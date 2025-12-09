@@ -699,9 +699,7 @@ But tbh, anything you think is worth doing and pushes this work forward is a plu
 - Active contributors offered interviews at [Iqidis](https://iqidis.ai) and access to our network of **1.5M+ members** including engineers, managers, and builders from Google, Nvidia, OpenAI, Anthropic, Meta AI, and other top AI organizations
 
 Bounties will be given out monthly, at the 15th of every month. 
-## License
 
-MIT License - see LICENSE file for details.
 
 ## Citation
 
