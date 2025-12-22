@@ -53,6 +53,9 @@ pip install -e .
 
 # Or with dev dependencies for testing/development
 pip install -e ".[dev]"
+
+# Optional: 4-bit quantization support (CUDA + bitsandbytes)
+pip install -e ".[quant]"
 ```
 
 ### Requirements
@@ -200,6 +203,8 @@ latent-reason run "Create test plan" --output result.json --format json
 
 **Key Options:**
 - `--encoder`: Model to use (default: Qwen/Qwen3-0.6B)
+- `--quantization`: Quantization mode (auto, 4bit, none)
+- `--decode-strategy`: Decode strategy (best, combined)
 - `--chains`: Number of parallel evolution chains (default: 5)
 - `--generations`: Maximum evolution generations (default: 10)
 - `--max-tokens`: Maximum output tokens (default: 2048)
@@ -252,9 +257,10 @@ You can use a YAML config file for complex setups. Copy `config.example.yaml` an
 # config.yaml
 encoder:
   model: "Qwen/Qwen3-4B"        # Model to use for encoding/decoding
-  layer: -4                     # Hidden layer to extract (-4 = 4th from last)
+  layer: -4                     # Hidden layer to extract (-4 = 4th from last)  
   pooling: "mean"               # How to pool sequence: mean, last, cls
   device: "auto"                # Device: auto, cuda, cpu
+  quantization: "auto"          # Quantization: auto, 4bit, none
 
 evolution:
   chains: 8                     # Number of parallel evolution chains
@@ -282,6 +288,8 @@ judges:
       latent_dim: 1024
 
 synthesis:
+  decode_strategy: "best"       # Decode strategy: best, combined
+  max_survivors: 5              # Used when decode_strategy is "combined"
   max_tokens: 2048              # Maximum output tokens
   temperature: 0.7              # Sampling temperature for decoding
 

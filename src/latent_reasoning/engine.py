@@ -49,7 +49,7 @@ class ReasoningResult:
 
     # Detailed results - for analysis and debugging
     survivors: List[ChainState] = field(default_factory=list)      # All final candidates
-    all_plans: List[str] = field(default_factory=list)             # Text from all survivors
+    all_plans: List[str] = field(default_factory=list)             # Decoded outputs (usually one)
 
     # Evolution metadata - for understanding performance
     generations: int = 0                         # How many evolution cycles ran
@@ -209,6 +209,7 @@ class Engine:
                     extraction_layer=self.config.encoder.layer,
                     pooling=self.config.encoder.pooling,
                     device_preference=self.config.encoder.device,
+                    quantization=self.config.encoder.quantization,
                 )
 
             # Create judge panel
@@ -230,6 +231,7 @@ class Engine:
                         layers=tuple(modifier_config.layers),
                         canonical_dim=encoder.latent_dim,
                         device_preference=self.config.encoder.device,
+                        quantization=modifier_config.quantization,
                     ))
 
             judge_panel = JudgePanel(

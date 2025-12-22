@@ -12,6 +12,7 @@ from torch import Tensor
 from transformers import AutoModel, AutoTokenizer, AutoConfig
 
 from latent_reasoning.utils.device import get_device, ensure_tensor_device
+from latent_reasoning.utils.quantization import get_default_dtype, get_quantization_kwargs
 
 if TYPE_CHECKING:
     from latent_reasoning.core.chain import ModificationContext
@@ -47,6 +48,7 @@ class ScorerJudge(Judge):
         canonical_dim: int | None = None,
         device_preference: str = "auto",
         use_semantic_similarity: bool = True,  # Default to similarity-based scoring
+        quantization: str = "none",
     ):
         """
         Initialize the scorer judge.
@@ -63,6 +65,7 @@ class ScorerJudge(Judge):
         self.extraction_layer = extraction_layer
         self._device = get_device(device_preference)
         self.use_semantic_similarity = use_semantic_similarity
+        self.quantization = quantization
 
         # Load model
         self._load_model()
@@ -149,13 +152,35 @@ class ScorerJudge(Judge):
         config = AutoConfig.from_pretrained(model_path, trust_remote_code=True)
         self.hidden_size = config.hidden_size
 
-        self.model = AutoModel.from_pretrained(
-            model_path,
-            trust_remote_code=True,
-            torch_dtype=torch.float16,
-            output_hidden_states=True,
+        model_kwargs = {
+            "trust_remote_code": True,
+            "output_hidden_states": True,
+        }
+        quant_kwargs, is_quantized, reason = get_quantization_kwargs(
+            self.quantization,
+            self._device,
         )
-        self.model.to(self._device)
+        if reason and self.quantization != "auto":
+            print(f"Quantization disabled: {reason}")
+        if is_quantized:
+            model_kwargs.update(quant_kwargs)
+        else:
+            model_kwargs["torch_dtype"] = get_default_dtype(self._device)
+
+        try:
+            self.model = AutoModel.from_pretrained(model_path, **model_kwargs)
+        except Exception as exc:
+            if not is_quantized:
+                raise
+            print(f"Quantized load failed: {exc}. Falling back to default dtype.")
+            model_kwargs.pop("quantization_config", None)
+            model_kwargs.pop("device_map", None)
+            model_kwargs["torch_dtype"] = get_default_dtype(self._device)
+            self.model = AutoModel.from_pretrained(model_path, **model_kwargs)
+            is_quantized = False
+
+        if not is_quantized:
+            self.model.to(self._device)
         self.model.eval()
 
         # Also load tokenizer for potential text input
@@ -286,6 +311,7 @@ class ModifierJudge(Judge):
         layers: tuple[int, int] = (-8, -4),
         canonical_dim: int | None = None,
         device_preference: str = "auto",
+        quantization: str = "auto",
     ):
         """
         Initialize the modifier judge.
@@ -299,6 +325,7 @@ class ModifierJudge(Judge):
         self.model_name = model_name
         self.layers = layers
         self._device = get_device(device_preference)
+        self.quantization = quantization
 
         # Load model
         self._load_model()
@@ -327,13 +354,35 @@ class ModifierJudge(Judge):
         config = AutoConfig.from_pretrained(model_path, trust_remote_code=True)
         self.hidden_size = config.hidden_size
 
-        self.model = AutoModel.from_pretrained(
-            model_path,
-            trust_remote_code=True,
-            torch_dtype=torch.float16,
-            output_hidden_states=True,
+        model_kwargs = {
+            "trust_remote_code": True,
+            "output_hidden_states": True,
+        }
+        quant_kwargs, is_quantized, reason = get_quantization_kwargs(
+            self.quantization,
+            self._device,
         )
-        self.model.to(self._device)
+        if reason and self.quantization != "auto":
+            print(f"Quantization disabled: {reason}")
+        if is_quantized:
+            model_kwargs.update(quant_kwargs)
+        else:
+            model_kwargs["torch_dtype"] = get_default_dtype(self._device)
+
+        try:
+            self.model = AutoModel.from_pretrained(model_path, **model_kwargs)
+        except Exception as exc:
+            if not is_quantized:
+                raise
+            print(f"Quantized load failed: {exc}. Falling back to default dtype.")
+            model_kwargs.pop("quantization_config", None)
+            model_kwargs.pop("device_map", None)
+            model_kwargs["torch_dtype"] = get_default_dtype(self._device)
+            self.model = AutoModel.from_pretrained(model_path, **model_kwargs)
+            is_quantized = False
+
+        if not is_quantized:
+            self.model.to(self._device)
         self.model.eval()
 
         self.tokenizer = AutoTokenizer.from_pretrained(model_path, trust_remote_code=True)
@@ -829,4 +878,5 @@ def create_scorer_from_config(
             head_weights=config.head,
             canonical_dim=encoder_latent_dim,
             device_preference=device,
+            quantization=config.quantization,
         )

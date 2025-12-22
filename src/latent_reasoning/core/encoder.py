@@ -34,6 +34,7 @@ from torch import Tensor
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from latent_reasoning.utils.device import get_device, ensure_tensor_device
+from latent_reasoning.utils.quantization import get_default_dtype, get_quantization_kwargs
 
 
 class LatentToSoftPrompt(nn.Module):
@@ -240,6 +241,7 @@ class LLMEncoder(Encoder):
         pooling: Literal["mean", "last", "cls"] = "mean",
         device_preference: str = "auto",
         max_length: int = 2048,
+        quantization: str = "auto",
     ):
         """
         Initialize the LLM encoder with a transformer model.
@@ -293,6 +295,7 @@ class LLMEncoder(Encoder):
         self.extraction_layer = extraction_layer
         self.pooling = pooling
         self.max_length = max_length
+        self.quantization = quantization
 
         # Get device
         self._device = get_device(device_preference)
@@ -315,13 +318,35 @@ class LLMEncoder(Encoder):
         if self.tokenizer.pad_token is None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
 
-        self.model = AutoModelForCausalLM.from_pretrained(
-            model_path,
-            trust_remote_code=True,
-            torch_dtype=torch.float16,  # Use fp16 for efficiency
-            output_hidden_states=True,
+        model_kwargs = {
+            "trust_remote_code": True,
+            "output_hidden_states": True,
+        }
+        quant_kwargs, is_quantized, reason = get_quantization_kwargs(
+            self.quantization,
+            self._device,
         )
-        self.model.to(self._device)
+        if reason and self.quantization != "auto":
+            print(f"Quantization disabled: {reason}")
+        if is_quantized:
+            model_kwargs.update(quant_kwargs)
+        else:
+            model_kwargs["torch_dtype"] = get_default_dtype(self._device)
+
+        try:
+            self.model = AutoModelForCausalLM.from_pretrained(model_path, **model_kwargs)
+        except Exception as exc:
+            if not is_quantized:
+                raise
+            print(f"Quantized load failed: {exc}. Falling back to default dtype.")
+            model_kwargs.pop("quantization_config", None)
+            model_kwargs.pop("device_map", None)
+            model_kwargs["torch_dtype"] = get_default_dtype(self._device)
+            self.model = AutoModelForCausalLM.from_pretrained(model_path, **model_kwargs)
+            is_quantized = False
+
+        if not is_quantized:
+            self.model.to(self._device)
         self.model.eval()
 
         # Cache the hidden size

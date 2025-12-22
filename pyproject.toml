@@ -53,8 +53,11 @@ dev = [
     "ruff>=0.4",
     "mypy>=1.10",
 ]
+quant = [
+    "bitsandbytes>=0.43.0",
+]
 all = [
-    "latent-reasoning[dev]",
+    "latent-reasoning[dev,quant]",
 ]
 
 [project.scripts]

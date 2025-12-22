@@ -156,6 +156,16 @@ def run(
         "--encoder", "-e",
         help="Model for encoding/decoding. Options: Qwen/Qwen3-4B (best quality, ~8GB), Qwen/Qwen3-1.7B (balanced, ~4GB), Qwen/Qwen3-0.6B (fast, ~2GB)",
     ),
+    quantization: str = typer.Option(
+        "auto",
+        "--quantization",
+        help="Quantization mode: auto, 4bit, none",
+    ),
+    decode_strategy: str = typer.Option(
+        "best",
+        "--decode-strategy",
+        help="Decode strategy: best, combined",
+    ),
     scorer: Optional[List[str]] = typer.Option(
         None,
         "--scorer", "-s",
@@ -295,6 +305,11 @@ def run(
 
     # Override config with CLI options
     cfg.encoder.model = encoder
+    cfg.encoder.quantization = quantization
+    if decode_strategy not in {"best", "combined"}:
+        console.print("[red]Error: --decode-strategy must be 'best' or 'combined'[/red]")
+        raise typer.Exit(1)
+    cfg.synthesis.decode_strategy = decode_strategy
     cfg.evolution.chains = chains
     cfg.evolution.generations = generations
     cfg.evolution.temperature = mutation_temp
@@ -426,6 +441,16 @@ def compare(
         "--encoder", "-e",
         help="Encoder model (HuggingFace ID or path)",
     ),
+    quantization: str = typer.Option(
+        "auto",
+        "--quantization",
+        help="Quantization mode: auto, 4bit, none",
+    ),
+    decode_strategy: str = typer.Option(
+        "best",
+        "--decode-strategy",
+        help="Decode strategy: best, combined",
+    ),
     # Generation options
     max_tokens: int = typer.Option(
         2048,
@@ -485,6 +510,11 @@ def compare(
 
     cfg = Config()
     cfg.encoder.model = encoder
+    cfg.encoder.quantization = quantization
+    if decode_strategy not in {"best", "combined"}:
+        console.print("[red]Error: --decode-strategy must be 'best' or 'combined'[/red]")
+        raise typer.Exit(1)
+    cfg.synthesis.decode_strategy = decode_strategy
     cfg.evolution.chains = chains
     cfg.evolution.generations = generations
     cfg.synthesis.max_tokens = max_tokens
@@ -563,6 +593,11 @@ def baseline(
         "--encoder", "-e",
         help="Encoder model",
     ),
+    quantization: str = typer.Option(
+        "auto",
+        "--quantization",
+        help="Quantization mode: auto, 4bit, none",
+    ),
     max_tokens: int = typer.Option(
         2048,
         "--max-tokens", "-t",
@@ -593,6 +628,7 @@ def baseline(
 
     cfg = Config()
     cfg.encoder.model = encoder
+    cfg.encoder.quantization = quantization
     cfg.synthesis.max_tokens = max_tokens
     cfg.synthesis.temperature = temperature
     cfg.output.verbosity = "silent"

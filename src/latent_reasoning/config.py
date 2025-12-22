@@ -82,6 +82,7 @@ class EncoderConfig(BaseModel):
 
     # Hardware settings
     device: str = "auto"           # Device: "auto", "cuda", "cuda:0", "cpu"
+    quantization: Literal["auto", "none", "4bit"] = "auto"
     max_length: int = Field(default=2048, ge=1, le=32768)  # Maximum input sequence length
 
     class Config:
@@ -127,6 +128,7 @@ class ScorerConfig(BaseModel):
     model: str | None = None       # HuggingFace model for encoding (e.g., "sentence-transformers/all-MiniLM-L6-v2")
     layer: int = -1                # Which layer to extract from semantic model
     head: str | None = None        # Optional path to trained regression head weights
+    quantization: Literal["auto", "none", "4bit"] = "none"
 
     # For trained_latent scorer (neural network trained on quality data)
     checkpoint: str | None = None  # Path to trained LatentScorer checkpoint
@@ -147,6 +149,7 @@ class ModifierConfig(BaseModel):
 
     model: str                     # HuggingFace model for modification suggestions
     layers: list[int] = Field(default_factory=lambda: [-8, -4])  # Hidden layers to extract from
+    quantization: Literal["auto", "none", "4bit"] = "auto"
 
     class Config:
         extra = "forbid"
@@ -322,8 +325,9 @@ class SynthesisConfig(BaseModel):
     """Configuration for final synthesis."""
     decoder: str | None = None  # None = use encoder model
     model: str = "gemini-2.5-flash"  # Frontier model for synthesis
+    decode_strategy: Literal["best", "combined"] = "best"
     max_survivors: int = Field(default=5, ge=1)
-    max_tokens: int = Field(default=2048, ge=1, le=32768)  # Max output tokens
+    max_tokens: int = Field(default=2048, ge=1, le=32768)  # Max output tokens  
     temperature: float = Field(default=0.7, ge=0, le=2.0)  # Decode temperature
 
     class Config:

@@ -137,6 +137,7 @@ class ImprovedOrchestrator:
             extraction_layer=self.config.encoder.layer,
             pooling=self.config.encoder.pooling,
             device_preference=self.config.encoder.device,
+            quantization=self.config.encoder.quantization,
         )
 
     def _create_judge_panel(self) -> JudgePanel:
@@ -149,6 +150,7 @@ class ImprovedOrchestrator:
                 head_weights=scorer_config.head,
                 canonical_dim=self.encoder.latent_dim,
                 device_preference=self.config.encoder.device,
+                quantization=scorer_config.quantization,
             )
             scorers.append(scorer)
 
@@ -158,6 +160,36 @@ class ImprovedOrchestrator:
             aggregation=self.config.judges.aggregation,
             calibrate=self.config.judges.calibrate,
         )
+
+    def _combine_latents(self, survivors: List[ChainState]) -> Tensor:
+        """Combine top survivor latents into a single representation."""        
+        if not survivors:
+            raise ValueError("No survivors to combine")
+
+        ordered = sorted(survivors, key=lambda s: s.score, reverse=True)
+        top = ordered[:self.config.synthesis.max_survivors]
+
+        stacked = torch.stack([s.latent.float() for s in top])
+        scores = torch.tensor([s.score for s in top], device=stacked.device, dtype=torch.float32)
+        if torch.allclose(scores, scores[0]) or scores.abs().sum().item() == 0.0:
+            weights = torch.ones(len(top), device=stacked.device) / len(top)
+        else:
+            weights = torch.softmax(scores, dim=0)
+
+        view_shape = [len(top)] + [1] * (stacked.dim() - 1)
+        combined = (stacked * weights.view(*view_shape)).sum(dim=0)
+        return combined.to(top[0].latent.dtype)
+
+    def _select_decode_latent(self, evolution_result: EvolutionResult) -> Tensor:
+        """Select the latent to decode based on synthesis strategy."""
+        strategy = self.config.synthesis.decode_strategy
+        if strategy == "combined":
+            if evolution_result.survivors:
+                return self._combine_latents(evolution_result.survivors)
+            return evolution_result.best_latent
+        if strategy == "best":
+            return evolution_result.best_latent
+        raise ValueError(f"Unsupported decode strategy: {strategy}")
 
     def run(self, query: str) -> ImprovedOrchestrationResult:
         """
@@ -202,42 +234,19 @@ class ImprovedOrchestrator:
         self.budget.evaluations_used += evolution_result.total_evaluations
         self.budget.generations_used = evolution_result.generations
 
-        # Decode ALL survivors (more options to choose from)
+        # Decode final latent
         log_event("DECODE", level=LogLevel.VERBOSE)
-        decoded_outputs = []
-        for survivor in evolution_result.survivors[:self.config.synthesis.max_survivors]:
-            decoded = self.encoder.decode(survivor.latent, query=query)
-            decoded_outputs.append(decoded)
+        decode_latent = self._select_decode_latent(evolution_result)
+        decoded_outputs = [self.encoder.decode(decode_latent, query=query)]
 
-        # Score decoded outputs using text heuristics
+        # Score decoded output using text heuristics
         log_event("HEURISTIC_SCORE", level=LogLevel.VERBOSE)
-        heuristic_scores = []
-        for output in decoded_outputs:
-            score = self.heuristic_scorer.score(output)
-            heuristic_scores.append(score.overall_score)
+        heuristic_scores = [
+            self.heuristic_scorer.score(decoded_outputs[0]).overall_score
+        ]
 
-        # Re-rank by heuristic score
-        if decoded_outputs:
-            sorted_indices = sorted(
-                range(len(heuristic_scores)),
-                key=lambda i: heuristic_scores[i],
-                reverse=True,
-            )
-            decoded_outputs = [decoded_outputs[i] for i in sorted_indices]
-            heuristic_scores = [heuristic_scores[i] for i in sorted_indices]
-
-            # Update survivors order
-            survivors_reranked = [evolution_result.survivors[i] for i in sorted_indices]
-        else:
-            survivors_reranked = evolution_result.survivors
-
-        # Calculate diversity of best survivor from seed
-        if survivors_reranked:
-            best_latent = survivors_reranked[0].latent
-            diversity = self.diversity_scorer.score_diversity(best_latent)
-        else:
-            best_latent = seed
-            diversity = 0.0
+        diversity = self.diversity_scorer.score_diversity(decode_latent)
+        survivors_reranked = evolution_result.survivors
 
         log_event(
             "DONE",
@@ -249,7 +258,7 @@ class ImprovedOrchestrator:
         )
 
         result = ImprovedOrchestrationResult(
-            final_latent=best_latent,
+            final_latent=decode_latent,
             decoded_outputs=decoded_outputs,
             best_score=evolution_result.best_score,
             heuristic_scores=heuristic_scores,

@@ -165,6 +165,7 @@ class Orchestrator:
             extraction_layer=self.config.encoder.layer,
             pooling=self.config.encoder.pooling,
             device_preference=self.config.encoder.device,
+            quantization=self.config.encoder.quantization,
         )
 
     def _create_judge_panel(self) -> JudgePanel:
@@ -186,6 +187,7 @@ class Orchestrator:
                 layers=tuple(modifier_config.layers),
                 canonical_dim=self.encoder.latent_dim,
                 device_preference=self.config.encoder.device,
+                quantization=modifier_config.quantization,
             )
             modifiers.append(modifier)
 
@@ -195,6 +197,36 @@ class Orchestrator:
             aggregation=self.config.judges.aggregation,
             calibrate=self.config.judges.calibrate,
         )
+
+    def _combine_latents(self, survivors: List[ChainState]) -> Tensor:
+        """Combine top survivor latents into a single representation."""
+        if not survivors:
+            raise ValueError("No survivors to combine")
+
+        ordered = sorted(survivors, key=lambda s: s.score, reverse=True)
+        top = ordered[:self.config.synthesis.max_survivors]
+
+        stacked = torch.stack([s.latent.float() for s in top])
+        scores = torch.tensor([s.score for s in top], device=stacked.device, dtype=torch.float32)
+        if torch.allclose(scores, scores[0]) or scores.abs().sum().item() == 0.0:
+            weights = torch.ones(len(top), device=stacked.device) / len(top)
+        else:
+            weights = torch.softmax(scores, dim=0)
+
+        view_shape = [len(top)] + [1] * (stacked.dim() - 1)
+        combined = (stacked * weights.view(*view_shape)).sum(dim=0)
+        return combined.to(top[0].latent.dtype)
+
+    def _select_decode_latent(self, evolution_result: EvolutionResult) -> Tensor:
+        """Select the latent to decode based on synthesis strategy."""
+        strategy = self.config.synthesis.decode_strategy
+        if strategy == "combined":
+            if evolution_result.survivors:
+                return self._combine_latents(evolution_result.survivors)
+            return evolution_result.best_latent
+        if strategy == "best":
+            return evolution_result.best_latent
+        raise ValueError(f"Unsupported decode strategy: {strategy}")
 
     def run(self, query: str) -> OrchestrationResult:
         """
@@ -225,9 +257,9 @@ class Orchestrator:
         Returns:
             OrchestrationResult containing:
             - final_latent: Best latent vector found through evolution
-            - decoded_outputs: List of text responses from survivor latents
+            - decoded_outputs: List of decoded responses (currently one)        
             - best_score: Highest fitness score achieved
-            - survivors: Final population of high-quality latent vectors
+            - survivors: Final population of high-quality latent vectors        
             - generations: Number of evolution cycles completed
             - total_evaluations: Total judge evaluations performed
             - stop_reason: Why the evolution process terminated
@@ -256,10 +288,10 @@ class Orchestrator:
             ValueError: If query is empty or invalid
 
         Note:
-            - The method handles all error recovery and resource management
-            - Progress is logged according to configured verbosity level
+            - The method handles all error recovery and resource management     
+            - Progress is logged according to configured verbosity level        
             - Checkpoints are saved automatically for fault tolerance
-            - Multiple decoded outputs may be available from survivor population
+            - Decoding strategy is controlled by synthesis.decode_strategy
         """
         print_header("Latent Space Reasoning Engine")
 
@@ -301,17 +333,17 @@ class Orchestrator:
             best_score=evolution_result.best_score,
         )
 
-        # Decode survivors (pass query for context)
+        # Decode final latent (pass query for context)
         log_event("DECODE", level=LogLevel.VERBOSE)
-        decoded_outputs = []
-        for survivor in evolution_result.survivors[:self.config.synthesis.max_survivors]:
-            decoded = self.encoder.decode(
-                survivor.latent,
+        decode_latent = self._select_decode_latent(evolution_result)
+        decoded_outputs = [
+            self.encoder.decode(
+                decode_latent,
                 query=query,
                 max_new_tokens=self.config.synthesis.max_tokens,
                 temperature=self.config.synthesis.temperature,
             )
-            decoded_outputs.append(decoded)
+        ]
 
         # Log completion
         log_event(
@@ -323,7 +355,7 @@ class Orchestrator:
         )
 
         result = OrchestrationResult(
-            final_latent=evolution_result.best_latent,
+            final_latent=decode_latent,
             decoded_outputs=decoded_outputs,
             best_score=evolution_result.best_score,
             survivors=evolution_result.survivors,

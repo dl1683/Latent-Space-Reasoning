@@ -47,6 +47,12 @@ encoder:
   # "cpu" - Force CPU usage (slower but works without GPU)
   device: "auto"
 
+  # Quantization mode
+  # "auto" - Try 4-bit on CUDA, fall back if unavailable
+  # "4bit" - Force 4-bit quantization (requires bitsandbytes + CUDA)
+  # "none" - Disable quantization
+  quantization: "auto"
+
   # Maximum input length in tokens
   # Longer inputs need more memory but can handle more complex queries
   # 2048 is good for most queries, increase to 4096 for very long inputs
@@ -80,6 +86,7 @@ judges:
     # Use a smaller/faster model than the encoder for speed
     - model: "Qwen/Qwen3-0.6B"
       layers: [-8, -4]  # Hidden layers to extract modification signals from
+      quantization: "auto"
 
   # Judge panel behavior
   aggregation: "mean"  # How to combine multiple scorer outputs: mean, weighted, max, min
@@ -188,7 +195,12 @@ synthesis:
   # Frontier model for synthesis (if needed)
   model: "gemini-2.5-flash"
 
-  # How many chains to decode
+  # Decode strategy for the final output
+  # "best" - decode only the highest-scoring survivor (default)
+  # "combined" - combine top survivors in latent space, then decode
+  decode_strategy: "best"
+
+  # How many chains to combine when decode_strategy is "combined"
   max_survivors: 5
 
   # Maximum output tokens
