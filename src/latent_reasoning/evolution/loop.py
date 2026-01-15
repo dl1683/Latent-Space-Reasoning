@@ -369,8 +369,22 @@ class EvolutionLoop:
             # Decay temperature
             self.current_temperature *= self.config.temperature_decay
 
-        # Final evaluation
-        scores = [c.score for c in chains]
+        # Final evaluation - actually score the final population
+        cross_chain = compute_cross_chain_summary(chains)
+        scores = []
+        for i, chain in enumerate(chains):
+            if chain.score == 0.0:  # Only evaluate if not already scored
+                context = trackers[min(i, len(trackers) - 1)].get_context(chain.latent, cross_chain)
+                verdict = self.judge_panel.evaluate(chain.latent, context)
+                chain.score = verdict.score
+                self.total_evaluations += 1
+            scores.append(chain.score)
+
+        # Update best if final evaluation found something better
+        final_best_idx = max(range(len(scores)), key=lambda i: scores[i])
+        if scores[final_best_idx] > best_score:
+            best_score = scores[final_best_idx]
+            best_latent = chains[final_best_idx].latent.clone()
 
         return EvolutionResult(
             best_latent=best_latent,

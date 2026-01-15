@@ -190,7 +190,7 @@ class Encoder(ABC):
         but require more computation.
 
         Returns:
-            Integer dimension of latent vectors (e.g., 1536, 2048, 4096)
+            Integer dimension of latent vectors (e.g., 1024, 2048, 4096)        
         """
         pass
 
@@ -242,6 +242,7 @@ class LLMEncoder(Encoder):
         device_preference: str = "auto",
         max_length: int = 2048,
         quantization: str = "auto",
+        latent_dim: int | None = None,
     ):
         """
         Initialize the LLM encoder with a transformer model.
@@ -265,13 +266,15 @@ class LLMEncoder(Encoder):
                 - "cpu": Force CPU (slower but always works)
                 - "cuda:0": Specific GPU device
             max_length: Maximum input sequence length in tokens. Longer sequences
-                are truncated. Typical values: 512-2048 for reasoning tasks.
+                are truncated. Typical values: 512-2048 for reasoning tasks.    
+            latent_dim: Optional canonical latent dimension. If provided and
+                different from the model hidden size, a projection is applied.
 
         Example:
             Basic usage:
             >>> encoder = LLMEncoder("Qwen/Qwen3-1.7B")
             >>> latent = encoder.encode("How to implement caching?")
-            >>> print(f"Latent shape: {latent.shape}")  # torch.Size([1536])
+            >>> print(f"Latent shape: {latent.shape}")  # torch.Size([latent_dim])
 
             Custom configuration:
             >>> encoder = LLMEncoder(
@@ -284,7 +287,7 @@ class LLMEncoder(Encoder):
             Batch encoding for efficiency:
             >>> queries = ["Query 1", "Query 2", "Query 3"]
             >>> latents = encoder.encode_batch(queries)
-            >>> print(f"Batch shape: {latents.shape}")  # torch.Size([3, 1536])
+            >>> print(f"Batch shape: {latents.shape}")  # torch.Size([3, latent_dim])
 
         Raises:
             ValueError: If model_name is not found or invalid
@@ -296,6 +299,7 @@ class LLMEncoder(Encoder):
         self.pooling = pooling
         self.max_length = max_length
         self.quantization = quantization
+        self._target_latent_dim = latent_dim
 
         # Get device
         self._device = get_device(device_preference)
@@ -350,7 +354,20 @@ class LLMEncoder(Encoder):
         self.model.eval()
 
         # Cache the hidden size
-        self._latent_dim = self.model.config.hidden_size
+        self._model_hidden_dim = self.model.config.hidden_size
+
+        target_dim = self._target_latent_dim or self._model_hidden_dim
+        if target_dim <= 0:
+            raise ValueError("latent_dim must be a positive integer.")
+        self._latent_dim = target_dim
+        self._latent_projection: nn.Linear | None = None
+        if self._latent_dim != self._model_hidden_dim:
+            self._latent_projection = nn.Linear(
+                self._model_hidden_dim,
+                self._latent_dim,
+            )
+            self._init_latent_projection()
+            self._latent_projection.to(self._device, dtype=self.model.dtype)
 
         # Get embedding dimension (might differ from hidden_size in some models)
         self._embed_dim = self.model.get_input_embeddings().embedding_dim
@@ -362,6 +379,29 @@ class LLMEncoder(Encoder):
             num_soft_tokens=8,  # 8 soft tokens to condition generation
         )
         self.soft_prompt_projector.to(self._device)
+
+    def _init_latent_projection(self) -> None:
+        if self._latent_projection is None:
+            return
+        if self._latent_dim <= self._model_hidden_dim:
+            nn.init.zeros_(self._latent_projection.weight)
+            nn.init.zeros_(self._latent_projection.bias)
+            with torch.no_grad():
+                eye = torch.eye(
+                    self._latent_dim,
+                    device=self._latent_projection.weight.device,
+                    dtype=self._latent_projection.weight.dtype,
+                )
+                self._latent_projection.weight[:, : self._latent_dim].copy_(eye)
+        else:
+            nn.init.xavier_uniform_(self._latent_projection.weight, gain=0.1)
+            nn.init.zeros_(self._latent_projection.bias)
+
+    def _apply_latent_projection(self, pooled: Tensor) -> Tensor:
+        if self._latent_projection is None:
+            return pooled
+        pooled = pooled.to(self._latent_projection.weight.dtype)
+        return self._latent_projection(pooled)
 
     def encode(self, text: str) -> Tensor:
         """
@@ -387,7 +427,7 @@ class LLMEncoder(Encoder):
         Example:
             >>> encoder = LLMEncoder("Qwen/Qwen3-1.7B")
             >>> latent = encoder.encode("How to optimize database queries?")
-            >>> print(f"Latent shape: {latent.shape}")  # torch.Size([1536])
+            >>> print(f"Latent shape: {latent.shape}")  # torch.Size([latent_dim])
             >>> print(f"Latent device: {latent.device}")  # cuda:0 or cpu
             >>> print(f"Latent dtype: {latent.dtype}")   # torch.float16
 
@@ -428,7 +468,8 @@ class LLMEncoder(Encoder):
         else:
             raise ValueError(f"Unknown pooling method: {self.pooling}")
 
-        return pooled.squeeze(0)  # Remove batch dimension for single input
+        pooled = self._apply_latent_projection(pooled)
+        return pooled.squeeze(0)  # Remove batch dimension for single input     
 
     def encode_batch(self, texts: list[str]) -> Tensor:
         """
@@ -454,7 +495,7 @@ class LLMEncoder(Encoder):
             ...     "Optimize database queries"
             ... ]
             >>> latents = encoder.encode_batch(queries)
-            >>> print(f"Batch shape: {latents.shape}")  # torch.Size([3, 1536])
+            >>> print(f"Batch shape: {latents.shape}")  # torch.Size([3, latent_dim])
             >>>
             >>> # Process individual latents
             >>> for i, query in enumerate(queries):
@@ -499,7 +540,7 @@ class LLMEncoder(Encoder):
         else:
             raise ValueError(f"Unknown pooling method: {self.pooling}")
 
-        return pooled
+        return self._apply_latent_projection(pooled)
 
     def decode(
         self,
@@ -623,7 +664,8 @@ class LLMEncoder(Encoder):
 
         with torch.no_grad():
             # Use greedy decoding for temperature=0, sampling otherwise
-            if adjusted_temp < 0.01:
+            # Check original temperature, not adjusted_temp (which is clamped to >=0.1)
+            if temperature < 0.01:
                 outputs = self.model.generate(
                     **inputs,
                     max_new_tokens=max_new_tokens,
@@ -669,6 +711,92 @@ class LLMEncoder(Encoder):
         elif response.startswith("<think>"):
             # Thinking tag but no end tag - might be truncated, try to find actual content
             # Look for common plan starters after the thinking
+            for starter in ["1.", "Step 1", "## Step", "Here's", "Here is"]:
+                if starter in response:
+                    idx = response.find(starter)
+                    response = response[idx:]
+                    break
+
+        return response if response else generated.strip()
+
+    def generate_baseline(
+        self,
+        query: str | None = None,
+        max_new_tokens: int = 2048,
+        temperature: float = 0.7,
+    ) -> str:
+        """
+        Generate text directly from the model without latent conditioning.
+
+        This uses the same prompt format as decode(), but skips latent seeding
+        and latent-driven sampling adjustments.
+        """
+        system_msg = "Answer to the best of your ability."
+        user_msg = query if query else ""
+
+        # Try to use chat template if available
+        if hasattr(self.tokenizer, "apply_chat_template"):
+            messages = [
+                {"role": "system", "content": system_msg},
+                {"role": "user", "content": user_msg},
+            ]
+            try:
+                prompt = self.tokenizer.apply_chat_template(
+                    messages,
+                    tokenize=False,
+                    add_generation_prompt=True,
+                )
+            except Exception:
+                prompt = (
+                    f"<|im_start|>system\n{system_msg}<|im_end|>\n"
+                    f"<|im_start|>user\n{user_msg}<|im_end|>\n"
+                    "<|im_start|>assistant\n"
+                )
+        else:
+            prompt = f"System: {system_msg}\n\nUser: {user_msg}\n\nAssistant: "
+
+        inputs = self.tokenizer(prompt, return_tensors="pt")
+        inputs = {k: v.to(self._device) for k, v in inputs.items()}
+
+        with torch.no_grad():
+            if temperature < 0.01:
+                outputs = self.model.generate(
+                    **inputs,
+                    max_new_tokens=max_new_tokens,
+                    do_sample=False,
+                    pad_token_id=self.tokenizer.pad_token_id,
+                    eos_token_id=self.tokenizer.eos_token_id,
+                    repetition_penalty=1.2,
+                )
+            else:
+                outputs = self.model.generate(
+                    **inputs,
+                    max_new_tokens=max_new_tokens,
+                    do_sample=True,
+                    temperature=temperature,
+                    top_p=0.9,
+                    top_k=50,
+                    pad_token_id=self.tokenizer.pad_token_id,
+                    eos_token_id=self.tokenizer.eos_token_id,
+                    repetition_penalty=1.2,
+                )
+
+        generated = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+
+        if user_msg in generated:
+            idx = generated.find(user_msg) + len(user_msg)
+            response = generated[idx:].strip()
+        else:
+            response = generated.strip()
+
+        for marker in ["Assistant:", "assistant:", "<|im_start|>", "<|im_end|>"]:
+            if response.startswith(marker):
+                response = response[len(marker):].strip()
+
+        if "<think>" in response and "</think>" in response:
+            think_end = response.find("</think>") + len("</think>")
+            response = response[think_end:].strip()
+        elif response.startswith("<think>"):
             for starter in ["1.", "Step 1", "## Step", "Here's", "Here is"]:
                 if starter in response:
                     idx = response.find(starter)
@@ -804,47 +932,6 @@ class LLMEncoder(Encoder):
 
         return response if response else generated.strip()
 
-    def encode_batch(self, texts: list[str]) -> Tensor:
-        """
-        Encode multiple texts into latent vectors.
-
-        Args:
-            texts: List of texts to encode
-
-        Returns:
-            Batch of latent vectors (batch_size, latent_dim)
-        """
-        # Tokenize batch
-        inputs = self.tokenizer(
-            texts,
-            return_tensors="pt",
-            padding=True,
-            truncation=True,
-            max_length=self.max_length,
-        )
-        inputs = {k: v.to(self._device) for k, v in inputs.items()}
-
-        # Get hidden states
-        with torch.no_grad():
-            outputs = self.model(**inputs, output_hidden_states=True)
-
-        hidden_states = outputs.hidden_states[self.extraction_layer]
-
-        # Pool across sequence dimension
-        if self.pooling == "mean":
-            attention_mask = inputs["attention_mask"].unsqueeze(-1)
-            pooled = (hidden_states * attention_mask).sum(dim=1) / attention_mask.sum(dim=1)
-        elif self.pooling == "last":
-            seq_lengths = inputs["attention_mask"].sum(dim=1) - 1
-            batch_size = hidden_states.size(0)
-            pooled = hidden_states[torch.arange(batch_size), seq_lengths]
-        elif self.pooling == "cls":
-            pooled = hidden_states[:, 0, :]
-        else:
-            raise ValueError(f"Unknown pooling method: {self.pooling}")
-
-        return pooled
-
     @property
     def latent_dim(self) -> int:
         """Return the dimensionality of the latent space."""
@@ -862,6 +949,8 @@ class LLMEncoder(Encoder):
         self._device = device
         self.model.to(device)
         self.soft_prompt_projector.to(device)
+        if self._latent_projection is not None:
+            self._latent_projection.to(device)
         return self
 
     def save_decoder_weights(self, path: str | Path) -> None:

@@ -330,15 +330,34 @@ class ModifierJudge(Judge):
         # Load model
         self._load_model()
 
-        # Set up projections
+        # Set up projections with proper initialization to preserve information
         self.canonical_dim = canonical_dim or self.hidden_size
         self.projection_in = nn.Linear(self.canonical_dim, self.hidden_size)
         self.projection_out = nn.Linear(self.hidden_size, self.canonical_dim)
+
+        # Initialize projection_in: preserve input as much as possible
+        with torch.no_grad():
+            nn.init.zeros_(self.projection_in.weight)
+            nn.init.zeros_(self.projection_in.bias)
+            # Copy identity for overlapping dimensions
+            min_dim = min(self.canonical_dim, self.hidden_size)
+            self.projection_in.weight[:min_dim, :min_dim].copy_(torch.eye(min_dim))
+
+        # Initialize projection_out: extract first canonical_dim dimensions
+        with torch.no_grad():
+            nn.init.zeros_(self.projection_out.weight)
+            nn.init.zeros_(self.projection_out.bias)
+            min_dim = min(self.canonical_dim, self.hidden_size)
+            self.projection_out.weight[:min_dim, :min_dim].copy_(torch.eye(min_dim))
 
         # Context projection (for trajectory context)
         # Input: current + momentum + recent_mods (flattened) + stuck_signal + cross_chain_summary
         context_input_dim = self.canonical_dim * 5 + 3  # Approximate
         self.context_projection = nn.Linear(context_input_dim, self.canonical_dim)
+        # Initialize with small weights for stable aggregation
+        with torch.no_grad():
+            nn.init.xavier_uniform_(self.context_projection.weight, gain=0.1)
+            nn.init.zeros_(self.context_projection.bias)
 
         # Move to device
         self.projection_in.to(self._device)
@@ -767,11 +786,12 @@ class DecodeScoreJudge(Judge):
         self._decode_cache.clear()
 
     def _latent_to_cache_key(self, latent: Tensor) -> str:
-        """Generate a cache key from a latent vector."""
-        # Use first/last few values + norm as a cheap hash
-        flat = latent.flatten()
-        key_vals = [flat[0].item(), flat[-1].item(), flat[len(flat)//2].item(), latent.norm().item()]
-        return f"{key_vals[0]:.4f}_{key_vals[1]:.4f}_{key_vals[2]:.4f}_{key_vals[3]:.4f}"
+        """Generate a cache key from a latent vector using full content hash."""
+        # Use hash of entire latent tensor bytes for collision-resistant caching
+        flat = latent.detach().cpu().flatten().float()
+        # Round to 4 decimals then hash the byte representation
+        rounded = torch.round(flat * 10000) / 10000
+        return str(hash(rounded.numpy().tobytes()))
 
     def score(self, latent: Tensor) -> float:
         """
@@ -791,6 +811,13 @@ class DecodeScoreJudge(Judge):
             return self._decode_cache[cache_key]
 
         # Decode the latent to text
+        # Save RNG state to avoid decode's manual_seed from affecting evolution
+        rng_state = torch.get_rng_state()
+        cuda_rng_states = {}
+        if torch.cuda.is_available():
+            for i in range(torch.cuda.device_count()):
+                cuda_rng_states[i] = torch.cuda.get_rng_state(i)
+
         try:
             decoded_text = self.encoder.decode(
                 latent,
@@ -801,6 +828,12 @@ class DecodeScoreJudge(Judge):
         except Exception as e:
             print(f"Decode error: {e}")
             return -1.0  # Failed decode gets worst score
+        finally:
+            # Restore RNG state so evolution mutations aren't affected
+            torch.set_rng_state(rng_state)
+            if torch.cuda.is_available():
+                for i, state in cuda_rng_states.items():
+                    torch.cuda.set_rng_state(state, i)
 
         # Score with heuristics
         result = self.heuristic_scorer.score(decoded_text)
