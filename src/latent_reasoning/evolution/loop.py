@@ -246,14 +246,18 @@ class EvolutionLoop:
             cross_chain = compute_cross_chain_summary(chains)
 
             # Evaluate all chains
-            scores = []
+            raw_scores = []
             for i, chain in enumerate(chains):
                 context = trackers[i].get_context(chain.latent, cross_chain)
                 verdict = self.judge_panel.evaluate(chain.latent, context)
-                chain.score = verdict.score
-                scores.append(verdict.score)
+                raw_scores.append(verdict.score)
                 trackers[i].record(chain.latent, verdict.score)
                 self.total_evaluations += 1
+
+            # Add diversity bonus to encourage exploration
+            scores = self._apply_diversity_bonus(chains, raw_scores)
+            for i, chain in enumerate(chains):
+                chain.score = scores[i]
 
             # Track best
             gen_best_idx = max(range(len(scores)), key=lambda i: scores[i])
@@ -398,14 +402,53 @@ class EvolutionLoop:
         )
 
     def _initialize_population(self, seed: Tensor) -> List[ChainState]:
-        """Initialize the population from a seed vector."""
+        """Initialize the population from a seed vector with high diversity."""
         chains = []
+        # Use initial_diversity multiplier for much more varied starting population
+        init_noise_scale = self.config.temperature * self.config.initial_diversity
         for _ in range(self.config.chains):
-            # Add some noise to create diversity
-            noise = torch.randn_like(seed) * self.config.temperature
+            # Add substantial noise to create diverse initial population
+            noise = torch.randn_like(seed) * init_noise_scale
             latent = seed + noise
             chains.append(ChainState(latent=latent))
         return chains
+
+    def _apply_diversity_bonus(
+        self,
+        chains: List[ChainState],
+        raw_scores: List[float],
+    ) -> List[float]:
+        """Apply diversity bonus to scores to encourage exploration.
+
+        Chains that are more different from others get a bonus, preventing
+        premature convergence to a single solution.
+        """
+        if len(chains) <= 1 or self.config.diversity_weight <= 0:
+            return raw_scores
+
+        # Stack all latents for efficient computation
+        latents = torch.stack([c.latent.flatten() for c in chains])
+
+        # Compute pairwise cosine similarities
+        norms = latents.norm(dim=1, keepdim=True).clamp(min=1e-8)
+        normalized = latents / norms
+        similarities = torch.mm(normalized, normalized.t())
+
+        # For each chain, compute average similarity to OTHER chains
+        # (exclude self-similarity on diagonal)
+        n = len(chains)
+        mask = 1.0 - torch.eye(n, device=latents.device)
+        avg_similarity = (similarities * mask).sum(dim=1) / (n - 1)
+
+        # Diversity bonus = 1 - avg_similarity (more different = higher bonus)
+        diversity_bonus = (1.0 - avg_similarity).tolist()
+
+        # Combine: final_score = raw_score + diversity_weight * diversity_bonus
+        final_scores = []
+        for raw, bonus in zip(raw_scores, diversity_bonus):
+            final_scores.append(raw + self.config.diversity_weight * bonus)
+
+        return final_scores
 
     def _get_top_k(
         self,

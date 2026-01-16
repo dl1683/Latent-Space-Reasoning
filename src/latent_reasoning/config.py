@@ -51,8 +51,8 @@ class EncoderConfig(BaseModel):
     model and parameters significantly impacts both quality and performance.
 
     Model Selection Guidelines:
-    - **Qwen/Qwen3-4B**: Best quality, requires ~8GB VRAM (recommended)
-    - **Qwen/Qwen3-1.7B**: Good balance of quality/speed, ~4GB VRAM
+    - **Qwen/Qwen3-4B**: Best quality, requires ~8GB VRAM
+    - **Qwen/Qwen3-1.7B**: Good balance of quality/speed, ~4GB VRAM (default)
     - **Qwen/Qwen3-0.6B**: Fastest, minimal VRAM (~2GB), lower quality
     - **microsoft/Phi-3.5-mini-instruct**: Alternative, good for reasoning
     - **Local models**: Use absolute path to local model directory
@@ -67,6 +67,10 @@ class EncoderConfig(BaseModel):
     - **last**: Use final token, good for completion-style tasks
     - **cls**: Use first token, for models with explicit CLS tokens
 
+    Latent Dimension:
+    - **latent_dim**: Canonical latent space size used across models
+    - If different from model hidden size, the encoder projects to this size
+
     Performance Considerations:
     - Larger models produce higher quality but require more compute
     - Layer choice affects both quality and evolution effectiveness
@@ -74,11 +78,12 @@ class EncoderConfig(BaseModel):
     """
 
     # Model selection - choose based on your hardware and quality needs
-    model: str = "Qwen/Qwen3-4B"  # HuggingFace model ID or local path
+    model: str = "Qwen/Qwen3-1.7B"  # HuggingFace model ID or local path
 
     # Latent extraction settings
     layer: int = -4                # Which hidden layer to extract (-4 = 4th from last, usually optimal)
     pooling: Literal["mean", "last", "cls"] = "mean"  # How to pool sequence dimension
+    latent_dim: int = Field(default=1024, ge=1)  # Canonical latent dimension
 
     # Hardware settings
     device: str = "auto"           # Device: "auto", "cuda", "cuda:0", "cpu"
@@ -302,6 +307,8 @@ class EvolutionConfig(BaseModel):
     temperature: float = Field(default=0.5, ge=0, le=2)
     temperature_decay: float = Field(default=0.95, ge=0, le=1)
     min_viable_score: float = Field(default=0.1, ge=0, le=1)
+    initial_diversity: float = Field(default=2.0, ge=0.1, le=10.0)  # Multiplier for initial population noise
+    diversity_weight: float = Field(default=0.1, ge=0, le=1.0)  # Weight for diversity bonus in scoring
     selection: SelectionConfig = Field(default_factory=SelectionConfig)
     mutation: MutationConfig = Field(default_factory=MutationConfig)
     crossover: CrossoverConfig = Field(default_factory=CrossoverConfig)
@@ -441,9 +448,9 @@ class Config(BaseModel):
 
 
 def get_default_config() -> Config:
-    """Get a default configuration with sensible defaults for testing."""
+    """Get a default configuration with sensible defaults for testing."""       
     return Config(
-        encoder=EncoderConfig(model="Qwen/Qwen3-4B"),
+        encoder=EncoderConfig(model="Qwen/Qwen3-1.7B"),
         judges=JudgeConfig(
             # Use smaller encoder model for scoring (faster)
             scorers=[ScorerConfig(type="semantic", model="sentence-transformers/all-MiniLM-L6-v2")],
@@ -462,7 +469,7 @@ def get_default_config() -> Config:
 def get_trained_scorer_config(checkpoint_path: str = "checkpoints/latent_scorer/final_model.pt") -> Config:
     """Get a configuration that uses the trained latent scorer."""
     return Config(
-        encoder=EncoderConfig(model="Qwen/Qwen3-0.6B"),  # Smaller for faster iteration
+        encoder=EncoderConfig(model="Qwen/Qwen3-1.7B"),
         judges=JudgeConfig(
             scorers=[ScorerConfig(
                 type="trained_latent",
