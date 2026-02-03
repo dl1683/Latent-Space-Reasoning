@@ -88,6 +88,24 @@ Options:
 - Compare final output quality not just diversity
 - Statistical significance testing
 
+## Codex Code Review Findings
+
+A detailed Codex review of the hyperbolic implementation found:
+
+### Math Correctness: VERIFIED
+- `mobius_add`, `expmap0`, `logmap0`, `expmap`, `logmap`, `hyperbolic_distance` are mathematically correct
+- `karcher_mean` uses reasonable Riemannian gradient descent
+
+### Integration Issues Identified
+1. **Critical (FIXED):** Hyperbolic latents were scored/decoded in Euclidean space - fixed by adding `hyperbolic`/`curvature` params to `decode()`
+2. **High:** Modifier hints inconsistent with hyperbolic latents - still needs fix
+3. **High:** Curvature annealing doesn't reproject latents - potential issue
+4. **Medium:** `mobius_add` hard-codes `max_norm=0.98` instead of using config
+5. **Low:** Mutation step sizes grow near boundary (not scaled by 1/λ_p)
+
+### Codex Verdict
+> "Yes, promising, but the next focus should be alignment and ablations."
+
 ## Conclusion
 
 **Hyperbolic geometry for latent evolution: Mechanism works, signal broken.**
