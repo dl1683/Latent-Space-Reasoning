@@ -199,6 +199,7 @@ class SelectionConfig(BaseModel):
     strategy: Literal["elitist", "tournament", "roulette", "rank"] = "elitist"
     survivors: int = Field(default=5, ge=1)    # How many chains to keep each generation
     elite: int = Field(default=2, ge=0)        # Always keep top N (for elitist strategy)
+    diversity_quota: float = Field(default=0.5, ge=0.0, le=1.0)  # Fraction of chains protected for diversity (increased for better exploration)
 
     class Config:
         extra = "forbid"
@@ -214,7 +215,8 @@ class MutationConfig(BaseModel):
     """
 
     strategy: Literal["directed", "gaussian", "adaptive"] = "directed"
-    trust: float = Field(default=0.7, ge=0, le=1)  # How much to trust modifier suggestions (0=random, 1=fully directed)
+    trust: float = Field(default=0.5, ge=0, le=1)  # How much to trust modifier suggestions (0=random, 1=fully directed)
+    noise_scale: float = Field(default=0.5, ge=0, le=2)  # Base scale for random noise in mutation
 
     class Config:
         extra = "forbid"
@@ -243,7 +245,7 @@ class MergeConfig(BaseModel):
     wasting computation on redundant exploration.
     """
 
-    threshold: float = Field(default=0.9, ge=0, le=1)  # Cosine similarity threshold for merging
+    threshold: float = Field(default=0.95, ge=0, le=1)  # Cosine similarity threshold for merging (0.95 = very similar)
 
     class Config:
         extra = "forbid"
@@ -362,6 +364,281 @@ class BenchmarkConfig(BaseModel):
         extra = "forbid"
 
 
+class QDConfig(BaseModel):
+    """
+    Configuration for Quality Diversity (QD) integration.
+
+    QD algorithms maintain an archive of diverse, high-quality solutions
+    rather than converging to a single optimum. This enables exploration
+    of multiple reasoning strategies for the same query.
+
+    Key Concepts:
+
+    **Behavioral Descriptors (BDs)**:
+    - Low-dimensional vectors that characterize HOW a solution achieves its goal
+    - Computed using Random Fourier Features (RFF) for efficient projection
+    - Combine latent statistics, structural features, and trajectory information
+
+    **Novelty Search**:
+    - Rewards solutions that are different from existing archive members
+    - Uses k-nearest neighbor distance in BD space
+    - Balances fitness (quality) with novelty (diversity)
+
+    **DNS Archive**:
+    - Dominated Novelty Search: gridless QD algorithm
+    - Stores diverse high-quality solutions without predefined grid boundaries
+    - Outperforms MAP-Elites in high-dimensional spaces
+
+    Benefits:
+    - Addresses diversity collapse in evolution
+    - Provides multiple valid reasoning approaches per query
+    - Enables recovery from local optima through diversity pressure
+
+    Usage:
+    >>> config = Config()
+    >>> config.qd.enabled = True
+    >>> config.qd.novelty_weight = 0.3  # Balance fitness vs novelty
+    """
+
+    # Master toggle (disabled by default for backward compatibility)
+    enabled: bool = False
+
+    # Behavioral descriptor settings
+    bd_dim: int = Field(default=16, ge=4, le=64)  # BD dimensionality (8-16 recommended)
+    rff_gamma: float = Field(default=0.1, ge=0.01, le=1.0)  # RFF kernel bandwidth
+
+    # BD component weights (should roughly sum to 1.0)
+    bd_latent_weight: float = Field(default=0.5, ge=0.0, le=1.0)  # Weight for latent position
+    bd_structural_weight: float = Field(default=0.25, ge=0.0, le=1.0)  # Weight for structural stats
+    bd_trajectory_weight: float = Field(default=0.25, ge=0.0, le=1.0)  # Weight for trajectory
+
+    # Novelty computation
+    novelty_k: int = Field(default=10, ge=3, le=50)  # k for k-NN novelty
+    novelty_weight: float = Field(default=0.3, ge=0.0, le=1.0)  # Alpha: qd_score = (1-α)*fitness + α*novelty
+
+    # Archive settings
+    archive_type: Literal["dns", "map_elites"] = "dns"  # Archive algorithm (NOTE: only dns currently implemented)
+    archive_size: int = Field(default=500, ge=50, le=5000)  # Maximum archive entries
+    domination_threshold: float = Field(default=0.1, ge=0.01, le=0.5)  # BD distance for domination check
+    novelty_threshold: float = Field(default=0.05, ge=0.0, le=0.5)  # Minimum novelty for automatic archive addition
+
+    # Semantic duplicate detection (NOTE: not yet implemented - reserved for future use)
+    semantic_threshold: float = Field(default=0.95, ge=0.8, le=1.0)  # Cosine similarity threshold
+
+    class Config:
+        extra = "forbid"
+
+
+class AutopoieticJudgeConfig(BaseModel):
+    """
+    Configuration for Autopoietic (self-updating) Judge system.
+
+    The autopoietic judge addresses the known scorer weakness (low correlation
+    with external quality) by:
+    1. Maintaining an experience buffer for online learning
+    2. Periodically grounding internal scores against external evaluation
+    3. Using homeostatic temperature control for diversity maintenance
+
+    Key Concepts:
+
+    **Two-Time-Scale Learning**:
+    - Fast: EMA update of internal scorer (every evaluation)
+    - Slow: Grounding against external evaluator (every judge_update_freq generations)
+
+    **Homeostatic Temperature Control**:
+    - Automatically adjusts mutation temperature based on diversity metrics
+    - Formula: T_{t+1} = T_t * exp(k * (D* - D_t))
+    - Where D* is target_diversity and D_t is current measured diversity
+
+    **Trust Weighting**:
+    - Balances internal scorer vs external evaluator
+    - Starts with more external weight, shifts to internal as correlation improves
+
+    **External Grounding**:
+    - Samples top solutions and evaluates with external judge (e.g., Gemini)
+    - Updates internal scorer to align with external quality signal
+    - Prevents drift and collusion between scorer and evolution
+
+    Usage:
+    >>> config = Config()
+    >>> config.autopoietic.enabled = True
+    >>> config.autopoietic.external_model = "gemini-2.5-flash"
+    """
+
+    # Master toggle (disabled by default for backward compatibility)
+    enabled: bool = False
+
+    # Update frequency settings
+    judge_update_freq: int = Field(default=5, ge=1, le=50)  # Generations between external grounding
+    external_sample_size: int = Field(default=3, ge=1, le=20)  # Solutions to evaluate externally per update
+
+    # Homeostatic temperature control
+    target_diversity: float = Field(default=0.4, ge=0.1, le=0.9)  # Target diversity D*
+    homeostasis_k: float = Field(default=0.1, ge=0.01, le=1.0)  # Control gain k
+    min_temperature: float = Field(default=0.1, ge=0.01, le=1.0)  # Temperature floor
+    max_temperature: float = Field(default=2.0, ge=0.5, le=5.0)  # Temperature ceiling
+
+    # EMA settings for internal scorer
+    ema_decay: float = Field(default=0.99, ge=0.9, le=0.999)  # EMA decay for scorer updates
+
+    # Trust weighting between internal and external
+    initial_internal_trust: float = Field(default=0.3, ge=0.0, le=1.0)  # Starting trust in internal scorer
+    max_internal_trust: float = Field(default=0.9, ge=0.5, le=1.0)  # Maximum trust in internal scorer
+    trust_growth_rate: float = Field(default=0.05, ge=0.0, le=0.5)  # Trust growth per successful grounding
+
+    # Experience buffer settings
+    buffer_size: int = Field(default=1000, ge=100, le=10000)  # Max entries in experience buffer
+
+    # External evaluator settings
+    external_model: str = "gemini-2.5-flash"  # Model for external grounding
+    external_temperature: float = Field(default=0.0, ge=0.0, le=1.0)  # Temperature for external eval (0 = deterministic)
+
+    # Anchor set for correlation monitoring
+    anchor_set_size: int = Field(default=50, ge=10, le=200)  # Size of fixed anchor set
+    correlation_threshold: float = Field(default=0.3, ge=0.0, le=1.0)  # Minimum correlation to increase trust
+
+    class Config:
+        extra = "forbid"
+
+
+class GrammarConfig(BaseModel):
+    """
+    Configuration for Fractal Latent Grammars.
+
+    Fractal grammars provide a compositional, rule-based approach to latent
+    space exploration. Instead of evolving raw latent vectors, we evolve
+    grammar structures that GENERATE latents through recursive expansion.
+
+    Key Concepts:
+
+    **Grammar Rules**:
+    - Each rule defines a contractive transform: T_r(z) = P_r * f(W_r @ z + b_r)
+    - Contraction (||W_r||_2 < 1) ensures convergence to attractors
+    - Rules are shared across the grammar for efficient representation
+
+    **AND/OR Trees**:
+    - AND nodes: Combine children via weighted average (blend perspectives)
+    - OR nodes: Select best child via gating (choose strategy)
+    - LEAF nodes: Apply a rule to input or constant
+
+    **Fractal Structure**:
+    - Self-similar: subtrees can be reused/referenced
+    - Compositional: complex behaviors from simple rules
+    - Compressible: grammar << expanded latent representation
+
+    Benefits:
+    - More structured search space than raw latent evolution
+    - Natural compositionality for complex reasoning
+    - Better interpretability (grammar structure reveals strategy)
+    - Synergy with QD (grammars as archive elements)
+
+    Usage:
+    >>> config = Config()
+    >>> config.grammar.enabled = True
+    >>> config.grammar.num_rules = 8
+    >>> config.grammar.max_depth = 4
+    """
+
+    # Master toggle (disabled by default for backward compatibility)
+    enabled: bool = False
+
+    # Rule settings
+    num_rules: int = Field(default=8, ge=2, le=32)  # Number of grammar rules
+    rule_hidden_dim: int = Field(default=256, ge=64, le=1024)  # Hidden dimension in rules
+    contraction_factor: float = Field(default=0.9, ge=0.5, le=0.99)  # Max spectral norm for W
+
+    # Tree structure settings
+    max_depth: int = Field(default=4, ge=2, le=8)  # Maximum tree depth
+    min_depth: int = Field(default=2, ge=1, le=4)  # Minimum tree depth
+    branching_factor: int = Field(default=3, ge=2, le=5)  # Max children per node
+
+    # Node type probabilities (for random initialization)
+    and_prob: float = Field(default=0.4, ge=0.0, le=1.0)  # Probability of AND node
+    or_prob: float = Field(default=0.3, ge=0.0, le=1.0)  # Probability of OR node
+    # LEAF prob = 1 - and_prob - or_prob
+
+    # Evolution settings (for GrammarEvolutionLoop)
+    population_size: int = Field(default=20, ge=4, le=100)  # Grammar population size
+    offspring_size: int = Field(default=10, ge=2, le=50)  # Offspring per generation
+    mutation_rate: float = Field(default=0.5, ge=0.0, le=1.0)  # Base mutation rate (increased for exploration)
+    crossover_rate: float = Field(default=0.3, ge=0.0, le=1.0)  # Crossover probability
+    tournament_size: int = Field(default=3, ge=2, le=10)  # Tournament selection size
+
+    # Structural mutation settings
+    structure_mutation_rate: float = Field(default=0.35, ge=0.0, le=1.0)  # Rate of structural mutations (increased)
+    param_mutation_scale: float = Field(default=0.15, ge=0.01, le=1.0)  # Scale for parameter mutations (increased)
+    depth_decay: float = Field(default=0.8, ge=0.5, le=1.0)  # Mutation rate decay with depth
+
+    # Attractor projection
+    use_attractor_projection: bool = True  # Project to rule attractors
+    attractor_iterations: int = Field(default=5, ge=1, le=20)  # IFS iterations
+
+    # Initialization
+    init_strategy: Literal["random", "balanced", "deep"] = "balanced"
+
+    class Config:
+        extra = "forbid"
+
+
+class GeometryConfig(BaseModel):
+    """
+    Configuration for latent space geometry.
+
+    Controls whether evolution operates in Euclidean or hyperbolic space.
+    Hyperbolic geometry naturally matches hierarchical reasoning structures
+    due to its exponential volume growth, enabling better separation of
+    reasoning branches.
+
+    Geometry Types:
+
+    **euclidean** (default): Standard flat geometry
+    - Traditional latent space operations
+    - Cosine similarity and L2 distance
+    - Well-understood and stable
+
+    **hyperbolic**: Poincaré ball model
+    - Exponential volume growth matches tree structures
+    - Better separation of hierarchical reasoning branches
+    - Enables implicit multi-branch tree search
+    - Requires Riemannian operations (slightly slower)
+
+    Curvature Guidelines:
+    - Higher curvature (>1.0): More curved space, faster hierarchy separation
+    - Lower curvature (<1.0): Closer to Euclidean, gentler hierarchy
+    - Default 1.0 is a good starting point
+
+    Reference: "Hyperbolic Neural Networks" (Ganea et al., 2018)
+    """
+
+    # Geometry type selection
+    space: Literal["euclidean", "hyperbolic"] = "euclidean"
+
+    # Hyperbolic space parameters (Poincaré ball model)
+    model: Literal["poincare", "lorentz"] = "poincare"
+    curvature: float = Field(default=1.0, ge=0.1, le=5.0)  # Negative curvature magnitude
+
+    # Mapping parameters (Euclidean → Hyperbolic)
+    tangent_scale: float = Field(default=0.35, ge=0.1, le=0.9)  # Scale for expmap0 input
+    max_norm: float = Field(default=0.98, ge=0.8, le=0.999)  # Maximum norm in ball (stability)
+
+    # Evolution-specific hyperbolic parameters
+    mutation_noise_scale: float = Field(default=0.35, ge=0.05, le=1.0)  # Tangent space noise scale
+    barycenter_iterations: int = Field(default=7, ge=3, le=20)  # Karcher mean iterations
+
+    # Distance thresholds (in hyperbolic distance)
+    merge_threshold: float = Field(default=0.15, ge=0.01, le=1.0)  # For merging similar chains
+    loop_threshold: float = Field(default=0.10, ge=0.01, le=0.5)  # For detecting loops
+
+    # Curvature annealing (for stability)
+    anneal_curvature: bool = False  # Start low, increase over generations
+    initial_curvature: float = Field(default=0.1, ge=0.01, le=1.0)
+    final_curvature: float = Field(default=1.0, ge=0.1, le=5.0)
+    anneal_generations: int = Field(default=20, ge=5, le=100)
+
+    class Config:
+        extra = "forbid"
+
+
 class Config(BaseModel):
     """
     Main configuration for the Latent Space Reasoning Engine.
@@ -421,6 +698,10 @@ class Config(BaseModel):
     synthesis: SynthesisConfig = Field(default_factory=SynthesisConfig)
     output: OutputConfig = Field(default_factory=OutputConfig)
     benchmark: BenchmarkConfig = Field(default_factory=BenchmarkConfig)
+    qd: QDConfig = Field(default_factory=QDConfig)  # Quality Diversity settings
+    autopoietic: AutopoieticJudgeConfig = Field(default_factory=AutopoieticJudgeConfig)  # Self-updating judge
+    grammar: GrammarConfig = Field(default_factory=GrammarConfig)  # Fractal grammar settings
+    geometry: GeometryConfig = Field(default_factory=GeometryConfig)  # Latent space geometry (Euclidean/Hyperbolic)
 
     class Config:
         extra = "forbid"
