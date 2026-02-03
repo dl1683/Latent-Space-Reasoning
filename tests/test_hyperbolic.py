@@ -287,8 +287,10 @@ class TestRadialAndAngular:
 
     def test_radial_depth_increases(self):
         """Points farther from origin should have higher radial depth."""
-        v_small = torch.randn(1024) * 0.1
-        v_large = torch.randn(1024) * 0.5
+        # Use deterministic vectors with very different magnitudes
+        # For 1024 dims: randn*0.001 has norm ~0.032, randn*0.01 has norm ~0.32
+        v_small = torch.randn(1024) * 0.001  # Very small (near origin)
+        v_large = torch.randn(1024) * 0.05   # Larger (away from origin, but not saturated)
 
         x_small = expmap0(v_small, 1.0)
         x_large = expmap0(v_large, 1.0)
@@ -296,7 +298,7 @@ class TestRadialAndAngular:
         d_small = radial_depth(x_small, 1.0).item()
         d_large = radial_depth(x_large, 1.0).item()
 
-        assert d_large > d_small
+        assert d_large > d_small, f"Expected {d_large} > {d_small}"
 
     def test_unit_tangent_direction(self):
         """Unit tangent should have unit norm."""
