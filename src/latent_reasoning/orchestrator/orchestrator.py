@@ -13,10 +13,29 @@ from latent_reasoning.core.encoder import Encoder, LLMEncoder
 from latent_reasoning.core.judge import ScorerJudge, ModifierJudge, create_scorer_from_config
 from latent_reasoning.core.panel import JudgePanel
 from latent_reasoning.core.chain import ChainState
+from latent_reasoning.core.autopoietic import create_autopoietic_panel, AutopoieticPanel
 from latent_reasoning.evolution.loop import EvolutionLoop, EvolutionResult
+from latent_reasoning.grammar import GrammarEvolutionLoop, GrammarEvolutionResult, FractalGrammar
+from latent_reasoning.qd import create_qd_manager, QDManager
 from latent_reasoning.orchestrator.budget import ComputeBudget
 from latent_reasoning.orchestrator.checkpoint import CheckpointManager
 from latent_reasoning.utils.logging import log_event, print_header, print_result, LogLevel, set_verbosity
+
+
+def _tag_history(history: list, source: str) -> list:
+    """
+    Tag history entries with a source identifier.
+
+    Handles cases where history entries might not be dicts (defensive coding).
+    """
+    tagged = []
+    for h in history:
+        if isinstance(h, dict):
+            tagged.append({**h, "source": source})
+        else:
+            # Fallback for non-dict entries (should not happen, but defensive)
+            tagged.append({"data": str(h), "source": source})
+    return tagged
 
 
 @dataclass
@@ -134,6 +153,7 @@ class Orchestrator:
             self.encoder = encoder
         else:
             self.encoder = self._create_encoder()
+        self._baseline_encoder: Encoder | None = None
 
         # Initialize judge panel
         if judge_panel is not None:
@@ -152,11 +172,62 @@ class Orchestrator:
         checkpoint_dir = config.output.history_path if config.output.save_history else None
         self.checkpoint_manager = CheckpointManager(checkpoint_dir)
 
+        # Initialize QD manager if enabled
+        self.qd_manager: QDManager | None = None
+        if config.qd.enabled:
+            self.qd_manager = create_qd_manager(
+                config=config.qd,
+                latent_dim=self.encoder.latent_dim,
+            )
+
+        # Initialize autopoietic panel if enabled
+        self.autopoietic_panel: AutopoieticPanel | None = None
+        if config.autopoietic.enabled:
+            # Create internal scorer callable from judge panel
+            def internal_scorer(latent: Tensor) -> float:
+                # Use the first scorer in the panel
+                if self.judge_panel.scorers:
+                    from latent_reasoning.core.judge import ScoreResult
+                    result = self.judge_panel.scorers[0].score(latent)
+                    return result.overall if isinstance(result, ScoreResult) else float(result)
+                return 0.5  # Neutral score if no scorers
+
+            # Create decoder callable from encoder
+            def decoder(latent: Tensor, query: str) -> str:
+                return self.encoder.decode(
+                    latent,
+                    query=query,
+                    max_new_tokens=config.synthesis.max_tokens,
+                    temperature=config.synthesis.temperature,
+                )
+
+            self.autopoietic_panel = create_autopoietic_panel(
+                config=config.autopoietic,
+                internal_scorer=internal_scorer,
+                decoder=decoder,
+                device=config.encoder.device,
+            )
+
         # Initialize evolution loop
         self.evolution_loop = EvolutionLoop(
             judge_panel=self.judge_panel,
             config=config.evolution,
+            qd_manager=self.qd_manager,
+            autopoietic_panel=self.autopoietic_panel,
+            geometry_config=config.geometry,
         )
+
+        # Initialize grammar evolution loop if enabled
+        self.grammar_loop: GrammarEvolutionLoop | None = None
+        if config.grammar.enabled:
+            # Use encoder's resolved device (handles "auto" -> actual device)
+            encoder_device = self.encoder.device if hasattr(self.encoder, 'device') else "cpu"
+            self.grammar_loop = GrammarEvolutionLoop.from_config(
+                grammar_config=config.grammar,
+                latent_dim=self.encoder.latent_dim,
+                device=encoder_device,
+                qd_manager=self.qd_manager,
+            )
 
     def _create_encoder(self) -> Encoder:
         """Create encoder from config."""
@@ -166,7 +237,26 @@ class Orchestrator:
             pooling=self.config.encoder.pooling,
             device_preference=self.config.encoder.device,
             quantization=self.config.encoder.quantization,
+            latent_dim=self.config.encoder.latent_dim,
         )
+
+    def _create_baseline_encoder(self) -> Encoder:
+        """Create baseline encoder without quantization."""
+        return LLMEncoder(
+            model_name=self.config.encoder.model,
+            extraction_layer=self.config.encoder.layer,
+            pooling=self.config.encoder.pooling,
+            device_preference=self.config.encoder.device,
+            quantization="none",
+            latent_dim=self.config.encoder.latent_dim,
+        )
+
+    def _get_baseline_encoder(self) -> Encoder:
+        if self.config.encoder.quantization == "none":
+            return self.encoder
+        if self._baseline_encoder is None:
+            self._baseline_encoder = self._create_baseline_encoder()
+        return self._baseline_encoder
 
     def _create_judge_panel(self) -> JudgePanel:
         """Create judge panel from config."""
@@ -213,8 +303,22 @@ class Orchestrator:
         else:
             weights = torch.softmax(scores, dim=0)
 
-        view_shape = [len(top)] + [1] * (stacked.dim() - 1)
-        combined = (stacked * weights.view(*view_shape)).sum(dim=0)
+        # Use Karcher mean for hyperbolic space
+        if self.config.geometry.space == "hyperbolic":
+            from latent_reasoning.utils import hyperbolic as hyp
+            # Flatten latents for Karcher mean
+            flat_latents = stacked.view(len(top), -1)
+            combined = hyp.karcher_mean(
+                flat_latents,
+                weights=weights,
+                c=self.config.geometry.curvature,
+                max_iters=self.config.geometry.barycenter_iterations,
+            )
+            combined = combined.view_as(top[0].latent)
+        else:
+            view_shape = [len(top)] + [1] * (stacked.dim() - 1)
+            combined = (stacked * weights.view(*view_shape)).sum(dim=0)
+
         return combined.to(top[0].latent.dtype)
 
     def _select_decode_latent(self, evolution_result: EvolutionResult) -> Tensor:
@@ -227,6 +331,56 @@ class Orchestrator:
         if strategy == "best":
             return evolution_result.best_latent
         raise ValueError(f"Unsupported decode strategy: {strategy}")
+
+    def _run_grammar_evolution(
+        self,
+        query: str,
+        seed: Tensor,
+    ) -> tuple[Tensor, float, list[dict]]:
+        """
+        Run grammar-based evolution.
+
+        Args:
+            query: Input query for scoring
+            seed: Seed latent from encoding
+
+        Returns:
+            Tuple of (best_latent, best_score, history)
+        """
+        if self.grammar_loop is None:
+            raise RuntimeError("Grammar loop not initialized")
+
+        # Get scorer from judge panel
+        if not self.judge_panel.scorers:
+            raise RuntimeError("No scorers available for grammar evolution")
+
+        scorer = self.judge_panel.scorers[0]
+
+        log_event("GRAMMAR_EVOLVE", level=LogLevel.NORMAL)
+
+        # Run grammar evolution
+        # Handle verbosity which can be int or str
+        verbosity = self.config.output.verbosity
+        is_verbose = verbosity >= 2 if isinstance(verbosity, int) else verbosity == "verbose"
+
+        grammar_result = self.grammar_loop.run(
+            scorer=scorer,
+            query=query,
+            num_generations=self.config.evolution.generations,
+            seed_latent=seed,
+            early_stop_threshold=0.95,
+            verbose=is_verbose,
+        )
+
+        log_event(
+            "GRAMMAR_DONE",
+            level=LogLevel.NORMAL,
+            score=f"{grammar_result.best_score:.3f}",
+            nodes=grammar_result.grammar_stats.num_nodes,
+            compression=f"{grammar_result.grammar_stats.compression_ratio:.2f}x",
+        )
+
+        return grammar_result.best_latent, grammar_result.best_score, grammar_result.history
 
     def run(self, query: str) -> OrchestrationResult:
         """
@@ -314,28 +468,90 @@ class Orchestrator:
         for scorer in self.judge_panel.scorers:
             scorer.set_reference(embedding=seed)
 
-        # Run evolution
-        log_event("EVOLVE", level=LogLevel.NORMAL)
-        evolution_result = self.evolution_loop.run(
-            seed=seed,
-            max_evaluations=self.budget.max_evaluations - self.budget.evaluations_used,
-        )
+        # Set query context for autopoietic panel if enabled
+        if self.autopoietic_panel is not None:
+            self.autopoietic_panel.set_query(query)
 
-        # Update budget
-        self.budget.evaluations_used += evolution_result.total_evaluations
-        self.budget.generations_used = evolution_result.generations
+        # Determine evolution mode
+        use_grammar = self.config.grammar.enabled and self.grammar_loop is not None
+        use_standard = not use_grammar or self.config.qd.enabled  # Hybrid if both enabled
+
+        # Storage for results
+        best_latent = seed
+        best_score = 0.0
+        total_evaluations = 0
+        generations = 0
+        stop_reason = "none"
+        evolution_history = []
+        survivors = []
+
+        # Run standard evolution if applicable
+        if use_standard:
+            log_event("EVOLVE", level=LogLevel.NORMAL)
+            evolution_result = self.evolution_loop.run(
+                seed=seed,
+                max_evaluations=self.budget.max_evaluations - self.budget.evaluations_used,
+            )
+
+            best_latent = evolution_result.best_latent
+            best_score = evolution_result.best_score
+            total_evaluations = evolution_result.total_evaluations
+            generations = evolution_result.generations
+            stop_reason = evolution_result.stop_reason
+            evolution_history = evolution_result.history
+            survivors = evolution_result.survivors
+
+            # Update budget
+            self.budget.evaluations_used += evolution_result.total_evaluations
+            self.budget.generations_used = evolution_result.generations
+
+        # Run grammar evolution if enabled
+        if use_grammar:
+            grammar_latent, grammar_score, grammar_history = self._run_grammar_evolution(
+                query=query,
+                seed=seed,
+            )
+
+            # In hybrid mode, take the better result
+            if use_standard:
+                log_event(
+                    "HYBRID_COMPARE",
+                    level=LogLevel.NORMAL,
+                    standard_score=f"{best_score:.3f}",
+                    grammar_score=f"{grammar_score:.3f}",
+                )
+                if grammar_score > best_score:
+                    log_event("HYBRID_WINNER", level=LogLevel.NORMAL, winner="grammar")
+                    best_latent = grammar_latent
+                    best_score = grammar_score
+                    stop_reason = "grammar_better"
+                    # Merge histories
+                    evolution_history = evolution_history + _tag_history(grammar_history, "grammar")
+                else:
+                    log_event("HYBRID_WINNER", level=LogLevel.NORMAL, winner="standard")
+                    evolution_history = _tag_history(evolution_history, "standard") + _tag_history(grammar_history, "grammar")
+            else:
+                # Grammar only mode
+                best_latent = grammar_latent
+                best_score = grammar_score
+                evolution_history = grammar_history
+                generations = len(grammar_history)
+                stop_reason = "grammar_complete"
 
         # Checkpoint final state
         self.checkpoint_manager.save_checkpoint(
-            chains=evolution_result.survivors,
-            generation=evolution_result.generations,
-            best_latent=evolution_result.best_latent,
-            best_score=evolution_result.best_score,
+            chains=survivors,
+            generation=generations,
+            best_latent=best_latent,
+            best_score=best_score,
         )
 
         # Decode final latent (pass query for context)
         log_event("DECODE", level=LogLevel.VERBOSE)
-        decode_latent = self._select_decode_latent(evolution_result)
+        decode_latent = best_latent
+        if survivors and self.config.synthesis.decode_strategy == "combined":
+            decode_latent = self._combine_latents(survivors)
+
         decoded_outputs = [
             self.encoder.decode(
                 decode_latent,
@@ -349,29 +565,29 @@ class Orchestrator:
         log_event(
             "DONE",
             level=LogLevel.NORMAL,
-            score=f"{evolution_result.best_score:.3f}",
-            generations=evolution_result.generations,
-            reason=evolution_result.stop_reason,
+            score=f"{best_score:.3f}",
+            generations=generations,
+            reason=stop_reason,
         )
 
         result = OrchestrationResult(
             final_latent=decode_latent,
             decoded_outputs=decoded_outputs,
-            best_score=evolution_result.best_score,
-            survivors=evolution_result.survivors,
-            generations=evolution_result.generations,
-            total_evaluations=evolution_result.total_evaluations,
-            stop_reason=evolution_result.stop_reason,
-            evolution_history=evolution_result.history,
+            best_score=best_score,
+            survivors=survivors,
+            generations=generations,
+            total_evaluations=total_evaluations,
+            stop_reason=stop_reason,
+            evolution_history=evolution_history,
         )
 
         # Print result
         if decoded_outputs:
             print_result(
                 decoded_outputs[0],
-                evolution_result.best_score,
-                generations=evolution_result.generations,
-                evaluations=evolution_result.total_evaluations,
+                best_score,
+                generations=generations,
+                evaluations=total_evaluations,
             )
 
         return result
@@ -386,10 +602,16 @@ class Orchestrator:
         Returns:
             Baseline generated output
         """
-        # For baseline, we just encode and decode directly
-        # without any evolution
-        seed = self.encoder.encode(query)
-        return self.encoder.decode(
+        baseline_encoder = self._get_baseline_encoder()
+        if hasattr(baseline_encoder, "generate_baseline"):
+            return baseline_encoder.generate_baseline(
+                query=query,
+                max_new_tokens=self.config.synthesis.max_tokens,
+                temperature=self.config.synthesis.temperature,
+            )
+        # Fallback: encode/decode without evolution if encoder lacks direct baseline
+        seed = baseline_encoder.encode(query)
+        return baseline_encoder.decode(
             seed,
             query=query,
             max_new_tokens=self.config.synthesis.max_tokens,
