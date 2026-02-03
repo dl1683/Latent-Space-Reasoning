@@ -270,12 +270,220 @@ class AdaptiveMutation(MutationStrategy):
         self.last_scores.clear()
 
 
+class HyperbolicMutation(MutationStrategy):
+    """
+    Hyperbolic mutation strategy for evolution in Poincaré ball.
+
+    Performs mutation in the tangent space of the hyperbolic manifold,
+    then projects back to the ball. This respects the curved geometry
+    of hyperbolic space and naturally handles hierarchical structures.
+
+    Algorithm:
+    1. Map candidate to tangent space at origin (logmap0)
+    2. Add Gaussian noise in tangent space
+    3. If hint available, parallel transport from origin and blend
+    4. Map back to Poincaré ball (expmap0)
+    5. Project inside max_norm for numerical stability
+
+    The hyperbolic geometry provides:
+    - Exponential volume growth that separates reasoning branches
+    - Natural hierarchy preservation
+    - Better exploration of tree-like solution structures
+
+    Reference: "Hyperbolic Neural Networks" (Ganea et al., 2018)
+    """
+
+    def __init__(
+        self,
+        noise_scale: float = 0.35,
+        curvature: float = 1.0,
+        max_norm: float = 0.98,
+        trust: float = 0.7,
+    ):
+        """
+        Initialize hyperbolic mutation.
+
+        Args:
+            noise_scale: Scale of Gaussian noise in tangent space
+            curvature: Poincaré ball curvature (c > 0)
+            max_norm: Maximum norm in ball for stability
+            trust: Trust level for modification hints
+        """
+        self.noise_scale = noise_scale
+        self.curvature = curvature
+        self.max_norm = max_norm
+        self.trust = trust
+
+        # Lazy import to avoid circular dependencies
+        self._hyp = None
+
+    def _get_hyperbolic(self):
+        """Lazy load hyperbolic module."""
+        if self._hyp is None:
+            from latent_reasoning.utils import hyperbolic as hyp
+            self._hyp = hyp
+        return self._hyp
+
+    def mutate(
+        self,
+        candidate: Tensor,
+        modification_hint: Tensor | None,
+        temperature: float,
+    ) -> Tensor:
+        """
+        Mutate in hyperbolic space via tangent space operations.
+
+        Args:
+            candidate: Current point in Poincaré ball
+            modification_hint: Optional direction hint (in Euclidean/tangent space)
+            temperature: Mutation strength multiplier
+
+        Returns:
+            Mutated point in Poincaré ball
+        """
+        hyp = self._get_hyperbolic()
+        device = candidate.device
+        dtype = candidate.dtype
+
+        # Ensure candidate is valid (inside ball)
+        candidate = hyp.project_to_ball(candidate, self.curvature, self.max_norm)
+
+        # Generate tangent noise at origin
+        tangent_noise = torch.randn_like(candidate) * self.noise_scale * temperature
+
+        if modification_hint is not None:
+            # Process hint - assume it's in Euclidean space (from modifier)
+            hint = modification_hint.to(device=device, dtype=dtype)
+            hint_norm = hint.norm()
+
+            if hint_norm > 1e-6:
+                # Normalize and scale hint
+                hint_direction = hint / hint_norm
+
+                # Parallel transport hint from origin to candidate's tangent space
+                transported_hint = hyp.parallel_transport(
+                    hint_direction.unsqueeze(0),
+                    torch.zeros_like(candidate).unsqueeze(0),  # from origin
+                    candidate.unsqueeze(0),  # to candidate
+                    self.curvature,
+                ).squeeze(0)
+
+                # Blend transported hint with noise
+                tangent_direction = (
+                    self.trust * transported_hint * temperature +
+                    (1 - self.trust) * tangent_noise
+                )
+            else:
+                tangent_direction = tangent_noise
+        else:
+            tangent_direction = tangent_noise
+
+        # Move in tangent space at candidate, then map back to ball
+        # expmap at candidate: move from candidate in direction tangent_direction
+        result = hyp.expmap(
+            tangent_direction.unsqueeze(0),
+            candidate.unsqueeze(0),
+            self.curvature,
+        ).squeeze(0)
+
+        # Ensure result stays inside ball
+        result = hyp.project_to_ball(result, self.curvature, self.max_norm)
+
+        return result
+
+    def update_curvature(self, curvature: float) -> None:
+        """Update curvature (for annealing)."""
+        self.curvature = curvature
+
+
+class HyperbolicAdaptiveMutation(MutationStrategy):
+    """
+    Adaptive hyperbolic mutation that adjusts based on performance.
+
+    Combines hyperbolic geometry with adaptive mutation strength.
+    When stuck, increases exploration; when progressing, refines.
+    """
+
+    def __init__(
+        self,
+        base_noise_scale: float = 0.35,
+        curvature: float = 1.0,
+        max_norm: float = 0.98,
+        base_trust: float = 0.7,
+        adaptation_rate: float = 0.1,
+    ):
+        self.base_noise_scale = base_noise_scale
+        self.curvature = curvature
+        self.max_norm = max_norm
+        self.base_trust = base_trust
+        self.adaptation_rate = adaptation_rate
+
+        # Adaptive state
+        self.current_noise = base_noise_scale
+        self.current_trust = base_trust
+        self.last_scores: list[float] = []
+
+        # Inner hyperbolic mutation
+        self._inner = HyperbolicMutation(
+            noise_scale=base_noise_scale,
+            curvature=curvature,
+            max_norm=max_norm,
+            trust=base_trust,
+        )
+
+    def mutate(
+        self,
+        candidate: Tensor,
+        modification_hint: Tensor | None,
+        temperature: float,
+    ) -> Tensor:
+        # Update inner mutation parameters
+        self._inner.noise_scale = self.current_noise
+        self._inner.trust = self.current_trust
+
+        return self._inner.mutate(candidate, modification_hint, temperature)
+
+    def update_adaptation(self, score: float) -> None:
+        """Update adaptation based on score."""
+        self.last_scores.append(score)
+
+        if len(self.last_scores) > 5:
+            self.last_scores = self.last_scores[-5:]
+
+        if len(self.last_scores) < 2:
+            return
+
+        recent_improvement = self.last_scores[-1] - self.last_scores[-2]
+
+        if recent_improvement > 0:
+            # Improving: focus more on hints, less noise
+            self.current_trust = min(0.95, self.current_trust + self.adaptation_rate)
+            self.current_noise = max(0.1, self.current_noise - self.adaptation_rate)
+        else:
+            # Not improving: explore more
+            self.current_trust = max(0.3, self.current_trust - self.adaptation_rate)
+            self.current_noise = min(0.8, self.current_noise + self.adaptation_rate)
+
+    def update_curvature(self, curvature: float) -> None:
+        """Update curvature (for annealing)."""
+        self.curvature = curvature
+        self._inner.curvature = curvature
+
+    def reset(self) -> None:
+        """Reset adaptation state."""
+        self.current_noise = self.base_noise_scale
+        self.current_trust = self.base_trust
+        self.last_scores.clear()
+
+
 def get_mutation_strategy(name: str, **kwargs) -> MutationStrategy:
     """Factory function to get a mutation strategy by name."""
     strategies = {
         "gaussian": GaussianMutation,
         "directed": DirectedMutation,
         "adaptive": AdaptiveMutation,
+        "hyperbolic": HyperbolicMutation,
+        "hyperbolic_adaptive": HyperbolicAdaptiveMutation,
     }
 
     if name not in strategies:
