@@ -151,18 +151,21 @@ class VerifiableEvolutionLoop:
 
             # Log progress
             avg_fitness = sum(c.fitness for c in population) / len(population)
+            diversity = self._compute_diversity(population)
             history.append({
                 "generation": gen,
                 "best_fitness": population[0].fitness,
                 "avg_fitness": avg_fitness,
                 "best_correct": population[0].correct,
                 "best_total": population[0].total,
+                "diversity": diversity,
             })
 
             print(
                 f"[GEN {gen+1:02d}] best={population[0].fitness:.3f} "
                 f"({population[0].correct}/{population[0].total}) "
-                f"avg={avg_fitness:.3f} survivors={len(population)}"
+                f"avg={avg_fitness:.3f} div={diversity:.3f} survivors={len(population)}",
+                flush=True,
             )
 
             # Check stopping conditions
@@ -347,6 +350,43 @@ class VerifiableEvolutionLoop:
             return getattr(c, '_shared_fitness', c.fitness)
 
         return max(contestants, key=get_fitness)
+
+    def _compute_diversity(self, population: List[VerifiableCandidate]) -> float:
+        """
+        Compute average pairwise distance as a diversity metric.
+
+        For hyperbolic space, this uses hyperbolic distance.
+        For euclidean space, this uses L2 norm.
+        """
+        n = len(population)
+        if n <= 1:
+            return 0.0
+
+        total_distance = 0.0
+        count = 0
+
+        for i in range(n):
+            for j in range(i + 1, n):
+                try:
+                    if self._hyp is not None:
+                        dist = self._hyp.hyperbolic_distance(
+                            population[i].latent.squeeze(),
+                            population[j].latent.squeeze(),
+                            self.geometry_config.curvature,
+                        ).item()
+                    else:
+                        dist = torch.norm(
+                            population[i].latent - population[j].latent
+                        ).item()
+
+                    # Skip NaN/Inf distances
+                    if not (torch.isnan(torch.tensor(dist)) or torch.isinf(torch.tensor(dist))):
+                        total_distance += dist
+                        count += 1
+                except Exception:
+                    continue
+
+        return total_distance / count if count > 0 else 0.0
 
 
 def run_verifiable_evolution(
