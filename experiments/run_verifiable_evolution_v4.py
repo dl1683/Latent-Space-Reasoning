@@ -491,7 +491,7 @@ def main():
 
     # Load model
     print("\nLoading model...")
-    encoder = LLMEncoder(model_name=args.model, quantize=True)
+    encoder = LLMEncoder(model_name=args.model, quantization="4bit")
 
     # Prompts focused on tree/hierarchical reasoning
     prompts = [

@@ -27,7 +27,7 @@ encoder:
   #   ibm-granite/granite-4.0-h-1b - Compact alternative, ~2GB VRAM
   #
   # You can also use local model paths if you have models downloaded
-  model: "Qwen/Qwen3-0.6B"
+  model: "Qwen/Qwen3-1.7B"
 
   # Hidden layer extraction settings
   # -4 means 4th layer from the end, which usually gives the best latent representations
@@ -39,6 +39,9 @@ encoder:
   # "last" - Use only the last token
   # "cls"  - Use the classification token (if model has one)
   pooling: "mean"
+
+  # Canonical latent dimension shared across models
+  latent_dim: 1024
 
   # Hardware settings
   # "auto" - Automatically choose GPU if available, otherwise CPU

@@ -52,13 +52,16 @@ def run_and_decode(
     print(f"  - Survivors: {len(result.survivors)}")
     print(f"  - Stop reason: {result.stop_reason}")
 
-    # Decode the best latent
+    # Decode the best latent - pass hyperbolic flag if using hyperbolic geometry
     print("\nDecoding best latent...")
+    is_hyperbolic = geometry_name == "hyperbolic"
     decoded = encoder.decode(
         result.best_latent,
         query=prompt,
         max_new_tokens=512,
         temperature=0.7,
+        hyperbolic=is_hyperbolic,
+        curvature=config.geometry.curvature if is_hyperbolic else 1.0,
     )
 
     print(f"\n{'='*60}")

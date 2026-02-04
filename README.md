@@ -267,8 +267,9 @@ encoder:
   model: "Qwen/Qwen3-4B"        # Model to use for encoding/decoding
   layer: -4                     # Hidden layer to extract (-4 = 4th from last)  
   pooling: "mean"               # How to pool sequence: mean, last, cls
+  latent_dim: 1024              # Canonical latent dimension
   device: "auto"                # Device: auto, cuda, cpu
-  quantization: "4bit"          # Quantization: 4bit (default), auto, none
+  quantization: "4bit"          # Quantization: 4bit (default), auto, none      
 
 evolution:
   chains: 8                     # Number of parallel evolution chains

@@ -43,6 +43,7 @@ class ChainState:
 
     latent: Tensor
     score: float = 0.0
+    raw_score: float = 0.0  # Raw fitness score (without QD novelty bonus)
     generation: int = 0
     history: List[Tensor] = field(default_factory=list)
     modification_history: List[Tensor] = field(default_factory=list)
@@ -63,6 +64,7 @@ class ChainState:
         return ChainState(
             latent=self.latent.clone(),
             score=self.score,
+            raw_score=self.raw_score,
             generation=self.generation,
             history=[h.clone() for h in self.history],
             modification_history=[m.clone() for m in self.modification_history],

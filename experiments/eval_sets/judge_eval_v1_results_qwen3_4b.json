@@ -1,0 +1,189 @@
+{
+  "metrics": {
+    "mse": 0.05926855653524399,
+    "mae": 0.19930188357830048,
+    "corr": 0.8171473741531372
+  },
+  "records": [
+    {
+      "query": "Design a rate limiting system for an API.",
+      "plan": "1) Identify endpoints and limits per user and per IP. 2) Choose algorithm (token bucket) and data store (Redis). 3) Implement middleware with headers and backoff. 4) Add monitoring and alerts. 5) Load test and tune limits.",
+      "score": 0.88,
+      "pred": 0.6289227604866028
+    },
+    {
+      "query": "Design a rate limiting system for an API.",
+      "plan": "1) Add a limit on requests. 2) Store counts in a database. 3) Return errors when the limit is hit.",
+      "score": 0.55,
+      "pred": 0.18581201136112213
+    },
+    {
+      "query": "Design a rate limiting system for an API.",
+      "plan": "Tell users not to send too many requests and hope they comply.",
+      "score": 0.18,
+      "pred": 0.13581353425979614
+    },
+    {
+      "query": "Plan a database migration with zero downtime.",
+      "plan": "1) Add new schema side by side. 2) Backfill data in batches with validation. 3) Dual write from the app. 4) Cut over reads with feature flags. 5) Monitor and keep rollback path. 6) Remove old schema after stability.",
+      "score": 0.9,
+      "pred": 0.5676835179328918
+    },
+    {
+      "query": "Plan a database migration with zero downtime.",
+      "plan": "1) Create new tables. 2) Copy data. 3) Switch the app to the new tables.",
+      "score": 0.52,
+      "pred": 0.37322792410850525
+    },
+    {
+      "query": "Plan a database migration with zero downtime.",
+      "plan": "Shut the service down, move the data, and restart.",
+      "score": 0.12,
+      "pred": 0.16931743919849396
+    },
+    {
+      "query": "Create a study plan for learning linear algebra in 6 weeks.",
+      "plan": "1) Week 1: vectors, norms, dot product. 2) Week 2: matrices and basic operations. 3) Week 3: systems of equations, Gaussian elimination. 4) Week 4: eigenvalues and eigenvectors. 5) Week 5: orthogonality and projections. 6) Week 6: SVD and applications. Include weekly problem sets and a review day.",
+      "score": 0.86,
+      "pred": 0.47687190771102905
+    },
+    {
+      "query": "Create a study plan for learning linear algebra in 6 weeks.",
+      "plan": "1) Read a textbook. 2) Watch videos. 3) Do some exercises.",
+      "score": 0.45,
+      "pred": 0.2367691844701767
+    },
+    {
+      "query": "Create a study plan for learning linear algebra in 6 weeks.",
+      "plan": "Learn everything in a day.",
+      "score": 0.1,
+      "pred": 0.2255241721868515
+    },
+    {
+      "query": "Troubleshoot a memory leak in a Python service.",
+      "plan": "1) Reproduce under load. 2) Capture memory profiles over time. 3) Compare heap snapshots to find growing objects. 4) Audit caches and global references. 5) Add limits and fix leaks. 6) Verify with soak tests.",
+      "score": 0.9,
+      "pred": 0.39520010352134705
+    },
+    {
+      "query": "Troubleshoot a memory leak in a Python service.",
+      "plan": "1) Restart the service. 2) Add more memory. 3) Hope it is fine.",
+      "score": 0.2,
+      "pred": 0.15556460618972778
+    },
+    {
+      "query": "Troubleshoot a memory leak in a Python service.",
+      "plan": "Check logs and try random changes until it stops.",
+      "score": 0.28,
+      "pred": 0.19990620017051697
+    },
+    {
+      "query": "Design a secure password reset flow.",
+      "plan": "1) Generate single use token with short TTL. 2) Send link via verified email. 3) Rate limit requests and add CAPTCHA. 4) Validate token and enforce strong password rules. 5) Invalidate sessions and log event.",
+      "score": 0.87,
+      "pred": 0.533900260925293
+    },
+    {
+      "query": "Design a secure password reset flow.",
+      "plan": "1) Send a reset link. 2) User changes password. 3) Done.",
+      "score": 0.48,
+      "pred": 0.3224259614944458
+    },
+    {
+      "query": "Design a secure password reset flow.",
+      "plan": "Ask users for their old password over email.",
+      "score": 0.05,
+      "pred": 0.26829519867897034
+    },
+    {
+      "query": "Plan a cloud cost reduction initiative.",
+      "plan": "1) Inventory services and tags. 2) Identify top cost drivers. 3) Right size compute and storage. 4) Enable autoscaling and turn off idle resources. 5) Negotiate commitments. 6) Set alerts and monthly review.",
+      "score": 0.84,
+      "pred": 0.5767245292663574
+    },
+    {
+      "query": "Plan a cloud cost reduction initiative.",
+      "plan": "1) Reduce costs. 2) Use smaller servers. 3) Monitor spending.",
+      "score": 0.5,
+      "pred": 0.46776509284973145
+    },
+    {
+      "query": "Plan a cloud cost reduction initiative.",
+      "plan": "Move everything to on prem without analysis.",
+      "score": 0.2,
+      "pred": 0.26469555497169495
+    },
+    {
+      "query": "Implement a caching strategy for a news feed.",
+      "plan": "1) Identify hot queries and cacheable objects. 2) Use cache aside with Redis. 3) Set TTLs based on content freshness. 4) Invalidate on updates. 5) Measure hit rate and latency.",
+      "score": 0.86,
+      "pred": 0.6053031086921692
+    },
+    {
+      "query": "Implement a caching strategy for a news feed.",
+      "plan": "1) Cache everything forever. 2) Serve cache to all users.",
+      "score": 0.22,
+      "pred": 0.22090263664722443
+    },
+    {
+      "query": "Implement a caching strategy for a news feed.",
+      "plan": "Add a cache and hope it helps.",
+      "score": 0.4,
+      "pred": 0.23227320611476898
+    },
+    {
+      "query": "Design a CI/CD pipeline for a monorepo.",
+      "plan": "1) Define build graph per package. 2) Run tests and lint in parallel. 3) Cache dependencies. 4) Build artifacts once and reuse. 5) Gate deploys with approvals. 6) Rollback on failures.",
+      "score": 0.85,
+      "pred": 0.2568907141685486
+    },
+    {
+      "query": "Design a CI/CD pipeline for a monorepo.",
+      "plan": "1) Run tests. 2) Deploy.",
+      "score": 0.38,
+      "pred": 0.19127383828163147
+    },
+    {
+      "query": "Design a CI/CD pipeline for a monorepo.",
+      "plan": "Manually copy files to production.",
+      "score": 0.08,
+      "pred": 0.22047854959964752
+    },
+    {
+      "query": "Create a plan to refactor a legacy monolith into services.",
+      "plan": "1) Map domains and dependencies. 2) Extract data ownership boundaries. 3) Build strangler facade. 4) Migrate one capability at a time. 5) Add observability and rollback. 6) Decommission old paths.",
+      "score": 0.88,
+      "pred": 0.6823368072509766
+    },
+    {
+      "query": "Create a plan to refactor a legacy monolith into services.",
+      "plan": "1) Break the app into services. 2) Deploy.",
+      "score": 0.35,
+      "pred": 0.30530059337615967
+    },
+    {
+      "query": "Create a plan to refactor a legacy monolith into services.",
+      "plan": "Rewrite everything from scratch in a week.",
+      "score": 0.1,
+      "pred": 0.17770224809646606
+    },
+    {
+      "query": "Plan a data backup and disaster recovery process.",
+      "plan": "1) Define RPO and RTO. 2) Automate backups and validate restores. 3) Store copies in another region. 4) Document runbooks. 5) Schedule recovery drills.",
+      "score": 0.87,
+      "pred": 0.5896245837211609
+    },
+    {
+      "query": "Plan a data backup and disaster recovery process.",
+      "plan": "1) Take backups. 2) Keep them somewhere.",
+      "score": 0.42,
+      "pred": 0.20487286150455475
+    },
+    {
+      "query": "Plan a data backup and disaster recovery process.",
+      "plan": "Ignore backups unless a failure happens.",
+      "score": 0.05,
+      "pred": 0.2566039264202118
+    }
+  ]
+}

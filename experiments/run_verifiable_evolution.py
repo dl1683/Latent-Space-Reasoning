@@ -232,6 +232,16 @@ def compare_geometries(
     hyp_fitnesses = [r["best_fitness"] for r in results["hyperbolic"]]
     euc_fitnesses = [r["best_fitness"] for r in results["euclidean"]]
 
+    # Extract final diversity from history (if available)
+    def get_final_diversity(result):
+        if result.get("history") and len(result["history"]) > 0:
+            last_gen = result["history"][-1]
+            return last_gen.get("diversity", 0.0)
+        return 0.0
+
+    hyp_diversities = [get_final_diversity(r) for r in results["hyperbolic"]]
+    euc_diversities = [get_final_diversity(r) for r in results["euclidean"]]
+
     results["comparison"] = {
         "hyperbolic_mean": sum(hyp_fitnesses) / len(hyp_fitnesses),
         "euclidean_mean": sum(euc_fitnesses) / len(euc_fitnesses),
@@ -240,6 +250,8 @@ def compare_geometries(
         "hyperbolic_wins": sum(1 for h, e in zip(hyp_fitnesses, euc_fitnesses) if h > e),
         "euclidean_wins": sum(1 for h, e in zip(hyp_fitnesses, euc_fitnesses) if e > h),
         "ties": sum(1 for h, e in zip(hyp_fitnesses, euc_fitnesses) if h == e),
+        "hyperbolic_final_diversity": sum(hyp_diversities) / len(hyp_diversities) if hyp_diversities else 0.0,
+        "euclidean_final_diversity": sum(euc_diversities) / len(euc_diversities) if euc_diversities else 0.0,
     }
 
     return results
@@ -343,6 +355,12 @@ def main():
     print(f"  Hyperbolic wins: {comp['hyperbolic_wins']}")
     print(f"  Euclidean wins:  {comp['euclidean_wins']}")
     print(f"  Ties:            {comp['ties']}")
+
+    print(f"\nFinal diversity:")
+    print(f"  Hyperbolic: {comp.get('hyperbolic_final_diversity', 0):.4f}")
+    print(f"  Euclidean:  {comp.get('euclidean_final_diversity', 0):.4f}")
+    div_ratio = comp.get('hyperbolic_final_diversity', 0) / max(comp.get('euclidean_final_diversity', 0.001), 0.001)
+    print(f"  Ratio (H/E): {div_ratio:.1f}x")
 
     # Improvement over baseline
     hyp_improvement = comp['hyperbolic_mean'] - baseline_results['overall_accuracy']

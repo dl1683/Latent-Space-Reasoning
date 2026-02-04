@@ -548,6 +548,8 @@ class LLMEncoder(Encoder):
         query: str | None = None,
         max_new_tokens: int = 2048,
         temperature: float = 0.0,
+        hyperbolic: bool = False,
+        curvature: float = 1.0,
     ) -> str:
         """
         Decode a latent vector back to text using latent-influenced generation.
@@ -578,6 +580,10 @@ class LLMEncoder(Encoder):
                 - 0.0: Deterministic greedy decoding (recommended for consistency)
                 - 0.1-0.3: Low randomness
                 - 0.7-1.0: Higher creativity
+            hyperbolic: If True, the latent is in hyperbolic (Poincaré ball) space and
+                will be mapped back to tangent space via logmap0 before computing
+                statistics. This ensures proper diversity in seed computation.
+            curvature: Curvature of the hyperbolic space (only used if hyperbolic=True).
 
         Returns:
             Generated text response. The output is cleaned to remove chat formatting,
@@ -603,8 +609,17 @@ class LLMEncoder(Encoder):
         if latent.dim() == 1:
             latent = latent.unsqueeze(0)
 
+        # If latent is in hyperbolic space (Poincaré ball), map back to tangent space
+        # This ensures statistics are computed in a comparable scale to Euclidean latents
+        if hyperbolic:
+            from latent_reasoning.utils import hyperbolic as hyp
+            # Map from Poincaré ball to tangent space at origin via logmap0
+            latent_for_stats = hyp.logmap0(latent.squeeze(0), curvature)
+        else:
+            latent_for_stats = latent
+
         # Use multiple latent statistics for diversity - small mutations should produce different outputs
-        latent_flat = latent.flatten().float()
+        latent_flat = latent_for_stats.flatten().float()
         latent_flat = torch.nan_to_num(latent_flat, nan=0.0, posinf=0.0, neginf=0.0)
         latent_mean = latent_flat.mean().item()
         latent_std = latent_flat.std().item()

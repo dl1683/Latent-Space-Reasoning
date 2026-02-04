@@ -403,18 +403,32 @@ def hyperbolic_interpolate(
     Interpolate along geodesic from x to y.
 
     Args:
-        x: Start point (..., dim)
-        y: End point (..., dim)
+        x: Start point (..., dim) or (dim,)
+        y: End point (..., dim) or (dim,)
         t: Interpolation parameter in [0, 1]
         c: Curvature
 
     Returns:
         Interpolated point
     """
+    # Handle 1D inputs
+    squeeze_x = x.dim() == 1
+    squeeze_y = y.dim() == 1
+
+    if squeeze_x:
+        x = x.unsqueeze(0)
+    if squeeze_y:
+        y = y.unsqueeze(0)
+
     # Get direction from x to y in tangent space at x
     log_xy = logmap(y, x, c)
     # Scale by t and map back
-    return expmap(t * log_xy, x, c)
+    result = expmap(t * log_xy, x, c)
+
+    if squeeze_x and squeeze_y:
+        result = result.squeeze(0)
+
+    return result
 
 
 class HyperbolicSpace:

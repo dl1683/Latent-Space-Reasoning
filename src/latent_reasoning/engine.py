@@ -210,6 +210,7 @@ class Engine:
                     pooling=self.config.encoder.pooling,
                     device_preference=self.config.encoder.device,
                     quantization=self.config.encoder.quantization,
+                    latent_dim=self.config.encoder.latent_dim,
                 )
 
             # Create judge panel

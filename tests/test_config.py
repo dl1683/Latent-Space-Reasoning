@@ -19,10 +19,11 @@ from latent_reasoning.config import (
 class TestEncoderConfig:
     def test_default_values(self):
         config = EncoderConfig()
-        assert config.model == "Qwen/Qwen3-4B"
+        assert config.model == "Qwen/Qwen3-1.7B"
         assert config.layer == -4
         assert config.pooling == "mean"
         assert config.device == "auto"
+        assert config.latent_dim == 1024
 
     def test_custom_values(self):
         config = EncoderConfig(
@@ -78,7 +79,7 @@ class TestEvolutionConfig:
 class TestConfig:
     def test_default_config(self):
         config = get_default_config()
-        assert config.encoder.model == "Qwen/Qwen3-4B"
+        assert config.encoder.model == "Qwen/Qwen3-1.7B"
         assert len(config.judges.scorers) == 1
         assert config.evolution.chains == 5
 
@@ -96,7 +97,7 @@ class TestConfig:
         data = config.to_dict()
         assert "encoder" in data
         assert "evolution" in data
-        assert data["encoder"]["model"] == "Qwen/Qwen3-4B"
+        assert data["encoder"]["model"] == "Qwen/Qwen3-1.7B"
 
     def test_yaml_roundtrip(self):
         config = get_default_config()
