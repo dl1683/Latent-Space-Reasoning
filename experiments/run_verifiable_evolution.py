@@ -54,16 +54,19 @@ def run_baseline_accuracy(
     }
 
     for prompt in prompts:
-        print(f"\n[BASELINE] Testing prompt: {prompt[:50]}...")
+        print(f"\n[BASELINE] Testing prompt: {prompt[:50]}...", flush=True)
 
         # Encode prompt
         latent = encoder.encode(prompt)
+        print(f"  Encoded latent shape: {latent.shape}", flush=True)
 
         # Generate tasks
         tasks = task_suite.generate_batch(tasks_per_prompt)
+        print(f"  Generated {len(tasks)} tasks", flush=True)
 
         correct = 0
-        for task in tasks:
+        for i, task in enumerate(tasks):
+            print(f"    Task {i+1}/{len(tasks)}: {task.prompt[:40]}...", end="", flush=True)
             response = encoder.decode(
                 latent,
                 query=task.prompt,
@@ -71,8 +74,12 @@ def run_baseline_accuracy(
                 temperature=0.3,
             )
 
-            if task_suite.evaluate_response(task, response):
+            is_correct = task_suite.evaluate_response(task, response)
+            if is_correct:
                 correct += 1
+                print(" [OK]", flush=True)
+            else:
+                print(" [WRONG]", flush=True)
 
         accuracy = correct / len(tasks)
         results["total_correct"] += correct
@@ -84,7 +91,7 @@ def run_baseline_accuracy(
             "accuracy": accuracy,
         })
 
-        print(f"  Accuracy: {accuracy:.1%} ({correct}/{len(tasks)})")
+        print(f"  Accuracy: {accuracy:.1%} ({correct}/{len(tasks)})", flush=True)
 
     results["overall_accuracy"] = results["total_correct"] / results["total_tasks"]
     return results
@@ -252,24 +259,27 @@ def main():
 
     # Quick mode for testing
     if args.quick:
-        args.generations = 5
+        args.generations = 3
         args.population = 4
         args.tasks = 5
         args.runs = 1
+        tasks_per_prompt = 5  # Fewer baseline tasks
+    else:
+        tasks_per_prompt = 20
 
-    print("="*70)
-    print("VERIFIABLE EVOLUTION EXPERIMENT")
-    print("Ground-truth fitness: Actual correctness on verifiable tasks")
-    print("="*70)
-    print(f"Model: {args.model}")
-    print(f"Generations: {args.generations}")
-    print(f"Population: {args.population}")
-    print(f"Tasks/eval: {args.tasks}")
-    print(f"Runs: {args.runs}")
-    print("="*70)
+    print("="*70, flush=True)
+    print("VERIFIABLE EVOLUTION EXPERIMENT", flush=True)
+    print("Ground-truth fitness: Actual correctness on verifiable tasks", flush=True)
+    print("="*70, flush=True)
+    print(f"Model: {args.model}", flush=True)
+    print(f"Generations: {args.generations}", flush=True)
+    print(f"Population: {args.population}", flush=True)
+    print(f"Tasks/eval: {args.tasks}", flush=True)
+    print(f"Runs: {args.runs}", flush=True)
+    print("="*70, flush=True)
 
     # Load model
-    print("\nLoading model...")
+    print("\nLoading model...", flush=True)
     encoder = LLMEncoder(
         model_name=args.model,
         quantization="4bit",
@@ -288,24 +298,24 @@ def main():
     ]
 
     # Run baseline first
-    print("\n" + "="*70)
-    print("PHASE 1: BASELINE ACCURACY (No Evolution)")
-    print("="*70)
+    print("\n" + "="*70, flush=True)
+    print("PHASE 1: BASELINE ACCURACY (No Evolution)", flush=True)
+    print("="*70, flush=True)
 
     baseline_results = run_baseline_accuracy(
-        encoder, task_suite, prompts[:2], tasks_per_prompt=20
+        encoder, task_suite, prompts[:2], tasks_per_prompt=tasks_per_prompt
     )
 
-    print(f"\nBaseline overall accuracy: {baseline_results['overall_accuracy']:.1%}")
+    print(f"\nBaseline overall accuracy: {baseline_results['overall_accuracy']:.1%}", flush=True)
 
     if args.baseline_only:
-        print("\n[Baseline only mode - stopping here]")
+        print("\n[Baseline only mode - stopping here]", flush=True)
         return
 
     # Run comparison
-    print("\n" + "="*70)
-    print("PHASE 2: EVOLUTION COMPARISON (Hyperbolic vs Euclidean)")
-    print("="*70)
+    print("\n" + "="*70, flush=True)
+    print("PHASE 2: EVOLUTION COMPARISON (Hyperbolic vs Euclidean)", flush=True)
+    print("="*70, flush=True)
 
     comparison_results = compare_geometries(
         encoder=encoder,
