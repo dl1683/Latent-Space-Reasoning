@@ -70,11 +70,56 @@ Counter to expectations, Euclidean maintained HIGHER diversity (5.5-6.1) than hy
 
 Current tasks are too "flat" - all arithmetic/logic tasks might have similar optimal latents. Diversity doesn't help when all tasks need the same solution.
 
-### Next Steps for Hyperbolic Advantage:
-1. **Clustered evaluation** - per-category accuracy, tail metrics
-2. **Coverage-based fitness** - reward solving different task types
-3. **Multi-objective evolution** - correctness + diversity + coverage
-4. **Hierarchical tasks** - nested arithmetic, multi-hop reasoning (ADDED)
+### V2 Final Results (Stopped after Run 2 due to slow progress)
+- Run 1 Prompt 1: TIE (35% vs 35%)
+- Run 1 Prompt 2: EUCLIDEAN wins (30% vs 25%)
+- Run 2: Hyperbolic roll=75%, Euclidean roll=62.5% (incomplete)
+
+**Conclusion: No clear hyperbolic advantage with flat tasks.**
+
+---
+
+## V3/V4 Experiments: True Hierarchical Tasks
+
+### Key Codex Insight (xhigh reasoning analysis)
+
+> "A 20–30% win is *not* likely on generic reasoning tasks. If you don't engineer the task structure to be explicitly hierarchical with depth/branching pressure, hyperbolic won't beat Euclidean by much, if at all."
+
+### What Could Actually Produce 20-30% Win:
+
+1. **Tasks with true tree geometry and depth pressure**
+   - Depth 6-10, branching factor 3-6
+   - Rare-leaf retrieval (distinguishing low-frequency leaves)
+   - Traversal tasks where reward scales with depth
+
+2. **Fitness that rewards depth AND breadth**
+   - Depth-weighted coverage (deeper = exponentially more valuable)
+   - Worst-leaf or 5th-percentile accuracy (not just average)
+   - Novelty/rarity bonus for rare leaves
+
+3. **Mixed geometry (Euclidean × Hyperbolic)**
+   - Split latent: Euclidean for local variance, hyperbolic for hierarchy
+   - "This setup consistently outperforms pure hyperbolic" - Codex
+
+4. **Curvature annealing**
+   - Start low (near Euclidean), increase as population stabilizes
+   - Learned curvature based on branching factor/depth
+
+### V3: Hierarchical Tasks + Coverage Fitness
+- Uses nested arithmetic and multi-hop reasoning only
+- Coverage bonus for solving different categories/difficulties
+- Tail metrics (worst-category accuracy)
+
+### V4: True Tree Tasks + Depth Fitness (In Progress)
+- **Tree traversal**: Follow path [2]→[1]→[3] through tree, compute node value
+- **Hierarchical classification**: Deep taxonomy (entity→living→animal→mammal→dog)
+- **Multi-hop reasoning**: Chains with branching factor > 2
+
+Key changes:
+- Depth-weighted fitness (2^depth scaling)
+- Rarity bonus for deep paths
+- Curvature annealing (0.5 → 1.5)
+- Numerical safeguards for diversity calculation
 
 ---
 

@@ -137,7 +137,7 @@ class TreeTraversalGenerator:
             prompt = "What is the root node value in this tree? (Answer: 0)"
         else:
             steps = [f"child {p}" for p in path]
-            prompt = f"Starting at the root (value=0), follow this path: {' → '.join(steps)}. The node value at depth d with path P is computed as: sum(P) * (d+1) + len(P) * 7. What is the final node value? Give only the number."
+            prompt = f"Starting at the root (value=0), follow this path: {' -> '.join(steps)}. The node value at depth d with path P is computed as: sum(P) * (d+1) + len(P) * 7. What is the final node value? Give only the number."
 
         # Difficulty based on depth
         if depth <= 2:
