@@ -388,7 +388,8 @@ def run_tree_evolution(
             f"wgt={population[0].weighted_fitness:.3f} "
             f"roll={roll_avg:.3f} "
             f"tail={tail_metric:.3f} "
-            f"div={diversity:.3f}{curv_str}"
+            f"div={diversity:.3f}{curv_str}",
+            flush=True
         )
 
         # Create next generation
@@ -471,26 +472,26 @@ def main():
     parser.add_argument("--no-annealing", action="store_true", help="Disable curvature annealing")
     args = parser.parse_args()
 
-    print("=" * 70)
-    print("VERIFIABLE EVOLUTION V4 - TRUE TREE TASKS + DEPTH FITNESS")
-    print("Tree traversal | Hierarchical classification | Multi-hop | Depth rewards")
-    print("=" * 70)
-    print(f"Model: {args.model}")
-    print(f"Generations: {args.generations}")
-    print(f"Population: {args.population}")
-    print(f"Tasks/gen: {args.tasks_per_gen}")
-    print(f"Pool size: {args.pool_size}")
-    print(f"Runs: {args.runs}")
-    print(f"Curvature annealing: {not args.no_annealing}")
-    print("=" * 70)
+    print("=" * 70, flush=True)
+    print("VERIFIABLE EVOLUTION V4 - TRUE TREE TASKS + DEPTH FITNESS", flush=True)
+    print("Tree traversal | Hierarchical classification | Multi-hop | Depth rewards", flush=True)
+    print("=" * 70, flush=True)
+    print(f"Model: {args.model}", flush=True)
+    print(f"Generations: {args.generations}", flush=True)
+    print(f"Population: {args.population}", flush=True)
+    print(f"Tasks/gen: {args.tasks_per_gen}", flush=True)
+    print(f"Pool size: {args.pool_size}", flush=True)
+    print(f"Runs: {args.runs}", flush=True)
+    print(f"Curvature annealing: {not args.no_annealing}", flush=True)
+    print("=" * 70, flush=True)
 
     # Create tree task pool
-    print("\nCreating tree task pool...")
+    print("\nCreating tree task pool...", flush=True)
     pool = TreeTaskPool(pool_size=args.pool_size, seed=args.seed)
-    print(f"Pool stats: {pool.stats()}")
+    print(f"Pool stats: {pool.stats()}", flush=True)
 
     # Load model
-    print("\nLoading model...")
+    print("\nLoading model...", flush=True)
     encoder = LLMEncoder(model_name=args.model, quantization="4bit")
 
     # Prompts focused on tree/hierarchical reasoning
@@ -506,18 +507,18 @@ def main():
         random.seed(run_seed)
         torch.manual_seed(run_seed)
 
-        print(f"\n{'#' * 70}")
-        print(f"# RUN {run_idx + 1}/{args.runs} (seed={run_seed})")
-        print("#" * 70)
+        print(f"\n{'#' * 70}", flush=True)
+        print(f"# RUN {run_idx + 1}/{args.runs} (seed={run_seed})", flush=True)
+        print("#" * 70, flush=True)
 
         for prompt_idx, prompt in enumerate(prompts):
-            print(f"\nPrompt: {prompt[:60]}...")
+            print(f"\nPrompt: {prompt[:60]}...", flush=True)
 
             # Encode seed
             seed_latent = encoder.encode(prompt)
 
             # Run HYPERBOLIC
-            print(f"\n[HYPERBOLIC] Running evolution...")
+            print(f"\n[HYPERBOLIC] Running evolution...", flush=True)
             hyp_result = run_tree_evolution(
                 encoder=encoder,
                 pool=pool,
