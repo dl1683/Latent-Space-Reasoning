@@ -49,13 +49,6 @@ class CalibratedTreeTaskGenerator:
     Add few-shot example in prompt for algorithmic scaffolding.
     """
 
-    FEW_SHOT_EXAMPLE = """Example:
-Q: Starting at root (value=0), follow: child 1 -> child 2. Value = sum(path) * (depth+1) + len(path) * 7.
-A: Path = [1, 2], depth = 2. sum([1,2]) = 3. 3 * (2+1) + 2*7 = 3*3 + 14 = 9 + 14 = 23.
-
-Now solve:
-"""
-
     def __init__(self, max_depth: int = 5, branching: int = 4, seed: int = 42):
         self.max_depth = max_depth
         self.branching = branching
@@ -81,19 +74,17 @@ Now solve:
         return tasks
 
     def _generate_task(self, depth: int) -> CalibratedTreeTask:
-        """Generate a single task."""
+        """Generate a single task with SIMPLE prompt format."""
         path = [self.rng.randint(0, self.branching - 1) for _ in range(depth)]
 
         # Compute answer: sum(path) * (depth+1) + len(path) * 7
-        answer = sum(path) * (depth + 1) + len(path) * 7
+        path_sum = sum(path)
+        answer = path_sum * (depth + 1) + depth * 7
 
-        # Build prompt with few-shot example
-        path_str = " -> ".join([f"child {p}" for p in path])
+        # SIMPLE prompt - model got 45 with this format
         prompt = (
-            f"{self.FEW_SHOT_EXAMPLE}"
-            f"Q: Starting at root (value=0), follow: {path_str}. "
-            f"Value = sum(path) * (depth+1) + len(path) * 7. What is the value? "
-            f"Just give the number."
+            f"Calculate: sum([{','.join(map(str, path))}]) * {depth + 1} + {depth} * 7 = ?\n"
+            f"Answer with just the number."
         )
 
         if depth <= 2:
@@ -113,15 +104,35 @@ Now solve:
         )
 
     def _verify_number(self, response: str, expected: int) -> bool:
-        """Verify numeric response."""
+        """Verify numeric response with robust pattern matching."""
         import re
+
+        # Try multiple patterns to find the answer
+        patterns = [
+            rf'=\s*{expected}\b',  # Exact match after equals
+            rf'\b{expected}\b',    # Exact number anywhere
+            r'(?:answer|result|equals)\s*[:=]?\s*(\d+)',  # Answer patterns
+        ]
+
+        # First check for exact match
+        if rf'\b{expected}\b' in response or f'= {expected}' in response:
+            return True
+
+        # Look for answer patterns
+        for pattern in patterns[:2]:
+            if re.search(pattern, response, re.IGNORECASE):
+                return True
+
+        # Fallback: last number in response
         numbers = re.findall(r'-?\d+', response)
-        if not numbers:
-            return False
-        try:
-            return int(numbers[-1]) == expected
-        except (ValueError, IndexError):
-            return False
+        if numbers:
+            try:
+                if int(numbers[-1]) == expected:
+                    return True
+            except (ValueError, IndexError):
+                pass
+
+        return False
 
 
 class CalibratedTaskPool:
