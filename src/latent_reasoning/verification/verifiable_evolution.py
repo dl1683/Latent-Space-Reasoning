@@ -78,6 +78,8 @@ class VerifiableEvolutionLoop:
         mutation_scale: float = 0.1,
         elite_count: int = 2,
         seed: int | None = None,
+        use_fitness_sharing: bool = True,
+        sharing_sigma: float = 0.3,
     ):
         self.encoder = encoder
         self.geometry_config = geometry_config
@@ -85,6 +87,8 @@ class VerifiableEvolutionLoop:
         self.tasks_per_evaluation = tasks_per_evaluation
         self.mutation_scale = mutation_scale
         self.elite_count = elite_count
+        self.use_fitness_sharing = use_fitness_sharing
+        self.sharing_sigma = sharing_sigma
 
         # Task suite for generating verifiable tasks
         self.task_suite = create_task_suite(seed=seed)
@@ -130,7 +134,11 @@ class VerifiableEvolutionLoop:
             for candidate in population:
                 self._evaluate_candidate(candidate, tasks)
 
-            # Sort by fitness (descending)
+            # Apply fitness sharing if enabled (makes diversity a selection mechanism)
+            if self.use_fitness_sharing:
+                self._apply_fitness_sharing(population, self.sharing_sigma)
+
+            # Sort by fitness (descending) - raw fitness for tracking best
             population.sort(key=lambda c: c.fitness, reverse=True)
 
             # Track best
@@ -257,9 +265,13 @@ class VerifiableEvolutionLoop:
 
         # Fill rest with offspring
         while len(next_gen) < self.population_size:
-            # Tournament selection
-            parent_a = self._tournament_select(population)
-            parent_b = self._tournament_select(population)
+            # Tournament selection (use shared fitness if enabled)
+            if self.use_fitness_sharing:
+                parent_a = self._tournament_select_shared(population)
+                parent_b = self._tournament_select_shared(population)
+            else:
+                parent_a = self._tournament_select(population)
+                parent_b = self._tournament_select(population)
 
             # Crossover
             child_latent = self._crossover(parent_a.latent, parent_b.latent)
@@ -276,6 +288,65 @@ class VerifiableEvolutionLoop:
         """Tournament selection."""
         contestants = random.sample(population, min(k, len(population)))
         return max(contestants, key=lambda c: c.fitness)
+
+    def _apply_fitness_sharing(self, population: List[VerifiableCandidate], sigma: float = 0.3) -> None:
+        """
+        Apply fitness sharing to penalize crowded regions.
+
+        This makes diversity a selection mechanism, not just a byproduct.
+        Candidates in crowded regions get their effective fitness reduced.
+
+        For hyperbolic space, this is powerful because:
+        - Volume grows exponentially with distance
+        - Peripheral regions have more "space"
+        - Fitness sharing naturally rewards exploration of periphery
+        """
+        n = len(population)
+        if n <= 1:
+            return
+
+        # Compute pairwise distances
+        distances = torch.zeros(n, n)
+        for i in range(n):
+            for j in range(i + 1, n):
+                if self._hyp is not None:
+                    # Hyperbolic distance
+                    dist = self._hyp.hyperbolic_distance(
+                        population[i].latent.squeeze(),
+                        population[j].latent.squeeze(),
+                        self.geometry_config.curvature,
+                    ).item()
+                else:
+                    # Euclidean distance
+                    dist = torch.norm(
+                        population[i].latent - population[j].latent
+                    ).item()
+                distances[i, j] = dist
+                distances[j, i] = dist
+
+        # Compute niche counts (sharing function)
+        for i, candidate in enumerate(population):
+            niche_count = 1.0  # Count self
+            for j in range(n):
+                if i != j:
+                    d = distances[i, j]
+                    if d < sigma:
+                        # Sharing function: linear decrease within sigma
+                        niche_count += 1 - (d / sigma)
+
+            # Store shared fitness (original fitness / niche count)
+            # Higher niche count = more crowded = lower shared fitness
+            candidate._shared_fitness = candidate.fitness / niche_count
+
+    def _tournament_select_shared(self, population: List[VerifiableCandidate], k: int = 3) -> VerifiableCandidate:
+        """Tournament selection using shared fitness."""
+        contestants = random.sample(population, min(k, len(population)))
+
+        # Use shared fitness if available, else raw fitness
+        def get_fitness(c):
+            return getattr(c, '_shared_fitness', c.fitness)
+
+        return max(contestants, key=get_fitness)
 
 
 def run_verifiable_evolution(
