@@ -539,8 +539,36 @@ The 1.7B model lacks capacity to:
 
 **Hyperbolic latent space with c=0.5 curvature provides substantial improvement (+15% overall, +140% at depth 3) for hierarchical reasoning tasks on 4B+ models.**
 
-This is a validated, replicable result:
-- V7 Seed 1: +7.8% overall, +70% at depth 3
-- V8 4B Seed 1: +15% overall, +140% at depth 3
+**IMPORTANT: Codex Critical Review (2026-02-04)**
 
-The effect is consistent and large enough to be practically meaningful for reasoning tasks with hierarchical structure.
+Codex (GPT-5.2 xhigh reasoning) reviewed these results and provided important caveats:
+
+### Statistical Limitations
+- V8 4B depth-3 (12/20 vs 5/20): p≈0.016, but may not survive multiple comparison correction
+- V7 depth-3 (34/50 vs 20/50): p≈0.004, but selected from curvature sweep = selection bias
+- V6 "3/5 seeds wins" = p=0.5 under sign test (not statistically significant)
+- Sample sizes (20-50 tasks/depth) are underpowered for strong claims
+
+### Methodology Concerns
+1. **Selection bias**: V7 curvature sweep on validation set, then selected c=0.5 as best
+2. **Need separate test set**: To claim real effect, must lock curvature and test on fresh data
+3. **Hyperparameter fairness**: Hyperbolic has extra tuning knob (curvature) vs Euclidean
+4. **Single-seed variance**: V7/V8 results from single seeds can swing wildly
+5. **Quantization confound**: 4-bit may interact differently with geometries
+
+### Codex Verdict
+> "This is **not** a legitimate breakthrough yet. It's a **plausible early signal** that hyperbolic geometry might help in a specific synthetic, depth-structured setting. The current evidence is too fragile and too entangled with tuning and single-seed variance to support strong claims."
+
+### What Would Strengthen These Claims
+- Pre-registered test set (lock curvature based on training, test on fresh data)
+- 10+ seeds per condition
+- 200+ tasks per depth with bootstrapped confidence intervals
+- Different task families (not just depth-structured arithmetic)
+- Precision ablation (4-bit vs 8-bit vs FP16)
+- Fair Euclidean baseline with equivalent hyperparameter budget
+
+### Revised Conclusion
+The results show a **promising preliminary signal** worth further investigation, not a validated breakthrough. The observed effects (35 percentage points at depth-3) are large but:
+- May be inflated by selection bias from curvature sweep
+- May not generalize beyond this specific synthetic task
+- Require replication with proper statistical controls
