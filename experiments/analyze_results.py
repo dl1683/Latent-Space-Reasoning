@@ -47,10 +47,13 @@ def format_for_codex(results: dict, version: str = "V11") -> str:
     # Per-depth
     if "per_depth" in stats:
         lines.append("\n--- PER-DEPTH ---")
-        for depth in sorted(stats["per_depth"].keys(), key=lambda x: int(x)):
-            lines.append(f"  Depth {depth}:")
+        for depth_key in sorted(stats["per_depth"].keys(), key=lambda x: int(x)):
+            lines.append(f"  Depth {depth_key}:")
+            depth_data = stats["per_depth"][depth_key]
             for cond in conditions:
-                ds = stats["per_depth"][str(depth) if isinstance(depth, int) else depth][cond]
+                if cond not in depth_data:
+                    continue
+                ds = depth_data[cond]
                 lines.append(f"    {cond:22s}: {ds['mean']*100:.1f}% +/- {ds['std']*100:.1f}%")
 
     # Pairwise comparisons
