@@ -158,6 +158,11 @@ def _apply_mutation(
     - hyp_local_expmap: expmap(noise, parent, c) (boundary-exploring)
     - euc_constrained: parent + noise, clamped to ball
     - euc_unconstrained: parent + noise
+
+    Note: All conditions receive the SAME raw noise vector. Effective step
+    size differs across operators by design (this IS the ablation variable).
+    hyp_local_expmap has radius-dependent scaling via lambda_p, which gives
+    larger effective steps near the boundary. Radius diagnostics track this.
     """
     if condition == "hyp_origin_roundtrip":
         lat = parent.squeeze()
@@ -702,10 +707,14 @@ def main():
         if not np.isnan(sp['p_value_raw']):
             print(f"  p-value (raw):     {sp['p_value_raw']:.4f}", flush=True)
 
-        if (not np.isnan(sp['p_value_raw'])
-                and sp['p_value_raw'] < 0.05
+        # Use Bonferroni-corrected p-value for secondary (non-pre-registered)
+        p_cancel = sp['p_value_bonferroni']
+        if not np.isnan(p_cancel):
+            print(f"  p-value (Bonf):    {p_cancel:.4f}", flush=True)
+        if (not np.isnan(p_cancel)
+                and p_cancel < 0.05
                 and sp['diff_mean'] > 0):
-            cancel_verdict = "CANCELLATION CONFIRMED: Mobius > Origin round-trip"
+            cancel_verdict = "CANCELLATION CONFIRMED: Mobius > Origin round-trip (Bonf p < 0.05)"
         else:
             cancel_verdict = "No significant cancellation effect detected"
         print(f"  VERDICT: {cancel_verdict}", flush=True)
