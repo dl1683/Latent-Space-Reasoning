@@ -1,0 +1,184 @@
+{
+  "config": {
+    "model": "Qwen/Qwen3-4B",
+    "seeds": 1,
+    "test_tasks_per_depth": 20,
+    "curvature": 0.5,
+    "evo_gens": 3,
+    "evo_pop": 4,
+    "evo_tasks": 8,
+    "conditions": [
+      "euc_unconstrained",
+      "euc_constrained",
+      "hyperbolic"
+    ]
+  },
+  "statistics": {
+    "per_condition": {
+      "euc_unconstrained": {
+        "mean": 0.75,
+        "std": 0.0,
+        "per_seed": [
+          0.75
+        ]
+      },
+      "euc_constrained": {
+        "mean": 0.675,
+        "std": 0.0,
+        "per_seed": [
+          0.675
+        ]
+      },
+      "hyperbolic": {
+        "mean": 0.9,
+        "std": 0.0,
+        "per_seed": [
+          0.9
+        ]
+      }
+    },
+    "pairwise": {
+      "euc_unconstrained_vs_euc_constrained": {
+        "diff_mean": -0.07499999999999996,
+        "diff_std": NaN,
+        "diff_ci_95": [
+          NaN,
+          NaN
+        ],
+        "t_stat": NaN,
+        "p_value": NaN,
+        "mcnemar_b": 3,
+        "mcnemar_c": 6,
+        "mcnemar_chi2": 0.4444444444444444,
+        "mcnemar_p": 0.5049850750938457
+      },
+      "euc_unconstrained_vs_hyperbolic": {
+        "diff_mean": 0.15000000000000002,
+        "diff_std": NaN,
+        "diff_ci_95": [
+          NaN,
+          NaN
+        ],
+        "t_stat": NaN,
+        "p_value": NaN,
+        "mcnemar_b": 10,
+        "mcnemar_c": 4,
+        "mcnemar_chi2": 1.7857142857142858,
+        "mcnemar_p": 0.18144920772142004
+      },
+      "euc_constrained_vs_hyperbolic": {
+        "diff_mean": 0.22499999999999998,
+        "diff_std": NaN,
+        "diff_ci_95": [
+          NaN,
+          NaN
+        ],
+        "t_stat": NaN,
+        "p_value": NaN,
+        "mcnemar_b": 12,
+        "mcnemar_c": 3,
+        "mcnemar_chi2": 4.266666666666667,
+        "mcnemar_p": 0.038867103812417314
+      }
+    },
+    "per_depth": {
+      "2": {
+        "euc_unconstrained": {
+          "mean": 0.6,
+          "std": 0.0
+        },
+        "euc_constrained": {
+          "mean": 0.7,
+          "std": 0.0
+        },
+        "hyperbolic": {
+          "mean": 0.8,
+          "std": 0.0
+        }
+      },
+      "3": {
+        "euc_unconstrained": {
+          "mean": 0.9,
+          "std": 0.0
+        },
+        "euc_constrained": {
+          "mean": 0.65,
+          "std": 0.0
+        },
+        "hyperbolic": {
+          "mean": 1.0,
+          "std": 0.0
+        }
+      }
+    }
+  },
+  "fitness_curves": {
+    "euc_unconstrained": [
+      [
+        {
+          "gen": 1,
+          "best": 0.9806034482758621,
+          "mean": 0.9513575953500523,
+          "min": 0.9145359848484849
+        },
+        {
+          "gen": 2,
+          "best": 0.9398148148148148,
+          "mean": 0.9030048545714682,
+          "min": 0.8613812913396064
+        },
+        {
+          "gen": 3,
+          "best": 1.0,
+          "mean": 0.960942992014172,
+          "min": 0.8815078171132918
+        }
+      ]
+    ],
+    "euc_constrained": [
+      [
+        {
+          "gen": 1,
+          "best": 0.9848484848484849,
+          "mean": 0.9130836348042017,
+          "min": 0.7401423043683218
+        },
+        {
+          "gen": 2,
+          "best": 1.0,
+          "mean": 0.9653435422081209,
+          "min": 0.8902203226786377
+        },
+        {
+          "gen": 3,
+          "best": 1.0,
+          "mean": 0.9503943705536653,
+          "min": 0.9212805443860191
+        }
+      ]
+    ],
+    "hyperbolic": [
+      [
+        {
+          "gen": 1,
+          "best": 0.9848484848484849,
+          "mean": 0.9517699162230412,
+          "min": 0.9219144570707071
+        },
+        {
+          "gen": 2,
+          "best": 1.0,
+          "mean": 0.9162993790983041,
+          "min": 0.8529475954059105
+        },
+        {
+          "gen": 3,
+          "best": 1.0,
+          "mean": 0.9517977193056454,
+          "min": 0.8891580903373356
+        }
+      ]
+    ]
+  },
+  "verdict": "NO SIGNIFICANT GEOMETRY EFFECT (p >= 0.05)"
+}
