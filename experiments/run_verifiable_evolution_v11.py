@@ -475,7 +475,7 @@ def main():
     print("=" * 70, flush=True)
     print("FIXES FROM V10 CODEX REVIEW:", flush=True)
     print("  1. Matched ball radii (same L2 radius for constrained+hyp)", flush=True)
-    print("  2. RNG isolation (torch.Generator, per-condition seeds)", flush=True)
+    print("  2. RNG isolation (torch.Generator, SAME seed all conditions)", flush=True)
     print("  3. No train/test leakage (unique enumerated tasks)", flush=True)
     print("  4. Per-seed McNemar (no pseudo-replication)", flush=True)
     print("  5. Global best tracking across generations", flush=True)
@@ -696,7 +696,7 @@ def main():
         },
         "codex_fixes": [
             "Matched ball radii (same L2 for constrained+hyp)",
-            "RNG isolation (torch.Generator, per-condition seeds)",
+            "RNG isolation (torch.Generator, SAME seed all conditions)",
             "Unique tasks, no train/test leakage",
             "Per-seed McNemar (no pseudo-replication)",
             "Global best tracking across generations",
