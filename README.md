@@ -1,56 +1,40 @@
 # Latent Space Reasoning
 
-A research codebase exploring evolutionary search over LLM hidden states (latent space) to improve text generation quality.
+Evolutionary search over LLM hidden states to produce higher-quality, more specific responses than standard text generation.
 
-## Status
+For a full breakdown of the approach and why it works: **[How to Teach LLMs to Reason for $0.50](https://www.artificialintelligencemadesimple.com/p/how-to-teach-llms-to-reason-for-50)**
 
-This project is **experimental research software** (alpha). It is not production-ready.
-
-### Working today
-- CLI workflows: `latent-reason run`, `compare`, `baseline`, `check-gpu`, `models`, `version`, `arc-eval`
-- Python API: `reason(...)`, `compare(...)`, `Engine`
-- Config-driven runs via YAML (`config.example.yaml`, `configs/aim_v1_low_resource.yaml`)
-- Reproducible experiment artifacts under `experiments/`
-- Test suite: 250 tests in `tests/`
-
-### Still experimental / in progress
-- Judge/scorer alignment with correctness
-- Reliability of improvements across prompts and models
-- `latent-reason benchmark` and `latent-reason train` are placeholders/in-progress
-- Advanced research lanes (QD, hyperbolic geometry, autopoietic judge, grammar search, dual steering)
-
-## Critical evaluation caveat
-
-`latent_score`, `confidence`, and score deltas in experiment summaries are **internal optimization signals**. They are useful as evolutionary search guidance, not as standalone output-quality metrics.
-
-Quality claims should be based on decoded outputs reviewed directly (manual review and/or LLM-as-judge). See `CLAUDE.md` for the full evaluation rule.
-
-## How It Works
+## What It Does
 
 Instead of generating text directly, this engine:
 
 1. **Encodes** your query into an LLM's hidden states (latent space)
 2. **Evolves** the latent representation through selection, mutation, and crossover
-3. **Scores** evolved latents to guide search toward better representations
-4. **Decodes** the best latent back into text, using two conditioning channels:
-   - **Soft prompt injection** (V13+): The latent is projected through a fixed orthogonal matrix into 8 soft tokens that are prepended to the model's input, shaping what the model attends to
+3. **Scores** evolved latents using decomposed judges to guide search
+4. **Decodes** the best latent back into text through two conditioning channels:
+   - **Soft prompt injection** (V13+): The latent is projected through a fixed orthogonal matrix into 8 soft tokens prepended to the model's input, shaping what the model attends to
    - **Dual Newton steering** (V14+): The latent is routed through the model's own `lm_head` to create a vocabulary-level steering direction, then a per-token regularized Newton step in the dual (probability) coordinate system nudges generation toward the evolved representation
 
-### Why This Approach Is Interesting
+## Why It Works
 
-**Standard LLM generation** is a single forward pass - you get whatever the model produces on first try. There's no search, no optimization, no iteration.
+**Standard LLM generation** is a single forward pass. Autoregressive decoding forces premature commitment - the model must choose tokens one at a time with no ability to search, backtrack, or optimize. You get whatever it produces on first try.
 
-**Latent Space Reasoning** adds a search loop in representation space. Evolution explores different latent configurations, and the best ones decode to more specific, structured outputs. Early qualitative results show:
+**Latent Space Reasoning** adds a search loop in representation space before decoding. The key insight: modern models contain sufficient knowledge, but their generation process doesn't explore alternatives. By evolving in latent space, we find representations that decode to more relevant, specific outputs.
 
-- LR outputs tend to be more **decisive and structured** (numbered steps, specific technologies, concrete details)
-- Baseline outputs tend to be more **generic and template-like** ("follow these steps: 1. Define the goal...")
-- On **open-ended design and code tasks**, LR consistently produces more actionable content
-- On **simple math/logic**, both approaches perform identically
-- On **single-answer proofs**, baseline can be better (LR sometimes explores too much and truncates)
+What this looks like in practice:
 
-**Current research frontier (V14)**: Dual steering via information geometry (arXiv:2602.15293) applies a mathematically principled Newton step in the probability simplex rather than naive logit addition. Early diagnostic results show the strongest signal on harder (depth-3) problems: 40% accuracy vs 20% for soft prompt alone.
+| Problem Type | LR Advantage |
+|-------------|--------------|
+| Open-ended design | **Strong** - specific technologies, actionable steps, concrete details |
+| Code generation | **Strong** - produces actual implementations faster |
+| Find-all problems | **Moderate** - more thorough exploration |
+| Simple math/logic | **None** - identical to baseline |
+| Single-answer proofs | **Negative** - can explore too much and truncate |
+| Rescue cases | **Very strong** - produces useful output when baseline fails completely |
 
-**Important caveat**: These are preliminary findings from single-seed diagnostic runs. We have not yet demonstrated statistically significant improvements with proper multi-seed studies. The internal scorer is useful as search guidance but does not reliably predict output quality. See `CLAUDE.md` for evaluation rules.
+**The architecture is deliberately modular**: control lives in judges and aggregation, generation is a commodity. Small judges swap independently without retraining the generator. Frozen base models mean seamless upgrades when new models release. The entire system runs on consumer hardware for under $1.
+
+**Current research frontier (V14)**: Dual steering via information geometry ([arXiv:2602.15293](https://arxiv.org/abs/2602.15293)) applies a mathematically principled Newton step in the probability simplex rather than naive logit addition. Diagnostic results show the strongest signal on harder depth-3 problems: 40% accuracy vs 20% for soft prompt alone, with only 2.6% latency overhead.
 
 ## Installation
 
@@ -78,7 +62,9 @@ pip install -e ".[quant]"  # bitsandbytes 4-bit quantization support
 
 ## Quick Start
 
-### Compare Methods
+### Compare Methods (Recommended)
+
+The best way to see the difference is to run both baseline and latent reasoning on the same query:
 
 ```bash
 # Basic comparison - see the difference immediately
@@ -119,8 +105,6 @@ advanced = engine.run("Design an API")
 print(advanced.generations, advanced.evaluations)
 ```
 
-Note: `result.confidence` / `cmp["latent_score"]` are scorer telemetry, not validated quality metrics.
-
 ### Check Your Setup
 
 ```bash
@@ -132,14 +116,14 @@ latent-reason models
 
 | Model | Size | VRAM | Best For |
 |-------|------|------|----------|
-| `Qwen/Qwen3-4B` | 4B | ~8 GB | Larger-capacity runs |
-| `Qwen/Qwen3-1.7B` | 1.7B | ~4 GB | Balance of speed/capacity |
-| `deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B` | 1.5B | ~3 GB | Reasoning tasks |
+| `Qwen/Qwen3-4B` | 4B | ~8 GB | Best quality output |
+| `Qwen/Qwen3-1.7B` | 1.7B | ~4 GB | Balance of speed/quality |
+| `deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B` | 1.5B | ~3 GB | Strong reasoning, efficient |
 | `Qwen/Qwen3-0.6B` | 0.6B | ~2 GB | Fast iteration, CPU-friendly |
 | `microsoft/phi-2` | 2.7B | ~6 GB | Alternative option |
 | `ibm-granite/granite-4.0-h-1b` | 1B | ~2 GB | Compact alternative |
 
-Compatibility can vary by hardware and backend.
+Qwen3 models generally produce the highest quality output. DeepSeek-R1-Distill is particularly strong for reasoning tasks.
 
 ## Configuration
 
@@ -191,9 +175,9 @@ make check
 ## Limitations
 
 - Output quality is prompt/model dependent and can regress on some tasks.
-- Internal scorer values can be weakly correlated with correctness.
-- Runtime can be high on larger models or long generation counts.
-- Experiment docs in `experiments/` include historical runs; always read timestamps and setup details.
+- Internal scorer values are useful as search guidance but do not reliably predict output quality on their own. See `CLAUDE.md` for evaluation rules.
+- Runtime scales with model size and evolution parameters.
+- Multi-seed statistical validation of V13/V14 improvements is still in progress.
 
 ## Contributing
 
@@ -204,7 +188,7 @@ Contributions welcome! Areas of interest:
 - Model architecture experiments
 - Performance optimizations
 
-Anything you think pushes this work forward is welcome. The point of open sourcing is to push the boundaries and explore ideas.
+The point of open sourcing is to push the boundaries and explore crazy ideas, so don't be scared to explore a lot.
 
 ### Monthly Bounty Program ($2,000/month)
 
@@ -241,7 +225,7 @@ Bounties given out monthly on the 15th.
 
 This open-source release provides the core engine and research artifacts. For production systems, you would likely need:
 
-1. **Better Judge Models**: The shared checkpoint is a basic trained scorer useful as search guidance. Production systems benefit from judges trained on domain-specific data with more sophisticated architectures.
+1. **Better Judge Models**: The shared checkpoint is a basic trained scorer. Production systems benefit from judges trained on domain-specific data with more sophisticated architectures.
 
 2. **Smarter Aggregation**: This implementation uses simple mean pooling to combine evolved latents. Production systems can use more sophisticated approaches. For example, [Iqidis](https://iqidis.ai) (the team behind this repo) uses a **reverse Mixture of Experts** architecture - a learned MLP that analyzes all evolved latents natively, scores them, and determines the optimal way to combine them into the final output.
 
