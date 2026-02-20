@@ -11,7 +11,7 @@ This project is **experimental research software** (alpha). It is not production
 - Python API: `reason(...)`, `compare(...)`, `Engine`
 - Config-driven runs via YAML (`config.example.yaml`, `configs/aim_v1_low_resource.yaml`)
 - Reproducible experiment artifacts under `experiments/`
-- Test suite: 227 tests in `tests/`
+- Test suite: 250 tests in `tests/`
 
 ### Still experimental / in progress
 - Judge/scorer alignment with correctness
@@ -149,14 +149,14 @@ src/latent_reasoning/
     hyperbolic.py        # Poincare ball / hyperbolic geometry utilities
     logging.py           # Structured logging and progress display
 experiments/             # Benchmark scripts and result artifacts (V10-V14)
-tests/                   # Unit and integration tests (227 tests)
+tests/                   # Unit and integration tests (250 tests)
 ```
 
 ## Development
 
 ```bash
 make install-dev
-make test      # 227 tests
+make test      # 250 tests
 make lint
 make check
 ```
