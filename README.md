@@ -25,6 +25,33 @@ This project is **experimental research software** (alpha). It is not production
 
 Quality claims should be based on decoded outputs reviewed directly (manual review and/or LLM-as-judge). See `CLAUDE.md` for the full evaluation rule.
 
+## How It Works
+
+Instead of generating text directly, this engine:
+
+1. **Encodes** your query into an LLM's hidden states (latent space)
+2. **Evolves** the latent representation through selection, mutation, and crossover
+3. **Scores** evolved latents to guide search toward better representations
+4. **Decodes** the best latent back into text, using two conditioning channels:
+   - **Soft prompt injection** (V13+): The latent is projected through a fixed orthogonal matrix into 8 soft tokens that are prepended to the model's input, shaping what the model attends to
+   - **Dual Newton steering** (V14+): The latent is routed through the model's own `lm_head` to create a vocabulary-level steering direction, then a per-token regularized Newton step in the dual (probability) coordinate system nudges generation toward the evolved representation
+
+### Why This Approach Is Interesting
+
+**Standard LLM generation** is a single forward pass - you get whatever the model produces on first try. There's no search, no optimization, no iteration.
+
+**Latent Space Reasoning** adds a search loop in representation space. Evolution explores different latent configurations, and the best ones decode to more specific, structured outputs. Early qualitative results show:
+
+- LR outputs tend to be more **decisive and structured** (numbered steps, specific technologies, concrete details)
+- Baseline outputs tend to be more **generic and template-like** ("follow these steps: 1. Define the goal...")
+- On **open-ended design and code tasks**, LR consistently produces more actionable content
+- On **simple math/logic**, both approaches perform identically
+- On **single-answer proofs**, baseline can be better (LR sometimes explores too much and truncates)
+
+**Current research frontier (V14)**: Dual steering via information geometry (arXiv:2602.15293) applies a mathematically principled Newton step in the probability simplex rather than naive logit addition. Early diagnostic results show the strongest signal on harder (depth-3) problems: 40% accuracy vs 20% for soft prompt alone.
+
+**Important caveat**: These are preliminary findings from single-seed diagnostic runs. We have not yet demonstrated statistically significant improvements with proper multi-seed studies. The internal scorer is useful as search guidance but does not reliably predict output quality. See `CLAUDE.md` for evaluation rules.
+
 ## Installation
 
 ```bash
@@ -201,6 +228,26 @@ Anything you think pushes this work forward is welcome. The point of open sourci
 - Active contributors offered interviews at [Iqidis](https://iqidis.ai) and access to our network of **1.5M+ members** including engineers, managers, and builders from Google, Nvidia, OpenAI, Anthropic, Meta AI, and other top AI organizations
 
 Bounties given out monthly on the 15th.
+
+## Exclusive Access for AI Made Simple Founding Members
+
+**Founding members of [AI Made Simple](https://www.artificialintelligencemadesimple.com/subscribe)** get exclusive access to:
+
+- **391-query comprehensive test set** - Extensive evaluation across different model families, configurations, and setups
+- **Detailed analysis** - Full breakdown of performance across various scenarios
+- **Research updates** - Early access to findings from ongoing V10-V14+ experiments
+
+### Production Considerations
+
+This open-source release provides the core engine and research artifacts. For production systems, you would likely need:
+
+1. **Better Judge Models**: The shared checkpoint is a basic trained scorer useful as search guidance. Production systems benefit from judges trained on domain-specific data with more sophisticated architectures.
+
+2. **Smarter Aggregation**: This implementation uses simple mean pooling to combine evolved latents. Production systems can use more sophisticated approaches. For example, [Iqidis](https://iqidis.ai) (the team behind this repo) uses a **reverse Mixture of Experts** architecture - a learned MLP that analyzes all evolved latents natively, scores them, and determines the optimal way to combine them into the final output.
+
+3. **Continuous Training**: Judge models improve with ongoing training on new data and feedback loops.
+
+**Bottom line**: The results shown here use the simple shared checkpoint and open research code. Better judges, conditioning methods, and aggregation strategies can yield significantly better results, but those components require substantial investment to develop and are often proprietary.
 
 ## License
 
