@@ -8,7 +8,7 @@
 # Usage: latent-reason run "your query" --config config.yaml
 #
 # Quick start tips:
-# - For best quality: Use Qwen/Qwen3-4B with 8+ chains and 15+ generations
+# - For larger-capacity runs: Use Qwen/Qwen3-4B with 8+ chains and 15+ generations
 # - For speed: Use Qwen/Qwen3-0.6B with 5 chains and 10 generations
 # - For CPU-only: Use Qwen/Qwen3-0.6B with device: "cpu"
 # ============================================================================
@@ -19,7 +19,7 @@
 encoder:
   # Model selection - choose based on your hardware and quality needs
   #
-  # Recommended models (all tested and working):
+  # Commonly used models in this repo (compatibility can vary by hardware/backend):
   #   Qwen/Qwen3-4B     - Best quality, needs ~8GB VRAM
   #   Qwen/Qwen3-1.7B   - Great balance, needs ~4GB VRAM
   #   Qwen/Qwen3-0.6B   - Fast iteration, needs ~2GB VRAM, CPU-friendly
@@ -65,19 +65,19 @@ encoder:
 # JUDGE CONFIGURATION - Quality evaluation and improvement
 # ============================================================================
 judges:
-  # Scorers evaluate the quality of latent vectors during evolution
+  # Scorers provide internal search guidance during evolution
   # Multiple scorers can be used and their outputs will be combined
   scorers:
-    # OPTION 1: Trained latent scorer (recommended)
-    # This uses a neural network trained specifically to predict response quality
-    # from latent vectors. It's fast and well-calibrated for evolution.
+    # OPTION 1: Trained latent scorer (experimental)
+    # This uses a neural network trained to rank latent candidates during search.
+    # Treat outputs as guidance telemetry, not direct quality scores.
     - type: "trained_latent"
       checkpoint: "checkpoints/latent_scorer/final_model.pt"  # Path to trained model
       latent_dim: 1024  # Must match the scorer's expected input dimension
 
     # OPTION 2: Semantic scorer (alternative)
     # This uses cosine similarity between query and response embeddings
-    # No training needed, but may be less accurate than trained scorer
+    # No training needed; still only a guidance signal for search.
     # - type: "semantic"
     #   model: "sentence-transformers/all-MiniLM-L6-v2"  # Embedding model
     #   layer: -1  # Which layer to extract embeddings from
@@ -123,6 +123,11 @@ evolution:
   # Chains below this score are eliminated regardless of ranking
   min_viable_score: 0.1
 
+  # Optional score cache for low-compute runs
+  # Reuses scorer outputs for repeated/near-identical latents.
+  score_cache: false
+  score_cache_precision: 4
+
   # SELECTION - Which chains survive to the next generation
   selection:
     # Selection strategies:
@@ -137,6 +142,13 @@ evolution:
 
     # For elitist strategy: always keep this many top performers
     elite: 2
+
+    # Adaptive survivor budget (optional low-compute mode)
+    # When enabled, survivor count shrinks during plateaus and restores on improvement
+    adaptive_survivors: false
+    min_survivors: 2
+    survivor_decay: 0.75
+    survivor_decay_patience: 2
 
   # MUTATION - How to modify surviving chains
   mutation:

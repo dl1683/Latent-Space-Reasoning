@@ -1,6 +1,7 @@
 # Latent Space Reasoning - Comparison Test Log
 
 Generated: 2024-12-07
+Note: This is an archival qualitative log. Final-score fields are internal scorer outputs and not standalone quality metrics.
 
 This log contains comparisons between Baseline (direct generation) and Latent Reasoning (LR) approaches across various models and complex queries.
 

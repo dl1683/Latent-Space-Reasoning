@@ -2,6 +2,8 @@
 
 This guide helps you resolve common issues when using the Latent Space Reasoning Engine.
 
+Important: scorer numbers (`latent_score`, `confidence`) are internal search guidance only. Evaluate decoded outputs directly for quality decisions.
+
 ## Quick Diagnostics
 
 First, run the system check:

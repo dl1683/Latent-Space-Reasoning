@@ -38,7 +38,7 @@ This note summarizes the qualitative differences observed in the 0.6B runs on te
 
 ## Implications
 
-This is strong proof-of-concept: the search is clearly changing output behavior, but the current judge does not align to correctness. Improving judges (or adding task-specific checkers) should let the same decisive style translate into higher accuracy.
+This is preliminary evidence: search is changing output behavior, but the current judge is not aligned to correctness. Better judges/checkers are still required before making quality claims.
 
 ## Next Steps
 
