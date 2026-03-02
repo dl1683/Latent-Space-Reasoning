@@ -703,7 +703,8 @@ class LLMEncoder(Encoder):
                 )
 
         # Decode and extract just the assistant's response
-        generated = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+        generated_ids = self._extract_first_sequence_ids(outputs)
+        generated = self.tokenizer.decode(generated_ids, skip_special_tokens=True)
 
         # Try to extract just the plan part (after the user's message)
         if user_msg in generated:
@@ -796,7 +797,8 @@ class LLMEncoder(Encoder):
                     repetition_penalty=1.2,
                 )
 
-        generated = self.tokenizer.decode(outputs[0], skip_special_tokens=True)
+        generated_ids = self._extract_first_sequence_ids(outputs)
+        generated = self.tokenizer.decode(generated_ids, skip_special_tokens=True)
 
         if user_msg in generated:
             idx = generated.find(user_msg) + len(user_msg)
@@ -819,6 +821,44 @@ class LLMEncoder(Encoder):
                     break
 
         return response if response else generated.strip()
+
+    def _extract_first_sequence_ids(self, generation_output) -> list[int]:
+        """
+        Normalize generation outputs to a single list of token ids.
+
+        Some model/tokenizer combinations can return nested Python lists or
+        generation objects with `.sequences`; this helper keeps decoding robust.
+        """
+        # GenerationMixin can return objects with a `.sequences` tensor.
+        if hasattr(generation_output, "sequences"):
+            generation_output = generation_output.sequences
+
+        # Common case: tensor shaped [batch, seq].
+        if isinstance(generation_output, torch.Tensor):
+            if generation_output.dim() == 0:
+                return [int(generation_output.item())]
+            if generation_output.dim() == 1:
+                return [int(x) for x in generation_output.tolist()]
+            return [int(x) for x in generation_output[0].tolist()]
+
+        # Fallback for list/tuple outputs.
+        if isinstance(generation_output, (list, tuple)):
+            if not generation_output:
+                return []
+
+            first = generation_output[0]
+            if isinstance(first, torch.Tensor):
+                if first.dim() == 0:
+                    return [int(first.item())]
+                return [int(x) for x in first.tolist()]
+
+            if isinstance(first, (list, tuple)):
+                # If nested (e.g., [[...]]), decode first sequence.
+                return [int(x) for x in first]
+
+            return [int(first)]
+
+        raise TypeError(f"Unsupported generation output type: {type(generation_output)!r}")
 
     def decode_with_soft_prompt(
         self,
