@@ -200,6 +200,10 @@ class SelectionConfig(BaseModel):
     survivors: int = Field(default=5, ge=1)    # How many chains to keep each generation
     elite: int = Field(default=2, ge=0)        # Always keep top N (for elitist strategy)
     diversity_quota: float = Field(default=0.5, ge=0.0, le=1.0)  # Fraction of chains protected for diversity (increased for better exploration)
+    adaptive_survivors: bool = False  # Dynamically shrink survivor budget when progress plateaus
+    min_survivors: int = Field(default=2, ge=1)  # Lower bound for adaptive survivor decay
+    survivor_decay: float = Field(default=0.75, ge=0.1, le=1.0)  # Multiplier applied on decay step
+    survivor_decay_patience: int = Field(default=2, ge=1)  # Plateau generations before each decay step
 
     class Config:
         extra = "forbid"
@@ -311,6 +315,8 @@ class EvolutionConfig(BaseModel):
     min_viable_score: float = Field(default=0.1, ge=0, le=1)
     initial_diversity: float = Field(default=2.0, ge=0.1, le=10.0)  # Multiplier for initial population noise
     diversity_weight: float = Field(default=0.1, ge=0, le=1.0)  # Weight for diversity bonus in scoring
+    score_cache: bool = False  # Reuse scorer outputs for repeated/near-identical latents
+    score_cache_precision: int = Field(default=4, ge=0, le=8)  # Decimal precision for cache key quantization
     selection: SelectionConfig = Field(default_factory=SelectionConfig)
     mutation: MutationConfig = Field(default_factory=MutationConfig)
     crossover: CrossoverConfig = Field(default_factory=CrossoverConfig)

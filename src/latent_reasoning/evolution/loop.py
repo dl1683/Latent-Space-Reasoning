@@ -226,6 +226,7 @@ class EvolutionLoop:
         # State
         self.current_temperature = config.temperature
         self.total_evaluations = 0
+        self._current_survivors = max(1, min(config.selection.survivors, config.chains))
 
     def run(
         self,
@@ -288,6 +289,11 @@ class EvolutionLoop:
         """
         device = seed.device
 
+        # Reset per-run state to avoid cross-query leakage when an orchestrator
+        # is reused for multiple queries.
+        self.total_evaluations = 0
+        self.current_temperature = self.config.temperature
+
         # Initialize population
         chains = self._initialize_population(seed)
         trackers = [ChainTracker() for _ in chains]
@@ -296,6 +302,8 @@ class EvolutionLoop:
         best_latent = seed.clone()
         best_score = float("-inf")
         generations_without_improvement = 0
+        self._current_survivors = max(1, min(self.config.selection.survivors, len(chains)))
+        score_cache: dict[bytes, float] = {}
 
         for gen in range(self.config.generations):
             # Check evaluation budget
@@ -308,12 +316,27 @@ class EvolutionLoop:
 
             # Evaluate all chains
             raw_scores = []
+            cache_hits = 0
             for i, chain in enumerate(chains):
-                context = trackers[i].get_context(chain.latent, cross_chain)
-                verdict = self.judge_panel.evaluate(chain.latent, context)
-                raw_scores.append(verdict.score)
-                trackers[i].record(chain.latent, verdict.score)
-                self.total_evaluations += 1
+                cached_score = None
+                cache_key = None
+                if self.config.score_cache:
+                    cache_key = self._score_cache_key(chain.latent, self.config.score_cache_precision)
+                    cached_score = score_cache.get(cache_key)
+
+                if cached_score is None:
+                    context = trackers[i].get_context(chain.latent, cross_chain)
+                    verdict = self.judge_panel.evaluate(chain.latent, context)
+                    score = verdict.score
+                    if cache_key is not None:
+                        score_cache[cache_key] = score
+                    self.total_evaluations += 1
+                else:
+                    score = cached_score
+                    cache_hits += 1
+
+                raw_scores.append(score)
+                trackers[i].record(chain.latent, score)
 
             # Apply QD scoring if manager is available, otherwise use diversity bonus
             if self.qd_manager is not None:
@@ -365,6 +388,13 @@ class EvolutionLoop:
             else:
                 generations_without_improvement += 1
 
+            # Dynamically adjust survivor budget when enabled.
+            current_survivor_budget = self._update_survivor_budget(
+                generations_without_improvement=generations_without_improvement,
+                current_population=len(chains),
+                generation=gen + 1,
+            )
+
             # Log progress
             log_generation(
                 gen=gen + 1,
@@ -389,7 +419,10 @@ class EvolutionLoop:
                 "mean_raw_score": gen_mean_raw_score,  # Raw mean
                 "num_chains": len(chains),
                 "diversity": current_diversity,
+                "survivor_budget": current_survivor_budget,
             }
+            if self.config.score_cache:
+                gen_history["score_cache_hits"] = cache_hits
             # Add geometry stats if hyperbolic
             if self._use_hyperbolic:
                 gen_history["curvature"] = self._current_curvature
@@ -416,7 +449,7 @@ class EvolutionLoop:
                 return EvolutionResult(
                     best_latent=best_latent,
                     best_score=best_score,
-                    survivors=self._get_top_k(chains, scores, self.config.selection.survivors),
+                    survivors=self._get_top_k(chains, scores, current_survivor_budget),
                     generations=gen + 1,
                     total_evaluations=self.total_evaluations,
                     history=history,
@@ -434,7 +467,7 @@ class EvolutionLoop:
                 return EvolutionResult(
                     best_latent=best_latent,
                     best_score=best_score,
-                    survivors=self._get_top_k(chains, scores, self.config.selection.survivors),
+                    survivors=self._get_top_k(chains, scores, current_survivor_budget),
                     generations=gen + 1,
                     total_evaluations=self.total_evaluations,
                     history=history,
@@ -451,7 +484,7 @@ class EvolutionLoop:
                 selection_result = self.selection.select_with_diversity(
                     [c.latent for c in chains],
                     scores,
-                    self.config.selection.survivors,
+                    current_survivor_budget,
                     diversity_quota=self.config.selection.diversity_quota,
                 )
                 selected_latents = selection_result.latents
@@ -461,7 +494,7 @@ class EvolutionLoop:
                 selected_latents, selected_scores = self.selection.select(
                     [c.latent for c in chains],
                     scores,
-                    self.config.selection.survivors,
+                    current_survivor_budget,
                 )
 
             # Get modifications for survivors
@@ -539,8 +572,8 @@ class EvolutionLoop:
             chains = []
             for mutant, parent in merged_with_parents:
                 # Create history with parent latent to enable trajectory-based BDs
-                history = [parent.clone()] if parent is not None else []
-                chain = ChainState(latent=mutant, generation=gen + 1, history=history)
+                chain_history = [parent.clone()] if parent is not None else []
+                chain = ChainState(latent=mutant, generation=gen + 1, history=chain_history)
                 chains.append(chain)
 
             # Update trackers
@@ -564,10 +597,21 @@ class EvolutionLoop:
         scores = []
         for i, chain in enumerate(chains):
             if chain.score == 0.0:  # Only evaluate if not already scored
-                context = trackers[min(i, len(trackers) - 1)].get_context(chain.latent, cross_chain)
-                verdict = self.judge_panel.evaluate(chain.latent, context)
-                chain.score = verdict.score
-                self.total_evaluations += 1
+                cached_score = None
+                cache_key = None
+                if self.config.score_cache:
+                    cache_key = self._score_cache_key(chain.latent, self.config.score_cache_precision)
+                    cached_score = score_cache.get(cache_key)
+
+                if cached_score is None:
+                    context = trackers[min(i, len(trackers) - 1)].get_context(chain.latent, cross_chain)
+                    verdict = self.judge_panel.evaluate(chain.latent, context)
+                    chain.score = verdict.score
+                    if cache_key is not None:
+                        score_cache[cache_key] = chain.score
+                    self.total_evaluations += 1
+                else:
+                    chain.score = cached_score
             scores.append(chain.score)
 
         # Update best if final evaluation found something better
@@ -580,7 +624,7 @@ class EvolutionLoop:
         return EvolutionResult(
             best_latent=best_latent,
             best_score=best_score,
-            survivors=self._get_top_k(chains, scores, self.config.selection.survivors),
+            survivors=self._get_top_k(chains, scores, self._current_survivors),
             generations=self.config.generations,
             total_evaluations=self.total_evaluations,
             history=history,
@@ -693,6 +737,57 @@ class EvolutionLoop:
             final_scores.append(raw + self.config.diversity_weight * bonus)
 
         return final_scores
+
+    def _score_cache_key(self, latent: Tensor, precision: int) -> bytes:
+        """Build a quantized cache key for scorer reuse."""
+        scale = float(10**precision)
+        quantized = torch.round(latent.detach().float().flatten() * scale).to(torch.int32)
+        return quantized.cpu().numpy().tobytes()
+
+    def _update_survivor_budget(
+        self,
+        generations_without_improvement: int,
+        current_population: int,
+        generation: int,
+    ) -> int:
+        """
+        Adapt survivor budget to reduce compute during plateaus.
+
+        When progress stalls, shrink survivor count to save evaluations.
+        When progress resumes, restore survivors gradually up to baseline.
+        """
+        cfg = self.config.selection
+        baseline = max(1, min(cfg.survivors, current_population))
+
+        if not cfg.adaptive_survivors:
+            self._current_survivors = baseline
+            return self._current_survivors
+
+        min_survivors = max(1, min(cfg.min_survivors, baseline))
+        self._current_survivors = max(min_survivors, min(self._current_survivors, current_population))
+
+        # Improvement phase: slowly restore exploration budget.
+        if generations_without_improvement == 0:
+            if self._current_survivors < baseline:
+                self._current_survivors = min(baseline, self._current_survivors + 1)
+            return self._current_survivors
+
+        # Plateau phase: decay survivor budget every configured patience window.
+        should_decay = generations_without_improvement % cfg.survivor_decay_patience == 0
+        if should_decay:
+            decayed = int(round(self._current_survivors * cfg.survivor_decay))
+            decayed = max(min_survivors, min(decayed, current_population))
+            if decayed < self._current_survivors:
+                log_event(
+                    "SURVIVOR_DECAY",
+                    level=LogLevel.VERBOSE,
+                    generation=generation,
+                    old=self._current_survivors,
+                    new=decayed,
+                )
+                self._current_survivors = decayed
+
+        return self._current_survivors
 
     def _get_top_k(
         self,
@@ -840,6 +935,7 @@ class EvolutionLoop:
         """Reset the evolution loop state."""
         self.current_temperature = self.config.temperature
         self.total_evaluations = 0
+        self._current_survivors = max(1, min(self.config.selection.survivors, self.config.chains))
         if isinstance(self.mutation, (AdaptiveMutation, HyperbolicAdaptiveMutation)):
             self.mutation.reset()
         if self.qd_manager is not None:
