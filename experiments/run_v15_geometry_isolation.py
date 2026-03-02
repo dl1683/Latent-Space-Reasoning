@@ -87,7 +87,9 @@ def main():
     num_soft_tokens = 8
     d_out = num_soft_tokens * embed_dim
     W = make_row_orthonormal_W(d_latent, d_out, seed=1234)
+    W = W.to(device=encoder._device, dtype=encoder.model.dtype)
     print(f"W shape: {W.shape} (d_latent={d_latent}, d_out={d_out})", flush=True)
+    print(f"W device: {W.device}", flush=True)
 
     # Task generation
     depths = args.diagnostic and [2] or [2, 3]

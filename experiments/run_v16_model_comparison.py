@@ -122,7 +122,8 @@ def run_single_model(
     num_soft_tokens = 8
     d_out = num_soft_tokens * embed_dim
     W = make_row_orthonormal_W(d_latent, d_out, seed=1234)
-    print(f"W shape: {W.shape}", flush=True)
+    W = W.to(device=encoder._device, dtype=encoder.model.dtype)
+    print(f"W shape: {W.shape}, device: {W.device}", flush=True)
 
     # Tasks
     depths = [2] if args.diagnostic else [2, 3]
