@@ -1,0 +1,20 @@
+============================================================
+CROSS-VERSION COMPARISON
+============================================================
+
+Versions found: V9, V10-diag
+
+--- OVERALL ACCURACY ---
+  Version      Condition                    Mean      Std  Seeds
+  ------------------------------------------------------------
+  V9           hyperbolic                  79.5%    11.0%      5
+               euclidean                   68.0%    12.1%
+  V10-diag     euc_unconstrained           75.0%     0.0%      1
+               euc_constrained             67.5%     0.0%       
+               hyperbolic                  90.0%     0.0%       
+
+--- PRIMARY COMPARISON (hyp vs euc_constrained) ---
+  Version          Diff    p-value Verdict                       
+  ------------------------------------------------------------
+  V9             +11.5%     0.1847 NO SIGNIFICANT DIFFERENCE (p >= 0.05)
+  V10-diag       +22.5%        nan NO SIGNIFICANT GEOMETRY EFFECT

@@ -1,0 +1,26 @@
+{
+  "config": {
+    "model": "Qwen/Qwen3-4B",
+    "seeds": 5,
+    "test_tasks_per_depth": 20,
+    "curvature": 0.5,
+    "test_seed": 9999,
+    "train_seed": 8888
+  },
+  "statistics": {
+    "hyp_mean": 0.7949999999999999,
+    "hyp_std": 0.11000000000000001,
+    "euc_mean": 0.6799999999999999,
+    "euc_std": 0.12083045973594572,
+    "diff_mean": 0.11499999999999996,
+    "diff_ci_95": [
+      -0.08448907818972903,
+      0.31448907818972893
+    ],
+    "t_stat": 1.6005447014702079,
+    "p_value": 0.18473057768575296,
+    "mcnemar_chi2": 5.9753086419753085,
+    "mcnemar_p": 0.014507542249735605
+  },
+  "verdict": "NO SIGNIFICANT DIFFERENCE (p >= 0.05)"
+}
