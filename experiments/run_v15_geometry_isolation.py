@@ -108,7 +108,7 @@ def main():
         num_soft_tokens=num_soft_tokens,
         target_rms=target_rms,
         curvature=curvature,
-        max_new_tokens=args.diagnostic and 150 or 250,
+        max_new_tokens=1024,  # Models need room for chain-of-thought
         temperature=0.3,
     )
 

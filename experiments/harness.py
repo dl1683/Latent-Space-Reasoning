@@ -192,8 +192,8 @@ class DecodeConfig:
     eta: float = 0.05
     alpha: float = 0.01
     kl_cap: float = 0.5
-    # Generation
-    max_new_tokens: int = 250
+    # Generation (min 1024 — models need room for chain-of-thought)
+    max_new_tokens: int = 1024
     temperature: float = 0.3
 
 

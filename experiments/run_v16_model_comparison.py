@@ -143,7 +143,7 @@ def run_single_model(
     base_kwargs = dict(
         mode=decode_mode,
         curvature=curvature,
-        max_new_tokens=150 if args.diagnostic else 250,
+        max_new_tokens=1024,  # Models need room for chain-of-thought
         temperature=0.3,
     )
 
