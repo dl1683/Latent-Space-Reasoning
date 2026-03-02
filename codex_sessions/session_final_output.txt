@@ -1,0 +1,3831 @@
+OpenAI Codex v0.101.0 (research preview)
+--------
+workdir: C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning
+model: gpt-5.3-codex
+provider: openai
+approval: never
+sandbox: danger-full-access
+reasoning effort: xhigh
+reasoning summaries: auto
+session id: 019c6472-3817-71a1-aee3-86f6169fd342
+--------
+user
+You are implementing a geometric soft-prompt transduction system for a latent space reasoning engine. You have FULL UNRESTRICTED write access. Write files, create commits, run tests freely.
+
+CONTEXT: This repo (Latent-Space-Reasoning) has a core bottleneck: the decode path uses latent stats to seed RNG, giving very low-bandwidth control. The fix is to replace this with a geometric latent-to-soft-prompt decoder using fixed orthonormal projection. V13 experiment script at experiments/run_verifiable_evolution_v13.py has a working prototype with the latent_to_soft_prompt() function.
+
+YOUR TASKS (implement in order, commit each separately):
+
+1. CONFIG: Add decode_conditioning_mode field to SynthesisConfig in src/latent_reasoning/config.py. Options: 'rng_seed' (current default), 'soft_prompt_fixed', 'hybrid'. Default to 'rng_seed' for backwards compat.
+
+2. ENCODER: In src/latent_reasoning/core/encoder.py, implement FixedOrthogonalProjection class alongside existing LatentToSoftPrompt. Use fixed random orthonormal matrix (seeded, deterministic), NaN/Inf guards, radial tanh squash, embedding-scale calibration. Reference experiments/run_verifiable_evolution_v13.py.
+
+3. ORCHESTRATOR: In src/latent_reasoning/orchestrator/orchestrator.py, route decode through soft_prompt_fixed mode when configured.
+
+4. VERIFIERS: In src/latent_reasoning/verification/verifiable_tasks.py, tighten answer parsing - extract only the last number, stricter boolean/yes-no.
+
+5. TESTS: Add tests/test_soft_prompt_projection.py with tests for projection orthonormality, determinism, scale calibration, strict parsing.
+
+READ existing code first. Small focused git commits. Run pytest tests/ -x -q after changes. Go.
+mcp startup: no servers
+
+thinking
+**Confirming no skill usage**
+codex
+I’m implementing the five requested changes in order and will make one focused commit per step. First I’ll inspect the existing config, encoder, orchestrator, verifier, and tests to mirror current patterns before editing.
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'pwd; ls; rg --files' in C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoningexec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'git status --short' in C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning succeeded in 185ms:
+ M experiments/v10_results.json
+?? codex_sessions/
+?? experiments/check_v10.py
+?? experiments/cross_version_comparison.txt
+?? experiments/run_verifiable_evolution_v9.py
+?? experiments/v10_results_diagnostic.json
+?? experiments/v11_results_diagnostic.json
+?? experiments/v11_results_diagnostic_summary.txt
+?? experiments/v12_results_diagnostic.json
+?? experiments/v5_calibrated_results.json
+?? experiments/v6_statistical_results.json
+?? experiments/v9_rigorous_results.json
+ succeeded in 294ms:
+
+TROUBLESHOOTING.md
+tests\test_qd.py
+tests\test_hyperbolic.py
+tests\test_grammar.py
+tests\test_evolution.py
+tests\test_config.py
+tests\test_chain.py
+tests\test_autopoietic.py
+tests\integration\__init__.py
+tests\integration\test_pipeline.py
+tests\conftest.py
+checkpoints\scorer\head_epoch_2.pt
+checkpoints\scorer\final_head.pt
+src\latent_reasoning\__init__.py
+checkpoints\latent_scorer\gemini_training_merged_latents_qwen3_4b_1024.pt
+checkpoints\latent_scorer\gemini_training_merged_latents.pt
+checkpoints\latent_scorer\gemini_training_merged_judge_qwen3_4b_1024.pt
+checkpoints\latent_scorer\gemini_training_merged_judge.pt
+checkpoints\latent_scorer\final_model.pt
+
+thinking
+**Planning cautious file reads**
+codex
+I found pre-existing uncommitted changes in unrelated files; I’ll leave those untouched and scope edits only to the requested paths. Next I’m reading the current implementations plus the v13 prototype to align behavior exactly.
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'Get-Content -Raw src/latent_reasoning/core/encoder.py' in C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoningexec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'Get-Content -Raw src/latent_reasoning/verification/verifiable_tasks.py' in C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoningexec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'Get-Content -Raw src/latent_reasoning/config.py' in C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoningexec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'Get-Content -Raw src/latent_reasoning/orchestrator/orchestrator.py' in C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning succeeded in 187ms:
+"""
+Verifiable Tasks for Ground-Truth Evolution
+
+This module provides tasks with PROGRAMMATIC VERIFICATION - no external APIs needed.
+The key insight: evolve latents using pass/fail on real correctness, not style scoring.
+
+Task types:
+- Math: arithmetic, algebra with known answers
+- Logic: propositional logic, truth tables
+- Code: simple functions with unit tests
+
+Each task has:
+- prompt: the question to answer
+- verifier: function that checks if answer is correct
+- extract_answer: function to parse the model's answer
+"""
+
+from __future__ import annotations
+
+import random
+ succeeded in 187ms:
+"""
+Configuration schema for Latent Space Reasoning Engine.
+
+This module defines all configuration classes using Pydantic for validation
+and type safety. The main Config class combines all settings and can be
+loaded from YAML files for easy customization.
+
+Key configuration areas:
+- EncoderConfig: Model selection and encoding parameters
+- JudgeConfig: Scoring and evaluation settings
+- EvolutionConfig: Evolutionary algorithm parameters
+- BudgetConfig: Compute limits and timeouts
+- SynthesisConfig: Text generation settings
+- OutputConfig: Logging and formatting options
+"""
+
+from __future__ import annotations
+
+from enum import IntEnum
+from pathlib import Path
+ succeeded in 186ms:
+"""Main orchestrator for coordinating the full reasoning pipeline."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from typing import List
+
+import torch
+from torch import Tensor
+
+from latent_reasoning.config import Config
+from latent_reasoning.core.encoder import Encoder, LLMEncoder
+from latent_reasoning.core.judge import ScorerJudge, ModifierJudge, create_scorer_from_config
+from latent_reasoning.core.panel import JudgePanel
+from latent_reasoning.core.chain import ChainState
+from latent_reasoning.core.autopoietic import create_autopoietic_panel, AutopoieticPanel
+from latent_reasoning.evolution.loop import EvolutionLoop, EvolutionResult
+from latent_reasoning.grammar import GrammarEvolutionLoop, GrammarEvolutionResult, FractalGrammar
+from latent_reasoning.qd import create_qd_manager, QDManager
+from latent_reasoning.orchestrator.budget import ComputeBudget
+ succeeded in 202ms:
+"""
+Encoder implementations for converting text to latent representations.
+
+This module contains the core encoding/decoding functionality that converts
+between text and latent space representations. The main class is LLMEncoder,
+which uses transformer models to:
+
+1. Encode text queries into latent vectors by extracting hidden states
+2. Decode evolved latent vectors back into text using influenced generation
+
+Key classes:
+- Encoder: Abstract base class defining the interface
+- LLMEncoder: Main implementation using HuggingFace transformers
+- LatentToSoftPrompt: Projects latents to soft prompt embeddings (experimental)
+
+The encoding process extracts hidden states from an intermediate layer of
+the transformer (typically -4, the 4th layer from the end) and pools them
+across the sequence dimension to create a single latent vector.
+
+The decoding process uses the latent vector to influence text generation
+
+thinking
+**Inspecting latent_to_soft_prompt details**
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'Get-Content -Raw experiments/run_verifiable_evolution_v13.py' in C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoningexec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'rg -n "latent_to_soft_prompt|soft_prompt|decode_conditioning_mode|rng_seed|hybrid|orth" experiments/run_verifiable_evolution_v13.py src tests' in C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoningexec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'Get-Content -Raw tests/test_config.py' in C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning succeeded in 171ms:
+"""
+Verifiable Evolution V13 - Fixed Orthogonal Projection to Soft Prompts
+
+Replaces the 31-bit RNG-seed conditioning mechanism with a fixed random
+orthogonal projection from the latent (1024d tangent space) to soft prompt
+tokens (8 x 2560 = 20,480 continuous values). ~650x more information bandwidth.
+
+Key insight (from research): The projection does NOT need training. A fixed
+row-orthonormal matrix preserves inner products (Johnson-Lindenstrauss), so
+similar latents -> similar soft prompts, different latents -> different prompts.
+The evolutionary optimizer searches the Poincare ball; the projection is just
+a deterministic change of coordinates.
+
+Based on Codex V13 design review (B- -> A- with fixes):
+1. Row-orthonormal W projection (W W^T = I_1024)
+2. Radial tanh squash for logmap0 output (prevents boundary blow-up)
+3. Embedding RMS calibration (match soft prompt scale to real tokens)
+4. Plain model control (no latent conditioning)
+
+Three conditions:
+ succeeded in 156ms:
+"""Tests for configuration system."""
+
+import pytest
+import tempfile
+from pathlib import Path
+
+from latent_reasoning.config import (
+    Config,
+    EncoderConfig,
+    JudgeConfig,
+    ScorerConfig,
+    ModifierConfig,
+    EvolutionConfig,
+    BudgetConfig,
+    get_default_config,
+)
+
+
+class TestEncoderConfig:
+    def test_default_values(self):
+ succeeded in 188ms:
+experiments/run_verifiable_evolution_v13.py:5:orthogonal projection from the latent (1024d tangent space) to soft prompt
+experiments/run_verifiable_evolution_v13.py:9:row-orthonormal matrix preserves inner products (Johnson-Lindenstrauss), so
+experiments/run_verifiable_evolution_v13.py:15:1. Row-orthonormal W projection (W W^T = I_1024)
+experiments/run_verifiable_evolution_v13.py:155:def make_row_orthonormal_W(d_latent: int = 1024, d_out: int = SOFT_PROMPT_FLAT_DIM,
+experiments/run_verifiable_evolution_v13.py:157:    """Create a fixed row-orthonormal projection matrix W.
+experiments/run_verifiable_evolution_v13.py:159:    W has shape (d_latent, d_out) with orthonormal rows: W W^T = I.
+experiments/run_verifiable_evolution_v13.py:168:    W = Q.T.contiguous()  # W: (d_latent, d_out), rows are orthonormal
+experiments/run_verifiable_evolution_v13.py:183:def latent_to_soft_prompt(
+experiments/run_verifiable_evolution_v13.py:195:    4. Project via row-orthonormal W: (1024,) -> (20480,)
+experiments/run_verifiable_evolution_v13.py:216:    soft_prompt = flat.view(NUM_SOFT_TOKENS, EMBED_DIM)
+experiments/run_verifiable_evolution_v13.py:219:    current_rms = soft_prompt.square().mean().sqrt().clamp_min(1e-8)
+experiments/run_verifiable_evolution_v13.py:220:    soft_prompt = soft_prompt * (target_rms / current_rms)
+experiments/run_verifiable_evolution_v13.py:222:    return soft_prompt.unsqueeze(0)  # (1, 8, 2560)
+experiments/run_verifiable_evolution_v13.py:234:    """Decode using fixed orthogonal projection to soft prompts.
+experiments/run_verifiable_evolution_v13.py:241:        soft_prompt = latent_to_soft_prompt(latent, W, curvature)
+experiments/run_verifiable_evolution_v13.py:242:        soft_prompt = soft_prompt.to(encoder.model.dtype).to(encoder._device)
+experiments/run_verifiable_evolution_v13.py:271:        combined_embeds = torch.cat([soft_prompt, text_embeds], dim=1)
+experiments/run_verifiable_evolution_v13.py:274:            1, soft_prompt.size(1),
+experiments/run_verifiable_evolution_v13.py:610:        description="V13: Fixed orthogonal projection to soft prompts"
+experiments/run_verifiable_evolution_v13.py:634:    print("  1. Row-orthonormal projection W (1024 -> 20480, W W^T = I)", flush=True)
+
+thinking
+**Inspecting core exports**
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'Get-Content -Raw src/latent_reasoning/core/__init__.py' in C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning succeeded in 157ms:
+"""Core components for Latent Space Reasoning Engine."""
+
+from latent_reasoning.core.encoder import Encoder, LLMEncoder
+from latent_reasoning.core.judge import Judge, ScorerJudge, ModifierJudge
+from latent_reasoning.core.panel import JudgePanel, PanelVerdict
+from latent_reasoning.core.chain import ChainState, ChainTracker, ModificationContext, CrossChainSummary
+
+__all__ = [
+    "Encoder",
+    "LLMEncoder",
+    "Judge",
+    "ScorerJudge",
+    "ModifierJudge",
+    "JudgePanel",
+    "PanelVerdict",
+    "ChainState",
+    "ChainTracker",
+    "ModificationContext",
+    "CrossChainSummary",
+]
+
+thinking
+**Assessing test imports and coverage**
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'rg -n "_verify_number|_verify_bool|_verify_yesno|verifiable_tasks|FixedOrthogonalProjection|decode_with_soft_prompt|decode_conditioning_mode" tests src' in C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning succeeded in 156ms:
+src\latent_reasoning\verification\__init__.py:3:from latent_reasoning.verification.verifiable_tasks import (
+src\latent_reasoning\verification\verifiable_evolution.py:26:from latent_reasoning.verification.verifiable_tasks import (
+src\latent_reasoning\verification\verifiable_tasks.py:63:                verifier=self._verify_number,
+src\latent_reasoning\verification\verifiable_tasks.py:71:                verifier=self._verify_number,
+src\latent_reasoning\verification\verifiable_tasks.py:79:                verifier=self._verify_number,
+src\latent_reasoning\verification\verifiable_tasks.py:88:                verifier=self._verify_number,
+src\latent_reasoning\verification\verifiable_tasks.py:97:                verifier=self._verify_number,
+src\latent_reasoning\verification\verifiable_tasks.py:102:    def _verify_number(response: str, correct: int) -> bool:
+src\latent_reasoning\verification\verifiable_tasks.py:149:                verifier=ArithmeticTaskGenerator._verify_number,
+src\latent_reasoning\verification\verifiable_tasks.py:174:                verifier=self._verify_bool,
+src\latent_reasoning\verification\verifiable_tasks.py:184:                verifier=self._verify_bool,
+src\latent_reasoning\verification\verifiable_tasks.py:196:                verifier=self._verify_bool,
+src\latent_reasoning\verification\verifiable_tasks.py:205:                verifier=self._verify_bool,
+src\latent_reasoning\verification\verifiable_tasks.py:210:    def _verify_bool(response: str, correct: bool) -> bool:
+src\latent_reasoning\verification\verifiable_tasks.py:235:                    verifier=self._verify_yesno,
+src\latent_reasoning\verification\verifiable_tasks.py:242:                    verifier=self._verify_yesno,
+src\latent_reasoning\verification\verifiable_tasks.py:252:                    verifier=self._verify_yesno,
+src\latent_reasoning\verification\verifiable_tasks.py:258:    def _verify_yesno(response: str, correct: bool) -> bool:
+src\latent_reasoning\verification\verifiable_tasks.py:291:            verifier=self._verify_number,
+src\latent_reasoning\verification\verifiable_tasks.py:320:    def _verify_number(response: str, correct: int) -> bool:
+
+thinking
+**Planning file inspection**
+codex
+I’ve located the v13 reference implementation and identified where parsing and decode routing currently happen. I’m now checking verification module exports and any callers so the stricter parsing change doesn’t break integration.
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'Get-Content -Raw src/latent_reasoning/verification/__init__.py' in C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoningexec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'Get-Content -Raw src/latent_reasoning/verification/verifiable_evolution.py' in C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoningexec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'Get-Content -Raw tests/test_evolution.py' in C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning succeeded in 201ms:
+"""Verification module for ground-truth evolution."""
+
+from latent_reasoning.verification.verifiable_tasks import (
+    VerifiableTask,
+    VerifiableTaskSuite,
+    create_task_suite,
+    ArithmeticTaskGenerator,
+    WordProblemGenerator,
+    LogicTaskGenerator,
+    ComparisonTaskGenerator,
+)
+
+__all__ = [
+    "VerifiableTask",
+    "VerifiableTaskSuite",
+    "create_task_suite",
+    "ArithmeticTaskGenerator",
+    "WordProblemGenerator",
+    "LogicTaskGenerator",
+    "ComparisonTaskGenerator",
+ succeeded in 217ms:
+"""
+Verifiable Evolution Loop
+
+This replaces the broken latent scorer with GROUND TRUTH fitness.
+Evolution is driven by actual correctness on verifiable tasks.
+
+Key insight from Codex:
+"The breakthrough isn't better scoring - it's making truth observable."
+
+Fitness = number of correct answers on verifiable tasks
+Selection = keep candidates that solve the most tasks
+"""
+
+from __future__ import annotations
+
+import random
+import time
+from dataclasses import dataclass, field
+from typing import List, Optional
+
+ succeeded in 185ms:
+"""Tests for evolution operators."""
+
+import pytest
+import torch
+
+from latent_reasoning.evolution.selection import (
+    ElitistSelection,
+    TournamentSelection,
+    RankSelection,
+    RouletteSelection,
+    get_selection_strategy,
+)
+from latent_reasoning.evolution.mutation import (
+    GaussianMutation,
+    DirectedMutation,
+    AdaptiveMutation,
+    get_mutation_strategy,
+)
+from latent_reasoning.evolution.crossover import (
+    MeanCrossover,
+
+thinking
+**Planning config field tests**
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'Get-Content -Raw pyproject.toml' in C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning succeeded in 170ms:
+[project]
+name = "latent-reasoning"
+version = "0.2.0"
+description = "Latent Space Reasoning Engine - Evolutionary optimization in LLM latent space for enhanced reasoning"
+readme = "README.md"
+license = {text = "MIT"}
+requires-python = ">=3.10"
+authors = [
+    {name = "Devansh"}
+]
+keywords = [
+    "llm",
+    "reasoning",
+    "latent-space",
+    "evolutionary-algorithm",
+    "machine-learning",
+    "nlp",
+    "transformers",
+]
+classifiers = [
+
+thinking
+**Designing fixed orthogonal projection**
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'Get-Content -Raw src/latent_reasoning/evolution/loop.py' in C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning succeeded in 205ms:
+"""Main evolution loop for latent space reasoning."""
+
+from __future__ import annotations
+
+from dataclasses import dataclass, field
+from typing import TYPE_CHECKING, List, Optional, Set
+
+import torch
+from torch import Tensor
+
+from latent_reasoning.config import EvolutionConfig, GeometryConfig
+from latent_reasoning.core.chain import ChainState, ChainTracker, compute_cross_chain_summary
+from latent_reasoning.core.panel import JudgePanel
+from latent_reasoning.evolution.operators import SelectionStrategy, MutationStrategy, CrossoverStrategy
+from latent_reasoning.evolution.selection import get_selection_strategy, SelectionResult, ElitistSelection
+from latent_reasoning.evolution.mutation import get_mutation_strategy, AdaptiveMutation, HyperbolicMutation, HyperbolicAdaptiveMutation
+from latent_reasoning.evolution.crossover import (
+    get_crossover_strategy,
+    select_crossover_pairs,
+    population_diversity,
+
+thinking
+**Planning config decode field**
+codex
+I’m starting step 1 now by adding a new synthesis config field with the three decode modes and defaulting to `rng_seed` for backward compatibility. After that I’ll commit just this config change.
+file update
+M C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/src/latent_reasoning/config.py
+@@ -332,10 +332,11 @@
+ 
+-class SynthesisConfig(BaseModel):
+-    """Configuration for final synthesis."""
+-    decoder: str | None = None  # None = use encoder model
+-    model: str = "gemini-2.5-flash"  # Frontier model for synthesis
+-    decode_strategy: Literal["best", "combined"] = "best"
+-    max_survivors: int = Field(default=5, ge=1)
+-    max_tokens: int = Field(default=2048, ge=1, le=32768)  # Max output tokens  
+-    temperature: float = Field(default=0.7, ge=0, le=2.0)  # Decode temperature
++class SynthesisConfig(BaseModel):
++    """Configuration for final synthesis."""
++    decoder: str | None = None  # None = use encoder model
++    model: str = "gemini-2.5-flash"  # Frontier model for synthesis
++    decode_strategy: Literal["best", "combined"] = "best"
++    decode_conditioning_mode: Literal["rng_seed", "soft_prompt_fixed", "hybrid"] = "rng_seed"
++    max_survivors: int = Field(default=5, ge=1)
++    max_tokens: int = Field(default=2048, ge=1, le=32768)  # Max output tokens  
++    temperature: float = Field(default=0.7, ge=0, le=2.0)  # Decode temperature
+ 
+apply_patch(auto_approved=true) exited 1 in 5ms:
+
+thinking
+**Retrying patch with relative path**
+file update
+M C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning\src/latent_reasoning/config.py
+@@ -332,10 +332,11 @@
+ 
+-class SynthesisConfig(BaseModel):
+-    """Configuration for final synthesis."""
+-    decoder: str | None = None  # None = use encoder model
+-    model: str = "gemini-2.5-flash"  # Frontier model for synthesis
+-    decode_strategy: Literal["best", "combined"] = "best"
+-    max_survivors: int = Field(default=5, ge=1)
+-    max_tokens: int = Field(default=2048, ge=1, le=32768)  # Max output tokens  
+-    temperature: float = Field(default=0.7, ge=0, le=2.0)  # Decode temperature
++class SynthesisConfig(BaseModel):
++    """Configuration for final synthesis."""
++    decoder: str | None = None  # None = use encoder model
++    model: str = "gemini-2.5-flash"  # Frontier model for synthesis
++    decode_strategy: Literal["best", "combined"] = "best"
++    decode_conditioning_mode: Literal["rng_seed", "soft_prompt_fixed", "hybrid"] = "rng_seed"
++    max_survivors: int = Field(default=5, ge=1)
++    max_tokens: int = Field(default=2048, ge=1, le=32768)  # Max output tokens  
++    temperature: float = Field(default=0.7, ge=0, le=2.0)  # Decode temperature
+ 
+apply_patch(auto_approved=true) exited 1 in 6ms:
+
+thinking
+**Switching to PowerShell text replace**
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command '$path='"'src/latent_reasoning/config.py';
+"'$content = Get-Content -Raw $path;
+$old = '"'    decode_strategy: Literal[\"best\", \"combined\"] = \"best\"';
+"'$new = "    decode_strategy: Literal['"\\\"best\\\", \\\"combined\\\"] = \\\"best\\\""'`r`n    decode_conditioning_mode: Literal['"\\\"rng_seed\\\", \\\"soft_prompt_fixed\\\", \\\"hybrid\\\"] = \\\"rng_seed\\\"\";
+if (-not "'$content.Contains($old)) { throw '"'Target line not found'; }
+"'$content = $content.Replace($old, $new);
+Set-Content -Path $path -Value $content -Encoding UTF8;' in C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning exited -1073741502 in 62ms:
+
+
+thinking
+**Investigating specific exec failure code**
+codex
+I hit a tooling issue with `apply_patch`, so I’m switching to direct shell edits and validating each file immediately after. I’m doing a quick shell sanity check first before retrying the config edit.
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'echo ok' in C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning exited -1073741502 in 63ms:
+
+
+thinking
+**Adjusting shell execution approach**
+exec
+"C:\\WINDOWS\\system32\\cmd.exe" /c 'echo ok' in C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning exited -1073741502 in 63ms:
+
+
+thinking
+**Testing command execution environment**
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'echo ok' in C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning succeeded in 188ms:
+[?25l[2J[m[Hok]0;C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe[?25h
+
+thinking
+**Deciding to enable TTY for command execution**
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command '$path='"'src/latent_reasoning/config.py'; "'$content=Get-Content -Raw $path; $old='"'    decode_strategy: Literal[\"best\", \"combined\"] = \"best\"'; "'$new="    decode_strategy: Literal['"\\\"best\\\", \\\"combined\\\"] = \\\"best\\\""'`r`n    decode_conditioning_mode: Literal['"\\\"rng_seed\\\", \\\"soft_prompt_fixed\\\", \\\"hybrid\\\"] = \\\"rng_seed\\\"\"; if (-not "'$content.Contains($old)) { throw '"'Target line not found'; }; "'$content=$content.Replace($old,$new); Set-Content -Path $path -Value $content -Encoding UTF8;' in C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning exited 1 in 219ms:
+[?25l[2J[m[38;5;9m[HAt line:2 char:177]0;C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe[?25h[m[38;5;9m
++ ... : Literal[\"best\", \"combined\"] = \"best\"`r`n    decode_conditioni ...
++                 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Unexpected token 'best\", \"combined\"] = \"best\"`r`n    
+decode_conditioning_mode: Literal[\"rng_seed\", \"soft_prompt_fixed\", 
+\"hybrid\"] = \"rng_seed\""' in expression or statement.
+    + CategoryInfo          : ParserError: (:) [], ParentContainsErrorRecordEx 
+   ception
+    + FullyQualifiedErrorId : UnexpectedToken
+ 
+
+thinking
+**Testing PowerShell string escaping**
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command '$path='"'src/latent_reasoning/config.py';
+"'$content=Get-Content -Raw $path;
+$old='"'    decode_strategy: Literal[\"best\", \"combined\"] = \"best\"';
+"'$new=@'"'
+    decode_strategy: Literal[\"best\", \"combined\"] = \"best\"
+    decode_conditioning_mode: Literal[\"rng_seed\", \"soft_prompt_fixed\", \"hybrid\"] = \"rng_seed\"
+'@.TrimEnd(\""'`r","`n");
+if (-not $content.Contains($old)) { throw '"'Target line not found'; }
+"'$content=$content.Replace($old,$new);
+Set-Content -Path $path -Value $content -Encoding UTF8;
+' in C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning succeeded in 206ms:
+[?9001h[?1004h
+file update:
+diff --git a/src/latent_reasoning/config.py b/src/latent_reasoning/config.py
+index fedd6a300549320fd49ab0e744866bebf5dd504b..d4283999c68039febaab35ab4eaaf8e98fb61075
+--- a/src/latent_reasoning/config.py
++++ b/src/latent_reasoning/config.py
+@@ -1,4 +1,4 @@
+-"""
++﻿"""
+ Configuration schema for Latent Space Reasoning Engine.
+ 
+ This module defines all configuration classes using Pydantic for validation
+@@ -334,7 +334,8 @@
+     """Configuration for final synthesis."""
+     decoder: str | None = None  # None = use encoder model
+     model: str = "gemini-2.5-flash"  # Frontier model for synthesis
+-    decode_strategy: Literal["best", "combined"] = "best"
++    decode_strategy: Literal["best", "combined"] = "best"
++    decode_conditioning_mode: Literal["rng_seed", "soft_prompt_fixed", "hybrid"] = "rng_seed"
+     max_survivors: int = Field(default=5, ge=1)
+     max_tokens: int = Field(default=2048, ge=1, le=32768)  # Max output tokens  
+     temperature: float = Field(default=0.7, ge=0, le=2.0)  # Decode temperature
+@@ -414,7 +415,7 @@
+ 
+     # Novelty computation
+     novelty_k: int = Field(default=10, ge=3, le=50)  # k for k-NN novelty
+-    novelty_weight: float = Field(default=0.3, ge=0.0, le=1.0)  # Alpha: qd_score = (1-α)*fitness + α*novelty
++    novelty_weight: float = Field(default=0.3, ge=0.0, le=1.0)  # Alpha: qd_score = (1-Î±)*fitness + Î±*novelty
+ 
+     # Archive settings
+     archive_type: Literal["dns", "map_elites"] = "dns"  # Archive algorithm (NOTE: only dns currently implemented)
+@@ -596,7 +597,7 @@
+     - Cosine similarity and L2 distance
+     - Well-understood and stable
+ 
+-    **hyperbolic**: Poincaré ball model
++    **hyperbolic**: PoincarÃ© ball model
+     - Exponential volume growth matches tree structures
+     - Better separation of hierarchical reasoning branches
+     - Enables implicit multi-branch tree search
+@@ -613,11 +614,11 @@
+     # Geometry type selection
+     space: Literal["euclidean", "hyperbolic"] = "euclidean"
+ 
+-    # Hyperbolic space parameters (Poincaré ball model)
++    # Hyperbolic space parameters (PoincarÃ© ball model)
+     model: Literal["poincare", "lorentz"] = "poincare"
+     curvature: float = Field(default=1.0, ge=0.1, le=5.0)  # Negative curvature magnitude
+ 
+-    # Mapping parameters (Euclidean → Hyperbolic)
++    # Mapping parameters (Euclidean â†’ Hyperbolic)
+     tangent_scale: float = Field(default=0.35, ge=0.1, le=0.9)  # Scale for expmap0 input
+     max_norm: float = Field(default=0.98, ge=0.8, le=0.999)  # Maximum norm in ball (stability)
+ 
+@@ -766,3 +767,4 @@
+         ),
+         budget=BudgetConfig(max_evaluations=300),
+     )
++
+
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'rg -n "decode_strategy|decode_conditioning_mode" src/latent_reasoning/config.py' in C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning succeeded in 171ms:
+[?25l[2J[m[H337:]0;C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe[?25h    decode_strategy: Literal["best", "combined"] = "best"
+338:    decode_conditioning_mode: Literal["rng_seed", "soft_prompt_fixed", "hybrid"] = "rng_seed"
+file update:
+diff --git a/src/latent_reasoning/config.py b/src/latent_reasoning/config.py
+index fedd6a300549320fd49ab0e744866bebf5dd504b..d4283999c68039febaab35ab4eaaf8e98fb61075
+--- a/src/latent_reasoning/config.py
++++ b/src/latent_reasoning/config.py
+@@ -1,4 +1,4 @@
+-"""
++﻿"""
+ Configuration schema for Latent Space Reasoning Engine.
+ 
+ This module defines all configuration classes using Pydantic for validation
+@@ -334,7 +334,8 @@
+     """Configuration for final synthesis."""
+     decoder: str | None = None  # None = use encoder model
+     model: str = "gemini-2.5-flash"  # Frontier model for synthesis
+-    decode_strategy: Literal["best", "combined"] = "best"
++    decode_strategy: Literal["best", "combined"] = "best"
++    decode_conditioning_mode: Literal["rng_seed", "soft_prompt_fixed", "hybrid"] = "rng_seed"
+     max_survivors: int = Field(default=5, ge=1)
+     max_tokens: int = Field(default=2048, ge=1, le=32768)  # Max output tokens  
+     temperature: float = Field(default=0.7, ge=0, le=2.0)  # Decode temperature
+@@ -414,7 +415,7 @@
+ 
+     # Novelty computation
+     novelty_k: int = Field(default=10, ge=3, le=50)  # k for k-NN novelty
+-    novelty_weight: float = Field(default=0.3, ge=0.0, le=1.0)  # Alpha: qd_score = (1-α)*fitness + α*novelty
++    novelty_weight: float = Field(default=0.3, ge=0.0, le=1.0)  # Alpha: qd_score = (1-Î±)*fitness + Î±*novelty
+ 
+     # Archive settings
+     archive_type: Literal["dns", "map_elites"] = "dns"  # Archive algorithm (NOTE: only dns currently implemented)
+@@ -596,7 +597,7 @@
+     - Cosine similarity and L2 distance
+     - Well-understood and stable
+ 
+-    **hyperbolic**: Poincaré ball model
++    **hyperbolic**: PoincarÃ© ball model
+     - Exponential volume growth matches tree structures
+     - Better separation of hierarchical reasoning branches
+     - Enables implicit multi-branch tree search
+@@ -613,11 +614,11 @@
+     # Geometry type selection
+     space: Literal["euclidean", "hyperbolic"] = "euclidean"
+ 
+-    # Hyperbolic space parameters (Poincaré ball model)
++    # Hyperbolic space parameters (PoincarÃ© ball model)
+     model: Literal["poincare", "lorentz"] = "poincare"
+     curvature: float = Field(default=1.0, ge=0.1, le=5.0)  # Negative curvature magnitude
+ 
+-    # Mapping parameters (Euclidean → Hyperbolic)
++    # Mapping parameters (Euclidean â†’ Hyperbolic)
+     tangent_scale: float = Field(default=0.35, ge=0.1, le=0.9)  # Scale for expmap0 input
+     max_norm: float = Field(default=0.98, ge=0.8, le=0.999)  # Maximum norm in ball (stability)
+ 
+@@ -766,3 +767,4 @@
+         ),
+         budget=BudgetConfig(max_evaluations=300),
+     )
++
+
+
+thinking
+**Planning staged commit with diff check**
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command 'git diff -- src/latent_reasoning/config.py' in C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning succeeded in 218ms:
+[?25l[2J[m[Hwarning: in the working copy of 'src/latent_reasoning/config.py', LF will be replaced by CRLF the next time Git touches it
+]0;C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe[?25hdiff --git a/src/latent_reasoning/config.py b/src/latent_reasoning/config.py
+index 2480bff..dfbb813 100644
+--- a/src/latent_reasoning/config.py
++++ b/src/latent_reasoning/config.py
+@@ -1,4 +1,4 @@
+-"""
++﻿"""
+ Configuration schema for Latent Space Reasoning Engine.
+ 
+ This module defines all configuration classes using Pydantic for validation
+@@ -335,6 +335,7 @@ class SynthesisConfig(BaseModel):
+     decoder: str | None = None  # None = use encoder model
+     model: str = "gemini-2.5-flash"  # Frontier model for synthesis
+     decode_strategy: Literal["best", "combined"] = "best"
++    decode_conditioning_mode: Literal["rng_seed", "soft_prompt_fixed", "hybrid"] = "rng_seed"
+     max_survivors: int = Field(default=5, ge=1)
+     max_tokens: int = Field(default=2048, ge=1, le=32768)  # Max output tokens  
+     temperature: float = Field(default=0.7, ge=0, le=2.0)  # Decode temperature
+@@ -414,7 +415,7 @@ class QDConfig(BaseModel):
+file update:
+diff --git a/src/latent_reasoning/config.py b/src/latent_reasoning/config.py
+index fedd6a300549320fd49ab0e744866bebf5dd504b..d4283999c68039febaab35ab4eaaf8e98fb61075
+--- a/src/latent_reasoning/config.py
++++ b/src/latent_reasoning/config.py
+@@ -1,4 +1,4 @@
+-"""
++﻿"""
+ Configuration schema for Latent Space Reasoning Engine.
+ 
+ This module defines all configuration classes using Pydantic for validation
+@@ -334,7 +334,8 @@
+     """Configuration for final synthesis."""
+     decoder: str | None = None  # None = use encoder model
+     model: str = "gemini-2.5-flash"  # Frontier model for synthesis
+-    decode_strategy: Literal["best", "combined"] = "best"
++    decode_strategy: Literal["best", "combined"] = "best"
++    decode_conditioning_mode: Literal["rng_seed", "soft_prompt_fixed", "hybrid"] = "rng_seed"
+     max_survivors: int = Field(default=5, ge=1)
+     max_tokens: int = Field(default=2048, ge=1, le=32768)  # Max output tokens  
+     temperature: float = Field(default=0.7, ge=0, le=2.0)  # Decode temperature
+@@ -414,7 +415,7 @@
+ 
+     # Novelty computation
+     novelty_k: int = Field(default=10, ge=3, le=50)  # k for k-NN novelty
+-    novelty_weight: float = Field(default=0.3, ge=0.0, le=1.0)  # Alpha: qd_score = (1-α)*fitness + α*novelty
++    novelty_weight: float = Field(default=0.3, ge=0.0, le=1.0)  # Alpha: qd_score = (1-Î±)*fitness + Î±*novelty
+ 
+     # Archive settings
+     archive_type: Literal["dns", "map_elites"] = "dns"  # Archive algorithm (NOTE: only dns currently implemented)
+@@ -596,7 +597,7 @@
+     - Cosine similarity and L2 distance
+     - Well-understood and stable
+ 
+-    **hyperbolic**: Poincaré ball model
++    **hyperbolic**: PoincarÃ© ball model
+     - Exponential volume growth matches tree structures
+     - Better separation of hierarchical reasoning branches
+     - Enables implicit multi-branch tree search
+@@ -613,11 +614,11 @@
+     # Geometry type selection
+     space: Literal["euclidean", "hyperbolic"] = "euclidean"
+ 
+-    # Hyperbolic space parameters (Poincaré ball model)
++    # Hyperbolic space parameters (PoincarÃ© ball model)
+     model: Literal["poincare", "lorentz"] = "poincare"
+     curvature: float = Field(default=1.0, ge=0.1, le=5.0)  # Negative curvature magnitude
+ 
+-    # Mapping parameters (Euclidean → Hyperbolic)
++    # Mapping parameters (Euclidean â†’ Hyperbolic)
+     tangent_scale: float = Field(default=0.35, ge=0.1, le=0.9)  # Scale for expmap0 input
+     max_norm: float = Field(default=0.98, ge=0.8, le=0.999)  # Maximum norm in ball (stability)
+ 
+@@ -766,3 +767,4 @@
+         ),
+         budget=BudgetConfig(max_evaluations=300),
+     )
++
+
+
+thinking
+**Avoiding destructive file revert by restoring bytes with Python**
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "python -c \"import subprocess, pathlib; p=pathlib.Path('src/latent_reasoning/config.py'); data=subprocess.check_output(['git','show','HEAD:src/latent_reasoning/config.py']); p.write_bytes(data)\"" in C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning succeeded in 253ms:
+[?25l[2J[m[H]0;C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe[?25h
+file update:
+diff --git a/src/latent_reasoning/config.py b/src/latent_reasoning/config.py
+index fedd6a300549320fd49ab0e744866bebf5dd504b..2480bff8285897cc110bda1151ac320bae4aaabc
+--- a/src/latent_reasoning/config.py
++++ b/src/latent_reasoning/config.py
+@@ -1,768 +1,768 @@
+-"""
+-Configuration schema for Latent Space Reasoning Engine.
+-
+-This module defines all configuration classes using Pydantic for validation
+-and type safety. The main Config class combines all settings and can be
+-loaded from YAML files for easy customization.
+-
+-Key configuration areas:
+-- EncoderConfig: Model selection and encoding parameters
+-- JudgeConfig: Scoring and evaluation settings
+-- EvolutionConfig: Evolutionary algorithm parameters
+-- BudgetConfig: Compute limits and timeouts
+-- SynthesisConfig: Text generation settings
+-- OutputConfig: Logging and formatting options
+-"""
+-
+-from __future__ import annotations
+-
+-from enum import IntEnum
+-from pathlib import Path
+-from typing import Literal
+-
+-import yaml
+-from pydantic import BaseModel, Field
+-
+-
+-class Verbosity(IntEnum):
+-    """
+-    Verbosity levels for logging output.
+-
+-    Controls how much information is displayed during reasoning:
+-    - SILENT (0): Only errors
+-    - MINIMAL (1): Just final results
+-    - NORMAL (2): Progress updates (default)
+-    - VERBOSE (3): Detailed evolution info
+-    - DEBUG (4): Everything including internal state
+-    """
+-    SILENT = 0
+-    MINIMAL = 1
+-    NORMAL = 2
+-    VERBOSE = 3
+-    DEBUG = 4
+-
+-
+-class EncoderConfig(BaseModel):
+-    """
+-    Configuration for the encoder model that converts text to latent vectors.
+-
+-    The encoder is the foundation of the entire reasoning system - it defines the
+-    latent space where evolutionary optimization occurs. The choice of encoder
+-    model and parameters significantly impacts both quality and performance.
+-
+-    Model Selection Guidelines:
+-    - **Qwen/Qwen3-4B**: Best quality, requires ~8GB VRAM
+-    - **Qwen/Qwen3-1.7B**: Good balance of quality/speed, ~4GB VRAM (default)
+-    - **Qwen/Qwen3-0.6B**: Fastest, minimal VRAM (~2GB), lower quality
+-    - **microsoft/Phi-3.5-mini-instruct**: Alternative, good for reasoning
+-    - **Local models**: Use absolute path to local model directory
+-
+-    Layer Selection:
+-    - **-4 (default)**: 4th layer from end, optimal for most reasoning tasks
+-    - **-2 to -6**: Earlier layers capture syntax, later capture semantics
+-    - **-1**: Final layer, most semantic but may be over-specialized
+-
+-    Pooling Strategies:
+-    - **mean**: Average all tokens, captures full context (recommended)
+-    - **last**: Use final token, good for completion-style tasks
+-    - **cls**: Use first token, for models with explicit CLS tokens
+-
+-    Latent Dimension:
+-    - **latent_dim**: Canonical latent space size used across models
+-    - If different from model hidden size, the encoder projects to this size
+-
+-    Performance Considerations:
+-    - Larger models produce higher quality but require more compute
+-    - Layer choice affects both quality and evolution effectiveness
+-    - max_length impacts memory usage and processing time
+-    """
+-
+-    # Model selection - choose based on your hardware and quality needs
+-    model: str = "Qwen/Qwen3-1.7B"  # HuggingFace model ID or local path
+-
+-    # Latent extraction settings
+-    layer: int = -4                # Which hidden layer to extract (-4 = 4th from last, usually optimal)
+-    pooling: Literal["mean", "last", "cls"] = "mean"  # How to pool sequence dimension
+-    latent_dim: int = Field(default=1024, ge=1)  # Canonical latent dimension
+-
+-    # Hardware settings
+-    device: str = "auto"           # Device: "auto", "cuda", "cuda:0", "cpu"
+-    quantization: Literal["auto", "none", "4bit"] = "4bit"
+-    max_length: int = Field(default=2048, ge=1, le=32768)  # Maximum input sequence length
+-
+-    class Config:
+-        extra = "forbid"  # Prevent typos in config files
+-
+-
+-class ScorerConfig(BaseModel):
+-    """
+-    Configuration for a scorer judge that evaluates latent vector quality.
+-
+-    Scorers are the critical component that drives evolution - they determine
+-    which latent vectors represent higher-quality responses and should survive
+-    to the next generation. The quality of scoring directly impacts the
+-    effectiveness of the evolutionary process.
+-
+-    Scorer Types:
+-
+-    **semantic**: Cosine similarity-based scoring
+-    - Uses a separate embedding model to encode the query
+-    - Scores latents based on similarity to query embedding
+-    - Fast and general-purpose, works out-of-the-box
+-    - Best for: Initial experiments, general reasoning tasks
+-    - Limitations: May not capture task-specific quality nuances
+-
+-    **trained_latent**: Neural network trained on quality data
+-    - Uses a specialized network trained to predict response quality
+-    - Works directly in the encoder's latent space
+-    - More accurate and task-specific than semantic similarity
+-    - Best for: Production use, specific domains with training data
+-    - Requirements: Trained checkpoint file matching encoder dimension
+-
+-    Configuration Guidelines:
+-    - Start with semantic for quick experiments
+-    - Use trained_latent for best quality when available
+-    - Multiple scorers can be combined for robust evaluation
+-    - Ensure latent_dim matches your encoder's output dimension
+-    """
+-
+-    # Scorer type selection
+-    type: Literal["semantic", "trained_latent"] = "semantic"
+-
+-    # For semantic scorer (cosine similarity based)
+-    model: str | None = None       # HuggingFace model for encoding (e.g., "sentence-transformers/all-MiniLM-L6-v2")
+-    layer: int = -1                # Which layer to extract from semantic model
+-    head: str | None = None        # Optional path to trained regression head weights
+-    quantization: Literal["auto", "none", "4bit"] = "none"
+-
+-    # For trained_latent scorer (neural network trained on quality data)
+-    checkpoint: str | None = None  # Path to trained LatentScorer checkpoint
+-    latent_dim: int = 1024         # Latent dimension (must match encoder)
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class ModifierConfig(BaseModel):
+-    """
+-    Configuration for a modifier judge that suggests improvements.
+-
+-    Modifiers analyze latent vectors and suggest directions for mutation
+-    to improve quality. They use LLM hidden states to understand what
+-    changes might help.
+-    """
+-
+-    model: str                     # HuggingFace model for modification suggestions
+-    layers: list[int] = Field(default_factory=lambda: [-8, -4])  # Hidden layers to extract from
+-    quantization: Literal["auto", "none", "4bit"] = "auto"
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class JudgeConfig(BaseModel):
+-    """
+-    Configuration for the judge panel that evaluates and improves latents.
+-
+-    The judge panel combines multiple scorers and modifiers to evaluate
+-    latent vector quality and suggest improvements during evolution.
+-    """
+-
+-    # Scorer configuration - determines quality evaluation
+-    scorers: list[ScorerConfig] = Field(
+-        default_factory=lambda: [ScorerConfig(
+-            type="trained_latent",
+-            checkpoint="checkpoints/latent_scorer/final_model.pt",
+-            latent_dim=1024,
+-        )]
+-    )
+-
+-    # Modifier configuration - suggests improvements (optional)
+-    modifiers: list[ModifierConfig] = Field(default_factory=list)
+-
+-    # Judge panel behavior
+-    aggregation: Literal["mean", "weighted", "max", "min"] = "mean"  # How to combine multiple scorer outputs
+-    calibrate: bool = True         # Whether to normalize scores to zero-mean
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class SelectionConfig(BaseModel):
+-    """
+-    Configuration for selection strategy in evolution.
+-
+-    Selection determines which latent vectors survive to the next generation.
+-    Different strategies balance exploration vs exploitation.
+-    """
+-
+-    strategy: Literal["elitist", "tournament", "roulette", "rank"] = "elitist"
+-    survivors: int = Field(default=5, ge=1)    # How many chains to keep each generation
+-    elite: int = Field(default=2, ge=0)        # Always keep top N (for elitist strategy)
+-    diversity_quota: float = Field(default=0.5, ge=0.0, le=1.0)  # Fraction of chains protected for diversity (increased for better exploration)
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class MutationConfig(BaseModel):
+-    """
+-    Configuration for mutation strategy in evolution.
+-
+-    Mutation adds variation to latent vectors to explore new regions
+-    of the latent space. Different strategies balance random exploration
+-    with directed improvement.
+-    """
+-
+-    strategy: Literal["directed", "gaussian", "adaptive"] = "directed"
+-    trust: float = Field(default=0.5, ge=0, le=1)  # How much to trust modifier suggestions (0=random, 1=fully directed)
+-    noise_scale: float = Field(default=0.5, ge=0, le=2)  # Base scale for random noise in mutation
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class CrossoverConfig(BaseModel):
+-    """
+-    Configuration for crossover strategy in evolution.
+-
+-    Crossover combines high-scoring parent latents to create children
+-    that inherit beneficial traits from both parents.
+-    """
+-
+-    strategy: Literal["weighted", "mean", "interpolation"] = "weighted"
+-    threshold: float = Field(default=0.3, ge=0, le=1)  # Minimum population diversity required for crossover
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class MergeConfig(BaseModel):
+-    """
+-    Configuration for merging similar chains.
+-
+-    When chains become too similar, they can be merged to avoid
+-    wasting computation on redundant exploration.
+-    """
+-
+-    threshold: float = Field(default=0.95, ge=0, le=1)  # Cosine similarity threshold for merging (0.95 = very similar)
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class ConvergenceConfig(BaseModel):
+-    """
+-    Configuration for convergence detection.
+-
+-    Evolution stops early when convergence criteria are met,
+-    saving computation when further improvement is unlikely.
+-    """
+-
+-    threshold: float = Field(default=0.95, ge=0, le=1)  # Score threshold for early stopping
+-    patience: int = Field(default=5, ge=1)              # Generations without improvement before stopping
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class EvolutionConfig(BaseModel):
+-    """
+-    Configuration for the evolutionary optimization process.
+-
+-    Controls the core evolutionary algorithm that optimizes latent vectors
+-    through selection, mutation, and crossover operations. These parameters
+-    significantly impact both quality and computational efficiency.
+-
+-    Key Parameters:
+-
+-    **Population Settings**:
+-    - chains: Population size (more = better exploration, slower)
+-    - generations: Evolution cycles (more = better optimization, slower)
+-
+-    **Mutation Control**:
+-    - temperature: Mutation strength (higher = more exploration)
+-    - temperature_decay: Cooling schedule (gradual focus on exploitation)
+-    - min_viable_score: Quality threshold for survival
+-
+-    **Algorithm Components**:
+-    - selection: How survivors are chosen each generation
+-    - mutation: How variations are created
+-    - crossover: How parents are combined
+-    - merge: When similar chains are consolidated
+-    - convergence: Early stopping criteria
+-
+-    Tuning Guidelines:
+-    - **Fast experiments**: chains=5, generations=10
+-    - **Balanced (default)**: chains=10, generations=30
+-    - **High quality**: chains=20, generations=50
+-    - **Research**: chains=50, generations=100+
+-
+-    Temperature Schedule:
+-    - Start high (0.8-1.0) for exploration
+-    - Decay gradually (0.95-0.98) to focus search
+-    - End low (0.1-0.3) for fine-tuning
+-    """
+-
+-    chains: int = Field(default=10, ge=1)
+-    generations: int = Field(default=30, ge=1)
+-    temperature: float = Field(default=0.5, ge=0, le=2)
+-    temperature_decay: float = Field(default=0.95, ge=0, le=1)
+-    min_viable_score: float = Field(default=0.1, ge=0, le=1)
+-    initial_diversity: float = Field(default=2.0, ge=0.1, le=10.0)  # Multiplier for initial population noise
+-    diversity_weight: float = Field(default=0.1, ge=0, le=1.0)  # Weight for diversity bonus in scoring
+-    selection: SelectionConfig = Field(default_factory=SelectionConfig)
+-    mutation: MutationConfig = Field(default_factory=MutationConfig)
+-    crossover: CrossoverConfig = Field(default_factory=CrossoverConfig)
+-    merge: MergeConfig = Field(default_factory=MergeConfig)
+-    convergence: ConvergenceConfig = Field(default_factory=ConvergenceConfig)
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class BudgetConfig(BaseModel):
+-    """Configuration for compute budget."""
+-    max_evaluations: int = Field(default=500, ge=1)
+-    max_time: float | None = None  # Seconds, None = unlimited
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class SynthesisConfig(BaseModel):
+-    """Configuration for final synthesis."""
+-    decoder: str | None = None  # None = use encoder model
+-    model: str = "gemini-2.5-flash"  # Frontier model for synthesis
+-    decode_strategy: Literal["best", "combined"] = "best"
+-    max_survivors: int = Field(default=5, ge=1)
+-    max_tokens: int = Field(default=2048, ge=1, le=32768)  # Max output tokens  
+-    temperature: float = Field(default=0.7, ge=0, le=2.0)  # Decode temperature
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class OutputConfig(BaseModel):
+-    """Configuration for output settings."""
+-    verbosity: Literal["silent", "minimal", "normal", "verbose", "debug"] = "normal"
+-    format: Literal["text", "json", "markdown"] = "text"
+-    save_history: bool = False
+-    history_path: str | None = None
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class BenchmarkConfig(BaseModel):
+-    """Configuration for benchmarks/evaluation."""
+-    judge_model: str = "gemini-2.5-flash"
+-    blind: bool = True
+-    temperature: float = 0  # Deterministic judging
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class QDConfig(BaseModel):
+-    """
+-    Configuration for Quality Diversity (QD) integration.
+-
+-    QD algorithms maintain an archive of diverse, high-quality solutions
+-    rather than converging to a single optimum. This enables exploration
+-    of multiple reasoning strategies for the same query.
+-
+-    Key Concepts:
+-
+-    **Behavioral Descriptors (BDs)**:
+-    - Low-dimensional vectors that characterize HOW a solution achieves its goal
+-    - Computed using Random Fourier Features (RFF) for efficient projection
+-    - Combine latent statistics, structural features, and trajectory information
+-
+-    **Novelty Search**:
+-    - Rewards solutions that are different from existing archive members
+-    - Uses k-nearest neighbor distance in BD space
+-    - Balances fitness (quality) with novelty (diversity)
+-
+-    **DNS Archive**:
+-    - Dominated Novelty Search: gridless QD algorithm
+-    - Stores diverse high-quality solutions without predefined grid boundaries
+-    - Outperforms MAP-Elites in high-dimensional spaces
+-
+-    Benefits:
+-    - Addresses diversity collapse in evolution
+-    - Provides multiple valid reasoning approaches per query
+-    - Enables recovery from local optima through diversity pressure
+-
+-    Usage:
+-    >>> config = Config()
+-    >>> config.qd.enabled = True
+-    >>> config.qd.novelty_weight = 0.3  # Balance fitness vs novelty
+-    """
+-
+-    # Master toggle (disabled by default for backward compatibility)
+-    enabled: bool = False
+-
+-    # Behavioral descriptor settings
+-    bd_dim: int = Field(default=16, ge=4, le=64)  # BD dimensionality (8-16 recommended)
+-    rff_gamma: float = Field(default=0.1, ge=0.01, le=1.0)  # RFF kernel bandwidth
+-
+-    # BD component weights (should roughly sum to 1.0)
+-    bd_latent_weight: float = Field(default=0.5, ge=0.0, le=1.0)  # Weight for latent position
+-    bd_structural_weight: float = Field(default=0.25, ge=0.0, le=1.0)  # Weight for structural stats
+-    bd_trajectory_weight: float = Field(default=0.25, ge=0.0, le=1.0)  # Weight for trajectory
+-
+-    # Novelty computation
+-    novelty_k: int = Field(default=10, ge=3, le=50)  # k for k-NN novelty
+-    novelty_weight: float = Field(default=0.3, ge=0.0, le=1.0)  # Alpha: qd_score = (1-α)*fitness + α*novelty
+-
+-    # Archive settings
+-    archive_type: Literal["dns", "map_elites"] = "dns"  # Archive algorithm (NOTE: only dns currently implemented)
+-    archive_size: int = Field(default=500, ge=50, le=5000)  # Maximum archive entries
+-    domination_threshold: float = Field(default=0.1, ge=0.01, le=0.5)  # BD distance for domination check
+-    novelty_threshold: float = Field(default=0.05, ge=0.0, le=0.5)  # Minimum novelty for automatic archive addition
+-
+-    # Semantic duplicate detection (NOTE: not yet implemented - reserved for future use)
+-    semantic_threshold: float = Field(default=0.95, ge=0.8, le=1.0)  # Cosine similarity threshold
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class AutopoieticJudgeConfig(BaseModel):
+-    """
+-    Configuration for Autopoietic (self-updating) Judge system.
+-
+-    The autopoietic judge addresses the known scorer weakness (low correlation
+-    with external quality) by:
+-    1. Maintaining an experience buffer for online learning
+-    2. Periodically grounding internal scores against external evaluation
+-    3. Using homeostatic temperature control for diversity maintenance
+-
+-    Key Concepts:
+-
+-    **Two-Time-Scale Learning**:
+-    - Fast: EMA update of internal scorer (every evaluation)
+-    - Slow: Grounding against external evaluator (every judge_update_freq generations)
+-
+-    **Homeostatic Temperature Control**:
+-    - Automatically adjusts mutation temperature based on diversity metrics
+-    - Formula: T_{t+1} = T_t * exp(k * (D* - D_t))
+-    - Where D* is target_diversity and D_t is current measured diversity
+-
+-    **Trust Weighting**:
+-    - Balances internal scorer vs external evaluator
+-    - Starts with more external weight, shifts to internal as correlation improves
+-
+-    **External Grounding**:
+-    - Samples top solutions and evaluates with external judge (e.g., Gemini)
+-    - Updates internal scorer to align with external quality signal
+-    - Prevents drift and collusion between scorer and evolution
+-
+-    Usage:
+-    >>> config = Config()
+-    >>> config.autopoietic.enabled = True
+-    >>> config.autopoietic.external_model = "gemini-2.5-flash"
+-    """
+-
+-    # Master toggle (disabled by default for backward compatibility)
+-    enabled: bool = False
+-
+-    # Update frequency settings
+-    judge_update_freq: int = Field(default=5, ge=1, le=50)  # Generations between external grounding
+-    external_sample_size: int = Field(default=3, ge=1, le=20)  # Solutions to evaluate externally per update
+-
+-    # Homeostatic temperature control
+-    target_diversity: float = Field(default=0.4, ge=0.1, le=0.9)  # Target diversity D*
+-    homeostasis_k: float = Field(default=0.1, ge=0.01, le=1.0)  # Control gain k
+-    min_temperature: float = Field(default=0.1, ge=0.01, le=1.0)  # Temperature floor
+-    max_temperature: float = Field(default=2.0, ge=0.5, le=5.0)  # Temperature ceiling
+-
+-    # EMA settings for internal scorer
+-    ema_decay: float = Field(default=0.99, ge=0.9, le=0.999)  # EMA decay for scorer updates
+-
+-    # Trust weighting between internal and external
+-    initial_internal_trust: float = Field(default=0.3, ge=0.0, le=1.0)  # Starting trust in internal scorer
+-    max_internal_trust: float = Field(default=0.9, ge=0.5, le=1.0)  # Maximum trust in internal scorer
+-    trust_growth_rate: float = Field(default=0.05, ge=0.0, le=0.5)  # Trust growth per successful grounding
+-
+-    # Experience buffer settings
+-    buffer_size: int = Field(default=1000, ge=100, le=10000)  # Max entries in experience buffer
+-
+-    # External evaluator settings
+-    external_model: str = "gemini-2.5-flash"  # Model for external grounding
+-    external_temperature: float = Field(default=0.0, ge=0.0, le=1.0)  # Temperature for external eval (0 = deterministic)
+-
+-    # Anchor set for correlation monitoring
+-    anchor_set_size: int = Field(default=50, ge=10, le=200)  # Size of fixed anchor set
+-    correlation_threshold: float = Field(default=0.3, ge=0.0, le=1.0)  # Minimum correlation to increase trust
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class GrammarConfig(BaseModel):
+-    """
+-    Configuration for Fractal Latent Grammars.
+-
+-    Fractal grammars provide a compositional, rule-based approach to latent
+-    space exploration. Instead of evolving raw latent vectors, we evolve
+-    grammar structures that GENERATE latents through recursive expansion.
+-
+-    Key Concepts:
+-
+-    **Grammar Rules**:
+-    - Each rule defines a contractive transform: T_r(z) = P_r * f(W_r @ z + b_r)
+-    - Contraction (||W_r||_2 < 1) ensures convergence to attractors
+-    - Rules are shared across the grammar for efficient representation
+-
+-    **AND/OR Trees**:
+-    - AND nodes: Combine children via weighted average (blend perspectives)
+-    - OR nodes: Select best child via gating (choose strategy)
+-    - LEAF nodes: Apply a rule to input or constant
+-
+-    **Fractal Structure**:
+-    - Self-similar: subtrees can be reused/referenced
+-    - Compositional: complex behaviors from simple rules
+-    - Compressible: grammar << expanded latent representation
+-
+-    Benefits:
+-    - More structured search space than raw latent evolution
+-    - Natural compositionality for complex reasoning
+-    - Better interpretability (grammar structure reveals strategy)
+-    - Synergy with QD (grammars as archive elements)
+-
+-    Usage:
+-    >>> config = Config()
+-    >>> config.grammar.enabled = True
+-    >>> config.grammar.num_rules = 8
+-    >>> config.grammar.max_depth = 4
+-    """
+-
+-    # Master toggle (disabled by default for backward compatibility)
+-    enabled: bool = False
+-
+-    # Rule settings
+-    num_rules: int = Field(default=8, ge=2, le=32)  # Number of grammar rules
+-    rule_hidden_dim: int = Field(default=256, ge=64, le=1024)  # Hidden dimension in rules
+-    contraction_factor: float = Field(default=0.9, ge=0.5, le=0.99)  # Max spectral norm for W
+-
+-    # Tree structure settings
+-    max_depth: int = Field(default=4, ge=2, le=8)  # Maximum tree depth
+-    min_depth: int = Field(default=2, ge=1, le=4)  # Minimum tree depth
+-    branching_factor: int = Field(default=3, ge=2, le=5)  # Max children per node
+-
+-    # Node type probabilities (for random initialization)
+-    and_prob: float = Field(default=0.4, ge=0.0, le=1.0)  # Probability of AND node
+-    or_prob: float = Field(default=0.3, ge=0.0, le=1.0)  # Probability of OR node
+-    # LEAF prob = 1 - and_prob - or_prob
+-
+-    # Evolution settings (for GrammarEvolutionLoop)
+-    population_size: int = Field(default=20, ge=4, le=100)  # Grammar population size
+-    offspring_size: int = Field(default=10, ge=2, le=50)  # Offspring per generation
+-    mutation_rate: float = Field(default=0.5, ge=0.0, le=1.0)  # Base mutation rate (increased for exploration)
+-    crossover_rate: float = Field(default=0.3, ge=0.0, le=1.0)  # Crossover probability
+-    tournament_size: int = Field(default=3, ge=2, le=10)  # Tournament selection size
+-
+-    # Structural mutation settings
+-    structure_mutation_rate: float = Field(default=0.35, ge=0.0, le=1.0)  # Rate of structural mutations (increased)
+-    param_mutation_scale: float = Field(default=0.15, ge=0.01, le=1.0)  # Scale for parameter mutations (increased)
+-    depth_decay: float = Field(default=0.8, ge=0.5, le=1.0)  # Mutation rate decay with depth
+-
+-    # Attractor projection
+-    use_attractor_projection: bool = True  # Project to rule attractors
+-    attractor_iterations: int = Field(default=5, ge=1, le=20)  # IFS iterations
+-
+-    # Initialization
+-    init_strategy: Literal["random", "balanced", "deep"] = "balanced"
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class GeometryConfig(BaseModel):
+-    """
+-    Configuration for latent space geometry.
+-
+-    Controls whether evolution operates in Euclidean or hyperbolic space.
+-    Hyperbolic geometry naturally matches hierarchical reasoning structures
+-    due to its exponential volume growth, enabling better separation of
+-    reasoning branches.
+-
+-    Geometry Types:
+-
+-    **euclidean** (default): Standard flat geometry
+-    - Traditional latent space operations
+-    - Cosine similarity and L2 distance
+-    - Well-understood and stable
+-
+-    **hyperbolic**: Poincaré ball model
+-    - Exponential volume growth matches tree structures
+-    - Better separation of hierarchical reasoning branches
+-    - Enables implicit multi-branch tree search
+-    - Requires Riemannian operations (slightly slower)
+-
+-    Curvature Guidelines:
+-    - Higher curvature (>1.0): More curved space, faster hierarchy separation
+-    - Lower curvature (<1.0): Closer to Euclidean, gentler hierarchy
+-    - Default 1.0 is a good starting point
+-
+-    Reference: "Hyperbolic Neural Networks" (Ganea et al., 2018)
+-    """
+-
+-    # Geometry type selection
+-    space: Literal["euclidean", "hyperbolic"] = "euclidean"
+-
+-    # Hyperbolic space parameters (Poincaré ball model)
+-    model: Literal["poincare", "lorentz"] = "poincare"
+-    curvature: float = Field(default=1.0, ge=0.1, le=5.0)  # Negative curvature magnitude
+-
+-    # Mapping parameters (Euclidean → Hyperbolic)
+-    tangent_scale: float = Field(default=0.35, ge=0.1, le=0.9)  # Scale for expmap0 input
+-    max_norm: float = Field(default=0.98, ge=0.8, le=0.999)  # Maximum norm in ball (stability)
+-
+-    # Evolution-specific hyperbolic parameters
+-    mutation_noise_scale: float = Field(default=0.35, ge=0.05, le=1.0)  # Tangent space noise scale
+-    barycenter_iterations: int = Field(default=7, ge=3, le=20)  # Karcher mean iterations
+-
+-    # Distance thresholds (in hyperbolic distance)
+-    merge_threshold: float = Field(default=0.15, ge=0.01, le=1.0)  # For merging similar chains
+-    loop_threshold: float = Field(default=0.10, ge=0.01, le=0.5)  # For detecting loops
+-
+-    # Curvature annealing (for stability)
+-    anneal_curvature: bool = False  # Start low, increase over generations
+-    initial_curvature: float = Field(default=0.1, ge=0.01, le=1.0)
+-    final_curvature: float = Field(default=1.0, ge=0.1, le=5.0)
+-    anneal_generations: int = Field(default=20, ge=5, le=100)
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class Config(BaseModel):
+-    """
+-    Main configuration for the Latent Space Reasoning Engine.
+-
+-    This is the central configuration object that controls all aspects of the
+-    reasoning system. It provides a hierarchical structure for organizing
+-    settings and supports both programmatic and file-based configuration.
+-
+-    Configuration Sections:
+-    - **encoder**: Model and parameters for text-to-latent conversion
+-    - **judges**: Scoring and modification strategies for evaluation
+-    - **evolution**: Evolutionary algorithm parameters and strategies
+-    - **budget**: Computational limits and resource management
+-    - **synthesis**: Final response generation and decoding
+-    - **output**: Logging, formatting, and result storage
+-    - **benchmark**: Evaluation and comparison settings
+-
+-    Usage Patterns:
+-
+-    **Default Configuration**:
+-    >>> config = Config()  # Uses sensible defaults
+-    >>> engine = Engine(config=config)
+-
+-    **Programmatic Customization**:
+-    >>> config = Config()
+-    >>> config.encoder.model = "Qwen/Qwen3-1.7B"  # Smaller model
+-    >>> config.evolution.chains = 20              # More exploration
+-    >>> config.output.verbosity = "verbose"       # Detailed logging
+-
+-    **YAML Configuration**:
+-    >>> config = Config.from_yaml("my_config.yaml")
+-    >>> # Modify if needed
+-    >>> config.evolution.generations = 50
+-    >>> config.to_yaml("updated_config.yaml")
+-
+-    **Environment-specific Configs**:
+-    >>> # Development: fast iteration
+-    >>> dev_config = Config()
+-    >>> dev_config.evolution.chains = 5
+-    >>> dev_config.evolution.generations = 10
+-    >>>
+-    >>> # Production: high quality
+-    >>> prod_config = Config()
+-    >>> prod_config.evolution.chains = 20
+-    >>> prod_config.evolution.generations = 50
+-    >>> prod_config.budget.max_time = 300  # 5 minute limit
+-
+-    The configuration system uses Pydantic for validation, ensuring that
+-    all parameters are valid and providing helpful error messages for
+-    invalid configurations.
+-    """
+-
+-    encoder: EncoderConfig = Field(default_factory=EncoderConfig)
+-    judges: JudgeConfig = Field(default_factory=JudgeConfig)
+-    evolution: EvolutionConfig = Field(default_factory=EvolutionConfig)
+-    budget: BudgetConfig = Field(default_factory=BudgetConfig)
+-    synthesis: SynthesisConfig = Field(default_factory=SynthesisConfig)
+-    output: OutputConfig = Field(default_factory=OutputConfig)
+-    benchmark: BenchmarkConfig = Field(default_factory=BenchmarkConfig)
+-    qd: QDConfig = Field(default_factory=QDConfig)  # Quality Diversity settings
+-    autopoietic: AutopoieticJudgeConfig = Field(default_factory=AutopoieticJudgeConfig)  # Self-updating judge
+-    grammar: GrammarConfig = Field(default_factory=GrammarConfig)  # Fractal grammar settings
+-    geometry: GeometryConfig = Field(default_factory=GeometryConfig)  # Latent space geometry (Euclidean/Hyperbolic)
+-
+-    class Config:
+-        extra = "forbid"
+-
+-    @classmethod
+-    def from_yaml(cls, path: str | Path) -> "Config":
+-        """Load configuration from a YAML file."""
+-        with open(path) as f:
+-            data = yaml.safe_load(f)
+-        return cls.from_dict(data)
+-
+-    @classmethod
+-    def from_dict(cls, data: dict) -> "Config":
+-        """Load configuration from a dictionary."""
+-        return cls(**data)
+-
+-    def to_yaml(self, path: str | Path) -> None:
+-        """Save configuration to a YAML file."""
+-        with open(path, "w") as f:
+-            yaml.dump(self.model_dump(), f, default_flow_style=False)
+-
+-    def to_dict(self) -> dict:
+-        """Convert configuration to a dictionary."""
+-        return self.model_dump()
+-
+-
+-def get_default_config() -> Config:
+-    """Get a default configuration with sensible defaults for testing."""       
+-    return Config(
+-        encoder=EncoderConfig(model="Qwen/Qwen3-1.7B"),
+-        judges=JudgeConfig(
+-            # Use smaller encoder model for scoring (faster)
+-            scorers=[ScorerConfig(type="semantic", model="sentence-transformers/all-MiniLM-L6-v2")],
+-            # Use smaller Qwen3 for modifications
+-            modifiers=[ModifierConfig(model="Qwen/Qwen3-1.7B")],
+-        ),
+-        evolution=EvolutionConfig(
+-            chains=5,
+-            generations=10,
+-            temperature=0.5,
+-        ),
+-        budget=BudgetConfig(max_evaluations=200),
+-    )
+-
+-
+-def get_trained_scorer_config(checkpoint_path: str = "checkpoints/latent_scorer/final_model.pt") -> Config:
+-    """Get a configuration that uses the trained latent scorer."""
+-    return Config(
+-        encoder=EncoderConfig(model="Qwen/Qwen3-1.7B"),
+-        judges=JudgeConfig(
+-            scorers=[ScorerConfig(
+-                type="trained_latent",
+-                checkpoint=checkpoint_path,
+-                latent_dim=1024,
+-            )],
+-            modifiers=[],  # No modifier for cleaner experiments
+-        ),
+-        evolution=EvolutionConfig(
+-            chains=5,
+-            generations=15,
+-            temperature=0.5,
+-        ),
+-        budget=BudgetConfig(max_evaluations=300),
+-    )
++"""
++Configuration schema for Latent Space Reasoning Engine.
++
++This module defines all configuration classes using Pydantic for validation
++and type safety. The main Config class combines all settings and can be
++loaded from YAML files for easy customization.
++
++Key configuration areas:
++- EncoderConfig: Model selection and encoding parameters
++- JudgeConfig: Scoring and evaluation settings
++- EvolutionConfig: Evolutionary algorithm parameters
++- BudgetConfig: Compute limits and timeouts
++- SynthesisConfig: Text generation settings
++- OutputConfig: Logging and formatting options
++"""
++
++from __future__ import annotations
++
++from enum import IntEnum
++from pathlib import Path
++from typing import Literal
++
++import yaml
++from pydantic import BaseModel, Field
++
++
++class Verbosity(IntEnum):
++    """
++    Verbosity levels for logging output.
++
++    Controls how much information is displayed during reasoning:
++    - SILENT (0): Only errors
++    - MINIMAL (1): Just final results
++    - NORMAL (2): Progress updates (default)
++    - VERBOSE (3): Detailed evolution info
++    - DEBUG (4): Everything including internal state
++    """
++    SILENT = 0
++    MINIMAL = 1
++    NORMAL = 2
++    VERBOSE = 3
++    DEBUG = 4
++
++
++class EncoderConfig(BaseModel):
++    """
++    Configuration for the encoder model that converts text to latent vectors.
++
++    The encoder is the foundation of the entire reasoning system - it defines the
++    latent space where evolutionary optimization occurs. The choice of encoder
++    model and parameters significantly impacts both quality and performance.
++
++    Model Selection Guidelines:
++    - **Qwen/Qwen3-4B**: Best quality, requires ~8GB VRAM
++    - **Qwen/Qwen3-1.7B**: Good balance of quality/speed, ~4GB VRAM (default)
++    - **Qwen/Qwen3-0.6B**: Fastest, minimal VRAM (~2GB), lower quality
++    - **microsoft/Phi-3.5-mini-instruct**: Alternative, good for reasoning
++    - **Local models**: Use absolute path to local model directory
++
++    Layer Selection:
++    - **-4 (default)**: 4th layer from end, optimal for most reasoning tasks
++    - **-2 to -6**: Earlier layers capture syntax, later capture semantics
++    - **-1**: Final layer, most semantic but may be over-specialized
++
++    Pooling Strategies:
++    - **mean**: Average all tokens, captures full context (recommended)
++    - **last**: Use final token, good for completion-style tasks
++    - **cls**: Use first token, for models with explicit CLS tokens
++
++    Latent Dimension:
++    - **latent_dim**: Canonical latent space size used across models
++    - If different from model hidden size, the encoder projects to this size
++
++    Performance Considerations:
++    - Larger models produce higher quality but require more compute
++    - Layer choice affects both quality and evolution effectiveness
++    - max_length impacts memory usage and processing time
++    """
++
++    # Model selection - choose based on your hardware and quality needs
++    model: str = "Qwen/Qwen3-1.7B"  # HuggingFace model ID or local path
++
++    # Latent extraction settings
++    layer: int = -4                # Which hidden layer to extract (-4 = 4th from last, usually optimal)
++    pooling: Literal["mean", "last", "cls"] = "mean"  # How to pool sequence dimension
++    latent_dim: int = Field(default=1024, ge=1)  # Canonical latent dimension
++
++    # Hardware settings
++    device: str = "auto"           # Device: "auto", "cuda", "cuda:0", "cpu"
++    quantization: Literal["auto", "none", "4bit"] = "4bit"
++    max_length: int = Field(default=2048, ge=1, le=32768)  # Maximum input sequence length
++
++    class Config:
++        extra = "forbid"  # Prevent typos in config files
++
++
++class ScorerConfig(BaseModel):
++    """
++    Configuration for a scorer judge that evaluates latent vector quality.
++
++    Scorers are the critical component that drives evolution - they determine
++    which latent vectors represent higher-quality responses and should survive
++    to the next generation. The quality of scoring directly impacts the
++    effectiveness of the evolutionary process.
++
++    Scorer Types:
++
++    **semantic**: Cosine similarity-based scoring
++    - Uses a separate embedding model to encode the query
++    - Scores latents based on similarity to query embedding
++    - Fast and general-purpose, works out-of-the-box
++    - Best for: Initial experiments, general reasoning tasks
++    - Limitations: May not capture task-specific quality nuances
++
++    **trained_latent**: Neural network trained on quality data
++    - Uses a specialized network trained to predict response quality
++    - Works directly in the encoder's latent space
++    - More accurate and task-specific than semantic similarity
++    - Best for: Production use, specific domains with training data
++    - Requirements: Trained checkpoint file matching encoder dimension
++
++    Configuration Guidelines:
++    - Start with semantic for quick experiments
++    - Use trained_latent for best quality when available
++    - Multiple scorers can be combined for robust evaluation
++    - Ensure latent_dim matches your encoder's output dimension
++    """
++
++    # Scorer type selection
++    type: Literal["semantic", "trained_latent"] = "semantic"
++
++    # For semantic scorer (cosine similarity based)
++    model: str | None = None       # HuggingFace model for encoding (e.g., "sentence-transformers/all-MiniLM-L6-v2")
++    layer: int = -1                # Which layer to extract from semantic model
++    head: str | None = None        # Optional path to trained regression head weights
++    quantization: Literal["auto", "none", "4bit"] = "none"
++
++    # For trained_latent scorer (neural network trained on quality data)
++    checkpoint: str | None = None  # Path to trained LatentScorer checkpoint
++    latent_dim: int = 1024         # Latent dimension (must match encoder)
++
++    class Config:
++        extra = "forbid"
++
++
++class ModifierConfig(BaseModel):
++    """
++    Configuration for a modifier judge that suggests improvements.
++
++    Modifiers analyze latent vectors and suggest directions for mutation
++    to improve quality. They use LLM hidden states to understand what
++    changes might help.
++    """
++
++    model: str                     # HuggingFace model for modification suggestions
++    layers: list[int] = Field(default_factory=lambda: [-8, -4])  # Hidden layers to extract from
++    quantization: Literal["auto", "none", "4bit"] = "auto"
++
++    class Config:
++        extra = "forbid"
++
++
++class JudgeConfig(BaseModel):
++    """
++    Configuration for the judge panel that evaluates and improves latents.
++
++    The judge panel combines multiple scorers and modifiers to evaluate
++    latent vector quality and suggest improvements during evolution.
++    """
++
++    # Scorer configuration - determines quality evaluation
++    scorers: list[ScorerConfig] = Field(
++        default_factory=lambda: [ScorerConfig(
++            type="trained_latent",
++            checkpoint="checkpoints/latent_scorer/final_model.pt",
++            latent_dim=1024,
++        )]
++    )
++
++    # Modifier configuration - suggests improvements (optional)
++    modifiers: list[ModifierConfig] = Field(default_factory=list)
++
++    # Judge panel behavior
++    aggregation: Literal["mean", "weighted", "max", "min"] = "mean"  # How to combine multiple scorer outputs
++    calibrate: bool = True         # Whether to normalize scores to zero-mean
++
++    class Config:
++        extra = "forbid"
++
++
++class SelectionConfig(BaseModel):
++    """
++    Configuration for selection strategy in evolution.
++
++    Selection determines which latent vectors survive to the next generation.
++    Different strategies balance exploration vs exploitation.
++    """
++
++    strategy: Literal["elitist", "tournament", "roulette", "rank"] = "elitist"
++    survivors: int = Field(default=5, ge=1)    # How many chains to keep each generation
++    elite: int = Field(default=2, ge=0)        # Always keep top N (for elitist strategy)
++    diversity_quota: float = Field(default=0.5, ge=0.0, le=1.0)  # Fraction of chains protected for diversity (increased for better exploration)
++
++    class Config:
++        extra = "forbid"
++
++
++class MutationConfig(BaseModel):
++    """
++    Configuration for mutation strategy in evolution.
++
++    Mutation adds variation to latent vectors to explore new regions
++    of the latent space. Different strategies balance random exploration
++    with directed improvement.
++    """
++
++    strategy: Literal["directed", "gaussian", "adaptive"] = "directed"
++    trust: float = Field(default=0.5, ge=0, le=1)  # How much to trust modifier suggestions (0=random, 1=fully directed)
++    noise_scale: float = Field(default=0.5, ge=0, le=2)  # Base scale for random noise in mutation
++
++    class Config:
++        extra = "forbid"
++
++
++class CrossoverConfig(BaseModel):
++    """
++    Configuration for crossover strategy in evolution.
++
++    Crossover combines high-scoring parent latents to create children
++    that inherit beneficial traits from both parents.
++    """
++
++    strategy: Literal["weighted", "mean", "interpolation"] = "weighted"
++    threshold: float = Field(default=0.3, ge=0, le=1)  # Minimum population diversity required for crossover
++
++    class Config:
++        extra = "forbid"
++
++
++class MergeConfig(BaseModel):
++    """
++    Configuration for merging similar chains.
++
++    When chains become too similar, they can be merged to avoid
++    wasting computation on redundant exploration.
++    """
++
++    threshold: float = Field(default=0.95, ge=0, le=1)  # Cosine similarity threshold for merging (0.95 = very similar)
++
++    class Config:
++        extra = "forbid"
++
++
++class ConvergenceConfig(BaseModel):
++    """
++    Configuration for convergence detection.
++
++    Evolution stops early when convergence criteria are met,
++    saving computation when further improvement is unlikely.
++    """
++
++    threshold: float = Field(default=0.95, ge=0, le=1)  # Score threshold for early stopping
++    patience: int = Field(default=5, ge=1)              # Generations without improvement before stopping
++
++    class Config:
++        extra = "forbid"
++
++
++class EvolutionConfig(BaseModel):
++    """
++    Configuration for the evolutionary optimization process.
++
++    Controls the core evolutionary algorithm that optimizes latent vectors
++    through selection, mutation, and crossover operations. These parameters
++    significantly impact both quality and computational efficiency.
++
++    Key Parameters:
++
++    **Population Settings**:
++    - chains: Population size (more = better exploration, slower)
++    - generations: Evolution cycles (more = better optimization, slower)
++
++    **Mutation Control**:
++    - temperature: Mutation strength (higher = more exploration)
++    - temperature_decay: Cooling schedule (gradual focus on exploitation)
++    - min_viable_score: Quality threshold for survival
++
++    **Algorithm Components**:
++    - selection: How survivors are chosen each generation
++    - mutation: How variations are created
++    - crossover: How parents are combined
++    - merge: When similar chains are consolidated
++    - convergence: Early stopping criteria
++
++    Tuning Guidelines:
++    - **Fast experiments**: chains=5, generations=10
++    - **Balanced (default)**: chains=10, generations=30
++    - **High quality**: chains=20, generations=50
++    - **Research**: chains=50, generations=100+
++
++    Temperature Schedule:
++    - Start high (0.8-1.0) for exploration
++    - Decay gradually (0.95-0.98) to focus search
++    - End low (0.1-0.3) for fine-tuning
++    """
++
++    chains: int = Field(default=10, ge=1)
++    generations: int = Field(default=30, ge=1)
++    temperature: float = Field(default=0.5, ge=0, le=2)
++    temperature_decay: float = Field(default=0.95, ge=0, le=1)
++    min_viable_score: float = Field(default=0.1, ge=0, le=1)
++    initial_diversity: float = Field(default=2.0, ge=0.1, le=10.0)  # Multiplier for initial population noise
++    diversity_weight: float = Field(default=0.1, ge=0, le=1.0)  # Weight for diversity bonus in scoring
++    selection: SelectionConfig = Field(default_factory=SelectionConfig)
++    mutation: MutationConfig = Field(default_factory=MutationConfig)
++    crossover: CrossoverConfig = Field(default_factory=CrossoverConfig)
++    merge: MergeConfig = Field(default_factory=MergeConfig)
++    convergence: ConvergenceConfig = Field(default_factory=ConvergenceConfig)
++
++    class Config:
++        extra = "forbid"
++
++
++class BudgetConfig(BaseModel):
++    """Configuration for compute budget."""
++    max_evaluations: int = Field(default=500, ge=1)
++    max_time: float | None = None  # Seconds, None = unlimited
++
++    class Config:
++        extra = "forbid"
++
++
++class SynthesisConfig(BaseModel):
++    """Configuration for final synthesis."""
++    decoder: str | None = None  # None = use encoder model
++    model: str = "gemini-2.5-flash"  # Frontier model for synthesis
++    decode_strategy: Literal["best", "combined"] = "best"
++    max_survivors: int = Field(default=5, ge=1)
++    max_tokens: int = Field(default=2048, ge=1, le=32768)  # Max output tokens  
++    temperature: float = Field(default=0.7, ge=0, le=2.0)  # Decode temperature
++
++    class Config:
++        extra = "forbid"
++
++
++class OutputConfig(BaseModel):
++    """Configuration for output settings."""
++    verbosity: Literal["silent", "minimal", "normal", "verbose", "debug"] = "normal"
++    format: Literal["text", "json", "markdown"] = "text"
++    save_history: bool = False
++    history_path: str | None = None
++
++    class Config:
++        extra = "forbid"
++
++
++class BenchmarkConfig(BaseModel):
++    """Configuration for benchmarks/evaluation."""
++    judge_model: str = "gemini-2.5-flash"
++    blind: bool = True
++    temperature: float = 0  # Deterministic judging
++
++    class Config:
++        extra = "forbid"
++
++
++class QDConfig(BaseModel):
++    """
++    Configuration for Quality Diversity (QD) integration.
++
++    QD algorithms maintain an archive of diverse, high-quality solutions
++    rather than converging to a single optimum. This enables exploration
++    of multiple reasoning strategies for the same query.
++
++    Key Concepts:
++
++    **Behavioral Descriptors (BDs)**:
++    - Low-dimensional vectors that characterize HOW a solution achieves its goal
++    - Computed using Random Fourier Features (RFF) for efficient projection
++    - Combine latent statistics, structural features, and trajectory information
++
++    **Novelty Search**:
++    - Rewards solutions that are different from existing archive members
++    - Uses k-nearest neighbor distance in BD space
++    - Balances fitness (quality) with novelty (diversity)
++
++    **DNS Archive**:
++    - Dominated Novelty Search: gridless QD algorithm
++    - Stores diverse high-quality solutions without predefined grid boundaries
++    - Outperforms MAP-Elites in high-dimensional spaces
++
++    Benefits:
++    - Addresses diversity collapse in evolution
++    - Provides multiple valid reasoning approaches per query
++    - Enables recovery from local optima through diversity pressure
++
++    Usage:
++    >>> config = Config()
++    >>> config.qd.enabled = True
++    >>> config.qd.novelty_weight = 0.3  # Balance fitness vs novelty
++    """
++
++    # Master toggle (disabled by default for backward compatibility)
++    enabled: bool = False
++
++    # Behavioral descriptor settings
++    bd_dim: int = Field(default=16, ge=4, le=64)  # BD dimensionality (8-16 recommended)
++    rff_gamma: float = Field(default=0.1, ge=0.01, le=1.0)  # RFF kernel bandwidth
++
++    # BD component weights (should roughly sum to 1.0)
++    bd_latent_weight: float = Field(default=0.5, ge=0.0, le=1.0)  # Weight for latent position
++    bd_structural_weight: float = Field(default=0.25, ge=0.0, le=1.0)  # Weight for structural stats
++    bd_trajectory_weight: float = Field(default=0.25, ge=0.0, le=1.0)  # Weight for trajectory
++
++    # Novelty computation
++    novelty_k: int = Field(default=10, ge=3, le=50)  # k for k-NN novelty
++    novelty_weight: float = Field(default=0.3, ge=0.0, le=1.0)  # Alpha: qd_score = (1-α)*fitness + α*novelty
++
++    # Archive settings
++    archive_type: Literal["dns", "map_elites"] = "dns"  # Archive algorithm (NOTE: only dns currently implemented)
++    archive_size: int = Field(default=500, ge=50, le=5000)  # Maximum archive entries
++    domination_threshold: float = Field(default=0.1, ge=0.01, le=0.5)  # BD distance for domination check
++    novelty_threshold: float = Field(default=0.05, ge=0.0, le=0.5)  # Minimum novelty for automatic archive addition
++
++    # Semantic duplicate detection (NOTE: not yet implemented - reserved for future use)
++    semantic_threshold: float = Field(default=0.95, ge=0.8, le=1.0)  # Cosine similarity threshold
++
++    class Config:
++        extra = "forbid"
++
++
++class AutopoieticJudgeConfig(BaseModel):
++    """
++    Configuration for Autopoietic (self-updating) Judge system.
++
++    The autopoietic judge addresses the known scorer weakness (low correlation
++    with external quality) by:
++    1. Maintaining an experience buffer for online learning
++    2. Periodically grounding internal scores against external evaluation
++    3. Using homeostatic temperature control for diversity maintenance
++
++    Key Concepts:
++
++    **Two-Time-Scale Learning**:
++    - Fast: EMA update of internal scorer (every evaluation)
++    - Slow: Grounding against external evaluator (every judge_update_freq generations)
++
++    **Homeostatic Temperature Control**:
++    - Automatically adjusts mutation temperature based on diversity metrics
++    - Formula: T_{t+1} = T_t * exp(k * (D* - D_t))
++    - Where D* is target_diversity and D_t is current measured diversity
++
++    **Trust Weighting**:
++    - Balances internal scorer vs external evaluator
++    - Starts with more external weight, shifts to internal as correlation improves
++
++    **External Grounding**:
++    - Samples top solutions and evaluates with external judge (e.g., Gemini)
++    - Updates internal scorer to align with external quality signal
++    - Prevents drift and collusion between scorer and evolution
++
++    Usage:
++    >>> config = Config()
++    >>> config.autopoietic.enabled = True
++    >>> config.autopoietic.external_model = "gemini-2.5-flash"
++    """
++
++    # Master toggle (disabled by default for backward compatibility)
++    enabled: bool = False
++
++    # Update frequency settings
++    judge_update_freq: int = Field(default=5, ge=1, le=50)  # Generations between external grounding
++    external_sample_size: int = Field(default=3, ge=1, le=20)  # Solutions to evaluate externally per update
++
++    # Homeostatic temperature control
++    target_diversity: float = Field(default=0.4, ge=0.1, le=0.9)  # Target diversity D*
++    homeostasis_k: float = Field(default=0.1, ge=0.01, le=1.0)  # Control gain k
++    min_temperature: float = Field(default=0.1, ge=0.01, le=1.0)  # Temperature floor
++    max_temperature: float = Field(default=2.0, ge=0.5, le=5.0)  # Temperature ceiling
++
++    # EMA settings for internal scorer
++    ema_decay: float = Field(default=0.99, ge=0.9, le=0.999)  # EMA decay for scorer updates
++
++    # Trust weighting between internal and external
++    initial_internal_trust: float = Field(default=0.3, ge=0.0, le=1.0)  # Starting trust in internal scorer
++    max_internal_trust: float = Field(default=0.9, ge=0.5, le=1.0)  # Maximum trust in internal scorer
++    trust_growth_rate: float = Field(default=0.05, ge=0.0, le=0.5)  # Trust growth per successful grounding
++
++    # Experience buffer settings
++    buffer_size: int = Field(default=1000, ge=100, le=10000)  # Max entries in experience buffer
++
++    # External evaluator settings
++    external_model: str = "gemini-2.5-flash"  # Model for external grounding
++    external_temperature: float = Field(default=0.0, ge=0.0, le=1.0)  # Temperature for external eval (0 = deterministic)
++
++    # Anchor set for correlation monitoring
++    anchor_set_size: int = Field(default=50, ge=10, le=200)  # Size of fixed anchor set
++    correlation_threshold: float = Field(default=0.3, ge=0.0, le=1.0)  # Minimum correlation to increase trust
++
++    class Config:
++        extra = "forbid"
++
++
++class GrammarConfig(BaseModel):
++    """
++    Configuration for Fractal Latent Grammars.
++
++    Fractal grammars provide a compositional, rule-based approach to latent
++    space exploration. Instead of evolving raw latent vectors, we evolve
++    grammar structures that GENERATE latents through recursive expansion.
++
++    Key Concepts:
++
++    **Grammar Rules**:
++    - Each rule defines a contractive transform: T_r(z) = P_r * f(W_r @ z + b_r)
++    - Contraction (||W_r||_2 < 1) ensures convergence to attractors
++    - Rules are shared across the grammar for efficient representation
++
++    **AND/OR Trees**:
++    - AND nodes: Combine children via weighted average (blend perspectives)
++    - OR nodes: Select best child via gating (choose strategy)
++    - LEAF nodes: Apply a rule to input or constant
++
++    **Fractal Structure**:
++    - Self-similar: subtrees can be reused/referenced
++    - Compositional: complex behaviors from simple rules
++    - Compressible: grammar << expanded latent representation
++
++    Benefits:
++    - More structured search space than raw latent evolution
++    - Natural compositionality for complex reasoning
++    - Better interpretability (grammar structure reveals strategy)
++    - Synergy with QD (grammars as archive elements)
++
++    Usage:
++    >>> config = Config()
++    >>> config.grammar.enabled = True
++    >>> config.grammar.num_rules = 8
++    >>> config.grammar.max_depth = 4
++    """
++
++    # Master toggle (disabled by default for backward compatibility)
++    enabled: bool = False
++
++    # Rule settings
++    num_rules: int = Field(default=8, ge=2, le=32)  # Number of grammar rules
++    rule_hidden_dim: int = Field(default=256, ge=64, le=1024)  # Hidden dimension in rules
++    contraction_factor: float = Field(default=0.9, ge=0.5, le=0.99)  # Max spectral norm for W
++
++    # Tree structure settings
++    max_depth: int = Field(default=4, ge=2, le=8)  # Maximum tree depth
++    min_depth: int = Field(default=2, ge=1, le=4)  # Minimum tree depth
++    branching_factor: int = Field(default=3, ge=2, le=5)  # Max children per node
++
++    # Node type probabilities (for random initialization)
++    and_prob: float = Field(default=0.4, ge=0.0, le=1.0)  # Probability of AND node
++    or_prob: float = Field(default=0.3, ge=0.0, le=1.0)  # Probability of OR node
++    # LEAF prob = 1 - and_prob - or_prob
++
++    # Evolution settings (for GrammarEvolutionLoop)
++    population_size: int = Field(default=20, ge=4, le=100)  # Grammar population size
++    offspring_size: int = Field(default=10, ge=2, le=50)  # Offspring per generation
++    mutation_rate: float = Field(default=0.5, ge=0.0, le=1.0)  # Base mutation rate (increased for exploration)
++    crossover_rate: float = Field(default=0.3, ge=0.0, le=1.0)  # Crossover probability
++    tournament_size: int = Field(default=3, ge=2, le=10)  # Tournament selection size
++
++    # Structural mutation settings
++    structure_mutation_rate: float = Field(default=0.35, ge=0.0, le=1.0)  # Rate of structural mutations (increased)
++    param_mutation_scale: float = Field(default=0.15, ge=0.01, le=1.0)  # Scale for parameter mutations (increased)
++    depth_decay: float = Field(default=0.8, ge=0.5, le=1.0)  # Mutation rate decay with depth
++
++    # Attractor projection
++    use_attractor_projection: bool = True  # Project to rule attractors
++    attractor_iterations: int = Field(default=5, ge=1, le=20)  # IFS iterations
++
++    # Initialization
++    init_strategy: Literal["random", "balanced", "deep"] = "balanced"
++
++    class Config:
++        extra = "forbid"
++
++
++class GeometryConfig(BaseModel):
++    """
++    Configuration for latent space geometry.
++
++    Controls whether evolution operates in Euclidean or hyperbolic space.
++    Hyperbolic geometry naturally matches hierarchical reasoning structures
++    due to its exponential volume growth, enabling better separation of
++    reasoning branches.
++
++    Geometry Types:
++
++    **euclidean** (default): Standard flat geometry
++    - Traditional latent space operations
++    - Cosine similarity and L2 distance
++    - Well-understood and stable
++
++    **hyperbolic**: Poincaré ball model
++    - Exponential volume growth matches tree structures
++    - Better separation of hierarchical reasoning branches
++    - Enables implicit multi-branch tree search
++    - Requires Riemannian operations (slightly slower)
++
++    Curvature Guidelines:
++    - Higher curvature (>1.0): More curved space, faster hierarchy separation
++    - Lower curvature (<1.0): Closer to Euclidean, gentler hierarchy
++    - Default 1.0 is a good starting point
++
++    Reference: "Hyperbolic Neural Networks" (Ganea et al., 2018)
++    """
++
++    # Geometry type selection
++    space: Literal["euclidean", "hyperbolic"] = "euclidean"
++
++    # Hyperbolic space parameters (Poincaré ball model)
++    model: Literal["poincare", "lorentz"] = "poincare"
++    curvature: float = Field(default=1.0, ge=0.1, le=5.0)  # Negative curvature magnitude
++
++    # Mapping parameters (Euclidean → Hyperbolic)
++    tangent_scale: float = Field(default=0.35, ge=0.1, le=0.9)  # Scale for expmap0 input
++    max_norm: float = Field(default=0.98, ge=0.8, le=0.999)  # Maximum norm in ball (stability)
++
++    # Evolution-specific hyperbolic parameters
++    mutation_noise_scale: float = Field(default=0.35, ge=0.05, le=1.0)  # Tangent space noise scale
++    barycenter_iterations: int = Field(default=7, ge=3, le=20)  # Karcher mean iterations
++
++    # Distance thresholds (in hyperbolic distance)
++    merge_threshold: float = Field(default=0.15, ge=0.01, le=1.0)  # For merging similar chains
++    loop_threshold: float = Field(default=0.10, ge=0.01, le=0.5)  # For detecting loops
++
++    # Curvature annealing (for stability)
++    anneal_curvature: bool = False  # Start low, increase over generations
++    initial_curvature: float = Field(default=0.1, ge=0.01, le=1.0)
++    final_curvature: float = Field(default=1.0, ge=0.1, le=5.0)
++    anneal_generations: int = Field(default=20, ge=5, le=100)
++
++    class Config:
++        extra = "forbid"
++
++
++class Config(BaseModel):
++    """
++    Main configuration for the Latent Space Reasoning Engine.
++
++    This is the central configuration object that controls all aspects of the
++    reasoning system. It provides a hierarchical structure for organizing
++    settings and supports both programmatic and file-based configuration.
++
++    Configuration Sections:
++    - **encoder**: Model and parameters for text-to-latent conversion
++    - **judges**: Scoring and modification strategies for evaluation
++    - **evolution**: Evolutionary algorithm parameters and strategies
++    - **budget**: Computational limits and resource management
++    - **synthesis**: Final response generation and decoding
++    - **output**: Logging, formatting, and result storage
++    - **benchmark**: Evaluation and comparison settings
++
++    Usage Patterns:
++
++    **Default Configuration**:
++    >>> config = Config()  # Uses sensible defaults
++    >>> engine = Engine(config=config)
++
++    **Programmatic Customization**:
++    >>> config = Config()
++    >>> config.encoder.model = "Qwen/Qwen3-1.7B"  # Smaller model
++    >>> config.evolution.chains = 20              # More exploration
++    >>> config.output.verbosity = "verbose"       # Detailed logging
++
++    **YAML Configuration**:
++    >>> config = Config.from_yaml("my_config.yaml")
++    >>> # Modify if needed
++    >>> config.evolution.generations = 50
++    >>> config.to_yaml("updated_config.yaml")
++
++    **Environment-specific Configs**:
++    >>> # Development: fast iteration
++    >>> dev_config = Config()
++    >>> dev_config.evolution.chains = 5
++    >>> dev_config.evolution.generations = 10
++    >>>
++    >>> # Production: high quality
++    >>> prod_config = Config()
++    >>> prod_config.evolution.chains = 20
++    >>> prod_config.evolution.generations = 50
++    >>> prod_config.budget.max_time = 300  # 5 minute limit
++
++    The configuration system uses Pydantic for validation, ensuring that
++    all parameters are valid and providing helpful error messages for
++    invalid configurations.
++    """
++
++    encoder: EncoderConfig = Field(default_factory=EncoderConfig)
++    judges: JudgeConfig = Field(default_factory=JudgeConfig)
++    evolution: EvolutionConfig = Field(default_factory=EvolutionConfig)
++    budget: BudgetConfig = Field(default_factory=BudgetConfig)
++    synthesis: SynthesisConfig = Field(default_factory=SynthesisConfig)
++    output: OutputConfig = Field(default_factory=OutputConfig)
++    benchmark: BenchmarkConfig = Field(default_factory=BenchmarkConfig)
++    qd: QDConfig = Field(default_factory=QDConfig)  # Quality Diversity settings
++    autopoietic: AutopoieticJudgeConfig = Field(default_factory=AutopoieticJudgeConfig)  # Self-updating judge
++    grammar: GrammarConfig = Field(default_factory=GrammarConfig)  # Fractal grammar settings
++    geometry: GeometryConfig = Field(default_factory=GeometryConfig)  # Latent space geometry (Euclidean/Hyperbolic)
++
++    class Config:
++        extra = "forbid"
++
++    @classmethod
++    def from_yaml(cls, path: str | Path) -> "Config":
++        """Load configuration from a YAML file."""
++        with open(path) as f:
++            data = yaml.safe_load(f)
++        return cls.from_dict(data)
++
++    @classmethod
++    def from_dict(cls, data: dict) -> "Config":
++        """Load configuration from a dictionary."""
++        return cls(**data)
++
++    def to_yaml(self, path: str | Path) -> None:
++        """Save configuration to a YAML file."""
++        with open(path, "w") as f:
++            yaml.dump(self.model_dump(), f, default_flow_style=False)
++
++    def to_dict(self) -> dict:
++        """Convert configuration to a dictionary."""
++        return self.model_dump()
++
++
++def get_default_config() -> Config:
++    """Get a default configuration with sensible defaults for testing."""       
++    return Config(
++        encoder=EncoderConfig(model="Qwen/Qwen3-1.7B"),
++        judges=JudgeConfig(
++            # Use smaller encoder model for scoring (faster)
++            scorers=[ScorerConfig(type="semantic", model="sentence-transformers/all-MiniLM-L6-v2")],
++            # Use smaller Qwen3 for modifications
++            modifiers=[ModifierConfig(model="Qwen/Qwen3-1.7B")],
++        ),
++        evolution=EvolutionConfig(
++            chains=5,
++            generations=10,
++            temperature=0.5,
++        ),
++        budget=BudgetConfig(max_evaluations=200),
++    )
++
++
++def get_trained_scorer_config(checkpoint_path: str = "checkpoints/latent_scorer/final_model.pt") -> Config:
++    """Get a configuration that uses the trained latent scorer."""
++    return Config(
++        encoder=EncoderConfig(model="Qwen/Qwen3-1.7B"),
++        judges=JudgeConfig(
++            scorers=[ScorerConfig(
++                type="trained_latent",
++                checkpoint=checkpoint_path,
++                latent_dim=1024,
++            )],
++            modifiers=[],  # No modifier for cleaner experiments
++        ),
++        evolution=EvolutionConfig(
++            chains=5,
++            generations=15,
++            temperature=0.5,
++        ),
++        budget=BudgetConfig(max_evaluations=300),
++    )
+
+
+thinking
+**Applying encoded text insertion**
+exec
+"C:\\WINDOWS\\System32\\WindowsPowerShell\\v1.0\\powershell.exe" -Command "python -c \"from pathlib import Path; p=Path('src/latent_reasoning/config.py'); text=p.read_text(encoding='utf-8'); old='    decode_strategy: Literal[\\\"best\\\", \\\"combined\\\"] = \\\"best\\\"'; new=old+'\\n    decode_conditioning_mode: Literal[\\\"rng_seed\\\", \\\"soft_prompt_fixed\\\", \\\"hybrid\\\"] = \\\"rng_seed\\\"';\\nif old not in text: raise SystemExit('target not found'); text=text.replace(old,new,1); p.write_text(text,encoding='utf-8',newline='\\n')\"" in C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning exited 1 in 234ms:
+[?25l[2J[m[H  File "<string>", line 1
+]0;C:\WINDOWS\System32\WindowsPowerShell\v1.0\powershell.exe[?25h    from pathlib import Path; p=Path('src/latent_reasoning/config.py'); text=p.read_text(encoding='utf-8'); old='    decode_strategy: Literal[" best\,
+                                                                                                                ^
+SyntaxError: unterminated string literal (detected at line 1)
+file update:
+diff --git a/src/latent_reasoning/config.py b/src/latent_reasoning/config.py
+index fedd6a300549320fd49ab0e744866bebf5dd504b..2480bff8285897cc110bda1151ac320bae4aaabc
+--- a/src/latent_reasoning/config.py
++++ b/src/latent_reasoning/config.py
+@@ -1,768 +1,768 @@
+-"""
+-Configuration schema for Latent Space Reasoning Engine.
+-
+-This module defines all configuration classes using Pydantic for validation
+-and type safety. The main Config class combines all settings and can be
+-loaded from YAML files for easy customization.
+-
+-Key configuration areas:
+-- EncoderConfig: Model selection and encoding parameters
+-- JudgeConfig: Scoring and evaluation settings
+-- EvolutionConfig: Evolutionary algorithm parameters
+-- BudgetConfig: Compute limits and timeouts
+-- SynthesisConfig: Text generation settings
+-- OutputConfig: Logging and formatting options
+-"""
+-
+-from __future__ import annotations
+-
+-from enum import IntEnum
+-from pathlib import Path
+-from typing import Literal
+-
+-import yaml
+-from pydantic import BaseModel, Field
+-
+-
+-class Verbosity(IntEnum):
+-    """
+-    Verbosity levels for logging output.
+-
+-    Controls how much information is displayed during reasoning:
+-    - SILENT (0): Only errors
+-    - MINIMAL (1): Just final results
+-    - NORMAL (2): Progress updates (default)
+-    - VERBOSE (3): Detailed evolution info
+-    - DEBUG (4): Everything including internal state
+-    """
+-    SILENT = 0
+-    MINIMAL = 1
+-    NORMAL = 2
+-    VERBOSE = 3
+-    DEBUG = 4
+-
+-
+-class EncoderConfig(BaseModel):
+-    """
+-    Configuration for the encoder model that converts text to latent vectors.
+-
+-    The encoder is the foundation of the entire reasoning system - it defines the
+-    latent space where evolutionary optimization occurs. The choice of encoder
+-    model and parameters significantly impacts both quality and performance.
+-
+-    Model Selection Guidelines:
+-    - **Qwen/Qwen3-4B**: Best quality, requires ~8GB VRAM
+-    - **Qwen/Qwen3-1.7B**: Good balance of quality/speed, ~4GB VRAM (default)
+-    - **Qwen/Qwen3-0.6B**: Fastest, minimal VRAM (~2GB), lower quality
+-    - **microsoft/Phi-3.5-mini-instruct**: Alternative, good for reasoning
+-    - **Local models**: Use absolute path to local model directory
+-
+-    Layer Selection:
+-    - **-4 (default)**: 4th layer from end, optimal for most reasoning tasks
+-    - **-2 to -6**: Earlier layers capture syntax, later capture semantics
+-    - **-1**: Final layer, most semantic but may be over-specialized
+-
+-    Pooling Strategies:
+-    - **mean**: Average all tokens, captures full context (recommended)
+-    - **last**: Use final token, good for completion-style tasks
+-    - **cls**: Use first token, for models with explicit CLS tokens
+-
+-    Latent Dimension:
+-    - **latent_dim**: Canonical latent space size used across models
+-    - If different from model hidden size, the encoder projects to this size
+-
+-    Performance Considerations:
+-    - Larger models produce higher quality but require more compute
+-    - Layer choice affects both quality and evolution effectiveness
+-    - max_length impacts memory usage and processing time
+-    """
+-
+-    # Model selection - choose based on your hardware and quality needs
+-    model: str = "Qwen/Qwen3-1.7B"  # HuggingFace model ID or local path
+-
+-    # Latent extraction settings
+-    layer: int = -4                # Which hidden layer to extract (-4 = 4th from last, usually optimal)
+-    pooling: Literal["mean", "last", "cls"] = "mean"  # How to pool sequence dimension
+-    latent_dim: int = Field(default=1024, ge=1)  # Canonical latent dimension
+-
+-    # Hardware settings
+-    device: str = "auto"           # Device: "auto", "cuda", "cuda:0", "cpu"
+-    quantization: Literal["auto", "none", "4bit"] = "4bit"
+-    max_length: int = Field(default=2048, ge=1, le=32768)  # Maximum input sequence length
+-
+-    class Config:
+-        extra = "forbid"  # Prevent typos in config files
+-
+-
+-class ScorerConfig(BaseModel):
+-    """
+-    Configuration for a scorer judge that evaluates latent vector quality.
+-
+-    Scorers are the critical component that drives evolution - they determine
+-    which latent vectors represent higher-quality responses and should survive
+-    to the next generation. The quality of scoring directly impacts the
+-    effectiveness of the evolutionary process.
+-
+-    Scorer Types:
+-
+-    **semantic**: Cosine similarity-based scoring
+-    - Uses a separate embedding model to encode the query
+-    - Scores latents based on similarity to query embedding
+-    - Fast and general-purpose, works out-of-the-box
+-    - Best for: Initial experiments, general reasoning tasks
+-    - Limitations: May not capture task-specific quality nuances
+-
+-    **trained_latent**: Neural network trained on quality data
+-    - Uses a specialized network trained to predict response quality
+-    - Works directly in the encoder's latent space
+-    - More accurate and task-specific than semantic similarity
+-    - Best for: Production use, specific domains with training data
+-    - Requirements: Trained checkpoint file matching encoder dimension
+-
+-    Configuration Guidelines:
+-    - Start with semantic for quick experiments
+-    - Use trained_latent for best quality when available
+-    - Multiple scorers can be combined for robust evaluation
+-    - Ensure latent_dim matches your encoder's output dimension
+-    """
+-
+-    # Scorer type selection
+-    type: Literal["semantic", "trained_latent"] = "semantic"
+-
+-    # For semantic scorer (cosine similarity based)
+-    model: str | None = None       # HuggingFace model for encoding (e.g., "sentence-transformers/all-MiniLM-L6-v2")
+-    layer: int = -1                # Which layer to extract from semantic model
+-    head: str | None = None        # Optional path to trained regression head weights
+-    quantization: Literal["auto", "none", "4bit"] = "none"
+-
+-    # For trained_latent scorer (neural network trained on quality data)
+-    checkpoint: str | None = None  # Path to trained LatentScorer checkpoint
+-    latent_dim: int = 1024         # Latent dimension (must match encoder)
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class ModifierConfig(BaseModel):
+-    """
+-    Configuration for a modifier judge that suggests improvements.
+-
+-    Modifiers analyze latent vectors and suggest directions for mutation
+-    to improve quality. They use LLM hidden states to understand what
+-    changes might help.
+-    """
+-
+-    model: str                     # HuggingFace model for modification suggestions
+-    layers: list[int] = Field(default_factory=lambda: [-8, -4])  # Hidden layers to extract from
+-    quantization: Literal["auto", "none", "4bit"] = "auto"
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class JudgeConfig(BaseModel):
+-    """
+-    Configuration for the judge panel that evaluates and improves latents.
+-
+-    The judge panel combines multiple scorers and modifiers to evaluate
+-    latent vector quality and suggest improvements during evolution.
+-    """
+-
+-    # Scorer configuration - determines quality evaluation
+-    scorers: list[ScorerConfig] = Field(
+-        default_factory=lambda: [ScorerConfig(
+-            type="trained_latent",
+-            checkpoint="checkpoints/latent_scorer/final_model.pt",
+-            latent_dim=1024,
+-        )]
+-    )
+-
+-    # Modifier configuration - suggests improvements (optional)
+-    modifiers: list[ModifierConfig] = Field(default_factory=list)
+-
+-    # Judge panel behavior
+-    aggregation: Literal["mean", "weighted", "max", "min"] = "mean"  # How to combine multiple scorer outputs
+-    calibrate: bool = True         # Whether to normalize scores to zero-mean
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class SelectionConfig(BaseModel):
+-    """
+-    Configuration for selection strategy in evolution.
+-
+-    Selection determines which latent vectors survive to the next generation.
+-    Different strategies balance exploration vs exploitation.
+-    """
+-
+-    strategy: Literal["elitist", "tournament", "roulette", "rank"] = "elitist"
+-    survivors: int = Field(default=5, ge=1)    # How many chains to keep each generation
+-    elite: int = Field(default=2, ge=0)        # Always keep top N (for elitist strategy)
+-    diversity_quota: float = Field(default=0.5, ge=0.0, le=1.0)  # Fraction of chains protected for diversity (increased for better exploration)
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class MutationConfig(BaseModel):
+-    """
+-    Configuration for mutation strategy in evolution.
+-
+-    Mutation adds variation to latent vectors to explore new regions
+-    of the latent space. Different strategies balance random exploration
+-    with directed improvement.
+-    """
+-
+-    strategy: Literal["directed", "gaussian", "adaptive"] = "directed"
+-    trust: float = Field(default=0.5, ge=0, le=1)  # How much to trust modifier suggestions (0=random, 1=fully directed)
+-    noise_scale: float = Field(default=0.5, ge=0, le=2)  # Base scale for random noise in mutation
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class CrossoverConfig(BaseModel):
+-    """
+-    Configuration for crossover strategy in evolution.
+-
+-    Crossover combines high-scoring parent latents to create children
+-    that inherit beneficial traits from both parents.
+-    """
+-
+-    strategy: Literal["weighted", "mean", "interpolation"] = "weighted"
+-    threshold: float = Field(default=0.3, ge=0, le=1)  # Minimum population diversity required for crossover
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class MergeConfig(BaseModel):
+-    """
+-    Configuration for merging similar chains.
+-
+-    When chains become too similar, they can be merged to avoid
+-    wasting computation on redundant exploration.
+-    """
+-
+-    threshold: float = Field(default=0.95, ge=0, le=1)  # Cosine similarity threshold for merging (0.95 = very similar)
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class ConvergenceConfig(BaseModel):
+-    """
+-    Configuration for convergence detection.
+-
+-    Evolution stops early when convergence criteria are met,
+-    saving computation when further improvement is unlikely.
+-    """
+-
+-    threshold: float = Field(default=0.95, ge=0, le=1)  # Score threshold for early stopping
+-    patience: int = Field(default=5, ge=1)              # Generations without improvement before stopping
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class EvolutionConfig(BaseModel):
+-    """
+-    Configuration for the evolutionary optimization process.
+-
+-    Controls the core evolutionary algorithm that optimizes latent vectors
+-    through selection, mutation, and crossover operations. These parameters
+-    significantly impact both quality and computational efficiency.
+-
+-    Key Parameters:
+-
+-    **Population Settings**:
+-    - chains: Population size (more = better exploration, slower)
+-    - generations: Evolution cycles (more = better optimization, slower)
+-
+-    **Mutation Control**:
+-    - temperature: Mutation strength (higher = more exploration)
+-    - temperature_decay: Cooling schedule (gradual focus on exploitation)
+-    - min_viable_score: Quality threshold for survival
+-
+-    **Algorithm Components**:
+-    - selection: How survivors are chosen each generation
+-    - mutation: How variations are created
+-    - crossover: How parents are combined
+-    - merge: When similar chains are consolidated
+-    - convergence: Early stopping criteria
+-
+-    Tuning Guidelines:
+-    - **Fast experiments**: chains=5, generations=10
+-    - **Balanced (default)**: chains=10, generations=30
+-    - **High quality**: chains=20, generations=50
+-    - **Research**: chains=50, generations=100+
+-
+-    Temperature Schedule:
+-    - Start high (0.8-1.0) for exploration
+-    - Decay gradually (0.95-0.98) to focus search
+-    - End low (0.1-0.3) for fine-tuning
+-    """
+-
+-    chains: int = Field(default=10, ge=1)
+-    generations: int = Field(default=30, ge=1)
+-    temperature: float = Field(default=0.5, ge=0, le=2)
+-    temperature_decay: float = Field(default=0.95, ge=0, le=1)
+-    min_viable_score: float = Field(default=0.1, ge=0, le=1)
+-    initial_diversity: float = Field(default=2.0, ge=0.1, le=10.0)  # Multiplier for initial population noise
+-    diversity_weight: float = Field(default=0.1, ge=0, le=1.0)  # Weight for diversity bonus in scoring
+-    selection: SelectionConfig = Field(default_factory=SelectionConfig)
+-    mutation: MutationConfig = Field(default_factory=MutationConfig)
+-    crossover: CrossoverConfig = Field(default_factory=CrossoverConfig)
+-    merge: MergeConfig = Field(default_factory=MergeConfig)
+-    convergence: ConvergenceConfig = Field(default_factory=ConvergenceConfig)
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class BudgetConfig(BaseModel):
+-    """Configuration for compute budget."""
+-    max_evaluations: int = Field(default=500, ge=1)
+-    max_time: float | None = None  # Seconds, None = unlimited
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class SynthesisConfig(BaseModel):
+-    """Configuration for final synthesis."""
+-    decoder: str | None = None  # None = use encoder model
+-    model: str = "gemini-2.5-flash"  # Frontier model for synthesis
+-    decode_strategy: Literal["best", "combined"] = "best"
+-    max_survivors: int = Field(default=5, ge=1)
+-    max_tokens: int = Field(default=2048, ge=1, le=32768)  # Max output tokens  
+-    temperature: float = Field(default=0.7, ge=0, le=2.0)  # Decode temperature
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class OutputConfig(BaseModel):
+-    """Configuration for output settings."""
+-    verbosity: Literal["silent", "minimal", "normal", "verbose", "debug"] = "normal"
+-    format: Literal["text", "json", "markdown"] = "text"
+-    save_history: bool = False
+-    history_path: str | None = None
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class BenchmarkConfig(BaseModel):
+-    """Configuration for benchmarks/evaluation."""
+-    judge_model: str = "gemini-2.5-flash"
+-    blind: bool = True
+-    temperature: float = 0  # Deterministic judging
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class QDConfig(BaseModel):
+-    """
+-    Configuration for Quality Diversity (QD) integration.
+-
+-    QD algorithms maintain an archive of diverse, high-quality solutions
+-    rather than converging to a single optimum. This enables exploration
+-    of multiple reasoning strategies for the same query.
+-
+-    Key Concepts:
+-
+-    **Behavioral Descriptors (BDs)**:
+-    - Low-dimensional vectors that characterize HOW a solution achieves its goal
+-    - Computed using Random Fourier Features (RFF) for efficient projection
+-    - Combine latent statistics, structural features, and trajectory information
+-
+-    **Novelty Search**:
+-    - Rewards solutions that are different from existing archive members
+-    - Uses k-nearest neighbor distance in BD space
+-    - Balances fitness (quality) with novelty (diversity)
+-
+-    **DNS Archive**:
+-    - Dominated Novelty Search: gridless QD algorithm
+-    - Stores diverse high-quality solutions without predefined grid boundaries
+-    - Outperforms MAP-Elites in high-dimensional spaces
+-
+-    Benefits:
+-    - Addresses diversity collapse in evolution
+-    - Provides multiple valid reasoning approaches per query
+-    - Enables recovery from local optima through diversity pressure
+-
+-    Usage:
+-    >>> config = Config()
+-    >>> config.qd.enabled = True
+-    >>> config.qd.novelty_weight = 0.3  # Balance fitness vs novelty
+-    """
+-
+-    # Master toggle (disabled by default for backward compatibility)
+-    enabled: bool = False
+-
+-    # Behavioral descriptor settings
+-    bd_dim: int = Field(default=16, ge=4, le=64)  # BD dimensionality (8-16 recommended)
+-    rff_gamma: float = Field(default=0.1, ge=0.01, le=1.0)  # RFF kernel bandwidth
+-
+-    # BD component weights (should roughly sum to 1.0)
+-    bd_latent_weight: float = Field(default=0.5, ge=0.0, le=1.0)  # Weight for latent position
+-    bd_structural_weight: float = Field(default=0.25, ge=0.0, le=1.0)  # Weight for structural stats
+-    bd_trajectory_weight: float = Field(default=0.25, ge=0.0, le=1.0)  # Weight for trajectory
+-
+-    # Novelty computation
+-    novelty_k: int = Field(default=10, ge=3, le=50)  # k for k-NN novelty
+-    novelty_weight: float = Field(default=0.3, ge=0.0, le=1.0)  # Alpha: qd_score = (1-α)*fitness + α*novelty
+-
+-    # Archive settings
+-    archive_type: Literal["dns", "map_elites"] = "dns"  # Archive algorithm (NOTE: only dns currently implemented)
+-    archive_size: int = Field(default=500, ge=50, le=5000)  # Maximum archive entries
+-    domination_threshold: float = Field(default=0.1, ge=0.01, le=0.5)  # BD distance for domination check
+-    novelty_threshold: float = Field(default=0.05, ge=0.0, le=0.5)  # Minimum novelty for automatic archive addition
+-
+-    # Semantic duplicate detection (NOTE: not yet implemented - reserved for future use)
+-    semantic_threshold: float = Field(default=0.95, ge=0.8, le=1.0)  # Cosine similarity threshold
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class AutopoieticJudgeConfig(BaseModel):
+-    """
+-    Configuration for Autopoietic (self-updating) Judge system.
+-
+-    The autopoietic judge addresses the known scorer weakness (low correlation
+-    with external quality) by:
+-    1. Maintaining an experience buffer for online learning
+-    2. Periodically grounding internal scores against external evaluation
+-    3. Using homeostatic temperature control for diversity maintenance
+-
+-    Key Concepts:
+-
+-    **Two-Time-Scale Learning**:
+-    - Fast: EMA update of internal scorer (every evaluation)
+-    - Slow: Grounding against external evaluator (every judge_update_freq generations)
+-
+-    **Homeostatic Temperature Control**:
+-    - Automatically adjusts mutation temperature based on diversity metrics
+-    - Formula: T_{t+1} = T_t * exp(k * (D* - D_t))
+-    - Where D* is target_diversity and D_t is current measured diversity
+-
+-    **Trust Weighting**:
+-    - Balances internal scorer vs external evaluator
+-    - Starts with more external weight, shifts to internal as correlation improves
+-
+-    **External Grounding**:
+-    - Samples top solutions and evaluates with external judge (e.g., Gemini)
+-    - Updates internal scorer to align with external quality signal
+-    - Prevents drift and collusion between scorer and evolution
+-
+-    Usage:
+-    >>> config = Config()
+-    >>> config.autopoietic.enabled = True
+-    >>> config.autopoietic.external_model = "gemini-2.5-flash"
+-    """
+-
+-    # Master toggle (disabled by default for backward compatibility)
+-    enabled: bool = False
+-
+-    # Update frequency settings
+-    judge_update_freq: int = Field(default=5, ge=1, le=50)  # Generations between external grounding
+-    external_sample_size: int = Field(default=3, ge=1, le=20)  # Solutions to evaluate externally per update
+-
+-    # Homeostatic temperature control
+-    target_diversity: float = Field(default=0.4, ge=0.1, le=0.9)  # Target diversity D*
+-    homeostasis_k: float = Field(default=0.1, ge=0.01, le=1.0)  # Control gain k
+-    min_temperature: float = Field(default=0.1, ge=0.01, le=1.0)  # Temperature floor
+-    max_temperature: float = Field(default=2.0, ge=0.5, le=5.0)  # Temperature ceiling
+-
+-    # EMA settings for internal scorer
+-    ema_decay: float = Field(default=0.99, ge=0.9, le=0.999)  # EMA decay for scorer updates
+-
+-    # Trust weighting between internal and external
+-    initial_internal_trust: float = Field(default=0.3, ge=0.0, le=1.0)  # Starting trust in internal scorer
+-    max_internal_trust: float = Field(default=0.9, ge=0.5, le=1.0)  # Maximum trust in internal scorer
+-    trust_growth_rate: float = Field(default=0.05, ge=0.0, le=0.5)  # Trust growth per successful grounding
+-
+-    # Experience buffer settings
+-    buffer_size: int = Field(default=1000, ge=100, le=10000)  # Max entries in experience buffer
+-
+-    # External evaluator settings
+-    external_model: str = "gemini-2.5-flash"  # Model for external grounding
+-    external_temperature: float = Field(default=0.0, ge=0.0, le=1.0)  # Temperature for external eval (0 = deterministic)
+-
+-    # Anchor set for correlation monitoring
+-    anchor_set_size: int = Field(default=50, ge=10, le=200)  # Size of fixed anchor set
+-    correlation_threshold: float = Field(default=0.3, ge=0.0, le=1.0)  # Minimum correlation to increase trust
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class GrammarConfig(BaseModel):
+-    """
+-    Configuration for Fractal Latent Grammars.
+-
+-    Fractal grammars provide a compositional, rule-based approach to latent
+-    space exploration. Instead of evolving raw latent vectors, we evolve
+-    grammar structures that GENERATE latents through recursive expansion.
+-
+-    Key Concepts:
+-
+-    **Grammar Rules**:
+-    - Each rule defines a contractive transform: T_r(z) = P_r * f(W_r @ z + b_r)
+-    - Contraction (||W_r||_2 < 1) ensures convergence to attractors
+-    - Rules are shared across the grammar for efficient representation
+-
+-    **AND/OR Trees**:
+-    - AND nodes: Combine children via weighted average (blend perspectives)
+-    - OR nodes: Select best child via gating (choose strategy)
+-    - LEAF nodes: Apply a rule to input or constant
+-
+-    **Fractal Structure**:
+-    - Self-similar: subtrees can be reused/referenced
+-    - Compositional: complex behaviors from simple rules
+-    - Compressible: grammar << expanded latent representation
+-
+-    Benefits:
+-    - More structured search space than raw latent evolution
+-    - Natural compositionality for complex reasoning
+-    - Better interpretability (grammar structure reveals strategy)
+-    - Synergy with QD (grammars as archive elements)
+-
+-    Usage:
+-    >>> config = Config()
+-    >>> config.grammar.enabled = True
+-    >>> config.grammar.num_rules = 8
+-    >>> config.grammar.max_depth = 4
+-    """
+-
+-    # Master toggle (disabled by default for backward compatibility)
+-    enabled: bool = False
+-
+-    # Rule settings
+-    num_rules: int = Field(default=8, ge=2, le=32)  # Number of grammar rules
+-    rule_hidden_dim: int = Field(default=256, ge=64, le=1024)  # Hidden dimension in rules
+-    contraction_factor: float = Field(default=0.9, ge=0.5, le=0.99)  # Max spectral norm for W
+-
+-    # Tree structure settings
+-    max_depth: int = Field(default=4, ge=2, le=8)  # Maximum tree depth
+-    min_depth: int = Field(default=2, ge=1, le=4)  # Minimum tree depth
+-    branching_factor: int = Field(default=3, ge=2, le=5)  # Max children per node
+-
+-    # Node type probabilities (for random initialization)
+-    and_prob: float = Field(default=0.4, ge=0.0, le=1.0)  # Probability of AND node
+-    or_prob: float = Field(default=0.3, ge=0.0, le=1.0)  # Probability of OR node
+-    # LEAF prob = 1 - and_prob - or_prob
+-
+-    # Evolution settings (for GrammarEvolutionLoop)
+-    population_size: int = Field(default=20, ge=4, le=100)  # Grammar population size
+-    offspring_size: int = Field(default=10, ge=2, le=50)  # Offspring per generation
+-    mutation_rate: float = Field(default=0.5, ge=0.0, le=1.0)  # Base mutation rate (increased for exploration)
+-    crossover_rate: float = Field(default=0.3, ge=0.0, le=1.0)  # Crossover probability
+-    tournament_size: int = Field(default=3, ge=2, le=10)  # Tournament selection size
+-
+-    # Structural mutation settings
+-    structure_mutation_rate: float = Field(default=0.35, ge=0.0, le=1.0)  # Rate of structural mutations (increased)
+-    param_mutation_scale: float = Field(default=0.15, ge=0.01, le=1.0)  # Scale for parameter mutations (increased)
+-    depth_decay: float = Field(default=0.8, ge=0.5, le=1.0)  # Mutation rate decay with depth
+-
+-    # Attractor projection
+-    use_attractor_projection: bool = True  # Project to rule attractors
+-    attractor_iterations: int = Field(default=5, ge=1, le=20)  # IFS iterations
+-
+-    # Initialization
+-    init_strategy: Literal["random", "balanced", "deep"] = "balanced"
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class GeometryConfig(BaseModel):
+-    """
+-    Configuration for latent space geometry.
+-
+-    Controls whether evolution operates in Euclidean or hyperbolic space.
+-    Hyperbolic geometry naturally matches hierarchical reasoning structures
+-    due to its exponential volume growth, enabling better separation of
+-    reasoning branches.
+-
+-    Geometry Types:
+-
+-    **euclidean** (default): Standard flat geometry
+-    - Traditional latent space operations
+-    - Cosine similarity and L2 distance
+-    - Well-understood and stable
+-
+-    **hyperbolic**: Poincaré ball model
+-    - Exponential volume growth matches tree structures
+-    - Better separation of hierarchical reasoning branches
+-    - Enables implicit multi-branch tree search
+-    - Requires Riemannian operations (slightly slower)
+-
+-    Curvature Guidelines:
+-    - Higher curvature (>1.0): More curved space, faster hierarchy separation
+-    - Lower curvature (<1.0): Closer to Euclidean, gentler hierarchy
+-    - Default 1.0 is a good starting point
+-
+-    Reference: "Hyperbolic Neural Networks" (Ganea et al., 2018)
+-    """
+-
+-    # Geometry type selection
+-    space: Literal["euclidean", "hyperbolic"] = "euclidean"
+-
+-    # Hyperbolic space parameters (Poincaré ball model)
+-    model: Literal["poincare", "lorentz"] = "poincare"
+-    curvature: float = Field(default=1.0, ge=0.1, le=5.0)  # Negative curvature magnitude
+-
+-    # Mapping parameters (Euclidean → Hyperbolic)
+-    tangent_scale: float = Field(default=0.35, ge=0.1, le=0.9)  # Scale for expmap0 input
+-    max_norm: float = Field(default=0.98, ge=0.8, le=0.999)  # Maximum norm in ball (stability)
+-
+-    # Evolution-specific hyperbolic parameters
+-    mutation_noise_scale: float = Field(default=0.35, ge=0.05, le=1.0)  # Tangent space noise scale
+-    barycenter_iterations: int = Field(default=7, ge=3, le=20)  # Karcher mean iterations
+-
+-    # Distance thresholds (in hyperbolic distance)
+-    merge_threshold: float = Field(default=0.15, ge=0.01, le=1.0)  # For merging similar chains
+-    loop_threshold: float = Field(default=0.10, ge=0.01, le=0.5)  # For detecting loops
+-
+-    # Curvature annealing (for stability)
+-    anneal_curvature: bool = False  # Start low, increase over generations
+-    initial_curvature: float = Field(default=0.1, ge=0.01, le=1.0)
+-    final_curvature: float = Field(default=1.0, ge=0.1, le=5.0)
+-    anneal_generations: int = Field(default=20, ge=5, le=100)
+-
+-    class Config:
+-        extra = "forbid"
+-
+-
+-class Config(BaseModel):
+-    """
+-    Main configuration for the Latent Space Reasoning Engine.
+-
+-    This is the central configuration object that controls all aspects of the
+-    reasoning system. It provides a hierarchical structure for organizing
+-    settings and supports both programmatic and file-based configuration.
+-
+-    Configuration Sections:
+-    - **encoder**: Model and parameters for text-to-latent conversion
+-    - **judges**: Scoring and modification strategies for evaluation
+-    - **evolution**: Evolutionary algorithm parameters and strategies
+-    - **budget**: Computational limits and resource management
+-    - **synthesis**: Final response generation and decoding
+-    - **output**: Logging, formatting, and result storage
+-    - **benchmark**: Evaluation and comparison settings
+-
+-    Usage Patterns:
+-
+-    **Default Configuration**:
+-    >>> config = Config()  # Uses sensible defaults
+-    >>> engine = Engine(config=config)
+-
+-    **Programmatic Customization**:
+-    >>> config = Config()
+-    >>> config.encoder.model = "Qwen/Qwen3-1.7B"  # Smaller model
+-    >>> config.evolution.chains = 20              # More exploration
+-    >>> config.output.verbosity = "verbose"       # Detailed logging
+-
+-    **YAML Configuration**:
+-    >>> config = Config.from_yaml("my_config.yaml")
+-    >>> # Modify if needed
+-    >>> config.evolution.generations = 50
+-    >>> config.to_yaml("updated_config.yaml")
+-
+-    **Environment-specific Configs**:
+-    >>> # Development: fast iteration
+-    >>> dev_config = Config()
+-    >>> dev_config.evolution.chains = 5
+-    >>> dev_config.evolution.generations = 10
+-    >>>
+-    >>> # Production: high quality
+-    >>> prod_config = Config()
+-    >>> prod_config.evolution.chains = 20
+-    >>> prod_config.evolution.generations = 50
+-    >>> prod_config.budget.max_time = 300  # 5 minute limit
+-
+-    The configuration system uses Pydantic for validation, ensuring that
+-    all parameters are valid and providing helpful error messages for
+-    invalid configurations.
+-    """
+-
+-    encoder: EncoderConfig = Field(default_factory=EncoderConfig)
+-    judges: JudgeConfig = Field(default_factory=JudgeConfig)
+-    evolution: EvolutionConfig = Field(default_factory=EvolutionConfig)
+-    budget: BudgetConfig = Field(default_factory=BudgetConfig)
+-    synthesis: SynthesisConfig = Field(default_factory=SynthesisConfig)
+-    output: OutputConfig = Field(default_factory=OutputConfig)
+-    benchmark: BenchmarkConfig = Field(default_factory=BenchmarkConfig)
+-    qd: QDConfig = Field(default_factory=QDConfig)  # Quality Diversity settings
+-    autopoietic: AutopoieticJudgeConfig = Field(default_factory=AutopoieticJudgeConfig)  # Self-updating judge
+-    grammar: GrammarConfig = Field(default_factory=GrammarConfig)  # Fractal grammar settings
+-    geometry: GeometryConfig = Field(default_factory=GeometryConfig)  # Latent space geometry (Euclidean/Hyperbolic)
+-
+-    class Config:
+-        extra = "forbid"
+-
+-    @classmethod
+-    def from_yaml(cls, path: str | Path) -> "Config":
+-        """Load configuration from a YAML file."""
+-        with open(path) as f:
+-            data = yaml.safe_load(f)
+-        return cls.from_dict(data)
+-
+-    @classmethod
+-    def from_dict(cls, data: dict) -> "Config":
+-        """Load configuration from a dictionary."""
+-        return cls(**data)
+-
+-    def to_yaml(self, path: str | Path) -> None:
+-        """Save configuration to a YAML file."""
+-        with open(path, "w") as f:
+-            yaml.dump(self.model_dump(), f, default_flow_style=False)
+-
+-    def to_dict(self) -> dict:
+-        """Convert configuration to a dictionary."""
+-        return self.model_dump()
+-
+-
+-def get_default_config() -> Config:
+-    """Get a default configuration with sensible defaults for testing."""       
+-    return Config(
+-        encoder=EncoderConfig(model="Qwen/Qwen3-1.7B"),
+-        judges=JudgeConfig(
+-            # Use smaller encoder model for scoring (faster)
+-            scorers=[ScorerConfig(type="semantic", model="sentence-transformers/all-MiniLM-L6-v2")],
+-            # Use smaller Qwen3 for modifications
+-            modifiers=[ModifierConfig(model="Qwen/Qwen3-1.7B")],
+-        ),
+-        evolution=EvolutionConfig(
+-            chains=5,
+-            generations=10,
+-            temperature=0.5,
+-        ),
+-        budget=BudgetConfig(max_evaluations=200),
+-    )
+-
+-
+-def get_trained_scorer_config(checkpoint_path: str = "checkpoints/latent_scorer/final_model.pt") -> Config:
+-    """Get a configuration that uses the trained latent scorer."""
+-    return Config(
+-        encoder=EncoderConfig(model="Qwen/Qwen3-1.7B"),
+-        judges=JudgeConfig(
+-            scorers=[ScorerConfig(
+-                type="trained_latent",
+-                checkpoint=checkpoint_path,
+-                latent_dim=1024,
+-            )],
+-            modifiers=[],  # No modifier for cleaner experiments
+-        ),
+-        evolution=EvolutionConfig(
+-            chains=5,
+-            generations=15,
+-            temperature=0.5,
+-        ),
+-        budget=BudgetConfig(max_evaluations=300),
+-    )
++"""
++Configuration schema for Latent Space Reasoning Engine.
++
++This module defines all configuration classes using Pydantic for validation
++and type safety. The main Config class combines all settings and can be
++loaded from YAML files for easy customization.
++
++Key configuration areas:
++- EncoderConfig: Model selection and encoding parameters
++- JudgeConfig: Scoring and evaluation settings
++- EvolutionConfig: Evolutionary algorithm parameters
++- BudgetConfig: Compute limits and timeouts
++- SynthesisConfig: Text generation settings
++- OutputConfig: Logging and formatting options
++"""
++
++from __future__ import annotations
++
++from enum import IntEnum
++from pathlib import Path
++from typing import Literal
++
++import yaml
++from pydantic import BaseModel, Field
++
++
++class Verbosity(IntEnum):
++    """
++    Verbosity levels for logging output.
++
++    Controls how much information is displayed during reasoning:
++    - SILENT (0): Only errors
++    - MINIMAL (1): Just final results
++    - NORMAL (2): Progress updates (default)
++    - VERBOSE (3): Detailed evolution info
++    - DEBUG (4): Everything including internal state
++    """
++    SILENT = 0
++    MINIMAL = 1
++    NORMAL = 2
++    VERBOSE = 3
++    DEBUG = 4
++
++
++class EncoderConfig(BaseModel):
++    """
++    Configuration for the encoder model that converts text to latent vectors.
++
++    The encoder is the foundation of the entire reasoning system - it defines the
++    latent space where evolutionary optimization occurs. The choice of encoder
++    model and parameters significantly impacts both quality and performance.
++
++    Model Selection Guidelines:
++    - **Qwen/Qwen3-4B**: Best quality, requires ~8GB VRAM
++    - **Qwen/Qwen3-1.7B**: Good balance of quality/speed, ~4GB VRAM (default)
++    - **Qwen/Qwen3-0.6B**: Fastest, minimal VRAM (~2GB), lower quality
++    - **microsoft/Phi-3.5-mini-instruct**: Alternative, good for reasoning
++    - **Local models**: Use absolute path to local model directory
++
++    Layer Selection:
++    - **-4 (default)**: 4th layer from end, optimal for most reasoning tasks
++    - **-2 to -6**: Earlier layers capture syntax, later capture semantics
++    - **-1**: Final layer, most semantic but may be over-specialized
++
++    Pooling Strategies:
++    - **mean**: Average all tokens, captures full context (recommended)
++    - **last**: Use final token, good for completion-style tasks
++    - **cls**: Use first token, for models with explicit CLS tokens
++
++    Latent Dimension:
++    - **latent_dim**: Canonical latent space size used across models
++    - If different from model hidden size, the encoder projects to this size
++
++    Performance Considerations:
++    - Larger models produce higher quality but require more compute
++    - Layer choice affects both quality and evolution effectiveness
++    - max_length impacts memory usage and processing time
++    """
++
++    # Model selection - choose based on your hardware and quality needs
++    model: str = "Qwen/Qwen3-1.7B"  # HuggingFace model ID or local path
++
++    # Latent extraction settings
++    layer: int = -4                # Which hidden layer to extract (-4 = 4th from last, usually optimal)
++    pooling: Literal["mean", "last", "cls"] = "mean"  # How to pool sequence dimension
++    latent_dim: int = Field(default=1024, ge=1)  # Canonical latent dimension
++
++    # Hardware settings
++    device: str = "auto"           # Device: "auto", "cuda", "cuda:0", "cpu"
++    quantization: Literal["auto", "none", "4bit"] = "4bit"
++    max_length: int = Field(default=2048, ge=1, le=32768)  # Maximum input sequence length
++
++    class Config:
++        extra = "forbid"  # Prevent typos in config files
++
++
++class ScorerConfig(BaseModel):
++    """
++    Configuration for a scorer judge that evaluates latent vector quality.
++
++    Scorers are the critical component that drives evolution - they determine
++    which latent vectors represent higher-quality responses and should survive
++    to the next generation. The quality of scoring directly impacts the
++    effectiveness of the evolutionary process.
++
++    Scorer Types:
++
++    **semantic**: Cosine similarity-based scoring
++    - Uses a separate embedding model to encode the query
++    - Scores latents based on similarity to query embedding
++    - Fast and general-purpose, works out-of-the-box
++    - Best for: Initial experiments, general reasoning tasks
++    - Limitations: May not capture task-specific quality nuances
++
++    **trained_latent**: Neural network trained on quality data
++    - Uses a specialized network trained to predict response quality
++    - Works directly in the encoder's latent space
++    - More accurate and task-specific than semantic similarity
++    - Best for: Production use, specific domains with training data
++    - Requirements: Trained checkpoint file matching encoder dimension
++
++    Configuration Guidelines:
++    - Start with semantic for quick experiments
++    - Use trained_latent for best quality when available
++    - Multiple scorers can be combined for robust evaluation
++    - Ensure latent_dim matches your encoder's output dimension
++    """
++
++    # Scorer type selection
++    type: Literal["semantic", "trained_latent"] = "semantic"
++
++    # For semantic scorer (cosine similarity based)
++    model: str | None = None       # HuggingFace model for encoding (e.g., "sentence-transformers/all-MiniLM-L6-v2")
++    layer: int = -1                # Which layer to extract from semantic model
++    head: str | None = None        # Optional path to trained regression head weights
++    quantization: Literal["auto", "none", "4bit"] = "none"
++
++    # For trained_latent scorer (neural network trained on quality data)
++    checkpoint: str | None = None  # Path to trained LatentScorer checkpoint
++    latent_dim: int = 1024         # Latent dimension (must match encoder)
++
++    class Config:
++        extra = "forbid"
++
++
++class ModifierConfig(BaseModel):
++    """
++    Configuration for a modifier judge that suggests improvements.
++
++    Modifiers analyze latent vectors and suggest directions for mutation
++    to improve quality. They use LLM hidden states to understand what
++    changes might help.
++    """
++
++    model: str                     # HuggingFace model for modification suggestions
++    layers: list[int] = Field(default_factory=lambda: [-8, -4])  # Hidden layers to extract from
++    quantization: Literal["auto", "none", "4bit"] = "auto"
++
++    class Config:
++        extra = "forbid"
++
++
++class JudgeConfig(BaseModel):
++    """
++    Configuration for the judge panel that evaluates and improves latents.
++
++    The judge panel combines multiple scorers and modifiers to evaluate
++    latent vector quality and suggest improvements during evolution.
++    """
++
++    # Scorer configuration - determines quality evaluation
++    scorers: list[ScorerConfig] = Field(
++        default_factory=lambda: [ScorerConfig(
++            type="trained_latent",
++            checkpoint="checkpoints/latent_scorer/final_model.pt",
++            latent_dim=1024,
++        )]
++    )
++
++    # Modifier configuration - suggests improvements (optional)
++    modifiers: list[ModifierConfig] = Field(default_factory=list)
++
++    # Judge panel behavior
++    aggregation: Literal["mean", "weighted", "max", "min"] = "mean"  # How to combine multiple scorer outputs
++    calibrate: bool = True         # Whether to normalize scores to zero-mean
++
++    class Config:
++        extra = "forbid"
++
++
++class SelectionConfig(BaseModel):
++    """
++    Configuration for selection strategy in evolution.
++
++    Selection determines which latent vectors survive to the next generation.
++    Different strategies balance exploration vs exploitation.
++    """
++
++    strategy: Literal["elitist", "tournament", "roulette", "rank"] = "elitist"
++    survivors: int = Field(default=5, ge=1)    # How many chains to keep each generation
++    elite: int = Field(default=2, ge=0)        # Always keep top N (for elitist strategy)
++    diversity_quota: float = Field(default=0.5, ge=0.0, le=1.0)  # Fraction of chains protected for diversity (increased for better exploration)
++
++    class Config:
++        extra = "forbid"
++
++
++class MutationConfig(BaseModel):
++    """
++    Configuration for mutation strategy in evolution.
++
++    Mutation adds variation to latent vectors to explore new regions
++    of the latent space. Different strategies balance random exploration
++    with directed improvement.
++    """
++
++    strategy: Literal["directed", "gaussian", "adaptive"] = "directed"
++    trust: float = Field(default=0.5, ge=0, le=1)  # How much to trust modifier suggestions (0=random, 1=fully directed)
++    noise_scale: float = Field(default=0.5, ge=0, le=2)  # Base scale for random noise in mutation
++
++    class Config:
++        extra = "forbid"
++
++
++class CrossoverConfig(BaseModel):
++    """
++    Configuration for crossover strategy in evolution.
++
++    Crossover combines high-scoring parent latents to create children
++    that inherit beneficial traits from both parents.
++    """
++
++    strategy: Literal["weighted", "mean", "interpolation"] = "weighted"
++    threshold: float = Field(default=0.3, ge=0, le=1)  # Minimum population diversity required for crossover
++
++    class Config:
++        extra = "forbid"
++
++
++class MergeConfig(BaseModel):
++    """
++    Configuration for merging similar chains.
++
++    When chains become too similar, they can be merged to avoid
++    wasting computation on redundant exploration.
++    """
++
++    threshold: float = Field(default=0.95, ge=0, le=1)  # Cosine similarity threshold for merging (0.95 = very similar)
++
++    class Config:
++        extra = "forbid"
++
++
++class ConvergenceConfig(BaseModel):
++    """
++    Configuration for convergence detection.
++
++    Evolution stops early when convergence criteria are met,
++    saving computation when further improvement is unlikely.
++    """
++
++    threshold: float = Field(default=0.95, ge=0, le=1)  # Score threshold for early stopping
++    patience: int = Field(default=5, ge=1)              # Generations without improvement before stopping
++
++    class Config:
++        extra = "forbid"
++
++
++class EvolutionConfig(BaseModel):
++    """
++    Configuration for the evolutionary optimization process.
++
++    Controls the core evolutionary algorithm that optimizes latent vectors
++    through selection, mutation, and crossover operations. These parameters
++    significantly impact both quality and computational efficiency.
++
++    Key Parameters:
++
++    **Population Settings**:
++    - chains: Population size (more = better exploration, slower)
++    - generations: Evolution cycles (more = better optimization, slower)
++
++    **Mutation Control**:
++    - temperature: Mutation strength (higher = more exploration)
++    - temperature_decay: Cooling schedule (gradual focus on exploitation)
++    - min_viable_score: Quality threshold for survival
++
++    **Algorithm Components**:
++    - selection: How survivors are chosen each generation
++    - mutation: How variations are created
++    - crossover: How parents are combined
++    - merge: When similar chains are consolidated
++    - convergence: Early stopping criteria
++
++    Tuning Guidelines:
++    - **Fast experiments**: chains=5, generations=10
++    - **Balanced (default)**: chains=10, generations=30
++    - **High quality**: chains=20, generations=50
++    - **Research**: chains=50, generations=100+
++
++    Temperature Schedule:
++    - Start high (0.8-1.0) for exploration
++    - Decay gradually (0.95-0.98) to focus search
++    - End low (0.1-0.3) for fine-tuning
++    """
++
++    chains: int = Field(default=10, ge=1)
++    generations: int = Field(default=30, ge=1)
++    temperature: float = Field(default=0.5, ge=0, le=2)
++    temperature_decay: float = Field(default=0.95, ge=0, le=1)
++    min_viable_score: float = Field(default=0.1, ge=0, le=1)
++    initial_diversity: float = Field(default=2.0, ge=0.1, le=10.0)  # Multiplier for initial population noise
++    diversity_weight: float = Field(default=0.1, ge=0, le=1.0)  # Weight for diversity bonus in scoring
++    selection: SelectionConfig = Field(default_factory=SelectionConfig)
++    mutation: MutationConfig = Field(default_factory=MutationConfig)
++    crossover: CrossoverConfig = Field(default_factory=CrossoverConfig)
++    merge: MergeConfig = Field(default_factory=MergeConfig)
++    convergence: ConvergenceConfig = Field(default_factory=ConvergenceConfig)
++
++    class Config:
++        extra = "forbid"
++
++
++class BudgetConfig(BaseModel):
++    """Configuration for compute budget."""
++    max_evaluations: int = Field(default=500, ge=1)
++    max_time: float | None = None  # Seconds, None = unlimited
++
++    class Config:
++        extra = "forbid"
++
++
++class SynthesisConfig(BaseModel):
++    """Configuration for final synthesis."""
++    decoder: str | None = None  # None = use encoder model
++    model: str = "gemini-2.5-flash"  # Frontier model for synthesis
++    decode_strategy: Literal["best", "combined"] = "best"
++    max_survivors: int = Field(default=5, ge=1)
++    max_tokens: int = Field(default=2048, ge=1, le=32768)  # Max output tokens  
++    temperature: float = Field(default=0.7, ge=0, le=2.0)  # Decode temperature
++
++    class Config:
++        extra = "forbid"
++
++
++class OutputConfig(BaseModel):
++    """Configuration for output settings."""
++    verbosity: Literal["silent", "minimal", "normal", "verbose", "debug"] = "normal"
++    format: Literal["text", "json", "markdown"] = "text"
++    save_history: bool = False
++    history_path: str | None = None
++
++    class Config:
++        extra = "forbid"
++
++
++class BenchmarkConfig(BaseModel):
++    """Configuration for benchmarks/evaluation."""
++    judge_model: str = "gemini-2.5-flash"
++    blind: bool = True
++    temperature: float = 0  # Deterministic judging
++
++    class Config:
++        extra = "forbid"
++
++
++class QDConfig(BaseModel):
++    """
++    Configuration for Quality Diversity (QD) integration.
++
++    QD algorithms maintain an archive of diverse, high-quality solutions
++    rather than converging to a single optimum. This enables exploration
++    of multiple reasoning strategies for the same query.
++
++    Key Concepts:
++
++    **Behavioral Descriptors (BDs)**:
++    - Low-dimensional vectors that characterize HOW a solution achieves its goal
++    - Computed using Random Fourier Features (RFF) for efficient projection
++    - Combine latent statistics, structural features, and trajectory information
++
++    **Novelty Search**:
++    - Rewards solutions that are different from existing archive members
++    - Uses k-nearest neighbor distance in BD space
++    - Balances fitness (quality) with novelty (diversity)
++
++    **DNS Archive**:
++    - Dominated Novelty Search: gridless QD algorithm
++    - Stores diverse high-quality solutions without predefined grid boundaries
++    - Outperforms MAP-Elites in high-dimensional spaces
++
++    Benefits:
++    - Addresses diversity collapse in evolution
++    - Provides multiple valid reasoning approaches per query
++    - Enables recovery from local optima through diversity pressure
++
++    Usage:
++    >>> config = Config()
++    >>> config.qd.enabled = True
++    >>> config.qd.novelty_weight = 0.3  # Balance fitness vs novelty
++    """
++
++    # Master toggle (disabled by default for backward compatibility)
++    enabled: bool = False
++
++    # Behavioral descriptor settings
++    bd_dim: int = Field(default=16, ge=4, le=64)  # BD dimensionality (8-16 recommended)
++    rff_gamma: float = Field(default=0.1, ge=0.01, le=1.0)  # RFF kernel bandwidth
++
++    # BD component weights (should roughly sum to 1.0)
++    bd_latent_weight: float = Field(default=0.5, ge=0.0, le=1.0)  # Weight for latent position
++    bd_structural_weight: float = Field(default=0.25, ge=0.0, le=1.0)  # Weight for structural stats
++    bd_trajectory_weight: float = Field(default=0.25, ge=0.0, le=1.0)  # Weight for trajectory
++
++    # Novelty computation
++    novelty_k: int = Field(default=10, ge=3, le=50)  # k for k-NN novelty
++    novelty_weight: float = Field(default=0.3, ge=0.0, le=1.0)  # Alpha: qd_score = (1-α)*fitness + α*novelty
++
++    # Archive settings
++    archive_type: Literal["dns", "map_elites"] = "dns"  # Archive algorithm (NOTE: only dns currently implemented)
++    archive_size: int = Field(default=500, ge=50, le=5000)  # Maximum archive entries
++    domination_threshold: float = Field(default=0.1, ge=0.01, le=0.5)  # BD distance for domination check
++    novelty_threshold: float = Field(default=0.05, ge=0.0, le=0.5)  # Minimum novelty for automatic archive addition
++
++    # Semantic duplicate detection (NOTE: not yet implemented - reserved for future use)
++    semantic_threshold: float = Field(default=0.95, ge=0.8, le=1.0)  # Cosine similarity threshold
++
++    class Config:
++        extra = "forbid"
++
++
++class AutopoieticJudgeConfig(BaseModel):
++    """
++    Configuration for Autopoietic (self-updating) Judge system.
++
++    The autopoietic judge addresses the known scorer weakness (low correlation
++    with external quality) by:
++    1. Maintaining an experience buffer for online learning
++    2. Periodically grounding internal scores against external evaluation
++    3. Using homeostatic temperature control for diversity maintenance
++
++    Key Concepts:
++
++    **Two-Time-Scale Learning**:
++    - Fast: EMA update of internal scorer (every evaluation)
++    - Slow: Grounding against external evaluator (every judge_update_freq generations)
++
++    **Homeostatic Temperature Control**:
++    - Automatically adjusts mutation temperature based on diversity metrics
++    - Formula: T_{t+1} = T_t * exp(k * (D* - D_t))
++    - Where D* is target_diversity and D_t is current measured diversity
++
++    **Trust Weighting**:
++    - Balances internal scorer vs external evaluator
++    - Starts with more external weight, shifts to internal as correlation improves
++
++    **External Grounding**:
++    - Samples top solutions and evaluates with external judge (e.g., Gemini)
++    - Updates internal scorer to align with external quality signal
++    - Prevents drift and collusion between scorer and evolution
++
++    Usage:
++    >>> config = Config()
++    >>> config.autopoietic.enabled = True
++    >>> config.autopoietic.external_model = "gemini-2.5-flash"
++    """
++
++    # Master toggle (disabled by default for backward compatibility)
++    enabled: bool = False
++
++    # Update frequency settings
++    judge_update_freq: int = Field(default=5, ge=1, le=50)  # Generations between external grounding
++    external_sample_size: int = Field(default=3, ge=1, le=20)  # Solutions to evaluate externally per update
++
++    # Homeostatic temperature control
++    target_diversity: float = Field(default=0.4, ge=0.1, le=0.9)  # Target diversity D*
++    homeostasis_k: float = Field(default=0.1, ge=0.01, le=1.0)  # Control gain k
++    min_temperature: float = Field(default=0.1, ge=0.01, le=1.0)  # Temperature floor
++    max_temperature: float = Field(default=2.0, ge=0.5, le=5.0)  # Temperature ceiling
++
++    # EMA settings for internal scorer
++    ema_decay: float = Field(default=0.99, ge=0.9, le=0.999)  # EMA decay for scorer updates
++
++    # Trust weighting between internal and external
++    initial_internal_trust: float = Field(default=0.3, ge=0.0, le=1.0)  # Starting trust in internal scorer
++    max_internal_trust: float = Field(default=0.9, ge=0.5, le=1.0)  # Maximum trust in internal scorer
++    trust_growth_rate: float = Field(default=0.05, ge=0.0, le=0.5)  # Trust growth per successful grounding
++
++    # Experience buffer settings
++    buffer_size: int = Field(default=1000, ge=100, le=10000)  # Max entries in experience buffer
++
++    # External evaluator settings
++    external_model: str = "gemini-2.5-flash"  # Model for external grounding
++    external_temperature: float = Field(default=0.0, ge=0.0, le=1.0)  # Temperature for external eval (0 = deterministic)
++
++    # Anchor set for correlation monitoring
++    anchor_set_size: int = Field(default=50, ge=10, le=200)  # Size of fixed anchor set
++    correlation_threshold: float = Field(default=0.3, ge=0.0, le=1.0)  # Minimum correlation to increase trust
++
++    class Config:
++        extra = "forbid"
++
++
++class GrammarConfig(BaseModel):
++    """
++    Configuration for Fractal Latent Grammars.
++
++    Fractal grammars provide a compositional, rule-based approach to latent
++    space exploration. Instead of evolving raw latent vectors, we evolve
++    grammar structures that GENERATE latents through recursive expansion.
++
++    Key Concepts:
++
++    **Grammar Rules**:
++    - Each rule defines a contractive transform: T_r(z) = P_r * f(W_r @ z + b_r)
++    - Contraction (||W_r||_2 < 1) ensures convergence to attractors
++    - Rules are shared across the grammar for efficient representation
++
++    **AND/OR Trees**:
++    - AND nodes: Combine children via weighted average (blend perspectives)
++    - OR nodes: Select best child via gating (choose strategy)
++    - LEAF nodes: Apply a rule to input or constant
++
++    **Fractal Structure**:
++    - Self-similar: subtrees can be reused/referenced
++    - Compositional: complex behaviors from simple rules
++    - Compressible: grammar << expanded latent representation
++
++    Benefits:
++    - More structured search space than raw latent evolution
++    - Natural compositionality for complex reasoning
++    - Better interpretability (grammar structure reveals strategy)
++    - Synergy with QD (grammars as archive elements)
++
++    Usage:
++    >>> config = Config()
++    >>> config.grammar.enabled = True
++    >>> config.grammar.num_rules = 8
++    >>> config.grammar.max_depth = 4
++    """
++
++    # Master toggle (disabled by default for backward compatibility)
++    enabled: bool = False
++
++    # Rule settings
++    num_rules: int = Field(default=8, ge=2, le=32)  # Number of grammar rules
++    rule_hidden_dim: int = Field(default=256, ge=64, le=1024)  # Hidden dimension in rules
++    contraction_factor: float = Field(default=0.9, ge=0.5, le=0.99)  # Max spectral norm for W
++
++    # Tree structure settings
++    max_depth: int = Field(default=4, ge=2, le=8)  # Maximum tree depth
++    min_depth: int = Field(default=2, ge=1, le=4)  # Minimum tree depth
++    branching_factor: int = Field(default=3, ge=2, le=5)  # Max children per node
++
++    # Node type probabilities (for random initialization)
++    and_prob: float = Field(default=0.4, ge=0.0, le=1.0)  # Probability of AND node
++    or_prob: float = Field(default=0.3, ge=0.0, le=1.0)  # Probability of OR node
++    # LEAF prob = 1 - and_prob - or_prob
++
++    # Evolution settings (for GrammarEvolutionLoop)
++    population_size: int = Field(default=20, ge=4, le=100)  # Grammar population size
++    offspring_size: int = Field(default=10, ge=2, le=50)  # Offspring per generation
++    mutation_rate: float = Field(default=0.5, ge=0.0, le=1.0)  # Base mutation rate (increased for exploration)
++    crossover_rate: float = Field(default=0.3, ge=0.0, le=1.0)  # Crossover probability
++    tournament_size: int = Field(default=3, ge=2, le=10)  # Tournament selection size
++
++    # Structural mutation settings
++    structure_mutation_rate: float = Field(default=0.35, ge=0.0, le=1.0)  # Rate of structural mutations (increased)
++    param_mutation_scale: float = Field(default=0.15, ge=0.01, le=1.0)  # Scale for parameter mutations (increased)
++    depth_decay: float = Field(default=0.8, ge=0.5, le=1.0)  # Mutation rate decay with depth
++
++    # Attractor projection
++    use_attractor_projection: bool = True  # Project to rule attractors
++    attractor_iterations: int = Field(default=5, ge=1, le=20)  # IFS iterations
++
++    # Initialization
++    init_strategy: Literal["random", "balanced", "deep"] = "balanced"
++
++    class Config:
++        extra = "forbid"
++
++
++class GeometryConfig(BaseModel):
++    """
++    Configuration for latent space geometry.
++
++    Controls whether evolution operates in Euclidean or hyperbolic space.
++    Hyperbolic geometry naturally matches hierarchical reasoning structures
++    due to its exponential volume growth, enabling better separation of
++    reasoning branches.
++
++    Geometry Types:
++
++    **euclidean** (default): Standard flat geometry
++    - Traditional latent space operations
++    - Cosine similarity and L2 distance
++    - Well-understood and stable
++
++    **hyperbolic**: Poincaré ball model
++    - Exponential volume growth matches tree structures
++    - Better separation of hierarchical reasoning branches
++    - Enables implicit multi-branch tree search
++    - Requires Riemannian operations (slightly slower)
++
++    Curvature Guidelines:
++    - Higher curvature (>1.0): More curved space, faster hierarchy separation
++    - Lower curvature (<1.0): Closer to Euclidean, gentler hierarchy
++    - Default 1.0 is a good starting point
++
++    Reference: "Hyperbolic Neural Networks" (Ganea et al., 2018)
++    """
++
++    # Geometry type selection
++    space: Literal["euclidean", "hyperbolic"] = "euclidean"
++
++    # Hyperbolic space parameters (Poincaré ball model)
++    model: Literal["poincare", "lorentz"] = "poincare"
++    curvature: float = Field(default=1.0, ge=0.1, le=5.0)  # Negative curvature magnitude
++
++    # Mapping parameters (Euclidean → Hyperbolic)
++    tangent_scale: float = Field(default=0.35, ge=0.1, le=0.9)  # Scale for expmap0 input
++    max_norm: float = Field(default=0.98, ge=0.8, le=0.999)  # Maximum norm in ball (stability)
++
++    # Evolution-specific hyperbolic parameters
++    mutation_noise_scale: float = Field(default=0.35, ge=0.05, le=1.0)  # Tangent space noise scale
++    barycenter_iterations: int = Field(default=7, ge=3, le=20)  # Karcher mean iterations
++
++    # Distance thresholds (in hyperbolic distance)
++    merge_threshold: float = Field(default=0.15, ge=0.01, le=1.0)  # For merging similar chains
++    loop_threshold: float = Field(default=0.10, ge=0.01, le=0.5)  # For detecting loops
++
++    # Curvature annealing (for stability)
++    anneal_curvature: bool = False  # Start low, increase over generations
++    initial_curvature: float = Field(default=0.1, ge=0.01, le=1.0)
++    final_curvature: float = Field(default=1.0, ge=0.1, le=5.0)
++    anneal_generations: int = Field(default=20, ge=5, le=100)
++
++    class Config:
++        extra = "forbid"
++
++
++class Config(BaseModel):
++    """
++    Main configuration for the Latent Space Reasoning Engine.
++
++    This is the central configuration object that controls all aspects of the
++    reasoning system. It provides a hierarchical structure for organizing
++    settings and supports both programmatic and file-based configuration.
++
++    Configuration Sections:
++    - **encoder**: Model and parameters for text-to-latent conversion
++    - **judges**: Scoring and modification strategies for evaluation
++    - **evolution**: Evolutionary algorithm parameters and strategies
++    - **budget**: Computational limits and resource management
++    - **synthesis**: Final response generation and decoding
++    - **output**: Logging, formatting, and result storage
++    - **benchmark**: Evaluation and comparison settings
++
++    Usage Patterns:
++
++    **Default Configuration**:
++    >>> config = Config()  # Uses sensible defaults
++    >>> engine = Engine(config=config)
++
++    **Programmatic Customization**:
++    >>> config = Config()
++    >>> config.encoder.model = "Qwen/Qwen3-1.7B"  # Smaller model
++    >>> config.evolution.chains = 20              # More exploration
++    >>> config.output.verbosity = "verbose"       # Detailed logging
++
++    **YAML Configuration**:
++    >>> config = Config.from_yaml("my_config.yaml")
++    >>> # Modify if needed
++    >>> config.evolution.generations = 50
++    >>> config.to_yaml("updated_config.yaml")
++
++    **Environment-specific Configs**:
++    >>> # Development: fast iteration
++    >>> dev_config = Config()
++    >>> dev_config.evolution.chains = 5
++    >>> dev_config.evolution.generations = 10
++    >>>
++    >>> # Production: high quality
++    >>> prod_config = Config()
++    >>> prod_config.evolution.chains = 20
++    >>> prod_config.evolution.generations = 50
++    >>> prod_config.budget.max_time = 300  # 5 minute limit
++
++    The configuration system uses Pydantic for validation, ensuring that
++    all parameters are valid and providing helpful error messages for
++    invalid configurations.
++    """
++
++    encoder: EncoderConfig = Field(default_factory=EncoderConfig)
++    judges: JudgeConfig = Field(default_factory=JudgeConfig)
++    evolution: EvolutionConfig = Field(default_factory=EvolutionConfig)
++    budget: BudgetConfig = Field(default_factory=BudgetConfig)
++    synthesis: SynthesisConfig = Field(default_factory=SynthesisConfig)
++    output: OutputConfig = Field(default_factory=OutputConfig)
++    benchmark: BenchmarkConfig = Field(default_factory=BenchmarkConfig)
++    qd: QDConfig = Field(default_factory=QDConfig)  # Quality Diversity settings
++    autopoietic: AutopoieticJudgeConfig = Field(default_factory=AutopoieticJudgeConfig)  # Self-updating judge
++    grammar: GrammarConfig = Field(default_factory=GrammarConfig)  # Fractal grammar settings
++    geometry: GeometryConfig = Field(default_factory=GeometryConfig)  # Latent space geometry (Euclidean/Hyperbolic)
++
++    class Config:
++        extra = "forbid"
++
++    @classmethod
++    def from_yaml(cls, path: str | Path) -> "Config":
++        """Load configuration from a YAML file."""
++        with open(path) as f:
++            data = yaml.safe_load(f)
++        return cls.from_dict(data)
++
++    @classmethod
++    def from_dict(cls, data: dict) -> "Config":
++        """Load configuration from a dictionary."""
++        return cls(**data)
++
++    def to_yaml(self, path: str | Path) -> None:
++        """Save configuration to a YAML file."""
++        with open(path, "w") as f:
++            yaml.dump(self.model_dump(), f, default_flow_style=False)
++
++    def to_dict(self) -> dict:
++        """Convert configuration to a dictionary."""
++        return self.model_dump()
++
++
++def get_default_config() -> Config:
++    """Get a default configuration with sensible defaults for testing."""       
++    return Config(
++        encoder=EncoderConfig(model="Qwen/Qwen3-1.7B"),
++        judges=JudgeConfig(
++            # Use smaller encoder model for scoring (faster)
++            scorers=[ScorerConfig(type="semantic", model="sentence-transformers/all-MiniLM-L6-v2")],
++            # Use smaller Qwen3 for modifications
++            modifiers=[ModifierConfig(model="Qwen/Qwen3-1.7B")],
++        ),
++        evolution=EvolutionConfig(
++            chains=5,
++            generations=10,
++            temperature=0.5,
++        ),
++        budget=BudgetConfig(max_evaluations=200),
++    )
++
++
++def get_trained_scorer_config(checkpoint_path: str = "checkpoints/latent_scorer/final_model.pt") -> Config:
++    """Get a configuration that uses the trained latent scorer."""
++    return Config(
++        encoder=EncoderConfig(model="Qwen/Qwen3-1.7B"),
++        judges=JudgeConfig(
++            scorers=[ScorerConfig(
++                type="trained_latent",
++                checkpoint=checkpoint_path,
++                latent_dim=1024,
++            )],
++            modifiers=[],  # No modifier for cleaner experiments
++        ),
++        evolution=EvolutionConfig(
++            chains=5,
++            generations=15,
++            temperature=0.5,
++        ),
++        budget=BudgetConfig(max_evaluations=300),
++    )
+
+
+thinking
+**Adjusting PowerShell command quoting**

@@ -1,0 +1,47 @@
+**Current State (What Exists / Works / Doesn’t)**
+- The repo has a real research engine, not just scaffolding: core evolution, hyperbolic ops, QD, grammar evolution, autopoietic judge, and verifiable-task loops are all implemented in `src/latent_reasoning/...`.
+- What works technically:
+  - Hyperbolic math stack is solid and tested (`src/latent_reasoning/utils/hyperbolic.py`, `tests/test_hyperbolic.py`).
+  - Evolution loop is mature (selection/mutation/crossover/QD wiring) (`src/latent_reasoning/evolution/loop.py`).
+  - QD + grammar + autopoietic modules are substantial (`src/latent_reasoning/qd/manager.py`, `src/latent_reasoning/grammar/grammar_loop.py`, `src/latent_reasoning/core/autopoietic/autopoietic_panel.py`).
+- What is currently the main bottleneck:
+  - The production decode path mostly uses latent stats to seed sampling and nudge temp/top-p (`src/latent_reasoning/core/encoder.py`), so latent influence is low-bandwidth.
+  - `decode_with_soft_prompt()` exists but is not the default path used by orchestration (`src/latent_reasoning/orchestrator/orchestrator.py`).
+- Experiment reality:
+  - Results are mixed/non-significant across rigorous versions (`experiments/v9_rigorous_results.json`, `experiments/v10_results.json`, `experiments/v11_results_diagnostic.json`, `experiments/v12_results_diagnostic.json`).
+  - The strongest new idea is in V13 (fixed orthonormal latent→soft-prompt projection), but no saved V13 result file is present (`experiments/run_verifiable_evolution_v13.py`, missing `experiments/v13_results*.json`).
+- Evaluation weakness that still matters:
+  - Several core verifiers are permissive (often accept any matching number anywhere), which risks false positives (`src/latent_reasoning/verification/verifiable_tasks.py`).
+
+**Most Promising Breakthrough Directions**
+1. **Manifold-to-token transduction**: replace RNG-seed conditioning with a geometric, high-bandwidth latent control channel (fixed orthonormal projection + radial control).
+2. **Reasoning as program search in curved spaces**: evolve compositional grammars (not points) with QD over behavior space.
+3. **Product-manifold search**: Euclidean local detail + hyperbolic hierarchy in a single latent state.
+4. **Grounded self-evaluators**: autopoietic judge, but tied to strict verifiable objectives instead of style proxies.
+
+**Single Highest-Impact Thing To Do First**
+- **Implement and make default a geometric latent-to-soft-prompt decoder path** (V13 concept) in the core engine.
+- Reason: until latent vectors strongly control generation, geometry/QD/grammar advances are underpowered. This is the narrowest chokepoint with the biggest upside.
+
+**Concrete Plan For First Implementation**
+1. Add a decode conditioning mode in config (`rng_seed`, `soft_prompt_fixed`, optional `hybrid`) in `src/latent_reasoning/config.py`.
+2. Implement a deterministic fixed projection module in `src/latent_reasoning/core/encoder.py`:
+   - Hyperbolic logmap (when needed), NaN/Inf guard, radial tanh squash.
+   - Row-orthonormal projection to soft-prompt embeddings.
+   - Embedding-scale calibration.
+3. Route orchestration decode through this mode in `src/latent_reasoning/orchestrator/orchestrator.py` so it is used end-to-end, not only in experiment scripts.
+4. Tighten verifiers (last-answer extraction, stricter boolean/yes-no parsing) in `src/latent_reasoning/verification/verifiable_tasks.py`.
+5. Add targeted tests:
+   - Projection orthonormality/determinism.
+   - Soft-prompt scale calibration.
+   - Regression tests for strict answer parsing.
+6. Run a pre-registered ablation (paired seeds, fixed train/test split):
+   - `no_evolution+rng`, `evolution+rng`, `evolution+soft_prompt_fixed`.
+   - Primary test: paired permutation/sign-flip on held-out exact accuracy.
+   - Success gate: statistically significant gain for `evolution+soft_prompt_fixed` over `evolution+rng`, especially on deeper tasks.
+
+**Summary**
+- You already built a powerful research substrate.
+- The critical missing piece is strong latent-to-generation coupling.
+- The most promising immediate breakthrough path is geometric soft-prompt transduction as the default decode interface.
+- I would implement that first, then re-run strict verifiable experiments to establish whether non-Euclidean search finally produces real, reproducible gains.

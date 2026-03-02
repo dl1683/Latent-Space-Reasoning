@@ -1,0 +1,5 @@
+Error loading config.toml:
+C:\Users\devan\.codex\config.toml:23:11: duplicate key
+   |
+23 | [projects.'C:\Users\devan\OneDrive\Desktop\Projects\Latent-Space-Reasoning']
+   |           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
