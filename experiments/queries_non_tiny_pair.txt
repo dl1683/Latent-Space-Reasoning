@@ -1,0 +1,2 @@
+Design a low-cost deployment plan for an internal AI assistant with clear audit logging.
+List practical safeguards against prompt injection for a small production API.
