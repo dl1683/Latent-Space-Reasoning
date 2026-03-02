@@ -10,30 +10,30 @@
   "statistics": {
     "per_condition": {
       "no_evolution": {
-        "mean": 0.95,
+        "mean": 0.9,
         "std": 0.0,
         "per_seed": [
-          0.95
+          0.9
         ]
       },
       "euclidean_softprompt": {
-        "mean": 0.95,
+        "mean": 0.6,
         "std": 0.0,
         "per_seed": [
-          0.95
+          0.6
         ]
       },
       "hyperbolic_softprompt": {
-        "mean": 0.95,
+        "mean": 0.6,
         "std": 0.0,
         "per_seed": [
-          0.95
+          0.6
         ]
       }
     },
     "pairwise": {
       "no_evolution_vs_euclidean_softprompt": {
-        "diff_mean": 0.0,
+        "diff_mean": -0.30000000000000004,
         "diff_std": NaN,
         "diff_ci_95": [
           NaN,
@@ -46,14 +46,14 @@
           {
             "seed": 0,
             "b": 0,
-            "c": 0,
-            "chi2": 0.0,
-            "p": 1.0
+            "c": 3,
+            "chi2": 1.3333333333333333,
+            "p": 0.24821307898992362
           }
         ]
       },
       "no_evolution_vs_hyperbolic_softprompt": {
-        "diff_mean": 0.0,
+        "diff_mean": -0.30000000000000004,
         "diff_std": NaN,
         "diff_ci_95": [
           NaN,
@@ -66,9 +66,9 @@
           {
             "seed": 0,
             "b": 0,
-            "c": 0,
-            "chi2": 0.0,
-            "p": 1.0
+            "c": 3,
+            "chi2": 1.3333333333333333,
+            "p": 0.24821307898992362
           }
         ]
       },
@@ -85,10 +85,10 @@
         "per_seed_mcnemar": [
           {
             "seed": 0,
-            "b": 0,
-            "c": 0,
-            "chi2": 0.0,
-            "p": 1.0
+            "b": 3,
+            "c": 3,
+            "chi2": 0.16666666666666666,
+            "p": 0.6830913983096086
           }
         ]
       }
@@ -96,15 +96,15 @@
     "per_depth": {
       "2": {
         "no_evolution": {
-          "mean": 0.95,
+          "mean": 0.9,
           "std": 0.0
         },
         "euclidean_softprompt": {
-          "mean": 0.95,
+          "mean": 0.6,
           "std": 0.0
         },
         "hyperbolic_softprompt": {
-          "mean": 0.95,
+          "mean": 0.6,
           "std": 0.0
         }
       }
@@ -116,20 +116,20 @@
         {
           "gen": 1,
           "best": 1.0,
-          "mean": 1.0,
-          "min": 1.0
+          "mean": 0.8150258635522863,
+          "min": 0.5070546737213404
         },
         {
           "gen": 2,
           "best": 1.0,
-          "mean": 1.0,
-          "min": 1.0
+          "mean": 0.8190221813043292,
+          "min": 0.5240226095148375
         },
         {
           "gen": 3,
-          "best": 1.0,
-          "mean": 1.0,
-          "min": 1.0
+          "best": 0.5037555992570741,
+          "mean": 0.38018471041898155,
+          "min": 0.2552764306024669
         }
       ]
     ],
@@ -138,26 +138,26 @@
         {
           "gen": 1,
           "best": 1.0,
-          "mean": 1.0,
-          "min": 1.0
+          "mean": 0.8765239424206815,
+          "min": 0.7527173913043478
         },
         {
           "gen": 2,
           "best": 1.0,
-          "mean": 1.0,
-          "min": 1.0
+          "mean": 0.9378834355828221,
+          "min": 0.7515337423312883
         },
         {
           "gen": 3,
           "best": 1.0,
-          "mean": 1.0,
-          "min": 1.0
+          "mean": 0.7523575548691355,
+          "min": 0.5038680185196038
         }
       ]
     ]
   },
   "primary_verdict": "NOT SIGNIFICANT (p=nan >= 0.05)",
-  "elapsed_seconds": 7161.38969707489,
+  "elapsed_seconds": 9058.19916844368,
   "config": {
     "model": "Qwen/Qwen3-4B",
     "quantization": "4bit",
@@ -167,11 +167,11 @@
     "depths": [
       2
     ],
-    "train_per_depth": 150,
-    "test_per_depth": 20,
+    "train_per_depth": 50,
+    "test_per_depth": 10,
     "evo_gens": 3,
     "evo_pop": 4,
-    "evo_tasks_per_gen": 8,
+    "evo_tasks_per_gen": 4,
     "noise_scale": 0.1,
     "num_soft_tokens": 8,
     "d_latent": 2560,

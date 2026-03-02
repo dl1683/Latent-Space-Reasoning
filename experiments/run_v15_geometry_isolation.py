@@ -178,6 +178,7 @@ def main():
         "seeds": n_seeds,
         "curvature": curvature,
         "branching": args.branching,
+        "difficulty": args.difficulty,
         "depths": depths,
         "train_per_depth": args.train_tasks_per_depth,
         "test_per_depth": args.test_tasks_per_depth,
