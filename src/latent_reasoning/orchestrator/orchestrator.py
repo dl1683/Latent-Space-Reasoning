@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from dataclasses import dataclass, field
+from time import perf_counter
 from typing import List
 
 import torch
@@ -57,6 +58,12 @@ class OrchestrationResult:
 
     # History
     evolution_history: List[dict] = field(default_factory=list)
+
+    # Stage timings (seconds)
+    encode_duration_s: float = 0.0
+    evolution_duration_s: float = 0.0
+    decode_duration_s: float = 0.0
+    total_run_duration_s: float = 0.0
 
 
 class Orchestrator:
@@ -252,6 +259,10 @@ class Orchestrator:
         )
 
     def _get_baseline_encoder(self) -> Encoder:
+        # If a custom encoder is injected, treat it as authoritative for baseline
+        # to avoid forcing model downloads in test/offline environments.
+        if not isinstance(self.encoder, LLMEncoder):
+            return self.encoder
         if self.config.encoder.quantization == "none":
             return self.encoder
         if self._baseline_encoder is None:
@@ -447,16 +458,26 @@ class Orchestrator:
             - Checkpoints are saved automatically for fault tolerance
             - Decoding strategy is controlled by synthesis.decode_strategy
         """
-        print_header("Latent Space Reasoning Engine")
+        run_start = perf_counter()
+        verbosity = self.config.output.verbosity
+        if isinstance(verbosity, int):
+            render_output = verbosity >= int(LogLevel.NORMAL)
+        else:
+            render_output = verbosity not in {"silent", "minimal"}
+        if render_output:
+            print_header("Latent Space Reasoning Engine")
 
         log_event("START", query=query[:50] + "..." if len(query) > 50 else query)
 
-        # Start budget timer
+        # Reset budget counters for per-query isolation, then start timer.
+        self.budget.reset()
         self.budget.start()
 
         # Encode query
         log_event("ENCODE", level=LogLevel.VERBOSE)
+        encode_start = perf_counter()
         seed = self.encoder.encode(query)
+        encode_duration_s = perf_counter() - encode_start
         log_event(
             "ENCODED",
             level=LogLevel.VERBOSE,
@@ -484,14 +505,17 @@ class Orchestrator:
         stop_reason = "none"
         evolution_history = []
         survivors = []
+        evolution_duration_s = 0.0
 
         # Run standard evolution if applicable
         if use_standard:
             log_event("EVOLVE", level=LogLevel.NORMAL)
+            evolution_start = perf_counter()
             evolution_result = self.evolution_loop.run(
                 seed=seed,
                 max_evaluations=self.budget.max_evaluations - self.budget.evaluations_used,
             )
+            evolution_duration_s += perf_counter() - evolution_start
 
             best_latent = evolution_result.best_latent
             best_score = evolution_result.best_score
@@ -507,10 +531,12 @@ class Orchestrator:
 
         # Run grammar evolution if enabled
         if use_grammar:
+            grammar_start = perf_counter()
             grammar_latent, grammar_score, grammar_history = self._run_grammar_evolution(
                 query=query,
                 seed=seed,
             )
+            evolution_duration_s += perf_counter() - grammar_start
 
             # In hybrid mode, take the better result
             if use_standard:
@@ -552,6 +578,7 @@ class Orchestrator:
         if survivors and self.config.synthesis.decode_strategy == "combined":
             decode_latent = self._combine_latents(survivors)
 
+        decode_start = perf_counter()
         decoded_outputs = [
             self.encoder.decode(
                 decode_latent,
@@ -560,6 +587,8 @@ class Orchestrator:
                 temperature=self.config.synthesis.temperature,
             )
         ]
+        decode_duration_s = perf_counter() - decode_start
+        total_run_duration_s = perf_counter() - run_start
 
         # Log completion
         log_event(
@@ -579,10 +608,14 @@ class Orchestrator:
             total_evaluations=total_evaluations,
             stop_reason=stop_reason,
             evolution_history=evolution_history,
+            encode_duration_s=encode_duration_s,
+            evolution_duration_s=evolution_duration_s,
+            decode_duration_s=decode_duration_s,
+            total_run_duration_s=total_run_duration_s,
         )
 
         # Print result
-        if decoded_outputs:
+        if decoded_outputs and render_output:
             print_result(
                 decoded_outputs[0],
                 best_score,
@@ -628,11 +661,22 @@ class Orchestrator:
         Returns:
             Dict with both outputs for comparison
         """
+        compare_start = perf_counter()
+
         # Run baseline
+        baseline_start = perf_counter()
         baseline_output = self.run_baseline(query)
+        baseline_duration_s = perf_counter() - baseline_start
 
         # Run latent reasoning
+        latent_start = perf_counter()
         result = self.run(query)
+        latent_duration_s = perf_counter() - latent_start
+        total_duration_s = perf_counter() - compare_start
+
+        latency_overhead_ratio = None
+        if baseline_duration_s > 0:
+            latency_overhead_ratio = latent_duration_s / baseline_duration_s
 
         return {
             "query": query,
@@ -641,6 +685,17 @@ class Orchestrator:
             "latent_score": result.best_score,
             "generations": result.generations,
             "evaluations": result.total_evaluations,
+            "baseline_duration_s": baseline_duration_s,
+            "latent_duration_s": latent_duration_s,
+            "latent_run_duration_s": result.total_run_duration_s,
+            "latent_encode_duration_s": result.encode_duration_s,
+            "latent_evolution_duration_s": result.evolution_duration_s,
+            "latent_decode_duration_s": result.decode_duration_s,
+            "latent_non_evolution_duration_s": max(
+                0.0, result.total_run_duration_s - result.evolution_duration_s
+            ),
+            "total_compare_duration_s": total_duration_s,
+            "latency_overhead_ratio": latency_overhead_ratio,
         }
 
     def reset(self) -> None:
