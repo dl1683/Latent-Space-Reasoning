@@ -1,0 +1,112 @@
+# Worklog
+
+## 2026-02-16
+- Initialized persistent autonomy scaffolding: `AGENTS.md`, `MEMORY.md`, `GOALS.md`, `TASKS.md`, and `WORKLOG.md`.
+- Established startup protocol and execution loop for autonomous run-until-done behavior within active sessions.
+- Verified scaffold consistency and marked bootstrap setup goals complete.
+- Current handoff: waiting for the next concrete repository goal to execute.
+- Corrected goal framing: autonomy is execution mechanism only; project objective must be explicitly defined by owner.
+- Captured owner mission: maximize intelligence accessibility via low-cost, low-resource, transparent, auditable operation.
+- Converted mission into `AIM-v1` measurable acceptance criteria in `GOALS.md`.
+- Began cycle 1 by running full tests; identified 2 integration failures in baseline/compare due forced model download with mock encoder.
+- Implemented fix in orchestrator baseline encoder selection to reuse custom encoders in offline/test contexts.
+- Added compare telemetry fields (`baseline_duration_s`, `latent_duration_s`, `latency_overhead_ratio`, `total_compare_duration_s`) and surfaced them in CLI stats.
+- Added config-driven compare runs (`--config`) to support reproducible low-resource profiles.
+- Added `configs/aim_v1_low_resource.yaml` and validated schema loading.
+- Added accessibility audit utilities (`src/latent_reasoning/eval/accessibility.py`, `experiments/aim_v1_audit.py`) with unit tests.
+- Fixed Windows UTF-8 BOM JSON parsing in compare-result loader (`utf-8-sig` support).
+- Implemented foundational compute-efficiency improvement: adaptive survivor budget decay during score plateaus.
+- Added integration test for adaptive survivor decay behavior.
+- Discovered and fixed evolution history corruption due variable shadowing in `EvolutionLoop.run`.
+- Validation status: `pytest tests/ -q` passes (239 passed).
+- Added `experiments/benchmark_adaptive_survivors.py` for real multi-query fixed-vs-adaptive benchmarking.
+- Ran benchmark on low-resource tiny model profile and produced:
+  - `experiments/aim_v1_adaptive_survivor_benchmark.json`
+  - `experiments/aim_v1_adaptive_survivor_benchmark.md`
+- Result snapshot: adaptive survivors preserved average score while reducing average evaluations by ~9.0% on this run.
+- Found and fixed a cross-model baseline decoding bug in `LLMEncoder.generate_baseline` by normalizing generation outputs.
+- Generated real multi-query audit outputs:
+  - `experiments/aim_v1_real_compare_runs.json`
+  - `experiments/aim_v1_real_audit_summary.json`
+  - `experiments/aim_v1_real_audit_summary.md`
+- Identified and fixed cross-query evolution state leakage (evaluation counter and temperature carried across runs).
+- Added regression coverage for run-state isolation in `tests/integration/test_pipeline.py`.
+- Added optional score-cache for repeated/near-identical latents in evolution config and loop.
+- Added deterministic regression test proving score-cache reduces evaluations on duplicate populations.
+- Updated `configs/aim_v1_low_resource.yaml` to keep score-cache disabled by default pending broader latency wins.
+- Refreshed benchmark artifacts after fixes:
+  - `experiments/aim_v1_adaptive_survivor_benchmark.json`
+  - `experiments/aim_v1_adaptive_survivor_benchmark.md`
+  - `experiments/aim_v1_real_compare_runs.json`
+  - `experiments/aim_v1_real_audit_summary.json`
+  - `experiments/aim_v1_real_audit_summary.md`
+- Latest benchmark snapshot (tiny model): quality delta `0.0`, eval reduction `~7.1%`, latency delta `~-0.06%` (near-neutral).
+- Validation status: `pytest tests/ -q` passes (241 passed).
+- Added stage-level timing telemetry from orchestrator runs:
+  - `latent_run_duration_s`
+  - `latent_encode_duration_s`
+  - `latent_evolution_duration_s`
+  - `latent_decode_duration_s`
+  - `latent_non_evolution_duration_s`
+- Extended compare summary metrics to aggregate new timing fields in accessibility evaluation helpers.
+- Upgraded adaptive benchmark methodology:
+  - repeated paired trials (`--repeats`, default `3`)
+  - counterbalanced mode order per trial
+  - optional per-trial warmup (enabled by default)
+  - median-trial metric fallback for comparison deltas
+  - added evolution-latency and evolution-time-per-eval deltas
+- Updated adaptive tuner to call repeated paired benchmark runs (`--repeats`, warmup support).
+- Refreshed artifacts with robust methodology:
+  - `experiments/aim_v1_adaptive_survivor_benchmark.json`
+  - `experiments/aim_v1_adaptive_survivor_benchmark.md`
+  - `experiments/aim_v1_adaptive_tuning.json`
+- Latest robust benchmark snapshot (tiny model, default script settings): quality delta `+0.0150`, eval reduction `~14.6%`, latency reduction `~1.9%`, evolution-latency reduction `~18.9%`.
+- Tuned objective now includes evolution-latency and per-eval efficiency terms with regression penalties.
+- Aligned tuner defaults with benchmark defaults (`generations=4`, `max_tokens=96`, `repeats=3`).
+- Latest tuning snapshot (tiny model, aligned defaults): best params remain `{min_survivors: 1, survivor_decay: 0.5, survivor_decay_patience: 1}`; evolution latency improves while end-to-end latency remains noisy at small deltas.
+- Validation status: `pytest tests/ -q` passes (242 passed).
+- Found and fixed orchestrator budget leakage across queries:
+  - Budget counters now reset at the start of each `Orchestrator.run`.
+  - Added regression test `test_orchestrator_budget_does_not_leak_across_queries`.
+- Validation status after budget fix: `pytest tests/ -q` passes (243 passed).
+- Reduced benchmark latency-noise source by disabling checkpoint/history writes in benchmark base config.
+- Re-ran canonical benchmark artifacts after budget + noise fixes:
+  - `experiments/aim_v1_adaptive_survivor_benchmark.json`
+  - `experiments/aim_v1_adaptive_survivor_benchmark.md`
+- Latest corrected benchmark snapshot (tiny model, default script settings): quality delta `+0.0007`, eval reduction `~15.5%`, latency reduction `~1.6%`, evolution-latency reduction `~13.9%`.
+- Hardened tuner fairness by comparing adaptive candidates against a shared fixed baseline summary.
+- Reweighted tuner objective toward stable signals (evaluation reduction + quality preservation) to reduce sensitivity to wall-clock jitter.
+- Refreshed tuning artifact:
+  - `experiments/aim_v1_adaptive_tuning.json`
+- Tuning remains somewhat wall-clock noisy across full sweeps despite robustness improvements; keep benchmark pair-runs as primary decision signal.
+- Latest tuning snapshot (stable-signal objective): best params `min_survivors=1`, `survivor_decay=0.5`, `survivor_decay_patience=1`, with evaluation reduction `~14.5%` and non-negative quality delta.
+- Began non-tiny validation lane and added query presets:
+  - `experiments/queries_non_tiny_validation.txt`
+  - `experiments/queries_non_tiny_pair.txt`
+  - `experiments/queries_non_tiny_smoke.txt`
+- Attempted broader non-tiny runs with `Qwen/Qwen3-0.6B` and `distilgpt2`; both exceeded practical autonomous cycle runtime at larger settings.
+- Added timeout-controlled non-tiny validation runner:
+  - `experiments/non_tiny_validation_runner.py`
+  - Emits `experiments/aim_v1_non_tiny_validation_report.json` with status, elapsed time, command, and comparison metrics.
+- Executed non-tiny smoke validation through runner (completed in ~33.5s):
+  - Benchmark artifact: `experiments/aim_v1_non_tiny_benchmark_distilgpt2_smoke.json`
+  - Report artifact: `experiments/aim_v1_non_tiny_validation_report.json`
+  - Snapshot: quality delta `0.0`, evaluation reduction `0.0` (expected at minimal settings), latency reduction `~32.8%`.
+- Outcome: non-tiny validation infrastructure is in place and auditable; next cycle should expand from smoke to multi-query within timeout bounds for stronger confidence.
+- Ran timeout-controlled multi-query non-tiny validation:
+  - Runner report: `experiments/aim_v1_non_tiny_validation_report_pair.json`
+  - Benchmark artifacts:
+    - `experiments/aim_v1_non_tiny_benchmark_distilgpt2_pair.json`
+    - `experiments/aim_v1_non_tiny_benchmark_distilgpt2_pair.md`
+  - Result snapshot (`distilgpt2`, 2 queries, 1 repeat): quality delta `0.0`, evaluation reduction `~21.4%` (`7.0 -> 5.5` median trial evals), end-to-end latency `~-1.3%`, evolution-latency reduction `~14.4%`.
+- Marked non-tiny efficiency-quality confirmation goal complete with caveat on end-to-end latency.
+- Extended `experiments/non_tiny_validation_runner.py` with `--score-cache` passthrough.
+- Ran non-tiny cache experiment:
+  - Report: `experiments/aim_v1_non_tiny_validation_report_pair_cache.json`
+  - Benchmark: `experiments/aim_v1_non_tiny_benchmark_distilgpt2_pair_cache.json`
+  - Comparison vs no-cache: same evaluation reduction (`~21.4%`), better evolution latency, but worse end-to-end latency (`~-3.0%` vs `~-1.3%`), so score-cache remains disabled by default for non-tiny path.
+- Ran non-tiny repeat-stabilization pass:
+  - Report: `experiments/aim_v1_non_tiny_validation_report_pair_r2.json`
+  - Benchmark: `experiments/aim_v1_non_tiny_benchmark_distilgpt2_pair_r2.json`
+  - Result snapshot (`distilgpt2`, 2 queries, 2 repeats): quality delta `0.0`, evaluation reduction `~15.4%` (`6.5 -> 5.5` median trial evals), end-to-end latency reduction `~7.4%`.
+- Updated non-tiny confirmation to use the repeat-stabilized result as primary reference.
