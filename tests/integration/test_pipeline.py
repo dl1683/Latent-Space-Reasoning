@@ -18,6 +18,7 @@ from latent_reasoning.evolution.selection import get_selection_strategy
 from latent_reasoning.evolution.mutation import get_mutation_strategy
 from latent_reasoning.evolution.crossover import get_crossover_strategy, population_diversity
 from latent_reasoning.evolution.loop import EvolutionLoop
+from latent_reasoning.engine import Engine
 from latent_reasoning.orchestrator.budget import ComputeBudget
 from latent_reasoning.orchestrator.checkpoint import CheckpointManager
 from latent_reasoning.orchestrator.orchestrator import Orchestrator
@@ -107,6 +108,34 @@ class MockModifierJudge(Judge):
             delta = (target - latent) * self.strength
             return delta
         return torch.zeros_like(latent)
+
+    @property
+    def device(self) -> torch.device:
+        return self._device
+
+    def to(self, device):
+        if isinstance(device, str):
+            device = torch.device(device)
+        self._device = device
+        return self
+
+
+class ConstantScorerJudge(Judge):
+    """Scorer that returns a constant value to force plateau behavior."""
+
+    def __init__(self, score: float = 0.0, dim: int = 768):
+        self._score = score
+        self._latent_dim = dim
+        self._device = torch.device("cpu")
+
+    def score(self, latent: torch.Tensor) -> float:
+        return self._score
+
+    def calibrate(self, latents: torch.Tensor) -> None:
+        pass
+
+    def set_reference(self, text: str | None = None, embedding: torch.Tensor | None = None) -> None:
+        pass
 
     @property
     def device(self) -> torch.device:
@@ -425,6 +454,78 @@ class TestOrchestratorIntegration:
         assert "baseline" in comparison
         assert "latent_reasoning" in comparison
         assert "latent_score" in comparison
+        assert "baseline_duration_s" in comparison
+        assert "latent_duration_s" in comparison
+        assert "latent_run_duration_s" in comparison
+        assert "latent_encode_duration_s" in comparison
+        assert "latent_evolution_duration_s" in comparison
+        assert "latent_decode_duration_s" in comparison
+        assert "latent_non_evolution_duration_s" in comparison
+        assert "total_compare_duration_s" in comparison
+        assert "latency_overhead_ratio" in comparison
+        assert comparison["baseline_duration_s"] >= 0.0
+        assert comparison["latent_duration_s"] >= 0.0
+        assert comparison["latent_run_duration_s"] >= 0.0
+        assert comparison["latent_encode_duration_s"] >= 0.0
+        assert comparison["latent_evolution_duration_s"] >= 0.0
+        assert comparison["latent_decode_duration_s"] >= 0.0
+        assert comparison["latent_non_evolution_duration_s"] >= 0.0
+        assert comparison["total_compare_duration_s"] >= 0.0
+
+    def test_orchestrator_budget_does_not_leak_across_queries(self, tmp_path):
+        """Per-query budget should reset when reusing an orchestrator."""
+        latent_dim = 64
+
+        encoder = MockEncoder(dim=latent_dim)
+        panel = JudgePanel(scorers=[ConstantScorerJudge(score=0.0, dim=latent_dim)])
+
+        config = Config(
+            encoder=EncoderConfig(model="mock"),
+            evolution=EvolutionConfig(
+                chains=4,
+                generations=2,
+                convergence=ConvergenceConfig(threshold=0.99, patience=20),
+            ),
+            budget=BudgetConfig(max_evaluations=20),
+            output=OutputConfig(save_history=False),
+        )
+
+        orchestrator = Orchestrator(config=config, encoder=encoder, judge_panel=panel)
+        first = orchestrator.compare("First query")
+        second = orchestrator.compare("Second query")
+
+        assert first["evaluations"] > 0
+        assert second["evaluations"] > 0
+        # Budget must not accumulate across queries (would be ~2x if leaked).
+        assert second["evaluations"] <= first["evaluations"] + 2
+        # Budget state should reflect only the latest run, not cumulative usage.
+        assert orchestrator.budget.evaluations_used == second["evaluations"]
+        assert orchestrator.budget.evaluations_used <= config.budget.max_evaluations
+
+    def test_engine_preserves_config_verbosity_when_not_overridden(self):
+        """Engine should not overwrite config verbosity unless explicitly requested."""
+        latent_dim = 64
+        cfg = Config(
+            encoder=EncoderConfig(model="mock"),
+            output=OutputConfig(verbosity="silent", save_history=False),
+        )
+
+        engine = Engine(
+            config=cfg,
+            encoder=MockEncoder(dim=latent_dim),
+            scorers=[MockScorerJudge(dim=latent_dim)],
+            modifiers=[],
+        )
+        assert engine.config.output.verbosity == "silent"
+
+        override_engine = Engine(
+            config=cfg,
+            encoder=MockEncoder(dim=latent_dim),
+            scorers=[MockScorerJudge(dim=latent_dim)],
+            modifiers=[],
+            verbosity="verbose",
+        )
+        assert override_engine.config.output.verbosity == "verbose"
 
 
 class TestEndToEnd:
@@ -550,3 +651,94 @@ class TestEndToEnd:
             final_diversity = population_diversity(final_population)
             # Some diversity should remain
             assert final_diversity > 0
+
+    def test_adaptive_survivor_budget_decays_on_plateau(self):
+        """Adaptive survivor budget should shrink when quality plateaus."""
+        latent_dim = 64
+        seed = torch.randn(latent_dim)
+
+        panel = JudgePanel(scorers=[ConstantScorerJudge(score=0.0, dim=latent_dim)])
+
+        config = EvolutionConfig(
+            chains=6,
+            generations=5,
+            temperature=0.2,
+            selection=SelectionConfig(
+                strategy="elitist",
+                survivors=5,
+                elite=2,
+                adaptive_survivors=True,
+                min_survivors=2,
+                survivor_decay=0.5,
+                survivor_decay_patience=1,
+            ),
+            mutation=MutationConfig(strategy="gaussian", noise_scale=0.05),
+            crossover=CrossoverConfig(strategy="mean", threshold=0.0),
+            convergence=ConvergenceConfig(threshold=0.99, patience=50),
+        )
+
+        loop = EvolutionLoop(judge_panel=panel, config=config)
+        result = loop.run(seed, max_evaluations=200)
+
+        survivor_budgets = [entry["survivor_budget"] for entry in result.history]
+        assert survivor_budgets, "History should include survivor budget metrics"
+        assert survivor_budgets[0] == 5
+        assert min(survivor_budgets) >= 2
+        assert any(budget < 5 for budget in survivor_budgets[1:])
+
+    def test_evolution_run_state_does_not_leak_across_queries(self):
+        """Evaluation counters and temperature should reset each run."""
+        latent_dim = 64
+        panel = JudgePanel(scorers=[ConstantScorerJudge(score=0.0, dim=latent_dim)])
+
+        config = EvolutionConfig(
+            chains=1,
+            generations=1,
+            temperature=0.6,
+            convergence=ConvergenceConfig(threshold=0.99, patience=10),
+        )
+
+        loop = EvolutionLoop(judge_panel=panel, config=config)
+        seed_a = torch.randn(latent_dim)
+        seed_b = torch.randn(latent_dim)
+
+        result_a = loop.run(seed_a, max_evaluations=100)
+        temperature_after_a = loop.current_temperature
+        result_b = loop.run(seed_b, max_evaluations=100)
+        temperature_after_b = loop.current_temperature
+
+        assert result_a.total_evaluations > 0
+        assert result_a.total_evaluations <= 3
+        assert result_b.total_evaluations > 0
+        assert result_b.total_evaluations <= 3
+        assert result_b.total_evaluations == result_a.total_evaluations
+        # Temperatures should match if each run starts from the same initial value.
+        assert temperature_after_a == pytest.approx(temperature_after_b)
+
+    def test_score_cache_reduces_evaluations_for_duplicate_latents(self):
+        """Score cache should cut scorer calls when latents repeat."""
+        latent_dim = 64
+        seed = torch.randn(latent_dim)
+        panel = JudgePanel(scorers=[ConstantScorerJudge(score=0.5, dim=latent_dim)])
+
+        base_config = EvolutionConfig(
+            chains=5,
+            generations=2,
+            temperature=0.0,          # Keep population identical to seed
+            temperature_decay=1.0,
+            merge=MergeConfig(threshold=1.0),  # Avoid merging identical vectors
+            crossover=CrossoverConfig(strategy="mean", threshold=1.0),  # Disable crossover
+            mutation=MutationConfig(strategy="gaussian", noise_scale=0.0),
+            convergence=ConvergenceConfig(threshold=0.99, patience=10),
+        )
+
+        cfg_no_cache = base_config.model_copy(deep=True)
+        cfg_no_cache.score_cache = False
+        result_no_cache = EvolutionLoop(judge_panel=panel, config=cfg_no_cache).run(seed, max_evaluations=200)
+
+        cfg_cache = base_config.model_copy(deep=True)
+        cfg_cache.score_cache = True
+        cfg_cache.score_cache_precision = 4
+        result_cache = EvolutionLoop(judge_panel=panel, config=cfg_cache).run(seed, max_evaluations=200)
+
+        assert result_cache.total_evaluations < result_no_cache.total_evaluations
