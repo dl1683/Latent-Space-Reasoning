@@ -1,0 +1,189 @@
+{
+  "experiment": "v15_geometry_isolation",
+  "conditions": [
+    "no_evolution",
+    "euclidean_softprompt",
+    "hyperbolic_softprompt"
+  ],
+  "primary_comparison": "euclidean_softprompt_vs_hyperbolic_softprompt",
+  "bonferroni_n": 1,
+  "statistics": {
+    "per_condition": {
+      "no_evolution": {
+        "mean": 0.95,
+        "std": 0.0,
+        "per_seed": [
+          0.95
+        ]
+      },
+      "euclidean_softprompt": {
+        "mean": 0.95,
+        "std": 0.0,
+        "per_seed": [
+          0.95
+        ]
+      },
+      "hyperbolic_softprompt": {
+        "mean": 0.95,
+        "std": 0.0,
+        "per_seed": [
+          0.95
+        ]
+      }
+    },
+    "pairwise": {
+      "no_evolution_vs_euclidean_softprompt": {
+        "diff_mean": 0.0,
+        "diff_std": NaN,
+        "diff_ci_95": [
+          NaN,
+          NaN
+        ],
+        "p_permutation": NaN,
+        "t_stat": NaN,
+        "p_ttest": NaN,
+        "per_seed_mcnemar": [
+          {
+            "seed": 0,
+            "b": 0,
+            "c": 0,
+            "chi2": 0.0,
+            "p": 1.0
+          }
+        ]
+      },
+      "no_evolution_vs_hyperbolic_softprompt": {
+        "diff_mean": 0.0,
+        "diff_std": NaN,
+        "diff_ci_95": [
+          NaN,
+          NaN
+        ],
+        "p_permutation": NaN,
+        "t_stat": NaN,
+        "p_ttest": NaN,
+        "per_seed_mcnemar": [
+          {
+            "seed": 0,
+            "b": 0,
+            "c": 0,
+            "chi2": 0.0,
+            "p": 1.0
+          }
+        ]
+      },
+      "euclidean_softprompt_vs_hyperbolic_softprompt": {
+        "diff_mean": 0.0,
+        "diff_std": NaN,
+        "diff_ci_95": [
+          NaN,
+          NaN
+        ],
+        "p_permutation": NaN,
+        "t_stat": NaN,
+        "p_ttest": NaN,
+        "per_seed_mcnemar": [
+          {
+            "seed": 0,
+            "b": 0,
+            "c": 0,
+            "chi2": 0.0,
+            "p": 1.0
+          }
+        ]
+      }
+    },
+    "per_depth": {
+      "2": {
+        "no_evolution": {
+          "mean": 0.95,
+          "std": 0.0
+        },
+        "euclidean_softprompt": {
+          "mean": 0.95,
+          "std": 0.0
+        },
+        "hyperbolic_softprompt": {
+          "mean": 0.95,
+          "std": 0.0
+        }
+      }
+    }
+  },
+  "fitness_curves": {
+    "euclidean_softprompt": [
+      [
+        {
+          "gen": 1,
+          "best": 1.0,
+          "mean": 1.0,
+          "min": 1.0
+        },
+        {
+          "gen": 2,
+          "best": 1.0,
+          "mean": 1.0,
+          "min": 1.0
+        },
+        {
+          "gen": 3,
+          "best": 1.0,
+          "mean": 1.0,
+          "min": 1.0
+        }
+      ]
+    ],
+    "hyperbolic_softprompt": [
+      [
+        {
+          "gen": 1,
+          "best": 1.0,
+          "mean": 1.0,
+          "min": 1.0
+        },
+        {
+          "gen": 2,
+          "best": 1.0,
+          "mean": 1.0,
+          "min": 1.0
+        },
+        {
+          "gen": 3,
+          "best": 1.0,
+          "mean": 1.0,
+          "min": 1.0
+        }
+      ]
+    ]
+  },
+  "primary_verdict": "NOT SIGNIFICANT (p=nan >= 0.05)",
+  "elapsed_seconds": 7161.38969707489,
+  "config": {
+    "model": "Qwen/Qwen3-4B",
+    "quantization": "4bit",
+    "seeds": 1,
+    "curvature": 0.5,
+    "branching": 15,
+    "depths": [
+      2
+    ],
+    "train_per_depth": 150,
+    "test_per_depth": 20,
+    "evo_gens": 3,
+    "evo_pop": 4,
+    "evo_tasks_per_gen": 8,
+    "noise_scale": 0.1,
+    "num_soft_tokens": 8,
+    "d_latent": 2560,
+    "embed_dim": 2560,
+    "target_rms": 0.021953146904706955,
+    "ball_radius": 1.34350288425444,
+    "calibration": {
+      "embed_dim": 2560,
+      "hidden_dim": 2560,
+      "vocab_size": 151936,
+      "embedding_rms": 0.021953146904706955,
+      "mean_token_norm": 1.097372055053711
+    }
+  }
+}

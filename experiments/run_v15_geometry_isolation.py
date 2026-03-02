@@ -87,7 +87,7 @@ def main():
     num_soft_tokens = 8
     d_out = num_soft_tokens * embed_dim
     W = make_row_orthonormal_W(d_latent, d_out, seed=1234)
-    W = W.to(device=encoder._device, dtype=encoder.model.dtype)
+    W = W.to(device=encoder._device)  # Keep float32 for precision
     print(f"W shape: {W.shape} (d_latent={d_latent}, d_out={d_out})", flush=True)
     print(f"W device: {W.device}", flush=True)
 

@@ -100,7 +100,9 @@ def latent_to_soft_prompt(
     tangent = radial_tanh_squash(tangent, r_max)
 
     # 4. Project (preserves inner products)
-    W_dev = W if W.device == tangent.device else W.to(tangent.device)
+    W_dev = W
+    if W_dev.device != tangent.device or W_dev.dtype != tangent.dtype:
+        W_dev = W_dev.to(device=tangent.device, dtype=tangent.dtype)
     flat = tangent @ W_dev  # (d_latent,) @ (d_latent, d_out) -> (d_out,)
 
     # 5. Reshape to token sequence
