@@ -127,7 +127,7 @@ class Engine:
         selection_strategy: SelectionStrategy | None = None,
         mutation_strategy: MutationStrategy | None = None,
         crossover_strategy: CrossoverStrategy | None = None,
-        verbosity: str | LogLevel = "normal",
+        verbosity: str | LogLevel | None = None,
     ):
         """
         Initialize the reasoning engine with custom settings.
@@ -140,7 +140,8 @@ class Engine:
             selection_strategy: Custom selection algorithm (elitist, tournament, etc.)
             mutation_strategy: Custom mutation algorithm (gaussian, directed, adaptive)
             crossover_strategy: Custom crossover algorithm (weighted, interpolation, etc.)
-            verbosity: Logging level ("silent", "minimal", "normal", "verbose", "debug")
+            verbosity: Optional logging level override ("silent", "minimal",
+                "normal", "verbose", "debug"). If None, preserve config verbosity.
 
         Note:
             If you provide both config and individual parameters (like encoder),
@@ -152,6 +153,15 @@ class Engine:
         # Set verbosity
         if isinstance(verbosity, str):
             self.config.output.verbosity = verbosity
+        elif isinstance(verbosity, LogLevel):
+            level_map = {
+                LogLevel.SILENT: "silent",
+                LogLevel.MINIMAL: "minimal",
+                LogLevel.NORMAL: "normal",
+                LogLevel.VERBOSE: "verbose",
+                LogLevel.DEBUG: "debug",
+            }
+            self.config.output.verbosity = level_map.get(verbosity, "normal")
         set_verbosity(self.config.output.verbosity)
 
         # Override config with explicit arguments

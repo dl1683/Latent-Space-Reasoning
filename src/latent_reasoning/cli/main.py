@@ -436,46 +436,52 @@ def run(
 def compare(
     query: str = typer.Argument(..., help="The query to compare on"),
     # Model options
-    encoder: str = typer.Option(
-        "Qwen/Qwen3-0.6B",
+    encoder: Optional[str] = typer.Option(
+        None,
         "--encoder", "-e",
-        help="Encoder model (HuggingFace ID or path)",
+        help="Encoder model (HuggingFace ID or path). Overrides config if set.",
     ),
-    quantization: str = typer.Option(
-        "4bit",
+    quantization: Optional[str] = typer.Option(
+        None,
         "--quantization",
-        help="Quantization mode: auto, 4bit, none",
+        help="Quantization mode: auto, 4bit, none. Overrides config if set.",
     ),
-    decode_strategy: str = typer.Option(
-        "best",
+    decode_strategy: Optional[str] = typer.Option(
+        None,
         "--decode-strategy",
-        help="Decode strategy: best, combined",
+        help="Decode strategy: best, combined. Overrides config if set.",
     ),
     # Generation options
-    max_tokens: int = typer.Option(
-        2048,
+    max_tokens: Optional[int] = typer.Option(
+        None,
         "--max-tokens", "-t",
-        help="Maximum tokens to generate",
+        help="Maximum tokens to generate. Overrides config if set.",
         min=1,
         max=32768,
     ),
-    temperature: float = typer.Option(
-        0.7,
+    temperature: Optional[float] = typer.Option(
+        None,
         "--temperature",
-        help="Sampling temperature",
+        help="Sampling temperature. Overrides config if set.",
         min=0.0,
         max=2.0,
     ),
     # Evolution options
-    chains: int = typer.Option(
-        5,
+    chains: Optional[int] = typer.Option(
+        None,
         "--chains", "-c",
-        help="Number of parallel reasoning chains",
+        help="Number of parallel reasoning chains. Overrides config if set.",
     ),
-    generations: int = typer.Option(
-        10,
+    generations: Optional[int] = typer.Option(
+        None,
         "--generations", "-g",
-        help="Maximum evolution generations",
+        help="Maximum evolution generations. Overrides config if set.",
+    ),
+    config: Optional[Path] = typer.Option(
+        None,
+        "--config",
+        help="YAML config profile for reproducible runs (e.g., low-resource profile)",
+        exists=True,
     ),
     # Output options
     output: Optional[Path] = typer.Option(
@@ -503,23 +509,46 @@ def compare(
     Examples:
         latent-reason compare "How to optimize a database query?"
         latent-reason compare "Design an API" --encoder Qwen/Qwen3-4B
+        latent-reason compare "Design an API" --config configs/aim_v1_low_resource.yaml
         latent-reason compare "Debug this issue" --full --output results.json
     """
     from latent_reasoning.config import Config
     from latent_reasoning.engine import Engine
 
-    cfg = Config()
-    cfg.encoder.model = encoder
-    cfg.encoder.quantization = quantization
-    if decode_strategy not in {"best", "combined"}:
+    cfg = Config.from_yaml(config) if config else Config()
+
+    # Sensible compare defaults when no config profile is provided.
+    if not config:
+        cfg.encoder.model = "Qwen/Qwen3-0.6B"
+        cfg.encoder.quantization = "4bit"
+        cfg.synthesis.decode_strategy = "best"
+        cfg.evolution.chains = 5
+        cfg.evolution.generations = 10
+        cfg.synthesis.max_tokens = 2048
+        cfg.synthesis.temperature = 0.7
+        cfg.output.verbosity = "minimal"
+
+    if encoder is not None:
+        cfg.encoder.model = encoder
+    if quantization is not None:
+        cfg.encoder.quantization = quantization
+    if decode_strategy is not None:
+        cfg.synthesis.decode_strategy = decode_strategy
+    if chains is not None:
+        cfg.evolution.chains = chains
+    if generations is not None:
+        cfg.evolution.generations = generations
+    if max_tokens is not None:
+        cfg.synthesis.max_tokens = max_tokens
+    if temperature is not None:
+        cfg.synthesis.temperature = temperature
+
+    if cfg.synthesis.decode_strategy not in {"best", "combined"}:
         console.print("[red]Error: --decode-strategy must be 'best' or 'combined'[/red]")
         raise typer.Exit(1)
-    cfg.synthesis.decode_strategy = decode_strategy
-    cfg.evolution.chains = chains
-    cfg.evolution.generations = generations
-    cfg.synthesis.max_tokens = max_tokens
-    cfg.synthesis.temperature = temperature
-    cfg.output.verbosity = "verbose" if verbose else "minimal"
+
+    if verbose:
+        cfg.output.verbosity = "verbose"
 
     try:
         console.print(f"\n[bold cyan]Comparing reasoning methods...[/bold cyan]")
@@ -561,6 +590,16 @@ def compare(
         stats_table.add_row("Evaluations", str(result['evaluations']))
         stats_table.add_row("Baseline Length", f"{len(result['baseline'])} chars")
         stats_table.add_row("Latent Length", f"{len(result['latent_reasoning'])} chars")
+        if "baseline_duration_s" in result:
+            stats_table.add_row("Baseline Time", f"{result['baseline_duration_s']:.2f}s")
+        if "latent_duration_s" in result:
+            stats_table.add_row("Latent Time", f"{result['latent_duration_s']:.2f}s")
+        if "latent_evolution_duration_s" in result:
+            stats_table.add_row("Evolution Time", f"{result['latent_evolution_duration_s']:.2f}s")
+        if "latent_non_evolution_duration_s" in result:
+            stats_table.add_row("Non-Evolution Time", f"{result['latent_non_evolution_duration_s']:.2f}s")
+        if "latency_overhead_ratio" in result and result["latency_overhead_ratio"] is not None:
+            stats_table.add_row("Latency Overhead", f"{result['latency_overhead_ratio']:.2f}x")
 
         console.print(Panel(stats_table, title="[bold]Statistics[/bold]", border_style="dim"))
 
