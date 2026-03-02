@@ -93,7 +93,7 @@ def main():
 
     # Task generation
     depths = args.diagnostic and [2] or [2, 3]
-    tasks_by_depth = generate_all_unique_tasks(args.branching, depths)
+    tasks_by_depth = generate_all_unique_tasks(args.branching, depths, args.difficulty)
     total_tasks = sum(len(v) for v in tasks_by_depth.values())
     print(f"Tasks: {total_tasks} total across depths {depths}", flush=True)
 

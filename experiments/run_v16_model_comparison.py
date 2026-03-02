@@ -127,7 +127,7 @@ def run_single_model(
 
     # Tasks
     depths = [2] if args.diagnostic else [2, 3]
-    tasks_by_depth = generate_all_unique_tasks(args.branching, depths)
+    tasks_by_depth = generate_all_unique_tasks(args.branching, depths, args.difficulty)
     train_tasks, test_tasks = split_train_test(
         tasks_by_depth, args.test_tasks_per_depth, args.train_tasks_per_depth,
     )

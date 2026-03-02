@@ -60,18 +60,51 @@ class Task:
     depth: int
 
 
-def generate_all_unique_tasks(branching: int, depths: List[int]) -> Dict[int, List[Task]]:
-    """Enumerate ALL unique arithmetic tasks per depth."""
+def generate_all_unique_tasks(
+    branching: int,
+    depths: List[int],
+    difficulty: str = "standard",
+) -> Dict[int, List[Task]]:
+    """Enumerate ALL unique arithmetic tasks per depth.
+
+    difficulty:
+        "standard" -- original single-step formula (depth-2 is easy)
+        "hard"     -- multi-step chained operations (requires genuine reasoning)
+    """
     tasks_by_depth: Dict[int, List[Task]] = {}
     for depth in depths:
         tasks = []
         for i, path in enumerate(product(range(branching), repeat=depth)):
             path_list = list(path)
-            answer = sum(path_list) * (depth + 1) + depth * 7
-            prompt = (
-                f"Calculate: sum([{','.join(map(str, path_list))}]) * {depth + 1}"
-                f" + {depth} * 7 = ?\nAnswer with just the number."
-            )
+
+            if difficulty == "hard":
+                # Multi-step chained arithmetic:
+                # Step 1: sum the path
+                # Step 2: multiply by (depth+1)
+                # Step 3: add depth*7
+                # Step 4: compute modulo of a larger product
+                # Step 5: final = step3 + step4
+                s = sum(path_list)
+                step2 = s * (depth + 1)
+                step3 = step2 + depth * 7
+                step4 = (s * 13 + 17) % (depth * 11 + 3)
+                answer = step3 * 2 + step4 - s
+                prompt = (
+                    f"Solve step by step:\n"
+                    f"  a = sum([{','.join(map(str, path_list))}])\n"
+                    f"  b = a * {depth + 1}\n"
+                    f"  c = b + {depth * 7}\n"
+                    f"  d = (a * 13 + 17) mod {depth * 11 + 3}\n"
+                    f"  result = c * 2 + d - a\n"
+                    f"What is result? Answer with just the number."
+                )
+            else:
+                answer = sum(path_list) * (depth + 1) + depth * 7
+                prompt = (
+                    f"Calculate: sum([{','.join(map(str, path_list))}]) * {depth + 1}"
+                    f" + {depth} * 7 = ?\nAnswer with just the number."
+                )
+
             tasks.append(Task(
                 task_id=f"d{depth}_u{i}",
                 prompt=prompt,
@@ -675,6 +708,8 @@ def experiment_cli(description: str) -> argparse.Namespace:
     parser.add_argument("--evo-tasks", type=int, default=8)
     parser.add_argument("--noise-scale", type=float, default=0.1)
     parser.add_argument("--curvature", type=float, default=0.5)
+    parser.add_argument("--difficulty", choices=["standard", "hard"], default="standard",
+                        help="Task difficulty: standard (easy) or hard (multi-step)")
     parser.add_argument("--diagnostic", action="store_true",
                         help="Run 1 seed for quick sanity check")
     parser.add_argument("--output", type=str, default=None,
