@@ -641,6 +641,10 @@ class GeometryConfig(BaseModel):
     final_curvature: float = Field(default=1.0, ge=0.1, le=5.0)
     anneal_generations: int = Field(default=20, ge=5, le=100)
 
+    # Mixture-of-curvature (per-individual curvature co-evolution)
+    mixture_curvature: bool = False  # Each individual evolves its own curvature
+    curvature_sigma: float = Field(default=0.1, ge=0.01, le=1.0)  # Log-normal step size
+
     class Config:
         extra = "forbid"
 

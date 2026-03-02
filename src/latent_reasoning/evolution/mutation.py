@@ -476,6 +476,83 @@ class HyperbolicAdaptiveMutation(MutationStrategy):
         self.last_scores.clear()
 
 
+class MixtureCurvatureMutation(MutationStrategy):
+    """Mutation that co-evolves curvature alongside the latent vector.
+
+    Each individual has its own curvature.  At mutation time:
+    1. Perturb curvature: c' = clamp(c * exp(sigma * N(0,1)), c_min, c_max)
+    2. Re-project parent to new ball (project_to_ball at new curvature)
+    3. Mobius-add noise at the new curvature
+
+    Returns mutated latent; the caller reads ``new_curvature`` afterwards.
+
+    Reference: HELM (NeurIPS 2025) — mixture-of-curvature > fixed curvature.
+    """
+
+    def __init__(
+        self,
+        noise_scale: float = 0.35,
+        curvature_sigma: float = 0.1,
+        c_min: float = 0.1,
+        c_max: float = 5.0,
+        max_norm: float = 0.95,
+        trust: float = 0.0,
+    ):
+        self.noise_scale = noise_scale
+        self.curvature_sigma = curvature_sigma
+        self.c_min = c_min
+        self.c_max = c_max
+        self.max_norm = max_norm
+        self.trust = trust
+        self._hyp = None
+        # Set after mutate() returns — caller reads this
+        self.new_curvature: float = 1.0
+
+    def _get_hyperbolic(self):
+        if self._hyp is None:
+            from latent_reasoning.utils import hyperbolic as hyp
+            self._hyp = hyp
+        return self._hyp
+
+    def mutate(
+        self,
+        candidate: Tensor,
+        modification_hint: Tensor | None,
+        temperature: float,
+        curvature: float = 1.0,
+    ) -> Tensor:
+        """Mutate with co-evolved curvature.
+
+        Args:
+            candidate: Point in Poincare ball at ``curvature``.
+            modification_hint: Ignored (for interface compat).
+            temperature: Mutation strength multiplier.
+            curvature: *Current* curvature of this individual.
+
+        Returns:
+            Mutated point in Poincare ball at ``self.new_curvature``.
+        """
+        import math
+
+        hyp = self._get_hyperbolic()
+
+        # 1. Perturb curvature (log-normal walk)
+        log_c = math.log(curvature) + self.curvature_sigma * temperature * torch.randn(1).item()
+        new_c = max(self.c_min, min(self.c_max, math.exp(log_c)))
+        self.new_curvature = new_c
+
+        # 2. Re-project parent to new ball
+        candidate = hyp.project_to_ball(candidate, new_c, self.max_norm)
+
+        # 3. Mobius-add noise at new curvature
+        tangent_noise = torch.randn_like(candidate) * self.noise_scale * temperature
+        noise_in_ball = hyp.expmap0(tangent_noise.squeeze(), new_c)
+        mutated = hyp.mobius_add(candidate.squeeze(), noise_in_ball, new_c)
+        mutated = hyp.project_to_ball(mutated, new_c, self.max_norm)
+
+        return mutated
+
+
 def get_mutation_strategy(name: str, **kwargs) -> MutationStrategy:
     """Factory function to get a mutation strategy by name."""
     strategies = {
@@ -484,6 +561,7 @@ def get_mutation_strategy(name: str, **kwargs) -> MutationStrategy:
         "adaptive": AdaptiveMutation,
         "hyperbolic": HyperbolicMutation,
         "hyperbolic_adaptive": HyperbolicAdaptiveMutation,
+        "mixture_curvature": MixtureCurvatureMutation,
     }
 
     if name not in strategies:
