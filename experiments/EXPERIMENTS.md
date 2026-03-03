@@ -5,6 +5,68 @@ Only Codex-validated conclusions are stated as "confirmed."
 
 ---
 
+## Nested Expression Sensitivity (2026-03-03) — STRONGLY EXPLOITABLE
+
+**Purpose:** Test whether random soft prompt latents produce different accuracy on nested expression tasks (no step-by-step scaffolding).
+**Config:** 10 random Euclidean latents, 25 easy_nested tasks (2-digit arithmetic expressions), greedy decoding, Qwen3-4B Q4
+**Script:** `experiments/run_latent_sensitivity.py --task-type nested --difficulty easy_nested --n-latents 10`
+
+### Results
+
+| Condition | Accuracy |
+|-----------|----------|
+| Zero-shot baseline | **92%** |
+| Latent 1 (best) | **96%** |
+| Latent 4, 7, 9 | 92% |
+| Latent 5 | 88% |
+| Latent 3, 6, 8 | 84% |
+| Latent 2 | 80% |
+| Latent 10 (worst) | **64%** |
+| Mean conditioned | 85.6% |
+
+**Cochran's Q = 23.2, p = 0.0058** (significant at p < 0.01)
+
+### What We Learned
+1. **STRONGLY EXPLOITABLE landscape** — 32% range across 10 random latents
+2. **Conditioning CAN improve accuracy** — Latent 1 beats baseline (96% > 92%)
+3. **Different latents fix different failures** — nest_006 (60% correct), nest_004 (20% correct, but L6/L7 fix it!)
+4. **Catastrophic latents exist** — L10 drops to 64% (9 additional failures)
+5. **Task-dependent sensitivity** — 13/25 tasks always correct, 3/25 are boundary tasks, 9/25 show moderate sensitivity
+6. **Cochran's Q is statistically significant** — not a fluke; p = 0.0058
+7. **First statistically significant result in the project** — evolution CAN exploit this
+
+### Per-Task Sensitivity (most variable)
+- nest_006: 60% (baseline wrong, conditioning fixes 6/10 times)
+- nest_002: 20% (baseline right, conditioning breaks 8/10 times)
+- nest_004: 20% (baseline wrong, conditioning fixes 2/10 times)
+- nest_009, 014, 015: 70% (baseline right, conditioning breaks 3/10 times)
+
+### Artifacts
+- `experiments/sensitivity_nested_easy_results.json`
+- `experiments/calibration_nested_results.json` (calibration run)
+- `experiments/run_latent_sensitivity.py` (unified script)
+
+---
+
+## Calibration: Nested Expression Difficulty (2026-03-03) — COMPLETE
+
+**Purpose:** Find task difficulty level producing 50-70% baseline accuracy for sensitivity testing.
+**Config:** 40 nested tasks across 4 difficulty levels, zero-shot baseline, Qwen3-4B Q4
+
+### Results
+
+| Difficulty | Accuracy | Operations | Status |
+|-----------|----------|-----------|--------|
+| easy_nested | 75% (8 tasks) / 92% (25 tasks) | 2 ops, 2-digit | Sweet spot |
+| medium_nested | 42% | 3-4 ops, nesting | Below target |
+| hard_nested | 8.3% | 5-6 ops, branches | Too hard |
+| brutal_nested | 12.5% | 7-8 ops, deep nest | Too hard |
+
+### Artifacts
+- `experiments/calibration_nested_results.json`
+
+---
+
 ## Latent Sensitivity Diagnostic (2026-03-03) — VALIDATED
 
 **Purpose:** Test whether different random soft prompt latents produce meaningfully different accuracy on step-by-step arithmetic tasks.

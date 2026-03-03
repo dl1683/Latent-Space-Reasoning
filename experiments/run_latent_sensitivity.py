@@ -41,6 +41,7 @@ from harness import (
 )
 from latent_reasoning.core.encoder import LLMEncoder
 from latent_reasoning.decode.projection import make_row_orthonormal_W
+from latent_reasoning.decode.steering import make_steer_projection
 
 
 def safe_print(text: str) -> None:
@@ -171,10 +172,11 @@ def generate_nested_tasks(
     - Modulo by larger divisors requires mental division
 
     Difficulty levels:
-    - easy_nested: single operation, 2-digit numbers
-    - medium_nested: 2-3 operations, some nesting
-    - hard_nested: 3-4 operations with branches
-    - brutal_nested: 5+ operations, deep nesting, large numbers
+    - easy_nested: single operation, 2-digit numbers (~92% baseline)
+    - sweet_spot: 2-3 ops, 2-digit*2-digit core, targeting ~60% baseline
+    - medium_nested: 2-3 operations, some nesting (~42% baseline)
+    - hard_nested: 3-4 operations with branches (~8% baseline)
+    - brutal_nested: 5+ operations, deep nesting, large numbers (~12% baseline)
     """
     rng = random.Random(seed)
     tasks: List[SensitivityTask] = []
@@ -206,6 +208,44 @@ def generate_nested_tasks(
         )
         return SensitivityTask(
             f"nest_{idx:03d}", prompt, answer, n_ops, "easy_nested")
+
+    def _make_sweet_spot(idx: int) -> SensitivityTask:
+        """2-3 operations with 2-digit*2-digit core. Targets ~60% baseline.
+
+        Key difficulty: larger multiplications (20-99 * 20-99) which are
+        borderline for Qwen3-4B. Plus one additional simple operation.
+        """
+        a = rng.randint(20, 99)
+        b = rng.randint(20, 99)
+        c = rng.randint(10, 99)
+        d = rng.randint(10, 60)
+        patterns = [
+            # Two multiplications added: a*b + c*d
+            (f"{a} * {b} + {c} * {d}", 3),
+            # Multiplication then modulo by small number
+            (f"({a} * {b} + {c}) % {rng.randint(13, 29)}", 3),
+            # Two multiplications subtracted
+            (f"{a} * {b} - {c} * {rng.randint(2, 8)}", 3),
+            # FOIL: (a+b)*(c-d) where result is multi-digit
+            (f"({a} + {b}) * ({c} - {d})", 3),
+            # Triple multiplication with smaller numbers
+            (f"{rng.randint(5, 15)} * {rng.randint(10, 30)} * {rng.randint(3, 9)}", 3),
+            # a*b with integer division
+            (f"({a} * {b}) // {rng.randint(3, 9)} + {c}", 3),
+        ]
+        expr, n_ops = rng.choice(patterns)
+        answer = _eval_safe(expr)
+        if answer is None or (isinstance(answer, int) and abs(answer) > 100000):
+            # Fallback to safe pattern
+            expr = f"{a} * {b} + {c}"
+            answer = _eval_safe(expr)
+            n_ops = 2
+        prompt = (
+            f"Compute the following expression. Show your work, "
+            f"then state the final answer as a single number.\n{expr}"
+        )
+        return SensitivityTask(
+            f"nest_{idx:03d}", prompt, answer, n_ops, "sweet_spot")
 
     def _make_medium_nested(idx: int) -> SensitivityTask:
         """2-3 operations with parenthesized nesting."""
@@ -291,6 +331,7 @@ def generate_nested_tasks(
     if difficulty_filter:
         makers = {
             "easy_nested": _make_easy_nested,
+            "sweet_spot": _make_sweet_spot,
             "medium_nested": _make_medium_nested,
             "hard_nested": _make_hard_nested,
             "brutal_nested": _make_brutal_nested,
@@ -422,8 +463,17 @@ def main():
         help="Number of tasks to generate in calibration mode")
     parser.add_argument(
         "--difficulty", default=None,
-        choices=["easy_nested", "medium_nested", "hard_nested", "brutal_nested"],
+        choices=["easy_nested", "sweet_spot", "medium_nested", "hard_nested",
+                 "brutal_nested"],
         help="Generate ALL nested tasks at this difficulty level")
+    parser.add_argument(
+        "--decode-mode", default="soft_prompt",
+        choices=["soft_prompt", "multi_scale"],
+        help="Conditioning mode: soft_prompt (default) or multi_scale (+ steering)")
+    parser.add_argument("--steer-layers", default="22,25,28",
+        help="Comma-separated layer indices for multi_scale steering")
+    parser.add_argument("--steer-scale", type=float, default=1.0,
+        help="Scaling factor for intermediate layer steering vectors")
     parser.add_argument("--output", default=None)
     args = parser.parse_args()
 
@@ -598,10 +648,26 @@ def main():
         z = z * (target_norm / z.norm())
         latents.append(z)
 
-    # Decode config: Euclidean soft prompt, greedy decoding
+    # Decode config: Euclidean conditioning, greedy decoding
+    decode_mode = (DecodeMode.MULTI_SCALE if args.decode_mode == "multi_scale"
+                   else DecodeMode.SOFT_PROMPT)
+
+    # Build layer projections for multi_scale mode
+    layer_projections = None
+    if decode_mode == DecodeMode.MULTI_SCALE:
+        layer_indices = [int(x) for x in args.steer_layers.split(",")]
+        layer_projections = {}
+        for li_idx in layer_indices:
+            layer_projections[li_idx] = make_steer_projection(
+                d_latent, embed_dim, seed=li_idx * 1000 + 42,
+            ).to(encoder._device)
+        safe_print(
+            f"  Multi-scale steering at layers: {layer_indices}, "
+            f"scale={args.steer_scale}")
+
     cfg = DecodeConfig(
         geometry="euclidean",
-        mode=DecodeMode.SOFT_PROMPT,
+        mode=decode_mode,
         W_soft=W,
         embed_dim=embed_dim,
         num_soft_tokens=8,
@@ -609,6 +675,9 @@ def main():
         curvature=0.5,
         max_new_tokens=1024,
         temperature=0.0,  # Greedy for determinism
+        layer_projections=layer_projections,
+        steer_scale=args.steer_scale,
+        hidden_rms=target_rms,
     )
 
     sensitivity_results: List[Dict] = []
@@ -764,6 +833,7 @@ def main():
         "model": args.model,
         "quantization": args.quantization,
         "task_type": args.task_type,
+        "decode_mode": args.decode_mode,
         "mode": run_mode,
         "n_latents": args.n_latents,
         "n_tasks": n_tasks,
