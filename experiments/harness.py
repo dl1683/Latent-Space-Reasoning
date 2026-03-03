@@ -312,9 +312,10 @@ class DecodeConfig:
     layer_projections: Optional[Dict[int, Tensor]] = None
     steer_scale: float = 1.0
     hidden_rms: float = 0.02195  # target RMS for steering vectors
-    # Generation (min 1024 — models need room for chain-of-thought)
+    # Generation
     max_new_tokens: int = 1024
     temperature: float = 0.3
+    enable_thinking: bool = True  # Qwen3 thinking mode
 
 
 def decode_latent(
@@ -357,8 +358,13 @@ def decode_latent(
             {"role": "user", "content": user_msg},
         ]
         try:
+            template_kwargs = dict(
+                tokenize=False, add_generation_prompt=True,
+            )
+            if not cfg.enable_thinking:
+                template_kwargs["enable_thinking"] = False
             prompt = encoder.tokenizer.apply_chat_template(
-                messages, tokenize=False, add_generation_prompt=True,
+                messages, **template_kwargs,
             )
         except Exception:
             prompt = (
@@ -1180,6 +1186,8 @@ def experiment_cli(description: str) -> argparse.Namespace:
     parser.add_argument("--evo-tasks", type=int, default=8)
     parser.add_argument("--noise-scale", type=float, default=0.1)
     parser.add_argument("--curvature", type=float, default=0.5)
+    parser.add_argument("--max-new-tokens", type=int, default=1024,
+                        help="Max generation tokens (256 sufficient for nested expressions)")
     parser.add_argument("--difficulty", choices=["standard", "hard", "easy_nested", "sweet_spot"],
                         default="standard",
                         help="Task difficulty: standard, hard, easy_nested, sweet_spot")
@@ -1187,6 +1195,8 @@ def experiment_cli(description: str) -> argparse.Namespace:
                         help="Task type: chain (step-by-step) or nested (expressions)")
     parser.add_argument("--fitness-mode", choices=["accuracy", "dense"], default="accuracy",
                         help="Evolution fitness: accuracy (binary) or dense (legacy)")
+    parser.add_argument("--no-think", action="store_true",
+                        help="Disable Qwen3 thinking mode (faster, shorter outputs)")
     parser.add_argument("--diagnostic", action="store_true",
                         help="Run 1 seed for quick sanity check")
     parser.add_argument("--output", type=str, default=None,
@@ -1208,6 +1218,8 @@ class ExperimentSetup:
     d_latent: int
     num_soft_tokens: int = 8
     curvature: float = 0.5
+    max_new_tokens: int = 1024
+    enable_thinking: bool = True
 
 
 def setup_soft_prompt_experiment(
@@ -1274,6 +1286,8 @@ def setup_soft_prompt_experiment(
         n_seeds=n_seeds, embed_dim=embed_dim,
         target_rms=target_rms, d_latent=d_latent,
         num_soft_tokens=num_soft_tokens, curvature=curvature,
+        max_new_tokens=args.max_new_tokens,
+        enable_thinking=not args.no_think,
     )
 
 
@@ -1286,8 +1300,9 @@ def make_base_decode_kwargs(setup: ExperimentSetup) -> dict:
         num_soft_tokens=setup.num_soft_tokens,
         target_rms=setup.target_rms,
         curvature=setup.curvature,
-        max_new_tokens=1024,
+        max_new_tokens=setup.max_new_tokens,
         temperature=0.3,
+        enable_thinking=setup.enable_thinking,
     )
 
 

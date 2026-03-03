@@ -387,7 +387,10 @@ def generate_nested_tasks(
 # Zero-shot baseline (same chat template, no conditioning)
 # =====================================================================
 
-def run_zero_shot(encoder: LLMEncoder, prompt: str) -> str:
+def run_zero_shot(
+    encoder: LLMEncoder, prompt: str,
+    max_new_tokens: int = 1024, enable_thinking: bool = True,
+) -> str:
     """Run with chat template but no soft prompt conditioning."""
     system_msg = "Answer to the best of your ability."
     if hasattr(encoder.tokenizer, "apply_chat_template"):
@@ -396,8 +399,13 @@ def run_zero_shot(encoder: LLMEncoder, prompt: str) -> str:
             {"role": "user", "content": prompt},
         ]
         try:
+            template_kwargs = dict(
+                tokenize=False, add_generation_prompt=True,
+            )
+            if not enable_thinking:
+                template_kwargs["enable_thinking"] = False
             formatted = encoder.tokenizer.apply_chat_template(
-                messages, tokenize=False, add_generation_prompt=True,
+                messages, **template_kwargs,
             )
         except Exception:
             formatted = (
@@ -414,7 +422,7 @@ def run_zero_shot(encoder: LLMEncoder, prompt: str) -> str:
     with torch.no_grad():
         out = encoder.model.generate(
             **inputs,
-            max_new_tokens=1024,
+            max_new_tokens=max_new_tokens,
             do_sample=False,
             pad_token_id=encoder.tokenizer.pad_token_id,
             repetition_penalty=1.2,
@@ -474,6 +482,10 @@ def main():
         help="Comma-separated layer indices for multi_scale steering")
     parser.add_argument("--steer-scale", type=float, default=1.0,
         help="Scaling factor for intermediate layer steering vectors")
+    parser.add_argument("--no-think", action="store_true",
+        help="Disable Qwen3 thinking mode (faster, shorter outputs)")
+    parser.add_argument("--max-new-tokens", type=int, default=1024,
+        help="Max generation tokens")
     parser.add_argument("--output", default=None)
     args = parser.parse_args()
 
@@ -534,7 +546,11 @@ def main():
     start = time.time()
     for i, task in enumerate(tasks):
         t0 = time.time()
-        resp = run_zero_shot(encoder, task.prompt)
+        resp = run_zero_shot(
+            encoder, task.prompt,
+            max_new_tokens=args.max_new_tokens,
+            enable_thinking=not args.no_think,
+        )
         elapsed = time.time() - t0
         correct = verify_answer(resp, task.correct_answer)
         baseline_results.append({
@@ -673,8 +689,9 @@ def main():
         num_soft_tokens=8,
         target_rms=target_rms,
         curvature=0.5,
-        max_new_tokens=1024,
+        max_new_tokens=args.max_new_tokens,
         temperature=0.0,  # Greedy for determinism
+        enable_thinking=not args.no_think,
         layer_projections=layer_projections,
         steer_scale=args.steer_scale,
         hidden_rms=target_rms,

@@ -5,6 +5,41 @@ Only Codex-validated conclusions are stated as "confirmed."
 
 ---
 
+## V15b: Accuracy Fitness Geometry Isolation (2026-03-03) — LOCAL EVOLUTION FAILS
+
+**Purpose:** Re-run V15 geometry isolation with accuracy-based fitness (fixing Goodhart's Law from V15a where dense_score was used). Tests whether hyperbolic vs Euclidean mutation geometry matters when fitness correctly tracks task accuracy.
+**Config:** 3 conditions, 1 seed, 80 train / 25 test easy_nested tasks, 3 gens x 4 pop, Qwen3-4B Q4, thinking disabled (--no-think --max-new-tokens 128)
+**Script:** `python experiments/run_v15_geometry_isolation.py --diagnostic --task-type nested --difficulty easy_nested --fitness-mode accuracy --no-think --max-new-tokens 128`
+
+### Results
+
+| Condition | Test Accuracy | Fitness Curve (best per gen) |
+|-----------|--------------|-----|
+| No evolution (baseline) | **72.0%** | N/A |
+| Euclidean evolved | **68.0%** | 62.5% -> 37.5% -> 62.5% |
+| Hyperbolic evolved | **68.0%** | 62.5% -> 37.5% -> 50.0% |
+
+### What We Learned
+1. **Evolution still hurts (-4%)** even with correct accuracy-based fitness
+2. **Geometry doesn't matter** — Euclidean and Hyperbolic produce identical test accuracy (68% = 68%)
+3. **Fitness curves collapse in gen 2** — elitist selection converges to suboptimal region
+4. **Local mutations can't exploit global landscape** — sensitivity showed 32% range across RANDOM latents, but local perturbations (noise_scale=0.1) around the seed degrade performance
+5. **The gap is LOCAL vs GLOBAL search** — good latents exist (sensitivity proved it) but they're FAR from each other in latent space
+6. **No-think mode reduces baseline from 88% to 72%** — chain-of-thought contributes ~16% accuracy on easy_nested tasks, but 72% baseline gives evolution more room to improve
+
+### Implication: Need Global Search
+The sensitivity analysis (32% range, p=0.006) proves good latents exist globally. V15b proves local evolution can't find them. Next steps:
+- Random search baseline (sample N random latents, pick best)
+- CMA-ES (learns landscape covariance, can make large adaptive jumps)
+- QD with large noise (diversity pressure + global exploration)
+- Increase noise_scale from 0.1 to 1.0+ (current mutations too conservative)
+
+### Artifacts
+- `experiments/v15b_accuracy_diagnostic.json`
+- `experiments/run_v15_geometry_isolation.py`
+
+---
+
 ## Nested Expression Sensitivity (2026-03-03) — STRONGLY EXPLOITABLE
 
 **Purpose:** Test whether random soft prompt latents produce different accuracy on nested expression tasks (no step-by-step scaffolding).

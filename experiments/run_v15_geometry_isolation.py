@@ -126,6 +126,7 @@ def main():
     print(f"Train: {len(train_tasks)}, Test: {len(test_tasks)}", flush=True)
 
     # Build conditions -- identical decode config except geometry
+    enable_thinking = not args.no_think
     base_decode_kwargs = dict(
         mode=DecodeMode.SOFT_PROMPT,
         W_soft=W,
@@ -133,8 +134,9 @@ def main():
         num_soft_tokens=num_soft_tokens,
         target_rms=target_rms,
         curvature=curvature,
-        max_new_tokens=1024,  # Models need room for chain-of-thought
+        max_new_tokens=args.max_new_tokens,
         temperature=0.3,
+        enable_thinking=enable_thinking,
     )
 
     conditions = [
