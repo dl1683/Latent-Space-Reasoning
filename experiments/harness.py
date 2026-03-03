@@ -206,6 +206,7 @@ class DecodeMode(str, Enum):
     RNG_SEED = "rng_seed"
     SOFT_PROMPT = "soft_prompt"
     DUAL_STEERING = "dual_steering"
+    MULTI_SCALE = "multi_scale"  # soft prompt + intermediate layer steering
 
 
 @dataclass
@@ -219,12 +220,16 @@ class DecodeConfig:
     embed_dim: int = 2560
     num_soft_tokens: int = 8
     target_rms: float = 0.02195
-    # Dual steering
+    # Dual steering (logit-level)
     W_steer: Optional[Tensor] = None
     lm_head_weight: Optional[Tensor] = None
     eta: float = 0.05
     alpha: float = 0.01
     kl_cap: float = 0.5
+    # Intermediate layer steering (residual stream injection)
+    layer_projections: Optional[Dict[int, Tensor]] = None
+    steer_scale: float = 1.0
+    hidden_rms: float = 0.02195  # target RMS for steering vectors
     # Generation (min 1024 — models need room for chain-of-thought)
     max_new_tokens: int = 1024
     temperature: float = 0.3
@@ -328,7 +333,27 @@ def decode_latent(
         if logits_processors:
             generate_kwargs["logits_processor"] = logits_processors
 
-        outputs = encoder.model.generate(**generate_kwargs)
+        # Intermediate layer steering (MULTI_SCALE mode)
+        layer_steering = None
+        if cfg.mode == DecodeMode.MULTI_SCALE and cfg.layer_projections:
+            from latent_reasoning.decode.steering import (
+                IntermediateLayerSteering,
+                latent_to_layer_vectors,
+            )
+            layer_vecs = latent_to_layer_vectors(
+                latent, cfg.layer_projections, cfg.curvature,
+                cfg.hidden_rms, use_logmap=use_logmap,
+            )
+            layer_steering = IntermediateLayerSteering(
+                encoder.model, layer_vecs, scale=cfg.steer_scale,
+            )
+            layer_steering.attach()
+
+        try:
+            outputs = encoder.model.generate(**generate_kwargs)
+        finally:
+            if layer_steering is not None:
+                layer_steering.detach()
 
     prompt_len = combined_embeds.size(1)
     generated_ids = outputs[0, prompt_len:]

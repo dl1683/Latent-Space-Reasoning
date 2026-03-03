@@ -15,9 +15,11 @@ import torch.nn.functional as F
 sys.path.insert(0, str(Path(__file__).parent.parent / "experiments"))
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
-from dual_steering import (
+from latent_reasoning.decode.steering import (
     DualSteeringProcessor,
+    IntermediateLayerSteering,
     compute_steering_direction,
+    latent_to_layer_vectors,
     make_steer_projection,
 )
 
@@ -205,3 +207,121 @@ class TestSteerProjectionDifferentSeed:
         assert abs(cos_sim) < 0.2, (
             f"Cosine similarity {cos_sim:.4f} too high for different seeds"
         )
+
+
+# =====================================================================
+# IntermediateLayerSteering tests
+# =====================================================================
+
+class _MockLayer(torch.nn.Module):
+    def forward(self, x):
+        return (x,)
+
+
+class _MockModel(torch.nn.Module):
+    def __init__(self, n_layers=36):
+        super().__init__()
+        self.model = torch.nn.Module()
+        self.model.layers = torch.nn.ModuleList(
+            [_MockLayer() for _ in range(n_layers)]
+        )
+
+
+class TestIntermediateLayerSteeringAttachDetach:
+    """Test that hooks are properly attached and detached."""
+
+    def test_attach_detach(self):
+        model = _MockModel(36)
+        vecs = {22: torch.randn(64), 25: torch.randn(64)}
+        steering = IntermediateLayerSteering(model, vecs)
+
+        steering.attach()
+        assert len(steering._handles) == 2
+
+        x = torch.randn(1, 5, 64)
+        out_steered = model.model.layers[22](x)
+        diff = (out_steered[0] - x).abs().mean().item()
+        assert diff > 0, "Steered layer should modify output"
+
+        steering.detach()
+        out_after = model.model.layers[22](x)
+        diff_after = (out_after[0] - x).abs().mean().item()
+        assert diff_after == 0, "After detach, no modification"
+
+
+class TestIntermediateLayerSteeringContextManager:
+    """Test context manager usage."""
+
+    def test_context_manager(self):
+        model = _MockModel(36)
+        vecs = {22: torch.randn(64)}
+        x = torch.randn(1, 5, 64)
+
+        with IntermediateLayerSteering(model, vecs):
+            out = model.model.layers[22](x)
+            assert (out[0] - x).abs().mean().item() > 0
+
+        out_after = model.model.layers[22](x)
+        assert (out_after[0] - x).abs().mean().item() == 0
+
+
+class TestIntermediateLayerSteeringScale:
+    """Test that scale parameter works correctly."""
+
+    def test_scale_doubles_effect(self):
+        model = _MockModel(36)
+        vec = torch.randn(64) * 0.01
+        x = torch.randn(1, 5, 64)
+
+        with IntermediateLayerSteering(model, {22: vec}, scale=1.0):
+            out1 = model.model.layers[22](x)
+            diff1 = (out1[0] - x).abs().mean().item()
+
+        with IntermediateLayerSteering(model, {22: vec}, scale=2.0):
+            out2 = model.model.layers[22](x)
+            diff2 = (out2[0] - x).abs().mean().item()
+
+        assert abs(diff2 / diff1 - 2.0) < 0.01, (
+            f"Scale 2x should double effect: {diff2/diff1:.2f}x"
+        )
+
+
+class TestIntermediateLayerSteeringUnsteeredUnchanged:
+    """Test that layers not in layer_vectors are unmodified."""
+
+    def test_unsteered_layers_unchanged(self):
+        model = _MockModel(36)
+        vecs = {22: torch.randn(64)}
+        x = torch.randn(1, 5, 64)
+
+        with IntermediateLayerSteering(model, vecs):
+            for i in [0, 10, 20, 25, 35]:
+                out = model.model.layers[i](x)
+                diff = (out[0] - x).abs().mean().item()
+                assert diff == 0, f"Layer {i} should be unchanged"
+
+
+class TestLatentToLayerVectors:
+    """Test latent_to_layer_vectors produces correct shapes and RMS."""
+
+    def test_output_shape_and_rms(self):
+        # d_latent == d_hidden (realistic: both = model hidden_size)
+        d = 128
+        target_rms = 0.02
+
+        layer_projs = {
+            22: make_steer_projection(d, d, seed=2200),
+            25: make_steer_projection(d, d, seed=2500),
+        }
+        latent = torch.randn(1, d) * 0.5
+
+        vecs = latent_to_layer_vectors(
+            latent, layer_projs, 0.5, target_rms, use_logmap=False)
+
+        assert set(vecs.keys()) == {22, 25}
+        for idx, v in vecs.items():
+            assert v.shape == (d,), f"Layer {idx}: {v.shape}"
+            rms = v.square().mean().sqrt().item()
+            assert abs(rms - target_rms) < 1e-4, (
+                f"Layer {idx} RMS {rms:.5f} != target {target_rms}"
+            )
