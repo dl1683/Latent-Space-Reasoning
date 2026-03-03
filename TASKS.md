@@ -1,47 +1,36 @@
 # Task Board
 
 ## Todo
-- [ ] Explore next foundational operator improvement beyond survivor decay (for example, budget-aware decode scheduling).
-- [ ] Expand non-tiny validation sample size (more queries and repeats) to tighten confidence intervals.
-- [ ] Further reduce tuning-time latency variance across full candidate sweeps (single-run wall-clock is still noisy).
-- [ ] Iterate on foundational algorithmic improvements after benchmark results.
-- [ ] Execute autonomous implement/validate/self-review cycles until `AIM-v1` criteria are met.
+- [ ] Fix evolutionary fitness function — use actual task accuracy instead of dense_score
+- [ ] Investigate why soft prompt induces verbosity at 8B (uncertainty signal interpretation?)
+- [ ] Test with tasks where baseline is ~50-60% (not 90%), giving room for evolution to improve
+- [ ] V17 ablation: Gaussian noise vs CMA-ES vs mixture-curvature (requires working fitness first)
+- [ ] Run V15 geometry isolation with accuracy-based fitness (the real test)
+- [ ] Expand conditioning comparison to non-Qwen model families (Falcon-H1, Granite)
 
 ## Doing
 - [ ] (none)
 
-## Done
-- [x] Create `AGENTS.md` autonomous workflow contract.
-- [x] Create `MEMORY.md` persistent preferences.
-- [x] Create `GOALS.md` goal tracking scaffold.
-- [x] Create `TASKS.md` task board scaffold.
-- [x] Create `WORKLOG.md` execution history scaffold.
-- [x] Mark autonomy bootstrap goal complete and leave explicit next-goal handoff.
-- [x] Treat autonomy as mechanism, not project objective.
-- [x] Capture owner mission and measurable acceptance framework in `GOALS.md`.
-- [x] Fix baseline/compare integration failures by avoiding forced baseline model creation for custom encoders.
-- [x] Add compare telemetry (timing/overhead) for quality-vs-cost auditability.
-- [x] Add `configs/aim_v1_low_resource.yaml` and validate config loading.
-- [x] Add `experiments/aim_v1_audit.py` and tested summary generation.
-- [x] Implement adaptive survivor budget in evolution loop for plateau-time compute reduction.
-- [x] Fix evolution history corruption bug caused by chain-history variable shadowing.
-- [x] Run real multi-query benchmark comparing adaptive vs fixed survivors and save artifacts.
-- [x] Generate real multi-query AIM-v1 audit summary from model runs.
-- [x] Fix baseline decode robustness for low-resource tiny models.
-- [x] Fix evolution run-state leakage across queries (evaluation count + temperature reset).
-- [x] Add optional evolution score-cache with deterministic regression coverage.
-- [x] Add stage-level latent timing telemetry (`encode`, `evolution`, `decode`, `non-evolution`) to compare outputs.
-- [x] Replace single-pass adaptive benchmark with repeated counterbalanced trials and median-trial aggregation.
-- [x] Update tuning script to use repeated paired benchmark methodology.
-- [x] Reweight tuning objective toward stable signals (evaluation reduction + quality preservation) to reduce wall-clock jitter sensitivity.
-- [x] Align tuning defaults with benchmark defaults (`generations=4`, `max_tokens=96`, `repeats=3`).
-- [x] Fix orchestrator budget leakage across queries by resetting budget counters per run.
-- [x] Disable benchmark checkpoint/history writes to reduce non-evolution latency noise.
-- [x] Stabilize tiny-model adaptive benchmark metrics with robust methodology and refresh artifacts.
-- [x] Add non-tiny benchmark preset inputs and timeout-controlled validation runner (`experiments/non_tiny_validation_runner.py`).
-- [x] Complete multi-query non-tiny validation run with auditable report (`distilgpt2`, timeout-controlled).
-- [x] Test score-cache effect on non-tiny validation lane and keep it disabled for now (end-to-end latency regressed).
-- [x] Re-run non-tiny validation with `repeats=2` and confirm positive end-to-end latency reduction alongside evaluation reduction.
+## Done (Recent)
+- [x] Create experiments/EXPERIMENTS.md and experiments/ledger.jsonl
+- [x] Update stale docs (WORKLOG, TASKS, GOALS)
+- [x] Cross-model conditioning comparison (0.6B/4B/8B/14B x 20 questions x 3 conditions)
+- [x] LLM-as-judge evaluation on all model outputs
+- [x] V15 geometry isolation diagnostic (hard difficulty)
+- [x] Add hard difficulty mode to harness
+- [x] Fix max_new_tokens (150 -> 1024)
+- [x] GPU optimization (W matrix placement, dtype handling)
+- [x] Fix Unicode crash on Windows cp1252
+- [x] Unified experiment harness (harness.py + decode subpackage)
+- [x] V15 geometry isolation experiment design
+- [x] V16 model comparison experiment design
+- [x] Algorithmic frontier (CMA-ES, mixture curvature, Karcher crossover)
+- [x] Fix all 10 Codex V10 issues (V11)
+
+## Done (Historical — AIM-v1 Era)
+- [x] Autonomy scaffolding, AIM-v1 framework, adaptive survivors, score cache
+- [x] Non-tiny model validation (distilgpt2)
+- [x] V1-V10 experiment series (see experiments/EXPERIMENTS.md)
 
 ## Blocked
-- [ ] (none)
+- [ ] Geometry comparison (V15+) — blocked on fixing fitness function

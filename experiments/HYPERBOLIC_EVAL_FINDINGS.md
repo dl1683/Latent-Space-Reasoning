@@ -572,3 +572,41 @@ The results show a **promising preliminary signal** worth further investigation,
 - May be inflated by selection bias from curvature sweep
 - May not generalize beyond this specific synthetic task
 - Require replication with proper statistical controls
+
+---
+
+## Post-V8 Updates (V9-V15, 2026-02-17 to 2026-03-02)
+
+**For full details, see `experiments/EXPERIMENTS.md`.**
+
+### V9: No Signal (p=0.18, fitness=0.000)
+Rigorous 5-seed run found zero signal. Evolution with latent scorer was blind.
+
+### V10: Invalidated by Codex Review
+90% accuracy was methodologically inflated (loose verifier, RNG contamination, ball radius mismatch). Codex found 10 issues.
+
+### V11: All 10 issues fixed. Codex grade: A-.
+
+### Codex Full Repo Review: Grade C+
+**Key verdict:** "Evidence that conditioning bandwidth matters, not that hyperbolic geometry improves reasoning."
+
+### V15: Geometry Isolation Under Identical Soft Prompt
+When both geometries use the SAME conditioning channel (orthogonal projection + soft prompt):
+- **Baseline (no evolution): 90%**
+- **Euclidean evolved: 60%** (evolution HURTS)
+- **Hyperbolic evolved: 60%** (evolution HURTS equally)
+
+**Root cause:** Goodhart's Law. The dense_score fitness function doesn't correlate with actual task accuracy. Evolution pushes latent away from the seed's "good mode."
+
+### Cross-Model Conditioning Comparison (4 Qwen3 models, 20 questions, LLM-as-judge)
+| Model | Pure Model | Soft Prompt | RNG Seed | Best |
+|-------|-----------|-------------|----------|------|
+| 0.6B  | 2.3/5     | 2.6/5       | 3.8/5    | RNG  |
+| 4B    | 2.8/5     | 4.0/5       | 3.5/5    | Soft |
+| 8B    | 3.8/5     | 3.9/5       | 4.6/5    | RNG  |
+| 14B   | 3.4/5     | 3.7/5       | 3.3/5    | Soft |
+
+Both conditioning methods eliminate the "phantom question hallucination" pathology seen in unconditioned models.
+
+### Current Status (2026-03-02)
+The geometry question CANNOT be answered until the fitness function is fixed. Hyperbolic vs Euclidean is meaningless when evolution actively degrades performance. The immediate priority is replacing dense_score with accuracy-based fitness, then re-running V15 geometry isolation.

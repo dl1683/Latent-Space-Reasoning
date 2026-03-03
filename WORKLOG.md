@@ -110,3 +110,31 @@
   - Benchmark: `experiments/aim_v1_non_tiny_benchmark_distilgpt2_pair_r2.json`
   - Result snapshot (`distilgpt2`, 2 queries, 2 repeats): quality delta `0.0`, evaluation reduction `~15.4%` (`6.5 -> 5.5` median trial evals), end-to-end latency reduction `~7.4%`.
 - Updated non-tiny confirmation to use the repeat-stabilized result as primary reference.
+
+## 2026-02-20 — Codex Full Repo Review + V11 Fixes
+- Codex reviewed entire repository. Grade: C+.
+- Key verdict: "Evidence that conditioning bandwidth matters, not that hyperbolic geometry improves reasoning."
+- V10 results invalidated (loose verifier, magnitude normalization, RNG contamination, ball radius mismatch).
+- Implemented all 10 Codex-identified fixes in V11. Codex grade for fixes: A-.
+- Designed V12 (Mobius mutations + operator ablation). Codex grade: A-/92.
+
+## 2026-03-02 — Unified Harness + V15 + Conditioning Comparison
+- Completed 4-task implementation plan:
+  - Task 1: Unified experiment harness (`experiments/harness.py`, `src/latent_reasoning/decode/` subpackage)
+  - Task 2: V15 geometry isolation experiment (`experiments/run_v15_geometry_isolation.py`)
+  - Task 3: Model exploration (`experiments/run_v16_model_comparison.py`)
+  - Task 4: Algorithmic frontier (CMA-ES, mixture curvature, Karcher crossover)
+- Fixed max_new_tokens: 150/250 -> 1024 (models need room for chain-of-thought).
+- Moved W matrix to GPU upfront (avoid per-call device transfer).
+- Fixed dtype mismatch in projection (float32 W with float16 model).
+- Added hard difficulty mode (5-step chained arithmetic with modular ops).
+- V15 hard-mode diagnostic: evolution HURTS (baseline 90% -> evolved 60% for both geometries).
+  - Root cause: Goodhart's Law — dense_score fitness != actual task quality.
+- Created conditioning comparison framework: 20 diverse questions, 3 conditions, LLM-as-judge.
+- Ran cross-model comparison on Qwen3-0.6B/4B/8B/14B.
+- Key findings: Both conditioning methods eliminate phantom hallucination. Non-monotonic scaling.
+- Fixed Unicode crash on Windows cp1252 (safe_print with ASCII fallback).
+- Created `experiments/EXPERIMENTS.md` and `experiments/ledger.jsonl` (required by constitution).
+- Updated all documentation.
+- Tests: 318 passing.
+- Commits: 68e9efb, 367fa74, 21a1b72, e74e49a, b2fe7ce, 9cc38b8, 81fded7, 9b7f276.
