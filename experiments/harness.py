@@ -1162,6 +1162,12 @@ class ExperimentSpec:
 
 def experiment_cli(description: str) -> argparse.Namespace:
     """Standard argparse setup for experiments."""
+    # Force unbuffered stdout on Windows to avoid lost output in pipes/redirects
+    import os
+    if hasattr(sys.stdout, 'reconfigure'):
+        sys.stdout.reconfigure(line_buffering=True)
+    elif os.name == 'nt':
+        sys.stdout = os.fdopen(sys.stdout.fileno(), 'w', buffering=1)
     parser = argparse.ArgumentParser(description=description)
     parser.add_argument("--model", default="Qwen/Qwen3-4B")
     parser.add_argument("--quantization", default="4bit")
