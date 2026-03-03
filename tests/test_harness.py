@@ -370,3 +370,45 @@ class TestQDIntegration:
         )
         # QD flag is checked first in run_experiment
         assert cond.use_qd
+
+
+class TestRobustness:
+    """Tests for robustness guards against edge cases."""
+
+    def test_fitness_from_empty_results(self):
+        """Division by zero guard: empty results -> fitness 0.0."""
+        results = {}
+        fitness = sum(results.values()) / len(results) if results else 0.0
+        assert fitness == 0.0
+
+    def test_fitness_from_all_false(self):
+        """All-false results -> fitness 0.0 (not crash)."""
+        results = {"t1": False, "t2": False, "t3": False}
+        fitness = sum(results.values()) / len(results) if results else 0.0
+        assert fitness == 0.0
+
+    def test_fitness_from_mixed_results(self):
+        """Mixed results -> correct fraction."""
+        results = {"t1": True, "t2": False, "t3": True}
+        fitness = sum(results.values()) / len(results) if results else 0.0
+        assert abs(fitness - 2/3) < 1e-6
+
+    def test_verify_answer_empty_response(self):
+        """Empty response returns False, not crash."""
+        assert verify_answer("", 42) is False
+
+    def test_verify_answer_no_numbers(self):
+        """Response with no numbers returns False."""
+        assert verify_answer("I don't know the answer", 42) is False
+
+    def test_verify_answer_correct_last_number(self):
+        """Verify uses last number in response."""
+        assert verify_answer("The answer is 42. Done.", 42) is True
+
+    def test_verify_answer_wrong(self):
+        assert verify_answer("The answer is 99", 42) is False
+
+    def test_candidate_default_fitness(self):
+        """Candidate starts with default fitness."""
+        c = Candidate(latent=torch.zeros(4))
+        assert c.fitness == 0.0

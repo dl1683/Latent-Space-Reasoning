@@ -17,6 +17,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import gc
 import math
 import random
 import re
@@ -442,7 +443,6 @@ def decode_latent(
 
     # Explicit cleanup to prevent VRAM accumulation in long-running loops
     del combined_embeds, combined_mask, outputs, soft_prompt, text_embeds
-    import gc
     gc.collect()
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
@@ -649,17 +649,18 @@ def evaluate_binary(
         try:
             response = decode_latent(encoder, latent, task.prompt, decode_cfg)
             results[task.task_id] = verify_answer(response, task.correct_answer)
-        except (RuntimeError, torch.cuda.CudaError) as e:
-            if "CUDA" in str(e):
+        except Exception as e:
+            if "CUDA" in str(e) or "out of memory" in str(e).lower():
                 print(f"  [CUDA ERROR on {task.task_id}, retrying] {e}", flush=True)
                 torch.cuda.empty_cache()
-                try:
-                    response = decode_latent(encoder, latent, task.prompt, decode_cfg)
-                    results[task.task_id] = verify_answer(response, task.correct_answer)
-                except Exception:
-                    results[task.task_id] = False  # Mark as wrong on second failure
             else:
-                raise
+                print(f"  [EVAL ERROR on {task.task_id}] {type(e).__name__}: {e}", flush=True)
+            try:
+                response = decode_latent(encoder, latent, task.prompt, decode_cfg)
+                results[task.task_id] = verify_answer(response, task.correct_answer)
+            except Exception as retry_err:
+                print(f"  [RETRY FAILED on {task.task_id}] {type(retry_err).__name__}: {retry_err}", flush=True)
+                results[task.task_id] = False
     return results
 
 
@@ -744,7 +745,7 @@ def run_evolution(
         for cand in population:
             if evo.fitness_mode == "accuracy":
                 results = evaluate_binary(cand.latent, gen_tasks, encoder, decode_cfg)
-                cand.fitness = sum(results.values()) / len(results)
+                cand.fitness = sum(results.values()) / len(results) if results else 0.0
             else:
                 score, _ = evaluate_dense(cand.latent, gen_tasks, encoder, decode_cfg)
                 cand.fitness = score
@@ -752,6 +753,11 @@ def run_evolution(
             # Update surrogate with actual observations
             if surrogate is not None:
                 surrogate.update(cand.latent, cand.fitness)
+
+        if not population:
+            print(f"  [GEN {gen+1}] WARNING: Empty population!", flush=True)
+            fitness_curve.append({"gen": gen + 1, "best": 0.0, "mean": 0.0, "min": 0.0})
+            continue
 
         gen_best = max(population, key=lambda c: c.fitness)
         if gen_best.fitness > global_best.fitness:
@@ -902,7 +908,7 @@ def run_qd_evolution(
         for cand in population:
             if evo.fitness_mode == "accuracy":
                 results = evaluate_binary(cand.latent, gen_tasks, encoder, decode_cfg)
-                cand.fitness = sum(results.values()) / len(results)
+                cand.fitness = sum(results.values()) / len(results) if results else 0.0
             else:
                 score, _ = evaluate_dense(cand.latent, gen_tasks, encoder, decode_cfg)
                 cand.fitness = score
@@ -920,6 +926,12 @@ def run_qd_evolution(
             )
             # Refresh archive BDs for next candidate
             archive_bds = archive.get_bds()
+
+        if not population:
+            print(f"  [QD GEN {gen+1}] WARNING: Empty population!", flush=True)
+            fitness_curve.append({"gen": gen + 1, "best": 0.0, "mean": 0.0, "min": 0.0,
+                                  "archive_size": 0, "archive_mean_fitness": 0.0, "archive_coverage": 0.0})
+            continue
 
         gen_best = max(population, key=lambda c: c.fitness)
         if gen_best.fitness > global_best.fitness:
