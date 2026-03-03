@@ -49,6 +49,11 @@ def main():
         model_short = hf_id.split("/")[-1].lower().replace("-", "_")
         out_path = results_dir / f"conditioning_comparison_{model_short}.json"
 
+        if out_path.exists():
+            print(f"\nSKIPPING: {hf_id} (results already exist at {out_path})")
+            completed.append((hf_id, 0))
+            continue
+
         cmd = [
             sys.executable, "-u", SCRIPT,
             "--model", hf_id,

@@ -17,6 +17,14 @@ import json
 import math
 import sys
 import time
+
+
+def safe_print(text: str) -> None:
+    """Print with ASCII fallback for Windows cp1252 compatibility."""
+    try:
+        print(text)
+    except UnicodeEncodeError:
+        print(text.encode("ascii", errors="replace").decode("ascii"))
 from dataclasses import dataclass
 from pathlib import Path
 from typing import List, Optional
@@ -205,7 +213,7 @@ def main():
         resp_pure = run_pure_model(encoder, q)
         entry["pure_model"] = resp_pure[:800]
         entry["pure_time"] = round(time.time() - t0, 1)
-        print(f"  PURE ({entry['pure_time']}s): {resp_pure[:120]}...")
+        safe_print(f"  PURE ({entry['pure_time']}s): {resp_pure[:120]}...")
 
         # Soft prompt (skip if model doesn't support inputs_embeds)
         if soft_ok:
@@ -213,7 +221,7 @@ def main():
             resp_soft = decode_latent(encoder, lat, q.prompt, cfg_soft)
             entry["soft_prompt"] = resp_soft[:800]
             entry["soft_time"] = round(time.time() - t0, 1)
-            print(f"  SOFT ({entry['soft_time']}s): {resp_soft[:120]}...")
+            safe_print(f"  SOFT ({entry['soft_time']}s): {resp_soft[:120]}...")
         else:
             entry["soft_prompt"] = "[SKIPPED - inputs_embeds not supported]"
             entry["soft_time"] = 0
@@ -224,7 +232,7 @@ def main():
         resp_rng = decode_latent(encoder, lat, q.prompt, cfg_rng)
         entry["rng_seed"] = resp_rng[:800]
         entry["rng_time"] = round(time.time() - t0, 1)
-        print(f"  RNG  ({entry['rng_time']}s): {resp_rng[:120]}...")
+        safe_print(f"  RNG  ({entry['rng_time']}s): {resp_rng[:120]}...")
 
         results.append(entry)
 
