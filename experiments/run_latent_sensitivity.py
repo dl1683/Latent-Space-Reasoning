@@ -157,6 +157,191 @@ def generate_tasks(
     return tasks
 
 
+def generate_nested_tasks(
+    n_tasks: int = 40,
+    seed: int = 42,
+    difficulty_filter: Optional[str] = None,
+) -> List[SensitivityTask]:
+    """Generate nested expression tasks WITHOUT step-by-step scaffolding.
+
+    These are harder because:
+    - No variable assignment scaffolding (must parse expression tree)
+    - Multi-digit arithmetic (numbers 10-999)
+    - Multiple branches to track simultaneously
+    - Modulo by larger divisors requires mental division
+
+    Difficulty levels:
+    - easy_nested: single operation, 2-digit numbers
+    - medium_nested: 2-3 operations, some nesting
+    - hard_nested: 3-4 operations with branches
+    - brutal_nested: 5+ operations, deep nesting, large numbers
+    """
+    rng = random.Random(seed)
+    tasks: List[SensitivityTask] = []
+
+    def _eval_safe(expr: str) -> Optional[int]:
+        """Safely evaluate an arithmetic expression."""
+        try:
+            result = eval(expr)  # noqa: S307 - only evaluating our own expressions
+            if isinstance(result, float):
+                result = int(result)
+            return result
+        except (ZeroDivisionError, ValueError):
+            return None
+
+    def _make_easy_nested(idx: int) -> SensitivityTask:
+        """2-digit * 2-digit + 1-digit, or 2-digit * 1-digit + 2-digit."""
+        patterns = [
+            lambda: (f"{rng.randint(11,49)} * {rng.randint(11,49)} + {rng.randint(10,99)}", 2),
+            lambda: (f"{rng.randint(10,99)} * {rng.randint(3,9)} - {rng.randint(10,50)}", 2),
+            lambda: (f"({rng.randint(10,99)} + {rng.randint(10,99)}) * {rng.randint(3,9)}", 2),
+            lambda: (f"{rng.randint(100,500)} - {rng.randint(10,99)} * {rng.randint(2,5)}", 2),
+        ]
+        gen = rng.choice(patterns)
+        expr, n_ops = gen()
+        answer = _eval_safe(expr)
+        prompt = (
+            f"Compute the following. Show your work, "
+            f"then state the final answer.\n{expr}"
+        )
+        return SensitivityTask(
+            f"nest_{idx:03d}", prompt, answer, n_ops, "easy_nested")
+
+    def _make_medium_nested(idx: int) -> SensitivityTask:
+        """2-3 operations with parenthesized nesting."""
+        a, b, c, d = (rng.randint(10, 99) for _ in range(4))
+        m = rng.randint(7, 23)
+        patterns = [
+            (f"({a} * {b} + {c}) % {m}", 3),
+            (f"({a} + {b}) * ({c} - {d})", 3),
+            (f"({a} * {b}) // {rng.randint(3, 9)} + {c} * {d}", 4),
+            (f"({a} * {b} - {c}) % {m} + {d}", 4),
+            (f"({a} + {b} * {c}) // {rng.randint(5, 15)}", 3),
+        ]
+        expr, n_ops = rng.choice(patterns)
+        answer = _eval_safe(expr)
+        if answer is None:
+            expr = f"({a} * {b} + {c}) % {m}"
+            answer = _eval_safe(expr)
+            n_ops = 3
+        prompt = (
+            f"Compute the following expression. Show your work, "
+            f"then state the final answer as a single number.\n{expr}"
+        )
+        return SensitivityTask(
+            f"nest_{idx:03d}", prompt, answer, n_ops, "medium_nested")
+
+    def _make_hard_nested(idx: int) -> SensitivityTask:
+        """3-4 operations with branches (two sub-expressions combined)."""
+        a, b = rng.randint(20, 99), rng.randint(11, 49)
+        c, d = rng.randint(10, 80), rng.randint(5, 30)
+        e = rng.randint(3, 9)
+        m = rng.randint(11, 37)
+        patterns = [
+            (f"({a} * {b} + {c}) % {m} * (({d} + {rng.randint(10,50)}) // {e})", 6),
+            (f"({a} * {b}) // {rng.randint(3,7)} + ({c} * {d}) % {m}", 5),
+            (f"(({a} + {b}) * {rng.randint(3,8)} - {c}) % {m} + {d} * {e}", 6),
+            (f"({a} * {b} - {c} * {d}) // {rng.randint(2,5)} + {rng.randint(10,99)}", 5),
+        ]
+        expr, n_ops = rng.choice(patterns)
+        answer = _eval_safe(expr)
+        if answer is None or answer < 0:
+            # Fallback to safe pattern
+            expr = f"({a} * {b} + {c}) % {m} + {d} * {e}"
+            answer = _eval_safe(expr)
+            n_ops = 4
+        prompt = (
+            f"Compute the following expression. Show your work step by step, "
+            f"then state the final answer as a single number.\n{expr}"
+        )
+        return SensitivityTask(
+            f"nest_{idx:03d}", prompt, answer, n_ops, "hard_nested")
+
+    def _make_brutal_nested(idx: int) -> SensitivityTask:
+        """5+ operations, deep nesting, 3-digit numbers, multiple branches."""
+        a = rng.randint(100, 499)
+        b = rng.randint(11, 49)
+        c = rng.randint(50, 199)
+        d = rng.randint(20, 80)
+        e = rng.randint(10, 40)
+        f = rng.randint(3, 9)
+        g = rng.randint(10, 30)
+        m1 = rng.randint(13, 47)
+        m2 = rng.randint(7, 19)
+        patterns = [
+            (f"(({a} * {b} + {c}) % {m1}) * (({d} * {f} - {e}) % {m2} + {g})", 8),
+            (f"(({a} + {b} * {c}) // {rng.randint(5,15)}) * {f} + ({d} * {e}) % {m1}", 7),
+            (f"({a} * {b}) % {m1} + (({c} - {d}) * {f}) // {rng.randint(2,5)} - {g}", 7),
+            (f"(({a} * {b} + {c} * {d}) % {m1}) * (({e} + {g}) // {f})", 7),
+        ]
+        expr, n_ops = rng.choice(patterns)
+        answer = _eval_safe(expr)
+        if answer is None or answer < 0:
+            expr = f"(({a} * {b} + {c}) % {m1}) * {f} + {g}"
+            answer = _eval_safe(expr)
+            n_ops = 5
+        prompt = (
+            f"Compute the following expression carefully. Show every step "
+            f"of your work, then state the final answer as a single number.\n{expr}"
+        )
+        return SensitivityTask(
+            f"nest_{idx:03d}", prompt, answer, n_ops, "brutal_nested")
+
+    # If a difficulty filter is set, generate all tasks at that level
+    if difficulty_filter:
+        makers = {
+            "easy_nested": _make_easy_nested,
+            "medium_nested": _make_medium_nested,
+            "hard_nested": _make_hard_nested,
+            "brutal_nested": _make_brutal_nested,
+        }
+        maker = makers.get(difficulty_filter)
+        if maker is None:
+            raise ValueError(f"Unknown difficulty: {difficulty_filter}")
+        idx = 0
+        for _ in range(n_tasks):
+            t = maker(idx)
+            if t.correct_answer is not None:
+                tasks.append(t)
+                idx += 1
+        return tasks
+
+    # Default distribution: 8 easy, 12 medium, 12 hard, 8 brutal
+    dist = {
+        "easy": max(1, n_tasks // 5),
+        "medium": max(1, n_tasks * 3 // 10),
+        "hard": max(1, n_tasks * 3 // 10),
+    }
+    dist["brutal"] = n_tasks - dist["easy"] - dist["medium"] - dist["hard"]
+
+    idx = 0
+    for _ in range(dist["easy"]):
+        t = _make_easy_nested(idx)
+        if t.correct_answer is not None:
+            tasks.append(t)
+            idx += 1
+
+    for _ in range(dist["medium"]):
+        t = _make_medium_nested(idx)
+        if t.correct_answer is not None:
+            tasks.append(t)
+            idx += 1
+
+    for _ in range(dist["hard"]):
+        t = _make_hard_nested(idx)
+        if t.correct_answer is not None:
+            tasks.append(t)
+            idx += 1
+
+    for _ in range(dist["brutal"]):
+        t = _make_brutal_nested(idx)
+        if t.correct_answer is not None:
+            tasks.append(t)
+            idx += 1
+
+    return tasks
+
+
 # =====================================================================
 # Zero-shot baseline (same chat template, no conditioning)
 # =====================================================================
@@ -227,6 +412,18 @@ def main():
     parser.add_argument(
         "--diagnostic", action="store_true",
         help="Quick run: 5 latents, 3+5+5 tasks")
+    parser.add_argument(
+        "--task-type", default="chain", choices=["chain", "nested"],
+        help="Task type: chain (sequential) or nested (expression trees)")
+    parser.add_argument(
+        "--calibrate", action="store_true",
+        help="Calibration mode: run baseline only to find 50-70%% sweet spot")
+    parser.add_argument("--n-calibrate", type=int, default=40,
+        help="Number of tasks to generate in calibration mode")
+    parser.add_argument(
+        "--difficulty", default=None,
+        choices=["easy_nested", "medium_nested", "hard_nested", "brutal_nested"],
+        help="Generate ALL nested tasks at this difficulty level")
     parser.add_argument("--output", default=None)
     args = parser.parse_args()
 
@@ -236,15 +433,31 @@ def main():
         args.n_medium = 5
         args.n_hard = 5
 
-    n_tasks = args.n_easy + args.n_medium + args.n_hard
+    # Generate tasks based on type
+    if args.task_type == "nested":
+        n_tasks_gen = args.n_calibrate if args.calibrate else (
+            args.n_easy + args.n_medium + args.n_hard)
+        tasks = generate_nested_tasks(
+            n_tasks=n_tasks_gen, difficulty_filter=args.difficulty)
+    else:
+        tasks = generate_tasks(
+            n_easy=args.n_easy,
+            n_medium=args.n_medium,
+            n_hard=args.n_hard,
+        )
+    n_tasks = len(tasks)
+
+    run_mode = "CALIBRATE" if args.calibrate else (
+        "DIAGNOSTIC" if args.diagnostic else "FULL")
 
     print("=" * 70)
     print("LATENT SENSITIVITY TEST")
     print(f"Model: {args.model} ({args.quantization})")
-    print(f"Latents: {args.n_latents}")
-    print(f"Tasks: {n_tasks} (easy={args.n_easy}, med={args.n_medium}, hard={args.n_hard})")
-    mode = "DIAGNOSTIC" if args.diagnostic else "FULL"
-    print(f"Mode: {mode}")
+    print(f"Task type: {args.task_type}")
+    print(f"Tasks: {n_tasks}")
+    if not args.calibrate:
+        print(f"Latents: {args.n_latents}")
+    print(f"Mode: {run_mode}")
     print("=" * 70)
 
     # Load model
@@ -262,14 +475,6 @@ def main():
     # Shared W matrix
     W = make_row_orthonormal_W(d_latent, 8 * embed_dim, seed=1234)
     W = W.to(encoder._device)
-
-    # Generate tasks
-    print(f"\nGenerating {n_tasks} tasks...")
-    tasks = generate_tasks(
-        n_easy=args.n_easy,
-        n_medium=args.n_medium,
-        n_hard=args.n_hard,
-    )
 
     # ---- Phase 1: Zero-shot baseline ----
     print(f"\n{'=' * 40}")
@@ -301,8 +506,10 @@ def main():
     baseline_accuracy = (
         sum(1 for r in baseline_results if r["correct"]) / len(baseline_results)
     )
+    # Collect all difficulty levels present
+    all_diffs = sorted(set(r["difficulty"] for r in baseline_results))
     per_diff = {}
-    for diff in ("easy", "medium", "hard"):
+    for diff in all_diffs:
         sub = [r for r in baseline_results if r["difficulty"] == diff]
         if sub:
             per_diff[diff] = sum(1 for r in sub if r["correct"]) / len(sub)
@@ -311,6 +518,68 @@ def main():
     for d, a in per_diff.items():
         print(f"  {d}: {a:.1%}")
     print(f"Baseline time: {baseline_elapsed:.0f}s")
+
+    # ---- Calibration mode: early exit ----
+    if args.calibrate:
+        print(f"\n{'=' * 40}")
+        print("CALIBRATION COMPLETE")
+        print(f"{'=' * 40}")
+
+        # Find tasks in the 50-70% sweet spot per difficulty
+        sweet_spot = [r for r in baseline_results if not r["correct"]]
+        n_wrong = len(sweet_spot)
+        n_right = len(baseline_results) - n_wrong
+        print(f"\n  Correct: {n_right}/{n_tasks} ({n_right/n_tasks:.0%})")
+        print(f"  Wrong:   {n_wrong}/{n_tasks} ({n_wrong/n_tasks:.0%})")
+
+        if 0.30 <= baseline_accuracy <= 0.80:
+            print("\n  >> SWEET SPOT ACHIEVED <<")
+            print("  This difficulty range is suitable for sensitivity testing.")
+        elif baseline_accuracy > 0.80:
+            print("\n  >> TOO EASY -- increase difficulty <<")
+        else:
+            print("\n  >> TOO HARD -- decrease difficulty <<")
+
+        # Per-task detail for wrong answers
+        if n_wrong > 0:
+            print(f"\nWrong answers ({n_wrong}):")
+            for r in baseline_results:
+                if not r["correct"]:
+                    safe_print(
+                        f"  {r['task_id']} ({r['difficulty']}): "
+                        f"expect={r['correct_answer']}, "
+                        f"resp='{r['response'][:80]}...'")
+
+        # Save calibration results
+        cal_output = {
+            "experiment": "latent_sensitivity_calibration",
+            "model": args.model,
+            "quantization": args.quantization,
+            "task_type": args.task_type,
+            "n_tasks": n_tasks,
+            "baseline_accuracy": baseline_accuracy,
+            "per_difficulty": per_diff,
+            "baseline_results": baseline_results,
+            "elapsed_s": baseline_elapsed,
+            "calibration": cal,
+        }
+        if args.output:
+            out_path = Path(args.output)
+        else:
+            out_path = (Path(__file__).parent
+                        / f"calibration_{args.task_type}_results.json")
+        with open(out_path, "w") as f_out:
+            json.dump(cal_output, f_out, indent=2, default=str)
+        print(f"\nCalibration saved to: {out_path}")
+        print(f"Total time: {baseline_elapsed / 60:.1f} min")
+
+        # Cleanup
+        del encoder
+        import gc
+        gc.collect()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+        return
 
     # ---- Phase 2: Latent sensitivity ----
     print(f"\n{'=' * 40}")
@@ -401,7 +670,7 @@ def main():
 
     # Per-difficulty breakdown
     print("\nPer-difficulty accuracy (mean across latents):")
-    for diff in ("easy", "medium", "hard"):
+    for diff in all_diffs:
         diff_accs = []
         for sr in sensitivity_results:
             sub = [r for r in sr["task_results"] if r["difficulty"] == diff]
@@ -494,7 +763,8 @@ def main():
         "experiment": "latent_sensitivity",
         "model": args.model,
         "quantization": args.quantization,
-        "mode": mode,
+        "task_type": args.task_type,
+        "mode": run_mode,
         "n_latents": args.n_latents,
         "n_tasks": n_tasks,
         "d_latent": d_latent,

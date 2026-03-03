@@ -1,0 +1,132 @@
+======================================================================
+LATENT SENSITIVITY TEST
+Model: Qwen/Qwen3-4B (4bit)
+Task type: nested
+Tasks: 40
+Mode: CALIBRATE
+======================================================================
+
+Loading model...
+The following generation flags are not valid and may be ignored: ['output_hidden_states']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+Loading checkpoint shards:   0%|          | 0/3 [00:00<?, ?it/s]Loading checkpoint shards:  33%|###3      | 1/3 [00:02<00:05,  2.59s/it]Loading checkpoint shards:  67%|######6   | 2/3 [00:05<00:02,  2.56s/it]Loading checkpoint shards: 100%|##########| 3/3 [00:05<00:00,  1.73s/it]
+  Latent dim: 2560
+  Embed dim:  2560
+  Target RMS: 0.02195
+
+========================================
+PHASE 1: Zero-shot baseline
+========================================
+The following generation flags are not valid and may be ignored: ['temperature', 'top_p', 'top_k']. Set `TRANSFORMERS_VERBOSITY=info` for more details.
+  [1/40] nest_000 (easy_nested/2step): OK (expect=377, t=51.2s)
+  [2/40] nest_001 (easy_nested/2step): OK (expect=200, t=59.7s)
+  [3/40] nest_002 (easy_nested/2step): OK (expect=1838, t=64.9s)
+  [4/40] nest_003 (easy_nested/2step): OK (expect=423, t=42.5s)
+  [5/40] nest_004 (easy_nested/2step): WRONG (expect=1151, t=62.9s)
+  [6/40] nest_005 (easy_nested/2step): OK (expect=-56, t=35.7s)
+  [7/40] nest_006 (easy_nested/2step): WRONG (expect=851, t=63.2s)
+  [8/40] nest_007 (easy_nested/2step): OK (expect=594, t=39.2s)
+  [9/40] nest_008 (medium_nested/3step): OK (expect=53, t=47.5s)
+  [10/40] nest_009 (medium_nested/3step): OK (expect=177, t=47.3s)
+  [11/40] nest_010 (medium_nested/3step): WRONG (expect=3, t=63.6s)
+  [12/40] nest_011 (medium_nested/4step): WRONG (expect=27, t=63.2s)
+  [13/40] nest_012 (medium_nested/3step): WRONG (expect=3955, t=63.0s)
+  [14/40] nest_013 (medium_nested/3step): OK (expect=278, t=41.9s)
+  [15/40] nest_014 (medium_nested/3step): WRONG (expect=87, t=63.1s)
+  [16/40] nest_015 (medium_nested/4step): WRONG (expect=1276, t=63.2s)
+  [17/40] nest_016 (medium_nested/4step): WRONG (expect=51, t=63.4s)
+  [18/40] nest_017 (medium_nested/3step): WRONG (expect=789, t=63.5s)
+  [19/40] nest_018 (medium_nested/3step): OK (expect=2420, t=42.4s)
+  [20/40] nest_019 (medium_nested/3step): OK (expect=740, t=44.1s)
+  [21/40] nest_020 (hard_nested/6step): WRONG (expect=126, t=63.0s)
+  [22/40] nest_021 (hard_nested/5step): WRONG (expect=426, t=63.7s)
+  [23/40] nest_022 (hard_nested/6step): WRONG (expect=36, t=62.8s)
+  [24/40] nest_023 (hard_nested/6step): OK (expect=132, t=63.0s)
+  [25/40] nest_024 (hard_nested/5step): WRONG (expect=347, t=63.4s)
+  [26/40] nest_025 (hard_nested/5step): WRONG (expect=473, t=63.0s)
+  [27/40] nest_026 (hard_nested/6step): WRONG (expect=20, t=63.4s)
+  [28/40] nest_027 (hard_nested/5step): WRONG (expect=236, t=62.9s)
+  [29/40] nest_028 (hard_nested/6step): WRONG (expect=216, t=62.7s)
+  [30/40] nest_029 (hard_nested/6step): WRONG (expect=105, t=62.9s)
+  [31/40] nest_030 (hard_nested/6step): WRONG (expect=63, t=63.1s)
+  [32/40] nest_031 (hard_nested/5step): WRONG (expect=1183, t=63.6s)
+  [33/40] nest_032 (brutal_nested/7step): OK (expect=48, t=63.3s)
+  [34/40] nest_033 (brutal_nested/7step): WRONG (expect=354, t=63.3s)
+  [35/40] nest_034 (brutal_nested/7step): WRONG (expect=2028, t=63.5s)
+  [36/40] nest_035 (brutal_nested/8step): WRONG (expect=58, t=63.8s)
+  [37/40] nest_036 (brutal_nested/7step): WRONG (expect=5349, t=63.4s)
+  [38/40] nest_037 (brutal_nested/8step): WRONG (expect=50, t=63.0s)
+  [39/40] nest_038 (brutal_nested/7step): WRONG (expect=80, t=63.0s)
+  [40/40] nest_039 (brutal_nested/7step): WRONG (expect=480, t=63.6s)
+
+Baseline accuracy: 32.5%
+  brutal_nested: 12.5%
+  easy_nested: 75.0%
+  hard_nested: 8.3%
+  medium_nested: 41.7%
+Baseline time: 2350s
+
+========================================
+CALIBRATION COMPLETE
+========================================
+
+  Correct: 13/40 (32%)
+  Wrong:   27/40 (68%)
+
+  >> SWEET SPOT ACHIEVED <<
+  This difficulty range is suitable for sensitivity testing.
+
+Wrong answers (27):
+  nest_004 (easy_nested): expect=1151, resp='1. Or perhaps another method: 1058 + 93. Think of 93 as 90 + 3. Adding 90 to 105...'
+  nest_006 (easy_nested): expect=851, resp='To solve $21 \times 38 + 53$, follow these steps:
+
+**Step 1:** Multiply 21 by 38...'
+  nest_010 (medium_nested): expect=3, resp='<think>
+Okay, let's see. I need to compute (47 * 90 + 89) mod 13. Hmm, modular a...'
+  nest_011 (medium_nested): expect=27, resp='1. So 3760 minus 94 equals... Let me check that again. 3760 - 94. Subtracting 90...'
+  nest_012 (medium_nested): expect=3955, resp='To solve the expression $(45 + 68) \times (91 - 56)$, follow these steps:
+
+**Ste...'
+  nest_014 (medium_nested): expect=87, resp='To solve the expression $(78 + 41 \times 30) \div 15$, follow these steps:
+
+**St...'
+  nest_015 (medium_nested): expect=1276, resp='1. Then 3686 - 3681 = 5. So 409 with remainder 5. Therefore, 3686//9 equals 409....'
+  nest_016 (medium_nested): expect=51, resp='1.
+
+Therefore, the entire expression evaluates to 51. But wait, let me make sure...'
+  nest_017 (medium_nested): expect=789, resp='1.
+
+Next, 71 divided by 8 is 8 (since...'
+  nest_020 (hard_nested): expect=126, resp='<think>
+Okay, let's see. I need to compute this expression: (74 * 49 + 18) % 30 ...'
+  nest_021 (hard_nested): expect=426, resp='To solve the expression $(88 \times 28) \div 6 + (53 \times 8) \%...'
+  nest_022 (hard_nested): expect=36, resp='<think>
+Okay, let's see. I need to compute this expression: (84 * 17 + 48) % 30 ...'
+  nest_024 (hard_nested): expect=347, resp='<think>
+Okay, let's see. I need to compute this expression: (30 * 42) // 4 + (18...'
+  nest_025 (hard_nested): expect=473, resp='To solve the expression $(53 \times 44 - 64 \times...'
+  nest_026 (hard_nested): expect=20, resp='1. How do I compute that? Maybe divide 948 by 11 and find the remainder. Alterna...'
+  nest_027 (hard_nested): expect=236, resp='To solve the expression $(27 \times 25 - 18 \times 6) // 4 + 95$, follow these s...'
+  nest_028 (hard_nested): expect=216, resp='1. Okay, so the first part simplifies to 2141.
+
+Now, the next part is taking tha...'
+  nest_029 (hard_nested): expect=105, resp='1. Wait, no, wait. Wait, hold on. Wait, 32 times 38 is actually 1216? Let me che...'
+  nest_030 (hard_nested): expect=63, resp='<think>
+Okay, let's see. I need to compute this expression: (51 * 23 + 34) % 15 ...'
+  nest_031 (hard_nested): expect=1183, resp='1. So putting it all together, 3 divides into 3364 how many times? Let me write ...'
+  nest_033 (brutal_nested): expect=354, resp='1. Wait, but actually, when performing integer division, 725 divided by 2 is 362...'
+  nest_034 (brutal_nested): expect=2028, resp='1. 13*2=26, remainder 5. Next digit is 5, making 55. 13*4=52, remainder 3. Now b...'
+  nest_035 (brutal_nested): expect=58, resp='<think>
+Okay, let's tackle this problem step by step. The expression given is:
+
+...'
+  nest_036 (brutal_nested): expect=5349, resp='1. So 9 × 1069 = 9×(1000+69) = 9000 + 621 = 9621. Then 9626 - 9621 = 5. Therefor...'
+  nest_037 (brutal_nested): expect=50, resp='1. Then take that modulo 14, then add 12.
+
+So compute 321 mod 14. Again, trying ...'
+  nest_038 (brutal_nested): expect=80, resp='<think>
+Okay, let's tackle this problem step by step. The expression given is ((...'
+  nest_039 (brutal_nested): expect=480, resp='<think>
+Okay, let's tackle this problem step by step. The expression given is (3...'
+
+Calibration saved to: experiments\calibration_nested_results.json
+Total time: 39.2 min
