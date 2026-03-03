@@ -440,6 +440,10 @@ def decode_latent(
     generated_ids = outputs[0, prompt_len:]
     generated = encoder.tokenizer.decode(generated_ids, skip_special_tokens=True)
 
+    # Free CUDA cache to prevent OOM on long-running loops
+    if torch.cuda.is_available():
+        torch.cuda.empty_cache()
+
     response = generated.strip()
     if "<think>" in response and "</think>" in response:
         think_end = response.find("</think>") + len("</think>")
@@ -473,6 +477,115 @@ class EvolutionParams:
     noise_scale: float = 0.1
     curvature: float = 0.5
     fitness_mode: str = "accuracy"  # "accuracy" (binary) or "dense" (legacy)
+    use_surrogate: bool = False  # Active Inference surrogate screening
+    surrogate_expansion: int = 4  # Generate N*expansion candidates, screen with surrogate
+
+
+class ActiveInferenceSurrogate:
+    """Lightweight surrogate that predicts accuracy from latent vectors.
+
+    Uses Expected Free Energy (EFE) decomposition:
+        EFE = -pragmatic_value - beta * epistemic_value
+            = -predicted_accuracy - beta * prediction_uncertainty
+
+    The surrogate enables screening many cheap candidates before expensive
+    LLM evaluation, and naturally balances explore vs exploit.
+
+    Inspired by Karl Friston's Free Energy Principle and active inference.
+    """
+
+    def __init__(
+        self,
+        latent_dim: int = 1024,
+        proj_dim: int = 32,
+        hidden_dim: int = 64,
+        beta: float = 1.0,
+        beta_decay: float = 0.8,
+        curvature: float = 0.5,
+        seed: int = 42,
+    ):
+        self.latent_dim = latent_dim
+        self.proj_dim = proj_dim
+        self.beta = beta
+        self.beta_decay = beta_decay
+        self.curvature = curvature
+
+        # Fixed random projection: 1024d -> 32d (Johnson-Lindenstrauss)
+        rng = torch.Generator()
+        rng.manual_seed(seed)
+        self.proj = torch.randn(latent_dim, proj_dim, generator=rng)
+        self.proj /= self.proj.norm(dim=0, keepdim=True)
+
+        # Small MLP: proj_dim -> (mean, log_var)
+        import torch.nn as nn
+        self.net = nn.Sequential(
+            nn.Linear(proj_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, hidden_dim),
+            nn.ReLU(),
+            nn.Linear(hidden_dim, 2),  # mean_accuracy, log_variance
+        )
+        self.optimizer = torch.optim.Adam(self.net.parameters(), lr=1e-3)
+        self.history: List[Tuple[Tensor, float]] = []
+
+    def _project(self, latent: Tensor) -> Tensor:
+        """Project latent to low-dimensional feature via tangent space."""
+        v = latent.squeeze()
+        # Approximate logmap at origin for hyperbolic
+        norm = v.norm()
+        if norm > 0.001:
+            scale = torch.atanh(torch.clamp(norm * math.sqrt(self.curvature), max=0.999))
+            v = v * (scale / (norm * math.sqrt(self.curvature)))
+        features = v @ self.proj.to(v.device)
+        return features
+
+    def predict(self, latent: Tensor) -> Tuple[float, float]:
+        """Predict (mean_accuracy, variance) for a latent vector."""
+        with torch.no_grad():
+            features = self._project(latent)
+            out = self.net(features.float().cpu())
+            mean_acc = torch.sigmoid(out[0]).item()  # Bounded [0, 1]
+            variance = torch.exp(out[1]).item()
+        return mean_acc, variance
+
+    def expected_free_energy(self, latent: Tensor) -> float:
+        """Compute EFE: lower = better (higher accuracy + higher uncertainty)."""
+        mean_acc, variance = self.predict(latent)
+        return -(mean_acc + self.beta * variance)
+
+    def select_by_efe(
+        self, candidates: List[Candidate], k: int,
+    ) -> List[Candidate]:
+        """Select top-k candidates by Expected Free Energy."""
+        scored = [(self.expected_free_energy(c.latent), c) for c in candidates]
+        scored.sort(key=lambda x: x[0])  # Lower EFE = better
+        return [c for _, c in scored[:k]]
+
+    def update(self, latent: Tensor, accuracy: float) -> None:
+        """Record observation and retrain surrogate."""
+        self.history.append((latent.detach().cpu(), accuracy))
+        if len(self.history) < 4:
+            return  # Need minimum data to train
+
+        # Train on recent history (last 200 observations)
+        recent = self.history[-200:]
+        for _ in range(20):
+            batch = random.sample(recent, min(32, len(recent)))
+            features = torch.stack([self._project(l) for l, _ in batch]).float()
+            targets = torch.tensor([a for _, a in batch]).float()
+            out = self.net(features)
+            mean_pred = torch.sigmoid(out[:, 0])
+            log_var = out[:, 1]
+            # Gaussian NLL loss
+            var = torch.exp(log_var)
+            loss = 0.5 * (log_var + (targets - mean_pred) ** 2 / var).mean()
+            self.optimizer.zero_grad()
+            loss.backward()
+            self.optimizer.step()
+
+    def anneal_beta(self) -> None:
+        """Reduce exploration weight after each generation."""
+        self.beta *= self.beta_decay
 
 
 def _make_noise(
@@ -530,8 +643,20 @@ def evaluate_binary(
     """Evaluate with binary (correct/incorrect) scoring."""
     results = {}
     for task in tasks:
-        response = decode_latent(encoder, latent, task.prompt, decode_cfg)
-        results[task.task_id] = verify_answer(response, task.correct_answer)
+        try:
+            response = decode_latent(encoder, latent, task.prompt, decode_cfg)
+            results[task.task_id] = verify_answer(response, task.correct_answer)
+        except (RuntimeError, torch.cuda.CudaError) as e:
+            if "CUDA" in str(e):
+                print(f"  [CUDA ERROR on {task.task_id}, retrying] {e}", flush=True)
+                torch.cuda.empty_cache()
+                try:
+                    response = decode_latent(encoder, latent, task.prompt, decode_cfg)
+                    results[task.task_id] = verify_answer(response, task.correct_answer)
+                except Exception:
+                    results[task.task_id] = False  # Mark as wrong on second failure
+            else:
+                raise
     return results
 
 
@@ -542,8 +667,13 @@ def run_evolution(
     evo: EvolutionParams,
     decode_cfg: DecodeConfig,
     condition_seed: int = 0,
+    surrogate: Optional[ActiveInferenceSurrogate] = None,
 ) -> Tuple[Tensor, List[dict]]:
     """Run evolution with configurable geometry and decode.
+
+    When surrogate is provided, generates expanded candidate pool and uses
+    Expected Free Energy to screen down to population_size before expensive
+    LLM evaluation (Active Inference exploration/exploitation balance).
 
     Returns (best_latent, fitness_curve).
     """
@@ -591,6 +721,23 @@ def run_evolution(
             train_tasks, min(evo.tasks_per_gen, len(train_tasks)),
         )
 
+        # Active Inference: generate expanded pool, screen with surrogate
+        if surrogate is not None and evo.use_surrogate and len(surrogate.history) >= 4:
+            n_expanded = evo.population_size * evo.surrogate_expansion
+            expanded = list(population)
+            while len(expanded) < n_expanded:
+                parent = random.choice(population)
+                noise = _make_noise(
+                    parent.latent.shape, evo.noise_scale, dim, mut_rng, device,
+                )
+                mutated = _apply_mutation(
+                    parent.latent, noise, curvature, ball_radius, geometry,
+                )
+                expanded.append(Candidate(latent=mutated, curvature=curvature))
+            # Screen by EFE (keeps top population_size)
+            population = surrogate.select_by_efe(expanded, evo.population_size)
+            print(f"    [SURROGATE] Screened {n_expanded} -> {len(population)}", flush=True)
+
         for cand in population:
             if evo.fitness_mode == "accuracy":
                 results = evaluate_binary(cand.latent, gen_tasks, encoder, decode_cfg)
@@ -598,6 +745,10 @@ def run_evolution(
             else:
                 score, _ = evaluate_dense(cand.latent, gen_tasks, encoder, decode_cfg)
                 cand.fitness = score
+
+            # Update surrogate with actual observations
+            if surrogate is not None:
+                surrogate.update(cand.latent, cand.fitness)
 
         gen_best = max(population, key=lambda c: c.fitness)
         if gen_best.fitness > global_best.fitness:
@@ -636,6 +787,11 @@ def run_evolution(
             new_pop.append(Candidate(latent=mutated, curvature=curvature))
 
         population = new_pop
+
+        # Anneal surrogate exploration weight
+        if surrogate is not None:
+            surrogate.anneal_beta()
+
         print(
             f"  [GEN {gen+1}] best={curve_entry['best']:.3f}"
             f" mean={curve_entry['mean']:.3f}",

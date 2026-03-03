@@ -1,36 +1,39 @@
 # Task Board
 
-## Todo
-- [ ] Fix evolutionary fitness function — use actual task accuracy instead of dense_score
-- [ ] Investigate why soft prompt induces verbosity at 8B (uncertainty signal interpretation?)
-- [ ] Test with tasks where baseline is ~50-60% (not 90%), giving room for evolution to improve
-- [ ] V17 ablation: Gaussian noise vs CMA-ES vs mixture-curvature (requires working fitness first)
-- [ ] Run V15 geometry isolation with accuracy-based fitness (the real test)
-- [ ] Expand conditioning comparison to non-Qwen model families (Falcon-H1, Granite)
-
 ## Doing
-- [ ] (none)
+- [ ] V15b: Geometry isolation with accuracy-based fitness (RUNNING NOW)
+
+## Todo (Priority Order)
+- [ ] Analyze V15b results with LLM-as-judge
+- [ ] V17: Active Inference acquisition function (surrogate + EFE for explore/exploit)
+- [ ] V18: Quality-Diversity archive with pyribs (MAP-Elites on Poincare ball)
+- [ ] Test sweet_spot difficulty (~60% baseline) for more room to improve
+- [ ] V19: Physarum-bioelectric hybrid search network
+- [ ] Investigate soft prompt verbosity at 8B (uncertainty signal interpretation?)
+- [ ] Expand conditioning comparison to non-Qwen model families (Falcon-H1, Granite)
+- [ ] V17 ablation: Gaussian noise vs CMA-ES vs mixture-curvature
 
 ## Done (Recent)
-- [x] Create experiments/EXPERIMENTS.md and experiments/ledger.jsonl
-- [x] Update stale docs (WORKLOG, TASKS, GOALS)
+- [x] Replace dense_score with accuracy-based fitness (the Goodhart fix)
+- [x] Add nested expression task generator to harness
+- [x] CUDA cache fix for long-running inference loops
+- [x] Bio-inspired optimization research (Physarum, ACO, Active Inference, Levin, QD)
+- [x] STRONGLY EXPLOITABLE: 32% accuracy range, p=0.006 (sensitivity analysis)
+- [x] Add nested expression tasks and calibration mode
 - [x] Cross-model conditioning comparison (0.6B/4B/8B/14B x 20 questions x 3 conditions)
 - [x] LLM-as-judge evaluation on all model outputs
-- [x] V15 geometry isolation diagnostic (hard difficulty)
-- [x] Add hard difficulty mode to harness
-- [x] Fix max_new_tokens (150 -> 1024)
-- [x] GPU optimization (W matrix placement, dtype handling)
-- [x] Fix Unicode crash on Windows cp1252
+- [x] V15a geometry isolation diagnostic (hard difficulty) -- evolution HURT
 - [x] Unified experiment harness (harness.py + decode subpackage)
-- [x] V15 geometry isolation experiment design
-- [x] V16 model comparison experiment design
 - [x] Algorithmic frontier (CMA-ES, mixture curvature, Karcher crossover)
-- [x] Fix all 10 Codex V10 issues (V11)
+- [x] Fix all 10 Codex V10 issues (V11, Codex grade: A-)
 
-## Done (Historical — AIM-v1 Era)
-- [x] Autonomy scaffolding, AIM-v1 framework, adaptive survivors, score cache
-- [x] Non-tiny model validation (distilgpt2)
+## Done (Historical)
 - [x] V1-V10 experiment series (see experiments/EXPERIMENTS.md)
+- [x] Autonomy scaffolding, AIM-v1 framework
 
-## Blocked
-- [ ] Geometry comparison (V15+) — blocked on fixing fitness function
+## Key Findings
+- Accuracy-based fitness: Evolution GEN3 mean=1.0 on training tasks (100%!)
+  - Previous dense_score fitness: evolution DEGRADED accuracy (90% -> 60%)
+  - Accuracy fitness is the critical fix -- Goodhart's Law resolved
+- Landscape exploitability: 32% range across random latents (p=0.006)
+- Novel research combo: QD + Poincare + Active Inference (unpublished)
