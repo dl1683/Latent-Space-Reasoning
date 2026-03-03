@@ -440,7 +440,10 @@ def decode_latent(
     generated_ids = outputs[0, prompt_len:]
     generated = encoder.tokenizer.decode(generated_ids, skip_special_tokens=True)
 
-    # Free CUDA cache to prevent OOM on long-running loops
+    # Explicit cleanup to prevent VRAM accumulation in long-running loops
+    del combined_embeds, combined_mask, outputs, soft_prompt, text_embeds
+    import gc
+    gc.collect()
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
 
@@ -1171,6 +1174,103 @@ def experiment_cli(description: str) -> argparse.Namespace:
     parser.add_argument("--output", type=str, default=None,
                         help="Override output JSON path")
     return parser.parse_args()
+
+
+@dataclass
+class ExperimentSetup:
+    """Result of setup_soft_prompt_experiment() — all shared boilerplate."""
+    encoder: LLMEncoder
+    cal: dict
+    W: Tensor
+    train_tasks: List[Task]
+    test_tasks: List[Task]
+    n_seeds: int
+    embed_dim: int
+    target_rms: float
+    d_latent: int
+    num_soft_tokens: int = 8
+    curvature: float = 0.5
+
+
+def setup_soft_prompt_experiment(
+    args,
+    experiment_name: str,
+    nested_difficulty: str = "easy_nested",
+) -> ExperimentSetup:
+    """Common setup for soft prompt experiments: load model, calibrate, create W, gen tasks.
+
+    Eliminates boilerplate duplicated across V15/V16/V17/V18 runners.
+    """
+    n_seeds = 1 if args.diagnostic else args.seeds
+    curvature = args.curvature
+
+    print("=" * 70, flush=True)
+    print(f"{experiment_name}", flush=True)
+    print("=" * 70, flush=True)
+    print(f"Model: {args.model}", flush=True)
+    print(f"Seeds: {n_seeds}", flush=True)
+    print(f"Curvature: {curvature}", flush=True)
+    print(f"Difficulty: {nested_difficulty}", flush=True)
+    print(f"Diagnostic: {args.diagnostic}", flush=True)
+
+    # Load model
+    print("\nLoading model...", flush=True)
+    encoder = LLMEncoder(
+        model_name=args.model,
+        quantization=args.quantization,
+    )
+
+    # Auto-calibrate
+    cal = auto_calibrate(encoder)
+    print(f"Calibration: {json.dumps(cal, indent=2)}", flush=True)
+
+    embed_dim = cal["embed_dim"]
+    target_rms = cal["embedding_rms"]
+    d_latent = encoder.latent_dim
+
+    # Verify soft prompt compatibility
+    compatible = check_soft_prompt_compatibility(encoder)
+    if not compatible:
+        print("ERROR: Model does not support inputs_embeds.", flush=True)
+        sys.exit(1)
+
+    # Shared W matrix (seed=1234 for reproducibility)
+    num_soft_tokens = 8
+    d_out = num_soft_tokens * embed_dim
+    W = make_row_orthonormal_W(d_latent, d_out, seed=1234)
+    W = W.to(device=encoder._device)
+    print(f"W shape: {W.shape}", flush=True)
+
+    # Task generation
+    n_test = 25 if args.diagnostic else args.test_tasks_per_depth
+    n_train = 80 if args.diagnostic else args.train_tasks_per_depth
+    train_tasks, test_tasks = generate_nested_expression_tasks(
+        n_train=n_train, n_test=n_test,
+        seed=42, difficulty=nested_difficulty,
+    )
+    print(f"Train: {len(train_tasks)}, Test: {len(test_tasks)}", flush=True)
+
+    return ExperimentSetup(
+        encoder=encoder, cal=cal, W=W,
+        train_tasks=train_tasks, test_tasks=test_tasks,
+        n_seeds=n_seeds, embed_dim=embed_dim,
+        target_rms=target_rms, d_latent=d_latent,
+        num_soft_tokens=num_soft_tokens, curvature=curvature,
+    )
+
+
+def make_base_decode_kwargs(setup: ExperimentSetup) -> dict:
+    """Standard decode kwargs dict from ExperimentSetup."""
+    return dict(
+        mode=DecodeMode.SOFT_PROMPT,
+        W_soft=setup.W,
+        embed_dim=setup.embed_dim,
+        num_soft_tokens=setup.num_soft_tokens,
+        target_rms=setup.target_rms,
+        curvature=setup.curvature,
+        max_new_tokens=1024,
+        temperature=0.3,
+    )
 
 
 def run_experiment(
