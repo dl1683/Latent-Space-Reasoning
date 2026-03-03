@@ -111,6 +111,29 @@
   - Result snapshot (`distilgpt2`, 2 queries, 2 repeats): quality delta `0.0`, evaluation reduction `~15.4%` (`6.5 -> 5.5` median trial evals), end-to-end latency reduction `~7.4%`.
 - Updated non-tiny confirmation to use the repeat-stabilized result as primary reference.
 
+## 2026-03-03 — Accuracy Fitness, V17/V18 Runners, Entropy Cleanup
+- Replaced dense_score with accuracy-based fitness (binary correct/incorrect).
+- Added nested expression task generator and calibration mode.
+- Sensitivity analysis: 32% accuracy range across 10 random latents (Cochran's Q=23.2, p=0.006).
+- First statistically significant result: landscape IS exploitable.
+- Created Active Inference surrogate (MLP + EFE screening, JL projection).
+- Created V17 runner (Active Inference surrogate ablation, 110 lines).
+- Wired QD archive into evolution loop (run_qd_evolution with DNS + novelty).
+- Created V18 runner (QD archive evolution, 106 lines).
+- Consolidated experiment boilerplate: setup_soft_prompt_experiment() helper.
+- Added robustness guards: empty population, div-by-zero, broader exception handling.
+- Massive entropy cleanup: -19,400 lines deleted across 68 files.
+  - Removed experiments/archive/ (30 files), V10-V14 monoliths, dead scripts.
+  - Removed 12 stale documentation files.
+  - Removed dead synthesis/ module (573 lines of unused stubs).
+  - Removed empty cli/commands/ package.
+- Fixed Windows stdout line buffering for experiment output.
+- Literature review: all 5 components validated by 2025-2026 papers.
+  - QD + Poincare + Active Inference + soft prompt + accuracy fitness = novel combination.
+- Tests: 342 passing (8 new robustness tests).
+- V15b running with accuracy-based fitness (3rd attempt, output buffering fixed for next run).
+- Commits: 3283808, 7ac8220, 4c48e82, de5b43b, fe4bf3e, 1be343b, 8ed053d, fc723db, c8be489, 3b9c82b.
+
 ## 2026-02-20 — Codex Full Repo Review + V11 Fixes
 - Codex reviewed entire repository. Grade: C+.
 - Key verdict: "Evidence that conditioning bandwidth matters, not that hyperbolic geometry improves reasoning."
