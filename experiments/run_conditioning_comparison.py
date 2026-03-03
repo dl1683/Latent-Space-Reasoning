@@ -66,7 +66,7 @@ QUESTIONS: List[TestQuestion] = [
     TestQuestion("multi_1", "multi_step", "medium",
         "Solve step by step:\n  a = 17 + 28\n  b = a * 3\n  c = b - 15\n  What is c? Answer with just the number.", "120"),
     TestQuestion("multi_2", "multi_step", "hard",
-        "Solve step by step:\n  a = 13 * 7\n  b = a + 29\n  c = b mod 17\n  d = c * 5 + a\n  What is d? Answer with just the number.", "141"),
+        "Solve step by step:\n  a = 13 * 7\n  b = a + 29\n  c = b mod 17\n  d = c * 5 + a\n  What is d? Answer with just the number.", "96"),
     TestQuestion("multi_3", "multi_step", "hard",
         "Solve step by step:\n  x = 256 / 8\n  y = x * x\n  z = y - x + 7\n  What is z? Answer with just the number.", "999"),
     TestQuestion("multi_4", "multi_step", "hard",

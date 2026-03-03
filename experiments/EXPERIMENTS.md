@@ -5,6 +5,39 @@ Only Codex-validated conclusions are stated as "confirmed."
 
 ---
 
+## Latent Sensitivity Diagnostic (2026-03-03) — VALIDATED
+
+**Purpose:** Test whether different random soft prompt latents produce meaningfully different accuracy on step-by-step arithmetic tasks.
+**Config:** 5 random Euclidean latents, 13 tasks (3 easy/5 medium/5 hard), greedy decoding, Qwen3-4B Q4
+**Script:** `experiments/run_latent_sensitivity.py --diagnostic`
+
+### Results
+
+| Condition | Accuracy |
+|-----------|----------|
+| Zero-shot baseline | **100%** |
+| Latent 1 | 100% |
+| Latent 2 | 92.3% |
+| Latent 3 | 92.3% |
+| Latent 4 | 92.3% |
+| Latent 5 | 92.3% |
+| Mean conditioned | 93.8% |
+
+### What We Learned
+1. **Landscape has structure** — different latents produce different accuracy (not flat)
+2. **Sensitivity is task-specific** — only 1 of 13 tasks (sens_008: 6-step chain, answer=9338) shows any latent sensitivity
+3. **Soft prompts CAN disrupt reasoning** — 4 of 5 random latents fail on the boundary task; failure mode is chain management disruption (model outputs intermediate values, not final answer)
+4. **Direction matters** — Latent 1 preserves accuracy while Latents 2-5 fail, despite all being random
+5. **Conditioning hurts on average** — -6.2% vs baseline, consistent with V15 finding
+6. **Baseline too high for positive signal** — 100% baseline leaves no room for improvement, only degradation
+7. **Next required**: tasks at 50-70% baseline to test if latents can IMPROVE accuracy
+
+### Artifacts
+- `experiments/latent_sensitivity_results.json`
+- `experiments/run_latent_sensitivity.py`
+
+---
+
 ## Conditioning Comparison (2026-03-02) — VALIDATED
 
 **Purpose:** Head-to-head comparison of 3 conditioning methods across 4 model sizes.
