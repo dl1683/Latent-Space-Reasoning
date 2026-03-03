@@ -25,7 +25,7 @@ from dataclasses import dataclass, field
 from enum import Enum
 from itertools import product
 from pathlib import Path
-from typing import Callable, Dict, List, Optional, Tuple
+from typing import Callable, Dict, List, Optional, Tuple, Union
 
 import numpy as np
 import torch
@@ -136,6 +136,87 @@ def split_train_test(
             )
         test_tasks.extend(pool[:n_test_per_depth])
         train_tasks.extend(pool[n_test_per_depth:n_needed])
+    return train_tasks, test_tasks
+
+
+def generate_nested_expression_tasks(
+    n_train: int = 150,
+    n_test: int = 40,
+    seed: int = 42,
+    difficulty: str = "easy_nested",
+) -> Tuple[List[Task], List[Task]]:
+    """Generate nested expression tasks for evolution experiments.
+
+    These tasks have NO step-by-step scaffolding — the model must parse
+    the expression tree directly.  Calibrated for Qwen3-4B.
+
+    Difficulty levels:
+        easy_nested  -- 2-digit arithmetic (~92% baseline, proven exploitable)
+        sweet_spot   -- 2-3 ops, 2-digit*2-digit core (~60% baseline)
+    """
+    rng = random.Random(seed)
+    tasks: List[Task] = []
+    total = n_train + n_test
+
+    def _eval_safe(expr: str) -> Optional[int]:
+        try:
+            result = eval(expr)  # noqa: S307 — only our own expressions
+            if isinstance(result, float):
+                result = int(result)
+            return result
+        except (ZeroDivisionError, ValueError):
+            return None
+
+    idx = 0
+    attempts = 0
+    while len(tasks) < total and attempts < total * 3:
+        attempts += 1
+
+        if difficulty == "easy_nested":
+            patterns = [
+                lambda: f"{rng.randint(11,49)} * {rng.randint(11,49)} + {rng.randint(10,99)}",
+                lambda: f"{rng.randint(10,99)} * {rng.randint(3,9)} - {rng.randint(10,50)}",
+                lambda: f"({rng.randint(10,99)} + {rng.randint(10,99)}) * {rng.randint(3,9)}",
+                lambda: f"{rng.randint(100,500)} - {rng.randint(10,99)} * {rng.randint(2,5)}",
+            ]
+            expr = rng.choice(patterns)()
+        elif difficulty == "sweet_spot":
+            a, b = rng.randint(20, 99), rng.randint(20, 99)
+            c, d = rng.randint(10, 99), rng.randint(10, 60)
+            patterns = [
+                f"{a} * {b} + {c} * {d}",
+                f"({a} * {b} + {c}) % {rng.randint(13, 29)}",
+                f"{a} * {b} - {c} * {rng.randint(2, 8)}",
+                f"({a} + {b}) * ({c} - {d})",
+                f"{rng.randint(5, 15)} * {rng.randint(10, 30)} * {rng.randint(3, 9)}",
+                f"({a} * {b}) // {rng.randint(3, 9)} + {c}",
+            ]
+            expr = rng.choice(patterns)
+        else:
+            raise ValueError(
+                f"Unknown difficulty: {difficulty!r}. "
+                f"Use 'easy_nested' or 'sweet_spot'."
+            )
+
+        answer = _eval_safe(expr)
+        if answer is None:
+            continue
+
+        prompt = (
+            f"Compute the following. Show your work, "
+            f"then state the final answer.\n{expr}"
+        )
+        tasks.append(Task(
+            task_id=f"nest_{idx:03d}",
+            prompt=prompt,
+            correct_answer=answer,
+            depth=2,
+        ))
+        idx += 1
+
+    # Deterministic split: first n_test are test, rest are train
+    test_tasks = tasks[:n_test]
+    train_tasks = tasks[n_test:]
     return train_tasks, test_tasks
 
 
@@ -391,6 +472,7 @@ class EvolutionParams:
     tasks_per_gen: int = 8
     noise_scale: float = 0.1
     curvature: float = 0.5
+    fitness_mode: str = "accuracy"  # "accuracy" (binary) or "dense" (legacy)
 
 
 def _make_noise(
@@ -510,8 +592,12 @@ def run_evolution(
         )
 
         for cand in population:
-            score, _ = evaluate_dense(cand.latent, gen_tasks, encoder, decode_cfg)
-            cand.fitness = score
+            if evo.fitness_mode == "accuracy":
+                results = evaluate_binary(cand.latent, gen_tasks, encoder, decode_cfg)
+                cand.fitness = sum(results.values()) / len(results)
+            else:
+                score, _ = evaluate_dense(cand.latent, gen_tasks, encoder, decode_cfg)
+                cand.fitness = score
 
         gen_best = max(population, key=lambda c: c.fitness)
         if gen_best.fitness > global_best.fitness:
@@ -733,8 +819,13 @@ def experiment_cli(description: str) -> argparse.Namespace:
     parser.add_argument("--evo-tasks", type=int, default=8)
     parser.add_argument("--noise-scale", type=float, default=0.1)
     parser.add_argument("--curvature", type=float, default=0.5)
-    parser.add_argument("--difficulty", choices=["standard", "hard"], default="standard",
-                        help="Task difficulty: standard (easy) or hard (multi-step)")
+    parser.add_argument("--difficulty", choices=["standard", "hard", "easy_nested", "sweet_spot"],
+                        default="standard",
+                        help="Task difficulty: standard, hard, easy_nested, sweet_spot")
+    parser.add_argument("--task-type", choices=["chain", "nested"], default="chain",
+                        help="Task type: chain (step-by-step) or nested (expressions)")
+    parser.add_argument("--fitness-mode", choices=["accuracy", "dense"], default="accuracy",
+                        help="Evolution fitness: accuracy (binary) or dense (legacy)")
     parser.add_argument("--diagnostic", action="store_true",
                         help="Run 1 seed for quick sanity check")
     parser.add_argument("--output", type=str, default=None,

@@ -14,6 +14,11 @@ Critical isolation:
 - Matched ball radius: Euclidean L2 ball radius = 1/sqrt(c) * 0.95
 - Both paths apply radial_tanh_squash before W projection
 - The ONLY variable is the mutation geometry (flat vs curved)
+
+V15b (accuracy fitness):
+- Uses nested expression tasks (proven exploitable: 32% range, p=0.006)
+- Fitness = binary accuracy (fraction correct), NOT dense_score
+- This fixes the Goodhart's Law problem where V15a evolved away from correct answers
 """
 
 from __future__ import annotations
@@ -37,6 +42,7 @@ from harness import (
     check_soft_prompt_compatibility,
     experiment_cli,
     generate_all_unique_tasks,
+    generate_nested_expression_tasks,
     print_results,
     run_experiment,
     save_results,
@@ -53,12 +59,20 @@ def main():
     n_seeds = 1 if args.diagnostic else args.seeds
     curvature = args.curvature
 
+    # Determine task type and difficulty
+    use_nested = args.task_type == "nested" or args.difficulty in ("easy_nested", "sweet_spot")
+    nested_difficulty = args.difficulty if args.difficulty in ("easy_nested", "sweet_spot") else "easy_nested"
+    fitness_mode = args.fitness_mode
+
     print("=" * 70, flush=True)
     print("V15: GEOMETRY ISOLATION UNDER SAME CONDITIONING", flush=True)
     print("=" * 70, flush=True)
     print(f"Model: {args.model}", flush=True)
     print(f"Seeds: {n_seeds}", flush=True)
     print(f"Curvature: {curvature}", flush=True)
+    print(f"Task type: {'nested' if use_nested else 'chain'}", flush=True)
+    print(f"Difficulty: {nested_difficulty if use_nested else args.difficulty}", flush=True)
+    print(f"Fitness mode: {fitness_mode}", flush=True)
     print(f"Diagnostic: {args.diagnostic}", flush=True)
 
     # Load model
@@ -92,14 +106,23 @@ def main():
     print(f"W device: {W.device}", flush=True)
 
     # Task generation
-    depths = args.diagnostic and [2] or [2, 3]
-    tasks_by_depth = generate_all_unique_tasks(args.branching, depths, args.difficulty)
-    total_tasks = sum(len(v) for v in tasks_by_depth.values())
-    print(f"Tasks: {total_tasks} total across depths {depths}", flush=True)
-
-    train_tasks, test_tasks = split_train_test(
-        tasks_by_depth, args.test_tasks_per_depth, args.train_tasks_per_depth,
-    )
+    if use_nested:
+        n_test = 25 if args.diagnostic else args.test_tasks_per_depth
+        n_train = 80 if args.diagnostic else args.train_tasks_per_depth
+        train_tasks, test_tasks = generate_nested_expression_tasks(
+            n_train=n_train, n_test=n_test,
+            seed=42, difficulty=nested_difficulty,
+        )
+        depths = [2]  # All nested tasks are depth 2
+        print(f"Tasks: {len(train_tasks) + len(test_tasks)} nested ({nested_difficulty})", flush=True)
+    else:
+        depths = args.diagnostic and [2] or [2, 3]
+        tasks_by_depth = generate_all_unique_tasks(args.branching, depths, args.difficulty)
+        total_tasks = sum(len(v) for v in tasks_by_depth.values())
+        print(f"Tasks: {total_tasks} total across depths {depths}", flush=True)
+        train_tasks, test_tasks = split_train_test(
+            tasks_by_depth, args.test_tasks_per_depth, args.train_tasks_per_depth,
+        )
     print(f"Train: {len(train_tasks)}, Test: {len(test_tasks)}", flush=True)
 
     # Build conditions -- identical decode config except geometry
@@ -150,6 +173,7 @@ def main():
         tasks_per_gen=args.evo_tasks,
         noise_scale=args.noise_scale,
         curvature=curvature,
+        fitness_mode=fitness_mode,
     )
 
     # Print config summary
@@ -177,11 +201,12 @@ def main():
         "quantization": args.quantization,
         "seeds": n_seeds,
         "curvature": curvature,
-        "branching": args.branching,
-        "difficulty": args.difficulty,
+        "task_type": "nested" if use_nested else "chain",
+        "difficulty": nested_difficulty if use_nested else args.difficulty,
+        "fitness_mode": fitness_mode,
         "depths": depths,
-        "train_per_depth": args.train_tasks_per_depth,
-        "test_per_depth": args.test_tasks_per_depth,
+        "n_train": len(train_tasks),
+        "n_test": len(test_tasks),
         "evo_gens": evo.generations,
         "evo_pop": evo.population_size,
         "evo_tasks_per_gen": evo.tasks_per_gen,
