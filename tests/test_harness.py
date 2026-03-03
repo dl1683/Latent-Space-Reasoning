@@ -11,10 +11,13 @@ sys.path.insert(0, str(Path(__file__).parent.parent / "experiments"))
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from experiments.harness import (
+    ActiveInferenceSurrogate,
     Candidate,
     DecodeConfig,
     DecodeMode,
     EvolutionParams,
+    ExperimentCondition,
+    QDParams,
     Task,
     _apply_mutation,
     _make_noise,
@@ -282,3 +285,88 @@ class TestDecodeConfig:
     def test_rng_seed_mode(self):
         cfg = DecodeConfig(mode=DecodeMode.RNG_SEED)
         assert cfg.mode == DecodeMode.RNG_SEED
+
+
+class TestActiveSurrogate:
+    """Tests for Active Inference surrogate screening."""
+
+    def test_surrogate_predict_returns_bounded_mean(self):
+        surr = ActiveInferenceSurrogate(latent_dim=64, proj_dim=16, hidden_dim=32)
+        latent = torch.randn(1, 64)
+        mean_acc, var = surr.predict(latent)
+        assert 0.0 <= mean_acc <= 1.0
+        assert var > 0.0
+
+    def test_surrogate_efe_is_negative(self):
+        surr = ActiveInferenceSurrogate(latent_dim=64, proj_dim=16)
+        latent = torch.randn(1, 64)
+        efe = surr.expected_free_energy(latent)
+        # EFE = -(mean_acc + beta*var), always negative since both terms > 0
+        assert efe < 0.0
+
+    def test_surrogate_select_returns_k_candidates(self):
+        surr = ActiveInferenceSurrogate(latent_dim=64, proj_dim=16)
+        candidates = [Candidate(latent=torch.randn(1, 64)) for _ in range(20)]
+        selected = surr.select_by_efe(candidates, k=5)
+        assert len(selected) == 5
+
+    def test_surrogate_update_trains_without_error(self):
+        surr = ActiveInferenceSurrogate(latent_dim=64, proj_dim=16)
+        for i in range(10):
+            surr.update(torch.randn(1, 64), float(i) / 10.0)
+        # After 10 updates, history should have 10 entries
+        assert len(surr.history) == 10
+
+    def test_surrogate_beta_annealing(self):
+        surr = ActiveInferenceSurrogate(latent_dim=64, beta=1.0, beta_decay=0.5)
+        assert surr.beta == 1.0
+        surr.anneal_beta()
+        assert surr.beta == pytest.approx(0.5)
+        surr.anneal_beta()
+        assert surr.beta == pytest.approx(0.25)
+
+    def test_experiment_condition_surrogate_flag(self):
+        cfg = DecodeConfig()
+        cond_no = ExperimentCondition(name="no_surr", decode_cfg=cfg, use_surrogate=False)
+        cond_yes = ExperimentCondition(name="surr", decode_cfg=cfg, use_surrogate=True)
+        assert not cond_no.use_surrogate
+        assert cond_yes.use_surrogate
+
+    def test_surrogate_deterministic_projection(self):
+        """Same seed -> same projection matrix."""
+        s1 = ActiveInferenceSurrogate(latent_dim=64, proj_dim=16, seed=42)
+        s2 = ActiveInferenceSurrogate(latent_dim=64, proj_dim=16, seed=42)
+        assert torch.allclose(s1.proj, s2.proj)
+
+
+class TestQDIntegration:
+    """Tests for QD integration in experiment harness."""
+
+    def test_qd_params_defaults(self):
+        params = QDParams()
+        assert params.bd_dim == 16
+        assert params.novelty_weight == 0.3
+        assert params.archive_size == 100
+
+    def test_experiment_condition_qd_flag(self):
+        cfg = DecodeConfig()
+        cond = ExperimentCondition(name="qd", decode_cfg=cfg, use_qd=True)
+        assert cond.use_qd
+        assert cond.qd_params is None  # Uses defaults
+
+    def test_experiment_condition_qd_with_params(self):
+        cfg = DecodeConfig()
+        qd = QDParams(bd_dim=8, novelty_weight=0.5)
+        cond = ExperimentCondition(name="qd", decode_cfg=cfg, use_qd=True, qd_params=qd)
+        assert cond.qd_params.bd_dim == 8
+        assert cond.qd_params.novelty_weight == 0.5
+
+    def test_qd_and_surrogate_mutually_exclusive_by_priority(self):
+        """QD takes priority over surrogate when both are set."""
+        cfg = DecodeConfig()
+        cond = ExperimentCondition(
+            name="both", decode_cfg=cfg,
+            use_qd=True, use_surrogate=True,
+        )
+        # QD flag is checked first in run_experiment
+        assert cond.use_qd

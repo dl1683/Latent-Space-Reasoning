@@ -801,6 +801,187 @@ def run_evolution(
     return global_best.latent, fitness_curve
 
 
+@dataclass
+class QDParams:
+    """Parameters for Quality-Diversity evolution."""
+    bd_dim: int = 16
+    rff_gamma: float = 0.1
+    novelty_weight: float = 0.3  # alpha: qd = (1-a)*fitness + a*novelty
+    novelty_k: int = 5
+    archive_size: int = 100
+    domination_threshold: float = 0.15
+
+
+def run_qd_evolution(
+    encoder: LLMEncoder,
+    train_tasks: List[Task],
+    seed_latent: Tensor,
+    evo: EvolutionParams,
+    decode_cfg: DecodeConfig,
+    condition_seed: int = 0,
+    qd_params: Optional[QDParams] = None,
+) -> Tuple[Tensor, List[dict]]:
+    """Run QD evolution with diversity archive on Poincare ball.
+
+    Instead of pure elitist selection, maintains a DNS archive of diverse
+    high-quality solutions. Parents are sampled from the archive using
+    farthest-point sampling, providing stepping stones for exploration.
+
+    Returns (best_latent, fitness_curve_with_archive_stats).
+    """
+    from latent_reasoning.qd.archive import DNSArchive
+    from latent_reasoning.qd.behavior import BehaviorComputer
+    from latent_reasoning.qd.novelty import (
+        NoveltyComputer,
+        combine_fitness_novelty,
+        normalize_novelty_scores,
+    )
+
+    if qd_params is None:
+        qd_params = QDParams()
+
+    fitness_curve = []
+    dim = seed_latent.numel()
+    device = seed_latent.device
+    geometry = decode_cfg.geometry
+    curvature = evo.curvature
+    ball_radius = (1.0 / math.sqrt(curvature)) * 0.95
+
+    # Initialize QD components
+    behavior = BehaviorComputer(
+        latent_dim=dim, bd_dim=qd_params.bd_dim,
+        rff_gamma=qd_params.rff_gamma, seed=condition_seed + 500,
+    )
+    novelty = NoveltyComputer(k=qd_params.novelty_k)
+    archive = DNSArchive(
+        max_size=qd_params.archive_size,
+        domination_threshold=qd_params.domination_threshold,
+    )
+
+    # Initialize seed in the appropriate space (same as run_evolution)
+    if geometry == "hyperbolic":
+        target_init_norm = 0.5 * ball_radius
+        seed_norm = seed_latent.squeeze().norm().item()
+        hyp_target = min(target_init_norm * math.sqrt(curvature), 0.999)
+        tangent_norm = math.atanh(hyp_target) / math.sqrt(curvature)
+        init_scale = tangent_norm / max(seed_norm, 1e-8)
+        seed_latent = hyp.expmap0(
+            seed_latent.squeeze() * init_scale, curvature,
+        ).unsqueeze(0)
+    else:
+        target_init_norm = 0.5 * ball_radius
+        seed_norm = seed_latent.squeeze().norm().item()
+        if seed_norm > 0:
+            seed_latent = seed_latent * (target_init_norm / seed_norm)
+
+    # Isolated RNGs
+    mut_rng = torch.Generator()
+    mut_rng.manual_seed(condition_seed)
+    task_rng = random.Random(condition_seed + 7)
+
+    # Create initial population
+    population = [Candidate(latent=seed_latent.clone(), curvature=curvature)]
+    for _ in range(evo.population_size - 1):
+        noise = _make_noise(seed_latent.shape, evo.noise_scale, dim, mut_rng, device)
+        mutated = _apply_mutation(
+            seed_latent, noise, curvature, ball_radius, geometry,
+        )
+        population.append(Candidate(latent=mutated, curvature=curvature))
+
+    global_best = Candidate(latent=seed_latent.clone(), fitness=-1.0, curvature=curvature)
+
+    for gen in range(evo.generations):
+        gen_tasks = task_rng.sample(
+            train_tasks, min(evo.tasks_per_gen, len(train_tasks)),
+        )
+
+        # Evaluate all candidates
+        for cand in population:
+            if evo.fitness_mode == "accuracy":
+                results = evaluate_binary(cand.latent, gen_tasks, encoder, decode_cfg)
+                cand.fitness = sum(results.values()) / len(results)
+            else:
+                score, _ = evaluate_dense(cand.latent, gen_tasks, encoder, decode_cfg)
+                cand.fitness = score
+
+        # Compute BDs and novelty, update archive
+        archive_bds = archive.get_bds()
+        for cand in population:
+            bd = behavior.compute(cand.latent.squeeze(), generation=gen)
+            nov_score = novelty.compute_novelty(bd.vector, archive_bds)
+            qd_score = combine_fitness_novelty(
+                cand.fitness, nov_score, alpha=qd_params.novelty_weight,
+            )
+            archive.try_add(
+                cand.latent, bd.vector, cand.fitness, qd_score, gen,
+            )
+            # Refresh archive BDs for next candidate
+            archive_bds = archive.get_bds()
+
+        gen_best = max(population, key=lambda c: c.fitness)
+        if gen_best.fitness > global_best.fitness:
+            global_best = Candidate(
+                latent=gen_best.latent.clone(),
+                fitness=gen_best.fitness,
+                curvature=gen_best.curvature,
+            )
+
+        # Also check archive's best
+        archive_best = archive.get_best(1)
+        if archive_best and archive_best[0].fitness > global_best.fitness:
+            global_best = Candidate(
+                latent=archive_best[0].latent.clone(),
+                fitness=archive_best[0].fitness,
+                curvature=curvature,
+            )
+
+        fitnesses = [c.fitness for c in population]
+        archive_stats = archive.get_statistics()
+        curve_entry = {
+            "gen": gen + 1,
+            "best": max(fitnesses),
+            "mean": sum(fitnesses) / len(fitnesses),
+            "min": min(fitnesses),
+            "archive_size": archive_stats["size"],
+            "archive_mean_fitness": archive_stats["mean_fitness"],
+            "archive_coverage": archive_stats["coverage"],
+        }
+        fitness_curve.append(curve_entry)
+
+        # Parent selection: sample from archive if populated, else elite
+        if len(archive) >= 2:
+            parent_entries = archive.sample_diverse(max(2, evo.population_size // 2))
+            parent_latents = [e.latent for e in parent_entries]
+        else:
+            population.sort(key=lambda c: c.fitness, reverse=True)
+            parent_latents = [c.latent for c in population[:max(2, evo.population_size // 2)]]
+
+        # Create next generation from diverse parents
+        new_pop = []
+        for lat in parent_latents:
+            new_pop.append(Candidate(latent=lat.clone(), curvature=curvature))
+        while len(new_pop) < evo.population_size:
+            parent_lat = parent_latents[task_rng.randint(0, len(parent_latents) - 1)]
+            noise = _make_noise(
+                parent_lat.shape, evo.noise_scale, dim, mut_rng, device,
+            )
+            mutated = _apply_mutation(
+                parent_lat, noise, curvature, ball_radius, geometry,
+            )
+            new_pop.append(Candidate(latent=mutated, curvature=curvature))
+
+        population = new_pop
+
+        print(
+            f"  [QD GEN {gen+1}] best={curve_entry['best']:.3f}"
+            f" mean={curve_entry['mean']:.3f}"
+            f" archive={archive_stats['size']}",
+            flush=True,
+        )
+
+    return global_best.latent, fitness_curve
+
+
 # =====================================================================
 # Statistics
 # =====================================================================
@@ -948,6 +1129,9 @@ class ExperimentCondition:
     name: str
     decode_cfg: DecodeConfig
     evolve: bool = True
+    use_surrogate: bool = False  # Active Inference surrogate screening
+    use_qd: bool = False  # Quality-Diversity archive evolution
+    qd_params: Optional[QDParams] = None
 
 
 @dataclass
@@ -1037,13 +1221,47 @@ def run_experiment(
                 res = evaluate_binary(no_evo_lat, test_tasks, encoder, cond.decode_cfg)
             else:
                 # Evolved condition
-                print("Evolving...", flush=True)
-                evolved, curve = run_evolution(
-                    encoder, train_tasks, seed_latent.clone(),
-                    evo=evo,
-                    decode_cfg=cond.decode_cfg,
-                    condition_seed=condition_seed,
-                )
+                if cond.use_qd:
+                    print("Evolving (QD archive)...", flush=True)
+                    evolved, curve = run_qd_evolution(
+                        encoder, train_tasks, seed_latent.clone(),
+                        evo=evo,
+                        decode_cfg=cond.decode_cfg,
+                        condition_seed=condition_seed,
+                        qd_params=cond.qd_params,
+                    )
+                elif cond.use_surrogate:
+                    surrogate = ActiveInferenceSurrogate(
+                        latent_dim=seed_latent.squeeze().numel(),
+                        curvature=evo.curvature,
+                        seed=condition_seed + 999,
+                    )
+                    evo_with_surr = EvolutionParams(
+                        generations=evo.generations,
+                        population_size=evo.population_size,
+                        tasks_per_gen=evo.tasks_per_gen,
+                        noise_scale=evo.noise_scale,
+                        curvature=evo.curvature,
+                        fitness_mode=evo.fitness_mode,
+                        use_surrogate=True,
+                        surrogate_expansion=evo.surrogate_expansion,
+                    )
+                    print("Evolving (with surrogate)...", flush=True)
+                    evolved, curve = run_evolution(
+                        encoder, train_tasks, seed_latent.clone(),
+                        evo=evo_with_surr,
+                        decode_cfg=cond.decode_cfg,
+                        condition_seed=condition_seed,
+                        surrogate=surrogate,
+                    )
+                else:
+                    print("Evolving...", flush=True)
+                    evolved, curve = run_evolution(
+                        encoder, train_tasks, seed_latent.clone(),
+                        evo=evo,
+                        decode_cfg=cond.decode_cfg,
+                        condition_seed=condition_seed,
+                    )
                 all_fitness_curves[cond.name].append(curve)
 
                 print(f"[{cond.name.upper()}] Testing...", flush=True)
