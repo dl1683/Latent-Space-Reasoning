@@ -111,6 +111,36 @@
   - Result snapshot (`distilgpt2`, 2 queries, 2 repeats): quality delta `0.0`, evaluation reduction `~15.4%` (`6.5 -> 5.5` median trial evals), end-to-end latency reduction `~7.4%`.
 - Updated non-tiny confirmation to use the repeat-stabilized result as primary reference.
 
+## 2026-03-03 (evening) — V15b Results, No-Think Discovery, Sweet-Spot Pivot
+
+### V15b Completed (accuracy-based fitness, geometry isolation)
+- Added `--no-think` and `--max-new-tokens` CLI flags to harness, V15, and sensitivity scripts.
+- V15b results (no-think, 128 tokens): baseline 72%, Euclidean 68%, Hyperbolic 68%.
+- **Geometry doesn't matter** — identical results for both geometries (concluded).
+- **Local evolution hurts** — even with accuracy fitness, noise=0.1 mutations degrade performance.
+- Evolution fitness curves collapse in gen 2 then partially recover (both geometries identical pattern).
+
+### No-Think Landscape is FLAT (critical finding)
+- Ran sensitivity with --no-think: 9/20 latents before CUDA error.
+- **Range: 4%** (68-72%) vs **32%** with thinking mode (64-96%).
+- **Chain-of-thought IS the steering mechanism**. Without it, soft prompts barely affect accuracy.
+- Soft prompts influence the reasoning chain, not direct computation.
+- Implication: must use thinking mode for evolution despite ~10x slower per call.
+
+### Sweet-Spot Sensitivity (RUNNING)
+- Launched sensitivity on sweet_spot difficulty (~60% baseline) with thinking mode.
+- 10 latents, 25 tasks, max_new_tokens=1024.
+- Hypothesis: if 32% range persists at 60% baseline, random search gives 20%+ improvements.
+- Estimated completion: ~5 hours.
+
+### Updated Research Direction
+- Geometry question CONCLUDED: Euclidean = Hyperbolic under same conditioning.
+- Focus shifted to: search radius (global vs local), task difficulty, and search algorithms.
+- V17/V18 deferred until global search is validated (they use local mutations which will fail).
+- Commits: fa6559b, d5a2fcc.
+
+---
+
 ## 2026-03-03 — Accuracy Fitness, V17/V18 Runners, Entropy Cleanup
 - Replaced dense_score with accuracy-based fitness (binary correct/incorrect).
 - Added nested expression task generator and calibration mode.
