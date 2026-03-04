@@ -5,6 +5,38 @@ Only Codex-validated conclusions are stated as "confirmed."
 
 ---
 
+## No-Think Sensitivity (2026-03-03) — LANDSCAPE IS FLAT WITHOUT THINKING
+
+**Purpose:** Test whether the exploitable landscape persists when Qwen3 thinking mode is disabled (--no-think). This determines whether chain-of-thought is the mechanism through which soft prompts influence accuracy.
+**Config:** 20 latents (9 completed before CUDA error), 25 easy_nested tasks, --no-think --max-new-tokens 128, Qwen3-4B Q4
+**Script:** `python experiments/run_latent_sensitivity.py --task-type nested --difficulty easy_nested --n-latents 20 --no-think --max-new-tokens 128`
+
+### Results
+
+| Metric | With Thinking | Without Thinking |
+|--------|--------------|-----------------|
+| Baseline | 92% | 72% |
+| Best latent | 96% | 72% |
+| Worst latent | 64% | 68% |
+| Range | **32%** | **4%** |
+| Time per call | ~60-120s | ~8-12s |
+
+### What We Learned
+1. **Chain-of-thought IS the steering mechanism** — without it, all latents produce nearly identical accuracy
+2. **No-think landscape is flat** — 4% range (not exploitable) vs 32% with thinking
+3. **Soft prompts influence reasoning chains, not direct computation** — the <think> block is where conditioning has its effect
+4. **No-think is ~10x faster** but provides no exploitable landscape for evolution
+5. **Must use thinking mode for evolution experiments** — there's no shortcut
+
+### Implication
+All evolution experiments must use thinking mode (max_new_tokens=1024) despite being ~10x slower per call. Optimize via fewer calls (smaller population, fewer tasks per gen), not by disabling thinking.
+
+### Artifacts
+- Partial results (CUDA error after 9/20 latents): not saved as JSON
+- Ledger entry: sensitivity-nothink-flat
+
+---
+
 ## V15b: Accuracy Fitness Geometry Isolation (2026-03-03) — LOCAL EVOLUTION FAILS
 
 **Purpose:** Re-run V15 geometry isolation with accuracy-based fitness (fixing Goodhart's Law from V15a where dense_score was used). Tests whether hyperbolic vs Euclidean mutation geometry matters when fitness correctly tracks task accuracy.

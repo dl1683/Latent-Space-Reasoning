@@ -1,41 +1,33 @@
 # Task Board
 
 ## Doing
-- [ ] V15b: Geometry isolation with accuracy-based fitness (RUNNING NOW - attempt 3)
-- [ ] Analyze V15b results with LLM-as-judge (pending completion)
+- [ ] Random search baseline: 20 latents, no-think, easy_nested (RUNNING)
 
 ## Todo (Priority Order)
-- [ ] Run V17 diagnostic: Active Inference surrogate ablation
-- [ ] Run V18 diagnostic: QD archive vs elitist selection
-- [ ] Test sweet_spot difficulty (~60% baseline) for more room to improve
-- [ ] V19: Physarum-bioelectric hybrid search network
-- [ ] Mutation operator ablation: Gaussian noise vs CMA-ES vs mixture-curvature
+- [ ] Large-noise evolution: test noise_scale=1.0 and 2.0 (search radius fix)
+- [ ] CMA-ES diagnostic: learned covariance for global search
+- [ ] If global search works: re-run V17 (surrogate) and V18 (QD) with large noise
+- [ ] Sweet-spot difficulty (~60% baseline) for even more room to improve
 - [ ] Expand conditioning comparison to non-Qwen model families
 
 ## Done (Recent)
-- [x] Repo entropy cleanup: -18,800 lines deleted (50 dead files + 12 stale docs)
+- [x] V15b: accuracy fitness geometry isolation -- CONCLUDED
+  - Evolution still hurts (-4%), geometry doesn't matter (68% = 68%)
+  - Root cause: local search radius too small (noise=0.1 in 2560d space)
+- [x] Add --no-think and --max-new-tokens CLI flags to harness + runners
+- [x] Repo entropy cleanup: -19,400 lines deleted (68 dead files)
 - [x] Robustness fixes: empty population guards, broader exception handling (8 new tests)
 - [x] Literature review: all 5 components validated by 2025-2026 papers
 - [x] V17 experiment runner: Active Inference surrogate ablation
 - [x] V18 experiment runner: QD archive evolution with DNS
-- [x] Wire surrogate + QD into ExperimentCondition and run_experiment
-- [x] run_qd_evolution() with DNS archive + novelty scoring (harness.py)
 - [x] Replace dense_score with accuracy-based fitness (the Goodhart fix)
 - [x] STRONGLY EXPLOITABLE: 32% accuracy range, p=0.006 (sensitivity analysis)
-- [x] Cross-model conditioning comparison (0.6B/4B/8B/14B x 20 questions x 3 conditions)
-- [x] V15a geometry isolation diagnostic (hard difficulty) -- evolution HURT
-- [x] Unified experiment harness (harness.py + decode subpackage)
-- [x] Algorithmic frontier (CMA-ES, mixture curvature, Karcher crossover)
-
-## Done (Historical)
-- [x] V1-V10 experiment series (see experiments/EXPERIMENTS.md)
-- [x] Autonomy scaffolding, AIM-v1 framework
 
 ## Key Findings
-- Accuracy-based fitness is the critical fix for Goodhart's Law
-- Landscape exploitability: 32% range across random latents (p=0.006)
-- Novel research combo: QD + Poincare + Active Inference (confirmed novel March 2026)
-- Each component validated independently in 2025-2026 literature
+- Local evolution can't exploit 32% global range (V15b: -4% both geometries)
+- Hyperbolic geometry = Euclidean under same conditioning (concluded)
+- Accuracy-based fitness fixes Goodhart but doesn't fix search radius
+- Good latents exist but are FAR apart -- need global search
 
 ## Test Suite: 342 tests passing
 - test_harness.py: 54 (7 surrogate + 4 QD + 8 robustness)
