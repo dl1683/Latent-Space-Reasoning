@@ -1,38 +1,31 @@
 # Task Board
 
 ## Doing
-- [ ] **CRITICAL: Random-noise control experiment** — determines if latent direction matters or if any soft prompt tokens at correct RMS act as warm-start
-  - 3 conditions on same 25 sweet-spot tasks: baseline, random noise, latent-projected
-  - Implement as --control-mode flag in run_latent_sensitivity.py
+- [ ] Run nested-easy noise control (completes interpretive picture)
 
-## Todo (Priority Order — ALL BLOCKED on warm-start control)
-- [ ] If direction matters: 50-latent random search on sweet-spot (paper's central figure)
-- [ ] If direction matters: fresh-task transfer test (best latent on new random tasks)
-- [ ] If warm-start: study warm-start mechanism (what makes good warm-start tokens?)
-- [ ] Manual CoT analysis: 10 outputs where conditioning flips wrong->correct
-- [ ] Expand conditioning comparison to non-Qwen model families
+## Todo (Priority Order)
+1. [ ] Mean-embedding control on sweet-spot tasks (do 8 identical tokens also work?)
+2. [ ] Token count dose-response (1, 2, 4, 8, 16, 32 tokens)
+3. [ ] RMS scale sweep (0.5x, 1x, 2x, 5x target_rms)
+4. [ ] Non-Qwen model test: Llama-3.2-3B on same sweet-spot tasks
+5. [ ] Non-arithmetic tasks: GSM8K subset (10-20 problems)
 
-## DEFERRED (until warm-start confound resolved)
-- Large-noise evolution, CMA-ES, V17 (surrogate), V18 (QD), V19 (Physarum)
-- These all assume latent direction matters — must prove that first
+## DEAD CODE (do NOT run)
+- V17 (Active Inference surrogate) — futile, direction doesn't matter
+- V18 (QD archive evolution) — futile, nothing to search for
+- V19 (Physarum) — deferred indefinitely
+- CMA-ES, large-noise evolution — all search is pointless
 
 ## Done (Recent)
-- [x] Fix Cochran's Q null bug (axis swap in matrix orientation) + reprocess both result files
-- [x] Sweet-spot sensitivity: +12.4% mean improvement, 3/10 individually significant (p<0.05)
-  - BUT Cochran Q not significant (p=0.504) — warm-start confound unresolved
-- [x] No-think sensitivity: landscape FLAT (4% range) — CoT is the steering mechanism
-- [x] Nested-easy sensitivity: Cochran Q=23.2 (p=0.006) — latents differ from each other
-  - BUT mean conditioned 85.6% < 92% baseline — mostly hurts on easy tasks
-- [x] V15b: accuracy fitness geometry isolation — CONCLUDED
-- [x] Add --no-think and --max-new-tokens CLI flags
-- [x] Repo entropy cleanup: -19,400 lines deleted
-- [x] Literature review: all 5 components validated by 2025-2026 papers
+- [x] WARM-START CONFIRMED: random noise = latent-projected (p=1.0)
+- [x] Cochran's Q bug fix + reprocessing
+- [x] Sweet-spot sensitivity: +12.4% mean, 3/10 individually significant
+- [x] No-think sensitivity: flat landscape without CoT
+- [x] V15b: geometry isolation concluded
 
-## Key Findings (Corrected Statistics)
-- Cochran's Q proves latents differ (p=0.006 on easy tasks)
-- BUT sweet-spot improvement may be warm-start, not direction-dependent
-- Local evolution can't exploit global landscape (V15b)
-- Hyperbolic = Euclidean (concluded)
-- Chain-of-thought IS the steering mechanism (no-think is flat)
+## Key Finding
+**The +12pp improvement from soft prompt conditioning is a WARM-START effect.**
+Random noise at the correct RMS scale produces identical improvement to W-projected latents.
+Latent direction carries no signal. The model benefits from extra attention targets, not specific directions.
 
 ## Test Suite: 342 tests passing

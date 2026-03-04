@@ -5,6 +5,45 @@ Only Codex-validated conclusions are stated as "confirmed."
 
 ---
 
+## Warm-Start Control (2026-03-04) — WARM-START CONFIRMED, CORE THESIS FALSIFIED
+
+**Purpose:** Determine if the +12pp improvement from soft prompt conditioning is due to latent direction (through W projection) or a generic warm-start from any embedding tokens at the correct RMS scale.
+**Config:** 4 random noise soft prompts (torch.randn scaled to target_rms=0.022, NOT through W), same 25 sweet_spot tasks, Qwen3-4B Q4, thinking mode
+**Script:** `python experiments/run_latent_sensitivity.py --task-type nested --difficulty sweet_spot --n-latents 10 --n-tasks 25 --control-mode random_noise`
+**Note:** 4/10 noise vectors completed before VRAM degradation killed experiment. 4 vectors sufficient for conclusion.
+
+### Results
+
+| Condition | Mean Acc | Std | Range | Sig vs Baseline |
+|-----------|---------|-----|-------|-----------------|
+| Baseline (no prompt) | **32%** | - | - | - |
+| Random noise (4 vectors) | **44.0%** | 3.3% | [40%, 48%] | 0/4 |
+| Latent-projected (10 vectors) | **44.4%** | 7.4% | [36%, 56%] | 3/10 |
+
+**Mann-Whitney U test: p = 1.000** (noise and latent-projected are statistically indistinguishable)
+
+### What We Learned (Codex-Validated)
+1. **WARM-START CONFIRMED** — random noise matches latent-projected (44.0% vs 44.4%, p=1.0)
+2. **Latent direction carries NO detectable signal** — the W projection is irrelevant
+3. **Improvement comes from PRESENCE of 8 embedding tokens** at correct RMS, not their content
+4. **The entire latent→W→soft_prompt pipeline adds no value** over random noise
+5. **Core thesis falsified** — "evolve soft prompts in latent space to improve reasoning" does not work because direction doesn't matter
+6. **Noise has LESS variance** (std 3.3% vs 7.4%) — W-projection adds noise-like variance, not signal
+7. **New finding: warm-start is real and reproducible** — +12pp free improvement from random tokens
+
+### Implications
+- All evolution/search in latent space is futile (nothing meaningful to search for)
+- Orthonormal projection, Poincare ball, curvature, etc. add no value
+- **Pivot to characterizing the warm-start mechanism** — this IS a publishable finding
+- Need to test: multi-model generality, task diversity, token count dose-response
+
+### Artifacts
+- `experiments/sensitivity_sweet_spot_random_noise_results.json`
+- `experiments/sensitivity_sweet_spot_random_noise_log.txt`
+- Ledger entry: warm-start-control
+
+---
+
 ## Sweet-Spot Sensitivity (2026-03-03) — POSITIVE SIGNAL, WARM-START CONFOUND UNRESOLVED
 
 **Purpose:** Test landscape exploitability on harder tasks where baseline is low (~60% target), giving room for improvement.

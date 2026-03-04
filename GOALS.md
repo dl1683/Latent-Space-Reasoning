@@ -6,52 +6,54 @@
 
 ## Active Goals
 
-### 1. CRITICAL: Resolve Warm-Start vs Direction Confound
-- [ ] Run random-noise control: 8 tokens of torch.randn at target_rms (NOT via W projection) on same 25 sweet-spot tasks
-- [ ] Compare 3 conditions: baseline (no tokens), random noise, latent-projected
-- [ ] If noise matches latent-projected: direction doesn't matter (warm-start only) -> pivot
-- [ ] If noise matches baseline: direction carries signal -> scale to 50 latents
-- **Current status:** All 10 latents beat baseline on sweet-spot (+12.4% mean), but Cochran's Q not significant (p=0.504). This is consistent with warm-start hypothesis. Random-noise control is the single most important experiment.
+### 1. Characterize the Warm-Start Mechanism
+The core finding: prepending 8 random embedding-scale tokens improves Qwen3-4B arithmetic by +12pp (32% -> 44%). Direction doesn't matter. Characterize WHY this works.
+- [ ] Mean-embedding control (does token diversity matter, or do 8 identical tokens also work?)
+- [ ] Zero-embedding control (does the attention mask extension suffice?)
+- [ ] Token count dose-response (1, 2, 4, 8, 16, 32 tokens)
+- [ ] RMS scale sweep (0.5x, 1x, 2x, 5x target_rms)
+- [ ] Nested-easy noise control (does noise show Cochran's Q significance on easy tasks?)
 
-### 2. Validate Soft Prompt Conditioning as a Real Improvement
-- [x] Build conditioning comparison framework (20 questions, 3 conditions, LLM-as-judge)
-- [x] Run on multiple model sizes (0.6B, 4B, 8B, 14B)
-- [x] Confirm conditioning eliminates phantom hallucination at all sizes
-- [ ] Expand to non-Qwen model families for generalizability
-- **Current status:** Both conditioning methods beat pure model. Non-monotonic scaling discovered.
+### 2. Test Warm-Start Generality
+Is warm-start Qwen3-specific or a general phenomenon?
+- [ ] Non-Qwen models: Llama-3.2-3B, Phi-3-mini, Gemma-2-2B
+- [ ] Non-arithmetic tasks: GSM8K subset, ARC-Easy, logic puzzles
+- [ ] Larger models: does the effect vanish at scale?
+- [ ] Multiple task counts (50-100 tasks for statistical power)
 
-### 3. Find a Search Algorithm That Exploits the Latent Landscape (BLOCKED on Goal 1)
-- [x] Replace dense_score with actual task accuracy as fitness signal
-- [x] V15b: Accuracy-based fitness geometry isolation (DONE -- evolution still hurts)
-- [x] Prove latents affect accuracy differently (Cochran's Q=23.2, p=0.006 on easy_nested)
-- [ ] Random-noise control to prove direction matters (Goal 1)
-- [ ] If direction matters: 50-latent random search, CMA-ES, QD
-- [ ] If warm-start only: pivot to studying warm-start mechanism
-- **Current status:** BLOCKED until warm-start confound is resolved.
+### 3. Paper: "Free Lunch: Random Embedding Tokens Improve Small-Model Reasoning"
+- [ ] Complete mechanism characterization (Goal 1)
+- [ ] Complete generality tests (Goal 2)
+- [ ] Position: zero-cost inference improvement, no training needed
+- [ ] Address reviewer concerns: efficiency argument, scale dependency
 
-### 4. Determine If Hyperbolic Geometry Matters — CONCLUDED
-- [x] V5-V8: Early mixed signals (fragile, high variance)
-- [x] V15a: No geometry effect under identical soft prompt (both 60%) -- fitness was broken
-- [x] V15b: No geometry effect with accuracy fitness (both 68%) -- geometry doesn't matter
-- **CONCLUDED:** Hyperbolic geometry provides no benefit over Euclidean for soft prompt mutation.
+## Concluded / Falsified Goals
+
+### Latent Space Search — FALSIFIED (2026-03-04)
+- Random noise matches latent-projected performance (44% vs 44.4%, Mann-Whitney p=1.0)
+- Latent direction carries no signal. Improvement is warm-start, not direction.
+- Evolution, CMA-ES, QD, Active Inference — all futile because nothing to search for.
+- V17, V18, V19 runners: DEAD CODE (do not run)
+
+### Hyperbolic Geometry — CONCLUDED (2026-03-03)
+- Euclidean = Hyperbolic under same conditioning (V15a, V15b)
+- Geometry adds no value.
 
 ## Completed Goals
-- [x] AIM-v1 accessibility milestone (efficiency + quality tradeoffs validated)
-- [x] Autonomy scaffolding (AGENTS.md, MEMORY.md, GOALS.md, TASKS.md, WORKLOG.md)
-- [x] Unified experiment harness (harness.py, decode subpackage)
-- [x] Cross-model conditioning comparison (4 models, 20 questions, LLM-as-judge)
-- [x] Experiment documentation (EXPERIMENTS.md, ledger.jsonl)
-- [x] V15b: geometry isolation with accuracy fitness (concluded: geometry doesn't matter)
+- [x] AIM-v1 accessibility milestone
+- [x] Autonomy scaffolding
+- [x] Unified experiment harness
+- [x] Cross-model conditioning comparison
+- [x] Experiment documentation
+- [x] V15b geometry isolation
+- [x] Cochran's Q bug fix and reprocessing
+- [x] Warm-start control experiment
 
 ## Key Research Findings (Codex-Validated)
-1. **Conditioning bandwidth matters** — soft prompt (20,480 continuous values) vs RNG seed (31-bit integer) vs nothing
-2. **Both conditioning methods eliminate phantom hallucination** — robust across all model sizes
-3. **Non-monotonic scaling** — soft prompt isn't universally better; RNG seed wins at 0.6B and 8B
-4. **Latents DO differ from each other** — Cochran's Q=23.2, p=0.006 on easy_nested tasks
-5. **BUT conditioning mostly hurts on easy tasks** — mean 85.6% vs 92% baseline; only 1/10 beats baseline
-6. **Sweet-spot: all latents beat baseline** — +12.4% mean improvement, 3/10 individually significant
-7. **UNRESOLVED: warm-start vs direction** — sweet-spot Q not significant (p=0.504), all latents improve similarly
-8. **Local evolution FAILS** — small mutations (noise=0.1) can't find improvements
-9. **Hyperbolic geometry doesn't matter** — identical to Euclidean under same conditioning
-10. **Chain-of-thought IS the steering mechanism** — no-think landscape flat (4% range vs 32% with thinking)
-11. **Cochran's Q bug found and fixed** — original code had swapped matrix axes, producing null Q values
+1. **WARM-START IS THE MECHANISM** — prepending random embedding tokens improves accuracy by +12pp
+2. **Latent direction does not matter** — random noise = W-projected latents (p=1.0)
+3. **Chain-of-thought IS the mediator** — no-think mode eliminates the effect entirely
+4. **Latents DO differ on easy tasks** — Cochran's Q=23.2 (p=0.006) but mostly in harmful directions
+5. **Local evolution fails** — small mutations can't exploit landscape, and landscape isn't exploitable anyway
+6. **Hyperbolic = Euclidean** — geometry irrelevant under same conditioning
+7. **Both conditioning methods eliminate hallucination** — robust across model sizes

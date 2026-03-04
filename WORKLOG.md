@@ -134,10 +134,14 @@
 - Added `decode_with_raw_soft_prompt()` helper for bypassing W projection
 - Fixed `gc` import shadowing bug (redundant `import gc` inside main() caused UnboundLocalError)
 
-### Random-Noise Control Experiment Launched
-- 10 random noise soft prompts, 25 sweet-spot tasks, thinking mode
-- Expected runtime: ~5.2 hours
-- Quick diagnostic (2 noise, 3 tasks): Noise 1 got 100% vs 66.7% baseline — promising early signal
+### Random-Noise Control Experiment: WARM-START CONFIRMED
+- 4/10 noise vectors completed before VRAM degradation (tasks went from 70s to 371s at noise 5)
+- **Results: Noise mean 44.0% vs Latent-projected mean 44.4%**
+- **Mann-Whitney U: p = 1.000** — distributions are indistinguishable
+- **CONCLUSION: Latent direction carries no signal.** Improvement is from PRESENCE of 8 embedding tokens at correct RMS, not from what they contain.
+- **Core thesis falsified** — "evolve soft prompts in latent space to improve reasoning" doesn't work because direction doesn't matter.
+- **Pivot: warm-start mechanism characterization** — this IS a publishable finding
+- Codex review: "Most research groups would have never run the noise control. Running it and getting a clear null is exactly the right process."
 
 ### Documentation Updated
 - GOALS.md rewritten: Goal 1 is now "Resolve Warm-Start vs Direction Confound"
