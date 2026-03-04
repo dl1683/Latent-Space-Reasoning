@@ -16,6 +16,7 @@ Design:
 
 from __future__ import annotations
 
+import gc
 import json
 import math
 import random
@@ -705,7 +706,16 @@ def main():
         task_results = []
         for ti, task in enumerate(tasks):
             t0 = time.time()
-            resp = decode_latent(encoder, latent, task.prompt, cfg)
+            try:
+                resp = decode_latent(encoder, latent, task.prompt, cfg)
+            except Exception as e:
+                print(f"    [{ti + 1}/{n_tasks}] {task.task_id}: ERROR {type(e).__name__}: {e}")
+                torch.cuda.empty_cache()
+                gc.collect()
+                try:
+                    resp = decode_latent(encoder, latent, task.prompt, cfg)
+                except Exception:
+                    resp = "ERROR"
             elapsed = time.time() - t0
             correct = verify_answer(resp, task.correct_answer)
             task_results.append({
@@ -732,6 +742,11 @@ def main():
             "n_total": n_tasks,
             "task_results": task_results,
         })
+
+        # Per-latent cleanup to prevent VRAM accumulation
+        gc.collect()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
 
     phase2_elapsed = time.time() - phase2_start
 
