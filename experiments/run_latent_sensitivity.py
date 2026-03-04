@@ -727,7 +727,6 @@ def main():
 
         # Cleanup
         del encoder
-        import gc
         gc.collect()
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
@@ -1071,7 +1070,6 @@ def main():
 
     # Cleanup
     del encoder
-    import gc
     gc.collect()
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
