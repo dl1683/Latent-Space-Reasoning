@@ -45,6 +45,80 @@ from latent_reasoning.decode.projection import make_row_orthonormal_W
 from latent_reasoning.decode.steering import make_steer_projection
 
 
+def decode_with_raw_soft_prompt(
+    encoder: LLMEncoder,
+    soft_prompt: torch.Tensor,
+    query: str,
+    max_new_tokens: int = 1024,
+    temperature: float = 0.0,
+    enable_thinking: bool = True,
+) -> str:
+    """Decode using a pre-built soft prompt tensor (bypasses latent projection).
+
+    Used for control experiments where soft prompt tokens are generated
+    directly (e.g., random noise, mean embeddings) rather than projected
+    from a latent vector via W.
+    """
+    system_msg = "Answer to the best of your ability."
+    user_msg = query or ""
+
+    if hasattr(encoder.tokenizer, "apply_chat_template"):
+        messages = [
+            {"role": "system", "content": system_msg},
+            {"role": "user", "content": user_msg},
+        ]
+        try:
+            template_kwargs = dict(tokenize=False, add_generation_prompt=True)
+            if not enable_thinking:
+                template_kwargs["enable_thinking"] = False
+            prompt = encoder.tokenizer.apply_chat_template(
+                messages, **template_kwargs,
+            )
+        except Exception:
+            prompt = (
+                f"<|im_start|>system\n{system_msg}<|im_end|>\n"
+                f"<|im_start|>user\n{user_msg}<|im_end|>\n"
+                f"<|im_start|>assistant\n"
+            )
+    else:
+        prompt = f"System: {system_msg}\n\nUser: {user_msg}\n\nAssistant: "
+
+    inputs = encoder.tokenizer(prompt, return_tensors="pt")
+    inputs = {k: v.to(encoder._device) for k, v in inputs.items()}
+
+    sp = soft_prompt.to(encoder.model.dtype).to(encoder._device)
+    with torch.no_grad():
+        text_embeds = encoder.model.get_input_embeddings()(inputs["input_ids"])
+        combined_embeds = torch.cat([sp, text_embeds], dim=1)
+
+        soft_mask = torch.ones(
+            1, sp.size(1),
+            dtype=inputs["attention_mask"].dtype,
+            device=encoder._device,
+        )
+        combined_mask = torch.cat([soft_mask, inputs["attention_mask"]], dim=1)
+
+        generate_kwargs = dict(
+            inputs_embeds=combined_embeds,
+            attention_mask=combined_mask,
+            max_new_tokens=max_new_tokens,
+            pad_token_id=encoder.tokenizer.pad_token_id,
+            eos_token_id=encoder.tokenizer.eos_token_id,
+            repetition_penalty=1.2,
+        )
+        if temperature > 0:
+            generate_kwargs["do_sample"] = True
+            generate_kwargs["temperature"] = temperature
+        else:
+            generate_kwargs["do_sample"] = False
+
+        output_ids = encoder.model.generate(**generate_kwargs)
+
+    new_tokens = output_ids[0, :]
+    text = encoder.tokenizer.decode(new_tokens, skip_special_tokens=True)
+    return text.strip()
+
+
 def safe_print(text: str) -> None:
     """Print with ASCII fallback for Windows cp1252 compatibility."""
     try:
@@ -487,6 +561,14 @@ def main():
         help="Disable Qwen3 thinking mode (faster, shorter outputs)")
     parser.add_argument("--max-new-tokens", type=int, default=1024,
         help="Max generation tokens")
+    parser.add_argument(
+        "--control-mode", default="latent_projected",
+        choices=["latent_projected", "random_noise", "mean_embedding"],
+        help="Control mode: latent_projected (normal W projection), "
+             "random_noise (random embeddings at target RMS), "
+             "mean_embedding (mean token embedding repeated)")
+    parser.add_argument("--n-tasks", type=int, default=None,
+        help="Override total number of tasks (for nested/sweet_spot modes)")
     parser.add_argument("--output", default=None)
     args = parser.parse_args()
 
@@ -508,6 +590,9 @@ def main():
             n_medium=args.n_medium,
             n_hard=args.n_hard,
         )
+    # Override task count if requested
+    if args.n_tasks is not None and args.n_tasks < len(tasks):
+        tasks = tasks[:args.n_tasks]
     n_tasks = len(tasks)
 
     run_mode = "CALIBRATE" if args.calibrate else (
@@ -653,19 +738,49 @@ def main():
     print("PHASE 2: Latent sensitivity")
     print(f"{'=' * 40}")
 
-    # Generate random latents (Euclidean, normalized)
-    print(f"Generating {args.n_latents} random latents...")
-    latent_gen = torch.Generator().manual_seed(2024)
-    ball_radius = (1.0 / math.sqrt(0.5)) * 0.95
-    target_norm = 0.5 * ball_radius
+    control_mode = args.control_mode
+    num_soft_tokens = 8
 
-    latents = []
-    for _ in range(args.n_latents):
-        z = torch.randn(1, d_latent, generator=latent_gen)
-        z = z * (target_norm / z.norm())
-        latents.append(z)
+    # Generate control soft prompts or latents based on mode
+    if control_mode == "random_noise":
+        print(f"CONTROL MODE: random_noise")
+        print(f"  Generating {args.n_latents} random noise soft prompts "
+              f"({num_soft_tokens} tokens x {embed_dim}d, target_rms={target_rms:.5f})")
+        noise_gen = torch.Generator().manual_seed(2024)
+        control_soft_prompts = []
+        for _ in range(args.n_latents):
+            sp = torch.randn(1, num_soft_tokens, embed_dim, generator=noise_gen)
+            current_rms = sp.square().mean().sqrt().clamp_min(1e-8)
+            sp = sp * (target_rms / current_rms)
+            control_soft_prompts.append(sp)
 
-    # Decode config: Euclidean conditioning, greedy decoding
+    elif control_mode == "mean_embedding":
+        print(f"CONTROL MODE: mean_embedding")
+        print(f"  Computing mean token embedding and repeating {num_soft_tokens} times")
+        with torch.no_grad():
+            embed_weight = encoder.model.get_input_embeddings().weight
+            mean_emb = embed_weight.float().mean(dim=0, keepdim=True)  # (1, embed_dim)
+            mean_rms = mean_emb.square().mean().sqrt().clamp_min(1e-8)
+            mean_emb = mean_emb * (target_rms / mean_rms)
+            sp = mean_emb.unsqueeze(0).expand(1, num_soft_tokens, embed_dim).clone()
+        control_soft_prompts = [sp] * args.n_latents
+        print(f"  Note: all {args.n_latents} use identical soft prompt (control)")
+
+    else:
+        # Default: latent_projected — generate random latents
+        print(f"Generating {args.n_latents} random latents...")
+        latent_gen = torch.Generator().manual_seed(2024)
+        ball_radius = (1.0 / math.sqrt(0.5)) * 0.95
+        target_norm = 0.5 * ball_radius
+
+        latents = []
+        for _ in range(args.n_latents):
+            z = torch.randn(1, d_latent, generator=latent_gen)
+            z = z * (target_norm / z.norm())
+            latents.append(z)
+        control_soft_prompts = None  # use decode_latent path
+
+    # Decode config (only needed for latent_projected mode)
     decode_mode = (DecodeMode.MULTI_SCALE if args.decode_mode == "multi_scale"
                    else DecodeMode.SOFT_PROMPT)
 
@@ -687,7 +802,7 @@ def main():
         mode=decode_mode,
         W_soft=W,
         embed_dim=embed_dim,
-        num_soft_tokens=8,
+        num_soft_tokens=num_soft_tokens,
         target_rms=target_rms,
         curvature=0.5,
         max_new_tokens=args.max_new_tokens,
@@ -701,19 +816,38 @@ def main():
     sensitivity_results: List[Dict] = []
     phase2_start = time.time()
 
-    for li, latent in enumerate(latents):
-        print(f"\n  --- Latent {li + 1}/{args.n_latents} ---")
+    for li in range(args.n_latents):
+        label = ("Noise" if control_mode == "random_noise"
+                 else "MeanEmb" if control_mode == "mean_embedding"
+                 else "Latent")
+        print(f"\n  --- {label} {li + 1}/{args.n_latents} ---")
         task_results = []
         for ti, task in enumerate(tasks):
             t0 = time.time()
             try:
-                resp = decode_latent(encoder, latent, task.prompt, cfg)
+                if control_soft_prompts is not None:
+                    resp = decode_with_raw_soft_prompt(
+                        encoder, control_soft_prompts[li], task.prompt,
+                        max_new_tokens=args.max_new_tokens,
+                        temperature=0.0,
+                        enable_thinking=not args.no_think,
+                    )
+                else:
+                    resp = decode_latent(encoder, latents[li], task.prompt, cfg)
             except Exception as e:
                 print(f"    [{ti + 1}/{n_tasks}] {task.task_id}: ERROR {type(e).__name__}: {e}")
                 torch.cuda.empty_cache()
                 gc.collect()
                 try:
-                    resp = decode_latent(encoder, latent, task.prompt, cfg)
+                    if control_soft_prompts is not None:
+                        resp = decode_with_raw_soft_prompt(
+                            encoder, control_soft_prompts[li], task.prompt,
+                            max_new_tokens=args.max_new_tokens,
+                            temperature=0.0,
+                            enable_thinking=not args.no_think,
+                        )
+                    else:
+                        resp = decode_latent(encoder, latents[li], task.prompt, cfg)
                 except Exception:
                     resp = "ERROR"
             elapsed = time.time() - t0
@@ -794,8 +928,11 @@ def main():
             for ti, tr in enumerate(sr["task_results"]):
                 binary[li, ti] = 1.0 if tr["correct"] else 0.0
 
-        T_j = binary.sum(axis=0)   # per-task totals
-        T_i = binary.sum(axis=1)   # per-latent totals
+        # Cochran's Q: rows=latents (treatments), cols=tasks (subjects)
+        # T_j = per-treatment (per-latent) totals = sum across tasks
+        # T_i = per-subject (per-task) totals = sum across latents
+        T_j = binary.sum(axis=1)   # per-latent totals (treatments)
+        T_i = binary.sum(axis=0)   # per-task totals (subjects)
         N = binary.sum()
         k = n_l
 
@@ -812,6 +949,27 @@ def main():
             print(f"  Significant at alpha=0.05: {sig}")
         else:
             print("\nCochran's Q: degenerate (all latents identical)")
+
+    # Per-latent binomial tests vs baseline rate
+    binomial_results = []
+    if baseline_accuracy > 0 and baseline_accuracy < 1:
+        from scipy.stats import binomtest
+        print(f"\nPer-latent binomial test (H0: accuracy = baseline {baseline_accuracy:.1%}):")
+        for li, sr in enumerate(sensitivity_results):
+            n_correct = sr["n_correct"]
+            p_val = binomtest(n_correct, n_tasks, baseline_accuracy,
+                              alternative="greater").pvalue
+            acc = sr["accuracy"]
+            sig = "*" if p_val < 0.05 else " "
+            print(f"  L{li}: {acc:.0%} ({n_correct}/{n_tasks}), "
+                  f"p={p_val:.4f} {sig}")
+            binomial_results.append({
+                "latent_idx": li,
+                "accuracy": acc,
+                "n_correct": n_correct,
+                "binomial_p": float(p_val),
+                "significant_05": p_val < 0.05,
+            })
 
     # Per-task variance: which tasks are most sensitive to latent?
     print("\nPer-task sensitivity (tasks where latents disagree):")
@@ -866,6 +1024,7 @@ def main():
         "quantization": args.quantization,
         "task_type": args.task_type,
         "decode_mode": args.decode_mode,
+        "control_mode": control_mode,
         "mode": run_mode,
         "n_latents": args.n_latents,
         "n_tasks": n_tasks,
@@ -883,6 +1042,7 @@ def main():
         "range_accuracy": range_acc,
         "latent_accuracies": accuracies.tolist(),
         "cochrans_q": cochran_q,
+        "binomial_tests": binomial_results,
         "cochrans_p": cochran_p,
         "verdict": verdict,
         "baseline_elapsed_s": baseline_elapsed,
@@ -898,7 +1058,10 @@ def main():
     if args.output:
         out_path = Path(args.output)
     else:
-        out_path = Path(__file__).parent / "latent_sensitivity_results.json"
+        diff_tag = f"_{args.difficulty}" if args.difficulty else ""
+        ctrl_tag = f"_{control_mode}" if control_mode != "latent_projected" else ""
+        out_path = (Path(__file__).parent
+                    / f"sensitivity{diff_tag}{ctrl_tag}_results.json")
 
     with open(out_path, "w") as f:
         json.dump(output, f, indent=2, default=str)

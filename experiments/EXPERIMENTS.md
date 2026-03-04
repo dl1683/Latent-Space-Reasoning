@@ -5,6 +5,42 @@ Only Codex-validated conclusions are stated as "confirmed."
 
 ---
 
+## Sweet-Spot Sensitivity (2026-03-03) — POSITIVE SIGNAL, WARM-START CONFOUND UNRESOLVED
+
+**Purpose:** Test landscape exploitability on harder tasks where baseline is low (~60% target), giving room for improvement.
+**Config:** 10 random Euclidean latents, 25 sweet_spot tasks (2-3 ops, 2-digit x 2-digit), thinking mode, Qwen3-4B Q4
+**Script:** `python experiments/run_latent_sensitivity.py --task-type nested --difficulty sweet_spot --n-latents 10 --n-tasks 25`
+**Runtime:** 5.7 hours (thinking mode)
+
+### Results
+
+| Condition | Accuracy |
+|-----------|----------|
+| Zero-shot baseline | **32%** |
+| L6 (best) | **56%** (p=0.011) |
+| L3, L8 | **52%** (p=0.030) |
+| L9 | 48% (p=0.070) |
+| L2, L4 | 44% |
+| L7 | 40% |
+| L0, L1, L5 | 36% |
+| Mean conditioned | **44.4%** (+12.4%) |
+
+**Cochran's Q = 8.3, p = 0.504** (NOT significant — latents don't differ from each other)
+**3/10 latents individually significant** vs baseline (binomial test, p < 0.05)
+
+### What We Learned
+1. **All 10 latents beat baseline** — conditioning consistently improves accuracy (+4% to +24%)
+2. **3/10 individually significant** — L6 (56%, p=0.011), L3 (52%, p=0.030), L8 (52%, p=0.030)
+3. **Cochran's Q NOT significant** — latents don't differ enough from each other (p=0.504)
+4. **CRITICAL CONFOUND: warm-start effect** — since all latents improve and they don't differ from each other, the improvement may be from ANY soft prompt tokens at correct RMS, not from latent direction
+5. **Must run random-noise control** to distinguish direction signal from generic warm-start
+
+### Artifacts
+- `experiments/sensitivity_sweet_spot_results.json`
+- Ledger entry: sweet-spot-sensitivity
+
+---
+
 ## No-Think Sensitivity (2026-03-03) — LANDSCAPE IS FLAT WITHOUT THINKING
 
 **Purpose:** Test whether the exploitable landscape persists when Qwen3 thinking mode is disabled (--no-think). This determines whether chain-of-thought is the mechanism through which soft prompts influence accuracy.
@@ -72,7 +108,7 @@ The sensitivity analysis (32% range, p=0.006) proves good latents exist globally
 
 ---
 
-## Nested Expression Sensitivity (2026-03-03) — STRONGLY EXPLOITABLE
+## Nested Expression Sensitivity (2026-03-03) — INTER-LATENT VARIANCE CONFIRMED
 
 **Purpose:** Test whether random soft prompt latents produce different accuracy on nested expression tasks (no step-by-step scaffolding).
 **Config:** 10 random Euclidean latents, 25 easy_nested tasks (2-digit arithmetic expressions), greedy decoding, Qwen3-4B Q4
@@ -91,16 +127,17 @@ The sensitivity analysis (32% range, p=0.006) proves good latents exist globally
 | Latent 10 (worst) | **64%** |
 | Mean conditioned | 85.6% |
 
-**Cochran's Q = 23.2, p = 0.0058** (significant at p < 0.01)
+**Cochran's Q = 23.2, p = 0.0058** (significant — latents differ from each other)
+**0/10 latents individually significant vs baseline** (binomial test, all p > 0.05)
+**Mean conditioned BELOW baseline** (85.6% < 92%)
 
 ### What We Learned
-1. **STRONGLY EXPLOITABLE landscape** — 32% range across 10 random latents
-2. **Conditioning CAN improve accuracy** — Latent 1 beats baseline (96% > 92%)
-3. **Different latents fix different failures** — nest_006 (60% correct), nest_004 (20% correct, but L6/L7 fix it!)
+1. **Latents produce different accuracy profiles** — Cochran's Q proves they're not all the same (p < 0.01)
+2. **Variance is predominantly negative** — mean conditioned 85.6% < 92% baseline. Conditioning mostly hurts on easy tasks
+3. **Best latent (96%) is NOT individually significant** — 24/25 vs 23/25 baseline = +1 correct answer (p=0.39)
 4. **Catastrophic latents exist** — L10 drops to 64% (9 additional failures)
-5. **Task-dependent sensitivity** — 13/25 tasks always correct, 3/25 are boundary tasks, 9/25 show moderate sensitivity
-6. **Cochran's Q is statistically significant** — not a fluke; p = 0.0058
-7. **First statistically significant result in the project** — evolution CAN exploit this
+5. **Direction matters for harm** — some directions strongly disrupt reasoning (L10 at 64%)
+6. **High-baseline tasks don't show positive signal** — need harder tasks where there's room for improvement
 
 ### Per-Task Sensitivity (most variable)
 - nest_006: 60% (baseline wrong, conditioning fixes 6/10 times)

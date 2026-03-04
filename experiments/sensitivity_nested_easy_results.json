@@ -264,8 +264,8 @@
     0.92,
     0.64
   ],
-  "cochrans_q": null,
-  "cochrans_p": null,
+  "cochrans_q": 23.2,
+  "cochrans_p": 0.005762432449900046,
   "verdict": "STRONGLY EXPLOITABLE",
   "baseline_elapsed_s": 1272.4592056274414,
   "sensitivity_elapsed_s": 11311.5432138443,
@@ -2477,6 +2477,78 @@
       "task_id": "nest_023",
       "difficulty": "easy_nested",
       "frac_correct": 1.0
+    }
+  ],
+  "binomial_tests": [
+    {
+      "latent_idx": 0,
+      "accuracy": 0.96,
+      "n_correct": 24,
+      "binomial_p": 0.39472143202467547,
+      "significant_05": false
+    },
+    {
+      "latent_idx": 1,
+      "accuracy": 0.8,
+      "n_correct": 20,
+      "binomial_p": 0.9877072888720928,
+      "significant_05": false
+    },
+    {
+      "latent_idx": 2,
+      "accuracy": 0.84,
+      "n_correct": 21,
+      "binomial_p": 0.9548564625799283,
+      "significant_05": false
+    },
+    {
+      "latent_idx": 3,
+      "accuracy": 0.92,
+      "n_correct": 23,
+      "binomial_p": 0.6768332357349855,
+      "significant_05": false
+    },
+    {
+      "latent_idx": 4,
+      "accuracy": 0.88,
+      "n_correct": 22,
+      "binomial_p": 0.8649077715418586,
+      "significant_05": false
+    },
+    {
+      "latent_idx": 5,
+      "accuracy": 0.84,
+      "n_correct": 21,
+      "binomial_p": 0.9548564625799283,
+      "significant_05": false
+    },
+    {
+      "latent_idx": 6,
+      "accuracy": 0.92,
+      "n_correct": 23,
+      "binomial_p": 0.6768332357349855,
+      "significant_05": false
+    },
+    {
+      "latent_idx": 7,
+      "accuracy": 0.84,
+      "n_correct": 21,
+      "binomial_p": 0.9548564625799283,
+      "significant_05": false
+    },
+    {
+      "latent_idx": 8,
+      "accuracy": 0.92,
+      "n_correct": 23,
+      "binomial_p": 0.6768332357349855,
+      "significant_05": false
+    },
+    {
+      "latent_idx": 9,
+      "accuracy": 0.64,
+      "n_correct": 16,
+      "binomial_p": 0.9999886277759169,
+      "significant_05": false
     }
   ]
 }
