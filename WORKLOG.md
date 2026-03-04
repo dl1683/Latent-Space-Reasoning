@@ -111,6 +111,46 @@
   - Result snapshot (`distilgpt2`, 2 queries, 2 repeats): quality delta `0.0`, evaluation reduction `~15.4%` (`6.5 -> 5.5` median trial evals), end-to-end latency reduction `~7.4%`.
 - Updated non-tiny confirmation to use the repeat-stabilized result as primary reference.
 
+## 2026-03-04 — Cochran's Q Bug Fix, Warm-Start Control Experiment
+
+### Cochran's Q Bug Found and Fixed
+- **Bug**: T_j and T_i axes were swapped in Cochran's Q computation (sum axis 0 vs 1).
+- Caused denominator < 0, resulting in null Q values in both sensitivity result files.
+- Fixed by swapping axis assignments (T_j = per-latent, T_i = per-task).
+- Added per-latent binomial tests vs baseline rate.
+
+### Corrected Results Change the Narrative
+- **Nested-easy**: Q=23.2, p=0.006 (confirmed significant). BUT 0/10 latents individually beat baseline.
+  Mean conditioned 85.6% BELOW 92% baseline. Signal is inter-latent variance, not improvement.
+- **Sweet-spot**: Q=8.3, p=0.504 (NOT significant). All 10 beat baseline, 3/10 individually significant.
+  BUT latents don't differ from each other enough → warm-start confound.
+- The "32% exploitable range" on nested-easy is mostly DOWNWARD variance (catastrophic latents).
+- Sweet-spot improvement (+12.4% mean) may be from ANY soft prompt tokens at correct RMS scale.
+
+### Codex Review: Random-Noise Control is Priority 1
+- If random noise matches latent-projected: direction doesn't matter (warm-start only) → pivot
+- If random noise matches baseline: direction carries genuine signal → scale up
+- Added `--control-mode` flag to sensitivity script: `latent_projected`, `random_noise`, `mean_embedding`
+- Added `decode_with_raw_soft_prompt()` helper for bypassing W projection
+- Fixed `gc` import shadowing bug (redundant `import gc` inside main() caused UnboundLocalError)
+
+### Random-Noise Control Experiment Launched
+- 10 random noise soft prompts, 25 sweet-spot tasks, thinking mode
+- Expected runtime: ~5.2 hours
+- Quick diagnostic (2 noise, 3 tasks): Noise 1 got 100% vs 66.7% baseline — promising early signal
+
+### Documentation Updated
+- GOALS.md rewritten: Goal 1 is now "Resolve Warm-Start vs Direction Confound"
+- TASKS.md rewritten: all evolution experiments DEFERRED until control result
+- EXPERIMENTS.md: corrected nested-easy narrative, added sweet-spot entry
+- Ledger updated with corrected metrics and sweet-spot entry
+
+### Commits
+- 943466b: Fix Cochran's Q axis swap, add control mode, update docs
+- 701673e: Fix gc import shadowing bug
+
+---
+
 ## 2026-03-03 (evening) — V15b Results, No-Think Discovery, Sweet-Spot Pivot
 
 ### V15b Completed (accuracy-based fitness, geometry isolation)
