@@ -26,23 +26,46 @@ Only Codex-validated conclusions are stated as "confirmed."
 - Consistent with attention perturbation/stochastic resonance
 - 1-token captures 89% → threshold/trigger effect, not cumulative
 
+### Qualitative Output Analysis (Codex CLI Reviewed)
+**Recovery pattern** (baseline wrong → 8-token correct):
+- Baseline gets stuck in "formal presentation mode" (LaTeX, structured steps, truncates before computing)
+- Random tokens shift model into "informal stream-of-consciousness" that actually computes
+
+**Regression pattern** (baseline correct → 8-token wrong):
+- Baseline uses efficient structured computation, completes within token budget
+- Random tokens cause rambling exploration, runs out of max_new_tokens (1024)
+
+**Generation time correlation:**
+- Correct answers: ~60s (completes before token budget)
+- Wrong answers: ~81s (hits max_new_tokens = 1024)
+- Random tokens shift output POLICY, not reasoning quality
+
+**Codex CLI interpretation:**
+> "Not 'reasoning improved magically,' but 'output policy changed.' Stochastic resonance / attractor switching is a better core mechanism than attention sink."
+
+### Response Style Analysis
+- Baseline correct: 19.4 numbers/resp, 13.0 operations/resp (efficient)
+- Baseline wrong: 28.8 numbers/resp, 7.8 operations/resp (verbose, not computing)
+- Random tokens increase operation density on recovered tasks
+
 ---
 
 ## UPCOMING: Diagnostic Experiments (Codex-Prioritized)
 
-**Priority order per Codex CLI review:**
+**Priority order per Codex CLI review (updated):**
 
 | # | Experiment | Purpose | Flag |
 |---|-----------|---------|------|
 | 1 | Repeated noise (1 vec x 8) | Within-prefix diversity required? | `--control-mode repeated_noise` |
 | 2 | Attention masking | If effect vanishes → sink confirmed | `--mask-prefix` |
 | 3 | Suffix position | Position matters? → sink evidence | `--position suffix` |
-| 4 | Scale to n=100+ | Statistical power for claims | -- |
-| 5 | RMS scale sweep | Optimal perturbation magnitude | `--rms-scale` |
+| 4 | max_new_tokens sweep (2048, 4096) | Token budget mediator? | `--max-new-tokens` |
+| 5 | Scale to n=100+ | Statistical power for claims | -- |
+| 6 | RMS scale sweep | Optimal perturbation magnitude | `--rms-scale` |
 
 **Candidate Mechanisms (updated with evidence):**
-1. **Attention Sink** — LEADING. Supported by: 1-token plateau, diversity matters, CoT required
-2. **Stochastic Resonance** — SECONDARY. Supported by: redistribution pattern, task instability
+1. **Trajectory Perturbation / Attractor Switching** — LEADING (Codex-validated). Random prefix perturbs hidden-state trajectory, biasing model toward different reasoning policy
+2. **Attention Sink** — SECONDARY. May contribute but not primary mechanism per qualitative analysis
 3. ~~Computational Depth~~ — ELIMINATED. Zero-embedding (+4pp) << random (+12pp)
 4. ~~KV Cache Warm-Up~~ — ELIMINATED. Mean-embedding = zero-embedding
 
