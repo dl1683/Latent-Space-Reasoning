@@ -370,24 +370,27 @@ def fig4_dose_response():
         ax.text(t, m + s + offset, f"{m:.1f}%", ha="center", fontsize=10,
                 fontweight="bold")
 
-    # Mark the 89% annotation
-    if len(tokens) >= 3 and 1 in tokens:
-        full_effect = means[-1] - baseline_acc
-        one_tok_effect = means[tokens.index(1)] - baseline_acc
-        if full_effect > 0:
-            pct = one_tok_effect / full_effect * 100
-            ax.annotate(f"1 token captures\n{pct:.0f}% of effect",
-                        xy=(1, means[tokens.index(1)]),
-                        xytext=(2.5, means[tokens.index(1)] - 5),
-                        fontsize=9, color=COLOR_1TOK,
-                        arrowprops=dict(arrowstyle="->", color=COLOR_1TOK),
-                        bbox=dict(boxstyle="round,pad=0.3", facecolor="lightyellow",
-                                  edgecolor=COLOR_1TOK))
+    # Find and annotate the peak
+    peak_idx = int(np.argmax(means))
+    peak_tok = tokens[peak_idx]
+    peak_val = means[peak_idx]
+    if peak_tok > 0 and peak_tok != tokens[-1]:
+        ax.annotate(f"Peak at {peak_tok} tokens\n({peak_val:.0f}%)",
+                    xy=(peak_tok, peak_val),
+                    xytext=(peak_tok + 1.5, peak_val - 3),
+                    fontsize=9, color="#d62728", fontweight="bold",
+                    arrowprops=dict(arrowstyle="->", color="#d62728", lw=1.5),
+                    bbox=dict(boxstyle="round,pad=0.3", facecolor="lightyellow",
+                              edgecolor="#d62728"))
+
+    # Non-monotonic subtitle
+    has_peak = len(tokens) >= 4 and peak_idx > 0 and peak_idx < len(tokens) - 1
+    subtitle = ("Non-monotonic: peaks at 2 tokens, then declines"
+                if has_peak else "Token count dose-response")
 
     ax.set_xlabel("Number of random prefix tokens", fontsize=12)
     ax.set_ylabel("Accuracy (%)", fontsize=12)
-    ax.set_title("Dose-Response: Prefix Token Count\n"
-                 "Threshold effect — 1 token captures most of the benefit",
+    ax.set_title(f"Dose-Response: Prefix Token Count\n{subtitle}",
                  fontsize=13, fontweight="bold")
     ax.set_xticks(tokens)
     ax.set_ylim(baseline_acc - 5, max(means) + max(stds) + 8)
@@ -526,15 +529,16 @@ def fig6_cross_difficulty():
 
 def fig7_mechanism_summary():
     """Visual summary table of mechanism evidence."""
-    fig, ax = plt.subplots(figsize=(10, 5))
+    fig, ax = plt.subplots(figsize=(11, 6.5))
     ax.axis("off")
 
     experiments = [
         ("Zero embedding (8 tokens)", "+4pp", "Embedding values matter,\nnot just length"),
         ("Mean embedding (8 identical)", "+4pp", "Token diversity doesn't help\nfor identical tokens"),
-        ("Random noise (1 token)", "+10.7pp", "Threshold effect:\n1 token = 89% of benefit"),
-        ("Random noise (8 tokens)", "+12pp", "Random = W-projected\n(p = 1.0)"),
-        ("W-projected (8 tokens)", "+12.4pp", "Direction carries\nno signal"),
+        ("Random noise (1 token)", "+10.7pp", "Immediate effect from\na single token"),
+        ("Random noise (2 tokens)", "+28pp", "NON-MONOTONIC PEAK:\n2 tokens is optimal"),
+        ("Random noise (8 tokens)", "+12pp", "More tokens hurts:\novershoot effect"),
+        ("W-projected (8 tokens)", "+12.4pp", "Direction carries\nno signal (p=1.0)"),
         ("No-think mode (any prefix)", "+0pp", "CoT is the mediating\nmechanism"),
     ]
 
@@ -546,8 +550,9 @@ def fig7_mechanism_summary():
         "+0pp": "#ffcccc",
         "+4pp": "#ffe0b2",
         "+10.7pp": "#c8e6c9",
-        "+12pp": "#a5d6a7",
-        "+12.4pp": "#a5d6a7",
+        "+12pp": "#c8e6c9",
+        "+12.4pp": "#c8e6c9",
+        "+28pp": "#66bb6a",
     }
 
     for exp, effect, interp in experiments:

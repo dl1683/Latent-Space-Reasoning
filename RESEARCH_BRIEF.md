@@ -6,7 +6,7 @@
 
 ## TL;DR
 
-Prepending **random embedding-scale tokens** to the input of Qwen3-4B (Q4) improves arithmetic accuracy by **+12 percentage points** (32% to 44%) on chain-of-thought tasks. The direction of the tokens doesn't matter — only their presence. A single random token captures 86% of the full effect. The mechanism is **trajectory perturbation**: random prefixes shift the model from a "formal presentation" mode into an "exploratory computation" mode, trading structured output for actual calculation.
+Prepending **random embedding-scale tokens** to the input of Qwen3-4B (Q4) improves arithmetic accuracy by up to **+28 percentage points** (32% to 60%) on chain-of-thought tasks. The direction of the tokens doesn't matter — only their presence. The effect is **non-monotonic**: 2 random tokens is optimal (60%), while 8 tokens drops back to 44%. The mechanism is **trajectory perturbation**: random prefixes shift the model from a "formal presentation" mode into an "exploratory computation" mode, trading structured output for actual calculation.
 
 ---
 
@@ -18,10 +18,11 @@ Prepending **random embedding-scale tokens** to the input of Qwen3-4B (Q4) impro
 | Zero embedding (8 tokens) | 36.0% | +4pp |
 | Mean embedding (8 identical) | 36.0% | +4pp |
 | Random noise (1 token) | 42.7% | +10.7pp |
+| **Random noise (2 tokens)** | **60.0%** | **+28pp** |
 | Random noise (8 tokens) | 44.0% | +12pp |
 | W-projected latent (8 tokens) | 44.4% | +12.4pp |
 
-**Random noise and W-projected latents are statistically indistinguishable** (Mann-Whitney p = 1.0). Direction carries no signal — improvement comes entirely from the *presence* of embedding-scale tokens.
+**Random noise and W-projected latents are statistically indistinguishable** (Mann-Whitney p = 1.0). Direction carries no signal. The dose-response is **non-monotonic** — 2 tokens is optimal, and more tokens actually degrades performance back toward 44%.
 
 ![Condition Comparison](experiments/figures/fig1_condition_comparison.png)
 
@@ -52,7 +53,8 @@ We propose **trajectory perturbation** as the primary mechanism. Evidence:
 |-----------|--------|-------------|
 | Zero embedding (8 tokens) | +4pp | Embedding *values* matter, not just sequence extension |
 | Mean embedding (8 identical) | +4pp | Token diversity within prefix doesn't help for identical tokens |
-| Random noise (1 token) | +10.7pp | Threshold/trigger effect — 1 token captures 86% of benefit |
+| Random noise (1 token) | +10.7pp | Immediate effect from a single token |
+| Random noise (2 tokens) | +28pp | **Non-monotonic peak** — 2 tokens is optimal |
 | Random noise (8 tokens) | +12pp | Random = W-projected (p = 1.0) |
 | No-think mode (any prefix) | +0pp | Chain-of-thought is the mediating mechanism |
 | Easy tasks (92% baseline) | -7pp | Effect reverses on tasks the model already solves well |
@@ -75,9 +77,18 @@ The effect is mediated by **token budget**: correct answers average ~60s of gene
 
 ---
 
-## Dose-Response: Threshold Effect
+## Dose-Response: Non-Monotonic Optimum
 
-The benefit saturates almost immediately. A single random embedding-scale token captures 86% of the full 8-token effect, suggesting a **trigger/threshold mechanism** rather than cumulative capacity addition.
+The relationship between prefix token count and accuracy is **non-monotonic**:
+
+| Tokens | Accuracy | Change vs baseline |
+|--------|----------|-------------------|
+| 0 | 32.0% | -- |
+| 1 | 42.7% | +10.7pp |
+| **2** | **60.0%** | **+28pp** |
+| 8 | 44.4% | +12.4pp |
+
+Two random tokens is the sweet spot. Adding more tokens actually *hurts* — 8 tokens drops back to 44%, likely because longer random prefixes induce excessive exploratory behavior that exhausts the token budget. The 2-token result showed **zero variance** across 3 independent random vectors (all exactly 15/25 correct).
 
 ![Dose Response](experiments/figures/fig4_dose_response.png)
 

@@ -5,6 +5,37 @@ Only Codex-validated conclusions are stated as "confirmed."
 
 ---
 
+## 2-Token Dose-Response (2026-03-05) — NON-MONOTONIC PEAK
+
+**Purpose:** Test 2-token random noise prefix as part of dose-response sweep.
+**Config:** 3 random noise vectors, 2 soft tokens each, RMS=0.022, 25 sweet-spot tasks, Qwen3-4B Q4, thinking mode
+**Script:** `python experiments/run_latent_sensitivity.py --task-type nested --difficulty sweet_spot --n-latents 3 --control-mode random_noise --num-soft-tokens 2`
+
+### Results
+
+| Tokens | Accuracy | Change | Std |
+|--------|----------|--------|-----|
+| 0 (baseline) | 32.0% | -- | -- |
+| 1 | 42.7% | +10.7pp | 2.3% |
+| **2** | **60.0%** | **+28pp** | **0.0%** |
+| 8 | 44.4% | +12.4pp | 7.4% |
+
+**Zero variance**: all 3 latent vectors produced exactly 15/25 correct (60%).
+**7 tasks fixed** (wrong→right), **2 tasks regressed** (right→wrong) vs baseline.
+
+### What We Learned
+1. **Non-monotonic optimum** — 2 tokens is the best condition tested (+28pp vs baseline)
+2. **Contradicts threshold/saturation story** — more tokens is NOT better, and 1 token is NOT 89% of peak
+3. **Zero variance is remarkable** — 3 independent random vectors at 2 tokens all produce identical accuracy
+4. **Overshoot at 8 tokens** — too many random tokens likely causes excessive exploratory behavior
+5. **Needs replication** — n=3 latents and n=25 tasks is fragile; need 4-token and 16-token data points
+
+### Artifacts
+- `experiments/sensitivity_sweet_spot_random_noise_t2_results.json`
+- Ledger entry: 2-token-dose-response
+
+---
+
 ## Error Taxonomy Analysis (2026-03-04) — REDISTRIBUTION, NOT CLEAN IMPROVEMENT
 
 **Purpose:** Classify per-task failure patterns across all conditions to understand what "improvement" means.

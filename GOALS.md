@@ -12,13 +12,14 @@
 **Completed:**
 - [x] Mean-embedding control: 36% = zero → token diversity doesn't help for identical tokens
 - [x] Zero-embedding control: 36% (+4pp) → embedding values matter, not just sequence extension
-- [x] 1-token dose-response: 42.7% → captures 89% of the 8-token effect (threshold effect)
+- [x] 1-token dose-response: 42.7% (+10.7pp)
+- [x] 2-token dose-response: 60.0% (+28pp) → NON-MONOTONIC PEAK, zero variance across 3 latents
 - [x] Nested-easy noise control: noise = latent-projected (p=1.0), confirmed cross-difficulty
 - [x] Error taxonomy: redistribution, not clean improvement (3 fixed, 6 regressed)
 - [x] Qualitative output analysis: policy shift from formal to exploratory reasoning
 
 **In progress / next:**
-- [ ] 2-token dose-response (RUNNING)
+- [x] 2-token dose-response: 60% (+28pp), non-monotonic peak
 - [ ] Repeated-noise (1 vector x 8): within-prefix diversity test
 - [ ] Attention masking (--mask-prefix): attention sink vs trajectory perturbation
 - [ ] Suffix position: does position matter?
@@ -58,7 +59,7 @@
 ## Key Research Findings (Codex-Validated)
 1. **TRAJECTORY PERTURBATION** — random prefix tokens shift generation from formal→exploratory mode
 2. **Redistribution effect** — some tasks improve, others regress. Net +12pp mean
-3. **Threshold effect** — 1 token captures 89% of the effect (not cumulative)
+3. **Non-monotonic optimum** — 2 tokens = 60% (best), 8 tokens = 44% (overshoot)
 4. **Token diversity matters** — diverse tokens (+12pp) >> identical tokens (+4pp)
 5. **Direction irrelevant** — random noise = W-projected latents (p=1.0)
 6. **CoT mediates** — no-think mode eliminates the effect entirely
