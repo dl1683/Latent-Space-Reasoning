@@ -492,8 +492,13 @@ def generate_nested_tasks(
 def run_zero_shot(
     encoder: LLMEncoder, prompt: str,
     max_new_tokens: int = 1024, enable_thinking: bool = True,
+    force_think: bool = False,
 ) -> str:
-    """Run with chat template but no soft prompt conditioning."""
+    """Run with chat template but no soft prompt conditioning.
+
+    force_think: if True, append '<think>\n' to the prompt to force the model
+                 into think mode (causal control for mode-gating hypothesis).
+    """
     system_msg = "Answer to the best of your ability."
     if hasattr(encoder.tokenizer, "apply_chat_template"):
         messages = [
@@ -517,6 +522,9 @@ def run_zero_shot(
             )
     else:
         formatted = f"System: {system_msg}\n\nUser: {prompt}\n\nAssistant: "
+
+    if force_think:
+        formatted += "<think>\n"
 
     inputs = encoder.tokenizer(formatted, return_tensors="pt")
     inputs = {k: v.to(encoder._device) for k, v in inputs.items()}
@@ -587,6 +595,9 @@ def main():
         help="Scaling factor for intermediate layer steering vectors")
     parser.add_argument("--no-think", action="store_true",
         help="Disable Qwen3 thinking mode (faster, shorter outputs)")
+    parser.add_argument("--force-think-baseline", action="store_true",
+        help="Force think mode in baseline by prepending <think> to response. "
+             "Causal control: separates mode-gate from noise effect.")
     parser.add_argument("--max-new-tokens", type=int, default=1024,
         help="Max generation tokens")
     parser.add_argument(
@@ -698,6 +709,7 @@ def main():
                 encoder, task.prompt,
                 max_new_tokens=args.max_new_tokens,
                 enable_thinking=not args.no_think,
+                force_think=args.force_think_baseline,
             )
             elapsed = time.time() - t0
             correct = verify_answer(resp, task.correct_answer)
@@ -1141,6 +1153,7 @@ def main():
         "task_type": args.task_type,
         "decode_mode": args.decode_mode,
         "control_mode": control_mode,
+        "force_think_baseline": args.force_think_baseline,
         "position": args.position,
         "mask_prefix": args.mask_prefix,
         "num_soft_tokens": num_soft_tokens,
