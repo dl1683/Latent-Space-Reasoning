@@ -22,6 +22,7 @@
 - [x] `--mask-prefix`: blocks attention to soft prompt positions
 - [x] `experiments/analyze_error_taxonomy.py`
 - [x] `experiments/run_mechanism_sweeps.sh` + `analyze_sweeps.py`
+- [x] `experiments/run_diagnostic_battery.sh` (repeated-noise, masking, suffix)
 
 ## Completed Experiments
 - [x] Error taxonomy: 8-tok effect is REDISTRIBUTION (3 fixed, 6 regressed)
@@ -41,7 +42,8 @@
 - Paper-worthy IF framed as "redistribution" with proper ablations
 - Need n=100+ for scientific claims
 
-## DEAD CODE (do NOT run)
-- V17, V18, V19 — all search-based experiments are futile
+## DEAD CODE (DELETED)
+- V16, V17, V18 runners — removed (search-based experiments are futile)
+- AGENTS.md, root MEMORY.md, MASTER_RESEARCH.md — removed (superseded)
 
 ## Test Suite: 342 tests passing
