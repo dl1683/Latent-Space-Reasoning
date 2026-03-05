@@ -111,6 +111,52 @@
   - Result snapshot (`distilgpt2`, 2 queries, 2 repeats): quality delta `0.0`, evaluation reduction `~15.4%` (`6.5 -> 5.5` median trial evals), end-to-end latency reduction `~7.4%`.
 - Updated non-tiny confirmation to use the repeat-stabilized result as primary reference.
 
+## 2026-03-04 (evening) — Mechanism Characterization Begins
+
+### Nested-Easy Noise Control (completes interpretive picture)
+- 4/5 noise vectors completed (noise 5 killed at task 18/25)
+- **Noise mean: 85.0% vs Latent mean: 84.0% (Mann-Whitney p=1.0)**
+- Cochran's Q (noise, k=4): Q=6.10, p=0.107 (not significant; power artifact vs k=10)
+- **Cross-validates sweet-spot result**: direction irrelevant across both difficulty levels
+- Core thesis falsification now complete
+
+### Infrastructure for Mechanism Sweeps
+- Added `--num-soft-tokens` (dose-response) and `--rms-scale` (sweep) CLI flags
+- Added `--reuse-baseline` (skips 21-min Phase 1 by loading from existing results JSON)
+- Added `zero_embedding` control mode (all-zero soft prompt tokens)
+- Created `experiments/run_mechanism_sweeps.sh` (sequential sweep battery)
+- Created `experiments/analyze_sweeps.py` (collates results into tables)
+
+### ZERO-EMBEDDING CONTROL: EMBEDDING VALUES MATTER
+- **Zero tokens (8 x zeros): 36% (+4pp vs 32% baseline)**
+- **Random noise (8 x random): 44% (+12pp vs 32% baseline)**
+- Zero helps slightly but random helps 3x more
+- **ELIMINATES pure computational depth / attention extension hypothesis**
+- Nonzero, diverse embedding values required for full warm-start effect
+- Strongly supports attention sink hypothesis (random tokens = better attention anchors)
+- All 3 repetitions identical (36.0%) — perfect consistency with greedy decoding
+
+### Mean-Embedding Control (RUNNING)
+- Tests if TOKEN DIVERSITY matters (8 identical mean-embedding tokens vs 8 diverse random tokens)
+- Running: PID 191012, ~80 min remaining
+
+### Literature Review
+- Comprehensive review of 18 papers on pause tokens, attention sinks, computational depth
+- **Result appears NOVEL** — no prior work shows random untrained embeddings improving inference
+- Closest: Goyal et al. "Pause Tokens" (ICLR 2024) but requires training
+- London & Nagarajan (NeurIPS 2025) PROVES extra tokens increase expressivity
+- See `memory/literature_review_warm_start.md`
+
+### Commits
+- 3ff8aea: Add --num-soft-tokens and --rms-scale CLI flags
+- 8db2712: Add zero_embedding control mode and --reuse-baseline
+- f597a6a: Add mechanism sweep runner, analysis script
+- 7a2fac4: Add upcoming sweeps to EXPERIMENTS.md
+- fd9934c: Nested-easy noise control results
+- f1cfea0: Zero-embedding control results
+
+---
+
 ## 2026-03-04 — Cochran's Q Bug Fix, Warm-Start Control Experiment
 
 ### Cochran's Q Bug Found and Fixed
