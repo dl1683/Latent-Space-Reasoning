@@ -147,9 +147,21 @@ def decode_with_raw_soft_prompt(
 
         output_ids = encoder.model.generate(**generate_kwargs)
 
+    n_input = combined_embeds.shape[1]
+    n_generated = output_ids.shape[1] - n_input
+    eos_id = encoder.tokenizer.eos_token_id
+    terminated_by_eos = bool(
+        eos_id is not None and output_ids[0, -1].item() == eos_id
+    )
+    gen_meta = {
+        "generated_tokens": n_generated,
+        "prompt_tokens": n_input,
+        "terminated_by_eos": terminated_by_eos,
+    }
+
     new_tokens = output_ids[0, :]
     text = encoder.tokenizer.decode(new_tokens, skip_special_tokens=True)
-    return text.strip()
+    return text.strip(), gen_meta
 
 
 def safe_print(text: str) -> None:
@@ -544,8 +556,18 @@ def run_zero_shot(
             repetition_penalty=1.2,
         )
 
+    n_prompt = inputs["input_ids"].shape[1]
+    n_generated = out[0].shape[0] - n_prompt
+    eos_id = encoder.tokenizer.eos_token_id
+    terminated_by_eos = bool(eos_id is not None and out[0][-1].item() == eos_id)
+    gen_meta = {
+        "generated_tokens": n_generated,
+        "prompt_tokens": n_prompt,
+        "terminated_by_eos": terminated_by_eos,
+    }
+
     raw = encoder.tokenizer.decode(
-        out[0][inputs["input_ids"].shape[1]:], skip_special_tokens=True,
+        out[0][n_prompt:], skip_special_tokens=True,
     ).strip()
 
     resp = raw
@@ -558,7 +580,7 @@ def run_zero_shot(
                 resp = resp[resp.index(starter):]
                 break
 
-    return (resp if resp else "No response"), raw
+    return (resp if resp else "No response"), raw, gen_meta
 
 
 # =====================================================================
@@ -645,6 +667,9 @@ def main():
     if args.task_type == "nested":
         n_tasks_gen = args.n_calibrate if args.calibrate else (
             args.n_easy + args.n_medium + args.n_hard)
+        # --n-tasks overrides generation count (allows scaling up)
+        if args.n_tasks is not None:
+            n_tasks_gen = max(n_tasks_gen, args.n_tasks)
         tasks = generate_nested_tasks(
             n_tasks=n_tasks_gen, difficulty_filter=args.difficulty)
     else:
@@ -653,7 +678,7 @@ def main():
             n_medium=args.n_medium,
             n_hard=args.n_hard,
         )
-    # Override task count if requested
+    # Truncate task count if requested
     if args.n_tasks is not None and args.n_tasks < len(tasks):
         tasks = tasks[:args.n_tasks]
     n_tasks = len(tasks)
@@ -711,7 +736,7 @@ def main():
         baseline_results = []
         for i, task in enumerate(tasks):
             t0 = time.time()
-            resp, raw = run_zero_shot(
+            resp, raw, gen_meta = run_zero_shot(
                 encoder, task.prompt,
                 max_new_tokens=args.max_new_tokens,
                 enable_thinking=not args.no_think,
@@ -719,6 +744,7 @@ def main():
             )
             elapsed = time.time() - t0
             correct = verify_answer(resp, task.correct_answer)
+            tps = gen_meta["generated_tokens"] / elapsed if elapsed > 0 else 0
             baseline_results.append({
                 "task_id": task.task_id,
                 "difficulty": task.difficulty,
@@ -728,6 +754,10 @@ def main():
                 "response_raw": raw[:2000],
                 "correct": correct,
                 "time": round(elapsed, 1),
+                "generated_tokens": gen_meta["generated_tokens"],
+                "prompt_tokens": gen_meta["prompt_tokens"],
+                "terminated_by_eos": gen_meta["terminated_by_eos"],
+                "tokens_per_sec": round(tps, 1),
             })
             mark = "OK" if correct else "WRONG"
             safe_print(
@@ -950,9 +980,10 @@ def main():
         for ti, task in enumerate(tasks):
             t0 = time.time()
             raw = ""
+            gen_meta = {}
             try:
                 if control_soft_prompts is not None:
-                    resp = decode_with_raw_soft_prompt(
+                    resp, gen_meta = decode_with_raw_soft_prompt(
                         encoder, control_soft_prompts[li], task.prompt,
                         max_new_tokens=args.max_new_tokens,
                         temperature=0.0,
@@ -970,7 +1001,7 @@ def main():
                 gc.collect()
                 try:
                     if control_soft_prompts is not None:
-                        resp = decode_with_raw_soft_prompt(
+                        resp, gen_meta = decode_with_raw_soft_prompt(
                             encoder, control_soft_prompts[li], task.prompt,
                             max_new_tokens=args.max_new_tokens,
                             temperature=0.0,
@@ -987,7 +1018,8 @@ def main():
                     raw = "ERROR"
             elapsed = time.time() - t0
             correct = verify_answer(resp, task.correct_answer)
-            task_results.append({
+            tps = gen_meta.get("generated_tokens", 0) / elapsed if elapsed > 0 else 0
+            result_entry = {
                 "task_id": task.task_id,
                 "difficulty": task.difficulty,
                 "correct_answer": task.correct_answer,
@@ -995,7 +1027,13 @@ def main():
                 "response_raw": raw[:2000],
                 "correct": correct,
                 "time": round(elapsed, 1),
-            })
+            }
+            if gen_meta:
+                result_entry["generated_tokens"] = gen_meta["generated_tokens"]
+                result_entry["prompt_tokens"] = gen_meta["prompt_tokens"]
+                result_entry["terminated_by_eos"] = gen_meta["terminated_by_eos"]
+                result_entry["tokens_per_sec"] = round(tps, 1)
+            task_results.append(result_entry)
             mark = "OK" if correct else "X "
             safe_print(
                 f"    [{ti + 1}/{n_tasks}] {task.task_id}: "

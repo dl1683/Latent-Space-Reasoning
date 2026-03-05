@@ -96,14 +96,65 @@ Zero vs force-think NOT statistically significant (10/25 vs 9/25, p >> 0.3 at n=
 **Codex caution**: Three-component model (think gate + positional perturbation + stochastic
 diversity), not simple two-component. Need n=100 to distinguish force-think from zero.
 
-## 7. Infrastructure Confound (RESOLVED)
+## 7a. Infrastructure Confound (RESOLVED)
 
 - `decode_with_raw_soft_prompt` preserves `<think>` tags
 - `run_zero_shot` and `decode_latent` STRIP `<think>` tags
 - Fixed: now stores `response_raw` alongside stripped `response` (2000 chars)
 - Baseline: 16% think mode (4/25), 2-token: 100% think mode (25/25)
 
-## 7. Theoretical Model: PGRMS (Updated)
+## 7b. Timing Confound (UNDER INVESTIGATION, Codex Analysis 2026-03-05)
+
+**The 2-tok condition is 1.6x slower than all other conditions:**
+
+| Condition | Mean time/task | Total (3 latents) |
+|-----------|-----------------|-------------------|
+| Baseline | 74.0s | 1851s |
+| 1-tok noise | 73.1s | 5481s |
+| 2-tok noise | **118.4s** | **8883s** |
+| Zero embedding | 72.1s | 5408s |
+| 8-tok latent | 75.1s | 18769s (10 latents) |
+
+- 73% of excess 2-tok wall-clock concentrated in 5 tasks (nest_013 to nest_017)
+- nest_017 latent 2: 1151s (19 min!) — not explainable by 1024-token cap (~80s)
+- Slowdown is specific to 2-tok noise, NOT think mode or positions generally
+- Slow != correct: nest_015 appears at 73s, 378s, 82s with mixed correctness
+- **Codex interpretation**: 2-tok noise induces longer, less stable rollouts;
+  part of the accuracy advantage may be mediated by extra compute, not just
+  better reasoning channel selection
+
+**Critical instrumentation gap** (fixed in harness):
+- Added `generated_tokens`, `prompt_tokens`, `terminated_by_eos`, `tokens_per_sec`
+  to distinguish "more tokens" from "slower tokens"
+
+**Required experiment**: Downward max_new_tokens sweep (128, 256, 512, 1024)
+with force-think baseline, 2-tok zero, 2-tok noise conditions.
+
+**3-tok timing (preliminary, latent 1)**: Normal range (34-93s), no outliers.
+If 3-tok accuracy ~45-50% with normal timing, materially weakens compute-time story.
+
+### TIMING CONFOUND RESOLUTION (2026-03-05)
+
+The timing anomaly is a **single-latent artifact**, NOT systematic:
+
+| Latent | Accuracy | Mean time | Max time | Outliers (>200s) |
+|--------|----------|-----------|----------|-------------------|
+| 0 | 60% | 73.6s | 94.2s | 0 |
+| 1 | 60% | 189.7s | 1151.3s | 5 |
+| 2 | 60% | 92.0s | 129.0s | 0 |
+
+- Point-biserial r(time, correct) = -0.206 (slow runs tend to be WRONG)
+- Latent 0 achieves 60% at 73.6s mean = baseline-identical timing
+- All three latents achieve the SAME accuracy despite wildly different timing
+- **The 2-tok advantage is NOT from extra computation time**
+- Budget sweep downgraded from "critical" to "reviewer-facing control" (Codex)
+
+**Paper-ready claim (Codex-approved, narrow)**:
+"At least one 2-token perturbation direction achieves the full 60% accuracy at
+baseline-matched latency (73.6s vs 74.0s baseline), while slower runs are not
+more accurate (point-biserial r = -0.206)."
+
+## 7c. Theoretical Model: PGRMS (Updated)
 
 **Perturbation-Gated Reasoning Mode Selection**
 - Random prefix tokens ACTIVATE think mode via energy perturbation
@@ -123,6 +174,25 @@ diversity), not simple two-component. Need n=100 to distinguish force-think from
 
 Key: Modular arithmetic benefits most (+52pp at 2-tok). Medium tasks REGRESS (overthinking).
 
+## 8b. Sensitive Task Analysis (Excluding Always-Solved and Never-Solved)
+
+Removing 5 always-solved (easy) and 2 never-solved (impossible) tasks leaves 18 "sensitive" tasks:
+
+| Condition | k lat | Counts/lat | Std | Oracle | Unsolved |
+|-----------|-------|-----------|-----|--------|----------|
+| Baseline | 1 | [3] | - | 3/18=16.7% | 15 tasks |
+| 1-tok | 3 | [5,6,6] | 0.5 | 12/18=66.7% | 6 tasks |
+| **2-tok** | **3** | **[10,10,10]** | **0.0** | **17/18=94.4%** | **1 task** |
+| 8-tok | 10 | [4..10] | 2.1 | 17/18=94.4% | 1 task |
+
+**Key findings:**
+- 2-tok and 8-tok reach the SAME oracle ceiling (94.4%), same missed task (nest_005)
+- 2-tok does it with 3 directions; 8-tok needs 10 (3x more efficient)
+- 2-tok equalizes per-direction count (std=0.0); 8-tok varies widely (std=2.1)
+- 1-tok misses 6 sensitive tasks including 4 modular arithmetic tasks that 2-tok unlocks
+- Jaccard overlap: 1-tok ~0.20-0.22 (independent), 2-tok ~0.33-0.54 (moderate)
+- Only nest_005 (answer=8360) is genuinely unsolvable — beyond model capacity at any noise
+
 ## 9. Paper Contributions (Revised Ranking)
 
 1. **STRONG**: Oracle 88% from 3 random directions vs 60% individual vs 32% baseline
@@ -132,12 +202,13 @@ Key: Modular arithmetic benefits most (+52pp at 2-tok). Medium tasks REGRESS (ov
 5. **MODERATE**: Non-monotonic dose-response (peak at 2 tokens)
 6. **MODERATE**: Operation-type stratification (mod > small > large)
 
-## 10. Pending Experiments (Priority Order, per Codex)
+## 10. Pending Experiments (Priority Order, per Codex 2026-03-05, updated post-timing-resolution)
 
-1. **Force-think + 2 noise tokens** -- isolates stochastic component (implemented)
-2. **Scale force-think to n=100 tasks** -- statistical power for decomposition
-3. **Scale 2-tok to n=100 tasks, n=10 latents** -- replicate oracle + zero-variance
-4. Dense dose-response (3,4,5,6,7 tokens)
-5. Cross-model (Qwen3-8B)
+1. **3-tok dose-response** -- RUNNING (10 latents). Latent 1: 44.0% with normal timing.
+2. **Scale 2-tok to n=100 tasks, n=10 latents** -- replicate oracle + zero-variance (HIGHEST IMPACT)
+3. **Reduced max_new_tokens sweep** (256, 512) -- reviewer-facing control, no longer critical
+   - Harness instrumented with generated_tokens, terminated_by_eos, tokens_per_sec
+4. **Force-think + 2 noise tokens** -- isolates stochastic component (OOM'd at 16/25)
+5. Dense dose-response (4,5,6,7 tokens)
 6. Position-ID-only control (shifted positions, no prefix tokens)
-6. Cross-model validation
+7. Cross-model (Qwen3-8B)
