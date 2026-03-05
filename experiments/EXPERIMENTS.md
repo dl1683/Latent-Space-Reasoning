@@ -5,6 +5,27 @@ Only Codex-validated conclusions are stated as "confirmed."
 
 ---
 
+## UPCOMING: Mechanism Characterization Sweeps (blocked on nested-easy noise control)
+
+**Goal:** Discriminate between 4 candidate mechanisms for the warm-start effect.
+
+| Sweep | Purpose | Discriminates |
+|-------|---------|---------------|
+| Token count (1-32) | Dose-response curve shape | Linear=depth, Log/plateau=sinks |
+| RMS scale (0.1x-10x) | Optimal scale | Bell curve confirms embedding values matter |
+| Zero-embedding | Attention extension only? | Zero=random → depth; zero<random → values matter |
+| Mean-embedding | Token diversity | Mean=random → diversity irrelevant |
+
+**Candidate Mechanisms (from literature review):**
+1. **Attention Sink** — random tokens absorb excess softmax attention (StreamingLLM, ICLR 2024)
+2. **Computational Depth** — extra tokens increase expressivity (London & Nagarajan, NeurIPS 2025)
+3. **Stochastic Resonance** — noise pushes past decision boundaries, amplified by CoT
+4. **KV Cache Warm-Up** — speculative
+
+**Infrastructure:** `run_mechanism_sweeps.sh`, `--reuse-baseline`, `--num-soft-tokens`, `--rms-scale`, `zero_embedding` control
+
+---
+
 ## Warm-Start Control (2026-03-04) — WARM-START CONFIRMED, CORE THESIS FALSIFIED
 
 **Purpose:** Determine if the +12pp improvement from soft prompt conditioning is due to latent direction (through W projection) or a generic warm-start from any embedding tokens at the correct RMS scale.
