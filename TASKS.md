@@ -43,9 +43,9 @@
 - Paper-worthy IF framed as "redistribution" with proper ablations
 - Need n=100+ for scientific claims
 
-## DEAD CODE (DELETED)
-- V16, V17, V18 runners — removed (search-based experiments are futile)
-- AGENTS.md, root MEMORY.md, MASTER_RESEARCH.md — removed (superseded)
+## Superseded Code (Cleaned Up)
+- V16, V17, V18 runners — removed (directional search doesn't add benefit; mechanism is direction-agnostic)
+- AGENTS.md, root MEMORY.md, MASTER_RESEARCH.md — removed (superseded by current docs)
 
 ## Documentation
 - [x] README.md updated to reflect warm-start findings

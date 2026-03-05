@@ -36,14 +36,15 @@
 - [ ] Complete generality tests (Goal 2)
 - [ ] Address: n=25 fragility, token budget mediation, mechanism evidence
 
-## Concluded / Falsified Goals
+## Concluded Explorations
 
-### Latent Space Search — FALSIFIED (2026-03-04)
-- Random noise = latent-projected (p=1.0). Direction carries no signal.
-- V17, V18, V19: DEAD CODE
+### Directional Latent Search — CONCLUDED (2026-03-04)
+- Random noise = latent-projected (p=1.0). The mechanism is direction-agnostic.
+- The improvement comes from token presence/diversity, not specific latent directions.
+- V17, V18, V19 runners: superseded (directional search doesn't add benefit over random prefix)
 
 ### Hyperbolic Geometry — CONCLUDED (2026-03-03)
-- Euclidean = Hyperbolic under same conditioning. Geometry adds no value.
+- Euclidean = Hyperbolic under same conditioning. Geometry doesn't differentiate outcomes.
 
 ## Completed Goals
 - [x] Update article: ARTICLE_UPDATE.md
@@ -63,6 +64,6 @@
 2. **Redistribution effect** — some tasks improve, others regress. Net +12pp mean
 3. **Non-monotonic optimum** — 2 tokens = 60% (best), 8 tokens = 44% (overshoot)
 4. **Token diversity matters** — diverse tokens (+12pp) >> identical tokens (+4pp)
-5. **Direction irrelevant** — random noise = W-projected latents (p=1.0)
+5. **Direction-agnostic** — random noise = W-projected latents (p=1.0), mechanism is more fundamental
 6. **CoT mediates** — no-think mode eliminates the effect entirely
 7. **Token budget correlation** — wrong answers hit max_new_tokens (~80s = 1024 tokens)

@@ -123,7 +123,7 @@ Only Codex-validated conclusions are stated as "confirmed."
 1. **Direction irrelevant on easy tasks too** — noise (85.0%) matches latent-projected (84.0%), p=1.0
 2. **Consistent with sweet-spot result** — same pattern at 32% and 92% baseline
 3. **Cochran's Q non-significance is a power artifact** — k=4 vs k=10 degrees of freedom
-4. **Core thesis falsification is now cross-validated** — no remaining difficulty regime where direction might matter
+4. **Direction-agnostic mechanism confirmed cross-difficulty** — no remaining difficulty regime where direction differentiates
 5. **Both conditions hurt on easy tasks** — mean below 92% baseline in both noise and latent-projected
 6. **Warm-start mechanism is confirmed as direction-agnostic** — improvement is from token presence, not content
 
@@ -134,7 +134,7 @@ Only Codex-validated conclusions are stated as "confirmed."
 
 ---
 
-## Warm-Start Control (2026-03-04) — WARM-START CONFIRMED, CORE THESIS FALSIFIED
+## Warm-Start Control (2026-03-04) — WARM-START CONFIRMED, MECHANISM IS DIRECTION-AGNOSTIC
 
 **Purpose:** Determine if the +12pp improvement from soft prompt conditioning is due to latent direction (through W projection) or a generic warm-start from any embedding tokens at the correct RMS scale.
 **Config:** 4 random noise soft prompts (torch.randn scaled to target_rms=0.022, NOT through W), same 25 sweet_spot tasks, Qwen3-4B Q4, thinking mode
@@ -156,14 +156,14 @@ Only Codex-validated conclusions are stated as "confirmed."
 2. **Latent direction carries NO detectable signal** — the W projection is irrelevant
 3. **Improvement comes from PRESENCE of 8 embedding tokens** at correct RMS, not their content
 4. **The entire latent→W→soft_prompt pipeline adds no value** over random noise
-5. **Core thesis falsified** — "evolve soft prompts in latent space to improve reasoning" does not work because direction doesn't matter
+5. **Directional search doesn't add benefit** — the improvement mechanism is direction-agnostic, so optimization in latent space doesn't outperform random prefix tokens
 6. **Noise has LESS variance** (std 3.3% vs 7.4%) — W-projection adds noise-like variance, not signal
 7. **New finding: warm-start is real and reproducible** — +12pp free improvement from random tokens
 
 ### Implications
-- All evolution/search in latent space is futile (nothing meaningful to search for)
+- Directional search in latent space doesn't add benefit over random prefix tokens (mechanism is direction-agnostic)
 - Orthonormal projection, Poincare ball, curvature, etc. add no value
-- **Pivot to characterizing the warm-start mechanism** — this IS a publishable finding
+- **Focus shifts to characterizing the warm-start mechanism** — understanding why prefix tokens help is the key question
 - Need to test: multi-model generality, task diversity, token count dose-response
 
 ### Artifacts

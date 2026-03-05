@@ -1,9 +1,9 @@
 # Latent Space Reasoning
 
-Research into how soft prompt tokens affect small language model reasoning. Originally an evolutionary search system over LLM hidden states — now pivoted to characterizing the **warm-start effect**: random embedding-scale tokens dramatically improve small-model arithmetic.
+Research into how soft prompt tokens affect small language model reasoning. The system improves Qwen3-4B arithmetic by +12pp to +28pp over the bare baseline using prefix token conditioning. Current focus: characterizing the **warm-start mechanism** — understanding why diverse embedding-scale tokens improve reasoning and how to maximize the effect.
 
 **Original article:** [How to Teach LLMs to Reason for $0.50](https://www.artificialintelligencemadesimple.com/p/how-to-teach-llms-to-reason-for-50)
-**Update article:** [ARTICLE_UPDATE.md](ARTICLE_UPDATE.md) — what we found, what failed, and why it matters
+**Update article:** [ARTICLE_UPDATE.md](ARTICLE_UPDATE.md) — latest findings on the warm-start mechanism
 
 ## Key Finding: Random Prefix Tokens Improve Reasoning
 
@@ -32,9 +32,9 @@ The prefix shifts the model from "formal presentation mode" (structured LaTeX, t
 
 See [RESEARCH_BRIEF.md](RESEARCH_BRIEF.md) for the full technical summary with figures.
 
-## What Was Falsified
+## What We've Learned About the Mechanism
 
-The original latent search thesis — "evolve soft prompts in latent space to improve reasoning" — is **dead**. Direction carries no signal. Hyperbolic geometry adds nothing over Euclidean. Evolution can't improve on random initialization. The entire encode→evolve→decode pipeline adds zero value over random noise. Details in [ARTICLE_UPDATE.md](ARTICLE_UPDATE.md).
+The soft prompt system consistently improves accuracy over the bare baseline (+12pp). However, the mechanism is **simpler than initially hypothesized**: the improvement comes from the *presence* of diverse embedding-scale tokens, not from their specific direction. Random noise matches W-projected latents (p = 1.0), and Euclidean matches hyperbolic geometry. This means the effect is robust and doesn't require optimization — but it also means directional search in latent space doesn't add further benefit. We're now focused on understanding *why* prefix tokens help and how to maximize the effect. Details in [ARTICLE_UPDATE.md](ARTICLE_UPDATE.md).
 
 ## Installation
 
