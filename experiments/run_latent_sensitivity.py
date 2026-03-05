@@ -704,7 +704,7 @@ def main():
                 "difficulty": task.difficulty,
                 "n_steps": task.n_steps,
                 "correct_answer": task.correct_answer,
-                "response": resp[:500],
+                "response": resp[:2000],
                 "correct": correct,
                 "time": round(elapsed, 1),
             })
@@ -945,7 +945,7 @@ def main():
                 "task_id": task.task_id,
                 "difficulty": task.difficulty,
                 "correct_answer": task.correct_answer,
-                "response": resp[:500],
+                "response": resp[:2000],
                 "correct": correct,
                 "time": round(elapsed, 1),
             })
