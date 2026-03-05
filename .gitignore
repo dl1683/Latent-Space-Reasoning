@@ -102,3 +102,4 @@ eval_results/
 models/
 compare_*.json
 test_results.md
+experiments/*.txt
