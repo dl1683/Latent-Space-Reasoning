@@ -53,6 +53,7 @@ def decode_with_raw_soft_prompt(
     temperature: float = 0.0,
     enable_thinking: bool = True,
     position: str = "prefix",
+    mask_prefix: bool = False,
 ) -> str:
     """Decode using a pre-built soft prompt tensor (bypasses latent projection).
 
@@ -61,6 +62,8 @@ def decode_with_raw_soft_prompt(
     from a latent vector via W.
 
     position: "prefix" (before all text) or "suffix" (between prompt and generation)
+    mask_prefix: if True, set attention mask to 0 for soft prompt positions
+                 (tokens exist in sequence but other tokens can't attend to them)
     """
     system_msg = "Answer to the best of your ability."
     user_msg = query or ""
@@ -93,11 +96,19 @@ def decode_with_raw_soft_prompt(
     with torch.no_grad():
         text_embeds = encoder.model.get_input_embeddings()(inputs["input_ids"])
 
-        soft_mask = torch.ones(
-            1, sp.size(1),
-            dtype=inputs["attention_mask"].dtype,
-            device=encoder._device,
-        )
+        if mask_prefix:
+            # Attention mask = 0 for soft prompt positions (blocked attention)
+            soft_mask = torch.zeros(
+                1, sp.size(1),
+                dtype=inputs["attention_mask"].dtype,
+                device=encoder._device,
+            )
+        else:
+            soft_mask = torch.ones(
+                1, sp.size(1),
+                dtype=inputs["attention_mask"].dtype,
+                device=encoder._device,
+            )
         if position == "suffix":
             # Insert soft prompt right before the last token (generation start)
             combined_embeds = torch.cat(
@@ -594,6 +605,10 @@ def main():
         choices=["prefix", "suffix"],
         help="Where to place soft prompt: prefix (before text) or suffix "
              "(between prompt and generation start)")
+    parser.add_argument("--mask-prefix", action="store_true",
+        help="Block attention to soft prompt positions (attention mask = 0). "
+             "Tests attention sink hypothesis: if effect vanishes, "
+             "attention routing is the mechanism.")
     parser.add_argument("--reuse-baseline", type=str, default=None,
         help="Path to existing results JSON to reuse baseline from (skips Phase 1)")
     parser.add_argument("--n-tasks", type=int, default=None,
@@ -902,6 +917,7 @@ def main():
                         temperature=0.0,
                         enable_thinking=not args.no_think,
                         position=args.position,
+                        mask_prefix=args.mask_prefix,
                     )
                 else:
                     resp = decode_latent(encoder, latents[li], task.prompt, cfg)
@@ -917,6 +933,7 @@ def main():
                             temperature=0.0,
                             enable_thinking=not args.no_think,
                             position=args.position,
+                            mask_prefix=args.mask_prefix,
                         )
                     else:
                         resp = decode_latent(encoder, latents[li], task.prompt, cfg)
@@ -1098,6 +1115,7 @@ def main():
         "decode_mode": args.decode_mode,
         "control_mode": control_mode,
         "position": args.position,
+        "mask_prefix": args.mask_prefix,
         "num_soft_tokens": num_soft_tokens,
         "rms_scale": args.rms_scale,
         "effective_rms": effective_rms,
@@ -1139,8 +1157,9 @@ def main():
         tok_tag = f"_t{num_soft_tokens}" if num_soft_tokens != 8 else ""
         rms_tag = f"_rms{args.rms_scale}" if args.rms_scale != 1.0 else ""
         pos_tag = f"_{args.position}" if args.position != "prefix" else ""
+        mask_tag = "_masked" if args.mask_prefix else ""
         out_path = (Path(__file__).parent
-                    / f"sensitivity{diff_tag}{ctrl_tag}{tok_tag}{rms_tag}{pos_tag}_results.json")
+                    / f"sensitivity{diff_tag}{ctrl_tag}{tok_tag}{rms_tag}{pos_tag}{mask_tag}_results.json")
 
     with open(out_path, "w") as f:
         json.dump(output, f, indent=2, default=str)
