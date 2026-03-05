@@ -1,8 +1,8 @@
 # Task Board
 
 ## Doing
-- [x] 2-token dose-response: **60% (+28pp)** — NON-MONOTONIC PEAK
 - [ ] Codex-reviewed priority experiments (below)
+- [x] Update article written: `ARTICLE_UPDATE.md`
 
 ## Todo (Priority Order — Codex CLI Reviewed 2026-03-04)
 1. [ ] **Repeated-noise control** (1 vector repeated 8x vs 8 distinct) — tests within-prefix diversity
@@ -35,16 +35,23 @@
 - [x] Sweet-spot sensitivity: +12.4% mean, Cochran's Q p=0.006
 - [x] No-think sensitivity: flat landscape without CoT
 
-## Codex Review Summary (2026-03-04)
+## Codex Review Summary (2026-03-04, updated 2026-03-05)
 **Signal is promising but fragile at n=25.**
 - Effect is redistribution, not clean improvement
-- 1-token = threshold/trigger effect, not cumulative capacity
-- Strongest test: attention masking intervention
+- 2-token = non-monotonic peak (+28pp), contradicts threshold/saturation story
+- Strongest next test: attention masking intervention
 - Paper-worthy IF framed as "redistribution" with proper ablations
 - Need n=100+ for scientific claims
 
 ## DEAD CODE (DELETED)
 - V16, V17, V18 runners — removed (search-based experiments are futile)
 - AGENTS.md, root MEMORY.md, MASTER_RESEARCH.md — removed (superseded)
+
+## Documentation
+- [x] README.md updated to reflect warm-start findings
+- [x] RESEARCH_BRIEF.md — technical summary with figures
+- [x] ARTICLE_UPDATE.md — accessible update article
+- [x] EXPERIMENTS.md — full experiment log
+- [x] All figures generated: `experiments/figures/`
 
 ## Test Suite: 342 tests passing

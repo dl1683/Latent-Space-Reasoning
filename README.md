@@ -1,40 +1,40 @@
 # Latent Space Reasoning
 
-Evolutionary search over LLM hidden states to produce higher-quality, more specific responses than standard text generation.
+Research into how soft prompt tokens affect small language model reasoning. Originally an evolutionary search system over LLM hidden states — now pivoted to characterizing the **warm-start effect**: random embedding-scale tokens dramatically improve small-model arithmetic.
 
-For a full breakdown of the approach and why it works: **[How to Teach LLMs to Reason for $0.50](https://www.artificialintelligencemadesimple.com/p/how-to-teach-llms-to-reason-for-50)**
+**Original article:** [How to Teach LLMs to Reason for $0.50](https://www.artificialintelligencemadesimple.com/p/how-to-teach-llms-to-reason-for-50)
+**Update article:** [ARTICLE_UPDATE.md](ARTICLE_UPDATE.md) — what we found, what failed, and why it matters
 
-## What It Does
+## Key Finding: Random Prefix Tokens Improve Reasoning
 
-Instead of generating text directly, this engine:
+Prepending **2 random embedding-scale tokens** to the input of Qwen3-4B (Q4) improves arithmetic accuracy from **32% to 60%** (+28pp). No training, no fine-tuning, no optimization — just noise at the right scale.
 
-1. **Encodes** your query into an LLM's hidden states (latent space)
-2. **Evolves** the latent representation through selection, mutation, and crossover
-3. **Scores** evolved latents using decomposed judges to guide search
-4. **Decodes** the best latent back into text through two conditioning channels:
-   - **Soft prompt injection** (V13+): The latent is projected through a fixed orthogonal matrix into 8 soft tokens prepended to the model's input, shaping what the model attends to
-   - **Dual Newton steering** (V14+): The latent is routed through the model's own `lm_head` to create a vocabulary-level steering direction, then a per-token regularized Newton step in the dual (probability) coordinate system nudges generation toward the evolved representation
+| Condition | Accuracy | Change |
+|-----------|:--------:|:------:|
+| Baseline (no prefix) | 32.0% | — |
+| Zero embedding (8 tokens) | 36.0% | +4pp |
+| Mean embedding (8 identical) | 36.0% | +4pp |
+| Random noise (1 token) | 42.7% | +10.7pp |
+| **Random noise (2 tokens)** | **60.0%** | **+28pp** |
+| Random noise (8 tokens) | 44.0% | +12pp |
+| W-projected latent (8 tokens) | 44.4% | +12.4pp |
 
-## Why It Works
+**Direction doesn't matter** — random noise and carefully-projected latents are statistically indistinguishable (p = 1.0). The dose-response is **non-monotonic**: 2 tokens is optimal, more tokens degrades back to ~44%.
 
-**Standard LLM generation** is a single forward pass. Autoregressive decoding forces premature commitment - the model must choose tokens one at a time with no ability to search, backtrack, or optimize. You get whatever it produces on first try.
+## What's Actually Happening
 
-**Latent Space Reasoning** adds a search loop in representation space before decoding. The key insight: modern models contain sufficient knowledge, but their generation process doesn't explore alternatives. By evolving in latent space, we find representations that decode to more relevant, specific outputs.
+The prefix shifts the model from "formal presentation mode" (structured LaTeX, truncates before computing) into "exploratory computation mode" (informal, but actually does math). This is **trajectory perturbation** — a policy change, not a capability gain.
 
-What this looks like in practice:
+- **Chain-of-thought mediates**: no-think mode eliminates the effect entirely
+- **It's redistribution**: 3 tasks fixed, 6 regressed, net +12pp at 8 tokens
+- **Difficulty-dependent**: helps hard tasks (+28pp), hurts easy tasks (-7pp)
+- **Token budget**: wrong answers hit max_new_tokens ceiling, correct answers finish early
 
-| Problem Type | LR Advantage |
-|-------------|--------------|
-| Open-ended design | **Strong** - specific technologies, actionable steps, concrete details |
-| Code generation | **Strong** - produces actual implementations faster |
-| Find-all problems | **Moderate** - more thorough exploration |
-| Simple math/logic | **None** - identical to baseline |
-| Single-answer proofs | **Negative** - can explore too much and truncate |
-| Rescue cases | **Very strong** - produces useful output when baseline fails completely |
+See [RESEARCH_BRIEF.md](RESEARCH_BRIEF.md) for the full technical summary with figures.
 
-**The architecture is deliberately modular**: control lives in judges and aggregation, generation is a commodity. Small judges swap independently without retraining the generator. Frozen base models mean seamless upgrades when new models release. The entire system runs on consumer hardware for under $1.
+## What Was Falsified
 
-**Current research frontier (V14)**: Dual steering via information geometry ([arXiv:2602.15293](https://arxiv.org/abs/2602.15293)) applies a mathematically principled Newton step in the probability simplex rather than naive logit addition. Diagnostic results show the strongest signal on harder depth-3 problems: 40% accuracy vs 20% for soft prompt alone, with only 2.6% latency overhead.
+The original latent search thesis — "evolve soft prompts in latent space to improve reasoning" — is **dead**. Direction carries no signal. Hyperbolic geometry adds nothing over Euclidean. Evolution can't improve on random initialization. The entire encode→evolve→decode pipeline adds zero value over random noise. Details in [ARTICLE_UPDATE.md](ARTICLE_UPDATE.md).
 
 ## Installation
 
@@ -147,6 +147,9 @@ src/latent_reasoning/
     judge.py             # Scoring: TrainedLatentJudge, ScorerJudge, etc.
     panel.py             # JudgePanel: aggregates multiple scorers
     chain.py             # ChainState: tracks evolution history
+  decode/
+    projection.py        # Orthogonal W projection for soft prompts
+    steering.py          # Intermediate layer steering
   evolution/
     loop.py              # EvolutionLoop: main evolution algorithm
     selection.py         # Selection strategies
@@ -154,30 +157,64 @@ src/latent_reasoning/
     crossover.py         # Crossover strategies
   orchestrator/
     orchestrator.py      # Coordinates full pipeline
-  eval/
-    arc_agi2.py          # ARC-AGI evaluation framework
   utils/
     hyperbolic.py        # Poincare ball / hyperbolic geometry utilities
     logging.py           # Structured logging and progress display
-experiments/             # Benchmark scripts and result artifacts (V10-V14)
-tests/                   # Unit and integration tests (250 tests)
+experiments/
+  run_latent_sensitivity.py   # Main experiment runner (all controls)
+  analyze_error_taxonomy.py   # Per-task error analysis
+  create_figures.py           # Publication-quality figure generation
+  harness.py                  # Unified experiment harness
+  EXPERIMENTS.md              # Full experiment log (reverse chronological)
+  ledger.jsonl                # Machine-readable experiment ledger
+  figures/                    # Generated figures (7 publication plots)
+tests/                        # Unit and integration tests (342 tests)
 ```
+
+## Key Documentation
+
+| Document | Purpose |
+|----------|---------|
+| [RESEARCH_BRIEF.md](RESEARCH_BRIEF.md) | Technical summary with data tables and figures |
+| [ARTICLE_UPDATE.md](ARTICLE_UPDATE.md) | Accessible article covering all findings |
+| [GOALS.md](GOALS.md) | Active research goals and completed milestones |
+| [TASKS.md](TASKS.md) | Current task board and experiment queue |
+| [experiments/EXPERIMENTS.md](experiments/EXPERIMENTS.md) | Full experiment log with methodology |
 
 ## Development
 
 ```bash
 make install-dev
-make test      # 250 tests
+make test      # 342 tests
 make lint
 make check
 ```
 
+## Current Research Status
+
+**Phase: Warm-start mechanism characterization** (see [TASKS.md](TASKS.md))
+
+Completed:
+- Warm-start confirmed: random noise = W-projected latents (p=1.0)
+- Non-monotonic dose-response: 2 tokens optimal (+28pp)
+- Error taxonomy: redistribution, not clean improvement
+- Controls: zero embedding, mean embedding, no-think, cross-difficulty
+
+Next experiments:
+- Repeated-noise control (within-prefix diversity)
+- Attention masking intervention
+- Suffix position test
+- Token budget sweep
+- Scale to n=100+ tasks
+- Multi-model validation
+
 ## Limitations
 
-- Output quality is prompt/model dependent and can regress on some tasks.
-- Internal scorer values are useful as search guidance but do not reliably predict output quality on their own. See `CLAUDE.md` for evaluation rules.
-- Runtime scales with model size and evolution parameters.
-- Multi-seed statistical validation of V13/V14 improvements is still in progress.
+- **Single model**: Only tested on Qwen3-4B. May not generalize.
+- **Single domain**: Only arithmetic tasks tested.
+- **Small n**: 25 tasks — need n=100+ for publication-strength claims.
+- **No internal probing**: Mechanism inferred from outputs, not attention patterns.
+- **Effect is redistribution**: some tasks improve, others regress.
 
 ## Contributing
 

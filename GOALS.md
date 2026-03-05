@@ -7,7 +7,7 @@
 ## Active Goals
 
 ### 1. Characterize the Warm-Start Mechanism (IN PROGRESS)
-**Core finding:** Prepending random embedding-scale tokens improves Qwen3-4B arithmetic by +12pp (32% -> 44%). Direction doesn't matter. This is a TRAJECTORY PERTURBATION effect.
+**Core finding:** Prepending random embedding-scale tokens improves Qwen3-4B arithmetic by up to +28pp (32% -> 60% at 2 tokens). Direction doesn't matter. The dose-response is non-monotonic. This is a TRAJECTORY PERTURBATION effect.
 
 **Completed:**
 - [x] Mean-embedding control: 36% = zero → token diversity doesn't help for identical tokens
@@ -19,7 +19,6 @@
 - [x] Qualitative output analysis: policy shift from formal to exploratory reasoning
 
 **In progress / next:**
-- [x] 2-token dose-response: 60% (+28pp), non-monotonic peak
 - [ ] Repeated-noise (1 vector x 8): within-prefix diversity test
 - [ ] Attention masking (--mask-prefix): attention sink vs trajectory perturbation
 - [ ] Suffix position: does position matter?
@@ -47,6 +46,9 @@
 - Euclidean = Hyperbolic under same conditioning. Geometry adds no value.
 
 ## Completed Goals
+- [x] Update article: ARTICLE_UPDATE.md
+- [x] Research brief: RESEARCH_BRIEF.md with 7 figures
+- [x] README.md updated to reflect warm-start findings
 - [x] AIM-v1 accessibility milestone
 - [x] Autonomy scaffolding
 - [x] Unified experiment harness
