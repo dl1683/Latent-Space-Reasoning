@@ -5,6 +5,71 @@ Only Codex-validated conclusions are stated as "confirmed."
 
 ---
 
+## Shi et al. Discrete Token Control (2026-03-05) — PLANNED
+
+**Purpose:** Codex-recommended highest-priority experiment. Replicate Shi et al. (2025) discrete
+punctuation token effect on our exact Qwen3-4B setup. Key question: does our continuous perturbation
+regime produce qualitatively different effects than their discrete tokens?
+**Config:** Repeated "/" and "?" tokens at 1,2,3,8 counts, 25 sweet-spot tasks, Qwen3-4B Q4
+**Script:** `python experiments/run_latent_sensitivity.py --task-type nested --difficulty sweet_spot --n-latents 2 --n-tasks 25 --control-mode discrete_tokens --discrete-token "/,?" --num-soft-tokens 2 --reuse-baseline <baseline_path>`
+**Status:** Implementation complete, awaiting GPU time.
+
+---
+
+## Think-Gate Probe (2026-03-05) — PLANNED
+
+**Purpose:** Codex-recommended highest-ROI mechanism probe. Measures <think> token probability
+at the first decode position under all perturbation conditions. Tests PGRMS gating claim directly.
+**Config:** 25 sweet-spot tasks, single forward pass per condition, 10 conditions
+**Script:** `python experiments/run_think_gate_probe.py --n-tasks 25`
+**Status:** Implementation complete, awaiting GPU time.
+
+### Expected
+- <think> rank=1 for all perturbation conditions (confirming mode gating)
+- <think> lower rank for baseline (confirming perturbation raises think-mode probability)
+- Graded effect: more tokens → higher <think> probability?
+
+---
+
+## 3-Token Dose-Response (2026-03-05) — RUNNING
+
+**Purpose:** Fill critical gap in dose-response curve. Confirm non-monotonic peak at 2 tokens.
+**Config:** 10 random noise vectors, 3 soft tokens each, 25 sweet-spot tasks, Qwen3-4B Q4
+**Script:** `python -u experiments/run_latent_sensitivity.py --task-type nested --difficulty sweet_spot --n-latents 10 --n-tasks 25 --control-mode random_noise --num-soft-tokens 3`
+**Status:** Baseline phase task 23/25, then 10 latent sweeps.
+
+### Preliminary
+- Latent 1 (from prior aborted run): 44.0% with normal timing (~no compute confound)
+
+---
+
+## Deep Data Analysis + Paper Figures (2026-03-05) — CODEX VALIDATED
+
+**Purpose:** Comprehensive statistical analysis of all existing data. 7 paper figures generated.
+**Artifacts:** experiments/figures/fig[1-7]_*.png, experiments/analysis_summary.md
+**Script:** experiments/create_figures.py
+
+### Key Findings (Codex-Validated)
+1. Strict categorization: 2 always-solved, 1 never-solved, 22 sensitive
+2. Equalization at 2-tok: all 3 latents solve exactly 13/22 sensitive (std=0.00)
+3. Full oracle: 24/25 = 96% (only nest_008 unsolvable)
+4. Task-specific resonance: nest_005 (1-tok only), nest_021 (8-tok only)
+5. McNemar: Latent 0 purely additive (7 gains, 0 losses, p≈0.023)
+6. Cohen's h = 0.570 at 2-tok (medium-large effect)
+7. Timing confound resolved: Latent 0 achieves 60% at baseline timing (73.6s)
+8. Headroom analysis: 41.2% error reduction vs Shi's 2.2-16.7%
+
+---
+
+## Force-Think Baseline (2026-03-05) — CONFIRMED
+
+**Purpose:** Decompose perturbation effect into think-mode gating vs noise-specific contribution.
+**Config:** Prepend `<think>\n` to force think mode without noise prefix.
+**Results:** 40% (10/25) — think mode alone gives +8pp, noise gives additional +20pp.
+**Codex validated:** Noise contributes 2.5x more than think mode at 2-tok optimum.
+
+---
+
 ## 2-Token Dose-Response (2026-03-05) — NON-MONOTONIC PEAK
 
 **Purpose:** Test 2-token random noise prefix as part of dose-response sweep.
