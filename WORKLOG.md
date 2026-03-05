@@ -111,37 +111,49 @@
   - Result snapshot (`distilgpt2`, 2 queries, 2 repeats): quality delta `0.0`, evaluation reduction `~15.4%` (`6.5 -> 5.5` median trial evals), end-to-end latency reduction `~7.4%`.
 - Updated non-tiny confirmation to use the repeat-stabilized result as primary reference.
 
-## 2026-03-04 (night) — Error Taxonomy, Codex Review, Diagnostic Controls
+## 2026-03-04/05 (night) — Error Taxonomy, Codex Review, Diagnostic Controls
 
 ### Error Taxonomy Analysis (CRITICAL FINDING)
 - **8-token effect is REDISTRIBUTION, not clean improvement**
 - 3/17 baseline failures FIXED (nest_006=70%, nest_010=100%, nest_015=70%)
 - 6/8 baseline successes REGRESSED (nest_003=30%, nest_007=30%, nest_014=10%)
 - Net effect positive on average but individual task reliability drops
-- Created `experiments/analyze_error_taxonomy.py`
 
-### Codex CLI Review
-- **Signal "promising but fragile" at n=25** — need larger task set
-- 1-token = threshold/trigger effect, not cumulative capacity
-- Pivot from token-count sweep to diagnostic experiments
-- Strongest test: attention masking intervention
-- Paper-worthy IF framed as redistribution with proper ablations
+### Qualitative Output Analysis (USER-REQUESTED)
+- Recovery: baseline stuck in "formal presentation mode" → random tokens push into informal computation
+- Regression: baseline efficient structured approach → tokens cause rambling, token budget waste
+- Generation time: correct answers ~60s, wrong answers ~81s (hit max_new_tokens)
+- Response style: correct have fewer numbers but MORE operations (computationally dense)
+
+### Three Codex CLI Reviews
+1. **Error taxonomy review**: Signal "promising but fragile" at n=25
+2. **Qualitative output review**: Trajectory perturbation / attractor switching, not attention sink
+3. **Paper framing review**: Workshop-worthy, lead with mechanism characterization
 
 ### New Diagnostic Controls Implemented
-1. `--control-mode repeated_noise`: 1 random vector repeated k times (tests within-prefix diversity)
+1. `--control-mode repeated_noise`: 1 random vector repeated k times
 2. `--position suffix`: places tokens between prompt and generation start
-3. `--mask-prefix`: blocks attention to soft prompt positions (attention sink test)
-4. All syntactically verified, 342 tests passing
+3. `--mask-prefix`: blocks attention to soft prompt positions
+4. `--max-new-tokens` sweep support (gen_tag in filenames)
+5. Response storage increased from 500 to 2000 chars
+6. `experiments/run_diagnostic_battery.sh` ready to run
 
-### 2-Token Sweep (RUNNING)
-- Noise 1: 60% (15/25) — below 8-token mean
-- Noise 2: in progress (~task 10/25)
-- Log buffering prevents real-time monitoring
+### 2-Token Sweep (STILL RUNNING)
+- Noise 1: 60% (15/25)
+- Noise 2: in progress (~task 15/25), slowed by VRAM contention with another GPU process
+- Note: PID 15884 (causal_pr_robust.py) is also using GPU, causing slowdown
 
 ### Commits
 - 03e59fd: Error taxonomy analysis, task board update, gitignore logs
 - 47ade9d: repeated_noise and suffix position controls
 - 14bbf45: Attention masking intervention (--mask-prefix)
+- bb7c2b0: Response storage 500→2000 chars
+- ce41bda: Diagnostic battery script
+- 9941b66: gen_tag for max_new_tokens sweep
+- 0010d9e: Timing/style analysis in error taxonomy
+- 98e2d24: EXPERIMENTS.md with trajectory perturbation
+- 23f8ace: GOALS.md updated
+- 9f4b326: 4 missing ledger entries
 
 ---
 
