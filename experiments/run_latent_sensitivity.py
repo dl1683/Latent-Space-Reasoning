@@ -631,13 +631,14 @@ def main():
     parser.add_argument(
         "--control-mode", default="latent_projected",
         choices=["latent_projected", "random_noise", "antipodal", "mean_embedding",
-                 "zero_embedding", "repeated_noise"],
+                 "zero_embedding", "repeated_noise", "discrete_tokens"],
         help="Control mode: latent_projected (normal W projection), "
              "random_noise (random embeddings at target RMS), "
              "antipodal (+v,-v pair: cancels semantics, preserves dynamics), "
              "mean_embedding (mean token embedding repeated), "
              "zero_embedding (all-zero soft prompt tokens), "
-             "repeated_noise (ONE random vector repeated k times)")
+             "repeated_noise (ONE random vector repeated k times), "
+             "discrete_tokens (Shi et al. replication: repeat real token embeddings)")
     parser.add_argument("--num-soft-tokens", type=int, default=8,
         help="Number of soft prompt tokens (for dose-response experiments)")
     parser.add_argument("--rms-scale", type=float, default=1.0,
@@ -650,6 +651,10 @@ def main():
         help="Block attention to soft prompt positions (attention mask = 0). "
              "Tests attention sink hypothesis: if effect vanishes, "
              "attention routing is the mechanism.")
+    parser.add_argument("--discrete-token", type=str, default="/",
+        help="Token character for discrete_tokens mode (default: '/'). "
+             "Use comma-separated for multiple tokens as separate 'latents': "
+             "e.g., '/,?,.,#' tests each token type.")
     parser.add_argument("--reuse-baseline", type=str, default=None,
         help="Path to existing results JSON to reuse baseline from (skips Phase 1)")
     parser.add_argument("--n-tasks", type=int, default=None,
@@ -920,6 +925,34 @@ def main():
         control_soft_prompts = [sp] * args.n_latents
         print(f"  Note: all {args.n_latents} use identical soft prompt (control)")
 
+    elif control_mode == "discrete_tokens":
+        # Shi et al. (2025) replication: use real token embeddings from the vocab
+        token_chars = [t.strip() for t in args.discrete_token.split(",")]
+        print(f"CONTROL MODE: discrete_tokens (Shi et al. replication)")
+        print(f"  Token characters: {token_chars}")
+        print(f"  Each repeated {num_soft_tokens} times as prefix")
+        control_soft_prompts = []
+        with torch.no_grad():
+            embed_layer = encoder.model.get_input_embeddings()
+            for tc in token_chars:
+                token_ids = encoder.tokenizer.encode(tc, add_special_tokens=False)
+                if len(token_ids) != 1:
+                    print(f"  WARNING: '{tc}' tokenizes to {len(token_ids)} tokens: {token_ids}")
+                    print(f"    Using first token ID: {token_ids[0]}")
+                tid = token_ids[0]
+                token_name = encoder.tokenizer.decode([tid])
+                emb = embed_layer(torch.tensor([[tid]], device=encoder._device))  # (1,1,d)
+                emb_rms = emb.float().square().mean().sqrt().item()
+                print(f"  Token '{tc}' -> id={tid} ('{token_name}'), "
+                      f"native RMS={emb_rms:.5f} (vs target {effective_rms:.5f})")
+                # Use NATIVE embedding scale (not rescaled) — matches Shi et al.
+                sp = emb.float().expand(1, num_soft_tokens, embed_dim).clone()
+                control_soft_prompts.append(sp)
+        # Override n_latents to match number of token types
+        if len(token_chars) > 1:
+            args.n_latents = len(token_chars)
+            print(f"  Set n_latents={args.n_latents} (one per token type)")
+
     else:
         # Default: latent_projected — generate random latents
         print(f"Generating {args.n_latents} random latents...")
@@ -974,6 +1007,7 @@ def main():
         label = ("Noise" if control_mode == "random_noise"
                  else "Antipodal" if control_mode == "antipodal"
                  else "MeanEmb" if control_mode == "mean_embedding"
+                 else "DiscTok" if control_mode == "discrete_tokens"
                  else "Latent")
         print(f"\n  --- {label} {li + 1}/{args.n_latents} ---")
         task_results = []
@@ -1199,6 +1233,7 @@ def main():
         "task_type": args.task_type,
         "decode_mode": args.decode_mode,
         "control_mode": control_mode,
+        "discrete_token": args.discrete_token if control_mode == "discrete_tokens" else None,
         "force_think_baseline": args.force_think_baseline,
         "position": args.position,
         "mask_prefix": args.mask_prefix,

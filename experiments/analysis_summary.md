@@ -223,13 +223,38 @@ Use "coarsely stable" label, not "always/never", per Codex guidance.
 9. **MODERATE**: Large-answer regression (100% → 78%) = informative limitation (policy switch, not boost)
 10. **MODERATE**: Latent 0 purely additive (7 gains, 0 losses, McNemar p≈0.023) — existence result
 
-## 10. Pending Experiments (Priority Order, per Codex 2026-03-05, updated post-timing-resolution)
+## 10. Codex Shi et al. Positioning (2026-03-05)
 
-1. **3-tok dose-response** -- RUNNING (10 latents). Latent 1: 44.0% with normal timing.
-2. **Scale 2-tok to n=100 tasks, n=10 latents** -- replicate oracle + zero-variance (HIGHEST IMPACT)
-3. **Reduced max_new_tokens sweep** (256, 512) -- reviewer-facing control, no longer critical
+**Codex assessment** of Shi et al. (arXiv:2510.01032, Oct 2025):
+
+- **Positioning**: Same umbrella phenomenon, different regime. Shi = closest related work.
+  They establish discrete-token perturbations help; we study continuous embedding-space
+  perturbations with stronger mechanistic structure.
+- **Mechanism**: No conflict. Multi-level reconciliation:
+  `prefix perturbation → MLP activation redistribution → gate crossing / mode selection → altered reasoning trajectory → task-level redistribution`
+  Shi = proximate MLP substrate. PGRMS = systems-level behavioral model.
+  Present think-mode gating as **Qwen3-4B instantiation**, not universal explanation.
+- **Venue**: Pushes toward NeurIPS-style pitch. Need: (1) Shi-style token control,
+  (2) internal mechanism probe, (3) broader replication. Without these, EMNLP safer but weaker.
+- **Effect size**: Don't sell +28pp vs +1-5% as simple superiority. Ours = peak resonance
+  in sensitive regime; theirs = broad cross-model average. Report headroom + matched controls.
+- **Immediate paper changes**: Remove "first to show" claims. Reframe as continuous
+  perturbation control + dynamical structure. Add Shi comparison table.
+
+**Positioning sentence (Codex-approved)**:
+"Shi et al. (2025) show that repeated punctuation tokens can produce modest, non-monotonic
+reasoning gains via activation redistribution. We study a distinct continuous-perturbation
+regime, where random embedding-scale prefixes induce much larger, direction-independent but
+task-selective effects, revealing mode gating, oracle efficiency, and task-specific resonance."
+
+## 11. Pending Experiments (Priority Order, per Codex 2026-03-05, updated post-Shi)
+
+1. **Shi-style discrete token control** -- HIGHEST PRIORITY (Codex).
+   Run repeated `/` and `?` on Qwen3-4B at 1,2,3,8 tokens. Implemented in harness.
+2. **3-tok dose-response** -- RUNNING (10 latents).
+3. **Scale 2-tok to n=100 tasks, n=10 latents** -- replicate oracle + zero-variance
+4. **Reduced max_new_tokens sweep** (256, 512) -- reviewer-facing control
    - Harness instrumented with generated_tokens, terminated_by_eos, tokens_per_sec
-4. **Force-think + 2 noise tokens** -- isolates stochastic component (OOM'd at 16/25)
-5. Dense dose-response (4,5,6,7 tokens)
-6. Position-ID-only control (shifted positions, no prefix tokens)
+5. **Force-think + 2 noise tokens** -- isolates stochastic component (OOM'd at 16/25)
+6. Dense dose-response (4,5,6,7 tokens)
 7. Cross-model (Qwen3-8B)
