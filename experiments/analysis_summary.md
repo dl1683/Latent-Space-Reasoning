@@ -193,14 +193,16 @@ Removing 5 always-solved (easy) and 2 never-solved (impossible) tasks leaves 18 
 - Jaccard overlap: 1-tok ~0.20-0.22 (independent), 2-tok ~0.33-0.54 (moderate)
 - Only nest_005 (answer=8360) is genuinely unsolvable — beyond model capacity at any noise
 
-## 9. Paper Contributions (Revised Ranking)
+## 9. Paper Contributions (Revised Ranking, Codex 2026-03-05)
 
-1. **STRONG**: Oracle 88% from 3 random directions vs 60% individual vs 32% baseline
-2. **STRONG**: Noise contributes 2.5x more than think mode (force-think decomposition)
-3. **STRONG**: Direction steers which tasks are solved, not how many (kappa=0.278)
+1. **STRONG**: Direction changes WHICH tasks, not HOW MANY (equalization at 2-tok, p=0.006)
+   - Headline claim per Codex: NOT "zero variance" but "constant count, different support"
+2. **STRONG**: Oracle efficiency — 2-tok matches 8-tok ceiling (94.4%) with 3x fewer directions
+3. **STRONG**: Noise contributes 2.5x more than think mode (force-think decomposition)
 4. **STRONG**: Deterministic chaos under greedy decoding (T=0, different outputs from noise)
-5. **MODERATE**: Non-monotonic dose-response (peak at 2 tokens)
-6. **MODERATE**: Operation-type stratification (mod > small > large)
+5. **STRONG**: Timing confound resolved — latent 0 achieves 60% at baseline timing (73.6s)
+6. **MODERATE**: Non-monotonic dose-response (peak at 2 tokens, pending 3-tok confirmation)
+7. **MODERATE**: Operation-type stratification (mod > small > large)
 
 ## 10. Pending Experiments (Priority Order, per Codex 2026-03-05, updated post-timing-resolution)
 
