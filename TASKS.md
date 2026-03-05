@@ -1,14 +1,22 @@
 # Task Board
 
 ## Doing
-- [ ] Run nested-easy noise control (completes interpretive picture)
+- [ ] Run nested-easy noise control (experiment running, ~2h remaining)
 
-## Todo (Priority Order)
-1. [ ] Mean-embedding control on sweet-spot tasks (do 8 identical tokens also work?)
-2. [ ] Token count dose-response (1, 2, 4, 8, 16, 32 tokens)
-3. [ ] RMS scale sweep (0.5x, 1x, 2x, 5x target_rms)
-4. [ ] Non-Qwen model test: Llama-3.2-3B on same sweet-spot tasks
-5. [ ] Non-arithmetic tasks: GSM8K subset (10-20 problems)
+## Todo (Priority Order — Codex-reviewed)
+1. [ ] Token count dose-response (1, 2, 4, 8, 16, 32 tokens) — n-latents=3, --reuse-baseline
+2. [ ] RMS scale sweep (0.1x, 0.25x, 0.5x, 1.0x, 2.0x, 5.0x, 10.0x) — same setup
+3. [ ] Zero-embedding control (tests attention extension only)
+4. [ ] Mean-embedding control (tests if token diversity matters)
+5. [ ] Non-Qwen model test: Llama-3.2-3B, Phi-3-mini, Gemma-2-2B (deferred until mechanism characterized)
+6. [ ] Non-arithmetic tasks: GSM8K subset (deferred)
+
+## Infrastructure Done
+- [x] `--num-soft-tokens` and `--rms-scale` CLI flags
+- [x] `--reuse-baseline` (skips 21-min baseline Phase 1)
+- [x] `--control-mode zero_embedding`
+- [x] `experiments/run_mechanism_sweeps.sh` (runs all sweeps sequentially)
+- [x] `experiments/analyze_sweeps.py` (collates results into summary table)
 
 ## DEAD CODE (do NOT run)
 - V17 (Active Inference surrogate) — futile, direction doesn't matter
