@@ -1,0 +1,41 @@
+{
+  "experiment": "nested_easy_noise_control",
+  "model": "Qwen/Qwen3-4B",
+  "quantization": "4bit",
+  "task_type": "nested",
+  "difficulty": "easy_nested",
+  "control_mode": "random_noise",
+  "n_latents": 5,
+  "n_latents_completed": 4,
+  "n_tasks": 25,
+  "baseline_accuracy": 0.92,
+  "noise_accuracies": [
+    0.96,
+    0.76,
+    0.88,
+    0.8
+  ],
+  "noise_correct": [
+    24,
+    19,
+    22,
+    20
+  ],
+  "noise_mean": 0.85,
+  "noise_std": 0.089,
+  "noise_range": 0.2,
+  "cochrans_q": 6.103,
+  "cochrans_p": 0.1067,
+  "cochrans_q_significant": false,
+  "comparison_vs_latent_projected": {
+    "latent_mean": 0.84,
+    "latent_std": 0.084,
+    "latent_range": 0.32,
+    "mann_whitney_U": 19.5,
+    "mann_whitney_p": 1.0,
+    "conclusion": "INDISTINGUISHABLE - noise matches latent-projected on easy tasks"
+  },
+  "note": "Noise 5 killed at task 18/25 (VRAM/process termination). 4 complete vectors sufficient.",
+  "verdict": "WARM_START_CONFIRMED_EASY_TASKS",
+  "interpretation": "Noise vectors show same inter-vector variance as W-projected. Both mean below baseline. Direction doesnt matter on easy tasks either."
+}
