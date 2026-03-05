@@ -1158,8 +1158,9 @@ def main():
         rms_tag = f"_rms{args.rms_scale}" if args.rms_scale != 1.0 else ""
         pos_tag = f"_{args.position}" if args.position != "prefix" else ""
         mask_tag = "_masked" if args.mask_prefix else ""
+        gen_tag = f"_gen{args.max_new_tokens}" if args.max_new_tokens != 1024 else ""
         out_path = (Path(__file__).parent
-                    / f"sensitivity{diff_tag}{ctrl_tag}{tok_tag}{rms_tag}{pos_tag}{mask_tag}_results.json")
+                    / f"sensitivity{diff_tag}{ctrl_tag}{tok_tag}{rms_tag}{pos_tag}{mask_tag}{gen_tag}_results.json")
 
     with open(out_path, "w") as f:
         json.dump(output, f, indent=2, default=str)
