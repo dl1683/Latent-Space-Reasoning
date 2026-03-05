@@ -54,6 +54,7 @@ def decode_with_raw_soft_prompt(
     enable_thinking: bool = True,
     position: str = "prefix",
     mask_prefix: bool = False,
+    force_think: bool = False,
 ) -> str:
     """Decode using a pre-built soft prompt tensor (bypasses latent projection).
 
@@ -64,6 +65,8 @@ def decode_with_raw_soft_prompt(
     position: "prefix" (before all text) or "suffix" (between prompt and generation)
     mask_prefix: if True, set attention mask to 0 for soft prompt positions
                  (tokens exist in sequence but other tokens can't attend to them)
+    force_think: if True, append '<think>\n' to the prompt to force think mode
+                 (used for decomposition: noise + forced think mode)
     """
     system_msg = "Answer to the best of your ability."
     user_msg = query or ""
@@ -88,6 +91,9 @@ def decode_with_raw_soft_prompt(
             )
     else:
         prompt = f"System: {system_msg}\n\nUser: {user_msg}\n\nAssistant: "
+
+    if force_think:
+        prompt += "<think>\n"
 
     inputs = encoder.tokenizer(prompt, return_tensors="pt")
     inputs = {k: v.to(encoder._device) for k, v in inputs.items()}
@@ -953,6 +959,7 @@ def main():
                         enable_thinking=not args.no_think,
                         position=args.position,
                         mask_prefix=args.mask_prefix,
+                        force_think=args.force_think_baseline,
                     )
                     raw = resp  # raw_soft_prompt returns unstripped
                 else:
@@ -970,6 +977,7 @@ def main():
                             enable_thinking=not args.no_think,
                             position=args.position,
                             mask_prefix=args.mask_prefix,
+                            force_think=args.force_think_baseline,
                         )
                         raw = resp
                     else:

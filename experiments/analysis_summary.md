@@ -68,23 +68,33 @@ byte-identical text for a "invariance length" that depends on perturbation energ
 - More tokens = more perturbation energy = shorter invariance = earlier bifurcation
 - 2-token sweet spot: late divergence preserves reasoning quality + high oracle coverage
 
-## 6. Think Mode Is a Step Function (NOT the Full Story)
+## 6. Force-Think Decomposition (CONFIRMED 2026-03-05)
 
-1-token has 100% think mode (25/25), same as 2-token. Yet accuracy differs: 42.7% vs 60%.
+**Force-think baseline: 40.0% (10/25)** -- prediction confirmed!
 
 | Condition | Think Rate | Accuracy | Component |
 |-----------|-----------|---------|-----------|
 | Baseline | 16% (4/25) | 32.0% | -- |
-| 1 token | 100% (25/25) | 42.7% | Gate: +10.7pp |
-| 2 tokens | 100% (25/25) | 60.0% | Gate + Energy: +28.0pp |
-| 8 tokens | ? (likely 100%) | 44.4% | Gate + Overperturbation |
+| Force-think | 100% (forced) | 40.0% | Think mode = +8pp |
+| Zero embedding | 100% (25/25) | 36.0% | Think + zero positions = +4pp |
+| 1-tok noise | 100% (25/25) | 42.7% | Think + 1 random = +10.7pp |
+| 2-tok noise | 100% (25/25) | 60.0% | Think + optimal noise = +28pp |
+| 8-tok noise | ~100% | 44.0% | Think + excess noise = +12pp |
 
-**Decomposition of the 2-token improvement**:
-- Think mode gate (step function): ~+10.7pp (floor)
-- Optimal perturbation energy within think mode: ~+17.3pp (continuous)
-- Total: +28.0pp
+**Clean decomposition at 2 tokens**:
+- Think mode alone: +8pp (32% -> 40%)
+- Noise perturbation beyond think: +20pp (40% -> 60%)
+- **Noise contributes 2.5x more than think mode activation**
 
-**Prediction for force-think-baseline**: ~40-45% (think mode alone, no noise)
+**Force-think task-level changes vs normal baseline**:
+- Gained: nest_002 (6193), nest_015 (7693), nest_016 (10), nest_018 (4)
+- Lost: nest_007 (1044), nest_014 (20) -- overthinking regression
+
+**Zero embedding determinism**: 25/25 byte-identical responses across 3 latents (no chaos).
+Zero vs force-think NOT statistically significant (10/25 vs 9/25, p >> 0.3 at n=25).
+
+**Codex caution**: Three-component model (think gate + positional perturbation + stochastic
+diversity), not simple two-component. Need n=100 to distinguish force-think from zero.
 
 ## 7. Infrastructure Confound (RESOLVED)
 
@@ -102,19 +112,32 @@ byte-identical text for a "invariance length" that depends on perturbation energ
 - At 8 tokens: excessive energy, direction-dependent accuracy AND tasks
 - Oracle ceiling suggests 88% of tasks are solvable with diverse perturbations
 
-## 8. Paper Contributions (Revised Ranking)
+## 8. Operation Type Stratification
 
-1. **STRONG**: Training-free random token prefix improves reasoning +28pp
-2. **STRONG**: Direction steers which tasks are solved, not how many (kappa=0.278)
-3. **STRONG**: Oracle 88% from 3 random directions vs 60% individual vs 32% baseline
-4. **MODERATE**: Non-monotonic dose-response (awaiting 3-token)
-5. **WEAK**: CoT mediates the effect
+| Category | n | Base | 1-tok | 2-tok | 8-tok |
+|----------|---|------|-------|-------|-------|
+| Mod (<50) | 7 | 14.3% | 23.8% | **66.7%** | 34.3% |
+| Small (<=1k) | 14 | 35.7% | 54.8% | **76.2%** | 57.1% |
+| Medium (1k-5k) | 3 | **100%** | 55.6% | 77.8% | 50.0% |
+| Large (>5k) | 8 | 0.0% | 16.7% | 25.0% | 20.0% |
 
-## 9. Pending Experiments (Priority Order)
+Key: Modular arithmetic benefits most (+52pp at 2-tok). Medium tasks REGRESS (overthinking).
 
-1. Dense dose-response: 3-token (RUNNING), then 4-7
-2. **2-token replication at scale (n=10+)** -- URGENT, confirm zero-acc-variance isn't n=3 coincidence
-3. Energy-normalized sweep (script ready)
-4. Antipodal pair (+v,-v) (implemented, not yet run)
-5. RMS sweep at 2 tokens (0.1x-10x)
+## 9. Paper Contributions (Revised Ranking)
+
+1. **STRONG**: Oracle 88% from 3 random directions vs 60% individual vs 32% baseline
+2. **STRONG**: Noise contributes 2.5x more than think mode (force-think decomposition)
+3. **STRONG**: Direction steers which tasks are solved, not how many (kappa=0.278)
+4. **STRONG**: Deterministic chaos under greedy decoding (T=0, different outputs from noise)
+5. **MODERATE**: Non-monotonic dose-response (peak at 2 tokens)
+6. **MODERATE**: Operation-type stratification (mod > small > large)
+
+## 10. Pending Experiments (Priority Order, per Codex)
+
+1. **Force-think + 2 noise tokens** -- isolates stochastic component (implemented)
+2. **Scale force-think to n=100 tasks** -- statistical power for decomposition
+3. **Scale 2-tok to n=100 tasks, n=10 latents** -- replicate oracle + zero-variance
+4. Dense dose-response (3,4,5,6,7 tokens)
+5. Cross-model (Qwen3-8B)
+6. Position-ID-only control (shifted positions, no prefix tokens)
 6. Cross-model validation
