@@ -563,14 +563,18 @@ def main():
         help="Max generation tokens")
     parser.add_argument(
         "--control-mode", default="latent_projected",
-        choices=["latent_projected", "random_noise", "mean_embedding"],
+        choices=["latent_projected", "random_noise", "mean_embedding",
+                 "zero_embedding"],
         help="Control mode: latent_projected (normal W projection), "
              "random_noise (random embeddings at target RMS), "
-             "mean_embedding (mean token embedding repeated)")
+             "mean_embedding (mean token embedding repeated), "
+             "zero_embedding (all-zero soft prompt tokens)")
     parser.add_argument("--num-soft-tokens", type=int, default=8,
         help="Number of soft prompt tokens (for dose-response experiments)")
     parser.add_argument("--rms-scale", type=float, default=1.0,
         help="Multiplier for target RMS (for RMS sweep experiments)")
+    parser.add_argument("--reuse-baseline", type=str, default=None,
+        help="Path to existing results JSON to reuse baseline from (skips Phase 1)")
     parser.add_argument("--n-tasks", type=int, default=None,
         help="Override total number of tasks (for nested/sweet_spot modes)")
     parser.add_argument("--output", default=None)
@@ -629,39 +633,55 @@ def main():
     W = W.to(encoder._device)
 
     # ---- Phase 1: Zero-shot baseline ----
-    print(f"\n{'=' * 40}")
-    print("PHASE 1: Zero-shot baseline")
-    print(f"{'=' * 40}")
-    baseline_results = []
     start = time.time()
-    for i, task in enumerate(tasks):
-        t0 = time.time()
-        resp = run_zero_shot(
-            encoder, task.prompt,
-            max_new_tokens=args.max_new_tokens,
-            enable_thinking=not args.no_think,
-        )
-        elapsed = time.time() - t0
-        correct = verify_answer(resp, task.correct_answer)
-        baseline_results.append({
-            "task_id": task.task_id,
-            "difficulty": task.difficulty,
-            "n_steps": task.n_steps,
-            "correct_answer": task.correct_answer,
-            "response": resp[:500],
-            "correct": correct,
-            "time": round(elapsed, 1),
-        })
-        mark = "OK" if correct else "WRONG"
-        safe_print(
-            f"  [{i + 1}/{n_tasks}] {task.task_id} "
-            f"({task.difficulty}/{task.n_steps}step): "
-            f"{mark} (expect={task.correct_answer}, t={elapsed:.1f}s)")
+    if args.reuse_baseline:
+        print(f"\n{'=' * 40}")
+        print(f"PHASE 1: Reusing baseline from {args.reuse_baseline}")
+        print(f"{'=' * 40}")
+        with open(args.reuse_baseline) as f_bl:
+            prev = json.load(f_bl)
+        baseline_results = prev["baseline_results"]
+        baseline_elapsed = prev.get("baseline_elapsed_s", 0)
+        baseline_accuracy = prev["baseline_accuracy"]
+        print(f"  Loaded {len(baseline_results)} baseline results, accuracy={baseline_accuracy:.1%}")
+        # Verify task count matches
+        if len(baseline_results) != n_tasks:
+            print(f"  WARNING: baseline has {len(baseline_results)} tasks, "
+                  f"current has {n_tasks}. Adjusting n_tasks.")
+            n_tasks = len(baseline_results)
+    else:
+        print(f"\n{'=' * 40}")
+        print("PHASE 1: Zero-shot baseline")
+        print(f"{'=' * 40}")
+        baseline_results = []
+        for i, task in enumerate(tasks):
+            t0 = time.time()
+            resp = run_zero_shot(
+                encoder, task.prompt,
+                max_new_tokens=args.max_new_tokens,
+                enable_thinking=not args.no_think,
+            )
+            elapsed = time.time() - t0
+            correct = verify_answer(resp, task.correct_answer)
+            baseline_results.append({
+                "task_id": task.task_id,
+                "difficulty": task.difficulty,
+                "n_steps": task.n_steps,
+                "correct_answer": task.correct_answer,
+                "response": resp[:500],
+                "correct": correct,
+                "time": round(elapsed, 1),
+            })
+            mark = "OK" if correct else "WRONG"
+            safe_print(
+                f"  [{i + 1}/{n_tasks}] {task.task_id} "
+                f"({task.difficulty}/{task.n_steps}step): "
+                f"{mark} (expect={task.correct_answer}, t={elapsed:.1f}s)")
 
-    baseline_elapsed = time.time() - start
-    baseline_accuracy = (
-        sum(1 for r in baseline_results if r["correct"]) / len(baseline_results)
-    )
+        baseline_elapsed = time.time() - start
+        baseline_accuracy = (
+            sum(1 for r in baseline_results if r["correct"]) / len(baseline_results)
+        )
     # Collect all difficulty levels present
     all_diffs = sorted(set(r["difficulty"] for r in baseline_results))
     per_diff = {}
@@ -761,6 +781,13 @@ def main():
             current_rms = sp.square().mean().sqrt().clamp_min(1e-8)
             sp = sp * (effective_rms / current_rms)
             control_soft_prompts.append(sp)
+
+    elif control_mode == "zero_embedding":
+        print(f"CONTROL MODE: zero_embedding")
+        print(f"  All-zero soft prompt ({num_soft_tokens} tokens x {embed_dim}d)")
+        sp = torch.zeros(1, num_soft_tokens, embed_dim)
+        control_soft_prompts = [sp] * args.n_latents
+        print(f"  Note: all {args.n_latents} use identical zero soft prompt")
 
     elif control_mode == "mean_embedding":
         print(f"CONTROL MODE: mean_embedding")
@@ -1033,6 +1060,9 @@ def main():
         "task_type": args.task_type,
         "decode_mode": args.decode_mode,
         "control_mode": control_mode,
+        "num_soft_tokens": num_soft_tokens,
+        "rms_scale": args.rms_scale,
+        "effective_rms": effective_rms,
         "mode": run_mode,
         "n_latents": args.n_latents,
         "n_tasks": n_tasks,
@@ -1068,8 +1098,10 @@ def main():
     else:
         diff_tag = f"_{args.difficulty}" if args.difficulty else ""
         ctrl_tag = f"_{control_mode}" if control_mode != "latent_projected" else ""
+        tok_tag = f"_t{num_soft_tokens}" if num_soft_tokens != 8 else ""
+        rms_tag = f"_rms{args.rms_scale}" if args.rms_scale != 1.0 else ""
         out_path = (Path(__file__).parent
-                    / f"sensitivity{diff_tag}{ctrl_tag}_results.json")
+                    / f"sensitivity{diff_tag}{ctrl_tag}{tok_tag}{rms_tag}_results.json")
 
     with open(out_path, "w") as f:
         json.dump(output, f, indent=2, default=str)
