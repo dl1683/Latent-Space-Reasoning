@@ -1,0 +1,615 @@
+{
+  "experiment": "latent_sensitivity",
+  "model": "Qwen/Qwen3-4B",
+  "quantization": "4bit",
+  "task_type": "nested",
+  "decode_mode": "soft_prompt",
+  "control_mode": "mean_embedding",
+  "num_soft_tokens": 8,
+  "rms_scale": 1.0,
+  "effective_rms": 0.021953146904706955,
+  "mode": "FULL",
+  "n_latents": 1,
+  "n_tasks": 25,
+  "d_latent": 2560,
+  "embed_dim": 2560,
+  "target_rms": 0.021953146904706955,
+  "calibration": {
+    "embed_dim": 2560,
+    "hidden_dim": 2560,
+    "vocab_size": 151936,
+    "embedding_rms": 0.021953146904706955,
+    "mean_token_norm": 1.097372055053711
+  },
+  "baseline_accuracy": 0.32,
+  "baseline_per_difficulty": {
+    "sweet_spot": 0.32
+  },
+  "baseline_results": [
+    {
+      "task_id": "nest_000",
+      "difficulty": "sweet_spot",
+      "n_steps": 3,
+      "correct_answer": 1140,
+      "response": "To solve the expression $(34 + 23) \\times (45 - 25)$, follow these steps:\n\n**Step 1:** Compute the values inside the parentheses.  \n$$\n34 + 23 = 57\n$$\n$$\n45 - 25 = 20\n$$\n\n**Step 2:** Multiply the results from Step 1.  \n$$\n57 \\times 20 = 1140\n$$\n\n**Final Answer:** $1140$",
+      "correct": true,
+      "time": 59.2
+    },
+    {
+      "task_id": "nest_001",
+      "difficulty": "sweet_spot",
+      "n_steps": 3,
+      "correct_answer": 159,
+      "response": "First, compute the product inside the parentheses:\n$$\n24 \\times 23 = 552\n$$\n\nNext, perform the integer division:\n$$\n552 \\div 4 = 138\n$$\n\nFinally, add 21 to the result:\n$$\n138 + 21 = 159\n$$\n\n**Final Answer:**  \n\\boxed{159}",
+      "correct": true,
+      "time": 55.0
+    },
+    {
+      "task_id": "nest_002",
+      "difficulty": "sweet_spot",
+      "n_steps": 3,
+      "correct_answer": 6193,
+      "response": "1. So 90*73 is 6570 (because 90*70=6300, plus 90*3=270; total 6570). Subtract 73 from that: 6570 - 73 = 6497. Okay, same result. Good.\n\nNow the second part is 38*8. That seems straightforward. 38*8. Let me compute that. 30*8=240, 8*8=64. Add them up: 240+64=304. Or just 38*8=304. Correct.\n\nSo now the entire expression is 6497 minus 304. What's 6497 - 304? Let me subtract step by step. 6497 - 300 = 6197, then subtract 4 more: 6197 - 4 = 6193. Wait, but wait, no. Wait, original was 6497 - 304. Whi",
+      "correct": false,
+      "time": 82.0
+    },
+    {
+      "task_id": "nest_003",
+      "difficulty": "sweet_spot",
+      "n_steps": 3,
+      "correct_answer": 2071,
+      "response": "To solve the expression $55 \\times 39 - 37 \\times 2$, follow these steps:\n\n**Step 1:** Compute $55 \\times 39$.  \nBreakdown:  \n$55 \\times 39 = (50 + 5) \\times 39 = 50 \\times 39 + 5 \\times 39$  \nCalculate each part:  \n$50 \\times 39 = 1950$  \n$5 \\times 39 = 195$  \nAdd them: $1950 + 195 = 2145$\n\n**Step 2:** Compute $37 \\times 2$.  \nThis simplifies directly to $74$.\n\n**Step 3:** Subtract the results:  \n$2145 - 74 = 2071$\n\nFinal Answer: **2071**",
+      "correct": true,
+      "time": 73.3
+    },
+    {
+      "task_id": "nest_004",
+      "difficulty": "sweet_spot",
+      "n_steps": 3,
+      "correct_answer": 5051,
+      "response": "1. Adding those together: 4850 + 291. Let me add them up. 4850 + 200 is 5050, then +91 more would be 5141. Wait, no, hold on. Wait 4850 + 291. Breakdown: 4850 + 200 = 5050, then 5050 + 91 = 5141. Yes, so 97*53 equals 5141?\n\nWait, let me check with another approach. Maybe using calculator steps mentally. Alternatively, 97*53. Since both are two-digit numbers, maybe use the formula (a*b) where a=97, b=53. Alternatively, note that 97*53 = (90 + 7)*(50 + 3). Expanding that would give 90*50 + 90*3 + ",
+      "correct": false,
+      "time": 80.5
+    },
+    {
+      "task_id": "nest_005",
+      "difficulty": "sweet_spot",
+      "n_steps": 3,
+      "correct_answer": 8360,
+      "response": "1. So 99*66 = (9*11)*(6*11) = 9*6*(11^2). That would be 54*121. Hmm, but not sure if that's helpful for mental math. Maybe better to just do standard multiplication.\n\nAlternatively, use distributive property. For example, 99 can be written as 100 - 1. So 99*66 = (100 - 1)*66 = 100*66 - 1*66 = 6600 - 66 = 6534. Okay, that seems manageable.\n\nThen 83*22. Let me try similar approach. 83 is like 80 + 3. So 83*22 = (80 + 3)*22 = 80*22 + 3*22 = 1760 + 66 = 1826. Wait, is that right? Let me check:\n\nWait",
+      "correct": false,
+      "time": 76.5
+    },
+    {
+      "task_id": "nest_006",
+      "difficulty": "sweet_spot",
+      "n_steps": 3,
+      "correct_answer": 6,
+      "response": "To evaluate the expression $$(49 \\times 32 + 58) \\% 27$$, we proceed systematically through modular arithmetic principles and basic computation",
+      "correct": false,
+      "time": 81.6
+    },
+    {
+      "task_id": "nest_007",
+      "difficulty": "sweet_spot",
+      "n_steps": 3,
+      "correct_answer": 1044,
+      "response": "1. That might be easier. So 54*30 is... well, 54*3 is 162, right? Then multiply by 10 gives 1620. Then subtract 54*1 which is 54. So 1620 - 54 equals... let me do that subtraction. 1620 minus 50 is 1570, then minus 4 more is 1566. Okay, so 54*29 = 1566?\n\nWait, but another way to check that. Maybe use standard multiplication:\n\n   54  \nx29  \n------  \nLet me do 54*9 first. 54*9 is 486. Then 54*20 (since 29 is 20+9). 54*20 is 1080. Add them together: 1080 + 486. Let's add those numbers. 1000 + 400 i",
+      "correct": true,
+      "time": 83.8
+    },
+    {
+      "task_id": "nest_008",
+      "difficulty": "sweet_spot",
+      "n_steps": 3,
+      "correct_answer": 7278,
+      "response": "<think>\nOkay, let's see. I need to compute 91 multiplied by 48 and then add that result to 97 multiplied by 30. Hmm, where do I start? Well, maybe I should break it down into two separate multiplications first.\n\nStarting with 91 times 48. That seems like a big multiplication. Maybe there's a way to simplify this using some distributive property or breaking numbers apart. Let me think... For example, 91 is close to 90, which might be easier to multiply. So 91*48 can be thought of as (90 + 1)*48. ",
+      "correct": false,
+      "time": 81.1
+    },
+    {
+      "task_id": "nest_009",
+      "difficulty": "sweet_spot",
+      "n_steps": 3,
+      "correct_answer": 6,
+      "response": "<think>\nOkay, let's see. I need to compute (47 * 92 + 50) mod 28. Hmm, first step is probably to calculate the multiplication part, right? So 47 multiplied by 92. Let me do that.\n\nWait, maybe there's a smarter way than just multiplying them directly? Because if I have to take modulo 28 at some point, perhaps breaking it down would be easier. But since the problem says to show my work and then give the final answer, maybe I should go through each step carefully.\n\nFirst, let me compute 47 times 92",
+      "correct": false,
+      "time": 80.1
+    },
+    {
+      "task_id": "nest_010",
+      "difficulty": "sweet_spot",
+      "n_steps": 3,
+      "correct_answer": 924,
+      "response": "To solve $11 \\times",
+      "correct": false,
+      "time": 79.1
+    },
+    {
+      "task_id": "nest_011",
+      "difficulty": "sweet_spot",
+      "n_steps": 3,
+      "correct_answer": -114,
+      "response": "First, calculate the values inside each parenthesis:\n\n- $83 + 31 = 114$\n- $16 - 17 = -1$\n\nNext, multiply the results:\n$$\n114 \\times (-1) = -114\n$$\n\n**Final Answer:** -114",
+      "correct": true,
+      "time": 31.4
+    },
+    {
+      "task_id": "nest_012",
+      "difficulty": "sweet_spot",
+      "n_steps": 3,
+      "correct_answer": 6114,
+      "response": "1. Hundreds: 5 - 4 = 1. Thousands: 6 - 0 = 6. So total is 6114. Yep, same result.\n\nBut hold on, let me verify my initial calculations again just to make sure I didn't mess up any steps.\n\nFirst, 68*96. If I use another method, like standard multiplication:\n\nMultiply 68 by 96:\n\nBreakdown:\n\n68 \u00d7 96 = 68 \u00d7 (90 + 6) = 68\u00d790 + 68\u00d76\n\nCalculate 68\u00d790: 68\u00d79\u00d710. 68\u00d79 is 612, so 612\u00d710=6120.\n\nThen 68\u00d76=408. Adding together: 6120 + 408 = 6528. Same as before. Good.\n\nSecond part: 69\u00d76=414. Correct.\n\nSubtract",
+      "correct": false,
+      "time": 81.7
+    },
+    {
+      "task_id": "nest_013",
+      "difficulty": "sweet_spot",
+      "n_steps": 3,
+      "correct_answer": 11,
+      "response": "1. So 47 \u2261 11 mod 18.\n\nAdding these two results: 0 + 11 = 11 mod 18. Therefore, the entire expression is 11.\n\nWait, but let me verify this because sometimes when you split into parts, you have to make sure about the order. The original problem was (63*34 + 47) mod 18. Which is equal to ((63*34 mod 18) + (47 mod 18)) mod 18. Which is (0 + 11) mod 18 = 11. Correct.\n\nAlternatively, if I had done the calculation without simplifying first, like 2189 / 18. Let me check that. How many times does 18 go ",
+      "correct": false,
+      "time": 81.8
+    },
+    {
+      "task_id": "nest_014",
+      "difficulty": "sweet_spot",
+      "n_steps": 3,
+      "correct_answer": 20,
+      "response": "<think>\nOkay, let's see. I need to compute (84 * 33 + 90) mod 29. Hmm, first step is probably to calculate the multiplication part and then add 90, right? Let me start with that.\n\nSo, 84 multiplied by 33. Wait, maybe there's a smarter way than just multiplying straight out? Since we're going to take modulo 29 at the end, perhaps I can simplify each term before doing the full calculation? But maybe it's easier to do the math directly first. Let me try both approaches.\n\nFirst approach: Calculate 8",
+      "correct": true,
+      "time": 81.7
+    },
+    {
+      "task_id": "nest_015",
+      "difficulty": "sweet_spot",
+      "n_steps": 3,
+      "correct_answer": 7693,
+      "response": "To solve the expression $89 \\times 87 - 10 \\times 5$, follow these steps:\n\n**Step 1:** Compute $89 \\times 87$.  \nBreakdown:  \n$$\n89 \\times 87 = (90 - 1)(90 - 3)\n$$  \nExpanding using distributive property:  \n$$\n= 90^2 - 90 \\times 3 - 90 \\times 1 + 1 \\times 3\n$$  \nCalculate each term:  \n$$\n90^2",
+      "correct": false,
+      "time": 81.8
+    },
+    {
+      "task_id": "nest_016",
+      "difficulty": "sweet_spot",
+      "n_steps": 3,
+      "correct_answer": 10,
+      "response": "<think>\nOkay, let's see. I need to compute this expression: (50 multiplied by 27 plus 40) modulo 15. Hmm, so first things first, maybe I should handle the multiplication and addition inside the parentheses before dealing with the modulus.\n\nAlright, starting with 50 times 27. Let me calculate that. Wait, what's 50*27? Well, 50 times 20 is 1000, and 50 times 7 is 350. Adding those together gives 1000 + 350 = 1350. So 50*27 equals 1350. Then add 40 to that result. So 1350 + 40 would be... 1390. Oka",
+      "correct": false,
+      "time": 81.0
+    },
+    {
+      "task_id": "nest_017",
+      "difficulty": "sweet_spot",
+      "n_steps": 3,
+      "correct_answer": 491,
+      "response": "1.\n\nAlternatively, if I use calculator steps: 7 \u00d7 411 = 2877. Then 2880 - 2877 = 3. Yep, so 2880 divided by 7 is 411 with a remainder of 3. Hence, integer division result is 411.\n\nThen, adding 80 to that result. So 411 + 80 = 491.\n\nTherefore, the final answer should be 491.\n\nBut wait, let me check again because sometimes when dealing with divisions, especially with different numbers, mistakes can happen. Let me verify each step once more.\n\nCalculating 36\u00d780: Yes, 36\u00d780. Breaking it down, 30\u00d780=2",
+      "correct": false,
+      "time": 81.5
+    },
+    {
+      "task_id": "nest_018",
+      "difficulty": "sweet_spot",
+      "n_steps": 3,
+      "correct_answer": 4,
+      "response": "1. Therefore 45 \u2261 21 mod 24.\n\nThen 59 mod 24. Let's divide 59 by 24. 24*2=48, subtract from 59 gives 11. So 59 \u2261 11 mod 24.\n\nTherefore 45*59 mod 24 is equivalent to 21*11 mod 24. Let me compute 21*11. That's 231. Now find 231 mod 24.\n\nHmm, 24*9=216. Subtract 216 from 231: 231 - 216 = 15. So 21*11 mod 24 is 15.\n\nNow compute 61 mod 24. 24*2=48, 61-48=13. So 61\u226113 mod24.\n\nAdding those two results: 15 + 13 = 28. Then take 28 mod24 which is 4. Wait, but wait\u2014is that correct?\n\nHold on, because earlier",
+      "correct": false,
+      "time": 79.9
+    },
+    {
+      "task_id": "nest_019",
+      "difficulty": "sweet_spot",
+      "n_steps": 3,
+      "correct_answer": 232,
+      "response": "Step 1: Multiply 28 by 63 \u2192 1764\n\nStep 2: Divide 1764 by 8 using integer division. Since 8 \u00d7 220 = 1760, and 1764 - 1760 = 4, the integer division result is 220.\n\nThen Step 3: Add 12 to 220 \u2192 220 + 12 = 232.\n\nTherefore, the final answer is 232.\n\nWait, but let me confirm once again. Maybe there's another way to look at it. Suppose someone does 28\u00d763 first, which is indeed 1764. Divided by 8, which is 220.5. Then adding 12 gives 232.5. But if the operator is floor division, then 220.5 becomes 220 ",
+      "correct": false,
+      "time": 82.2
+    },
+    {
+      "task_id": "nest_020",
+      "difficulty": "sweet_spot",
+      "n_steps": 3,
+      "correct_answer": 456,
+      "response": "First, solve the expressions within each pair of parentheses:\n\n**Step 1:**  \nAdd 27 and 49:  \n$$ 27 + 49 = 76 $$  \n\n**Step 2:**  \nSubtract 12 from 18:  \n$$ 18 - 12 = 6 $$  \n\n**Step 3:**  \nMultiply the results from Step 1 and Step 2:  \n$$ 76 \\times 6 = 456 $$  \n\nFinal Answer: **456**",
+      "correct": true,
+      "time": 50.1
+    },
+    {
+      "task_id": "nest_021",
+      "difficulty": "sweet_spot",
+      "n_steps": 3,
+      "correct_answer": 5639,
+      "response": "1. Then 47*(90 - 1) = 47*90 - 47*1. That might be easier. \n\nCalculating 47*90: Well, 47*9 is 423, right? Because 40*9=360 and 7*9=63; 360+63=423. Then multiplying by 10 gives 4230. Then subtract 47 from that. So 4230 - 47 equals... 4230 minus 40 is 4190, then minus 7 more is 4183. Wait, no, wait. Wait, 4230 - 47. Let me check again. 4230 minus 47. Since 4230 - 40 = 4190, then 4190 - 7 = 4183. Yes, that seems correct. So 47\u00d789 is 4183.\n\nNow moving on to 26\u00d756. Let me calculate that similarly. May",
+      "correct": false,
+      "time": 82.5
+    },
+    {
+      "task_id": "nest_022",
+      "difficulty": "sweet_spot",
+      "n_steps": 3,
+      "correct_answer": 7179,
+      "response": "1. Write down 1, carry over 1.\n\nThousands place: 4 + 2 = 6, plus carried 1 makes 7.\n\nTherefore, total is 7179?\n\nWait, but 4875 + 2304. Let me check with another method. For example, 4875 + 2000 = 6875, then +3",
+      "correct": false,
+      "time": 80.1
+    },
+    {
+      "task_id": "nest_023",
+      "difficulty": "sweet_spot",
+      "n_steps": 3,
+      "correct_answer": 12,
+      "response": "1. So subtract 57 from 71: 71 - 57 = 14. Therefore, 71 \u2261 14 mod 19.\n\nSimilarly, let's find 63 mod 19. Divide 63 by 19. 19*3=57, 19*3+ something? 63-57=6. Wait, no, wait. 19*3 is 57, 63 minus 57 is 6. So 63 \u2261 6 mod 19.\n\nSo now, replacing 71 with 14 and 63 with 6 in the original expression:\n\nOriginal expression becomes (14 * 6 + 23) mod 19.\n\nWait, hold on. Because 71*63 mod 19 is equivalent to (71 mod 19)*(63 mod 19) mod 19. Which is 14*6 mod 19. Then add 23, then take mod 19 again.\n\nBut actually,",
+      "correct": false,
+      "time": 80.9
+    },
+    {
+      "task_id": "nest_024",
+      "difficulty": "sweet_spot",
+      "n_steps": 3,
+      "correct_answer": 507,
+      "response": "To solve $13 \\times 13 \\times 3$, follow these steps:\n\n**Step 1:** Compute $13 \\times 13$.  \n$$\n13 \\times 13 = 169\n$$\n\n**Step 2:** Multiply the result by 3.  \n$$\n169 \\times 3 = 507\n$$\n\n**Final Answer:** $\\boxed{507}$",
+      "correct": true,
+      "time": 42.0
+    }
+  ],
+  "mean_accuracy": 0.36,
+  "std_accuracy": 0.0,
+  "min_accuracy": 0.36,
+  "max_accuracy": 0.36,
+  "range_accuracy": 0.0,
+  "latent_accuracies": [
+    0.36
+  ],
+  "cochrans_q": null,
+  "binomial_tests": [
+    {
+      "latent_idx": 0,
+      "accuracy": 0.36,
+      "n_correct": 9,
+      "binomial_p": 0.4057173166322225,
+      "significant_05": "False"
+    }
+  ],
+  "cochrans_p": null,
+  "verdict": "NOT EXPLOITABLE",
+  "baseline_elapsed_s": 1850.7491426467896,
+  "sensitivity_elapsed_s": 1937.9969770908356,
+  "total_elapsed_s": 1938.0216851234436,
+  "sensitivity_results": [
+    {
+      "latent_idx": 0,
+      "accuracy": 0.36,
+      "n_correct": 9,
+      "n_total": 25,
+      "task_results": [
+        {
+          "task_id": "nest_000",
+          "difficulty": "sweet_spot",
+          "correct_answer": 1140,
+          "response": "<think>\nOkay, let's see. I need to compute the expression (34 + 23) multiplied by (45 - 25). Hmm, first step is probably to solve what's inside the parentheses first. Let me remember the order of operations\u2014PEMDAS: Parentheses, Exponents, Multiplication and Division, Addition and Subtraction. But here there are only parentheses, so I should handle those first.\n\nSo starting with the first part: 34 plus 23. Let me add those numbers. 34 + 23... 30+20 is 50, and 4+3 is 7, so total is 57? Wait, no, w",
+          "correct": true,
+          "time": 69.5
+        },
+        {
+          "task_id": "nest_001",
+          "difficulty": "sweet_spot",
+          "correct_answer": 159,
+          "response": "<think>\nOkay, let's see. I need to compute the expression (24 * 23) // 4 + 21. Hmm, first, I should remember the order of operations here. Parentheses come first, right? So inside the parentheses, there's 24 multiplied by 23. Let me calculate that.\n\nSo 24 times 23... Well, 24*20 is 480 and 24*3 is 72, so adding those together gives 480+72=552. Wait, no, wait\u2014that\u2019s not correct because 24*(20+3)=24*23. But actually, 24*23 is indeed 552. Yeah, that seems right. Let me check with another way: 25*23",
+          "correct": true,
+          "time": 66.8
+        },
+        {
+          "task_id": "nest_002",
+          "difficulty": "sweet_spot",
+          "correct_answer": 6193,
+          "response": "<think>\nOkay, let's see. I need to compute 89 multiplied by 73 minus 38 multiplied by 8. Hmm, so the expression is 89*73 - 38*8. Alright, first step is probably to calculate each multiplication separately and then subtract the results.\n\nFirst, let me do 89 times 73. Hmm, how do I multiply these numbers? Maybe break it down. Let me recall the standard multiplication method. Alternatively, maybe there's a shortcut or something?\n\nAlternatively, perhaps using distributive property? Like breaking the",
+          "correct": false,
+          "time": 81.0
+        },
+        {
+          "task_id": "nest_003",
+          "difficulty": "sweet_spot",
+          "correct_answer": 2071,
+          "response": "<think>\nOkay, let's see. I need to compute the expression 55 multiplied by 39 minus 37 multiplied by 2. Hmm, so first, maybe I should handle each multiplication separately and then subtract the results? Let me write that down step by step.\n\nFirst, calculate 55 * 39. Hmm, how do I do that? Well, breaking it down might help. Maybe using the standard multiplication method. Alternatively, think of 55*40 and then subtract 55 because 39 is one less than 40. Wait, yes! That could be easier. So 55 times",
+          "correct": false,
+          "time": 83.0
+        },
+        {
+          "task_id": "nest_004",
+          "difficulty": "sweet_spot",
+          "correct_answer": 5051,
+          "response": "<think>\nOkay, let's see. I need to compute 97 multiplied by 53 minus 15 multiplied by 6. Hmm, so the expression is 97*53 - 15*6. Alright, first step is probably to calculate each multiplication separately and then subtract the second product from the first.\n\nLet me start with 97 times 53. Hmm, how do I multiply these numbers? Maybe break it down using the standard multiplication method. Let me recall: 97 * 50 would be easier, right? Because 97*50 is 4850, and then add 97*3 which is 291. So addin",
+          "correct": false,
+          "time": 82.0
+        },
+        {
+          "task_id": "nest_005",
+          "difficulty": "sweet_spot",
+          "correct_answer": 8360,
+          "response": "<think>\nOkay, let's see. I need to compute 99 multiplied by 66 plus 83 multiplied by 22. Hmm, how do I approach this? Well, maybe I can break it down step by step.\n\nFirst, I remember that multiplication is involved here, so I should handle each part separately and then add the results together. Let me write down the expression again: (99 * 66) + (83 * 22). \n\nStarting with 99 times 66. Wait, 99 is close to 100, so maybe there's a trick for multiplying by 99. Like, 99 is 100 - 1. So perhaps 99*66 ",
+          "correct": false,
+          "time": 80.7
+        },
+        {
+          "task_id": "nest_006",
+          "difficulty": "sweet_spot",
+          "correct_answer": 6,
+          "response": "<think>\nOkay, let's see. I need to compute (49 * 32 + 58) modulo 27. Hmm, first step is to calculate the value inside the parentheses. Let me break it down.\n\nFirst, multiply 49 by 32. Wait, what's 49 times 32? Let me do that. Well, 49*30 is 1470 and then 49*2 is 98, so adding those together gives 1470 + 98 = 1568. So 49*32 equals 1568. Then add 58 to that. So 1568 + 58... That would be 1626. \n\nNow, I have to find 1626 mod 27. To compute this, maybe there's a smarter way than dividing directly. S",
+          "correct": true,
+          "time": 81.4
+        },
+        {
+          "task_id": "nest_007",
+          "difficulty": "sweet_spot",
+          "correct_answer": 1044,
+          "response": "<think>\nOkay, let's see. I need to compute 54 multiplied by 29 minus 87 multiplied by 6. Hmm, so the expression is 54*29 - 87*6. Alright, first step is probably to calculate each multiplication separately and then subtract the results.\n\nLet me start with 54 times 29. Hmm, how do I do that? Maybe break it down. Let me think... Well, 54 * 30 would be easier because 30 is a round number. So 54*30 is 1620, right? But since it's 29 instead of 30, I can subtract one more 54 from that. Wait, no, actual",
+          "correct": false,
+          "time": 81.6
+        },
+        {
+          "task_id": "nest_008",
+          "difficulty": "sweet_spot",
+          "correct_answer": 7278,
+          "response": "<think>\nOkay, let's see. I need to compute 91 multiplied by 48 plus 97 multiplied by 30. Hmm, how do I approach this? Well, maybe I should break it down step by step.\n\nFirst, I remember that when there are two separate multiplications and then addition, I can calculate each part separately and then add them together. So, first calculate 91 * 48 and then 97 * 30, right?\n\nStarting with 91 times 48. Let me think about how to multiply these numbers. Maybe breaking it down using the distributive prop",
+          "correct": true,
+          "time": 83.0
+        },
+        {
+          "task_id": "nest_009",
+          "difficulty": "sweet_spot",
+          "correct_answer": 6,
+          "response": "<think>\nOkay, let's see. I need to compute (47 * 92 + 50) mod 28. Hmm, first step is probably to calculate the multiplication part and then add 50, right? Let me start with that.\n\nSo, 47 multiplied by 92. Wait, how do I do that? Maybe break it down. 47*90 would be easier. 47*90 is... well, 47*10=470, so times 9 is 4230? Wait no, wait: 47*90 = 47*(10*9)= 470*9. Let me check again. 47*90: 40*90=3600, 7*90=630; adding those gives 3600+630=4230. Then 47*2 is 94. So total of 47*92 is 4230 + 94 = 4324",
+          "correct": false,
+          "time": 82.7
+        },
+        {
+          "task_id": "nest_010",
+          "difficulty": "sweet_spot",
+          "correct_answer": 924,
+          "response": "<think>\nOkay, let's see. I need to compute 11 multiplied by 21 and then multiply that result by 4. Hmm, where do I start? Well, maybe I should break it down step by step.\n\nFirst, let me handle the first part: 11 times 21. Wait, how do I calculate that? Maybe I can use the standard multiplication method. Let me write it out:\n\n11  \n\u00d721  \n------  \nWell, multiplying 11 by 21... Alternatively, maybe there's a simpler way. Since 11 is a number I know well, perhaps using distributive property?\n\nYes! Br",
+          "correct": false,
+          "time": 82.7
+        },
+        {
+          "task_id": "nest_011",
+          "difficulty": "sweet_spot",
+          "correct_answer": -114,
+          "response": "<think>\nOkay, let's see. I need to compute the expression (83 + 31) multiplied by (16 - 17). Hmm, first step is probably to solve what's inside the parentheses first. Let me start with the first part: 83 plus 31. \n\nSo, adding those two numbers together. 80 + 30 is 110, and then 3 + 1 is 4, so total would be 114? Wait, no, wait. Wait, 83 + 31. Let me do it properly. 83 + 30 is 113, then add 1 more makes 114. Yeah, that seems right.\n\nThen the second part is 16 minus 17. That should be negative 1, ",
+          "correct": true,
+          "time": 40.6
+        },
+        {
+          "task_id": "nest_012",
+          "difficulty": "sweet_spot",
+          "correct_answer": 6114,
+          "response": "<think>\nOkay, let's see. I need to compute 68 multiplied by 96 minus 69 multiplied by 6. Hmm, so the expression is 68*96 - 69*6. Let me think about how to approach this.\n\nFirst, maybe I should calculate each multiplication separately and then subtract them? That seems straightforward. But wait, maybe there's a smarter way to simplify it before multiplying? Let me check if there are any patterns or ways to factor things out.\n\nLooking at the numbers: 68 times 96 and 69 times 6. Hmmm... Maybe I can",
+          "correct": false,
+          "time": 84.3
+        },
+        {
+          "task_id": "nest_013",
+          "difficulty": "sweet_spot",
+          "correct_answer": 11,
+          "response": "<think>\nOkay, let's see. I need to compute (63 * 34 + 47) mod 18. Hmm, first step is to calculate the multiplication part and then add 47, right? Let me start with that.\n\nSo, 63 multiplied by 34. Wait, maybe there's a smarter way than just multiplying straight up? Since we're dealing with modulo 18 later on, perhaps I can simplify things using modular arithmetic properties?\n\nBut wait, do I have to follow order of operations here? The expression is (63*34 + 47) % 18. So according to PEMDAS, paren",
+          "correct": false,
+          "time": 83.9
+        },
+        {
+          "task_id": "nest_014",
+          "difficulty": "sweet_spot",
+          "correct_answer": 20,
+          "response": "<think>\nOkay, let's see. I need to compute (84 * 33 + 90) modulo 29. Hmm, first step is probably to calculate the multiplication part and then add 90, right? Let me start with that.\n\nSo, 84 multiplied by 33. Wait, maybe there's a smarter way than just multiplying straight out since we're going to take mod 29 at the end. But maybe it's easier to do straightforwardly. Let me try both ways.\n\nFirst method: Calculate 84*33. Let me compute that. Well, 80*33 = 2640, and 4*33=132, so total is 2640+132=2",
+          "correct": false,
+          "time": 83.8
+        },
+        {
+          "task_id": "nest_015",
+          "difficulty": "sweet_spot",
+          "correct_answer": 7693,
+          "response": "<think>\nOkay, let's see. I need to compute the expression 89 multiplied by 87 minus 10 multiplied by 5. Hmm, so first, maybe I should handle the multiplication parts separately and then subtract them? Let me break it down step by step.\n\nFirst, calculate 89 * 87. Wait, multiplying those two numbers... That might be a bit tricky. Maybe there's a shortcut or a way to simplify this? Like using the difference of squares formula? Because 89 is like 90 - 1 and 87 is 90 - 3. But wait, not sure if that h",
+          "correct": true,
+          "time": 72.0
+        },
+        {
+          "task_id": "nest_016",
+          "difficulty": "sweet_spot",
+          "correct_answer": 10,
+          "response": "<think>\nOkay, let's see. I need to compute the expression (50 * 27 + 40) % 15. Hmm, first step is to follow the order of operations. So according to PEMDAS\u2014Parentheses, Exponents, Multiplication and Division, Addition and Subtraction. But here there are no exponents or parentheses except the one around the whole thing, which just means we do what's inside that first.\n\nSo inside the parentheses, it's 50 multiplied by 27 plus 40. Let me calculate 50 times 27 first. Wait, 50*27... Well, 50*27 is th",
+          "correct": false,
+          "time": 82.4
+        },
+        {
+          "task_id": "nest_017",
+          "difficulty": "sweet_spot",
+          "correct_answer": 491,
+          "response": "<think>\nOkay, let's see. I need to compute the expression (36 * 80) // 7 + 80. Hmm, first, I should remember the order of operations here. Parentheses come first, right? So inside the parentheses, there's 36 multiplied by 80. Let me calculate that.\n\nSo 36 times 80... Well, 35*80 is 2800, and then add another 1*80 which is 80, so total would be 2880. Wait, no, wait. Actually, 36*80 can also be thought of as 36*8*10. 36*8 is 288, so 288*10 is 2880. Yeah, same result. Okay, so 36*80 equals 2880. \n\n",
+          "correct": false,
+          "time": 84.0
+        },
+        {
+          "task_id": "nest_018",
+          "difficulty": "sweet_spot",
+          "correct_answer": 4,
+          "response": "<think>\nOkay, let's see. I need to compute (45 * 59 + 61) modulo 24. Hmm, so first, maybe I should calculate the multiplication part and then add 61, right? Let me start with that.\n\nFirst step: Multiply 45 by 59. Wait, what's 45 times 59? Let me do this carefully. Maybe break it down. 45*50 is 2250, and 45*9 is 405. So adding those together gives 2250 + 405 = 2655. Is that correct? Let me check another way. Alternatively, 45*(60 - 1) = 45*60 - 45*1 = 2700 - 45 = 2655. Yeah, same result. Okay, so",
+          "correct": false,
+          "time": 83.6
+        },
+        {
+          "task_id": "nest_019",
+          "difficulty": "sweet_spot",
+          "correct_answer": 232,
+          "response": "<think>\nOkay, let's see. I need to compute the expression (28 * 63) // 8 + 12. Hmm, first, I should remember the order of operations here. Parentheses come first, right? So inside the parentheses, there's multiplication and then division with floor division maybe?\n\nWait, the problem uses \"//\" which usually denotes integer division or floor division in programming languages like Python. But since it's not specified whether it's integer division or regular division, but given that they use \"floor\"",
+          "correct": false,
+          "time": 81.9
+        },
+        {
+          "task_id": "nest_020",
+          "difficulty": "sweet_spot",
+          "correct_answer": 456,
+          "response": "<think>\nOkay, let's see. I need to compute the expression (27 + 49) multiplied by (18 - 12). Hmm, first step is to solve what's inside the parentheses, right? So let me break it down.\n\nFirst, calculate the addition part: 27 plus 49. Let me add those numbers. 27 + 49... Well, 20 + 40 is 60, and then 7 + 9 is 16, so total would be 60 + 16 = \u33a0 Wait, no, that's not correct. Wait, actually, 27 + 49. Maybe another way: 27 + 49 equals 76? Because 27 + 40 is 67, then add 9 more makes 76. Yeah, that seem",
+          "correct": true,
+          "time": 51.4
+        },
+        {
+          "task_id": "nest_021",
+          "difficulty": "sweet_spot",
+          "correct_answer": 5639,
+          "response": "<think>\nOkay, let's see. I need to compute 47 multiplied by 89 plus 26 multiplied by 56. Hmm, how do I approach this? Well, maybe I should break it down step by step.\n\nFirst, I remember that according to the order of operations, multiplication comes before addition, so I should handle those two multiplications first and then add the results together. So, I'll tackle each part separately.\n\nStarting with 47 * 89. Let me think about how to multiply these numbers. Maybe breaking them into parts woul",
+          "correct": false,
+          "time": 83.9
+        },
+        {
+          "task_id": "nest_022",
+          "difficulty": "sweet_spot",
+          "correct_answer": 7179,
+          "response": "<think>\nOkay, let's see. I need to compute 75 multiplied by 65 plus 64 multiplied by 36. Hmm, so the expression is 75*65 + 64*36. Alright, first step is probably to calculate each multiplication separately and then add them together.\n\nLet me start with 75 times 65. Let me think about how to do that. Maybe breaking it down? Like, 70*65 plus 5*65? Yeah, because 75 is 70+5. So 70*65... Well, 70*60 is 4200, and 70*5 is 350, so adding those gives 4200 + 350 = 4550. Then 5*65 is 325. Adding that to 45",
+          "correct": false,
+          "time": 83.4
+        },
+        {
+          "task_id": "nest_023",
+          "difficulty": "sweet_spot",
+          "correct_answer": 12,
+          "response": "<think>\nOkay, let's see. I need to compute (71 * 63 + 23) modulo 19. Hmm, how do I approach this? Well, first, maybe I should calculate the multiplication part and then add 23, right? But since it's mod 19, perhaps there's a smarter way than calculating the whole number first?\n\nWait, but if I just go step by step, maybe that's easier. Let me try both ways.\n\nFirst method: Calculate 71*63 first. Then add 23, then take mod 19.\n\nBut wait, multiplying 71 and 63 might be tedious. Maybe I can simplify ",
+          "correct": true,
+          "time": 85.1
+        },
+        {
+          "task_id": "nest_024",
+          "difficulty": "sweet_spot",
+          "correct_answer": 507,
+          "response": "<think>\nOkay, let's see. I need to compute 13 multiplied by 13 multiplied by 3. Hmm, where do I start? Well, maybe I should break it down step by step.\n\nFirst, I know that multiplying three numbers together can be done in steps. So perhaps first multiply 13 and 13, then multiply the result by 3. Let me try that.\n\nSo, 13 times 13... Wait, what's 13 squared? I remember that 10 squared is 100, and 13 squared is a bit more. Alternatively, I can calculate it as (10 + 3) * (10 + 3). Using the formula ",
+          "correct": true,
+          "time": 63.0
+        }
+      ]
+    }
+  ],
+  "task_sensitivity": [
+    {
+      "task_id": "nest_000",
+      "difficulty": "sweet_spot",
+      "frac_correct": 1.0
+    },
+    {
+      "task_id": "nest_001",
+      "difficulty": "sweet_spot",
+      "frac_correct": 1.0
+    },
+    {
+      "task_id": "nest_002",
+      "difficulty": "sweet_spot",
+      "frac_correct": 0.0
+    },
+    {
+      "task_id": "nest_003",
+      "difficulty": "sweet_spot",
+      "frac_correct": 0.0
+    },
+    {
+      "task_id": "nest_004",
+      "difficulty": "sweet_spot",
+      "frac_correct": 0.0
+    },
+    {
+      "task_id": "nest_005",
+      "difficulty": "sweet_spot",
+      "frac_correct": 0.0
+    },
+    {
+      "task_id": "nest_006",
+      "difficulty": "sweet_spot",
+      "frac_correct": 1.0
+    },
+    {
+      "task_id": "nest_007",
+      "difficulty": "sweet_spot",
+      "frac_correct": 0.0
+    },
+    {
+      "task_id": "nest_008",
+      "difficulty": "sweet_spot",
+      "frac_correct": 1.0
+    },
+    {
+      "task_id": "nest_009",
+      "difficulty": "sweet_spot",
+      "frac_correct": 0.0
+    },
+    {
+      "task_id": "nest_010",
+      "difficulty": "sweet_spot",
+      "frac_correct": 0.0
+    },
+    {
+      "task_id": "nest_011",
+      "difficulty": "sweet_spot",
+      "frac_correct": 1.0
+    },
+    {
+      "task_id": "nest_012",
+      "difficulty": "sweet_spot",
+      "frac_correct": 0.0
+    },
+    {
+      "task_id": "nest_013",
+      "difficulty": "sweet_spot",
+      "frac_correct": 0.0
+    },
+    {
+      "task_id": "nest_014",
+      "difficulty": "sweet_spot",
+      "frac_correct": 0.0
+    },
+    {
+      "task_id": "nest_015",
+      "difficulty": "sweet_spot",
+      "frac_correct": 1.0
+    },
+    {
+      "task_id": "nest_016",
+      "difficulty": "sweet_spot",
+      "frac_correct": 0.0
+    },
+    {
+      "task_id": "nest_017",
+      "difficulty": "sweet_spot",
+      "frac_correct": 0.0
+    },
+    {
+      "task_id": "nest_018",
+      "difficulty": "sweet_spot",
+      "frac_correct": 0.0
+    },
+    {
+      "task_id": "nest_019",
+      "difficulty": "sweet_spot",
+      "frac_correct": 0.0
+    },
+    {
+      "task_id": "nest_020",
+      "difficulty": "sweet_spot",
+      "frac_correct": 1.0
+    },
+    {
+      "task_id": "nest_021",
+      "difficulty": "sweet_spot",
+      "frac_correct": 0.0
+    },
+    {
+      "task_id": "nest_022",
+      "difficulty": "sweet_spot",
+      "frac_correct": 0.0
+    },
+    {
+      "task_id": "nest_023",
+      "difficulty": "sweet_spot",
+      "frac_correct": 1.0
+    },
+    {
+      "task_id": "nest_024",
+      "difficulty": "sweet_spot",
+      "frac_correct": 1.0
+    }
+  ]
+}
