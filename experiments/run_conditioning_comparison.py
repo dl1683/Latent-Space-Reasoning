@@ -218,7 +218,7 @@ def main():
         # Soft prompt (skip if model doesn't support inputs_embeds)
         if soft_ok:
             t0 = time.time()
-            resp_soft = decode_latent(encoder, lat, q.prompt, cfg_soft)
+            resp_soft, _raw = decode_latent(encoder, lat, q.prompt, cfg_soft)
             entry["soft_prompt"] = resp_soft[:800]
             entry["soft_time"] = round(time.time() - t0, 1)
             safe_print(f"  SOFT ({entry['soft_time']}s): {resp_soft[:120]}...")
@@ -229,7 +229,7 @@ def main():
 
         # RNG seed
         t0 = time.time()
-        resp_rng = decode_latent(encoder, lat, q.prompt, cfg_rng)
+        resp_rng, _raw = decode_latent(encoder, lat, q.prompt, cfg_rng)
         entry["rng_seed"] = resp_rng[:800]
         entry["rng_time"] = round(time.time() - t0, 1)
         safe_print(f"  RNG  ({entry['rng_time']}s): {resp_rng[:120]}...")

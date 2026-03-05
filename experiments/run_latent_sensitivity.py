@@ -530,10 +530,11 @@ def run_zero_shot(
             repetition_penalty=1.2,
         )
 
-    resp = encoder.tokenizer.decode(
+    raw = encoder.tokenizer.decode(
         out[0][inputs["input_ids"].shape[1]:], skip_special_tokens=True,
     ).strip()
 
+    resp = raw
     if "<think>" in resp and "</think>" in resp:
         think_end = resp.find("</think>") + len("</think>")
         resp = resp[think_end:].strip()
@@ -543,7 +544,7 @@ def run_zero_shot(
                 resp = resp[resp.index(starter):]
                 break
 
-    return resp if resp else "No response"
+    return (resp if resp else "No response"), raw
 
 
 # =====================================================================
@@ -590,10 +591,11 @@ def main():
         help="Max generation tokens")
     parser.add_argument(
         "--control-mode", default="latent_projected",
-        choices=["latent_projected", "random_noise", "mean_embedding",
+        choices=["latent_projected", "random_noise", "antipodal", "mean_embedding",
                  "zero_embedding", "repeated_noise"],
         help="Control mode: latent_projected (normal W projection), "
              "random_noise (random embeddings at target RMS), "
+             "antipodal (+v,-v pair: cancels semantics, preserves dynamics), "
              "mean_embedding (mean token embedding repeated), "
              "zero_embedding (all-zero soft prompt tokens), "
              "repeated_noise (ONE random vector repeated k times)")
@@ -692,7 +694,7 @@ def main():
         baseline_results = []
         for i, task in enumerate(tasks):
             t0 = time.time()
-            resp = run_zero_shot(
+            resp, raw = run_zero_shot(
                 encoder, task.prompt,
                 max_new_tokens=args.max_new_tokens,
                 enable_thinking=not args.no_think,
@@ -705,6 +707,7 @@ def main():
                 "n_steps": task.n_steps,
                 "correct_answer": task.correct_answer,
                 "response": resp[:2000],
+                "response_raw": raw[:2000],
                 "correct": correct,
                 "time": round(elapsed, 1),
             })
@@ -818,6 +821,24 @@ def main():
             sp = sp * (effective_rms / current_rms)
             control_soft_prompts.append(sp)
 
+    elif control_mode == "antipodal":
+        print(f"CONTROL MODE: antipodal (+v, -v)")
+        print(f"  Generating {args.n_latents} antipodal token pairs")
+        print(f"  Token[1] = -Token[0] (cancels semantics, preserves dynamics)")
+        noise_gen = torch.Generator().manual_seed(2024)
+        control_soft_prompts = []
+        for _ in range(args.n_latents):
+            # Generate one random vector
+            single_vec = torch.randn(1, 1, embed_dim, generator=noise_gen)
+            current_rms = single_vec.square().mean().sqrt().clamp_min(1e-8)
+            single_vec = single_vec * (effective_rms / current_rms)
+            # Create antipodal pair: [+v, -v]
+            sp = torch.cat([single_vec, -single_vec], dim=1)  # (1, 2, embed_dim)
+            control_soft_prompts.append(sp)
+        # Override num_soft_tokens to 2 for antipodal mode
+        num_soft_tokens = 2
+        print(f"  Forced num_soft_tokens=2 for antipodal mode")
+
     elif control_mode == "zero_embedding":
         print(f"CONTROL MODE: zero_embedding")
         print(f"  All-zero soft prompt ({num_soft_tokens} tokens x {embed_dim}d)")
@@ -903,12 +924,14 @@ def main():
 
     for li in range(args.n_latents):
         label = ("Noise" if control_mode == "random_noise"
+                 else "Antipodal" if control_mode == "antipodal"
                  else "MeanEmb" if control_mode == "mean_embedding"
                  else "Latent")
         print(f"\n  --- {label} {li + 1}/{args.n_latents} ---")
         task_results = []
         for ti, task in enumerate(tasks):
             t0 = time.time()
+            raw = ""
             try:
                 if control_soft_prompts is not None:
                     resp = decode_with_raw_soft_prompt(
@@ -919,8 +942,9 @@ def main():
                         position=args.position,
                         mask_prefix=args.mask_prefix,
                     )
+                    raw = resp  # raw_soft_prompt returns unstripped
                 else:
-                    resp = decode_latent(encoder, latents[li], task.prompt, cfg)
+                    resp, raw = decode_latent(encoder, latents[li], task.prompt, cfg)
             except Exception as e:
                 print(f"    [{ti + 1}/{n_tasks}] {task.task_id}: ERROR {type(e).__name__}: {e}")
                 torch.cuda.empty_cache()
@@ -935,10 +959,12 @@ def main():
                             position=args.position,
                             mask_prefix=args.mask_prefix,
                         )
+                        raw = resp
                     else:
-                        resp = decode_latent(encoder, latents[li], task.prompt, cfg)
+                        resp, raw = decode_latent(encoder, latents[li], task.prompt, cfg)
                 except Exception:
                     resp = "ERROR"
+                    raw = "ERROR"
             elapsed = time.time() - t0
             correct = verify_answer(resp, task.correct_answer)
             task_results.append({
@@ -946,6 +972,7 @@ def main():
                 "difficulty": task.difficulty,
                 "correct_answer": task.correct_answer,
                 "response": resp[:2000],
+                "response_raw": raw[:2000],
                 "correct": correct,
                 "time": round(elapsed, 1),
             })

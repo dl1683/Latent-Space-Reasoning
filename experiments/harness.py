@@ -453,7 +453,8 @@ def decode_latent(
     if torch.cuda.is_available():
         torch.cuda.empty_cache()
 
-    response = generated.strip()
+    raw = generated.strip()
+    response = raw
     if "<think>" in response and "</think>" in response:
         think_end = response.find("</think>") + len("</think>")
         response = response[think_end:].strip()
@@ -463,7 +464,7 @@ def decode_latent(
                 response = response[response.index(starter):]
                 break
 
-    return response if response else generated.strip()
+    return (response if response else raw), raw
 
 
 # =====================================================================
@@ -637,7 +638,7 @@ def evaluate_dense(
     """Evaluate with dense scoring using any decode mode."""
     scores = {}
     for task in tasks:
-        response = decode_latent(encoder, latent, task.prompt, decode_cfg)
+        response, _raw = decode_latent(encoder, latent, task.prompt, decode_cfg)
         scores[task.task_id] = dense_score(response, task.correct_answer)
     mean = sum(scores.values()) / len(scores) if scores else 0.0
     return mean, scores
@@ -653,7 +654,7 @@ def evaluate_binary(
     results = {}
     for task in tasks:
         try:
-            response = decode_latent(encoder, latent, task.prompt, decode_cfg)
+            response, _raw = decode_latent(encoder, latent, task.prompt, decode_cfg)
             results[task.task_id] = verify_answer(response, task.correct_answer)
         except Exception as e:
             if "CUDA" in str(e) or "out of memory" in str(e).lower():
@@ -662,7 +663,7 @@ def evaluate_binary(
             else:
                 print(f"  [EVAL ERROR on {task.task_id}] {type(e).__name__}: {e}", flush=True)
             try:
-                response = decode_latent(encoder, latent, task.prompt, decode_cfg)
+                response, _raw = decode_latent(encoder, latent, task.prompt, decode_cfg)
                 results[task.task_id] = verify_answer(response, task.correct_answer)
             except Exception as retry_err:
                 print(f"  [RETRY FAILED on {task.task_id}] {type(retry_err).__name__}: {retry_err}", flush=True)
