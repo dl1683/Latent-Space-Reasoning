@@ -1,6 +1,6 @@
 # Random Prefix Tokens Improve Small-Model Arithmetic via Trajectory Perturbation
 
-**Devansh Lodha** | March 2026 | Work in Progress
+**Devansh** | March 2026 | Work in Progress
 
 ---
 

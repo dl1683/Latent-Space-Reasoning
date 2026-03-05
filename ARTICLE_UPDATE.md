@@ -1,6 +1,6 @@
 # Latent Space Reasoning: What We've Learned So Far
 
-**Devansh Lodha** | March 2026
+**Devansh** | March 2026
 
 ---
 
