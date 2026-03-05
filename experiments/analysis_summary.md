@@ -174,35 +174,54 @@ more accurate (point-biserial r = -0.206)."
 
 Key: Modular arithmetic benefits most (+52pp at 2-tok). Medium tasks REGRESS (overthinking).
 
-## 8b. Sensitive Task Analysis (Excluding Always-Solved and Never-Solved)
+## 8b. Sensitive Task Analysis (STRICT categorization, Codex 2026-03-05)
 
-Removing 5 always-solved (easy) and 2 never-solved (impossible) tasks leaves 18 "sensitive" tasks:
+**Strict definition**: Always-solved = correct by baseline AND every latent in every condition.
+Never-solved = wrong by baseline AND every latent in every condition.
+
+- Always solved (strict): 2/25 (nest_001, nest_024)
+- Never solved (strict): 1/25 (nest_008, answer=7278)
+- Sensitive: 22/25 tasks
+- Full cross-condition oracle: 24/25 = **96%** (only nest_008 unsolvable)
 
 | Condition | k lat | Counts/lat | Std | Oracle | Unsolved |
 |-----------|-------|-----------|-----|--------|----------|
-| Baseline | 1 | [3] | - | 3/18=16.7% | 15 tasks |
-| 1-tok | 3 | [5,6,6] | 0.5 | 12/18=66.7% | 6 tasks |
-| **2-tok** | **3** | **[10,10,10]** | **0.0** | **17/18=94.4%** | **1 task** |
-| 8-tok | 10 | [4..10] | 2.1 | 17/18=94.4% | 1 task |
+| Baseline | 1 | [6] | - | 6/22=27.3% | 16 tasks |
+| 1-tok | 3 | [8,9,9] | 0.47 | 15/22=68.2% | 7 tasks |
+| **2-tok** | **3** | **[13,13,13]** | **0.00** | **21/22=95.5%** | **1 task** |
+| 8-tok | 10 | [7..12] | 1.76 | 21/22=95.5% | 1 task |
+| Zero | 3 | [7,7,7] | 0.00 | 7/22=31.8% | 15 tasks |
 
 **Key findings:**
-- 2-tok and 8-tok reach the SAME oracle ceiling (94.4%), same missed task (nest_005)
+- 2-tok and 8-tok reach the SAME oracle ceiling (95.5%), same missed task (nest_005)
 - 2-tok does it with 3 directions; 8-tok needs 10 (3x more efficient)
-- 2-tok equalizes per-direction count (std=0.0); 8-tok varies widely (std=2.1)
-- 1-tok misses 6 sensitive tasks including 4 modular arithmetic tasks that 2-tok unlocks
-- Jaccard overlap: 1-tok ~0.20-0.22 (independent), 2-tok ~0.33-0.54 (moderate)
-- Only nest_005 (answer=8360) is genuinely unsolvable — beyond model capacity at any noise
+- 2-tok equalizes per-direction count (std=0.0); 8-tok varies widely (std=1.76)
+- Zero embedding also shows equalization (std=0.0) but at much lower level (7/22)
+- **Task-specific resonance windows**: nest_005 (8360) ONLY solved by 1-tok; nest_021 (5639) ONLY solved by 8-tok
+  - This shows non-monotonicity at the task level in both directions
+- McNemar per-latent (2-tok vs baseline):
+  - Latent 0: 7 gains, 0 losses (chi2=5.14, p≈0.023) — purely additive
+  - Latent 1: 9 gains, 2 losses (chi2=3.27)
+  - Latent 2: 8 gains, 1 losses (chi2=4.00)
+- Effect size: Cohen's h = 0.570 (medium-large)
 
-## 9. Paper Contributions (Revised Ranking, Codex 2026-03-05)
+### Coarsely-stable categorization (supplement-only)
+Previous looser definition (solved by baseline + all 2-tok latents): 5 always-solved, 2 never-solved, 18 sensitive.
+Use "coarsely stable" label, not "always/never", per Codex guidance.
 
-1. **STRONG**: Direction changes WHICH tasks, not HOW MANY (equalization at 2-tok, p=0.006)
-   - Headline claim per Codex: NOT "zero variance" but "constant count, different support"
-2. **STRONG**: Oracle efficiency — 2-tok matches 8-tok ceiling (94.4%) with 3x fewer directions
+## 9. Paper Contributions (Revised Ranking, Codex 2026-03-05, updated 2026-03-06)
+
+1. **STRONG**: Direction changes WHICH tasks, not HOW MANY (equalization at 2-tok, std=0.0 on 22 sensitive)
+   - Headline: "constant count, different support" — same for strict (22) and loose (18) task sets
+2. **STRONG**: Oracle efficiency — 2-tok matches 8-tok ceiling (95.5%) with 3x fewer directions
 3. **STRONG**: Noise contributes 2.5x more than think mode (force-think decomposition)
 4. **STRONG**: Deterministic chaos under greedy decoding (T=0, different outputs from noise)
 5. **STRONG**: Timing confound resolved — latent 0 achieves 60% at baseline timing (73.6s)
-6. **MODERATE**: Non-monotonic dose-response (peak at 2 tokens, pending 3-tok confirmation)
-7. **MODERATE**: Operation-type stratification (mod > small > large)
+6. **STRONG**: Task-specific resonance windows (nest_005 = 1-tok only, nest_021 = 8-tok only)
+7. **STRONG**: Full oracle 24/25 (96%) across all conditions — only nest_008 truly unsolvable
+8. **MODERATE**: Non-monotonic dose-response (best at 2 tokens among tested, pending 3-tok)
+9. **MODERATE**: Large-answer regression (100% → 78%) = informative limitation (policy switch, not boost)
+10. **MODERATE**: Latent 0 purely additive (7 gains, 0 losses, McNemar p≈0.023) — existence result
 
 ## 10. Pending Experiments (Priority Order, per Codex 2026-03-05, updated post-timing-resolution)
 
