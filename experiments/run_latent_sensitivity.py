@@ -52,12 +52,15 @@ def decode_with_raw_soft_prompt(
     max_new_tokens: int = 1024,
     temperature: float = 0.0,
     enable_thinking: bool = True,
+    position: str = "prefix",
 ) -> str:
     """Decode using a pre-built soft prompt tensor (bypasses latent projection).
 
     Used for control experiments where soft prompt tokens are generated
     directly (e.g., random noise, mean embeddings) rather than projected
     from a latent vector via W.
+
+    position: "prefix" (before all text) or "suffix" (between prompt and generation)
     """
     system_msg = "Answer to the best of your ability."
     user_msg = query or ""
@@ -89,14 +92,27 @@ def decode_with_raw_soft_prompt(
     sp = soft_prompt.to(encoder.model.dtype).to(encoder._device)
     with torch.no_grad():
         text_embeds = encoder.model.get_input_embeddings()(inputs["input_ids"])
-        combined_embeds = torch.cat([sp, text_embeds], dim=1)
 
         soft_mask = torch.ones(
             1, sp.size(1),
             dtype=inputs["attention_mask"].dtype,
             device=encoder._device,
         )
-        combined_mask = torch.cat([soft_mask, inputs["attention_mask"]], dim=1)
+        if position == "suffix":
+            # Insert soft prompt right before the last token (generation start)
+            combined_embeds = torch.cat(
+                [text_embeds[:, :-1, :], sp, text_embeds[:, -1:, :]], dim=1
+            )
+            combined_mask = torch.cat(
+                [inputs["attention_mask"][:, :-1], soft_mask,
+                 inputs["attention_mask"][:, -1:]], dim=1
+            )
+        else:
+            # Default: prefix — soft prompt before all text
+            combined_embeds = torch.cat([sp, text_embeds], dim=1)
+            combined_mask = torch.cat(
+                [soft_mask, inputs["attention_mask"]], dim=1
+            )
 
         generate_kwargs = dict(
             inputs_embeds=combined_embeds,
@@ -564,15 +580,20 @@ def main():
     parser.add_argument(
         "--control-mode", default="latent_projected",
         choices=["latent_projected", "random_noise", "mean_embedding",
-                 "zero_embedding"],
+                 "zero_embedding", "repeated_noise"],
         help="Control mode: latent_projected (normal W projection), "
              "random_noise (random embeddings at target RMS), "
              "mean_embedding (mean token embedding repeated), "
-             "zero_embedding (all-zero soft prompt tokens)")
+             "zero_embedding (all-zero soft prompt tokens), "
+             "repeated_noise (ONE random vector repeated k times)")
     parser.add_argument("--num-soft-tokens", type=int, default=8,
         help="Number of soft prompt tokens (for dose-response experiments)")
     parser.add_argument("--rms-scale", type=float, default=1.0,
         help="Multiplier for target RMS (for RMS sweep experiments)")
+    parser.add_argument("--position", default="prefix",
+        choices=["prefix", "suffix"],
+        help="Where to place soft prompt: prefix (before text) or suffix "
+             "(between prompt and generation start)")
     parser.add_argument("--reuse-baseline", type=str, default=None,
         help="Path to existing results JSON to reuse baseline from (skips Phase 1)")
     parser.add_argument("--n-tasks", type=int, default=None,
@@ -789,6 +810,20 @@ def main():
         control_soft_prompts = [sp] * args.n_latents
         print(f"  Note: all {args.n_latents} use identical zero soft prompt")
 
+    elif control_mode == "repeated_noise":
+        print(f"CONTROL MODE: repeated_noise")
+        print(f"  ONE random vector repeated {num_soft_tokens} times per latent")
+        print(f"  Tests: does diversity WITHIN prefix matter?")
+        noise_gen = torch.Generator().manual_seed(2024)
+        control_soft_prompts = []
+        for _ in range(args.n_latents):
+            # Generate ONE random vector, repeat it num_soft_tokens times
+            single_vec = torch.randn(1, 1, embed_dim, generator=noise_gen)
+            current_rms = single_vec.square().mean().sqrt().clamp_min(1e-8)
+            single_vec = single_vec * (effective_rms / current_rms)
+            sp = single_vec.expand(1, num_soft_tokens, embed_dim).clone()
+            control_soft_prompts.append(sp)
+
     elif control_mode == "mean_embedding":
         print(f"CONTROL MODE: mean_embedding")
         print(f"  Computing mean token embedding and repeating {num_soft_tokens} times")
@@ -866,6 +901,7 @@ def main():
                         max_new_tokens=args.max_new_tokens,
                         temperature=0.0,
                         enable_thinking=not args.no_think,
+                        position=args.position,
                     )
                 else:
                     resp = decode_latent(encoder, latents[li], task.prompt, cfg)
@@ -880,6 +916,7 @@ def main():
                             max_new_tokens=args.max_new_tokens,
                             temperature=0.0,
                             enable_thinking=not args.no_think,
+                            position=args.position,
                         )
                     else:
                         resp = decode_latent(encoder, latents[li], task.prompt, cfg)
@@ -1060,6 +1097,7 @@ def main():
         "task_type": args.task_type,
         "decode_mode": args.decode_mode,
         "control_mode": control_mode,
+        "position": args.position,
         "num_soft_tokens": num_soft_tokens,
         "rms_scale": args.rms_scale,
         "effective_rms": effective_rms,
@@ -1100,8 +1138,9 @@ def main():
         ctrl_tag = f"_{control_mode}" if control_mode != "latent_projected" else ""
         tok_tag = f"_t{num_soft_tokens}" if num_soft_tokens != 8 else ""
         rms_tag = f"_rms{args.rms_scale}" if args.rms_scale != 1.0 else ""
+        pos_tag = f"_{args.position}" if args.position != "prefix" else ""
         out_path = (Path(__file__).parent
-                    / f"sensitivity{diff_tag}{ctrl_tag}{tok_tag}{rms_tag}_results.json")
+                    / f"sensitivity{diff_tag}{ctrl_tag}{tok_tag}{rms_tag}{pos_tag}_results.json")
 
     with open(out_path, "w") as f:
         json.dump(output, f, indent=2, default=str)
