@@ -567,6 +567,10 @@ def main():
         help="Control mode: latent_projected (normal W projection), "
              "random_noise (random embeddings at target RMS), "
              "mean_embedding (mean token embedding repeated)")
+    parser.add_argument("--num-soft-tokens", type=int, default=8,
+        help="Number of soft prompt tokens (for dose-response experiments)")
+    parser.add_argument("--rms-scale", type=float, default=1.0,
+        help="Multiplier for target RMS (for RMS sweep experiments)")
     parser.add_argument("--n-tasks", type=int, default=None,
         help="Override total number of tasks (for nested/sweet_spot modes)")
     parser.add_argument("--output", default=None)
@@ -738,19 +742,24 @@ def main():
     print(f"{'=' * 40}")
 
     control_mode = args.control_mode
-    num_soft_tokens = 8
+    num_soft_tokens = args.num_soft_tokens
+    effective_rms = target_rms * args.rms_scale
+    if args.rms_scale != 1.0:
+        print(f"  RMS scale: {args.rms_scale}x -> effective_rms={effective_rms:.5f}")
+    if args.num_soft_tokens != 8:
+        print(f"  Soft tokens: {num_soft_tokens} (default: 8)")
 
     # Generate control soft prompts or latents based on mode
     if control_mode == "random_noise":
         print(f"CONTROL MODE: random_noise")
         print(f"  Generating {args.n_latents} random noise soft prompts "
-              f"({num_soft_tokens} tokens x {embed_dim}d, target_rms={target_rms:.5f})")
+              f"({num_soft_tokens} tokens x {embed_dim}d, rms={effective_rms:.5f})")
         noise_gen = torch.Generator().manual_seed(2024)
         control_soft_prompts = []
         for _ in range(args.n_latents):
             sp = torch.randn(1, num_soft_tokens, embed_dim, generator=noise_gen)
             current_rms = sp.square().mean().sqrt().clamp_min(1e-8)
-            sp = sp * (target_rms / current_rms)
+            sp = sp * (effective_rms / current_rms)
             control_soft_prompts.append(sp)
 
     elif control_mode == "mean_embedding":
@@ -760,7 +769,7 @@ def main():
             embed_weight = encoder.model.get_input_embeddings().weight
             mean_emb = embed_weight.float().mean(dim=0, keepdim=True)  # (1, embed_dim)
             mean_rms = mean_emb.square().mean().sqrt().clamp_min(1e-8)
-            mean_emb = mean_emb * (target_rms / mean_rms)
+            mean_emb = mean_emb * (effective_rms / mean_rms)
             sp = mean_emb.unsqueeze(0).expand(1, num_soft_tokens, embed_dim).clone()
         control_soft_prompts = [sp] * args.n_latents
         print(f"  Note: all {args.n_latents} use identical soft prompt (control)")
@@ -802,14 +811,14 @@ def main():
         W_soft=W,
         embed_dim=embed_dim,
         num_soft_tokens=num_soft_tokens,
-        target_rms=target_rms,
+        target_rms=effective_rms,
         curvature=0.5,
         max_new_tokens=args.max_new_tokens,
         temperature=0.0,  # Greedy for determinism
         enable_thinking=not args.no_think,
         layer_projections=layer_projections,
         steer_scale=args.steer_scale,
-        hidden_rms=target_rms,
+        hidden_rms=effective_rms,
     )
 
     sensitivity_results: List[Dict] = []
