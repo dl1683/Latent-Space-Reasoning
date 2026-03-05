@@ -148,3 +148,34 @@ print(f"Baseline correct: {len(baseline_right)}/25")
 print(f"Baseline failures recovered by 8-tok (>50%): {n_fixed}/{len(baseline_wrong)}")
 print(f"Baseline successes with regressions: {n_broken}/{len(baseline_right)}")
 print(f"Net effect: +{n_fixed} recovered - {n_broken} regressed")
+
+# Generation time analysis
+import re
+bl_ok_times = [bl_map[t]['time'] for t in baseline_right]
+bl_x_times = [bl_map[t]['time'] for t in baseline_wrong]
+lat_ok_times = []
+lat_x_times = []
+for entry in sr_latent_projected:
+    for r in entry.get('task_results', []):
+        if r['correct']:
+            lat_ok_times.append(r['time'])
+        else:
+            lat_x_times.append(r['time'])
+
+if bl_ok_times and bl_x_times and lat_ok_times and lat_x_times:
+    from statistics import mean
+    print("\n=== GENERATION TIME ===")
+    print(f"Baseline correct:  {mean(bl_ok_times):.1f}s (n={len(bl_ok_times)})")
+    print(f"Baseline wrong:    {mean(bl_x_times):.1f}s (n={len(bl_x_times)})")
+    print(f"8-token correct:   {mean(lat_ok_times):.1f}s (n={len(lat_ok_times)})")
+    print(f"8-token wrong:     {mean(lat_x_times):.1f}s (n={len(lat_x_times)})")
+    print(f"Wrong answers hit max_new_tokens (~80s = 1024 tokens)")
+
+# Response style: numbers and operations density
+print("\n=== RESPONSE STYLE (numbers/operations per 500 chars) ===")
+bl_nums_ok = [len(re.findall(r'-?\d+', bl_map[t]['response'])) for t in baseline_right]
+bl_nums_x = [len(re.findall(r'-?\d+', bl_map[t]['response'])) for t in baseline_wrong]
+bl_ops_ok = [len(re.findall(r'[+\-*/]', bl_map[t]['response'])) for t in baseline_right]
+bl_ops_x = [len(re.findall(r'[+\-*/]', bl_map[t]['response'])) for t in baseline_wrong]
+print(f"Baseline correct:  {mean(bl_nums_ok):.1f} numbers, {mean(bl_ops_ok):.1f} ops")
+print(f"Baseline wrong:    {mean(bl_nums_x):.1f} numbers, {mean(bl_ops_x):.1f} ops")
