@@ -6,38 +6,44 @@
 
 ## Active Goals
 
-### 1. Characterize the Warm-Start Mechanism
-The core finding: prepending 8 random embedding-scale tokens improves Qwen3-4B arithmetic by +12pp (32% -> 44%). Direction doesn't matter. Characterize WHY this works.
-- [ ] Mean-embedding control (does token diversity matter, or do 8 identical tokens also work?)
-- [ ] Zero-embedding control (does the attention mask extension suffice?)
-- [ ] Token count dose-response (1, 2, 4, 8, 16, 32 tokens)
-- [ ] RMS scale sweep (0.5x, 1x, 2x, 5x target_rms)
-- [ ] Nested-easy noise control (does noise show Cochran's Q significance on easy tasks?)
+### 1. Characterize the Warm-Start Mechanism (IN PROGRESS)
+**Core finding:** Prepending random embedding-scale tokens improves Qwen3-4B arithmetic by +12pp (32% -> 44%). Direction doesn't matter. This is a TRAJECTORY PERTURBATION effect.
 
-### 2. Test Warm-Start Generality
-Is warm-start Qwen3-specific or a general phenomenon?
+**Completed:**
+- [x] Mean-embedding control: 36% = zero → token diversity doesn't help for identical tokens
+- [x] Zero-embedding control: 36% (+4pp) → embedding values matter, not just sequence extension
+- [x] 1-token dose-response: 42.7% → captures 89% of the 8-token effect (threshold effect)
+- [x] Nested-easy noise control: noise = latent-projected (p=1.0), confirmed cross-difficulty
+- [x] Error taxonomy: redistribution, not clean improvement (3 fixed, 6 regressed)
+- [x] Qualitative output analysis: policy shift from formal to exploratory reasoning
+
+**In progress / next:**
+- [ ] 2-token dose-response (RUNNING)
+- [ ] Repeated-noise (1 vector x 8): within-prefix diversity test
+- [ ] Attention masking (--mask-prefix): attention sink vs trajectory perturbation
+- [ ] Suffix position: does position matter?
+- [ ] max_new_tokens sweep: token budget mediator test
+- [ ] Scale to n=100+ for statistical power
+
+### 2. Test Warm-Start Generality (DEFERRED until mechanism characterized)
 - [ ] Non-Qwen models: Llama-3.2-3B, Phi-3-mini, Gemma-2-2B
-- [ ] Non-arithmetic tasks: GSM8K subset, ARC-Easy, logic puzzles
+- [ ] Non-arithmetic tasks: GSM8K subset, logic puzzles
 - [ ] Larger models: does the effect vanish at scale?
-- [ ] Multiple task counts (50-100 tasks for statistical power)
 
-### 3. Paper: "Free Lunch: Random Embedding Tokens Improve Small-Model Reasoning"
+### 3. Paper: "Prefix Perturbation as Policy Switch in Small Language Models"
 - [ ] Complete mechanism characterization (Goal 1)
+- [ ] Frame as redistribution/policy change, not pure improvement
 - [ ] Complete generality tests (Goal 2)
-- [ ] Position: zero-cost inference improvement, no training needed
-- [ ] Address reviewer concerns: efficiency argument, scale dependency
+- [ ] Address: n=25 fragility, token budget mediation, mechanism evidence
 
 ## Concluded / Falsified Goals
 
 ### Latent Space Search — FALSIFIED (2026-03-04)
-- Random noise matches latent-projected performance (44% vs 44.4%, Mann-Whitney p=1.0)
-- Latent direction carries no signal. Improvement is warm-start, not direction.
-- Evolution, CMA-ES, QD, Active Inference — all futile because nothing to search for.
-- V17, V18, V19 runners: DEAD CODE (do not run)
+- Random noise = latent-projected (p=1.0). Direction carries no signal.
+- V17, V18, V19: DEAD CODE
 
 ### Hyperbolic Geometry — CONCLUDED (2026-03-03)
-- Euclidean = Hyperbolic under same conditioning (V15a, V15b)
-- Geometry adds no value.
+- Euclidean = Hyperbolic under same conditioning. Geometry adds no value.
 
 ## Completed Goals
 - [x] AIM-v1 accessibility milestone
@@ -50,10 +56,10 @@ Is warm-start Qwen3-specific or a general phenomenon?
 - [x] Warm-start control experiment
 
 ## Key Research Findings (Codex-Validated)
-1. **WARM-START IS THE MECHANISM** — prepending random embedding tokens improves accuracy by +12pp
-2. **Latent direction does not matter** — random noise = W-projected latents (p=1.0)
-3. **Chain-of-thought IS the mediator** — no-think mode eliminates the effect entirely
-4. **Latents DO differ on easy tasks** — Cochran's Q=23.2 (p=0.006) but mostly in harmful directions
-5. **Local evolution fails** — small mutations can't exploit landscape, and landscape isn't exploitable anyway
-6. **Hyperbolic = Euclidean** — geometry irrelevant under same conditioning
-7. **Both conditioning methods eliminate hallucination** — robust across model sizes
+1. **TRAJECTORY PERTURBATION** — random prefix tokens shift generation from formal→exploratory mode
+2. **Redistribution effect** — some tasks improve, others regress. Net +12pp mean
+3. **Threshold effect** — 1 token captures 89% of the effect (not cumulative)
+4. **Token diversity matters** — diverse tokens (+12pp) >> identical tokens (+4pp)
+5. **Direction irrelevant** — random noise = W-projected latents (p=1.0)
+6. **CoT mediates** — no-think mode eliminates the effect entirely
+7. **Token budget correlation** — wrong answers hit max_new_tokens (~80s = 1024 tokens)
