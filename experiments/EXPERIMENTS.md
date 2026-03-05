@@ -5,24 +5,46 @@ Only Codex-validated conclusions are stated as "confirmed."
 
 ---
 
-## UPCOMING: Mechanism Characterization Sweeps (UNBLOCKED)
+## Error Taxonomy Analysis (2026-03-04) — REDISTRIBUTION, NOT CLEAN IMPROVEMENT
 
-**Goal:** Discriminate between 4 candidate mechanisms for the warm-start effect.
+**Purpose:** Classify per-task failure patterns across all conditions to understand what "improvement" means.
+**Script:** `experiments/analyze_error_taxonomy.py`
 
-| Sweep | Purpose | Discriminates |
-|-------|---------|---------------|
-| Token count (1-32) | Dose-response curve shape | Linear=depth, Log/plateau=sinks |
-| RMS scale (0.1x-10x) | Optimal scale | Bell curve confirms embedding values matter |
-| Zero-embedding | Attention extension only? | Zero=random → depth; zero<random → values matter |
-| Mean-embedding | Token diversity | Mean=random → diversity irrelevant |
+### Results (Codex CLI Reviewed)
 
-**Candidate Mechanisms (from literature review):**
-1. **Attention Sink** — random tokens absorb excess softmax attention (StreamingLLM, ICLR 2024)
-2. **Computational Depth** — extra tokens increase expressivity (London & Nagarajan, NeurIPS 2025)
-3. **Stochastic Resonance** — noise pushes past decision boundaries, amplified by CoT
-4. **KV Cache Warm-Up** — speculative
+| Metric | Value |
+|--------|-------|
+| Baseline correct | 8/25 (32%) |
+| Baseline failures FIXED by 8 tokens (>50% recovery) | 3/17 (nest_006=70%, nest_010=100%, nest_015=70%) |
+| Baseline successes REGRESSED by 8 tokens | 6/8 (nest_003=30%, nest_007=30%, nest_014=10%) |
+| Always broken regardless of condition | 2 (nest_005, nest_008) |
 
-**Infrastructure:** `run_mechanism_sweeps.sh`, `--reuse-baseline`, `--num-soft-tokens`, `--rms-scale`, `zero_embedding` control
+**Codex CLI Verdict:** The +12pp mean improvement is REDISTRIBUTION — random tokens destabilize AND re-stabilize behavior across different tasks. The net effect is positive on average, but individual task reliability drops. At n=25, the signal is "promising but fragile."
+
+### Mechanism Implications
+- Effect is NOT additive computation: tasks that work get broken
+- Consistent with attention perturbation/stochastic resonance
+- 1-token captures 89% → threshold/trigger effect, not cumulative
+
+---
+
+## UPCOMING: Diagnostic Experiments (Codex-Prioritized)
+
+**Priority order per Codex CLI review:**
+
+| # | Experiment | Purpose | Flag |
+|---|-----------|---------|------|
+| 1 | Repeated noise (1 vec x 8) | Within-prefix diversity required? | `--control-mode repeated_noise` |
+| 2 | Attention masking | If effect vanishes → sink confirmed | `--mask-prefix` |
+| 3 | Suffix position | Position matters? → sink evidence | `--position suffix` |
+| 4 | Scale to n=100+ | Statistical power for claims | -- |
+| 5 | RMS scale sweep | Optimal perturbation magnitude | `--rms-scale` |
+
+**Candidate Mechanisms (updated with evidence):**
+1. **Attention Sink** — LEADING. Supported by: 1-token plateau, diversity matters, CoT required
+2. **Stochastic Resonance** — SECONDARY. Supported by: redistribution pattern, task instability
+3. ~~Computational Depth~~ — ELIMINATED. Zero-embedding (+4pp) << random (+12pp)
+4. ~~KV Cache Warm-Up~~ — ELIMINATED. Mean-embedding = zero-embedding
 
 ---
 

@@ -1,24 +1,30 @@
 # Task Board
 
 ## Doing
-- [ ] Token count dose-response sweep (1-token DONE, 2-token RUNNING, then 4,16,32)
+- [ ] 2-token dose-response (RUNNING)
+- [ ] Codex-reviewed priority experiments (below)
 
-## Todo (Priority Order — Codex-reviewed)
-1. [ ] RMS scale sweep (0.1x, 0.25x, 0.5x, 1.0x, 2.0x, 5.0x, 10.0x) — same setup
-2. [ ] Error taxonomy: classify failure modes across conditions (Codex directive)
-3. [ ] 2D sweep: token count x RMS (highest-value per Codex CLI review)
-4. [ ] Non-Qwen model test: Llama-3.2-3B, Phi-3-mini, Gemma-2-2B (deferred until mechanism characterized)
-5. [ ] Non-arithmetic tasks: GSM8K subset (deferred)
-6. [ ] n=10 replication at key sweep points for statistical power
+## Todo (Priority Order — Codex CLI Reviewed 2026-03-04)
+1. [ ] **Repeated-noise control** (1 vector repeated 8x vs 8 distinct) — tests within-prefix diversity
+2. [ ] **Attention masking** (`--mask-prefix`) — if effect vanishes, attention sink confirmed
+3. [ ] **Suffix position** (`--position suffix`) — if prefix >> suffix, supports sink
+4. [ ] **Larger task set** (n=100+) — n=25 too small for scientific claims
+5. [ ] RMS scale sweep (0.1x to 10x) — lower priority per Codex
+6. [ ] Remaining token count sweep (4,16,32) — low priority, diminishing returns
+7. [ ] Non-Qwen model test — deferred
+8. [ ] Non-arithmetic tasks — deferred
 
 ## Infrastructure Done
 - [x] `--num-soft-tokens` and `--rms-scale` CLI flags
 - [x] `--reuse-baseline` (skips 21-min baseline Phase 1)
-- [x] `--control-mode zero_embedding` and `mean_embedding`
-- [x] `experiments/run_mechanism_sweeps.sh` (runs all sweeps sequentially)
-- [x] `experiments/analyze_sweeps.py` (collates results into summary table)
+- [x] `--control-mode`: zero_embedding, mean_embedding, repeated_noise
+- [x] `--position`: prefix (default), suffix
+- [x] `--mask-prefix`: blocks attention to soft prompt positions
+- [x] `experiments/analyze_error_taxonomy.py`
+- [x] `experiments/run_mechanism_sweeps.sh` + `analyze_sweeps.py`
 
 ## Completed Experiments
+- [x] Error taxonomy: 8-tok effect is REDISTRIBUTION (3 fixed, 6 regressed)
 - [x] Zero-embedding control: 36% (+4pp) — embedding values matter
 - [x] Mean-embedding control: 36% = zero — token DIVERSITY is key
 - [x] 1-token dose-response: 42.7% — captures 89% of 8-token effect
@@ -27,15 +33,15 @@
 - [x] Sweet-spot sensitivity: +12.4% mean, Cochran's Q p=0.006
 - [x] No-think sensitivity: flat landscape without CoT
 
-## Key Finding
-**The +12pp improvement is a WARM-START effect driven by token DIVERSITY.**
-- Zero/mean tokens: +4pp (computational depth alone)
-- Random diverse tokens: +12pp (additional +8pp from diversity)
-- 1 token captures ~89% of effect → logarithmic/plateau → attention sink
-- Direction carries no signal (p=1.0)
+## Codex Review Summary (2026-03-04)
+**Signal is promising but fragile at n=25.**
+- Effect is redistribution, not clean improvement
+- 1-token = threshold/trigger effect, not cumulative capacity
+- Strongest test: attention masking intervention
+- Paper-worthy IF framed as "redistribution" with proper ablations
+- Need n=100+ for scientific claims
 
 ## DEAD CODE (do NOT run)
 - V17, V18, V19 — all search-based experiments are futile
-- CMA-ES, large-noise evolution — direction doesn't matter
 
 ## Test Suite: 342 tests passing
