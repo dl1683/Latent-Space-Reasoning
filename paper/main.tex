@@ -76,9 +76,9 @@ tasks are:
 
     \item \textbf{Oracle-efficiency optimum.} Three two-token
     perturbation runs achieve 88\% oracle accuracy (22/25 tasks),
-    while eight three-token runs reach only 72\% (18/25) and add
+    while nine three-token runs reach only 72\% (18/25) and add
     no tasks beyond the two-token oracle. At matched budget ($k = 3$),
-    two tokens freeze only 3 tasks, versus 10 for three or eight tokens.
+    two tokens freeze only 3 tasks, versus 11 for three tokens and 8 for eight tokens.
 
     \item \textbf{Solve-count equalization (2-token).}
     At the two-token optimum, all independent random directions solve
@@ -339,7 +339,7 @@ shows coverage as a function of budget $k$ for each condition.
 \includegraphics[width=0.8\linewidth]{experiments/fig_oracle_coverage.pdf}
 \caption{Oracle coverage vs.\ perturbation budget. Two-token (green)
 dominates at every matched budget $k$: three runs achieve 88\% coverage,
-while eight three-token runs (red) reach only 72\% and add zero unique
+while nine three-token runs (red) reach only 72\% and add zero unique
 tasks. Eight-token (blue) eventually reaches 92\% at $k = 10$.
 Budget-matched bootstrap: $P(\text{8-tok} < \text{2-tok}) = 1.000$
 at every $k \leq 3$.}
@@ -463,7 +463,7 @@ efficiently.
 \subsection{Why Two Tokens?}
 
 At matched sample size ($n = 3$ directions), two tokens freeze only
-3 tasks, compared to 8 at one token, 10 at three tokens, and 10 at
+3 tasks, compared to 8 at one token, 11 at three tokens, and 8 at
 eight tokens. Two tokens thus maximize the set of tasks that
 \emph{can} be solved while maintaining the highest per-direction
 accuracy (15/25 = 60\%). We hypothesize that two tokens provide the
@@ -480,7 +480,7 @@ budget before reaching an answer.
 The training-free nature of this intervention suggests a practical
 ``perturbation ensemble'' strategy: run a small model with $k$ random
 two-token prefixes and take the majority vote or oracle. Three runs
-achieve 88\% coverage, while eight three-token runs reach only 72\%
+achieve 88\% coverage, while nine three-token runs reach only 72\%
 and add no tasks beyond the two-token oracle. Beyond the two-token
 optimum, additional perturbation is deleterious: it lowers
 per-direction accuracy and contracts the reachable task set, freezing
