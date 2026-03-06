@@ -249,12 +249,29 @@ task-selective effects, revealing mode gating, oracle efficiency, and task-speci
 
 ## 11. Pending Experiments (Priority Order, per Codex 2026-03-05, updated post-Shi)
 
+### Behavioral Experiments
 1. **Shi-style discrete token control** -- HIGHEST PRIORITY (Codex).
    Run repeated `/` and `?` on Qwen3-4B at 1,2,3,8 tokens. Implemented in harness.
-2. **3-tok dose-response** -- RUNNING (10 latents).
+2. **3-tok dose-response** -- RUNNING (10 latents, baseline at task 24/25).
 3. **Scale 2-tok to n=100 tasks, n=10 latents** -- replicate oracle + zero-variance
-4. **Reduced max_new_tokens sweep** (256, 512) -- reviewer-facing control
-   - Harness instrumented with generated_tokens, terminated_by_eos, tokens_per_sec
-5. **Force-think + 2 noise tokens** -- isolates stochastic component (OOM'd at 16/25)
-6. Dense dose-response (4,5,6,7 tokens)
-7. Cross-model (Qwen3-8B)
+4. Dense dose-response (4,5,6,7 tokens)
+5. Cross-model (Qwen3-8B)
+
+### Mechanism Probes (Codex-ordered for NeurIPS, 2026-03-05)
+1. **D. Think-gate probe** (HIGHEST ROI) -- Script ready: run_think_gate_probe.py
+   - Single forward pass, measure <think> log-prob under all perturbation conditions
+   - Tests PGRMS gating claim directly
+2. **C. MLP redistribution probe** -- Hook MLP blocks on last prompt + first generated tokens
+   - Under teacher forcing to control for different text
+   - Measure layer-wise MLP output norm, top-k neuron overlap, activation entropy
+   - Bridges directly to Shi et al.'s mechanism
+3. **E. Reduced causal tracing** -- Activation patching at candidate layers
+   - Patch baseline residual/MLP into perturbed run; check if <think> logit gain collapses
+   - First-token effects only (full rollout too expensive)
+4. **A. Hidden-state scouting** -- Identify candidate layers for C and E
+   - Residual stream comparison: L2, cosine sim, norm changes per layer
+
+### Lower Priority
+- Reduced max_new_tokens sweep (256, 512) -- reviewer-facing control
+- Force-think + 2 noise tokens -- stochastic decomposition
+- Antipodal pair experiment
