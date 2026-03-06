@@ -31,21 +31,22 @@ at the first decode position under all perturbation conditions. Tests PGRMS gati
 
 ---
 
-## 3-Token Dose-Response (2026-03-05) — RUNNING (N6/10)
+## 3-Token Dose-Response (2026-03-05) — RUNNING (N9/10)
 
 **Purpose:** Fill critical gap in dose-response curve. Confirm non-monotonic peak at 2 tokens.
 **Config:** 10 random noise vectors, 3 soft tokens each, 25 sweet-spot tasks, Qwen3-4B Q4
 **Script:** `python -u experiments/run_latent_sensitivity.py --task-type nested --difficulty sweet_spot --n-latents 10 --n-tasks 25 --control-mode random_noise --num-soft-tokens 3`
-**Status:** N1-N5 complete, N6 in progress.
+**Status:** N1-N8 complete, N9 in progress (GPU-contended ~120s/task).
 
-### Results (N1-N5)
-- Solve counts: [11, 11, 11, 10, 13], mean=11.2, SD=1.10
-- **Equalization FAILED**: p=0.434 vs heterogeneous iid null (Monte Carlo 100k)
-- N1-N3 [11,11,11] was small-sample noise, not evidence for equalization
-- Categories (N1-N5): 7 unanimous, 9 frozen, 9 sensitive
-- nest_007 escaped "frozen" (0/4→1/5): categories are probabilistic
-- 3-tok oracle (5 dirs) = 16/25 = 64% (adds 0 new tasks over 2-tok oracle)
-- 3-tok is transitional data, not equalization evidence (Codex 2026-03-05e)
+### Results (N1-N8)
+- Solve counts: [11, 11, 11, 10, 13, 12, 9, 9], mean=10.8, SD=1.39
+- **Equalization FAILED**: p=0.497 vs iid (AT THE MEDIAN)
+- Categories (N1-N8): 5 unanimous, 7 frozen, 13 sensitive
+- 3-tok oracle (8 dirs) = 18/25 = 72% (adds 0 new tasks over 2-tok oracle)
+- **2-tok oracle (3 dirs) = 22/25 = 88% >> 3-tok oracle (8 dirs) = 72%**
+- At matched n=3: 2-tok freezes 3 tasks, 3-tok freezes 10.2 (mean over all combos)
+- 4 tasks solvable at 2-tok become frozen at 3-tok (002, 012, 013, 014)
+- Over-perturbation contracts reachable set (Codex 2026-03-05f)
 
 ---
 
