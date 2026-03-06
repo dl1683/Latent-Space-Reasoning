@@ -212,6 +212,12 @@ accuracy to $\sim$44\%, matching the eight-token level. The three-token
 solve set is entirely a subset of the two-token oracle, adding no new
 task coverage.
 
+Statistical significance: McNemar's exact test confirms the 2-token
+effect per-latent (7 gains / 0 losses, $p = 0.016$; 8/1, $p = 0.039$;
+9/2, $p = 0.065$). The pooled sign test across all three latents yields
+24 gains vs.\ 3 losses ($p < 0.0001$). Fisher's exact test on pooled
+counts: OR = 3.19, $p = 0.021$. Cohen's $h = 0.570$ (medium effect).
+
 \subsection{Force-Think Decomposition} % [LOCKED]
 \label{sec:decomposition}
 
@@ -254,12 +260,15 @@ two-token condition:
 Zero (3 latents) & [7, 7, 7] & 7.0/22 & 0.00 \\
 1-tok (3 latents) & [8, 9, 9] & 8.7/22 & 0.58 \\
 \textbf{2-tok (3 latents)} & \textbf{[13, 13, 13]} & \textbf{13.0/22} & \textbf{0.00} \\
+3-tok (2 latents) & [9, 9] & 9.0/22 & 0.00 \\
 8-tok (10 latents) & [7..12] & 9.1/22 & 1.85 \\
 \bottomrule
 \end{tabular}
 \caption{Equalization across sensitive tasks (22 tasks excluding
-2 always-solved and 1 never-solved). Only 2-tok and zero achieve
-std = 0.00, but 2-tok solves nearly twice as many.}
+2 always-solved and 1 never-solved). Zero, 2-tok, and 3-tok achieve
+std = 0.00 (equalization), but 2-tok solves nearly twice as many as
+the others. 8-tok shows high variance (std = 1.85) despite similar
+mean to 3-tok.}
 \label{tab:equalization}
 \end{table}
 

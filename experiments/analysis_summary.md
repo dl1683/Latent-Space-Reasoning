@@ -255,9 +255,14 @@ uses the fixed code. All experiments should eventually be re-run with current co
 5. **STRONG**: Condition-specific rescue windows (Shapley: 3 families each uniquely rescue 1 task)
    - noise_1tok: nest_005; latent_8tok: nest_021; mean_8tok: nest_008 (revalidate)
 6. **STRONG**: Timing confound resolved — latent 0 achieves 60% at baseline timing (73.6s)
-7. **MODERATE**: Non-monotonic dose-response (best at 2 tokens, pending 3-tok)
-8. **MODERATE**: Large-answer regression (100% → 78%) = policy switch, not generic boost
-9. **MODERATE**: Latent 0 purely additive (7 gains, 0 losses, McNemar p≈0.023)
+7. **STRONG**: Non-monotonic dose-response CONFIRMED: 3-tok N1=N2=44%, sharp drop from 2-tok 60%
+   - 3-tok equalization: both latents solve EXACTLY 11/25 (std=0.00, P=2.5% under independence)
+   - 3-tok solve set entirely subset of 2-tok oracle (adds 0 new tasks)
+8. **STRONG**: Pooled sign test: 24 gains / 3 losses across 3 latents, p=0.000049
+   - Per-latent McNemar exact: L0 p=0.016, L2 p=0.039 (significant)
+   - Fisher exact pooled: OR=3.19, p=0.021
+   - Cohen's h=0.570 (medium effect)
+9. **MODERATE**: Large-answer regression (100% -> 78%) = policy switch, not generic boost
 10. **WEAK**: Answer-magnitude Spearman on delta accuracy: r=-0.295, p=0.15 (NS)
     - Raw accuracy correlation is confounded by baseline difficulty
 
@@ -451,11 +456,14 @@ task-selective effects, revealing mode gating, oracle efficiency, and task-speci
 1. **Shi-style discrete token control** -- HIGHEST PRIORITY (Codex).
    Run repeated `/` and `?` on Qwen3-4B at 1,2,3,8 tokens. Implemented in harness.
 2. **3-tok dose-response** -- RUNNING (Noise 2/10 in progress).
-   - Noise 1: 44% (11/25) = matches 8-tok level, confirms sharp 2-tok peak
-   - 3-tok N1 solve set is ENTIRELY a subset of 2-tok oracle (adds 0 new tasks)
+   - Noise 1: 44% (11/25), Noise 2: 44% (11/25) — EQUALIZATION AT 3-TOK TOO!
+   - N1 and N2 solve EXACTLY 11/25 but 4 different tasks (2 swaps each way)
+   - 3-tok solve set is ENTIRELY a subset of 2-tok oracle (adds 0 new tasks)
    - 3-tok gains from baseline: nest_006, _010, _015, _017, _019 (5 gains, 2 losses)
    - Combined oracle unchanged at 24/25 (nest_008 still unsolved)
-   - Dose-response: 0=32%, 1=42.7%, 2=60%, 3=44% (N1 only), 8=44%
+   - Dose-response: 0=32%, 1=42.7%, 2=60%, 3=44% (N1+N2), 8=44%
+   - Equalization hierarchy: 2-tok [15,15,15] std=0, 3-tok [11,11] std=0 (n=2 only!)
+   - Need N3+ to confirm 3-tok equalization vs coincidence
 3. **Scale 2-tok to n=100 tasks, n=10 latents** -- replicate oracle + zero-variance
 4. Dense dose-response (4,5,6,7 tokens)
 5. Cross-model (Qwen3-8B)
