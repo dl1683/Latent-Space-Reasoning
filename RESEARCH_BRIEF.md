@@ -115,7 +115,7 @@ The effect is **difficulty-dependent** and acts as a **policy switch**, not a ge
 - **Large answers (1001-5000)**: 100% → 78% at 2-tok (**regression** = overthinking)
 - **Huge answers (>5000)**: 0% → 25% at 2-tok (modest)
 
-This is consistent with **stochastic resonance**: noise helps when the system is near a threshold, but hurts when it's already performing well.
+The pattern is consistent with a **policy switch** rather than a generic compute boost: perturbation helps tasks where the model's default mode fails, but causes overthinking on tasks it already handles efficiently. Note: Spearman correlation of |answer| with *delta* accuracy (gain over baseline) is not significant (r=-0.295, p=0.15), and logistic regression with a quadratic term shows no significant inverted-U (p=0.15). The stochastic resonance analogy is suggestive but not statistically confirmed.
 
 ![Cross Difficulty](experiments/figures/fig6_cross_difficulty.png)
 
@@ -176,6 +176,7 @@ All figures generated from experiment data. Source: `experiments/create_figures.
 | [Fig 5](experiments/figures/fig5_generation_time.png) | Generation time vs correctness |
 | [Fig 6](experiments/figures/fig6_cross_difficulty.png) | Cross-difficulty comparison |
 | [Fig 7](experiments/figures/fig7_mechanism_summary.png) | Mechanism evidence summary |
+| [Fig 8](experiments/figures/fig8_coverage_budget.png) | Oracle coverage vs perturbation budget |
 
 ---
 

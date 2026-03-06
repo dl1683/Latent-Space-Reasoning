@@ -665,6 +665,125 @@ def fig7_butterfly_effect():
     print("  [ok] fig7_butterfly_effect.png")
 
 
+def fig8_coverage_budget():
+    """Coverage-vs-budget curve (Codex: recommended main figure).
+
+    Shows oracle coverage as a function of number of perturbation runs,
+    comparing 2-tok vs 8-tok efficiency.
+    """
+    # Load per-task data for 2-tok and 8-tok
+    t2_data = load_json("sensitivity_sweet_spot_random_noise_t2_results.json")
+    t8_data = load_json("sensitivity_sweet_spot_results.json")
+    t1_data = load_json("sensitivity_sweet_spot_random_noise_t1_results.json")
+
+    if not all([t2_data, t8_data, t1_data]):
+        print("  [skip] fig8 - missing data files")
+        return
+
+    task_ids = [t["task_id"] for t in t2_data["baseline_results"]]
+    n_tasks = len(task_ids)
+
+    def build_matrix(data, n_lat):
+        mat = np.zeros((n_tasks, n_lat))
+        for li, sr in enumerate(data["sensitivity_results"][:n_lat]):
+            for tr in sr["task_results"]:
+                ti = task_ids.index(tr["task_id"])
+                mat[ti, li] = 1 if tr.get("correct", tr.get("is_correct", False)) else 0
+        return mat
+
+    mat_2tok = build_matrix(t2_data, 3)
+    mat_8tok = build_matrix(t8_data, 10)
+    mat_1tok = build_matrix(t1_data, 3)
+
+    # Compute oracle curves
+    def oracle_curve(mat):
+        n_lat = mat.shape[1]
+        oracles = []
+        for k in range(1, n_lat + 1):
+            oracle = (mat[:, :k].max(axis=1) > 0).mean() * 100
+            oracles.append(oracle)
+        return oracles
+
+    oc_2tok = oracle_curve(mat_2tok)
+    oc_8tok = oracle_curve(mat_8tok)
+    oc_1tok = oracle_curve(mat_1tok)
+
+    # Independence null for each
+    def independence_null(mat, n_perm=2000):
+        n_lat = mat.shape[1]
+        curves = []
+        rng = np.random.default_rng(42)
+        for _ in range(n_perm):
+            perm_mat = np.zeros_like(mat)
+            for li in range(n_lat):
+                perm_col = mat[:, li].copy()
+                rng.shuffle(perm_col)
+                perm_mat[:, li] = perm_col
+            curve = []
+            for k in range(1, n_lat + 1):
+                curve.append((perm_mat[:, :k].max(axis=1) > 0).mean() * 100)
+            curves.append(curve)
+        return np.array(curves)
+
+    null_2tok = independence_null(mat_2tok)
+    null_8tok = independence_null(mat_8tok)
+
+    # Mean accuracy lines for reference
+    mean_2tok = mat_2tok.mean() * 100
+    mean_8tok = mat_8tok.mean() * 100
+
+    fig, ax = plt.subplots(figsize=(8, 5))
+
+    # 2-tok
+    ax.plot(range(1, 4), oc_2tok, "o-", color=C_2TOK, linewidth=2.5,
+            markersize=10, label=f"2-tok noise (mean={mean_2tok:.0f}%)", zorder=5)
+    null_mean_2 = null_2tok.mean(axis=0)
+    null_lo_2 = np.percentile(null_2tok, 2.5, axis=0)
+    null_hi_2 = np.percentile(null_2tok, 97.5, axis=0)
+    ax.fill_between(range(1, 4), null_lo_2, null_hi_2, alpha=0.15, color=C_2TOK)
+    ax.plot(range(1, 4), null_mean_2, "--", color=C_2TOK, alpha=0.5,
+            label="2-tok independence null")
+
+    # 8-tok
+    ax.plot(range(1, 11), oc_8tok, "s-", color=C_8TOK, linewidth=2,
+            markersize=7, label=f"8-tok latent (mean={mean_8tok:.0f}%)", zorder=4)
+    null_mean_8 = null_8tok.mean(axis=0)
+    null_lo_8 = np.percentile(null_8tok, 2.5, axis=0)
+    null_hi_8 = np.percentile(null_8tok, 97.5, axis=0)
+    ax.fill_between(range(1, 11), null_lo_8, null_hi_8, alpha=0.12, color=C_8TOK)
+    ax.plot(range(1, 11), null_mean_8, "--", color=C_8TOK, alpha=0.5,
+            label="8-tok independence null")
+
+    # 1-tok
+    ax.plot(range(1, 4), oc_1tok, "^-", color=C_1TOK, linewidth=1.5,
+            markersize=7, label=f"1-tok noise (mean={mat_1tok.mean()*100:.0f}%)", zorder=3)
+
+    # Baseline
+    base_acc = sum(1 for t in t2_data["baseline_results"]
+                   if t.get("correct", t.get("is_correct", False))) / n_tasks * 100
+    ax.axhline(y=base_acc, color=C_BASE, linestyle=":", linewidth=1.5,
+               label=f"Baseline ({base_acc:.0f}%)")
+
+    # 100% line
+    ax.axhline(y=100, color="black", linestyle="-", linewidth=0.5, alpha=0.3)
+
+    ax.set_xlabel("Number of perturbation runs (k)", fontsize=12)
+    ax.set_ylabel("Oracle coverage (%)", fontsize=12)
+    ax.set_ylim(25, 105)
+    ax.set_xlim(0.5, 10.5)
+    ax.set_xticks(range(1, 11))
+    ax.legend(fontsize=8.5, loc="lower right")
+    ax.set_title("Oracle Coverage vs Perturbation Budget\n"
+                 "2-tok reaches 88% in 3 runs; 8-tok needs 10 for 92%\n"
+                 "Shaded: independence null (observed below = positive correlation)",
+                 fontsize=10, fontweight="bold")
+
+    fig.tight_layout()
+    fig.savefig(FIGURES_DIR / "fig8_coverage_budget.png", dpi=200, bbox_inches="tight")
+    plt.close(fig)
+    print("  [ok] fig8_coverage_budget.png")
+
+
 # ─── Main ────────────────────────────────────────────────────────────────────
 
 if __name__ == "__main__":
@@ -678,4 +797,5 @@ if __name__ == "__main__":
     fig5_resonance_windows()
     fig6_dose_response()
     fig7_butterfly_effect()
+    fig8_coverage_budget()
     print(f"\nAll figures saved to {FIGURES_DIR}/")
