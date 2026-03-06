@@ -8,7 +8,7 @@ Date: 2026-03-05 (Tesla Workflow Deep Analysis)
 | 0 | baseline | 32.0% | - | - | - |
 | 1 | random_noise | 42.7% | 1.9% | 3 | +10.7pp |
 | **2** | **random_noise** | **60.0%** | **0.0%** | **3** | **+28.0pp** |
-| 3 | random_noise | 45.3% | 3.7% | 6 (RUNNING 10) | +13.3pp |
+| 3 | random_noise | 44.0% | 5.0% | 7 (RUNNING 10) | +12.0pp |
 | 8 | random_noise | 44.0% | 2.8% | 4 | +12.0pp |
 | 8 | latent_projected | 44.4% | 7.0% | 10 | +12.4pp |
 | 8 | zero_embedding | 36.0% | 0.0% | 3 | +4.0pp |
@@ -495,12 +495,15 @@ This is NOT explained by higher per-latent accuracy alone (60% vs 44%) —
 - N4 = 10/25 (40%): first break
 - N5 = 13/25 (52%): significant outlier
 - N6 = 12/25 (48%): solved two frozen tasks (nest_009, nest_022)
-- **Solve counts N1-N6: [11, 11, 11, 10, 13, 12], mean=11.33, SD=1.03**
-- **p=0.258 vs heterogeneous iid** — NOT SIGNIFICANT
-- Categories (N1-N6): 7 unanimous, 7 frozen, 11 sensitive
-- Category breaches: nest_007(N5), nest_009(N6), nest_022(N6) escaped frozen
-- Equalization is DEAD at 3-tok (Codex 2026-03-05e confirmed)
-- N7-N10 in progress (running)
+- N6 = 12/25 (48%): solved two frozen tasks (nest_009, nest_022)
+- **N7 = 9/25 (36%): lowest direction yet, nest_006 (was unanimous) failed**
+- **Solve counts N1-N7: [11, 11, 11, 10, 13, 12, 9], mean=11.0, SD=1.29**
+- **Expected iid SD = 1.37, p = 0.462** — PERFECTLY CONSISTENT WITH IID
+- Categories (N1-N7): 6 unanimous, 7 frozen, 12 sensitive
+- Category breaches: nest_007(N5), nest_009(N6), nest_022(N6) escaped frozen;
+  nest_006(N7) fell from unanimous
+- Equalization is DEAD at 3-tok (variance matches iid exactly)
+- N8-N10 in progress (~1h remaining)
 
 ### Power Analysis: 2-tok n=10 Rerun (EXISTENTIAL experiment)
 Under heterogeneous iid null (100k Monte Carlo simulations using per-task rates):
