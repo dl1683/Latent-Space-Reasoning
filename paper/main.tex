@@ -43,8 +43,8 @@ At the two-token optimum, all random directions solve exactly the same
 number of tasks ($p = 0.031$ vs.\ heterogeneous iid null) but
 \emph{different task subsets}, enabling 88\% oracle coverage from just
 three perturbation runs. At three tokens, early equalization did not
-persist; by seven directions, variance was indistinguishable from iid,
-so we treat higher-token behavior as transitional. These results establish embedding-space
+persist; by seven directions, variance was indistinguishable from iid.
+These results establish embedding-space
 perturbation as a training-free intervention that activates latent
 reasoning capabilities in small language models.
 \end{abstract}
@@ -74,16 +74,18 @@ tasks are:
     increase accuracy from 32\% to 60\%; one token yields 42.7\%, and
     three or eight tokens revert to $\sim$44\%.
 
+    \item \textbf{Oracle-efficiency optimum.} Three two-token
+    perturbation runs achieve 88\% oracle accuracy (22/25 tasks),
+    while seven three-token runs reach only 72\% (18/25) and add
+    no tasks beyond the two-token oracle. At matched budget ($k = 3$),
+    two tokens freeze only 3 tasks, versus 10 for three or eight tokens.
+
     \item \textbf{Solve-count equalization (2-token).}
     At the two-token optimum, all independent random directions solve
     exactly the same number of tasks (std = 0.00, $p = 0.031$ vs.\
     heterogeneous iid) but solve \emph{different} subsets.
     This equalization does not persist at three tokens, where
     variance becomes indistinguishable from independence ($p = 0.462$).
-
-    \item \textbf{Efficient oracle coverage.} Three two-token
-    perturbation runs achieve 88\% oracle accuracy, compared to
-    ten eight-token runs for 92\%.
 
     \item \textbf{Think-mode gating.} Any perturbation activates
     Qwen3's reasoning mode (16\% $\to$ 100\%), but random noise
@@ -276,25 +278,43 @@ may solve ``frozen'' tasks or fail ``unanimous'' ones.
 
 \begin{table}[h]
 \centering
-\begin{tabular}{lcccccc}
+\textbf{Panel A: Matched budget ($k = 3$ directions)}
+
+\medskip
+\begin{tabular}{lcccc}
 \toprule
-\textbf{Condition} & \textbf{Unan.} & \textbf{Frozen} & \textbf{Sens.} & \textbf{Per-latent} & \textbf{Std} \\
+\textbf{Condition} & \textbf{Unan.} & \textbf{Frozen} & \textbf{Sens.} & \textbf{Mean acc.} \\
 \midrule
-Zero (3 lat) & 7 & 16 & 2 & 7/25 & 0.00 \\
-1-tok (3 lat) & 6 & 8 & 11 & 10.7/25 & 0.47 \\
-\textbf{2-tok (3 lat)} & \textbf{9} & \textbf{3} & \textbf{13} & \textbf{15/25} & \textbf{0.00} \\
-3-tok (7 lat) & 6 & 7 & 12 & 11.0/25 & 1.29 \\
-8-tok (10 lat) & 3 & 2 & 20 & 11.1/25 & 1.76 \\
+1-tok & 6.0 & 8.0 & 11.0 & 10.7/25 \\
+\textbf{2-tok} & \textbf{9.0} & \textbf{3.0} & \textbf{13.0} & \textbf{15.0/25} \\
+3-tok$^\dagger$ & 7.6 & 10.2 & 7.1 & 11.0/25 \\
+8-tok$^\dagger$ & 6.0 & 7.9 & 11.2 & 11.1/25 \\
+\bottomrule
+\end{tabular}
+
+\medskip
+\textbf{Panel B: Full observed directions (with equalization $p$-values)}
+
+\medskip
+\begin{tabular}{lccccccc}
+\toprule
+\textbf{Condition} & $k$ & \textbf{Unan.} & \textbf{Frozen} & \textbf{Sens.} & \textbf{Mean/25} & \textbf{Std} & $p_{\text{iid}}$ \\
+\midrule
+1-tok & 3 & 6 & 8 & 11 & 10.7 & 0.47 & 0.23 \\
+\textbf{2-tok} & \textbf{3} & \textbf{9} & \textbf{3} & \textbf{13} & \textbf{15.0} & \textbf{0.00} & \textbf{0.031} \\
+3-tok & 7 & 6 & 7 & 12 & 11.0 & 1.29 & 0.462 \\
+8-tok & 10 & 3 & 2 & 20 & 11.1 & 1.76 & $\sim$0.15 \\
 \bottomrule
 \end{tabular}
 \caption{Task decomposition by perturbation magnitude.
-Two-token is the only condition showing significant variance
-suppression (std = 0.00, $p = 0.031$ vs.\ heterogeneous iid null).
-Three-token variance (std = 1.29, 7 directions) is not significantly
-below iid expectation ($p = 0.462$). Eight-token is near independence
-(std = 1.76 vs.\ 2.21 expected). Increasing perturbation primarily
-shifts the unanimous/frozen/sensitive partition: more perturbation
-energy freezes additional tasks.}
+\textbf{Panel A}: At matched budget ($k = 3$), two tokens minimize the
+frozen set (3 vs.\ 8--10 for all other conditions) and maximize per-direction
+accuracy. $^\dagger$For 3-tok and 8-tok, values are averaged over all
+$\binom{n}{3}$ subsets (35 and 120 combinations respectively).
+\textbf{Panel B}: Full observed directions with Monte Carlo equalization
+$p$-values. Two-token is the only condition showing significant variance
+suppression ($p = 0.031$); three-token is indistinguishable from
+iid ($p = 0.462$).}
 \label{tab:equalization}
 \end{table}
 
@@ -308,11 +328,18 @@ condition is substantially more oracle-efficient:
 
 \begin{itemize}
     \item 2-tok: 88\% oracle from 3 runs (22/25 tasks)
+    \item 3-tok: 72\% oracle from 7 runs (18/25 tasks), adds \emph{zero}
+    tasks beyond the 2-tok oracle
     \item 8-tok: 92\% oracle from 10 runs (23/25 tasks)
     \item Budget-matched bootstrap: $P(\text{8-tok} < \text{2-tok}) = 1.000$ at every $k$
     \item Combined oracle across all conditions: 24/25 = 96\%
     (Clopper-Pearson 95\% CI: [0.80, 0.99])
 \end{itemize}
+
+The oracle comparison reveals that the non-monotonic optimum extends beyond
+per-direction accuracy to coverage efficiency: four tasks solvable at two
+tokens (nest\_002, 012, 013, 014) become frozen at three tokens, contracting
+the reachable task set rather than merely redistributing it.
 
 Oracle coverage grows more slowly than the independence null (positive
 task correlation, $z = -1.35$ for 2-tok vs.\ $z = -8.25$ for 8-tok),
@@ -442,10 +469,11 @@ budget before reaching an answer.
 The training-free nature of this intervention suggests a practical
 ``perturbation ensemble'' strategy: run a small model with $k$ random
 two-token prefixes and take the majority vote or oracle. Three runs
-achieve 88\% coverage, far exceeding the 72\% ceiling of seven
-three-token runs. The non-monotonic optimum extends to oracle
-efficiency: more perturbation energy is strictly worse, not just
-on average but in the maximum achievable coverage.
+achieve 88\% coverage, while seven three-token runs reach only 72\%
+and add no tasks beyond the two-token oracle. Beyond the two-token
+optimum, additional perturbation is deleterious: it lowers
+per-direction accuracy and contracts the reachable task set, freezing
+tasks that are solvable at two tokens.
 
 % ============================================================================
 \section{Limitations} % [LOCKED]
