@@ -503,6 +503,134 @@ def generate_nested_tasks(
     return tasks
 
 
+def generate_word_problems(
+    n_tasks: int = 25,
+    seed: int = 42,
+    difficulty: str = "medium",
+) -> List[SensitivityTask]:
+    """Generate word problems for cross-task replication.
+
+    Clearly different from nested expressions: narrative format, real-world
+    scenarios, requires reading comprehension + multi-step reasoning.
+    All answers are exact integers for automatic evaluation.
+
+    Difficulty levels:
+    - easy: 1-step (addition/subtraction only), small numbers
+    - medium: 2-step, mixed operations, targeting ~30-40% baseline
+    - hard: 3-step, larger numbers, multiple entities
+    """
+    rng = random.Random(seed)
+    tasks: List[SensitivityTask] = []
+    idx = 0
+
+    # Template categories
+    templates_medium = [
+        # Shopping
+        lambda r: _shop_problem(r),
+        # Distance/time
+        lambda r: _distance_problem(r),
+        # Groups/sharing
+        lambda r: _groups_problem(r),
+        # Age
+        lambda r: _age_problem(r),
+        # Collection
+        lambda r: _collection_problem(r),
+    ]
+
+    while len(tasks) < n_tasks:
+        template_fn = rng.choice(templates_medium)
+        prompt, answer = template_fn(rng)
+        if answer is not None and isinstance(answer, int) and -10000 < answer < 100000:
+            tasks.append(SensitivityTask(
+                f"wp_{idx:03d}", prompt, answer, 2, difficulty))
+            idx += 1
+
+    return tasks
+
+
+def _shop_problem(rng):
+    """Shopping scenario: buy items, compute total/change."""
+    names = ["Alice", "Bob", "Charlie", "Diana", "Eve", "Frank"]
+    items = ["apples", "oranges", "bananas", "notebooks", "pens", "books"]
+    name = rng.choice(names)
+    item1, item2 = rng.sample(items, 2)
+    qty1 = rng.randint(2, 12)
+    price1 = rng.randint(2, 15)
+    qty2 = rng.randint(1, 8)
+    price2 = rng.randint(3, 20)
+    budget = qty1 * price1 + qty2 * price2 + rng.randint(5, 30)
+    total = qty1 * price1 + qty2 * price2
+    change = budget - total
+    prompt = (f"{name} buys {qty1} {item1} at ${price1} each "
+              f"and {qty2} {item2} at ${price2} each. "
+              f"If {name} pays with ${budget}, how much change does "
+              f"{name} get? Give your answer as a number.")
+    return prompt, change
+
+
+def _distance_problem(rng):
+    """Distance/speed/time problem."""
+    names = ["A car", "A train", "A cyclist", "A runner"]
+    vehicle = rng.choice(names)
+    speed = rng.randint(10, 80)
+    hours = rng.randint(2, 6)
+    extra_dist = rng.randint(10, 100)
+    total = speed * hours + extra_dist
+    prompt = (f"{vehicle} travels at {speed} km/h for {hours} hours, "
+              f"then travels an additional {extra_dist} km. "
+              f"What is the total distance traveled in km? "
+              f"Give your answer as a number.")
+    return prompt, total
+
+
+def _groups_problem(rng):
+    """Grouping/sharing problem."""
+    total_items = rng.randint(50, 200)
+    n_groups = rng.choice([3, 4, 5, 6, 7])
+    extra = rng.randint(5, 30)
+    # Ensure clean division for the first part
+    per_group = total_items // n_groups
+    total_items = per_group * n_groups  # make it divide evenly
+    answer = per_group + extra
+    prompt = (f"There are {total_items} students divided equally into "
+              f"{n_groups} groups. Each group then receives {extra} additional "
+              f"worksheets. How many worksheets does each group have in total? "
+              f"Give your answer as a number.")
+    return prompt, answer
+
+
+def _age_problem(rng):
+    """Age relationship problem."""
+    names = rng.sample(["Tom", "Sarah", "Mike", "Lisa", "James", "Emma"], 2)
+    age1 = rng.randint(8, 40)
+    diff = rng.randint(3, 15)
+    years = rng.randint(2, 10)
+    age2_now = age1 + diff
+    answer = age1 + years + age2_now + years  # combined age in N years
+    prompt = (f"{names[0]} is {age1} years old. {names[1]} is {diff} years "
+              f"older than {names[0]}. What will be their combined age "
+              f"in {years} years? Give your answer as a number.")
+    return prompt, answer
+
+
+def _collection_problem(rng):
+    """Collection/inventory problem with multiple operations."""
+    names = ["A library", "A store", "A warehouse", "A school"]
+    items = ["books", "boxes", "items", "packages"]
+    place = rng.choice(names)
+    item = rng.choice(items)
+    start = rng.randint(100, 500)
+    received = rng.randint(50, 200)
+    given_frac_num = rng.choice([2, 3, 4, 5])
+    total_after_receive = start + received
+    given_away = total_after_receive // given_frac_num
+    remainder = total_after_receive - given_away
+    prompt = (f"{place} has {start} {item}. It receives {received} more, "
+              f"then gives away 1/{given_frac_num} of all its {item}. "
+              f"How many {item} remain? Give your answer as a number.")
+    return prompt, remainder
+
+
 # =====================================================================
 # Zero-shot baseline (same chat template, no conditioning)
 # =====================================================================
@@ -601,8 +729,9 @@ def main():
         "--diagnostic", action="store_true",
         help="Quick run: 5 latents, 3+5+5 tasks")
     parser.add_argument(
-        "--task-type", default="chain", choices=["chain", "nested"],
-        help="Task type: chain (sequential) or nested (expression trees)")
+        "--task-type", default="chain", choices=["chain", "nested", "word_problem"],
+        help="Task type: chain (sequential), nested (expression trees), "
+             "or word_problem (narrative format for cross-task replication)")
     parser.add_argument(
         "--calibrate", action="store_true",
         help="Calibration mode: run baseline only to find 50-70%% sweet spot")
@@ -677,6 +806,9 @@ def main():
             n_tasks_gen = max(n_tasks_gen, args.n_tasks)
         tasks = generate_nested_tasks(
             n_tasks=n_tasks_gen, difficulty_filter=args.difficulty)
+    elif args.task_type == "word_problem":
+        n_tasks_gen = args.n_tasks if args.n_tasks else 25
+        tasks = generate_word_problems(n_tasks=n_tasks_gen)
     else:
         tasks = generate_tasks(
             n_easy=args.n_easy,
