@@ -466,9 +466,9 @@ This is NOT explained by higher per-latent accuracy alone (60% vs 44%) —
 
 ### Equalization vs Independence (Codex, UPDATED 2026-03-05e)
 - Expected SD under iid Bernoulli(q=0.42): 1-tok=1.64, 2-tok=1.78, 3-tok=1.19(sim), 8-tok=2.21
-- Observed SD: 1-tok=0.47, **2-tok=0.00**, 3-tok=1.10, 8-tok=1.76
+- Observed SD: 1-tok=0.47, **2-tok=0.00**, 3-tok=1.29 (N7), 8-tok=1.76
 - **2-tok is significantly equalized** (p=0.031 vs iid null)
-- **3-tok equalization FAILED**: p=0.434 vs iid null. N1-N3 [11,11,11] was small-sample noise
+- **3-tok equalization FAILED**: p=0.462 vs iid null. N1-N3 [11,11,11] was small-sample noise
 - 8-tok is close to iid (1.76 vs 2.21 expected)
 - Equalization is now a 2-TOKEN-SPECIFIC CANDIDATE REGIME (Codex 2026-03-05e)
 
@@ -477,13 +477,11 @@ This is NOT explained by higher per-latent accuracy alone (60% vs 44%) —
 - Under iid Bernoulli at k=3: q_cond = (1+p)/3, so q_cond ≈ 0.42 implies p ≈ 0.26
 - Categories are endogenous to the directions that defined them
 
-### Variance Decomposition (3-tok sensitive tasks, N1-N5)
+### Variance Decomposition (3-tok sensitive tasks)
 - Homogeneous Bernoulli (q=0.42, S=9): expected SD = 1.40
-- Heterogeneous Bernoulli (per-task p_i from data): expected SD = ~1.25
-- **Observed SD (N1-N4) = 0.43** (0.3x expected) → fixed-quota model
-- **Observed SD (N1-N5) = 1.10** (0.88x expected) → still suppressed but weaker
-- N5=13/25 is a significant outlier; variance suppression weakening with more samples
-- Per-task solve rates on sensitive (N1-N5): heterogeneous (20%-80%)
+- Heterogeneous Bernoulli (per-task p_i from data): expected SD = ~1.37
+- **Observed SD (N1-N7) = 1.29** (0.94x expected) → NO suppression
+- 3-tok variance is iid-consistent at all sample sizes tested (N5: p=0.434, N7: p=0.462)
 
 ### Pairwise Overlap (3-tok sensitive tasks, N1-N4)
 - On sensitive tasks only: mean overlap = 1.7 (close to iid expected 1.4)
@@ -495,7 +493,6 @@ This is NOT explained by higher per-latent accuracy alone (60% vs 44%) —
 - N4 = 10/25 (40%): first break
 - N5 = 13/25 (52%): significant outlier
 - N6 = 12/25 (48%): solved two frozen tasks (nest_009, nest_022)
-- N6 = 12/25 (48%): solved two frozen tasks (nest_009, nest_022)
 - **N7 = 9/25 (36%): lowest direction yet, nest_006 (was unanimous) failed**
 - **Solve counts N1-N7: [11, 11, 11, 10, 13, 12, 9], mean=11.0, SD=1.29**
 - **Expected iid SD = 1.37, p = 0.462** — PERFECTLY CONSISTENT WITH IID
@@ -503,7 +500,29 @@ This is NOT explained by higher per-latent accuracy alone (60% vs 44%) —
 - Category breaches: nest_007(N5), nest_009(N6), nest_022(N6) escaped frozen;
   nest_006(N7) fell from unanimous
 - Equalization is DEAD at 3-tok (variance matches iid exactly)
-- N8-N10 in progress (~1h remaining)
+- N8-N10 in progress (GPU-contended, ~120s/task)
+
+### 3-tok vs 2-tok Oracle Comparison (2026-03-05f)
+
+| k dirs | 2-tok oracle | 3-tok oracle |
+|--------|-------------|-------------|
+| 1 | 15.0/25 (60.0%) | 11.0/25 (44.0%) |
+| 2 | 19.3/25 (77.3%) | 13.4/25 (53.5%) |
+| 3 | 22.0/25 (88.0%) | 14.8/25 (59.1%) |
+| 4 | — | 15.8/25 (63.1%) |
+| 5 | — | 16.6/25 (66.3%) |
+| 6 | — | 17.3/25 (69.1%) |
+| 7 | — | 18.0/25 (72.0%) |
+
+- 2-tok k=3 oracle (88%) >> 3-tok k=7 oracle (72%)
+- 3-tok adds ZERO unique tasks beyond 2-tok oracle
+- Frozen set nesting: {005,008,021} ⊂ {002,005,008,012,013,014,021}
+- 4 tasks frozen at 3-tok but solvable at 2-tok: nest_002, 012, 013, 014
+  - nest_002: 2-tok [0,1,0], 3-tok [0,0,0,0,0,0,0] — killed by over-perturbation
+  - nest_014: 2-tok [1,0,1], 3-tok [0,0,0,0,0,0,0] — killed by over-perturbation
+- **Interpretation**: 3-tok pushes perturbation past the solvability threshold for marginal tasks,
+  destroying capability rather than redistributing it. 2-tok is both the accuracy optimum
+  AND the oracle efficiency optimum.
 
 ### Power Analysis: 2-tok n=10 Rerun (EXISTENTIAL experiment)
 Under heterogeneous iid null (100k Monte Carlo simulations using per-task rates):
@@ -521,7 +540,7 @@ Under heterogeneous iid null (100k Monte Carlo simulations using per-task rates)
 |-----------|-----------|--------|-----------|-------|
 | 1-tok | 6 | 8 | 11 | 3 |
 | **2-tok** | **9** | **3** | **13** | **3** |
-| 3-tok | 7 | 9 | 9 | 5 |
+| 3-tok | 6 | 7 | 12 | 7 |
 | 8-tok | 3 | 2 | 20 | 10 |
 
 Key transitions (2-tok → 3-tok):
@@ -565,16 +584,14 @@ task-selective effects, revealing mode gating, oracle efficiency, and task-speci
 ### Behavioral Experiments
 1. **Shi-style discrete token control** -- HIGHEST PRIORITY (Codex).
    Run repeated `/` and `?` on Qwen3-4B at 1,2,3,8 tokens. Implemented in harness.
-2. **3-tok dose-response** -- RUNNING (N5/10 complete, N6-N10 in progress).
-   - Solve counts N1-N5: [11, 11, 11, 10, 13], mean=11.2, SD=1.10
-   - N5=52% is significant outlier; equalization is APPROXIMATE not exact
-   - Categories (N1-N5): 7 unanimous, 9 frozen, 9 sensitive
-   - Variance suppression: 0.88x heterogeneous iid expected (still suppressed)
+2. **3-tok dose-response** -- RUNNING (N7/10 complete, N8-N10 in progress).
+   - Solve counts N1-N7: [11, 11, 11, 10, 13, 12, 9], mean=11.0, SD=1.29
+   - Equalization FAILED: p=0.462 vs iid (perfectly consistent with independence)
+   - Categories (N1-N7): 6 unanimous, 7 frozen, 12 sensitive
    - 3-tok solve set is ENTIRELY a subset of 2-tok oracle (adds 0 new tasks)
-   - STRUCTURAL FINDING: equalization = fixed capacity per perturbation level
-     - 2-tok: 9 unanimous + 3 frozen + 13 sensitive, per-latent = 9 + 6/13 = 15
-     - 3-tok: 7 unanimous + 9 frozen + 9 sensitive (N1-N5 categories)
-     - More perturbation energy freezes more tasks (9 vs 3 frozen)
+   - **3-tok oracle (k=7): 18/25 = 72%** vs **2-tok oracle (k=3): 22/25 = 88%**
+   - Frozen set nesting: 2-tok frozen = {005,008,021} ⊂ 3-tok frozen = {002,005,008,012,013,014,021}
+   - 4 extra frozen tasks at 3-tok are all solvable by 2-tok (capability destruction)
 3. **Scale 2-tok to n=100 tasks, n=10 latents** -- replicate oracle + zero-variance
 4. Dense dose-response (4,5,6,7 tokens)
 5. Cross-model (Qwen3-8B)

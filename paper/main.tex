@@ -390,8 +390,9 @@ The structural decomposition suggests a two-stage model:
     Perturbation energy determines which tasks are \emph{unanimous}
     (solved by all directions), \emph{frozen} (solved by none), or
     \emph{sensitive} (solved by some). Increasing energy freezes more
-    tasks (3 frozen at 2-tok, 9 at 3-tok) while reducing the
-    sensitive set.
+    tasks (3 frozen at 2-tok, 7 at 3-tok) while reducing the
+    sensitive set. The frozen sets are nested: every task frozen at
+    2-tok is also frozen at 3-tok, plus 4 additional tasks.
 
     \item \textbf{Direction selects within the sensitive set.}
     Each random direction solves a roughly similar fraction of the
@@ -437,8 +438,10 @@ reaching an answer.
 The training-free nature of this intervention suggests a practical
 ``perturbation ensemble'' strategy: run a small model with $k$ random
 two-token prefixes and take the majority vote or oracle. Three runs
-achieve 88\% coverage, approaching the performance of a much larger
-perturbation budget.
+achieve 88\% coverage, far exceeding the 72\% ceiling of seven
+three-token runs. The non-monotonic optimum extends to oracle
+efficiency: more perturbation energy is strictly worse, not just
+on average but in the maximum achievable coverage.
 
 % ============================================================================
 \section{Limitations} % [LOCKED]
