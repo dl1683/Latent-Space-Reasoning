@@ -209,21 +209,158 @@ Never-solved = wrong by baseline AND every latent in every condition.
 Previous looser definition (solved by baseline + all 2-tok latents): 5 always-solved, 2 never-solved, 18 sensitive.
 Use "coarsely stable" label, not "always/never", per Codex guidance.
 
-## 9. Paper Contributions (Revised Ranking, Codex 2026-03-05, updated 2026-03-06)
+## 9. Paper Contributions (Revised Ranking, Codex 2026-03-05, updated 2026-03-05b)
 
-1. **STRONG**: Direction changes WHICH tasks, not HOW MANY (equalization at 2-tok, std=0.0 on 22 sensitive)
-   - Headline: "constant count, different support" — same for strict (22) and loose (18) task sets
-2. **STRONG**: Oracle efficiency — 2-tok matches 8-tok ceiling (95.5%) with 3x fewer directions
+1. **MAIN FIGURE**: Oracle efficiency / coverage-vs-budget curve (Codex: "strongest claim")
+   - 2-tok: 88% oracle with 3 runs; 8-tok: 92% oracle with 10 runs (3x more efficient)
+   - 25/25 combined oracle as capstone endpoint (CI: [0.86, 1.0])
+2. **STRONG**: Direction changes WHICH tasks, not HOW MANY (equalization at 2-tok, std=0.0)
+   - "Constant count, different support" — task redistribution without marginal change
 3. **STRONG**: Noise contributes 2.5x more than think mode (force-think decomposition)
 4. **STRONG**: Deterministic chaos under greedy decoding (T=0, different outputs from noise)
-5. **STRONG**: Timing confound resolved — latent 0 achieves 60% at baseline timing (73.6s)
-6. **STRONG**: Task-specific resonance windows (nest_005 = 1-tok only, nest_021 = 8-tok only)
-7. **STRONG**: Full oracle 24/25 (96%) across all conditions — only nest_008 truly unsolvable
-8. **MODERATE**: Non-monotonic dose-response (best at 2 tokens among tested, pending 3-tok)
-9. **MODERATE**: Large-answer regression (100% → 78%) = informative limitation (policy switch, not boost)
-10. **MODERATE**: Latent 0 purely additive (7 gains, 0 losses, McNemar p≈0.023) — existence result
+5. **STRONG**: Condition-specific rescue windows (Shapley: 3 families each uniquely rescue 1 task)
+   - noise_1tok: nest_005; latent_8tok: nest_021; mean_8tok: nest_008 (revalidate)
+6. **STRONG**: Timing confound resolved — latent 0 achieves 60% at baseline timing (73.6s)
+7. **MODERATE**: Non-monotonic dose-response (best at 2 tokens, pending 3-tok)
+8. **MODERATE**: Large-answer regression (100% → 78%) = policy switch, not generic boost
+9. **MODERATE**: Latent 0 purely additive (7 gains, 0 losses, McNemar p≈0.023)
+10. **WEAK**: Answer-magnitude Spearman on delta accuracy: r=-0.295, p=0.15 (NS)
+    - Raw accuracy correlation is confounded by baseline difficulty
 
-## 10. Codex Shi et al. Positioning (2026-03-05)
+## 10. Cross-Experiment Oracle Analysis (2026-03-05)
+
+### Combined Oracle = 100% (25/25)
+
+Every single task is solvable by at least one perturbation condition across all experiments.
+Baseline solves only 8/25 = 32%. The perturbation landscape is sufficient to cover all tasks.
+
+**Total perturbation budget**: 20 runs across 6 condition types (3×1tok + 3×2tok + 10×8tok-latent + 3×zero + 1×mean).
+
+### Oracle Scaling Efficiency
+
+| Group | k latents | Oracle | Coverage |
+|-------|-----------|--------|----------|
+| noise_2tok | 1 | 15/25 | 60% |
+| noise_2tok | 2 | 20/25 | 80% |
+| noise_2tok | 3 | 22/25 | 88% |
+| latent_8tok | 1 | 9/25 | 36% |
+| latent_8tok | 3 | 15/25 | 60% |
+| latent_8tok | 5 | 19/25 | 76% |
+| latent_8tok | 10 | 23/25 | 92% |
+
+**2-tok is ~3x more oracle-efficient than 8-tok** (3 directions → 88% vs 10 directions → 92%).
+
+### Unique Solvers (tasks solvable by ONLY one condition group)
+
+| Task | Answer | Unique solver | Solve rate across all 20 runs |
+|------|--------|--------------|------------------------------|
+| nest_005 | 8360 | noise_1tok (1/3 latents) | 5% |
+| nest_008 | 7278 | mean_8tok (1/1) | 5% |
+| nest_021 | 5639 | latent_8tok (2/10 latents) | 10% |
+
+All unique-solver tasks have |answer| > 5000. Each condition type covers a slightly different region of task space.
+
+### Zero is Strict Subset of Noise
+
+Zero embedding solves 9 tasks. All 9 are also solved by latent_8tok. Zero adds nothing unique.
+
+### Task Categories (across ALL conditions)
+
+| Category | Count | Description |
+|----------|-------|-------------|
+| always-solved | 5 | Correct in baseline + all perturbation conditions |
+| RECOVERED by 2-tok | 7 | Baseline wrong, 2-tok majority correct |
+| sensitive | 6 | Mixed across conditions |
+| never-solved | 6 | All |answer| > 5000 except nest_014 (ans=20, anomaly) |
+| REGRESSED by 2-tok | 1 | nest_007 (ans=1044), baseline correct but 2-tok mostly wrong |
+
+### Answer Magnitude Gradient
+
+| Bin | n | Baseline | 1-tok | 2-tok | 8-tok-L | Delta (2-tok) |
+|-----|---|----------|-------|-------|---------|---------------|
+| tiny (≤10) | 4 | 0% | 17% | 75% | 40% | +75pp |
+| small (11-100) | 3 | 33% | 33% | 56% | 27% | +22pp |
+| medium (101-1000) | 7 | 57% | 86% | 86% | 80% | +29pp |
+| large (1001-5000) | 3 | 100% | 56% | 78% | 50% | -22pp |
+| huge (>5000) | 8 | 0% | 17% | 25% | 20% | +25pp |
+
+**Spearman(|answer|, 2tok_acc) = -0.458, p = 0.021** — significant negative correlation.
+
+### Oracle vs Independence: Positive Correlation Structure
+
+Permutation test (5000 permutations, preserving per-latent marginals):
+
+| Group | k latents | Observed Oracle | Independence Null | z-score | p |
+|-------|-----------|----------------|-------------------|---------|---|
+| 2-tok | 1 | 60% | 60% | 0.00 | 1.000 |
+| 2-tok | 2 | 80% | 84% | -0.84 | 0.902 |
+| 2-tok | 3 | 88% | 94% | -1.35 | 0.963 |
+| 8-tok-L | 1 | 36% | 36% | 0.00 | 1.000 |
+| 8-tok-L | 3 | 60% | 77% | -3.04 | 1.000 |
+| 8-tok-L | 5 | 76% | 94% | -4.25 | 1.000 |
+| 8-tok-L | 10 | 92% | 100% | -8.25 | 1.000 |
+
+**Key insight**: Oracle is BELOW independence, not above. Latents are positively correlated —
+they fail on the same hard tasks (large answers). 2-tok has least redundancy (closest to
+independence null), explaining its higher oracle efficiency per latent.
+
+The combined oracle = 100% is trivially expected under independence with 21 conditions at ~44%
+average accuracy. The INTERESTING finding is that 2-tok achieves near-independence oracle rates
+with only 3 directions, while 8-tok shows massive redundancy (z=-8.25 at k=10).
+
+### Leave-One-Condition-Out Oracle (Shapley-style, Codex-recommended)
+
+| Dropped | Oracle | Lost Task | Interpretation |
+|---------|--------|-----------|----------------|
+| noise_1tok | 24/25 | nest_005 (8360) | Unique contribution |
+| noise_2tok | 25/25 | - | Dominated by others |
+| latent_8tok | 24/25 | nest_021 (5639) | Unique contribution |
+| zero_8tok | 25/25 | - | Dominated, adds nothing |
+| mean_8tok | 24/25 | nest_008 (7278) | Unique contribution (SINGLETON, revalidate) |
+
+Three condition families each rescue exactly one unique task. noise_2tok and zero_8tok are fully dominated.
+
+### Spearman on Delta Accuracy (Codex-corrected test)
+
+**Raw accuracy**: Spearman(|answer|, 2tok_acc) = -0.458, p = 0.021 (significant)
+**Delta accuracy**: Spearman(|answer|, delta_acc) = -0.295, p = 0.152 (NOT significant)
+
+Codex noted: the raw-accuracy correlation conflates baseline difficulty with treatment effect.
+When testing on GAIN over baseline (the proper SR variable), the correlation vanishes.
+This WEAKENS the stochastic resonance framing — the answer-magnitude gradient is driven by
+baseline difficulty, not by differential noise benefit.
+
+### Clopper-Pearson CI for 25/25 Oracle
+
+- 95% CI (two-sided): [0.863, 1.000]
+- 95% lower bound (one-sided): 0.887
+- Reject H0: p <= 0.85 (p = 0.017)
+- Fail to reject H0: p <= 0.90 (p = 0.072)
+- **Claim**: oracle coverage > 85% is defensible; > 90% is not
+
+### Codex Oracle Framing (2026-03-05)
+
+- **100% combined oracle**: descriptive benchmark endpoint, NOT generalizable standalone claim
+- **Oracle efficiency** (coverage-vs-budget curve): MAIN RESULT
+  - Make the main figure a coverage-vs-budget curve
+  - 2-tok reaches 88% in 3 runs; 8-tok needs 10 runs for 92%
+  - Treat 25/25 as the rightmost capstone point
+- **Unique solvers**: frame as "condition-specific rescue windows"
+  - Use leave-one-condition-out table (above)
+  - Caution: mean_8tok singleton needs manual revalidation
+- **Answer magnitude**: supports bounded SR but only weakly
+  - Test on delta accuracy, not raw (Spearman becomes NS)
+  - Use logistic regression with quadratic term for inverted-U
+- **Must do**: held-out task set (n=100) with pre-registered 20-run budget
+
+### Statistical Notes
+- Pairwise agreement between 2-tok latents: 60-76% (substantial task redistribution)
+- Fleiss kappa: 0.278 (fair agreement, not random but not homogeneous)
+- Combined oracle = 100% is EXPECTED under independence (trivial, not publishable as standalone)
+- 2-tok oracle EFFICIENCY (88% with just 3 directions) IS the publishable result
+- Need: held-out test set (n=100 tasks) to validate oracle scaling curve
+
+## 11. Codex Shi et al. Positioning (2026-03-05)
 
 **Codex assessment** of Shi et al. (arXiv:2510.01032, Oct 2025):
 
