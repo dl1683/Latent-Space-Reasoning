@@ -44,9 +44,12 @@ perturbation directions solve \emph{different task subsets}: ten two-token
 directions collectively cover 100\% of tasks (25/25), compared to 80\%
 for three-token and 92\% for eight-token perturbations. The three-token
 oracle set is a strict subset of the two-token oracle, indicating that
-over-perturbation contracts the reachable task space. These results
-establish embedding-space perturbation as a training-free intervention
-that activates latent reasoning capabilities in small language models.
+over-perturbation contracts the reachable task space. Cross-model scouts confirm the effect on DeepSeek-R1-Distill-1.5B
+(+5.3pp, oracle 100\% from $k=3$) and phi-2 (+6.7pp, out-of-family),
+while Qwen3-1.7B shows no effect, suggesting the phenomenon is
+substrate-dependent. These results establish embedding-space perturbation
+as a training-free intervention that activates latent reasoning capabilities
+across multiple model families.
 \end{abstract}
 
 % ============================================================================
@@ -499,6 +502,42 @@ discrete regime, token identity matters---possibly reflecting
 different semantic or positional biases in the model's embedding
 space.
 
+\subsection{Cross-Model Validation} % [LOCKED]
+\label{sec:crossmodel}
+
+To test whether the perturbation effect generalizes beyond Qwen3-4B,
+we run 2-token $n = 3$ scouts on three additional models using the
+same 25-task set and auto-calibrated RMS scale.
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lcccc}
+\toprule
+\textbf{Model} & \textbf{Baseline} & \textbf{Mean +noise} & \textbf{$\Delta$} & \textbf{Oracle $k{=}3$} \\
+\midrule
+Qwen3-4B (anchor, $n{=}10$) & 32.0\% & 51.6\% & +19.6pp & 100\% \\
+DeepSeek-R1-Distill-1.5B & 76.0\% & 81.3\% & +5.3pp & 100\% \\
+phi-2 (2.7B, out-of-family) & 12.0\% & 18.7\% & +6.7pp & 28\% \\
+Qwen3-1.7B & 28.0\% & 29.3\% & +1.3pp & --- \\
+\bottomrule
+\end{tabular}
+\caption{Cross-model 2-token perturbation results. DeepSeek (reasoning-distilled,
+1.5B) and phi-2 (Microsoft, out-of-family) show positive effects; Qwen3-1.7B
+does not. All scouts use $n = 3$ directions except the Qwen3-4B anchor.}
+\label{tab:crossmodel}
+\end{table}
+
+The effect replicates on DeepSeek-R1-Distill-Qwen-1.5B (+5.3pp mean,
+oracle 25/25 from just 3 directions) and on phi-2 (+6.7pp, 56\% relative
+improvement), an out-of-family model with no thinking mode. It does not
+replicate on Qwen3-1.7B (+1.3pp, within noise). Notably, DeepSeek is
+\emph{smaller} than Qwen3-1.7B (1.5B vs.\ 1.7B) but shows a clear
+effect, suggesting that training regime---specifically reasoning
+distillation---matters more than raw parameter count. We interpret the
+1.7B null as a boundary condition: the perturbation selects among
+pre-existing reasoning trajectories, and the model must have sufficient
+reasoning substrate for those trajectories to be accessible.
+
 % ============================================================================
 \section{Discussion}
 
@@ -565,8 +604,12 @@ reachable task set, freezing tasks that are solvable at two tokens.
 \label{sec:limitations}
 
 \begin{itemize}
-    \item \textbf{Single model.} All experiments use Qwen3-4B (4-bit).
-    The effect may not generalize to other architectures or scales.
+    \item \textbf{Model-contingent.} The primary experiments use Qwen3-4B
+    (4-bit). Cross-model scouts (Section~\ref{sec:crossmodel}) show
+    positive transfer to DeepSeek-R1-Distill-1.5B and phi-2 but not to
+    Qwen3-1.7B, suggesting the effect is substrate-dependent rather than
+    universal. Full characterization across architectures and scales
+    remains future work.
 
     \item \textbf{Single task domain.} Only nested arithmetic
     expressions were tested. Generalization to reasoning, coding, or
