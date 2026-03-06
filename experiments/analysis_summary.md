@@ -252,22 +252,24 @@ uses the fixed code. All experiments should eventually be re-run with current co
 - **8-tok mechanism**: Regime boundary. Moderate perturbation selects among equal channels; over-perturbation makes channel quality direction-dependent
 - **Paper sentence (Codex-approved)**: "At fixed perturbation magnitude, random directions enter an equalized solve-count regime: each direction solves the same number of tasks, but not the same tasks. Oracle gains arise by covering the perturbation-sensitive subset."
 
-1. **MAIN SCIENTIFIC INSIGHT**: Solve-count equalization (Codex: "fixed-capacity regime")
-   - Confirmed at 2-tok [15,15,15] and 3-tok [11,11,11], both std=0.00
-   - P=0.004 under independence for 3-tok
-   - Structural decomposition: unanimous/frozen/sensitive explains mechanism
+1. **MAIN SCIENTIFIC INSIGHT**: Solve-count equalization (2-tok ONLY, Codex 2026-03-05e)
+   - Confirmed at 2-tok [15,15,15], std=0.00, p=0.031 vs heterogeneous iid null
+   - **3-tok equalization FAILED**: N1-N5=[11,11,11,10,13], SD=1.10, p=0.434 vs iid
+   - Equalization is now a 2-token-specific candidate regime, not a general phenomenon
+   - Pending: 2-tok n=10 rerun will confirm or refute (EXISTENTIAL experiment)
+   - Structural decomposition: unanimous/frozen/sensitive still valid as descriptive
 2. **MAIN EMPIRICAL PAYOFF**: Oracle efficiency / coverage-vs-budget curve (Codex: "strongest claim")
    - 2-tok: 88% oracle with 3 runs; 8-tok: 92% oracle with 10 runs (3x more efficient)
    - 25/25 combined oracle as capstone endpoint (CI: [0.86, 1.0])
 3. **STRONG**: Direction changes WHICH tasks, not HOW MANY (equalization at 2-tok, std=0.0)
    - "Constant count, different support" — task redistribution without marginal change
-3. **STRONG**: Noise contributes 2.5x more than think mode (force-think decomposition)
+4. **STRONG**: Noise contributes 2.5x more than think mode (force-think decomposition)
 4. **STRONG**: Deterministic chaos under greedy decoding (T=0, different outputs from noise)
 5. **STRONG**: Condition-specific rescue windows (Shapley: 3 families each uniquely rescue 1 task)
    - noise_1tok: nest_005; latent_8tok: nest_021; mean_8tok: nest_008 (revalidate)
 6. **STRONG**: Timing confound resolved — latent 0 achieves 60% at baseline timing (73.6s)
-7. **STRONG**: Non-monotonic dose-response CONFIRMED: 3-tok N1=N2=44%, sharp drop from 2-tok 60%
-   - 3-tok equalization: both latents solve EXACTLY 11/25 (std=0.00, P=2.5% under independence)
+7. **STRONG**: Non-monotonic dose-response CONFIRMED: 3-tok mean=44.8%, sharp drop from 2-tok 60%
+   - 3-tok early equalization (N1-N3) was noise; N1-N5 variance matches iid (p=0.434)
    - 3-tok solve set entirely subset of 2-tok oracle (adds 0 new tasks)
 8. **STRONG**: Pooled sign test: 24 gains / 3 losses across 3 latents, p=0.000049
    - Per-latent McNemar exact: L0 p=0.016, L2 p=0.039 (significant)
@@ -452,11 +454,13 @@ This is NOT explained by higher per-latent accuracy alone (60% vs 44%) —
 1. **Magnitude sets the task-level threshold**: which tasks are frozen, unanimous, or sensitive
 2. **Direction selects** which sensitive tasks get solved, at roughly fixed capacity (~42%)
 
-### Equalization vs Independence (Codex)
-- Expected SD under iid Bernoulli(q=0.42): 1-tok=1.64, 2-tok=1.78, 3-tok=1.31, 8-tok=2.21
-- Observed SD: 1-tok=0.47, **2-tok=0.00**, 3-tok=0.43, 8-tok=1.76
-- 2-tok and 3-tok are MUCH more equalized than iid → **fixed-quota model**, not independent Bernoulli
+### Equalization vs Independence (Codex, UPDATED 2026-03-05e)
+- Expected SD under iid Bernoulli(q=0.42): 1-tok=1.64, 2-tok=1.78, 3-tok=1.19(sim), 8-tok=2.21
+- Observed SD: 1-tok=0.47, **2-tok=0.00**, 3-tok=1.10, 8-tok=1.76
+- **2-tok is significantly equalized** (p=0.031 vs iid null)
+- **3-tok equalization FAILED**: p=0.434 vs iid null. N1-N3 [11,11,11] was small-sample noise
 - 8-tok is close to iid (1.76 vs 2.21 expected)
+- Equalization is now a 2-TOKEN-SPECIFIC CANDIDATE REGIME (Codex 2026-03-05e)
 
 ### Endogeneity Warning (Codex)
 - 42% is a CONDITIONAL occupancy rate (sensitive tasks exclude all-correct and all-wrong)

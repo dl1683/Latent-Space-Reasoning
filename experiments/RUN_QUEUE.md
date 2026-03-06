@@ -56,8 +56,11 @@ python -u experiments/run_latent_sensitivity.py --task-type nested --difficulty 
 Why: Decides 24/25 vs 25/25 oracle. Nice-to-have per Codex.
 
 ## Notes
-- 3-tok N1-N4: [11,11,11,10], N5 in progress. Categories are probabilistic.
-- 2-tok n=10 rerun is EXISTENTIAL: defines whether equalization is central claim
+- 3-tok N1-N5: [11,11,11,10,13], SD=1.10, p=0.434 vs iid (NOT SIGNIFICANT)
+- 3-tok equalization FAILED — N1-N3 [11,11,11] was small-sample noise
+- Equalization is now 2-tok-specific candidate regime (Codex 2026-03-05e)
+- 2-tok n=10 rerun is EXISTENTIAL: only remaining equalization evidence (p=0.031 at n=3)
 - Define success as suppressed variance, not std=0.00 (Codex guidance)
 - Codex priority: 2-tok n=10 > think-gate > Shi t=2 > word problem
+- If 2-tok n=10 fails: pivot paper to oracle efficiency + task redistribution + dose-response
 - MVP timeline: items 1-3 = ~100 min post-3tok
