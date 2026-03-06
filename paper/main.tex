@@ -39,10 +39,10 @@ chain-of-thought arithmetic reasoning. Two random tokens increase accuracy
 from 32\% to 60\% (+28 percentage points), while one token yields 42.7\%
 and three or eight tokens revert to $\sim$44\%. The effect decomposes into
 think-mode gating (+8pp) and perturbation-specific optimization (+20pp).
-At fixed perturbation magnitude, random directions enter an equalized
-solve-count regime: each direction solves the \emph{same number} of tasks
-but \emph{different task subsets}, enabling 88\% oracle coverage from just
-three two-token perturbation runs. At eight tokens, equalization breaks,
+At the two-token optimum, all random directions solve exactly the same
+number of tasks but \emph{different task subsets}, enabling 88\% oracle
+coverage from just three perturbation runs. Between-direction variance
+is strongly suppressed at 1--3 tokens but breaks at eight tokens,
 marking a regime boundary. These results establish embedding-space
 perturbation as a training-free intervention that activates latent
 reasoning capabilities in small language models.
@@ -74,10 +74,11 @@ tasks are:
     three or eight tokens revert to $\sim$44\%.
 
     \item \textbf{Solve-count equalization.}
-    At fixed perturbation magnitude (2 and 3 tokens), all independent
-    random directions solve exactly the same number of tasks
-    (std = 0.00) but solve \emph{different} subsets---a fixed-capacity
-    regime that breaks at 8 tokens.
+    At the two-token optimum, all independent random directions solve
+    exactly the same number of tasks (std = 0.00) but solve
+    \emph{different} subsets. Between-direction variance is strongly
+    suppressed relative to independence at 1--3 tokens, marking a
+    fixed-capacity regime that breaks at 8 tokens.
 
     \item \textbf{Efficient oracle coverage.} Three two-token
     perturbation runs achieve 88\% oracle accuracy, compared to
@@ -198,7 +199,7 @@ the full response (up to 2000 characters) for independent verification.
 0 & 32.0\% & --- & 1 & --- \\
 1 & 42.7\% & 1.9\% & 3 & +10.7pp \\
 \textbf{2} & \textbf{60.0\%} & \textbf{0.0\%} & \textbf{3} & \textbf{+28.0pp} \\
-3 & 43.0\% & 2.0\% & 4 & +11.0pp \\
+3 & 44.8\% & 4.4\% & 5 & +12.8pp \\
 8 & 44.4\% & 7.0\% & 10 & +12.4pp \\
 \bottomrule
 \end{tabular}
@@ -249,15 +250,20 @@ more than mode gating at the two-token optimum.
 \subsection{Solve-Count Equalization} % [LOCKED — Codex-approved terminology]
 \label{sec:equalization}
 
-At fixed perturbation magnitude, random directions enter an equalized
-solve-count regime: each direction solves the \emph{same number} of tasks
-but \emph{different task subsets}. Oracle gains arise by covering the
-perturbation-sensitive subset.
+At the two-token optimum, all three random directions solve exactly the
+same number of tasks (15/25, std = 0.00) but solve \emph{different task
+subsets}. This variance suppression extends to 3-tok (std = 0.43 with
+4 directions, vs.\ 1.25 expected under independence), while 8-tok
+shows near-independence variance (std = 1.76 vs.\ 2.21 expected).
+Oracle gains arise by covering the perturbation-sensitive subset.
 
 We decompose tasks at each perturbation level into three categories:
-\emph{unanimous} (solved by all directions), \emph{frozen} (solved by
-none), and \emph{sensitive} (solved by some but not all). The per-latent
-solve count equals unanimous + a fixed fraction of sensitive tasks.
+\emph{unanimous} (solved by all sampled directions), \emph{frozen}
+(solved by none), and \emph{sensitive} (solved by some but not all).
+These categories are probabilistic, not absolute---additional directions
+may solve ``frozen'' tasks or fail ``unanimous'' ones. The per-latent
+solve count approximately equals unanimous + a stable fraction
+($\sim$0.42) of sensitive tasks.
 
 \begin{table}[h]
 \centering
@@ -266,21 +272,22 @@ solve count equals unanimous + a fixed fraction of sensitive tasks.
 \textbf{Condition} & \textbf{Unan.} & \textbf{Frozen} & \textbf{Sens.} & \textbf{Per-latent} & \textbf{Std} \\
 \midrule
 Zero (3 lat) & 7 & 16 & 2 & 7/25 & 0.00 \\
-1-tok (3 lat) & --- & --- & --- & 10.7/25 & 0.58 \\
+1-tok (3 lat) & 6 & 8 & 11 & 10.7/25 & 0.47 \\
 \textbf{2-tok (3 lat)} & \textbf{9} & \textbf{3} & \textbf{13} & \textbf{15/25} & \textbf{0.00} \\
-3-tok (4 lat) & 7--8 & 10 & 7--8 & 10.8/25 & 0.43 \\
-8-tok (10 lat) & --- & --- & --- & 11.0/25 & 1.85 \\
+3-tok (5 lat) & 7 & 9 & 9 & 11.2/25 & 1.10 \\
+8-tok (10 lat) & 3 & 2 & 20 & 11.1/25 & 1.76 \\
 \bottomrule
 \end{tabular}
-\caption{Solve-count equalization. At each perturbation magnitude, every
-random direction solves the same number of tasks (std = 0.00 for zero,
-2-tok, and 3-tok). The structural decomposition into unanimous, frozen,
-and sensitive tasks reveals a fixed-capacity regime: per-latent count =
-unanimous + a constant fraction of sensitive tasks. Increasing
-perturbation freezes more tasks (3 $\to$ 10 frozen) while the
-equalization property is preserved. 8-tok breaks equalization
-(std = 1.85), marking a regime boundary where direction affects both
-\emph{which} and \emph{how many} tasks are solved.}
+\caption{Solve-count equalization. At each perturbation magnitude,
+random directions solve approximately the same number of tasks.
+Two-token achieves perfect equalization (std = 0.00); three-token
+shows suppressed variance (std = 1.10 with 5 directions, 0.88$\times$ iid expected);
+eight-token breaks the pattern (std = 1.76). The observed variance at 2-tok
+is 0.0$\times$ and at 3-tok is 0.88$\times$ the expectation under independent heterogeneous
+Bernoulli models, supporting a fixed-quota regime rather than
+independent task solving. Increasing perturbation primarily changes
+the unanimous/frozen/sensitive partition, not the per-direction solve
+fraction on sensitive tasks ($\sim$0.42 across conditions).}
 \label{tab:equalization}
 \end{table}
 
@@ -464,11 +471,12 @@ Random prefix tokens at the embedding scale reveal a sharp non-monotonic
 optimum in small-model arithmetic reasoning. Two tokens produce a
 +28 percentage point improvement over baseline, decomposable into
 think-mode gating (+8pp) and perturbation-specific optimization (+20pp).
-At fixed perturbation magnitude, random directions enter a solve-count
-equalization regime: they solve the same number of tasks but different
-subsets, enabling efficient oracle coverage (88\% from 3 runs). This
-fixed-capacity regime holds at 2--3 tokens but breaks at 8 tokens,
-where direction affects both which and how many tasks are solved.
+At the two-token optimum, random directions enter a solve-count
+equalization regime: they solve the same number of tasks (std = 0.00)
+but different subsets, enabling efficient oracle coverage (88\% from
+3 runs). Between-direction variance is strongly suppressed at 1--3
+tokens relative to independence, but breaks at 8 tokens, where
+direction affects both which and how many tasks are solved.
 These findings suggest that small language models possess latent
 reasoning capabilities that can be unlocked through minimal,
 training-free embedding-space perturbation.

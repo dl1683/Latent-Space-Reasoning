@@ -8,7 +8,7 @@ Date: 2026-03-05 (Tesla Workflow Deep Analysis)
 | 0 | baseline | 32.0% | - | - | - |
 | 1 | random_noise | 42.7% | 1.9% | 3 | +10.7pp |
 | **2** | **random_noise** | **60.0%** | **0.0%** | **3** | **+28.0pp** |
-| 3 | random_noise | 44.0% | 0.0% | 3+ (RUNNING 10) | +12.0pp |
+| 3 | random_noise | 44.8% | 4.4% | 5 (RUNNING 10) | +12.8pp |
 | 8 | random_noise | 44.0% | 2.8% | 4 | +12.0pp |
 | 8 | latent_projected | 44.4% | 7.0% | 10 | +12.4pp |
 | 8 | zero_embedding | 36.0% | 0.0% | 3 | +4.0pp |
@@ -463,15 +463,28 @@ This is NOT explained by higher per-latent accuracy alone (60% vs 44%) —
 - Under iid Bernoulli at k=3: q_cond = (1+p)/3, so q_cond ≈ 0.42 implies p ≈ 0.26
 - Categories are endogenous to the directions that defined them
 
-### Held-Out Direction Test (N4 as natural held-out)
-- N4 solves 3/7 = 42.9% of N1-N3's sensitive tasks → fraction CONFIRMED on held-out
-- BUT N4 breaches nest_003 (unanimous in N1-N3) → categories are NOT perfectly stable
+### Variance Decomposition (3-tok sensitive tasks, N1-N5)
+- Homogeneous Bernoulli (q=0.42, S=9): expected SD = 1.40
+- Heterogeneous Bernoulli (per-task p_i from data): expected SD = ~1.25
+- **Observed SD (N1-N4) = 0.43** (0.3x expected) → fixed-quota model
+- **Observed SD (N1-N5) = 1.10** (0.88x expected) → still suppressed but weaker
+- N5=13/25 is a significant outlier; variance suppression weakening with more samples
+- Per-task solve rates on sensitive (N1-N5): heterogeneous (20%-80%)
 
-### N4 Result (2026-03-05)
+### Pairwise Overlap (3-tok sensitive tasks, N1-N4)
+- On sensitive tasks only: mean overlap = 1.7 (close to iid expected 1.4)
+- On all tasks: mean overlap = 8.7 (dominated by 7 unanimous tasks)
+- Structure: unanimous tasks provide stable overlap base; sensitive tasks are ~iid
+
+### N4-N5 Results (2026-03-05)
 - N4 = 10/25 (40%): equalization breaks from [11,11,11] to [11,11,11,10]
-- 3-tok std now 0.43 (was 0.00 with N1-N3 only)
-- Key: equalization is APPROXIMATE at 3-tok, EXACT at 2-tok (so far)
-- N5-N10 will refine the 3-tok distribution
+- N5 = 13/25 (52%): significant outlier, further breaks equalization
+- Solve counts N1-N5: [11, 11, 11, 10, 13], mean=11.2, SD=1.10
+- Categories (N1-N5): 7 unanimous, 9 frozen, 9 sensitive
+- nest_007 escaped "frozen" (0/4 → 1/5): categories are probabilistic
+- N5 solved 6 sensitive tasks vs typical 3-4: nest_003,007,015,016,017,018
+- Variance suppression: 0.88x heterogeneous iid expected (still suppressed but weaker)
+- N6-N10 will determine final 3-tok distribution
 
 ## 11. Codex Shi et al. Positioning (2026-03-05)
 
@@ -502,21 +515,16 @@ task-selective effects, revealing mode gating, oracle efficiency, and task-speci
 ### Behavioral Experiments
 1. **Shi-style discrete token control** -- HIGHEST PRIORITY (Codex).
    Run repeated `/` and `?` on Qwen3-4B at 1,2,3,8 tokens. Implemented in harness.
-2. **3-tok dose-response** -- RUNNING (Noise 2/10 in progress).
-   - Noise 1: 44% (11/25), Noise 2: 44% (11/25) — EQUALIZATION AT 3-TOK TOO!
-   - N1 and N2 solve EXACTLY 11/25 but 4 different tasks (2 swaps each way)
+2. **3-tok dose-response** -- RUNNING (N5/10 complete, N6-N10 in progress).
+   - Solve counts N1-N5: [11, 11, 11, 10, 13], mean=11.2, SD=1.10
+   - N5=52% is significant outlier; equalization is APPROXIMATE not exact
+   - Categories (N1-N5): 7 unanimous, 9 frozen, 9 sensitive
+   - Variance suppression: 0.88x heterogeneous iid expected (still suppressed)
    - 3-tok solve set is ENTIRELY a subset of 2-tok oracle (adds 0 new tasks)
-   - 3-tok gains from baseline: nest_006, _010, _015, _017, _019 (5 gains, 2 losses)
-   - Combined oracle unchanged at 24/25 (nest_008 still unsolved)
-   - Dose-response: 0=32%, 1=42.7%, 2=60%, 3=44% (N1+N2), 8=44%
-   - Equalization hierarchy: 2-tok [15,15,15] std=0, 3-tok [11,11] std=0 (n=2 only!)
-   - N3 CONFIRMED: [11, 11, 11] across 3 latents (P=0.004 under independence)
    - STRUCTURAL FINDING: equalization = fixed capacity per perturbation level
-     - 2-tok: 9 always + 3 never + 13 sensitive, per-latent = 9 + 6/13 = 15
-     - 3-tok: 8 always + 10 never + 7 sensitive, per-latent = 8 + 3/7 = 11
-     - Both achieve 100% oracle coverage of sensitive tasks from 3 latents
-     - More perturbation energy freezes more tasks (10 vs 3 never-solved)
-     - 3-tok oracle (3 lat) = 15/25 = 60% = exactly 2-tok per-latent accuracy
+     - 2-tok: 9 unanimous + 3 frozen + 13 sensitive, per-latent = 9 + 6/13 = 15
+     - 3-tok: 7 unanimous + 9 frozen + 9 sensitive (N1-N5 categories)
+     - More perturbation energy freezes more tasks (9 vs 3 frozen)
 3. **Scale 2-tok to n=100 tasks, n=10 latents** -- replicate oracle + zero-variance
 4. Dense dose-response (4,5,6,7 tokens)
 5. Cross-model (Qwen3-8B)
