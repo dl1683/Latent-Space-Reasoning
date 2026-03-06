@@ -424,12 +424,16 @@ efficiently.
 
 \subsection{Why Two Tokens?}
 
-We hypothesize that two tokens provide the minimum perturbation energy
-needed to cross the mode-gating threshold while staying below the
-energy level that induces excessive divergence. At one token, the
-perturbation is marginal; at three or more, the model's reasoning
-trajectory diverges too early, exhausting the token budget before
-reaching an answer.
+At matched sample size ($n = 3$ directions), two tokens freeze only
+3 tasks, compared to 8 at one token, 10 at three tokens, and 10 at
+eight tokens. Two tokens thus maximize the set of tasks that
+\emph{can} be solved while maintaining the highest per-direction
+accuracy (15/25 = 60\%). We hypothesize that two tokens provide the
+minimum perturbation energy needed to cross the mode-gating threshold
+while staying below the energy level that freezes marginal tasks.
+At one token, the perturbation is marginal; at three or more, the
+model's reasoning trajectory diverges too early, exhausting the token
+budget before reaching an answer.
 
 \pending{Think-gate probe results will test this hypothesis directly.}
 

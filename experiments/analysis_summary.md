@@ -534,7 +534,9 @@ Under heterogeneous iid null (100k Monte Carlo simulations using per-task rates)
 - P(SD=0 | iid, k=10) = 0.000000 (zero in 100k sims)
 - Decision: If SD < 1.0, equalization is a real 2-tok phenomenon. If SD > 1.1, pivot paper.
 
-### Cross-Condition Category Transitions (2026-03-05e)
+### Cross-Condition Category Transitions (2026-03-05f)
+
+**Raw categories (different n_lat per condition):**
 
 | Condition | Unanimous | Frozen | Sensitive | n_lat |
 |-----------|-----------|--------|-----------|-------|
@@ -542,6 +544,24 @@ Under heterogeneous iid null (100k Monte Carlo simulations using per-task rates)
 | **2-tok** | **9** | **3** | **13** | **3** |
 | 3-tok | 6 | 7 | 12 | 7 |
 | 8-tok | 3 | 2 | 20 | 10 |
+
+**At matched n=3 (first 3 directions, apples-to-apples):**
+
+| Condition | Unanimous | Frozen | Sensitive |
+|-----------|-----------|--------|-----------|
+| 1-tok | 6 | 8 | 11 |
+| **2-tok** | **9** | **3** | **13** |
+| 3-tok | 8 | 10 | 7 |
+| 8-tok | 6 | 10 | 9 |
+
+**2-tok minimizes frozen count at matched sample size (3 vs 8-10 for all others).**
+3-tok has the MOST frozen tasks at n=3 (10, mean across all combos = 10.2).
+This is the mechanism behind the non-monotonic optimum: 2-tok perturbation energy
+is just right to maximize the solvable set.
+
+Per-task solve rate correlations (r):
+- 1-tok vs 2-tok: 0.638 | 2-tok vs 3-tok: 0.803 | 2-tok vs 8-tok: 0.767 | 3-tok vs 8-tok: 0.910
+- 3-tok and 8-tok share a very similar task difficulty landscape (r=0.91)
 
 Key transitions (2-tok → 3-tok):
 - 6 tasks S→F: over-perturbation freezes sensitive tasks (002,009,012,013,014,022)
