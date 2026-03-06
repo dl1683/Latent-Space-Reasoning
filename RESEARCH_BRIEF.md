@@ -28,16 +28,16 @@ Prepending **random embedding-scale tokens** to the input of Qwen3-4B (Q4) impro
 
 ---
 
-## It's Redistribution, Not Clean Improvement
+## Direction Changes WHICH Tasks, Not HOW MANY
 
-The +12pp mean improvement masks a more nuanced picture. Across 25 tasks tested with 10 different random latent vectors:
+At the 2-token sweet spot, all 3 random directions solve exactly the same number of tasks (13/22 sensitive tasks, std=0.00) but solve **different task subsets**. This "equalization" is the paper's headline finding.
 
-- **3 tasks fixed** by prefix tokens (previously wrong, now majority correct)
-- **6 tasks regressed** (previously correct, now sometimes wrong)
-- **14 tasks still broken** regardless of condition
-- **2 tasks stably correct** across all conditions
-
-The prefix doesn't add reasoning capability — it changes which tasks the model succeeds on.
+Strict categorization (across ALL conditions):
+- **2 always-solved** tasks (correct everywhere)
+- **1 never-solved** task (nest_008, answer=7278)
+- **22 sensitive** tasks (perturbation-dependent)
+- **Full oracle**: 24/25 = 96% (only nest_008 truly unsolvable)
+- **Oracle from 3 random 2-tok directions**: 21/22 = 95.5% of sensitive tasks
 
 ![Error Redistribution](experiments/figures/fig3_error_redistribution.png)
 
@@ -94,12 +94,26 @@ Two random tokens is the sweet spot. Adding more tokens actually *hurts* — 8 t
 
 ---
 
+## Force-Think Decomposition
+
+The perturbation effect has two components:
+- **Think-mode gating (+8pp)**: Any perturbation activates Qwen3's think mode (16% → 100%)
+- **Noise beyond think (+20pp)**: Random noise contributes 2.5x more than think mode alone
+
+| Condition | Think Rate | Accuracy |
+|-----------|-----------|----------|
+| Baseline | 16% | 32% |
+| Force-think (no noise) | 100% | 40% |
+| 2-tok random noise | 100% | 60% |
+
 ## Difficulty Dependence
 
-The warm-start effect is **difficulty-dependent**:
+The effect is **difficulty-dependent** and acts as a **policy switch**, not a generic intelligence boost:
 
-- **Hard tasks (32% baseline)**: +12pp improvement — prefix unlocks alternative reasoning paths
-- **Easy tasks (92% baseline)**: -7pp degradation — prefix disrupts already-effective strategies
+- **Tiny answers (≤10)**: 0% → 75% at 2-tok (largest improvement!)
+- **Medium answers (101-1000)**: 57% → 86% at 2-tok
+- **Large answers (1001-5000)**: 100% → 78% at 2-tok (**regression** = overthinking)
+- **Huge answers (>5000)**: 0% → 25% at 2-tok (modest)
 
 This is consistent with **stochastic resonance**: noise helps when the system is near a threshold, but hurts when it's already performing well.
 
@@ -139,11 +153,13 @@ This is consistent with **stochastic resonance**: noise helps when the system is
 
 ## Related Work
 
-- **Goyal et al. (2024)** — "Think before you speak: Training Language Models With Pause Tokens" (ICLR 2024). Closest prior work, but requires *training* with pause tokens. Our effect uses *untrained* random embeddings at inference time.
-- **London & Nagarajan (2025)** — NeurIPS. Proves mathematically that extra tokens increase transformer expressivity. Theoretical support for our empirical finding.
-- **Xiao et al. (2024)** — "Efficient Streaming Language Models with Attention Sinks." Documents attention sink phenomenon in first tokens, which may partially explain our prefix effect.
+- **Shi et al. (2025)** — "Meaningless Tokens, Meaningful Gains" (arXiv:2510.01032). Closest prior work: repeated punctuation tokens (`/`, `?`) improve reasoning by 1-5% via MLP activation redistribution. Our work studies the continuous embedding-space regime, finding much larger effects (+28pp), direction independence, equalization, and deterministic chaos — phenomena not observed in discrete token space.
+- **Goyal et al. (2024)** — "Think before you speak: Training Language Models With Pause Tokens" (ICLR 2024). Requires *training* with pause tokens; our effect uses *untrained* random embeddings at inference time.
+- **London & Nagarajan (2025)** — NeurIPS. Proves mathematically that extra tokens increase transformer expressivity.
+- **Li et al. (2025)** — Quasi-Lyapunov Exponent for LLMs. Formal chaos analysis in transformer layers.
+- **Xiao et al. (2024)** — Attention Sinks. Documents attention sink phenomenon in first tokens.
 
-Our finding appears **novel**: no prior work demonstrates that *random, untrained* embedding-scale tokens improve inference-time reasoning in small language models.
+**Positioning**: Shi et al. establish that prefix token perturbations help reasoning; we reveal the structure of the continuous perturbation landscape, demonstrating mode gating, oracle efficiency, and task-specific resonance.
 
 ---
 
