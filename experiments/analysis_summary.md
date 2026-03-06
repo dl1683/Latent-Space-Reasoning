@@ -209,6 +209,29 @@ Never-solved = wrong by baseline AND every latent in every condition.
 Previous looser definition (solved by baseline + all 2-tok latents): 5 always-solved, 2 never-solved, 18 sensitive.
 Use "coarsely stable" label, not "always/never", per Codex guidance.
 
+## 8b. Data Integrity Issue: 500-Char Response Truncation (2026-03-05)
+
+**All pre-3-tok experiments** store responses truncated at 500 chars (`resp[:500]`).
+The current code stores `resp[:2000]` + `response_raw[:2000]`.
+
+**Impact on scoring**: verify_answer() was called on FULL responses at runtime, so the stored
+`correct` flags are based on full generation outputs. The stored responses are for inspection
+only and cannot independently verify the scores.
+
+| Experiment | Mismatches | Total | % Unverifiable |
+|-----------|-----------|-------|----------------|
+| mean_embedding | 9/25 | 36% | All "correct" tasks |
+| zero_embedding | 27/75 | 36% | |
+| latent_8tok | 110/250 | 44% | |
+| noise_1tok | 32/75 | 43% | |
+| noise_2tok | 46/75 | 61% | |
+| baseline | 3/25 | 12% | |
+
+**Assessment**: This is a REPRODUCIBILITY issue, not a correctness issue. The accuracy numbers
+(32%, 42.7%, 60%, 44%, 36%) are based on runtime full-response scoring and are likely correct.
+However, reviewers cannot independently verify from stored data. The 3-tok experiment (running now)
+uses the fixed code. All experiments should eventually be re-run with current code for publication.
+
 ## 9. Paper Contributions (Revised Ranking, Codex 2026-03-05, updated 2026-03-05b)
 
 1. **MAIN FIGURE**: Oracle efficiency / coverage-vs-budget curve (Codex: "strongest claim")
@@ -229,10 +252,11 @@ Use "coarsely stable" label, not "always/never", per Codex guidance.
 
 ## 10. Cross-Experiment Oracle Analysis (2026-03-05)
 
-### Combined Oracle = 100% (25/25)
+### Combined Oracle = 24/25 (96%) VERIFIED, 25/25 UNVERIFIABLE
 
-Every single task is solvable by at least one perturbation condition across all experiments.
-Baseline solves only 8/25 = 32%. The perturbation landscape is sufficient to cover all tasks.
+Every task is solvable by at least one perturbation condition — but nest_008 (mean_8tok) has
+a scoring bug (response truncated at 500 chars, stored `correct: True` is unverifiable).
+Conservative claim: 24/25 = 96%. Need to re-run mean_embedding with current code.
 
 **Total perturbation budget**: 20 runs across 6 condition types (3×1tok + 3×2tok + 10×8tok-latent + 3×zero + 1×mean).
 
@@ -316,7 +340,17 @@ with only 3 directions, while 8-tok shows massive redundancy (z=-8.25 at k=10).
 | noise_2tok | 25/25 | - | Dominated by others |
 | latent_8tok | 24/25 | nest_021 (5639) | Unique contribution |
 | zero_8tok | 25/25 | - | Dominated, adds nothing |
-| mean_8tok | 24/25 | nest_008 (7278) | Unique contribution (SINGLETON, revalidate) |
+| mean_8tok | 24/25 | nest_008 (7278) | **UNVERIFIABLE** (see below) |
+
+**SCORING BUG (nest_008, mean_8tok)**: The mean_embedding experiment used an older code version
+that stored only 500 chars of response. verify_answer() was called on the full response
+(which may have been longer), but the stored 500-char response does NOT contain "7278".
+Reproducing verify_answer on the stored response gives False, but the stored `correct` flag is True.
+**This result is UNVERIFIABLE** from the stored data. Need to re-run mean_embedding with
+current code (which stores 2000 chars + response_raw).
+
+**Impact**: Combined oracle is 24/25 (verified) or 25/25 (if nest_008 mean_8tok is genuinely correct).
+Conservative claim: 24/25 = 96%, consistent with original analysis.
 
 Three condition families each rescue exactly one unique task. noise_2tok and zero_8tok are fully dominated.
 
@@ -337,6 +371,22 @@ baseline difficulty, not by differential noise benefit.
 - Reject H0: p <= 0.85 (p = 0.017)
 - Fail to reject H0: p <= 0.90 (p = 0.072)
 - **Claim**: oracle coverage > 85% is defensible; > 90% is not
+
+### Budget-Matched Oracle Comparison (Codex-recommended test)
+
+Bootstrap subsampling: random k-of-10 from 8-tok vs 2-tok at same k
+
+| k | 2-tok Oracle | 8-tok Mean [95% CI] | P(8tok < 2tok) |
+|---|-------------|---------------------|----------------|
+| 1 | 60% | 44.2% [36, 56] | 1.000 |
+| 2 | 80% | 59.2% [48, 72] | 1.000 |
+| 3 | 88% | 68.5% [52, 80] | 1.000 |
+
+**Oracle AUC** (k=1..3): 2-tok = 0.760, 8-tok random-3 = 0.572 [0.467, 0.680], P = 1.000
+
+2-tok is universally more oracle-efficient at every budget level.
+This is NOT explained by higher per-latent accuracy alone (60% vs 44%) —
+2-tok latents also explore more diverse task-space regions.
 
 ### Codex Oracle Framing (2026-03-05)
 

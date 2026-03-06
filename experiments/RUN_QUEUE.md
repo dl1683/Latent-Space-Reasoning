@@ -33,6 +33,13 @@ python -u experiments/run_activation_probe.py --n-tasks 5
 Output: experiments/activation_probe_results.json
 Why: Identifies target layers for MLP redistribution and causal tracing.
 
+## Priority 5b: Causal Tracing Probe (~15 min)
+```bash
+python -u experiments/run_causal_trace.py --n-tasks 5
+```
+Output: experiments/causal_trace_results.json
+Why: Activation patching at each layer to identify causal bottleneck for <think> probability.
+
 ## Priority 6: Word Problem Cross-Task Replication (~90 min)
 ```bash
 python -u experiments/run_latent_sensitivity.py --task-type word_problem --n-latents 3 --n-tasks 25 --control-mode random_noise --num-soft-tokens 2
