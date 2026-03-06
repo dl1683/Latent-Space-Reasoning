@@ -43,7 +43,7 @@ At the two-token optimum, all random directions solve exactly the same
 number of tasks ($p = 0.031$ vs.\ heterogeneous iid null) but
 \emph{different task subsets}, enabling 88\% oracle coverage from just
 three perturbation runs. At three tokens, early equalization did not
-persist; by five directions, variance was indistinguishable from iid,
+persist; by six directions, variance was indistinguishable from iid,
 so we treat higher-token behavior as transitional. These results establish embedding-space
 perturbation as a training-free intervention that activates latent
 reasoning capabilities in small language models.
@@ -79,7 +79,7 @@ tasks are:
     exactly the same number of tasks (std = 0.00, $p = 0.031$ vs.\
     heterogeneous iid) but solve \emph{different} subsets.
     This equalization does not persist at three tokens, where
-    variance becomes indistinguishable from independence ($p = 0.434$).
+    variance becomes indistinguishable from independence ($p = 0.258$).
 
     \item \textbf{Efficient oracle coverage.} Three two-token
     perturbation runs achieve 88\% oracle accuracy, compared to
@@ -200,7 +200,7 @@ the full response (up to 2000 characters) for independent verification.
 0 & 32.0\% & --- & 1 & --- \\
 1 & 42.7\% & 1.9\% & 3 & +10.7pp \\
 \textbf{2} & \textbf{60.0\%} & \textbf{0.0\%} & \textbf{3} & \textbf{+28.0pp} \\
-3 & 44.8\% & 4.4\% & 5 & +12.8pp \\
+3 & 45.3\% & 4.1\% & 6 & +13.3pp \\
 8 & 44.4\% & 7.0\% & 10 & +12.4pp \\
 \bottomrule
 \end{tabular}
@@ -254,9 +254,9 @@ more than mode gating at the two-token optimum.
 At the two-token optimum, all three random directions solve exactly the
 same number of tasks (15/25, std = 0.00, $p = 0.031$ vs.\ heterogeneous
 iid null) but solve \emph{different task subsets}. At three tokens,
-early equalization observed over four directions (std = 0.43) did not
-persist; by five directions, variance (std = 1.10) was
-indistinguishable from the heterogeneous iid expectation ($p = 0.434$).
+early equalization observed over three directions did not
+persist; by six directions, variance (std = 1.03) was
+indistinguishable from the heterogeneous iid expectation ($p = 0.258$).
 At eight tokens, variance is large (std = 1.76) and near the iid
 expected value (2.21). We therefore treat equalization as a candidate
 regime specific to two tokens, pending confirmation at $n = 10$
@@ -283,15 +283,15 @@ may solve ``frozen'' tasks or fail ``unanimous'' ones.
 Zero (3 lat) & 7 & 16 & 2 & 7/25 & 0.00 \\
 1-tok (3 lat) & 6 & 8 & 11 & 10.7/25 & 0.47 \\
 \textbf{2-tok (3 lat)} & \textbf{9} & \textbf{3} & \textbf{13} & \textbf{15/25} & \textbf{0.00} \\
-3-tok (5 lat) & 7 & 9 & 9 & 11.2/25 & 1.10 \\
+3-tok (6 lat) & 7 & 7 & 11 & 11.3/25 & 1.03 \\
 8-tok (10 lat) & 3 & 2 & 20 & 11.1/25 & 1.76 \\
 \bottomrule
 \end{tabular}
 \caption{Task decomposition by perturbation magnitude.
 Two-token is the only condition showing significant variance
 suppression (std = 0.00, $p = 0.031$ vs.\ heterogeneous iid null).
-Three-token variance (std = 1.10) is not significantly below iid
-expectation ($p = 0.434$). Eight-token is near independence
+Three-token variance (std = 1.03, 6 directions) is not significantly
+below iid expectation ($p = 0.258$). Eight-token is near independence
 (std = 1.76 vs.\ 2.21 expected). Increasing perturbation primarily
 shifts the unanimous/frozen/sensitive partition: more perturbation
 energy freezes additional tasks.}
@@ -404,8 +404,8 @@ The two-token optimum emerges because it maximizes the sensitive set
 (13 tasks) while maintaining a high per-direction solve rate (0.462),
 yielding the highest per-direction accuracy (15/25 = 60\%).
 
-At three tokens, variance (std = 1.10 from 5 directions) is
-indistinguishable from the heterogeneous iid null ($p = 0.434$),
+At three tokens, variance (std = 1.03 from 6 directions) is
+indistinguishable from the heterogeneous iid null ($p = 0.258$),
 so equalization does not extend beyond two tokens. At eight tokens,
 variance is large (std = 1.76) and near the iid expectation (2.21):
 direction affects both \emph{which} and \emph{how many} tasks are
@@ -482,7 +482,7 @@ At the two-token optimum, random directions solve the same number of
 tasks (std = 0.00, $p = 0.031$ vs.\ iid null) but different subsets,
 enabling efficient oracle coverage (88\% from 3 runs). This
 equalization is specific to two tokens; at three tokens, variance
-is indistinguishable from independence ($p = 0.434$).
+is indistinguishable from independence ($p = 0.258$).
 These findings suggest that small language models possess latent
 reasoning capabilities that can be unlocked through minimal,
 training-free embedding-space perturbation.
