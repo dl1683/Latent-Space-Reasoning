@@ -465,10 +465,10 @@ This is NOT explained by higher per-latent accuracy alone (60% vs 44%) —
 **Only 2-tok shows significant equalization.** 2-tok n=10 rerun is EXISTENTIAL.
 
 ### Equalization vs Independence (Codex, UPDATED 2026-03-05e)
-- Expected SD under iid Bernoulli(q=0.42): 1-tok=1.64, 2-tok=1.78, 3-tok=1.19(sim), 8-tok=2.21
-- Observed SD: 1-tok=0.47, **2-tok=0.00**, 3-tok=1.29 (N7), 8-tok=1.76
+- Expected SD under iid Bernoulli: 1-tok=1.64, 2-tok=1.78, 3-tok=1.48(MC,N10), 8-tok=2.21
+- Observed SD: 1-tok=0.47, **2-tok=0.00**, 3-tok=1.33 (N10 final), 8-tok=1.76
 - **2-tok is significantly equalized** (p=0.031 vs iid null)
-- **3-tok equalization FAILED**: p=0.462 vs iid null. N1-N3 [11,11,11] was small-sample noise
+- **3-tok equalization FAILED**: p=0.335 vs iid null (N10 final). N1-N3 [11,11,11] was small-sample noise
 - 8-tok is close to iid (1.76 vs 2.21 expected)
 - Equalization is now a 2-TOKEN-SPECIFIC CANDIDATE REGIME (Codex 2026-03-05e)
 
@@ -480,8 +480,8 @@ This is NOT explained by higher per-latent accuracy alone (60% vs 44%) —
 ### Variance Decomposition (3-tok sensitive tasks)
 - Homogeneous Bernoulli (q=0.42, S=9): expected SD = 1.40
 - Heterogeneous Bernoulli (per-task p_i from data): expected SD = ~1.37
-- **Observed SD (N1-N7) = 1.29** (0.94x expected) → NO suppression
-- 3-tok variance is iid-consistent at all sample sizes tested (N5: p=0.434, N7: p=0.462)
+- **Observed SD (N1-N10) = 1.33** (0.90x expected) → NO suppression
+- 3-tok variance is iid-consistent at all sample sizes tested (N5: p=0.434, N7: p=0.462, N10: p=0.335)
 
 ### Pairwise Overlap (3-tok sensitive tasks, N1-N4)
 - On sensitive tasks only: mean overlap = 1.7 (close to iid expected 1.4)

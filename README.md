@@ -1,6 +1,6 @@
 # Latent Space Reasoning
 
-Research into how soft prompt tokens affect small language model reasoning. The system improves Qwen3-4B arithmetic by +12pp to +28pp over the bare baseline using prefix token conditioning. Current focus: characterizing the **warm-start mechanism** — understanding why diverse embedding-scale tokens improve reasoning and how to maximize the effect.
+Research into how soft prompt tokens affect small language model reasoning. Prepending random embedding-scale prefix tokens improves Qwen3-4B arithmetic by up to +28pp over baseline. The dose-response is non-monotonic (2 tokens optimal), the effect decomposes into think-mode gating (+8pp) and perturbation-specific optimization (+20pp), and different random directions solve different task subsets enabling 88% oracle coverage from 3 runs. See `paper/main.tex` for the full NeurIPS paper draft.
 
 **Original article:** [How to Teach LLMs to Reason for $0.50](https://www.artificialintelligencemadesimple.com/p/how-to-teach-llms-to-reason-for-50)
 **Update article:** [ARTICLE_UPDATE.md](ARTICLE_UPDATE.md) — latest findings on the warm-start mechanism

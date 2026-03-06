@@ -1,6 +1,8 @@
 # Random Prefix Tokens Improve Small-Model Arithmetic via Trajectory Perturbation
 
-**Devansh** | March 2026 | Work in Progress
+> **OUTDATED** — This brief predates the full NeurIPS paper (`paper/main.tex`) which supersedes it. Key updates: 2-tok peak is 60% (+28pp), non-monotonic dose-response confirmed, oracle efficiency is the main empirical payoff. Figures referenced below were removed during repo cleanup; see `experiments/fig_dose_response.png` and `experiments/fig_oracle_coverage.png` for current figures.
+
+**Devansh** | March 2026 | Superseded by paper/main.tex
 
 ---
 

@@ -34,6 +34,9 @@ def verify_file(path: Path) -> dict:
     results = {"file": str(path), "baseline": [], "noise": []}
 
     # Baseline results
+    # Note: 'response' is truncated to 2000 chars. Mismatches on truncated
+    # responses are expected — the 'correct' field was evaluated on full text
+    # at generation time and is the ground truth.
     for r in data.get("baseline_results", []):
         stored_correct = r.get("correct")
         response = r.get("response", "")
