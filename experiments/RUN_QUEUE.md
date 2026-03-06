@@ -1,19 +1,14 @@
 # Experiment Run Queue (Updated 2026-03-06)
 
 3-tok COMPLETE (44.0%, SD=1.33, p=0.335, oracle=80%). Orthogonality killed (stuck 22h).
-2-tok n=10 rerun NOW RUNNING (PID 38532, Run 4 — nohup+disown for persistence. Runs 1-3 killed by shell exits).
+2-tok n=10 COMPLETE (51.6%, SD=1.87, p=0.659, oracle=100%). Equalization DEAD. 284.7 min.
 
 ## PRIORITY 1: EXISTENTIAL FOR PAPER (~90 min)
 
-### 1. 2-tok Clean Rerun at n=10 (~75 min) [MOST IMPORTANT]
-```bash
-python -u experiments/run_latent_sensitivity.py --task-type nested --difficulty sweet_spot --n-latents 10 --n-tasks 25 --control-mode random_noise --num-soft-tokens 2
-```
-Why: Confirmatory experiment for paper's core mechanism. Tests whether 2-tok
-equalization holds at n=10. Success = observed SD far below heterogeneous-iid
-expectation (NOT std=0.00). If this fails, equalization is demoted from central
-mechanism to small-n observation. Codex: "most important experiment in the paper."
-Endpoints: solve-count variance, oracle efficiency, sensitive-set occupancy.
+### 1. ~~2-tok Clean Rerun at n=10~~ DONE
+**Result**: [15,15,15,13,14,13,11,12,9,12], SD=1.87, p=0.659. Equalization DEAD.
+Oracle 25/25=100%, zero frozen tasks. Mean 51.6% still best of all token counts.
+The n=3 [15,15,15] was small-sample noise. Paper restructured accordingly.
 
 ### 2. Think-Gate Probe (~5 min) [REQUIRED for MVP]
 ```bash

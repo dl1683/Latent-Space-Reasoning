@@ -23,7 +23,7 @@
 \title{Random Prefix Tokens Reveal a Sharp Non-Monotonic Optimum\\in Language Model Arithmetic Reasoning}
 % Title is [PENDING] per Codex — finalize after Shi comparison
 
-\author{Devansh Lodha}
+\author{Devansh}
 \date{March 2026}
 
 \begin{document}
@@ -31,22 +31,20 @@
 
 % ============================================================================
 \begin{abstract}
-% 3-tok equalization failed at N5 (p=0.434 vs iid). Equalization is 2-tok specific.
-
 Prepending random embedding-scale tokens to the input of a 4-bit quantized
 language model (Qwen3-4B) produces a sharp, non-monotonic improvement in
-chain-of-thought arithmetic reasoning. Two random tokens increase accuracy
-from 32\% to 60\% (+28 percentage points), while one token yields 42.7\%
-and three or eight tokens revert to $\sim$44\%. The effect decomposes into
-think-mode gating (+8pp) and perturbation-specific optimization (+20pp).
-At the two-token optimum, all random directions solve exactly the same
-number of tasks ($p = 0.031$ vs.\ heterogeneous iid null) but
-\emph{different task subsets}, enabling 88\% oracle coverage from just
-three perturbation runs. At three tokens, early equalization did not
-persist; by ten directions, variance was indistinguishable from iid.
-These results establish embedding-space
-perturbation as a training-free intervention that activates latent
-reasoning capabilities in small language models.
+chain-of-thought arithmetic reasoning. Two random tokens raise mean
+accuracy from 32\% to 51.6\% (+19.6 percentage points) across ten
+independent directions, while one token yields 42.7\% and three or eight
+tokens revert to $\sim$44\%. The effect decomposes into think-mode gating
+(+8pp) and perturbation-specific optimization (+12pp). Different
+perturbation directions solve \emph{different task subsets}: ten two-token
+directions collectively cover 100\% of tasks (25/25), compared to 80\%
+for three-token and 92\% for eight-token perturbations. The three-token
+oracle set is a strict subset of the two-token oracle, indicating that
+over-perturbation contracts the reachable task space. These results
+establish embedding-space perturbation as a training-free intervention
+that activates latent reasoning capabilities in small language models.
 \end{abstract}
 
 % ============================================================================
@@ -71,25 +69,28 @@ tasks are:
 
 \begin{enumerate}
     \item \textbf{Sharp non-monotonic optimum.} Two random prefix tokens
-    increase accuracy from 32\% to 60\%; one token yields 42.7\%, and
-    three or eight tokens revert to $\sim$44\%.
+    raise mean accuracy from 32\% to 51.6\% across ten directions;
+    one token yields 42.7\%, and three or eight tokens revert to
+    $\sim$44\%.
 
-    \item \textbf{Oracle-efficiency optimum.} Three two-token
-    perturbation runs achieve 88\% oracle accuracy (22/25 tasks),
-    while ten three-token runs reach only 80\% (20/25) and add
-    no tasks beyond the two-token oracle. At matched budget ($k = 3$),
-    two tokens freeze only 3 tasks, versus 10 for three tokens and 8 for eight tokens.
+    \item \textbf{Complete oracle coverage.} Ten two-token directions
+    collectively solve 100\% of tasks (25/25), compared to 80\% (20/25)
+    for three-token and 92\% (23/25) for eight-token perturbations.
+    The three-token oracle set is a strict subset of the two-token
+    oracle: five tasks solvable at two tokens become frozen at three.
+    At matched budget ($k = 3$), two tokens achieve 77\% oracle coverage
+    versus 60\% for three tokens and 68\% for eight tokens.
 
-    \item \textbf{Solve-count equalization (2-token).}
-    At the two-token optimum, all independent random directions solve
-    exactly the same number of tasks (std = 0.00, $p = 0.031$ vs.\
-    heterogeneous iid) but solve \emph{different} subsets.
-    This equalization does not persist at three tokens, where
-    variance becomes indistinguishable from independence ($p = 0.34$).
+    \item \textbf{Heterogeneous task selectivity.}
+    Different perturbation directions solve different task subsets,
+    but per-direction solve counts vary normally (std = 1.87,
+    $p = 0.66$ vs.\ heterogeneous iid null). The diversity is in
+    \emph{which} tasks are solved, not in \emph{how many}.
 
     \item \textbf{Think-mode gating.} Any perturbation activates
     Qwen3's reasoning mode (16\% $\to$ 100\%), but random noise
-    contributes 2.5$\times$ more accuracy gain than mode activation alone.
+    contributes $\sim$1.5$\times$ more accuracy gain than mode
+    activation alone.
 \end{enumerate}
 
 All experiments use greedy decoding (temperature = 0), making the
@@ -104,7 +105,7 @@ Shi et al.~\cite{shi2025} demonstrate that repeated punctuation tokens
 (e.g., ``/'' and ``?'') improve reasoning accuracy by 1--5\% across
 multiple models, attributing the effect to MLP activation redistribution.
 Our work studies the continuous embedding-space regime, finding
-substantially larger effects (+28pp at the optimum), direction
+substantially larger effects (+19.6pp mean at the optimum), direction
 independence, and task-selective redistribution---phenomena not observed
 in discrete token space.
 \pending{Add Shi head-to-head comparison when discrete token experiment completes.}
@@ -190,7 +191,7 @@ the full response (up to 2000 characters) for independent verification.
 % ============================================================================
 \section{Results} % [LOCKED sections noted; PENDING sections noted]
 
-\subsection{Non-Monotonic Dose-Response} % [LOCKED for 0,1,2,8; PENDING 3-tok]
+\subsection{Non-Monotonic Dose-Response} % [LOCKED]
 \label{sec:dose}
 
 \begin{table}[h]
@@ -201,12 +202,13 @@ the full response (up to 2000 characters) for independent verification.
 \midrule
 0 & 32.0\% & --- & 1 & --- \\
 1 & 42.7\% & 1.9\% & 3 & +10.7pp \\
-\textbf{2} & \textbf{60.0\%} & \textbf{0.0\%} & \textbf{3} & \textbf{+28.0pp} \\
+\textbf{2} & \textbf{51.6\%} & \textbf{7.9\%} & \textbf{10} & \textbf{+19.6pp} \\
 3 & 44.0\% & 5.3\% & 10 & +12.0pp \\
 8 & 44.4\% & 7.0\% & 10 & +12.4pp \\
 \bottomrule
 \end{tabular}
-\caption{Dose-response: accuracy vs.\ number of random prefix tokens.
+\caption{Dose-response: accuracy vs.\ number of random prefix tokens
+($n$ = number of independent directions tested).
 Two tokens is the sharp optimum. Three and eight tokens revert to
 $\sim$44\%.}
 \label{tab:dose}
@@ -221,17 +223,12 @@ error of the mean across $n$ perturbation directions.}
 \end{figure}
 
 The relationship between token count and accuracy is sharply non-monotonic.
-Two random tokens produce the highest accuracy (60\%), with zero variance
-across three independent random directions. Adding a third token drops
-accuracy to $\sim$44\%, matching the eight-token level. The three-token
-solve set is entirely a subset of the two-token oracle, adding no new
-task coverage.
-
-Statistical significance: McNemar's exact test confirms the 2-token
-effect per-latent (7 gains / 0 losses, $p = 0.016$; 8/1, $p = 0.039$;
-9/2, $p = 0.065$). The pooled sign test across all three latents yields
-24 gains vs.\ 3 losses ($p < 0.0001$). Fisher's exact test on pooled
-counts: OR = 3.19, $p = 0.021$. Cohen's $h = 0.570$ (medium effect).
+Two random tokens produce the highest mean accuracy (51.6\% $\pm$ 7.9\%
+across ten independent directions). Adding a third token drops accuracy to
+$\sim$44\%, matching the eight-token level. The three-token oracle set
+(20/25) is a strict subset of the two-token oracle (25/25), indicating
+that over-perturbation contracts the reachable task space rather than
+merely redistributing it.
 
 \subsection{Force-Think Decomposition} % [LOCKED]
 \label{sec:decomposition}
@@ -244,33 +241,64 @@ counts: OR = 3.19, $p = 0.021$. Cohen's $h = 0.570$ (medium effect).
 \midrule
 Baseline & 16\% & 32.0\% & --- \\
 Force-think (no noise) & 100\% & 40.0\% & +8pp (mode gate) \\
-2-tok random noise & 100\% & 60.0\% & +20pp (perturbation) \\
+2-tok random noise & 100\% & 51.6\% & +11.6pp (perturbation) \\
 \bottomrule
 \end{tabular}
 \caption{Two-component decomposition. Think-mode activation alone adds
-+8pp; random noise contributes an additional +20pp beyond think mode.}
++8pp; random noise contributes an additional +11.6pp beyond think mode
+(mean across 10 directions).}
 \label{tab:decomposition}
 \end{table}
 
 The perturbation effect has two separable components. First, any
 perturbation activates Qwen3's reasoning mode (think rate: 16\% $\to$
-100\%). Second, the noise itself produces an additional +20pp gain
-beyond what think-mode activation provides. Noise contributes 2.5$\times$
-more than mode gating at the two-token optimum.
+100\%). Second, the noise itself produces an additional +11.6pp gain
+beyond what think-mode activation provides (mean across 10 directions).
+Noise contributes $\sim$1.5$\times$ more than mode gating at the
+two-token optimum.
 
-\subsection{Solve-Count Equalization} % [LOCKED — Codex-approved terminology]
+\subsection{Oracle Efficiency} % [LOCKED]
+\label{sec:oracle}
+
+Because different perturbation directions solve different task subsets,
+running multiple perturbations and taking the oracle (any-correct)
+provides coverage well above individual accuracy. Figure~\ref{fig:oracle}
+shows coverage as a function of budget $k$ for each condition.
+
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\linewidth]{experiments/fig_oracle_coverage.pdf}
+\caption{Oracle coverage vs.\ perturbation budget. Two-token (green)
+reaches 100\% coverage at $k = 10$ (zero frozen tasks), dominates at
+every matched budget, and its oracle set is a strict superset of the
+three-token set (red, 80\% at $k = 10$). Eight-token (blue) reaches
+92\% at $k = 10$.}
+\label{fig:oracle}
+\end{figure}
+
+The non-monotonic optimum extends beyond per-direction accuracy to
+coverage efficiency: five tasks solvable at two tokens become frozen
+at three tokens, contracting the reachable task set rather than merely
+redistributing it. Two-token perturbation alone covers all 25 tasks;
+combined oracle across all conditions is therefore 25/25 = 100\%.
+
+Oracle coverage grows more slowly than the independence null (positive
+task correlation, $z = -1.35$ for 2-tok vs.\ $z = -8.25$ for 8-tok),
+indicating that latents fail on correlated hard tasks. The two-token
+condition has the least redundancy, closest to independence.
+
+\subsection{Task Selectivity Without Equalization}
 \label{sec:equalization}
 
-At the two-token optimum, all three random directions solve exactly the
-same number of tasks (15/25, std = 0.00, $p = 0.031$ vs.\ heterogeneous
-iid null) but solve \emph{different task subsets}. At three tokens,
-early equalization observed over three directions did not
-persist; by ten directions, variance (std = 1.33) was
-indistinguishable from the heterogeneous iid expectation ($p = 0.34$).
-At eight tokens, variance is large (std = 1.76) and near the iid
-expected value (2.21). We therefore treat equalization as a candidate
-regime specific to two tokens, pending confirmation at $n = 10$
-directions.
+An initial observation at $n = 3$ two-token directions suggested
+solve-count equalization (all directions solving exactly 15/25 tasks,
+$p = 0.031$ vs.\ heterogeneous iid null). This did not replicate:
+at $n = 10$ directions, solve counts range from 9 to 15
+(std = 1.87, $p = 0.66$), fully consistent with independent sampling
+at heterogeneous per-task solve rates. The initial pattern was
+small-sample noise. The robust finding is \emph{task selectivity}:
+directions solve different subsets, enabling oracle gains, but the
+total number solved per direction varies normally.
 
 We test equalization by Monte Carlo simulation: given the observed
 per-task solve rates, we simulate 100{,}000 draws under a
@@ -294,14 +322,14 @@ may solve ``frozen'' tasks or fail ``unanimous'' ones.
 \textbf{Condition} & \textbf{Unan.} & \textbf{Frozen} & \textbf{Sens.} & \textbf{Mean acc.} \\
 \midrule
 1-tok & 6.0 & 8.0 & 11.0 & 10.7/25 \\
-\textbf{2-tok} & \textbf{9.0} & \textbf{3.0} & \textbf{13.0} & \textbf{15.0/25} \\
+\textbf{2-tok}$^\dagger$ & \textbf{7.6} & \textbf{5.8} & \textbf{11.6} & \textbf{12.9/25} \\
 3-tok$^\dagger$ & 7.3 & 9.9 & 7.8 & 11.0/25 \\
 8-tok$^\dagger$ & 6.0 & 7.9 & 11.2 & 11.1/25 \\
 \bottomrule
 \end{tabular}
 
 \medskip
-\textbf{Panel B: Full observed directions (with equalization $p$-values)}
+\textbf{Panel B: Full observed directions (with iid $p$-values)}
 
 \medskip
 \begin{tabular}{lccccccc}
@@ -309,53 +337,22 @@ may solve ``frozen'' tasks or fail ``unanimous'' ones.
 \textbf{Condition} & $k$ & \textbf{Unan.} & \textbf{Frozen} & \textbf{Sens.} & \textbf{Mean/25} & \textbf{Std} & $p_{\text{iid}}$ \\
 \midrule
 1-tok & 3 & 6 & 8 & 11 & 10.7 & 0.47 & 0.23 \\
-\textbf{2-tok} & \textbf{3} & \textbf{9} & \textbf{3} & \textbf{13} & \textbf{15.0} & \textbf{0.00} & \textbf{0.031} \\
+\textbf{2-tok} & \textbf{10} & \textbf{6} & \textbf{0} & \textbf{19} & \textbf{12.9} & \textbf{1.87} & \textbf{0.659} \\
 3-tok & 10 & 5 & 5 & 15 & 11.0 & 1.33 & 0.335 \\
-8-tok & 10 & 3 & 2 & 20 & 11.1 & 1.76 & $\sim$0.15 \\
+8-tok & 10 & 3 & 2 & 20 & 11.1 & 1.76 & 0.586 \\
 \bottomrule
 \end{tabular}
 \caption{Task decomposition by perturbation magnitude.
 \textbf{Panel A}: At matched budget ($k = 3$), two tokens minimize the
-frozen set (3 vs.\ 8--10 for all other conditions) and maximize per-direction
-accuracy. $^\dagger$For 3-tok and 8-tok, values are averaged over all
-$\binom{n}{3}$ subsets (120 combinations each).
-\textbf{Panel B}: Full observed directions with Monte Carlo equalization
-$p$-values. Two-token is the only condition showing significant variance
-suppression ($p = 0.031$); three-token is indistinguishable from
-iid ($p = 0.34$).}
+frozen set and maximize per-direction accuracy.
+$^\dagger$Values are averaged over all $\binom{n}{3}$ subsets
+(120 combinations each for $n = 10$ conditions).
+\textbf{Panel B}: Full observed directions with Monte Carlo
+$p$-values against heterogeneous iid null. No condition shows
+significant variance suppression; the diversity is in task identity,
+not solve count.}
 \label{tab:equalization}
 \end{table}
-
-\subsection{Oracle Efficiency} % [LOCKED — pending 8-tok rerun for hardened data]
-\label{sec:oracle}
-
-Because different perturbation directions solve different task subsets,
-running multiple perturbations and taking the oracle (any-correct)
-provides coverage well above individual accuracy. Figure~\ref{fig:oracle}
-shows coverage as a function of budget $k$ for each condition.
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.8\linewidth]{experiments/fig_oracle_coverage.pdf}
-\caption{Oracle coverage vs.\ perturbation budget. Two-token (green)
-dominates at every matched budget $k$: three runs achieve 88\% coverage,
-while ten three-token runs (red) reach only 80\% and add no unique
-tasks. Eight-token (blue) eventually reaches 92\% at $k = 10$.
-Budget-matched bootstrap: $P(\text{8-tok} < \text{2-tok}) = 1.000$
-at every $k \leq 3$.}
-\label{fig:oracle}
-\end{figure}
-
-The non-monotonic optimum extends beyond per-direction accuracy to
-coverage efficiency: two tasks solvable at two tokens become frozen
-at three tokens, contracting the reachable task set rather than merely
-redistributing it. Combined oracle across all conditions: 24/25 = 96\%
-(Clopper-Pearson 95\% CI: [0.80, 0.99]).
-
-Oracle coverage grows more slowly than the independence null (positive
-task correlation, $z = -1.35$ for 2-tok vs.\ $z = -8.25$ for 8-tok),
-indicating that latents fail on correlated hard tasks. The two-token
-condition has the least redundancy, closest to independence.
 
 \subsection{Deterministic Chaos} % [LOCKED]
 \label{sec:chaos}
@@ -371,7 +368,7 @@ perturbation energy:
 \textbf{Tokens} & \textbf{Mean Invariance} & \textbf{Oracle} \\
 \midrule
 1 & 349 chars & 68\% \\
-2 & 323 chars & 88\% \\
+2 & 323 chars & 100\% \\
 8 & 93 chars & 92\% \\
 \bottomrule
 \end{tabular}
@@ -393,22 +390,24 @@ reasoning quality with short enough invariance for task-subset diversity.
     \item \textbf{No-think mode}: Perturbation has no effect when
     chain-of-thought is disabled. CoT is the mediating mechanism.
     \item \textbf{Timing confound resolved}: The highest-accuracy
-    2-tok latent achieves 60\% at baseline-identical mean timing
-    (73.6s), ruling out extra computation as the mechanism.
+    2-tok directions achieve 60\% (15/25) at baseline-identical mean
+    timing (73.6s), ruling out extra computation as the mechanism.
 \end{itemize}
 
 \subsection{Task-Specific Resonance Windows} % [LOCKED]
 
-Individual tasks have non-overlapping resonance windows:
+Individual tasks exhibit condition-dependent resonance windows:
 \begin{itemize}
-    \item \texttt{nest\_005} (answer = 8360): solvable \emph{only}
-    by 1-tok perturbation
-    \item \texttt{nest\_021} (answer = 5639): solvable \emph{only}
-    by 8-tok perturbation
+    \item \texttt{nest\_005} (answer = 8360): solvable at 1-tok and
+    2-tok but frozen at 3-tok and 8-tok
+    \item \texttt{nest\_008} (answer = 7278): solvable \emph{only}
+    at 2-tok (the sole task uniquely rescued by a single condition)
+    \item \texttt{nest\_021} (answer = 5639): solvable at 2-tok and
+    8-tok but frozen at 1-tok and 3-tok
 \end{itemize}
 More noise can \emph{prevent} solving certain tasks while enabling
-others. Leave-one-condition-out analysis confirms that three condition
-families each uniquely rescue exactly one task.
+others. At $n = 10$ directions, the 2-tok condition has zero frozen
+tasks, while 3-tok freezes 5 and 8-tok freezes 2.
 
 \subsection{Shi et al.\ Comparison} % [PENDING]
 \label{sec:shi}
@@ -427,28 +426,21 @@ The structural decomposition suggests a two-stage model:
     \item \textbf{Magnitude sets the task-level threshold.}
     Perturbation energy determines which tasks are \emph{unanimous}
     (solved by all directions), \emph{frozen} (solved by none), or
-    \emph{sensitive} (solved by some). Increasing energy freezes more
-    tasks (3 frozen at 2-tok, 5 at 3-tok) while reducing the
-    sensitive set. The frozen sets are nested: every task frozen at
-    2-tok is also frozen at 3-tok, plus 2 additional tasks.
+    \emph{sensitive} (solved by some). At $n = 10$, two tokens freeze
+    zero tasks, three tokens freeze 5, and eight tokens freeze 2.
+    The three-token frozen set is a strict superset of the two-token
+    frozen set: over-perturbation contracts reachability.
 
     \item \textbf{Direction selects within the sensitive set.}
-    Each random direction solves a roughly similar fraction of the
-    sensitive tasks ($\sim$0.42 across conditions), though this
-    occupancy rate is a conditional statistic that may partly
-    reflect endogenous category definitions.
+    Each random direction solves a different subset of the sensitive
+    tasks. Per-direction solve counts vary normally across all
+    conditions (all $p > 0.3$ vs.\ heterogeneous iid null), so the
+    diversity is in task identity, not in total solve count.
 \end{enumerate}
 
-The two-token optimum emerges because it maximizes the sensitive set
-(13 tasks) while maintaining a high per-direction solve rate (0.462),
-yielding the highest per-direction accuracy (15/25 = 60\%).
-
-At three tokens, variance (std = 1.33 from 10 directions) is
-indistinguishable from the heterogeneous iid null ($p = 0.34$),
-so equalization does not extend beyond two tokens. At eight tokens,
-variance is large (std = 1.76) and near the iid expectation (2.21):
-direction affects both \emph{which} and \emph{how many} tasks are
-solved.
+The two-token optimum emerges because it maximizes the reachable task
+set (25/25 at $n = 10$, vs.\ 20/25 for three tokens) while maintaining
+the highest mean per-direction accuracy (12.9/25 = 51.6\%).
 
 \subsection{Perturbation as Policy Switch}
 
@@ -462,11 +454,12 @@ efficiently.
 
 \subsection{Why Two Tokens?}
 
-At matched sample size ($n = 3$ directions), two tokens freeze only
-3 tasks, compared to 8 at one token, 10 at three tokens, and 8 at
-eight tokens. Two tokens thus maximize the set of tasks that
-\emph{can} be solved while maintaining the highest per-direction
-accuracy (15/25 = 60\%). We hypothesize that two tokens provide the
+At $n = 10$ directions, two tokens have zero frozen tasks, compared to
+5 at three tokens and 2 at eight tokens. At matched budget ($k = 3$),
+two tokens freeze 5.8 tasks on average versus 9.9 for three tokens
+and 7.9 for eight tokens. Two tokens thus maximize the reachable task
+set while maintaining the highest per-direction accuracy
+(mean 12.9/25 = 51.6\%). We hypothesize that two tokens provide the
 minimum perturbation energy needed to cross the mode-gating threshold
 while staying below the energy level that freezes marginal tasks.
 At one token, the perturbation is marginal; at three or more, the
@@ -479,12 +472,12 @@ budget before reaching an answer.
 
 The training-free nature of this intervention suggests a practical
 ``perturbation ensemble'' strategy: run a small model with $k$ random
-two-token prefixes and take the majority vote or oracle. Three runs
-achieve 88\% coverage, while ten three-token runs reach only 80\%
-and add no tasks beyond the two-token oracle. Beyond the two-token
-optimum, additional perturbation is deleterious: it lowers
-per-direction accuracy and contracts the reachable task set, freezing
-tasks that are solvable at two tokens.
+two-token prefixes and take the majority vote or oracle. Ten two-token
+directions achieve 100\% coverage (25/25 tasks), while ten three-token
+directions reach only 80\% and add no tasks beyond the two-token
+oracle. Beyond the two-token optimum, additional perturbation is
+deleterious: it lowers per-direction accuracy and contracts the
+reachable task set, freezing tasks that are solvable at two tokens.
 
 % ============================================================================
 \section{Limitations} % [LOCKED]
@@ -499,8 +492,9 @@ tasks that are solvable at two tokens.
     language tasks is unknown.
     \pending{Word problem replication may address this.}
 
-    \item \textbf{Small $n$.} 25 tasks with 3 perturbation vectors at
-    the key 2-token condition. Statistical power is limited.
+    \item \textbf{Small $n$.} 25 tasks with 10 perturbation directions at
+    the key 2-token condition. Per-task mechanistic analyses remain
+    statistically limited.
 
     \item \textbf{4-bit quantization.} Quantization amplifies chaos
     (reduced numerical precision increases sensitivity to perturbation).
@@ -522,13 +516,15 @@ tasks that are solvable at two tokens.
 
 Random prefix tokens at the embedding scale reveal a sharp non-monotonic
 optimum in small-model arithmetic reasoning. Two tokens produce a
-+28 percentage point improvement over baseline, decomposable into
-think-mode gating (+8pp) and perturbation-specific optimization (+20pp).
-At the two-token optimum, random directions solve the same number of
-tasks (std = 0.00, $p = 0.031$ vs.\ iid null) but different subsets,
-enabling efficient oracle coverage (88\% from 3 runs). This
-equalization is specific to two tokens; at three tokens, variance
-is indistinguishable from independence ($p = 0.34$).
+mean +19.6 percentage point improvement over baseline, decomposable into
+think-mode gating (+8pp) and perturbation-specific optimization (+12pp).
+Different random directions solve different task subsets, enabling
+complete oracle coverage (100\% from 10 two-token directions, compared
+to 80\% for three-token and 92\% for eight-token). The three-token
+oracle set is a strict subset of the two-token oracle, with five tasks
+becoming frozen at three tokens. Per-direction solve counts vary
+normally ($p = 0.66$ vs.\ iid null); the diversity is in task identity,
+not total count.
 These findings suggest that small language models possess latent
 reasoning capabilities that can be unlocked through minimal,
 training-free embedding-space perturbation.

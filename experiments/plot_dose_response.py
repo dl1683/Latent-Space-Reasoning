@@ -9,11 +9,11 @@ EXP_DIR = Path(__file__).parent
 
 
 def main():
-    # Data from experiments
+    # Data from experiments (n=10 for 2-tok and 3-tok, n=3 for 1-tok, n=10 for 8-tok)
     tokens = [0, 1, 2, 3, 8]
-    mean_acc = [32.0, 42.7, 60.0, 44.0, 44.4]
-    std_acc = [0, 1.9, 0.0, 5.3, 7.0]
-    n_lat = [1, 3, 3, 10, 10]
+    mean_acc = [32.0, 42.7, 51.6, 44.0, 44.4]
+    std_acc = [0, 1.9, 7.9, 5.3, 7.0]
+    n_lat = [1, 3, 10, 10, 10]
 
     # Standard errors (std / sqrt(n))
     se = [s / np.sqrt(n) if n > 1 else 0 for s, n in zip(std_acc, n_lat)]
@@ -24,8 +24,8 @@ def main():
                 linewidth=2, markersize=8, capsize=4, capthick=1.5, zorder=5)
 
     # Highlight the optimum
-    ax.plot(2, 60.0, 'o', color='#2ecc71', markersize=14, zorder=6, alpha=0.3)
-    ax.annotate('60%\n(+28pp)', xy=(2, 60), xytext=(3.2, 62),
+    ax.plot(2, 51.6, 'o', color='#2ecc71', markersize=14, zorder=6, alpha=0.3)
+    ax.annotate('51.6%\n(+19.6pp)', xy=(2, 51.6), xytext=(3.2, 56),
                 fontsize=9, fontweight='bold', color='#2ecc71',
                 arrowprops=dict(arrowstyle='->', color='#2ecc71', lw=1.5))
 

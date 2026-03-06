@@ -9,6 +9,34 @@ Only Codex-validated conclusions are stated as "confirmed."
 
 ---
 
+## 2-Token n=10 Replication (2026-03-06) — COMPLETE
+
+**Purpose:** EXISTENTIAL test of solve-count equalization. The n=3 result [15,15,15] (p=0.031)
+was the strongest equalization evidence. Needed n=10 to confirm or refute.
+**Config:** 10 random noise vectors, 2 soft tokens each, 25 sweet-spot tasks, Qwen3-4B Q4
+**Script:** `python -u experiments/run_latent_sensitivity.py --task-type nested --difficulty sweet_spot --n-latents 10 --n-tasks 25 --control-mode random_noise --num-soft-tokens 2`
+**Total time:** 284.7 min
+**Artifacts:** `sensitivity_sweet_spot_random_noise_t2_results.json` (n=3 backup: `_t2_n3_results.json`)
+
+### Results
+- Solve counts: [15, 15, 15, 13, 14, 13, 11, 12, 9, 12], mean=12.9/25=51.6%, SD=1.87
+- **Equalization DEAD**: p=0.659 vs heterogeneous iid null (100k MC sims). Small-sample noise.
+- **Oracle**: 25/25 = 100% at k=10. Zero frozen tasks.
+- At k=3: 19.2/25 = 76.8% (avg over C(10,3) subsets)
+- 3-tok oracle (20/25) is strict subset of 2-tok oracle (25/25)
+- 5 tasks unique to 2-tok vs 3-tok: {nest_002, nest_005, nest_008, nest_012, nest_021}
+- nest_008 is the ONLY task uniquely solvable by a single condition (2-tok only)
+- Categories at k=10: 6 unanimous, 0 frozen, 19 sensitive
+- Paper fully updated: oracle leads, equalization reported as negative result
+
+### What We Learned
+- Equalization was small-sample noise (n=3). Does not replicate at n=10.
+- Oracle efficiency is the real story: 2-tok covers ALL tasks with 10 directions.
+- 2-tok still has highest mean accuracy (51.6% > 44% for 3/8-tok).
+- Non-monotonic dose-response holds at n=10. Paper restructured accordingly (Codex review).
+
+---
+
 ## Shi et al. Discrete Token Control (2026-03-05) — PLANNED
 
 **Purpose:** Codex-recommended highest-priority experiment. Replicate Shi et al. (2025) discrete

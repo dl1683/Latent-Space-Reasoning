@@ -58,14 +58,14 @@ def main():
     ax.plot(k3, c3, 's-', color='#e74c3c', linewidth=2, markersize=6, label='3-token')
     ax.plot(k8, c8, '^-', color='#3498db', linewidth=2, markersize=6, label='8-token')
 
-    # Annotations
-    ax.annotate('88%', xy=(3, 88), xytext=(3.5, 91),
+    # Annotations — final oracle values at k=max
+    ax.annotate('100%', xy=(10, 100), xytext=(8.5, 96),
                 fontsize=9, color='#2ecc71', fontweight='bold',
                 arrowprops=dict(arrowstyle='->', color='#2ecc71', lw=1.5))
     ax.annotate('80%', xy=(10, 80), xytext=(9, 74),
                 fontsize=9, color='#e74c3c', fontweight='bold',
                 arrowprops=dict(arrowstyle='->', color='#e74c3c', lw=1.5))
-    ax.annotate('92%', xy=(10, 92), xytext=(9, 95),
+    ax.annotate('92%', xy=(10, 92), xytext=(7.5, 89),
                 fontsize=9, color='#3498db', fontweight='bold',
                 arrowprops=dict(arrowstyle='->', color='#3498db', lw=1.5))
 
