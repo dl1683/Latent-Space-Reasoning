@@ -323,23 +323,26 @@ iid ($p = 0.50$).}
 
 Because different perturbation directions solve different task subsets,
 running multiple perturbations and taking the oracle (any-correct)
-provides coverage well above individual accuracy. The two-token
-condition is substantially more oracle-efficient:
+provides coverage well above individual accuracy. Figure~\ref{fig:oracle}
+shows coverage as a function of budget $k$ for each condition.
 
-\begin{itemize}
-    \item 2-tok: 88\% oracle from 3 runs (22/25 tasks)
-    \item 3-tok: 72\% oracle from 8 runs (18/25 tasks), adds \emph{zero}
-    tasks beyond the 2-tok oracle
-    \item 8-tok: 92\% oracle from 10 runs (23/25 tasks)
-    \item Budget-matched bootstrap: $P(\text{8-tok} < \text{2-tok}) = 1.000$ at every $k$
-    \item Combined oracle across all conditions: 24/25 = 96\%
-    (Clopper-Pearson 95\% CI: [0.80, 0.99])
-\end{itemize}
+\begin{figure}[h]
+\centering
+\includegraphics[width=0.8\linewidth]{experiments/fig_oracle_coverage.pdf}
+\caption{Oracle coverage vs.\ perturbation budget. Two-token (green)
+dominates at every matched budget $k$: three runs achieve 88\% coverage,
+while eight three-token runs (red) reach only 72\% and add zero unique
+tasks. Eight-token (blue) eventually reaches 92\% at $k = 10$.
+Budget-matched bootstrap: $P(\text{8-tok} < \text{2-tok}) = 1.000$
+at every $k \leq 3$.}
+\label{fig:oracle}
+\end{figure}
 
-The oracle comparison reveals that the non-monotonic optimum extends beyond
-per-direction accuracy to coverage efficiency: four tasks solvable at two
-tokens (nest\_002, 012, 013, 014) become frozen at three tokens, contracting
-the reachable task set rather than merely redistributing it.
+The non-monotonic optimum extends beyond per-direction accuracy to
+coverage efficiency: four tasks solvable at two tokens become frozen
+at three tokens, contracting the reachable task set rather than merely
+redistributing it. Combined oracle across all conditions: 24/25 = 96\%
+(Clopper-Pearson 95\% CI: [0.80, 0.99]).
 
 Oracle coverage grows more slowly than the independence null (positive
 task correlation, $z = -1.35$ for 2-tok vs.\ $z = -8.25$ for 8-tok),
