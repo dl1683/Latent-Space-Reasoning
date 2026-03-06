@@ -225,20 +225,27 @@ def generate_nested_expression_tasks(
 # Answer verification (V11+ canonical form)
 # =====================================================================
 
+def _parse_integers(response: str) -> list[int]:
+    """Extract all integers from text, handling comma-formatted numbers like 1,140."""
+    # Match optional minus, then digits possibly separated by commas (e.g. 1,140 or 7,278)
+    raw = re.findall(r"-?(?:\d{1,3}(?:,\d{3})+|\d+)", response)
+    return [int(s.replace(",", "")) for s in raw]
+
+
 def verify_answer(response: str, expected: int) -> bool:
     """Verify that the last number in the response matches expected."""
-    numbers = re.findall(r"-?\d+", response)
+    numbers = _parse_integers(response)
     if not numbers:
         return False
-    return int(numbers[-1]) == expected
+    return numbers[-1] == expected
 
 
 def extract_answer(response: str) -> int | None:
     """Extract the last integer from response (same logic as verify_answer)."""
-    numbers = re.findall(r"-?\d+", response)
+    numbers = _parse_integers(response)
     if not numbers:
         return None
-    return int(numbers[-1])
+    return numbers[-1]
 
 
 def dense_score(response: str, expected: int) -> float:

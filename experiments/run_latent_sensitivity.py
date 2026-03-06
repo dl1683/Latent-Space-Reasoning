@@ -1417,8 +1417,13 @@ def main():
         pos_tag = f"_{args.position}" if args.position != "prefix" else ""
         mask_tag = "_masked" if args.mask_prefix else ""
         gen_tag = f"_gen{args.max_new_tokens}" if args.max_new_tokens != 1024 else ""
+        # Include model short name to prevent cross-model filename collisions
+        model_tag = ""
+        if args.model != "Qwen/Qwen3-4B":
+            model_short = args.model.split("/")[-1].lower().replace("-", "")
+            model_tag = f"_{model_short}"
         out_path = (Path(__file__).parent
-                    / f"sensitivity{diff_tag}{ctrl_tag}{tok_tag}{rms_tag}{pos_tag}{mask_tag}{gen_tag}_results.json")
+                    / f"sensitivity{diff_tag}{ctrl_tag}{tok_tag}{rms_tag}{pos_tag}{mask_tag}{gen_tag}{model_tag}_results.json")
 
     with open(out_path, "w") as f:
         json.dump(output, f, indent=2, default=str)

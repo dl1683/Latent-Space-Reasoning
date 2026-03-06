@@ -14,19 +14,25 @@ import sys
 from pathlib import Path
 
 
+def _parse_integers(response: str) -> list[int]:
+    """Extract all integers from text, handling comma-formatted numbers like 1,140."""
+    raw = re.findall(r"-?(?:\d{1,3}(?:,\d{3})+|\d+)", response)
+    return [int(s.replace(",", "")) for s in raw]
+
+
 def verify_answer(response: str, expected: int) -> bool:
     """Exact copy of harness.verify_answer for standalone use."""
-    numbers = re.findall(r"-?\d+", response)
+    numbers = _parse_integers(response)
     if not numbers:
         return False
-    return int(numbers[-1]) == expected
+    return numbers[-1] == expected
 
 
 def extract_answer(response: str) -> int | None:
-    numbers = re.findall(r"-?\d+", response)
+    numbers = _parse_integers(response)
     if not numbers:
         return None
-    return int(numbers[-1])
+    return numbers[-1]
 
 
 def verify_file(path: Path) -> dict:
