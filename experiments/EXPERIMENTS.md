@@ -31,23 +31,25 @@ at the first decode position under all perturbation conditions. Tests PGRMS gati
 
 ---
 
-## 3-Token Dose-Response (2026-03-05) — RUNNING (N10/10)
+## 3-Token Dose-Response (2026-03-05) — COMPLETE
 
 **Purpose:** Fill critical gap in dose-response curve. Confirm non-monotonic peak at 2 tokens.
 **Config:** 10 random noise vectors, 3 soft tokens each, 25 sweet-spot tasks, Qwen3-4B Q4
 **Script:** `python -u experiments/run_latent_sensitivity.py --task-type nested --difficulty sweet_spot --n-latents 10 --n-tasks 25 --control-mode random_noise --num-soft-tokens 3`
-**Status:** N1-N9 complete, N10 in progress (GPU-contended ~120s/task).
+**Total time:** 348 min
+**Artifacts:** `sensitivity_sweet_spot_random_noise_t3_results.json`
 
-### Results (N1-N9)
-- Solve counts: [11, 11, 11, 10, 13, 12, 9, 9, 12], mean=10.9, SD=1.36
-- **Equalization FAILED**: p=0.465 vs iid (AT THE MEDIAN)
-- Categories (N1-N9): 5 unanimous, 6 frozen, 14 sensitive
-- N9 = 12/25 (48%) — HIGHEST direction, nest_013 escaped frozen
-- 3-tok oracle (9 dirs) = 19/25 = 76% (adds 1 task over 2-tok oracle: nest_013)
-- **2-tok oracle (3 dirs) = 22/25 = 88% >> 3-tok oracle (9 dirs) = 76%**
-- At matched n=3: 2-tok freezes 3 tasks, 3-tok freezes 10.4 (mean over all combos)
-- 4 tasks solvable at 2-tok become frozen at 3-tok (002, 012, 013, 014)
+### FINAL Results (N1-N10)
+- Solve counts: [11, 11, 11, 10, 13, 12, 9, 9, 12, 12], mean=11.0/25=44.0%, SD=1.33
+- **Equalization**: p=0.335 vs heterogeneous iid (NS, below median — slightly suppressed but not significant)
+- Categories: 5 unanimous, 5 frozen, 15 sensitive
+- Frozen: {nest_002, nest_005, nest_008, nest_012, nest_021}
+- **Oracle (k=10): 20/25 = 80%** — adds NO tasks beyond 2-tok oracle (22/25=88%)
+- **2-tok oracle (3 dirs) = 88% >> 3-tok oracle (10 dirs) = 80%**
+- At matched n=3: 2-tok freezes 3 tasks, 3-tok freezes 9.9 (mean over C(10,3)=120 combos)
+- 2 tasks frozen at 3-tok but solvable at 2-tok (nest_012, nest_021→actually also frozen at 2tok)
 - Over-perturbation contracts reachable set (Codex 2026-03-05f)
+- N10 broke nest_014 out of frozen (was 0/9, now 1/10)
 
 ---
 

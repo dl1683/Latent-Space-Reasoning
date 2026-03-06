@@ -40,18 +40,8 @@ def main():
     # 2-tok
     s2 = build_matrix_from_json(EXP_DIR / 'sensitivity_sweet_spot_random_noise_t2_results.json')
 
-    # 3-tok from log (N1-N9)
-    s3 = np.array([
-        [1,1,0,1,0,0,1,0,0,0,1,1,0,0,0,1,0,1,0,1,1,0,0,0,1],
-        [1,1,0,1,0,0,1,0,0,0,1,1,0,0,0,0,1,1,0,0,1,0,0,1,1],
-        [1,1,0,1,1,0,1,0,0,0,1,1,0,0,0,1,0,0,1,0,1,0,0,0,1],
-        [1,1,0,0,0,0,1,0,0,0,1,1,0,0,0,1,1,1,0,0,1,0,0,0,1],
-        [1,1,0,1,0,0,1,1,0,0,1,1,0,0,0,1,1,1,1,0,1,0,0,0,1],
-        [1,1,0,0,0,0,1,0,0,1,1,1,0,0,0,0,0,1,1,1,1,0,1,0,1],
-        [1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,1,0,1,0,1,1,0,0,0,1],
-        [1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,1,1,1,0,1,1,0,0,0,1],
-        [1,1,0,1,0,0,1,0,0,0,1,1,0,1,0,0,1,1,0,1,1,0,0,0,1],
-    ])
+    # 3-tok from results JSON (N1-N10, final)
+    s3 = build_matrix_from_json(EXP_DIR / 'sensitivity_sweet_spot_random_noise_t3_results.json')
 
     # 8-tok
     s8 = build_matrix_from_json(EXP_DIR / 'sensitivity_sweet_spot_results.json')
@@ -72,7 +62,7 @@ def main():
     ax.annotate('88%', xy=(3, 88), xytext=(3.5, 91),
                 fontsize=9, color='#2ecc71', fontweight='bold',
                 arrowprops=dict(arrowstyle='->', color='#2ecc71', lw=1.5))
-    ax.annotate('76%', xy=(9, 76), xytext=(9.5, 71),
+    ax.annotate('80%', xy=(10, 80), xytext=(9, 74),
                 fontsize=9, color='#e74c3c', fontweight='bold',
                 arrowprops=dict(arrowstyle='->', color='#e74c3c', lw=1.5))
     ax.annotate('92%', xy=(10, 92), xytext=(9, 95),

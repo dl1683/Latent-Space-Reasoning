@@ -8,7 +8,7 @@ Date: 2026-03-05 (Tesla Workflow Deep Analysis)
 | 0 | baseline | 32.0% | - | - | - |
 | 1 | random_noise | 42.7% | 1.9% | 3 | +10.7pp |
 | **2** | **random_noise** | **60.0%** | **0.0%** | **3** | **+28.0pp** |
-| 3 | random_noise | 43.6% | 5.5% | 9 (N10 running) | +11.6pp |
+| 3 | random_noise | 44.0% | 5.3% | 10 | +12.0pp |
 | 8 | random_noise | 44.0% | 2.8% | 4 | +12.0pp |
 | 8 | latent_projected | 44.4% | 7.0% | 10 | +12.4pp |
 | 8 | zero_embedding | 36.0% | 0.0% | 3 | +4.0pp |
@@ -459,7 +459,7 @@ This is NOT explained by higher per-latent accuracy alone (60% vs 44%) —
 |-----------|-------|--------|--------------|---------|--------------|
 | 1-tok | 3 | 0.58 | 1.39 | 0.230 | No |
 | **2-tok** | **3** | **0.00** | **1.51** | **0.031** | **Yes** |
-| 3-tok | 5 | 1.10 | 1.19 | 0.434 | No |
+| 3-tok | 10 | 1.33 | 1.48 | 0.335 | No |
 | 8-tok | 10 | 1.76 | 2.21 | ~0.15 | No |
 
 **Only 2-tok shows significant equalization.** 2-tok n=10 rerun is EXISTENTIAL.
@@ -496,32 +496,32 @@ This is NOT explained by higher per-latent accuracy alone (60% vs 44%) —
 - **N7 = 9/25 (36%): lowest direction yet, nest_006 (was unanimous) failed**
 - **N8 = 9/25 (36%): nest_010 fell from unanimous (7/7→7/8)**
 - **N9 = 12/25 (48%): HIGHEST direction! nest_013 escaped frozen set**
-- **Solve counts N1-N9: [11, 11, 11, 10, 13, 12, 9, 9, 12], mean=10.9, SD=1.36**
-- **Expected iid SD = 1.41, p = 0.465** — AT THE MEDIAN OF IID
-- Categories (N1-N9): 5 unanimous, 6 frozen, 14 sensitive (nest_013 escaped!)
-- Category breaches: nest_007(N5), nest_009(N6), nest_022(N6) escaped frozen;
+- **N10 = 12/25 (48%): nest_014 escaped frozen set (was 0/9, now 1/10)**
+- **FINAL solve counts N1-N10: [11, 11, 11, 10, 13, 12, 9, 9, 12, 12], mean=11.0, SD=1.33**
+- **Expected iid SD = 1.48, p = 0.335** — BELOW MEDIAN OF IID (even more equalized than expected, but NS)
+- **FINAL categories (N1-N10): 5 unanimous, 5 frozen, 15 sensitive**
+- Frozen: {nest_002, nest_005, nest_008, nest_012, nest_021}
+- Category breaches: nest_007(N5), nest_009(N6), nest_022(N6), nest_013(N9), nest_014(N10) escaped frozen;
   nest_006(N7), nest_010(N8) fell from unanimous
 - Equalization is DEAD at 3-tok (variance matches iid exactly)
-- N10 in progress (GPU-contended, ~120s/task)
+- **Oracle (k=10): 20/25 = 80%** — 3-tok adds NO tasks beyond 2-tok oracle (22/25=88%)
 
 ### 3-tok vs 2-tok Oracle Comparison (2026-03-05f)
 
 | k dirs | 2-tok oracle | 3-tok oracle |
 |--------|-------------|-------------|
 | 1 | 15.0/25 (60.0%) | 11.0/25 (44.0%) |
-| 2 | 19.3/25 (77.3%) | 13.4/25 (53.5%) |
-| 3 | 22.0/25 (88.0%) | 14.8/25 (59.1%) |
-| 4 | — | 15.8/25 (63.1%) |
-| 5 | — | 16.6/25 (66.3%) |
-| 6 | — | 17.3/25 (69.1%) |
-| 7 | — | 18.0/25 (72.0%) |
+| 2 | 19.3/25 (77.3%) | 13.6/25 (54.4%) |
+| 3 | 22.0/25 (88.0%) | 15.1/25 (60.3%) |
+| 5 | — | 17.0/25 (67.9%) |
+| 10 | — | 20.0/25 (80.0%) |
 
-- 2-tok k=3 oracle (88%) >> 3-tok k=7 oracle (72%)
+- 2-tok k=3 oracle (88%) >> 3-tok k=10 oracle (80%)
 - 3-tok adds ZERO unique tasks beyond 2-tok oracle
-- Frozen set nesting: {005,008,021} ⊂ {002,005,008,012,013,014,021}
-- 4 tasks frozen at 3-tok but solvable at 2-tok: nest_002, 012, 013, 014
-  - nest_002: 2-tok [0,1,0], 3-tok [0,0,0,0,0,0,0] — killed by over-perturbation
-  - nest_014: 2-tok [1,0,1], 3-tok [0,0,0,0,0,0,0] — killed by over-perturbation
+- Frozen set nesting: {005,008,021} ⊂ {002,005,008,012,021} (2-tok frozen ⊂ 3-tok frozen)
+- 2 tasks frozen at 3-tok but solvable at 2-tok: nest_012, nest_021
+  - Actually nest_021 is frozen at both. Corrected: nest_012 solvable at 2-tok, frozen at 3-tok
+  - nest_014: now 1/10 at 3-tok (N10 solved it), but 2/3 at 2-tok — still weaker
 - **Interpretation**: 3-tok pushes perturbation past the solvability threshold for marginal tasks,
   destroying capability rather than redistributing it. 2-tok is both the accuracy optimum
   AND the oracle efficiency optimum.
@@ -544,7 +544,7 @@ Under heterogeneous iid null (100k Monte Carlo simulations using per-task rates)
 |-----------|-----------|--------|-----------|-------|
 | 1-tok | 6 | 8 | 11 | 3 |
 | **2-tok** | **9** | **3** | **13** | **3** |
-| 3-tok | 6 | 7 | 12 | 7 |
+| 3-tok | 5 | 5 | 15 | 10 |
 | 8-tok | 3 | 2 | 20 | 10 |
 
 **At matched n=3 (first 3 directions, apples-to-apples):**
@@ -606,14 +606,13 @@ task-selective effects, revealing mode gating, oracle efficiency, and task-speci
 ### Behavioral Experiments
 1. **Shi-style discrete token control** -- HIGHEST PRIORITY (Codex).
    Run repeated `/` and `?` on Qwen3-4B at 1,2,3,8 tokens. Implemented in harness.
-2. **3-tok dose-response** -- RUNNING (N7/10 complete, N8-N10 in progress).
-   - Solve counts N1-N7: [11, 11, 11, 10, 13, 12, 9], mean=11.0, SD=1.29
-   - Equalization FAILED: p=0.462 vs iid (perfectly consistent with independence)
-   - Categories (N1-N7): 6 unanimous, 7 frozen, 12 sensitive
-   - 3-tok solve set is ENTIRELY a subset of 2-tok oracle (adds 0 new tasks)
-   - **3-tok oracle (k=7): 18/25 = 72%** vs **2-tok oracle (k=3): 22/25 = 88%**
-   - Frozen set nesting: 2-tok frozen = {005,008,021} ⊂ 3-tok frozen = {002,005,008,012,013,014,021}
-   - 4 extra frozen tasks at 3-tok are all solvable by 2-tok (capability destruction)
+2. **3-tok dose-response** -- COMPLETE (10/10 directions, 348 min total).
+   - FINAL: [11, 11, 11, 10, 13, 12, 9, 9, 12, 12], mean=11.0/25=44.0%, SD=1.33
+   - Equalization: p=0.335 vs iid (NS, but below median — variance slightly suppressed)
+   - Categories: 5 unanimous, 5 frozen, 15 sensitive
+   - Oracle (k=10): 20/25 = 80%
+   - 3-tok adds ZERO unique tasks beyond 2-tok oracle (22/25=88%)
+   - Frozen set: {002, 005, 008, 012, 021} (2-tok frozen ⊂ 3-tok frozen)
 3. **Scale 2-tok to n=100 tasks, n=10 latents** -- replicate oracle + zero-variance
 4. Dense dose-response (4,5,6,7 tokens)
 5. Cross-model (Qwen3-8B)
