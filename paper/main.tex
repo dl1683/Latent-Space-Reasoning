@@ -43,7 +43,7 @@ At the two-token optimum, all random directions solve exactly the same
 number of tasks ($p = 0.031$ vs.\ heterogeneous iid null) but
 \emph{different task subsets}, enabling 88\% oracle coverage from just
 three perturbation runs. At three tokens, early equalization did not
-persist; by seven directions, variance was indistinguishable from iid.
+persist; by eight directions, variance was indistinguishable from iid.
 These results establish embedding-space
 perturbation as a training-free intervention that activates latent
 reasoning capabilities in small language models.
@@ -76,7 +76,7 @@ tasks are:
 
     \item \textbf{Oracle-efficiency optimum.} Three two-token
     perturbation runs achieve 88\% oracle accuracy (22/25 tasks),
-    while seven three-token runs reach only 72\% (18/25) and add
+    while eight three-token runs reach only 72\% (18/25) and add
     no tasks beyond the two-token oracle. At matched budget ($k = 3$),
     two tokens freeze only 3 tasks, versus 10 for three or eight tokens.
 
@@ -85,7 +85,7 @@ tasks are:
     exactly the same number of tasks (std = 0.00, $p = 0.031$ vs.\
     heterogeneous iid) but solve \emph{different} subsets.
     This equalization does not persist at three tokens, where
-    variance becomes indistinguishable from independence ($p = 0.462$).
+    variance becomes indistinguishable from independence ($p = 0.50$).
 
     \item \textbf{Think-mode gating.} Any perturbation activates
     Qwen3's reasoning mode (16\% $\to$ 100\%), but random noise
@@ -202,7 +202,7 @@ the full response (up to 2000 characters) for independent verification.
 0 & 32.0\% & --- & 1 & --- \\
 1 & 42.7\% & 1.9\% & 3 & +10.7pp \\
 \textbf{2} & \textbf{60.0\%} & \textbf{0.0\%} & \textbf{3} & \textbf{+28.0pp} \\
-3 & 44.0\% & 5.2\% & 7 & +12.0pp \\
+3 & 43.0\% & 5.6\% & 8 & +11.0pp \\
 8 & 44.4\% & 7.0\% & 10 & +12.4pp \\
 \bottomrule
 \end{tabular}
@@ -257,8 +257,8 @@ At the two-token optimum, all three random directions solve exactly the
 same number of tasks (15/25, std = 0.00, $p = 0.031$ vs.\ heterogeneous
 iid null) but solve \emph{different task subsets}. At three tokens,
 early equalization observed over three directions did not
-persist; by seven directions, variance (std = 1.29) was
-indistinguishable from the heterogeneous iid expectation ($p = 0.462$).
+persist; by eight directions, variance (std = 1.39) was
+indistinguishable from the heterogeneous iid expectation ($p = 0.50$).
 At eight tokens, variance is large (std = 1.76) and near the iid
 expected value (2.21). We therefore treat equalization as a candidate
 regime specific to two tokens, pending confirmation at $n = 10$
@@ -287,7 +287,7 @@ may solve ``frozen'' tasks or fail ``unanimous'' ones.
 \midrule
 1-tok & 6.0 & 8.0 & 11.0 & 10.7/25 \\
 \textbf{2-tok} & \textbf{9.0} & \textbf{3.0} & \textbf{13.0} & \textbf{15.0/25} \\
-3-tok$^\dagger$ & 7.6 & 10.2 & 7.1 & 11.0/25 \\
+3-tok$^\dagger$ & 7.2 & 10.5 & 7.3 & 10.8/25 \\
 8-tok$^\dagger$ & 6.0 & 7.9 & 11.2 & 11.1/25 \\
 \bottomrule
 \end{tabular}
@@ -302,7 +302,7 @@ may solve ``frozen'' tasks or fail ``unanimous'' ones.
 \midrule
 1-tok & 3 & 6 & 8 & 11 & 10.7 & 0.47 & 0.23 \\
 \textbf{2-tok} & \textbf{3} & \textbf{9} & \textbf{3} & \textbf{13} & \textbf{15.0} & \textbf{0.00} & \textbf{0.031} \\
-3-tok & 7 & 6 & 7 & 12 & 11.0 & 1.29 & 0.462 \\
+3-tok & 8 & 5 & 7 & 13 & 10.8 & 1.39 & 0.497 \\
 8-tok & 10 & 3 & 2 & 20 & 11.1 & 1.76 & $\sim$0.15 \\
 \bottomrule
 \end{tabular}
@@ -314,7 +314,7 @@ $\binom{n}{3}$ subsets (35 and 120 combinations respectively).
 \textbf{Panel B}: Full observed directions with Monte Carlo equalization
 $p$-values. Two-token is the only condition showing significant variance
 suppression ($p = 0.031$); three-token is indistinguishable from
-iid ($p = 0.462$).}
+iid ($p = 0.50$).}
 \label{tab:equalization}
 \end{table}
 
@@ -328,7 +328,7 @@ condition is substantially more oracle-efficient:
 
 \begin{itemize}
     \item 2-tok: 88\% oracle from 3 runs (22/25 tasks)
-    \item 3-tok: 72\% oracle from 7 runs (18/25 tasks), adds \emph{zero}
+    \item 3-tok: 72\% oracle from 8 runs (18/25 tasks), adds \emph{zero}
     tasks beyond the 2-tok oracle
     \item 8-tok: 92\% oracle from 10 runs (23/25 tasks)
     \item Budget-matched bootstrap: $P(\text{8-tok} < \text{2-tok}) = 1.000$ at every $k$
@@ -432,8 +432,8 @@ The two-token optimum emerges because it maximizes the sensitive set
 (13 tasks) while maintaining a high per-direction solve rate (0.462),
 yielding the highest per-direction accuracy (15/25 = 60\%).
 
-At three tokens, variance (std = 1.29 from 7 directions) is
-indistinguishable from the heterogeneous iid null ($p = 0.462$),
+At three tokens, variance (std = 1.39 from 8 directions) is
+indistinguishable from the heterogeneous iid null ($p = 0.50$),
 so equalization does not extend beyond two tokens. At eight tokens,
 variance is large (std = 1.76) and near the iid expectation (2.21):
 direction affects both \emph{which} and \emph{how many} tasks are
@@ -469,7 +469,7 @@ budget before reaching an answer.
 The training-free nature of this intervention suggests a practical
 ``perturbation ensemble'' strategy: run a small model with $k$ random
 two-token prefixes and take the majority vote or oracle. Three runs
-achieve 88\% coverage, while seven three-token runs reach only 72\%
+achieve 88\% coverage, while eight three-token runs reach only 72\%
 and add no tasks beyond the two-token oracle. Beyond the two-token
 optimum, additional perturbation is deleterious: it lowers
 per-direction accuracy and contracts the reachable task set, freezing
@@ -517,7 +517,7 @@ At the two-token optimum, random directions solve the same number of
 tasks (std = 0.00, $p = 0.031$ vs.\ iid null) but different subsets,
 enabling efficient oracle coverage (88\% from 3 runs). This
 equalization is specific to two tokens; at three tokens, variance
-is indistinguishable from independence ($p = 0.462$).
+is indistinguishable from independence ($p = 0.50$).
 These findings suggest that small language models possess latent
 reasoning capabilities that can be unlocked through minimal,
 training-free embedding-space perturbation.
