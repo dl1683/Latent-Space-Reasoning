@@ -262,13 +262,17 @@ expected value (2.21). We therefore treat equalization as a candidate
 regime specific to two tokens, pending confirmation at $n = 10$
 directions.
 
+We test equalization by Monte Carlo simulation: given the observed
+per-task solve rates, we simulate 100{,}000 draws under a
+heterogeneous iid Bernoulli null (each task independently solved at
+its observed rate) and compare the observed standard deviation of
+per-direction solve counts against this null distribution.
+
 We decompose tasks at each perturbation level into three categories:
 \emph{unanimous} (solved by all sampled directions), \emph{frozen}
 (solved by none), and \emph{sensitive} (solved by some but not all).
 These categories are probabilistic, not absolute---additional directions
-may solve ``frozen'' tasks or fail ``unanimous'' ones. The per-latent
-solve count approximately equals unanimous + a stable fraction
-($\sim$0.42) of sensitive tasks.
+may solve ``frozen'' tasks or fail ``unanimous'' ones.
 
 \begin{table}[h]
 \centering

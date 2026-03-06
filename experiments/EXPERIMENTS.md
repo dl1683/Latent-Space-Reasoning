@@ -31,24 +31,21 @@ at the first decode position under all perturbation conditions. Tests PGRMS gati
 
 ---
 
-## 3-Token Dose-Response (2026-03-05) — RUNNING (N4/10)
+## 3-Token Dose-Response (2026-03-05) — RUNNING (N6/10)
 
 **Purpose:** Fill critical gap in dose-response curve. Confirm non-monotonic peak at 2 tokens.
 **Config:** 10 random noise vectors, 3 soft tokens each, 25 sweet-spot tasks, Qwen3-4B Q4
 **Script:** `python -u experiments/run_latent_sensitivity.py --task-type nested --difficulty sweet_spot --n-latents 10 --n-tasks 25 --control-mode random_noise --num-soft-tokens 3`
-**Status:** N1-N3 complete, N4 in progress (~task 14/25).
+**Status:** N1-N5 complete, N6 in progress.
 
-### Confirmed Results (N1-N3)
-- **Solve-count equalization**: N1=N2=N3=11/25 (44.0%), std=0.00, P=0.004
-- Structural decomposition: 8 unanimous + 10 frozen + 7 sensitive
-- Each latent solves exactly 3/7 sensitive tasks (fraction=0.429)
-- 100% oracle coverage of sensitive tasks from 3 latents
-- 3-tok oracle = 15/25 = 60% = exactly 2-tok per-latent accuracy
-- Codex naming: "solve-count equalization" / "fixed-capacity regime"
-
-### N4 Preliminary
-- N4 tracking ~36% at 14/25 — may break equalization
-- nest_003 flipped from unanimous→wrong (first breach of unanimous category)
+### Results (N1-N5)
+- Solve counts: [11, 11, 11, 10, 13], mean=11.2, SD=1.10
+- **Equalization FAILED**: p=0.434 vs heterogeneous iid null (Monte Carlo 100k)
+- N1-N3 [11,11,11] was small-sample noise, not evidence for equalization
+- Categories (N1-N5): 7 unanimous, 9 frozen, 9 sensitive
+- nest_007 escaped "frozen" (0/4→1/5): categories are probabilistic
+- 3-tok oracle (5 dirs) = 16/25 = 64% (adds 0 new tasks over 2-tok oracle)
+- 3-tok is transitional data, not equalization evidence (Codex 2026-03-05e)
 
 ---
 
