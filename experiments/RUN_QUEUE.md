@@ -10,11 +10,10 @@
 Oracle 25/25=100%, zero frozen tasks. Mean 51.6% still best of all token counts.
 The n=3 [15,15,15] was small-sample noise. Paper restructured accordingly.
 
-### 2. Think-Gate Probe (~5 min) [REQUIRED for MVP]
-```bash
-python -u experiments/run_think_gate_probe.py --n-tasks 25
-```
-Why: Highest-ROI mechanism probe. Tests mode gating claim directly.
+### 2. ~~Think-Gate Probe~~ DONE
+**Result**: <think> saturated at >99.99% for ALL conditions including baseline.
+Think-mode gating FALSIFIED. 16% baseline think rate was visibility artifact.
+Paper updated: trajectory modulation, not mode activation.
 
 ## PRIORITY 2: POSITIONING (~30 min)
 

@@ -1,33 +1,33 @@
 # Latent Space Reasoning
 
-Research into how soft prompt tokens affect small language model reasoning. Prepending random embedding-scale prefix tokens improves Qwen3-4B arithmetic by up to +28pp over baseline. The dose-response is non-monotonic (2 tokens optimal), the effect decomposes into think-mode gating (+8pp) and perturbation-specific optimization (+20pp), and different random directions solve different task subsets enabling 88% oracle coverage from 3 runs. See `paper/main.tex` for the full NeurIPS paper draft.
+Research into how soft prompt tokens affect small language model reasoning. Prepending random embedding-scale prefix tokens improves Qwen3-4B arithmetic by +19.6pp mean over baseline (32% → 51.6%, n=10 directions). The dose-response is non-monotonic (2 tokens optimal), and different random directions solve different task subsets — ten 2-token directions achieve 100% oracle coverage (25/25 tasks). A first-token logit probe confirms the mechanism is trajectory modulation, not mode activation. See `paper/main.tex` for the full NeurIPS paper draft.
 
 **Original article:** [How to Teach LLMs to Reason for $0.50](https://www.artificialintelligencemadesimple.com/p/how-to-teach-llms-to-reason-for-50)
 **Update article:** [ARTICLE_UPDATE.md](ARTICLE_UPDATE.md) — latest findings on the warm-start mechanism
 
 ## Key Finding: Random Prefix Tokens Improve Reasoning
 
-Prepending **2 random embedding-scale tokens** to the input of Qwen3-4B (Q4) improves arithmetic accuracy from **32% to 60%** (+28pp). No training, no fine-tuning, no optimization — just noise at the right scale.
+Prepending **2 random embedding-scale tokens** to the input of Qwen3-4B (Q4) improves arithmetic accuracy from **32% to 51.6% mean** (+19.6pp, n=10 directions). No training, no fine-tuning, no optimization — just noise at the right scale.
 
-| Condition | Accuracy | Change |
-|-----------|:--------:|:------:|
-| Baseline (no prefix) | 32.0% | — |
-| Zero embedding (8 tokens) | 36.0% | +4pp |
-| Mean embedding (8 identical) | 36.0% | +4pp |
-| Random noise (1 token) | 42.7% | +10.7pp |
-| **Random noise (2 tokens)** | **60.0%** | **+28pp** |
-| Random noise (8 tokens) | 44.0% | +12pp |
-| W-projected latent (8 tokens) | 44.4% | +12.4pp |
+| Condition | Accuracy | Change | n |
+|-----------|:--------:|:------:|:-:|
+| Baseline (no prefix) | 32.0% | — | 1 |
+| Zero embedding (8 tokens) | 36.0% | +4pp | 3 |
+| Mean embedding (8 identical) | 36.0% | +4pp | 1 |
+| Random noise (1 token) | 42.7% | +10.7pp | 3 |
+| **Random noise (2 tokens)** | **51.6%** | **+19.6pp** | **10** |
+| Random noise (3 tokens) | 44.0% | +12pp | 10 |
+| Random noise (8 tokens) | 44.4% | +12.4pp | 10 |
 
-**Direction doesn't matter** — random noise and carefully-projected latents are statistically indistinguishable (p = 1.0). The dose-response is **non-monotonic**: 2 tokens is optimal, more tokens degrades back to ~44%.
+**Direction doesn't matter for total count** — solve counts vary normally (p=0.66 vs iid). But directions solve **different task subsets**: 10 two-token directions achieve 100% oracle coverage (25/25). The dose-response is **non-monotonic**: 2 tokens is optimal, more tokens degrades back to ~44%.
 
 ## What's Actually Happening
 
 The prefix shifts the model from "formal presentation mode" (structured LaTeX, truncates before computing) into "exploratory computation mode" (informal, but actually does math). This is **trajectory perturbation** — a policy change, not a capability gain.
 
-- **Chain-of-thought mediates**: no-think mode eliminates the effect entirely
-- **It's redistribution**: 3 tasks fixed, 6 regressed, net +12pp at 8 tokens
-- **Difficulty-dependent**: helps hard tasks (+28pp), hurts easy tasks (-7pp)
+- **Chain-of-thought mediates**: disabling thinking eliminates the effect entirely
+- **Trajectory modulation**: first-token logit probe shows <think> is saturated (>99.99%) under all conditions — perturbation modulates the reasoning chain, not mode entry
+- **Task-selective**: different directions solve different tasks, enabling oracle coverage
 - **Token budget**: wrong answers hit max_new_tokens ceiling, correct answers finish early
 
 See [RESEARCH_BRIEF.md](RESEARCH_BRIEF.md) for the full technical summary with figures.
@@ -195,25 +195,22 @@ make check
 **Phase: Warm-start mechanism characterization** (see [TASKS.md](TASKS.md))
 
 Completed:
-- Warm-start confirmed: random noise = W-projected latents (p=1.0)
-- Non-monotonic dose-response: 2 tokens optimal (+28pp)
-- Error taxonomy: redistribution, not clean improvement
-- Controls: zero embedding, mean embedding, no-think, cross-difficulty
+- Non-monotonic dose-response: 2 tokens optimal (+19.6pp mean, n=10)
+- Oracle coverage: 100% from 10 two-token directions (vs 80% 3-tok, 92% 8-tok)
+- Think-gate probe: mode gating falsified, mechanism is trajectory modulation
+- Controls: zero embedding, mean embedding, no-think, explicit think-prefix
+- Equalization negative result: n=3 pattern did not replicate at n=10
 
 Next experiments:
-- Repeated-noise control (within-prefix diversity)
-- Attention masking intervention
-- Suffix position test
-- Token budget sweep
-- Scale to n=100+ tasks
+- Shi et al. discrete token comparison (in progress)
+- Word problem cross-task replication
 - Multi-model validation
 
 ## Limitations
 
 - **Single model**: Only tested on Qwen3-4B. May not generalize.
 - **Single domain**: Only arithmetic tasks tested.
-- **Small n**: 25 tasks — need n=100+ for publication-strength claims.
-- **No internal probing**: Mechanism inferred from outputs, not attention patterns.
+- **Modest n**: 25 tasks with 10 directions at the key condition.
 - **Effect is redistribution**: some tasks improve, others regress.
 
 ## Contributing
