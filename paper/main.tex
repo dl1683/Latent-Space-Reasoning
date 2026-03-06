@@ -198,7 +198,7 @@ the full response (up to 2000 characters) for independent verification.
 0 & 32.0\% & --- & 1 & --- \\
 1 & 42.7\% & 1.9\% & 3 & +10.7pp \\
 \textbf{2} & \textbf{60.0\%} & \textbf{0.0\%} & \textbf{3} & \textbf{+28.0pp} \\
-3 & 44.0\% & 0.0\% & 3 & +12.0pp \\
+3 & 43.0\% & 2.0\% & 4 & +11.0pp \\
 8 & 44.4\% & 7.0\% & 10 & +12.4pp \\
 \bottomrule
 \end{tabular}
@@ -268,7 +268,7 @@ solve count equals unanimous + a fixed fraction of sensitive tasks.
 Zero (3 lat) & 7 & 16 & 2 & 7/25 & 0.00 \\
 1-tok (3 lat) & --- & --- & --- & 10.7/25 & 0.58 \\
 \textbf{2-tok (3 lat)} & \textbf{9} & \textbf{3} & \textbf{13} & \textbf{15/25} & \textbf{0.00} \\
-3-tok (3 lat) & 8 & 10 & 7 & 11/25 & 0.00 \\
+3-tok (4 lat) & 7--8 & 10 & 7--8 & 10.8/25 & 0.43 \\
 8-tok (10 lat) & --- & --- & --- & 11.0/25 & 1.85 \\
 \bottomrule
 \end{tabular}
@@ -368,20 +368,34 @@ Experiment queued.}
 % ============================================================================
 \section{Discussion} % [PLACEHOLDER — refine after mechanism probes]
 
-\subsection{Fixed-Capacity Regime and Regime Boundary}
+\subsection{Two-Stage Gating Model}
 
-The solve-count equalization results suggest a \emph{fixed-capacity
-regime}: at moderate perturbation magnitudes (1--3 tokens), the
-perturbation energy determines a capacity budget (how many tasks the
-model can solve), while direction determines which tasks fill that
-budget. Within this regime, different random directions select among
-roughly equal reasoning channels.
+The structural decomposition suggests a two-stage model:
+\begin{enumerate}
+    \item \textbf{Magnitude sets the task-level threshold.}
+    Perturbation energy determines which tasks are \emph{unanimous}
+    (solved by all directions), \emph{frozen} (solved by none), or
+    \emph{sensitive} (solved by some). Increasing energy freezes more
+    tasks (3 frozen at 2-tok, 10 at 3-tok) while reducing the
+    sensitive set.
 
-At 8 tokens, equalization breaks (std = 1.85): direction now affects
-both \emph{which} and \emph{how many} tasks are solved. This marks a
-regime boundary where perturbation energy is large enough to make
-channel quality itself direction-dependent, rather than merely selecting
-among equivalent channels.
+    \item \textbf{Direction selects within the sensitive set.}
+    Each random direction solves approximately 42\% of the sensitive
+    tasks, regardless of perturbation magnitude (range: 0.405--0.462
+    across conditions). This per-direction occupancy is approximately
+    stable across 1--8 tokens.
+\end{enumerate}
+
+The two-token optimum emerges because it maximizes the sensitive set
+(13 tasks) while maintaining a high per-direction solve rate (0.462),
+yielding the highest per-direction accuracy (15/25 = 60\%).
+
+At 8 tokens, equalization breaks (std = 1.76): direction now affects
+both \emph{which} and \emph{how many} tasks are solved. The observed
+variance among directions (1.76) is close to the iid Bernoulli
+expectation (2.21), in contrast to 2-tok (observed 0, expected 1.78)
+and 3-tok (observed 0.43, expected 1.31). This suggests a transition
+from a fixed-quota regime to an approximately independent regime.
 
 \subsection{Perturbation as Policy Switch}
 

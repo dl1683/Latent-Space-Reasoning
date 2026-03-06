@@ -276,8 +276,8 @@ def fig2_equalization_oracle():
     ax.set_xticks(range(len(conditions)))
     ax.set_xticklabels(conditions, fontsize=9)
     ax.set_ylabel(f"Tasks solved (out of {n_sens} sensitive)", fontsize=10)
-    ax.set_title("A. Per-Direction Solve Count\n"
-                 "2-tok: perfect equalization (std=0.0)",
+    ax.set_title("A. Solve-Count Equalization\n"
+                 "2-tok: fixed-capacity regime (std=0.0)",
                  fontsize=11, fontweight="bold")
 
     # Panel B: Oracle rate
@@ -297,8 +297,8 @@ def fig2_equalization_oracle():
                  "2-tok matches 8-tok with 3x fewer directions",
                  fontsize=11, fontweight="bold")
 
-    fig.suptitle(f"Equalization and Oracle Efficiency on {n_sens} Sensitive Tasks\n"
-                 f"(strict: {len(ALWAYS)} always-solved, {len(NEVER)} never-solved excluded)",
+    fig.suptitle(f"Solve-Count Equalization and Oracle Efficiency on {n_sens} Sensitive Tasks\n"
+                 f"(strict: {len(ALWAYS)} unanimous, {len(NEVER)} frozen excluded)",
                  fontsize=12, fontweight="bold", y=1.02)
     sns.despine()
     fig.tight_layout()

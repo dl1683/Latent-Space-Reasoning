@@ -437,6 +437,42 @@ This is NOT explained by higher per-latent accuracy alone (60% vs 44%) —
 - 2-tok oracle EFFICIENCY (88% with just 3 directions) IS the publishable result
 - Need: held-out test set (n=100 tasks) to validate oracle scaling curve
 
+## 9b. Universal Fraction and Two-Stage Model (Codex 2026-03-05)
+
+### Per-Perturbation Structural Decomposition
+| Condition | Unan | Froz | Sens | Per-lat counts | Std | Sens frac (q) |
+|-----------|------|------|------|----------------|-----|---------------|
+| zero (3) | 9 | 16 | 0 | [9,9,9] | 0.00 | n/a |
+| 1-tok (3) | 6 | 8 | 11 | [10,11,11] | 0.47 | 0.424 |
+| **2-tok (3)** | **9** | **3** | **13** | **[15,15,15]** | **0.00** | **0.462** |
+| 3-tok (4) | 7 | 10 | 8 | [11,11,11,10] | 0.43 | 0.44 |
+| 8-tok (10) | 3 | 2 | 20 | [9..14] | 1.76 | 0.405 |
+
+### Codex Two-Stage Model (2026-03-05)
+1. **Magnitude sets the task-level threshold**: which tasks are frozen, unanimous, or sensitive
+2. **Direction selects** which sensitive tasks get solved, at roughly fixed capacity (~42%)
+
+### Equalization vs Independence (Codex)
+- Expected SD under iid Bernoulli(q=0.42): 1-tok=1.64, 2-tok=1.78, 3-tok=1.31, 8-tok=2.21
+- Observed SD: 1-tok=0.47, **2-tok=0.00**, 3-tok=0.43, 8-tok=1.76
+- 2-tok and 3-tok are MUCH more equalized than iid → **fixed-quota model**, not independent Bernoulli
+- 8-tok is close to iid (1.76 vs 2.21 expected)
+
+### Endogeneity Warning (Codex)
+- 42% is a CONDITIONAL occupancy rate (sensitive tasks exclude all-correct and all-wrong)
+- Under iid Bernoulli at k=3: q_cond = (1+p)/3, so q_cond ≈ 0.42 implies p ≈ 0.26
+- Categories are endogenous to the directions that defined them
+
+### Held-Out Direction Test (N4 as natural held-out)
+- N4 solves 3/7 = 42.9% of N1-N3's sensitive tasks → fraction CONFIRMED on held-out
+- BUT N4 breaches nest_003 (unanimous in N1-N3) → categories are NOT perfectly stable
+
+### N4 Result (2026-03-05)
+- N4 = 10/25 (40%): equalization breaks from [11,11,11] to [11,11,11,10]
+- 3-tok std now 0.43 (was 0.00 with N1-N3 only)
+- Key: equalization is APPROXIMATE at 3-tok, EXACT at 2-tok (so far)
+- N5-N10 will refine the 3-tok distribution
+
 ## 11. Codex Shi et al. Positioning (2026-03-05)
 
 **Codex assessment** of Shi et al. (arXiv:2510.01032, Oct 2025):

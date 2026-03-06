@@ -31,15 +31,24 @@ at the first decode position under all perturbation conditions. Tests PGRMS gati
 
 ---
 
-## 3-Token Dose-Response (2026-03-05) — RUNNING
+## 3-Token Dose-Response (2026-03-05) — RUNNING (N4/10)
 
 **Purpose:** Fill critical gap in dose-response curve. Confirm non-monotonic peak at 2 tokens.
 **Config:** 10 random noise vectors, 3 soft tokens each, 25 sweet-spot tasks, Qwen3-4B Q4
 **Script:** `python -u experiments/run_latent_sensitivity.py --task-type nested --difficulty sweet_spot --n-latents 10 --n-tasks 25 --control-mode random_noise --num-soft-tokens 3`
-**Status:** Baseline phase task 23/25, then 10 latent sweeps.
+**Status:** N1-N3 complete, N4 in progress (~task 14/25).
 
-### Preliminary
-- Latent 1 (from prior aborted run): 44.0% with normal timing (~no compute confound)
+### Confirmed Results (N1-N3)
+- **Solve-count equalization**: N1=N2=N3=11/25 (44.0%), std=0.00, P=0.004
+- Structural decomposition: 8 unanimous + 10 frozen + 7 sensitive
+- Each latent solves exactly 3/7 sensitive tasks (fraction=0.429)
+- 100% oracle coverage of sensitive tasks from 3 latents
+- 3-tok oracle = 15/25 = 60% = exactly 2-tok per-latent accuracy
+- Codex naming: "solve-count equalization" / "fixed-capacity regime"
+
+### N4 Preliminary
+- N4 tracking ~36% at 14/25 — may break equalization
+- nest_003 flipped from unanimous→wrong (first breach of unanimous category)
 
 ---
 
@@ -50,8 +59,8 @@ at the first decode position under all perturbation conditions. Tests PGRMS gati
 **Script:** experiments/create_figures.py
 
 ### Key Findings (Codex-Validated)
-1. Strict categorization: 2 always-solved, 1 never-solved, 22 sensitive
-2. Equalization at 2-tok: all 3 latents solve exactly 13/22 sensitive (std=0.00)
+1. Strict categorization: 2 unanimous, 1 frozen, 22 sensitive (cross-condition)
+2. Solve-count equalization at 2-tok: all 3 latents solve exactly 13/22 sensitive (std=0.00)
 3. Full oracle: 24/25 = 96% (only nest_008 unsolvable)
 4. Task-specific resonance: nest_005 (1-tok only), nest_021 (8-tok only)
 5. McNemar: Latent 0 purely additive (7 gains, 0 losses, p≈0.023)
