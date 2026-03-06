@@ -1,6 +1,6 @@
 # Experiment Run Queue (Codex Updated Priority, 2026-03-05)
 
-GPU currently occupied by 3-tok (N5/10 running). Run these in order after 3-tok.
+GPU occupied by 3-tok (N9/10) + orthogonality_mechanism_016. Run in order after 3-tok.
 
 ## PRIORITY 1: EXISTENTIAL FOR PAPER (~90 min)
 
@@ -56,11 +56,12 @@ python -u experiments/run_latent_sensitivity.py --task-type nested --difficulty 
 Why: Decides 24/25 vs 25/25 oracle. Nice-to-have per Codex.
 
 ## Notes
-- 3-tok N1-N5: [11,11,11,10,13], SD=1.10, p=0.434 vs iid (NOT SIGNIFICANT)
-- 3-tok equalization FAILED — N1-N3 [11,11,11] was small-sample noise
-- Equalization is now 2-tok-specific candidate regime (Codex 2026-03-05e)
+- 3-tok N1-N8: [11,11,11,10,13,12,9,9], SD=1.39, p=0.497 (AT IID MEDIAN)
+- 3-tok equalization conclusively DEAD
+- Paper restructured: oracle-efficiency > equalization (Codex 2026-03-05f)
 - 2-tok n=10 rerun is EXISTENTIAL: only remaining equalization evidence (p=0.031 at n=3)
 - Define success as suppressed variance, not std=0.00 (Codex guidance)
 - Codex priority: 2-tok n=10 > think-gate > Shi t=2 > word problem
-- If 2-tok n=10 fails: pivot paper to oracle efficiency + task redistribution + dose-response
+- If 2-tok n=10 fails: paper already has oracle efficiency + dose-response + over-perturbation
 - MVP timeline: items 1-3 = ~100 min post-3tok
+- Codex 2026-03-05f: value of 3-tok N9-N10 is LOW; GPU should go to 2-tok n=10 ASAP
