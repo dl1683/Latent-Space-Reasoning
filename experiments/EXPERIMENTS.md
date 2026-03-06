@@ -48,18 +48,24 @@ regime produce qualitatively different effects than their discrete tokens?
 
 ---
 
-## Think-Gate Probe (2026-03-05) — PLANNED
+## Think-Gate Probe (2026-03-06) — COMPLETE
 
-**Purpose:** Codex-recommended highest-ROI mechanism probe. Measures <think> token probability
-at the first decode position under all perturbation conditions. Tests PGRMS gating claim directly.
-**Config:** 25 sweet-spot tasks, single forward pass per condition, 10 conditions
-**Script:** `python experiments/run_think_gate_probe.py --n-tasks 25`
-**Status:** Implementation complete, awaiting GPU time.
+**Purpose:** Test whether perturbation activates <think> mode via first-token logit probe.
+**Config:** 25 sweet-spot tasks, single forward pass per condition, 9 conditions
+**Script:** `python -u experiments/run_think_gate_probe.py --n-tasks 25`
+**Artifacts:** `think_gate_probe_results.json`
 
-### Expected
-- <think> rank=1 for all perturbation conditions (confirming mode gating)
-- <think> lower rank for baseline (confirming perturbation raises think-mode probability)
-- Graded effect: more tokens → higher <think> probability?
+### Results — CRITICAL NEGATIVE FINDING
+- <think> is rank=1 with probability >99.99% for ALL conditions including unperturbed baseline
+- No meaningful variation: baseline=99.994%, noise_2tok=99.997%, discrete_/=99.998%
+- **Think-mode gating hypothesis FALSIFIED**: model always generates <think> first
+- The 16% baseline think rate was a visibility artifact (tag stripping in stored responses)
+- Paper updated: removed "think-mode gating" claim, reframed as trajectory modulation
+
+### What We Learned
+- The mechanism is NOT mode activation — it's trajectory modulation within already-active think mode
+- Force-think decomposition reframed: explicit <think> prefix = trajectory priming, not mode switch
+- Perturbation operates on the reasoning chain content, not on whether the model reasons
 
 ---
 

@@ -36,8 +36,10 @@ language model (Qwen3-4B) produces a sharp, non-monotonic improvement in
 chain-of-thought arithmetic reasoning. Two random tokens raise mean
 accuracy from 32\% to 51.6\% (+19.6 percentage points) across ten
 independent directions, while one token yields 42.7\% and three or eight
-tokens revert to $\sim$44\%. The effect decomposes into think-mode gating
-(+8pp) and perturbation-specific optimization (+12pp). Different
+tokens revert to $\sim$44\%. A first-token logit probe confirms that
+perturbation does not activate reasoning mode (which is already
+saturated at $>$99.99\% under thinking-enabled decoding); instead,
+it modulates the downstream reasoning trajectory. Different
 perturbation directions solve \emph{different task subsets}: ten two-token
 directions collectively cover 100\% of tasks (25/25), compared to 80\%
 for three-token and 92\% for eight-token perturbations. The three-token
@@ -87,10 +89,12 @@ tasks are:
     $p = 0.66$ vs.\ heterogeneous iid null). The diversity is in
     \emph{which} tasks are solved, not in \emph{how many}.
 
-    \item \textbf{Think-mode gating.} Any perturbation activates
-    Qwen3's reasoning mode (16\% $\to$ 100\%), but random noise
-    contributes $\sim$1.5$\times$ more accuracy gain than mode
-    activation alone.
+    \item \textbf{Trajectory modulation, not mode gating.}
+    A first-token logit probe shows that \texttt{<think>} probability
+    is saturated ($>$99.99\%) under all conditions including baseline.
+    Perturbation does not activate reasoning mode; it modulates the
+    downstream reasoning trajectory within an already-active think
+    mode.
 \end{enumerate}
 
 All experiments use greedy decoding (temperature = 0), making the
@@ -230,32 +234,38 @@ $\sim$44\%, matching the eight-token level. The three-token oracle set
 that over-perturbation contracts the reachable task space rather than
 merely redistributing it.
 
-\subsection{Force-Think Decomposition} % [LOCKED]
+\subsection{Explicit Think-Prefix Control} % [LOCKED]
 \label{sec:decomposition}
 
 \begin{table}[h]
 \centering
-\begin{tabular}{lccc}
+\begin{tabular}{lcc}
 \toprule
-\textbf{Condition} & \textbf{Think Rate} & \textbf{Accuracy} & \textbf{Component} \\
+\textbf{Condition} & \textbf{Accuracy} & \textbf{$\Delta$ vs baseline} \\
 \midrule
-Baseline & 16\% & 32.0\% & --- \\
-Force-think (no noise) & 100\% & 40.0\% & +8pp (mode gate) \\
-2-tok random noise & 100\% & 51.6\% & +11.6pp (perturbation) \\
+Baseline & 32.0\% & --- \\
+Explicit \texttt{<think>} prefix & 40.0\% & +8pp \\
+2-tok random noise (mean, $n = 10$) & 51.6\% & +19.6pp \\
 \bottomrule
 \end{tabular}
-\caption{Two-component decomposition. Think-mode activation alone adds
-+8pp; random noise contributes an additional +11.6pp beyond think mode
-(mean across 10 directions).}
+\caption{Explicit think-prefix control. Teacher-forcing the first token
+to \texttt{<think>} adds +8pp. Random noise adds a further +11.6pp
+beyond the explicit prefix (mean across 10 directions). Note: a
+first-token logit probe (Section~\ref{sec:probe}) shows that
+\texttt{<think>} probability is already $>$99.99\% at baseline under
+thinking-enabled decoding, so the +8pp is not mode activation but a
+trajectory-priming effect of the explicit prefix.}
 \label{tab:decomposition}
 \end{table}
 
-The perturbation effect has two separable components. First, any
-perturbation activates Qwen3's reasoning mode (think rate: 16\% $\to$
-100\%). Second, the noise itself produces an additional +11.6pp gain
-beyond what think-mode activation provides (mean across 10 directions).
-Noise contributes $\sim$1.5$\times$ more than mode gating at the
-two-token optimum.
+A first-token logit probe (Section~\ref{sec:probe}) confirms that
+\texttt{<think>} is the dominant first token under all conditions
+(probability $>$99.99\%), including unperturbed baseline. The observed
+accuracy differences therefore reflect trajectory modulation within
+an already-active reasoning mode, not mode-switching. Teacher-forcing
+\texttt{<think>} as an explicit prefix adds +8pp; random noise provides
+an additional +11.6pp beyond this, indicating that the perturbation
+effect operates on the reasoning trajectory rather than on mode entry.
 
 \subsection{Oracle Efficiency} % [LOCKED]
 \label{sec:oracle}
@@ -387,12 +397,52 @@ reasoning quality with short enough invariance for task-subset diversity.
     provides minimal benefit.
     \item \textbf{Mean embedding} (+4pp): Identical to zero---no
     advantage from the ``average token.''
-    \item \textbf{No-think mode}: Perturbation has no effect when
-    chain-of-thought is disabled. CoT is the mediating mechanism.
+    \item \textbf{No-think mode}: When thinking is disabled
+    (\texttt{enable\_thinking=False}), perturbation has no effect.
+    Chain-of-thought is the mediating mechanism.
     \item \textbf{Timing confound resolved}: The highest-accuracy
     2-tok directions achieve 60\% (15/25) at baseline-identical mean
     timing (73.6s), ruling out extra computation as the mechanism.
 \end{itemize}
+
+\subsection{First-Token Logit Probe} % [LOCKED]
+\label{sec:probe}
+
+To test whether perturbation activates reasoning mode, we extract
+logits at the first decode position (immediately after the assistant
+turn) under all conditions. The \texttt{<think>} token is rank 1
+with probability $>$99.99\% for all 25 tasks under every condition,
+including unperturbed baseline (Table~\ref{tab:probe}).
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{lcc}
+\toprule
+\textbf{Condition} & \textbf{Mean $P(\texttt{<think>})$} & \textbf{Rank = 1} \\
+\midrule
+Baseline & 99.994\% & 25/25 \\
+Zero (2-tok) & 99.994\% & 25/25 \\
+Mean (2-tok) & 99.994\% & 25/25 \\
+Noise 1-tok & 99.996\% & 25/25 \\
+Noise 2-tok & 99.997\% & 25/25 \\
+Noise 3-tok & 99.997\% & 25/25 \\
+Noise 8-tok & 99.995\% & 25/25 \\
+Discrete \texttt{/} (2-tok) & 99.998\% & 25/25 \\
+Discrete \texttt{?} (2-tok) & 99.997\% & 25/25 \\
+\bottomrule
+\end{tabular}
+\caption{First-token logit probe. \texttt{<think>} probability is
+saturated under all conditions including baseline. Perturbation does
+not activate reasoning mode; it modulates the subsequent reasoning
+trajectory.}
+\label{tab:probe}
+\end{table}
+
+This rules out first-token mode gating as the mechanism. The
+perturbation effect operates within an already-active reasoning mode,
+modulating the trajectory of the chain-of-thought rather than
+determining whether the model reasons at all.
 
 \subsection{Task-Specific Resonance Windows} % [LOCKED]
 
@@ -417,9 +467,9 @@ discrete (repeated punctuation) prefix tokens at matched token counts.
 Experiment queued.}
 
 % ============================================================================
-\section{Discussion} % [PLACEHOLDER — refine after mechanism probes]
+\section{Discussion}
 
-\subsection{Two-Stage Gating Model}
+\subsection{Two-Level Trajectory Model}
 
 The structural decomposition suggests a two-stage model:
 \begin{enumerate}
@@ -460,13 +510,11 @@ two tokens freeze 5.8 tasks on average versus 9.9 for three tokens
 and 7.9 for eight tokens. Two tokens thus maximize the reachable task
 set while maintaining the highest per-direction accuracy
 (mean 12.9/25 = 51.6\%). We hypothesize that two tokens provide the
-minimum perturbation energy needed to cross the mode-gating threshold
-while staying below the energy level that freezes marginal tasks.
-At one token, the perturbation is marginal; at three or more, the
-model's reasoning trajectory diverges too early, exhausting the token
-budget before reaching an answer.
-
-\pending{Think-gate probe results will test this hypothesis directly.}
+minimum perturbation energy needed to productively diversify the
+reasoning trajectory while staying below the energy level that
+freezes marginal tasks. At one token, the perturbation is marginal;
+at three or more, the model's reasoning trajectory diverges too early,
+exhausting the token budget before reaching an answer.
 
 \subsection{Implications for Practice}
 
@@ -516,8 +564,10 @@ reachable task set, freezing tasks that are solvable at two tokens.
 
 Random prefix tokens at the embedding scale reveal a sharp non-monotonic
 optimum in small-model arithmetic reasoning. Two tokens produce a
-mean +19.6 percentage point improvement over baseline, decomposable into
-think-mode gating (+8pp) and perturbation-specific optimization (+12pp).
+mean +19.6 percentage point improvement over baseline. A first-token
+logit probe confirms that perturbation does not activate reasoning mode
+(already saturated at $>$99.99\%); instead, it modulates the downstream
+reasoning trajectory.
 Different random directions solve different task subsets, enabling
 complete oracle coverage (100\% from 10 two-token directions, compared
 to 80\% for three-token and 92\% for eight-token). The three-token
