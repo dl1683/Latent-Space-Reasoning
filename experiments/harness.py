@@ -233,6 +233,14 @@ def verify_answer(response: str, expected: int) -> bool:
     return int(numbers[-1]) == expected
 
 
+def extract_answer(response: str) -> int | None:
+    """Extract the last integer from response (same logic as verify_answer)."""
+    numbers = re.findall(r"-?\d+", response)
+    if not numbers:
+        return None
+    return int(numbers[-1])
+
+
 def dense_score(response: str, expected: int) -> float:
     """Dense reward: 1.0 for exact match, 1/(1+distance) otherwise."""
     numbers = re.findall(r"-?\d+", response)

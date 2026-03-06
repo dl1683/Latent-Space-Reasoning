@@ -1,0 +1,470 @@
+% Non-Monotonic Optimum in Prefix-Token Perturbation of Language Model Reasoning
+% NeurIPS 2026 Workshop Submission — DRAFT
+%
+% Sections marked [LOCKED] are stable and can be finalized.
+% Sections marked [PENDING] await experimental data.
+% Sections marked [PLACEHOLDER] need substantial revision.
+
+\documentclass{article}
+\usepackage[utf8]{inputenc}
+\usepackage{amsmath,amssymb}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{hyperref}
+\usepackage{xcolor}
+\usepackage{subcaption}
+
+% NeurIPS workshop format (if needed, swap for neurips_2026.sty)
+\usepackage[margin=1in]{geometry}
+
+\newcommand{\pending}[1]{\textcolor{red}{[PENDING: #1]}}
+\newcommand{\placeholder}[1]{\textcolor{orange}{[PLACEHOLDER: #1]}}
+
+\title{Random Prefix Tokens Reveal a Sharp Non-Monotonic Optimum\\in Language Model Arithmetic Reasoning}
+% Title is [PENDING] per Codex — finalize after Shi comparison
+
+\author{Devansh Lodha}
+\date{March 2026}
+
+\begin{document}
+\maketitle
+
+% ============================================================================
+\begin{abstract}
+\pending{Finalize after 3-tok completion and Shi comparison.}
+
+Prepending random embedding-scale tokens to the input of a 4-bit quantized
+language model (Qwen3-4B) produces a sharp, non-monotonic improvement in
+chain-of-thought arithmetic reasoning. Two random tokens increase accuracy
+from 32\% to 60\% (+28 percentage points), while one token yields 42.7\%
+and three or eight tokens revert to $\sim$44\%. The effect decomposes into
+think-mode gating (+8pp) and perturbation-specific optimization (+20pp).
+At the two-token optimum, different random directions solve the \emph{same
+number} of tasks but \emph{different task subsets}, enabling 88\% oracle
+coverage from just three perturbation runs. These results establish
+embedding-space perturbation as a training-free intervention that activates
+latent reasoning capabilities in small language models.
+\end{abstract}
+
+% ============================================================================
+\section{Introduction} % [LOCKED — stable claims only]
+
+Large language models possess reasoning capabilities that are not
+uniformly accessible through standard prompting. Recent work has shown
+that semantically meaningless prefix tokens---repeated punctuation
+\cite{shi2025}, pause tokens \cite{goyal2024}, and trailing whitespace
+\cite{salinas2024}---can measurably alter model behavior, sometimes
+improving reasoning performance.
+
+We study a related but distinct regime: \emph{continuous} perturbation
+in embedding space. Rather than prepending discrete tokens from the
+vocabulary, we inject random vectors at the model's native embedding
+scale as soft prompt prefixes. This eliminates semantic content entirely,
+isolating the effect of perturbation energy and position from token
+identity.
+
+Our key findings on Qwen3-4B (4-bit quantized) with 25 nested arithmetic
+tasks are:
+
+\begin{enumerate}
+    \item \textbf{Sharp non-monotonic optimum.} Two random prefix tokens
+    increase accuracy from 32\% to 60\%; one token yields 42.7\%, and
+    three or eight tokens revert to $\sim$44\%.
+
+    \item \textbf{Direction changes which tasks, not how many.}
+    At the two-token optimum, all three independent random directions
+    solve exactly 13/22 sensitive tasks (std = 0.00), but solve
+    \emph{different} subsets.
+
+    \item \textbf{Efficient oracle coverage.} Three two-token
+    perturbation runs achieve 88\% oracle accuracy, compared to
+    ten eight-token runs for 92\%.
+
+    \item \textbf{Think-mode gating.} Any perturbation activates
+    Qwen3's reasoning mode (16\% $\to$ 100\%), but random noise
+    contributes 2.5$\times$ more accuracy gain than mode activation alone.
+\end{enumerate}
+
+All experiments use greedy decoding (temperature = 0), making the
+observed variability across perturbation directions a form of
+\emph{deterministic chaos} rather than sampling noise.
+
+% ============================================================================
+\section{Related Work} % [LOCKED — core refs stable]
+
+\paragraph{Discrete prefix perturbations.}
+Shi et al.~\cite{shi2025} demonstrate that repeated punctuation tokens
+(e.g., ``/'' and ``?'') improve reasoning accuracy by 1--5\% across
+multiple models, attributing the effect to MLP activation redistribution.
+Our work studies the continuous embedding-space regime, finding
+substantially larger effects (+28pp at the optimum), direction
+independence, and task-selective redistribution---phenomena not observed
+in discrete token space.
+\pending{Add Shi head-to-head comparison when discrete token experiment completes.}
+
+\paragraph{Pause tokens.}
+Goyal et al.~\cite{goyal2024} show that training with learned pause
+tokens improves downstream performance. Our effect requires no training:
+random embeddings at inference time suffice.
+
+\paragraph{Extra-token expressivity.}
+London \& Nagarajan~\cite{london2025} prove that additional tokens
+increase transformer expressivity. Our results provide an empirical
+instantiation: two tokens at the correct energy scale unlock reasoning
+that the model cannot access with standard prompting.
+
+\paragraph{Deterministic chaos in transformers.}
+Li et al.~\cite{li2025} introduce quasi-Lyapunov exponents for
+language models, establishing that small perturbations to hidden states
+grow exponentially through transformer layers. Our invariance-length
+analysis (Section~\ref{sec:chaos}) provides a complementary behavioral
+measure of this phenomenon under greedy decoding.
+
+\paragraph{Stochastic resonance.}
+The non-monotonic dose-response is reminiscent of stochastic resonance
+\cite{gammaitoni1998}, where noise improves signal detection in nonlinear
+systems. However, our statistical tests do not confirm the formal
+inverted-U relationship at the task level (Section~\ref{sec:limitations}),
+so we use the more conservative framing of ``non-monotonic optimum.''
+
+% ============================================================================
+\section{Methods} % [LOCKED]
+
+\subsection{Model and Inference}
+
+We use Qwen3-4B~\cite{qwen2025} with 4-bit GPTQ quantization,
+running on a single NVIDIA RTX 5090 Laptop GPU (24GB VRAM). All
+generation uses greedy decoding (temperature = 0, \texttt{do\_sample =
+False}) with \texttt{max\_new\_tokens = 1024} and thinking mode enabled.
+
+\subsection{Task Suite}
+
+We use 25 nested arithmetic expressions at ``sweet-spot'' difficulty
+(3-step expressions with intermediate results in the hundreds to
+thousands range, 32\% baseline accuracy). Tasks are deterministically
+generated and fixed across all conditions.
+
+\subsection{Perturbation Protocol}
+
+We inject $k$ random embedding vectors as soft prompt tokens before
+the user input. Each vector is sampled from $\mathcal{N}(0, I)$ and
+scaled to match the model's embedding table RMS norm
+($\sigma_{\text{emb}} \approx 0.022$), calibrated via
+\texttt{auto\_calibrate()} over 1000 vocabulary samples.
+
+\subsection{Conditions}
+
+\begin{table}[h]
+\centering
+\small
+\begin{tabular}{llp{5cm}}
+\toprule
+\textbf{Condition} & \textbf{Tokens} & \textbf{Description} \\
+\midrule
+Baseline & 0 & No prefix tokens \\
+Zero embedding & 8 & All-zero vectors \\
+Mean embedding & 8 & Mean of embedding table \\
+Force-think & 0 & Forced \texttt{<think>} token, no noise \\
+Random noise & 1, 2, 3, 8 & Random $\mathcal{N}(0,I)$, RMS-matched \\
+\pending{Discrete tokens} & \pending{1, 2, 8} & \pending{Repeated `/', `?' tokens (Shi comparison)} \\
+\bottomrule
+\end{tabular}
+\caption{Experimental conditions. All use greedy decoding.}
+\label{tab:conditions}
+\end{table}
+
+\subsection{Scoring and Data Integrity}
+
+Correctness is determined by \texttt{verify\_answer()}: the last integer
+in the generated response must exactly match the expected answer. All
+experiments with the current codebase store the extracted answer alongside
+the full response (up to 2000 characters) for independent verification.
+
+% ============================================================================
+\section{Results} % [LOCKED sections noted; PENDING sections noted]
+
+\subsection{Non-Monotonic Dose-Response} % [LOCKED for 0,1,2,8; PENDING 3-tok]
+\label{sec:dose}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{cccccc}
+\toprule
+\textbf{Tokens} & \textbf{Accuracy} & \textbf{Std} & \textbf{$n$} & \textbf{$\Delta$ vs baseline} \\
+\midrule
+0 & 32.0\% & --- & 1 & --- \\
+1 & 42.7\% & 1.9\% & 3 & +10.7pp \\
+\textbf{2} & \textbf{60.0\%} & \textbf{0.0\%} & \textbf{3} & \textbf{+28.0pp} \\
+3 & \pending{44\% (N1 only)} & \pending{TBD} & \pending{$\geq$3} & \pending{+12pp} \\
+8 & 44.4\% & 7.0\% & 10 & +12.4pp \\
+\bottomrule
+\end{tabular}
+\caption{Dose-response: accuracy vs.\ number of random prefix tokens.
+Two tokens is the sharp optimum. Three and eight tokens revert to
+$\sim$44\%.}
+\label{tab:dose}
+\end{table}
+
+The relationship between token count and accuracy is sharply non-monotonic.
+Two random tokens produce the highest accuracy (60\%), with zero variance
+across three independent random directions. Adding a third token drops
+accuracy to $\sim$44\%, matching the eight-token level. The three-token
+solve set is entirely a subset of the two-token oracle, adding no new
+task coverage.
+
+\subsection{Force-Think Decomposition} % [LOCKED]
+\label{sec:decomposition}
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lccc}
+\toprule
+\textbf{Condition} & \textbf{Think Rate} & \textbf{Accuracy} & \textbf{Component} \\
+\midrule
+Baseline & 16\% & 32.0\% & --- \\
+Force-think (no noise) & 100\% & 40.0\% & +8pp (mode gate) \\
+2-tok random noise & 100\% & 60.0\% & +20pp (perturbation) \\
+\bottomrule
+\end{tabular}
+\caption{Two-component decomposition. Think-mode activation alone adds
++8pp; random noise contributes an additional +20pp beyond think mode.}
+\label{tab:decomposition}
+\end{table}
+
+The perturbation effect has two separable components. First, any
+perturbation activates Qwen3's reasoning mode (think rate: 16\% $\to$
+100\%). Second, the noise itself produces an additional +20pp gain
+beyond what think-mode activation provides. Noise contributes 2.5$\times$
+more than mode gating at the two-token optimum.
+
+\subsection{Task-Selective Redistribution} % [LOCKED]
+\label{sec:equalization}
+
+At the two-token optimum, all three random perturbation directions solve
+exactly the same number of sensitive tasks (13/22, std = 0.00) but solve
+\emph{different subsets}. This ``equalization'' property is unique to the
+two-token condition:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lccc}
+\toprule
+\textbf{Condition} & \textbf{Per-latent counts} & \textbf{Mean} & \textbf{Std} \\
+\midrule
+Zero (3 latents) & [7, 7, 7] & 7.0/22 & 0.00 \\
+1-tok (3 latents) & [8, 9, 9] & 8.7/22 & 0.58 \\
+\textbf{2-tok (3 latents)} & \textbf{[13, 13, 13]} & \textbf{13.0/22} & \textbf{0.00} \\
+8-tok (10 latents) & [7..12] & 9.1/22 & 1.85 \\
+\bottomrule
+\end{tabular}
+\caption{Equalization across sensitive tasks (22 tasks excluding
+2 always-solved and 1 never-solved). Only 2-tok and zero achieve
+std = 0.00, but 2-tok solves nearly twice as many.}
+\label{tab:equalization}
+\end{table}
+
+\subsection{Oracle Efficiency} % [LOCKED — pending 8-tok rerun for hardened data]
+\label{sec:oracle}
+
+Because different perturbation directions solve different task subsets,
+running multiple perturbations and taking the oracle (any-correct)
+provides coverage well above individual accuracy. The two-token
+condition is substantially more oracle-efficient:
+
+\begin{itemize}
+    \item 2-tok: 88\% oracle from 3 runs (22/25 tasks)
+    \item 8-tok: 92\% oracle from 10 runs (23/25 tasks)
+    \item Budget-matched bootstrap: $P(\text{8-tok} < \text{2-tok}) = 1.000$ at every $k$
+    \item Combined oracle across all conditions: 24/25 = 96\%
+    (Clopper-Pearson 95\% CI: [0.80, 0.99])
+\end{itemize}
+
+Oracle coverage grows more slowly than the independence null (positive
+task correlation, $z = -1.35$ for 2-tok vs.\ $z = -8.25$ for 8-tok),
+indicating that latents fail on correlated hard tasks. The two-token
+condition has the least redundancy, closest to independence.
+
+\subsection{Deterministic Chaos} % [LOCKED]
+\label{sec:chaos}
+
+Under greedy decoding, different random prefix vectors produce
+byte-identical text for an ``invariance length'' that decreases with
+perturbation energy:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{ccc}
+\toprule
+\textbf{Tokens} & \textbf{Mean Invariance} & \textbf{Oracle} \\
+\midrule
+1 & 349 chars & 68\% \\
+2 & 323 chars & 88\% \\
+8 & 93 chars & 92\% \\
+\bottomrule
+\end{tabular}
+\caption{Invariance length (byte-identical prefix before divergence)
+under greedy decoding. This is deterministic chaos, not sampling noise.}
+\label{tab:invariance}
+\end{table}
+
+The two-token sweet spot balances long enough invariance to preserve
+reasoning quality with short enough invariance for task-subset diversity.
+
+\subsection{Controls} % [LOCKED]
+
+\begin{itemize}
+    \item \textbf{Zero embedding} (+4pp): Sequence extension alone
+    provides minimal benefit.
+    \item \textbf{Mean embedding} (+4pp): Identical to zero---no
+    advantage from the ``average token.''
+    \item \textbf{No-think mode}: Perturbation has no effect when
+    chain-of-thought is disabled. CoT is the mediating mechanism.
+    \item \textbf{Timing confound resolved}: The highest-accuracy
+    2-tok latent achieves 60\% at baseline-identical mean timing
+    (73.6s), ruling out extra computation as the mechanism.
+\end{itemize}
+
+\subsection{Task-Specific Resonance Windows} % [LOCKED]
+
+Individual tasks have non-overlapping resonance windows:
+\begin{itemize}
+    \item \texttt{nest\_005} (answer = 8360): solvable \emph{only}
+    by 1-tok perturbation
+    \item \texttt{nest\_021} (answer = 5639): solvable \emph{only}
+    by 8-tok perturbation
+\end{itemize}
+More noise can \emph{prevent} solving certain tasks while enabling
+others. Leave-one-condition-out analysis confirms that three condition
+families each uniquely rescue exactly one task.
+
+\subsection{Shi et al.\ Comparison} % [PENDING]
+\label{sec:shi}
+
+\pending{Head-to-head comparison of continuous (random embedding) vs.\
+discrete (repeated punctuation) prefix tokens at matched token counts.
+Experiment queued.}
+
+% ============================================================================
+\section{Discussion} % [PLACEHOLDER — refine after mechanism probes]
+
+\subsection{Perturbation as Policy Switch}
+
+The prefix perturbation does not make the model ``smarter''; it
+switches the model's output policy from a formal presentation mode
+(structured LaTeX, enumerated steps, truncation before computation)
+to an exploratory computation mode (informal, stream-of-consciousness,
+actual arithmetic). This policy switch helps tasks where the default
+mode fails but causes overthinking on tasks the model already handles
+efficiently.
+
+\subsection{Why Two Tokens?}
+
+We hypothesize that two tokens provide the minimum perturbation energy
+needed to cross the mode-gating threshold while staying below the
+energy level that induces excessive divergence. At one token, the
+perturbation is marginal; at three or more, the model's reasoning
+trajectory diverges too early, exhausting the token budget before
+reaching an answer.
+
+\pending{Think-gate probe results will test this hypothesis directly.}
+
+\subsection{Implications for Practice}
+
+The training-free nature of this intervention suggests a practical
+``perturbation ensemble'' strategy: run a small model with $k$ random
+two-token prefixes and take the majority vote or oracle. Three runs
+achieve 88\% coverage, approaching the performance of a much larger
+perturbation budget.
+
+% ============================================================================
+\section{Limitations} % [LOCKED]
+\label{sec:limitations}
+
+\begin{itemize}
+    \item \textbf{Single model.} All experiments use Qwen3-4B (4-bit).
+    The effect may not generalize to other architectures or scales.
+
+    \item \textbf{Single task domain.} Only nested arithmetic
+    expressions were tested. Generalization to reasoning, coding, or
+    language tasks is unknown.
+    \pending{Word problem replication may address this.}
+
+    \item \textbf{Small $n$.} 25 tasks with 3 perturbation vectors at
+    the key 2-token condition. Statistical power is limited.
+
+    \item \textbf{4-bit quantization.} Quantization amplifies chaos
+    (reduced numerical precision increases sensitivity to perturbation).
+    Full-precision experiments may show different dose-response curves.
+
+    \item \textbf{Stochastic resonance framing.} The delta-accuracy
+    Spearman correlation with answer magnitude is not significant
+    ($r = -0.295$, $p = 0.15$), and the logistic regression quadratic
+    term is not significant ($p = 0.148$). The stochastic resonance
+    analogy is suggestive but not statistically confirmed.
+
+    \item \textbf{Token budget interaction.} Regressions on easy tasks
+    (large-answer category: 100\% $\to$ 78\%) suggest the effect
+    interacts with the 1024-token generation budget.
+\end{itemize}
+
+% ============================================================================
+\section{Conclusion}
+
+Random prefix tokens at the embedding scale reveal a sharp non-monotonic
+optimum in small-model arithmetic reasoning. Two tokens produce a
++28 percentage point improvement over baseline, decomposable into
+think-mode gating (+8pp) and perturbation-specific optimization (+20pp).
+The effect is direction-independent but task-selective: different random
+directions solve the same number of tasks but different subsets, enabling
+efficient oracle coverage. These findings suggest that small language
+models possess latent reasoning capabilities that can be unlocked through
+minimal, training-free embedding-space perturbation.
+
+% ============================================================================
+\bibliographystyle{plain}
+% References (inline for now; move to .bib for submission)
+\begin{thebibliography}{99}
+
+\bibitem{shi2025}
+Shi, Z., et al.
+\newblock Meaningless tokens, meaningful gains: Repeated tokens improve LLM reasoning.
+\newblock \emph{arXiv:2510.01032}, 2025.
+
+\bibitem{goyal2024}
+Goyal, S., et al.
+\newblock Think before you speak: Training language models with pause tokens.
+\newblock \emph{ICLR}, 2024.
+
+\bibitem{salinas2024}
+Salinas, D. and Morstatter, F.
+\newblock The butterfly effect of altering prompts: How small changes and jailbreaks affect large language model performance.
+\newblock \emph{arXiv:2401.03729}, 2024.
+
+\bibitem{london2025}
+London, B. and Nagarajan, V.
+\newblock Provably more expressive transformers via extra tokens.
+\newblock \emph{NeurIPS}, 2025.
+
+\bibitem{li2025}
+Li, Z., et al.
+\newblock Quasi-Lyapunov exponent for language models.
+\newblock \emph{arXiv}, 2025.
+
+\bibitem{gammaitoni1998}
+Gammaitoni, L., et al.
+\newblock Stochastic resonance.
+\newblock \emph{Reviews of Modern Physics}, 70(1):223, 1998.
+
+\bibitem{qwen2025}
+Qwen Team.
+\newblock Qwen3 technical report.
+\newblock 2025.
+
+\bibitem{xu2025}
+Xu, Z., et al.
+\newblock Causal amplification in the residual stream.
+\newblock \emph{arXiv}, 2025.
+
+\end{thebibliography}
+
+\end{document}

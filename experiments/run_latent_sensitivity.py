@@ -38,6 +38,7 @@ from harness import (
     DecodeMode,
     auto_calibrate,
     decode_latent,
+    extract_answer,
     verify_answer,
 )
 from latent_reasoning.core.encoder import LLMEncoder
@@ -881,6 +882,7 @@ def main():
             )
             elapsed = time.time() - t0
             correct = verify_answer(resp, task.correct_answer)
+            extracted = extract_answer(resp)
             tps = gen_meta["generated_tokens"] / elapsed if elapsed > 0 else 0
             baseline_results.append({
                 "task_id": task.task_id,
@@ -890,6 +892,7 @@ def main():
                 "response": resp[:2000],
                 "response_raw": raw[:2000],
                 "correct": correct,
+                "extracted_answer": extracted,
                 "time": round(elapsed, 1),
                 "generated_tokens": gen_meta["generated_tokens"],
                 "prompt_tokens": gen_meta["prompt_tokens"],
@@ -1184,6 +1187,7 @@ def main():
                     raw = "ERROR"
             elapsed = time.time() - t0
             correct = verify_answer(resp, task.correct_answer)
+            extracted = extract_answer(resp)
             tps = gen_meta.get("generated_tokens", 0) / elapsed if elapsed > 0 else 0
             result_entry = {
                 "task_id": task.task_id,
@@ -1192,6 +1196,7 @@ def main():
                 "response": resp[:2000],
                 "response_raw": raw[:2000],
                 "correct": correct,
+                "extracted_answer": extracted,
                 "time": round(elapsed, 1),
             }
             if gen_meta:

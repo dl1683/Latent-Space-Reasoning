@@ -220,12 +220,23 @@ only and cannot independently verify the scores.
 
 | Experiment | Mismatches | Total | % Unverifiable |
 |-----------|-----------|-------|----------------|
-| mean_embedding | 9/25 | 36% | All "correct" tasks |
-| zero_embedding | 27/75 | 36% | |
-| latent_8tok | 110/250 | 44% | |
-| noise_1tok | 32/75 | 43% | |
-| noise_2tok | 46/75 | 61% | |
-| baseline | 3/25 | 12% | |
+| mean_embedding | 12 (3 base + 9 noise) | 36% | includes nest_008 |
+| zero_embedding | 30 (3 base + 27 noise) | 36% | |
+| latent_8tok | 113 (3 base + 110 noise) | 44% | |
+| noise_2tok | 49 (3 base + 46 noise) | 61% | |
+| baseline | 3/25 | 12% | shared across files |
+
+**Mismatch direction** (verify_stored_data.py audit, 2026-03-05):
+- 199/204 mismatches: stored=True, replayed=False (answer truncated past 500 chars)
+- 5/204 mismatches: stored=False, replayed=True (all nest_018, expected=4, tiny answer
+  accidentally appears in truncated text; runtime found different final number in full response)
+
+**Codex assessment (2026-03-05)**: Not a hard submission blocker if claims stay conservative.
+Re-run priority: mean_embedding (decides 24/25 vs 25/25) -> noise_2tok (main result) ->
+latent_8tok (oracle comparison arm). Full reruns before camera-ready.
+
+**Hardening (implemented)**: Current code now stores `extracted_answer` field alongside
+`correct` flag, capturing the exact number verify_answer() matched against.
 
 **Assessment**: This is a REPRODUCIBILITY issue, not a correctness issue. The accuracy numbers
 (32%, 42.7%, 60%, 44%, 36%) are based on runtime full-response scoring and are likely correct.
@@ -439,7 +450,12 @@ task-selective effects, revealing mode gating, oracle efficiency, and task-speci
 ### Behavioral Experiments
 1. **Shi-style discrete token control** -- HIGHEST PRIORITY (Codex).
    Run repeated `/` and `?` on Qwen3-4B at 1,2,3,8 tokens. Implemented in harness.
-2. **3-tok dose-response** -- RUNNING (10 latents, baseline at task 24/25).
+2. **3-tok dose-response** -- RUNNING (Noise 2/10 in progress).
+   - Noise 1: 44% (11/25) = matches 8-tok level, confirms sharp 2-tok peak
+   - 3-tok N1 solve set is ENTIRELY a subset of 2-tok oracle (adds 0 new tasks)
+   - 3-tok gains from baseline: nest_006, _010, _015, _017, _019 (5 gains, 2 losses)
+   - Combined oracle unchanged at 24/25 (nest_008 still unsolved)
+   - Dose-response: 0=32%, 1=42.7%, 2=60%, 3=44% (N1 only), 8=44%
 3. **Scale 2-tok to n=100 tasks, n=10 latents** -- replicate oracle + zero-variance
 4. Dense dose-response (4,5,6,7 tokens)
 5. Cross-model (Qwen3-8B)
