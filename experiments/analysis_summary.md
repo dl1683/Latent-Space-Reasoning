@@ -8,7 +8,7 @@ Date: 2026-03-05 (Tesla Workflow Deep Analysis)
 | 0 | baseline | 32.0% | - | - | - |
 | 1 | random_noise | 42.7% | 1.9% | 3 | +10.7pp |
 | **2** | **random_noise** | **60.0%** | **0.0%** | **3** | **+28.0pp** |
-| 3 | random_noise | 44.0% | 5.0% | 7 (RUNNING 10) | +12.0pp |
+| 3 | random_noise | 42.2% | 5.7% | 9 (N10 running) | +10.2pp |
 | 8 | random_noise | 44.0% | 2.8% | 4 | +12.0pp |
 | 8 | latent_projected | 44.4% | 7.0% | 10 | +12.4pp |
 | 8 | zero_embedding | 36.0% | 0.0% | 3 | +4.0pp |
@@ -495,13 +495,14 @@ This is NOT explained by higher per-latent accuracy alone (60% vs 44%) —
 - N6 = 12/25 (48%): solved two frozen tasks (nest_009, nest_022)
 - **N7 = 9/25 (36%): lowest direction yet, nest_006 (was unanimous) failed**
 - **N8 = 9/25 (36%): nest_010 fell from unanimous (7/7→7/8)**
-- **Solve counts N1-N8: [11, 11, 11, 10, 13, 12, 9, 9], mean=10.8, SD=1.39**
-- **Expected iid SD = 1.41, p = 0.497** — AT THE MEDIAN OF IID
-- Categories (N1-N8): 5 unanimous, 7 frozen, 13 sensitive
+- **N9 = 9/25 (36%): identical solve pattern to N8**
+- **Solve counts N1-N9: [11, 11, 11, 10, 13, 12, 9, 9, 9], mean=10.6, SD=1.42**
+- **Expected iid SD = 1.41, p = 0.550** — AT THE MEDIAN OF IID
+- Categories (N1-N9): 5 unanimous, 7 frozen, 13 sensitive (unchanged from N8)
 - Category breaches: nest_007(N5), nest_009(N6), nest_022(N6) escaped frozen;
   nest_006(N7), nest_010(N8) fell from unanimous
 - Equalization is DEAD at 3-tok (variance matches iid exactly)
-- N9-N10 in progress (GPU-contended, ~120s/task)
+- N10 in progress (GPU-contended, ~120s/task)
 
 ### 3-tok vs 2-tok Oracle Comparison (2026-03-05f)
 

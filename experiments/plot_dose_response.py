@@ -11,9 +11,9 @@ EXP_DIR = Path(__file__).parent
 def main():
     # Data from experiments
     tokens = [0, 1, 2, 3, 8]
-    mean_acc = [32.0, 42.7, 60.0, 43.0, 44.4]
-    std_acc = [0, 1.9, 0.0, 5.6, 7.0]
-    n_lat = [1, 3, 3, 8, 10]
+    mean_acc = [32.0, 42.7, 60.0, 42.2, 44.4]
+    std_acc = [0, 1.9, 0.0, 5.7, 7.0]
+    n_lat = [1, 3, 3, 9, 10]
 
     # Standard errors (std / sqrt(n))
     se = [s / np.sqrt(n) if n > 1 else 0 for s, n in zip(std_acc, n_lat)]
