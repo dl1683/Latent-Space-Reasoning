@@ -8,7 +8,7 @@ Date: 2026-03-05 (Tesla Workflow Deep Analysis)
 | 0 | baseline | 32.0% | - | - | - |
 | 1 | random_noise | 42.7% | 1.9% | 3 | +10.7pp |
 | **2** | **random_noise** | **60.0%** | **0.0%** | **3** | **+28.0pp** |
-| 3 | random_noise | **RUNNING** | - | 10 | TBD |
+| 3 | random_noise | 44.0% | 0.0% | 3+ (RUNNING 10) | +12.0pp |
 | 8 | random_noise | 44.0% | 2.8% | 4 | +12.0pp |
 | 8 | latent_projected | 44.4% | 7.0% | 10 | +12.4pp |
 | 8 | zero_embedding | 36.0% | 0.0% | 3 | +4.0pp |
@@ -243,12 +243,23 @@ latent_8tok (oracle comparison arm). Full reruns before camera-ready.
 However, reviewers cannot independently verify from stored data. The 3-tok experiment (running now)
 uses the fixed code. All experiments should eventually be re-run with current code for publication.
 
-## 9. Paper Contributions (Revised Ranking, Codex 2026-03-05, updated 2026-03-05b)
+## 9. Paper Contributions (Revised Ranking, Codex 2026-03-05, updated 2026-03-05c)
 
-1. **MAIN FIGURE**: Oracle efficiency / coverage-vs-budget curve (Codex: "strongest claim")
+### Codex Equalization Review (2026-03-05)
+- **Paper framing**: Solve-count equalization = main SCIENTIFIC INSIGHT; oracle efficiency = main EMPIRICAL PAYOFF
+- **Terminology**: Per-perturbation categories → `unanimous`/`frozen`/`sensitive` (not `always`/`never` to avoid collision with cross-condition strict definition)
+- **Naming**: Paper term = "solve-count equalization", interpretive = "fixed-capacity regime"
+- **8-tok mechanism**: Regime boundary. Moderate perturbation selects among equal channels; over-perturbation makes channel quality direction-dependent
+- **Paper sentence (Codex-approved)**: "At fixed perturbation magnitude, random directions enter an equalized solve-count regime: each direction solves the same number of tasks, but not the same tasks. Oracle gains arise by covering the perturbation-sensitive subset."
+
+1. **MAIN SCIENTIFIC INSIGHT**: Solve-count equalization (Codex: "fixed-capacity regime")
+   - Confirmed at 2-tok [15,15,15] and 3-tok [11,11,11], both std=0.00
+   - P=0.004 under independence for 3-tok
+   - Structural decomposition: unanimous/frozen/sensitive explains mechanism
+2. **MAIN EMPIRICAL PAYOFF**: Oracle efficiency / coverage-vs-budget curve (Codex: "strongest claim")
    - 2-tok: 88% oracle with 3 runs; 8-tok: 92% oracle with 10 runs (3x more efficient)
    - 25/25 combined oracle as capstone endpoint (CI: [0.86, 1.0])
-2. **STRONG**: Direction changes WHICH tasks, not HOW MANY (equalization at 2-tok, std=0.0)
+3. **STRONG**: Direction changes WHICH tasks, not HOW MANY (equalization at 2-tok, std=0.0)
    - "Constant count, different support" — task redistribution without marginal change
 3. **STRONG**: Noise contributes 2.5x more than think mode (force-think decomposition)
 4. **STRONG**: Deterministic chaos under greedy decoding (T=0, different outputs from noise)
@@ -463,7 +474,13 @@ task-selective effects, revealing mode gating, oracle efficiency, and task-speci
    - Combined oracle unchanged at 24/25 (nest_008 still unsolved)
    - Dose-response: 0=32%, 1=42.7%, 2=60%, 3=44% (N1+N2), 8=44%
    - Equalization hierarchy: 2-tok [15,15,15] std=0, 3-tok [11,11] std=0 (n=2 only!)
-   - Need N3+ to confirm 3-tok equalization vs coincidence
+   - N3 CONFIRMED: [11, 11, 11] across 3 latents (P=0.004 under independence)
+   - STRUCTURAL FINDING: equalization = fixed capacity per perturbation level
+     - 2-tok: 9 always + 3 never + 13 sensitive, per-latent = 9 + 6/13 = 15
+     - 3-tok: 8 always + 10 never + 7 sensitive, per-latent = 8 + 3/7 = 11
+     - Both achieve 100% oracle coverage of sensitive tasks from 3 latents
+     - More perturbation energy freezes more tasks (10 vs 3 never-solved)
+     - 3-tok oracle (3 lat) = 15/25 = 60% = exactly 2-tok per-latent accuracy
 3. **Scale 2-tok to n=100 tasks, n=10 latents** -- replicate oracle + zero-variance
 4. Dense dose-response (4,5,6,7 tokens)
 5. Cross-model (Qwen3-8B)
