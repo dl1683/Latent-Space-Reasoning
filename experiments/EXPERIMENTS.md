@@ -37,14 +37,36 @@ was the strongest equalization evidence. Needed n=10 to confirm or refute.
 
 ---
 
-## Shi et al. Discrete Token Control (2026-03-05) — PLANNED
+## Shi et al. Discrete Token Control — 2 Tokens (2026-03-06) — COMPLETE
 
-**Purpose:** Codex-recommended highest-priority experiment. Replicate Shi et al. (2025) discrete
-punctuation token effect on our exact Qwen3-4B setup. Key question: does our continuous perturbation
-regime produce qualitatively different effects than their discrete tokens?
-**Config:** Repeated "/" and "?" tokens at 1,2,3,8 counts, 25 sweet-spot tasks, Qwen3-4B Q4
-**Script:** `python experiments/run_latent_sensitivity.py --task-type nested --difficulty sweet_spot --n-latents 2 --n-tasks 25 --control-mode discrete_tokens --discrete-token "/,?" --num-soft-tokens 2 --reuse-baseline <baseline_path>`
-**Status:** Implementation complete, awaiting GPU time.
+**Purpose:** Head-to-head comparison of Shi et al. (2025) discrete punctuation tokens vs our
+continuous random noise at 2 tokens. Key positioning experiment.
+**Config:** "/" and "?" tokens each repeated 2 times, 25 sweet-spot tasks, Qwen3-4B Q4, baseline reused
+**Script:** `python -u experiments/run_latent_sensitivity.py --task-type nested --difficulty sweet_spot --n-latents 2 --n-tasks 25 --control-mode discrete_tokens --discrete-token "/,?" --num-soft-tokens 2 --reuse-baseline experiments/sensitivity_sweet_spot_random_noise_t2_results.json`
+**Total time:** 54.2 min
+**Artifacts:** `sensitivity_sweet_spot_discrete_tokens_t2_results.json`
+
+### Results
+- "/" (2 tokens): 9/25 = 36% (+4pp vs baseline)
+- "?" (2 tokens): 12/25 = 48% (+16pp vs baseline)
+- Discrete mean: 42% (+10pp)
+- **Random continuous 2-tok mean: 51.6% (+19.6pp)** — 9.6pp advantage
+- Discrete oracle (2 tokens): 12/25 = 48%
+- Combined oracle (discrete + baseline): 15/25 = 60%
+- For comparison: random continuous oracle at k=2 (best pair) would be higher
+
+### Token-Level Observations
+- Native RMS: "/" = 0.02027, "?" = 0.02025 (vs target 0.02195) — close to embedding scale
+- "/" barely exceeds baseline (+4pp), "?" substantially better (+16pp)
+- "?" outperforms 3-tok random (44%) but trails 2-tok random (51.6%)
+- Both discrete tokens solve a SUBSET of what random noise solves
+
+### What We Learned
+- Continuous embedding-space perturbation produces larger effects than discrete tokens at matched count
+- The 9.6pp gap (42% vs 51.6%) supports the paper's positioning: continuous space has richer structure
+- "?" > "/" suggests even within discrete tokens, token identity matters (semantic content?)
+- Discrete tokens DO improve over baseline (+10pp mean), consistent with Shi et al.'s observation
+- But continuous random noise adds an additional ~10pp on top of discrete
 
 ---
 

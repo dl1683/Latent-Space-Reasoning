@@ -111,8 +111,10 @@ multiple models, attributing the effect to MLP activation redistribution.
 Our work studies the continuous embedding-space regime, finding
 substantially larger effects (+19.6pp mean at the optimum), direction
 independence, and task-selective redistribution---phenomena not observed
-in discrete token space.
-\pending{Add Shi head-to-head comparison when discrete token experiment completes.}
+in discrete token space. In a head-to-head comparison on our task set
+(Section~\ref{sec:shi}), discrete ``/'' and ``?'' tokens at 2 tokens
+yield +4pp and +16pp respectively (mean +10pp), while continuous random
+noise yields +19.6pp---a 9.6pp advantage for continuous perturbation.
 
 \paragraph{Pause tokens.}
 Goyal et al.~\cite{goyal2024} show that training with learned pause
@@ -178,7 +180,7 @@ Zero embedding & 8 & All-zero vectors \\
 Mean embedding & 8 & Mean of embedding table \\
 Force-think & 0 & Forced \texttt{<think>} token, no noise \\
 Random noise & 1, 2, 3, 8 & Random $\mathcal{N}(0,I)$, RMS-matched \\
-\pending{Discrete tokens} & \pending{1, 2, 8} & \pending{Repeated `/', `?' tokens (Shi comparison)} \\
+Discrete tokens & 2 & Repeated ``/'' and ``?'' tokens (Shi comparison) \\
 \bottomrule
 \end{tabular}
 \caption{Experimental conditions. All use greedy decoding.}
@@ -459,12 +461,43 @@ More noise can \emph{prevent} solving certain tasks while enabling
 others. At $n = 10$ directions, the 2-tok condition has zero frozen
 tasks, while 3-tok freezes 5 and 8-tok freezes 2.
 
-\subsection{Shi et al.\ Comparison} % [PENDING]
+\subsection{Shi et al.\ Comparison} % [LOCKED]
 \label{sec:shi}
 
-\pending{Head-to-head comparison of continuous (random embedding) vs.\
-discrete (repeated punctuation) prefix tokens at matched token counts.
-Experiment queued.}
+To compare continuous and discrete perturbation regimes, we replicate
+the Shi et al.~\cite{shi2025} protocol on our task set: repeating
+discrete tokens ``/'' and ``?'' as 2-token prefixes, using native
+embeddings (RMS $\approx 0.020$, close to our target 0.022).
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lccc}
+\toprule
+\textbf{Condition} & \textbf{Accuracy} & \textbf{$\Delta$ vs.\ baseline} & \textbf{$n$} \\
+\midrule
+Baseline (no prefix) & 32.0\% & --- & 1 \\
+Discrete ``/'' (2 tok) & 36.0\% & +4pp & 1 \\
+Discrete ``?'' (2 tok) & 48.0\% & +16pp & 1 \\
+Discrete mean & 42.0\% & +10pp & 2 \\
+\textbf{Random noise (2 tok)} & \textbf{51.6\%} & \textbf{+19.6pp} & \textbf{10} \\
+\bottomrule
+\end{tabular}
+\caption{Discrete vs.\ continuous perturbation at 2 tokens.
+Continuous random noise outperforms the best discrete token by 3.6pp
+and the discrete mean by 9.6pp.}
+\label{tab:shi}
+\end{table}
+
+Both discrete tokens improve over baseline, consistent with Shi et
+al.'s observation that punctuation prefixes can aid reasoning. However,
+continuous random noise in embedding space produces a substantially
+larger effect (+19.6pp vs.\ +10pp mean discrete). The gap suggests
+that the continuous embedding manifold offers a richer space of
+perturbations than the discrete token vocabulary. Notably, ``?''
+(+16pp) outperforms ``/'' (+4pp), indicating that even within the
+discrete regime, token identity matters---possibly reflecting
+different semantic or positional biases in the model's embedding
+space.
 
 % ============================================================================
 \section{Discussion}

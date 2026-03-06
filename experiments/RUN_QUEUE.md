@@ -1,62 +1,89 @@
 # Experiment Run Queue (Updated 2026-03-06)
 
-3-tok COMPLETE (44.0%, SD=1.33, p=0.335, oracle=80%). Orthogonality killed (stuck 22h).
-2-tok n=10 COMPLETE (51.6%, SD=1.87, p=0.659, oracle=100%). Equalization DEAD. 284.7 min.
+3-tok COMPLETE (44.0%, SD=1.33, p=0.335, oracle=80%).
+2-tok n=10 COMPLETE (51.6%, SD=1.87, p=0.659, oracle=100%). Equalization DEAD.
+Think-gate probe COMPLETE (<think> saturated >99.99% all conditions).
+Shi discrete 2-tok COMPLETE (/ = 36%, ? = 48%, mean = 42% vs continuous 51.6%).
 
-## PRIORITY 1: EXISTENTIAL FOR PAPER (~90 min)
+## COMPLETED (Priority 1-2)
 
 ### 1. ~~2-tok Clean Rerun at n=10~~ DONE
 **Result**: [15,15,15,13,14,13,11,12,9,12], SD=1.87, p=0.659. Equalization DEAD.
 Oracle 25/25=100%, zero frozen tasks. Mean 51.6% still best of all token counts.
-The n=3 [15,15,15] was small-sample noise. Paper restructured accordingly.
 
 ### 2. ~~Think-Gate Probe~~ DONE
 **Result**: <think> saturated at >99.99% for ALL conditions including baseline.
-Think-mode gating FALSIFIED. 16% baseline think rate was visibility artifact.
-Paper updated: trajectory modulation, not mode activation.
+Think-mode gating FALSIFIED. Paper updated: trajectory modulation.
 
-## PRIORITY 2: POSITIONING (~30 min)
+### 3. ~~Shi-Style Discrete Token Control — 2 tokens~~ DONE
+**Result**: / = 36% (+4pp), ? = 48% (+16pp), mean = 42% (+10pp).
+Continuous 2-tok = 51.6% (+19.6pp). Gap: 9.6pp in favor of continuous.
+Paper updated with full comparison table.
 
-### 3. Shi-Style Discrete Token Control — 2 tokens (~30 min) [REQUIRED for MVP]
+## PRIORITY 1: CROSS-MODEL VALIDATION (~8-14 GPU hours) [EXISTENTIAL]
+
+Per Codex (2026-03-06): model diversity is MORE urgent than task diversity.
+Strategy: Screen → Promote → Characterize.
+
+### 4. Qwen3-1.7B — Calibrate + 2-tok n=3 (~1-1.5h)
 ```bash
-python -u experiments/run_latent_sensitivity.py --task-type nested --difficulty sweet_spot --n-latents 2 --n-tasks 25 --control-mode discrete_tokens --discrete-token "/,?" --num-soft-tokens 2 --reuse-baseline experiments/sensitivity_sweet_spot_random_noise_t2_results.json
+# Step 1: Calibrate baseline
+python -u experiments/run_latent_sensitivity.py --model Qwen/Qwen3-1.7B --task-type nested --difficulty sweet_spot --calibrate --n-calibrate 40
+# Step 2: Run 2-tok n=3
+python -u experiments/run_latent_sensitivity.py --model Qwen/Qwen3-1.7B --task-type nested --difficulty sweet_spot --n-latents 3 --n-tasks 25 --control-mode random_noise --num-soft-tokens 2
 ```
-Why: Head-to-head Shi comparison. Key positioning experiment.
+Why: Same family, different scale. Fast scout model.
 
-## PRIORITY 3: BREADTH (~2h)
+### 5. DeepSeek-R1-Distill-Qwen-1.5B — Calibrate + 2-tok n=3 (~1-1.5h)
+```bash
+python -u experiments/run_latent_sensitivity.py --model deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B --task-type nested --difficulty sweet_spot --calibrate --n-calibrate 40
+python -u experiments/run_latent_sensitivity.py --model deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B --task-type nested --difficulty sweet_spot --n-latents 3 --n-tasks 25 --control-mode random_noise --num-soft-tokens 2
+```
+Why: Different training (distilled reasoning), same architecture.
 
-### 4. Word Problem Cross-Task Replication (~90 min) [HIGH ROI]
+### 6. phi-2 — Smoke test + Calibrate + 2-tok n=3 (~1.5-2h)
+```bash
+# Step 1: 10-task smoke test
+python -u experiments/run_latent_sensitivity.py --model microsoft/phi-2 --task-type nested --difficulty sweet_spot --calibrate --n-calibrate 10
+# Step 2: If stable, full calibrate + 2-tok n=3
+python -u experiments/run_latent_sensitivity.py --model microsoft/phi-2 --task-type nested --difficulty sweet_spot --n-latents 3 --n-tasks 25 --control-mode random_noise --num-soft-tokens 2
+```
+Why: Out-of-family. Critical for reviewer objection "Qwen-specific artifact."
+
+### 7. Promote best non-Qwen → 1/2/3-tok dose-response + 2-tok n=10
+Why: Tests whether non-monotonic dose-response and oracle behavior generalize.
+
+### 8. Qwen3-8B — Calibrate + 2-tok n=3 (~2.5-4h)
+```bash
+python -u experiments/run_latent_sensitivity.py --model Qwen/Qwen3-8B --task-type nested --difficulty sweet_spot --calibrate --n-calibrate 40
+python -u experiments/run_latent_sensitivity.py --model Qwen/Qwen3-8B --task-type nested --difficulty sweet_spot --n-latents 3 --n-tasks 25 --control-mode random_noise --num-soft-tokens 2
+```
+Why: Larger same-family model. Tests scale dependence.
+
+## PRIORITY 2: BREADTH (after cross-model)
+
+### 9. Word Problem Cross-Task Replication (~90 min)
 ```bash
 python -u experiments/run_latent_sensitivity.py --task-type word_problem --n-latents 3 --n-tasks 25 --control-mode random_noise --num-soft-tokens 2
 ```
-Why: Best external validity per hour invested.
+Why: Different task domain. Best external validity per hour.
 
-### 5. 8-tok Random Noise RERUN at n=10 (~75 min) [CONDITIONAL]
-```bash
-python -u experiments/run_latent_sensitivity.py --task-type nested --difficulty sweet_spot --n-latents 10 --n-tasks 25 --control-mode random_noise --num-soft-tokens 8
-```
-Why: Clean 8-tok data for regime-boundary comparison with 2-tok.
+## PRIORITY 3: OPTIONAL
 
-## Nice-to-have (after MVP experiments)
+### 10. Qwen3-0.6B — Capacity floor null
+Why: Expected negative (too small). Only run if time permits.
 
-### 6. Discrete Token Control — 1 token (~30 min)
-```bash
-python -u experiments/run_latent_sensitivity.py --task-type nested --difficulty sweet_spot --n-latents 2 --n-tasks 25 --control-mode discrete_tokens --discrete-token "/,?" --num-soft-tokens 1 --reuse-baseline experiments/sensitivity_sweet_spot_random_noise_t2_results.json
-```
+### 11. Granite-4.0-h-1b — Backup out-of-family
+Why: Fallback if phi-2 is unstable with prompt formatting.
 
-### 7. Mean Embedding RERUN (~30 min)
-```bash
-python -u experiments/run_latent_sensitivity.py --task-type nested --difficulty sweet_spot --n-latents 1 --n-tasks 25 --control-mode mean_embedding --num-soft-tokens 8
-```
-Why: Decides 24/25 vs 25/25 oracle. Nice-to-have per Codex.
+## NeurIPS-Sufficient Evidence (Codex 2026-03-06)
+- Workshop: 4B + 3 models, 2-tok > baseline on 2/3, non-monotonic on 1 non-4B
+- Paper-grade: one non-4B at n=10 showing oracle/task-selectivity
+- If only Qwen-family positives: still vulnerable to "Qwen-specific" objection
+- One out-of-family positive makes the paper much harder to dismiss
 
 ## Notes
-- 3-tok FINAL N1-N10: [11,11,11,10,13,12,9,9,12,12], SD=1.33, p=0.335
-- 3-tok equalization conclusively DEAD
-- Paper restructured: oracle-efficiency > equalization (Codex 2026-03-05f)
-- 2-tok n=10 rerun is EXISTENTIAL: only remaining equalization evidence (p=0.031 at n=3)
-- Define success as suppressed variance, not std=0.00 (Codex guidance)
-- Codex priority: 2-tok n=10 > think-gate > Shi t=2 > word problem
-- If 2-tok n=10 fails: paper already has oracle efficiency + dose-response + over-perturbation
-- MVP timeline: items 1-3 = ~100 min post-3tok
-- Codex 2026-03-05f: value of 3-tok N9-N10 is LOW; GPU should go to 2-tok n=10 ASAP
+- Each model needs its OWN sweet-spot calibration (different baseline accuracy)
+- Compare models by DELTA vs baseline, not raw accuracy
+- Budget from Qwen3-4B logs: 284.7 min for n=10 at 4B, scale down for smaller models
+- Shi discrete: continuous > discrete by 9.6pp (42% vs 51.6%)
