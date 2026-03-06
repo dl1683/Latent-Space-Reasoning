@@ -454,6 +454,16 @@ This is NOT explained by higher per-latent accuracy alone (60% vs 44%) —
 1. **Magnitude sets the task-level threshold**: which tasks are frozen, unanimous, or sensitive
 2. **Direction selects** which sensitive tasks get solved, at roughly fixed capacity (~42%)
 
+### Equalization Significance Summary (2026-03-05e, Monte Carlo tests)
+| Condition | n_lat | Obs SD | Exp SD (iid) | p-value | Significant? |
+|-----------|-------|--------|--------------|---------|--------------|
+| 1-tok | 3 | 0.58 | 1.39 | 0.230 | No |
+| **2-tok** | **3** | **0.00** | **1.51** | **0.031** | **Yes** |
+| 3-tok | 5 | 1.10 | 1.19 | 0.434 | No |
+| 8-tok | 10 | 1.76 | 2.21 | ~0.15 | No |
+
+**Only 2-tok shows significant equalization.** 2-tok n=10 rerun is EXISTENTIAL.
+
 ### Equalization vs Independence (Codex, UPDATED 2026-03-05e)
 - Expected SD under iid Bernoulli(q=0.42): 1-tok=1.64, 2-tok=1.78, 3-tok=1.19(sim), 8-tok=2.21
 - Observed SD: 1-tok=0.47, **2-tok=0.00**, 3-tok=1.10, 8-tok=1.76
@@ -489,6 +499,37 @@ This is NOT explained by higher per-latent accuracy alone (60% vs 44%) —
 - N5 solved 6 sensitive tasks vs typical 3-4: nest_003,007,015,016,017,018
 - Variance suppression: 0.88x heterogeneous iid expected (still suppressed but weaker)
 - N6-N10 will determine final 3-tok distribution
+
+### Power Analysis: 2-tok n=10 Rerun (EXISTENTIAL experiment)
+Under heterogeneous iid null (100k Monte Carlo simulations using per-task rates):
+- Expected SD at k=10: 1.66
+- **SD < 0.5 → p < 0.0002** (strong equalization confirmed)
+- **SD < 1.0 → p < 0.04** (significant suppression)
+- **SD > 1.1 → indistinguishable from iid** (equalization fails)
+- **SD = 0 → p < 0.00001** (extraordinary, would settle question definitively)
+- P(SD=0 | iid, k=10) = 0.000000 (zero in 100k sims)
+- Decision: If SD < 1.0, equalization is a real 2-tok phenomenon. If SD > 1.1, pivot paper.
+
+### Cross-Condition Category Transitions (2026-03-05e)
+
+| Condition | Unanimous | Frozen | Sensitive | n_lat |
+|-----------|-----------|--------|-----------|-------|
+| 1-tok | 6 | 8 | 11 | 3 |
+| **2-tok** | **9** | **3** | **13** | **3** |
+| 3-tok | 7 | 9 | 9 | 5 |
+| 8-tok | 3 | 2 | 20 | 10 |
+
+Key transitions (2-tok → 3-tok):
+- 6 tasks S→F: over-perturbation freezes sensitive tasks (002,009,012,013,014,022)
+- 2 tasks U→S: over-perturbation destabilizes unanimous tasks (003,016)
+- **2-tok maximizes the optimal partition**: most U, fewest F, large S
+- This is publishable regardless of equalization — shows magnitude controls partition
+
+Notable per-task patterns:
+- nest_010: N(base)→U→U→U→U — rescued at 1-tok, stays rescued at all levels
+- nest_006: N→S→U→U→S — rescued at 2-3 tok, re-sensitized at 8-tok
+- nest_005: N→S→F→F→F — partially rescued at 1-tok, frozen at 2+ (hardest task after 008)
+- nest_003: Y→S→U→S→S — baseline correct, disrupted by 1-tok, restored at 2-tok
 
 ## 11. Codex Shi et al. Positioning (2026-03-05)
 
