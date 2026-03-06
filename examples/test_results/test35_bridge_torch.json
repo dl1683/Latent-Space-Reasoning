@@ -1,3 +1,0 @@
-{
-  "query": "Six hikers with crossing times 1, 2, 5, 10, 15, 20 minutes must cross a bridge at night. Only two cross at a time, they must carry one torch, and crossing time equals the slower hiker. Find the minimum total time and give one optimal crossing sequence."
-}

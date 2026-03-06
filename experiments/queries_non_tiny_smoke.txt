@@ -1,1 +1,0 @@
-Design a low-cost, auditable deployment plan for an internal AI assistant.

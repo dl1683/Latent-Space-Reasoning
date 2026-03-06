@@ -1,8 +1,0 @@
-{
-  "query": "Calculate step by step: A store has 156 apples. They receive a shipment of 3 boxes with 24 apples each. Then they sell 45 apples in the morning and 67 apples in the afternoon. How many apples remain? Show each calculation.",
-  "baseline": "**Step-by-Step Plan:**  \n\n1. **Initial Apples**: Start with the given apples:  \n   $ 156 $ apples.  \n\n2. **Add Apples Received from Shipment**:  \n   Each box contains 24 apples, and there are 3 boxes. Total received:  \n   $ 3 \\times 24 = 72 $.  \n   Updated stock: $ 156 + 72 = 228 $ apples.  \n\n3. **Subtract Sold Apples**:  \n   Morning sale: $ 45 $ apples; Afternoon sale: $ 67 $ apples. Total sales:  \n   $ 45 + 67 = 112 $ apples.  \n   Remaining apples: $ 228 - 112 = 116 $ apples.  \n\n**Final Answer**: The number of apples remaining is **116**.",
-  "latent_reasoning": "To determine how many apples remain after calculations, follow these steps:\n\n1. **Initial Apples**:  \n   $ 156 \\text{ apples} $\n\n2. **Apples Received Shipment**:  \n   Each of the 3 boxes contains 24 apples.  \n   Total apples in shipment: $ 3 \\times 24 = 72 $.  \n\n   New total apples:  \n   $ 156 + 72 = 228 \\text{ apples} $\n\n3. **Apple Sales**:  \n   Morning sale: $ 45 $ apples  \n   Afternoon sale: $ 67 $ apples  \n\n   Combined sales: $ 45 + 67 = 112 $ apples.  \n\n4. **Remaining Apples**:  \n   Subtracting sales from total:  \n   $ 228 - 112 = 116 \\text{ apples} $\n\n**Final Answer:** There will be $ \\boxed{116} $ apples left.",
-  "latent_score": 0.7284865379333496,
-  "generations": 6,
-  "evaluations": 10
-}

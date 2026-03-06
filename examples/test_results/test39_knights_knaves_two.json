@@ -1,3 +1,0 @@
-{
-  "query": "Each person is either a Knight (always tells the truth) or a Knave (always lies). Statements: Alice: \"Bob is a knave.\" Bob: \"Carol and Dave are the same type.\" Carol: \"Dave is a knave.\" Dave: \"Alice and Bob are different types.\" Exactly two are Knights. Determine who is Knight/Knave."
-}

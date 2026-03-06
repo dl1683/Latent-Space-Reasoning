@@ -1,3 +1,0 @@
-{
-  "query": "Two jugs with capacities 8L and 5L. You can fill a jug to full, empty it, or pour from one jug to the other until one is full or the other is empty. Start with both empty. Measure exactly 6L using the minimum number of actions; provide the sequence of jug states (8L,5L)."
-}

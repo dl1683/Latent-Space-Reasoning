@@ -1,3 +1,0 @@
-{
-  "query": "Project scheduling with two identical workers (tasks are non-preemptible; each worker can do only one task at a time). Tasks and durations: A=3, B=5, C=4, D=6, E=2, F=3, G=4. Dependencies: D after A and B; E after A; F after C and E; G after D and F. Find the minimum completion time and one optimal schedule (start/end times for each task)."
-}

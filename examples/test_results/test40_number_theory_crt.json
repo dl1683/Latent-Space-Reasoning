@@ -1,3 +1,0 @@
-{
-  "query": "Find the smallest integer N with 1000 < N < 2000 such that: N ≡ 3 (mod 5), N ≡ 4 (mod 7), N ≡ 5 (mod 9). Give N and a brief check."
-}

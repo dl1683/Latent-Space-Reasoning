@@ -1,3 +1,0 @@
-{
-  "query": "Stack machine (top of stack is rightmost). Instructions: PUSH n, ADD (pop a,b push a+b), MUL (pop a,b push a*b), SUB (pop a then b, push b-a), DUP (duplicate top), SWAP (swap top two). Start empty. Program: PUSH 4; PUSH 1; PUSH 3; DUP; ADD; PUSH 2; MUL; SWAP; SUB; PUSH 5; ADD. What is the final stack (bottom to top)?"
-}

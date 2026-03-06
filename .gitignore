@@ -103,3 +103,13 @@ models/
 compare_*.json
 test_results.md
 experiments/*.txt
+
+# Old model checkpoints (not needed for current experiments)
+checkpoints/
+
+# Experiment logs (local only)
+experiments/*_log*.txt
+experiments/*.log
+
+# Local eval results
+eval_results/

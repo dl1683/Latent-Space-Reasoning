@@ -1,3 +1,0 @@
-{
-  "query": "Directed weighted graph edges: A->B(4), A->C(2), A->D(7), B->E(6), B->C(3), C->E(5), C->F(9), D->C(2), D->F(3), E->G(4), F->E(1), F->G(2). Find the shortest path from A to G that must visit E at least once and must include exactly one of {B, D} (not both). Give the path and total cost."
-}

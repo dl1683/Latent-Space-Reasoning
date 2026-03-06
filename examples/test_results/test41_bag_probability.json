@@ -1,3 +1,0 @@
-{
-  "query": "Three bags: Bag A has 3 gold and 1 silver, Bag B has 1 gold and 3 silver, Bag C has 2 gold and 2 silver. Choose a bag uniformly at random, then draw two coins without replacement and both are gold. What is P(Bag A | two gold)? Give a simplified fraction."
-}
