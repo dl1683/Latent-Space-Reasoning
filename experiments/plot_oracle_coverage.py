@@ -50,7 +50,7 @@ def main():
         [1,1,0,0,0,0,1,0,0,1,1,1,0,0,0,0,0,1,1,1,1,0,1,0,1],
         [1,1,0,0,0,0,0,0,0,0,1,1,0,0,0,1,0,1,0,1,1,0,0,0,1],
         [1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,1,1,1,0,1,1,0,0,0,1],
-        [1,1,0,0,0,0,0,0,0,0,0,1,0,0,0,1,1,1,0,1,1,0,0,0,1],
+        [1,1,0,1,0,0,1,0,0,0,1,1,0,1,0,0,1,1,0,1,1,0,0,0,1],
     ])
 
     # 8-tok
@@ -72,7 +72,7 @@ def main():
     ax.annotate('88%', xy=(3, 88), xytext=(3.5, 91),
                 fontsize=9, color='#2ecc71', fontweight='bold',
                 arrowprops=dict(arrowstyle='->', color='#2ecc71', lw=1.5))
-    ax.annotate('72%', xy=(9, 72), xytext=(9.5, 67),
+    ax.annotate('76%', xy=(9, 76), xytext=(9.5, 71),
                 fontsize=9, color='#e74c3c', fontweight='bold',
                 arrowprops=dict(arrowstyle='->', color='#e74c3c', lw=1.5))
     ax.annotate('92%', xy=(10, 92), xytext=(9, 95),
