@@ -3,6 +3,10 @@
 Reverse chronological. Each entry links artifacts and summarizes findings.
 Only Codex-validated conclusions are stated as "confirmed."
 
+> Note: Pre-paradigm artifacts (V1-V15, conditioning comparison, etc.) were removed in
+> commit 5055d58 (2026-03-05). Historical entries below reference these for context but
+> the files no longer exist. Current experiment data lives in `experiments/*.json`.
+
 ---
 
 ## Shi et al. Discrete Token Control (2026-03-05) — PLANNED
@@ -156,24 +160,16 @@ at the first decode position under all perturbation conditions. Tests PGRMS gati
 
 ---
 
-## UPCOMING: Diagnostic Experiments (Codex-Prioritized)
+## UPCOMING: Priority Experiments (Codex 2026-03-05f)
 
-**Priority order per Codex CLI review (updated):**
+See `experiments/RUN_QUEUE.md` for full details and commands.
 
-| # | Experiment | Purpose | Flag |
-|---|-----------|---------|------|
-| 1 | Repeated noise (1 vec x 8) | Within-prefix diversity required? | `--control-mode repeated_noise` |
-| 2 | Attention masking | If effect vanishes → sink confirmed | `--mask-prefix` |
-| 3 | Suffix position | Position matters? → sink evidence | `--position suffix` |
-| 4 | max_new_tokens sweep (2048, 4096) | Token budget mediator? | `--max-new-tokens` |
-| 5 | Scale to n=100+ | Statistical power for claims | -- |
-| 6 | RMS scale sweep | Optimal perturbation magnitude | `--rms-scale` |
-
-**Candidate Mechanisms (updated with evidence):**
-1. **Trajectory Perturbation / Attractor Switching** — LEADING (Codex-validated). Random prefix perturbs hidden-state trajectory, biasing model toward different reasoning policy
-2. **Attention Sink** — SECONDARY. May contribute but not primary mechanism per qualitative analysis
-3. ~~Computational Depth~~ — ELIMINATED. Zero-embedding (+4pp) << random (+12pp)
-4. ~~KV Cache Warm-Up~~ — ELIMINATED. Mean-embedding = zero-embedding
+| # | Experiment | Purpose | Status |
+|---|-----------|---------|--------|
+| 1 | 2-tok n=10 rerun | EXISTENTIAL: equalization at scale | RUNNING (PID 38532) |
+| 2 | Think-gate probe | Mode gating mechanism proof | Script ready |
+| 3 | Shi discrete t=2 | Continuous vs discrete comparison | Script ready |
+| 4 | Word problem cross-task | External validity | Queued |
 
 ---
 

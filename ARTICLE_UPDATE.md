@@ -1,5 +1,10 @@
 # Latent Space Reasoning: What We've Learned So Far
 
+> **OUTDATED** — This blog article was written before the full NeurIPS paper draft
+> (`paper/main.tex`) which supersedes it. Key updates since this article: 2-tok peak is 60%
+> (+28pp), non-monotonic dose-response confirmed at 3/8 tokens, think-mode gating decomposition,
+> oracle efficiency is the main empirical finding.
+
 **Devansh** | March 2026
 
 ---

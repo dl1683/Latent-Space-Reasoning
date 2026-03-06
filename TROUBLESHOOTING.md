@@ -1,5 +1,10 @@
 # Troubleshooting Guide
 
+> **OUTDATED** — This guide references the `latent-reason` CLI tool from the evolution-based
+> approach (pre-March 2026). The project has shifted to experiment-focused research using
+> `experiments/run_latent_sensitivity.py` and `experiments/harness.py`. See `paper/main.tex`
+> for current work and `experiments/RUN_QUEUE.md` for active experiments.
+
 This guide helps you resolve common issues when using the Latent Space Reasoning Engine.
 
 Important: scorer numbers (`latent_score`, `confidence`) are internal search guidance only. Evaluate decoded outputs directly for quality decisions.
