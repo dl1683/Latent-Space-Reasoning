@@ -113,3 +113,6 @@ experiments/*.log
 
 # Local eval results
 eval_results/
+
+# Experiment checkpoints (transient, auto-deleted on completion)
+experiments/*.checkpoint.json

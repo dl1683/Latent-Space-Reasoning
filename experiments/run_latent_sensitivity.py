@@ -790,6 +790,8 @@ def main():
     parser.add_argument("--n-tasks", type=int, default=None,
         help="Override total number of tasks (for nested/sweet_spot modes)")
     parser.add_argument("--output", default=None)
+    parser.add_argument("--resume-checkpoint", type=str, default=None,
+        help="Path to checkpoint JSON from a crashed run. Resumes from last completed latent.")
     args = parser.parse_args()
 
     if args.diagnostic:
@@ -1135,10 +1137,52 @@ def main():
         hidden_rms=effective_rms,
     )
 
+    # Compute checkpoint path for incremental saves
+    def _make_output_path():
+        if args.output:
+            return Path(args.output)
+        diff_tag = f"_{args.difficulty}" if args.difficulty else ""
+        ctrl_tag = f"_{control_mode}" if control_mode != "latent_projected" else ""
+        tok_tag = f"_t{num_soft_tokens}" if num_soft_tokens != 8 else ""
+        rms_tag = f"_rms{args.rms_scale}" if args.rms_scale != 1.0 else ""
+        pos_tag = f"_{args.position}" if args.position != "prefix" else ""
+        mask_tag = "_masked" if args.mask_prefix else ""
+        gen_tag = f"_gen{args.max_new_tokens}" if args.max_new_tokens != 1024 else ""
+        model_tag = ""
+        if args.model != "Qwen/Qwen3-4B":
+            model_short = args.model.split("/")[-1].lower().replace("-", "")
+            model_tag = f"_{model_short}"
+        return (Path(__file__).parent
+                / f"sensitivity{diff_tag}{ctrl_tag}{tok_tag}{rms_tag}{pos_tag}{mask_tag}{gen_tag}{model_tag}_results.json")
+
+    checkpoint_path = _make_output_path().with_suffix(".checkpoint.json")
+
     sensitivity_results: List[Dict] = []
+    start_latent_idx = 0
     phase2_start = time.time()
 
-    for li in range(args.n_latents):
+    # Resume from checkpoint if provided
+    if args.resume_checkpoint:
+        ckpt_file = Path(args.resume_checkpoint)
+        if ckpt_file.exists():
+            with open(ckpt_file) as f:
+                ckpt = json.load(f)
+            sensitivity_results = ckpt["sensitivity_results"]
+            start_latent_idx = len(sensitivity_results)
+            print(f"  RESUMED from checkpoint: {start_latent_idx}/{args.n_latents} latents completed")
+        else:
+            print(f"  WARNING: checkpoint file not found: {ckpt_file}")
+    elif checkpoint_path.exists():
+        # Auto-detect checkpoint from previous crash
+        with open(checkpoint_path) as f:
+            ckpt = json.load(f)
+        n_done = len(ckpt.get("sensitivity_results", []))
+        if n_done > 0 and n_done < args.n_latents:
+            print(f"  FOUND checkpoint with {n_done}/{args.n_latents} latents. Auto-resuming.")
+            sensitivity_results = ckpt["sensitivity_results"]
+            start_latent_idx = n_done
+
+    for li in range(start_latent_idx, args.n_latents):
         label = ("Noise" if control_mode == "random_noise"
                  else "Antipodal" if control_mode == "antipodal"
                  else "MeanEmb" if control_mode == "mean_embedding"
@@ -1226,6 +1270,17 @@ def main():
         gc.collect()
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
+
+        # Incremental checkpoint after each latent
+        ckpt_data = {
+            "model": args.model,
+            "n_latents_target": args.n_latents,
+            "n_latents_done": li + 1,
+            "sensitivity_results": sensitivity_results,
+        }
+        with open(checkpoint_path, "w") as f:
+            json.dump(ckpt_data, f, indent=2, default=str)
+        print(f"  [checkpoint saved: {li + 1}/{args.n_latents}]")
 
     phase2_elapsed = time.time() - phase2_start
 
@@ -1407,26 +1462,15 @@ def main():
         ],
     }
 
-    if args.output:
-        out_path = Path(args.output)
-    else:
-        diff_tag = f"_{args.difficulty}" if args.difficulty else ""
-        ctrl_tag = f"_{control_mode}" if control_mode != "latent_projected" else ""
-        tok_tag = f"_t{num_soft_tokens}" if num_soft_tokens != 8 else ""
-        rms_tag = f"_rms{args.rms_scale}" if args.rms_scale != 1.0 else ""
-        pos_tag = f"_{args.position}" if args.position != "prefix" else ""
-        mask_tag = "_masked" if args.mask_prefix else ""
-        gen_tag = f"_gen{args.max_new_tokens}" if args.max_new_tokens != 1024 else ""
-        # Include model short name to prevent cross-model filename collisions
-        model_tag = ""
-        if args.model != "Qwen/Qwen3-4B":
-            model_short = args.model.split("/")[-1].lower().replace("-", "")
-            model_tag = f"_{model_short}"
-        out_path = (Path(__file__).parent
-                    / f"sensitivity{diff_tag}{ctrl_tag}{tok_tag}{rms_tag}{pos_tag}{mask_tag}{gen_tag}{model_tag}_results.json")
+    out_path = _make_output_path()
 
     with open(out_path, "w") as f:
         json.dump(output, f, indent=2, default=str)
+
+    # Remove checkpoint after successful save
+    if checkpoint_path.exists():
+        checkpoint_path.unlink()
+        print("  [checkpoint removed — final results saved]")
 
     print(f"\nResults saved to: {out_path}")
     print(f"Total time: {total_elapsed / 60:.1f} min")
