@@ -9,6 +9,34 @@ Only Codex-validated conclusions are stated as "confirmed."
 
 ---
 
+## Cross-Model: Qwen3-8B (2026-03-06) — COMPLETE (NULL, QUANTIZATION-CONFOUNDED)
+
+**Purpose:** Cross-model validation. Larger same-family model. Tests scale dependence.
+**Config:** 3 random noise vectors, 2 soft tokens each, 25 sweet-spot tasks, Qwen3-8B Q4
+**Script:** `python -u experiments/run_latent_sensitivity.py --model Qwen/Qwen3-8B --task-type nested --difficulty sweet_spot --n-tasks 25 --n-latents 3 --control-mode random_noise --num-soft-tokens 2`
+**Total time:** 124.5 min
+**Artifacts:** `sensitivity_sweet_spot_random_noise_t2_qwen38b_results.json`
+
+### Results — NULL (SECOND QWEN-FAMILY NEGATIVE)
+- Baseline: 24% (6/25) — BELOW 4B (32%), 4-bit quantization likely too aggressive
+- Noise 1: 16% (4/25) = -8pp
+- Noise 2: 24% (6/25) = +0pp
+- Noise 3: 36% (9/25) = +12pp
+- Mean conditioned: 25.3% (+1.3pp, identical to Qwen3-1.7B)
+- Oracle (k=3): 11/25 = 44% (7 tasks rescued, 2 regressed)
+- Regressions: nest_016, nest_018 (both mod tasks correct at baseline)
+- McNemar: gains=7, losses=2, p=0.18 (not significant)
+
+### What We Learned
+- **8B at 4-bit performs WORSE than 4B at 4-bit** — quantization is a confound
+- Strikingly similar to 1.7B null: +1.3pp mean, 44% oracle, 2 regressions
+- Cannot distinguish "4B is genuinely special" from "4-bit hits 4B sweet spot"
+- 8-bit quantization rerun needed before concluding about scale dependence
+- High within-latent variance: [4, 6, 9] suggests SOME directional sensitivity
+- Baseline tasks differ from 4B (only 3/6 overlap) — different models solve different subsets
+
+---
+
 ## Cross-Model: phi-2 (2026-03-06) — COMPLETE (POSITIVE, OUT-OF-FAMILY)
 
 **Purpose:** Cross-model validation. Out-of-family (Microsoft, 2.7B). Critical for reviewer objection.
