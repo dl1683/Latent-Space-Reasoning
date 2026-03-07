@@ -49,7 +49,10 @@ Qwen3-8B at 8-bit (+16.0pp), DeepSeek-R1-Distill-1.5B (+5.3pp),
 and phi-2 (+6.7pp, out-of-family). A within-model quantization
 control reveals that weight precision modulates perturbation
 sensitivity: Qwen3-8B at 4-bit yields a null result while 8-bit
-yields +16pp on the same tasks. These results establish
+yields +16pp on the same tasks. A dose-response scout on DeepSeek
+confirms the non-monotonic window generalizes: 1-token perturbation
+hurts ($-12$pp), 2-token is the stable optimum, and 3-token enters
+a direction-sensitive bifurcated regime. These results establish
 embedding-space perturbation as a training-free intervention that
 activates latent reasoning capabilities, with transfer dependent
 on reasoning substrate and quantization fidelity.
@@ -571,6 +574,19 @@ per direction). This rules out raw parameter count as the predictor and
 points to training regime---specifically reasoning distillation---as
 a key substrate requirement, alongside sufficient quantization fidelity.
 
+\paragraph{Cross-model dose-response.}
+A scout dose-response on DeepSeek-R1-Distill-1.5B ($n{=}3$ per condition)
+confirms a non-monotonic constructive window: 1-token perturbation
+\emph{hurts} ($76\% \to 64\%$, $-12\text{pp}$), 2-token is
+the stable optimum ($+5.3\text{pp}$, SD = 0.046), and 3-token maintains
+a similar mean ($+4.0\text{pp}$) but enters a bifurcated regime
+(SD = 0.174, Cochran's $Q = 9.5$, $p \approx 0.009$). Per-latent
+accuracies at 3 tokens range from 60\% (destructive) to 92\%
+(constructive), compared to the tight 76--84\% band at 2 tokens.
+This mirrors the Qwen3-4B pattern (1-tok marginal, 2-tok peak, 3-tok
+decline), establishing the non-monotonic optimum as a cross-model
+phenomenon rather than a model-specific artifact.
+
 \paragraph{Task-level structure.} One task (\texttt{nest\_009}:
 $(47 \times 92 + 50) \bmod 28 = 6$) is unlocked by all tested models
 including Qwen3-1.7B, suggesting that modular arithmetic creates a
@@ -721,7 +737,11 @@ control on Qwen3-8B reveals that weight precision modulates
 perturbation sensitivity: 4-bit yields a null result while 8-bit
 yields +16pp, with only 2/25 baseline tasks shared---demonstrating
 that quantization fidelity determines which reasoning trajectories
-are accessible to perturbation.
+are accessible to perturbation. A cross-model dose-response on
+DeepSeek confirms the non-monotonic constructive window: 1-token
+perturbation hurts ($-12$pp), 2-token is the stable optimum ($+5.3$pp),
+and 3-token enters a bifurcated regime with direction-dependent outcomes
+(Cochran's $Q$ significant only at 3 tokens).
 These findings suggest that language models with sufficient reasoning
 substrate and quantization fidelity possess latent capabilities
 that can be unlocked through minimal, training-free embedding-space

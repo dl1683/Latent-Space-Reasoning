@@ -99,6 +99,24 @@ Oracle overlap: 9/25 tasks shared.
 Codex mechanism: 4-bit regularizes trajectory landscape (helps default path,
 washes out perturbation). 8-bit preserves richer local trajectory structure.
 
+## DeepSeek Dose-Response (2026-03-07, Codex-validated)
+
+Same model, same tasks, same perturbation method. Only num_soft_tokens changed.
+
+| Tokens | Baseline | Mean | Delta | SD | Oracle | Cochran Q | Cochran p |
+|--------|----------|------|-------|------|--------|-----------|-----------|
+| 1 | 76% | 64% | -12pp | 0.040 | 96% | 0.5 | NS |
+| 2 | 76% | 81.3% | +5.3pp | 0.046 | 100% | 0.89 | NS |
+| 3 | 76% | 80% | +4pp | 0.174 | 100% | 9.5 | 0.009 |
+
+Key: Cochran's Q transitions from NS to significant at 3 tokens — formal evidence of
+"latent bifurcation." 2-tok is stable optimum (tight clustering, all latents at/above baseline).
+3-tok enters direction-sensitive regime (L0=60% destructive, L2=92% constructive).
+
+Qwen3-4B comparison: 1-tok=+10.7pp, 2-tok=+28pp (peak), 3-tok=+12pp.
+Both models show non-monotonic window with 2-tok optimum, but DeepSeek's drop at 3-tok
+is shallower (+4pp vs +12pp for Qwen3-4B). Higher baseline leaves less room for catastrophic harm.
+
 ## Statistical Tests (Updated 2026-03-07)
 
 - Per-model: Exact McNemar on paired (baseline vs oracle) task outcomes

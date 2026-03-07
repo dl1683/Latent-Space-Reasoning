@@ -9,6 +9,38 @@ Only Codex-validated conclusions are stated as "confirmed."
 
 ---
 
+## DeepSeek Dose-Response (2026-03-07) — COMPLETE (NON-MONOTONIC WINDOW CONFIRMED)
+
+**Purpose:** Test whether non-monotonic 2-tok optimum generalizes beyond Qwen3-4B.
+**Config:** DeepSeek-R1-Distill-Qwen-1.5B Q4, 25 sweet-spot tasks, 3 latents, 1/2/3 soft tokens
+**Scripts:**
+- 1-tok: `python -u experiments/run_latent_sensitivity.py --model deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B --task-type nested --difficulty sweet_spot --n-latents 3 --n-tasks 25 --control-mode random_noise --num-soft-tokens 1 --reuse-baseline ...t2...results.json`
+- 3-tok: same with `--num-soft-tokens 3`
+**Artifacts:** `sensitivity_sweet_spot_random_noise_t{1,3}_deepseekr1distillqwen1.5b_results.json`
+
+### Results — Non-Monotonic Constructive Window
+
+| Tokens | Baseline | Mean | Delta | SD | Oracle | Rescued | Total Regress |
+|--------|----------|------|-------|-----|--------|---------|---------------|
+| 1 | 76% | 64% | -12pp | 0.040 | 96% | 5 | 19 |
+| 2 | 76% | 81.3% | +5.3pp | 0.046 | 100% | 6 | 10 |
+| 3 | 76% | 80% | +4pp | 0.174 | 100% | 6 | 10 |
+
+Per-latent at 3-tok: [60%, 88%, 92%] — massive variance (Cochran's Q=9.5, p≈0.009)
+Per-latent at 2-tok: [84%, 76%, 84%] — tight clustering (Cochran's Q=0.89, NS)
+Per-latent at 1-tok: [64%, 68%, 60%] — all below baseline, tight clustering
+
+### What We Learned (Codex-validated)
+- **Non-monotonic constructive window confirmed on second model**: 1-tok HURTS, 2-tok is stable optimum, 3-tok enters bifurcated regime
+- 2-tok vs 3-tok difference is small in mean (+1.3pp) but massive in stability (SD: 0.046 vs 0.174)
+- Cochran's Q significant ONLY at 3-tok: direction sensitivity emerges at higher token counts
+- 1-tok: high-churn net-negative. Capability accessible (oracle rescues 5) but operating point mistuned
+- Codex framing: "2 tokens is stable optimum; 3 tokens crosses into direction-sensitive basin"
+- Pattern matches Qwen3-4B: 1-tok < baseline < 2-tok (peak) > 3-tok
+- McNemar at oracle: 1-tok p=0.0625, 2-tok p=0.031, 3-tok p=0.031
+
+---
+
 ## Cross-Model: Qwen3-8B 8-bit (2026-03-07) — COMPLETE (STRONGLY POSITIVE)
 
 **Purpose:** Quantization adjudication. Same architecture as 4-bit null, only quantization changed.

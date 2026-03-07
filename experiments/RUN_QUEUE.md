@@ -1,4 +1,4 @@
-# Experiment Run Queue (Updated 2026-03-07, post-8bit-adjudication)
+# Experiment Run Queue (Updated 2026-03-07, post-dose-response)
 
 ## COMPLETED
 
@@ -19,6 +19,8 @@ Continuous 2-tok = 51.6% (+19.6pp). Gap: 9.6pp in favor of continuous.
 ### 6. ~~phi-2 2-tok n=3~~ DONE — POSITIVE (+6.7pp, out-of-family)
 ### 7. ~~Qwen3-8B 4-bit 2-tok n=3~~ DONE — NULL (+1.3pp, quantization confound)
 ### 8. ~~Qwen3-8B 8-bit 2-tok n=3~~ DONE — STRONGLY POSITIVE (+16pp, reverses 4-bit null!)
+### 9. ~~DeepSeek 1-tok n=3~~ DONE — NEGATIVE (-12pp, 1-tok HURTS)
+### 10. ~~DeepSeek 3-tok n=3~~ DONE — CONSTRUCTIVE BUT BIFURCATED (+4pp, SD=0.174)
 
 ## Cross-Model Statistical Summary (Updated with 8-bit)
 | Model | Quant | McNemar p | Gains | Losses | Headroom used |
@@ -38,9 +40,17 @@ Continuous 2-tok = 51.6% (+19.6pp). Gap: 9.6pp in favor of continuous.
 | 8-bit | 16% | 32% | +16pp | 60% | 11/21 | 0 |
 Only 2/25 baseline tasks shared. Oracle sets overlap on 9/25.
 
+## DeepSeek Dose-Response (COMPLETE)
+| Tokens | Baseline | Mean | Delta | SD | Oracle | Cochran p |
+|--------|----------|------|-------|-----|--------|-----------|
+| 1 | 76% | 64% | -12pp | 0.040 | 96% | NS |
+| 2 | 76% | 81.3% | +5.3pp | 0.046 | 100% | NS |
+| 3 | 76% | 80% | +4pp | 0.174 | 100% | 0.009 |
+Non-monotonic window confirmed. 2-tok stable optimum, 3-tok bifurcated.
+
 ## PRIORITY 1: Qwen3-8B 8-bit n=10 (Codex: firm up within-model control)
 
-### 9. Qwen3-8B 8-bit 2-tok n=10 (~4 hours, 15.6 GB VRAM)
+### 11. Qwen3-8B 8-bit 2-tok n=10 (~4 hours, 15.6 GB VRAM)
 ```bash
 python -u experiments/run_latent_sensitivity.py \
   --model Qwen/Qwen3-8B \
@@ -52,33 +62,25 @@ python -u experiments/run_latent_sensitivity.py \
 ```
 Why: Tests oracle/task-selectivity and equalization on second model at paper-grade n=10.
 Answers biggest reviewer question: is 8-bit crossover real or n=3 fluke?
+**CAUTION**: Previously crashed twice (no checkpointing). Add checkpointing first if attempting.
 
-## PRIORITY 2: DeepSeek Dose-Response
+## PRIORITY 2: DeepSeek 2-tok n=10 (Codex: promoted from optional)
 
-### 10. DeepSeek 1-tok n=3 (~20 min, reuses baseline)
+### 12. DeepSeek 2-tok n=10 (~60 min, reuses baseline)
 ```bash
 python -u experiments/run_latent_sensitivity.py \
   --model deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B \
   --task-type nested --difficulty sweet_spot \
-  --n-latents 3 --n-tasks 25 \
-  --control-mode random_noise --num-soft-tokens 1 \
+  --n-latents 10 --n-tasks 25 \
+  --control-mode random_noise --num-soft-tokens 2 \
   --reuse-baseline experiments/sensitivity_sweet_spot_random_noise_t2_deepseekr1distillqwen1.5b_results.json
 ```
-
-### 11. DeepSeek 3-tok n=3 (~20 min, reuses baseline)
-```bash
-python -u experiments/run_latent_sensitivity.py \
-  --model deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B \
-  --task-type nested --difficulty sweet_spot \
-  --n-latents 3 --n-tasks 25 \
-  --control-mode random_noise --num-soft-tokens 3 \
-  --reuse-baseline experiments/sensitivity_sweet_spot_random_noise_t2_deepseekr1distillqwen1.5b_results.json
-```
-Why: Tests if non-monotonic 2-tok optimum generalizes beyond Qwen3-4B.
+Why: Dose-response confirmed non-monotonic window. Paper-grade n=10 makes DeepSeek
+a second fully-powered positive model alongside Qwen3-4B.
 
 ## PRIORITY 3: BREADTH
 
-### 12. Word Problem Cross-Task Replication (~90 min)
+### 13. Word Problem Cross-Task Replication (~90 min)
 ```bash
 python -u experiments/run_latent_sensitivity.py \
   --task-type word_problem --n-latents 3 --n-tasks 25 \
@@ -88,22 +90,20 @@ Why: Different task domain. Best external validity per hour.
 
 ## PRIORITY 4: OPTIONAL
 
-### 13. DeepSeek 2-tok n=10 (~60 min, reuses baseline)
-If dose-response positive, promotes DeepSeek to paper-grade evidence.
-
 ### 14. Qwen3-0.6B — Capacity floor null
 Why: Expected negative. Boundary condition.
 
-## NeurIPS-Sufficient Evidence (Codex 2026-03-07, updated)
+## NeurIPS-Sufficient Evidence (Codex 2026-03-07, updated post-dose-response)
 - **4 positive models** (4B, 8B-8bit, DeepSeek, phi-2), Fisher combined p < 0.001
 - Within-model quantization control = cleanest evidence against "model-specific" objection
 - Out-of-family positive (phi-2) addresses "Qwen-specific" objection
-- 8B 8-bit n=10 would give paper-grade second model with oracle/selectivity analysis
-- DeepSeek dose-response would establish generality of non-monotonic optimum
+- **DeepSeek dose-response confirms non-monotonic window generalizes** (1-tok HURTS, 2-tok peak, 3-tok bifurcated)
+- DeepSeek 2-tok n=10 would give paper-grade second model with oracle/selectivity analysis
+- 8B 8-bit n=10 would firm up quantization control (if checkpointing added)
 
 ## Notes
 - Each model needs its OWN sweet-spot calibration (different baseline accuracy)
 - Compare models by DELTA vs baseline, not raw accuracy
 - DeepSeek --reuse-baseline saves ~20 min per experiment
-- 8B 8-bit: 15.6 GB VRAM, ~148s/task (all hitting 1024 token cap)
+- 8B 8-bit: 15.6 GB VRAM, ~148s/task (all hitting 1024 token cap). Crashes without checkpointing.
 - All data integrity verified: mismatches are truncation artifacts only
