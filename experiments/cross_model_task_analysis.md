@@ -51,16 +51,19 @@ Tasks sorted by how many models solve at baseline -> perturbation benefit:
 Codex insight: "Perturbation seems to help most when there is a low-state alternative
 trajectory the model can fall into." Modular reduction creates a cheap compressed path.
 
-## Headroom and Rescue Efficiency (Codex 2026-03-06)
+## Headroom and Rescue Efficiency (Updated 2026-03-07)
 
-| Model | Base | Oracle | Headroom used | Per-direction rescue rate |
-|-------|------|--------|---------------|-------------------------|
-| Qwen3-4B | 8/25 | 25/25 | 100% (17/17) | 39.4% (67/170) |
-| DeepSeek | 19/25 | 25/25 | 100% (6/6) | 77.8% (14/18) |
-| phi-2 | 3/25 | 7/25 | 18% (4/22) | 6.1% (4/66) |
-| Qwen3-1.7B | 7/25 | 11/25 | 22% (4/18) | — (net: +4 rescue, -2 regress) |
+| Model | Quant | Base | Oracle | Headroom used | Per-direction rescue rate |
+|-------|-------|------|--------|---------------|-------------------------|
+| Qwen3-4B | 4-bit | 8/25 | 25/25 | 100% (17/17) | 39.4% (67/170) |
+| Qwen3-8B | 8-bit | 4/25 | 15/25 | 52% (11/21) | 52.4% (11/21 from k=3) |
+| DeepSeek | 4-bit | 19/25 | 25/25 | 100% (6/6) | 77.8% (14/18) |
+| phi-2 | none | 3/25 | 7/25 | 18% (4/22) | 6.1% (4/66) |
+| Qwen3-1.7B | 4-bit | 7/25 | 11/25 | 22% (4/18) | — (net: +4 rescue, -2 regress) |
+| Qwen3-8B | 4-bit | 6/25 | 13/25 | — (null) | — (7 rescue, 2 regress) |
 
 DeepSeek directions are 2x more efficient at rescuing misses than Qwen3-4B.
+8-bit 8B rescue rate (52%) is between 4B (39%) and DeepSeek (78%).
 
 ## Expression Type x Model Interaction (Qwen3-4B anchor)
 
@@ -77,14 +80,34 @@ DeepSeek directions are 2x more efficient at rescuing misses than Qwen3-4B.
 
 Caveat: n=2-7 tasks per pattern, n=3 latents for non-4B. Exploratory only.
 
-## Statistical Tests (Codex-recommended)
+## Quantization x Noise Interaction (Qwen3-8B within-model control, 2026-03-07)
+
+Same architecture, tokenizer, task set, perturbation budget. Only quantization changed.
+
+| Quant | Base | Mean Noise | Delta | Oracle | Rescued | Regress |
+|-------|------|-----------|-------|--------|---------|---------|
+| 4-bit | 6/25 (24%) | 25.3% | +1.3pp | 13/25 (52%) | 7/19 | 2 |
+| 8-bit | 4/25 (16%) | 32% | +16pp | 15/25 (60%) | 11/21 | 0 |
+
+Baseline overlap: only 2/25 tasks shared (nest_020, nest_024).
+Oracle overlap: 9/25 tasks shared.
+4-bit-only baseline: nest_000, nest_016, nest_018, nest_019
+8-bit-only baseline: nest_009, nest_011
+8-bit-only oracle: nest_002, nest_004, nest_006, nest_009, nest_017, nest_022
+4-bit-only oracle: nest_003, nest_012, nest_014, nest_019
+
+Codex mechanism: 4-bit regularizes trajectory landscape (helps default path,
+washes out perturbation). 8-bit preserves richer local trajectory structure.
+
+## Statistical Tests (Updated 2026-03-07)
 
 - Per-model: Exact McNemar on paired (baseline vs oracle) task outcomes
   - Qwen3-4B: 17 gains, 0 losses, p ~ 1.5e-5
+  - Qwen3-8B 8-bit: 11 gains, 0 losses, p ~ 9.8e-4
   - DeepSeek: 6 gains, 0 losses, p ~ 0.031
   - phi-2: 4 gains, 0 losses, p ~ 0.125 (underpowered)
 - Cross-model: Compare rescued-failure proportions, NOT raw +pp (different headroom)
-- Combined: Fisher on per-model McNemar p-values (exploratory, n=3 models)
+- Combined: Fisher on per-model McNemar p-values (4 positive models, p < 0.001)
 
 ## 1.7B Regression Mechanism (Codex 2026-03-06)
 

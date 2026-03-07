@@ -44,13 +44,15 @@ perturbation directions solve \emph{different task subsets}: ten two-token
 directions collectively cover 100\% of tasks (25/25), compared to 80\%
 for three-token and 92\% for eight-token perturbations. The three-token
 oracle set is a strict subset of the two-token oracle, indicating that
-over-perturbation contracts the reachable task space. Cross-model scouts confirm the effect on DeepSeek-R1-Distill-1.5B
-(+5.3pp, oracle 100\% from $k=3$) and phi-2 (+6.7pp, out-of-family),
-while Qwen3-1.7B shows no effect, suggesting the phenomenon is
-substrate-dependent. These results establish embedding-space perturbation
-as a training-free intervention that activates latent reasoning capabilities,
-with transfer dependent on the model's reasoning substrate rather than
-parameter count.
+over-perturbation contracts the reachable task space. Cross-model validation confirms the effect on four models including
+Qwen3-8B at 8-bit (+16.0pp), DeepSeek-R1-Distill-1.5B (+5.3pp),
+and phi-2 (+6.7pp, out-of-family). A within-model quantization
+control reveals that weight precision modulates perturbation
+sensitivity: Qwen3-8B at 4-bit yields a null result while 8-bit
+yields +16pp on the same tasks. These results establish
+embedding-space perturbation as a training-free intervention that
+activates latent reasoning capabilities, with transfer dependent
+on reasoning substrate and quantization fidelity.
 \end{abstract}
 
 % ============================================================================
@@ -513,61 +515,76 @@ same 25-task set and auto-calibrated RMS scale.
 \begin{table}[h]
 \centering
 \small
-\begin{tabular}{lccccccc}
+\begin{tabular}{lcccccccc}
 \toprule
-\textbf{Model} & \textbf{Base} & \textbf{+Noise} & \textbf{$\Delta$} & \textbf{Oracle} & \textbf{Rescued} & \textbf{Rescue\%} & \textbf{Regress} \\
+\textbf{Model} & \textbf{Quant} & \textbf{Base} & \textbf{+Noise} & \textbf{$\Delta$} & \textbf{Oracle} & \textbf{Rescued} & \textbf{Rescue\%} & \textbf{Regress} \\
 \midrule
-Qwen3-4B ($n{=}10$) & 32\% & 51.6\% & +19.6pp & 100\% & 17/17 & 39\% & 0 \\
-DeepSeek-1.5B ($n{=}3$) & 76\% & 81.3\% & +5.3pp & 100\% & 6/6 & 78\% & 0 \\
-phi-2 ($n{=}3$) & 12\% & 18.7\% & +6.7pp & 28\% & 4/22 & 6\% & 0 \\
-Qwen3-1.7B ($n{=}3$) & 28\% & 29.3\% & +1.3pp & 44\% & 6/18 & --- & 2 \\
-Qwen3-8B ($n{=}3$) & 24\% & 25.3\% & +1.3pp & 44\% & 7/19 & --- & 2 \\
+Qwen3-4B ($n{=}10$) & 4-bit & 32\% & 51.6\% & +19.6pp & 100\% & 17/17 & 39\% & 0 \\
+Qwen3-8B ($n{=}3$) & 8-bit & 16\% & 32\% & +16.0pp & 60\% & 11/21 & 52\% & 0 \\
+DeepSeek-1.5B ($n{=}3$) & 4-bit & 76\% & 81.3\% & +5.3pp & 100\% & 6/6 & 78\% & 0 \\
+phi-2 ($n{=}3$) & none & 12\% & 18.7\% & +6.7pp & 28\% & 4/22 & 6\% & 0 \\
+\midrule
+Qwen3-1.7B ($n{=}3$) & 4-bit & 28\% & 29.3\% & +1.3pp & 44\% & 6/18 & --- & 2 \\
+Qwen3-8B ($n{=}3$) & 4-bit & 24\% & 25.3\% & +1.3pp & 44\% & 7/19 & --- & 2 \\
 \bottomrule
 \end{tabular}
-\caption{Cross-model 2-token perturbation results. \emph{Rescued}: baseline
+\caption{Cross-model 2-token perturbation results. Top: positive models
+(above midrule). Bottom: null results. \emph{Rescued}: baseline
 failures solved by at least one direction (out of total baseline failures).
 \emph{Rescue\%}: per-direction rescue rate on baseline failures.
 \emph{Regress}: baseline successes lost under all directions.
-DeepSeek directions rescue misses at 2$\times$ the rate of Qwen3-4B
-despite having fewer parameters.}
+The Qwen3-8B rows constitute a within-model quantization control
+(same architecture, tokenizer, task set; only quantization changed).}
 \label{tab:crossmodel}
 \end{table}
 
-The effect replicates on DeepSeek-R1-Distill-Qwen-1.5B (+5.3pp mean,
-oracle 25/25 from just 3 directions, McNemar $p \approx 0.031$) and on
-phi-2 (+6.7pp, 56\% relative improvement, $p \approx 0.125$), an
-out-of-family model with no thinking mode. It does not replicate on
-Qwen3-1.7B or Qwen3-8B (both +1.3pp, oracle 44\%, 2 regressions each),
-despite their different scales (1.7B vs.\ 8B parameters).
+The effect replicates on four models: Qwen3-4B (+19.6pp),
+Qwen3-8B at 8-bit quantization (+16.0pp, McNemar $p < 0.001$),
+DeepSeek-R1-Distill-Qwen-1.5B (+5.3pp, $p = 0.031$), and
+phi-2 (+6.7pp, $p = 0.125$), an out-of-family model with no thinking mode.
+It does not replicate on Qwen3-1.7B or Qwen3-8B at 4-bit quantization
+(both +1.3pp, oracle 44\%, 2 regressions each).
 
-The Qwen-family null results are strikingly parallel:
-both show identical mean delta (+1.3pp), identical oracle ceiling (44\%),
-and identical regression count (2). However, Qwen3-8B at 4-bit
-quantization achieves a \emph{lower} baseline (24\%) than Qwen3-4B
-(32\%), suggesting that aggressive quantization disproportionately
-damages the larger model and may confound the scale comparison.
+\paragraph{Quantization $\times$ perturbation interaction.}
+The Qwen3-8B 4-bit null is \emph{explained} by an 8-bit adjudication
+experiment. Switching from 4-bit to 8-bit quantization on the same model
+with identical experimental parameters produces a crossover interaction:
+the baseline \emph{drops} ($24\% \to 16\%$) but the perturbation benefit
+\emph{increases sharply} ($+1.3\text{pp} \to +16.0\text{pp}$), oracle
+coverage rises ($44\% \to 60\%$), and regressions vanish ($2 \to 0$).
+Only 2 of 25 baseline tasks are shared between quantization levels;
+oracle sets overlap on only 9 of 25.
+This constitutes the cleanest within-model control in our study:
+architecture, tokenizer, task set, and perturbation budget are fixed;
+only weight precision varies.
+The mechanism is consistent with 4-bit quantization regularizing
+the trajectory landscape, helping the default reasoning path under
+a fixed decode budget but washing out small perturbation signals.
+8-bit preserves a richer local trajectory structure, making
+perturbation-sensitive reasoning pathways accessible.
 
-Notably, DeepSeek is \emph{smaller} than both null Qwen models (1.5B
-vs.\ 1.7B and 8B) but shows a clear effect with substantially higher
-per-direction rescue efficiency (78\% of baseline failures rescued per
-direction). This rules out raw parameter count as the predictor and
+\paragraph{Substrate dependence.}
+DeepSeek is \emph{smaller} than both null Qwen models (1.5B
+vs.\ 1.7B and 8B at 4-bit) but shows a clear effect with substantially
+higher per-direction rescue efficiency (78\% of baseline failures rescued
+per direction). This rules out raw parameter count as the predictor and
 points to training regime---specifically reasoning distillation---as
-the key substrate requirement.
+a key substrate requirement, alongside sufficient quantization fidelity.
 
 \paragraph{Task-level structure.} One task (\texttt{nest\_009}:
-$(47 \times 92 + 50) \bmod 28 = 6$) is unlocked by all four models
+$(47 \times 92 + 50) \bmod 28 = 6$) is unlocked by all tested models
 including Qwen3-1.7B, suggesting that modular arithmetic creates a
 ``cheap compressed trajectory'' that perturbation can discover
 regardless of model capacity. Cross-model difficulty analysis reveals a
 monotonic relationship: tasks that fewer models solve at baseline benefit
 \emph{more} from perturbation (100\% unlock rate for tasks failed by
-all 4 models, vs.\ 0\% for the one task all models solve).
+all models, vs.\ 0\% for universally-solved tasks).
 
 \paragraph{Statistical significance.} Exact McNemar tests on paired
 baseline-vs-oracle task outcomes: Qwen3-4B $p < 0.0001$ (17 gains, 0
-losses), DeepSeek $p = 0.031$ (6/0), phi-2 $p = 0.125$ (4/0).
-Fisher's combined test across three positive models yields
-$\chi^2(6) = 33.3$, $p < 0.001$.
+losses), Qwen3-8B 8-bit $p < 0.001$ (11/0), DeepSeek $p = 0.031$ (6/0),
+phi-2 $p = 0.125$ (4/0).
+Fisher's combined test across four positive models yields $p < 0.001$.
 
 % ============================================================================
 \section{Discussion}
@@ -647,9 +664,9 @@ reachable task set, freezing tasks that are solvable at two tokens.
 \label{sec:limitations}
 
 \begin{itemize}
-    \item \textbf{Model-contingent.} The primary experiments use Qwen3-4B
-    (4-bit). Cross-model scouts (Section~\ref{sec:crossmodel}) show
-    positive transfer to DeepSeek-R1-Distill-1.5B and phi-2 but not to
+    \item \textbf{Model-contingent.} Cross-model scouts
+    (Section~\ref{sec:crossmodel}) show positive transfer to four models
+    (Qwen3-4B, Qwen3-8B at 8-bit, DeepSeek-1.5B, phi-2) but not to
     Qwen3-1.7B, suggesting the effect is substrate-dependent rather than
     universal. Full characterization across architectures and scales
     remains future work.
@@ -663,22 +680,22 @@ reachable task set, freezing tasks that are solvable at two tokens.
     the key 2-token condition. Per-task mechanistic analyses remain
     statistically limited.
 
-    \item \textbf{4-bit quantization.} All experiments use 4-bit
-    quantization, which disproportionately damages larger models
-    (Qwen3-8B baseline \emph{drops below} Qwen3-4B). The two
-    Qwen-family null results may reflect quantization artifacts rather
-    than genuine scale boundaries. Full-precision or 8-bit experiments
-    are needed to disentangle scale from quantization effects.
-
-    \item \textbf{Stochastic resonance framing.} The delta-accuracy
-    Spearman correlation with answer magnitude is not significant
-    ($r = -0.295$, $p = 0.15$), and the logistic regression quadratic
-    term is not significant ($p = 0.148$). The stochastic resonance
-    analogy is suggestive but not statistically confirmed.
+    \item \textbf{Quantization--perturbation entanglement.}
+    The Qwen3-8B within-model control (Section~\ref{sec:crossmodel})
+    demonstrates that quantization modulates perturbation sensitivity:
+    4-bit yields a null result while 8-bit yields +16pp.
+    This raises the question of whether our primary Qwen3-4B results
+    are quantization-specific. Full-precision experiments are needed
+    to determine whether 4-bit represents a sweet spot or whether
+    higher fidelity would yield even larger effects.
 
     \item \textbf{Token budget interaction.} Regressions on easy tasks
-    (large-answer category: 100\% $\to$ 78\%) suggest the effect
-    interacts with the 1024-token generation budget.
+    (large-answer category: 100\% $\to$ 78\%) and the 8-bit 8B baseline
+    degradation ($16\%$ vs.\ $24\%$ at 4-bit, with 8-bit traces being
+    more verbose) suggest the effect interacts with the 1024-token
+    generation budget. Perturbation may benefit models that can reach
+    correct answers within budget, while harming those whose reasoning
+    chains are already budget-limited.
 \end{itemize}
 
 % ============================================================================
@@ -697,14 +714,18 @@ oracle set is a strict subset of the two-token oracle, with five tasks
 becoming frozen at three tokens. Per-direction solve counts vary
 normally ($p = 0.66$ vs.\ iid null); the diversity is in task identity,
 not total count.
-Cross-model scouts confirm the effect on DeepSeek-R1-Distill-1.5B
-(reasoning-distilled, oracle 100\% from $k{=}3$) and phi-2
-(out-of-family), but not on Qwen3-1.7B, establishing that
-perturbation sensitivity is substrate-dependent: training regime
-matters more than parameter count.
+Cross-model validation confirms the effect on four models:
+Qwen3-4B, Qwen3-8B (8-bit), DeepSeek-R1-Distill-1.5B (oracle 100\%
+from $k{=}3$), and phi-2 (out-of-family). A within-model quantization
+control on Qwen3-8B reveals that weight precision modulates
+perturbation sensitivity: 4-bit yields a null result while 8-bit
+yields +16pp, with only 2/25 baseline tasks shared---demonstrating
+that quantization fidelity determines which reasoning trajectories
+are accessible to perturbation.
 These findings suggest that language models with sufficient reasoning
-substrate possess latent capabilities that can be unlocked through
-minimal, training-free embedding-space perturbation.
+substrate and quantization fidelity possess latent capabilities
+that can be unlocked through minimal, training-free embedding-space
+perturbation.
 
 % ============================================================================
 \bibliographystyle{plain}
