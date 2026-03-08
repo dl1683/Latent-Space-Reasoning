@@ -12,31 +12,34 @@ Only Codex-validated conclusions are stated as "confirmed."
 ## DeepSeek Dose-Response (2026-03-07) — COMPLETE (NON-MONOTONIC WINDOW CONFIRMED)
 
 **Purpose:** Test whether non-monotonic 2-tok optimum generalizes beyond Qwen3-4B.
-**Config:** DeepSeek-R1-Distill-Qwen-1.5B Q4, 25 sweet-spot tasks, 3 latents, 1/2/3 soft tokens
+**Config:** DeepSeek-R1-Distill-Qwen-1.5B Q4, 25 sweet-spot tasks, 3 latents per condition, 1/2/3 soft tokens
 **Scripts:**
 - 1-tok: `python -u experiments/run_latent_sensitivity.py --model deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B --task-type nested --difficulty sweet_spot --n-latents 3 --n-tasks 25 --control-mode random_noise --num-soft-tokens 1 --reuse-baseline ...t2...results.json`
 - 3-tok: same with `--num-soft-tokens 3`
 **Artifacts:** `sensitivity_sweet_spot_random_noise_t{1,3}_deepseekr1distillqwen1.5b_results.json`
 
-### Results — Non-Monotonic Constructive Window
+### Results — Non-Monotonic Constructive Window (n=3 scout)
 
-| Tokens | Baseline | Mean | Delta | SD | Oracle | Rescued | Total Regress |
-|--------|----------|------|-------|-----|--------|---------|---------------|
+| Tokens | Baseline | Mean (n=3) | Delta | SD | Oracle | Rescued | Total Regress |
+|--------|----------|------------|-------|-----|--------|---------|---------------|
 | 1 | 76% | 64% | -12pp | 0.040 | 96% | 5 | 19 |
 | 2 | 76% | 81.3% | +5.3pp | 0.046 | 100% | 6 | 10 |
 | 3 | 76% | 80% | +4pp | 0.174 | 100% | 6 | 10 |
 
+**NOTE**: The 2-tok +5.3pp was at n=3 only. At n=10, mean drops to 74.4% (-1.6pp).
+See "DeepSeek 2-tok n=10" entry below for the paper-grade result.
+
 Per-latent at 3-tok: [60%, 88%, 92%] — massive variance (Cochran's Q=9.5, p≈0.009)
-Per-latent at 2-tok: [84%, 76%, 84%] — tight clustering (Cochran's Q=0.89, NS)
+Per-latent at 2-tok (n=3): [84%, 76%, 84%] — tight clustering (Cochran's Q=0.89, NS)
 Per-latent at 1-tok: [64%, 68%, 60%] — all below baseline, tight clustering
 
 ### What We Learned (Codex-validated)
-- **Non-monotonic constructive window confirmed on second model**: 1-tok HURTS, 2-tok is stable optimum, 3-tok enters bifurcated regime
+- **Non-monotonic constructive window confirmed on second model**: 1-tok HURTS, 2-tok best at n=3, 3-tok enters bifurcated regime
 - 2-tok vs 3-tok difference is small in mean (+1.3pp) but massive in stability (SD: 0.046 vs 0.174)
 - Cochran's Q significant ONLY at 3-tok: direction sensitivity emerges at higher token counts
 - 1-tok: high-churn net-negative. Capability accessible (oracle rescues 5) but operating point mistuned
-- Codex framing: "2 tokens is stable optimum; 3 tokens crosses into direction-sensitive basin"
-- Pattern matches Qwen3-4B: 1-tok < baseline < 2-tok (peak) > 3-tok
+- **UPDATED**: 2-tok "stable optimum" only held at n=3; at n=10 mean drops below baseline while oracle remains 100%
+- Pattern matches Qwen3-4B shape: 1-tok < baseline < 2-tok (peak at small n) > 3-tok
 - McNemar at oracle: 1-tok p=0.0625, 2-tok p=0.031, 3-tok p=0.031
 
 ---
@@ -128,15 +131,42 @@ Per-latent at 1-tok: [64%, 68%, 60%] — all below baseline, tight clustering
 
 ---
 
-## Cross-Model: DeepSeek-R1-Distill-Qwen-1.5B (2026-03-06) — COMPLETE
+## DeepSeek 2-tok n=10 (2026-03-08) — COMPLETE (ORACLE/TASK-SELECTIVE, NOT MEAN-EFFECT)
+
+**Purpose:** Paper-grade n=10 replication of DeepSeek 2-tok. Tests whether n=3 mean gain (+5.3pp) holds at scale.
+**Config:** 10 random noise vectors, 2 soft tokens each, 25 sweet-spot tasks, DeepSeek-R1-Distill-Qwen-1.5B Q4
+**Script:** `python -u experiments/run_latent_sensitivity.py --model deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B --task-type nested --difficulty sweet_spot --n-tasks 25 --n-latents 10 --control-mode random_noise --num-soft-tokens 2 --reuse-baseline experiments/sensitivity_sweet_spot_random_noise_t2_deepseekr1distillqwen1.5b_n3_results.json`
+**Artifacts:** `sensitivity_sweet_spot_random_noise_t2_deepseekr1distillqwen1.5b_results.json` (n=10), `..._n3_results.json` (n=3 preserved)
+
+### Results — MEAN BELOW BASELINE, ORACLE 100%
+- Baseline: 76% (19/25)
+- Latent accuracies: [84, 76, 84, 76, 84, 68, 60, 64, 88, 60]
+- Mean conditioned: 74.4% (-1.6pp) — BELOW baseline
+- SD: 0.107 (high heterogeneity)
+- **Oracle (k=10): 25/25 = 100%** — every baseline miss is reachable
+- **McNemar: 6 gains, 0 losses, p=0.031** — oracle is statistically significant
+- Cochran's Q: 19.07, p=0.025 (significant heterogeneity across directions)
+- First 5 latents (from n=3 scout): avg 80.8%; latents 6-10: avg 68.0%
+
+### What We Learned (Codex-validated)
+- **n=3 scout was upward-biased** by sampling good directions; mean does NOT hold at n=10
+- **DeepSeek is NOT a positive mean replication** — reframe as oracle/task-selective evidence
+- **Oracle 100% with McNemar 6/0 IS significant** — every baseline failure is recoverable
+- **Cochran Q significant** — DeepSeek enters heterogeneity regime at n=10 (like 3-tok Qwen3-4B)
+- Qwen3-4B remains the only powered positive mean-effect model
+- DeepSeek contributes: (1) 100% oracle in high-baseline model, (2) dose-response confirmation, (3) task-selective recoverability
+
+---
+
+## Cross-Model: DeepSeek-R1-Distill-Qwen-1.5B n=3 (2026-03-06) — COMPLETE (SUPERSEDED BY n=10)
 
 **Purpose:** Cross-model validation. Different training regime (reasoning distillation), Qwen architecture.
 **Config:** 3 random noise vectors, 2 soft tokens each, 25 sweet-spot tasks, DeepSeek-R1-Distill-Qwen-1.5B Q4
 **Script:** `python -u experiments/run_latent_sensitivity.py --model deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B --task-type nested --difficulty sweet_spot --n-tasks 25 --n-latents 3 --control-mode random_noise --num-soft-tokens 2`
 **Total time:** 39.3 min
-**Artifacts:** `sensitivity_sweet_spot_random_noise_t2_deepseekr1distillqwen1.5b_results.json`
+**Artifacts:** `sensitivity_sweet_spot_random_noise_t2_deepseekr1distillqwen1.5b_n3_results.json` (preserved from overwrite)
 
-### Results — POSITIVE REPLICATION
+### Results — POSITIVE at n=3 (but did not hold at n=10)
 - Baseline: 76% (19/25) — much higher than Qwen3-4B (32%)
 - Noise 1: 84% (21/25) = +8pp
 - Noise 2: 76% (19/25) = +0pp
@@ -144,14 +174,12 @@ Per-latent at 1-tok: [64%, 68%, 60%] — all below baseline, tight clustering
 - Mean conditioned: 81.3% (+5.3pp)
 - **Noise oracle (k=3): 25/25 = 100%** — solved ALL 6 tasks baseline missed
 - No tasks lost by noise (noise-only oracle = 25/25)
-- Task selectivity present: 10 tasks show disagreement across directions
+- **NOTE**: n=3 was upward-biased. See n=10 entry above for paper-grade result.
 
 ### What We Learned
-- **Effect TRANSFERS to a different training regime** (reasoning-distilled model)
-- Oracle coverage generalizes: 100% from just k=3 (vs k=10 needed on Qwen3-4B)
-- Higher baseline compresses the absolute delta but effect is structurally the same
-- Perturbation helps EVEN on a model already good at these tasks (+5.3pp mean)
-- Auto-calibration worked correctly (embed dim=1536, RMS=0.030 vs 4B's 0.022)
+- Scout-level positive result that motivated n=10 scale-up
+- Oracle coverage (100%) DID hold at n=10 — the oracle finding is robust
+- Mean gain (+5.3pp) did NOT hold at n=10 — sampling artifact from good directions
 
 ---
 
@@ -387,16 +415,14 @@ continuous random noise at 2 tokens. Key positioning experiment.
 
 ---
 
-## UPCOMING: Priority Experiments (Codex 2026-03-05f)
+## NEXT: Priority Experiments (Updated 2026-03-08)
 
 See `experiments/RUN_QUEUE.md` for full details and commands.
 
 | # | Experiment | Purpose | Status |
 |---|-----------|---------|--------|
-| 1 | 2-tok n=10 rerun | EXISTENTIAL: equalization at scale | RUNNING (PID 38532) |
-| 2 | Think-gate probe | Mode gating mechanism proof | Script ready |
-| 3 | Shi discrete t=2 | Continuous vs discrete comparison | Script ready |
-| 4 | Word problem cross-task | External validity | Queued |
+| 1 | 8B 8-bit n=10 | Firm up within-model quant control | Queued (needs restart with checkpointing) |
+| 2 | Word problem cross-task | External validity / task domain breadth | Queued |
 
 ---
 

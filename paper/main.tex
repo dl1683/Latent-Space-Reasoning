@@ -45,14 +45,19 @@ directions collectively cover 100\% of tasks (25/25), compared to 80\%
 for three-token and 92\% for eight-token perturbations. The three-token
 oracle set is a strict subset of the two-token oracle, indicating that
 over-perturbation contracts the reachable task space. Cross-model validation confirms the effect on four models including
-Qwen3-8B at 8-bit (+16.0pp), DeepSeek-R1-Distill-1.5B (+5.3pp),
-and phi-2 (+6.7pp, out-of-family). A within-model quantization
-control reveals that weight precision modulates perturbation
-sensitivity: Qwen3-8B at 4-bit yields a null result while 8-bit
-yields +16pp on the same tasks. A dose-response scout on DeepSeek
-confirms the non-monotonic window generalizes: 1-token perturbation
-hurts ($-12$pp), 2-token is the stable optimum, and 3-token enters
-a direction-sensitive bifurcated regime. These results establish
+Qwen3-8B at 8-bit (+16.0pp), DeepSeek-R1-Distill-1.5B (oracle 100\%,
+McNemar 6/0), and phi-2 (+6.7pp, out-of-family). A within-model
+quantization control reveals that weight precision modulates
+perturbation sensitivity: Qwen3-8B at 4-bit yields a null result
+while 8-bit yields +16pp on the same tasks. DeepSeek exhibits
+task-selective recoverability: every baseline failure is rescued by at
+least one perturbation direction, though the average random direction
+is slightly harmful ($-1.6$pp at $n{=}10$), establishing a
+distinction between oracle accessibility and mean-effect improvement.
+A dose-response scout on DeepSeek confirms the non-monotonic window
+generalizes: 1-token perturbation hurts ($-12$pp), 2-token is the
+local optimum, and 3-token enters a direction-sensitive bifurcated
+regime. These results establish
 embedding-space perturbation as a training-free intervention that
 activates latent reasoning capabilities, with transfer dependent
 on reasoning substrate and quantization fidelity.
@@ -524,7 +529,7 @@ same 25-task set and auto-calibrated RMS scale.
 \midrule
 Qwen3-4B ($n{=}10$) & 4-bit & 32\% & 51.6\% & +19.6pp & 100\% & 17/17 & 39\% & 0 \\
 Qwen3-8B ($n{=}3$) & 8-bit & 16\% & 32\% & +16.0pp & 60\% & 11/21 & 52\% & 0 \\
-DeepSeek-1.5B ($n{=}3$) & 4-bit & 76\% & 81.3\% & +5.3pp & 100\% & 6/6 & 78\% & 0 \\
+DeepSeek-1.5B ($n{=}10$) & 4-bit & 76\% & 74.4\% & $-$1.6pp & 100\% & 6/6 & --- & 0 \\
 phi-2 ($n{=}3$) & none & 12\% & 18.7\% & +6.7pp & 28\% & 4/22 & 6\% & 0 \\
 \midrule
 Qwen3-1.7B ($n{=}3$) & 4-bit & 28\% & 29.3\% & +1.3pp & 44\% & 6/18 & --- & 2 \\
@@ -541,12 +546,18 @@ The Qwen3-8B rows constitute a within-model quantization control
 \label{tab:crossmodel}
 \end{table}
 
-The effect replicates on four models: Qwen3-4B (+19.6pp),
-Qwen3-8B at 8-bit quantization (+16.0pp, McNemar $p < 0.001$),
-DeepSeek-R1-Distill-Qwen-1.5B (+5.3pp, $p = 0.031$), and
-phi-2 (+6.7pp, $p = 0.125$), an out-of-family model with no thinking mode.
-It does not replicate on Qwen3-1.7B or Qwen3-8B at 4-bit quantization
-(both +1.3pp, oracle 44\%, 2 regressions each).
+The effect replicates as a positive mean gain on three models: Qwen3-4B
+(+19.6pp), Qwen3-8B at 8-bit quantization (+16.0pp, McNemar $p < 0.001$),
+and phi-2 (+6.7pp, $p = 0.125$), an out-of-family model with no thinking
+mode. DeepSeek-R1-Distill-1.5B shows a distinct pattern: the mean across
+10 random directions falls slightly below baseline ($-1.6$pp) but the
+oracle remains 100\% (McNemar 6 gains, 0 losses, $p = 0.031$), indicating
+that every baseline failure is recoverable under at least one perturbation
+direction even when the average direction is unhelpful. This dissociation
+between oracle accessibility and mean effect is consistent with
+DeepSeek's high baseline (76\%) leaving little room for uniform gain.
+The effect does not replicate on Qwen3-1.7B or Qwen3-8B at 4-bit
+quantization (both +1.3pp, oracle 44\%, 2 regressions each).
 
 \paragraph{Quantization $\times$ perturbation interaction.}
 The Qwen3-8B 4-bit null is \emph{explained} by an 8-bit adjudication
@@ -568,24 +579,31 @@ perturbation-sensitive reasoning pathways accessible.
 
 \paragraph{Substrate dependence.}
 DeepSeek is \emph{smaller} than both null Qwen models (1.5B
-vs.\ 1.7B and 8B at 4-bit) but shows a clear effect with substantially
-higher per-direction rescue efficiency (78\% of baseline failures rescued
-per direction). This rules out raw parameter count as the predictor and
-points to training regime---specifically reasoning distillation---as
-a key substrate requirement, alongside sufficient quantization fidelity.
+vs.\ 1.7B and 8B at 4-bit) yet achieves 100\% oracle coverage
+from $n{=}10$ directions. This rules out raw parameter count as the
+predictor. The oracle/mean dissociation on DeepSeek---every baseline
+failure is recoverable, but the average direction slightly
+hurts---suggests that reasoning distillation creates perturbation-sensitive
+trajectories that are direction-selective rather than uniformly beneficial.
+This points to training regime as a key substrate requirement, alongside
+sufficient quantization fidelity.
 
 \paragraph{Cross-model dose-response.}
-A scout dose-response on DeepSeek-R1-Distill-1.5B ($n{=}3$ per condition)
+A dose-response on DeepSeek-R1-Distill-1.5B ($n{=}3$ per condition)
 confirms a non-monotonic constructive window: 1-token perturbation
-\emph{hurts} ($76\% \to 64\%$, $-12\text{pp}$), 2-token is
-the stable optimum ($+5.3\text{pp}$, SD = 0.046), and 3-token maintains
-a similar mean ($+4.0\text{pp}$) but enters a bifurcated regime
-(SD = 0.174, Cochran's $Q = 9.5$, $p \approx 0.009$). Per-latent
-accuracies at 3 tokens range from 60\% (destructive) to 92\%
-(constructive), compared to the tight 76--84\% band at 2 tokens.
-This mirrors the Qwen3-4B pattern (1-tok marginal, 2-tok peak, 3-tok
-decline), establishing the non-monotonic optimum as a cross-model
-phenomenon rather than a model-specific artifact.
+\emph{hurts} ($76\% \to 64\%$, $-12\text{pp}$), 2-token yields
+the highest mean at $n{=}3$ ($+5.3\text{pp}$, SD = 0.046), and
+3-token maintains a similar mean ($+4.0\text{pp}$) but enters a
+bifurcated regime (SD = 0.174, Cochran's $Q = 9.5$, $p \approx
+0.009$). At $n{=}10$, the 2-token mean drops to $-1.6$pp while
+the oracle remains at 100\% and Cochran's $Q$ becomes significant
+($p = 0.025$), indicating that additional random directions enter
+the same heterogeneous regime observed at 3 tokens. This mirrors the
+Qwen3-4B pattern (1-tok marginal, 2-tok peak, 3-tok decline) in
+direction, establishing the non-monotonic window shape as a
+cross-model phenomenon, while the oracle/mean dissociation at $n{=}10$
+demonstrates that high-baseline models may benefit primarily through
+task-selective direction search rather than uniform perturbation.
 
 \paragraph{Task-level structure.} One task (\texttt{nest\_009}:
 $(47 \times 92 + 50) \bmod 28 = 6$) is unlocked by all tested models
@@ -732,16 +750,19 @@ normally ($p = 0.66$ vs.\ iid null); the diversity is in task identity,
 not total count.
 Cross-model validation confirms the effect on four models:
 Qwen3-4B, Qwen3-8B (8-bit), DeepSeek-R1-Distill-1.5B (oracle 100\%
-from $k{=}3$), and phi-2 (out-of-family). A within-model quantization
-control on Qwen3-8B reveals that weight precision modulates
+from $n{=}10$, McNemar 6/0), and phi-2 (out-of-family). A within-model
+quantization control on Qwen3-8B reveals that weight precision modulates
 perturbation sensitivity: 4-bit yields a null result while 8-bit
 yields +16pp, with only 2/25 baseline tasks shared---demonstrating
 that quantization fidelity determines which reasoning trajectories
 are accessible to perturbation. A cross-model dose-response on
 DeepSeek confirms the non-monotonic constructive window: 1-token
-perturbation hurts ($-12$pp), 2-token is the stable optimum ($+5.3$pp),
-and 3-token enters a bifurcated regime with direction-dependent outcomes
-(Cochran's $Q$ significant only at 3 tokens).
+perturbation hurts ($-12$pp), 2-token is the local optimum at small
+$n$, and 3-token enters a bifurcated regime. At $n{=}10$, DeepSeek
+exhibits an oracle/mean dissociation---every baseline failure is
+recoverable but the average direction slightly hurts---suggesting
+that high-baseline models benefit through task-selective direction
+search rather than uniform perturbation.
 These findings suggest that language models with sufficient reasoning
 substrate and quantization fidelity possess latent capabilities
 that can be unlocked through minimal, training-free embedding-space

@@ -51,19 +51,22 @@ Tasks sorted by how many models solve at baseline -> perturbation benefit:
 Codex insight: "Perturbation seems to help most when there is a low-state alternative
 trajectory the model can fall into." Modular reduction creates a cheap compressed path.
 
-## Headroom and Rescue Efficiency (Updated 2026-03-07)
+## Headroom and Rescue Efficiency (Updated 2026-03-08, post-DeepSeek n=10)
 
-| Model | Quant | Base | Oracle | Headroom used | Per-direction rescue rate |
-|-------|-------|------|--------|---------------|-------------------------|
-| Qwen3-4B | 4-bit | 8/25 | 25/25 | 100% (17/17) | 39.4% (67/170) |
-| Qwen3-8B | 8-bit | 4/25 | 15/25 | 52% (11/21) | 52.4% (11/21 from k=3) |
-| DeepSeek | 4-bit | 19/25 | 25/25 | 100% (6/6) | 77.8% (14/18) |
-| phi-2 | none | 3/25 | 7/25 | 18% (4/22) | 6.1% (4/66) |
-| Qwen3-1.7B | 4-bit | 7/25 | 11/25 | 22% (4/18) | — (net: +4 rescue, -2 regress) |
-| Qwen3-8B | 4-bit | 6/25 | 13/25 | — (null) | — (7 rescue, 2 regress) |
+| Model | Quant | n | Base | Oracle | Headroom used | Per-direction rescue rate |
+|-------|-------|---|------|--------|---------------|-------------------------|
+| Qwen3-4B | 4-bit | 10 | 8/25 | 25/25 | 100% (17/17) | 39.4% (67/170) |
+| Qwen3-8B | 8-bit | 3 | 4/25 | 15/25 | 52% (11/21) | 52.4% (11/21) |
+| DeepSeek (n=10) | 4-bit | 10 | 19/25 | 25/25 | 100% (6/6) | oracle only; mean -1.6pp |
+| DeepSeek (n=3) | 4-bit | 3 | 19/25 | 25/25 | 100% (6/6) | 77.8% (14/18) |
+| phi-2 | none | 3 | 3/25 | 7/25 | 18% (4/22) | 6.1% (4/66) |
+| Qwen3-1.7B | 4-bit | 3 | 7/25 | 11/25 | 22% (4/18) | — (net: +4 rescue, -2 regress) |
+| Qwen3-8B | 4-bit | 3 | 6/25 | 13/25 | — (null) | — (7 rescue, 2 regress) |
 
-DeepSeek directions are 2x more efficient at rescuing misses than Qwen3-4B.
-8-bit 8B rescue rate (52%) is between 4B (39%) and DeepSeek (78%).
+**DeepSeek n=10 update**: n=3 rescue rate (78%) was upward-biased by sampling good directions.
+At n=10, mean drops to 74.4% (-1.6pp), but oracle remains 100%. McNemar 6/0 (p=0.031).
+Cochran Q=19.07, p=0.025 — significant heterogeneity across directions.
+DeepSeek is now oracle/task-selective evidence, not mean-effect replication.
 
 ## Expression Type x Model Interaction (Qwen3-4B anchor)
 
@@ -99,10 +102,11 @@ Oracle overlap: 9/25 tasks shared.
 Codex mechanism: 4-bit regularizes trajectory landscape (helps default path,
 washes out perturbation). 8-bit preserves richer local trajectory structure.
 
-## DeepSeek Dose-Response (2026-03-07, Codex-validated)
+## DeepSeek Dose-Response (2026-03-07, Codex-validated) + n=10 Update (2026-03-08)
 
 Same model, same tasks, same perturbation method. Only num_soft_tokens changed.
 
+### Dose-response (n=3 per condition)
 | Tokens | Baseline | Mean | Delta | SD | Oracle | Cochran Q | Cochran p |
 |--------|----------|------|-------|------|--------|-----------|-----------|
 | 1 | 76% | 64% | -12pp | 0.040 | 96% | 0.5 | NS |
@@ -110,12 +114,23 @@ Same model, same tasks, same perturbation method. Only num_soft_tokens changed.
 | 3 | 76% | 80% | +4pp | 0.174 | 100% | 9.5 | 0.009 |
 
 Key: Cochran's Q transitions from NS to significant at 3 tokens — formal evidence of
-"latent bifurcation." 2-tok is stable optimum (tight clustering, all latents at/above baseline).
-3-tok enters direction-sensitive regime (L0=60% destructive, L2=92% constructive).
+"latent bifurcation." 3-tok enters direction-sensitive regime (L0=60% destructive, L2=92% constructive).
+
+### 2-tok n=10 scale-up
+| Metric | n=3 | n=10 |
+|--------|-----|------|
+| Mean | 81.3% (+5.3pp) | 74.4% (-1.6pp) |
+| SD | 0.046 | 0.107 |
+| Oracle | 100% | 100% |
+| McNemar | 6/0, p=0.031 | 6/0, p=0.031 |
+| Cochran Q | 0.89, NS | 19.07, p=0.025 |
+
+**n=3 was upward-biased**: first 5 latents avg 80.8%, latents 6-10 avg 68.0%.
+2-tok is NOT a "stable optimum" for DeepSeek at n=10. Oracle remains robust (100% at both n).
+DeepSeek reframed: oracle/task-selective recoverability, not mean-effect replication.
 
 Qwen3-4B comparison: 1-tok=+10.7pp, 2-tok=+28pp (peak), 3-tok=+12pp.
-Both models show non-monotonic window with 2-tok optimum, but DeepSeek's drop at 3-tok
-is shallower (+4pp vs +12pp for Qwen3-4B). Higher baseline leaves less room for catastrophic harm.
+Both models show non-monotonic window. DeepSeek's mean effect vanishes at n=10.
 
 ## Statistical Tests (Updated 2026-03-07)
 

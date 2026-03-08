@@ -76,14 +76,10 @@ venv.bak/
 .dmypy.json
 dmypy.json
 
-# Models and checkpoints (but include our trained checkpoints)
+# Models and checkpoints
 *.pth
 *.ckpt
 models/
-
-# Include trained scorer checkpoints
-!checkpoints/
-!checkpoints/**/*.pt
 
 # Logs
 logs/

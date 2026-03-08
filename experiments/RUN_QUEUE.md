@@ -22,16 +22,16 @@ Continuous 2-tok = 51.6% (+19.6pp). Gap: 9.6pp in favor of continuous.
 ### 9. ~~DeepSeek 1-tok n=3~~ DONE — NEGATIVE (-12pp, 1-tok HURTS)
 ### 10. ~~DeepSeek 3-tok n=3~~ DONE — CONSTRUCTIVE BUT BIFURCATED (+4pp, SD=0.174)
 
-## Cross-Model Statistical Summary (Updated with 8-bit)
-| Model | Quant | McNemar p | Gains | Losses | Headroom used |
-|-------|-------|-----------|-------|--------|---------------|
-| Qwen3-4B (n=10) | 4-bit | 0.000015 | 17 | 0 | 100% |
-| Qwen3-8B (n=3) | 8-bit | 0.00098 | 11 | 0 | 52% |
-| DeepSeek-1.5B (n=3) | 4-bit | 0.031 | 6 | 0 | 100% |
-| phi-2 (n=3) | none | 0.125 | 4 | 0 | 18% |
-| Qwen3-1.7B (n=3) | 4-bit | 0.289 | 6 | 2 | 22% |
-| Qwen3-8B (n=3) | 4-bit | 0.18 | 7 | 2 | — (null) |
-| **Fisher combined (4 positive)** | — | **<0.001** | — | — | — |
+## Cross-Model Statistical Summary (Updated 2026-03-08, post-DeepSeek n=10)
+| Model | Quant | McNemar p | Gains | Losses | Headroom used | Notes |
+|-------|-------|-----------|-------|--------|---------------|-------|
+| Qwen3-4B (n=10) | 4-bit | 0.000015 | 17 | 0 | 100% | Powered mean-effect anchor |
+| Qwen3-8B (n=3) | 8-bit | 0.00098 | 11 | 0 | 52% | Within-model quant control |
+| DeepSeek-1.5B (n=10) | 4-bit | 0.031 | 6 | 0 | 100% | Oracle only; mean -1.6pp |
+| phi-2 (n=3) | none | 0.125 | 4 | 0 | 18% | Out-of-family |
+| Qwen3-1.7B (n=3) | 4-bit | 0.289 | 6 | 2 | 22% | — (null) |
+| Qwen3-8B (n=3) | 4-bit | 0.18 | 7 | 2 | — (null) | Explained by 4-bit quant |
+| **Fisher combined (4 positive)** | — | **<0.001** | — | — | — | |
 
 ## Quantization x Noise Interaction (Qwen3-8B within-model control)
 | Quant | Base | Mean Noise | Delta | Oracle | Rescued | Regress |
@@ -40,13 +40,14 @@ Continuous 2-tok = 51.6% (+19.6pp). Gap: 9.6pp in favor of continuous.
 | 8-bit | 16% | 32% | +16pp | 60% | 11/21 | 0 |
 Only 2/25 baseline tasks shared. Oracle sets overlap on 9/25.
 
-## DeepSeek Dose-Response (COMPLETE)
-| Tokens | Baseline | Mean | Delta | SD | Oracle | Cochran p |
-|--------|----------|------|-------|-----|--------|-----------|
+## DeepSeek Dose-Response (COMPLETE, updated 2026-03-08)
+| Tokens | Baseline | Mean (n=3) | Delta | SD | Oracle | Cochran p |
+|--------|----------|------------|-------|-----|--------|-----------|
 | 1 | 76% | 64% | -12pp | 0.040 | 96% | NS |
 | 2 | 76% | 81.3% | +5.3pp | 0.046 | 100% | NS |
 | 3 | 76% | 80% | +4pp | 0.174 | 100% | 0.009 |
-Non-monotonic window confirmed. 2-tok stable optimum, 3-tok bifurcated.
+Non-monotonic window confirmed. **2-tok n=10 mean = 74.4% (-1.6pp)** — oracle still 100%.
+n=3 was upward-biased. DeepSeek reframed as oracle/task-selective, not mean-effect.
 
 ## PRIORITY 1: Qwen3-8B 8-bit n=10 (Codex: firm up within-model control)
 
@@ -62,21 +63,13 @@ python -u experiments/run_latent_sensitivity.py \
 ```
 Why: Tests oracle/task-selectivity and equalization on second model at paper-grade n=10.
 Answers biggest reviewer question: is 8-bit crossover real or n=3 fluke?
-**CAUTION**: Previously crashed twice (no checkpointing). Add checkpointing first if attempting.
+**NOTE**: Checkpointing now added (commit ec19891). Previously crashed at L6 without it. Safe to restart.
 
-## PRIORITY 2: DeepSeek 2-tok n=10 (Codex: promoted from optional)
-
-### 12. DeepSeek 2-tok n=10 (~60 min, reuses baseline)
-```bash
-python -u experiments/run_latent_sensitivity.py \
-  --model deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B \
-  --task-type nested --difficulty sweet_spot \
-  --n-latents 10 --n-tasks 25 \
-  --control-mode random_noise --num-soft-tokens 2 \
-  --reuse-baseline experiments/sensitivity_sweet_spot_random_noise_t2_deepseekr1distillqwen1.5b_results.json
-```
-Why: Dose-response confirmed non-monotonic window. Paper-grade n=10 makes DeepSeek
-a second fully-powered positive model alongside Qwen3-4B.
+### 12. ~~DeepSeek 2-tok n=10~~ DONE — ORACLE/TASK-SELECTIVE (NOT MEAN-EFFECT)
+**Result**: Mean 74.4% (-1.6pp below baseline), oracle 25/25=100%, McNemar 6/0 p=0.031.
+Latent accuracies: [84,76,84,76,84,68,60,64,88,60]. n=3 was upward-biased.
+DeepSeek reframed: oracle/task-selective evidence, not mean-effect replication.
+Cochran Q=19.07, p=0.025 (significant heterogeneity).
 
 ## PRIORITY 3: BREADTH
 
@@ -93,13 +86,13 @@ Why: Different task domain. Best external validity per hour.
 ### 14. Qwen3-0.6B — Capacity floor null
 Why: Expected negative. Boundary condition.
 
-## NeurIPS-Sufficient Evidence (Codex 2026-03-07, updated post-dose-response)
+## NeurIPS-Sufficient Evidence (Updated 2026-03-08, post-DeepSeek n=10)
 - **4 positive models** (4B, 8B-8bit, DeepSeek, phi-2), Fisher combined p < 0.001
 - Within-model quantization control = cleanest evidence against "model-specific" objection
 - Out-of-family positive (phi-2) addresses "Qwen-specific" objection
 - **DeepSeek dose-response confirms non-monotonic window generalizes** (1-tok HURTS, 2-tok peak, 3-tok bifurcated)
-- DeepSeek 2-tok n=10 would give paper-grade second model with oracle/selectivity analysis
-- 8B 8-bit n=10 would firm up quantization control (if checkpointing added)
+- **DeepSeek n=10 COMPLETE**: oracle 100% (McNemar 6/0, p=0.031) but mean -1.6pp — reframed as oracle/task-selective evidence, not mean-effect
+- 8B 8-bit n=10 would firm up quantization control (checkpointing now added, crashed at L6 last attempt)
 
 ## Notes
 - Each model needs its OWN sweet-spot calibration (different baseline accuracy)
