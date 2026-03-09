@@ -171,6 +171,19 @@ with high computational ceilings, it aids convergence (placing the correct answe
 Different perturbation directions succeed on different tasks, enabling oracle-style coverage
 through trajectory diversification."
 
+## Codex Review #2 (2026-03-09, gpt-5.4)
+
+Key findings from second Codex evidence gate review:
+
+1. **McNemar p proves oracle, not mean**: McNemar 16/0 p=0.000177 tests oracle (any-direction-correct) vs baseline, not the 28.8% mean. Must be clear about this.
+2. **2000-char truncation weakens answer-anywhere audit**: 80-98% of responses truncated at 2000 chars. The stored `response_raw[:2000]` may miss correct answers late in traces. Answer-anywhere rates are LOWER BOUNDS.
+3. **4B convergence claim: "probably yes in broad strokes"** — the gap is too large to dismiss.
+4. **8B computation claim: "would not publish as established"** — truncated traces + size/quant confound.
+5. **Planning: "basically a benchmark failure"** — too easy and too arithmetic-like.
+6. **n=3 → n=10 regression: "ordinary small-sample scout optimism"** — not a bug.
+
+Codex verdict: *"The strongest clean result is the 8B oracle/task-coverage effect, not the one-shot mean. The computation-vs-convergence split needs a cleaner audit before it becomes a headline claim."*
+
 ## Action Items
 - [x] Remove heuristic scorer from paper (or clearly label as exploratory)
 - [x] Frame paper around trajectory diversification, not quality
@@ -179,3 +192,4 @@ through trajectory diversification."
 - [x] Test on PLANNING tasks (DONE: ceiling effect, tasks too easy at 96% baseline)
 - [ ] Run LLM-as-judge evaluation on FIXED chains
 - [ ] Run harder planning tasks (more steps, larger numbers) for meaningful signal
+- [ ] Full-trace answer-anywhere audit (not truncated at 2000 chars) — needed for 8B claim

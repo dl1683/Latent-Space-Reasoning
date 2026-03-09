@@ -553,7 +553,7 @@ The Qwen3-8B rows constitute a within-model quantization control
 
 The effect replicates as a positive mean gain on three models: Qwen3-4B
 (+19.6pp), Qwen3-8B at 8-bit quantization (+12.8pp at $n{=}10$,
-McNemar $p < 0.001$, 16 gains/0 losses),
+oracle McNemar $p < 0.001$, 16 gains/0 losses),
 and phi-2 (+6.7pp, $p = 0.125$), an out-of-family model with no thinking
 mode. DeepSeek-R1-Distill-1.5B shows a distinct pattern: the mean across
 10 random directions falls slightly below baseline ($-1.6$pp) but the
@@ -675,8 +675,10 @@ Qwen3-8B (8-bit) & Answer anywhere & 32\% & 50\% & +18pp \\
 \caption{Accuracy under two grading rules. Qwen3-4B can already compute
 the correct answer 80\% of the time; its gain is purely convergence
 (placing the answer last). Qwen3-8B at 8-bit has a lower computational
-ceiling (32\%); perturbation genuinely improves computation (+18pp
-answer-anywhere) as well as convergence.}
+ceiling (32\%); perturbation appears to improve computation as well as
+convergence. \emph{Caveat}: answer-anywhere is computed from stored
+traces truncated at 2000 characters ($>$80\% of responses are
+truncated), so these rates are lower bounds.}
 \label{tab:convergence}
 \end{table}
 
@@ -685,11 +687,11 @@ reasoning chain for 80\% of tasks but fails to produce it as the
 final output. Perturbation improves convergence without changing
 computational success. For Qwen3-8B at 8-bit, the model has substantial
 room for computational improvement (32\% answer-anywhere at baseline),
-and perturbation produces genuine gains in both computation (+18pp)
-and convergence (+6pp). This suggests the mechanism depends on the
-model's computational ceiling: when computation is saturated,
-perturbation aids convergence; when it is not, perturbation can
-diversify reasoning paths into ones that actually find the answer.
+and perturbation produces apparent gains in both computation (+18pp)
+and convergence (+6pp), though these estimates are based on truncated
+stored traces and should be treated as preliminary. This pattern is
+consistent with the mechanism depending on the model's computational
+ceiling, but confirming this requires full-trace analysis.
 
 \subsection{Trajectory Efficiency Examples}
 
