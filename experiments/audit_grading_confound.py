@@ -58,7 +58,7 @@ def audit_file(path: str, label: str):
     # Baseline audit
     baseline_audits = []
     for task in data['baseline_results']:
-        response = task.get('response', '') or task.get('response_raw', '')
+        response = task.get('response_raw', '') or task.get('response', '')
         expected = task.get('expected') or task.get('correct_answer')
         if response:
             a = audit_response(response, expected)
@@ -70,7 +70,7 @@ def audit_file(path: str, label: str):
     perturbed_audits = []
     for li_data in data.get('sensitivity_results', []):
         for task in li_data['task_results']:
-            response = task.get('response', '') or task.get('response_raw', '')
+            response = task.get('response_raw', '') or task.get('response', '')
             expected = task.get('expected') or task.get('correct_answer')
             if response:
                 a = audit_response(response, expected)
@@ -154,6 +154,8 @@ if __name__ == "__main__":
     files = [
         ("Qwen3-4B 2-tok n=10",
          result_dir / "sensitivity_sweet_spot_random_noise_t2_results.json"),
+        ("Qwen3-8B 8-bit 2-tok n=10",
+         result_dir / "sensitivity_sweet_spot_random_noise_t2_qwen38b_8bit_n10_results.json"),
         ("DeepSeek 2-tok n=10",
          result_dir / "sensitivity_sweet_spot_random_noise_t2_deepseekr1distillqwen1.5b_results.json"),
         ("phi-2 2-tok n=3",

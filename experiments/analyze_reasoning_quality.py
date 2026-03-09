@@ -242,6 +242,9 @@ if __name__ == "__main__":
         # Qwen3-4B 2-tok n=10 (primary)
         ("Qwen3-4B 2-tok n=10",
          result_dir / "sensitivity_sweet_spot_random_noise_t2_results.json"),
+        # Qwen3-8B 8-bit 2-tok n=10 (within-model control)
+        ("Qwen3-8B 8-bit 2-tok n=10",
+         result_dir / "sensitivity_sweet_spot_random_noise_t2_qwen38b_8bit_n10_results.json"),
         # DeepSeek 2-tok n=10
         ("DeepSeek 2-tok n=10",
          result_dir / "sensitivity_sweet_spot_random_noise_t2_deepseekr1distillqwen1.5b_results.json"),
