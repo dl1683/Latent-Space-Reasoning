@@ -1,4 +1,4 @@
-# Experiment Run Queue (Updated 2026-03-07, post-dose-response)
+# Experiment Run Queue (Updated 2026-03-08, post-critical-analysis)
 
 ## COMPLETED
 
@@ -49,7 +49,28 @@ Only 2/25 baseline tasks shared. Oracle sets overlap on 9/25.
 Non-monotonic window confirmed. **2-tok n=10 mean = 74.4% (-1.6pp)** — oracle still 100%.
 n=3 was upward-biased. DeepSeek reframed as oracle/task-selective, not mean-effect.
 
-## PRIORITY 1: Qwen3-8B 8-bit n=10 (Codex: firm up within-model control)
+## CRITICAL REFRAMING (2026-03-08): Convergence, Not Computation
+
+**Grading audit reveals**: Qwen3-4B can compute the correct answer 80% of the time
+(answer-anywhere accuracy). Perturbation barely changes this (82%). But last-integer
+accuracy jumps from 32% to 43% — perturbation helps the model CONVERGE on the right
+final answer, not compute better.
+
+DeepSeek: perturbation HURTS both computation (84%->78%) and convergence (76%->69%).
+
+**Verbosity is NOT a quality signal**: Wrong answers are already more verbose than
+correct at baseline. FIXED and MAINTAINED tasks get identical word increases.
+
+See: experiments/CRITICAL_ANALYSIS.md for full analysis.
+
+## COMPLETED: Word Problem Cross-Task (experiment 13)
+
+### 13. ~~Word Problem Cross-Task Replication~~ DONE — WEAKLY EXPLOITABLE (+2.7pp, NS)
+Baseline: 56%, Mean: 58.7%, Oracle: 64% (16/25). McNemar 2/0, p=0.5 (NS).
+Only 2 tasks rescued — both were token-cap truncation fixes, not reasoning improvements.
+100% correlation: all 11 baseline failures hit 1024 cap, all 14 correct used no think mode.
+
+## PRIORITY 1: Qwen3-8B 8-bit n=10
 
 ### 11. Qwen3-8B 8-bit 2-tok n=10 (~4 hours, 15.6 GB VRAM)
 ```bash
@@ -63,7 +84,8 @@ python -u experiments/run_latent_sensitivity.py \
 ```
 Why: Tests oracle/task-selectivity and equalization on second model at paper-grade n=10.
 Answers biggest reviewer question: is 8-bit crossover real or n=3 fluke?
-**NOTE**: Checkpointing now added (commit ec19891). Previously crashed at L6 without it. Safe to restart.
+**NOTE**: Checkpointing now added (commit ec19891). Previously crashed at L6 without it.
+**STATUS**: Previous n=10 attempt crashed at L6 (before checkpointing), 6 completed latents LOST. No checkpoint file. Must restart from scratch after word problem finishes.
 
 ### 12. ~~DeepSeek 2-tok n=10~~ DONE — ORACLE/TASK-SELECTIVE (NOT MEAN-EFFECT)
 **Result**: Mean 74.4% (-1.6pp below baseline), oracle 25/25=100%, McNemar 6/0 p=0.031.
@@ -71,28 +93,32 @@ Latent accuracies: [84,76,84,76,84,68,60,64,88,60]. n=3 was upward-biased.
 DeepSeek reframed: oracle/task-selective evidence, not mean-effect replication.
 Cochran Q=19.07, p=0.025 (significant heterogeneity).
 
-## PRIORITY 3: BREADTH
-
-### 13. Word Problem Cross-Task Replication (~90 min)
-```bash
-python -u experiments/run_latent_sensitivity.py \
-  --task-type word_problem --n-latents 3 --n-tasks 25 \
-  --control-mode random_noise --num-soft-tokens 2
-```
-Why: Different task domain. Best external validity per hour.
+## PRIORITY 3: BREADTH (done — word problem was the test)
 
 ## PRIORITY 4: OPTIONAL
 
 ### 14. Qwen3-0.6B — Capacity floor null
 Why: Expected negative. Boundary condition.
 
-## NeurIPS-Sufficient Evidence (Updated 2026-03-08, post-DeepSeek n=10)
-- **4 positive models** (4B, 8B-8bit, DeepSeek, phi-2), Fisher combined p < 0.001
-- Within-model quantization control = cleanest evidence against "model-specific" objection
-- Out-of-family positive (phi-2) addresses "Qwen-specific" objection
-- **DeepSeek dose-response confirms non-monotonic window generalizes** (1-tok HURTS, 2-tok peak, 3-tok bifurcated)
-- **DeepSeek n=10 COMPLETE**: oracle 100% (McNemar 6/0, p=0.031) but mean -1.6pp — reframed as oracle/task-selective evidence, not mean-effect
-- 8B 8-bit n=10 would firm up quantization control (checkpointing now added, crashed at L6 last attempt)
+## NeurIPS-Sufficient Evidence (Updated 2026-03-08, post-critical-analysis)
+
+### What HOLDS UP under scrutiny:
+- **Oracle coverage structure**: Different directions solve different tasks (permutation-validated)
+- **Non-monotonic dose-response**: 2-tok optimum (1-tok hurts, 3-tok bifurcated)
+- **Quantization x noise interaction**: Clean within-model control (4-bit null, 8-bit +16pp)
+- **Force-think decomposition**: Perturbation contributes +11.6pp beyond think-mode activation
+- **Fisher combined p < 0.001** across 4 positive models
+
+### What DOES NOT hold up:
+- **"Reasoning quality improvement"**: Quality metrics are verbosity proxies, not quality signals
+- **Heuristic scorer**: Domain mismatch (designed for planning, used on arithmetic)
+- **Mean accuracy gains**: Confounded by convergence effects (answer-anywhere = 80% at baseline)
+- **Cross-model generality of mean-effect**: DeepSeek mean-negative, phi-2 marginal
+
+### Critical open questions:
+- Does perturbation help on planning/reasoning tasks (original domain)?
+- Can we separate convergence from computation effects?
+- Is the word problem result positive (running now)?
 
 ## Notes
 - Each model needs its OWN sweet-spot calibration (different baseline accuracy)

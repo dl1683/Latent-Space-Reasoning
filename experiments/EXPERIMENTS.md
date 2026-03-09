@@ -9,6 +9,49 @@ Only Codex-validated conclusions are stated as "confirmed."
 
 ---
 
+## Word Problem Cross-Task (2026-03-08) — WEAKLY EXPLOITABLE, NOT REASONING IMPROVEMENT
+
+**Purpose:** First non-arithmetic test. Does perturbation help on word problems?
+**Config:** Qwen3-4B Q4, 25 word problems (medium/2step), 3 latents, 2 soft tokens
+**Script:** `python -u experiments/run_latent_sensitivity.py --task-type word_problem --n-latents 3 --n-tasks 25 --control-mode random_noise --num-soft-tokens 2`
+**Artifacts:** `sensitivity_random_noise_t2_results.json`, `word_problem_scout_log.txt`
+
+### Results
+
+| Condition | Accuracy | Delta |
+|-----------|----------|-------|
+| Baseline | 56% (14/25) | — |
+| L0 | 56% | +0pp |
+| L1 | 64% | +8pp |
+| L2 | 56% | +0pp |
+| **Mean** | **58.7%** | **+2.7pp** |
+| Oracle | 64% | — |
+
+McNemar: 2 gains, 0 losses, p=0.5 (not significant).
+
+### Critical Finding: Token-Cap Truncation, Not Reasoning
+
+**100% correlation between token cap and failure:**
+- ALL 11 wrong answers hit the 1024 token cap
+- ALL 14 correct answers used NO think mode (31-45 words direct answer)
+- Perturbed responses: 0% hit cap (max=962 tokens)
+
+The 2 rescued tasks (wp_013, wp_021) were truncation fixes: baseline ran out of tokens
+before outputting the final answer; perturbation kept output under the cap.
+
+**This is token budget management, not reasoning improvement.**
+
+### Critical Analysis: Convergence vs Computation (Grading Audit)
+
+Separate grading confound audit on nested arithmetic revealed:
+- **Qwen3-4B answer-anywhere accuracy: 80% baseline, 82% perturbed** (negligible)
+- **Last-integer accuracy: 32% -> 43%** (where the gain comes from)
+- The model can already COMPUTE correct answers 80% of the time
+- Perturbation helps CONVERGENCE (ending on the right answer), not computation
+- See: `experiments/CRITICAL_ANALYSIS.md` for full analysis
+
+---
+
 ## DeepSeek Dose-Response (2026-03-07) — COMPLETE (NON-MONOTONIC WINDOW CONFIRMED)
 
 **Purpose:** Test whether non-monotonic 2-tok optimum generalizes beyond Qwen3-4B.
