@@ -20,8 +20,7 @@
 \newcommand{\pending}[1]{\textcolor{red}{[PENDING: #1]}}
 \newcommand{\placeholder}[1]{\textcolor{orange}{[PLACEHOLDER: #1]}}
 
-\title{Random Prefix Tokens Reveal a Sharp Non-Monotonic Optimum\\in Language Model Arithmetic Reasoning}
-% Title is [PENDING] per Codex — finalize after Shi comparison
+\title{Random Prefix Perturbations Diversify Reasoning Trajectories\\with a Sharp Non-Monotonic Optimum in Small Language Models}
 
 \author{Devansh}
 \date{March 2026}
@@ -57,9 +56,13 @@ distinction between oracle accessibility and mean-effect improvement.
 A dose-response scout on DeepSeek confirms the non-monotonic window
 generalizes: 1-token perturbation hurts ($-12$pp), 2-token is the
 local optimum, and 3-token enters a direction-sensitive bifurcated
-regime. These results establish
+regime. A grading-confound analysis reveals that the accuracy gains are
+primarily a \emph{convergence} effect: the model can already compute
+correct answers 80\% of the time (answer-anywhere), but perturbation
+improves the rate at which the correct answer appears as the final
+output (32\% $\to$ 51.6\%). These results establish
 embedding-space perturbation as a training-free intervention that
-activates latent reasoning capabilities, with transfer dependent
+diversifies reasoning trajectories, with transfer dependent
 on reasoning substrate and quantization fidelity.
 \end{abstract}
 
@@ -85,9 +88,10 @@ tasks are:
 
 \begin{enumerate}
     \item \textbf{Sharp non-monotonic optimum.} Two random prefix tokens
-    raise mean accuracy from 32\% to 51.6\% across ten directions;
-    one token yields 42.7\%, and three or eight tokens revert to
-    $\sim$44\%.
+    raise mean last-integer accuracy from 32\% to 51.6\% across ten
+    directions (primarily a convergence effect; answer-anywhere accuracy
+    is 80\% at baseline); one token yields 42.7\%, and three or eight
+    tokens revert to $\sim$44\%.
 
     \item \textbf{Complete oracle coverage.} Ten two-token directions
     collectively solve 100\% of tasks (25/25), compared to 80\% (20/25)
@@ -646,27 +650,56 @@ The two-token optimum emerges because it maximizes the reachable task
 set (25/25 at $n = 10$, vs.\ 20/25 for three tokens) while maintaining
 the highest mean per-direction accuracy (12.9/25 = 51.6\%).
 
-\subsection{Perturbation as Trajectory Efficiency Switch}
+\subsection{Convergence, Not Computation}
 
-The prefix perturbation does not make the model ``smarter''; it
-routes the model to a different computational trajectory. Response
-inspection reveals the mechanism concretely:
+A grading-confound analysis reveals that the accuracy effect is
+primarily about \emph{answer convergence} rather than \emph{improved
+computation}. Extracting all integers from each response and checking
+whether the correct answer appears anywhere (not just as the last
+integer) shows:
+
+\begin{table}[h]
+\centering
+\begin{tabular}{lccc}
+\toprule
+\textbf{Grading Rule} & \textbf{Baseline} & \textbf{Perturbed} & \textbf{$\Delta$} \\
+\midrule
+Last integer (used) & 32\% & 51.6\% & +19.6pp \\
+Answer anywhere & 80\% & 82\% & +2pp \\
+\bottomrule
+\end{tabular}
+\caption{Qwen3-4B accuracy under two grading rules. The model computes
+the correct answer 80\% of the time at baseline; perturbation barely
+changes this. The gain is almost entirely in convergence---placing
+the correct answer as the final output.}
+\label{tab:convergence}
+\end{table}
+
+The model can already derive the correct answer in its reasoning chain
+for 80\% of tasks but fails to produce it as the final output---it
+continues computing and drifts past the correct answer. Perturbation
+improves the rate at which the reasoning chain \emph{terminates} at
+the correct answer. This is consistent with the trajectory
+diversification model: different starting conditions lead to different
+chain-of-thought trajectories that terminate at different points.
+
+\subsection{Trajectory Efficiency Examples}
+
+Response inspection confirms the convergence mechanism concretely:
 \begin{itemize}
     \item \texttt{nest\_010} ($11 \times 21 \times 4 = 924$): The
     baseline response enters a verbose place-value explanation that
     exhausts the token budget before reaching the answer. Under noise,
     the model takes a more direct path ($11 \times 21 = 231$,
     $231 \times 4 = 924$) and completes within budget.
-    \item \texttt{nest\_009} (DeepSeek, $(47 \times 92 + 50) \bmod
-    28 = 6$): The baseline computes $47 \times 92 = 4364$ (arithmetic
-    error, off by 40). Under noise, the model switches to Chinese and
-    computes correctly: $4{,}324 + 50 = 4{,}374$, remainder 6.
+    \item \texttt{nest\_006} ($= 6$): The baseline derives the correct
+    answer within its reasoning trace but continues generating,
+    runs out of tokens, and the last integer is not 6. Under perturbation,
+    the model produces a clean answer ending with $\boxed{6}$---a
+    convergence fix, not a computation fix.
 \end{itemize}
 The effect is trajectory efficiency: noise routes computation through
-paths that reach the answer within the generation budget. On
-Qwen3-1.7B, the same mechanism works in reverse---noise induces
-verbose, indecisive reasoning that \emph{exceeds} the model's
-reliable completion budget, explaining the two observed regressions.
+paths that terminate at the correct answer within the generation budget.
 
 \subsection{Why Two Tokens?}
 
@@ -705,10 +738,12 @@ reachable task set, freezing tasks that are solvable at two tokens.
     universal. Full characterization across architectures and scales
     remains future work.
 
-    \item \textbf{Single task domain.} Only nested arithmetic
-    expressions were tested. Generalization to reasoning, coding, or
-    language tasks is unknown.
-    \pending{Word problem replication may address this.}
+    \item \textbf{Limited cross-task transfer.} A word problem
+    scout ($n{=}3$, 25 tasks on Qwen3-4B) yielded +2.7pp mean
+    (not significant; McNemar 2/0, $p = 0.5$). All 11 baseline
+    failures hit the 1024-token cap; the two rescued tasks were
+    token-budget truncation fixes. Generalization beyond nested
+    arithmetic remains unestablished.
 
     \item \textbf{Small $n$.} 25 tasks with 10 perturbation directions at
     the key 2-token condition. Per-task mechanistic analyses remain
@@ -730,43 +765,48 @@ reachable task set, freezing tasks that are solvable at two tokens.
     generation budget. Perturbation may benefit models that can reach
     correct answers within budget, while harming those whose reasoning
     chains are already budget-limited.
+
+    \item \textbf{Convergence vs.\ computation confound.}
+    A grading-confound analysis (Table~\ref{tab:convergence}) reveals
+    the model can already compute correct answers 80\% of the time
+    at baseline. The accuracy gain is primarily a convergence effect
+    (placing the correct answer last) rather than improved reasoning.
+    DeepSeek shows the reverse: perturbation degrades both
+    answer-anywhere (84\% $\to$ 78\%) and last-integer accuracy
+    (76\% $\to$ 69\%), with only oracle coverage benefiting.
 \end{itemize}
 
 % ============================================================================
 \section{Conclusion}
 
-Random prefix tokens at the embedding scale reveal a sharp non-monotonic
-optimum in small-model arithmetic reasoning. Two tokens produce a
-mean +19.6 percentage point improvement over baseline. A first-token
-logit probe confirms that perturbation does not activate reasoning mode
-(already saturated at $>$99.99\%); instead, it modulates the downstream
-reasoning trajectory.
-Different random directions solve different task subsets, enabling
-complete oracle coverage (100\% from 10 two-token directions, compared
-to 80\% for three-token and 92\% for eight-token). The three-token
-oracle set is a strict subset of the two-token oracle, with five tasks
-becoming frozen at three tokens. Per-direction solve counts vary
-normally ($p = 0.66$ vs.\ iid null); the diversity is in task identity,
-not total count.
-Cross-model validation confirms the effect on four models:
-Qwen3-4B, Qwen3-8B (8-bit), DeepSeek-R1-Distill-1.5B (oracle 100\%
-from $n{=}10$, McNemar 6/0), and phi-2 (out-of-family). A within-model
-quantization control on Qwen3-8B reveals that weight precision modulates
-perturbation sensitivity: 4-bit yields a null result while 8-bit
-yields +16pp, with only 2/25 baseline tasks shared---demonstrating
-that quantization fidelity determines which reasoning trajectories
-are accessible to perturbation. A cross-model dose-response on
-DeepSeek confirms the non-monotonic constructive window: 1-token
-perturbation hurts ($-12$pp), 2-token is the local optimum at small
-$n$, and 3-token enters a bifurcated regime. At $n{=}10$, DeepSeek
-exhibits an oracle/mean dissociation---every baseline failure is
-recoverable but the average direction slightly hurts---suggesting
-that high-baseline models benefit through task-selective direction
-search rather than uniform perturbation.
-These findings suggest that language models with sufficient reasoning
-substrate and quantization fidelity possess latent capabilities
-that can be unlocked through minimal, training-free embedding-space
-perturbation.
+Random prefix perturbations at the embedding scale diversify reasoning
+trajectories in small language models, producing a sharp non-monotonic
+optimum. Two tokens raise Qwen3-4B mean accuracy from 32\% to 51.6\%,
+but a grading-confound analysis reveals this is primarily a
+\emph{convergence} effect: the model already computes correct answers
+80\% of the time; perturbation improves the rate at which the correct
+answer appears as the final output, not the ability to compute it.
+
+The trajectory diversification is genuine and well-characterized:
+different random directions solve different task subsets, enabling
+100\% oracle coverage from 10 two-token directions. Per-direction solve
+counts vary normally; the diversity is in task identity, not total count.
+Cross-model validation confirms the effect on four models, while
+a within-model quantization control reveals that weight precision
+modulates perturbation sensitivity (4-bit null, 8-bit +16pp).
+A cross-model dose-response on DeepSeek confirms the non-monotonic
+window generalizes: 1-token hurts, 2-token is the local optimum,
+3-token enters a bifurcated regime. At $n{=}10$, DeepSeek exhibits
+oracle/mean dissociation---every baseline failure is recoverable
+but the average direction slightly hurts.
+
+A word problem cross-task scout (+2.7pp, not significant) suggests the
+effect may be specific to nested arithmetic or to tasks where
+convergence is the primary bottleneck. These findings establish
+embedding-space perturbation as a training-free trajectory
+diversification tool, with the caveat that the observed accuracy
+gains reflect improved answer convergence rather than improved
+reasoning computation.
 
 % ============================================================================
 \bibliographystyle{plain}

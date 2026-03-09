@@ -1,31 +1,41 @@
 # Critical Self-Reflective Analysis: Reasoning Quality vs Verbosity
-**Date**: 2026-03-08
+**Date**: 2026-03-08 (UPDATED with response_raw fix)
 
 ## Executive Summary
 
-The reasoning quality analysis reveals that **perturbation uniformly inflates output length across ALL task outcomes**, and existing quality metrics are either verbosity proxies or mismatched to the task domain. The defensible claim is trajectory diversification, not reasoning quality improvement.
+The initial reasoning quality analysis appeared to show perturbation inflating output length.
+**This was ENTIRELY an artifact of the response/response_raw field ordering bug** (fixed in
+commit 6c69284). With the fix, perturbation produces essentially NO change in verbosity (-3% words).
+The defensible claim remains trajectory diversification and convergence improvement.
 
-## Key Finding: Verbosity is NOT a Quality Signal
+## CORRECTION: Verbosity Inflation was a Bug (2026-03-08)
 
-### Baseline Evidence
-Qwen3-4B baseline shows wrong answers are ALREADY more verbose than correct:
-| Metric | Correct | Wrong |
-|--------|---------|-------|
-| Words | 135 | 237 |
-| Step markers | 12.4 | 19.8 |
-| Computations | 11.4 | 22.5 |
-| Logical flow | 5.4 | 12.3 |
+### The Bug
+`analyze_reasoning_quality.py` used `response` before `response_raw`. For correct baseline
+tasks, `response` was the short polished post-`</think>` answer (~135 words). For wrong
+tasks, `response` was the raw thinking trace (~237 words). This manufactured the
+"wrong answers are more verbose" pattern.
 
-**Implication**: More computation at baseline = more likely WRONG, not right.
+### Before vs After Fix (Qwen3-4B)
+| Metric | Before Fix (buggy) | After Fix (correct) |
+|--------|-------------------|---------------------|
+| Baseline correct words | 135 | 300 |
+| Baseline wrong words | 237 | 376 |
+| Wrong/correct ratio | 1.76x | 1.25x |
+| Perturbation delta words | +67% | **-3%** |
+| Perturbation delta steps | +79% | -0% |
 
-### Perturbation Effect is Uniform (NOT Selective)
+**The perturbation verbosity effect was entirely an artifact.**
+
+### Corrected Quality Deltas (Qwen3-4B)
 | Outcome | n | Delta words | Delta steps | Delta computations |
 |---------|---|-------------|-------------|--------------------|
-| FIXED (wrong->right) | 67 | +146 | +14.5 | +10.8 |
-| MAINTAINED (same) | 165 | +142 | +14.5 | +9.1 |
-| BROKEN (right->wrong) | 18 | +61 | +4.5 | +3.7 |
+| FIXED (wrong->right) | 67 | **-32** | -1.7 | +1.8 |
+| MAINTAINED (same) | 165 | -3 | +0.6 | -0.7 |
+| BROKEN (right->wrong) | 18 | -1 | -0.1 | 0.0 |
 
-FIXED and MAINTAINED deltas are statistically indistinguishable. Perturbation inflates output uniformly; task flips are a stochastic byproduct.
+FIXED tasks actually get SHORTER under perturbation. The reasoning chains are
+more efficient, not more verbose.
 
 ### DeepSeek: BROKEN > FIXED Verbosity (Red Flag)
 | Outcome | n | Delta words | Delta steps |

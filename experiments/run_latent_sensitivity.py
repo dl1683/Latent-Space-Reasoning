@@ -632,6 +632,151 @@ def _collection_problem(rng):
     return prompt, remainder
 
 
+def generate_planning_tasks(
+    n_tasks: int = 25,
+    seed: int = 42,
+) -> List[SensitivityTask]:
+    """Generate planning tasks with verifiable integer answers.
+
+    These are real-world planning scenarios requiring multi-step arithmetic.
+    The heuristic scorer (designed for planning) can meaningfully evaluate
+    these responses, while correct_answer enables automatic verification.
+    """
+    rng = random.Random(seed)
+    tasks: List[SensitivityTask] = []
+    idx = 0
+
+    template_fns = [
+        _staffing_plan,
+        _budget_plan,
+        _inventory_plan,
+        _schedule_plan,
+        _resource_plan,
+    ]
+
+    while len(tasks) < n_tasks:
+        fn = rng.choice(template_fns)
+        prompt, answer = fn(rng)
+        if answer is not None and isinstance(answer, int) and 0 < answer < 100000:
+            tasks.append(SensitivityTask(
+                f"plan_{idx:03d}", prompt, answer, 3, "planning"))
+            idx += 1
+
+    return tasks
+
+
+def _staffing_plan(rng):
+    """Project staffing: compute total person-weeks."""
+    n_phases = rng.randint(2, 4)
+    phases = []
+    total = 0
+    for i in range(n_phases):
+        engineers = rng.randint(2, 10)
+        weeks = rng.randint(2, 8)
+        phases.append((i + 1, engineers, weeks))
+        total += engineers * weeks
+
+    phase_desc = ". ".join(
+        f"Phase {p} requires {e} engineers for {w} weeks"
+        for p, e, w in phases)
+    prompt = (f"A software project has {n_phases} phases. {phase_desc}. "
+              f"Create a staffing plan and compute the total person-weeks "
+              f"needed across all phases. Give your answer as a number.")
+    return prompt, total
+
+
+def _budget_plan(rng):
+    """Department budget: compute remaining after allocations."""
+    total_budget = rng.randint(50, 200) * 1000
+    n_items = rng.randint(3, 5)
+    items = []
+    spent = 0
+    item_names = ["hardware", "software licenses", "training",
+                  "travel", "contractors", "cloud services", "office supplies"]
+    chosen = rng.sample(item_names, min(n_items, len(item_names)))
+    for name in chosen:
+        cost = rng.randint(5, 40) * 1000
+        items.append((name, cost))
+        spent += cost
+
+    if spent >= total_budget:
+        return None, None
+
+    remaining = total_budget - spent
+    items_desc = ", ".join(f"${c:,} on {n}" for n, c in items)
+    prompt = (f"A department has a budget of ${total_budget:,}. "
+              f"They plan to spend {items_desc}. "
+              f"Create a budget allocation plan and compute how much "
+              f"budget remains after all allocations. Give your answer as a number.")
+    return prompt, remaining
+
+
+def _inventory_plan(rng):
+    """Warehouse inventory: compute final stock after operations."""
+    initial = rng.randint(100, 500)
+    received = rng.randint(50, 200)
+    shipped = rng.randint(30, 150)
+    damaged = rng.randint(5, 30)
+    final = initial + received - shipped - damaged
+
+    if final <= 0:
+        return None, None
+
+    prompt = (f"A warehouse starts with {initial} units. "
+              f"They receive a shipment of {received} units, "
+              f"ship out {shipped} units to customers, "
+              f"and {damaged} units are found damaged and removed. "
+              f"Create an inventory management plan and compute "
+              f"the final stock count. Give your answer as a number.")
+    return prompt, final
+
+
+def _schedule_plan(rng):
+    """Event scheduling: compute total hours needed."""
+    n_events = rng.randint(3, 6)
+    events = []
+    total_hours = 0
+    event_types = ["setup", "keynote", "workshop", "networking",
+                   "panel discussion", "demo session", "closing"]
+    chosen = rng.sample(event_types, min(n_events, len(event_types)))
+    for event in chosen:
+        duration = rng.randint(1, 4)
+        staff = rng.randint(2, 8)
+        events.append((event, duration, staff))
+        total_hours += duration * staff
+
+    events_desc = ". ".join(
+        f"The {e} takes {d} hours and needs {s} staff members"
+        for e, d, s in events)
+    prompt = (f"An event has {n_events} activities. {events_desc}. "
+              f"Create a scheduling plan and compute the total "
+              f"staff-hours needed. Give your answer as a number.")
+    return prompt, total_hours
+
+
+def _resource_plan(rng):
+    """Server capacity planning: compute total required."""
+    n_services = rng.randint(2, 4)
+    services = []
+    total_cpu = 0
+    service_names = ["web frontend", "API backend", "database",
+                     "cache layer", "batch processor", "monitoring"]
+    chosen = rng.sample(service_names, min(n_services, len(service_names)))
+    for name in chosen:
+        instances = rng.randint(2, 6)
+        cpu_per = rng.randint(2, 8)
+        services.append((name, instances, cpu_per))
+        total_cpu += instances * cpu_per
+
+    svc_desc = ". ".join(
+        f"The {n} needs {i} instances with {c} CPU cores each"
+        for n, i, c in services)
+    prompt = (f"A deployment has {n_services} services. {svc_desc}. "
+              f"Create a capacity plan and compute the total CPU cores "
+              f"needed. Give your answer as a number.")
+    return prompt, total_cpu
+
+
 # =====================================================================
 # Zero-shot baseline (same chat template, no conditioning)
 # =====================================================================
@@ -730,9 +875,9 @@ def main():
         "--diagnostic", action="store_true",
         help="Quick run: 5 latents, 3+5+5 tasks")
     parser.add_argument(
-        "--task-type", default="chain", choices=["chain", "nested", "word_problem"],
+        "--task-type", default="chain", choices=["chain", "nested", "word_problem", "planning"],
         help="Task type: chain (sequential), nested (expression trees), "
-             "or word_problem (narrative format for cross-task replication)")
+             "word_problem (narrative format), or planning (verifiable planning tasks)")
     parser.add_argument(
         "--calibrate", action="store_true",
         help="Calibration mode: run baseline only to find 50-70%% sweet spot")
@@ -812,6 +957,9 @@ def main():
     elif args.task_type == "word_problem":
         n_tasks_gen = args.n_tasks if args.n_tasks else 25
         tasks = generate_word_problems(n_tasks=n_tasks_gen)
+    elif args.task_type == "planning":
+        n_tasks_gen = args.n_tasks if args.n_tasks else 25
+        tasks = generate_planning_tasks(n_tasks=n_tasks_gen)
     else:
         tasks = generate_tasks(
             n_easy=args.n_easy,
