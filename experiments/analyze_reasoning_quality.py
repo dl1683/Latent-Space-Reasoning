@@ -86,7 +86,7 @@ def load_and_analyze(result_path: str, label: str = "") -> dict:
     baseline_results = data['baseline_results']
     baseline_quality = []
     for task in baseline_results:
-        response = task.get('response', '') or task.get('response_raw', '')
+        response = task.get('response_raw', '') or task.get('response', '')
         if response:
             q = analyze_response_quality(response)
             q['correct'] = task['correct']
@@ -99,7 +99,7 @@ def load_and_analyze(result_path: str, label: str = "") -> dict:
 
     for li, latent_data in enumerate(sensitivity_results):
         for task in latent_data['task_results']:
-            response = task.get('response', '') or task.get('response_raw', '')
+            response = task.get('response_raw', '') or task.get('response', '')
             if response:
                 q = analyze_response_quality(response)
                 q['correct'] = task['correct']
@@ -203,7 +203,7 @@ def load_and_analyze(result_path: str, label: str = "") -> dict:
     print(f"\n--- Heuristic Scorer (Planning Quality) ---")
     base_scores = []
     for task in baseline_results:
-        response = task.get('response', '') or task.get('response_raw', '')
+        response = task.get('response_raw', '') or task.get('response', '')
         if response:
             s = scorer.score(response)
             base_scores.append(s)
@@ -211,7 +211,7 @@ def load_and_analyze(result_path: str, label: str = "") -> dict:
     pert_scores = []
     for li in sensitivity_results:
         for task in li['task_results']:
-            response = task.get('response', '') or task.get('response_raw', '')
+            response = task.get('response_raw', '') or task.get('response', '')
             if response:
                 s = scorer.score(response)
                 pert_scores.append(s)
