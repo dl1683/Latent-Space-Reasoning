@@ -26,7 +26,7 @@ Continuous 2-tok = 51.6% (+19.6pp). Gap: 9.6pp in favor of continuous.
 | Model | Quant | McNemar p | Gains | Losses | Headroom used | Notes |
 |-------|-------|-----------|-------|--------|---------------|-------|
 | Qwen3-4B (n=10) | 4-bit | 0.000015 | 17 | 0 | 100% | Powered mean-effect anchor |
-| Qwen3-8B (n=3) | 8-bit | 0.00098 | 11 | 0 | 52% | Within-model quant control |
+| Qwen3-8B (n=10) | 8-bit | 0.000177 | 16 | 0 | 80% | Within-model quant control, computation+convergence |
 | DeepSeek-1.5B (n=10) | 4-bit | 0.031 | 6 | 0 | 100% | Oracle only; mean -1.6pp |
 | phi-2 (n=3) | none | 0.125 | 4 | 0 | 18% | Out-of-family |
 | Qwen3-1.7B (n=3) | 4-bit | 0.289 | 6 | 2 | 22% | — (null) |
@@ -37,7 +37,7 @@ Continuous 2-tok = 51.6% (+19.6pp). Gap: 9.6pp in favor of continuous.
 | Quant | Base | Mean Noise | Delta | Oracle | Rescued | Regress |
 |-------|------|-----------|-------|--------|---------|---------|
 | 4-bit | 24% | 25.3% | +1.3pp | 44% | 7/19 | 2 |
-| 8-bit | 16% | 32% | +16pp | 60% | 11/21 | 0 |
+| 8-bit (n=10) | 16% | 28.8% | +12.8pp | 80% | 16/21 | 0 |
 Only 2/25 baseline tasks shared. Oracle sets overlap on 9/25.
 
 ## DeepSeek Dose-Response (COMPLETE, updated 2026-03-08)
@@ -70,22 +70,13 @@ Baseline: 56%, Mean: 58.7%, Oracle: 64% (16/25). McNemar 2/0, p=0.5 (NS).
 Only 2 tasks rescued — both were token-cap truncation fixes, not reasoning improvements.
 100% correlation: all 11 baseline failures hit 1024 cap, all 14 correct used no think mode.
 
-## PRIORITY 1: Qwen3-8B 8-bit n=10
+## ~~PRIORITY 1: Qwen3-8B 8-bit n=10~~ DONE
 
-### 11. Qwen3-8B 8-bit 2-tok n=10 (~4 hours, 15.6 GB VRAM)
-```bash
-python -u experiments/run_latent_sensitivity.py \
-  --model Qwen/Qwen3-8B \
-  --task-type nested --difficulty sweet_spot \
-  --n-latents 10 --n-tasks 25 \
-  --control-mode random_noise --num-soft-tokens 2 \
-  --quantization 8bit \
-  --reuse-baseline experiments/sensitivity_sweet_spot_random_noise_t2_qwen38b_8bit_results.json
-```
-Why: Tests oracle/task-selectivity and equalization on second model at paper-grade n=10.
-Answers biggest reviewer question: is 8-bit crossover real or n=3 fluke?
-**NOTE**: Checkpointing now added (commit ec19891). Previously crashed at L6 without it.
-**STATUS**: Previous n=10 attempt crashed at L6 (before checkpointing), 6 completed latents LOST. No checkpoint file. Must restart from scratch after word problem finishes.
+### 11. ~~Qwen3-8B 8-bit 2-tok n=10~~ DONE — STRONGLY POSITIVE (+12.8pp, oracle 80%)
+**Result**: Mean 28.8% (+12.8pp), oracle 20/25=80%, McNemar 16/0 p=0.000177.
+Latent accuracies: [32,24,40,16,40,24,32,32,16,32]. n=3 was slightly upward-biased (32% vs 28.8%).
+Oracle grows from 60% (n=3) to 80% (n=10).
+**KEY**: Unlike 4B, perturbation improves COMPUTATION (+18pp answer-anywhere) not just convergence.
 
 ### 12. ~~DeepSeek 2-tok n=10~~ DONE — ORACLE/TASK-SELECTIVE (NOT MEAN-EFFECT)
 **Result**: Mean 74.4% (-1.6pp below baseline), oracle 25/25=100%, McNemar 6/0 p=0.031.
@@ -95,9 +86,16 @@ Cochran Q=19.07, p=0.025 (significant heterogeneity).
 
 ## PRIORITY 3: BREADTH (done — word problem was the test)
 
+## ~~PRIORITY 2: Planning Task Cross-Domain~~ DONE
+
+### 15. ~~Qwen3-4B Planning Tasks 2-tok n=3~~ DONE — CEILING EFFECT (96% baseline, 100% perturbed)
+Baseline 96%, all 3 directions 100%. Tasks too easy. Heuristic scorer delta = +0.001.
+Only 1 baseline failure (computation error), rescued by all directions.
+Need harder planning tasks for meaningful signal.
+
 ## PRIORITY 4: OPTIONAL
 
-### 14. Qwen3-0.6B — Capacity floor null
+### 16. Qwen3-0.6B — Capacity floor null
 Why: Expected negative. Boundary condition.
 
 ## NeurIPS-Sufficient Evidence (Updated 2026-03-08, post-critical-analysis)
@@ -105,20 +103,23 @@ Why: Expected negative. Boundary condition.
 ### What HOLDS UP under scrutiny:
 - **Oracle coverage structure**: Different directions solve different tasks (permutation-validated)
 - **Non-monotonic dose-response**: 2-tok optimum (1-tok hurts, 3-tok bifurcated)
-- **Quantization x noise interaction**: Clean within-model control (4-bit null, 8-bit +16pp)
+- **Quantization x noise interaction**: Clean within-model control (4-bit null, 8-bit +12.8pp at n=10)
+- **8B 8-bit confirmed at n=10**: McNemar 16/0 p=0.000177, oracle 80%
 - **Force-think decomposition**: Perturbation contributes +11.6pp beyond think-mode activation
 - **Fisher combined p < 0.001** across 4 positive models
+- **Model-dependent mechanism**: 4B = convergence aid, 8B = computation + convergence
 
 ### What DOES NOT hold up:
 - **"Reasoning quality improvement"**: Quality metrics are verbosity proxies, not quality signals
-- **Heuristic scorer**: Domain mismatch (designed for planning, used on arithmetic)
-- **Mean accuracy gains**: Confounded by convergence effects (answer-anywhere = 80% at baseline)
+- **Heuristic scorer**: No signal even on planning tasks (correct domain) — ceiling effect
+- **Mean accuracy gains on 4B**: Confounded by convergence effects (answer-anywhere = 80%)
 - **Cross-model generality of mean-effect**: DeepSeek mean-negative, phi-2 marginal
+- **Cross-task generality**: Word problem +2.7pp (NS), planning ceiling effect
 
-### Critical open questions:
-- Does perturbation help on planning/reasoning tasks (original domain)?
-- Can we separate convergence from computation effects?
-- Is the word problem result positive (running now)?
+### Resolved questions:
+- ~~Does perturbation help on planning tasks?~~ Ceiling effect — tasks too easy (96% baseline)
+- ~~Can we separate convergence from computation?~~ YES: 4B = convergence only, 8B = both
+- ~~Is the word problem result positive?~~ +2.7pp, not significant (token-budget artifact)
 
 ## Notes
 - Each model needs its OWN sweet-spot calibration (different baseline accuracy)

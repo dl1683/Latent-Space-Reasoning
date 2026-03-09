@@ -44,7 +44,8 @@ directions collectively cover 100\% of tasks (25/25), compared to 80\%
 for three-token and 92\% for eight-token perturbations. The three-token
 oracle set is a strict subset of the two-token oracle, indicating that
 over-perturbation contracts the reachable task space. Cross-model validation confirms the effect on four models including
-Qwen3-8B at 8-bit (+16.0pp), DeepSeek-R1-Distill-1.5B (oracle 100\%,
+Qwen3-8B at 8-bit (+12.8pp at $n{=}10$, oracle 80\%,
+McNemar 16/0), DeepSeek-R1-Distill-1.5B (oracle 100\%,
 McNemar 6/0), and phi-2 (+6.7pp, out-of-family). A within-model
 quantization control reveals that weight precision modulates
 perturbation sensitivity: Qwen3-8B at 4-bit yields a null result
@@ -532,7 +533,7 @@ same 25-task set and auto-calibrated RMS scale.
 \textbf{Model} & \textbf{Quant} & \textbf{Base} & \textbf{+Noise} & \textbf{$\Delta$} & \textbf{Oracle} & \textbf{Rescued} & \textbf{Rescue\%} & \textbf{Regress} \\
 \midrule
 Qwen3-4B ($n{=}10$) & 4-bit & 32\% & 51.6\% & +19.6pp & 100\% & 17/17 & 39\% & 0 \\
-Qwen3-8B ($n{=}3$) & 8-bit & 16\% & 32\% & +16.0pp & 60\% & 11/21 & 52\% & 0 \\
+Qwen3-8B ($n{=}10$) & 8-bit & 16\% & 28.8\% & +12.8pp & 80\% & 16/21 & 20\% & 0 \\
 DeepSeek-1.5B ($n{=}10$) & 4-bit & 76\% & 74.4\% & $-$1.6pp & 100\% & 6/6 & --- & 0 \\
 phi-2 ($n{=}3$) & none & 12\% & 18.7\% & +6.7pp & 28\% & 4/22 & 6\% & 0 \\
 \midrule
@@ -551,7 +552,8 @@ The Qwen3-8B rows constitute a within-model quantization control
 \end{table}
 
 The effect replicates as a positive mean gain on three models: Qwen3-4B
-(+19.6pp), Qwen3-8B at 8-bit quantization (+16.0pp, McNemar $p < 0.001$),
+(+19.6pp), Qwen3-8B at 8-bit quantization (+12.8pp at $n{=}10$,
+McNemar $p < 0.001$, 16 gains/0 losses),
 and phi-2 (+6.7pp, $p = 0.125$), an out-of-family model with no thinking
 mode. DeepSeek-R1-Distill-1.5B shows a distinct pattern: the mean across
 10 random directions falls slightly below baseline ($-1.6$pp) but the
@@ -568,8 +570,8 @@ The Qwen3-8B 4-bit null is \emph{explained} by an 8-bit adjudication
 experiment. Switching from 4-bit to 8-bit quantization on the same model
 with identical experimental parameters produces a crossover interaction:
 the baseline \emph{drops} ($24\% \to 16\%$) but the perturbation benefit
-\emph{increases sharply} ($+1.3\text{pp} \to +16.0\text{pp}$), oracle
-coverage rises ($44\% \to 60\%$), and regressions vanish ($2 \to 0$).
+\emph{increases sharply} ($+1.3\text{pp} \to +12.8\text{pp}$ at $n{=}10$),
+oracle coverage rises ($44\% \to 80\%$), and regressions vanish ($2 \to 0$).
 Only 2 of 25 baseline tasks are shared between quantization levels;
 oracle sets overlap on only 9 of 25.
 This constitutes the cleanest within-model control in our study:
@@ -620,8 +622,8 @@ all models, vs.\ 0\% for universally-solved tasks).
 
 \paragraph{Statistical significance.} Exact McNemar tests on paired
 baseline-vs-oracle task outcomes: Qwen3-4B $p < 0.0001$ (17 gains, 0
-losses), Qwen3-8B 8-bit $p < 0.001$ (11/0), DeepSeek $p = 0.031$ (6/0),
-phi-2 $p = 0.125$ (4/0).
+losses), Qwen3-8B 8-bit $p < 0.001$ (16/0 at $n{=}10$),
+DeepSeek $p = 0.031$ (6/0), phi-2 $p = 0.125$ (4/0).
 Fisher's combined test across four positive models yields $p < 0.001$.
 
 % ============================================================================
@@ -650,38 +652,44 @@ The two-token optimum emerges because it maximizes the reachable task
 set (25/25 at $n = 10$, vs.\ 20/25 for three tokens) while maintaining
 the highest mean per-direction accuracy (12.9/25 = 51.6\%).
 
-\subsection{Convergence, Not Computation}
+\subsection{Convergence vs.\ Computation}
 
-A grading-confound analysis reveals that the accuracy effect is
-primarily about \emph{answer convergence} rather than \emph{improved
-computation}. Extracting all integers from each response and checking
-whether the correct answer appears anywhere (not just as the last
-integer) shows:
+A grading-confound analysis reveals that the accuracy effect has
+model-dependent character. Extracting all integers from each response
+and checking whether the correct answer appears anywhere (not just as
+the last integer) shows:
 
 \begin{table}[h]
 \centering
-\begin{tabular}{lccc}
+\begin{tabular}{llccc}
 \toprule
-\textbf{Grading Rule} & \textbf{Baseline} & \textbf{Perturbed} & \textbf{$\Delta$} \\
+\textbf{Model} & \textbf{Grading Rule} & \textbf{Baseline} & \textbf{Perturbed} & \textbf{$\Delta$} \\
 \midrule
-Last integer (used) & 32\% & 51.6\% & +19.6pp \\
-Answer anywhere & 80\% & 82\% & +2pp \\
+Qwen3-4B & Last integer (used) & 32\% & 51.6\% & +19.6pp \\
+Qwen3-4B & Answer anywhere & 80\% & 82\% & +2pp \\
+\midrule
+Qwen3-8B (8-bit) & Last integer (used) & 16\% & 22\% & +6pp \\
+Qwen3-8B (8-bit) & Answer anywhere & 32\% & 50\% & +18pp \\
 \bottomrule
 \end{tabular}
-\caption{Qwen3-4B accuracy under two grading rules. The model computes
-the correct answer 80\% of the time at baseline; perturbation barely
-changes this. The gain is almost entirely in convergence---placing
-the correct answer as the final output.}
+\caption{Accuracy under two grading rules. Qwen3-4B can already compute
+the correct answer 80\% of the time; its gain is purely convergence
+(placing the answer last). Qwen3-8B at 8-bit has a lower computational
+ceiling (32\%); perturbation genuinely improves computation (+18pp
+answer-anywhere) as well as convergence.}
 \label{tab:convergence}
 \end{table}
 
-The model can already derive the correct answer in its reasoning chain
-for 80\% of tasks but fails to produce it as the final output---it
-continues computing and drifts past the correct answer. Perturbation
-improves the rate at which the reasoning chain \emph{terminates} at
-the correct answer. This is consistent with the trajectory
-diversification model: different starting conditions lead to different
-chain-of-thought trajectories that terminate at different points.
+For Qwen3-4B, the model can already derive the correct answer in its
+reasoning chain for 80\% of tasks but fails to produce it as the
+final output. Perturbation improves convergence without changing
+computational success. For Qwen3-8B at 8-bit, the model has substantial
+room for computational improvement (32\% answer-anywhere at baseline),
+and perturbation produces genuine gains in both computation (+18pp)
+and convergence (+6pp). This suggests the mechanism depends on the
+model's computational ceiling: when computation is saturated,
+perturbation aids convergence; when it is not, perturbation can
+diversify reasoning paths into ones that actually find the answer.
 
 \subsection{Trajectory Efficiency Examples}
 
@@ -742,7 +750,10 @@ reachable task set, freezing tasks that are solvable at two tokens.
     scout ($n{=}3$, 25 tasks on Qwen3-4B) yielded +2.7pp mean
     (not significant; McNemar 2/0, $p = 0.5$). All 11 baseline
     failures hit the 1024-token cap; the two rescued tasks were
-    token-budget truncation fixes. Generalization beyond nested
+    token-budget truncation fixes. A planning task scout (25 tasks,
+    $n{=}3$) showed a ceiling effect: 96\% baseline accuracy with
+    all 3 noise directions achieving 100\%, leaving no room to
+    assess perturbation benefit. Generalization beyond nested
     arithmetic remains unestablished.
 
     \item \textbf{Small $n$.} 25 tasks with 10 perturbation directions at
@@ -769,8 +780,11 @@ reachable task set, freezing tasks that are solvable at two tokens.
     \item \textbf{Convergence vs.\ computation confound.}
     A grading-confound analysis (Table~\ref{tab:convergence}) reveals
     the model can already compute correct answers 80\% of the time
-    at baseline. The accuracy gain is primarily a convergence effect
-    (placing the correct answer last) rather than improved reasoning.
+    at baseline. For Qwen3-4B, the accuracy gain is primarily a
+    convergence effect (placing the correct answer last). For
+    Qwen3-8B at 8-bit, perturbation also improves computation
+    (answer-anywhere 32\% $\to$ 50\%). The mechanism appears to
+    depend on the model's computational ceiling.
     DeepSeek shows the reverse: perturbation degrades both
     answer-anywhere (84\% $\to$ 78\%) and last-integer accuracy
     (76\% $\to$ 69\%), with only oracle coverage benefiting.
@@ -781,32 +795,35 @@ reachable task set, freezing tasks that are solvable at two tokens.
 
 Random prefix perturbations at the embedding scale diversify reasoning
 trajectories in small language models, producing a sharp non-monotonic
-optimum. Two tokens raise Qwen3-4B mean accuracy from 32\% to 51.6\%,
-but a grading-confound analysis reveals this is primarily a
-\emph{convergence} effect: the model already computes correct answers
-80\% of the time; perturbation improves the rate at which the correct
-answer appears as the final output, not the ability to compute it.
+optimum. Two tokens raise Qwen3-4B mean accuracy from 32\% to 51.6\%.
+A grading-confound analysis reveals the mechanism is model-dependent:
+for Qwen3-4B (where the model already computes correct answers 80\%
+of the time), the gain is primarily \emph{convergence}---placing the
+correct answer as the final output. For Qwen3-8B at 8-bit (lower
+computational ceiling at 32\% answer-anywhere), perturbation genuinely
+improves computation (+18pp answer-anywhere) as well as convergence.
 
 The trajectory diversification is genuine and well-characterized:
 different random directions solve different task subsets, enabling
-100\% oracle coverage from 10 two-token directions. Per-direction solve
-counts vary normally; the diversity is in task identity, not total count.
+100\% oracle coverage from 10 two-token directions on Qwen3-4B and
+80\% on Qwen3-8B at 8-bit. Per-direction solve counts vary normally;
+the diversity is in task identity, not total count.
 Cross-model validation confirms the effect on four models, while
 a within-model quantization control reveals that weight precision
-modulates perturbation sensitivity (4-bit null, 8-bit +16pp).
-A cross-model dose-response on DeepSeek confirms the non-monotonic
-window generalizes: 1-token hurts, 2-token is the local optimum,
-3-token enters a bifurcated regime. At $n{=}10$, DeepSeek exhibits
-oracle/mean dissociation---every baseline failure is recoverable
-but the average direction slightly hurts.
+modulates perturbation sensitivity (4-bit null, 8-bit +12.8pp at
+$n{=}10$). A cross-model dose-response on DeepSeek confirms the
+non-monotonic window generalizes: 1-token hurts, 2-token is the
+local optimum, 3-token enters a bifurcated regime. At $n{=}10$,
+DeepSeek exhibits oracle/mean dissociation---every baseline failure
+is recoverable but the average direction slightly hurts.
 
 A word problem cross-task scout (+2.7pp, not significant) suggests the
 effect may be specific to nested arithmetic or to tasks where
 convergence is the primary bottleneck. These findings establish
 embedding-space perturbation as a training-free trajectory
-diversification tool, with the caveat that the observed accuracy
-gains reflect improved answer convergence rather than improved
-reasoning computation.
+diversification tool whose accuracy gains reflect a mixture of
+improved convergence and computation depending on the model's
+baseline capability.
 
 % ============================================================================
 \bibliographystyle{plain}

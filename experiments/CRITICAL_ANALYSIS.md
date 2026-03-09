@@ -139,16 +139,43 @@ These findings ARE genuine and do not depend on the quality question:
 4. **Quantization x noise interaction**: Clean within-model control (4-bit null, 8-bit +16pp)
 5. **Force-think decomposition**: Perturbation contributes +11.6pp beyond think-mode activation
 
-## Correct Framing
+## 8B 8-bit n=10: Computation + Convergence (2026-03-09)
+
+Unlike Qwen3-4B (computation saturated at 80% answer-anywhere), 8B 8-bit shows BOTH:
+- Answer-anywhere: 32% → 50% (+18pp) — genuine computation improvement
+- Last-integer: 16% → 22% (+6pp) — convergence improvement
+
+This means the mechanism is model-dependent:
+- **High computational ceiling** (4B: 80%): perturbation aids convergence only
+- **Low computational ceiling** (8B 8-bit: 32%): perturbation aids both computation and convergence
+
+8B n=10 results: mean 28.8% (+12.8pp), oracle 80%, McNemar 16/0 p=0.000177.
+n=3 mean was 32% — slight regression with more data (same pattern as DeepSeek).
+
+## Planning Tasks: Ceiling Effect (2026-03-09)
+
+Planning experiment (Qwen3-4B, n=3): baseline 96%, all 3 noise directions 100%.
+Only 1 task wrong at baseline (plan_016: computation error 193 vs 203).
+Heuristic scorer delta: +0.001 (noise).
+
+**Tasks too easy** — no room for perturbation to demonstrate effect. Need harder planning
+tasks (more steps, larger numbers) for meaningful signal.
+
+## Correct Framing (UPDATED 2026-03-09)
 
 **Wrong**: "Perturbation improves reasoning quality"
-**Wrong**: "Perturbation helps the model compute better"
-**Right**: "Perturbation modulates reasoning trajectories, improving answer convergence for some tasks while degrading it for others. The model can already compute correct answers 80% of the time — the bottleneck is convergence, not computation. Different perturbation directions succeed on different tasks, enabling oracle-style coverage through trajectory diversification."
+**Nuanced**: "Perturbation helps the model compute better" — TRUE for 8B, FALSE for 4B
+**Right**: "Perturbation modulates reasoning trajectories. For models with low computational
+ceilings, it diversifies computation paths into ones that find correct answers. For models
+with high computational ceilings, it aids convergence (placing the correct answer last).
+Different perturbation directions succeed on different tasks, enabling oracle-style coverage
+through trajectory diversification."
 
 ## Action Items
-- [ ] Remove heuristic scorer from paper (or clearly label as exploratory)
-- [ ] Frame paper around trajectory diversification, not quality
+- [x] Remove heuristic scorer from paper (or clearly label as exploratory)
+- [x] Frame paper around trajectory diversification, not quality
 - [ ] Run length-controlled baselines
-- [x] Audit last-integer-wins grading for length confound (DONE: convergence, not computation)
-- [ ] Test on PLANNING tasks (the domain the scorer was designed for)
+- [x] Audit last-integer-wins grading for length confound (DONE: convergence vs computation)
+- [x] Test on PLANNING tasks (DONE: ceiling effect, tasks too easy at 96% baseline)
 - [ ] Run LLM-as-judge evaluation on FIXED chains
+- [ ] Run harder planning tasks (more steps, larger numbers) for meaningful signal

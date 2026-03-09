@@ -9,6 +9,81 @@ Only Codex-validated conclusions are stated as "confirmed."
 
 ---
 
+## Planning Tasks Cross-Domain (2026-03-09) — CEILING EFFECT (96% baseline)
+
+**Purpose:** Test on planning tasks (the original domain for the heuristic scorer).
+**Config:** Qwen3-4B Q4, 25 planning tasks (staffing/budget/inventory/schedule/resource), 3 latents, 2 soft tokens
+**Script:** `python -u experiments/run_latent_sensitivity.py --task-type planning --n-latents 3 --n-tasks 25 --control-mode random_noise --num-soft-tokens 2`
+**Artifacts:** `sensitivity_planning_random_noise_t2_results.json`
+
+### Results
+
+| Condition | Accuracy |
+|-----------|----------|
+| Baseline | 96% (24/25) |
+| L1 | 100% (25/25) |
+| L2 | 100% (25/25) |
+| L3 | 100% (25/25) |
+| **Mean** | **100%** (+4pp) |
+
+Heuristic scorer (correct domain): overall delta = +0.001 (noise).
+
+### Interpretation
+**Ceiling effect.** Tasks too easy for Qwen3-4B — 96% baseline leaves no room for perturbation
+to demonstrate meaningful effect. The single baseline failure (plan_016: computation error
+193 vs 203) is rescued by all 3 directions, but this is statistically meaningless.
+Need harder planning tasks for a real test.
+
+---
+
+## Qwen3-8B 8-bit n=10 (2026-03-09) — STRONGLY POSITIVE, COMPUTATION + CONVERGENCE
+
+**Purpose:** Paper-grade n=10 replication of 8-bit crossover finding. Tests whether n=3 (+16pp) holds at scale.
+**Config:** Qwen3-8B 8-bit, 25 sweet-spot tasks, 10 latents, 2 soft tokens, random_noise
+**Script:** `python -u experiments/run_latent_sensitivity.py --model Qwen/Qwen3-8B --task-type nested --difficulty sweet_spot --n-latents 10 --n-tasks 25 --control-mode random_noise --num-soft-tokens 2 --quantization 8bit --reuse-baseline ...`
+**Artifacts:** `sensitivity_sweet_spot_random_noise_t2_qwen38b_8bit_n10_results.json`
+**Total time:** 586.6 min (~9.8 hours)
+
+### Results
+
+| Latent | Accuracy |
+|--------|----------|
+| L1 | 32% (8/25) |
+| L2 | 24% (6/25) |
+| L3 | 40% (10/25) |
+| L4 | 16% (4/25) |
+| L5 | 40% (10/25) |
+| L6 | 24% (6/25) |
+| L7 | 32% (8/25) |
+| L8 | 32% (8/25) |
+| L9 | 16% (4/25) |
+| L10 | 32% (8/25) |
+| **Mean** | **28.8%** (+12.8pp) |
+| **Oracle** | **80%** (20/25) |
+
+**Statistics:**
+- McNemar: 16 gains, 0 losses, p=0.000177 (highly significant)
+- Cochran Q: 11.35, p=0.253 (NS — expected heterogeneity)
+- Solve count std: 2.04, Monte Carlo p=0.820 (no equalization)
+- Frozen: 5, Unanimous: 1 (nest_011), Sensitive: 19
+
+### Key Finding: Computation + Convergence (Different from 4B!)
+
+**8B convergence audit:**
+- Answer-anywhere: 32% baseline → 50% perturbed (+18pp)
+- Last-integer: 16% → 22% (+6pp)
+
+Unlike Qwen3-4B (where computation is saturated at 80% answer-anywhere), the 8B model
+benefits from BOTH improved computation (+18pp answer-anywhere) and convergence (+6pp
+last-integer). This suggests the mechanism depends on the model's computational ceiling.
+
+### n=3 vs n=10 Comparison
+- n=3 mean: 32.0% — n=10 mean: 28.8% (slight regression, same pattern as DeepSeek)
+- n=3 oracle: 60% — n=10 oracle: 80% (oracle grows with more directions)
+- First 3 latents of n=10 average 32.0%, matching n=3 exactly
+
+---
+
 ## Word Problem Cross-Task (2026-03-08) — WEAKLY EXPLOITABLE, NOT REASONING IMPROVEMENT
 
 **Purpose:** First non-arithmetic test. Does perturbation help on word problems?
