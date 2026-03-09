@@ -91,6 +91,16 @@ The correct reframing: perturbation doesn't help the model FIND the answer — i
 
 This is still interesting (and publishable), but it's a much more modest claim than "improved reasoning quality."
 
+## Codex Review Confirmation (2026-03-08, gpt-5.4)
+
+Codex independently confirmed all findings and identified an additional systematic bias:
+
+**Response field ordering bug**: `analyze_reasoning_quality.py` uses `task.get('response', '') or task.get('response_raw', '')`. For successes, `response` is often the short polished post-`</think>` answer. For failures/truncations, it is the raw unfinished thinking trace. This alone can manufacture the "wrong answers are more verbose" pattern.
+
+Codex verdict: *"Current evidence does not justify a claim that perturbation improves reasoning quality or planning quality. It supports a narrower claim: on Qwen, 2-token perturbation changes rollout mode and sometimes improves arithmetic success, but the quality analysis mostly measures verbosity, formatting, and whether the model cleanly exits its think trace."*
+
+Codex also flagged `nest_006`: baseline derives correct answer (6) in thinking but continues generating, runs out of tokens, and last integer is not 6. Under perturbation, it produces clean `</think>` + `\boxed{6}`. This is a convergence fix, not a reasoning fix.
+
 ## Three Alternative Interpretations
 
 ### 1. Lottery-Ticket Trajectory Sampling
