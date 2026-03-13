@@ -20,7 +20,7 @@ Only Codex-validated conclusions are stated as "confirmed."
 **Artifacts:**
 - `experiments/planning_bp_2048_results.json` (30 outputs: 5 baseline + 25 perturbation)
 - `experiments/planning_evolution_results.json` (25 evolution outputs)
-- `experiments/codex_quality_review.txt` (Codex evaluation)
+- `experiments/eval_all_plans.json` (consolidated LLM-as-judge evaluation across all tasks)
 - `experiments/eval_raw_task{1-5}.json` (extracted outputs for judging)
 
 ### Conditions

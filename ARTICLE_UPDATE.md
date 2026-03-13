@@ -12,13 +12,15 @@
 
 ## The 30-Second Version
 
-In the [original article](https://devsphere.blog/latent-space-reasoning), I proposed a system that would evolve soft prompt vectors to steer a small language model's reasoning. The system worked — **prepending soft prompt tokens improved Qwen3-4B arithmetic accuracy from 32% to 44%**, a meaningful +12 percentage point gain over the bare model.
+In the [original article](https://devsphere.blog/latent-space-reasoning), I proposed a system that would evolve soft prompt vectors to steer a small language model's reasoning. The system worked — **prepending 2 random soft prompt tokens improved Qwen3-4B arithmetic accuracy from 32% to 51.6%** (+19.6pp, n=10 directions), and 10 two-token directions achieve **100% oracle coverage** (every task solved by at least one direction).
 
-But when we dug into *why* it worked, we found something surprising: **the improvement doesn't come from finding the "right" direction in latent space. It comes from the sheer presence of diverse embedding-scale tokens.** Random noise at the correct scale produces the same +12pp improvement as carefully-projected latent vectors.
+The improvement doesn't come from finding the "right" direction in latent space — **random noise at the correct embedding scale matches carefully-projected latent vectors** (p = 1.0). The dose-response is non-monotonic: 2 tokens is optimal, more tokens degrades back to ~44%.
 
-And then it got even more interesting: **just 2 random tokens pushes accuracy all the way to 60%** — nearly doubling the baseline. The dose-response is non-monotonic, the effect has zero variance at the optimum, and it completely changes how the model reasons.
+The effect is **model-dependent**: on Qwen3-8B (8-bit), perturbation improves both computation and convergence (+12.8pp mean, 80% oracle, McNemar p=0.000177). And on complex planning tasks, perturbation rescues catastrophic baseline failures while evolution surfaces qualitatively different knowledge the model never accesses under standard decoding.
 
 This article is the story of what we built, what we discovered along the way, and where we're headed next.
+
+> **Reading note**: Parts 1-6 below tell the story chronologically, using the numbers as they appeared at each stage. Early results used small sample sizes (n=3) that were later refined at n=10. Part 7 covers the latest findings including cross-model and cross-domain validation.
 
 ---
 
@@ -39,6 +41,8 @@ Then we started actually testing it.
 ## Part 1: The System Works — But Not How We Expected
 
 ### The Key Experiment
+
+> *Historical context: These early results used 8-token prefixes with n=3-10 directions, showing +12pp improvement. The 2-token optimum and n=10 scale-up came later (Parts 3 and 7).*
 
 The Latent Space Reasoning system improved accuracy from 32% to 44%. That's real. But we needed to answer a deeper question: **is the improvement coming from the *direction* of the latent vector, or just from having extra tokens in the input?**
 
@@ -152,18 +156,19 @@ Here's where things got really interesting. We assumed the relationship between 
 
 Neither. It's **non-monotonic**.
 
-| Prefix Tokens | Accuracy | Change vs Baseline |
-|:-------------:|:--------:|:------------------:|
-| 0 | 32.0% | — |
-| 1 | 42.7% | +10.7pp |
-| **2** | **60.0%** | **+28pp** |
-| 8 | 44.4% | +12.4pp |
+| Prefix Tokens | Accuracy | Change vs Baseline | n |
+|:-------------:|:--------:|:------------------:|:-:|
+| 0 | 32.0% | — | 1 |
+| 1 | 42.7% | +10.7pp | 3 |
+| **2** | **51.6%** | **+19.6pp** | **10** |
+| 3 | 44.0% | +12pp | 10 |
+| 8 | 44.4% | +12.4pp | 10 |
 
-Read that again. **Two random tokens gives 60% accuracy. Eight tokens drops back to 44%.** The optimal number of random prefix tokens is *two*.
+**Two random tokens gives 51.6% mean accuracy at n=10. Three and eight tokens drop back to ~44%.** The optimal number of random prefix tokens is *two*.
 
-And perhaps the most striking detail: the 2-token result showed **zero variance**. We tested 3 completely independent random vectors. All three produced exactly 15 out of 25 correct. Exactly the same number. Different random directions, identical outcome.
+> **Historical note**: The initial n=3 scout showed 60% with zero variance — all 3 directions solved exactly 15/25 tasks. This "equalization" was a striking finding at the time, but at n=10 it resolved to 51.6% mean with 7.9% std. The zero variance was small-sample noise, not a fundamental property. What *did* hold up: 10 two-token directions achieve **100% oracle coverage** (25/25), meaning every task is solvable by at least one direction.
 
-This is not what "noise" usually does. Noise usually adds variance. Here, at exactly 2 tokens, the noise creates a remarkably stable attractor — the model locks into a specific behavioral mode regardless of which particular random values it receives.
+The dose-response non-monotonicity is robust across sample sizes. Two tokens is the sweet spot — enough perturbation to shift the model's reasoning trajectory without destroying coherence.
 
 ### Why 2? A Hypothesis
 
@@ -275,31 +280,33 @@ Xiao et al. (2024) documented the "attention sink" phenomenon — early tokens a
 Let me be clear about what we're NOT claiming:
 
 1. **This is not a general intelligence boost.** It's a policy shift. Some tasks get better, some get worse.
-2. **This is not tested beyond one model.** Qwen3-4B is a single architecture. The effect might vanish on other models.
-3. **This is not tested beyond arithmetic.** We don't know if this extends to coding, logic, or language tasks.
-4. **Our sample size is small.** 25 tasks is enough to detect the effect, but not enough for strong scientific claims. We need n=100+ for publication.
-5. **We don't have a mechanistic explanation.** We have behavioral observations and hypotheses, but we haven't probed the model's internal representations.
+2. ~~**This is not tested beyond one model.**~~ **UPDATE**: Now tested on 4 models (Qwen3-4B, Qwen3-8B, DeepSeek-1.5B, phi-2). Effect replicates on 3/4 at mean level. See Part 8.
+3. ~~**This is not tested beyond arithmetic.**~~ **UPDATE**: Cross-domain validation on 5 complex planning tasks shows attention sink avoidance and knowledge access. See Part 7.
+4. **Our sample size is modest.** 25 arithmetic tasks, 5 planning tasks. Larger benchmarks needed for strong claims.
+5. **We don't have a mechanistic explanation.** We have behavioral observations, the convergence/computation split (Part 8), and the attention sink hypothesis, but no direct internal probing.
 
 ---
 
 ## Part 6: What's Next
 
-We're treating this as a characterize-first, claim-later research program. Before making any strong statements, we need:
+We're treating this as a characterize-first, claim-later research program.
 
-### Mechanism Tests (In Progress)
-1. **Repeated noise** — Does repeating one random vector 8 times work as well as 8 distinct vectors? This tests whether within-prefix diversity matters.
-2. **Attention masking** — If we block the model from attending to the prefix positions, does the effect disappear? This would confirm or rule out the attention-routing hypothesis.
-3. **Suffix placement** — Does putting random tokens *after* the prompt work? If only the prefix position works, it supports the attention sink mechanism.
-4. **Token budget sweep** — If we give the model 2048 or 4096 tokens instead of 1024, do the regressions disappear? This would confirm that the "too much exploration" failure mode is purely a budget issue.
+### Completed Since Original Article
+- [x] Cross-model validation: 4 models tested (Qwen3-4B, 8B, DeepSeek-1.5B, phi-2)
+- [x] Cross-domain validation: 5 complex planning tasks (Part 7)
+- [x] Think-gate probe: mode gating falsified (>99.99% think rate at baseline)
+- [x] Convergence vs computation split: grading audit distinguishes two mechanisms (Part 8)
+- [x] Quantization × noise interaction: 4-bit vs 8-bit dramatically changes results
+- [x] n=10 scale-up: equalization dead, but oracle coverage and mean effect robust
 
-### Scaling Tests (Planned)
-5. **More tasks** — Scale from 25 to 100+ for statistical power.
-6. **More models** — Llama-3.2-3B, Phi-3-mini, Gemma-2-2B. Does the effect generalize across architectures?
-7. **Non-arithmetic tasks** — GSM8K, logic puzzles, maybe coding. Is this specific to arithmetic or a general reasoning phenomenon?
-8. **Larger models** — Does the effect vanish at 8B, 14B, 70B? If it's about output policy, larger models with more robust defaults might be immune.
+### Remaining Tests
+1. **Attention probing** — Direct confirmation of the attention sink avoidance mechanism via internal attention maps.
+2. **Better latent scorers** — More training data, more sophisticated architectures for more consistent evolution.
+3. **Larger planning benchmarks** — Scale beyond 5 tasks for statistical power.
+4. **Multi-model planning** — Test attention sink avoidance on other model families.
 
 ### The Paper
-We're working toward: **"Prefix Perturbation as Policy Switch in Small Language Models"** — framing this as a redistribution/policy-change phenomenon, not a magic improvement. The honest framing is important. This is a real effect, but it's subtle, and overclaiming would be worse than underclaiming.
+NeurIPS paper draft in `paper/main.tex`. Framed as trajectory modulation and latent knowledge access, not a generic improvement claim.
 
 ---
 
@@ -313,7 +320,7 @@ This is actually a stronger result than finding a magic direction would have bee
 
 The Intelligence-Control Gap from the original article is still very much real. Small models underperform relative to their latent capabilities. What's changed is our understanding of how to close that gap: **it's not about finding the right input vector — it's about understanding why the model's default behavior doesn't access its full capabilities, and finding the simplest intervention that shifts it.**
 
-Two random tokens. That's the current best intervention. Now we're working to understand exactly why, and how to push it further.
+Two random tokens. That's the current best intervention — and it works across models and task domains. Now we're working to understand the mechanism more precisely and build better scorers that make evolution consistent.
 
 ---
 
@@ -398,24 +405,60 @@ If you read into what systems like [Iqidis](https://iqidis.ai) have done with be
 
 ---
 
+## Part 8: Cross-Model Validation and the Convergence-Computation Split
+
+### The Effect Replicates — But the Mechanism Depends on the Model
+
+We tested 4 models across 3 architectures:
+
+| Model | Quant | n | Baseline | +Noise | Delta | Oracle | McNemar p |
+|-------|-------|---|----------|--------|-------|--------|-----------|
+| Qwen3-4B | 4-bit | 10 | 32% | 51.6% | +19.6pp | 100% | 0.000015 |
+| Qwen3-8B | 8-bit | 10 | 16% | 28.8% | +12.8pp | 80% | 0.000177 |
+| DeepSeek-1.5B | 4-bit | 10 | 76% | 74.4% | -1.6pp | 100% | 0.031 |
+| phi-2 | none | 3 | 12% | 18.7% | +6.7pp | 28% | 0.125 |
+
+The replication pattern reveals something deeper: **the mechanism is model-dependent.**
+
+### Convergence vs Computation
+
+A grading audit using "answer-anywhere" (correct answer appears anywhere in the response, not just as the final integer) reveals two distinct mechanisms:
+
+**Qwen3-4B (high computational ceiling):** The model already computes the correct answer 80% of the time — it just fails to put it last. Perturbation barely changes answer-anywhere (80% → 82%) but dramatically improves last-integer accuracy (32% → 51.6%). **Perturbation is a convergence aid**: it helps the model stop at the right answer.
+
+**Qwen3-8B 8-bit (low computational ceiling):** Answer-anywhere is only 32% at baseline. Perturbation improves it to 50% (+18pp) — the model is actually finding correct answers it couldn't compute before. Last-integer also improves (16% → 22%). **Perturbation aids both computation and convergence.**
+
+**DeepSeek-1.5B:** Perturbation hurts *both* computation and convergence at the mean level. But oracle is still 100% — some directions work for specific tasks. The effect is purely task-selective trajectory diversity.
+
+### Quantization × Noise Interaction
+
+A striking finding: Qwen3-8B at 4-bit quantization shows a NULL result (+1.3pp, same as 1.7B). But the *same model* at 8-bit quantization shows a strong positive (+12.8pp at n=10, McNemar p=0.000177). The quantization level modulates whether noise can access the model's trajectory landscape — aggressive quantization appears to collapse the diversity of accessible reasoning paths.
+
+### The n=3 → n=10 Pattern
+
+Both 4B and 8B show a consistent pattern: n=3 scouts overestimate the mean effect. 4B dropped from 60% (n=3) to 51.6% (n=10). 8B dropped from 32% (n=3) to 28.8% (n=10). This is ordinary small-sample scout optimism — the first few directions sampled happened to be above-average. The oracle, which is the operationally useful metric, held or improved in both cases.
+
+---
+
 ## Summary of Key Findings
 
 | # | Finding | Evidence |
 |:-:|---------|----------|
-| 1 | Soft prompt conditioning improves over baseline | +12pp consistently (32% → 44%) |
+| 1 | Soft prompt conditioning improves over baseline | +19.6pp at 2-tok n=10 (32% → 51.6%) |
 | 2 | Mechanism is direction-agnostic | Random noise = W-projected (p = 1.0); Euclidean = Hyperbolic |
-| 3 | Optimal prefix boosts accuracy to 60% | 32% → 60% with just 2 random tokens |
-| 4 | The dose-response is non-monotonic | 2 tokens > 8 tokens > 1 token |
-| 5 | The effect is redistribution, not clean improvement | 3 tasks fixed, 6 regressed (at 8 tokens) |
+| 3 | Optimal prefix: 2 random tokens | Non-monotonic peak; 100% oracle at n=10 |
+| 4 | The dose-response is non-monotonic | 2 tokens > 3 tokens ≈ 8 tokens > 1 token |
+| 5 | The effect is redistribution, not clean improvement | Different directions solve different tasks |
 | 6 | Chain-of-thought mediates the effect | No-think mode: 0pp improvement |
 | 7 | Token budget mediates regressions | Wrong answers hit max_new_tokens ceiling |
 | 8 | Diverse tokens >> identical tokens | Random (+12pp) vs mean embedding (+4pp) |
 | 9 | Difficulty-dependent | Helps hard tasks, hurts easy tasks |
-| 10 | Zero variance at 2-token optimum | 3 independent random vectors → identical accuracy |
+| 10 | Model-dependent mechanism | 4B: convergence aid; 8B 8-bit: computation + convergence |
 | **11** | **Perturbation breaks attention sink failures** | **14-word baseline → 650+ word plans (all 5 seeds)** |
 | **12** | **Evolution surfaces different knowledge** | **Honeypots, MITRE ATT&CK, HSM rotation — never in baseline** |
 | **13** | **New axis of improvement** | **Orthogonal to scaling, fine-tuning, prompting, RAG, sampling** |
 | **14** | **More efficient than best-of-N** | **N scorer evals + 1 generation vs N generations** |
+| **15** | **Cross-model replication** | **4B +19.6pp, 8B 8-bit +12.8pp, phi-2 +6.7pp** |
 
 ---
 

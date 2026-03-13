@@ -116,8 +116,11 @@ Codex also flagged `nest_006`: baseline derives correct answer (6) in thinking b
 ### 1. Lottery-Ticket Trajectory Sampling
 Perturbation diversifies starting conditions under greedy decoding. Different trajectories reach different answers. Accuracy gain = selection bias. Oracle = exploration of trajectory space. No reasoning quality improvement needed.
 
-### 2. Token-Budget Exploitation
-Perturbation activates think mode (16% -> 100%), giving more tokens. More tokens = more chances for `last-integer-wins` grading to find correct match. Non-monotonic dose-response: 2-tok activates think mode without destroying coherence.
+### 2. Token-Budget Exploitation *(partially superseded)*
+~~Perturbation activates think mode (16% -> 100%), giving more tokens.~~ **UPDATE (2026-03-06):** Think-gate probe
+(commit bdda09d) shows `<think>` is saturated at >99.99% under ALL conditions including baseline. The 16% think
+rate was a visibility artifact. Perturbation does NOT gate think mode. However, the token-budget aspect remains
+partially relevant: perturbation changes how the model allocates tokens within think mode.
 
 ### 3. Computational Shortcut Activation
 Perturbation selects among pre-existing strategies of roughly equal quality. Some strategies work for some tasks. Explains task selectivity and force-think gap (+11.6pp beyond think-mode alone). More charitable than #1 but still ≠ "improved reasoning."
@@ -152,14 +155,31 @@ This means the mechanism is model-dependent:
 8B n=10 results: mean 28.8% (+12.8pp), oracle 80%, McNemar 16/0 p=0.000177.
 n=3 mean was 32% — slight regression with more data (same pattern as DeepSeek).
 
-## Planning Tasks: Ceiling Effect (2026-03-09)
+## Planning Tasks: Ceiling Effect → Hard Tasks (2026-03-09 / UPDATED 2026-03-10)
 
+### Easy Tasks (2026-03-09): Ceiling Effect
 Planning experiment (Qwen3-4B, n=3): baseline 96%, all 3 noise directions 100%.
 Only 1 task wrong at baseline (plan_016: computation error 193 vs 203).
 Heuristic scorer delta: +0.001 (noise).
+**Tasks too easy** — no room for perturbation to demonstrate effect.
 
-**Tasks too easy** — no room for perturbation to demonstrate effect. Need harder planning
-tasks (more steps, larger numbers) for meaningful signal.
+### Hard Tasks (2026-03-10): 3-Way Comparison — NEW SIGNAL
+5 hard planning tasks (fraud detection, incident response, data platform, cache debugging,
+DB migration) × 5 seeds, all temp=0, max_new_tokens=2048. Three conditions: baseline,
+random perturbation, evolution.
+
+**LLM-as-Judge tally: Perturbation 3/5, Evolution 2/5, Baseline 0/5.**
+
+Key findings that materially change the planning narrative:
+1. **Attention sink avoidance**: Task 4 baseline produces only 14 words (catastrophic failure).
+   All 5 perturbation seeds produce 650-710 word complete plans. Binary rescue.
+2. **Evolution surfaces different knowledge**: Honeypots, MITRE ATT&CK, HSM credential rotation,
+   immutable container rebuilds — concepts the baseline never produces.
+3. **New axis of improvement**: Orthogonal to scaling/fine-tuning/prompting/sampling. Changes
+   input embeddings in continuous space, shifts attention from layer 1.
+
+This supersedes the "ceiling effect" conclusion. The easy tasks were a benchmark failure;
+hard tasks reveal genuine signal. However, n=5 tasks is still small and single-model (Qwen3-4B).
 
 ## Correct Framing (UPDATED 2026-03-09)
 
@@ -189,7 +209,7 @@ Codex verdict: *"The strongest clean result is the 8B oracle/task-coverage effec
 - [x] Frame paper around trajectory diversification, not quality
 - [ ] Run length-controlled baselines
 - [x] Audit last-integer-wins grading for length confound (DONE: convergence vs computation)
-- [x] Test on PLANNING tasks (DONE: ceiling effect, tasks too easy at 96% baseline)
+- [x] Test on PLANNING tasks (DONE: ceiling effect on easy tasks, then 3-way hard comparison)
 - [ ] Run LLM-as-judge evaluation on FIXED chains
-- [ ] Run harder planning tasks (more steps, larger numbers) for meaningful signal
+- [x] Run harder planning tasks (DONE: 3-way comparison, perturbation 3/5, evolution 2/5, baseline 0/5)
 - [ ] Full-trace answer-anywhere audit (not truncated at 2000 chars) — needed for 8B claim

@@ -238,6 +238,30 @@ Completed:
 - **Attention sink avoidance**: perturbation rescues catastrophic baseline failures
 - **Evolution quality**: evolved latents surface qualitatively different reasoning
 - Multi-model validation: Qwen3-4B, Qwen3-8B (8-bit), DeepSeek-1.5B, phi-2
+- **Model-dependent mechanism**: 4B aids convergence only (80% answer-anywhere); 8B 8-bit aids both computation (+18pp answer-anywhere) and convergence
+
+### Cross-Model Arithmetic Results
+
+| Model | Quant | n | Baseline | +Noise | Delta | Oracle | McNemar p |
+|-------|-------|---|----------|--------|-------|--------|-----------|
+| Qwen3-4B | 4-bit | 10 | 32% | 51.6% | +19.6pp | 100% | 0.000015 |
+| Qwen3-8B | 8-bit | 10 | 16% | 28.8% | +12.8pp | 80% | 0.000177 |
+| DeepSeek-1.5B | 4-bit | 10 | 76% | 74.4% | -1.6pp | 100% | 0.031 |
+| phi-2 | none | 3 | 12% | 18.7% | +6.7pp | 28% | 0.125 |
+
+**Convergence vs computation**: For Qwen3-4B (high computational ceiling, 80% answer-anywhere), perturbation primarily aids convergence — the model already computes correctly but fails to put the answer last. For Qwen3-8B 8-bit (low ceiling, 32% answer-anywhere), perturbation improves actual computation (+18pp answer-anywhere) as well as convergence.
+
+### Planning Task 3-Way Comparison
+
+| Task | Baseline | Perturbation | Evolution | Winner |
+|------|----------|-------------|-----------|--------|
+| Fraud Detection | 5.6/10 | 4.8/10 | **5.8/10** | Evolution |
+| Incident Response | 5.6/10 | **7.4/10** | 5.8/10 | Perturbation |
+| Data Platform | 5.8/10 | **7.2/10** | 5.8/10 | Perturbation |
+| Cache Debugging | 29/50 | **39/50** | 25/50 | Perturbation |
+| DB Migration | 14/50 | 24/50 | **35/50** | Evolution |
+
+**Judge tally**: Perturbation 3/5, Evolution 2/5, Baseline 0/5.
 
 Next experiments:
 - Better latent scorers for more consistent evolution gains

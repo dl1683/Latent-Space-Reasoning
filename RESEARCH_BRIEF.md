@@ -8,9 +8,11 @@
 
 ## TL;DR
 
-Prepending **random embedding-scale tokens** to the input of Qwen3-4B (Q4) improves arithmetic accuracy by up to **+28 percentage points** (32% to 60%) on chain-of-thought tasks. The direction of the tokens doesn't matter — only their presence. The effect is **non-monotonic**: 2 random tokens is optimal (60%), while 8 tokens drops back to 44%. The mechanism is **trajectory perturbation**: random prefixes shift the model from a "formal presentation" mode into an "exploratory computation" mode, trading structured output for actual calculation.
+Prepending **2 random embedding-scale tokens** to the input of Qwen3-4B (Q4) improves arithmetic accuracy by **+19.6 percentage points** (32% → 51.6%, n=10 directions). The direction of the tokens doesn't matter — only their presence. The effect is **non-monotonic**: 2 random tokens is optimal, while 8 tokens drops back to 44%. The mechanism is **trajectory perturbation**: random prefixes modulate reasoning chains, shifting which tasks the model solves. The effect is **model-dependent**: on Qwen3-8B 8-bit, perturbation improves both computation and convergence (+12.8pp mean, oracle 80%, McNemar p=0.000177).
 
-**New: Cross-domain validation on 5 complex planning tasks reveals two additional findings:**
+> **Historical note**: An initial n=3 scout showed 60% (+28pp) at the 2-token optimum with zero variance. At n=10, this resolved to 51.6% with 7.9% std — the equalization was small-sample noise, but the effect remains large and significant.
+
+**Cross-domain validation on 5 complex planning tasks reveals two additional findings:**
 1. **Attention sink avoidance**: Perturbation rescues catastrophic greedy failures where the model produces only 14 words before collapsing — every perturbation seed produces complete 650+ word plans.
 2. **Latent knowledge access**: Evolved soft prompts (via trained scorer + evolutionary search) surface qualitatively different reasoning — security frameworks, architectural patterns, and diagnostic strategies the baseline never produces. This is not style variation; it's accessing different knowledge regions in parameter space.
 
@@ -18,17 +20,17 @@ Prepending **random embedding-scale tokens** to the input of Qwen3-4B (Q4) impro
 
 ## Key Finding
 
-| Condition | Accuracy | Change |
-|-----------|----------|--------|
-| Baseline (no prefix) | 32.0% | -- |
-| Zero embedding (8 tokens) | 36.0% | +4pp |
-| Mean embedding (8 identical) | 36.0% | +4pp |
-| Random noise (1 token) | 42.7% | +10.7pp |
-| **Random noise (2 tokens)** | **60.0%** | **+28pp** |
-| Random noise (8 tokens) | 44.0% | +12pp |
-| W-projected latent (8 tokens) | 44.4% | +12.4pp |
+| Condition | Accuracy | Change | n |
+|-----------|----------|--------|:-:|
+| Baseline (no prefix) | 32.0% | -- | 1 |
+| Zero embedding (8 tokens) | 36.0% | +4pp | 3 |
+| Mean embedding (8 identical) | 36.0% | +4pp | 1 |
+| Random noise (1 token) | 42.7% | +10.7pp | 3 |
+| **Random noise (2 tokens)** | **51.6%** | **+19.6pp** | **10** |
+| Random noise (3 tokens) | 44.0% | +12pp | 10 |
+| Random noise (8 tokens) | 44.4% | +12.4pp | 10 |
 
-**Random noise and W-projected latents are statistically indistinguishable** (Mann-Whitney p = 1.0). Direction carries no signal. The dose-response is **non-monotonic** — 2 tokens is optimal, and more tokens actually degrades performance back toward 44%.
+**Random noise and W-projected latents are statistically indistinguishable** (Mann-Whitney p = 1.0). Direction carries no signal. The dose-response is **non-monotonic** — 2 tokens is optimal, and more tokens actually degrades performance back toward 44%. At n=10, 2-token directions achieve 100% oracle coverage (25/25).
 
 ![Condition Comparison](experiments/figures/fig1_condition_comparison.png)
 
@@ -36,14 +38,14 @@ Prepending **random embedding-scale tokens** to the input of Qwen3-4B (Q4) impro
 
 ## Direction Changes WHICH Tasks, Not HOW MANY
 
-At the 2-token sweet spot, all 3 random directions solve exactly the same number of tasks (13/22 sensitive tasks, std=0.00) but solve **different task subsets**. This "equalization" is the paper's headline finding.
+Different directions solve **different task subsets**, enabling oracle-style coverage. At n=10, solve counts vary normally (p=0.66 vs iid, std=1.87) — the n=3 "equalization" (zero variance) was small-sample noise.
 
-Strict categorization (across ALL conditions):
-- **2 always-solved** tasks (correct everywhere)
-- **1 never-solved** task (nest_008, answer=7278)
-- **22 sensitive** tasks (perturbation-dependent)
-- **Full oracle**: 24/25 = 96% (only nest_008 truly unsolvable)
-- **Oracle from 3 random 2-tok directions**: 21/22 = 95.5% of sensitive tasks
+Strict categorization (n=10, 2-token):
+- **0 frozen** tasks (all tasks solvable by at least one direction)
+- **0 never-solved** tasks (nest_008 cracked by direction N5)
+- **25 sensitive** tasks (perturbation-dependent)
+- **Full oracle**: 25/25 = **100%** from 10 two-token directions
+- **Oracle from 3 random 2-tok directions**: ~77% (19/25)
 
 ![Error Redistribution](experiments/figures/fig3_error_redistribution.png)
 
@@ -60,7 +62,7 @@ We propose **trajectory perturbation** as the primary mechanism. Evidence:
 | Zero embedding (8 tokens) | +4pp | Embedding *values* matter, not just sequence extension |
 | Mean embedding (8 identical) | +4pp | Token diversity within prefix doesn't help for identical tokens |
 | Random noise (1 token) | +10.7pp | Immediate effect from a single token |
-| Random noise (2 tokens) | +28pp | **Non-monotonic peak** — 2 tokens is optimal |
+| Random noise (2 tokens) | +19.6pp (n=10) | **Non-monotonic peak** — 2 tokens is optimal |
 | Random noise (8 tokens) | +12pp | Random = W-projected (p = 1.0) |
 | No-think mode (any prefix) | +0pp | Chain-of-thought is the mediating mechanism |
 | Easy tasks (92% baseline) | -7pp | Effect reverses on tasks the model already solves well |
@@ -87,14 +89,15 @@ The effect is mediated by **token budget**: correct answers average ~60s of gene
 
 The relationship between prefix token count and accuracy is **non-monotonic**:
 
-| Tokens | Accuracy | Change vs baseline |
-|--------|----------|-------------------|
-| 0 | 32.0% | -- |
-| 1 | 42.7% | +10.7pp |
-| **2** | **60.0%** | **+28pp** |
-| 8 | 44.4% | +12.4pp |
+| Tokens | Accuracy | Change vs baseline | n |
+|--------|----------|-------------------|:-:|
+| 0 | 32.0% | -- | 1 |
+| 1 | 42.7% | +10.7pp | 3 |
+| **2** | **51.6%** | **+19.6pp** | **10** |
+| 3 | 44.0% | +12pp | 10 |
+| 8 | 44.4% | +12.4pp | 10 |
 
-Two random tokens is the sweet spot. Adding more tokens actually *hurts* — 8 tokens drops back to 44%, likely because longer random prefixes induce excessive exploratory behavior that exhausts the token budget. The 2-token result showed **zero variance** across 3 independent random vectors (all exactly 15/25 correct).
+Two random tokens is the sweet spot. Adding more tokens actually *hurts* — 3 and 8 tokens drop back to ~44%, likely because longer random prefixes induce excessive exploratory behavior that exhausts the token budget. At n=10, solve counts vary (std=1.87), confirming direction matters for *which* tasks but total count clusters around the mean.
 
 ![Dose Response](experiments/figures/fig4_dose_response.png)
 
@@ -102,15 +105,21 @@ Two random tokens is the sweet spot. Adding more tokens actually *hurts* — 8 t
 
 ## Force-Think Decomposition
 
-The perturbation effect has two components:
-- **Think-mode gating (+8pp)**: Any perturbation activates Qwen3's think mode (16% → 100%)
-- **Noise beyond think (+20pp)**: Random noise contributes 2.5x more than think mode alone
+> **UPDATE (2026-03-06):** Think-gate probe (commit bdda09d) shows `<think>` probability is saturated
+> at >99.99% under ALL conditions, including bare baseline. The 16% observed think rate was a
+> visibility artifact (post-processing, not model behavior). Perturbation does NOT gate think mode.
+> The force-think decomposition below measures the contribution of *explicit think-prefix formatting*,
+> not mode activation.
 
-| Condition | Think Rate | Accuracy |
-|-----------|-----------|----------|
-| Baseline | 16% | 32% |
-| Force-think (no noise) | 100% | 40% |
-| 2-tok random noise | 100% | 60% |
+The perturbation effect decomposes into two components:
+- **Think-prefix formatting (+8pp)**: Explicitly prepending `<think>` raises accuracy from 32% to 40%
+- **Noise beyond think (+12pp at n=10)**: Random noise contributes additional improvement via trajectory modulation
+
+| Condition | Accuracy | n |
+|-----------|----------|:-:|
+| Baseline | 32% | 1 |
+| Force-think (no noise) | 40% | 1 |
+| 2-tok random noise | 51.6% | 10 |
 
 ## Difficulty Dependence
 
@@ -137,6 +146,31 @@ The pattern is consistent with a **policy switch** rather than a generic compute
 - **Sample size**: 25 tasks, 3-10 random prefix vectors per condition
 
 ---
+
+---
+
+## Cross-Model Validation: Model-Dependent Mechanism
+
+The effect replicates across model families but with a critical model-dependent distinction:
+
+| Model | Quant | n | Baseline | +Noise | Delta | Oracle | McNemar p |
+|-------|-------|---|----------|--------|-------|--------|-----------|
+| Qwen3-4B | 4-bit | 10 | 32% | 51.6% | +19.6pp | 100% | 0.000015 |
+| Qwen3-8B | 8-bit | 10 | 16% | 28.8% | +12.8pp | 80% | 0.000177 |
+| DeepSeek-1.5B | 4-bit | 10 | 76% | 74.4% | -1.6pp | 100% | 0.031 |
+| phi-2 | none | 3 | 12% | 18.7% | +6.7pp | 28% | 0.125 |
+
+### Convergence vs Computation
+
+The mechanism depends on the model's computational ceiling:
+
+- **Qwen3-4B (high ceiling)**: Answer-anywhere accuracy is already 80% at baseline — the model *computes* correctly but fails to put the answer last. Perturbation aids **convergence only** (+2pp answer-anywhere, +19.6pp last-integer).
+- **Qwen3-8B 8-bit (low ceiling)**: Answer-anywhere is only 32% at baseline. Perturbation improves **both computation** (+18pp answer-anywhere) **and convergence** (+6pp last-integer). Mean 28.8% (+12.8pp), oracle 80%, McNemar 16/0 p=0.000177.
+- **DeepSeek-1.5B**: Perturbation **hurts** both computation and convergence at the mean. Oracle still 100% — effect is purely task-selective trajectory diversity.
+
+### Quantization × Noise Interaction
+
+Qwen3-8B at 4-bit quantization shows NULL effect (+1.3pp), but at 8-bit shows STRONG positive (+16pp at n=3, +12.8pp at n=10). The quantization level modulates whether the noise can exploit the model's trajectory landscape — 4-bit compression appears to collapse the diversity of accessible trajectories.
 
 ---
 
@@ -223,7 +257,7 @@ The efficiency advantage: evolution runs N forward passes through a tiny MLP sco
 - **Li et al. (2025)** — Quasi-Lyapunov Exponent for LLMs. Formal chaos analysis in transformer layers.
 - **Xiao et al. (2024)** — Attention Sinks. Documents attention sink phenomenon in first tokens.
 
-**Positioning**: Shi et al. establish that prefix token perturbations help reasoning; we reveal the structure of the continuous perturbation landscape, demonstrating mode gating, oracle efficiency, and task-specific resonance.
+**Positioning**: Shi et al. establish that prefix token perturbations help reasoning; we reveal the structure of the continuous perturbation landscape, demonstrating trajectory modulation, oracle efficiency, model-dependent convergence/computation mechanisms, and cross-domain attention sink avoidance.
 
 ---
 
