@@ -625,10 +625,13 @@ class TrainedLatentJudge(Judge):
         # Create projection layer if dimensions don't match
         self._projection: torch.nn.Linear | None = None
         if latent_dim != self.scorer_latent_dim:
+            # Use a fixed seed for deterministic projection, independent of global RNG
+            saved_rng = torch.get_rng_state()
+            torch.manual_seed(42_000)
             self._projection = torch.nn.Linear(latent_dim, self.scorer_latent_dim)
-            # Initialize with small weights for stable projection
             torch.nn.init.xavier_uniform_(self._projection.weight, gain=0.1)
             torch.nn.init.zeros_(self._projection.bias)
+            torch.set_rng_state(saved_rng)
             self._projection.to(self._device)
             print(f"Created projection layer: {latent_dim} -> {self.scorer_latent_dim}")
 
@@ -680,8 +683,12 @@ class TrainedLatentJudge(Judge):
         with torch.no_grad():
             score = self.model(latent, self._reference_latent)
 
+        raw = score.item()
+        # Guard against NaN from numerical instability
+        if raw != raw:  # NaN check
+            return 0.0
         # Convert 0-1 range to -1 to 1 for compatibility with other judges
-        return (score.item() * 2) - 1
+        return (raw * 2) - 1
 
     def score_batch(self, latents: Tensor) -> list[float]:
         """

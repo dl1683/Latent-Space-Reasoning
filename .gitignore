@@ -112,3 +112,16 @@ eval_results/
 
 # Experiment checkpoints (transient, auto-deleted on completion)
 experiments/*.checkpoint.json
+
+# Raw experiment data (local only — curated showcase is in legal_showcase.json)
+experiments/legal_v2_full.json
+experiments/legal_v2_full_clean.json
+experiments/legal_v2_batch_*.json
+experiments/legal_batch_*.json
+experiments/blind_review_v2_*.json
+experiments/task1_blind_review.json
+experiments/eval_task1_outputs.json
+experiments/legal_comparison_results.json
+experiments/eval_all_plans.json
+experiments/planning_3way_outputs.json
+experiments/codex_review_v2_*.txt

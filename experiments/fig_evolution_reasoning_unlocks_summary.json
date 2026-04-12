@@ -1,0 +1,84 @@
+[
+  {
+    "task_id": "plan_02_incident_response",
+    "group": "Incident Response",
+    "label": "DMZ / quarantine segmentation",
+    "note": "explicit containment topology",
+    "baseline_count": 0,
+    "perturb_count": 0,
+    "evolution_count": 4,
+    "evolution_total": 5,
+    "seeds": [
+      42,
+      44,
+      45,
+      46
+    ]
+  },
+  {
+    "task_id": "plan_02_incident_response",
+    "group": "Incident Response",
+    "label": "Honeypot / decoy services",
+    "note": "active adversary-monitoring tactic",
+    "baseline_count": 0,
+    "perturb_count": 0,
+    "evolution_count": 1,
+    "evolution_total": 5,
+    "seeds": [
+      42
+    ]
+  },
+  {
+    "task_id": "plan_02_incident_response",
+    "group": "Incident Response",
+    "label": "MITRE ATT&CK / TTP mapping",
+    "note": "framework-based attacker tracking",
+    "baseline_count": 0,
+    "perturb_count": 0,
+    "evolution_count": 1,
+    "evolution_total": 5,
+    "seeds": [
+      42
+    ]
+  },
+  {
+    "task_id": "plan_04_cache_debugging",
+    "group": "Cache Debugging",
+    "label": "Key versioning checks",
+    "note": "state-consistency instrumentation",
+    "baseline_count": 0,
+    "perturb_count": 0,
+    "evolution_count": 2,
+    "evolution_total": 5,
+    "seeds": [
+      45,
+      46
+    ]
+  },
+  {
+    "task_id": "plan_04_cache_debugging",
+    "group": "Cache Debugging",
+    "label": "Application-level traces",
+    "note": "looks beyond Redis internals",
+    "baseline_count": 0,
+    "perturb_count": 0,
+    "evolution_count": 1,
+    "evolution_total": 5,
+    "seeds": [
+      45
+    ]
+  },
+  {
+    "task_id": "plan_04_cache_debugging",
+    "group": "Cache Debugging",
+    "label": "Idempotent update logic",
+    "note": "app-level duplicate prevention",
+    "baseline_count": 0,
+    "perturb_count": 0,
+    "evolution_count": 1,
+    "evolution_total": 5,
+    "seeds": [
+      46
+    ]
+  }
+]

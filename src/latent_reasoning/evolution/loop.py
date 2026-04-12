@@ -328,6 +328,9 @@ class EvolutionLoop:
                     context = trackers[i].get_context(chain.latent, cross_chain)
                     verdict = self.judge_panel.evaluate(chain.latent, context)
                     score = verdict.score
+                    # Guard against NaN scores (prevents evolution from stalling)
+                    if score != score:  # NaN check
+                        score = 0.0
                     if cache_key is not None:
                         score_cache[cache_key] = score
                     self.total_evaluations += 1
