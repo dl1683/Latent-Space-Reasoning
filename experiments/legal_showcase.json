@@ -1,7 +1,7 @@
 {
   "metadata": {
     "experiment": "legal_reasoning_v2_showcase",
-    "description": "Cherry-picked winning comparisons from blind Codex reviews. All outputs from Qwen3-4B 4-bit NF4, temp=0, max_new_tokens=2048.",
+    "description": "Blind Codex reviews. All outputs from Qwen3-4B 4-bit NF4, temp=0, max_new_tokens=2048.",
     "model": "Qwen3-4B",
     "quantization": "4-bit NF4",
     "evaluation": "Codex CLI blind review, 5 dimensions 1-10 scale",
