@@ -397,6 +397,29 @@ This is **literally what we're doing** — perturbing the input to get diverse o
 
 Without a validated selector/router, the efficiency story is aspirational. If temperature best-of-N matches our oracle and Phase B is weak, the paper becomes mechanistic/diagnostic, not performance-superiority work. That is still publishable but requires honest positioning.
 
+### CRITICAL PRIOR ART: Continuous Space Reasoning
+
+Two recent papers are DIRECTLY relevant to our mechanism:
+
+1. **COCONUT (Chain of Continuous Thought)** — Facebook Research, arXiv:2412.06769, Dec 2024
+   - Feeds the model's last hidden state back as the next input embedding — reasoning in continuous latent space
+   - Continuous thoughts can encode MULTIPLE alternative next steps → breadth-first search
+   - Outperforms token-based CoT on logical reasoning while generating fewer tokens
+   - **Connection to us**: We inject random continuous vectors at position 0; COCONUT injects the model's own hidden state iteratively. Both operate in continuous embedding space below token granularity. The key difference: COCONUT trains the model for continuous reasoning; we perturb an off-the-shelf model without training.
+
+2. **Scaling by Thinking in Continuous Space** — arXiv:2502.05171, Feb 2025
+   - Recurrent depth: a shared block iterates in latent space before emitting tokens
+   - 3.5B model achieves computation equivalent to 50B through recurrence
+   - No specialized training data needed; naturally supports adaptive compute per token
+   - **Connection to us**: This is the trained version of what we achieve through perturbation — the model processes additional computation in continuous space before committing to token output
+
+3. **Towards Inference-time Scaling for Continuous Space Reasoning** — arXiv:2510.12167
+   - Uses **dropout-based sampling** in COCONUT's continuous space for diversity → Pass@N
+   - Dropout as noise source for trajectory diversity in continuous space = closest prior work to our mechanism
+   - **Connection to us**: They use dropout; we use random prefix. Both are noise-based diversity in continuous representation space.
+
+**Paper positioning**: We must acknowledge this prior art. Our contribution is NOT "continuous space reasoning" (that's COCONUT). Our contribution is: (a) showing that even untrained random perturbation in embedding space creates useful diversity, (b) characterizing the dose-response and model-dependency, (c) the ensemble-theoretic analysis of error decorrelation, (d) the attention-sink connection.
+
 ### What This Means for Our Contribution
 1. **Trajectory diversification is a known technique.** We cannot claim novelty for "perturbing inputs improves best-of-N." That's been published.
 2. **Our novelty MUST be**: (a) perturbation in continuous embedding space below token granularity, (b) the non-monotonic dose-response and its theoretical explanation, (c) the connection to attention sinks and model pathologies, (d) the efficiency story (prefix perturbation is cheaper than prompt rephrasing for the same diversity).
