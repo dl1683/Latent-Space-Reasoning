@@ -84,6 +84,8 @@ models/
 # Logs
 logs/
 *.log
+paper/*.aux
+paper/*.out
 
 # OS
 .DS_Store
