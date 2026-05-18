@@ -2,25 +2,6 @@
 
 Thank you for your interest in contributing! This project is actively developing toward a NeurIPS publication and we welcome contributions from the community.
 
-## 🏆 Monthly Bounty Program
-
-This project offers a **$2,000/month bounty pool** sponsored by [Iqidis](https://iqidis.ai), distributed to the top 10 contributors:
-
-| Rank | Bounty |
-|------|--------|
-| 1st  | $500   |
-| 2nd  | $350   |
-| 3rd  | $275   |
-| 4th  | $200   |
-| 5th  | $175   |
-| 6th  | $150   |
-| 7th  | $125   |
-| 8th  | $100   |
-| 9th  | $75    |
-| 10th | $50    |
-
-Bounties are paid on the **15th of each month** based on merged contributions.
-
 ## 🎯 Contribution Areas
 
 ### Research Contributions (GPU recommended)
@@ -84,7 +65,7 @@ make test-cov    # Tests with coverage report
 
 ## 💬 Questions?
 
-Open a [GitHub Discussion](https://github.com/dl1683/Latent-Space-Reasoning/discussions) or contact devansh@iqidis.ai for extended test sets.
+Open a [GitHub Discussion](https://github.com/dl1683/Latent-Space-Reasoning/discussions).
 
 ## 📄 License
 
