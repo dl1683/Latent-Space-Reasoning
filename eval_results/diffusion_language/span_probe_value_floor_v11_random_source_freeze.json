@@ -1,0 +1,58 @@
+{
+  "controller": {
+    "controller_id": "v10_measured_probe_value_floor_frozen_for_v11_random_source_stress",
+    "feature": "measured_probe_value_prediction",
+    "operator": "ge",
+    "probe_policy": "span_tomography_probe_v4",
+    "promotion_status": "frozen_random_source_stress_not_live_spend_trigger",
+    "rule_id": "measured_probe_value_prediction_ge_0p028915",
+    "threshold": 0.02891517987715706
+  },
+  "failure_accounting": [
+    "If random source still creates no source-divergent rows, the runner needs explicit source-pair replay.",
+    "If source divergence appears but the frozen floor misses positives, keep the floor diagnostic-only.",
+    "If source divergence appears but labels contain zero positives, treat the result as inconclusive.",
+    "If measurement cost erases utility, do not implement the probe as a live spend step."
+  ],
+  "fresh_slice_protocol": {
+    "label_pass": "python experiments\\run_diffusion_three_arm_benchmark.py --task-preset lean_gpu_mixed_transfer_v11 --candidates llada-moe-7b-a1b-instruct-hf --limit-schedules 2 --limit-evolved-schedules 0 --limit-repair-candidates 1 --repair-source-policy random --repair-pack constraint_span_phase_final_preserve_seeded_gated --repair-spend-trigger denoise_phase_repairability --repair-source-min-chars 240 --repair-source-prompt-gap-min 2 --repair-source-prompt-gap-max 9 --repair-source-prompt-coverage-min 0.4 --repair-source-prompt-coverage-max 1.0 --repair-phase-budget frontier --repair-selector candidate_aware_promotion_v1 --repair-promotion-margin 0.02 --trajectory-selector planning_state --device cuda --dtype bfloat16 --raw-output eval_results\\diffusion_language\\span_probe_value_floor_v11_random_source_label_raw.jsonl --scores-output eval_results\\diffusion_language\\span_probe_value_floor_v11_random_source_label_scores.json --report-output eval_results\\diffusion_language\\span_probe_value_floor_v11_random_source_label_report.md",
+    "measurement_pass": "python experiments\\run_diffusion_three_arm_benchmark.py --task-preset lean_gpu_mixed_transfer_v11 --candidates llada-moe-7b-a1b-instruct-hf --limit-schedules 2 --limit-evolved-schedules 0 --limit-repair-candidates 1 --repair-source-policy random --repair-spend-trigger counterfactual_micro_probe_v1 --counterfactual-probe-mode all --counterfactual-probe-policy span_tomography_probe_v4 --trajectory-selector planning_state --device cuda --dtype bfloat16 --raw-output eval_results\\diffusion_language\\span_probe_value_floor_v11_random_source_measurement_raw.jsonl --scores-output eval_results\\diffusion_language\\span_probe_value_floor_v11_random_source_measurement_scores.json --report-output eval_results\\diffusion_language\\span_probe_value_floor_v11_random_source_measurement_report.md",
+    "replay_inputs": [
+      "random-source measurement pass raw/scores/report artifacts",
+      "random-source label pass raw/scores/report artifacts",
+      "eval_results\\diffusion_language\\span_probe_value_floor_v11_freeze.json"
+    ]
+  },
+  "generated_by": "experiments/build_diffusion_span_probe_value_floor_random_source_freeze.py",
+  "prior_boundary": {
+    "fixed_source_freeze_json": "eval_results\\diffusion_language\\span_probe_value_floor_v11_freeze.json",
+    "fixed_source_freeze_sha256": "5304e603a9f2897389324d59793892a6de57173e2a53254eb5a41d760d1404cb",
+    "fixed_source_measurement_report": "DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_VALUE_FLOOR_V11_MEASUREMENT.md",
+    "fixed_source_measurement_sha256": "9d13ac26e5071c7d04c41f954acc3117c2e7c69617447fcd440be4178b155617",
+    "reason": "fixed_source_measurement_had_zero_source_task_delta_on_all_planning_rows"
+  },
+  "replay_gates": {
+    "charge_probe_measurement_cost": true,
+    "maximum_false_negative_count": 0,
+    "maximum_false_positive_count": 0,
+    "minimum_positive_count_for_conclusive_result": 1,
+    "must_compare_against_fixed_source_measurement": true,
+    "required_source_divergence": "at_least_one_planning_row_with_nonzero_source_task_delta_vs_trajectory"
+  },
+  "schema": "diffusion_span_probe_value_floor_random_source_freeze.v1",
+  "source_policy": "random",
+  "task_ids": [
+    "plan_081",
+    "plan_082",
+    "plan_083",
+    "plan_084",
+    "plan_085",
+    "plan_086",
+    "plan_087",
+    "plan_088",
+    "math_009",
+    "sym_007",
+    "sci_002"
+  ],
+  "task_preset": "lean_gpu_mixed_transfer_v11"
+}

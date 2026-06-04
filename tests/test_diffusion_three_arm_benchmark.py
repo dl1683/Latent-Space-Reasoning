@@ -857,6 +857,25 @@ def test_repair_source_policy_keeps_non_revision_evolved_source():
     assert source is evolved
 
 
+def test_repair_source_policy_can_force_random_source():
+    selected = {
+        "fixed": _record("model", "plan", "fixed", task_score=0.0, trajectory_score=0.10),
+        "random": _record("model", "plan", "random", task_score=0.0, trajectory_score=0.20),
+        "trajectory_selected": _record("model", "plan", "low_confidence_32", task_score=0.0, trajectory_score=0.50),
+    }
+    evolved = _record("model", "plan", "evolved_low_confidence_48", task_score=0.0, trajectory_score=0.62)
+
+    source = _select_repair_source_record(
+        "random",
+        selected_records=selected,
+        evolved_record=evolved,
+        candidate_records=[*selected.values(), evolved],
+        trajectory_selector="generic",
+    )
+
+    assert source is selected["random"]
+
+
 def test_repair_source_policy_can_spend_from_evolved_and_trajectory_sources():
     selected = {
         "fixed": _record("model", "plan", "fixed", task_score=0.0, trajectory_score=0.10),

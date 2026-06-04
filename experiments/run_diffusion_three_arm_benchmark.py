@@ -182,6 +182,7 @@ REPAIR_SOURCE_POLICIES = (
     "evolved",
     "trajectory",
     "fixed",
+    "random",
     "non_revision_evolved",
     "evolved_and_trajectory",
     "non_revision_plus_gap_trajectory",
@@ -557,6 +558,8 @@ def parse_args() -> argparse.Namespace:
             "'evolved' preserves old behavior; 'non_revision_evolved' lets "
             "non-monotonic revision schedules win the evolved arm without "
             "forcing repairs to branch from the revised text; "
+            "'random' forces the stable random perturbation source, useful for "
+            "source-divergence stress tests against a separate trajectory; "
             "'evolved_and_trajectory' spends repairs from both the evolved "
             "winner and the base trajectory source; "
             "'non_revision_plus_gap_trajectory' starts from the non-revision "
@@ -6338,6 +6341,8 @@ def _select_repair_source_record(
         return selected_records["trajectory_selected"]
     if policy == "fixed":
         return selected_records["fixed"]
+    if policy == "random":
+        return selected_records["random"]
     if policy == "non_revision_evolved":
         if not _is_revision_record(evolved_record):
             return evolved_record
