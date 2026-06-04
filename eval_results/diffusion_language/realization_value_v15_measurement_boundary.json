@@ -1,0 +1,182 @@
+{
+  "generated_by": "experiments/analyze_diffusion_realization_value_v15_measurement.py",
+  "inputs": {
+    "freeze": "eval_results\\diffusion_language\\realization_value_v15_freeze.json",
+    "measurement": "eval_results\\diffusion_language\\realization_value_v15_measurement_scores.json"
+  },
+  "row_diagnostics": [
+    {
+      "has_repairable_denoise_skeleton": true,
+      "measured_probe_value_prediction": 0.035622950819672136,
+      "peak_denoise_prompt_coverage": 0.26666666666666666,
+      "probe_only": false,
+      "probe_surface_selected": false,
+      "prompt_coverage": 0.8,
+      "prompt_gap_count": 4.0,
+      "source_control": "random_32",
+      "source_task_delta_vs_trajectory": -0.11285714285714282,
+      "static_only": false,
+      "static_probe_disagreement": false,
+      "static_surface_selected": false,
+      "task_id": "plan_113",
+      "would_probe": true
+    },
+    {
+      "has_repairable_denoise_skeleton": true,
+      "measured_probe_value_prediction": 0.04979023307436182,
+      "peak_denoise_prompt_coverage": 0.35294117647058826,
+      "probe_only": false,
+      "probe_surface_selected": false,
+      "prompt_coverage": 0.5294117647058824,
+      "prompt_gap_count": 8.0,
+      "source_control": "random_32",
+      "source_task_delta_vs_trajectory": -0.10300000000000004,
+      "static_only": false,
+      "static_probe_disagreement": false,
+      "static_surface_selected": false,
+      "task_id": "plan_114",
+      "would_probe": true
+    },
+    {
+      "has_repairable_denoise_skeleton": true,
+      "measured_probe_value_prediction": 0.02625909483290172,
+      "peak_denoise_prompt_coverage": 0.4117647058823529,
+      "probe_only": false,
+      "probe_surface_selected": false,
+      "prompt_coverage": 0.8235294117647058,
+      "prompt_gap_count": 3.0,
+      "source_control": "low_confidence_32",
+      "source_task_delta_vs_trajectory": 0.0,
+      "static_only": false,
+      "static_probe_disagreement": false,
+      "static_surface_selected": false,
+      "task_id": "plan_115",
+      "would_probe": true
+    },
+    {
+      "has_repairable_denoise_skeleton": true,
+      "measured_probe_value_prediction": 0.03747477744807122,
+      "peak_denoise_prompt_coverage": 0.06666666666666667,
+      "probe_only": false,
+      "probe_surface_selected": false,
+      "prompt_coverage": 0.4666666666666667,
+      "prompt_gap_count": 8.0,
+      "source_control": "low_confidence_32",
+      "source_task_delta_vs_trajectory": 0.0,
+      "static_only": false,
+      "static_probe_disagreement": false,
+      "static_surface_selected": false,
+      "task_id": "plan_116",
+      "would_probe": true
+    },
+    {
+      "has_repairable_denoise_skeleton": true,
+      "measured_probe_value_prediction": 0.04859577922077923,
+      "peak_denoise_prompt_coverage": 0.125,
+      "probe_only": false,
+      "probe_surface_selected": false,
+      "prompt_coverage": 0.625,
+      "prompt_gap_count": 6.0,
+      "source_control": "random_32",
+      "source_task_delta_vs_trajectory": -0.063,
+      "static_only": false,
+      "static_probe_disagreement": false,
+      "static_surface_selected": false,
+      "task_id": "plan_117",
+      "would_probe": true
+    },
+    {
+      "has_repairable_denoise_skeleton": true,
+      "measured_probe_value_prediction": 0.026108870967741934,
+      "peak_denoise_prompt_coverage": 0.125,
+      "probe_only": false,
+      "probe_surface_selected": false,
+      "prompt_coverage": 0.5,
+      "prompt_gap_count": 8.0,
+      "source_control": "low_confidence_32",
+      "source_task_delta_vs_trajectory": 0.0,
+      "static_only": false,
+      "static_probe_disagreement": false,
+      "static_surface_selected": false,
+      "task_id": "plan_118",
+      "would_probe": true
+    },
+    {
+      "has_repairable_denoise_skeleton": true,
+      "measured_probe_value_prediction": 0.04121729957805907,
+      "peak_denoise_prompt_coverage": 0.2,
+      "probe_only": false,
+      "probe_surface_selected": false,
+      "prompt_coverage": 0.2,
+      "prompt_gap_count": 12.0,
+      "source_control": "random_32",
+      "source_task_delta_vs_trajectory": -0.26071428571428573,
+      "static_only": false,
+      "static_probe_disagreement": false,
+      "static_surface_selected": false,
+      "task_id": "plan_119",
+      "would_probe": false
+    },
+    {
+      "has_repairable_denoise_skeleton": true,
+      "measured_probe_value_prediction": 0.0386619322176909,
+      "peak_denoise_prompt_coverage": 0.38461538461538464,
+      "probe_only": false,
+      "probe_surface_selected": false,
+      "prompt_coverage": 0.6923076923076923,
+      "prompt_gap_count": 4.0,
+      "source_control": "low_confidence_32",
+      "source_task_delta_vs_trajectory": 0.0,
+      "static_only": true,
+      "static_probe_disagreement": true,
+      "static_surface_selected": true,
+      "task_id": "plan_120",
+      "would_probe": true
+    }
+  ],
+  "schema": "diffusion_realization_value_v15_measurement_boundary.v1",
+  "summary": {
+    "disagreement_count": 1,
+    "disagreement_task_ids": [
+      "plan_120"
+    ],
+    "full_generation_count": 22,
+    "label_pass_authorization_reason": "static-vs-probe disagreement exists before labels",
+    "label_pass_authorized": true,
+    "minimum_static_probe_disagreement_count": 1,
+    "probe_generation_count": 8,
+    "probe_only_task_ids": [],
+    "probe_selected_count": 0,
+    "probe_selected_task_ids": [],
+    "run_id": "diffusion-9310814fffeb6d04",
+    "static_only_task_ids": [
+      "plan_120"
+    ],
+    "static_selected_count": 1,
+    "static_selected_task_ids": [
+      "plan_120"
+    ],
+    "target_count": 8
+  },
+  "target_surfaces": {
+    "probe_conditioned_realization_value_v15": {
+      "measured_probe_value_prediction_max": 0.033,
+      "prompt_gap_count_max": 7.0,
+      "prompt_gap_count_min": 4.0,
+      "requires_label_pass_denoise_trigger": true,
+      "source_task_delta_vs_trajectory_min": 0.0,
+      "surface_id": "probe_conditioned_realization_value_v15",
+      "uses_probe_measurement": true
+    },
+    "static_source_gap_coverage_v15": {
+      "prompt_coverage_max": 1.0,
+      "prompt_coverage_min": 0.4,
+      "prompt_gap_count_max": 7.0,
+      "prompt_gap_count_min": 4.0,
+      "requires_label_pass_denoise_trigger": true,
+      "source_task_delta_vs_trajectory_min": 0.0,
+      "surface_id": "static_source_gap_coverage_v15",
+      "uses_probe_measurement": false
+    }
+  }
+}
