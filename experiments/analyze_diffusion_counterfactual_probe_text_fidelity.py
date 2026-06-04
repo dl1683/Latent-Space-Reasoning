@@ -200,9 +200,11 @@ def _probe_text_features(
     record: dict[str, object],
 ) -> dict[str, float]:
     lower = text.lower()
-    exact_authorization = "FULL_REPAIR_AUTHORIZED=false" in text
+    compact_authorization = bool(re.search(r"(^|\n)\s*Z\s*=\s*false\s*(\n|$)", text))
+    exact_authorization = "FULL_REPAIR_AUTHORIZED=false" in text or compact_authorization
     has_full_repair = "FULL_REPAIR" in text
-    malformed_authorization = has_full_repair and not exact_authorization
+    has_compact_authorization_key = bool(re.search(r"(^|\n)\s*Z\s*=", text))
+    malformed_authorization = (has_full_repair or has_compact_authorization_key) and not exact_authorization
     strict_slot_count = sum(
         int(bool(re.search(pattern, text)))
         for pattern in (
@@ -210,6 +212,10 @@ def _probe_text_features(
             r"(^|\n)\s*EVIDENCE_NEEDED\s*=",
             r"(^|\n)\s*RETENTION_RISK\s*=",
         )
+    )
+    compact_slot_count = sum(
+        int(bool(re.search(pattern, text)))
+        for pattern in (r"(^|\n)\s*A\s*=", r"(^|\n)\s*B\s*=", r"(^|\n)\s*C\s*=")
     )
     legacy_slot_count = sum(
         int(value)
@@ -219,10 +225,10 @@ def _probe_text_features(
             bool(re.search(r"(^|[ ;])3\)", text)),
         )
     )
-    slot_count = max(strict_slot_count, legacy_slot_count)
-    has_missing = "missing" in lower or "constraint" in lower
-    has_evidence = "evidence" in lower or "metric" in lower
-    has_retention = "retention" in lower or "risk" in lower
+    slot_count = max(strict_slot_count, compact_slot_count, legacy_slot_count)
+    has_missing = "missing" in lower or "constraint" in lower or bool(re.search(r"(^|\n)\s*A\s*=", text))
+    has_evidence = "evidence" in lower or "metric" in lower or bool(re.search(r"(^|\n)\s*B\s*=", text))
+    has_retention = "retention" in lower or "risk" in lower or bool(re.search(r"(^|\n)\s*C\s*=", text))
     weird_punctuation = any(
         marker in text
         for marker in (
@@ -234,12 +240,18 @@ def _probe_text_features(
             "AUTHORORIZED",
             "RETION_RISK",
             "RETENTION_RISK_Risk",
+            "Z==",
         )
     )
     placeholder_slot = "<" in text or ">" in text
     generic_slot = bool(
         re.search(
             r"(MISSING_CONSTRAINT|EVIDENCE_NEEDED|RETENTION_RISK)\s*=\s*(none|true|false|unknown)?\s*(\n|$)",
+            text,
+            flags=re.IGNORECASE,
+        )
+        or re.search(
+            r"(^|\n)\s*[ABC]\s*=\s*(none|true|false|unknown)?\s*(\n|$)",
             text,
             flags=re.IGNORECASE,
         )

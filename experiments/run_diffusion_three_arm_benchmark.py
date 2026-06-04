@@ -140,10 +140,12 @@ COUNTERFACTUAL_MICRO_PROBE_TRIGGER_ID = "counterfactual_micro_probe_v1"
 COUNTERFACTUAL_MICRO_PROBE_POLICY_ID = "deterministic_missing_constraint_probe_v1"
 COUNTERFACTUAL_MICRO_PROBE_TOMOGRAPHY_POLICY_ID = "strict_tomography_probe_v1"
 COUNTERFACTUAL_MICRO_PROBE_KEY_VALUE_POLICY_ID = "key_value_tomography_probe_v2"
+COUNTERFACTUAL_MICRO_PROBE_COMPACT_POLICY_ID = "compact_tomography_probe_v3"
 COUNTERFACTUAL_MICRO_PROBE_POLICIES = (
     COUNTERFACTUAL_MICRO_PROBE_POLICY_ID,
     COUNTERFACTUAL_MICRO_PROBE_TOMOGRAPHY_POLICY_ID,
     COUNTERFACTUAL_MICRO_PROBE_KEY_VALUE_POLICY_ID,
+    COUNTERFACTUAL_MICRO_PROBE_COMPACT_POLICY_ID,
 )
 COUNTERFACTUAL_MICRO_PROBE_COST_RELATIVE = 0.125
 COUNTERFACTUAL_MICRO_PROBE_GAP_VISIBILITY_MAX = 2.0 / 3.0
@@ -153,6 +155,8 @@ COUNTERFACTUAL_MICRO_PROBE_TOMOGRAPHY_MAX_NEW_TOKENS = 48
 COUNTERFACTUAL_MICRO_PROBE_TOMOGRAPHY_STEPS = 24
 COUNTERFACTUAL_MICRO_PROBE_KEY_VALUE_MAX_NEW_TOKENS = 64
 COUNTERFACTUAL_MICRO_PROBE_KEY_VALUE_STEPS = 32
+COUNTERFACTUAL_MICRO_PROBE_COMPACT_MAX_NEW_TOKENS = 48
+COUNTERFACTUAL_MICRO_PROBE_COMPACT_STEPS = 24
 COUNTERFACTUAL_MICRO_PROBE_MODES = ("triage", "all")
 DEFAULT_ADAPTIVE_SOURCE_GAP_MIN_TERMS = 6
 DEFAULT_ADAPTIVE_SOURCE_QUALITY_FLOOR = 0.25
@@ -2833,6 +2837,8 @@ def _generate_counterfactual_micro_probe_record(
 
 
 def _counterfactual_micro_probe_max_new_tokens(probe_policy: str) -> int:
+    if probe_policy == COUNTERFACTUAL_MICRO_PROBE_COMPACT_POLICY_ID:
+        return COUNTERFACTUAL_MICRO_PROBE_COMPACT_MAX_NEW_TOKENS
     if probe_policy == COUNTERFACTUAL_MICRO_PROBE_KEY_VALUE_POLICY_ID:
         return COUNTERFACTUAL_MICRO_PROBE_KEY_VALUE_MAX_NEW_TOKENS
     if probe_policy == COUNTERFACTUAL_MICRO_PROBE_TOMOGRAPHY_POLICY_ID:
@@ -2841,6 +2847,8 @@ def _counterfactual_micro_probe_max_new_tokens(probe_policy: str) -> int:
 
 
 def _counterfactual_micro_probe_steps(probe_policy: str) -> int:
+    if probe_policy == COUNTERFACTUAL_MICRO_PROBE_COMPACT_POLICY_ID:
+        return COUNTERFACTUAL_MICRO_PROBE_COMPACT_STEPS
     if probe_policy == COUNTERFACTUAL_MICRO_PROBE_KEY_VALUE_POLICY_ID:
         return COUNTERFACTUAL_MICRO_PROBE_KEY_VALUE_STEPS
     if probe_policy == COUNTERFACTUAL_MICRO_PROBE_TOMOGRAPHY_POLICY_ID:
@@ -2923,28 +2931,49 @@ def _measured_counterfactual_micro_probe_diagnostics(
 
 
 def _counterfactual_micro_probe_text_validity(text: str) -> dict[str, object]:
-    exact_authorization = "FULL_REPAIR_AUTHORIZED=false" in text
+    compact_authorization = bool(re.search(r"(^|\n)\s*Z\s*=\s*false\s*(\n|$)", text))
+    exact_authorization = "FULL_REPAIR_AUTHORIZED=false" in text or compact_authorization
     has_full_repair = "FULL_REPAIR" in text
-    malformed_authorization = has_full_repair and not exact_authorization
-    slot_patterns = (
+    has_compact_authorization_key = bool(re.search(r"(^|\n)\s*Z\s*=", text))
+    malformed_authorization = (has_full_repair or has_compact_authorization_key) and not exact_authorization
+    strict_slot_patterns = (
         r"(^|\n)\s*MISSING_CONSTRAINT\s*=",
         r"(^|\n)\s*EVIDENCE_NEEDED\s*=",
         r"(^|\n)\s*RETENTION_RISK\s*=",
     )
-    strict_slot_count = sum(int(bool(re.search(pattern, text))) for pattern in slot_patterns)
+    strict_slot_count = sum(int(bool(re.search(pattern, text))) for pattern in strict_slot_patterns)
+    compact_slot_count = sum(
+        int(bool(re.search(pattern, text)))
+        for pattern in (r"(^|\n)\s*A\s*=", r"(^|\n)\s*B\s*=", r"(^|\n)\s*C\s*=")
+    )
     legacy_slot_count = sum(
         int(bool(re.search(pattern, text)))
         for pattern in (r"(^|[ ;])1\)", r"(^|[ ;])2\)", r"(^|[ ;])3\)")
     )
-    slot_count = max(strict_slot_count, legacy_slot_count)
+    slot_count = max(strict_slot_count, compact_slot_count, legacy_slot_count)
     weird_punctuation = any(
         marker in text
-        for marker in ("::", "..", ",AUTHORIZED", "AUTH_AUTHORIZED", "AUTHUTHORIZED", "AUTHORORIZED")
+        for marker in (
+            "::",
+            "..",
+            ",AUTHORIZED",
+            "AUTH_AUTHORIZED",
+            "AUTHUTHORIZED",
+            "AUTHORORIZED",
+            "RETION_RISK",
+            "RETENTION_RISK_Risk",
+            "Z==",
+        )
     )
     placeholder_slot = "<" in text or ">" in text
     generic_slot = bool(
         re.search(
             r"(MISSING_CONSTRAINT|EVIDENCE_NEEDED|RETENTION_RISK)\s*=\s*(none|true|false|unknown)?\s*(\n|$)",
+            text,
+            flags=re.IGNORECASE,
+        )
+        or re.search(
+            r"(^|\n)\s*[ABC]\s*=\s*(none|true|false|unknown)?\s*(\n|$)",
             text,
             flags=re.IGNORECASE,
         )
@@ -2976,6 +3005,24 @@ def _counterfactual_micro_probe_prompt(
     gap_terms = _prompt_constraint_gap_terms(task_prompt, source_text, limit=8)
     gap_text = ", ".join(gap_terms) if gap_terms else "none"
     draft = _compact_text(source_text, max_chars=700)
+    if probe_policy == COUNTERFACTUAL_MICRO_PROBE_COMPACT_POLICY_ID:
+        return (
+            f"{task_prompt}\n\n"
+            f"Draft answer under inspection:\n{draft}\n\n"
+            f"Missing or weak task terms: {gap_text}\n\n"
+            "Counterfactual compact tomography probe only. Do not rewrite the answer. "
+            "Return exactly four newline-separated key=value lines using these keys only: "
+            "A, B, C, Z. A is the missing or weak constraint. B is verifier-visible "
+            "evidence needed before buying repair. C is source detail repair might delete "
+            "or distort. Z is the repair authorization sentinel. Use concrete task words "
+            "for A, B, and C. Do not use angle brackets. Do not write true, false, none, "
+            "unknown, or generic template text for A, B, or C. The fourth line must be "
+            "exactly Z=false.\n"
+            "A=\n"
+            "B=\n"
+            "C=\n"
+            "Z=false"
+        )
     if probe_policy == COUNTERFACTUAL_MICRO_PROBE_KEY_VALUE_POLICY_ID:
         return (
             f"{task_prompt}\n\n"
