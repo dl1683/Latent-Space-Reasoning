@@ -13,7 +13,7 @@ import json
 from pathlib import Path
 
 DEFAULT_JSON_OUTPUT = Path("eval_results/gated_attention/gated_attention_null_probe_freeze.json")
-DEFAULT_REPORT_OUTPUT = Path("GATED_ATTENTION_NULL_PROBE_FREEZE.md")
+DEFAULT_REPORT_OUTPUT = Path("docs/gated_attention/GATED_ATTENTION_NULL_PROBE_FREEZE.md")
 DEFAULT_PRIOR_RESULTS = (
     Path("experiments/sensitivity_sweet_spot_random_noise_t2_results.json"),
     Path("experiments/sensitivity_sweet_spot_random_noise_t2_qwen38b_8bit_n10_results.json"),

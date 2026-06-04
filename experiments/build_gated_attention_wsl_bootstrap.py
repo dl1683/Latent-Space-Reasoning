@@ -9,7 +9,7 @@ import subprocess
 from pathlib import Path
 
 DEFAULT_JSON_OUTPUT = Path("eval_results/gated_attention/gated_attention_wsl_bootstrap.json")
-DEFAULT_REPORT_OUTPUT = Path("GATED_ATTENTION_WSL_BOOTSTRAP.md")
+DEFAULT_REPORT_OUTPUT = Path("docs/gated_attention/GATED_ATTENTION_WSL_BOOTSTRAP.md")
 DEFAULT_DISTRO = "Ubuntu"
 
 

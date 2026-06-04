@@ -20,7 +20,7 @@ from transformers.models.auto.configuration_auto import CONFIG_MAPPING
 
 DEFAULT_FREEZE = Path("eval_results/gated_attention/gated_attention_null_probe_freeze.json")
 DEFAULT_JSON_OUTPUT = Path("eval_results/gated_attention/gated_attention_probe_execution_plan.json")
-DEFAULT_REPORT_OUTPUT = Path("GATED_ATTENTION_PROBE_EXECUTION_PLAN.md")
+DEFAULT_REPORT_OUTPUT = Path("docs/gated_attention/GATED_ATTENTION_PROBE_EXECUTION_PLAN.md")
 DEFAULT_HF_CACHE = Path.home() / ".cache" / "huggingface" / "hub"
 
 PRIMARY_MODEL = "Qwen/Qwen3-Next-80B-A3B-Instruct"
