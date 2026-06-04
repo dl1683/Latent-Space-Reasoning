@@ -1,0 +1,171 @@
+{
+  "generated_by": "experiments/analyze_diffusion_selected_repair_cost.py",
+  "inputs": {
+    "control_scores": "eval_results\\diffusion_language\\generated_repair_value_hook_v19_broad_denoise_control_scores.json",
+    "hook_scores": "eval_results\\diffusion_language\\generated_repair_value_hook_v19_label_scores.json",
+    "targets": "eval_results\\diffusion_language\\generated_repair_value_hook_v19_targets.json"
+  },
+  "policies": [
+    {
+      "gross_selected_candidate_lift": 0.35428571428571426,
+      "missed_positive_tasks": [
+        "plan_151"
+      ],
+      "no_lift_selected_count": 0,
+      "no_lift_selected_tasks": [],
+      "policy_id": "generated_repair_value_v1",
+      "repair_covered_count": 8,
+      "repair_promotion_margin": 0.02,
+      "repair_selector": "generated_repair_value_v1",
+      "repair_task_delta_per_extra_generation_vs_evolved": 0.07085714285714285,
+      "repair_task_delta_vs_evolved": 0.04428571428571428,
+      "run_id": "diffusion-e4db8307fba01a16",
+      "scores_path": "eval_results\\diffusion_language\\generated_repair_value_hook_v19_label_scores.json",
+      "selected_repair_pool_count": 3,
+      "selected_repair_pool_tasks": [
+        "plan_145",
+        "plan_149",
+        "plan_152"
+      ],
+      "substantial_selected_count": 3,
+      "substantial_selected_tasks": [
+        "plan_145",
+        "plan_149",
+        "plan_152"
+      ],
+      "tiny_selected_count": 0,
+      "tiny_selected_tasks": [],
+      "waste_selected_count": 0,
+      "waste_selected_tasks": []
+    },
+    {
+      "gross_selected_candidate_lift": 0.36128571428571427,
+      "missed_positive_tasks": [],
+      "no_lift_selected_count": 1,
+      "no_lift_selected_tasks": [
+        "plan_150"
+      ],
+      "policy_id": "planning_quality_zero_margin",
+      "repair_covered_count": 8,
+      "repair_promotion_margin": 0.0,
+      "repair_selector": "planning_quality",
+      "repair_task_delta_per_extra_generation_vs_evolved": 0.07085714285714285,
+      "repair_task_delta_vs_evolved": 0.04428571428571428,
+      "run_id": "diffusion-6841660796b6d7c6",
+      "scores_path": "eval_results\\diffusion_language\\generated_repair_value_hook_v19_broad_denoise_control_scores.json",
+      "selected_repair_pool_count": 5,
+      "selected_repair_pool_tasks": [
+        "plan_145",
+        "plan_149",
+        "plan_150",
+        "plan_151",
+        "plan_152"
+      ],
+      "substantial_selected_count": 3,
+      "substantial_selected_tasks": [
+        "plan_145",
+        "plan_149",
+        "plan_152"
+      ],
+      "tiny_selected_count": 1,
+      "tiny_selected_tasks": [
+        "plan_151"
+      ],
+      "waste_selected_count": 2,
+      "waste_selected_tasks": [
+        "plan_150",
+        "plan_151"
+      ]
+    }
+  ],
+  "schema": "diffusion_selected_repair_cost_audit.v1",
+  "selected_policy": {
+    "gross_selected_candidate_lift": 0.35428571428571426,
+    "missed_positive_tasks": [
+      "plan_151"
+    ],
+    "no_lift_selected_count": 0,
+    "no_lift_selected_tasks": [],
+    "policy_id": "generated_repair_value_v1",
+    "repair_covered_count": 8,
+    "repair_promotion_margin": 0.02,
+    "repair_selector": "generated_repair_value_v1",
+    "repair_task_delta_per_extra_generation_vs_evolved": 0.07085714285714285,
+    "repair_task_delta_vs_evolved": 0.04428571428571428,
+    "run_id": "diffusion-e4db8307fba01a16",
+    "scores_path": "eval_results\\diffusion_language\\generated_repair_value_hook_v19_label_scores.json",
+    "selected_repair_pool_count": 3,
+    "selected_repair_pool_tasks": [
+      "plan_145",
+      "plan_149",
+      "plan_152"
+    ],
+    "substantial_selected_count": 3,
+    "substantial_selected_tasks": [
+      "plan_145",
+      "plan_149",
+      "plan_152"
+    ],
+    "tiny_selected_count": 0,
+    "tiny_selected_tasks": [],
+    "waste_selected_count": 0,
+    "waste_selected_tasks": []
+  },
+  "substantial_lift": 0.02,
+  "summary": {
+    "aggregate_utility_parity": true,
+    "control_only_selected_tasks": [
+      "plan_150",
+      "plan_151"
+    ],
+    "control_only_waste_tasks": [
+      "plan_150",
+      "plan_151"
+    ],
+    "control_selected_tasks": [
+      "plan_145",
+      "plan_149",
+      "plan_150",
+      "plan_151",
+      "plan_152"
+    ],
+    "cost_sweep": [
+      {
+        "control_net": 0.04428571428571428,
+        "hook_advantage": 0.0,
+        "hook_net": 0.04428571428571428,
+        "selected_cost": 0.0
+      },
+      {
+        "control_net": 0.04366071428571428,
+        "hook_advantage": 0.0002500000000000002,
+        "hook_net": 0.04391071428571428,
+        "selected_cost": 0.001
+      },
+      {
+        "control_net": 0.04116071428571428,
+        "hook_advantage": 0.0012500000000000011,
+        "hook_net": 0.04241071428571428,
+        "selected_cost": 0.005
+      },
+      {
+        "control_net": 0.038035714285714284,
+        "hook_advantage": 0.0025000000000000022,
+        "hook_net": 0.040535714285714286,
+        "selected_cost": 0.01
+      },
+      {
+        "control_net": 0.03178571428571428,
+        "hook_advantage": 0.0050000000000000044,
+        "hook_net": 0.03678571428571428,
+        "selected_cost": 0.02
+      }
+    ],
+    "hook_selected_tasks": [
+      "plan_145",
+      "plan_149",
+      "plan_152"
+    ],
+    "substantial_lift": 0.02
+  }
+}
