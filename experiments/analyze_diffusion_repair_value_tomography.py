@@ -5,7 +5,15 @@ from __future__ import annotations
 import argparse
 import json
 import math
+import sys
 from pathlib import Path
+
+sys.path.insert(0, str(Path(__file__).parent.parent))
+
+from experiments.run_diffusion_three_arm_benchmark import (
+    LAMBDA_AWARE_VALUE_PROXY_TRIGGER_ID,
+    _lambda_value_proxy_source_quality_max,
+)
 
 DEFAULT_LOSS_TARGETS = Path("eval_results/diffusion_language/diffusion_budget_policy_loss_targets.jsonl")
 DEFAULT_JSON_OUTPUT = Path("eval_results/diffusion_language/diffusion_repair_value_tomography.json")
@@ -34,6 +42,9 @@ def main() -> int:
                 "report_output": str(args.report_output),
                 "probe_count": len(_list_of_dicts(audit.get("probe_rows"))),
                 "incumbent_stable": bool(_dict(audit.get("summary")).get("incumbent_stable")),
+                "implemented_controller_zero_regret": bool(
+                    _dict(audit.get("summary")).get("implemented_controller_zero_regret")
+                ),
                 "next_controller_required": bool(_dict(audit.get("summary")).get("next_controller_required")),
             },
             indent=2,
@@ -46,14 +57,17 @@ def main() -> int:
 def build_repair_value_tomography(*, loss_targets_path: Path) -> dict[str, object]:
     targets = _load_jsonl(loss_targets_path)
     probes = _probe_specs()
+    controller_probes = _implemented_controller_probe_specs()
     probe_rows = [_score_probe(probe, targets) for probe in probes]
-    task_rows = [_task_signature(target, probes) for target in targets]
+    implemented_controller_rows = [_score_probe(probe, targets) for probe in controller_probes]
+    task_rows = [_task_signature(target, probes + controller_probes) for target in targets]
     return {
         "generated_by": "experiments/analyze_diffusion_repair_value_tomography.py",
+        "implemented_controller_rows": implemented_controller_rows,
         "loss_targets_path": str(loss_targets_path),
         "probe_rows": probe_rows,
         "schema": "diffusion_repair_value_tomography.v1",
-        "summary": _summary(probe_rows),
+        "summary": _summary(probe_rows, implemented_controller_rows),
         "task_rows": task_rows,
     }
 
@@ -79,7 +93,15 @@ def render_markdown(audit: dict[str, object]) -> str:
         f"- Probe count: `{summary.get('probe_count', 0)}`",
         f"- Passed probes: `{summary.get('passed_probe_count', 0)}`",
         f"- Incumbent stable at lambda 0.18: `{summary.get('incumbent_stable', False)}`",
-        f"- Next controller required: `{summary.get('next_controller_required', False)}`",
+        f"- Fixed-threshold controller requires successor: `{summary.get('next_controller_required', False)}`",
+        (
+            "- Implemented lambda controller zero-regret checks: "
+            f"`{summary.get('implemented_controller_zero_regret', False)}`"
+        ),
+        (
+            "- Implemented lambda controller worst regret: "
+            f"`{_format_float(summary.get('implemented_controller_worst_regret'))}`"
+        ),
         f"- Worst probe: `{summary.get('worst_probe_id', '')}`",
         f"- Worst regret: `{_format_float(summary.get('worst_regret'))}`",
         "",
@@ -97,6 +119,34 @@ def render_markdown(audit: dict[str, object]) -> str:
             f"{_format_float(row.get('cost_penalty_lambda'))} | "
             f"{_format_float(row.get('source_quality_max'))} | "
             f"{int(_float(row.get('prompt_gap_max'), default=0.0))} | "
+            f"{_join_tasks(row.get('selected_tasks'))} | "
+            f"{_join_tasks(row.get('oracle_tasks'))} | "
+            f"{_format_float(row.get('regret_vs_oracle'))} | "
+            f"FP={row.get('false_positive_count', 0)}, FN={row.get('false_negative_count', 0)} | "
+            f"{bool(row.get('passed'))} | "
+            f"{row.get('interpretation', '')} |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Implemented Controller Checks",
+            "",
+            (
+                "These rows score the runner hook "
+                f"`--repair-spend-trigger {LAMBDA_AWARE_VALUE_PROXY_TRIGGER_ID}` "
+                "with the lambda-adjusted source-quality ceiling."
+            ),
+            "",
+            "| Probe | Lambda | Effective Quality Max | Selected | Oracle | Regret | Errors | Pass | Interpretation |",
+            "| --- | ---: | ---: | --- | --- | ---: | --- | --- | --- |",
+        ]
+    )
+    for row in _list_of_dicts(audit.get("implemented_controller_rows")):
+        lines.append(
+            "| "
+            f"`{row.get('probe_id', '')}` | "
+            f"{_format_float(row.get('cost_penalty_lambda'))} | "
+            f"{_format_float(row.get('source_quality_max'))} | "
             f"{_join_tasks(row.get('selected_tasks'))} | "
             f"{_join_tasks(row.get('oracle_tasks'))} | "
             f"{_format_float(row.get('regret_vs_oracle'))} | "
@@ -136,6 +186,16 @@ def render_markdown(audit: dict[str, object]) -> str:
                 "repairs such as `plan_006`. Quality and gap threshold perturbations are also "
                 "useful because they expose where one-dimensional loosening immediately admits "
                 "known no-lift spends."
+            ),
+            "",
+            "## Implementation Hook",
+            "",
+            (
+                "The runner exposes this as "
+                f"`--repair-spend-trigger {LAMBDA_AWARE_VALUE_PROXY_TRIGGER_ID}` with "
+                "`--repair-cost-penalty-lambda`. The implemented schedule keeps the "
+                "incumbent `0.31` source-quality ceiling at lambda `0.18`, loosens to "
+                "`0.35` for lambda `<=0.05`, and tightens to `0.30` for lambda `>=0.25`."
             ),
         ]
     )
@@ -200,6 +260,24 @@ def _probe_specs() -> list[dict[str, object]]:
             "prompt_gap_max": 9,
             "source_quality_max": 0.31,
         },
+    ]
+
+
+def _implemented_controller_probe_specs() -> list[dict[str, object]]:
+    return [
+        {
+            "cost_penalty_lambda": cost_penalty_lambda,
+            "expected_behavior": "implemented lambda-aware policy should match oracle",
+            "probe_id": probe_id,
+            "probe_type": "implemented_controller",
+            "prompt_gap_max": 9,
+            "source_quality_max": _lambda_value_proxy_source_quality_max(cost_penalty_lambda),
+        }
+        for probe_id, cost_penalty_lambda in [
+            ("implemented_lambda_low_005", 0.05),
+            ("implemented_lambda_neutral_018", 0.18),
+            ("implemented_lambda_high_025", 0.25),
+        ]
     ]
 
 
@@ -277,7 +355,7 @@ def _oracle_utility(targets: list[dict[str, object]], probe: dict[str, object]) 
 
 def _probe_passed(row: dict[str, object]) -> bool:
     probe_type = str(row.get("probe_type", ""))
-    if probe_type in {"baseline", "invariance"}:
+    if probe_type in {"baseline", "invariance", "implemented_controller"}:
         return _float(row.get("regret_vs_oracle")) <= 1e-9
     return bool(row.get("false_positive_count") or row.get("false_negative_count"))
 
@@ -298,19 +376,37 @@ def _interpretation(row: dict[str, object]) -> str:
             return "controller is too conservative for this cost regime"
         if fp:
             return "controller is too spend-happy for this cost regime"
+    if probe_type == "implemented_controller" and row.get("passed"):
+        return "implemented lambda-aware schedule matches the oracle surface"
     return "probe did not expose the expected behavior"
 
 
-def _summary(probe_rows: list[dict[str, object]]) -> dict[str, object]:
+def _summary(
+    probe_rows: list[dict[str, object]],
+    implemented_controller_rows: list[dict[str, object]],
+) -> dict[str, object]:
     worst = max(probe_rows, key=lambda row: _float(row.get("regret_vs_oracle")), default={})
+    implemented_worst = max(
+        implemented_controller_rows,
+        key=lambda row: _float(row.get("regret_vs_oracle")),
+        default={},
+    )
     incumbent_stable = all(
         row.get("passed") and _float(row.get("regret_vs_oracle")) <= 1e-9
         for row in probe_rows
         if row.get("probe_type") in {"baseline", "invariance"}
     )
+    implemented_controller_zero_regret = all(
+        row.get("passed") and _float(row.get("regret_vs_oracle")) <= 1e-9
+        for row in implemented_controller_rows
+    )
     any_nonzero_probe_regret = any(_float(row.get("regret_vs_oracle")) > 1e-9 for row in probe_rows)
     return {
         "incumbent_stable": incumbent_stable,
+        "implemented_controller_probe_count": len(implemented_controller_rows),
+        "implemented_controller_zero_regret": implemented_controller_zero_regret,
+        "implemented_controller_worst_probe_id": str(implemented_worst.get("probe_id", "")),
+        "implemented_controller_worst_regret": _float(implemented_worst.get("regret_vs_oracle")),
         "next_controller_required": any_nonzero_probe_regret,
         "passed_probe_count": sum(1 for row in probe_rows if row.get("passed")),
         "probe_count": len(probe_rows),

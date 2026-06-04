@@ -10,7 +10,9 @@ It treats repair spending as a behavior surface over the candidate set `{spend, 
 - Probe count: `7`
 - Passed probes: `7`
 - Incumbent stable at lambda 0.18: `True`
-- Next controller required: `True`
+- Fixed-threshold controller requires successor: `True`
+- Implemented lambda controller zero-regret checks: `True`
+- Implemented lambda controller worst regret: `0.000000`
 - Worst probe: `quality_relaxed_035`
 - Worst regret: `0.022589`
 
@@ -26,18 +28,28 @@ It treats repair spending as a behavior surface over the candidate set `{spend, 
 | `lambda_low_005` | `cost_sensitivity` | lower cost should spend on low-margin positives | 0.050000 | 0.310000 | 9 | plan_004, plan_006, plan_007 | plan_001, plan_003, plan_004, plan_006, plan_007 | 0.009911 | FP=0, FN=2 | True | controller is too conservative for this cost regime |
 | `lambda_high_025` | `cost_sensitivity` | higher cost should drop marginal positives | 0.250000 | 0.310000 | 9 | plan_004, plan_006, plan_007 | plan_004, plan_007 | 0.007143 | FP=1, FN=0 | True | controller is too spend-happy for this cost regime |
 
+## Implemented Controller Checks
+
+These rows score the runner hook `--repair-spend-trigger denoise_phase_lambda_value_proxy` with the lambda-adjusted source-quality ceiling.
+
+| Probe | Lambda | Effective Quality Max | Selected | Oracle | Regret | Errors | Pass | Interpretation |
+| --- | ---: | ---: | --- | --- | ---: | --- | --- | --- |
+| `implemented_lambda_low_005` | 0.050000 | 0.350000 | plan_001, plan_003, plan_004, plan_006, plan_007 | plan_001, plan_003, plan_004, plan_006, plan_007 | 0.000000 | FP=0, FN=0 | True | implemented lambda-aware schedule matches the oracle surface |
+| `implemented_lambda_neutral_018` | 0.180000 | 0.310000 | plan_004, plan_006, plan_007 | plan_004, plan_006, plan_007 | 0.000000 | FP=0, FN=0 | True | implemented lambda-aware schedule matches the oracle surface |
+| `implemented_lambda_high_025` | 0.250000 | 0.300000 | plan_004, plan_007 | plan_004, plan_007 | 0.000000 | FP=0, FN=0 | True | implemented lambda-aware schedule matches the oracle surface |
+
 ## Task Signatures
 
 | Task | Break-even Lambda | Quality | Gap | First Step | Signature |
 | --- | ---: | ---: | ---: | ---: | --- |
-| plan_001 | 0.062857 | 0.347857 | 9 | 10 | `--S----` |
-| plan_002 | 0.000000 | 0.558571 | 12 |  | `-------` |
-| plan_003 | 0.116429 | 0.324286 | 6 | 10 | `--S----` |
-| plan_004 | 0.283929 | 0.277857 | 2 | 10 | `SSSSSSS` |
-| plan_005 | 0.000000 | 0.298929 | 10 | 30 | `---S---` |
-| plan_006 | 0.192857 | 0.301429 | 9 | 20 | `SSSS-SS` |
-| plan_007 | 0.276071 | 0.247500 | 8 | 31 | `SSSSSSS` |
-| plan_008 | 0.000000 | 0.244286 | 12 |  | `-------` |
+| plan_001 | 0.062857 | 0.347857 | 9 | 10 | `--S----S--` |
+| plan_002 | 0.000000 | 0.558571 | 12 |  | `----------` |
+| plan_003 | 0.116429 | 0.324286 | 6 | 10 | `--S----S--` |
+| plan_004 | 0.283929 | 0.277857 | 2 | 10 | `SSSSSSSSSS` |
+| plan_005 | 0.000000 | 0.298929 | 10 | 30 | `---S------` |
+| plan_006 | 0.192857 | 0.301429 | 9 | 20 | `SSSS-SSSS-` |
+| plan_007 | 0.276071 | 0.247500 | 8 | 31 | `SSSSSSSSSS` |
+| plan_008 | 0.000000 | 0.244286 | 12 |  | `----------` |
 
 ## Reading
 

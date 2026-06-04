@@ -24,6 +24,7 @@ def test_repair_value_tomography_scores_probe_surface(tmp_path):
 
     assert audit["schema"] == "diffusion_repair_value_tomography.v1"
     probes = {row["probe_id"]: row for row in audit["probe_rows"]}
+    controller = {row["probe_id"]: row for row in audit["implemented_controller_rows"]}
     assert probes["incumbent_lambda_018"]["selected_tasks"] == ["plan_004", "plan_006", "plan_007"]
     assert probes["incumbent_lambda_018"]["oracle_tasks"] == ["plan_004", "plan_006", "plan_007"]
     assert probes["quality_relaxed_035"]["false_positive_tasks"] == ["plan_001", "plan_003"]
@@ -31,7 +32,31 @@ def test_repair_value_tomography_scores_probe_surface(tmp_path):
     assert probes["gap_tight_8"]["false_negative_tasks"] == ["plan_006"]
     assert probes["lambda_low_005"]["false_negative_tasks"] == ["plan_001", "plan_003"]
     assert probes["lambda_high_025"]["false_positive_tasks"] == ["plan_006"]
+    assert audit["summary"]["implemented_controller_zero_regret"] is True
+    assert controller["implemented_lambda_low_005"]["selected_tasks"] == [
+        "plan_001",
+        "plan_003",
+        "plan_004",
+        "plan_006",
+        "plan_007",
+    ]
+    assert controller["implemented_lambda_low_005"]["oracle_tasks"] == [
+        "plan_001",
+        "plan_003",
+        "plan_004",
+        "plan_006",
+        "plan_007",
+    ]
+    assert controller["implemented_lambda_neutral_018"]["selected_tasks"] == [
+        "plan_004",
+        "plan_006",
+        "plan_007",
+    ]
+    assert controller["implemented_lambda_high_025"]["selected_tasks"] == ["plan_004", "plan_007"]
+    assert controller["implemented_lambda_high_025"]["oracle_tasks"] == ["plan_004", "plan_007"]
+    assert all(row["regret_vs_oracle"] == 0.0 for row in controller.values())
     assert "behavior surface" in markdown
+    assert "Implemented Controller Checks" in markdown
     assert "lambda-aware" in markdown
 
 
