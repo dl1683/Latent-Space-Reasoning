@@ -2,6 +2,8 @@
 
 from argparse import Namespace
 from dataclasses import replace
+import json
+from pathlib import Path
 
 from experiments.run_diffusion_three_arm_benchmark import (
     _anchor_selected_execution_repair,
@@ -19,6 +21,7 @@ from experiments.run_diffusion_three_arm_benchmark import (
     _float_csv,
     _format_fraction_list,
     _generate_counterfactual_micro_probe_record,
+    _generated_repair_value_score,
     _generate_exact_answer_repair_records,
     _generate_repair_records,
     _history_instability_gate_decision,
@@ -108,6 +111,17 @@ def _record(candidate: str, task_id: str, schedule: str, task_score: float, traj
         "combined_selection_score": combined,
         "text": schedule,
     }
+
+
+def _raw_record(path: str, task_id: str, *, stage: str, schedule: str | None = None):
+    for line in Path(path).read_text(encoding="utf-8").splitlines():
+        record = json.loads(line)
+        record_task_id = (record.get("task") or {}).get("task_id")
+        record_stage = record.get("generation_stage")
+        record_schedule = (record.get("schedule") or {}).get("name")
+        if record_task_id == task_id and record_stage == stage and (schedule is None or record_schedule == schedule):
+            return record
+    raise AssertionError(f"missing raw record {task_id} {stage} {schedule}")
 
 
 def test_history_sample_count_override_updates_schedule_candidates():
@@ -4148,6 +4162,54 @@ def test_candidate_aware_promotion_alias_matches_seed_realization_guarded_select
     )
 
     assert alias_score == guarded_score
+
+
+def test_generated_repair_value_selector_matches_v18_positive_boundary():
+    raw_path = "eval_results/diffusion_language/generated_repair_v18_label_raw.jsonl"
+    baseline = _raw_record(raw_path, "plan_137", stage="candidate_generation", schedule="low_confidence_32")
+    repair = _raw_record(raw_path, "plan_137", stage="repair_candidate")
+
+    score = _generated_repair_value_score(
+        repair,
+        baseline_record=baseline,
+        task_prompt=(repair.get("task") or {}).get("prompt", ""),
+    )
+    selected = select_repair_record(
+        [baseline, repair],
+        baseline_record=baseline,
+        task_prompt=(repair.get("task") or {}).get("prompt", ""),
+        task_answer_type="rubric",
+        trajectory_selector="planning_state",
+        repair_selector="generated_repair_value_v1",
+        promotion_margin=0.02,
+    )
+
+    assert score > 0.02
+    assert selected is repair
+
+
+def test_generated_repair_value_selector_rejects_v18_no_lift_repair():
+    raw_path = "eval_results/diffusion_language/generated_repair_v18_label_raw.jsonl"
+    baseline = _raw_record(raw_path, "plan_141", stage="candidate_generation", schedule="low_confidence_32")
+    repair = _raw_record(raw_path, "plan_141", stage="repair_candidate")
+
+    score = _generated_repair_value_score(
+        repair,
+        baseline_record=baseline,
+        task_prompt=(repair.get("task") or {}).get("prompt", ""),
+    )
+    selected = select_repair_record(
+        [baseline, repair],
+        baseline_record=baseline,
+        task_prompt=(repair.get("task") or {}).get("prompt", ""),
+        task_answer_type="rubric",
+        trajectory_selector="planning_state",
+        repair_selector="generated_repair_value_v1",
+        promotion_margin=0.02,
+    )
+
+    assert score == 0.0
+    assert selected is baseline
 
 
 def test_seed_realization_guarded_selection_rejects_low_quality_seed_meta_text():

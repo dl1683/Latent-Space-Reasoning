@@ -213,6 +213,7 @@ REPAIR_SELECTORS = (
     "planning_quality_seed_objective_guarded",
     "planning_quality_seed_realization_guarded",
     "candidate_aware_promotion_v1",
+    "generated_repair_value_v1",
 )
 EXACT_ANSWER_REPAIR_NAMES = frozenset(
     {
@@ -1150,6 +1151,8 @@ def parse_args() -> argparse.Namespace:
             "integration of compact seed anchors while penalizing meta labels; "
             "candidate_aware_promotion_v1 is the named post-repair promotion "
             "policy currently backed by that seed-realization score; "
+            "generated_repair_value_v1 promotes only generated repair candidates "
+            "with label-free planning-quality improvement over their source; "
             "planning_quality_seed_objective_guarded also rewards preservation "
             "of selected/oracle and claim-survival seed semantics."
         ),
@@ -8493,6 +8496,12 @@ def _repair_selection_score(
         return _planning_quality_seed_objective_guarded_score(record, task_prompt)
     if repair_selector in {"planning_quality_seed_realization_guarded", "candidate_aware_promotion_v1"}:
         return _planning_quality_seed_realization_guarded_score(record, task_prompt)
+    if repair_selector == "generated_repair_value_v1":
+        return _generated_repair_value_score(
+            record,
+            baseline_record=baseline_record,
+            task_prompt=task_prompt,
+        )
     raise ValueError(f"Unsupported repair selector: {repair_selector}")
 
 
@@ -9704,6 +9713,31 @@ def _planning_quality_seed_realization_guarded_score(
     low_realization_penalty = max(0.0, 0.35 - realization_quality) * 0.75
     score = 0.55 * base_score + 0.45 * realization_quality - low_realization_penalty
     return max(0.0, min(1.0, score))
+
+
+def _generated_repair_value_score(
+    record: dict[str, object],
+    *,
+    baseline_record: dict[str, object],
+    task_prompt: str,
+) -> float:
+    """Label-free generated-repair value hook.
+
+    This is the runner-level boundary promoted by the v17/v18 replay evidence:
+    spend results only count when a generated repair improves over the source's
+    planning-quality signal. Direct source wins and no-lift repairs score zero.
+    """
+    if not _is_repair_record(record):
+        return 0.0
+    repair_quality = _planning_quality_score(record, task_prompt)
+    source_quality = _repair_source_planning_quality_score(record)
+    if source_quality is None:
+        source_quality = _planning_quality_score(baseline_record, task_prompt)
+    source_delta = repair_quality - source_quality
+    if source_delta <= 0.0:
+        return 0.0
+    realization_guard = _planning_quality_seed_realization_guarded_score(record, task_prompt)
+    return max(0.0, min(1.0, source_delta + 0.10 * realization_guard))
 
 
 def _planning_quality_seed_objective_guarded_score(
