@@ -71,7 +71,8 @@ Required before using it as claim evidence:
 
 Keep the frozen claim blocked and either:
 
-1. move the native Transformers path onto a Triton-capable runtime, or
+1. move the native Transformers path onto a Triton-capable runtime; current
+   WSL2 bootstrap state is tracked in `GATED_ATTENTION_WSL_BOOTSTRAP.md`, or
 2. build a GGUF/server smoke as a separate non-claim artifact.
 
 The generated source of truth for current readiness is
