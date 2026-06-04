@@ -1,0 +1,1341 @@
+{
+  "generated_by": "experiments/evaluate_diffusion_validated_probe_conjunction_transfer.py",
+  "inputs": {
+    "max_conditions": 2,
+    "test_scores": "eval_results\\diffusion_language\\counterfactual_micro_probe_span_tomography_v4_fresh_planning_scores.json",
+    "test_targets": "eval_results\\diffusion_language\\diffusion_counterfactual_probe_transfer_targets_v1.json",
+    "test_text_fidelity": "eval_results\\diffusion_language\\counterfactual_span_probe_text_fidelity_v4_fresh_planning.json",
+    "train_scores": "eval_results\\diffusion_language\\counterfactual_micro_probe_span_tomography_v4_scores.json",
+    "train_targets": "eval_results\\diffusion_language\\diffusion_counterfactual_probe_targets_v1.json",
+    "train_text_fidelity": "eval_results\\diffusion_language\\counterfactual_span_probe_text_fidelity_v4.json"
+  },
+  "schema": "diffusion_counterfactual_validated_probe_conjunction_transfer.v1",
+  "summary": {
+    "best_train_error_count": 0,
+    "best_train_rule_id": "valid_if_measured_distinct_retention_risk_visibility_ge_0p927195",
+    "best_train_transfer_error_count": 3,
+    "best_transfer_screened_rule_id": "valid_if_measured_expected_gap_visibility_gain_ge_0p666667_and_measured_expected_span_evidence_gain_le_0p600000",
+    "best_transfer_screened_test_error_count": 0,
+    "best_transfer_screened_train_error_count": 1,
+    "candidate_rule_count": 14535,
+    "gate_decision": "diagnostic_only_transfer_screened_challenger",
+    "max_conditions": 2,
+    "test_row_count": 8,
+    "train_row_count": 12
+  },
+  "top_train_ranked_rules": [
+    {
+      "condition_count": 1,
+      "conditions": [
+        {
+          "direction": "ge",
+          "feature": "measured_distinct_retention_risk_visibility",
+          "threshold": 0.9271948608137045
+        }
+      ],
+      "rule_id": "valid_if_measured_distinct_retention_risk_visibility_ge_0p927195",
+      "test": {
+        "error_count": 3,
+        "false_negative_count": 1,
+        "false_negative_task_ids": [
+          "plan_004"
+        ],
+        "false_positive_count": 2,
+        "false_positive_task_ids": [
+          "plan_002",
+          "plan_003"
+        ],
+        "missed_positive_lift": 0.021428571428571408,
+        "selected_count": 7,
+        "selected_task_ids": [
+          "plan_001",
+          "plan_002",
+          "plan_003",
+          "plan_005",
+          "plan_006",
+          "plan_007",
+          "plan_008"
+        ]
+      },
+      "train": {
+        "error_count": 0,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 0,
+        "false_positive_task_ids": [],
+        "missed_positive_lift": 0,
+        "selected_count": 7,
+        "selected_task_ids": [
+          "plan_034",
+          "plan_044",
+          "plan_046",
+          "plan_061",
+          "plan_063",
+          "plan_070",
+          "plan_072"
+        ]
+      }
+    },
+    {
+      "condition_count": 1,
+      "conditions": [
+        {
+          "direction": "le",
+          "feature": "prompt_gap_count",
+          "threshold": 7.0
+        }
+      ],
+      "rule_id": "valid_if_prompt_gap_count_le_7p000000",
+      "test": {
+        "error_count": 6,
+        "false_negative_count": 5,
+        "false_negative_task_ids": [
+          "plan_001",
+          "plan_005",
+          "plan_006",
+          "plan_007",
+          "plan_008"
+        ],
+        "false_positive_count": 1,
+        "false_positive_task_ids": [
+          "plan_003"
+        ],
+        "missed_positive_lift": 0.4624999999999999,
+        "selected_count": 2,
+        "selected_task_ids": [
+          "plan_003",
+          "plan_004"
+        ]
+      },
+      "train": {
+        "error_count": 0,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 0,
+        "false_positive_task_ids": [],
+        "missed_positive_lift": 0,
+        "selected_count": 7,
+        "selected_task_ids": [
+          "plan_034",
+          "plan_044",
+          "plan_046",
+          "plan_061",
+          "plan_063",
+          "plan_070",
+          "plan_072"
+        ]
+      }
+    },
+    {
+      "condition_count": 2,
+      "conditions": [
+        {
+          "direction": "ge",
+          "feature": "measured_distinct_retention_risk_visibility",
+          "threshold": 0.9271948608137045
+        },
+        {
+          "direction": "le",
+          "feature": "source_quality",
+          "threshold": 0.31142857142857144
+        }
+      ],
+      "rule_id": "valid_if_measured_distinct_retention_risk_visibility_ge_0p927195_and_source_quality_le_0p311429",
+      "test": {
+        "error_count": 2,
+        "false_negative_count": 2,
+        "false_negative_task_ids": [
+          "plan_001",
+          "plan_004"
+        ],
+        "false_positive_count": 0,
+        "false_positive_task_ids": [],
+        "missed_positive_lift": 0.08428571428571419,
+        "selected_count": 4,
+        "selected_task_ids": [
+          "plan_005",
+          "plan_006",
+          "plan_007",
+          "plan_008"
+        ]
+      },
+      "train": {
+        "error_count": 0,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 0,
+        "false_positive_task_ids": [],
+        "missed_positive_lift": 0,
+        "selected_count": 7,
+        "selected_task_ids": [
+          "plan_034",
+          "plan_044",
+          "plan_046",
+          "plan_061",
+          "plan_063",
+          "plan_070",
+          "plan_072"
+        ]
+      }
+    },
+    {
+      "condition_count": 2,
+      "conditions": [
+        {
+          "direction": "ge",
+          "feature": "measured_expected_span_evidence_gain",
+          "threshold": 0.38095238095238093
+        },
+        {
+          "direction": "ge",
+          "feature": "measured_distinct_retention_risk_visibility",
+          "threshold": 0.9271948608137045
+        }
+      ],
+      "rule_id": "valid_if_measured_expected_span_evidence_gain_ge_0p380952_and_measured_distinct_retention_risk_visibility_ge_0p927195",
+      "test": {
+        "error_count": 2,
+        "false_negative_count": 1,
+        "false_negative_task_ids": [
+          "plan_004"
+        ],
+        "false_positive_count": 1,
+        "false_positive_task_ids": [
+          "plan_003"
+        ],
+        "missed_positive_lift": 0.021428571428571408,
+        "selected_count": 6,
+        "selected_task_ids": [
+          "plan_001",
+          "plan_003",
+          "plan_005",
+          "plan_006",
+          "plan_007",
+          "plan_008"
+        ]
+      },
+      "train": {
+        "error_count": 0,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 0,
+        "false_positive_task_ids": [],
+        "missed_positive_lift": 0,
+        "selected_count": 7,
+        "selected_task_ids": [
+          "plan_034",
+          "plan_044",
+          "plan_046",
+          "plan_061",
+          "plan_063",
+          "plan_070",
+          "plan_072"
+        ]
+      }
+    },
+    {
+      "condition_count": 2,
+      "conditions": [
+        {
+          "direction": "ge",
+          "feature": "measured_expected_span_evidence_gain",
+          "threshold": 0.38095238095238093
+        },
+        {
+          "direction": "ge",
+          "feature": "source_quality",
+          "threshold": 0.2139285714285714
+        }
+      ],
+      "rule_id": "valid_if_measured_expected_span_evidence_gain_ge_0p380952_and_source_quality_ge_0p213929",
+      "test": {
+        "error_count": 2,
+        "false_negative_count": 1,
+        "false_negative_task_ids": [
+          "plan_004"
+        ],
+        "false_positive_count": 1,
+        "false_positive_task_ids": [
+          "plan_003"
+        ],
+        "missed_positive_lift": 0.021428571428571408,
+        "selected_count": 6,
+        "selected_task_ids": [
+          "plan_001",
+          "plan_003",
+          "plan_005",
+          "plan_006",
+          "plan_007",
+          "plan_008"
+        ]
+      },
+      "train": {
+        "error_count": 0,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 0,
+        "false_positive_task_ids": [],
+        "missed_positive_lift": 0,
+        "selected_count": 7,
+        "selected_task_ids": [
+          "plan_034",
+          "plan_044",
+          "plan_046",
+          "plan_061",
+          "plan_063",
+          "plan_070",
+          "plan_072"
+        ]
+      }
+    },
+    {
+      "condition_count": 2,
+      "conditions": [
+        {
+          "direction": "le",
+          "feature": "measured_expected_span_evidence_gain",
+          "threshold": 0.6
+        },
+        {
+          "direction": "ge",
+          "feature": "measured_distinct_retention_risk_visibility",
+          "threshold": 0.9271948608137045
+        }
+      ],
+      "rule_id": "valid_if_measured_expected_span_evidence_gain_le_0p600000_and_measured_distinct_retention_risk_visibility_ge_0p927195",
+      "test": {
+        "error_count": 2,
+        "false_negative_count": 1,
+        "false_negative_task_ids": [
+          "plan_004"
+        ],
+        "false_positive_count": 1,
+        "false_positive_task_ids": [
+          "plan_002"
+        ],
+        "missed_positive_lift": 0.021428571428571408,
+        "selected_count": 6,
+        "selected_task_ids": [
+          "plan_001",
+          "plan_002",
+          "plan_005",
+          "plan_006",
+          "plan_007",
+          "plan_008"
+        ]
+      },
+      "train": {
+        "error_count": 0,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 0,
+        "false_positive_task_ids": [],
+        "missed_positive_lift": 0,
+        "selected_count": 7,
+        "selected_task_ids": [
+          "plan_034",
+          "plan_044",
+          "plan_046",
+          "plan_061",
+          "plan_063",
+          "plan_070",
+          "plan_072"
+        ]
+      }
+    },
+    {
+      "condition_count": 2,
+      "conditions": [
+        {
+          "direction": "le",
+          "feature": "measured_expected_span_evidence_gain",
+          "threshold": 0.6923076923076923
+        },
+        {
+          "direction": "ge",
+          "feature": "measured_distinct_retention_risk_visibility",
+          "threshold": 0.9271948608137045
+        }
+      ],
+      "rule_id": "valid_if_measured_expected_span_evidence_gain_le_0p692308_and_measured_distinct_retention_risk_visibility_ge_0p927195",
+      "test": {
+        "error_count": 2,
+        "false_negative_count": 1,
+        "false_negative_task_ids": [
+          "plan_004"
+        ],
+        "false_positive_count": 1,
+        "false_positive_task_ids": [
+          "plan_002"
+        ],
+        "missed_positive_lift": 0.021428571428571408,
+        "selected_count": 6,
+        "selected_task_ids": [
+          "plan_001",
+          "plan_002",
+          "plan_005",
+          "plan_006",
+          "plan_007",
+          "plan_008"
+        ]
+      },
+      "train": {
+        "error_count": 0,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 0,
+        "false_positive_task_ids": [],
+        "missed_positive_lift": 0,
+        "selected_count": 7,
+        "selected_task_ids": [
+          "plan_034",
+          "plan_044",
+          "plan_046",
+          "plan_061",
+          "plan_063",
+          "plan_070",
+          "plan_072"
+        ]
+      }
+    },
+    {
+      "condition_count": 2,
+      "conditions": [
+        {
+          "direction": "le",
+          "feature": "measured_probe_value_prediction",
+          "threshold": 0.038905770710438575
+        },
+        {
+          "direction": "ge",
+          "feature": "measured_distinct_retention_risk_visibility",
+          "threshold": 0.9271948608137045
+        }
+      ],
+      "rule_id": "valid_if_measured_probe_value_prediction_le_0p038906_and_measured_distinct_retention_risk_visibility_ge_0p927195",
+      "test": {
+        "error_count": 2,
+        "false_negative_count": 1,
+        "false_negative_task_ids": [
+          "plan_004"
+        ],
+        "false_positive_count": 1,
+        "false_positive_task_ids": [
+          "plan_002"
+        ],
+        "missed_positive_lift": 0.021428571428571408,
+        "selected_count": 6,
+        "selected_task_ids": [
+          "plan_001",
+          "plan_002",
+          "plan_005",
+          "plan_006",
+          "plan_007",
+          "plan_008"
+        ]
+      },
+      "train": {
+        "error_count": 0,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 0,
+        "false_positive_task_ids": [],
+        "missed_positive_lift": 0,
+        "selected_count": 7,
+        "selected_task_ids": [
+          "plan_034",
+          "plan_044",
+          "plan_046",
+          "plan_061",
+          "plan_063",
+          "plan_070",
+          "plan_072"
+        ]
+      }
+    },
+    {
+      "condition_count": 2,
+      "conditions": [
+        {
+          "direction": "ge",
+          "feature": "measured_distinct_retention_risk_visibility",
+          "threshold": 0.6911764705882353
+        },
+        {
+          "direction": "ge",
+          "feature": "measured_distinct_retention_risk_visibility",
+          "threshold": 0.9271948608137045
+        }
+      ],
+      "rule_id": "valid_if_measured_distinct_retention_risk_visibility_ge_0p691176_and_measured_distinct_retention_risk_visibility_ge_0p927195",
+      "test": {
+        "error_count": 3,
+        "false_negative_count": 1,
+        "false_negative_task_ids": [
+          "plan_004"
+        ],
+        "false_positive_count": 2,
+        "false_positive_task_ids": [
+          "plan_002",
+          "plan_003"
+        ],
+        "missed_positive_lift": 0.021428571428571408,
+        "selected_count": 7,
+        "selected_task_ids": [
+          "plan_001",
+          "plan_002",
+          "plan_003",
+          "plan_005",
+          "plan_006",
+          "plan_007",
+          "plan_008"
+        ]
+      },
+      "train": {
+        "error_count": 0,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 0,
+        "false_positive_task_ids": [],
+        "missed_positive_lift": 0,
+        "selected_count": 7,
+        "selected_task_ids": [
+          "plan_034",
+          "plan_044",
+          "plan_046",
+          "plan_061",
+          "plan_063",
+          "plan_070",
+          "plan_072"
+        ]
+      }
+    },
+    {
+      "condition_count": 2,
+      "conditions": [
+        {
+          "direction": "ge",
+          "feature": "measured_distinct_retention_risk_visibility",
+          "threshold": 0.8382352941176471
+        },
+        {
+          "direction": "ge",
+          "feature": "measured_distinct_retention_risk_visibility",
+          "threshold": 0.9271948608137045
+        }
+      ],
+      "rule_id": "valid_if_measured_distinct_retention_risk_visibility_ge_0p838235_and_measured_distinct_retention_risk_visibility_ge_0p927195",
+      "test": {
+        "error_count": 3,
+        "false_negative_count": 1,
+        "false_negative_task_ids": [
+          "plan_004"
+        ],
+        "false_positive_count": 2,
+        "false_positive_task_ids": [
+          "plan_002",
+          "plan_003"
+        ],
+        "missed_positive_lift": 0.021428571428571408,
+        "selected_count": 7,
+        "selected_task_ids": [
+          "plan_001",
+          "plan_002",
+          "plan_003",
+          "plan_005",
+          "plan_006",
+          "plan_007",
+          "plan_008"
+        ]
+      },
+      "train": {
+        "error_count": 0,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 0,
+        "false_positive_task_ids": [],
+        "missed_positive_lift": 0,
+        "selected_count": 7,
+        "selected_task_ids": [
+          "plan_034",
+          "plan_044",
+          "plan_046",
+          "plan_061",
+          "plan_063",
+          "plan_070",
+          "plan_072"
+        ]
+      }
+    },
+    {
+      "condition_count": 2,
+      "conditions": [
+        {
+          "direction": "ge",
+          "feature": "measured_distinct_retention_risk_visibility",
+          "threshold": 0.9036796536796537
+        },
+        {
+          "direction": "ge",
+          "feature": "measured_distinct_retention_risk_visibility",
+          "threshold": 0.9271948608137045
+        }
+      ],
+      "rule_id": "valid_if_measured_distinct_retention_risk_visibility_ge_0p903680_and_measured_distinct_retention_risk_visibility_ge_0p927195",
+      "test": {
+        "error_count": 3,
+        "false_negative_count": 1,
+        "false_negative_task_ids": [
+          "plan_004"
+        ],
+        "false_positive_count": 2,
+        "false_positive_task_ids": [
+          "plan_002",
+          "plan_003"
+        ],
+        "missed_positive_lift": 0.021428571428571408,
+        "selected_count": 7,
+        "selected_task_ids": [
+          "plan_001",
+          "plan_002",
+          "plan_003",
+          "plan_005",
+          "plan_006",
+          "plan_007",
+          "plan_008"
+        ]
+      },
+      "train": {
+        "error_count": 0,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 0,
+        "false_positive_task_ids": [],
+        "missed_positive_lift": 0,
+        "selected_count": 7,
+        "selected_task_ids": [
+          "plan_034",
+          "plan_044",
+          "plan_046",
+          "plan_061",
+          "plan_063",
+          "plan_070",
+          "plan_072"
+        ]
+      }
+    },
+    {
+      "condition_count": 2,
+      "conditions": [
+        {
+          "direction": "ge",
+          "feature": "measured_distinct_retention_risk_visibility",
+          "threshold": 0.9036796536796537
+        },
+        {
+          "direction": "le",
+          "feature": "prompt_gap_count",
+          "threshold": 10.0
+        }
+      ],
+      "rule_id": "valid_if_measured_distinct_retention_risk_visibility_ge_0p903680_and_prompt_gap_count_le_10p000000",
+      "test": {
+        "error_count": 3,
+        "false_negative_count": 2,
+        "false_negative_task_ids": [
+          "plan_004",
+          "plan_008"
+        ],
+        "false_positive_count": 1,
+        "false_positive_task_ids": [
+          "plan_003"
+        ],
+        "missed_positive_lift": 0.024285714285714244,
+        "selected_count": 5,
+        "selected_task_ids": [
+          "plan_001",
+          "plan_003",
+          "plan_005",
+          "plan_006",
+          "plan_007"
+        ]
+      },
+      "train": {
+        "error_count": 0,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 0,
+        "false_positive_task_ids": [],
+        "missed_positive_lift": 0,
+        "selected_count": 7,
+        "selected_task_ids": [
+          "plan_034",
+          "plan_044",
+          "plan_046",
+          "plan_061",
+          "plan_063",
+          "plan_070",
+          "plan_072"
+        ]
+      }
+    }
+  ],
+  "top_transfer_screened_rules": [
+    {
+      "condition_count": 2,
+      "conditions": [
+        {
+          "direction": "ge",
+          "feature": "measured_expected_gap_visibility_gain",
+          "threshold": 0.6666666666666666
+        },
+        {
+          "direction": "le",
+          "feature": "measured_expected_span_evidence_gain",
+          "threshold": 0.6
+        }
+      ],
+      "rule_id": "valid_if_measured_expected_gap_visibility_gain_ge_0p666667_and_measured_expected_span_evidence_gain_le_0p600000",
+      "test": {
+        "error_count": 0,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 0,
+        "false_positive_task_ids": [],
+        "missed_positive_lift": 0,
+        "selected_count": 6,
+        "selected_task_ids": [
+          "plan_001",
+          "plan_004",
+          "plan_005",
+          "plan_006",
+          "plan_007",
+          "plan_008"
+        ]
+      },
+      "train": {
+        "error_count": 1,
+        "false_negative_count": 1,
+        "false_negative_task_ids": [
+          "plan_063"
+        ],
+        "false_positive_count": 0,
+        "false_positive_task_ids": [],
+        "missed_positive_lift": 0.09642857142857142,
+        "selected_count": 6,
+        "selected_task_ids": [
+          "plan_034",
+          "plan_044",
+          "plan_046",
+          "plan_061",
+          "plan_070",
+          "plan_072"
+        ]
+      }
+    },
+    {
+      "condition_count": 2,
+      "conditions": [
+        {
+          "direction": "ge",
+          "feature": "measured_expected_gap_visibility_gain",
+          "threshold": 0.6666666666666666
+        },
+        {
+          "direction": "le",
+          "feature": "measured_expected_span_evidence_gain",
+          "threshold": 0.6923076923076923
+        }
+      ],
+      "rule_id": "valid_if_measured_expected_gap_visibility_gain_ge_0p666667_and_measured_expected_span_evidence_gain_le_0p692308",
+      "test": {
+        "error_count": 0,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 0,
+        "false_positive_task_ids": [],
+        "missed_positive_lift": 0,
+        "selected_count": 6,
+        "selected_task_ids": [
+          "plan_001",
+          "plan_004",
+          "plan_005",
+          "plan_006",
+          "plan_007",
+          "plan_008"
+        ]
+      },
+      "train": {
+        "error_count": 1,
+        "false_negative_count": 1,
+        "false_negative_task_ids": [
+          "plan_063"
+        ],
+        "false_positive_count": 0,
+        "false_positive_task_ids": [],
+        "missed_positive_lift": 0.09642857142857142,
+        "selected_count": 6,
+        "selected_task_ids": [
+          "plan_034",
+          "plan_044",
+          "plan_046",
+          "plan_061",
+          "plan_070",
+          "plan_072"
+        ]
+      }
+    },
+    {
+      "condition_count": 2,
+      "conditions": [
+        {
+          "direction": "le",
+          "feature": "measured_probe_value_prediction",
+          "threshold": 0.038905770710438575
+        },
+        {
+          "direction": "ge",
+          "feature": "measured_expected_gap_visibility_gain",
+          "threshold": 0.6666666666666666
+        }
+      ],
+      "rule_id": "valid_if_measured_probe_value_prediction_le_0p038906_and_measured_expected_gap_visibility_gain_ge_0p666667",
+      "test": {
+        "error_count": 0,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 0,
+        "false_positive_task_ids": [],
+        "missed_positive_lift": 0,
+        "selected_count": 6,
+        "selected_task_ids": [
+          "plan_001",
+          "plan_004",
+          "plan_005",
+          "plan_006",
+          "plan_007",
+          "plan_008"
+        ]
+      },
+      "train": {
+        "error_count": 1,
+        "false_negative_count": 1,
+        "false_negative_task_ids": [
+          "plan_063"
+        ],
+        "false_positive_count": 0,
+        "false_positive_task_ids": [],
+        "missed_positive_lift": 0.09642857142857142,
+        "selected_count": 6,
+        "selected_task_ids": [
+          "plan_034",
+          "plan_044",
+          "plan_046",
+          "plan_061",
+          "plan_070",
+          "plan_072"
+        ]
+      }
+    },
+    {
+      "condition_count": 2,
+      "conditions": [
+        {
+          "direction": "ge",
+          "feature": "measured_expected_gap_visibility_gain",
+          "threshold": 0.5833333333333334
+        },
+        {
+          "direction": "le",
+          "feature": "measured_expected_span_evidence_gain",
+          "threshold": 0.6
+        }
+      ],
+      "rule_id": "valid_if_measured_expected_gap_visibility_gain_ge_0p583333_and_measured_expected_span_evidence_gain_le_0p600000",
+      "test": {
+        "error_count": 0,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 0,
+        "false_positive_task_ids": [],
+        "missed_positive_lift": 0,
+        "selected_count": 6,
+        "selected_task_ids": [
+          "plan_001",
+          "plan_004",
+          "plan_005",
+          "plan_006",
+          "plan_007",
+          "plan_008"
+        ]
+      },
+      "train": {
+        "error_count": 2,
+        "false_negative_count": 1,
+        "false_negative_task_ids": [
+          "plan_063"
+        ],
+        "false_positive_count": 1,
+        "false_positive_task_ids": [
+          "plan_071"
+        ],
+        "missed_positive_lift": 0.09642857142857142,
+        "selected_count": 7,
+        "selected_task_ids": [
+          "plan_034",
+          "plan_044",
+          "plan_046",
+          "plan_061",
+          "plan_070",
+          "plan_071",
+          "plan_072"
+        ]
+      }
+    },
+    {
+      "condition_count": 2,
+      "conditions": [
+        {
+          "direction": "ge",
+          "feature": "measured_expected_gap_visibility_gain",
+          "threshold": 0.5833333333333334
+        },
+        {
+          "direction": "le",
+          "feature": "measured_expected_span_evidence_gain",
+          "threshold": 0.6923076923076923
+        }
+      ],
+      "rule_id": "valid_if_measured_expected_gap_visibility_gain_ge_0p583333_and_measured_expected_span_evidence_gain_le_0p692308",
+      "test": {
+        "error_count": 0,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 0,
+        "false_positive_task_ids": [],
+        "missed_positive_lift": 0,
+        "selected_count": 6,
+        "selected_task_ids": [
+          "plan_001",
+          "plan_004",
+          "plan_005",
+          "plan_006",
+          "plan_007",
+          "plan_008"
+        ]
+      },
+      "train": {
+        "error_count": 2,
+        "false_negative_count": 1,
+        "false_negative_task_ids": [
+          "plan_063"
+        ],
+        "false_positive_count": 1,
+        "false_positive_task_ids": [
+          "plan_071"
+        ],
+        "missed_positive_lift": 0.09642857142857142,
+        "selected_count": 7,
+        "selected_task_ids": [
+          "plan_034",
+          "plan_044",
+          "plan_046",
+          "plan_061",
+          "plan_070",
+          "plan_071",
+          "plan_072"
+        ]
+      }
+    },
+    {
+      "condition_count": 2,
+      "conditions": [
+        {
+          "direction": "le",
+          "feature": "measured_probe_value_prediction",
+          "threshold": 0.03445610278372592
+        },
+        {
+          "direction": "ge",
+          "feature": "measured_expected_gap_visibility_gain",
+          "threshold": 0.6666666666666666
+        }
+      ],
+      "rule_id": "valid_if_measured_probe_value_prediction_le_0p034456_and_measured_expected_gap_visibility_gain_ge_0p666667",
+      "test": {
+        "error_count": 0,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 0,
+        "false_positive_task_ids": [],
+        "missed_positive_lift": 0,
+        "selected_count": 6,
+        "selected_task_ids": [
+          "plan_001",
+          "plan_004",
+          "plan_005",
+          "plan_006",
+          "plan_007",
+          "plan_008"
+        ]
+      },
+      "train": {
+        "error_count": 2,
+        "false_negative_count": 2,
+        "false_negative_task_ids": [
+          "plan_034",
+          "plan_063"
+        ],
+        "false_positive_count": 0,
+        "false_positive_task_ids": [],
+        "missed_positive_lift": 0.19285714285714284,
+        "selected_count": 5,
+        "selected_task_ids": [
+          "plan_044",
+          "plan_046",
+          "plan_061",
+          "plan_070",
+          "plan_072"
+        ]
+      }
+    },
+    {
+      "condition_count": 2,
+      "conditions": [
+        {
+          "direction": "le",
+          "feature": "measured_probe_value_prediction",
+          "threshold": 0.038905770710438575
+        },
+        {
+          "direction": "ge",
+          "feature": "measured_expected_gap_visibility_gain",
+          "threshold": 0.5833333333333334
+        }
+      ],
+      "rule_id": "valid_if_measured_probe_value_prediction_le_0p038906_and_measured_expected_gap_visibility_gain_ge_0p583333",
+      "test": {
+        "error_count": 0,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 0,
+        "false_positive_task_ids": [],
+        "missed_positive_lift": 0,
+        "selected_count": 6,
+        "selected_task_ids": [
+          "plan_001",
+          "plan_004",
+          "plan_005",
+          "plan_006",
+          "plan_007",
+          "plan_008"
+        ]
+      },
+      "train": {
+        "error_count": 2,
+        "false_negative_count": 1,
+        "false_negative_task_ids": [
+          "plan_063"
+        ],
+        "false_positive_count": 1,
+        "false_positive_task_ids": [
+          "plan_071"
+        ],
+        "missed_positive_lift": 0.09642857142857142,
+        "selected_count": 7,
+        "selected_task_ids": [
+          "plan_034",
+          "plan_044",
+          "plan_046",
+          "plan_061",
+          "plan_070",
+          "plan_071",
+          "plan_072"
+        ]
+      }
+    },
+    {
+      "condition_count": 2,
+      "conditions": [
+        {
+          "direction": "ge",
+          "feature": "measured_probe_value_prediction",
+          "threshold": 0.01229826546003017
+        },
+        {
+          "direction": "le",
+          "feature": "measured_expected_span_evidence_gain",
+          "threshold": 0.6
+        }
+      ],
+      "rule_id": "valid_if_measured_probe_value_prediction_ge_0p012298_and_measured_expected_span_evidence_gain_le_0p600000",
+      "test": {
+        "error_count": 0,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 0,
+        "false_positive_task_ids": [],
+        "missed_positive_lift": 0,
+        "selected_count": 6,
+        "selected_task_ids": [
+          "plan_001",
+          "plan_004",
+          "plan_005",
+          "plan_006",
+          "plan_007",
+          "plan_008"
+        ]
+      },
+      "train": {
+        "error_count": 3,
+        "false_negative_count": 1,
+        "false_negative_task_ids": [
+          "plan_063"
+        ],
+        "false_positive_count": 2,
+        "false_positive_task_ids": [
+          "plan_064",
+          "plan_071"
+        ],
+        "missed_positive_lift": 0.09642857142857142,
+        "selected_count": 8,
+        "selected_task_ids": [
+          "plan_034",
+          "plan_044",
+          "plan_046",
+          "plan_061",
+          "plan_064",
+          "plan_070",
+          "plan_071",
+          "plan_072"
+        ]
+      }
+    },
+    {
+      "condition_count": 2,
+      "conditions": [
+        {
+          "direction": "ge",
+          "feature": "measured_probe_value_prediction",
+          "threshold": 0.01229826546003017
+        },
+        {
+          "direction": "le",
+          "feature": "measured_expected_span_evidence_gain",
+          "threshold": 0.6923076923076923
+        }
+      ],
+      "rule_id": "valid_if_measured_probe_value_prediction_ge_0p012298_and_measured_expected_span_evidence_gain_le_0p692308",
+      "test": {
+        "error_count": 0,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 0,
+        "false_positive_task_ids": [],
+        "missed_positive_lift": 0,
+        "selected_count": 6,
+        "selected_task_ids": [
+          "plan_001",
+          "plan_004",
+          "plan_005",
+          "plan_006",
+          "plan_007",
+          "plan_008"
+        ]
+      },
+      "train": {
+        "error_count": 3,
+        "false_negative_count": 1,
+        "false_negative_task_ids": [
+          "plan_063"
+        ],
+        "false_positive_count": 2,
+        "false_positive_task_ids": [
+          "plan_064",
+          "plan_071"
+        ],
+        "missed_positive_lift": 0.09642857142857142,
+        "selected_count": 8,
+        "selected_task_ids": [
+          "plan_034",
+          "plan_044",
+          "plan_046",
+          "plan_061",
+          "plan_064",
+          "plan_070",
+          "plan_071",
+          "plan_072"
+        ]
+      }
+    },
+    {
+      "condition_count": 2,
+      "conditions": [
+        {
+          "direction": "ge",
+          "feature": "measured_probe_value_prediction",
+          "threshold": 0.01229826546003017
+        },
+        {
+          "direction": "le",
+          "feature": "measured_probe_value_prediction",
+          "threshold": 0.038905770710438575
+        }
+      ],
+      "rule_id": "valid_if_measured_probe_value_prediction_ge_0p012298_and_measured_probe_value_prediction_le_0p038906",
+      "test": {
+        "error_count": 0,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 0,
+        "false_positive_task_ids": [],
+        "missed_positive_lift": 0,
+        "selected_count": 6,
+        "selected_task_ids": [
+          "plan_001",
+          "plan_004",
+          "plan_005",
+          "plan_006",
+          "plan_007",
+          "plan_008"
+        ]
+      },
+      "train": {
+        "error_count": 3,
+        "false_negative_count": 1,
+        "false_negative_task_ids": [
+          "plan_063"
+        ],
+        "false_positive_count": 2,
+        "false_positive_task_ids": [
+          "plan_064",
+          "plan_071"
+        ],
+        "missed_positive_lift": 0.09642857142857142,
+        "selected_count": 8,
+        "selected_task_ids": [
+          "plan_034",
+          "plan_044",
+          "plan_046",
+          "plan_061",
+          "plan_064",
+          "plan_070",
+          "plan_071",
+          "plan_072"
+        ]
+      }
+    },
+    {
+      "condition_count": 2,
+      "conditions": [
+        {
+          "direction": "le",
+          "feature": "measured_probe_value_prediction",
+          "threshold": 0.03445610278372592
+        },
+        {
+          "direction": "ge",
+          "feature": "measured_expected_gap_visibility_gain",
+          "threshold": 0.5833333333333334
+        }
+      ],
+      "rule_id": "valid_if_measured_probe_value_prediction_le_0p034456_and_measured_expected_gap_visibility_gain_ge_0p583333",
+      "test": {
+        "error_count": 0,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 0,
+        "false_positive_task_ids": [],
+        "missed_positive_lift": 0,
+        "selected_count": 6,
+        "selected_task_ids": [
+          "plan_001",
+          "plan_004",
+          "plan_005",
+          "plan_006",
+          "plan_007",
+          "plan_008"
+        ]
+      },
+      "train": {
+        "error_count": 3,
+        "false_negative_count": 2,
+        "false_negative_task_ids": [
+          "plan_034",
+          "plan_063"
+        ],
+        "false_positive_count": 1,
+        "false_positive_task_ids": [
+          "plan_071"
+        ],
+        "missed_positive_lift": 0.19285714285714284,
+        "selected_count": 6,
+        "selected_task_ids": [
+          "plan_044",
+          "plan_046",
+          "plan_061",
+          "plan_070",
+          "plan_071",
+          "plan_072"
+        ]
+      }
+    },
+    {
+      "condition_count": 2,
+      "conditions": [
+        {
+          "direction": "ge",
+          "feature": "measured_probe_value_prediction",
+          "threshold": 0.01229826546003017
+        },
+        {
+          "direction": "le",
+          "feature": "measured_probe_value_prediction",
+          "threshold": 0.03445610278372592
+        }
+      ],
+      "rule_id": "valid_if_measured_probe_value_prediction_ge_0p012298_and_measured_probe_value_prediction_le_0p034456",
+      "test": {
+        "error_count": 0,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 0,
+        "false_positive_task_ids": [],
+        "missed_positive_lift": 0,
+        "selected_count": 6,
+        "selected_task_ids": [
+          "plan_001",
+          "plan_004",
+          "plan_005",
+          "plan_006",
+          "plan_007",
+          "plan_008"
+        ]
+      },
+      "train": {
+        "error_count": 4,
+        "false_negative_count": 2,
+        "false_negative_task_ids": [
+          "plan_034",
+          "plan_063"
+        ],
+        "false_positive_count": 2,
+        "false_positive_task_ids": [
+          "plan_064",
+          "plan_071"
+        ],
+        "missed_positive_lift": 0.19285714285714284,
+        "selected_count": 7,
+        "selected_task_ids": [
+          "plan_044",
+          "plan_046",
+          "plan_061",
+          "plan_064",
+          "plan_070",
+          "plan_071",
+          "plan_072"
+        ]
+      }
+    }
+  ]
+}

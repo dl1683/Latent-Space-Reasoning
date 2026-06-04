@@ -204,6 +204,14 @@ transfer errors: false positives on `plan_002` and `plan_003`, and a false
 negative on `plan_004`. The gate remains `diagnostic_only`; the next controller
 must learn a cross-slice value-of-information feature rather than reusing this
 retention threshold.
+[DIFFUSION_COUNTERFACTUAL_SPAN_VALIDATED_PROBE_CONJUNCTION_TRANSFER_V4.md](../DIFFUSION_COUNTERFACTUAL_SPAN_VALIDATED_PROBE_CONJUNCTION_TRANSFER_V4.md)
+then exhaustively searches two-condition validated probe rules as a diagnostic
+next-hypothesis generator. The train-ranked winner is still the failing
+distinct-retention threshold, but transfer screening finds a challenger:
+`measured_expected_gap_visibility_gain >= 0.666667` and
+`measured_expected_span_evidence_gain <= 0.600000`. It has one named-surface
+error and zero errors on the fresh planning slice, so it is a frozen next-slice
+hypothesis, not a promoted gate.
 
 ## Benchmark And Cost Layer
 
@@ -265,6 +273,7 @@ hidden behind a large search stack:
 | [DIFFUSION_COUNTERFACTUAL_PROBE_TRANSFER_TARGETS_V1.md](../DIFFUSION_COUNTERFACTUAL_PROBE_TRANSFER_TARGETS_V1.md) | Independent `plan_001`-`plan_008` transfer target sheet for measured counterfactual probe gates: 6 positives and 2 negatives. |
 | [DIFFUSION_COUNTERFACTUAL_SPAN_DISTINCT_RETENTION_RULE_V4_FRESH_PLANNING.md](../DIFFUSION_COUNTERFACTUAL_SPAN_DISTINCT_RETENTION_RULE_V4_FRESH_PLANNING.md) | Frozen distinct-retention rule transfer check: 3 errors on the fresh planning slice, so the local zero-error rule is rejected for promotion. |
 | [DIFFUSION_COUNTERFACTUAL_SPAN_VALIDATED_PROBE_TRANSFER_MATRIX_V4.md](../DIFFUSION_COUNTERFACTUAL_SPAN_VALIDATED_PROBE_TRANSFER_MATRIX_V4.md) | Cross-slice matrix separating discovery-fit rules from fresh-only diagnostic upper bounds; best local v4 rule has 3 transfer errors. |
+| [DIFFUSION_COUNTERFACTUAL_SPAN_VALIDATED_PROBE_CONJUNCTION_TRANSFER_V4.md](../DIFFUSION_COUNTERFACTUAL_SPAN_VALIDATED_PROBE_CONJUNCTION_TRANSFER_V4.md) | Two-condition measured-probe rule search; transfer-screened gap/span conjunction is the next frozen hypothesis, not a promoted controller. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT.md) | Transfer-rule fit showing current decomposed spend is the best repair-availability rule. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md) | Expanded transfer-rule fit over the eight-row independent slice. |
 | [DIFFUSION_TRANSFER_PROMOTION_VALUE.md](../DIFFUSION_TRANSFER_PROMOTION_VALUE.md) | Transfer promotion-value result showing named `--repair-selector transfer_promotion_value` realizes the low-margin repair. |
