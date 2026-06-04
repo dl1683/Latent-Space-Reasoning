@@ -166,6 +166,24 @@ of these gates on accumulated target rows:
 
 Anything weaker is diagnostic only.
 
+## Current Probe Evidence
+
+The measured `counterfactual_micro_probe_v1` line has advanced through four
+diagnostic instruments without clearing the spend gate:
+
+- The legacy prose probe exposed value signal but produced malformed
+  `FULL_REPAIR_AUTHORIZED=false` strings and weak slot fidelity.
+- `strict_tomography_probe_v1` fixed the full sentinel but left only 8/12 rows
+  valid for Stage 1 and missed three profitable invalid-positive rows.
+- `key_value_tomography_probe_v2` removed placeholder exemplars but regressed
+  raw diagnostic reliability to 6/12 valid rows and two malformed
+  authorizations.
+- `compact_tomography_probe_v3` restores 12/12 valid rows with zero malformed
+  `Z=false` authorizations at a 48-token / 24-step probe budget, but the best
+  validity-required Stage 1 rule still makes four false-positive spend
+  decisions. This is a better measurement instrument, not a promoted spend
+  controller.
+
 ## First Implementation Slice
 
 The next code increment should be the smallest probe harness that can produce

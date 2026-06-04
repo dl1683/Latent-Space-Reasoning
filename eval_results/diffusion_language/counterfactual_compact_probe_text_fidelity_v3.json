@@ -1,0 +1,759 @@
+{
+  "generated_by": "experiments/analyze_diffusion_counterfactual_probe_text_fidelity.py",
+  "inputs": {
+    "raw": "eval_results\\diffusion_language\\counterfactual_micro_probe_compact_tomography_v3_raw.jsonl",
+    "targets": "eval_results\\diffusion_language\\diffusion_counterfactual_probe_targets_v1.json"
+  },
+  "rows": [
+    {
+      "candidate_lift_vs_trajectory": 0.09642857142857142,
+      "features": {
+        "diagnostic_fidelity_score": 5.0,
+        "diagnostic_slot_count": 3.0,
+        "exact_authorization_false": 1.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 1.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 0.0,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.23450000000000004,
+        "weak_term_echo_count": 0.0,
+        "weak_term_echo_fraction": 0.0,
+        "weird_punctuation": 0.0,
+        "word_count": 29.0
+      },
+      "label": true,
+      "probe_text": "A=missing or weak constraint  \nB=verifier-visible evidence needed before buying repair  \nC=source detail repair might delete or distort  \nZ=repair authorization sentinel  \n audit results  \nZ=false",
+      "selected_by_best_post_probe_rule": true,
+      "task_id": "plan_034",
+      "weak_terms": [
+        "average",
+        "sometimes",
+        "plan",
+        "making"
+      ]
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.11249999999999999,
+      "features": {
+        "diagnostic_fidelity_score": 5.0,
+        "diagnostic_slot_count": 3.0,
+        "exact_authorization_false": 1.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 1.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 0.0,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.15842857142857142,
+        "weak_term_echo_count": 3.0,
+        "weak_term_echo_fraction": 0.75,
+        "weird_punctuation": 0.0,
+        "word_count": 33.0
+      },
+      "label": true,
+      "probe_text": "A=improves answer quality but reduces less faithful  \nB=retention test benchmark prompts measuring reasoning trace fidelity to prompt fidelity  \nC=reasoning trace fidelity fidelity reasoning trace fidelity to prompt fidelity  \nZ=false",
+      "selected_by_best_post_probe_rule": true,
+      "task_id": "plan_044",
+      "weak_terms": [
+        "improves",
+        "makes",
+        "less",
+        "faithful"
+      ]
+    },
+    {
+      "candidate_lift_vs_trajectory": -0.08357142857142857,
+      "features": {
+        "diagnostic_fidelity_score": 5.0,
+        "diagnostic_slot_count": 3.0,
+        "exact_authorization_false": 1.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 1.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 0.0,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.2745,
+        "weak_term_echo_count": 0.0,
+        "weak_term_echo_fraction": 0.0,
+        "weird_punctuation": 0.0,
+        "word_count": 31.0
+      },
+      "label": false,
+      "probe_text": "A=AA=missing or weak constraint in the task task  \nB=BB=verifier-visible evidence needed before buying repair  \nC=CC=source detail that repair might delete or distort  \nZ=false",
+      "selected_by_best_post_probe_rule": true,
+      "task_id": "plan_045",
+      "weak_terms": [
+        "cheap",
+        "language",
+        "diffusion",
+        "model",
+        "multiple",
+        "denoise",
+        "tight",
+        "plan"
+      ]
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.07642857142857146,
+      "features": {
+        "diagnostic_fidelity_score": 5.0,
+        "diagnostic_slot_count": 3.0,
+        "exact_authorization_false": 1.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 1.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 0.0,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.29700000000000004,
+        "weak_term_echo_count": 1.0,
+        "weak_term_echo_fraction": 0.14285714285714285,
+        "weird_punctuation": 0.0,
+        "word_count": 30.0
+      },
+      "label": true,
+      "probe_text": "A=missing or weak constraint: useful missing constraints present in denoise states.  \nB=verifier-visible evidence needed before buying repair.  \nC=source detail repair might delete or distort.  \nZ=false",
+      "selected_by_best_post_probe_rule": true,
+      "task_id": "plan_046",
+      "weak_terms": [
+        "world-model",
+        "world",
+        "model",
+        "style",
+        "predicts",
+        "denoise",
+        "plan"
+      ]
+    },
+    {
+      "candidate_lift_vs_trajectory": -0.03892857142857137,
+      "features": {
+        "diagnostic_fidelity_score": 5.0,
+        "diagnostic_slot_count": 3.0,
+        "exact_authorization_false": 1.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 1.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 0.0,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.21200000000000002,
+        "weak_term_echo_count": 4.0,
+        "weak_term_echo_fraction": 0.5,
+        "weird_punctuation": 0.0,
+        "word_count": 27.0
+      },
+      "label": false,
+      "probe_text": "A=repairable-denoise spending  \nB=verifier-visible evidence needed before buying repair  \nC=source detail repair might delete or distort  \nZ=false  \nZ=Z=false  \nZ=false",
+      "selected_by_best_post_probe_rule": false,
+      "task_id": "plan_050",
+      "weak_terms": [
+        "repairable-denoise",
+        "looks",
+        "cheaper",
+        "than",
+        "repairable",
+        "denoise",
+        "spending",
+        "seeing"
+      ]
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.046928571428571486,
+      "features": {
+        "diagnostic_fidelity_score": 5.0,
+        "diagnostic_slot_count": 3.0,
+        "exact_authorization_false": 1.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 1.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 0.0,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.24200000000000002,
+        "weak_term_echo_count": 3.0,
+        "weak_term_echo_fraction": 1.0,
+        "weird_punctuation": 0.0,
+        "word_count": 29.0
+      },
+      "label": true,
+      "probe_text": "A=Missing or weak task terms: controller, plan, slice  \nB=cheap phase budget, full frontier budget, task complexity, resource availability  \nC=task complexity, resource availability, performance goals  \nZ=false",
+      "selected_by_best_post_probe_rule": true,
+      "task_id": "plan_061",
+      "weak_terms": [
+        "controller",
+        "plan",
+        "slice"
+      ]
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.09642857142857142,
+      "features": {
+        "diagnostic_fidelity_score": 5.0,
+        "diagnostic_slot_count": 3.0,
+        "exact_authorization_false": 1.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 1.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 0.0,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.3145,
+        "weak_term_echo_count": 1.0,
+        "weak_term_echo_fraction": 0.16666666666666666,
+        "weird_punctuation": 0.0,
+        "word_count": 30.0
+      },
+      "label": true,
+      "probe_text": "A=denoise weak constraint is missing or weak constraint  \nB=verifier-visible evidence needed before buying denoised repair  \nC=source detail repair might delete or distort denoised history  \nZ=false",
+      "selected_by_best_post_probe_rule": true,
+      "task_id": "plan_063",
+      "weak_terms": [
+        "denoise-history",
+        "source",
+        "sometimes",
+        "loses",
+        "plan",
+        "trusted"
+      ]
+    },
+    {
+      "candidate_lift_vs_trajectory": -0.08300000000000002,
+      "features": {
+        "diagnostic_fidelity_score": 5.0,
+        "diagnostic_slot_count": 3.0,
+        "exact_authorization_false": 1.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 1.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 0.0,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.137,
+        "weak_term_echo_count": 8.0,
+        "weak_term_echo_fraction": 1.0,
+        "weird_punctuation": 0.0,
+        "word_count": 32.0
+      },
+      "label": false,
+      "probe_text": "A=fresh GPU slice could either improve the public benchmark or falsify the current theory  \nB=both outcomes are useful and verifiable  \nC=run,, run, run,, run, and both outcomes  \nZ=false",
+      "selected_by_best_post_probe_rule": false,
+      "task_id": "plan_064",
+      "weak_terms": [
+        "gpu",
+        "fresh",
+        "slice",
+        "either",
+        "improve",
+        "public",
+        "benchmark",
+        "falsify"
+      ]
+    },
+    {
+      "candidate_lift_vs_trajectory": -0.05499999999999999,
+      "features": {
+        "diagnostic_fidelity_score": 5.0,
+        "diagnostic_slot_count": 3.0,
+        "exact_authorization_false": 1.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 1.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 0.0,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.125,
+        "weak_term_echo_count": 2.0,
+        "weak_term_echo_fraction": 0.25,
+        "weird_punctuation": 0.0,
+        "word_count": 22.0
+      },
+      "label": false,
+      "probe_text": "A=missing-aware-promotion-selection  \nB=pre-repair-edge-proxy-predict-promoability  \nC=post-repair-labels-avoidance  \nZ=repair-authorization  \nZ=false",
+      "selected_by_best_post_probe_rule": true,
+      "task_id": "plan_069",
+      "weak_terms": [
+        "candidate-aware",
+        "aware",
+        "promotion",
+        "selector",
+        "frozen",
+        "claims",
+        "will",
+        "later"
+      ]
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.012500000000000011,
+      "features": {
+        "diagnostic_fidelity_score": 5.0,
+        "diagnostic_slot_count": 3.0,
+        "exact_authorization_false": 1.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 1.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 0.0,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.232,
+        "weak_term_echo_count": 1.0,
+        "weak_term_echo_fraction": 0.2,
+        "weird_punctuation": 0.0,
+        "word_count": 34.0
+      },
+      "label": true,
+      "probe_text": "A=den intermediate state can be a better repair source  \nB=verifier-visible evidence needed before buying repair repair  \nC=source detail repair might delete or distort prior history-instability repair negative  \nZ=false",
+      "selected_by_best_post_probe_rule": true,
+      "task_id": "plan_070",
+      "weak_terms": [
+        "denoise-state",
+        "denoise",
+        "says",
+        "better",
+        "than"
+      ]
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "features": {
+        "diagnostic_fidelity_score": 5.0,
+        "diagnostic_slot_count": 3.0,
+        "exact_authorization_false": 1.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 1.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 0.0,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.177,
+        "weak_term_echo_count": 5.0,
+        "weak_term_echo_fraction": 0.625,
+        "weird_punctuation": 0.0,
+        "word_count": 29.0
+      },
+      "label": false,
+      "probe_text": "A=GPU cost against missed positive repairs on fresh planning prompts  \nB=GPU Cost, Prompt ID, Prompt ID,, Prompt ID,  \nC=Prompt ID, Prompt ID, Prompt ID,  \nZ=false",
+      "selected_by_best_post_probe_rule": false,
+      "task_id": "plan_071",
+      "weak_terms": [
+        "controller",
+        "must",
+        "trade",
+        "missed",
+        "positive",
+        "repairs",
+        "fresh",
+        "planning"
+      ]
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.058928571428571386,
+      "features": {
+        "diagnostic_fidelity_score": 5.0,
+        "diagnostic_slot_count": 3.0,
+        "exact_authorization_false": 1.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 1.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 0.0,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.25450000000000006,
+        "weak_term_echo_count": 0.0,
+        "weak_term_echo_fraction": 0.0,
+        "weird_punctuation": 0.0,
+        "word_count": 29.0
+      },
+      "label": true,
+      "probe_text": "A=missing or weak constraint  \nB=verifier-visible evidence needed before buying repair  \nC=source detail repair might delete or distort  \nZ=repair authorization sentinel   not   here  \nZ=false",
+      "selected_by_best_post_probe_rule": true,
+      "task_id": "plan_072",
+      "weak_terms": [
+        "proof-obligation",
+        "says"
+      ]
+    }
+  ],
+  "schema": "diffusion_counterfactual_probe_text_fidelity.v1",
+  "summary": {
+    "best_post_probe_error_count": 2,
+    "best_post_probe_false_negative_count": 0,
+    "best_post_probe_false_positive_count": 2,
+    "best_post_probe_rule_name": "weak_term_echo_count_le_3p000000",
+    "gate_decision": "diagnostic_only",
+    "generic_slot_count": 0,
+    "malformed_authorization_count": 0,
+    "negative_label_count": 5,
+    "placeholder_slot_count": 0,
+    "positive_label_count": 7,
+    "row_count": 12,
+    "weird_punctuation_count": 0
+  },
+  "top_post_probe_rules": [
+    {
+      "direction": "le",
+      "error_count": 2,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_069"
+      ],
+      "feature": "weak_term_echo_count",
+      "missed_positive_lift": 0,
+      "rule_name": "weak_term_echo_count_le_3p000000",
+      "selected_count": 9,
+      "threshold": 3.0
+    },
+    {
+      "direction": "ge",
+      "error_count": 2,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_044"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_045"
+      ],
+      "feature": "probe_task_score",
+      "missed_positive_lift": 0.11249999999999999,
+      "rule_name": "probe_task_score_ge_0p232000",
+      "selected_count": 7,
+      "threshold": 0.232
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_071"
+      ],
+      "feature": "probe_task_score",
+      "missed_positive_lift": 0,
+      "rule_name": "probe_task_score_ge_0p158429",
+      "selected_count": 10,
+      "threshold": 0.15842857142857142
+    },
+    {
+      "direction": "le",
+      "error_count": 3,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_069"
+      ],
+      "feature": "weak_term_echo_count",
+      "missed_positive_lift": 0,
+      "rule_name": "weak_term_echo_count_le_4p000000",
+      "selected_count": 10,
+      "threshold": 4.0
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_064",
+        "plan_071"
+      ],
+      "feature": "word_count",
+      "missed_positive_lift": 0,
+      "rule_name": "word_count_ge_29p000000",
+      "selected_count": 10,
+      "threshold": 29.0
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_044"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050"
+      ],
+      "feature": "probe_task_score",
+      "missed_positive_lift": 0.11249999999999999,
+      "rule_name": "probe_task_score_ge_0p212000",
+      "selected_count": 8,
+      "threshold": 0.21200000000000002
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_044",
+        "plan_070"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_045"
+      ],
+      "feature": "probe_task_score",
+      "missed_positive_lift": 0.125,
+      "rule_name": "probe_task_score_ge_0p234500",
+      "selected_count": 6,
+      "threshold": 0.23450000000000004
+    },
+    {
+      "direction": "le",
+      "error_count": 3,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_044",
+        "plan_061"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_045"
+      ],
+      "feature": "weak_term_echo_count",
+      "missed_positive_lift": 0.15942857142857148,
+      "rule_name": "weak_term_echo_count_le_1p000000",
+      "selected_count": 6,
+      "threshold": 1.0
+    },
+    {
+      "direction": "le",
+      "error_count": 3,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_044",
+        "plan_061"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_045"
+      ],
+      "feature": "weak_term_echo_fraction",
+      "missed_positive_lift": 0.15942857142857148,
+      "rule_name": "weak_term_echo_fraction_le_0p200000",
+      "selected_count": 6,
+      "threshold": 0.2
+    },
+    {
+      "direction": "ge",
+      "error_count": 4,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 4,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_064",
+        "plan_071"
+      ],
+      "feature": "probe_task_score",
+      "missed_positive_lift": 0,
+      "rule_name": "probe_task_score_ge_0p137000",
+      "selected_count": 11,
+      "threshold": 0.137
+    },
+    {
+      "direction": "le",
+      "error_count": 4,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 4,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_069",
+        "plan_071"
+      ],
+      "feature": "weak_term_echo_count",
+      "missed_positive_lift": 0,
+      "rule_name": "weak_term_echo_count_le_5p000000",
+      "selected_count": 11,
+      "threshold": 5.0
+    },
+    {
+      "direction": "ge",
+      "error_count": 4,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 4,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_064",
+        "plan_071"
+      ],
+      "feature": "word_count",
+      "missed_positive_lift": 0,
+      "rule_name": "word_count_ge_27p000000",
+      "selected_count": 11,
+      "threshold": 27.0
+    },
+    {
+      "direction": "ge",
+      "error_count": 4,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_044"
+      ],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_071"
+      ],
+      "feature": "probe_task_score",
+      "missed_positive_lift": 0.11249999999999999,
+      "rule_name": "probe_task_score_ge_0p177000",
+      "selected_count": 9,
+      "threshold": 0.177
+    },
+    {
+      "direction": "le",
+      "error_count": 4,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_044",
+        "plan_061"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_069"
+      ],
+      "feature": "weak_term_echo_count",
+      "missed_positive_lift": 0.15942857142857148,
+      "rule_name": "weak_term_echo_count_le_2p000000",
+      "selected_count": 7,
+      "threshold": 2.0
+    },
+    {
+      "direction": "le",
+      "error_count": 4,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_044",
+        "plan_061"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_069"
+      ],
+      "feature": "weak_term_echo_fraction",
+      "missed_positive_lift": 0.15942857142857148,
+      "rule_name": "weak_term_echo_fraction_le_0p250000",
+      "selected_count": 7,
+      "threshold": 0.25
+    },
+    {
+      "direction": "le",
+      "error_count": 4,
+      "false_negative_count": 3,
+      "false_negative_task_ids": [
+        "plan_044",
+        "plan_061",
+        "plan_070"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_045"
+      ],
+      "feature": "weak_term_echo_fraction",
+      "missed_positive_lift": 0.17192857142857149,
+      "rule_name": "weak_term_echo_fraction_le_0p166667",
+      "selected_count": 5,
+      "threshold": 0.16666666666666666
+    },
+    {
+      "direction": "ge",
+      "error_count": 4,
+      "false_negative_count": 3,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_070"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_045"
+      ],
+      "feature": "probe_task_score",
+      "missed_positive_lift": 0.22142857142857142,
+      "rule_name": "probe_task_score_ge_0p242000",
+      "selected_count": 5,
+      "threshold": 0.24200000000000002
+    },
+    {
+      "direction": "ge",
+      "error_count": 5,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 5,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_064",
+        "plan_069",
+        "plan_071"
+      ],
+      "feature": "diagnostic_fidelity_score",
+      "missed_positive_lift": 0,
+      "rule_name": "diagnostic_fidelity_score_ge_5p000000",
+      "selected_count": 12,
+      "threshold": 5.0
+    },
+    {
+      "direction": "le",
+      "error_count": 5,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 5,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_064",
+        "plan_069",
+        "plan_071"
+      ],
+      "feature": "diagnostic_fidelity_score",
+      "missed_positive_lift": 0,
+      "rule_name": "diagnostic_fidelity_score_le_5p000000",
+      "selected_count": 12,
+      "threshold": 5.0
+    },
+    {
+      "direction": "ge",
+      "error_count": 5,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 5,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_064",
+        "plan_069",
+        "plan_071"
+      ],
+      "feature": "diagnostic_slot_count",
+      "missed_positive_lift": 0,
+      "rule_name": "diagnostic_slot_count_ge_3p000000",
+      "selected_count": 12,
+      "threshold": 3.0
+    }
+  ]
+}

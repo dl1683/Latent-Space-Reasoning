@@ -24,14 +24,21 @@ legacy prose probe with fixed diagnostic slots:
 `--counterfactual-probe-policy key_value_tomography_probe_v2` removes placeholder
 exemplars and forbids generic values, but the measured v2 run is not promoted:
 it regresses authorization reliability and valid-row count.
+`--counterfactual-probe-policy compact_tomography_probe_v3` switches to short
+`A=`, `B=`, `C=`, and `Z=false` slots. The measured v3 run restores 12/12
+format-valid rows and zero malformed authorization rows at a `48` token / `24`
+step budget, but it is still diagnostic-only because the best validated Stage 1
+rule admits four no-lift rows.
 
 The trigger records probe diagnostics in `repair_spend_gate_rows` for each
 selected repair source. When frozen triage sets `would_probe=true`, it also
 generates a bounded `generation_stage="counterfactual_probe"` raw record under
 a strict `32` token / `16` step budget for the legacy policy, or `48` tokens /
-`24` steps for `strict_tomography_probe_v1`. It always returns
-`should_run=false`, so the `repair_selected` arm keeps the evolved record and
-cannot get score credit from probe logic.
+`24` steps for `strict_tomography_probe_v1` and
+`compact_tomography_probe_v3`, or `64` tokens / `32` steps for
+`key_value_tomography_probe_v2`. It always returns `should_run=false`, so the
+`repair_selected` arm keeps the evolved record and cannot get score credit from
+probe logic.
 
 ## Recorded Fields
 
@@ -40,8 +47,8 @@ Each gate row keeps the normal source diagnostics and adds:
 | Field | Meaning |
 | --- | --- |
 | `counterfactual_probe_gate` | Always `diagnostic_only`. |
-| `counterfactual_probe_policy` | `deterministic_missing_constraint_probe_v1`. |
-| `counterfactual_probe_cost_relative` | Current scaffold probe cost, `0.125`. |
+| `counterfactual_probe_policy` | The selected probe policy: legacy deterministic, strict tomography, key-value v2, or compact v3. |
+| `counterfactual_probe_cost_relative` | Token-normalized probe budget: `0.125` for legacy, `0.1875` for strict/compact, `0.25` for key-value v2. |
 | `counterfactual_probe_observation` | `measured_generation` when a bounded probe was generated; otherwise `deterministic_scaffold`. |
 | `counterfactual_probe_text` | Bounded missing-constraint sketch with explicit `full_repair_authorized=false`. |
 | `counterfactual_probe_text_valid_for_stage1` | True only when measured text has exact authorization, all diagnostic slots, no placeholder/generic slot, and no known slot/sentinel typo. |
@@ -91,16 +98,21 @@ The key-value v2 follow-up is recorded in
 `DIFFUSION_COUNTERFACTUAL_KEY_VALUE_PROBE_TEXT_FIDELITY_V2.md` and
 `DIFFUSION_COUNTERFACTUAL_KEY_VALUE_VALIDATED_PROBE_STAGE1_GATE_V2.md`. It is a
 negative control: fewer validated-fit errors, but worse diagnostic reliability.
+The compact v3 follow-up is recorded in
+`DIFFUSION_COUNTERFACTUAL_COMPACT_PROBE_TEXT_FIDELITY_V3.md` and
+`DIFFUSION_COUNTERFACTUAL_COMPACT_VALIDATED_PROBE_STAGE1_GATE_V3.md`. It fixes
+the row-format reliability problem, but remains diagnostic-only because the
+measured post-probe value rule still selects no-lift rows.
 
 ## Next Measurement
 
 The next increment should improve the measured target rows until the Stage 1
 value-of-information policy can clear the controller gate:
 
-1. Add post-probe features that are not just Stage 0 prompt-gap or `would_probe`
-   rediscovery.
-2. Treat `FULL_REPAIR_AUTHORIZED=false` as a hard validity sentinel and discard
-   probe rows that cannot reproduce it exactly.
+1. Add post-probe features that penalize template echoes, duplicated slot keys,
+   repeated generic labels, and repeated authorization lines.
+2. Keep `FULL_REPAIR_AUTHORIZED=false` or `Z=false` as hard validity sentinels
+   and discard probe rows that cannot reproduce the selected sentinel exactly.
 3. Check whether measured probe values can decide full repair after the probe,
    not just whether to buy a probe.
 4. Promote only if the architecture gate in
