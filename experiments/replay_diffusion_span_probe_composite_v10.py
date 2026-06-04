@@ -174,6 +174,15 @@ def replay_composite_v10(
 def render_markdown(result: dict[str, object]) -> str:
     summary = _dict(result.get("summary"))
     rows = _list_of_dicts(result.get("row_diagnostics"))
+    negative_delta_count = sum(
+        1 for row in rows if _float(row.get("source_task_delta_vs_trajectory")) < 0.0
+    )
+    trajectory_blocked = [
+        str(row.get("task_id", ""))
+        for row in rows
+        if bool(row.get("cohort_risk_selected"))
+        and not bool(row.get("trajectory_relative_prediction"))
+    ]
     lines = [
         "# Diffusion Span Probe Composite V10 Replay",
         "",
@@ -189,6 +198,8 @@ def render_markdown(result: dict[str, object]) -> str:
         f"- Signed utility: `{_format_float(summary.get('policy_utility'))}`",
         f"- Promotion utility bar: `{_format_float(PROMOTION_UTILITY_BAR)}`",
         f"- Positive lift covered: `{_format_float(summary.get('positive_lift_covered'))}`",
+        f"- Negative source-vs-trajectory rows: `{negative_delta_count}`",
+        f"- Trajectory-veto blocked tasks: `{_join_tasks(trajectory_blocked)}`",
         "",
         "## Decision",
         "",
@@ -205,11 +216,19 @@ def render_markdown(result: dict[str, object]) -> str:
     else:
         lines.append(
             "Keep the composite diagnostic-only. The v10 replay preserves all selected-repair "
-            "positive labels, but it selects every planning row, admits no-lift repairs, "
-            "and stays below the frozen promotion utility bar. Because every v10 planning "
-            "row has zero source-vs-trajectory delta, this slice also does not stress the "
-            "trajectory-relative veto."
+            "positive labels, but it still admits no-lift repairs and stays below the "
+            "frozen promotion utility bar."
         )
+        if negative_delta_count:
+            lines.append(
+                "This replay does exercise the trajectory-relative veto on the negative-delta "
+                f"rows and blocks `{_join_tasks(trajectory_blocked)}`."
+            )
+        else:
+            lines.append(
+                "Every planning row has zero source-vs-trajectory delta, so this replay does "
+                "not stress the trajectory-relative veto."
+            )
     lines.extend(
         [
             "",
@@ -238,11 +257,11 @@ def render_markdown(result: dict[str, object]) -> str:
             "",
             (
                 "The v10 label pass is useful because repair candidates improve five "
-                "planning tasks with only small oracle headroom left. The replay is "
-                "also a boundary result: this slice validates the measured probe and "
-                "cohort-risk path under a fresh prompt family, but it does not stress "
-                "the trajectory-relative veto because source and selected trajectory "
-                "scores are tied on all eight planning rows."
+                "planning tasks with only small oracle headroom left. The replay remains "
+                "a boundary result: measured probes and cohort risk preserve positives, "
+                "and the trajectory-relative veto can remove a no-lift row when source "
+                "falls below the selected trajectory, but the controller still needs "
+                "stronger no-lift specificity before promotion."
             ),
         ]
     )
@@ -329,6 +348,9 @@ def _summary(rows: list[dict[str, object]], *, selection_penalty: float) -> dict
         "false_negative_task_ids": _task_ids(false_negatives),
         "false_positive_count": len(false_positives),
         "false_positive_task_ids": _task_ids(false_positives),
+        "negative_source_delta_count": sum(
+            1 for row in rows if _float(row.get("source_task_delta_vs_trajectory")) < 0.0
+        ),
         "oracle_positive_count": sum(1 for row in rows if bool(row.get("oracle_label"))),
         "policy_utility": signed_lift - selection_penalty * len(selected),
         "positive_count": len(positives),

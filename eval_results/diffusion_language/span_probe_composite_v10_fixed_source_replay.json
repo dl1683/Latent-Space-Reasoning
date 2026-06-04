@@ -9,8 +9,8 @@
   "generated_by": "experiments/replay_diffusion_span_probe_composite_v10.py",
   "inputs": {
     "label_scores": "eval_results\\diffusion_language\\span_probe_composite_v10_label_scores.json",
-    "measurement_raw": "eval_results\\diffusion_language\\span_probe_composite_v10_measurement_raw.jsonl",
-    "measurement_scores": "eval_results\\diffusion_language\\span_probe_composite_v10_measurement_scores.json",
+    "measurement_raw": "eval_results\\diffusion_language\\span_probe_composite_v10_fixed_source_measurement_raw.jsonl",
+    "measurement_scores": "eval_results\\diffusion_language\\span_probe_composite_v10_fixed_source_measurement_scores.json",
     "signature_model": "eval_results\\diffusion_language\\counterfactual_span_probe_signature_model_v4.json"
   },
   "row_diagnostics": [
@@ -32,18 +32,18 @@
     },
     {
       "candidate_lift_vs_trajectory": 0.0,
-      "cohort_negative_fraction": 0.3076923076923077,
+      "cohort_negative_fraction": 0.23076923076923078,
       "cohort_risk_selected": true,
       "label": false,
       "oracle_label": false,
       "oracle_lift_vs_trajectory": 0.0,
-      "predicted_signed_value": 0.027610682781057713,
-      "probe_signature_score": 0.9204854071056197,
-      "risk_adjusted_signed_value": 0.01837991355028848,
-      "selected": true,
-      "source_task_delta_vs_trajectory": 0.0,
+      "predicted_signed_value": 0.044685350790881095,
+      "probe_signature_score": 0.7327784603966621,
+      "risk_adjusted_signed_value": 0.037762273867804175,
+      "selected": false,
+      "source_task_delta_vs_trajectory": -0.03607142857142853,
       "task_id": "plan_074",
-      "trajectory_relative_prediction": true,
+      "trajectory_relative_prediction": false,
       "valid_for_stage1": true
     },
     {
@@ -146,21 +146,20 @@
   "schema": "diffusion_span_probe_composite_v10_replay.v1",
   "selection_penalty": 0.02,
   "summary": {
-    "error_count": 3,
+    "error_count": 2,
     "false_negative_count": 0,
     "false_negative_task_ids": [],
-    "false_positive_count": 3,
+    "false_positive_count": 2,
     "false_positive_task_ids": [
-      "plan_074",
       "plan_075",
       "plan_078"
     ],
-    "negative_source_delta_count": 0,
+    "negative_source_delta_count": 1,
     "oracle_positive_count": 6,
-    "policy_utility": 0.42821428571428555,
+    "policy_utility": 0.44821428571428557,
     "positive_count": 5,
     "positive_lift_covered": 0.5882142857142856,
-    "selected_count": 8,
+    "selected_count": 7,
     "target_count": 8
   }
 }
