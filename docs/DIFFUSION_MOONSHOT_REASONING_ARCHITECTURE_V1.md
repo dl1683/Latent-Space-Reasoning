@@ -176,6 +176,20 @@ The signed-value claim is only real if the winning model degrades when the
 load-bearing feature family is removed. Otherwise, the head is likely learning
 slice artifacts.
 
+### M2.5: Weak-Slice Cohort Calibration
+
+Status: implemented as
+`DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_SIGNED_VALUE_WEAK_SLICE_V4.md`. The
+`plan_017`-`plan_024` slice is the current blocker: `signed_value_knn_k8_all`
+selects all eight rows, but only `plan_018` and `plan_021` have positive
+realized lift. The slice contributes six false positives and only `0.001429`
+signed utility.
+
+This means the next controller feature should not be another global scalar
+threshold over one measured probe field. It should estimate local cohort value
+density, prediction uncertainty, or neighbor disagreement from the frozen
+probe-signature geometry before any new GPU slice is run.
+
 ### M3: Frozen Fresh Slice
 
 Only after M1 and M2 pass, run a fresh GPU slice with the signed-value head
