@@ -1,0 +1,763 @@
+{
+  "generated_by": "experiments/analyze_diffusion_counterfactual_probe_text_fidelity.py",
+  "inputs": {
+    "raw": "eval_results\\diffusion_language\\counterfactual_micro_probe_counterexamples_all_v1_raw.jsonl",
+    "targets": "eval_results\\diffusion_language\\diffusion_counterfactual_probe_targets_v1.json"
+  },
+  "rows": [
+    {
+      "candidate_lift_vs_trajectory": 0.09642857142857142,
+      "features": {
+        "diagnostic_fidelity_score": 4.0,
+        "diagnostic_slot_count": 3.0,
+        "exact_authorization_false": 1.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 0.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 0.0,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.23700000000000002,
+        "weak_term_echo_count": 0.0,
+        "weak_term_echo_fraction": 0.0,
+        "weird_punctuation": 0.0,
+        "word_count": 16.0
+      },
+      "label": true,
+      "probe_text": "1) Missing context constraint; 2) Audit results on context preservation; 3) Context deletion risk. FULL_REPAIR_AUTHORIZED=false",
+      "selected_by_best_post_probe_rule": true,
+      "task_id": "plan_034",
+      "weak_terms": [
+        "average",
+        "sometimes",
+        "plan",
+        "making"
+      ]
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.11249999999999999,
+      "features": {
+        "diagnostic_fidelity_score": 2.0,
+        "diagnostic_slot_count": 3.0,
+        "exact_authorization_false": 0.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 1.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 1.0,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.27842857142857147,
+        "weak_term_echo_count": 0.0,
+        "weak_term_echo_fraction": 0.0,
+        "weird_punctuation": 1.0,
+        "word_count": 15.0
+      },
+      "label": true,
+      "probe_text": "1) Prompt fidelity constraint; 2) Reasoning trace fidelity metric; 3) Data leakage risk. FULL_REPAIR_AUTHORORIZED=false",
+      "selected_by_best_post_probe_rule": true,
+      "task_id": "plan_044",
+      "weak_terms": [
+        "improves",
+        "makes",
+        "less",
+        "faithful"
+      ]
+    },
+    {
+      "candidate_lift_vs_trajectory": -0.08357142857142857,
+      "features": {
+        "diagnostic_fidelity_score": 4.0,
+        "diagnostic_slot_count": 0.0,
+        "exact_authorization_false": 1.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 1.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 0.0,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.32199999999999995,
+        "weak_term_echo_count": 0.0,
+        "weak_term_echo_fraction": 0.0,
+        "weird_punctuation": 0.0,
+        "word_count": 18.0
+      },
+      "label": false,
+      "probe_text": "Missing constraint: GPU budget limit. Evidence: marginal cost per schedule vs benefit. Retention risk: incomplete optimization. FULL_REPAIR_AUTHORIZED=false",
+      "selected_by_best_post_probe_rule": true,
+      "task_id": "plan_045",
+      "weak_terms": [
+        "cheap",
+        "language",
+        "diffusion",
+        "model",
+        "multiple",
+        "denoise",
+        "tight",
+        "plan"
+      ]
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.07642857142857146,
+      "features": {
+        "diagnostic_fidelity_score": 1.0,
+        "diagnostic_slot_count": 0.0,
+        "exact_authorization_false": 0.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 1.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 1.0,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.2995,
+        "weak_term_echo_count": 0.0,
+        "weak_term_echo_fraction": 0.0,
+        "weird_punctuation": 1.0,
+        "word_count": 16.0
+      },
+      "label": true,
+      "probe_text": "Missing constraint: Useful missing constraints. Evidence: Controller's accuracy vs.. Risk: Draft lacks incomplete. FULL_REPAIR_AUTHUTHORIZED=false",
+      "selected_by_best_post_probe_rule": true,
+      "task_id": "plan_046",
+      "weak_terms": [
+        "world-model",
+        "world",
+        "model",
+        "style",
+        "predicts",
+        "denoise",
+        "plan"
+      ]
+    },
+    {
+      "candidate_lift_vs_trajectory": -0.03892857142857137,
+      "features": {
+        "diagnostic_fidelity_score": 3.6666666666666665,
+        "diagnostic_slot_count": 2.0,
+        "exact_authorization_false": 1.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 1.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 0.0,
+        "malformed_authorization": 0.0,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.1795,
+        "weak_term_echo_count": 1.0,
+        "weak_term_echo_fraction": 0.125,
+        "weird_punctuation": 0.0,
+        "word_count": 15.0
+      },
+      "label": false,
+      "probe_text": "1) No cost-denoise constraint; 2) No cost-ben or utility evidence; 3. FULL_REPAIR_AUTHORIZED=false",
+      "selected_by_best_post_probe_rule": false,
+      "task_id": "plan_050",
+      "weak_terms": [
+        "repairable-denoise",
+        "looks",
+        "cheaper",
+        "than",
+        "repairable",
+        "denoise",
+        "spending",
+        "seeing"
+      ]
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.046928571428571486,
+      "features": {
+        "diagnostic_fidelity_score": 4.0,
+        "diagnostic_slot_count": 0.0,
+        "exact_authorization_false": 1.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 1.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 0.0,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.21700000000000003,
+        "weak_term_echo_count": 0.0,
+        "weak_term_echo_fraction": 0.0,
+        "weird_punctuation": 0.0,
+        "word_count": 16.0
+      },
+      "label": true,
+      "probe_text": "Missing constraint: task complexity. Evidence: resource availability and performance goals. Retention risk: incompleteimplied criteria. FULL_REPAIR_AUTHORIZED=false",
+      "selected_by_best_post_probe_rule": true,
+      "task_id": "plan_061",
+      "weak_terms": [
+        "controller",
+        "plan",
+        "slice"
+      ]
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.09642857142857142,
+      "features": {
+        "diagnostic_fidelity_score": 3.0,
+        "diagnostic_slot_count": 0.0,
+        "exact_authorization_false": 1.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 1.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 0.0,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.23700000000000002,
+        "weak_term_echo_count": 0.0,
+        "weak_term_echo_fraction": 0.0,
+        "weird_punctuation": 1.0,
+        "word_count": 15.0
+      },
+      "label": true,
+      "probe_text": "Missing constraint:: contextual integrity. Evidence:: consistency and original intent alignment. Retention risk:: none. FULL_REPAIR_AUTHORIZED=false",
+      "selected_by_best_post_probe_rule": true,
+      "task_id": "plan_063",
+      "weak_terms": [
+        "denoise-history",
+        "source",
+        "sometimes",
+        "loses",
+        "plan",
+        "trusted"
+      ]
+    },
+    {
+      "candidate_lift_vs_trajectory": -0.08300000000000002,
+      "features": {
+        "diagnostic_fidelity_score": 3.0,
+        "diagnostic_slot_count": 0.0,
+        "exact_authorization_false": 1.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 1.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 0.0,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.1995,
+        "weak_term_echo_count": 2.0,
+        "weak_term_echo_fraction": 0.25,
+        "weird_punctuation": 1.0,
+        "word_count": 16.0
+      },
+      "label": false,
+      "probe_text": "Missing constraint: benchmark improvement vs.. Evidence: falsification of current theory. Retention: draft lacks specificity. FULL_REPAIR_AUTHORIZED=false",
+      "selected_by_best_post_probe_rule": false,
+      "task_id": "plan_064",
+      "weak_terms": [
+        "gpu",
+        "fresh",
+        "slice",
+        "either",
+        "improve",
+        "public",
+        "benchmark",
+        "falsify"
+      ]
+    },
+    {
+      "candidate_lift_vs_trajectory": -0.05499999999999999,
+      "features": {
+        "diagnostic_fidelity_score": 1.0,
+        "diagnostic_slot_count": 0.0,
+        "exact_authorization_false": 0.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 1.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 1.0,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.21700000000000003,
+        "weak_term_echo_count": 0.0,
+        "weak_term_echo_fraction": 0.0,
+        "weird_punctuation": 1.0,
+        "word_count": 15.0
+      },
+      "label": false,
+      "probe_text": "Missing constraint: post-repair labels. Evidence: prediction-actual correlation. Retention risk: label leakage. FULL_REPAIR_AUTH_AUTHORIZED=false",
+      "selected_by_best_post_probe_rule": true,
+      "task_id": "plan_069",
+      "weak_terms": [
+        "candidate-aware",
+        "aware",
+        "promotion",
+        "selector",
+        "frozen",
+        "claims",
+        "will",
+        "later"
+      ]
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.012500000000000011,
+      "features": {
+        "diagnostic_fidelity_score": 4.0,
+        "diagnostic_slot_count": 0.0,
+        "exact_authorization_false": 1.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 1.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 0.0,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.2995,
+        "weak_term_echo_count": 0.0,
+        "weak_term_echo_fraction": 0.0,
+        "weird_punctuation": 0.0,
+        "word_count": 18.0
+      },
+      "label": true,
+      "probe_text": "Missing constraint: prior negative repair history. Evidence needed: consistency with final diagnostics. Retention risk: draft incomplete. FULL_REPAIR_AUTHORIZED=false",
+      "selected_by_best_post_probe_rule": true,
+      "task_id": "plan_070",
+      "weak_terms": [
+        "denoise-state",
+        "denoise",
+        "says",
+        "better",
+        "than"
+      ]
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "features": {
+        "diagnostic_fidelity_score": 1.0,
+        "diagnostic_slot_count": 0.0,
+        "exact_authorization_false": 0.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 1.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 1.0,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.25842857142857145,
+        "weak_term_echo_count": 1.0,
+        "weak_term_echo_fraction": 0.125,
+        "weird_punctuation": 1.0,
+        "word_count": 17.0
+      },
+      "label": false,
+      "probe_text": "Missing constraint: prompt freshness score threshold.. Missing evidence: prompt freshness score. Retention risk: none. FULL_REPAIR,AUTHORIZED=false",
+      "selected_by_best_post_probe_rule": false,
+      "task_id": "plan_071",
+      "weak_terms": [
+        "controller",
+        "must",
+        "trade",
+        "missed",
+        "positive",
+        "repairs",
+        "fresh",
+        "planning"
+      ]
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.058928571428571386,
+      "features": {
+        "diagnostic_fidelity_score": 4.0,
+        "diagnostic_slot_count": 3.0,
+        "exact_authorization_false": 1.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 0.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 0.0,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.21700000000000003,
+        "weak_term_echo_count": 0.0,
+        "weak_term_echo_fraction": 0.0,
+        "weird_punctuation": 0.0,
+        "word_count": 15.0
+      },
+      "label": true,
+      "probe_text": "1) Candidate realization edge; 2) Missing-constraint type; 3) Source retention bias risk. FULL_REPAIR_AUTHORIZED=false",
+      "selected_by_best_post_probe_rule": true,
+      "task_id": "plan_072",
+      "weak_terms": [
+        "proof-obligation",
+        "says"
+      ]
+    }
+  ],
+  "schema": "diffusion_counterfactual_probe_text_fidelity.v1",
+  "summary": {
+    "best_post_probe_error_count": 2,
+    "best_post_probe_false_negative_count": 0,
+    "best_post_probe_false_positive_count": 2,
+    "best_post_probe_rule_name": "weak_term_echo_count_le_0p000000",
+    "gate_decision": "diagnostic_only",
+    "generic_slot_count": 0,
+    "malformed_authorization_count": 4,
+    "negative_label_count": 5,
+    "placeholder_slot_count": 0,
+    "positive_label_count": 7,
+    "row_count": 12,
+    "weird_punctuation_count": 6
+  },
+  "top_post_probe_rules": [
+    {
+      "direction": "le",
+      "error_count": 2,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_069"
+      ],
+      "feature": "weak_term_echo_count",
+      "missed_positive_lift": 0,
+      "rule_name": "weak_term_echo_count_le_0p000000",
+      "selected_count": 9,
+      "threshold": 0.0
+    },
+    {
+      "direction": "le",
+      "error_count": 2,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_069"
+      ],
+      "feature": "weak_term_echo_fraction",
+      "missed_positive_lift": 0,
+      "rule_name": "weak_term_echo_fraction_le_0p000000",
+      "selected_count": 9,
+      "threshold": 0.0
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_069",
+        "plan_071"
+      ],
+      "feature": "probe_task_score",
+      "missed_positive_lift": 0,
+      "rule_name": "probe_task_score_ge_0p217000",
+      "selected_count": 10,
+      "threshold": 0.21700000000000003
+    },
+    {
+      "direction": "ge",
+      "error_count": 4,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 4,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_064",
+        "plan_069",
+        "plan_071"
+      ],
+      "feature": "has_retention_slot",
+      "missed_positive_lift": 0,
+      "rule_name": "has_retention_slot_ge_1p000000",
+      "selected_count": 11,
+      "threshold": 1.0
+    },
+    {
+      "direction": "ge",
+      "error_count": 4,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 4,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_064",
+        "plan_069",
+        "plan_071"
+      ],
+      "feature": "probe_task_score",
+      "missed_positive_lift": 0,
+      "rule_name": "probe_task_score_ge_0p199500",
+      "selected_count": 11,
+      "threshold": 0.1995
+    },
+    {
+      "direction": "le",
+      "error_count": 4,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 4,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_069",
+        "plan_071"
+      ],
+      "feature": "probe_task_score",
+      "missed_positive_lift": 0,
+      "rule_name": "probe_task_score_le_0p299500",
+      "selected_count": 11,
+      "threshold": 0.2995
+    },
+    {
+      "direction": "le",
+      "error_count": 4,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 4,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_069",
+        "plan_071"
+      ],
+      "feature": "weak_term_echo_count",
+      "missed_positive_lift": 0,
+      "rule_name": "weak_term_echo_count_le_1p000000",
+      "selected_count": 11,
+      "threshold": 1.0
+    },
+    {
+      "direction": "le",
+      "error_count": 4,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 4,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_069",
+        "plan_071"
+      ],
+      "feature": "weak_term_echo_fraction",
+      "missed_positive_lift": 0,
+      "rule_name": "weak_term_echo_fraction_le_0p125000",
+      "selected_count": 11,
+      "threshold": 0.125
+    },
+    {
+      "direction": "le",
+      "error_count": 4,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_070"
+      ],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_069"
+      ],
+      "feature": "word_count",
+      "missed_positive_lift": 0.012500000000000011,
+      "rule_name": "word_count_le_16p000000",
+      "selected_count": 9,
+      "threshold": 16.0
+    },
+    {
+      "direction": "ge",
+      "error_count": 4,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_046"
+      ],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_064"
+      ],
+      "feature": "diagnostic_fidelity_score",
+      "missed_positive_lift": 0.07642857142857146,
+      "rule_name": "diagnostic_fidelity_score_ge_2p000000",
+      "selected_count": 9,
+      "threshold": 2.0
+    },
+    {
+      "direction": "ge",
+      "error_count": 4,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_061",
+        "plan_072"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_071"
+      ],
+      "feature": "probe_task_score",
+      "missed_positive_lift": 0.10585714285714287,
+      "rule_name": "probe_task_score_ge_0p237000",
+      "selected_count": 7,
+      "threshold": 0.23700000000000002
+    },
+    {
+      "direction": "ge",
+      "error_count": 4,
+      "false_negative_count": 4,
+      "false_negative_task_ids": [
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070"
+      ],
+      "false_positive_count": 0,
+      "false_positive_task_ids": [],
+      "feature": "diagnostic_slot_count",
+      "missed_positive_lift": 0.23228571428571437,
+      "rule_name": "diagnostic_slot_count_ge_3p000000",
+      "selected_count": 3,
+      "threshold": 3.0
+    },
+    {
+      "direction": "ge",
+      "error_count": 4,
+      "false_negative_count": 3,
+      "false_negative_task_ids": [
+        "plan_044",
+        "plan_046",
+        "plan_063"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_045"
+      ],
+      "feature": "diagnostic_fidelity_score",
+      "missed_positive_lift": 0.28535714285714286,
+      "rule_name": "diagnostic_fidelity_score_ge_4p000000",
+      "selected_count": 5,
+      "threshold": 4.0
+    },
+    {
+      "direction": "ge",
+      "error_count": 5,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 5,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_064",
+        "plan_069",
+        "plan_071"
+      ],
+      "feature": "diagnostic_fidelity_score",
+      "missed_positive_lift": 0,
+      "rule_name": "diagnostic_fidelity_score_ge_1p000000",
+      "selected_count": 12,
+      "threshold": 1.0
+    },
+    {
+      "direction": "le",
+      "error_count": 5,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 5,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_064",
+        "plan_069",
+        "plan_071"
+      ],
+      "feature": "diagnostic_fidelity_score",
+      "missed_positive_lift": 0,
+      "rule_name": "diagnostic_fidelity_score_le_4p000000",
+      "selected_count": 12,
+      "threshold": 4.0
+    },
+    {
+      "direction": "ge",
+      "error_count": 5,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 5,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_064",
+        "plan_069",
+        "plan_071"
+      ],
+      "feature": "diagnostic_slot_count",
+      "missed_positive_lift": 0,
+      "rule_name": "diagnostic_slot_count_ge_0p000000",
+      "selected_count": 12,
+      "threshold": 0.0
+    },
+    {
+      "direction": "le",
+      "error_count": 5,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 5,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_064",
+        "plan_069",
+        "plan_071"
+      ],
+      "feature": "diagnostic_slot_count",
+      "missed_positive_lift": 0,
+      "rule_name": "diagnostic_slot_count_le_3p000000",
+      "selected_count": 12,
+      "threshold": 3.0
+    },
+    {
+      "direction": "ge",
+      "error_count": 5,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 5,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_064",
+        "plan_069",
+        "plan_071"
+      ],
+      "feature": "exact_authorization_false",
+      "missed_positive_lift": 0,
+      "rule_name": "exact_authorization_false_ge_0p000000",
+      "selected_count": 12,
+      "threshold": 0.0
+    },
+    {
+      "direction": "le",
+      "error_count": 5,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 5,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_064",
+        "plan_069",
+        "plan_071"
+      ],
+      "feature": "exact_authorization_false",
+      "missed_positive_lift": 0,
+      "rule_name": "exact_authorization_false_le_1p000000",
+      "selected_count": 12,
+      "threshold": 1.0
+    },
+    {
+      "direction": "ge",
+      "error_count": 5,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 5,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_064",
+        "plan_069",
+        "plan_071"
+      ],
+      "feature": "generic_slot",
+      "missed_positive_lift": 0,
+      "rule_name": "generic_slot_ge_0p000000",
+      "selected_count": 12,
+      "threshold": 0.0
+    }
+  ]
+}

@@ -1,0 +1,83 @@
+**Convergence Verdict**
+
+The theoretical analysis has converged. Proceed to implementation.
+
+But proceed specifically to **measurement-infrastructure implementation**, not immediately to a GPU run or paper-claim drafting. The remaining issues are not unresolved theory; they are preregistration cleanup, accounting rigor, and instrumentation requirements.
+
+**1. Substantive Concerns Still Not Fully Addressed**
+
+There are no remaining mechanism-level blockers. The EOS/completion framing, extractor-selection caveat, budget-vs-path-vs-verbosity distinction, and discovery-set overfitting risk are all now recognized.
+
+There are, however, three remaining substantive cleanup items:
+
+1. **Compute parity is still incomplete.**  
+   The current sweep stops greedy at `2048`, but prefix `N=10 x 1024` costs roughly 10k generated-token budget per task. A `2048` greedy result can kill prefix if it wins, but a failure at `2048` does not prove prefix is Pareto-efficient. Add adaptive greedy continuation to `4096` and possibly `8192` or until completion/saturation, at least for tasks still truncated at `2048`.
+
+2. **Response-level CIs are overconfident because of task clustering.**  
+   The `100/100` EOS correctness lower bound assumes response-level independence. But responses are nested inside 25 tasks and repeated seeds. Report response-level stats, but also use task-level or cluster-bootstrap intervals. This matters for `P(correct|EOS)`, EOS-rate comparisons, and “any EOS seed implies plurality success.”
+
+3. **The preregistration is internally stale.**  
+   [phase1a_preregistration.md](C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/tesla_session/phase1a_preregistration.md:30) still makes margin/error-diversity the primary hypothesis, while [prefix_vs_temperature_mechanism.md](C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/tesla_session/prefix_vs_temperature_mechanism.md:250) correctly says EOS rate is now primary. Before running, cut a v2.3 that promotes EOS rate / normal completion / final-answer correctness to primary mechanism metrics and demotes margin/DM13/max-q to secondary diagnostics.
+
+**2. Missing Blind Spots**
+
+Yes. I would add these:
+
+- **Blind Spot 17: Pseudoreplication / Clustered Inference**  
+  Response-level counts like `94/250` and `100/100` are useful descriptively, but not sufficient inferentially because task identity dominates difficulty. Use task-level paired tests and cluster bootstrap.
+
+- **Blind Spot 18: Compute-Equivalent Budget Baseline**  
+  Greedy `{512, 768, 1024, 1536, 2048}` is necessary but not sufficient for a compute-cost rebuttal. Prefix `N=10` spends far more total generation budget. Need a compute-parity single-path or continuation baseline, plus generated-token and prompt-prefill accounting.
+
+- **Blind Spot 19: Preregistration Drift After EOS Discovery**  
+  The documents now say EOS/completion is primary, but the preregistration still locks margin as primary. That is a real confirmatory-analysis risk.
+
+Also fix the bookkeeping issue in [adversarial_self_audit.md](C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/tesla_session/adversarial_self_audit.md:441): there are two “Blind Spot 12” headings and no actual “Blind Spot 13” heading, even though the synthesis lists 16 blind spots.
+
+**3. Experiment Plan Priority**
+
+The priority in [SESSION_STATUS.md](C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/tesla_session/SESSION_STATUS.md:109) is basically right:
+
+1. Fix measurement infrastructure.
+2. Run greedy + prefix budget sweep.
+3. Only then run full Phase 1A.
+4. Held-out tasks are required for publishability.
+
+Required adjustments:
+
+- Add strict final-answer parser validation/manual audit into Step 0.
+- Add task-clustered stats to the analysis harness.
+- Extend greedy budget testing beyond `2048` adaptively or at least document why not.
+- Clarify whether Step 1 is Qwen-only or includes DeepSeek. If the paper wants anything broader than “Qwen arithmetic,” DeepSeek cannot wait until late-stage polish.
+- Do the no-GPU CDE/offline audits in parallel with infrastructure work, not as a blocker.
+
+**4. Remaining Overclaims**
+
+Yes, a few remain:
+
+- “Random prefix perturbation increases reasoning-path completion rate in small quantized models” is too broad. Say: “In the Qwen discovery runs, prefix perturbation produced a higher observed normal-completion rate under a 1024-token cap.”
+
+- “The mechanism is about completion, not error diversity” is directionally right but too absolute. Say: “Current discovery data is better explained by completion/final-answer formatting than by independent error-diversity.”
+
+- “The model has latent knowledge it can’t access via default path” and especially “ALWAYS there” in [critical_finding_eos_mechanism.md](C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/tesla_session/critical_finding_eos_mechanism.md:139) overstates the evidence. The data show that completed responses are correct and many truncated responses contain the answer; that is not proof of universal latent knowledge.
+
+- Section 12 of `critical_finding_eos_mechanism.md` still contains stale token numbers: `213,105`, `11,839`, `345-952`, `661`, and `~968` appear after the corrected `718`, `396-1009`, `1024`, and `~256,000` synthesis. See [line 264](C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/tesla_session/critical_finding_eos_mechanism.md:264), [line 364](C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/tesla_session/critical_finding_eos_mechanism.md:364), and [line 411](C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/tesla_session/critical_finding_eos_mechanism.md:411). These must be corrected before anyone relies on the compute-cost section.
+
+**5. “What We Can Claim NOW” Calibration**
+
+Close, but not fully calibrated.
+
+I would rewrite it as:
+
+- On the 25-task Qwen discovery set, random soft-prefix perturbation produced more observed normally terminating responses than greedy under a 1024-token cap.
+- In the observed 4B EOS set, completed responses were correct under the current extraction/scoring pipeline: `100/100`; this should be reported with response-level and task-clustered caveats.
+- Plurality over extracted answers achieved `18/25 = 72%` on the discovery set, with wide uncertainty and no held-out confirmation yet.
+- Current evidence points to completion/final-answer formatting as the primary mechanism; error diversity appears largely downstream of truncation.
+
+Do not claim generality across small quantized models, do not claim exact `P(correct|EOS)=1.0` as a stable law, and do not claim prefix beats increasing budget until the sweep is done.
+
+**Final Decision**
+
+Claude can proceed to implementation planning for the measurement infrastructure now. The next implementation target should be the instrumented generation wrapper: correct token counts, true stop reasons, path-equivalent `input_ids`/`inputs_embeds` behavior, full raw output storage, strict/last-integer/answer-anywhere extractors, and task-clustered analysis hooks.
+
+Do not run the main experiment until v2.3 of the preregistration resolves the EOS-primary metric hierarchy and the compute-parity extension is specified.

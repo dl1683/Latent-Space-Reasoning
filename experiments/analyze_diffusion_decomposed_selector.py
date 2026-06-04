@@ -1,0 +1,467 @@
+"""Compare decomposed diffusion selectors against single repairability labels."""
+
+from __future__ import annotations
+
+import argparse
+import json
+from pathlib import Path
+
+DEFAULT_REPAIR_VALUE_GEOMETRY = Path(
+    "eval_results/diffusion_language/diffusion_repair_value_geometry.json"
+)
+DEFAULT_PHASE_SOURCE_POLICY = Path(
+    "eval_results/diffusion_language/diffusion_phase_source_policy_audit.json"
+)
+DEFAULT_RETENTION_AUDIT = Path(
+    "eval_results/diffusion_language/diffusion_anchor_retention_loss_audit.json"
+)
+DEFAULT_REALIZATION_AUDIT = Path(
+    "eval_results/diffusion_language/diffusion_realization_quality_audit.json"
+)
+DEFAULT_JSON_OUTPUT = Path("eval_results/diffusion_language/diffusion_decomposed_selector_audit.json")
+DEFAULT_REPORT_OUTPUT = Path("DIFFUSION_DECOMPOSED_SELECTOR_AUDIT.md")
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--repair-value-geometry", type=Path, default=DEFAULT_REPAIR_VALUE_GEOMETRY)
+    parser.add_argument("--phase-source-policy", type=Path, default=DEFAULT_PHASE_SOURCE_POLICY)
+    parser.add_argument("--retention-audit", type=Path, default=DEFAULT_RETENTION_AUDIT)
+    parser.add_argument("--realization-audit", type=Path, default=DEFAULT_REALIZATION_AUDIT)
+    parser.add_argument("--json-output", type=Path, default=DEFAULT_JSON_OUTPUT)
+    parser.add_argument("--report-output", type=Path, default=DEFAULT_REPORT_OUTPUT)
+    return parser.parse_args()
+
+
+def main() -> int:
+    args = parse_args()
+    audit = build_decomposed_selector_audit(
+        repair_value_geometry_path=args.repair_value_geometry,
+        phase_source_policy_path=args.phase_source_policy,
+        retention_audit_path=args.retention_audit,
+        realization_audit_path=args.realization_audit,
+    )
+    args.json_output.parent.mkdir(parents=True, exist_ok=True)
+    args.report_output.parent.mkdir(parents=True, exist_ok=True)
+    args.json_output.write_text(json.dumps(audit, indent=2, sort_keys=True), encoding="utf-8")
+    args.report_output.write_text(render_markdown(audit), encoding="utf-8")
+    selected = _dict(audit.get("selected_selector"))
+    print(
+        json.dumps(
+            {
+                "json_output": str(args.json_output),
+                "report_output": str(args.report_output),
+                "selected_selector": selected.get("selector_id", ""),
+                "single_repairability_shortfall": _float(
+                    _dict(audit.get("summary")).get("single_repairability_shortfall")
+                ),
+            },
+            indent=2,
+            sort_keys=True,
+        )
+    )
+    return 0
+
+
+def build_decomposed_selector_audit(
+    *,
+    repair_value_geometry_path: Path,
+    phase_source_policy_path: Path,
+    retention_audit_path: Path = DEFAULT_RETENTION_AUDIT,
+    realization_audit_path: Path = DEFAULT_REALIZATION_AUDIT,
+) -> dict[str, object]:
+    repair_value = json.loads(repair_value_geometry_path.read_text(encoding="utf-8"))
+    source_policy = json.loads(phase_source_policy_path.read_text(encoding="utf-8"))
+    retention_audit = json.loads(retention_audit_path.read_text(encoding="utf-8"))
+    realization_audit = json.loads(realization_audit_path.read_text(encoding="utf-8"))
+    value_rows = _list_of_dicts(repair_value.get("coordinate_rows"))
+    source_rows = _list_of_dicts(source_policy.get("targets"))
+    retention_rows = _retention_rows_by_task(retention_audit)
+    realization_rows = _realization_rows_by_policy(realization_audit)
+    selectors = _candidate_selectors()
+    selector_rows = [
+        _score_selector(
+            selector,
+            value_rows=value_rows,
+            source_rows=source_rows,
+            retention_rows=retention_rows,
+            realization_rows=realization_rows,
+        )
+        for selector in selectors
+    ]
+    selected = min(
+        selector_rows,
+        key=lambda row: (
+            _float(row.get("composite_shortfall")),
+            _float(row.get("value_regret")),
+            _float(row.get("source_weighted_error")),
+            str(row.get("selector_id", "")),
+        ),
+    )
+    return {
+        "generated_by": "experiments/analyze_diffusion_decomposed_selector.py",
+        "inputs": {
+            "phase_source_policy": str(phase_source_policy_path),
+            "realization_audit": str(realization_audit_path),
+            "repair_value_geometry": str(repair_value_geometry_path),
+            "retention_audit": str(retention_audit_path),
+        },
+        "schema": "diffusion_decomposed_selector_audit.v1",
+        "selected_selector": selected,
+        "selector_rows": selector_rows,
+        "summary": _summary(selector_rows, selected),
+    }
+
+
+def render_markdown(audit: dict[str, object]) -> str:
+    selected = _dict(audit.get("selected_selector"))
+    summary = _dict(audit.get("summary"))
+    lines = [
+        "# Diffusion Decomposed Selector Audit",
+        "",
+        "This file is generated by `experiments/analyze_diffusion_decomposed_selector.py`.",
+        (
+            "It compares one-label repairability selectors against decomposed selectors "
+            "that score repair value, source trust, retention, and anchor realization "
+            "as separate decisions."
+        ),
+        "",
+        "## Inputs",
+        "",
+        f"- Repair-value geometry: `{_dict(audit.get('inputs')).get('repair_value_geometry', '')}`",
+        f"- Phase-source policy audit: `{_dict(audit.get('inputs')).get('phase_source_policy', '')}`",
+        f"- Retention audit: `{_dict(audit.get('inputs')).get('retention_audit', '')}`",
+        f"- Realization audit: `{_dict(audit.get('inputs')).get('realization_audit', '')}`",
+        "",
+        "## Summary",
+        "",
+        f"- Selected selector: `{selected.get('selector_id', '')}`",
+        f"- Selected composite shortfall: `{_format_float(selected.get('composite_shortfall'))}`",
+        f"- Single repairability composite shortfall: `{_format_float(summary.get('single_repairability_shortfall'))}`",
+        f"- Decomposed improvement over single repairability: `{_format_float(summary.get('decomposed_improvement_over_single'))}`",
+        "",
+        "## Selector Comparison",
+        "",
+        (
+            "| Selector | Composite Shortfall | Value Regret | Source Error | Retention Error | Realization Error | "
+            "Value TP/FP/TN/FN | Source TP/FP/TN/FN | Spend Tasks | History Tasks | Seed Policy | Notes |"
+        ),
+        "| --- | ---: | ---: | ---: | ---: | ---: | --- | --- | --- | --- | --- | --- |",
+    ]
+    for row in _list_of_dicts(audit.get("selector_rows")):
+        lines.append(
+            "| "
+            f"`{row.get('selector_id', '')}` | "
+            f"{_format_float(row.get('composite_shortfall'))} | "
+            f"{_format_float(row.get('value_regret'))} | "
+            f"{_format_float(row.get('source_weighted_error'))} | "
+            f"{_format_float(row.get('retention_constraint_error'))} | "
+            f"{_format_float(row.get('realization_policy_error'))} | "
+            f"{_confusion(row, prefix='value')} | "
+            f"{_confusion(row, prefix='source')} | "
+            f"{_join_tasks(row.get('value_selected_tasks'))} | "
+            f"{_join_tasks(row.get('source_history_tasks'))} | "
+            f"`{row.get('realization_policy', '')}` | "
+            f"{row.get('notes', '')} |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Interpretation",
+            "",
+            (
+                "The single repairability label fails because it conflates at least two "
+                "different questions: whether another repair generation is worth its "
+                "cost, whether denoise history should replace the final source, whether "
+                "the chosen history source is retention-safe, and whether the compact "
+                "anchor is directly realized. The decomposed selector keeps those "
+                "questions separate."
+            ),
+            "",
+            (
+                "This is the immediate executable form of the proposed composite loss: "
+                "`L_total = L_value + beta L_source + gamma L_ret + eta L_realization`. "
+                "This audit now covers all four terms on the current local target rows."
+            ),
+        ]
+    )
+    return "\n".join(lines) + "\n"
+
+
+def _candidate_selectors() -> list[dict[str, object]]:
+    return [
+        {
+            "selector_id": "single_repairability_label",
+            "realization_policy": "auto_seeded",
+            "source_policy": "any_repairable_history",
+            "spend_policy": "any_repairable",
+            "notes": "collapses repair value and source trust into one repairability label",
+        },
+        {
+            "selector_id": "single_safe_repairability_label",
+            "realization_policy": "auto_compat_seeded",
+            "source_policy": "any_safe_history",
+            "spend_policy": "repairable_prompt_band",
+            "notes": "adds a safety/band proxy but still uses one positive repairability concept",
+        },
+        {
+            "selector_id": "value_proxy_final_source",
+            "realization_policy": "auto_compat_preserve_seeded",
+            "source_policy": "final_only",
+            "spend_policy": "value_proxy",
+            "notes": "separates cost-aware spend but refuses history source trust",
+        },
+        {
+            "selector_id": "decomposed_value_source",
+            "realization_policy": "auto_compat_preserve_seeded",
+            "source_policy": "strict_similarity_history",
+            "spend_policy": "value_proxy",
+            "notes": "current decomposed controller: value proxy, source-trust gate, retention constraint, and preservation seed",
+        },
+        {
+            "selector_id": "oracle_targets",
+            "realization_policy": "auto_compat_preserve_seeded",
+            "source_policy": "oracle_source",
+            "spend_policy": "oracle_value",
+            "notes": "upper bound from generated target labels",
+        },
+    ]
+
+
+def _score_selector(
+    selector: dict[str, object],
+    *,
+    value_rows: list[dict[str, object]],
+    source_rows: list[dict[str, object]],
+    retention_rows: dict[str, dict[str, object]],
+    realization_rows: dict[str, dict[str, object]],
+) -> dict[str, object]:
+    value = _score_value_policy(str(selector.get("spend_policy", "")), value_rows)
+    source = _score_source_policy(str(selector.get("source_policy", "")), source_rows)
+    retention_error = _retention_constraint_error(source.get("history_tasks", []), retention_rows)
+    realization_error = _realization_policy_error(
+        str(selector.get("realization_policy", "")),
+        realization_rows,
+    )
+    composite_shortfall = (
+        _float(value.get("regret"))
+        + _float(source.get("weighted_error"))
+        + retention_error
+        + realization_error
+    )
+    return {
+        **selector,
+        "composite_shortfall": composite_shortfall,
+        "realization_policy_error": realization_error,
+        "realization_policy_summary": realization_rows.get(
+            str(selector.get("realization_policy", "")),
+            {},
+        ),
+        "retention_constraint_error": retention_error,
+        "source_false_negative_count": source.get("false_negative_count", 0),
+        "source_false_positive_count": source.get("false_positive_count", 0),
+        "source_history_tasks": source.get("history_tasks", []),
+        "source_true_negative_count": source.get("true_negative_count", 0),
+        "source_true_positive_count": source.get("true_positive_count", 0),
+        "source_weighted_error": source.get("weighted_error", 0.0),
+        "value_false_negative_count": value.get("false_negative_count", 0),
+        "value_false_positive_count": value.get("false_positive_count", 0),
+        "value_regret": value.get("regret", 0.0),
+        "value_selected_tasks": value.get("selected_tasks", []),
+        "value_true_negative_count": value.get("true_negative_count", 0),
+        "value_true_positive_count": value.get("true_positive_count", 0),
+        "value_utility": value.get("policy_utility", 0.0),
+    }
+
+
+def _score_value_policy(policy_id: str, rows: list[dict[str, object]]) -> dict[str, object]:
+    oracle = sum(max(0.0, _float(row.get("utility"))) for row in rows)
+    true_positive = false_positive = true_negative = false_negative = 0
+    selected_tasks: list[str] = []
+    policy_utility = 0.0
+    for row in rows:
+        profitable = _float(row.get("utility")) > 0.0
+        selected = _predict_spend(policy_id, row)
+        if selected:
+            selected_tasks.append(str(row.get("task_id", "")))
+            policy_utility += _float(row.get("utility"))
+        if selected and profitable:
+            true_positive += 1
+        elif selected and not profitable:
+            false_positive += 1
+        elif not selected and not profitable:
+            true_negative += 1
+        else:
+            false_negative += 1
+    return {
+        "false_negative_count": false_negative,
+        "false_positive_count": false_positive,
+        "oracle_utility": oracle,
+        "policy_utility": policy_utility,
+        "regret": oracle - policy_utility,
+        "selected_tasks": selected_tasks,
+        "true_negative_count": true_negative,
+        "true_positive_count": true_positive,
+    }
+
+
+def _score_source_policy(policy_id: str, rows: list[dict[str, object]]) -> dict[str, object]:
+    true_positive = false_positive = true_negative = false_negative = 0
+    weighted_error = 0.0
+    history_tasks: list[str] = []
+    for row in rows:
+        label = int(_float(row.get("label")))
+        predicted_history = _predict_history(policy_id, row)
+        if predicted_history:
+            history_tasks.append(str(row.get("task_id", "")))
+        if predicted_history and label == 1:
+            true_positive += 1
+        elif predicted_history and label == 0:
+            false_positive += 1
+            weighted_error += _float(row.get("loss_weight"))
+        elif not predicted_history and label == 0:
+            true_negative += 1
+        else:
+            false_negative += 1
+            weighted_error += _float(row.get("loss_weight"))
+    return {
+        "false_negative_count": false_negative,
+        "false_positive_count": false_positive,
+        "history_tasks": history_tasks,
+        "true_negative_count": true_negative,
+        "true_positive_count": true_positive,
+        "weighted_error": weighted_error,
+    }
+
+
+def _predict_spend(policy_id: str, row: dict[str, object]) -> bool:
+    repairable = row.get("first_repairable_step") is not None
+    source_needs_repair = bool(row.get("source_needs_repair", False))
+    prompt_gap = _float(row.get("prompt_gap_count"))
+    source_quality = _float(row.get("source_quality"))
+    if policy_id == "any_repairable":
+        return repairable and source_needs_repair
+    if policy_id == "repairable_prompt_band":
+        return repairable and source_needs_repair and prompt_gap <= 9
+    if policy_id == "value_proxy":
+        return repairable and source_needs_repair and prompt_gap <= 9 and source_quality <= 0.31
+    if policy_id == "oracle_value":
+        return _float(row.get("utility")) > 0.0
+    return False
+
+
+def _predict_history(policy_id: str, row: dict[str, object]) -> bool:
+    if policy_id == "final_only":
+        return False
+    if policy_id == "any_repairable_history":
+        return _float(row.get("phase_repairable_count")) > 0.0
+    if policy_id == "any_safe_history":
+        return _float(row.get("phase_safe_repairable_count")) > 0.0
+    if policy_id == "strict_similarity_history":
+        return (
+            _float(row.get("phase_safe_repairable_count")) > 0.0
+            and _float(row.get("target_similarity")) >= 0.96
+            and _float(row.get("text_similarity")) >= 0.96
+        )
+    if policy_id == "oracle_source":
+        return int(_float(row.get("label"))) == 1
+    return False
+
+
+def _summary(selector_rows: list[dict[str, object]], selected: dict[str, object]) -> dict[str, object]:
+    single = next(
+        row for row in selector_rows if row.get("selector_id") == "single_repairability_label"
+    )
+    decomposed = next(
+        row for row in selector_rows if row.get("selector_id") == "decomposed_value_source"
+    )
+    return {
+        "decomposed_improvement_over_single": _float(single.get("composite_shortfall"))
+        - _float(decomposed.get("composite_shortfall")),
+        "decomposed_realization_error": decomposed.get("realization_policy_error", 0.0),
+        "decomposed_retention_error": decomposed.get("retention_constraint_error", 0.0),
+        "selected_selector_id": selected.get("selector_id", ""),
+        "single_repairability_shortfall": single.get("composite_shortfall", 0.0),
+    }
+
+
+def _retention_rows_by_task(audit: dict[str, object]) -> dict[str, dict[str, object]]:
+    return {
+        str(row.get("task_id", "")): row
+        for row in _list_of_dicts(audit.get("rows"))
+        if row.get("task_id")
+    }
+
+
+def _realization_rows_by_policy(audit: dict[str, object]) -> dict[str, dict[str, object]]:
+    rows = {}
+    best_task_score = max(
+        (_float(row.get("mean_task_score")) for row in _list_of_dicts(audit.get("policy_summaries"))),
+        default=0.0,
+    )
+    for row in _list_of_dicts(audit.get("policy_summaries")):
+        policy_id = str(row.get("policy_id", ""))
+        rows[policy_id] = {
+            **row,
+            "realization_policy_error": _float(row.get("mean_realization_quality_loss"))
+            + max(0.0, best_task_score - _float(row.get("mean_task_score"))),
+        }
+    return rows
+
+
+def _retention_constraint_error(
+    history_tasks: object,
+    retention_rows: dict[str, dict[str, object]],
+) -> float:
+    if not isinstance(history_tasks, list):
+        return 0.0
+    error = 0.0
+    for task_id in history_tasks:
+        row = retention_rows.get(str(task_id), {})
+        if row.get("classification") != "safe_history_anchor":
+            error += _float(row.get("constraint_retention_loss"))
+    return error
+
+
+def _realization_policy_error(
+    policy_id: str,
+    realization_rows: dict[str, dict[str, object]],
+) -> float:
+    return _float(_dict(realization_rows.get(policy_id)).get("realization_policy_error"))
+
+
+def _confusion(row: dict[str, object], *, prefix: str) -> str:
+    return (
+        f"{row.get(prefix + '_true_positive_count', 0)}/"
+        f"{row.get(prefix + '_false_positive_count', 0)}/"
+        f"{row.get(prefix + '_true_negative_count', 0)}/"
+        f"{row.get(prefix + '_false_negative_count', 0)}"
+    )
+
+
+def _dict(value: object) -> dict[str, object]:
+    return value if isinstance(value, dict) else {}
+
+
+def _list_of_dicts(value: object) -> list[dict[str, object]]:
+    return [row for row in value if isinstance(row, dict)] if isinstance(value, list) else []
+
+
+def _float(value: object) -> float:
+    if value is None:
+        return 0.0
+    return float(value)
+
+
+def _format_float(value: object) -> str:
+    return f"{_float(value):.6f}"
+
+
+def _join_tasks(value: object) -> str:
+    if not isinstance(value, list) or not value:
+        return "`none`"
+    return ", ".join(f"`{item}`" for item in value)
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

@@ -1,0 +1,144 @@
+{
+  "controller": {
+    "feature": "measured_probe_value_prediction",
+    "operator": "ge",
+    "rule_id": "measured_probe_value_prediction_ge_0p028915",
+    "threshold": 0.02891517987715706
+  },
+  "generated_by": "experiments/replay_diffusion_span_probe_value_floor_v11.py",
+  "inputs": {
+    "freeze_json": "eval_results\\diffusion_language\\span_probe_value_floor_v11_random_source_freeze.json",
+    "label_scores": "eval_results\\diffusion_language\\span_probe_value_floor_v11_random_source_label_scores.json",
+    "measurement_scores": "eval_results\\diffusion_language\\span_probe_value_floor_v11_random_source_measurement_scores.json"
+  },
+  "row_diagnostics": [
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "label": false,
+      "measured_probe_value_prediction": 0.029693952802359883,
+      "oracle_label": false,
+      "oracle_lift_vs_trajectory": 0.0,
+      "probe_cost_relative": 0.1875,
+      "prompt_coverage": 0.1875,
+      "prompt_gap_count": 12.0,
+      "selected": true,
+      "source_task_delta_vs_trajectory": -0.17692857142857144,
+      "task_id": "plan_081"
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "label": false,
+      "measured_probe_value_prediction": 0.03215008726003491,
+      "oracle_label": false,
+      "oracle_lift_vs_trajectory": 0.0,
+      "probe_cost_relative": 0.1875,
+      "prompt_coverage": 0.0,
+      "prompt_gap_count": 12.0,
+      "selected": true,
+      "source_task_delta_vs_trajectory": -0.2578571428571429,
+      "task_id": "plan_082"
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "label": false,
+      "measured_probe_value_prediction": 0.01833333333333333,
+      "oracle_label": false,
+      "oracle_lift_vs_trajectory": 0.0,
+      "probe_cost_relative": 0.1875,
+      "prompt_coverage": 0.0,
+      "prompt_gap_count": 12.0,
+      "selected": false,
+      "source_task_delta_vs_trajectory": -0.25642857142857145,
+      "task_id": "plan_083"
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "label": false,
+      "measured_probe_value_prediction": 0.02785175638017014,
+      "oracle_label": true,
+      "oracle_lift_vs_trajectory": 0.03750000000000003,
+      "probe_cost_relative": 0.1875,
+      "prompt_coverage": 0.7857142857142857,
+      "prompt_gap_count": 3.0,
+      "selected": false,
+      "source_task_delta_vs_trajectory": 0.0,
+      "task_id": "plan_084"
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "label": false,
+      "measured_probe_value_prediction": 0.02211255411255411,
+      "oracle_label": false,
+      "oracle_lift_vs_trajectory": 0.0,
+      "probe_cost_relative": 0.1875,
+      "prompt_coverage": 0.0,
+      "prompt_gap_count": 12.0,
+      "selected": false,
+      "source_task_delta_vs_trajectory": -0.3078571428571429,
+      "task_id": "plan_085"
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "label": false,
+      "measured_probe_value_prediction": 0.04006340718105424,
+      "oracle_label": false,
+      "oracle_lift_vs_trajectory": 0.0,
+      "probe_cost_relative": 0.1875,
+      "prompt_coverage": 0.35714285714285715,
+      "prompt_gap_count": 10.0,
+      "selected": true,
+      "source_task_delta_vs_trajectory": -0.3014285714285714,
+      "task_id": "plan_086"
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "label": false,
+      "measured_probe_value_prediction": 0.02552980132450331,
+      "oracle_label": false,
+      "oracle_lift_vs_trajectory": 0.0,
+      "probe_cost_relative": 0.1875,
+      "prompt_coverage": 0.7222222222222222,
+      "prompt_gap_count": 5.0,
+      "selected": false,
+      "source_task_delta_vs_trajectory": 0.0,
+      "task_id": "plan_087"
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.1389285714285714,
+      "label": true,
+      "measured_probe_value_prediction": 0.017524900398406377,
+      "oracle_label": true,
+      "oracle_lift_vs_trajectory": 0.1389285714285714,
+      "probe_cost_relative": 0.1875,
+      "prompt_coverage": 0.7333333333333333,
+      "prompt_gap_count": 4.0,
+      "selected": false,
+      "source_task_delta_vs_trajectory": 0.0,
+      "task_id": "plan_088"
+    }
+  ],
+  "schema": "diffusion_span_probe_value_floor_v11_replay.v1",
+  "selection_penalty": 0.02,
+  "summary": {
+    "error_count": 4,
+    "false_negative_count": 1,
+    "false_negative_task_ids": [
+      "plan_088"
+    ],
+    "false_positive_count": 3,
+    "false_positive_task_ids": [
+      "plan_081",
+      "plan_082",
+      "plan_086"
+    ],
+    "negative_source_delta_count": 5,
+    "oracle_positive_count": 2,
+    "policy_utility": -0.06,
+    "policy_utility_with_probe_cost": -0.09,
+    "positive_count": 1,
+    "positive_lift_covered": 0,
+    "probe_cost_penalty": 0.03,
+    "selected_count": 3,
+    "target_count": 8
+  }
+}

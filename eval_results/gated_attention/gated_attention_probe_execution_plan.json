@@ -1,0 +1,105 @@
+{
+  "allow_existing_primary_results": false,
+  "baseline_model": "Qwen/Qwen3-4B",
+  "blocking_reasons": [
+    "primary Qwen3-Next weights are not cached locally; select and record a current quantized artifact before starting the expensive run",
+    "Qwen3-Next model construction fails before weights load; resolve modeling dependencies (ModuleNotFoundError: ModuleNotFoundError: Could not import module 'Qwen3NextForCausalLM'. Are this object's requirements defined correctly? <- ModuleNotFoundError: No module named 'triton')"
+  ],
+  "claim_boundaries": [
+    "Do not treat mechanics smoke as gated-attention evidence.",
+    "Do not interpret random-prefix lift without the position-shift and zero-prefix controls.",
+    "Do not update article or README claim strength before mean-first report exists.",
+    "Do not rebuild the pre-result freeze after primary results exist unless explicitly auditing."
+  ],
+  "existing_primary_results": [],
+  "freeze_path": "eval_results\\gated_attention\\gated_attention_null_probe_freeze.json",
+  "freeze_probe_id": "gated_attention_null_probe_v1",
+  "generated_by": "experiments/build_gated_attention_probe_execution_plan.py",
+  "hf_cache": "C:\\Users\\devan\\.cache\\huggingface\\hub",
+  "mechanics_model": "Qwen/Qwen3-0.6B",
+  "model_cache": {
+    "baseline": {
+      "cache_dir_exists": true,
+      "has_weight_files": true,
+      "model": "Qwen/Qwen3-4B",
+      "path": "C:\\Users\\devan\\.cache\\huggingface\\hub\\models--Qwen--Qwen3-4B",
+      "snapshot_count": 1,
+      "weight_file_count": 5
+    },
+    "mechanics": {
+      "cache_dir_exists": true,
+      "has_weight_files": true,
+      "model": "Qwen/Qwen3-0.6B",
+      "path": "C:\\Users\\devan\\.cache\\huggingface\\hub\\models--Qwen--Qwen3-0.6B",
+      "snapshot_count": 1,
+      "weight_file_count": 1
+    },
+    "primary_gated": {
+      "cache_dir_exists": true,
+      "has_weight_files": false,
+      "model": "Qwen/Qwen3-Next-80B-A3B-Instruct",
+      "path": "C:\\Users\\devan\\.cache\\huggingface\\hub\\models--Qwen--Qwen3-Next-80B-A3B-Instruct",
+      "snapshot_count": 1,
+      "weight_file_count": 0
+    }
+  },
+  "modeling_dependency_state": {
+    "causal_conv1d_available": true,
+    "empty_model_constructible": false,
+    "failure_summary": "ModuleNotFoundError: Could not import module 'Qwen3NextForCausalLM'. Are this object's requirements defined correctly? <- ModuleNotFoundError: No module named 'triton'",
+    "failure_type": "ModuleNotFoundError",
+    "fla_available": true,
+    "flash_linear_attention_available": false,
+    "triton_available": false
+  },
+  "ordered_runs": [
+    {
+      "claim_status": "mechanics_only",
+      "command": "python -u experiments/run_latent_sensitivity.py --model Qwen/Qwen3-0.6B --task-type nested --difficulty sweet_spot --n-tasks 2 --control-mode position_shift --num-soft-tokens 2 --quantization 4bit --max-new-tokens 64 --output eval_results/gated_attention/qwen3_06b_position_shift_mechanics_smoke.json",
+      "expected_artifact": "eval_results/gated_attention/qwen3_06b_position_shift_mechanics_smoke.json",
+      "id": "mechanics_position_shift_smoke",
+      "required_before_primary": false
+    },
+    {
+      "claim_status": "required_primary_control",
+      "command": "python -u experiments/run_latent_sensitivity.py --model Qwen/Qwen3-Next-80B-A3B-Instruct --task-type nested --difficulty sweet_spot --n-tasks 25 --control-mode position_shift --num-soft-tokens 2 --quantization 4bit --output eval_results/gated_attention/qwen3_next_position_shift_control_result.json",
+      "expected_artifact": "eval_results\\gated_attention\\qwen3_next_position_shift_control_result.json",
+      "id": "primary_position_shift_control",
+      "required_before_primary": true
+    },
+    {
+      "claim_status": "required_primary_control",
+      "command": "python -u experiments/run_latent_sensitivity.py --model Qwen/Qwen3-Next-80B-A3B-Instruct --task-type nested --difficulty sweet_spot --n-tasks 25 --n-latents 1 --control-mode zero_embedding --num-soft-tokens 2 --quantization 4bit --output eval_results/gated_attention/qwen3_next_zero_prefix_result.json",
+      "expected_artifact": "eval_results\\gated_attention\\qwen3_next_zero_prefix_result.json",
+      "id": "primary_zero_prefix_control",
+      "required_before_primary": true
+    },
+    {
+      "claim_status": "primary_test",
+      "command": "python -u experiments/run_latent_sensitivity.py --model Qwen/Qwen3-Next-80B-A3B-Instruct --task-type nested --difficulty sweet_spot --n-tasks 25 --n-latents 10 --control-mode random_noise --num-soft-tokens 2 --quantization 4bit --output eval_results/gated_attention/qwen3_next_random_prefix_n10_result.json",
+      "expected_artifact": "eval_results\\gated_attention\\qwen3_next_random_prefix_n10_result.json",
+      "id": "primary_random_prefix_n10",
+      "required_before_primary": true
+    }
+  ],
+  "primary_model": "Qwen/Qwen3-Next-80B-A3B-Instruct",
+  "ready_for_primary_gpu_run": false,
+  "reporting_order": [
+    "mean last-integer accuracy",
+    "EOS/completion rate",
+    "true generated-token count",
+    "strict final-answer accuracy",
+    "answer-anywhere accuracy",
+    "position-shift delta vs zero-prefix delta",
+    "oracle coverage after mean metrics",
+    "pairwise error overlap/correlation after oracle"
+  ],
+  "runtime_compatibility": {
+    "current_runner_requires_transformers_inputs_embeds": true,
+    "gguf_openai_compatible_servers_do_not_expose_soft_prefix_inputs_embeds": true,
+    "transformers_supports_qwen3_next": true,
+    "transformers_version": "5.10.0.dev0"
+  },
+  "schema": "gated_attention_probe_execution_plan.v1",
+  "task_preset": "lsr_25_arithmetic_plus_cache_debug"
+}

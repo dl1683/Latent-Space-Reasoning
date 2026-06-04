@@ -1,0 +1,441 @@
+{
+  "generated_by": "experiments/analyze_diffusion_phase_source_threshold_sweep.py",
+  "runs": [
+    {
+      "extra_history_switches_vs_reference": 0,
+      "planning_repair_score": 0.5311160714285714,
+      "policy_id": "strict_096",
+      "raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_phase_hybrid_preserve_seeded_gated_fresh_v2_raw.jsonl",
+      "relative_gpu_cost": 2.625,
+      "repair_rows": [
+        {
+          "reason": "phase_hybrid_history_source_advantage",
+          "source_state": "history",
+          "target_similarity": 0.960486,
+          "task_id": "plan_001",
+          "task_score": 0.5282142857142856,
+          "text_similarity": 0.979969
+        },
+        {
+          "reason": "phase_hybrid_final_no_source_advantage",
+          "source_state": "final",
+          "target_similarity": 0.943503,
+          "task_id": "plan_003",
+          "task_score": 0.5382142857142858,
+          "text_similarity": 0.934498
+        },
+        {
+          "reason": "phase_hybrid_final_no_safe_repairable_skeleton",
+          "source_state": "final",
+          "target_similarity": 0.297872,
+          "task_id": "plan_004",
+          "task_score": 0.6217857142857143,
+          "text_similarity": 0.432773
+        },
+        {
+          "reason": "phase_hybrid_final_no_source_advantage",
+          "source_state": "final",
+          "target_similarity": 0.953405,
+          "task_id": "plan_006",
+          "task_score": 0.5842857142857143,
+          "text_similarity": 0.981132
+        },
+        {
+          "reason": "phase_hybrid_final_no_source_advantage",
+          "source_state": "final",
+          "target_similarity": 0.917012,
+          "task_id": "plan_007",
+          "task_score": 0.5835714285714286,
+          "text_similarity": 0.936102
+        }
+      ],
+      "run_id": "diffusion-9386ee5300a75528",
+      "score_delta_vs_reference": 0.0,
+      "scores_path": "eval_results\\diffusion_language\\llada_moe_mixed_phase_hybrid_preserve_seeded_gated_fresh_v2_scores.json",
+      "source_state_counts": {
+        "final": 4,
+        "history": 1
+      },
+      "thresholds": {
+        "phase_source_history_char_ratio_min": 0.95,
+        "phase_source_target_similarity_min": 0.96,
+        "phase_source_text_similarity_min": 0.96
+      }
+    },
+    {
+      "extra_history_switches_vs_reference": 1,
+      "planning_repair_score": 0.5245535714285714,
+      "policy_id": "loose_090",
+      "raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_phase_hybrid_preserve_seeded_gated_phase_source_loose090_fresh_v1_raw.jsonl",
+      "relative_gpu_cost": 2.625,
+      "repair_rows": [
+        {
+          "reason": "phase_hybrid_history_source_advantage",
+          "source_state": "history",
+          "target_similarity": 0.960486,
+          "task_id": "plan_001",
+          "task_score": 0.5282142857142856,
+          "text_similarity": 0.979969
+        },
+        {
+          "reason": "phase_hybrid_history_source_advantage",
+          "source_state": "history",
+          "target_similarity": 0.943503,
+          "task_id": "plan_003",
+          "task_score": 0.4857142857142857,
+          "text_similarity": 0.934498
+        },
+        {
+          "reason": "phase_hybrid_final_no_safe_repairable_skeleton",
+          "source_state": "final",
+          "target_similarity": 0.297872,
+          "task_id": "plan_004",
+          "task_score": 0.6217857142857143,
+          "text_similarity": 0.432773
+        },
+        {
+          "reason": "phase_hybrid_final_no_source_advantage",
+          "source_state": "final",
+          "target_similarity": 0.953405,
+          "task_id": "plan_006",
+          "task_score": 0.5842857142857143,
+          "text_similarity": 0.981132
+        },
+        {
+          "reason": "phase_hybrid_final_no_source_advantage",
+          "source_state": "final",
+          "target_similarity": 0.917012,
+          "task_id": "plan_007",
+          "task_score": 0.5835714285714286,
+          "text_similarity": 0.936102
+        }
+      ],
+      "run_id": "diffusion-27e1b13d93f3abad",
+      "score_delta_vs_reference": -0.006562500000000027,
+      "scores_path": "eval_results\\diffusion_language\\llada_moe_mixed_phase_hybrid_preserve_seeded_gated_phase_source_loose090_fresh_v1_scores.json",
+      "source_state_counts": {
+        "final": 3,
+        "history": 2
+      },
+      "thresholds": {
+        "phase_source_history_char_ratio_min": 0.9,
+        "phase_source_target_similarity_min": 0.9,
+        "phase_source_text_similarity_min": 0.9
+      }
+    },
+    {
+      "extra_history_switches_vs_reference": 0,
+      "planning_repair_score": 0.5311160714285714,
+      "policy_id": "strict_097",
+      "raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_phase_hybrid_preserve_seeded_gated_phase_source_strict097_fresh_v1_raw.jsonl",
+      "relative_gpu_cost": 2.625,
+      "repair_rows": [
+        {
+          "reason": "phase_hybrid_final_no_source_advantage",
+          "source_state": "final",
+          "target_similarity": 0.941176,
+          "task_id": "plan_001",
+          "task_score": 0.5282142857142856,
+          "text_similarity": 0.970451
+        },
+        {
+          "reason": "phase_hybrid_final_no_source_advantage",
+          "source_state": "final",
+          "target_similarity": 0.943503,
+          "task_id": "plan_003",
+          "task_score": 0.5382142857142858,
+          "text_similarity": 0.934498
+        },
+        {
+          "reason": "phase_hybrid_final_no_safe_repairable_skeleton",
+          "source_state": "final",
+          "target_similarity": 0.297872,
+          "task_id": "plan_004",
+          "task_score": 0.6217857142857143,
+          "text_similarity": 0.432773
+        },
+        {
+          "reason": "phase_hybrid_final_no_source_advantage",
+          "source_state": "final",
+          "target_similarity": 0.953405,
+          "task_id": "plan_006",
+          "task_score": 0.5842857142857143,
+          "text_similarity": 0.981132
+        },
+        {
+          "reason": "phase_hybrid_final_no_source_advantage",
+          "source_state": "final",
+          "target_similarity": 0.917012,
+          "task_id": "plan_007",
+          "task_score": 0.5835714285714286,
+          "text_similarity": 0.936102
+        }
+      ],
+      "run_id": "diffusion-d3d0f8b6e108263e",
+      "score_delta_vs_reference": 0.0,
+      "scores_path": "eval_results\\diffusion_language\\llada_moe_mixed_phase_hybrid_preserve_seeded_gated_phase_source_strict097_fresh_v1_scores.json",
+      "source_state_counts": {
+        "final": 5
+      },
+      "thresholds": {
+        "phase_source_history_char_ratio_min": 0.95,
+        "phase_source_target_similarity_min": 0.97,
+        "phase_source_text_similarity_min": 0.97
+      }
+    },
+    {
+      "extra_history_switches_vs_reference": 0,
+      "planning_repair_score": 0.5311160714285714,
+      "policy_id": "phase_final_named",
+      "raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_phase_final_preserve_seeded_gated_fresh_v1_raw.jsonl",
+      "relative_gpu_cost": 2.625,
+      "repair_rows": [
+        {
+          "reason": "final",
+          "source_state": "final",
+          "target_similarity": 0.0,
+          "task_id": "plan_001",
+          "task_score": 0.5282142857142856,
+          "text_similarity": 0.0
+        },
+        {
+          "reason": "final",
+          "source_state": "final",
+          "target_similarity": 0.0,
+          "task_id": "plan_003",
+          "task_score": 0.5382142857142858,
+          "text_similarity": 0.0
+        },
+        {
+          "reason": "final",
+          "source_state": "final",
+          "target_similarity": 0.0,
+          "task_id": "plan_004",
+          "task_score": 0.6217857142857143,
+          "text_similarity": 0.0
+        },
+        {
+          "reason": "final",
+          "source_state": "final",
+          "target_similarity": 0.0,
+          "task_id": "plan_006",
+          "task_score": 0.5842857142857143,
+          "text_similarity": 0.0
+        },
+        {
+          "reason": "final",
+          "source_state": "final",
+          "target_similarity": 0.0,
+          "task_id": "plan_007",
+          "task_score": 0.5835714285714286,
+          "text_similarity": 0.0
+        }
+      ],
+      "run_id": "diffusion-175cbd422107ee5e",
+      "score_delta_vs_reference": 0.0,
+      "scores_path": "eval_results\\diffusion_language\\llada_moe_mixed_phase_final_preserve_seeded_gated_fresh_v1_scores.json",
+      "source_state_counts": {
+        "final": 5
+      },
+      "thresholds": {}
+    }
+  ],
+  "schema": "diffusion_phase_source_threshold_sweep.v1",
+  "source_change_rows": [
+    {
+      "comparison_policy_id": "loose_090",
+      "comparison_reason": "phase_hybrid_history_source_advantage",
+      "comparison_source_state": "history",
+      "comparison_task_score": 0.5282142857142856,
+      "reference_reason": "phase_hybrid_history_source_advantage",
+      "reference_source_state": "history",
+      "reference_task_score": 0.5282142857142856,
+      "source_changed": false,
+      "task_id": "plan_001",
+      "task_score_delta": 0.0
+    },
+    {
+      "comparison_policy_id": "loose_090",
+      "comparison_reason": "phase_hybrid_history_source_advantage",
+      "comparison_source_state": "history",
+      "comparison_task_score": 0.4857142857142857,
+      "reference_reason": "phase_hybrid_final_no_source_advantage",
+      "reference_source_state": "final",
+      "reference_task_score": 0.5382142857142858,
+      "source_changed": true,
+      "task_id": "plan_003",
+      "task_score_delta": -0.05250000000000005
+    },
+    {
+      "comparison_policy_id": "loose_090",
+      "comparison_reason": "phase_hybrid_final_no_safe_repairable_skeleton",
+      "comparison_source_state": "final",
+      "comparison_task_score": 0.6217857142857143,
+      "reference_reason": "phase_hybrid_final_no_safe_repairable_skeleton",
+      "reference_source_state": "final",
+      "reference_task_score": 0.6217857142857143,
+      "source_changed": false,
+      "task_id": "plan_004",
+      "task_score_delta": 0.0
+    },
+    {
+      "comparison_policy_id": "loose_090",
+      "comparison_reason": "phase_hybrid_final_no_source_advantage",
+      "comparison_source_state": "final",
+      "comparison_task_score": 0.5842857142857143,
+      "reference_reason": "phase_hybrid_final_no_source_advantage",
+      "reference_source_state": "final",
+      "reference_task_score": 0.5842857142857143,
+      "source_changed": false,
+      "task_id": "plan_006",
+      "task_score_delta": 0.0
+    },
+    {
+      "comparison_policy_id": "loose_090",
+      "comparison_reason": "phase_hybrid_final_no_source_advantage",
+      "comparison_source_state": "final",
+      "comparison_task_score": 0.5835714285714286,
+      "reference_reason": "phase_hybrid_final_no_source_advantage",
+      "reference_source_state": "final",
+      "reference_task_score": 0.5835714285714286,
+      "source_changed": false,
+      "task_id": "plan_007",
+      "task_score_delta": 0.0
+    },
+    {
+      "comparison_policy_id": "strict_097",
+      "comparison_reason": "phase_hybrid_final_no_source_advantage",
+      "comparison_source_state": "final",
+      "comparison_task_score": 0.5282142857142856,
+      "reference_reason": "phase_hybrid_history_source_advantage",
+      "reference_source_state": "history",
+      "reference_task_score": 0.5282142857142856,
+      "source_changed": true,
+      "task_id": "plan_001",
+      "task_score_delta": 0.0
+    },
+    {
+      "comparison_policy_id": "strict_097",
+      "comparison_reason": "phase_hybrid_final_no_source_advantage",
+      "comparison_source_state": "final",
+      "comparison_task_score": 0.5382142857142858,
+      "reference_reason": "phase_hybrid_final_no_source_advantage",
+      "reference_source_state": "final",
+      "reference_task_score": 0.5382142857142858,
+      "source_changed": false,
+      "task_id": "plan_003",
+      "task_score_delta": 0.0
+    },
+    {
+      "comparison_policy_id": "strict_097",
+      "comparison_reason": "phase_hybrid_final_no_safe_repairable_skeleton",
+      "comparison_source_state": "final",
+      "comparison_task_score": 0.6217857142857143,
+      "reference_reason": "phase_hybrid_final_no_safe_repairable_skeleton",
+      "reference_source_state": "final",
+      "reference_task_score": 0.6217857142857143,
+      "source_changed": false,
+      "task_id": "plan_004",
+      "task_score_delta": 0.0
+    },
+    {
+      "comparison_policy_id": "strict_097",
+      "comparison_reason": "phase_hybrid_final_no_source_advantage",
+      "comparison_source_state": "final",
+      "comparison_task_score": 0.5842857142857143,
+      "reference_reason": "phase_hybrid_final_no_source_advantage",
+      "reference_source_state": "final",
+      "reference_task_score": 0.5842857142857143,
+      "source_changed": false,
+      "task_id": "plan_006",
+      "task_score_delta": 0.0
+    },
+    {
+      "comparison_policy_id": "strict_097",
+      "comparison_reason": "phase_hybrid_final_no_source_advantage",
+      "comparison_source_state": "final",
+      "comparison_task_score": 0.5835714285714286,
+      "reference_reason": "phase_hybrid_final_no_source_advantage",
+      "reference_source_state": "final",
+      "reference_task_score": 0.5835714285714286,
+      "source_changed": false,
+      "task_id": "plan_007",
+      "task_score_delta": 0.0
+    },
+    {
+      "comparison_policy_id": "phase_final_named",
+      "comparison_reason": "final",
+      "comparison_source_state": "final",
+      "comparison_task_score": 0.5282142857142856,
+      "reference_reason": "phase_hybrid_history_source_advantage",
+      "reference_source_state": "history",
+      "reference_task_score": 0.5282142857142856,
+      "source_changed": true,
+      "task_id": "plan_001",
+      "task_score_delta": 0.0
+    },
+    {
+      "comparison_policy_id": "phase_final_named",
+      "comparison_reason": "final",
+      "comparison_source_state": "final",
+      "comparison_task_score": 0.5382142857142858,
+      "reference_reason": "phase_hybrid_final_no_source_advantage",
+      "reference_source_state": "final",
+      "reference_task_score": 0.5382142857142858,
+      "source_changed": false,
+      "task_id": "plan_003",
+      "task_score_delta": 0.0
+    },
+    {
+      "comparison_policy_id": "phase_final_named",
+      "comparison_reason": "final",
+      "comparison_source_state": "final",
+      "comparison_task_score": 0.6217857142857143,
+      "reference_reason": "phase_hybrid_final_no_safe_repairable_skeleton",
+      "reference_source_state": "final",
+      "reference_task_score": 0.6217857142857143,
+      "source_changed": false,
+      "task_id": "plan_004",
+      "task_score_delta": 0.0
+    },
+    {
+      "comparison_policy_id": "phase_final_named",
+      "comparison_reason": "final",
+      "comparison_source_state": "final",
+      "comparison_task_score": 0.5842857142857143,
+      "reference_reason": "phase_hybrid_final_no_source_advantage",
+      "reference_source_state": "final",
+      "reference_task_score": 0.5842857142857143,
+      "source_changed": false,
+      "task_id": "plan_006",
+      "task_score_delta": 0.0
+    },
+    {
+      "comparison_policy_id": "phase_final_named",
+      "comparison_reason": "final",
+      "comparison_source_state": "final",
+      "comparison_task_score": 0.5835714285714286,
+      "reference_reason": "phase_hybrid_final_no_source_advantage",
+      "reference_source_state": "final",
+      "reference_task_score": 0.5835714285714286,
+      "source_changed": false,
+      "task_id": "plan_007",
+      "task_score_delta": 0.0
+    }
+  ],
+  "summary": {
+    "best_policies": [
+      "strict_096",
+      "strict_097",
+      "phase_final_named"
+    ],
+    "loose_policy_extra_history_switches": 1,
+    "loose_policy_score_delta": -0.006562500000000027,
+    "phase_final_named_history_switches_removed": 1,
+    "phase_final_named_policy_score_delta": 0.0,
+    "strict097_history_switches_removed": 1,
+    "strict097_policy_score_delta": 0.0,
+    "strict_policy_score": 0.5311160714285714,
+    "strict_relative_gpu_cost": 2.625
+  }
+}

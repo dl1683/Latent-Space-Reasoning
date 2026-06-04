@@ -1,4 +1,4 @@
-"""ARC-AGI-2 Evaluation Module for Latent Space Reasoning."""
+"""ARC Evaluation Module for Latent Space Reasoning."""
 
 from latent_reasoning.eval.arc_agi2 import (
     ARCEvaluator,

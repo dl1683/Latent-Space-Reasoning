@@ -1,0 +1,586 @@
+{
+  "base_generation_budget": 2.0,
+  "confirmation_rows": [
+    {
+      "cap": 9,
+      "cost": 2.0,
+      "cost_diff": 0.0,
+      "generation_count": 22,
+      "matches_budget_model": true,
+      "predicted_cost": 2.0,
+      "predicted_score": 0.4145982142857143,
+      "repair_phase_budget": "custom",
+      "repair_tasks": [],
+      "run_id": "diffusion-fae5a3498468b66f",
+      "score": 0.4145982142857143,
+      "score_diff": 0.0,
+      "score_path": "eval_results\\diffusion_language\\llada_moe_mixed_phase_final_preserve_seeded_gated_phase09_fresh_v1_scores.json"
+    },
+    {
+      "cap": 9,
+      "cost": 2.0,
+      "cost_diff": 0.0,
+      "generation_count": 22,
+      "matches_budget_model": true,
+      "predicted_cost": 2.0,
+      "predicted_score": 0.4145982142857143,
+      "repair_phase_budget": "floor",
+      "repair_tasks": [],
+      "run_id": "diffusion-fae5a3498468b66f",
+      "score": 0.4145982142857143,
+      "score_diff": 0.0,
+      "score_path": "eval_results\\diffusion_language\\llada_moe_mixed_phase_final_preserve_seeded_gated_phase_budget_floor_fresh_v1_scores.json"
+    },
+    {
+      "cap": 10,
+      "cost": 2.375,
+      "cost_diff": 0.0,
+      "generation_count": 25,
+      "matches_budget_model": true,
+      "predicted_cost": 2.375,
+      "predicted_score": 0.47250000000000003,
+      "repair_phase_budget": "cheap",
+      "repair_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004"
+      ],
+      "run_id": "diffusion-f8f6ae3e209d502b",
+      "score": 0.47250000000000003,
+      "score_diff": 0.0,
+      "score_path": "eval_results\\diffusion_language\\llada_moe_mixed_phase_final_preserve_seeded_gated_phase_budget_cheap_fresh_v1_scores.json"
+    },
+    {
+      "cap": 10,
+      "cost": 2.375,
+      "cost_diff": 0.0,
+      "generation_count": 25,
+      "matches_budget_model": true,
+      "predicted_cost": 2.375,
+      "predicted_score": 0.47250000000000003,
+      "repair_phase_budget": "custom",
+      "repair_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004"
+      ],
+      "run_id": "diffusion-f8f6ae3e209d502b",
+      "score": 0.47250000000000003,
+      "score_diff": 0.0,
+      "score_path": "eval_results\\diffusion_language\\llada_moe_mixed_phase_final_preserve_seeded_gated_phase10_fresh_v1_scores.json"
+    },
+    {
+      "cap": 16,
+      "cost": 2.375,
+      "cost_diff": 0.0,
+      "generation_count": 25,
+      "matches_budget_model": true,
+      "predicted_cost": 2.375,
+      "predicted_score": 0.47250000000000003,
+      "repair_phase_budget": "custom",
+      "repair_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004"
+      ],
+      "run_id": "diffusion-f8f6ae3e209d502b",
+      "score": 0.47250000000000003,
+      "score_diff": 0.0,
+      "score_path": "eval_results\\diffusion_language\\llada_moe_mixed_phase_final_preserve_seeded_gated_phase16_fresh_v1_scores.json"
+    },
+    {
+      "cap": 20,
+      "cost": 2.5,
+      "cost_diff": 0.0,
+      "generation_count": 26,
+      "matches_budget_model": true,
+      "predicted_cost": 2.5,
+      "predicted_score": 0.49660714285714286,
+      "repair_phase_budget": "custom",
+      "repair_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004",
+        "plan_006"
+      ],
+      "run_id": "diffusion-65f906724fed3cbc",
+      "score": 0.49660714285714286,
+      "score_diff": 0.0,
+      "score_path": "eval_results\\diffusion_language\\llada_moe_mixed_phase_final_preserve_seeded_gated_phase20_fresh_v1_scores.json"
+    },
+    {
+      "cap": 20,
+      "cost": 2.5,
+      "cost_diff": 0.0,
+      "generation_count": 26,
+      "matches_budget_model": true,
+      "predicted_cost": 2.5,
+      "predicted_score": 0.49660714285714286,
+      "repair_phase_budget": "mid",
+      "repair_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004",
+        "plan_006"
+      ],
+      "run_id": "diffusion-65f906724fed3cbc",
+      "score": 0.49660714285714286,
+      "score_diff": 0.0,
+      "score_path": "eval_results\\diffusion_language\\llada_moe_mixed_phase_final_preserve_seeded_gated_phase_budget_mid_fresh_v1_scores.json"
+    },
+    {
+      "cap": 30,
+      "cost": 2.5,
+      "cost_diff": 0.0,
+      "generation_count": 26,
+      "matches_budget_model": true,
+      "predicted_cost": 2.5,
+      "predicted_score": 0.49660714285714286,
+      "repair_phase_budget": "custom",
+      "repair_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004",
+        "plan_006"
+      ],
+      "run_id": "diffusion-65f906724fed3cbc",
+      "score": 0.49660714285714286,
+      "score_diff": 0.0,
+      "score_path": "eval_results\\diffusion_language\\llada_moe_mixed_phase_final_preserve_seeded_gated_phase30_fresh_v1_scores.json"
+    },
+    {
+      "cap": 31,
+      "cost": 2.625,
+      "cost_diff": 0.0,
+      "generation_count": 27,
+      "matches_budget_model": true,
+      "predicted_cost": 2.625,
+      "predicted_score": 0.5311160714285714,
+      "repair_phase_budget": "custom",
+      "repair_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004",
+        "plan_006",
+        "plan_007"
+      ],
+      "run_id": "diffusion-175cbd422107ee5e",
+      "score": 0.5311160714285714,
+      "score_diff": 0.0,
+      "score_path": "eval_results\\diffusion_language\\llada_moe_mixed_phase_final_preserve_seeded_gated_phase31_fresh_v1_scores.json"
+    },
+    {
+      "cap": 31,
+      "cost": 2.625,
+      "cost_diff": 0.0,
+      "generation_count": 27,
+      "matches_budget_model": true,
+      "predicted_cost": 2.625,
+      "predicted_score": 0.5311160714285714,
+      "repair_phase_budget": "frontier",
+      "repair_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004",
+        "plan_006",
+        "plan_007"
+      ],
+      "run_id": "diffusion-175cbd422107ee5e",
+      "score": 0.5311160714285714,
+      "score_diff": 0.0,
+      "score_path": "eval_results\\diffusion_language\\llada_moe_mixed_phase_final_preserve_seeded_gated_phase_budget_frontier_fresh_v1_scores.json"
+    },
+    {
+      "cap": 32,
+      "cost": 2.625,
+      "cost_diff": 0.0,
+      "generation_count": 27,
+      "matches_budget_model": true,
+      "predicted_cost": 2.625,
+      "predicted_score": 0.5311160714285714,
+      "repair_phase_budget": "custom",
+      "repair_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004",
+        "plan_006",
+        "plan_007"
+      ],
+      "run_id": "diffusion-175cbd422107ee5e",
+      "score": 0.5311160714285714,
+      "score_diff": 0.0,
+      "score_path": "eval_results\\diffusion_language\\llada_moe_mixed_phase_final_preserve_seeded_gated_fresh_v1_scores.json"
+    }
+  ],
+  "generated_by": "experiments/analyze_diffusion_phase_window_budget.py",
+  "predicted_cap_rows": [
+    {
+      "active_repair_count": 0,
+      "active_repair_tasks": [],
+      "cap": 9,
+      "delta_vs_greedy": 0.0023214285714285854,
+      "delta_vs_random": 0.04247321428571432,
+      "predicted_generation_count": 22,
+      "predicted_relative_cost": 2.0,
+      "predicted_score": 0.4145982142857143
+    },
+    {
+      "active_repair_count": 3,
+      "active_repair_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004"
+      ],
+      "cap": 10,
+      "delta_vs_greedy": 0.06022321428571431,
+      "delta_vs_random": 0.10037500000000005,
+      "predicted_generation_count": 25,
+      "predicted_relative_cost": 2.375,
+      "predicted_score": 0.47250000000000003
+    },
+    {
+      "active_repair_count": 3,
+      "active_repair_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004"
+      ],
+      "cap": 16,
+      "delta_vs_greedy": 0.06022321428571431,
+      "delta_vs_random": 0.10037500000000005,
+      "predicted_generation_count": 25,
+      "predicted_relative_cost": 2.375,
+      "predicted_score": 0.47250000000000003
+    },
+    {
+      "active_repair_count": 4,
+      "active_repair_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004",
+        "plan_006"
+      ],
+      "cap": 20,
+      "delta_vs_greedy": 0.08433035714285714,
+      "delta_vs_random": 0.12448214285714287,
+      "predicted_generation_count": 26,
+      "predicted_relative_cost": 2.5,
+      "predicted_score": 0.49660714285714286
+    },
+    {
+      "active_repair_count": 4,
+      "active_repair_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004",
+        "plan_006"
+      ],
+      "cap": 30,
+      "delta_vs_greedy": 0.08433035714285714,
+      "delta_vs_random": 0.12448214285714287,
+      "predicted_generation_count": 26,
+      "predicted_relative_cost": 2.5,
+      "predicted_score": 0.49660714285714286
+    },
+    {
+      "active_repair_count": 5,
+      "active_repair_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004",
+        "plan_006",
+        "plan_007"
+      ],
+      "cap": 31,
+      "delta_vs_greedy": 0.1188392857142857,
+      "delta_vs_random": 0.15899107142857144,
+      "predicted_generation_count": 27,
+      "predicted_relative_cost": 2.625,
+      "predicted_score": 0.5311160714285714
+    },
+    {
+      "active_repair_count": 5,
+      "active_repair_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004",
+        "plan_006",
+        "plan_007"
+      ],
+      "cap": 32,
+      "delta_vs_greedy": 0.1188392857142857,
+      "delta_vs_random": 0.15899107142857144,
+      "predicted_generation_count": 27,
+      "predicted_relative_cost": 2.625,
+      "predicted_score": 0.5311160714285714
+    }
+  ],
+  "promotion_margin": 0.02,
+  "reference_run_id": "diffusion-175cbd422107ee5e",
+  "reference_score_path": "eval_results\\diffusion_language\\llada_moe_mixed_phase_final_preserve_seeded_gated_fresh_v1_scores.json",
+  "repair_generation_budget": 1.0,
+  "repair_pack": "constraint_span_phase_final_preserve_seeded_gated",
+  "runner_mode_rows": [
+    {
+      "cap": 9,
+      "mode": "floor",
+      "predicted_relative_cost": 2.0,
+      "predicted_score": 0.4145982142857143,
+      "repair_tasks": []
+    },
+    {
+      "cap": 10,
+      "mode": "cheap",
+      "predicted_relative_cost": 2.375,
+      "predicted_score": 0.47250000000000003,
+      "repair_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004"
+      ]
+    },
+    {
+      "cap": 20,
+      "mode": "mid",
+      "predicted_relative_cost": 2.5,
+      "predicted_score": 0.49660714285714286,
+      "repair_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004",
+        "plan_006"
+      ]
+    },
+    {
+      "cap": 31,
+      "mode": "frontier",
+      "predicted_relative_cost": 2.625,
+      "predicted_score": 0.5311160714285714,
+      "repair_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004",
+        "plan_006",
+        "plan_007"
+      ]
+    }
+  ],
+  "schema": "diffusion_phase_window_budget_map.v1",
+  "summary": {
+    "confirmation_count": 11,
+    "confirmation_mismatch_count": 0,
+    "first_repair_cap": 10,
+    "floor_cap": 9,
+    "four_repair_cap": 20,
+    "full_frontier_cap": 31,
+    "max_predicted_score": 0.5311160714285714,
+    "transition_count": 4
+  },
+  "task_rows": [
+    {
+      "first_repairable_coverage": 0.4,
+      "first_repairable_step": 10,
+      "first_repairable_step_fraction": 0.3125,
+      "gate_reason": "denoise_phase_repairable",
+      "prompt_coverage": 0.4666666666666667,
+      "prompt_gap_count": 9,
+      "repair_control": "constraint_gap_span_phase_final_preserve_seeded_gated_repair",
+      "repair_lift_vs_trajectory": 0.06285714285714278,
+      "repair_score": 0.5282142857142856,
+      "selected_repair": true,
+      "source_needs_repair": true,
+      "source_quality": 0.34785714285714286,
+      "task_id": "plan_001",
+      "trajectory_score": 0.46535714285714286
+    },
+    {
+      "first_repairable_coverage": null,
+      "first_repairable_step": null,
+      "first_repairable_step_fraction": null,
+      "gate_reason": "source_quality_ok",
+      "prompt_coverage": 0.2777777777777778,
+      "prompt_gap_count": 12,
+      "repair_control": "low_confidence_32",
+      "repair_lift_vs_trajectory": 0.0,
+      "repair_score": 0.6885714285714286,
+      "selected_repair": false,
+      "source_needs_repair": false,
+      "source_quality": 0.5585714285714286,
+      "task_id": "plan_002",
+      "trajectory_score": 0.6885714285714286
+    },
+    {
+      "first_repairable_coverage": 0.4,
+      "first_repairable_step": 10,
+      "first_repairable_step_fraction": 0.3125,
+      "gate_reason": "denoise_phase_repairable",
+      "prompt_coverage": 0.6,
+      "prompt_gap_count": 6,
+      "repair_control": "constraint_gap_span_phase_final_preserve_seeded_gated_repair",
+      "repair_lift_vs_trajectory": 0.11642857142857149,
+      "repair_score": 0.5382142857142858,
+      "selected_repair": true,
+      "source_needs_repair": true,
+      "source_quality": 0.32428571428571423,
+      "task_id": "plan_003",
+      "trajectory_score": 0.42178571428571426
+    },
+    {
+      "first_repairable_coverage": 0.4117647058823529,
+      "first_repairable_step": 10,
+      "first_repairable_step_fraction": 0.3125,
+      "gate_reason": "denoise_phase_repairable",
+      "prompt_coverage": 0.8823529411764706,
+      "prompt_gap_count": 2,
+      "repair_control": "constraint_gap_span_phase_final_preserve_seeded_gated_repair",
+      "repair_lift_vs_trajectory": 0.2839285714285714,
+      "repair_score": 0.6217857142857143,
+      "selected_repair": true,
+      "source_needs_repair": true,
+      "source_quality": 0.27785714285714286,
+      "task_id": "plan_004",
+      "trajectory_score": 0.33785714285714286
+    },
+    {
+      "first_repairable_coverage": 0.4117647058823529,
+      "first_repairable_step": 30,
+      "first_repairable_step_fraction": 0.9375,
+      "gate_reason": "outside_repairable_band",
+      "prompt_coverage": 0.4117647058823529,
+      "prompt_gap_count": 10,
+      "repair_control": "low_confidence_32",
+      "repair_lift_vs_trajectory": 0.0,
+      "repair_score": 0.42142857142857143,
+      "selected_repair": false,
+      "source_needs_repair": true,
+      "source_quality": 0.29892857142857143,
+      "task_id": "plan_005",
+      "trajectory_score": 0.42142857142857143
+    },
+    {
+      "first_repairable_coverage": 0.4375,
+      "first_repairable_step": 20,
+      "first_repairable_step_fraction": 0.625,
+      "gate_reason": "denoise_phase_repairable",
+      "prompt_coverage": 0.4375,
+      "prompt_gap_count": 9,
+      "repair_control": "constraint_gap_span_phase_final_preserve_seeded_gated_repair",
+      "repair_lift_vs_trajectory": 0.19285714285714284,
+      "repair_score": 0.5842857142857143,
+      "selected_repair": true,
+      "source_needs_repair": true,
+      "source_quality": 0.30142857142857143,
+      "task_id": "plan_006",
+      "trajectory_score": 0.39142857142857146
+    },
+    {
+      "first_repairable_coverage": 0.4166666666666667,
+      "first_repairable_step": 31,
+      "first_repairable_step_fraction": 0.96875,
+      "gate_reason": "denoise_phase_repairable",
+      "prompt_coverage": 0.4166666666666667,
+      "prompt_gap_count": 8,
+      "repair_control": "constraint_gap_span_phase_final_preserve_seeded_gated_repair",
+      "repair_lift_vs_trajectory": 0.27607142857142863,
+      "repair_score": 0.5835714285714286,
+      "selected_repair": true,
+      "source_needs_repair": true,
+      "source_quality": 0.2475,
+      "task_id": "plan_007",
+      "trajectory_score": 0.3075
+    },
+    {
+      "first_repairable_coverage": null,
+      "first_repairable_step": null,
+      "first_repairable_step_fraction": null,
+      "gate_reason": "outside_repairable_band",
+      "prompt_coverage": 0.0625,
+      "prompt_gap_count": 12,
+      "repair_control": "random_32",
+      "repair_lift_vs_trajectory": 0.0,
+      "repair_score": 0.28285714285714286,
+      "selected_repair": false,
+      "source_needs_repair": true,
+      "source_quality": 0.24428571428571427,
+      "task_id": "plan_008",
+      "trajectory_score": 0.28285714285714286
+    }
+  ],
+  "transition_rows": [
+    {
+      "active_repair_count": 0,
+      "active_repair_tasks": [],
+      "cap": 9,
+      "cap_range": "9-9",
+      "delta_vs_greedy": 0.0023214285714285854,
+      "delta_vs_random": 0.04247321428571432,
+      "newly_active_tasks": [],
+      "onset_explanation": "",
+      "predicted_generation_count": 22,
+      "predicted_relative_cost": 2.0,
+      "predicted_score": 0.4145982142857143
+    },
+    {
+      "active_repair_count": 3,
+      "active_repair_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004"
+      ],
+      "cap": 10,
+      "cap_range": "10-19",
+      "delta_vs_greedy": 0.06022321428571431,
+      "delta_vs_random": 0.10037500000000005,
+      "newly_active_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004"
+      ],
+      "onset_explanation": "plan_001@10, plan_003@10, plan_004@10",
+      "predicted_generation_count": 25,
+      "predicted_relative_cost": 2.375,
+      "predicted_score": 0.47250000000000003
+    },
+    {
+      "active_repair_count": 4,
+      "active_repair_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004",
+        "plan_006"
+      ],
+      "cap": 20,
+      "cap_range": "20-30",
+      "delta_vs_greedy": 0.08433035714285714,
+      "delta_vs_random": 0.12448214285714287,
+      "newly_active_tasks": [
+        "plan_006"
+      ],
+      "onset_explanation": "plan_006@20",
+      "predicted_generation_count": 26,
+      "predicted_relative_cost": 2.5,
+      "predicted_score": 0.49660714285714286
+    },
+    {
+      "active_repair_count": 5,
+      "active_repair_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004",
+        "plan_006",
+        "plan_007"
+      ],
+      "cap": 31,
+      "cap_range": "31+",
+      "delta_vs_greedy": 0.1188392857142857,
+      "delta_vs_random": 0.15899107142857144,
+      "newly_active_tasks": [
+        "plan_007"
+      ],
+      "onset_explanation": "plan_007@31",
+      "predicted_generation_count": 27,
+      "predicted_relative_cost": 2.625,
+      "predicted_score": 0.5311160714285714
+    }
+  ]
+}

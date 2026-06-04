@@ -1,0 +1,133 @@
+{
+  "decision": {
+    "cost_sweep": [
+      {
+        "best_control_advantage": -0.1289285714285714,
+        "best_control_net": 0.1728571428571427,
+        "selected_cost": 0.0,
+        "unchanged_net": 0.3017857142857141
+      },
+      {
+        "best_control_advantage": -0.1309285714285714,
+        "best_control_net": 0.1678571428571427,
+        "selected_cost": 0.001,
+        "unchanged_net": 0.2987857142857141
+      },
+      {
+        "best_control_advantage": -0.13892857142857137,
+        "best_control_net": 0.14785714285714271,
+        "selected_cost": 0.005,
+        "unchanged_net": 0.2867857142857141
+      },
+      {
+        "best_control_advantage": -0.14892857142857135,
+        "best_control_net": 0.1228571428571427,
+        "selected_cost": 0.01,
+        "unchanged_net": 0.2717857142857141
+      },
+      {
+        "best_control_advantage": -0.14392857142857135,
+        "best_control_net": 0.09785714285714277,
+        "selected_cost": 0.02,
+        "unchanged_net": 0.2417857142857141
+      }
+    ],
+    "reason": "Unchanged hook selects all generated positives with zero selected waste and beats replay controls.",
+    "status": "unchanged_baseline_revalidated"
+  },
+  "generated_by": "experiments/analyze_diffusion_history_guard_v24_result.py",
+  "inputs": {
+    "scores": "eval_results\\diffusion_language\\history_guard_v24_label_scores.json",
+    "targets": "eval_results\\diffusion_language\\history_guard_v24_targets.json"
+  },
+  "policies": [
+    {
+      "missed_positive_tasks": [],
+      "policy_id": "generated_repair_value_v1",
+      "selected_count": 3,
+      "selected_positive_count": 3,
+      "selected_positive_lift": 0.3017857142857141,
+      "selected_tasks": [
+        "plan_187",
+        "plan_188",
+        "plan_190"
+      ],
+      "selected_waste_count": 0,
+      "selected_waste_tasks": []
+    },
+    {
+      "missed_positive_tasks": [],
+      "policy_id": "history_prefix_all_control",
+      "selected_count": 5,
+      "selected_positive_count": 1,
+      "selected_positive_lift": 0.1289285714285714,
+      "selected_tasks": [
+        "plan_185",
+        "plan_187",
+        "plan_188",
+        "plan_190",
+        "plan_191"
+      ],
+      "selected_waste_count": 4,
+      "selected_waste_tasks": [
+        "plan_185",
+        "plan_188",
+        "plan_190",
+        "plan_191"
+      ]
+    },
+    {
+      "missed_positive_tasks": [],
+      "policy_id": "final_preserve_all_control",
+      "selected_count": 5,
+      "selected_positive_count": 2,
+      "selected_positive_lift": 0.1728571428571427,
+      "selected_tasks": [
+        "plan_185",
+        "plan_187",
+        "plan_188",
+        "plan_190",
+        "plan_191"
+      ],
+      "selected_waste_count": 3,
+      "selected_waste_tasks": [
+        "plan_185",
+        "plan_187",
+        "plan_191"
+      ]
+    },
+    {
+      "missed_positive_tasks": [
+        "plan_187",
+        "plan_188"
+      ],
+      "policy_id": "asymmetric_repair_source_filter_v23",
+      "selected_count": 1,
+      "selected_positive_count": 1,
+      "selected_positive_lift": 0.11785714285714277,
+      "selected_tasks": [
+        "plan_190"
+      ],
+      "selected_waste_count": 0,
+      "selected_waste_tasks": []
+    }
+  ],
+  "schema": "diffusion_history_guard_v24_result.v1",
+  "summary": {
+    "all_generation_count": 32,
+    "candidate_aware_promotion_error_count": 3,
+    "oracle_headroom_vs_repair": 0.0,
+    "positive_count": 3,
+    "positive_tasks": [
+      "plan_187",
+      "plan_188",
+      "plan_190"
+    ],
+    "repair_task_delta_per_extra_generation_vs_evolved": 0.03017857142857141,
+    "repair_task_delta_vs_evolved": 0.03772321428571426,
+    "run_id": "diffusion-12de30e468544b5d",
+    "target_count": 10,
+    "unchanged_selected_positive_count": 3,
+    "unchanged_selected_waste_count": 0
+  }
+}

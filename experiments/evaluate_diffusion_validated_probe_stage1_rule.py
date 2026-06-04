@@ -1,0 +1,235 @@
+"""Evaluate a frozen validated Stage 1 probe rule on a target slice."""
+
+from __future__ import annotations
+
+import argparse
+import json
+import sys
+from pathlib import Path
+
+if __package__ is None or __package__ == "":
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+from experiments.fit_diffusion_validated_probe_stage1_gate import (
+    _dict,
+    _evaluate_rule,
+    _float,
+    _format_float,
+    _rule_selects,
+    fit_validated_probe_stage1_gate,
+)
+
+DEFAULT_TARGETS = Path(
+    "eval_results/diffusion_language/diffusion_counterfactual_probe_transfer_targets_v1.json"
+)
+DEFAULT_SCORES = Path(
+    "eval_results/diffusion_language/counterfactual_micro_probe_span_tomography_v4_fresh_planning_scores.json"
+)
+DEFAULT_TEXT_FIDELITY = Path(
+    "eval_results/diffusion_language/counterfactual_span_probe_text_fidelity_v4_fresh_planning.json"
+)
+DEFAULT_JSON_OUTPUT = Path(
+    "eval_results/diffusion_language/counterfactual_span_distinct_retention_rule_v4_fresh_planning.json"
+)
+DEFAULT_REPORT_OUTPUT = Path(
+    "DIFFUSION_COUNTERFACTUAL_SPAN_DISTINCT_RETENTION_RULE_V4_FRESH_PLANNING.md"
+)
+DEFAULT_FEATURE = "measured_distinct_retention_risk_visibility"
+DEFAULT_DIRECTION = "ge"
+DEFAULT_THRESHOLD = 0.927195
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--targets", type=Path, default=DEFAULT_TARGETS)
+    parser.add_argument("--scores", type=Path, default=DEFAULT_SCORES)
+    parser.add_argument("--text-fidelity", type=Path, default=DEFAULT_TEXT_FIDELITY)
+    parser.add_argument("--json-output", type=Path, default=DEFAULT_JSON_OUTPUT)
+    parser.add_argument("--report-output", type=Path, default=DEFAULT_REPORT_OUTPUT)
+    parser.add_argument("--report-title", default="Diffusion Counterfactual Span Distinct Retention Rule V4 Fresh Planning")
+    parser.add_argument("--feature", default=DEFAULT_FEATURE)
+    parser.add_argument("--direction", choices=("ge", "le"), default=DEFAULT_DIRECTION)
+    parser.add_argument("--threshold", type=float, default=DEFAULT_THRESHOLD)
+    parser.add_argument(
+        "--allow-invalid-probe-selection",
+        action="store_true",
+        help="Do not require Stage 1 probe validity before applying the frozen rule.",
+    )
+    return parser.parse_args()
+
+
+def main() -> int:
+    args = parse_args()
+    evaluation = evaluate_validated_probe_stage1_rule(
+        direction=args.direction,
+        feature=args.feature,
+        require_valid_probe=not args.allow_invalid_probe_selection,
+        scores_path=args.scores,
+        targets_path=args.targets,
+        text_fidelity_path=args.text_fidelity,
+        threshold=args.threshold,
+    )
+    args.json_output.parent.mkdir(parents=True, exist_ok=True)
+    args.report_output.parent.mkdir(parents=True, exist_ok=True)
+    args.json_output.write_text(json.dumps(evaluation, indent=2, sort_keys=True), encoding="utf-8")
+    args.report_output.write_text(
+        render_markdown(evaluation, title=args.report_title),
+        encoding="utf-8",
+    )
+    print(
+        json.dumps(
+            {
+                "error_count": evaluation["summary"]["error_count"],
+                "false_negative_count": evaluation["summary"]["false_negative_count"],
+                "false_positive_count": evaluation["summary"]["false_positive_count"],
+                "gate_decision": evaluation["summary"]["gate_decision"],
+                "selected_count": evaluation["summary"]["selected_count"],
+            },
+            indent=2,
+            sort_keys=True,
+        )
+    )
+    return 0
+
+
+def evaluate_validated_probe_stage1_rule(
+    *,
+    direction: str,
+    feature: str,
+    require_valid_probe: bool,
+    scores_path: Path,
+    targets_path: Path,
+    text_fidelity_path: Path | None,
+    threshold: float,
+) -> dict[str, object]:
+    fit = fit_validated_probe_stage1_gate(
+        scores_path=scores_path,
+        targets_path=targets_path,
+        text_fidelity_path=text_fidelity_path,
+    )
+    rows = [dict(row) for row in _list_of_dicts(fit.get("rows"))]
+    rule = _evaluate_rule(
+        rows,
+        feature,
+        direction,
+        threshold,
+        require_valid_probe=require_valid_probe,
+    )
+    for row in rows:
+        row["selected_by_fixed_rule"] = _rule_selects(row, rule)
+    return {
+        "generated_by": "experiments/evaluate_diffusion_validated_probe_stage1_rule.py",
+        "inputs": {
+            "scores": str(scores_path),
+            "targets": str(targets_path),
+            "text_fidelity": str(text_fidelity_path) if text_fidelity_path else "",
+        },
+        "rows": rows,
+        "rule": rule,
+        "schema": "diffusion_counterfactual_validated_probe_stage1_rule_eval.v1",
+        "summary": _summary(rows, rule, fit),
+    }
+
+
+def render_markdown(
+    evaluation: dict[str, object],
+    *,
+    title: str = "Diffusion Counterfactual Validated Probe Stage 1 Rule Evaluation",
+) -> str:
+    summary = _dict(evaluation.get("summary"))
+    rule = _dict(evaluation.get("rule"))
+    lines = [
+        f"# {title}",
+        "",
+        "This file is generated by `experiments/evaluate_diffusion_validated_probe_stage1_rule.py`.",
+        (
+            "It applies one frozen Stage 1 rule to the supplied slice. The threshold "
+            "is not refit on this evaluation surface."
+        ),
+        "",
+        "## Summary",
+        "",
+        f"- Rows: `{summary.get('row_count', 0)}`",
+        f"- Valid probe rows: `{summary.get('valid_probe_count', 0)}`",
+        f"- Positive labels: `{summary.get('positive_label_count', 0)}`",
+        f"- Negative labels: `{summary.get('negative_label_count', 0)}`",
+        f"- Fixed rule: `{rule.get('rule_name', '')}`",
+        f"- Selected rows: `{summary.get('selected_count', 0)}`",
+        f"- Errors: `{summary.get('error_count', 0)}`",
+        f"- False positives: `{summary.get('false_positive_count', 0)}`",
+        f"- False negatives: `{summary.get('false_negative_count', 0)}`",
+        f"- Missed positive lift: `{_format_float(summary.get('missed_positive_lift'))}`",
+        f"- Gate decision: `{summary.get('gate_decision', '')}`",
+        "",
+        "## Rows",
+        "",
+        (
+            "| Task | Label | Lift | Valid Probe | Distinct Retention | "
+            "X0/X2 Overlap | Fixed Select | Error |"
+        ),
+        "| --- | --- | ---: | --- | ---: | ---: | --- | --- |",
+    ]
+    for row in _list_of_dicts(evaluation.get("rows")):
+        features = _dict(row.get("features"))
+        selected = bool(row.get("selected_by_fixed_rule"))
+        label = bool(row.get("label"))
+        lines.append(
+            "| "
+            f"`{row.get('task_id', '')}` | "
+            f"{label} | "
+            f"{_format_float(row.get('candidate_lift_vs_trajectory'))} | "
+            f"{bool(row.get('valid_for_stage1'))} | "
+            f"{_format_float(features.get('measured_distinct_retention_risk_visibility'))} | "
+            f"{_format_float(features.get('counterfactual_probe_text_x0_x2_slot_overlap'))} | "
+            f"{selected} | "
+            f"{selected != label} |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Reading",
+            "",
+            (
+                "A passing local fit is not enough for promotion. This evaluation is "
+                "the required transfer check: the frozen rule must survive a "
+                "non-overlapping planning slice before it can move beyond "
+                "`diagnostic_only`."
+            ),
+        ]
+    )
+    return "\n".join(lines) + "\n"
+
+
+def _summary(
+    rows: list[dict[str, object]],
+    rule: dict[str, object],
+    fit: dict[str, object],
+) -> dict[str, object]:
+    positives = [row for row in rows if bool(row.get("label"))]
+    negatives = [row for row in rows if not bool(row.get("label"))]
+    valid_rows = [row for row in rows if bool(row.get("valid_for_stage1"))]
+    return {
+        "counterfactual_probe_policy": str(_dict(fit.get("summary")).get("counterfactual_probe_policy", "")),
+        "error_count": int(rule.get("error_count", 0)),
+        "false_negative_count": int(rule.get("false_negative_count", 0)),
+        "false_negative_task_ids": list(rule.get("false_negative_task_ids", [])),
+        "false_positive_count": int(rule.get("false_positive_count", 0)),
+        "false_positive_task_ids": list(rule.get("false_positive_task_ids", [])),
+        "gate_decision": "diagnostic_only",
+        "missed_positive_lift": _float(rule.get("missed_positive_lift")),
+        "negative_label_count": len(negatives),
+        "positive_label_count": len(positives),
+        "row_count": len(rows),
+        "selected_count": int(rule.get("selected_count", 0)),
+        "valid_probe_count": len(valid_rows),
+    }
+
+
+def _list_of_dicts(value: object) -> list[dict[str, object]]:
+    if not isinstance(value, list):
+        return []
+    return [item for item in value if isinstance(item, dict)]
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

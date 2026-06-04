@@ -1,0 +1,381 @@
+{
+  "all_generation_count": 24,
+  "baseline_selected_count": 17,
+  "baseline_selected_mean_combined_score": 0.7171806148534683,
+  "baseline_selected_mean_task_score": 0.9411764705882353,
+  "counterfactual_repair_selected_count": 0,
+  "mean_selected_repair_task_delta": 1.0,
+  "proposal_only_candidate_count": 1,
+  "proposal_only_selected": [
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7599479166666667,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "math_001",
+      "task_score": 1.0,
+      "text": "354"
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7599479166666667,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "math_002",
+      "task_score": 1.0,
+      "text": "270"
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7595659722222222,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "math_003",
+      "task_score": 1.0,
+      "text": "6"
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7597569444444444,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "math_004",
+      "task_score": 1.0,
+      "text": "72"
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7597569444444444,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "math_005",
+      "task_score": 1.0,
+      "text": "73"
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7599479166666667,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "math_006",
+      "task_score": 1.0,
+      "text": "540"
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7597569444444444,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "math_007",
+      "task_score": 1.0,
+      "text": "50"
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7597569444444444,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "math_008",
+      "task_score": 1.0,
+      "text": "29"
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7609386200716846,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "sym_001",
+      "task_score": 1.0,
+      "text": "D A B C"
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.75,
+      "repair_task_delta": 1.0,
+      "schedule_or_repair": "proposal_only_ablation",
+      "stage": "proposal_only",
+      "task_id": "sym_002",
+      "task_score": 1.0,
+      "text": "on"
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7628993055555555,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "sym_003",
+      "task_score": 1.0,
+      "text": "green, red, blue"
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7601747311827957,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "sym_004",
+      "task_score": 1.0,
+      "text": "No."
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7595659722222222,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "sym_005",
+      "task_score": 1.0,
+      "text": "6"
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7597569444444444,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "sym_006",
+      "task_score": 1.0,
+      "text": "13"
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7771712589605735,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "sci_001",
+      "task_score": 1.0,
+      "text": "B) amount of fertilizer"
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7616666666666667,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "sci_002",
+      "task_score": 1.0,
+      "text": "C) increases"
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7615115367383513,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "sci_003",
+      "task_score": 1.0,
+      "text": "B) thymine"
+    }
+  ],
+  "proposal_only_selected_count": 17,
+  "proposal_only_selected_mean_task_score": 1.0,
+  "proposal_only_selected_task_delta_vs_baseline": 0.05882352941176472,
+  "repair_selected_count": 1,
+  "selected": [
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7599479166666667,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "math_001",
+      "task_score": 1.0,
+      "text": "354",
+      "trajectory_score": 0.039791666666666684
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7599479166666667,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "math_002",
+      "task_score": 1.0,
+      "text": "270",
+      "trajectory_score": 0.039791666666666684
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7595659722222222,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "math_003",
+      "task_score": 1.0,
+      "text": "6",
+      "trajectory_score": 0.03826388888888892
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7597569444444444,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "math_004",
+      "task_score": 1.0,
+      "text": "72",
+      "trajectory_score": 0.039027777777777786
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7597569444444444,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "math_005",
+      "task_score": 1.0,
+      "text": "73",
+      "trajectory_score": 0.039027777777777786
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7599479166666667,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "math_006",
+      "task_score": 1.0,
+      "text": "540",
+      "trajectory_score": 0.039791666666666684
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7597569444444444,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "math_007",
+      "task_score": 1.0,
+      "text": "50",
+      "trajectory_score": 0.039027777777777786
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7597569444444444,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "math_008",
+      "task_score": 1.0,
+      "text": "29",
+      "trajectory_score": 0.039027777777777786
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7609386200716846,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "sym_001",
+      "task_score": 1.0,
+      "text": "D A B C",
+      "trajectory_score": 0.04375448028673838
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.8230381944444445,
+      "repair_task_delta": 1.0,
+      "schedule_or_repair": "answer_context_random_repair",
+      "stage": "verifier_repair",
+      "task_id": "sym_002",
+      "task_score": 1.0,
+      "text": "On",
+      "trajectory_score": 0.2921527777777778
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7628993055555555,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "sym_003",
+      "task_score": 1.0,
+      "text": "green, red, blue",
+      "trajectory_score": 0.05159722222222224
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7601747311827957,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "sym_004",
+      "task_score": 1.0,
+      "text": "No.",
+      "trajectory_score": 0.04069892473118282
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7595659722222222,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "sym_005",
+      "task_score": 1.0,
+      "text": "6",
+      "trajectory_score": 0.03826388888888892
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7597569444444444,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "sym_006",
+      "task_score": 1.0,
+      "text": "13",
+      "trajectory_score": 0.039027777777777786
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7771712589605735,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "sci_001",
+      "task_score": 1.0,
+      "text": "B) amount of fertilizer",
+      "trajectory_score": 0.10868503584229393
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7616666666666667,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "sci_002",
+      "task_score": 1.0,
+      "text": "C) increases",
+      "trajectory_score": 0.046666666666666676
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7615115367383513,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "sci_003",
+      "task_score": 1.0,
+      "text": "B) thymine",
+      "trajectory_score": 0.046046146953405045
+    }
+  ],
+  "selected_combined_delta_vs_baseline": 0.04782883986928099,
+  "selected_count": 17,
+  "selected_mean_combined_score": 0.7650094547227493,
+  "selected_mean_task_score": 1.0,
+  "selected_task_delta_vs_baseline": 0.05882352941176472,
+  "selected_task_delta_vs_proposal_only": 0.0,
+  "verifier_repair_selected_count": 1
+}

@@ -1,0 +1,68 @@
+**Verdict**
+
+Do not spend GPU time on the current draft. The experiment is directionally sound, but the preregistered primary endpoint answers the wrong mechanism question.
+
+The single most important change: **replace H1’s primary metric from `DM13` to plurality margin, `p - max(q_i)`, with `max(q_i)` and oracle coverage as required decompositions.** Keep `DM13` as secondary. The prereg currently makes `DM13_prefix > DM13_temperature` the primary diversity claim in [phase1a_preregistration.md](C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/tesla_session/phase1a_preregistration.md:20), but the theory and new analysis both say the binding condition is top-wrong mass plus margin, not wrong-answer uniqueness alone: [plurality_voting_theory.md](C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/tesla_session/plurality_voting_theory.md:8), [top_wrong_mass_analysis.md](C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/tesla_session/top_wrong_mass_analysis.md:175).
+
+**Design Critique**
+
+The design distinguishes **prefix vs temperature=0.6**, not “prefix special vs any diversity works.” One temperature setting is too narrow. If temp=0.6 loses, temp=0.9 or 1.0 may still work; if temp=0.6 wins, prefix length/RMS may be suboptimal. The conclusion should be scoped unless a dose-response arm is added.
+
+The current design also conflates three effects: individual correctness mass `p`, error concentration `max(q_i)`, and oracle coverage `p > 0`. The new analysis says Qwen4B’s advantage was largely oracle coverage, not voting mechanics: [top_wrong_mass_analysis.md](C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/tesla_session/top_wrong_mass_analysis.md:49). So H1 should not be “more answer diversity”; it should be “better vote viability,” operationalized as higher margin and lower top-wrong mass at comparable or reported `p`.
+
+`N=16` is acceptable for a pilot histogram, but weak for decisive inference. It reduces some N=10 tie instability, but it does not fix the fact that only 25 tasks drive the main statistical test. Also, even `N=16` is even; exact ties remain possible. `N=17` would be marginally better if the extra seed is cheap.
+
+Main confounds not addressed: reuse of existing Qwen prefix seeds vs fresh temperature data, operator-specific extraction failure, temperature-induced verbosity/malformed outputs, task/model selection after known prefix benefit, and response-format differences under last-integer extraction.
+
+**Metric Critique**
+
+Yes, the prereg should be updated. `DM13` is necessary but not sufficient. A task can have perfect wrong-answer uniqueness and still fail if `p` is too low. The correct primary mechanism metric is:
+
+`margin = p - max_i(q_i)`
+
+Use this hierarchy:
+
+1. Primary mechanism: `margin_prefix > margin_temperature`
+2. Required decomposition: `p`, `oracle coverage`, `max(q_i)`, tie rate
+3. Secondary diversity: `DM13`
+4. Diagnostic: full answer histograms and trivial-attractor mass
+
+The current `DM14` already exists in the metric table, but it is not elevated to the hypothesis/test level: [phase1a_preregistration.md](C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/tesla_session/phase1a_preregistration.md:138).
+
+The tie-breaking policy is not truly unbiased. “Earliest seed wins” in [phase1a_preregistration.md](C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/tesla_session/phase1a_preregistration.md:90) is only unbiased if seed order has no quality structure. That is not guaranteed, especially with reused prefix seeds. Better: report expected accuracy under uniform random tie-breaking, plus deterministic sensitivity analyses: earliest, latest, worst-case, best-case. For confirmatory testing, ties should be counted as fractional expected correctness or treated as abstentions, not silently resolved by seed order.
+
+**Statistical Critique**
+
+McNemar on 25 tasks at Bonferroni `alpha=0.025` is severely underpowered. The prereg’s “minimum detectable effect ~6 discordant pairs” is too optimistic for a two-sided exact test: 6-0 discordants gives `p=0.03125`, not significant at 0.025. You need at least 7-0 in the cleanest possible case, i.e. a 28-point task accuracy gap with zero temperature-only wins. With any opposite discordance, the required gap is larger.
+
+So if prefix is 18/25 and temperature is 14/25, McNemar cannot confirm H2 no matter how cleanly that looks descriptively. Treat H2 as effect-size plus CI unless the expected effect is very large.
+
+Wilcoxon on 19 “sensitive” tasks is only reasonable if the sensitive set is defined without post-treatment bias. If “sensitive” depends on both operators’ observed outputs, it conditions on outcomes and can hide oracle-coverage differences. Prefer all 25 tasks for primary margin/oracle analysis, with a clearly labeled conditional analysis on tasks where wrong-answer diversity is defined.
+
+Use permutation tests where possible. For binary paired accuracy, exact McNemar is already essentially the paired sign/permutation test. For margin, `max(q_i)`, oracle coverage, and per-task continuous/discrete effect sizes, use paired randomization tests plus bootstrap confidence intervals.
+
+**Missing Items**
+
+H3 as written is not a real prediction if `p` and `max(q_i)` are computed from the same histogram used for plurality. The theory file explicitly flags this tautology: [plurality_voting_theory.md](C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/tesla_session/plurality_voting_theory.md:7). Make H3 descriptive, or make it out-of-sample by estimating `p/max(q_i)` on seeds 0-7 and predicting plurality on seeds 8-15.
+
+Add a trivial-attractor analysis. Report cross-task wrong-answer mass for values like `1`, `2`, `0`, `-1`, excluding tasks where that value is correct. The new analysis already identifies this as systematic: [top_wrong_mass_analysis.md](C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/tesla_session/top_wrong_mass_analysis.md:149).
+
+Add response-level analysis. The mechanism file predicts different reasoning trajectories and specifically calls for edit-distance analysis: [prefix_vs_temperature_mechanism.md](C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/tesla_session/prefix_vs_temperature_mechanism.md:73). The prereg should include pairwise edit distance, first-divergence position, output length, extraction-span location, and manual review of decoded outputs. This also aligns with `CLAUDE.md`, which requires saved decoded outputs and manual/LLM-as-judge review: [CLAUDE.md](C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/CLAUDE.md:13).
+
+Extraction failure needs a hard rule. “Flag and investigate” in [phase1a_preregistration.md](C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/tesla_session/phase1a_preregistration.md:119) is not enough. Pre-register: if any primary operator exceeds 5 percent extraction failure, confirmatory claims are suspended and the run becomes exploratory unless a revised extractor is preregistered and rerun.
+
+**Alternative Design**
+
+Add a fourth operator: `temp=1.0`, same `N`, same extraction, same selector. This gives a real dose-response test: as temperature rises, does `DM13` rise while `p` collapses, or does `max(q_i)` fall enough to improve margin? That directly tests “any diversity works.”
+
+Paired bootstrap over per-task binary accuracy is useful for confidence intervals, but it is not a magic power fix. For binary task outcomes it contains nearly the same information as McNemar. Bootstrap becomes more valuable if the primary endpoint is per-task margin, oracle coverage, `max(q_i)`, or expected tie-broken accuracy.
+
+Compute per-task effect sizes, not just correct/wrong. For every task and operator report `p`, `max(q_i)`, `margin`, oracle indicator, plurality winner count, tie count, entropy, `DM13`, extraction failure, and trivial-attractor hit. That will let the result explain itself even if the binary test is underpowered.
+
+**Priority Directive**
+
+Revise the preregistration so the primary mechanistic hypothesis is:
+
+`margin_prefix = p_prefix - max(q_i)_prefix` is greater than `margin_temperature = p_temperature - max(q_i)_temperature`, with `max(q_i)`, `p`, oracle coverage, and tie rate reported as locked decompositions.
+
+Everything else is secondary. Without this change, Phase 1A can produce a statistically tidy answer to the wrong question.

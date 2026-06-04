@@ -58,6 +58,9 @@ class ReasoningResult:
 
     # Detailed history - for research and debugging
     history: List[dict] = field(default_factory=list)              # Per-generation statistics
+    reasoning_mode: str = "evolution"
+    reasoning_trace: List[dict] = field(default_factory=list)      # Stage-by-stage reasoning trace
+    decode_trace: List[dict] = field(default_factory=list)         # Per-token decode trace
 
 
 class Engine:
@@ -311,6 +314,9 @@ class Engine:
             evaluations=result.total_evaluations,
             stop_reason=result.stop_reason,
             history=result.evolution_history,
+            reasoning_mode=result.reasoning_mode,
+            reasoning_trace=result.reasoning_trace,
+            decode_trace=result.decode_trace,
         )
 
     def run_baseline(self, query: str) -> str:
@@ -389,7 +395,12 @@ class Engine:
         orchestrator = self._get_orchestrator()
         return orchestrator.encoder.encode(text)
 
-    def decode(self, latent: Tensor, query: str | None = None) -> str:
+    def decode(
+        self,
+        latent: Tensor,
+        query: str | None = None,
+        decode_mode: str | None = None,
+    ) -> str:
         """
         Decode a latent vector back to text.
 
@@ -408,11 +419,11 @@ class Engine:
             >>> # Encode then decode (should be similar to original)
             >>> original = "How to implement caching?"
             >>> latent = engine.encode(original)
-            >>> decoded = engine.decode(latent, query=original)
+            >>> decoded = engine.decode(latent, query=original, decode_mode="soft_prompt")
             >>> print("Decoded:", decoded)
         """
         orchestrator = self._get_orchestrator()
-        return orchestrator.encoder.decode(latent, query=query)
+        return orchestrator.decode(latent, query=query, decode_mode=decode_mode)
 
     def reset(self) -> None:
         """

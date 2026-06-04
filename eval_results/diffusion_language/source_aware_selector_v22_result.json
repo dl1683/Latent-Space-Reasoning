@@ -1,0 +1,99 @@
+{
+  "decision": {
+    "cost_sweep": [
+      {
+        "selected_cost": 0.0,
+        "source_aware_advantage": -0.08535714285714291,
+        "source_aware_net": 0.11785714285714288,
+        "unchanged_net": 0.2032142857142858
+      },
+      {
+        "selected_cost": 0.001,
+        "source_aware_advantage": -0.0823571428571429,
+        "source_aware_net": 0.11685714285714288,
+        "unchanged_net": 0.1992142857142858
+      },
+      {
+        "selected_cost": 0.005,
+        "source_aware_advantage": -0.07035714285714292,
+        "source_aware_net": 0.11285714285714288,
+        "unchanged_net": 0.1832142857142858
+      },
+      {
+        "selected_cost": 0.01,
+        "source_aware_advantage": -0.055357142857142896,
+        "source_aware_net": 0.10785714285714289,
+        "unchanged_net": 0.16321428571428578
+      },
+      {
+        "selected_cost": 0.02,
+        "source_aware_advantage": -0.02535714285714291,
+        "source_aware_net": 0.09785714285714288,
+        "unchanged_net": 0.12321428571428579
+      }
+    ],
+    "reason": "Source-aware replay rejects waste but loses too much positive utility versus the unchanged hook.",
+    "status": "precision_positive_utility_failed"
+  },
+  "generated_by": "experiments/analyze_diffusion_source_aware_selector_v22_result.py",
+  "inputs": {
+    "freeze": "eval_results\\diffusion_language\\source_aware_selector_v22_freeze.json",
+    "scores": "eval_results\\diffusion_language\\source_aware_selector_v22_label_scores.json",
+    "targets": "eval_results\\diffusion_language\\source_aware_selector_v22_targets.json"
+  },
+  "policies": [
+    {
+      "missed_positive_tasks": [
+        "plan_173"
+      ],
+      "policy_id": "generated_repair_value_v1",
+      "selected_count": 4,
+      "selected_positive_count": 3,
+      "selected_positive_lift": 0.2032142857142858,
+      "selected_tasks": [
+        "plan_169",
+        "plan_170",
+        "plan_175",
+        "plan_176"
+      ],
+      "selected_waste_count": 1,
+      "selected_waste_tasks": [
+        "plan_176"
+      ]
+    },
+    {
+      "missed_positive_tasks": [
+        "plan_169",
+        "plan_170",
+        "plan_173"
+      ],
+      "policy_id": "source_aware_candidate_selector_v22",
+      "selected_count": 1,
+      "selected_positive_count": 1,
+      "selected_positive_lift": 0.11785714285714288,
+      "selected_tasks": [
+        "plan_175"
+      ],
+      "selected_waste_count": 0,
+      "selected_waste_tasks": []
+    }
+  ],
+  "schema": "diffusion_source_aware_selector_v22_result.v1",
+  "summary": {
+    "candidate_aware_promotion_error_count": 3,
+    "positive_count": 3,
+    "positive_tasks": [
+      "plan_169",
+      "plan_170",
+      "plan_175"
+    ],
+    "repair_task_delta_per_extra_generation_vs_evolved": 0.016428571428571438,
+    "repair_task_delta_vs_evolved": 0.020535714285714296,
+    "run_id": "diffusion-2034a90bbe1f25f6",
+    "source_aware_selected_positive_count": 1,
+    "source_aware_selected_waste_count": 0,
+    "target_count": 10,
+    "unchanged_selected_positive_count": 3,
+    "unchanged_selected_waste_count": 1
+  }
+}

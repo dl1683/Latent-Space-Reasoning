@@ -1,0 +1,1018 @@
+{
+  "generated_by": "experiments/fit_diffusion_validated_probe_stage1_gate.py",
+  "inputs": {
+    "scores": "eval_results\\diffusion_language\\counterfactual_micro_probe_span_tomography_v4_transfer_v3_planning_scores.json",
+    "targets": "eval_results\\diffusion_language\\diffusion_counterfactual_probe_spend_eval_targets_v3_planning.json",
+    "text_fidelity": "eval_results\\diffusion_language\\counterfactual_span_probe_text_fidelity_v4_transfer_v3_planning.json"
+  },
+  "rows": [
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "features": {
+        "counterfactual_probe_text_duplicate_authorization": 0.0,
+        "counterfactual_probe_text_duplicate_slot_key": 0.0,
+        "counterfactual_probe_text_generic_slot": 0.0,
+        "counterfactual_probe_text_malformed_compact_key": 0.0,
+        "counterfactual_probe_text_max_slot_overlap": 0.25,
+        "counterfactual_probe_text_placeholder_slot": 0.0,
+        "counterfactual_probe_text_repeated_token_excess": 3.0,
+        "counterfactual_probe_text_semantic_defect": 0.0,
+        "counterfactual_probe_text_semantic_valid_for_stage1": 1.0,
+        "counterfactual_probe_text_slot_count": 3.0,
+        "counterfactual_probe_text_template_slot_echo": 0.0,
+        "counterfactual_probe_text_valid_for_stage1": 1.0,
+        "counterfactual_probe_text_weird_punctuation": 0.0,
+        "counterfactual_probe_text_x0_x2_slot_overlap": 0.25,
+        "measured_distinct_retention_risk_visibility": 0.9343690702087287,
+        "measured_expected_gap_visibility_gain": 0.2,
+        "measured_expected_realization_defect_visibility": 0.2,
+        "measured_expected_retention_risk_visibility": 0.9468690702087287,
+        "measured_expected_span_evidence_gain": 0.4444444444444444,
+        "measured_probe_value_prediction": 0.004410237643444473,
+        "prompt_gap_count": 10.0,
+        "source_quality": 0.36571428571428577,
+        "would_probe_score": 0.0
+      },
+      "label": false,
+      "selected_by_all_feature_rule": false,
+      "selected_by_validated_rule": false,
+      "task_id": "plan_017",
+      "valid_for_stage1": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.09000000000000002,
+      "features": {
+        "counterfactual_probe_text_duplicate_authorization": 0.0,
+        "counterfactual_probe_text_duplicate_slot_key": 0.0,
+        "counterfactual_probe_text_generic_slot": 0.0,
+        "counterfactual_probe_text_malformed_compact_key": 0.0,
+        "counterfactual_probe_text_max_slot_overlap": 0.0,
+        "counterfactual_probe_text_placeholder_slot": 0.0,
+        "counterfactual_probe_text_repeated_token_excess": 0.0,
+        "counterfactual_probe_text_semantic_defect": 0.0,
+        "counterfactual_probe_text_semantic_valid_for_stage1": 1.0,
+        "counterfactual_probe_text_slot_count": 3.0,
+        "counterfactual_probe_text_template_slot_echo": 0.0,
+        "counterfactual_probe_text_valid_for_stage1": 1.0,
+        "counterfactual_probe_text_weird_punctuation": 0.0,
+        "counterfactual_probe_text_x0_x2_slot_overlap": 0.0,
+        "measured_distinct_retention_risk_visibility": 0.9705263157894737,
+        "measured_expected_gap_visibility_gain": 1.0,
+        "measured_expected_realization_defect_visibility": 0.2,
+        "measured_expected_retention_risk_visibility": 0.9705263157894737,
+        "measured_expected_span_evidence_gain": 0.6666666666666666,
+        "measured_probe_value_prediction": 0.03958947368421052,
+        "prompt_gap_count": 8.0,
+        "source_quality": 0.24785714285714286,
+        "would_probe_score": 1.0
+      },
+      "label": true,
+      "selected_by_all_feature_rule": true,
+      "selected_by_validated_rule": true,
+      "task_id": "plan_018",
+      "valid_for_stage1": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "features": {
+        "counterfactual_probe_text_duplicate_authorization": 0.0,
+        "counterfactual_probe_text_duplicate_slot_key": 0.0,
+        "counterfactual_probe_text_generic_slot": 0.0,
+        "counterfactual_probe_text_malformed_compact_key": 0.0,
+        "counterfactual_probe_text_max_slot_overlap": 0.09090909090909091,
+        "counterfactual_probe_text_placeholder_slot": 0.0,
+        "counterfactual_probe_text_repeated_token_excess": 2.0,
+        "counterfactual_probe_text_semantic_defect": 0.0,
+        "counterfactual_probe_text_semantic_valid_for_stage1": 1.0,
+        "counterfactual_probe_text_slot_count": 3.0,
+        "counterfactual_probe_text_template_slot_echo": 0.0,
+        "counterfactual_probe_text_valid_for_stage1": 1.0,
+        "counterfactual_probe_text_weird_punctuation": 0.0,
+        "counterfactual_probe_text_x0_x2_slot_overlap": 0.09090909090909091,
+        "measured_distinct_retention_risk_visibility": 0.9677865612648222,
+        "measured_expected_gap_visibility_gain": 0.6666666666666666,
+        "measured_expected_realization_defect_visibility": 0.2,
+        "measured_expected_retention_risk_visibility": 0.9723320158102767,
+        "measured_expected_span_evidence_gain": 0.6470588235294118,
+        "measured_probe_value_prediction": 0.026805600580153008,
+        "prompt_gap_count": 12.0,
+        "source_quality": 0.33285714285714285,
+        "would_probe_score": 0.0
+      },
+      "label": false,
+      "selected_by_all_feature_rule": false,
+      "selected_by_validated_rule": false,
+      "task_id": "plan_019",
+      "valid_for_stage1": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "features": {
+        "counterfactual_probe_text_duplicate_authorization": 0.0,
+        "counterfactual_probe_text_duplicate_slot_key": 0.0,
+        "counterfactual_probe_text_generic_slot": 0.0,
+        "counterfactual_probe_text_malformed_compact_key": 0.0,
+        "counterfactual_probe_text_max_slot_overlap": 0.0,
+        "counterfactual_probe_text_placeholder_slot": 0.0,
+        "counterfactual_probe_text_repeated_token_excess": 0.0,
+        "counterfactual_probe_text_semantic_defect": 0.0,
+        "counterfactual_probe_text_semantic_valid_for_stage1": 1.0,
+        "counterfactual_probe_text_slot_count": 3.0,
+        "counterfactual_probe_text_template_slot_echo": 0.0,
+        "counterfactual_probe_text_valid_for_stage1": 1.0,
+        "counterfactual_probe_text_weird_punctuation": 0.0,
+        "counterfactual_probe_text_x0_x2_slot_overlap": 0.0,
+        "measured_distinct_retention_risk_visibility": 0.9017094017094017,
+        "measured_expected_gap_visibility_gain": 0.8333333333333334,
+        "measured_expected_realization_defect_visibility": 0.0,
+        "measured_expected_retention_risk_visibility": 0.9017094017094017,
+        "measured_expected_span_evidence_gain": 0.4375,
+        "measured_probe_value_prediction": 0.024257478632478638,
+        "prompt_gap_count": 6.0,
+        "source_quality": 0.18,
+        "would_probe_score": 1.0
+      },
+      "label": false,
+      "selected_by_all_feature_rule": true,
+      "selected_by_validated_rule": false,
+      "task_id": "plan_020",
+      "valid_for_stage1": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0714285714285714,
+      "features": {
+        "counterfactual_probe_text_duplicate_authorization": 0.0,
+        "counterfactual_probe_text_duplicate_slot_key": 0.0,
+        "counterfactual_probe_text_generic_slot": 0.0,
+        "counterfactual_probe_text_malformed_compact_key": 0.0,
+        "counterfactual_probe_text_max_slot_overlap": 0.0,
+        "counterfactual_probe_text_placeholder_slot": 0.0,
+        "counterfactual_probe_text_repeated_token_excess": 0.0,
+        "counterfactual_probe_text_semantic_defect": 0.0,
+        "counterfactual_probe_text_semantic_valid_for_stage1": 1.0,
+        "counterfactual_probe_text_slot_count": 3.0,
+        "counterfactual_probe_text_template_slot_echo": 0.0,
+        "counterfactual_probe_text_valid_for_stage1": 1.0,
+        "counterfactual_probe_text_weird_punctuation": 0.0,
+        "counterfactual_probe_text_x0_x2_slot_overlap": 0.0,
+        "measured_distinct_retention_risk_visibility": 0.9445628997867804,
+        "measured_expected_gap_visibility_gain": 0.8333333333333334,
+        "measured_expected_realization_defect_visibility": 0.0,
+        "measured_expected_retention_risk_visibility": 0.9445628997867804,
+        "measured_expected_span_evidence_gain": 0.4666666666666667,
+        "measured_probe_value_prediction": 0.024275408670931062,
+        "prompt_gap_count": 6.0,
+        "source_quality": 0.2564285714285714,
+        "would_probe_score": 1.0
+      },
+      "label": true,
+      "selected_by_all_feature_rule": true,
+      "selected_by_validated_rule": false,
+      "task_id": "plan_021",
+      "valid_for_stage1": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "features": {
+        "counterfactual_probe_text_duplicate_authorization": 0.0,
+        "counterfactual_probe_text_duplicate_slot_key": 0.0,
+        "counterfactual_probe_text_generic_slot": 0.0,
+        "counterfactual_probe_text_malformed_compact_key": 0.0,
+        "counterfactual_probe_text_max_slot_overlap": 0.0,
+        "counterfactual_probe_text_placeholder_slot": 0.0,
+        "counterfactual_probe_text_repeated_token_excess": 0.0,
+        "counterfactual_probe_text_semantic_defect": 0.0,
+        "counterfactual_probe_text_semantic_valid_for_stage1": 1.0,
+        "counterfactual_probe_text_slot_count": 3.0,
+        "counterfactual_probe_text_template_slot_echo": 0.0,
+        "counterfactual_probe_text_valid_for_stage1": 1.0,
+        "counterfactual_probe_text_weird_punctuation": 0.0,
+        "counterfactual_probe_text_x0_x2_slot_overlap": 0.0,
+        "measured_distinct_retention_risk_visibility": 0.9763779527559056,
+        "measured_expected_gap_visibility_gain": 0.6666666666666666,
+        "measured_expected_realization_defect_visibility": 0.0,
+        "measured_expected_retention_risk_visibility": 0.9763779527559056,
+        "measured_expected_span_evidence_gain": 0.55,
+        "measured_probe_value_prediction": 0.019620059992500934,
+        "prompt_gap_count": 12.0,
+        "source_quality": 0.34571428571428564,
+        "would_probe_score": 0.0
+      },
+      "label": false,
+      "selected_by_all_feature_rule": false,
+      "selected_by_validated_rule": false,
+      "task_id": "plan_022",
+      "valid_for_stage1": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "features": {
+        "counterfactual_probe_text_duplicate_authorization": 0.0,
+        "counterfactual_probe_text_duplicate_slot_key": 0.0,
+        "counterfactual_probe_text_generic_slot": 0.0,
+        "counterfactual_probe_text_malformed_compact_key": 0.0,
+        "counterfactual_probe_text_max_slot_overlap": 0.16666666666666666,
+        "counterfactual_probe_text_placeholder_slot": 0.0,
+        "counterfactual_probe_text_repeated_token_excess": 1.0,
+        "counterfactual_probe_text_semantic_defect": 0.0,
+        "counterfactual_probe_text_semantic_valid_for_stage1": 1.0,
+        "counterfactual_probe_text_slot_count": 3.0,
+        "counterfactual_probe_text_template_slot_echo": 0.0,
+        "counterfactual_probe_text_valid_for_stage1": 1.0,
+        "counterfactual_probe_text_weird_punctuation": 0.0,
+        "counterfactual_probe_text_x0_x2_slot_overlap": 0.0,
+        "measured_distinct_retention_risk_visibility": 0.9692982456140351,
+        "measured_expected_gap_visibility_gain": 0.8571428571428571,
+        "measured_expected_realization_defect_visibility": 0.2,
+        "measured_expected_retention_risk_visibility": 0.9692982456140351,
+        "measured_expected_span_evidence_gain": 0.4375,
+        "measured_probe_value_prediction": 0.027433677944862157,
+        "prompt_gap_count": 7.0,
+        "source_quality": 0.32035714285714284,
+        "would_probe_score": 1.0
+      },
+      "label": false,
+      "selected_by_all_feature_rule": false,
+      "selected_by_validated_rule": false,
+      "task_id": "plan_023",
+      "valid_for_stage1": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "features": {
+        "counterfactual_probe_text_duplicate_authorization": 0.0,
+        "counterfactual_probe_text_duplicate_slot_key": 0.0,
+        "counterfactual_probe_text_generic_slot": 0.0,
+        "counterfactual_probe_text_malformed_compact_key": 0.0,
+        "counterfactual_probe_text_max_slot_overlap": 0.0,
+        "counterfactual_probe_text_placeholder_slot": 0.0,
+        "counterfactual_probe_text_repeated_token_excess": 0.0,
+        "counterfactual_probe_text_semantic_defect": 0.0,
+        "counterfactual_probe_text_semantic_valid_for_stage1": 1.0,
+        "counterfactual_probe_text_slot_count": 3.0,
+        "counterfactual_probe_text_template_slot_echo": 0.0,
+        "counterfactual_probe_text_valid_for_stage1": 1.0,
+        "counterfactual_probe_text_weird_punctuation": 0.0,
+        "counterfactual_probe_text_x0_x2_slot_overlap": 0.0,
+        "measured_distinct_retention_risk_visibility": 0.9511201629327902,
+        "measured_expected_gap_visibility_gain": 1.0,
+        "measured_expected_realization_defect_visibility": 0.0,
+        "measured_expected_retention_risk_visibility": 0.9511201629327902,
+        "measured_expected_span_evidence_gain": 0.6470588235294118,
+        "measured_probe_value_prediction": 0.034917932875797975,
+        "prompt_gap_count": 7.0,
+        "source_quality": 0.3314285714285714,
+        "would_probe_score": 1.0
+      },
+      "label": false,
+      "selected_by_all_feature_rule": false,
+      "selected_by_validated_rule": false,
+      "task_id": "plan_024",
+      "valid_for_stage1": true
+    }
+  ],
+  "schema": "diffusion_counterfactual_validated_probe_stage1_gate.v1",
+  "summary": {
+    "best_all_feature_error_count": 1,
+    "best_all_feature_rule_name": "source_quality_le_0p256429",
+    "best_validated_error_count": 1,
+    "best_validated_false_negative_count": 1,
+    "best_validated_false_positive_count": 0,
+    "best_validated_rule_name": "valid_measured_expected_span_evidence_gain_ge_0p666667",
+    "counterfactual_probe_policy": "span_tomography_probe_v4",
+    "gate_decision": "diagnostic_only",
+    "invalid_positive_count": 0,
+    "invalid_positive_lift": 0,
+    "negative_label_count": 6,
+    "positive_label_count": 2,
+    "row_count": 8,
+    "semantic_valid_probe_count": 8,
+    "valid_probe_count": 8
+  },
+  "top_all_feature_rules": [
+    {
+      "direction": "le",
+      "error_count": 1,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_020"
+      ],
+      "feature": "source_quality",
+      "missed_positive_lift": 0,
+      "requires_valid_probe": false,
+      "rule_name": "source_quality_le_0p256429",
+      "selected_count": 3,
+      "threshold": 0.2564285714285714
+    },
+    {
+      "direction": "ge",
+      "error_count": 1,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_021"
+      ],
+      "false_positive_count": 0,
+      "false_positive_task_ids": [],
+      "feature": "measured_expected_span_evidence_gain",
+      "missed_positive_lift": 0.0714285714285714,
+      "requires_valid_probe": false,
+      "rule_name": "measured_expected_span_evidence_gain_ge_0p666667",
+      "selected_count": 1,
+      "threshold": 0.6666666666666666
+    },
+    {
+      "direction": "ge",
+      "error_count": 1,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_021"
+      ],
+      "false_positive_count": 0,
+      "false_positive_task_ids": [],
+      "feature": "measured_probe_value_prediction",
+      "missed_positive_lift": 0.0714285714285714,
+      "requires_valid_probe": false,
+      "rule_name": "measured_probe_value_prediction_ge_0p039589",
+      "selected_count": 1,
+      "threshold": 0.03958947368421052
+    },
+    {
+      "direction": "le",
+      "error_count": 2,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_020",
+        "plan_023"
+      ],
+      "feature": "source_quality",
+      "missed_positive_lift": 0,
+      "requires_valid_probe": false,
+      "rule_name": "source_quality_le_0p320357",
+      "selected_count": 4,
+      "threshold": 0.32035714285714284
+    },
+    {
+      "direction": "ge",
+      "error_count": 2,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_021"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_022"
+      ],
+      "feature": "measured_distinct_retention_risk_visibility",
+      "missed_positive_lift": 0.0714285714285714,
+      "requires_valid_probe": false,
+      "rule_name": "measured_distinct_retention_risk_visibility_ge_0p970526",
+      "selected_count": 2,
+      "threshold": 0.9705263157894737
+    },
+    {
+      "direction": "ge",
+      "error_count": 2,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_021"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_024"
+      ],
+      "feature": "measured_expected_gap_visibility_gain",
+      "missed_positive_lift": 0.0714285714285714,
+      "requires_valid_probe": false,
+      "rule_name": "measured_expected_gap_visibility_gain_ge_1p000000",
+      "selected_count": 2,
+      "threshold": 1.0
+    },
+    {
+      "direction": "ge",
+      "error_count": 2,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_021"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_024"
+      ],
+      "feature": "measured_probe_value_prediction",
+      "missed_positive_lift": 0.0714285714285714,
+      "requires_valid_probe": false,
+      "rule_name": "measured_probe_value_prediction_ge_0p034918",
+      "selected_count": 2,
+      "threshold": 0.034917932875797975
+    },
+    {
+      "direction": "le",
+      "error_count": 2,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_021"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_020"
+      ],
+      "feature": "source_quality",
+      "missed_positive_lift": 0.0714285714285714,
+      "requires_valid_probe": false,
+      "rule_name": "source_quality_le_0p247857",
+      "selected_count": 2,
+      "threshold": 0.24785714285714286
+    },
+    {
+      "direction": "le",
+      "error_count": 2,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_018"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_020"
+      ],
+      "feature": "measured_expected_retention_risk_visibility",
+      "missed_positive_lift": 0.09000000000000002,
+      "requires_valid_probe": false,
+      "rule_name": "measured_expected_retention_risk_visibility_le_0p944563",
+      "selected_count": 2,
+      "threshold": 0.9445628997867804
+    },
+    {
+      "direction": "le",
+      "error_count": 2,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_018"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_020"
+      ],
+      "feature": "prompt_gap_count",
+      "missed_positive_lift": 0.09000000000000002,
+      "requires_valid_probe": false,
+      "rule_name": "prompt_gap_count_le_6p000000",
+      "selected_count": 2,
+      "threshold": 6.0
+    },
+    {
+      "direction": "le",
+      "error_count": 3,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_020",
+        "plan_022",
+        "plan_024"
+      ],
+      "feature": "counterfactual_probe_text_max_slot_overlap",
+      "missed_positive_lift": 0,
+      "requires_valid_probe": false,
+      "rule_name": "counterfactual_probe_text_max_slot_overlap_le_0p000000",
+      "selected_count": 5,
+      "threshold": 0.0
+    },
+    {
+      "direction": "le",
+      "error_count": 3,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_020",
+        "plan_022",
+        "plan_024"
+      ],
+      "feature": "counterfactual_probe_text_repeated_token_excess",
+      "missed_positive_lift": 0,
+      "requires_valid_probe": false,
+      "rule_name": "counterfactual_probe_text_repeated_token_excess_le_0p000000",
+      "selected_count": 5,
+      "threshold": 0.0
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_020",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature": "measured_expected_gap_visibility_gain",
+      "missed_positive_lift": 0,
+      "requires_valid_probe": false,
+      "rule_name": "measured_expected_gap_visibility_gain_ge_0p833333",
+      "selected_count": 5,
+      "threshold": 0.8333333333333334
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_019",
+        "plan_022",
+        "plan_024"
+      ],
+      "feature": "measured_expected_span_evidence_gain",
+      "missed_positive_lift": 0,
+      "requires_valid_probe": false,
+      "rule_name": "measured_expected_span_evidence_gain_ge_0p466667",
+      "selected_count": 5,
+      "threshold": 0.4666666666666667
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_019",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature": "measured_probe_value_prediction",
+      "missed_positive_lift": 0,
+      "requires_valid_probe": false,
+      "rule_name": "measured_probe_value_prediction_ge_0p024275",
+      "selected_count": 5,
+      "threshold": 0.024275408670931062
+    },
+    {
+      "direction": "le",
+      "error_count": 3,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_020",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature": "prompt_gap_count",
+      "missed_positive_lift": 0,
+      "requires_valid_probe": false,
+      "rule_name": "prompt_gap_count_le_8p000000",
+      "selected_count": 5,
+      "threshold": 8.0
+    },
+    {
+      "direction": "le",
+      "error_count": 3,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_020",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature": "source_quality",
+      "missed_positive_lift": 0,
+      "requires_valid_probe": false,
+      "rule_name": "source_quality_le_0p331429",
+      "selected_count": 5,
+      "threshold": 0.3314285714285714
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_020",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature": "would_probe_score",
+      "missed_positive_lift": 0,
+      "requires_valid_probe": false,
+      "rule_name": "would_probe_score_ge_1p000000",
+      "selected_count": 5,
+      "threshold": 1.0
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_021"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_022",
+        "plan_023"
+      ],
+      "feature": "measured_distinct_retention_risk_visibility",
+      "missed_positive_lift": 0.0714285714285714,
+      "requires_valid_probe": false,
+      "rule_name": "measured_distinct_retention_risk_visibility_ge_0p969298",
+      "selected_count": 3,
+      "threshold": 0.9692982456140351
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_021"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_023",
+        "plan_024"
+      ],
+      "feature": "measured_expected_gap_visibility_gain",
+      "missed_positive_lift": 0.0714285714285714,
+      "requires_valid_probe": false,
+      "rule_name": "measured_expected_gap_visibility_gain_ge_0p857143",
+      "selected_count": 3,
+      "threshold": 0.8571428571428571
+    }
+  ],
+  "top_validated_rules": [
+    {
+      "direction": "ge",
+      "error_count": 1,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_021"
+      ],
+      "false_positive_count": 0,
+      "false_positive_task_ids": [],
+      "feature": "measured_expected_span_evidence_gain",
+      "missed_positive_lift": 0.0714285714285714,
+      "requires_valid_probe": true,
+      "rule_name": "valid_measured_expected_span_evidence_gain_ge_0p666667",
+      "selected_count": 1,
+      "threshold": 0.6666666666666666
+    },
+    {
+      "direction": "ge",
+      "error_count": 1,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_021"
+      ],
+      "false_positive_count": 0,
+      "false_positive_task_ids": [],
+      "feature": "measured_probe_value_prediction",
+      "missed_positive_lift": 0.0714285714285714,
+      "requires_valid_probe": true,
+      "rule_name": "valid_measured_probe_value_prediction_ge_0p039589",
+      "selected_count": 1,
+      "threshold": 0.03958947368421052
+    },
+    {
+      "direction": "ge",
+      "error_count": 2,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_021"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_022"
+      ],
+      "feature": "measured_distinct_retention_risk_visibility",
+      "missed_positive_lift": 0.0714285714285714,
+      "requires_valid_probe": true,
+      "rule_name": "valid_measured_distinct_retention_risk_visibility_ge_0p970526",
+      "selected_count": 2,
+      "threshold": 0.9705263157894737
+    },
+    {
+      "direction": "ge",
+      "error_count": 2,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_021"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_024"
+      ],
+      "feature": "measured_expected_gap_visibility_gain",
+      "missed_positive_lift": 0.0714285714285714,
+      "requires_valid_probe": true,
+      "rule_name": "valid_measured_expected_gap_visibility_gain_ge_1p000000",
+      "selected_count": 2,
+      "threshold": 1.0
+    },
+    {
+      "direction": "ge",
+      "error_count": 2,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_021"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_024"
+      ],
+      "feature": "measured_probe_value_prediction",
+      "missed_positive_lift": 0.0714285714285714,
+      "requires_valid_probe": true,
+      "rule_name": "valid_measured_probe_value_prediction_ge_0p034918",
+      "selected_count": 2,
+      "threshold": 0.034917932875797975
+    },
+    {
+      "direction": "le",
+      "error_count": 2,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_018"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_020"
+      ],
+      "feature": "measured_expected_retention_risk_visibility",
+      "missed_positive_lift": 0.09000000000000002,
+      "requires_valid_probe": true,
+      "rule_name": "valid_measured_expected_retention_risk_visibility_le_0p944563",
+      "selected_count": 2,
+      "threshold": 0.9445628997867804
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_020",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature": "measured_expected_gap_visibility_gain",
+      "missed_positive_lift": 0,
+      "requires_valid_probe": true,
+      "rule_name": "valid_measured_expected_gap_visibility_gain_ge_0p833333",
+      "selected_count": 5,
+      "threshold": 0.8333333333333334
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_019",
+        "plan_022",
+        "plan_024"
+      ],
+      "feature": "measured_expected_span_evidence_gain",
+      "missed_positive_lift": 0,
+      "requires_valid_probe": true,
+      "rule_name": "valid_measured_expected_span_evidence_gain_ge_0p466667",
+      "selected_count": 5,
+      "threshold": 0.4666666666666667
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_019",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature": "measured_probe_value_prediction",
+      "missed_positive_lift": 0,
+      "requires_valid_probe": true,
+      "rule_name": "valid_measured_probe_value_prediction_ge_0p024275",
+      "selected_count": 5,
+      "threshold": 0.024275408670931062
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_021"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_022",
+        "plan_023"
+      ],
+      "feature": "measured_distinct_retention_risk_visibility",
+      "missed_positive_lift": 0.0714285714285714,
+      "requires_valid_probe": true,
+      "rule_name": "valid_measured_distinct_retention_risk_visibility_ge_0p969298",
+      "selected_count": 3,
+      "threshold": 0.9692982456140351
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_021"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_023",
+        "plan_024"
+      ],
+      "feature": "measured_expected_gap_visibility_gain",
+      "missed_positive_lift": 0.0714285714285714,
+      "requires_valid_probe": true,
+      "rule_name": "valid_measured_expected_gap_visibility_gain_ge_0p857143",
+      "selected_count": 3,
+      "threshold": 0.8571428571428571
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_021"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_019",
+        "plan_022"
+      ],
+      "feature": "measured_expected_retention_risk_visibility",
+      "missed_positive_lift": 0.0714285714285714,
+      "requires_valid_probe": true,
+      "rule_name": "valid_measured_expected_retention_risk_visibility_ge_0p970526",
+      "selected_count": 3,
+      "threshold": 0.9705263157894737
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_021"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_019",
+        "plan_024"
+      ],
+      "feature": "measured_expected_span_evidence_gain",
+      "missed_positive_lift": 0.0714285714285714,
+      "requires_valid_probe": true,
+      "rule_name": "valid_measured_expected_span_evidence_gain_ge_0p647059",
+      "selected_count": 3,
+      "threshold": 0.6470588235294118
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_021"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_023",
+        "plan_024"
+      ],
+      "feature": "measured_probe_value_prediction",
+      "missed_positive_lift": 0.0714285714285714,
+      "requires_valid_probe": true,
+      "rule_name": "valid_measured_probe_value_prediction_ge_0p027434",
+      "selected_count": 3,
+      "threshold": 0.027433677944862157
+    },
+    {
+      "direction": "le",
+      "error_count": 3,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_018"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020"
+      ],
+      "feature": "measured_distinct_retention_risk_visibility",
+      "missed_positive_lift": 0.09000000000000002,
+      "requires_valid_probe": true,
+      "rule_name": "valid_measured_distinct_retention_risk_visibility_le_0p944563",
+      "selected_count": 3,
+      "threshold": 0.9445628997867804
+    },
+    {
+      "direction": "le",
+      "error_count": 3,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_018"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020"
+      ],
+      "feature": "measured_expected_retention_risk_visibility",
+      "missed_positive_lift": 0.09000000000000002,
+      "requires_valid_probe": true,
+      "rule_name": "valid_measured_expected_retention_risk_visibility_le_0p946869",
+      "selected_count": 3,
+      "threshold": 0.9468690702087287
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_018",
+        "plan_021"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_022"
+      ],
+      "feature": "measured_distinct_retention_risk_visibility",
+      "missed_positive_lift": 0.16142857142857142,
+      "requires_valid_probe": true,
+      "rule_name": "valid_measured_distinct_retention_risk_visibility_ge_0p976378",
+      "selected_count": 1,
+      "threshold": 0.9763779527559056
+    },
+    {
+      "direction": "le",
+      "error_count": 3,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_018",
+        "plan_021"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_020"
+      ],
+      "feature": "measured_distinct_retention_risk_visibility",
+      "missed_positive_lift": 0.16142857142857142,
+      "requires_valid_probe": true,
+      "rule_name": "valid_measured_distinct_retention_risk_visibility_le_0p901709",
+      "selected_count": 1,
+      "threshold": 0.9017094017094017
+    },
+    {
+      "direction": "le",
+      "error_count": 3,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_018",
+        "plan_021"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_017"
+      ],
+      "feature": "measured_expected_gap_visibility_gain",
+      "missed_positive_lift": 0.16142857142857142,
+      "requires_valid_probe": true,
+      "rule_name": "valid_measured_expected_gap_visibility_gain_le_0p200000",
+      "selected_count": 1,
+      "threshold": 0.2
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_018",
+        "plan_021"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_022"
+      ],
+      "feature": "measured_expected_retention_risk_visibility",
+      "missed_positive_lift": 0.16142857142857142,
+      "requires_valid_probe": true,
+      "rule_name": "valid_measured_expected_retention_risk_visibility_ge_0p976378",
+      "selected_count": 1,
+      "threshold": 0.9763779527559056
+    }
+  ]
+}

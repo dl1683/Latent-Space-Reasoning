@@ -1,0 +1,645 @@
+{
+  "generated_by": "experiments/fit_diffusion_counterfactual_probe_policy.py",
+  "inputs": {
+    "targets": "eval_results\\diffusion_language\\diffusion_counterfactual_probe_targets_v1.json"
+  },
+  "rows": [
+    {
+      "best_rule_error": false,
+      "candidate_lift_vs_trajectory": 0.09642857142857142,
+      "counterexample_type": "false_negative",
+      "features": {
+        "degeneracy_score": 0.19048724082934607,
+        "expected_gap_visibility_gain": 0.3333333333333333,
+        "expected_realization_defect_visibility": 0.2539829877724614,
+        "expected_retention_risk_visibility": 0.33125000000000004,
+        "expected_span_evidence_gain": 0.8035159999999999,
+        "first_repairable_step": 18.0,
+        "max_span_target_score": 2.00879,
+        "min_span_source_relative_preservation": 0.66875,
+        "probe_value_prediction": 0.034055377850687324,
+        "prompt_gap_count": 4.0,
+        "source_quality": 0.31142857142857144,
+        "source_task_delta_vs_trajectory": 0.0
+      },
+      "label": true,
+      "selected_by_best_rule": true,
+      "task_id": "plan_034"
+    },
+    {
+      "best_rule_error": false,
+      "candidate_lift_vs_trajectory": 0.11249999999999999,
+      "counterexample_type": "false_negative",
+      "features": {
+        "degeneracy_score": 0.25981989063568006,
+        "expected_gap_visibility_gain": 0.3333333333333333,
+        "expected_realization_defect_visibility": 0.3464265208475734,
+        "expected_retention_risk_visibility": 0.3325,
+        "expected_span_evidence_gain": 0.8051259999999999,
+        "first_repairable_step": 4.0,
+        "max_span_target_score": 2.012815,
+        "min_span_source_relative_preservation": 0.6675,
+        "probe_value_prediction": 0.03609897708361813,
+        "prompt_gap_count": 4.0,
+        "source_quality": 0.2564285714285714,
+        "source_task_delta_vs_trajectory": 0.0
+      },
+      "label": true,
+      "selected_by_best_rule": true,
+      "task_id": "plan_044"
+    },
+    {
+      "best_rule_error": false,
+      "candidate_lift_vs_trajectory": 0.07642857142857146,
+      "counterexample_type": "false_negative",
+      "features": {
+        "degeneracy_score": 0.14053583453583454,
+        "expected_gap_visibility_gain": 0.6666666666666666,
+        "expected_realization_defect_visibility": 0.18738111271444605,
+        "expected_retention_risk_visibility": 0.44147800000000004,
+        "expected_span_evidence_gain": 0.7753428,
+        "first_repairable_step": 3.0,
+        "max_span_target_score": 1.938357,
+        "min_span_source_relative_preservation": 0.558522,
+        "probe_value_prediction": 0.04151167958762226,
+        "prompt_gap_count": 8.0,
+        "source_quality": 0.24392857142857144,
+        "source_task_delta_vs_trajectory": 0.0
+      },
+      "label": true,
+      "selected_by_best_rule": true,
+      "task_id": "plan_046"
+    },
+    {
+      "best_rule_error": false,
+      "candidate_lift_vs_trajectory": 0.046928571428571486,
+      "counterexample_type": "false_negative",
+      "features": {
+        "degeneracy_score": 0.2487565098608384,
+        "expected_gap_visibility_gain": 0.3333333333333333,
+        "expected_realization_defect_visibility": 0.33167534648111785,
+        "expected_retention_risk_visibility": 0.0,
+        "expected_span_evidence_gain": 1.0,
+        "first_repairable_step": 3.0,
+        "max_span_target_score": 2.875525,
+        "min_span_source_relative_preservation": 1.0,
+        "probe_value_prediction": 0.048769459310574734,
+        "prompt_gap_count": 4.0,
+        "source_quality": 0.2864285714285714,
+        "source_task_delta_vs_trajectory": 0.046928571428571486
+      },
+      "label": true,
+      "selected_by_best_rule": true,
+      "task_id": "plan_061"
+    },
+    {
+      "best_rule_error": false,
+      "candidate_lift_vs_trajectory": 0.09642857142857142,
+      "counterexample_type": "false_negative",
+      "features": {
+        "degeneracy_score": 0.10747826086956522,
+        "expected_gap_visibility_gain": 0.6666666666666666,
+        "expected_realization_defect_visibility": 0.14330434782608695,
+        "expected_retention_risk_visibility": 0.12664299999999995,
+        "expected_span_evidence_gain": 0.855198,
+        "first_repairable_step": 4.0,
+        "max_span_target_score": 2.137995,
+        "min_span_source_relative_preservation": 0.873357,
+        "probe_value_prediction": 0.049322500289855076,
+        "prompt_gap_count": 8.0,
+        "source_quality": 0.2864285714285714,
+        "source_task_delta_vs_trajectory": 0.0
+      },
+      "label": true,
+      "selected_by_best_rule": true,
+      "task_id": "plan_063"
+    },
+    {
+      "best_rule_error": false,
+      "candidate_lift_vs_trajectory": 0.012500000000000011,
+      "counterexample_type": "false_negative",
+      "features": {
+        "degeneracy_score": 0.1554189514189514,
+        "expected_gap_visibility_gain": 0.3333333333333333,
+        "expected_realization_defect_visibility": 0.20722526855860188,
+        "expected_retention_risk_visibility": 0.531081,
+        "expected_span_evidence_gain": 0.7693968,
+        "first_repairable_step": 4.0,
+        "max_span_target_score": 1.923492,
+        "min_span_source_relative_preservation": 0.468919,
+        "probe_value_prediction": 0.028271456037838705,
+        "prompt_gap_count": 4.0,
+        "source_quality": 0.2139285714285714,
+        "source_task_delta_vs_trajectory": 0.0
+      },
+      "label": true,
+      "selected_by_best_rule": true,
+      "task_id": "plan_070"
+    },
+    {
+      "best_rule_error": false,
+      "candidate_lift_vs_trajectory": 0.058928571428571386,
+      "counterexample_type": "false_negative",
+      "features": {
+        "degeneracy_score": 0.21543529411764706,
+        "expected_gap_visibility_gain": 0.25,
+        "expected_realization_defect_visibility": 0.2872470588235294,
+        "expected_retention_risk_visibility": 0.0,
+        "expected_span_evidence_gain": 0.8788360000000001,
+        "first_repairable_step": 4.0,
+        "max_span_target_score": 2.19709,
+        "min_span_source_relative_preservation": 1.0,
+        "probe_value_prediction": 0.0408600211764706,
+        "prompt_gap_count": 3.0,
+        "source_quality": 0.24392857142857144,
+        "source_task_delta_vs_trajectory": 0.0
+      },
+      "label": true,
+      "selected_by_best_rule": true,
+      "task_id": "plan_072"
+    },
+    {
+      "best_rule_error": false,
+      "candidate_lift_vs_trajectory": -0.08357142857142857,
+      "counterexample_type": "false_positive",
+      "features": {
+        "degeneracy_score": 0.1685972850678733,
+        "expected_gap_visibility_gain": 0.9166666666666666,
+        "expected_realization_defect_visibility": 0.22479638009049774,
+        "expected_retention_risk_visibility": 0.566519,
+        "expected_span_evidence_gain": 0.7692652,
+        "first_repairable_step": 3.0,
+        "max_span_target_score": 1.923163,
+        "min_span_source_relative_preservation": 0.433481,
+        "probe_value_prediction": 0.047892908363714716,
+        "prompt_gap_count": 11.0,
+        "source_quality": 0.32892857142857146,
+        "source_task_delta_vs_trajectory": 0.0
+      },
+      "label": false,
+      "selected_by_best_rule": false,
+      "task_id": "plan_045"
+    },
+    {
+      "best_rule_error": true,
+      "candidate_lift_vs_trajectory": -0.03892857142857137,
+      "counterexample_type": "false_positive",
+      "features": {
+        "degeneracy_score": 0.15280000000000002,
+        "expected_gap_visibility_gain": 0.6666666666666666,
+        "expected_realization_defect_visibility": 0.20373333333333335,
+        "expected_retention_risk_visibility": 0.29003599999999996,
+        "expected_span_evidence_gain": 1.0,
+        "first_repairable_step": 4.0,
+        "max_span_target_score": 2.732511,
+        "min_span_source_relative_preservation": 0.709964,
+        "probe_value_prediction": 0.05160728,
+        "prompt_gap_count": 8.0,
+        "source_quality": 0.28178571428571425,
+        "source_task_delta_vs_trajectory": 0.0
+      },
+      "label": false,
+      "selected_by_best_rule": true,
+      "task_id": "plan_050"
+    },
+    {
+      "best_rule_error": false,
+      "candidate_lift_vs_trajectory": -0.08300000000000002,
+      "counterexample_type": "false_positive",
+      "features": {
+        "degeneracy_score": 0.7501379310344827,
+        "expected_gap_visibility_gain": 1.0,
+        "expected_realization_defect_visibility": 1.0,
+        "expected_retention_risk_visibility": 0.0,
+        "expected_span_evidence_gain": 0.8854984,
+        "first_repairable_step": 4.0,
+        "max_span_target_score": 2.213746,
+        "min_span_source_relative_preservation": 1.0,
+        "probe_value_prediction": 0.08156495200000001,
+        "prompt_gap_count": 12.0,
+        "source_quality": 0.18,
+        "source_task_delta_vs_trajectory": -0.020000000000000018
+      },
+      "label": false,
+      "selected_by_best_rule": false,
+      "task_id": "plan_064"
+    },
+    {
+      "best_rule_error": false,
+      "candidate_lift_vs_trajectory": -0.05499999999999999,
+      "counterexample_type": "false_positive",
+      "features": {
+        "degeneracy_score": 0.22143478260869562,
+        "expected_gap_visibility_gain": 1.0,
+        "expected_realization_defect_visibility": 0.29524637681159416,
+        "expected_retention_risk_visibility": 0.10714299999999999,
+        "expected_span_evidence_gain": 0.8568716000000001,
+        "first_repairable_step": 4.0,
+        "max_span_target_score": 2.142179,
+        "min_span_source_relative_preservation": 0.892857,
+        "probe_value_prediction": 0.06446821553623189,
+        "prompt_gap_count": 12.0,
+        "source_quality": 0.27785714285714286,
+        "source_task_delta_vs_trajectory": 0.0
+      },
+      "label": false,
+      "selected_by_best_rule": false,
+      "task_id": "plan_069"
+    },
+    {
+      "best_rule_error": false,
+      "candidate_lift_vs_trajectory": 0.0,
+      "counterexample_type": "false_positive",
+      "features": {
+        "degeneracy_score": 0.603275293255132,
+        "expected_gap_visibility_gain": 1.0,
+        "expected_realization_defect_visibility": 0.8043670576735092,
+        "expected_retention_risk_visibility": 1.0,
+        "expected_span_evidence_gain": 0.0,
+        "first_repairable_step": 4.0,
+        "max_span_target_score": 0.0,
+        "min_span_source_relative_preservation": 0.0,
+        "probe_value_prediction": 0.03108734115347019,
+        "prompt_gap_count": 17.0,
+        "source_quality": 0.18,
+        "source_task_delta_vs_trajectory": 0.0
+      },
+      "label": false,
+      "selected_by_best_rule": false,
+      "task_id": "plan_071"
+    }
+  ],
+  "schema": "diffusion_counterfactual_probe_policy_fit.v1",
+  "summary": {
+    "best_error_count": 1,
+    "best_false_negative_count": 0,
+    "best_false_positive_count": 1,
+    "best_missed_positive_lift": 0.0,
+    "best_removed_negative_count": 4,
+    "best_rule_name": "expected_gap_visibility_gain_le_0p666667",
+    "best_selected_count": 8,
+    "gate_decision": "diagnostic_only",
+    "negative_label_count": 5,
+    "positive_label_count": 7,
+    "row_count": 12,
+    "total_positive_lift": 0.5001428571428572
+  },
+  "top_rules": [
+    {
+      "direction": "le",
+      "error_count": 1,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_050"
+      ],
+      "feature": "expected_gap_visibility_gain",
+      "missed_positive_lift": 0,
+      "removed_negative_count": 4,
+      "rule_name": "expected_gap_visibility_gain_le_0p666667",
+      "selected_count": 8,
+      "threshold": 0.6666666666666666
+    },
+    {
+      "direction": "le",
+      "error_count": 1,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_050"
+      ],
+      "feature": "prompt_gap_count",
+      "missed_positive_lift": 0,
+      "removed_negative_count": 4,
+      "rule_name": "prompt_gap_count_le_8p000000",
+      "selected_count": 8,
+      "threshold": 8.0
+    },
+    {
+      "direction": "le",
+      "error_count": 2,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050"
+      ],
+      "feature": "expected_gap_visibility_gain",
+      "missed_positive_lift": 0,
+      "removed_negative_count": 3,
+      "rule_name": "expected_gap_visibility_gain_le_0p916667",
+      "selected_count": 9,
+      "threshold": 0.9166666666666666
+    },
+    {
+      "direction": "le",
+      "error_count": 2,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_071"
+      ],
+      "feature": "probe_value_prediction",
+      "missed_positive_lift": 0,
+      "removed_negative_count": 3,
+      "rule_name": "probe_value_prediction_le_0p049323",
+      "selected_count": 9,
+      "threshold": 0.049322500289855076
+    },
+    {
+      "direction": "le",
+      "error_count": 2,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050"
+      ],
+      "feature": "prompt_gap_count",
+      "missed_positive_lift": 0,
+      "removed_negative_count": 3,
+      "rule_name": "prompt_gap_count_le_11p000000",
+      "selected_count": 9,
+      "threshold": 11.0
+    },
+    {
+      "direction": "le",
+      "error_count": 2,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_046",
+        "plan_063"
+      ],
+      "false_positive_count": 0,
+      "false_positive_task_ids": [],
+      "feature": "expected_gap_visibility_gain",
+      "missed_positive_lift": 0.17285714285714288,
+      "removed_negative_count": 5,
+      "rule_name": "expected_gap_visibility_gain_le_0p333333",
+      "selected_count": 5,
+      "threshold": 0.3333333333333333
+    },
+    {
+      "direction": "le",
+      "error_count": 2,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_046",
+        "plan_063"
+      ],
+      "false_positive_count": 0,
+      "false_positive_task_ids": [],
+      "feature": "prompt_gap_count",
+      "missed_positive_lift": 0.17285714285714288,
+      "removed_negative_count": 5,
+      "rule_name": "prompt_gap_count_le_4p000000",
+      "selected_count": 5,
+      "threshold": 4.0
+    },
+    {
+      "direction": "le",
+      "error_count": 3,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_069"
+      ],
+      "feature": "degeneracy_score",
+      "missed_positive_lift": 0,
+      "removed_negative_count": 2,
+      "rule_name": "degeneracy_score_le_0p259820",
+      "selected_count": 10,
+      "threshold": 0.25981989063568006
+    },
+    {
+      "direction": "le",
+      "error_count": 3,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_069"
+      ],
+      "feature": "expected_realization_defect_visibility",
+      "missed_positive_lift": 0,
+      "removed_negative_count": 2,
+      "rule_name": "expected_realization_defect_visibility_le_0p346427",
+      "selected_count": 10,
+      "threshold": 0.3464265208475734
+    },
+    {
+      "direction": "le",
+      "error_count": 3,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_069"
+      ],
+      "feature": "expected_retention_risk_visibility",
+      "missed_positive_lift": 0,
+      "removed_negative_count": 2,
+      "rule_name": "expected_retention_risk_visibility_le_0p531081",
+      "selected_count": 10,
+      "threshold": 0.531081
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_069"
+      ],
+      "feature": "expected_span_evidence_gain",
+      "missed_positive_lift": 0,
+      "removed_negative_count": 2,
+      "rule_name": "expected_span_evidence_gain_ge_0p769397",
+      "selected_count": 10,
+      "threshold": 0.7693968
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_069"
+      ],
+      "feature": "max_span_target_score",
+      "missed_positive_lift": 0,
+      "removed_negative_count": 2,
+      "rule_name": "max_span_target_score_ge_1p923492",
+      "selected_count": 10,
+      "threshold": 1.923492
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_069"
+      ],
+      "feature": "min_span_source_relative_preservation",
+      "missed_positive_lift": 0,
+      "removed_negative_count": 2,
+      "rule_name": "min_span_source_relative_preservation_ge_0p468919",
+      "selected_count": 10,
+      "threshold": 0.468919
+    },
+    {
+      "direction": "le",
+      "error_count": 3,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_071"
+      ],
+      "feature": "probe_value_prediction",
+      "missed_positive_lift": 0,
+      "removed_negative_count": 2,
+      "rule_name": "probe_value_prediction_le_0p051607",
+      "selected_count": 10,
+      "threshold": 0.05160728
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_069"
+      ],
+      "feature": "source_quality",
+      "missed_positive_lift": 0,
+      "removed_negative_count": 2,
+      "rule_name": "source_quality_ge_0p213929",
+      "selected_count": 10,
+      "threshold": 0.2139285714285714
+    },
+    {
+      "direction": "le",
+      "error_count": 3,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_063"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_071"
+      ],
+      "feature": "probe_value_prediction",
+      "missed_positive_lift": 0.09642857142857142,
+      "removed_negative_count": 3,
+      "rule_name": "probe_value_prediction_le_0p048769",
+      "selected_count": 8,
+      "threshold": 0.048769459310574734
+    },
+    {
+      "direction": "le",
+      "error_count": 3,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_061",
+        "plan_063"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_071"
+      ],
+      "feature": "probe_value_prediction",
+      "missed_positive_lift": 0.1433571428571429,
+      "removed_negative_count": 4,
+      "rule_name": "probe_value_prediction_le_0p041512",
+      "selected_count": 6,
+      "threshold": 0.04151167958762226
+    },
+    {
+      "direction": "le",
+      "error_count": 4,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 4,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_069",
+        "plan_071"
+      ],
+      "feature": "degeneracy_score",
+      "missed_positive_lift": 0,
+      "removed_negative_count": 1,
+      "rule_name": "degeneracy_score_le_0p603275",
+      "selected_count": 11,
+      "threshold": 0.603275293255132
+    },
+    {
+      "direction": "le",
+      "error_count": 4,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 4,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_069",
+        "plan_071"
+      ],
+      "feature": "expected_realization_defect_visibility",
+      "missed_positive_lift": 0,
+      "removed_negative_count": 1,
+      "rule_name": "expected_realization_defect_visibility_le_0p804367",
+      "selected_count": 11,
+      "threshold": 0.8043670576735092
+    },
+    {
+      "direction": "le",
+      "error_count": 4,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 4,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_064",
+        "plan_069"
+      ],
+      "feature": "expected_retention_risk_visibility",
+      "missed_positive_lift": 0,
+      "removed_negative_count": 1,
+      "rule_name": "expected_retention_risk_visibility_le_0p566519",
+      "selected_count": 11,
+      "threshold": 0.566519
+    }
+  ]
+}

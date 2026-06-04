@@ -1,0 +1,267 @@
+{
+  "baseline_leave_one_slice_out": {
+    "error_count": 11,
+    "false_negative_count": 0,
+    "false_negative_task_ids": [],
+    "false_positive_count": 11,
+    "false_positive_task_ids": [
+      "plan_050",
+      "plan_064",
+      "plan_071",
+      "plan_002",
+      "plan_003",
+      "plan_017",
+      "plan_019",
+      "plan_020",
+      "plan_022",
+      "plan_023",
+      "plan_024"
+    ],
+    "policy_utility": 0.6255,
+    "selected_count": 26,
+    "selected_lift": 1.1455,
+    "vetoed_count": 0,
+    "vetoed_task_ids": []
+  },
+  "candidate_rule_count": 73154,
+  "features": [
+    "measured_probe_value_prediction",
+    "measured_expected_gap_visibility_gain",
+    "measured_expected_realization_defect_visibility",
+    "measured_expected_span_evidence_gain",
+    "measured_expected_retention_risk_visibility",
+    "measured_distinct_retention_risk_visibility",
+    "counterfactual_probe_text_x0_x2_slot_overlap",
+    "counterfactual_probe_text_max_slot_overlap",
+    "counterfactual_probe_text_repeated_token_excess",
+    "prompt_gap_count",
+    "source_quality",
+    "probe_signature_score"
+  ],
+  "generated_by": "experiments/evaluate_diffusion_span_probe_no_lift_veto.py",
+  "inputs": {
+    "signature_model": "eval_results\\diffusion_language\\counterfactual_span_probe_signature_model_v4.json"
+  },
+  "schema": "diffusion_counterfactual_span_probe_no_lift_veto.v1",
+  "selection_penalty": 0.02,
+  "slice_results": [
+    {
+      "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+      "rule": [
+        {
+          "feature": "measured_expected_retention_risk_visibility",
+          "operator": "<=",
+          "threshold": 0.9763779527559056
+        },
+        {
+          "feature": "source_quality",
+          "operator": ">=",
+          "threshold": 0.31142857142857144
+        }
+      ],
+      "test_summary": {
+        "error_count": 4,
+        "false_negative_count": 1,
+        "false_negative_task_ids": [
+          "plan_034"
+        ],
+        "false_positive_count": 3,
+        "false_positive_task_ids": [
+          "plan_050",
+          "plan_064",
+          "plan_071"
+        ],
+        "policy_utility": 0.22371428571428575,
+        "selected_count": 9,
+        "selected_lift": 0.40371428571428575,
+        "vetoed_count": 1,
+        "vetoed_task_ids": [
+          "plan_034"
+        ]
+      },
+      "train_summary": {
+        "error_count": 1,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 1,
+        "false_positive_task_ids": [
+          "plan_020"
+        ],
+        "policy_utility": 0.46535714285714275,
+        "selected_count": 9,
+        "selected_lift": 0.6453571428571427,
+        "vetoed_count": 7,
+        "vetoed_task_ids": [
+          "plan_002",
+          "plan_003",
+          "plan_017",
+          "plan_019",
+          "plan_022",
+          "plan_023",
+          "plan_024"
+        ]
+      }
+    },
+    {
+      "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+      "rule": [
+        {
+          "feature": "measured_probe_value_prediction",
+          "operator": "<=",
+          "threshold": 0.027433677944862157
+        },
+        {
+          "feature": "prompt_gap_count",
+          "operator": ">=",
+          "threshold": 7.0
+        }
+      ],
+      "test_summary": {
+        "error_count": 5,
+        "false_negative_count": 4,
+        "false_negative_task_ids": [
+          "plan_005",
+          "plan_006",
+          "plan_007",
+          "plan_008"
+        ],
+        "false_positive_count": 1,
+        "false_positive_task_ids": [
+          "plan_003"
+        ],
+        "policy_utility": 0.02428571428571419,
+        "selected_count": 3,
+        "selected_lift": 0.08428571428571419,
+        "vetoed_count": 5,
+        "vetoed_task_ids": [
+          "plan_002",
+          "plan_005",
+          "plan_006",
+          "plan_007",
+          "plan_008"
+        ]
+      },
+      "train_summary": {
+        "error_count": 2,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 2,
+        "false_positive_task_ids": [
+          "plan_020",
+          "plan_024"
+        ],
+        "policy_utility": 0.4415714285714286,
+        "selected_count": 11,
+        "selected_lift": 0.6615714285714286,
+        "vetoed_count": 7,
+        "vetoed_task_ids": [
+          "plan_050",
+          "plan_064",
+          "plan_071",
+          "plan_017",
+          "plan_019",
+          "plan_022",
+          "plan_023"
+        ]
+      }
+    },
+    {
+      "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+      "rule": [
+        {
+          "feature": "measured_probe_value_prediction",
+          "operator": "<=",
+          "threshold": 0.019746434937611405
+        },
+        {
+          "feature": "prompt_gap_count",
+          "operator": ">=",
+          "threshold": 7.0
+        }
+      ],
+      "test_summary": {
+        "error_count": 4,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 4,
+        "false_positive_task_ids": [
+          "plan_019",
+          "plan_020",
+          "plan_023",
+          "plan_024"
+        ],
+        "policy_utility": 0.041428571428571426,
+        "selected_count": 6,
+        "selected_lift": 0.16142857142857142,
+        "vetoed_count": 2,
+        "vetoed_task_ids": [
+          "plan_017",
+          "plan_022"
+        ]
+      },
+      "train_summary": {
+        "error_count": 2,
+        "false_negative_count": 1,
+        "false_negative_task_ids": [
+          "plan_008"
+        ],
+        "false_positive_count": 1,
+        "false_positive_task_ids": [
+          "plan_003"
+        ],
+        "policy_utility": 0.7212142857142856,
+        "selected_count": 13,
+        "selected_lift": 0.9812142857142856,
+        "vetoed_count": 5,
+        "vetoed_task_ids": [
+          "plan_050",
+          "plan_064",
+          "plan_071",
+          "plan_002",
+          "plan_008"
+        ]
+      }
+    }
+  ],
+  "summary": {
+    "base_selected_count": 26,
+    "positive_count": 15,
+    "target_count": 28
+  },
+  "veto_leave_one_slice_out": {
+    "error_count": 13,
+    "false_negative_count": 5,
+    "false_negative_task_ids": [
+      "plan_034",
+      "plan_005",
+      "plan_006",
+      "plan_007",
+      "plan_008"
+    ],
+    "false_positive_count": 8,
+    "false_positive_task_ids": [
+      "plan_050",
+      "plan_064",
+      "plan_071",
+      "plan_003",
+      "plan_019",
+      "plan_020",
+      "plan_023",
+      "plan_024"
+    ],
+    "policy_utility": 0.28942857142857137,
+    "selected_count": 18,
+    "selected_lift": 0.6494285714285714,
+    "vetoed_count": 8,
+    "vetoed_task_ids": [
+      "plan_034",
+      "plan_002",
+      "plan_005",
+      "plan_006",
+      "plan_007",
+      "plan_008",
+      "plan_017",
+      "plan_022"
+    ]
+  }
+}

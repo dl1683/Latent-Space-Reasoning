@@ -1,0 +1,116 @@
+{
+  "conclusive_result_gates": {
+    "charge_probe_measurement_cost": true,
+    "maximum_probe_surface_false_negative_count": 0,
+    "maximum_probe_surface_false_positive_count": 0,
+    "minimum_selected_repair_positive_count": 1,
+    "minimum_static_probe_disagreement_count": 1,
+    "no_live_spend_trigger_without_runner_implementation": true,
+    "static_control_must_not_match_probe_surface": true
+  },
+  "design_intent": "Separate static source/gap/coverage banding from probe-conditioned realization value on a fresh slice before any v15 measurement or labels exist.",
+  "failure_accounting": [
+    "If static and probe surfaces select the same rows, mark the slice inconclusive for the T56 obligation.",
+    "If the probe surface misses any selected-repair positive, reject the probe-conditioned surface.",
+    "If the probe surface admits no-lift rows that static controls reject, reject the probe-conditioned surface.",
+    "If static controls match or beat probe utility after probe cost, keep the probe diagnostic-only.",
+    "If broad denoise triggering buys recall with no-lift rows, preserve it as availability evidence only."
+  ],
+  "fit_boundary": {
+    "reason_for_new_slice": "The v14b probe-conditioned surface and static source/gap/coverage control both select plan_109 and plan_112 with zero selected-repair errors, so v14b cannot prove whether the measured probe adds information beyond static banding.",
+    "v14b_probe_surface": {
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 0,
+      "false_positive_task_ids": [],
+      "policy_utility": 0.16192857142857156,
+      "policy_utility_with_probe_cost": 0.13192857142857156,
+      "positive_count": 2,
+      "selected_count": 2,
+      "selected_task_ids": [
+        "plan_109",
+        "plan_112"
+      ],
+      "uses_probe": true
+    },
+    "v14b_replay": "eval_results\\diffusion_language\\realization_value_v14b_replay.json",
+    "v14b_replay_sha256": "de64e379eccb62b869d21499d9410a82b96ec1f13b12d3e4430d95f86ae8892d",
+    "v14b_static_control": {
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 0,
+      "false_positive_task_ids": [],
+      "policy_utility": 0.16192857142857156,
+      "policy_utility_with_probe_cost": 0.16192857142857156,
+      "positive_count": 2,
+      "selected_count": 2,
+      "selected_task_ids": [
+        "plan_109",
+        "plan_112"
+      ],
+      "uses_probe": false
+    }
+  },
+  "fresh_slice_protocol": {
+    "label_pass": "python experiments\\run_diffusion_three_arm_benchmark.py --task-preset lean_gpu_mixed_transfer_v15 --candidates llada-moe-7b-a1b-instruct-hf --limit-schedules 2 --limit-evolved-schedules 0 --limit-repair-candidates 1 --repair-source-policy random --repair-pack constraint_span_phase_final_preserve_seeded_gated --repair-spend-trigger denoise_phase_repairability --repair-source-min-chars 240 --repair-source-prompt-gap-min 2 --repair-source-prompt-gap-max 9 --repair-source-prompt-coverage-min 0.4 --repair-source-prompt-coverage-max 1.0 --repair-phase-budget frontier --repair-selector candidate_aware_promotion_v1 --repair-promotion-margin 0.02 --trajectory-selector planning_state --device cuda --dtype bfloat16 --raw-output eval_results\\diffusion_language\\realization_value_v15_label_raw.jsonl --scores-output eval_results\\diffusion_language\\realization_value_v15_label_scores.json --report-output eval_results\\diffusion_language\\realization_value_v15_label_report.md",
+    "measurement_pass": "python experiments\\run_diffusion_three_arm_benchmark.py --task-preset lean_gpu_mixed_transfer_v15 --candidates llada-moe-7b-a1b-instruct-hf --limit-schedules 2 --limit-evolved-schedules 0 --limit-repair-candidates 1 --repair-source-policy random --repair-spend-trigger counterfactual_micro_probe_v1 --counterfactual-probe-mode all --counterfactual-probe-policy span_tomography_probe_v4 --trajectory-selector planning_state --device cuda --dtype bfloat16 --raw-output eval_results\\diffusion_language\\realization_value_v15_measurement_raw.jsonl --scores-output eval_results\\diffusion_language\\realization_value_v15_measurement_scores.json --report-output eval_results\\diffusion_language\\realization_value_v15_measurement_report.md",
+    "required_replay_outputs": [
+      "static-vs-probe disagreement rows before labels",
+      "selected-repair false positives and false negatives for both frozen surfaces",
+      "oracle-positive selector misses for both frozen surfaces",
+      "coverage-only, gap-only, source-only, broad-trigger, skeleton, and probe-only controls",
+      "utility before and after probe measurement cost",
+      "inconclusive marking if static and probe surfaces select the same rows or if no positives appear"
+    ]
+  },
+  "generated_by": "experiments/build_diffusion_realization_value_v15_freeze.py",
+  "overlap_with_v14b_replay_rows": [],
+  "planning_task_ids": [
+    "plan_113",
+    "plan_114",
+    "plan_115",
+    "plan_116",
+    "plan_117",
+    "plan_118",
+    "plan_119",
+    "plan_120"
+  ],
+  "schema": "diffusion_realization_value_v15_freeze.v1",
+  "target_surfaces": [
+    {
+      "promotion_status": "frozen_control_not_live_spend_trigger",
+      "prompt_coverage_max": 1.0,
+      "prompt_coverage_min": 0.4,
+      "prompt_gap_count_max": 7.0,
+      "prompt_gap_count_min": 4.0,
+      "requires_label_pass_denoise_trigger": true,
+      "source_task_delta_vs_trajectory_min": 0.0,
+      "surface_id": "static_source_gap_coverage_v15",
+      "uses_probe_measurement": false
+    },
+    {
+      "measured_probe_value_prediction_max": 0.033,
+      "promotion_status": "frozen_test_surface_not_live_spend_trigger",
+      "prompt_gap_count_max": 7.0,
+      "prompt_gap_count_min": 4.0,
+      "requires_label_pass_denoise_trigger": true,
+      "source_task_delta_vs_trajectory_min": 0.0,
+      "surface_id": "probe_conditioned_realization_value_v15",
+      "uses_probe_measurement": true
+    }
+  ],
+  "task_ids": [
+    "plan_113",
+    "plan_114",
+    "plan_115",
+    "plan_116",
+    "plan_117",
+    "plan_118",
+    "plan_119",
+    "plan_120",
+    "math_009",
+    "sym_007",
+    "sci_002"
+  ],
+  "task_preset": "lean_gpu_mixed_transfer_v15"
+}

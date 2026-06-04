@@ -1,0 +1,189 @@
+{
+  "generated_by": "experiments/build_diffusion_counterfactual_probe_spend_eval_targets.py",
+  "inputs": {
+    "spend_eval": "eval_results\\diffusion_language\\diffusion_independent_spend_transfer_v3_eval.json"
+  },
+  "probe_policy": "span_tomography_probe_v4",
+  "rows": [
+    {
+      "counterexample_type": "spend_eval_transfer",
+      "labels": {
+        "candidate_lift_vs_trajectory": 0.0,
+        "promote_vs_trajectory": false,
+        "repair_lift": 0.0,
+        "repair_selector_edge": 0.0
+      },
+      "pre_probe_features": {
+        "decomposed_prediction": false,
+        "first_repairable_step": 23.0,
+        "prompt_gap_count": 10.0,
+        "single_repairability_prediction": false,
+        "source_quality": 0.36571428571428577,
+        "source_task_delta_vs_trajectory": 0.0,
+        "trajectory_relative_prediction": false
+      },
+      "probe_policy": "span_tomography_probe_v4",
+      "task_id": "plan_017"
+    },
+    {
+      "counterexample_type": "spend_eval_transfer",
+      "labels": {
+        "candidate_lift_vs_trajectory": 0.09000000000000002,
+        "promote_vs_trajectory": true,
+        "repair_lift": 0.09000000000000002,
+        "repair_selector_edge": 0.09000000000000002
+      },
+      "pre_probe_features": {
+        "decomposed_prediction": true,
+        "first_repairable_step": 18.0,
+        "prompt_gap_count": 8.0,
+        "single_repairability_prediction": true,
+        "source_quality": 0.24785714285714286,
+        "source_task_delta_vs_trajectory": 0.0,
+        "trajectory_relative_prediction": true
+      },
+      "probe_policy": "span_tomography_probe_v4",
+      "task_id": "plan_018"
+    },
+    {
+      "counterexample_type": "spend_eval_transfer",
+      "labels": {
+        "candidate_lift_vs_trajectory": 0.0,
+        "promote_vs_trajectory": false,
+        "repair_lift": 0.0,
+        "repair_selector_edge": 0.0
+      },
+      "pre_probe_features": {
+        "decomposed_prediction": false,
+        "first_repairable_step": 0.0,
+        "prompt_gap_count": 12.0,
+        "single_repairability_prediction": false,
+        "source_quality": 0.33285714285714285,
+        "source_task_delta_vs_trajectory": 0.0,
+        "trajectory_relative_prediction": false
+      },
+      "probe_policy": "span_tomography_probe_v4",
+      "task_id": "plan_019"
+    },
+    {
+      "counterexample_type": "spend_eval_transfer",
+      "labels": {
+        "candidate_lift_vs_trajectory": 0.0,
+        "promote_vs_trajectory": false,
+        "repair_lift": 0.0,
+        "repair_selector_edge": 0.0
+      },
+      "pre_probe_features": {
+        "decomposed_prediction": true,
+        "first_repairable_step": 11.0,
+        "prompt_gap_count": 6.0,
+        "single_repairability_prediction": true,
+        "source_quality": 0.18,
+        "source_task_delta_vs_trajectory": -0.06392857142857145,
+        "trajectory_relative_prediction": false
+      },
+      "probe_policy": "span_tomography_probe_v4",
+      "task_id": "plan_020"
+    },
+    {
+      "counterexample_type": "spend_eval_transfer",
+      "labels": {
+        "candidate_lift_vs_trajectory": 0.0714285714285714,
+        "promote_vs_trajectory": true,
+        "repair_lift": 0.0714285714285714,
+        "repair_selector_edge": 0.0714285714285714
+      },
+      "pre_probe_features": {
+        "decomposed_prediction": true,
+        "first_repairable_step": 14.0,
+        "prompt_gap_count": 6.0,
+        "single_repairability_prediction": true,
+        "source_quality": 0.2564285714285714,
+        "source_task_delta_vs_trajectory": 0.0,
+        "trajectory_relative_prediction": true
+      },
+      "probe_policy": "span_tomography_probe_v4",
+      "task_id": "plan_021"
+    },
+    {
+      "counterexample_type": "spend_eval_transfer",
+      "labels": {
+        "candidate_lift_vs_trajectory": 0.0,
+        "promote_vs_trajectory": false,
+        "repair_lift": 0.0,
+        "repair_selector_edge": 0.0
+      },
+      "pre_probe_features": {
+        "decomposed_prediction": false,
+        "first_repairable_step": 18.0,
+        "prompt_gap_count": 12.0,
+        "single_repairability_prediction": false,
+        "source_quality": 0.34571428571428564,
+        "source_task_delta_vs_trajectory": 0.0,
+        "trajectory_relative_prediction": false
+      },
+      "probe_policy": "span_tomography_probe_v4",
+      "task_id": "plan_022"
+    },
+    {
+      "counterexample_type": "spend_eval_transfer",
+      "labels": {
+        "candidate_lift_vs_trajectory": 0.0,
+        "promote_vs_trajectory": false,
+        "repair_lift": 0.0,
+        "repair_selector_edge": 0.0
+      },
+      "pre_probe_features": {
+        "decomposed_prediction": false,
+        "first_repairable_step": 8.0,
+        "prompt_gap_count": 7.0,
+        "single_repairability_prediction": true,
+        "source_quality": 0.32035714285714284,
+        "source_task_delta_vs_trajectory": 0.0,
+        "trajectory_relative_prediction": false
+      },
+      "probe_policy": "span_tomography_probe_v4",
+      "task_id": "plan_023"
+    },
+    {
+      "counterexample_type": "spend_eval_transfer",
+      "labels": {
+        "candidate_lift_vs_trajectory": 0.0,
+        "promote_vs_trajectory": false,
+        "repair_lift": 0.0,
+        "repair_selector_edge": 0.0
+      },
+      "pre_probe_features": {
+        "decomposed_prediction": false,
+        "first_repairable_step": 22.0,
+        "prompt_gap_count": 7.0,
+        "single_repairability_prediction": true,
+        "source_quality": 0.3314285714285714,
+        "source_task_delta_vs_trajectory": 0.0,
+        "trajectory_relative_prediction": false
+      },
+      "probe_policy": "span_tomography_probe_v4",
+      "task_id": "plan_024"
+    }
+  ],
+  "schema": "diffusion_counterfactual_probe_spend_eval_targets.v1",
+  "summary": {
+    "gate_decision": "diagnostic_only",
+    "negative_label_count": 6,
+    "negative_task_ids": [
+      "plan_017",
+      "plan_019",
+      "plan_020",
+      "plan_022",
+      "plan_023",
+      "plan_024"
+    ],
+    "positive_label_count": 2,
+    "positive_task_ids": [
+      "plan_018",
+      "plan_021"
+    ],
+    "target_count": 8,
+    "total_positive_lift": 0.16142857142857142
+  }
+}

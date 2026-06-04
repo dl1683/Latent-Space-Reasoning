@@ -1,0 +1,225 @@
+{
+  "conclusive_result_gates": {
+    "maximum_learned_selected_waste_rows": 0,
+    "minimum_generated_positive_count": 1,
+    "must_beat_unchanged_hook_after_selected_output_cost": true,
+    "must_not_reduce_selected_positive_count_vs_unchanged": true,
+    "must_report_duplicate_candidate_errors_separately": true,
+    "no_runner_hook_before_fresh_replay_passes": true
+  },
+  "design_intent": "Freeze a held-out proof obligation for a learned candidate-row selector. The model may compress v21-v24 counterexamples, but it cannot become a runner hook unless it beats the unchanged hook on fresh v25 labels under strict selected utility.",
+  "failure_accounting": [
+    "If the unchanged hook again selects all positives with zero waste, keep it as the live baseline.",
+    "If the learned model overfits v21-v24 and loses on v25, preserve the model as a counterexample.",
+    "If v25 has zero generated positives, mark selector validation inconclusive.",
+    "If the model wins only by dropping positives, reject it despite lower selected count."
+  ],
+  "fresh_slice_protocol": {
+    "label_pass": "python experiments\\run_diffusion_three_arm_benchmark.py --task-preset lean_gpu_mixed_transfer_v25 --candidates llada-moe-7b-a1b-instruct-hf --limit-schedules 2 --limit-evolved-schedules 0 --limit-repair-candidates 2 --repair-source-policy random --repair-pack constraint_span_phase_final_preserve_seeded_gated --include-history-repairs --history-repair-fractions 0.25 --repair-spend-trigger denoise_phase_repairability --repair-source-min-chars 240 --repair-source-prompt-gap-min 2 --repair-source-prompt-gap-max 9 --repair-source-prompt-coverage-min 0.4 --repair-source-prompt-coverage-max 1.0 --repair-phase-budget frontier --repair-selector generated_repair_value_v1 --repair-promotion-margin 0.02 --trajectory-selector planning_state --device cuda --dtype bfloat16 --raw-output eval_results\\diffusion_language\\learned_selector_v25_label_raw.jsonl --scores-output eval_results\\diffusion_language\\learned_selector_v25_label_scores.json --report-output eval_results\\diffusion_language\\learned_selector_v25_label_report.md",
+    "required_replay_outputs": [
+      "candidate-promotion target sheet built from raw repair candidates",
+      "trained candidate_row_value_model_v25 parameters fitted only from v21-v24 rows",
+      "leave-one-slice-out training audit and held-out v25 replay",
+      "comparison against unchanged generated_repair_value_v1, v23 asymmetric replay, blanket history, and blanket final controls",
+      "selected-output cost sweep and selected-waste accounting",
+      "feature-ablation table proving the model is not only a candidate-source shortcut"
+    ]
+  },
+  "generated_by": "experiments/build_diffusion_learned_selector_v25_freeze.py",
+  "learned_selector_protocol": {
+    "forbidden_features": [
+      "candidate_lift_vs_trajectory",
+      "candidate_lift_vs_source",
+      "candidate_task_score",
+      "trajectory_task_score",
+      "promote_vs_trajectory",
+      "promote_vs_source",
+      "selected_repair_lift"
+    ],
+    "label": "candidate_lift_vs_trajectory > 0",
+    "label_free_features": [
+      "repair_is_history_prefix",
+      "repair_is_final_preserve",
+      "planning_quality_delta_vs_source",
+      "repair_selector_edge",
+      "repair_selector_score",
+      "source_planning_quality_score",
+      "source_task_score",
+      "prompt_gap_term_count",
+      "max_span_target_score",
+      "min_span_source_relative_preservation"
+    ],
+    "model_class": "regularized_label_free_candidate_row_model",
+    "promotion_status": "frozen_audit_not_runner_hook",
+    "regularization": [
+      "prefer lower feature count when held-out training utility ties",
+      "report leave-one-slice-out selected utility before fitting on all training slices",
+      "reject any model whose advantage comes from selected-positive regression",
+      "preserve failed rules and rejected controls in the result report"
+    ],
+    "selector_id": "candidate_row_value_model_v25",
+    "training_slices": [
+      "v21",
+      "v22",
+      "v23",
+      "v24"
+    ]
+  },
+  "moonshots_alignment": {
+    "attention_as_budget": "selected-output cost is treated as the scarce attention/compute resource",
+    "error_correction_loop": "failed v21-v24 gates become training data rather than discarded experiments",
+    "intelligence_equals_geometry": "learn a compact label-free value geometry instead of adding scale",
+    "single_gpu_constraint": "all evidence is generated on the local RTX 5090 path",
+    "strict_metric_first": "selected positive lift and selected waste beat candidate-row anecdotes"
+  },
+  "overlap_with_training_rows": [],
+  "planning_task_ids": [
+    "plan_193",
+    "plan_194",
+    "plan_195",
+    "plan_196",
+    "plan_197",
+    "plan_198",
+    "plan_199",
+    "plan_200"
+  ],
+  "schema": "diffusion_learned_selector_v25_freeze.v1",
+  "task_ids": [
+    "plan_193",
+    "plan_194",
+    "plan_195",
+    "plan_196",
+    "plan_197",
+    "plan_198",
+    "plan_199",
+    "plan_200",
+    "math_009",
+    "sym_007",
+    "sci_002"
+  ],
+  "task_preset": "lean_gpu_mixed_transfer_v25",
+  "training_packet": {
+    "artifact_hashes": {
+      "v21": "2c8a5a067e159505ef7bc300b38a8e7338ad58b0ba9467ba31503835138aa6a3",
+      "v22": "0de3bacb333c10a1613379230896b0876ff31a9f35c2f39e0e14de18b74294e6",
+      "v23": "1f9305073f2d90895658ffade19821d67cbc7b9a946c19a40fe1b47fb45c9e1b",
+      "v24": "747b058339a555c89ee5b3b4be7ee6068ea058ab923bd1752929a2af53ae6c23"
+    },
+    "final_preserve_row_count": 23,
+    "history_row_count": 23,
+    "negative_count": 29,
+    "positive_count": 17,
+    "row_count": 46,
+    "slice_counts": {
+      "v21": 12,
+      "v22": 10,
+      "v23": 14,
+      "v24": 10
+    },
+    "unique_task_count": 23
+  },
+  "training_results": {
+    "v21": {
+      "decision": "availability_positive_selector_failed",
+      "sha256": "37ace40ab50deb008563788dd8b371d86aae33e8783c09c5dbea74f5caf131ee",
+      "summary": {
+        "all_generation_count": 34,
+        "candidate_aware_promotion_error_count": 2,
+        "positive_count": 4,
+        "positive_tasks": [
+          "plan_164",
+          "plan_164",
+          "plan_167",
+          "plan_168"
+        ],
+        "repair_task_delta_per_extra_generation_vs_evolved": 0.024315476190476196,
+        "repair_task_delta_vs_evolved": 0.036473214285714296,
+        "repair_task_delta_vs_fixed": 0.036473214285714296,
+        "repair_task_delta_vs_random": 0.10226785714285716,
+        "run_id": "diffusion-09714dd28133e7e9",
+        "selected_count": 5,
+        "selected_positive_count": 3,
+        "selected_positive_lift": 0.31178571428571433,
+        "selected_positive_tasks": [
+          "plan_164",
+          "plan_167",
+          "plan_168"
+        ],
+        "selected_waste_count": 2,
+        "selected_waste_tasks": [
+          "plan_161",
+          "plan_162"
+        ],
+        "target_count": 12
+      }
+    },
+    "v22": {
+      "decision": "precision_positive_utility_failed",
+      "sha256": "e76ae73a687f4f0910933102afbe35d1acae592f507a5814d6850c9bbdb9b22a",
+      "summary": {
+        "candidate_aware_promotion_error_count": 3,
+        "positive_count": 3,
+        "positive_tasks": [
+          "plan_169",
+          "plan_170",
+          "plan_175"
+        ],
+        "repair_task_delta_per_extra_generation_vs_evolved": 0.016428571428571438,
+        "repair_task_delta_vs_evolved": 0.020535714285714296,
+        "run_id": "diffusion-2034a90bbe1f25f6",
+        "source_aware_selected_positive_count": 1,
+        "source_aware_selected_waste_count": 0,
+        "target_count": 10,
+        "unchanged_selected_positive_count": 3,
+        "unchanged_selected_waste_count": 1
+      }
+    },
+    "v23": {
+      "decision": "precision_positive_utility_failed",
+      "sha256": "4bf33808d776a1af08e772e50099aafd905b3af0fc965d6e82124c710078cf29",
+      "summary": {
+        "asymmetric_selected_positive_count": 3,
+        "asymmetric_selected_waste_count": 0,
+        "candidate_aware_promotion_error_count": 5,
+        "positive_count": 7,
+        "positive_tasks": [
+          "plan_177",
+          "plan_178",
+          "plan_179",
+          "plan_181",
+          "plan_182",
+          "plan_183"
+        ],
+        "repair_task_delta_per_extra_generation_vs_evolved": 0.03318877551020409,
+        "repair_task_delta_vs_evolved": 0.058080357142857156,
+        "run_id": "diffusion-27588651dd595f61",
+        "target_count": 14,
+        "unchanged_selected_positive_count": 6,
+        "unchanged_selected_waste_count": 0,
+        "v22_source_aware_selected_positive_count": 2,
+        "v22_source_aware_selected_waste_count": 0
+      }
+    },
+    "v24": {
+      "decision": "unchanged_baseline_revalidated",
+      "sha256": "53456eb385e2419bdf07deb8cedd0e6c14917a77f03b4f18ab9db30c0a7fff69",
+      "summary": {
+        "all_generation_count": 32,
+        "candidate_aware_promotion_error_count": 3,
+        "oracle_headroom_vs_repair": 0.0,
+        "positive_count": 3,
+        "positive_tasks": [
+          "plan_187",
+          "plan_188",
+          "plan_190"
+        ],
+        "repair_task_delta_per_extra_generation_vs_evolved": 0.03017857142857141,
+        "repair_task_delta_vs_evolved": 0.03772321428571426,
+        "run_id": "diffusion-12de30e468544b5d",
+        "target_count": 10,
+        "unchanged_selected_positive_count": 3,
+        "unchanged_selected_waste_count": 0
+      }
+    }
+  }
+}

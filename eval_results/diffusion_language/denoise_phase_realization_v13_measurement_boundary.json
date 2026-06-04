@@ -1,0 +1,161 @@
+{
+  "generated_by": "experiments/analyze_diffusion_denoise_phase_realization_v13_measurement.py",
+  "inputs": {
+    "freeze": "eval_results\\diffusion_language\\denoise_phase_realization_v13_freeze.json",
+    "measurement": "eval_results\\diffusion_language\\denoise_phase_realization_v13_measurement_scores.json"
+  },
+  "row_diagnostics": [
+    {
+      "first_repairable_denoise_skeleton_step_fraction": 0.21875,
+      "has_repairable_denoise_skeleton": true,
+      "measured_probe_value_prediction": 0.011170764119601332,
+      "peak_denoise_prompt_coverage": 0.125,
+      "prompt_coverage": 0.375,
+      "prompt_gap_count": 10.0,
+      "source_control": "random_32",
+      "source_task_delta_vs_trajectory": 0.10857142857142854,
+      "surface_selected": false,
+      "task_id": "plan_097",
+      "would_probe": false
+    },
+    {
+      "first_repairable_denoise_skeleton_step_fraction": 0.625,
+      "has_repairable_denoise_skeleton": true,
+      "measured_probe_value_prediction": 0.04984063615709186,
+      "peak_denoise_prompt_coverage": 0.3076923076923077,
+      "prompt_coverage": 0.5384615384615384,
+      "prompt_gap_count": 6.0,
+      "source_control": "random_32",
+      "source_task_delta_vs_trajectory": -0.17500000000000004,
+      "surface_selected": false,
+      "task_id": "plan_098",
+      "would_probe": true
+    },
+    {
+      "first_repairable_denoise_skeleton_step_fraction": 0.21875,
+      "has_repairable_denoise_skeleton": true,
+      "measured_probe_value_prediction": 0.03114068441064639,
+      "peak_denoise_prompt_coverage": 0.5,
+      "prompt_coverage": 0.7857142857142857,
+      "prompt_gap_count": 4.0,
+      "source_control": "low_confidence_32",
+      "source_task_delta_vs_trajectory": 0.0,
+      "surface_selected": true,
+      "task_id": "plan_099",
+      "would_probe": true
+    },
+    {
+      "first_repairable_denoise_skeleton_step_fraction": 0.21875,
+      "has_repairable_denoise_skeleton": true,
+      "measured_probe_value_prediction": 0.011784313725490193,
+      "peak_denoise_prompt_coverage": 0.25,
+      "prompt_coverage": 0.875,
+      "prompt_gap_count": 2.0,
+      "source_control": "low_confidence_32",
+      "source_task_delta_vs_trajectory": 0.0,
+      "surface_selected": false,
+      "task_id": "plan_100",
+      "would_probe": true
+    },
+    {
+      "first_repairable_denoise_skeleton_step_fraction": 0.21875,
+      "has_repairable_denoise_skeleton": true,
+      "measured_probe_value_prediction": 0.035318565713439026,
+      "peak_denoise_prompt_coverage": 0.058823529411764705,
+      "prompt_coverage": 0.7647058823529411,
+      "prompt_gap_count": 5.0,
+      "source_control": "low_confidence_32",
+      "source_task_delta_vs_trajectory": 0.0,
+      "surface_selected": false,
+      "task_id": "plan_101",
+      "would_probe": true
+    },
+    {
+      "first_repairable_denoise_skeleton_step_fraction": 0.21875,
+      "has_repairable_denoise_skeleton": true,
+      "measured_probe_value_prediction": 0.0,
+      "peak_denoise_prompt_coverage": 0.5,
+      "prompt_coverage": 1.0,
+      "prompt_gap_count": 0.0,
+      "source_control": "low_confidence_32",
+      "source_task_delta_vs_trajectory": 0.0,
+      "surface_selected": true,
+      "task_id": "plan_102",
+      "would_probe": true
+    },
+    {
+      "first_repairable_denoise_skeleton_step_fraction": 0.21875,
+      "has_repairable_denoise_skeleton": true,
+      "measured_probe_value_prediction": 0.0014166666666666633,
+      "peak_denoise_prompt_coverage": 0.375,
+      "prompt_coverage": 1.0,
+      "prompt_gap_count": 0.0,
+      "source_control": "low_confidence_32",
+      "source_task_delta_vs_trajectory": 0.0,
+      "surface_selected": false,
+      "task_id": "plan_103",
+      "would_probe": true
+    },
+    {
+      "first_repairable_denoise_skeleton_step_fraction": 0.21875,
+      "has_repairable_denoise_skeleton": true,
+      "measured_probe_value_prediction": 0.010396825396825397,
+      "peak_denoise_prompt_coverage": 0.3333333333333333,
+      "prompt_coverage": 0.5333333333333333,
+      "prompt_gap_count": 7.0,
+      "source_control": "low_confidence_32",
+      "source_task_delta_vs_trajectory": 0.0,
+      "surface_selected": false,
+      "task_id": "plan_104",
+      "would_probe": true
+    }
+  ],
+  "schema": "diffusion_denoise_phase_realization_v13_measurement_boundary.v1",
+  "summary": {
+    "full_generation_count": 22,
+    "high_probe_blocked_task_ids": [
+      "plan_098",
+      "plan_101"
+    ],
+    "measurement_gate_passed": true,
+    "negative_source_delta_count": 1,
+    "negative_source_delta_task_ids": [
+      "plan_098"
+    ],
+    "positive_source_delta_count": 1,
+    "positive_source_delta_task_ids": [
+      "plan_097"
+    ],
+    "probe_generation_count": 8,
+    "run_id": "diffusion-8196af06c90923b1",
+    "skeleton_only_count": 8,
+    "skeleton_only_task_ids": [
+      "plan_097",
+      "plan_098",
+      "plan_099",
+      "plan_100",
+      "plan_101",
+      "plan_102",
+      "plan_103",
+      "plan_104"
+    ],
+    "source_divergent_count": 2,
+    "source_divergent_task_ids": [
+      "plan_097",
+      "plan_098"
+    ],
+    "surface_selected_count": 2,
+    "surface_selected_task_ids": [
+      "plan_099",
+      "plan_102"
+    ],
+    "target_count": 8
+  },
+  "target_surface": {
+    "first_repairable_denoise_skeleton_step_fraction_max": 0.4,
+    "peak_denoise_prompt_coverage_min": 0.4,
+    "requires_repairable_denoise_skeleton": true,
+    "source_task_delta_vs_trajectory_min": 0.0,
+    "surface_id": "source_aligned_denoise_realization_v13"
+  }
+}

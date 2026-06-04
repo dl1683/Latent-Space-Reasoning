@@ -1,0 +1,657 @@
+{
+  "generated_by": "experiments/analyze_diffusion_counterfactual_probe_text_fidelity.py",
+  "inputs": {
+    "raw": "eval_results\\diffusion_language\\counterfactual_micro_probe_span_tomography_v4_transfer_v3_planning_raw.jsonl",
+    "targets": "eval_results\\diffusion_language\\diffusion_counterfactual_probe_spend_eval_targets_v3_planning.json"
+  },
+  "rows": [
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "features": {
+        "diagnostic_fidelity_score": 5.0,
+        "diagnostic_slot_count": 3.0,
+        "duplicate_authorization": 0.0,
+        "duplicate_slot_key": 0.0,
+        "exact_authorization_false": 1.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 1.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 0.0,
+        "malformed_compact_key": 0.0,
+        "max_slot_overlap": 0.25,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.2884285714285714,
+        "repeated_token_excess": 3.0,
+        "semantic_defect": 0.0,
+        "semantic_valid_for_stage1": 1.0,
+        "template_slot_echo": 0.0,
+        "weak_term_echo_count": 0.0,
+        "weak_term_echo_fraction": 0.0,
+        "weird_punctuation": 0.0,
+        "word_count": 20.0,
+        "x0_x2_slot_overlap": 0.25
+      },
+      "label": false,
+      "probe_text": "X0=adding, hidden, examples, prompt, template  \nX1=contamination, performance, difference, measure, performance  \nX2=whether, hidden, examples, caused, improvement  \nN=0",
+      "selected_by_best_post_probe_rule": false,
+      "task_id": "plan_017",
+      "weak_terms": []
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.09000000000000002,
+      "features": {
+        "diagnostic_fidelity_score": 5.0,
+        "diagnostic_slot_count": 3.0,
+        "duplicate_authorization": 0.0,
+        "duplicate_slot_key": 0.0,
+        "exact_authorization_false": 1.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 1.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 0.0,
+        "malformed_compact_key": 0.0,
+        "max_slot_overlap": 0.0,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.22342857142857142,
+        "repeated_token_excess": 0.0,
+        "semantic_defect": 0.0,
+        "semantic_valid_for_stage1": 1.0,
+        "template_slot_echo": 0.0,
+        "weak_term_echo_count": 0.0,
+        "weak_term_echo_fraction": 0.0,
+        "weird_punctuation": 0.0,
+        "word_count": 20.0,
+        "x0_x2_slot_overlap": 0.0
+      },
+      "label": true,
+      "probe_text": "X0=flags, many, rule, change, engineers, either, plan, next  \nX1=verifier, features, inspect, lower  \nX2=Then, compare, results  \nN=0",
+      "selected_by_best_post_probe_rule": true,
+      "task_id": "plan_018",
+      "weak_terms": []
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "features": {
+        "diagnostic_fidelity_score": 5.0,
+        "diagnostic_slot_count": 3.0,
+        "duplicate_authorization": 0.0,
+        "duplicate_slot_key": 0.0,
+        "exact_authorization_false": 1.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 1.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 0.0,
+        "malformed_compact_key": 0.0,
+        "max_slot_overlap": 0.09090909090909091,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.21842857142857144,
+        "repeated_token_excess": 2.0,
+        "semantic_defect": 0.0,
+        "semantic_valid_for_stage1": 1.0,
+        "template_slot_echo": 0.0,
+        "weak_term_echo_count": 0.0,
+        "weak_term_echo_fraction": 0.0,
+        "weird_punctuation": 0.0,
+        "word_count": 22.0,
+        "x0_x2_slot_overlap": 0.09090909090909091
+      },
+      "label": false,
+      "probe_text": "X0=model, system, improves, creates, longer, answers, users, find\nX1=run, compare, collect, feedback\nX2=repair, scores, scores, answers, audit\nN=0",
+      "selected_by_best_post_probe_rule": false,
+      "task_id": "plan_019",
+      "weak_terms": []
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "features": {
+        "diagnostic_fidelity_score": 5.0,
+        "diagnostic_slot_count": 3.0,
+        "duplicate_authorization": 0.0,
+        "duplicate_slot_key": 0.0,
+        "exact_authorization_false": 1.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 1.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 0.0,
+        "malformed_compact_key": 0.0,
+        "max_slot_overlap": 0.0,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.1795,
+        "repeated_token_excess": 0.0,
+        "semantic_defect": 0.0,
+        "semantic_valid_for_stage1": 1.0,
+        "template_slot_echo": 0.0,
+        "weak_term_echo_count": 0.0,
+        "weak_term_echo_fraction": 0.0,
+        "weird_punctuation": 0.0,
+        "word_count": 20.0,
+        "x0_x2_slot_overlap": 0.0
+      },
+      "label": false,
+      "probe_text": "X0=helps, hurts, afford, overnight, mixed  \nX1=Run, tasks, performance, results, overfit  \nX2=Use, set, evaluate, analyze, adjust  \nN=0",
+      "selected_by_best_post_probe_rule": true,
+      "task_id": "plan_020",
+      "weak_terms": []
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0714285714285714,
+      "features": {
+        "diagnostic_fidelity_score": 5.0,
+        "diagnostic_slot_count": 3.0,
+        "duplicate_authorization": 0.0,
+        "duplicate_slot_key": 0.0,
+        "exact_authorization_false": 1.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 1.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 0.0,
+        "malformed_compact_key": 0.0,
+        "max_slot_overlap": 0.0,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.19842857142857143,
+        "repeated_token_excess": 0.0,
+        "semantic_defect": 0.0,
+        "semantic_valid_for_stage1": 1.0,
+        "template_slot_echo": 0.0,
+        "weak_term_echo_count": 0.0,
+        "weak_term_echo_fraction": 0.0,
+        "weird_punctuation": 0.0,
+        "word_count": 20.0,
+        "x0_x2_slot_overlap": 0.0
+      },
+      "label": true,
+      "probe_text": "X0=Automated, rewards, every, some, trusting  \nX1=manually, checking, coherence, completeness, mention  \nX2=document, process, trust, judge, consistency  \nN=0",
+      "selected_by_best_post_probe_rule": true,
+      "task_id": "plan_021",
+      "weak_terms": []
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "features": {
+        "diagnostic_fidelity_score": 5.0,
+        "diagnostic_slot_count": 3.0,
+        "duplicate_authorization": 0.0,
+        "duplicate_slot_key": 0.0,
+        "exact_authorization_false": 1.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 1.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 0.0,
+        "malformed_compact_key": 0.0,
+        "max_slot_overlap": 0.0,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.34235714285714286,
+        "repeated_token_excess": 0.0,
+        "semantic_defect": 0.0,
+        "semantic_valid_for_stage1": 1.0,
+        "template_slot_echo": 0.0,
+        "weak_term_echo_count": 0.0,
+        "weak_term_echo_fraction": 0.0,
+        "weird_punctuation": 0.0,
+        "word_count": 20.0,
+        "x0_x2_slot_overlap": 0.0
+      },
+      "label": false,
+      "probe_text": "X0=production, sometimes, gives, right, wrong, either, both, limits  \nX1=intermediate states, reasoning, traceability  \nX2=validate, flag, review  \nN=0",
+      "selected_by_best_post_probe_rule": true,
+      "task_id": "plan_022",
+      "weak_terms": []
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "features": {
+        "diagnostic_fidelity_score": 5.0,
+        "diagnostic_slot_count": 3.0,
+        "duplicate_authorization": 0.0,
+        "duplicate_slot_key": 0.0,
+        "exact_authorization_false": 1.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 1.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 0.0,
+        "malformed_compact_key": 0.0,
+        "max_slot_overlap": 0.16666666666666666,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.15842857142857142,
+        "repeated_token_excess": 1.0,
+        "semantic_defect": 0.0,
+        "semantic_valid_for_stage1": 1.0,
+        "template_slot_echo": 0.0,
+        "weak_term_echo_count": 0.0,
+        "weak_term_echo_fraction": 0.0,
+        "weird_punctuation": 0.0,
+        "word_count": 18.0,
+        "x0_x2_slot_overlap": 0.0
+      },
+      "label": false,
+      "probe_text": "X0=cheap, enough, more, plan, fair, comparison  \n\nX1=,repairs,,accuracy,  \nX2=track, GPU, time, efficiency, accuracy  \nN=0",
+      "selected_by_best_post_probe_rule": false,
+      "task_id": "plan_023",
+      "weak_terms": []
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "features": {
+        "diagnostic_fidelity_score": 5.0,
+        "diagnostic_slot_count": 3.0,
+        "duplicate_authorization": 0.0,
+        "duplicate_slot_key": 0.0,
+        "exact_authorization_false": 1.0,
+        "generic_slot": 0.0,
+        "has_evidence_slot": 1.0,
+        "has_missing_slot": 1.0,
+        "has_retention_slot": 1.0,
+        "malformed_authorization": 0.0,
+        "malformed_compact_key": 0.0,
+        "max_slot_overlap": 0.0,
+        "placeholder_slot": 0.0,
+        "probe_task_score": 0.2145,
+        "repeated_token_excess": 0.0,
+        "semantic_defect": 0.0,
+        "semantic_valid_for_stage1": 1.0,
+        "template_slot_echo": 0.0,
+        "weak_term_echo_count": 0.0,
+        "weak_term_echo_fraction": 0.0,
+        "weird_punctuation": 0.0,
+        "word_count": 20.0,
+        "x0_x2_slot_overlap": 0.0
+      },
+      "label": false,
+      "probe_text": "X0=evaluation, improves, adding, developers, suspect  \nX1=Plan, small, validation, run, subset  \nX2=refuses, harmless, cases, monitor, feedback  \nN=0",
+      "selected_by_best_post_probe_rule": true,
+      "task_id": "plan_024",
+      "weak_terms": []
+    }
+  ],
+  "schema": "diffusion_counterfactual_probe_text_fidelity.v1",
+  "summary": {
+    "best_post_probe_error_count": 3,
+    "best_post_probe_false_negative_count": 0,
+    "best_post_probe_false_positive_count": 3,
+    "best_post_probe_rule_name": "max_slot_overlap_le_0p000000",
+    "duplicate_authorization_count": 0,
+    "duplicate_slot_key_count": 0,
+    "gate_decision": "diagnostic_only",
+    "generic_slot_count": 0,
+    "malformed_authorization_count": 0,
+    "malformed_compact_key_count": 0,
+    "negative_label_count": 6,
+    "placeholder_slot_count": 0,
+    "positive_label_count": 2,
+    "row_count": 8,
+    "semantic_valid_for_stage1_count": 8,
+    "template_slot_echo_count": 0,
+    "weird_punctuation_count": 0
+  },
+  "top_post_probe_rules": [
+    {
+      "direction": "le",
+      "error_count": 3,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_020",
+        "plan_022",
+        "plan_024"
+      ],
+      "feature": "max_slot_overlap",
+      "missed_positive_lift": 0,
+      "rule_name": "max_slot_overlap_le_0p000000",
+      "selected_count": 5,
+      "threshold": 0.0
+    },
+    {
+      "direction": "le",
+      "error_count": 3,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_020",
+        "plan_022",
+        "plan_024"
+      ],
+      "feature": "repeated_token_excess",
+      "missed_positive_lift": 0,
+      "rule_name": "repeated_token_excess_le_0p000000",
+      "selected_count": 5,
+      "threshold": 0.0
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_021"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_022"
+      ],
+      "feature": "probe_task_score",
+      "missed_positive_lift": 0.0714285714285714,
+      "rule_name": "probe_task_score_ge_0p223429",
+      "selected_count": 3,
+      "threshold": 0.22342857142857142
+    },
+    {
+      "direction": "le",
+      "error_count": 3,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_018"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_020",
+        "plan_023"
+      ],
+      "feature": "probe_task_score",
+      "missed_positive_lift": 0.09000000000000002,
+      "rule_name": "probe_task_score_le_0p198429",
+      "selected_count": 3,
+      "threshold": 0.19842857142857143
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_018",
+        "plan_021"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_017"
+      ],
+      "feature": "max_slot_overlap",
+      "missed_positive_lift": 0.16142857142857142,
+      "rule_name": "max_slot_overlap_ge_0p250000",
+      "selected_count": 1,
+      "threshold": 0.25
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_018",
+        "plan_021"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_022"
+      ],
+      "feature": "probe_task_score",
+      "missed_positive_lift": 0.16142857142857142,
+      "rule_name": "probe_task_score_ge_0p342357",
+      "selected_count": 1,
+      "threshold": 0.34235714285714286
+    },
+    {
+      "direction": "le",
+      "error_count": 3,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_018",
+        "plan_021"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_023"
+      ],
+      "feature": "probe_task_score",
+      "missed_positive_lift": 0.16142857142857142,
+      "rule_name": "probe_task_score_le_0p158429",
+      "selected_count": 1,
+      "threshold": 0.15842857142857142
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_018",
+        "plan_021"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_017"
+      ],
+      "feature": "repeated_token_excess",
+      "missed_positive_lift": 0.16142857142857142,
+      "rule_name": "repeated_token_excess_ge_3p000000",
+      "selected_count": 1,
+      "threshold": 3.0
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_018",
+        "plan_021"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_019"
+      ],
+      "feature": "word_count",
+      "missed_positive_lift": 0.16142857142857142,
+      "rule_name": "word_count_ge_22p000000",
+      "selected_count": 1,
+      "threshold": 22.0
+    },
+    {
+      "direction": "le",
+      "error_count": 3,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_018",
+        "plan_021"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_023"
+      ],
+      "feature": "word_count",
+      "missed_positive_lift": 0.16142857142857142,
+      "rule_name": "word_count_le_18p000000",
+      "selected_count": 1,
+      "threshold": 18.0
+    },
+    {
+      "direction": "ge",
+      "error_count": 3,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_018",
+        "plan_021"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_017"
+      ],
+      "feature": "x0_x2_slot_overlap",
+      "missed_positive_lift": 0.16142857142857142,
+      "rule_name": "x0_x2_slot_overlap_ge_0p250000",
+      "selected_count": 1,
+      "threshold": 0.25
+    },
+    {
+      "direction": "le",
+      "error_count": 4,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 4,
+      "false_positive_task_ids": [
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_024"
+      ],
+      "feature": "max_slot_overlap",
+      "missed_positive_lift": 0,
+      "rule_name": "max_slot_overlap_le_0p090909",
+      "selected_count": 6,
+      "threshold": 0.09090909090909091
+    },
+    {
+      "direction": "ge",
+      "error_count": 4,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 4,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_019",
+        "plan_022",
+        "plan_024"
+      ],
+      "feature": "probe_task_score",
+      "missed_positive_lift": 0,
+      "rule_name": "probe_task_score_ge_0p198429",
+      "selected_count": 6,
+      "threshold": 0.19842857142857143
+    },
+    {
+      "direction": "le",
+      "error_count": 4,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 4,
+      "false_positive_task_ids": [
+        "plan_019",
+        "plan_020",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature": "probe_task_score",
+      "missed_positive_lift": 0,
+      "rule_name": "probe_task_score_le_0p223429",
+      "selected_count": 6,
+      "threshold": 0.22342857142857142
+    },
+    {
+      "direction": "le",
+      "error_count": 4,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 4,
+      "false_positive_task_ids": [
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature": "repeated_token_excess",
+      "missed_positive_lift": 0,
+      "rule_name": "repeated_token_excess_le_1p000000",
+      "selected_count": 6,
+      "threshold": 1.0
+    },
+    {
+      "direction": "le",
+      "error_count": 4,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 4,
+      "false_positive_task_ids": [
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature": "x0_x2_slot_overlap",
+      "missed_positive_lift": 0,
+      "rule_name": "x0_x2_slot_overlap_le_0p000000",
+      "selected_count": 6,
+      "threshold": 0.0
+    },
+    {
+      "direction": "ge",
+      "error_count": 4,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_021"
+      ],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_019",
+        "plan_022"
+      ],
+      "feature": "probe_task_score",
+      "missed_positive_lift": 0.0714285714285714,
+      "rule_name": "probe_task_score_ge_0p218429",
+      "selected_count": 4,
+      "threshold": 0.21842857142857144
+    },
+    {
+      "direction": "le",
+      "error_count": 4,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_018"
+      ],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_020",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature": "probe_task_score",
+      "missed_positive_lift": 0.09000000000000002,
+      "rule_name": "probe_task_score_le_0p214500",
+      "selected_count": 4,
+      "threshold": 0.2145
+    },
+    {
+      "direction": "ge",
+      "error_count": 4,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_018",
+        "plan_021"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_023"
+      ],
+      "feature": "max_slot_overlap",
+      "missed_positive_lift": 0.16142857142857142,
+      "rule_name": "max_slot_overlap_ge_0p166667",
+      "selected_count": 2,
+      "threshold": 0.16666666666666666
+    },
+    {
+      "direction": "ge",
+      "error_count": 4,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_018",
+        "plan_021"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_022"
+      ],
+      "feature": "probe_task_score",
+      "missed_positive_lift": 0.16142857142857142,
+      "rule_name": "probe_task_score_ge_0p288429",
+      "selected_count": 2,
+      "threshold": 0.2884285714285714
+    }
+  ]
+}

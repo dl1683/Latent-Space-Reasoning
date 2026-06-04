@@ -1,0 +1,260 @@
+{
+  "active_questions": [
+    {
+      "evidence_tasks": [
+        "plan_044",
+        "plan_034",
+        "plan_063",
+        "plan_046",
+        "plan_072",
+        "plan_061",
+        "plan_070"
+      ],
+      "next_measurement": "Collect fresh low-gap repairable rows and check candidate lift before raising any prompt-gap threshold.",
+      "question": "When prompt gap is low, which denoise/source features distinguish a hidden profitable repair from a true no-lift row?",
+      "question_id": "low_gap_value_probe"
+    },
+    {
+      "evidence_tasks": [
+        "plan_045",
+        "plan_050",
+        "plan_064",
+        "plan_069",
+        "plan_071"
+      ],
+      "next_measurement": "Add post-repair edge prediction or source-retention features before spending on high-gap rows.",
+      "question": "Which high-gap rows are actually repair-value rows rather than keyword-missing rows?",
+      "question_id": "high_gap_waste_probe"
+    },
+    {
+      "evidence_tasks": [
+        "plan_045",
+        "plan_050",
+        "plan_064",
+        "plan_069",
+        "plan_071"
+      ],
+      "next_measurement": "Estimate candidate realization or promotion edge before live repair using only frozen source and span diagnostics.",
+      "question": "Can the controller predict candidate promotion edge before generating the repair candidate?",
+      "question_id": "pre_repair_edge_proxy"
+    }
+  ],
+  "best_rule": {
+    "conditions": [
+      "prompt_gap_count >= 8.000000",
+      "source_task_delta_vs_trajectory <= 0.063000"
+    ],
+    "error_count": 12,
+    "false_negative_count": 7,
+    "false_positive_count": 5,
+    "missed_profitable_tasks": [
+      "plan_034",
+      "plan_044",
+      "plan_046",
+      "plan_061",
+      "plan_063",
+      "plan_070",
+      "plan_072"
+    ],
+    "no_lift_selected_tasks": [
+      "plan_045",
+      "plan_050",
+      "plan_064",
+      "plan_069",
+      "plan_071"
+    ],
+    "positive_lift_covered": 1.5054285714285716,
+    "rule_id": "repairable_if_prompt_gap_count_ge_8p000000_and_source_task_delta_vs_trajectory_le_0p063000"
+  },
+  "clusters": [
+    {
+      "cluster_id": "low_gap_profitable_false_negatives",
+      "reading": "Profitable repairs can appear outside the best rule's prompt-gap floor.",
+      "tasks": [
+        "plan_044",
+        "plan_034",
+        "plan_063",
+        "plan_046",
+        "plan_072",
+        "plan_061",
+        "plan_070"
+      ]
+    },
+    {
+      "cluster_id": "high_gap_no_lift_false_positives",
+      "reading": "High prompt-gap rows can still be no-lift, so gap is not repair value.",
+      "tasks": [
+        "plan_045",
+        "plan_050",
+        "plan_064",
+        "plan_069",
+        "plan_071"
+      ]
+    },
+    {
+      "cluster_id": "positive_source_delta_false_negatives",
+      "reading": "A source that already beats trajectory can still deserve repair.",
+      "tasks": [
+        "plan_061"
+      ]
+    },
+    {
+      "cluster_id": "zero_edge_false_positives",
+      "reading": "Some repairable states produce candidates with no post-repair promotion edge.",
+      "tasks": [
+        "plan_045",
+        "plan_050",
+        "plan_064",
+        "plan_069",
+        "plan_071"
+      ]
+    }
+  ],
+  "counterexamples": [
+    {
+      "error_type": "false_negative",
+      "lesson": "low-gap profitable repair; prompt-gap floor is too brittle",
+      "prompt_gap_count": 4.0,
+      "repair_lift": 0.11249999999999999,
+      "repair_selector_edge": 0.0,
+      "source_quality": 0.2564285714285714,
+      "source_task_delta_vs_trajectory": 0.0,
+      "task_id": "plan_044"
+    },
+    {
+      "error_type": "false_negative",
+      "lesson": "low-gap profitable repair; prompt-gap floor is too brittle",
+      "prompt_gap_count": 4.0,
+      "repair_lift": 0.09642857142857142,
+      "repair_selector_edge": 0.0,
+      "source_quality": 0.31142857142857144,
+      "source_task_delta_vs_trajectory": 0.0,
+      "task_id": "plan_034"
+    },
+    {
+      "error_type": "false_negative",
+      "lesson": "low-gap profitable repair; prompt-gap floor is too brittle",
+      "prompt_gap_count": 6.0,
+      "repair_lift": 0.09642857142857142,
+      "repair_selector_edge": 0.0,
+      "source_quality": 0.2864285714285714,
+      "source_task_delta_vs_trajectory": 0.0,
+      "task_id": "plan_063"
+    },
+    {
+      "error_type": "false_negative",
+      "lesson": "low-gap profitable repair; prompt-gap floor is too brittle",
+      "prompt_gap_count": 7.0,
+      "repair_lift": 0.07642857142857146,
+      "repair_selector_edge": 0.0,
+      "source_quality": 0.24392857142857144,
+      "source_task_delta_vs_trajectory": 0.0,
+      "task_id": "plan_046"
+    },
+    {
+      "error_type": "false_negative",
+      "lesson": "low-gap profitable repair; prompt-gap floor is too brittle",
+      "prompt_gap_count": 2.0,
+      "repair_lift": 0.058928571428571386,
+      "repair_selector_edge": 0.15892857142857136,
+      "source_quality": 0.24392857142857144,
+      "source_task_delta_vs_trajectory": 0.0,
+      "task_id": "plan_072"
+    },
+    {
+      "error_type": "false_negative",
+      "lesson": "low-gap profitable repair; prompt-gap floor is too brittle",
+      "prompt_gap_count": 3.0,
+      "repair_lift": 0.046928571428571486,
+      "repair_selector_edge": 0.0,
+      "source_quality": 0.2864285714285714,
+      "source_task_delta_vs_trajectory": 0.046928571428571486,
+      "task_id": "plan_061"
+    },
+    {
+      "error_type": "false_negative",
+      "lesson": "low-gap profitable repair; prompt-gap floor is too brittle",
+      "prompt_gap_count": 5.0,
+      "repair_lift": 0.012500000000000011,
+      "repair_selector_edge": 0.012500000000000011,
+      "source_quality": 0.2139285714285714,
+      "source_task_delta_vs_trajectory": 0.0,
+      "task_id": "plan_070"
+    },
+    {
+      "error_type": "false_positive",
+      "lesson": "high-gap no-lift repair; missing terms alone overpredict value",
+      "prompt_gap_count": 10.0,
+      "repair_lift": 0.0,
+      "repair_selector_edge": 0.0,
+      "source_quality": 0.32892857142857146,
+      "source_task_delta_vs_trajectory": 0.0,
+      "task_id": "plan_045"
+    },
+    {
+      "error_type": "false_positive",
+      "lesson": "high-gap no-lift repair; missing terms alone overpredict value",
+      "prompt_gap_count": 9.0,
+      "repair_lift": 0.0,
+      "repair_selector_edge": 0.0,
+      "source_quality": 0.28178571428571425,
+      "source_task_delta_vs_trajectory": 0.0,
+      "task_id": "plan_050"
+    },
+    {
+      "error_type": "false_positive",
+      "lesson": "high-gap no-lift repair; missing terms alone overpredict value",
+      "prompt_gap_count": 12.0,
+      "repair_lift": 0.0,
+      "repair_selector_edge": 0.0,
+      "source_quality": 0.18,
+      "source_task_delta_vs_trajectory": -0.020000000000000018,
+      "task_id": "plan_064"
+    },
+    {
+      "error_type": "false_positive",
+      "lesson": "high-gap no-lift repair; missing terms alone overpredict value",
+      "prompt_gap_count": 12.0,
+      "repair_lift": 0.0,
+      "repair_selector_edge": 0.0,
+      "source_quality": 0.27785714285714286,
+      "source_task_delta_vs_trajectory": 0.0,
+      "task_id": "plan_069"
+    },
+    {
+      "error_type": "false_positive",
+      "lesson": "high-gap no-lift repair; missing terms alone overpredict value",
+      "prompt_gap_count": 12.0,
+      "repair_lift": 0.0,
+      "repair_selector_edge": 0.0,
+      "source_quality": 0.18,
+      "source_task_delta_vs_trajectory": 0.0,
+      "task_id": "plan_071"
+    }
+  ],
+  "generated_by": "experiments/analyze_diffusion_spend_counterexamples.py",
+  "inputs": {
+    "promotion_targets": "eval_results\\diffusion_language\\diffusion_candidate_promotion_targets_v9.json",
+    "spend_gate_fit": "eval_results\\diffusion_language\\diffusion_spend_gate_v9_fit.json"
+  },
+  "next_controller_contract": {
+    "gpu_gate": "Do not run a live spend-gated policy until offline evaluation preserves all profitable rows or explicitly trades a named lift amount for cost.",
+    "promotion_invariant": "Keep `candidate_aware_promotion_v1` fixed until a challenger beats its zero-error generated-candidate record.",
+    "required_data": "All-repairable raw generations, spend labels, generated-candidate promotion labels, and per-task cost/lift rows.",
+    "spend_invariant": "A spend controller must report false positives and false negatives separately; average score alone is not enough."
+  },
+  "schema": "diffusion_spend_counterexample_workbench.v1",
+  "summary": {
+    "counterexample_count": 12,
+    "profitable_count": 20,
+    "promotion_error_count": 0,
+    "promotion_positive_tasks": [
+      "plan_065",
+      "plan_067",
+      "plan_068",
+      "plan_070",
+      "plan_072"
+    ],
+    "target_count": 40
+  }
+}

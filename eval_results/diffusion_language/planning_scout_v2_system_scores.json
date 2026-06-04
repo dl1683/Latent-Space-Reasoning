@@ -1,0 +1,171 @@
+{
+  "all_generation_count": 40,
+  "by_candidate": {
+    "dream-7b-instruct-hf": {
+      "count": 8,
+      "mean_combined_score": 0.43432343345992247,
+      "mean_task_score": 0.36677678571428574
+    },
+    "llada-8b-instruct-hf": {
+      "count": 8,
+      "mean_combined_score": 0.48366672390109894,
+      "mean_task_score": 0.4122767857142857
+    }
+  },
+  "by_family": {
+    "planning": {
+      "count": 16,
+      "mean_combined_score": 0.4589950786805107,
+      "mean_task_score": 0.38952678571428573
+    }
+  },
+  "selected": [
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.30652947573260075,
+      "schedule": "origin_64",
+      "task_id": "plan_001",
+      "task_score": 0.3148571428571429,
+      "text": "Collect measurements from the baseline job and the risky reasoning intervention job.",
+      "trajectory_score": 0.2815464743589744
+    },
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.6210825892857142,
+      "schedule": "entropy_64",
+      "task_id": "plan_002",
+      "task_score": 0.5932142857142857,
+      "text": "1. Monitor the data pipeline to count the number of failed records.\n2. Identify the common characteristics of the failed records.\n3. Inspect the source of the failed records.\n4. Test the source of the failed records to isolate the issue.\n5. Validate the fix in the data pipeline before the demo.",
+      "trajectory_score": 0.7046875
+    },
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.4485814732142857,
+      "schedule": "entropy_64",
+      "task_id": "plan_003",
+      "task_score": 0.35878571428571426,
+      "text": "Measure offline accuracy and latency in production. The decision rule could be to ship the model if the offline accuracy improvement is greater than the latency increase, otherwise rollback.",
+      "trajectory_score": 0.71796875
+    },
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.4003850446428572,
+      "schedule": "entropy_64",
+      "task_id": "plan_004",
+      "task_score": 0.3028571428571429,
+      "text": "1. Repeat the experiment with the original baseline token count and prompt format.\n2. Compare the results with the original research.\n3. If the results are similar, the original claim is falsified.",
+      "trajectory_score": 0.69296875
+    },
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.4165401785714286,
+      "schedule": "entropy_32",
+      "task_id": "plan_005",
+      "task_score": 0.31892857142857145,
+      "text": "1. Stop the training run immediately.\n2. Identify the last checkpoint that successfully successfully.\n3. Copy the successful checkpoint to a safe location.\n4. Clear the disk space for the training run.\n5. Restart the training run from the copied checkpoint.\n6. Monitor disk space usage closely during the training run.",
+      "trajectory_score": 0.7093750000000001
+    },
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.5018861607142857,
+      "schedule": "entropy_64",
+      "task_id": "plan_006",
+      "task_score": 0.4342857142857143,
+      "text": "1. Identify the affected dashboard and confirm the issue.\n2. Check the timezone settings and verify the migration was successful.\n3. Update the timezone settings on the dashboard.\n4. Test the dashboard to ensure the issue is resolved.\n5. Document the fix and note the need for a deeper root-cause analysis.",
+      "trajectory_score": 0.7046875
+    },
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.5008147321428572,
+      "schedule": "entropy_64",
+      "task_id": "plan_007",
+      "task_score": 0.4328571428571429,
+      "text": "1. Use the original optimizer on the free GPU to train the model.\n2. Use the new optimizer on the free GPU to train the model.\n3. Compare the results of the two runs.\n4. If the new optimizer diverges, repeat the process with a different hyperparameter to isolate the exact cause.",
+      "trajectory_score": 0.7046875
+    },
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.27876781337535017,
+      "schedule": "entropy_64",
+      "task_id": "plan_008",
+      "task_score": 0.17842857142857144,
+      "text": "To test the system's actual reasoning ability, design a set of complex, nuanced tasks that require deep understanding and reasoning, rather than just gaming the scorer.",
+      "trajectory_score": 0.5797855392156863
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.47365556318681323,
+      "schedule": "low_confidence_32",
+      "task_id": "plan_001",
+      "task_score": 0.3989285714285714,
+      "text": "Run the baseline job first. If the baseline job fails, you can still run the intervention job, but the baseline data will not be available, making it a valid comparison. If the baseline job succeeds, you can then run the intervention job, ensuring you have a publishable result even if the intervention fails.",
+      "trajectory_score": 0.6978365384615386
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.6276734203296703,
+      "schedule": "low_confidence_32",
+      "task_id": "plan_002",
+      "task_score": 0.6042857142857143,
+      "text": "1. Identify the failure points in the logs.\n2.. Analyze the logs for patterns or common issues.\n3. Narrow down potential causes.\n4.. Prioritize the most likely cause based on the analysis.\n5. Develop a plan to isolate and fix the issue before the demo.",
+      "trajectory_score": 0.6978365384615386
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.5068698489010989,
+      "schedule": "low_confidence_32",
+      "task_id": "plan_003",
+      "task_score": 0.44321428571428567,
+      "text": "1. Measure: Offline accuracy and production latency.\n2. Decision rule: If the improvement in offline accuracy is significant (e.g., above a certain threshold) and the increase in latency is acceptable (e.g., below an acceptable threshold), ship out the model. Otherwise, rollback or gate the release.",
+      "trajectory_score": 0.6978365384615386
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.3866019917582418,
+      "schedule": "low_confidence_32",
+      "task_id": "plan_004",
+      "task_score": 0.28285714285714286,
+      "text": "To falsify the result,\n1. Increase the number of tokens used in the experiment.\n2. Change the prompt format to match the baseline.\n3. Repeat the experiment with the new tokens and prompt format.\n4. Compare the results to the original baseline to ensure the improvement is genuine.",
+      "trajectory_score": 0.6978365384615386
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.4578519917582418,
+      "schedule": "low_confidence_32",
+      "task_id": "plan_005",
+      "task_score": 0.3778571428571429,
+      "text": "To recover from checkpoint failures without losing the best checkpoint, use a checkpoint checkpointing strategy that saves multiple checkpoints at regular intervals. If a checkpoint fails, resume from the last successful checkpoint. This, combined with a rolling checkpointing that skards over failed checkpoints, ensures reproducibility and avoids corrupting the best checkpoint.",
+      "trajectory_score": 0.6978365384615386
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.3978519917582418,
+      "schedule": "low_confidence_32",
+      "task_id": "plan_006",
+      "task_score": 0.2978571428571429,
+      "text": "1. Identify the issue: Wrong totals on customer dashboard after timezone migration.\n2. Plan the fix: Update the dashboard to reflect the correct totals.\n3. Confirm the fix: Verify the updated totals with the customer.\n4. Document the fix: Log the issue and solution for future reference.",
+      "trajectory_score": 0.6978365384615386
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.6322269917582417,
+      "schedule": "low_confidence_32",
+      "task_id": "plan_007",
+      "task_score": 0.6103571428571428,
+      "text": "To isolate the cause of divergence divergence, revert optimizer change and compare the model's performance before and after the change. This the cheapest experiment sequence as it only requires one GPU run. By comparing the performance before and after the optimizer change, you can determine if the optimizer change was the cause of the diver divergence.",
+      "trajectory_score": 0.6978365384615386
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.3866019917582418,
+      "schedule": "low_confidence_32",
+      "task_id": "plan_008",
+      "task_score": 0.28285714285714286,
+      "text": "To test whether the system actually reasons better rather than gaming the scorer, you can compare the qualitative outputs for the same tasks across different versions of the system. If the outputs become more and less evasive evasive as the system improves, it may indicate that the is actually reasoning better rather than gaming the scorer.",
+      "trajectory_score": 0.6978365384615386
+    }
+  ],
+  "selected_count": 16,
+  "selected_mean_combined_score": 0.4589950786805107,
+  "selected_mean_task_score": 0.38952678571428573
+}

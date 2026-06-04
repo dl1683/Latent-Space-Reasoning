@@ -1,0 +1,90 @@
+{
+  "conclusive_result_gates": {
+    "maximum_generated_repair_value_surface_false_negative_count": 0,
+    "maximum_generated_repair_value_surface_false_positive_count": 0,
+    "minimum_generated_repair_positive_count": 2,
+    "must_beat_source_delta_only_control": true,
+    "must_report_zero_generated_positives_as_inconclusive": true,
+    "no_live_spend_trigger_without_runner_implementation": true
+  },
+  "design_intent": "Test whether generated repair value repeats on fresh tasks after v17 falsified source-preservation recurrence but recovered three generated repair positives.",
+  "failure_accounting": [
+    "If fewer than two generated repair positives appear, mark v18 inconclusive rather than successful.",
+    "If positives only appear as source-positive rows, separate source search from generated repair value.",
+    "If broad denoise matches the surface after cost, keep the new surface diagnostic-only.",
+    "If candidate-aware margin misses low-margin positives, keep selector changes replay-only.",
+    "If repair cost erases task lift, do not promote the head as a live controller."
+  ],
+  "fit_boundary": {
+    "boundary_reading": "V17 did not repeat source-positive repair degradation, but `plan_129`, `plan_130`, and `plan_131` show generated repair lift of at least `+0.037500` over tied or non-positive source baselines.",
+    "v17_generated_repair_positive_count": 3,
+    "v17_generated_repair_positive_tasks": [
+      "plan_129",
+      "plan_130",
+      "plan_131"
+    ],
+    "v17_max_positive_prompt_gap_count": 6,
+    "v17_min_positive_candidate_lift_vs_trajectory": 0.03749999999999998,
+    "v17_positive_prompt_coverage_band": [
+      0.6470588235294118,
+      0.8461538461538461
+    ],
+    "v17_report": "eval_results\\diffusion_language\\source_preservation_v17_label_report.md",
+    "v17_report_sha256": "f08cb2e8f530685c892001411d650059506255c4fa72ff8206c7c2695304c31d",
+    "v17_source_positive_repair_degradation_count": 0,
+    "v17_targets": "eval_results\\diffusion_language\\diffusion_source_preservation_targets_v17.json",
+    "v17_targets_sha256": "fc9cc39fefe450c070142826e4b5d5405bc59c93326759341fa6dd1aaf0bee50"
+  },
+  "fresh_slice_protocol": {
+    "label_pass": "python experiments\\run_diffusion_three_arm_benchmark.py --task-preset lean_gpu_mixed_transfer_v18 --candidates llada-moe-7b-a1b-instruct-hf --limit-schedules 2 --limit-evolved-schedules 0 --limit-repair-candidates 1 --repair-source-policy random --repair-pack constraint_span_phase_final_preserve_seeded_gated --repair-spend-trigger denoise_phase_repairability --repair-source-min-chars 240 --repair-source-prompt-gap-min 2 --repair-source-prompt-gap-max 9 --repair-source-prompt-coverage-min 0.4 --repair-source-prompt-coverage-max 1.0 --repair-phase-budget frontier --repair-selector candidate_aware_promotion_v1 --repair-promotion-margin 0.02 --trajectory-selector planning_state --device cuda --dtype bfloat16 --raw-output eval_results\\diffusion_language\\generated_repair_v18_label_raw.jsonl --scores-output eval_results\\diffusion_language\\generated_repair_v18_label_scores.json --report-output eval_results\\diffusion_language\\generated_repair_v18_label_report.md",
+    "required_replay_outputs": [
+      "generated-repair promotion targets built from raw repair candidates",
+      "selected-repair positives and oracle positives reported separately",
+      "candidate-aware margin, margin-free, source-delta-only, span-only, gap-only, and broad-denoise controls",
+      "task lift per extra repair generation and utility after repair-generation cost",
+      "source-tie rows separated from source-positive rows",
+      "no live generated-repair trigger before runner implementation and validation"
+    ]
+  },
+  "generated_by": "experiments/build_diffusion_generated_repair_v18_freeze.py",
+  "overlap_with_v17_target_rows": [],
+  "planning_task_ids": [
+    "plan_137",
+    "plan_138",
+    "plan_139",
+    "plan_140",
+    "plan_141",
+    "plan_142",
+    "plan_143",
+    "plan_144"
+  ],
+  "schema": "diffusion_generated_repair_v18_freeze.v1",
+  "target_surface": {
+    "candidate_lift_vs_source_min_exclusive": 0.0,
+    "candidate_lift_vs_trajectory_min_exclusive": 0.0,
+    "cost_accounting": "repair generation cost must be charged before any transfer claim",
+    "promotion_status": "frozen_replay_surface_not_live_trigger",
+    "prompt_coverage_max": 0.9,
+    "prompt_coverage_min": 0.6,
+    "prompt_gap_count_max": 6.0,
+    "prompt_gap_count_min": 2.0,
+    "requires_generated_repair_candidate": true,
+    "requires_label_pass_denoise_trigger": true,
+    "source_task_delta_vs_trajectory_min": 0.0,
+    "surface_id": "generated_repair_value_v18"
+  },
+  "task_ids": [
+    "plan_137",
+    "plan_138",
+    "plan_139",
+    "plan_140",
+    "plan_141",
+    "plan_142",
+    "plan_143",
+    "plan_144",
+    "math_009",
+    "sym_007",
+    "sci_002"
+  ],
+  "task_preset": "lean_gpu_mixed_transfer_v18"
+}

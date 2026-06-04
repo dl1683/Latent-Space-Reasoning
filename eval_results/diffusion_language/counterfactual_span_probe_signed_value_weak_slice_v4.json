@@ -1,0 +1,790 @@
+{
+  "feature_contrasts": [
+    {
+      "false_positive_mean": 9.0,
+      "feature": "prompt_gap_count",
+      "mean_difference": -2.0,
+      "positive_mean": 7.0
+    },
+    {
+      "false_positive_mean": 1.0,
+      "feature": "counterfactual_probe_text_repeated_token_excess",
+      "mean_difference": -1.0,
+      "positive_mean": 0.0
+    },
+    {
+      "false_positive_mean": 0.5,
+      "feature": "would_probe_score",
+      "mean_difference": 0.5,
+      "positive_mean": 1.0
+    },
+    {
+      "false_positive_mean": 0.703968253968254,
+      "feature": "measured_expected_gap_visibility_gain",
+      "mean_difference": 0.21269841269841272,
+      "positive_mean": 0.9166666666666667
+    },
+    {
+      "false_positive_mean": 0.9914130258583423,
+      "feature": "probe_signature_score",
+      "mean_difference": 0.15221957045414614,
+      "positive_mean": 1.1436325963124885
+    },
+    {
+      "false_positive_mean": 0.0845959595959596,
+      "feature": "counterfactual_probe_text_max_slot_overlap",
+      "mean_difference": -0.0845959595959596,
+      "positive_mean": 0.0
+    },
+    {
+      "false_positive_mean": 0.3126785714285714,
+      "feature": "source_quality",
+      "mean_difference": -0.060535714285714304,
+      "positive_mean": 0.2521428571428571
+    },
+    {
+      "false_positive_mean": 0.05681818181818182,
+      "feature": "counterfactual_probe_text_x0_x2_slot_overlap",
+      "mean_difference": -0.05681818181818182,
+      "positive_mean": 0.0
+    },
+    {
+      "false_positive_mean": 0.5272603485838779,
+      "feature": "measured_expected_span_evidence_gain",
+      "mean_difference": 0.039406318082788716,
+      "positive_mean": 0.5666666666666667
+    },
+    {
+      "false_positive_mean": 0.022907497944872863,
+      "feature": "measured_probe_value_prediction",
+      "mean_difference": 0.009024943232697927,
+      "positive_mean": 0.03193244117757079
+    },
+    {
+      "false_positive_mean": 0.9501102324142806,
+      "feature": "measured_distinct_retention_risk_visibility",
+      "mean_difference": 0.007434375373846502,
+      "positive_mean": 0.9575446077881271
+    },
+    {
+      "false_positive_mean": 0.9529511415051898,
+      "feature": "measured_expected_retention_risk_visibility",
+      "mean_difference": 0.004593466282937331,
+      "positive_mean": 0.9575446077881271
+    },
+    {
+      "false_positive_mean": 0.10000000000000002,
+      "feature": "measured_expected_realization_defect_visibility",
+      "mean_difference": -1.3877787807814457e-17,
+      "positive_mean": 0.1
+    },
+    {
+      "false_positive_mean": 1.0,
+      "feature": "counterfactual_probe_text_semantic_valid_for_stage1",
+      "mean_difference": 0.0,
+      "positive_mean": 1.0
+    },
+    {
+      "false_positive_mean": 0.0,
+      "feature": "counterfactual_probe_text_semantic_defect",
+      "mean_difference": 0.0,
+      "positive_mean": 0.0
+    },
+    {
+      "false_positive_mean": 0.0,
+      "feature": "counterfactual_probe_text_malformed_compact_key",
+      "mean_difference": 0.0,
+      "positive_mean": 0.0
+    },
+    {
+      "false_positive_mean": 0.0,
+      "feature": "counterfactual_probe_text_template_slot_echo",
+      "mean_difference": 0.0,
+      "positive_mean": 0.0
+    },
+    {
+      "false_positive_mean": 0.0,
+      "feature": "counterfactual_probe_text_duplicate_authorization",
+      "mean_difference": 0.0,
+      "positive_mean": 0.0
+    },
+    {
+      "false_positive_mean": 0.0,
+      "feature": "counterfactual_probe_text_weird_punctuation",
+      "mean_difference": 0.0,
+      "positive_mean": 0.0
+    }
+  ],
+  "generated_by": "experiments/analyze_diffusion_span_probe_signed_value_weak_slice.py",
+  "inputs": {
+    "signature_model": "eval_results\\diffusion_language\\counterfactual_span_probe_signature_model_v4.json",
+    "signed_value": "eval_results\\diffusion_language\\counterfactual_span_probe_signed_value_v4.json"
+  },
+  "row_diagnostics": [
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "feature_values": {
+        "counterfactual_probe_text_duplicate_authorization": 0.0,
+        "counterfactual_probe_text_malformed_compact_key": 0.0,
+        "counterfactual_probe_text_max_slot_overlap": 0.25,
+        "counterfactual_probe_text_repeated_token_excess": 3.0,
+        "counterfactual_probe_text_semantic_defect": 0.0,
+        "counterfactual_probe_text_semantic_valid_for_stage1": 1.0,
+        "counterfactual_probe_text_template_slot_echo": 0.0,
+        "counterfactual_probe_text_weird_punctuation": 0.0,
+        "counterfactual_probe_text_x0_x2_slot_overlap": 0.25,
+        "measured_distinct_retention_risk_visibility": 0.9343690702087287,
+        "measured_expected_gap_visibility_gain": 0.2,
+        "measured_expected_realization_defect_visibility": 0.2,
+        "measured_expected_retention_risk_visibility": 0.9468690702087287,
+        "measured_expected_span_evidence_gain": 0.4444444444444444,
+        "measured_probe_value_prediction": 0.004410237643444473,
+        "probe_signature_score": 1.4037824524753133,
+        "prompt_gap_count": 10.0,
+        "source_quality": 0.36571428571428577,
+        "would_probe_score": 0.0
+      },
+      "label": false,
+      "nearest_neighbors": [
+        {
+          "distance": 4.15681437364362,
+          "label": true,
+          "signed_value": 0.03892857142857144,
+          "task_id": "plan_006"
+        },
+        {
+          "distance": 4.263518733242868,
+          "label": true,
+          "signed_value": -0.017142857142857165,
+          "task_id": "plan_008"
+        },
+        {
+          "distance": 4.439157360274591,
+          "label": true,
+          "signed_value": 0.12642857142857142,
+          "task_id": "plan_005"
+        },
+        {
+          "distance": 4.642089216321915,
+          "label": false,
+          "signed_value": -0.05892857142857137,
+          "task_id": "plan_050"
+        },
+        {
+          "distance": 4.795996805434629,
+          "label": true,
+          "signed_value": 0.042857142857142774,
+          "task_id": "plan_001"
+        },
+        {
+          "distance": 4.902690041615641,
+          "label": true,
+          "signed_value": 0.17142857142857146,
+          "task_id": "plan_007"
+        },
+        {
+          "distance": 4.919624279667278,
+          "label": false,
+          "signed_value": -0.02,
+          "task_id": "plan_071"
+        },
+        {
+          "distance": 5.043290166863729,
+          "label": true,
+          "signed_value": 0.05642857142857145,
+          "task_id": "plan_046"
+        }
+      ],
+      "predicted_signed_value": 0.041712597517712176,
+      "selected": true,
+      "selection_margin": 0.041712597517712176,
+      "signed_value": -0.02,
+      "task_id": "plan_017"
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.09000000000000002,
+      "feature_values": {
+        "counterfactual_probe_text_duplicate_authorization": 0.0,
+        "counterfactual_probe_text_malformed_compact_key": 0.0,
+        "counterfactual_probe_text_max_slot_overlap": 0.0,
+        "counterfactual_probe_text_repeated_token_excess": 0.0,
+        "counterfactual_probe_text_semantic_defect": 0.0,
+        "counterfactual_probe_text_semantic_valid_for_stage1": 1.0,
+        "counterfactual_probe_text_template_slot_echo": 0.0,
+        "counterfactual_probe_text_weird_punctuation": 0.0,
+        "counterfactual_probe_text_x0_x2_slot_overlap": 0.0,
+        "measured_distinct_retention_risk_visibility": 0.9705263157894737,
+        "measured_expected_gap_visibility_gain": 1.0,
+        "measured_expected_realization_defect_visibility": 0.2,
+        "measured_expected_retention_risk_visibility": 0.9705263157894737,
+        "measured_expected_span_evidence_gain": 0.6666666666666666,
+        "measured_probe_value_prediction": 0.03958947368421052,
+        "probe_signature_score": 0.6889279578517811,
+        "prompt_gap_count": 8.0,
+        "source_quality": 0.24785714285714286,
+        "would_probe_score": 1.0
+      },
+      "label": true,
+      "nearest_neighbors": [
+        {
+          "distance": 2.494651197654321,
+          "label": true,
+          "signed_value": 0.05642857142857145,
+          "task_id": "plan_046"
+        },
+        {
+          "distance": 2.6779517321744235,
+          "label": true,
+          "signed_value": 0.026928571428571486,
+          "task_id": "plan_061"
+        },
+        {
+          "distance": 2.705068411327331,
+          "label": true,
+          "signed_value": 0.07642857142857142,
+          "task_id": "plan_034"
+        },
+        {
+          "distance": 2.8370864002280265,
+          "label": true,
+          "signed_value": -0.007499999999999989,
+          "task_id": "plan_070"
+        },
+        {
+          "distance": 2.98657639376426,
+          "label": false,
+          "signed_value": -0.02,
+          "task_id": "plan_003"
+        },
+        {
+          "distance": 2.9979021470388734,
+          "label": true,
+          "signed_value": 0.042857142857142774,
+          "task_id": "plan_001"
+        },
+        {
+          "distance": 3.274304643407911,
+          "label": true,
+          "signed_value": 0.03892857142857144,
+          "task_id": "plan_006"
+        },
+        {
+          "distance": 3.4139914581544484,
+          "label": true,
+          "signed_value": 0.09249999999999999,
+          "task_id": "plan_044"
+        }
+      ],
+      "predicted_signed_value": 0.03795250481469512,
+      "selected": true,
+      "selection_margin": 0.03795250481469512,
+      "signed_value": 0.07000000000000002,
+      "task_id": "plan_018"
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "feature_values": {
+        "counterfactual_probe_text_duplicate_authorization": 0.0,
+        "counterfactual_probe_text_malformed_compact_key": 0.0,
+        "counterfactual_probe_text_max_slot_overlap": 0.09090909090909091,
+        "counterfactual_probe_text_repeated_token_excess": 2.0,
+        "counterfactual_probe_text_semantic_defect": 0.0,
+        "counterfactual_probe_text_semantic_valid_for_stage1": 1.0,
+        "counterfactual_probe_text_template_slot_echo": 0.0,
+        "counterfactual_probe_text_weird_punctuation": 0.0,
+        "counterfactual_probe_text_x0_x2_slot_overlap": 0.09090909090909091,
+        "measured_distinct_retention_risk_visibility": 0.9677865612648222,
+        "measured_expected_gap_visibility_gain": 0.6666666666666666,
+        "measured_expected_realization_defect_visibility": 0.2,
+        "measured_expected_retention_risk_visibility": 0.9723320158102767,
+        "measured_expected_span_evidence_gain": 0.6470588235294118,
+        "measured_probe_value_prediction": 0.026805600580153008,
+        "probe_signature_score": 0.5159097649723545,
+        "prompt_gap_count": 12.0,
+        "source_quality": 0.33285714285714285,
+        "would_probe_score": 0.0
+      },
+      "label": false,
+      "nearest_neighbors": [
+        {
+          "distance": 2.1198938348401257,
+          "label": true,
+          "signed_value": 0.042857142857142774,
+          "task_id": "plan_001"
+        },
+        {
+          "distance": 2.456343022937548,
+          "label": true,
+          "signed_value": 0.03892857142857144,
+          "task_id": "plan_006"
+        },
+        {
+          "distance": 2.696577961328771,
+          "label": true,
+          "signed_value": 0.12642857142857142,
+          "task_id": "plan_005"
+        },
+        {
+          "distance": 3.368016229807648,
+          "label": true,
+          "signed_value": 0.05642857142857145,
+          "task_id": "plan_046"
+        },
+        {
+          "distance": 3.7340958287207626,
+          "label": true,
+          "signed_value": -0.017142857142857165,
+          "task_id": "plan_008"
+        },
+        {
+          "distance": 3.887406971316866,
+          "label": false,
+          "signed_value": -0.10357142857142858,
+          "task_id": "plan_045"
+        },
+        {
+          "distance": 4.078284752270713,
+          "label": true,
+          "signed_value": 0.07642857142857142,
+          "task_id": "plan_034"
+        },
+        {
+          "distance": 4.087292175977297,
+          "label": false,
+          "signed_value": -0.02,
+          "task_id": "plan_003"
+        }
+      ],
+      "predicted_signed_value": 0.03213654036796443,
+      "selected": true,
+      "selection_margin": 0.03213654036796443,
+      "signed_value": -0.02,
+      "task_id": "plan_019"
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "feature_values": {
+        "counterfactual_probe_text_duplicate_authorization": 0.0,
+        "counterfactual_probe_text_malformed_compact_key": 0.0,
+        "counterfactual_probe_text_max_slot_overlap": 0.0,
+        "counterfactual_probe_text_repeated_token_excess": 0.0,
+        "counterfactual_probe_text_semantic_defect": 0.0,
+        "counterfactual_probe_text_semantic_valid_for_stage1": 1.0,
+        "counterfactual_probe_text_template_slot_echo": 0.0,
+        "counterfactual_probe_text_weird_punctuation": 0.0,
+        "counterfactual_probe_text_x0_x2_slot_overlap": 0.0,
+        "measured_distinct_retention_risk_visibility": 0.9017094017094017,
+        "measured_expected_gap_visibility_gain": 0.8333333333333334,
+        "measured_expected_realization_defect_visibility": 0.0,
+        "measured_expected_retention_risk_visibility": 0.9017094017094017,
+        "measured_expected_span_evidence_gain": 0.4375,
+        "measured_probe_value_prediction": 0.024257478632478638,
+        "probe_signature_score": 1.9525200052532836,
+        "prompt_gap_count": 6.0,
+        "source_quality": 0.18,
+        "would_probe_score": 1.0
+      },
+      "label": false,
+      "nearest_neighbors": [
+        {
+          "distance": 1.6873863550697026,
+          "label": true,
+          "signed_value": -0.007499999999999989,
+          "task_id": "plan_070"
+        },
+        {
+          "distance": 3.028988747098514,
+          "label": true,
+          "signed_value": 0.0014285714285714075,
+          "task_id": "plan_004"
+        },
+        {
+          "distance": 3.5174475105528167,
+          "label": true,
+          "signed_value": 0.026928571428571486,
+          "task_id": "plan_061"
+        },
+        {
+          "distance": 3.6226388084516805,
+          "label": true,
+          "signed_value": 0.03892857142857144,
+          "task_id": "plan_006"
+        },
+        {
+          "distance": 3.820905617874606,
+          "label": true,
+          "signed_value": 0.09249999999999999,
+          "task_id": "plan_044"
+        },
+        {
+          "distance": 4.4587664286587305,
+          "label": true,
+          "signed_value": 0.17142857142857146,
+          "task_id": "plan_007"
+        },
+        {
+          "distance": 4.67984363222201,
+          "label": true,
+          "signed_value": 0.05642857142857145,
+          "task_id": "plan_046"
+        },
+        {
+          "distance": 4.704643484783003,
+          "label": true,
+          "signed_value": 0.03892857142857138,
+          "task_id": "plan_072"
+        }
+      ],
+      "predicted_signed_value": 0.04066935699544994,
+      "selected": true,
+      "selection_margin": 0.04066935699544994,
+      "signed_value": -0.02,
+      "task_id": "plan_020"
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0714285714285714,
+      "feature_values": {
+        "counterfactual_probe_text_duplicate_authorization": 0.0,
+        "counterfactual_probe_text_malformed_compact_key": 0.0,
+        "counterfactual_probe_text_max_slot_overlap": 0.0,
+        "counterfactual_probe_text_repeated_token_excess": 0.0,
+        "counterfactual_probe_text_semantic_defect": 0.0,
+        "counterfactual_probe_text_semantic_valid_for_stage1": 1.0,
+        "counterfactual_probe_text_template_slot_echo": 0.0,
+        "counterfactual_probe_text_weird_punctuation": 0.0,
+        "counterfactual_probe_text_x0_x2_slot_overlap": 0.0,
+        "measured_distinct_retention_risk_visibility": 0.9445628997867804,
+        "measured_expected_gap_visibility_gain": 0.8333333333333334,
+        "measured_expected_realization_defect_visibility": 0.0,
+        "measured_expected_retention_risk_visibility": 0.9445628997867804,
+        "measured_expected_span_evidence_gain": 0.4666666666666667,
+        "measured_probe_value_prediction": 0.024275408670931062,
+        "probe_signature_score": 1.5983372347731957,
+        "prompt_gap_count": 6.0,
+        "source_quality": 0.2564285714285714,
+        "would_probe_score": 1.0
+      },
+      "label": true,
+      "nearest_neighbors": [
+        {
+          "distance": 1.1418694282284632,
+          "label": true,
+          "signed_value": -0.007499999999999989,
+          "task_id": "plan_070"
+        },
+        {
+          "distance": 2.81170599509641,
+          "label": true,
+          "signed_value": 0.026928571428571486,
+          "task_id": "plan_061"
+        },
+        {
+          "distance": 2.8178213972932835,
+          "label": true,
+          "signed_value": 0.0014285714285714075,
+          "task_id": "plan_004"
+        },
+        {
+          "distance": 2.949235385872379,
+          "label": true,
+          "signed_value": 0.03892857142857144,
+          "task_id": "plan_006"
+        },
+        {
+          "distance": 3.256046838811034,
+          "label": true,
+          "signed_value": 0.09249999999999999,
+          "task_id": "plan_044"
+        },
+        {
+          "distance": 3.855463702388131,
+          "label": true,
+          "signed_value": 0.12642857142857142,
+          "task_id": "plan_005"
+        },
+        {
+          "distance": 4.060399687079813,
+          "label": true,
+          "signed_value": 0.05642857142857145,
+          "task_id": "plan_046"
+        },
+        {
+          "distance": 4.1206866922147,
+          "label": true,
+          "signed_value": 0.07642857142857142,
+          "task_id": "plan_034"
+        }
+      ],
+      "predicted_signed_value": 0.03702378512210285,
+      "selected": true,
+      "selection_margin": 0.03702378512210285,
+      "signed_value": 0.05142857142857139,
+      "task_id": "plan_021"
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "feature_values": {
+        "counterfactual_probe_text_duplicate_authorization": 0.0,
+        "counterfactual_probe_text_malformed_compact_key": 0.0,
+        "counterfactual_probe_text_max_slot_overlap": 0.0,
+        "counterfactual_probe_text_repeated_token_excess": 0.0,
+        "counterfactual_probe_text_semantic_defect": 0.0,
+        "counterfactual_probe_text_semantic_valid_for_stage1": 1.0,
+        "counterfactual_probe_text_template_slot_echo": 0.0,
+        "counterfactual_probe_text_weird_punctuation": 0.0,
+        "counterfactual_probe_text_x0_x2_slot_overlap": 0.0,
+        "measured_distinct_retention_risk_visibility": 0.9763779527559056,
+        "measured_expected_gap_visibility_gain": 0.6666666666666666,
+        "measured_expected_realization_defect_visibility": 0.0,
+        "measured_expected_retention_risk_visibility": 0.9763779527559056,
+        "measured_expected_span_evidence_gain": 0.55,
+        "measured_probe_value_prediction": 0.019620059992500934,
+        "probe_signature_score": 0.5583998714671221,
+        "prompt_gap_count": 12.0,
+        "source_quality": 0.34571428571428564,
+        "would_probe_score": 0.0
+      },
+      "label": false,
+      "nearest_neighbors": [
+        {
+          "distance": 1.8833525239051285,
+          "label": true,
+          "signed_value": 0.03892857142857144,
+          "task_id": "plan_006"
+        },
+        {
+          "distance": 2.0167661444829434,
+          "label": true,
+          "signed_value": 0.12642857142857142,
+          "task_id": "plan_005"
+        },
+        {
+          "distance": 2.619328691911005,
+          "label": true,
+          "signed_value": 0.042857142857142774,
+          "task_id": "plan_001"
+        },
+        {
+          "distance": 3.7721725836359963,
+          "label": false,
+          "signed_value": -0.10357142857142858,
+          "task_id": "plan_045"
+        },
+        {
+          "distance": 3.790044867356565,
+          "label": true,
+          "signed_value": -0.017142857142857165,
+          "task_id": "plan_008"
+        },
+        {
+          "distance": 3.8514925042246904,
+          "label": true,
+          "signed_value": -0.007499999999999989,
+          "task_id": "plan_070"
+        },
+        {
+          "distance": 4.046605819986274,
+          "label": true,
+          "signed_value": 0.026928571428571486,
+          "task_id": "plan_061"
+        },
+        {
+          "distance": 4.410125884617373,
+          "label": true,
+          "signed_value": 0.05642857142857145,
+          "task_id": "plan_046"
+        }
+      ],
+      "predicted_signed_value": 0.03191375102313609,
+      "selected": true,
+      "selection_margin": 0.03191375102313609,
+      "signed_value": -0.02,
+      "task_id": "plan_022"
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "feature_values": {
+        "counterfactual_probe_text_duplicate_authorization": 0.0,
+        "counterfactual_probe_text_malformed_compact_key": 0.0,
+        "counterfactual_probe_text_max_slot_overlap": 0.16666666666666666,
+        "counterfactual_probe_text_repeated_token_excess": 1.0,
+        "counterfactual_probe_text_semantic_defect": 0.0,
+        "counterfactual_probe_text_semantic_valid_for_stage1": 1.0,
+        "counterfactual_probe_text_template_slot_echo": 0.0,
+        "counterfactual_probe_text_weird_punctuation": 0.0,
+        "counterfactual_probe_text_x0_x2_slot_overlap": 0.0,
+        "measured_distinct_retention_risk_visibility": 0.9692982456140351,
+        "measured_expected_gap_visibility_gain": 0.8571428571428571,
+        "measured_expected_realization_defect_visibility": 0.2,
+        "measured_expected_retention_risk_visibility": 0.9692982456140351,
+        "measured_expected_span_evidence_gain": 0.4375,
+        "measured_probe_value_prediction": 0.027433677944862157,
+        "probe_signature_score": 1.0916992773098668,
+        "prompt_gap_count": 7.0,
+        "source_quality": 0.32035714285714284,
+        "would_probe_score": 1.0
+      },
+      "label": false,
+      "nearest_neighbors": [
+        {
+          "distance": 2.267794144636119,
+          "label": true,
+          "signed_value": -0.007499999999999989,
+          "task_id": "plan_070"
+        },
+        {
+          "distance": 2.696104378367215,
+          "label": true,
+          "signed_value": 0.05642857142857145,
+          "task_id": "plan_046"
+        },
+        {
+          "distance": 2.7308188620294884,
+          "label": true,
+          "signed_value": 0.07642857142857142,
+          "task_id": "plan_034"
+        },
+        {
+          "distance": 2.9474394653064917,
+          "label": true,
+          "signed_value": 0.03892857142857144,
+          "task_id": "plan_006"
+        },
+        {
+          "distance": 3.02507346103006,
+          "label": true,
+          "signed_value": 0.026928571428571486,
+          "task_id": "plan_061"
+        },
+        {
+          "distance": 3.1083894402214316,
+          "label": true,
+          "signed_value": 0.09249999999999999,
+          "task_id": "plan_044"
+        },
+        {
+          "distance": 3.2475301977287154,
+          "label": true,
+          "signed_value": 0.0014285714285714075,
+          "task_id": "plan_004"
+        },
+        {
+          "distance": 3.260146583481627,
+          "label": true,
+          "signed_value": 0.042857142857142774,
+          "task_id": "plan_001"
+        }
+      ],
+      "predicted_signed_value": 0.039889466927355725,
+      "selected": true,
+      "selection_margin": 0.039889466927355725,
+      "signed_value": -0.02,
+      "task_id": "plan_023"
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "feature_values": {
+        "counterfactual_probe_text_duplicate_authorization": 0.0,
+        "counterfactual_probe_text_malformed_compact_key": 0.0,
+        "counterfactual_probe_text_max_slot_overlap": 0.0,
+        "counterfactual_probe_text_repeated_token_excess": 0.0,
+        "counterfactual_probe_text_semantic_defect": 0.0,
+        "counterfactual_probe_text_semantic_valid_for_stage1": 1.0,
+        "counterfactual_probe_text_template_slot_echo": 0.0,
+        "counterfactual_probe_text_weird_punctuation": 0.0,
+        "counterfactual_probe_text_x0_x2_slot_overlap": 0.0,
+        "measured_distinct_retention_risk_visibility": 0.9511201629327902,
+        "measured_expected_gap_visibility_gain": 1.0,
+        "measured_expected_realization_defect_visibility": 0.0,
+        "measured_expected_retention_risk_visibility": 0.9511201629327902,
+        "measured_expected_span_evidence_gain": 0.6470588235294118,
+        "measured_probe_value_prediction": 0.034917932875797975,
+        "probe_signature_score": 0.42616678367211347,
+        "prompt_gap_count": 7.0,
+        "source_quality": 0.3314285714285714,
+        "would_probe_score": 1.0
+      },
+      "label": false,
+      "nearest_neighbors": [
+        {
+          "distance": 1.6594011523543315,
+          "label": true,
+          "signed_value": 0.026928571428571486,
+          "task_id": "plan_061"
+        },
+        {
+          "distance": 2.245628208794944,
+          "label": false,
+          "signed_value": -0.02,
+          "task_id": "plan_003"
+        },
+        {
+          "distance": 2.577593490640609,
+          "label": true,
+          "signed_value": 0.03892857142857144,
+          "task_id": "plan_006"
+        },
+        {
+          "distance": 2.622558256868948,
+          "label": true,
+          "signed_value": -0.007499999999999989,
+          "task_id": "plan_070"
+        },
+        {
+          "distance": 2.934403942800159,
+          "label": true,
+          "signed_value": 0.09249999999999999,
+          "task_id": "plan_044"
+        },
+        {
+          "distance": 3.0017323441896364,
+          "label": true,
+          "signed_value": 0.042857142857142774,
+          "task_id": "plan_001"
+        },
+        {
+          "distance": 3.155221796398677,
+          "label": true,
+          "signed_value": 0.0014285714285714075,
+          "task_id": "plan_004"
+        },
+        {
+          "distance": 3.318847462352979,
+          "label": true,
+          "signed_value": 0.12642857142857142,
+          "task_id": "plan_005"
+        }
+      ],
+      "predicted_signed_value": 0.033418804043395485,
+      "selected": true,
+      "selection_margin": 0.033418804043395485,
+      "signed_value": -0.02,
+      "task_id": "plan_024"
+    }
+  ],
+  "schema": "diffusion_counterfactual_span_probe_signed_value_weak_slice.v1",
+  "selection_penalty": 0.02,
+  "weak_slice_summary": {
+    "false_positive_count": 6,
+    "false_positive_task_ids": [
+      "plan_017",
+      "plan_019",
+      "plan_020",
+      "plan_022",
+      "plan_023",
+      "plan_024"
+    ],
+    "model_id": "signed_value_knn_k8_all",
+    "neighbor_count": 8,
+    "policy_utility": 0.001428571428571418,
+    "positive_count": 2,
+    "positive_task_ids": [
+      "plan_018",
+      "plan_021"
+    ],
+    "selected_count": 8,
+    "selected_positive_rate": 0.25,
+    "signed_lift_covered": 0.16142857142857142,
+    "weak_slice": "counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json"
+  }
+}

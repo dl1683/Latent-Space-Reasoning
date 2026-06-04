@@ -1,0 +1,130 @@
+{
+  "failure_accounting": [
+    "If skeleton presence selects plan_091-style no-lift rows, the channel remains diagnostic-only.",
+    "If source-aligned skeleton evidence misses plan_093-style selected-repair positives, reject the target.",
+    "If oracle-positive selector misses persist, separate generator value from promotion-selector work.",
+    "If source-only, skeleton-only, static source/gap/coverage, or probe-value controls match the target, reject the combined-signal story.",
+    "If the fresh slice has zero selected-repair positives, mark the result inconclusive rather than successful."
+  ],
+  "fit_boundary": {
+    "named_counterexamples": {
+      "oracle_positive_selector_miss": {
+        "first_repairable_denoise_skeleton_step_fraction": null,
+        "has_repairable_denoise_skeleton": false,
+        "oracle_label": true,
+        "peak_denoise_prompt_coverage": 0.25,
+        "selected_repair_label": false,
+        "source_task_delta_vs_trajectory": 0.0,
+        "task_id": "plan_094"
+      },
+      "static_surface_false_negative": {
+        "first_repairable_denoise_skeleton_step_fraction": 0.375,
+        "has_repairable_denoise_skeleton": true,
+        "oracle_label": true,
+        "peak_denoise_prompt_coverage": 0.45454545454545453,
+        "selected_repair_label": true,
+        "source_task_delta_vs_trajectory": 0.0,
+        "task_id": "plan_093"
+      },
+      "static_surface_false_positive": {
+        "first_repairable_denoise_skeleton_step_fraction": 0.25,
+        "has_repairable_denoise_skeleton": true,
+        "oracle_label": false,
+        "peak_denoise_prompt_coverage": 0.4666666666666667,
+        "selected_repair_label": false,
+        "source_task_delta_vs_trajectory": 0.0,
+        "task_id": "plan_091"
+      }
+    },
+    "v12_label_scores": "eval_results\\diffusion_language\\source_aware_lift_direction_v12_label_scores.json",
+    "v12_label_scores_sha256": "90e07ab8ebc1115afe4099ec7a1ce7faaadbf3b6aaff0023eb5316063af0d74d",
+    "v12_replay": "eval_results\\diffusion_language\\source_aware_lift_direction_v12_replay.json",
+    "v12_replay_sha256": "19770b0606beed51bf1b03bfc7a2d26b207e7f4a41f7e33d0e68424243b6749a",
+    "v12_static_surface_oracle": {
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_093",
+        "plan_094"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_091"
+      ],
+      "policy_utility": -0.02,
+      "policy_utility_with_probe_cost": -0.05,
+      "positive_count": 2,
+      "selected_count": 1
+    },
+    "v12_static_surface_selected_repair": {
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_093"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_091"
+      ],
+      "policy_utility": -0.02,
+      "policy_utility_with_probe_cost": -0.05,
+      "positive_count": 1,
+      "selected_count": 1
+    }
+  },
+  "fresh_slice_protocol": {
+    "label_pass": "python experiments\\run_diffusion_three_arm_benchmark.py --task-preset lean_gpu_mixed_transfer_v13 --candidates llada-moe-7b-a1b-instruct-hf --limit-schedules 2 --limit-evolved-schedules 0 --limit-repair-candidates 1 --repair-source-policy random --repair-pack constraint_span_phase_final_preserve_seeded_gated --repair-spend-trigger denoise_phase_repairability --repair-source-min-chars 240 --repair-source-prompt-gap-min 2 --repair-source-prompt-gap-max 9 --repair-source-prompt-coverage-min 0.4 --repair-source-prompt-coverage-max 1.0 --repair-phase-budget frontier --repair-selector candidate_aware_promotion_v1 --repair-promotion-margin 0.02 --trajectory-selector planning_state --device cuda --dtype bfloat16 --raw-output eval_results\\diffusion_language\\denoise_phase_realization_v13_label_raw.jsonl --scores-output eval_results\\diffusion_language\\denoise_phase_realization_v13_label_scores.json --report-output eval_results\\diffusion_language\\denoise_phase_realization_v13_label_report.md",
+    "measurement_pass": "python experiments\\run_diffusion_three_arm_benchmark.py --task-preset lean_gpu_mixed_transfer_v13 --candidates llada-moe-7b-a1b-instruct-hf --limit-schedules 2 --limit-evolved-schedules 0 --limit-repair-candidates 1 --repair-source-policy random --repair-spend-trigger counterfactual_micro_probe_v1 --counterfactual-probe-mode all --counterfactual-probe-policy span_tomography_probe_v4 --trajectory-selector planning_state --device cuda --dtype bfloat16 --raw-output eval_results\\diffusion_language\\denoise_phase_realization_v13_measurement_raw.jsonl --scores-output eval_results\\diffusion_language\\denoise_phase_realization_v13_measurement_scores.json --report-output eval_results\\diffusion_language\\denoise_phase_realization_v13_measurement_report.md",
+    "required_replay_outputs": [
+      "selected-repair positives, false positives, and false negatives",
+      "oracle-positive selector misses",
+      "skeleton-only, source-only, static source/gap/coverage, and probe-value controls",
+      "source-aligned skeleton versus source-aligned phase-window/coverage controls",
+      "utility before and after probe measurement cost"
+    ]
+  },
+  "generated_by": "experiments/build_diffusion_denoise_phase_realization_v13_freeze.py",
+  "overlap_with_v12_replay_rows": [],
+  "planning_task_ids": [
+    "plan_097",
+    "plan_098",
+    "plan_099",
+    "plan_100",
+    "plan_101",
+    "plan_102",
+    "plan_103",
+    "plan_104"
+  ],
+  "replay_gates": {
+    "charge_probe_measurement_cost": true,
+    "maximum_oracle_selector_miss_count_for_promotion": 0,
+    "maximum_selected_repair_false_negative_count": 0,
+    "maximum_selected_repair_false_positive_count": 0,
+    "minimum_positive_count_for_conclusive_result": 1,
+    "no_live_spend_trigger_without_runner_implementation": true,
+    "reject_if_skeleton_only_matches_combined_surface": true
+  },
+  "schema": "diffusion_denoise_phase_realization_v13_freeze.v1",
+  "target_surface": {
+    "first_repairable_denoise_skeleton_step_fraction_max": 0.4,
+    "known_limitation": "skeleton_presence_is_not_enough; replay_must_distinguish_no_lift_skeleton_rows",
+    "peak_denoise_prompt_coverage_min": 0.4,
+    "prediction_target": "repair_realization_value_with_selected_and_oracle_split",
+    "promotion_status": "frozen_diagnostic_target_not_live_spend_trigger",
+    "requires_repairable_denoise_skeleton": true,
+    "source_task_delta_vs_trajectory_min": 0.0,
+    "surface_id": "source_aligned_denoise_realization_v13"
+  },
+  "task_ids": [
+    "plan_097",
+    "plan_098",
+    "plan_099",
+    "plan_100",
+    "plan_101",
+    "plan_102",
+    "plan_103",
+    "plan_104",
+    "math_009",
+    "sym_007",
+    "sci_002"
+  ],
+  "task_preset": "lean_gpu_mixed_transfer_v13"
+}

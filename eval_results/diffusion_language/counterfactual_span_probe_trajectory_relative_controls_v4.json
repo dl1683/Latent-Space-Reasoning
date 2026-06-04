@@ -1,0 +1,244 @@
+{
+  "controls": [
+    {
+      "blocked_cohort_risk_task_ids": [],
+      "control_id": "no_trajectory_channel",
+      "error_count": 8,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.6855,
+      "positive_lift_covered": 1.1455,
+      "selected_count": 23,
+      "signed_lift_covered": 1.1455,
+      "weak_slice_summary": {
+        "error_count": 6,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 6,
+        "false_positive_task_ids": [
+          "plan_017",
+          "plan_019",
+          "plan_020",
+          "plan_022",
+          "plan_023",
+          "plan_024"
+        ],
+        "policy_utility": 0.001428571428571418,
+        "positive_lift_covered": 0.16142857142857142,
+        "positive_task_ids": [
+          "plan_018",
+          "plan_021"
+        ],
+        "selected_count": 8,
+        "signed_lift_covered": 0.16142857142857142
+      }
+    },
+    {
+      "blocked_cohort_risk_task_ids": [
+        "plan_020"
+      ],
+      "control_id": "delta_nonnegative_only",
+      "error_count": 7,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.7055,
+      "positive_lift_covered": 1.1455,
+      "selected_count": 22,
+      "signed_lift_covered": 1.1455,
+      "weak_slice_summary": {
+        "error_count": 5,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 5,
+        "false_positive_task_ids": [
+          "plan_017",
+          "plan_019",
+          "plan_022",
+          "plan_023",
+          "plan_024"
+        ],
+        "policy_utility": 0.021428571428571408,
+        "positive_lift_covered": 0.16142857142857142,
+        "positive_task_ids": [
+          "plan_018",
+          "plan_021"
+        ],
+        "selected_count": 7,
+        "signed_lift_covered": 0.16142857142857142
+      }
+    },
+    {
+      "blocked_cohort_risk_task_ids": [
+        "plan_018",
+        "plan_021"
+      ],
+      "control_id": "inverted_trajectory_relative",
+      "error_count": 10,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_018",
+        "plan_021"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.5640714285714286,
+      "positive_lift_covered": 0.9840714285714285,
+      "selected_count": 21,
+      "signed_lift_covered": 0.9840714285714285,
+      "weak_slice_summary": {
+        "error_count": 8,
+        "false_negative_count": 2,
+        "false_negative_task_ids": [
+          "plan_018",
+          "plan_021"
+        ],
+        "false_positive_count": 6,
+        "false_positive_task_ids": [
+          "plan_017",
+          "plan_019",
+          "plan_020",
+          "plan_022",
+          "plan_023",
+          "plan_024"
+        ],
+        "policy_utility": -0.12,
+        "positive_lift_covered": 0,
+        "positive_task_ids": [
+          "plan_018",
+          "plan_021"
+        ],
+        "selected_count": 6,
+        "signed_lift_covered": 0.0
+      }
+    },
+    {
+      "blocked_cohort_risk_task_ids": [
+        "plan_018",
+        "plan_019",
+        "plan_021",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "control_id": "rotated_trajectory_relative",
+      "error_count": 6,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_018",
+        "plan_021"
+      ],
+      "false_positive_count": 4,
+      "false_positive_task_ids": [
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_020"
+      ],
+      "policy_utility": 0.6440714285714284,
+      "positive_lift_covered": 0.9840714285714285,
+      "selected_count": 17,
+      "signed_lift_covered": 0.9840714285714285,
+      "weak_slice_summary": {
+        "error_count": 4,
+        "false_negative_count": 2,
+        "false_negative_task_ids": [
+          "plan_018",
+          "plan_021"
+        ],
+        "false_positive_count": 2,
+        "false_positive_task_ids": [
+          "plan_017",
+          "plan_020"
+        ],
+        "policy_utility": -0.04,
+        "positive_lift_covered": 0,
+        "positive_task_ids": [
+          "plan_018",
+          "plan_021"
+        ],
+        "selected_count": 2,
+        "signed_lift_covered": 0.0
+      }
+    }
+  ],
+  "generated_by": "experiments/analyze_diffusion_span_probe_trajectory_relative_controls.py",
+  "inputs": {
+    "signature_model": "eval_results\\diffusion_language\\counterfactual_span_probe_signature_model_v4.json",
+    "spend_eval": "eval_results\\diffusion_language\\diffusion_independent_spend_transfer_v3_eval.json"
+  },
+  "schema": "diffusion_counterfactual_span_probe_trajectory_relative_controls.v1",
+  "selected_policy": {
+    "blocked_cohort_risk_task_ids": [
+      "plan_017",
+      "plan_019",
+      "plan_020",
+      "plan_022",
+      "plan_023",
+      "plan_024"
+    ],
+    "control_id": "true_trajectory_relative",
+    "error_count": 2,
+    "false_negative_count": 0,
+    "false_negative_task_ids": [],
+    "false_positive_count": 2,
+    "false_positive_task_ids": [
+      "plan_071",
+      "plan_003"
+    ],
+    "policy_utility": 0.8054999999999999,
+    "positive_lift_covered": 1.1455,
+    "selected_count": 17,
+    "signed_lift_covered": 1.1455,
+    "weak_slice_summary": {
+      "error_count": 0,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 0,
+      "false_positive_task_ids": [],
+      "policy_utility": 0.12142857142857141,
+      "positive_lift_covered": 0.16142857142857142,
+      "positive_task_ids": [
+        "plan_018",
+        "plan_021"
+      ],
+      "selected_count": 2,
+      "signed_lift_covered": 0.16142857142857142
+    }
+  },
+  "selection_penalty": 0.02,
+  "summary": {
+    "control_count": 4,
+    "strictly_degraded_controls": 4,
+    "weak_slice": "counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json"
+  }
+}

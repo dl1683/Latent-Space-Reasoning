@@ -1,0 +1,92 @@
+**Bottom Line**
+Section 13 is directionally right, but I would sharpen the language: this is not a full tautology; it is an extractor-conditioned selection effect. EOS does not mechanically imply correctness, but EOS strongly changes what the last-integer extractor is measuring.
+
+For completed traces, last-integer is usually a final-answer parser. For truncated traces, it is a tail-of-working parser. That makes `P(correct|EOS)=1.0` real as an observed result, but unsafe as a universal mechanism claim.
+
+**1. Tautology Assessment**
+The code-path analysis is mostly correct, but with one important correction.
+
+In [experiments/run_latent_sensitivity.py](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_latent_sensitivity.py:49), the direct random soft-prefix path returns unstripped decoded generated text. Baseline `run_zero_shot` strips completed `<think>...</think>` before verification at [run_latent_sensitivity.py:844](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_latent_sensitivity.py:844). The verifier itself is exactly last-integer comparison in [experiments/harness.py](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/harness.py:235).
+
+So Section 13.1 should distinguish two paths:
+
+- Baseline / latent-projected path: decode generated tokens, strip completed think block, verify last integer.
+- Direct random soft-prefix path: decode generated tokens, do not strip think block, verify last integer on raw response.
+
+That does not destroy the Section 13 argument. EOS responses still tend to end with a final-answer section, so the last integer is the stated answer. But the prose currently implies a uniform stripping step that is not true for the prefix data.
+
+Your “partial tautology” verdict is basically right, but I would phrase it this way:
+
+- Weaker than tautology for `EOS -> correct`: the code never uses ground truth until `verify_answer`; an EOS response can absolutely be wrong.
+- Stronger than stated for `EOS accuracy > truncated accuracy`: the extractor changes semantic role across stop modes. On EOS it extracts the final stated answer; on truncation it extracts an arbitrary frontier integer.
+
+Section 13.5 is suitable for the paper, but do not call it fully “extractor-agnostic.” It still depends on identifying “final stated result.” Better wording:
+
+> Prefix perturbation increases the rate of responses that both terminate normally and contain a parseable final answer equal to ground truth.
+
+Add these to Section 13:
+
+- Report exact binomial confidence intervals: `100/100` is not “true 1.0”; it is observed `1.0` with a 95% lower bound around `0.964`. If using the combined 4B+8B EOS count, use that denominator explicitly.
+- Add a parser agreement table: last-integer vs strict final-answer parser vs manual final-answer label.
+- Annotate all EOS responses, not 10-20. There are few enough. Have the annotator record final stated answer without relying on last-integer.
+- Add a stop-mode table: `EOS + final-answer parsed`, `EOS + no final answer`, `length-stop + final answer present`, `length-stop + correct somewhere only`, `length-stop + no correct answer`.
+- Store full raw outputs. Current JSON artifacts truncate response fields, so post-hoc audits from saved text can silently disagree with runtime correctness flags.
+
+**2. R8 Corrections**
+Sections 12.3-12.5 are substantially improved. You correctly downgraded loop detection to suggestive, added the budget/verbosity/path trichotomy, and made H6 the deciding experiment.
+
+Remaining overclaims:
+
+- Section 12.3 still labels `8/11` tasks as `LIKELY LOOP`. I would rename that table “manual loop-hypothesis labels.” Until you have repeated-subexpression or sliding-window progress metrics, “likely” is still too strong.
+- Section 12.4 says `70%` of truncated responses containing the correct answer “strongly favors verbosity.” Mostly yes, but guard against coincidence for small answers like `1`, `2`, `12`, etc. Stratify by answer magnitude or random-match probability.
+- Section 12.6 says EOS responses are “well within” the `1024` budget. Be careful: the soft-prefix path appears to undercount generated tokens by subtracting prompt length even though `inputs_embeds` generation output is already generated-token-only. The stored truncated prefix counts around `968` are probably actually `1024`. EOS traces are still shorter, but the max EOS may be closer to the cap than the `345-952` range suggests.
+
+The paper defense is now acceptable only if H6 survives. Keep the “parallel restarts” analogy, but avoid “independent path samples” unless you measure effective sample size or pairwise correlation.
+
+**3. EOS-Revised Predictions**
+RP1-RP7 are useful but over-calibrated.
+
+- RP1 hierarchy is too confident. `prefix > temp0.6 > temp1.0 > greedy` is plausible, not primary-grade. Temperature could either increase EOS by escaping loops or decrease EOS by injecting detours.
+- RP2 numeric bands for temperature, especially `0.90-0.95` and `0.80-0.90`, are invented. Use directional predictions unless you have pilot data.
+- RP3 should not say plurality is approximately EOS rate. Task-level plurality is closer to a function of `P(any EOS-correct among N)`, EOS answer concentration, and truncated-answer concentration.
+- RP4 needs the token-count caveat above. Stored prefix `~968` truncation lengths are probably accounting artifacts; true length-stop is `1024`.
+- RP5 is good as a revised hypothesis: diversity becomes downstream, not primary.
+- RP6 is good but should be marked low-confidence.
+- RP7 is strong future work, but not Phase 1A evidence.
+
+The scenario framework is not complete. You have four scenarios despite calling it “three,” and Scenario D says “temperature at 2048” while the bullet is actually greedy at `2048`.
+
+The missing scenario:
+
+> Temperature has lower or similar EOS rate, but better truncated-answer extraction or lower wrong-answer concentration, so plurality matches or beats prefix without winning on EOS.
+
+Also add the inverse:
+
+> Temperature has higher EOS rate but lower `P(correct|EOS)`, producing completed wrong answers that cluster and beat the correct answer under plurality.
+
+The Soft Reasoning framing is defensible if softened. Say their BO may be optimizing a reward correlated with completion, not that it “likely maximizes EOS rate.” The verifier-free contrast is only defensible in domains where `P(correct|EOS)` remains high and final answers are extractable.
+
+**4. Repetition Penalty Confound**
+Yes, include a `repetition_penalty=1.0` control.
+
+This is more serious than “it is applied to all operators.” Because prefix uses `inputs_embeds`, while greedy/temperature usually use `input_ids`, the repetition-penalty processor may not see the same prompt-token history across operators. That can make the operators non-equivalent even before considering the perturbation.
+
+Possible effects:
+
+- It can suppress repeated arithmetic tokens, repeated digits, and repeated verification phrases.
+- It can either reduce exact loops or create semantic wandering by penalizing natural next tokens.
+- It can interact with temperature because sampling from already penalty-shaped logits is not the same as sampling from the base distribution.
+- It can interact with prefix because different early generated tokens define a different penalty history.
+
+Minimal control:
+
+- Greedy at `1024` and `2048`, `rp=1.0` vs `1.2`.
+- Prefix N=10 at `1024`, `rp=1.0` vs `1.2`.
+- Temp0.6 at `1024`, `rp=1.0` vs `1.2`.
+
+If this changes EOS rate materially, all claims become conditional on `repetition_penalty=1.2`.
+
+**5. Priority Directive**
+The single biggest remaining blind spot is generation-path equivalence.
+
+Before Phase 1A, build one instrumented generation wrapper that makes prefix, greedy, and temperature comparable: verified generation boundary, true generated-token count, full raw output, EOS/length stop, same repetition-penalty semantics, and identical extraction inputs. Right now, `inputs_embeds` vs `input_ids` can affect token accounting and possibly repetition-penalty history. If that is not nailed down, the EOS mechanism, compute Pareto curves, and repetition-penalty control all rest on unstable measurement.

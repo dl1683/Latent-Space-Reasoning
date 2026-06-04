@@ -1,0 +1,293 @@
+{
+  "generated_by": "experiments/replay_diffusion_source_aware_lift_direction_v12.py",
+  "inputs": {
+    "label_scores": "eval_results\\diffusion_language\\source_aware_lift_direction_v12_label_scores.json",
+    "measurement_boundary": "eval_results\\diffusion_language\\source_aware_lift_direction_v12_measurement_boundary.json"
+  },
+  "oracle_hypotheses": {
+    "coverage_ge_0p7_only": {
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_093",
+        "plan_094"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_091"
+      ],
+      "policy_utility": -0.02,
+      "policy_utility_with_probe_cost": -0.05,
+      "positive_count": 2,
+      "selected_count": 1
+    },
+    "frozen_source_aware_surface": {
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_093",
+        "plan_094"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_091"
+      ],
+      "policy_utility": -0.02,
+      "policy_utility_with_probe_cost": -0.05,
+      "positive_count": 2,
+      "selected_count": 1
+    },
+    "gap_le_4_only": {
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_093",
+        "plan_094"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_091"
+      ],
+      "policy_utility": -0.02,
+      "policy_utility_with_probe_cost": -0.05,
+      "positive_count": 2,
+      "selected_count": 1
+    },
+    "probe_value_floor_control": {
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 5,
+      "false_positive_task_ids": [
+        "plan_089",
+        "plan_090",
+        "plan_091",
+        "plan_092",
+        "plan_095"
+      ],
+      "policy_utility": 0.20514285714285718,
+      "policy_utility_with_probe_cost": 0.17514285714285718,
+      "positive_count": 2,
+      "selected_count": 7
+    },
+    "source_nonnegative_only": {
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_091",
+        "plan_092",
+        "plan_096"
+      ],
+      "policy_utility": 0.2451428571428572,
+      "policy_utility_with_probe_cost": 0.2151428571428572,
+      "positive_count": 2,
+      "selected_count": 5
+    }
+  },
+  "row_diagnostics": [
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "label": false,
+      "measured_probe_value_prediction": 0.029528253773969816,
+      "oracle_label": false,
+      "oracle_lift_vs_trajectory": 0.0,
+      "prompt_coverage": 0.3157894736842105,
+      "prompt_gap_count": 12.0,
+      "repair_lift_vs_trajectory": 0.0,
+      "source_control": "random_32",
+      "source_task_delta_vs_trajectory": -0.21728571428571428,
+      "surface_selected": false,
+      "task_id": "plan_089",
+      "would_probe": false
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "label": false,
+      "measured_probe_value_prediction": 0.0366121382636656,
+      "oracle_label": false,
+      "oracle_lift_vs_trajectory": 0.0,
+      "prompt_coverage": 0.375,
+      "prompt_gap_count": 10.0,
+      "repair_lift_vs_trajectory": 0.0,
+      "source_control": "random_32",
+      "source_task_delta_vs_trajectory": -0.021428571428571463,
+      "surface_selected": false,
+      "task_id": "plan_090",
+      "would_probe": false
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "label": false,
+      "measured_probe_value_prediction": 0.0389831043956044,
+      "oracle_label": false,
+      "oracle_lift_vs_trajectory": 0.0,
+      "prompt_coverage": 0.8666666666666667,
+      "prompt_gap_count": 2.0,
+      "repair_lift_vs_trajectory": 0.0,
+      "source_control": "low_confidence_32",
+      "source_task_delta_vs_trajectory": 0.0,
+      "surface_selected": true,
+      "task_id": "plan_091",
+      "would_probe": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "label": false,
+      "measured_probe_value_prediction": 0.041380952380952386,
+      "oracle_label": false,
+      "oracle_lift_vs_trajectory": 0.0,
+      "prompt_coverage": 0.5333333333333333,
+      "prompt_gap_count": 7.0,
+      "repair_lift_vs_trajectory": 0.0,
+      "source_control": "low_confidence_32",
+      "source_task_delta_vs_trajectory": 0.0,
+      "surface_selected": false,
+      "task_id": "plan_092",
+      "would_probe": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.1389285714285715,
+      "label": true,
+      "measured_probe_value_prediction": 0.03570478774956387,
+      "oracle_label": true,
+      "oracle_lift_vs_trajectory": 0.1389285714285715,
+      "prompt_coverage": 0.45454545454545453,
+      "prompt_gap_count": 6.0,
+      "repair_lift_vs_trajectory": 0.1389285714285715,
+      "source_control": "low_confidence_32",
+      "source_task_delta_vs_trajectory": 0.0,
+      "surface_selected": false,
+      "task_id": "plan_093",
+      "would_probe": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "label": false,
+      "measured_probe_value_prediction": 0.033902564102564106,
+      "oracle_label": true,
+      "oracle_lift_vs_trajectory": 0.20621428571428566,
+      "prompt_coverage": 0.25,
+      "prompt_gap_count": 12.0,
+      "repair_lift_vs_trajectory": 0.0,
+      "source_control": "random_32",
+      "source_task_delta_vs_trajectory": 0.0,
+      "surface_selected": false,
+      "task_id": "plan_094",
+      "would_probe": false
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "label": false,
+      "measured_probe_value_prediction": 0.02938774205334308,
+      "oracle_label": false,
+      "oracle_lift_vs_trajectory": 0.0,
+      "prompt_coverage": 0.0,
+      "prompt_gap_count": 12.0,
+      "repair_lift_vs_trajectory": 0.0,
+      "source_control": "random_32",
+      "source_task_delta_vs_trajectory": -0.3089285714285714,
+      "surface_selected": false,
+      "task_id": "plan_095",
+      "would_probe": false
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "label": false,
+      "measured_probe_value_prediction": 0.0,
+      "oracle_label": false,
+      "oracle_lift_vs_trajectory": 0.0,
+      "prompt_coverage": 0.35294117647058826,
+      "prompt_gap_count": 12.0,
+      "repair_lift_vs_trajectory": 0.0,
+      "source_control": "random_32",
+      "source_task_delta_vs_trajectory": 0.0,
+      "surface_selected": false,
+      "task_id": "plan_096",
+      "would_probe": false
+    }
+  ],
+  "schema": "diffusion_source_aware_lift_direction_v12_replay.v1",
+  "selected_repair_hypotheses": {
+    "coverage_ge_0p7_only": {
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_093"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_091"
+      ],
+      "policy_utility": -0.02,
+      "policy_utility_with_probe_cost": -0.05,
+      "positive_count": 1,
+      "selected_count": 1
+    },
+    "frozen_source_aware_surface": {
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_093"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_091"
+      ],
+      "policy_utility": -0.02,
+      "policy_utility_with_probe_cost": -0.05,
+      "positive_count": 1,
+      "selected_count": 1
+    },
+    "gap_le_4_only": {
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_093"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_091"
+      ],
+      "policy_utility": -0.02,
+      "policy_utility_with_probe_cost": -0.05,
+      "positive_count": 1,
+      "selected_count": 1
+    },
+    "probe_value_floor_control": {
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 6,
+      "false_positive_task_ids": [
+        "plan_089",
+        "plan_090",
+        "plan_091",
+        "plan_092",
+        "plan_094",
+        "plan_095"
+      ],
+      "policy_utility": -0.001071428571428501,
+      "policy_utility_with_probe_cost": -0.0310714285714285,
+      "positive_count": 1,
+      "selected_count": 7
+    },
+    "source_nonnegative_only": {
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 4,
+      "false_positive_task_ids": [
+        "plan_091",
+        "plan_092",
+        "plan_094",
+        "plan_096"
+      ],
+      "policy_utility": 0.03892857142857151,
+      "policy_utility_with_probe_cost": 0.008928571428571508,
+      "positive_count": 1,
+      "selected_count": 5
+    }
+  },
+  "summary": {
+    "oracle_positive_task_ids": [
+      "plan_093",
+      "plan_094"
+    ],
+    "selected_repair_positive_task_ids": [
+      "plan_093"
+    ],
+    "target_count": 8
+  }
+}

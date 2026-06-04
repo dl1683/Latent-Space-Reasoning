@@ -341,6 +341,32 @@ class SynthesisConfig(BaseModel):
     decoder: str | None = None  # None = use encoder model
     model: str = "gemini-2.5-flash"  # Frontier model for synthesis
     decode_strategy: Literal["best", "combined"] = "best"
+    reasoning_mode: Literal["evolution", "trajectory", "hybrid"] = "evolution"
+    decode_mode: Literal[
+        "seed",
+        "soft_prompt",
+        "dual_steering",
+        "intermediate_steering",
+        "geometry_feedback",
+    ] = "soft_prompt"
+    geometry_feedback_target_forward_kl: float = Field(default=0.06, ge=0.0)
+    geometry_feedback_kl_tolerance: float = Field(default=0.5, ge=0.0)
+    geometry_feedback_steering_eta: float = Field(default=0.05, ge=0.0, le=1.0)
+    geometry_feedback_alpha: float = Field(default=0.01, ge=0.0, le=1.0)
+    geometry_feedback_kl_cap: float = Field(default=0.5, ge=0.0)
+    geometry_feedback_topk: int = Field(default=50, ge=1, le=4096)
+    geometry_feedback_eta_min: float = Field(default=0.01, ge=0.0, le=1.0)
+    geometry_feedback_eta_max: float = Field(default=0.5, ge=0.0, le=1.0)
+    geometry_feedback_eta_growth: float = Field(default=1.06, ge=1.0)
+    geometry_feedback_eta_decay: float = Field(default=0.85, ge=0.0, le=1.0)
+    geometry_feedback_controller: Literal["legacy", "pid"] = "legacy"
+    geometry_feedback_controller_kp: float = Field(default=0.0, ge=0.0, le=2.0)
+    geometry_feedback_controller_ki: float = Field(default=0.0, ge=0.0, le=2.0)
+    geometry_feedback_controller_kd: float = Field(default=0.0, ge=0.0, le=2.0)
+    geometry_feedback_controller_error_ema: float = Field(default=0.2, ge=0.0, le=1.0)
+    trajectory_steps: int = Field(default=6, ge=1, le=200)
+    trajectory_decode_interval: int = Field(default=0, ge=0, le=20)
+    trajectory_step_scale: float = Field(default=0.2, ge=0.0, le=5.0)
     max_survivors: int = Field(default=5, ge=1)
     max_tokens: int = Field(default=2048, ge=1, le=32768)  # Max output tokens  
     temperature: float = Field(default=0.7, ge=0, le=2.0)  # Decode temperature

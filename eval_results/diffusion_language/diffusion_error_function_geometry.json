@@ -1,0 +1,102 @@
+{
+  "assertions": [
+    {
+      "assertion": "Raw repair lift is not the same as cost-profitable repair value.",
+      "consequence": "Use a utility loss with an explicit compute penalty, not a binary repairability label.",
+      "evidence": "5 raw positive repair targets shrink to 3 cost-profitable targets at lambda 0.180000; flipped tasks: `plan_001`, `plan_003`.",
+      "id": "E1"
+    },
+    {
+      "assertion": "First repairable denoise step is not sufficient to predict value.",
+      "consequence": "The geometry vector must include source quality, prompt gap, and feasibility terms.",
+      "evidence": "The earliest step `10.000000` contains mixed-sign value rows: `plan_001`, `plan_003`, `plan_004`.",
+      "id": "E2"
+    },
+    {
+      "assertion": "The current spend surface is separable by label-free value geometry.",
+      "consequence": "Train the next selector on feature-family stability, then test transfer instead of reusing thresholds as theory.",
+      "evidence": "The runner value proxy selects `plan_004`, `plan_006`, `plan_007` with regret 0.000000; source-quality band gap is 0.022857.",
+      "id": "E3"
+    },
+    {
+      "assertion": "Denoise history is source evidence only after retention and source-advantage checks.",
+      "consequence": "Use a source-trust loss separate from the repair-spend loss.",
+      "evidence": "Naively trusting every repairable history source creates 4 false positives; even any-safe-history trust creates 3 false positives.",
+      "id": "E4"
+    }
+  ],
+  "candidate_error_functions": [
+    {
+      "evidence": "`DIFFUSION_BUDGET_POLICY_LOSS.md` and `DIFFUSION_REPAIR_VALUE_GEOMETRY.md`.",
+      "formula": "L_value = BCE(1[Delta S / c > lambda], h_value(phi(p, x_t))) weighted by |Delta S - lambda c|",
+      "name": "Cost-Aware Repair-Value Loss",
+      "next_test": "Train a small selector on generated repair-value targets and evaluate on a new lean planning slice.",
+      "purpose": "Predict whether another denoise repair is worth the extra GPU generation before spending it."
+    },
+    {
+      "evidence": "`DIFFUSION_PHASE_HYBRID_MECHANISM_AUDIT.md` and `diffusion_phase_hybrid_loss_targets.jsonl`.",
+      "formula": "L_source = WBCE(trust_history_source, h_source(retention, similarity, source_advantage))",
+      "name": "Retention-Gated Source-Trust Loss",
+      "next_test": "Replace hand-coded source thresholds with a learned trust-history selector.",
+      "purpose": "Separate repairability from the decision to use denoise history as the source state."
+    },
+    {
+      "evidence": "`DIFFUSION_ANCHOR_RETENTION_LOSS.md` and `DIFFUSION_REALIZATION_QUALITY.md`.",
+      "formula": "L_total = L_value + beta L_source + gamma L_ret + eta L_realization",
+      "name": "Composite Denoise Reasoning Loss",
+      "next_test": "Report all four terms for every promoted operator and check which term predicts transfer failures.",
+      "purpose": "Make reasoning improvement a constrained optimization over value, source trust, retention, and anchor realization."
+    }
+  ],
+  "generated_by": "experiments/analyze_diffusion_error_function_geometry.py",
+  "inputs": {
+    "phase_source_targets": "eval_results\\diffusion_language\\diffusion_phase_hybrid_loss_targets.jsonl",
+    "repair_value_geometry": "eval_results\\diffusion_language\\diffusion_repair_value_geometry.json"
+  },
+  "repair_value_geometry": {
+    "cost_flip_tasks": [
+      "plan_001",
+      "plan_003"
+    ],
+    "cost_penalty_lambda": 0.18,
+    "cost_profitable_repair_count": 3,
+    "early_step": 10.0,
+    "early_step_has_mixed_value": true,
+    "early_step_mixed_sign_tasks": [
+      "plan_001",
+      "plan_003",
+      "plan_004"
+    ],
+    "raw_positive_repair_target_count": 5,
+    "runner_policy_regret": 0.0,
+    "runner_selected_tasks": [
+      "plan_004",
+      "plan_006",
+      "plan_007"
+    ],
+    "source_quality_band_gap": 0.022857142857142798
+  },
+  "schema": "diffusion_error_function_geometry.v1",
+  "source_trust_geometry": {
+    "any_safe_history_false_positive_count": 3,
+    "any_safe_history_false_positive_tasks": [
+      "plan_003",
+      "plan_006",
+      "plan_007"
+    ],
+    "mean_retention_safety_lag": 12.75,
+    "naive_repairable_history_false_positive_count": 4,
+    "naive_repairable_history_false_positive_tasks": [
+      "plan_003",
+      "plan_004",
+      "plan_006",
+      "plan_007"
+    ],
+    "preserve_final_count": 4,
+    "target_count": 5,
+    "trust_history_count": 1,
+    "trust_history_tasks": [
+      "plan_001"
+    ]
+  }
+}

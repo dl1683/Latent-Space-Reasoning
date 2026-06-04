@@ -13,7 +13,11 @@ from latent_reasoning.config import Config
 from latent_reasoning.core.encoder import Encoder, LLMEncoder
 from latent_reasoning.core.judge import ScorerJudge, ModifierJudge, create_scorer_from_config
 from latent_reasoning.core.panel import JudgePanel
-from latent_reasoning.core.chain import ChainState
+from latent_reasoning.core.chain import (
+    ChainState,
+    ChainTracker,
+    compute_cross_chain_summary,
+)
 from latent_reasoning.core.autopoietic import create_autopoietic_panel, AutopoieticPanel
 from latent_reasoning.evolution.loop import EvolutionLoop, EvolutionResult
 from latent_reasoning.grammar import GrammarEvolutionLoop, GrammarEvolutionResult, FractalGrammar
@@ -58,6 +62,9 @@ class OrchestrationResult:
 
     # History
     evolution_history: List[dict] = field(default_factory=list)
+    reasoning_trace: List[dict] = field(default_factory=list)
+    decode_trace: List[dict] = field(default_factory=list)
+    reasoning_mode: str = "evolution"
 
     # Stage timings (seconds)
     encode_duration_s: float = 0.0
@@ -201,9 +208,10 @@ class Orchestrator:
 
             # Create decoder callable from encoder
             def decoder(latent: Tensor, query: str) -> str:
-                return self.encoder.decode(
-                    latent,
+                return self.decode(
+                    latent=latent,
                     query=query,
+                    decode_mode=config.synthesis.decode_mode,
                     max_new_tokens=config.synthesis.max_tokens,
                     temperature=config.synthesis.temperature,
                 )
@@ -342,6 +350,236 @@ class Orchestrator:
         if strategy == "best":
             return evolution_result.best_latent
         raise ValueError(f"Unsupported decode strategy: {strategy}")
+
+    def decode(
+        self,
+        latent: Tensor,
+        query: str | None,
+        decode_mode: str | None = None,
+        max_new_tokens: int | None = None,
+        temperature: float | None = None,
+    ) -> str:
+        """
+        Decode a latent vector using the configured control mode.
+
+        Args:
+            latent: Latent vector to decode
+            query: Optional query context
+            decode_mode: Optional override for synthesis decode mode
+            max_new_tokens: Optional override for generation length
+            temperature: Optional override for generation temperature
+        """
+        selected_mode = decode_mode or self.config.synthesis.decode_mode
+        selected_max_tokens = max_new_tokens if max_new_tokens is not None else self.config.synthesis.max_tokens
+        selected_temperature = temperature if temperature is not None else self.config.synthesis.temperature
+
+        geometry_feedback_kwargs = {}
+        if selected_mode == "geometry_feedback":
+            synthesis_cfg = self.config.synthesis
+            geometry_feedback_kwargs = {
+                "steering_eta": synthesis_cfg.geometry_feedback_steering_eta,
+                "steering_alpha": synthesis_cfg.geometry_feedback_alpha,
+                "kl_cap": synthesis_cfg.geometry_feedback_kl_cap,
+                "geometry_topk": synthesis_cfg.geometry_feedback_topk,
+                "target_forward_kl": synthesis_cfg.geometry_feedback_target_forward_kl,
+                "kl_tolerance": synthesis_cfg.geometry_feedback_kl_tolerance,
+                "eta_min": synthesis_cfg.geometry_feedback_eta_min,
+                "eta_max": synthesis_cfg.geometry_feedback_eta_max,
+                "eta_growth": synthesis_cfg.geometry_feedback_eta_growth,
+                "eta_decay": synthesis_cfg.geometry_feedback_eta_decay,
+                "geometry_controller": synthesis_cfg.geometry_feedback_controller,
+                "geometry_controller_kp": synthesis_cfg.geometry_feedback_controller_kp,
+                "geometry_controller_ki": synthesis_cfg.geometry_feedback_controller_ki,
+                "geometry_controller_kd": synthesis_cfg.geometry_feedback_controller_kd,
+                "geometry_controller_error_ema": synthesis_cfg.geometry_feedback_controller_error_ema,
+            }
+
+        decode_with_control = getattr(self.encoder, "decode_with_control", None)
+        if callable(decode_with_control):
+            if selected_mode == "geometry_feedback":
+                decode_with_geometry_feedback = getattr(
+                    self.encoder,
+                    "decode_with_geometry_feedback",
+                    None,
+                )
+                if callable(decode_with_geometry_feedback):
+                    return decode_with_geometry_feedback(
+                        latent=latent,
+                        query=query,
+                        max_new_tokens=selected_max_tokens,
+                        temperature=selected_temperature,
+                        **geometry_feedback_kwargs,
+                    )
+                return decode_with_control(
+                    latent=latent,
+                    mode=selected_mode,
+                    query=query,
+                    max_new_tokens=selected_max_tokens,
+                    temperature=selected_temperature,
+                )
+            return decode_with_control(
+                latent=latent,
+                mode=selected_mode,
+                query=query,
+                max_new_tokens=selected_max_tokens,
+                temperature=selected_temperature,
+            )
+
+        return self.encoder.decode(
+            latent=latent,
+            query=query,
+            max_new_tokens=selected_max_tokens,
+            temperature=selected_temperature,
+        )
+
+    def _run_trajectory_reasoning(
+        self,
+        query: str,
+        seed: Tensor,
+    ) -> tuple[Tensor, float, List[dict], int, int, str, List[ChainState]]:
+        """Run trajectory-only latent reasoning.
+
+        This method applies judge-provided modifiers and scored latent movement
+        step-by-step. It keeps the budget accounting aligned with budget limits
+        and records a compact trace for each step.
+        """
+        max_steps = max(0, self.config.synthesis.trajectory_steps)
+        if max_steps == 0:
+            seed_verdict = self.judge_panel.evaluate(seed)
+            return seed, seed_verdict.score, [], 0, 0, "trajectory_disabled", [
+                ChainState(latent=seed, score=seed_verdict.score)
+            ]
+
+        tracker = ChainTracker(
+            similarity_threshold=0.99,
+            stagnation_threshold=0.01,
+            history_window=max(3, min(10, self.config.evolution.chains)),
+        )
+
+        current = seed.clone()
+        current_verdict = self.judge_panel.evaluate(seed)
+        self.budget.record_evaluation(1)
+        current_score = float(current_verdict.score)
+
+        best_latent = current.clone()
+        best_score = current_score
+
+        trackable_chain = [ChainState(latent=current, score=current_score)]
+        tracker.record(current, current_score, current_verdict.modification)
+
+        trajectory_trace: List[dict] = []
+        trajectory_evals = 1
+        trajectory_generations = 0
+        stop_reason = "trajectory_complete"
+
+        decode_interval = self.config.synthesis.trajectory_decode_interval
+
+        for step in range(1, max_steps + 1):
+            if not self.budget.can_continue():
+                stop_reason = self.budget.get_stop_reason() or "budget_exhausted"
+                break
+
+            self.budget.record_generation(1)
+
+            cross_chain = compute_cross_chain_summary(trackable_chain)
+            context = tracker.get_context(current, cross_chain=cross_chain)
+            current_verdict = self.judge_panel.evaluate(current, context=context)
+            trajectory_evals += 1
+            self.budget.record_evaluation(1)
+            current_score = float(current_verdict.score)
+            stuck_signal = tracker.compute_stuck_signal()
+
+            modification = current_verdict.modification
+            if modification is None:
+                modification = torch.randn_like(current) * self.config.synthesis.trajectory_step_scale
+
+            if not torch.isfinite(modification).all():
+                modification = torch.zeros_like(modification)
+
+            candidate = current + modification * self.config.synthesis.trajectory_step_scale
+            candidate_verdict = self.judge_panel.evaluate(
+                candidate,
+                context=tracker.get_context(candidate, cross_chain=cross_chain),
+            )
+            candidate_score = float(candidate_verdict.score)
+            trajectory_evals += 1
+            self.budget.record_evaluation(1)
+
+            accepted = (
+                candidate_score > current_score
+                or (
+                    stuck_signal > 0.7
+                    and candidate_score >= current_score - 0.05
+                )
+            )
+
+            if accepted:
+                current = candidate
+                current_score = candidate_score
+                trackable_chain[0] = ChainState(latent=current.clone(), score=current_score)
+                tracker.record(current, current_score, candidate_verdict.modification)
+                log_event(
+                    "TRAJ_ACCEPT",
+                    level=LogLevel.VERBOSE,
+                    step=f"{step}",
+                    score=f"{current_score:.3f}",
+                )
+            else:
+                tracker.record(current, current_score, current_verdict.modification)
+                log_event(
+                    "TRAJ_REJECT",
+                    level=LogLevel.VERBOSE,
+                    step=f"{step}",
+                    score=f"{current_score:.3f}",
+                    candidate=f"{candidate_score:.3f}",
+                )
+
+            if current_score > best_score:
+                best_score = current_score
+                best_latent = current.clone()
+
+            decode_preview = ""
+            if decode_interval > 0 and step % decode_interval == 0:
+                decode_preview = self.decode(
+                    current,
+                    query=query,
+                    decode_mode=self.config.synthesis.decode_mode,
+                    max_new_tokens=min(128, self.config.synthesis.max_tokens),
+                    temperature=self.config.synthesis.temperature,
+                ).strip()[:250]
+
+            trajectory_trace.append(
+                {
+                    "step": step,
+                    "source": "trajectory",
+                    "current_score": current_score,
+                    "candidate_score": candidate_score,
+                    "best_score": best_score,
+                    "accepted": accepted,
+                    "stuck_signal": stuck_signal,
+                    "delta_norm": float(torch.norm(modification).item()),
+                    "latent_norm": float(current.norm().item()),
+                    "decode_preview": decode_preview,
+                }
+            )
+            trajectory_generations = step
+
+            if trajectory_generations >= max_steps:
+                stop_reason = "trajectory_complete"
+
+        survivors = [
+            ChainState(latent=best_latent.clone(), score=best_score, generation=trajectory_generations)
+        ]
+
+        return (
+            best_latent,
+            best_score,
+            trajectory_trace,
+            trajectory_generations,
+            trajectory_evals,
+            stop_reason,
+            survivors,
+        )
 
     def _run_grammar_evolution(
         self,
@@ -493,9 +731,16 @@ class Orchestrator:
         if self.autopoietic_panel is not None:
             self.autopoietic_panel.set_query(query)
 
-        # Determine evolution mode
+        # Determine reasoning mode
+        reasoning_mode = self.config.synthesis.reasoning_mode
+        if reasoning_mode not in {"evolution", "trajectory", "hybrid"}:
+            raise ValueError(
+                "Unsupported reasoning_mode. Valid options: evolution, trajectory, hybrid"
+            )
+
         use_grammar = self.config.grammar.enabled and self.grammar_loop is not None
-        use_standard = not use_grammar or self.config.qd.enabled  # Hybrid if both enabled
+        use_standard = reasoning_mode in {"evolution", "hybrid"} and (not use_grammar or self.config.qd.enabled)
+        use_trajectory = reasoning_mode in {"trajectory", "hybrid"}
 
         # Storage for results
         best_latent = seed
@@ -506,6 +751,7 @@ class Orchestrator:
         evolution_history = []
         survivors = []
         evolution_duration_s = 0.0
+        reasoning_trace: list[dict] = []
 
         # Run standard evolution if applicable
         if use_standard:
@@ -522,12 +768,15 @@ class Orchestrator:
             total_evaluations = evolution_result.total_evaluations
             generations = evolution_result.generations
             stop_reason = evolution_result.stop_reason
-            evolution_history = evolution_result.history
+            evolution_history = _tag_history(evolution_result.history, source="evolution")
             survivors = evolution_result.survivors
 
             # Update budget
             self.budget.evaluations_used += evolution_result.total_evaluations
             self.budget.generations_used = evolution_result.generations
+
+            # Keep compatibility with the old evolution trace fields
+            reasoning_trace.extend(evolution_history)
 
         # Run grammar evolution if enabled
         if use_grammar:
@@ -537,6 +786,8 @@ class Orchestrator:
                 seed=seed,
             )
             evolution_duration_s += perf_counter() - grammar_start
+            grammar_history = _tag_history(grammar_history, source="grammar")
+            reasoning_trace.extend(grammar_history)
 
             # In hybrid mode, take the better result
             if use_standard:
@@ -552,10 +803,10 @@ class Orchestrator:
                     best_score = grammar_score
                     stop_reason = "grammar_better"
                     # Merge histories
-                    evolution_history = evolution_history + _tag_history(grammar_history, "grammar")
+                    evolution_history = evolution_history + grammar_history
                 else:
                     log_event("HYBRID_WINNER", level=LogLevel.NORMAL, winner="standard")
-                    evolution_history = _tag_history(evolution_history, "standard") + _tag_history(grammar_history, "grammar")
+                    evolution_history = evolution_history + grammar_history
             else:
                 # Grammar only mode
                 best_latent = grammar_latent
@@ -564,7 +815,47 @@ class Orchestrator:
                 generations = len(grammar_history)
                 stop_reason = "grammar_complete"
 
+        # Optional trajectory pass for latent-space refinement
+        if use_trajectory:
+            log_event("TRAJECTORY", level=LogLevel.NORMAL)
+            trajectory_start = perf_counter()
+            (
+                trajectory_latent,
+                trajectory_score,
+                trajectory_trace,
+                trajectory_generations,
+                trajectory_evals,
+                trajectory_stop_reason,
+                trajectory_survivors,
+            ) = self._run_trajectory_reasoning(query, best_latent)
+            evolution_duration_s += perf_counter() - trajectory_start
+
+            total_evaluations += trajectory_evals
+            generations += trajectory_generations
+
+            trajectory_tagged_trace = _tag_history(trajectory_trace, source="trajectory")
+            evolution_history.extend(trajectory_tagged_trace)
+            reasoning_trace.extend(trajectory_tagged_trace)
+
+            if use_standard or use_grammar:
+                if trajectory_score > best_score:
+                    best_latent = trajectory_latent
+                    best_score = trajectory_score
+                    stop_reason = f"trajectory_{trajectory_stop_reason}"
+                    survivors = trajectory_survivors
+            else:
+                best_latent = trajectory_latent
+                best_score = trajectory_score
+                stop_reason = trajectory_stop_reason
+                survivors = trajectory_survivors
+
+            if not survivors:
+                survivors = trajectory_survivors
+
         # Checkpoint final state
+        if not survivors:
+            survivors = [ChainState(latent=best_latent.clone(), score=best_score)]
+
         self.checkpoint_manager.save_checkpoint(
             chains=survivors,
             generation=generations,
@@ -579,14 +870,20 @@ class Orchestrator:
             decode_latent = self._combine_latents(survivors)
 
         decode_start = perf_counter()
+        decode_trace: list[dict] = []
         decoded_outputs = [
-            self.encoder.decode(
+            self.decode(
                 decode_latent,
                 query=query,
+                decode_mode=self.config.synthesis.decode_mode,
                 max_new_tokens=self.config.synthesis.max_tokens,
                 temperature=self.config.synthesis.temperature,
             )
         ]
+        if self.config.synthesis.decode_mode == "geometry_feedback":
+            decode_trace = list(
+                getattr(self.encoder, "_last_decode_geometry_feedback_trace", []) or []
+            )
         decode_duration_s = perf_counter() - decode_start
         total_run_duration_s = perf_counter() - run_start
 
@@ -608,6 +905,9 @@ class Orchestrator:
             total_evaluations=total_evaluations,
             stop_reason=stop_reason,
             evolution_history=evolution_history,
+            reasoning_trace=reasoning_trace,
+            decode_trace=decode_trace,
+            reasoning_mode=reasoning_mode,
             encode_duration_s=encode_duration_s,
             evolution_duration_s=evolution_duration_s,
             decode_duration_s=decode_duration_s,
@@ -685,6 +985,9 @@ class Orchestrator:
             "latent_score": result.best_score,
             "generations": result.generations,
             "evaluations": result.total_evaluations,
+            "reasoning_mode": result.reasoning_mode,
+            "reasoning_trace": result.reasoning_trace,
+            "decode_trace": result.decode_trace,
             "baseline_duration_s": baseline_duration_s,
             "latent_duration_s": latent_duration_s,
             "latent_run_duration_s": result.total_run_duration_s,

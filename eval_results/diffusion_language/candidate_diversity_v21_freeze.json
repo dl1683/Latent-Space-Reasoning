@@ -1,0 +1,84 @@
+{
+  "candidate_pool": {
+    "candidate_names": [
+      "history_prefix_25_repair",
+      "constraint_gap_span_phase_final_preserve_seeded_gated_repair"
+    ],
+    "history_repair_fractions": [
+      0.25
+    ],
+    "include_history_repairs": true,
+    "include_history_visible_repair": false,
+    "limit_repair_candidates": 2,
+    "promotion_margin": 0.02,
+    "repair_pack": "constraint_span_phase_final_preserve_seeded_gated",
+    "selector": "generated_repair_value_v1"
+  },
+  "conclusive_result_gates": {
+    "main_hook_must_remain_unchanged_until_result_passes": true,
+    "maximum_selected_no_lift_rows": 0,
+    "minimum_generated_positive_count": 1,
+    "minimum_positive_count_lift_over_v20": 1,
+    "selected_output_cost_must_not_erase_lift": true,
+    "zero_generated_positives_are_negative": true
+  },
+  "design_intent": "Test whether broader repair availability and source diversity produce fresh generated-repair positives after the v20 one-candidate low-margin slice found none.",
+  "failure_accounting": [
+    "If zero generated positives appear again, record candidate diversity as a negative availability result.",
+    "If positives appear only in unselected rows, record selector regret instead of hook success.",
+    "If selected no-lift rows appear, do not broaden the candidate pool under the live hook.",
+    "If selected-output cost erases the lift, keep the current one-candidate hook boundary."
+  ],
+  "fit_boundary": {
+    "v20_negative_task_ids": [
+      "plan_154",
+      "plan_155",
+      "plan_158",
+      "plan_160"
+    ],
+    "v20_positive_count": 0,
+    "v20_repair_delta_vs_evolved": 0.0,
+    "v20_scores": "eval_results\\diffusion_language\\low_margin_repair_v20_label_scores.json",
+    "v20_scores_sha256": "11c161bf5aeae2d1282660cef04371d3739f7aff56a973c3779e869f3c6a44c7",
+    "v20_target_row_count": 4,
+    "v20_targets": "eval_results\\diffusion_language\\low_margin_repair_v20_targets.json",
+    "v20_targets_sha256": "292e82165ea3cc4dd7172ad6428eb95de41c13cafe817c1fda6d03d7a8c21eb8"
+  },
+  "fresh_slice_protocol": {
+    "label_pass": "python experiments\\run_diffusion_three_arm_benchmark.py --task-preset lean_gpu_mixed_transfer_v21 --candidates llada-moe-7b-a1b-instruct-hf --limit-schedules 2 --limit-evolved-schedules 0 --limit-repair-candidates 2 --repair-source-policy random --repair-pack constraint_span_phase_final_preserve_seeded_gated --include-history-repairs --history-repair-fractions 0.25 --repair-spend-trigger denoise_phase_repairability --repair-source-min-chars 240 --repair-source-prompt-gap-min 2 --repair-source-prompt-gap-max 9 --repair-source-prompt-coverage-min 0.4 --repair-source-prompt-coverage-max 1.0 --repair-phase-budget frontier --repair-selector generated_repair_value_v1 --repair-promotion-margin 0.02 --trajectory-selector planning_state --device cuda --dtype bfloat16 --raw-output eval_results\\diffusion_language\\candidate_diversity_v21_label_raw.jsonl --scores-output eval_results\\diffusion_language\\candidate_diversity_v21_label_scores.json --report-output eval_results\\diffusion_language\\candidate_diversity_v21_label_report.md",
+    "required_replay_outputs": [
+      "candidate-promotion target sheet built from raw repair candidates",
+      "candidate-name summary for history-prefix versus final-preserve repairs",
+      "main generated_repair_value_v1 selected rows and no-lift rejections",
+      "one-candidate control replay against the v20 repair pool shape",
+      "selected-output cost sweep over selected repair-pool outputs"
+    ]
+  },
+  "generated_by": "experiments/build_diffusion_candidate_diversity_v21_freeze.py",
+  "overlap_with_v20_target_rows": [],
+  "planning_task_ids": [
+    "plan_161",
+    "plan_162",
+    "plan_163",
+    "plan_164",
+    "plan_165",
+    "plan_166",
+    "plan_167",
+    "plan_168"
+  ],
+  "schema": "diffusion_candidate_diversity_v21_freeze.v1",
+  "task_ids": [
+    "plan_161",
+    "plan_162",
+    "plan_163",
+    "plan_164",
+    "plan_165",
+    "plan_166",
+    "plan_167",
+    "plan_168",
+    "math_009",
+    "sym_007",
+    "sci_002"
+  ],
+  "task_preset": "lean_gpu_mixed_transfer_v21"
+}

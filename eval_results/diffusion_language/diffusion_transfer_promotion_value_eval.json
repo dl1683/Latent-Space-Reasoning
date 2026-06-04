@@ -1,0 +1,231 @@
+{
+  "all_repairable_scores": "eval_results\\diffusion_language\\llada_moe_mixed_transfer_v2_all_repairable_frontier_v1_scores.json",
+  "availability_rows": [
+    {
+      "available": false,
+      "oracle_lift": 0.0,
+      "oracle_task_score": 0.35642857142857143,
+      "task_id": "plan_009",
+      "trajectory_task_score": 0.35642857142857143
+    },
+    {
+      "available": false,
+      "oracle_lift": 0.0,
+      "oracle_task_score": 0.39285714285714285,
+      "task_id": "plan_010",
+      "trajectory_task_score": 0.39285714285714285
+    },
+    {
+      "available": false,
+      "oracle_lift": 0.0,
+      "oracle_task_score": 0.3364285714285714,
+      "task_id": "plan_011",
+      "trajectory_task_score": 0.3364285714285714
+    },
+    {
+      "available": false,
+      "oracle_lift": 0.0,
+      "oracle_task_score": 0.3153571428571429,
+      "task_id": "plan_012",
+      "trajectory_task_score": 0.2953571428571429
+    },
+    {
+      "available": false,
+      "oracle_lift": 0.0,
+      "oracle_task_score": 0.30392857142857144,
+      "task_id": "plan_013",
+      "trajectory_task_score": 0.30392857142857144
+    },
+    {
+      "available": false,
+      "oracle_lift": 0.0,
+      "oracle_task_score": 0.3028571428571429,
+      "task_id": "plan_014",
+      "trajectory_task_score": 0.3028571428571429
+    },
+    {
+      "available": false,
+      "oracle_lift": 0.0,
+      "oracle_task_score": 0.5582142857142857,
+      "task_id": "plan_015",
+      "trajectory_task_score": 0.5582142857142857
+    },
+    {
+      "available": false,
+      "oracle_lift": 0.0,
+      "oracle_task_score": 0.24142857142857144,
+      "task_id": "plan_016",
+      "trajectory_task_score": 0.24142857142857144
+    }
+  ],
+  "generated_by": "experiments/evaluate_diffusion_transfer_promotion_value.py",
+  "lift_min": 1e-09,
+  "policies": [
+    {
+      "all_generation_count": 23,
+      "content_hash": "6c109fce02464b0fd791340fac65d226c526618fac299bbabc60d3603d05ad8e",
+      "missed_available_count": 0,
+      "oracle_headroom_vs_repair": 0.0025000000000000022,
+      "policy_id": "planning_quality_seed_realization_guarded",
+      "repair_mean_generation_budget_per_task": 2.125,
+      "repair_mean_task_score": 0.3484375,
+      "repair_task_delta_vs_trajectory": 0.0,
+      "rows": [
+        {
+          "available": false,
+          "oracle_lift": 0.0,
+          "repair_selection_reason": "repair_spend_gate_kept_evolved_decomposed_spend_transfer_rule",
+          "selected_lift": 0.0,
+          "selected_positive_lift": false,
+          "task_id": "plan_009"
+        },
+        {
+          "available": false,
+          "oracle_lift": 0.0,
+          "repair_selection_reason": "repair_spend_gate_kept_evolved_decomposed_spend_transfer_rule",
+          "selected_lift": 0.0,
+          "selected_positive_lift": false,
+          "task_id": "plan_010"
+        },
+        {
+          "available": false,
+          "oracle_lift": 0.0,
+          "repair_selection_reason": "repair_spend_gate_kept_evolved_decomposed_spend_transfer_rule",
+          "selected_lift": 0.0,
+          "selected_positive_lift": false,
+          "task_id": "plan_011"
+        },
+        {
+          "available": false,
+          "oracle_lift": 0.0,
+          "repair_selection_reason": "max_planning_quality_seed_realization_guarded_score_repair_pool",
+          "selected_lift": 0.0,
+          "selected_positive_lift": false,
+          "task_id": "plan_012"
+        },
+        {
+          "available": false,
+          "oracle_lift": 0.0,
+          "repair_selection_reason": "repair_spend_gate_kept_evolved_decomposed_spend_transfer_rule",
+          "selected_lift": 0.0,
+          "selected_positive_lift": false,
+          "task_id": "plan_013"
+        },
+        {
+          "available": false,
+          "oracle_lift": 0.0,
+          "repair_selection_reason": "repair_spend_gate_kept_evolved_decomposed_spend_transfer_rule",
+          "selected_lift": 0.0,
+          "selected_positive_lift": false,
+          "task_id": "plan_014"
+        },
+        {
+          "available": false,
+          "oracle_lift": 0.0,
+          "repair_selection_reason": "repair_spend_gate_kept_evolved_decomposed_spend_transfer_rule",
+          "selected_lift": 0.0,
+          "selected_positive_lift": false,
+          "task_id": "plan_015"
+        },
+        {
+          "available": false,
+          "oracle_lift": 0.0,
+          "repair_selection_reason": "repair_spend_gate_kept_evolved_decomposed_spend_transfer_rule",
+          "selected_lift": 0.0,
+          "selected_positive_lift": false,
+          "task_id": "plan_016"
+        }
+      ],
+      "run_id": "diffusion-6c109fce02464b0f",
+      "score_path": "eval_results\\diffusion_language\\llada_moe_mixed_transfer_v2_decomposed_spend_transfer_rule_margin0_frontier_v1_scores.json",
+      "selected_available_count": 0
+    },
+    {
+      "all_generation_count": 23,
+      "content_hash": "2a4bd4e3cad622a24ca33de41f328fe3a9034afbf369a3db1d881b1ec2a78b60",
+      "missed_available_count": 0,
+      "oracle_headroom_vs_repair": 0.0,
+      "policy_id": "inherit",
+      "repair_mean_generation_budget_per_task": 2.125,
+      "repair_mean_task_score": 0.3509375,
+      "repair_task_delta_vs_trajectory": 0.0025000000000000022,
+      "rows": [
+        {
+          "available": false,
+          "oracle_lift": 0.0,
+          "repair_selection_reason": "repair_spend_gate_kept_evolved_decomposed_spend_transfer_rule",
+          "selected_lift": 0.0,
+          "selected_positive_lift": false,
+          "task_id": "plan_009"
+        },
+        {
+          "available": false,
+          "oracle_lift": 0.0,
+          "repair_selection_reason": "repair_spend_gate_kept_evolved_decomposed_spend_transfer_rule",
+          "selected_lift": 0.0,
+          "selected_positive_lift": false,
+          "task_id": "plan_010"
+        },
+        {
+          "available": false,
+          "oracle_lift": 0.0,
+          "repair_selection_reason": "repair_spend_gate_kept_evolved_decomposed_spend_transfer_rule",
+          "selected_lift": 0.0,
+          "selected_positive_lift": false,
+          "task_id": "plan_011"
+        },
+        {
+          "available": false,
+          "oracle_lift": 0.0,
+          "repair_selection_reason": "max_inherit_score_repair_pool",
+          "selected_lift": 0.020000000000000018,
+          "selected_positive_lift": true,
+          "task_id": "plan_012"
+        },
+        {
+          "available": false,
+          "oracle_lift": 0.0,
+          "repair_selection_reason": "repair_spend_gate_kept_evolved_decomposed_spend_transfer_rule",
+          "selected_lift": 0.0,
+          "selected_positive_lift": false,
+          "task_id": "plan_013"
+        },
+        {
+          "available": false,
+          "oracle_lift": 0.0,
+          "repair_selection_reason": "repair_spend_gate_kept_evolved_decomposed_spend_transfer_rule",
+          "selected_lift": 0.0,
+          "selected_positive_lift": false,
+          "task_id": "plan_014"
+        },
+        {
+          "available": false,
+          "oracle_lift": 0.0,
+          "repair_selection_reason": "repair_spend_gate_kept_evolved_decomposed_spend_transfer_rule",
+          "selected_lift": 0.0,
+          "selected_positive_lift": false,
+          "task_id": "plan_015"
+        },
+        {
+          "available": false,
+          "oracle_lift": 0.0,
+          "repair_selection_reason": "repair_spend_gate_kept_evolved_decomposed_spend_transfer_rule",
+          "selected_lift": 0.0,
+          "selected_positive_lift": false,
+          "task_id": "plan_016"
+        }
+      ],
+      "run_id": "diffusion-2a4bd4e3cad622a2",
+      "score_path": "eval_results\\diffusion_language\\llada_moe_mixed_transfer_v2_decomposed_spend_transfer_rule_inherit_margin0_frontier_v1_scores.json",
+      "selected_available_count": 0
+    }
+  ],
+  "schema": "diffusion_transfer_promotion_value_eval.v1",
+  "summary": {
+    "available_repair_count": 0,
+    "available_repair_tasks": [],
+    "best_policy": "inherit",
+    "best_policy_run_id": "diffusion-2a4bd4e3cad622a2",
+    "planning_row_count": 8
+  }
+}

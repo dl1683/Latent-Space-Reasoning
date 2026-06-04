@@ -1,0 +1,137 @@
+{
+  "blocking_reasons": [
+    "WSL Python has no pip",
+    "WSL Python lacks ensurepip/python3-venv",
+    "sudo requires a password; cannot install python3.12-venv non-interactively"
+  ],
+  "checks": {
+    "ensurepip": {
+      "command": [
+        "wsl.exe",
+        "-d",
+        "Ubuntu",
+        "--",
+        "bash",
+        "-lc",
+        "python3 -c 'import ensurepip; print(\"ensurepip ok\")'"
+      ],
+      "returncode": 1,
+      "stderr": "Traceback (most recent call last):\n  File \"<string>\", line 1, in <module>\nModuleNotFoundError: No module named 'ensurepip'\n",
+      "stdout": ""
+    },
+    "gpu_visible": {
+      "command": [
+        "wsl.exe",
+        "-d",
+        "Ubuntu",
+        "--",
+        "bash",
+        "-lc",
+        "nvidia-smi --query-gpu=name,memory.total,memory.used,utilization.gpu --format=csv,noheader,nounits"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "NVIDIA GeForce RTX 5090 Laptop GPU, 24463, 0, 0\n"
+    },
+    "linux_kernel": {
+      "command": [
+        "wsl.exe",
+        "-d",
+        "Ubuntu",
+        "--",
+        "bash",
+        "-lc",
+        "uname -a"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "Linux MSI 6.6.87.2-microsoft-standard-WSL2 #1 SMP PREEMPT_DYNAMIC Thu Jun  5 18:30:46 UTC 2025 x86_64 x86_64 x86_64 GNU/Linux\n"
+    },
+    "pip": {
+      "command": [
+        "wsl.exe",
+        "-d",
+        "Ubuntu",
+        "--",
+        "bash",
+        "-lc",
+        "python3 -m pip --version"
+      ],
+      "returncode": 1,
+      "stderr": "/usr/bin/python3: No module named pip\n",
+      "stdout": ""
+    },
+    "python": {
+      "command": [
+        "wsl.exe",
+        "-d",
+        "Ubuntu",
+        "--",
+        "bash",
+        "-lc",
+        "command -v python3 && python3 --version"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": "/usr/bin/python3\nPython 3.12.3\n"
+    },
+    "sudo_noninteractive": {
+      "command": [
+        "wsl.exe",
+        "-d",
+        "Ubuntu",
+        "--",
+        "bash",
+        "-lc",
+        "sudo -n true"
+      ],
+      "returncode": 1,
+      "stderr": "sudo: a password is required\n",
+      "stdout": ""
+    },
+    "triton_package_index": {
+      "command": [
+        "wsl.exe",
+        "-d",
+        "Ubuntu",
+        "--",
+        "bash",
+        "-lc",
+        "python3 -m pip index versions triton"
+      ],
+      "returncode": 1,
+      "stderr": "/usr/bin/python3: No module named pip\n",
+      "stdout": ""
+    },
+    "wsl_list": {
+      "command": [
+        "wsl.exe",
+        "-l",
+        "-v"
+      ],
+      "returncode": 0,
+      "stderr": "",
+      "stdout": " \u0000 \u0000N\u0000A\u0000M\u0000E\u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000S\u0000T\u0000A\u0000T\u0000E\u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000V\u0000E\u0000R\u0000S\u0000I\u0000O\u0000N\u0000\n\u0000\n\u0000*\u0000 \u0000U\u0000b\u0000u\u0000n\u0000t\u0000u\u0000 \u0000 \u0000 \u0000 \u0000S\u0000t\u0000o\u0000p\u0000p\u0000e\u0000d\u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u0000 \u00002\u0000\n\u0000\n\u0000"
+    }
+  },
+  "claim_boundary": [
+    "This bootstrap only prepares a Triton-capable runtime.",
+    "It does not download Qwen3-Next weights.",
+    "It does not produce a gated-attention result."
+  ],
+  "distro": "Ubuntu",
+  "generated_by": "experiments/build_gated_attention_wsl_bootstrap.py",
+  "manual_install_commands": [
+    "sudo apt-get update",
+    "sudo apt-get install -y python3.12-venv python3-pip",
+    "python3 -m venv ~/.venvs/lsr-qwen-next",
+    "source ~/.venvs/lsr-qwen-next/bin/activate",
+    "python -m pip install --upgrade pip",
+    "python -m pip install --index-url https://download.pytorch.org/whl/cu128 torch",
+    "python -m pip install 'transformers @ git+https://github.com/huggingface/transformers.git@032db9c8d6c3c3cb89e71cc414bfb5a469b1a6da' accelerate safetensors huggingface_hub bitsandbytes triton flash-linear-attention causal-conv1d"
+  ],
+  "post_install_validation_command": "source ~/.venvs/lsr-qwen-next/bin/activate\npython - <<'PY'\nfrom transformers import AutoConfig, AutoModelForCausalLM\nfrom accelerate import init_empty_weights\ncfg = AutoConfig.from_pretrained('Qwen/Qwen3-Next-80B-A3B-Instruct', trust_remote_code=True)\nprint(cfg.model_type)\nwith init_empty_weights():\n    AutoModelForCausalLM.from_config(cfg, trust_remote_code=True)\nprint('empty model ok')\nPY",
+  "ready_for_wsl_runtime_bootstrap": false,
+  "schema": "gated_attention_wsl_bootstrap.v1",
+  "wsl_path": "C:\\WINDOWS\\system32\\wsl.exe"
+}

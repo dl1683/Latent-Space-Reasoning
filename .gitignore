@@ -112,6 +112,15 @@ experiments/*.log
 # Local eval results
 eval_results/
 
+# Local external checkouts and model snapshots. These are reproducible/local
+# dependencies and include multi-GB model weights; keep source adapters in repo
+# code, not raw downloaded checkpoints.
+external/diffusion_models/
+external/diffusion_preflight/
+external/arc-agi-3-benchmarking/
+external/arc-agi-3-human-baseline/
+external/arc-agi-3-just-explore/
+
 # Experiment checkpoints (transient, auto-deleted on completion)
 experiments/*.checkpoint.json
 

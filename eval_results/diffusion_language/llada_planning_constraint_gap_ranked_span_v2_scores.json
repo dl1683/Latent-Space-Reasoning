@@ -1,0 +1,420 @@
+{
+  "all_generation_count": 6,
+  "arm_selection_count": 4,
+  "arms": {
+    "fixed": {
+      "count": 1,
+      "mean_combined_score": 0.4640401785714286,
+      "mean_generation_budget_per_task": 1.0,
+      "mean_task_score": 0.3989285714285714,
+      "mean_trajectory_score": 0.659375
+    },
+    "random": {
+      "count": 1,
+      "mean_combined_score": 0.4640401785714286,
+      "mean_generation_budget_per_task": 1.0,
+      "mean_task_score": 0.3989285714285714,
+      "mean_trajectory_score": 0.659375
+    },
+    "repair_selected": {
+      "count": 1,
+      "mean_combined_score": 0.4640401785714286,
+      "mean_generation_budget_per_task": 6.0,
+      "mean_task_score": 0.3989285714285714,
+      "mean_trajectory_score": 0.659375
+    },
+    "trajectory_selected": {
+      "count": 1,
+      "mean_combined_score": 0.4640401785714286,
+      "mean_generation_budget_per_task": 1.0,
+      "mean_task_score": 0.3989285714285714,
+      "mean_trajectory_score": 0.659375
+    }
+  },
+  "by_candidate_arm": {
+    "llada-8b-instruct-hf:fixed": {
+      "count": 1,
+      "mean_combined_score": 0.4640401785714286,
+      "mean_generation_budget_per_task": 1.0,
+      "mean_task_score": 0.3989285714285714,
+      "mean_trajectory_score": 0.659375
+    },
+    "llada-8b-instruct-hf:random": {
+      "count": 1,
+      "mean_combined_score": 0.4640401785714286,
+      "mean_generation_budget_per_task": 1.0,
+      "mean_task_score": 0.3989285714285714,
+      "mean_trajectory_score": 0.659375
+    },
+    "llada-8b-instruct-hf:repair_selected": {
+      "count": 1,
+      "mean_combined_score": 0.4640401785714286,
+      "mean_generation_budget_per_task": 6.0,
+      "mean_task_score": 0.3989285714285714,
+      "mean_trajectory_score": 0.659375
+    },
+    "llada-8b-instruct-hf:trajectory_selected": {
+      "count": 1,
+      "mean_combined_score": 0.4640401785714286,
+      "mean_generation_budget_per_task": 1.0,
+      "mean_task_score": 0.3989285714285714,
+      "mean_trajectory_score": 0.659375
+    }
+  },
+  "by_family_arm": {
+    "planning": {
+      "fixed": {
+        "count": 1,
+        "mean_combined_score": 0.4640401785714286,
+        "mean_generation_budget_per_task": 1.0,
+        "mean_task_score": 0.3989285714285714,
+        "mean_trajectory_score": 0.659375
+      },
+      "random": {
+        "count": 1,
+        "mean_combined_score": 0.4640401785714286,
+        "mean_generation_budget_per_task": 1.0,
+        "mean_task_score": 0.3989285714285714,
+        "mean_trajectory_score": 0.659375
+      },
+      "repair_selected": {
+        "count": 1,
+        "mean_combined_score": 0.4640401785714286,
+        "mean_generation_budget_per_task": 6.0,
+        "mean_task_score": 0.3989285714285714,
+        "mean_trajectory_score": 0.659375
+      },
+      "trajectory_selected": {
+        "count": 1,
+        "mean_combined_score": 0.4640401785714286,
+        "mean_generation_budget_per_task": 1.0,
+        "mean_task_score": 0.3989285714285714,
+        "mean_trajectory_score": 0.659375
+      }
+    }
+  },
+  "comparison_rows": [
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "evolved_delta_vs_fixed": 0.0,
+      "evolved_delta_vs_random": 0.0,
+      "evolved_delta_vs_trajectory": 0.0,
+      "evolved_schedule": "",
+      "evolved_selection_reason": "",
+      "evolved_selector_edge": 0.0,
+      "evolved_selector_score": 0.0,
+      "evolved_task_score": 0.0,
+      "evolved_trajectory_score": 0.0,
+      "fixed_schedule": "low_confidence_32",
+      "fixed_task_score": 0.3989285714285714,
+      "fixed_trajectory_score": 0.659375,
+      "oracle_delta_vs_evolved": 0.0,
+      "oracle_delta_vs_repair": 0.0,
+      "oracle_delta_vs_trajectory": 0.0,
+      "oracle_schedule": "constraint_gap_revision_repair",
+      "oracle_task_score": 0.3989285714285714,
+      "random_schedule": "low_confidence_32",
+      "random_task_score": 0.3989285714285714,
+      "random_trajectory_score": 0.659375,
+      "repair_control": "low_confidence_32",
+      "repair_delta_vs_evolved": 0.0,
+      "repair_selection_reason": "repair_margin_guard_kept_evolved_0.020",
+      "repair_selector_edge": 0.0,
+      "repair_selector_score": 0.0,
+      "repair_source_history_step": "",
+      "repair_source_state": "",
+      "repair_task_score": 0.3989285714285714,
+      "task_id": "plan_001",
+      "trajectory_delta_vs_fixed": 0.0,
+      "trajectory_delta_vs_random": 0.0,
+      "trajectory_schedule": "low_confidence_32",
+      "trajectory_selection_reason": "max_planning_state_score_base_pool",
+      "trajectory_selector_score": 0.3389071875,
+      "trajectory_task_score": 0.3989285714285714,
+      "trajectory_trajectory_score": 0.659375
+    }
+  ],
+  "constraint_gap_rescue_limit": 1,
+  "constraint_gap_rescue_min_terms": 6,
+  "constraint_gap_rescue_source_controls": [],
+  "constraint_gap_rescue_source_quality_ceiling": 0.5,
+  "constraint_gap_rescue_source_quality_floor": 0.4,
+  "constraint_gap_rescue_trigger": "off",
+  "evolved_promotion_margin": 0.015,
+  "evolved_quality_margin": 0.01,
+  "evolved_selector": "inherit",
+  "evolved_selector_tolerance": 0.015,
+  "exact_task_trajectory_policy": "fixed",
+  "exact_trajectory_selection_source_counts": {},
+  "exact_verifier_revision": false,
+  "history_mutability": {
+    "committed_token_change_count": 0,
+    "committed_token_remask_count": 0,
+    "count": 6,
+    "mask_count_increase_count": 0,
+    "monotonic_fill_count": 6,
+    "remasked_token_rewrite_count": 0
+  },
+  "history_repair_fractions": [
+    0.25
+  ],
+  "history_rescue_fractions": [],
+  "history_rescue_source_controls": [],
+  "history_rescue_trigger": "baseline",
+  "history_rescue_visible": false,
+  "include_history_repairs": false,
+  "include_history_visible_repair": false,
+  "include_revision_schedules": false,
+  "oracle_generation_budget_per_task": 6.0,
+  "oracle_headroom_vs_repair": 0.0,
+  "oracle_headroom_vs_trajectory": 0.0,
+  "oracle_task_score": 0.3989285714285714,
+  "oracle_wins_vs_repair": {
+    "losses": 0,
+    "ties": 1,
+    "wins": 0
+  },
+  "oracle_wins_vs_trajectory": {
+    "losses": 0,
+    "ties": 1,
+    "wins": 0
+  },
+  "prompt_guided_rescue_limit": 1,
+  "prompt_guided_rescue_source_controls": [],
+  "prompt_guided_rescue_source_quality_threshold": 0.45,
+  "prompt_guided_rescue_trigger": "off",
+  "repair_candidate_summary": {
+    "constraint_gap_revision_anchor25_repair": {
+      "count": 1,
+      "mean_combined_score": 0.47118303571428577,
+      "mean_contradiction_penalty": 0.0,
+      "mean_overpreservation_penalty": 0.0,
+      "mean_planning_quality_delta_vs_source": 0.0,
+      "mean_proposal_task_score": 0.0,
+      "mean_seed_masked_positions": 48.0,
+      "mean_self_repair_arithmetic_claim_count": 0.0,
+      "mean_self_repair_arithmetic_consistent": 0.0,
+      "mean_self_repair_arithmetic_provenance_gap_count": 0.0,
+      "mean_self_repair_changed_answer": 0.0,
+      "mean_self_repair_final_answer_object_gap_count": 0.0,
+      "mean_self_repair_final_answer_role_gap_count": 0.0,
+      "mean_self_repair_final_answer_target_gap_count": 0.0,
+      "mean_self_repair_irrelevant_number_used": 0.0,
+      "mean_self_repair_missing_required_operator_count": 0.0,
+      "mean_self_repair_quantity_role_gap_count": 0.0,
+      "mean_self_repair_short_text_symbolic_gap_count": 0.0,
+      "mean_self_repair_short_text_trace_gap_count": 0.0,
+      "mean_task_delta_vs_proposal": 0.0,
+      "mean_task_delta_vs_source": 0.0,
+      "mean_task_score": 0.3989285714285714,
+      "mean_trajectory_score": 0.6879464285714286,
+      "selected_count": 0,
+      "source_states": "final",
+      "wins_vs_source": {
+        "losses": 0,
+        "ties": 1,
+        "wins": 0
+      }
+    },
+    "constraint_gap_revision_repair": {
+      "count": 1,
+      "mean_combined_score": 0.47365556318681323,
+      "mean_contradiction_penalty": 0.0,
+      "mean_overpreservation_penalty": 0.0,
+      "mean_planning_quality_delta_vs_source": 0.0,
+      "mean_proposal_task_score": 0.0,
+      "mean_seed_masked_positions": 64.0,
+      "mean_self_repair_arithmetic_claim_count": 0.0,
+      "mean_self_repair_arithmetic_consistent": 0.0,
+      "mean_self_repair_arithmetic_provenance_gap_count": 0.0,
+      "mean_self_repair_changed_answer": 0.0,
+      "mean_self_repair_final_answer_object_gap_count": 0.0,
+      "mean_self_repair_final_answer_role_gap_count": 0.0,
+      "mean_self_repair_final_answer_target_gap_count": 0.0,
+      "mean_self_repair_irrelevant_number_used": 0.0,
+      "mean_self_repair_missing_required_operator_count": 0.0,
+      "mean_self_repair_quantity_role_gap_count": 0.0,
+      "mean_self_repair_short_text_symbolic_gap_count": 0.0,
+      "mean_self_repair_short_text_trace_gap_count": 0.0,
+      "mean_task_delta_vs_proposal": 0.0,
+      "mean_task_delta_vs_source": 0.0,
+      "mean_task_score": 0.3989285714285714,
+      "mean_trajectory_score": 0.6978365384615386,
+      "selected_count": 0,
+      "source_states": "final",
+      "wins_vs_source": {
+        "losses": 0,
+        "ties": 1,
+        "wins": 0
+      }
+    },
+    "constraint_gap_span_repair": {
+      "count": 1,
+      "mean_combined_score": 0.47118303571428577,
+      "mean_contradiction_penalty": 0.0,
+      "mean_overpreservation_penalty": 0.0,
+      "mean_planning_quality_delta_vs_source": 0.0,
+      "mean_proposal_task_score": 0.0,
+      "mean_seed_masked_positions": 56.0,
+      "mean_self_repair_arithmetic_claim_count": 0.0,
+      "mean_self_repair_arithmetic_consistent": 0.0,
+      "mean_self_repair_arithmetic_provenance_gap_count": 0.0,
+      "mean_self_repair_changed_answer": 0.0,
+      "mean_self_repair_final_answer_object_gap_count": 0.0,
+      "mean_self_repair_final_answer_role_gap_count": 0.0,
+      "mean_self_repair_final_answer_target_gap_count": 0.0,
+      "mean_self_repair_irrelevant_number_used": 0.0,
+      "mean_self_repair_missing_required_operator_count": 0.0,
+      "mean_self_repair_quantity_role_gap_count": 0.0,
+      "mean_self_repair_short_text_symbolic_gap_count": 0.0,
+      "mean_self_repair_short_text_trace_gap_count": 0.0,
+      "mean_task_delta_vs_proposal": 0.0,
+      "mean_task_delta_vs_source": 0.0,
+      "mean_task_score": 0.3989285714285714,
+      "mean_trajectory_score": 0.6879464285714286,
+      "selected_count": 0,
+      "source_states": "final",
+      "wins_vs_source": {
+        "losses": 0,
+        "ties": 1,
+        "wins": 0
+      }
+    },
+    "prefix_25_repair": {
+      "count": 1,
+      "mean_combined_score": 0.29359573412698414,
+      "mean_contradiction_penalty": 0.0,
+      "mean_overpreservation_penalty": 0.0,
+      "mean_planning_quality_delta_vs_source": -0.11300000000000002,
+      "mean_proposal_task_score": 0.0,
+      "mean_seed_masked_positions": 48.0,
+      "mean_self_repair_arithmetic_claim_count": 0.0,
+      "mean_self_repair_arithmetic_consistent": 0.0,
+      "mean_self_repair_arithmetic_provenance_gap_count": 0.0,
+      "mean_self_repair_changed_answer": 0.0,
+      "mean_self_repair_final_answer_object_gap_count": 0.0,
+      "mean_self_repair_final_answer_role_gap_count": 0.0,
+      "mean_self_repair_final_answer_target_gap_count": 0.0,
+      "mean_self_repair_irrelevant_number_used": 0.0,
+      "mean_self_repair_missing_required_operator_count": 0.0,
+      "mean_self_repair_quantity_role_gap_count": 0.0,
+      "mean_self_repair_short_text_symbolic_gap_count": 0.0,
+      "mean_self_repair_short_text_trace_gap_count": 0.0,
+      "mean_task_delta_vs_proposal": 0.0,
+      "mean_task_delta_vs_source": -0.11299999999999999,
+      "mean_task_score": 0.2859285714285714,
+      "mean_trajectory_score": 0.3165972222222223,
+      "selected_count": 0,
+      "source_states": "final",
+      "wins_vs_source": {
+        "losses": 1,
+        "ties": 0,
+        "wins": 0
+      }
+    },
+    "state_adaptive_history_repair": {
+      "count": 1,
+      "mean_combined_score": 0.29359573412698414,
+      "mean_contradiction_penalty": 0.0,
+      "mean_overpreservation_penalty": 0.0,
+      "mean_planning_quality_delta_vs_source": -0.11300000000000002,
+      "mean_proposal_task_score": 0.0,
+      "mean_seed_masked_positions": 48.0,
+      "mean_self_repair_arithmetic_claim_count": 0.0,
+      "mean_self_repair_arithmetic_consistent": 0.0,
+      "mean_self_repair_arithmetic_provenance_gap_count": 0.0,
+      "mean_self_repair_changed_answer": 0.0,
+      "mean_self_repair_final_answer_object_gap_count": 0.0,
+      "mean_self_repair_final_answer_role_gap_count": 0.0,
+      "mean_self_repair_final_answer_target_gap_count": 0.0,
+      "mean_self_repair_irrelevant_number_used": 0.0,
+      "mean_self_repair_missing_required_operator_count": 0.0,
+      "mean_self_repair_quantity_role_gap_count": 0.0,
+      "mean_self_repair_short_text_symbolic_gap_count": 0.0,
+      "mean_self_repair_short_text_trace_gap_count": 0.0,
+      "mean_task_delta_vs_proposal": 0.0,
+      "mean_task_delta_vs_source": -0.11299999999999999,
+      "mean_task_score": 0.2859285714285714,
+      "mean_trajectory_score": 0.3165972222222223,
+      "selected_count": 0,
+      "source_states": "history",
+      "wins_vs_source": {
+        "losses": 1,
+        "ties": 0,
+        "wins": 0
+      }
+    }
+  },
+  "repair_eligible_task_count": 1,
+  "repair_generation_budget_delta_vs_evolved": 5.0,
+  "repair_pack": "constraint_gap",
+  "repair_promotion_margin": 0.02,
+  "repair_selector": "planning_quality_delta_risk_guarded",
+  "repair_source_controls": [],
+  "repair_source_min_chars": 320,
+  "repair_source_quality_threshold": 0.5,
+  "repair_spend_trigger": "always",
+  "repair_task_delta_per_extra_generation_vs_evolved": 0.0,
+  "repair_task_delta_vs_evolved": 0.0,
+  "repair_task_delta_vs_fixed": 0.0,
+  "repair_task_delta_vs_random": 0.0,
+  "repair_task_delta_vs_trajectory": 0.0,
+  "repair_wins_vs_evolved": {
+    "losses": 0,
+    "ties": 1,
+    "wins": 0
+  },
+  "repair_wins_vs_fixed": {
+    "losses": 0,
+    "ties": 1,
+    "wins": 0
+  },
+  "repair_wins_vs_random": {
+    "losses": 0,
+    "ties": 1,
+    "wins": 0
+  },
+  "repair_wins_vs_trajectory": {
+    "losses": 0,
+    "ties": 1,
+    "wins": 0
+  },
+  "revision_promotion_margin": 0.05,
+  "revision_remask_fraction": 0.25,
+  "revision_steps": 16,
+  "selector_regret_vs_repair": {
+    "count": 1,
+    "improvable_count": 0,
+    "improvable_fraction": 0.0,
+    "mean_task_regret": 0.0,
+    "wins_vs_selected": {
+      "losses": 0,
+      "ties": 1,
+      "wins": 0
+    }
+  },
+  "selector_regret_vs_trajectory": {
+    "count": 1,
+    "improvable_count": 0,
+    "improvable_fraction": 0.0,
+    "mean_task_regret": 0.0,
+    "wins_vs_selected": {
+      "losses": 0,
+      "ties": 1,
+      "wins": 0
+    }
+  },
+  "trajectory_selector": "planning_state",
+  "trajectory_task_delta_vs_fixed": 0.0,
+  "trajectory_task_delta_vs_random": 0.0,
+  "trajectory_wins_vs_fixed": {
+    "losses": 0,
+    "ties": 1,
+    "wins": 0
+  },
+  "trajectory_wins_vs_random": {
+    "losses": 0,
+    "ties": 1,
+    "wins": 0
+  }
+}

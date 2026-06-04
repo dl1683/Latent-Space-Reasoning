@@ -1,0 +1,151 @@
+{
+  "generated_by": "experiments/analyze_diffusion_realization_value_v14_measurement.py",
+  "inputs": {
+    "freeze": "eval_results\\diffusion_language\\realization_value_v14_freeze.json",
+    "measurement": "eval_results\\diffusion_language\\realization_value_v14_measurement_scores.json"
+  },
+  "row_diagnostics": [
+    {
+      "has_repairable_denoise_skeleton": true,
+      "measured_probe_value_prediction": 0.027887362637362634,
+      "near_miss_probe_cap_only": false,
+      "peak_denoise_prompt_coverage": 0.0,
+      "prompt_coverage": 0.0,
+      "prompt_gap_count": 12.0,
+      "source_control": "random_32",
+      "source_task_delta_vs_trajectory": -0.325,
+      "surface_selected": false,
+      "task_id": "plan_105",
+      "would_probe": false
+    },
+    {
+      "has_repairable_denoise_skeleton": true,
+      "measured_probe_value_prediction": 0.0,
+      "near_miss_probe_cap_only": false,
+      "peak_denoise_prompt_coverage": 0.4375,
+      "prompt_coverage": 0.5625,
+      "prompt_gap_count": 8.0,
+      "source_control": "low_confidence_32",
+      "source_task_delta_vs_trajectory": 0.0,
+      "surface_selected": false,
+      "task_id": "plan_106",
+      "would_probe": true
+    },
+    {
+      "has_repairable_denoise_skeleton": true,
+      "measured_probe_value_prediction": 0.04780932203389831,
+      "near_miss_probe_cap_only": false,
+      "peak_denoise_prompt_coverage": 0.125,
+      "prompt_coverage": 0.4375,
+      "prompt_gap_count": 10.0,
+      "source_control": "random_32",
+      "source_task_delta_vs_trajectory": -0.1605,
+      "surface_selected": false,
+      "task_id": "plan_107",
+      "would_probe": false
+    },
+    {
+      "has_repairable_denoise_skeleton": true,
+      "measured_probe_value_prediction": 0.04840811965811966,
+      "near_miss_probe_cap_only": false,
+      "peak_denoise_prompt_coverage": 0.3076923076923077,
+      "prompt_coverage": 0.7692307692307693,
+      "prompt_gap_count": 4.0,
+      "source_control": "random_32",
+      "source_task_delta_vs_trajectory": -0.10299999999999998,
+      "surface_selected": false,
+      "task_id": "plan_108",
+      "would_probe": true
+    },
+    {
+      "has_repairable_denoise_skeleton": true,
+      "measured_probe_value_prediction": 0.03244474393530997,
+      "near_miss_probe_cap_only": true,
+      "peak_denoise_prompt_coverage": 0.42857142857142855,
+      "prompt_coverage": 0.6428571428571429,
+      "prompt_gap_count": 5.0,
+      "source_control": "low_confidence_32",
+      "source_task_delta_vs_trajectory": 0.0,
+      "surface_selected": false,
+      "task_id": "plan_109",
+      "would_probe": true
+    },
+    {
+      "has_repairable_denoise_skeleton": true,
+      "measured_probe_value_prediction": 0.027117680047225503,
+      "near_miss_probe_cap_only": false,
+      "peak_denoise_prompt_coverage": 0.4,
+      "prompt_coverage": 0.8,
+      "prompt_gap_count": 3.0,
+      "source_control": "low_confidence_32",
+      "source_task_delta_vs_trajectory": 0.0,
+      "surface_selected": false,
+      "task_id": "plan_110",
+      "would_probe": true
+    },
+    {
+      "has_repairable_denoise_skeleton": true,
+      "measured_probe_value_prediction": 0.0,
+      "near_miss_probe_cap_only": false,
+      "peak_denoise_prompt_coverage": 0.35294117647058826,
+      "prompt_coverage": 1.0,
+      "prompt_gap_count": 0.0,
+      "source_control": "low_confidence_32",
+      "source_task_delta_vs_trajectory": 0.0,
+      "surface_selected": false,
+      "task_id": "plan_111",
+      "would_probe": true
+    },
+    {
+      "has_repairable_denoise_skeleton": true,
+      "measured_probe_value_prediction": 0.032382667228415866,
+      "near_miss_probe_cap_only": true,
+      "peak_denoise_prompt_coverage": 0.21428571428571427,
+      "prompt_coverage": 0.5714285714285714,
+      "prompt_gap_count": 6.0,
+      "source_control": "low_confidence_32",
+      "source_task_delta_vs_trajectory": 0.06300000000000011,
+      "surface_selected": false,
+      "task_id": "plan_112",
+      "would_probe": true
+    }
+  ],
+  "schema": "diffusion_realization_value_v14_measurement_boundary.v1",
+  "summary": {
+    "full_generation_count": 22,
+    "measurement_gate_passed": false,
+    "near_miss_count": 2,
+    "near_miss_task_ids": [
+      "plan_109",
+      "plan_112"
+    ],
+    "negative_source_delta_task_ids": [
+      "plan_105",
+      "plan_107",
+      "plan_108"
+    ],
+    "positive_source_delta_task_ids": [
+      "plan_112"
+    ],
+    "probe_generation_count": 8,
+    "run_id": "diffusion-22840dc9c690b7c0",
+    "source_divergent_count": 4,
+    "source_divergent_task_ids": [
+      "plan_105",
+      "plan_107",
+      "plan_108",
+      "plan_112"
+    ],
+    "surface_selected_count": 0,
+    "surface_selected_task_ids": [],
+    "target_count": 8
+  },
+  "target_surface": {
+    "measured_probe_value_prediction_max": 0.032,
+    "prompt_gap_count_max": 7.0,
+    "prompt_gap_count_min": 4.0,
+    "requires_label_pass_denoise_trigger": true,
+    "source_task_delta_vs_trajectory_min": 0.0,
+    "surface_id": "realization_value_probe_banded_v14"
+  }
+}

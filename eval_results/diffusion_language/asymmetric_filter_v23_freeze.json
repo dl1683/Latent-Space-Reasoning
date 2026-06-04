@@ -1,0 +1,82 @@
+{
+  "conclusive_result_gates": {
+    "maximum_asymmetric_selected_waste_rows": 0,
+    "minimum_asymmetric_selected_positive_count": 1,
+    "minimum_generated_positive_count": 1,
+    "must_beat_unchanged_hook_after_selected_output_cost": true,
+    "no_runner_hook_before_fresh_replay_passes": true
+  },
+  "design_intent": "Test an asymmetric repair-source replay surface that keeps the history-prefix guard from v22 but restores recall for span-supported final-preserve positives.",
+  "failure_accounting": [
+    "If the relaxed final-preserve threshold selects no-lift rows, keep it diagnostic.",
+    "If it still drops most generated positives, record overfiltering.",
+    "If selected-output cost does not beat the unchanged hook, do not implement it.",
+    "If v23 has zero generated positives, mark selector validation inconclusive."
+  ],
+  "fit_boundary": {
+    "v22_positive_tasks": [
+      "plan_169",
+      "plan_170",
+      "plan_175"
+    ],
+    "v22_result": "eval_results\\diffusion_language\\source_aware_selector_v22_result.json",
+    "v22_result_sha256": "e76ae73a687f4f0910933102afbe35d1acae592f507a5814d6850c9bbdb9b22a",
+    "v22_source_aware_selected_positive_count": 1,
+    "v22_source_aware_selected_waste_count": 0,
+    "v22_status": "precision_positive_utility_failed",
+    "v22_targets": "eval_results\\diffusion_language\\source_aware_selector_v22_targets.json",
+    "v22_targets_sha256": "0de3bacb333c10a1613379230896b0876ff31a9f35c2f39e0e14de18b74294e6",
+    "v22_unchanged_selected_waste_count": 1
+  },
+  "fresh_slice_protocol": {
+    "label_pass": "python experiments\\run_diffusion_three_arm_benchmark.py --task-preset lean_gpu_mixed_transfer_v23 --candidates llada-moe-7b-a1b-instruct-hf --limit-schedules 2 --limit-evolved-schedules 0 --limit-repair-candidates 2 --repair-source-policy random --repair-pack constraint_span_phase_final_preserve_seeded_gated --include-history-repairs --history-repair-fractions 0.25 --repair-spend-trigger denoise_phase_repairability --repair-source-min-chars 240 --repair-source-prompt-gap-min 2 --repair-source-prompt-gap-max 9 --repair-source-prompt-coverage-min 0.4 --repair-source-prompt-coverage-max 1.0 --repair-phase-budget frontier --repair-selector generated_repair_value_v1 --repair-promotion-margin 0.02 --trajectory-selector planning_state --device cuda --dtype bfloat16 --raw-output eval_results\\diffusion_language\\asymmetric_filter_v23_label_raw.jsonl --scores-output eval_results\\diffusion_language\\asymmetric_filter_v23_label_scores.json --report-output eval_results\\diffusion_language\\asymmetric_filter_v23_label_report.md",
+    "required_replay_outputs": [
+      "candidate-promotion target sheet built from raw repair candidates",
+      "asymmetric repair-source replay surface over fresh v23 candidates",
+      "comparison against unchanged generated_repair_value_v1 and v22 source-aware surface",
+      "selected-output cost sweep across unchanged, v22 source-aware, and v23 asymmetric policies",
+      "false-positive and false-negative accounting by candidate source"
+    ]
+  },
+  "generated_by": "experiments/build_diffusion_asymmetric_filter_v23_freeze.py",
+  "overlap_with_v22_target_rows": [],
+  "planning_task_ids": [
+    "plan_177",
+    "plan_178",
+    "plan_179",
+    "plan_180",
+    "plan_181",
+    "plan_182",
+    "plan_183",
+    "plan_184"
+  ],
+  "schema": "diffusion_asymmetric_filter_v23_freeze.v1",
+  "target_surface": {
+    "final_preserve_planning_delta_min": 0.005,
+    "final_preserve_span_score_min": 1.85,
+    "final_preserve_threshold_relaxed_from_v22": true,
+    "fit_history_waste_guard_task": "plan_176",
+    "fit_should_recover_tasks": [
+      "plan_169",
+      "plan_170",
+      "plan_175"
+    ],
+    "history_prefix_planning_delta_min": 0.2,
+    "promotion_status": "frozen_replay_surface_not_runner_hook",
+    "surface_id": "asymmetric_repair_source_filter_v23"
+  },
+  "task_ids": [
+    "plan_177",
+    "plan_178",
+    "plan_179",
+    "plan_180",
+    "plan_181",
+    "plan_182",
+    "plan_183",
+    "plan_184",
+    "math_009",
+    "sym_007",
+    "sci_002"
+  ],
+  "task_preset": "lean_gpu_mixed_transfer_v23"
+}

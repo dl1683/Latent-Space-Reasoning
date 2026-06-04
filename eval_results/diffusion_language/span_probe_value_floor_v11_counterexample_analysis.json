@@ -1,0 +1,257 @@
+{
+  "counterexample_rows": [
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "counterexample_type": "value_floor_false_positive",
+      "label": false,
+      "measured_probe_value_prediction": 0.029693952802359883,
+      "oracle_label": false,
+      "oracle_lift_vs_trajectory": 0.0,
+      "probe_cost_relative": 0.1875,
+      "prompt_coverage": 0.1875,
+      "prompt_gap_count": 12.0,
+      "selected": true,
+      "source_task_delta_vs_trajectory": -0.17692857142857144,
+      "task_id": "plan_081"
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "counterexample_type": "value_floor_false_positive",
+      "label": false,
+      "measured_probe_value_prediction": 0.03215008726003491,
+      "oracle_label": false,
+      "oracle_lift_vs_trajectory": 0.0,
+      "probe_cost_relative": 0.1875,
+      "prompt_coverage": 0.0,
+      "prompt_gap_count": 12.0,
+      "selected": true,
+      "source_task_delta_vs_trajectory": -0.2578571428571429,
+      "task_id": "plan_082"
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "counterexample_type": "oracle_positive_selector_miss",
+      "label": false,
+      "measured_probe_value_prediction": 0.02785175638017014,
+      "oracle_label": true,
+      "oracle_lift_vs_trajectory": 0.03750000000000003,
+      "probe_cost_relative": 0.1875,
+      "prompt_coverage": 0.7857142857142857,
+      "prompt_gap_count": 3.0,
+      "selected": false,
+      "source_task_delta_vs_trajectory": 0.0,
+      "task_id": "plan_084"
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "counterexample_type": "value_floor_false_positive",
+      "label": false,
+      "measured_probe_value_prediction": 0.04006340718105424,
+      "oracle_label": false,
+      "oracle_lift_vs_trajectory": 0.0,
+      "probe_cost_relative": 0.1875,
+      "prompt_coverage": 0.35714285714285715,
+      "prompt_gap_count": 10.0,
+      "selected": true,
+      "source_task_delta_vs_trajectory": -0.3014285714285714,
+      "task_id": "plan_086"
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.1389285714285714,
+      "counterexample_type": "value_floor_false_negative",
+      "label": true,
+      "measured_probe_value_prediction": 0.017524900398406377,
+      "oracle_label": true,
+      "oracle_lift_vs_trajectory": 0.1389285714285714,
+      "probe_cost_relative": 0.1875,
+      "prompt_coverage": 0.7333333333333333,
+      "prompt_gap_count": 4.0,
+      "selected": false,
+      "source_task_delta_vs_trajectory": 0.0,
+      "task_id": "plan_088"
+    }
+  ],
+  "generated_by": "experiments/analyze_diffusion_span_probe_value_floor_v11_counterexamples.py",
+  "inputs": {
+    "replay": "eval_results\\diffusion_language\\span_probe_value_floor_v11_random_source_replay.json"
+  },
+  "oracle_hypotheses": [
+    {
+      "description": "Source-aligned moderate prompt-gap rows.",
+      "error_count": 0,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 0,
+      "false_positive_task_ids": [],
+      "hypothesis_id": "source_nonnegative_and_prompt_gap_le_4",
+      "label_key": "oracle_label",
+      "policy_utility": 0.13642857142857143,
+      "policy_utility_with_probe_cost": 0.10642857142857143,
+      "positive_count": 2,
+      "selected_count": 2
+    },
+    {
+      "description": "Source-aligned moderate-gap rows with at least partial prompt coverage.",
+      "error_count": 0,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 0,
+      "false_positive_task_ids": [],
+      "hypothesis_id": "source_nonnegative_gap_le_4_coverage_ge_0p7",
+      "label_key": "oracle_label",
+      "policy_utility": 0.13642857142857143,
+      "policy_utility_with_probe_cost": 0.10642857142857143,
+      "positive_count": 2,
+      "selected_count": 2
+    },
+    {
+      "description": "Negative source delta veto only.",
+      "error_count": 1,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_087"
+      ],
+      "hypothesis_id": "source_nonnegative_only",
+      "label_key": "oracle_label",
+      "policy_utility": 0.11642857142857144,
+      "policy_utility_with_probe_cost": 0.08642857142857144,
+      "positive_count": 2,
+      "selected_count": 3
+    },
+    {
+      "description": "Value floor plus nonnegative source-vs-trajectory delta.",
+      "error_count": 2,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_084",
+        "plan_088"
+      ],
+      "false_positive_count": 0,
+      "false_positive_task_ids": [],
+      "hypothesis_id": "value_floor_and_source_nonnegative",
+      "label_key": "oracle_label",
+      "policy_utility": 0.0,
+      "policy_utility_with_probe_cost": -0.03,
+      "positive_count": 2,
+      "selected_count": 0
+    },
+    {
+      "description": "Original frozen v10 value floor.",
+      "error_count": 5,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_084",
+        "plan_088"
+      ],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_081",
+        "plan_082",
+        "plan_086"
+      ],
+      "hypothesis_id": "frozen_probe_value_floor",
+      "label_key": "oracle_label",
+      "policy_utility": -0.06,
+      "policy_utility_with_probe_cost": -0.09,
+      "positive_count": 2,
+      "selected_count": 3
+    }
+  ],
+  "schema": "diffusion_span_probe_value_floor_v11_counterexamples.v1",
+  "selected_repair_hypotheses": [
+    {
+      "description": "Source-aligned moderate prompt-gap rows.",
+      "error_count": 1,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_084"
+      ],
+      "hypothesis_id": "source_nonnegative_and_prompt_gap_le_4",
+      "label_key": "label",
+      "policy_utility": 0.0989285714285714,
+      "policy_utility_with_probe_cost": 0.0689285714285714,
+      "positive_count": 1,
+      "selected_count": 2
+    },
+    {
+      "description": "Source-aligned moderate-gap rows with at least partial prompt coverage.",
+      "error_count": 1,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_084"
+      ],
+      "hypothesis_id": "source_nonnegative_gap_le_4_coverage_ge_0p7",
+      "label_key": "label",
+      "policy_utility": 0.0989285714285714,
+      "policy_utility_with_probe_cost": 0.0689285714285714,
+      "positive_count": 1,
+      "selected_count": 2
+    },
+    {
+      "description": "Value floor plus nonnegative source-vs-trajectory delta.",
+      "error_count": 1,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_088"
+      ],
+      "false_positive_count": 0,
+      "false_positive_task_ids": [],
+      "hypothesis_id": "value_floor_and_source_nonnegative",
+      "label_key": "label",
+      "policy_utility": 0.0,
+      "policy_utility_with_probe_cost": -0.03,
+      "positive_count": 1,
+      "selected_count": 0
+    },
+    {
+      "description": "Negative source delta veto only.",
+      "error_count": 2,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_084",
+        "plan_087"
+      ],
+      "hypothesis_id": "source_nonnegative_only",
+      "label_key": "label",
+      "policy_utility": 0.0789285714285714,
+      "policy_utility_with_probe_cost": 0.048928571428571405,
+      "positive_count": 1,
+      "selected_count": 3
+    },
+    {
+      "description": "Original frozen v10 value floor.",
+      "error_count": 4,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_088"
+      ],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_081",
+        "plan_082",
+        "plan_086"
+      ],
+      "hypothesis_id": "frozen_probe_value_floor",
+      "label_key": "label",
+      "policy_utility": -0.06,
+      "policy_utility_with_probe_cost": -0.09,
+      "positive_count": 1,
+      "selected_count": 3
+    }
+  ],
+  "summary": {
+    "counterexample_count": 5,
+    "oracle_positive_count": 2,
+    "selected_repair_positive_count": 1,
+    "source_divergent_count": 5,
+    "target_count": 8
+  }
+}

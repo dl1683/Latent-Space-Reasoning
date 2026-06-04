@@ -1,0 +1,85 @@
+{
+  "conclusive_result_gates": {
+    "maximum_low_margin_surface_false_negative_count": 0,
+    "maximum_low_margin_surface_false_positive_count": 0,
+    "minimum_generated_positive_count": 1,
+    "must_beat_incumbent_candidate_aware_error_count": true,
+    "must_not_count_source_only_lift_as_promotion": true,
+    "no_live_spend_trigger_without_runner_implementation": true
+  },
+  "design_intent": "Test whether candidate-level realization features can recover low-margin generated repair positives without reopening broad no-lift promotion.",
+  "failure_accounting": [
+    "If no generated positives appear, mark v16 inconclusive rather than successful.",
+    "If the low-margin surface promotes a source-relative-only trap, reject it.",
+    "If it misses any selected-repair positive, reject it for recall.",
+    "If incumbent candidate_aware_promotion_v1 matches it, keep the new surface diagnostic-only.",
+    "If oracle positives remain selector-negative, separate generation value from deployed value."
+  ],
+  "fit_boundary": {
+    "named_counterexample": "plan_118 is a generated positive repair candidate with small lift, strong span preservation, positive planning-quality delta, and zero selected-repair lift under the incumbent promotion margin.",
+    "source_relative_trap": "plan_113 improves over its weak source but remains below the selected trajectory, so v16 must label promotion against trajectory, not against source.",
+    "v15_candidate_aware_selected_tasks": [
+      "plan_120"
+    ],
+    "v15_positive_tasks": [
+      "plan_118",
+      "plan_120"
+    ],
+    "v15_replay": "eval_results\\diffusion_language\\realization_value_v15_replay.json",
+    "v15_replay_sha256": "7c7d37462b4cca70574aeb7b30a613c78a158e1d26fd3637d4ae02f022368bd7",
+    "v15_targets": "eval_results\\diffusion_language\\diffusion_candidate_promotion_targets_v15.json",
+    "v15_targets_sha256": "d716504f3d87183b46b21b51296a20f1f705717d796fa9002f88a3c767ff5564"
+  },
+  "fresh_slice_protocol": {
+    "label_pass": "python experiments\\run_diffusion_three_arm_benchmark.py --task-preset lean_gpu_mixed_transfer_v16 --candidates llada-moe-7b-a1b-instruct-hf --limit-schedules 2 --limit-evolved-schedules 0 --limit-repair-candidates 1 --repair-source-policy random --repair-pack constraint_span_phase_final_preserve_seeded_gated --repair-spend-trigger denoise_phase_repairability --repair-source-min-chars 240 --repair-source-prompt-gap-min 2 --repair-source-prompt-gap-max 9 --repair-source-prompt-coverage-min 0.4 --repair-source-prompt-coverage-max 1.0 --repair-phase-budget frontier --repair-selector candidate_aware_promotion_v1 --repair-promotion-margin 0.02 --trajectory-selector planning_state --device cuda --dtype bfloat16 --raw-output eval_results\\diffusion_language\\promotion_margin_v16_label_raw.jsonl --scores-output eval_results\\diffusion_language\\promotion_margin_v16_label_scores.json --report-output eval_results\\diffusion_language\\promotion_margin_v16_label_report.md",
+    "required_replay_outputs": [
+      "candidate-level promotion targets built from raw repair candidates",
+      "selected-repair and oracle labels reported separately",
+      "incumbent candidate_aware_promotion_v1 false positives and false negatives",
+      "low-margin candidate-realization surface false positives and false negatives",
+      "source-lift-only, span-only, planning-delta-only, broad-trigger, and margin-free controls",
+      "utility after repair-generation cost and no live-trigger language before runner implementation"
+    ]
+  },
+  "generated_by": "experiments/build_diffusion_promotion_margin_v16_freeze.py",
+  "overlap_with_v15_promotion_rows": [],
+  "planning_task_ids": [
+    "plan_121",
+    "plan_122",
+    "plan_123",
+    "plan_124",
+    "plan_125",
+    "plan_126",
+    "plan_127",
+    "plan_128"
+  ],
+  "schema": "diffusion_promotion_margin_v16_freeze.v1",
+  "target_surface": {
+    "max_span_target_score_min": 2.1,
+    "min_span_source_relative_preservation_min": 0.9,
+    "planning_quality_delta_vs_source_min_exclusive": 0.0,
+    "promotion_status": "frozen_replay_surface_not_live_trigger",
+    "prompt_coverage_max": 1.0,
+    "prompt_coverage_min": 0.4,
+    "prompt_gap_count_max": 8.0,
+    "prompt_gap_count_min": 4.0,
+    "requires_generated_repair_candidate": true,
+    "requires_label_pass_denoise_trigger": true,
+    "source_task_delta_vs_trajectory_min": 0.0,
+    "surface_id": "low_margin_candidate_realization_v16"
+  },
+  "task_ids": [
+    "plan_121",
+    "plan_122",
+    "plan_123",
+    "plan_124",
+    "plan_125",
+    "plan_126",
+    "plan_127",
+    "plan_128",
+    "math_009",
+    "sym_007",
+    "sci_002"
+  ],
+  "task_preset": "lean_gpu_mixed_transfer_v16"
+}

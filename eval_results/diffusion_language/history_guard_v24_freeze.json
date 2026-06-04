@@ -1,0 +1,99 @@
+{
+  "audit_surface": {
+    "audit_id": "history_prefix_guard_audit_v24",
+    "final_preserve_filtering_allowed": false,
+    "history_prefix_fixed_threshold_allowed": false,
+    "must_join_selected_rows_by_repair_control": true,
+    "promotion_status": "frozen_audit_not_runner_hook",
+    "required_history_counterexamples": [
+      "low-delta history positives",
+      "low-delta history waste",
+      "high-delta history positives",
+      "high-delta history waste"
+    ],
+    "unchanged_hook_remains_baseline": true
+  },
+  "conclusive_result_gates": {
+    "maximum_selected_waste_rows_for_any_promoted_guard": 0,
+    "minimum_generated_positive_count": 1,
+    "must_beat_unchanged_hook_after_selected_output_cost": true,
+    "must_not_reduce_selected_positive_count_vs_unchanged": true,
+    "no_final_preserve_filtering_from_v23": true,
+    "no_runner_hook_before_fresh_replay_passes": true
+  },
+  "design_intent": "Freeze a fresh audit slice for history-prefix guard evidence after v23 showed that filtering final-preserve or applying a broad asymmetric surface loses value.",
+  "failure_accounting": [
+    "If the unchanged hook again selects positives with zero waste, treat it as the live baseline.",
+    "If history-prefix positives and waste remain inseparable by label-free features, move to learned targets.",
+    "If a guard wins only by dropping positives, keep it diagnostic.",
+    "If v24 has zero generated positives, mark selector validation inconclusive."
+  ],
+  "fit_boundary": {
+    "v23_asymmetric_selected_positive_count": 3,
+    "v23_asymmetric_selected_waste_count": 0,
+    "v23_history_positive_tasks": [
+      "plan_177",
+      "plan_179",
+      "plan_181"
+    ],
+    "v23_history_waste_tasks": [
+      "plan_178",
+      "plan_180",
+      "plan_182",
+      "plan_183"
+    ],
+    "v23_positive_candidate_rows": 7,
+    "v23_positive_tasks": [
+      "plan_177",
+      "plan_178",
+      "plan_179",
+      "plan_181",
+      "plan_182",
+      "plan_183"
+    ],
+    "v23_result": "eval_results\\diffusion_language\\asymmetric_filter_v23_result.json",
+    "v23_result_sha256": "4bf33808d776a1af08e772e50099aafd905b3af0fc965d6e82124c710078cf29",
+    "v23_status": "precision_positive_utility_failed",
+    "v23_targets": "eval_results\\diffusion_language\\asymmetric_filter_v23_targets.json",
+    "v23_targets_sha256": "1f9305073f2d90895658ffade19821d67cbc7b9a946c19a40fe1b47fb45c9e1b",
+    "v23_unchanged_selected_positive_count": 6,
+    "v23_unchanged_selected_waste_count": 0
+  },
+  "fresh_slice_protocol": {
+    "label_pass": "python experiments\\run_diffusion_three_arm_benchmark.py --task-preset lean_gpu_mixed_transfer_v24 --candidates llada-moe-7b-a1b-instruct-hf --limit-schedules 2 --limit-evolved-schedules 0 --limit-repair-candidates 2 --repair-source-policy random --repair-pack constraint_span_phase_final_preserve_seeded_gated --include-history-repairs --history-repair-fractions 0.25 --repair-spend-trigger denoise_phase_repairability --repair-source-min-chars 240 --repair-source-prompt-gap-min 2 --repair-source-prompt-gap-max 9 --repair-source-prompt-coverage-min 0.4 --repair-source-prompt-coverage-max 1.0 --repair-phase-budget frontier --repair-selector generated_repair_value_v1 --repair-promotion-margin 0.02 --trajectory-selector planning_state --device cuda --dtype bfloat16 --raw-output eval_results\\diffusion_language\\history_guard_v24_label_raw.jsonl --scores-output eval_results\\diffusion_language\\history_guard_v24_label_scores.json --report-output eval_results\\diffusion_language\\history_guard_v24_label_report.md",
+    "required_replay_outputs": [
+      "candidate-promotion target sheet built from raw repair candidates",
+      "selected-row replay joined through repair_control, not candidate-row aliases",
+      "unchanged hook, final-preserve-first, history-prefix fallback, and any proposed history guard",
+      "selected-output cost sweep against the unchanged hook",
+      "false-positive and false-negative accounting by candidate source and planning-delta band"
+    ]
+  },
+  "generated_by": "experiments/build_diffusion_history_guard_v24_freeze.py",
+  "overlap_with_v23_target_rows": [],
+  "planning_task_ids": [
+    "plan_185",
+    "plan_186",
+    "plan_187",
+    "plan_188",
+    "plan_189",
+    "plan_190",
+    "plan_191",
+    "plan_192"
+  ],
+  "schema": "diffusion_history_guard_v24_freeze.v1",
+  "task_ids": [
+    "plan_185",
+    "plan_186",
+    "plan_187",
+    "plan_188",
+    "plan_189",
+    "plan_190",
+    "plan_191",
+    "plan_192",
+    "math_009",
+    "sym_007",
+    "sci_002"
+  ],
+  "task_preset": "lean_gpu_mixed_transfer_v24"
+}

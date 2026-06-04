@@ -1,0 +1,82 @@
+{
+  "generated_by": "experiments/fit_diffusion_composite_selector.py",
+  "inputs": {
+    "targets": "eval_results\\diffusion_language\\diffusion_composite_selector_targets.json"
+  },
+  "realization_head": {
+    "complexity": 0,
+    "error_count": 0,
+    "field": "realization_policy_error",
+    "rule_id": "min_realization_policy_error",
+    "selected_policy_error": 0.18612698412698414,
+    "selected_policy_id": "auto_compat_preserve_seeded",
+    "target_policy_id": "auto_compat_preserve_seeded"
+  },
+  "retention_head": {
+    "class_value": "safe_history_anchor",
+    "complexity": 1,
+    "error_count": 0,
+    "false_negative_count": 0,
+    "false_positive_count": 0,
+    "field": "retention_classification",
+    "predictions": {
+      "plan_001": true,
+      "plan_002": false,
+      "plan_003": false,
+      "plan_004": false,
+      "plan_005": false,
+      "plan_006": false,
+      "plan_007": false,
+      "plan_008": false
+    },
+    "rule_id": "classification_safe_history_anchor",
+    "true_negative_count": 7,
+    "true_positive_count": 1,
+    "type": "class_equals"
+  },
+  "schema": "diffusion_composite_selector_fit.v1",
+  "source_head": {
+    "complexity": 1,
+    "error_count": 0,
+    "false_negative_count": 0,
+    "false_positive_count": 0,
+    "field": "retention_safe_history_label",
+    "predictions": {
+      "plan_001": true,
+      "plan_003": false,
+      "plan_004": false,
+      "plan_006": false,
+      "plan_007": false
+    },
+    "rule_id": "retention_safe_history",
+    "true_negative_count": 4,
+    "true_positive_count": 1,
+    "type": "bool_field"
+  },
+  "spend_head": {
+    "complexity": 3,
+    "error_count": 0,
+    "false_negative_count": 0,
+    "false_positive_count": 0,
+    "max_prompt_gap_count": 9.0,
+    "max_source_quality": 0.30142857142857143,
+    "predictions": {
+      "plan_001": false,
+      "plan_002": false,
+      "plan_003": false,
+      "plan_004": true,
+      "plan_005": false,
+      "plan_006": true,
+      "plan_007": true,
+      "plan_008": false
+    },
+    "requires_first_repairable": true,
+    "rule_id": "first_repairable_gap_le_9_source_quality_le_0p301429",
+    "true_negative_count": 5,
+    "true_positive_count": 3,
+    "type": "gap_and_source_quality"
+  },
+  "summary": {
+    "total_training_error": 0
+  }
+}

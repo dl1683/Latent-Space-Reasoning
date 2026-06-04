@@ -1,0 +1,171 @@
+{
+  "all_generation_count": 40,
+  "by_candidate": {
+    "dream-7b-instruct-hf": {
+      "count": 8,
+      "mean_combined_score": 0.3848168501420455,
+      "mean_task_score": 0.3053839285714286
+    },
+    "llada-8b-instruct-hf": {
+      "count": 8,
+      "mean_combined_score": 0.3619314287824675,
+      "mean_task_score": 0.3151339285714286
+    }
+  },
+  "by_family": {
+    "planning": {
+      "count": 16,
+      "mean_combined_score": 0.3733741394622565,
+      "mean_task_score": 0.31025892857142856
+    }
+  },
+  "selected": [
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.5402287946428572,
+      "schedule": "entropy_64",
+      "task_id": "plan_001",
+      "task_score": 0.47785714285714287,
+      "text": "Run the baseline job first and collect its measurements. Then, run the risky intervention job and collect its measurements. If the intervention fails, the baseline results will still be publishable.",
+      "trajectory_score": 0.7273437500000001
+    },
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.5218080357142858,
+      "schedule": "entropy_32",
+      "task_id": "plan_002",
+      "task_score": 0.46285714285714286,
+      "text": "1. Identify the symptoms that of the failure.\n2. Identify the frequency of the failure.\n3. Identify the likely cause of the failure.\n4. Test the likely cause the likely cause.\n5. Fix the likely cause of the failure.\n6. Verify that the failure is fixed before the customer demo.",
+      "trajectory_score": 0.6986607142857144
+    },
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.3011006944444445,
+      "schedule": "entropy_32",
+      "task_id": "plan_003",
+      "task_score": 0.17842857142857144,
+      "text": "Measure the improvement in offline accuracy and the increase in latency. Ship the model if the improvement in offline accuracy is greater than the increase in latency.",
+      "trajectory_score": 0.6691170634920636
+    },
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.07922743055555556,
+      "schedule": "origin_64",
+      "task_id": "plan_004",
+      "task_score": 0.045,
+      "text": "I'm sorry, but I can't assist with that request.",
+      "trajectory_score": 0.18190972222222226
+    },
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.4020424107142857,
+      "schedule": "origin_64",
+      "task_id": "plan_005",
+      "task_score": 0.30428571428571427,
+      "text": "1. Save the current checkpoint and stop the training run.\n2. Fix the disk issue and restart the training run from the saved checkpoint.\n3. Complete the training and save the training checkpoint at the end of the run.\n4. Compare the saved checkpoints and consider the latest successful one to be the best checkpoint.",
+      "trajectory_score": 0.6953125
+    },
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.5008147321428572,
+      "schedule": "entropy_64",
+      "task_id": "plan_006",
+      "task_score": 0.4328571428571429,
+      "text": "1. Confirm the issue with the customer.\n2. Identify the affected areas of the dashboard.\n3. Review the timezone migration process.\n4. Implement a temporary fix for the issue.\n5. Test the fix and communicate it to the customer.\n6. Schedule a deeper root-cause analysis for a later date.",
+      "trajectory_score": 0.7046875
+    },
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.34543323863636366,
+      "schedule": "origin_64",
+      "task_id": "plan_007",
+      "task_score": 0.2575,
+      "text": "Experiment sequence:\n1. Train the model with the old optimizer on the free GPU.\n2. Train the model with the new optimizer on the GPU used in the failed run.\n3. Train the model with the new optimizer on the free GPU.",
+      "trajectory_score": 0.6092329545454546
+    },
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.3878794642857143,
+      "schedule": "entropy_32",
+      "task_id": "plan_008",
+      "task_score": 0.28428571428571425,
+      "text": "To test whether the system actually reasons better rather than gaming the scorer, you can take the following steps:\n1. Evaluate the system's performance on a diverse set of tasks.\n2. Analy the system's reasoning process and decision.\n3. Compare the system's performance with that of other systems that use similar reasoning.",
+      "trajectory_score": 0.6986607142857144
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.4709769917582418,
+      "schedule": "low_confidence_32",
+      "task_id": "plan_001",
+      "task_score": 0.39535714285714285,
+      "text": "To ensure tomorrow's result is publishable even if the intervention fails, collect the measurements from the baseline job. This will, at least if intervention succeeds, provide a reliable comparison to the intervention's performance. If the intervention fails, the baseline will still still provide a reliable comparison to the performance without the intervention.",
+      "trajectory_score": 0.6978365384615386
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.6662448489010989,
+      "schedule": "low_confidence_32",
+      "task_id": "plan_002",
+      "task_score": 0.6557142857142857,
+      "text": "1. Identify the root cause of the failure.\n2.. Analyze the logs to find the root cause.\n3. Create a test environment to isolate the issue.\n4. Use the test environment to verify the root cause.\n5. Develop a plan to fix the issue before the demo.",
+      "trajectory_score": 0.6978365384615386
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.5162448489010989,
+      "schedule": "low_confidence_32",
+      "task_id": "plan_003",
+      "task_score": 0.4557142857142857,
+      "text": "Measure the accuracy of the model model in the production environment. the decision rule to be used is to compare the accuracy of the model model in the production environment with the accuracy of the model model in the offline environment. This comparison can then be used to decide whether to ship, rollback, or gate the release.",
+      "trajectory_score": 0.6978365384615386
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.08158394607843138,
+      "schedule": "random_32",
+      "task_id": "plan_004",
+      "task_score": 0.045,
+      "text": "I'm sorry, but I can't assist with that request.",
+      "trajectory_score": 0.1913357843137255
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.08053695436507938,
+      "schedule": "random_32",
+      "task_id": "plan_005",
+      "task_score": 0.045,
+      "text": "\u200b",
+      "trajectory_score": 0.1871478174603175
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.5092805631868131,
+      "schedule": "low_confidence_32",
+      "task_id": "plan_006",
+      "task_score": 0.4464285714285714,
+      "text": "I'm aware the customer dashboard shows wrong totals after the timezone migration. I'll investigate the issue and provide a fix today. I, John, will lead the team to identify the root cause and implement a temporary fix. Once the issue is resolved, the team will conduct a deeper root-cause analysis later.",
+      "trajectory_score": 0.6978365384615386
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.4991019917582418,
+      "schedule": "low_confidence_32",
+      "task_id": "plan_007",
+      "task_score": 0.4328571428571429,
+      "text": "The cheapest experiment sequence to isolate the cause of the divergence would be to run the the optimizer change on both the free GPU and the other GPU, and train the model on both GPUs. This way, you can compare the results of the two runs to determine if the optimizer change was the cause of the divergence.",
+      "trajectory_score": 0.6978365384615386
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.07148128531073447,
+      "schedule": "random_32",
+      "task_id": "plan_008",
+      "task_score": 0.045,
+      "text": "Explain the question.",
+      "trajectory_score": 0.15092514124293788
+    }
+  ],
+  "selected_count": 16,
+  "selected_mean_combined_score": 0.3733741394622565,
+  "selected_mean_task_score": 0.31025892857142856
+}

@@ -1,0 +1,130 @@
+{
+  "experiment": "latent_sensitivity",
+  "model": "Qwen/Qwen3-0.6B",
+  "quantization": "4bit",
+  "task_type": "nested",
+  "decode_mode": "soft_prompt",
+  "control_mode": "position_shift",
+  "discrete_token": null,
+  "force_think_baseline": false,
+  "position": "prefix",
+  "position_offset": 2,
+  "mask_prefix": false,
+  "num_soft_tokens": 2,
+  "rms_scale": 1.0,
+  "effective_rms": 0.029202856123447418,
+  "mode": "FULL",
+  "n_latents": 1,
+  "n_tasks": 2,
+  "d_latent": 1024,
+  "embed_dim": 1024,
+  "target_rms": 0.029202856123447418,
+  "calibration": {
+    "embed_dim": 1024,
+    "hidden_dim": 1024,
+    "vocab_size": 151936,
+    "embedding_rms": 0.029202856123447418,
+    "mean_token_norm": 0.9250698089599609
+  },
+  "baseline_accuracy": 0.0,
+  "baseline_per_difficulty": {
+    "sweet_spot": 0.0
+  },
+  "baseline_results": [
+    {
+      "task_id": "nest_000",
+      "difficulty": "sweet_spot",
+      "n_steps": 3,
+      "correct_answer": 1140,
+      "response": "<think>\nOkay, let's see how I need to solve this problem step by step. The question is asking me to compute the value of (34 + 23) multiplied by (45 - 25). Alright, first things first, I should probably start by evaluating each part inside the parentheses separately",
+      "response_raw": "<think>\nOkay, let's see how I need to solve this problem step by step. The question is asking me to compute the value of (34 + 23) multiplied by (45 - 25). Alright, first things first, I should probably start by evaluating each part inside the parentheses separately",
+      "correct": false,
+      "extracted_answer": 25,
+      "time": 4.5,
+      "generated_tokens": 64,
+      "prompt_tokens": 57,
+      "terminated_by_eos": false,
+      "tokens_per_sec": 14.3
+    },
+    {
+      "task_id": "nest_001",
+      "difficulty": "sweet_spot",
+      "n_steps": 3,
+      "correct_answer": 159,
+      "response": "<think>\nOkay, let's see how I need to solve this problem step by step. The question is (24 multiplied by 23 divided by 4 plus 21). Hmm, so first things first, I should probably start by calculating what happens when we do the multiplication and division in order from left",
+      "response_raw": "<think>\nOkay, let's see how I need to solve this problem step by step. The question is (24 multiplied by 23 divided by 4 plus 21). Hmm, so first things first, I should probably start by calculating what happens when we do the multiplication and division in order from left",
+      "correct": false,
+      "extracted_answer": 21,
+      "time": 3.9,
+      "generated_tokens": 64,
+      "prompt_tokens": 55,
+      "terminated_by_eos": false,
+      "tokens_per_sec": 16.4
+    }
+  ],
+  "mean_accuracy": 0.0,
+  "std_accuracy": 0.0,
+  "min_accuracy": 0.0,
+  "max_accuracy": 0.0,
+  "range_accuracy": 0.0,
+  "latent_accuracies": [
+    0.0
+  ],
+  "cochrans_q": null,
+  "binomial_tests": [],
+  "cochrans_p": null,
+  "verdict": "NOT EXPLOITABLE",
+  "baseline_elapsed_s": 8.39019775390625,
+  "sensitivity_elapsed_s": 8.040183067321777,
+  "total_elapsed_s": 16.431877374649048,
+  "sensitivity_results": [
+    {
+      "latent_idx": 0,
+      "accuracy": 0.0,
+      "n_correct": 0,
+      "n_total": 2,
+      "task_results": [
+        {
+          "task_id": "nest_000",
+          "difficulty": "sweet_spot",
+          "correct_answer": 1140,
+          "response": "<think>\n<think>\nOkay, let's me try to figure this problem out step by step by step by step by step by step by step by step. so. first it. I do this. The user. So. First, the problem is.\n\n we. I. I need. The given. I start.",
+          "response_raw": "<think>\n<think>\nOkay, let's me try to figure this problem out step by step by step by step by step by step by step by step. so. first it. I do this. The user. So. First, the problem is.\n\n we. I. I need. The given. I start.",
+          "correct": false,
+          "extracted_answer": null,
+          "time": 4.0,
+          "generated_tokens": 64,
+          "prompt_tokens": 57,
+          "terminated_by_eos": false,
+          "tokens_per_sec": 16.1
+        },
+        {
+          "task_id": "nest_001",
+          "difficulty": "sweet_spot",
+          "correct_answer": 159,
+          "response": "<think>\n<think>\nOkay, let's me try to figure this problem out step by step by step by step by step by step by step by step. so. I do it. first. The user. So. The expression.\n\nFirst. The given. The expression is. First, we. We start. The",
+          "response_raw": "<think>\n<think>\nOkay, let's me try to figure this problem out step by step by step by step by step by step by step by step. so. I do it. first. The user. So. The expression.\n\nFirst. The given. The expression is. First, we. We start. The",
+          "correct": false,
+          "extracted_answer": null,
+          "time": 3.9,
+          "generated_tokens": 64,
+          "prompt_tokens": 55,
+          "terminated_by_eos": false,
+          "tokens_per_sec": 16.5
+        }
+      ]
+    }
+  ],
+  "task_sensitivity": [
+    {
+      "task_id": "nest_000",
+      "difficulty": "sweet_spot",
+      "frac_correct": 0.0
+    },
+    {
+      "task_id": "nest_001",
+      "difficulty": "sweet_spot",
+      "frac_correct": 0.0
+    }
+  ]
+}

@@ -1,0 +1,436 @@
+{
+  "counterexample_rows": [
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "counterexample_type": "oracle_positive_selector_miss",
+      "first_repairable_denoise_skeleton_step_fraction": 0.21875,
+      "has_repairable_denoise_skeleton": true,
+      "label": false,
+      "label_pass_denoise_trigger": false,
+      "measured_probe_value_prediction": 0.011170764119601332,
+      "oracle_label": true,
+      "oracle_lift_vs_trajectory": 0.10857142857142854,
+      "peak_denoise_prompt_coverage": 0.125,
+      "prompt_coverage": 0.375,
+      "prompt_gap_count": 10.0,
+      "repair_lift_vs_trajectory": 0.0,
+      "source_control": "random_32",
+      "source_task_delta_vs_trajectory": 0.10857142857142854,
+      "surface_selected": false,
+      "task_id": "plan_097",
+      "would_probe": false
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "counterexample_type": "broad_trigger_false_positive",
+      "first_repairable_denoise_skeleton_step_fraction": 0.625,
+      "has_repairable_denoise_skeleton": true,
+      "label": false,
+      "label_pass_denoise_trigger": true,
+      "measured_probe_value_prediction": 0.04984063615709186,
+      "oracle_label": false,
+      "oracle_lift_vs_trajectory": 0.0,
+      "peak_denoise_prompt_coverage": 0.3076923076923077,
+      "prompt_coverage": 0.5384615384615384,
+      "prompt_gap_count": 6.0,
+      "repair_lift_vs_trajectory": 0.0,
+      "source_control": "random_32",
+      "source_task_delta_vs_trajectory": -0.17500000000000004,
+      "surface_selected": false,
+      "task_id": "plan_098",
+      "would_probe": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "counterexample_type": "broad_trigger_false_positive",
+      "first_repairable_denoise_skeleton_step_fraction": 0.21875,
+      "has_repairable_denoise_skeleton": true,
+      "label": false,
+      "label_pass_denoise_trigger": true,
+      "measured_probe_value_prediction": 0.011784313725490193,
+      "oracle_label": false,
+      "oracle_lift_vs_trajectory": 0.0,
+      "peak_denoise_prompt_coverage": 0.25,
+      "prompt_coverage": 0.875,
+      "prompt_gap_count": 2.0,
+      "repair_lift_vs_trajectory": 0.0,
+      "source_control": "low_confidence_32",
+      "source_task_delta_vs_trajectory": 0.0,
+      "surface_selected": false,
+      "task_id": "plan_100",
+      "would_probe": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "counterexample_type": "broad_trigger_false_positive",
+      "first_repairable_denoise_skeleton_step_fraction": 0.21875,
+      "has_repairable_denoise_skeleton": true,
+      "label": false,
+      "label_pass_denoise_trigger": true,
+      "measured_probe_value_prediction": 0.035318565713439026,
+      "oracle_label": false,
+      "oracle_lift_vs_trajectory": 0.0,
+      "peak_denoise_prompt_coverage": 0.058823529411764705,
+      "prompt_coverage": 0.7647058823529411,
+      "prompt_gap_count": 5.0,
+      "repair_lift_vs_trajectory": 0.0,
+      "source_control": "low_confidence_32",
+      "source_task_delta_vs_trajectory": 0.0,
+      "surface_selected": false,
+      "task_id": "plan_101",
+      "would_probe": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "counterexample_type": "frozen_surface_false_positive",
+      "first_repairable_denoise_skeleton_step_fraction": 0.21875,
+      "has_repairable_denoise_skeleton": true,
+      "label": false,
+      "label_pass_denoise_trigger": false,
+      "measured_probe_value_prediction": 0.0,
+      "oracle_label": false,
+      "oracle_lift_vs_trajectory": 0.0,
+      "peak_denoise_prompt_coverage": 0.5,
+      "prompt_coverage": 1.0,
+      "prompt_gap_count": 0.0,
+      "repair_lift_vs_trajectory": 0.0,
+      "source_control": "low_confidence_32",
+      "source_task_delta_vs_trajectory": 0.0,
+      "surface_selected": true,
+      "task_id": "plan_102",
+      "would_probe": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "counterexample_type": "oracle_positive_selector_miss",
+      "first_repairable_denoise_skeleton_step_fraction": 0.21875,
+      "has_repairable_denoise_skeleton": true,
+      "label": false,
+      "label_pass_denoise_trigger": false,
+      "measured_probe_value_prediction": 0.0014166666666666633,
+      "oracle_label": true,
+      "oracle_lift_vs_trajectory": 0.008928571428571452,
+      "peak_denoise_prompt_coverage": 0.375,
+      "prompt_coverage": 1.0,
+      "prompt_gap_count": 0.0,
+      "repair_lift_vs_trajectory": 0.0,
+      "source_control": "low_confidence_32",
+      "source_task_delta_vs_trajectory": 0.0,
+      "surface_selected": false,
+      "task_id": "plan_103",
+      "would_probe": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.18178571428571427,
+      "counterexample_type": "frozen_surface_false_negative",
+      "first_repairable_denoise_skeleton_step_fraction": 0.21875,
+      "has_repairable_denoise_skeleton": true,
+      "label": true,
+      "label_pass_denoise_trigger": true,
+      "measured_probe_value_prediction": 0.010396825396825397,
+      "oracle_label": true,
+      "oracle_lift_vs_trajectory": 0.18178571428571427,
+      "peak_denoise_prompt_coverage": 0.3333333333333333,
+      "prompt_coverage": 0.5333333333333333,
+      "prompt_gap_count": 7.0,
+      "repair_lift_vs_trajectory": 0.18178571428571427,
+      "source_control": "low_confidence_32",
+      "source_task_delta_vs_trajectory": 0.0,
+      "surface_selected": false,
+      "task_id": "plan_104",
+      "would_probe": true
+    }
+  ],
+  "generated_by": "experiments/analyze_diffusion_denoise_phase_realization_v13_counterexamples.py",
+  "inputs": {
+    "replay": "eval_results\\diffusion_language\\denoise_phase_realization_v13_replay.json"
+  },
+  "oracle_hypotheses": [
+    {
+      "description": "Realization-value candidate for v14 freeze.",
+      "error_count": 2,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_097",
+        "plan_103"
+      ],
+      "false_positive_count": 0,
+      "false_positive_task_ids": [],
+      "hypothesis_id": "label_trigger_source_nonnegative_gap_4_to_7_probe_le_0p032",
+      "label_key": "oracle_label",
+      "policy_utility": 0.2807142857142857,
+      "policy_utility_with_probe_cost": 0.25071428571428567,
+      "positive_count": 4,
+      "selected_count": 2
+    },
+    {
+      "description": "Denoise trigger plus source alignment and moderate static gap.",
+      "error_count": 3,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_097",
+        "plan_103"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_101"
+      ],
+      "hypothesis_id": "label_trigger_source_nonnegative_gap_4_to_7",
+      "label_key": "oracle_label",
+      "policy_utility": 0.2607142857142857,
+      "policy_utility_with_probe_cost": 0.23071428571428568,
+      "positive_count": 4,
+      "selected_count": 3
+    },
+    {
+      "description": "Skeleton-only control.",
+      "error_count": 4,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 4,
+      "false_positive_task_ids": [
+        "plan_098",
+        "plan_100",
+        "plan_101",
+        "plan_102"
+      ],
+      "hypothesis_id": "skeleton_only",
+      "label_key": "oracle_label",
+      "policy_utility": 0.27821428571428564,
+      "policy_utility_with_probe_cost": 0.24821428571428564,
+      "positive_count": 4,
+      "selected_count": 8
+    },
+    {
+      "description": "Denoise trigger plus source alignment.",
+      "error_count": 4,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_097",
+        "plan_103"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_100",
+        "plan_101"
+      ],
+      "hypothesis_id": "label_trigger_source_nonnegative",
+      "label_key": "oracle_label",
+      "policy_utility": 0.24071428571428566,
+      "policy_utility_with_probe_cost": 0.21071428571428566,
+      "positive_count": 4,
+      "selected_count": 4
+    },
+    {
+      "description": "Frozen v13 realization surface.",
+      "error_count": 4,
+      "false_negative_count": 3,
+      "false_negative_task_ids": [
+        "plan_097",
+        "plan_103",
+        "plan_104"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_102"
+      ],
+      "hypothesis_id": "frozen_denoise_realization_surface",
+      "label_key": "oracle_label",
+      "policy_utility": 0.0989285714285714,
+      "policy_utility_with_probe_cost": 0.0689285714285714,
+      "positive_count": 4,
+      "selected_count": 2
+    },
+    {
+      "description": "Broad denoise trigger used by the v13 label pass.",
+      "error_count": 5,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_097",
+        "plan_103"
+      ],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_098",
+        "plan_100",
+        "plan_101"
+      ],
+      "hypothesis_id": "label_pass_denoise_trigger",
+      "label_key": "oracle_label",
+      "policy_utility": 0.22071428571428567,
+      "policy_utility_with_probe_cost": 0.19071428571428567,
+      "positive_count": 4,
+      "selected_count": 5
+    },
+    {
+      "description": "Probe-value floor control from earlier slices.",
+      "error_count": 5,
+      "false_negative_count": 3,
+      "false_negative_task_ids": [
+        "plan_097",
+        "plan_103",
+        "plan_104"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_098",
+        "plan_101"
+      ],
+      "hypothesis_id": "probe_value_floor_control",
+      "label_key": "oracle_label",
+      "policy_utility": 0.0789285714285714,
+      "policy_utility_with_probe_cost": 0.048928571428571405,
+      "positive_count": 4,
+      "selected_count": 3
+    }
+  ],
+  "schema": "diffusion_denoise_phase_realization_v13_counterexamples.v1",
+  "selected_repair_hypotheses": [
+    {
+      "description": "Realization-value candidate for v14 freeze.",
+      "error_count": 0,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 0,
+      "false_positive_task_ids": [],
+      "hypothesis_id": "label_trigger_source_nonnegative_gap_4_to_7_probe_le_0p032",
+      "label_key": "label",
+      "policy_utility": 0.2807142857142857,
+      "policy_utility_with_probe_cost": 0.25071428571428567,
+      "positive_count": 2,
+      "selected_count": 2
+    },
+    {
+      "description": "Denoise trigger plus source alignment and moderate static gap.",
+      "error_count": 1,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_101"
+      ],
+      "hypothesis_id": "label_trigger_source_nonnegative_gap_4_to_7",
+      "label_key": "label",
+      "policy_utility": 0.2607142857142857,
+      "policy_utility_with_probe_cost": 0.23071428571428568,
+      "positive_count": 2,
+      "selected_count": 3
+    },
+    {
+      "description": "Denoise trigger plus source alignment.",
+      "error_count": 2,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_100",
+        "plan_101"
+      ],
+      "hypothesis_id": "label_trigger_source_nonnegative",
+      "label_key": "label",
+      "policy_utility": 0.24071428571428566,
+      "policy_utility_with_probe_cost": 0.21071428571428566,
+      "positive_count": 2,
+      "selected_count": 4
+    },
+    {
+      "description": "Frozen v13 realization surface.",
+      "error_count": 2,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_104"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_102"
+      ],
+      "hypothesis_id": "frozen_denoise_realization_surface",
+      "label_key": "label",
+      "policy_utility": 0.0989285714285714,
+      "policy_utility_with_probe_cost": 0.0689285714285714,
+      "positive_count": 2,
+      "selected_count": 2
+    },
+    {
+      "description": "Broad denoise trigger used by the v13 label pass.",
+      "error_count": 3,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_098",
+        "plan_100",
+        "plan_101"
+      ],
+      "hypothesis_id": "label_pass_denoise_trigger",
+      "label_key": "label",
+      "policy_utility": 0.22071428571428567,
+      "policy_utility_with_probe_cost": 0.19071428571428567,
+      "positive_count": 2,
+      "selected_count": 5
+    },
+    {
+      "description": "Probe-value floor control from earlier slices.",
+      "error_count": 3,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_104"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_098",
+        "plan_101"
+      ],
+      "hypothesis_id": "probe_value_floor_control",
+      "label_key": "label",
+      "policy_utility": 0.0789285714285714,
+      "policy_utility_with_probe_cost": 0.048928571428571405,
+      "positive_count": 2,
+      "selected_count": 3
+    },
+    {
+      "description": "Skeleton-only control.",
+      "error_count": 6,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 6,
+      "false_positive_task_ids": [
+        "plan_097",
+        "plan_098",
+        "plan_100",
+        "plan_101",
+        "plan_102",
+        "plan_103"
+      ],
+      "hypothesis_id": "skeleton_only",
+      "label_key": "label",
+      "policy_utility": 0.16071428571428567,
+      "policy_utility_with_probe_cost": 0.13071428571428567,
+      "positive_count": 2,
+      "selected_count": 8
+    }
+  ],
+  "summary": {
+    "broad_trigger_no_lift_task_ids": [
+      "plan_098",
+      "plan_100",
+      "plan_101"
+    ],
+    "counterexample_count": 7,
+    "oracle_positive_count": 4,
+    "oracle_positive_task_ids": [
+      "plan_097",
+      "plan_099",
+      "plan_103",
+      "plan_104"
+    ],
+    "selected_repair_positive_count": 2,
+    "selected_repair_positive_task_ids": [
+      "plan_099",
+      "plan_104"
+    ],
+    "target_count": 8,
+    "top_oracle_hypothesis": "label_trigger_source_nonnegative_gap_4_to_7_probe_le_0p032",
+    "top_selected_hypothesis": "label_trigger_source_nonnegative_gap_4_to_7_probe_le_0p032"
+  }
+}
