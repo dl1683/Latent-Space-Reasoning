@@ -193,6 +193,17 @@ first semantic-valid Stage 1 fit has one false-positive no-lift row; adding an
 X0/X2 slot-overlap penalty to retention-risk visibility then yields a zero-error
 local validated rule. That is a fresh-slice challenger, not a promoted spend
 gate.
+[DIFFUSION_COUNTERFACTUAL_PROBE_TRANSFER_TARGETS_V1.md](../DIFFUSION_COUNTERFACTUAL_PROBE_TRANSFER_TARGETS_V1.md),
+[DIFFUSION_COUNTERFACTUAL_SPAN_DISTINCT_RETENTION_RULE_V4_FRESH_PLANNING.md](../DIFFUSION_COUNTERFACTUAL_SPAN_DISTINCT_RETENTION_RULE_V4_FRESH_PLANNING.md),
+and
+[DIFFUSION_COUNTERFACTUAL_SPAN_VALIDATED_PROBE_TRANSFER_MATRIX_V4.md](../DIFFUSION_COUNTERFACTUAL_SPAN_VALIDATED_PROBE_TRANSFER_MATRIX_V4.md)
+then close that obligation on an independent `plan_001`-`plan_008` planning
+slice. The fresh GPU run has 8/8 semantic-valid probe rows, but the frozen local
+rule `valid_measured_distinct_retention_risk_visibility_ge_0p927195` has three
+transfer errors: false positives on `plan_002` and `plan_003`, and a false
+negative on `plan_004`. The gate remains `diagnostic_only`; the next controller
+must learn a cross-slice value-of-information feature rather than reusing this
+retention threshold.
 
 ## Benchmark And Cost Layer
 
@@ -250,7 +261,10 @@ hidden behind a large search stack:
 | [DIFFUSION_COUNTERFACTUAL_COMPACT_PROBE_TEXT_FIDELITY_V3.md](../DIFFUSION_COUNTERFACTUAL_COMPACT_PROBE_TEXT_FIDELITY_V3.md) | Compact tomography v3 text-fidelity result; runtime format is stable, but semantic validity falls to 4/12 because of template echoes, malformed compact keys, and duplicate authorization. |
 | [DIFFUSION_COUNTERFACTUAL_COMPACT_VALIDATED_PROBE_STAGE1_GATE_V3.md](../DIFFUSION_COUNTERFACTUAL_COMPACT_VALIDATED_PROBE_STAGE1_GATE_V3.md) | Compact tomography v3 semantic-validity-required gate fit; five profitable rows become invalid-positive misses and the best measured Stage 1 rule has six errors. |
 | [DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_TEXT_FIDELITY_V4.md](../DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_TEXT_FIDELITY_V4.md) | Span tomography v4 text-fidelity result; 10/12 semantic-valid rows, zero template echoes, and one malformed span key. |
-| [DIFFUSION_COUNTERFACTUAL_SPAN_VALIDATED_PROBE_STAGE1_GATE_V4.md](../DIFFUSION_COUNTERFACTUAL_SPAN_VALIDATED_PROBE_STAGE1_GATE_V4.md) | Span tomography v4 semantic-validity-required gate fit; X0/X2-overlap-penalized retention risk clears the local 12-row fit, pending independent fresh-slice validation. |
+| [DIFFUSION_COUNTERFACTUAL_SPAN_VALIDATED_PROBE_STAGE1_GATE_V4.md](../DIFFUSION_COUNTERFACTUAL_SPAN_VALIDATED_PROBE_STAGE1_GATE_V4.md) | Span tomography v4 semantic-validity-required gate fit; X0/X2-overlap-penalized retention risk clears the local 12-row fit but remains diagnostic. |
+| [DIFFUSION_COUNTERFACTUAL_PROBE_TRANSFER_TARGETS_V1.md](../DIFFUSION_COUNTERFACTUAL_PROBE_TRANSFER_TARGETS_V1.md) | Independent `plan_001`-`plan_008` transfer target sheet for measured counterfactual probe gates: 6 positives and 2 negatives. |
+| [DIFFUSION_COUNTERFACTUAL_SPAN_DISTINCT_RETENTION_RULE_V4_FRESH_PLANNING.md](../DIFFUSION_COUNTERFACTUAL_SPAN_DISTINCT_RETENTION_RULE_V4_FRESH_PLANNING.md) | Frozen distinct-retention rule transfer check: 3 errors on the fresh planning slice, so the local zero-error rule is rejected for promotion. |
+| [DIFFUSION_COUNTERFACTUAL_SPAN_VALIDATED_PROBE_TRANSFER_MATRIX_V4.md](../DIFFUSION_COUNTERFACTUAL_SPAN_VALIDATED_PROBE_TRANSFER_MATRIX_V4.md) | Cross-slice matrix separating discovery-fit rules from fresh-only diagnostic upper bounds; best local v4 rule has 3 transfer errors. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT.md) | Transfer-rule fit showing current decomposed spend is the best repair-availability rule. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md) | Expanded transfer-rule fit over the eight-row independent slice. |
 | [DIFFUSION_TRANSFER_PROMOTION_VALUE.md](../DIFFUSION_TRANSFER_PROMOTION_VALUE.md) | Transfer promotion-value result showing named `--repair-selector transfer_promotion_value` realizes the low-margin repair. |
