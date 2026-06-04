@@ -13,6 +13,7 @@ It audits the implemented runner trigger `--repair-spend-trigger denoise_phase_l
 - Worst regret: `1.361000`
 - Worst false positives: `14`
 - Worst false negatives: `8`
+- Active data targets: `25`
 
 ## Lambda Surfaces
 
@@ -41,6 +42,38 @@ It audits the implemented runner trigger `--repair-spend-trigger denoise_phase_l
 | 0.250000 | `diffusion_independent_spend_transfer_v7_eval.json` | 8 | 6 | `plan_050`, `plan_051`, `plan_052`, `plan_053`, `plan_055` | `plan_054` | 0.291429 |
 | 0.250000 | `diffusion_independent_spend_transfer_v8_eval.json` | 8 | 3 | `plan_057`, `plan_058` | `plan_060` | 0.151607 |
 | 0.250000 | `diffusion_independent_spend_transfer_v9_eval.json` | 8 | 4 | `plan_070` | `plan_065`, `plan_067`, `plan_068` | 0.399071 |
+
+## Active Data Targets
+
+These are the named rows that should drive the next GPU collection. `hidden_value_probe` rows are profitable repairs missed by the controller; `waste_probe` rows are non-positive-utility repairs selected by the controller.
+
+| Rank | Task | Probe | Priority | Failing Lambdas | Source Eval | Lift | Gap | Source Quality | Step |
+| ---: | --- | --- | ---: | --- | --- | ---: | ---: | ---: | ---: |
+| 1 | `plan_048` | `hidden_value_probe` | 0.795086 | `0.050000`, `0.180000`, `0.250000` | `diffusion_independent_spend_transfer_v6_eval.json` | 0.240857 | 12.000000 | 0.045000 | 3 |
+| 2 | `plan_067` | `hidden_value_probe` | 0.789943 | `0.050000`, `0.180000`, `0.250000` | `diffusion_independent_spend_transfer_v9_eval.json` | 0.239429 | 12.000000 | 0.201429 | 4 |
+| 3 | `plan_054` | `hidden_value_probe` | 0.527143 | `0.050000`, `0.180000`, `0.250000` | `diffusion_independent_spend_transfer_v7_eval.json` | 0.166429 | 12.000000 | 0.286786 | 3 |
+| 4 | `plan_068` | `hidden_value_probe` | 0.504000 | `0.050000`, `0.180000`, `0.250000` | `diffusion_independent_spend_transfer_v9_eval.json` | 0.160000 | 12.000000 | 0.201429 | 4 |
+| 5 | `plan_041` | `hidden_value_probe` | 0.312429 | `0.050000`, `0.180000`, `0.250000` | `diffusion_independent_spend_transfer_v6_eval.json` | 0.106786 | 12.000000 | 0.251429 | 3 |
+| 6 | `plan_060` | `hidden_value_probe` | 0.235518 | `0.180000`, `0.250000` | `diffusion_independent_spend_transfer_v8_eval.json` | 0.133929 | 8.000000 | 0.332500 | 4 |
+| 7 | `plan_065` | `hidden_value_probe` | 0.196714 | `0.050000`, `0.180000`, `0.250000` | `diffusion_independent_spend_transfer_v9_eval.json` | 0.074643 | 12.000000 | 0.244286 | 4 |
+| 8 | `plan_034` | `hidden_value_probe` | 0.153018 | `0.180000`, `0.250000` | `diffusion_independent_spend_transfer_v5_eval.json` | 0.096429 | 4.000000 | 0.311429 | 18 |
+| 9 | `plan_033` | `waste_probe` | 0.072000 | `0.050000`, `0.180000`, `0.250000` | `diffusion_independent_spend_transfer_v5_eval.json` | 0.000000 | 6.000000 | 0.256429 | 12 |
+| 10 | `plan_038` | `waste_probe` | 0.072000 | `0.050000`, `0.180000`, `0.250000` | `diffusion_independent_spend_transfer_v5_eval.json` | 0.000000 | 6.000000 | 0.287143 | 10 |
+| 11 | `plan_040` | `waste_probe` | 0.072000 | `0.050000`, `0.180000`, `0.250000` | `diffusion_independent_spend_transfer_v5_eval.json` | 0.000000 | 7.000000 | 0.201429 | 7 |
+| 12 | `plan_042` | `waste_probe` | 0.072000 | `0.050000`, `0.180000`, `0.250000` | `diffusion_independent_spend_transfer_v6_eval.json` | 0.000000 | 6.000000 | 0.247857 | 4 |
+| 13 | `plan_043` | `waste_probe` | 0.072000 | `0.050000`, `0.180000`, `0.250000` | `diffusion_independent_spend_transfer_v6_eval.json` | 0.000000 | 7.000000 | 0.277857 | 3 |
+| 14 | `plan_050` | `waste_probe` | 0.072000 | `0.050000`, `0.180000`, `0.250000` | `diffusion_independent_spend_transfer_v7_eval.json` | 0.000000 | 9.000000 | 0.281786 | 4 |
+| 15 | `plan_051` | `waste_probe` | 0.072000 | `0.050000`, `0.180000`, `0.250000` | `diffusion_independent_spend_transfer_v7_eval.json` | 0.000000 | 6.000000 | 0.243929 | 4 |
+| 16 | `plan_052` | `waste_probe` | 0.072000 | `0.050000`, `0.180000`, `0.250000` | `diffusion_independent_spend_transfer_v7_eval.json` | 0.000000 | 6.000000 | 0.217500 | 3 |
+| 17 | `plan_053` | `waste_probe` | 0.072000 | `0.050000`, `0.180000`, `0.250000` | `diffusion_independent_spend_transfer_v7_eval.json` | 0.000000 | 4.000000 | 0.201429 | 4 |
+| 18 | `plan_055` | `waste_probe` | 0.072000 | `0.050000`, `0.180000`, `0.250000` | `diffusion_independent_spend_transfer_v7_eval.json` | 0.000000 | 4.000000 | 0.256429 | 3 |
+| 19 | `plan_057` | `waste_probe` | 0.072000 | `0.050000`, `0.180000`, `0.250000` | `diffusion_independent_spend_transfer_v8_eval.json` | 0.000000 | 6.000000 | 0.268929 | 4 |
+| 20 | `plan_070` | `waste_probe` | 0.031625 | `0.180000`, `0.250000` | `diffusion_independent_spend_transfer_v9_eval.json` | 0.012500 | 5.000000 | 0.213929 | 4 |
+| 21 | `plan_058` | `waste_probe` | 0.029268 | `0.180000`, `0.250000` | `diffusion_independent_spend_transfer_v8_eval.json` | 0.013571 | 9.000000 | 0.297857 | 4 |
+| 22 | `plan_035` | `waste_probe` | 0.017482 | `0.180000`, `0.250000` | `diffusion_independent_spend_transfer_v5_eval.json` | 0.018929 | 8.000000 | 0.294286 | 26 |
+| 23 | `plan_059` | `waste_probe` | 0.006250 | `0.050000` | `diffusion_independent_spend_transfer_v8_eval.json` | 0.000000 | 3.000000 | 0.319286 | 4 |
+| 24 | `plan_062` | `waste_probe` | 0.006250 | `0.050000` | `diffusion_independent_spend_transfer_v8_eval.json` | 0.000000 | 5.000000 | 0.340357 | 4 |
+| 25 | `plan_066` | `waste_probe` | 0.006250 | `0.050000` | `diffusion_independent_spend_transfer_v9_eval.json` | 0.000000 | 4.000000 | 0.324286 | 3 |
 
 ## Decision
 

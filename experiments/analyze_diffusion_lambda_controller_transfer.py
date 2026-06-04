@@ -101,14 +101,20 @@ def build_lambda_controller_transfer_audit(
         for cost_penalty_lambda in cost_penalties
         for source_eval in sorted({str(row.get("source_eval")) for row in source_rows})
     ]
+    active_target_rows = _active_target_rows(
+        source_rows,
+        cost_penalties=cost_penalties,
+        marginal_relative_cost=marginal_relative_cost,
+    )
     return {
+        "active_target_rows": active_target_rows,
         "generated_by": "experiments/analyze_diffusion_lambda_controller_transfer.py",
         "inputs": {"spend_evals": [str(path) for path in spend_eval_paths]},
         "lambda_rows": lambda_rows,
         "marginal_relative_cost": marginal_relative_cost,
         "schema": "diffusion_lambda_controller_transfer.v1",
         "slice_rows": slice_rows,
-        "summary": _summary(lambda_rows),
+        "summary": _summary(lambda_rows, active_target_rows),
     }
 
 
@@ -136,6 +142,7 @@ def render_markdown(audit: dict[str, object]) -> str:
         f"- Worst regret: `{_format_float(summary.get('worst_regret'))}`",
         f"- Worst false positives: `{summary.get('worst_false_positive_count', 0)}`",
         f"- Worst false negatives: `{summary.get('worst_false_negative_count', 0)}`",
+        f"- Active data targets: `{summary.get('active_target_count', 0)}`",
         "",
         "## Lambda Surfaces",
         "",
@@ -175,6 +182,35 @@ def render_markdown(audit: dict[str, object]) -> str:
             f"{_join_tasks(row.get('false_positive_tasks'))} | "
             f"{_join_tasks(row.get('false_negative_tasks'))} | "
             f"{_format_float(row.get('regret_vs_oracle'))} |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Active Data Targets",
+            "",
+            (
+                "These are the named rows that should drive the next GPU collection. "
+                "`hidden_value_probe` rows are profitable repairs missed by the controller; "
+                "`waste_probe` rows are non-positive-utility repairs selected by the controller."
+            ),
+            "",
+            "| Rank | Task | Probe | Priority | Failing Lambdas | Source Eval | Lift | Gap | Source Quality | Step |",
+            "| ---: | --- | --- | ---: | --- | --- | ---: | ---: | ---: | ---: |",
+        ]
+    )
+    for rank, row in enumerate(_list_of_dicts(audit.get("active_target_rows")), start=1):
+        lines.append(
+            "| "
+            f"{rank} | "
+            f"`{row.get('task_id', '')}` | "
+            f"`{row.get('probe_type', '')}` | "
+            f"{_format_float(row.get('priority_score'))} | "
+            f"{_join_numbers(row.get('failing_lambdas'))} | "
+            f"`{Path(str(row.get('source_eval', ''))).name}` | "
+            f"{_format_float(row.get('repair_lift'))} | "
+            f"{_format_float(row.get('prompt_gap_count'))} | "
+            f"{_format_float(row.get('source_quality'))} | "
+            f"{_format_optional_int(row.get('first_repairable_step'))} |"
         )
     lines.extend(
         [
@@ -278,6 +314,67 @@ def _controller_selects(row: dict[str, object], *, cost_penalty_lambda: float) -
     )
 
 
+def _active_target_rows(
+    rows: list[dict[str, object]],
+    *,
+    cost_penalties: tuple[float, ...],
+    marginal_relative_cost: float,
+) -> list[dict[str, object]]:
+    targets: dict[tuple[str, str], dict[str, object]] = {}
+    for row in rows:
+        for cost_penalty_lambda in cost_penalties:
+            scored = _score_row(
+                row,
+                cost_penalty_lambda=cost_penalty_lambda,
+                marginal_relative_cost=marginal_relative_cost,
+            )
+            selected = bool(scored.get("prediction"))
+            oracle_positive = bool(scored.get("oracle_positive"))
+            if selected == oracle_positive:
+                continue
+            probe_type = "waste_probe" if selected else "hidden_value_probe"
+            key = (str(row.get("task_id", "")), probe_type)
+            target = targets.setdefault(
+                key,
+                {
+                    "failing_lambdas": [],
+                    "first_repairable_step": row.get("first_repairable_step"),
+                    "probe_type": probe_type,
+                    "prompt_gap_count": row.get("prompt_gap_count"),
+                    "repair_lift": _float(row.get("repair_lift")),
+                    "source_eval": str(row.get("source_eval", "")),
+                    "source_quality": row.get("source_quality"),
+                    "task_id": str(row.get("task_id", "")),
+                    "utility_at_stake": 0.0,
+                },
+            )
+            target["failing_lambdas"].append(cost_penalty_lambda)
+            target["utility_at_stake"] = _float(target.get("utility_at_stake")) + abs(
+                _float(scored.get("repair_utility"))
+            )
+    for target in targets.values():
+        target["failing_lambdas"] = sorted(_list(target.get("failing_lambdas")))
+        target["failure_count"] = len(_list(target.get("failing_lambdas")))
+        target["priority_score"] = _float(target.get("utility_at_stake")) * (
+            1.0 + 0.1 * max(0, int(_float(target.get("failure_count"))) - 1)
+        )
+        target["measurement"] = _measurement_for_target(target)
+    return sorted(
+        targets.values(),
+        key=lambda row: (
+            -_float(row.get("priority_score")),
+            str(row.get("probe_type")),
+            str(row.get("task_id")),
+        ),
+    )
+
+
+def _measurement_for_target(row: dict[str, object]) -> str:
+    if row.get("probe_type") == "hidden_value_probe":
+        return "collect repair candidates for low-obviousness profitable source"
+    return "collect negative-utility diagnostics before spending on similar sources"
+
+
 def _surface_summary(rows: list[dict[str, object]]) -> dict[str, object]:
     true_positive = [row for row in rows if bool(row.get("prediction")) and bool(row.get("oracle_positive"))]
     false_positive = [row for row in rows if bool(row.get("prediction")) and not bool(row.get("oracle_positive"))]
@@ -299,9 +396,13 @@ def _surface_summary(rows: list[dict[str, object]]) -> dict[str, object]:
     }
 
 
-def _summary(lambda_rows: list[dict[str, object]]) -> dict[str, object]:
+def _summary(
+    lambda_rows: list[dict[str, object]],
+    active_target_rows: list[dict[str, object]],
+) -> dict[str, object]:
     worst = max(lambda_rows, key=lambda row: _float(row.get("regret_vs_oracle")), default={})
     return {
+        "active_target_count": len(active_target_rows),
         "controller_transfer_safe": all(int(_float(row.get("error_count"))) == 0 for row in lambda_rows),
         "cost_penalties": [_float(row.get("cost_penalty_lambda")) for row in lambda_rows],
         "target_count": max((int(_float(row.get("target_count"))) for row in lambda_rows), default=0),
@@ -342,6 +443,12 @@ def _float(value: object, *, default: float = 0.0) -> float:
 
 def _format_float(value: object) -> str:
     return f"{_float(value):.6f}"
+
+
+def _format_optional_int(value: object) -> str:
+    if value is None:
+        return ""
+    return str(int(_float(value)))
 
 
 def _join_numbers(value: object) -> str:

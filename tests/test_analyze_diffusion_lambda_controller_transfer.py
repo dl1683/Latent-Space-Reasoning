@@ -29,14 +29,21 @@ def test_lambda_controller_transfer_audit_reports_named_generalization_failures(
     )
     markdown = render_markdown(audit)
     rows = {row["cost_penalty_lambda"]: row for row in audit["lambda_rows"]}
+    targets = {row["task_id"]: row for row in audit["active_target_rows"]}
 
     assert audit["schema"] == "diffusion_lambda_controller_transfer.v1"
     assert audit["summary"]["controller_transfer_safe"] is False
+    assert audit["summary"]["active_target_count"] == 2
     assert rows[0.05]["false_positive_tasks"] == ["plan_high_waste"]
     assert rows[0.05]["false_negative_tasks"] == ["plan_gap_hidden_positive"]
     assert rows[0.25]["false_positive_tasks"] == ["plan_high_waste"]
     assert rows[0.25]["false_negative_tasks"] == ["plan_gap_hidden_positive"]
+    assert targets["plan_gap_hidden_positive"]["probe_type"] == "hidden_value_probe"
+    assert targets["plan_gap_hidden_positive"]["failing_lambdas"] == [0.05, 0.25]
+    assert targets["plan_high_waste"]["probe_type"] == "waste_probe"
+    assert targets["plan_gap_hidden_positive"]["priority_score"] > targets["plan_high_waste"]["priority_score"]
     assert "Controller transfer safe: `False`" in markdown
+    assert "Active Data Targets" in markdown
     assert "plan_gap_hidden_positive" in markdown
 
 
