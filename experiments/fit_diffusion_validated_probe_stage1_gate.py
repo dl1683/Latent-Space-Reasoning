@@ -21,8 +21,14 @@ MEASURED_FEATURES = (
 TEXT_FEATURES = (
     "counterfactual_probe_text_slot_count",
     "counterfactual_probe_text_valid_for_stage1",
+    "counterfactual_probe_text_semantic_valid_for_stage1",
     "counterfactual_probe_text_placeholder_slot",
     "counterfactual_probe_text_generic_slot",
+    "counterfactual_probe_text_template_slot_echo",
+    "counterfactual_probe_text_duplicate_slot_key",
+    "counterfactual_probe_text_duplicate_authorization",
+    "counterfactual_probe_text_malformed_compact_key",
+    "counterfactual_probe_text_semantic_defect",
     "counterfactual_probe_text_weird_punctuation",
 )
 PREPROBE_FEATURES = (
@@ -36,6 +42,15 @@ def parse_args() -> argparse.Namespace:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--targets", type=Path, default=DEFAULT_TARGETS)
     parser.add_argument("--scores", type=Path, default=DEFAULT_SCORES)
+    parser.add_argument(
+        "--text-fidelity",
+        type=Path,
+        default=None,
+        help=(
+            "Optional probe-text fidelity audit JSON. When supplied, Stage 1 "
+            "validity also requires semantic_valid_for_stage1 from that audit."
+        ),
+    )
     parser.add_argument("--json-output", type=Path, default=DEFAULT_JSON_OUTPUT)
     parser.add_argument("--report-output", type=Path, default=DEFAULT_REPORT_OUTPUT)
     parser.add_argument("--report-title", default="Diffusion Counterfactual Validated Probe Stage 1 Gate V1")
@@ -44,7 +59,11 @@ def parse_args() -> argparse.Namespace:
 
 def main() -> int:
     args = parse_args()
-    fit = fit_validated_probe_stage1_gate(scores_path=args.scores, targets_path=args.targets)
+    fit = fit_validated_probe_stage1_gate(
+        scores_path=args.scores,
+        targets_path=args.targets,
+        text_fidelity_path=args.text_fidelity,
+    )
     args.json_output.parent.mkdir(parents=True, exist_ok=True)
     args.report_output.parent.mkdir(parents=True, exist_ok=True)
     args.json_output.write_text(json.dumps(fit, indent=2, sort_keys=True), encoding="utf-8")
@@ -64,15 +83,25 @@ def main() -> int:
     return 0
 
 
-def fit_validated_probe_stage1_gate(*, scores_path: Path, targets_path: Path) -> dict[str, object]:
+def fit_validated_probe_stage1_gate(
+    *,
+    scores_path: Path,
+    targets_path: Path,
+    text_fidelity_path: Path | None = None,
+) -> dict[str, object]:
     scores = json.loads(scores_path.read_text(encoding="utf-8"))
     targets = json.loads(targets_path.read_text(encoding="utf-8"))
     target_rows = {
         str(row.get("task_id", "")): row
         for row in _list_of_dicts(targets.get("rows"))
     }
+    text_fidelity_rows = _load_text_fidelity_rows(text_fidelity_path)
     rows = [
-        _row_from_gate_row(row, target_rows.get(str(row.get("task_id", "")), {}))
+        _row_from_gate_row(
+            row,
+            target_rows.get(str(row.get("task_id", "")), {}),
+            text_fidelity_rows.get(str(row.get("task_id", "")), {}),
+        )
         for row in _list_of_dicts(scores.get("repair_spend_gate_rows"))
         if row.get("counterfactual_probe_observation") == "measured_generation"
     ]
@@ -90,6 +119,7 @@ def fit_validated_probe_stage1_gate(*, scores_path: Path, targets_path: Path) ->
         "inputs": {
             "scores": str(scores_path),
             "targets": str(targets_path),
+            "text_fidelity": str(text_fidelity_path) if text_fidelity_path else "",
         },
         "rows": _rows_with_decisions(rows, validated_best, all_best),
         "schema": "diffusion_counterfactual_validated_probe_stage1_gate.v1",
@@ -119,6 +149,7 @@ def render_markdown(
         "",
         f"- Rows: `{summary.get('row_count', 0)}`",
         f"- Valid probe rows: `{summary.get('valid_probe_count', 0)}`",
+        f"- Semantic-valid probe rows: `{summary.get('semantic_valid_probe_count', 0)}`",
         f"- Invalid positive rows: `{summary.get('invalid_positive_count', 0)}`",
         f"- Invalid positive lift: `{_format_float(summary.get('invalid_positive_lift'))}`",
         f"- Best validated rule: `{summary.get('best_validated_rule_name', '')}`",
@@ -154,9 +185,9 @@ def render_markdown(
             "",
             (
                 "| Task | Label | Lift | Valid Probe | Measured Value | Gap Gain | "
-                "Span Gain | Retention Risk | Validated Select | All-Feature Select |"
+                "Span Gain | Retention Risk | Semantic Defect | Validated Select | All-Feature Select |"
             ),
-            "| --- | --- | ---: | --- | ---: | ---: | ---: | ---: | --- | --- |",
+            "| --- | --- | ---: | --- | ---: | ---: | ---: | ---: | --- | --- | --- |",
         ]
     )
     for row in _list_of_dicts(fit.get("rows")):
@@ -171,6 +202,7 @@ def render_markdown(
             f"{_format_float(features.get('measured_expected_gap_visibility_gain'))} | "
             f"{_format_float(features.get('measured_expected_span_evidence_gain'))} | "
             f"{_format_float(features.get('measured_expected_retention_risk_visibility'))} | "
+            f"{bool(features.get('counterfactual_probe_text_semantic_defect'))} | "
             f"{bool(row.get('selected_by_validated_rule'))} | "
             f"{bool(row.get('selected_by_all_feature_rule'))} |"
         )
@@ -191,23 +223,51 @@ def render_markdown(
     return "\n".join(lines) + "\n"
 
 
-def _row_from_gate_row(gate_row: dict[str, object], target_row: dict[str, object]) -> dict[str, object]:
+def _row_from_gate_row(
+    gate_row: dict[str, object],
+    target_row: dict[str, object],
+    text_fidelity_row: dict[str, object],
+) -> dict[str, object]:
     labels = _dict(target_row.get("labels"))
     measured = _dict(gate_row.get("measured_probe_feature_delta"))
-    valid_for_stage1 = bool(gate_row.get("counterfactual_probe_text_valid_for_stage1"))
+    text_features = _dict(text_fidelity_row.get("features"))
+    runtime_valid_for_stage1 = bool(gate_row.get("counterfactual_probe_text_valid_for_stage1"))
+    has_semantic_audit = bool(text_features)
+    semantic_valid_for_stage1 = bool(
+        _float(text_features.get("semantic_valid_for_stage1")) > 0.0
+    ) if has_semantic_audit else runtime_valid_for_stage1
+    valid_for_stage1 = runtime_valid_for_stage1 and semantic_valid_for_stage1
     return {
         "candidate_lift_vs_trajectory": _float(labels.get("candidate_lift_vs_trajectory")),
         "features": {
             "counterfactual_probe_text_generic_slot": _bool_float(
                 gate_row.get("counterfactual_probe_text_generic_slot")
             ),
+            "counterfactual_probe_text_duplicate_authorization": _float(
+                text_features.get("duplicate_authorization")
+            ),
+            "counterfactual_probe_text_duplicate_slot_key": _float(
+                text_features.get("duplicate_slot_key")
+            ),
+            "counterfactual_probe_text_malformed_compact_key": _float(
+                text_features.get("malformed_compact_key")
+            ),
             "counterfactual_probe_text_placeholder_slot": _bool_float(
                 gate_row.get("counterfactual_probe_text_placeholder_slot")
+            ),
+            "counterfactual_probe_text_semantic_defect": _float(
+                text_features.get("semantic_defect")
+            ),
+            "counterfactual_probe_text_semantic_valid_for_stage1": _bool_float(
+                semantic_valid_for_stage1
             ),
             "counterfactual_probe_text_slot_count": _float(
                 gate_row.get("counterfactual_probe_text_slot_count")
             ),
             "counterfactual_probe_text_valid_for_stage1": _bool_float(valid_for_stage1),
+            "counterfactual_probe_text_template_slot_echo": _float(
+                text_features.get("template_slot_echo")
+            ),
             "counterfactual_probe_text_weird_punctuation": _bool_float(
                 gate_row.get("counterfactual_probe_text_weird_punctuation")
             ),
@@ -227,6 +287,16 @@ def _row_from_gate_row(gate_row: dict[str, object], target_row: dict[str, object
         "label": bool(labels.get("promote_vs_trajectory")),
         "task_id": str(gate_row.get("task_id", "")),
         "valid_for_stage1": valid_for_stage1,
+    }
+
+
+def _load_text_fidelity_rows(path: Path | None) -> dict[str, dict[str, object]]:
+    if path is None:
+        return {}
+    audit = json.loads(path.read_text(encoding="utf-8"))
+    return {
+        str(row.get("task_id", "")): row
+        for row in _list_of_dicts(audit.get("rows"))
     }
 
 
@@ -334,6 +404,14 @@ def _summary(
     positives = [row for row in rows if bool(row.get("label"))]
     negatives = [row for row in rows if not bool(row.get("label"))]
     valid_rows = [row for row in rows if bool(row.get("valid_for_stage1"))]
+    semantic_valid_rows = [
+        row
+        for row in rows
+        if _float(
+            _dict(row.get("features")).get("counterfactual_probe_text_semantic_valid_for_stage1")
+        )
+        > 0.0
+    ]
     invalid_positives = [
         row for row in rows if bool(row.get("label")) and not bool(row.get("valid_for_stage1"))
     ]
@@ -351,6 +429,7 @@ def _summary(
         "negative_label_count": len(negatives),
         "positive_label_count": len(positives),
         "row_count": len(rows),
+        "semantic_valid_probe_count": len(semantic_valid_rows),
         "valid_probe_count": len(valid_rows),
     }
 

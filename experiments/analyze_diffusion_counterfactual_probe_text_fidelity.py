@@ -20,6 +20,12 @@ POST_PROBE_FEATURES = (
     "has_retention_slot",
     "exact_authorization_false",
     "generic_slot",
+    "template_slot_echo",
+    "duplicate_slot_key",
+    "duplicate_authorization",
+    "malformed_compact_key",
+    "semantic_valid_for_stage1",
+    "semantic_defect",
     "malformed_authorization",
     "placeholder_slot",
     "weird_punctuation",
@@ -116,6 +122,11 @@ def render_markdown(
         f"- Malformed authorization rows: `{summary.get('malformed_authorization_count', 0)}`",
         f"- Placeholder slot rows: `{summary.get('placeholder_slot_count', 0)}`",
         f"- Generic evidence rows: `{summary.get('generic_slot_count', 0)}`",
+        f"- Template echo rows: `{summary.get('template_slot_echo_count', 0)}`",
+        f"- Duplicate slot-key rows: `{summary.get('duplicate_slot_key_count', 0)}`",
+        f"- Duplicate authorization rows: `{summary.get('duplicate_authorization_count', 0)}`",
+        f"- Malformed compact-key rows: `{summary.get('malformed_compact_key_count', 0)}`",
+        f"- Semantic-valid rows: `{summary.get('semantic_valid_for_stage1_count', 0)}`",
         f"- Weird punctuation rows: `{summary.get('weird_punctuation_count', 0)}`",
         f"- Best post-probe rule: `{summary.get('best_post_probe_rule_name', '')}`",
         f"- Best post-probe errors: `{summary.get('best_post_probe_error_count', 0)}`",
@@ -137,9 +148,13 @@ def render_markdown(
             "",
             (
                 "| Task | Label | Lift | Task Score | Slots | Auth OK | Malformed Auth | "
-                "Placeholder | Generic | Weird Punct | Weak Echo | Selected | Probe Text |"
+                "Placeholder | Generic | Template | Dup Key | Dup Auth | Semantic Valid | "
+                "Weird Punct | Weak Echo | Selected | Probe Text |"
             ),
-            "| --- | --- | ---: | ---: | ---: | --- | --- | --- | --- | --- | ---: | --- | --- |",
+            (
+                "| --- | --- | ---: | ---: | ---: | --- | --- | --- | --- | --- | --- | "
+                "--- | --- | --- | ---: | --- | --- |"
+            ),
         ]
     )
     for row in _list_of_dicts(audit.get("rows")):
@@ -155,6 +170,10 @@ def render_markdown(
             f"{bool(features.get('malformed_authorization'))} | "
             f"{bool(features.get('placeholder_slot'))} | "
             f"{bool(features.get('generic_slot'))} | "
+            f"{bool(features.get('template_slot_echo'))} | "
+            f"{bool(features.get('duplicate_slot_key'))} | "
+            f"{bool(features.get('duplicate_authorization'))} | "
+            f"{bool(features.get('semantic_valid_for_stage1'))} | "
             f"{bool(features.get('weird_punctuation'))} | "
             f"{int(_float(features.get('weak_term_echo_count')))} | "
             f"{bool(row.get('selected_by_best_post_probe_rule'))} | "
@@ -168,7 +187,8 @@ def render_markdown(
             (
                 "The cheap probe text is not yet a deployable Stage 1 value signal. "
                 "The summary above separates hard sentinel failures, placeholder "
-                "slots, generic evidence slots, and punctuation or spelling defects. "
+                "slots, generic evidence slots, template echoes, duplicate keys, "
+                "duplicate authorization lines, and punctuation or spelling defects. "
                 "The useful next design move is probe tomography: require stable "
                 "diagnostic slots and constraint-sensitive evidence before fitting "
                 "another spend gate."
@@ -256,6 +276,39 @@ def _probe_text_features(
             flags=re.IGNORECASE,
         )
     )
+    template_slot_echo = bool(
+        re.search(
+            r"missing\s+or\s+weak\s+constraint|verifier-visible\s+evidence\s+needed\s+before\s+buying\s+repair|source\s+detail\s+repair\s+might\s+delete\s+or\s+distort|repair\s+authorization\s+sentinel",
+            lower,
+        )
+    )
+    compact_key_counts = {
+        key: len(re.findall(rf"(?<![A-Za-z0-9_]){key}\s*=", text))
+        for key in ("A", "B", "C", "Z")
+    }
+    duplicate_slot_key = any(compact_key_counts[key] > 1 for key in ("A", "B", "C"))
+    duplicate_authorization = (
+        len(re.findall(r"FULL_REPAIR_AUTHORIZED\s*=\s*false", text)) > 1
+        or len(re.findall(r"(?<![A-Za-z0-9_])Z\s*=\s*false", text)) > 1
+    )
+    malformed_compact_key = bool(
+        re.search(r"(?<![A-Za-z0-9_])(AA|BB|CC|ZZ)\s*=", text)
+        or re.search(r"(?<![A-Za-z0-9_])Z\s*=\s*(?!false(\s|$))", text)
+    )
+    semantic_defect = (
+        template_slot_echo
+        or duplicate_slot_key
+        or duplicate_authorization
+        or malformed_compact_key
+    )
+    semantic_valid_for_stage1 = (
+        exact_authorization
+        and slot_count >= 3
+        and not generic_slot
+        and not placeholder_slot
+        and not weird_punctuation
+        and not semantic_defect
+    )
     word_count = len(re.findall(r"[A-Za-z0-9_]+", text))
     weak_echo_count = sum(int(term in lower) for term in weak_terms)
     weak_echo_fraction = weak_echo_count / max(len(weak_terms), 1)
@@ -272,13 +325,19 @@ def _probe_text_features(
         "diagnostic_fidelity_score": fidelity_score,
         "diagnostic_slot_count": float(slot_count),
         "exact_authorization_false": float(exact_authorization),
+        "duplicate_authorization": float(duplicate_authorization),
+        "duplicate_slot_key": float(duplicate_slot_key),
         "generic_slot": float(generic_slot),
         "has_evidence_slot": float(has_evidence),
         "has_missing_slot": float(has_missing),
         "has_retention_slot": float(has_retention),
+        "malformed_compact_key": float(malformed_compact_key),
         "malformed_authorization": float(malformed_authorization),
         "placeholder_slot": float(placeholder_slot),
         "probe_task_score": _float(_dict(record.get("task_score")).get("score")),
+        "semantic_defect": float(semantic_defect),
+        "semantic_valid_for_stage1": float(semantic_valid_for_stage1),
+        "template_slot_echo": float(template_slot_echo),
         "weak_term_echo_count": float(weak_echo_count),
         "weak_term_echo_fraction": weak_echo_fraction,
         "weird_punctuation": float(weird_punctuation),
@@ -371,6 +430,18 @@ def _summary(rows: list[dict[str, object]], best_rule: dict[str, object]) -> dic
             int(_float(_dict(row.get("features")).get("generic_slot")) > 0.0)
             for row in rows
         ),
+        "duplicate_authorization_count": sum(
+            int(_float(_dict(row.get("features")).get("duplicate_authorization")) > 0.0)
+            for row in rows
+        ),
+        "duplicate_slot_key_count": sum(
+            int(_float(_dict(row.get("features")).get("duplicate_slot_key")) > 0.0)
+            for row in rows
+        ),
+        "malformed_compact_key_count": sum(
+            int(_float(_dict(row.get("features")).get("malformed_compact_key")) > 0.0)
+            for row in rows
+        ),
         "negative_label_count": len(negatives),
         "positive_label_count": len(positives),
         "placeholder_slot_count": sum(
@@ -378,6 +449,14 @@ def _summary(rows: list[dict[str, object]], best_rule: dict[str, object]) -> dic
             for row in rows
         ),
         "row_count": len(rows),
+        "semantic_valid_for_stage1_count": sum(
+            int(_float(_dict(row.get("features")).get("semantic_valid_for_stage1")) > 0.0)
+            for row in rows
+        ),
+        "template_slot_echo_count": sum(
+            int(_float(_dict(row.get("features")).get("template_slot_echo")) > 0.0)
+            for row in rows
+        ),
         "weird_punctuation_count": sum(
             int(_float(_dict(row.get("features")).get("weird_punctuation")) > 0.0)
             for row in rows

@@ -66,11 +66,49 @@ def test_probe_text_fidelity_audit_scores_slots_and_authorization(tmp_path):
     assert audit["summary"]["malformed_authorization_count"] == 1
     assert audit["summary"]["placeholder_slot_count"] == 1
     assert audit["summary"]["generic_slot_count"] == 1
+    assert audit["summary"]["template_slot_echo_count"] == 0
+    assert audit["summary"]["semantic_valid_for_stage1_count"] == 2
     assert audit["summary"]["weird_punctuation_count"] == 1
     assert audit["summary"]["best_post_probe_error_count"] == 1
     assert audit["summary"]["gate_decision"] == "diagnostic_only"
     assert audit["rows"][0]["features"]["diagnostic_slot_count"] == 3.0
     assert "Probe Text Fidelity" in markdown
+
+
+def test_probe_text_fidelity_flags_compact_template_and_duplicate_defects(tmp_path):
+    raw = tmp_path / "raw.jsonl"
+    targets = tmp_path / "targets.json"
+    targets.write_text(
+        json.dumps({"rows": [_target_row("plan_a", label=True, lift=0.20)]}),
+        encoding="utf-8",
+    )
+    raw.write_text(
+        json.dumps(
+            _probe_row(
+                "plan_a",
+                "A=AA=missing or weak constraint in the task task\n"
+                "B=BB=verifier-visible evidence needed before buying repair\n"
+                "C=source detail repair might delete or distort\n"
+                "Z=false\n"
+                "Z=false",
+                "alpha, beta",
+                score=0.30,
+            )
+        ),
+        encoding="utf-8",
+    )
+
+    audit = analyze_probe_text_fidelity(raw_path=raw, targets_path=targets)
+    features = audit["rows"][0]["features"]
+
+    assert features["diagnostic_slot_count"] == 3.0
+    assert features["exact_authorization_false"] == 1.0
+    assert features["template_slot_echo"] == 1.0
+    assert features["duplicate_authorization"] == 1.0
+    assert features["malformed_compact_key"] == 1.0
+    assert features["semantic_defect"] == 1.0
+    assert features["semantic_valid_for_stage1"] == 0.0
+    assert audit["summary"]["semantic_valid_for_stage1_count"] == 0
 
 
 def _target_row(task_id, *, label, lift):

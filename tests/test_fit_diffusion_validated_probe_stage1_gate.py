@@ -51,6 +51,62 @@ def test_validated_probe_stage1_gate_counts_invalid_positive_misses(tmp_path):
     assert "Validated Probe Stage 1 Gate" in markdown
 
 
+def test_validated_probe_stage1_gate_can_require_semantic_text_validity(tmp_path):
+    targets = tmp_path / "targets.json"
+    scores = tmp_path / "scores.json"
+    text_fidelity = tmp_path / "text_fidelity.json"
+    targets.write_text(
+        json.dumps(
+            {
+                "rows": [
+                    _target_row("plan_a", label=True, lift=0.20),
+                    _target_row("plan_b", label=False, lift=-0.05),
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    scores.write_text(
+        json.dumps(
+            {
+                "counterfactual_probe_policy": "compact_tomography_probe_v3",
+                "repair_spend_gate_rows": [
+                    _gate_row("plan_a", measured_value=0.9, valid=True),
+                    _gate_row("plan_b", measured_value=0.1, valid=True),
+                ],
+            }
+        ),
+        encoding="utf-8",
+    )
+    text_fidelity.write_text(
+        json.dumps(
+            {
+                "rows": [
+                    _text_fidelity_row("plan_a", semantic_valid=False, semantic_defect=True),
+                    _text_fidelity_row("plan_b", semantic_valid=True, semantic_defect=False),
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+
+    fit = fit_validated_probe_stage1_gate(
+        scores_path=scores,
+        targets_path=targets,
+        text_fidelity_path=text_fidelity,
+    )
+
+    assert fit["summary"]["valid_probe_count"] == 1
+    assert fit["summary"]["semantic_valid_probe_count"] == 1
+    assert fit["summary"]["invalid_positive_count"] == 1
+    assert fit["summary"]["invalid_positive_lift"] == 0.20
+    assert fit["rows"][0]["valid_for_stage1"] is False
+    assert (
+        fit["rows"][0]["features"]["counterfactual_probe_text_semantic_defect"]
+        == 1.0
+    )
+
+
 def _target_row(task_id, *, label, lift):
     return {
         "labels": {
@@ -77,4 +133,18 @@ def _gate_row(task_id, *, measured_value, valid):
         "source_quality": 0.2,
         "task_id": task_id,
         "would_probe": True,
+    }
+
+
+def _text_fidelity_row(task_id, *, semantic_valid, semantic_defect):
+    return {
+        "features": {
+            "duplicate_authorization": 0.0,
+            "duplicate_slot_key": 0.0,
+            "malformed_compact_key": 0.0,
+            "semantic_defect": 1.0 if semantic_defect else 0.0,
+            "semantic_valid_for_stage1": 1.0 if semantic_valid else 0.0,
+            "template_slot_echo": 1.0 if semantic_defect else 0.0,
+        },
+        "task_id": task_id,
     }
