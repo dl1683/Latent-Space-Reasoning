@@ -355,6 +355,7 @@ hidden behind a large search stack:
 | [DIFFUSION_LOW_MARGIN_REPAIR_V20_FREEZE.md](../DIFFUSION_LOW_MARGIN_REPAIR_V20_FREEZE.md) | Frozen v20 low-margin repair proof obligation over `plan_153`-`plan_160`, testing whether the `plan_151` tiny-positive geometry repeats without admitting no-lift rows like `plan_150`. |
 | [DIFFUSION_LOW_MARGIN_REPAIR_V20_RESULT.md](../DIFFUSION_LOW_MARGIN_REPAIR_V20_RESULT.md) | Fresh v20 low-margin result: no generated repair candidate improves over the selected trajectory, so the fallback is not validated. |
 | [DIFFUSION_LOW_MARGIN_REPAIR_V20_TARGETS.md](../DIFFUSION_LOW_MARGIN_REPAIR_V20_TARGETS.md) | V20 target sheet showing four generated repair candidates and zero positives. |
+| [DIFFUSION_CANDIDATE_DIVERSITY_V21_FREEZE.md](../DIFFUSION_CANDIDATE_DIVERSITY_V21_FREEZE.md) | Frozen v21 candidate-diversity proof obligation over `plan_161`-`plan_168`, adding a history-prefix candidate before the current final-preserve repair while keeping `generated_repair_value_v1` unchanged. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT.md) | Transfer-rule fit showing current decomposed spend is the best repair-availability rule. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md) | Expanded transfer-rule fit over the eight-row independent slice. |
 | [DIFFUSION_TRANSFER_PROMOTION_VALUE.md](../DIFFUSION_TRANSFER_PROMOTION_VALUE.md) | Transfer promotion-value result showing named `--repair-selector transfer_promotion_value` realizes the low-margin repair. |
