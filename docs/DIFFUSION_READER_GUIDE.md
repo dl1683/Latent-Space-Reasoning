@@ -115,6 +115,11 @@ positives only by spending too broadly and still drops a held-out positive.
 then audits source-text structure directly. It also is not deployable, but it
 shows the next useful channel is source realization/degeneracy rather than more
 prompt-gap tuning.
+[DIFFUSION_SOURCE_DEGENERATION_AUDIT_V1.md](../DIFFUSION_SOURCE_DEGENERATION_AUDIT_V1.md)
+splits that channel into repeated-token, punctuation-run, and meta-leakage
+defects. It keeps the gate closed: degeneration is explanatory evidence, not a
+standalone spend trigger, because defective sources include both repairable
+positives and no-lift traps.
 
 ## Benchmark And Cost Layer
 
@@ -155,6 +160,7 @@ hidden behind a large search stack:
 | [DIFFUSION_SPEND_COUNTEREXAMPLE_WORKBENCH.md](../DIFFUSION_SPEND_COUNTEREXAMPLE_WORKBENCH.md) | Active controller workbench naming the false-negative and false-positive clusters the next spend model must solve. |
 | [DIFFUSION_SPEND_VALUE_MODEL_V1.md](../DIFFUSION_SPEND_VALUE_MODEL_V1.md) | Offline nonlinear prototype challenger over pre-repair diagnostics; useful negative showing local geometry alone is still not deployable. |
 | [DIFFUSION_SOURCE_VALUE_SIGNALS_V1.md](../DIFFUSION_SOURCE_VALUE_SIGNALS_V1.md) | Label-free source-text signal audit over v5-v9 rows; identifies source realization and degeneracy features as the next controller channel to test. |
+| [DIFFUSION_SOURCE_DEGENERATION_AUDIT_V1.md](../DIFFUSION_SOURCE_DEGENERATION_AUDIT_V1.md) | Source realization defect audit over v5-v9 rows; separates repeated-token, punctuation-run, and meta-leakage clusters without promoting them to a spend gate. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT.md) | Transfer-rule fit showing current decomposed spend is the best repair-availability rule. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md) | Expanded transfer-rule fit over the eight-row independent slice. |
 | [DIFFUSION_TRANSFER_PROMOTION_VALUE.md](../DIFFUSION_TRANSFER_PROMOTION_VALUE.md) | Transfer promotion-value result showing named `--repair-selector transfer_promotion_value` realizes the low-margin repair. |
@@ -205,6 +211,7 @@ Read these when evaluating compact control terms and information preservation:
 | V7 spend-gate fitter | [experiments/fit_diffusion_spend_gate_v7.py](../experiments/fit_diffusion_spend_gate_v7.py) |
 | Transfer promotion-value evaluator | [experiments/evaluate_diffusion_transfer_promotion_value.py](../experiments/evaluate_diffusion_transfer_promotion_value.py) |
 | Transfer-head fitter | [experiments/fit_diffusion_transfer_heads.py](../experiments/fit_diffusion_transfer_heads.py) |
+| Source degeneration audit | [experiments/analyze_diffusion_source_degeneracy.py](../experiments/analyze_diffusion_source_degeneracy.py) |
 | Proof-object builder | [experiments/build_diffusion_proof_object.py](../experiments/build_diffusion_proof_object.py) |
 | Four-head runner trigger | [experiments/run_diffusion_three_arm_benchmark.py](../experiments/run_diffusion_three_arm_benchmark.py) with `--repair-spend-trigger decomposed_four_head_selector` |
 | Transfer-rule runner trigger | [experiments/run_diffusion_three_arm_benchmark.py](../experiments/run_diffusion_three_arm_benchmark.py) with `--repair-spend-trigger decomposed_spend_transfer_rule` |
