@@ -145,6 +145,11 @@ deltas in the gate row, and no repair score credit.
 then runs the measured hook across all 12 named v5-v9 counterexamples. It buys
 seven cheap probes, skips five no-lift rows, records zero triage errors, and
 still keeps `should_run=false`.
+[DIFFUSION_COUNTERFACTUAL_MEASURED_PROBE_VALUE_POLICY_V1.md](../DIFFUSION_COUNTERFACTUAL_MEASURED_PROBE_VALUE_POLICY_V1.md)
+then reruns the same counterexample set in all-shadow probe mode so negatives
+also get measured probe deltas. The measured-only Stage 1 rule still has two
+errors, while the zero-error all-feature rule is just the old prompt-gap /
+`would_probe` Stage 0 boundary, so full repair spend remains blocked.
 
 ## Benchmark And Cost Layer
 
@@ -193,6 +198,7 @@ hidden behind a large search stack:
 | [DIFFUSION_COUNTERFACTUAL_MICRO_PROBE_RUNNER_HOOK_V1.md](../DIFFUSION_COUNTERFACTUAL_MICRO_PROBE_RUNNER_HOOK_V1.md) | Runner hook for `--repair-spend-trigger counterfactual_micro_probe_v1`; emits bounded probe records while blocking full repair spend. |
 | [DIFFUSION_COUNTERFACTUAL_MICRO_PROBE_SMOKE_V1.md](../DIFFUSION_COUNTERFACTUAL_MICRO_PROBE_SMOKE_V1.md) | First GPU smoke of the measured micro-probe hook on `plan_070`; confirms measured gate deltas with `should_run=false`. |
 | [DIFFUSION_COUNTERFACTUAL_MICRO_PROBE_COUNTEREXAMPLES_V1.md](../DIFFUSION_COUNTERFACTUAL_MICRO_PROBE_COUNTEREXAMPLES_V1.md) | Measured micro-probe run over all named v5-v9 counterexamples; zero triage errors but still diagnostic-only. |
+| [DIFFUSION_COUNTERFACTUAL_MEASURED_PROBE_VALUE_POLICY_V1.md](../DIFFUSION_COUNTERFACTUAL_MEASURED_PROBE_VALUE_POLICY_V1.md) | All-shadow measured probe fit over the 12 named counterexamples; measured-only Stage 1 still has two errors, so full repair spend remains blocked. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT.md) | Transfer-rule fit showing current decomposed spend is the best repair-availability rule. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md) | Expanded transfer-rule fit over the eight-row independent slice. |
 | [DIFFUSION_TRANSFER_PROMOTION_VALUE.md](../DIFFUSION_TRANSFER_PROMOTION_VALUE.md) | Transfer promotion-value result showing named `--repair-selector transfer_promotion_value` realizes the low-margin repair. |

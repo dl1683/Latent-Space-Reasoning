@@ -142,6 +142,7 @@ COUNTERFACTUAL_MICRO_PROBE_COST_RELATIVE = 0.125
 COUNTERFACTUAL_MICRO_PROBE_GAP_VISIBILITY_MAX = 2.0 / 3.0
 COUNTERFACTUAL_MICRO_PROBE_MAX_NEW_TOKENS = 32
 COUNTERFACTUAL_MICRO_PROBE_STEPS = 16
+COUNTERFACTUAL_MICRO_PROBE_MODES = ("triage", "all")
 DEFAULT_ADAPTIVE_SOURCE_GAP_MIN_TERMS = 6
 DEFAULT_ADAPTIVE_SOURCE_QUALITY_FLOOR = 0.25
 DEFAULT_ADAPTIVE_SOURCE_QUALITY_CEILING: float | None = None
@@ -786,6 +787,18 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--counterfactual-probe-mode",
+        choices=COUNTERFACTUAL_MICRO_PROBE_MODES,
+        default="triage",
+        help=(
+            "Diagnostic generation mode for --repair-spend-trigger "
+            f"{COUNTERFACTUAL_MICRO_PROBE_TRIGGER_ID}. 'triage' generates measured "
+            "probe records only when would_probe is true; 'all' generates shadow "
+            "probe records for every selected repair source. Both modes keep "
+            "should_run=false."
+        ),
+    )
+    parser.add_argument(
         "--repair-phase-budget",
         choices=REPAIR_PHASE_BUDGET_MODES,
         default="custom",
@@ -1260,7 +1273,10 @@ def main() -> int:
                 ]
                 if args.repair_spend_trigger == COUNTERFACTUAL_MICRO_PROBE_TRIGGER_ID:
                     for source_record, diagnostics in repair_gate_pairs:
-                        if not bool(diagnostics.get("would_probe")):
+                        if not _should_generate_counterfactual_probe_record(
+                            diagnostics,
+                            mode=args.counterfactual_probe_mode,
+                        ):
                             continue
                         probe_record = _generate_counterfactual_micro_probe_record(
                             backend,
@@ -1576,6 +1592,7 @@ def main() -> int:
         repair_source_prompt_gap_max=args.repair_source_prompt_gap_max,
         repair_source_prompt_coverage_min=args.repair_source_prompt_coverage_min,
         repair_source_prompt_coverage_max=args.repair_source_prompt_coverage_max,
+        counterfactual_probe_mode=args.counterfactual_probe_mode,
         repair_value_proxy_source_quality_max=args.repair_value_proxy_source_quality_max,
         repair_transfer_source_task_min=args.repair_transfer_source_task_min,
         repair_phase_budget=args.repair_phase_budget,
@@ -2075,6 +2092,7 @@ def _rescore_raw_main(args: argparse.Namespace, tasks: list[GeneralReasoningTask
         repair_source_prompt_gap_max=args.repair_source_prompt_gap_max,
         repair_source_prompt_coverage_min=args.repair_source_prompt_coverage_min,
         repair_source_prompt_coverage_max=args.repair_source_prompt_coverage_max,
+        counterfactual_probe_mode=args.counterfactual_probe_mode,
         repair_value_proxy_source_quality_max=args.repair_value_proxy_source_quality_max,
         repair_transfer_source_task_min=args.repair_transfer_source_task_min,
         repair_phase_budget=args.repair_phase_budget,
@@ -2669,6 +2687,18 @@ def _counterfactual_micro_probe_diagnostics(
         "would_probe": would_probe,
         "should_run": False,
     }
+
+
+def _should_generate_counterfactual_probe_record(
+    diagnostics: dict[str, object],
+    *,
+    mode: str,
+) -> bool:
+    if mode == "triage":
+        return bool(diagnostics.get("would_probe"))
+    if mode == "all":
+        return bool(diagnostics.get("counterfactual_probe_gate") == "diagnostic_only")
+    raise ValueError(f"Unsupported counterfactual probe mode: {mode}")
 
 
 def _counterfactual_probe_feature_delta(
@@ -6513,6 +6543,7 @@ def summarize_three_arm_scores(
     repair_source_prompt_gap_max: int = 999,
     repair_source_prompt_coverage_min: float = 0.0,
     repair_source_prompt_coverage_max: float = 1.0,
+    counterfactual_probe_mode: str = "triage",
     repair_value_proxy_source_quality_max: float = 0.31,
     repair_transfer_source_task_min: float = DECOMPOSED_SPEND_TRANSFER_SOURCE_TASK_MIN,
     repair_phase_budget: str = "custom",
@@ -6599,6 +6630,7 @@ def summarize_three_arm_scores(
         "repair_source_prompt_gap_max": repair_source_prompt_gap_max,
         "repair_source_prompt_coverage_min": repair_source_prompt_coverage_min,
         "repair_source_prompt_coverage_max": repair_source_prompt_coverage_max,
+        "counterfactual_probe_mode": counterfactual_probe_mode,
         "repair_value_proxy_source_quality_max": repair_value_proxy_source_quality_max,
         "repair_transfer_source_task_min": repair_transfer_source_task_min,
         "repair_phase_budget": repair_phase_budget,
@@ -7310,6 +7342,7 @@ def render_report(scores: dict[str, object]) -> str:
         f"History repair fractions: `{_format_fraction_list(scores.get('history_repair_fractions', []))}`",
         f"History visible repair included: `{bool(scores.get('include_history_visible_repair', False))}`",
         f"Repair spend trigger: `{scores.get('repair_spend_trigger', 'always')}`",
+        f"Counterfactual probe mode: `{scores.get('counterfactual_probe_mode', 'triage')}`",
         f"Repair source-quality threshold: `{scores.get('repair_source_quality_threshold', 0.0):.3f}`",
         f"Repair source min chars: `{int(scores.get('repair_source_min_chars', 0))}`",
         f"Repair source prompt-gap min: `{int(scores.get('repair_source_prompt_gap_min', 0))}`",

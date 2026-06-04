@@ -79,6 +79,7 @@ from experiments.run_diffusion_three_arm_benchmark import (
     _should_run_prompt_guided_rescue,
     _should_run_repairs,
     _should_run_selector_disagreement_rescue,
+    _should_generate_counterfactual_probe_record,
     _with_history_sample_count,
     render_report,
     select_evolved_record,
@@ -6174,6 +6175,17 @@ def test_counterfactual_micro_probe_generation_records_measured_probe_metadata()
     assert measured["measured_probe_feature_delta"]["expected_gap_visibility_gain"] > 0.0
     assert measured["probe_feature_delta"] == measured["measured_probe_feature_delta"]
     assert measured["should_run"] is False
+
+
+def test_counterfactual_micro_probe_modes_control_shadow_generation_only():
+    diagnostics = {
+        "counterfactual_probe_gate": "diagnostic_only",
+        "should_run": False,
+        "would_probe": False,
+    }
+
+    assert not _should_generate_counterfactual_probe_record(diagnostics, mode="triage")
+    assert _should_generate_counterfactual_probe_record(diagnostics, mode="all")
 
 
 def test_primary_repair_gate_diagnostics_apply_denoise_value_proxy():

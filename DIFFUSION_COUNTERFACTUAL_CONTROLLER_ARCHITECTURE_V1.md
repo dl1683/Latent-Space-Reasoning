@@ -209,6 +209,16 @@ repair authorizations. This is strong Stage 0 evidence, but still not a live
 spend gate; the next promotion question is whether measured deltas support a
 Stage 1 value-of-information rule that decides full repair after the probe.
 
+The all-shadow measurement and fit in
+`DIFFUSION_COUNTERFACTUAL_MEASURED_PROBE_VALUE_POLICY_V1.md` answers that Stage
+1 question conservatively. It generates measured probe rows for all 12 named
+counterexamples, including the five no-lift negatives. The best measured-only
+post-probe rule still makes two false-positive errors. The only zero-error
+all-feature rules are `prompt_gap_count_le_7` and `would_probe_score_ge_1`,
+which are Stage 0 triage signals reappearing after the fact. Full repair spend
+therefore remains blocked until measured probe features add a real post-probe
+decision boundary.
+
 ## Falsifiers
 
 This architecture is wrong if any of the following happen:

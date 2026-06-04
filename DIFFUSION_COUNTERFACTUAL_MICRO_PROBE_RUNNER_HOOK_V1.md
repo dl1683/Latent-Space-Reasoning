@@ -13,6 +13,11 @@ python experiments\run_diffusion_three_arm_benchmark.py `
   --repair-selector candidate_aware_promotion_v1
 ```
 
+The default `--counterfactual-probe-mode triage` generates bounded measured
+probe records only for rows where frozen triage sets `would_probe=true`. Use
+`--counterfactual-probe-mode all` for offline shadow fitting when negative rows
+also need measured probe deltas. Both modes keep `should_run=false`.
+
 The trigger records probe diagnostics in `repair_spend_gate_rows` for each
 selected repair source. When frozen triage sets `would_probe=true`, it also
 generates a bounded `generation_stage="counterfactual_probe"` raw record under
@@ -58,15 +63,18 @@ The first one-task CUDA smoke is recorded in
 `DIFFUSION_COUNTERFACTUAL_MICRO_PROBE_SMOKE_V1.md`.
 The first 12-row named-counterexample CUDA run is recorded in
 `DIFFUSION_COUNTERFACTUAL_MICRO_PROBE_COUNTEREXAMPLES_V1.md`.
+The all-shadow 12-row measured fit is recorded in
+`DIFFUSION_COUNTERFACTUAL_MEASURED_PROBE_VALUE_POLICY_V1.md`; it keeps the full
+repair gate closed because measured-only Stage 1 rules still make two errors.
 
 ## Next Measurement
 
-The next increment should use the measured target rows to fit the Stage 1
-value-of-information policy:
+The next increment should improve the measured target rows until the Stage 1
+value-of-information policy can clear the controller gate:
 
-1. Refit `DIFFUSION_COUNTERFACTUAL_PROBE_POLICY_FIT_V1.md` against measured
-   deltas.
-2. Check whether the measured probe values can decide full repair after the
-   probe, not just whether to buy a probe.
+1. Add post-probe features that are not just Stage 0 prompt-gap or `would_probe`
+   rediscovery.
+2. Check whether measured probe values can decide full repair after the probe,
+   not just whether to buy a probe.
 3. Promote only if the architecture gate in
    `DIFFUSION_COUNTERFACTUAL_CONTROLLER_ARCHITECTURE_V1.md` clears.
