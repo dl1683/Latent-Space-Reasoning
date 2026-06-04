@@ -208,6 +208,13 @@ probe signature plus source/trajectory evidence. Before M3, add negative control
 that withhold the trajectory-relative channel and perturb source-vs-trajectory
 features.
 
+The trajectory-channel controls are recorded in
+`DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_TRAJECTORY_RELATIVE_CONTROLS_V4.md`.
+Withholding the channel falls back to `0.685500` utility and six weak-slice false
+positives; a delta-only approximation leaves five weak-slice false positives;
+inverted and rotated controls introduce false negatives. This supports the
+channel as load-bearing rather than decorative.
+
 ### M3: Frozen Fresh Slice
 
 Only after M1 and M2 pass, run a fresh GPU slice with the signed-value head
