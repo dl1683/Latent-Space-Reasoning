@@ -43,15 +43,15 @@ It converts the accumulated failed spend-gate fit into controller design questio
 - `low_gap_value_probe`: When prompt gap is low, which denoise/source features distinguish a hidden profitable repair from a true no-lift row? Evidence: `plan_044`, `plan_034`, `plan_063`, `plan_046`, `plan_072`, `plan_061`, `plan_070`. Next measurement: Collect fresh low-gap repairable rows and check candidate lift before raising any prompt-gap threshold.
 - `high_gap_waste_probe`: Which high-gap rows are actually repair-value rows rather than keyword-missing rows? Evidence: `plan_045`, `plan_050`, `plan_064`, `plan_069`, `plan_071`. Next measurement: Add post-repair edge prediction or source-retention features before spending on high-gap rows.
 - `pre_repair_edge_proxy`: Can the controller predict candidate promotion edge before generating the repair candidate? Evidence: `plan_045`, `plan_050`, `plan_064`, `plan_069`, `plan_071`. Next measurement: Estimate candidate realization or promotion edge before live repair using only frozen source and span diagnostics.
-- `pre_repair_edge_proxy_v1`: The first offline proxy is now measured in `DIFFUSION_PRE_REPAIR_EDGE_PROXY_V1.md`. It joins generated-candidate promotion labels to frozen source, source-degeneration, and span-diagnostic features before any live spend promotion.
+- `counterfactual_controller_v1`: Can frozen features decide when to buy a cheap counterfactual observation instead of directly promoting a full repair spend? Evidence: `plan_044`, `plan_034`, `plan_063`, `plan_046`, `plan_072`, `plan_061`, `plan_070`, `plan_045`, `plan_050`, `plan_064`, `plan_069`, `plan_071`. Next measurement: Generate cheap counterfactual probe rows before full repair spend, then fit a value-of-information rule over probe deltas and existing promotion labels.
 
 ## Next Controller Contract
 
-- Required data: All-repairable raw generations, spend labels, generated-candidate promotion labels, and per-task cost/lift rows.
+- Required data: All-repairable raw generations, spend labels, generated-candidate promotion labels, per-task cost/lift rows, and counterfactual probe rows.
 - Promotion invariant: Keep `candidate_aware_promotion_v1` fixed until a challenger beats its zero-error generated-candidate record.
-- Spend invariant: A spend controller must report false positives and false negatives separately; average score alone is not enough.
+- Spend invariant: A spend controller must report false positives and false negatives separately; average score alone is not enough. Frozen features may choose `skip` or `probe`, but not `repair`, until probe-aware offline evaluation clears the GPU gate.
 - GPU gate: Do not run a live spend-gated policy until offline evaluation preserves all profitable rows or explicitly trades a named lift amount for cost.
 
 ## Reading
 
-The accumulated transfer results make the controller split concrete. Post-repair promotion is stable on the generated candidates, but pre-repair spend is not separable by a small conjunction of source quality, prompt gap, denoise phase, and trajectory-relative delta. The next architecture should therefore use counterexample-driven active data collection or a richer value model before attempting another live spend gate.
+The accumulated transfer results make the controller split concrete. Post-repair promotion is stable on the generated candidates, but pre-repair spend is not separable by a small conjunction of source quality, prompt gap, denoise phase, trajectory-relative delta, source degeneration, or span diagnostics. The next architecture should therefore use counterexample-driven active data collection: cheap counterfactual probe rows first, value-of-information scoring second, and live repair spend only after an offline challenger preserves named lift or explicitly prices the lift it trades away.

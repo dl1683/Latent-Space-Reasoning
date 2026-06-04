@@ -37,6 +37,25 @@
       "next_measurement": "Estimate candidate realization or promotion edge before live repair using only frozen source and span diagnostics.",
       "question": "Can the controller predict candidate promotion edge before generating the repair candidate?",
       "question_id": "pre_repair_edge_proxy"
+    },
+    {
+      "evidence_tasks": [
+        "plan_044",
+        "plan_034",
+        "plan_063",
+        "plan_046",
+        "plan_072",
+        "plan_061",
+        "plan_070",
+        "plan_045",
+        "plan_050",
+        "plan_064",
+        "plan_069",
+        "plan_071"
+      ],
+      "next_measurement": "Generate cheap counterfactual probe rows before full repair spend, then fit a value-of-information rule over probe deltas and existing promotion labels.",
+      "question": "Can frozen features decide when to buy a cheap counterfactual observation instead of directly promoting a full repair spend?",
+      "question_id": "counterfactual_controller_v1"
     }
   ],
   "best_rule": {
@@ -240,8 +259,8 @@
   "next_controller_contract": {
     "gpu_gate": "Do not run a live spend-gated policy until offline evaluation preserves all profitable rows or explicitly trades a named lift amount for cost.",
     "promotion_invariant": "Keep `candidate_aware_promotion_v1` fixed until a challenger beats its zero-error generated-candidate record.",
-    "required_data": "All-repairable raw generations, spend labels, generated-candidate promotion labels, and per-task cost/lift rows.",
-    "spend_invariant": "A spend controller must report false positives and false negatives separately; average score alone is not enough."
+    "required_data": "All-repairable raw generations, spend labels, generated-candidate promotion labels, per-task cost/lift rows, and counterfactual probe rows.",
+    "spend_invariant": "A spend controller must report false positives and false negatives separately; average score alone is not enough. Frozen features may choose `skip` or `probe`, but not `repair`, until probe-aware offline evaluation clears the GPU gate."
   },
   "schema": "diffusion_spend_counterexample_workbench.v1",
   "summary": {

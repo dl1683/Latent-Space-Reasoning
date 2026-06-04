@@ -37,4 +37,4 @@ The current decision is to keep `candidate_aware_promotion_v1` fixed and use den
 
 ## Next Benchmark
 
-Do not promote a live spend gate from these thresholds. The next benchmark should first score a richer offline value model against the accumulated v5-v9 rows, preserving every named positive repair or explicitly reporting the lift traded away for cost.
+Do not promote a live spend gate from these thresholds. The next benchmark should first score a richer offline value model against the accumulated v5-v9 rows, preserving every named positive repair or explicitly reporting the lift traded away for cost. After the frozen-feature pre-repair edge proxy also failed to beat the error floor, the next model should add cheap counterfactual probe rows as specified in `DIFFUSION_COUNTERFACTUAL_CONTROLLER_ARCHITECTURE_V1.md`, not tune another threshold over the same frozen features.

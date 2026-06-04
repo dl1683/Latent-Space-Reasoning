@@ -124,6 +124,9 @@ positives and no-lift traps.
 then measures the named pre-repair edge-proxy question directly: can frozen
 source and span diagnostics predict candidate promotion edge before live repair
 spend?
+[DIFFUSION_COUNTERFACTUAL_CONTROLLER_ARCHITECTURE_V1.md](../DIFFUSION_COUNTERFACTUAL_CONTROLLER_ARCHITECTURE_V1.md)
+is the next architecture contract: frozen features can only triage whether to
+buy a cheap counterfactual observation; they cannot promote full repair spend.
 
 ## Benchmark And Cost Layer
 
@@ -166,6 +169,7 @@ hidden behind a large search stack:
 | [DIFFUSION_SOURCE_VALUE_SIGNALS_V1.md](../DIFFUSION_SOURCE_VALUE_SIGNALS_V1.md) | Label-free source-text signal audit over v5-v9 rows; identifies source realization and degeneracy features as the next controller channel to test. |
 | [DIFFUSION_SOURCE_DEGENERATION_AUDIT_V1.md](../DIFFUSION_SOURCE_DEGENERATION_AUDIT_V1.md) | Source realization defect audit over v5-v9 rows; separates repeated-token, punctuation-run, and meta-leakage clusters without promoting them to a spend gate. |
 | [DIFFUSION_PRE_REPAIR_EDGE_PROXY_V1.md](../DIFFUSION_PRE_REPAIR_EDGE_PROXY_V1.md) | Offline pre-repair promotion-edge proxy over v5-v9 rows; joins frozen source, degeneration, and span diagnostics before any live spend promotion. |
+| [DIFFUSION_COUNTERFACTUAL_CONTROLLER_ARCHITECTURE_V1.md](../DIFFUSION_COUNTERFACTUAL_CONTROLLER_ARCHITECTURE_V1.md) | Next-controller contract: use frozen features for probe triage, then learn value-of-information from cheap counterfactual probe rows before another live spend gate. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT.md) | Transfer-rule fit showing current decomposed spend is the best repair-availability rule. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md) | Expanded transfer-rule fit over the eight-row independent slice. |
 | [DIFFUSION_TRANSFER_PROMOTION_VALUE.md](../DIFFUSION_TRANSFER_PROMOTION_VALUE.md) | Transfer promotion-value result showing named `--repair-selector transfer_promotion_value` realizes the low-margin repair. |

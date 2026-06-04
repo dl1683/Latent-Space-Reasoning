@@ -179,10 +179,12 @@ def render_markdown(workbench: dict[str, object]) -> str:
                 "The accumulated transfer results make the controller split concrete. Post-repair "
                 "promotion is stable on the generated candidates, but pre-repair "
                 "spend is not separable by a small conjunction of source quality, "
-                "prompt gap, denoise phase, and trajectory-relative delta. The next "
-                "architecture should therefore use counterexample-driven active "
-                "data collection or a richer value model before attempting another "
-                "live spend gate."
+                "prompt gap, denoise phase, trajectory-relative delta, source "
+                "degeneration, or span diagnostics. The next architecture should "
+                "therefore use counterexample-driven active data collection: cheap "
+                "counterfactual probe rows first, value-of-information scoring "
+                "second, and live repair spend only after an offline challenger "
+                "preserves named lift or explicitly prices the lift it trades away."
             ),
         ]
     )
@@ -309,6 +311,19 @@ def _active_questions(
             ),
             "question_id": "pre_repair_edge_proxy",
         },
+        {
+            "evidence_tasks": [str(row.get("task_id", "")) for row in counterexamples],
+            "next_measurement": (
+                "Generate cheap counterfactual probe rows before full repair spend, "
+                "then fit a value-of-information rule over probe deltas and existing "
+                "promotion labels."
+            ),
+            "question": (
+                "Can frozen features decide when to buy a cheap counterfactual "
+                "observation instead of directly promoting a full repair spend?"
+            ),
+            "question_id": "counterfactual_controller_v1",
+        },
     ]
     return [question for question in questions if question["evidence_tasks"]] or [
         {
@@ -332,11 +347,13 @@ def _next_controller_contract(counterexamples: list[dict[str, object]]) -> dict[
         ),
         "required_data": (
             "All-repairable raw generations, spend labels, generated-candidate "
-            "promotion labels, and per-task cost/lift rows."
+            "promotion labels, per-task cost/lift rows, and counterfactual probe rows."
         ),
         "spend_invariant": (
             "A spend controller must report false positives and false negatives "
-            "separately; average score alone is not enough."
+            "separately; average score alone is not enough. Frozen features may "
+            "choose `skip` or `probe`, but not `repair`, until probe-aware offline "
+            "evaluation clears the GPU gate."
         ),
     }
 
