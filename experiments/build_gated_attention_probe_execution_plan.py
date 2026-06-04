@@ -9,10 +9,13 @@ runs.
 from __future__ import annotations
 
 import argparse
+import importlib.util
 import json
 from pathlib import Path
 
 import transformers
+from accelerate import init_empty_weights
+from transformers import AutoConfig, AutoModelForCausalLM
 from transformers.models.auto.configuration_auto import CONFIG_MAPPING
 
 DEFAULT_FREEZE = Path("eval_results/gated_attention/gated_attention_null_probe_freeze.json")
@@ -81,6 +84,7 @@ def build_execution_plan(
         str(path) for path in PRIMARY_RESULT_PATHS.values() if path.exists()
     ]
     compatibility = _runtime_compatibility_state()
+    modeling = _modeling_dependency_state()
     model_cache = {
         "baseline": _model_cache_state(BASELINE_MODEL, hf_cache),
         "mechanics": _model_cache_state(MECHANICS_MODEL, hf_cache),
@@ -102,6 +106,11 @@ def build_execution_plan(
         blocking_reasons.append(
             "local Transformers does not support model_type=qwen3_next; install a "
             "supporting release/source build before using the Transformers soft-prefix runner"
+        )
+    if not modeling["empty_model_constructible"]:
+        blocking_reasons.append(
+            "Qwen3-Next model construction fails before weights load; resolve modeling dependencies "
+            f"({modeling['failure_type']}: {modeling['failure_summary']})"
         )
 
     ordered_runs = [
@@ -152,6 +161,7 @@ def build_execution_plan(
         "mechanics_model": MECHANICS_MODEL,
         "hf_cache": str(hf_cache),
         "runtime_compatibility": compatibility,
+        "modeling_dependency_state": modeling,
         "model_cache": model_cache,
         "existing_primary_results": existing_primary_results,
         "allow_existing_primary_results": allow_existing_primary_results,
@@ -211,6 +221,7 @@ def render_markdown(plan: dict[str, object]) -> str:
         )
 
     compat = plan["runtime_compatibility"]
+    modeling = plan["modeling_dependency_state"]
     lines.extend(
         [
             "",
@@ -218,6 +229,10 @@ def render_markdown(plan: dict[str, object]) -> str:
             "",
             f"- Transformers version: `{compat['transformers_version']}`",
             f"- Supports `qwen3_next`: `{compat['transformers_supports_qwen3_next']}`",
+            f"- Empty Qwen3-Next model constructible: `{modeling['empty_model_constructible']}`",
+            f"- `triton` available: `{modeling['triton_available']}`",
+            f"- `fla` available: `{modeling['fla_available']}`",
+            f"- Failure: `{modeling['failure_type']}: {modeling['failure_summary']}`",
             "",
         ]
     )
@@ -291,6 +306,49 @@ def _runtime_compatibility_state() -> dict[str, object]:
         "current_runner_requires_transformers_inputs_embeds": True,
         "gguf_openai_compatible_servers_do_not_expose_soft_prefix_inputs_embeds": True,
     }
+
+
+def _modeling_dependency_state() -> dict[str, object]:
+    state: dict[str, object] = {
+        "fla_available": importlib.util.find_spec("fla") is not None,
+        "triton_available": importlib.util.find_spec("triton") is not None,
+        "causal_conv1d_available": importlib.util.find_spec("causal_conv1d") is not None,
+        "flash_linear_attention_available": importlib.util.find_spec("flash_linear_attention") is not None,
+        "empty_model_constructible": False,
+        "failure_type": None,
+        "failure_summary": None,
+    }
+    try:
+        cfg = AutoConfig.from_pretrained(PRIMARY_MODEL, trust_remote_code=True)
+        with init_empty_weights():
+            AutoModelForCausalLM.from_config(cfg, trust_remote_code=True)
+    except Exception as exc:  # pragma: no cover - exact dependency error is environment-specific
+        state["failure_type"] = type(exc).__name__
+        state["failure_summary"] = _exception_chain_summary(exc)
+    else:
+        state["empty_model_constructible"] = True
+        state["failure_type"] = "none"
+        state["failure_summary"] = "none"
+    return state
+
+
+def _one_line(text: str, max_len: int = 220) -> str:
+    compact = " ".join(text.split())
+    if len(compact) <= max_len:
+        return compact
+    return compact[: max_len - 3] + "..."
+
+
+def _exception_chain_summary(exc: BaseException) -> str:
+    parts = []
+    current: BaseException | None = exc
+    seen = set()
+    while current is not None and id(current) not in seen:
+        seen.add(id(current))
+        text = _one_line(str(current), max_len=140)
+        parts.append(f"{type(current).__name__}: {text}")
+        current = current.__cause__ or current.__context__
+    return _one_line(" <- ".join(parts), max_len=320)
 
 
 if __name__ == "__main__":

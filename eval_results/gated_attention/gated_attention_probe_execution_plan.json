@@ -2,7 +2,8 @@
   "allow_existing_primary_results": false,
   "baseline_model": "Qwen/Qwen3-4B",
   "blocking_reasons": [
-    "primary Qwen3-Next weights are not cached locally; select and record a current quantized artifact before starting the expensive run"
+    "primary Qwen3-Next weights are not cached locally; select and record a current quantized artifact before starting the expensive run",
+    "Qwen3-Next model construction fails before weights load; resolve modeling dependencies (ModuleNotFoundError: ModuleNotFoundError: Could not import module 'Qwen3NextForCausalLM'. Are this object's requirements defined correctly? <- ModuleNotFoundError: No module named 'triton')"
   ],
   "claim_boundaries": [
     "Do not treat mechanics smoke as gated-attention evidence.",
@@ -41,6 +42,15 @@
       "snapshot_count": 1,
       "weight_file_count": 0
     }
+  },
+  "modeling_dependency_state": {
+    "causal_conv1d_available": true,
+    "empty_model_constructible": false,
+    "failure_summary": "ModuleNotFoundError: Could not import module 'Qwen3NextForCausalLM'. Are this object's requirements defined correctly? <- ModuleNotFoundError: No module named 'triton'",
+    "failure_type": "ModuleNotFoundError",
+    "fla_available": true,
+    "flash_linear_attention_available": false,
+    "triton_available": false
   },
   "ordered_runs": [
     {

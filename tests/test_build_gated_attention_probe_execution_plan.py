@@ -4,6 +4,7 @@ import experiments.build_gated_attention_probe_execution_plan as execution_plan
 from experiments.build_gated_attention_probe_execution_plan import (
     PRIMARY_MODEL,
     build_execution_plan,
+    _exception_chain_summary,
     render_markdown,
 )
 
@@ -11,6 +12,7 @@ from experiments.build_gated_attention_probe_execution_plan import (
 def test_execution_plan_blocks_when_primary_weights_are_not_cached(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     _patch_runtime_supported(monkeypatch)
+    _patch_modeling_supported(monkeypatch)
     freeze = tmp_path / "freeze.json"
     freeze.write_text(json.dumps(_freeze()), encoding="utf-8")
     hf_cache = tmp_path / "hf" / "hub"
@@ -31,6 +33,7 @@ def test_execution_plan_blocks_when_primary_weights_are_not_cached(tmp_path, mon
 def test_execution_plan_ready_when_primary_cached_and_no_results(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     _patch_runtime_supported(monkeypatch)
+    _patch_modeling_supported(monkeypatch)
     freeze = tmp_path / "freeze.json"
     freeze.write_text(json.dumps(_freeze()), encoding="utf-8")
     hf_cache = tmp_path / "hf" / "hub"
@@ -51,6 +54,7 @@ def test_execution_plan_ready_when_primary_cached_and_no_results(tmp_path, monke
 def test_execution_plan_blocks_existing_primary_results(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
     _patch_runtime_supported(monkeypatch)
+    _patch_modeling_supported(monkeypatch)
     freeze = tmp_path / "freeze.json"
     freeze.write_text(json.dumps(_freeze()), encoding="utf-8")
     hf_cache = tmp_path / "hf" / "hub"
@@ -82,6 +86,7 @@ def test_execution_plan_blocks_when_transformers_lacks_qwen3_next(tmp_path, monk
             "gguf_openai_compatible_servers_do_not_expose_soft_prefix_inputs_embeds": True,
         },
     )
+    _patch_modeling_supported(monkeypatch)
     freeze = tmp_path / "freeze.json"
     freeze.write_text(json.dumps(_freeze()), encoding="utf-8")
     hf_cache = tmp_path / "hf" / "hub"
@@ -96,6 +101,51 @@ def test_execution_plan_blocks_when_transformers_lacks_qwen3_next(tmp_path, monk
     assert "does not support model_type=qwen3_next" in plan["blocking_reasons"][0]
     assert plan["runtime_compatibility"]["transformers_supports_qwen3_next"] is False
     assert "Supports `qwen3_next`: `False`" in markdown
+
+
+def test_execution_plan_blocks_when_qwen3_next_modeling_dependencies_fail(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    _patch_runtime_supported(monkeypatch)
+    monkeypatch.setattr(
+        execution_plan,
+        "_modeling_dependency_state",
+        lambda: {
+            "fla_available": True,
+            "triton_available": False,
+            "causal_conv1d_available": True,
+            "flash_linear_attention_available": False,
+            "empty_model_constructible": False,
+            "failure_type": "ModuleNotFoundError",
+            "failure_summary": "No module named 'triton'",
+        },
+    )
+    freeze = tmp_path / "freeze.json"
+    freeze.write_text(json.dumps(_freeze()), encoding="utf-8")
+    hf_cache = tmp_path / "hf" / "hub"
+    primary_cache = hf_cache / ("models--" + PRIMARY_MODEL.replace("/", "--")) / "snapshots" / "abc123"
+    primary_cache.mkdir(parents=True)
+    (primary_cache / "model.safetensors").write_text("fake", encoding="utf-8")
+
+    plan = build_execution_plan(freeze_path=freeze, hf_cache=hf_cache)
+    markdown = render_markdown(plan)
+
+    assert plan["ready_for_primary_gpu_run"] is False
+    assert "model construction fails before weights load" in plan["blocking_reasons"][0]
+    assert plan["modeling_dependency_state"]["triton_available"] is False
+    assert "Empty Qwen3-Next model constructible: `False`" in markdown
+
+
+def test_exception_chain_summary_preserves_root_cause():
+    try:
+        try:
+            raise ModuleNotFoundError("No module named 'triton'")
+        except ModuleNotFoundError as exc:
+            raise RuntimeError("wrapper") from exc
+    except RuntimeError as exc:
+        summary = _exception_chain_summary(exc)
+
+    assert "RuntimeError: wrapper" in summary
+    assert "ModuleNotFoundError: No module named 'triton'" in summary
 
 
 def _freeze():
@@ -119,5 +169,21 @@ def _patch_runtime_supported(monkeypatch):
             "transformers_supports_qwen3_next": True,
             "current_runner_requires_transformers_inputs_embeds": True,
             "gguf_openai_compatible_servers_do_not_expose_soft_prefix_inputs_embeds": True,
+        },
+    )
+
+
+def _patch_modeling_supported(monkeypatch):
+    monkeypatch.setattr(
+        execution_plan,
+        "_modeling_dependency_state",
+        lambda: {
+            "fla_available": True,
+            "triton_available": True,
+            "causal_conv1d_available": True,
+            "flash_linear_attention_available": False,
+            "empty_model_constructible": True,
+            "failure_type": "none",
+            "failure_summary": "none",
         },
     )
