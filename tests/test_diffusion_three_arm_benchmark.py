@@ -6038,6 +6038,64 @@ def test_primary_repair_gate_diagnostics_track_denoise_phase_features():
     assert diagnostics["denoise_skeleton_within_max_step"] is True
 
 
+def test_counterfactual_micro_probe_trigger_records_probe_without_repair_spend():
+    prompt = (
+        "Run two GPU jobs overnight: one reliable baseline and one risky reasoning "
+        "intervention. Collect measurements, failure evidence, and a publishable fallback."
+    )
+    source = {
+        **_record("model", "plan", "low_confidence_32", task_score=0.0, trajectory_score=0.5),
+        "history_steps": 16,
+        "text": "Run baseline and intervention, collect measurements and failure evidence.",
+        "trajectory_summary": {
+            "samples": [
+                {"step": 4, "visible_chars": 24, "visible_text": "Collect the baseline."},
+                {
+                    "step": 8,
+                    "visible_chars": 55,
+                    "visible_text": "Collect the baseline measurement and failure evidence.",
+                },
+            ]
+        },
+    }
+
+    diagnostics = _primary_repair_gate_diagnostics(
+        trigger="counterfactual_micro_probe_v1",
+        source_record=source,
+        source_controls=[],
+        task_prompt=prompt,
+        task_answer_type="rubric",
+        source_quality_threshold=0.99,
+        source_min_chars=40,
+        source_prompt_gap_min=2,
+        source_prompt_gap_max=8,
+        source_prompt_coverage_min=0.30,
+        source_prompt_coverage_max=1.00,
+    )
+
+    assert diagnostics["should_run"] is False
+    assert diagnostics["would_probe"] is True
+    assert diagnostics["reason"] == "counterfactual_probe_recorded_no_repair"
+    assert diagnostics["counterfactual_probe_gate"] == "diagnostic_only"
+    assert diagnostics["counterfactual_probe_policy"] == "deterministic_missing_constraint_probe_v1"
+    assert diagnostics["counterfactual_probe_observation"] == "deterministic_scaffold"
+    assert diagnostics["probe_feature_delta"]["expected_gap_visibility_gain"] <= 2.0 / 3.0
+    assert "full_repair_authorized=false" in diagnostics["counterfactual_probe_text"]
+    assert not _should_run_primary_repair_pass(
+        trigger="counterfactual_micro_probe_v1",
+        source_record=source,
+        source_controls=[],
+        task_prompt=prompt,
+        task_answer_type="rubric",
+        source_quality_threshold=0.99,
+        source_min_chars=40,
+        source_prompt_gap_min=2,
+        source_prompt_gap_max=8,
+        source_prompt_coverage_min=0.30,
+        source_prompt_coverage_max=1.00,
+    )
+
+
 def test_primary_repair_gate_diagnostics_apply_denoise_value_proxy():
     prompt = (
         "Run two GPU jobs overnight: one reliable baseline and one risky reasoning "

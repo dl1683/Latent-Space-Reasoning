@@ -194,6 +194,12 @@ keeps all seven profitable rows and removes four of five no-lift rows, but it
 is still `diagnostic_only` because the decisive probe deltas are generated
 predictions rather than measured cheap-probe observations.
 
+The runner now exposes the diagnostic hook in
+`DIFFUSION_COUNTERFACTUAL_MICRO_PROBE_RUNNER_HOOK_V1.md` through
+`--repair-spend-trigger counterfactual_micro_probe_v1`. That trigger records
+probe fields in `repair_spend_gate_rows` while forcing `should_run=false`, so it
+cannot promote full repair spend before measured probe deltas exist.
+
 ## Falsifiers
 
 This architecture is wrong if any of the following happen:

@@ -135,6 +135,10 @@ LEARNED_AVAILABILITY_PROMPT_GAP_MAX = 8
 CALIBRATED_AVAILABILITY_PREDICTOR_SELECTOR_ID = "calibrated_availability_predictor_v1"
 CALIBRATED_AVAILABILITY_PREDICTOR_RULE_ID = "calibrated_gap_not_7_source_ge_trajectory"
 CALIBRATED_AVAILABILITY_BLOCKED_PROMPT_GAP = 7
+COUNTERFACTUAL_MICRO_PROBE_TRIGGER_ID = "counterfactual_micro_probe_v1"
+COUNTERFACTUAL_MICRO_PROBE_POLICY_ID = "deterministic_missing_constraint_probe_v1"
+COUNTERFACTUAL_MICRO_PROBE_COST_RELATIVE = 0.125
+COUNTERFACTUAL_MICRO_PROBE_GAP_VISIBILITY_MAX = 2.0 / 3.0
 DEFAULT_ADAPTIVE_SOURCE_GAP_MIN_TERMS = 6
 DEFAULT_ADAPTIVE_SOURCE_QUALITY_FLOOR = 0.25
 DEFAULT_ADAPTIVE_SOURCE_QUALITY_CEILING: float | None = None
@@ -682,6 +686,7 @@ def parse_args() -> argparse.Namespace:
             TRAJECTORY_RELATIVE_DECOMPOSED_SPEND_SELECTOR_ID,
             LEARNED_AVAILABILITY_PREDICTOR_SELECTOR_ID,
             CALIBRATED_AVAILABILITY_PREDICTOR_SELECTOR_ID,
+            COUNTERFACTUAL_MICRO_PROBE_TRIGGER_ID,
         ),
         default="always",
         help=(
@@ -705,7 +710,10 @@ def parse_args() -> argparse.Namespace:
             "availability rule from DIFFUSION_AVAILABILITY_PREDICTOR_FIT.md; "
             f"'{CALIBRATED_AVAILABILITY_PREDICTOR_SELECTOR_ID}' uses the v3/v4 "
             "calibrated availability boundary without the failed absolute "
-            "source-quality ceiling."
+            "source-quality ceiling; "
+            f"'{COUNTERFACTUAL_MICRO_PROBE_TRIGGER_ID}' records a bounded "
+            "counterfactual-probe observation in gate diagnostics but never "
+            "authorizes full repair spend."
         ),
     )
     parser.add_argument(
@@ -2395,6 +2403,30 @@ def _primary_repair_gate_diagnostics(
         diagnostics["should_run"] = source_needs_repair
         diagnostics["reason"] = "source_needs_repair" if source_needs_repair else "source_quality_ok"
         return diagnostics
+    if trigger == COUNTERFACTUAL_MICRO_PROBE_TRIGGER_ID:
+        diagnostics.update(
+            _counterfactual_micro_probe_diagnostics(
+                source_record=source_record,
+                task_prompt=task_prompt,
+                source_quality=source_quality,
+                source_task_score=source_task_score,
+                trajectory_task_score=trajectory_task_score,
+                prompt_gap_count=prompt_gap_count,
+                denoise_skeleton=denoise_skeleton,
+                source_needs_repair=source_needs_repair,
+                source_prompt_gap_min=source_prompt_gap_min,
+                source_prompt_gap_max=source_prompt_gap_max,
+                prompt_coverage=prompt_coverage,
+                source_prompt_coverage_min=source_prompt_coverage_min,
+                source_prompt_coverage_max=source_prompt_coverage_max,
+            )
+        )
+        diagnostics["reason"] = (
+            "counterfactual_probe_recorded_no_repair"
+            if bool(diagnostics["would_probe"])
+            else "counterfactual_probe_triage_skip_no_repair"
+        )
+        return diagnostics
     if trigger in {
         "source_repairability_geometry",
         "denoise_phase_repairability",
@@ -2558,6 +2590,125 @@ def _primary_repair_gate_diagnostics(
         )
         return diagnostics
     raise ValueError(f"Unsupported repair spend trigger: {trigger}")
+
+
+def _counterfactual_micro_probe_diagnostics(
+    *,
+    source_record: dict[str, object],
+    task_prompt: str,
+    source_quality: float,
+    source_task_score: float,
+    trajectory_task_score: float,
+    prompt_gap_count: int,
+    denoise_skeleton: dict[str, object],
+    source_needs_repair: bool,
+    source_prompt_gap_min: int,
+    source_prompt_gap_max: int,
+    prompt_coverage: float,
+    source_prompt_coverage_min: float,
+    source_prompt_coverage_max: float,
+) -> dict[str, object]:
+    probe_feature_delta = _counterfactual_probe_feature_delta(
+        prompt_gap_count=prompt_gap_count,
+        denoise_skeleton=denoise_skeleton,
+    )
+    probe_value_prediction = _counterfactual_probe_value_prediction(
+        source_quality=source_quality,
+        source_task_delta_vs_trajectory=source_task_score - trajectory_task_score,
+        probe_feature_delta=probe_feature_delta,
+    )
+    in_probe_band = (
+        source_needs_repair
+        and source_prompt_gap_min <= prompt_gap_count <= source_prompt_gap_max
+        and source_prompt_coverage_min <= prompt_coverage <= source_prompt_coverage_max
+    )
+    would_probe = (
+        in_probe_band
+        and _number(probe_feature_delta["expected_gap_visibility_gain"])
+        <= COUNTERFACTUAL_MICRO_PROBE_GAP_VISIBILITY_MAX
+    )
+    return {
+        "counterfactual_probe_gate": "diagnostic_only",
+        "counterfactual_probe_policy": COUNTERFACTUAL_MICRO_PROBE_POLICY_ID,
+        "counterfactual_probe_cost_relative": COUNTERFACTUAL_MICRO_PROBE_COST_RELATIVE,
+        "counterfactual_probe_observation": "deterministic_scaffold",
+        "counterfactual_probe_text": _counterfactual_probe_text(
+            source_record=source_record,
+            task_prompt=task_prompt,
+            prompt_gap_count=prompt_gap_count,
+            source_quality=source_quality,
+            denoise_skeleton=denoise_skeleton,
+        ),
+        "probe_feature_delta": probe_feature_delta,
+        "probe_value_prediction": probe_value_prediction,
+        "would_probe": would_probe,
+        "should_run": False,
+    }
+
+
+def _counterfactual_probe_feature_delta(
+    *,
+    prompt_gap_count: int,
+    denoise_skeleton: dict[str, object],
+) -> dict[str, float]:
+    first_coverage = _number(denoise_skeleton.get("first_repairable_denoise_skeleton_coverage"))
+    peak_coverage = _number(denoise_skeleton.get("peak_denoise_prompt_coverage"))
+    first_step_fraction = _number(denoise_skeleton.get("first_repairable_denoise_skeleton_step_fraction"))
+    has_skeleton = bool(denoise_skeleton.get("has_repairable_denoise_skeleton"))
+    return {
+        "expected_gap_visibility_gain": min(1.0, max(0.0, prompt_gap_count / 12.0)),
+        "expected_realization_defect_visibility": max(0.0, 1.0 - min(1.0, peak_coverage)),
+        "expected_span_evidence_gain": min(1.0, max(first_coverage, peak_coverage)),
+        "expected_retention_risk_visibility": (
+            min(1.0, max(0.0, first_step_fraction))
+            if has_skeleton
+            else 1.0
+        ),
+    }
+
+
+def _counterfactual_probe_value_prediction(
+    *,
+    source_quality: float,
+    source_task_delta_vs_trajectory: float,
+    probe_feature_delta: dict[str, float],
+) -> float:
+    gap_visibility = _number(probe_feature_delta.get("expected_gap_visibility_gain"))
+    span_gain = _number(probe_feature_delta.get("expected_span_evidence_gain"))
+    defect_visibility = _number(probe_feature_delta.get("expected_realization_defect_visibility"))
+    retention_risk = _number(probe_feature_delta.get("expected_retention_risk_visibility"))
+    raw = (
+        0.035 * gap_visibility
+        + 0.030 * span_gain
+        + 0.020 * defect_visibility
+        - 0.020 * retention_risk
+        - 0.015 * max(0.0, source_quality - 0.30)
+        + 0.010 * max(0.0, source_task_delta_vs_trajectory)
+    )
+    return max(0.0, raw)
+
+
+def _counterfactual_probe_text(
+    *,
+    source_record: dict[str, object],
+    task_prompt: str,
+    prompt_gap_count: int,
+    source_quality: float,
+    denoise_skeleton: dict[str, object],
+) -> str:
+    gap_terms = _prompt_constraint_gap_terms(
+        task_prompt,
+        str(source_record.get("text", "")),
+        limit=6,
+    )
+    gap_text = ", ".join(gap_terms) if gap_terms else "none"
+    return (
+        f"Probe {_task_id(source_record)}: missing_terms={gap_text}; "
+        f"gap_count={prompt_gap_count}; "
+        f"source_quality={source_quality:.6f}; "
+        f"first_skeleton_step={denoise_skeleton.get('first_repairable_denoise_skeleton_step')}; "
+        "full_repair_authorized=false."
+    )
 
 
 def _apply_decomposed_selector_diagnostics(
