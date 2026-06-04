@@ -35,6 +35,7 @@ from typing import Any
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
 
 from latent_reasoning.diffusion import (  # noqa: E402
+    DiffusionGenerationConfig,
     DiffusionVerifierRepairCandidate,
     HFDiffusionBackend,
     attach_control_score,
@@ -139,6 +140,8 @@ COUNTERFACTUAL_MICRO_PROBE_TRIGGER_ID = "counterfactual_micro_probe_v1"
 COUNTERFACTUAL_MICRO_PROBE_POLICY_ID = "deterministic_missing_constraint_probe_v1"
 COUNTERFACTUAL_MICRO_PROBE_COST_RELATIVE = 0.125
 COUNTERFACTUAL_MICRO_PROBE_GAP_VISIBILITY_MAX = 2.0 / 3.0
+COUNTERFACTUAL_MICRO_PROBE_MAX_NEW_TOKENS = 32
+COUNTERFACTUAL_MICRO_PROBE_STEPS = 16
 DEFAULT_ADAPTIVE_SOURCE_GAP_MIN_TERMS = 6
 DEFAULT_ADAPTIVE_SOURCE_QUALITY_FLOOR = 0.25
 DEFAULT_ADAPTIVE_SOURCE_QUALITY_CEILING: float | None = None
@@ -1255,6 +1258,27 @@ def main() -> int:
                     )
                     for source_record in repair_source_records
                 ]
+                if args.repair_spend_trigger == COUNTERFACTUAL_MICRO_PROBE_TRIGGER_ID:
+                    for source_record, diagnostics in repair_gate_pairs:
+                        if not bool(diagnostics.get("would_probe")):
+                            continue
+                        probe_record = _generate_counterfactual_micro_probe_record(
+                            backend,
+                            task,
+                            source_record=source_record,
+                            diagnostics=diagnostics,
+                            generation_seed_base=args.generation_seed,
+                        )
+                        diagnostics.update(
+                            _measured_counterfactual_micro_probe_diagnostics(
+                                probe_record,
+                                source_record=source_record,
+                                task_prompt=task.prompt,
+                                diagnostics=diagnostics,
+                            )
+                        )
+                        _append_jsonl(raw_output, probe_record)
+                        _print_generation(probe_record)
                 repair_spend_gate_rows.extend(
                     _repair_spend_gate_row(source_record, diagnostics)
                     for source_record, diagnostics in repair_gate_pairs
@@ -2641,6 +2665,7 @@ def _counterfactual_micro_probe_diagnostics(
         ),
         "probe_feature_delta": probe_feature_delta,
         "probe_value_prediction": probe_value_prediction,
+        "in_repairable_band": in_probe_band,
         "would_probe": would_probe,
         "should_run": False,
     }
@@ -2686,6 +2711,158 @@ def _counterfactual_probe_value_prediction(
         + 0.010 * max(0.0, source_task_delta_vs_trajectory)
     )
     return max(0.0, raw)
+
+
+def _generate_counterfactual_micro_probe_record(
+    backend: HFDiffusionBackend,
+    task: GeneralReasoningTask,
+    *,
+    source_record: dict[str, object],
+    diagnostics: dict[str, object],
+    generation_seed_base: int,
+) -> dict[str, object]:
+    generation_seed = _stable_generation_seed(
+        generation_seed_base,
+        str(source_record.get("candidate_key", "")),
+        task.task_id,
+        f"{COUNTERFACTUAL_MICRO_PROBE_TRIGGER_ID}:{_control_name(source_record)}",
+    )
+    _set_generation_seed(generation_seed)
+    config = DiffusionGenerationConfig(
+        max_new_tokens=COUNTERFACTUAL_MICRO_PROBE_MAX_NEW_TOKENS,
+        steps=COUNTERFACTUAL_MICRO_PROBE_STEPS,
+        algorithm="low_confidence",
+        block_length=COUNTERFACTUAL_MICRO_PROBE_MAX_NEW_TOKENS,
+        remasking="low_confidence",
+        temperature=0.0,
+        output_history=False,
+        history_sample_count=0,
+    )
+    probe_metadata = {
+        "probe_trigger": COUNTERFACTUAL_MICRO_PROBE_TRIGGER_ID,
+        "probe_policy": COUNTERFACTUAL_MICRO_PROBE_POLICY_ID,
+        "probe_cost_relative": COUNTERFACTUAL_MICRO_PROBE_COST_RELATIVE,
+        "probe_budget_max_new_tokens": COUNTERFACTUAL_MICRO_PROBE_MAX_NEW_TOKENS,
+        "probe_budget_steps": COUNTERFACTUAL_MICRO_PROBE_STEPS,
+        "probe_observation": "measured_generation",
+        "source_control": _control_name(source_record),
+        "source_task_score": _task_score(source_record),
+        "source_planning_quality_score": diagnostics.get("source_quality"),
+        "source_prompt_gap_count": diagnostics.get("prompt_gap_count"),
+        "source_prompt_coverage": diagnostics.get("prompt_coverage"),
+        "source_first_repairable_denoise_skeleton_step": diagnostics.get(
+            "first_repairable_denoise_skeleton_step"
+        ),
+        "full_repair_authorized": False,
+    }
+    return _generate_record(
+        backend,
+        task,
+        config=config,
+        schedule={"name": COUNTERFACTUAL_MICRO_PROBE_TRIGGER_ID},
+        stage="counterfactual_probe",
+        generation_seed=generation_seed,
+        prompt_override=_counterfactual_micro_probe_prompt(
+            task_prompt=task.prompt,
+            source_text=str(source_record.get("text", "")),
+            diagnostics=diagnostics,
+        ),
+        counterfactual_probe=probe_metadata,
+    )
+
+
+def _measured_counterfactual_micro_probe_diagnostics(
+    probe_record: dict[str, object],
+    *,
+    source_record: dict[str, object],
+    task_prompt: str,
+    diagnostics: dict[str, object],
+) -> dict[str, object]:
+    measured_text = str(probe_record.get("text", ""))
+    source_text = str(source_record.get("text", ""))
+    source_gap_terms = _prompt_constraint_gap_terms(task_prompt, source_text, limit=12)
+    remaining_gap_terms = [
+        term
+        for term in source_gap_terms
+        if _normalize(term) not in _normalize(measured_text)
+    ]
+    source_prompt_gap_count = int(_number(diagnostics.get("prompt_gap_count")))
+    measured_delta = {
+        "expected_gap_visibility_gain": _safe_ratio(
+            max(0, len(source_gap_terms) - len(remaining_gap_terms)),
+            max(1, len(source_gap_terms)),
+        ),
+        "expected_realization_defect_visibility": _counterfactual_probe_realization_signal(measured_text),
+        "expected_span_evidence_gain": _prompt_keyword_coverage(task_prompt, _normalize(measured_text)),
+        "expected_retention_risk_visibility": max(
+            0.0,
+            1.0 - _text_similarity(measured_text, source_text),
+        ),
+    }
+    measured_value = _counterfactual_probe_value_prediction(
+        source_quality=_number(diagnostics.get("source_quality")),
+        source_task_delta_vs_trajectory=_number(diagnostics.get("source_task_delta_vs_trajectory")),
+        probe_feature_delta=measured_delta,
+    )
+    return {
+        "counterfactual_probe_observation": "measured_generation",
+        "counterfactual_probe_record_id": _record_identity(probe_record),
+        "counterfactual_probe_generated_token_count": int(
+            _number(probe_record.get("generated_token_count"))
+        ),
+        "counterfactual_probe_measured_text": _compact_text(measured_text, max_chars=360),
+        "counterfactual_probe_remaining_gap_count": len(remaining_gap_terms),
+        "counterfactual_probe_resolved_gap_count": max(
+            0,
+            min(source_prompt_gap_count, len(source_gap_terms) - len(remaining_gap_terms)),
+        ),
+        "counterfactual_probe_source_gap_terms": source_gap_terms,
+        "counterfactual_probe_remaining_gap_terms": remaining_gap_terms,
+        "measured_probe_feature_delta": measured_delta,
+        "measured_probe_value_prediction": measured_value,
+        "probe_feature_delta": measured_delta,
+        "probe_value_prediction": measured_value,
+        "should_run": False,
+    }
+
+
+def _counterfactual_micro_probe_prompt(
+    *,
+    task_prompt: str,
+    source_text: str,
+    diagnostics: dict[str, object],
+) -> str:
+    gap_terms = _prompt_constraint_gap_terms(task_prompt, source_text, limit=8)
+    gap_text = ", ".join(gap_terms) if gap_terms else "none"
+    draft = _compact_text(source_text, max_chars=700)
+    return (
+        f"{task_prompt}\n\n"
+        f"Draft answer under inspection:\n{draft}\n\n"
+        f"Missing or weak task terms: {gap_text}\n\n"
+        "Counterfactual micro-probe only. Do not rewrite the full answer and do not solve "
+        "the whole task. In at most 80 words, list: "
+        "1) the missing constraint that most changes repair value; "
+        "2) the verifier-visible evidence needed to decide whether repair is worth buying; "
+        "3) any retention risk in the draft. End with FULL_REPAIR_AUTHORIZED=false."
+    )
+
+
+def _counterfactual_probe_realization_signal(text: str) -> float:
+    normalized = _normalize(text)
+    if not normalized:
+        return 0.0
+    evidence_terms = (
+        "missing",
+        "constraint",
+        "evidence",
+        "verifier",
+        "measure",
+        "risk",
+        "fallback",
+        "threshold",
+        "repair",
+    )
+    return min(1.0, sum(1 for term in evidence_terms if term in normalized) / 5.0)
 
 
 def _counterfactual_probe_text(
@@ -4331,6 +4508,7 @@ def _generate_record(
     stage: str,
     generation_seed: int,
     repair: dict[str, object] | None = None,
+    counterfactual_probe: dict[str, object] | None = None,
     prompt_override: str | None = None,
 ) -> dict[str, object]:
     result = backend.generate(prompt_override or task.prompt, config=config)
@@ -4350,6 +4528,8 @@ def _generate_record(
     record["schedule"] = schedule
     if repair is not None:
         record["repair"] = repair
+    if counterfactual_probe is not None:
+        record["counterfactual_probe"] = counterfactual_probe
     record["task_score"] = task_score.to_dict()
     record = attach_control_score(record)
     record["combined_selection_score"] = _combined_score(record)
@@ -6379,9 +6559,17 @@ def summarize_three_arm_scores(
     ]
     task_rows = _comparison_rows(arm_records, all_records)
     oracle_records = _oracle_records(all_records)
+    gate_rows = repair_spend_gate_rows or []
+    counterfactual_probe_generation_count = sum(
+        1
+        for row in gate_rows
+        if isinstance(row, dict)
+        and row.get("counterfactual_probe_observation") == "measured_generation"
+    )
     scores = {
         "all_generation_count": len(all_records),
         "arm_selection_count": len(arm_records),
+        "counterfactual_probe_generation_count": counterfactual_probe_generation_count,
         "exact_task_trajectory_policy": exact_task_trajectory_policy,
         "exact_trajectory_selection_source_counts": _exact_trajectory_selection_source_counts(arm_records),
         "history_mutability": _history_mutability_summary(all_records),
@@ -6459,7 +6647,7 @@ def summarize_three_arm_scores(
         ),
         "repair_candidate_summary": _repair_candidate_summary(all_records, repair_records),
         "planning_span_target_rows": _planning_span_target_rows(all_records, repair_records),
-        "repair_spend_gate_rows": repair_spend_gate_rows or [],
+        "repair_spend_gate_rows": gate_rows,
         "adaptive_source_gate_rows": _adaptive_source_gate_rows(
             all_records,
             arm_records,
@@ -7095,6 +7283,7 @@ def render_report(scores: dict[str, object]) -> str:
         "# Diffusion Schedule-Selection Benchmark Report",
         "",
         f"Full model generations: `{scores['all_generation_count']}`",
+        f"Counterfactual probe generations: `{int(scores.get('counterfactual_probe_generation_count', 0))}`",
         f"Arm selections: `{scores['arm_selection_count']}`",
         f"Run ID: `{scores.get('run_id', '')}`",
         f"Content hash: `{scores.get('content_hash', '')}`",
@@ -7312,8 +7501,8 @@ def render_report(scores: dict[str, object]) -> str:
                 "",
                 "## Repair Spend Gate Diagnostics",
                 "",
-                "| Candidate | Task | Source | Run | Reason | Source Task | Source PQ | Chars | Needs Repair | Gap Terms | Coverage | Repairable Band | Denoise Skeleton | Skeleton Step | Step Frac | Skeleton Coverage | Peak Coverage |",
-                "| --- | --- | --- | --- | --- | ---: | ---: | ---: | --- | ---: | ---: | --- | --- | ---: | ---: | ---: | ---: |",
+                "| Candidate | Task | Source | Run | Reason | Probe | Probe Observation | Source Task | Source PQ | Chars | Needs Repair | Gap Terms | Coverage | Repairable Band | Denoise Skeleton | Skeleton Step | Step Frac | Skeleton Coverage | Peak Coverage |",
+                "| --- | --- | --- | --- | --- | --- | --- | ---: | ---: | ---: | --- | ---: | ---: | --- | --- | ---: | ---: | ---: | ---: |",
             ]
         )
         for row in repair_spend_gate_rows:
@@ -7326,6 +7515,8 @@ def render_report(scores: dict[str, object]) -> str:
                 f"{row.get('source_control', '')} | "
                 f"{bool(row.get('should_run', False))} | "
                 f"{row.get('reason', '')} | "
+                f"{bool(row.get('would_probe', False))} | "
+                f"{row.get('counterfactual_probe_observation', '')} | "
                 f"{float(row.get('source_task_score', 0.0)):.3f} | "
                 f"{float(row.get('source_quality', 0.0)):.3f} | "
                 f"{int(row.get('source_chars', 0))} | "

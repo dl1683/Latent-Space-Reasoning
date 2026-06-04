@@ -17,12 +17,14 @@ from experiments.run_diffusion_three_arm_benchmark import (
     _exact_answer_repair_selection_score,
     _float_csv,
     _format_fraction_list,
+    _generate_counterfactual_micro_probe_record,
     _generate_exact_answer_repair_records,
     _generate_repair_records,
     _history_instability_gate_decision,
     _history_rescue_candidates,
     _label_free_exact_answer_from_text,
     _label_free_exact_answer_supported,
+    _measured_counterfactual_micro_probe_diagnostics,
     _phase_history_anchor_has_source_advantage,
     _phase_history_anchor_passes_source_policy,
     _planning_constraint_gap_span_target_scores,
@@ -6094,6 +6096,84 @@ def test_counterfactual_micro_probe_trigger_records_probe_without_repair_spend()
         source_prompt_coverage_min=0.30,
         source_prompt_coverage_max=1.00,
     )
+
+
+def test_counterfactual_micro_probe_generation_records_measured_probe_metadata():
+    task = GeneralReasoningTask(
+        task_id="plan_probe",
+        family="planning",
+        prompt=(
+            "Run two GPU jobs overnight: one reliable baseline and one risky reasoning "
+            "intervention. Collect measurements, failure evidence, and a publishable fallback."
+        ),
+        answer_type="rubric",
+        scorer="generic_planning_surface",
+        max_new_tokens=64,
+    )
+    source = {
+        **_record("llada-moe-7b-a1b-instruct-hf", "plan_probe", "low_confidence_32", task_score=0.0, trajectory_score=0.5),
+        "history_steps": 16,
+        "text": "Run baseline and intervention, collect measurements and failure evidence.",
+        "trajectory_summary": {
+            "samples": [
+                {"step": 4, "visible_chars": 24, "visible_text": "Collect the baseline."},
+                {
+                    "step": 8,
+                    "visible_chars": 55,
+                    "visible_text": "Collect the baseline measurement and failure evidence.",
+                },
+            ]
+        },
+    }
+    diagnostics = _primary_repair_gate_diagnostics(
+        trigger="counterfactual_micro_probe_v1",
+        source_record=source,
+        source_controls=[],
+        task_prompt=task.prompt,
+        task_answer_type="rubric",
+        source_quality_threshold=0.99,
+        source_min_chars=40,
+        source_prompt_gap_min=2,
+        source_prompt_gap_max=8,
+        source_prompt_coverage_min=0.30,
+        source_prompt_coverage_max=1.00,
+    )
+    backend = _FakeExactRepairBackend(
+        [
+            (
+                "Missing constraint: threshold and publishable fallback. "
+                "Verifier evidence: measurement table and failure evidence. "
+                "Retention risk: preserve baseline and intervention. "
+                "FULL_REPAIR_AUTHORIZED=false."
+            )
+        ]
+    )
+
+    probe_record = _generate_counterfactual_micro_probe_record(
+        backend,
+        task,
+        source_record=source,
+        diagnostics=diagnostics,
+        generation_seed_base=123,
+    )
+    measured = _measured_counterfactual_micro_probe_diagnostics(
+        probe_record,
+        source_record=source,
+        task_prompt=task.prompt,
+        diagnostics=diagnostics,
+    )
+
+    assert probe_record["generation_stage"] == "counterfactual_probe"
+    assert probe_record["counterfactual_probe"]["probe_observation"] == "measured_generation"
+    assert probe_record["counterfactual_probe"]["full_repair_authorized"] is False
+    assert probe_record["config"]["max_new_tokens"] == 32
+    assert probe_record["config"]["steps"] == 16
+    assert "Counterfactual micro-probe only" in backend.prompts[0]
+    assert measured["counterfactual_probe_observation"] == "measured_generation"
+    assert measured["counterfactual_probe_generated_token_count"] == 0
+    assert measured["measured_probe_feature_delta"]["expected_gap_visibility_gain"] > 0.0
+    assert measured["probe_feature_delta"] == measured["measured_probe_feature_delta"]
+    assert measured["should_run"] is False
 
 
 def test_primary_repair_gate_diagnostics_apply_denoise_value_proxy():

@@ -136,8 +136,11 @@ keeps the result diagnostic until measured micro-probe deltas replace the
 generated predictions.
 [DIFFUSION_COUNTERFACTUAL_MICRO_PROBE_RUNNER_HOOK_V1.md](../DIFFUSION_COUNTERFACTUAL_MICRO_PROBE_RUNNER_HOOK_V1.md)
 adds the runner-facing `counterfactual_micro_probe_v1` trigger. It records
-probe diagnostics in gate rows while forcing `should_run=false`, so probe
-triage cannot accidentally become full repair spend.
+measured probe diagnostics in gate rows while forcing `should_run=false`, so
+probe triage cannot accidentally become full repair spend.
+[DIFFUSION_COUNTERFACTUAL_MICRO_PROBE_SMOKE_V1.md](../DIFFUSION_COUNTERFACTUAL_MICRO_PROBE_SMOKE_V1.md)
+is the first GPU smoke for that hook: one `plan_070` probe generation, measured
+deltas in the gate row, and no repair score credit.
 
 ## Benchmark And Cost Layer
 
@@ -183,7 +186,8 @@ hidden behind a large search stack:
 | [DIFFUSION_COUNTERFACTUAL_CONTROLLER_ARCHITECTURE_V1.md](../DIFFUSION_COUNTERFACTUAL_CONTROLLER_ARCHITECTURE_V1.md) | Next-controller contract: use frozen features for probe triage, then learn value-of-information from cheap counterfactual probe rows before another live spend gate. |
 | [DIFFUSION_COUNTERFACTUAL_PROBE_TARGETS_V1.md](../DIFFUSION_COUNTERFACTUAL_PROBE_TARGETS_V1.md) | First deterministic counterfactual-probe target sheet over named spend counterexamples; diagnostic scaffold for the future measured micro-probe run. |
 | [DIFFUSION_COUNTERFACTUAL_PROBE_POLICY_FIT_V1.md](../DIFFUSION_COUNTERFACTUAL_PROBE_POLICY_FIT_V1.md) | Offline value-of-information rule fit over the deterministic probe scaffold; one-error diagnostic result, not a promoted spend gate. |
-| [DIFFUSION_COUNTERFACTUAL_MICRO_PROBE_RUNNER_HOOK_V1.md](../DIFFUSION_COUNTERFACTUAL_MICRO_PROBE_RUNNER_HOOK_V1.md) | Runner hook for `--repair-spend-trigger counterfactual_micro_probe_v1`; records probe rows while blocking full repair spend. |
+| [DIFFUSION_COUNTERFACTUAL_MICRO_PROBE_RUNNER_HOOK_V1.md](../DIFFUSION_COUNTERFACTUAL_MICRO_PROBE_RUNNER_HOOK_V1.md) | Runner hook for `--repair-spend-trigger counterfactual_micro_probe_v1`; emits bounded probe records while blocking full repair spend. |
+| [DIFFUSION_COUNTERFACTUAL_MICRO_PROBE_SMOKE_V1.md](../DIFFUSION_COUNTERFACTUAL_MICRO_PROBE_SMOKE_V1.md) | First GPU smoke of the measured micro-probe hook on `plan_070`; confirms measured gate deltas with `should_run=false`. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT.md) | Transfer-rule fit showing current decomposed spend is the best repair-availability rule. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md) | Expanded transfer-rule fit over the eight-row independent slice. |
 | [DIFFUSION_TRANSFER_PROMOTION_VALUE.md](../DIFFUSION_TRANSFER_PROMOTION_VALUE.md) | Transfer promotion-value result showing named `--repair-selector transfer_promotion_value` realizes the low-margin repair. |
