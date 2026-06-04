@@ -190,6 +190,14 @@ threshold over one measured probe field. It should estimate local cohort value
 density, prediction uncertainty, or neighbor disagreement from the frozen
 probe-signature geometry before any new GPU slice is run.
 
+The first risk-adjusted neighbor attempt is recorded in
+`DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_COHORT_RISK_V4.md`. It improves global
+leave-one-slice-out signed utility to `0.685500` with zero false negatives and
+eight false positives, so it clears the old M1 scalar bar. It still selects all
+eight weak-slice rows, leaving six false positives and only `0.001429` weak-slice
+signed utility. Treat it as evidence that risk calibration helps, not as an M3
+unlock.
+
 ### M3: Frozen Fresh Slice
 
 Only after M1 and M2 pass, run a fresh GPU slice with the signed-value head
