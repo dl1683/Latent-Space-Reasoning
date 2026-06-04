@@ -1,0 +1,2716 @@
+{
+  "base_signature_positive_utility_bar": 0.6255,
+  "baseline_signature_gate": {
+    "error_count": 11,
+    "false_negative_count": 0,
+    "false_negative_task_ids": [],
+    "false_positive_count": 11,
+    "false_positive_task_ids": [
+      "plan_050",
+      "plan_064",
+      "plan_071",
+      "plan_002",
+      "plan_003",
+      "plan_017",
+      "plan_019",
+      "plan_020",
+      "plan_022",
+      "plan_023",
+      "plan_024"
+    ],
+    "model_id": "base_signature_gate",
+    "policy_utility": 0.49857142857142844,
+    "positive_lift_covered": 1.1455,
+    "positive_lift_utility": 0.6255,
+    "selected_count": 26,
+    "signed_lift_covered": 1.0185714285714285
+  },
+  "feature_groups": {
+    "all": [
+      "measured_probe_value_prediction",
+      "measured_expected_gap_visibility_gain",
+      "measured_expected_realization_defect_visibility",
+      "measured_expected_span_evidence_gain",
+      "measured_expected_retention_risk_visibility",
+      "measured_distinct_retention_risk_visibility",
+      "counterfactual_probe_text_x0_x2_slot_overlap",
+      "counterfactual_probe_text_max_slot_overlap",
+      "counterfactual_probe_text_repeated_token_excess",
+      "prompt_gap_count",
+      "source_quality",
+      "probe_signature_score",
+      "counterfactual_probe_text_semantic_valid_for_stage1",
+      "counterfactual_probe_text_semantic_defect",
+      "counterfactual_probe_text_malformed_compact_key",
+      "counterfactual_probe_text_template_slot_echo",
+      "counterfactual_probe_text_duplicate_authorization",
+      "counterfactual_probe_text_weird_punctuation",
+      "would_probe_score"
+    ],
+    "no_gap_span": [
+      "measured_probe_value_prediction",
+      "measured_expected_realization_defect_visibility",
+      "measured_expected_retention_risk_visibility",
+      "measured_distinct_retention_risk_visibility",
+      "counterfactual_probe_text_x0_x2_slot_overlap",
+      "counterfactual_probe_text_max_slot_overlap",
+      "counterfactual_probe_text_repeated_token_excess",
+      "source_quality",
+      "probe_signature_score",
+      "counterfactual_probe_text_semantic_valid_for_stage1",
+      "counterfactual_probe_text_semantic_defect",
+      "counterfactual_probe_text_malformed_compact_key",
+      "counterfactual_probe_text_template_slot_echo",
+      "counterfactual_probe_text_duplicate_authorization",
+      "counterfactual_probe_text_weird_punctuation",
+      "would_probe_score"
+    ],
+    "no_retention": [
+      "measured_probe_value_prediction",
+      "measured_expected_gap_visibility_gain",
+      "measured_expected_realization_defect_visibility",
+      "measured_expected_span_evidence_gain",
+      "counterfactual_probe_text_x0_x2_slot_overlap",
+      "counterfactual_probe_text_max_slot_overlap",
+      "counterfactual_probe_text_repeated_token_excess",
+      "prompt_gap_count",
+      "source_quality",
+      "probe_signature_score",
+      "counterfactual_probe_text_semantic_valid_for_stage1",
+      "counterfactual_probe_text_semantic_defect",
+      "counterfactual_probe_text_malformed_compact_key",
+      "counterfactual_probe_text_template_slot_echo",
+      "counterfactual_probe_text_duplicate_authorization",
+      "counterfactual_probe_text_weird_punctuation",
+      "would_probe_score"
+    ],
+    "no_source": [
+      "measured_probe_value_prediction",
+      "measured_expected_gap_visibility_gain",
+      "measured_expected_realization_defect_visibility",
+      "measured_expected_span_evidence_gain",
+      "measured_expected_retention_risk_visibility",
+      "measured_distinct_retention_risk_visibility",
+      "counterfactual_probe_text_x0_x2_slot_overlap",
+      "counterfactual_probe_text_max_slot_overlap",
+      "counterfactual_probe_text_repeated_token_excess",
+      "prompt_gap_count",
+      "probe_signature_score",
+      "counterfactual_probe_text_semantic_valid_for_stage1",
+      "counterfactual_probe_text_semantic_defect",
+      "counterfactual_probe_text_malformed_compact_key",
+      "counterfactual_probe_text_template_slot_echo",
+      "counterfactual_probe_text_duplicate_authorization",
+      "counterfactual_probe_text_weird_punctuation",
+      "would_probe_score"
+    ],
+    "no_text": [
+      "measured_probe_value_prediction",
+      "measured_expected_gap_visibility_gain",
+      "measured_expected_realization_defect_visibility",
+      "measured_expected_span_evidence_gain",
+      "measured_expected_retention_risk_visibility",
+      "measured_distinct_retention_risk_visibility",
+      "prompt_gap_count",
+      "source_quality",
+      "probe_signature_score"
+    ]
+  },
+  "generated_by": "experiments/fit_diffusion_span_probe_signed_value.py",
+  "inputs": {
+    "no_lift_veto": "eval_results\\diffusion_language\\counterfactual_span_probe_no_lift_veto_v4.json",
+    "signature_model": "eval_results\\diffusion_language\\counterfactual_span_probe_signature_model_v4.json"
+  },
+  "model_results": [
+    {
+      "error_count": 16,
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005",
+        "plan_006",
+        "plan_021"
+      ],
+      "false_positive_count": 6,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_022",
+        "plan_024"
+      ],
+      "feature_group_id": "all",
+      "model_id": "signed_value_knn_k1_all",
+      "neighbor_count": 1,
+      "policy_utility": -0.02371428571428566,
+      "positive_lift_covered": 0.3182142857142857,
+      "selected_count": 11,
+      "signed_lift_covered": 0.19628571428571434,
+      "slice_results": [
+        {
+          "error_count": 8,
+          "false_negative_count": 6,
+          "false_negative_task_ids": [
+            "plan_034",
+            "plan_044",
+            "plan_046",
+            "plan_061",
+            "plan_063",
+            "plan_072"
+          ],
+          "false_positive_count": 2,
+          "false_positive_task_ids": [
+            "plan_050",
+            "plan_064"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+          "policy_utility": -0.16942857142857137,
+          "positive_lift_covered": 0.012500000000000011,
+          "selected_count": 3,
+          "signed_lift_covered": -0.10942857142857138
+        },
+        {
+          "error_count": 3,
+          "false_negative_count": 3,
+          "false_negative_task_ids": [
+            "plan_001",
+            "plan_005",
+            "plan_006"
+          ],
+          "false_positive_count": 0,
+          "false_positive_task_ids": [],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+          "policy_utility": 0.1557142857142857,
+          "positive_lift_covered": 0.2157142857142857,
+          "selected_count": 3,
+          "signed_lift_covered": 0.2157142857142857
+        },
+        {
+          "error_count": 5,
+          "false_negative_count": 1,
+          "false_negative_task_ids": [
+            "plan_021"
+          ],
+          "false_positive_count": 4,
+          "false_positive_task_ids": [
+            "plan_017",
+            "plan_019",
+            "plan_022",
+            "plan_024"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+          "policy_utility": -0.009999999999999981,
+          "positive_lift_covered": 0.09000000000000002,
+          "selected_count": 5,
+          "signed_lift_covered": 0.09000000000000002
+        }
+      ]
+    },
+    {
+      "error_count": 12,
+      "false_negative_count": 5,
+      "false_negative_task_ids": [
+        "plan_044",
+        "plan_061",
+        "plan_001",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature_group_id": "all",
+      "model_id": "signed_value_knn_k2_all",
+      "neighbor_count": 2,
+      "policy_utility": 0.3778571428571427,
+      "positive_lift_covered": 0.7178571428571427,
+      "selected_count": 17,
+      "signed_lift_covered": 0.7178571428571427,
+      "slice_results": [
+        {
+          "error_count": 3,
+          "false_negative_count": 2,
+          "false_negative_task_ids": [
+            "plan_044",
+            "plan_061"
+          ],
+          "false_positive_count": 1,
+          "false_positive_task_ids": [
+            "plan_071"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+          "policy_utility": 0.2207142857142857,
+          "positive_lift_covered": 0.3407142857142857,
+          "selected_count": 6,
+          "signed_lift_covered": 0.3407142857142857
+        },
+        {
+          "error_count": 4,
+          "false_negative_count": 3,
+          "false_negative_task_ids": [
+            "plan_001",
+            "plan_005",
+            "plan_006"
+          ],
+          "false_positive_count": 1,
+          "false_positive_task_ids": [
+            "plan_003"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+          "policy_utility": 0.13571428571428568,
+          "positive_lift_covered": 0.2157142857142857,
+          "selected_count": 4,
+          "signed_lift_covered": 0.2157142857142857
+        },
+        {
+          "error_count": 5,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 5,
+          "false_positive_task_ids": [
+            "plan_017",
+            "plan_019",
+            "plan_022",
+            "plan_023",
+            "plan_024"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+          "policy_utility": 0.021428571428571408,
+          "positive_lift_covered": 0.16142857142857142,
+          "selected_count": 7,
+          "signed_lift_covered": 0.16142857142857142
+        }
+      ]
+    },
+    {
+      "error_count": 12,
+      "false_negative_count": 3,
+      "false_negative_task_ids": [
+        "plan_001",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 9,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature_group_id": "all",
+      "model_id": "signed_value_knn_k3_all",
+      "neighbor_count": 3,
+      "policy_utility": 0.3742857142857143,
+      "positive_lift_covered": 0.8772857142857142,
+      "selected_count": 21,
+      "signed_lift_covered": 0.7942857142857143,
+      "slice_results": [
+        {
+          "error_count": 2,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 2,
+          "false_positive_task_ids": [
+            "plan_064",
+            "plan_071"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+          "policy_utility": 0.23714285714285716,
+          "positive_lift_covered": 0.5001428571428572,
+          "selected_count": 9,
+          "signed_lift_covered": 0.41714285714285715
+        },
+        {
+          "error_count": 4,
+          "false_negative_count": 3,
+          "false_negative_task_ids": [
+            "plan_001",
+            "plan_005",
+            "plan_006"
+          ],
+          "false_positive_count": 1,
+          "false_positive_task_ids": [
+            "plan_003"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+          "policy_utility": 0.13571428571428568,
+          "positive_lift_covered": 0.2157142857142857,
+          "selected_count": 4,
+          "signed_lift_covered": 0.2157142857142857
+        },
+        {
+          "error_count": 6,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 6,
+          "false_positive_task_ids": [
+            "plan_017",
+            "plan_019",
+            "plan_020",
+            "plan_022",
+            "plan_023",
+            "plan_024"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+          "policy_utility": 0.001428571428571418,
+          "positive_lift_covered": 0.16142857142857142,
+          "selected_count": 8,
+          "signed_lift_covered": 0.16142857142857142
+        }
+      ]
+    },
+    {
+      "error_count": 12,
+      "false_negative_count": 3,
+      "false_negative_task_ids": [
+        "plan_001",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 9,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature_group_id": "all",
+      "model_id": "signed_value_knn_k5_all",
+      "neighbor_count": 5,
+      "policy_utility": 0.4183571428571429,
+      "positive_lift_covered": 0.8772857142857142,
+      "selected_count": 21,
+      "signed_lift_covered": 0.8383571428571429,
+      "slice_results": [
+        {
+          "error_count": 2,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 2,
+          "false_positive_task_ids": [
+            "plan_050",
+            "plan_071"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+          "policy_utility": 0.2812142857142858,
+          "positive_lift_covered": 0.5001428571428572,
+          "selected_count": 9,
+          "signed_lift_covered": 0.4612142857142858
+        },
+        {
+          "error_count": 4,
+          "false_negative_count": 3,
+          "false_negative_task_ids": [
+            "plan_001",
+            "plan_005",
+            "plan_006"
+          ],
+          "false_positive_count": 1,
+          "false_positive_task_ids": [
+            "plan_003"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+          "policy_utility": 0.13571428571428568,
+          "positive_lift_covered": 0.2157142857142857,
+          "selected_count": 4,
+          "signed_lift_covered": 0.2157142857142857
+        },
+        {
+          "error_count": 6,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 6,
+          "false_positive_task_ids": [
+            "plan_017",
+            "plan_019",
+            "plan_020",
+            "plan_022",
+            "plan_023",
+            "plan_024"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+          "policy_utility": 0.001428571428571418,
+          "positive_lift_covered": 0.16142857142857142,
+          "selected_count": 8,
+          "signed_lift_covered": 0.16142857142857142
+        }
+      ]
+    },
+    {
+      "error_count": 9,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 9,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature_group_id": "all",
+      "model_id": "signed_value_knn_k8_all",
+      "neighbor_count": 8,
+      "policy_utility": 0.5825,
+      "positive_lift_covered": 1.1455,
+      "selected_count": 24,
+      "signed_lift_covered": 1.0625,
+      "slice_results": [
+        {
+          "error_count": 2,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 2,
+          "false_positive_task_ids": [
+            "plan_064",
+            "plan_071"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+          "policy_utility": 0.23714285714285716,
+          "positive_lift_covered": 0.5001428571428572,
+          "selected_count": 9,
+          "signed_lift_covered": 0.41714285714285715
+        },
+        {
+          "error_count": 1,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 1,
+          "false_positive_task_ids": [
+            "plan_003"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+          "policy_utility": 0.3439285714285713,
+          "positive_lift_covered": 0.4839285714285713,
+          "selected_count": 7,
+          "signed_lift_covered": 0.4839285714285713
+        },
+        {
+          "error_count": 6,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 6,
+          "false_positive_task_ids": [
+            "plan_017",
+            "plan_019",
+            "plan_020",
+            "plan_022",
+            "plan_023",
+            "plan_024"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+          "policy_utility": 0.001428571428571418,
+          "positive_lift_covered": 0.16142857142857142,
+          "selected_count": 8,
+          "signed_lift_covered": 0.16142857142857142
+        }
+      ]
+    },
+    {
+      "error_count": 11,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 11,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_002",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature_group_id": "all",
+      "model_id": "signed_value_knn_k13_all",
+      "neighbor_count": 13,
+      "policy_utility": 0.49857142857142844,
+      "positive_lift_covered": 1.1455,
+      "selected_count": 26,
+      "signed_lift_covered": 1.0185714285714285,
+      "slice_results": [
+        {
+          "error_count": 3,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 3,
+          "false_positive_task_ids": [
+            "plan_050",
+            "plan_064",
+            "plan_071"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+          "policy_utility": 0.17821428571428577,
+          "positive_lift_covered": 0.5001428571428572,
+          "selected_count": 10,
+          "signed_lift_covered": 0.3782142857142858
+        },
+        {
+          "error_count": 2,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 2,
+          "false_positive_task_ids": [
+            "plan_002",
+            "plan_003"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+          "policy_utility": 0.31892857142857123,
+          "positive_lift_covered": 0.4839285714285713,
+          "selected_count": 8,
+          "signed_lift_covered": 0.4789285714285712
+        },
+        {
+          "error_count": 6,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 6,
+          "false_positive_task_ids": [
+            "plan_017",
+            "plan_019",
+            "plan_020",
+            "plan_022",
+            "plan_023",
+            "plan_024"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+          "policy_utility": 0.001428571428571418,
+          "positive_lift_covered": 0.16142857142857142,
+          "selected_count": 8,
+          "signed_lift_covered": 0.16142857142857142
+        }
+      ]
+    },
+    {
+      "error_count": 12,
+      "false_negative_count": 9,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005",
+        "plan_006",
+        "plan_008"
+      ],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_023"
+      ],
+      "feature_group_id": "no_text",
+      "model_id": "signed_value_knn_k1_no_text",
+      "neighbor_count": 1,
+      "policy_utility": 0.20021428571428573,
+      "positive_lift_covered": 0.46321428571428575,
+      "selected_count": 9,
+      "signed_lift_covered": 0.3802142857142857,
+      "slice_results": [
+        {
+          "error_count": 7,
+          "false_negative_count": 5,
+          "false_negative_task_ids": [
+            "plan_034",
+            "plan_044",
+            "plan_061",
+            "plan_063",
+            "plan_072"
+          ],
+          "false_positive_count": 2,
+          "false_positive_task_ids": [
+            "plan_064",
+            "plan_071"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+          "policy_utility": -0.07407142857142855,
+          "positive_lift_covered": 0.08892857142857147,
+          "selected_count": 4,
+          "signed_lift_covered": 0.00592857142857145
+        },
+        {
+          "error_count": 4,
+          "false_negative_count": 4,
+          "false_negative_task_ids": [
+            "plan_001",
+            "plan_005",
+            "plan_006",
+            "plan_008"
+          ],
+          "false_positive_count": 0,
+          "false_positive_task_ids": [],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+          "policy_utility": 0.17285714285714285,
+          "positive_lift_covered": 0.21285714285714286,
+          "selected_count": 2,
+          "signed_lift_covered": 0.21285714285714286
+        },
+        {
+          "error_count": 1,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 1,
+          "false_positive_task_ids": [
+            "plan_023"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+          "policy_utility": 0.10142857142857142,
+          "positive_lift_covered": 0.16142857142857142,
+          "selected_count": 3,
+          "signed_lift_covered": 0.16142857142857142
+        }
+      ]
+    },
+    {
+      "error_count": 8,
+      "false_negative_count": 5,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_001",
+        "plan_005",
+        "plan_006",
+        "plan_008"
+      ],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_071",
+        "plan_020",
+        "plan_023"
+      ],
+      "feature_group_id": "no_text",
+      "model_id": "signed_value_knn_k2_no_text",
+      "neighbor_count": 2,
+      "policy_utility": 0.518,
+      "positive_lift_covered": 0.778,
+      "selected_count": 13,
+      "signed_lift_covered": 0.778,
+      "slice_results": [
+        {
+          "error_count": 2,
+          "false_negative_count": 1,
+          "false_negative_task_ids": [
+            "plan_063"
+          ],
+          "false_positive_count": 1,
+          "false_positive_task_ids": [
+            "plan_071"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+          "policy_utility": 0.26371428571428573,
+          "positive_lift_covered": 0.40371428571428575,
+          "selected_count": 7,
+          "signed_lift_covered": 0.40371428571428575
+        },
+        {
+          "error_count": 4,
+          "false_negative_count": 4,
+          "false_negative_task_ids": [
+            "plan_001",
+            "plan_005",
+            "plan_006",
+            "plan_008"
+          ],
+          "false_positive_count": 0,
+          "false_positive_task_ids": [],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+          "policy_utility": 0.17285714285714285,
+          "positive_lift_covered": 0.21285714285714286,
+          "selected_count": 2,
+          "signed_lift_covered": 0.21285714285714286
+        },
+        {
+          "error_count": 2,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 2,
+          "false_positive_task_ids": [
+            "plan_020",
+            "plan_023"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+          "policy_utility": 0.08142857142857142,
+          "positive_lift_covered": 0.16142857142857142,
+          "selected_count": 4,
+          "signed_lift_covered": 0.16142857142857142
+        }
+      ]
+    },
+    {
+      "error_count": 11,
+      "false_negative_count": 5,
+      "false_negative_task_ids": [
+        "plan_061",
+        "plan_001",
+        "plan_005",
+        "plan_006",
+        "plan_008"
+      ],
+      "false_positive_count": 6,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_002",
+        "plan_020",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature_group_id": "no_text",
+      "model_id": "signed_value_knn_k3_no_text",
+      "neighbor_count": 3,
+      "policy_utility": 0.4194999999999998,
+      "positive_lift_covered": 0.8274999999999999,
+      "selected_count": 16,
+      "signed_lift_covered": 0.7394999999999998,
+      "slice_results": [
+        {
+          "error_count": 3,
+          "false_negative_count": 1,
+          "false_negative_task_ids": [
+            "plan_061"
+          ],
+          "false_positive_count": 2,
+          "false_positive_task_ids": [
+            "plan_064",
+            "plan_071"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+          "policy_utility": 0.21021428571428566,
+          "positive_lift_covered": 0.4532142857142857,
+          "selected_count": 8,
+          "signed_lift_covered": 0.37021428571428566
+        },
+        {
+          "error_count": 5,
+          "false_negative_count": 4,
+          "false_negative_task_ids": [
+            "plan_001",
+            "plan_005",
+            "plan_006",
+            "plan_008"
+          ],
+          "false_positive_count": 1,
+          "false_positive_task_ids": [
+            "plan_002"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+          "policy_utility": 0.14785714285714274,
+          "positive_lift_covered": 0.21285714285714286,
+          "selected_count": 3,
+          "signed_lift_covered": 0.20785714285714274
+        },
+        {
+          "error_count": 3,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 3,
+          "false_positive_task_ids": [
+            "plan_020",
+            "plan_023",
+            "plan_024"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+          "policy_utility": 0.061428571428571416,
+          "positive_lift_covered": 0.16142857142857142,
+          "selected_count": 5,
+          "signed_lift_covered": 0.16142857142857142
+        }
+      ]
+    },
+    {
+      "error_count": 10,
+      "false_negative_count": 4,
+      "false_negative_task_ids": [
+        "plan_001",
+        "plan_005",
+        "plan_006",
+        "plan_008"
+      ],
+      "false_positive_count": 6,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_003",
+        "plan_017",
+        "plan_020",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature_group_id": "no_text",
+      "model_id": "signed_value_knn_k5_no_text",
+      "neighbor_count": 5,
+      "policy_utility": 0.45142857142857135,
+      "positive_lift_covered": 0.8744285714285714,
+      "selected_count": 17,
+      "signed_lift_covered": 0.7914285714285714,
+      "slice_results": [
+        {
+          "error_count": 1,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 1,
+          "false_positive_task_ids": [
+            "plan_064"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+          "policy_utility": 0.2571428571428571,
+          "positive_lift_covered": 0.5001428571428572,
+          "selected_count": 8,
+          "signed_lift_covered": 0.41714285714285715
+        },
+        {
+          "error_count": 5,
+          "false_negative_count": 4,
+          "false_negative_task_ids": [
+            "plan_001",
+            "plan_005",
+            "plan_006",
+            "plan_008"
+          ],
+          "false_positive_count": 1,
+          "false_positive_task_ids": [
+            "plan_003"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+          "policy_utility": 0.15285714285714286,
+          "positive_lift_covered": 0.21285714285714286,
+          "selected_count": 3,
+          "signed_lift_covered": 0.21285714285714286
+        },
+        {
+          "error_count": 4,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 4,
+          "false_positive_task_ids": [
+            "plan_017",
+            "plan_020",
+            "plan_023",
+            "plan_024"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+          "policy_utility": 0.041428571428571426,
+          "positive_lift_covered": 0.16142857142857142,
+          "selected_count": 6,
+          "signed_lift_covered": 0.16142857142857142
+        }
+      ]
+    },
+    {
+      "error_count": 11,
+      "false_negative_count": 4,
+      "false_negative_task_ids": [
+        "plan_001",
+        "plan_005",
+        "plan_006",
+        "plan_008"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature_group_id": "no_text",
+      "model_id": "signed_value_knn_k8_no_text",
+      "neighbor_count": 8,
+      "policy_utility": 0.4314285714285714,
+      "positive_lift_covered": 0.8744285714285714,
+      "selected_count": 18,
+      "signed_lift_covered": 0.7914285714285714,
+      "slice_results": [
+        {
+          "error_count": 2,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 2,
+          "false_positive_task_ids": [
+            "plan_064",
+            "plan_071"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+          "policy_utility": 0.23714285714285716,
+          "positive_lift_covered": 0.5001428571428572,
+          "selected_count": 9,
+          "signed_lift_covered": 0.41714285714285715
+        },
+        {
+          "error_count": 4,
+          "false_negative_count": 4,
+          "false_negative_task_ids": [
+            "plan_001",
+            "plan_005",
+            "plan_006",
+            "plan_008"
+          ],
+          "false_positive_count": 0,
+          "false_positive_task_ids": [],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+          "policy_utility": 0.17285714285714285,
+          "positive_lift_covered": 0.21285714285714286,
+          "selected_count": 2,
+          "signed_lift_covered": 0.21285714285714286
+        },
+        {
+          "error_count": 5,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 5,
+          "false_positive_task_ids": [
+            "plan_017",
+            "plan_020",
+            "plan_022",
+            "plan_023",
+            "plan_024"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+          "policy_utility": 0.021428571428571408,
+          "positive_lift_covered": 0.16142857142857142,
+          "selected_count": 7,
+          "signed_lift_covered": 0.16142857142857142
+        }
+      ]
+    },
+    {
+      "error_count": 13,
+      "false_negative_count": 3,
+      "false_negative_task_ids": [
+        "plan_005",
+        "plan_006",
+        "plan_008"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature_group_id": "no_text",
+      "model_id": "signed_value_knn_k13_no_text",
+      "neighbor_count": 13,
+      "policy_utility": 0.3753571428571429,
+      "positive_lift_covered": 0.9372857142857143,
+      "selected_count": 22,
+      "signed_lift_covered": 0.8153571428571429,
+      "slice_results": [
+        {
+          "error_count": 3,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 3,
+          "false_positive_task_ids": [
+            "plan_050",
+            "plan_064",
+            "plan_071"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+          "policy_utility": 0.17821428571428577,
+          "positive_lift_covered": 0.5001428571428572,
+          "selected_count": 10,
+          "signed_lift_covered": 0.3782142857142858
+        },
+        {
+          "error_count": 4,
+          "false_negative_count": 3,
+          "false_negative_task_ids": [
+            "plan_005",
+            "plan_006",
+            "plan_008"
+          ],
+          "false_positive_count": 1,
+          "false_positive_task_ids": [
+            "plan_003"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+          "policy_utility": 0.19571428571428562,
+          "positive_lift_covered": 0.27571428571428563,
+          "selected_count": 4,
+          "signed_lift_covered": 0.27571428571428563
+        },
+        {
+          "error_count": 6,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 6,
+          "false_positive_task_ids": [
+            "plan_017",
+            "plan_019",
+            "plan_020",
+            "plan_022",
+            "plan_023",
+            "plan_024"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+          "policy_utility": 0.001428571428571418,
+          "positive_lift_covered": 0.16142857142857142,
+          "selected_count": 8,
+          "signed_lift_covered": 0.16142857142857142
+        }
+      ]
+    },
+    {
+      "error_count": 15,
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_021"
+      ],
+      "false_positive_count": 5,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_002",
+        "plan_019",
+        "plan_022",
+        "plan_024"
+      ],
+      "feature_group_id": "no_source",
+      "model_id": "signed_value_knn_k1_no_source",
+      "neighbor_count": 1,
+      "policy_utility": 0.1052142857142856,
+      "positive_lift_covered": 0.39321428571428574,
+      "selected_count": 10,
+      "signed_lift_covered": 0.3052142857142856,
+      "slice_results": [
+        {
+          "error_count": 6,
+          "false_negative_count": 5,
+          "false_negative_task_ids": [
+            "plan_044",
+            "plan_046",
+            "plan_061",
+            "plan_063",
+            "plan_072"
+          ],
+          "false_positive_count": 1,
+          "false_positive_task_ids": [
+            "plan_064"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+          "policy_utility": -0.034071428571428586,
+          "positive_lift_covered": 0.10892857142857143,
+          "selected_count": 3,
+          "signed_lift_covered": 0.025928571428571412
+        },
+        {
+          "error_count": 5,
+          "false_negative_count": 4,
+          "false_negative_task_ids": [
+            "plan_001",
+            "plan_004",
+            "plan_005",
+            "plan_006"
+          ],
+          "false_positive_count": 1,
+          "false_positive_task_ids": [
+            "plan_002"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+          "policy_utility": 0.12928571428571417,
+          "positive_lift_covered": 0.19428571428571428,
+          "selected_count": 3,
+          "signed_lift_covered": 0.18928571428571417
+        },
+        {
+          "error_count": 4,
+          "false_negative_count": 1,
+          "false_negative_task_ids": [
+            "plan_021"
+          ],
+          "false_positive_count": 3,
+          "false_positive_task_ids": [
+            "plan_019",
+            "plan_022",
+            "plan_024"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+          "policy_utility": 0.010000000000000023,
+          "positive_lift_covered": 0.09000000000000002,
+          "selected_count": 4,
+          "signed_lift_covered": 0.09000000000000002
+        }
+      ]
+    },
+    {
+      "error_count": 14,
+      "false_negative_count": 6,
+      "false_negative_task_ids": [
+        "plan_044",
+        "plan_061",
+        "plan_063",
+        "plan_001",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_071",
+        "plan_002",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature_group_id": "no_source",
+      "model_id": "signed_value_knn_k2_no_source",
+      "neighbor_count": 2,
+      "policy_utility": 0.2764285714285713,
+      "positive_lift_covered": 0.6214285714285714,
+      "selected_count": 17,
+      "signed_lift_covered": 0.6164285714285713,
+      "slice_results": [
+        {
+          "error_count": 4,
+          "false_negative_count": 3,
+          "false_negative_task_ids": [
+            "plan_044",
+            "plan_061",
+            "plan_063"
+          ],
+          "false_positive_count": 1,
+          "false_positive_task_ids": [
+            "plan_071"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+          "policy_utility": 0.14428571428571427,
+          "positive_lift_covered": 0.24428571428571427,
+          "selected_count": 5,
+          "signed_lift_covered": 0.24428571428571427
+        },
+        {
+          "error_count": 5,
+          "false_negative_count": 3,
+          "false_negative_task_ids": [
+            "plan_001",
+            "plan_005",
+            "plan_006"
+          ],
+          "false_positive_count": 2,
+          "false_positive_task_ids": [
+            "plan_002",
+            "plan_003"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+          "policy_utility": 0.11071428571428557,
+          "positive_lift_covered": 0.2157142857142857,
+          "selected_count": 5,
+          "signed_lift_covered": 0.21071428571428558
+        },
+        {
+          "error_count": 5,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 5,
+          "false_positive_task_ids": [
+            "plan_017",
+            "plan_019",
+            "plan_022",
+            "plan_023",
+            "plan_024"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+          "policy_utility": 0.021428571428571408,
+          "positive_lift_covered": 0.16142857142857142,
+          "selected_count": 7,
+          "signed_lift_covered": 0.16142857142857142
+        }
+      ]
+    },
+    {
+      "error_count": 13,
+      "false_negative_count": 3,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_002",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature_group_id": "no_source",
+      "model_id": "signed_value_knn_k3_no_source",
+      "neighbor_count": 3,
+      "policy_utility": 0.31571428571428556,
+      "positive_lift_covered": 0.8437142857142856,
+      "selected_count": 22,
+      "signed_lift_covered": 0.7557142857142856,
+      "slice_results": [
+        {
+          "error_count": 3,
+          "false_negative_count": 1,
+          "false_negative_task_ids": [
+            "plan_063"
+          ],
+          "false_positive_count": 2,
+          "false_positive_task_ids": [
+            "plan_064",
+            "plan_071"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+          "policy_utility": 0.16071428571428573,
+          "positive_lift_covered": 0.40371428571428575,
+          "selected_count": 8,
+          "signed_lift_covered": 0.32071428571428573
+        },
+        {
+          "error_count": 4,
+          "false_negative_count": 2,
+          "false_negative_task_ids": [
+            "plan_005",
+            "plan_006"
+          ],
+          "false_positive_count": 2,
+          "false_positive_task_ids": [
+            "plan_002",
+            "plan_003"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+          "policy_utility": 0.15357142857142836,
+          "positive_lift_covered": 0.27857142857142847,
+          "selected_count": 6,
+          "signed_lift_covered": 0.27357142857142835
+        },
+        {
+          "error_count": 6,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 6,
+          "false_positive_task_ids": [
+            "plan_017",
+            "plan_019",
+            "plan_020",
+            "plan_022",
+            "plan_023",
+            "plan_024"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+          "policy_utility": 0.001428571428571418,
+          "positive_lift_covered": 0.16142857142857142,
+          "selected_count": 8,
+          "signed_lift_covered": 0.16142857142857142
+        }
+      ]
+    },
+    {
+      "error_count": 10,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature_group_id": "no_source",
+      "model_id": "signed_value_knn_k5_no_source",
+      "neighbor_count": 5,
+      "policy_utility": 0.520142857142857,
+      "positive_lift_covered": 0.9401428571428571,
+      "selected_count": 21,
+      "signed_lift_covered": 0.9401428571428571,
+      "slice_results": [
+        {
+          "error_count": 1,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 1,
+          "false_positive_task_ids": [
+            "plan_071"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+          "policy_utility": 0.3401428571428572,
+          "positive_lift_covered": 0.5001428571428572,
+          "selected_count": 8,
+          "signed_lift_covered": 0.5001428571428572
+        },
+        {
+          "error_count": 3,
+          "false_negative_count": 2,
+          "false_negative_task_ids": [
+            "plan_005",
+            "plan_006"
+          ],
+          "false_positive_count": 1,
+          "false_positive_task_ids": [
+            "plan_003"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+          "policy_utility": 0.17857142857142846,
+          "positive_lift_covered": 0.27857142857142847,
+          "selected_count": 5,
+          "signed_lift_covered": 0.27857142857142847
+        },
+        {
+          "error_count": 6,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 6,
+          "false_positive_task_ids": [
+            "plan_017",
+            "plan_019",
+            "plan_020",
+            "plan_022",
+            "plan_023",
+            "plan_024"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+          "policy_utility": 0.001428571428571418,
+          "positive_lift_covered": 0.16142857142857142,
+          "selected_count": 8,
+          "signed_lift_covered": 0.16142857142857142
+        }
+      ]
+    },
+    {
+      "error_count": 11,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_006"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_002",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature_group_id": "no_source",
+      "model_id": "signed_value_knn_k8_no_source",
+      "neighbor_count": 8,
+      "policy_utility": 0.5185714285714284,
+      "positive_lift_covered": 1.0865714285714285,
+      "selected_count": 24,
+      "signed_lift_covered": 0.9985714285714283,
+      "slice_results": [
+        {
+          "error_count": 2,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 2,
+          "false_positive_task_ids": [
+            "plan_064",
+            "plan_071"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+          "policy_utility": 0.23714285714285716,
+          "positive_lift_covered": 0.5001428571428572,
+          "selected_count": 9,
+          "signed_lift_covered": 0.41714285714285715
+        },
+        {
+          "error_count": 3,
+          "false_negative_count": 1,
+          "false_negative_task_ids": [
+            "plan_006"
+          ],
+          "false_positive_count": 2,
+          "false_positive_task_ids": [
+            "plan_002",
+            "plan_003"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+          "policy_utility": 0.27999999999999975,
+          "positive_lift_covered": 0.4249999999999999,
+          "selected_count": 7,
+          "signed_lift_covered": 0.41999999999999976
+        },
+        {
+          "error_count": 6,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 6,
+          "false_positive_task_ids": [
+            "plan_017",
+            "plan_019",
+            "plan_020",
+            "plan_022",
+            "plan_023",
+            "plan_024"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+          "policy_utility": 0.001428571428571418,
+          "positive_lift_covered": 0.16142857142857142,
+          "selected_count": 8,
+          "signed_lift_covered": 0.16142857142857142
+        }
+      ]
+    },
+    {
+      "error_count": 11,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 11,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_002",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature_group_id": "no_source",
+      "model_id": "signed_value_knn_k13_no_source",
+      "neighbor_count": 13,
+      "policy_utility": 0.49857142857142844,
+      "positive_lift_covered": 1.1455,
+      "selected_count": 26,
+      "signed_lift_covered": 1.0185714285714285,
+      "slice_results": [
+        {
+          "error_count": 3,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 3,
+          "false_positive_task_ids": [
+            "plan_050",
+            "plan_064",
+            "plan_071"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+          "policy_utility": 0.17821428571428577,
+          "positive_lift_covered": 0.5001428571428572,
+          "selected_count": 10,
+          "signed_lift_covered": 0.3782142857142858
+        },
+        {
+          "error_count": 2,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 2,
+          "false_positive_task_ids": [
+            "plan_002",
+            "plan_003"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+          "policy_utility": 0.31892857142857123,
+          "positive_lift_covered": 0.4839285714285713,
+          "selected_count": 8,
+          "signed_lift_covered": 0.4789285714285712
+        },
+        {
+          "error_count": 6,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 6,
+          "false_positive_task_ids": [
+            "plan_017",
+            "plan_019",
+            "plan_020",
+            "plan_022",
+            "plan_023",
+            "plan_024"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+          "policy_utility": 0.001428571428571418,
+          "positive_lift_covered": 0.16142857142857142,
+          "selected_count": 8,
+          "signed_lift_covered": 0.16142857142857142
+        }
+      ]
+    },
+    {
+      "error_count": 15,
+      "false_negative_count": 8,
+      "false_negative_task_ids": [
+        "plan_044",
+        "plan_061",
+        "plan_063",
+        "plan_001",
+        "plan_005",
+        "plan_006",
+        "plan_018",
+        "plan_021"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_022",
+        "plan_024"
+      ],
+      "feature_group_id": "no_gap_span",
+      "model_id": "signed_value_knn_k1_no_gap_span",
+      "neighbor_count": 1,
+      "policy_utility": 0.05807142857142855,
+      "positive_lift_covered": 0.45999999999999996,
+      "selected_count": 14,
+      "signed_lift_covered": 0.3380714285714286,
+      "slice_results": [
+        {
+          "error_count": 5,
+          "false_negative_count": 3,
+          "false_negative_task_ids": [
+            "plan_044",
+            "plan_061",
+            "plan_063"
+          ],
+          "false_positive_count": 2,
+          "false_positive_task_ids": [
+            "plan_050",
+            "plan_064"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+          "policy_utility": 0.002357142857142891,
+          "positive_lift_covered": 0.24428571428571427,
+          "selected_count": 6,
+          "signed_lift_covered": 0.12235714285714289
+        },
+        {
+          "error_count": 4,
+          "false_negative_count": 3,
+          "false_negative_task_ids": [
+            "plan_001",
+            "plan_005",
+            "plan_006"
+          ],
+          "false_positive_count": 1,
+          "false_positive_task_ids": [
+            "plan_003"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+          "policy_utility": 0.13571428571428568,
+          "positive_lift_covered": 0.2157142857142857,
+          "selected_count": 4,
+          "signed_lift_covered": 0.2157142857142857
+        },
+        {
+          "error_count": 6,
+          "false_negative_count": 2,
+          "false_negative_task_ids": [
+            "plan_018",
+            "plan_021"
+          ],
+          "false_positive_count": 4,
+          "false_positive_task_ids": [
+            "plan_017",
+            "plan_019",
+            "plan_022",
+            "plan_024"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+          "policy_utility": -0.08,
+          "positive_lift_covered": 0,
+          "selected_count": 4,
+          "signed_lift_covered": 0.0
+        }
+      ]
+    },
+    {
+      "error_count": 13,
+      "false_negative_count": 6,
+      "false_negative_task_ids": [
+        "plan_044",
+        "plan_061",
+        "plan_001",
+        "plan_005",
+        "plan_006",
+        "plan_021"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature_group_id": "no_gap_span",
+      "model_id": "signed_value_knn_k2_no_gap_span",
+      "neighbor_count": 2,
+      "policy_utility": 0.32642857142857135,
+      "positive_lift_covered": 0.6464285714285714,
+      "selected_count": 16,
+      "signed_lift_covered": 0.6464285714285714,
+      "slice_results": [
+        {
+          "error_count": 3,
+          "false_negative_count": 2,
+          "false_negative_task_ids": [
+            "plan_044",
+            "plan_061"
+          ],
+          "false_positive_count": 1,
+          "false_positive_task_ids": [
+            "plan_071"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+          "policy_utility": 0.2207142857142857,
+          "positive_lift_covered": 0.3407142857142857,
+          "selected_count": 6,
+          "signed_lift_covered": 0.3407142857142857
+        },
+        {
+          "error_count": 4,
+          "false_negative_count": 3,
+          "false_negative_task_ids": [
+            "plan_001",
+            "plan_005",
+            "plan_006"
+          ],
+          "false_positive_count": 1,
+          "false_positive_task_ids": [
+            "plan_003"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+          "policy_utility": 0.13571428571428568,
+          "positive_lift_covered": 0.2157142857142857,
+          "selected_count": 4,
+          "signed_lift_covered": 0.2157142857142857
+        },
+        {
+          "error_count": 6,
+          "false_negative_count": 1,
+          "false_negative_task_ids": [
+            "plan_021"
+          ],
+          "false_positive_count": 5,
+          "false_positive_task_ids": [
+            "plan_017",
+            "plan_019",
+            "plan_022",
+            "plan_023",
+            "plan_024"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+          "policy_utility": -0.02999999999999997,
+          "positive_lift_covered": 0.09000000000000002,
+          "selected_count": 6,
+          "signed_lift_covered": 0.09000000000000002
+        }
+      ]
+    },
+    {
+      "error_count": 14,
+      "false_negative_count": 4,
+      "false_negative_task_ids": [
+        "plan_044",
+        "plan_061",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature_group_id": "no_gap_span",
+      "model_id": "signed_value_knn_k3_no_gap_span",
+      "neighbor_count": 3,
+      "policy_utility": 0.2387857142857142,
+      "positive_lift_covered": 0.7807142857142856,
+      "selected_count": 21,
+      "signed_lift_covered": 0.6587857142857142,
+      "slice_results": [
+        {
+          "error_count": 5,
+          "false_negative_count": 2,
+          "false_negative_task_ids": [
+            "plan_044",
+            "plan_061"
+          ],
+          "false_positive_count": 3,
+          "false_positive_task_ids": [
+            "plan_050",
+            "plan_064",
+            "plan_071"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+          "policy_utility": 0.0587857142857143,
+          "positive_lift_covered": 0.3407142857142857,
+          "selected_count": 8,
+          "signed_lift_covered": 0.2187857142857143
+        },
+        {
+          "error_count": 3,
+          "false_negative_count": 2,
+          "false_negative_task_ids": [
+            "plan_005",
+            "plan_006"
+          ],
+          "false_positive_count": 1,
+          "false_positive_task_ids": [
+            "plan_003"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+          "policy_utility": 0.17857142857142846,
+          "positive_lift_covered": 0.27857142857142847,
+          "selected_count": 5,
+          "signed_lift_covered": 0.27857142857142847
+        },
+        {
+          "error_count": 6,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 6,
+          "false_positive_task_ids": [
+            "plan_017",
+            "plan_019",
+            "plan_020",
+            "plan_022",
+            "plan_023",
+            "plan_024"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+          "policy_utility": 0.001428571428571418,
+          "positive_lift_covered": 0.16142857142857142,
+          "selected_count": 8,
+          "signed_lift_covered": 0.16142857142857142
+        }
+      ]
+    },
+    {
+      "error_count": 13,
+      "false_negative_count": 3,
+      "false_negative_task_ids": [
+        "plan_001",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature_group_id": "no_gap_span",
+      "model_id": "signed_value_knn_k5_no_gap_span",
+      "neighbor_count": 5,
+      "policy_utility": 0.31535714285714284,
+      "positive_lift_covered": 0.8772857142857142,
+      "selected_count": 22,
+      "signed_lift_covered": 0.7553571428571428,
+      "slice_results": [
+        {
+          "error_count": 3,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 3,
+          "false_positive_task_ids": [
+            "plan_050",
+            "plan_064",
+            "plan_071"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+          "policy_utility": 0.17821428571428577,
+          "positive_lift_covered": 0.5001428571428572,
+          "selected_count": 10,
+          "signed_lift_covered": 0.3782142857142858
+        },
+        {
+          "error_count": 4,
+          "false_negative_count": 3,
+          "false_negative_task_ids": [
+            "plan_001",
+            "plan_005",
+            "plan_006"
+          ],
+          "false_positive_count": 1,
+          "false_positive_task_ids": [
+            "plan_003"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+          "policy_utility": 0.13571428571428568,
+          "positive_lift_covered": 0.2157142857142857,
+          "selected_count": 4,
+          "signed_lift_covered": 0.2157142857142857
+        },
+        {
+          "error_count": 6,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 6,
+          "false_positive_task_ids": [
+            "plan_017",
+            "plan_019",
+            "plan_020",
+            "plan_022",
+            "plan_023",
+            "plan_024"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+          "policy_utility": 0.001428571428571418,
+          "positive_lift_covered": 0.16142857142857142,
+          "selected_count": 8,
+          "signed_lift_covered": 0.16142857142857142
+        }
+      ]
+    },
+    {
+      "error_count": 10,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature_group_id": "no_gap_span",
+      "model_id": "signed_value_knn_k8_no_gap_span",
+      "neighbor_count": 8,
+      "policy_utility": 0.5235714285714286,
+      "positive_lift_covered": 1.1455,
+      "selected_count": 25,
+      "signed_lift_covered": 1.0235714285714286,
+      "slice_results": [
+        {
+          "error_count": 3,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 3,
+          "false_positive_task_ids": [
+            "plan_050",
+            "plan_064",
+            "plan_071"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+          "policy_utility": 0.17821428571428577,
+          "positive_lift_covered": 0.5001428571428572,
+          "selected_count": 10,
+          "signed_lift_covered": 0.3782142857142858
+        },
+        {
+          "error_count": 1,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 1,
+          "false_positive_task_ids": [
+            "plan_003"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+          "policy_utility": 0.3439285714285713,
+          "positive_lift_covered": 0.4839285714285713,
+          "selected_count": 7,
+          "signed_lift_covered": 0.4839285714285713
+        },
+        {
+          "error_count": 6,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 6,
+          "false_positive_task_ids": [
+            "plan_017",
+            "plan_019",
+            "plan_020",
+            "plan_022",
+            "plan_023",
+            "plan_024"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+          "policy_utility": 0.001428571428571418,
+          "positive_lift_covered": 0.16142857142857142,
+          "selected_count": 8,
+          "signed_lift_covered": 0.16142857142857142
+        }
+      ]
+    },
+    {
+      "error_count": 12,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_006"
+      ],
+      "false_positive_count": 11,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_002",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature_group_id": "no_gap_span",
+      "model_id": "signed_value_knn_k13_no_gap_span",
+      "neighbor_count": 13,
+      "policy_utility": 0.459642857142857,
+      "positive_lift_covered": 1.0865714285714285,
+      "selected_count": 25,
+      "signed_lift_covered": 0.959642857142857,
+      "slice_results": [
+        {
+          "error_count": 3,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 3,
+          "false_positive_task_ids": [
+            "plan_050",
+            "plan_064",
+            "plan_071"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+          "policy_utility": 0.17821428571428577,
+          "positive_lift_covered": 0.5001428571428572,
+          "selected_count": 10,
+          "signed_lift_covered": 0.3782142857142858
+        },
+        {
+          "error_count": 3,
+          "false_negative_count": 1,
+          "false_negative_task_ids": [
+            "plan_006"
+          ],
+          "false_positive_count": 2,
+          "false_positive_task_ids": [
+            "plan_002",
+            "plan_003"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+          "policy_utility": 0.27999999999999975,
+          "positive_lift_covered": 0.4249999999999999,
+          "selected_count": 7,
+          "signed_lift_covered": 0.41999999999999976
+        },
+        {
+          "error_count": 6,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 6,
+          "false_positive_task_ids": [
+            "plan_017",
+            "plan_019",
+            "plan_020",
+            "plan_022",
+            "plan_023",
+            "plan_024"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+          "policy_utility": 0.001428571428571418,
+          "positive_lift_covered": 0.16142857142857142,
+          "selected_count": 8,
+          "signed_lift_covered": 0.16142857142857142
+        }
+      ]
+    },
+    {
+      "error_count": 14,
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_008",
+        "plan_021"
+      ],
+      "false_positive_count": 4,
+      "false_positive_task_ids": [
+        "plan_071",
+        "plan_019",
+        "plan_022",
+        "plan_024"
+      ],
+      "feature_group_id": "no_retention",
+      "model_id": "signed_value_knn_k1_no_retention",
+      "neighbor_count": 1,
+      "policy_utility": 0.28535714285714286,
+      "positive_lift_covered": 0.46535714285714286,
+      "selected_count": 9,
+      "signed_lift_covered": 0.46535714285714286,
+      "slice_results": [
+        {
+          "error_count": 5,
+          "false_negative_count": 4,
+          "false_negative_task_ids": [
+            "plan_034",
+            "plan_046",
+            "plan_061",
+            "plan_063"
+          ],
+          "false_positive_count": 1,
+          "false_positive_task_ids": [
+            "plan_071"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+          "policy_utility": 0.10392857142857138,
+          "positive_lift_covered": 0.18392857142857139,
+          "selected_count": 4,
+          "signed_lift_covered": 0.18392857142857139
+        },
+        {
+          "error_count": 5,
+          "false_negative_count": 5,
+          "false_negative_task_ids": [
+            "plan_001",
+            "plan_004",
+            "plan_005",
+            "plan_006",
+            "plan_008"
+          ],
+          "false_positive_count": 0,
+          "false_positive_task_ids": [],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+          "policy_utility": 0.17142857142857146,
+          "positive_lift_covered": 0.19142857142857145,
+          "selected_count": 1,
+          "signed_lift_covered": 0.19142857142857145
+        },
+        {
+          "error_count": 4,
+          "false_negative_count": 1,
+          "false_negative_task_ids": [
+            "plan_021"
+          ],
+          "false_positive_count": 3,
+          "false_positive_task_ids": [
+            "plan_019",
+            "plan_022",
+            "plan_024"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+          "policy_utility": 0.010000000000000023,
+          "positive_lift_covered": 0.09000000000000002,
+          "selected_count": 4,
+          "signed_lift_covered": 0.09000000000000002
+        }
+      ]
+    },
+    {
+      "error_count": 15,
+      "false_negative_count": 8,
+      "false_negative_task_ids": [
+        "plan_044",
+        "plan_061",
+        "plan_072",
+        "plan_001",
+        "plan_005",
+        "plan_006",
+        "plan_008",
+        "plan_021"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_019",
+        "plan_022",
+        "plan_024"
+      ],
+      "feature_group_id": "no_retention",
+      "model_id": "signed_value_knn_k2_no_retention",
+      "neighbor_count": 2,
+      "policy_utility": 0.18271428571428577,
+      "positive_lift_covered": 0.5846428571428572,
+      "selected_count": 14,
+      "signed_lift_covered": 0.4627142857142858,
+      "slice_results": [
+        {
+          "error_count": 6,
+          "false_negative_count": 3,
+          "false_negative_task_ids": [
+            "plan_044",
+            "plan_061",
+            "plan_072"
+          ],
+          "false_positive_count": 3,
+          "false_positive_task_ids": [
+            "plan_050",
+            "plan_064",
+            "plan_071"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+          "policy_utility": 0.019857142857142907,
+          "positive_lift_covered": 0.2817857142857143,
+          "selected_count": 7,
+          "signed_lift_covered": 0.15985714285714292
+        },
+        {
+          "error_count": 5,
+          "false_negative_count": 4,
+          "false_negative_task_ids": [
+            "plan_001",
+            "plan_005",
+            "plan_006",
+            "plan_008"
+          ],
+          "false_positive_count": 1,
+          "false_positive_task_ids": [
+            "plan_003"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+          "policy_utility": 0.15285714285714286,
+          "positive_lift_covered": 0.21285714285714286,
+          "selected_count": 3,
+          "signed_lift_covered": 0.21285714285714286
+        },
+        {
+          "error_count": 4,
+          "false_negative_count": 1,
+          "false_negative_task_ids": [
+            "plan_021"
+          ],
+          "false_positive_count": 3,
+          "false_positive_task_ids": [
+            "plan_019",
+            "plan_022",
+            "plan_024"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+          "policy_utility": 0.010000000000000023,
+          "positive_lift_covered": 0.09000000000000002,
+          "selected_count": 4,
+          "signed_lift_covered": 0.09000000000000002
+        }
+      ]
+    },
+    {
+      "error_count": 16,
+      "false_negative_count": 7,
+      "false_negative_task_ids": [
+        "plan_044",
+        "plan_061",
+        "plan_001",
+        "plan_005",
+        "plan_006",
+        "plan_007",
+        "plan_008"
+      ],
+      "false_positive_count": 9,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature_group_id": "no_retention",
+      "model_id": "signed_value_knn_k3_no_retention",
+      "neighbor_count": 3,
+      "policy_utility": 0.06164285714285711,
+      "positive_lift_covered": 0.5235714285714286,
+      "selected_count": 17,
+      "signed_lift_covered": 0.40164285714285713,
+      "slice_results": [
+        {
+          "error_count": 5,
+          "false_negative_count": 2,
+          "false_negative_task_ids": [
+            "plan_044",
+            "plan_061"
+          ],
+          "false_positive_count": 3,
+          "false_positive_task_ids": [
+            "plan_050",
+            "plan_064",
+            "plan_071"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+          "policy_utility": 0.0587857142857143,
+          "positive_lift_covered": 0.3407142857142857,
+          "selected_count": 8,
+          "signed_lift_covered": 0.2187857142857143
+        },
+        {
+          "error_count": 6,
+          "false_negative_count": 5,
+          "false_negative_task_ids": [
+            "plan_001",
+            "plan_005",
+            "plan_006",
+            "plan_007",
+            "plan_008"
+          ],
+          "false_positive_count": 1,
+          "false_positive_task_ids": [
+            "plan_003"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+          "policy_utility": -0.018571428571428593,
+          "positive_lift_covered": 0.021428571428571408,
+          "selected_count": 2,
+          "signed_lift_covered": 0.021428571428571408
+        },
+        {
+          "error_count": 5,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 5,
+          "false_positive_task_ids": [
+            "plan_019",
+            "plan_020",
+            "plan_022",
+            "plan_023",
+            "plan_024"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+          "policy_utility": 0.021428571428571408,
+          "positive_lift_covered": 0.16142857142857142,
+          "selected_count": 7,
+          "signed_lift_covered": 0.16142857142857142
+        }
+      ]
+    },
+    {
+      "error_count": 14,
+      "false_negative_count": 4,
+      "false_negative_task_ids": [
+        "plan_005",
+        "plan_006",
+        "plan_007",
+        "plan_008"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature_group_id": "no_retention",
+      "model_id": "signed_value_knn_k5_no_retention",
+      "neighbor_count": 5,
+      "policy_utility": 0.2039285714285714,
+      "positive_lift_covered": 0.7458571428571428,
+      "selected_count": 21,
+      "signed_lift_covered": 0.6239285714285714,
+      "slice_results": [
+        {
+          "error_count": 3,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 3,
+          "false_positive_task_ids": [
+            "plan_050",
+            "plan_064",
+            "plan_071"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+          "policy_utility": 0.17821428571428577,
+          "positive_lift_covered": 0.5001428571428572,
+          "selected_count": 10,
+          "signed_lift_covered": 0.3782142857142858
+        },
+        {
+          "error_count": 5,
+          "false_negative_count": 4,
+          "false_negative_task_ids": [
+            "plan_005",
+            "plan_006",
+            "plan_007",
+            "plan_008"
+          ],
+          "false_positive_count": 1,
+          "false_positive_task_ids": [
+            "plan_003"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+          "policy_utility": 0.02428571428571419,
+          "positive_lift_covered": 0.08428571428571419,
+          "selected_count": 3,
+          "signed_lift_covered": 0.08428571428571419
+        },
+        {
+          "error_count": 6,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 6,
+          "false_positive_task_ids": [
+            "plan_017",
+            "plan_019",
+            "plan_020",
+            "plan_022",
+            "plan_023",
+            "plan_024"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+          "policy_utility": 0.001428571428571418,
+          "positive_lift_covered": 0.16142857142857142,
+          "selected_count": 8,
+          "signed_lift_covered": 0.16142857142857142
+        }
+      ]
+    },
+    {
+      "error_count": 11,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_008"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature_group_id": "no_retention",
+      "model_id": "signed_value_knn_k8_no_retention",
+      "neighbor_count": 8,
+      "policy_utility": 0.5407142857142857,
+      "positive_lift_covered": 1.142642857142857,
+      "selected_count": 24,
+      "signed_lift_covered": 1.0207142857142857,
+      "slice_results": [
+        {
+          "error_count": 3,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 3,
+          "false_positive_task_ids": [
+            "plan_050",
+            "plan_064",
+            "plan_071"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+          "policy_utility": 0.17821428571428577,
+          "positive_lift_covered": 0.5001428571428572,
+          "selected_count": 10,
+          "signed_lift_covered": 0.3782142857142858
+        },
+        {
+          "error_count": 2,
+          "false_negative_count": 1,
+          "false_negative_task_ids": [
+            "plan_008"
+          ],
+          "false_positive_count": 1,
+          "false_positive_task_ids": [
+            "plan_003"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+          "policy_utility": 0.3610714285714285,
+          "positive_lift_covered": 0.4810714285714285,
+          "selected_count": 6,
+          "signed_lift_covered": 0.4810714285714285
+        },
+        {
+          "error_count": 6,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 6,
+          "false_positive_task_ids": [
+            "plan_017",
+            "plan_019",
+            "plan_020",
+            "plan_022",
+            "plan_023",
+            "plan_024"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+          "policy_utility": 0.001428571428571418,
+          "positive_lift_covered": 0.16142857142857142,
+          "selected_count": 8,
+          "signed_lift_covered": 0.16142857142857142
+        }
+      ]
+    },
+    {
+      "error_count": 11,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_008"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "feature_group_id": "no_retention",
+      "model_id": "signed_value_knn_k13_no_retention",
+      "neighbor_count": 13,
+      "policy_utility": 0.5407142857142857,
+      "positive_lift_covered": 1.142642857142857,
+      "selected_count": 24,
+      "signed_lift_covered": 1.0207142857142857,
+      "slice_results": [
+        {
+          "error_count": 3,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 3,
+          "false_positive_task_ids": [
+            "plan_050",
+            "plan_064",
+            "plan_071"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+          "policy_utility": 0.17821428571428577,
+          "positive_lift_covered": 0.5001428571428572,
+          "selected_count": 10,
+          "signed_lift_covered": 0.3782142857142858
+        },
+        {
+          "error_count": 2,
+          "false_negative_count": 1,
+          "false_negative_task_ids": [
+            "plan_008"
+          ],
+          "false_positive_count": 1,
+          "false_positive_task_ids": [
+            "plan_003"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+          "policy_utility": 0.3610714285714285,
+          "positive_lift_covered": 0.4810714285714285,
+          "selected_count": 6,
+          "signed_lift_covered": 0.4810714285714285
+        },
+        {
+          "error_count": 6,
+          "false_negative_count": 0,
+          "false_negative_task_ids": [],
+          "false_positive_count": 6,
+          "false_positive_task_ids": [
+            "plan_017",
+            "plan_019",
+            "plan_020",
+            "plan_022",
+            "plan_023",
+            "plan_024"
+          ],
+          "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+          "policy_utility": 0.001428571428571418,
+          "positive_lift_covered": 0.16142857142857142,
+          "selected_count": 8,
+          "signed_lift_covered": 0.16142857142857142
+        }
+      ]
+    }
+  ],
+  "no_lift_veto": {
+    "false_negative_count": 5,
+    "false_negative_task_ids": [
+      "plan_034",
+      "plan_005",
+      "plan_006",
+      "plan_007",
+      "plan_008"
+    ],
+    "false_positive_count": 8,
+    "false_positive_task_ids": [
+      "plan_050",
+      "plan_064",
+      "plan_071",
+      "plan_003",
+      "plan_019",
+      "plan_020",
+      "plan_023",
+      "plan_024"
+    ],
+    "model_id": "no_lift_veto",
+    "policy_utility": 0.28942857142857137,
+    "positive_lift_covered": 0.6494285714285714,
+    "selected_count": 18
+  },
+  "schema": "diffusion_counterfactual_span_probe_signed_value.v1",
+  "selected_model": {
+    "error_count": 9,
+    "false_negative_count": 0,
+    "false_negative_task_ids": [],
+    "false_positive_count": 9,
+    "false_positive_task_ids": [
+      "plan_064",
+      "plan_071",
+      "plan_003",
+      "plan_017",
+      "plan_019",
+      "plan_020",
+      "plan_022",
+      "plan_023",
+      "plan_024"
+    ],
+    "feature_group_id": "all",
+    "model_id": "signed_value_knn_k8_all",
+    "neighbor_count": 8,
+    "policy_utility": 0.5825,
+    "positive_lift_covered": 1.1455,
+    "selected_count": 24,
+    "signed_lift_covered": 1.0625,
+    "slice_results": [
+      {
+        "error_count": 2,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 2,
+        "false_positive_task_ids": [
+          "plan_064",
+          "plan_071"
+        ],
+        "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+        "policy_utility": 0.23714285714285716,
+        "positive_lift_covered": 0.5001428571428572,
+        "selected_count": 9,
+        "signed_lift_covered": 0.41714285714285715
+      },
+      {
+        "error_count": 1,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 1,
+        "false_positive_task_ids": [
+          "plan_003"
+        ],
+        "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+        "policy_utility": 0.3439285714285713,
+        "positive_lift_covered": 0.4839285714285713,
+        "selected_count": 7,
+        "signed_lift_covered": 0.4839285714285713
+      },
+      {
+        "error_count": 6,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 6,
+        "false_positive_task_ids": [
+          "plan_017",
+          "plan_019",
+          "plan_020",
+          "plan_022",
+          "plan_023",
+          "plan_024"
+        ],
+        "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+        "policy_utility": 0.001428571428571418,
+        "positive_lift_covered": 0.16142857142857142,
+        "selected_count": 8,
+        "signed_lift_covered": 0.16142857142857142
+      }
+    ]
+  },
+  "selection_penalty": 0.02,
+  "summary": {
+    "positive_count": 15,
+    "target_count": 28
+  }
+}

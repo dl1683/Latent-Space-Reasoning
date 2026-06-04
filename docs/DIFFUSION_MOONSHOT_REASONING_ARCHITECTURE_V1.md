@@ -125,6 +125,12 @@ repair, verify.
 
 Add `experiments/fit_diffusion_span_probe_signed_value.py`.
 
+Status: implemented as `DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_SIGNED_VALUE_V4.md`.
+The first signed-value head is a boundary, not a promotion: it improves strict
+signed utility from `0.498571` to `0.582500`, preserves zero false negatives,
+and reduces false positives from 11 to 9, but it does not clear the `0.625500`
+promotion bar.
+
 Inputs:
 
 - `eval_results/diffusion_language/counterfactual_span_probe_signature_model_v4.json`
