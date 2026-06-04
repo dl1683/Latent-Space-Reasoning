@@ -1,0 +1,173 @@
+{
+  "commands": {
+    "baseline_replay": "python -u experiments/run_latent_sensitivity.py --model Qwen/Qwen3-4B --task-type nested --difficulty sweet_spot --n-tasks 25 --n-latents 10 --control-mode random_noise --num-soft-tokens 2 --quantization 4bit",
+    "gated_position_shift": "IMPLEMENT before run: add --position-shift-control to run_latent_sensitivity.py or a sibling runner that sets position_ids without prepended embeddings.",
+    "gated_primary_random_prefix": "python -u experiments/run_latent_sensitivity.py --model Qwen/Qwen3-Next-80B-A3B-Instruct --task-type nested --difficulty sweet_spot --n-tasks 25 --n-latents 10 --control-mode random_noise --num-soft-tokens 2 --quantization 4bit --output eval_results/gated_attention/qwen3_next_random_prefix_n10_result.json"
+  },
+  "conditions": [
+    {
+      "decode": "greedy_temperature_0",
+      "id": "baseline_greedy",
+      "position_ids": "standard",
+      "soft_prompt": "none"
+    },
+    {
+      "decode": "greedy_temperature_0",
+      "id": "zero_prefix",
+      "position_ids": "standard_after_prefix",
+      "soft_prompt": "2 zero-valued embedding tokens"
+    },
+    {
+      "decode": "greedy_temperature_0",
+      "id": "random_prefix_n10",
+      "position_ids": "standard_after_prefix",
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4,
+        5,
+        6,
+        7,
+        8,
+        9
+      ],
+      "soft_prompt": "2 RMS-matched random embedding tokens"
+    },
+    {
+      "decode": "greedy_temperature_0",
+      "id": "position_shift_control",
+      "position_ids": "start_at_2_without_extra_embeddings",
+      "soft_prompt": "none"
+    }
+  ],
+  "design_intent": "Test whether the LSR random-prefix effect survives an architecture that uses gated-attention / Qwen3-Next-style layers instead of relying on ordinary attention sinks.",
+  "external_sources_checked": [
+    {
+      "note": "Current primary model card exists; exact quantized runtime must be rechecked before GPU run.",
+      "url": "https://huggingface.co/Qwen/Qwen3-Next-80B-A3B-Instruct"
+    },
+    {
+      "note": "Current GGUF model card exists; selected quant file must be recorded in result metadata.",
+      "url": "https://huggingface.co/Qwen/Qwen3-Next-80B-A3B-Instruct-GGUF"
+    }
+  ],
+  "generated_by": "experiments/build_gated_attention_null_probe_freeze.py",
+  "infrastructure_gates": {
+    "full_raw_outputs_required": true,
+    "include_cache_debugging_task": true,
+    "inputs_embeds_token_count_bug_fixed": true,
+    "no_article_claim_without_heldout_or_architecture_transfer_result": true,
+    "path_equivalence_smoke_required": true,
+    "reuse_exact_25_task_arithmetic_set": true,
+    "source_snapshot_must_be_recorded": true
+  },
+  "interpretation_gates": {
+    "ambiguous": {
+      "action": "extend tasks and run dose-response before changing the article",
+      "mean_lift_pp_range": [
+        5.0,
+        10.0
+      ],
+      "oracle_coverage_range": [
+        0.6,
+        0.8
+      ]
+    },
+    "sink_dependent": {
+      "mean_lift_pp_lt": 5.0,
+      "oracle_coverage_lt": 0.6,
+      "planning_rescue": false
+    },
+    "trajectory_diversification_persists": {
+      "or_mean_lift_pp_gt": 10.0,
+      "oracle_coverage_gt": 0.8
+    }
+  },
+  "metrics": {
+    "primary_report_first": [
+      "mean last-integer accuracy by condition",
+      "EOS/completion rate by condition",
+      "true generated-token count from output_ids and prompt length",
+      "strict final-answer accuracy",
+      "answer-anywhere accuracy",
+      "position-shift delta vs zero-prefix delta"
+    ],
+    "secondary_report_after_mean": [
+      "oracle coverage at N=10",
+      "pairwise error overlap/correlation",
+      "planning rescue word count and judge score",
+      "attention sink mass if output_attentions is exposed",
+      "attention entropy if output_attentions is exposed"
+    ]
+  },
+  "model_arms": {
+    "baseline_family_matched": {
+      "model": "Qwen/Qwen3-4B",
+      "quantization": "4bit_nf4_or_existing_repo_default",
+      "role": "non_gated_qwen_baseline",
+      "source_status": "existing_repo_baseline"
+    },
+    "gated_primary": {
+      "architecture_requirement": "hybrid Gated DeltaNet plus Gated Attention",
+      "model": "Qwen/Qwen3-Next-80B-A3B-Instruct",
+      "quantization": "GGUF_Q4_or_FP8_with_CPU_offload_if_needed",
+      "role": "gated_attention_transfer_candidate",
+      "source_status": "must_verify_snapshot_before_gpu_run"
+    },
+    "gated_small_control": {
+      "model": "QwQZh/gated_attention 1B gate/head variants or another documented gated-attention checkpoint",
+      "quantization": "native_or_8bit",
+      "role": "cheap_mechanics_control_if_primary_is_too_slow",
+      "source_status": "mechanics_only_not_claim_surface"
+    }
+  },
+  "planning_conditions": [
+    {
+      "decode": "greedy_temperature_0",
+      "id": "cache_debug_baseline",
+      "max_new_tokens": 2048,
+      "soft_prompt": "none"
+    },
+    {
+      "decode": "greedy_temperature_0",
+      "id": "cache_debug_random_prefix_n5",
+      "max_new_tokens": 2048,
+      "seeds": [
+        0,
+        1,
+        2,
+        3,
+        4
+      ],
+      "soft_prompt": "2 RMS-matched random embedding tokens"
+    }
+  ],
+  "pre_result_boundary": {
+    "allow_existing_results": false,
+    "existing_result_glob": "eval_results/gated_attention/*result*.json",
+    "existing_results": [],
+    "no_gated_attention_outputs_seen": true
+  },
+  "prior_artifacts": [
+    {
+      "exists": true,
+      "path": "experiments\\sensitivity_sweet_spot_random_noise_t2_results.json",
+      "sha256": "8fd69bd9d9ecba656a2667ca3dfafd7b375c22a8dcf2a4ee7948a96101506ccd"
+    },
+    {
+      "exists": true,
+      "path": "experiments\\sensitivity_sweet_spot_random_noise_t2_qwen38b_8bit_n10_results.json",
+      "sha256": "9ff74c7e95752c4443d413ef88d0e593971ecd02aeda010afb9dd7c1599d026b"
+    },
+    {
+      "exists": true,
+      "path": "experiments\\planning_bp_2048_results.json",
+      "sha256": "cc6c117e85db74bd47f09188d2ae8bef758da3426cd46d776f774ad13d216669"
+    }
+  ],
+  "probe_id": "gated_attention_null_probe_v1",
+  "schema": "gated_attention_null_probe_freeze.v1",
+  "task_preset": "lsr_25_arithmetic_plus_cache_debug"
+}

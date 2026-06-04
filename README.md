@@ -700,6 +700,7 @@ tests/                        # Unit and integration tests (342 tests)
 | [docs/DIFFUSION_REASONING_GEOMETRY_THEORY.md](docs/DIFFUSION_REASONING_GEOMETRY_THEORY.md) | Mathematical theory layer for information loss, denoise geometry, proof obligations, and next error functions |
 | [docs/DIFFUSION_REASONING_FIELD_IMPLICATIONS.md](docs/DIFFUSION_REASONING_FIELD_IMPLICATIONS.md) | Public narrative for why denoise-trajectory control is the next latent reasoning substrate |
 | [docs/LEAN_GPU_DIFFUSION_BENCHMARK_PROTOCOL.md](docs/LEAN_GPU_DIFFUSION_BENCHMARK_PROTOCOL.md) | Cheap local GPU protocol for fixed, random, and latent repair comparisons |
+| [GATED_ATTENTION_NULL_PROBE_FREEZE.md](GATED_ATTENTION_NULL_PROBE_FREEZE.md) | Pre-result architecture-transfer freeze for testing whether random-prefix gains survive Qwen3-Next-style gated attention |
 | [RESEARCH_BRIEF.md](RESEARCH_BRIEF.md) | Technical summary with data tables and figures |
 | [ARTICLE_UPDATE.md](ARTICLE_UPDATE.md) | Accessible article covering all findings |
 | [GOALS.md](GOALS.md) | Active research goals and completed milestones |
@@ -784,6 +785,7 @@ Next experiments:
 - Clean re-run with fixed scorer (deterministic projection)
 - Better latent scorers for more consistent evolution gains
 - Larger planning/legal task sets for statistical power
+- Gated-attention null-probe to test whether the mechanism survives Qwen3-Next-style architectures
 - Attention probing to confirm the attention sink mechanism directly
 
 ## Limitations
