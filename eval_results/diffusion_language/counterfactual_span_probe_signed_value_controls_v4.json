@@ -1,0 +1,188 @@
+{
+  "best_withheld_controls": [
+    {
+      "control_type": "best_withheld",
+      "false_negative_count": 5,
+      "false_positive_count": 3,
+      "feature_group_id": "no_text",
+      "model_id": "signed_value_knn_k2_no_text",
+      "neighbor_count": 2,
+      "policy_utility": 0.518,
+      "selected_count": 13,
+      "utility_delta_vs_selected": -0.0645,
+      "verdict": "degraded"
+    },
+    {
+      "control_type": "best_withheld",
+      "false_negative_count": 2,
+      "false_positive_count": 8,
+      "feature_group_id": "no_source",
+      "model_id": "signed_value_knn_k5_no_source",
+      "neighbor_count": 5,
+      "policy_utility": 0.520142857142857,
+      "selected_count": 21,
+      "utility_delta_vs_selected": -0.062357142857143,
+      "verdict": "degraded"
+    },
+    {
+      "control_type": "best_withheld",
+      "false_negative_count": 0,
+      "false_positive_count": 10,
+      "feature_group_id": "no_gap_span",
+      "model_id": "signed_value_knn_k8_no_gap_span",
+      "neighbor_count": 8,
+      "policy_utility": 0.5235714285714286,
+      "selected_count": 25,
+      "utility_delta_vs_selected": -0.05892857142857144,
+      "verdict": "degraded"
+    },
+    {
+      "control_type": "best_withheld",
+      "false_negative_count": 1,
+      "false_positive_count": 10,
+      "feature_group_id": "no_retention",
+      "model_id": "signed_value_knn_k8_no_retention",
+      "neighbor_count": 8,
+      "policy_utility": 0.5407142857142857,
+      "selected_count": 24,
+      "utility_delta_vs_selected": -0.041785714285714315,
+      "verdict": "degraded"
+    }
+  ],
+  "generated_by": "experiments/analyze_diffusion_span_probe_signed_value_controls.py",
+  "inputs": {
+    "signed_value": "eval_results\\diffusion_language\\counterfactual_span_probe_signed_value_v4.json"
+  },
+  "matched_k_controls": [
+    {
+      "control_type": "matched_k",
+      "false_negative_count": 4,
+      "false_positive_count": 7,
+      "feature_group_id": "no_text",
+      "model_id": "signed_value_knn_k8_no_text",
+      "neighbor_count": 8,
+      "policy_utility": 0.4314285714285714,
+      "selected_count": 18,
+      "utility_delta_vs_selected": -0.15107142857142863,
+      "verdict": "degraded"
+    },
+    {
+      "control_type": "matched_k",
+      "false_negative_count": 1,
+      "false_positive_count": 10,
+      "feature_group_id": "no_source",
+      "model_id": "signed_value_knn_k8_no_source",
+      "neighbor_count": 8,
+      "policy_utility": 0.5185714285714284,
+      "selected_count": 24,
+      "utility_delta_vs_selected": -0.06392857142857167,
+      "verdict": "degraded"
+    },
+    {
+      "control_type": "matched_k",
+      "false_negative_count": 0,
+      "false_positive_count": 10,
+      "feature_group_id": "no_gap_span",
+      "model_id": "signed_value_knn_k8_no_gap_span",
+      "neighbor_count": 8,
+      "policy_utility": 0.5235714285714286,
+      "selected_count": 25,
+      "utility_delta_vs_selected": -0.05892857142857144,
+      "verdict": "degraded"
+    },
+    {
+      "control_type": "matched_k",
+      "false_negative_count": 1,
+      "false_positive_count": 10,
+      "feature_group_id": "no_retention",
+      "model_id": "signed_value_knn_k8_no_retention",
+      "neighbor_count": 8,
+      "policy_utility": 0.5407142857142857,
+      "selected_count": 24,
+      "utility_delta_vs_selected": -0.041785714285714315,
+      "verdict": "degraded"
+    }
+  ],
+  "schema": "diffusion_counterfactual_span_probe_signed_value_controls.v1",
+  "selected_model": {
+    "error_count": 9,
+    "false_negative_count": 0,
+    "false_negative_task_ids": [],
+    "false_positive_count": 9,
+    "false_positive_task_ids": [
+      "plan_064",
+      "plan_071",
+      "plan_003",
+      "plan_017",
+      "plan_019",
+      "plan_020",
+      "plan_022",
+      "plan_023",
+      "plan_024"
+    ],
+    "feature_group_id": "all",
+    "model_id": "signed_value_knn_k8_all",
+    "neighbor_count": 8,
+    "policy_utility": 0.5825,
+    "positive_lift_covered": 1.1455,
+    "selected_count": 24,
+    "signed_lift_covered": 1.0625,
+    "slice_results": [
+      {
+        "error_count": 2,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 2,
+        "false_positive_task_ids": [
+          "plan_064",
+          "plan_071"
+        ],
+        "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4.json",
+        "policy_utility": 0.23714285714285716,
+        "positive_lift_covered": 0.5001428571428572,
+        "selected_count": 9,
+        "signed_lift_covered": 0.41714285714285715
+      },
+      {
+        "error_count": 1,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 1,
+        "false_positive_task_ids": [
+          "plan_003"
+        ],
+        "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_fresh_planning.json",
+        "policy_utility": 0.3439285714285713,
+        "positive_lift_covered": 0.4839285714285713,
+        "selected_count": 7,
+        "signed_lift_covered": 0.4839285714285713
+      },
+      {
+        "error_count": 6,
+        "false_negative_count": 0,
+        "false_negative_task_ids": [],
+        "false_positive_count": 6,
+        "false_positive_task_ids": [
+          "plan_017",
+          "plan_019",
+          "plan_020",
+          "plan_022",
+          "plan_023",
+          "plan_024"
+        ],
+        "held_out_fit": "eval_results\\diffusion_language\\counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json",
+        "policy_utility": 0.001428571428571418,
+        "positive_lift_covered": 0.16142857142857142,
+        "selected_count": 8,
+        "signed_lift_covered": 0.16142857142857142
+      }
+    ]
+  },
+  "summary": {
+    "best_withheld_control_count": 4,
+    "best_withheld_degraded_count": 4,
+    "matched_k_control_count": 4,
+    "matched_k_degraded_count": 4,
+    "worst_matched_k_utility_delta": -0.15107142857142863
+  }
+}

@@ -161,6 +161,12 @@ Promotion bar:
 
 Add a control mode that deliberately withholds one feature family:
 
+Status: implemented as
+`DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_SIGNED_VALUE_CONTROLS_V4.md`. M2 passes
+as an audit: all matched-k and best-withheld feature-family controls degrade
+relative to `signed_value_knn_k8_all`. This supports the distributed-signature
+interpretation, but it does not override the M1 promotion failure.
+
 - no text-fidelity features
 - no source-quality features
 - no retention features
