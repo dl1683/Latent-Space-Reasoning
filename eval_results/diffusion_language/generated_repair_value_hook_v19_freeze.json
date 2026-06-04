@@ -1,0 +1,79 @@
+{
+  "conclusive_result_gates": {
+    "maximum_generated_repair_value_v1_false_positive_count": 0,
+    "minimum_generated_repair_positive_count": 2,
+    "must_beat_broad_denoise_after_cost": true,
+    "must_report_zero_generated_positives_as_inconclusive": true,
+    "no_promotion_language_without_fresh_validation": true
+  },
+  "design_intent": "Validate the implemented generated_repair_value_v1 selector on fresh rows instead of relying on the v18 no-generation replay boundary.",
+  "failure_accounting": [
+    "If the hook selects nonpositive task-lift rows, keep it diagnostic-only.",
+    "If broad denoise matches the hook after cost, do not promote the hook.",
+    "If zero generated positives appear, mark v19 inconclusive rather than successful.",
+    "If source-only value explains positives, separate source search from generated repair value."
+  ],
+  "fit_boundary": {
+    "v18_hook_report": "eval_results\\diffusion_language\\generated_repair_v18_value_hook_report.md",
+    "v18_hook_report_sha256": "0428e262fa37a2d114e0688f81b25bcdf8222fa3572b4b62bfa023ff63abeaf1",
+    "v18_hook_run_id": "diffusion-d4a90959bf5734b2",
+    "v18_hook_scores": "eval_results\\diffusion_language\\generated_repair_v18_value_hook_scores.json",
+    "v18_hook_scores_sha256": "bec6e6c38f5386fb751c38748da734d562d6c5407ec509a1c7b12399a3abf5e4",
+    "v18_rejected_no_lift_tasks": [
+      "plan_141",
+      "plan_144"
+    ],
+    "v18_repair_covered_task_delta_vs_fixed": 0.035223,
+    "v18_repair_covered_task_delta_vs_random": 0.058652,
+    "v18_selected_generated_repair_tasks": [
+      "plan_137",
+      "plan_139"
+    ],
+    "v18_task_delta_per_extra_generation": 0.071
+  },
+  "fresh_slice_protocol": {
+    "label_pass": "python experiments\\run_diffusion_three_arm_benchmark.py --task-preset lean_gpu_mixed_transfer_v19 --candidates llada-moe-7b-a1b-instruct-hf --limit-schedules 2 --limit-evolved-schedules 0 --limit-repair-candidates 1 --repair-source-policy random --repair-pack constraint_span_phase_final_preserve_seeded_gated --repair-spend-trigger denoise_phase_repairability --repair-source-min-chars 240 --repair-source-prompt-gap-min 2 --repair-source-prompt-gap-max 9 --repair-source-prompt-coverage-min 0.4 --repair-source-prompt-coverage-max 1.0 --repair-phase-budget frontier --repair-selector generated_repair_value_v1 --repair-promotion-margin 0.02 --trajectory-selector planning_state --device cuda --dtype bfloat16 --raw-output eval_results\\diffusion_language\\generated_repair_value_hook_v19_label_raw.jsonl --scores-output eval_results\\diffusion_language\\generated_repair_value_hook_v19_label_scores.json --report-output eval_results\\diffusion_language\\generated_repair_value_hook_v19_label_report.md",
+    "required_replay_outputs": [
+      "fresh selected-repair positives and no-lift selected rows",
+      "generated_repair_value_v1 versus candidate_aware_promotion_v1 and broad-denoise controls",
+      "source-tie, source-positive, and source-negative row buckets",
+      "task lift per extra repair generation and utility after repair-generation cost",
+      "selector regret and oracle headroom"
+    ]
+  },
+  "generated_by": "experiments/build_diffusion_generated_repair_value_hook_v19_freeze.py",
+  "overlap_with_v18_hook_rows": [],
+  "planning_task_ids": [
+    "plan_145",
+    "plan_146",
+    "plan_147",
+    "plan_148",
+    "plan_149",
+    "plan_150",
+    "plan_151",
+    "plan_152"
+  ],
+  "schema": "diffusion_generated_repair_value_hook_v19_freeze.v1",
+  "target_selector": {
+    "cost_accounting": "repair generation cost must be charged before any live-controller claim",
+    "promotion_margin": 0.02,
+    "promotion_status": "fresh_live_hook_validation_not_promoted_controller",
+    "requires_positive_source_relative_planning_quality_delta": true,
+    "selection_signal": "generated repair planning-quality lift over recorded repair source",
+    "selector_id": "generated_repair_value_v1"
+  },
+  "task_ids": [
+    "plan_145",
+    "plan_146",
+    "plan_147",
+    "plan_148",
+    "plan_149",
+    "plan_150",
+    "plan_151",
+    "plan_152",
+    "math_009",
+    "sym_007",
+    "sci_002"
+  ],
+  "task_preset": "lean_gpu_mixed_transfer_v19"
+}
