@@ -31,16 +31,16 @@ The v13 measurement gate is meaningful: the frozen random-source pass produced s
 
 ## Rows
 
-| Task | Selected | Source Delta | Skeleton | Step Frac | Peak Coverage | Probe Value | Probe | Source |
-| --- | --- | ---: | --- | ---: | ---: | ---: | --- | --- |
-| `plan_097` | False | 0.108571 | True | 0.218750 | 0.125000 | 0.011171 | False | `random_32` |
-| `plan_098` | False | -0.175000 | True | 0.625000 | 0.307692 | 0.049841 | True | `random_32` |
-| `plan_099` | True | 0.000000 | True | 0.218750 | 0.500000 | 0.031141 | True | `low_confidence_32` |
-| `plan_100` | False | 0.000000 | True | 0.218750 | 0.250000 | 0.011784 | True | `low_confidence_32` |
-| `plan_101` | False | 0.000000 | True | 0.218750 | 0.058824 | 0.035319 | True | `low_confidence_32` |
-| `plan_102` | True | 0.000000 | True | 0.218750 | 0.500000 | 0.000000 | True | `low_confidence_32` |
-| `plan_103` | False | 0.000000 | True | 0.218750 | 0.375000 | 0.001417 | True | `low_confidence_32` |
-| `plan_104` | False | 0.000000 | True | 0.218750 | 0.333333 | 0.010397 | True | `low_confidence_32` |
+| Task | Selected | Source Delta | Skeleton | Step Frac | Peak Coverage | Gap | Coverage | Probe Value | Probe | Source |
+| --- | --- | ---: | --- | ---: | ---: | ---: | ---: | ---: | --- | --- |
+| `plan_097` | False | 0.108571 | True | 0.218750 | 0.125000 | 10.000000 | 0.375000 | 0.011171 | False | `random_32` |
+| `plan_098` | False | -0.175000 | True | 0.625000 | 0.307692 | 6.000000 | 0.538462 | 0.049841 | True | `random_32` |
+| `plan_099` | True | 0.000000 | True | 0.218750 | 0.500000 | 4.000000 | 0.785714 | 0.031141 | True | `low_confidence_32` |
+| `plan_100` | False | 0.000000 | True | 0.218750 | 0.250000 | 2.000000 | 0.875000 | 0.011784 | True | `low_confidence_32` |
+| `plan_101` | False | 0.000000 | True | 0.218750 | 0.058824 | 5.000000 | 0.764706 | 0.035319 | True | `low_confidence_32` |
+| `plan_102` | True | 0.000000 | True | 0.218750 | 0.500000 | 0.000000 | 1.000000 | 0.000000 | True | `low_confidence_32` |
+| `plan_103` | False | 0.000000 | True | 0.218750 | 0.375000 | 0.000000 | 1.000000 | 0.001417 | True | `low_confidence_32` |
+| `plan_104` | False | 0.000000 | True | 0.218750 | 0.333333 | 7.000000 | 0.533333 | 0.010397 | True | `low_confidence_32` |
 
 ## Reading
 

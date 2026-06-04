@@ -164,9 +164,9 @@ def render_markdown(result: dict[str, object]) -> str:
             "",
             (
                 "| Task | Selected | Source Delta | Skeleton | Step Frac | Peak Coverage | "
-                "Probe Value | Probe | Source |"
+                "Gap | Coverage | Probe Value | Probe | Source |"
             ),
-            "| --- | --- | ---: | --- | ---: | ---: | ---: | --- | --- |",
+            "| --- | --- | ---: | --- | ---: | ---: | ---: | ---: | ---: | --- | --- |",
         ]
     )
     for row in rows:
@@ -178,6 +178,8 @@ def render_markdown(result: dict[str, object]) -> str:
             f"{bool(row.get('has_repairable_denoise_skeleton'))} | "
             f"{_format_float(row.get('first_repairable_denoise_skeleton_step_fraction'))} | "
             f"{_format_float(row.get('peak_denoise_prompt_coverage'))} | "
+            f"{_format_float(row.get('prompt_gap_count'))} | "
+            f"{_format_float(row.get('prompt_coverage'))} | "
             f"{_format_float(row.get('measured_probe_value_prediction'))} | "
             f"{bool(row.get('would_probe'))} | "
             f"`{row.get('source_control')}` |"
@@ -217,6 +219,8 @@ def _score_row(row: dict[str, object], *, surface: dict[str, object]) -> dict[st
         "has_repairable_denoise_skeleton": has_skeleton,
         "measured_probe_value_prediction": _float(row.get("measured_probe_value_prediction")),
         "peak_denoise_prompt_coverage": peak_coverage,
+        "prompt_coverage": _float(row.get("prompt_coverage")),
+        "prompt_gap_count": _float(row.get("prompt_gap_count")),
         "source_control": str(row.get("source_control", "")),
         "source_task_delta_vs_trajectory": source_delta,
         "surface_selected": selected,
