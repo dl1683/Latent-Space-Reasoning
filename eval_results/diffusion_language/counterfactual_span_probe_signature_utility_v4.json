@@ -1,0 +1,5228 @@
+{
+  "frontier_rows": [
+    {
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 11,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_002",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 1.0185714285714285,
+      "regret_vs_oracle": 0.1269285714285715,
+      "selected_count": 26,
+      "selected_lift": 1.0185714285714285,
+      "selection_penalty": 0.0,
+      "threshold": -2.9094910974586345
+    },
+    {
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 11,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_002",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 1.0185714285714285,
+      "regret_vs_oracle": 0.1269285714285715,
+      "selected_count": 26,
+      "selected_lift": 1.0185714285714285,
+      "selection_penalty": 0.0,
+      "threshold": -1.9094910974586345
+    },
+    {
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_063"
+      ],
+      "false_positive_count": 11,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_002",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.9221428571428569,
+      "regret_vs_oracle": 0.22335714285714303,
+      "selected_count": 25,
+      "selected_lift": 0.9221428571428569,
+      "selection_penalty": 0.0,
+      "threshold": -1.7062872069842694
+    },
+    {
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_063"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.927142857142857,
+      "regret_vs_oracle": 0.21835714285714292,
+      "selected_count": 24,
+      "selected_lift": 0.927142857142857,
+      "selection_penalty": 0.0,
+      "threshold": -0.8382070056094348
+    },
+    {
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_072"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.8682142857142857,
+      "regret_vs_oracle": 0.27728571428571425,
+      "selected_count": 23,
+      "selected_lift": 0.8682142857142857,
+      "selection_penalty": 0.0,
+      "threshold": -0.6321311180610418
+    },
+    {
+      "false_negative_count": 3,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_072",
+        "plan_005"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.7217857142857143,
+      "regret_vs_oracle": 0.4237142857142857,
+      "selected_count": 22,
+      "selected_lift": 0.7217857142857143,
+      "selection_penalty": 0.0,
+      "threshold": -0.5598081840255063
+    },
+    {
+      "false_negative_count": 4,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.6589285714285715,
+      "regret_vs_oracle": 0.48657142857142843,
+      "selected_count": 21,
+      "selected_lift": 0.6589285714285715,
+      "selection_penalty": 0.0,
+      "threshold": -0.5184263906742399
+    },
+    {
+      "false_negative_count": 4,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 9,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.6589285714285715,
+      "regret_vs_oracle": 0.48657142857142843,
+      "selected_count": 20,
+      "selected_lift": 0.6589285714285715,
+      "selection_penalty": 0.0,
+      "threshold": -0.31324374958632006
+    },
+    {
+      "false_negative_count": 4,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.697857142857143,
+      "regret_vs_oracle": 0.447642857142857,
+      "selected_count": 19,
+      "selected_lift": 0.697857142857143,
+      "selection_penalty": 0.0,
+      "threshold": -0.2203393550083539
+    },
+    {
+      "false_negative_count": 5,
+      "false_negative_task_ids": [
+        "plan_046",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.6214285714285714,
+      "regret_vs_oracle": 0.5240714285714285,
+      "selected_count": 18,
+      "selected_lift": 0.6214285714285714,
+      "selection_penalty": 0.0,
+      "threshold": -0.2130490063255448
+    },
+    {
+      "false_negative_count": 6,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_046",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.525,
+      "regret_vs_oracle": 0.6204999999999999,
+      "selected_count": 17,
+      "selected_lift": 0.525,
+      "selection_penalty": 0.0,
+      "threshold": -0.1754957799786636
+    },
+    {
+      "false_negative_count": 7,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.47807142857142854,
+      "regret_vs_oracle": 0.6674285714285715,
+      "selected_count": 16,
+      "selected_lift": 0.47807142857142854,
+      "selection_penalty": 0.0,
+      "threshold": 0.06442041168806956
+    },
+    {
+      "false_negative_count": 7,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.47807142857142854,
+      "regret_vs_oracle": 0.6674285714285715,
+      "selected_count": 16,
+      "selected_lift": 0.47807142857142854,
+      "selection_penalty": 0.0,
+      "threshold": 0.1185465894105091
+    },
+    {
+      "false_negative_count": 7,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.47807142857142854,
+      "regret_vs_oracle": 0.6674285714285715,
+      "selected_count": 15,
+      "selected_lift": 0.47807142857142854,
+      "selection_penalty": 0.0,
+      "threshold": 0.14604820210181435
+    },
+    {
+      "false_negative_count": 8,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.36557142857142855,
+      "regret_vs_oracle": 0.7799285714285714,
+      "selected_count": 14,
+      "selected_lift": 0.36557142857142855,
+      "selection_penalty": 0.0,
+      "threshold": 0.14980547573845726
+    },
+    {
+      "false_negative_count": 9,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.34414285714285714,
+      "regret_vs_oracle": 0.8013571428571429,
+      "selected_count": 13,
+      "selected_lift": 0.34414285714285714,
+      "selection_penalty": 0.0,
+      "threshold": 0.19077240563112619
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.2852142857142857,
+      "regret_vs_oracle": 0.8602857142857143,
+      "selected_count": 12,
+      "selected_lift": 0.2852142857142857,
+      "selection_penalty": 0.0,
+      "threshold": 0.2442882804069768
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.2852142857142857,
+      "regret_vs_oracle": 0.8602857142857143,
+      "selected_count": 12,
+      "selected_lift": 0.2852142857142857,
+      "selection_penalty": 0.0,
+      "threshold": 0.42616678367211347
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 6,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023"
+      ],
+      "policy_utility": 0.2852142857142857,
+      "regret_vs_oracle": 0.8602857142857143,
+      "selected_count": 11,
+      "selected_lift": 0.2852142857142857,
+      "selection_penalty": 0.0,
+      "threshold": 0.5159097649723545
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 5,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_020",
+        "plan_022",
+        "plan_023"
+      ],
+      "policy_utility": 0.2852142857142857,
+      "regret_vs_oracle": 0.8602857142857143,
+      "selected_count": 10,
+      "selected_lift": 0.2852142857142857,
+      "selection_penalty": 0.0,
+      "threshold": 0.5583998714671221
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 4,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_020",
+        "plan_023"
+      ],
+      "policy_utility": 0.2852142857142857,
+      "regret_vs_oracle": 0.8602857142857143,
+      "selected_count": 9,
+      "selected_lift": 0.2852142857142857,
+      "selection_penalty": 0.0,
+      "threshold": 0.5728910380051531
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020",
+        "plan_023"
+      ],
+      "policy_utility": 0.3682142857142857,
+      "regret_vs_oracle": 0.7772857142857142,
+      "selected_count": 8,
+      "selected_lift": 0.3682142857142857,
+      "selection_penalty": 0.0,
+      "threshold": 0.6889279578517811
+    },
+    {
+      "false_negative_count": 11,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_018"
+      ],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020",
+        "plan_023"
+      ],
+      "policy_utility": 0.2782142857142857,
+      "regret_vs_oracle": 0.8672857142857142,
+      "selected_count": 7,
+      "selected_lift": 0.2782142857142857,
+      "selection_penalty": 0.0,
+      "threshold": 0.7062908833220609
+    },
+    {
+      "false_negative_count": 12,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020",
+        "plan_023"
+      ],
+      "policy_utility": 0.27535714285714286,
+      "regret_vs_oracle": 0.8701428571428571,
+      "selected_count": 6,
+      "selected_lift": 0.27535714285714286,
+      "selection_penalty": 0.0,
+      "threshold": 1.0916992773098668
+    },
+    {
+      "false_negative_count": 12,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020"
+      ],
+      "policy_utility": 0.27535714285714286,
+      "regret_vs_oracle": 0.8701428571428571,
+      "selected_count": 5,
+      "selected_lift": 0.27535714285714286,
+      "selection_penalty": 0.0,
+      "threshold": 1.2532380015582
+    },
+    {
+      "false_negative_count": 13,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020"
+      ],
+      "policy_utility": 0.26285714285714284,
+      "regret_vs_oracle": 0.8826428571428571,
+      "selected_count": 4,
+      "selected_lift": 0.26285714285714284,
+      "selection_penalty": 0.0,
+      "threshold": 1.4037824524753133
+    },
+    {
+      "false_negative_count": 13,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_020"
+      ],
+      "policy_utility": 0.26285714285714284,
+      "regret_vs_oracle": 0.8826428571428571,
+      "selected_count": 3,
+      "selected_lift": 0.26285714285714284,
+      "selection_penalty": 0.0,
+      "threshold": 1.502388665506245
+    },
+    {
+      "false_negative_count": 14,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_007",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_020"
+      ],
+      "policy_utility": 0.0714285714285714,
+      "regret_vs_oracle": 1.0740714285714286,
+      "selected_count": 2,
+      "selected_lift": 0.0714285714285714,
+      "selection_penalty": 0.0,
+      "threshold": 1.5983372347731957
+    },
+    {
+      "false_negative_count": 15,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_007",
+        "plan_008",
+        "plan_018",
+        "plan_021"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_020"
+      ],
+      "policy_utility": 0.0,
+      "regret_vs_oracle": 1.1455,
+      "selected_count": 1,
+      "selected_lift": 0.0,
+      "selection_penalty": 0.0,
+      "threshold": 1.9525200052532836
+    },
+    {
+      "false_negative_count": 15,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_007",
+        "plan_008",
+        "plan_018",
+        "plan_021"
+      ],
+      "false_positive_count": 0,
+      "false_positive_task_ids": [],
+      "policy_utility": 0.0,
+      "regret_vs_oracle": 1.1455,
+      "selected_count": 0,
+      "selected_lift": 0,
+      "selection_penalty": 0.0,
+      "threshold": 2.952520005253284
+    },
+    {
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 11,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_002",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.8885714285714285,
+      "regret_vs_oracle": 0.18407142857142855,
+      "selected_count": 26,
+      "selected_lift": 1.0185714285714285,
+      "selection_penalty": 0.005,
+      "threshold": -2.9094910974586345
+    },
+    {
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 11,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_002",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.8885714285714285,
+      "regret_vs_oracle": 0.18407142857142855,
+      "selected_count": 26,
+      "selected_lift": 1.0185714285714285,
+      "selection_penalty": 0.005,
+      "threshold": -1.9094910974586345
+    },
+    {
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_063"
+      ],
+      "false_positive_count": 11,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_002",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.7971428571428569,
+      "regret_vs_oracle": 0.2755000000000001,
+      "selected_count": 25,
+      "selected_lift": 0.9221428571428569,
+      "selection_penalty": 0.005,
+      "threshold": -1.7062872069842694
+    },
+    {
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_063"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.807142857142857,
+      "regret_vs_oracle": 0.26549999999999996,
+      "selected_count": 24,
+      "selected_lift": 0.927142857142857,
+      "selection_penalty": 0.005,
+      "threshold": -0.8382070056094348
+    },
+    {
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_072"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.7532142857142857,
+      "regret_vs_oracle": 0.3194285714285713,
+      "selected_count": 23,
+      "selected_lift": 0.8682142857142857,
+      "selection_penalty": 0.005,
+      "threshold": -0.6321311180610418
+    },
+    {
+      "false_negative_count": 3,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_072",
+        "plan_005"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.6117857142857143,
+      "regret_vs_oracle": 0.46085714285714274,
+      "selected_count": 22,
+      "selected_lift": 0.7217857142857143,
+      "selection_penalty": 0.005,
+      "threshold": -0.5598081840255063
+    },
+    {
+      "false_negative_count": 4,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.5539285714285715,
+      "regret_vs_oracle": 0.5187142857142855,
+      "selected_count": 21,
+      "selected_lift": 0.6589285714285715,
+      "selection_penalty": 0.005,
+      "threshold": -0.5184263906742399
+    },
+    {
+      "false_negative_count": 4,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 9,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.5589285714285716,
+      "regret_vs_oracle": 0.5137142857142855,
+      "selected_count": 20,
+      "selected_lift": 0.6589285714285715,
+      "selection_penalty": 0.005,
+      "threshold": -0.31324374958632006
+    },
+    {
+      "false_negative_count": 4,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.602857142857143,
+      "regret_vs_oracle": 0.46978571428571403,
+      "selected_count": 19,
+      "selected_lift": 0.697857142857143,
+      "selection_penalty": 0.005,
+      "threshold": -0.2203393550083539
+    },
+    {
+      "false_negative_count": 5,
+      "false_negative_task_ids": [
+        "plan_046",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.5314285714285715,
+      "regret_vs_oracle": 0.5412142857142855,
+      "selected_count": 18,
+      "selected_lift": 0.6214285714285714,
+      "selection_penalty": 0.005,
+      "threshold": -0.2130490063255448
+    },
+    {
+      "false_negative_count": 6,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_046",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.44,
+      "regret_vs_oracle": 0.6326428571428571,
+      "selected_count": 17,
+      "selected_lift": 0.525,
+      "selection_penalty": 0.005,
+      "threshold": -0.1754957799786636
+    },
+    {
+      "false_negative_count": 7,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.3980714285714285,
+      "regret_vs_oracle": 0.6745714285714285,
+      "selected_count": 16,
+      "selected_lift": 0.47807142857142854,
+      "selection_penalty": 0.005,
+      "threshold": 0.06442041168806956
+    },
+    {
+      "false_negative_count": 7,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.3980714285714285,
+      "regret_vs_oracle": 0.6745714285714285,
+      "selected_count": 16,
+      "selected_lift": 0.47807142857142854,
+      "selection_penalty": 0.005,
+      "threshold": 0.1185465894105091
+    },
+    {
+      "false_negative_count": 7,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.4030714285714285,
+      "regret_vs_oracle": 0.6695714285714285,
+      "selected_count": 15,
+      "selected_lift": 0.47807142857142854,
+      "selection_penalty": 0.005,
+      "threshold": 0.14604820210181435
+    },
+    {
+      "false_negative_count": 8,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.29557142857142854,
+      "regret_vs_oracle": 0.7770714285714284,
+      "selected_count": 14,
+      "selected_lift": 0.36557142857142855,
+      "selection_penalty": 0.005,
+      "threshold": 0.14980547573845726
+    },
+    {
+      "false_negative_count": 9,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.27914285714285714,
+      "regret_vs_oracle": 0.7934999999999999,
+      "selected_count": 13,
+      "selected_lift": 0.34414285714285714,
+      "selection_penalty": 0.005,
+      "threshold": 0.19077240563112619
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.2252142857142857,
+      "regret_vs_oracle": 0.8474285714285713,
+      "selected_count": 12,
+      "selected_lift": 0.2852142857142857,
+      "selection_penalty": 0.005,
+      "threshold": 0.2442882804069768
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.2252142857142857,
+      "regret_vs_oracle": 0.8474285714285713,
+      "selected_count": 12,
+      "selected_lift": 0.2852142857142857,
+      "selection_penalty": 0.005,
+      "threshold": 0.42616678367211347
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 6,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023"
+      ],
+      "policy_utility": 0.2302142857142857,
+      "regret_vs_oracle": 0.8424285714285713,
+      "selected_count": 11,
+      "selected_lift": 0.2852142857142857,
+      "selection_penalty": 0.005,
+      "threshold": 0.5159097649723545
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 5,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_020",
+        "plan_022",
+        "plan_023"
+      ],
+      "policy_utility": 0.2352142857142857,
+      "regret_vs_oracle": 0.8374285714285713,
+      "selected_count": 10,
+      "selected_lift": 0.2852142857142857,
+      "selection_penalty": 0.005,
+      "threshold": 0.5583998714671221
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 4,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_020",
+        "plan_023"
+      ],
+      "policy_utility": 0.2402142857142857,
+      "regret_vs_oracle": 0.8324285714285713,
+      "selected_count": 9,
+      "selected_lift": 0.2852142857142857,
+      "selection_penalty": 0.005,
+      "threshold": 0.5728910380051531
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020",
+        "plan_023"
+      ],
+      "policy_utility": 0.32821428571428574,
+      "regret_vs_oracle": 0.7444285714285712,
+      "selected_count": 8,
+      "selected_lift": 0.3682142857142857,
+      "selection_penalty": 0.005,
+      "threshold": 0.6889279578517811
+    },
+    {
+      "false_negative_count": 11,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_018"
+      ],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020",
+        "plan_023"
+      ],
+      "policy_utility": 0.2432142857142857,
+      "regret_vs_oracle": 0.8294285714285713,
+      "selected_count": 7,
+      "selected_lift": 0.2782142857142857,
+      "selection_penalty": 0.005,
+      "threshold": 0.7062908833220609
+    },
+    {
+      "false_negative_count": 12,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020",
+        "plan_023"
+      ],
+      "policy_utility": 0.24535714285714286,
+      "regret_vs_oracle": 0.8272857142857142,
+      "selected_count": 6,
+      "selected_lift": 0.27535714285714286,
+      "selection_penalty": 0.005,
+      "threshold": 1.0916992773098668
+    },
+    {
+      "false_negative_count": 12,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020"
+      ],
+      "policy_utility": 0.25035714285714283,
+      "regret_vs_oracle": 0.8222857142857142,
+      "selected_count": 5,
+      "selected_lift": 0.27535714285714286,
+      "selection_penalty": 0.005,
+      "threshold": 1.2532380015582
+    },
+    {
+      "false_negative_count": 13,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020"
+      ],
+      "policy_utility": 0.24285714285714285,
+      "regret_vs_oracle": 0.8297857142857141,
+      "selected_count": 4,
+      "selected_lift": 0.26285714285714284,
+      "selection_penalty": 0.005,
+      "threshold": 1.4037824524753133
+    },
+    {
+      "false_negative_count": 13,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_020"
+      ],
+      "policy_utility": 0.24785714285714283,
+      "regret_vs_oracle": 0.8247857142857142,
+      "selected_count": 3,
+      "selected_lift": 0.26285714285714284,
+      "selection_penalty": 0.005,
+      "threshold": 1.502388665506245
+    },
+    {
+      "false_negative_count": 14,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_007",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_020"
+      ],
+      "policy_utility": 0.061428571428571395,
+      "regret_vs_oracle": 1.0112142857142856,
+      "selected_count": 2,
+      "selected_lift": 0.0714285714285714,
+      "selection_penalty": 0.005,
+      "threshold": 1.5983372347731957
+    },
+    {
+      "false_negative_count": 15,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_007",
+        "plan_008",
+        "plan_018",
+        "plan_021"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_020"
+      ],
+      "policy_utility": -0.005,
+      "regret_vs_oracle": 1.077642857142857,
+      "selected_count": 1,
+      "selected_lift": 0.0,
+      "selection_penalty": 0.005,
+      "threshold": 1.9525200052532836
+    },
+    {
+      "false_negative_count": 15,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_007",
+        "plan_008",
+        "plan_018",
+        "plan_021"
+      ],
+      "false_positive_count": 0,
+      "false_positive_task_ids": [],
+      "policy_utility": 0.0,
+      "regret_vs_oracle": 1.072642857142857,
+      "selected_count": 0,
+      "selected_lift": 0,
+      "selection_penalty": 0.005,
+      "threshold": 2.952520005253284
+    },
+    {
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 11,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_002",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.7585714285714285,
+      "regret_vs_oracle": 0.2440714285714285,
+      "selected_count": 26,
+      "selected_lift": 1.0185714285714285,
+      "selection_penalty": 0.01,
+      "threshold": -2.9094910974586345
+    },
+    {
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 11,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_002",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.7585714285714285,
+      "regret_vs_oracle": 0.2440714285714285,
+      "selected_count": 26,
+      "selected_lift": 1.0185714285714285,
+      "selection_penalty": 0.01,
+      "threshold": -1.9094910974586345
+    },
+    {
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_063"
+      ],
+      "false_positive_count": 11,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_002",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.6721428571428569,
+      "regret_vs_oracle": 0.3305,
+      "selected_count": 25,
+      "selected_lift": 0.9221428571428569,
+      "selection_penalty": 0.01,
+      "threshold": -1.7062872069842694
+    },
+    {
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_063"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.687142857142857,
+      "regret_vs_oracle": 0.3154999999999999,
+      "selected_count": 24,
+      "selected_lift": 0.927142857142857,
+      "selection_penalty": 0.01,
+      "threshold": -0.8382070056094348
+    },
+    {
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_072"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.6382142857142857,
+      "regret_vs_oracle": 0.3644285714285712,
+      "selected_count": 23,
+      "selected_lift": 0.8682142857142857,
+      "selection_penalty": 0.01,
+      "threshold": -0.6321311180610418
+    },
+    {
+      "false_negative_count": 3,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_072",
+        "plan_005"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.5017857142857143,
+      "regret_vs_oracle": 0.5008571428571427,
+      "selected_count": 22,
+      "selected_lift": 0.7217857142857143,
+      "selection_penalty": 0.01,
+      "threshold": -0.5598081840255063
+    },
+    {
+      "false_negative_count": 4,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.44892857142857157,
+      "regret_vs_oracle": 0.5537142857142854,
+      "selected_count": 21,
+      "selected_lift": 0.6589285714285715,
+      "selection_penalty": 0.01,
+      "threshold": -0.5184263906742399
+    },
+    {
+      "false_negative_count": 4,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 9,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.4589285714285715,
+      "regret_vs_oracle": 0.5437142857142854,
+      "selected_count": 20,
+      "selected_lift": 0.6589285714285715,
+      "selection_penalty": 0.01,
+      "threshold": -0.31324374958632006
+    },
+    {
+      "false_negative_count": 4,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.507857142857143,
+      "regret_vs_oracle": 0.49478571428571394,
+      "selected_count": 19,
+      "selected_lift": 0.697857142857143,
+      "selection_penalty": 0.01,
+      "threshold": -0.2203393550083539
+    },
+    {
+      "false_negative_count": 5,
+      "false_negative_task_ids": [
+        "plan_046",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.44142857142857145,
+      "regret_vs_oracle": 0.5612142857142854,
+      "selected_count": 18,
+      "selected_lift": 0.6214285714285714,
+      "selection_penalty": 0.01,
+      "threshold": -0.2130490063255448
+    },
+    {
+      "false_negative_count": 6,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_046",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.355,
+      "regret_vs_oracle": 0.647642857142857,
+      "selected_count": 17,
+      "selected_lift": 0.525,
+      "selection_penalty": 0.01,
+      "threshold": -0.1754957799786636
+    },
+    {
+      "false_negative_count": 7,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.31807142857142856,
+      "regret_vs_oracle": 0.6845714285714284,
+      "selected_count": 16,
+      "selected_lift": 0.47807142857142854,
+      "selection_penalty": 0.01,
+      "threshold": 0.06442041168806956
+    },
+    {
+      "false_negative_count": 7,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.31807142857142856,
+      "regret_vs_oracle": 0.6845714285714284,
+      "selected_count": 16,
+      "selected_lift": 0.47807142857142854,
+      "selection_penalty": 0.01,
+      "threshold": 0.1185465894105091
+    },
+    {
+      "false_negative_count": 7,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.32807142857142857,
+      "regret_vs_oracle": 0.6745714285714284,
+      "selected_count": 15,
+      "selected_lift": 0.47807142857142854,
+      "selection_penalty": 0.01,
+      "threshold": 0.14604820210181435
+    },
+    {
+      "false_negative_count": 8,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.22557142857142853,
+      "regret_vs_oracle": 0.7770714285714284,
+      "selected_count": 14,
+      "selected_lift": 0.36557142857142855,
+      "selection_penalty": 0.01,
+      "threshold": 0.14980547573845726
+    },
+    {
+      "false_negative_count": 9,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.21414285714285713,
+      "regret_vs_oracle": 0.7884999999999998,
+      "selected_count": 13,
+      "selected_lift": 0.34414285714285714,
+      "selection_penalty": 0.01,
+      "threshold": 0.19077240563112619
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.1652142857142857,
+      "regret_vs_oracle": 0.8374285714285712,
+      "selected_count": 12,
+      "selected_lift": 0.2852142857142857,
+      "selection_penalty": 0.01,
+      "threshold": 0.2442882804069768
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.1652142857142857,
+      "regret_vs_oracle": 0.8374285714285712,
+      "selected_count": 12,
+      "selected_lift": 0.2852142857142857,
+      "selection_penalty": 0.01,
+      "threshold": 0.42616678367211347
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 6,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023"
+      ],
+      "policy_utility": 0.1752142857142857,
+      "regret_vs_oracle": 0.8274285714285712,
+      "selected_count": 11,
+      "selected_lift": 0.2852142857142857,
+      "selection_penalty": 0.01,
+      "threshold": 0.5159097649723545
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 5,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_020",
+        "plan_022",
+        "plan_023"
+      ],
+      "policy_utility": 0.1852142857142857,
+      "regret_vs_oracle": 0.8174285714285713,
+      "selected_count": 10,
+      "selected_lift": 0.2852142857142857,
+      "selection_penalty": 0.01,
+      "threshold": 0.5583998714671221
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 4,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_020",
+        "plan_023"
+      ],
+      "policy_utility": 0.1952142857142857,
+      "regret_vs_oracle": 0.8074285714285713,
+      "selected_count": 9,
+      "selected_lift": 0.2852142857142857,
+      "selection_penalty": 0.01,
+      "threshold": 0.5728910380051531
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020",
+        "plan_023"
+      ],
+      "policy_utility": 0.2882142857142857,
+      "regret_vs_oracle": 0.7144285714285712,
+      "selected_count": 8,
+      "selected_lift": 0.3682142857142857,
+      "selection_penalty": 0.01,
+      "threshold": 0.6889279578517811
+    },
+    {
+      "false_negative_count": 11,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_018"
+      ],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020",
+        "plan_023"
+      ],
+      "policy_utility": 0.20821428571428569,
+      "regret_vs_oracle": 0.7944285714285713,
+      "selected_count": 7,
+      "selected_lift": 0.2782142857142857,
+      "selection_penalty": 0.01,
+      "threshold": 0.7062908833220609
+    },
+    {
+      "false_negative_count": 12,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020",
+        "plan_023"
+      ],
+      "policy_utility": 0.21535714285714286,
+      "regret_vs_oracle": 0.7872857142857141,
+      "selected_count": 6,
+      "selected_lift": 0.27535714285714286,
+      "selection_penalty": 0.01,
+      "threshold": 1.0916992773098668
+    },
+    {
+      "false_negative_count": 12,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020"
+      ],
+      "policy_utility": 0.22535714285714287,
+      "regret_vs_oracle": 0.7772857142857141,
+      "selected_count": 5,
+      "selected_lift": 0.27535714285714286,
+      "selection_penalty": 0.01,
+      "threshold": 1.2532380015582
+    },
+    {
+      "false_negative_count": 13,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020"
+      ],
+      "policy_utility": 0.22285714285714284,
+      "regret_vs_oracle": 0.7797857142857141,
+      "selected_count": 4,
+      "selected_lift": 0.26285714285714284,
+      "selection_penalty": 0.01,
+      "threshold": 1.4037824524753133
+    },
+    {
+      "false_negative_count": 13,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_020"
+      ],
+      "policy_utility": 0.23285714285714285,
+      "regret_vs_oracle": 0.7697857142857141,
+      "selected_count": 3,
+      "selected_lift": 0.26285714285714284,
+      "selection_penalty": 0.01,
+      "threshold": 1.502388665506245
+    },
+    {
+      "false_negative_count": 14,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_007",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_020"
+      ],
+      "policy_utility": 0.05142857142857139,
+      "regret_vs_oracle": 0.9512142857142856,
+      "selected_count": 2,
+      "selected_lift": 0.0714285714285714,
+      "selection_penalty": 0.01,
+      "threshold": 1.5983372347731957
+    },
+    {
+      "false_negative_count": 15,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_007",
+        "plan_008",
+        "plan_018",
+        "plan_021"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_020"
+      ],
+      "policy_utility": -0.01,
+      "regret_vs_oracle": 1.012642857142857,
+      "selected_count": 1,
+      "selected_lift": 0.0,
+      "selection_penalty": 0.01,
+      "threshold": 1.9525200052532836
+    },
+    {
+      "false_negative_count": 15,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_007",
+        "plan_008",
+        "plan_018",
+        "plan_021"
+      ],
+      "false_positive_count": 0,
+      "false_positive_task_ids": [],
+      "policy_utility": 0.0,
+      "regret_vs_oracle": 1.002642857142857,
+      "selected_count": 0,
+      "selected_lift": 0,
+      "selection_penalty": 0.01,
+      "threshold": 2.952520005253284
+    },
+    {
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 11,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_002",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.49857142857142844,
+      "regret_vs_oracle": 0.37157142857142866,
+      "selected_count": 26,
+      "selected_lift": 1.0185714285714285,
+      "selection_penalty": 0.02,
+      "threshold": -2.9094910974586345
+    },
+    {
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 11,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_002",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.49857142857142844,
+      "regret_vs_oracle": 0.37157142857142866,
+      "selected_count": 26,
+      "selected_lift": 1.0185714285714285,
+      "selection_penalty": 0.02,
+      "threshold": -1.9094910974586345
+    },
+    {
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_063"
+      ],
+      "false_positive_count": 11,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_002",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.42214285714285693,
+      "regret_vs_oracle": 0.4480000000000002,
+      "selected_count": 25,
+      "selected_lift": 0.9221428571428569,
+      "selection_penalty": 0.02,
+      "threshold": -1.7062872069842694
+    },
+    {
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_063"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.44714285714285706,
+      "regret_vs_oracle": 0.42300000000000004,
+      "selected_count": 24,
+      "selected_lift": 0.927142857142857,
+      "selection_penalty": 0.02,
+      "threshold": -0.8382070056094348
+    },
+    {
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_072"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.4082142857142857,
+      "regret_vs_oracle": 0.4619285714285714,
+      "selected_count": 23,
+      "selected_lift": 0.8682142857142857,
+      "selection_penalty": 0.02,
+      "threshold": -0.6321311180610418
+    },
+    {
+      "false_negative_count": 3,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_072",
+        "plan_005"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.28178571428571425,
+      "regret_vs_oracle": 0.5883571428571428,
+      "selected_count": 22,
+      "selected_lift": 0.7217857142857143,
+      "selection_penalty": 0.02,
+      "threshold": -0.5598081840255063
+    },
+    {
+      "false_negative_count": 4,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.23892857142857155,
+      "regret_vs_oracle": 0.6312142857142855,
+      "selected_count": 21,
+      "selected_lift": 0.6589285714285715,
+      "selection_penalty": 0.02,
+      "threshold": -0.5184263906742399
+    },
+    {
+      "false_negative_count": 4,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 9,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.2589285714285715,
+      "regret_vs_oracle": 0.6112142857142856,
+      "selected_count": 20,
+      "selected_lift": 0.6589285714285715,
+      "selection_penalty": 0.02,
+      "threshold": -0.31324374958632006
+    },
+    {
+      "false_negative_count": 4,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.31785714285714295,
+      "regret_vs_oracle": 0.5522857142857142,
+      "selected_count": 19,
+      "selected_lift": 0.697857142857143,
+      "selection_penalty": 0.02,
+      "threshold": -0.2203393550083539
+    },
+    {
+      "false_negative_count": 5,
+      "false_negative_task_ids": [
+        "plan_046",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.26142857142857145,
+      "regret_vs_oracle": 0.6087142857142857,
+      "selected_count": 18,
+      "selected_lift": 0.6214285714285714,
+      "selection_penalty": 0.02,
+      "threshold": -0.2130490063255448
+    },
+    {
+      "false_negative_count": 6,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_046",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.185,
+      "regret_vs_oracle": 0.685142857142857,
+      "selected_count": 17,
+      "selected_lift": 0.525,
+      "selection_penalty": 0.02,
+      "threshold": -0.1754957799786636
+    },
+    {
+      "false_negative_count": 7,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.15807142857142853,
+      "regret_vs_oracle": 0.7120714285714286,
+      "selected_count": 16,
+      "selected_lift": 0.47807142857142854,
+      "selection_penalty": 0.02,
+      "threshold": 0.06442041168806956
+    },
+    {
+      "false_negative_count": 7,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.15807142857142853,
+      "regret_vs_oracle": 0.7120714285714286,
+      "selected_count": 16,
+      "selected_lift": 0.47807142857142854,
+      "selection_penalty": 0.02,
+      "threshold": 0.1185465894105091
+    },
+    {
+      "false_negative_count": 7,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.17807142857142855,
+      "regret_vs_oracle": 0.6920714285714286,
+      "selected_count": 15,
+      "selected_lift": 0.47807142857142854,
+      "selection_penalty": 0.02,
+      "threshold": 0.14604820210181435
+    },
+    {
+      "false_negative_count": 8,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.08557142857142852,
+      "regret_vs_oracle": 0.7845714285714286,
+      "selected_count": 14,
+      "selected_lift": 0.36557142857142855,
+      "selection_penalty": 0.02,
+      "threshold": 0.14980547573845726
+    },
+    {
+      "false_negative_count": 9,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.08414285714285713,
+      "regret_vs_oracle": 0.786,
+      "selected_count": 13,
+      "selected_lift": 0.34414285714285714,
+      "selection_penalty": 0.02,
+      "threshold": 0.19077240563112619
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.04521428571428571,
+      "regret_vs_oracle": 0.8249285714285715,
+      "selected_count": 12,
+      "selected_lift": 0.2852142857142857,
+      "selection_penalty": 0.02,
+      "threshold": 0.2442882804069768
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.04521428571428571,
+      "regret_vs_oracle": 0.8249285714285715,
+      "selected_count": 12,
+      "selected_lift": 0.2852142857142857,
+      "selection_penalty": 0.02,
+      "threshold": 0.42616678367211347
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 6,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023"
+      ],
+      "policy_utility": 0.0652142857142857,
+      "regret_vs_oracle": 0.8049285714285714,
+      "selected_count": 11,
+      "selected_lift": 0.2852142857142857,
+      "selection_penalty": 0.02,
+      "threshold": 0.5159097649723545
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 5,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_020",
+        "plan_022",
+        "plan_023"
+      ],
+      "policy_utility": 0.08521428571428569,
+      "regret_vs_oracle": 0.7849285714285714,
+      "selected_count": 10,
+      "selected_lift": 0.2852142857142857,
+      "selection_penalty": 0.02,
+      "threshold": 0.5583998714671221
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 4,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_020",
+        "plan_023"
+      ],
+      "policy_utility": 0.1052142857142857,
+      "regret_vs_oracle": 0.7649285714285714,
+      "selected_count": 9,
+      "selected_lift": 0.2852142857142857,
+      "selection_penalty": 0.02,
+      "threshold": 0.5728910380051531
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020",
+        "plan_023"
+      ],
+      "policy_utility": 0.2082142857142857,
+      "regret_vs_oracle": 0.6619285714285714,
+      "selected_count": 8,
+      "selected_lift": 0.3682142857142857,
+      "selection_penalty": 0.02,
+      "threshold": 0.6889279578517811
+    },
+    {
+      "false_negative_count": 11,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_018"
+      ],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020",
+        "plan_023"
+      ],
+      "policy_utility": 0.13821428571428568,
+      "regret_vs_oracle": 0.7319285714285715,
+      "selected_count": 7,
+      "selected_lift": 0.2782142857142857,
+      "selection_penalty": 0.02,
+      "threshold": 0.7062908833220609
+    },
+    {
+      "false_negative_count": 12,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020",
+        "plan_023"
+      ],
+      "policy_utility": 0.15535714285714286,
+      "regret_vs_oracle": 0.7147857142857142,
+      "selected_count": 6,
+      "selected_lift": 0.27535714285714286,
+      "selection_penalty": 0.02,
+      "threshold": 1.0916992773098668
+    },
+    {
+      "false_negative_count": 12,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020"
+      ],
+      "policy_utility": 0.17535714285714285,
+      "regret_vs_oracle": 0.6947857142857142,
+      "selected_count": 5,
+      "selected_lift": 0.27535714285714286,
+      "selection_penalty": 0.02,
+      "threshold": 1.2532380015582
+    },
+    {
+      "false_negative_count": 13,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020"
+      ],
+      "policy_utility": 0.18285714285714283,
+      "regret_vs_oracle": 0.6872857142857143,
+      "selected_count": 4,
+      "selected_lift": 0.26285714285714284,
+      "selection_penalty": 0.02,
+      "threshold": 1.4037824524753133
+    },
+    {
+      "false_negative_count": 13,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_020"
+      ],
+      "policy_utility": 0.20285714285714285,
+      "regret_vs_oracle": 0.6672857142857143,
+      "selected_count": 3,
+      "selected_lift": 0.26285714285714284,
+      "selection_penalty": 0.02,
+      "threshold": 1.502388665506245
+    },
+    {
+      "false_negative_count": 14,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_007",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_020"
+      ],
+      "policy_utility": 0.031428571428571396,
+      "regret_vs_oracle": 0.8387142857142857,
+      "selected_count": 2,
+      "selected_lift": 0.0714285714285714,
+      "selection_penalty": 0.02,
+      "threshold": 1.5983372347731957
+    },
+    {
+      "false_negative_count": 15,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_007",
+        "plan_008",
+        "plan_018",
+        "plan_021"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_020"
+      ],
+      "policy_utility": -0.02,
+      "regret_vs_oracle": 0.8901428571428571,
+      "selected_count": 1,
+      "selected_lift": 0.0,
+      "selection_penalty": 0.02,
+      "threshold": 1.9525200052532836
+    },
+    {
+      "false_negative_count": 15,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_007",
+        "plan_008",
+        "plan_018",
+        "plan_021"
+      ],
+      "false_positive_count": 0,
+      "false_positive_task_ids": [],
+      "policy_utility": 0.0,
+      "regret_vs_oracle": 0.8701428571428571,
+      "selected_count": 0,
+      "selected_lift": 0,
+      "selection_penalty": 0.02,
+      "threshold": 2.952520005253284
+    },
+    {
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 11,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_002",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -0.2814285714285716,
+      "regret_vs_oracle": 0.7932142857142856,
+      "selected_count": 26,
+      "selected_lift": 1.0185714285714285,
+      "selection_penalty": 0.05,
+      "threshold": -2.9094910974586345
+    },
+    {
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 11,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_002",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -0.2814285714285716,
+      "regret_vs_oracle": 0.7932142857142856,
+      "selected_count": 26,
+      "selected_lift": 1.0185714285714285,
+      "selection_penalty": 0.05,
+      "threshold": -1.9094910974586345
+    },
+    {
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_063"
+      ],
+      "false_positive_count": 11,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_002",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -0.32785714285714307,
+      "regret_vs_oracle": 0.8396428571428571,
+      "selected_count": 25,
+      "selected_lift": 0.9221428571428569,
+      "selection_penalty": 0.05,
+      "threshold": -1.7062872069842694
+    },
+    {
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_063"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -0.27285714285714313,
+      "regret_vs_oracle": 0.7846428571428572,
+      "selected_count": 24,
+      "selected_lift": 0.927142857142857,
+      "selection_penalty": 0.05,
+      "threshold": -0.8382070056094348
+    },
+    {
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_072"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -0.2817857142857144,
+      "regret_vs_oracle": 0.7935714285714285,
+      "selected_count": 23,
+      "selected_lift": 0.8682142857142857,
+      "selection_penalty": 0.05,
+      "threshold": -0.6321311180610418
+    },
+    {
+      "false_negative_count": 3,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_072",
+        "plan_005"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -0.37821428571428584,
+      "regret_vs_oracle": 0.8899999999999999,
+      "selected_count": 22,
+      "selected_lift": 0.7217857142857143,
+      "selection_penalty": 0.05,
+      "threshold": -0.5598081840255063
+    },
+    {
+      "false_negative_count": 4,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -0.3910714285714285,
+      "regret_vs_oracle": 0.9028571428571426,
+      "selected_count": 21,
+      "selected_lift": 0.6589285714285715,
+      "selection_penalty": 0.05,
+      "threshold": -0.5184263906742399
+    },
+    {
+      "false_negative_count": 4,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 9,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -0.34107142857142847,
+      "regret_vs_oracle": 0.8528571428571425,
+      "selected_count": 20,
+      "selected_lift": 0.6589285714285715,
+      "selection_penalty": 0.05,
+      "threshold": -0.31324374958632006
+    },
+    {
+      "false_negative_count": 4,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -0.2521428571428571,
+      "regret_vs_oracle": 0.7639285714285712,
+      "selected_count": 19,
+      "selected_lift": 0.697857142857143,
+      "selection_penalty": 0.05,
+      "threshold": -0.2203393550083539
+    },
+    {
+      "false_negative_count": 5,
+      "false_negative_task_ids": [
+        "plan_046",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -0.2785714285714286,
+      "regret_vs_oracle": 0.7903571428571426,
+      "selected_count": 18,
+      "selected_lift": 0.6214285714285714,
+      "selection_penalty": 0.05,
+      "threshold": -0.2130490063255448
+    },
+    {
+      "false_negative_count": 6,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_046",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -0.32500000000000007,
+      "regret_vs_oracle": 0.8367857142857141,
+      "selected_count": 17,
+      "selected_lift": 0.525,
+      "selection_penalty": 0.05,
+      "threshold": -0.1754957799786636
+    },
+    {
+      "false_negative_count": 7,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -0.3219285714285715,
+      "regret_vs_oracle": 0.8337142857142856,
+      "selected_count": 16,
+      "selected_lift": 0.47807142857142854,
+      "selection_penalty": 0.05,
+      "threshold": 0.06442041168806956
+    },
+    {
+      "false_negative_count": 7,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -0.3219285714285715,
+      "regret_vs_oracle": 0.8337142857142856,
+      "selected_count": 16,
+      "selected_lift": 0.47807142857142854,
+      "selection_penalty": 0.05,
+      "threshold": 0.1185465894105091
+    },
+    {
+      "false_negative_count": 7,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -0.27192857142857146,
+      "regret_vs_oracle": 0.7837142857142856,
+      "selected_count": 15,
+      "selected_lift": 0.47807142857142854,
+      "selection_penalty": 0.05,
+      "threshold": 0.14604820210181435
+    },
+    {
+      "false_negative_count": 8,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -0.3344285714285715,
+      "regret_vs_oracle": 0.8462142857142856,
+      "selected_count": 14,
+      "selected_lift": 0.36557142857142855,
+      "selection_penalty": 0.05,
+      "threshold": 0.14980547573845726
+    },
+    {
+      "false_negative_count": 9,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -0.3058571428571429,
+      "regret_vs_oracle": 0.8176428571428569,
+      "selected_count": 13,
+      "selected_lift": 0.34414285714285714,
+      "selection_penalty": 0.05,
+      "threshold": 0.19077240563112619
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -0.3147857142857144,
+      "regret_vs_oracle": 0.8265714285714285,
+      "selected_count": 12,
+      "selected_lift": 0.2852142857142857,
+      "selection_penalty": 0.05,
+      "threshold": 0.2442882804069768
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -0.3147857142857144,
+      "regret_vs_oracle": 0.8265714285714285,
+      "selected_count": 12,
+      "selected_lift": 0.2852142857142857,
+      "selection_penalty": 0.05,
+      "threshold": 0.42616678367211347
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 6,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023"
+      ],
+      "policy_utility": -0.26478571428571435,
+      "regret_vs_oracle": 0.7765714285714285,
+      "selected_count": 11,
+      "selected_lift": 0.2852142857142857,
+      "selection_penalty": 0.05,
+      "threshold": 0.5159097649723545
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 5,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_020",
+        "plan_022",
+        "plan_023"
+      ],
+      "policy_utility": -0.2147857142857143,
+      "regret_vs_oracle": 0.7265714285714284,
+      "selected_count": 10,
+      "selected_lift": 0.2852142857142857,
+      "selection_penalty": 0.05,
+      "threshold": 0.5583998714671221
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 4,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_020",
+        "plan_023"
+      ],
+      "policy_utility": -0.1647857142857143,
+      "regret_vs_oracle": 0.6765714285714284,
+      "selected_count": 9,
+      "selected_lift": 0.2852142857142857,
+      "selection_penalty": 0.05,
+      "threshold": 0.5728910380051531
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020",
+        "plan_023"
+      ],
+      "policy_utility": -0.031785714285714306,
+      "regret_vs_oracle": 0.5435714285714284,
+      "selected_count": 8,
+      "selected_lift": 0.3682142857142857,
+      "selection_penalty": 0.05,
+      "threshold": 0.6889279578517811
+    },
+    {
+      "false_negative_count": 11,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_018"
+      ],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020",
+        "plan_023"
+      ],
+      "policy_utility": -0.07178571428571434,
+      "regret_vs_oracle": 0.5835714285714284,
+      "selected_count": 7,
+      "selected_lift": 0.2782142857142857,
+      "selection_penalty": 0.05,
+      "threshold": 0.7062908833220609
+    },
+    {
+      "false_negative_count": 12,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020",
+        "plan_023"
+      ],
+      "policy_utility": -0.02464285714285719,
+      "regret_vs_oracle": 0.5364285714285713,
+      "selected_count": 6,
+      "selected_lift": 0.27535714285714286,
+      "selection_penalty": 0.05,
+      "threshold": 1.0916992773098668
+    },
+    {
+      "false_negative_count": 12,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020"
+      ],
+      "policy_utility": 0.025357142857142856,
+      "regret_vs_oracle": 0.4864285714285712,
+      "selected_count": 5,
+      "selected_lift": 0.27535714285714286,
+      "selection_penalty": 0.05,
+      "threshold": 1.2532380015582
+    },
+    {
+      "false_negative_count": 13,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020"
+      ],
+      "policy_utility": 0.06285714285714283,
+      "regret_vs_oracle": 0.44892857142857123,
+      "selected_count": 4,
+      "selected_lift": 0.26285714285714284,
+      "selection_penalty": 0.05,
+      "threshold": 1.4037824524753133
+    },
+    {
+      "false_negative_count": 13,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_020"
+      ],
+      "policy_utility": 0.11285714285714282,
+      "regret_vs_oracle": 0.39892857142857124,
+      "selected_count": 3,
+      "selected_lift": 0.26285714285714284,
+      "selection_penalty": 0.05,
+      "threshold": 1.502388665506245
+    },
+    {
+      "false_negative_count": 14,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_007",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_020"
+      ],
+      "policy_utility": -0.02857142857142861,
+      "regret_vs_oracle": 0.5403571428571426,
+      "selected_count": 2,
+      "selected_lift": 0.0714285714285714,
+      "selection_penalty": 0.05,
+      "threshold": 1.5983372347731957
+    },
+    {
+      "false_negative_count": 15,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_007",
+        "plan_008",
+        "plan_018",
+        "plan_021"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_020"
+      ],
+      "policy_utility": -0.05,
+      "regret_vs_oracle": 0.5617857142857141,
+      "selected_count": 1,
+      "selected_lift": 0.0,
+      "selection_penalty": 0.05,
+      "threshold": 1.9525200052532836
+    },
+    {
+      "false_negative_count": 15,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_007",
+        "plan_008",
+        "plan_018",
+        "plan_021"
+      ],
+      "false_positive_count": 0,
+      "false_positive_task_ids": [],
+      "policy_utility": 0.0,
+      "regret_vs_oracle": 0.5117857142857141,
+      "selected_count": 0,
+      "selected_lift": 0,
+      "selection_penalty": 0.05,
+      "threshold": 2.952520005253284
+    },
+    {
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 11,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_002",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -1.5814285714285716,
+      "regret_vs_oracle": 1.7317857142857145,
+      "selected_count": 26,
+      "selected_lift": 1.0185714285714285,
+      "selection_penalty": 0.1,
+      "threshold": -2.9094910974586345
+    },
+    {
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 11,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_002",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -1.5814285714285716,
+      "regret_vs_oracle": 1.7317857142857145,
+      "selected_count": 26,
+      "selected_lift": 1.0185714285714285,
+      "selection_penalty": 0.1,
+      "threshold": -1.9094910974586345
+    },
+    {
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_063"
+      ],
+      "false_positive_count": 11,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_002",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -1.577857142857143,
+      "regret_vs_oracle": 1.728214285714286,
+      "selected_count": 25,
+      "selected_lift": 0.9221428571428569,
+      "selection_penalty": 0.1,
+      "threshold": -1.7062872069842694
+    },
+    {
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_063"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -1.4728571428571433,
+      "regret_vs_oracle": 1.6232142857142862,
+      "selected_count": 24,
+      "selected_lift": 0.927142857142857,
+      "selection_penalty": 0.1,
+      "threshold": -0.8382070056094348
+    },
+    {
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_072"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -1.4317857142857147,
+      "regret_vs_oracle": 1.5821428571428575,
+      "selected_count": 23,
+      "selected_lift": 0.8682142857142857,
+      "selection_penalty": 0.1,
+      "threshold": -0.6321311180610418
+    },
+    {
+      "false_negative_count": 3,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_072",
+        "plan_005"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -1.478214285714286,
+      "regret_vs_oracle": 1.6285714285714288,
+      "selected_count": 22,
+      "selected_lift": 0.7217857142857143,
+      "selection_penalty": 0.1,
+      "threshold": -0.5598081840255063
+    },
+    {
+      "false_negative_count": 4,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 10,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -1.4410714285714286,
+      "regret_vs_oracle": 1.5914285714285714,
+      "selected_count": 21,
+      "selected_lift": 0.6589285714285715,
+      "selection_penalty": 0.1,
+      "threshold": -0.5184263906742399
+    },
+    {
+      "false_negative_count": 4,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 9,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -1.3410714285714285,
+      "regret_vs_oracle": 1.4914285714285713,
+      "selected_count": 20,
+      "selected_lift": 0.6589285714285715,
+      "selection_penalty": 0.1,
+      "threshold": -0.31324374958632006
+    },
+    {
+      "false_negative_count": 4,
+      "false_negative_task_ids": [
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -1.2021428571428572,
+      "regret_vs_oracle": 1.3525,
+      "selected_count": 19,
+      "selected_lift": 0.697857142857143,
+      "selection_penalty": 0.1,
+      "threshold": -0.2203393550083539
+    },
+    {
+      "false_negative_count": 5,
+      "false_negative_task_ids": [
+        "plan_046",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -1.1785714285714286,
+      "regret_vs_oracle": 1.3289285714285715,
+      "selected_count": 18,
+      "selected_lift": 0.6214285714285714,
+      "selection_penalty": 0.1,
+      "threshold": -0.2130490063255448
+    },
+    {
+      "false_negative_count": 6,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_046",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -1.1750000000000003,
+      "regret_vs_oracle": 1.3253571428571431,
+      "selected_count": 17,
+      "selected_lift": 0.525,
+      "selection_penalty": 0.1,
+      "threshold": -0.1754957799786636
+    },
+    {
+      "false_negative_count": 7,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -1.1219285714285716,
+      "regret_vs_oracle": 1.2722857142857145,
+      "selected_count": 16,
+      "selected_lift": 0.47807142857142854,
+      "selection_penalty": 0.1,
+      "threshold": 0.06442041168806956
+    },
+    {
+      "false_negative_count": 7,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 8,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_071",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -1.1219285714285716,
+      "regret_vs_oracle": 1.2722857142857145,
+      "selected_count": 16,
+      "selected_lift": 0.47807142857142854,
+      "selection_penalty": 0.1,
+      "threshold": 0.1185465894105091
+    },
+    {
+      "false_negative_count": 7,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -1.0219285714285715,
+      "regret_vs_oracle": 1.1722857142857144,
+      "selected_count": 15,
+      "selected_lift": 0.47807142857142854,
+      "selection_penalty": 0.1,
+      "threshold": 0.14604820210181435
+    },
+    {
+      "false_negative_count": 8,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_005"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -1.0344285714285717,
+      "regret_vs_oracle": 1.1847857142857146,
+      "selected_count": 14,
+      "selected_lift": 0.36557142857142855,
+      "selection_penalty": 0.1,
+      "threshold": 0.14980547573845726
+    },
+    {
+      "false_negative_count": 9,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -0.955857142857143,
+      "regret_vs_oracle": 1.1062142857142858,
+      "selected_count": 13,
+      "selected_lift": 0.34414285714285714,
+      "selection_penalty": 0.1,
+      "threshold": 0.19077240563112619
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -0.9147857142857145,
+      "regret_vs_oracle": 1.0651428571428574,
+      "selected_count": 12,
+      "selected_lift": 0.2852142857142857,
+      "selection_penalty": 0.1,
+      "threshold": 0.2442882804069768
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 7,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": -0.9147857142857145,
+      "regret_vs_oracle": 1.0651428571428574,
+      "selected_count": 12,
+      "selected_lift": 0.2852142857142857,
+      "selection_penalty": 0.1,
+      "threshold": 0.42616678367211347
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 6,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023"
+      ],
+      "policy_utility": -0.8147857142857144,
+      "regret_vs_oracle": 0.9651428571428573,
+      "selected_count": 11,
+      "selected_lift": 0.2852142857142857,
+      "selection_penalty": 0.1,
+      "threshold": 0.5159097649723545
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 5,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_020",
+        "plan_022",
+        "plan_023"
+      ],
+      "policy_utility": -0.7147857142857144,
+      "regret_vs_oracle": 0.8651428571428572,
+      "selected_count": 10,
+      "selected_lift": 0.2852142857142857,
+      "selection_penalty": 0.1,
+      "threshold": 0.5583998714671221
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 4,
+      "false_positive_task_ids": [
+        "plan_064",
+        "plan_017",
+        "plan_020",
+        "plan_023"
+      ],
+      "policy_utility": -0.6147857142857143,
+      "regret_vs_oracle": 0.7651428571428571,
+      "selected_count": 9,
+      "selected_lift": 0.2852142857142857,
+      "selection_penalty": 0.1,
+      "threshold": 0.5728910380051531
+    },
+    {
+      "false_negative_count": 10,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006"
+      ],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020",
+        "plan_023"
+      ],
+      "policy_utility": -0.43178571428571433,
+      "regret_vs_oracle": 0.5821428571428571,
+      "selected_count": 8,
+      "selected_lift": 0.3682142857142857,
+      "selection_penalty": 0.1,
+      "threshold": 0.6889279578517811
+    },
+    {
+      "false_negative_count": 11,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_018"
+      ],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020",
+        "plan_023"
+      ],
+      "policy_utility": -0.4217857142857144,
+      "regret_vs_oracle": 0.5721428571428572,
+      "selected_count": 7,
+      "selected_lift": 0.2782142857142857,
+      "selection_penalty": 0.1,
+      "threshold": 0.7062908833220609
+    },
+    {
+      "false_negative_count": 12,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020",
+        "plan_023"
+      ],
+      "policy_utility": -0.32464285714285723,
+      "regret_vs_oracle": 0.47500000000000003,
+      "selected_count": 6,
+      "selected_lift": 0.27535714285714286,
+      "selection_penalty": 0.1,
+      "threshold": 1.0916992773098668
+    },
+    {
+      "false_negative_count": 12,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020"
+      ],
+      "policy_utility": -0.22464285714285714,
+      "regret_vs_oracle": 0.37499999999999994,
+      "selected_count": 5,
+      "selected_lift": 0.27535714285714286,
+      "selection_penalty": 0.1,
+      "threshold": 1.2532380015582
+    },
+    {
+      "false_negative_count": 13,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_020"
+      ],
+      "policy_utility": -0.13714285714285718,
+      "regret_vs_oracle": 0.2875,
+      "selected_count": 4,
+      "selected_lift": 0.26285714285714284,
+      "selection_penalty": 0.1,
+      "threshold": 1.4037824524753133
+    },
+    {
+      "false_negative_count": 13,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_020"
+      ],
+      "policy_utility": -0.0371428571428572,
+      "regret_vs_oracle": 0.1875,
+      "selected_count": 3,
+      "selected_lift": 0.26285714285714284,
+      "selection_penalty": 0.1,
+      "threshold": 1.502388665506245
+    },
+    {
+      "false_negative_count": 14,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_007",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_020"
+      ],
+      "policy_utility": -0.12857142857142861,
+      "regret_vs_oracle": 0.2789285714285714,
+      "selected_count": 2,
+      "selected_lift": 0.0714285714285714,
+      "selection_penalty": 0.1,
+      "threshold": 1.5983372347731957
+    },
+    {
+      "false_negative_count": 15,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_007",
+        "plan_008",
+        "plan_018",
+        "plan_021"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_020"
+      ],
+      "policy_utility": -0.1,
+      "regret_vs_oracle": 0.25035714285714283,
+      "selected_count": 1,
+      "selected_lift": 0.0,
+      "selection_penalty": 0.1,
+      "threshold": 1.9525200052532836
+    },
+    {
+      "false_negative_count": 15,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_007",
+        "plan_008",
+        "plan_018",
+        "plan_021"
+      ],
+      "false_positive_count": 0,
+      "false_positive_task_ids": [],
+      "policy_utility": 0.0,
+      "regret_vs_oracle": 0.1503571428571428,
+      "selected_count": 0,
+      "selected_lift": 0,
+      "selection_penalty": 0.1,
+      "threshold": 2.952520005253284
+    }
+  ],
+  "generated_by": "experiments/analyze_diffusion_span_probe_signature_utility.py",
+  "inputs": {
+    "signature_model": "eval_results\\diffusion_language\\counterfactual_span_probe_signature_model_v4.json"
+  },
+  "oracle_by_penalty": {
+    "0.000000": {
+      "oracle_selected_count": 15,
+      "oracle_selected_lift": 1.1455,
+      "oracle_utility": 1.1455
+    },
+    "0.005000": {
+      "oracle_selected_count": 14,
+      "oracle_selected_lift": 1.142642857142857,
+      "oracle_utility": 1.072642857142857
+    },
+    "0.010000": {
+      "oracle_selected_count": 14,
+      "oracle_selected_lift": 1.142642857142857,
+      "oracle_utility": 1.002642857142857
+    },
+    "0.020000": {
+      "oracle_selected_count": 13,
+      "oracle_selected_lift": 1.1301428571428571,
+      "oracle_utility": 0.8701428571428571
+    },
+    "0.050000": {
+      "oracle_selected_count": 11,
+      "oracle_selected_lift": 1.061785714285714,
+      "oracle_utility": 0.5117857142857141
+    },
+    "0.100000": {
+      "oracle_selected_count": 3,
+      "oracle_selected_lift": 0.45035714285714284,
+      "oracle_utility": 0.1503571428571428
+    }
+  },
+  "schema": "diffusion_counterfactual_span_probe_signature_utility.v1",
+  "selected_penalty_results": {
+    "0.000000": {
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 11,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_002",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 1.0185714285714285,
+      "regret_vs_oracle": 0.1269285714285715,
+      "selected_count": 26,
+      "selected_lift": 1.0185714285714285,
+      "selection_penalty": 0.0,
+      "threshold": -2.9094910974586345
+    },
+    "0.005000": {
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 11,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_002",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.8885714285714285,
+      "regret_vs_oracle": 0.18407142857142855,
+      "selected_count": 26,
+      "selected_lift": 1.0185714285714285,
+      "selection_penalty": 0.005,
+      "threshold": -2.9094910974586345
+    },
+    "0.010000": {
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 11,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_002",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.7585714285714285,
+      "regret_vs_oracle": 0.2440714285714285,
+      "selected_count": 26,
+      "selected_lift": 1.0185714285714285,
+      "selection_penalty": 0.01,
+      "threshold": -2.9094910974586345
+    },
+    "0.020000": {
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 11,
+      "false_positive_task_ids": [
+        "plan_050",
+        "plan_064",
+        "plan_071",
+        "plan_002",
+        "plan_003",
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.49857142857142844,
+      "regret_vs_oracle": 0.37157142857142866,
+      "selected_count": 26,
+      "selected_lift": 1.0185714285714285,
+      "selection_penalty": 0.02,
+      "threshold": -2.9094910974586345
+    },
+    "0.050000": {
+      "false_negative_count": 13,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_008",
+        "plan_018"
+      ],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_020"
+      ],
+      "policy_utility": 0.11285714285714282,
+      "regret_vs_oracle": 0.39892857142857124,
+      "selected_count": 3,
+      "selected_lift": 0.26285714285714284,
+      "selection_penalty": 0.05,
+      "threshold": 1.502388665506245
+    },
+    "0.100000": {
+      "false_negative_count": 15,
+      "false_negative_task_ids": [
+        "plan_034",
+        "plan_044",
+        "plan_046",
+        "plan_061",
+        "plan_063",
+        "plan_070",
+        "plan_072",
+        "plan_001",
+        "plan_004",
+        "plan_005",
+        "plan_006",
+        "plan_007",
+        "plan_008",
+        "plan_018",
+        "plan_021"
+      ],
+      "false_positive_count": 0,
+      "false_positive_task_ids": [],
+      "policy_utility": 0.0,
+      "regret_vs_oracle": 0.1503571428571428,
+      "selected_count": 0,
+      "selected_lift": 0,
+      "selection_penalty": 0.1,
+      "threshold": 2.952520005253284
+    }
+  },
+  "summary": {
+    "positive_count": 15,
+    "target_count": 28,
+    "threshold_count": 30
+  }
+}

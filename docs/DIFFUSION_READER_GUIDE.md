@@ -227,6 +227,13 @@ slot overlap, source quality, and probe-text validity features. It preserves all
 11 no-lift negatives. That makes it useful diagnostic evidence, not a live spend
 gate; the next model must learn no-lift specificity or an explicit cost penalty
 before any promotion.
+[DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_SIGNATURE_UTILITY_FRONTIER_V4.md](../DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_SIGNATURE_UTILITY_FRONTIER_V4.md)
+adds that explicit cost penalty as a threshold frontier over the same
+leave-one-slice-out signature scores. The result is still a negative gate:
+selection penalties through `0.020000` keep the broad 26-row policy with 11 false
+positives, while `0.050000` drops to three selected rows but misses 13 positives.
+The failure is now sharper: the current signature score is recall-biased and
+does not expose a cheap no-lift cutoff.
 
 ## Benchmark And Cost Layer
 
@@ -291,6 +298,7 @@ hidden behind a large search stack:
 | [DIFFUSION_COUNTERFACTUAL_SPAN_VALIDATED_PROBE_CONJUNCTION_TRANSFER_V4.md](../DIFFUSION_COUNTERFACTUAL_SPAN_VALIDATED_PROBE_CONJUNCTION_TRANSFER_V4.md) | Two-condition measured-probe rule search; transfer-screened gap/span conjunction is the next frozen hypothesis, not a promoted controller. |
 | [DIFFUSION_COUNTERFACTUAL_SPAN_GAP_SPAN_RULE_V4_TRANSFER_V3_PLANNING.md](../DIFFUSION_COUNTERFACTUAL_SPAN_GAP_SPAN_RULE_V4_TRANSFER_V3_PLANNING.md) | Frozen next-slice check for the gap/span conjunction: 3 errors on `plan_017`-`plan_024`, retiring the challenger as diagnostic-only. |
 | [DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_SIGNATURE_MODEL_V4.md](../DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_SIGNATURE_MODEL_V4.md) | Leave-slice-out signature-model audit across 28 span-v4 rows: all positives are preserved, but 11 no-lift false positives block promotion. |
+| [DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_SIGNATURE_UTILITY_FRONTIER_V4.md](../DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_SIGNATURE_UTILITY_FRONTIER_V4.md) | Cost-penalized frontier over the signature score: low penalties keep 11 false positives; higher penalties miss most positives. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT.md) | Transfer-rule fit showing current decomposed spend is the best repair-availability rule. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md) | Expanded transfer-rule fit over the eight-row independent slice. |
 | [DIFFUSION_TRANSFER_PROMOTION_VALUE.md](../DIFFUSION_TRANSFER_PROMOTION_VALUE.md) | Transfer promotion-value result showing named `--repair-selector transfer_promotion_value` realizes the low-margin repair. |
