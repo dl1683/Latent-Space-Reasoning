@@ -96,6 +96,17 @@ def build_artifact_decision(
             "sha": full["sha"],
             "format": "safetensors_transformers",
         }
+    if transformers_supports_qwen3_next:
+        next_engineering_gate = (
+            "Choose between a full-weights Transformers/offload path for the frozen soft-prefix claim "
+            "and a separate GGUF/server adapter for a non-soft-prefix serving smoke; do not start the "
+            "full download until the memory/offload plan is explicit."
+        )
+    else:
+        next_engineering_gate = (
+            "Upgrade/install a qwen3_next-capable Transformers runtime for the soft-prefix runner, "
+            "or build a separate GGUF/server adapter and explicitly mark it as non-soft-prefix."
+        )
 
     return {
         "schema": "gated_attention_artifact_decision.v1",
@@ -130,10 +141,7 @@ def build_artifact_decision(
             "purpose": "local serving/runtime feasibility smoke, not soft-prefix claim run",
         },
         "blockers": blockers,
-        "next_engineering_gate": (
-            "Upgrade/install a qwen3_next-capable Transformers runtime for the soft-prefix runner, "
-            "or build a separate GGUF/server adapter and explicitly mark it as non-soft-prefix."
-        ),
+        "next_engineering_gate": next_engineering_gate,
         "claim_boundary": [
             "Do not use the GGUF OpenAI-compatible path for the frozen soft-prefix claim unless it exposes inputs_embeds or an equivalent embedding-prefix hook.",
             "Do not download full safetensors until Transformers qwen3_next support is verified locally.",
@@ -156,7 +164,7 @@ def render_markdown(decision: dict[str, object]) -> str:
         "",
         "No immediate primary Qwen3-Next soft-prefix run is selected for the current runner.",
         "",
-        "The full Transformers artifact is the only path that matches the current `inputs_embeds` soft-prefix runner, but the local Transformers install does not recognize `qwen3_next` yet and the full safetensors payload is larger than a direct 24GB single-GPU run. The GGUF Q4_K_M artifact is the best download candidate for a local serving smoke, but it does not by itself satisfy the frozen soft-prefix claim surface.",
+        _decision_summary(runtime),
         "",
         "## Full Transformers Artifact",
         "",
@@ -208,6 +216,24 @@ def _file_record(repo: dict[str, object], filename: str) -> dict[str, object]:
     if not matches:
         raise ValueError(f"missing required file in repo inventory: {filename}")
     return matches[0]
+
+
+def _decision_summary(runtime: dict[str, object]) -> str:
+    if runtime["transformers_supports_qwen3_next"]:
+        return (
+            "The full Transformers artifact is now architecture-compatible with the current "
+            "`inputs_embeds` soft-prefix runner, but the full safetensors payload is larger "
+            "than a direct 24GB single-GPU run. The GGUF Q4_K_M artifact remains the best "
+            "download candidate for a local serving smoke, but it does not by itself satisfy "
+            "the frozen soft-prefix claim surface."
+        )
+    return (
+        "The full Transformers artifact is the only path that matches the current "
+        "`inputs_embeds` soft-prefix runner, but the local Transformers install does not "
+        "recognize `qwen3_next` yet and the full safetensors payload is larger than a direct "
+        "24GB single-GPU run. The GGUF Q4_K_M artifact is the best download candidate for a "
+        "local serving smoke, but it does not by itself satisfy the frozen soft-prefix claim surface."
+    )
 
 
 if __name__ == "__main__":

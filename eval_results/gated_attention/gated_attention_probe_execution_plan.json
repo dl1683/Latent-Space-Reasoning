@@ -2,8 +2,7 @@
   "allow_existing_primary_results": false,
   "baseline_model": "Qwen/Qwen3-4B",
   "blocking_reasons": [
-    "primary Qwen3-Next weights are not cached locally; select and record a current quantized artifact before starting the expensive run",
-    "local Transformers does not support model_type=qwen3_next; install a supporting release/source build before using the Transformers soft-prefix runner"
+    "primary Qwen3-Next weights are not cached locally; select and record a current quantized artifact before starting the expensive run"
   ],
   "claim_boundaries": [
     "Do not treat mechanics smoke as gated-attention evidence.",
@@ -88,8 +87,8 @@
   "runtime_compatibility": {
     "current_runner_requires_transformers_inputs_embeds": true,
     "gguf_openai_compatible_servers_do_not_expose_soft_prefix_inputs_embeds": true,
-    "transformers_supports_qwen3_next": false,
-    "transformers_version": "4.56.2"
+    "transformers_supports_qwen3_next": true,
+    "transformers_version": "5.10.0.dev0"
   },
   "schema": "gated_attention_probe_execution_plan.v1",
   "task_preset": "lsr_25_arithmetic_plus_cache_debug"

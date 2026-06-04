@@ -36,6 +36,22 @@ def test_artifact_decision_can_select_full_artifact_when_runtime_and_size_are_ok
     assert decision["blockers"] == []
 
 
+def test_artifact_decision_moves_to_memory_gate_when_transformers_support_exists():
+    decision = build_artifact_decision(
+        inventory=_inventory(),
+        transformers_version="5.dev",
+        transformers_supports_qwen3_next=True,
+        llama_cpp_available=False,
+    )
+
+    assert decision["selected_immediate_primary_artifact"] is None
+    assert decision["blockers"] == [
+        "full safetensors artifact is too large for a direct 24GB single-GPU run",
+        "llama.cpp Python bindings are not installed for local GGUF execution",
+    ]
+    assert "Choose between a full-weights Transformers/offload path" in decision["next_engineering_gate"]
+
+
 def _inventory(full_safetensor_size: int = 162_000_000_000):
     return {
         "full": {

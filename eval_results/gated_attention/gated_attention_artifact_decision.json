@@ -1,6 +1,5 @@
 {
   "blockers": [
-    "local Transformers does not recognize model_type=qwen3_next",
     "full safetensors artifact is too large for a direct 24GB single-GPU run",
     "llama.cpp Python bindings are not installed for local GGUF execution"
   ],
@@ -31,10 +30,10 @@
   "local_runtime": {
     "gpu_vram_bytes": 25651314688,
     "llama_cpp_available": false,
-    "transformers_supports_qwen3_next": false,
-    "transformers_version": "4.56.2"
+    "transformers_supports_qwen3_next": true,
+    "transformers_version": "5.10.0.dev0"
   },
-  "next_engineering_gate": "Upgrade/install a qwen3_next-capable Transformers runtime for the soft-prefix runner, or build a separate GGUF/server adapter and explicitly mark it as non-soft-prefix.",
+  "next_engineering_gate": "Choose between a full-weights Transformers/offload path for the frozen soft-prefix claim and a separate GGUF/server adapter for a non-soft-prefix serving smoke; do not start the full download until the memory/offload plan is explicit.",
   "schema": "gated_attention_artifact_decision.v1",
   "selected_download_candidate": {
     "bytes": 48410988384,

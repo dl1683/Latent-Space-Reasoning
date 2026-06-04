@@ -701,7 +701,8 @@ tests/                        # Unit and integration tests (342 tests)
 | [docs/DIFFUSION_REASONING_FIELD_IMPLICATIONS.md](docs/DIFFUSION_REASONING_FIELD_IMPLICATIONS.md) | Public narrative for why denoise-trajectory control is the next latent reasoning substrate |
 | [docs/LEAN_GPU_DIFFUSION_BENCHMARK_PROTOCOL.md](docs/LEAN_GPU_DIFFUSION_BENCHMARK_PROTOCOL.md) | Cheap local GPU protocol for fixed, random, and latent repair comparisons |
 | [GATED_ATTENTION_NULL_PROBE_FREEZE.md](GATED_ATTENTION_NULL_PROBE_FREEZE.md) | Pre-result architecture-transfer freeze for testing whether random-prefix gains survive Qwen3-Next-style gated attention |
-| [GATED_ATTENTION_ARTIFACT_DECISION.md](GATED_ATTENTION_ARTIFACT_DECISION.md) | Current Qwen3-Next artifact/runtime decision: full Transformers is soft-prefix compatible in principle but locally unsupported; GGUF Q4_K_M is serving-only until an embedding hook exists |
+| [GATED_ATTENTION_ARTIFACT_DECISION.md](GATED_ATTENTION_ARTIFACT_DECISION.md) | Current Qwen3-Next artifact/runtime decision: full Transformers now has local architecture support but still needs an explicit memory/offload plan; GGUF Q4_K_M is serving-only until an embedding hook exists |
+| [GATED_ATTENTION_RUNTIME_UPGRADE_NOTE.md](GATED_ATTENTION_RUNTIME_UPGRADE_NOTE.md) | Environment note for the Transformers source upgrade that enabled local `qwen3_next` config support and its dependency side effects |
 | [GATED_ATTENTION_PROBE_EXECUTION_PLAN.md](GATED_ATTENTION_PROBE_EXECUTION_PLAN.md) | Ordered gated-attention run packet with cache/result preflight gates and mean-first reporting order |
 | [GATED_ATTENTION_PROBE_MECHANICS_SMOKE.md](GATED_ATTENTION_PROBE_MECHANICS_SMOKE.md) | CUDA mechanics smoke proving the new position-shift control runs end-to-end without changing the gated-attention claim surface |
 | [RESEARCH_BRIEF.md](RESEARCH_BRIEF.md) | Technical summary with data tables and figures |
