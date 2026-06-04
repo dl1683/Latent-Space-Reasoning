@@ -29,16 +29,20 @@ it regresses authorization reliability and valid-row count.
 runtime-format-valid rows and zero malformed authorization rows at a `48` token
 / `24` step budget, but the semantic audit leaves only 4/12 rows valid. It is
 still diagnostic-only because invalid diagnostics include five profitable rows.
+`--counterfactual-probe-policy span_tomography_probe_v4` switches to copied-span
+slots `X0=`, `X1=`, `X2=`, and `N=0`. The measured v4 run reaches 10/12
+semantic-valid rows with zero template echoes and zero invalid-positive misses,
+but the best validated rule still has one no-lift false positive.
 
 The trigger records probe diagnostics in `repair_spend_gate_rows` for each
 selected repair source. When frozen triage sets `would_probe=true`, it also
 generates a bounded `generation_stage="counterfactual_probe"` raw record under
 a strict `32` token / `16` step budget for the legacy policy, or `48` tokens /
 `24` steps for `strict_tomography_probe_v1` and
-`compact_tomography_probe_v3`, or `64` tokens / `32` steps for
-`key_value_tomography_probe_v2`. It always returns `should_run=false`, so the
-`repair_selected` arm keeps the evolved record and cannot get score credit from
-probe logic.
+`compact_tomography_probe_v3` and `span_tomography_probe_v4`, or `64` tokens /
+`32` steps for `key_value_tomography_probe_v2`. It always returns
+`should_run=false`, so the `repair_selected` arm keeps the evolved record and
+cannot get score credit from probe logic.
 
 ## Recorded Fields
 
@@ -47,8 +51,8 @@ Each gate row keeps the normal source diagnostics and adds:
 | Field | Meaning |
 | --- | --- |
 | `counterfactual_probe_gate` | Always `diagnostic_only`. |
-| `counterfactual_probe_policy` | The selected probe policy: legacy deterministic, strict tomography, key-value v2, or compact v3. |
-| `counterfactual_probe_cost_relative` | Token-normalized probe budget: `0.125` for legacy, `0.1875` for strict/compact, `0.25` for key-value v2. |
+| `counterfactual_probe_policy` | The selected probe policy: legacy deterministic, strict tomography, key-value v2, compact v3, or span v4. |
+| `counterfactual_probe_cost_relative` | Token-normalized probe budget: `0.125` for legacy, `0.1875` for strict/compact/span, `0.25` for key-value v2. |
 | `counterfactual_probe_observation` | `measured_generation` when a bounded probe was generated; otherwise `deterministic_scaffold`. |
 | `counterfactual_probe_text` | Bounded missing-constraint sketch with explicit `full_repair_authorized=false`. |
 | `counterfactual_probe_text_valid_for_stage1` | True only when measured text has exact authorization, all diagnostic slots, no placeholder/generic slot, and no known slot/sentinel typo. |
@@ -104,16 +108,23 @@ The compact v3 follow-up is recorded in
 the runtime row-format reliability problem, but stricter semantic auditing
 exposes template echoes, malformed compact keys, duplicate authorization, and
 five invalid-positive misses.
+The span v4 follow-up is recorded in
+`DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_TEXT_FIDELITY_V4.md` and
+`DIFFUSION_COUNTERFACTUAL_SPAN_VALIDATED_PROBE_STAGE1_GATE_V4.md`. It removes
+the template-echo failure mode and cuts semantic Stage 1 errors to one
+false-positive spend decision, but that is still below the promotion bar.
 
 ## Next Measurement
 
 The next increment should improve the measured target rows until the Stage 1
 value-of-information policy can clear the controller gate:
 
-1. Add post-probe features that penalize template echoes, duplicated slot keys,
-   repeated generic labels, and repeated authorization lines.
-2. Keep `FULL_REPAIR_AUTHORIZED=false` or `Z=false` as hard validity sentinels
-   and discard probe rows that cannot reproduce the selected sentinel exactly.
+1. Add post-probe features that separate the remaining valid no-lift false
+   positive from profitable span-valid positives without rediscovering Stage 0
+   prompt-gap or `would_probe`.
+2. Keep `FULL_REPAIR_AUTHORIZED=false`, `Z=false`, or `N=0` as hard validity
+   sentinels and discard probe rows that cannot reproduce the selected sentinel
+   exactly.
 3. Check whether measured probe values can decide full repair after the probe,
    not just whether to buy a probe.
 4. Promote only if the architecture gate in

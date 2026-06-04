@@ -168,7 +168,7 @@ Anything weaker is diagnostic only.
 
 ## Current Probe Evidence
 
-The measured `counterfactual_micro_probe_v1` line has advanced through four
+The measured `counterfactual_micro_probe_v1` line has advanced through five
 diagnostic instruments without clearing the spend gate:
 
 - The legacy prose probe exposed value signal but produced malformed
@@ -184,6 +184,13 @@ diagnostic instruments without clearing the spend gate:
   semantically valid, with seven template echoes, five malformed compact-key
   rows, one duplicate authorization row, and five invalid-positive misses. This
   is a better syntax instrument, not a promoted spend controller.
+- `span_tomography_probe_v4` moves the probe from slot descriptions to copied
+  spans. On the same 12-row all-shadow CUDA surface it reaches 10/12
+  semantic-valid rows, zero template echoes, zero malformed authorizations, zero
+  invalid-positive misses, and a best semantic-valid Stage 1 rule with one
+  remaining false-positive no-lift spend decision. This is the first near-miss
+  probe instrument, but it is still diagnostic until that last no-lift trap is
+  separated without rediscovering Stage 0 prompt-gap or `would_probe`.
 
 ## First Implementation Slice
 

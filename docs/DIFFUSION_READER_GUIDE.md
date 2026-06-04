@@ -182,6 +182,15 @@ finds only 4/12 rows valid: seven template echoes, five malformed compact-key
 rows, and one duplicate authorization row. Under semantic-required Stage 1
 validity, five profitable rows become invalid-positive misses and the best
 validated rule has six errors, so v3 is not a live spend gate.
+[DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_TEXT_FIDELITY_V4.md](../DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_TEXT_FIDELITY_V4.md)
+and
+[DIFFUSION_COUNTERFACTUAL_SPAN_VALIDATED_PROBE_STAGE1_GATE_V4.md](../DIFFUSION_COUNTERFACTUAL_SPAN_VALIDATED_PROBE_STAGE1_GATE_V4.md)
+then test `span_tomography_probe_v4`: copied-span `X0=`, `X1=`, `X2=`, `N=0`
+slots remove the v3 template-echo failure mode. The same 12-row all-shadow CUDA
+surface now has 10/12 semantic-valid rows, zero malformed authorizations, zero
+template echoes, one malformed span key, and zero invalid-positive misses. The
+best semantic-valid Stage 1 rule has one remaining false-positive no-lift row,
+so v4 is major progress but still diagnostic-only.
 
 ## Benchmark And Cost Layer
 
@@ -238,6 +247,8 @@ hidden behind a large search stack:
 | [DIFFUSION_COUNTERFACTUAL_KEY_VALUE_VALIDATED_PROBE_STAGE1_GATE_V2.md](../DIFFUSION_COUNTERFACTUAL_KEY_VALUE_VALIDATED_PROBE_STAGE1_GATE_V2.md) | Key-value tomography v2 validity-required gate fit; two false negatives but still diagnostic-only because probe reliability regressed. |
 | [DIFFUSION_COUNTERFACTUAL_COMPACT_PROBE_TEXT_FIDELITY_V3.md](../DIFFUSION_COUNTERFACTUAL_COMPACT_PROBE_TEXT_FIDELITY_V3.md) | Compact tomography v3 text-fidelity result; runtime format is stable, but semantic validity falls to 4/12 because of template echoes, malformed compact keys, and duplicate authorization. |
 | [DIFFUSION_COUNTERFACTUAL_COMPACT_VALIDATED_PROBE_STAGE1_GATE_V3.md](../DIFFUSION_COUNTERFACTUAL_COMPACT_VALIDATED_PROBE_STAGE1_GATE_V3.md) | Compact tomography v3 semantic-validity-required gate fit; five profitable rows become invalid-positive misses and the best measured Stage 1 rule has six errors. |
+| [DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_TEXT_FIDELITY_V4.md](../DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_TEXT_FIDELITY_V4.md) | Span tomography v4 text-fidelity result; 10/12 semantic-valid rows, zero template echoes, and one malformed span key. |
+| [DIFFUSION_COUNTERFACTUAL_SPAN_VALIDATED_PROBE_STAGE1_GATE_V4.md](../DIFFUSION_COUNTERFACTUAL_SPAN_VALIDATED_PROBE_STAGE1_GATE_V4.md) | Span tomography v4 semantic-validity-required gate fit; no invalid-positive misses, but one valid no-lift false positive keeps full repair spend blocked. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT.md) | Transfer-rule fit showing current decomposed spend is the best repair-availability rule. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md) | Expanded transfer-rule fit over the eight-row independent slice. |
 | [DIFFUSION_TRANSFER_PROMOTION_VALUE.md](../DIFFUSION_TRANSFER_PROMOTION_VALUE.md) | Transfer promotion-value result showing named `--repair-selector transfer_promotion_value` realizes the low-margin repair. |
