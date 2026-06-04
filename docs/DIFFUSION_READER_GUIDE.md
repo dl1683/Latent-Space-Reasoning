@@ -234,6 +234,13 @@ selection penalties through `0.020000` keep the broad 26-row policy with 11 fals
 positives, while `0.050000` drops to three selected rows but misses 13 positives.
 The failure is now sharper: the current signature score is recall-biased and
 does not expose a cheap no-lift cutoff.
+[DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_NO_LIFT_VETO_V4.md](../DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_NO_LIFT_VETO_V4.md)
+then tests the obvious two-stage controller: keep the high-recall signature
+selection, but train a separate one- or two-condition veto over selected rows to
+drop likely no-lift spends. Leave-slice-out transfer rejects it. The veto lowers
+false positives from 11 to 8, but introduces five false negatives, reducing
+practical-penalty utility from `0.625500` to `0.289429`. The next model needs
+signed realized-lift prediction, not threshold-fragment vetoing.
 
 ## Benchmark And Cost Layer
 
@@ -299,6 +306,7 @@ hidden behind a large search stack:
 | [DIFFUSION_COUNTERFACTUAL_SPAN_GAP_SPAN_RULE_V4_TRANSFER_V3_PLANNING.md](../DIFFUSION_COUNTERFACTUAL_SPAN_GAP_SPAN_RULE_V4_TRANSFER_V3_PLANNING.md) | Frozen next-slice check for the gap/span conjunction: 3 errors on `plan_017`-`plan_024`, retiring the challenger as diagnostic-only. |
 | [DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_SIGNATURE_MODEL_V4.md](../DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_SIGNATURE_MODEL_V4.md) | Leave-slice-out signature-model audit across 28 span-v4 rows: all positives are preserved, but 11 no-lift false positives block promotion. |
 | [DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_SIGNATURE_UTILITY_FRONTIER_V4.md](../DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_SIGNATURE_UTILITY_FRONTIER_V4.md) | Cost-penalized frontier over the signature score: low penalties keep 11 false positives; higher penalties miss most positives. |
+| [DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_NO_LIFT_VETO_V4.md](../DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_NO_LIFT_VETO_V4.md) | Leave-slice-out no-lift veto search over 73,154 threshold-fragment rules; specificity improves weakly but five positives are newly missed. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT.md) | Transfer-rule fit showing current decomposed spend is the best repair-availability rule. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md) | Expanded transfer-rule fit over the eight-row independent slice. |
 | [DIFFUSION_TRANSFER_PROMOTION_VALUE.md](../DIFFUSION_TRANSFER_PROMOTION_VALUE.md) | Transfer promotion-value result showing named `--repair-selector transfer_promotion_value` realizes the low-margin repair. |
