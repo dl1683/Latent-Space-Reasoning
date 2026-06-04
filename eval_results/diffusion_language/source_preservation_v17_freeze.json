@@ -1,0 +1,84 @@
+{
+  "conclusive_result_gates": {
+    "maximum_direct_source_control_false_negative_count": 0,
+    "maximum_direct_source_control_false_positive_count": 0,
+    "minimum_source_positive_repair_degradation_count": 1,
+    "must_beat_generated_repair_candidate_control": true,
+    "must_report_zero_source_positive_as_inconclusive": true,
+    "no_live_spend_trigger_without_runner_implementation": true
+  },
+  "design_intent": "Test whether source search and preservation can recover oracle-positive rows where repair generation degrades a useful source before any further margin-relaxation work.",
+  "failure_accounting": [
+    "If no source-positive repair-degradation rows appear, mark v17 inconclusive rather than successful.",
+    "If direct-source selection admits below-trajectory rows, reject it.",
+    "If repair candidates recover every source-positive row, the bottleneck is not source preservation.",
+    "If source-positive rows remain oracle-only under replay, separate source search from deployed value.",
+    "If extra candidate diversity erases utility after cost, keep it diagnostic-only."
+  ],
+  "fit_boundary": {
+    "candidate_lift_vs_source": -0.040000000000000036,
+    "candidate_lift_vs_trajectory": -0.020000000000000018,
+    "named_counterexample": "`plan_128` shows the source-search bottleneck: the random source beats the selected trajectory by `+0.020000`, but the generated repair candidate falls `-0.020000` below trajectory and `-0.040000` below its own source.",
+    "named_counterexample_task_id": "plan_128",
+    "oracle_delta_vs_trajectory": 0.020000000000000018,
+    "source_control": "random_32",
+    "source_task_delta_vs_trajectory": 0.020000000000000018,
+    "v16_generated_positive_count": 0,
+    "v16_scores": "eval_results\\diffusion_language\\promotion_margin_v16_label_scores.json",
+    "v16_scores_sha256": "4c76653ea7b11a12a331404725ba331e66e520e5472cba4e590debc4f2d54c92",
+    "v16_targets": "eval_results\\diffusion_language\\diffusion_candidate_promotion_targets_v16.json",
+    "v16_targets_sha256": "6384e51747f07f632e3c47cf4d15315e254f3682106a50b3a1677b4c8584e8da"
+  },
+  "fresh_slice_protocol": {
+    "label_pass": "python experiments\\run_diffusion_three_arm_benchmark.py --task-preset lean_gpu_mixed_transfer_v17 --candidates llada-moe-7b-a1b-instruct-hf --limit-schedules 2 --limit-evolved-schedules 0 --limit-repair-candidates 1 --repair-source-policy random --repair-pack constraint_span_phase_final_preserve_seeded_gated --repair-spend-trigger denoise_phase_repairability --repair-source-min-chars 240 --repair-source-prompt-gap-min 2 --repair-source-prompt-gap-max 9 --repair-source-prompt-coverage-min 0.4 --repair-source-prompt-coverage-max 1.0 --repair-phase-budget frontier --repair-selector candidate_aware_promotion_v1 --repair-promotion-margin 0.02 --trajectory-selector planning_state --device cuda --dtype bfloat16 --raw-output eval_results\\diffusion_language\\source_preservation_v17_label_raw.jsonl --scores-output eval_results\\diffusion_language\\source_preservation_v17_label_scores.json --report-output eval_results\\diffusion_language\\source_preservation_v17_label_report.md",
+    "required_replay_outputs": [
+      "source-positive repair-degradation rows built from score and repair-candidate artifacts",
+      "direct-source control false positives and false negatives",
+      "generated-repair candidate control false positives and false negatives",
+      "source-delta-only, candidate-degradation-only, span-only, and broad-denoise controls",
+      "utility after direct-source, repair-generation, and candidate-diversity costs",
+      "no live controller language before a runner-level source-preservation hook exists"
+    ]
+  },
+  "generated_by": "experiments/build_diffusion_source_preservation_v17_freeze.py",
+  "overlap_with_v16_promotion_rows": [],
+  "planning_task_ids": [
+    "plan_129",
+    "plan_130",
+    "plan_131",
+    "plan_132",
+    "plan_133",
+    "plan_134",
+    "plan_135",
+    "plan_136"
+  ],
+  "schema": "diffusion_source_preservation_v17_freeze.v1",
+  "target_surface": {
+    "candidate_diversity_control": "compare direct source selection against generated repair candidates",
+    "direct_source_control": "select source arm only when source beats selected trajectory",
+    "promotion_status": "frozen_replay_surface_not_live_trigger",
+    "prompt_coverage_max": 1.0,
+    "prompt_coverage_min": 0.4,
+    "prompt_gap_count_max": 8.0,
+    "prompt_gap_count_min": 4.0,
+    "requires_candidate_lift_vs_source_negative": true,
+    "requires_candidate_lift_vs_trajectory_nonpositive": true,
+    "requires_label_pass_denoise_trigger": true,
+    "requires_source_task_delta_vs_trajectory_positive": true,
+    "surface_id": "source_positive_repair_degradation_v17"
+  },
+  "task_ids": [
+    "plan_129",
+    "plan_130",
+    "plan_131",
+    "plan_132",
+    "plan_133",
+    "plan_134",
+    "plan_135",
+    "plan_136",
+    "math_009",
+    "sym_007",
+    "sci_002"
+  ],
+  "task_preset": "lean_gpu_mixed_transfer_v17"
+}
