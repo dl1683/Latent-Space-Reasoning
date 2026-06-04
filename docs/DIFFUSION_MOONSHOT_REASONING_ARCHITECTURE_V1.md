@@ -198,6 +198,16 @@ eight weak-slice rows, leaving six false positives and only `0.001429` weak-slic
 signed utility. Treat it as evidence that risk calibration helps, not as an M3
 unlock.
 
+The first successful weak-slice blocker is recorded in
+`DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_TRAJECTORY_RELATIVE_GATE_V4.md`. It adds the
+frozen trajectory-relative spend channel to the cohort-risk head, reaches
+`0.805500` signed utility, preserves zero false negatives, reduces false
+positives to `2`, and removes all weak-slice false positives. This is the right
+shape, but it changes the information contract from pure probe signature to
+probe signature plus source/trajectory evidence. Before M3, add negative controls
+that withhold the trajectory-relative channel and perturb source-vs-trajectory
+features.
+
 ### M3: Frozen Fresh Slice
 
 Only after M1 and M2 pass, run a fresh GPU slice with the signed-value head

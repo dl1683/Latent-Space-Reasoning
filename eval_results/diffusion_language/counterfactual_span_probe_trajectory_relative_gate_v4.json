@@ -1,0 +1,412 @@
+{
+  "base_signature_positive_utility_bar": 0.6255,
+  "cohort_risk_baseline": {
+    "error_count": 8,
+    "false_negative_count": 0,
+    "false_negative_task_ids": [],
+    "false_positive_count": 8,
+    "false_positive_task_ids": [
+      "plan_071",
+      "plan_003",
+      "plan_017",
+      "plan_019",
+      "plan_020",
+      "plan_022",
+      "plan_023",
+      "plan_024"
+    ],
+    "policy_utility": 0.6855,
+    "positive_lift_covered": 1.1455,
+    "selected_count": 23,
+    "signed_lift_covered": 1.1455,
+    "weak_slice_summary": {
+      "error_count": 6,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 6,
+      "false_positive_task_ids": [
+        "plan_017",
+        "plan_019",
+        "plan_020",
+        "plan_022",
+        "plan_023",
+        "plan_024"
+      ],
+      "policy_utility": 0.001428571428571418,
+      "positive_lift_covered": 0.16142857142857142,
+      "positive_task_ids": [
+        "plan_018",
+        "plan_021"
+      ],
+      "selected_count": 8,
+      "signed_lift_covered": 0.16142857142857142
+    }
+  },
+  "cohort_risk_parameters": {
+    "margin": -0.01,
+    "negative_fraction_penalty": 0.03,
+    "neighbor_count": 13,
+    "std_penalty": 0.0
+  },
+  "generated_by": "experiments/evaluate_diffusion_span_probe_trajectory_relative_gate.py",
+  "inputs": {
+    "signature_model": "eval_results\\diffusion_language\\counterfactual_span_probe_signature_model_v4.json",
+    "spend_eval": "eval_results\\diffusion_language\\diffusion_independent_spend_transfer_v3_eval.json"
+  },
+  "row_diagnostics": [
+    {
+      "candidate_lift_vs_trajectory": 0.09642857142857142,
+      "cohort_risk_selected": true,
+      "has_trajectory_channel": false,
+      "label": true,
+      "risk_adjusted_signed_value": -4.96718224986363e-05,
+      "selected": true,
+      "source_task_delta_vs_trajectory": null,
+      "task_id": "plan_034",
+      "trajectory_relative_prediction": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.11249999999999999,
+      "cohort_risk_selected": true,
+      "has_trajectory_channel": false,
+      "label": true,
+      "risk_adjusted_signed_value": 0.014856599132636482,
+      "selected": true,
+      "source_task_delta_vs_trajectory": null,
+      "task_id": "plan_044",
+      "trajectory_relative_prediction": true
+    },
+    {
+      "candidate_lift_vs_trajectory": -0.08357142857142857,
+      "cohort_risk_selected": false,
+      "has_trajectory_channel": false,
+      "label": false,
+      "risk_adjusted_signed_value": 0.0007056681820343767,
+      "selected": false,
+      "source_task_delta_vs_trajectory": null,
+      "task_id": "plan_045",
+      "trajectory_relative_prediction": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.07642857142857146,
+      "cohort_risk_selected": true,
+      "has_trajectory_channel": false,
+      "label": true,
+      "risk_adjusted_signed_value": -0.0025193565137400543,
+      "selected": true,
+      "source_task_delta_vs_trajectory": null,
+      "task_id": "plan_046",
+      "trajectory_relative_prediction": true
+    },
+    {
+      "candidate_lift_vs_trajectory": -0.03892857142857137,
+      "cohort_risk_selected": false,
+      "has_trajectory_channel": false,
+      "label": false,
+      "risk_adjusted_signed_value": -0.01175493191160168,
+      "selected": false,
+      "source_task_delta_vs_trajectory": null,
+      "task_id": "plan_050",
+      "trajectory_relative_prediction": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.046928571428571486,
+      "cohort_risk_selected": true,
+      "has_trajectory_channel": false,
+      "label": true,
+      "risk_adjusted_signed_value": 0.007972858280226315,
+      "selected": true,
+      "source_task_delta_vs_trajectory": null,
+      "task_id": "plan_061",
+      "trajectory_relative_prediction": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.09642857142857142,
+      "cohort_risk_selected": true,
+      "has_trajectory_channel": false,
+      "label": true,
+      "risk_adjusted_signed_value": -0.005716080196317591,
+      "selected": true,
+      "source_task_delta_vs_trajectory": null,
+      "task_id": "plan_063",
+      "trajectory_relative_prediction": true
+    },
+    {
+      "candidate_lift_vs_trajectory": -0.08300000000000002,
+      "cohort_risk_selected": false,
+      "has_trajectory_channel": false,
+      "label": false,
+      "risk_adjusted_signed_value": -0.014301525956650817,
+      "selected": false,
+      "source_task_delta_vs_trajectory": null,
+      "task_id": "plan_064",
+      "trajectory_relative_prediction": true
+    },
+    {
+      "candidate_lift_vs_trajectory": -0.05499999999999999,
+      "cohort_risk_selected": false,
+      "has_trajectory_channel": false,
+      "label": false,
+      "risk_adjusted_signed_value": -0.0005310105247613266,
+      "selected": false,
+      "source_task_delta_vs_trajectory": null,
+      "task_id": "plan_069",
+      "trajectory_relative_prediction": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.012500000000000011,
+      "cohort_risk_selected": true,
+      "has_trajectory_channel": false,
+      "label": true,
+      "risk_adjusted_signed_value": 0.013668367065365365,
+      "selected": true,
+      "source_task_delta_vs_trajectory": null,
+      "task_id": "plan_070",
+      "trajectory_relative_prediction": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "cohort_risk_selected": true,
+      "has_trajectory_channel": false,
+      "label": false,
+      "risk_adjusted_signed_value": 0.01378674149601497,
+      "selected": true,
+      "source_task_delta_vs_trajectory": null,
+      "task_id": "plan_071",
+      "trajectory_relative_prediction": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.058928571428571386,
+      "cohort_risk_selected": true,
+      "has_trajectory_channel": false,
+      "label": true,
+      "risk_adjusted_signed_value": 0.01437509294161946,
+      "selected": true,
+      "source_task_delta_vs_trajectory": null,
+      "task_id": "plan_072",
+      "trajectory_relative_prediction": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.06285714285714278,
+      "cohort_risk_selected": true,
+      "has_trajectory_channel": false,
+      "label": true,
+      "risk_adjusted_signed_value": -0.00046412981927624296,
+      "selected": true,
+      "source_task_delta_vs_trajectory": null,
+      "task_id": "plan_001",
+      "trajectory_relative_prediction": true
+    },
+    {
+      "candidate_lift_vs_trajectory": -0.0050000000000001155,
+      "cohort_risk_selected": false,
+      "has_trajectory_channel": false,
+      "label": false,
+      "risk_adjusted_signed_value": -0.010394488385608722,
+      "selected": false,
+      "source_task_delta_vs_trajectory": null,
+      "task_id": "plan_002",
+      "trajectory_relative_prediction": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "cohort_risk_selected": true,
+      "has_trajectory_channel": false,
+      "label": false,
+      "risk_adjusted_signed_value": 0.0043034108083426555,
+      "selected": true,
+      "source_task_delta_vs_trajectory": null,
+      "task_id": "plan_003",
+      "trajectory_relative_prediction": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.021428571428571408,
+      "cohort_risk_selected": true,
+      "has_trajectory_channel": false,
+      "label": true,
+      "risk_adjusted_signed_value": 0.008006189485863584,
+      "selected": true,
+      "source_task_delta_vs_trajectory": null,
+      "task_id": "plan_004",
+      "trajectory_relative_prediction": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.1464285714285714,
+      "cohort_risk_selected": true,
+      "has_trajectory_channel": false,
+      "label": true,
+      "risk_adjusted_signed_value": -0.009696351914906066,
+      "selected": true,
+      "source_task_delta_vs_trajectory": null,
+      "task_id": "plan_005",
+      "trajectory_relative_prediction": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.05892857142857144,
+      "cohort_risk_selected": true,
+      "has_trajectory_channel": false,
+      "label": true,
+      "risk_adjusted_signed_value": -0.006898418831559085,
+      "selected": true,
+      "source_task_delta_vs_trajectory": null,
+      "task_id": "plan_006",
+      "trajectory_relative_prediction": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.19142857142857145,
+      "cohort_risk_selected": true,
+      "has_trajectory_channel": false,
+      "label": true,
+      "risk_adjusted_signed_value": 0.0031456514284362025,
+      "selected": true,
+      "source_task_delta_vs_trajectory": null,
+      "task_id": "plan_007",
+      "trajectory_relative_prediction": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.002857142857142836,
+      "cohort_risk_selected": true,
+      "has_trajectory_channel": false,
+      "label": true,
+      "risk_adjusted_signed_value": -0.005382338925690939,
+      "selected": true,
+      "source_task_delta_vs_trajectory": null,
+      "task_id": "plan_008",
+      "trajectory_relative_prediction": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "cohort_risk_selected": true,
+      "has_trajectory_channel": true,
+      "label": false,
+      "risk_adjusted_signed_value": 0.01594059556147486,
+      "selected": false,
+      "source_task_delta_vs_trajectory": 0.0,
+      "task_id": "plan_017",
+      "trajectory_relative_prediction": false
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.09000000000000002,
+      "cohort_risk_selected": true,
+      "has_trajectory_channel": true,
+      "label": true,
+      "risk_adjusted_signed_value": 0.033841037412732144,
+      "selected": true,
+      "source_task_delta_vs_trajectory": 0.0,
+      "task_id": "plan_018",
+      "trajectory_relative_prediction": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "cohort_risk_selected": true,
+      "has_trajectory_channel": true,
+      "label": false,
+      "risk_adjusted_signed_value": 0.03218220106856367,
+      "selected": false,
+      "source_task_delta_vs_trajectory": 0.0,
+      "task_id": "plan_019",
+      "trajectory_relative_prediction": false
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "cohort_risk_selected": true,
+      "has_trajectory_channel": true,
+      "label": false,
+      "risk_adjusted_signed_value": 0.034579333224922654,
+      "selected": false,
+      "source_task_delta_vs_trajectory": -0.06392857142857145,
+      "task_id": "plan_020",
+      "trajectory_relative_prediction": false
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0714285714285714,
+      "cohort_risk_selected": true,
+      "has_trajectory_channel": true,
+      "label": true,
+      "risk_adjusted_signed_value": 0.032386621557229996,
+      "selected": true,
+      "source_task_delta_vs_trajectory": 0.0,
+      "task_id": "plan_021",
+      "trajectory_relative_prediction": true
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "cohort_risk_selected": true,
+      "has_trajectory_channel": true,
+      "label": false,
+      "risk_adjusted_signed_value": 0.031209435111324485,
+      "selected": false,
+      "source_task_delta_vs_trajectory": 0.0,
+      "task_id": "plan_022",
+      "trajectory_relative_prediction": false
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "cohort_risk_selected": true,
+      "has_trajectory_channel": true,
+      "label": false,
+      "risk_adjusted_signed_value": 0.04018437848720923,
+      "selected": false,
+      "source_task_delta_vs_trajectory": 0.0,
+      "task_id": "plan_023",
+      "trajectory_relative_prediction": false
+    },
+    {
+      "candidate_lift_vs_trajectory": 0.0,
+      "cohort_risk_selected": true,
+      "has_trajectory_channel": true,
+      "label": false,
+      "risk_adjusted_signed_value": 0.03030850239793788,
+      "selected": false,
+      "source_task_delta_vs_trajectory": 0.0,
+      "task_id": "plan_024",
+      "trajectory_relative_prediction": false
+    }
+  ],
+  "schema": "diffusion_counterfactual_span_probe_trajectory_relative_gate.v1",
+  "selection_penalty": 0.02,
+  "summary": {
+    "positive_count": 15,
+    "target_count": 28,
+    "trajectory_channel_row_count": 16,
+    "weak_slice": "counterfactual_span_validated_probe_stage1_gate_v4_transfer_v3_planning.json"
+  },
+  "trajectory_relative_gate": {
+    "blocked_cohort_risk_task_ids": [
+      "plan_017",
+      "plan_019",
+      "plan_020",
+      "plan_022",
+      "plan_023",
+      "plan_024"
+    ],
+    "error_count": 2,
+    "false_negative_count": 0,
+    "false_negative_task_ids": [],
+    "false_positive_count": 2,
+    "false_positive_task_ids": [
+      "plan_071",
+      "plan_003"
+    ],
+    "model_id": "cohort_risk_plus_trajectory_relative_gate",
+    "policy_utility": 0.8054999999999999,
+    "positive_lift_covered": 1.1455,
+    "selected_count": 17,
+    "signed_lift_covered": 1.1455,
+    "weak_slice_summary": {
+      "error_count": 0,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 0,
+      "false_positive_task_ids": [],
+      "policy_utility": 0.12142857142857141,
+      "positive_lift_covered": 0.16142857142857142,
+      "positive_task_ids": [
+        "plan_018",
+        "plan_021"
+      ],
+      "selected_count": 2,
+      "signed_lift_covered": 0.16142857142857142
+    }
+  }
+}
