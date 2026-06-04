@@ -1,0 +1,117 @@
+{
+  "generated_by": "experiments/build_diffusion_candidate_promotion_targets.py",
+  "inputs": {
+    "all_repairable_raw": "eval_results\\diffusion_language\\generated_repair_v18_label_raw.jsonl",
+    "all_repairable_scores": "eval_results\\diffusion_language\\generated_repair_v18_label_scores.json"
+  },
+  "lift_min": 1e-09,
+  "rows": [
+    {
+      "candidate_aware_promotion_error": false,
+      "candidate_aware_promotion_prediction": true,
+      "candidate_lift_vs_source": 0.16035714285714286,
+      "candidate_lift_vs_trajectory": 0.16035714285714286,
+      "candidate_task_score": 0.4828571428571429,
+      "max_span_target_score": 1.815618,
+      "min_span_source_relative_preservation": 0.273147,
+      "planning_quality_delta_vs_source": 0.1603571428571429,
+      "planning_quality_score": 0.3828571428571429,
+      "promote_vs_source": true,
+      "promote_vs_trajectory": true,
+      "prompt_gap_term_count": 2,
+      "repair": "constraint_gap_span_phase_final_preserve_seeded_gated_repair",
+      "repair_selector_edge": 0.26035714285714284,
+      "repair_selector_score": 0.4828571428571429,
+      "selected_repair_lift": 0.16035714285714286,
+      "source_planning_quality_score": 0.2225,
+      "source_task_score": 0.3225,
+      "task_id": "plan_137",
+      "trajectory_task_score": 0.3225
+    },
+    {
+      "candidate_aware_promotion_error": false,
+      "candidate_aware_promotion_prediction": true,
+      "candidate_lift_vs_source": 0.12285714285714289,
+      "candidate_lift_vs_trajectory": 0.12285714285714289,
+      "candidate_task_score": 0.4017857142857143,
+      "max_span_target_score": 2.154657,
+      "min_span_source_relative_preservation": 0.94375,
+      "planning_quality_delta_vs_source": 0.12285714285714283,
+      "planning_quality_score": 0.36178571428571427,
+      "promote_vs_source": true,
+      "promote_vs_trajectory": true,
+      "prompt_gap_term_count": 5,
+      "repair": "constraint_gap_span_phase_final_preserve_seeded_gated_repair",
+      "repair_selector_edge": 0.19208791208791204,
+      "repair_selector_score": 0.4310164835164835,
+      "selected_repair_lift": 0.12285714285714289,
+      "source_planning_quality_score": 0.23892857142857143,
+      "source_task_score": 0.2789285714285714,
+      "task_id": "plan_139",
+      "trajectory_task_score": 0.2789285714285714
+    },
+    {
+      "candidate_aware_promotion_error": false,
+      "candidate_aware_promotion_prediction": false,
+      "candidate_lift_vs_source": 0.0,
+      "candidate_lift_vs_trajectory": 0.0,
+      "candidate_task_score": 0.3889285714285714,
+      "max_span_target_score": 1.966103,
+      "min_span_source_relative_preservation": 0.624731,
+      "planning_quality_delta_vs_source": 0.0,
+      "planning_quality_score": 0.28892857142857137,
+      "promote_vs_source": false,
+      "promote_vs_trajectory": false,
+      "prompt_gap_term_count": 5,
+      "repair": "constraint_gap_span_phase_final_preserve_seeded_gated_repair",
+      "repair_selector_edge": 0.0,
+      "repair_selector_score": 0.28892857142857137,
+      "selected_repair_lift": 0.0,
+      "source_planning_quality_score": 0.28892857142857137,
+      "source_task_score": 0.3889285714285714,
+      "task_id": "plan_141",
+      "trajectory_task_score": 0.3889285714285714
+    },
+    {
+      "candidate_aware_promotion_error": false,
+      "candidate_aware_promotion_prediction": false,
+      "candidate_lift_vs_source": -0.021428571428571352,
+      "candidate_lift_vs_trajectory": -0.021428571428571352,
+      "candidate_task_score": 0.33892857142857147,
+      "max_span_target_score": 2.184125,
+      "min_span_source_relative_preservation": 1.0,
+      "planning_quality_delta_vs_source": -0.021428571428571408,
+      "planning_quality_score": 0.23892857142857143,
+      "promote_vs_source": false,
+      "promote_vs_trajectory": false,
+      "prompt_gap_term_count": 8,
+      "repair": "constraint_gap_span_phase_final_preserve_seeded_gated_repair",
+      "repair_selector_edge": 0.0,
+      "repair_selector_score": 0.26035714285714284,
+      "selected_repair_lift": 0.0,
+      "source_planning_quality_score": 0.26035714285714284,
+      "source_task_score": 0.3603571428571428,
+      "task_id": "plan_144",
+      "trajectory_task_score": 0.3603571428571428
+    }
+  ],
+  "schema": "diffusion_candidate_promotion_targets.v1",
+  "summary": {
+    "candidate_aware_promotion_error_count": 0,
+    "candidate_aware_selected_tasks": [
+      "plan_137",
+      "plan_139"
+    ],
+    "negative_count": 2,
+    "negative_tasks": [
+      "plan_141",
+      "plan_144"
+    ],
+    "positive_count": 2,
+    "positive_tasks": [
+      "plan_137",
+      "plan_139"
+    ],
+    "target_count": 4
+  }
+}
