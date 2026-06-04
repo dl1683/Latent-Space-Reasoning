@@ -219,6 +219,14 @@ the rule has three strict transfer errors: false positives on `plan_020` and
 `plan_023`, plus a false negative on positive `plan_018`. The conjunction is
 retired as a controller candidate; future work needs a richer probe signature or
 learned value-of-information model rather than another hand threshold.
+[DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_SIGNATURE_MODEL_V4.md](../DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_SIGNATURE_MODEL_V4.md)
+then audits that next step across all three span-v4 slices with a nearest-prototype
+signature model over measured probe value, gap, realization, span, retention,
+slot overlap, source quality, and probe-text validity features. It preserves all
+15 positive rows in sample and under leave-one-slice-out, but it still selects
+11 no-lift negatives. That makes it useful diagnostic evidence, not a live spend
+gate; the next model must learn no-lift specificity or an explicit cost penalty
+before any promotion.
 
 ## Benchmark And Cost Layer
 
@@ -282,6 +290,7 @@ hidden behind a large search stack:
 | [DIFFUSION_COUNTERFACTUAL_SPAN_VALIDATED_PROBE_TRANSFER_MATRIX_V4.md](../DIFFUSION_COUNTERFACTUAL_SPAN_VALIDATED_PROBE_TRANSFER_MATRIX_V4.md) | Cross-slice matrix separating discovery-fit rules from fresh-only diagnostic upper bounds; best local v4 rule has 3 transfer errors. |
 | [DIFFUSION_COUNTERFACTUAL_SPAN_VALIDATED_PROBE_CONJUNCTION_TRANSFER_V4.md](../DIFFUSION_COUNTERFACTUAL_SPAN_VALIDATED_PROBE_CONJUNCTION_TRANSFER_V4.md) | Two-condition measured-probe rule search; transfer-screened gap/span conjunction is the next frozen hypothesis, not a promoted controller. |
 | [DIFFUSION_COUNTERFACTUAL_SPAN_GAP_SPAN_RULE_V4_TRANSFER_V3_PLANNING.md](../DIFFUSION_COUNTERFACTUAL_SPAN_GAP_SPAN_RULE_V4_TRANSFER_V3_PLANNING.md) | Frozen next-slice check for the gap/span conjunction: 3 errors on `plan_017`-`plan_024`, retiring the challenger as diagnostic-only. |
+| [DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_SIGNATURE_MODEL_V4.md](../DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_SIGNATURE_MODEL_V4.md) | Leave-slice-out signature-model audit across 28 span-v4 rows: all positives are preserved, but 11 no-lift false positives block promotion. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT.md) | Transfer-rule fit showing current decomposed spend is the best repair-availability rule. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md) | Expanded transfer-rule fit over the eight-row independent slice. |
 | [DIFFUSION_TRANSFER_PROMOTION_VALUE.md](../DIFFUSION_TRANSFER_PROMOTION_VALUE.md) | Transfer promotion-value result showing named `--repair-selector transfer_promotion_value` realizes the low-margin repair. |
