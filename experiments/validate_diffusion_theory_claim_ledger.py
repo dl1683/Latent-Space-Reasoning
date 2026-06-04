@@ -15,6 +15,7 @@ DEFAULT_REQUIRED_BACKLINK_DOCS = (
     Path("docs/DIFFUSION_READER_GUIDE.md"),
     Path("docs/DIFFUSION_REASONING_GEOMETRY_THEORY.md"),
 )
+DEFAULT_REPORT_ARCHIVE = Path("docs/reports/diffusion")
 ALLOWED_STATUSES = {
     "boundary",
     "hypothesis",
@@ -235,6 +236,9 @@ def _resolve_markdown_ref(ref: str, *, ledger_path: Path) -> Path:
     root_candidate = Path(normalized)
     if root_candidate.exists():
         return root_candidate
+    archive_candidate = DEFAULT_REPORT_ARCHIVE / normalized
+    if normalized.startswith("DIFFUSION_") and archive_candidate.exists():
+        return archive_candidate
     return ledger_path.parent / normalized
 
 

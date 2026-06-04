@@ -32,6 +32,25 @@ def test_validate_theory_claim_ledger_accepts_complete_rows_and_backlinks(tmp_pa
     assert issues == []
 
 
+def test_validate_theory_claim_ledger_resolves_archived_diffusion_reports(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    ledger = tmp_path / "docs" / "ledger.md"
+    evidence = tmp_path / "docs" / "reports" / "diffusion" / "DIFFUSION_ARCHIVED_REPORT.md"
+    backlink = tmp_path / "README.md"
+    ledger.parent.mkdir(parents=True)
+    evidence.parent.mkdir(parents=True)
+    ledger.write_text(_ledger(evidence_ref="DIFFUSION_ARCHIVED_REPORT.md"), encoding="utf-8")
+    evidence.write_text("# Evidence\n", encoding="utf-8")
+    backlink.write_text("See DIFFUSION_THEORY_CLAIM_LEDGER.md\n", encoding="utf-8")
+
+    issues = validate_theory_claim_ledger(
+        ledger_path=ledger,
+        required_backlink_docs=(backlink,),
+    )
+
+    assert issues == []
+
+
 def test_validate_theory_claim_ledger_rejects_bad_status_missing_ref_and_weak_fields(tmp_path):
     ledger = tmp_path / "ledger.md"
     backlink = tmp_path / "README.md"

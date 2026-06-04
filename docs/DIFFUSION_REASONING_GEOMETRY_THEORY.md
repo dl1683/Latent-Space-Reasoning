@@ -338,7 +338,7 @@ vague style differences.
 These are the loss families that should guide the next generation of the system.
 
 The generated bridge from collected rows to loss design is
-[DIFFUSION_ERROR_FUNCTION_GEOMETRY.md](../DIFFUSION_ERROR_FUNCTION_GEOMETRY.md).
+[DIFFUSION_ERROR_FUNCTION_GEOMETRY.md](reports/diffusion/DIFFUSION_ERROR_FUNCTION_GEOMETRY.md).
 It derives four current assertions from the repair-value and phase-source
 target data:
 
@@ -356,7 +356,7 @@ trust, retention, and anchor realization rather than collapsing them into one
 "repairable state" label.
 
 The first direct selector comparison is
-[DIFFUSION_DECOMPOSED_SELECTOR_AUDIT.md](../DIFFUSION_DECOMPOSED_SELECTOR_AUDIT.md).
+[DIFFUSION_DECOMPOSED_SELECTOR_AUDIT.md](reports/diffusion/DIFFUSION_DECOMPOSED_SELECTOR_AUDIT.md).
 On the current target rows, the one-label repairability controller has
 composite shortfall `3.053730`, with three value false positives, four source
 false positives, retention error `1.566063`, and realization error `0.573292`.
@@ -367,14 +367,14 @@ oracle on value/source decisions: spend on `plan_004`, `plan_006`, and
 `plan_007`; trust history source only on `plan_001`.
 
 The first trainable target surface is
-[DIFFUSION_COMPOSITE_SELECTOR_TARGETS.md](../DIFFUSION_COMPOSITE_SELECTOR_TARGETS.md).
+[DIFFUSION_COMPOSITE_SELECTOR_TARGETS.md](reports/diffusion/DIFFUSION_COMPOSITE_SELECTOR_TARGETS.md).
 It emits `diffusion_composite_selector_targets.jsonl` with eight task-level
 rows for spend/source/retention heads and seven realization-policy rows for the
 compact-anchor head. This is the handoff from proof-style geometry to a learned
 controller.
 
 The first fitted controller baseline is
-[DIFFUSION_COMPOSITE_SELECTOR_FIT.md](../DIFFUSION_COMPOSITE_SELECTOR_FIT.md).
+[DIFFUSION_COMPOSITE_SELECTOR_FIT.md](reports/diffusion/DIFFUSION_COMPOSITE_SELECTOR_FIT.md).
 It fits zero-error local heads:
 
 - spend: `first_repairable_step` exists, `prompt_gap_count <= 9`, and
@@ -387,7 +387,7 @@ This is the floor for learned selectors. A neural or regression-based
 controller is only useful if it transfers better than this tiny rule fit.
 
 The first local transfer check is
-[DIFFUSION_SELECTOR_HOLDOUT_EVAL.md](../DIFFUSION_SELECTOR_HOLDOUT_EVAL.md).
+[DIFFUSION_SELECTOR_HOLDOUT_EVAL.md](reports/diffusion/DIFFUSION_SELECTOR_HOLDOUT_EVAL.md).
 It hides each task row, refits the spend/source/retention heads on the
 remaining seven task rows, and tests the held-out labels. The decomposed heads
 make `4` errors over `21` scored labels, while a single repairability controller
@@ -397,7 +397,7 @@ exact local fit to leave-one-task-out evidence that the decomposition captures
 real geometry rather than only memorizing the full target surface.
 
 The first runner-facing bridge is
-[DIFFUSION_COMPOSITE_SELECTOR_RUNNER_POLICY.md](../DIFFUSION_COMPOSITE_SELECTOR_RUNNER_POLICY.md).
+[DIFFUSION_COMPOSITE_SELECTOR_RUNNER_POLICY.md](reports/diffusion/DIFFUSION_COMPOSITE_SELECTOR_RUNNER_POLICY.md).
 The benchmark CLI now accepts
 `--repair-spend-trigger decomposed_four_head_selector`, which exposes the fitted
 spend rule in live repair gating and writes the four head IDs into repair-spend
@@ -411,7 +411,7 @@ does not beat the `0.531116` top-score frontier; it promotes the decomposed
 selector as the lower-cost budget controller with explicit provenance.
 
 The first independent spend-head transfer check is
-[DIFFUSION_INDEPENDENT_SPEND_TRANSFER.md](../DIFFUSION_INDEPENDENT_SPEND_TRANSFER.md).
+[DIFFUSION_INDEPENDENT_SPEND_TRANSFER.md](reports/diffusion/DIFFUSION_INDEPENDENT_SPEND_TRANSFER.md).
 It adds four new planning prompts, runs an all-repairable phase/final GPU pass,
 and derives repair-value labels from repair-oracle lift. The boundary is
 important: `plan_012` is a positive low-margin repair case even though the
@@ -421,14 +421,14 @@ decomposed spend head skips `plan_010` and keeps `plan_012`, giving zero
 repair-availability errors on the four-row transfer slice.
 
 The expanded transfer check is
-[DIFFUSION_INDEPENDENT_SPEND_TRANSFER_V2.md](../DIFFUSION_INDEPENDENT_SPEND_TRANSFER_V2.md).
+[DIFFUSION_INDEPENDENT_SPEND_TRANSFER_V2.md](reports/diffusion/DIFFUSION_INDEPENDENT_SPEND_TRANSFER_V2.md).
 It adds four more independent planning prompts. The result is stable but
 narrow: `plan_012` remains the only positive repair-availability label, and
 the decomposed spend head still has zero errors over eight independent planning
 rows.
 
 The fitted transfer rule report is
-[DIFFUSION_SPEND_TRANSFER_RULE_FIT.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT.md).
+[DIFFUSION_SPEND_TRANSFER_RULE_FIT.md](reports/diffusion/DIFFUSION_SPEND_TRANSFER_RULE_FIT.md).
 After the oracle-lift correction, the best repair-availability rule is the
 current decomposed spend rule, not the stricter `0.3075` source-task floor. The
 mathematical assertion changed in a useful way: source quality and prompt-gap
@@ -438,7 +438,7 @@ false negative because it skips the low-margin but positive `plan_012` repair.
 The next proof question is how to learn two related functions: repair
 availability and cost-adjusted promotion value.
 
-[DIFFUSION_TRANSFER_PROMOTION_VALUE.md](../DIFFUSION_TRANSFER_PROMOTION_VALUE.md)
+[DIFFUSION_TRANSFER_PROMOTION_VALUE.md](reports/diffusion/DIFFUSION_TRANSFER_PROMOTION_VALUE.md)
 tests that split directly. On `lean_gpu_mixed_transfer_v2`, the corrected
 spend gate runs only `plan_012`. The planning-quality seed-realization selector
 generates the better repair but leaves `0.002500` mean repair headroom, while
@@ -456,14 +456,14 @@ surface is different from the repair-availability surface, but the current
 implementation still uses an interpretable proxy until a learned selector is
 trained.
 
-[DIFFUSION_TRANSFER_HEAD_FIT.md](../DIFFUSION_TRANSFER_HEAD_FIT.md) turns that
+[DIFFUSION_TRANSFER_HEAD_FIT.md](reports/diffusion/DIFFUSION_TRANSFER_HEAD_FIT.md) turns that
 split into the first fitted transfer-head artifact. The availability head
 `availability_current_decomposed_spend` has `0` errors over 16 original plus
 transfer rows. The promotion head `transfer_promotion_value` has `0` errors on
 the expanded transfer policy rows, while the planning-quality promotion policy
 has one false negative: the available `plan_012` repair.
 
-[DIFFUSION_REASONING_PROOF_OBJECT.md](../DIFFUSION_REASONING_PROOF_OBJECT.md)
+[DIFFUSION_REASONING_PROOF_OBJECT.md](reports/diffusion/DIFFUSION_REASONING_PROOF_OBJECT.md)
 is the current canonical proof-object ledger. It ties six heads to target rows,
 information channels, evidence files, falsifiers, and next GPU validations:
 availability, promotion value, source trust, retention, realization, and cost.
@@ -471,7 +471,7 @@ This is the repo's concrete bridge from "geometry of reasoning space" to
 testable error functions.
 
 The first larger proof-object GPU slice is
-[DIFFUSION_INDEPENDENT_SPEND_TRANSFER_V3.md](../DIFFUSION_INDEPENDENT_SPEND_TRANSFER_V3.md).
+[DIFFUSION_INDEPENDENT_SPEND_TRANSFER_V3.md](reports/diffusion/DIFFUSION_INDEPENDENT_SPEND_TRANSFER_V3.md).
 It adds eight more planning prompts on top of the v2 transfer surface and
 turns the availability head into a sharper geometric statement. Repair
 availability is not only a property of the denoise skeleton and source-quality
@@ -489,7 +489,7 @@ post-repair promotion. The resulting spend-gate loss term is:
 This is a stricter information-accounting rule: a repair source can expose a
 repairable denoise skeleton and still be the wrong source if another denoise
 trajectory has already carried more task-relevant information forward.
-[DIFFUSION_AVAILABILITY_PREDICTOR_FIT.md](../DIFFUSION_AVAILABILITY_PREDICTOR_FIT.md)
+[DIFFUSION_AVAILABILITY_PREDICTOR_FIT.md](reports/diffusion/DIFFUSION_AVAILABILITY_PREDICTOR_FIT.md)
 fits the first learned version of this head: `prompt_gap_count <= 8`,
 `source_quality <= 0.256429`, and
 `source_task_delta_vs_trajectory >= 0`. CUDA run
