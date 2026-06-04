@@ -26,9 +26,9 @@ exemplars and forbids generic values, but the measured v2 run is not promoted:
 it regresses authorization reliability and valid-row count.
 `--counterfactual-probe-policy compact_tomography_probe_v3` switches to short
 `A=`, `B=`, `C=`, and `Z=false` slots. The measured v3 run restores 12/12
-format-valid rows and zero malformed authorization rows at a `48` token / `24`
-step budget, but it is still diagnostic-only because the best validated Stage 1
-rule admits four no-lift rows.
+runtime-format-valid rows and zero malformed authorization rows at a `48` token
+/ `24` step budget, but the semantic audit leaves only 4/12 rows valid. It is
+still diagnostic-only because invalid diagnostics include five profitable rows.
 
 The trigger records probe diagnostics in `repair_spend_gate_rows` for each
 selected repair source. When frozen triage sets `would_probe=true`, it also
@@ -101,8 +101,9 @@ negative control: fewer validated-fit errors, but worse diagnostic reliability.
 The compact v3 follow-up is recorded in
 `DIFFUSION_COUNTERFACTUAL_COMPACT_PROBE_TEXT_FIDELITY_V3.md` and
 `DIFFUSION_COUNTERFACTUAL_COMPACT_VALIDATED_PROBE_STAGE1_GATE_V3.md`. It fixes
-the row-format reliability problem, but remains diagnostic-only because the
-measured post-probe value rule still selects no-lift rows.
+the runtime row-format reliability problem, but stricter semantic auditing
+exposes template echoes, malformed compact keys, duplicate authorization, and
+five invalid-positive misses.
 
 ## Next Measurement
 

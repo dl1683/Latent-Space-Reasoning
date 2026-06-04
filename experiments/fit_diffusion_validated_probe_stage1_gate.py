@@ -212,11 +212,13 @@ def render_markdown(
             "## Reading",
             "",
             (
-                "The strict tomography probe improves the no-repair sentinel, but "
-                "validity filtering exposes a harder bottleneck: invalid diagnostics "
-                "include profitable rows. A Stage 1 spend gate cannot promote until "
-                "the probe reliably produces valid diagnostic rows for positives and "
-                "then separates valid positives from no-lift traps."
+                "The tomography probe may satisfy the no-repair sentinel while still "
+                "failing as semantic evidence. Validity filtering exposes the harder "
+                "bottleneck: invalid diagnostics include profitable rows, and valid "
+                "diagnostics can still select no-lift traps. A Stage 1 spend gate "
+                "cannot promote until the probe reliably produces semantically valid "
+                "diagnostic rows for positives and then separates those valid "
+                "positives from no-lift traps."
             ),
         ]
     )

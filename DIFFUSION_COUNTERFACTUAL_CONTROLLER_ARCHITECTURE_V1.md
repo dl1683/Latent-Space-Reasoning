@@ -178,11 +178,12 @@ diagnostic instruments without clearing the spend gate:
 - `key_value_tomography_probe_v2` removed placeholder exemplars but regressed
   raw diagnostic reliability to 6/12 valid rows and two malformed
   authorizations.
-- `compact_tomography_probe_v3` restores 12/12 valid rows with zero malformed
-  `Z=false` authorizations at a 48-token / 24-step probe budget, but the best
-  validity-required Stage 1 rule still makes four false-positive spend
-  decisions. This is a better measurement instrument, not a promoted spend
-  controller.
+- `compact_tomography_probe_v3` restores 12/12 runtime-format-valid rows with
+  zero malformed `Z=false` authorizations at a 48-token / 24-step probe budget.
+  A stricter semantic audit then exposes the real failure: only 4/12 rows remain
+  semantically valid, with seven template echoes, five malformed compact-key
+  rows, one duplicate authorization row, and five invalid-positive misses. This
+  is a better syntax instrument, not a promoted spend controller.
 
 ## First Implementation Slice
 

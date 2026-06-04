@@ -176,10 +176,12 @@ authorization strings, so it is a negative control rather than a promoted probe.
 and
 [DIFFUSION_COUNTERFACTUAL_COMPACT_VALIDATED_PROBE_STAGE1_GATE_V3.md](../DIFFUSION_COUNTERFACTUAL_COMPACT_VALIDATED_PROBE_STAGE1_GATE_V3.md)
 then test `compact_tomography_probe_v3`: short `A=`, `B=`, `C=`, `Z=false`
-slots restore 12/12 valid measured rows and zero malformed authorizations at a
-48-token / 24-step budget. The best post-probe text rule still has two false
-positives and the best validity-required Stage 1 rule has four false positives,
-so v3 is a stronger diagnostic instrument but still not a live spend gate.
+slots restore 12/12 runtime-format-valid rows and zero malformed
+authorizations at a 48-token / 24-step budget, but the stricter semantic audit
+finds only 4/12 rows valid: seven template echoes, five malformed compact-key
+rows, and one duplicate authorization row. Under semantic-required Stage 1
+validity, five profitable rows become invalid-positive misses and the best
+validated rule has six errors, so v3 is not a live spend gate.
 
 ## Benchmark And Cost Layer
 
@@ -234,8 +236,8 @@ hidden behind a large search stack:
 | [DIFFUSION_COUNTERFACTUAL_VALIDATED_PROBE_STAGE1_GATE_V1.md](../DIFFUSION_COUNTERFACTUAL_VALIDATED_PROBE_STAGE1_GATE_V1.md) | Validity-required Stage 1 gate fit; invalid diagnostics include three profitable rows, so the best validated rule has five errors. |
 | [DIFFUSION_COUNTERFACTUAL_KEY_VALUE_PROBE_TEXT_FIDELITY_V2.md](../DIFFUSION_COUNTERFACTUAL_KEY_VALUE_PROBE_TEXT_FIDELITY_V2.md) | Key-value tomography v2 text-fidelity result; removes placeholders but regresses exact authorization and valid-row count. |
 | [DIFFUSION_COUNTERFACTUAL_KEY_VALUE_VALIDATED_PROBE_STAGE1_GATE_V2.md](../DIFFUSION_COUNTERFACTUAL_KEY_VALUE_VALIDATED_PROBE_STAGE1_GATE_V2.md) | Key-value tomography v2 validity-required gate fit; two false negatives but still diagnostic-only because probe reliability regressed. |
-| [DIFFUSION_COUNTERFACTUAL_COMPACT_PROBE_TEXT_FIDELITY_V3.md](../DIFFUSION_COUNTERFACTUAL_COMPACT_PROBE_TEXT_FIDELITY_V3.md) | Compact tomography v3 text-fidelity result; restores 12/12 format-valid rows and exact no-repair authorization, but still leaves two post-probe false positives. |
-| [DIFFUSION_COUNTERFACTUAL_COMPACT_VALIDATED_PROBE_STAGE1_GATE_V3.md](../DIFFUSION_COUNTERFACTUAL_COMPACT_VALIDATED_PROBE_STAGE1_GATE_V3.md) | Compact tomography v3 validity-required gate fit; all rows are valid, but the best measured Stage 1 rule still admits four no-lift rows. |
+| [DIFFUSION_COUNTERFACTUAL_COMPACT_PROBE_TEXT_FIDELITY_V3.md](../DIFFUSION_COUNTERFACTUAL_COMPACT_PROBE_TEXT_FIDELITY_V3.md) | Compact tomography v3 text-fidelity result; runtime format is stable, but semantic validity falls to 4/12 because of template echoes, malformed compact keys, and duplicate authorization. |
+| [DIFFUSION_COUNTERFACTUAL_COMPACT_VALIDATED_PROBE_STAGE1_GATE_V3.md](../DIFFUSION_COUNTERFACTUAL_COMPACT_VALIDATED_PROBE_STAGE1_GATE_V3.md) | Compact tomography v3 semantic-validity-required gate fit; five profitable rows become invalid-positive misses and the best measured Stage 1 rule has six errors. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT.md) | Transfer-rule fit showing current decomposed spend is the best repair-availability rule. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md) | Expanded transfer-rule fit over the eight-row independent slice. |
 | [DIFFUSION_TRANSFER_PROMOTION_VALUE.md](../DIFFUSION_TRANSFER_PROMOTION_VALUE.md) | Transfer promotion-value result showing named `--repair-selector transfer_promotion_value` realizes the low-margin repair. |

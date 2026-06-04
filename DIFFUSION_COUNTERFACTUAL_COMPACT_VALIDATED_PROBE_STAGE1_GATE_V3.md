@@ -6,13 +6,14 @@ It fits Stage 1 full-repair rules only after the measured probe row passes stric
 ## Summary
 
 - Rows: `12`
-- Valid probe rows: `12`
-- Invalid positive rows: `0`
-- Invalid positive lift: `0.000000`
-- Best validated rule: `valid_measured_expected_retention_risk_visibility_ge_0p922948`
-- Best validated errors: `4`
-- Best validated false positives: `4`
-- Best validated false negatives: `0`
+- Valid probe rows: `4`
+- Semantic-valid probe rows: `4`
+- Invalid positive rows: `5`
+- Invalid positive lift: `0.340714`
+- Best validated rule: `valid_measured_expected_gap_visibility_gain_ge_0p750000`
+- Best validated errors: `6`
+- Best validated false positives: `1`
+- Best validated false negatives: `5`
 - Best all-feature rule: `prompt_gap_count_le_7p000000`
 - Best all-feature errors: `0`
 - Gate decision: `diagnostic_only`
@@ -21,26 +22,26 @@ It fits Stage 1 full-repair rules only after the measured probe row passes stric
 
 | Rule | Errors | FP | FN | Missed Lift | Selected |
 | --- | ---: | ---: | ---: | ---: | ---: |
-| `valid_measured_expected_retention_risk_visibility_ge_0p922948` | 4 | 4 | 0 | 0.000000 | 11 |
-| `valid_measured_expected_span_evidence_gain_ge_0p187500` | 4 | 4 | 0 | 0.000000 | 11 |
-| `valid_measured_expected_span_evidence_gain_le_0p900000` | 4 | 4 | 0 | 0.000000 | 11 |
-| `valid_measured_probe_value_prediction_ge_0p005873` | 4 | 4 | 0 | 0.000000 | 11 |
-| `valid_measured_probe_value_prediction_le_0p047194` | 4 | 4 | 0 | 0.000000 | 11 |
-| `valid_measured_expected_retention_risk_visibility_le_0p979021` | 4 | 3 | 1 | 0.096429 | 9 |
-| `valid_measured_probe_value_prediction_ge_0p014659` | 4 | 2 | 2 | 0.155357 | 7 |
-| `valid_measured_expected_gap_visibility_gain_le_0p200000` | 4 | 2 | 2 | 0.159429 | 7 |
-| `valid_measured_expected_realization_defect_visibility_ge_0p600000` | 4 | 2 | 2 | 0.159429 | 7 |
-| `valid_measured_expected_realization_defect_visibility_ge_1p000000` | 4 | 1 | 3 | 0.171929 | 5 |
-| `valid_measured_expected_retention_risk_visibility_le_0p965753` | 4 | 2 | 2 | 0.192857 | 7 |
-| `valid_measured_expected_retention_risk_visibility_le_0p946050` | 4 | 1 | 3 | 0.269286 | 5 |
-| `valid_measured_expected_gap_visibility_gain_ge_0p000000` | 5 | 5 | 0 | 0.000000 | 12 |
-| `valid_measured_expected_gap_visibility_gain_le_1p000000` | 5 | 5 | 0 | 0.000000 | 12 |
-| `valid_measured_expected_realization_defect_visibility_ge_0p000000` | 5 | 5 | 0 | 0.000000 | 12 |
-| `valid_measured_expected_realization_defect_visibility_le_1p000000` | 5 | 5 | 0 | 0.000000 | 12 |
-| `valid_measured_expected_retention_risk_visibility_ge_0p627507` | 5 | 5 | 0 | 0.000000 | 12 |
-| `valid_measured_expected_retention_risk_visibility_le_0p985866` | 5 | 5 | 0 | 0.000000 | 12 |
-| `valid_measured_expected_span_evidence_gain_ge_0p000000` | 5 | 5 | 0 | 0.000000 | 12 |
-| `valid_measured_expected_span_evidence_gain_le_0p923077` | 5 | 5 | 0 | 0.000000 | 12 |
+| `valid_measured_expected_gap_visibility_gain_ge_0p750000` | 6 | 1 | 5 | 0.340714 | 3 |
+| `valid_measured_expected_retention_risk_visibility_ge_0p922948` | 6 | 1 | 5 | 0.340714 | 3 |
+| `valid_measured_expected_retention_risk_visibility_ge_0p924342` | 6 | 1 | 5 | 0.340714 | 3 |
+| `valid_measured_expected_retention_risk_visibility_le_0p940299` | 6 | 1 | 5 | 0.340714 | 3 |
+| `valid_measured_expected_retention_risk_visibility_le_0p946050` | 6 | 1 | 5 | 0.340714 | 3 |
+| `valid_measured_expected_span_evidence_gain_ge_0p421053` | 6 | 1 | 5 | 0.340714 | 3 |
+| `valid_measured_expected_span_evidence_gain_ge_0p470588` | 6 | 1 | 5 | 0.340714 | 3 |
+| `valid_measured_expected_span_evidence_gain_ge_0p600000` | 6 | 1 | 5 | 0.340714 | 3 |
+| `valid_measured_expected_span_evidence_gain_le_0p900000` | 6 | 1 | 5 | 0.340714 | 3 |
+| `valid_measured_probe_value_prediction_ge_0p014659` | 6 | 1 | 5 | 0.340714 | 3 |
+| `valid_measured_probe_value_prediction_ge_0p015347` | 6 | 1 | 5 | 0.340714 | 3 |
+| `valid_measured_probe_value_prediction_ge_0p016399` | 6 | 1 | 5 | 0.340714 | 3 |
+| `valid_measured_probe_value_prediction_ge_0p017227` | 6 | 1 | 5 | 0.340714 | 3 |
+| `valid_measured_probe_value_prediction_ge_0p025763` | 6 | 1 | 5 | 0.340714 | 3 |
+| `valid_measured_probe_value_prediction_le_0p047194` | 6 | 1 | 5 | 0.340714 | 3 |
+| `valid_measured_expected_gap_visibility_gain_ge_1p000000` | 6 | 0 | 6 | 0.453214 | 1 |
+| `valid_measured_expected_gap_visibility_gain_ge_0p000000` | 7 | 2 | 5 | 0.340714 | 4 |
+| `valid_measured_expected_gap_visibility_gain_ge_0p142857` | 7 | 2 | 5 | 0.340714 | 4 |
+| `valid_measured_expected_gap_visibility_gain_ge_0p166667` | 7 | 2 | 5 | 0.340714 | 4 |
+| `valid_measured_expected_gap_visibility_gain_ge_0p200000` | 7 | 2 | 5 | 0.340714 | 4 |
 
 ## Top All-Feature Rules
 
@@ -54,6 +55,7 @@ It fits Stage 1 full-repair rules only after the measured probe row passes stric
 | `prompt_gap_count_le_5p000000` | 2 | 0 | 2 | 0.172857 | 5 |
 | `source_quality_ge_0p213929` | 3 | 3 | 0 | 0.000000 | 10 |
 | `prompt_gap_count_le_4p000000` | 3 | 0 | 3 | 0.185357 | 4 |
+| `counterfactual_probe_text_duplicate_authorization_le_0p000000` | 4 | 4 | 0 | 0.000000 | 11 |
 | `measured_expected_retention_risk_visibility_ge_0p922948` | 4 | 4 | 0 | 0.000000 | 11 |
 | `measured_expected_span_evidence_gain_ge_0p187500` | 4 | 4 | 0 | 0.000000 | 11 |
 | `measured_expected_span_evidence_gain_le_0p900000` | 4 | 4 | 0 | 0.000000 | 11 |
@@ -62,28 +64,27 @@ It fits Stage 1 full-repair rules only after the measured probe row passes stric
 | `source_quality_le_0p311429` | 4 | 4 | 0 | 0.000000 | 11 |
 | `source_quality_ge_0p243929` | 4 | 3 | 1 | 0.012500 | 9 |
 | `measured_expected_retention_risk_visibility_le_0p979021` | 4 | 3 | 1 | 0.096429 | 9 |
+| `counterfactual_probe_text_malformed_compact_key_le_0p000000` | 4 | 2 | 2 | 0.155357 | 7 |
 | `measured_probe_value_prediction_ge_0p014659` | 4 | 2 | 2 | 0.155357 | 7 |
-| `measured_expected_gap_visibility_gain_le_0p200000` | 4 | 2 | 2 | 0.159429 | 7 |
-| `measured_expected_realization_defect_visibility_ge_0p600000` | 4 | 2 | 2 | 0.159429 | 7 |
-| `measured_expected_realization_defect_visibility_ge_1p000000` | 4 | 1 | 3 | 0.171929 | 5 |
+| `counterfactual_probe_text_template_slot_echo_ge_1p000000` | 4 | 2 | 2 | 0.159429 | 7 |
 
 ## Rows
 
-| Task | Label | Lift | Valid Probe | Measured Value | Gap Gain | Span Gain | Retention Risk | Validated Select | All-Feature Select |
-| --- | --- | ---: | --- | ---: | ---: | ---: | ---: | --- | --- |
-| `plan_034` | True | 0.096429 | True | 0.005873 | 0.000000 | 0.187500 | 0.979021 | True | True |
-| `plan_044` | True | 0.112500 | True | 0.025763 | 0.750000 | 0.600000 | 0.924342 | True | True |
-| `plan_045` | False | -0.083571 | True | 0.000000 | 0.000000 | 0.000000 | 0.979210 | True | False |
-| `plan_046` | True | 0.076429 | True | 0.016399 | 0.142857 | 0.357143 | 0.965753 | True | True |
-| `plan_050` | False | -0.038929 | True | 0.017227 | 0.444444 | 0.307692 | 0.977974 | True | False |
-| `plan_061` | True | 0.046929 | True | 0.047194 | 1.000000 | 0.900000 | 0.940299 | True | True |
-| `plan_063` | True | 0.096429 | True | 0.015347 | 0.166667 | 0.307692 | 0.985866 | True | True |
-| `plan_064` | False | -0.083000 | True | 0.047225 | 0.916667 | 0.923077 | 0.627507 | False | False |
-| `plan_069` | False | -0.055000 | True | 0.006798 | 0.166667 | 0.421053 | 0.983368 | True | False |
-| `plan_070` | True | 0.012500 | True | 0.014659 | 0.200000 | 0.470588 | 0.922948 | True | True |
-| `plan_071` | False | 0.000000 | True | 0.014635 | 0.500000 | 0.411765 | 0.960894 | True | False |
-| `plan_072` | True | 0.058929 | True | 0.006793 | 0.000000 | 0.190476 | 0.946050 | True | True |
+| Task | Label | Lift | Valid Probe | Measured Value | Gap Gain | Span Gain | Retention Risk | Semantic Defect | Validated Select | All-Feature Select |
+| --- | --- | ---: | --- | ---: | ---: | ---: | ---: | --- | --- | --- |
+| `plan_034` | True | 0.096429 | False | 0.005873 | 0.000000 | 0.187500 | 0.979021 | True | False | True |
+| `plan_044` | True | 0.112500 | True | 0.025763 | 0.750000 | 0.600000 | 0.924342 | False | True | True |
+| `plan_045` | False | -0.083571 | False | 0.000000 | 0.000000 | 0.000000 | 0.979210 | True | False | False |
+| `plan_046` | True | 0.076429 | False | 0.016399 | 0.142857 | 0.357143 | 0.965753 | True | False | True |
+| `plan_050` | False | -0.038929 | False | 0.017227 | 0.444444 | 0.307692 | 0.977974 | True | False | False |
+| `plan_061` | True | 0.046929 | True | 0.047194 | 1.000000 | 0.900000 | 0.940299 | False | True | True |
+| `plan_063` | True | 0.096429 | False | 0.015347 | 0.166667 | 0.307692 | 0.985866 | True | False | True |
+| `plan_064` | False | -0.083000 | True | 0.047225 | 0.916667 | 0.923077 | 0.627507 | False | True | False |
+| `plan_069` | False | -0.055000 | False | 0.006798 | 0.166667 | 0.421053 | 0.983368 | True | False | False |
+| `plan_070` | True | 0.012500 | False | 0.014659 | 0.200000 | 0.470588 | 0.922948 | True | False | True |
+| `plan_071` | False | 0.000000 | True | 0.014635 | 0.500000 | 0.411765 | 0.960894 | False | False | False |
+| `plan_072` | True | 0.058929 | False | 0.006793 | 0.000000 | 0.190476 | 0.946050 | True | False | True |
 
 ## Reading
 
-The strict tomography probe improves the no-repair sentinel, but validity filtering exposes a harder bottleneck: invalid diagnostics include profitable rows. A Stage 1 spend gate cannot promote until the probe reliably produces valid diagnostic rows for positives and then separates valid positives from no-lift traps.
+The tomography probe may satisfy the no-repair sentinel while still failing as semantic evidence. Validity filtering exposes the harder bottleneck: invalid diagnostics include profitable rows, and valid diagnostics can still select no-lift traps. A Stage 1 spend gate cannot promote until the probe reliably produces semantically valid diagnostic rows for positives and then separates those valid positives from no-lift traps.
