@@ -1,0 +1,83 @@
+{
+  "allow_existing_primary_results": false,
+  "baseline_model": "Qwen/Qwen3-4B",
+  "blocking_reasons": [
+    "primary Qwen3-Next model is not cached locally; select and record a current quantized artifact before starting the expensive run"
+  ],
+  "claim_boundaries": [
+    "Do not treat mechanics smoke as gated-attention evidence.",
+    "Do not interpret random-prefix lift without the position-shift and zero-prefix controls.",
+    "Do not update article or README claim strength before mean-first report exists.",
+    "Do not rebuild the pre-result freeze after primary results exist unless explicitly auditing."
+  ],
+  "existing_primary_results": [],
+  "freeze_path": "eval_results\\gated_attention\\gated_attention_null_probe_freeze.json",
+  "freeze_probe_id": "gated_attention_null_probe_v1",
+  "generated_by": "experiments/build_gated_attention_probe_execution_plan.py",
+  "hf_cache": "C:\\Users\\devan\\.cache\\huggingface\\hub",
+  "mechanics_model": "Qwen/Qwen3-0.6B",
+  "model_cache": {
+    "baseline": {
+      "cached": true,
+      "model": "Qwen/Qwen3-4B",
+      "path": "C:\\Users\\devan\\.cache\\huggingface\\hub\\models--Qwen--Qwen3-4B",
+      "snapshot_count": 1
+    },
+    "mechanics": {
+      "cached": true,
+      "model": "Qwen/Qwen3-0.6B",
+      "path": "C:\\Users\\devan\\.cache\\huggingface\\hub\\models--Qwen--Qwen3-0.6B",
+      "snapshot_count": 1
+    },
+    "primary_gated": {
+      "cached": false,
+      "model": "Qwen/Qwen3-Next-80B-A3B-Instruct",
+      "path": "C:\\Users\\devan\\.cache\\huggingface\\hub\\models--Qwen--Qwen3-Next-80B-A3B-Instruct",
+      "snapshot_count": 0
+    }
+  },
+  "ordered_runs": [
+    {
+      "claim_status": "mechanics_only",
+      "command": "python -u experiments/run_latent_sensitivity.py --model Qwen/Qwen3-0.6B --task-type nested --difficulty sweet_spot --n-tasks 2 --control-mode position_shift --num-soft-tokens 2 --quantization 4bit --max-new-tokens 64 --output eval_results/gated_attention/qwen3_06b_position_shift_mechanics_smoke.json",
+      "expected_artifact": "eval_results/gated_attention/qwen3_06b_position_shift_mechanics_smoke.json",
+      "id": "mechanics_position_shift_smoke",
+      "required_before_primary": false
+    },
+    {
+      "claim_status": "required_primary_control",
+      "command": "python -u experiments/run_latent_sensitivity.py --model Qwen/Qwen3-Next-80B-A3B-Instruct --task-type nested --difficulty sweet_spot --n-tasks 25 --control-mode position_shift --num-soft-tokens 2 --quantization 4bit --output eval_results/gated_attention/qwen3_next_position_shift_control_result.json",
+      "expected_artifact": "eval_results\\gated_attention\\qwen3_next_position_shift_control_result.json",
+      "id": "primary_position_shift_control",
+      "required_before_primary": true
+    },
+    {
+      "claim_status": "required_primary_control",
+      "command": "python -u experiments/run_latent_sensitivity.py --model Qwen/Qwen3-Next-80B-A3B-Instruct --task-type nested --difficulty sweet_spot --n-tasks 25 --n-latents 1 --control-mode zero_embedding --num-soft-tokens 2 --quantization 4bit --output eval_results/gated_attention/qwen3_next_zero_prefix_result.json",
+      "expected_artifact": "eval_results\\gated_attention\\qwen3_next_zero_prefix_result.json",
+      "id": "primary_zero_prefix_control",
+      "required_before_primary": true
+    },
+    {
+      "claim_status": "primary_test",
+      "command": "python -u experiments/run_latent_sensitivity.py --model Qwen/Qwen3-Next-80B-A3B-Instruct --task-type nested --difficulty sweet_spot --n-tasks 25 --n-latents 10 --control-mode random_noise --num-soft-tokens 2 --quantization 4bit --output eval_results/gated_attention/qwen3_next_random_prefix_n10_result.json",
+      "expected_artifact": "eval_results\\gated_attention\\qwen3_next_random_prefix_n10_result.json",
+      "id": "primary_random_prefix_n10",
+      "required_before_primary": true
+    }
+  ],
+  "primary_model": "Qwen/Qwen3-Next-80B-A3B-Instruct",
+  "ready_for_primary_gpu_run": false,
+  "reporting_order": [
+    "mean last-integer accuracy",
+    "EOS/completion rate",
+    "true generated-token count",
+    "strict final-answer accuracy",
+    "answer-anywhere accuracy",
+    "position-shift delta vs zero-prefix delta",
+    "oracle coverage after mean metrics",
+    "pairwise error overlap/correlation after oracle"
+  ],
+  "schema": "gated_attention_probe_execution_plan.v1",
+  "task_preset": "lsr_25_arithmetic_plus_cache_debug"
+}

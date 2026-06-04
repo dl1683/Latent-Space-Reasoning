@@ -69,6 +69,12 @@ Primary gated random-prefix run:
 python -u experiments/run_latent_sensitivity.py --model Qwen/Qwen3-Next-80B-A3B-Instruct --task-type nested --difficulty sweet_spot --n-tasks 25 --n-latents 10 --control-mode random_noise --num-soft-tokens 2 --quantization 4bit --output eval_results/gated_attention/qwen3_next_random_prefix_n10_result.json
 ```
 
+Primary gated zero-prefix run:
+
+```powershell
+python -u experiments/run_latent_sensitivity.py --model Qwen/Qwen3-Next-80B-A3B-Instruct --task-type nested --difficulty sweet_spot --n-tasks 25 --n-latents 1 --control-mode zero_embedding --num-soft-tokens 2 --quantization 4bit --output eval_results/gated_attention/qwen3_next_zero_prefix_result.json
+```
+
 Position-shift control:
 
 ```text

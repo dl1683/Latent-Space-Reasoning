@@ -217,6 +217,13 @@ def build_freeze_manifest(*, result_glob: str, allow_existing_results: bool = Fa
                 "--control-mode random_noise --num-soft-tokens 2 --quantization 4bit "
                 "--output eval_results/gated_attention/qwen3_next_random_prefix_n10_result.json"
             ),
+            "gated_zero_prefix": (
+                "python -u experiments/run_latent_sensitivity.py "
+                "--model Qwen/Qwen3-Next-80B-A3B-Instruct --task-type nested "
+                "--difficulty sweet_spot --n-tasks 25 --n-latents 1 "
+                "--control-mode zero_embedding --num-soft-tokens 2 --quantization 4bit "
+                "--output eval_results/gated_attention/qwen3_next_zero_prefix_result.json"
+            ),
             "gated_position_shift": (
                 "python -u experiments/run_latent_sensitivity.py "
                 "--model Qwen/Qwen3-Next-80B-A3B-Instruct --task-type nested "
@@ -325,6 +332,10 @@ def render_markdown(manifest: dict[str, object]) -> str:
             "Primary gated random-prefix run:",
             "",
             f"```powershell\n{commands['gated_primary_random_prefix']}\n```",
+            "",
+            "Primary gated zero-prefix run:",
+            "",
+            f"```powershell\n{commands['gated_zero_prefix']}\n```",
             "",
             "Position-shift control:",
             "",
