@@ -19,7 +19,9 @@ POST_PROBE_FEATURES = (
     "has_evidence_slot",
     "has_retention_slot",
     "exact_authorization_false",
+    "generic_slot",
     "malformed_authorization",
+    "placeholder_slot",
     "weird_punctuation",
     "word_count",
     "weak_term_echo_count",
@@ -107,6 +109,8 @@ def render_markdown(audit: dict[str, object]) -> str:
         f"- Positive labels: `{summary.get('positive_label_count', 0)}`",
         f"- Negative labels: `{summary.get('negative_label_count', 0)}`",
         f"- Malformed authorization rows: `{summary.get('malformed_authorization_count', 0)}`",
+        f"- Placeholder slot rows: `{summary.get('placeholder_slot_count', 0)}`",
+        f"- Generic evidence rows: `{summary.get('generic_slot_count', 0)}`",
         f"- Weird punctuation rows: `{summary.get('weird_punctuation_count', 0)}`",
         f"- Best post-probe rule: `{summary.get('best_post_probe_rule_name', '')}`",
         f"- Best post-probe errors: `{summary.get('best_post_probe_error_count', 0)}`",
@@ -128,9 +132,9 @@ def render_markdown(audit: dict[str, object]) -> str:
             "",
             (
                 "| Task | Label | Lift | Task Score | Slots | Auth OK | Malformed Auth | "
-                "Weird Punct | Weak Echo | Selected | Probe Text |"
+                "Placeholder | Generic | Weird Punct | Weak Echo | Selected | Probe Text |"
             ),
-            "| --- | --- | ---: | ---: | ---: | --- | --- | --- | ---: | --- | --- |",
+            "| --- | --- | ---: | ---: | ---: | --- | --- | --- | --- | --- | ---: | --- | --- |",
         ]
     )
     for row in _list_of_dicts(audit.get("rows")):
@@ -144,6 +148,8 @@ def render_markdown(audit: dict[str, object]) -> str:
             f"{int(_float(features.get('diagnostic_slot_count')))} | "
             f"{bool(features.get('exact_authorization_false'))} | "
             f"{bool(features.get('malformed_authorization'))} | "
+            f"{bool(features.get('placeholder_slot'))} | "
+            f"{bool(features.get('generic_slot'))} | "
             f"{bool(features.get('weird_punctuation'))} | "
             f"{int(_float(features.get('weak_term_echo_count')))} | "
             f"{bool(row.get('selected_by_best_post_probe_rule'))} | "
@@ -156,11 +162,11 @@ def render_markdown(audit: dict[str, object]) -> str:
             "",
             (
                 "The cheap probe text is not yet a deployable Stage 1 value signal. "
-                "Four rows have malformed `FULL_REPAIR_AUTHORIZED=false` strings, "
-                "five have punctuation or spelling defects, and the best simple "
-                "post-probe text rule still makes errors. The useful next design "
-                "move is probe tomography: require stable diagnostic slots and "
-                "constraint-sensitive evidence before fitting another spend gate."
+                "The summary above separates hard sentinel failures, placeholder "
+                "slots, generic evidence slots, and punctuation or spelling defects. "
+                "The useful next design move is probe tomography: require stable "
+                "diagnostic slots and constraint-sensitive evidence before fitting "
+                "another spend gate."
             ),
         ]
     )
@@ -192,7 +198,15 @@ def _probe_text_features(
     exact_authorization = "FULL_REPAIR_AUTHORIZED=false" in text
     has_full_repair = "FULL_REPAIR" in text
     malformed_authorization = has_full_repair and not exact_authorization
-    slot_count = sum(
+    strict_slot_count = sum(
+        int(bool(re.search(pattern, text)))
+        for pattern in (
+            r"(^|\n)\s*MISSING_CONSTRAINT\s*=",
+            r"(^|\n)\s*EVIDENCE_NEEDED\s*=",
+            r"(^|\n)\s*RETENTION_RISK\s*=",
+        )
+    )
+    legacy_slot_count = sum(
         int(value)
         for value in (
             bool(re.search(r"(^|[ ;])1\)", text)),
@@ -200,10 +214,27 @@ def _probe_text_features(
             bool(re.search(r"(^|[ ;])3\)", text)),
         )
     )
+    slot_count = max(strict_slot_count, legacy_slot_count)
     has_missing = "missing" in lower or "constraint" in lower
     has_evidence = "evidence" in lower or "metric" in lower
     has_retention = "retention" in lower or "risk" in lower
-    weird_punctuation = any(marker in text for marker in ("::", "..", ",AUTHORIZED", "AUTH_AUTHORIZED", "AUTHUTHORIZED"))
+    weird_punctuation = any(
+        marker in text
+        for marker in (
+            "::",
+            "..",
+            ",AUTHORIZED",
+            "AUTH_AUTHORIZED",
+            "AUTHUTHORIZED",
+            "AUTHORORIZED",
+            "RETION_RISK",
+            "RETENTION_RISK_Risk",
+        )
+    )
+    placeholder_slot = "<" in text or ">" in text
+    generic_slot = bool(
+        re.search(r"EVIDENCE_NEEDED\s*=\s*(none|true|false)\b", text, flags=re.IGNORECASE)
+    )
     word_count = len(re.findall(r"[A-Za-z0-9_]+", text))
     weak_echo_count = sum(int(term in lower) for term in weak_terms)
     weak_echo_fraction = weak_echo_count / max(len(weak_terms), 1)
@@ -220,10 +251,12 @@ def _probe_text_features(
         "diagnostic_fidelity_score": fidelity_score,
         "diagnostic_slot_count": float(slot_count),
         "exact_authorization_false": float(exact_authorization),
+        "generic_slot": float(generic_slot),
         "has_evidence_slot": float(has_evidence),
         "has_missing_slot": float(has_missing),
         "has_retention_slot": float(has_retention),
         "malformed_authorization": float(malformed_authorization),
+        "placeholder_slot": float(placeholder_slot),
         "probe_task_score": _float(_dict(record.get("task_score")).get("score")),
         "weak_term_echo_count": float(weak_echo_count),
         "weak_term_echo_fraction": weak_echo_fraction,
@@ -313,8 +346,16 @@ def _summary(rows: list[dict[str, object]], best_rule: dict[str, object]) -> dic
             int(_float(_dict(row.get("features")).get("malformed_authorization")) > 0.0)
             for row in rows
         ),
+        "generic_slot_count": sum(
+            int(_float(_dict(row.get("features")).get("generic_slot")) > 0.0)
+            for row in rows
+        ),
         "negative_label_count": len(negatives),
         "positive_label_count": len(positives),
+        "placeholder_slot_count": sum(
+            int(_float(_dict(row.get("features")).get("placeholder_slot")) > 0.0)
+            for row in rows
+        ),
         "row_count": len(rows),
         "weird_punctuation_count": sum(
             int(_float(_dict(row.get("features")).get("weird_punctuation")) > 0.0)
@@ -395,7 +436,7 @@ def _format_token(value: float) -> str:
 
 
 def _markdown_escape(value: str) -> str:
-    return value.replace("|", "\\|")
+    return value.replace("|", "\\|").replace("\r\n", "<br>").replace("\n", "<br>")
 
 
 if __name__ == "__main__":

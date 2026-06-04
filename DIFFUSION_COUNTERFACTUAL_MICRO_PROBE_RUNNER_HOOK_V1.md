@@ -17,13 +17,18 @@ The default `--counterfactual-probe-mode triage` generates bounded measured
 probe records only for rows where frozen triage sets `would_probe=true`. Use
 `--counterfactual-probe-mode all` for offline shadow fitting when negative rows
 also need measured probe deltas. Both modes keep `should_run=false`.
+Use `--counterfactual-probe-policy strict_tomography_probe_v1` to replace the
+legacy prose probe with fixed diagnostic slots:
+`MISSING_CONSTRAINT=`, `EVIDENCE_NEEDED=`, `RETENTION_RISK=`, and exact
+`FULL_REPAIR_AUTHORIZED=false`.
 
 The trigger records probe diagnostics in `repair_spend_gate_rows` for each
 selected repair source. When frozen triage sets `would_probe=true`, it also
 generates a bounded `generation_stage="counterfactual_probe"` raw record under
-a strict `32` token / `16` step budget. It always returns `should_run=false`, so
-the `repair_selected` arm keeps the evolved record and cannot get score credit
-from probe logic.
+a strict `32` token / `16` step budget for the legacy policy, or `48` tokens /
+`24` steps for `strict_tomography_probe_v1`. It always returns
+`should_run=false`, so the `repair_selected` arm keeps the evolved record and
+cannot get score credit from probe logic.
 
 ## Recorded Fields
 
@@ -36,6 +41,7 @@ Each gate row keeps the normal source diagnostics and adds:
 | `counterfactual_probe_cost_relative` | Current scaffold probe cost, `0.125`. |
 | `counterfactual_probe_observation` | `measured_generation` when a bounded probe was generated; otherwise `deterministic_scaffold`. |
 | `counterfactual_probe_text` | Bounded missing-constraint sketch with explicit `full_repair_authorized=false`. |
+| `counterfactual_probe_text_valid_for_stage1` | True only when measured text has exact authorization, all diagnostic slots, no placeholder/generic slot, and no known slot/sentinel typo. |
 | `probe_feature_delta` | Gap visibility, realization-defect visibility, span evidence, and retention-risk proxy deltas. |
 | `probe_value_prediction` | Deterministic proxy value prediction using the same public scaffold terms. |
 | `would_probe` | Frozen triage decision for buying the cheap observation, not permission to run repair. |
@@ -70,6 +76,10 @@ The probe-text fidelity audit is recorded in
 `DIFFUSION_COUNTERFACTUAL_PROBE_TEXT_FIDELITY_V1.md`; it shows the current probe
 text is not stable enough for promotion because malformed authorization strings
 and weak diagnostic slots remain common.
+The strict tomography follow-up is recorded in
+`DIFFUSION_COUNTERFACTUAL_TOMOGRAPHY_PROBE_TEXT_FIDELITY_V1.md`: it fixes the
+authorization sentinel but still leaves four invalid diagnostic rows and one
+post-probe false positive, so it remains diagnostic-only.
 
 ## Next Measurement
 

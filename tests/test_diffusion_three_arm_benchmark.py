@@ -13,6 +13,7 @@ from experiments.run_diffusion_three_arm_benchmark import (
     _arithmetic_inconsistency_span_targets,
     _choose_pre_generation_repair_anchor,
     _constraint_gap_rescue_candidates,
+    _counterfactual_micro_probe_text_validity,
     _evolved_schedules_for_candidate,
     _exact_answer_repair_selection_score,
     _float_csv,
@@ -6175,6 +6176,106 @@ def test_counterfactual_micro_probe_generation_records_measured_probe_metadata()
     assert measured["measured_probe_feature_delta"]["expected_gap_visibility_gain"] > 0.0
     assert measured["probe_feature_delta"] == measured["measured_probe_feature_delta"]
     assert measured["should_run"] is False
+
+
+def test_counterfactual_micro_probe_tomography_policy_records_strict_validity():
+    task = GeneralReasoningTask(
+        task_id="plan_probe",
+        family="planning",
+        prompt="Plan an audit that measures retained evidence before promoting repair.",
+        answer=None,
+        answer_type="rubric",
+        max_new_tokens=64,
+        scorer="planning_rubric_v1",
+    )
+    source = {
+        **_record("model", "plan_probe", "low_confidence_32", task_score=0.0, trajectory_score=0.5),
+        "history_steps": 16,
+        "text": "Plan an audit before promoting repair.",
+        "trajectory_summary": {
+            "samples": [
+                {"step": 4, "visible_chars": 24, "visible_text": "Plan an audit."},
+                {"step": 8, "visible_chars": 46, "visible_text": "Plan an audit before repair."},
+            ]
+        },
+    }
+    diagnostics = _primary_repair_gate_diagnostics(
+        trigger="counterfactual_micro_probe_v1",
+        source_record=source,
+        source_controls=[],
+        task_prompt=task.prompt,
+        task_answer_type="rubric",
+        source_quality_threshold=0.99,
+        source_min_chars=20,
+        source_prompt_gap_min=0,
+        source_prompt_gap_max=8,
+        source_prompt_coverage_min=0.0,
+        source_prompt_coverage_max=1.0,
+    )
+    backend = _FakeExactRepairBackend(
+        [
+            (
+                "MISSING_CONSTRAINT=retained evidence\n"
+                "EVIDENCE_NEEDED=before/after evidence table\n"
+                "RETENTION_RISK=repair may delete audit context\n"
+                "FULL_REPAIR_AUTHORIZED=false"
+            )
+        ]
+    )
+
+    probe_record = _generate_counterfactual_micro_probe_record(
+        backend,
+        task,
+        source_record=source,
+        diagnostics=diagnostics,
+        generation_seed_base=123,
+        probe_policy="strict_tomography_probe_v1",
+    )
+    measured = _measured_counterfactual_micro_probe_diagnostics(
+        probe_record,
+        source_record=source,
+        task_prompt=task.prompt,
+        diagnostics=diagnostics,
+    )
+
+    assert probe_record["counterfactual_probe"]["probe_policy"] == "strict_tomography_probe_v1"
+    assert probe_record["config"]["max_new_tokens"] == 48
+    assert probe_record["config"]["steps"] == 24
+    assert "Return exactly these four lines" in backend.prompts[0]
+    assert "MISSING_CONSTRAINT=" in backend.prompts[0]
+    assert measured["counterfactual_probe_text_slot_count"] == 3
+    assert measured["counterfactual_probe_text_exact_authorization_false"] is True
+    assert measured["counterfactual_probe_text_malformed_authorization"] is False
+    assert measured["counterfactual_probe_text_valid_for_stage1"] is True
+    assert measured["should_run"] is False
+
+
+def test_counterfactual_micro_probe_text_validity_rejects_malformed_sentinel():
+    validity = _counterfactual_micro_probe_text_validity(
+        "MISSING_CONSTRAINT=x\n"
+        "EVIDENCE_NEEDED=y\n"
+        "RETENTION_RISK=z\n"
+        "FULL_REPAIR_AUTHORORIZED=false"
+    )
+
+    assert validity["slot_count"] == 3
+    assert validity["exact_authorization_false"] is False
+    assert validity["malformed_authorization"] is True
+    assert validity["valid_for_stage1"] is False
+
+
+def test_counterfactual_micro_probe_text_validity_rejects_placeholder_slots():
+    validity = _counterfactual_micro_probe_text_validity(
+        "MISSING_CONSTRAINT=<one missing or weak constraint>\n"
+        "EVIDENCE_NEEDED=none\n"
+        "RETENTION_RISK=<source detail>\n"
+        "FULL_REPAIR_AUTHORIZED=false"
+    )
+
+    assert validity["slot_count"] == 3
+    assert validity["placeholder_slot"] is True
+    assert validity["generic_slot"] is True
+    assert validity["valid_for_stage1"] is False
 
 
 def test_counterfactual_micro_probe_modes_control_shadow_generation_only():

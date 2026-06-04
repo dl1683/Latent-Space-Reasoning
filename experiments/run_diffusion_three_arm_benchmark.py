@@ -138,10 +138,17 @@ CALIBRATED_AVAILABILITY_PREDICTOR_RULE_ID = "calibrated_gap_not_7_source_ge_traj
 CALIBRATED_AVAILABILITY_BLOCKED_PROMPT_GAP = 7
 COUNTERFACTUAL_MICRO_PROBE_TRIGGER_ID = "counterfactual_micro_probe_v1"
 COUNTERFACTUAL_MICRO_PROBE_POLICY_ID = "deterministic_missing_constraint_probe_v1"
+COUNTERFACTUAL_MICRO_PROBE_TOMOGRAPHY_POLICY_ID = "strict_tomography_probe_v1"
+COUNTERFACTUAL_MICRO_PROBE_POLICIES = (
+    COUNTERFACTUAL_MICRO_PROBE_POLICY_ID,
+    COUNTERFACTUAL_MICRO_PROBE_TOMOGRAPHY_POLICY_ID,
+)
 COUNTERFACTUAL_MICRO_PROBE_COST_RELATIVE = 0.125
 COUNTERFACTUAL_MICRO_PROBE_GAP_VISIBILITY_MAX = 2.0 / 3.0
 COUNTERFACTUAL_MICRO_PROBE_MAX_NEW_TOKENS = 32
 COUNTERFACTUAL_MICRO_PROBE_STEPS = 16
+COUNTERFACTUAL_MICRO_PROBE_TOMOGRAPHY_MAX_NEW_TOKENS = 48
+COUNTERFACTUAL_MICRO_PROBE_TOMOGRAPHY_STEPS = 24
 COUNTERFACTUAL_MICRO_PROBE_MODES = ("triage", "all")
 DEFAULT_ADAPTIVE_SOURCE_GAP_MIN_TERMS = 6
 DEFAULT_ADAPTIVE_SOURCE_QUALITY_FLOOR = 0.25
@@ -799,6 +806,17 @@ def parse_args() -> argparse.Namespace:
         ),
     )
     parser.add_argument(
+        "--counterfactual-probe-policy",
+        choices=COUNTERFACTUAL_MICRO_PROBE_POLICIES,
+        default=COUNTERFACTUAL_MICRO_PROBE_POLICY_ID,
+        help=(
+            "Diagnostic prompt policy for --repair-spend-trigger "
+            f"{COUNTERFACTUAL_MICRO_PROBE_TRIGGER_ID}. The default preserves the "
+            "legacy prose micro-probe; strict_tomography_probe_v1 asks for fixed "
+            "diagnostic slots plus an exact no-repair sentinel."
+        ),
+    )
+    parser.add_argument(
         "--repair-phase-budget",
         choices=REPAIR_PHASE_BUDGET_MODES,
         default="custom",
@@ -1284,6 +1302,7 @@ def main() -> int:
                             source_record=source_record,
                             diagnostics=diagnostics,
                             generation_seed_base=args.generation_seed,
+                            probe_policy=args.counterfactual_probe_policy,
                         )
                         diagnostics.update(
                             _measured_counterfactual_micro_probe_diagnostics(
@@ -1593,6 +1612,7 @@ def main() -> int:
         repair_source_prompt_coverage_min=args.repair_source_prompt_coverage_min,
         repair_source_prompt_coverage_max=args.repair_source_prompt_coverage_max,
         counterfactual_probe_mode=args.counterfactual_probe_mode,
+        counterfactual_probe_policy=args.counterfactual_probe_policy,
         repair_value_proxy_source_quality_max=args.repair_value_proxy_source_quality_max,
         repair_transfer_source_task_min=args.repair_transfer_source_task_min,
         repair_phase_budget=args.repair_phase_budget,
@@ -2093,6 +2113,7 @@ def _rescore_raw_main(args: argparse.Namespace, tasks: list[GeneralReasoningTask
         repair_source_prompt_coverage_min=args.repair_source_prompt_coverage_min,
         repair_source_prompt_coverage_max=args.repair_source_prompt_coverage_max,
         counterfactual_probe_mode=args.counterfactual_probe_mode,
+        counterfactual_probe_policy=args.counterfactual_probe_policy,
         repair_value_proxy_source_quality_max=args.repair_value_proxy_source_quality_max,
         repair_transfer_source_task_min=args.repair_transfer_source_task_min,
         repair_phase_budget=args.repair_phase_budget,
@@ -2750,19 +2771,22 @@ def _generate_counterfactual_micro_probe_record(
     source_record: dict[str, object],
     diagnostics: dict[str, object],
     generation_seed_base: int,
+    probe_policy: str = COUNTERFACTUAL_MICRO_PROBE_POLICY_ID,
 ) -> dict[str, object]:
+    max_new_tokens = _counterfactual_micro_probe_max_new_tokens(probe_policy)
+    steps = _counterfactual_micro_probe_steps(probe_policy)
     generation_seed = _stable_generation_seed(
         generation_seed_base,
         str(source_record.get("candidate_key", "")),
         task.task_id,
-        f"{COUNTERFACTUAL_MICRO_PROBE_TRIGGER_ID}:{_control_name(source_record)}",
+        f"{COUNTERFACTUAL_MICRO_PROBE_TRIGGER_ID}:{probe_policy}:{_control_name(source_record)}",
     )
     _set_generation_seed(generation_seed)
     config = DiffusionGenerationConfig(
-        max_new_tokens=COUNTERFACTUAL_MICRO_PROBE_MAX_NEW_TOKENS,
-        steps=COUNTERFACTUAL_MICRO_PROBE_STEPS,
+        max_new_tokens=max_new_tokens,
+        steps=steps,
         algorithm="low_confidence",
-        block_length=COUNTERFACTUAL_MICRO_PROBE_MAX_NEW_TOKENS,
+        block_length=max_new_tokens,
         remasking="low_confidence",
         temperature=0.0,
         output_history=False,
@@ -2770,10 +2794,10 @@ def _generate_counterfactual_micro_probe_record(
     )
     probe_metadata = {
         "probe_trigger": COUNTERFACTUAL_MICRO_PROBE_TRIGGER_ID,
-        "probe_policy": COUNTERFACTUAL_MICRO_PROBE_POLICY_ID,
-        "probe_cost_relative": COUNTERFACTUAL_MICRO_PROBE_COST_RELATIVE,
-        "probe_budget_max_new_tokens": COUNTERFACTUAL_MICRO_PROBE_MAX_NEW_TOKENS,
-        "probe_budget_steps": COUNTERFACTUAL_MICRO_PROBE_STEPS,
+        "probe_policy": probe_policy,
+        "probe_cost_relative": _counterfactual_micro_probe_cost_relative(probe_policy),
+        "probe_budget_max_new_tokens": max_new_tokens,
+        "probe_budget_steps": steps,
         "probe_observation": "measured_generation",
         "source_control": _control_name(source_record),
         "source_task_score": _task_score(source_record),
@@ -2796,8 +2820,28 @@ def _generate_counterfactual_micro_probe_record(
             task_prompt=task.prompt,
             source_text=str(source_record.get("text", "")),
             diagnostics=diagnostics,
+            probe_policy=probe_policy,
         ),
         counterfactual_probe=probe_metadata,
+    )
+
+
+def _counterfactual_micro_probe_max_new_tokens(probe_policy: str) -> int:
+    if probe_policy == COUNTERFACTUAL_MICRO_PROBE_TOMOGRAPHY_POLICY_ID:
+        return COUNTERFACTUAL_MICRO_PROBE_TOMOGRAPHY_MAX_NEW_TOKENS
+    return COUNTERFACTUAL_MICRO_PROBE_MAX_NEW_TOKENS
+
+
+def _counterfactual_micro_probe_steps(probe_policy: str) -> int:
+    if probe_policy == COUNTERFACTUAL_MICRO_PROBE_TOMOGRAPHY_POLICY_ID:
+        return COUNTERFACTUAL_MICRO_PROBE_TOMOGRAPHY_STEPS
+    return COUNTERFACTUAL_MICRO_PROBE_STEPS
+
+
+def _counterfactual_micro_probe_cost_relative(probe_policy: str) -> float:
+    return _safe_ratio(
+        _counterfactual_micro_probe_max_new_tokens(probe_policy),
+        256,
     )
 
 
@@ -2810,6 +2854,7 @@ def _measured_counterfactual_micro_probe_diagnostics(
 ) -> dict[str, object]:
     measured_text = str(probe_record.get("text", ""))
     source_text = str(source_record.get("text", ""))
+    text_validity = _counterfactual_micro_probe_text_validity(measured_text)
     source_gap_terms = _prompt_constraint_gap_terms(task_prompt, source_text, limit=12)
     remaining_gap_terms = [
         term
@@ -2848,6 +2893,17 @@ def _measured_counterfactual_micro_probe_diagnostics(
         ),
         "counterfactual_probe_source_gap_terms": source_gap_terms,
         "counterfactual_probe_remaining_gap_terms": remaining_gap_terms,
+        "counterfactual_probe_text_exact_authorization_false": text_validity[
+            "exact_authorization_false"
+        ],
+        "counterfactual_probe_text_generic_slot": text_validity["generic_slot"],
+        "counterfactual_probe_text_malformed_authorization": text_validity[
+            "malformed_authorization"
+        ],
+        "counterfactual_probe_text_placeholder_slot": text_validity["placeholder_slot"],
+        "counterfactual_probe_text_slot_count": text_validity["slot_count"],
+        "counterfactual_probe_text_valid_for_stage1": text_validity["valid_for_stage1"],
+        "counterfactual_probe_text_weird_punctuation": text_validity["weird_punctuation"],
         "measured_probe_feature_delta": measured_delta,
         "measured_probe_value_prediction": measured_value,
         "probe_feature_delta": measured_delta,
@@ -2856,15 +2912,68 @@ def _measured_counterfactual_micro_probe_diagnostics(
     }
 
 
+def _counterfactual_micro_probe_text_validity(text: str) -> dict[str, object]:
+    exact_authorization = "FULL_REPAIR_AUTHORIZED=false" in text
+    has_full_repair = "FULL_REPAIR" in text
+    malformed_authorization = has_full_repair and not exact_authorization
+    slot_patterns = (
+        r"(^|\n)\s*MISSING_CONSTRAINT\s*=",
+        r"(^|\n)\s*EVIDENCE_NEEDED\s*=",
+        r"(^|\n)\s*RETENTION_RISK\s*=",
+    )
+    strict_slot_count = sum(int(bool(re.search(pattern, text))) for pattern in slot_patterns)
+    legacy_slot_count = sum(
+        int(bool(re.search(pattern, text)))
+        for pattern in (r"(^|[ ;])1\)", r"(^|[ ;])2\)", r"(^|[ ;])3\)")
+    )
+    slot_count = max(strict_slot_count, legacy_slot_count)
+    weird_punctuation = any(
+        marker in text
+        for marker in ("::", "..", ",AUTHORIZED", "AUTH_AUTHORIZED", "AUTHUTHORIZED", "AUTHORORIZED")
+    )
+    placeholder_slot = "<" in text or ">" in text
+    generic_slot = bool(
+        re.search(r"EVIDENCE_NEEDED\s*=\s*(none|true|false)\b", text, flags=re.IGNORECASE)
+    )
+    return {
+        "exact_authorization_false": exact_authorization,
+        "generic_slot": generic_slot,
+        "malformed_authorization": malformed_authorization,
+        "placeholder_slot": placeholder_slot,
+        "slot_count": slot_count,
+        "valid_for_stage1": (
+            exact_authorization
+            and slot_count >= 3
+            and not generic_slot
+            and not placeholder_slot
+            and not weird_punctuation
+        ),
+        "weird_punctuation": weird_punctuation,
+    }
+
+
 def _counterfactual_micro_probe_prompt(
     *,
     task_prompt: str,
     source_text: str,
     diagnostics: dict[str, object],
+    probe_policy: str = COUNTERFACTUAL_MICRO_PROBE_POLICY_ID,
 ) -> str:
     gap_terms = _prompt_constraint_gap_terms(task_prompt, source_text, limit=8)
     gap_text = ", ".join(gap_terms) if gap_terms else "none"
     draft = _compact_text(source_text, max_chars=700)
+    if probe_policy == COUNTERFACTUAL_MICRO_PROBE_TOMOGRAPHY_POLICY_ID:
+        return (
+            f"{task_prompt}\n\n"
+            f"Draft answer under inspection:\n{draft}\n\n"
+            f"Missing or weak task terms: {gap_text}\n\n"
+            "Counterfactual tomography micro-probe only. Do not rewrite the answer. "
+            "Return exactly these four lines and no other text:\n"
+            "MISSING_CONSTRAINT=<one missing or weak constraint that changes repair value>\n"
+            "EVIDENCE_NEEDED=<verifier-visible evidence needed before buying repair>\n"
+            "RETENTION_RISK=<source detail that repair might delete or distort>\n"
+            "FULL_REPAIR_AUTHORIZED=false"
+        )
     return (
         f"{task_prompt}\n\n"
         f"Draft answer under inspection:\n{draft}\n\n"
@@ -6544,6 +6653,7 @@ def summarize_three_arm_scores(
     repair_source_prompt_coverage_min: float = 0.0,
     repair_source_prompt_coverage_max: float = 1.0,
     counterfactual_probe_mode: str = "triage",
+    counterfactual_probe_policy: str = COUNTERFACTUAL_MICRO_PROBE_POLICY_ID,
     repair_value_proxy_source_quality_max: float = 0.31,
     repair_transfer_source_task_min: float = DECOMPOSED_SPEND_TRANSFER_SOURCE_TASK_MIN,
     repair_phase_budget: str = "custom",
@@ -6631,6 +6741,7 @@ def summarize_three_arm_scores(
         "repair_source_prompt_coverage_min": repair_source_prompt_coverage_min,
         "repair_source_prompt_coverage_max": repair_source_prompt_coverage_max,
         "counterfactual_probe_mode": counterfactual_probe_mode,
+        "counterfactual_probe_policy": counterfactual_probe_policy,
         "repair_value_proxy_source_quality_max": repair_value_proxy_source_quality_max,
         "repair_transfer_source_task_min": repair_transfer_source_task_min,
         "repair_phase_budget": repair_phase_budget,
@@ -7343,6 +7454,7 @@ def render_report(scores: dict[str, object]) -> str:
         f"History visible repair included: `{bool(scores.get('include_history_visible_repair', False))}`",
         f"Repair spend trigger: `{scores.get('repair_spend_trigger', 'always')}`",
         f"Counterfactual probe mode: `{scores.get('counterfactual_probe_mode', 'triage')}`",
+        f"Counterfactual probe policy: `{scores.get('counterfactual_probe_policy', COUNTERFACTUAL_MICRO_PROBE_POLICY_ID)}`",
         f"Repair source-quality threshold: `{scores.get('repair_source_quality_threshold', 0.0):.3f}`",
         f"Repair source min chars: `{int(scores.get('repair_source_min_chars', 0))}`",
         f"Repair source prompt-gap min: `{int(scores.get('repair_source_prompt_gap_min', 0))}`",

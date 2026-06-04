@@ -46,7 +46,10 @@ def test_probe_text_fidelity_audit_scores_slots_and_authorization(tmp_path):
                 ),
                 _probe_row(
                     "plan_d",
-                    "Missing constraint: delta. Evidence: metric.. Retention risk. FULL_REPAIR_AUTHUTHORIZED=false",
+                    "MISSING_CONSTRAINT=<delta>\n"
+                    "EVIDENCE_NEEDED=none\n"
+                    "RETENTION_RISK=<source detail>\n"
+                    "FULL_REPAIR_AUTHUTHORIZED=false",
                     "delta, epsilon",
                     score=0.24,
                 ),
@@ -61,6 +64,8 @@ def test_probe_text_fidelity_audit_scores_slots_and_authorization(tmp_path):
     assert audit["schema"] == "diffusion_counterfactual_probe_text_fidelity.v1"
     assert audit["summary"]["row_count"] == 4
     assert audit["summary"]["malformed_authorization_count"] == 1
+    assert audit["summary"]["placeholder_slot_count"] == 1
+    assert audit["summary"]["generic_slot_count"] == 1
     assert audit["summary"]["weird_punctuation_count"] == 1
     assert audit["summary"]["best_post_probe_error_count"] == 1
     assert audit["summary"]["gate_decision"] == "diagnostic_only"

@@ -230,6 +230,17 @@ Moonshots stack: perturb one constraint at a time, require stable slot fills,
 score no-repair authorization as a hard validity check, and fit value only on
 validated diagnostic rows.
 
+The strict tomography policy in
+`DIFFUSION_COUNTERFACTUAL_TOMOGRAPHY_PROBE_TEXT_FIDELITY_V1.md` is the first
+measured response to that constraint. It adds
+`--counterfactual-probe-policy strict_tomography_probe_v1`, raises the bounded
+probe budget to `48` tokens / `24` denoise steps, and records slot-validity
+fields in each gate row. On the same 12 named counterexamples, exact
+`FULL_REPAIR_AUTHORIZED=false` improves to 12/12 with zero malformed
+authorization rows. The gate still stays closed: only 8/12 rows pass strict
+Stage 1 validity, and the best post-probe text rule still admits one no-lift
+false positive.
+
 ## Falsifiers
 
 This architecture is wrong if any of the following happen:
