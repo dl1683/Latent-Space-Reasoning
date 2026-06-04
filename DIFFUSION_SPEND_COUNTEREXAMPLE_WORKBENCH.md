@@ -43,6 +43,7 @@ It converts the accumulated failed spend-gate fit into controller design questio
 - `low_gap_value_probe`: When prompt gap is low, which denoise/source features distinguish a hidden profitable repair from a true no-lift row? Evidence: `plan_044`, `plan_034`, `plan_063`, `plan_046`, `plan_072`, `plan_061`, `plan_070`. Next measurement: Collect fresh low-gap repairable rows and check candidate lift before raising any prompt-gap threshold.
 - `high_gap_waste_probe`: Which high-gap rows are actually repair-value rows rather than keyword-missing rows? Evidence: `plan_045`, `plan_050`, `plan_064`, `plan_069`, `plan_071`. Next measurement: Add post-repair edge prediction or source-retention features before spending on high-gap rows.
 - `pre_repair_edge_proxy`: Can the controller predict candidate promotion edge before generating the repair candidate? Evidence: `plan_045`, `plan_050`, `plan_064`, `plan_069`, `plan_071`. Next measurement: Estimate candidate realization or promotion edge before live repair using only frozen source and span diagnostics.
+- `pre_repair_edge_proxy_v1`: The first offline proxy is now measured in `DIFFUSION_PRE_REPAIR_EDGE_PROXY_V1.md`. It joins generated-candidate promotion labels to frozen source, source-degeneration, and span-diagnostic features before any live spend promotion.
 
 ## Next Controller Contract
 
