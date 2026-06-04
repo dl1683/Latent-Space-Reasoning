@@ -1,0 +1,380 @@
+{
+  "generated_by": "experiments/build_diffusion_counterfactual_probe_targets.py",
+  "inputs": {
+    "edge_proxy": "eval_results\\diffusion_language\\diffusion_pre_repair_edge_proxy_v1.json",
+    "workbench": "eval_results\\diffusion_language\\diffusion_spend_counterexample_workbench.json"
+  },
+  "probe_policy": "deterministic_missing_constraint_probe_v1",
+  "rows": [
+    {
+      "counterexample_type": "false_negative",
+      "labels": {
+        "candidate_lift_vs_trajectory": 0.09642857142857142,
+        "promote_vs_trajectory": true,
+        "repair_lift": 0.09642857142857142,
+        "repair_selector_edge": 0.0
+      },
+      "pre_probe_features": {
+        "degeneracy_score": 0.19048724082934607,
+        "first_repairable_step": 18.0,
+        "max_span_target_score": 2.00879,
+        "min_span_source_relative_preservation": 0.66875,
+        "prompt_gap_count": 4.0,
+        "source_quality": 0.31142857142857144,
+        "source_task_delta_vs_trajectory": 0.0
+      },
+      "probe_cost_relative": 0.125,
+      "probe_feature_delta": {
+        "expected_gap_visibility_gain": 0.3333333333333333,
+        "expected_realization_defect_visibility": 0.2539829877724614,
+        "expected_retention_risk_visibility": 0.33125000000000004,
+        "expected_span_evidence_gain": 0.8035159999999999
+      },
+      "probe_policy": "deterministic_missing_constraint_probe_v1",
+      "probe_text": "Probe plan_034: expose missing constraints before repair; gap=4, source_quality=0.311429, degeneration=0.190487, span_score=2.008790.",
+      "probe_value_prediction": 0.034055377850687324,
+      "task_id": "plan_034",
+      "would_probe": true
+    },
+    {
+      "counterexample_type": "false_negative",
+      "labels": {
+        "candidate_lift_vs_trajectory": 0.11249999999999999,
+        "promote_vs_trajectory": true,
+        "repair_lift": 0.11249999999999999,
+        "repair_selector_edge": 0.0
+      },
+      "pre_probe_features": {
+        "degeneracy_score": 0.25981989063568006,
+        "first_repairable_step": 4.0,
+        "max_span_target_score": 2.012815,
+        "min_span_source_relative_preservation": 0.6675,
+        "prompt_gap_count": 4.0,
+        "source_quality": 0.2564285714285714,
+        "source_task_delta_vs_trajectory": 0.0
+      },
+      "probe_cost_relative": 0.125,
+      "probe_feature_delta": {
+        "expected_gap_visibility_gain": 0.3333333333333333,
+        "expected_realization_defect_visibility": 0.3464265208475734,
+        "expected_retention_risk_visibility": 0.3325,
+        "expected_span_evidence_gain": 0.8051259999999999
+      },
+      "probe_policy": "deterministic_missing_constraint_probe_v1",
+      "probe_text": "Probe plan_044: expose missing constraints before repair; gap=4, source_quality=0.256429, degeneration=0.259820, span_score=2.012815.",
+      "probe_value_prediction": 0.03609897708361813,
+      "task_id": "plan_044",
+      "would_probe": true
+    },
+    {
+      "counterexample_type": "false_negative",
+      "labels": {
+        "candidate_lift_vs_trajectory": 0.07642857142857146,
+        "promote_vs_trajectory": true,
+        "repair_lift": 0.07642857142857146,
+        "repair_selector_edge": 0.0
+      },
+      "pre_probe_features": {
+        "degeneracy_score": 0.14053583453583454,
+        "first_repairable_step": 3.0,
+        "max_span_target_score": 1.938357,
+        "min_span_source_relative_preservation": 0.558522,
+        "prompt_gap_count": 8.0,
+        "source_quality": 0.24392857142857144,
+        "source_task_delta_vs_trajectory": 0.0
+      },
+      "probe_cost_relative": 0.125,
+      "probe_feature_delta": {
+        "expected_gap_visibility_gain": 0.6666666666666666,
+        "expected_realization_defect_visibility": 0.18738111271444605,
+        "expected_retention_risk_visibility": 0.44147800000000004,
+        "expected_span_evidence_gain": 0.7753428
+      },
+      "probe_policy": "deterministic_missing_constraint_probe_v1",
+      "probe_text": "Probe plan_046: expose missing constraints before repair; gap=8, source_quality=0.243929, degeneration=0.140536, span_score=1.938357.",
+      "probe_value_prediction": 0.04151167958762226,
+      "task_id": "plan_046",
+      "would_probe": true
+    },
+    {
+      "counterexample_type": "false_negative",
+      "labels": {
+        "candidate_lift_vs_trajectory": 0.046928571428571486,
+        "promote_vs_trajectory": true,
+        "repair_lift": 0.046928571428571486,
+        "repair_selector_edge": 0.0
+      },
+      "pre_probe_features": {
+        "degeneracy_score": 0.2487565098608384,
+        "first_repairable_step": 3.0,
+        "max_span_target_score": 2.875525,
+        "min_span_source_relative_preservation": 1.0,
+        "prompt_gap_count": 4.0,
+        "source_quality": 0.2864285714285714,
+        "source_task_delta_vs_trajectory": 0.046928571428571486
+      },
+      "probe_cost_relative": 0.125,
+      "probe_feature_delta": {
+        "expected_gap_visibility_gain": 0.3333333333333333,
+        "expected_realization_defect_visibility": 0.33167534648111785,
+        "expected_retention_risk_visibility": 0.0,
+        "expected_span_evidence_gain": 1.0
+      },
+      "probe_policy": "deterministic_missing_constraint_probe_v1",
+      "probe_text": "Probe plan_061: expose missing constraints before repair; gap=4, source_quality=0.286429, degeneration=0.248757, span_score=2.875525.",
+      "probe_value_prediction": 0.048769459310574734,
+      "task_id": "plan_061",
+      "would_probe": true
+    },
+    {
+      "counterexample_type": "false_negative",
+      "labels": {
+        "candidate_lift_vs_trajectory": 0.09642857142857142,
+        "promote_vs_trajectory": true,
+        "repair_lift": 0.09642857142857142,
+        "repair_selector_edge": 0.0
+      },
+      "pre_probe_features": {
+        "degeneracy_score": 0.10747826086956522,
+        "first_repairable_step": 4.0,
+        "max_span_target_score": 2.137995,
+        "min_span_source_relative_preservation": 0.873357,
+        "prompt_gap_count": 8.0,
+        "source_quality": 0.2864285714285714,
+        "source_task_delta_vs_trajectory": 0.0
+      },
+      "probe_cost_relative": 0.125,
+      "probe_feature_delta": {
+        "expected_gap_visibility_gain": 0.6666666666666666,
+        "expected_realization_defect_visibility": 0.14330434782608695,
+        "expected_retention_risk_visibility": 0.12664299999999995,
+        "expected_span_evidence_gain": 0.855198
+      },
+      "probe_policy": "deterministic_missing_constraint_probe_v1",
+      "probe_text": "Probe plan_063: expose missing constraints before repair; gap=8, source_quality=0.286429, degeneration=0.107478, span_score=2.137995.",
+      "probe_value_prediction": 0.049322500289855076,
+      "task_id": "plan_063",
+      "would_probe": true
+    },
+    {
+      "counterexample_type": "false_negative",
+      "labels": {
+        "candidate_lift_vs_trajectory": 0.012500000000000011,
+        "promote_vs_trajectory": true,
+        "repair_lift": 0.012500000000000011,
+        "repair_selector_edge": 0.012500000000000011
+      },
+      "pre_probe_features": {
+        "degeneracy_score": 0.1554189514189514,
+        "first_repairable_step": 4.0,
+        "max_span_target_score": 1.923492,
+        "min_span_source_relative_preservation": 0.468919,
+        "prompt_gap_count": 4.0,
+        "source_quality": 0.2139285714285714,
+        "source_task_delta_vs_trajectory": 0.0
+      },
+      "probe_cost_relative": 0.125,
+      "probe_feature_delta": {
+        "expected_gap_visibility_gain": 0.3333333333333333,
+        "expected_realization_defect_visibility": 0.20722526855860188,
+        "expected_retention_risk_visibility": 0.531081,
+        "expected_span_evidence_gain": 0.7693968
+      },
+      "probe_policy": "deterministic_missing_constraint_probe_v1",
+      "probe_text": "Probe plan_070: expose missing constraints before repair; gap=4, source_quality=0.213929, degeneration=0.155419, span_score=1.923492.",
+      "probe_value_prediction": 0.028271456037838705,
+      "task_id": "plan_070",
+      "would_probe": true
+    },
+    {
+      "counterexample_type": "false_negative",
+      "labels": {
+        "candidate_lift_vs_trajectory": 0.058928571428571386,
+        "promote_vs_trajectory": true,
+        "repair_lift": 0.058928571428571386,
+        "repair_selector_edge": 0.15892857142857136
+      },
+      "pre_probe_features": {
+        "degeneracy_score": 0.21543529411764706,
+        "first_repairable_step": 4.0,
+        "max_span_target_score": 2.19709,
+        "min_span_source_relative_preservation": 1.0,
+        "prompt_gap_count": 3.0,
+        "source_quality": 0.24392857142857144,
+        "source_task_delta_vs_trajectory": 0.0
+      },
+      "probe_cost_relative": 0.125,
+      "probe_feature_delta": {
+        "expected_gap_visibility_gain": 0.25,
+        "expected_realization_defect_visibility": 0.2872470588235294,
+        "expected_retention_risk_visibility": 0.0,
+        "expected_span_evidence_gain": 0.8788360000000001
+      },
+      "probe_policy": "deterministic_missing_constraint_probe_v1",
+      "probe_text": "Probe plan_072: expose missing constraints before repair; gap=3, source_quality=0.243929, degeneration=0.215435, span_score=2.197090.",
+      "probe_value_prediction": 0.0408600211764706,
+      "task_id": "plan_072",
+      "would_probe": true
+    },
+    {
+      "counterexample_type": "false_positive",
+      "labels": {
+        "candidate_lift_vs_trajectory": -0.08357142857142857,
+        "promote_vs_trajectory": false,
+        "repair_lift": 0.0,
+        "repair_selector_edge": 0.0
+      },
+      "pre_probe_features": {
+        "degeneracy_score": 0.1685972850678733,
+        "first_repairable_step": 3.0,
+        "max_span_target_score": 1.923163,
+        "min_span_source_relative_preservation": 0.433481,
+        "prompt_gap_count": 11.0,
+        "source_quality": 0.32892857142857146,
+        "source_task_delta_vs_trajectory": 0.0
+      },
+      "probe_cost_relative": 0.125,
+      "probe_feature_delta": {
+        "expected_gap_visibility_gain": 0.9166666666666666,
+        "expected_realization_defect_visibility": 0.22479638009049774,
+        "expected_retention_risk_visibility": 0.566519,
+        "expected_span_evidence_gain": 0.7692652
+      },
+      "probe_policy": "deterministic_missing_constraint_probe_v1",
+      "probe_text": "Probe plan_045: expose missing constraints before repair; gap=11, source_quality=0.328929, degeneration=0.168597, span_score=1.923163.",
+      "probe_value_prediction": 0.047892908363714716,
+      "task_id": "plan_045",
+      "would_probe": true
+    },
+    {
+      "counterexample_type": "false_positive",
+      "labels": {
+        "candidate_lift_vs_trajectory": -0.03892857142857137,
+        "promote_vs_trajectory": false,
+        "repair_lift": 0.0,
+        "repair_selector_edge": 0.0
+      },
+      "pre_probe_features": {
+        "degeneracy_score": 0.15280000000000002,
+        "first_repairable_step": 4.0,
+        "max_span_target_score": 2.732511,
+        "min_span_source_relative_preservation": 0.709964,
+        "prompt_gap_count": 8.0,
+        "source_quality": 0.28178571428571425,
+        "source_task_delta_vs_trajectory": 0.0
+      },
+      "probe_cost_relative": 0.125,
+      "probe_feature_delta": {
+        "expected_gap_visibility_gain": 0.6666666666666666,
+        "expected_realization_defect_visibility": 0.20373333333333335,
+        "expected_retention_risk_visibility": 0.29003599999999996,
+        "expected_span_evidence_gain": 1.0
+      },
+      "probe_policy": "deterministic_missing_constraint_probe_v1",
+      "probe_text": "Probe plan_050: expose missing constraints before repair; gap=8, source_quality=0.281786, degeneration=0.152800, span_score=2.732511.",
+      "probe_value_prediction": 0.05160728,
+      "task_id": "plan_050",
+      "would_probe": true
+    },
+    {
+      "counterexample_type": "false_positive",
+      "labels": {
+        "candidate_lift_vs_trajectory": -0.08300000000000002,
+        "promote_vs_trajectory": false,
+        "repair_lift": 0.0,
+        "repair_selector_edge": 0.0
+      },
+      "pre_probe_features": {
+        "degeneracy_score": 0.7501379310344827,
+        "first_repairable_step": 4.0,
+        "max_span_target_score": 2.213746,
+        "min_span_source_relative_preservation": 1.0,
+        "prompt_gap_count": 12.0,
+        "source_quality": 0.18,
+        "source_task_delta_vs_trajectory": -0.020000000000000018
+      },
+      "probe_cost_relative": 0.125,
+      "probe_feature_delta": {
+        "expected_gap_visibility_gain": 1.0,
+        "expected_realization_defect_visibility": 1.0,
+        "expected_retention_risk_visibility": 0.0,
+        "expected_span_evidence_gain": 0.8854984
+      },
+      "probe_policy": "deterministic_missing_constraint_probe_v1",
+      "probe_text": "Probe plan_064: expose missing constraints before repair; gap=12, source_quality=0.180000, degeneration=0.750138, span_score=2.213746.",
+      "probe_value_prediction": 0.08156495200000001,
+      "task_id": "plan_064",
+      "would_probe": true
+    },
+    {
+      "counterexample_type": "false_positive",
+      "labels": {
+        "candidate_lift_vs_trajectory": -0.05499999999999999,
+        "promote_vs_trajectory": false,
+        "repair_lift": 0.0,
+        "repair_selector_edge": 0.0
+      },
+      "pre_probe_features": {
+        "degeneracy_score": 0.22143478260869562,
+        "first_repairable_step": 4.0,
+        "max_span_target_score": 2.142179,
+        "min_span_source_relative_preservation": 0.892857,
+        "prompt_gap_count": 12.0,
+        "source_quality": 0.27785714285714286,
+        "source_task_delta_vs_trajectory": 0.0
+      },
+      "probe_cost_relative": 0.125,
+      "probe_feature_delta": {
+        "expected_gap_visibility_gain": 1.0,
+        "expected_realization_defect_visibility": 0.29524637681159416,
+        "expected_retention_risk_visibility": 0.10714299999999999,
+        "expected_span_evidence_gain": 0.8568716000000001
+      },
+      "probe_policy": "deterministic_missing_constraint_probe_v1",
+      "probe_text": "Probe plan_069: expose missing constraints before repair; gap=12, source_quality=0.277857, degeneration=0.221435, span_score=2.142179.",
+      "probe_value_prediction": 0.06446821553623189,
+      "task_id": "plan_069",
+      "would_probe": true
+    },
+    {
+      "counterexample_type": "false_positive",
+      "labels": {
+        "candidate_lift_vs_trajectory": 0.0,
+        "promote_vs_trajectory": false,
+        "repair_lift": 0.0,
+        "repair_selector_edge": 0.0
+      },
+      "pre_probe_features": {
+        "degeneracy_score": 0.603275293255132,
+        "first_repairable_step": 4.0,
+        "max_span_target_score": 0.0,
+        "min_span_source_relative_preservation": 0.0,
+        "prompt_gap_count": 17.0,
+        "source_quality": 0.18,
+        "source_task_delta_vs_trajectory": 0.0
+      },
+      "probe_cost_relative": 0.125,
+      "probe_feature_delta": {
+        "expected_gap_visibility_gain": 1.0,
+        "expected_realization_defect_visibility": 0.8043670576735092,
+        "expected_retention_risk_visibility": 1.0,
+        "expected_span_evidence_gain": 0.0
+      },
+      "probe_policy": "deterministic_missing_constraint_probe_v1",
+      "probe_text": "Probe plan_071: expose missing constraints before repair; gap=17, source_quality=0.180000, degeneration=0.603275, span_score=0.000000.",
+      "probe_value_prediction": 0.03108734115347019,
+      "task_id": "plan_071",
+      "would_probe": true
+    }
+  ],
+  "schema": "diffusion_counterfactual_probe_targets.v1",
+  "summary": {
+    "gate_decision": "diagnostic_only",
+    "negative_label_count": 5,
+    "positive_label_count": 7,
+    "probe_cost_relative": 0.125,
+    "probe_row_count": 12,
+    "total_positive_lift": 0.5001428571428572,
+    "would_probe_count": 12
+  }
+}

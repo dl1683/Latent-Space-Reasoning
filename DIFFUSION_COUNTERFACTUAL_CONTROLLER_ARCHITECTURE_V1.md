@@ -183,6 +183,11 @@ real target rows:
 4. Fit an offline value-of-information rule against those probe rows.
 5. Keep the result offline unless it clears the GPU gate above.
 
+The first replayable target sheet is now specified by
+`DIFFUSION_COUNTERFACTUAL_PROBE_TARGETS_V1.md`. It is a deterministic scaffold,
+not a measured GPU probe result: it names the rows, fields, labels, and cost
+contract that a real `counterfactual_micro_probe_v1` run must replace.
+
 ## Falsifiers
 
 This architecture is wrong if any of the following happen:
