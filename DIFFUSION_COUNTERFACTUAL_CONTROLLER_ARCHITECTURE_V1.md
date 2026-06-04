@@ -250,6 +250,15 @@ The best validated Stage 1 rule still has five errors. This blocks full repair
 spend more strongly than the raw text-fidelity result: the next probe must
 first make profitable rows valid, then learn value.
 
+The key-value v2 probe in
+`DIFFUSION_COUNTERFACTUAL_KEY_VALUE_PROBE_TEXT_FIDELITY_V2.md` and
+`DIFFUSION_COUNTERFACTUAL_KEY_VALUE_VALIDATED_PROBE_STAGE1_GATE_V2.md` tests
+whether removing placeholder exemplars fixes that first bottleneck. It does not.
+The validated value fit improves to two false negatives, but raw diagnostic
+quality regresses to 6/12 valid rows, two malformed authorization strings, and
+three generic slot rows. This is a controller-design lesson: a lower fit error
+cannot compensate for a probe operator that is less reliable as an instrument.
+
 ## Falsifiers
 
 This architecture is wrong if any of the following happen:

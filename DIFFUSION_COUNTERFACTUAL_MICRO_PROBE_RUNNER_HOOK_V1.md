@@ -21,6 +21,9 @@ Use `--counterfactual-probe-policy strict_tomography_probe_v1` to replace the
 legacy prose probe with fixed diagnostic slots:
 `MISSING_CONSTRAINT=`, `EVIDENCE_NEEDED=`, `RETENTION_RISK=`, and exact
 `FULL_REPAIR_AUTHORIZED=false`.
+`--counterfactual-probe-policy key_value_tomography_probe_v2` removes placeholder
+exemplars and forbids generic values, but the measured v2 run is not promoted:
+it regresses authorization reliability and valid-row count.
 
 The trigger records probe diagnostics in `repair_spend_gate_rows` for each
 selected repair source. When frozen triage sets `would_probe=true`, it also
@@ -84,6 +87,10 @@ The validity-required Stage 1 fit is recorded in
 `DIFFUSION_COUNTERFACTUAL_VALIDATED_PROBE_STAGE1_GATE_V1.md`: invalid diagnostic
 rows are treated as missing evidence. That exposes three invalid profitable
 rows and a best validated rule with five errors.
+The key-value v2 follow-up is recorded in
+`DIFFUSION_COUNTERFACTUAL_KEY_VALUE_PROBE_TEXT_FIDELITY_V2.md` and
+`DIFFUSION_COUNTERFACTUAL_KEY_VALUE_VALIDATED_PROBE_STAGE1_GATE_V2.md`. It is a
+negative control: fewer validated-fit errors, but worse diagnostic reliability.
 
 ## Next Measurement
 

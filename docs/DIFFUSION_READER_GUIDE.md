@@ -165,6 +165,13 @@ then applies the actual controller discipline: invalid probe rows cannot be
 used as value evidence. Under that validity-required rule, three profitable
 rows become invalid-positive misses and the best validated Stage 1 rule has
 five errors. Full repair spend remains blocked.
+[DIFFUSION_COUNTERFACTUAL_KEY_VALUE_PROBE_TEXT_FIDELITY_V2.md](../DIFFUSION_COUNTERFACTUAL_KEY_VALUE_PROBE_TEXT_FIDELITY_V2.md)
+and
+[DIFFUSION_COUNTERFACTUAL_KEY_VALUE_VALIDATED_PROBE_STAGE1_GATE_V2.md](../DIFFUSION_COUNTERFACTUAL_KEY_VALUE_VALIDATED_PROBE_STAGE1_GATE_V2.md)
+test a `key_value_tomography_probe_v2` prompt that removes placeholder
+exemplars. It lowers the validated gate fit to two false negatives, but raw
+diagnostic reliability regresses to 6/12 valid rows and two malformed
+authorization strings, so it is a negative control rather than a promoted probe.
 
 ## Benchmark And Cost Layer
 
@@ -217,6 +224,8 @@ hidden behind a large search stack:
 | [DIFFUSION_COUNTERFACTUAL_PROBE_TEXT_FIDELITY_V1.md](../DIFFUSION_COUNTERFACTUAL_PROBE_TEXT_FIDELITY_V1.md) | Post-probe text fidelity audit over the all-shadow probe rows; malformed authorization and weak tomography keep Stage 1 diagnostic-only. |
 | [DIFFUSION_COUNTERFACTUAL_TOMOGRAPHY_PROBE_TEXT_FIDELITY_V1.md](../DIFFUSION_COUNTERFACTUAL_TOMOGRAPHY_PROBE_TEXT_FIDELITY_V1.md) | Strict tomography prompt GPU run; fixes the authorization sentinel but still leaves one post-probe false positive and four invalid diagnostic rows. |
 | [DIFFUSION_COUNTERFACTUAL_VALIDATED_PROBE_STAGE1_GATE_V1.md](../DIFFUSION_COUNTERFACTUAL_VALIDATED_PROBE_STAGE1_GATE_V1.md) | Validity-required Stage 1 gate fit; invalid diagnostics include three profitable rows, so the best validated rule has five errors. |
+| [DIFFUSION_COUNTERFACTUAL_KEY_VALUE_PROBE_TEXT_FIDELITY_V2.md](../DIFFUSION_COUNTERFACTUAL_KEY_VALUE_PROBE_TEXT_FIDELITY_V2.md) | Key-value tomography v2 text-fidelity result; removes placeholders but regresses exact authorization and valid-row count. |
+| [DIFFUSION_COUNTERFACTUAL_KEY_VALUE_VALIDATED_PROBE_STAGE1_GATE_V2.md](../DIFFUSION_COUNTERFACTUAL_KEY_VALUE_VALIDATED_PROBE_STAGE1_GATE_V2.md) | Key-value tomography v2 validity-required gate fit; two false negatives but still diagnostic-only because probe reliability regressed. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT.md) | Transfer-rule fit showing current decomposed spend is the best repair-availability rule. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md) | Expanded transfer-rule fit over the eight-row independent slice. |
 | [DIFFUSION_TRANSFER_PROMOTION_VALUE.md](../DIFFUSION_TRANSFER_PROMOTION_VALUE.md) | Transfer promotion-value result showing named `--repair-selector transfer_promotion_value` realizes the low-margin repair. |

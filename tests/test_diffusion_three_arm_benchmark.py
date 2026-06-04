@@ -6250,6 +6250,75 @@ def test_counterfactual_micro_probe_tomography_policy_records_strict_validity():
     assert measured["should_run"] is False
 
 
+def test_counterfactual_micro_probe_key_value_policy_avoids_placeholder_examples():
+    task = GeneralReasoningTask(
+        task_id="plan_probe",
+        family="planning",
+        prompt="Plan an audit that measures retained evidence before promoting repair.",
+        answer=None,
+        answer_type="rubric",
+        max_new_tokens=64,
+        scorer="planning_rubric_v1",
+    )
+    source = {
+        **_record("model", "plan_probe", "low_confidence_32", task_score=0.0, trajectory_score=0.5),
+        "history_steps": 16,
+        "text": "Plan an audit before promoting repair.",
+        "trajectory_summary": {
+            "samples": [
+                {"step": 4, "visible_chars": 24, "visible_text": "Plan an audit."},
+                {"step": 8, "visible_chars": 46, "visible_text": "Plan an audit before repair."},
+            ]
+        },
+    }
+    diagnostics = _primary_repair_gate_diagnostics(
+        trigger="counterfactual_micro_probe_v1",
+        source_record=source,
+        source_controls=[],
+        task_prompt=task.prompt,
+        task_answer_type="rubric",
+        source_quality_threshold=0.99,
+        source_min_chars=20,
+        source_prompt_gap_min=0,
+        source_prompt_gap_max=8,
+        source_prompt_coverage_min=0.0,
+        source_prompt_coverage_max=1.0,
+    )
+    backend = _FakeExactRepairBackend(
+        [
+            (
+                "MISSING_CONSTRAINT=retained evidence measurement\n"
+                "EVIDENCE_NEEDED=before after evidence table\n"
+                "RETENTION_RISK=repair may delete audit context\n"
+                "FULL_REPAIR_AUTHORIZED=false"
+            )
+        ]
+    )
+
+    probe_record = _generate_counterfactual_micro_probe_record(
+        backend,
+        task,
+        source_record=source,
+        diagnostics=diagnostics,
+        generation_seed_base=123,
+        probe_policy="key_value_tomography_probe_v2",
+    )
+    measured = _measured_counterfactual_micro_probe_diagnostics(
+        probe_record,
+        source_record=source,
+        task_prompt=task.prompt,
+        diagnostics=diagnostics,
+    )
+
+    assert probe_record["counterfactual_probe"]["probe_policy"] == "key_value_tomography_probe_v2"
+    assert probe_record["config"]["max_new_tokens"] == 64
+    assert probe_record["config"]["steps"] == 32
+    assert "Do not use angle brackets" in backend.prompts[0]
+    assert "MISSING_CONSTRAINT=<" not in backend.prompts[0]
+    assert measured["counterfactual_probe_text_valid_for_stage1"] is True
+    assert measured["should_run"] is False
+
+
 def test_counterfactual_micro_probe_text_validity_rejects_malformed_sentinel():
     validity = _counterfactual_micro_probe_text_validity(
         "MISSING_CONSTRAINT=x\n"
@@ -6274,6 +6343,19 @@ def test_counterfactual_micro_probe_text_validity_rejects_placeholder_slots():
 
     assert validity["slot_count"] == 3
     assert validity["placeholder_slot"] is True
+    assert validity["generic_slot"] is True
+    assert validity["valid_for_stage1"] is False
+
+
+def test_counterfactual_micro_probe_text_validity_rejects_empty_unknown_slots():
+    validity = _counterfactual_micro_probe_text_validity(
+        "MISSING_CONSTRAINT=unknown\n"
+        "EVIDENCE_NEEDED=\n"
+        "RETENTION_RISK=task-specific risk\n"
+        "FULL_REPAIR_AUTHORIZED=false"
+    )
+
+    assert validity["slot_count"] == 3
     assert validity["generic_slot"] is True
     assert validity["valid_for_stage1"] is False
 
