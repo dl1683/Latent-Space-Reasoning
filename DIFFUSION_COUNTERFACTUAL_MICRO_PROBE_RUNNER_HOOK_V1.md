@@ -66,6 +66,10 @@ The first 12-row named-counterexample CUDA run is recorded in
 The all-shadow 12-row measured fit is recorded in
 `DIFFUSION_COUNTERFACTUAL_MEASURED_PROBE_VALUE_POLICY_V1.md`; it keeps the full
 repair gate closed because measured-only Stage 1 rules still make two errors.
+The probe-text fidelity audit is recorded in
+`DIFFUSION_COUNTERFACTUAL_PROBE_TEXT_FIDELITY_V1.md`; it shows the current probe
+text is not stable enough for promotion because malformed authorization strings
+and weak diagnostic slots remain common.
 
 ## Next Measurement
 
@@ -74,7 +78,9 @@ value-of-information policy can clear the controller gate:
 
 1. Add post-probe features that are not just Stage 0 prompt-gap or `would_probe`
    rediscovery.
-2. Check whether measured probe values can decide full repair after the probe,
+2. Treat `FULL_REPAIR_AUTHORIZED=false` as a hard validity sentinel and discard
+   probe rows that cannot reproduce it exactly.
+3. Check whether measured probe values can decide full repair after the probe,
    not just whether to buy a probe.
-3. Promote only if the architecture gate in
+4. Promote only if the architecture gate in
    `DIFFUSION_COUNTERFACTUAL_CONTROLLER_ARCHITECTURE_V1.md` clears.

@@ -219,6 +219,17 @@ which are Stage 0 triage signals reappearing after the fact. Full repair spend
 therefore remains blocked until measured probe features add a real post-probe
 decision boundary.
 
+The probe-text fidelity audit in
+`DIFFUSION_COUNTERFACTUAL_PROBE_TEXT_FIDELITY_V1.md` makes the next design
+constraint sharper: the cheap probe is currently too much like a short answer
+and not enough like a stable diagnostic instrument. Four of 12 rows malformed
+the explicit `FULL_REPAIR_AUTHORIZED=false` sentinel, five rows show punctuation
+or spelling defects, and the best post-probe text rule still has two errors.
+The next micro-probe should borrow the tomography discipline from the broader
+Moonshots stack: perturb one constraint at a time, require stable slot fills,
+score no-repair authorization as a hard validity check, and fit value only on
+validated diagnostic rows.
+
 ## Falsifiers
 
 This architecture is wrong if any of the following happen:
