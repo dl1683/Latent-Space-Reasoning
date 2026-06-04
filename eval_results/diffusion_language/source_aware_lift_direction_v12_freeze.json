@@ -1,0 +1,124 @@
+{
+  "failure_accounting": [
+    "If v12 has zero selected-repair positives, the result is inconclusive, not support.",
+    "If the source-aware surface misses any selected-repair positive, keep it diagnostic-only.",
+    "If it admits any no-lift selected-repair row, keep it diagnostic-only.",
+    "If oracle-positive selector misses remain, separate generation-value work from promotion-selector work.",
+    "If source-only, gap-only, coverage-only, or probe-value controls match the combined surface, reject the combined-signal story."
+  ],
+  "fit_boundary": {
+    "counterexample_analysis": "eval_results\\diffusion_language\\span_probe_value_floor_v11_counterexample_analysis.json",
+    "counterexample_analysis_sha256": "42b5462fa00d04c773c9b8e68ce2010944acdb408b2045a4319e3c016c5d6225",
+    "failed_probe_floor_hypothesis": {
+      "error_count": 4,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_088"
+      ],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_081",
+        "plan_082",
+        "plan_086"
+      ],
+      "hypothesis_id": "frozen_probe_value_floor",
+      "label_key": "label",
+      "policy_utility": -0.06,
+      "policy_utility_with_probe_cost": -0.09,
+      "positive_count": 1,
+      "selected_count": 3
+    },
+    "named_counterexamples": [
+      "plan_081",
+      "plan_082",
+      "plan_084",
+      "plan_086",
+      "plan_088"
+    ],
+    "oracle_hypothesis": {
+      "error_count": 0,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 0,
+      "false_positive_task_ids": [],
+      "hypothesis_id": "source_nonnegative_gap_le_4_coverage_ge_0p7",
+      "label_key": "oracle_label",
+      "policy_utility": 0.13642857142857143,
+      "policy_utility_with_probe_cost": 0.10642857142857143,
+      "positive_count": 2,
+      "selected_count": 2
+    },
+    "selected_repair_hypothesis": {
+      "error_count": 1,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 1,
+      "false_positive_task_ids": [
+        "plan_084"
+      ],
+      "hypothesis_id": "source_nonnegative_gap_le_4_coverage_ge_0p7",
+      "label_key": "label",
+      "policy_utility": 0.0989285714285714,
+      "policy_utility_with_probe_cost": 0.0689285714285714,
+      "positive_count": 1,
+      "selected_count": 2
+    }
+  },
+  "fresh_slice_protocol": {
+    "label_pass": "python experiments\\run_diffusion_three_arm_benchmark.py --task-preset lean_gpu_mixed_transfer_v12 --candidates llada-moe-7b-a1b-instruct-hf --limit-schedules 2 --limit-evolved-schedules 0 --limit-repair-candidates 1 --repair-source-policy random --repair-pack constraint_span_phase_final_preserve_seeded_gated --repair-spend-trigger denoise_phase_repairability --repair-source-min-chars 240 --repair-source-prompt-gap-min 2 --repair-source-prompt-gap-max 9 --repair-source-prompt-coverage-min 0.4 --repair-source-prompt-coverage-max 1.0 --repair-phase-budget frontier --repair-selector candidate_aware_promotion_v1 --repair-promotion-margin 0.02 --trajectory-selector planning_state --device cuda --dtype bfloat16 --raw-output eval_results\\diffusion_language\\source_aware_lift_direction_v12_label_raw.jsonl --scores-output eval_results\\diffusion_language\\source_aware_lift_direction_v12_label_scores.json --report-output eval_results\\diffusion_language\\source_aware_lift_direction_v12_label_report.md",
+    "measurement_pass": "python experiments\\run_diffusion_three_arm_benchmark.py --task-preset lean_gpu_mixed_transfer_v12 --candidates llada-moe-7b-a1b-instruct-hf --limit-schedules 2 --limit-evolved-schedules 0 --limit-repair-candidates 1 --repair-source-policy random --repair-spend-trigger counterfactual_micro_probe_v1 --counterfactual-probe-mode all --counterfactual-probe-policy span_tomography_probe_v4 --trajectory-selector planning_state --device cuda --dtype bfloat16 --raw-output eval_results\\diffusion_language\\source_aware_lift_direction_v12_measurement_raw.jsonl --scores-output eval_results\\diffusion_language\\source_aware_lift_direction_v12_measurement_scores.json --report-output eval_results\\diffusion_language\\source_aware_lift_direction_v12_measurement_report.md",
+    "required_replay_outputs": [
+      "selected-repair false positives and false negatives",
+      "oracle-positive selector misses",
+      "utility before and after probe measurement cost",
+      "source-only, gap-only, coverage-only, and probe-value controls"
+    ]
+  },
+  "generated_by": "experiments/build_diffusion_source_aware_lift_direction_v12_freeze.py",
+  "overlap_with_v11_counterexample_rows": [],
+  "planning_task_ids": [
+    "plan_089",
+    "plan_090",
+    "plan_091",
+    "plan_092",
+    "plan_093",
+    "plan_094",
+    "plan_095",
+    "plan_096"
+  ],
+  "replay_gates": {
+    "charge_probe_measurement_cost": true,
+    "maximum_oracle_selector_miss_count_for_promotion": 0,
+    "maximum_selected_repair_false_negative_count": 0,
+    "maximum_selected_repair_false_positive_count": 0,
+    "minimum_positive_count_for_conclusive_result": 1,
+    "no_live_spend_trigger_without_runner_implementation": true,
+    "required_source_divergence": "at_least_one_planning_row_with_negative_source_task_delta_vs_trajectory"
+  },
+  "schema": "diffusion_source_aware_lift_direction_v12_freeze.v1",
+  "target_surface": {
+    "prediction_target": "signed_lift_direction_with_selected_and_oracle_realization_split",
+    "probe_policy": "span_tomography_probe_v4",
+    "probe_value_feature_role": "recorded_for_diagnostics_not_positive_direction_threshold",
+    "promotion_status": "frozen_fresh_slice_target_not_live_spend_trigger",
+    "prompt_coverage_min": 0.7,
+    "prompt_gap_count_max": 4.0,
+    "source_policy": "random",
+    "source_task_delta_vs_trajectory_min": 0.0,
+    "surface_id": "source_nonnegative_gap_le_4_coverage_ge_0p7_frozen_for_v12"
+  },
+  "task_ids": [
+    "plan_089",
+    "plan_090",
+    "plan_091",
+    "plan_092",
+    "plan_093",
+    "plan_094",
+    "plan_095",
+    "plan_096",
+    "math_009",
+    "sym_007",
+    "sci_002"
+  ],
+  "task_preset": "lean_gpu_mixed_transfer_v12"
+}
