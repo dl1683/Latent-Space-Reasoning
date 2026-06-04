@@ -12,6 +12,8 @@ Current high-signal generated reports:
 
 - [DIFFUSION_REPAIR_VALUE_TOMOGRAPHY.md](DIFFUSION_REPAIR_VALUE_TOMOGRAPHY.md):
   behavior-tomography audit for the cost-aware repair-spend controller.
+- [DIFFUSION_LAMBDA_REPAIR_CONTROLLER_TRANSFER.md](DIFFUSION_LAMBDA_REPAIR_CONTROLLER_TRANSFER.md):
+  transfer audit showing where the lambda-aware repair controller does and does not generalize.
 
 Generated report builders may still emit root-level markdown unless their
 defaults have been migrated. Treat new root-level generated reports as temporary
