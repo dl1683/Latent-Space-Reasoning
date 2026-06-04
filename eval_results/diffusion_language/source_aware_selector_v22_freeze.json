@@ -1,0 +1,88 @@
+{
+  "conclusive_result_gates": {
+    "maximum_source_aware_selected_waste_rows": 0,
+    "minimum_generated_positive_count": 1,
+    "minimum_source_aware_selected_positive_count": 1,
+    "must_beat_unchanged_hook_after_selected_output_cost": true,
+    "no_runner_hook_before_fresh_replay_passes": true
+  },
+  "design_intent": "Test a replay-only candidate-source-aware selector that preserves the v21 candidate-diversity positives while rejecting history-prefix waste rows.",
+  "failure_accounting": [
+    "If source-aware replay selects any no-lift row, keep it diagnostic.",
+    "If it drops all generated positives, record precision-overfiltering.",
+    "If it fails to beat the unchanged hook after selected-output cost, do not implement it.",
+    "If v22 has zero generated positives, treat selector validation as inconclusive."
+  ],
+  "fit_boundary": {
+    "v21_positive_count": 4,
+    "v21_repair_task_delta_vs_evolved": 0.036473214285714296,
+    "v21_result": "eval_results\\diffusion_language\\candidate_diversity_v21_result.json",
+    "v21_result_sha256": "37ace40ab50deb008563788dd8b371d86aae33e8783c09c5dbea74f5caf131ee",
+    "v21_selected_positive_tasks": [
+      "plan_164",
+      "plan_167",
+      "plan_168"
+    ],
+    "v21_selected_waste_tasks": [
+      "plan_161",
+      "plan_162"
+    ],
+    "v21_status": "availability_positive_selector_failed",
+    "v21_targets": "eval_results\\diffusion_language\\candidate_diversity_v21_targets.json",
+    "v21_targets_sha256": "2c8a5a067e159505ef7bc300b38a8e7338ad58b0ba9467ba31503835138aa6a3"
+  },
+  "fresh_slice_protocol": {
+    "label_pass": "python experiments\\run_diffusion_three_arm_benchmark.py --task-preset lean_gpu_mixed_transfer_v22 --candidates llada-moe-7b-a1b-instruct-hf --limit-schedules 2 --limit-evolved-schedules 0 --limit-repair-candidates 2 --repair-source-policy random --repair-pack constraint_span_phase_final_preserve_seeded_gated --include-history-repairs --history-repair-fractions 0.25 --repair-spend-trigger denoise_phase_repairability --repair-source-min-chars 240 --repair-source-prompt-gap-min 2 --repair-source-prompt-gap-max 9 --repair-source-prompt-coverage-min 0.4 --repair-source-prompt-coverage-max 1.0 --repair-phase-budget frontier --repair-selector generated_repair_value_v1 --repair-promotion-margin 0.02 --trajectory-selector planning_state --device cuda --dtype bfloat16 --raw-output eval_results\\diffusion_language\\source_aware_selector_v22_label_raw.jsonl --scores-output eval_results\\diffusion_language\\source_aware_selector_v22_label_scores.json --report-output eval_results\\diffusion_language\\source_aware_selector_v22_label_report.md",
+    "required_replay_outputs": [
+      "candidate-promotion target sheet built from raw repair candidates",
+      "source-aware replay surface over history-prefix and final-preserve candidates",
+      "comparison against unchanged generated_repair_value_v1 selected rows",
+      "selected-output cost sweep for both unchanged and source-aware policies",
+      "false-negative accounting for any unselected generated-positive rows"
+    ]
+  },
+  "generated_by": "experiments/build_diffusion_source_aware_selector_v22_freeze.py",
+  "overlap_with_v21_target_rows": [],
+  "planning_task_ids": [
+    "plan_169",
+    "plan_170",
+    "plan_171",
+    "plan_172",
+    "plan_173",
+    "plan_174",
+    "plan_175",
+    "plan_176"
+  ],
+  "schema": "diffusion_source_aware_selector_v22_freeze.v1",
+  "target_surface": {
+    "final_preserve_planning_delta_min": 0.09,
+    "final_preserve_span_score_min": 2.0,
+    "fit_selected_positive_tasks": [
+      "plan_164",
+      "plan_167",
+      "plan_168"
+    ],
+    "fit_selected_waste_tasks": [
+      "plan_161",
+      "plan_162"
+    ],
+    "history_prefix_planning_delta_min": 0.2,
+    "promotion_status": "frozen_replay_surface_not_runner_hook",
+    "selector_must_be_candidate_source_specific": true,
+    "surface_id": "source_aware_candidate_selector_v22"
+  },
+  "task_ids": [
+    "plan_169",
+    "plan_170",
+    "plan_171",
+    "plan_172",
+    "plan_173",
+    "plan_174",
+    "plan_175",
+    "plan_176",
+    "math_009",
+    "sym_007",
+    "sci_002"
+  ],
+  "task_preset": "lean_gpu_mixed_transfer_v22"
+}
