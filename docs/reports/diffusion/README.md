@@ -8,6 +8,11 @@ entry path for new readers. Start with the root [README](../../../README.md),
 [CLAIM_EVIDENCE_MAP.md](../../../CLAIM_EVIDENCE_MAP.md), and
 [DIFFUSION_GROUND_TRUTH_INDEX.md](../../../DIFFUSION_GROUND_TRUTH_INDEX.md).
 
+Current high-signal generated reports:
+
+- [DIFFUSION_REPAIR_VALUE_TOMOGRAPHY.md](DIFFUSION_REPAIR_VALUE_TOMOGRAPHY.md):
+  behavior-tomography audit for the cost-aware repair-spend controller.
+
 Generated report builders may still emit root-level markdown unless their
 defaults have been migrated. Treat new root-level generated reports as temporary
 audit output and move durable reports back under this archive or a specific

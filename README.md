@@ -33,6 +33,7 @@ the lower-cost point for the controller/cost claim.
 | [docs/DIFFUSION_THEORY_CLAIM_LEDGER.md](docs/DIFFUSION_THEORY_CLAIM_LEDGER.md) | Conservative theory ledger with falsifiers and next proof obligations |
 | [docs/GATED_ATTENTION_PROBE.md](docs/GATED_ATTENTION_PROBE.md) | Current Qwen3-Next gated-attention probe status and blockers |
 | [docs/reports/diffusion/README.md](docs/reports/diffusion/README.md) | Historical/generated diffusion report archive |
+| [docs/reports/diffusion/DIFFUSION_REPAIR_VALUE_TOMOGRAPHY.md](docs/reports/diffusion/DIFFUSION_REPAIR_VALUE_TOMOGRAPHY.md) | Behavior-tomography audit for the next repair-spend controller |
 | [experiments/EXPERIMENTS.md](experiments/EXPERIMENTS.md) | Chronological experiment log |
 
 Generated one-off reports and raw artifacts are retained for auditability, but
