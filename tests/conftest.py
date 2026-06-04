@@ -1,7 +1,17 @@
 """Pytest configuration and fixtures."""
 
+import sys
+from pathlib import Path
+
 import pytest
 import torch
+
+REPO_ROOT = Path(__file__).parent.parent
+SRC_ROOT = REPO_ROOT / "src"
+
+for path in (str(REPO_ROOT), str(SRC_ROOT)):
+    if path not in sys.path:
+        sys.path.insert(0, path)
 
 
 @pytest.fixture
@@ -33,7 +43,13 @@ def sample_query():
 @pytest.fixture
 def simple_config():
     """Simple configuration for testing."""
-    from latent_reasoning.config import Config, EncoderConfig, JudgeConfig, ScorerConfig, ModifierConfig, EvolutionConfig
+    from latent_reasoning.config import (
+        Config,
+        EncoderConfig,
+        EvolutionConfig,
+        JudgeConfig,
+        ScorerConfig,
+    )
 
     return Config(
         encoder=EncoderConfig(model="bert-base-uncased"),

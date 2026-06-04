@@ -1,0 +1,534 @@
+{
+  "budget_map_path": "eval_results\\diffusion_language\\diffusion_phase_window_budget_map.json",
+  "cap_policy_rows": [
+    {
+      "active_repair_count": 5,
+      "cap": 31,
+      "cap_range": "31+",
+      "cost_penalty_lambda": 0.0,
+      "objective": 0.5311160714285714,
+      "predicted_relative_cost": 2.625,
+      "predicted_score": 0.5311160714285714,
+      "repair_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004",
+        "plan_006",
+        "plan_007"
+      ]
+    },
+    {
+      "active_repair_count": 5,
+      "cap": 31,
+      "cap_range": "31+",
+      "cost_penalty_lambda": 0.05,
+      "objective": 0.39986607142857145,
+      "predicted_relative_cost": 2.625,
+      "predicted_score": 0.5311160714285714,
+      "repair_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004",
+        "plan_006",
+        "plan_007"
+      ]
+    },
+    {
+      "active_repair_count": 5,
+      "cap": 31,
+      "cap_range": "31+",
+      "cost_penalty_lambda": 0.1,
+      "objective": 0.2686160714285714,
+      "predicted_relative_cost": 2.625,
+      "predicted_score": 0.5311160714285714,
+      "repair_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004",
+        "plan_006",
+        "plan_007"
+      ]
+    },
+    {
+      "active_repair_count": 5,
+      "cap": 31,
+      "cap_range": "31+",
+      "cost_penalty_lambda": 0.15,
+      "objective": 0.13736607142857143,
+      "predicted_relative_cost": 2.625,
+      "predicted_score": 0.5311160714285714,
+      "repair_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004",
+        "plan_006",
+        "plan_007"
+      ]
+    },
+    {
+      "active_repair_count": 5,
+      "cap": 31,
+      "cap_range": "31+",
+      "cost_penalty_lambda": 0.18,
+      "objective": 0.05861607142857145,
+      "predicted_relative_cost": 2.625,
+      "predicted_score": 0.5311160714285714,
+      "repair_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004",
+        "plan_006",
+        "plan_007"
+      ]
+    },
+    {
+      "active_repair_count": 0,
+      "cap": 9,
+      "cap_range": "9-9",
+      "cost_penalty_lambda": 0.2,
+      "objective": 0.014598214285714284,
+      "predicted_relative_cost": 2.0,
+      "predicted_score": 0.4145982142857143,
+      "repair_tasks": []
+    },
+    {
+      "active_repair_count": 0,
+      "cap": 9,
+      "cap_range": "9-9",
+      "cost_penalty_lambda": 0.25,
+      "objective": -0.0854017857142857,
+      "predicted_relative_cost": 2.0,
+      "predicted_score": 0.4145982142857143,
+      "repair_tasks": []
+    },
+    {
+      "active_repair_count": 0,
+      "cap": 9,
+      "cap_range": "9-9",
+      "cost_penalty_lambda": 0.28,
+      "objective": -0.14540178571428575,
+      "predicted_relative_cost": 2.0,
+      "predicted_score": 0.4145982142857143,
+      "repair_tasks": []
+    },
+    {
+      "active_repair_count": 0,
+      "cap": 9,
+      "cap_range": "9-9",
+      "cost_penalty_lambda": 0.3,
+      "objective": -0.18540178571428567,
+      "predicted_relative_cost": 2.0,
+      "predicted_score": 0.4145982142857143,
+      "repair_tasks": []
+    }
+  ],
+  "cost_penalties": [
+    0.0,
+    0.05,
+    0.1,
+    0.15,
+    0.18,
+    0.2,
+    0.25,
+    0.28,
+    0.3
+  ],
+  "generated_by": "experiments/analyze_diffusion_budget_policy_loss.py",
+  "marginal_relative_cost_per_repair": 0.125,
+  "planning_task_count": 8,
+  "repair_generation_budget": 1.0,
+  "schema": "diffusion_budget_policy_loss.v1",
+  "summary": {
+    "frontier_cap_range": "31+",
+    "max_break_even_lambda": 0.2839285714285714,
+    "max_task_policy_gain_lambda": 0.18,
+    "max_task_policy_gain_vs_cap": 0.0225892857142857,
+    "mean_positive_break_even_lambda": 0.18642857142857144,
+    "negative_target_count": 3,
+    "positive_target_count": 5,
+    "total_positive_aggregate_lift": 0.11651785714285715
+  },
+  "target_rows": [
+    {
+      "aggregate_score_lift": 0.007857142857142847,
+      "break_even_lambda": 0.06285714285714278,
+      "first_repairable_coverage": 0.4,
+      "first_repairable_step": 10,
+      "first_repairable_step_fraction": 0.3125,
+      "gate_reason": "denoise_phase_repairable",
+      "label": 1,
+      "loss_weight": 0.007857142857142847,
+      "marginal_relative_cost": 0.125,
+      "minimum_phase_budget": "cheap",
+      "prompt_coverage": 0.4666666666666667,
+      "prompt_gap_count": 9,
+      "repair_control": "constraint_gap_span_phase_final_preserve_seeded_gated_repair",
+      "repair_score": 0.5282142857142856,
+      "source_needs_repair": true,
+      "source_quality": 0.34785714285714286,
+      "target": "spend_repair",
+      "task_id": "plan_001",
+      "task_lift": 0.06285714285714278,
+      "trajectory_score": 0.46535714285714286
+    },
+    {
+      "aggregate_score_lift": 0.0,
+      "break_even_lambda": 0.0,
+      "first_repairable_coverage": null,
+      "first_repairable_step": null,
+      "first_repairable_step_fraction": null,
+      "gate_reason": "source_quality_ok",
+      "label": 0,
+      "loss_weight": 0.125,
+      "marginal_relative_cost": 0.125,
+      "minimum_phase_budget": "",
+      "prompt_coverage": 0.2777777777777778,
+      "prompt_gap_count": 12,
+      "repair_control": "low_confidence_32",
+      "repair_score": 0.6885714285714286,
+      "source_needs_repair": false,
+      "source_quality": 0.5585714285714286,
+      "target": "skip_repair",
+      "task_id": "plan_002",
+      "task_lift": 0.0,
+      "trajectory_score": 0.6885714285714286
+    },
+    {
+      "aggregate_score_lift": 0.014553571428571437,
+      "break_even_lambda": 0.11642857142857149,
+      "first_repairable_coverage": 0.4,
+      "first_repairable_step": 10,
+      "first_repairable_step_fraction": 0.3125,
+      "gate_reason": "denoise_phase_repairable",
+      "label": 1,
+      "loss_weight": 0.014553571428571437,
+      "marginal_relative_cost": 0.125,
+      "minimum_phase_budget": "cheap",
+      "prompt_coverage": 0.6,
+      "prompt_gap_count": 6,
+      "repair_control": "constraint_gap_span_phase_final_preserve_seeded_gated_repair",
+      "repair_score": 0.5382142857142858,
+      "source_needs_repair": true,
+      "source_quality": 0.32428571428571423,
+      "target": "spend_repair",
+      "task_id": "plan_003",
+      "task_lift": 0.11642857142857149,
+      "trajectory_score": 0.42178571428571426
+    },
+    {
+      "aggregate_score_lift": 0.03549107142857143,
+      "break_even_lambda": 0.2839285714285714,
+      "first_repairable_coverage": 0.4117647058823529,
+      "first_repairable_step": 10,
+      "first_repairable_step_fraction": 0.3125,
+      "gate_reason": "denoise_phase_repairable",
+      "label": 1,
+      "loss_weight": 0.03549107142857143,
+      "marginal_relative_cost": 0.125,
+      "minimum_phase_budget": "cheap",
+      "prompt_coverage": 0.8823529411764706,
+      "prompt_gap_count": 2,
+      "repair_control": "constraint_gap_span_phase_final_preserve_seeded_gated_repair",
+      "repair_score": 0.6217857142857143,
+      "source_needs_repair": true,
+      "source_quality": 0.27785714285714286,
+      "target": "spend_repair",
+      "task_id": "plan_004",
+      "task_lift": 0.2839285714285714,
+      "trajectory_score": 0.33785714285714286
+    },
+    {
+      "aggregate_score_lift": 0.0,
+      "break_even_lambda": 0.0,
+      "first_repairable_coverage": 0.4117647058823529,
+      "first_repairable_step": 30,
+      "first_repairable_step_fraction": 0.9375,
+      "gate_reason": "outside_repairable_band",
+      "label": 0,
+      "loss_weight": 0.125,
+      "marginal_relative_cost": 0.125,
+      "minimum_phase_budget": "frontier",
+      "prompt_coverage": 0.4117647058823529,
+      "prompt_gap_count": 10,
+      "repair_control": "low_confidence_32",
+      "repair_score": 0.42142857142857143,
+      "source_needs_repair": true,
+      "source_quality": 0.29892857142857143,
+      "target": "skip_repair",
+      "task_id": "plan_005",
+      "task_lift": 0.0,
+      "trajectory_score": 0.42142857142857143
+    },
+    {
+      "aggregate_score_lift": 0.024107142857142855,
+      "break_even_lambda": 0.19285714285714284,
+      "first_repairable_coverage": 0.4375,
+      "first_repairable_step": 20,
+      "first_repairable_step_fraction": 0.625,
+      "gate_reason": "denoise_phase_repairable",
+      "label": 1,
+      "loss_weight": 0.024107142857142855,
+      "marginal_relative_cost": 0.125,
+      "minimum_phase_budget": "mid",
+      "prompt_coverage": 0.4375,
+      "prompt_gap_count": 9,
+      "repair_control": "constraint_gap_span_phase_final_preserve_seeded_gated_repair",
+      "repair_score": 0.5842857142857143,
+      "source_needs_repair": true,
+      "source_quality": 0.30142857142857143,
+      "target": "spend_repair",
+      "task_id": "plan_006",
+      "task_lift": 0.19285714285714284,
+      "trajectory_score": 0.39142857142857146
+    },
+    {
+      "aggregate_score_lift": 0.03450892857142858,
+      "break_even_lambda": 0.27607142857142863,
+      "first_repairable_coverage": 0.4166666666666667,
+      "first_repairable_step": 31,
+      "first_repairable_step_fraction": 0.96875,
+      "gate_reason": "denoise_phase_repairable",
+      "label": 1,
+      "loss_weight": 0.03450892857142858,
+      "marginal_relative_cost": 0.125,
+      "minimum_phase_budget": "frontier",
+      "prompt_coverage": 0.4166666666666667,
+      "prompt_gap_count": 8,
+      "repair_control": "constraint_gap_span_phase_final_preserve_seeded_gated_repair",
+      "repair_score": 0.5835714285714286,
+      "source_needs_repair": true,
+      "source_quality": 0.2475,
+      "target": "spend_repair",
+      "task_id": "plan_007",
+      "task_lift": 0.27607142857142863,
+      "trajectory_score": 0.3075
+    },
+    {
+      "aggregate_score_lift": 0.0,
+      "break_even_lambda": 0.0,
+      "first_repairable_coverage": null,
+      "first_repairable_step": null,
+      "first_repairable_step_fraction": null,
+      "gate_reason": "outside_repairable_band",
+      "label": 0,
+      "loss_weight": 0.125,
+      "marginal_relative_cost": 0.125,
+      "minimum_phase_budget": "",
+      "prompt_coverage": 0.0625,
+      "prompt_gap_count": 12,
+      "repair_control": "random_32",
+      "repair_score": 0.28285714285714286,
+      "source_needs_repair": true,
+      "source_quality": 0.24428571428571427,
+      "target": "skip_repair",
+      "task_id": "plan_008",
+      "task_lift": 0.0,
+      "trajectory_score": 0.28285714285714286
+    }
+  ],
+  "task_policy_rows": [
+    {
+      "cost_penalty_lambda": 0.0,
+      "gain_vs_best_cap_policy": 0.0,
+      "objective": 0.5311160714285714,
+      "predicted_relative_cost": 2.625,
+      "predicted_score": 0.5311160714285714,
+      "selected_count": 5,
+      "selected_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004",
+        "plan_006",
+        "plan_007"
+      ]
+    },
+    {
+      "cost_penalty_lambda": 0.05,
+      "gain_vs_best_cap_policy": 0.0,
+      "objective": 0.39986607142857145,
+      "predicted_relative_cost": 2.625,
+      "predicted_score": 0.5311160714285714,
+      "selected_count": 5,
+      "selected_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004",
+        "plan_006",
+        "plan_007"
+      ]
+    },
+    {
+      "cost_penalty_lambda": 0.1,
+      "gain_vs_best_cap_policy": 0.004642857142857226,
+      "objective": 0.27325892857142864,
+      "predicted_relative_cost": 2.5,
+      "predicted_score": 0.5232589285714286,
+      "selected_count": 4,
+      "selected_tasks": [
+        "plan_003",
+        "plan_004",
+        "plan_006",
+        "plan_007"
+      ]
+    },
+    {
+      "cost_penalty_lambda": 0.15,
+      "gain_vs_best_cap_policy": 0.015089285714285694,
+      "objective": 0.15245535714285713,
+      "predicted_relative_cost": 2.375,
+      "predicted_score": 0.5087053571428571,
+      "selected_count": 3,
+      "selected_tasks": [
+        "plan_004",
+        "plan_006",
+        "plan_007"
+      ]
+    },
+    {
+      "cost_penalty_lambda": 0.18,
+      "gain_vs_best_cap_policy": 0.0225892857142857,
+      "objective": 0.08120535714285715,
+      "predicted_relative_cost": 2.375,
+      "predicted_score": 0.5087053571428571,
+      "selected_count": 3,
+      "selected_tasks": [
+        "plan_004",
+        "plan_006",
+        "plan_007"
+      ]
+    },
+    {
+      "cost_penalty_lambda": 0.2,
+      "gain_vs_best_cap_policy": 0.020000000000000018,
+      "objective": 0.0345982142857143,
+      "predicted_relative_cost": 2.25,
+      "predicted_score": 0.4845982142857143,
+      "selected_count": 2,
+      "selected_tasks": [
+        "plan_004",
+        "plan_007"
+      ]
+    },
+    {
+      "cost_penalty_lambda": 0.25,
+      "gain_vs_best_cap_policy": 0.007500000000000007,
+      "objective": -0.07790178571428569,
+      "predicted_relative_cost": 2.25,
+      "predicted_score": 0.4845982142857143,
+      "selected_count": 2,
+      "selected_tasks": [
+        "plan_004",
+        "plan_007"
+      ]
+    },
+    {
+      "cost_penalty_lambda": 0.28,
+      "gain_vs_best_cap_policy": 0.0004910714285714102,
+      "objective": -0.14491071428571434,
+      "predicted_relative_cost": 2.125,
+      "predicted_score": 0.45008928571428575,
+      "selected_count": 1,
+      "selected_tasks": [
+        "plan_004"
+      ]
+    },
+    {
+      "cost_penalty_lambda": 0.3,
+      "gain_vs_best_cap_policy": 0.0,
+      "objective": -0.18540178571428567,
+      "predicted_relative_cost": 2.0,
+      "predicted_score": 0.4145982142857143,
+      "selected_count": 0,
+      "selected_tasks": []
+    }
+  ],
+  "transition_value_rows": [
+    {
+      "active_repair_count": 0,
+      "active_repair_tasks": [],
+      "cap": 9,
+      "cap_range": "9-9",
+      "cost_delta_from_previous": 0.0,
+      "delta_vs_greedy": 0.0023214285714285854,
+      "delta_vs_random": 0.04247321428571432,
+      "marginal_roi": null,
+      "newly_active_tasks": [],
+      "onset_explanation": "",
+      "predicted_generation_count": 22,
+      "predicted_relative_cost": 2.0,
+      "predicted_score": 0.4145982142857143,
+      "score_delta_from_previous": 0.0
+    },
+    {
+      "active_repair_count": 3,
+      "active_repair_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004"
+      ],
+      "cap": 10,
+      "cap_range": "10-19",
+      "cost_delta_from_previous": 0.375,
+      "delta_vs_greedy": 0.06022321428571431,
+      "delta_vs_random": 0.10037500000000005,
+      "marginal_roi": 0.15440476190476193,
+      "newly_active_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004"
+      ],
+      "onset_explanation": "plan_001@10, plan_003@10, plan_004@10",
+      "predicted_generation_count": 25,
+      "predicted_relative_cost": 2.375,
+      "predicted_score": 0.47250000000000003,
+      "score_delta_from_previous": 0.057901785714285725
+    },
+    {
+      "active_repair_count": 4,
+      "active_repair_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004",
+        "plan_006"
+      ],
+      "cap": 20,
+      "cap_range": "20-30",
+      "cost_delta_from_previous": 0.125,
+      "delta_vs_greedy": 0.08433035714285714,
+      "delta_vs_random": 0.12448214285714287,
+      "marginal_roi": 0.19285714285714262,
+      "newly_active_tasks": [
+        "plan_006"
+      ],
+      "onset_explanation": "plan_006@20",
+      "predicted_generation_count": 26,
+      "predicted_relative_cost": 2.5,
+      "predicted_score": 0.49660714285714286,
+      "score_delta_from_previous": 0.024107142857142827
+    },
+    {
+      "active_repair_count": 5,
+      "active_repair_tasks": [
+        "plan_001",
+        "plan_003",
+        "plan_004",
+        "plan_006",
+        "plan_007"
+      ],
+      "cap": 31,
+      "cap_range": "31+",
+      "cost_delta_from_previous": 0.125,
+      "delta_vs_greedy": 0.1188392857142857,
+      "delta_vs_random": 0.15899107142857144,
+      "marginal_roi": 0.2760714285714285,
+      "newly_active_tasks": [
+        "plan_007"
+      ],
+      "onset_explanation": "plan_007@31",
+      "predicted_generation_count": 27,
+      "predicted_relative_cost": 2.625,
+      "predicted_score": 0.5311160714285714,
+      "score_delta_from_previous": 0.034508928571428565
+    }
+  ]
+}

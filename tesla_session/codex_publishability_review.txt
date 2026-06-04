@@ -1,0 +1,102 @@
+**Bottom Line**
+
+Current work is **not ICML/NeurIPS main-track publishable yet** given Soft Reasoning. It is a strong internal pilot and a plausible workshop paper if Phase 1A is positive. The publishable core is not “embedding perturbation improves reasoning.” Soft Reasoning already owns that territory. The viable novelty is narrower:
+
+> Random soft-prefix perturbations can create answer-level error dispersion such that simple verifier-free plurality voting recovers correct answers in small quantized models, without Bayesian optimization or LLM/verifier selection.
+
+That claim is interesting, but it must be proven against temperature sampling and Soft Reasoning-style output-token perturbation on held-out data.
+
+**1. Novelty Assessment**
+
+Soft Reasoning is a serious prior-art threat. It perturbs embeddings, uses greedy decoding, compares against temperature/self-consistency, reports coverage, studies token placement, and uses Bayesian optimization with verifier-guided rewards. The paper explicitly says it injects Gaussian perturbations into the first answer-token embedding and greedily decodes each perturbed trajectory; it also reports LLaMA3-8B GSM8K gains from 73.9% best baseline to 79.4% Soft Reasoning in zero-shot, with verifier and coherence ablations. See [PMLR](https://proceedings.mlr.press/v267/zhu25ae.html) and [OpenReview PDF](https://openreview.net/pdf/11efbfd319035f30653bb45f05700124694bad89.pdf).
+
+What remains genuinely novel:
+
+| Candidate Novelty | Honest Assessment |
+|---|---|
+| Random noise sufficiency | **Potentially strong, not yet proven.** Current data suggests random perturbations can work, but Soft Reasoning already has random Gaussian initialization and verifier/coherence ablations. You need direct random-only vs BO vs temperature vs output-token perturbation. |
+| Prefix-before-input vs first-output-token | **Mechanically different, conceptually fragile.** Soft Reasoning also studies special-token placement. Unless Phase 1A shows prefix position uniquely changes answer distributions, reviewers may call this a placement variant. |
+| Verifier-free plurality | **Best differentiator.** But only strong for arithmetic/extractable-answer domains. The theory is known/straightforward; the empirical claim is that prefix perturbation creates low top-wrong mass. |
+| Small quantized models | **Moderate differentiator, not enough alone.** “Small/quantized” is a regime difference. It becomes scientifically interesting only with controlled bit-width sweeps showing qualitatively different sensitivity. Current 4B Q4 vs 8B 8-bit is confounded by size and precision. |
+| Non-monotonic dose-response | **Promising if replicated.** Soft Reasoning reports that optimizing more initial tokens degrades performance, so the general phenomenon is not wholly new. Your exact prefix-token optimum could still be useful. |
+| Quantization-dependent sensitivity | **Currently weak/overclaimed unless same-model precision is controlled.** Need Qwen3-4B FP16/8-bit/4-bit and Qwen3-8B FP16/8-bit/4-bit. |
+
+**2. Claims We Can Honestly Make**
+
+| Claim | Rating | Peer-Review Survivability |
+|---|---:|---|
+| On the audited 25 arithmetic tasks, Qwen3-4B Q4 greedy baseline is 8/25 and N=10 prefix plurality is 18/25. | **Strong** | Survives as exploratory/held-in result, with CI and tie caveat. |
+| On the same setup, strict plurality is 16/25 and generous tie treatment is 21/25. | **Strong** | Important to report; weakens overclean 72% story. |
+| Qwen3-8B 8-bit improves from 4/25 greedy to 14/25 plurality; oracle is 20/25. | **Strong** | Survives as dataset-specific result. |
+| Majority voting fails in the minority-correct regime. | **Strong** | Data supports it; theory supports it. |
+| Plurality works when correct-answer mass exceeds top-wrong mass. | **Strong but not novel** | Cite voting/social-choice literature; do not sell as theorem novelty. |
+| max(q_i) / margin is more relevant than DM13 alone. | **Strong** | Good diagnostic contribution. |
+| Prefix perturbation produces diverse wrong answers on current arithmetic data. | **Strong** | Within current data. Needs comparison for uniqueness. |
+| Random prefix perturbation is better than temperature sampling. | **Weak until Phase 1A** | This is the key missing experiment. |
+| Random noise makes Bayesian optimization unnecessary. | **Moderate-to-weak now** | Needs direct comparison to Soft Reasoning-style BO at equal budget. |
+| Verifier-free plurality is a viable arithmetic selector. | **Moderate** | Good if held-out. Domain-limited. |
+| The method generalizes to legal/planning. | **Weak** | Current legal data only shows oracle gap; no deployable selector. CLAUDE rules also warn not to trust numeric scorer outputs. |
+| Prefix is a strict oracle superset of greedy. | **Moderate** | True in audited data, but phrase as “under this task/model/operator budget.” |
+| Small quantized models are a distinct scientific regime. | **Moderate** | Needs more models and controlled quantization. |
+| Quantization causes perturbation sensitivity. | **Overclaim currently** | Confounded unless same model, different bit widths. |
+| First to show embedding perturbation helps reasoning. | **Overclaim** | Soft Reasoning already did this. |
+| First to show greedy decoding plus embedding noise yields diverse reasoning paths. | **Overclaim** | Soft Reasoning already did this. |
+| 72% is paper-ready confirmatory evidence. | **Overclaim** | It was discovered on the same small dataset; tie policy was arbitrary. |
+
+**3. Minimum Viable Paper**
+
+Minimum publishable package, given Soft Reasoning:
+
+1. Pre-registered held-out arithmetic benchmark, not just the 25-task discovery set.
+2. Compute-matched comparison of:
+   - greedy baseline
+   - temperature self-consistency, tuned across temperatures
+   - random soft prefix
+   - Soft Reasoning-style first-output-token perturbation
+   - random perturbation + plurality
+   - BO/verifier variant if feasible
+3. Same N budget: N=5, 10, 16, 32.
+4. Same selectors: random pick, plurality, oracle, exact verifier where applicable.
+5. Report answer histograms, oracle coverage, p, max(q_i), margin, tie rate, extraction failures.
+6. Controlled model suite:
+   - at least Qwen3-4B Q4/8-bit or FP16
+   - Qwen3-8B Q4/8-bit or FP16
+   - one non-Qwen small model
+7. Statistical discipline:
+   - held-out tasks
+   - paired tests
+   - bootstrap CIs
+   - fixed tie-breaking policy
+   - no post-hoc selector discovery.
+
+Phase 1A prefix-vs-temperature is **necessary but not sufficient**. It differentiates you from generic sampling only if prefix wins on selected accuracy and on the distributional mechanism: lower top-wrong mass, higher margin, better oracle coverage, fewer concentrated wrong attractors. It still does not fully differentiate from Soft Reasoning unless you include first-output-token perturbation or a close proxy.
+
+**4. Venue Assessment**
+
+Current results alone: **not main-track publishable**. Realistic as an internal report, arXiv note, or workshop submission if framed honestly.
+
+Current results + positive Phase 1A on the same 25 tasks: **workshop-level**, maybe a short empirical paper. Still too small and too close to Soft Reasoning for ICML/NeurIPS main.
+
+Positive Phase 1A on held-out standard arithmetic datasets, multiple small quantized models, direct Soft Reasoning-style baseline, and controlled quantization: **credible ACL/EMNLP Findings, TMLR, ICLR workshop-to-main borderline** depending on strength.
+
+To move toward ICML/NeurIPS main: show a surprising, robust phenomenon Soft Reasoning does not explain: random prefix perturbation systematically lowers top-wrong answer concentration more than temperature and output-token perturbation, enabling verifier-free selection under small quantized deployment constraints.
+
+**5. Red Team**
+
+Hostile reviewer version:
+
+> This is Soft Reasoning without Bayesian optimization, evaluated on 25 arithmetic problems, with a post-hoc plurality selector. The “theory” is just the known plurality condition p > max wrong mass and is tautological when measured on the same histograms. The method only works where exact answer extraction is available. There is no direct comparison to Soft Reasoning, no held-out standard benchmark, no controlled quantization study, and the legal/planning claims have no valid selector.
+
+Most devastating critique:
+
+> The entire observed gain may be ordinary self-consistency/temperature diversity plus answer extraction, not a special property of random soft prefixes.
+
+Preempt it by making Phase 1A decisive: compute-matched, held-out, pre-registered, and distributional. Do not just compare final accuracy. Show that prefix perturbation changes the answer histogram in the predicted way: lower max(q_i), higher p - max(q_i), higher oracle coverage, and better plurality under fixed tie rules.
+
+**6. Priority Directive**
+
+The single most important thing is:
+
+> Run a pre-registered, held-out, compute-matched comparison of random soft-prefix plurality against tuned temperature self-consistency and Soft Reasoning-style output-token perturbation, reporting p, max(q_i), margin, oracle coverage, plurality accuracy, and tie behavior.
+
+If prefix does not beat those baselines on answer-distribution structure, the paper collapses to “another perturbation variant.” If it does, you have a real publishable contribution: verifier-free selection from random continuous perturbations in small quantized LMs.

@@ -1,0 +1,23 @@
+GO for GPU execution, with one small prereg cleanup before launch.
+
+The R5 corrections are substantially integrated:
+
+- Primary metric is now correctly `margin = p - max(q_i)`, with DM13 demoted to secondary.
+- Temp `1.0` operator is added, enabling dose-response.
+- Tie handling is fixed via fractional expected correctness plus sensitivity policies.
+- H3 is no longer tautological: prediction is out-of-sample across seed splits.
+- Trivial-attractor, response-level, extraction-failure, and N=17 changes are all present.
+- The design now separates mechanism claims from plurality accuracy much better.
+
+Remaining issues:
+
+1. **H3 seed split inconsistency**
+   The top correction list says estimate on seeds `0-7`, predict `8-15`, but the actual H3/test sections say estimate on `0-8`, predict `9-16`. With `N=17`, the latter is fine, but make it consistent everywhere before execution.
+
+2. **Held-out status remains limited**
+   Section 3.2 correctly says these 25 tasks are the discovery set, so Phase 1A should be treated as preregistered exploratory/replication evidence, not final confirmatory evidence. That is acceptable if the paper claims are worded accordingly.
+
+3. **H3 held-out tie scoring should be explicit**
+   For held-out plurality outcome on seeds `9-16`, specify that ties are scored with the same fractional expected correctness rule.
+
+Verdict: **GO**, after fixing the H3 seed-split wording and tie-scoring sentence. I would not spend more design time before the GPU run.

@@ -1,0 +1,478 @@
+{
+  "best_rule": {
+    "complexity": 3,
+    "error_count": 0,
+    "false_negative_count": 0,
+    "false_positive_count": 0,
+    "max_prompt_gap_count": 9,
+    "max_source_quality": 0.301429,
+    "predictions": {
+      "plan_001": false,
+      "plan_002": false,
+      "plan_003": false,
+      "plan_004": true,
+      "plan_005": false,
+      "plan_006": true,
+      "plan_007": true,
+      "plan_008": false,
+      "plan_009": false,
+      "plan_010": false,
+      "plan_011": false,
+      "plan_012": true
+    },
+    "requires_first_repairable": true,
+    "rule_id": "current_decomposed_spend",
+    "selected_tasks": [
+      "plan_004",
+      "plan_006",
+      "plan_007",
+      "plan_012"
+    ],
+    "true_negative_count": 8,
+    "true_positive_count": 4,
+    "type": "current"
+  },
+  "candidate_rules": [
+    {
+      "complexity": 3,
+      "error_count": 0,
+      "false_negative_count": 0,
+      "false_positive_count": 0,
+      "max_prompt_gap_count": 9,
+      "max_source_quality": 0.301429,
+      "predictions": {
+        "plan_001": false,
+        "plan_002": false,
+        "plan_003": false,
+        "plan_004": true,
+        "plan_005": false,
+        "plan_006": true,
+        "plan_007": true,
+        "plan_008": false,
+        "plan_009": false,
+        "plan_010": false,
+        "plan_011": false,
+        "plan_012": true
+      },
+      "requires_first_repairable": true,
+      "rule_id": "current_decomposed_spend",
+      "selected_tasks": [
+        "plan_004",
+        "plan_006",
+        "plan_007",
+        "plan_012"
+      ],
+      "true_negative_count": 8,
+      "true_positive_count": 4,
+      "type": "current"
+    },
+    {
+      "complexity": 4,
+      "error_count": 0,
+      "false_negative_count": 0,
+      "false_positive_count": 0,
+      "max_prompt_gap_count": 9,
+      "max_source_quality": 0.301429,
+      "min_source_task_score": 0.2953571428571429,
+      "predictions": {
+        "plan_001": false,
+        "plan_002": false,
+        "plan_003": false,
+        "plan_004": true,
+        "plan_005": false,
+        "plan_006": true,
+        "plan_007": true,
+        "plan_008": false,
+        "plan_009": false,
+        "plan_010": false,
+        "plan_011": false,
+        "plan_012": true
+      },
+      "requires_first_repairable": true,
+      "rule_id": "current_decomposed_spend_source_task_ge_0p295357",
+      "selected_tasks": [
+        "plan_004",
+        "plan_006",
+        "plan_007",
+        "plan_012"
+      ],
+      "true_negative_count": 8,
+      "true_positive_count": 4,
+      "type": "source_task_floor"
+    },
+    {
+      "complexity": 4,
+      "error_count": 1,
+      "false_negative_count": 1,
+      "false_positive_count": 0,
+      "max_prompt_gap_count": 9,
+      "max_source_quality": 0.301429,
+      "min_source_task_score": 0.3075,
+      "predictions": {
+        "plan_001": false,
+        "plan_002": false,
+        "plan_003": false,
+        "plan_004": true,
+        "plan_005": false,
+        "plan_006": true,
+        "plan_007": true,
+        "plan_008": false,
+        "plan_009": false,
+        "plan_010": false,
+        "plan_011": false,
+        "plan_012": false
+      },
+      "requires_first_repairable": true,
+      "rule_id": "current_decomposed_spend_source_task_ge_0p3075",
+      "selected_tasks": [
+        "plan_004",
+        "plan_006",
+        "plan_007"
+      ],
+      "true_negative_count": 8,
+      "true_positive_count": 3,
+      "type": "source_task_floor"
+    },
+    {
+      "complexity": 4,
+      "error_count": 2,
+      "false_negative_count": 2,
+      "false_positive_count": 0,
+      "max_prompt_gap_count": 9,
+      "max_source_quality": 0.301429,
+      "min_source_task_score": 0.33785714285714286,
+      "predictions": {
+        "plan_001": false,
+        "plan_002": false,
+        "plan_003": false,
+        "plan_004": true,
+        "plan_005": false,
+        "plan_006": true,
+        "plan_007": false,
+        "plan_008": false,
+        "plan_009": false,
+        "plan_010": false,
+        "plan_011": false,
+        "plan_012": false
+      },
+      "requires_first_repairable": true,
+      "rule_id": "current_decomposed_spend_source_task_ge_0p337857",
+      "selected_tasks": [
+        "plan_004",
+        "plan_006"
+      ],
+      "true_negative_count": 8,
+      "true_positive_count": 2,
+      "type": "source_task_floor"
+    },
+    {
+      "complexity": 4,
+      "error_count": 3,
+      "false_negative_count": 3,
+      "false_positive_count": 0,
+      "max_prompt_gap_count": 9,
+      "max_source_quality": 0.301429,
+      "min_source_task_score": 0.35642857142857143,
+      "predictions": {
+        "plan_001": false,
+        "plan_002": false,
+        "plan_003": false,
+        "plan_004": false,
+        "plan_005": false,
+        "plan_006": true,
+        "plan_007": false,
+        "plan_008": false,
+        "plan_009": false,
+        "plan_010": false,
+        "plan_011": false,
+        "plan_012": false
+      },
+      "requires_first_repairable": true,
+      "rule_id": "current_decomposed_spend_source_task_ge_0p356429",
+      "selected_tasks": [
+        "plan_006"
+      ],
+      "true_negative_count": 8,
+      "true_positive_count": 1,
+      "type": "source_task_floor"
+    },
+    {
+      "complexity": 4,
+      "error_count": 3,
+      "false_negative_count": 3,
+      "false_positive_count": 0,
+      "max_prompt_gap_count": 9,
+      "max_source_quality": 0.301429,
+      "min_source_task_score": 0.39142857142857146,
+      "predictions": {
+        "plan_001": false,
+        "plan_002": false,
+        "plan_003": false,
+        "plan_004": false,
+        "plan_005": false,
+        "plan_006": true,
+        "plan_007": false,
+        "plan_008": false,
+        "plan_009": false,
+        "plan_010": false,
+        "plan_011": false,
+        "plan_012": false
+      },
+      "requires_first_repairable": true,
+      "rule_id": "current_decomposed_spend_source_task_ge_0p391429",
+      "selected_tasks": [
+        "plan_006"
+      ],
+      "true_negative_count": 8,
+      "true_positive_count": 1,
+      "type": "source_task_floor"
+    },
+    {
+      "complexity": 4,
+      "error_count": 4,
+      "false_negative_count": 4,
+      "false_positive_count": 0,
+      "max_prompt_gap_count": 9,
+      "max_source_quality": 0.301429,
+      "min_source_task_score": 0.39285714285714285,
+      "predictions": {
+        "plan_001": false,
+        "plan_002": false,
+        "plan_003": false,
+        "plan_004": false,
+        "plan_005": false,
+        "plan_006": false,
+        "plan_007": false,
+        "plan_008": false,
+        "plan_009": false,
+        "plan_010": false,
+        "plan_011": false,
+        "plan_012": false
+      },
+      "requires_first_repairable": true,
+      "rule_id": "current_decomposed_spend_source_task_ge_0p392857",
+      "selected_tasks": [],
+      "true_negative_count": 8,
+      "true_positive_count": 0,
+      "type": "source_task_floor"
+    },
+    {
+      "complexity": 4,
+      "error_count": 4,
+      "false_negative_count": 4,
+      "false_positive_count": 0,
+      "max_prompt_gap_count": 9,
+      "max_source_quality": 0.301429,
+      "min_source_task_score": 0.42142857142857143,
+      "predictions": {
+        "plan_001": false,
+        "plan_002": false,
+        "plan_003": false,
+        "plan_004": false,
+        "plan_005": false,
+        "plan_006": false,
+        "plan_007": false,
+        "plan_008": false,
+        "plan_009": false,
+        "plan_010": false,
+        "plan_011": false,
+        "plan_012": false
+      },
+      "requires_first_repairable": true,
+      "rule_id": "current_decomposed_spend_source_task_ge_0p421429",
+      "selected_tasks": [],
+      "true_negative_count": 8,
+      "true_positive_count": 0,
+      "type": "source_task_floor"
+    },
+    {
+      "complexity": 4,
+      "error_count": 4,
+      "false_negative_count": 4,
+      "false_positive_count": 0,
+      "max_prompt_gap_count": 9,
+      "max_source_quality": 0.301429,
+      "min_source_task_score": 0.42178571428571426,
+      "predictions": {
+        "plan_001": false,
+        "plan_002": false,
+        "plan_003": false,
+        "plan_004": false,
+        "plan_005": false,
+        "plan_006": false,
+        "plan_007": false,
+        "plan_008": false,
+        "plan_009": false,
+        "plan_010": false,
+        "plan_011": false,
+        "plan_012": false
+      },
+      "requires_first_repairable": true,
+      "rule_id": "current_decomposed_spend_source_task_ge_0p421786",
+      "selected_tasks": [],
+      "true_negative_count": 8,
+      "true_positive_count": 0,
+      "type": "source_task_floor"
+    },
+    {
+      "complexity": 4,
+      "error_count": 4,
+      "false_negative_count": 4,
+      "false_positive_count": 0,
+      "max_prompt_gap_count": 9,
+      "max_source_quality": 0.301429,
+      "min_source_task_score": 0.46535714285714286,
+      "predictions": {
+        "plan_001": false,
+        "plan_002": false,
+        "plan_003": false,
+        "plan_004": false,
+        "plan_005": false,
+        "plan_006": false,
+        "plan_007": false,
+        "plan_008": false,
+        "plan_009": false,
+        "plan_010": false,
+        "plan_011": false,
+        "plan_012": false
+      },
+      "requires_first_repairable": true,
+      "rule_id": "current_decomposed_spend_source_task_ge_0p465357",
+      "selected_tasks": [],
+      "true_negative_count": 8,
+      "true_positive_count": 0,
+      "type": "source_task_floor"
+    }
+  ],
+  "generated_by": "experiments/fit_diffusion_spend_transfer_rule.py",
+  "inputs": {
+    "independent_eval": "eval_results\\diffusion_language\\diffusion_independent_spend_transfer_eval.json",
+    "targets": "eval_results\\diffusion_language\\diffusion_composite_selector_targets.json"
+  },
+  "rows": [
+    {
+      "first_repairable_step": 10.0,
+      "label": false,
+      "prompt_gap_count": 9.0,
+      "source_quality": 0.34785714285714286,
+      "source_task_score": 0.46535714285714286,
+      "split": "original",
+      "task_id": "plan_001"
+    },
+    {
+      "first_repairable_step": null,
+      "label": false,
+      "prompt_gap_count": 12.0,
+      "source_quality": 0.5585714285714286,
+      "source_task_score": 0.6885714285714286,
+      "split": "original",
+      "task_id": "plan_002"
+    },
+    {
+      "first_repairable_step": 10.0,
+      "label": false,
+      "prompt_gap_count": 6.0,
+      "source_quality": 0.32428571428571423,
+      "source_task_score": 0.42178571428571426,
+      "split": "original",
+      "task_id": "plan_003"
+    },
+    {
+      "first_repairable_step": 10.0,
+      "label": true,
+      "prompt_gap_count": 2.0,
+      "source_quality": 0.27785714285714286,
+      "source_task_score": 0.33785714285714286,
+      "split": "original",
+      "task_id": "plan_004"
+    },
+    {
+      "first_repairable_step": 30.0,
+      "label": false,
+      "prompt_gap_count": 10.0,
+      "source_quality": 0.29892857142857143,
+      "source_task_score": 0.42142857142857143,
+      "split": "original",
+      "task_id": "plan_005"
+    },
+    {
+      "first_repairable_step": 20.0,
+      "label": true,
+      "prompt_gap_count": 9.0,
+      "source_quality": 0.30142857142857143,
+      "source_task_score": 0.39142857142857146,
+      "split": "original",
+      "task_id": "plan_006"
+    },
+    {
+      "first_repairable_step": 31.0,
+      "label": true,
+      "prompt_gap_count": 8.0,
+      "source_quality": 0.2475,
+      "source_task_score": 0.3075,
+      "split": "original",
+      "task_id": "plan_007"
+    },
+    {
+      "first_repairable_step": null,
+      "label": false,
+      "prompt_gap_count": 12.0,
+      "source_quality": 0.24428571428571427,
+      "source_task_score": 0.28285714285714286,
+      "split": "original",
+      "task_id": "plan_008"
+    },
+    {
+      "first_repairable_step": 17,
+      "label": false,
+      "prompt_gap_count": 10.0,
+      "source_quality": 0.2564285714285714,
+      "source_task_score": 0.35642857142857143,
+      "split": "independent",
+      "task_id": "plan_009"
+    },
+    {
+      "first_repairable_step": 15,
+      "label": false,
+      "prompt_gap_count": 7.0,
+      "source_quality": 0.33285714285714285,
+      "source_task_score": 0.39285714285714285,
+      "split": "independent",
+      "task_id": "plan_010"
+    },
+    {
+      "first_repairable_step": null,
+      "label": false,
+      "prompt_gap_count": 12.0,
+      "source_quality": 0.23892857142857143,
+      "source_task_score": 0.3364285714285714,
+      "split": "independent",
+      "task_id": "plan_011"
+    },
+    {
+      "first_repairable_step": 20,
+      "label": true,
+      "prompt_gap_count": 8.0,
+      "source_quality": 0.23535714285714285,
+      "source_task_score": 0.2953571428571429,
+      "split": "independent",
+      "task_id": "plan_012"
+    }
+  ],
+  "schema": "diffusion_spend_transfer_rule_fit.v1",
+  "summary": {
+    "profitable_tasks": [
+      "plan_004",
+      "plan_006",
+      "plan_007",
+      "plan_012"
+    ],
+    "row_count": 12,
+    "selected_tasks": [
+      "plan_004",
+      "plan_006",
+      "plan_007",
+      "plan_012"
+    ]
+  }
+}

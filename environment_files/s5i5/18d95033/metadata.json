@@ -1,0 +1,20 @@
+{
+  "game_id": "s5i5-18d95033",
+  "title": "S5I5",
+  "default_fps": 15,
+  "tags": [
+    "click"
+  ],
+  "baseline_actions": [
+    20,
+    89,
+    106,
+    54,
+    162,
+    38,
+    86,
+    83
+  ],
+  "local_dir": "environment_files\\s5i5\\18d95033",
+  "date_downloaded": "2026-05-14T07:37:13.547454+00:00"
+}

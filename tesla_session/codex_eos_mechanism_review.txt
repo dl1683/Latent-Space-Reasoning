@@ -1,0 +1,97 @@
+I read [critical_finding_eos_mechanism.md](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/tesla_session/critical_finding_eos_mechanism.md:1>) and checked the scoring/storage code.
+
+**Bottom Line**
+
+I would treat the finding as **substantially real for the current artifacts**, but not yet as a universal mechanism. The stored result files support the core claim: every row marked `terminated_by_eos: true` is also `correct: true`. Across all stored baseline + perturbation rows I found:
+
+| Model | EOS rows | EOS correct | EOS wrong | Truncated correct | Truncated wrong |
+|---|---:|---:|---:|---:|---:|
+| Qwen3-4B 4-bit | 100 | 100 | 0 | 37 | 138 |
+| Qwen3-8B 8-bit | 34 | 34 | 0 | 42 | 199 |
+
+The document’s perturbation-only count, 126 EOS responses with 0 wrong, is consistent with that. But statistically, `126/126` is not “the true rate is exactly 1.000”; rule-of-three says the 95% upper bound on EOS failure rate is still about `3/126 = 2.4%`.
+
+**Validation / Challenge**
+
+This is not obviously too good to be true for these 25 arithmetic tasks. It is plausible that the model usually knows the answer, and the observed failure mode is failure to finish cleanly under a verbose reasoning template.
+
+But the stronger interpretation is not yet proven. The current extractor is last-integer scoring in [harness.py](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/harness.py:235>), and correctness is computed before the JSON truncates `response` / `response_raw` to 2000 characters in [run_latent_sensitivity.py](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_latent_sensitivity.py:1034>) and [run_latent_sensitivity.py](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_latent_sensitivity.py:1381>). So the aggregate labels are meaningful, but the stored text is insufficient for a full manual audit of truncated outputs.
+
+One metadata issue: the soft-prompt `generated_tokens` calculation likely undercounts by subtracting prompt length from an `inputs_embeds` generation sequence in [run_latent_sensitivity.py](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_latent_sensitivity.py:152>). That probably does **not** invalidate the EOS flag or correctness labels, but it means the exact token-length table should be recomputed from full token IDs or raw output tokenization.
+
+What would make the finding wrong:
+
+1. Any EOS response has a wrong **final answer** under a stricter final-answer parser or blind manual audit.
+2. Truncated responses often contain the correct final answer earlier, meaning the failure is last-integer/extraction-after-continuation, not reasoning failure.
+3. `terminated_by_eos` misses alternate semantic stops or mislabels generation stops.
+4. Held-out arithmetic, harder math, temperature sampling, or Soft Reasoning-style perturbations show `P(correct|EOS)` well below 1.
+5. Increasing `max_new_tokens` does not increase EOS rate / accuracy as predicted.
+
+**Paper Impact**
+
+This strengthens the paper if you pivot the mechanism to:
+
+> Random perturbation increases the probability that a small quantized reasoning model completes a correct reasoning trajectory within a fixed token budget.
+
+It weakens the older story:
+
+> Wrong answers are diverse because perturbation induces diverse error strategies.
+
+The diversity story now looks derivative. DM13 and `max(q_i)` are still useful diagnostics, but they are probably downstream of truncation noise. The paper should not sell DM13 as the causal mechanism unless Phase 1A disproves the EOS hypothesis.
+
+This also creates a reviewer vulnerability: “Why not just raise `max_new_tokens`?” The answer must be empirical and compute-normalized. Compare prefix plurality at `N × 1024` tokens against greedy / temperature at larger single-sample budgets. If `max_new_tokens=2048` greedy solves most tasks cheaper than N-prefix voting, the story narrows.
+
+**Soft Reasoning**
+
+The finding does not remove the Soft Reasoning threat. It sharpens it.
+
+Soft Reasoning may also work by raising completion probability. Your differentiator becomes: random prefix perturbation gets completion gains without Bayesian optimization or verifier-guided search. That is only publishable if a direct comparison shows your method improves EOS/selected accuracy at equal budget against temperature and a Soft Reasoning-style first-output-token perturbation.
+
+**Phase 1A Impact**
+
+Yes, Phase 1A should promote EOS rate to a primary **mechanism** metric. Keep plurality accuracy as the primary **outcome** metric.
+
+The metric hierarchy should become:
+
+1. Selected accuracy / plurality accuracy.
+2. EOS rate.
+3. `P(correct | EOS)` and `P(correct | truncated)`.
+4. Token budget sensitivity.
+5. Margin `p - max(q_i)`, `max(q_i)`, DM13 as derived distributional metrics.
+
+Yes, add a `max_new_tokens` sweep: `512, 768, 1024, 1536, 2048`. I would run it before the full Phase 1A if possible, because it tests the causal story directly.
+
+Temperature predictions change:
+
+- Low/moderate temperature may increase EOS by escaping loops.
+- High temperature may either reduce EOS or produce completed-but-wrong answers.
+- The key question is no longer just “does temperature spread wrong answers?” but “does temperature increase completion without lowering `P(correct|EOS)`?”
+
+**Red Team**
+
+The main red-team audit should classify outputs into five buckets:
+
+1. EOS, final answer correct.
+2. EOS, final answer wrong.
+3. Truncated, correct final answer already stated before truncation.
+4. Truncated, correct number appears somewhere but not as final answer.
+5. Truncated, no correct answer found.
+
+This directly answers the extractor concerns. The existing protocol already mentions `answer_anywhere_correct` in [cde_measurement_protocol_v2.md](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/tesla_session/cde_measurement_protocol_v2.md:109>), but the current JSON artifacts do not store enough full text to apply it retrospectively.
+
+**Priority Directive**
+
+The single most important next step is:
+
+Run a full-output EOS/token-budget validation sweep before further paper-story commitments.
+
+Minimum version:
+
+- Same 25 tasks.
+- Qwen3-4B, prefix N=10.
+- `max_new_tokens = {512, 768, 1024, 1536, 2048}`.
+- Store full raw output, full token IDs, stop reason, EOS token ID, generated-token count.
+- Score with last-integer, strict final-answer parser, and answer-anywhere.
+- Report EOS rate, `P(correct|EOS)`, `P(correct|truncated)`, plurality accuracy, and whether truncated outputs already contained the correct answer.
+
+That one run will tell you whether this is a real completion-budget mechanism or an extraction/termination artifact.

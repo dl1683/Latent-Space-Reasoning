@@ -1,0 +1,149 @@
+{
+  "generated_by": "experiments/build_diffusion_proof_object.py",
+  "heads": [
+    {
+      "assertion": "Repair availability is relative to denoise/source geometry, but pre-repair geometry alone is not yet a slice-stable promotion model.",
+      "error_count": 4,
+      "evidence_files": [
+        "eval_results\\diffusion_language\\diffusion_transfer_head_fit.json",
+        "DIFFUSION_TRANSFER_HEAD_FIT.md",
+        "DIFFUSION_INDEPENDENT_SPEND_TRANSFER_V3.md",
+        "DIFFUSION_AVAILABILITY_PREDICTOR_FIT.md",
+        "eval_results\\diffusion_language\\diffusion_independent_spend_transfer_v8_eval.json"
+      ],
+      "falsifier": "A fresh independent GPU slice produces available repairs that this head drops or no-lift repairs that it admits at the same or higher rate than single repairability.",
+      "head_id": "availability",
+      "information_channels": [
+        "denoise phase",
+        "source quality",
+        "prompt gap",
+        "source task minus selected trajectory task"
+      ],
+      "next_gpu_validation": "Keep `candidate_aware_promotion_v1` fixed, test any learned spend gate offline against the accumulated transfer target rows, then run the next fresh slice only if it preserves positive repairs.",
+      "rule_id": "calibrated_availability_predictor_v1",
+      "status": "boundary",
+      "target_row_count": 24
+    },
+    {
+      "assertion": "Repair promotion value is distinct from repair availability.",
+      "error_count": 0,
+      "evidence_files": [
+        "eval_results\\diffusion_language\\diffusion_candidate_promotion_targets_v8.json"
+      ],
+      "falsifier": "A fresh transfer slice shows the named promotion-value proxy selects harmful repairs or misses available positive repairs as often as the planning-quality promotion policy.",
+      "head_id": "promotion_value",
+      "information_channels": [
+        "post-repair selector state",
+        "selected lift"
+      ],
+      "next_gpu_validation": "Keep `candidate_aware_promotion_v1` fixed on the next fresh planning slice and compare selected repair lift against any new spend gate.",
+      "rule_id": "candidate_aware_promotion_v1",
+      "status": "validated-local",
+      "target_row_count": 8
+    },
+    {
+      "assertion": "Denoise history should be trusted as a source only under retention-safe source advantage.",
+      "error_count": 0,
+      "evidence_files": [
+        "eval_results\\diffusion_language\\diffusion_composite_selector_fit.json",
+        "DIFFUSION_COMPOSITE_SELECTOR_FIT.md"
+      ],
+      "falsifier": "A fresh source-choice slice shows retention-safe history switches regress or final-source preservation loses to naive history replacement.",
+      "head_id": "source_trust",
+      "information_channels": [
+        "history/final similarity",
+        "retention label",
+        "source advantage"
+      ],
+      "next_gpu_validation": "Run phase-source switches on new planning prompts and score final/history counterfactuals under the same source-trust labels.",
+      "rule_id": "retention_safe_history",
+      "status": "validated-local",
+      "target_row_count": 5
+    },
+    {
+      "assertion": "Safe repair requires retaining stable task constraints.",
+      "error_count": 0,
+      "evidence_files": [
+        "eval_results\\diffusion_language\\diffusion_composite_selector_fit.json",
+        "DIFFUSION_COMPOSITE_SELECTOR_FIT.md"
+      ],
+      "falsifier": "Unconstrained history or anchor repair transfers without constraint loss and matches the retention-constrained policy on fresh GPU rows.",
+      "head_id": "retention",
+      "information_channels": [
+        "prompt constraints",
+        "target similarity",
+        "constraint-retention loss"
+      ],
+      "next_gpu_validation": "Report retention labels beside every selected repair on a larger GPU slice and verify the head blocks destructive source replacements.",
+      "rule_id": "classification_safe_history_anchor",
+      "status": "validated-local",
+      "target_row_count": 8
+    },
+    {
+      "assertion": "Compact controls must be realized without leaking meta-instructions.",
+      "error_count": 0,
+      "evidence_files": [
+        "eval_results\\diffusion_language\\diffusion_composite_selector_fit.json",
+        "DIFFUSION_COMPOSITE_SELECTOR_FIT.md"
+      ],
+      "falsifier": "A different compact-control policy dominates the selected realization policy on task score, realization loss, and meta-leakage on fresh rows.",
+      "head_id": "realization",
+      "information_channels": [
+        "compact anchors",
+        "realization quality",
+        "meta leakage"
+      ],
+      "next_gpu_validation": "Evaluate realization policies on new anchor-bearing planning repairs and compare task score against realization-quality loss.",
+      "rule_id": "min_realization_policy_error",
+      "status": "validated-local",
+      "target_row_count": 7
+    },
+    {
+      "assertion": "Repair spending should optimize marginal value per GPU generation; the current incumbent preserves positive repairs before trying another pre-repair spend gate.",
+      "error_count": null,
+      "evidence_files": [
+        "eval_results\\diffusion_language\\diffusion_budget_policy_loss.json",
+        "DIFFUSION_BUDGET_POLICY_LOSS.md",
+        "eval_results\\diffusion_language\\diffusion_spend_policy_decision.json",
+        "DIFFUSION_SPEND_POLICY_DECISION.md"
+      ],
+      "falsifier": "A learned or calibrated spend gate preserves all positive repairs and dominates the repairable-denoise incumbent at matched cost on a fresh GPU slice.",
+      "head_id": "cost",
+      "information_channels": [
+        "relative GPU cost",
+        "marginal repair lift",
+        "phase-window cap"
+      ],
+      "next_gpu_validation": "Run v8 with greedy/fixed, random perturbation, and latent repair only; compare any learned spend gate against the repairable-denoise plus `candidate_aware_promotion_v1` incumbent at matched cost.",
+      "rule_id": "energy_aware_marginal_value",
+      "status": "objective-defined",
+      "target_row_count": 8,
+      "target_summary": {
+        "incremental_lift_per_extra_generation": 0.10576190476190478,
+        "incumbent_policy_id": "denoise_phase_repairability_plus_candidate_aware_promotion_v1",
+        "marginal_relative_cost_per_repair": 0.125,
+        "max_task_policy_gain_lambda": 0.18,
+        "max_task_policy_gain_vs_cap": 0.0225892857142857
+      }
+    }
+  ],
+  "inputs": {
+    "availability_predictor_fit": "eval_results\\diffusion_language\\diffusion_availability_predictor_fit.json",
+    "budget_loss": "eval_results\\diffusion_language\\diffusion_budget_policy_loss.json",
+    "candidate_promotion_targets": "eval_results\\diffusion_language\\diffusion_candidate_promotion_targets_v8.json",
+    "composite_fit": "eval_results\\diffusion_language\\diffusion_composite_selector_fit.json",
+    "composite_targets": "eval_results\\diffusion_language\\diffusion_composite_selector_targets.json",
+    "fresh_availability_eval": "eval_results\\diffusion_language\\diffusion_independent_spend_transfer_v8_eval.json",
+    "larger_availability_eval": "eval_results\\diffusion_language\\diffusion_independent_spend_transfer_v3_eval.json",
+    "spend_policy_decision": "eval_results\\diffusion_language\\diffusion_spend_policy_decision.json",
+    "transfer_head_fit": "eval_results\\diffusion_language\\diffusion_transfer_head_fit.json"
+  },
+  "schema": "diffusion_reasoning_proof_object.v1",
+  "summary": {
+    "head_count": 6,
+    "resolved_head_count": 5,
+    "total_measured_errors": 4,
+    "total_target_rows": 60,
+    "unresolved_head_count": 1
+  }
+}

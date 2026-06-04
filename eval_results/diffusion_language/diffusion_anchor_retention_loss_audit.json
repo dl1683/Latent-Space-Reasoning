@@ -1,0 +1,1174 @@
+{
+  "anchor_instability": {
+    "delta_vs_fixed": 0.06875000000000003,
+    "delta_vs_random": 0.10890178571428577,
+    "relative_cost": 2.625,
+    "repair_score": 0.48102678571428575,
+    "run_id": "diffusion-d14467a9f9a550b2",
+    "selected_count": 3.0,
+    "source_states": "final,history"
+  },
+  "anchor_instability_claim_auto_seeded_gated": {
+    "delta_vs_fixed": 0.1082589285714286,
+    "delta_vs_random": 0.14841071428571434,
+    "relative_cost": 2.625,
+    "repair_score": 0.5205357142857143,
+    "run_id": "diffusion-7b74493b8c5ca15a",
+    "selected_count": 5.0,
+    "source_states": "final,history"
+  },
+  "anchor_instability_claim_auto_seeded_gated_identity": {
+    "anchor_raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_claim_compatible_seeded_gated_realization_guard_fresh_v1_raw.jsonl",
+    "compared_task_count": 5,
+    "gate_active_count": 2,
+    "gate_active_mean_task_score_delta": -0.042321428571428565,
+    "gate_inactive_count": 3,
+    "gate_inactive_identity_match_count": 3,
+    "gated_raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_claim_auto_seeded_gated_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+    "rows": [
+      {
+        "gate_active": false,
+        "history_instability_gate_active": false,
+        "planning_prompt_gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_001",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": false,
+        "history_instability_gate_active": false,
+        "planning_prompt_gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_003",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": true,
+        "history_instability_gate_active": false,
+        "planning_prompt_gate_active": true,
+        "prompt_same": false,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_004",
+        "task_score_delta": -0.08464285714285713,
+        "text_same": false
+      },
+      {
+        "gate_active": false,
+        "history_instability_gate_active": false,
+        "planning_prompt_gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_006",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": true,
+        "history_instability_gate_active": true,
+        "planning_prompt_gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_007",
+        "task_score_delta": 0.0,
+        "text_same": true
+      }
+    ]
+  },
+  "anchor_instability_claim_auto_seeded_gated_raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_claim_auto_seeded_gated_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+  "anchor_instability_claim_auto_seeded_gated_scores_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_claim_auto_seeded_gated_denoise_phase_gate_dense_history_fresh_v1_scores.json",
+  "anchor_instability_claim_auto_seeded_realization_gated": {
+    "delta_vs_fixed": 0.10348214285714286,
+    "delta_vs_random": 0.1436339285714286,
+    "relative_cost": 2.625,
+    "repair_score": 0.5157589285714286,
+    "run_id": "diffusion-2a310ed45712a36b",
+    "selected_count": 5.0,
+    "source_states": "final,history"
+  },
+  "anchor_instability_claim_auto_seeded_realization_gated_identity": {
+    "anchor_raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_claim_auto_seeded_gated_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+    "compared_task_count": 5,
+    "gate_active_count": 2,
+    "gate_active_mean_task_score_delta": -0.019107142857142878,
+    "gate_inactive_count": 3,
+    "gate_inactive_identity_match_count": 3,
+    "gated_raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_claim_auto_seeded_realization_gated_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+    "rows": [
+      {
+        "gate_active": false,
+        "history_instability_gate_active": false,
+        "planning_prompt_gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_001",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": false,
+        "history_instability_gate_active": false,
+        "planning_prompt_gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_003",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": true,
+        "history_instability_gate_active": false,
+        "planning_prompt_gate_active": true,
+        "prompt_same": false,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_004",
+        "task_score_delta": -0.038214285714285756,
+        "text_same": false
+      },
+      {
+        "gate_active": false,
+        "history_instability_gate_active": false,
+        "planning_prompt_gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_006",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": true,
+        "history_instability_gate_active": true,
+        "planning_prompt_gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_007",
+        "task_score_delta": 0.0,
+        "text_same": true
+      }
+    ]
+  },
+  "anchor_instability_claim_auto_seeded_realization_gated_raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_claim_auto_seeded_realization_gated_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+  "anchor_instability_claim_auto_seeded_realization_gated_scores_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_claim_auto_seeded_realization_gated_denoise_phase_gate_dense_history_fresh_v1_scores.json",
+  "anchor_instability_claim_compatible_seeded_gated": {
+    "delta_vs_fixed": 0.1188392857142857,
+    "delta_vs_random": 0.15899107142857144,
+    "relative_cost": 2.625,
+    "repair_score": 0.5311160714285714,
+    "run_id": "diffusion-a9ae901393235364",
+    "selected_count": 5.0,
+    "source_states": "final,history"
+  },
+  "anchor_instability_claim_compatible_seeded_gated_identity": {
+    "anchor_raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_claim_seeded_gated_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+    "compared_task_count": 5,
+    "gate_active_count": 2,
+    "gate_active_mean_task_score_delta": 0.03928571428571431,
+    "gate_inactive_count": 3,
+    "gate_inactive_identity_match_count": 3,
+    "gated_raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_claim_compatible_seeded_gated_realization_guard_fresh_v1_raw.jsonl",
+    "rows": [
+      {
+        "gate_active": false,
+        "history_instability_gate_active": false,
+        "planning_prompt_gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_001",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": false,
+        "history_instability_gate_active": false,
+        "planning_prompt_gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_003",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": true,
+        "history_instability_gate_active": false,
+        "planning_prompt_gate_active": true,
+        "prompt_same": false,
+        "seed_same": true,
+        "seed_tokens_same": false,
+        "task_id": "plan_004",
+        "task_score_delta": 0.07857142857142863,
+        "text_same": false
+      },
+      {
+        "gate_active": false,
+        "history_instability_gate_active": false,
+        "planning_prompt_gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_006",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": true,
+        "history_instability_gate_active": true,
+        "planning_prompt_gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_007",
+        "task_score_delta": 0.0,
+        "text_same": true
+      }
+    ]
+  },
+  "anchor_instability_claim_compatible_seeded_gated_raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_claim_compatible_seeded_gated_realization_guard_fresh_v1_raw.jsonl",
+  "anchor_instability_claim_compatible_seeded_gated_scores_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_claim_compatible_seeded_gated_realization_guard_fresh_v1_scores.json",
+  "anchor_instability_claim_gated": {
+    "delta_vs_fixed": 0.10116071428571427,
+    "delta_vs_random": 0.1413125,
+    "relative_cost": 2.625,
+    "repair_score": 0.5134375,
+    "run_id": "diffusion-0fc7f067a7d87799",
+    "selected_count": 5.0,
+    "source_states": "final,history"
+  },
+  "anchor_instability_claim_gated_identity": {
+    "anchor_raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_prompt_gated_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+    "compared_task_count": 5,
+    "gate_active_count": 2,
+    "gate_active_mean_task_score_delta": 0.060535714285714304,
+    "gate_inactive_count": 3,
+    "gate_inactive_identity_match_count": 3,
+    "gated_raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_claim_gated_compact_prompt_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+    "rows": [
+      {
+        "gate_active": false,
+        "history_instability_gate_active": false,
+        "planning_prompt_gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_001",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": false,
+        "history_instability_gate_active": false,
+        "planning_prompt_gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_003",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": true,
+        "history_instability_gate_active": false,
+        "planning_prompt_gate_active": true,
+        "prompt_same": false,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_004",
+        "task_score_delta": 0.12107142857142861,
+        "text_same": false
+      },
+      {
+        "gate_active": false,
+        "history_instability_gate_active": false,
+        "planning_prompt_gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_006",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": true,
+        "history_instability_gate_active": true,
+        "planning_prompt_gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_007",
+        "task_score_delta": 0.0,
+        "text_same": true
+      }
+    ]
+  },
+  "anchor_instability_claim_gated_raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_claim_gated_compact_prompt_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+  "anchor_instability_claim_gated_scores_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_claim_gated_compact_prompt_denoise_phase_gate_dense_history_fresh_v1_scores.json",
+  "anchor_instability_claim_oracle_gated": {
+    "delta_vs_fixed": 0.1110267857142857,
+    "delta_vs_random": 0.15117857142857144,
+    "relative_cost": 2.625,
+    "repair_score": 0.5233035714285714,
+    "run_id": "diffusion-692592da063daa60",
+    "selected_count": 5.0,
+    "source_states": "final,history"
+  },
+  "anchor_instability_claim_oracle_gated_identity": {
+    "anchor_raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_claim_gated_compact_prompt_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+    "compared_task_count": 5,
+    "gate_active_count": 2,
+    "gate_active_mean_task_score_delta": 0.03946428571428576,
+    "gate_inactive_count": 3,
+    "gate_inactive_identity_match_count": 3,
+    "gated_raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_claim_oracle_gated_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+    "rows": [
+      {
+        "gate_active": false,
+        "history_instability_gate_active": false,
+        "planning_prompt_gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_001",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": false,
+        "history_instability_gate_active": false,
+        "planning_prompt_gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_003",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": true,
+        "history_instability_gate_active": false,
+        "planning_prompt_gate_active": true,
+        "prompt_same": false,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_004",
+        "task_score_delta": 0.07892857142857151,
+        "text_same": false
+      },
+      {
+        "gate_active": false,
+        "history_instability_gate_active": false,
+        "planning_prompt_gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_006",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": true,
+        "history_instability_gate_active": true,
+        "planning_prompt_gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_007",
+        "task_score_delta": 0.0,
+        "text_same": true
+      }
+    ]
+  },
+  "anchor_instability_claim_oracle_gated_raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_claim_oracle_gated_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+  "anchor_instability_claim_oracle_gated_scores_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_claim_oracle_gated_denoise_phase_gate_dense_history_fresh_v1_scores.json",
+  "anchor_instability_claim_seeded_gated": {
+    "delta_vs_fixed": 0.10901785714285717,
+    "delta_vs_random": 0.1491696428571429,
+    "relative_cost": 2.625,
+    "repair_score": 0.5212946428571429,
+    "run_id": "diffusion-6ae167dc85d5e6ac",
+    "selected_count": 5.0,
+    "source_states": "final,history"
+  },
+  "anchor_instability_claim_seeded_gated_identity": {
+    "anchor_raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_claim_oracle_gated_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+    "compared_task_count": 5,
+    "gate_active_count": 2,
+    "gate_active_mean_task_score_delta": -0.008035714285714368,
+    "gate_inactive_count": 3,
+    "gate_inactive_identity_match_count": 3,
+    "gated_raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_claim_seeded_gated_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+    "rows": [
+      {
+        "gate_active": false,
+        "history_instability_gate_active": false,
+        "planning_prompt_gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_001",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": false,
+        "history_instability_gate_active": false,
+        "planning_prompt_gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_003",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": true,
+        "history_instability_gate_active": false,
+        "planning_prompt_gate_active": true,
+        "prompt_same": false,
+        "seed_same": true,
+        "seed_tokens_same": false,
+        "task_id": "plan_004",
+        "task_score_delta": -0.016071428571428736,
+        "text_same": false
+      },
+      {
+        "gate_active": false,
+        "history_instability_gate_active": false,
+        "planning_prompt_gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_006",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": true,
+        "history_instability_gate_active": true,
+        "planning_prompt_gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_007",
+        "task_score_delta": 0.0,
+        "text_same": true
+      }
+    ]
+  },
+  "anchor_instability_claim_seeded_gated_raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_claim_seeded_gated_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+  "anchor_instability_claim_seeded_gated_scores_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_claim_seeded_gated_denoise_phase_gate_dense_history_fresh_v1_scores.json",
+  "anchor_instability_claim_strict_gated": {
+    "delta_vs_fixed": 0.08334821428571426,
+    "delta_vs_random": 0.1235,
+    "relative_cost": 2.625,
+    "repair_score": 0.495625,
+    "run_id": "diffusion-df4149f37f6b21bf",
+    "selected_count": 4.0,
+    "source_states": "final,history"
+  },
+  "anchor_instability_claim_strict_gated_identity": {
+    "anchor_raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_claim_gated_compact_prompt_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+    "compared_task_count": 5,
+    "gate_active_count": 2,
+    "gate_active_mean_task_score_delta": -0.06267857142857144,
+    "gate_inactive_count": 3,
+    "gate_inactive_identity_match_count": 3,
+    "gated_raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_claim_strict_gated_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+    "rows": [
+      {
+        "gate_active": false,
+        "history_instability_gate_active": false,
+        "planning_prompt_gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_001",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": false,
+        "history_instability_gate_active": false,
+        "planning_prompt_gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_003",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": true,
+        "history_instability_gate_active": false,
+        "planning_prompt_gate_active": true,
+        "prompt_same": false,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_004",
+        "task_score_delta": -0.1253571428571429,
+        "text_same": false
+      },
+      {
+        "gate_active": false,
+        "history_instability_gate_active": false,
+        "planning_prompt_gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_006",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": true,
+        "history_instability_gate_active": true,
+        "planning_prompt_gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_007",
+        "task_score_delta": 0.0,
+        "text_same": true
+      }
+    ]
+  },
+  "anchor_instability_claim_strict_gated_raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_claim_strict_gated_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+  "anchor_instability_claim_strict_gated_scores_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_claim_strict_gated_denoise_phase_gate_dense_history_fresh_v1_scores.json",
+  "anchor_instability_gated": {
+    "delta_vs_fixed": 0.07763392857142859,
+    "delta_vs_random": 0.11778571428571433,
+    "relative_cost": 2.625,
+    "repair_score": 0.4899107142857143,
+    "run_id": "diffusion-a7b64be5b7258f39",
+    "selected_count": 5.0,
+    "source_states": "final,history"
+  },
+  "anchor_instability_gated_identity": {
+    "anchor_raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_select_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+    "compared_task_count": 5,
+    "gate_active_count": 1,
+    "gate_active_mean_task_score_delta": 0.0,
+    "gate_inactive_count": 4,
+    "gate_inactive_identity_match_count": 4,
+    "gated_raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_gated_identity_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+    "rows": [
+      {
+        "gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_001",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_003",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_004",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_006",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": true,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": false,
+        "task_id": "plan_007",
+        "task_score_delta": 0.0,
+        "text_same": false
+      }
+    ]
+  },
+  "anchor_instability_gated_raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_gated_identity_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+  "anchor_instability_gated_scores_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_gated_identity_denoise_phase_gate_dense_history_fresh_v1_scores.json",
+  "anchor_instability_prompt_gated": {
+    "delta_vs_fixed": 0.08602678571428574,
+    "delta_vs_random": 0.12617857142857147,
+    "relative_cost": 2.625,
+    "repair_score": 0.49830357142857146,
+    "run_id": "diffusion-4c6a7a9f356b3f0d",
+    "selected_count": 5.0,
+    "source_states": "final,history"
+  },
+  "anchor_instability_prompt_gated_identity": {
+    "anchor_raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_select_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+    "compared_task_count": 5,
+    "gate_active_count": 1,
+    "gate_active_mean_task_score_delta": 0.06714285714285717,
+    "gate_inactive_count": 4,
+    "gate_inactive_identity_match_count": 4,
+    "gated_raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_prompt_gated_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+    "rows": [
+      {
+        "gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_001",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_003",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_004",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_006",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": true,
+        "prompt_same": false,
+        "seed_same": true,
+        "seed_tokens_same": false,
+        "task_id": "plan_007",
+        "task_score_delta": 0.06714285714285717,
+        "text_same": false
+      }
+    ]
+  },
+  "anchor_instability_prompt_gated_raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_prompt_gated_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+  "anchor_instability_prompt_gated_scores_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_prompt_gated_denoise_phase_gate_dense_history_fresh_v1_scores.json",
+  "anchor_instability_prompt_only_gated": {
+    "delta_vs_fixed": 0.06763392857142858,
+    "delta_vs_random": 0.10778571428571432,
+    "relative_cost": 2.625,
+    "repair_score": 0.4799107142857143,
+    "run_id": "diffusion-4b5fc2b7604c28a5",
+    "selected_count": 5.0,
+    "source_states": "final,history"
+  },
+  "anchor_instability_prompt_only_gated_identity": {
+    "anchor_raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_select_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+    "compared_task_count": 5,
+    "gate_active_count": 1,
+    "gate_active_mean_task_score_delta": -0.08000000000000002,
+    "gate_inactive_count": 4,
+    "gate_inactive_identity_match_count": 4,
+    "gated_raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_prompt_only_gated_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+    "rows": [
+      {
+        "gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_001",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_003",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_004",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": false,
+        "prompt_same": true,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_006",
+        "task_score_delta": 0.0,
+        "text_same": true
+      },
+      {
+        "gate_active": true,
+        "prompt_same": false,
+        "seed_same": true,
+        "seed_tokens_same": true,
+        "task_id": "plan_007",
+        "task_score_delta": -0.08000000000000002,
+        "text_same": false
+      }
+    ]
+  },
+  "anchor_instability_prompt_only_gated_raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_prompt_only_gated_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+  "anchor_instability_prompt_only_gated_scores_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_prompt_only_gated_denoise_phase_gate_dense_history_fresh_v1_scores.json",
+  "anchor_instability_scores_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_instability_denoise_phase_gate_dense_history_fresh_v1_scores.json",
+  "final_source_scores_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_fixed_source_denoise_phase_gate_fresh_v1_scores.json",
+  "generated_by": "experiments/analyze_diffusion_anchor_retention_loss.py",
+  "guarded_search_scores_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_search_guarded_denoise_phase_gate_dense_history_fresh_v1_scores.json",
+  "history_anchor_scores_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_history_anchor_denoise_phase_gate_fresh_v1_scores.json",
+  "history_contrast_scores_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_history_contrast_denoise_phase_gate_dense_history_fresh_v1_scores.json",
+  "history_instability_scores_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_history_instability_denoise_phase_gate_dense_history_fresh_v1_scores.json",
+  "loose_search_scores_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_search_denoise_phase_gate_dense_history_fresh_v1_scores.json",
+  "loss_formula": "(1 - target_similarity) + 0.25 * lost_target_token_count + 0.75 * lost_prompt_keyword_count + 1.0 * lost_digit_token_count + max(0, 0.90 - history_to_final_char_ratio) + 0.25 * target_count_gap",
+  "raw_path": "eval_results\\diffusion_language\\llada_moe_mixed_compact_span_anchor_select_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+  "rows": [
+    {
+      "anchor_choice": "history",
+      "anchor_selection_features": {
+        "final_span_score": 6.583403,
+        "final_target_count": 1,
+        "history_mask_count": 2,
+        "history_retention_loss": 0.289514,
+        "history_safety_char_ratio_min": 0.95,
+        "history_safety_target_similarity_min": 0.96,
+        "history_selection_score": 0.3835,
+        "history_span_score": 6.586903,
+        "history_span_score_delta": 0.0035,
+        "history_step": 31,
+        "history_target_count": 1,
+        "history_to_final_char_ratio": 0.960725,
+        "history_visible_chars": 318,
+        "lost_digit_token_count": 0,
+        "lost_prompt_keyword_count": 0,
+        "lost_target_tokens": [
+          "either"
+        ],
+        "target_similarity": 0.960486,
+        "text_similarity": 0.979969
+      },
+      "anchor_selection_reason": "history_single_span_score_advantage",
+      "classification": "safe_history_anchor",
+      "constraint_retention_loss": 0.289514,
+      "final_repair_score": 0.5282142857142856,
+      "history_minus_final_repair_score": 0.0,
+      "history_repair_score": 0.5282142857142856,
+      "history_span_score_delta": 0.0035,
+      "history_to_final_char_ratio": 0.960725,
+      "lost_digit_token_count": 0,
+      "lost_prompt_keyword_count": 0,
+      "lost_target_token_count": 1,
+      "lost_target_tokens": [
+        "either"
+      ],
+      "target_count_gap": 0,
+      "target_similarity": 0.960486,
+      "task_id": "plan_001",
+      "text_similarity": 0.979969
+    },
+    {
+      "anchor_choice": "final",
+      "anchor_selection_features": {
+        "final_span_score": 3.718275,
+        "final_target_count": 2,
+        "history_mask_count": 6,
+        "history_retention_loss": 0.336253,
+        "history_safety_char_ratio_min": 0.95,
+        "history_safety_target_similarity_min": 0.96,
+        "history_selection_score": 0.474333,
+        "history_span_score": 3.718275,
+        "history_span_score_delta": 0.0,
+        "history_step": 29,
+        "history_target_count": 2,
+        "history_to_final_char_ratio": 0.897338,
+        "history_visible_chars": 236,
+        "lost_digit_token_count": 0,
+        "lost_prompt_keyword_count": 0,
+        "lost_target_tokens": [
+          "timeouts"
+        ],
+        "target_similarity": 0.916409,
+        "text_similarity": 0.697395
+      },
+      "anchor_selection_reason": "final_source_preserves_more_context",
+      "classification": "span_advantage_blocks_history",
+      "constraint_retention_loss": 0.336253,
+      "final_repair_score": 0.6885714285714286,
+      "history_minus_final_repair_score": 0.0,
+      "history_repair_score": 0.6885714285714286,
+      "history_span_score_delta": 0.0,
+      "history_to_final_char_ratio": 0.897338,
+      "lost_digit_token_count": 0,
+      "lost_prompt_keyword_count": 0,
+      "lost_target_token_count": 1,
+      "lost_target_tokens": [
+        "timeouts"
+      ],
+      "target_count_gap": 0,
+      "target_similarity": 0.916409,
+      "task_id": "plan_002",
+      "text_similarity": 0.697395
+    },
+    {
+      "anchor_choice": "final",
+      "anchor_selection_features": {
+        "final_span_score": 2.7747,
+        "final_target_count": 1,
+        "history_mask_count": 2,
+        "history_retention_loss": 0.030303,
+        "history_safety_char_ratio_min": 0.95,
+        "history_safety_target_similarity_min": 0.96,
+        "history_selection_score": 0.407,
+        "history_span_score": 2.7747,
+        "history_span_score_delta": 0.0,
+        "history_step": 31,
+        "history_target_count": 1,
+        "history_to_final_char_ratio": 0.946058,
+        "history_visible_chars": 228,
+        "lost_digit_token_count": 0,
+        "lost_prompt_keyword_count": 0,
+        "lost_target_tokens": [],
+        "target_similarity": 0.969697,
+        "text_similarity": 0.929336
+      },
+      "anchor_selection_reason": "final_source_preserves_more_context",
+      "classification": "span_advantage_blocks_history",
+      "constraint_retention_loss": 0.030303,
+      "final_repair_score": 0.5382142857142858,
+      "history_minus_final_repair_score": -0.05250000000000005,
+      "history_repair_score": 0.4857142857142857,
+      "history_span_score_delta": 0.0,
+      "history_to_final_char_ratio": 0.946058,
+      "lost_digit_token_count": 0,
+      "lost_prompt_keyword_count": 0,
+      "lost_target_token_count": 0,
+      "lost_target_tokens": [],
+      "target_count_gap": 0,
+      "target_similarity": 0.969697,
+      "task_id": "plan_003",
+      "text_similarity": 0.929336
+    },
+    {
+      "anchor_choice": "final",
+      "anchor_selection_features": {
+        "final_span_score": 1.716248,
+        "final_target_count": 1,
+        "history_mask_count": 2,
+        "history_retention_loss": 0.656177,
+        "history_safety_char_ratio_min": 0.95,
+        "history_safety_target_similarity_min": 0.96,
+        "history_selection_score": 0.459206,
+        "history_span_score": 1.716248,
+        "history_span_score_delta": 0.0,
+        "history_step": 31,
+        "history_target_count": 1,
+        "history_to_final_char_ratio": 0.938338,
+        "history_visible_chars": 350,
+        "lost_digit_token_count": 0,
+        "lost_prompt_keyword_count": 0,
+        "lost_target_tokens": [
+          "evaluating",
+          "performance"
+        ],
+        "target_similarity": 0.843823,
+        "text_similarity": 0.907331
+      },
+      "anchor_selection_reason": "final_source_preserves_more_context",
+      "classification": "span_advantage_blocks_history",
+      "constraint_retention_loss": 0.656177,
+      "final_repair_score": 0.35928571428571426,
+      "history_minus_final_repair_score": -0.021428571428571408,
+      "history_repair_score": 0.33785714285714286,
+      "history_span_score_delta": 0.0,
+      "history_to_final_char_ratio": 0.938338,
+      "lost_digit_token_count": 0,
+      "lost_prompt_keyword_count": 0,
+      "lost_target_token_count": 2,
+      "lost_target_tokens": [
+        "evaluating",
+        "performance"
+      ],
+      "target_count_gap": 0,
+      "target_similarity": 0.843823,
+      "task_id": "plan_004",
+      "text_similarity": 0.907331
+    },
+    {
+      "anchor_choice": "final",
+      "anchor_selection_features": {
+        "final_span_score": 1.674714,
+        "final_target_count": 2,
+        "history_mask_count": 2,
+        "history_retention_loss": 1.290498,
+        "history_safety_char_ratio_min": 0.95,
+        "history_safety_target_similarity_min": 0.96,
+        "history_selection_score": 0.292779,
+        "history_span_score": 1.68264,
+        "history_span_score_delta": 0.007926,
+        "history_step": 31,
+        "history_target_count": 2,
+        "history_to_final_char_ratio": 0.963687,
+        "history_visible_chars": 345,
+        "lost_digit_token_count": 0,
+        "lost_prompt_keyword_count": 1,
+        "lost_target_tokens": [
+          "training",
+          "run"
+        ],
+        "target_similarity": 0.959502,
+        "text_similarity": 0.981508
+      },
+      "anchor_selection_reason": "final_source_preserves_more_context",
+      "classification": "compact_target_blocks_history",
+      "constraint_retention_loss": 1.290498,
+      "final_repair_score": 0.42142857142857143,
+      "history_minus_final_repair_score": 0.0,
+      "history_repair_score": 0.42142857142857143,
+      "history_span_score_delta": 0.007926,
+      "history_to_final_char_ratio": 0.963687,
+      "lost_digit_token_count": 0,
+      "lost_prompt_keyword_count": 1,
+      "lost_target_token_count": 2,
+      "lost_target_tokens": [
+        "training",
+        "run"
+      ],
+      "target_count_gap": 0,
+      "target_similarity": 0.959502,
+      "task_id": "plan_005",
+      "text_similarity": 0.981508
+    },
+    {
+      "anchor_choice": "final",
+      "anchor_selection_features": {
+        "final_span_score": 2.10875,
+        "final_target_count": 2,
+        "history_mask_count": 2,
+        "history_retention_loss": 0.296595,
+        "history_safety_char_ratio_min": 0.95,
+        "history_safety_target_similarity_min": 0.96,
+        "history_selection_score": 0.34225,
+        "history_span_score": 2.10875,
+        "history_span_score_delta": 0.0,
+        "history_step": 31,
+        "history_target_count": 2,
+        "history_to_final_char_ratio": 0.962963,
+        "history_visible_chars": 338,
+        "lost_digit_token_count": 0,
+        "lost_prompt_keyword_count": 0,
+        "lost_target_tokens": [
+          "includesable"
+        ],
+        "target_similarity": 0.953405,
+        "text_similarity": 0.981132
+      },
+      "anchor_selection_reason": "final_source_preserves_more_context",
+      "classification": "span_advantage_blocks_history",
+      "constraint_retention_loss": 0.296595,
+      "final_repair_score": 0.5842857142857143,
+      "history_minus_final_repair_score": -0.03392857142857142,
+      "history_repair_score": 0.5503571428571429,
+      "history_span_score_delta": 0.0,
+      "history_to_final_char_ratio": 0.962963,
+      "lost_digit_token_count": 0,
+      "lost_prompt_keyword_count": 0,
+      "lost_target_token_count": 1,
+      "lost_target_tokens": [
+        "includesable"
+      ],
+      "target_count_gap": 0,
+      "target_similarity": 0.953405,
+      "task_id": "plan_006",
+      "text_similarity": 0.981132
+    },
+    {
+      "anchor_choice": "final",
+      "anchor_selection_features": {
+        "final_span_score": 1.422565,
+        "final_target_count": 3,
+        "history_mask_count": 2,
+        "history_retention_loss": 0.582988,
+        "history_safety_char_ratio_min": 0.95,
+        "history_safety_target_similarity_min": 0.96,
+        "history_selection_score": 0.29825,
+        "history_span_score": 1.422565,
+        "history_span_score_delta": 0.0,
+        "history_step": 31,
+        "history_target_count": 3,
+        "history_to_final_char_ratio": 0.944099,
+        "history_visible_chars": 304,
+        "lost_digit_token_count": 0,
+        "lost_prompt_keyword_count": 0,
+        "lost_target_tokens": [
+          "architecture",
+          "loop"
+        ],
+        "target_similarity": 0.917012,
+        "text_similarity": 0.936102
+      },
+      "anchor_selection_reason": "final_source_preserves_more_context",
+      "classification": "span_advantage_blocks_history",
+      "constraint_retention_loss": 0.582988,
+      "final_repair_score": 0.5164285714285715,
+      "history_minus_final_repair_score": -0.018571428571428572,
+      "history_repair_score": 0.4978571428571429,
+      "history_span_score_delta": 0.0,
+      "history_to_final_char_ratio": 0.944099,
+      "lost_digit_token_count": 0,
+      "lost_prompt_keyword_count": 0,
+      "lost_target_token_count": 2,
+      "lost_target_tokens": [
+        "architecture",
+        "loop"
+      ],
+      "target_count_gap": 0,
+      "target_similarity": 0.917012,
+      "task_id": "plan_007",
+      "text_similarity": 0.936102
+    },
+    {
+      "anchor_choice": "final",
+      "anchor_selection_features": {
+        "final_span_score": 2.137775,
+        "final_target_count": 3,
+        "history_mask_count": 20,
+        "history_retention_loss": 2.081838,
+        "history_safety_char_ratio_min": 0.95,
+        "history_safety_target_similarity_min": 0.96,
+        "history_selection_score": 0.14565,
+        "history_span_score": 2.137775,
+        "history_span_score_delta": 0.0,
+        "history_step": 22,
+        "history_target_count": 2,
+        "history_to_final_char_ratio": 0.614108,
+        "history_visible_chars": 148,
+        "lost_digit_token_count": 0,
+        "lost_prompt_keyword_count": 0,
+        "lost_target_tokens": [
+          "evaluate",
+          "consistency",
+          "known",
+          "facts"
+        ],
+        "target_similarity": 0.454054,
+        "text_similarity": 0.735219
+      },
+      "anchor_selection_reason": "final_source_preserves_more_context",
+      "classification": "span_advantage_blocks_history",
+      "constraint_retention_loss": 2.081838,
+      "final_repair_score": 0.28285714285714286,
+      "history_minus_final_repair_score": 0.0,
+      "history_repair_score": 0.28285714285714286,
+      "history_span_score_delta": 0.0,
+      "history_to_final_char_ratio": 0.614108,
+      "lost_digit_token_count": 0,
+      "lost_prompt_keyword_count": 0,
+      "lost_target_token_count": 4,
+      "lost_target_tokens": [
+        "evaluate",
+        "consistency",
+        "known",
+        "facts"
+      ],
+      "target_count_gap": 1,
+      "target_similarity": 0.454054,
+      "task_id": "plan_008",
+      "text_similarity": 0.735219
+    }
+  ],
+  "schema": "diffusion_anchor_retention_loss_audit.v1",
+  "summary": {
+    "anchor_choice_counts": {
+      "final": 7,
+      "history": 1
+    },
+    "blocked_history_anchor_count": 7,
+    "classification_counts": {
+      "compact_target_blocks_history": 1,
+      "safe_history_anchor": 1,
+      "span_advantage_blocks_history": 6
+    },
+    "loss_formula": "(1 - target_similarity) + 0.25 * lost_target_token_count + 0.75 * lost_prompt_keyword_count + 1.0 * lost_digit_token_count + max(0, 0.90 - history_to_final_char_ratio) + 0.25 * target_count_gap",
+    "mean_history_minus_final_repair_score": -0.01580357142857143,
+    "mean_loss_blocked_history_anchor": 0.7535217142857142,
+    "mean_loss_safe_history_anchor": 0.289514,
+    "mean_retention_loss": 0.69552075,
+    "row_count": 8,
+    "safe_history_anchor_count": 1
+  },
+  "theory_statement": "A denoise-history state is a useful latent repair anchor only when it keeps the constraints that survived in the final state while exposing a cleaner compact span to rewrite. The loss below turns that into an executable closed-loop criterion.",
+  "trajectory_contrast": {
+    "delta_vs_fixed": 0.0023214285714285854,
+    "delta_vs_random": 0.04247321428571432,
+    "relative_cost": 2.625,
+    "repair_score": 0.4145982142857143,
+    "run_id": "diffusion-b92d689695016154",
+    "selected_count": 0.0,
+    "source_states": "final"
+  },
+  "trajectory_instability": {
+    "delta_vs_fixed": 0.04683035714285716,
+    "delta_vs_random": 0.0869821428571429,
+    "relative_cost": 2.625,
+    "repair_score": 0.4591071428571429,
+    "run_id": "diffusion-e28eb1d3dde8eea7",
+    "selected_count": 4.0,
+    "source_states": "final"
+  },
+  "whole_history_search": {
+    "guarded": {
+      "delta_vs_fixed": 0.07763392857142859,
+      "delta_vs_random": 0.11778571428571433,
+      "relative_cost": 2.625,
+      "repair_score": 0.4899107142857143,
+      "run_id": "diffusion-ccef06238847a352",
+      "selected_count": 5.0,
+      "source_states": "final,history"
+    },
+    "loose": {
+      "delta_vs_fixed": 0.07107142857142856,
+      "delta_vs_random": 0.1112232142857143,
+      "relative_cost": 2.625,
+      "repair_score": 0.4833482142857143,
+      "run_id": "diffusion-c326b3ef25eb8374",
+      "selected_count": 5.0,
+      "source_states": "final,history"
+    }
+  }
+}

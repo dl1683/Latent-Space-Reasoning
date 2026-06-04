@@ -35,6 +35,15 @@ from transformers import AutoModelForCausalLM, AutoTokenizer
 
 from latent_reasoning.utils.device import get_device, ensure_tensor_device
 from latent_reasoning.utils.quantization import get_default_dtype, get_quantization_kwargs
+from latent_reasoning.decode.steering import (
+    DualSteeringProcessor,
+    IntermediateLayerSteering,
+    compute_steering_direction,
+    latent_to_layer_vectors,
+    make_steer_projection,
+)
+from latent_reasoning.decode.distribution_geometry import compare_logit_geometry
+from latent_reasoning.decode.geometry_controller import build_geometry_controller
 
 
 class LatentToSoftPrompt(nn.Module):
@@ -379,6 +388,12 @@ class LLMEncoder(Encoder):
             num_soft_tokens=8,  # 8 soft tokens to condition generation
         )
         self.soft_prompt_projector.to(self._device)
+        self._steer_projection = make_steer_projection(
+            d_latent=self._latent_dim,
+            d_hidden=self._embed_dim,
+            seed=5678,
+        ).to(device=self._device, dtype=self.model.dtype)
+        self._layer_steer_projections: dict[int, Tensor] = {}
 
     def _init_latent_projection(self) -> None:
         if self._latent_projection is None:
@@ -402,6 +417,92 @@ class LLMEncoder(Encoder):
             return pooled
         pooled = pooled.to(self._latent_projection.weight.dtype)
         return self._latent_projection(pooled)
+
+    @staticmethod
+    def _build_chat_prompt(tokenizer: AutoTokenizer, query: str | None) -> tuple[str, str]:
+        system_msg = "Answer to the best of your ability."
+        user_msg = query if query else ""
+        if hasattr(tokenizer, "apply_chat_template"):
+            messages = [
+                {"role": "system", "content": system_msg},
+                {"role": "user", "content": user_msg},
+            ]
+            try:
+                prompt = tokenizer.apply_chat_template(
+                    messages,
+                    tokenize=False,
+                    add_generation_prompt=True,
+                )
+            except Exception:
+                prompt = (
+                    "<|im_start|>system\n"
+                    f"{system_msg}<|im_end|>\n"
+                    "<|im_start|>user\n"
+                    f"{user_msg}<|im_end|>\n"
+                    "<|im_start|>assistant\n"
+                )
+        else:
+            prompt = f"System: {system_msg}\n\nUser: {user_msg}\n\nAssistant: "
+        return prompt, user_msg
+
+    @staticmethod
+    def _extract_clean_response(tokenizer: AutoTokenizer, generated: str, user_msg: str) -> str:
+        if user_msg in generated:
+            idx = generated.find(user_msg) + len(user_msg)
+            response = generated[idx:].strip()
+        else:
+            response = generated.strip()
+
+        for marker in ["Assistant:", "assistant:", "<|im_start|>", "<|im_end|>"]:
+            if response.startswith(marker):
+                response = response[len(marker):].strip()
+
+        if "<think>" in response and "</think>" in response:
+            think_end = response.find("</think>") + len("</think>")
+            response = response[think_end:].strip()
+        elif response.startswith("<think>"):
+            for starter in ["1.", "Step 1", "## Step", "Here's", "Here is"]:
+                if starter in response:
+                    idx = response.find(starter)
+                    response = response[idx:]
+                    break
+
+        return response if response else generated.strip()
+
+    @staticmethod
+    def _get_lm_head_weight(model: AutoModelForCausalLM) -> Tensor:
+        if hasattr(model, "lm_head") and hasattr(model.lm_head, "weight"):
+            return model.lm_head.weight
+
+        output_embedding = model.get_output_embeddings()
+        if output_embedding is None or output_embedding.weight is None:
+            raise ValueError("Model does not expose output logits weight.")
+        return output_embedding.weight
+
+    def _default_steering_layers(self) -> list[int]:
+        if not hasattr(self.model, "model") or not hasattr(self.model.model, "layers"):
+            return []
+        num_layers = len(self.model.model.layers)
+        if num_layers <= 0:
+            return []
+        return sorted({
+            max(0, num_layers // 4),
+            max(0, num_layers // 2),
+            max(0, int(3 * num_layers / 4)),
+        })
+
+    def _layer_projection(self, layer_idx: int) -> Tensor:
+        if layer_idx in self._layer_steer_projections:
+            return self._layer_steer_projections[layer_idx].to(
+                device=self._device, dtype=self.model.dtype
+            )
+        projection = make_steer_projection(
+            d_latent=self._latent_dim,
+            d_hidden=self._embed_dim,
+            seed=7000 + int(layer_idx),
+        ).to(device=self._device, dtype=self.model.dtype)
+        self._layer_steer_projections[layer_idx] = projection
+        return projection
 
     def encode(self, text: str) -> Tensor:
         """
@@ -714,26 +815,408 @@ class LLMEncoder(Encoder):
         else:
             response = generated.strip()
 
-        # Clean up role markers and thinking tokens
-        for marker in ["Assistant:", "assistant:", "<|im_start|>", "<|im_end|>"]:
-            if response.startswith(marker):
-                response = response[len(marker):].strip()
+        return self._extract_clean_response(self.tokenizer, generated, user_msg)
 
-        # Remove thinking block if present (Qwen3 thinking mode)
-        # Format: <think>...</think> followed by actual response
-        if "<think>" in response and "</think>" in response:
-            think_end = response.find("</think>") + len("</think>")
-            response = response[think_end:].strip()
-        elif response.startswith("<think>"):
-            # Thinking tag but no end tag - might be truncated, try to find actual content
-            # Look for common plan starters after the thinking
-            for starter in ["1.", "Step 1", "## Step", "Here's", "Here is"]:
-                if starter in response:
-                    idx = response.find(starter)
-                    response = response[idx:]
+    def decode_with_dual_steering(
+        self,
+        latent: Tensor,
+        query: str | None = None,
+        max_new_tokens: int = 2048,
+        temperature: float = 0.7,
+        steering_eta: float = 0.05,
+        steering_alpha: float = 0.01,
+        kl_cap: float = 0.5,
+    ) -> str:
+        """
+        Decode with logits-space dual steering derived from the latent vector.
+        """
+        latent = ensure_tensor_device(latent, self._device)
+        if latent.dim() == 1:
+            latent = latent.unsqueeze(0)
+
+        prompt, user_msg = self._build_chat_prompt(self.tokenizer, query)
+        inputs = self.tokenizer(prompt, return_tensors="pt")
+        inputs = {k: v.to(self._device) for k, v in inputs.items()}
+
+        omega = compute_steering_direction(
+            latent=latent,
+            W_steer=self._steer_projection,
+            lm_head_weight=self._get_lm_head_weight(self.model),
+            curvature=1.0,
+            device=self._device,
+        )
+        processor = DualSteeringProcessor(
+            omega_W=omega,
+            eta=steering_eta,
+            alpha=steering_alpha,
+            kl_cap=kl_cap,
+        )
+
+        with torch.no_grad():
+            if temperature < 0.01:
+                outputs = self.model.generate(
+                    **inputs,
+                    max_new_tokens=max_new_tokens,
+                    do_sample=False,
+                    logits_processor=[processor],
+                    pad_token_id=self.tokenizer.pad_token_id,
+                    eos_token_id=self.tokenizer.eos_token_id,
+                    repetition_penalty=1.2,
+                )
+            else:
+                outputs = self.model.generate(
+                    **inputs,
+                    max_new_tokens=max_new_tokens,
+                    do_sample=True,
+                    temperature=temperature,
+                    top_p=0.9,
+                    top_k=50,
+                    logits_processor=[processor],
+                    pad_token_id=self.tokenizer.pad_token_id,
+                    eos_token_id=self.tokenizer.eos_token_id,
+                    repetition_penalty=1.2,
+                )
+
+        generated_ids = self._extract_first_sequence_ids(outputs)
+        generated = self.tokenizer.decode(generated_ids, skip_special_tokens=True)
+        return self._extract_clean_response(self.tokenizer, generated, user_msg)
+
+    def decode_with_intermediate_steering(
+        self,
+        latent: Tensor,
+        query: str | None = None,
+        max_new_tokens: int = 2048,
+        temperature: float = 0.7,
+        steering_scale: float = 1.0,
+    ) -> str:
+        """
+        Decode with residual-stream steering injected at selected layers.
+        """
+        latent = ensure_tensor_device(latent, self._device)
+        if latent.dim() == 1:
+            latent = latent.unsqueeze(0)
+
+        prompt, user_msg = self._build_chat_prompt(self.tokenizer, query)
+        inputs = self.tokenizer(prompt, return_tensors="pt")
+        inputs = {k: v.to(self._device) for k, v in inputs.items()}
+
+        layer_indices = self._default_steering_layers()
+        if not layer_indices:
+            return self.decode_with_soft_prompt(
+                latent=latent,
+                query=query,
+                max_new_tokens=max_new_tokens,
+                temperature=temperature,
+            )
+
+        layer_projections = {
+            layer_idx: self._layer_projection(layer_idx)
+            for layer_idx in layer_indices
+        }
+        layer_vectors = latent_to_layer_vectors(
+            latent=latent.squeeze(0),
+            layer_projections=layer_projections,
+            curvature=1.0,
+            target_rms=0.022,
+            use_logmap=False,
+        )
+
+        with IntermediateLayerSteering(
+            model=self.model,
+            layer_vectors=layer_vectors,
+            scale=steering_scale,
+        ):
+            with torch.no_grad():
+                if temperature < 0.01:
+                    outputs = self.model.generate(
+                        **inputs,
+                        max_new_tokens=max_new_tokens,
+                        do_sample=False,
+                        pad_token_id=self.tokenizer.pad_token_id,
+                        eos_token_id=self.tokenizer.eos_token_id,
+                        repetition_penalty=1.2,
+                    )
+                else:
+                    outputs = self.model.generate(
+                        **inputs,
+                        max_new_tokens=max_new_tokens,
+                        do_sample=True,
+                        temperature=temperature,
+                        top_p=0.9,
+                        top_k=50,
+                        pad_token_id=self.tokenizer.pad_token_id,
+                        eos_token_id=self.tokenizer.eos_token_id,
+                        repetition_penalty=1.2,
+                    )
+
+        generated_ids = self._extract_first_sequence_ids(outputs)
+        generated = self.tokenizer.decode(generated_ids, skip_special_tokens=True)
+        return self._extract_clean_response(self.tokenizer, generated, user_msg)
+
+    def _sample_from_logits(
+        self,
+        logits: Tensor,
+        temperature: float,
+        *,
+        do_sample: bool,
+        top_p: float = 0.9,
+        top_k: int = 50,
+    ) -> Tensor:
+        """Sample the next token from logits with top-p/top-k filtering."""
+        logits = logits.to(self._device)
+        if logits.shape[0] != 1:
+            raise ValueError("Geometry feedback sampling supports batch size 1 only.")
+
+        if not do_sample:
+            return torch.argmax(logits, dim=-1)
+
+        scaled = logits / max(float(temperature), 1e-8)
+        probs = torch.softmax(scaled, dim=-1)
+        probs = probs.to(dtype=torch.float32, device=self._device)
+
+        if top_k > 0:
+            top_k = min(top_k, probs.size(-1))
+            top_k_values, top_k_indices = torch.topk(probs, k=top_k, dim=-1)
+            top_k_probs = torch.zeros_like(probs)
+            top_k_probs.scatter_(1, top_k_indices, top_k_values)
+            probs = top_k_probs
+
+        if top_p < 1.0:
+            sorted_probs, sorted_indices = torch.sort(probs, dim=-1, descending=True)
+            cumulative = torch.cumsum(sorted_probs, dim=-1)
+            sorted_probs = torch.where(cumulative <= top_p, sorted_probs, torch.zeros_like(sorted_probs))
+            if not torch.any(sorted_probs.sum(dim=-1) > 0):
+                sorted_probs = probs
+                sorted_indices = torch.arange(probs.size(-1), device=probs.device).unsqueeze(0).expand_as(probs)
+            else:
+                # Ensure we never drop the top token from an extremely low top-p budget.
+                sorted_probs[..., 0] = torch.max(sorted_probs[..., 0], torch.tensor(1e-8, device=probs.device))
+                sorted_probs = sorted_probs / sorted_probs.sum(dim=-1, keepdim=True).clamp_min(1e-8)
+
+            probs = torch.zeros_like(probs)
+            probs.scatter_(1, sorted_indices, sorted_probs)
+
+        probs = probs / probs.sum(dim=-1, keepdim=True).clamp_min(1e-8)
+        return torch.multinomial(probs, num_samples=1).squeeze(-1)
+
+    def decode_with_geometry_feedback(
+        self,
+        latent: Tensor,
+        query: str | None = None,
+        max_new_tokens: int = 2048,
+        temperature: float = 0.7,
+        steering_eta: float = 0.05,
+        steering_alpha: float = 0.01,
+        kl_cap: float = 0.5,
+        geometry_topk: int = 50,
+        target_forward_kl: float = 0.06,
+        kl_tolerance: float = 0.5,
+        eta_min: float = 0.01,
+        eta_max: float = 0.5,
+        eta_growth: float = 1.06,
+        eta_decay: float = 0.85,
+        geometry_controller: str = "legacy",
+        geometry_controller_kp: float = 0.0,
+        geometry_controller_ki: float = 0.0,
+        geometry_controller_kd: float = 0.0,
+        geometry_controller_error_ema: float = 0.2,
+    ) -> str:
+        """
+        Decode with geometry-feedback dual steering.
+
+        A baseline no-steer branch is used as a local reference at each step.
+        The steering gain is adapted online to keep the distribution drift near a
+        target forward KL for low-cost closed-loop control.
+        """
+        latent = ensure_tensor_device(latent, self._device)
+        if latent.dim() == 1:
+            latent = latent.unsqueeze(0)
+
+        prompt, user_msg = self._build_chat_prompt(self.tokenizer, query)
+        prompt_inputs = self.tokenizer(prompt, return_tensors="pt")
+        prompt_inputs = {k: v.to(self._device) for k, v in prompt_inputs.items()}
+        # Keep prompt and generated ids aligned for geometry diagnostics.
+        current_ids = prompt_inputs["input_ids"].clone()
+        current_attention = prompt_inputs["attention_mask"].clone()
+
+        omega = compute_steering_direction(
+            latent=latent,
+            W_steer=self._steer_projection,
+            lm_head_weight=self._get_lm_head_weight(self.model),
+            curvature=1.0,
+            device=self._device,
+        )
+        processor = DualSteeringProcessor(
+            omega_W=omega,
+            eta=steering_eta,
+            alpha=steering_alpha,
+            kl_cap=kl_cap,
+        )
+
+        do_sample = temperature >= 0.01
+        current_temp = temperature
+        current_top_p = 0.9
+
+        generated_ids: list[int] = []
+        geometry_trace: list[dict[str, object]] = []
+        controller = build_geometry_controller(
+            mode=geometry_controller,
+            steering_eta=float(steering_eta),
+            target_forward_kl=target_forward_kl,
+            kl_tolerance=kl_tolerance,
+            eta_min=eta_min,
+            eta_max=eta_max,
+            eta_growth=eta_growth,
+            eta_decay=eta_decay,
+            kp=geometry_controller_kp,
+            ki=geometry_controller_ki,
+            kd=geometry_controller_kd,
+            ema_alpha=geometry_controller_error_ema,
+        )
+
+        with torch.no_grad():
+            for _ in range(max_new_tokens):
+                baseline_outputs = self.model(
+                    input_ids=current_ids,
+                    attention_mask=current_attention,
+                    use_cache=False,
+                )
+                baseline_logits = baseline_outputs.logits[:, -1, :].detach()
+
+                steered_outputs = self.model(
+                    input_ids=current_ids,
+                    attention_mask=current_attention,
+                    use_cache=False,
+                )
+                steered_logits = steered_outputs.logits[:, -1, :].detach()
+                steered_logits = processor(current_ids, steered_logits)
+
+                metrics = compare_logit_geometry(
+                    reference_logits=baseline_logits,
+                    candidate_logits=steered_logits,
+                    topk=max(1, min(int(geometry_topk), steered_logits.shape[-1])),
+                )
+                mean_metrics = metrics.mean_dict()
+                forward_kl = float(mean_metrics["forward_kl"])
+                eta_before = float(processor.eta)
+                controller_state = controller.step(forward_kl)
+                controller_mode = str(controller_state.get("mode", geometry_controller))
+                controller_state["mode"] = controller_mode
+                eta_after = float(controller_state.get("eta_after", eta_before))
+                processor.eta = eta_after
+
+                next_token = self._sample_from_logits(
+                    logits=steered_logits,
+                    temperature=current_temp,
+                    do_sample=do_sample,
+                    top_p=current_top_p,
+                    top_k=50,
+                )
+                if not torch.isfinite(next_token).all():
                     break
 
-        return response if response else generated.strip()
+                token_id = next_token.item()
+                generated_ids.append(token_id)
+                if token_id == self.tokenizer.eos_token_id:
+                    break
+
+                current_ids = torch.cat(
+                    [current_ids, next_token.view(1, 1)], dim=1
+                )
+                current_attention = torch.cat(
+                    [current_attention, torch.ones_like(next_token.view(1, 1))],
+                    dim=1,
+                )
+
+                geometry_trace.append({
+                    "step": len(generated_ids),
+                    "forward_kl": forward_kl,
+                    "js": mean_metrics["js"],
+                    "reference_entropy": mean_metrics["reference_entropy"],
+                    "candidate_entropy": mean_metrics["candidate_entropy"],
+                    "entropy_delta": mean_metrics["entropy_delta"],
+                    "topk_overlap": mean_metrics["topk_overlap"],
+                    "weighted_rank_drift": mean_metrics["weighted_rank_drift"],
+                    "top1_changed": bool(mean_metrics["top1_changed"]),
+                    "controller": controller_mode,
+                    "eta_before": eta_before,
+                    "eta_after": eta_after,
+                    "eta_delta": float(controller_state.get("eta_delta", eta_after - eta_before)),
+                    "controller_error": float(
+                        controller_state.get(
+                            "normalized_error",
+                            controller_state.get("forward_kl_error", 0.0),
+                        )
+                    ),
+                    "eta": float(processor.eta),
+                })
+
+        self._last_decode_geometry_feedback_trace = geometry_trace
+
+        if not generated_ids:
+            # Fallback path in case generation gets stuck.
+            return self._extract_clean_response(
+                self.tokenizer,
+                "",
+                user_msg,
+            )
+
+        generated = self.tokenizer.decode(generated_ids, skip_special_tokens=True)
+        return self._extract_clean_response(self.tokenizer, generated, user_msg)
+
+    def decode_with_control(
+        self,
+        latent: Tensor,
+        mode: str = "soft_prompt",
+        query: str | None = None,
+        max_new_tokens: int = 2048,
+        temperature: float = 0.7,
+    ) -> str:
+        """
+        Decode using a latent control mode.
+        """
+        selected_mode = (mode or "soft_prompt").strip().lower()
+
+        if selected_mode in {"seed", "rng", "legacy"}:
+            return self.decode(
+                latent=latent,
+                query=query,
+                max_new_tokens=max_new_tokens,
+                temperature=temperature,
+            )
+        if selected_mode == "soft_prompt":
+            return self.decode_with_soft_prompt(
+                latent=latent,
+                query=query,
+                max_new_tokens=max_new_tokens,
+                temperature=temperature,
+            )
+        if selected_mode == "dual_steering":
+            return self.decode_with_dual_steering(
+                latent=latent,
+                query=query,
+                max_new_tokens=max_new_tokens,
+                temperature=temperature,
+            )
+        if selected_mode == "intermediate_steering":
+            return self.decode_with_intermediate_steering(
+                latent=latent,
+                query=query,
+                max_new_tokens=max_new_tokens,
+                temperature=temperature,
+            )
+        if selected_mode == "geometry_feedback":
+            return self.decode_with_geometry_feedback(
+                latent=latent,
+                query=query,
+                max_new_tokens=max_new_tokens,
+                temperature=temperature,
+            )
+
+        raise ValueError(
+            "Unsupported decode mode. Valid options: seed, soft_prompt, "
+            "dual_steering, intermediate_steering, geometry_feedback"
+        )
 
     def generate_baseline(
         self,
@@ -747,29 +1230,7 @@ class LLMEncoder(Encoder):
         This uses the same prompt format as decode(), but skips latent seeding
         and latent-driven sampling adjustments.
         """
-        system_msg = "Answer to the best of your ability."
-        user_msg = query if query else ""
-
-        # Try to use chat template if available
-        if hasattr(self.tokenizer, "apply_chat_template"):
-            messages = [
-                {"role": "system", "content": system_msg},
-                {"role": "user", "content": user_msg},
-            ]
-            try:
-                prompt = self.tokenizer.apply_chat_template(
-                    messages,
-                    tokenize=False,
-                    add_generation_prompt=True,
-                )
-            except Exception:
-                prompt = (
-                    f"<|im_start|>system\n{system_msg}<|im_end|>\n"
-                    f"<|im_start|>user\n{user_msg}<|im_end|>\n"
-                    "<|im_start|>assistant\n"
-                )
-        else:
-            prompt = f"System: {system_msg}\n\nUser: {user_msg}\n\nAssistant: "
+        prompt, user_msg = self._build_chat_prompt(self.tokenizer, query)
 
         inputs = self.tokenizer(prompt, return_tensors="pt")
         inputs = {k: v.to(self._device) for k, v in inputs.items()}
@@ -800,27 +1261,7 @@ class LLMEncoder(Encoder):
         generated_ids = self._extract_first_sequence_ids(outputs)
         generated = self.tokenizer.decode(generated_ids, skip_special_tokens=True)
 
-        if user_msg in generated:
-            idx = generated.find(user_msg) + len(user_msg)
-            response = generated[idx:].strip()
-        else:
-            response = generated.strip()
-
-        for marker in ["Assistant:", "assistant:", "<|im_start|>", "<|im_end|>"]:
-            if response.startswith(marker):
-                response = response[len(marker):].strip()
-
-        if "<think>" in response and "</think>" in response:
-            think_end = response.find("</think>") + len("</think>")
-            response = response[think_end:].strip()
-        elif response.startswith("<think>"):
-            for starter in ["1.", "Step 1", "## Step", "Here's", "Here is"]:
-                if starter in response:
-                    idx = response.find(starter)
-                    response = response[idx:]
-                    break
-
-        return response if response else generated.strip()
+        return self._extract_clean_response(self.tokenizer, generated, user_msg)
 
     def _extract_first_sequence_ids(self, generation_output) -> list[int]:
         """
@@ -893,26 +1334,7 @@ class LLMEncoder(Encoder):
             soft_prompt = self.soft_prompt_projector(latent)  # (1, num_soft_tokens, embed_dim)
             soft_prompt = soft_prompt.to(self.model.dtype)
 
-        # Build the text prompt
-        system_msg = "Answer to the best of your ability."
-        user_msg = query if query else ""
-
-        # Try to use chat template if available
-        if hasattr(self.tokenizer, 'apply_chat_template'):
-            messages = [
-                {"role": "system", "content": system_msg},
-                {"role": "user", "content": user_msg},
-            ]
-            try:
-                prompt = self.tokenizer.apply_chat_template(
-                    messages,
-                    tokenize=False,
-                    add_generation_prompt=True,
-                )
-            except Exception:
-                prompt = f"<|im_start|>system\n{system_msg}<|im_end|>\n<|im_start|>user\n{user_msg}<|im_end|>\n<|im_start|>assistant\n"
-        else:
-            prompt = f"System: {system_msg}\n\nUser: {user_msg}\n\nAssistant: "
+        prompt, user_msg = self._build_chat_prompt(self.tokenizer, query)
 
         # Tokenize
         inputs = self.tokenizer(prompt, return_tensors="pt")
@@ -1004,6 +1426,15 @@ class LLMEncoder(Encoder):
         self._device = device
         self.model.to(device)
         self.soft_prompt_projector.to(device)
+        self._steer_projection = self._steer_projection.to(
+            device=device,
+            dtype=self.model.dtype,
+        )
+        for layer_idx, layer_projection in self._layer_steer_projections.items():
+            self._layer_steer_projections[layer_idx] = layer_projection.to(
+                device=device,
+                dtype=self.model.dtype,
+            )
         if self._latent_projection is not None:
             self._latent_projection.to(device)
         return self

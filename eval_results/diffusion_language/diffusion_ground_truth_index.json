@@ -1,0 +1,2123 @@
+{
+  "canonical_slots": [
+    {
+      "canonical_file_hashes": {
+        "raw_sha256": "7257b8d288f5f31d0bbc984abbd38354600423b2627fab0221304312f9102a52",
+        "report_sha256": "57a451f887250d1112e56ef9c08faebad81f2f597af3f0637d752bce59e98da7",
+        "scores_sha256": "efa492a71602afe59dba46b2c3b2d65572c9786056f54443ffb39f5d2c5b21c0"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_mixed_gated_ranked_span_guarded_exact_identity_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_mixed_gated_ranked_span_guarded_exact_identity_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_mixed_gated_ranked_span_guarded_exact_identity_v1_scores.json"
+      },
+      "claim_id": "dense_llada_lean_mixed_guarded_repair",
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.3664682539682539,
+        "oracle_headroom_vs_repair": 0.0009920634920634885,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.3344841269841269,
+        "repair_budget_delta_vs_evolved": 2.111111111111111,
+        "repair_delta_vs_evolved": 0.14702380952380953,
+        "repair_delta_vs_fixed": 0.1813095238095238,
+        "repair_delta_vs_random": 0.2132936507936508,
+        "repair_gain_per_extra_generation": 0.06964285714285715,
+        "repair_generation_budget": 6.111111111111111,
+        "repair_relative_gpu_cost": 6.111111111111111,
+        "repair_score": 0.5477777777777777,
+        "repair_wins_vs_evolved": "7/2/0",
+        "repair_wins_vs_fixed": "7/2/0",
+        "repair_wins_vs_random": "9/0/0"
+      },
+      "label": "Dense compact top-score policy",
+      "required_repair_diagnostics": [],
+      "result_identity": {
+        "content_hash": "45da934106d48a5bcb4514b89fc53a684f8f6012c8dac2d078d5e3df94adafce",
+        "run_id": "diffusion-45da934106d48a5b"
+      },
+      "selection_reason": "Highest current compact mixed dense-LLaDA repair score.",
+      "slot_id": "dense_compact_top_score",
+      "status": "supported scout result",
+      "title": "Dense LLaDA compact mixed guarded repair remains the strongest lean repair line"
+    },
+    {
+      "canonical_file_hashes": {
+        "raw_sha256": "82158193d1ac1a1279604cc852b8a5455717da0dcb729718ea0b389a90367da6",
+        "report_sha256": "07426ef44433d7fb4eda97d1220a7937bece6307981085ab7250e6fced3447fb",
+        "scores_sha256": "722c74adc276229e92e608ec2ae825a6723934c92c0cc86c3c86879ec93dbcc0"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_mixed_adaptive_constraint_span_identity_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_mixed_adaptive_constraint_span_identity_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_mixed_adaptive_constraint_span_identity_v1_scores.json"
+      },
+      "claim_id": "dense_llada_mixed_adaptive_span_budget",
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.3664682539682539,
+        "oracle_headroom_vs_repair": 0.0036111111111111083,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.3344841269841269,
+        "repair_budget_delta_vs_evolved": 1.0,
+        "repair_delta_vs_evolved": 0.11571428571428571,
+        "repair_delta_vs_fixed": 0.15000000000000002,
+        "repair_delta_vs_random": 0.181984126984127,
+        "repair_gain_per_extra_generation": 0.11571428571428571,
+        "repair_generation_budget": 5.0,
+        "repair_relative_gpu_cost": 5.0,
+        "repair_score": 0.5164682539682539,
+        "repair_wins_vs_evolved": "2/7/0",
+        "repair_wins_vs_fixed": "5/4/0",
+        "repair_wins_vs_random": "9/0/0"
+      },
+      "label": "Dense compact budget policy",
+      "required_repair_diagnostics": [],
+      "result_identity": {
+        "content_hash": "34e1ccb29a8754bcf41c6fccda06432c3bb4d00ad451b9429b219edc41feec2b",
+        "run_id": "diffusion-34e1ccb29a8754bc"
+      },
+      "selection_reason": "Best dense-LLaDA mixed gain per extra generation in the lean stack.",
+      "slot_id": "dense_compact_budget",
+      "status": "supported budget scout result",
+      "title": "Dense LLaDA adaptive constraint-span repair is the budget-favored mixed policy"
+    },
+    {
+      "canonical_file_hashes": {
+        "raw_sha256": "3e7e12245e7b53cfa37d11d54a53c4b5f447f5b815b3f8700e252970b7b0f6de",
+        "report_sha256": "545b90aab8a57d9641c21f762b77770c81e723b981a5b856d6c9638018ad58e3",
+        "scores_sha256": "97381c6a2689cca8a681a0fcedaf65dbb1481392b222974f7efe2fe1bdef02f7"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_planning_constraint_gap_span_adaptive_8task_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_planning_constraint_gap_span_adaptive_8task_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_planning_constraint_gap_span_adaptive_8task_v1_scores.json"
+      },
+      "claim_id": "dense_llada_planning_adaptive_span_repair",
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0015624999999999944,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.4122767857142857,
+        "repair_budget_delta_vs_evolved": 5.0,
+        "repair_delta_vs_evolved": 0.053035714285714276,
+        "repair_delta_vs_fixed": 0.053035714285714276,
+        "repair_delta_vs_random": 0.053035714285714276,
+        "repair_gain_per_extra_generation": 0.010607142857142855,
+        "repair_generation_budget": 6.0,
+        "repair_relative_gpu_cost": 6.0,
+        "repair_score": 0.4653125,
+        "repair_wins_vs_evolved": "6/2/0",
+        "repair_wins_vs_fixed": "6/2/0",
+        "repair_wins_vs_random": "6/2/0"
+      },
+      "label": "Dense planning span-repair policy",
+      "required_repair_diagnostics": [],
+      "result_identity": {
+        "content_hash": "",
+        "run_id": ""
+      },
+      "selection_reason": "Current canonical short-planning adaptive span repair result.",
+      "slot_id": "dense_planning_span_repair",
+      "status": "supported planning scout result",
+      "title": "Dense LLaDA adaptive planning span repair improves all eight short planning tasks"
+    },
+    {
+      "canonical_file_hashes": {
+        "raw_sha256": "20b6139426fbb3eeb515b8e5e3643b89d767c5d2c0fc6c3d79db8e59d0f376df",
+        "report_sha256": "8fe4d4087af306e818341adc52428db1084b79409d0a509a68bdde5f9afed9f8",
+        "scores_sha256": "e3a7aaae27e10a739e3b36a16eb7fdfb8705caa1d184f108384b846ba9d82fa8"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_hard_exact_verifier_span_early_stop_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_hard_exact_verifier_span_early_stop_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_hard_exact_verifier_span_early_stop_v1_scores.json"
+      },
+      "claim_id": "dense_llada_hard_exact_no_proposal_span_repair",
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.0,
+        "oracle_headroom_vs_repair": 0.0,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.0,
+        "repair_budget_delta_vs_evolved": 1.5,
+        "repair_delta_vs_evolved": 1.0,
+        "repair_delta_vs_fixed": 1.0,
+        "repair_delta_vs_random": 1.0,
+        "repair_gain_per_extra_generation": 0.6666666666666666,
+        "repair_generation_budget": 5.5,
+        "repair_relative_gpu_cost": 5.5,
+        "repair_score": 1.0,
+        "repair_wins_vs_evolved": "2/0/0",
+        "repair_wins_vs_fixed": "2/0/0",
+        "repair_wins_vs_random": "2/0/0"
+      },
+      "label": "Dense hard-exact no-proposal policy",
+      "required_repair_diagnostics": [],
+      "result_identity": {
+        "content_hash": "",
+        "run_id": ""
+      },
+      "selection_reason": "Verifier-localized span inpainting result without deterministic proposals.",
+      "slot_id": "dense_hard_exact_no_proposal",
+      "status": "supported hard-exact scout result",
+      "title": "Dense LLaDA hard exact repair solves no-proposal failures with verifier-localized span inpainting"
+    },
+    {
+      "canonical_file_hashes": {
+        "raw_sha256": "c0e330a59e5057b29d749fb6d9facd7547745a11cd36b230e669a837c366f79e",
+        "report_sha256": "5990177478689636aa824c730aa85814cb3c3b2ca7f58ea9b4aeef52f90ed5c4",
+        "scores_sha256": "a276544fbc4ac548009333786128692696501350bef0a828dee4515554d49063"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_moe_mixed_gated_ranked_span_guarded_exact_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_moe_mixed_gated_ranked_span_guarded_exact_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_moe_mixed_gated_ranked_span_guarded_exact_v1_scores.json"
+      },
+      "claim_id": "moe_local_mixed_transfer_baseline",
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0006250000000000144,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.372125,
+        "repair_budget_delta_vs_evolved": 2.0,
+        "repair_delta_vs_evolved": 0.02392857142857143,
+        "repair_delta_vs_fixed": 0.03366071428571427,
+        "repair_delta_vs_random": 0.0738125,
+        "repair_gain_per_extra_generation": 0.011964285714285715,
+        "repair_generation_budget": 6.0,
+        "repair_relative_gpu_cost": 6.0,
+        "repair_score": 0.4459375,
+        "repair_wins_vs_evolved": "1/7/0",
+        "repair_wins_vs_fixed": "4/3/1",
+        "repair_wins_vs_random": "5/3/0"
+      },
+      "label": "MoE dense-policy transfer baseline",
+      "required_repair_diagnostics": [],
+      "result_identity": {
+        "content_hash": "",
+        "run_id": ""
+      },
+      "selection_reason": "Baseline showing local MoE viability and weak direct dense-policy transfer.",
+      "slot_id": "moe_transfer_baseline",
+      "status": "baseline and negative-transfer evidence",
+      "title": "LLaDA-MoE is locally runnable but dense-LLaDA repair policy transfer was weak"
+    },
+    {
+      "canonical_file_hashes": {
+        "raw_sha256": "d6851b644102bc92f7cc5bb43b66a06cbbcd8c5459654d9252905d65f3610341",
+        "report_sha256": "36cf886fe8982e2ddcb027097f21b0364e22faf37b31ca32da62f34ad2b31336",
+        "scores_sha256": "4d8fe1483a3887f0380fa1f1052116aa1950a0adce7f78f44db25e2f365bc087"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_moe_mixed_compact_span_score_max_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_moe_mixed_compact_span_score_max_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_moe_mixed_compact_span_score_max_v1_scores.json"
+      },
+      "claim_id": "moe_mixed_adaptive_score_max",
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0006250000000000144,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.37212500000000004,
+        "repair_budget_delta_vs_evolved": 1.25,
+        "repair_delta_vs_evolved": 0.04857142857142857,
+        "repair_delta_vs_fixed": 0.08004464285714284,
+        "repair_delta_vs_random": 0.12019642857142857,
+        "repair_gain_per_extra_generation": 0.038857142857142854,
+        "repair_generation_budget": 7.25,
+        "repair_relative_gpu_cost": 7.25,
+        "repair_score": 0.4923214285714286,
+        "repair_wins_vs_evolved": "6/2/0",
+        "repair_wins_vs_fixed": "6/1/1",
+        "repair_wins_vs_random": "7/1/0"
+      },
+      "label": "MoE compact score-max policy",
+      "required_repair_diagnostics": [],
+      "result_identity": {
+        "content_hash": "33bf0475f913c6a781d75f20ab54d3ac30ec6750605cb1c5bf12eb90366b2925",
+        "run_id": "diffusion-33bf0475f913c6a7"
+      },
+      "selection_reason": "Historical score-max compact revision policy before prompt-gated fixed-source repair.",
+      "slot_id": "moe_compact_score_max",
+      "status": "supported scout result",
+      "title": "Compact MoE revision plus constraint-span repair improves lean mixed planning"
+    },
+    {
+      "canonical_file_hashes": {
+        "raw_sha256": "730be993a736e64314f890a9dd5192abd34de53054457af935c6d5a5f23e6419",
+        "report_sha256": "53f37496927d66d23e7703f154b90bb0e54e3ba0137980a91e0ebd884f64a16c",
+        "scores_sha256": "efc4eef52f9c1f7bd8537be04c4e520d2bc9c75fd8fe21d3c9cfe52f09173229"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_moe_planning_compact_span_score_max_v2_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_moe_planning_compact_span_score_max_v2_report.md",
+        "scores": "eval_results/diffusion_language/llada_moe_planning_compact_span_score_max_v2_scores.json"
+      },
+      "claim_id": "moe_planning_span_localized_repair",
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0006250000000000144,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.37212500000000004,
+        "repair_budget_delta_vs_evolved": 1.25,
+        "repair_delta_vs_evolved": 0.04857142857142857,
+        "repair_delta_vs_fixed": 0.08004464285714284,
+        "repair_delta_vs_random": 0.12019642857142857,
+        "repair_gain_per_extra_generation": 0.038857142857142854,
+        "repair_generation_budget": 7.25,
+        "repair_relative_gpu_cost": 7.25,
+        "repair_score": 0.4923214285714286,
+        "repair_wins_vs_evolved": "6/2/0",
+        "repair_wins_vs_fixed": "6/1/1",
+        "repair_wins_vs_random": "7/1/0"
+      },
+      "label": "MoE planning span-localized policy",
+      "required_repair_diagnostics": [
+        {
+          "max_value": null,
+          "metric": "mean_span_literal_target_found",
+          "min_value": 1.0,
+          "note": "verifier target must be found as decoded text, not inferred post hoc",
+          "repair_name": "constraint_gap_span_repair"
+        },
+        {
+          "max_value": 0.0,
+          "metric": "mean_span_fallback_used",
+          "min_value": null,
+          "note": "tail-window fallback must not support the promoted localization claim",
+          "repair_name": "constraint_gap_span_repair"
+        }
+      ],
+      "result_identity": {
+        "content_hash": "911c8526a9cfa11eedb6d251094d69011c6df8b6d065e2c13fd0f7c9b186134b",
+        "run_id": "diffusion-911c8526a9cfa11e"
+      },
+      "selection_reason": "Fresh planning-only confirmation that compact span repair improves the MoE planning score line while still using literal target localization rather than tail-window fallback.",
+      "slot_id": "moe_planning_span_localization",
+      "status": "supported planning localization scout result",
+      "title": "MoE compact planning span repair localizes verifier targets before inpainting"
+    },
+    {
+      "canonical_file_hashes": {
+        "raw_sha256": "bb8501aa6f7b17f0aee1a6bd5a8ad365e0d19c1a31fbe81c0ff7278d853b661d",
+        "report_sha256": "2e8774b1f1e6a8010d32668c11805f1cf3c5c96e0fe5db19e84d4209e42285d5",
+        "scores_sha256": "66a85b6343a277cc3686454e2235950c5dfd7b1c68b98448af40cf9cd9ad013e"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_moe_mixed_compact_span_score_efficient_fresh_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_moe_mixed_compact_span_score_efficient_fresh_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_moe_mixed_compact_span_score_efficient_fresh_v1_scores.json"
+      },
+      "claim_id": "moe_mixed_adaptive_efficiency",
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0006250000000000144,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.37212500000000004,
+        "repair_budget_delta_vs_evolved": 1.125,
+        "repair_delta_vs_evolved": 0.04857142857142857,
+        "repair_delta_vs_fixed": 0.08004464285714284,
+        "repair_delta_vs_random": 0.12019642857142857,
+        "repair_gain_per_extra_generation": 0.04317460317460317,
+        "repair_generation_budget": 7.125,
+        "repair_relative_gpu_cost": 7.125,
+        "repair_score": 0.4923214285714286,
+        "repair_wins_vs_evolved": "6/2/0",
+        "repair_wins_vs_fixed": "6/1/1",
+        "repair_wins_vs_random": "7/1/0"
+      },
+      "label": "MoE compact score-efficient policy",
+      "required_repair_diagnostics": [],
+      "result_identity": {
+        "content_hash": "afe24cca9924dc379c85888e360d175e00b0c8e31697b1e6cb213c5fcc148db4",
+        "run_id": "diffusion-afe24cca9924dc37"
+      },
+      "selection_reason": "Pareto improvement over score_max: same repair score with one fewer generation.",
+      "slot_id": "moe_compact_efficiency",
+      "status": "fresh GPU score-efficient scout result",
+      "title": "Score-efficient compact MoE gate preserves the top score with one fewer generation"
+    },
+    {
+      "canonical_file_hashes": {
+        "raw_sha256": "ef24b13b572f0e9eb5a145d732406ec4add44331057708ec1c43ee4c6adc3d06",
+        "report_sha256": "ceda5efbd6ff9c6bd657c44769bfc06a44db8cb5d724fe0ab463ce6b0ea11749",
+        "scores_sha256": "b374d25f4c1d0b27ce91c81b1bfd86f3d7597764bdeae8235404b4191ca15a3b"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_claim_auto_compat_preserve_seeded_gated_preservation_seed_fresh_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_claim_auto_compat_preserve_seeded_gated_preservation_seed_fresh_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_claim_auto_compat_preserve_seeded_gated_preservation_seed_fresh_v1_scores.json"
+      },
+      "claim_id": "moe_mixed_anchor_instability_claim_auto_compat_preserve_seeded_gated_budget",
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.372125,
+        "repair_budget_delta_vs_evolved": 0.625,
+        "repair_delta_vs_evolved": 0.11651785714285715,
+        "repair_delta_vs_fixed": 0.11883928571428572,
+        "repair_delta_vs_random": 0.15899107142857144,
+        "repair_gain_per_extra_generation": 0.18642857142857144,
+        "repair_generation_budget": 2.625,
+        "repair_relative_gpu_cost": 2.625,
+        "repair_score": 0.5311160714285714,
+        "repair_wins_vs_evolved": "5/3/0",
+        "repair_wins_vs_fixed": "6/2/0",
+        "repair_wins_vs_random": "6/2/0"
+      },
+      "label": "MoE auto-compatible preservation-seeded claim-gated instability budget policy",
+      "required_repair_diagnostics": [
+        {
+          "max_value": null,
+          "metric": "mean_span_literal_target_found",
+          "min_value": 1.0,
+          "note": "auto-preserve seeded claim gate must still localize decoded verifier targets",
+          "repair_name": "constraint_gap_span_anchor_instability_claim_auto_compat_preserve_seeded_gated_repair"
+        },
+        {
+          "max_value": 0.0,
+          "metric": "mean_span_fallback_used",
+          "min_value": null,
+          "note": "tail-window fallback must not support the auto-preserve seeded frontier",
+          "repair_name": "constraint_gap_span_anchor_instability_claim_auto_compat_preserve_seeded_gated_repair"
+        },
+        {
+          "max_value": 0.0,
+          "metric": "mean_seed_realization_meta_penalty",
+          "min_value": null,
+          "note": "preservation seed must avoid explicit seed/anchor meta text on the promoted run",
+          "repair_name": "constraint_gap_span_anchor_instability_claim_auto_compat_preserve_seeded_gated_repair"
+        }
+      ],
+      "result_identity": {
+        "content_hash": "3b42951db77c5aa616f281aa9c2a3034f4b659baa91bc6a9ae790839ffa6635e",
+        "run_id": "diffusion-3b42951db77c5aa6"
+      },
+      "selection_reason": "Current public MoE budget frontier: preserves the denoise-anchor/instability geometry and automatically scores compact seed anchors so oracle/selected result separation remains compatible with public-claim preservation without seed/anchor meta text or extra cost.",
+      "slot_id": "moe_claim_auto_compat_preserve_seeded_instability_budget",
+      "status": "fresh GPU automatic preservation-seeded denoise-geometry budget scout result",
+      "title": "Automatic preservation-seeded claim repair recovers the MoE budget frontier without seed-meta wording"
+    },
+    {
+      "canonical_file_hashes": {
+        "raw_sha256": "19bbf945d3a553a700bf3b3415356a7cdcb745c4d64074b9182f99f0e46247f9",
+        "report_sha256": "fd9ef54635dea1a74a3b01e8eacd075a79b13bba80c9346a1dd1eb98557cd2b6",
+        "scores_sha256": "4e62bcc45df572a50f019cd9a1482bb39a20c3ec9d03af81d5b4d611b1e511c5"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_moe_mixed_phase_final_preserve_seeded_gated_value_proxy_fresh_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_moe_mixed_phase_final_preserve_seeded_gated_value_proxy_fresh_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_moe_mixed_phase_final_preserve_seeded_gated_value_proxy_fresh_v1_scores.json"
+      },
+      "claim_id": "moe_mixed_phase_final_preserve_seeded_value_proxy_budget",
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.372125,
+        "repair_budget_delta_vs_evolved": 0.375,
+        "repair_delta_vs_evolved": 0.09410714285714286,
+        "repair_delta_vs_fixed": 0.09642857142857143,
+        "repair_delta_vs_random": 0.13658035714285716,
+        "repair_gain_per_extra_generation": 0.250952380952381,
+        "repair_generation_budget": 2.375,
+        "repair_relative_gpu_cost": 2.375,
+        "repair_score": 0.5087053571428571,
+        "repair_wins_vs_evolved": "3/5/0",
+        "repair_wins_vs_fixed": "4/4/0",
+        "repair_wins_vs_random": "4/4/0"
+      },
+      "label": "MoE phase-final value-proxy budget policy",
+      "required_repair_diagnostics": [
+        {
+          "max_value": null,
+          "metric": "mean_span_literal_target_found",
+          "min_value": 1.0,
+          "note": "value-proxy repair must still localize decoded verifier targets",
+          "repair_name": "constraint_gap_span_phase_final_preserve_seeded_gated_repair"
+        },
+        {
+          "max_value": 0.0,
+          "metric": "mean_span_fallback_used",
+          "min_value": null,
+          "note": "tail-window fallback must not support the value-proxy budget claim",
+          "repair_name": "constraint_gap_span_phase_final_preserve_seeded_gated_repair"
+        },
+        {
+          "max_value": null,
+          "metric": "mean_task_delta_vs_source",
+          "min_value": 0.17,
+          "note": "value-proxy repairs must be real improvements over their selected sources",
+          "repair_name": "constraint_gap_span_phase_final_preserve_seeded_gated_repair"
+        }
+      ],
+      "result_identity": {
+        "content_hash": "a343e942cbfb0a93872f1aeecec7b7c28d93761e1e084dcdee3ca448050bdd4f",
+        "run_id": "diffusion-a343e942cbfb0a93"
+      },
+      "selection_reason": "Current lower-cost MoE budget frontier: same 2.375x relative GPU cost as the cheap phase-budget tier, but higher score by using a source-quality marginal-value proxy to skip low-value early repairs and keep high-value late repairs.",
+      "slot_id": "moe_phase_final_value_proxy_budget",
+      "status": "fresh GPU value-proxy budget frontier result",
+      "title": "Cost-aware value-proxy MoE repair beats the cheap tier at the same GPU cost"
+    },
+    {
+      "canonical_file_hashes": {
+        "raw_sha256": "ea4f0f0504b2dc952e9cf954320544ea7c2f9fb2e66089d571346f4b26f9430b",
+        "report_sha256": "f0a278e3f36ff622bc543a8674279e48bcab09305d1c6fa1acba1853377a18a5",
+        "scores_sha256": "518b3cb2ffb6ec088177b57fcfc37d0341eaa7b034f0ae394cf24efad751f1fd"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_moe_mixed_decomposed_four_head_selector_frontier_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_moe_mixed_decomposed_four_head_selector_frontier_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_moe_mixed_decomposed_four_head_selector_frontier_v1_scores.json"
+      },
+      "claim_id": "moe_mixed_decomposed_four_head_selector_budget",
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.372125,
+        "repair_budget_delta_vs_evolved": 0.375,
+        "repair_delta_vs_evolved": 0.09410714285714286,
+        "repair_delta_vs_fixed": 0.09642857142857143,
+        "repair_delta_vs_random": 0.13658035714285716,
+        "repair_gain_per_extra_generation": 0.250952380952381,
+        "repair_generation_budget": 2.375,
+        "repair_relative_gpu_cost": 2.375,
+        "repair_score": 0.5087053571428571,
+        "repair_wins_vs_evolved": "3/5/0",
+        "repair_wins_vs_fixed": "4/4/0",
+        "repair_wins_vs_random": "4/4/0"
+      },
+      "label": "MoE decomposed four-head selector budget policy",
+      "required_repair_diagnostics": [
+        {
+          "max_value": null,
+          "metric": "mean_span_literal_target_found",
+          "min_value": 1.0,
+          "note": "decomposed-selector repair must still localize decoded verifier targets",
+          "repair_name": "constraint_gap_span_phase_final_preserve_seeded_gated_repair"
+        },
+        {
+          "max_value": 0.0,
+          "metric": "mean_span_fallback_used",
+          "min_value": null,
+          "note": "tail-window fallback must not support the decomposed-selector budget claim",
+          "repair_name": "constraint_gap_span_phase_final_preserve_seeded_gated_repair"
+        },
+        {
+          "max_value": null,
+          "metric": "mean_task_delta_vs_source",
+          "min_value": 0.17,
+          "note": "decomposed-selector repairs must be real improvements over their selected sources",
+          "repair_name": "constraint_gap_span_phase_final_preserve_seeded_gated_repair"
+        }
+      ],
+      "result_identity": {
+        "content_hash": "62476b492c9e592c713735b2377e7c34dc80bb9258b88318295c22561f77df2a",
+        "run_id": "diffusion-62476b492c9e592c"
+      },
+      "selection_reason": "Executable bridge from the theory/audit layer to the runner: same lower-cost 2.375x budget point as the value proxy, now with fitted spend/source/retention/realization head provenance in repair-spend diagnostics.",
+      "slot_id": "moe_decomposed_four_head_selector_budget",
+      "status": "fresh GPU decomposed-selector budget confirmation",
+      "title": "Decomposed four-head MoE selector reproduces the lower-cost budget point with runner provenance"
+    },
+    {
+      "canonical_file_hashes": {
+        "raw_sha256": "cbb2a99792f2ffaab54ea6e56c329aa66b229c429566823195427210ffef91fc",
+        "report_sha256": "80699c6c8afcce5b8620b559f2a65898eb9609430909004538516115df47f2e7",
+        "scores_sha256": "bfca557d94904fee109ab6ceeefe92a520907e573af265b62055c62b27253a58"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_moe_mixed_phase_hybrid_preserve_seeded_gated_fresh_v2_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_moe_mixed_phase_hybrid_preserve_seeded_gated_fresh_v2_report.md",
+        "scores": "eval_results/diffusion_language/llada_moe_mixed_phase_hybrid_preserve_seeded_gated_fresh_v2_scores.json"
+      },
+      "claim_id": "moe_mixed_phase_hybrid_preserve_seeded_equivalent_frontier",
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.372125,
+        "repair_budget_delta_vs_evolved": 0.625,
+        "repair_delta_vs_evolved": 0.11651785714285715,
+        "repair_delta_vs_fixed": 0.11883928571428572,
+        "repair_delta_vs_random": 0.15899107142857144,
+        "repair_gain_per_extra_generation": 0.18642857142857144,
+        "repair_generation_budget": 2.625,
+        "repair_relative_gpu_cost": 2.625,
+        "repair_score": 0.5311160714285714,
+        "repair_wins_vs_evolved": "5/3/0",
+        "repair_wins_vs_fixed": "6/2/0",
+        "repair_wins_vs_random": "6/2/0"
+      },
+      "label": "MoE strict phase-hybrid mechanism-equivalent policy",
+      "required_repair_diagnostics": [
+        {
+          "max_value": null,
+          "metric": "mean_span_literal_target_found",
+          "min_value": 1.0,
+          "note": "strict phase-hybrid repair must still localize decoded verifier targets",
+          "repair_name": "constraint_gap_span_phase_hybrid_preserve_seeded_gated_repair"
+        },
+        {
+          "max_value": 0.0,
+          "metric": "mean_span_fallback_used",
+          "min_value": null,
+          "note": "tail-window fallback must not support the phase-hybrid mechanism claim",
+          "repair_name": "constraint_gap_span_phase_hybrid_preserve_seeded_gated_repair"
+        },
+        {
+          "max_value": 0.0,
+          "metric": "mean_seed_realization_meta_penalty",
+          "min_value": null,
+          "note": "strict phase-hybrid frontier must avoid seed/anchor meta text",
+          "repair_name": "constraint_gap_span_phase_hybrid_preserve_seeded_gated_repair"
+        },
+        {
+          "max_value": null,
+          "metric": "mean_task_delta_vs_source",
+          "min_value": 0.18,
+          "note": "phase-hybrid repairs must be real improvements over their selected sources",
+          "repair_name": "constraint_gap_span_phase_hybrid_preserve_seeded_gated_repair"
+        }
+      ],
+      "result_identity": {
+        "content_hash": "9386ee5300a75528d70da9903e8c3f3027e44461feee39f9619d7c466ffae8ca",
+        "run_id": "diffusion-9386ee5300a75528"
+      },
+      "selection_reason": "Mechanism-equivalent confirmation of the public frontier: same score/cost point as the promoted preservation-seeded claim, but with explicit denoise phase repairability, retention-safety timing, and strict history-source gating.",
+      "slot_id": "moe_phase_hybrid_preserve_seeded_mechanism_equivalent",
+      "status": "fresh GPU phase-conditioned hybrid mechanism confirmation",
+      "title": "Strict phase-hybrid MoE repair matches the public budget frontier with explicit phase evidence"
+    }
+  ],
+  "claim_count": 25,
+  "claims": [
+    {
+      "all_generation_count": 63,
+      "canonical_file_hashes": {
+        "raw_sha256": "7257b8d288f5f31d0bbc984abbd38354600423b2627fab0221304312f9102a52",
+        "report_sha256": "57a451f887250d1112e56ef9c08faebad81f2f597af3f0637d752bce59e98da7",
+        "scores_sha256": "efa492a71602afe59dba46b2c3b2d65572c9786056f54443ffb39f5d2c5b21c0"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_mixed_gated_ranked_span_guarded_exact_identity_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_mixed_gated_ranked_span_guarded_exact_identity_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_mixed_gated_ranked_span_guarded_exact_identity_v1_scores.json"
+      },
+      "claim_id": "dense_llada_lean_mixed_guarded_repair",
+      "coverage": {
+        "full_count": 11,
+        "repair_count": 9,
+        "repair_eligible_count": 9
+      },
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.3664682539682539,
+        "oracle_headroom_vs_repair": 0.0009920634920634885,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.3344841269841269,
+        "repair_budget_delta_vs_evolved": 2.111111111111111,
+        "repair_delta_vs_evolved": 0.14702380952380953,
+        "repair_delta_vs_fixed": 0.1813095238095238,
+        "repair_delta_vs_random": 0.2132936507936508,
+        "repair_gain_per_extra_generation": 0.06964285714285715,
+        "repair_generation_budget": 6.111111111111111,
+        "repair_relative_gpu_cost": 6.111111111111111,
+        "repair_score": 0.5477777777777777,
+        "repair_wins_vs_evolved": "7/2/0",
+        "repair_wins_vs_fixed": "7/2/0",
+        "repair_wins_vs_random": "9/0/0"
+      },
+      "note": "Dense LLaDA gives the strongest compact repair-covered score today; exact checks include proposal attribution and guarded symbolic repair. The current canonical artifact includes deterministic run identity and artifact hashes.",
+      "required_repair_diagnostics": [],
+      "result_identity": {
+        "content_hash": "45da934106d48a5bcb4514b89fc53a684f8f6012c8dac2d078d5e3df94adafce",
+        "run_id": "diffusion-45da934106d48a5b"
+      },
+      "settings": {
+        "adaptive_source_gate_mode": "custom",
+        "exact_task_trajectory_policy": "proposal_history",
+        "repair_pack": "state_adaptive",
+        "repair_source_policy": "evolved"
+      },
+      "status": "supported scout result",
+      "title": "Dense LLaDA compact mixed guarded repair remains the strongest lean repair line"
+    },
+    {
+      "all_generation_count": 19,
+      "canonical_file_hashes": {
+        "raw_sha256": "20b6139426fbb3eeb515b8e5e3643b89d767c5d2c0fc6c3d79db8e59d0f376df",
+        "report_sha256": "8fe4d4087af306e818341adc52428db1084b79409d0a509a68bdde5f9afed9f8",
+        "scores_sha256": "e3a7aaae27e10a739e3b36a16eb7fdfb8705caa1d184f108384b846ba9d82fa8"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_hard_exact_verifier_span_early_stop_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_hard_exact_verifier_span_early_stop_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_hard_exact_verifier_span_early_stop_v1_scores.json"
+      },
+      "claim_id": "dense_llada_hard_exact_no_proposal_span_repair",
+      "coverage": {
+        "full_count": 4,
+        "repair_count": 2,
+        "repair_eligible_count": 2
+      },
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.0,
+        "oracle_headroom_vs_repair": 0.0,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.0,
+        "repair_budget_delta_vs_evolved": 1.5,
+        "repair_delta_vs_evolved": 1.0,
+        "repair_delta_vs_fixed": 1.0,
+        "repair_delta_vs_random": 1.0,
+        "repair_gain_per_extra_generation": 0.6666666666666666,
+        "repair_generation_budget": 5.5,
+        "repair_relative_gpu_cost": 5.5,
+        "repair_score": 1.0,
+        "repair_wins_vs_evolved": "2/0/0",
+        "repair_wins_vs_fixed": "2/0/0",
+        "repair_wins_vs_random": "2/0/0"
+      },
+      "note": "No deterministic answer proposals are available on this exact slice; the win comes from label-free self-repair plus verifier-localized arithmetic span inpainting, with feedback skipped after span repair passes exact-answer guards.",
+      "required_repair_diagnostics": [],
+      "result_identity": {
+        "content_hash": "",
+        "run_id": ""
+      },
+      "settings": {
+        "adaptive_source_gate_mode": "custom",
+        "exact_task_trajectory_policy": "proposal_history",
+        "repair_pack": "prefix",
+        "repair_source_policy": "evolved"
+      },
+      "status": "supported hard-exact scout result",
+      "title": "Dense LLaDA hard exact repair solves no-proposal failures with verifier-localized span inpainting"
+    },
+    {
+      "all_generation_count": 48,
+      "canonical_file_hashes": {
+        "raw_sha256": "3e7e12245e7b53cfa37d11d54a53c4b5f447f5b815b3f8700e252970b7b0f6de",
+        "report_sha256": "545b90aab8a57d9641c21f762b77770c81e723b981a5b856d6c9638018ad58e3",
+        "scores_sha256": "97381c6a2689cca8a681a0fcedaf65dbb1481392b222974f7efe2fe1bdef02f7"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_planning_constraint_gap_span_adaptive_8task_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_planning_constraint_gap_span_adaptive_8task_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_planning_constraint_gap_span_adaptive_8task_v1_scores.json"
+      },
+      "claim_id": "dense_llada_planning_adaptive_span_repair",
+      "coverage": {
+        "full_count": 8,
+        "repair_count": 8,
+        "repair_eligible_count": 8
+      },
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0015624999999999944,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.4122767857142857,
+        "repair_budget_delta_vs_evolved": 5.0,
+        "repair_delta_vs_evolved": 0.053035714285714276,
+        "repair_delta_vs_fixed": 0.053035714285714276,
+        "repair_delta_vs_random": 0.053035714285714276,
+        "repair_gain_per_extra_generation": 0.010607142857142855,
+        "repair_generation_budget": 6.0,
+        "repair_relative_gpu_cost": 6.0,
+        "repair_score": 0.4653125,
+        "repair_wins_vs_evolved": "6/2/0",
+        "repair_wins_vs_fixed": "6/2/0",
+        "repair_wins_vs_random": "6/2/0"
+      },
+      "note": "Default planning repair now uses verifier-ranked adaptive spans: sentence spans when specific, clause spans when sentence targeting collapses to whole-draft masking. The 8-task CUDA scout improves fixed/random/evolved with 6 wins and 2 ties.",
+      "required_repair_diagnostics": [],
+      "result_identity": {
+        "content_hash": "",
+        "run_id": ""
+      },
+      "settings": {
+        "adaptive_source_gate_mode": "custom",
+        "exact_task_trajectory_policy": "fixed",
+        "repair_pack": "constraint_gap",
+        "repair_source_policy": "evolved"
+      },
+      "status": "supported planning scout result",
+      "title": "Dense LLaDA adaptive planning span repair improves all eight short planning tasks"
+    },
+    {
+      "all_generation_count": 53,
+      "canonical_file_hashes": {
+        "raw_sha256": "82158193d1ac1a1279604cc852b8a5455717da0dcb729718ea0b389a90367da6",
+        "report_sha256": "07426ef44433d7fb4eda97d1220a7937bece6307981085ab7250e6fced3447fb",
+        "scores_sha256": "722c74adc276229e92e608ec2ae825a6723934c92c0cc86c3c86879ec93dbcc0"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_mixed_adaptive_constraint_span_identity_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_mixed_adaptive_constraint_span_identity_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_mixed_adaptive_constraint_span_identity_v1_scores.json"
+      },
+      "claim_id": "dense_llada_mixed_adaptive_span_budget",
+      "coverage": {
+        "full_count": 11,
+        "repair_count": 9,
+        "repair_eligible_count": 9
+      },
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.3664682539682539,
+        "oracle_headroom_vs_repair": 0.0036111111111111083,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.3344841269841269,
+        "repair_budget_delta_vs_evolved": 1.0,
+        "repair_delta_vs_evolved": 0.11571428571428571,
+        "repair_delta_vs_fixed": 0.15000000000000002,
+        "repair_delta_vs_random": 0.181984126984127,
+        "repair_gain_per_extra_generation": 0.11571428571428571,
+        "repair_generation_budget": 5.0,
+        "repair_relative_gpu_cost": 5.0,
+        "repair_score": 0.5164682539682539,
+        "repair_wins_vs_evolved": "2/7/0",
+        "repair_wins_vs_fixed": "5/4/0",
+        "repair_wins_vs_random": "9/0/0"
+      },
+      "note": "This lean mixed run trades some absolute score for lower repair spend: the adaptive span-only planning path plus exact verifier repair uses fewer full generations than the strongest guarded mixed run and has higher gain per extra generation versus evolved. The current canonical artifact includes deterministic run identity and artifact hashes.",
+      "required_repair_diagnostics": [],
+      "result_identity": {
+        "content_hash": "34e1ccb29a8754bcf41c6fccda06432c3bb4d00ad451b9429b219edc41feec2b",
+        "run_id": "diffusion-34e1ccb29a8754bc"
+      },
+      "settings": {
+        "adaptive_source_gate_mode": "custom",
+        "exact_task_trajectory_policy": "proposal_history",
+        "repair_pack": "constraint_span",
+        "repair_source_policy": "evolved"
+      },
+      "status": "supported budget scout result",
+      "title": "Dense LLaDA adaptive constraint-span repair is the budget-favored mixed policy"
+    },
+    {
+      "all_generation_count": 60,
+      "canonical_file_hashes": {
+        "raw_sha256": "c0e330a59e5057b29d749fb6d9facd7547745a11cd36b230e669a837c366f79e",
+        "report_sha256": "5990177478689636aa824c730aa85814cb3c3b2ca7f58ea9b4aeef52f90ed5c4",
+        "scores_sha256": "a276544fbc4ac548009333786128692696501350bef0a828dee4515554d49063"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_moe_mixed_gated_ranked_span_guarded_exact_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_moe_mixed_gated_ranked_span_guarded_exact_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_moe_mixed_gated_ranked_span_guarded_exact_v1_scores.json"
+      },
+      "claim_id": "moe_local_mixed_transfer_baseline",
+      "coverage": {
+        "full_count": 11,
+        "repair_count": 8,
+        "repair_eligible_count": 8
+      },
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0006250000000000144,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.372125,
+        "repair_budget_delta_vs_evolved": 2.0,
+        "repair_delta_vs_evolved": 0.02392857142857143,
+        "repair_delta_vs_fixed": 0.03366071428571427,
+        "repair_delta_vs_random": 0.0738125,
+        "repair_gain_per_extra_generation": 0.011964285714285715,
+        "repair_generation_budget": 6.0,
+        "repair_relative_gpu_cost": 6.0,
+        "repair_score": 0.4459375,
+        "repair_wins_vs_evolved": "1/7/0",
+        "repair_wins_vs_fixed": "4/3/1",
+        "repair_wins_vs_random": "5/3/0"
+      },
+      "note": "The sparse MoE target runs cheaply enough for iteration, but the inherited state-adaptive dense-LLaDA repair pack produced only a small planning gain.",
+      "required_repair_diagnostics": [],
+      "result_identity": {
+        "content_hash": "",
+        "run_id": ""
+      },
+      "settings": {
+        "adaptive_source_gate_mode": "",
+        "exact_task_trajectory_policy": "proposal_history",
+        "repair_pack": "state_adaptive",
+        "repair_source_policy": ""
+      },
+      "status": "baseline and negative-transfer evidence",
+      "title": "LLaDA-MoE is locally runnable but dense-LLaDA repair policy transfer was weak"
+    },
+    {
+      "all_generation_count": 76,
+      "canonical_file_hashes": {
+        "raw_sha256": "d6851b644102bc92f7cc5bb43b66a06cbbcd8c5459654d9252905d65f3610341",
+        "report_sha256": "36cf886fe8982e2ddcb027097f21b0364e22faf37b31ca32da62f34ad2b31336",
+        "scores_sha256": "4d8fe1483a3887f0380fa1f1052116aa1950a0adce7f78f44db25e2f365bc087"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_moe_mixed_compact_span_score_max_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_moe_mixed_compact_span_score_max_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_moe_mixed_compact_span_score_max_v1_scores.json"
+      },
+      "claim_id": "moe_mixed_adaptive_score_max",
+      "coverage": {
+        "full_count": 11,
+        "repair_count": 8,
+        "repair_eligible_count": 8
+      },
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0006250000000000144,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.37212500000000004,
+        "repair_budget_delta_vs_evolved": 1.25,
+        "repair_delta_vs_evolved": 0.04857142857142857,
+        "repair_delta_vs_fixed": 0.08004464285714284,
+        "repair_delta_vs_random": 0.12019642857142857,
+        "repair_gain_per_extra_generation": 0.038857142857142854,
+        "repair_generation_budget": 7.25,
+        "repair_relative_gpu_cost": 7.25,
+        "repair_score": 0.4923214285714286,
+        "repair_wins_vs_evolved": "6/2/0",
+        "repair_wins_vs_fixed": "6/1/1",
+        "repair_wins_vs_random": "7/1/0"
+      },
+      "note": "Current MoE lean mixed score-max line: revision schedules, adaptive second-source spending, and compact verifier-localized span targeting. The compact policy keeps decision-rule context and near-tie failure chains while improving the prior source-ranked mixed score at the same generation count.",
+      "required_repair_diagnostics": [],
+      "result_identity": {
+        "content_hash": "33bf0475f913c6a781d75f20ab54d3ac30ec6750605cb1c5bf12eb90366b2925",
+        "run_id": "diffusion-33bf0475f913c6a7"
+      },
+      "settings": {
+        "adaptive_source_gate_mode": "score_max",
+        "exact_task_trajectory_policy": "proposal_history",
+        "repair_pack": "constraint_span",
+        "repair_source_policy": "non_revision_plus_gap_trajectory"
+      },
+      "status": "supported scout result",
+      "title": "Compact MoE revision plus constraint-span repair improves lean mixed planning"
+    },
+    {
+      "all_generation_count": 58,
+      "canonical_file_hashes": {
+        "raw_sha256": "730be993a736e64314f890a9dd5192abd34de53054457af935c6d5a5f23e6419",
+        "report_sha256": "53f37496927d66d23e7703f154b90bb0e54e3ba0137980a91e0ebd884f64a16c",
+        "scores_sha256": "efc4eef52f9c1f7bd8537be04c4e520d2bc9c75fd8fe21d3c9cfe52f09173229"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_moe_planning_compact_span_score_max_v2_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_moe_planning_compact_span_score_max_v2_report.md",
+        "scores": "eval_results/diffusion_language/llada_moe_planning_compact_span_score_max_v2_scores.json"
+      },
+      "claim_id": "moe_planning_span_localized_repair",
+      "coverage": {
+        "full_count": 8,
+        "repair_count": 8,
+        "repair_eligible_count": 8
+      },
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0006250000000000144,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.37212500000000004,
+        "repair_budget_delta_vs_evolved": 1.25,
+        "repair_delta_vs_evolved": 0.04857142857142857,
+        "repair_delta_vs_fixed": 0.08004464285714284,
+        "repair_delta_vs_random": 0.12019642857142857,
+        "repair_gain_per_extra_generation": 0.038857142857142854,
+        "repair_generation_budget": 7.25,
+        "repair_relative_gpu_cost": 7.25,
+        "repair_score": 0.4923214285714286,
+        "repair_wins_vs_evolved": "6/2/0",
+        "repair_wins_vs_fixed": "6/1/1",
+        "repair_wins_vs_random": "7/1/0"
+      },
+      "note": "Fresh planning-only CUDA confirmation of the MoE compact constraint-span policy. Compact target selection keeps decision-rule context and near-tie failure chains while reducing average masked span size versus the older source-ranked line. The repair candidate summary reports literal span localization on every constraint-gap repair and zero tail-window fallback.",
+      "required_repair_diagnostics": [
+        {
+          "max_value": null,
+          "metric": "mean_span_literal_target_found",
+          "min_value": 1.0,
+          "note": "verifier target must be found as decoded text, not inferred post hoc",
+          "repair_name": "constraint_gap_span_repair"
+        },
+        {
+          "max_value": 0.0,
+          "metric": "mean_span_fallback_used",
+          "min_value": null,
+          "note": "tail-window fallback must not support the promoted localization claim",
+          "repair_name": "constraint_gap_span_repair"
+        }
+      ],
+      "result_identity": {
+        "content_hash": "911c8526a9cfa11eedb6d251094d69011c6df8b6d065e2c13fd0f7c9b186134b",
+        "run_id": "diffusion-911c8526a9cfa11e"
+      },
+      "settings": {
+        "adaptive_source_gate_mode": "score_max",
+        "exact_task_trajectory_policy": "fixed",
+        "repair_pack": "constraint_span",
+        "repair_source_policy": "non_revision_plus_gap_trajectory"
+      },
+      "status": "supported planning localization scout result",
+      "title": "MoE compact planning span repair localizes verifier targets before inpainting"
+    },
+    {
+      "all_generation_count": 75,
+      "canonical_file_hashes": {
+        "raw_sha256": "bb8501aa6f7b17f0aee1a6bd5a8ad365e0d19c1a31fbe81c0ff7278d853b661d",
+        "report_sha256": "2e8774b1f1e6a8010d32668c11805f1cf3c5c96e0fe5db19e84d4209e42285d5",
+        "scores_sha256": "66a85b6343a277cc3686454e2235950c5dfd7b1c68b98448af40cf9cd9ad013e"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_moe_mixed_compact_span_score_efficient_fresh_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_moe_mixed_compact_span_score_efficient_fresh_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_moe_mixed_compact_span_score_efficient_fresh_v1_scores.json"
+      },
+      "claim_id": "moe_mixed_adaptive_efficiency",
+      "coverage": {
+        "full_count": 11,
+        "repair_count": 8,
+        "repair_eligible_count": 8
+      },
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0006250000000000144,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.37212500000000004,
+        "repair_budget_delta_vs_evolved": 1.125,
+        "repair_delta_vs_evolved": 0.04857142857142857,
+        "repair_delta_vs_fixed": 0.08004464285714284,
+        "repair_delta_vs_random": 0.12019642857142857,
+        "repair_gain_per_extra_generation": 0.04317460317460317,
+        "repair_generation_budget": 7.125,
+        "repair_relative_gpu_cost": 7.125,
+        "repair_score": 0.4923214285714286,
+        "repair_wins_vs_evolved": "6/2/0",
+        "repair_wins_vs_fixed": "6/1/1",
+        "repair_wins_vs_random": "7/1/0"
+      },
+      "note": "Fresh CUDA confirmation of the score_efficient gate. It adds a quality ceiling, skips the high-quality no-op plan_002 second source, keeps the useful plan_006 source, and preserves the top repair score with one fewer generation.",
+      "required_repair_diagnostics": [],
+      "result_identity": {
+        "content_hash": "afe24cca9924dc379c85888e360d175e00b0c8e31697b1e6cb213c5fcc148db4",
+        "run_id": "diffusion-afe24cca9924dc37"
+      },
+      "settings": {
+        "adaptive_source_gate_mode": "score_efficient",
+        "exact_task_trajectory_policy": "proposal_history",
+        "repair_pack": "constraint_span",
+        "repair_source_policy": "non_revision_plus_gap_trajectory"
+      },
+      "status": "fresh GPU score-efficient scout result",
+      "title": "Score-efficient compact MoE gate preserves the top score with one fewer generation"
+    },
+    {
+      "all_generation_count": 74,
+      "canonical_file_hashes": {
+        "raw_sha256": "5e07641e9bb54a651e4e21b44bce52ad2d206b772e7fefdf040aad8357cc4b3f",
+        "report_sha256": "a74070c83bb917c4dfe5d01e90dc30992fd404ec5578ab85ed389be4af045c29",
+        "scores_sha256": "e029ed4e57c6e1471072844bceeafed1066cbc06b1bc8d682bad09e37854f4eb"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_moe_mixed_compact_span_single_source_fresh_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_moe_mixed_compact_span_single_source_fresh_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_moe_mixed_compact_span_single_source_fresh_v1_scores.json"
+      },
+      "claim_id": "moe_mixed_single_source_budget",
+      "coverage": {
+        "full_count": 11,
+        "repair_count": 8,
+        "repair_eligible_count": 8
+      },
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0033035714285714404,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.372125,
+        "repair_budget_delta_vs_evolved": 1.0,
+        "repair_delta_vs_evolved": 0.029642857142857144,
+        "repair_delta_vs_fixed": 0.061116071428571415,
+        "repair_delta_vs_random": 0.10126785714285715,
+        "repair_gain_per_extra_generation": 0.029642857142857144,
+        "repair_generation_budget": 7.0,
+        "repair_relative_gpu_cost": 7.0,
+        "repair_score": 0.4733928571428571,
+        "repair_wins_vs_evolved": "5/3/0",
+        "repair_wins_vs_fixed": "6/1/1",
+        "repair_wins_vs_random": "7/1/0"
+      },
+      "note": "Fresh CUDA confirmation of the cheapest revision-enabled compact MoE policy. It branches span repair only from the best non-revision evolved source, uses one fewer generation than score_efficient, and preserves the expected tradeoff. The newer direct fixed-source run dominates it on both score and cost, so this claim is retained as historical frontier evidence rather than the public budget point.",
+      "required_repair_diagnostics": [],
+      "result_identity": {
+        "content_hash": "150ed790105bb0b66280704719832b0777a25c28897032a04d0a3b00c9ec1040",
+        "run_id": "diffusion-150ed790105bb0b6"
+      },
+      "settings": {
+        "adaptive_source_gate_mode": "custom",
+        "exact_task_trajectory_policy": "proposal_history",
+        "repair_pack": "constraint_span",
+        "repair_source_policy": "non_revision_evolved"
+      },
+      "status": "fresh GPU dominated budget scout result",
+      "title": "Compact single-source MoE repair is dominated by direct fixed-source repair"
+    },
+    {
+      "all_generation_count": 30,
+      "canonical_file_hashes": {
+        "raw_sha256": "7e928b24d32075c980a15026cb6cc31a6eed3f14bf932380d5ef8ea4ea2b6455",
+        "report_sha256": "101c08ca112b37d686dc3c8f2fa8789aeadd47ae311429e6507445957ecdec2c",
+        "scores_sha256": "87878574b21683233807382f03ed7323dd817fd401efad1167b1e1d9b64b65c7"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_moe_mixed_compact_span_fixed_source_fresh_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_moe_mixed_compact_span_fixed_source_fresh_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_moe_mixed_compact_span_fixed_source_fresh_v1_scores.json"
+      },
+      "claim_id": "moe_mixed_fixed_source_budget",
+      "coverage": {
+        "full_count": 11,
+        "repair_count": 8,
+        "repair_eligible_count": 8
+      },
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.37212500000000004,
+        "repair_budget_delta_vs_evolved": 1.0,
+        "repair_delta_vs_evolved": 0.0753125,
+        "repair_delta_vs_fixed": 0.07763392857142856,
+        "repair_delta_vs_random": 0.1177857142857143,
+        "repair_gain_per_extra_generation": 0.0753125,
+        "repair_generation_budget": 3.0,
+        "repair_relative_gpu_cost": 3.0,
+        "repair_score": 0.4899107142857143,
+        "repair_wins_vs_evolved": "5/3/0",
+        "repair_wins_vs_fixed": "6/2/0",
+        "repair_wins_vs_random": "6/2/0"
+      },
+      "note": "Fresh CUDA confirmation that the compact span repair can branch directly from the greedy fixed denoise output, without evolved schedules. This cuts the repair-covered relative cost from 7.125x to 3.000x while preserving nearly the same planning repair score. The newer quality-gated fixed-source run preserves the exact same score and wins at 2.875x, so this claim is retained as historical evidence rather than the public budget point.",
+      "required_repair_diagnostics": [],
+      "result_identity": {
+        "content_hash": "935bf9edc3efd41078988cc22cabcf8bc8038dc7f75d2ad90166d5486232756e",
+        "run_id": "diffusion-935bf9edc3efd410"
+      },
+      "settings": {
+        "adaptive_source_gate_mode": "custom",
+        "exact_task_trajectory_policy": "fixed",
+        "repair_pack": "constraint_span",
+        "repair_source_policy": "fixed"
+      },
+      "status": "fresh GPU dominated direct-repair scout result",
+      "title": "Direct fixed-source MoE repair is dominated by the quality-gated budget policy"
+    },
+    {
+      "all_generation_count": 29,
+      "canonical_file_hashes": {
+        "raw_sha256": "c0612a468632b9fc9160146985d38a649724e341fd780f1011e72e62f97d6898",
+        "report_sha256": "8db0179325c8c1368d3b6bdfb47f9e2db623b05f263a258aa74d1806ac34f9ff",
+        "scores_sha256": "16f716a615400152213a060b0ab329bcd78428f88d661046a5695a3a5aa7ea22"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_moe_mixed_compact_span_fixed_source_quality_gate_fresh_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_moe_mixed_compact_span_fixed_source_quality_gate_fresh_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_moe_mixed_compact_span_fixed_source_quality_gate_fresh_v1_scores.json"
+      },
+      "claim_id": "moe_mixed_fixed_source_quality_gate_budget",
+      "coverage": {
+        "full_count": 11,
+        "repair_count": 8,
+        "repair_eligible_count": 8
+      },
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.37212500000000004,
+        "repair_budget_delta_vs_evolved": 0.875,
+        "repair_delta_vs_evolved": 0.0753125,
+        "repair_delta_vs_fixed": 0.07763392857142856,
+        "repair_delta_vs_random": 0.1177857142857143,
+        "repair_gain_per_extra_generation": 0.08607142857142858,
+        "repair_generation_budget": 2.875,
+        "repair_relative_gpu_cost": 2.875,
+        "repair_score": 0.4899107142857143,
+        "repair_wins_vs_evolved": "5/3/0",
+        "repair_wins_vs_fixed": "6/2/0",
+        "repair_wins_vs_random": "6/2/0"
+      },
+      "note": "Fresh CUDA confirmation that source-quality gating can skip the high-quality plan_002 repair pass while keeping the direct fixed-source score unchanged. It preserves repair-selected 0.489911, the same win/tie/loss profile, and zero oracle headroom while cutting relative repair cost from 3.000x to 2.875x. The newer repairability-geometry gate preserves the same score and wins at 2.625x, so this claim is retained as historical evidence.",
+      "required_repair_diagnostics": [],
+      "result_identity": {
+        "content_hash": "f2384443e57f55488a566d777c3bb6f8519645780f95b96663dd3b61d52d3b5c",
+        "run_id": "diffusion-f2384443e57f5548"
+      },
+      "settings": {
+        "adaptive_source_gate_mode": "custom",
+        "exact_task_trajectory_policy": "fixed",
+        "repair_pack": "constraint_span",
+        "repair_source_policy": "fixed"
+      },
+      "status": "fresh GPU dominated quality-gated direct-repair scout result",
+      "title": "Quality-gated fixed-source MoE repair is dominated by repairability geometry gating"
+    },
+    {
+      "all_generation_count": 27,
+      "canonical_file_hashes": {
+        "raw_sha256": "7b9446a7318a156768a9fbb027b1b972583108b9a2a2f89285f12216277e8043",
+        "report_sha256": "4286384ea6cc4cd3630536c67b86caee916895bdfd15a94ce944a1438f79fee2",
+        "scores_sha256": "769a03b2b4b94ffe3ad7bd9f76c561f937439e8527abc01dc0c4f4c54232eee0"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_moe_mixed_compact_span_fixed_source_repairability_gate_fresh_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_moe_mixed_compact_span_fixed_source_repairability_gate_fresh_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_moe_mixed_compact_span_fixed_source_repairability_gate_fresh_v1_scores.json"
+      },
+      "claim_id": "moe_mixed_fixed_source_repairability_gate_budget",
+      "coverage": {
+        "full_count": 11,
+        "repair_count": 8,
+        "repair_eligible_count": 8
+      },
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.37212500000000004,
+        "repair_budget_delta_vs_evolved": 0.625,
+        "repair_delta_vs_evolved": 0.0753125,
+        "repair_delta_vs_fixed": 0.07763392857142856,
+        "repair_delta_vs_random": 0.1177857142857143,
+        "repair_gain_per_extra_generation": 0.12050000000000001,
+        "repair_generation_budget": 2.625,
+        "repair_relative_gpu_cost": 2.625,
+        "repair_score": 0.4899107142857143,
+        "repair_wins_vs_evolved": "5/3/0",
+        "repair_wins_vs_fixed": "6/2/0",
+        "repair_wins_vs_random": "6/2/0"
+      },
+      "note": "Fresh CUDA confirmation that a source-quality plus prompt-gap/coverage geometry gate can skip the high-quality no-op plan_002 repair and the under-grounded plan_005/plan_008 span repairs while keeping the direct fixed-source score unchanged. It preserves repair-selected 0.489911, the same win/tie/loss profile, and zero oracle headroom while cutting relative repair cost from 2.875x to 2.625x.",
+      "required_repair_diagnostics": [],
+      "result_identity": {
+        "content_hash": "ae26bb892c8a68aafca1f4769aa337050d92e7e8de2f173c7d9a04bf99ccca82",
+        "run_id": "diffusion-ae26bb892c8a68aa"
+      },
+      "settings": {
+        "adaptive_source_gate_mode": "custom",
+        "exact_task_trajectory_policy": "fixed",
+        "repair_pack": "constraint_span",
+        "repair_source_policy": "fixed"
+      },
+      "status": "fresh GPU repairability-geometry budget scout result",
+      "title": "Repairability-geometry gated MoE repair keeps the budget score at lower cost"
+    },
+    {
+      "all_generation_count": 27,
+      "canonical_file_hashes": {
+        "raw_sha256": "9b15c2e4315efc76927d7e19be4de6ef3dd7eaea269748ff39681f3b5885de6e",
+        "report_sha256": "ff901186f9dba4cadacfd6ca88f05c8f1f495d0010c305a99f83bb64db7fb70e",
+        "scores_sha256": "47d53cbcc82c47b57ef0b04d8189f2bb06c13489ea2e870eeae8b9e25f6f2850"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_moe_mixed_compact_span_fixed_source_denoise_phase_gate_fresh_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_moe_mixed_compact_span_fixed_source_denoise_phase_gate_fresh_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_moe_mixed_compact_span_fixed_source_denoise_phase_gate_fresh_v1_scores.json"
+      },
+      "claim_id": "moe_mixed_fixed_source_denoise_phase_gate_budget",
+      "coverage": {
+        "full_count": 11,
+        "repair_count": 8,
+        "repair_eligible_count": 8
+      },
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.37212500000000004,
+        "repair_budget_delta_vs_evolved": 0.625,
+        "repair_delta_vs_evolved": 0.0753125,
+        "repair_delta_vs_fixed": 0.07763392857142856,
+        "repair_delta_vs_random": 0.1177857142857143,
+        "repair_gain_per_extra_generation": 0.12050000000000001,
+        "repair_generation_budget": 2.625,
+        "repair_relative_gpu_cost": 2.625,
+        "repair_score": 0.4899107142857143,
+        "repair_wins_vs_evolved": "5/3/0",
+        "repair_wins_vs_fixed": "6/2/0",
+        "repair_wins_vs_random": "6/2/0"
+      },
+      "note": "Fresh CUDA confirmation that the repairability gate can be executed from sampled denoise-history structure, not only final-text geometry. The trigger requires the same source-quality plus prompt-gap/coverage repairable band and a visible denoise constraint skeleton before spending repair compute. It preserves repair-selected 0.489911, the same win/tie/loss profile, and zero oracle headroom at 2.625x relative cost while giving the public budget point a trajectory-level mechanism.",
+      "required_repair_diagnostics": [],
+      "result_identity": {
+        "content_hash": "5b1bf286b8cfa727e3e85de58eeaf0178ca5a36d363412d1d2a31515cc5d47ef",
+        "run_id": "diffusion-5b1bf286b8cfa727"
+      },
+      "settings": {
+        "adaptive_source_gate_mode": "custom",
+        "exact_task_trajectory_policy": "fixed",
+        "repair_pack": "constraint_span",
+        "repair_source_policy": "fixed"
+      },
+      "status": "fresh GPU denoise-phase geometry budget scout result",
+      "title": "Denoise-phase gated MoE repair preserves the budget frontier with a trajectory skeleton trigger"
+    },
+    {
+      "all_generation_count": 27,
+      "canonical_file_hashes": {
+        "raw_sha256": "533f521ae41a95aa7eb1a53feffd7cb15b4443874c227a90a26f63de6ea8d6d3",
+        "report_sha256": "0d29a0f1935a6a7f28fc6a6af167773cc120216d34aae2f721409637f8b8c8d2",
+        "scores_sha256": "856e458687f59a5230f042e8c32a0256e6f9a04c0663132b5e636a0ca3fee684"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_select_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_select_denoise_phase_gate_dense_history_fresh_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_select_denoise_phase_gate_dense_history_fresh_v1_scores.json"
+      },
+      "claim_id": "moe_mixed_anchor_select_denoise_phase_gate_budget",
+      "coverage": {
+        "full_count": 11,
+        "repair_count": 8,
+        "repair_eligible_count": 8
+      },
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.37212500000000004,
+        "repair_budget_delta_vs_evolved": 0.625,
+        "repair_delta_vs_evolved": 0.0753125,
+        "repair_delta_vs_fixed": 0.07763392857142856,
+        "repair_delta_vs_random": 0.1177857142857143,
+        "repair_gain_per_extra_generation": 0.12050000000000001,
+        "repair_generation_budget": 2.625,
+        "repair_relative_gpu_cost": 2.625,
+        "repair_score": 0.4899107142857143,
+        "repair_wins_vs_evolved": "5/3/0",
+        "repair_wins_vs_fixed": "6/2/0",
+        "repair_wins_vs_random": "6/2/0"
+      },
+      "note": "Fresh CUDA confirmation that the runner can choose between final and sampled history anchors before spending repair compute. Dense history sampling exposes near-final denoise states without adding model generations; the selector chooses a history anchor on plan_001 and final anchors elsewhere, preserving repair-selected 0.489911, zero oracle headroom, and 2.625x relative cost.",
+      "required_repair_diagnostics": [
+        {
+          "max_value": null,
+          "metric": "mean_span_literal_target_found",
+          "min_value": 1.0,
+          "note": "anchor-selected span repair must localize decoded verifier targets",
+          "repair_name": "constraint_gap_span_anchor_select_repair"
+        },
+        {
+          "max_value": 0.0,
+          "metric": "mean_span_fallback_used",
+          "min_value": null,
+          "note": "tail-window fallback must not support the promoted anchor-select claim",
+          "repair_name": "constraint_gap_span_anchor_select_repair"
+        }
+      ],
+      "result_identity": {
+        "content_hash": "f3c291037d94daafce8bf67efcc4bcace904b9e77696ab687f632188dfcfd0de",
+        "run_id": "diffusion-f3c291037d94daaf"
+      },
+      "settings": {
+        "adaptive_source_gate_mode": "custom",
+        "exact_task_trajectory_policy": "fixed",
+        "repair_pack": "constraint_span_anchor_select",
+        "repair_source_policy": "fixed"
+      },
+      "status": "fresh GPU pre-generation anchor-select budget scout result",
+      "title": "Pre-generation anchor-selected MoE repair uses denoise history while preserving the budget frontier"
+    },
+    {
+      "all_generation_count": 27,
+      "canonical_file_hashes": {
+        "raw_sha256": "936abf1c12b7b9b635125a3497008b8702802a238832abfce80193d334e26b42",
+        "report_sha256": "47fd426f7f609bc2bca29a1ee96777393d311897db4d7e9df4f267151a2ee7fb",
+        "scores_sha256": "5629575d910be83ba487ad311e7d62cd61867547ef1ba66772bb648c851adcff"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_prompt_gated_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_prompt_gated_denoise_phase_gate_dense_history_fresh_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_prompt_gated_denoise_phase_gate_dense_history_fresh_v1_scores.json"
+      },
+      "claim_id": "moe_mixed_anchor_instability_prompt_gated_budget",
+      "coverage": {
+        "full_count": 11,
+        "repair_count": 8,
+        "repair_eligible_count": 8
+      },
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.37212500000000004,
+        "repair_budget_delta_vs_evolved": 0.625,
+        "repair_delta_vs_evolved": 0.08370535714285715,
+        "repair_delta_vs_fixed": 0.08602678571428571,
+        "repair_delta_vs_random": 0.12617857142857145,
+        "repair_gain_per_extra_generation": 0.13392857142857145,
+        "repair_generation_budget": 2.625,
+        "repair_relative_gpu_cost": 2.625,
+        "repair_score": 0.49830357142857146,
+        "repair_wins_vs_evolved": "5/3/0",
+        "repair_wins_vs_fixed": "6/2/0",
+        "repair_wins_vs_random": "6/2/0"
+      },
+      "note": "Fresh CUDA confirmation that sampled denoise instability can help when it gates both the remask positions and the instability-specific repair instruction. The runner preserves exact anchor-select identity on gate-off tasks, then activates the instability prompt only on the low-quality multi-span plan_007 branch. That lifts repair-selected planning score to 0.498304 at the same 2.625x relative cost, with zero oracle headroom.",
+      "required_repair_diagnostics": [
+        {
+          "max_value": null,
+          "metric": "mean_span_literal_target_found",
+          "min_value": 1.0,
+          "note": "prompt-gated instability repair must still localize decoded verifier targets",
+          "repair_name": "constraint_gap_span_anchor_instability_prompt_gated_repair"
+        },
+        {
+          "max_value": 0.0,
+          "metric": "mean_span_fallback_used",
+          "min_value": null,
+          "note": "tail-window fallback must not support the prompt-gated claim",
+          "repair_name": "constraint_gap_span_anchor_instability_prompt_gated_repair"
+        }
+      ],
+      "result_identity": {
+        "content_hash": "4c6a7a9f356b3f0d6896b628f0e91bde391c50e4844f1084a8f28d4c4915b028",
+        "run_id": "diffusion-4c6a7a9f356b3f0d"
+      },
+      "settings": {
+        "adaptive_source_gate_mode": "custom",
+        "exact_task_trajectory_policy": "fixed",
+        "repair_pack": "constraint_span_anchor_instability_prompt_gated",
+        "repair_source_policy": "fixed"
+      },
+      "status": "fresh GPU prompt-gated denoise-geometry budget scout result",
+      "title": "Prompt-gated anchor-instability MoE repair improves the budget frontier"
+    },
+    {
+      "all_generation_count": 27,
+      "canonical_file_hashes": {
+        "raw_sha256": "714909a593562e6ce31dbfa5a23826d000ffc0a63ad14af542df2c8552bc49fa",
+        "report_sha256": "bad5037a0fce56720f7c3976126d0fc6013bf20c2d547595160b1bbc391d0f34",
+        "scores_sha256": "d73dda17a2873ba6098cc627a0d40b55bd56202edad324411d8050769d016cad"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_claim_gated_compact_prompt_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_claim_gated_compact_prompt_denoise_phase_gate_dense_history_fresh_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_claim_gated_compact_prompt_denoise_phase_gate_dense_history_fresh_v1_scores.json"
+      },
+      "claim_id": "moe_mixed_anchor_instability_claim_gated_budget",
+      "coverage": {
+        "full_count": 11,
+        "repair_count": 8,
+        "repair_eligible_count": 8
+      },
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.372125,
+        "repair_budget_delta_vs_evolved": 0.625,
+        "repair_delta_vs_evolved": 0.09883928571428571,
+        "repair_delta_vs_fixed": 0.1011607142857143,
+        "repair_delta_vs_random": 0.1413125,
+        "repair_gain_per_extra_generation": 0.15814285714285714,
+        "repair_generation_budget": 2.625,
+        "repair_relative_gpu_cost": 2.625,
+        "repair_score": 0.5134375,
+        "repair_wins_vs_evolved": "5/3/0",
+        "repair_wins_vs_fixed": "6/2/0",
+        "repair_wins_vs_random": "6/2/0"
+      },
+      "note": "Fresh CUDA confirmation of the composite denoise-geometry repair policy. It preserves prompt-gated anchor-instability behavior on gate-off tasks, keeps the active plan_007 denoise-instability branch, and adds a public-claim confound-control prompt gate for plan_004 without increasing relative cost. The resulting repair-selected planning score is 0.513438 at 2.625x relative cost, with zero oracle headroom.",
+      "required_repair_diagnostics": [
+        {
+          "max_value": null,
+          "metric": "mean_span_literal_target_found",
+          "min_value": 1.0,
+          "note": "claim-gated instability repair must still localize decoded verifier targets",
+          "repair_name": "constraint_gap_span_anchor_instability_claim_gated_repair"
+        },
+        {
+          "max_value": 0.0,
+          "metric": "mean_span_fallback_used",
+          "min_value": null,
+          "note": "tail-window fallback must not support the claim-gated frontier",
+          "repair_name": "constraint_gap_span_anchor_instability_claim_gated_repair"
+        }
+      ],
+      "result_identity": {
+        "content_hash": "0fc7f067a7d877990c974287fd31b059f293394edfed2fa96a6a245b98544021",
+        "run_id": "diffusion-0fc7f067a7d87799"
+      },
+      "settings": {
+        "adaptive_source_gate_mode": "custom",
+        "exact_task_trajectory_policy": "fixed",
+        "repair_pack": "constraint_span_anchor_instability_claim_gated",
+        "repair_source_policy": "fixed"
+      },
+      "status": "fresh GPU claim-gated denoise-geometry budget scout result",
+      "title": "Claim-gated anchor-instability MoE repair improves the budget frontier"
+    },
+    {
+      "all_generation_count": 27,
+      "canonical_file_hashes": {
+        "raw_sha256": "384a624e4e9fe7cdc12a10120c899516e640a42049dd62d666d76c33225b17f0",
+        "report_sha256": "f3ebd551942fdd60f38d689fcdabf0fda7861755599c4878135e61f6f84094b6",
+        "scores_sha256": "6338feb71770dd31e2a081ace710aebbc7df64f6780656f32734d8a4eee0a542"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_claim_oracle_gated_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_claim_oracle_gated_denoise_phase_gate_dense_history_fresh_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_claim_oracle_gated_denoise_phase_gate_dense_history_fresh_v1_scores.json"
+      },
+      "claim_id": "moe_mixed_anchor_instability_claim_oracle_gated_budget",
+      "coverage": {
+        "full_count": 11,
+        "repair_count": 8,
+        "repair_eligible_count": 8
+      },
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.372125,
+        "repair_budget_delta_vs_evolved": 0.625,
+        "repair_delta_vs_evolved": 0.10870535714285716,
+        "repair_delta_vs_fixed": 0.11102678571428573,
+        "repair_delta_vs_random": 0.15117857142857144,
+        "repair_gain_per_extra_generation": 0.17392857142857146,
+        "repair_generation_budget": 2.625,
+        "repair_relative_gpu_cost": 2.625,
+        "repair_score": 0.5233035714285714,
+        "repair_wins_vs_evolved": "5/3/0",
+        "repair_wins_vs_fixed": "6/2/0",
+        "repair_wins_vs_random": "6/2/0"
+      },
+      "note": "Fresh CUDA confirmation of the compact oracle-aware public-claim gate. It keeps the same denoise-anchor and instability-mask geometry, preserves the active plan_007 branch, and improves the plan_004 public-claim repair without increasing relative cost. The resulting repair-selected planning score is 0.523304 at 2.625x relative cost, with zero oracle headroom.",
+      "required_repair_diagnostics": [
+        {
+          "max_value": null,
+          "metric": "mean_span_literal_target_found",
+          "min_value": 1.0,
+          "note": "oracle-aware claim gate must still localize decoded verifier targets",
+          "repair_name": "constraint_gap_span_anchor_instability_claim_oracle_gated_repair"
+        },
+        {
+          "max_value": 0.0,
+          "metric": "mean_span_fallback_used",
+          "min_value": null,
+          "note": "tail-window fallback must not support the oracle-aware frontier",
+          "repair_name": "constraint_gap_span_anchor_instability_claim_oracle_gated_repair"
+        }
+      ],
+      "result_identity": {
+        "content_hash": "692592da063daa601ece88226e3b8da9b813707f8456d23b8fc80b2f963272c6",
+        "run_id": "diffusion-692592da063daa60"
+      },
+      "settings": {
+        "adaptive_source_gate_mode": "custom",
+        "exact_task_trajectory_policy": "fixed",
+        "repair_pack": "constraint_span_anchor_instability_claim_oracle_gated",
+        "repair_source_policy": "fixed"
+      },
+      "status": "fresh GPU oracle-aware claim-gated denoise-geometry budget scout result",
+      "title": "Oracle-aware claim-gated MoE repair improves the budget frontier"
+    },
+    {
+      "all_generation_count": 27,
+      "canonical_file_hashes": {
+        "raw_sha256": "3dd83f423c4bceeb4f70267f27feb2a88427651eb42938033801974fd0b84c30",
+        "report_sha256": "fa94885fdf9314c24b80134245ce95b28afdc3e867e7e2dc09ca52a4ba1547b2",
+        "scores_sha256": "4b13c7f3ff30740dbaa8319b0bf9c1dfc7fc340170e9c14f2a853baa7162aefc"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_claim_compatible_seeded_gated_realization_guard_fresh_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_claim_compatible_seeded_gated_realization_guard_fresh_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_claim_compatible_seeded_gated_realization_guard_fresh_v1_scores.json"
+      },
+      "claim_id": "moe_mixed_anchor_instability_claim_compatible_seeded_gated_budget",
+      "coverage": {
+        "full_count": 11,
+        "repair_count": 8,
+        "repair_eligible_count": 8
+      },
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.372125,
+        "repair_budget_delta_vs_evolved": 0.625,
+        "repair_delta_vs_evolved": 0.11651785714285715,
+        "repair_delta_vs_fixed": 0.11883928571428572,
+        "repair_delta_vs_random": 0.15899107142857144,
+        "repair_gain_per_extra_generation": 0.18642857142857144,
+        "repair_generation_budget": 2.625,
+        "repair_relative_gpu_cost": 2.625,
+        "repair_score": 0.5311160714285714,
+        "repair_wins_vs_evolved": "5/3/0",
+        "repair_wins_vs_fixed": "6/2/0",
+        "repair_wins_vs_random": "6/2/0"
+      },
+      "note": "Fresh CUDA confirmation that a compact semantic seed can carry both the oracle/selected-results split and the claim-survival control without adding repair candidates. It keeps the same denoise-anchor and instability-mask geometry, uses the realization-quality selector to reject low-specificity seed meta text, raises plan_004 to full rubric coverage, and preserves the repair-selected planning score at 0.531116 with 2.625x relative cost and zero oracle headroom.",
+      "required_repair_diagnostics": [
+        {
+          "max_value": null,
+          "metric": "mean_span_literal_target_found",
+          "min_value": 1.0,
+          "note": "compatible seeded claim gate must still localize decoded verifier targets",
+          "repair_name": "constraint_gap_span_anchor_instability_claim_compatible_seeded_gated_repair"
+        },
+        {
+          "max_value": 0.0,
+          "metric": "mean_span_fallback_used",
+          "min_value": null,
+          "note": "tail-window fallback must not support the compatible-seeded frontier",
+          "repair_name": "constraint_gap_span_anchor_instability_claim_compatible_seeded_gated_repair"
+        },
+        {
+          "max_value": 0.01,
+          "metric": "mean_seed_realization_meta_penalty",
+          "min_value": null,
+          "note": "realization guard must keep compact seed repairs low-meta on average",
+          "repair_name": "constraint_gap_span_anchor_instability_claim_compatible_seeded_gated_repair"
+        }
+      ],
+      "result_identity": {
+        "content_hash": "a9ae901393235364134e0f86a352f715d85f0eb556fce94aea9bb03c3b3769e8",
+        "run_id": "diffusion-a9ae901393235364"
+      },
+      "settings": {
+        "adaptive_source_gate_mode": "custom",
+        "exact_task_trajectory_policy": "fixed",
+        "repair_pack": "constraint_span_anchor_instability_claim_compatible_seeded_gated",
+        "repair_source_policy": "fixed"
+      },
+      "status": "fresh GPU realization-guarded compatible-seeded denoise-geometry budget scout result",
+      "title": "Realization-guarded compatible seeded claim-gated MoE repair improves the budget frontier"
+    },
+    {
+      "all_generation_count": 27,
+      "canonical_file_hashes": {
+        "raw_sha256": "47d641dbf16c10cdcea099ff81d02896bcdb740541ec965b51745ab8f191570d",
+        "report_sha256": "74e5714690fdc3201e015e0b440035162abd4a47bb8dbcbd915f172e4579ff38",
+        "scores_sha256": "7c3218b584ead46f8ab7c45ee1550b3855d93ae6a37a0e235ce4d9728e312753"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_claim_auto_compat_seeded_gated_realization_guard_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_claim_auto_compat_seeded_gated_realization_guard_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_claim_auto_compat_seeded_gated_realization_guard_v1_scores.json"
+      },
+      "claim_id": "moe_mixed_anchor_instability_claim_auto_compat_seeded_gated_budget",
+      "coverage": {
+        "full_count": 11,
+        "repair_count": 8,
+        "repair_eligible_count": 8
+      },
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.372125,
+        "repair_budget_delta_vs_evolved": 0.625,
+        "repair_delta_vs_evolved": 0.11651785714285715,
+        "repair_delta_vs_fixed": 0.11883928571428572,
+        "repair_delta_vs_random": 0.15899107142857144,
+        "repair_gain_per_extra_generation": 0.18642857142857144,
+        "repair_generation_budget": 2.625,
+        "repair_relative_gpu_cost": 2.625,
+        "repair_score": 0.5311160714285714,
+        "repair_wins_vs_evolved": "5/3/0",
+        "repair_wins_vs_fixed": "6/2/0",
+        "repair_wins_vs_random": "6/2/0"
+      },
+      "note": "Fresh CUDA confirmation that compact semantic seed selection can be automated with a label-free compatibility score over required controls. The policy scores candidate 9-token anchors, selects the oracle/selected-results plus claim-survival anchor for the public-claim repair, matches the prior hand-compatible repair-selected planning score at 0.531116 with 2.625x relative cost, and keeps zero repair-oracle headroom.",
+      "required_repair_diagnostics": [
+        {
+          "max_value": null,
+          "metric": "mean_span_literal_target_found",
+          "min_value": 1.0,
+          "note": "auto-compatible seeded claim gate must still localize decoded verifier targets",
+          "repair_name": "constraint_gap_span_anchor_instability_claim_auto_compat_seeded_gated_repair"
+        },
+        {
+          "max_value": 0.0,
+          "metric": "mean_span_fallback_used",
+          "min_value": null,
+          "note": "tail-window fallback must not support the auto-compatible seeded frontier",
+          "repair_name": "constraint_gap_span_anchor_instability_claim_auto_compat_seeded_gated_repair"
+        }
+      ],
+      "result_identity": {
+        "content_hash": "913b5bccb7894e5a2358f91c89d799a8c4a697ed07b21ce3f2a6fce6d09c4dd7",
+        "run_id": "diffusion-913b5bccb7894e5a"
+      },
+      "settings": {
+        "adaptive_source_gate_mode": "custom",
+        "exact_task_trajectory_policy": "fixed",
+        "repair_pack": "constraint_span_anchor_instability_claim_auto_compat_seeded_gated",
+        "repair_source_policy": "fixed"
+      },
+      "status": "fresh GPU automatic compatibility-scored denoise-geometry budget scout result",
+      "title": "Automatic compatibility-scored claim seed recovers the MoE budget frontier"
+    },
+    {
+      "all_generation_count": 27,
+      "canonical_file_hashes": {
+        "raw_sha256": "ef24b13b572f0e9eb5a145d732406ec4add44331057708ec1c43ee4c6adc3d06",
+        "report_sha256": "ceda5efbd6ff9c6bd657c44769bfc06a44db8cb5d724fe0ab463ce6b0ea11749",
+        "scores_sha256": "b374d25f4c1d0b27ce91c81b1bfd86f3d7597764bdeae8235404b4191ca15a3b"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_claim_auto_compat_preserve_seeded_gated_preservation_seed_fresh_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_claim_auto_compat_preserve_seeded_gated_preservation_seed_fresh_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_claim_auto_compat_preserve_seeded_gated_preservation_seed_fresh_v1_scores.json"
+      },
+      "claim_id": "moe_mixed_anchor_instability_claim_auto_compat_preserve_seeded_gated_budget",
+      "coverage": {
+        "full_count": 11,
+        "repair_count": 8,
+        "repair_eligible_count": 8
+      },
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.372125,
+        "repair_budget_delta_vs_evolved": 0.625,
+        "repair_delta_vs_evolved": 0.11651785714285715,
+        "repair_delta_vs_fixed": 0.11883928571428572,
+        "repair_delta_vs_random": 0.15899107142857144,
+        "repair_gain_per_extra_generation": 0.18642857142857144,
+        "repair_generation_budget": 2.625,
+        "repair_relative_gpu_cost": 2.625,
+        "repair_score": 0.5311160714285714,
+        "repair_wins_vs_evolved": "5/3/0",
+        "repair_wins_vs_fixed": "6/2/0",
+        "repair_wins_vs_random": "6/2/0"
+      },
+      "note": "Fresh CUDA confirmation that the automatic compatibility seed can be refined into a public-claim preservation seed. The policy selects a compact 9-token denoise tail for plan_004, recovers the same 0.531116 repair-selected planning score at 2.625x relative cost, keeps zero repair-oracle headroom, and removes explicit seed/anchor meta wording from the frontier task.",
+      "required_repair_diagnostics": [
+        {
+          "max_value": null,
+          "metric": "mean_span_literal_target_found",
+          "min_value": 1.0,
+          "note": "auto-preserve seeded claim gate must still localize decoded verifier targets",
+          "repair_name": "constraint_gap_span_anchor_instability_claim_auto_compat_preserve_seeded_gated_repair"
+        },
+        {
+          "max_value": 0.0,
+          "metric": "mean_span_fallback_used",
+          "min_value": null,
+          "note": "tail-window fallback must not support the auto-preserve seeded frontier",
+          "repair_name": "constraint_gap_span_anchor_instability_claim_auto_compat_preserve_seeded_gated_repair"
+        },
+        {
+          "max_value": 0.0,
+          "metric": "mean_seed_realization_meta_penalty",
+          "min_value": null,
+          "note": "preservation seed must avoid explicit seed/anchor meta text on the promoted run",
+          "repair_name": "constraint_gap_span_anchor_instability_claim_auto_compat_preserve_seeded_gated_repair"
+        }
+      ],
+      "result_identity": {
+        "content_hash": "3b42951db77c5aa616f281aa9c2a3034f4b659baa91bc6a9ae790839ffa6635e",
+        "run_id": "diffusion-3b42951db77c5aa6"
+      },
+      "settings": {
+        "adaptive_source_gate_mode": "custom",
+        "exact_task_trajectory_policy": "fixed",
+        "repair_pack": "constraint_span_anchor_instability_claim_auto_compat_preserve_seeded_gated",
+        "repair_source_policy": "fixed"
+      },
+      "status": "fresh GPU automatic preservation-seeded denoise-geometry budget scout result",
+      "title": "Automatic preservation-seeded claim repair recovers the MoE budget frontier without seed-meta wording"
+    },
+    {
+      "all_generation_count": 27,
+      "canonical_file_hashes": {
+        "raw_sha256": "cbb2a99792f2ffaab54ea6e56c329aa66b229c429566823195427210ffef91fc",
+        "report_sha256": "80699c6c8afcce5b8620b559f2a65898eb9609430909004538516115df47f2e7",
+        "scores_sha256": "bfca557d94904fee109ab6ceeefe92a520907e573af265b62055c62b27253a58"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_moe_mixed_phase_hybrid_preserve_seeded_gated_fresh_v2_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_moe_mixed_phase_hybrid_preserve_seeded_gated_fresh_v2_report.md",
+        "scores": "eval_results/diffusion_language/llada_moe_mixed_phase_hybrid_preserve_seeded_gated_fresh_v2_scores.json"
+      },
+      "claim_id": "moe_mixed_phase_hybrid_preserve_seeded_equivalent_frontier",
+      "coverage": {
+        "full_count": 11,
+        "repair_count": 8,
+        "repair_eligible_count": 8
+      },
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.372125,
+        "repair_budget_delta_vs_evolved": 0.625,
+        "repair_delta_vs_evolved": 0.11651785714285715,
+        "repair_delta_vs_fixed": 0.11883928571428572,
+        "repair_delta_vs_random": 0.15899107142857144,
+        "repair_gain_per_extra_generation": 0.18642857142857144,
+        "repair_generation_budget": 2.625,
+        "repair_relative_gpu_cost": 2.625,
+        "repair_score": 0.5311160714285714,
+        "repair_wins_vs_evolved": "5/3/0",
+        "repair_wins_vs_fixed": "6/2/0",
+        "repair_wins_vs_random": "6/2/0"
+      },
+      "note": "Fresh CUDA confirmation that denoise-history source replacement must be conditional. The strict phase-hybrid policy keeps the promoted preservation-seeded controls, records repairable and retention-safe denoise phase timing, switches to history only under strict retention/source-advantage checks, and matches the public frontier at 0.531116 repair-selected planning score, 2.625x relative cost, and zero repair-oracle headroom. This is mechanism-equivalent frontier evidence, not a replacement for the simpler public headline claim.",
+      "required_repair_diagnostics": [
+        {
+          "max_value": null,
+          "metric": "mean_span_literal_target_found",
+          "min_value": 1.0,
+          "note": "strict phase-hybrid repair must still localize decoded verifier targets",
+          "repair_name": "constraint_gap_span_phase_hybrid_preserve_seeded_gated_repair"
+        },
+        {
+          "max_value": 0.0,
+          "metric": "mean_span_fallback_used",
+          "min_value": null,
+          "note": "tail-window fallback must not support the phase-hybrid mechanism claim",
+          "repair_name": "constraint_gap_span_phase_hybrid_preserve_seeded_gated_repair"
+        },
+        {
+          "max_value": 0.0,
+          "metric": "mean_seed_realization_meta_penalty",
+          "min_value": null,
+          "note": "strict phase-hybrid frontier must avoid seed/anchor meta text",
+          "repair_name": "constraint_gap_span_phase_hybrid_preserve_seeded_gated_repair"
+        },
+        {
+          "max_value": null,
+          "metric": "mean_task_delta_vs_source",
+          "min_value": 0.18,
+          "note": "phase-hybrid repairs must be real improvements over their selected sources",
+          "repair_name": "constraint_gap_span_phase_hybrid_preserve_seeded_gated_repair"
+        }
+      ],
+      "result_identity": {
+        "content_hash": "9386ee5300a75528d70da9903e8c3f3027e44461feee39f9619d7c466ffae8ca",
+        "run_id": "diffusion-9386ee5300a75528"
+      },
+      "settings": {
+        "adaptive_source_gate_mode": "custom",
+        "exact_task_trajectory_policy": "fixed",
+        "repair_pack": "constraint_span_phase_hybrid_preserve_seeded_gated",
+        "repair_source_policy": "fixed"
+      },
+      "status": "fresh GPU phase-conditioned hybrid mechanism confirmation",
+      "title": "Strict phase-hybrid MoE repair matches the public budget frontier with explicit phase evidence"
+    },
+    {
+      "all_generation_count": 25,
+      "canonical_file_hashes": {
+        "raw_sha256": "19bbf945d3a553a700bf3b3415356a7cdcb745c4d64074b9182f99f0e46247f9",
+        "report_sha256": "fd9ef54635dea1a74a3b01e8eacd075a79b13bba80c9346a1dd1eb98557cd2b6",
+        "scores_sha256": "4e62bcc45df572a50f019cd9a1482bb39a20c3ec9d03af81d5b4d611b1e511c5"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_moe_mixed_phase_final_preserve_seeded_gated_value_proxy_fresh_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_moe_mixed_phase_final_preserve_seeded_gated_value_proxy_fresh_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_moe_mixed_phase_final_preserve_seeded_gated_value_proxy_fresh_v1_scores.json"
+      },
+      "claim_id": "moe_mixed_phase_final_preserve_seeded_value_proxy_budget",
+      "coverage": {
+        "full_count": 11,
+        "repair_count": 8,
+        "repair_eligible_count": 8
+      },
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.372125,
+        "repair_budget_delta_vs_evolved": 0.375,
+        "repair_delta_vs_evolved": 0.09410714285714286,
+        "repair_delta_vs_fixed": 0.09642857142857143,
+        "repair_delta_vs_random": 0.13658035714285716,
+        "repair_gain_per_extra_generation": 0.250952380952381,
+        "repair_generation_budget": 2.375,
+        "repair_relative_gpu_cost": 2.375,
+        "repair_score": 0.5087053571428571,
+        "repair_wins_vs_evolved": "3/5/0",
+        "repair_wins_vs_fixed": "4/4/0",
+        "repair_wins_vs_random": "4/4/0"
+      },
+      "note": "Fresh CUDA confirmation that the cost-aware marginal-value proxy can be run as a primary repair spend trigger. The rule keeps the phase/final preservation-seeded operator, requires a repairable denoise skeleton, and spends only when source quality is low enough to justify the extra GPU generation. It repairs plan_004, plan_006, and plan_007, reaches 0.508705 at 2.375x relative cost, and dominates the cheap and mid phase-budget tiers on score/cost.",
+      "required_repair_diagnostics": [
+        {
+          "max_value": null,
+          "metric": "mean_span_literal_target_found",
+          "min_value": 1.0,
+          "note": "value-proxy repair must still localize decoded verifier targets",
+          "repair_name": "constraint_gap_span_phase_final_preserve_seeded_gated_repair"
+        },
+        {
+          "max_value": 0.0,
+          "metric": "mean_span_fallback_used",
+          "min_value": null,
+          "note": "tail-window fallback must not support the value-proxy budget claim",
+          "repair_name": "constraint_gap_span_phase_final_preserve_seeded_gated_repair"
+        },
+        {
+          "max_value": null,
+          "metric": "mean_task_delta_vs_source",
+          "min_value": 0.17,
+          "note": "value-proxy repairs must be real improvements over their selected sources",
+          "repair_name": "constraint_gap_span_phase_final_preserve_seeded_gated_repair"
+        }
+      ],
+      "result_identity": {
+        "content_hash": "a343e942cbfb0a93872f1aeecec7b7c28d93761e1e084dcdee3ca448050bdd4f",
+        "run_id": "diffusion-a343e942cbfb0a93"
+      },
+      "settings": {
+        "adaptive_source_gate_mode": "custom",
+        "exact_task_trajectory_policy": "fixed",
+        "repair_pack": "constraint_span_phase_final_preserve_seeded_gated",
+        "repair_source_policy": "fixed"
+      },
+      "status": "fresh GPU value-proxy budget frontier result",
+      "title": "Cost-aware value-proxy MoE repair beats the cheap tier at the same GPU cost"
+    },
+    {
+      "all_generation_count": 25,
+      "canonical_file_hashes": {
+        "raw_sha256": "ea4f0f0504b2dc952e9cf954320544ea7c2f9fb2e66089d571346f4b26f9430b",
+        "report_sha256": "f0a278e3f36ff622bc543a8674279e48bcab09305d1c6fa1acba1853377a18a5",
+        "scores_sha256": "518b3cb2ffb6ec088177b57fcfc37d0341eaa7b034f0ae394cf24efad751f1fd"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_moe_mixed_decomposed_four_head_selector_frontier_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_moe_mixed_decomposed_four_head_selector_frontier_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_moe_mixed_decomposed_four_head_selector_frontier_v1_scores.json"
+      },
+      "claim_id": "moe_mixed_decomposed_four_head_selector_budget",
+      "coverage": {
+        "full_count": 11,
+        "repair_count": 8,
+        "repair_eligible_count": 8
+      },
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.372125,
+        "repair_budget_delta_vs_evolved": 0.375,
+        "repair_delta_vs_evolved": 0.09410714285714286,
+        "repair_delta_vs_fixed": 0.09642857142857143,
+        "repair_delta_vs_random": 0.13658035714285716,
+        "repair_gain_per_extra_generation": 0.250952380952381,
+        "repair_generation_budget": 2.375,
+        "repair_relative_gpu_cost": 2.375,
+        "repair_score": 0.5087053571428571,
+        "repair_wins_vs_evolved": "3/5/0",
+        "repair_wins_vs_fixed": "4/4/0",
+        "repair_wins_vs_random": "4/4/0"
+      },
+      "note": "Fresh CUDA confirmation that the fitted four-head selector is executable in the benchmark runner. The trigger records spend/source/retention/realization head provenance on every repair-spend gate row, repairs plan_004, plan_006, and plan_007, and reproduces the value-proxy budget point: 0.508705 repair score at 2.375x relative cost with zero repair-oracle headroom.",
+      "required_repair_diagnostics": [
+        {
+          "max_value": null,
+          "metric": "mean_span_literal_target_found",
+          "min_value": 1.0,
+          "note": "decomposed-selector repair must still localize decoded verifier targets",
+          "repair_name": "constraint_gap_span_phase_final_preserve_seeded_gated_repair"
+        },
+        {
+          "max_value": 0.0,
+          "metric": "mean_span_fallback_used",
+          "min_value": null,
+          "note": "tail-window fallback must not support the decomposed-selector budget claim",
+          "repair_name": "constraint_gap_span_phase_final_preserve_seeded_gated_repair"
+        },
+        {
+          "max_value": null,
+          "metric": "mean_task_delta_vs_source",
+          "min_value": 0.17,
+          "note": "decomposed-selector repairs must be real improvements over their selected sources",
+          "repair_name": "constraint_gap_span_phase_final_preserve_seeded_gated_repair"
+        }
+      ],
+      "result_identity": {
+        "content_hash": "62476b492c9e592c713735b2377e7c34dc80bb9258b88318295c22561f77df2a",
+        "run_id": "diffusion-62476b492c9e592c"
+      },
+      "settings": {
+        "adaptive_source_gate_mode": "custom",
+        "exact_task_trajectory_policy": "fixed",
+        "repair_pack": "constraint_span_phase_final_preserve_seeded_gated",
+        "repair_source_policy": "fixed"
+      },
+      "status": "fresh GPU decomposed-selector budget confirmation",
+      "title": "Decomposed four-head MoE selector reproduces the lower-cost budget point with runner provenance"
+    },
+    {
+      "all_generation_count": 27,
+      "canonical_file_hashes": {
+        "raw_sha256": "011469baf575a5d0cba26a9e7a2f09ce4a0a63eec487e3b8f486b998964fd98c",
+        "report_sha256": "600b3c20be52011bdfeca4f15117f89e04e1337fc33eae3981e86fb1cf1897ed",
+        "scores_sha256": "9191084d915454cf95073e302637569e40b9030ab56757f2486df7bb78563cb6"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_claim_auto_seeded_gated_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_claim_auto_seeded_gated_denoise_phase_gate_dense_history_fresh_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_claim_auto_seeded_gated_denoise_phase_gate_dense_history_fresh_v1_scores.json"
+      },
+      "claim_id": "moe_mixed_anchor_instability_claim_auto_seeded_gated_boundary",
+      "coverage": {
+        "full_count": 11,
+        "repair_count": 8,
+        "repair_eligible_count": 8
+      },
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.37212500000000004,
+        "repair_budget_delta_vs_evolved": 0.625,
+        "repair_delta_vs_evolved": 0.1059375,
+        "repair_delta_vs_fixed": 0.10825892857142858,
+        "repair_delta_vs_random": 0.14841071428571428,
+        "repair_gain_per_extra_generation": 0.1695,
+        "repair_generation_budget": 2.625,
+        "repair_relative_gpu_cost": 2.625,
+        "repair_score": 0.5205357142857143,
+        "repair_wins_vs_evolved": "5/3/0",
+        "repair_wins_vs_fixed": "6/2/0",
+        "repair_wins_vs_random": "6/2/0"
+      },
+      "note": "Fresh CUDA boundary result for synthesizing a compact semantic seed from the active task/rubric surface. The policy generates and applies the expected oracle/selected plus claim-survival anchor, and plan_004 hits all five rubric controls, but the aggregate repair-selected planning score is 0.520536 at 2.625x relative cost. This trails the fixed compatible seed, so the next policy needs a realization-quality term in addition to control-term extraction.",
+      "required_repair_diagnostics": [
+        {
+          "max_value": null,
+          "metric": "mean_span_literal_target_found",
+          "min_value": 1.0,
+          "note": "auto-seeded claim gate must still localize decoded verifier targets",
+          "repair_name": "constraint_gap_span_anchor_instability_claim_auto_seeded_gated_repair"
+        },
+        {
+          "max_value": 0.0,
+          "metric": "mean_span_fallback_used",
+          "min_value": null,
+          "note": "tail-window fallback must not support the auto-seeded boundary result",
+          "repair_name": "constraint_gap_span_anchor_instability_claim_auto_seeded_gated_repair"
+        }
+      ],
+      "result_identity": {
+        "content_hash": "7b74493b8c5ca15a7fa564dc7d405bc1d7a7ec373da5ccf1369af44317ebb5f4",
+        "run_id": "diffusion-7b74493b8c5ca15a"
+      },
+      "settings": {
+        "adaptive_source_gate_mode": "custom",
+        "exact_task_trajectory_policy": "fixed",
+        "repair_pack": "constraint_span_anchor_instability_claim_auto_seeded_gated",
+        "repair_source_policy": "fixed"
+      },
+      "status": "fresh GPU automatic-seed boundary scout result",
+      "title": "Automatic compact-control seeding works mechanically but trails the fixed compatible seed"
+    },
+    {
+      "all_generation_count": 27,
+      "canonical_file_hashes": {
+        "raw_sha256": "0df1ee399a18689c261cf70da301272f75129d226015e5bd187782cf22249371",
+        "report_sha256": "2695bfada2158427a79e6b9f97c998c6db7abcceed2da27a52a2c1cc8f3a60d5",
+        "scores_sha256": "b27c87b46baba6cf6023f36441a57b99f49254f252b93bd1d8e329cd75a5452d"
+      },
+      "canonical_files": {
+        "raw": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_claim_auto_seeded_realization_gated_denoise_phase_gate_dense_history_fresh_v1_raw.jsonl",
+        "report": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_claim_auto_seeded_realization_gated_denoise_phase_gate_dense_history_fresh_v1_report.md",
+        "scores": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_claim_auto_seeded_realization_gated_denoise_phase_gate_dense_history_fresh_v1_scores.json"
+      },
+      "claim_id": "moe_mixed_anchor_instability_claim_auto_seeded_realization_gated_boundary",
+      "coverage": {
+        "full_count": 11,
+        "repair_count": 8,
+        "repair_eligible_count": 8
+      },
+      "headline": {
+        "fixed_generation_budget": 1.0,
+        "fixed_repair_slice_score": 0.4122767857142857,
+        "oracle_headroom_vs_repair": 0.0,
+        "random_generation_budget": 1.0,
+        "random_repair_slice_score": 0.372125,
+        "repair_budget_delta_vs_evolved": 0.625,
+        "repair_delta_vs_evolved": 0.10116071428571428,
+        "repair_delta_vs_fixed": 0.10348214285714286,
+        "repair_delta_vs_random": 0.1436339285714286,
+        "repair_gain_per_extra_generation": 0.16185714285714287,
+        "repair_generation_budget": 2.625,
+        "repair_relative_gpu_cost": 2.625,
+        "repair_score": 0.5157589285714286,
+        "repair_wins_vs_evolved": "5/3/0",
+        "repair_wins_vs_fixed": "6/2/0",
+        "repair_wins_vs_random": "6/2/0"
+      },
+      "note": "Fresh CUDA boundary result for adding explicit realization constraints to automatic compact-control seeding. The generated seed still applies and plan_004 still hits all rubric controls, but the answer collapses toward a labeled control sentence and the aggregate repair-selected planning score falls to 0.515759 at 2.625x relative cost. This rules out stronger prompt constraints as the next path; the policy needs a scored realization-quality loss.",
+      "required_repair_diagnostics": [
+        {
+          "max_value": null,
+          "metric": "mean_span_literal_target_found",
+          "min_value": 1.0,
+          "note": "realization-gated auto seed must still localize decoded verifier targets",
+          "repair_name": "constraint_gap_span_anchor_instability_claim_auto_seeded_realization_gated_repair"
+        },
+        {
+          "max_value": 0.0,
+          "metric": "mean_span_fallback_used",
+          "min_value": null,
+          "note": "tail-window fallback must not support the realization boundary result",
+          "repair_name": "constraint_gap_span_anchor_instability_claim_auto_seeded_realization_gated_repair"
+        }
+      ],
+      "result_identity": {
+        "content_hash": "2a310ed45712a36bb6053815ec4b829c1b36f269a8790a951b0317314b6cb038",
+        "run_id": "diffusion-2a310ed45712a36b"
+      },
+      "settings": {
+        "adaptive_source_gate_mode": "custom",
+        "exact_task_trajectory_policy": "fixed",
+        "repair_pack": "constraint_span_anchor_instability_claim_auto_seeded_realization_gated",
+        "repair_source_policy": "fixed"
+      },
+      "status": "fresh GPU realization-constraint boundary scout result",
+      "title": "Explicit realization constraints over-compress automatic compact-control seeding"
+    }
+  ],
+  "generated_by": "experiments/build_diffusion_claim_evidence.py",
+  "schema": "diffusion_ground_truth_index.v1"
+}

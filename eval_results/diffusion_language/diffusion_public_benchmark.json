@@ -1,0 +1,112 @@
+{
+  "artifact_paths": {
+    "raw": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_claim_auto_compat_preserve_seeded_gated_preservation_seed_fresh_v1_raw.jsonl",
+    "report": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_claim_auto_compat_preserve_seeded_gated_preservation_seed_fresh_v1_report.md",
+    "scores": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_claim_auto_compat_preserve_seeded_gated_preservation_seed_fresh_v1_scores.json"
+  },
+  "benchmark": "lean_gpu_mixed",
+  "claim_id": "moe_mixed_anchor_instability_claim_auto_compat_preserve_seeded_gated_budget",
+  "coverage": {
+    "full_task_count": 11,
+    "repair_eligible_task_count": 8,
+    "repair_task_count": 8
+  },
+  "generated_by": "experiments/build_diffusion_claim_evidence.py",
+  "guard_checks": [
+    {
+      "family": "math",
+      "greedy_score": 1.0,
+      "latent_repair_spend": "none",
+      "random_perturbation_score": 1.0,
+      "task_count": 1
+    },
+    {
+      "family": "symbolic",
+      "greedy_score": 1.0,
+      "latent_repair_spend": "none",
+      "random_perturbation_score": 1.0,
+      "task_count": 1
+    },
+    {
+      "family": "science",
+      "greedy_score": 1.0,
+      "latent_repair_spend": "none",
+      "random_perturbation_score": 1.0,
+      "task_count": 1
+    }
+  ],
+  "latent_repair_frontier": [
+    {
+      "claim_id": "moe_mixed_anchor_instability_claim_auto_compat_preserve_seeded_gated_budget",
+      "delta_vs_greedy": 0.11883928571428572,
+      "delta_vs_random": 0.15899107142857144,
+      "generation_budget_per_task": 2.625,
+      "label": "Top-score latent repair",
+      "lift_per_extra_cost_vs_greedy": 0.07313186813186813,
+      "lift_per_extra_cost_vs_random": 0.09784065934065934,
+      "relative_gpu_cost": 2.625,
+      "score": 0.5311160714285714,
+      "scores_path": "eval_results/diffusion_language/llada_moe_mixed_compact_span_anchor_instability_claim_auto_compat_preserve_seeded_gated_preservation_seed_fresh_v1_scores.json",
+      "total_generation_records": 27
+    },
+    {
+      "claim_id": "moe_mixed_decomposed_four_head_selector_budget",
+      "delta_vs_greedy": 0.09642857142857143,
+      "delta_vs_random": 0.13658035714285716,
+      "generation_budget_per_task": 2.375,
+      "label": "Budget-favored latent repair",
+      "lift_per_extra_cost_vs_greedy": 0.07012987012987014,
+      "lift_per_extra_cost_vs_random": 0.09933116883116884,
+      "relative_gpu_cost": 2.375,
+      "score": 0.5087053571428571,
+      "scores_path": "eval_results/diffusion_language/llada_moe_mixed_decomposed_four_head_selector_frontier_v1_scores.json",
+      "total_generation_records": 25
+    }
+  ],
+  "primary_slice": {
+    "description": "short-planning repair-eligible tasks",
+    "family": "planning",
+    "task_count": 8
+  },
+  "public_arms": [
+    {
+      "arm_id": "greedy",
+      "delta_vs_greedy": 0.0,
+      "delta_vs_random": 0.04015178571428574,
+      "generation_budget_per_task": 1.0,
+      "label": "Greedy",
+      "lift_per_extra_cost_vs_greedy": null,
+      "lift_per_extra_cost_vs_random": null,
+      "relative_gpu_cost": 1.0,
+      "score": 0.4122767857142857
+    },
+    {
+      "arm_id": "random_perturbation",
+      "delta_vs_greedy": -0.04015178571428574,
+      "delta_vs_random": 0.0,
+      "generation_budget_per_task": 1.0,
+      "label": "Random perturbation",
+      "lift_per_extra_cost_vs_greedy": null,
+      "lift_per_extra_cost_vs_random": null,
+      "relative_gpu_cost": 1.0,
+      "score": 0.372125
+    },
+    {
+      "arm_id": "latent_repair",
+      "delta_vs_greedy": 0.11883928571428572,
+      "delta_vs_random": 0.15899107142857144,
+      "generation_budget_per_task": 2.625,
+      "label": "Latent repair",
+      "lift_per_extra_cost_vs_greedy": 0.07313186813186813,
+      "lift_per_extra_cost_vs_random": 0.09784065934065934,
+      "relative_gpu_cost": 2.625,
+      "score": 0.5311160714285714
+    }
+  ],
+  "result_identity": {
+    "content_hash": "3b42951db77c5aa616f281aa9c2a3034f4b659baa91bc6a9ae790839ffa6635e",
+    "run_id": "diffusion-3b42951db77c5aa6"
+  },
+  "schema": "diffusion_public_benchmark.v1",
+  "total_generation_records": 27
+}

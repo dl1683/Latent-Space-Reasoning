@@ -1,0 +1,331 @@
+{
+  "baseline": {
+    "description": "single repairability controller predicts every head from first_repairable_step existence",
+    "rule_id": "single_first_repairable_exists"
+  },
+  "generated_by": "experiments/evaluate_diffusion_selector_holdout.py",
+  "holdout_rows": [
+    {
+      "decomposed_error_count": 2,
+      "label_results": [
+        {
+          "decomposed_error": false,
+          "decomposed_prediction": false,
+          "label": false,
+          "label_name": "spend",
+          "scored": true,
+          "single_label_error": true,
+          "single_label_prediction": true
+        },
+        {
+          "decomposed_error": true,
+          "decomposed_prediction": false,
+          "label": true,
+          "label_name": "source",
+          "scored": true,
+          "single_label_error": false,
+          "single_label_prediction": true
+        },
+        {
+          "decomposed_error": true,
+          "decomposed_prediction": false,
+          "label": true,
+          "label_name": "retention",
+          "scored": true,
+          "single_label_error": false,
+          "single_label_prediction": true
+        }
+      ],
+      "retention_rule_id": "retention_safe_none",
+      "schema": "diffusion_selector_holdout_task_eval.v1",
+      "scored_label_count": 3,
+      "single_label_error_count": 1,
+      "source_rule_id": "trust_none",
+      "spend_rule_id": "first_repairable_gap_le_9_source_quality_le_0p301429",
+      "task_id": "plan_001",
+      "train_task_count": 7
+    },
+    {
+      "decomposed_error_count": 0,
+      "label_results": [
+        {
+          "decomposed_error": false,
+          "decomposed_prediction": false,
+          "label": false,
+          "label_name": "spend",
+          "scored": true,
+          "single_label_error": false,
+          "single_label_prediction": false
+        },
+        {
+          "label": null,
+          "label_name": "source",
+          "scored": false
+        },
+        {
+          "decomposed_error": false,
+          "decomposed_prediction": false,
+          "label": false,
+          "label_name": "retention",
+          "scored": true,
+          "single_label_error": false,
+          "single_label_prediction": false
+        }
+      ],
+      "retention_rule_id": "classification_safe_history_anchor",
+      "schema": "diffusion_selector_holdout_task_eval.v1",
+      "scored_label_count": 2,
+      "single_label_error_count": 0,
+      "source_rule_id": "retention_safe_history",
+      "spend_rule_id": "first_repairable_gap_le_9_source_quality_le_0p301429",
+      "task_id": "plan_002",
+      "train_task_count": 7
+    },
+    {
+      "decomposed_error_count": 0,
+      "label_results": [
+        {
+          "decomposed_error": false,
+          "decomposed_prediction": false,
+          "label": false,
+          "label_name": "spend",
+          "scored": true,
+          "single_label_error": true,
+          "single_label_prediction": true
+        },
+        {
+          "decomposed_error": false,
+          "decomposed_prediction": false,
+          "label": false,
+          "label_name": "source",
+          "scored": true,
+          "single_label_error": true,
+          "single_label_prediction": true
+        },
+        {
+          "decomposed_error": false,
+          "decomposed_prediction": false,
+          "label": false,
+          "label_name": "retention",
+          "scored": true,
+          "single_label_error": true,
+          "single_label_prediction": true
+        }
+      ],
+      "retention_rule_id": "classification_safe_history_anchor",
+      "schema": "diffusion_selector_holdout_task_eval.v1",
+      "scored_label_count": 3,
+      "single_label_error_count": 3,
+      "source_rule_id": "retention_safe_history",
+      "spend_rule_id": "first_repairable_gap_le_9_source_quality_le_0p301429",
+      "task_id": "plan_003",
+      "train_task_count": 7
+    },
+    {
+      "decomposed_error_count": 0,
+      "label_results": [
+        {
+          "decomposed_error": false,
+          "decomposed_prediction": true,
+          "label": true,
+          "label_name": "spend",
+          "scored": true,
+          "single_label_error": false,
+          "single_label_prediction": true
+        },
+        {
+          "decomposed_error": false,
+          "decomposed_prediction": false,
+          "label": false,
+          "label_name": "source",
+          "scored": true,
+          "single_label_error": true,
+          "single_label_prediction": true
+        },
+        {
+          "decomposed_error": false,
+          "decomposed_prediction": false,
+          "label": false,
+          "label_name": "retention",
+          "scored": true,
+          "single_label_error": true,
+          "single_label_prediction": true
+        }
+      ],
+      "retention_rule_id": "classification_safe_history_anchor",
+      "schema": "diffusion_selector_holdout_task_eval.v1",
+      "scored_label_count": 3,
+      "single_label_error_count": 2,
+      "source_rule_id": "retention_safe_history",
+      "spend_rule_id": "first_repairable_gap_le_9_source_quality_le_0p301429",
+      "task_id": "plan_004",
+      "train_task_count": 7
+    },
+    {
+      "decomposed_error_count": 1,
+      "label_results": [
+        {
+          "decomposed_error": true,
+          "decomposed_prediction": true,
+          "label": false,
+          "label_name": "spend",
+          "scored": true,
+          "single_label_error": true,
+          "single_label_prediction": true
+        },
+        {
+          "label": null,
+          "label_name": "source",
+          "scored": false
+        },
+        {
+          "decomposed_error": false,
+          "decomposed_prediction": false,
+          "label": false,
+          "label_name": "retention",
+          "scored": true,
+          "single_label_error": true,
+          "single_label_prediction": true
+        }
+      ],
+      "retention_rule_id": "classification_safe_history_anchor",
+      "schema": "diffusion_selector_holdout_task_eval.v1",
+      "scored_label_count": 2,
+      "single_label_error_count": 2,
+      "source_rule_id": "retention_safe_history",
+      "spend_rule_id": "first_repairable_source_quality_le_0p301429",
+      "task_id": "plan_005",
+      "train_task_count": 7
+    },
+    {
+      "decomposed_error_count": 1,
+      "label_results": [
+        {
+          "decomposed_error": true,
+          "decomposed_prediction": false,
+          "label": true,
+          "label_name": "spend",
+          "scored": true,
+          "single_label_error": false,
+          "single_label_prediction": true
+        },
+        {
+          "decomposed_error": false,
+          "decomposed_prediction": false,
+          "label": false,
+          "label_name": "source",
+          "scored": true,
+          "single_label_error": true,
+          "single_label_prediction": true
+        },
+        {
+          "decomposed_error": false,
+          "decomposed_prediction": false,
+          "label": false,
+          "label_name": "retention",
+          "scored": true,
+          "single_label_error": true,
+          "single_label_prediction": true
+        }
+      ],
+      "retention_rule_id": "classification_safe_history_anchor",
+      "schema": "diffusion_selector_holdout_task_eval.v1",
+      "scored_label_count": 3,
+      "single_label_error_count": 2,
+      "source_rule_id": "retention_safe_history",
+      "spend_rule_id": "first_repairable_source_quality_le_0p277857",
+      "task_id": "plan_006",
+      "train_task_count": 7
+    },
+    {
+      "decomposed_error_count": 0,
+      "label_results": [
+        {
+          "decomposed_error": false,
+          "decomposed_prediction": true,
+          "label": true,
+          "label_name": "spend",
+          "scored": true,
+          "single_label_error": false,
+          "single_label_prediction": true
+        },
+        {
+          "decomposed_error": false,
+          "decomposed_prediction": false,
+          "label": false,
+          "label_name": "source",
+          "scored": true,
+          "single_label_error": true,
+          "single_label_prediction": true
+        },
+        {
+          "decomposed_error": false,
+          "decomposed_prediction": false,
+          "label": false,
+          "label_name": "retention",
+          "scored": true,
+          "single_label_error": true,
+          "single_label_prediction": true
+        }
+      ],
+      "retention_rule_id": "classification_safe_history_anchor",
+      "schema": "diffusion_selector_holdout_task_eval.v1",
+      "scored_label_count": 3,
+      "single_label_error_count": 2,
+      "source_rule_id": "retention_safe_history",
+      "spend_rule_id": "first_repairable_gap_le_9_source_quality_le_0p301429",
+      "task_id": "plan_007",
+      "train_task_count": 7
+    },
+    {
+      "decomposed_error_count": 0,
+      "label_results": [
+        {
+          "decomposed_error": false,
+          "decomposed_prediction": false,
+          "label": false,
+          "label_name": "spend",
+          "scored": true,
+          "single_label_error": false,
+          "single_label_prediction": false
+        },
+        {
+          "label": null,
+          "label_name": "source",
+          "scored": false
+        },
+        {
+          "decomposed_error": false,
+          "decomposed_prediction": false,
+          "label": false,
+          "label_name": "retention",
+          "scored": true,
+          "single_label_error": false,
+          "single_label_prediction": false
+        }
+      ],
+      "retention_rule_id": "classification_safe_history_anchor",
+      "schema": "diffusion_selector_holdout_task_eval.v1",
+      "scored_label_count": 2,
+      "single_label_error_count": 0,
+      "source_rule_id": "retention_safe_history",
+      "spend_rule_id": "first_repairable_gap_le_9_source_quality_le_0p301429",
+      "task_id": "plan_008",
+      "train_task_count": 7
+    }
+  ],
+  "inputs": {
+    "targets": "eval_results\\diffusion_language\\diffusion_composite_selector_targets.json"
+  },
+  "schema": "diffusion_selector_holdout_eval.v1",
+  "summary": {
+    "absolute_error_reduction": 8,
+    "decomposed_error_count": 4,
+    "decomposed_error_rate": 0.19047619047619047,
+    "holdout_task_count": 8,
+    "relative_error_reduction": 0.6666666666666666,
+    "scored_label_count": 21,
+    "single_label_error_count": 12,
+    "single_label_error_rate": 0.5714285714285714
+  }
+}

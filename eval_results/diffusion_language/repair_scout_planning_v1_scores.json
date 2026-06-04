@@ -1,0 +1,103 @@
+{
+  "all_generation_count": 24,
+  "baseline_selected_count": 8,
+  "baseline_selected_mean_combined_score": 0.48366672390109894,
+  "baseline_selected_mean_task_score": 0.4122767857142857,
+  "mean_selected_repair_task_delta": 0.04830357142857142,
+  "repair_selected_count": 4,
+  "selected": [
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.5022544642857143,
+      "repair_task_delta": 0.041428571428571426,
+      "schedule_or_repair": "prefix_50_repair",
+      "stage": "repair",
+      "task_id": "plan_001",
+      "task_score": 0.44035714285714284,
+      "text": "Run the baseline job first. If the baseline job fails, you can still run the intervention job, but the baseline data will not be available, making it a publishable result. If the baseline job succeeds, you can then run the intervention job, and both measurements will be available for a publishable result.",
+      "trajectory_score": 0.6879464285714286
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.69296875,
+      "repair_task_delta": 0.0903571428571428,
+      "schedule_or_repair": "prefix_25_repair",
+      "stage": "repair",
+      "task_id": "plan_002",
+      "task_score": 0.6946428571428571,
+      "text": "1. Identify the failure points in the logs.\n2.. Analyze the logs for any patterns or anomalies.\n3. Isolate the issue in the pipeline.\n4. Test the fix in a non-stable environment.\n5. Develop a rollback plan to resolve the issue before the demo.",
+      "trajectory_score": 0.6879464285714286
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.5202008928571429,
+      "repair_task_delta": 0.02107142857142863,
+      "schedule_or_repair": "prefix_25_repair",
+      "stage": "repair",
+      "task_id": "plan_003",
+      "task_score": 0.4642857142857143,
+      "text": "1. Measure: Offline accuracy and production latency.\n2. Decision rule: If offline accuracy is acceptable and latency is within acceptable acceptable limits, ship the model. If offline accuracy is acceptable but latency is too high, rollback. If offline accuracy is unacceptable but latency is within acceptable limits, gate the release.",
+      "trajectory_score": 0.6879464285714286
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.3866019917582418,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "plan_004",
+      "task_score": 0.28285714285714286,
+      "text": "To falsify the result,\n1. Increase the number of tokens used in the experiment.\n2. Change the prompt format to match the baseline.\n3. Repeat the experiment with the new tokens and prompt format.\n4. Compare the results to the original baseline to ensure the improvement is genuine.",
+      "trajectory_score": 0.6978365384615386
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.4578519917582418,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "plan_005",
+      "task_score": 0.3778571428571429,
+      "text": "To recover from checkpoint failures without losing the best checkpoint, use a checkpoint checkpointing strategy that saves multiple checkpoints at regular intervals. If a checkpoint fails, resume from the last successful checkpoint. This, combined with a rolling checkpointing that skards over failed checkpoints, ensures reproducibility and avoids corrupting the best checkpoint.",
+      "trajectory_score": 0.6978365384615386
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.3978519917582418,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "plan_006",
+      "task_score": 0.2978571428571429,
+      "text": "1. Identify the issue: Wrong totals on customer dashboard after timezone migration.\n2. Plan the fix: Update the dashboard to reflect the correct totals.\n3. Confirm the fix: Verify the updated totals with the customer.\n4. Document the fix: Log the issue and solution for future reference.",
+      "trajectory_score": 0.6978365384615386
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.6322269917582417,
+      "repair_task_delta": null,
+      "schedule_or_repair": "low_confidence_32",
+      "stage": "baseline",
+      "task_id": "plan_007",
+      "task_score": 0.6103571428571428,
+      "text": "To isolate the cause of divergence divergence, revert optimizer change and compare the model's performance before and after the change. This the cheapest experiment sequence as it only requires one GPU run. By comparing the performance before and after the optimizer change, you can determine if the optimizer change was the cause of the diver divergence.",
+      "trajectory_score": 0.6978365384615386
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.41439732142857144,
+      "repair_task_delta": 0.040357142857142814,
+      "schedule_or_repair": "prefix_25_repair",
+      "stage": "repair",
+      "task_id": "plan_008",
+      "task_score": 0.3232142857142857,
+      "text": "To test whether the system actually reasons better rather than gaming the scorer, you can:\n\n1. Analyze the qualitative outputs for coherence and logical reasoning.\n2. Compare the outputs to known benchmarks or expert evaluations.\n3. Verify reproducibility.\n4. Conduct further testing to validate the score improvement.",
+      "trajectory_score": 0.6879464285714286
+    }
+  ],
+  "selected_combined_delta_vs_baseline": 0.01687757554945052,
+  "selected_count": 8,
+  "selected_mean_combined_score": 0.5005442994505495,
+  "selected_mean_task_score": 0.43642857142857144,
+  "selected_task_delta_vs_baseline": 0.024151785714285723
+}

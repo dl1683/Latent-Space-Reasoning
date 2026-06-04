@@ -1,0 +1,18 @@
+{
+  "game_id": "sp80-589a99af",
+  "title": "SP80",
+  "default_fps": 10,
+  "tags": [
+    "keyboard_click"
+  ],
+  "baseline_actions": [
+    39,
+    58,
+    25,
+    148,
+    96,
+    152
+  ],
+  "local_dir": "environment_files\\sp80\\589a99af",
+  "date_downloaded": "2026-05-14T08:02:53.257069+00:00"
+}

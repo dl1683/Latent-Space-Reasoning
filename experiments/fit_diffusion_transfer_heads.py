@@ -1,0 +1,437 @@
+"""Fit separate diffusion transfer heads for repair availability and promotion."""
+
+from __future__ import annotations
+
+import argparse
+import json
+from pathlib import Path
+
+DEFAULT_ORIGINAL_TARGETS = Path(
+    "eval_results/diffusion_language/diffusion_composite_selector_targets.json"
+)
+DEFAULT_TRANSFER_AVAILABILITY = Path(
+    "eval_results/diffusion_language/diffusion_independent_spend_transfer_v2_eval.json"
+)
+DEFAULT_PROMOTION_EVAL = Path(
+    "eval_results/diffusion_language/diffusion_transfer_promotion_value_eval.json"
+)
+DEFAULT_JSON_OUTPUT = Path("eval_results/diffusion_language/diffusion_transfer_head_fit.json")
+DEFAULT_REPORT_OUTPUT = Path("DIFFUSION_TRANSFER_HEAD_FIT.md")
+AVAILABILITY_HEAD_ID = "availability_current_decomposed_spend"
+PROMOTION_HEAD_ALIAS = "transfer_promotion_value"
+DEFAULT_SOURCE_QUALITY_MAX = 0.301429
+DEFAULT_PROMPT_GAP_MAX = 9
+
+
+def parse_args() -> argparse.Namespace:
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument("--original-targets", type=Path, default=DEFAULT_ORIGINAL_TARGETS)
+    parser.add_argument(
+        "--transfer-availability",
+        type=Path,
+        default=DEFAULT_TRANSFER_AVAILABILITY,
+    )
+    parser.add_argument("--promotion-eval", type=Path, default=DEFAULT_PROMOTION_EVAL)
+    parser.add_argument("--json-output", type=Path, default=DEFAULT_JSON_OUTPUT)
+    parser.add_argument("--report-output", type=Path, default=DEFAULT_REPORT_OUTPUT)
+    return parser.parse_args()
+
+
+def main() -> int:
+    args = parse_args()
+    fit = fit_transfer_heads(
+        original_targets_path=args.original_targets,
+        promotion_eval_path=args.promotion_eval,
+        transfer_availability_path=args.transfer_availability,
+    )
+    args.json_output.parent.mkdir(parents=True, exist_ok=True)
+    args.report_output.parent.mkdir(parents=True, exist_ok=True)
+    args.json_output.write_text(json.dumps(fit, indent=2, sort_keys=True), encoding="utf-8")
+    args.report_output.write_text(render_markdown(fit), encoding="utf-8")
+    print(
+        json.dumps(
+            {
+                "availability_error_count": _dict(fit.get("availability_head")).get(
+                    "error_count", 0
+                ),
+                "json_output": str(args.json_output),
+                "promotion_error_count": _dict(fit.get("promotion_head")).get(
+                    "error_count", 0
+                ),
+                "promotion_head": _dict(fit.get("promotion_head")).get("head_id", ""),
+                "report_output": str(args.report_output),
+            },
+            indent=2,
+            sort_keys=True,
+        )
+    )
+    return 0
+
+
+def fit_transfer_heads(
+    *,
+    original_targets_path: Path,
+    promotion_eval_path: Path,
+    transfer_availability_path: Path,
+) -> dict[str, object]:
+    original_targets = json.loads(original_targets_path.read_text(encoding="utf-8"))
+    transfer_availability = json.loads(transfer_availability_path.read_text(encoding="utf-8"))
+    promotion_eval = json.loads(promotion_eval_path.read_text(encoding="utf-8"))
+    availability_rows = _availability_rows(original_targets, transfer_availability)
+    availability_head = _score_availability_head(availability_rows)
+    promotion_policies = _score_promotion_policies(promotion_eval)
+    promotion_head = min(
+        promotion_policies,
+        key=lambda policy: (
+            int(policy.get("error_count", 0)),
+            int(policy.get("false_positive_count", 0)),
+            int(policy.get("false_negative_count", 0)),
+            str(policy.get("head_id", "")),
+        ),
+    )
+    separation_rows = _separation_rows(
+        availability_rows=availability_rows,
+        promotion_policies=promotion_policies,
+    )
+    return {
+        "availability_head": availability_head,
+        "availability_rows": availability_rows,
+        "generated_by": "experiments/fit_diffusion_transfer_heads.py",
+        "inputs": {
+            "original_targets": str(original_targets_path),
+            "promotion_eval": str(promotion_eval_path),
+            "transfer_availability": str(transfer_availability_path),
+        },
+        "promotion_head": promotion_head,
+        "promotion_policies": promotion_policies,
+        "schema": "diffusion_transfer_head_fit.v1",
+        "separation_rows": separation_rows,
+        "summary": _summary(
+            availability_head=availability_head,
+            availability_rows=availability_rows,
+            promotion_head=promotion_head,
+            promotion_policies=promotion_policies,
+            separation_rows=separation_rows,
+        ),
+    }
+
+
+def render_markdown(fit: dict[str, object]) -> str:
+    availability = _dict(fit.get("availability_head"))
+    promotion = _dict(fit.get("promotion_head"))
+    summary = _dict(fit.get("summary"))
+    lines = [
+        "# Diffusion Transfer Head Fit",
+        "",
+        "This file is generated by `experiments/fit_diffusion_transfer_heads.py`.",
+        (
+            "It fits separate CPU-safe predictors for repair availability and "
+            "repair promotion value from the current GPU evidence rows."
+        ),
+        "",
+        "## Summary",
+        "",
+        f"- Availability head: `{availability.get('head_id', '')}`",
+        f"- Availability rows: `{availability.get('row_count', 0)}`",
+        f"- Availability errors: `{availability.get('error_count', 0)}`",
+        f"- Availability selected tasks: {_join_tasks(availability.get('selected_tasks'))}",
+        f"- Promotion head: `{promotion.get('head_id', '')}`",
+        f"- Promotion source policy: `{promotion.get('policy_id', '')}`",
+        f"- Promotion errors: `{promotion.get('error_count', 0)}`",
+        f"- Promotion selected available tasks: {_join_tasks(promotion.get('selected_available_tasks'))}",
+        (
+            "- Availability-positive but baseline-promotion-missed tasks: "
+            f"{_join_tasks(summary.get('availability_positive_baseline_missed_tasks'))}"
+        ),
+        "",
+        "## Availability Head",
+        "",
+        "| Split | Task | Label | Prediction | Source Quality | Gap | First Step |",
+        "| --- | --- | --- | --- | ---: | ---: | ---: |",
+    ]
+    predictions = _dict(availability.get("predictions"))
+    for row in _list_of_dicts(fit.get("availability_rows")):
+        task_id = str(row.get("task_id", ""))
+        lines.append(
+            "| "
+            f"`{row.get('split', '')}` | "
+            f"`{task_id}` | "
+            f"{bool(row.get('label'))} | "
+            f"{bool(predictions.get(task_id))} | "
+            f"{_format_float(row.get('source_quality'))} | "
+            f"{_format_float(row.get('prompt_gap_count'))} | "
+            f"{_format_optional(row.get('first_repairable_step'))} |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Promotion Head",
+            "",
+            "| Policy | Head | Error | FP | FN | Selected Available | Missed Available |",
+            "| --- | --- | ---: | ---: | ---: | --- | --- |",
+        ]
+    )
+    for policy in _list_of_dicts(fit.get("promotion_policies")):
+        lines.append(
+            "| "
+            f"`{policy.get('policy_id', '')}` | "
+            f"`{policy.get('head_id', '')}` | "
+            f"{policy.get('error_count', 0)} | "
+            f"{policy.get('false_positive_count', 0)} | "
+            f"{policy.get('false_negative_count', 0)} | "
+            f"{_join_tasks(policy.get('selected_available_tasks'))} | "
+            f"{_join_tasks(policy.get('missed_available_tasks'))} |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Separation Rows",
+            "",
+            "| Task | Availability | Baseline Promotion | Transfer Promotion |",
+            "| --- | --- | --- | --- |",
+        ]
+    )
+    for row in _list_of_dicts(fit.get("separation_rows")):
+        lines.append(
+            "| "
+            f"`{row.get('task_id', '')}` | "
+            f"{bool(row.get('availability_label'))} | "
+            f"{bool(row.get('baseline_promotion_selected'))} | "
+            f"{bool(row.get('transfer_promotion_selected'))} |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Reading",
+            "",
+            (
+                "The availability head asks whether a repair opportunity exists. "
+                "The promotion head asks whether the generated repair should replace "
+                "the source output. `plan_012` is the useful witness: the spend head "
+                "marks it available, the planning-quality promotion policy misses it, "
+                "and the named `transfer_promotion_value` policy selects it."
+            ),
+        ]
+    )
+    return "\n".join(lines) + "\n"
+
+
+def _availability_rows(
+    original_targets: dict[str, object],
+    transfer_availability: dict[str, object],
+) -> list[dict[str, object]]:
+    rows = []
+    for row in _list_of_dicts(original_targets.get("task_targets")):
+        rows.append(
+            {
+                "first_repairable_step": row.get("first_repairable_step"),
+                "label": bool(row.get("spend_repair_label")),
+                "prompt_gap_count": _float(row.get("prompt_gap_count")),
+                "source_quality": _float(row.get("source_quality")),
+                "source_task_score": _float(row.get("trajectory_score")),
+                "split": "original",
+                "task_id": str(row.get("task_id", "")),
+            }
+        )
+    for row in _list_of_dicts(transfer_availability.get("rows")):
+        rows.append(
+            {
+                "first_repairable_step": row.get("first_repairable_step"),
+                "label": bool(row.get("profitable")),
+                "prompt_gap_count": _float(row.get("prompt_gap_count")),
+                "source_quality": _float(row.get("source_quality")),
+                "source_task_score": _float(row.get("source_task_score")),
+                "split": "transfer",
+                "task_id": str(row.get("task_id", "")),
+            }
+        )
+    return rows
+
+
+def _score_availability_head(rows: list[dict[str, object]]) -> dict[str, object]:
+    predictions = {
+        str(row.get("task_id", "")): _availability_prediction(row)
+        for row in rows
+    }
+    confusion = _confusion(
+        [
+            {
+                "label": bool(row.get("label")),
+                "prediction": bool(predictions.get(str(row.get("task_id", "")))),
+                "task_id": str(row.get("task_id", "")),
+            }
+            for row in rows
+        ]
+    )
+    return {
+        **confusion,
+        "head_id": AVAILABILITY_HEAD_ID,
+        "max_prompt_gap_count": DEFAULT_PROMPT_GAP_MAX,
+        "max_source_quality": DEFAULT_SOURCE_QUALITY_MAX,
+        "predictions": predictions,
+        "requires_first_repairable": True,
+        "row_count": len(rows),
+        "selected_tasks": [task_id for task_id, selected in predictions.items() if selected],
+    }
+
+
+def _availability_prediction(row: dict[str, object]) -> bool:
+    if row.get("first_repairable_step") is None:
+        return False
+    if _float(row.get("prompt_gap_count")) > DEFAULT_PROMPT_GAP_MAX:
+        return False
+    return _float(row.get("source_quality")) <= DEFAULT_SOURCE_QUALITY_MAX
+
+
+def _score_promotion_policies(promotion_eval: dict[str, object]) -> list[dict[str, object]]:
+    policies = []
+    for policy in _list_of_dicts(promotion_eval.get("policies")):
+        policy_rows = []
+        for row in _list_of_dicts(policy.get("rows")):
+            policy_rows.append(
+                {
+                    "label": bool(row.get("available")),
+                    "prediction": bool(row.get("selected_positive_lift")),
+                    "selected_lift": _float(row.get("selected_lift")),
+                    "task_id": str(row.get("task_id", "")),
+                }
+            )
+        confusion = _confusion(policy_rows)
+        policy_id = str(policy.get("policy_id", ""))
+        head_id = PROMOTION_HEAD_ALIAS if policy_id == "inherit" else policy_id
+        policies.append(
+            {
+                **confusion,
+                "head_id": head_id,
+                "policy_id": policy_id,
+                "run_id": str(policy.get("run_id", "")),
+                "selected_available_tasks": [
+                    row["task_id"]
+                    for row in policy_rows
+                    if row["label"] and row["prediction"]
+                ],
+                "missed_available_tasks": [
+                    row["task_id"]
+                    for row in policy_rows
+                    if row["label"] and not row["prediction"]
+                ],
+            }
+        )
+    return policies
+
+
+def _separation_rows(
+    *,
+    availability_rows: list[dict[str, object]],
+    promotion_policies: list[dict[str, object]],
+) -> list[dict[str, object]]:
+    available_tasks = {
+        str(row.get("task_id", ""))
+        for row in availability_rows
+        if row.get("label")
+    }
+    baseline = _policy_by_id(promotion_policies, "planning_quality_seed_realization_guarded")
+    transfer = _policy_by_id(promotion_policies, "inherit")
+    baseline_selected = set(_list_of_strings(baseline.get("selected_available_tasks")))
+    transfer_selected = set(_list_of_strings(transfer.get("selected_available_tasks")))
+    return [
+        {
+            "availability_label": True,
+            "baseline_promotion_selected": task_id in baseline_selected,
+            "task_id": task_id,
+            "transfer_promotion_selected": task_id in transfer_selected,
+        }
+        for task_id in sorted(available_tasks)
+        if task_id in baseline_selected or task_id in transfer_selected
+    ]
+
+
+def _policy_by_id(policies: list[dict[str, object]], policy_id: str) -> dict[str, object]:
+    for policy in policies:
+        if policy.get("policy_id") == policy_id:
+            return policy
+    return {}
+
+
+def _summary(
+    *,
+    availability_head: dict[str, object],
+    availability_rows: list[dict[str, object]],
+    promotion_head: dict[str, object],
+    promotion_policies: list[dict[str, object]],
+    separation_rows: list[dict[str, object]],
+) -> dict[str, object]:
+    baseline = _policy_by_id(promotion_policies, "planning_quality_seed_realization_guarded")
+    return {
+        "availability_positive_baseline_missed_tasks": [
+            str(row.get("task_id", ""))
+            for row in separation_rows
+            if row.get("availability_label") and not row.get("baseline_promotion_selected")
+        ],
+        "availability_positive_count": sum(int(row.get("label", False)) for row in availability_rows),
+        "baseline_promotion_error_count": baseline.get("error_count", 0),
+        "best_promotion_head": promotion_head.get("head_id", ""),
+        "transfer_promotion_error_reduction": int(baseline.get("error_count", 0))
+        - int(promotion_head.get("error_count", 0)),
+        "availability_error_count": availability_head.get("error_count", 0),
+        "promotion_error_count": promotion_head.get("error_count", 0),
+    }
+
+
+def _confusion(rows: list[dict[str, object]]) -> dict[str, object]:
+    false_positive = false_negative = true_positive = true_negative = 0
+    for row in rows:
+        label = bool(row.get("label"))
+        prediction = bool(row.get("prediction"))
+        if prediction and label:
+            true_positive += 1
+        elif prediction and not label:
+            false_positive += 1
+        elif not prediction and label:
+            false_negative += 1
+        else:
+            true_negative += 1
+    return {
+        "error_count": false_positive + false_negative,
+        "false_negative_count": false_negative,
+        "false_positive_count": false_positive,
+        "true_negative_count": true_negative,
+        "true_positive_count": true_positive,
+    }
+
+
+def _dict(value: object) -> dict[str, object]:
+    return value if isinstance(value, dict) else {}
+
+
+def _list_of_dicts(value: object) -> list[dict[str, object]]:
+    return [row for row in value if isinstance(row, dict)] if isinstance(value, list) else []
+
+
+def _list_of_strings(value: object) -> list[str]:
+    return [str(item) for item in value] if isinstance(value, list) else []
+
+
+def _float(value: object) -> float:
+    if value is None:
+        return 0.0
+    return float(value)
+
+
+def _format_float(value: object) -> str:
+    return f"{_float(value):.6f}"
+
+
+def _format_optional(value: object) -> str:
+    if value is None:
+        return ""
+    return _format_float(value)
+
+
+def _join_tasks(value: object) -> str:
+    values = _list_of_strings(value)
+    return ", ".join(f"`{item}`" for item in values) if values else "`none`"
+
+
+if __name__ == "__main__":
+    raise SystemExit(main())

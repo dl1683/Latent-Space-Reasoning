@@ -166,6 +166,135 @@ def run(
         "--decode-strategy",
         help="Decode strategy: best, combined",
     ),
+    decode_mode: str = typer.Option(
+        "soft_prompt",
+        "--decode-mode",
+        help="Decode control mode: seed, soft_prompt, dual_steering, intermediate_steering, geometry_feedback",
+    ),
+    reasoning_mode: str = typer.Option(
+        "evolution",
+        "--reasoning-mode",
+        help="Reasoning strategy: evolution, trajectory, hybrid",
+    ),
+    trajectory_steps: int = typer.Option(
+        6,
+        "--trajectory-steps",
+        help="Number of trajectory refinement steps when trajectory mode is enabled",
+        min=1,
+        max=200,
+    ),
+    trajectory_decode_interval: int = typer.Option(
+        0,
+        "--trajectory-decode-interval",
+        help="Decode preview interval during trajectory steps (0 disables previews)",
+        min=0,
+        max=20,
+    ),
+    trajectory_step_scale: float = typer.Option(
+        0.2,
+        "--trajectory-step-scale",
+        help="Step scale for trajectory movement updates",
+        min=0.0,
+        max=5.0,
+    ),
+    geometry_feedback_target_forward_kl: float = typer.Option(
+        0.06,
+        "--geometry-feedback-target-forward-kl",
+        help="Target forward-KL for geometry feedback decoding.",
+        min=0.0,
+    ),
+    geometry_feedback_kl_tolerance: float = typer.Option(
+        0.5,
+        "--geometry-feedback-kl-tolerance",
+        help="KL tolerance band for geometry feedback decoder steering.",
+        min=0.0,
+    ),
+    geometry_feedback_steering_eta: float = typer.Option(
+        0.05,
+        "--geometry-feedback-steering-eta",
+        help="Learning-rate-like step size for geometry feedback steering.",
+        min=0.0,
+        max=1.0,
+    ),
+    geometry_feedback_alpha: float = typer.Option(
+        0.01,
+        "--geometry-feedback-alpha",
+        help="EMA momentum for geometry feedback steering updates.",
+        min=0.0,
+        max=1.0,
+    ),
+    geometry_feedback_kl_cap: float = typer.Option(
+        0.5,
+        "--geometry-feedback-kl-cap",
+        help="KL cap for geometry feedback updates.",
+        min=0.0,
+    ),
+    geometry_feedback_topk: int = typer.Option(
+        50,
+        "--geometry-feedback-topk",
+        help="Top-k logits to consider for geometry feedback.",
+        min=1,
+    ),
+    geometry_feedback_eta_min: float = typer.Option(
+        0.01,
+        "--geometry-feedback-eta-min",
+        help="Minimum geometry steering step size.",
+        min=0.0,
+        max=1.0,
+    ),
+    geometry_feedback_eta_max: float = typer.Option(
+        0.5,
+        "--geometry-feedback-eta-max",
+        help="Maximum geometry steering step size.",
+        min=0.0,
+        max=1.0,
+    ),
+    geometry_feedback_eta_growth: float = typer.Option(
+        1.06,
+        "--geometry-feedback-eta-growth",
+        help="Growth factor when steering error is low.",
+        min=1.0,
+    ),
+    geometry_feedback_eta_decay: float = typer.Option(
+        0.85,
+        "--geometry-feedback-eta-decay",
+        help="Decay factor when steering error is high.",
+        min=0.0,
+        max=1.0,
+    ),
+    geometry_feedback_controller: str = typer.Option(
+        "legacy",
+        "--geometry-feedback-controller",
+        help="Geometry controller type: legacy or pid",
+    ),
+    geometry_feedback_controller_kp: float = typer.Option(
+        0.0,
+        "--geometry-feedback-controller-kp",
+        help="Proportional gain for PID controller.",
+        min=0.0,
+        max=2.0,
+    ),
+    geometry_feedback_controller_ki: float = typer.Option(
+        0.0,
+        "--geometry-feedback-controller-ki",
+        help="Integral gain for PID controller.",
+        min=0.0,
+        max=2.0,
+    ),
+    geometry_feedback_controller_kd: float = typer.Option(
+        0.0,
+        "--geometry-feedback-controller-kd",
+        help="Derivative gain for PID controller.",
+        min=0.0,
+        max=2.0,
+    ),
+    geometry_feedback_controller_error_ema: float = typer.Option(
+        0.2,
+        "--geometry-feedback-controller-error-ema",
+        help="EMA smoothing for controller error signal.",
+        min=0.0,
+        max=1.0,
+    ),
     scorer: Optional[List[str]] = typer.Option(
         None,
         "--scorer", "-s",
@@ -310,6 +439,38 @@ def run(
         console.print("[red]Error: --decode-strategy must be 'best' or 'combined'[/red]")
         raise typer.Exit(1)
     cfg.synthesis.decode_strategy = decode_strategy
+    if decode_mode not in {"seed", "soft_prompt", "dual_steering", "intermediate_steering", "geometry_feedback"}:
+        console.print(
+            "[red]Error: --decode-mode must be one of: "
+            "seed, soft_prompt, dual_steering, intermediate_steering, geometry_feedback[/red]"
+        )
+        raise typer.Exit(1)
+    cfg.synthesis.decode_mode = decode_mode
+    if reasoning_mode not in {"evolution", "trajectory", "hybrid"}:
+        console.print(
+            "[red]Error: --reasoning-mode must be one of: "
+            "evolution, trajectory, hybrid[/red]"
+        )
+        raise typer.Exit(1)
+    cfg.synthesis.reasoning_mode = reasoning_mode
+    cfg.synthesis.trajectory_steps = trajectory_steps
+    cfg.synthesis.trajectory_decode_interval = trajectory_decode_interval
+    cfg.synthesis.trajectory_step_scale = trajectory_step_scale
+    cfg.synthesis.geometry_feedback_target_forward_kl = geometry_feedback_target_forward_kl
+    cfg.synthesis.geometry_feedback_kl_tolerance = geometry_feedback_kl_tolerance
+    cfg.synthesis.geometry_feedback_steering_eta = geometry_feedback_steering_eta
+    cfg.synthesis.geometry_feedback_alpha = geometry_feedback_alpha
+    cfg.synthesis.geometry_feedback_kl_cap = geometry_feedback_kl_cap
+    cfg.synthesis.geometry_feedback_topk = geometry_feedback_topk
+    cfg.synthesis.geometry_feedback_eta_min = geometry_feedback_eta_min
+    cfg.synthesis.geometry_feedback_eta_max = geometry_feedback_eta_max
+    cfg.synthesis.geometry_feedback_eta_growth = geometry_feedback_eta_growth
+    cfg.synthesis.geometry_feedback_eta_decay = geometry_feedback_eta_decay
+    cfg.synthesis.geometry_feedback_controller = geometry_feedback_controller
+    cfg.synthesis.geometry_feedback_controller_kp = geometry_feedback_controller_kp
+    cfg.synthesis.geometry_feedback_controller_ki = geometry_feedback_controller_ki
+    cfg.synthesis.geometry_feedback_controller_kd = geometry_feedback_controller_kd
+    cfg.synthesis.geometry_feedback_controller_error_ema = geometry_feedback_controller_error_ema
     cfg.evolution.chains = chains
     cfg.evolution.generations = generations
     cfg.evolution.temperature = mutation_temp
@@ -349,7 +510,10 @@ def run(
                 "generations": result.generations,
                 "evaluations": result.evaluations,
                 "stop_reason": result.stop_reason,
+                "reasoning_mode": result.reasoning_mode,
+                "reasoning_trace": result.reasoning_trace,
                 "all_plans": [_sanitize_text(p) for p in result.all_plans],
+                "decode_trace": result.decode_trace,
             }
             console.print_json(data=output_data)
         elif format == "markdown":
@@ -365,7 +529,10 @@ def run(
                 "generations": result.generations,
                 "evaluations": result.evaluations,
                 "stop_reason": result.stop_reason,
+                "reasoning_mode": result.reasoning_mode,
+                "reasoning_trace": result.reasoning_trace,
                 "all_plans": result.all_plans,
+                "decode_trace": result.decode_trace,
             }
             with open(output, "w", encoding="utf-8") as f:
                 json.dump(output_data, f, indent=2, ensure_ascii=False)
@@ -451,6 +618,38 @@ def compare(
         "--decode-strategy",
         help="Decode strategy: best, combined. Overrides config if set.",
     ),
+    decode_mode: Optional[str] = typer.Option(
+        None,
+        "--decode-mode",
+        help="Decode control mode: seed, soft_prompt, dual_steering, intermediate_steering, geometry_feedback. "
+             "Overrides config if set.",
+    ),
+    reasoning_mode: Optional[str] = typer.Option(
+        None,
+        "--reasoning-mode",
+        help="Reasoning strategy: evolution, trajectory, hybrid. Overrides config if set.",
+    ),
+    trajectory_steps: Optional[int] = typer.Option(
+        None,
+        "--trajectory-steps",
+        help="Number of trajectory refinement steps when trajectory reasoning is enabled.",
+        min=1,
+        max=200,
+    ),
+    trajectory_decode_interval: Optional[int] = typer.Option(
+        None,
+        "--trajectory-decode-interval",
+        help="Decode preview interval during trajectory steps (0 disables previews).",
+        min=0,
+        max=20,
+    ),
+    trajectory_step_scale: Optional[float] = typer.Option(
+        None,
+        "--trajectory-step-scale",
+        help="Step scale for trajectory movement updates.",
+        min=0.0,
+        max=5.0,
+    ),
     # Generation options
     max_tokens: Optional[int] = typer.Option(
         None,
@@ -534,6 +733,28 @@ def compare(
         cfg.encoder.quantization = quantization
     if decode_strategy is not None:
         cfg.synthesis.decode_strategy = decode_strategy
+    if decode_mode is not None:
+        if decode_mode not in {"seed", "soft_prompt", "dual_steering", "intermediate_steering", "geometry_feedback"}:
+            console.print(
+                "[red]Error: --decode-mode must be one of: "
+                "seed, soft_prompt, dual_steering, intermediate_steering, geometry_feedback[/red]"
+            )
+            raise typer.Exit(1)
+        cfg.synthesis.decode_mode = decode_mode
+    if reasoning_mode is not None:
+        if reasoning_mode not in {"evolution", "trajectory", "hybrid"}:
+            console.print(
+                "[red]Error: --reasoning-mode must be one of: "
+                "evolution, trajectory, hybrid[/red]"
+            )
+            raise typer.Exit(1)
+        cfg.synthesis.reasoning_mode = reasoning_mode
+    if trajectory_steps is not None:
+        cfg.synthesis.trajectory_steps = trajectory_steps
+    if trajectory_decode_interval is not None:
+        cfg.synthesis.trajectory_decode_interval = trajectory_decode_interval
+    if trajectory_step_scale is not None:
+        cfg.synthesis.trajectory_step_scale = trajectory_step_scale
     if chains is not None:
         cfg.evolution.chains = chains
     if generations is not None:
@@ -854,10 +1075,154 @@ def arc_eval(
         "--max-tokens", "-t",
         help="Max output tokens",
     ),
+    decode_mode: str = typer.Option(
+        "soft_prompt",
+        "--decode-mode",
+        help="Decode control mode: seed, soft_prompt, dual_steering, intermediate_steering, geometry_feedback",
+    ),
+    reasoning_mode: str = typer.Option(
+        "evolution",
+        "--reasoning-mode",
+        help="Reasoning strategy: evolution, trajectory, hybrid",
+    ),
+    trajectory_steps: int = typer.Option(
+        6,
+        "--trajectory-steps",
+        help="Number of trajectory refinement steps when trajectory reasoning is enabled.",
+        min=1,
+        max=200,
+    ),
+    trajectory_decode_interval: int = typer.Option(
+        0,
+        "--trajectory-decode-interval",
+        help="Decode preview interval during trajectory steps (0 disables previews).",
+        min=0,
+        max=20,
+    ),
+    trajectory_step_scale: float = typer.Option(
+        0.2,
+        "--trajectory-step-scale",
+        help="Step scale for trajectory movement updates.",
+        min=0.0,
+        max=5.0,
+    ),
+    geometry_feedback_target_forward_kl: float = typer.Option(
+        0.06,
+        "--geometry-feedback-target-forward-kl",
+        help="Target forward-KL for geometry feedback decoding.",
+        min=0.0,
+    ),
+    geometry_feedback_kl_tolerance: float = typer.Option(
+        0.5,
+        "--geometry-feedback-kl-tolerance",
+        help="KL tolerance band for geometry feedback decoder steering.",
+        min=0.0,
+    ),
+    geometry_feedback_steering_eta: float = typer.Option(
+        0.05,
+        "--geometry-feedback-steering-eta",
+        help="Learning-rate-like step size for geometry feedback steering.",
+        min=0.0,
+        max=1.0,
+    ),
+    geometry_feedback_alpha: float = typer.Option(
+        0.01,
+        "--geometry-feedback-alpha",
+        help="EMA momentum for geometry feedback steering updates.",
+        min=0.0,
+        max=1.0,
+    ),
+    geometry_feedback_kl_cap: float = typer.Option(
+        0.5,
+        "--geometry-feedback-kl-cap",
+        help="KL cap for geometry feedback updates.",
+        min=0.0,
+    ),
+    geometry_feedback_topk: int = typer.Option(
+        50,
+        "--geometry-feedback-topk",
+        help="Top-k logits to consider for geometry feedback.",
+        min=1,
+    ),
+    geometry_feedback_eta_min: float = typer.Option(
+        0.01,
+        "--geometry-feedback-eta-min",
+        help="Minimum geometry steering step size.",
+        min=0.0,
+        max=1.0,
+    ),
+    geometry_feedback_eta_max: float = typer.Option(
+        0.5,
+        "--geometry-feedback-eta-max",
+        help="Maximum geometry steering step size.",
+        min=0.0,
+        max=1.0,
+    ),
+    geometry_feedback_eta_growth: float = typer.Option(
+        1.06,
+        "--geometry-feedback-eta-growth",
+        help="Growth factor when steering error is low.",
+        min=1.0,
+    ),
+    geometry_feedback_eta_decay: float = typer.Option(
+        0.85,
+        "--geometry-feedback-eta-decay",
+        help="Decay factor when steering error is high.",
+        min=0.0,
+        max=1.0,
+    ),
+    geometry_feedback_controller: str = typer.Option(
+        "legacy",
+        "--geometry-feedback-controller",
+        help="Geometry controller type: legacy or pid",
+    ),
+    geometry_feedback_controller_kp: float = typer.Option(
+        0.0,
+        "--geometry-feedback-controller-kp",
+        help="Proportional gain for PID controller.",
+        min=0.0,
+        max=2.0,
+    ),
+    geometry_feedback_controller_ki: float = typer.Option(
+        0.0,
+        "--geometry-feedback-controller-ki",
+        help="Integral gain for PID controller.",
+        min=0.0,
+        max=2.0,
+    ),
+    geometry_feedback_controller_kd: float = typer.Option(
+        0.0,
+        "--geometry-feedback-controller-kd",
+        help="Derivative gain for PID controller.",
+        min=0.0,
+        max=2.0,
+    ),
+    geometry_feedback_controller_error_ema: float = typer.Option(
+        0.2,
+        "--geometry-feedback-controller-error-ema",
+        help="EMA smoothing for controller error signal.",
+        min=0.0,
+        max=1.0,
+    ),
+    arc_version: str = typer.Option(
+        "3",
+        "--arc-version",
+        help="ARC benchmark version: 2 (legacy) or 3 (default)",
+    ),
+    lr_retries: int = typer.Option(
+        1,
+        "--lr-retries",
+        help="Additional ARC LR attempts per test when parsing fails",
+    ),
+    arc_strategy: str = typer.Option(
+        "adaptive",
+        "--arc-strategy",
+        help="ARC LR strategy: single, adaptive, repair, consensus, geometry_bandit, self_improving",
+    ),
     data_dir: Path = typer.Option(
         Path("./data"),
         "--data-dir",
-        help="Directory for ARC-AGI-2 dataset",
+        help="Directory for ARC dataset files",
     ),
     output_dir: Path = typer.Option(
         Path("./eval_results"),
@@ -866,10 +1231,11 @@ def arc_eval(
     ),
 ):
     """
-    Run ARC-AGI-2 evaluation comparing Baseline vs Latent Reasoning.
+    Run static ARC-style grid evaluation comparing Baseline vs Latent Reasoning.
 
-    Downloads the ARC-AGI-2 dataset (if needed) and evaluates both methods
-    on visual reasoning tasks. Saves all outputs (baseline + LR) and results.
+    Note: official ARC-AGI-3 is now an interactive agent benchmark. Use
+    experiments/run_arc3_official_harness.py for the real ARC-AGI-3 harness.
+    This command is for static grid tasks and cheap proxy experiments.
 
     ARC tasks are grid-based puzzles where you must find the pattern from
     training examples and apply it to test inputs.
@@ -877,9 +1243,23 @@ def arc_eval(
     Examples:
         latent-reason arc-eval --max-tasks 10
         latent-reason arc-eval --encoder Qwen/Qwen3-0.6B --chains 6
+        latent-reason arc-eval --arc-strategy consensus --lr-retries 2 --arc-version 3
         latent-reason arc-eval --output-dir ./my_results
     """
     from latent_reasoning.eval.arc_agi2 import run_arc_evaluation
+
+    if decode_mode not in {"seed", "soft_prompt", "dual_steering", "intermediate_steering", "geometry_feedback"}:
+        console.print(
+            "[red]Error: --decode-mode must be one of: "
+            "seed, soft_prompt, dual_steering, intermediate_steering, geometry_feedback[/red]"
+        )
+        raise typer.Exit(1)
+    if reasoning_mode not in {"evolution", "trajectory", "hybrid"}:
+        console.print(
+            "[red]Error: --reasoning-mode must be one of: "
+            "evolution, trajectory, hybrid[/red]"
+        )
+        raise typer.Exit(1)
 
     try:
         results = run_arc_evaluation(
@@ -888,8 +1268,31 @@ def arc_eval(
             chains=chains,
             generations=generations,
             max_tokens=max_tokens,
+            decode_mode=decode_mode,
+            arc_version=arc_version,
+            lr_retries=lr_retries,
             data_dir=str(data_dir),
             output_dir=str(output_dir),
+            arc_strategy=arc_strategy,
+            reasoning_mode=reasoning_mode,
+            trajectory_steps=trajectory_steps,
+            trajectory_decode_interval=trajectory_decode_interval,
+            trajectory_step_scale=trajectory_step_scale,
+            geometry_feedback_target_forward_kl=geometry_feedback_target_forward_kl,
+            geometry_feedback_kl_tolerance=geometry_feedback_kl_tolerance,
+            geometry_feedback_steering_eta=geometry_feedback_steering_eta,
+            geometry_feedback_alpha=geometry_feedback_alpha,
+            geometry_feedback_kl_cap=geometry_feedback_kl_cap,
+            geometry_feedback_topk=geometry_feedback_topk,
+            geometry_feedback_eta_min=geometry_feedback_eta_min,
+            geometry_feedback_eta_max=geometry_feedback_eta_max,
+            geometry_feedback_eta_growth=geometry_feedback_eta_growth,
+            geometry_feedback_eta_decay=geometry_feedback_eta_decay,
+            geometry_feedback_controller=geometry_feedback_controller,
+            geometry_feedback_controller_kp=geometry_feedback_controller_kp,
+            geometry_feedback_controller_ki=geometry_feedback_controller_ki,
+            geometry_feedback_controller_kd=geometry_feedback_controller_kd,
+            geometry_feedback_controller_error_ema=geometry_feedback_controller_error_ema,
         )
 
         # Summary already printed by run_arc_evaluation

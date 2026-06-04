@@ -1,0 +1,343 @@
+{
+  "all_generation_count": 85,
+  "by_candidate": {
+    "dream-7b-instruct-hf": {
+      "count": 17,
+      "mean_combined_score": 0.5415499613107454,
+      "mean_task_score": 0.6470588235294118
+    },
+    "llada-8b-instruct-hf": {
+      "count": 17,
+      "mean_combined_score": 0.728312810883994,
+      "mean_task_score": 0.9411764705882353
+    }
+  },
+  "by_family": {
+    "math": {
+      "count": 16,
+      "mean_combined_score": 0.5470429570423542,
+      "mean_task_score": 0.6875
+    },
+    "science": {
+      "count": 6,
+      "mean_combined_score": 0.7946427359856778,
+      "mean_task_score": 1.0
+    },
+    "symbolic": {
+      "count": 12,
+      "mean_combined_score": 0.6722602832265695,
+      "mean_task_score": 0.8333333333333334
+    }
+  },
+  "selected": [
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.039089888649425295,
+      "schedule": "origin_64",
+      "task_id": "math_001",
+      "task_score": 0.0,
+      "text": "402",
+      "trajectory_score": 0.15635955459770118
+    },
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.8107965158045977,
+      "schedule": "entropy_32",
+      "task_id": "math_002",
+      "task_score": 1.0,
+      "text": "270",
+      "trajectory_score": 0.2431860632183908
+    },
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.05983058915770611,
+      "schedule": "entropy_32",
+      "task_id": "math_003",
+      "task_score": 0.0,
+      "text": "5",
+      "trajectory_score": 0.23932235663082443
+    },
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.023862847222222226,
+      "schedule": "entropy_64",
+      "task_id": "math_004",
+      "task_score": 0.0,
+      "text": "The result is 87.",
+      "trajectory_score": 0.0954513888888889
+    },
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.021749131944444444,
+      "schedule": "origin_64",
+      "task_id": "math_005",
+      "task_score": 0.0,
+      "text": "83",
+      "trajectory_score": 0.08699652777777778
+    },
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.8107965158045977,
+      "schedule": "entropy_32",
+      "task_id": "math_006",
+      "task_score": 1.0,
+      "text": "540",
+      "trajectory_score": 0.2431860632183908
+    },
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.03491319444444445,
+      "schedule": "entropy_32",
+      "task_id": "math_007",
+      "task_score": 0.0,
+      "text": "56",
+      "trajectory_score": 0.1396527777777778
+    },
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.8103038194444444,
+      "schedule": "entropy_32",
+      "task_id": "math_008",
+      "task_score": 1.0,
+      "text": "29",
+      "trajectory_score": 0.2412152777777778
+    },
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.8284635416666667,
+      "schedule": "entropy_32",
+      "task_id": "sci_001",
+      "task_score": 1.0,
+      "text": "B) amount of fertilizer",
+      "trajectory_score": 0.3138541666666667
+    },
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.8125152658045978,
+      "schedule": "entropy_32",
+      "task_id": "sci_002",
+      "task_score": 1.0,
+      "text": "C) increases",
+      "trajectory_score": 0.25006106321839083
+    },
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.8128038194444445,
+      "schedule": "entropy_32",
+      "task_id": "sci_003",
+      "task_score": 1.0,
+      "text": "B) thymine",
+      "trajectory_score": 0.2512152777777778
+    },
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.8118836805555556,
+      "schedule": "entropy_32",
+      "task_id": "sym_001",
+      "task_score": 1.0,
+      "text": "D A B C",
+      "trajectory_score": 0.24753472222222223
+    },
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.8104947916666667,
+      "schedule": "entropy_32",
+      "task_id": "sym_002",
+      "task_score": 1.0,
+      "text": "On.",
+      "trajectory_score": 0.2419791666666667
+    },
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.07812105429292929,
+      "schedule": "entropy_32",
+      "task_id": "sym_003",
+      "task_score": 0.0,
+      "text": "The final list is green, blue, red.",
+      "trajectory_score": 0.31248421717171715
+    },
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.8104947916666667,
+      "schedule": "entropy_32",
+      "task_id": "sym_004",
+      "task_score": 1.0,
+      "text": "No.",
+      "trajectory_score": 0.2419791666666667
+    },
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.8098305891577061,
+      "schedule": "entropy_32",
+      "task_id": "sym_005",
+      "task_score": 1.0,
+      "text": "6",
+      "trajectory_score": 0.23932235663082443
+    },
+    {
+      "candidate": "dream-7b-instruct-hf",
+      "combined_score": 0.8203993055555556,
+      "schedule": "entropy_32",
+      "task_id": "sym_006",
+      "task_score": 1.0,
+      "text": "f(g(10)) = f(10-5) = f(5) = 2*5 + 3 = 13",
+      "trajectory_score": 0.2815972222222223
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7599479166666667,
+      "schedule": "low_confidence_32",
+      "task_id": "math_001",
+      "task_score": 1.0,
+      "text": "354",
+      "trajectory_score": 0.039791666666666684
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7599479166666667,
+      "schedule": "low_confidence_32",
+      "task_id": "math_002",
+      "task_score": 1.0,
+      "text": "270",
+      "trajectory_score": 0.039791666666666684
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7597927867383513,
+      "schedule": "random_32",
+      "task_id": "math_003",
+      "task_score": 1.0,
+      "text": "6",
+      "trajectory_score": 0.03917114695340505
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7836631944444444,
+      "schedule": "random_32",
+      "task_id": "math_004",
+      "task_score": 1.0,
+      "text": "72",
+      "trajectory_score": 0.1346527777777778
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7602256944444444,
+      "schedule": "random_32",
+      "task_id": "math_005",
+      "task_score": 1.0,
+      "text": "73",
+      "trajectory_score": 0.04090277777777779
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7599479166666667,
+      "schedule": "low_confidence_32",
+      "task_id": "math_006",
+      "task_score": 1.0,
+      "text": "540",
+      "trajectory_score": 0.039791666666666684
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7602256944444444,
+      "schedule": "random_32",
+      "task_id": "math_007",
+      "task_score": 1.0,
+      "text": "50",
+      "trajectory_score": 0.04090277777777779
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7975936901340996,
+      "schedule": "random_32",
+      "task_id": "math_008",
+      "task_score": 1.0,
+      "text": "29",
+      "trajectory_score": 0.19037476053639846
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7779489087301588,
+      "schedule": "random_32",
+      "task_id": "sci_001",
+      "task_score": 1.0,
+      "text": "B) amount of fertilizer",
+      "trajectory_score": 0.11179563492063493
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7741127873563218,
+      "schedule": "random_32",
+      "task_id": "sci_002",
+      "task_score": 1.0,
+      "text": "C) increases",
+      "trajectory_score": 0.09645114942528739
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7620120929118774,
+      "schedule": "random_32",
+      "task_id": "sci_003",
+      "task_score": 1.0,
+      "text": "B) thymine",
+      "trajectory_score": 0.048048371647509594
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7620138888888889,
+      "schedule": "random_32",
+      "task_id": "sym_001",
+      "task_score": 1.0,
+      "text": "D  A B C",
+      "trajectory_score": 0.048055555555555574
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.02213541666666667,
+      "schedule": "random_32",
+      "task_id": "sym_002",
+      "task_score": 0.0,
+      "text": "off",
+      "trajectory_score": 0.08854166666666669
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7628993055555555,
+      "schedule": "low_confidence_32",
+      "task_id": "sym_003",
+      "task_score": 1.0,
+      "text": "green, red, blue",
+      "trajectory_score": 0.05159722222222224
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7841127873563218,
+      "schedule": "random_32",
+      "task_id": "sym_004",
+      "task_score": 1.0,
+      "text": "No.",
+      "trajectory_score": 0.13645114942528735
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7971440972222222,
+      "schedule": "random_32",
+      "task_id": "sym_005",
+      "task_score": 1.0,
+      "text": "6",
+      "trajectory_score": 0.18857638888888895
+    },
+    {
+      "candidate": "llada-8b-instruct-hf",
+      "combined_score": 0.7975936901340996,
+      "schedule": "random_32",
+      "task_id": "sym_006",
+      "task_score": 1.0,
+      "text": "13",
+      "trajectory_score": 0.19037476053639846
+    }
+  ],
+  "selected_count": 34,
+  "selected_mean_combined_score": 0.6349313860973697,
+  "selected_mean_task_score": 0.7941176470588235
+}
