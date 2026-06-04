@@ -20,7 +20,7 @@ It turns the current diffusion reasoning theory into falsifiable heads with targ
 | `source_trust` | `validated-local` | `retention_safe_history` | 5 | 0 | `eval_results\diffusion_language\diffusion_composite_selector_fit.json`, `DIFFUSION_COMPOSITE_SELECTOR_FIT.md` |
 | `retention` | `validated-local` | `classification_safe_history_anchor` | 8 | 0 | `eval_results\diffusion_language\diffusion_composite_selector_fit.json`, `DIFFUSION_COMPOSITE_SELECTOR_FIT.md` |
 | `realization` | `validated-local` | `min_realization_policy_error` | 7 | 0 | `eval_results\diffusion_language\diffusion_composite_selector_fit.json`, `DIFFUSION_COMPOSITE_SELECTOR_FIT.md` |
-| `cost` | `objective-defined` | `energy_aware_marginal_value` | 8 |  | `eval_results\diffusion_language\diffusion_budget_policy_loss.json`, `DIFFUSION_BUDGET_POLICY_LOSS.md`, `eval_results\diffusion_language\diffusion_spend_policy_decision.json`, `DIFFUSION_SPEND_POLICY_DECISION.md` |
+| `cost` | `objective-defined` | `energy_aware_marginal_value` | 8 |  | `eval_results\diffusion_language\diffusion_budget_policy_loss.json`, `DIFFUSION_BUDGET_POLICY_LOSS.md`, `eval_results\diffusion_language\diffusion_spend_policy_decision.json`, `DIFFUSION_SPEND_POLICY_DECISION.md`, `eval_results\diffusion_language\diffusion_spend_value_model_v1.json`, `DIFFUSION_SPEND_VALUE_MODEL_V1.md` |
 
 ## Falsifiers
 
@@ -64,7 +64,7 @@ It turns the current diffusion reasoning theory into falsifiable heads with targ
 - Assertion: Repair spending should optimize marginal value per GPU generation; the current incumbent preserves positive repairs before trying another pre-repair spend gate.
 - Information channels: relative GPU cost, marginal repair lift, phase-window cap
 - Falsifier: A learned or calibrated spend gate preserves all positive repairs and dominates the repairable-denoise incumbent at matched cost on a fresh GPU slice.
-- Next GPU validation: Run the next fresh counterexample probe with greedy/fixed, random perturbation, and latent repair only; compare any learned spend gate against the repairable-denoise plus `candidate_aware_promotion_v1` incumbent at matched cost.
+- Next GPU validation: Do not run a live spend gate from local geometry alone. The prototype value model must first be beaten by a richer offline controller that preserves held-out positives or names the lift it trades away for cost.
 
 ## Reading
 

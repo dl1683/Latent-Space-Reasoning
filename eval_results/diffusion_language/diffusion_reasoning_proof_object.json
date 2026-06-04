@@ -106,7 +106,9 @@
         "eval_results\\diffusion_language\\diffusion_budget_policy_loss.json",
         "DIFFUSION_BUDGET_POLICY_LOSS.md",
         "eval_results\\diffusion_language\\diffusion_spend_policy_decision.json",
-        "DIFFUSION_SPEND_POLICY_DECISION.md"
+        "DIFFUSION_SPEND_POLICY_DECISION.md",
+        "eval_results\\diffusion_language\\diffusion_spend_value_model_v1.json",
+        "DIFFUSION_SPEND_VALUE_MODEL_V1.md"
       ],
       "falsifier": "A learned or calibrated spend gate preserves all positive repairs and dominates the repairable-denoise incumbent at matched cost on a fresh GPU slice.",
       "head_id": "cost",
@@ -115,7 +117,7 @@
         "marginal repair lift",
         "phase-window cap"
       ],
-      "next_gpu_validation": "Run the next fresh counterexample probe with greedy/fixed, random perturbation, and latent repair only; compare any learned spend gate against the repairable-denoise plus `candidate_aware_promotion_v1` incumbent at matched cost.",
+      "next_gpu_validation": "Do not run a live spend gate from local geometry alone. The prototype value model must first be beaten by a richer offline controller that preserves held-out positives or names the lift it trades away for cost.",
       "rule_id": "energy_aware_marginal_value",
       "status": "objective-defined",
       "target_row_count": 8,
@@ -124,7 +126,9 @@
         "incumbent_policy_id": "denoise_phase_repairability_plus_candidate_aware_promotion_v1",
         "marginal_relative_cost_per_repair": 0.125,
         "max_task_policy_gain_lambda": 0.18,
-        "max_task_policy_gain_vs_cap": 0.0225892857142857
+        "max_task_policy_gain_vs_cap": 0.0225892857142857,
+        "prototype_value_model_loo_errors": 21,
+        "prototype_value_model_loo_false_negatives": 1
       }
     }
   ],
@@ -137,6 +141,7 @@
     "fresh_availability_eval": "eval_results\\diffusion_language\\diffusion_independent_spend_transfer_v9_eval.json",
     "larger_availability_eval": "eval_results\\diffusion_language\\diffusion_independent_spend_transfer_v3_eval.json",
     "spend_policy_decision": "eval_results\\diffusion_language\\diffusion_spend_policy_decision.json",
+    "spend_value_model": "eval_results\\diffusion_language\\diffusion_spend_value_model_v1.json",
     "transfer_head_fit": "eval_results\\diffusion_language\\diffusion_transfer_head_fit.json"
   },
   "schema": "diffusion_reasoning_proof_object.v1",

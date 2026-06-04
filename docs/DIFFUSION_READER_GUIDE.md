@@ -106,7 +106,11 @@ but [DIFFUSION_SPEND_GATE_V9_FIT.md](../DIFFUSION_SPEND_GATE_V9_FIT.md) still
 has 12 simple-gate errors across 40 accumulated spend rows. Read
 [DIFFUSION_SPEND_COUNTEREXAMPLE_WORKBENCH.md](../DIFFUSION_SPEND_COUNTEREXAMPLE_WORKBENCH.md)
 next: it names the low-gap profitable false negatives and high-gap no-lift
-false positives that any future spend controller must explain.
+false positives that any future spend controller must explain. The first richer
+offline challenger,
+[DIFFUSION_SPEND_VALUE_MODEL_V1.md](../DIFFUSION_SPEND_VALUE_MODEL_V1.md),
+is a negative control: nearest-prototype pre-repair geometry protects most
+positives only by spending too broadly and still drops a held-out positive.
 
 ## Benchmark And Cost Layer
 
@@ -145,6 +149,7 @@ hidden behind a large search stack:
 | [DIFFUSION_CANDIDATE_PROMOTION_TARGETS_V9.md](../DIFFUSION_CANDIDATE_PROMOTION_TARGETS_V9.md) | Counterexample-probe promotion labels showing zero candidate-aware promotion errors with five positives. |
 | [DIFFUSION_SPEND_GATE_V9_FIT.md](../DIFFUSION_SPEND_GATE_V9_FIT.md) | Offline simple-gate fit over v5-v9 showing the best threshold still misses seven positives and admits five no-lift repairs. |
 | [DIFFUSION_SPEND_COUNTEREXAMPLE_WORKBENCH.md](../DIFFUSION_SPEND_COUNTEREXAMPLE_WORKBENCH.md) | Active controller workbench naming the false-negative and false-positive clusters the next spend model must solve. |
+| [DIFFUSION_SPEND_VALUE_MODEL_V1.md](../DIFFUSION_SPEND_VALUE_MODEL_V1.md) | Offline nonlinear prototype challenger over pre-repair diagnostics; useful negative showing local geometry alone is still not deployable. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT.md) | Transfer-rule fit showing current decomposed spend is the best repair-availability rule. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md) | Expanded transfer-rule fit over the eight-row independent slice. |
 | [DIFFUSION_TRANSFER_PROMOTION_VALUE.md](../DIFFUSION_TRANSFER_PROMOTION_VALUE.md) | Transfer promotion-value result showing named `--repair-selector transfer_promotion_value` realizes the low-margin repair. |

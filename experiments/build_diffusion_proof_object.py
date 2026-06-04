@@ -27,6 +27,9 @@ DEFAULT_FRESH_AVAILABILITY_EVAL = Path(
 DEFAULT_SPEND_POLICY_DECISION = Path(
     "eval_results/diffusion_language/diffusion_spend_policy_decision.json"
 )
+DEFAULT_SPEND_VALUE_MODEL = Path(
+    "eval_results/diffusion_language/diffusion_spend_value_model_v1.json"
+)
 DEFAULT_JSON_OUTPUT = Path("eval_results/diffusion_language/diffusion_reasoning_proof_object.json")
 DEFAULT_REPORT_OUTPUT = Path("DIFFUSION_REASONING_PROOF_OBJECT.md")
 
@@ -62,6 +65,7 @@ def parse_args() -> argparse.Namespace:
         type=Path,
         default=DEFAULT_SPEND_POLICY_DECISION,
     )
+    parser.add_argument("--spend-value-model", type=Path, default=DEFAULT_SPEND_VALUE_MODEL)
     parser.add_argument("--json-output", type=Path, default=DEFAULT_JSON_OUTPUT)
     parser.add_argument("--report-output", type=Path, default=DEFAULT_REPORT_OUTPUT)
     return parser.parse_args()
@@ -78,6 +82,7 @@ def main() -> int:
         fresh_availability_eval_path=args.fresh_availability_eval,
         larger_availability_eval_path=args.larger_availability_eval,
         spend_policy_decision_path=args.spend_policy_decision,
+        spend_value_model_path=args.spend_value_model,
         transfer_head_fit_path=args.transfer_head_fit,
     )
     args.json_output.parent.mkdir(parents=True, exist_ok=True)
@@ -112,6 +117,7 @@ def build_proof_object(
     fresh_availability_eval_path: Path | None = None,
     larger_availability_eval_path: Path | None = None,
     spend_policy_decision_path: Path | None = None,
+    spend_value_model_path: Path | None = None,
 ) -> dict[str, object]:
     transfer = json.loads(transfer_head_fit_path.read_text(encoding="utf-8"))
     composite_fit = json.loads(composite_fit_path.read_text(encoding="utf-8"))
@@ -142,6 +148,11 @@ def build_proof_object(
         if spend_policy_decision_path is not None and spend_policy_decision_path.exists()
         else {}
     )
+    spend_value_model = (
+        json.loads(spend_value_model_path.read_text(encoding="utf-8"))
+        if spend_value_model_path is not None and spend_value_model_path.exists()
+        else {}
+    )
     heads = [
         _availability_head(
             transfer,
@@ -160,7 +171,14 @@ def build_proof_object(
         _source_trust_head(composite_fit, composite_targets, composite_fit_path),
         _retention_head(composite_fit, composite_targets, composite_fit_path),
         _realization_head(composite_fit, composite_targets, composite_fit_path),
-        _cost_head(budget_loss, budget_loss_path, spend_policy_decision, spend_policy_decision_path),
+        _cost_head(
+            budget_loss,
+            budget_loss_path,
+            spend_policy_decision,
+            spend_policy_decision_path,
+            spend_value_model,
+            spend_value_model_path,
+        ),
     ]
     return {
         "generated_by": "experiments/build_diffusion_proof_object.py",
@@ -193,6 +211,9 @@ def build_proof_object(
                 str(spend_policy_decision_path)
                 if spend_policy_decision_path is not None
                 else ""
+            ),
+            "spend_value_model": (
+                str(spend_value_model_path) if spend_value_model_path is not None else ""
             ),
             "transfer_head_fit": str(transfer_head_fit_path),
         },
@@ -507,9 +528,13 @@ def _cost_head(
     evidence_path: Path,
     spend_policy_decision: dict[str, object] | None = None,
     spend_policy_decision_path: Path | None = None,
+    spend_value_model: dict[str, object] | None = None,
+    spend_value_model_path: Path | None = None,
 ) -> dict[str, object]:
     summary = _dict(budget_loss.get("summary"))
     spend_summary = _dict(_dict(spend_policy_decision).get("summary"))
+    value_summary = _dict(_dict(spend_value_model).get("leave_one_slice_out")).get("summary")
+    value_summary = _dict(value_summary)
     live_delta = _dict(
         _dict(_dict(spend_policy_decision).get("live_v6_policy_scores")).get(
             "repairable_minus_calibrated"
@@ -523,6 +548,15 @@ def _cost_head(
                 if spend_policy_decision_path is not None
                 else "eval_results/diffusion_language/diffusion_spend_policy_decision.json",
                 "DIFFUSION_SPEND_POLICY_DECISION.md",
+            ]
+        )
+    if value_summary:
+        evidence_files.extend(
+            [
+                str(spend_value_model_path)
+                if spend_value_model_path is not None
+                else "eval_results/diffusion_language/diffusion_spend_value_model_v1.json",
+                "DIFFUSION_SPEND_VALUE_MODEL_V1.md",
             ]
         )
     return {
@@ -548,10 +582,19 @@ def _cost_head(
         "head_id": "cost",
         "information_channels": ["relative GPU cost", "marginal repair lift", "phase-window cap"],
         "next_gpu_validation": (
-            "Run the next fresh counterexample probe with greedy/fixed, random "
-            "perturbation, and latent repair only; "
-            "compare any learned spend gate against the repairable-denoise plus "
-            "`candidate_aware_promotion_v1` incumbent at matched cost."
+            (
+                "Do not run a live spend gate from local geometry alone. The "
+                "prototype value model must first be beaten by a richer offline "
+                "controller that preserves held-out positives or names the lift it "
+                "trades away for cost."
+            )
+            if value_summary
+            else (
+                "Run the next fresh counterexample probe with greedy/fixed, random "
+                "perturbation, and latent repair only; "
+                "compare any learned spend gate against the repairable-denoise plus "
+                "`candidate_aware_promotion_v1` incumbent at matched cost."
+            )
             if spend_summary
             else (
                 "Run the same lambda sweep on a larger slice and verify the selected cost "
@@ -565,6 +608,10 @@ def _cost_head(
             "incumbent_policy_id": spend_summary.get("incumbent_policy_id"),
             "incremental_lift_per_extra_generation": live_delta.get(
                 "incremental_lift_per_extra_generation"
+            ),
+            "prototype_value_model_loo_errors": value_summary.get("error_count"),
+            "prototype_value_model_loo_false_negatives": value_summary.get(
+                "false_negative_count"
             ),
             "marginal_relative_cost_per_repair": budget_loss.get(
                 "marginal_relative_cost_per_repair"
