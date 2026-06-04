@@ -1,0 +1,79 @@
+{
+  "conclusive_result_gates": {
+    "maximum_no_lift_false_positive_count": 0,
+    "minimum_tiny_positive_count": 1,
+    "must_beat_main_hook_after_selected_output_cost": true,
+    "no_live_fallback_without_fresh_validation": true,
+    "zero_tiny_positives_are_inconclusive": true
+  },
+  "design_intent": "Test whether low-margin source-tie generated repairs like v19 plan_151 recur without admitting no-lift high-span rows like plan_150.",
+  "failure_accounting": [
+    "If no tiny positives appear, mark v20 inconclusive rather than successful.",
+    "If a no-lift row matches the low-margin surface, kill the fallback.",
+    "If selected-output cost erases the fallback gain, keep the main hook unchanged.",
+    "If high span score predicts no-lift rows again, record span as misleading polish."
+  ],
+  "fit_boundary": {
+    "plan_150_candidate_lift_vs_trajectory": 0.0,
+    "plan_150_max_span_target_score": 3.81075,
+    "plan_151_candidate_lift_vs_trajectory": 0.007000000000000006,
+    "plan_151_max_span_target_score": 0.0,
+    "plan_151_planning_quality_delta_vs_source": 0.0,
+    "v19_control_only_waste_tasks": [
+      "plan_150",
+      "plan_151"
+    ],
+    "v19_selected_cost_audit": "eval_results\\diffusion_language\\generated_repair_value_hook_v19_selected_cost_audit.json",
+    "v19_selected_cost_audit_sha256": "64ea349c4966a5c51ab2eaad796e36a9bbba1c57c8f8abe61213e23becb88176",
+    "v19_targets": "eval_results\\diffusion_language\\generated_repair_value_hook_v19_targets.json",
+    "v19_targets_sha256": "f2d626bd3277d8eb22d6250c1ebfa60bc863caeffbd9185179f1c875b3495d93"
+  },
+  "fresh_slice_protocol": {
+    "label_pass": "python experiments\\run_diffusion_three_arm_benchmark.py --task-preset lean_gpu_mixed_transfer_v20 --candidates llada-moe-7b-a1b-instruct-hf --limit-schedules 2 --limit-evolved-schedules 0 --limit-repair-candidates 1 --repair-source-policy random --repair-pack constraint_span_phase_final_preserve_seeded_gated --repair-spend-trigger denoise_phase_repairability --repair-source-min-chars 240 --repair-source-prompt-gap-min 2 --repair-source-prompt-gap-max 9 --repair-source-prompt-coverage-min 0.4 --repair-source-prompt-coverage-max 1.0 --repair-phase-budget frontier --repair-selector planning_quality --repair-promotion-margin 0.0 --trajectory-selector planning_state --device cuda --dtype bfloat16 --raw-output eval_results\\diffusion_language\\low_margin_repair_v20_label_raw.jsonl --scores-output eval_results\\diffusion_language\\low_margin_repair_v20_label_scores.json --report-output eval_results\\diffusion_language\\low_margin_repair_v20_label_report.md",
+    "required_replay_outputs": [
+      "candidate-promotion target sheet built from raw repair candidates",
+      "main hook, permissive planning-quality, and low-margin feature-surface replays",
+      "tiny-lift, substantial-lift, and no-lift rows reported separately",
+      "selected-output cost sweep over selected repair-pool outputs",
+      "explicit decision to kill or keep the low-margin fallback"
+    ]
+  },
+  "generated_by": "experiments/build_diffusion_low_margin_repair_v20_freeze.py",
+  "overlap_with_v19_target_rows": [],
+  "planning_task_ids": [
+    "plan_153",
+    "plan_154",
+    "plan_155",
+    "plan_156",
+    "plan_157",
+    "plan_158",
+    "plan_159",
+    "plan_160"
+  ],
+  "schema": "diffusion_low_margin_repair_v20_freeze.v1",
+  "target_surface": {
+    "candidate_high_span_is_not_positive_evidence": true,
+    "no_lift_counterexample_task": "plan_150",
+    "positive_fit_task": "plan_151",
+    "promotion_status": "frozen_replay_surface_not_live_trigger",
+    "requires_zero_planning_quality_delta_vs_source": true,
+    "selected_output_cost_must_be_reported": true,
+    "surface_id": "low_margin_source_tie_repair_v20",
+    "tiny_lift_max_exclusive": 0.02,
+    "tiny_lift_min_exclusive": 0.0
+  },
+  "task_ids": [
+    "plan_153",
+    "plan_154",
+    "plan_155",
+    "plan_156",
+    "plan_157",
+    "plan_158",
+    "plan_159",
+    "plan_160",
+    "math_009",
+    "sym_007",
+    "sci_002"
+  ],
+  "task_preset": "lean_gpu_mixed_transfer_v20"
+}
