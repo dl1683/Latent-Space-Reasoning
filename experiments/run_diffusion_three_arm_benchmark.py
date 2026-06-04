@@ -389,6 +389,19 @@ LEAN_GPU_MIXED_TRANSFER_V10_TASK_IDS = (
     "sym_007",
     "sci_002",
 )
+LEAN_GPU_MIXED_TRANSFER_V11_TASK_IDS = (
+    "plan_081",
+    "plan_082",
+    "plan_083",
+    "plan_084",
+    "plan_085",
+    "plan_086",
+    "plan_087",
+    "plan_088",
+    "math_009",
+    "sym_007",
+    "sci_002",
+)
 
 TASK_PRESETS = {
     "lean_gpu_mixed": LEAN_GPU_MIXED_TASK_IDS,
@@ -413,6 +426,8 @@ TASK_PRESETS = {
     "lean-gpu-mixed-transfer-v9": LEAN_GPU_MIXED_TRANSFER_V9_TASK_IDS,
     "lean_gpu_mixed_transfer_v10": LEAN_GPU_MIXED_TRANSFER_V10_TASK_IDS,
     "lean-gpu-mixed-transfer-v10": LEAN_GPU_MIXED_TRANSFER_V10_TASK_IDS,
+    "lean_gpu_mixed_transfer_v11": LEAN_GPU_MIXED_TRANSFER_V11_TASK_IDS,
+    "lean-gpu-mixed-transfer-v11": LEAN_GPU_MIXED_TRANSFER_V11_TASK_IDS,
 }
 REPAIR_PHASE_BUDGET_CAPS = {
     "floor": 9,
