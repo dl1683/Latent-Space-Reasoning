@@ -368,6 +368,8 @@ hidden behind a large search stack:
 | [DIFFUSION_HISTORY_GUARD_V24_RESULT.md](../DIFFUSION_HISTORY_GUARD_V24_RESULT.md) | Fresh v24 history-prefix guard result: the unchanged hook selects all generated positives with zero selected waste, while blanket source controls admit waste. |
 | [DIFFUSION_HISTORY_GUARD_V24_TARGETS.md](../DIFFUSION_HISTORY_GUARD_V24_TARGETS.md) | V24 generated-repair target sheet with 10 candidate rows, three positives, and duplicate candidate-row error accounting. |
 | [DIFFUSION_LEARNED_SELECTOR_V25_FREEZE.md](../DIFFUSION_LEARNED_SELECTOR_V25_FREEZE.md) | Frozen v25 learned-selector proof obligation over `plan_193`-`plan_200`, using v21-v24 candidate-row failures as training-only evidence and fresh labels as the held-out gate. |
+| [DIFFUSION_LEARNED_SELECTOR_V25_RESULT.md](../DIFFUSION_LEARNED_SELECTOR_V25_RESULT.md) | Fresh v25 learned-selector result: the learned zero-waste model misses `plan_194`, while the unchanged hook again selects every positive without waste. |
+| [DIFFUSION_LEARNED_SELECTOR_V25_TARGETS.md](../DIFFUSION_LEARNED_SELECTOR_V25_TARGETS.md) | V25 generated-repair target sheet with six candidate rows, two positives, and duplicate candidate-row error accounting. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT.md) | Transfer-rule fit showing current decomposed spend is the best repair-availability rule. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md) | Expanded transfer-rule fit over the eight-row independent slice. |
 | [DIFFUSION_TRANSFER_PROMOTION_VALUE.md](../DIFFUSION_TRANSFER_PROMOTION_VALUE.md) | Transfer promotion-value result showing named `--repair-selector transfer_promotion_value` realizes the low-margin repair. |

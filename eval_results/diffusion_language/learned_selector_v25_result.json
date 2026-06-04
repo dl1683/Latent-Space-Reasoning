@@ -1,0 +1,175 @@
+{
+  "decision": {
+    "cost_sweep": [
+      {
+        "learned_advantage": -0.021428571428571463,
+        "learned_net": 0.11785714285714288,
+        "selected_cost": 0.0,
+        "unchanged_net": 0.13928571428571435
+      },
+      {
+        "learned_advantage": -0.020428571428571463,
+        "learned_net": 0.11685714285714288,
+        "selected_cost": 0.001,
+        "unchanged_net": 0.13728571428571434
+      },
+      {
+        "learned_advantage": -0.01642857142857146,
+        "learned_net": 0.11285714285714288,
+        "selected_cost": 0.005,
+        "unchanged_net": 0.12928571428571434
+      },
+      {
+        "learned_advantage": -0.011428571428571455,
+        "learned_net": 0.10785714285714289,
+        "selected_cost": 0.01,
+        "unchanged_net": 0.11928571428571434
+      },
+      {
+        "learned_advantage": -0.0014285714285714596,
+        "learned_net": 0.09785714285714288,
+        "selected_cost": 0.02,
+        "unchanged_net": 0.09928571428571434
+      }
+    ],
+    "reason": "Learned model is precision-clean but misses positives selected by the unchanged hook.",
+    "status": "heldout_recall_failed"
+  },
+  "generated_by": "experiments/analyze_diffusion_learned_selector_v25_result.py",
+  "inputs": {
+    "scores": "eval_results\\diffusion_language\\learned_selector_v25_label_scores.json",
+    "targets": "eval_results\\diffusion_language\\learned_selector_v25_targets.json"
+  },
+  "learned_model": {
+    "final_planning_delta_min": 0.005,
+    "final_span_score_min": 0.0,
+    "history_planning_delta_min": 0.168929,
+    "model_class": "source_specific_delta_span_threshold",
+    "training_selected_count": 12,
+    "training_selected_positive_count": 12,
+    "training_selected_positive_lift": 1.0896428571428571,
+    "training_selected_waste_count": 0
+  },
+  "leave_one_slice_out": [
+    {
+      "heldout_slice": "v21",
+      "selected_count": 3,
+      "selected_positive_count": 3,
+      "selected_waste_count": 0
+    },
+    {
+      "heldout_slice": "v22",
+      "selected_count": 4,
+      "selected_positive_count": 3,
+      "selected_waste_count": 1
+    },
+    {
+      "heldout_slice": "v23",
+      "selected_count": 4,
+      "selected_positive_count": 4,
+      "selected_waste_count": 0
+    },
+    {
+      "heldout_slice": "v24",
+      "selected_count": 2,
+      "selected_positive_count": 2,
+      "selected_waste_count": 0
+    }
+  ],
+  "policies": [
+    {
+      "missed_positive_tasks": [],
+      "policy_id": "generated_repair_value_v1",
+      "selected_count": 2,
+      "selected_positive_count": 2,
+      "selected_positive_lift": 0.13928571428571435,
+      "selected_tasks": [
+        "plan_194",
+        "plan_199"
+      ],
+      "selected_waste_count": 0,
+      "selected_waste_tasks": []
+    },
+    {
+      "missed_positive_tasks": [
+        "plan_194"
+      ],
+      "policy_id": "candidate_row_value_model_v25",
+      "selected_count": 1,
+      "selected_positive_count": 1,
+      "selected_positive_lift": 0.11785714285714288,
+      "selected_tasks": [
+        "plan_199"
+      ],
+      "selected_waste_count": 0,
+      "selected_waste_tasks": []
+    },
+    {
+      "missed_positive_tasks": [],
+      "policy_id": "history_prefix_all_control",
+      "selected_count": 3,
+      "selected_positive_count": 1,
+      "selected_positive_lift": 0.021428571428571463,
+      "selected_tasks": [
+        "plan_194",
+        "plan_199",
+        "plan_200"
+      ],
+      "selected_waste_count": 2,
+      "selected_waste_tasks": [
+        "plan_199",
+        "plan_200"
+      ]
+    },
+    {
+      "missed_positive_tasks": [],
+      "policy_id": "final_preserve_all_control",
+      "selected_count": 3,
+      "selected_positive_count": 1,
+      "selected_positive_lift": 0.11785714285714288,
+      "selected_tasks": [
+        "plan_194",
+        "plan_199",
+        "plan_200"
+      ],
+      "selected_waste_count": 2,
+      "selected_waste_tasks": [
+        "plan_194",
+        "plan_200"
+      ]
+    },
+    {
+      "missed_positive_tasks": [
+        "plan_194"
+      ],
+      "policy_id": "asymmetric_repair_source_filter_v23",
+      "selected_count": 1,
+      "selected_positive_count": 1,
+      "selected_positive_lift": 0.11785714285714288,
+      "selected_tasks": [
+        "plan_199"
+      ],
+      "selected_waste_count": 0,
+      "selected_waste_tasks": []
+    }
+  ],
+  "schema": "diffusion_learned_selector_v25_result.v1",
+  "summary": {
+    "all_generation_count": 28,
+    "candidate_aware_promotion_error_count": 2,
+    "learned_selected_positive_count": 1,
+    "learned_selected_waste_count": 0,
+    "oracle_headroom_vs_repair": 0.0,
+    "positive_count": 2,
+    "positive_tasks": [
+      "plan_194",
+      "plan_199"
+    ],
+    "repair_task_delta_per_extra_generation_vs_evolved": 0.023214285714285725,
+    "repair_task_delta_vs_evolved": 0.017410714285714293,
+    "run_id": "diffusion-22b78dbf828866d4",
+    "target_count": 6,
+    "unchanged_selected_positive_count": 2,
+    "unchanged_selected_waste_count": 0
+  }
+}
