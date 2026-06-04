@@ -153,10 +153,41 @@ def test_probe_text_fidelity_accepts_span_schema_and_rejects_span_key_defects(tm
     assert good["diagnostic_slot_count"] == 3.0
     assert good["exact_authorization_false"] == 1.0
     assert good["semantic_valid_for_stage1"] == 1.0
+    assert good["x0_x2_slot_overlap"] == 0.0
     assert bad["malformed_authorization"] == 1.0
     assert bad["malformed_compact_key"] == 1.0
     assert bad["semantic_valid_for_stage1"] == 0.0
     assert audit["summary"]["semantic_valid_for_stage1_count"] == 1
+
+
+def test_probe_text_fidelity_measures_span_slot_overlap(tmp_path):
+    raw = tmp_path / "raw.jsonl"
+    targets = tmp_path / "targets.json"
+    targets.write_text(
+        json.dumps({"rows": [_target_row("plan_a", label=False, lift=0.0)]}),
+        encoding="utf-8",
+    )
+    raw.write_text(
+        json.dumps(
+            _probe_row(
+                "plan_a",
+                "X0=missed positive repairs fresh planning\n"
+                "X1=must trade cost\n"
+                "X2=positive repairs fresh planning\n"
+                "N=0",
+                "missed, positive",
+                score=0.10,
+            )
+        ),
+        encoding="utf-8",
+    )
+
+    audit = analyze_probe_text_fidelity(raw_path=raw, targets_path=targets)
+    features = audit["rows"][0]["features"]
+
+    assert features["x0_x2_slot_overlap"] == 0.8
+    assert features["max_slot_overlap"] == 0.8
+    assert features["repeated_token_excess"] == 4.0
 
 
 def _target_row(task_id, *, label, lift):

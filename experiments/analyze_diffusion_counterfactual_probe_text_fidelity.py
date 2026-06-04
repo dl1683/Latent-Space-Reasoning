@@ -26,6 +26,9 @@ POST_PROBE_FEATURES = (
     "malformed_compact_key",
     "semantic_valid_for_stage1",
     "semantic_defect",
+    "x0_x2_slot_overlap",
+    "max_slot_overlap",
+    "repeated_token_excess",
     "malformed_authorization",
     "placeholder_slot",
     "weird_punctuation",
@@ -346,6 +349,22 @@ def _probe_text_features(
         and not semantic_defect
     )
     word_count = len(re.findall(r"[A-Za-z0-9_]+", text))
+    slot_values = _slot_values(text)
+    slot_word_sets = {
+        key: set(_word_tokens(value))
+        for key, value in slot_values.items()
+    }
+    x0_x2_slot_overlap = _jaccard(slot_word_sets.get("X0", set()), slot_word_sets.get("X2", set()))
+    max_slot_overlap = max(
+        _jaccard(slot_word_sets.get(left, set()), slot_word_sets.get(right, set()))
+        for left, right in (("X0", "X1"), ("X0", "X2"), ("X1", "X2"))
+    )
+    text_tokens = _word_tokens(text)
+    repeated_token_excess = sum(
+        max(0, text_tokens.count(token) - 1)
+        for token in set(text_tokens)
+        if token not in {"x0", "x1", "x2", "n", "0"}
+    )
     weak_echo_count = sum(int(term in lower) for term in weak_terms)
     weak_echo_fraction = weak_echo_count / max(len(weak_terms), 1)
     fidelity_score = (
@@ -369,8 +388,10 @@ def _probe_text_features(
         "has_retention_slot": float(has_retention),
         "malformed_compact_key": float(malformed_compact_key),
         "malformed_authorization": float(malformed_authorization),
+        "max_slot_overlap": max_slot_overlap,
         "placeholder_slot": float(placeholder_slot),
         "probe_task_score": _float(_dict(record.get("task_score")).get("score")),
+        "repeated_token_excess": float(repeated_token_excess),
         "semantic_defect": float(semantic_defect),
         "semantic_valid_for_stage1": float(semantic_valid_for_stage1),
         "template_slot_echo": float(template_slot_echo),
@@ -378,7 +399,27 @@ def _probe_text_features(
         "weak_term_echo_fraction": weak_echo_fraction,
         "weird_punctuation": float(weird_punctuation),
         "word_count": float(word_count),
+        "x0_x2_slot_overlap": x0_x2_slot_overlap,
     }
+
+
+def _slot_values(text: str) -> dict[str, str]:
+    values: dict[str, str] = {}
+    for key in ("X0", "X1", "X2"):
+        match = re.search(rf"(?m)^\s*{key}\s*=\s*(.*)$", text)
+        if match:
+            values[key] = match.group(1)
+    return values
+
+
+def _word_tokens(text: str) -> list[str]:
+    return re.findall(r"[a-z0-9]+", text.lower())
+
+
+def _jaccard(left: set[str], right: set[str]) -> float:
+    if not left and not right:
+        return 0.0
+    return len(left & right) / max(1, len(left | right))
 
 
 def _rank_rules(rows: list[dict[str, object]], feature_names: tuple[str, ...]) -> list[dict[str, object]]:

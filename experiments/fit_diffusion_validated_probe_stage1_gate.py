@@ -17,6 +17,7 @@ MEASURED_FEATURES = (
     "measured_expected_realization_defect_visibility",
     "measured_expected_span_evidence_gain",
     "measured_expected_retention_risk_visibility",
+    "measured_distinct_retention_risk_visibility",
 )
 TEXT_FEATURES = (
     "counterfactual_probe_text_slot_count",
@@ -29,6 +30,9 @@ TEXT_FEATURES = (
     "counterfactual_probe_text_duplicate_authorization",
     "counterfactual_probe_text_malformed_compact_key",
     "counterfactual_probe_text_semantic_defect",
+    "counterfactual_probe_text_x0_x2_slot_overlap",
+    "counterfactual_probe_text_max_slot_overlap",
+    "counterfactual_probe_text_repeated_token_excess",
     "counterfactual_probe_text_weird_punctuation",
 )
 PREPROBE_FEATURES = (
@@ -185,9 +189,13 @@ def render_markdown(
             "",
             (
                 "| Task | Label | Lift | Valid Probe | Measured Value | Gap Gain | "
-                "Span Gain | Retention Risk | Semantic Defect | Validated Select | All-Feature Select |"
+                "Span Gain | Retention Risk | X0/X2 Overlap | Distinct Retention | "
+                "Semantic Defect | Validated Select | All-Feature Select |"
             ),
-            "| --- | --- | ---: | --- | ---: | ---: | ---: | ---: | --- | --- | --- |",
+            (
+                "| --- | --- | ---: | --- | ---: | ---: | ---: | ---: | ---: | "
+                "---: | --- | --- | --- |"
+            ),
         ]
     )
     for row in _list_of_dicts(fit.get("rows")):
@@ -202,6 +210,8 @@ def render_markdown(
             f"{_format_float(features.get('measured_expected_gap_visibility_gain'))} | "
             f"{_format_float(features.get('measured_expected_span_evidence_gain'))} | "
             f"{_format_float(features.get('measured_expected_retention_risk_visibility'))} | "
+            f"{_format_float(features.get('counterfactual_probe_text_x0_x2_slot_overlap'))} | "
+            f"{_format_float(features.get('measured_distinct_retention_risk_visibility'))} | "
             f"{bool(features.get('counterfactual_probe_text_semantic_defect'))} | "
             f"{bool(row.get('selected_by_validated_rule'))} | "
             f"{bool(row.get('selected_by_all_feature_rule'))} |"
@@ -239,6 +249,8 @@ def _row_from_gate_row(
         _float(text_features.get("semantic_valid_for_stage1")) > 0.0
     ) if has_semantic_audit else runtime_valid_for_stage1
     valid_for_stage1 = runtime_valid_for_stage1 and semantic_valid_for_stage1
+    retention_risk = _float(measured.get("expected_retention_risk_visibility"))
+    x0_x2_overlap = _float(text_features.get("x0_x2_slot_overlap"))
     return {
         "candidate_lift_vs_trajectory": _float(labels.get("candidate_lift_vs_trajectory")),
         "features": {
@@ -254,8 +266,14 @@ def _row_from_gate_row(
             "counterfactual_probe_text_malformed_compact_key": _float(
                 text_features.get("malformed_compact_key")
             ),
+            "counterfactual_probe_text_max_slot_overlap": _float(
+                text_features.get("max_slot_overlap")
+            ),
             "counterfactual_probe_text_placeholder_slot": _bool_float(
                 gate_row.get("counterfactual_probe_text_placeholder_slot")
+            ),
+            "counterfactual_probe_text_repeated_token_excess": _float(
+                text_features.get("repeated_token_excess")
             ),
             "counterfactual_probe_text_semantic_defect": _float(
                 text_features.get("semantic_defect")
@@ -273,13 +291,16 @@ def _row_from_gate_row(
             "counterfactual_probe_text_weird_punctuation": _bool_float(
                 gate_row.get("counterfactual_probe_text_weird_punctuation")
             ),
+            "counterfactual_probe_text_x0_x2_slot_overlap": x0_x2_overlap,
+            "measured_distinct_retention_risk_visibility": max(
+                0.0,
+                retention_risk - 0.05 * x0_x2_overlap,
+            ),
             "measured_expected_gap_visibility_gain": _float(measured.get("expected_gap_visibility_gain")),
             "measured_expected_realization_defect_visibility": _float(
                 measured.get("expected_realization_defect_visibility")
             ),
-            "measured_expected_retention_risk_visibility": _float(
-                measured.get("expected_retention_risk_visibility")
-            ),
+            "measured_expected_retention_risk_visibility": retention_risk,
             "measured_expected_span_evidence_gain": _float(measured.get("expected_span_evidence_gain")),
             "measured_probe_value_prediction": _float(gate_row.get("measured_probe_value_prediction")),
             "prompt_gap_count": _float(gate_row.get("prompt_gap_count")),

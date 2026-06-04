@@ -82,8 +82,18 @@ def test_validated_probe_stage1_gate_can_require_semantic_text_validity(tmp_path
         json.dumps(
             {
                 "rows": [
-                    _text_fidelity_row("plan_a", semantic_valid=False, semantic_defect=True),
-                    _text_fidelity_row("plan_b", semantic_valid=True, semantic_defect=False),
+                    _text_fidelity_row(
+                        "plan_a",
+                        semantic_valid=False,
+                        semantic_defect=True,
+                        x0_x2_overlap=0.8,
+                    ),
+                    _text_fidelity_row(
+                        "plan_b",
+                        semantic_valid=True,
+                        semantic_defect=False,
+                        x0_x2_overlap=0.0,
+                    ),
                 ]
             }
         ),
@@ -104,6 +114,14 @@ def test_validated_probe_stage1_gate_can_require_semantic_text_validity(tmp_path
     assert (
         fit["rows"][0]["features"]["counterfactual_probe_text_semantic_defect"]
         == 1.0
+    )
+    assert (
+        fit["rows"][0]["features"]["counterfactual_probe_text_x0_x2_slot_overlap"]
+        == 0.8
+    )
+    assert (
+        fit["rows"][0]["features"]["measured_distinct_retention_risk_visibility"]
+        == 0.87
     )
 
 
@@ -136,15 +154,18 @@ def _gate_row(task_id, *, measured_value, valid):
     }
 
 
-def _text_fidelity_row(task_id, *, semantic_valid, semantic_defect):
+def _text_fidelity_row(task_id, *, semantic_valid, semantic_defect, x0_x2_overlap=0.0):
     return {
         "features": {
             "duplicate_authorization": 0.0,
             "duplicate_slot_key": 0.0,
             "malformed_compact_key": 0.0,
+            "max_slot_overlap": x0_x2_overlap,
+            "repeated_token_excess": 0.0,
             "semantic_defect": 1.0 if semantic_defect else 0.0,
             "semantic_valid_for_stage1": 1.0 if semantic_valid else 0.0,
             "template_slot_echo": 1.0 if semantic_defect else 0.0,
+            "x0_x2_slot_overlap": x0_x2_overlap,
         },
         "task_id": task_id,
     }
