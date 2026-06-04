@@ -1,0 +1,122 @@
+{
+  "decision": {
+    "cost_sweep": [
+      {
+        "asymmetric_advantage": -0.10535714285714287,
+        "asymmetric_net": 0.3592857142857144,
+        "selected_cost": 0.0,
+        "unchanged_net": 0.46464285714285725
+      },
+      {
+        "asymmetric_advantage": -0.10235714285714287,
+        "asymmetric_net": 0.35628571428571437,
+        "selected_cost": 0.001,
+        "unchanged_net": 0.45864285714285724
+      },
+      {
+        "asymmetric_advantage": -0.09035714285714286,
+        "asymmetric_net": 0.34428571428571436,
+        "selected_cost": 0.005,
+        "unchanged_net": 0.4346428571428572
+      },
+      {
+        "asymmetric_advantage": -0.07535714285714284,
+        "asymmetric_net": 0.3292857142857144,
+        "selected_cost": 0.01,
+        "unchanged_net": 0.40464285714285725
+      },
+      {
+        "asymmetric_advantage": -0.045357142857142874,
+        "asymmetric_net": 0.2992857142857144,
+        "selected_cost": 0.02,
+        "unchanged_net": 0.34464285714285725
+      }
+    ],
+    "reason": "Asymmetric replay reduces waste but does not beat the unchanged hook after selected-output cost.",
+    "status": "precision_positive_utility_failed"
+  },
+  "generated_by": "experiments/analyze_diffusion_asymmetric_filter_v23_result.py",
+  "inputs": {
+    "freeze": "eval_results\\diffusion_language\\asymmetric_filter_v23_freeze.json",
+    "scores": "eval_results\\diffusion_language\\asymmetric_filter_v23_label_scores.json",
+    "targets": "eval_results\\diffusion_language\\asymmetric_filter_v23_targets.json"
+  },
+  "policies": [
+    {
+      "missed_positive_tasks": [],
+      "policy_id": "generated_repair_value_v1",
+      "selected_count": 6,
+      "selected_positive_count": 6,
+      "selected_positive_lift": 0.46464285714285725,
+      "selected_tasks": [
+        "plan_177",
+        "plan_178",
+        "plan_179",
+        "plan_181",
+        "plan_182",
+        "plan_183"
+      ],
+      "selected_waste_count": 0,
+      "selected_waste_tasks": []
+    },
+    {
+      "missed_positive_tasks": [
+        "plan_177",
+        "plan_179",
+        "plan_181",
+        "plan_183"
+      ],
+      "policy_id": "source_aware_candidate_selector_v22",
+      "selected_count": 2,
+      "selected_positive_count": 2,
+      "selected_positive_lift": 0.23285714285714293,
+      "selected_tasks": [
+        "plan_178",
+        "plan_182"
+      ],
+      "selected_waste_count": 0,
+      "selected_waste_tasks": []
+    },
+    {
+      "missed_positive_tasks": [
+        "plan_177",
+        "plan_179",
+        "plan_181"
+      ],
+      "policy_id": "asymmetric_repair_source_filter_v23",
+      "selected_count": 3,
+      "selected_positive_count": 3,
+      "selected_positive_lift": 0.3592857142857144,
+      "selected_tasks": [
+        "plan_178",
+        "plan_182",
+        "plan_183"
+      ],
+      "selected_waste_count": 0,
+      "selected_waste_tasks": []
+    }
+  ],
+  "schema": "diffusion_asymmetric_filter_v23_result.v1",
+  "summary": {
+    "asymmetric_selected_positive_count": 3,
+    "asymmetric_selected_waste_count": 0,
+    "candidate_aware_promotion_error_count": 5,
+    "positive_count": 7,
+    "positive_tasks": [
+      "plan_177",
+      "plan_178",
+      "plan_179",
+      "plan_181",
+      "plan_182",
+      "plan_183"
+    ],
+    "repair_task_delta_per_extra_generation_vs_evolved": 0.03318877551020409,
+    "repair_task_delta_vs_evolved": 0.058080357142857156,
+    "run_id": "diffusion-27588651dd595f61",
+    "target_count": 14,
+    "unchanged_selected_positive_count": 6,
+    "unchanged_selected_waste_count": 0,
+    "v22_source_aware_selected_positive_count": 2,
+    "v22_source_aware_selected_waste_count": 0
+  }
+}
