@@ -202,6 +202,13 @@ records the measured deltas in `repair_spend_gate_rows` while forcing
 `should_run=false`, so it cannot promote full repair spend before the measured
 probe policy clears the offline gate.
 
+The first full named-counterexample measurement is
+`DIFFUSION_COUNTERFACTUAL_MICRO_PROBE_COUNTEREXAMPLES_V1.md`: seven measured
+cheap probes, five skipped no-lift rows, zero triage errors, and zero full
+repair authorizations. This is strong Stage 0 evidence, but still not a live
+spend gate; the next promotion question is whether measured deltas support a
+Stage 1 value-of-information rule that decides full repair after the probe.
+
 ## Falsifiers
 
 This architecture is wrong if any of the following happen:

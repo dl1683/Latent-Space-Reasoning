@@ -56,16 +56,17 @@ and refit before any spend-gated GPU run is allowed.
 
 The first one-task CUDA smoke is recorded in
 `DIFFUSION_COUNTERFACTUAL_MICRO_PROBE_SMOKE_V1.md`.
+The first 12-row named-counterexample CUDA run is recorded in
+`DIFFUSION_COUNTERFACTUAL_MICRO_PROBE_COUNTEREXAMPLES_V1.md`.
 
 ## Next Measurement
 
-The next GPU-backed increment should run this hook on the named counterexample
-rows and refit the value-of-information policy:
+The next increment should use the measured target rows to fit the Stage 1
+value-of-information policy:
 
-1. Run `counterfactual_micro_probe_v1` on the named v5-v9 counterexamples.
-2. Confirm raw `counterfactual_probe` records exist for every `would_probe`
-   row.
-3. Refit `DIFFUSION_COUNTERFACTUAL_PROBE_POLICY_FIT_V1.md` against measured
+1. Refit `DIFFUSION_COUNTERFACTUAL_PROBE_POLICY_FIT_V1.md` against measured
    deltas.
-4. Promote only if the architecture gate in
+2. Check whether the measured probe values can decide full repair after the
+   probe, not just whether to buy a probe.
+3. Promote only if the architecture gate in
    `DIFFUSION_COUNTERFACTUAL_CONTROLLER_ARCHITECTURE_V1.md` clears.
