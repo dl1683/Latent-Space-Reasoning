@@ -6382,6 +6382,8 @@ def test_counterfactual_micro_probe_compact_policy_records_validity():
     assert probe_record["counterfactual_probe"]["probe_policy"] == "compact_tomography_probe_v3"
     assert probe_record["config"]["max_new_tokens"] == 48
     assert probe_record["config"]["steps"] == 24
+    assert measured["counterfactual_probe_policy"] == "compact_tomography_probe_v3"
+    assert measured["counterfactual_probe_cost_relative"] == 0.1875
     assert "using these keys only: A, B, C, Z" in backend.prompts[0]
     assert "MISSING_CONSTRAINT=<" not in backend.prompts[0]
     assert "Z=false" in backend.prompts[0]

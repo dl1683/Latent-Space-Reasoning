@@ -2871,6 +2871,10 @@ def _measured_counterfactual_micro_probe_diagnostics(
     diagnostics: dict[str, object],
 ) -> dict[str, object]:
     measured_text = str(probe_record.get("text", ""))
+    probe_metadata = _dict(probe_record.get("counterfactual_probe"))
+    probe_policy = str(
+        probe_metadata.get("probe_policy", COUNTERFACTUAL_MICRO_PROBE_POLICY_ID)
+    )
     source_text = str(source_record.get("text", ""))
     text_validity = _counterfactual_micro_probe_text_validity(measured_text)
     source_gap_terms = _prompt_constraint_gap_terms(task_prompt, source_text, limit=12)
@@ -2899,6 +2903,10 @@ def _measured_counterfactual_micro_probe_diagnostics(
     )
     return {
         "counterfactual_probe_observation": "measured_generation",
+        "counterfactual_probe_policy": probe_policy,
+        "counterfactual_probe_cost_relative": _counterfactual_micro_probe_cost_relative(
+            probe_policy
+        ),
         "counterfactual_probe_record_id": _record_identity(probe_record),
         "counterfactual_probe_generated_token_count": int(
             _number(probe_record.get("generated_token_count"))
