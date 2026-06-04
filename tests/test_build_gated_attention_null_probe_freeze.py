@@ -16,6 +16,7 @@ def test_gated_attention_freeze_locks_pre_result_boundary(tmp_path, monkeypatch)
     assert manifest["conditions"][2]["seeds"] == list(FROZEN_RANDOM_PREFIX_SEEDS)
     assert manifest["infrastructure_gates"]["inputs_embeds_token_count_bug_fixed"] is True
     assert manifest["interpretation_gates"]["sink_dependent"]["oracle_coverage_lt"] == 0.60
+    assert "--control-mode position_shift" in manifest["commands"]["gated_position_shift"]
     assert "Report mean metrics before oracle metrics" in markdown
     assert "Position-shift control" in markdown
 

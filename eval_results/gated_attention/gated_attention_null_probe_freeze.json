@@ -1,7 +1,7 @@
 {
   "commands": {
     "baseline_replay": "python -u experiments/run_latent_sensitivity.py --model Qwen/Qwen3-4B --task-type nested --difficulty sweet_spot --n-tasks 25 --n-latents 10 --control-mode random_noise --num-soft-tokens 2 --quantization 4bit",
-    "gated_position_shift": "IMPLEMENT before run: add --position-shift-control to run_latent_sensitivity.py or a sibling runner that sets position_ids without prepended embeddings.",
+    "gated_position_shift": "python -u experiments/run_latent_sensitivity.py --model Qwen/Qwen3-Next-80B-A3B-Instruct --task-type nested --difficulty sweet_spot --n-tasks 25 --control-mode position_shift --num-soft-tokens 2 --quantization 4bit --output eval_results/gated_attention/qwen3_next_position_shift_control_result.json",
     "gated_primary_random_prefix": "python -u experiments/run_latent_sensitivity.py --model Qwen/Qwen3-Next-80B-A3B-Instruct --task-type nested --difficulty sweet_spot --n-tasks 25 --n-latents 10 --control-mode random_noise --num-soft-tokens 2 --quantization 4bit --output eval_results/gated_attention/qwen3_next_random_prefix_n10_result.json"
   },
   "conditions": [

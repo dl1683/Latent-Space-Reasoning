@@ -72,12 +72,11 @@ python -u experiments/run_latent_sensitivity.py --model Qwen/Qwen3-Next-80B-A3B-
 Position-shift control:
 
 ```text
-IMPLEMENT before run: add --position-shift-control to run_latent_sensitivity.py or a sibling runner that sets position_ids without prepended embeddings.
+python -u experiments/run_latent_sensitivity.py --model Qwen/Qwen3-Next-80B-A3B-Instruct --task-type nested --difficulty sweet_spot --n-tasks 25 --control-mode position_shift --num-soft-tokens 2 --quantization 4bit --output eval_results/gated_attention/qwen3_next_position_shift_control_result.json
 ```
 
 ## Run Blockers
 
 - Verify the current Qwen3-Next snapshot and selected quantized artifact before spending GPU time.
-- Implement the position-shift control before interpreting any random-prefix lift.
 - Keep full raw outputs and true generated-token counts; old inputs_embeds token counts are not acceptable.
 - Do not update the article or README claim strength from oracle numbers alone.

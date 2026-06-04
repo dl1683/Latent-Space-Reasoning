@@ -785,11 +785,14 @@ def run_zero_shot(
     encoder: LLMEncoder, prompt: str,
     max_new_tokens: int = 1024, enable_thinking: bool = True,
     force_think: bool = False,
+    position_offset: int = 0,
 ) -> str:
     """Run with chat template but no soft prompt conditioning.
 
     force_think: if True, append '<think>\n' to the prompt to force the model
                  into think mode (causal control for mode-gating hypothesis).
+    position_offset: if >0, shift position_ids without adding embeddings. This
+                     isolates position shift from soft-prefix content.
     """
     system_msg = "Answer to the best of your ability."
     if hasattr(encoder.tokenizer, "apply_chat_template"):
@@ -820,6 +823,9 @@ def run_zero_shot(
 
     inputs = encoder.tokenizer(formatted, return_tensors="pt")
     inputs = {k: v.to(encoder._device) for k, v in inputs.items()}
+    if position_offset:
+        position_ids = inputs["attention_mask"].long().cumsum(-1) - 1
+        inputs["position_ids"] = position_ids.clamp_min(0) + int(position_offset)
 
     with torch.no_grad():
         out = encoder.model.generate(
@@ -906,14 +912,15 @@ def main():
     parser.add_argument(
         "--control-mode", default="latent_projected",
         choices=["latent_projected", "random_noise", "antipodal", "mean_embedding",
-                 "zero_embedding", "repeated_noise", "discrete_tokens"],
+                 "zero_embedding", "repeated_noise", "discrete_tokens", "position_shift"],
         help="Control mode: latent_projected (normal W projection), "
              "random_noise (random embeddings at target RMS), "
              "antipodal (+v,-v pair: cancels semantics, preserves dynamics), "
              "mean_embedding (mean token embedding repeated), "
              "zero_embedding (all-zero soft prompt tokens), "
              "repeated_noise (ONE random vector repeated k times), "
-             "discrete_tokens (Shi et al. replication: repeat real token embeddings)")
+             "discrete_tokens (Shi et al. replication: repeat real token embeddings), "
+             "position_shift (no soft prompt; position_ids start at num_soft_tokens)")
     parser.add_argument("--num-soft-tokens", type=int, default=8,
         help="Number of soft prompt tokens (for dose-response experiments)")
     parser.add_argument("--rms-scale", type=float, default=1.0,
@@ -1145,6 +1152,7 @@ def main():
         print(f"  RMS scale: {args.rms_scale}x -> effective_rms={effective_rms:.5f}")
     if args.num_soft_tokens != 8:
         print(f"  Soft tokens: {num_soft_tokens} (default: 8)")
+    control_position_offset = 0
 
     # Generate control soft prompts or latents based on mode
     if control_mode == "random_noise":
@@ -1237,6 +1245,14 @@ def main():
         if len(token_chars) > 1:
             args.n_latents = len(token_chars)
             print(f"  Set n_latents={args.n_latents} (one per token type)")
+
+    elif control_mode == "position_shift":
+        control_position_offset = num_soft_tokens
+        args.n_latents = 1
+        control_soft_prompts = None
+        print(f"CONTROL MODE: position_shift")
+        print(f"  No soft prompt. position_ids offset={control_position_offset}")
+        print("  Set n_latents=1 because the position-shift control is deterministic")
 
     else:
         # Default: latent_projected — generate random latents
@@ -1335,6 +1351,7 @@ def main():
                  else "Antipodal" if control_mode == "antipodal"
                  else "MeanEmb" if control_mode == "mean_embedding"
                  else "DiscTok" if control_mode == "discrete_tokens"
+                 else "PosShift" if control_mode == "position_shift"
                  else "Latent")
         print(f"\n  --- {label} {li + 1}/{args.n_latents} ---")
         task_results = []
@@ -1354,6 +1371,14 @@ def main():
                         force_think=args.force_think_baseline,
                     )
                     raw = resp  # raw_soft_prompt returns unstripped
+                elif control_mode == "position_shift":
+                    resp, raw, gen_meta = run_zero_shot(
+                        encoder, task.prompt,
+                        max_new_tokens=args.max_new_tokens,
+                        enable_thinking=not args.no_think,
+                        force_think=args.force_think_baseline,
+                        position_offset=control_position_offset,
+                    )
                 else:
                     resp, raw = decode_latent(encoder, latents[li], task.prompt, cfg)
             except Exception as e:
@@ -1372,6 +1397,14 @@ def main():
                             force_think=args.force_think_baseline,
                         )
                         raw = resp
+                    elif control_mode == "position_shift":
+                        resp, raw, gen_meta = run_zero_shot(
+                            encoder, task.prompt,
+                            max_new_tokens=args.max_new_tokens,
+                            enable_thinking=not args.no_think,
+                            force_think=args.force_think_baseline,
+                            position_offset=control_position_offset,
+                        )
                     else:
                         resp, raw = decode_latent(encoder, latents[li], task.prompt, cfg)
                 except Exception:
@@ -1576,6 +1609,7 @@ def main():
         "discrete_token": args.discrete_token if control_mode == "discrete_tokens" else None,
         "force_think_baseline": args.force_think_baseline,
         "position": args.position,
+        "position_offset": control_position_offset,
         "mask_prefix": args.mask_prefix,
         "num_soft_tokens": num_soft_tokens,
         "rms_scale": args.rms_scale,
