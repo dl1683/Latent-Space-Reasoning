@@ -1,0 +1,191 @@
+{
+  "generated_by": "experiments/build_diffusion_counterfactual_probe_transfer_targets.py",
+  "inputs": {
+    "scores": "eval_results\\diffusion_language\\llada_moe_planning_compact_span_score_max_v1_scores.json",
+    "scores_content_hash": "458181d9af3566fe66ff46361c48f85994ac7f00b554cd5cd497eef2a4fe73a7"
+  },
+  "lift_min": 1e-09,
+  "probe_policy": "span_tomography_probe_v4",
+  "rows": [
+    {
+      "counterexample_type": "fresh_planning_transfer",
+      "labels": {
+        "candidate_lift_vs_trajectory": 0.06285714285714278,
+        "promote_vs_trajectory": true,
+        "repair_lift": 0.06285714285714278,
+        "repair_selector_edge": 0.03619047619047616
+      },
+      "pre_probe_features": {
+        "evolved_task_score": 0.46535714285714286,
+        "repair_selector_edge": 0.03619047619047616,
+        "repair_task_score": 0.5282142857142856,
+        "source_quality": 0.46535714285714286,
+        "trajectory_task_score": 0.46535714285714286
+      },
+      "probe_policy": "span_tomography_probe_v4",
+      "repair_control": "constraint_gap_span_repair",
+      "repair_source_control": "low_confidence_32",
+      "task_id": "plan_001"
+    },
+    {
+      "counterexample_type": "fresh_planning_transfer",
+      "labels": {
+        "candidate_lift_vs_trajectory": -0.0050000000000001155,
+        "promote_vs_trajectory": false,
+        "repair_lift": -0.0050000000000001155,
+        "repair_selector_edge": 0.0
+      },
+      "pre_probe_features": {
+        "evolved_task_score": 0.6835714285714285,
+        "repair_selector_edge": 0.0,
+        "repair_task_score": 0.6835714285714285,
+        "source_quality": 0.6885714285714286,
+        "trajectory_task_score": 0.6885714285714286
+      },
+      "probe_policy": "span_tomography_probe_v4",
+      "repair_control": "evolved_low_confidence_48",
+      "repair_source_control": "",
+      "task_id": "plan_002"
+    },
+    {
+      "counterexample_type": "fresh_planning_transfer",
+      "labels": {
+        "candidate_lift_vs_trajectory": 0.0,
+        "promote_vs_trajectory": false,
+        "repair_lift": 0.0,
+        "repair_selector_edge": 0.0
+      },
+      "pre_probe_features": {
+        "evolved_task_score": 0.42178571428571426,
+        "repair_selector_edge": 0.0,
+        "repair_task_score": 0.42178571428571426,
+        "source_quality": 0.42178571428571426,
+        "trajectory_task_score": 0.42178571428571426
+      },
+      "probe_policy": "span_tomography_probe_v4",
+      "repair_control": "low_confidence_32",
+      "repair_source_control": "",
+      "task_id": "plan_003"
+    },
+    {
+      "counterexample_type": "fresh_planning_transfer",
+      "labels": {
+        "candidate_lift_vs_trajectory": 0.021428571428571408,
+        "promote_vs_trajectory": true,
+        "repair_lift": 0.021428571428571408,
+        "repair_selector_edge": 0.021428571428571408
+      },
+      "pre_probe_features": {
+        "evolved_task_score": 0.3578571428571429,
+        "repair_selector_edge": 0.021428571428571408,
+        "repair_task_score": 0.35928571428571426,
+        "source_quality": 0.33785714285714286,
+        "trajectory_task_score": 0.33785714285714286
+      },
+      "probe_policy": "span_tomography_probe_v4",
+      "repair_control": "constraint_gap_span_repair",
+      "repair_source_control": "evolved_low_confidence_48",
+      "task_id": "plan_004"
+    },
+    {
+      "counterexample_type": "fresh_planning_transfer",
+      "labels": {
+        "candidate_lift_vs_trajectory": 0.1464285714285714,
+        "promote_vs_trajectory": true,
+        "repair_lift": 0.1464285714285714,
+        "repair_selector_edge": 0.19936974789915962
+      },
+      "pre_probe_features": {
+        "evolved_task_score": 0.42142857142857143,
+        "repair_selector_edge": 0.19936974789915962,
+        "repair_task_score": 0.5678571428571428,
+        "source_quality": 0.42142857142857143,
+        "trajectory_task_score": 0.42142857142857143
+      },
+      "probe_policy": "span_tomography_probe_v4",
+      "repair_control": "constraint_gap_span_repair",
+      "repair_source_control": "low_confidence_32",
+      "task_id": "plan_005"
+    },
+    {
+      "counterexample_type": "fresh_planning_transfer",
+      "labels": {
+        "candidate_lift_vs_trajectory": 0.05892857142857144,
+        "promote_vs_trajectory": true,
+        "repair_lift": 0.05892857142857144,
+        "repair_selector_edge": 0.03125
+      },
+      "pre_probe_features": {
+        "evolved_task_score": 0.4328571428571429,
+        "repair_selector_edge": 0.03125,
+        "repair_task_score": 0.4503571428571429,
+        "source_quality": 0.39142857142857146,
+        "trajectory_task_score": 0.39142857142857146
+      },
+      "probe_policy": "span_tomography_probe_v4",
+      "repair_control": "constraint_gap_span_repair",
+      "repair_source_control": "low_confidence_32",
+      "task_id": "plan_006"
+    },
+    {
+      "counterexample_type": "fresh_planning_transfer",
+      "labels": {
+        "candidate_lift_vs_trajectory": 0.19142857142857145,
+        "promote_vs_trajectory": true,
+        "repair_lift": 0.19142857142857145,
+        "repair_selector_edge": 0.04249999999999998
+      },
+      "pre_probe_features": {
+        "evolved_task_score": 0.48142857142857143,
+        "repair_selector_edge": 0.04249999999999998,
+        "repair_task_score": 0.49892857142857144,
+        "source_quality": 0.3075,
+        "trajectory_task_score": 0.3075
+      },
+      "probe_policy": "span_tomography_probe_v4",
+      "repair_control": "constraint_gap_span_repair",
+      "repair_source_control": "low_confidence_32",
+      "task_id": "plan_007"
+    },
+    {
+      "counterexample_type": "fresh_planning_transfer",
+      "labels": {
+        "candidate_lift_vs_trajectory": 0.002857142857142836,
+        "promote_vs_trajectory": true,
+        "repair_lift": 0.002857142857142836,
+        "repair_selector_edge": 0.0
+      },
+      "pre_probe_features": {
+        "evolved_task_score": 0.2857142857142857,
+        "repair_selector_edge": 0.0,
+        "repair_task_score": 0.2857142857142857,
+        "source_quality": 0.28285714285714286,
+        "trajectory_task_score": 0.28285714285714286
+      },
+      "probe_policy": "span_tomography_probe_v4",
+      "repair_control": "evolved_low_confidence_48",
+      "repair_source_control": "",
+      "task_id": "plan_008"
+    }
+  ],
+  "schema": "diffusion_counterfactual_probe_transfer_targets.v1",
+  "summary": {
+    "gate_decision": "diagnostic_only",
+    "negative_label_count": 2,
+    "negative_task_ids": [
+      "plan_002",
+      "plan_003"
+    ],
+    "positive_label_count": 6,
+    "positive_task_ids": [
+      "plan_001",
+      "plan_004",
+      "plan_005",
+      "plan_006",
+      "plan_007",
+      "plan_008"
+    ],
+    "target_count": 8,
+    "total_positive_lift": 0.4839285714285713
+  }
+}
