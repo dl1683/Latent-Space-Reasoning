@@ -1,5 +1,6 @@
 import json
 
+import experiments.build_gated_attention_probe_execution_plan as execution_plan
 from experiments.build_gated_attention_probe_execution_plan import (
     PRIMARY_MODEL,
     build_execution_plan,
@@ -7,8 +8,9 @@ from experiments.build_gated_attention_probe_execution_plan import (
 )
 
 
-def test_execution_plan_blocks_when_primary_model_is_not_cached(tmp_path, monkeypatch):
+def test_execution_plan_blocks_when_primary_weights_are_not_cached(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
+    _patch_runtime_supported(monkeypatch)
     freeze = tmp_path / "freeze.json"
     freeze.write_text(json.dumps(_freeze()), encoding="utf-8")
     hf_cache = tmp_path / "hf" / "hub"
@@ -18,7 +20,7 @@ def test_execution_plan_blocks_when_primary_model_is_not_cached(tmp_path, monkey
     markdown = render_markdown(plan)
 
     assert plan["ready_for_primary_gpu_run"] is False
-    assert "not cached locally" in plan["blocking_reasons"][0]
+    assert "weights are not cached locally" in plan["blocking_reasons"][0]
     assert plan["ordered_runs"][1]["id"] == "primary_position_shift_control"
     assert plan["ordered_runs"][2]["id"] == "primary_zero_prefix_control"
     assert "--control-mode zero_embedding" in plan["ordered_runs"][2]["command"]
@@ -28,27 +30,33 @@ def test_execution_plan_blocks_when_primary_model_is_not_cached(tmp_path, monkey
 
 def test_execution_plan_ready_when_primary_cached_and_no_results(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
+    _patch_runtime_supported(monkeypatch)
     freeze = tmp_path / "freeze.json"
     freeze.write_text(json.dumps(_freeze()), encoding="utf-8")
     hf_cache = tmp_path / "hf" / "hub"
     primary_cache = hf_cache / ("models--" + PRIMARY_MODEL.replace("/", "--")) / "snapshots" / "abc123"
     primary_cache.mkdir(parents=True)
+    (primary_cache / "model.safetensors").write_text("fake", encoding="utf-8")
 
     plan = build_execution_plan(freeze_path=freeze, hf_cache=hf_cache)
 
     assert plan["ready_for_primary_gpu_run"] is True
     assert plan["blocking_reasons"] == []
-    assert plan["model_cache"]["primary_gated"]["cached"] is True
+    assert plan["model_cache"]["primary_gated"]["cache_dir_exists"] is True
+    assert plan["model_cache"]["primary_gated"]["has_weight_files"] is True
+    assert plan["model_cache"]["primary_gated"]["weight_file_count"] == 1
     assert plan["model_cache"]["primary_gated"]["snapshot_count"] == 1
 
 
 def test_execution_plan_blocks_existing_primary_results(tmp_path, monkeypatch):
     monkeypatch.chdir(tmp_path)
+    _patch_runtime_supported(monkeypatch)
     freeze = tmp_path / "freeze.json"
     freeze.write_text(json.dumps(_freeze()), encoding="utf-8")
     hf_cache = tmp_path / "hf" / "hub"
     primary_cache = hf_cache / ("models--" + PRIMARY_MODEL.replace("/", "--")) / "snapshots" / "abc123"
     primary_cache.mkdir(parents=True)
+    (primary_cache / "model.safetensors").write_text("fake", encoding="utf-8")
     result_dir = tmp_path / "eval_results" / "gated_attention"
     result_dir.mkdir(parents=True)
     (result_dir / "qwen3_next_zero_prefix_result.json").write_text("{}", encoding="utf-8")
@@ -62,6 +70,34 @@ def test_execution_plan_blocks_existing_primary_results(tmp_path, monkeypatch):
     assert "already exist" in plan["blocking_reasons"][0]
 
 
+def test_execution_plan_blocks_when_transformers_lacks_qwen3_next(tmp_path, monkeypatch):
+    monkeypatch.chdir(tmp_path)
+    monkeypatch.setattr(
+        execution_plan,
+        "_runtime_compatibility_state",
+        lambda: {
+            "transformers_version": "4.test",
+            "transformers_supports_qwen3_next": False,
+            "current_runner_requires_transformers_inputs_embeds": True,
+            "gguf_openai_compatible_servers_do_not_expose_soft_prefix_inputs_embeds": True,
+        },
+    )
+    freeze = tmp_path / "freeze.json"
+    freeze.write_text(json.dumps(_freeze()), encoding="utf-8")
+    hf_cache = tmp_path / "hf" / "hub"
+    primary_cache = hf_cache / ("models--" + PRIMARY_MODEL.replace("/", "--")) / "snapshots" / "abc123"
+    primary_cache.mkdir(parents=True)
+    (primary_cache / "model.safetensors").write_text("fake", encoding="utf-8")
+
+    plan = build_execution_plan(freeze_path=freeze, hf_cache=hf_cache)
+    markdown = render_markdown(plan)
+
+    assert plan["ready_for_primary_gpu_run"] is False
+    assert "does not support model_type=qwen3_next" in plan["blocking_reasons"][0]
+    assert plan["runtime_compatibility"]["transformers_supports_qwen3_next"] is False
+    assert "Supports `qwen3_next`: `False`" in markdown
+
+
 def _freeze():
     return {
         "probe_id": "gated_attention_null_probe_v1",
@@ -72,3 +108,16 @@ def _freeze():
             "gated_primary_random_prefix": "python random",
         },
     }
+
+
+def _patch_runtime_supported(monkeypatch):
+    monkeypatch.setattr(
+        execution_plan,
+        "_runtime_compatibility_state",
+        lambda: {
+            "transformers_version": "4.test",
+            "transformers_supports_qwen3_next": True,
+            "current_runner_requires_transformers_inputs_embeds": True,
+            "gguf_openai_compatible_servers_do_not_expose_soft_prefix_inputs_embeds": True,
+        },
+    )

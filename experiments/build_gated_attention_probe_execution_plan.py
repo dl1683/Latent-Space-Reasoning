@@ -12,6 +12,9 @@ import argparse
 import json
 from pathlib import Path
 
+import transformers
+from transformers.models.auto.configuration_auto import CONFIG_MAPPING
+
 DEFAULT_FREEZE = Path("eval_results/gated_attention/gated_attention_null_probe_freeze.json")
 DEFAULT_JSON_OUTPUT = Path("eval_results/gated_attention/gated_attention_probe_execution_plan.json")
 DEFAULT_REPORT_OUTPUT = Path("GATED_ATTENTION_PROBE_EXECUTION_PLAN.md")
@@ -77,6 +80,7 @@ def build_execution_plan(
     existing_primary_results = [
         str(path) for path in PRIMARY_RESULT_PATHS.values() if path.exists()
     ]
+    compatibility = _runtime_compatibility_state()
     model_cache = {
         "baseline": _model_cache_state(BASELINE_MODEL, hf_cache),
         "mechanics": _model_cache_state(MECHANICS_MODEL, hf_cache),
@@ -89,10 +93,15 @@ def build_execution_plan(
             "primary Qwen3-Next result artifacts already exist; pass "
             "--allow-existing-primary-results only for post-run audit rebuilds"
         )
-    if not model_cache["primary_gated"]["cached"]:
+    if not model_cache["primary_gated"]["has_weight_files"]:
         blocking_reasons.append(
-            "primary Qwen3-Next model is not cached locally; select and record a "
+            "primary Qwen3-Next weights are not cached locally; select and record a "
             "current quantized artifact before starting the expensive run"
+        )
+    if not compatibility["transformers_supports_qwen3_next"]:
+        blocking_reasons.append(
+            "local Transformers does not support model_type=qwen3_next; install a "
+            "supporting release/source build before using the Transformers soft-prefix runner"
         )
 
     ordered_runs = [
@@ -142,6 +151,7 @@ def build_execution_plan(
         "baseline_model": BASELINE_MODEL,
         "mechanics_model": MECHANICS_MODEL,
         "hf_cache": str(hf_cache),
+        "runtime_compatibility": compatibility,
         "model_cache": model_cache,
         "existing_primary_results": existing_primary_results,
         "allow_existing_primary_results": allow_existing_primary_results,
@@ -186,11 +196,31 @@ def render_markdown(plan: dict[str, object]) -> str:
         lines.extend(f"- {reason}" for reason in plan["blocking_reasons"])
         lines.append("")
 
-    lines.extend(["## Model Cache", "", "| Role | Model | Cached | Cache path |", "|---|---|---:|---|"])
+    lines.extend(
+        [
+            "## Model Cache",
+            "",
+            "| Role | Model | Cache dir | Weights | Snapshots | Cache path |",
+            "|---|---|---:|---:|---:|---|",
+        ]
+    )
     for role, state in plan["model_cache"].items():
         lines.append(
-            f"| `{role}` | `{state['model']}` | `{state['cached']}` | `{state['path']}` |"
+            f"| `{role}` | `{state['model']}` | `{state['cache_dir_exists']}` | "
+            f"`{state['has_weight_files']}` | `{state['snapshot_count']}` | `{state['path']}` |"
         )
+
+    compat = plan["runtime_compatibility"]
+    lines.extend(
+        [
+            "",
+            "## Runtime Compatibility",
+            "",
+            f"- Transformers version: `{compat['transformers_version']}`",
+            f"- Supports `qwen3_next`: `{compat['transformers_supports_qwen3_next']}`",
+            "",
+        ]
+    )
 
     lines.extend(["", "## Ordered Runs", ""])
     for idx, run in enumerate(plan["ordered_runs"], start=1):
@@ -229,9 +259,12 @@ def _zero_prefix_command() -> str:
 def _model_cache_state(model: str, hf_cache: Path) -> dict[str, object]:
     cache_name = "models--" + model.replace("/", "--")
     path = hf_cache / cache_name
+    weight_file_count = _weight_file_count(path)
     return {
         "model": model,
-        "cached": path.exists(),
+        "cache_dir_exists": path.exists(),
+        "has_weight_files": weight_file_count > 0,
+        "weight_file_count": weight_file_count,
         "path": str(path),
         "snapshot_count": _snapshot_count(path),
     }
@@ -242,6 +275,22 @@ def _snapshot_count(path: Path) -> int:
     if not snapshots.exists():
         return 0
     return sum(1 for child in snapshots.iterdir() if child.is_dir())
+
+
+def _weight_file_count(path: Path) -> int:
+    if not path.exists():
+        return 0
+    suffixes = (".safetensors", ".bin", ".gguf")
+    return sum(1 for child in path.rglob("*") if child.is_file() and child.name.endswith(suffixes))
+
+
+def _runtime_compatibility_state() -> dict[str, object]:
+    return {
+        "transformers_version": transformers.__version__,
+        "transformers_supports_qwen3_next": "qwen3_next" in CONFIG_MAPPING,
+        "current_runner_requires_transformers_inputs_embeds": True,
+        "gguf_openai_compatible_servers_do_not_expose_soft_prefix_inputs_embeds": True,
+    }
 
 
 if __name__ == "__main__":

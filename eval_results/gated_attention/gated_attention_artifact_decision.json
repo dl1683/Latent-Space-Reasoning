@@ -1,0 +1,47 @@
+{
+  "blockers": [
+    "local Transformers does not recognize model_type=qwen3_next",
+    "full safetensors artifact is too large for a direct 24GB single-GPU run",
+    "llama.cpp Python bindings are not installed for local GGUF execution"
+  ],
+  "claim_boundary": [
+    "Do not use the GGUF OpenAI-compatible path for the frozen soft-prefix claim unless it exposes inputs_embeds or an equivalent embedding-prefix hook.",
+    "Do not download full safetensors until Transformers qwen3_next support is verified locally.",
+    "Do not treat artifact selection as a gated-attention result."
+  ],
+  "full_repo": {
+    "repo": "Qwen/Qwen3-Next-80B-A3B-Instruct",
+    "safetensor_bytes": 162659161528,
+    "safetensor_shards": 41,
+    "sha": "9c7f2fbe84465e40164a94cc16cd30b6999b0cc7",
+    "source_url": "https://huggingface.co/Qwen/Qwen3-Next-80B-A3B-Instruct",
+    "total_bytes": 162682272937
+  },
+  "generated_by": "experiments/build_gated_attention_artifact_decision.py",
+  "gguf_repo": {
+    "q4_k_m_file": {
+      "name": "Qwen3-Next-80B-A3B-Instruct-Q4_K_M.gguf",
+      "size": 48410988384
+    },
+    "repo": "Qwen/Qwen3-Next-80B-A3B-Instruct-GGUF",
+    "sha": "4c8630cf7af926a9c5095cb4bbbbc65d36e20f77",
+    "source_url": "https://huggingface.co/Qwen/Qwen3-Next-80B-A3B-Instruct-GGUF",
+    "total_bytes": 469915013754
+  },
+  "local_runtime": {
+    "gpu_vram_bytes": 25651314688,
+    "llama_cpp_available": false,
+    "transformers_supports_qwen3_next": false,
+    "transformers_version": "4.56.2"
+  },
+  "next_engineering_gate": "Upgrade/install a qwen3_next-capable Transformers runtime for the soft-prefix runner, or build a separate GGUF/server adapter and explicitly mark it as non-soft-prefix.",
+  "schema": "gated_attention_artifact_decision.v1",
+  "selected_download_candidate": {
+    "bytes": 48410988384,
+    "file": "Qwen3-Next-80B-A3B-Instruct-Q4_K_M.gguf",
+    "purpose": "local serving/runtime feasibility smoke, not soft-prefix claim run",
+    "repo": "Qwen/Qwen3-Next-80B-A3B-Instruct-GGUF",
+    "sha": "4c8630cf7af926a9c5095cb4bbbbc65d36e20f77"
+  },
+  "selected_immediate_primary_artifact": null
+}

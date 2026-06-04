@@ -2,7 +2,8 @@
   "allow_existing_primary_results": false,
   "baseline_model": "Qwen/Qwen3-4B",
   "blocking_reasons": [
-    "primary Qwen3-Next model is not cached locally; select and record a current quantized artifact before starting the expensive run"
+    "primary Qwen3-Next weights are not cached locally; select and record a current quantized artifact before starting the expensive run",
+    "local Transformers does not support model_type=qwen3_next; install a supporting release/source build before using the Transformers soft-prefix runner"
   ],
   "claim_boundaries": [
     "Do not treat mechanics smoke as gated-attention evidence.",
@@ -18,22 +19,28 @@
   "mechanics_model": "Qwen/Qwen3-0.6B",
   "model_cache": {
     "baseline": {
-      "cached": true,
+      "cache_dir_exists": true,
+      "has_weight_files": true,
       "model": "Qwen/Qwen3-4B",
       "path": "C:\\Users\\devan\\.cache\\huggingface\\hub\\models--Qwen--Qwen3-4B",
-      "snapshot_count": 1
+      "snapshot_count": 1,
+      "weight_file_count": 5
     },
     "mechanics": {
-      "cached": true,
+      "cache_dir_exists": true,
+      "has_weight_files": true,
       "model": "Qwen/Qwen3-0.6B",
       "path": "C:\\Users\\devan\\.cache\\huggingface\\hub\\models--Qwen--Qwen3-0.6B",
-      "snapshot_count": 1
+      "snapshot_count": 1,
+      "weight_file_count": 1
     },
     "primary_gated": {
-      "cached": false,
+      "cache_dir_exists": true,
+      "has_weight_files": false,
       "model": "Qwen/Qwen3-Next-80B-A3B-Instruct",
       "path": "C:\\Users\\devan\\.cache\\huggingface\\hub\\models--Qwen--Qwen3-Next-80B-A3B-Instruct",
-      "snapshot_count": 0
+      "snapshot_count": 1,
+      "weight_file_count": 0
     }
   },
   "ordered_runs": [
@@ -78,6 +85,12 @@
     "oracle coverage after mean metrics",
     "pairwise error overlap/correlation after oracle"
   ],
+  "runtime_compatibility": {
+    "current_runner_requires_transformers_inputs_embeds": true,
+    "gguf_openai_compatible_servers_do_not_expose_soft_prefix_inputs_embeds": true,
+    "transformers_supports_qwen3_next": false,
+    "transformers_version": "4.56.2"
+  },
   "schema": "gated_attention_probe_execution_plan.v1",
   "task_preset": "lsr_25_arithmetic_plus_cache_debug"
 }
