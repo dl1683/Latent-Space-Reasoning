@@ -1,0 +1,128 @@
+{
+  "candidate_name_summary": [
+    {
+      "positive_count": 2,
+      "positive_tasks": [
+        "plan_164",
+        "plan_167"
+      ],
+      "repair": "constraint_gap_span_phase_final_preserve_seeded_gated_repair",
+      "row_count": 6,
+      "selected_count": 2,
+      "selected_positive_count": 2,
+      "selected_waste_count": 0
+    },
+    {
+      "positive_count": 2,
+      "positive_tasks": [
+        "plan_164",
+        "plan_168"
+      ],
+      "repair": "history_prefix_25_repair",
+      "row_count": 6,
+      "selected_count": 3,
+      "selected_positive_count": 1,
+      "selected_waste_count": 2
+    }
+  ],
+  "decision": {
+    "reason": "Candidate diversity creates positives, but the unchanged hook also selects zero/negative-lift rows.",
+    "status": "availability_positive_selector_failed"
+  },
+  "generated_by": "experiments/analyze_diffusion_candidate_diversity_v21_result.py",
+  "inputs": {
+    "freeze": "eval_results\\diffusion_language\\candidate_diversity_v21_freeze.json",
+    "scores": "eval_results\\diffusion_language\\candidate_diversity_v21_label_scores.json",
+    "targets": "eval_results\\diffusion_language\\candidate_diversity_v21_targets.json"
+  },
+  "schema": "diffusion_candidate_diversity_v21_result.v1",
+  "selected_cost_sweep": [
+    {
+      "net_repair_delta_vs_evolved": 0.036473214285714296,
+      "selected_cost": 0.0
+    },
+    {
+      "net_repair_delta_vs_evolved": 0.035848214285714296,
+      "selected_cost": 0.001
+    },
+    {
+      "net_repair_delta_vs_evolved": 0.033348214285714294,
+      "selected_cost": 0.005
+    },
+    {
+      "net_repair_delta_vs_evolved": 0.030223214285714298,
+      "selected_cost": 0.01
+    },
+    {
+      "net_repair_delta_vs_evolved": 0.023973214285714296,
+      "selected_cost": 0.02
+    }
+  ],
+  "selected_rows": [
+    {
+      "candidate_lift_vs_source": 0.063,
+      "candidate_lift_vs_trajectory": 0.0,
+      "repair": "history_prefix_25_repair",
+      "selected_class": "zero_lift",
+      "task_id": "plan_161"
+    },
+    {
+      "candidate_lift_vs_source": 0.08300000000000005,
+      "candidate_lift_vs_trajectory": -0.019999999999999962,
+      "repair": "history_prefix_25_repair",
+      "selected_class": "negative_lift",
+      "task_id": "plan_162"
+    },
+    {
+      "candidate_lift_vs_source": 0.09607142857142859,
+      "candidate_lift_vs_trajectory": 0.09607142857142859,
+      "repair": "constraint_gap_span_phase_final_preserve_seeded_gated_repair",
+      "selected_class": "positive",
+      "task_id": "plan_164"
+    },
+    {
+      "candidate_lift_vs_source": 0.13892857142857146,
+      "candidate_lift_vs_trajectory": 0.13892857142857146,
+      "repair": "constraint_gap_span_phase_final_preserve_seeded_gated_repair",
+      "selected_class": "positive",
+      "task_id": "plan_167"
+    },
+    {
+      "candidate_lift_vs_source": 0.26071428571428573,
+      "candidate_lift_vs_trajectory": 0.07678571428571429,
+      "repair": "history_prefix_25_repair",
+      "selected_class": "positive",
+      "task_id": "plan_168"
+    }
+  ],
+  "summary": {
+    "all_generation_count": 34,
+    "candidate_aware_promotion_error_count": 2,
+    "positive_count": 4,
+    "positive_tasks": [
+      "plan_164",
+      "plan_164",
+      "plan_167",
+      "plan_168"
+    ],
+    "repair_task_delta_per_extra_generation_vs_evolved": 0.024315476190476196,
+    "repair_task_delta_vs_evolved": 0.036473214285714296,
+    "repair_task_delta_vs_fixed": 0.036473214285714296,
+    "repair_task_delta_vs_random": 0.10226785714285716,
+    "run_id": "diffusion-09714dd28133e7e9",
+    "selected_count": 5,
+    "selected_positive_count": 3,
+    "selected_positive_lift": 0.31178571428571433,
+    "selected_positive_tasks": [
+      "plan_164",
+      "plan_167",
+      "plan_168"
+    ],
+    "selected_waste_count": 2,
+    "selected_waste_tasks": [
+      "plan_161",
+      "plan_162"
+    ],
+    "target_count": 12
+  }
+}
