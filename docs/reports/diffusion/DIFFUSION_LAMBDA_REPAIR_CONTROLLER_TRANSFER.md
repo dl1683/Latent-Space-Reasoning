@@ -14,6 +14,7 @@ It audits the implemented runner trigger `--repair-spend-trigger denoise_phase_l
 - Worst false positives: `14`
 - Worst false negatives: `8`
 - Active data targets: `25`
+- Active target manifest: `docs\reports\diffusion\DIFFUSION_LAMBDA_REPAIR_ACTIVE_TARGETS.json`
 
 ## Lambda Surfaces
 
@@ -74,6 +75,18 @@ These are the named rows that should drive the next GPU collection. `hidden_valu
 | 23 | `plan_059` | `waste_probe` | 0.006250 | `0.050000` | `diffusion_independent_spend_transfer_v8_eval.json` | 0.000000 | 3.000000 | 0.319286 | 4 |
 | 24 | `plan_062` | `waste_probe` | 0.006250 | `0.050000` | `diffusion_independent_spend_transfer_v8_eval.json` | 0.000000 | 5.000000 | 0.340357 | 4 |
 | 25 | `plan_066` | `waste_probe` | 0.006250 | `0.050000` | `diffusion_independent_spend_transfer_v9_eval.json` | 0.000000 | 4.000000 | 0.324286 | 3 |
+
+## Runner Bridge
+
+Use the active-target manifest when launching the next focused GPU collection:
+
+- Manifest: `docs\reports\diffusion\DIFFUSION_LAMBDA_REPAIR_ACTIVE_TARGETS.json`
+- Top hidden-value task ids: `plan_048,plan_067,plan_054,plan_068,plan_041,plan_060,plan_065,plan_034`
+- Top waste-probe task ids: `plan_033,plan_038,plan_040,plan_042,plan_043,plan_050,plan_051,plan_052`
+
+```powershell
+python experiments/run_diffusion_three_arm_benchmark.py --tasks experiments/general_reasoning_tasks_scout.jsonl --families all --task-ids plan_048,plan_067,plan_054,plan_068,plan_041,plan_060,plan_065,plan_034 --repair-spend-trigger always
+```
 
 ## Decision
 

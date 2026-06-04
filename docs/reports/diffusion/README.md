@@ -14,6 +14,8 @@ Current high-signal generated reports:
   behavior-tomography audit for the cost-aware repair-spend controller.
 - [DIFFUSION_LAMBDA_REPAIR_CONTROLLER_TRANSFER.md](DIFFUSION_LAMBDA_REPAIR_CONTROLLER_TRANSFER.md):
   transfer audit showing where the lambda-aware repair controller does and does not generalize.
+- [DIFFUSION_LAMBDA_REPAIR_ACTIVE_TARGETS.json](DIFFUSION_LAMBDA_REPAIR_ACTIVE_TARGETS.json):
+  runner-ready task-id manifest for the next focused active-data collection.
 
 Generated report builders may still emit root-level markdown unless their
 defaults have been migrated. Treat new root-level generated reports as temporary

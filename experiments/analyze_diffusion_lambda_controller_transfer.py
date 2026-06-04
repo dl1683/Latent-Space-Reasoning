@@ -18,8 +18,10 @@ from experiments.run_diffusion_three_arm_benchmark import (
 
 DEFAULT_JSON_OUTPUT = Path("eval_results/diffusion_language/diffusion_lambda_controller_transfer.json")
 DEFAULT_REPORT_OUTPUT = Path("docs/reports/diffusion/DIFFUSION_LAMBDA_REPAIR_CONTROLLER_TRANSFER.md")
+DEFAULT_ACTIVE_TARGET_OUTPUT = Path("docs/reports/diffusion/DIFFUSION_LAMBDA_REPAIR_ACTIVE_TARGETS.json")
 DEFAULT_COST_PENALTIES = (0.05, 0.18, 0.25)
 DEFAULT_MARGINAL_RELATIVE_COST = 0.125
+DEFAULT_TASKS_PATH = "experiments/general_reasoning_tasks_scout.jsonl"
 
 
 def parse_args() -> argparse.Namespace:
@@ -33,6 +35,7 @@ def parse_args() -> argparse.Namespace:
     )
     parser.add_argument("--json-output", type=Path, default=DEFAULT_JSON_OUTPUT)
     parser.add_argument("--report-output", type=Path, default=DEFAULT_REPORT_OUTPUT)
+    parser.add_argument("--active-target-output", type=Path, default=DEFAULT_ACTIVE_TARGET_OUTPUT)
     parser.add_argument(
         "--cost-penalty-lambda",
         action="append",
@@ -58,12 +61,18 @@ def main() -> int:
     )
     args.json_output.parent.mkdir(parents=True, exist_ok=True)
     args.report_output.parent.mkdir(parents=True, exist_ok=True)
+    args.active_target_output.parent.mkdir(parents=True, exist_ok=True)
     args.json_output.write_text(json.dumps(audit, indent=2, sort_keys=True), encoding="utf-8")
+    args.active_target_output.write_text(
+        json.dumps(build_active_target_manifest(audit), indent=2, sort_keys=True),
+        encoding="utf-8",
+    )
     args.report_output.write_text(render_markdown(audit), encoding="utf-8")
     print(
         json.dumps(
             {
                 "controller_transfer_safe": bool(_dict(audit.get("summary")).get("controller_transfer_safe")),
+                "active_target_output": str(args.active_target_output),
                 "json_output": str(args.json_output),
                 "report_output": str(args.report_output),
                 "worst_lambda": _dict(audit.get("summary")).get("worst_lambda"),
@@ -120,6 +129,7 @@ def build_lambda_controller_transfer_audit(
 
 def render_markdown(audit: dict[str, object]) -> str:
     summary = _dict(audit.get("summary"))
+    manifest = build_active_target_manifest(audit)
     lines = [
         "# Diffusion Lambda Repair Controller Transfer",
         "",
@@ -143,6 +153,7 @@ def render_markdown(audit: dict[str, object]) -> str:
         f"- Worst false positives: `{summary.get('worst_false_positive_count', 0)}`",
         f"- Worst false negatives: `{summary.get('worst_false_negative_count', 0)}`",
         f"- Active data targets: `{summary.get('active_target_count', 0)}`",
+        f"- Active target manifest: `{DEFAULT_ACTIVE_TARGET_OUTPUT}`",
         "",
         "## Lambda Surfaces",
         "",
@@ -215,6 +226,22 @@ def render_markdown(audit: dict[str, object]) -> str:
     lines.extend(
         [
             "",
+            "## Runner Bridge",
+            "",
+            "Use the active-target manifest when launching the next focused GPU collection:",
+            "",
+            f"- Manifest: `{DEFAULT_ACTIVE_TARGET_OUTPUT}`",
+            f"- Top hidden-value task ids: `{manifest.get('top_hidden_value_task_ids_arg', '')}`",
+            f"- Top waste-probe task ids: `{manifest.get('top_waste_probe_task_ids_arg', '')}`",
+            "",
+            "```powershell",
+            _shell_command(_list(manifest.get("hidden_value_collection_command"))),
+            "```",
+        ]
+    )
+    lines.extend(
+        [
+            "",
             "## Decision",
             "",
         ]
@@ -244,6 +271,54 @@ def render_markdown(audit: dict[str, object]) -> str:
         ]
     )
     return "\n".join(lines) + "\n"
+
+
+def build_active_target_manifest(audit: dict[str, object], *, top_n: int = 8) -> dict[str, object]:
+    active_rows = _list_of_dicts(audit.get("active_target_rows"))
+    hidden_rows = [row for row in active_rows if row.get("probe_type") == "hidden_value_probe"]
+    waste_rows = [row for row in active_rows if row.get("probe_type") == "waste_probe"]
+    hidden_task_ids = _task_ids(hidden_rows)
+    waste_task_ids = _task_ids(waste_rows)
+    top_hidden_task_ids = hidden_task_ids[:top_n]
+    top_waste_task_ids = waste_task_ids[:top_n]
+    hidden_command = [
+        "python",
+        "experiments/run_diffusion_three_arm_benchmark.py",
+        "--tasks",
+        DEFAULT_TASKS_PATH,
+        "--families",
+        "all",
+        "--task-ids",
+        ",".join(top_hidden_task_ids),
+        "--repair-spend-trigger",
+        "always",
+    ]
+    waste_command = [
+        "python",
+        "experiments/run_diffusion_three_arm_benchmark.py",
+        "--tasks",
+        DEFAULT_TASKS_PATH,
+        "--families",
+        "all",
+        "--task-ids",
+        ",".join(top_waste_task_ids),
+        "--repair-spend-trigger",
+        LAMBDA_AWARE_VALUE_PROXY_TRIGGER_ID,
+    ]
+    return {
+        "generated_by": "experiments/analyze_diffusion_lambda_controller_transfer.py",
+        "hidden_value_collection_command": hidden_command,
+        "hidden_value_task_ids": hidden_task_ids,
+        "schema": "diffusion_lambda_repair_active_targets.v1",
+        "task_ids_by_priority": _task_ids(active_rows),
+        "tasks_path": DEFAULT_TASKS_PATH,
+        "top_hidden_value_task_ids": top_hidden_task_ids,
+        "top_hidden_value_task_ids_arg": ",".join(top_hidden_task_ids),
+        "top_waste_probe_task_ids": top_waste_task_ids,
+        "top_waste_probe_task_ids_arg": ",".join(top_waste_task_ids),
+        "waste_probe_command": waste_command,
+        "waste_probe_task_ids": waste_task_ids,
+    }
 
 
 def _score_lambda_surface(
@@ -459,6 +534,10 @@ def _join_numbers(value: object) -> str:
 def _join_tasks(value: object) -> str:
     tasks = [str(item) for item in _list(value)]
     return ", ".join(f"`{task}`" for task in tasks) if tasks else "`none`"
+
+
+def _shell_command(parts: list[object]) -> str:
+    return " ".join(str(part) for part in parts if str(part))
 
 
 if __name__ == "__main__":
