@@ -89,8 +89,8 @@ shows calibrated availability misses spend decisions. The generated
 [DIFFUSION_SPEND_POLICY_DECISION.md](../DIFFUSION_SPEND_POLICY_DECISION.md)
 then makes the current cost decision explicit: keep `candidate_aware_promotion_v1`
 fixed, use denoise-phase repairability as the incumbent spend trigger, and test
-any learned spend gate offline against v5/v6 targets before buying another full
-GPU slice. The fresh v7 run has now done that no-retuning check:
+any learned spend gate offline against accumulated transfer targets before
+buying another full GPU slice. The fresh v7 run did that no-retuning check:
 [DIFFUSION_INDEPENDENT_SPEND_TRANSFER_V7.md](../DIFFUSION_INDEPENDENT_SPEND_TRANSFER_V7.md)
 shows the incumbent still beats fixed and random but spends on six no-lift
 repairable rows, while
@@ -98,7 +98,15 @@ repairable rows, while
 keeps the post-repair promotion head at zero errors.
 [DIFFUSION_SPEND_GATE_V7_FIT.md](../DIFFUSION_SPEND_GATE_V7_FIT.md)
 then searches simple offline gates over v5/v6/v7 and finds no deployable
-replacement yet: the best rule still has five errors.
+replacement yet: the best rule still has five errors. The v8 and v9
+counterexample probes make that failure sharper rather than resolving it:
+[DIFFUSION_CANDIDATE_PROMOTION_TARGETS_V9.md](../DIFFUSION_CANDIDATE_PROMOTION_TARGETS_V9.md)
+keeps `candidate_aware_promotion_v1` at zero errors on generated candidates,
+but [DIFFUSION_SPEND_GATE_V9_FIT.md](../DIFFUSION_SPEND_GATE_V9_FIT.md) still
+has 12 simple-gate errors across 40 accumulated spend rows. Read
+[DIFFUSION_SPEND_COUNTEREXAMPLE_WORKBENCH.md](../DIFFUSION_SPEND_COUNTEREXAMPLE_WORKBENCH.md)
+next: it names the low-gap profitable false negatives and high-gap no-lift
+false positives that any future spend controller must explain.
 
 ## Benchmark And Cost Layer
 
@@ -127,10 +135,16 @@ hidden behind a large search stack:
 | [DIFFUSION_CANDIDATE_PROMOTION_TARGETS_V5.md](../DIFFUSION_CANDIDATE_PROMOTION_TARGETS_V5.md) | Post-repair promotion labels showing `candidate_aware_promotion_v1` has zero local errors on v5 repair candidates. |
 | [DIFFUSION_INDEPENDENT_SPEND_TRANSFER_V6.md](../DIFFUSION_INDEPENDENT_SPEND_TRANSFER_V6.md) | Fresh-slice test showing calibrated spend gating has four errors on v6. |
 | [DIFFUSION_CANDIDATE_PROMOTION_TARGETS_V6.md](../DIFFUSION_CANDIDATE_PROMOTION_TARGETS_V6.md) | Post-repair promotion labels showing `candidate_aware_promotion_v1` has zero local errors again on v6 repair candidates. |
-| [DIFFUSION_SPEND_POLICY_DECISION.md](../DIFFUSION_SPEND_POLICY_DECISION.md) | Current v5/v6/v7 spend-policy decision and live v6 relative-cost comparison. |
+| [DIFFUSION_SPEND_POLICY_DECISION.md](../DIFFUSION_SPEND_POLICY_DECISION.md) | Current v5-v9 spend-policy decision and live v6 relative-cost comparison. |
 | [DIFFUSION_INDEPENDENT_SPEND_TRANSFER_V7.md](../DIFFUSION_INDEPENDENT_SPEND_TRANSFER_V7.md) | Fresh no-retuning v7 spend check: repairable-denoise spending finds two positives and six no-lift rows. |
 | [DIFFUSION_CANDIDATE_PROMOTION_TARGETS_V7.md](../DIFFUSION_CANDIDATE_PROMOTION_TARGETS_V7.md) | Fresh v7 promotion labels showing `candidate_aware_promotion_v1` remains zero-error on generated candidates. |
 | [DIFFUSION_SPEND_GATE_V7_FIT.md](../DIFFUSION_SPEND_GATE_V7_FIT.md) | Offline simple-gate fit over v5/v6/v7 showing no pre-repair spend gate is ready for GPU promotion. |
+| [DIFFUSION_INDEPENDENT_SPEND_TRANSFER_V8.md](../DIFFUSION_INDEPENDENT_SPEND_TRANSFER_V8.md) | Fresh v8 spend check: four profitable repairs, four no-lift rows, and continued spend-head errors. |
+| [DIFFUSION_CANDIDATE_PROMOTION_TARGETS_V8.md](../DIFFUSION_CANDIDATE_PROMOTION_TARGETS_V8.md) | Fresh v8 promotion labels showing `candidate_aware_promotion_v1` remains zero-error on generated candidates. |
+| [DIFFUSION_INDEPENDENT_SPEND_TRANSFER_V9.md](../DIFFUSION_INDEPENDENT_SPEND_TRANSFER_V9.md) | Counterexample-probe spend check: five profitable repairs, three no-lift rows, and low-gap/high-gap boundary stress. |
+| [DIFFUSION_CANDIDATE_PROMOTION_TARGETS_V9.md](../DIFFUSION_CANDIDATE_PROMOTION_TARGETS_V9.md) | Counterexample-probe promotion labels showing zero candidate-aware promotion errors with five positives. |
+| [DIFFUSION_SPEND_GATE_V9_FIT.md](../DIFFUSION_SPEND_GATE_V9_FIT.md) | Offline simple-gate fit over v5-v9 showing the best threshold still misses seven positives and admits five no-lift repairs. |
+| [DIFFUSION_SPEND_COUNTEREXAMPLE_WORKBENCH.md](../DIFFUSION_SPEND_COUNTEREXAMPLE_WORKBENCH.md) | Active controller workbench naming the false-negative and false-positive clusters the next spend model must solve. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT.md) | Transfer-rule fit showing current decomposed spend is the best repair-availability rule. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md) | Expanded transfer-rule fit over the eight-row independent slice. |
 | [DIFFUSION_TRANSFER_PROMOTION_VALUE.md](../DIFFUSION_TRANSFER_PROMOTION_VALUE.md) | Transfer promotion-value result showing named `--repair-selector transfer_promotion_value` realizes the low-margin repair. |

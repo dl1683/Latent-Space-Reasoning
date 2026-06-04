@@ -10,6 +10,8 @@ DEFAULT_SPEND_EVALS = (
     Path("eval_results/diffusion_language/diffusion_independent_spend_transfer_v5_eval.json"),
     Path("eval_results/diffusion_language/diffusion_independent_spend_transfer_v6_eval.json"),
     Path("eval_results/diffusion_language/diffusion_independent_spend_transfer_v7_eval.json"),
+    Path("eval_results/diffusion_language/diffusion_independent_spend_transfer_v8_eval.json"),
+    Path("eval_results/diffusion_language/diffusion_independent_spend_transfer_v9_eval.json"),
 )
 DEFAULT_REPAIRABLE_CANDIDATE_AWARE_SCORES = Path(
     "eval_results/diffusion_language/"
@@ -142,16 +144,16 @@ def render_markdown(decision: dict[str, object]) -> str:
         "",
         (
             "The current decision is to keep `candidate_aware_promotion_v1` fixed "
-            "and use denoise-phase repairability as the spend trigger until a fresh "
-            "gate can preserve all profitable v5/v6/v7 candidates while removing "
-            "no-lift spend. The calibrated pre-repair trigger is cheaper, but on "
-            "the last calibrated live comparison it misses valuable candidates and "
-            "loses both total score and lift per extra generation. The v7 "
-            "no-retuning run keeps the same conclusion: promotion transfers, "
+            "and use denoise-phase repairability as the spend trigger until an "
+            "offline gate can preserve all profitable v5-v9 candidates while "
+            "removing named no-lift spend. The calibrated pre-repair trigger is "
+            "cheaper, but on the live comparison it misses valuable candidates and "
+            "loses both total score and lift per extra generation. The v9 "
+            "counterexample probe keeps the same conclusion: promotion transfers, "
             "spend gating is the unsolved cost problem."
         ),
         "",
-        "## V5/V6/V7 Spend-Label Summary",
+        "## V5-V9 Spend-Label Summary",
         "",
         (
             "| Policy | Selected | TP | FP | FN | TN | Errors | Positive Lift Covered | "
@@ -205,11 +207,10 @@ def render_markdown(decision: dict[str, object]) -> str:
             "## Next Benchmark",
             "",
             (
-                "Run v8 with only the allowed public arms: greedy/fixed denoise, "
-                "random perturbation, and latent repair. Keep the latent arm as "
-                "`denoise_phase_repairability` plus `candidate_aware_promotion_v1`, "
-                "then separately score any learned spend gate against v5/v6/v7 "
-                "target rows before spending another full GPU slice on it."
+                "Do not promote a live spend gate from these thresholds. The next "
+                "benchmark should first score a richer offline value model against "
+                "the accumulated v5-v9 rows, preserving every named positive repair "
+                "or explicitly reporting the lift traded away for cost."
             ),
         ]
     )

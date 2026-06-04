@@ -15,8 +15,8 @@ It turns the current diffusion reasoning theory into falsifiable heads with targ
 
 | Head | Status | Rule | Targets | Errors | Evidence |
 | --- | --- | --- | ---: | ---: | --- |
-| `availability` | `boundary` | `calibrated_availability_predictor_v1` | 24 | 4 | `eval_results\diffusion_language\diffusion_transfer_head_fit.json`, `DIFFUSION_TRANSFER_HEAD_FIT.md`, `DIFFUSION_INDEPENDENT_SPEND_TRANSFER_V3.md`, `DIFFUSION_AVAILABILITY_PREDICTOR_FIT.md`, `eval_results\diffusion_language\diffusion_independent_spend_transfer_v8_eval.json` |
-| `promotion_value` | `validated-local` | `candidate_aware_promotion_v1` | 8 | 0 | `eval_results\diffusion_language\diffusion_candidate_promotion_targets_v8.json` |
+| `availability` | `boundary` | `calibrated_availability_predictor_v1` | 24 | 4 | `eval_results\diffusion_language\diffusion_transfer_head_fit.json`, `DIFFUSION_TRANSFER_HEAD_FIT.md`, `DIFFUSION_INDEPENDENT_SPEND_TRANSFER_V3.md`, `DIFFUSION_AVAILABILITY_PREDICTOR_FIT.md`, `DIFFUSION_INDEPENDENT_SPEND_TRANSFER_V9.md` |
+| `promotion_value` | `validated-local` | `candidate_aware_promotion_v1` | 8 | 0 | `eval_results\diffusion_language\diffusion_candidate_promotion_targets_v9.json`, `DIFFUSION_CANDIDATE_PROMOTION_TARGETS_V9.md` |
 | `source_trust` | `validated-local` | `retention_safe_history` | 5 | 0 | `eval_results\diffusion_language\diffusion_composite_selector_fit.json`, `DIFFUSION_COMPOSITE_SELECTOR_FIT.md` |
 | `retention` | `validated-local` | `classification_safe_history_anchor` | 8 | 0 | `eval_results\diffusion_language\diffusion_composite_selector_fit.json`, `DIFFUSION_COMPOSITE_SELECTOR_FIT.md` |
 | `realization` | `validated-local` | `min_realization_policy_error` | 7 | 0 | `eval_results\diffusion_language\diffusion_composite_selector_fit.json`, `DIFFUSION_COMPOSITE_SELECTOR_FIT.md` |
@@ -64,8 +64,8 @@ It turns the current diffusion reasoning theory into falsifiable heads with targ
 - Assertion: Repair spending should optimize marginal value per GPU generation; the current incumbent preserves positive repairs before trying another pre-repair spend gate.
 - Information channels: relative GPU cost, marginal repair lift, phase-window cap
 - Falsifier: A learned or calibrated spend gate preserves all positive repairs and dominates the repairable-denoise incumbent at matched cost on a fresh GPU slice.
-- Next GPU validation: Run v8 with greedy/fixed, random perturbation, and latent repair only; compare any learned spend gate against the repairable-denoise plus `candidate_aware_promotion_v1` incumbent at matched cost.
+- Next GPU validation: Run the next fresh counterexample probe with greedy/fixed, random perturbation, and latent repair only; compare any learned spend gate against the repairable-denoise plus `candidate_aware_promotion_v1` incumbent at matched cost.
 
 ## Reading
 
-This is the current proof object for diffusion-native latent reasoning. It does not claim broad benchmark domination. It says the system now has separate, executable heads for where repairable information appears, whether a repair should be promoted, whether history is a safe source, whether constraints are retained, whether compact controls are realized, and whether the marginal GPU spend is worth paying. The first larger availability slice found the missing trajectory-relative term; the next fresh slices falsified the absolute source-quality cutoff and then showed calibrated pre-repair availability still misses promotion value. The v7 fresh slice keeps that split: spend remains wasteful, while the post-repair promotion target is still zero-error locally.
+This is the current proof object for diffusion-native latent reasoning. It does not claim broad benchmark domination. It says the system now has separate, executable heads for where repairable information appears, whether a repair should be promoted, whether history is a safe source, whether constraints are retained, whether compact controls are realized, and whether the marginal GPU spend is worth paying. The first larger availability slice found the missing trajectory-relative term; the next fresh slices falsified the absolute source-quality cutoff and then showed calibrated pre-repair availability still misses promotion value. The v9 counterexample probe keeps that split: spend remains wasteful, while the post-repair promotion target is still zero-error locally.

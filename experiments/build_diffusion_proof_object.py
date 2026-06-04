@@ -13,7 +13,7 @@ DEFAULT_COMPOSITE_TARGETS = Path(
 )
 DEFAULT_BUDGET_LOSS = Path("eval_results/diffusion_language/diffusion_budget_policy_loss.json")
 DEFAULT_CANDIDATE_PROMOTION_TARGETS = Path(
-    "eval_results/diffusion_language/diffusion_candidate_promotion_targets_v7.json"
+    "eval_results/diffusion_language/diffusion_candidate_promotion_targets_v9.json"
 )
 DEFAULT_LARGER_AVAILABILITY_EVAL = Path(
     "eval_results/diffusion_language/diffusion_independent_spend_transfer_v3_eval.json"
@@ -22,7 +22,7 @@ DEFAULT_AVAILABILITY_PREDICTOR_FIT = Path(
     "eval_results/diffusion_language/diffusion_availability_predictor_fit.json"
 )
 DEFAULT_FRESH_AVAILABILITY_EVAL = Path(
-    "eval_results/diffusion_language/diffusion_independent_spend_transfer_v7_eval.json"
+    "eval_results/diffusion_language/diffusion_independent_spend_transfer_v9_eval.json"
 )
 DEFAULT_SPEND_POLICY_DECISION = Path(
     "eval_results/diffusion_language/diffusion_spend_policy_decision.json"
@@ -263,9 +263,9 @@ def render_markdown(proof: dict[str, object]) -> str:
                 "worth paying. The first larger availability slice found the missing "
                 "trajectory-relative term; the next fresh slices falsified the "
                 "absolute source-quality cutoff and then showed calibrated "
-                "pre-repair availability still misses promotion value. The v7 fresh "
-                "slice keeps that split: spend remains wasteful, while the "
-                "post-repair promotion target is still zero-error locally."
+                "pre-repair availability still misses promotion value. The v9 "
+                "counterexample probe keeps that split: spend remains wasteful, "
+                "while the post-repair promotion target is still zero-error locally."
             ),
         ]
     )
@@ -548,7 +548,8 @@ def _cost_head(
         "head_id": "cost",
         "information_channels": ["relative GPU cost", "marginal repair lift", "phase-window cap"],
         "next_gpu_validation": (
-            "Run v8 with greedy/fixed, random perturbation, and latent repair only; "
+            "Run the next fresh counterexample probe with greedy/fixed, random "
+            "perturbation, and latent repair only; "
             "compare any learned spend gate against the repairable-denoise plus "
             "`candidate_aware_promotion_v1` incumbent at matched cost."
             if spend_summary
@@ -612,6 +613,10 @@ def _availability_report_path(path: Path | None) -> str:
         return "DIFFUSION_INDEPENDENT_SPEND_TRANSFER_V6.md"
     if name == "diffusion_independent_spend_transfer_v7_eval.json":
         return "DIFFUSION_INDEPENDENT_SPEND_TRANSFER_V7.md"
+    if name == "diffusion_independent_spend_transfer_v8_eval.json":
+        return "DIFFUSION_INDEPENDENT_SPEND_TRANSFER_V8.md"
+    if name == "diffusion_independent_spend_transfer_v9_eval.json":
+        return "DIFFUSION_INDEPENDENT_SPEND_TRANSFER_V9.md"
     return str(path)
 
 
@@ -625,6 +630,10 @@ def _candidate_promotion_report_path(path: Path | None) -> str:
         return "DIFFUSION_CANDIDATE_PROMOTION_TARGETS_V6.md"
     if name == "diffusion_candidate_promotion_targets_v7.json":
         return "DIFFUSION_CANDIDATE_PROMOTION_TARGETS_V7.md"
+    if name == "diffusion_candidate_promotion_targets_v8.json":
+        return "DIFFUSION_CANDIDATE_PROMOTION_TARGETS_V8.md"
+    if name == "diffusion_candidate_promotion_targets_v9.json":
+        return "DIFFUSION_CANDIDATE_PROMOTION_TARGETS_V9.md"
     return str(path)
 
 

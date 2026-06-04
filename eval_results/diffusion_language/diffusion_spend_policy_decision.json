@@ -6,7 +6,9 @@
     "spend_evals": [
       "eval_results\\diffusion_language\\diffusion_independent_spend_transfer_v5_eval.json",
       "eval_results\\diffusion_language\\diffusion_independent_spend_transfer_v6_eval.json",
-      "eval_results\\diffusion_language\\diffusion_independent_spend_transfer_v7_eval.json"
+      "eval_results\\diffusion_language\\diffusion_independent_spend_transfer_v7_eval.json",
+      "eval_results\\diffusion_language\\diffusion_independent_spend_transfer_v8_eval.json",
+      "eval_results\\diffusion_language\\diffusion_independent_spend_transfer_v9_eval.json"
     ]
   },
   "live_v6_policy_scores": {
@@ -44,9 +46,9 @@
   },
   "policy_summaries": [
     {
-      "error_count": 12,
+      "error_count": 19,
       "false_negative_count": 0,
-      "false_positive_count": 12,
+      "false_positive_count": 19,
       "missed_profitable_tasks": [],
       "no_lift_selected_tasks": [
         "plan_033",
@@ -60,13 +62,20 @@
         "plan_051",
         "plan_052",
         "plan_053",
-        "plan_055"
+        "plan_055",
+        "plan_057",
+        "plan_059",
+        "plan_062",
+        "plan_064",
+        "plan_066",
+        "plan_069",
+        "plan_071"
       ],
       "policy_id": "repairable_denoise_spend",
       "positive_lift_coverage_rate": 1.0,
-      "positive_lift_covered": 1.1692142857142858,
+      "positive_lift_covered": 2.005571428571429,
       "prediction_field": "single_repairability_prediction",
-      "selected_count": 23,
+      "selected_count": 39,
       "selected_tasks": [
         "plan_034",
         "plan_035",
@@ -79,6 +88,15 @@
         "plan_048",
         "plan_054",
         "plan_056",
+        "plan_058",
+        "plan_060",
+        "plan_061",
+        "plan_063",
+        "plan_065",
+        "plan_067",
+        "plan_068",
+        "plan_070",
+        "plan_072",
         "plan_033",
         "plan_038",
         "plan_040",
@@ -90,18 +108,26 @@
         "plan_051",
         "plan_052",
         "plan_053",
-        "plan_055"
+        "plan_055",
+        "plan_057",
+        "plan_059",
+        "plan_062",
+        "plan_064",
+        "plan_066",
+        "plan_069",
+        "plan_071"
       ],
       "true_negative_count": 1,
-      "true_positive_count": 11
+      "true_positive_count": 20
     },
     {
-      "error_count": 13,
-      "false_negative_count": 2,
-      "false_positive_count": 11,
+      "error_count": 18,
+      "false_negative_count": 3,
+      "false_positive_count": 15,
       "missed_profitable_tasks": [
         "plan_034",
-        "plan_047"
+        "plan_047",
+        "plan_060"
       ],
       "no_lift_selected_tasks": [
         "plan_033",
@@ -114,13 +140,17 @@
         "plan_051",
         "plan_052",
         "plan_053",
-        "plan_055"
+        "plan_055",
+        "plan_057",
+        "plan_064",
+        "plan_069",
+        "plan_071"
       ],
       "policy_id": "decomposed_spend",
-      "positive_lift_coverage_rate": 0.9111124686908181,
-      "positive_lift_covered": 1.0652857142857144,
+      "positive_lift_coverage_rate": 0.8814018092456727,
+      "positive_lift_covered": 1.7677142857142858,
       "prediction_field": "decomposed_prediction",
-      "selected_count": 20,
+      "selected_count": 32,
       "selected_tasks": [
         "plan_035",
         "plan_037",
@@ -131,6 +161,14 @@
         "plan_048",
         "plan_054",
         "plan_056",
+        "plan_058",
+        "plan_061",
+        "plan_063",
+        "plan_065",
+        "plan_067",
+        "plan_068",
+        "plan_070",
+        "plan_072",
         "plan_033",
         "plan_038",
         "plan_040",
@@ -141,20 +179,25 @@
         "plan_051",
         "plan_052",
         "plan_053",
-        "plan_055"
+        "plan_055",
+        "plan_057",
+        "plan_064",
+        "plan_069",
+        "plan_071"
       ],
-      "true_negative_count": 2,
-      "true_positive_count": 9
+      "true_negative_count": 5,
+      "true_positive_count": 17
     },
     {
-      "error_count": 13,
-      "false_negative_count": 4,
-      "false_positive_count": 9,
+      "error_count": 17,
+      "false_negative_count": 5,
+      "false_positive_count": 12,
       "missed_profitable_tasks": [
         "plan_034",
         "plan_037",
         "plan_047",
-        "plan_048"
+        "plan_048",
+        "plan_060"
       ],
       "no_lift_selected_tasks": [
         "plan_033",
@@ -165,13 +208,16 @@
         "plan_050",
         "plan_051",
         "plan_052",
-        "plan_053"
+        "plan_053",
+        "plan_057",
+        "plan_069",
+        "plan_071"
       ],
       "policy_id": "trajectory_relative_spend",
-      "positive_lift_coverage_rate": 0.5893457144602602,
-      "positive_lift_covered": 0.6890714285714286,
+      "positive_lift_coverage_rate": 0.6938172234489635,
+      "positive_lift_covered": 1.3915,
       "prediction_field": "trajectory_relative_prediction",
-      "selected_count": 16,
+      "selected_count": 27,
       "selected_tasks": [
         "plan_035",
         "plan_039",
@@ -180,6 +226,14 @@
         "plan_046",
         "plan_054",
         "plan_056",
+        "plan_058",
+        "plan_061",
+        "plan_063",
+        "plan_065",
+        "plan_067",
+        "plan_068",
+        "plan_070",
+        "plan_072",
         "plan_033",
         "plan_038",
         "plan_042",
@@ -188,14 +242,17 @@
         "plan_050",
         "plan_051",
         "plan_052",
-        "plan_053"
+        "plan_053",
+        "plan_057",
+        "plan_069",
+        "plan_071"
       ],
-      "true_negative_count": 4,
-      "true_positive_count": 7
+      "true_negative_count": 8,
+      "true_positive_count": 15
     },
     {
-      "error_count": 13,
-      "false_negative_count": 8,
+      "error_count": 20,
+      "false_negative_count": 15,
       "false_positive_count": 5,
       "missed_profitable_tasks": [
         "plan_034",
@@ -205,7 +262,14 @@
         "plan_047",
         "plan_048",
         "plan_054",
-        "plan_056"
+        "plan_056",
+        "plan_058",
+        "plan_060",
+        "plan_061",
+        "plan_063",
+        "plan_065",
+        "plan_067",
+        "plan_068"
       ],
       "no_lift_selected_tasks": [
         "plan_033",
@@ -215,27 +279,29 @@
         "plan_053"
       ],
       "policy_id": "learned_availability_predictor_v1",
-      "positive_lift_coverage_rate": 0.2591483902498625,
-      "positive_lift_covered": 0.303,
+      "positive_lift_coverage_rate": 0.18669420898924421,
+      "positive_lift_covered": 0.3744285714285714,
       "prediction_field": "learned_availability_prediction",
-      "selected_count": 8,
+      "selected_count": 10,
       "selected_tasks": [
         "plan_039",
         "plan_044",
         "plan_046",
+        "plan_070",
+        "plan_072",
         "plan_033",
         "plan_042",
         "plan_051",
         "plan_052",
         "plan_053"
       ],
-      "true_negative_count": 8,
-      "true_positive_count": 3
+      "true_negative_count": 15,
+      "true_positive_count": 5
     },
     {
-      "error_count": 12,
+      "error_count": 18,
       "false_negative_count": 3,
-      "false_positive_count": 9,
+      "false_positive_count": 15,
       "missed_profitable_tasks": [
         "plan_037",
         "plan_046",
@@ -250,13 +316,19 @@
         "plan_050",
         "plan_051",
         "plan_052",
-        "plan_053"
+        "plan_053",
+        "plan_057",
+        "plan_059",
+        "plan_062",
+        "plan_066",
+        "plan_069",
+        "plan_071"
       ],
       "policy_id": "calibrated_availability_predictor_v1",
-      "positive_lift_coverage_rate": 0.6128657828822776,
-      "positive_lift_covered": 0.7165714285714286,
+      "positive_lift_coverage_rate": 0.7743072868437922,
+      "positive_lift_covered": 1.5529285714285714,
       "prediction_field": "calibrated_availability_prediction",
-      "selected_count": 17,
+      "selected_count": 32,
       "selected_tasks": [
         "plan_034",
         "plan_035",
@@ -266,6 +338,15 @@
         "plan_047",
         "plan_054",
         "plan_056",
+        "plan_058",
+        "plan_060",
+        "plan_061",
+        "plan_063",
+        "plan_065",
+        "plan_067",
+        "plan_068",
+        "plan_070",
+        "plan_072",
         "plan_033",
         "plan_038",
         "plan_042",
@@ -274,21 +355,27 @@
         "plan_050",
         "plan_051",
         "plan_052",
-        "plan_053"
+        "plan_053",
+        "plan_057",
+        "plan_059",
+        "plan_062",
+        "plan_066",
+        "plan_069",
+        "plan_071"
       ],
-      "true_negative_count": 4,
-      "true_positive_count": 8
+      "true_negative_count": 5,
+      "true_positive_count": 17
     }
   ],
   "schema": "diffusion_spend_policy_decision.v1",
   "summary": {
     "calibrated_missed_profitable_count": 3,
     "incumbent_policy_id": "denoise_phase_repairability_plus_candidate_aware_promotion_v1",
-    "profitable_count": 11,
+    "profitable_count": 20,
     "promotion_policy_id": "candidate_aware_promotion_v1",
     "repairable_false_negative_count": 0,
     "repairable_incremental_lift_per_extra_generation": 0.10576190476190478,
-    "target_count": 24,
-    "total_repair_lift": 1.1692142857142858
+    "target_count": 40,
+    "total_repair_lift": 2.005571428571429
   }
 }

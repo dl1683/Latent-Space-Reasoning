@@ -9,7 +9,7 @@
         "DIFFUSION_TRANSFER_HEAD_FIT.md",
         "DIFFUSION_INDEPENDENT_SPEND_TRANSFER_V3.md",
         "DIFFUSION_AVAILABILITY_PREDICTOR_FIT.md",
-        "eval_results\\diffusion_language\\diffusion_independent_spend_transfer_v8_eval.json"
+        "DIFFUSION_INDEPENDENT_SPEND_TRANSFER_V9.md"
       ],
       "falsifier": "A fresh independent GPU slice produces available repairs that this head drops or no-lift repairs that it admits at the same or higher rate than single repairability.",
       "head_id": "availability",
@@ -28,7 +28,8 @@
       "assertion": "Repair promotion value is distinct from repair availability.",
       "error_count": 0,
       "evidence_files": [
-        "eval_results\\diffusion_language\\diffusion_candidate_promotion_targets_v8.json"
+        "eval_results\\diffusion_language\\diffusion_candidate_promotion_targets_v9.json",
+        "DIFFUSION_CANDIDATE_PROMOTION_TARGETS_V9.md"
       ],
       "falsifier": "A fresh transfer slice shows the named promotion-value proxy selects harmful repairs or misses available positive repairs as often as the planning-quality promotion policy.",
       "head_id": "promotion_value",
@@ -114,7 +115,7 @@
         "marginal repair lift",
         "phase-window cap"
       ],
-      "next_gpu_validation": "Run v8 with greedy/fixed, random perturbation, and latent repair only; compare any learned spend gate against the repairable-denoise plus `candidate_aware_promotion_v1` incumbent at matched cost.",
+      "next_gpu_validation": "Run the next fresh counterexample probe with greedy/fixed, random perturbation, and latent repair only; compare any learned spend gate against the repairable-denoise plus `candidate_aware_promotion_v1` incumbent at matched cost.",
       "rule_id": "energy_aware_marginal_value",
       "status": "objective-defined",
       "target_row_count": 8,
@@ -130,10 +131,10 @@
   "inputs": {
     "availability_predictor_fit": "eval_results\\diffusion_language\\diffusion_availability_predictor_fit.json",
     "budget_loss": "eval_results\\diffusion_language\\diffusion_budget_policy_loss.json",
-    "candidate_promotion_targets": "eval_results\\diffusion_language\\diffusion_candidate_promotion_targets_v8.json",
+    "candidate_promotion_targets": "eval_results\\diffusion_language\\diffusion_candidate_promotion_targets_v9.json",
     "composite_fit": "eval_results\\diffusion_language\\diffusion_composite_selector_fit.json",
     "composite_targets": "eval_results\\diffusion_language\\diffusion_composite_selector_targets.json",
-    "fresh_availability_eval": "eval_results\\diffusion_language\\diffusion_independent_spend_transfer_v8_eval.json",
+    "fresh_availability_eval": "eval_results\\diffusion_language\\diffusion_independent_spend_transfer_v9_eval.json",
     "larger_availability_eval": "eval_results\\diffusion_language\\diffusion_independent_spend_transfer_v3_eval.json",
     "spend_policy_decision": "eval_results\\diffusion_language\\diffusion_spend_policy_decision.json",
     "transfer_head_fit": "eval_results\\diffusion_language\\diffusion_transfer_head_fit.json"
