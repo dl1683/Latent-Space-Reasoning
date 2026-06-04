@@ -42,3 +42,7 @@ It treats repair spending as a behavior surface over the candidate set `{spend, 
 ## Reading
 
 The current value proxy is not promotion-ready as a universal controller. It is a useful operating point at lambda `0.18`, but tomography shows why the next controller must be lambda-aware: low cost penalties should recover early low-margin positives, while high cost penalties should drop marginal repairs such as `plan_006`. Quality and gap threshold perturbations are also useful because they expose where one-dimensional loosening immediately admits known no-lift spends.
+
+## Implementation Hook
+
+The runner exposes this as `--repair-spend-trigger denoise_phase_lambda_value_proxy` with `--repair-cost-penalty-lambda`. The implemented schedule keeps the incumbent `0.31` source-quality ceiling at lambda `0.18`, loosens to `0.35` for lambda `<=0.05`, and tightens to `0.30` for lambda `>=0.25`.

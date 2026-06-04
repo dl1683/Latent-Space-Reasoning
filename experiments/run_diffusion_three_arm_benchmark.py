@@ -138,6 +138,8 @@ CALIBRATED_AVAILABILITY_PREDICTOR_RULE_ID = "calibrated_gap_not_7_source_ge_traj
 CALIBRATED_AVAILABILITY_BLOCKED_PROMPT_GAP = 7
 COUNTERFACTUAL_MICRO_PROBE_TRIGGER_ID = "counterfactual_micro_probe_v1"
 COUNTERFACTUAL_MICRO_PROBE_POLICY_ID = "deterministic_missing_constraint_probe_v1"
+LAMBDA_AWARE_VALUE_PROXY_TRIGGER_ID = "denoise_phase_lambda_value_proxy"
+DEFAULT_REPAIR_COST_PENALTY_LAMBDA = 0.18
 COUNTERFACTUAL_MICRO_PROBE_TOMOGRAPHY_POLICY_ID = "strict_tomography_probe_v1"
 COUNTERFACTUAL_MICRO_PROBE_KEY_VALUE_POLICY_ID = "key_value_tomography_probe_v2"
 COUNTERFACTUAL_MICRO_PROBE_COMPACT_POLICY_ID = "compact_tomography_probe_v3"
@@ -948,6 +950,7 @@ def parse_args() -> argparse.Namespace:
             "source_repairability_geometry",
             "denoise_phase_repairability",
             "denoise_phase_value_proxy",
+            LAMBDA_AWARE_VALUE_PROXY_TRIGGER_ID,
             DECOMPOSED_FOUR_HEAD_SELECTOR_ID,
             DECOMPOSED_SPEND_TRANSFER_SELECTOR_ID,
             TRAJECTORY_RELATIVE_DECOMPOSED_SPEND_SELECTOR_ID,
@@ -967,6 +970,8 @@ def parse_args() -> argparse.Namespace:
             "requires the sampled denoise history to expose a repairable "
             "constraint skeleton; 'denoise_phase_value_proxy' further applies "
             "the calibrated source-quality proxy from the budget-value audit; "
+            f"'{LAMBDA_AWARE_VALUE_PROXY_TRIGGER_ID}' adjusts that source-quality "
+            "proxy by the configured repair cost penalty from the tomography audit; "
             f"'{DECOMPOSED_FOUR_HEAD_SELECTOR_ID}' exposes the fitted four-head "
             "selector policy as a runner trigger; "
             f"'{DECOMPOSED_SPEND_TRANSFER_SELECTOR_ID}' adds the fitted independent "
@@ -1037,6 +1042,16 @@ def parse_args() -> argparse.Namespace:
             "Maximum label-free source quality for --repair-spend-trigger "
             "denoise_phase_value_proxy. The current budget-value audit calibrates "
             "the public MoE mixed proxy near 0.301429; 0.31 is the stable CLI tier."
+        ),
+    )
+    parser.add_argument(
+        "--repair-cost-penalty-lambda",
+        type=float,
+        default=DEFAULT_REPAIR_COST_PENALTY_LAMBDA,
+        help=(
+            "Repair cost penalty used by --repair-spend-trigger "
+            f"{LAMBDA_AWARE_VALUE_PROXY_TRIGGER_ID}. The tomography audit keeps "
+            "0.18 as the neutral tier, loosens at <=0.05, and tightens at >=0.25."
         ),
     )
     parser.add_argument(
@@ -1543,6 +1558,7 @@ def main() -> int:
                                 args.repair_denoise_skeleton_max_step
                             ),
                             value_proxy_source_quality_max=args.repair_value_proxy_source_quality_max,
+                            repair_cost_penalty_lambda=args.repair_cost_penalty_lambda,
                             transfer_source_task_min=args.repair_transfer_source_task_min,
                             trajectory_record=selected["trajectory_selected"],
                         ),
@@ -1874,6 +1890,7 @@ def main() -> int:
         counterfactual_probe_mode=args.counterfactual_probe_mode,
         counterfactual_probe_policy=args.counterfactual_probe_policy,
         repair_value_proxy_source_quality_max=args.repair_value_proxy_source_quality_max,
+        repair_cost_penalty_lambda=args.repair_cost_penalty_lambda,
         repair_transfer_source_task_min=args.repair_transfer_source_task_min,
         repair_phase_budget=args.repair_phase_budget,
         repair_denoise_skeleton_max_step=_positive_int_or_none(
@@ -2157,6 +2174,7 @@ def _rescore_raw_main(args: argparse.Namespace, tasks: list[GeneralReasoningTask
                         args.repair_denoise_skeleton_max_step
                     ),
                     value_proxy_source_quality_max=args.repair_value_proxy_source_quality_max,
+                    repair_cost_penalty_lambda=args.repair_cost_penalty_lambda,
                     transfer_source_task_min=args.repair_transfer_source_task_min,
                     trajectory_record=selected["trajectory_selected"],
                 ),
@@ -2375,6 +2393,7 @@ def _rescore_raw_main(args: argparse.Namespace, tasks: list[GeneralReasoningTask
         counterfactual_probe_mode=args.counterfactual_probe_mode,
         counterfactual_probe_policy=args.counterfactual_probe_policy,
         repair_value_proxy_source_quality_max=args.repair_value_proxy_source_quality_max,
+        repair_cost_penalty_lambda=args.repair_cost_penalty_lambda,
         repair_transfer_source_task_min=args.repair_transfer_source_task_min,
         repair_phase_budget=args.repair_phase_budget,
         repair_denoise_skeleton_max_step=_positive_int_or_none(
@@ -2604,6 +2623,7 @@ def _should_run_primary_repair_pass(
     source_prompt_coverage_max: float = 1.0,
     denoise_skeleton_max_step: int | None = None,
     value_proxy_source_quality_max: float = 0.31,
+    repair_cost_penalty_lambda: float = DEFAULT_REPAIR_COST_PENALTY_LAMBDA,
     transfer_source_task_min: float = DECOMPOSED_SPEND_TRANSFER_SOURCE_TASK_MIN,
     trajectory_record: dict[str, object] | None = None,
 ) -> bool:
@@ -2622,10 +2642,19 @@ def _should_run_primary_repair_pass(
             source_prompt_coverage_max=source_prompt_coverage_max,
             denoise_skeleton_max_step=denoise_skeleton_max_step,
             value_proxy_source_quality_max=value_proxy_source_quality_max,
+            repair_cost_penalty_lambda=repair_cost_penalty_lambda,
             transfer_source_task_min=transfer_source_task_min,
             trajectory_record=trajectory_record,
         )["should_run"]
     )
+
+
+def _lambda_value_proxy_source_quality_max(cost_penalty_lambda: float) -> float:
+    if cost_penalty_lambda <= 0.05:
+        return 0.35
+    if cost_penalty_lambda >= 0.25:
+        return 0.30
+    return 0.31
 
 
 def _primary_repair_gate_diagnostics(
@@ -2643,6 +2672,7 @@ def _primary_repair_gate_diagnostics(
     source_prompt_coverage_max: float = 1.0,
     denoise_skeleton_max_step: int | None = None,
     value_proxy_source_quality_max: float = 0.31,
+    repair_cost_penalty_lambda: float = DEFAULT_REPAIR_COST_PENALTY_LAMBDA,
     transfer_source_task_min: float = DECOMPOSED_SPEND_TRANSFER_SOURCE_TASK_MIN,
     trajectory_record: dict[str, object] | None = None,
 ) -> dict[str, object]:
@@ -2668,6 +2698,11 @@ def _primary_repair_gate_diagnostics(
         task_prompt=task_prompt,
         prompt_coverage_min=source_prompt_coverage_min,
     )
+    effective_value_proxy_source_quality_max = (
+        _lambda_value_proxy_source_quality_max(repair_cost_penalty_lambda)
+        if trigger == LAMBDA_AWARE_VALUE_PROXY_TRIGGER_ID
+        else value_proxy_source_quality_max
+    )
     diagnostics: dict[str, object] = {
         "trigger": trigger,
         "allowed_source_control": allowed_source_control,
@@ -2685,6 +2720,8 @@ def _primary_repair_gate_diagnostics(
         "source_prompt_coverage_max": source_prompt_coverage_max,
         "denoise_skeleton_max_step": denoise_skeleton_max_step,
         "value_proxy_source_quality_max": value_proxy_source_quality_max,
+        "repair_cost_penalty_lambda": repair_cost_penalty_lambda,
+        "effective_value_proxy_source_quality_max": effective_value_proxy_source_quality_max,
         "source_task_score": source_task_score,
         "trajectory_task_score": trajectory_task_score,
         "source_task_delta_vs_trajectory": source_task_score - trajectory_task_score,
@@ -2754,6 +2791,7 @@ def _primary_repair_gate_diagnostics(
         "source_repairability_geometry",
         "denoise_phase_repairability",
         "denoise_phase_value_proxy",
+        LAMBDA_AWARE_VALUE_PROXY_TRIGGER_ID,
         DECOMPOSED_FOUR_HEAD_SELECTOR_ID,
         DECOMPOSED_SPEND_TRANSFER_SELECTOR_ID,
         TRAJECTORY_RELATIVE_DECOMPOSED_SPEND_SELECTOR_ID,
@@ -2800,13 +2838,14 @@ def _primary_repair_gate_diagnostics(
             trigger
             in {
                 "denoise_phase_value_proxy",
+                LAMBDA_AWARE_VALUE_PROXY_TRIGGER_ID,
                 DECOMPOSED_FOUR_HEAD_SELECTOR_ID,
                 DECOMPOSED_SPEND_TRANSFER_SELECTOR_ID,
                 TRAJECTORY_RELATIVE_DECOMPOSED_SPEND_SELECTOR_ID,
             }
             and has_repairable_denoise_skeleton
             and skeleton_within_max_step
-            and source_quality > value_proxy_source_quality_max
+            and source_quality > effective_value_proxy_source_quality_max
         ):
             diagnostics["should_run"] = False
             diagnostics["reason"] = "value_proxy_source_quality_high"
@@ -2900,6 +2939,7 @@ def _primary_repair_gate_diagnostics(
                 if trigger
                 in {
                     "denoise_phase_value_proxy",
+                    LAMBDA_AWARE_VALUE_PROXY_TRIGGER_ID,
                     DECOMPOSED_FOUR_HEAD_SELECTOR_ID,
                     DECOMPOSED_SPEND_TRANSFER_SELECTOR_ID,
                     TRAJECTORY_RELATIVE_DECOMPOSED_SPEND_SELECTOR_ID,
@@ -7032,6 +7072,7 @@ def summarize_three_arm_scores(
     counterfactual_probe_mode: str = "triage",
     counterfactual_probe_policy: str = COUNTERFACTUAL_MICRO_PROBE_POLICY_ID,
     repair_value_proxy_source_quality_max: float = 0.31,
+    repair_cost_penalty_lambda: float = DEFAULT_REPAIR_COST_PENALTY_LAMBDA,
     repair_transfer_source_task_min: float = DECOMPOSED_SPEND_TRANSFER_SOURCE_TASK_MIN,
     repair_phase_budget: str = "custom",
     repair_denoise_skeleton_max_step: int | None = None,
@@ -7120,6 +7161,7 @@ def summarize_three_arm_scores(
         "counterfactual_probe_mode": counterfactual_probe_mode,
         "counterfactual_probe_policy": counterfactual_probe_policy,
         "repair_value_proxy_source_quality_max": repair_value_proxy_source_quality_max,
+        "repair_cost_penalty_lambda": repair_cost_penalty_lambda,
         "repair_transfer_source_task_min": repair_transfer_source_task_min,
         "repair_phase_budget": repair_phase_budget,
         "repair_denoise_skeleton_max_step": repair_denoise_skeleton_max_step,
@@ -7844,6 +7886,10 @@ def render_report(scores: dict[str, object]) -> str:
         (
             "Repair value-proxy source-quality max: "
             f"`{scores.get('repair_value_proxy_source_quality_max', 0.31):.3f}`"
+        ),
+        (
+            "Repair cost penalty lambda: "
+            f"`{scores.get('repair_cost_penalty_lambda', DEFAULT_REPAIR_COST_PENALTY_LAMBDA):.3f}`"
         ),
         (
             "Repair transfer source-task min: "

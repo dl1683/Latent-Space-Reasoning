@@ -5,6 +5,7 @@ from dataclasses import replace
 import json
 from pathlib import Path
 
+import experiments.run_diffusion_three_arm_benchmark as benchmark
 from experiments.run_diffusion_three_arm_benchmark import (
     _anchor_selected_execution_repair,
     _answer_text_matches_proposal,
@@ -7170,6 +7171,107 @@ def test_primary_repair_gate_diagnostics_apply_denoise_value_proxy():
     assert skip_diagnostics["should_run"] is False
     assert skip_diagnostics["reason"] == "value_proxy_source_quality_high"
     assert skip_diagnostics["source_quality"] > 0.0
+
+
+def test_primary_repair_gate_diagnostics_apply_lambda_value_proxy(monkeypatch):
+    prompt = (
+        "Run two GPU jobs overnight: one reliable baseline and one risky reasoning "
+        "intervention. Collect measurements, failure evidence, and a publishable fallback."
+    )
+    source = {
+        **_record("model", "plan", "low_confidence_32", task_score=0.0, trajectory_score=0.5),
+        "history_steps": 16,
+        "text": (
+            "Collect the baseline measurement first, then run the intervention. "
+            "If the intervention fails, record failure evidence and keep a fallback."
+        ),
+        "trajectory_summary": {
+            "samples": [
+                {"step": 4, "visible_chars": 24, "visible_text": "Collect the baseline."},
+                {
+                    "step": 8,
+                    "visible_chars": 55,
+                    "visible_text": "Collect the baseline measurement and failure evidence.",
+                },
+            ]
+        },
+    }
+
+    low_cost_diagnostics = _primary_repair_gate_diagnostics(
+        trigger="denoise_phase_lambda_value_proxy",
+        source_record=source,
+        source_controls=[],
+        task_prompt=prompt,
+        task_answer_type="rubric",
+        source_quality_threshold=0.99,
+        source_min_chars=40,
+        source_prompt_gap_min=2,
+        source_prompt_gap_max=8,
+        source_prompt_coverage_min=0.30,
+        source_prompt_coverage_max=1.00,
+        denoise_skeleton_max_step=12,
+        repair_cost_penalty_lambda=0.05,
+    )
+    neutral_cost_diagnostics = _primary_repair_gate_diagnostics(
+        trigger="denoise_phase_lambda_value_proxy",
+        source_record=source,
+        source_controls=[],
+        task_prompt=prompt,
+        task_answer_type="rubric",
+        source_quality_threshold=0.99,
+        source_min_chars=40,
+        source_prompt_gap_min=2,
+        source_prompt_gap_max=8,
+        source_prompt_coverage_min=0.30,
+        source_prompt_coverage_max=1.00,
+        denoise_skeleton_max_step=12,
+        repair_cost_penalty_lambda=0.18,
+    )
+
+    assert low_cost_diagnostics["effective_value_proxy_source_quality_max"] == 0.35
+    assert low_cost_diagnostics["should_run"] is True
+    assert low_cost_diagnostics["reason"] == "denoise_phase_lambda_value_proxy"
+    assert neutral_cost_diagnostics["effective_value_proxy_source_quality_max"] == 0.31
+    assert neutral_cost_diagnostics["should_run"] is False
+    assert neutral_cost_diagnostics["reason"] == "value_proxy_source_quality_high"
+
+    monkeypatch.setattr(benchmark, "_planning_quality_score", lambda *_args, **_kwargs: 0.301429)
+    marginal_neutral_diagnostics = _primary_repair_gate_diagnostics(
+        trigger="denoise_phase_lambda_value_proxy",
+        source_record=source,
+        source_controls=[],
+        task_prompt=prompt,
+        task_answer_type="rubric",
+        source_quality_threshold=0.99,
+        source_min_chars=40,
+        source_prompt_gap_min=2,
+        source_prompt_gap_max=8,
+        source_prompt_coverage_min=0.30,
+        source_prompt_coverage_max=1.00,
+        denoise_skeleton_max_step=12,
+        repair_cost_penalty_lambda=0.18,
+    )
+    marginal_high_cost_diagnostics = _primary_repair_gate_diagnostics(
+        trigger="denoise_phase_lambda_value_proxy",
+        source_record=source,
+        source_controls=[],
+        task_prompt=prompt,
+        task_answer_type="rubric",
+        source_quality_threshold=0.99,
+        source_min_chars=40,
+        source_prompt_gap_min=2,
+        source_prompt_gap_max=8,
+        source_prompt_coverage_min=0.30,
+        source_prompt_coverage_max=1.00,
+        denoise_skeleton_max_step=12,
+        repair_cost_penalty_lambda=0.25,
+    )
+
+    assert marginal_neutral_diagnostics["effective_value_proxy_source_quality_max"] == 0.31
+    assert marginal_neutral_diagnostics["should_run"] is True
+    assert marginal_high_cost_diagnostics["effective_value_proxy_source_quality_max"] == 0.30
+    assert marginal_high_cost_diagnostics["should_run"] is False
+    assert marginal_high_cost_diagnostics["reason"] == "value_proxy_source_quality_high"
 
 
 def test_primary_repair_gate_diagnostics_apply_decomposed_four_head_selector():
