@@ -241,6 +241,15 @@ authorization rows. The gate still stays closed: only 8/12 rows pass strict
 Stage 1 validity, and the best post-probe text rule still admits one no-lift
 false positive.
 
+`DIFFUSION_COUNTERFACTUAL_VALIDATED_PROBE_STAGE1_GATE_V1.md` then applies the
+controller rule that invalid diagnostics are missing evidence, not weakly
+usable evidence. With `valid_for_stage1` required before any measured value rule
+can select a row, three profitable repairs (`plan_034`, `plan_046`,
+`plan_070`) become invalid-positive misses with `0.185357` total missed lift.
+The best validated Stage 1 rule still has five errors. This blocks full repair
+spend more strongly than the raw text-fidelity result: the next probe must
+first make profitable rows valid, then learn value.
+
 ## Falsifiers
 
 This architecture is wrong if any of the following happen:

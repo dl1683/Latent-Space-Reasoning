@@ -80,6 +80,10 @@ The strict tomography follow-up is recorded in
 `DIFFUSION_COUNTERFACTUAL_TOMOGRAPHY_PROBE_TEXT_FIDELITY_V1.md`: it fixes the
 authorization sentinel but still leaves four invalid diagnostic rows and one
 post-probe false positive, so it remains diagnostic-only.
+The validity-required Stage 1 fit is recorded in
+`DIFFUSION_COUNTERFACTUAL_VALIDATED_PROBE_STAGE1_GATE_V1.md`: invalid diagnostic
+rows are treated as missing evidence. That exposes three invalid profitable
+rows and a best validated rule with five errors.
 
 ## Next Measurement
 

@@ -160,6 +160,11 @@ adds the strict `strict_tomography_probe_v1` prompt policy and reruns the 12-row
 all-shadow GPU measurement. The sentinel improves to 12/12 exact and zero
 malformed authorization rows, but only 8/12 rows pass the stricter Stage 1
 validity gate and the best post-probe text rule still has one false positive.
+[DIFFUSION_COUNTERFACTUAL_VALIDATED_PROBE_STAGE1_GATE_V1.md](../DIFFUSION_COUNTERFACTUAL_VALIDATED_PROBE_STAGE1_GATE_V1.md)
+then applies the actual controller discipline: invalid probe rows cannot be
+used as value evidence. Under that validity-required rule, three profitable
+rows become invalid-positive misses and the best validated Stage 1 rule has
+five errors. Full repair spend remains blocked.
 
 ## Benchmark And Cost Layer
 
@@ -211,6 +216,7 @@ hidden behind a large search stack:
 | [DIFFUSION_COUNTERFACTUAL_MEASURED_PROBE_VALUE_POLICY_V1.md](../DIFFUSION_COUNTERFACTUAL_MEASURED_PROBE_VALUE_POLICY_V1.md) | All-shadow measured probe fit over the 12 named counterexamples; measured-only Stage 1 still has two errors, so full repair spend remains blocked. |
 | [DIFFUSION_COUNTERFACTUAL_PROBE_TEXT_FIDELITY_V1.md](../DIFFUSION_COUNTERFACTUAL_PROBE_TEXT_FIDELITY_V1.md) | Post-probe text fidelity audit over the all-shadow probe rows; malformed authorization and weak tomography keep Stage 1 diagnostic-only. |
 | [DIFFUSION_COUNTERFACTUAL_TOMOGRAPHY_PROBE_TEXT_FIDELITY_V1.md](../DIFFUSION_COUNTERFACTUAL_TOMOGRAPHY_PROBE_TEXT_FIDELITY_V1.md) | Strict tomography prompt GPU run; fixes the authorization sentinel but still leaves one post-probe false positive and four invalid diagnostic rows. |
+| [DIFFUSION_COUNTERFACTUAL_VALIDATED_PROBE_STAGE1_GATE_V1.md](../DIFFUSION_COUNTERFACTUAL_VALIDATED_PROBE_STAGE1_GATE_V1.md) | Validity-required Stage 1 gate fit; invalid diagnostics include three profitable rows, so the best validated rule has five errors. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT.md) | Transfer-rule fit showing current decomposed spend is the best repair-availability rule. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md) | Expanded transfer-rule fit over the eight-row independent slice. |
 | [DIFFUSION_TRANSFER_PROMOTION_VALUE.md](../DIFFUSION_TRANSFER_PROMOTION_VALUE.md) | Transfer promotion-value result showing named `--repair-selector transfer_promotion_value` realizes the low-margin repair. |
