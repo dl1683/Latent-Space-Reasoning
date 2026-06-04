@@ -550,6 +550,33 @@ def test_lean_gpu_mixed_transfer_v14_task_preset_freezes_realization_value_slice
     assert {task.family for task in tasks} == {"planning", "math", "symbolic", "science"}
 
 
+def test_lean_gpu_mixed_transfer_v15_task_preset_freezes_static_probe_disagreement_slice():
+    args = Namespace(
+        tasks="experiments/general_reasoning_tasks_scout.jsonl",
+        families="planning",
+        task_ids=None,
+        task_preset="lean_gpu_mixed_transfer_v15",
+        limit_tasks=None,
+    )
+
+    tasks = _select_tasks(args)
+
+    assert [task.task_id for task in tasks] == [
+        "plan_113",
+        "plan_114",
+        "plan_115",
+        "plan_116",
+        "plan_117",
+        "plan_118",
+        "plan_119",
+        "plan_120",
+        "math_009",
+        "sym_007",
+        "sci_002",
+    ]
+    assert {task.family for task in tasks} == {"planning", "math", "symbolic", "science"}
+
+
 def test_revision_schedules_enable_non_monotonic_llada_revision_config():
     schedule = DiffusionScheduleCandidate(
         name="low_confidence_32",
