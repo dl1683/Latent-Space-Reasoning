@@ -30,23 +30,23 @@ It audits the measured all-shadow micro-probe text as tomography: did the cheap 
 | `diagnostic_fidelity_score_ge_5p000000` | 3 | 3 | 0 | 0.000000 | 10 |
 | `diagnostic_slot_count_ge_3p000000` | 3 | 3 | 0 | 0.000000 | 10 |
 | `has_retention_slot_ge_1p000000` | 3 | 3 | 0 | 0.000000 | 10 |
+| `max_slot_overlap_le_0p600000` | 3 | 3 | 0 | 0.000000 | 10 |
+| `repeated_token_excess_le_5p000000` | 3 | 3 | 0 | 0.000000 | 10 |
 | `semantic_valid_for_stage1_ge_1p000000` | 3 | 3 | 0 | 0.000000 | 10 |
 | `probe_task_score_ge_0p242000` | 3 | 0 | 3 | 0.183929 | 4 |
 | `malformed_compact_key_le_0p000000` | 4 | 4 | 0 | 0.000000 | 11 |
+| `max_slot_overlap_le_0p714286` | 4 | 4 | 0 | 0.000000 | 11 |
 | `probe_task_score_ge_0p137000` | 4 | 4 | 0 | 0.000000 | 11 |
+| `repeated_token_excess_ge_1p000000` | 4 | 4 | 0 | 0.000000 | 11 |
+| `repeated_token_excess_le_7p000000` | 4 | 4 | 0 | 0.000000 | 11 |
 | `semantic_defect_le_0p000000` | 4 | 4 | 0 | 0.000000 | 11 |
 | `word_count_ge_19p000000` | 4 | 4 | 0 | 0.000000 | 11 |
 | `word_count_le_28p000000` | 4 | 4 | 0 | 0.000000 | 11 |
+| `x0_x2_slot_overlap_le_0p090909` | 4 | 4 | 0 | 0.000000 | 11 |
+| `max_slot_overlap_le_0p181818` | 4 | 3 | 1 | 0.112500 | 9 |
+| `repeated_token_excess_le_2p000000` | 4 | 2 | 2 | 0.171429 | 7 |
 | `probe_task_score_ge_0p218429` | 4 | 1 | 3 | 0.183929 | 5 |
 | `probe_task_score_ge_0p262000` | 4 | 0 | 4 | 0.230857 | 3 |
-| `diagnostic_fidelity_score_ge_3p666667` | 5 | 5 | 0 | 0.000000 | 12 |
-| `diagnostic_fidelity_score_le_5p000000` | 5 | 5 | 0 | 0.000000 | 12 |
-| `diagnostic_slot_count_ge_2p000000` | 5 | 5 | 0 | 0.000000 | 12 |
-| `diagnostic_slot_count_le_3p000000` | 5 | 5 | 0 | 0.000000 | 12 |
-| `duplicate_authorization_ge_0p000000` | 5 | 5 | 0 | 0.000000 | 12 |
-| `duplicate_authorization_le_0p000000` | 5 | 5 | 0 | 0.000000 | 12 |
-| `duplicate_slot_key_ge_0p000000` | 5 | 5 | 0 | 0.000000 | 12 |
-| `duplicate_slot_key_le_0p000000` | 5 | 5 | 0 | 0.000000 | 12 |
 
 ## Rows
 

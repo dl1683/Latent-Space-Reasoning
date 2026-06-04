@@ -32,7 +32,8 @@ still diagnostic-only because invalid diagnostics include five profitable rows.
 `--counterfactual-probe-policy span_tomography_probe_v4` switches to copied-span
 slots `X0=`, `X1=`, `X2=`, and `N=0`. The measured v4 run reaches 10/12
 semantic-valid rows with zero template echoes and zero invalid-positive misses,
-but the best validated rule still has one no-lift false positive.
+and the overlap-penalized retention rule clears the local 12-row validated fit.
+It is still diagnostic until a fresh independent slice confirms the rule.
 
 The trigger records probe diagnostics in `repair_spend_gate_rows` for each
 selected repair source. When frozen triage sets `would_probe=true`, it also
@@ -111,8 +112,9 @@ five invalid-positive misses.
 The span v4 follow-up is recorded in
 `DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_TEXT_FIDELITY_V4.md` and
 `DIFFUSION_COUNTERFACTUAL_SPAN_VALIDATED_PROBE_STAGE1_GATE_V4.md`. It removes
-the template-echo failure mode and cuts semantic Stage 1 errors to one
-false-positive spend decision, but that is still below the promotion bar.
+the template-echo failure mode; after adding the X0/X2 slot-overlap penalty,
+the semantic-valid Stage 1 fit reaches zero local errors. This is a challenger
+for fresh-slice validation, not a promoted spend gate.
 
 ## Next Measurement
 

@@ -187,10 +187,10 @@ diagnostic instruments without clearing the spend gate:
 - `span_tomography_probe_v4` moves the probe from slot descriptions to copied
   spans. On the same 12-row all-shadow CUDA surface it reaches 10/12
   semantic-valid rows, zero template echoes, zero malformed authorizations, zero
-  invalid-positive misses, and a best semantic-valid Stage 1 rule with one
-  remaining false-positive no-lift spend decision. This is the first near-miss
-  probe instrument, but it is still diagnostic until that last no-lift trap is
-  separated without rediscovering Stage 0 prompt-gap or `would_probe`.
+  invalid-positive misses, and an X0/X2-overlap-penalized retention-risk rule
+  with zero local validated errors. This is the first local challenger for a
+  fresh-slice validation run, but it is still diagnostic until it holds outside
+  the named counterexample surface.
 
 ## First Implementation Slice
 
@@ -285,6 +285,15 @@ quality regresses to 6/12 valid rows, two malformed authorization strings, and
 three generic slot rows. This is a controller-design lesson: a lower fit error
 cannot compensate for a probe operator that is less reliable as an instrument.
 
+The span v4 probe in `DIFFUSION_COUNTERFACTUAL_SPAN_PROBE_TEXT_FIDELITY_V4.md`
+and `DIFFUSION_COUNTERFACTUAL_SPAN_VALIDATED_PROBE_STAGE1_GATE_V4.md` is the
+first local challenger: copied-span slots remove the v3 template echo collapse,
+and the `valid_measured_distinct_retention_risk_visibility_ge_0p927195` rule
+has zero errors on the same 12 named counterexamples after penalizing overlap
+between the missing-span and preservation-span slots. The result still stays
+diagnostic because the zero-error boundary has not yet survived a fresh
+independent planning slice.
+
 ## Falsifiers
 
 This architecture is wrong if any of the following happen:
@@ -299,6 +308,6 @@ This architecture is wrong if any of the following happen:
 ## Current Decision
 
 Do not spend another live GPU slice on a promoted spend gate yet. Spend the next
-engineering increment on counterfactual probe rows. The goal is not to make the
-current controller look better; it is to change the information geometry of the
-decision.
+GPU slice on fresh-slice validation of the span v4 distinct-retention rule. The
+goal is not to make the current controller look better; it is to test whether
+the changed information geometry transfers beyond the named counterexamples.

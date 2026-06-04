@@ -19,15 +19,18 @@
         "has_retention_slot": 1.0,
         "malformed_authorization": 0.0,
         "malformed_compact_key": 0.0,
+        "max_slot_overlap": 0.0,
         "placeholder_slot": 0.0,
         "probe_task_score": 0.2648571428571429,
+        "repeated_token_excess": 1.0,
         "semantic_defect": 0.0,
         "semantic_valid_for_stage1": 1.0,
         "template_slot_echo": 0.0,
         "weak_term_echo_count": 0.0,
         "weak_term_echo_fraction": 0.0,
         "weird_punctuation": 0.0,
-        "word_count": 21.0
+        "word_count": 21.0,
+        "x0_x2_slot_overlap": 0.0
       },
       "label": true,
       "probe_text": "X0=average, sometimes, plan, making\nX1=comprehensive, audit, evaluate, assess, effectiveness, measure\nX2=preservation, context, balancing, fixes, constraints, context\nN=0",
@@ -49,15 +52,18 @@
         "has_retention_slot": 1.0,
         "malformed_authorization": 0.0,
         "malformed_compact_key": 0.0,
+        "max_slot_overlap": 0.6,
         "placeholder_slot": 0.0,
         "probe_task_score": 0.137,
+        "repeated_token_excess": 5.0,
         "semantic_defect": 0.0,
         "semantic_valid_for_stage1": 1.0,
         "template_slot_echo": 0.0,
         "weak_term_echo_count": 0.0,
         "weak_term_echo_fraction": 0.0,
         "weird_punctuation": 0.0,
-        "word_count": 19.0
+        "word_count": 19.0,
+        "x0_x2_slot_overlap": 0.0
       },
       "label": true,
       "probe_text": "X0=improves, makes, less, faithful  \nX1=answer, trace, fidelity, fidelity, prompt  \nX2=reasoning, trace, fidelity, prompt, fidelity  \nN=0",
@@ -79,15 +85,18 @@
         "has_retention_slot": 0.0,
         "malformed_authorization": 0.0,
         "malformed_compact_key": 0.0,
+        "max_slot_overlap": 0.0,
         "placeholder_slot": 0.0,
         "probe_task_score": 0.157,
+        "repeated_token_excess": 1.0,
         "semantic_defect": 0.0,
         "semantic_valid_for_stage1": 0.0,
         "template_slot_echo": 0.0,
         "weak_term_echo_count": 0.0,
         "weak_term_echo_fraction": 0.0,
         "weird_punctuation": 0.0,
-        "word_count": 21.0
+        "word_count": 21.0,
+        "x0_x2_slot_overlap": 0.0
       },
       "label": false,
       "probe_text": "X0=cheap, language, diffusion, model, multiple, denoise, tight, plan  \nX1=cost, per, schedule, quality, quality, gain, marginal, optimal, resource  \nN=0",
@@ -109,15 +118,18 @@
         "has_retention_slot": 1.0,
         "malformed_authorization": 0.0,
         "malformed_compact_key": 0.0,
+        "max_slot_overlap": 0.125,
         "placeholder_slot": 0.0,
         "probe_task_score": 0.262,
+        "repeated_token_excess": 2.0,
         "semantic_defect": 0.0,
         "semantic_valid_for_stage1": 1.0,
         "template_slot_echo": 0.0,
         "weak_term_echo_count": 0.0,
         "weak_term_echo_fraction": 0.0,
         "weird_punctuation": 0.0,
-        "word_count": 20.0
+        "word_count": 20.0,
+        "x0_x2_slot_overlap": 0.0
       },
       "label": true,
       "probe_text": "X0=world, model, style, predicts, plan  \nX1=random, states, against, benchmark, dataset  \nX2=deno, states, constraints, missing, constraints  \nN=0",
@@ -139,15 +151,18 @@
         "has_retention_slot": 1.0,
         "malformed_authorization": 0.0,
         "malformed_compact_key": 0.0,
+        "max_slot_overlap": 0.0,
         "placeholder_slot": 0.0,
         "probe_task_score": 0.15842857142857142,
+        "repeated_token_excess": 0.0,
         "semantic_defect": 0.0,
         "semantic_valid_for_stage1": 1.0,
         "template_slot_echo": 0.0,
         "weak_term_echo_count": 0.0,
         "weak_term_echo_fraction": 0.0,
         "weird_punctuation": 0.0,
-        "word_count": 16.0
+        "word_count": 16.0,
+        "x0_x2_slot_overlap": 0.0
       },
       "label": false,
       "probe_text": "X0=without, leaking, labels,\n  \nX1=use, separate, validation, set,\n  \n  \nX2=synthetic, dataset, appropriate, metrics,\n  \nN=0",
@@ -169,15 +184,18 @@
         "has_retention_slot": 1.0,
         "malformed_authorization": 0.0,
         "malformed_compact_key": 0.0,
+        "max_slot_overlap": 0.0,
         "placeholder_slot": 0.0,
         "probe_task_score": 0.24200000000000002,
+        "repeated_token_excess": 1.0,
         "semantic_defect": 0.0,
         "semantic_valid_for_stage1": 1.0,
         "template_slot_echo": 0.0,
         "weak_term_echo_count": 0.0,
         "weak_term_echo_fraction": 0.0,
         "weird_punctuation": 0.0,
-        "word_count": 20.0
+        "word_count": 20.0,
+        "x0_x2_slot_overlap": 0.0
       },
       "label": true,
       "probe_text": "X0=controller, plan, slice  \nX1=choose, budget, task, simple, resources, goal, goal  \nX2=decide, based, complexity, availability, goals  \nN=0",
@@ -199,15 +217,18 @@
         "has_retention_slot": 1.0,
         "malformed_authorization": 0.0,
         "malformed_compact_key": 0.0,
+        "max_slot_overlap": 0.09090909090909091,
         "placeholder_slot": 0.0,
         "probe_task_score": 0.3045,
+        "repeated_token_excess": 1.0,
         "semantic_defect": 0.0,
         "semantic_valid_for_stage1": 1.0,
         "template_slot_echo": 0.0,
         "weak_term_echo_count": 0.0,
         "weak_term_echo_fraction": 0.0,
         "weird_punctuation": 0.0,
-        "word_count": 24.0
+        "word_count": 24.0,
+        "x0_x2_slot_overlap": 0.09090909090909091
       },
       "label": true,
       "probe_text": "X0=preserves, maintains, useful constraints, final-context detail  \nX1=consistency, factual accuracy, alignment with original intent  \nX2=retains critical context, contextual integrity  \nN=0",
@@ -229,15 +250,18 @@
         "has_retention_slot": 1.0,
         "malformed_authorization": 0.0,
         "malformed_compact_key": 0.0,
+        "max_slot_overlap": 1.0,
         "placeholder_slot": 0.0,
         "probe_task_score": 0.11699999999999999,
+        "repeated_token_excess": 9.0,
         "semantic_defect": 0.0,
         "semantic_valid_for_stage1": 1.0,
         "template_slot_echo": 0.0,
         "weak_term_echo_count": 0.0,
         "weak_term_echo_fraction": 0.0,
         "weird_punctuation": 0.0,
-        "word_count": 20.0
+        "word_count": 20.0,
+        "x0_x2_slot_overlap": 0.0
       },
       "label": false,
       "probe_text": "X0=either, improve, public, benchmark, falsify  \nX1=run, run, run, run, run  \nX2=run, run, run, run, run  \nN=0",
@@ -259,15 +283,18 @@
         "has_retention_slot": 0.0,
         "malformed_authorization": 0.0,
         "malformed_compact_key": 1.0,
+        "max_slot_overlap": 0.0,
         "placeholder_slot": 0.0,
         "probe_task_score": 0.21842857142857144,
+        "repeated_token_excess": 4.0,
         "semantic_defect": 1.0,
         "semantic_valid_for_stage1": 0.0,
         "template_slot_echo": 0.0,
         "weak_term_echo_count": 0.0,
         "weak_term_echo_fraction": 0.0,
         "weird_punctuation": 0.0,
-        "word_count": 29.0
+        "word_count": 29.0,
+        "x0_x2_slot_overlap": 0.0
       },
       "label": false,
       "probe_text": "X0= candidate-aware aware promotion selector frozen will claims later  \nX1= Apply the proxy to candidates predict their promoability  \nX2X2= compare these predictions to actual actual promoability  \nN=0",
@@ -289,15 +316,18 @@
         "has_retention_slot": 1.0,
         "malformed_authorization": 0.0,
         "malformed_compact_key": 0.0,
+        "max_slot_overlap": 0.0,
         "placeholder_slot": 0.0,
         "probe_task_score": 0.157,
+        "repeated_token_excess": 1.0,
         "semantic_defect": 0.0,
         "semantic_valid_for_stage1": 1.0,
         "template_slot_echo": 0.0,
         "weak_term_echo_count": 0.0,
         "weak_term_echo_fraction": 0.0,
         "weird_punctuation": 0.0,
-        "word_count": 20.0
+        "word_count": 20.0,
+        "x0_x2_slot_overlap": 0.0
       },
       "label": true,
       "probe_text": "X0=denoise-state, denoise, says, better, than  \nX1=evaluate, potential, assess, reliability  \nX2=prior, history, negative, outcome, integrity  \nN=0",
@@ -319,15 +349,18 @@
         "has_retention_slot": 1.0,
         "malformed_authorization": 0.0,
         "malformed_compact_key": 0.0,
+        "max_slot_overlap": 0.7142857142857143,
         "placeholder_slot": 0.0,
         "probe_task_score": 0.157,
+        "repeated_token_excess": 7.0,
         "semantic_defect": 0.0,
         "semantic_valid_for_stage1": 1.0,
         "template_slot_echo": 0.0,
         "weak_term_echo_count": 0.0,
         "weak_term_echo_fraction": 0.0,
         "weird_punctuation": 0.0,
-        "word_count": 20.0
+        "word_count": 20.0,
+        "x0_x2_slot_overlap": 0.7142857142857143
       },
       "label": false,
       "probe_text": "X0=must, trade, missed, positive, repairs, fresh, planning  \nX1=must, trade, cost  \nX2=missed, positive, repairs, fresh, planning  \nN=0",
@@ -349,15 +382,18 @@
         "has_retention_slot": 1.0,
         "malformed_authorization": 0.0,
         "malformed_compact_key": 0.0,
+        "max_slot_overlap": 0.18181818181818182,
         "placeholder_slot": 0.0,
         "probe_task_score": 0.157,
+        "repeated_token_excess": 5.0,
         "semantic_defect": 0.0,
         "semantic_valid_for_stage1": 1.0,
         "template_slot_echo": 0.0,
         "weak_term_echo_count": 0.0,
         "weak_term_echo_fraction": 0.0,
         "weird_punctuation": 0.0,
-        "word_count": 28.0
+        "word_count": 28.0,
+        "x0_x2_slot_overlap": 0.0
       },
       "label": true,
       "probe_text": "X0=proof-obligation, says  \nX1=plan a small-obligation proof slice on a specific repair scenario  \nX2=evaluate the impact of these factors on repair value  \nN=0",
@@ -439,6 +475,40 @@
       "threshold": 1.0
     },
     {
+      "direction": "le",
+      "error_count": 3,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_069"
+      ],
+      "feature": "max_slot_overlap",
+      "missed_positive_lift": 0,
+      "rule_name": "max_slot_overlap_le_0p600000",
+      "selected_count": 10,
+      "threshold": 0.6
+    },
+    {
+      "direction": "le",
+      "error_count": 3,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_069"
+      ],
+      "feature": "repeated_token_excess",
+      "missed_positive_lift": 0,
+      "rule_name": "repeated_token_excess_le_5p000000",
+      "selected_count": 10,
+      "threshold": 5.0
+    },
+    {
       "direction": "ge",
       "error_count": 3,
       "false_negative_count": 0,
@@ -491,6 +561,24 @@
       "threshold": 0.0
     },
     {
+      "direction": "le",
+      "error_count": 4,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 4,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_069",
+        "plan_071"
+      ],
+      "feature": "max_slot_overlap",
+      "missed_positive_lift": 0,
+      "rule_name": "max_slot_overlap_le_0p714286",
+      "selected_count": 11,
+      "threshold": 0.7142857142857143
+    },
+    {
       "direction": "ge",
       "error_count": 4,
       "false_negative_count": 0,
@@ -507,6 +595,42 @@
       "rule_name": "probe_task_score_ge_0p137000",
       "selected_count": 11,
       "threshold": 0.137
+    },
+    {
+      "direction": "ge",
+      "error_count": 4,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 4,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_064",
+        "plan_069",
+        "plan_071"
+      ],
+      "feature": "repeated_token_excess",
+      "missed_positive_lift": 0,
+      "rule_name": "repeated_token_excess_ge_1p000000",
+      "selected_count": 11,
+      "threshold": 1.0
+    },
+    {
+      "direction": "le",
+      "error_count": 4,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 4,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_069",
+        "plan_071"
+      ],
+      "feature": "repeated_token_excess",
+      "missed_positive_lift": 0,
+      "rule_name": "repeated_token_excess_le_7p000000",
+      "selected_count": 11,
+      "threshold": 7.0
     },
     {
       "direction": "le",
@@ -563,6 +687,62 @@
       "threshold": 28.0
     },
     {
+      "direction": "le",
+      "error_count": 4,
+      "false_negative_count": 0,
+      "false_negative_task_ids": [],
+      "false_positive_count": 4,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_064",
+        "plan_069"
+      ],
+      "feature": "x0_x2_slot_overlap",
+      "missed_positive_lift": 0,
+      "rule_name": "x0_x2_slot_overlap_le_0p090909",
+      "selected_count": 11,
+      "threshold": 0.09090909090909091
+    },
+    {
+      "direction": "le",
+      "error_count": 4,
+      "false_negative_count": 1,
+      "false_negative_task_ids": [
+        "plan_044"
+      ],
+      "false_positive_count": 3,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050",
+        "plan_069"
+      ],
+      "feature": "max_slot_overlap",
+      "missed_positive_lift": 0.11249999999999999,
+      "rule_name": "max_slot_overlap_le_0p181818",
+      "selected_count": 9,
+      "threshold": 0.18181818181818182
+    },
+    {
+      "direction": "le",
+      "error_count": 4,
+      "false_negative_count": 2,
+      "false_negative_task_ids": [
+        "plan_044",
+        "plan_072"
+      ],
+      "false_positive_count": 2,
+      "false_positive_task_ids": [
+        "plan_045",
+        "plan_050"
+      ],
+      "feature": "repeated_token_excess",
+      "missed_positive_lift": 0.17142857142857137,
+      "rule_name": "repeated_token_excess_le_2p000000",
+      "selected_count": 7,
+      "threshold": 2.0
+    },
+    {
       "direction": "ge",
       "error_count": 4,
       "false_negative_count": 3,
@@ -598,158 +778,6 @@
       "rule_name": "probe_task_score_ge_0p262000",
       "selected_count": 3,
       "threshold": 0.262
-    },
-    {
-      "direction": "ge",
-      "error_count": 5,
-      "false_negative_count": 0,
-      "false_negative_task_ids": [],
-      "false_positive_count": 5,
-      "false_positive_task_ids": [
-        "plan_045",
-        "plan_050",
-        "plan_064",
-        "plan_069",
-        "plan_071"
-      ],
-      "feature": "diagnostic_fidelity_score",
-      "missed_positive_lift": 0,
-      "rule_name": "diagnostic_fidelity_score_ge_3p666667",
-      "selected_count": 12,
-      "threshold": 3.6666666666666665
-    },
-    {
-      "direction": "le",
-      "error_count": 5,
-      "false_negative_count": 0,
-      "false_negative_task_ids": [],
-      "false_positive_count": 5,
-      "false_positive_task_ids": [
-        "plan_045",
-        "plan_050",
-        "plan_064",
-        "plan_069",
-        "plan_071"
-      ],
-      "feature": "diagnostic_fidelity_score",
-      "missed_positive_lift": 0,
-      "rule_name": "diagnostic_fidelity_score_le_5p000000",
-      "selected_count": 12,
-      "threshold": 5.0
-    },
-    {
-      "direction": "ge",
-      "error_count": 5,
-      "false_negative_count": 0,
-      "false_negative_task_ids": [],
-      "false_positive_count": 5,
-      "false_positive_task_ids": [
-        "plan_045",
-        "plan_050",
-        "plan_064",
-        "plan_069",
-        "plan_071"
-      ],
-      "feature": "diagnostic_slot_count",
-      "missed_positive_lift": 0,
-      "rule_name": "diagnostic_slot_count_ge_2p000000",
-      "selected_count": 12,
-      "threshold": 2.0
-    },
-    {
-      "direction": "le",
-      "error_count": 5,
-      "false_negative_count": 0,
-      "false_negative_task_ids": [],
-      "false_positive_count": 5,
-      "false_positive_task_ids": [
-        "plan_045",
-        "plan_050",
-        "plan_064",
-        "plan_069",
-        "plan_071"
-      ],
-      "feature": "diagnostic_slot_count",
-      "missed_positive_lift": 0,
-      "rule_name": "diagnostic_slot_count_le_3p000000",
-      "selected_count": 12,
-      "threshold": 3.0
-    },
-    {
-      "direction": "ge",
-      "error_count": 5,
-      "false_negative_count": 0,
-      "false_negative_task_ids": [],
-      "false_positive_count": 5,
-      "false_positive_task_ids": [
-        "plan_045",
-        "plan_050",
-        "plan_064",
-        "plan_069",
-        "plan_071"
-      ],
-      "feature": "duplicate_authorization",
-      "missed_positive_lift": 0,
-      "rule_name": "duplicate_authorization_ge_0p000000",
-      "selected_count": 12,
-      "threshold": 0.0
-    },
-    {
-      "direction": "le",
-      "error_count": 5,
-      "false_negative_count": 0,
-      "false_negative_task_ids": [],
-      "false_positive_count": 5,
-      "false_positive_task_ids": [
-        "plan_045",
-        "plan_050",
-        "plan_064",
-        "plan_069",
-        "plan_071"
-      ],
-      "feature": "duplicate_authorization",
-      "missed_positive_lift": 0,
-      "rule_name": "duplicate_authorization_le_0p000000",
-      "selected_count": 12,
-      "threshold": 0.0
-    },
-    {
-      "direction": "ge",
-      "error_count": 5,
-      "false_negative_count": 0,
-      "false_negative_task_ids": [],
-      "false_positive_count": 5,
-      "false_positive_task_ids": [
-        "plan_045",
-        "plan_050",
-        "plan_064",
-        "plan_069",
-        "plan_071"
-      ],
-      "feature": "duplicate_slot_key",
-      "missed_positive_lift": 0,
-      "rule_name": "duplicate_slot_key_ge_0p000000",
-      "selected_count": 12,
-      "threshold": 0.0
-    },
-    {
-      "direction": "le",
-      "error_count": 5,
-      "false_negative_count": 0,
-      "false_negative_task_ids": [],
-      "false_positive_count": 5,
-      "false_positive_task_ids": [
-        "plan_045",
-        "plan_050",
-        "plan_064",
-        "plan_069",
-        "plan_071"
-      ],
-      "feature": "duplicate_slot_key",
-      "missed_positive_lift": 0,
-      "rule_name": "duplicate_slot_key_le_0p000000",
-      "selected_count": 12,
-      "threshold": 0.0
     }
   ]
 }

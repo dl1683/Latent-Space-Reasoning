@@ -223,12 +223,11 @@ def render_markdown(
             "",
             (
                 "The tomography probe may satisfy the no-repair sentinel while still "
-                "failing as semantic evidence. Validity filtering exposes the harder "
-                "bottleneck: invalid diagnostics include profitable rows, and valid "
-                "diagnostics can still select no-lift traps. A Stage 1 spend gate "
-                "cannot promote until the probe reliably produces semantically valid "
-                "diagnostic rows for positives and then separates those valid "
-                "positives from no-lift traps."
+                "failing as semantic evidence. Validity filtering separates invalid "
+                "diagnostics from usable value observations; when a local rule clears "
+                "this table, it is still diagnostic until an independent fresh-slice "
+                "GPU run confirms the same post-probe feature is not just fitting the "
+                "named counterexample surface."
             ),
         ]
     )
