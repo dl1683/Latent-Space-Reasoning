@@ -221,10 +221,20 @@ def _probe_text_features(
 ) -> dict[str, float]:
     lower = text.lower()
     compact_authorization = bool(re.search(r"(^|\n)\s*Z\s*=\s*false\s*(\n|$)", text))
-    exact_authorization = "FULL_REPAIR_AUTHORIZED=false" in text or compact_authorization
+    span_authorization = bool(re.search(r"(^|\n)\s*N\s*=\s*0\s*(\n|$)", text))
+    exact_authorization = (
+        "FULL_REPAIR_AUTHORIZED=false" in text
+        or compact_authorization
+        or span_authorization
+    )
     has_full_repair = "FULL_REPAIR" in text
     has_compact_authorization_key = bool(re.search(r"(^|\n)\s*Z\s*=", text))
-    malformed_authorization = (has_full_repair or has_compact_authorization_key) and not exact_authorization
+    has_span_authorization_key = bool(re.search(r"(^|\n)\s*N\s*=", text))
+    malformed_authorization = (
+        has_full_repair
+        or has_compact_authorization_key
+        or has_span_authorization_key
+    ) and not exact_authorization
     strict_slot_count = sum(
         int(bool(re.search(pattern, text)))
         for pattern in (
@@ -237,6 +247,10 @@ def _probe_text_features(
         int(bool(re.search(pattern, text)))
         for pattern in (r"(^|\n)\s*A\s*=", r"(^|\n)\s*B\s*=", r"(^|\n)\s*C\s*=")
     )
+    span_slot_count = sum(
+        int(bool(re.search(pattern, text)))
+        for pattern in (r"(^|\n)\s*X0\s*=", r"(^|\n)\s*X1\s*=", r"(^|\n)\s*X2\s*=")
+    )
     legacy_slot_count = sum(
         int(value)
         for value in (
@@ -245,10 +259,22 @@ def _probe_text_features(
             bool(re.search(r"(^|[ ;])3\)", text)),
         )
     )
-    slot_count = max(strict_slot_count, compact_slot_count, legacy_slot_count)
-    has_missing = "missing" in lower or "constraint" in lower or bool(re.search(r"(^|\n)\s*A\s*=", text))
-    has_evidence = "evidence" in lower or "metric" in lower or bool(re.search(r"(^|\n)\s*B\s*=", text))
-    has_retention = "retention" in lower or "risk" in lower or bool(re.search(r"(^|\n)\s*C\s*=", text))
+    slot_count = max(strict_slot_count, compact_slot_count, span_slot_count, legacy_slot_count)
+    has_missing = (
+        "missing" in lower
+        or "constraint" in lower
+        or bool(re.search(r"(^|\n)\s*(A|X0)\s*=", text))
+    )
+    has_evidence = (
+        "evidence" in lower
+        or "metric" in lower
+        or bool(re.search(r"(^|\n)\s*(B|X1)\s*=", text))
+    )
+    has_retention = (
+        "retention" in lower
+        or "risk" in lower
+        or bool(re.search(r"(^|\n)\s*(C|X2)\s*=", text))
+    )
     weird_punctuation = any(
         marker in text
         for marker in (
@@ -261,6 +287,7 @@ def _probe_text_features(
             "RETION_RISK",
             "RETENTION_RISK_Risk",
             "Z==",
+            "N==",
         )
     )
     placeholder_slot = "<" in text or ">" in text
@@ -275,6 +302,11 @@ def _probe_text_features(
             text,
             flags=re.IGNORECASE,
         )
+        or re.search(
+            r"(^|\n)\s*X[0-2]\s*=\s*(none|true|false|unknown)?\s*(\n|$)",
+            text,
+            flags=re.IGNORECASE,
+        )
     )
     template_slot_echo = bool(
         re.search(
@@ -284,16 +316,20 @@ def _probe_text_features(
     )
     compact_key_counts = {
         key: len(re.findall(rf"(?<![A-Za-z0-9_]){key}\s*=", text))
-        for key in ("A", "B", "C", "Z")
+        for key in ("A", "B", "C", "Z", "X0", "X1", "X2", "N")
     }
-    duplicate_slot_key = any(compact_key_counts[key] > 1 for key in ("A", "B", "C"))
+    duplicate_slot_key = any(
+        compact_key_counts[key] > 1 for key in ("A", "B", "C", "X0", "X1", "X2")
+    )
     duplicate_authorization = (
         len(re.findall(r"FULL_REPAIR_AUTHORIZED\s*=\s*false", text)) > 1
         or len(re.findall(r"(?<![A-Za-z0-9_])Z\s*=\s*false", text)) > 1
+        or len(re.findall(r"(?<![A-Za-z0-9_])N\s*=\s*0", text)) > 1
     )
     malformed_compact_key = bool(
-        re.search(r"(?<![A-Za-z0-9_])(AA|BB|CC|ZZ)\s*=", text)
+        re.search(r"(?<![A-Za-z0-9_])(AA|BB|CC|ZZ|X0X0|X1X1|X2X2|NN)\s*=", text)
         or re.search(r"(?<![A-Za-z0-9_])Z\s*=\s*(?!false(\s|$))", text)
+        or re.search(r"(?<![A-Za-z0-9_])N\s*=\s*(?!0(\s|$))", text)
     )
     semantic_defect = (
         template_slot_echo

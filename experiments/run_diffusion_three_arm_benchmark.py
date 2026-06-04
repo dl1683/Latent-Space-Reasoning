@@ -141,11 +141,13 @@ COUNTERFACTUAL_MICRO_PROBE_POLICY_ID = "deterministic_missing_constraint_probe_v
 COUNTERFACTUAL_MICRO_PROBE_TOMOGRAPHY_POLICY_ID = "strict_tomography_probe_v1"
 COUNTERFACTUAL_MICRO_PROBE_KEY_VALUE_POLICY_ID = "key_value_tomography_probe_v2"
 COUNTERFACTUAL_MICRO_PROBE_COMPACT_POLICY_ID = "compact_tomography_probe_v3"
+COUNTERFACTUAL_MICRO_PROBE_SPAN_POLICY_ID = "span_tomography_probe_v4"
 COUNTERFACTUAL_MICRO_PROBE_POLICIES = (
     COUNTERFACTUAL_MICRO_PROBE_POLICY_ID,
     COUNTERFACTUAL_MICRO_PROBE_TOMOGRAPHY_POLICY_ID,
     COUNTERFACTUAL_MICRO_PROBE_KEY_VALUE_POLICY_ID,
     COUNTERFACTUAL_MICRO_PROBE_COMPACT_POLICY_ID,
+    COUNTERFACTUAL_MICRO_PROBE_SPAN_POLICY_ID,
 )
 COUNTERFACTUAL_MICRO_PROBE_COST_RELATIVE = 0.125
 COUNTERFACTUAL_MICRO_PROBE_GAP_VISIBILITY_MAX = 2.0 / 3.0
@@ -157,6 +159,8 @@ COUNTERFACTUAL_MICRO_PROBE_KEY_VALUE_MAX_NEW_TOKENS = 64
 COUNTERFACTUAL_MICRO_PROBE_KEY_VALUE_STEPS = 32
 COUNTERFACTUAL_MICRO_PROBE_COMPACT_MAX_NEW_TOKENS = 48
 COUNTERFACTUAL_MICRO_PROBE_COMPACT_STEPS = 24
+COUNTERFACTUAL_MICRO_PROBE_SPAN_MAX_NEW_TOKENS = 48
+COUNTERFACTUAL_MICRO_PROBE_SPAN_STEPS = 24
 COUNTERFACTUAL_MICRO_PROBE_MODES = ("triage", "all")
 DEFAULT_ADAPTIVE_SOURCE_GAP_MIN_TERMS = 6
 DEFAULT_ADAPTIVE_SOURCE_QUALITY_FLOOR = 0.25
@@ -2837,6 +2841,8 @@ def _generate_counterfactual_micro_probe_record(
 
 
 def _counterfactual_micro_probe_max_new_tokens(probe_policy: str) -> int:
+    if probe_policy == COUNTERFACTUAL_MICRO_PROBE_SPAN_POLICY_ID:
+        return COUNTERFACTUAL_MICRO_PROBE_SPAN_MAX_NEW_TOKENS
     if probe_policy == COUNTERFACTUAL_MICRO_PROBE_COMPACT_POLICY_ID:
         return COUNTERFACTUAL_MICRO_PROBE_COMPACT_MAX_NEW_TOKENS
     if probe_policy == COUNTERFACTUAL_MICRO_PROBE_KEY_VALUE_POLICY_ID:
@@ -2847,6 +2853,8 @@ def _counterfactual_micro_probe_max_new_tokens(probe_policy: str) -> int:
 
 
 def _counterfactual_micro_probe_steps(probe_policy: str) -> int:
+    if probe_policy == COUNTERFACTUAL_MICRO_PROBE_SPAN_POLICY_ID:
+        return COUNTERFACTUAL_MICRO_PROBE_SPAN_STEPS
     if probe_policy == COUNTERFACTUAL_MICRO_PROBE_COMPACT_POLICY_ID:
         return COUNTERFACTUAL_MICRO_PROBE_COMPACT_STEPS
     if probe_policy == COUNTERFACTUAL_MICRO_PROBE_KEY_VALUE_POLICY_ID:
@@ -2940,10 +2948,20 @@ def _measured_counterfactual_micro_probe_diagnostics(
 
 def _counterfactual_micro_probe_text_validity(text: str) -> dict[str, object]:
     compact_authorization = bool(re.search(r"(^|\n)\s*Z\s*=\s*false\s*(\n|$)", text))
-    exact_authorization = "FULL_REPAIR_AUTHORIZED=false" in text or compact_authorization
+    span_authorization = bool(re.search(r"(^|\n)\s*N\s*=\s*0\s*(\n|$)", text))
+    exact_authorization = (
+        "FULL_REPAIR_AUTHORIZED=false" in text
+        or compact_authorization
+        or span_authorization
+    )
     has_full_repair = "FULL_REPAIR" in text
     has_compact_authorization_key = bool(re.search(r"(^|\n)\s*Z\s*=", text))
-    malformed_authorization = (has_full_repair or has_compact_authorization_key) and not exact_authorization
+    has_span_authorization_key = bool(re.search(r"(^|\n)\s*N\s*=", text))
+    malformed_authorization = (
+        has_full_repair
+        or has_compact_authorization_key
+        or has_span_authorization_key
+    ) and not exact_authorization
     strict_slot_patterns = (
         r"(^|\n)\s*MISSING_CONSTRAINT\s*=",
         r"(^|\n)\s*EVIDENCE_NEEDED\s*=",
@@ -2954,11 +2972,15 @@ def _counterfactual_micro_probe_text_validity(text: str) -> dict[str, object]:
         int(bool(re.search(pattern, text)))
         for pattern in (r"(^|\n)\s*A\s*=", r"(^|\n)\s*B\s*=", r"(^|\n)\s*C\s*=")
     )
+    span_slot_count = sum(
+        int(bool(re.search(pattern, text)))
+        for pattern in (r"(^|\n)\s*X0\s*=", r"(^|\n)\s*X1\s*=", r"(^|\n)\s*X2\s*=")
+    )
     legacy_slot_count = sum(
         int(bool(re.search(pattern, text)))
         for pattern in (r"(^|[ ;])1\)", r"(^|[ ;])2\)", r"(^|[ ;])3\)")
     )
-    slot_count = max(strict_slot_count, compact_slot_count, legacy_slot_count)
+    slot_count = max(strict_slot_count, compact_slot_count, span_slot_count, legacy_slot_count)
     weird_punctuation = any(
         marker in text
         for marker in (
@@ -2971,6 +2993,7 @@ def _counterfactual_micro_probe_text_validity(text: str) -> dict[str, object]:
             "RETION_RISK",
             "RETENTION_RISK_Risk",
             "Z==",
+            "N==",
         )
     )
     placeholder_slot = "<" in text or ">" in text
@@ -2982,6 +3005,11 @@ def _counterfactual_micro_probe_text_validity(text: str) -> dict[str, object]:
         )
         or re.search(
             r"(^|\n)\s*[ABC]\s*=\s*(none|true|false|unknown)?\s*(\n|$)",
+            text,
+            flags=re.IGNORECASE,
+        )
+        or re.search(
+            r"(^|\n)\s*X[0-2]\s*=\s*(none|true|false|unknown)?\s*(\n|$)",
             text,
             flags=re.IGNORECASE,
         )
@@ -3013,6 +3041,23 @@ def _counterfactual_micro_probe_prompt(
     gap_terms = _prompt_constraint_gap_terms(task_prompt, source_text, limit=8)
     gap_text = ", ".join(gap_terms) if gap_terms else "none"
     draft = _compact_text(source_text, max_chars=700)
+    if probe_policy == COUNTERFACTUAL_MICRO_PROBE_SPAN_POLICY_ID:
+        return (
+            f"{task_prompt}\n\n"
+            f"Draft answer under inspection:\n{draft}\n\n"
+            f"Weak task words: {gap_text}\n\n"
+            "Probe only. Do not rewrite or solve. Return four newline-separated "
+            "key=value lines with labels X0, X1, X2, N. After X0, copy 2-8 "
+            "consecutive words from the task that are absent or weak in the draft. "
+            "After X1, copy 2-8 consecutive words from the draft that a verifier can "
+            "check. After X2, copy 2-8 consecutive words from the draft that should "
+            "be preserved. Use copied words only after equals signs: no label words, "
+            "no explanations, no angle brackets. The fourth line must be exactly N=0.\n"
+            "X0=\n"
+            "X1=\n"
+            "X2=\n"
+            "N=0"
+        )
     if probe_policy == COUNTERFACTUAL_MICRO_PROBE_COMPACT_POLICY_ID:
         return (
             f"{task_prompt}\n\n"

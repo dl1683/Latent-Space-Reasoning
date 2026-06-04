@@ -111,6 +111,54 @@ def test_probe_text_fidelity_flags_compact_template_and_duplicate_defects(tmp_pa
     assert audit["summary"]["semantic_valid_for_stage1_count"] == 0
 
 
+def test_probe_text_fidelity_accepts_span_schema_and_rejects_span_key_defects(tmp_path):
+    raw = tmp_path / "raw.jsonl"
+    targets = tmp_path / "targets.json"
+    targets.write_text(
+        json.dumps(
+            {
+                "rows": [
+                    _target_row("plan_a", label=True, lift=0.20),
+                    _target_row("plan_b", label=False, lift=-0.05),
+                ]
+            }
+        ),
+        encoding="utf-8",
+    )
+    raw.write_text(
+        "\n".join(
+            json.dumps(row)
+            for row in [
+                _probe_row(
+                    "plan_a",
+                    "X0=retained evidence\nX1=Plan an audit\nX2=promoting repair\nN=0",
+                    "retained, evidence",
+                    score=0.30,
+                ),
+                _probe_row(
+                    "plan_b",
+                    "X0X0=retained evidence\nX1=Plan an audit\nX2=promoting repair\nN=1",
+                    "retained, evidence",
+                    score=0.10,
+                ),
+            ]
+        ),
+        encoding="utf-8",
+    )
+
+    audit = analyze_probe_text_fidelity(raw_path=raw, targets_path=targets)
+    good = audit["rows"][0]["features"]
+    bad = audit["rows"][1]["features"]
+
+    assert good["diagnostic_slot_count"] == 3.0
+    assert good["exact_authorization_false"] == 1.0
+    assert good["semantic_valid_for_stage1"] == 1.0
+    assert bad["malformed_authorization"] == 1.0
+    assert bad["malformed_compact_key"] == 1.0
+    assert bad["semantic_valid_for_stage1"] == 0.0
+    assert audit["summary"]["semantic_valid_for_stage1_count"] == 1
+
+
 def _target_row(task_id, *, label, lift):
     return {
         "labels": {
