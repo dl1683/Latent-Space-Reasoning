@@ -111,6 +111,10 @@ offline challenger,
 [DIFFUSION_SPEND_VALUE_MODEL_V1.md](../DIFFUSION_SPEND_VALUE_MODEL_V1.md),
 is a negative control: nearest-prototype pre-repair geometry protects most
 positives only by spending too broadly and still drops a held-out positive.
+[DIFFUSION_SOURCE_VALUE_SIGNALS_V1.md](../DIFFUSION_SOURCE_VALUE_SIGNALS_V1.md)
+then audits source-text structure directly. It also is not deployable, but it
+shows the next useful channel is source realization/degeneracy rather than more
+prompt-gap tuning.
 
 ## Benchmark And Cost Layer
 
@@ -150,6 +154,7 @@ hidden behind a large search stack:
 | [DIFFUSION_SPEND_GATE_V9_FIT.md](../DIFFUSION_SPEND_GATE_V9_FIT.md) | Offline simple-gate fit over v5-v9 showing the best threshold still misses seven positives and admits five no-lift repairs. |
 | [DIFFUSION_SPEND_COUNTEREXAMPLE_WORKBENCH.md](../DIFFUSION_SPEND_COUNTEREXAMPLE_WORKBENCH.md) | Active controller workbench naming the false-negative and false-positive clusters the next spend model must solve. |
 | [DIFFUSION_SPEND_VALUE_MODEL_V1.md](../DIFFUSION_SPEND_VALUE_MODEL_V1.md) | Offline nonlinear prototype challenger over pre-repair diagnostics; useful negative showing local geometry alone is still not deployable. |
+| [DIFFUSION_SOURCE_VALUE_SIGNALS_V1.md](../DIFFUSION_SOURCE_VALUE_SIGNALS_V1.md) | Label-free source-text signal audit over v5-v9 rows; identifies source realization and degeneracy features as the next controller channel to test. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT.md) | Transfer-rule fit showing current decomposed spend is the best repair-availability rule. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md) | Expanded transfer-rule fit over the eight-row independent slice. |
 | [DIFFUSION_TRANSFER_PROMOTION_VALUE.md](../DIFFUSION_TRANSFER_PROMOTION_VALUE.md) | Transfer promotion-value result showing named `--repair-selector transfer_promotion_value` realizes the low-margin repair. |
