@@ -130,6 +130,10 @@ buy a cheap counterfactual observation; they cannot promote full repair spend.
 [DIFFUSION_COUNTERFACTUAL_PROBE_TARGETS_V1.md](../DIFFUSION_COUNTERFACTUAL_PROBE_TARGETS_V1.md)
 turns that contract into the first replayable probe-target sheet for the named
 counterexamples.
+[DIFFUSION_COUNTERFACTUAL_PROBE_POLICY_FIT_V1.md](../DIFFUSION_COUNTERFACTUAL_PROBE_POLICY_FIT_V1.md)
+then fits the deterministic scaffold offline. It finds a one-error rule, but
+keeps the result diagnostic until measured micro-probe deltas replace the
+generated predictions.
 
 ## Benchmark And Cost Layer
 
@@ -174,6 +178,7 @@ hidden behind a large search stack:
 | [DIFFUSION_PRE_REPAIR_EDGE_PROXY_V1.md](../DIFFUSION_PRE_REPAIR_EDGE_PROXY_V1.md) | Offline pre-repair promotion-edge proxy over v5-v9 rows; joins frozen source, degeneration, and span diagnostics before any live spend promotion. |
 | [DIFFUSION_COUNTERFACTUAL_CONTROLLER_ARCHITECTURE_V1.md](../DIFFUSION_COUNTERFACTUAL_CONTROLLER_ARCHITECTURE_V1.md) | Next-controller contract: use frozen features for probe triage, then learn value-of-information from cheap counterfactual probe rows before another live spend gate. |
 | [DIFFUSION_COUNTERFACTUAL_PROBE_TARGETS_V1.md](../DIFFUSION_COUNTERFACTUAL_PROBE_TARGETS_V1.md) | First deterministic counterfactual-probe target sheet over named spend counterexamples; diagnostic scaffold for the future measured micro-probe run. |
+| [DIFFUSION_COUNTERFACTUAL_PROBE_POLICY_FIT_V1.md](../DIFFUSION_COUNTERFACTUAL_PROBE_POLICY_FIT_V1.md) | Offline value-of-information rule fit over the deterministic probe scaffold; one-error diagnostic result, not a promoted spend gate. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT.md) | Transfer-rule fit showing current decomposed spend is the best repair-availability rule. |
 | [DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md](../DIFFUSION_SPEND_TRANSFER_RULE_FIT_V2.md) | Expanded transfer-rule fit over the eight-row independent slice. |
 | [DIFFUSION_TRANSFER_PROMOTION_VALUE.md](../DIFFUSION_TRANSFER_PROMOTION_VALUE.md) | Transfer promotion-value result showing named `--repair-selector transfer_promotion_value` realizes the low-margin repair. |
@@ -227,6 +232,7 @@ Read these when evaluating compact control terms and information preservation:
 | Source degeneration audit | [experiments/analyze_diffusion_source_degeneracy.py](../experiments/analyze_diffusion_source_degeneracy.py) |
 | Pre-repair edge proxy audit | [experiments/analyze_diffusion_pre_repair_edge_proxy.py](../experiments/analyze_diffusion_pre_repair_edge_proxy.py) |
 | Counterfactual probe target builder | [experiments/build_diffusion_counterfactual_probe_targets.py](../experiments/build_diffusion_counterfactual_probe_targets.py) |
+| Counterfactual probe policy fitter | [experiments/fit_diffusion_counterfactual_probe_policy.py](../experiments/fit_diffusion_counterfactual_probe_policy.py) |
 | Proof-object builder | [experiments/build_diffusion_proof_object.py](../experiments/build_diffusion_proof_object.py) |
 | Four-head runner trigger | [experiments/run_diffusion_three_arm_benchmark.py](../experiments/run_diffusion_three_arm_benchmark.py) with `--repair-spend-trigger decomposed_four_head_selector` |
 | Transfer-rule runner trigger | [experiments/run_diffusion_three_arm_benchmark.py](../experiments/run_diffusion_three_arm_benchmark.py) with `--repair-spend-trigger decomposed_spend_transfer_rule` |

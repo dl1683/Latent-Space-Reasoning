@@ -188,6 +188,12 @@ The first replayable target sheet is now specified by
 not a measured GPU probe result: it names the rows, fields, labels, and cost
 contract that a real `counterfactual_micro_probe_v1` run must replace.
 
+The first offline fit over that scaffold is now specified by
+`DIFFUSION_COUNTERFACTUAL_PROBE_POLICY_FIT_V1.md`. The best deterministic rule
+keeps all seven profitable rows and removes four of five no-lift rows, but it
+is still `diagnostic_only` because the decisive probe deltas are generated
+predictions rather than measured cheap-probe observations.
+
 ## Falsifiers
 
 This architecture is wrong if any of the following happen:
