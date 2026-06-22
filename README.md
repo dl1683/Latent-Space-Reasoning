@@ -31,6 +31,8 @@ Use this order:
 3. [DIFFUSION_GROUND_TRUTH_INDEX.md](DIFFUSION_GROUND_TRUTH_INDEX.md)  
 4. [docs/DIFFUSION_READER_GUIDE.md](docs/DIFFUSION_READER_GUIDE.md)  
 
+Or use the compact map: [docs/NAVIGATION.md](docs/NAVIGATION.md)
+
 Then choose one path:
 
 - Evidence review: continue with [docs/DIFFUSION_THEORY_CLAIM_LEDGER.md](docs/DIFFUSION_THEORY_CLAIM_LEDGER.md)

@@ -19,6 +19,8 @@ After this, move to one of:
 - theory proofs: `DIFFUSION_THEORY_CLAIM_LEDGER.md`
 - future work: `NEXT_GENERATION_REASONING_TASKS.md`
 
+If you want the same path in one page, read [docs/NAVIGATION.md](NAVIGATION.md) first.
+
 ## First read (public-facing)
 
 - [README.md](../README.md) - current promoted result and quick entry points.
