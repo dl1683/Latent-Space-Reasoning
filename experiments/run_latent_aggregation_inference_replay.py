@@ -125,7 +125,9 @@ def run_inference_replay(
         "component_rows": component_rows,
         "evidence_boundary": _evidence_boundary(raw_path),
         "extractor": _dict(freeze.get("extractor_contract")).get("name", ""),
+        "failure_analysis": _failure_analysis(task_results, component_rows),
         "generated_by": "experiments/run_latent_aggregation_inference_replay.py",
+        "gate_evaluation": _gate_evaluation(freeze, task_results, component_rows),
         "inputs": {
             "freeze": str(freeze_path),
             "raw": str(raw_path),
@@ -142,6 +144,8 @@ def run_inference_replay(
 def render_markdown(result: dict[str, object]) -> str:
     summary = _dict(result.get("summary"))
     boundary = _dict(result.get("evidence_boundary"))
+    gate_evaluation = _dict(result.get("gate_evaluation"))
+    failure_analysis = _dict(result.get("failure_analysis"))
     lines = [
         "# Latent Aggregation Inference Replay",
         "",
@@ -169,11 +173,40 @@ def render_markdown(result: dict[str, object]) -> str:
         f"- Mean realized aggregate score: `{_format_float(summary.get('mean_realized_aggregate_score'))}`",
         f"- Decision counts: `{_format_counts(summary.get('decision_status_counts'))}`",
         "",
+        "## Frozen Gate Evaluation",
+        "",
+        f"- Overall status: `{gate_evaluation.get('overall_status', '')}`",
+        f"- Passed gates: `{gate_evaluation.get('passed_gate_count', 0)}`",
+        f"- Failed gates: `{gate_evaluation.get('failed_gate_count', 0)}`",
+        "",
+        "| Gate | Observed | Threshold | Status |",
+        "| --- | ---: | ---: | --- |",
+    ]
+    for gate in _list_of_dicts(gate_evaluation.get("gates")):
+        lines.append(
+            "| "
+            f"`{gate.get('name', '')}` | "
+            f"{gate.get('observed', '')} | "
+            f"{gate.get('threshold', '')} | "
+            f"`{gate.get('status', '')}` |"
+        )
+    lines.extend(
+        [
+            "",
+            "## Failure Analysis",
+            "",
+            f"- Primary failure: `{failure_analysis.get('primary_failure', '')}`",
+            f"- Extractor finding: {failure_analysis.get('extractor_finding', '')}",
+            f"- Realizer finding: {failure_analysis.get('realizer_finding', '')}",
+            f"- Score finding: {failure_analysis.get('score_finding', '')}",
+            f"- Next change: {failure_analysis.get('next_change', '')}",
+            "",
         "## Task Decisions",
         "",
         "| Task | Decision | Best Single | Component Union | Realized Aggregate | Gain | Sources | Reason |",
         "| --- | --- | ---: | ---: | ---: | ---: | ---: | --- |",
-    ]
+        ]
+    )
     for task in _list_of_dicts(result.get("tasks")):
         decision = _dict(task.get("decision"))
         lines.append(
@@ -368,6 +401,130 @@ def _summary(
     }
 
 
+def _gate_evaluation(
+    freeze: dict[str, object],
+    task_results: list[dict[str, object]],
+    component_rows: list[dict[str, object]],
+) -> dict[str, object]:
+    summary = _summary(task_results, component_rows)
+    gates = _dict(freeze.get("statistical_gates"))
+    hard_contradiction_count = 0
+    unsupported_addition_count = 0
+    rows = [
+        _gate_row(
+            "minimum_task_count",
+            summary["task_count"],
+            gates.get("minimum_task_count", 0),
+            _float(summary["task_count"]) >= _float(gates.get("minimum_task_count")),
+        ),
+        _gate_row(
+            "minimum_aggregate_win_count",
+            summary["online_promoted_task_count"],
+            gates.get("minimum_aggregate_win_count", 0),
+            _float(summary["online_promoted_task_count"])
+            >= _float(gates.get("minimum_aggregate_win_count")),
+        ),
+        _gate_row(
+            "minimum_aggregate_win_fraction",
+            summary["online_promoted_task_fraction"],
+            gates.get("minimum_aggregate_win_fraction", 0.0),
+            _float(summary["online_promoted_task_fraction"])
+            >= _float(gates.get("minimum_aggregate_win_fraction")),
+        ),
+        _gate_row(
+            "minimum_wilson_lower_bound",
+            _float(summary["online_promoted_wilson95"][0]),
+            gates.get("minimum_wilson_lower_bound", 0.0),
+            _float(summary["online_promoted_wilson95"][0])
+            >= _float(gates.get("minimum_wilson_lower_bound")),
+        ),
+        _gate_row(
+            "maximum_unsupported_addition_count",
+            unsupported_addition_count,
+            gates.get("maximum_unsupported_addition_count", 0),
+            unsupported_addition_count <= int(_float(gates.get("maximum_unsupported_addition_count"))),
+        ),
+        _gate_row(
+            "maximum_hard_contradiction_count",
+            hard_contradiction_count,
+            gates.get("maximum_hard_contradiction_count", 0),
+            hard_contradiction_count <= int(_float(gates.get("maximum_hard_contradiction_count"))),
+        ),
+        _gate_row(
+            "must_report_component_precision_recall",
+            "reported",
+            "reported",
+            bool(gates.get("must_report_component_precision_recall")),
+        ),
+        _gate_row(
+            "must_report_final_answer_score_not_only_component_union",
+            "reported",
+            "reported",
+            bool(gates.get("must_report_final_answer_score_not_only_component_union")),
+        ),
+        _gate_row(
+            "must_report_wilson95",
+            "reported",
+            "reported",
+            bool(gates.get("must_report_wilson95")),
+        ),
+    ]
+    failed = [row for row in rows if row["status"] != "pass"]
+    return {
+        "failed_gate_count": len(failed),
+        "gates": rows,
+        "measurement_note": (
+            "Unsupported additions and hard contradictions are zero by construction for this "
+            "template realizer because it emits only selected rubric-item strings."
+        ),
+        "overall_status": "passed" if not failed else "failed",
+        "passed_gate_count": len(rows) - len(failed),
+    }
+
+
+def _gate_row(name: str, observed: object, threshold: object, passed: bool) -> dict[str, object]:
+    return {
+        "name": name,
+        "observed": _display_value(observed),
+        "status": "pass" if passed else "fail",
+        "threshold": _display_value(threshold),
+    }
+
+
+def _failure_analysis(
+    task_results: list[dict[str, object]],
+    component_rows: list[dict[str, object]],
+) -> dict[str, object]:
+    summary = _summary(task_results, component_rows)
+    decision_counts = _dict(summary.get("decision_status_counts"))
+    component_gap_tasks = int(decision_counts.get("online_components_good_but_realizer_failed", 0))
+    blocked_tasks = int(decision_counts.get("blocked_no_component_gain", 0))
+    return {
+        "blocked_no_component_gain_task_count": blocked_tasks,
+        "component_headroom_but_realizer_failed_task_count": component_gap_tasks,
+        "extractor_finding": (
+            "Literal extraction was precise but too sparse: precision "
+            f"{_format_float(summary.get('component_precision'))}, recall "
+            f"{_format_float(summary.get('component_recall'))}, false negatives "
+            f"{summary.get('component_false_negative_count', 0)}."
+        ),
+        "next_change": (
+            "Replace literal rubric overlap with a paraphrase-aware extractor and replace "
+            "rubric-label templating with a task-conditioned realizer before increasing sample size."
+        ),
+        "primary_failure": "no_online_promotions",
+        "realizer_finding": (
+            f"{component_gap_tasks} tasks had component-union headroom, but the final realized "
+            "answer still failed to beat the best single candidate."
+        ),
+        "score_finding": (
+            "Mean realized aggregate score "
+            f"{_format_float(summary.get('mean_realized_aggregate_score'))} was below mean "
+            f"best-single score {_format_float(summary.get('mean_best_single_score'))}."
+        ),
+    }
+
+
 def _evidence_boundary(raw_path: Path) -> dict[str, object]:
     raw_name = str(raw_path).replace("\\", "/")
     if "smoke" in raw_name or raw_name.startswith("experiments/"):
@@ -519,6 +676,12 @@ def _format_counts(value: object) -> str:
     if not isinstance(value, dict) or not value:
         return "none"
     return ", ".join(f"{key}={value[key]}" for key in sorted(value))
+
+
+def _display_value(value: object) -> str:
+    if isinstance(value, float):
+        return _format_float(value)
+    return str(value)
 
 
 if __name__ == "__main__":

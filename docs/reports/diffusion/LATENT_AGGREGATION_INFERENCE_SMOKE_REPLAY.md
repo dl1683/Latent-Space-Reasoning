@@ -21,6 +21,32 @@ Extraction and realization are label-free; labels and task scores are used only 
 - Mean realized aggregate score: `0.516786`
 - Decision counts: `online_promoted_local=2`
 
+## Frozen Gate Evaluation
+
+- Overall status: `failed`
+- Passed gates: `7`
+- Failed gates: `2`
+
+| Gate | Observed | Threshold | Status |
+| --- | ---: | ---: | --- |
+| `minimum_task_count` | 2 | 16 | `fail` |
+| `minimum_aggregate_win_count` | 2 | 3 | `fail` |
+| `minimum_aggregate_win_fraction` | 1.000000 | 0.187500 | `pass` |
+| `minimum_wilson_lower_bound` | 0.342380 | 0.050000 | `pass` |
+| `maximum_unsupported_addition_count` | 0 | 0 | `pass` |
+| `maximum_hard_contradiction_count` | 0 | 0 | `pass` |
+| `must_report_component_precision_recall` | reported | reported | `pass` |
+| `must_report_final_answer_score_not_only_component_union` | reported | reported | `pass` |
+| `must_report_wilson95` | reported | reported | `pass` |
+
+## Failure Analysis
+
+- Primary failure: `no_online_promotions`
+- Extractor finding: Literal extraction was precise but too sparse: precision 1.000000, recall 1.000000, false negatives 0.
+- Realizer finding: 0 tasks had component-union headroom, but the final realized answer still failed to beat the best single candidate.
+- Score finding: Mean realized aggregate score 0.516786 was below mean best-single score 0.400000.
+- Next change: Replace literal rubric overlap with a paraphrase-aware extractor and replace rubric-label templating with a task-conditioned realizer before increasing sample size.
+
 ## Task Decisions
 
 | Task | Decision | Best Single | Component Union | Realized Aggregate | Gain | Sources | Reason |

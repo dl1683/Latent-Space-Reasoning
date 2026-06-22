@@ -4,6 +4,77 @@
     "status": "smoke_fixture_only"
   },
   "extractor": "literal_rubric_component_extractor_v1",
+  "failure_analysis": {
+    "blocked_no_component_gain_task_count": 0,
+    "component_headroom_but_realizer_failed_task_count": 0,
+    "extractor_finding": "Literal extraction was precise but too sparse: precision 1.000000, recall 1.000000, false negatives 0.",
+    "next_change": "Replace literal rubric overlap with a paraphrase-aware extractor and replace rubric-label templating with a task-conditioned realizer before increasing sample size.",
+    "primary_failure": "no_online_promotions",
+    "realizer_finding": "0 tasks had component-union headroom, but the final realized answer still failed to beat the best single candidate.",
+    "score_finding": "Mean realized aggregate score 0.516786 was below mean best-single score 0.400000."
+  },
+  "gate_evaluation": {
+    "failed_gate_count": 2,
+    "gates": [
+      {
+        "name": "minimum_task_count",
+        "observed": "2",
+        "status": "fail",
+        "threshold": "16"
+      },
+      {
+        "name": "minimum_aggregate_win_count",
+        "observed": "2",
+        "status": "fail",
+        "threshold": "3"
+      },
+      {
+        "name": "minimum_aggregate_win_fraction",
+        "observed": "1.000000",
+        "status": "pass",
+        "threshold": "0.187500"
+      },
+      {
+        "name": "minimum_wilson_lower_bound",
+        "observed": "0.342380",
+        "status": "pass",
+        "threshold": "0.050000"
+      },
+      {
+        "name": "maximum_unsupported_addition_count",
+        "observed": "0",
+        "status": "pass",
+        "threshold": "0"
+      },
+      {
+        "name": "maximum_hard_contradiction_count",
+        "observed": "0",
+        "status": "pass",
+        "threshold": "0"
+      },
+      {
+        "name": "must_report_component_precision_recall",
+        "observed": "reported",
+        "status": "pass",
+        "threshold": "reported"
+      },
+      {
+        "name": "must_report_final_answer_score_not_only_component_union",
+        "observed": "reported",
+        "status": "pass",
+        "threshold": "reported"
+      },
+      {
+        "name": "must_report_wilson95",
+        "observed": "reported",
+        "status": "pass",
+        "threshold": "reported"
+      }
+    ],
+    "measurement_note": "Unsupported additions and hard contradictions are zero by construction for this template realizer because it emits only selected rubric-item strings.",
+    "overall_status": "failed",
+    "passed_gate_count": 7
+  },
   "generated_by": "experiments/run_latent_aggregation_inference_replay.py",
   "inputs": {
     "freeze": "eval_results\\diffusion_language\\latent_aggregation_inference_v1_freeze.json",

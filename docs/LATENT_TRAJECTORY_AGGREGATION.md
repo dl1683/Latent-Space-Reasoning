@@ -219,13 +219,18 @@ Current scaffold:
   `experiments/run_latent_aggregation_inference_replay.py`
 - Smoke replay report:
   `docs/reports/diffusion/LATENT_AGGREGATION_INFERENCE_SMOKE_REPLAY.md`
+- Frozen GPU replay report:
+  `docs/reports/diffusion/LATENT_AGGREGATION_INFERENCE_V1_REPLAY.md`
 
-Status: protocol scaffold only. The current scout validates the accounting
-logic and gate behavior on deterministic component fixtures. The rubric replay
-then applies the same accounting to existing scored planning trajectories and
-finds post-hoc component-union headroom. Neither artifact proves an online
-extractor, verifier, or final-answer realizer, so neither should be cited as a
-headline aggregation result.
+Status: protocol scaffold plus one negative frozen validation. The current
+scout validates the accounting logic and gate behavior on deterministic
+component fixtures. The rubric replay then applies the same accounting to
+existing scored planning trajectories and finds post-hoc component-union
+headroom. The frozen GPU replay is the first inference-time validation and
+fails the predeclared promotion gates: `0/16` online promotions, low component
+recall, and realized aggregate answers below the best single candidate on
+average. It should be cited as a useful failure, not as a promoted aggregation
+result.
 
 The inference freeze is the next run contract. It fixes a 16-task planning
 slice, trajectory families, extractor inputs, forbidden label fields, final
@@ -234,6 +239,12 @@ The smoke replay is only a deterministic pipeline check: it proves the frozen
 extractor/fuser/realizer accounting path runs end to end and keeps the
 post-hoc scoring boundary intact, but it is not GPU evidence and cannot satisfy
 the freeze gates.
+
+The frozen GPU replay identifies the next implementation bottleneck: the
+literal rubric-overlap extractor has high precision but misses most paraphrased
+components, while the template realizer copies selected rubric labels rather
+than synthesizing task-conditioned answers strong enough to beat the best LLaDA
+repair candidate.
 
 Task mix:
 

@@ -25,6 +25,12 @@ Current high-signal generated reports:
   deterministic smoke replay for the inference-time extractor/fuser/realizer
   harness; useful for pipeline validation, but explicitly not frozen GPU
   evidence.
+- [LATENT_AGGREGATION_INFERENCE_V1_REPLAY.md](LATENT_AGGREGATION_INFERENCE_V1_REPLAY.md):
+  real frozen GPU replay over 16 planning tasks; negative aggregation result
+  with `0/16` online promotions and failed predeclared statistical gates.
+- [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
+  generated label report for the frozen Dream/LLaDA trajectory run that feeds
+  the inference aggregation replay.
 - [DIFFUSION_REPAIR_VALUE_TOMOGRAPHY.md](DIFFUSION_REPAIR_VALUE_TOMOGRAPHY.md):
   behavior-tomography audit for the cost-aware repair-spend controller.
 - [DIFFUSION_LAMBDA_REPAIR_CONTROLLER_TRANSFER.md](DIFFUSION_LAMBDA_REPAIR_CONTROLLER_TRANSFER.md):
