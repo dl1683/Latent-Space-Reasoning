@@ -3,7 +3,14 @@
 import torch
 
 from latent_reasoning.diffusion import DiffusionGenerationConfig, HFDiffusionBackend
-from latent_reasoning.diffusion.backends import _llada_apply_revision_remask, _llada_mask_token_id
+from latent_reasoning.diffusion.backends import (
+    _ensure_all_tied_weights_keys_compat,
+    _ensure_generation_config_validate_compat,
+    _ensure_transformers_default_rope,
+    _fill_generation_special_token_ids,
+    _llada_apply_revision_remask,
+    _llada_mask_token_id,
+)
 from latent_reasoning.diffusion.candidates import (
     available_candidates,
     candidate_keys,
@@ -102,6 +109,100 @@ def test_llada_revision_remask_masks_low_confidence_committed_tokens():
     assert x.tolist() == [[101, 11, 99, 99, 14]]
     assert torch.isnan(confidences[0, 2])
     assert torch.isnan(confidences[0, 3])
+
+
+def test_default_rope_compatibility_patch_supports_dream_remote_code():
+    from transformers.modeling_rope_utils import ROPE_INIT_FUNCTIONS
+
+    original = ROPE_INIT_FUNCTIONS.pop("default", None)
+    try:
+        _ensure_transformers_default_rope()
+
+        class Config:
+            rope_theta = 10000.0
+            hidden_size = 64
+            num_attention_heads = 4
+
+        inv_freq, attention_scaling = ROPE_INIT_FUNCTIONS["default"](Config(), device="cpu")
+
+        assert inv_freq.shape == (8,)
+        assert attention_scaling == 1.0
+    finally:
+        ROPE_INIT_FUNCTIONS.pop("default", None)
+        if original is not None:
+            ROPE_INIT_FUNCTIONS["default"] = original
+
+
+def test_generation_config_update_accepts_legacy_validate_signature():
+    from transformers.generation.configuration_utils import GenerationConfig
+
+    _ensure_generation_config_validate_compat()
+
+    class LegacyGenerationConfig(GenerationConfig):
+        def validate(self):
+            self.validated = True
+
+    config = object.__new__(LegacyGenerationConfig)
+    config.flag = False
+    config.validated = False
+    unused = config.update(flag=True, unknown_value=3)
+
+    assert config.flag is True
+    assert config.validated is True
+    assert unused == {"unknown_value": 3}
+
+
+def test_generation_special_token_backfill_uses_tokenizer_and_model_config():
+    class GenerationConfig:
+        mask_token_id = None
+        pad_token_id = None
+        bos_token_id = None
+        eos_token_id = 9
+
+    class Tokenizer:
+        mask_token_id = 7
+        pad_token_id = None
+        bos_token_id = 5
+        eos_token_id = 8
+
+    class ModelConfig:
+        pad_token_id = 6
+
+    class Model:
+        config = ModelConfig()
+
+    generation_config = GenerationConfig()
+
+    _fill_generation_special_token_ids(generation_config, Tokenizer(), Model())
+
+    assert generation_config.mask_token_id == 7
+    assert generation_config.pad_token_id == 6
+    assert generation_config.bos_token_id == 5
+    assert generation_config.eos_token_id == 9
+
+
+def test_all_tied_weights_keys_compatibility_property_exposes_legacy_name():
+    from transformers.modeling_utils import PreTrainedModel
+
+    original = getattr(PreTrainedModel, "all_tied_weights_keys", None)
+    if original is not None:
+        delattr(PreTrainedModel, "all_tied_weights_keys")
+    try:
+        _ensure_all_tied_weights_keys_compat()
+
+        class Model(PreTrainedModel):
+            config_class = None
+            _tied_weights_keys = ["lm_head.weight"]
+
+            def __init__(self):
+                torch.nn.Module.__init__(self)
+
+        assert Model().all_tied_weights_keys == {"lm_head.weight": "lm_head.weight"}
+    finally:
+        if original is not None:
+            PreTrainedModel.all_tied_weights_keys = original
+        elif hasattr(PreTrainedModel, "all_tied_weights_keys"):
+            delattr(PreTrainedModel, "all_tied_weights_keys")
 
 
 def test_hf_backend_rejects_gguf_candidate_without_loading():

@@ -118,6 +118,9 @@ class HFDiffusionBackend:
         dtype = _resolve_torch_dtype(torch, self.dtype, device)
         model_ref = self.model_path or self.candidate.model_id
         tokenizer = AutoTokenizer.from_pretrained(model_ref, trust_remote_code=True)
+        _ensure_transformers_default_rope()
+        _ensure_generation_config_validate_compat()
+        _ensure_all_tied_weights_keys_compat()
         model = AutoModel.from_pretrained(
             model_ref,
             dtype=dtype,
@@ -215,6 +218,10 @@ class HFDiffusionBackend:
         }
         if config.top_p is not None:
             kwargs["top_p"] = config.top_p
+        generation_config = getattr(self.model, "generation_config", None)
+        if generation_config is not None:
+            _fill_generation_special_token_ids(generation_config, self.tokenizer, self.model)
+            kwargs["generation_config"] = generation_config
 
         with torch.no_grad():
             output = self.model.diffusion_generate(input_ids, **kwargs)
@@ -299,6 +306,103 @@ def _resolve_torch_dtype(torch_module: Any, dtype: str | None, device: str) -> A
     if normalized in {"fp32", "float32"}:
         return torch_module.float32
     raise ValueError(f"Unsupported dtype {dtype!r}")
+
+
+def _ensure_transformers_default_rope() -> None:
+    """Restore the legacy Dream remote-code RoPE key on newer Transformers."""
+    try:
+        import torch
+        from transformers.modeling_rope_utils import ROPE_INIT_FUNCTIONS
+    except Exception:
+        return
+    if "default" in ROPE_INIT_FUNCTIONS:
+        return
+
+    def _compute_default_rope_parameters(
+        config: Any | None = None,
+        device: Any | None = None,
+        seq_len: int | None = None,
+        layer_type: str | None = None,
+    ) -> tuple[Any, float]:
+        del seq_len, layer_type
+        if config is None:
+            raise ValueError("Dream default RoPE compatibility requires a model config")
+        base = getattr(config, "rope_theta", getattr(config, "default_theta", 10000.0))
+        head_dim = getattr(config, "head_dim", None)
+        if head_dim is None:
+            head_dim = getattr(config, "hidden_size") // getattr(config, "num_attention_heads")
+        partial_rotary_factor = getattr(config, "partial_rotary_factor", 1.0)
+        dim = int(head_dim * partial_rotary_factor)
+        inv_freq = 1.0 / (
+            base ** (torch.arange(0, dim, 2, dtype=torch.int64, device=device).float() / dim)
+        )
+        return inv_freq, 1.0
+
+    ROPE_INIT_FUNCTIONS["default"] = _compute_default_rope_parameters
+
+
+def _ensure_generation_config_validate_compat() -> None:
+    """Let older remote GenerationConfig subclasses survive newer update calls."""
+    try:
+        from transformers.generation.configuration_utils import GenerationConfig
+    except Exception:
+        return
+    if getattr(GenerationConfig.update, "_latent_reasoning_validate_compat", False):
+        return
+
+    original_update = GenerationConfig.update
+
+    def _compatible_update(self: Any, **kwargs: Any) -> dict[str, Any]:
+        try:
+            return original_update(self, **kwargs)
+        except TypeError as exc:
+            if "user_set_attributes" not in str(exc):
+                raise
+        to_remove = []
+        for key, value in kwargs.items():
+            if hasattr(self, key):
+                setattr(self, key, value)
+                to_remove.append(key)
+        self.validate()
+        return {key: value for key, value in kwargs.items() if key not in to_remove}
+
+    _compatible_update._latent_reasoning_validate_compat = True  # type: ignore[attr-defined]
+    _compatible_update._latent_reasoning_original_update = original_update  # type: ignore[attr-defined]
+    GenerationConfig.update = _compatible_update
+
+
+def _ensure_all_tied_weights_keys_compat() -> None:
+    """Expose old remote-code `_tied_weights_keys` under the newer HF name."""
+    try:
+        from transformers.modeling_utils import PreTrainedModel
+    except Exception:
+        return
+    if hasattr(PreTrainedModel, "all_tied_weights_keys"):
+        return
+
+    def _all_tied_weights_keys(self: Any) -> dict[str, str]:
+        tied_keys = getattr(self, "_tied_weights_keys", None)
+        if tied_keys is None:
+            return {}
+        if isinstance(tied_keys, dict):
+            return {str(key): str(value) for key, value in tied_keys.items()}
+        return {str(key): str(key) for key in tied_keys}
+
+    PreTrainedModel.all_tied_weights_keys = property(_all_tied_weights_keys)
+
+
+def _fill_generation_special_token_ids(generation_config: Any, tokenizer: Any, model: Any) -> None:
+    """Fill missing remote generation token ids from tokenizer/model config."""
+    model_config = getattr(model, "config", None)
+    for attr in ("mask_token_id", "pad_token_id", "bos_token_id", "eos_token_id"):
+        if getattr(generation_config, attr, None) is not None:
+            continue
+        value = _first_not_none(
+            getattr(tokenizer, attr, None),
+            getattr(model_config, attr, None),
+        )
+        if value is not None:
+            setattr(generation_config, attr, value)
 
 
 def _chat_messages(system_prompt: str | None, prompt: str) -> list[dict[str, str]]:
