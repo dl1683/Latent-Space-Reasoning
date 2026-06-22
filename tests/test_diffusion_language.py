@@ -10,6 +10,7 @@ from latent_reasoning.diffusion.backends import (
     _fill_generation_special_token_ids,
     _llada_apply_revision_remask,
     _llada_mask_token_id,
+    _wrap_legacy_tie_weights,
 )
 from latent_reasoning.diffusion.candidates import (
     available_candidates,
@@ -206,6 +207,23 @@ def test_all_tied_weights_keys_compatibility_property_exposes_legacy_name():
             PreTrainedModel.all_tied_weights_keys = original
         elif hasattr(PreTrainedModel, "all_tied_weights_keys"):
             delattr(PreTrainedModel, "all_tied_weights_keys")
+
+
+def test_legacy_tie_weights_wrapper_accepts_new_finalize_kwargs():
+    class Model:
+        def __init__(self):
+            self.calls = 0
+
+        def tie_weights(self):
+            self.calls += 1
+            return "tied"
+
+    model = Model()
+
+    _wrap_legacy_tie_weights(model)
+
+    assert model.tie_weights(missing_keys=["lm_head.weight"], recompute_mapping=False) == "tied"
+    assert model.calls == 1
 
 
 def test_hf_backend_rejects_gguf_candidate_without_loading():

@@ -121,6 +121,7 @@ class HFDiffusionBackend:
         _ensure_transformers_default_rope()
         _ensure_generation_config_validate_compat()
         _ensure_all_tied_weights_keys_compat()
+        _ensure_tie_weights_signature_compat()
         model = AutoModel.from_pretrained(
             model_ref,
             dtype=dtype,
@@ -396,6 +397,46 @@ def _ensure_all_tied_weights_keys_compat() -> None:
         _get_all_tied_weights_keys,
         _set_all_tied_weights_keys,
     )
+
+
+def _ensure_tie_weights_signature_compat() -> None:
+    """Let old remote-code tie_weights methods ignore newer HF kwargs."""
+    try:
+        from transformers.modeling_utils import PreTrainedModel
+    except Exception:
+        return
+    original_finalize = PreTrainedModel._finalize_model_loading
+    if getattr(original_finalize, "_latent_reasoning_tie_weights_compat", False):
+        return
+
+    def _compatible_finalize(model: Any, load_config: Any, loading_info: Any) -> Any:
+        _wrap_legacy_tie_weights(model)
+        return original_finalize(model, load_config, loading_info)
+
+    _compatible_finalize._latent_reasoning_tie_weights_compat = True  # type: ignore[attr-defined]
+    _compatible_finalize._latent_reasoning_original_finalize = original_finalize  # type: ignore[attr-defined]
+    PreTrainedModel._finalize_model_loading = staticmethod(_compatible_finalize)
+
+
+def _wrap_legacy_tie_weights(model: Any) -> None:
+    tie_weights = getattr(model, "tie_weights", None)
+    if not callable(tie_weights) or getattr(tie_weights, "_latent_reasoning_tie_weights_compat", False):
+        return
+
+    def _compatible_tie_weights(*args: Any, **kwargs: Any) -> Any:
+        try:
+            return tie_weights(*args, **kwargs)
+        except TypeError as exc:
+            if "unexpected keyword argument" not in str(exc):
+                raise
+            if not any(key in str(exc) for key in ("missing_keys", "recompute_mapping")):
+                raise
+            if args:
+                return tie_weights(*args)
+            return tie_weights()
+
+    _compatible_tie_weights._latent_reasoning_tie_weights_compat = True  # type: ignore[attr-defined]
+    model.tie_weights = _compatible_tie_weights
 
 
 def _fill_generation_special_token_ids(generation_config: Any, tokenizer: Any, model: Any) -> None:
