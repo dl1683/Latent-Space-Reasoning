@@ -32,6 +32,7 @@ the lower-cost point for the controller/cost claim.
 | [docs/DIFFUSION_READER_GUIDE.md](docs/DIFFUSION_READER_GUIDE.md) | Reader map for diffusion claims, theory, and validation surfaces |
 | [docs/DIFFUSION_THEORY_CLAIM_LEDGER.md](docs/DIFFUSION_THEORY_CLAIM_LEDGER.md) | Conservative theory ledger with falsifiers and next proof obligations |
 | [meditations/README.md](meditations/README.md) | Private question-first notes used to maintain the paradigm layer of the project |
+| [docs/README.md](docs/README.md) | Single-page documentation index for onboarding and navigation |
 | [docs/GATED_ATTENTION_PROBE.md](docs/GATED_ATTENTION_PROBE.md) | Current Qwen3-Next gated-attention probe status and blockers |
 | [docs/reports/diffusion/README.md](docs/reports/diffusion/README.md) | Historical/generated diffusion report archive |
 | [docs/reports/diffusion/DIFFUSION_REPAIR_VALUE_TOMOGRAPHY.md](docs/reports/diffusion/DIFFUSION_REPAIR_VALUE_TOMOGRAPHY.md) | Behavior-tomography audit for the next repair-spend controller |
@@ -45,7 +46,7 @@ you are reproducing a specific historical run.
 
 ```text
 experiments/     Experiment runners, report builders, validators, and analysis scripts
-eval_results/    Generated run outputs, ledgers, raw generations, and score reports
+eval_results/    Generated run outputs, ledgers, raw generations, and score reports (typically git-ignored)
 docs/            Reader guides, theory docs, runbooks, and consolidated status pages
 tests/           Unit and regression tests for runners, builders, validators, and controls
 src/             Shared package code used by the experiment stack
