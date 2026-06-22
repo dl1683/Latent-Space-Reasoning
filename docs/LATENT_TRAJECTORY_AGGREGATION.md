@@ -254,6 +254,11 @@ When replayed post hoc at support threshold `0.1`, the mean realized aggregate
 score rises above best-single, but the run still fails the frozen promotion
 gate with only `1/16` online promotions because most recovered components do
 not add measured component gain beyond the best single candidate.
+A follow-up gain diagnostic shows the remaining bottleneck more sharply:
+`12/16` tasks lift final score without positive component gain. This means the
+next credible experiment is not just more sampling; it needs a complement-aware
+selector that starts from the best single answer and explicitly targets
+supported components absent from or weak in that answer.
 
 Task mix:
 

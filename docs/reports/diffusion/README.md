@@ -36,6 +36,10 @@ Current high-signal generated reports:
   post-hoc threshold replay using support threshold `0.1`; component extraction
   recovers the frozen labels, mean realized score rises, but predeclared
   promotion gates still fail with only `1/16` online promotions.
+- [LATENT_AGGREGATION_GAIN_FAILURE_THRESHOLD01.md](LATENT_AGGREGATION_GAIN_FAILURE_THRESHOLD01.md):
+  diagnostic over the threshold `0.1` replay showing the remaining bottleneck:
+  `12/16` tasks lift final score without positive component gain, split between
+  best-single reformatting and multi-source selection with no new components.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.
