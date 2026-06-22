@@ -3,6 +3,22 @@
 Start here before opening individual reports.  
 This folder is organized by **current workflow** first, then **historical archive**.
 
+## If you are new to this repo
+
+Read only these four files first, in order:
+
+1. [README.md](../README.md)
+2. [DIFFUSION_READER_GUIDE.md](DIFFUSION_READER_GUIDE.md)
+3. [DIFFUSION_PUBLIC_BENCHMARK.md](../DIFFUSION_PUBLIC_BENCHMARK.md)
+4. [CLAIM_EVIDENCE_MAP.md](../CLAIM_EVIDENCE_MAP.md) or
+   [DIFFUSION_GROUND_TRUTH_INDEX.md](../DIFFUSION_GROUND_TRUTH_INDEX.md)
+
+After this, move to one of:
+
+- mechanism details: `DIFFUSION_REASONING_GEOMETRY_THEORY.md`
+- theory proofs: `DIFFUSION_THEORY_CLAIM_LEDGER.md`
+- future work: `NEXT_GENERATION_REASONING_TASKS.md`
+
 ## First read (public-facing)
 
 - [README.md](../README.md) - current promoted result and quick entry points.
@@ -23,6 +39,11 @@ This folder is organized by **current workflow** first, then **historical archiv
 
 - [docs/reports/diffusion/README.md](reports/diffusion/README.md) - generated history and historical diagnostics.
 - [experiments/README.md](../experiments/EXPERIMENTS.md) - experiment roster and reproducibility notes.
+
+## What to avoid first
+
+- Deep scans of `docs/reports/diffusion/` (historical archive).  
+- `question_*.md` files in `meditations/` (private reflection layer).
 
 ## How to stay current
 
