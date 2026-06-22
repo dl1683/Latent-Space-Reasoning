@@ -294,6 +294,12 @@ tasks are anchor-dominance cases on the frozen aspect ontology, while only
 primarily a threshold tweak; it should add targeted aspect-deficit probes or a
 second candidate family conditioned on missing non-rubric dimensions.
 
+V3 is now frozen as a pre-label task-extension contract over new `plan_201`-
+`plan_224` rows. The freeze separates complement coverage from conditional
+complement quality, requires probe cost and equal-budget best-of controls, and
+keeps the targeted aspect-deficit probe as an explicit implementation boundary
+if it is not available before labels.
+
 Task mix:
 
 - 8 planning tasks with explicit rubric components.

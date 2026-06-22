@@ -67,6 +67,10 @@ Current high-signal generated reports:
   coverage blocker diagnostic showing `14/15` no-complement tasks are anchor
   dominance on the frozen aspect ontology and only `1/15` is a below-threshold
   near miss.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V3_FREEZE.md](LATENT_AGGREGATION_MULTI_ASPECT_V3_FREEZE.md):
+  pre-label v3 freeze over new `plan_201`-`plan_224` tasks, with targeted
+  aspect-deficit probes, separate coverage and conditional-quality gates, probe
+  cost accounting, and equal-budget best-of controls.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.

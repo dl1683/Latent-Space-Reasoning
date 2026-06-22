@@ -1,0 +1,200 @@
+{
+  "aspect_deficit_probe_contract": {
+    "allowed_inputs": [
+      "task prompt",
+      "anchor text",
+      "candidate texts",
+      "pre-final-score aspect details"
+    ],
+    "forbidden_inputs": [
+      "realized aggregate score",
+      "post-run promotion decision",
+      "hand-labeled v3 outcomes"
+    ],
+    "maximum_probes_per_task": 2,
+    "name": "targeted_aspect_deficit_probe_v1",
+    "status": "must_be_implemented_or_explicitly_marked_unrun_before_v3_labels",
+    "trigger": "anchor dominates ordinary candidates or anchor has missing non-rubric dimensions"
+  },
+  "aspect_ontology": {
+    "aspect_types": [
+      "rubric_item",
+      "causal_diagnosis",
+      "specificity",
+      "constraint_handling",
+      "risk_awareness",
+      "coverage_gap",
+      "contradiction_risk"
+    ],
+    "dimension_delta_threshold": 0.05,
+    "new_dimensions": {
+      "contradiction_risk": "candidate or probe identifies conflict between selected aspects or unsupported additions",
+      "coverage_gap": "candidate or probe names missing evaluation coverage and how to measure it"
+    },
+    "rubric_support_threshold": 0.1
+  },
+  "failure_taxonomy": [
+    "fresh_task_inventory_missing",
+    "ordinary_candidate_anchor_dominance_repeats",
+    "targeted_probe_no_new_aspect",
+    "targeted_probe_unsupported_aspect",
+    "coverage_pass_quality_fail",
+    "conditional_quality_pass_global_cost_fail",
+    "realizer_dropped_delta_aspect",
+    "realizer_added_unsupported_claim",
+    "equal_budget_best_of_matches_aggregate",
+    "contradictory_complements_selected"
+  ],
+  "freshness_contract": {
+    "prior_planning_task_max": 200,
+    "rule": "all v3 planning IDs must be greater than every prior committed diffusion planning slice",
+    "status": "passed"
+  },
+  "generated_by": "experiments/build_latent_aggregation_multi_aspect_v3_freeze.py",
+  "prior_diagnostics": {
+    "boundary": "v2 diagnostics define v3 hypothesis but do not promote v2",
+    "multi_aspect_v2_coverage_gap": {
+      "path": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v2_coverage_gap.json",
+      "sha256": "fe486b6e9946d516815fb16c5a6c9d22efa5c26e6d0314ba11fb9d8506fbdd05",
+      "summary": {
+        "max_no_complement_dimension_delta": 0.04464285714285715,
+        "mean_no_complement_max_dimension_delta": 0.002976190476190477,
+        "mean_non_anchor_candidate_count": 5.333333333333333,
+        "mean_nonempty_candidate_count": 3.75,
+        "no_complement_blockers": {
+          "anchor_dominates_candidate_aspects": 14,
+          "positive_but_below_threshold": 1
+        },
+        "no_complement_tasks_with_near_miss": 1,
+        "task_count": 24,
+        "tasks_with_selected_complement": 9,
+        "tasks_without_selected_complement": 15
+      }
+    },
+    "multi_aspect_v2_failure": {
+      "path": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v2_failure.json",
+      "sha256": "a677cdd78da8c5280f0cd7e083aa77c0e23f8796073fe5641e90567e9a1525b8",
+      "summary": {
+        "complement_task_count": 9,
+        "complement_task_mean_non_rubric_lift": 0.07222222222222222,
+        "complement_task_mean_score_lift": 0.08777777777777775,
+        "dimension_only_promoted_count": 4,
+        "failed_gate": "minimum_mean_non_rubric_lift",
+        "global_mean_non_rubric_lift": 0.02708333333333333,
+        "global_threshold": 0.03,
+        "missing_global_lift": 0.002916666666666668,
+        "no_complement_task_count": 15,
+        "rubric_only_promoted_count": 4,
+        "task_count": 24
+      }
+    }
+  },
+  "realizer_contract": {
+    "name": "anchor_preserve_delta_realizer_v3",
+    "requirements": [
+      "return the anchor unchanged when no complements are selected",
+      "add only selected sourced complements",
+      "emit a replay proof object for anchor, complements, final text, and score deltas",
+      "record dropped selected aspects and unsupported additions"
+    ]
+  },
+  "schema": "latent_aggregation_multi_aspect_v3_freeze.v1",
+  "selector_contract": {
+    "anchor": "best single candidate by pre-rescore task score",
+    "name": "best_anchor_plus_targeted_complement_selector_v3",
+    "selection_rule": [
+      "preserve the anchor unless selected complements exist",
+      "select at most three complements per task",
+      "prefer complements from distinct latent source families",
+      "require source text provenance for every complement",
+      "separate ordinary-candidate complements from targeted-probe complements"
+    ]
+  },
+  "statistical_gates": {
+    "maximum_hard_contradiction_count": 0,
+    "maximum_unsupported_addition_count": 0,
+    "minimum_aggregate_win_count": 8,
+    "minimum_all_task_mean_non_rubric_lift": 0.03,
+    "minimum_complement_coverage_count": 12,
+    "minimum_complement_coverage_fraction": 0.5,
+    "minimum_conditional_non_rubric_lift": 0.05,
+    "minimum_conditional_promoted_fraction": 0.5,
+    "minimum_task_count": 24,
+    "minimum_wilson_lower_bound": 0.1,
+    "must_report_equal_budget_best_of_control": true,
+    "must_report_probe_cost": true,
+    "must_report_rubric_and_dimension_gain_separately": true
+  },
+  "task_count": 24,
+  "task_ids": [
+    "plan_201",
+    "plan_202",
+    "plan_203",
+    "plan_204",
+    "plan_205",
+    "plan_206",
+    "plan_207",
+    "plan_208",
+    "plan_209",
+    "plan_210",
+    "plan_211",
+    "plan_212",
+    "plan_213",
+    "plan_214",
+    "plan_215",
+    "plan_216",
+    "plan_217",
+    "plan_218",
+    "plan_219",
+    "plan_220",
+    "plan_221",
+    "plan_222",
+    "plan_223",
+    "plan_224"
+  ],
+  "task_preset": "latent_aggregation_multi_aspect_v3_plan201_224",
+  "task_source": {
+    "path": "experiments\\general_reasoning_tasks_scout.jsonl",
+    "sha256": "8c689e23bbd09cf64715dd3ca5a754c81295ed7483dde80b5d619f9584238ee2",
+    "task_hashes": {
+      "plan_201": "57c8f0d2b3e5058a77e9f5771b41ffd964535f06c9c2f983bba98a7305842e70",
+      "plan_202": "31c9b206802b0a1a2640571eb01844d0f585179efcfdebde4da324c591843b7f",
+      "plan_203": "0e5f1720a61ca2809d3c8587bdcfdb1c3e474329ca018dcba5d797c58a9526a4",
+      "plan_204": "438a8fb5e7731b884e91400be466b7f68588d797f4770bf8444421c1f7c71a4f",
+      "plan_205": "8b2ce578e642ec1c81b673791b14041912b28d4ccb5ffdf0fad4ea69812a2d97",
+      "plan_206": "d4f9c073e644c539ba9c140d2728679ccb1f8f5699c8f148f8ea6ec420dc1d93",
+      "plan_207": "4291792b05cd80cf3075aa4f5efa38419dc922ea1868fc6fe9c03234330a4d8f",
+      "plan_208": "db3c9ab0713159f85e98c09920540570e833d252acc9600de78b02f471df5535",
+      "plan_209": "6c5202bc8df4782683872f52478364acb0d72fe87b20c9fc289e8b725c26e187",
+      "plan_210": "dc6a5ae73151f9a3f2bd9fc13f1a72ce1ed4c2b561eee4b2606fdec9dbd41c0f",
+      "plan_211": "0c6fc2775db723eb5d110fbe44e7615919938dec2582bfd5347f7470b953e347",
+      "plan_212": "d32d92545739f0c1dece504a27fcbacdc99e2c3be5db7d58232bcf398eaabc95",
+      "plan_213": "dc1a38acd79926a02dfe8e188e1e07e9d7ff76b01dc0973b85d979d332bc35fb",
+      "plan_214": "f371c9b17423c4fa5d5ae083551c191dfe83fa3a68edb373139a3ce70266e3a8",
+      "plan_215": "18ed3e6b616108e7562753f411b06f79b8ab7c4ff6b731279503bf4f8a9fa75c",
+      "plan_216": "603b0db95c995ac1a689d843010e4d70de4985ff5e267c872ae079997110b6ad",
+      "plan_217": "11371baaa71c61d31f100314b2a87ae2c4d6750e278e5606aabbe1ae3e851823",
+      "plan_218": "936eb13c27c33aaf2ee77d5f953fe91c9d6cffd2c40de5f2446d27bea9c349e8",
+      "plan_219": "6c0d2e6224f36e6a2766cae4da9be4708a71fa658712c55d6eb32e65022926fd",
+      "plan_220": "92c4192a5aae33afa486e18b9f839a4b74a12b88d5b5a47e2ed35e4de4187ae6",
+      "plan_221": "aeb2fa843c9d1a52ef60fc804e1d4b029cf77bcec187fe7820780c6a7a5d4267",
+      "plan_222": "eee9a084d4208775c4705cc4a747da306b286146cc4526b4fa9cdf57a029bc42",
+      "plan_223": "bd892f6c3833ed85b08f729540844b353ad4e225ed59a91e4d2efdcfde8c8747",
+      "plan_224": "f88740e30049e4b451bc11dc4e9d21da1b2d70bd8880478c49a0e6894686af36"
+    }
+  },
+  "trajectory_generation_contract": {
+    "families": [
+      "fixed_low_confidence_32",
+      "random_32",
+      "temperature_entropy_64",
+      "history_prefix_25_repair_when_spend_gate_allows",
+      "final_preserve_repair_when_spend_gate_allows",
+      "targeted_aspect_deficit_probe_v1"
+    ],
+    "gpu_command": "python experiments\\run_diffusion_three_arm_benchmark.py --task-ids plan_201,plan_202,plan_203,plan_204,plan_205,plan_206,plan_207,plan_208,plan_209,plan_210,plan_211,plan_212,plan_213,plan_214,plan_215,plan_216,plan_217,plan_218,plan_219,plan_220,plan_221,plan_222,plan_223,plan_224 --candidates dream-7b-instruct-hf,llada-8b-instruct-hf --limit-schedules 3 --limit-evolved-schedules 0 --limit-repair-candidates 2 --include-history-repairs --history-repair-fractions 0.25 --repair-pack constraint_span_phase_final_preserve_seeded_gated --repair-spend-trigger denoise_phase_repairability --repair-selector generated_repair_value_v1 --repair-promotion-margin 0.02 --trajectory-selector planning_state --device cuda --dtype bfloat16 --raw-output eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v3_raw.jsonl --scores-output eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v3_scores.json --report-output docs\\reports\\diffusion\\LATENT_AGGREGATION_MULTI_ASPECT_V3_LABEL_REPORT.md",
+    "minimum_trajectories_per_task": 3,
+    "raw_output": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v3_raw.jsonl",
+    "scores_output": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v3_scores.json"
+  }
+}
