@@ -215,6 +215,10 @@ Current scaffold:
   `docs/reports/diffusion/LATENT_AGGREGATION_RUBRIC_REPLAY.md`
 - Inference validation freeze:
   `docs/reports/diffusion/LATENT_AGGREGATION_INFERENCE_V1_FREEZE.md`
+- Inference replay harness:
+  `experiments/run_latent_aggregation_inference_replay.py`
+- Smoke replay report:
+  `docs/reports/diffusion/LATENT_AGGREGATION_INFERENCE_SMOKE_REPLAY.md`
 
 Status: protocol scaffold only. The current scout validates the accounting
 logic and gate behavior on deterministic component fixtures. The rubric replay
@@ -226,6 +230,10 @@ headline aggregation result.
 The inference freeze is the next run contract. It fixes a 16-task planning
 slice, trajectory families, extractor inputs, forbidden label fields, final
 answer realization requirements, and statistical gates before labels exist.
+The smoke replay is only a deterministic pipeline check: it proves the frozen
+extractor/fuser/realizer accounting path runs end to end and keeps the
+post-hoc scoring boundary intact, but it is not GPU evidence and cannot satisfy
+the freeze gates.
 
 Task mix:
 

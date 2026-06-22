@@ -21,6 +21,10 @@ Current high-signal generated reports:
   pre-label contract for the first inference-time aggregation validation,
   including frozen task IDs, extractor limits, realization requirements, and
   statistical gates.
+- [LATENT_AGGREGATION_INFERENCE_SMOKE_REPLAY.md](LATENT_AGGREGATION_INFERENCE_SMOKE_REPLAY.md):
+  deterministic smoke replay for the inference-time extractor/fuser/realizer
+  harness; useful for pipeline validation, but explicitly not frozen GPU
+  evidence.
 - [DIFFUSION_REPAIR_VALUE_TOMOGRAPHY.md](DIFFUSION_REPAIR_VALUE_TOMOGRAPHY.md):
   behavior-tomography audit for the cost-aware repair-spend controller.
 - [DIFFUSION_LAMBDA_REPAIR_CONTROLLER_TRANSFER.md](DIFFUSION_LAMBDA_REPAIR_CONTROLLER_TRANSFER.md):

@@ -1,0 +1,111 @@
+{
+  "evidence_boundary": {
+    "reason": "Raw rows are a deterministic smoke fixture for exercising the pipeline; do not cite as frozen GPU evidence.",
+    "status": "smoke_fixture_only"
+  },
+  "extractor": "literal_rubric_component_extractor_v1",
+  "generated_by": "experiments/run_latent_aggregation_inference_replay.py",
+  "inputs": {
+    "freeze": "eval_results\\diffusion_language\\latent_aggregation_inference_v1_freeze.json",
+    "raw": "experiments\\latent_aggregation_inference_smoke_raw.jsonl",
+    "tasks": "experiments\\general_reasoning_tasks_scout.jsonl"
+  },
+  "realizer": "component_provenance_template_realizer_v1",
+  "schema": "latent_aggregation_inference_replay.v1",
+  "summary": {
+    "component_f1": 1.0,
+    "component_false_negative_count": 0,
+    "component_false_positive_count": 0,
+    "component_precision": 1.0,
+    "component_recall": 1.0,
+    "component_true_positive_count": 10,
+    "decision_status_counts": {
+      "online_promoted_local": 2
+    },
+    "mean_best_single_score": 0.4,
+    "mean_realized_aggregate_score": 0.5167857142857142,
+    "online_promoted_task_count": 2,
+    "online_promoted_task_fraction": 1.0,
+    "online_promoted_wilson95": [
+      0.3423802275066531,
+      1.0
+    ],
+    "task_count": 2
+  },
+  "tasks": [
+    {
+      "best_single_score": 0.4,
+      "best_single_trajectory_id": "plan_009:smoke-model:smoke_a:candidate_generation",
+      "component_gain": 2,
+      "component_loss": 0,
+      "component_union_score": 1.0,
+      "decision": {
+        "reason": "Realized aggregate beats best single with positive component gain.",
+        "status": "online_promoted_local"
+      },
+      "realized_aggregate_score": 0.46285714285714286,
+      "realized_rubric_hits": [
+        {
+          "hit": true,
+          "item": "identify which citation conflicts with the others"
+        },
+        {
+          "hit": true,
+          "item": "check the original source text before trusting summaries"
+        },
+        {
+          "hit": true,
+          "item": "separate factual correction from citation-format cleanup"
+        },
+        {
+          "hit": true,
+          "item": "define a ship or hold decision rule"
+        },
+        {
+          "hit": true,
+          "item": "preserve an audit trail for the customer review"
+        }
+      ],
+      "selected_component_count": 5,
+      "source_diversity": 2,
+      "task_id": "plan_009"
+    },
+    {
+      "best_single_score": 0.4,
+      "best_single_trajectory_id": "plan_010:smoke-model:smoke_a:candidate_generation",
+      "component_gain": 2,
+      "component_loss": 0,
+      "component_union_score": 1.0,
+      "decision": {
+        "reason": "Realized aggregate beats best single with positive component gain.",
+        "status": "online_promoted_local"
+      },
+      "realized_aggregate_score": 0.5707142857142856,
+      "realized_rubric_hits": [
+        {
+          "hit": true,
+          "item": "rerun old and new dependency versions under the same seed"
+        },
+        {
+          "hit": true,
+          "item": "lock test order and task set before comparing"
+        },
+        {
+          "hit": true,
+          "item": "check whether failures moved between tasks"
+        },
+        {
+          "hit": true,
+          "item": "measure both mean score and regressions"
+        },
+        {
+          "hit": true,
+          "item": "state what evidence would justify keeping the upgrade"
+        }
+      ],
+      "selected_component_count": 5,
+      "source_diversity": 2,
+      "task_id": "plan_010"
+    }
+  ]
+}
