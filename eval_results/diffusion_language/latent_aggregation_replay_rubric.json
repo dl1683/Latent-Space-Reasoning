@@ -1,0 +1,463 @@
+{
+  "generated_by": "experiments/build_latent_aggregation_replay_from_rubric_hits.py",
+  "inputs": {
+    "raw": "eval_results\\diffusion_language\\three_arm_planning_mix_guarded_v1_raw.jsonl"
+  },
+  "replay_boundary": {
+    "reason": "Rubric-hit labels are used after scoring to estimate component-level aggregation headroom. This does not prove an online extractor or verifier.",
+    "status": "oracle_replay_not_inference_time"
+  },
+  "schema": "latent_aggregation_rubric_replay.v1",
+  "summary": {
+    "aggregate_win_count": 2,
+    "blocked_task_count": 6,
+    "component_row_count": 200,
+    "mean_aggregate_score": 0.725,
+    "mean_best_single_score": 0.675,
+    "mean_component_gain": 0.25,
+    "mean_component_loss": 0.0,
+    "planning_record_count": 40,
+    "promoted_task_count": 2,
+    "promoted_tasks": [
+      "plan_005",
+      "plan_007"
+    ],
+    "schema_note": "post-hoc rubric replay only; not inference-time aggregation evidence",
+    "task_count": 8
+  },
+  "tasks": [
+    {
+      "aggregate_score": 0.8,
+      "best_single_score": 0.8,
+      "best_single_trajectory_id": "plan_001:dream-7b-instruct-hf:entropy_64:candidate_generation:1",
+      "component_gain": 0,
+      "component_gain_ids": [],
+      "component_loss": 0,
+      "component_loss_ids": [],
+      "contradiction_count": 0,
+      "decision": {
+        "reason": "Aggregate did not beat the best individual trajectory.",
+        "status": "blocked_no_score_lift"
+      },
+      "expected_component_count": 5,
+      "expected_component_weight": 5.0,
+      "selected_components": [
+        {
+          "component_id": "avoid_spending_both_jobs_on_risky_variants",
+          "component_type": "planning_rubric_hit",
+          "component_weight": 1.0,
+          "source_span": "Run the reliable baseline first and then the risky intervention job.",
+          "support_score": 0.24642857142857144,
+          "trajectory_family": "dream-7b-instruct-hf:origin_64:candidate_generation",
+          "trajectory_id": "plan_001:dream-7b-instruct-hf:origin_64:candidate_generation:2"
+        },
+        {
+          "component_id": "compare_the_risky_intervention_against_the_baseline",
+          "component_type": "planning_rubric_hit",
+          "component_weight": 1.0,
+          "source_span": "Run the baseline job first. If the baseline job fails, you can still run the intervention job, but the baseline data will not be available, making it a valid comparison. If the bas",
+          "support_score": 0.3989285714285714,
+          "trajectory_family": "llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+          "trajectory_id": "plan_001:llada-8b-instruct-hf:low_confidence_32:candidate_generation:24"
+        },
+        {
+          "component_id": "preserve_a_reliable_baseline_measurement",
+          "component_type": "planning_rubric_hit",
+          "component_weight": 1.0,
+          "source_span": "Run the baseline job first. If the baseline job fails, you can still run the intervention job, but the baseline data will not be available, making it a valid comparison. If the bas",
+          "support_score": 0.3989285714285714,
+          "trajectory_family": "llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+          "trajectory_id": "plan_001:llada-8b-instruct-hf:low_confidence_32:candidate_generation:24"
+        },
+        {
+          "component_id": "state_what_remains_publishable_if_the_intervention_fails",
+          "component_type": "planning_rubric_hit",
+          "component_weight": 1.0,
+          "source_span": "Run the baseline job first. If the baseline job fails, you can still run the intervention job, but the baseline data will not be available, making it a valid comparison. If the bas",
+          "support_score": 0.3989285714285714,
+          "trajectory_family": "llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+          "trajectory_id": "plan_001:llada-8b-instruct-hf:low_confidence_32:candidate_generation:24"
+        }
+      ],
+      "source_diversity": 2,
+      "task_id": "plan_001",
+      "unsupported_addition_count": 0
+    },
+    {
+      "aggregate_score": 0.8,
+      "best_single_score": 0.8,
+      "best_single_trajectory_id": "plan_002:dream-7b-instruct-hf:entropy_32:candidate_generation:3",
+      "component_gain": 0,
+      "component_gain_ids": [],
+      "component_loss": 0,
+      "component_loss_ids": [],
+      "contradiction_count": 0,
+      "decision": {
+        "reason": "Aggregate did not beat the best individual trajectory.",
+        "status": "blocked_no_score_lift"
+      },
+      "expected_component_count": 5,
+      "expected_component_weight": 5.0,
+      "selected_components": [
+        {
+          "component_id": "define_a_stop_condition_before_the_demo",
+          "component_type": "planning_rubric_hit",
+          "component_weight": 1.0,
+          "source_span": "1. Identify the failure points in the logs. 2.. Analyze the logs for patterns or common issues. 3. Narrow down potential causes. 4.. Prioritize the most likely cause based on the a",
+          "support_score": 0.6042857142857143,
+          "trajectory_family": "llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+          "trajectory_id": "plan_002:llada-8b-instruct-hf:low_confidence_32:candidate_generation:26"
+        },
+        {
+          "component_id": "isolate_a_minimal_failing_record_or_batch",
+          "component_type": "planning_rubric_hit",
+          "component_weight": 1.0,
+          "source_span": "1. Identify the failure points in the logs. 2.. Analyze the logs for patterns or common issues. 3. Narrow down potential causes. 4.. Prioritize the most likely cause based on the a",
+          "support_score": 0.6042857142857143,
+          "trajectory_family": "llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+          "trajectory_id": "plan_002:llada-8b-instruct-hf:low_confidence_32:candidate_generation:26"
+        },
+        {
+          "component_id": "prioritize_likely_malformed_input_or_schema_drift",
+          "component_type": "planning_rubric_hit",
+          "component_weight": 1.0,
+          "source_span": "1. Identify the failure points in the logs. 2.. Analyze the logs for patterns or common issues. 3. Narrow down potential causes. 4.. Prioritize the most likely cause based on the a",
+          "support_score": 0.6042857142857143,
+          "trajectory_family": "llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+          "trajectory_id": "plan_002:llada-8b-instruct-hf:low_confidence_32:candidate_generation:26"
+        },
+        {
+          "component_id": "protect_the_demo_path_with_rollback_or_cached_data",
+          "component_type": "planning_rubric_hit",
+          "component_weight": 1.0,
+          "source_span": "1. Identify the failure points in the logs. 2.. Analyze the logs for patterns or common issues. 3. Narrow down potential causes. 4.. Prioritize the most likely cause based on the a",
+          "support_score": 0.6042857142857143,
+          "trajectory_family": "llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+          "trajectory_id": "plan_002:llada-8b-instruct-hf:low_confidence_32:candidate_generation:26"
+        }
+      ],
+      "source_diversity": 1,
+      "task_id": "plan_002",
+      "unsupported_addition_count": 0
+    },
+    {
+      "aggregate_score": 0.6,
+      "best_single_score": 0.6,
+      "best_single_trajectory_id": "plan_003:dream-7b-instruct-hf:entropy_64:candidate_generation:7",
+      "component_gain": 0,
+      "component_gain_ids": [],
+      "component_loss": 0,
+      "component_loss_ids": [],
+      "contradiction_count": 0,
+      "decision": {
+        "reason": "Aggregate did not beat the best individual trajectory.",
+        "status": "blocked_no_score_lift"
+      },
+      "expected_component_count": 5,
+      "expected_component_weight": 5.0,
+      "selected_components": [
+        {
+          "component_id": "compare_accuracy_lift_against_latency_cost",
+          "component_type": "planning_rubric_hit",
+          "component_weight": 1.0,
+          "source_span": "1. Measure: Offline accuracy and production latency. 2. Decision rule: If the improvement in offline accuracy is significant (e.g., above a certain threshold) and the increase in l",
+          "support_score": 0.44321428571428567,
+          "trajectory_family": "llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+          "trajectory_id": "plan_003:llada-8b-instruct-hf:low_confidence_32:candidate_generation:28"
+        },
+        {
+          "component_id": "define_rollback_thresholds",
+          "component_type": "planning_rubric_hit",
+          "component_weight": 1.0,
+          "source_span": "1. Measure: Offline accuracy and production latency. 2. Decision rule: If the improvement in offline accuracy is significant (e.g., above a certain threshold) and the increase in l",
+          "support_score": 0.44321428571428567,
+          "trajectory_family": "llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+          "trajectory_id": "plan_003:llada-8b-instruct-hf:low_confidence_32:candidate_generation:28"
+        },
+        {
+          "component_id": "measure_production_tail_latency_not_only_average_latency",
+          "component_type": "planning_rubric_hit",
+          "component_weight": 1.0,
+          "source_span": "1. Measure: Offline accuracy and production latency. 2. Decision rule: If the improvement in offline accuracy is significant (e.g., above a certain threshold) and the increase in l",
+          "support_score": 0.44321428571428567,
+          "trajectory_family": "llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+          "trajectory_id": "plan_003:llada-8b-instruct-hf:low_confidence_32:candidate_generation:28"
+        }
+      ],
+      "source_diversity": 1,
+      "task_id": "plan_003",
+      "unsupported_addition_count": 0
+    },
+    {
+      "aggregate_score": 0.8,
+      "best_single_score": 0.8,
+      "best_single_trajectory_id": "plan_004:dream-7b-instruct-hf:entropy_64:candidate_generation:10",
+      "component_gain": 0,
+      "component_gain_ids": [],
+      "component_loss": 0,
+      "component_loss_ids": [],
+      "contradiction_count": 0,
+      "decision": {
+        "reason": "Aggregate did not beat the best individual trajectory.",
+        "status": "blocked_no_score_lift"
+      },
+      "expected_component_count": 5,
+      "expected_component_weight": 5.0,
+      "selected_components": [
+        {
+          "component_id": "equalize_token_budget_and_prompt_format",
+          "component_type": "planning_rubric_hit",
+          "component_weight": 1.0,
+          "source_span": "1. Repeat the experiment with the original baseline token count and prompt format. 2. Compare the results with the original research. 3. If the results are similar, the original cl",
+          "support_score": 0.3028571428571429,
+          "trajectory_family": "dream-7b-instruct-hf:entropy_64:candidate_generation",
+          "trajectory_id": "plan_004:dream-7b-instruct-hf:entropy_64:candidate_generation:10"
+        },
+        {
+          "component_id": "rerun_the_baseline_and_intervention_on_locked_tasks",
+          "component_type": "planning_rubric_hit",
+          "component_weight": 1.0,
+          "source_span": "1. Repeat the experiment with the original baseline token count and prompt format. 2. Compare the results with the original research. 3. If the results are similar, the original cl",
+          "support_score": 0.3028571428571429,
+          "trajectory_family": "dream-7b-instruct-hf:entropy_64:candidate_generation",
+          "trajectory_id": "plan_004:dream-7b-instruct-hf:entropy_64:candidate_generation:10"
+        },
+        {
+          "component_id": "separate_oracle_best_of_results_from_selected_results",
+          "component_type": "planning_rubric_hit",
+          "component_weight": 1.0,
+          "source_span": "1. Repeat the experiment with the original baseline token count and prompt format. 2. Compare the results with the original research. 3. If the results are similar, the original cl",
+          "support_score": 0.3028571428571429,
+          "trajectory_family": "dream-7b-instruct-hf:entropy_64:candidate_generation",
+          "trajectory_id": "plan_004:dream-7b-instruct-hf:entropy_64:candidate_generation:10"
+        },
+        {
+          "component_id": "state_what_claim_survives_if_the_effect_disappears",
+          "component_type": "planning_rubric_hit",
+          "component_weight": 1.0,
+          "source_span": "1. Repeat the experiment with the original baseline token count and prompt format. 2. Compare the results with the original research. 3. If the results are similar, the original cl",
+          "support_score": 0.3028571428571429,
+          "trajectory_family": "dream-7b-instruct-hf:entropy_64:candidate_generation",
+          "trajectory_id": "plan_004:dream-7b-instruct-hf:entropy_64:candidate_generation:10"
+        }
+      ],
+      "source_diversity": 1,
+      "task_id": "plan_004",
+      "unsupported_addition_count": 0
+    },
+    {
+      "aggregate_score": 1.0,
+      "best_single_score": 0.8,
+      "best_single_trajectory_id": "plan_005:dream-7b-instruct-hf:entropy_32:candidate_generation:12",
+      "component_gain": 1,
+      "component_gain_ids": [
+        "preserve_config_seeds_and_logs_for_reproducibility"
+      ],
+      "component_loss": 0,
+      "component_loss_ids": [],
+      "contradiction_count": 0,
+      "decision": {
+        "reason": "Aggregate beats best single with net component gain and no hard safety failures.",
+        "status": "promoted_local_scout"
+      },
+      "expected_component_count": 5,
+      "expected_component_weight": 5.0,
+      "selected_components": [
+        {
+          "component_id": "identify_removable_cache_or_temporary_files",
+          "component_type": "planning_rubric_hit",
+          "component_weight": 1.0,
+          "source_span": "1. Stop the training run immediately. 2. Identify the last successful checkpoint. 3. Copy the last successful checkpoint to a safe location. 4. Clear the disk space and restart the",
+          "support_score": 0.31892857142857145,
+          "trajectory_family": "dream-7b-instruct-hf:entropy_64:candidate_generation",
+          "trajectory_id": "plan_005:dream-7b-instruct-hf:entropy_64:candidate_generation:13"
+        },
+        {
+          "component_id": "preserve_config_seeds_and_logs_for_reproducibility",
+          "component_type": "planning_rubric_hit",
+          "component_weight": 1.0,
+          "source_span": "To recover from checkpoint failures without losing the best checkpoint, use a checkpoint checkpointing strategy that saves multiple checkpoints at regular intervals. If a checkpoin",
+          "support_score": 0.3778571428571429,
+          "trajectory_family": "llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+          "trajectory_id": "plan_005:llada-8b-instruct-hf:low_confidence_32:candidate_generation:32"
+        },
+        {
+          "component_id": "resume_from_a_validated_checkpoint_only",
+          "component_type": "planning_rubric_hit",
+          "component_weight": 1.0,
+          "source_span": "To recover from checkpoint failures without losing the best checkpoint, use a checkpoint checkpointing strategy that saves multiple checkpoints at regular intervals. If a checkpoin",
+          "support_score": 0.3778571428571429,
+          "trajectory_family": "llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+          "trajectory_id": "plan_005:llada-8b-instruct-hf:low_confidence_32:candidate_generation:32"
+        },
+        {
+          "component_id": "stop_or_throttle_writes_before_corrupting_checkpoints",
+          "component_type": "planning_rubric_hit",
+          "component_weight": 1.0,
+          "source_span": "To recover from checkpoint failures without losing the best checkpoint, use a checkpoint checkpointing strategy that saves multiple checkpoints at regular intervals. If a checkpoin",
+          "support_score": 0.3778571428571429,
+          "trajectory_family": "llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+          "trajectory_id": "plan_005:llada-8b-instruct-hf:low_confidence_32:candidate_generation:32"
+        },
+        {
+          "component_id": "verify_the_latest_good_checkpoint_before_deleting_anything",
+          "component_type": "planning_rubric_hit",
+          "component_weight": 1.0,
+          "source_span": "To recover from checkpoint failures without losing the best checkpoint, use a checkpoint checkpointing strategy that saves multiple checkpoints at regular intervals. If a checkpoin",
+          "support_score": 0.3778571428571429,
+          "trajectory_family": "llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+          "trajectory_id": "plan_005:llada-8b-instruct-hf:low_confidence_32:candidate_generation:32"
+        }
+      ],
+      "source_diversity": 2,
+      "task_id": "plan_005",
+      "unsupported_addition_count": 0
+    },
+    {
+      "aggregate_score": 0.4,
+      "best_single_score": 0.4,
+      "best_single_trajectory_id": "plan_006:dream-7b-instruct-hf:entropy_32:candidate_generation:15",
+      "component_gain": 0,
+      "component_gain_ids": [],
+      "component_loss": 0,
+      "component_loss_ids": [],
+      "contradiction_count": 0,
+      "decision": {
+        "reason": "Aggregate did not beat the best individual trajectory.",
+        "status": "blocked_no_score_lift"
+      },
+      "expected_component_count": 5,
+      "expected_component_weight": 5.0,
+      "selected_components": [
+        {
+          "component_id": "compare_old_and_new_timezone_aggregation_on_sample_accounts",
+          "component_type": "planning_rubric_hit",
+          "component_weight": 1.0,
+          "source_span": "1. Identify the affected dashboard and confirm the issue. 2. Check the timezone settings and verify the migration was successful. 3. Update the timezone settings on the dashboard. ",
+          "support_score": 0.4342857142857143,
+          "trajectory_family": "dream-7b-instruct-hf:entropy_64:candidate_generation",
+          "trajectory_id": "plan_006:dream-7b-instruct-hf:entropy_64:candidate_generation:16"
+        },
+        {
+          "component_id": "separate_immediate_mitigation_from_root_cause_follow_up",
+          "component_type": "planning_rubric_hit",
+          "component_weight": 1.0,
+          "source_span": "1. Identify the affected dashboard and confirm the issue. 2. Check the timezone settings and verify the migration was successful. 3. Update the timezone settings on the dashboard. ",
+          "support_score": 0.4342857142857143,
+          "trajectory_family": "dream-7b-instruct-hf:entropy_64:candidate_generation",
+          "trajectory_id": "plan_006:dream-7b-instruct-hf:entropy_64:candidate_generation:16"
+        }
+      ],
+      "source_diversity": 1,
+      "task_id": "plan_006",
+      "unsupported_addition_count": 0
+    },
+    {
+      "aggregate_score": 0.8,
+      "best_single_score": 0.6,
+      "best_single_trajectory_id": "plan_007:dream-7b-instruct-hf:entropy_32:candidate_generation:18",
+      "component_gain": 1,
+      "component_gain_ids": [
+        "change_one_variable_at_a_time"
+      ],
+      "component_loss": 0,
+      "component_loss_ids": [],
+      "contradiction_count": 0,
+      "decision": {
+        "reason": "Aggregate beats best single with net component gain and no hard safety failures.",
+        "status": "promoted_local_scout"
+      },
+      "expected_component_count": 5,
+      "expected_component_weight": 5.0,
+      "selected_components": [
+        {
+          "component_id": "change_one_variable_at_a_time",
+          "component_type": "planning_rubric_hit",
+          "component_weight": 1.0,
+          "source_span": "To isolate the cause of divergence divergence, revert optimizer change and compare the model's performance before and after the change. This the cheapest experiment sequence as it ",
+          "support_score": 0.6103571428571428,
+          "trajectory_family": "llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+          "trajectory_id": "plan_007:llada-8b-instruct-hf:low_confidence_32:candidate_generation:36"
+        },
+        {
+          "component_id": "compare_old_and_new_optimizer_with_fixed_seed",
+          "component_type": "planning_rubric_hit",
+          "component_weight": 1.0,
+          "source_span": "To isolate the cause of divergence divergence, revert optimizer change and compare the model's performance before and after the change. This the cheapest experiment sequence as it ",
+          "support_score": 0.6103571428571428,
+          "trajectory_family": "llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+          "trajectory_id": "plan_007:llada-8b-instruct-hf:low_confidence_32:candidate_generation:36"
+        },
+        {
+          "component_id": "reproduce_with_the_smallest_run_that_still_diverges",
+          "component_type": "planning_rubric_hit",
+          "component_weight": 1.0,
+          "source_span": "1. Use the original optimizer on the free GPU to train the model. 2. Use the new optimizer on the free GPU to train the model. 3. Compare the results of the two runs. 4. If the new",
+          "support_score": 0.4328571428571429,
+          "trajectory_family": "dream-7b-instruct-hf:entropy_64:candidate_generation",
+          "trajectory_id": "plan_007:dream-7b-instruct-hf:entropy_64:candidate_generation:19"
+        },
+        {
+          "component_id": "stop_once_the_cause_is_isolated",
+          "component_type": "planning_rubric_hit",
+          "component_weight": 1.0,
+          "source_span": "To isolate the cause of divergence divergence, revert optimizer change and compare the model's performance before and after the change. This the cheapest experiment sequence as it ",
+          "support_score": 0.6103571428571428,
+          "trajectory_family": "llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+          "trajectory_id": "plan_007:llada-8b-instruct-hf:low_confidence_32:candidate_generation:36"
+        }
+      ],
+      "source_diversity": 2,
+      "task_id": "plan_007",
+      "unsupported_addition_count": 0
+    },
+    {
+      "aggregate_score": 0.6,
+      "best_single_score": 0.6,
+      "best_single_trajectory_id": "plan_008:llada-8b-instruct-hf:low_confidence_32:candidate_generation:38",
+      "component_gain": 0,
+      "component_gain_ids": [],
+      "component_loss": 0,
+      "component_loss_ids": [],
+      "contradiction_count": 0,
+      "decision": {
+        "reason": "Aggregate did not beat the best individual trajectory.",
+        "status": "blocked_no_score_lift"
+      },
+      "expected_component_count": 5,
+      "expected_component_weight": 5.0,
+      "selected_components": [
+        {
+          "component_id": "inspect_examples_where_the_score_improved",
+          "component_type": "planning_rubric_hit",
+          "component_weight": 1.0,
+          "source_span": "To test whether the system actually reasons better rather than gaming the scorer, you can compare the qualitative outputs for the same tasks across different versions of the system",
+          "support_score": 0.28285714285714286,
+          "trajectory_family": "llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+          "trajectory_id": "plan_008:llada-8b-instruct-hf:low_confidence_32:candidate_generation:38"
+        },
+        {
+          "component_id": "measure_regressions_and_evasive_answers",
+          "component_type": "planning_rubric_hit",
+          "component_weight": 1.0,
+          "source_span": "To test whether the system actually reasons better rather than gaming the scorer, you can compare the qualitative outputs for the same tasks across different versions of the system",
+          "support_score": 0.28285714285714286,
+          "trajectory_family": "llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+          "trajectory_id": "plan_008:llada-8b-instruct-hf:low_confidence_32:candidate_generation:38"
+        },
+        {
+          "component_id": "use_held_out_tasks_or_adversarial_prompts",
+          "component_type": "planning_rubric_hit",
+          "component_weight": 1.0,
+          "source_span": "To test whether the system actually reasons better rather than gaming the scorer, you can compare the qualitative outputs for the same tasks across different versions of the system",
+          "support_score": 0.28285714285714286,
+          "trajectory_family": "llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+          "trajectory_id": "plan_008:llada-8b-instruct-hf:low_confidence_32:candidate_generation:38"
+        }
+      ],
+      "source_diversity": 1,
+      "task_id": "plan_008",
+      "unsupported_addition_count": 0
+    }
+  ]
+}

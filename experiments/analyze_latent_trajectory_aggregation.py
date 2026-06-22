@@ -46,6 +46,17 @@ def main() -> int:
 
 def build_aggregation_scout(*, component_path: Path) -> dict[str, object]:
     rows = _read_jsonl(component_path)
+    return build_aggregation_scout_from_rows(
+        rows=rows,
+        input_label=str(component_path),
+    )
+
+
+def build_aggregation_scout_from_rows(
+    *,
+    rows: list[dict[str, object]],
+    input_label: str,
+) -> dict[str, object]:
     task_rows: dict[str, list[dict[str, object]]] = defaultdict(list)
     for row in rows:
         task_id = str(row.get("task_id", ""))
@@ -57,7 +68,7 @@ def build_aggregation_scout(*, component_path: Path) -> dict[str, object]:
     ]
     return {
         "generated_by": "experiments/analyze_latent_trajectory_aggregation.py",
-        "inputs": {"components": str(component_path)},
+        "inputs": {"components": input_label},
         "schema": "latent_trajectory_aggregation_scout.v1",
         "summary": _summary(task_summaries),
         "tasks": task_summaries,

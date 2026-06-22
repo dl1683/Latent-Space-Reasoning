@@ -209,11 +209,17 @@ Current scaffold:
 - Fixture rows: `experiments/latent_trajectory_aggregation_scout_components.jsonl`
 - JSON output: `eval_results/latent_trajectory_aggregation_scout.json`
 - Report: `docs/reports/diffusion/LATENT_TRAJECTORY_AGGREGATION_SCOUT.md`
+- Rubric replay script:
+  `experiments/build_latent_aggregation_replay_from_rubric_hits.py`
+- Rubric replay report:
+  `docs/reports/diffusion/LATENT_AGGREGATION_RUBRIC_REPLAY.md`
 
 Status: protocol scaffold only. The current scout validates the accounting
-logic and gate behavior on deterministic component fixtures. It is not
-model-generated statistical evidence and must not be cited as a headline
-aggregation result.
+logic and gate behavior on deterministic component fixtures. The rubric replay
+then applies the same accounting to existing scored planning trajectories and
+finds post-hoc component-union headroom. Neither artifact proves an online
+extractor, verifier, or final-answer realizer, so neither should be cited as a
+headline aggregation result.
 
 Task mix:
 

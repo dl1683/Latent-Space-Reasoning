@@ -14,6 +14,9 @@ Current high-signal generated reports:
   deterministic component-aggregation scaffold showing one local compositional
   promotion and two blocked safety cases; protocol evidence only, not a
   promoted model result.
+- [LATENT_AGGREGATION_RUBRIC_REPLAY.md](LATENT_AGGREGATION_RUBRIC_REPLAY.md):
+  post-hoc replay over existing planning rubric-hit labels; estimates oracle
+  component-union headroom, not inference-time aggregation.
 - [DIFFUSION_REPAIR_VALUE_TOMOGRAPHY.md](DIFFUSION_REPAIR_VALUE_TOMOGRAPHY.md):
   behavior-tomography audit for the cost-aware repair-spend controller.
 - [DIFFUSION_LAMBDA_REPAIR_CONTROLLER_TRANSFER.md](DIFFUSION_LAMBDA_REPAIR_CONTROLLER_TRANSFER.md):
