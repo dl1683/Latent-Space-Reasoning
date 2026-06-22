@@ -25,6 +25,7 @@ If you need one-screen onboarding, open [../START_HERE.md](../START_HERE.md) fir
 - For the post-hoc extractor failure diagnostic: [LATENT_AGGREGATION_EXTRACTOR_FAILURE_V1.md](reports/diffusion/LATENT_AGGREGATION_EXTRACTOR_FAILURE_V1.md)
 - For the post-hoc threshold replay: [LATENT_AGGREGATION_INFERENCE_V1_THRESHOLD01_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_INFERENCE_V1_THRESHOLD01_REPLAY.md)
 - For the remaining aggregation gain bottleneck: [LATENT_AGGREGATION_GAIN_FAILURE_THRESHOLD01.md](reports/diffusion/LATENT_AGGREGATION_GAIN_FAILURE_THRESHOLD01.md)
+- For the rubric-vs-score dimension gap: [LATENT_AGGREGATION_SCORE_DIMENSION_GAP_THRESHOLD01.md](reports/diffusion/LATENT_AGGREGATION_SCORE_DIMENSION_GAP_THRESHOLD01.md)
 - For near-term roadmap: [NEXT_GENERATION_REASONING_TASKS.md](../NEXT_GENERATION_REASONING_TASKS.md)
 
 ## Current result surfaces

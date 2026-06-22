@@ -40,6 +40,10 @@ Current high-signal generated reports:
   diagnostic over the threshold `0.1` replay showing the remaining bottleneck:
   `12/16` tasks lift final score without positive component gain, split between
   best-single reformatting and multi-source selection with no new components.
+- [LATENT_AGGREGATION_SCORE_DIMENSION_GAP_THRESHOLD01.md](LATENT_AGGREGATION_SCORE_DIMENSION_GAP_THRESHOLD01.md):
+  diagnostic showing why rubric-only component gain is too narrow; `12/16`
+  score-lift/no-gain tasks improve through non-rubric scoring dimensions, and
+  `4/16` do so after the best single already saturates rubric coverage.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.

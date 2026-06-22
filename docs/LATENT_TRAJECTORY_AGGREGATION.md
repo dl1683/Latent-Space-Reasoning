@@ -259,6 +259,13 @@ A follow-up gain diagnostic shows the remaining bottleneck more sharply:
 next credible experiment is not just more sampling; it needs a complement-aware
 selector that starts from the best single answer and explicitly targets
 supported components absent from or weak in that answer.
+A second score-dimension diagnostic sharpens that further: the current
+component ontology only counts rubric items, but the scorer also rewards
+causal diagnosis, specificity, constraint handling, and risk awareness. On the
+threshold `0.1` replay, `12/16` score-lift/no-gain tasks improve through these
+non-rubric dimensions, including `4/16` where the best single already has full
+rubric coverage. The next family should therefore aggregate across multiple
+latent aspect types, not only across rubric fragments.
 
 Task mix:
 

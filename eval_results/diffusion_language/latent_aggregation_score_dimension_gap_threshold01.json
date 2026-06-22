@@ -1,0 +1,678 @@
+{
+  "evidence_boundary": {
+    "reason": "Diagnostic over post-hoc threshold replay score details; use to define richer predeclared components.",
+    "status": "post_hoc_score_dimension_gap_diagnostic"
+  },
+  "generated_by": "experiments/analyze_latent_aggregation_score_dimension_gap.py",
+  "inputs": {
+    "raw": "eval_results\\diffusion_language\\latent_aggregation_inference_v1_raw.jsonl",
+    "realized": "eval_results\\diffusion_language\\latent_aggregation_inference_v1_threshold01_realized.jsonl",
+    "replay": "eval_results\\diffusion_language\\latent_aggregation_inference_v1_threshold01_replay.json"
+  },
+  "schema": "latent_aggregation_score_dimension_gap.v1",
+  "summary": {
+    "best_full_rubric_score_lift_without_gain_task_count": 4,
+    "best_full_rubric_task_count": 4,
+    "diagnosis_counts": {
+      "no_score_lift": 3,
+      "rubric_component_gain": 1,
+      "score_lift_from_non_rubric_dimensions": 8,
+      "score_lift_hidden_by_rubric_saturation": 4
+    },
+    "mean_best_non_rubric_score": 0.29526785714285714,
+    "mean_dimension_delta": {
+      "causal_diagnosis": 0.09375,
+      "completion": -0.06562499999999999,
+      "constraint_handling": 0.125,
+      "risk_awareness": 0.34375,
+      "rubric_coverage": 0.024999999999999994,
+      "specificity": 0.06919642857142856
+    },
+    "mean_non_rubric_lift": 0.09358928571428572,
+    "mean_realized_non_rubric_score": 0.38885714285714285,
+    "score_lift_without_component_gain_task_count": 12,
+    "task_count": 16
+  },
+  "tasks": [
+    {
+      "best_details": {
+        "causal_diagnosis": 0.0,
+        "completion": 1.0,
+        "constraint_handling": 0.25,
+        "risk_awareness": 0.0,
+        "rubric_coverage": 1.0,
+        "specificity": 0.16964285714285715
+      },
+      "best_full_rubric": true,
+      "best_non_rubric_score": 0.2564285714285714,
+      "best_score": 0.35642857142857143,
+      "best_single_trajectory_id": "plan_009:llada-8b-instruct-hf:schedule:repair_candidate",
+      "component_gain": 0,
+      "decision_status": "blocked_no_component_gain",
+      "diagnosis": "score_lift_hidden_by_rubric_saturation",
+      "dimension_delta": {
+        "causal_diagnosis": 0.0,
+        "completion": 0.0,
+        "constraint_handling": 0.5,
+        "risk_awareness": 0.0,
+        "rubric_coverage": 0.0,
+        "specificity": 0.10714285714285715
+      },
+      "largest_dimension_lift": "constraint_handling",
+      "non_rubric_lift": 0.10642857142857148,
+      "realized_details": {
+        "causal_diagnosis": 0.0,
+        "completion": 1.0,
+        "constraint_handling": 0.75,
+        "risk_awareness": 0.0,
+        "rubric_coverage": 1.0,
+        "specificity": 0.2767857142857143
+      },
+      "realized_non_rubric_score": 0.3628571428571429,
+      "realized_score": 0.46285714285714286,
+      "score_lift": 0.10642857142857143,
+      "score_lift_without_component_gain": true,
+      "task_id": "plan_009"
+    },
+    {
+      "best_details": {
+        "causal_diagnosis": 0.0,
+        "completion": 1.0,
+        "constraint_handling": 0.25,
+        "risk_awareness": 0.0,
+        "rubric_coverage": 0.6,
+        "specificity": 0.3839285714285714
+      },
+      "best_full_rubric": false,
+      "best_non_rubric_score": 0.29928571428571427,
+      "best_score": 0.35928571428571426,
+      "best_single_trajectory_id": "plan_010:llada-8b-instruct-hf:schedule:repair_candidate",
+      "component_gain": 0,
+      "decision_status": "online_components_good_but_realizer_failed",
+      "diagnosis": "no_score_lift",
+      "dimension_delta": {
+        "causal_diagnosis": 0.0,
+        "completion": 0.0,
+        "constraint_handling": 0.0,
+        "risk_awareness": 0.0,
+        "rubric_coverage": 0.0,
+        "specificity": -0.21428571428571425
+      },
+      "largest_dimension_lift": "none",
+      "non_rubric_lift": -0.04285714285714287,
+      "realized_details": {
+        "causal_diagnosis": 0.0,
+        "completion": 1.0,
+        "constraint_handling": 0.25,
+        "risk_awareness": 0.0,
+        "rubric_coverage": 0.6,
+        "specificity": 0.16964285714285715
+      },
+      "realized_non_rubric_score": 0.2564285714285714,
+      "realized_score": 0.3164285714285714,
+      "score_lift": -0.04285714285714287,
+      "score_lift_without_component_gain": false,
+      "task_id": "plan_010"
+    },
+    {
+      "best_details": {
+        "causal_diagnosis": 0.0,
+        "completion": 1.0,
+        "constraint_handling": 0.0,
+        "risk_awareness": 1.0,
+        "rubric_coverage": 0.6,
+        "specificity": 0.10714285714285714
+      },
+      "best_full_rubric": false,
+      "best_non_rubric_score": 0.3514285714285714,
+      "best_score": 0.4114285714285714,
+      "best_single_trajectory_id": "plan_011:llada-8b-instruct-hf:schedule:repair_candidate",
+      "component_gain": 0,
+      "decision_status": "blocked_no_component_gain",
+      "diagnosis": "score_lift_from_non_rubric_dimensions",
+      "dimension_delta": {
+        "causal_diagnosis": 0.5,
+        "completion": -0.35,
+        "constraint_handling": 0.0,
+        "risk_awareness": 0.0,
+        "rubric_coverage": 0.0,
+        "specificity": 0.0
+      },
+      "largest_dimension_lift": "causal_diagnosis",
+      "non_rubric_lift": 0.03700000000000003,
+      "realized_details": {
+        "causal_diagnosis": 0.5,
+        "completion": 0.65,
+        "constraint_handling": 0.0,
+        "risk_awareness": 1.0,
+        "rubric_coverage": 0.6,
+        "specificity": 0.10714285714285714
+      },
+      "realized_non_rubric_score": 0.38842857142857146,
+      "realized_score": 0.44842857142857145,
+      "score_lift": 0.03700000000000003,
+      "score_lift_without_component_gain": true,
+      "task_id": "plan_011"
+    },
+    {
+      "best_details": {
+        "causal_diagnosis": 0.0,
+        "completion": 1.0,
+        "constraint_handling": 0.5,
+        "risk_awareness": 0.0,
+        "rubric_coverage": 0.8,
+        "specificity": 0.5089285714285714
+      },
+      "best_full_rubric": false,
+      "best_non_rubric_score": 0.3667857142857143,
+      "best_score": 0.44678571428571434,
+      "best_single_trajectory_id": "plan_012:llada-8b-instruct-hf:schedule:repair_candidate",
+      "component_gain": 0,
+      "decision_status": "blocked_no_component_gain",
+      "diagnosis": "score_lift_from_non_rubric_dimensions",
+      "dimension_delta": {
+        "causal_diagnosis": 0.0,
+        "completion": 0.0,
+        "constraint_handling": -0.25,
+        "risk_awareness": 1.0,
+        "rubric_coverage": 0.0,
+        "specificity": -0.08035714285714285
+      },
+      "largest_dimension_lift": "risk_awareness",
+      "non_rubric_lift": 0.09142857142857136,
+      "realized_details": {
+        "causal_diagnosis": 0.0,
+        "completion": 1.0,
+        "constraint_handling": 0.25,
+        "risk_awareness": 1.0,
+        "rubric_coverage": 0.8,
+        "specificity": 0.42857142857142855
+      },
+      "realized_non_rubric_score": 0.4582142857142857,
+      "realized_score": 0.5382142857142858,
+      "score_lift": 0.09142857142857141,
+      "score_lift_without_component_gain": true,
+      "task_id": "plan_012"
+    },
+    {
+      "best_details": {
+        "causal_diagnosis": 0.25,
+        "completion": 1.0,
+        "constraint_handling": 0.0,
+        "risk_awareness": 0.0,
+        "rubric_coverage": 0.8,
+        "specificity": 0.0
+      },
+      "best_full_rubric": false,
+      "best_non_rubric_score": 0.22999999999999998,
+      "best_score": 0.31,
+      "best_single_trajectory_id": "plan_013:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "component_gain": 0,
+      "decision_status": "blocked_no_component_gain",
+      "diagnosis": "score_lift_from_non_rubric_dimensions",
+      "dimension_delta": {
+        "causal_diagnosis": -0.25,
+        "completion": 0.0,
+        "constraint_handling": 0.25,
+        "risk_awareness": 0.25,
+        "rubric_coverage": 0.0,
+        "specificity": 0.10714285714285714
+      },
+      "largest_dimension_lift": "constraint_handling",
+      "non_rubric_lift": 0.051428571428571435,
+      "realized_details": {
+        "causal_diagnosis": 0.0,
+        "completion": 1.0,
+        "constraint_handling": 0.25,
+        "risk_awareness": 0.25,
+        "rubric_coverage": 0.8,
+        "specificity": 0.10714285714285714
+      },
+      "realized_non_rubric_score": 0.2814285714285714,
+      "realized_score": 0.36142857142857143,
+      "score_lift": 0.051428571428571435,
+      "score_lift_without_component_gain": true,
+      "task_id": "plan_013"
+    },
+    {
+      "best_details": {
+        "causal_diagnosis": 0.0,
+        "completion": 1.0,
+        "constraint_handling": 0.0,
+        "risk_awareness": 0.0,
+        "rubric_coverage": 0.8,
+        "specificity": 0.10714285714285714
+      },
+      "best_full_rubric": false,
+      "best_non_rubric_score": 0.20142857142857143,
+      "best_score": 0.2814285714285715,
+      "best_single_trajectory_id": "plan_014:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "component_gain": 0,
+      "decision_status": "blocked_no_component_gain",
+      "diagnosis": "score_lift_from_non_rubric_dimensions",
+      "dimension_delta": {
+        "causal_diagnosis": 0.0,
+        "completion": 0.0,
+        "constraint_handling": 0.5,
+        "risk_awareness": 0.0,
+        "rubric_coverage": 0.0,
+        "specificity": 0.21428571428571425
+      },
+      "largest_dimension_lift": "constraint_handling",
+      "non_rubric_lift": 0.12785714285714286,
+      "realized_details": {
+        "causal_diagnosis": 0.0,
+        "completion": 1.0,
+        "constraint_handling": 0.5,
+        "risk_awareness": 0.0,
+        "rubric_coverage": 0.8,
+        "specificity": 0.3214285714285714
+      },
+      "realized_non_rubric_score": 0.3292857142857143,
+      "realized_score": 0.4092857142857143,
+      "score_lift": 0.12785714285714284,
+      "score_lift_without_component_gain": true,
+      "task_id": "plan_014"
+    },
+    {
+      "best_details": {
+        "causal_diagnosis": 0.0,
+        "completion": 1.0,
+        "constraint_handling": 0.0,
+        "risk_awareness": 1.0,
+        "rubric_coverage": 1.0,
+        "specificity": 0.21428571428571427
+      },
+      "best_full_rubric": true,
+      "best_non_rubric_score": 0.3728571428571429,
+      "best_score": 0.47285714285714286,
+      "best_single_trajectory_id": "plan_015:llada-8b-instruct-hf:random_32:candidate_generation",
+      "component_gain": 0,
+      "decision_status": "blocked_no_component_gain",
+      "diagnosis": "score_lift_hidden_by_rubric_saturation",
+      "dimension_delta": {
+        "causal_diagnosis": 0.5,
+        "completion": 0.0,
+        "constraint_handling": 0.25,
+        "risk_awareness": 0.0,
+        "rubric_coverage": 0.0,
+        "specificity": 0.16964285714285712
+      },
+      "largest_dimension_lift": "causal_diagnosis",
+      "non_rubric_lift": 0.17642857142857138,
+      "realized_details": {
+        "causal_diagnosis": 0.5,
+        "completion": 1.0,
+        "constraint_handling": 0.25,
+        "risk_awareness": 1.0,
+        "rubric_coverage": 1.0,
+        "specificity": 0.3839285714285714
+      },
+      "realized_non_rubric_score": 0.5492857142857143,
+      "realized_score": 0.6492857142857142,
+      "score_lift": 0.17642857142857138,
+      "score_lift_without_component_gain": true,
+      "task_id": "plan_015"
+    },
+    {
+      "best_details": {
+        "causal_diagnosis": 0.0,
+        "completion": 1.0,
+        "constraint_handling": 0.5,
+        "risk_awareness": 0.0,
+        "rubric_coverage": 0.4,
+        "specificity": 0.29464285714285715
+      },
+      "best_full_rubric": false,
+      "best_non_rubric_score": 0.32392857142857145,
+      "best_score": 0.3639285714285715,
+      "best_single_trajectory_id": "plan_016:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "component_gain": 0,
+      "decision_status": "blocked_no_component_gain",
+      "diagnosis": "score_lift_from_non_rubric_dimensions",
+      "dimension_delta": {
+        "causal_diagnosis": 0.75,
+        "completion": -0.35,
+        "constraint_handling": -0.5,
+        "risk_awareness": 0.75,
+        "rubric_coverage": 0.0,
+        "specificity": 0.026785714285714246
+      },
+      "largest_dimension_lift": "causal_diagnosis",
+      "non_rubric_lift": 0.11985714285714283,
+      "realized_details": {
+        "causal_diagnosis": 0.75,
+        "completion": 0.65,
+        "constraint_handling": 0.0,
+        "risk_awareness": 0.75,
+        "rubric_coverage": 0.4,
+        "specificity": 0.3214285714285714
+      },
+      "realized_non_rubric_score": 0.4437857142857143,
+      "realized_score": 0.48378571428571426,
+      "score_lift": 0.11985714285714277,
+      "score_lift_without_component_gain": true,
+      "task_id": "plan_016"
+    },
+    {
+      "best_details": {
+        "causal_diagnosis": 0.25,
+        "completion": 1.0,
+        "constraint_handling": 0.0,
+        "risk_awareness": 0.0,
+        "rubric_coverage": 0.8,
+        "specificity": 0.3214285714285714
+      },
+      "best_full_rubric": false,
+      "best_non_rubric_score": 0.29428571428571426,
+      "best_score": 0.3742857142857143,
+      "best_single_trajectory_id": "plan_017:llada-8b-instruct-hf:random_32:candidate_generation",
+      "component_gain": 0,
+      "decision_status": "blocked_no_component_gain",
+      "diagnosis": "score_lift_from_non_rubric_dimensions",
+      "dimension_delta": {
+        "causal_diagnosis": -0.25,
+        "completion": 0.0,
+        "constraint_handling": 0.5,
+        "risk_awareness": 0.25,
+        "rubric_coverage": 0.19999999999999996,
+        "specificity": -0.10714285714285712
+      },
+      "largest_dimension_lift": "constraint_handling",
+      "non_rubric_lift": 0.0510714285714286,
+      "realized_details": {
+        "causal_diagnosis": 0.0,
+        "completion": 1.0,
+        "constraint_handling": 0.5,
+        "risk_awareness": 0.25,
+        "rubric_coverage": 1.0,
+        "specificity": 0.21428571428571427
+      },
+      "realized_non_rubric_score": 0.34535714285714286,
+      "realized_score": 0.4453571428571429,
+      "score_lift": 0.07107142857142862,
+      "score_lift_without_component_gain": true,
+      "task_id": "plan_017"
+    },
+    {
+      "best_details": {
+        "causal_diagnosis": 0.0,
+        "completion": 1.0,
+        "constraint_handling": 0.0,
+        "risk_awareness": 0.0,
+        "rubric_coverage": 0.8,
+        "specificity": 0.21428571428571427
+      },
+      "best_full_rubric": false,
+      "best_non_rubric_score": 0.22285714285714286,
+      "best_score": 0.3028571428571429,
+      "best_single_trajectory_id": "plan_018:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "component_gain": 0,
+      "decision_status": "blocked_no_component_gain",
+      "diagnosis": "score_lift_from_non_rubric_dimensions",
+      "dimension_delta": {
+        "causal_diagnosis": 0.0,
+        "completion": 0.0,
+        "constraint_handling": 0.5,
+        "risk_awareness": 1.0,
+        "rubric_coverage": 0.0,
+        "specificity": 0.2767857142857143
+      },
+      "largest_dimension_lift": "risk_awareness",
+      "non_rubric_lift": 0.29035714285714287,
+      "realized_details": {
+        "causal_diagnosis": 0.0,
+        "completion": 1.0,
+        "constraint_handling": 0.5,
+        "risk_awareness": 1.0,
+        "rubric_coverage": 0.8,
+        "specificity": 0.49107142857142855
+      },
+      "realized_non_rubric_score": 0.5132142857142857,
+      "realized_score": 0.5932142857142857,
+      "score_lift": 0.2903571428571428,
+      "score_lift_without_component_gain": true,
+      "task_id": "plan_018"
+    },
+    {
+      "best_details": {
+        "causal_diagnosis": 0.0,
+        "completion": 1.0,
+        "constraint_handling": 0.5,
+        "risk_awareness": 0.0,
+        "rubric_coverage": 0.8,
+        "specificity": 0.3392857142857143
+      },
+      "best_full_rubric": false,
+      "best_non_rubric_score": 0.33285714285714285,
+      "best_score": 0.41285714285714287,
+      "best_single_trajectory_id": "plan_019:llada-8b-instruct-hf:schedule:repair_candidate",
+      "component_gain": 0,
+      "decision_status": "online_components_good_but_realizer_failed",
+      "diagnosis": "no_score_lift",
+      "dimension_delta": {
+        "causal_diagnosis": 0.0,
+        "completion": 0.0,
+        "constraint_handling": -0.5,
+        "risk_awareness": 0.0,
+        "rubric_coverage": 0.0,
+        "specificity": -0.12500000000000003
+      },
+      "largest_dimension_lift": "none",
+      "non_rubric_lift": -0.10999999999999999,
+      "realized_details": {
+        "causal_diagnosis": 0.0,
+        "completion": 1.0,
+        "constraint_handling": 0.0,
+        "risk_awareness": 0.0,
+        "rubric_coverage": 0.8,
+        "specificity": 0.21428571428571427
+      },
+      "realized_non_rubric_score": 0.22285714285714286,
+      "realized_score": 0.3028571428571429,
+      "score_lift": -0.10999999999999999,
+      "score_lift_without_component_gain": false,
+      "task_id": "plan_019"
+    },
+    {
+      "best_details": {
+        "causal_diagnosis": 0.0,
+        "completion": 1.0,
+        "constraint_handling": 0.25,
+        "risk_awareness": 0.0,
+        "rubric_coverage": 0.8,
+        "specificity": 0.0
+      },
+      "best_full_rubric": false,
+      "best_non_rubric_score": 0.2225,
+      "best_score": 0.3025,
+      "best_single_trajectory_id": "plan_020:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "component_gain": 0,
+      "decision_status": "blocked_no_component_gain",
+      "diagnosis": "score_lift_from_non_rubric_dimensions",
+      "dimension_delta": {
+        "causal_diagnosis": 0.0,
+        "completion": 0.0,
+        "constraint_handling": 0.0,
+        "risk_awareness": 0.25,
+        "rubric_coverage": 0.0,
+        "specificity": 0.0
+      },
+      "largest_dimension_lift": "risk_awareness",
+      "non_rubric_lift": 0.037500000000000006,
+      "realized_details": {
+        "causal_diagnosis": 0.0,
+        "completion": 1.0,
+        "constraint_handling": 0.25,
+        "risk_awareness": 0.25,
+        "rubric_coverage": 0.8,
+        "specificity": 0.0
+      },
+      "realized_non_rubric_score": 0.26,
+      "realized_score": 0.34,
+      "score_lift": 0.03750000000000003,
+      "score_lift_without_component_gain": true,
+      "task_id": "plan_020"
+    },
+    {
+      "best_details": {
+        "causal_diagnosis": 0.0,
+        "completion": 1.0,
+        "constraint_handling": 0.25,
+        "risk_awareness": 0.0,
+        "rubric_coverage": 1.0,
+        "specificity": 0.16964285714285715
+      },
+      "best_full_rubric": true,
+      "best_non_rubric_score": 0.2564285714285714,
+      "best_score": 0.35642857142857143,
+      "best_single_trajectory_id": "plan_021:llada-8b-instruct-hf:schedule:repair_candidate",
+      "component_gain": 0,
+      "decision_status": "blocked_no_component_gain",
+      "diagnosis": "score_lift_hidden_by_rubric_saturation",
+      "dimension_delta": {
+        "causal_diagnosis": 0.0,
+        "completion": 0.0,
+        "constraint_handling": -0.25,
+        "risk_awareness": 1.0,
+        "rubric_coverage": 0.0,
+        "specificity": 0.36607142857142855
+      },
+      "largest_dimension_lift": "risk_awareness",
+      "non_rubric_lift": 0.18071428571428577,
+      "realized_details": {
+        "causal_diagnosis": 0.0,
+        "completion": 1.0,
+        "constraint_handling": 0.0,
+        "risk_awareness": 1.0,
+        "rubric_coverage": 1.0,
+        "specificity": 0.5357142857142857
+      },
+      "realized_non_rubric_score": 0.43714285714285717,
+      "realized_score": 0.5371428571428571,
+      "score_lift": 0.18071428571428572,
+      "score_lift_without_component_gain": true,
+      "task_id": "plan_021"
+    },
+    {
+      "best_details": {
+        "causal_diagnosis": 0.0,
+        "completion": 1.0,
+        "constraint_handling": 0.5,
+        "risk_awareness": 0.0,
+        "rubric_coverage": 0.8,
+        "specificity": 0.10714285714285714
+      },
+      "best_full_rubric": false,
+      "best_non_rubric_score": 0.2864285714285714,
+      "best_score": 0.36642857142857144,
+      "best_single_trajectory_id": "plan_022:llada-8b-instruct-hf:schedule:repair_candidate",
+      "component_gain": 1,
+      "decision_status": "online_promoted_local",
+      "diagnosis": "rubric_component_gain",
+      "dimension_delta": {
+        "causal_diagnosis": 0.25,
+        "completion": 0.0,
+        "constraint_handling": 0.5,
+        "risk_awareness": 1.0,
+        "rubric_coverage": 0.19999999999999996,
+        "specificity": 0.3214285714285714
+      },
+      "largest_dimension_lift": "risk_awareness",
+      "non_rubric_lift": 0.34928571428571437,
+      "realized_details": {
+        "causal_diagnosis": 0.25,
+        "completion": 1.0,
+        "constraint_handling": 1.0,
+        "risk_awareness": 1.0,
+        "rubric_coverage": 1.0,
+        "specificity": 0.42857142857142855
+      },
+      "realized_non_rubric_score": 0.6357142857142858,
+      "realized_score": 0.7357142857142858,
+      "score_lift": 0.36928571428571433,
+      "score_lift_without_component_gain": false,
+      "task_id": "plan_022"
+    },
+    {
+      "best_details": {
+        "causal_diagnosis": 0.0,
+        "completion": 1.0,
+        "constraint_handling": 0.5,
+        "risk_awareness": 0.0,
+        "rubric_coverage": 0.6,
+        "specificity": 0.16964285714285715
+      },
+      "best_full_rubric": false,
+      "best_non_rubric_score": 0.29892857142857143,
+      "best_score": 0.35892857142857143,
+      "best_single_trajectory_id": "plan_023:llada-8b-instruct-hf:schedule:repair_candidate",
+      "component_gain": 0,
+      "decision_status": "online_components_good_but_realizer_failed",
+      "diagnosis": "no_score_lift",
+      "dimension_delta": {
+        "causal_diagnosis": 0.0,
+        "completion": -0.35,
+        "constraint_handling": 0.0,
+        "risk_awareness": 0.0,
+        "rubric_coverage": 0.0,
+        "specificity": 0.0
+      },
+      "largest_dimension_lift": "none",
+      "non_rubric_lift": -0.063,
+      "realized_details": {
+        "causal_diagnosis": 0.0,
+        "completion": 0.65,
+        "constraint_handling": 0.5,
+        "risk_awareness": 0.0,
+        "rubric_coverage": 0.6,
+        "specificity": 0.16964285714285715
+      },
+      "realized_non_rubric_score": 0.23592857142857143,
+      "realized_score": 0.29592857142857143,
+      "score_lift": -0.063,
+      "score_lift_without_component_gain": false,
+      "task_id": "plan_023"
+    },
+    {
+      "best_details": {
+        "causal_diagnosis": 0.0,
+        "completion": 1.0,
+        "constraint_handling": 0.5,
+        "risk_awareness": 0.5,
+        "rubric_coverage": 1.0,
+        "specificity": 0.3392857142857143
+      },
+      "best_full_rubric": true,
+      "best_non_rubric_score": 0.40785714285714286,
+      "best_score": 0.5078571428571429,
+      "best_single_trajectory_id": "plan_024:llada-8b-instruct-hf:schedule:repair_candidate",
+      "component_gain": 0,
+      "decision_status": "blocked_no_component_gain",
+      "diagnosis": "score_lift_hidden_by_rubric_saturation",
+      "dimension_delta": {
+        "causal_diagnosis": 0.0,
+        "completion": 0.0,
+        "constraint_handling": 0.5,
+        "risk_awareness": 0.0,
+        "rubric_coverage": 0.0,
+        "specificity": 0.044642857142857095
+      },
+      "largest_dimension_lift": "constraint_handling",
+      "non_rubric_lift": 0.09392857142857142,
+      "realized_details": {
+        "causal_diagnosis": 0.0,
+        "completion": 1.0,
+        "constraint_handling": 1.0,
+        "risk_awareness": 0.5,
+        "rubric_coverage": 1.0,
+        "specificity": 0.3839285714285714
+      },
+      "realized_non_rubric_score": 0.5017857142857143,
+      "realized_score": 0.6017857142857143,
+      "score_lift": 0.09392857142857136,
+      "score_lift_without_component_gain": true,
+      "task_id": "plan_024"
+    }
+  ]
+}
