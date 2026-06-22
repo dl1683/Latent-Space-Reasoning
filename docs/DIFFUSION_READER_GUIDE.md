@@ -17,6 +17,9 @@ This guide is the short routing map for new contributors and reviewers.
 - Cost-favored line is documented in the same file for lower-threshold deployments.
 - The current mechanism framing is in
   [DIFFUSION_REASONING_GEOMETRY_THEORY.md](DIFFUSION_REASONING_GEOMETRY_THEORY.md).
+- The next cross-family paradigm is in
+  [LATENT_TRAJECTORY_AGGREGATION.md](LATENT_TRAJECTORY_AGGREGATION.md). Treat it
+  as a research protocol, not a promoted result.
 - Spend decisions are currently governed by the denoise-phase repairability policy plus
   `candidate_aware_promotion_v1`.
 
@@ -28,8 +31,9 @@ Follow this sequence when building an evidence argument:
 2. [CLAIM_EVIDENCE_MAP.md](../CLAIM_EVIDENCE_MAP.md)
 3. [DIFFUSION_THEORY_CLAIM_LEDGER.md](DIFFUSION_THEORY_CLAIM_LEDGER.md)
 4. [docs/DIFFUSION_REASONING_GEOMETRY_THEORY.md](DIFFUSION_REASONING_GEOMETRY_THEORY.md)
-5. [DIFFUSION_REASONING_PROOF_OBJECT.md](reports/diffusion/DIFFUSION_REASONING_PROOF_OBJECT.md)
-6. [DIFFUSION_SPEND_POLICY_DECISION.md](reports/diffusion/DIFFUSION_SPEND_POLICY_DECISION.md)
+5. [LATENT_TRAJECTORY_AGGREGATION.md](LATENT_TRAJECTORY_AGGREGATION.md)
+6. [DIFFUSION_REASONING_PROOF_OBJECT.md](reports/diffusion/DIFFUSION_REASONING_PROOF_OBJECT.md)
+7. [DIFFUSION_SPEND_POLICY_DECISION.md](reports/diffusion/DIFFUSION_SPEND_POLICY_DECISION.md)
 
 ## High-Signal Core Docs
 

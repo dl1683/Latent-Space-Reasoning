@@ -34,6 +34,21 @@ trajectory diversity into reliable reasoning gains.
 
 ## Task Backlog
 
+### Latent Trajectory Aggregation Pivot
+
+The next cross-family doctrine is
+`docs/LATENT_TRAJECTORY_AGGREGATION.md`. It generalizes the project from
+winner-take-all trajectory selection to component-level synthesis across
+multiple latent trajectories. Treat this as a research protocol, not a promoted
+result: token perturbation, diffusion repair, denoise history, anchors, and
+candidate promotion become intervention surfaces that expose useful partial
+components for aggregation.
+
+The first proof target is not "which method wins." It is whether a fused answer
+can beat the best individual candidate by preserving non-overlapping verified
+components from different latent trajectories without introducing
+contradictions.
+
 ### Current Narrow Execution Protocol
 
 The next non-ARC execution path is locked in
@@ -883,6 +898,11 @@ repairs do not report arithmetic operator noise.
 - [ ] T064. Add a scorer calibration report: reliability curve, Brier score, and false-positive analysis.
 - [ ] T065. Add active-learning loops that request labels for high-uncertainty perturbation candidates.
 - [ ] T066. Add multi-objective selection: accuracy, low hallucination, low off-target drift, and diversity.
+- [ ] T066a. Build the first component extraction schema for latent aggregation: component ID, task slot, source trajectory, source span, verifier status, contradiction group, and support score.
+- [ ] T066b. Add a component-level aggregation scout over planning tasks where prefix perturbation, greedy, and diffusion repair candidates expose different rubric components.
+- [ ] T066c. Compare aggregate answer quality against best single candidate, whole-candidate selector, and majority/self-consistency baselines.
+- [ ] T066d. Add aggregation metrics: component gain, component loss, contradiction count, unsupported additions, source diversity, and total generation/repair/fusion cost.
+- [ ] T066e. Promote no aggregation claim unless it beats the best single candidate on a predeclared or held-out slice with zero hard contradictions.
 - [ ] T067. Implement Pareto-front selection instead of scalar-only fitness.
 - [ ] T068. Add novelty search over distribution-geometry signatures.
 - [ ] T069. Add quality-diversity archives keyed by answer-token mass and trajectory divergence.

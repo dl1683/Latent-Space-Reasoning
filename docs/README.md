@@ -20,6 +20,7 @@ After this, move to one of:
 
 - mechanism details: `DIFFUSION_REASONING_GEOMETRY_THEORY.md`
 - theory proofs: `DIFFUSION_THEORY_CLAIM_LEDGER.md`
+- next paradigm: `LATENT_TRAJECTORY_AGGREGATION.md`
 - future work: `NEXT_GENERATION_REASONING_TASKS.md`
 
 If you want the same path in one page, read [docs/NAVIGATION.md](NAVIGATION.md) first.
@@ -32,6 +33,7 @@ If you want the same path in one page, read [docs/NAVIGATION.md](NAVIGATION.md) 
 - [DIFFUSION_GROUND_TRUTH_INDEX.md](../DIFFUSION_GROUND_TRUTH_INDEX.md) - canonical file hashes and run IDs.
 - [DIFFUSION_READER_GUIDE.md](DIFFUSION_READER_GUIDE.md) - evidence argument route for reviewers.
 - [DIFFUSION_THEORY_CLAIM_LEDGER.md](DIFFUSION_THEORY_CLAIM_LEDGER.md) - falsifiers and next proof obligations.
+- [LATENT_TRAJECTORY_AGGREGATION.md](LATENT_TRAJECTORY_AGGREGATION.md) - next doctrine for component-level aggregation across latent trajectories.
 - [meditations/README.md](../meditations/README.md) - question-first long-term thinking, not front-page evidence.
 
 ## Then read (architecture and controls)

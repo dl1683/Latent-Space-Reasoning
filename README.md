@@ -37,6 +37,7 @@ Then choose one path:
 
 - Evidence review: continue with [docs/DIFFUSION_THEORY_CLAIM_LEDGER.md](docs/DIFFUSION_THEORY_CLAIM_LEDGER.md)
 - Mechanism depth: continue with [docs/DIFFUSION_REASONING_GEOMETRY_THEORY.md](docs/DIFFUSION_REASONING_GEOMETRY_THEORY.md)
+- Next paradigm: continue with [docs/LATENT_TRAJECTORY_AGGREGATION.md](docs/LATENT_TRAJECTORY_AGGREGATION.md)
 - Future work: continue with [NEXT_GENERATION_REASONING_TASKS.md](NEXT_GENERATION_REASONING_TASKS.md)
 
 If you need quick orientation only, skip everything else and do not open:
@@ -57,6 +58,7 @@ If you need quick orientation only, skip everything else and do not open:
 | [DIFFUSION_GROUND_TRUTH_INDEX.md](DIFFUSION_GROUND_TRUTH_INDEX.md) | Canonical raw/report/score artifact pointers and hashes |
 | [docs/DIFFUSION_READER_GUIDE.md](docs/DIFFUSION_READER_GUIDE.md) | Reader map for diffusion claims, theory, and validation surfaces |
 | [docs/DIFFUSION_THEORY_CLAIM_LEDGER.md](docs/DIFFUSION_THEORY_CLAIM_LEDGER.md) | Conservative theory ledger with falsifiers and next proof obligations |
+| [docs/LATENT_TRAJECTORY_AGGREGATION.md](docs/LATENT_TRAJECTORY_AGGREGATION.md) | Next research doctrine for composing useful fragments across multiple latent trajectories |
 | [docs/README.md](docs/README.md) | Single-page documentation index for onboarding and navigation |
 | [docs/ARCHIVE_INDEX.md](docs/ARCHIVE_INDEX.md) | Archive-only areas and when to use them |
 | [meditations/README.md](meditations/README.md) | Private question-first notes used to maintain the paradigm layer of the project |

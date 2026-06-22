@@ -16,6 +16,7 @@ If you need one-screen onboarding, open [../START_HERE.md](../START_HERE.md) fir
 - Read the full path in: [docs/DIFFUSION_READER_GUIDE.md](DIFFUSION_READER_GUIDE.md)
 - For mechanism and theory: [DIFFUSION_REASONING_GEOMETRY_THEORY.md](DIFFUSION_REASONING_GEOMETRY_THEORY.md)
 - For falsifiers and obligations: [DIFFUSION_THEORY_CLAIM_LEDGER.md](DIFFUSION_THEORY_CLAIM_LEDGER.md)
+- For the next aggregation paradigm: [LATENT_TRAJECTORY_AGGREGATION.md](LATENT_TRAJECTORY_AGGREGATION.md)
 - For near-term roadmap: [NEXT_GENERATION_REASONING_TASKS.md](../NEXT_GENERATION_REASONING_TASKS.md)
 
 ## Current result surfaces

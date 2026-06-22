@@ -612,6 +612,26 @@ labels from final/history counterfactuals. A theorem-like claim should then
 survive three checks: local fit, holdout over generated target rows, and a fresh
 GPU slice without retuning thresholds.
 
+## Extension: Multi-Trajectory Aggregation
+
+The current diffusion theory is mostly a selection and repair theory: expose or
+edit trajectories, then choose the best candidate under verifier and cost
+constraints.
+
+The next doctrine is aggregation: preserve useful verified components from
+multiple trajectories instead of discarding every non-selected branch. This
+extends the same information-accounting discipline. A component from a prefix
+perturbation, a denoise repair, a history state, or a semantic anchor is only
+usable if its source, verifier status, contradiction risk, and cost are recorded.
+
+The aggregation proof target is stronger than oracle selection:
+
+`S(aggregate({tau_i})) > max_i S(final(tau_i))`
+
+because the aggregate retained non-overlapping useful components from multiple
+trajectory branches. The protocol and metrics for this next research layer are
+defined in [LATENT_TRAJECTORY_AGGREGATION.md](LATENT_TRAJECTORY_AGGREGATION.md).
+
 ## Current Theoretical Boundary
 
 The strongest current assertion is:
