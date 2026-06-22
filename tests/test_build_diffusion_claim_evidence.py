@@ -358,17 +358,19 @@ def test_default_claims_include_phase_hybrid_mechanism_equivalent_frontier():
     assert "moe_mixed_phase_hybrid_preserve_seeded_equivalent_frontier" in claim_ids
 
 
-def test_default_claims_include_value_proxy_budget_frontier():
+def test_default_claims_include_budget_frontiers():
     claim_ids = {claim.claim_id for claim in DEFAULT_CLAIMS}
 
     assert "moe_mixed_phase_final_preserve_seeded_value_proxy_budget" in claim_ids
-    assert DEFAULT_PUBLIC_BUDGET_CLAIM_ID == "moe_mixed_phase_final_preserve_seeded_value_proxy_budget"
+    assert "moe_mixed_decomposed_four_head_selector_budget" in claim_ids
+    assert DEFAULT_PUBLIC_BUDGET_CLAIM_ID == "moe_mixed_decomposed_four_head_selector_budget"
 
 
-def test_default_canonical_slots_include_value_proxy_budget_frontier():
+def test_default_canonical_slots_include_budget_frontiers():
     slot_ids = {slot.slot_id for slot in DEFAULT_CANONICAL_SLOTS}
 
     assert "moe_phase_final_value_proxy_budget" in slot_ids
+    assert "moe_decomposed_four_head_selector_budget" in slot_ids
 
 
 def test_default_canonical_slots_include_phase_hybrid_mechanism_equivalent_frontier():
