@@ -7,6 +7,7 @@ from latent_reasoning.diffusion.backends import (
     _ensure_all_tied_weights_keys_compat,
     _ensure_generation_config_validate_compat,
     _ensure_transformers_default_rope,
+    _fill_model_config_defaults,
     _fill_generation_special_token_ids,
     _llada_apply_revision_remask,
     _llada_mask_token_id,
@@ -224,6 +225,20 @@ def test_legacy_tie_weights_wrapper_accepts_new_finalize_kwargs():
 
     assert model.tie_weights(missing_keys=["lm_head.weight"], recompute_mapping=False) == "tied"
     assert model.calls == 1
+
+
+def test_model_config_defaults_backfill_missing_use_cache():
+    class Config:
+        pass
+
+    class Model:
+        config = Config()
+
+    model = Model()
+
+    _fill_model_config_defaults(model)
+
+    assert model.config.use_cache is False
 
 
 def test_hf_backend_rejects_gguf_candidate_without_loading():

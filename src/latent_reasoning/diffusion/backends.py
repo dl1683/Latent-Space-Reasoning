@@ -128,6 +128,7 @@ class HFDiffusionBackend:
             trust_remote_code=True,
             low_cpu_mem_usage=True,
         )
+        _fill_model_config_defaults(model)
         if is_llada_family(self.candidate.family) and getattr(tokenizer, "padding_side", None) != "left":
             tokenizer.padding_side = "left"
         self.model = model.to(device).eval()
@@ -437,6 +438,15 @@ def _wrap_legacy_tie_weights(model: Any) -> None:
 
     _compatible_tie_weights._latent_reasoning_tie_weights_compat = True  # type: ignore[attr-defined]
     model.tie_weights = _compatible_tie_weights
+
+
+def _fill_model_config_defaults(model: Any) -> None:
+    """Backfill conservative config defaults required by older remote code."""
+    config = getattr(model, "config", None)
+    if config is None:
+        return
+    if not hasattr(config, "use_cache"):
+        setattr(config, "use_cache", False)
 
 
 def _fill_generation_special_token_ids(generation_config: Any, tokenizer: Any, model: Any) -> None:
