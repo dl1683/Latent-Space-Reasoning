@@ -1,5 +1,8 @@
 # Goals
 
+> **ARCHIVED**: This file is a historical planning snapshot.  
+> For the current evidence and execution surface, start with [START_HERE.md](START_HERE.md).
+
 ## Mission
 - Liberate high-quality intelligence for everyone through low-cost, low-resource, transparent, and auditable systems.
 - Prefer large efficiency gains (10x-100x lower cost) even with modest quality tradeoffs versus maximum-benchmark systems.

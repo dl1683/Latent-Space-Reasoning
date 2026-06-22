@@ -1,5 +1,10 @@
 # Soft Prompt Perturbation: Trajectory Modulation and Latent Knowledge Access in Small Language Models
 
+> **ARCHIVED**: This is a historical brief kept for continuity. Use the promoted
+> documentation path (`START_HERE.md` -> `DIFFUSION_PUBLIC_BENCHMARK.md` ->
+> `CLAIM_EVIDENCE_MAP.md` -> `DIFFUSION_GROUND_TRUTH_INDEX.md`) for current
+> claims and reproductions.
+
 > **UPDATED April 2026** — Now includes legal reasoning cross-domain validation (12 tasks, blind-reviewed). Planning task findings (5 tasks) plus new legal reasoning 3-way comparison showing 92% oracle perturbation win rate on expert legal analysis.
 
 **Devansh** | March 2026

@@ -45,6 +45,8 @@ If you need quick orientation only, skip everything else and do not open:
 - `meditations/question_*.md`,
 - archive-level reports in `docs/reports/diffusion/`.
 - everything in `eval_results/`.
+- historical snapshots (`GOALS.md`, `ARTICLE_UPDATE.md`, `RESEARCH_BRIEF.md`) unless you
+  specifically want legacy context.
 
 ## Read First
 

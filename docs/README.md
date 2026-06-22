@@ -14,6 +14,8 @@ Read only these four files first, in order:
 
 If you want an even shorter path, start with [START_HERE.md](../START_HERE.md).
 
+For historical snapshots and legacy narratives, jump to [ARCHIVE_INDEX.md](ARCHIVE_INDEX.md) first.
+
 After this, move to one of:
 
 - mechanism details: `DIFFUSION_REASONING_GEOMETRY_THEORY.md`
@@ -49,6 +51,8 @@ If you want the same path in one page, read [docs/NAVIGATION.md](NAVIGATION.md) 
 - Deep scans of `docs/reports/diffusion/` (historical archive).  
 - `question_*.md` files in `meditations/` (private reflection layer).
 - Files in `eval_results/` unless a promoted claim surface already points there.
+- Historical one-off writeups (`../GOALS.md`, `../ARTICLE_UPDATE.md`, `../RESEARCH_BRIEF.md`)
+  unless you are intentionally tracing project evolution.
 
 ## How to stay current
 

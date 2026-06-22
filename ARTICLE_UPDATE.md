@@ -1,5 +1,10 @@
 # Latent Space Reasoning: What We've Learned So Far
 
+> **ARCHIVED**: This is a historical writeup that predates the current promoted
+> evidence structure. For current claims and reproducibility, use
+> [START_HERE.md](START_HERE.md), [DIFFUSION_PUBLIC_BENCHMARK.md](DIFFUSION_PUBLIC_BENCHMARK.md),
+> and [CLAIM_EVIDENCE_MAP.md](CLAIM_EVIDENCE_MAP.md).
+
 > **UPDATED April 2026** — Now includes legal reasoning validation across 12 professional
 > tasks (Part 9). Oracle perturbation beats baseline on 11/12 blind-reviewed legal tasks
 > (+1.6 avg, +3.4 peak). Also covers planning tasks (Part 7), cross-model validation

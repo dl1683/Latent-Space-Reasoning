@@ -26,6 +26,11 @@ If you are new, use [NAVIGATION.md](NAVIGATION.md) instead.
   The experiment corpus is large; prefer entry points listed in
   [README.md](../README.md) and [DIFFUSION_READER_GUIDE.md](DIFFUSION_READER_GUIDE.md).
 
+- Historical root notes:
+  - [GOALS.md](../GOALS.md) — legacy milestone file from the earlier PGRMS planning phase.
+  - [ARTICLE_UPDATE.md](../ARTICLE_UPDATE.md) — historical article draft and result narrative.
+  - [RESEARCH_BRIEF.md](../RESEARCH_BRIEF.md) — compressed research update used before the current evidence promotion pipeline.
+
 ## How to use archived folders
 
 1. Confirm the statement is already in a promoted claim/artifact surface.
