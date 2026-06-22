@@ -4,6 +4,8 @@ Use this file if you have no context and want the shortest path to current work.
 
 ## Start Here (read in order)
 
+If you need one-screen onboarding, open [../START_HERE.md](../START_HERE.md) first.
+
 1. [README.md](../README.md)
 2. [DIFFUSION_PUBLIC_BENCHMARK.md](../DIFFUSION_PUBLIC_BENCHMARK.md)
 3. [CLAIM_EVIDENCE_MAP.md](../CLAIM_EVIDENCE_MAP.md)

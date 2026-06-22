@@ -24,7 +24,7 @@ the lower-cost point for the controller/cost claim.
 
 ## If You Are New to This Repo (Start Here)
 
-Use this order:
+Use [START_HERE.md](START_HERE.md), or this order:
 
 1. [DIFFUSION_PUBLIC_BENCHMARK.md](DIFFUSION_PUBLIC_BENCHMARK.md)  
 2. [CLAIM_EVIDENCE_MAP.md](CLAIM_EVIDENCE_MAP.md)  

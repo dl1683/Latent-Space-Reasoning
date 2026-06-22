@@ -8,10 +8,11 @@ This folder is organized by **current workflow** first, then **historical archiv
 Read only these four files first, in order:
 
 1. [README.md](../README.md)
-2. [DIFFUSION_READER_GUIDE.md](DIFFUSION_READER_GUIDE.md)
-3. [DIFFUSION_PUBLIC_BENCHMARK.md](../DIFFUSION_PUBLIC_BENCHMARK.md)
-4. [CLAIM_EVIDENCE_MAP.md](../CLAIM_EVIDENCE_MAP.md) or
-   [DIFFUSION_GROUND_TRUTH_INDEX.md](../DIFFUSION_GROUND_TRUTH_INDEX.md)
+2. [DIFFUSION_PUBLIC_BENCHMARK.md](../DIFFUSION_PUBLIC_BENCHMARK.md)
+3. [CLAIM_EVIDENCE_MAP.md](../CLAIM_EVIDENCE_MAP.md)
+4. [DIFFUSION_GROUND_TRUTH_INDEX.md](../DIFFUSION_GROUND_TRUTH_INDEX.md)
+
+If you want an even shorter path, start with [START_HERE.md](../START_HERE.md).
 
 After this, move to one of:
 
