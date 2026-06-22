@@ -35,8 +35,9 @@ These are the stable, promoted docs updated by recent work:
   Start here for private note classification: [../meditations/README.md](../meditations/README.md)
 - Deep-session notes: [tesla_session/](../tesla_session/)  
   Start here for historical session history: [docs/ARCHIVE_INDEX.md](ARCHIVE_INDEX.md)
-- Historical narrative snapshots: [GOALS.md](../GOALS.md), [ARTICLE_UPDATE.md](../ARTICLE_UPDATE.md),
-  [RESEARCH_BRIEF.md](../RESEARCH_BRIEF.md)  
+- Historical narrative snapshots: [GOALS.md](../archive/legacy_notes/GOALS.md),
+  [ARTICLE_UPDATE.md](../archive/legacy_notes/ARTICLE_UPDATE.md),
+  [RESEARCH_BRIEF.md](../archive/legacy_notes/RESEARCH_BRIEF.md)  
   Start here when you need legacy project context: [docs/ARCHIVE_INDEX.md](ARCHIVE_INDEX.md)
 
 ## If you need to reproduce or check evidence

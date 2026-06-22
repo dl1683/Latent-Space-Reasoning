@@ -101,7 +101,8 @@ arithmetic is wrong, or a raw artifact is too small for the promoted score file.
 For claims that depend on mechanism-level diagnostics, `DEFAULT_CLAIMS` can now
 declare required repair-candidate metrics; the validator enforces those
 thresholds directly from `repair_candidate_summary`.
-It also scans `README.md`, `RESEARCH_BRIEF.md`, `ARTICLE_UPDATE.md`, and
+It also scans `README.md`, `archive/legacy_notes/RESEARCH_BRIEF.md`,
+`archive/legacy_notes/ARTICLE_UPDATE.md`, and
 `EXPERIMENTS.md` for stale diffusion score/report/raw references in
 public-claim contexts, using the generated ground-truth index as the canonical
 allowlist.

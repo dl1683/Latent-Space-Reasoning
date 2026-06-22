@@ -1359,9 +1359,10 @@ task from `0.399` to `0.465`, and carries run ID
 Implemented v62: stale public diffusion evidence references are now gated in
 code, not only by reviewer memory. `experiments/scan_stale_diffusion_docs.py`
 loads the generated ground-truth index, extracts canonical score/report/raw
-artifacts, and scans `README.md`, `RESEARCH_BRIEF.md`, `ARTICLE_UPDATE.md`,
-and `EXPERIMENTS.md` for non-canonical diffusion artifacts used in current,
-canonical, promoted, headline, public, or claim contexts. The normal
+artifacts, and scans `README.md`, `archive/legacy_notes/RESEARCH_BRIEF.md`,
+`archive/legacy_notes/ARTICLE_UPDATE.md`, and `EXPERIMENTS.md` for
+non-canonical diffusion artifacts used in current, canonical, promoted, headline,
+public, or claim contexts. The normal
 `experiments/validate_diffusion_claim_evidence.py` gate calls this scanner, so
 a top-level public doc cannot quietly keep pointing at an old benchmark file
 after `DIFFUSION_GROUND_TRUTH_INDEX.md` changes. Historical diagnostic mentions
