@@ -31,6 +31,7 @@ the lower-cost point for the controller/cost claim.
 | [DIFFUSION_GROUND_TRUTH_INDEX.md](DIFFUSION_GROUND_TRUTH_INDEX.md) | Canonical raw/report/score artifact pointers and hashes |
 | [docs/DIFFUSION_READER_GUIDE.md](docs/DIFFUSION_READER_GUIDE.md) | Reader map for diffusion claims, theory, and validation surfaces |
 | [docs/DIFFUSION_THEORY_CLAIM_LEDGER.md](docs/DIFFUSION_THEORY_CLAIM_LEDGER.md) | Conservative theory ledger with falsifiers and next proof obligations |
+| [meditations/README.md](meditations/README.md) | Private question-first notes used to maintain the paradigm layer of the project |
 | [docs/GATED_ATTENTION_PROBE.md](docs/GATED_ATTENTION_PROBE.md) | Current Qwen3-Next gated-attention probe status and blockers |
 | [docs/reports/diffusion/README.md](docs/reports/diffusion/README.md) | Historical/generated diffusion report archive |
 | [docs/reports/diffusion/DIFFUSION_REPAIR_VALUE_TOMOGRAPHY.md](docs/reports/diffusion/DIFFUSION_REPAIR_VALUE_TOMOGRAPHY.md) | Behavior-tomography audit for the next repair-spend controller |
@@ -64,15 +65,9 @@ beside score.
 
 ## Current Gated-Attention Status
 
-The Qwen3-Next gated-attention probe is not a result yet. The frozen claim
-requires a real soft-prefix / `inputs_embeds` path, not a GGUF serving smoke.
-Windows now resolves the Qwen3-Next config through source Transformers, but
-model construction is blocked by the Triton dependency path. WSL2 can see the
-RTX 5090, but Python bootstrap requires interactive `sudo` for
-`python3.12-venv` and `python3-pip`.
-
-Use [docs/GATED_ATTENTION_PROBE.md](docs/GATED_ATTENTION_PROBE.md) for the
-single current status page.
+Current blocker/runner status for Qwen3-Next is maintained in
+[docs/GATED_ATTENTION_PROBE.md](docs/GATED_ATTENTION_PROBE.md). Use that file for
+the latest environment and dependency notes.
 
 ## Development
 
