@@ -1,0 +1,197 @@
+{
+  "best_threshold_by_f1": {
+    "f1": 1.0,
+    "false_negative_count": 0,
+    "false_positive_count": 0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "threshold": 0.1,
+    "true_positive_count": 230
+  },
+  "boundary": "Post-hoc diagnostic over frozen labels. It may guide the next frozen extractor, but it is not a promoted online aggregation result.",
+  "component_count": 560,
+  "false_negative_examples": [
+    {
+      "best_source_span": "Make a decision within the one hour before the customer review.",
+      "best_support_score": 0.14285714285714285,
+      "rubric_item": "check the original source text before trusting summaries",
+      "task_id": "plan_009"
+    },
+    {
+      "best_source_span": "Compare the results of the new run with the results of the run before the upgrade to determine if the gain is real.",
+      "best_support_score": 0.14285714285714285,
+      "rubric_item": "state what evidence would justify keeping the upgrade",
+      "task_id": "plan_010"
+    },
+    {
+      "best_source_span": "Additionally, ensure that the repair system improves the average score despite the trade-off of creating longer answers that users find harder to audit.",
+      "best_support_score": 0.14285714285714285,
+      "rubric_item": "include user-facing or reviewer-facing acceptance criteria",
+      "task_id": "plan_019"
+    },
+    {
+      "best_source_span": "Choose logging option: - Final answers.",
+      "best_support_score": 0.14285714285714285,
+      "rubric_item": "choose logs that expose the suspected failure mechanism",
+      "task_id": "plan_022"
+    },
+    {
+      "best_source_span": "If it passes without the hidden examples, the improvement is real and should likely be kept.",
+      "best_support_score": 0.16666666666666666,
+      "rubric_item": "state whether the claim should be narrowed or withdrawn",
+      "task_id": "plan_017"
+    },
+    {
+      "best_source_span": "To audit the automated judge, create a set of questions that cover all checklist items.",
+      "best_support_score": 0.16666666666666666,
+      "rubric_item": "separate checklist coverage from causal usefulness",
+      "task_id": "plan_021"
+    },
+    {
+      "best_source_span": "To audit the automated judge, create a set of questions that cover all checklist items.",
+      "best_support_score": 0.16666666666666666,
+      "rubric_item": "state what failure would invalidate the judge",
+      "task_id": "plan_021"
+    },
+    {
+      "best_source_span": "To validate the new refusal rule, conduct a small test run with a subset of the data data that includes harmless edge cases.",
+      "best_support_score": 0.16666666666666666,
+      "rubric_item": "measure false refusals and missed harmful cases",
+      "task_id": "plan_024"
+    },
+    {
+      "best_source_span": "To determine if the improvement is real, conduct a quick test by removing the hidden examples from the prompt template and running the benchmark again.",
+      "best_support_score": 0.2,
+      "rubric_item": "measure regressions as well as the headline gain",
+      "task_id": "plan_017"
+    },
+    {
+      "best_source_span": "the the the the if the the if the the same in the same the the the the same the the the same as the same name the same the the same name the a the the same the the the same't the s",
+      "best_support_score": 0.2,
+      "rubric_item": "compare old and new rules on the same locked cases",
+      "task_id": "plan_018"
+    },
+    {
+      "best_source_span": "This approach allows for a balanced assessment of the schedule's performance across different types of tasks and avoids overfitting to a single family.",
+      "best_support_score": 0.2,
+      "rubric_item": "report family-level gains and regressions",
+      "task_id": "plan_020"
+    },
+    {
+      "best_source_span": "To audit the automated judge, create a set of questions that cover all checklist items.",
+      "best_support_score": 0.2,
+      "rubric_item": "add a penalty for contradictions or irrelevant checklist dumping",
+      "task_id": "plan_021"
+    }
+  ],
+  "generated_by": "experiments/analyze_latent_aggregation_extractor_failure.py",
+  "inputs": {
+    "components": "eval_results\\diffusion_language\\latent_aggregation_inference_v1_components.jsonl",
+    "replay": "eval_results\\diffusion_language\\latent_aggregation_inference_v1_replay.json"
+  },
+  "replay_summary": {
+    "component_f1": 0.2899628252788104,
+    "component_false_negative_count": 191,
+    "component_false_positive_count": 0,
+    "component_precision": 1.0,
+    "component_recall": 0.16956521739130434,
+    "component_true_positive_count": 39,
+    "decision_status_counts": {
+      "blocked_no_component_gain": 13,
+      "online_components_good_but_realizer_failed": 3
+    },
+    "mean_best_single_score": 0.3740178571428572,
+    "mean_realized_aggregate_score": 0.1435357142857143,
+    "online_promoted_task_count": 0,
+    "online_promoted_task_fraction": 0.0,
+    "online_promoted_wilson95": [
+      0.0,
+      0.1936076805344365
+    ],
+    "task_count": 16
+  },
+  "schema": "latent_aggregation_extractor_failure.v1",
+  "threshold_sweep": [
+    {
+      "f1": 1.0,
+      "false_negative_count": 0,
+      "false_positive_count": 0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "threshold": 0.1,
+      "true_positive_count": 230
+    },
+    {
+      "f1": 0.8641975308641976,
+      "false_negative_count": 55,
+      "false_positive_count": 0,
+      "precision": 1.0,
+      "recall": 0.7608695652173914,
+      "threshold": 0.2,
+      "true_positive_count": 175
+    },
+    {
+      "f1": 0.6627906976744187,
+      "false_negative_count": 116,
+      "false_positive_count": 0,
+      "precision": 1.0,
+      "recall": 0.4956521739130435,
+      "threshold": 0.3,
+      "true_positive_count": 114
+    },
+    {
+      "f1": 0.435374149659864,
+      "false_negative_count": 166,
+      "false_positive_count": 0,
+      "precision": 1.0,
+      "recall": 0.2782608695652174,
+      "threshold": 0.4,
+      "true_positive_count": 64
+    },
+    {
+      "f1": 0.2899628252788104,
+      "false_negative_count": 191,
+      "false_positive_count": 0,
+      "precision": 1.0,
+      "recall": 0.16956521739130434,
+      "threshold": 0.5,
+      "true_positive_count": 39
+    },
+    {
+      "f1": 0.15261044176706826,
+      "false_negative_count": 211,
+      "false_positive_count": 0,
+      "precision": 1.0,
+      "recall": 0.08260869565217391,
+      "threshold": 0.6,
+      "true_positive_count": 19
+    },
+    {
+      "f1": 0.05907172995780591,
+      "false_negative_count": 223,
+      "false_positive_count": 0,
+      "precision": 1.0,
+      "recall": 0.030434782608695653,
+      "threshold": 0.7,
+      "true_positive_count": 7
+    },
+    {
+      "f1": 0.03418803418803419,
+      "false_negative_count": 226,
+      "false_positive_count": 0,
+      "precision": 1.0,
+      "recall": 0.017391304347826087,
+      "threshold": 0.8,
+      "true_positive_count": 4
+    },
+    {
+      "f1": 0.0,
+      "false_negative_count": 230,
+      "false_positive_count": 0,
+      "precision": 0.0,
+      "recall": 0.0,
+      "threshold": 0.9,
+      "true_positive_count": 0
+    }
+  ]
+}

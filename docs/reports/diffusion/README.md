@@ -28,6 +28,10 @@ Current high-signal generated reports:
 - [LATENT_AGGREGATION_INFERENCE_V1_REPLAY.md](LATENT_AGGREGATION_INFERENCE_V1_REPLAY.md):
   real frozen GPU replay over 16 planning tasks; negative aggregation result
   with `0/16` online promotions and failed predeclared statistical gates.
+- [LATENT_AGGREGATION_EXTRACTOR_FAILURE_V1.md](LATENT_AGGREGATION_EXTRACTOR_FAILURE_V1.md):
+  post-hoc extractor failure diagnostic showing the current literal threshold
+  is too conservative on the frozen replay labels; useful for the next freeze,
+  not a promoted online result.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.

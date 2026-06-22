@@ -22,6 +22,7 @@ If you need one-screen onboarding, open [../START_HERE.md](../START_HERE.md) fir
 - For the frozen inference-time aggregation run: [LATENT_AGGREGATION_INFERENCE_V1_FREEZE.md](reports/diffusion/LATENT_AGGREGATION_INFERENCE_V1_FREEZE.md)
 - For the inference aggregation pipeline smoke check: [LATENT_AGGREGATION_INFERENCE_SMOKE_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_INFERENCE_SMOKE_REPLAY.md)
 - For the real frozen inference aggregation result: [LATENT_AGGREGATION_INFERENCE_V1_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_INFERENCE_V1_REPLAY.md)
+- For the post-hoc extractor failure diagnostic: [LATENT_AGGREGATION_EXTRACTOR_FAILURE_V1.md](reports/diffusion/LATENT_AGGREGATION_EXTRACTOR_FAILURE_V1.md)
 - For near-term roadmap: [NEXT_GENERATION_REASONING_TASKS.md](../NEXT_GENERATION_REASONING_TASKS.md)
 
 ## Current result surfaces

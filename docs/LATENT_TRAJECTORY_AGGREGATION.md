@@ -246,6 +246,11 @@ components, while the template realizer copies selected rubric labels rather
 than synthesizing task-conditioned answers strong enough to beat the best LLaDA
 repair candidate.
 
+A post-hoc extractor diagnostic on the same frozen labels shows that the first
+literal threshold was too conservative: a lower support threshold recovers the
+frozen rubric components without false positives on this slice. That finding
+must be frozen before reuse; it cannot retroactively promote the failed run.
+
 Task mix:
 
 - 8 planning tasks with explicit rubric components.
