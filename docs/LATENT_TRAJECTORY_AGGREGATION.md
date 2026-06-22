@@ -288,6 +288,11 @@ weak-complement-driven: the `9` complement tasks average `0.072222` non-rubric
 lift and `0.087778` score lift, but `15/24` tasks have no complement material.
 The next freeze should therefore improve complement discovery coverage or use
 separate predeclared gates for coverage and conditional complement quality.
+A coverage-gap diagnostic sharpens that prescription: `14/15` no-complement
+tasks are anchor-dominance cases on the frozen aspect ontology, while only
+`1/15` is a positive-but-below-threshold near miss. That means v3 should not be
+primarily a threshold tweak; it should add targeted aspect-deficit probes or a
+second candidate family conditioned on missing non-rubric dimensions.
 
 Task mix:
 

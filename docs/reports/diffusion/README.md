@@ -63,6 +63,10 @@ Current high-signal generated reports:
   post-replay failure analysis showing the miss is coverage-driven: complement
   tasks average `0.072222` non-rubric lift, but only `9/24` tasks have complement
   material, diluting the all-task mean below threshold.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V2_COVERAGE_GAP.md](LATENT_AGGREGATION_MULTI_ASPECT_V2_COVERAGE_GAP.md):
+  coverage blocker diagnostic showing `14/15` no-complement tasks are anchor
+  dominance on the frozen aspect ontology and only `1/15` is a below-threshold
+  near miss.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.

@@ -31,6 +31,7 @@ If you need one-screen onboarding, open [../START_HERE.md](../START_HERE.md) fir
 - For held-out multi-aspect v2 complement headroom: [LATENT_AGGREGATION_MULTI_ASPECT_V2_HEADROOM.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V2_HEADROOM.md)
 - For held-out multi-aspect v2 replay: [LATENT_AGGREGATION_MULTI_ASPECT_V2_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V2_REPLAY.md)
 - For held-out multi-aspect v2 failure analysis: [LATENT_AGGREGATION_MULTI_ASPECT_V2_FAILURE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V2_FAILURE.md)
+- For held-out multi-aspect v2 coverage blockers: [LATENT_AGGREGATION_MULTI_ASPECT_V2_COVERAGE_GAP.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V2_COVERAGE_GAP.md)
 - For near-term roadmap: [NEXT_GENERATION_REASONING_TASKS.md](../NEXT_GENERATION_REASONING_TASKS.md)
 
 ## Current result surfaces
