@@ -44,6 +44,10 @@ Current high-signal generated reports:
   diagnostic showing why rubric-only component gain is too narrow; `12/16`
   score-lift/no-gain tasks improve through non-rubric scoring dimensions, and
   `4/16` do so after the best single already saturates rubric coverage.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V2_FREEZE.md](LATENT_AGGREGATION_MULTI_ASPECT_V2_FREEZE.md):
+  frozen held-out v2 contract over `plan_025..plan_048` that promotes
+  aggregation from rubric-item stitching to multi-aspect latent fusion across
+  rubric, causal, specificity, constraint, and risk aspects.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.

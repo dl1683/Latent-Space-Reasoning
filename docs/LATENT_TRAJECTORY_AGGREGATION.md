@@ -266,6 +266,11 @@ threshold `0.1` replay, `12/16` score-lift/no-gain tasks improve through these
 non-rubric dimensions, including `4/16` where the best single already has full
 rubric coverage. The next family should therefore aggregate across multiple
 latent aspect types, not only across rubric fragments.
+That follow-up is frozen as multi-aspect v2 on held-out tasks
+`plan_025..plan_048`, with aspect types for rubric items, causal diagnosis,
+specificity, constraint handling, and risk awareness. Its promotion gates
+require separate reporting of rubric gain and dimension gain so a score lift
+cannot hide inside an underspecified component definition.
 
 Task mix:
 

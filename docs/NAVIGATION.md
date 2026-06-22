@@ -26,6 +26,7 @@ If you need one-screen onboarding, open [../START_HERE.md](../START_HERE.md) fir
 - For the post-hoc threshold replay: [LATENT_AGGREGATION_INFERENCE_V1_THRESHOLD01_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_INFERENCE_V1_THRESHOLD01_REPLAY.md)
 - For the remaining aggregation gain bottleneck: [LATENT_AGGREGATION_GAIN_FAILURE_THRESHOLD01.md](reports/diffusion/LATENT_AGGREGATION_GAIN_FAILURE_THRESHOLD01.md)
 - For the rubric-vs-score dimension gap: [LATENT_AGGREGATION_SCORE_DIMENSION_GAP_THRESHOLD01.md](reports/diffusion/LATENT_AGGREGATION_SCORE_DIMENSION_GAP_THRESHOLD01.md)
+- For the next held-out multi-aspect aggregation freeze: [LATENT_AGGREGATION_MULTI_ASPECT_V2_FREEZE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V2_FREEZE.md)
 - For near-term roadmap: [NEXT_GENERATION_REASONING_TASKS.md](../NEXT_GENERATION_REASONING_TASKS.md)
 
 ## Current result surfaces

@@ -1,0 +1,193 @@
+{
+  "aspect_ontology": {
+    "aspect_types": [
+      "rubric_item",
+      "causal_diagnosis",
+      "specificity",
+      "constraint_handling",
+      "risk_awareness"
+    ],
+    "dimension_aspects": {
+      "causal_diagnosis": "candidate names causes, mechanisms, tradeoffs, confounds, or why the failure occurs",
+      "constraint_handling": "candidate preserves explicit constraints, budgets, limits, ordering, or rollback boundaries",
+      "risk_awareness": "candidate names risk, regression, false positive, false negative, abuse, safety, or failure modes",
+      "specificity": "candidate uses concrete measurement, validation, logging, baseline, threshold, owner, or time markers"
+    },
+    "dimension_support_rule": "predeclared cheap scorer-dimension probes from candidate text only",
+    "rubric_support_threshold": 0.1
+  },
+  "failure_taxonomy": [
+    "rubric_extractor_false_positive",
+    "rubric_extractor_false_negative",
+    "dimension_probe_false_positive",
+    "dimension_probe_false_negative",
+    "selector_recovered_anchor_only",
+    "selector_added_no_complement_aspect",
+    "realizer_dropped_delta_aspect",
+    "realizer_added_unsupported_claim",
+    "aggregate_no_score_lift",
+    "rubric_gain_but_dimension_loss",
+    "dimension_gain_but_rubric_loss"
+  ],
+  "generated_by": "experiments/build_latent_aggregation_multi_aspect_v2_freeze.py",
+  "prior_diagnostics": {
+    "boundary": "post_hoc_v1_diagnostics_define_v2_hypothesis_not_v1_promotion",
+    "gain_failure": {
+      "path": "eval_results\\diffusion_language\\latent_aggregation_gain_failure_threshold01.json",
+      "sha256": "ffed2598c471b12adebdb97da8c625351dcfe7df4262b13d6f54e00582958120",
+      "summary": {
+        "diagnosis_counts": {
+          "component_headroom_lost_in_realizer": 3,
+          "positive_component_gain": 1,
+          "score_lift_from_best_single_reformatting": 5,
+          "score_lift_from_multi_source_but_no_new_components": 7
+        },
+        "mean_realized_score_lift": 0.09608928571428571,
+        "multi_source_without_component_gain_task_count": 10,
+        "positive_component_gain_task_count": 1,
+        "realizer_failure_task_count": 3,
+        "score_lift_task_count": 13,
+        "score_lift_without_component_gain_task_count": 12,
+        "task_count": 16
+      }
+    },
+    "score_dimension_gap": {
+      "path": "eval_results\\diffusion_language\\latent_aggregation_score_dimension_gap_threshold01.json",
+      "sha256": "fb882db58e41c94007207ce497833ac944c06b7548f3a63f85b19c34a39cf1a8",
+      "summary": {
+        "best_full_rubric_score_lift_without_gain_task_count": 4,
+        "best_full_rubric_task_count": 4,
+        "diagnosis_counts": {
+          "no_score_lift": 3,
+          "rubric_component_gain": 1,
+          "score_lift_from_non_rubric_dimensions": 8,
+          "score_lift_hidden_by_rubric_saturation": 4
+        },
+        "mean_best_non_rubric_score": 0.29526785714285714,
+        "mean_dimension_delta": {
+          "causal_diagnosis": 0.09375,
+          "completion": -0.06562499999999999,
+          "constraint_handling": 0.125,
+          "risk_awareness": 0.34375,
+          "rubric_coverage": 0.024999999999999994,
+          "specificity": 0.06919642857142856
+        },
+        "mean_non_rubric_lift": 0.09358928571428572,
+        "mean_realized_non_rubric_score": 0.38885714285714285,
+        "score_lift_without_component_gain_task_count": 12,
+        "task_count": 16
+      }
+    }
+  },
+  "realizer_contract": {
+    "name": "anchor_preserve_delta_realizer_v2",
+    "requirements": [
+      "start from the anchor answer's supported structure",
+      "add selected complement aspects as explicit deltas",
+      "do not add unsupported claims beyond selected aspects",
+      "emit one final answer per task before final scoring"
+    ],
+    "status": "must_emit_final_answer_before_rescoring"
+  },
+  "schema": "latent_aggregation_multi_aspect_v2_freeze.v1",
+  "selector_contract": {
+    "anchor": "best single candidate by pre-rescore task score",
+    "forbidden_inputs": [
+      "held-out task labels",
+      "post-run realized aggregate score",
+      "post-run promotion decision",
+      "oracle component union"
+    ],
+    "name": "best_anchor_plus_complement_aspect_selector_v2",
+    "selection_rule": [
+      "preserve all supported anchor rubric components unless contradicted",
+      "select complement aspects only when anchor support is absent or weaker",
+      "prefer aspects with source diversity across trajectory families",
+      "record whether each selected aspect is rubric or scorer-dimension evidence"
+    ],
+    "status": "must_be_frozen_before_labels"
+  },
+  "statistical_gates": {
+    "maximum_hard_contradiction_count": 0,
+    "maximum_unsupported_addition_count": 0,
+    "minimum_aggregate_win_count": 5,
+    "minimum_aggregate_win_fraction": 0.20833333333333334,
+    "minimum_mean_non_rubric_lift": 0.03,
+    "minimum_task_count": 24,
+    "minimum_wilson_lower_bound": 0.05,
+    "must_report_final_answer_score_not_only_component_union": true,
+    "must_report_rubric_and_dimension_gain_separately": true,
+    "must_report_wilson95": true
+  },
+  "task_count": 24,
+  "task_ids": [
+    "plan_025",
+    "plan_026",
+    "plan_027",
+    "plan_028",
+    "plan_029",
+    "plan_030",
+    "plan_031",
+    "plan_032",
+    "plan_033",
+    "plan_034",
+    "plan_035",
+    "plan_036",
+    "plan_037",
+    "plan_038",
+    "plan_039",
+    "plan_040",
+    "plan_041",
+    "plan_042",
+    "plan_043",
+    "plan_044",
+    "plan_045",
+    "plan_046",
+    "plan_047",
+    "plan_048"
+  ],
+  "task_preset": "latent_aggregation_multi_aspect_v2_plan025_048",
+  "task_source": {
+    "path": "experiments\\general_reasoning_tasks_scout.jsonl",
+    "sha256": "6ea8986f9a63238c0618f9ccf9f1b31121c5904bbb9b242ab45eb204c25ca9ac",
+    "task_hashes": {
+      "plan_025": "53f846003a0738e0e22606eb6ccfd5683fdd609f97fbbb2fd8a9a63be0ef4839",
+      "plan_026": "2192b8adcaa14e85a2b7fd7ac27eb2d47e437b3dcd8de522b6df74a468c23350",
+      "plan_027": "a01c8c55d6196a76db397c7f12574879649c5569d4aff54a0185995c65555f6b",
+      "plan_028": "b5d56740e56816c8cecc8217fb15632df3456c77618652ca14acd8985de970fb",
+      "plan_029": "27aa2566bef845c7b90c3a75855db396b338c1919e56e0ab247c30c20c927a95",
+      "plan_030": "882d4a40838c583f18166195ee561102f31eceb0b7ed785a5096bef7b9a9da6d",
+      "plan_031": "3aff4bdc6bfaaf33b922c368a782be6075b616b76c0500dbed59a83736455771",
+      "plan_032": "660f99e0a9c4aedf3f6eacf90a57e2ee5c1c96a9214f2de4d05bb752c68f8280",
+      "plan_033": "c6ff26da1a7b4744f967f5bf89b7db247616caacec5ea64afd01f92b991345cb",
+      "plan_034": "480a7ee6369f953e96047ea5ab9ea4f573012b3bd010d958b7a230cf34f96903",
+      "plan_035": "66da9a758d4b9b54a6dce52352ab541fb0868756800b43957bd6caf5dbc9ee04",
+      "plan_036": "800ff0a941fa6d49b382e8eec9d5d2c776da2c1ea69a1881185c9b854a1e6c36",
+      "plan_037": "ac56d15fd6564ec386a2d8f1a4ba584b4778c3f0852514de4915e1df9c86147f",
+      "plan_038": "f9a0cd493731450fcb4ee32dcdf14c23602bdd85d8718b164f9e8a8f2d678dc4",
+      "plan_039": "1e6efd440db77ae6e737211bf3902c7ee8455adb20c2b60dc7c7bbeffa71116e",
+      "plan_040": "dfa7777c97d0f25ab0e521ba6853dc4b8ba96745a000c07d1c73c3003d22bb6b",
+      "plan_041": "b29c49e737c4f970d82ced4868d2b3711234652de7751c9dc59e22e966d0130e",
+      "plan_042": "d395528f6115e7b5217a52e204bb9505a63c7da26713d90d48abbc378f59ba93",
+      "plan_043": "b8bb54d4be5e311c5e597ec116fc8af2c46dc030527347721c9fe2a75eaee893",
+      "plan_044": "d5db2eb3e35afab1907b7129cf6deb3f6175d21179be572ba86c23eaa32a0a8e",
+      "plan_045": "8df6732289b82f9f50c83d29ec6225d1de77116a676ee8aff676920416085bf8",
+      "plan_046": "792878f3ba0683f56071d17131dd1ae5f2b2fce5ed105430f6ff56a9507a9755",
+      "plan_047": "102170de9a3e86ea0cef74908235b4a37e282ee6b3f22cc0cd2d2d646331f3f4",
+      "plan_048": "ec36276fc71e8404ee7c8515066e18d18e2a43811c5061f6a86c220430a32b89"
+    }
+  },
+  "trajectory_generation_contract": {
+    "families": [
+      "fixed_low_confidence_32",
+      "random_32",
+      "temperature_entropy_64",
+      "history_prefix_25_repair_when_spend_gate_allows",
+      "final_preserve_repair_when_spend_gate_allows"
+    ],
+    "gpu_command": "python experiments\\run_diffusion_three_arm_benchmark.py --task-ids plan_025,plan_026,plan_027,plan_028,plan_029,plan_030,plan_031,plan_032,plan_033,plan_034,plan_035,plan_036,plan_037,plan_038,plan_039,plan_040,plan_041,plan_042,plan_043,plan_044,plan_045,plan_046,plan_047,plan_048 --candidates dream-7b-instruct-hf,llada-8b-instruct-hf --limit-schedules 3 --limit-evolved-schedules 0 --limit-repair-candidates 2 --include-history-repairs --history-repair-fractions 0.25 --repair-pack constraint_span_phase_final_preserve_seeded_gated --repair-spend-trigger denoise_phase_repairability --repair-selector generated_repair_value_v1 --repair-promotion-margin 0.02 --trajectory-selector planning_state --device cuda --dtype bfloat16 --raw-output eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v2_raw.jsonl --scores-output eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v2_scores.json --report-output docs\\reports\\diffusion\\LATENT_AGGREGATION_MULTI_ASPECT_V2_LABEL_REPORT.md",
+    "minimum_trajectories_per_task": 3,
+    "raw_output": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v2_raw.jsonl",
+    "scores_output": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v2_scores.json"
+  }
+}
