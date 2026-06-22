@@ -33,7 +33,7 @@ Prepending **2 random embedding-scale tokens** to the input of Qwen3-4B (Q4) imp
 
 **Random noise and W-projected latents are statistically indistinguishable** (Mann-Whitney p = 1.0). Direction carries no signal. The dose-response is **non-monotonic** — 2 tokens is optimal, and more tokens actually degrades performance back toward 44%. At n=10, 2-token directions achieve 100% oracle coverage (25/25).
 
-![Condition Comparison](experiments/figures/fig1_condition_comparison.png)
+_Figure path is no longer tracked in-repo._ See `experiments/fig_dose_response.png` for available plot output and regenerate this figure as needed.
 
 ---
 
@@ -48,7 +48,7 @@ Strict categorization (n=10, 2-token):
 - **Full oracle**: 25/25 = **100%** from 10 two-token directions
 - **Oracle from 3 random 2-tok directions**: ~77% (19/25)
 
-![Error Redistribution](experiments/figures/fig3_error_redistribution.png)
+_Figure path is no longer tracked in-repo._
 
 ---
 
@@ -68,7 +68,7 @@ We propose **trajectory perturbation** as the primary mechanism. Evidence:
 | No-think mode (any prefix) | +0pp | Chain-of-thought is the mediating mechanism |
 | Easy tasks (92% baseline) | -7pp | Effect reverses on tasks the model already solves well |
 
-![Mechanism Evidence](experiments/figures/fig7_mechanism_summary.png)
+_Figure path is no longer tracked in-repo. Use `paper/main.pdf` for the latest mechanism summary illustration._
 
 ### How it works
 
@@ -80,7 +80,7 @@ We propose **trajectory perturbation** as the primary mechanism. Evidence:
 - Without prefix: efficient structured computation, finishes within token budget
 - With prefix: exploratory rambling, exhausts the 1024-token limit before reaching an answer
 
-![Generation Time](experiments/figures/fig5_generation_time.png)
+_Figure path is no longer tracked in-repo._
 
 The effect is mediated by **token budget**: correct answers average ~60s of generation, while wrong answers consistently hit the max_new_tokens ceiling (~80s = 1024 tokens). The prefix shifts output *policy*, not reasoning *quality*.
 
@@ -100,7 +100,7 @@ The relationship between prefix token count and accuracy is **non-monotonic**:
 
 Two random tokens is the sweet spot. Adding more tokens actually *hurts* — 3 and 8 tokens drop back to ~44%, likely because longer random prefixes induce excessive exploratory behavior that exhausts the token budget. At n=10, solve counts vary (std=1.87), confirming direction matters for *which* tasks but total count clusters around the mean.
 
-![Dose Response](experiments/figures/fig4_dose_response.png)
+![Dose Response](experiments/fig_dose_response.png)
 
 ---
 
@@ -133,7 +133,7 @@ The effect is **difficulty-dependent** and acts as a **policy switch**, not a ge
 
 The pattern is consistent with a **policy switch** rather than a generic compute boost: perturbation helps tasks where the model's default mode fails, but causes overthinking on tasks it already handles efficiently. Note: Spearman correlation of |answer| with *delta* accuracy (gain over baseline) is not significant (r=-0.295, p=0.15), and logistic regression with a quadratic term shows no significant inverted-U (p=0.15). The stochastic resonance analogy is suggestive but not statistically confirmed.
 
-![Cross Difficulty](experiments/figures/fig6_cross_difficulty.png)
+_Figure path is no longer tracked in-repo._
 
 ---
 
@@ -272,14 +272,14 @@ All figures generated from experiment data. Source: `experiments/create_figures.
 
 | Figure | Description |
 |--------|-------------|
-| [Fig 1](experiments/figures/fig1_condition_comparison.png) | Accuracy across all prefix conditions |
-| [Fig 2](experiments/figures/fig2_task_heatmap.png) | Per-task correctness heatmap |
-| [Fig 3](experiments/figures/fig3_error_redistribution.png) | Error redistribution analysis |
-| [Fig 4](experiments/figures/fig4_dose_response.png) | Token count dose-response |
-| [Fig 5](experiments/figures/fig5_generation_time.png) | Generation time vs correctness |
-| [Fig 6](experiments/figures/fig6_cross_difficulty.png) | Cross-difficulty comparison |
-| [Fig 7](experiments/figures/fig7_mechanism_summary.png) | Mechanism evidence summary |
-| [Fig 8](experiments/figures/fig8_coverage_budget.png) | Oracle coverage vs perturbation budget |
+| Fig 1 | Not tracked in this repo (legacy path removed). |
+| Fig 2 | Not tracked in this repo (legacy path removed). |
+| Fig 3 | Not tracked in this repo (legacy path removed). |
+| [Fig 4](experiments/fig_dose_response.png) | Token count dose-response |
+| Fig 5 | Not tracked in this repo (legacy path removed). |
+| Fig 6 | Not tracked in this repo (legacy path removed). |
+| Fig 7 | Not tracked in this repo; mechanism notes are in `paper/main.pdf`. |
+| [Fig 8](experiments/fig_oracle_coverage.png) | Oracle coverage vs perturbation budget |
 
 ---
 

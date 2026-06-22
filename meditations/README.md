@@ -1,29 +1,34 @@
-# Meditations Index?
+# Meditations Index
 
-This folder is the private, question-first working surface for paradigm and reasoning-process design.
-It is intentionally separate from the promoted evidence system, run logs, and claim ledgers.
+This folder is private and question-first.
+It is intentionally separate from the promoted evidence surface (`README`, `docs`, and `CLAIM_*` files).
+Use it to track uncertainty, assumptions, and what still needs evidence before claims move outward.
 
-## What Is In This Folder?
+## What is in this folder?
 
-- `question_*.md` files are focused question taxonomies for a single topic.
-- `question_ladder.md` is the top-level refinement chain used to compose related lines of inquiry.
-- `question_map.md` is the high-level curation map for what the question corpus is trying to preserve.
+- `question_*.md` files are focused question taxonomies for one topic each.
+- `question_ladder.md` is the top-level refinement chain used to connect related topics.
+- `question_map.md` is the high-level curation map for what the question corpus should preserve.
 
-## What Should Stay Here?
+## What should stay here?
 
-- Questions, uncertainty statements, maintenance questions, and question refinements.
-- Meta-level process and epistemic hygiene questions.
-- Documentation of what needs more evidence before any claim can be promoted.
+- Questions, uncertainty statements, maintenance checks, and refinements.
+- Meta-level process notes about reasoning quality and epistemic hygiene.
+- Evidence gaps that must be closed before a claim can be promoted.
 
-## What Should Be Promoted Out?
+## What should move out?
 
-- Concrete reproducible claims with evidence trails: `README.md`, `DIFFUSION_PUBLIC_BENCHMARK.md`, `CLAIM_EVIDENCE_MAP.md`, `DIFFUSION_GROUND_TRUTH_INDEX.md`.
-- Stable test and control artifacts with reproducible hashes.
-- Theory claims and status updates in the `docs/DIFFUSION_*` ledger/readers.
+- Concrete reproducible claims with evidence trails:
+  - `README.md`
+  - `DIFFUSION_PUBLIC_BENCHMARK.md`
+  - `CLAIM_EVIDENCE_MAP.md`
+  - `DIFFUSION_GROUND_TRUTH_INDEX.md`
+- Stable test/control artifacts with reproducible hashes.
+- Promoted theory claims and status updates in `docs/DIFFUSION_*` ledger/readers.
 
-## What To Update Next?
+## What to update next?
 
-- What has changed in the public evidence stack since this folder was last updated?
-- What new uncertainty changed the priority of existing question files?
-- What question file is no longer useful and should be retired to keep the corpus clean?
-- What question file needs a deeper "what would falsify this" branch before moving into README-level claims?
+- What has changed in the public evidence stack since this file list was last reviewed?
+- What new uncertainty changed the priority of existing questions?
+- Which question files are still useful, and which should be archived?
+- Which questions need a deeper "what would falsify this" branch before public promotion?
