@@ -9,10 +9,14 @@ It is a deterministic protocol scout, not a promoted model result: the rows are 
 - Aggregate wins: `2`
 - Promoted tasks: `1`
 - Blocked tasks: `2`
+- Aggregate win fraction: `0.666667`
+- Promoted task fraction: `0.333333`
+- Promoted task Wilson 95% interval: `0.061492..0.792340`
 - Mean best-single score: `0.438889`
 - Mean aggregate score: `0.805556`
 - Mean component gain: `1.666667`
 - Mean component loss: `0.000000`
+- Decision counts: `blocked_contradiction=1, blocked_unsupported=1, promoted_local_scout=1`
 
 ## Task Decisions
 

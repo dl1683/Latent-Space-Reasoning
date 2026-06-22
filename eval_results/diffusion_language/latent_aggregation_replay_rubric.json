@@ -10,14 +10,24 @@
   "schema": "latent_aggregation_rubric_replay.v1",
   "summary": {
     "aggregate_win_count": 2,
+    "aggregate_win_fraction": 0.25,
     "blocked_task_count": 6,
     "component_row_count": 200,
+    "decision_status_counts": {
+      "blocked_no_score_lift": 6,
+      "promoted_local_scout": 2
+    },
     "mean_aggregate_score": 0.725,
     "mean_best_single_score": 0.675,
     "mean_component_gain": 0.25,
     "mean_component_loss": 0.0,
     "planning_record_count": 40,
     "promoted_task_count": 2,
+    "promoted_task_fraction": 0.25,
+    "promoted_task_wilson95": [
+      0.07147921275210901,
+      0.5907245696898311
+    ],
     "promoted_tasks": [
       "plan_005",
       "plan_007"

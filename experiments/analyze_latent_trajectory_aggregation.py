@@ -93,10 +93,17 @@ def render_markdown(result: dict[str, object]) -> str:
         f"- Aggregate wins: `{summary.get('aggregate_win_count', 0)}`",
         f"- Promoted tasks: `{summary.get('promoted_task_count', 0)}`",
         f"- Blocked tasks: `{summary.get('blocked_task_count', 0)}`",
+        f"- Aggregate win fraction: `{_format_float(summary.get('aggregate_win_fraction'))}`",
+        f"- Promoted task fraction: `{_format_float(summary.get('promoted_task_fraction'))}`",
+        (
+            "- Promoted task Wilson 95% interval: "
+            f"`{_format_interval(summary.get('promoted_task_wilson95'))}`"
+        ),
         f"- Mean best-single score: `{_format_float(summary.get('mean_best_single_score'))}`",
         f"- Mean aggregate score: `{_format_float(summary.get('mean_aggregate_score'))}`",
         f"- Mean component gain: `{_format_float(summary.get('mean_component_gain'))}`",
         f"- Mean component loss: `{_format_float(summary.get('mean_component_loss'))}`",
+        f"- Decision counts: `{_format_counts(summary.get('decision_status_counts'))}`",
         "",
         "## Task Decisions",
         "",
@@ -336,17 +343,22 @@ def _summary(tasks: list[dict[str, object]]) -> dict[str, object]:
     aggregate_wins = [
         task for task in tasks if _float(task.get("aggregate_score")) > _float(task.get("best_single_score"))
     ]
+    task_count = len(tasks)
     return {
         "aggregate_win_count": len(aggregate_wins),
+        "aggregate_win_fraction": len(aggregate_wins) / task_count if task_count else 0.0,
         "blocked_task_count": len(tasks) - len(promoted),
+        "decision_status_counts": _decision_status_counts(tasks),
         "mean_aggregate_score": _mean(_float(task.get("aggregate_score")) for task in tasks),
         "mean_best_single_score": _mean(_float(task.get("best_single_score")) for task in tasks),
         "mean_component_gain": _mean(_float(task.get("component_gain")) for task in tasks),
         "mean_component_loss": _mean(_float(task.get("component_loss")) for task in tasks),
         "promoted_task_count": len(promoted),
+        "promoted_task_fraction": len(promoted) / task_count if task_count else 0.0,
+        "promoted_task_wilson95": _wilson_interval(len(promoted), task_count),
         "promoted_tasks": [str(task.get("task_id", "")) for task in promoted],
         "schema_note": "fixture scout only; not model-generated headline evidence",
-        "task_count": len(tasks),
+        "task_count": task_count,
     }
 
 
@@ -413,6 +425,36 @@ def _mean(values: object) -> float:
 
 def _format_float(value: object) -> str:
     return f"{_float(value):.6f}"
+
+
+def _decision_status_counts(tasks: list[dict[str, object]]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for task in tasks:
+        status = str(_dict(task.get("decision")).get("status", ""))
+        counts[status] = counts.get(status, 0) + 1
+    return dict(sorted(counts.items()))
+
+
+def _wilson_interval(successes: int, total: int, z: float = 1.959963984540054) -> list[float]:
+    if total <= 0:
+        return [0.0, 0.0]
+    p_hat = successes / total
+    denominator = 1.0 + z * z / total
+    centre = p_hat + z * z / (2.0 * total)
+    margin = z * ((p_hat * (1.0 - p_hat) + z * z / (4.0 * total)) / total) ** 0.5
+    return [(centre - margin) / denominator, (centre + margin) / denominator]
+
+
+def _format_interval(value: object) -> str:
+    if not isinstance(value, list) or len(value) != 2:
+        return "0.000000..0.000000"
+    return f"{_float(value[0]):.6f}..{_float(value[1]):.6f}"
+
+
+def _format_counts(value: object) -> str:
+    if not isinstance(value, dict) or not value:
+        return "none"
+    return ", ".join(f"{key}={value[key]}" for key in sorted(value))
 
 
 if __name__ == "__main__":

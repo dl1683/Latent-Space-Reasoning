@@ -19,10 +19,14 @@ It is a post-hoc replay over already-scored planning rubric components. It estim
 - Aggregate wins: `2`
 - Promoted tasks: `2`
 - Blocked tasks: `6`
+- Aggregate win fraction: `0.250000`
+- Promoted task fraction: `0.250000`
+- Promoted task Wilson 95% interval: `0.071479..0.590725`
 - Mean best-single score: `0.675000`
 - Mean aggregate score: `0.725000`
 - Mean component gain: `0.250000`
 - Mean component loss: `0.000000`
+- Decision counts: `blocked_no_score_lift=6, promoted_local_scout=2`
 
 ## Task Decisions
 
