@@ -380,15 +380,22 @@ def _ensure_all_tied_weights_keys_compat() -> None:
     if hasattr(PreTrainedModel, "all_tied_weights_keys"):
         return
 
-    def _all_tied_weights_keys(self: Any) -> dict[str, str]:
-        tied_keys = getattr(self, "_tied_weights_keys", None)
+    def _get_all_tied_weights_keys(self: Any) -> dict[str, str]:
+        explicit_keys = getattr(self, "_latent_reasoning_all_tied_weights_keys", None)
+        tied_keys = explicit_keys if explicit_keys is not None else getattr(self, "_tied_weights_keys", None)
         if tied_keys is None:
             return {}
         if isinstance(tied_keys, dict):
             return {str(key): str(value) for key, value in tied_keys.items()}
         return {str(key): str(key) for key in tied_keys}
 
-    PreTrainedModel.all_tied_weights_keys = property(_all_tied_weights_keys)
+    def _set_all_tied_weights_keys(self: Any, value: Any) -> None:
+        self._latent_reasoning_all_tied_weights_keys = value
+
+    PreTrainedModel.all_tied_weights_keys = property(
+        _get_all_tied_weights_keys,
+        _set_all_tied_weights_keys,
+    )
 
 
 def _fill_generation_special_token_ids(generation_config: Any, tokenizer: Any, model: Any) -> None:

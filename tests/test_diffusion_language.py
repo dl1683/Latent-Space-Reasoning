@@ -198,6 +198,9 @@ def test_all_tied_weights_keys_compatibility_property_exposes_legacy_name():
                 torch.nn.Module.__init__(self)
 
         assert Model().all_tied_weights_keys == {"lm_head.weight": "lm_head.weight"}
+        model = Model()
+        model.all_tied_weights_keys = ["custom.weight"]
+        assert model.all_tied_weights_keys == {"custom.weight": "custom.weight"}
     finally:
         if original is not None:
             PreTrainedModel.all_tied_weights_keys = original
