@@ -213,6 +213,8 @@ Current scaffold:
   `experiments/build_latent_aggregation_replay_from_rubric_hits.py`
 - Rubric replay report:
   `docs/reports/diffusion/LATENT_AGGREGATION_RUBRIC_REPLAY.md`
+- Inference validation freeze:
+  `docs/reports/diffusion/LATENT_AGGREGATION_INFERENCE_V1_FREEZE.md`
 
 Status: protocol scaffold only. The current scout validates the accounting
 logic and gate behavior on deterministic component fixtures. The rubric replay
@@ -220,6 +222,10 @@ then applies the same accounting to existing scored planning trajectories and
 finds post-hoc component-union headroom. Neither artifact proves an online
 extractor, verifier, or final-answer realizer, so neither should be cited as a
 headline aggregation result.
+
+The inference freeze is the next run contract. It fixes a 16-task planning
+slice, trajectory families, extractor inputs, forbidden label fields, final
+answer realization requirements, and statistical gates before labels exist.
 
 Task mix:
 

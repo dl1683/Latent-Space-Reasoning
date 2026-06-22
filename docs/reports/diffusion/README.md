@@ -17,6 +17,10 @@ Current high-signal generated reports:
 - [LATENT_AGGREGATION_RUBRIC_REPLAY.md](LATENT_AGGREGATION_RUBRIC_REPLAY.md):
   post-hoc replay over existing planning rubric-hit labels; estimates oracle
   component-union headroom, not inference-time aggregation.
+- [LATENT_AGGREGATION_INFERENCE_V1_FREEZE.md](LATENT_AGGREGATION_INFERENCE_V1_FREEZE.md):
+  pre-label contract for the first inference-time aggregation validation,
+  including frozen task IDs, extractor limits, realization requirements, and
+  statistical gates.
 - [DIFFUSION_REPAIR_VALUE_TOMOGRAPHY.md](DIFFUSION_REPAIR_VALUE_TOMOGRAPHY.md):
   behavior-tomography audit for the cost-aware repair-spend controller.
 - [DIFFUSION_LAMBDA_REPAIR_CONTROLLER_TRANSFER.md](DIFFUSION_LAMBDA_REPAIR_CONTROLLER_TRANSFER.md):

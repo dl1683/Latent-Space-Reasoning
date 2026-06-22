@@ -1,0 +1,134 @@
+{
+  "baselines": [
+    "best_single_candidate_by_task_score",
+    "whole_candidate_selector",
+    "oracle_rubric_union_upper_bound",
+    "aggregation_extractor_plus_realizer"
+  ],
+  "extractor_contract": {
+    "allowed_inputs": [
+      "prompt text",
+      "candidate text",
+      "task rubric item strings",
+      "trajectory family",
+      "trajectory id"
+    ],
+    "forbidden_inputs": [
+      "rubric hit labels",
+      "task_score.score",
+      "candidate_lift_vs_trajectory",
+      "oracle selected components",
+      "post-run aggregate decision"
+    ],
+    "name": "literal_rubric_component_extractor_v1",
+    "output_schema": {
+      "component_id": "slug derived from rubric item",
+      "source_span": "candidate substring or empty",
+      "support_prediction": "boolean",
+      "support_score": "float between 0 and 1",
+      "task_id": "string",
+      "trajectory_id": "string"
+    },
+    "status": "must_be_frozen_before_labels"
+  },
+  "failure_taxonomy": [
+    "extractor_false_positive_supported_component",
+    "extractor_false_negative_missed_component",
+    "fusion_contradiction",
+    "realizer_dropped_selected_component",
+    "realizer_added_unsupported_claim",
+    "aggregate_no_score_lift",
+    "oracle_headroom_but_online_extractor_failed",
+    "online_components_good_but_realizer_failed"
+  ],
+  "generated_by": "experiments/build_latent_aggregation_inference_v1_freeze.py",
+  "prior_oracle_replay": {
+    "boundary": "oracle_replay_not_inference_time",
+    "path": "eval_results\\diffusion_language\\latent_aggregation_replay_rubric.json",
+    "promoted_task_count": 2,
+    "promoted_task_fraction": 0.25,
+    "promoted_task_wilson95": [
+      0.07147921275210901,
+      0.5907245696898311
+    ],
+    "sha256": "89c838d51b31b254cbf1e4d68ea8f526add651cee94a3edbda5d997a18a4207f",
+    "task_count": 8
+  },
+  "realizer_contract": {
+    "name": "component_provenance_template_realizer_v1",
+    "requirements": [
+      "use only selected supported components and prompt constraints",
+      "keep private provenance for every included component",
+      "emit one final candidate answer per task",
+      "rescore final answer with the existing planning rubric scorer"
+    ],
+    "status": "must_emit_final_answer_before_rescoring"
+  },
+  "schema": "latent_aggregation_inference_v1_freeze.v1",
+  "statistical_gates": {
+    "maximum_hard_contradiction_count": 0,
+    "maximum_unsupported_addition_count": 0,
+    "minimum_aggregate_win_count": 3,
+    "minimum_aggregate_win_fraction": 0.1875,
+    "minimum_task_count": 16,
+    "minimum_wilson_lower_bound": 0.05,
+    "must_report_component_precision_recall": true,
+    "must_report_final_answer_score_not_only_component_union": true,
+    "must_report_wilson95": true
+  },
+  "task_count": 16,
+  "task_ids": [
+    "plan_009",
+    "plan_010",
+    "plan_011",
+    "plan_012",
+    "plan_013",
+    "plan_014",
+    "plan_015",
+    "plan_016",
+    "plan_017",
+    "plan_018",
+    "plan_019",
+    "plan_020",
+    "plan_021",
+    "plan_022",
+    "plan_023",
+    "plan_024"
+  ],
+  "task_preset": "latent_aggregation_inference_v1_plan009_024",
+  "task_source": {
+    "path": "experiments\\general_reasoning_tasks_scout.jsonl",
+    "sha256": "6ea8986f9a63238c0618f9ccf9f1b31121c5904bbb9b242ab45eb204c25ca9ac",
+    "task_hashes": {
+      "plan_009": "47ad0da6d09f8e498eae14be7c10d1d378ddb3aa822d30341323032a8eae2642",
+      "plan_010": "10fecb8c13746c0434f2d6e8cb3f1adc189798f7029455df9bff2db0e44827f7",
+      "plan_011": "a4ac43bc630165a518ced40fd901cddf5ff4534bc6db900028fe2b60ba8a82f7",
+      "plan_012": "362e5d621ef1b0e69214bc76bf7125535d46539cb268595d851a7d86b9aef7a8",
+      "plan_013": "e58b0ab9574690d9ee9e46214ea7ca79036e0e8fab50c7e7f49b10320b9ef1ce",
+      "plan_014": "2eeb2c4dda50da719e55d17699b142b1fde1809e2d3aed8447631c3dba1b37fc",
+      "plan_015": "42acb6778fcb8d1a62ecd0ac91dd55b5c64057e08cecd3a7d6862bd43e3be3ed",
+      "plan_016": "9238f1587c0741a8d46f1275e746ef3e961cbe49869114511191258159d28a11",
+      "plan_017": "aa3408420218958cd1ce5d8219b2c6328eec94fa6b553768ca62c54c7a9dec40",
+      "plan_018": "348f447da4e05da9a6b77f5a3282eaf6b08f1d967df1a8b9acf9f5c74b7e1639",
+      "plan_019": "8bfd8f8079b201cac257655c2cd599b83abe76c696e697ee13bb6f339f9c4e46",
+      "plan_020": "4d0501e6fc2873859779ce32e0f7653b43318c86ea5633ee7e7cf6db2806e5c2",
+      "plan_021": "7f8602504f4ba1c98ac7301471f351814da2467c2e9eb85cc6386d8a31476cea",
+      "plan_022": "f4644aa2db77b603149d2704817d485e4ad6f1ab03ec7334cae699d075919228",
+      "plan_023": "1dfb2be92ec593f6658fa3347b5da0980ccf62fdc75b6d9885f12f961ff313de",
+      "plan_024": "2d1932faaa9edc4f440863a00899921d9e54fc0d0a09a66ce74ca4be718c6b68"
+    }
+  },
+  "trajectory_generation_contract": {
+    "families": [
+      "fixed_low_confidence_32",
+      "random_32",
+      "temperature_entropy_64",
+      "history_prefix_25_repair_when_spend_gate_allows",
+      "final_preserve_repair_when_spend_gate_allows"
+    ],
+    "gpu_command": "python experiments\\run_diffusion_three_arm_benchmark.py --task-ids plan_009,plan_010,plan_011,plan_012,plan_013,plan_014,plan_015,plan_016,plan_017,plan_018,plan_019,plan_020,plan_021,plan_022,plan_023,plan_024 --candidates dream-7b-instruct-hf,llada-8b-instruct-hf --limit-schedules 3 --limit-evolved-schedules 0 --limit-repair-candidates 2 --include-history-repairs --history-repair-fractions 0.25 --repair-pack constraint_span_phase_final_preserve_seeded_gated --repair-spend-trigger denoise_phase_repairability --repair-selector generated_repair_value_v1 --repair-promotion-margin 0.02 --trajectory-selector planning_state --device cuda --dtype bfloat16 --raw-output eval_results\\diffusion_language\\latent_aggregation_inference_v1_raw.jsonl --scores-output eval_results\\diffusion_language\\latent_aggregation_inference_v1_scores.json --report-output docs\\reports\\diffusion\\LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md",
+    "minimum_trajectories_per_task": 3,
+    "raw_output": "eval_results\\diffusion_language\\latent_aggregation_inference_v1_raw.jsonl",
+    "scores_output": "eval_results\\diffusion_language\\latent_aggregation_inference_v1_scores.json"
+  }
+}

@@ -19,6 +19,7 @@ If you need one-screen onboarding, open [../START_HERE.md](../START_HERE.md) fir
 - For the next aggregation paradigm: [LATENT_TRAJECTORY_AGGREGATION.md](LATENT_TRAJECTORY_AGGREGATION.md)
 - For the first aggregation scaffold: [LATENT_TRAJECTORY_AGGREGATION_SCOUT.md](reports/diffusion/LATENT_TRAJECTORY_AGGREGATION_SCOUT.md)
 - For the first real-score aggregation replay: [LATENT_AGGREGATION_RUBRIC_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_RUBRIC_REPLAY.md)
+- For the frozen inference-time aggregation run: [LATENT_AGGREGATION_INFERENCE_V1_FREEZE.md](reports/diffusion/LATENT_AGGREGATION_INFERENCE_V1_FREEZE.md)
 - For near-term roadmap: [NEXT_GENERATION_REASONING_TASKS.md](../NEXT_GENERATION_REASONING_TASKS.md)
 
 ## Current result surfaces
@@ -52,5 +53,6 @@ These are the stable, promoted docs updated by recent work:
 - Rebuild aggregation scaffold:
   - `python experiments/analyze_latent_trajectory_aggregation.py`
   - `python experiments/build_latent_aggregation_replay_from_rubric_hits.py`
+  - `python experiments/build_latent_aggregation_inference_v1_freeze.py`
 - Archive scans:
   - `python experiments/scan_stale_diffusion_docs.py`
