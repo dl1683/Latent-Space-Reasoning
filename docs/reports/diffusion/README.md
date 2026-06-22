@@ -71,6 +71,9 @@ Current high-signal generated reports:
   pre-label v3 freeze over new `plan_201`-`plan_224` tasks, with targeted
   aspect-deficit probes, separate coverage and conditional-quality gates, probe
   cost accounting, and equal-budget best-of controls.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_DRY_RUN_FAILURE.md](LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_DRY_RUN_FAILURE.md):
+  failed first GPU probe dry run; the command used `--limit-repair-candidates 0`,
+  so the runner skipped the probe gate and generated `0` counterfactual probes.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.

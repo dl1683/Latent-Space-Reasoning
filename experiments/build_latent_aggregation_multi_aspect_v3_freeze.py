@@ -322,7 +322,7 @@ def _probe_measurement_command(probe_raw_path: Path, probe_scores_path: Path) ->
         "--candidates dream-7b-instruct-hf,llada-8b-instruct-hf "
         "--limit-schedules 3 "
         "--limit-evolved-schedules 0 "
-        "--limit-repair-candidates 0 "
+        "--limit-repair-candidates 1 "
         "--repair-spend-trigger counterfactual_micro_probe_v1 "
         "--counterfactual-probe-mode all "
         "--counterfactual-probe-policy span_tomography_probe_v4 "

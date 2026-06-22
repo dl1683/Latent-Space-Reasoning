@@ -300,6 +300,12 @@ complement quality, requires probe cost and equal-budget best-of controls, and
 keeps the targeted aspect-deficit probe as an explicit implementation boundary
 if it is not available before labels.
 
+The first v3 probe dry run is explicitly non-evidence: it used
+`--limit-repair-candidates 0`, which skipped the runner's repair/probe gate and
+therefore generated `0` counterfactual probes. The corrected probe command keeps
+the diagnostic-only trigger but uses `--limit-repair-candidates 1` so the probe
+source path is actually reached.
+
 Task mix:
 
 - 8 planning tasks with explicit rubric components.

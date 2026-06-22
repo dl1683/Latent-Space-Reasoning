@@ -51,6 +51,7 @@ def test_multi_aspect_v3_freeze_locks_fresh_tasks_and_split_gates(tmp_path):
     assert "--task-ids plan_201,plan_202" in manifest["trajectory_generation_contract"]["gpu_command"]
     assert "counterfactual_micro_probe_v1" in manifest["trajectory_generation_contract"]["probe_measurement_command"]
     assert "span_tomography_probe_v4" in manifest["trajectory_generation_contract"]["probe_measurement_command"]
+    assert "--limit-repair-candidates 1" in manifest["trajectory_generation_contract"]["probe_measurement_command"]
     assert manifest["trajectory_generation_contract"]["probe_raw_output"] == str(probe_raw)
     assert "coverage" in markdown.lower()
     assert "GPU Probe Measurement Command" in markdown
