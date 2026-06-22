@@ -13,6 +13,8 @@ def test_multi_aspect_v3_freeze_locks_fresh_tasks_and_split_gates(tmp_path):
     coverage = tmp_path / "coverage.json"
     raw = tmp_path / "labels.jsonl"
     scores = tmp_path / "scores.json"
+    probe_raw = tmp_path / "probe_labels.jsonl"
+    probe_scores = tmp_path / "probe_scores.json"
     tasks.write_text(
         "\n".join(json.dumps(_task(task_id)) for task_id in FROZEN_TASK_IDS) + "\n",
         encoding="utf-8",
@@ -32,6 +34,8 @@ def test_multi_aspect_v3_freeze_locks_fresh_tasks_and_split_gates(tmp_path):
         coverage_diagnostic_path=coverage,
         label_raw_path=raw,
         label_scores_path=scores,
+        probe_raw_path=probe_raw,
+        probe_scores_path=probe_scores,
     )
     markdown = render_markdown(manifest)
 
@@ -45,7 +49,11 @@ def test_multi_aspect_v3_freeze_locks_fresh_tasks_and_split_gates(tmp_path):
     assert manifest["aspect_deficit_probe_contract"]["maximum_probes_per_task"] == 2
     assert "targeted_aspect_deficit_probe_v1" in manifest["trajectory_generation_contract"]["families"]
     assert "--task-ids plan_201,plan_202" in manifest["trajectory_generation_contract"]["gpu_command"]
+    assert "counterfactual_micro_probe_v1" in manifest["trajectory_generation_contract"]["probe_measurement_command"]
+    assert "span_tomography_probe_v4" in manifest["trajectory_generation_contract"]["probe_measurement_command"]
+    assert manifest["trajectory_generation_contract"]["probe_raw_output"] == str(probe_raw)
     assert "coverage" in markdown.lower()
+    assert "GPU Probe Measurement Command" in markdown
 
 
 def test_multi_aspect_v3_freeze_refuses_existing_label_outputs(tmp_path):
@@ -54,6 +62,8 @@ def test_multi_aspect_v3_freeze_refuses_existing_label_outputs(tmp_path):
     coverage = tmp_path / "coverage.json"
     raw = tmp_path / "labels.jsonl"
     scores = tmp_path / "scores.json"
+    probe_raw = tmp_path / "probe_labels.jsonl"
+    probe_scores = tmp_path / "probe_scores.json"
     tasks.write_text(
         "\n".join(json.dumps(_task(task_id)) for task_id in FROZEN_TASK_IDS) + "\n",
         encoding="utf-8",
@@ -72,6 +82,8 @@ def test_multi_aspect_v3_freeze_refuses_existing_label_outputs(tmp_path):
             coverage_diagnostic_path=coverage,
             label_raw_path=raw,
             label_scores_path=scores,
+            probe_raw_path=probe_raw,
+            probe_scores_path=probe_scores,
         )
     except ValueError as exc:
         assert "label outputs exist" in str(exc)

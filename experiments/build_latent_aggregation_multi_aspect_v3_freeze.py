@@ -18,6 +18,8 @@ DEFAULT_JSON_OUTPUT = Path("eval_results/diffusion_language/latent_aggregation_m
 DEFAULT_REPORT_OUTPUT = Path("docs/reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V3_FREEZE.md")
 DEFAULT_LABEL_RAW = Path("eval_results/diffusion_language/latent_aggregation_multi_aspect_v3_raw.jsonl")
 DEFAULT_LABEL_SCORES = Path("eval_results/diffusion_language/latent_aggregation_multi_aspect_v3_scores.json")
+DEFAULT_PROBE_RAW = Path("eval_results/diffusion_language/latent_aggregation_multi_aspect_v3_probe_raw.jsonl")
+DEFAULT_PROBE_SCORES = Path("eval_results/diffusion_language/latent_aggregation_multi_aspect_v3_probe_scores.json")
 
 FROZEN_TASK_PRESET = "latent_aggregation_multi_aspect_v3_plan201_224"
 FROZEN_TASK_IDS = tuple(f"plan_{index:03d}" for index in range(201, 225))
@@ -48,6 +50,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--coverage-diagnostic", type=Path, default=DEFAULT_COVERAGE_DIAGNOSTIC)
     parser.add_argument("--label-raw", type=Path, default=DEFAULT_LABEL_RAW)
     parser.add_argument("--label-scores", type=Path, default=DEFAULT_LABEL_SCORES)
+    parser.add_argument("--probe-raw", type=Path, default=DEFAULT_PROBE_RAW)
+    parser.add_argument("--probe-scores", type=Path, default=DEFAULT_PROBE_SCORES)
     parser.add_argument("--json-output", type=Path, default=DEFAULT_JSON_OUTPUT)
     parser.add_argument("--report-output", type=Path, default=DEFAULT_REPORT_OUTPUT)
     return parser.parse_args()
@@ -61,6 +65,8 @@ def main() -> int:
         coverage_diagnostic_path=args.coverage_diagnostic,
         label_raw_path=args.label_raw,
         label_scores_path=args.label_scores,
+        probe_raw_path=args.probe_raw,
+        probe_scores_path=args.probe_scores,
     )
     args.json_output.parent.mkdir(parents=True, exist_ok=True)
     args.report_output.parent.mkdir(parents=True, exist_ok=True)
@@ -88,8 +94,11 @@ def build_freeze_manifest(
     coverage_diagnostic_path: Path,
     label_raw_path: Path,
     label_scores_path: Path,
+    probe_raw_path: Path = DEFAULT_PROBE_RAW,
+    probe_scores_path: Path = DEFAULT_PROBE_SCORES,
 ) -> dict[str, object]:
-    existing_labels = [path for path in (label_raw_path, label_scores_path) if path.exists()]
+    output_paths = (label_raw_path, label_scores_path, probe_raw_path, probe_scores_path)
+    existing_labels = [path for path in output_paths if path.exists()]
     if existing_labels:
         paths = ", ".join(str(path) for path in existing_labels)
         raise ValueError(f"refusing v3 freeze after label outputs exist: {paths}")
@@ -136,6 +145,9 @@ def build_freeze_manifest(
             "gpu_command": _gpu_command(label_raw_path, label_scores_path),
             "raw_output": str(label_raw_path),
             "scores_output": str(label_scores_path),
+            "probe_measurement_command": _probe_measurement_command(probe_raw_path, probe_scores_path),
+            "probe_raw_output": str(probe_raw_path),
+            "probe_scores_output": str(probe_scores_path),
         },
         "aspect_deficit_probe_contract": {
             "name": "targeted_aspect_deficit_probe_v1",
@@ -244,10 +256,16 @@ def render_markdown(manifest: dict[str, object]) -> str:
         f"- V2 failure diagnostic: `{_dict(prior.get('multi_aspect_v2_failure')).get('path')}`",
         f"- V2 coverage diagnostic: `{_dict(prior.get('multi_aspect_v2_coverage_gap')).get('path')}`",
         "",
-        "## GPU Command",
+        "## GPU Label Command",
         "",
         "```powershell",
         str(generation.get("gpu_command", "")),
+        "```",
+        "",
+        "## GPU Probe Measurement Command",
+        "",
+        "```powershell",
+        str(generation.get("probe_measurement_command", "")),
         "```",
         "",
         "## Probe Contract",
@@ -294,6 +312,25 @@ def _gpu_command(label_raw_path: Path, label_scores_path: Path) -> str:
         f"--raw-output {label_raw_path} "
         f"--scores-output {label_scores_path} "
         "--report-output docs\\reports\\diffusion\\LATENT_AGGREGATION_MULTI_ASPECT_V3_LABEL_REPORT.md"
+    )
+
+
+def _probe_measurement_command(probe_raw_path: Path, probe_scores_path: Path) -> str:
+    return (
+        "python experiments\\run_diffusion_three_arm_benchmark.py "
+        "--task-ids " + ",".join(FROZEN_TASK_IDS) + " "
+        "--candidates dream-7b-instruct-hf,llada-8b-instruct-hf "
+        "--limit-schedules 3 "
+        "--limit-evolved-schedules 0 "
+        "--limit-repair-candidates 0 "
+        "--repair-spend-trigger counterfactual_micro_probe_v1 "
+        "--counterfactual-probe-mode all "
+        "--counterfactual-probe-policy span_tomography_probe_v4 "
+        "--trajectory-selector planning_state "
+        "--device cuda --dtype bfloat16 "
+        f"--raw-output {probe_raw_path} "
+        f"--scores-output {probe_scores_path} "
+        "--report-output docs\\reports\\diffusion\\LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_REPORT.md"
     )
 
 
