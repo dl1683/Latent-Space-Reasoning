@@ -22,6 +22,27 @@ There is also a lower-cost decomposed-selector point at `0.508705` and
 `2.375000x`. Use the top-score point for the headline reasoning-lift claim and
 the lower-cost point for the controller/cost claim.
 
+## If You Are New to This Repo (Start Here)
+
+Use this order:
+
+1. [DIFFUSION_PUBLIC_BENCHMARK.md](DIFFUSION_PUBLIC_BENCHMARK.md)  
+2. [CLAIM_EVIDENCE_MAP.md](CLAIM_EVIDENCE_MAP.md)  
+3. [DIFFUSION_GROUND_TRUTH_INDEX.md](DIFFUSION_GROUND_TRUTH_INDEX.md)  
+4. [docs/DIFFUSION_READER_GUIDE.md](docs/DIFFUSION_READER_GUIDE.md)  
+
+Then choose one path:
+
+- Evidence review: continue with [docs/DIFFUSION_THEORY_CLAIM_LEDGER.md](docs/DIFFUSION_THEORY_CLAIM_LEDGER.md)
+- Mechanism depth: continue with [docs/DIFFUSION_REASONING_GEOMETRY_THEORY.md](docs/DIFFUSION_REASONING_GEOMETRY_THEORY.md)
+- Future work: continue with [NEXT_GENERATION_REASONING_TASKS.md](NEXT_GENERATION_REASONING_TASKS.md)
+
+If you need quick orientation only, skip everything else and do not open:
+
+- all `tesla_session/*.md` notes,
+- `meditations/question_*.md`,
+- archive-level reports in `docs/reports/diffusion/`.
+
 ## Read First
 
 | Path | Purpose |
