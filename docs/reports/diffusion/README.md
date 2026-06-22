@@ -48,6 +48,10 @@ Current high-signal generated reports:
   frozen held-out v2 contract over `plan_025..plan_048` that promotes
   aggregation from rubric-item stitching to multi-aspect latent fusion across
   rubric, causal, specificity, constraint, and risk aspects.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V2_LABEL_REPORT.md](LATENT_AGGREGATION_MULTI_ASPECT_V2_LABEL_REPORT.md):
+  GPU label-generation report for the frozen v2 held-out slice; repair coverage
+  is `24/24` eligible tasks with repair task score `0.378586` versus fixed
+  `0.336354` on repair-covered tasks.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.
