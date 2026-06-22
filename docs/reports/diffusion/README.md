@@ -52,6 +52,9 @@ Current high-signal generated reports:
   GPU label-generation report for the frozen v2 held-out slice; repair coverage
   is `24/24` eligible tasks with repair task score `0.378586` versus fixed
   `0.336354` on repair-covered tasks.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V2_HEADROOM.md](LATENT_AGGREGATION_MULTI_ASPECT_V2_HEADROOM.md):
+  held-out diagnostic over the v2 GPU rows showing modest complement material:
+  `9/24` tasks have any complement aspect and `5/24` have dimension complements.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.

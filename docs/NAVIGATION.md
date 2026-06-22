@@ -28,6 +28,7 @@ If you need one-screen onboarding, open [../START_HERE.md](../START_HERE.md) fir
 - For the rubric-vs-score dimension gap: [LATENT_AGGREGATION_SCORE_DIMENSION_GAP_THRESHOLD01.md](reports/diffusion/LATENT_AGGREGATION_SCORE_DIMENSION_GAP_THRESHOLD01.md)
 - For the next held-out multi-aspect aggregation freeze: [LATENT_AGGREGATION_MULTI_ASPECT_V2_FREEZE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V2_FREEZE.md)
 - For the held-out multi-aspect v2 GPU label run: [LATENT_AGGREGATION_MULTI_ASPECT_V2_LABEL_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V2_LABEL_REPORT.md)
+- For held-out multi-aspect v2 complement headroom: [LATENT_AGGREGATION_MULTI_ASPECT_V2_HEADROOM.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V2_HEADROOM.md)
 - For near-term roadmap: [NEXT_GENERATION_REASONING_TASKS.md](../NEXT_GENERATION_REASONING_TASKS.md)
 
 ## Current result surfaces

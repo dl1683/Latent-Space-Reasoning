@@ -271,6 +271,12 @@ That follow-up is frozen as multi-aspect v2 on held-out tasks
 specificity, constraint handling, and risk awareness. Its promotion gates
 require separate reporting of rubric gain and dimension gain so a score lift
 cannot hide inside an underspecified component definition.
+The first held-out v2 headroom diagnostic found modest candidate-level
+complement material: `9/24` tasks have at least one complement aspect beyond
+the best anchor, and `5/24` have dimension complements. The next replay should
+therefore separate three failure modes: no complement material, selector found
+complements but the realizer dropped them, and realized aggregate preserved
+complements but still failed final scoring.
 
 Task mix:
 
