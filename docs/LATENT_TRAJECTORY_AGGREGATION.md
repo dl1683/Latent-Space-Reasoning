@@ -277,6 +277,12 @@ the best anchor, and `5/24` have dimension complements. The next replay should
 therefore separate three failure modes: no complement material, selector found
 complements but the realizer dropped them, and realized aggregate preserved
 complements but still failed final scoring.
+The first deterministic v2 replay preserved the no-complement control: tasks
+without selected complements now return the anchor text unchanged. It locally
+promotes `9/24` tasks and clears win-count, win-fraction, and Wilson gates, but
+the full frozen gate still fails because mean non-rubric lift is `0.027083`,
+below the predeclared `0.030000` threshold. This is evidence that multi-aspect
+aggregation is viable but not yet strong enough to promote as a full result.
 
 Task mix:
 

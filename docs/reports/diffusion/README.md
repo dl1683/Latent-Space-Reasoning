@@ -55,6 +55,10 @@ Current high-signal generated reports:
 - [LATENT_AGGREGATION_MULTI_ASPECT_V2_HEADROOM.md](LATENT_AGGREGATION_MULTI_ASPECT_V2_HEADROOM.md):
   held-out diagnostic over the v2 GPU rows showing modest complement material:
   `9/24` tasks have any complement aspect and `5/24` have dimension complements.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V2_REPLAY.md](LATENT_AGGREGATION_MULTI_ASPECT_V2_REPLAY.md):
+  deterministic held-out v2 replay; `9/24` tasks promote locally and win-count
+  gates pass, but the overall frozen gate fails because mean non-rubric lift is
+  `0.027083` below the predeclared `0.030000` threshold.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.
