@@ -9,7 +9,7 @@ If you are new, use [NAVIGATION.md](NAVIGATION.md) instead.
   Historical generated diffusion reports and legacy checkpoints. Useful for deep
   reproduction and forensic review, not onboarding.
 
-- `tesla_session/`  
+- `archive/tesla_session/`
   Deep internal session notes. Keep for context history, usually not needed for
   active claims.
 
@@ -26,11 +26,12 @@ If you are new, use [NAVIGATION.md](NAVIGATION.md) instead.
   The experiment corpus is large; prefer entry points listed in
   [README.md](../README.md) and [DIFFUSION_READER_GUIDE.md](DIFFUSION_READER_GUIDE.md).
 
-- Historical root notes:
-- [GOALS.md](../archive/legacy_notes/GOALS.md) — legacy milestone file from the earlier PGRMS planning phase.
-- [ARTICLE_UPDATE.md](../archive/legacy_notes/ARTICLE_UPDATE.md) — historical article draft and result narrative.
-- [RESEARCH_BRIEF.md](../archive/legacy_notes/RESEARCH_BRIEF.md) — compressed research update used before the current evidence promotion pipeline.
-- [README.md](../archive/legacy_notes/README.md) — map to legacy context files.
+- `archive/legacy_notes/`
+  Historical narrative snapshots moved out of the repository root:
+  [GOALS.md](../archive/legacy_notes/GOALS.md),
+  [ARTICLE_UPDATE.md](../archive/legacy_notes/ARTICLE_UPDATE.md),
+  [RESEARCH_BRIEF.md](../archive/legacy_notes/RESEARCH_BRIEF.md), and
+  [README.md](../archive/legacy_notes/README.md).
 
 ## How to use archived folders
 

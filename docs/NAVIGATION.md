@@ -33,7 +33,7 @@ These are the stable, promoted docs updated by recent work:
   Start here for historical archives only: [docs/ARCHIVE_INDEX.md](ARCHIVE_INDEX.md)
 - Private process notes: [meditations/](../meditations/)  
   Start here for private note classification: [../meditations/README.md](../meditations/README.md)
-- Deep-session notes: [tesla_session/](../tesla_session/)  
+- Deep-session notes: [archive/tesla_session/](../archive/tesla_session/)  
   Start here for historical session history: [docs/ARCHIVE_INDEX.md](ARCHIVE_INDEX.md)
 - Historical narrative snapshots: [GOALS.md](../archive/legacy_notes/GOALS.md),
   [ARTICLE_UPDATE.md](../archive/legacy_notes/ARTICLE_UPDATE.md),

@@ -41,7 +41,7 @@ Then choose one path:
 
 If you need quick orientation only, skip everything else and do not open:
 
-- all `tesla_session/*.md` notes,
+- all `archive/tesla_session/*.md` notes,
 - `meditations/question_*.md`,
 - archive-level reports in `docs/reports/diffusion/`.
 - everything in `eval_results/`.
@@ -73,9 +73,12 @@ evidence surfaces.
 ## Repository Layout
 
 ```text
+archive/        Historical notes and legacy snapshots; not part of first-read onboarding
 experiments/     Experiment runners, report builders, validators, and analysis scripts
 eval_results/    Generated run outputs, ledgers, raw generations, and score reports (typically git-ignored)
 docs/            Reader guides, theory docs, runbooks, and consolidated status pages
+meditations/     Question-first research notes; useful for paradigm work, not evidence claims
+paper/           Paper drafts and manuscript materials when present
 tests/           Unit and regression tests for runners, builders, validators, and controls
 src/             Shared package code used by the experiment stack
 ```

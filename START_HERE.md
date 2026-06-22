@@ -17,7 +17,7 @@ You do not need to read everything in this repo. Start with this order and stop.
 
 ## What to avoid until later
 
-- `tesla_session/` notes
+- `archive/tesla_session/` notes
 - `eval_results/` raw outputs
 - `docs/reports/diffusion/` historical report archive
 - `meditations/question_*.md` (private reflection notes)

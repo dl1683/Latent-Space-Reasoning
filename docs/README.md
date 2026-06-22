@@ -49,6 +49,7 @@ If you want the same path in one page, read [docs/NAVIGATION.md](NAVIGATION.md) 
 ## What to avoid first
 
 - Deep scans of `docs/reports/diffusion/` (historical archive).  
+- Deep scans of `../archive/tesla_session/` (historical internal session notes).
 - `question_*.md` files in `meditations/` (private reflection layer).
 - Files in `eval_results/` unless a promoted claim surface already points there.
 - Historical one-off writeups in `../archive/legacy_notes/`
