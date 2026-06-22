@@ -59,6 +59,10 @@ Current high-signal generated reports:
   deterministic held-out v2 replay; `9/24` tasks promote locally and win-count
   gates pass, but the overall frozen gate fails because mean non-rubric lift is
   `0.027083` below the predeclared `0.030000` threshold.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V2_FAILURE.md](LATENT_AGGREGATION_MULTI_ASPECT_V2_FAILURE.md):
+  post-replay failure analysis showing the miss is coverage-driven: complement
+  tasks average `0.072222` non-rubric lift, but only `9/24` tasks have complement
+  material, diluting the all-task mean below threshold.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.

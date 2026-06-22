@@ -283,6 +283,11 @@ promotes `9/24` tasks and clears win-count, win-fraction, and Wilson gates, but
 the full frozen gate still fails because mean non-rubric lift is `0.027083`,
 below the predeclared `0.030000` threshold. This is evidence that multi-aspect
 aggregation is viable but not yet strong enough to promote as a full result.
+A post-replay failure analysis shows the miss is coverage-driven rather than
+weak-complement-driven: the `9` complement tasks average `0.072222` non-rubric
+lift and `0.087778` score lift, but `15/24` tasks have no complement material.
+The next freeze should therefore improve complement discovery coverage or use
+separate predeclared gates for coverage and conditional complement quality.
 
 Task mix:
 

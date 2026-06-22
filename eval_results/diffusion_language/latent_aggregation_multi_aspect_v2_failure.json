@@ -1,0 +1,242 @@
+{
+  "evidence_boundary": {
+    "reason": "Post-replay diagnostic over held-out v2 outputs; explains a failed frozen gate, not a new promotion.",
+    "status": "held_out_multi_aspect_v2_failure_analysis"
+  },
+  "generated_by": "experiments/analyze_latent_aggregation_multi_aspect_v2_failure.py",
+  "inputs": {
+    "replay": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v2_replay.json"
+  },
+  "schema": "latent_aggregation_multi_aspect_v2_failure.v1",
+  "summary": {
+    "complement_task_count": 9,
+    "complement_task_mean_non_rubric_lift": 0.07222222222222222,
+    "complement_task_mean_score_lift": 0.08777777777777775,
+    "dimension_only_promoted_count": 4,
+    "failed_gate": "minimum_mean_non_rubric_lift",
+    "global_mean_non_rubric_lift": 0.02708333333333333,
+    "global_threshold": 0.03,
+    "missing_global_lift": 0.002916666666666668,
+    "no_complement_task_count": 15,
+    "rubric_only_promoted_count": 4,
+    "task_count": 24
+  },
+  "tasks": [
+    {
+      "decision_status": "blocked_no_complement_material",
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_025"
+    },
+    {
+      "decision_status": "blocked_no_complement_material",
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_026"
+    },
+    {
+      "decision_status": "blocked_no_complement_material",
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_027"
+    },
+    {
+      "decision_status": "blocked_no_complement_material",
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_028"
+    },
+    {
+      "decision_status": "online_promoted_local",
+      "dimension_gain_count": 1,
+      "non_rubric_lift": 0.08500000000000002,
+      "rubric_gain_count": 0,
+      "score_lift": 0.08499999999999996,
+      "selected_complement_count": 1,
+      "task_id": "plan_029"
+    },
+    {
+      "decision_status": "blocked_no_complement_material",
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_030"
+    },
+    {
+      "decision_status": "blocked_no_complement_material",
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_031"
+    },
+    {
+      "decision_status": "online_promoted_local",
+      "dimension_gain_count": 1,
+      "non_rubric_lift": 0.08535714285714285,
+      "rubric_gain_count": 1,
+      "score_lift": 0.1253571428571429,
+      "selected_complement_count": 2,
+      "task_id": "plan_032"
+    },
+    {
+      "decision_status": "online_promoted_local",
+      "dimension_gain_count": 1,
+      "non_rubric_lift": 0.06392857142857145,
+      "rubric_gain_count": 0,
+      "score_lift": 0.06392857142857145,
+      "selected_complement_count": 1,
+      "task_id": "plan_033"
+    },
+    {
+      "decision_status": "online_promoted_local",
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.04249999999999998,
+      "rubric_gain_count": 1,
+      "score_lift": 0.0824999999999999,
+      "selected_complement_count": 1,
+      "task_id": "plan_034"
+    },
+    {
+      "decision_status": "online_promoted_local",
+      "dimension_gain_count": 1,
+      "non_rubric_lift": 0.10142857142857137,
+      "rubric_gain_count": 0,
+      "score_lift": 0.10142857142857137,
+      "selected_complement_count": 1,
+      "task_id": "plan_035"
+    },
+    {
+      "decision_status": "blocked_no_complement_material",
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_036"
+    },
+    {
+      "decision_status": "online_promoted_local",
+      "dimension_gain_count": 1,
+      "non_rubric_lift": 0.10142857142857137,
+      "rubric_gain_count": 0,
+      "score_lift": 0.10142857142857137,
+      "selected_complement_count": 1,
+      "task_id": "plan_037"
+    },
+    {
+      "decision_status": "online_promoted_local",
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.06392857142857145,
+      "rubric_gain_count": 1,
+      "score_lift": 0.08392857142857141,
+      "selected_complement_count": 1,
+      "task_id": "plan_038"
+    },
+    {
+      "decision_status": "blocked_no_complement_material",
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_039"
+    },
+    {
+      "decision_status": "online_promoted_local",
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.06392857142857139,
+      "rubric_gain_count": 1,
+      "score_lift": 0.08392857142857135,
+      "selected_complement_count": 1,
+      "task_id": "plan_040"
+    },
+    {
+      "decision_status": "blocked_no_complement_material",
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_041"
+    },
+    {
+      "decision_status": "blocked_no_complement_material",
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_042"
+    },
+    {
+      "decision_status": "online_promoted_local",
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.04250000000000004,
+      "rubric_gain_count": 1,
+      "score_lift": 0.0625,
+      "selected_complement_count": 1,
+      "task_id": "plan_043"
+    },
+    {
+      "decision_status": "blocked_no_complement_material",
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_044"
+    },
+    {
+      "decision_status": "blocked_no_complement_material",
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_045"
+    },
+    {
+      "decision_status": "blocked_no_complement_material",
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_046"
+    },
+    {
+      "decision_status": "blocked_no_complement_material",
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_047"
+    },
+    {
+      "decision_status": "blocked_no_complement_material",
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_048"
+    }
+  ]
+}
