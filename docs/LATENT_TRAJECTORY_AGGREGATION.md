@@ -203,6 +203,18 @@ Aggregation fails if:
 
 Use a small but predeclared scout before building a large system.
 
+Current scaffold:
+
+- Script: `experiments/analyze_latent_trajectory_aggregation.py`
+- Fixture rows: `experiments/latent_trajectory_aggregation_scout_components.jsonl`
+- JSON output: `eval_results/latent_trajectory_aggregation_scout.json`
+- Report: `docs/reports/diffusion/LATENT_TRAJECTORY_AGGREGATION_SCOUT.md`
+
+Status: protocol scaffold only. The current scout validates the accounting
+logic and gate behavior on deterministic component fixtures. It is not
+model-generated statistical evidence and must not be cited as a headline
+aggregation result.
+
 Task mix:
 
 - 8 planning tasks with explicit rubric components.

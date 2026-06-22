@@ -17,6 +17,7 @@ If you need one-screen onboarding, open [../START_HERE.md](../START_HERE.md) fir
 - For mechanism and theory: [DIFFUSION_REASONING_GEOMETRY_THEORY.md](DIFFUSION_REASONING_GEOMETRY_THEORY.md)
 - For falsifiers and obligations: [DIFFUSION_THEORY_CLAIM_LEDGER.md](DIFFUSION_THEORY_CLAIM_LEDGER.md)
 - For the next aggregation paradigm: [LATENT_TRAJECTORY_AGGREGATION.md](LATENT_TRAJECTORY_AGGREGATION.md)
+- For the first aggregation scaffold: [LATENT_TRAJECTORY_AGGREGATION_SCOUT.md](reports/diffusion/LATENT_TRAJECTORY_AGGREGATION_SCOUT.md)
 - For near-term roadmap: [NEXT_GENERATION_REASONING_TASKS.md](../NEXT_GENERATION_REASONING_TASKS.md)
 
 ## Current result surfaces
@@ -47,5 +48,7 @@ These are the stable, promoted docs updated by recent work:
   - `python experiments/build_diffusion_claim_evidence.py`
   - `python experiments/validate_diffusion_claim_evidence.py`
   - `python experiments/validate_diffusion_theory_claim_ledger.py`
+- Rebuild aggregation scaffold:
+  - `python experiments/analyze_latent_trajectory_aggregation.py`
 - Archive scans:
   - `python experiments/scan_stale_diffusion_docs.py`

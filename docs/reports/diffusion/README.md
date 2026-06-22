@@ -10,6 +10,10 @@ entry path for new readers. Start with the root [README](../../../README.md),
 
 Current high-signal generated reports:
 
+- [LATENT_TRAJECTORY_AGGREGATION_SCOUT.md](LATENT_TRAJECTORY_AGGREGATION_SCOUT.md):
+  deterministic component-aggregation scaffold showing one local compositional
+  promotion and two blocked safety cases; protocol evidence only, not a
+  promoted model result.
 - [DIFFUSION_REPAIR_VALUE_TOMOGRAPHY.md](DIFFUSION_REPAIR_VALUE_TOMOGRAPHY.md):
   behavior-tomography audit for the cost-aware repair-spend controller.
 - [DIFFUSION_LAMBDA_REPAIR_CONTROLLER_TRANSFER.md](DIFFUSION_LAMBDA_REPAIR_CONTROLLER_TRANSFER.md):

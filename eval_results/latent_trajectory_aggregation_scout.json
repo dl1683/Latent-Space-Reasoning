@@ -1,0 +1,183 @@
+{
+  "generated_by": "experiments/analyze_latent_trajectory_aggregation.py",
+  "inputs": {
+    "components": "experiments\\latent_trajectory_aggregation_scout_components.jsonl"
+  },
+  "schema": "latent_trajectory_aggregation_scout.v1",
+  "summary": {
+    "aggregate_win_count": 2,
+    "blocked_task_count": 2,
+    "mean_aggregate_score": 0.8055555555555555,
+    "mean_best_single_score": 0.4388888888888889,
+    "mean_component_gain": 1.6666666666666667,
+    "mean_component_loss": 0.0,
+    "promoted_task_count": 1,
+    "promoted_tasks": [
+      "plan_cache_stampede"
+    ],
+    "schema_note": "fixture scout only; not model-generated headline evidence",
+    "task_count": 3
+  },
+  "tasks": [
+    {
+      "aggregate_score": 0.6666666666666666,
+      "best_single_score": 0.6666666666666666,
+      "best_single_trajectory_id": "greedy_baseline",
+      "component_gain": 0,
+      "component_gain_ids": [],
+      "component_loss": 0,
+      "component_loss_ids": [],
+      "contradiction_count": 0,
+      "decision": {
+        "reason": "At least one proposed component was not supported by trajectory evidence.",
+        "status": "blocked_unsupported"
+      },
+      "expected_component_count": 3,
+      "expected_component_weight": 3.0,
+      "selected_components": [
+        {
+          "component_id": "idempotent_writes",
+          "component_type": "constraint",
+          "component_weight": 1.0,
+          "source_span": "make writes idempotent by key and batch id",
+          "support_score": 0.91,
+          "trajectory_family": "greedy",
+          "trajectory_id": "greedy_baseline"
+        },
+        {
+          "component_id": "snapshot_source_table",
+          "component_type": "step",
+          "component_weight": 1.0,
+          "source_span": "take a consistent source snapshot before replay",
+          "support_score": 0.89,
+          "trajectory_family": "greedy",
+          "trajectory_id": "greedy_baseline"
+        }
+      ],
+      "source_diversity": 1,
+      "task_id": "etl_backfill_plan",
+      "unsupported_addition_count": 1
+    },
+    {
+      "aggregate_score": 1.0,
+      "best_single_score": 0.4,
+      "best_single_trajectory_id": "diffusion_repair_01",
+      "component_gain": 3,
+      "component_gain_ids": [
+        "define_rollback_threshold",
+        "detect_stampede_trigger",
+        "preserve_stale_while_revalidate"
+      ],
+      "component_loss": 0,
+      "component_loss_ids": [],
+      "contradiction_count": 0,
+      "decision": {
+        "reason": "Aggregate beats best single with net component gain and no hard safety failures.",
+        "status": "promoted_local_scout"
+      },
+      "expected_component_count": 5,
+      "expected_component_weight": 5.0,
+      "selected_components": [
+        {
+          "component_id": "add_request_coalescing",
+          "component_type": "mitigation",
+          "component_weight": 1.0,
+          "source_span": "single-flight lock for identical cache keys",
+          "support_score": 0.88,
+          "trajectory_family": "diffusion_repair",
+          "trajectory_id": "diffusion_repair_01"
+        },
+        {
+          "component_id": "define_rollback_threshold",
+          "component_type": "safety",
+          "component_weight": 1.0,
+          "source_span": "rollback if origin saturation or latency crosses threshold",
+          "support_score": 0.84,
+          "trajectory_family": "temperature",
+          "trajectory_id": "temperature_seed_02"
+        },
+        {
+          "component_id": "detect_stampede_trigger",
+          "component_type": "root_cause",
+          "component_weight": 1.0,
+          "source_span": "identifies request burst and cold cache as trigger",
+          "support_score": 0.92,
+          "trajectory_family": "greedy",
+          "trajectory_id": "greedy_baseline"
+        },
+        {
+          "component_id": "instrument_origin_qps",
+          "component_type": "measurement",
+          "component_weight": 1.0,
+          "source_span": "track origin QPS and cache miss amplification before rollout",
+          "support_score": 0.89,
+          "trajectory_family": "diffusion_repair",
+          "trajectory_id": "diffusion_repair_01"
+        },
+        {
+          "component_id": "preserve_stale_while_revalidate",
+          "component_type": "mitigation",
+          "component_weight": 1.0,
+          "source_span": "serve stale values while a background refresh runs",
+          "support_score": 0.91,
+          "trajectory_family": "prefix_perturbation",
+          "trajectory_id": "prefix_seed_04"
+        }
+      ],
+      "source_diversity": 4,
+      "task_id": "plan_cache_stampede",
+      "unsupported_addition_count": 0
+    },
+    {
+      "aggregate_score": 0.75,
+      "best_single_score": 0.25,
+      "best_single_trajectory_id": "diffusion_repair_02",
+      "component_gain": 2,
+      "component_gain_ids": [
+        "notify_compliance",
+        "skip_manager_approval"
+      ],
+      "component_loss": 0,
+      "component_loss_ids": [],
+      "contradiction_count": 1,
+      "decision": {
+        "reason": "Fusion left a hard or unresolved contradiction group.",
+        "status": "blocked_contradiction"
+      },
+      "expected_component_count": 4,
+      "expected_component_weight": 4.0,
+      "selected_components": [
+        {
+          "component_id": "log_audit_reason",
+          "component_type": "audit",
+          "component_weight": 1.0,
+          "source_span": "record the requester, reason, and reviewer in the audit log",
+          "support_score": 0.9,
+          "trajectory_family": "diffusion_repair",
+          "trajectory_id": "diffusion_repair_02"
+        },
+        {
+          "component_id": "notify_compliance",
+          "component_type": "notification",
+          "component_weight": 1.0,
+          "source_span": "notify compliance when exception volume increases",
+          "support_score": 0.86,
+          "trajectory_family": "temperature",
+          "trajectory_id": "temperature_seed_03"
+        },
+        {
+          "component_id": "skip_manager_approval",
+          "component_type": "constraint",
+          "component_weight": 1.0,
+          "source_span": "allow direct bypass when urgency is high",
+          "support_score": 0.88,
+          "trajectory_family": "prefix_perturbation",
+          "trajectory_id": "prefix_seed_01"
+        }
+      ],
+      "source_diversity": 3,
+      "task_id": "policy_exception_route",
+      "unsupported_addition_count": 0
+    }
+  ]
+}
