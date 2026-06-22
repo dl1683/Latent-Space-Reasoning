@@ -44,6 +44,7 @@ If you need quick orientation only, skip everything else and do not open:
 - all `tesla_session/*.md` notes,
 - `meditations/question_*.md`,
 - archive-level reports in `docs/reports/diffusion/`.
+- everything in `eval_results/`.
 
 ## Read First
 
@@ -54,8 +55,9 @@ If you need quick orientation only, skip everything else and do not open:
 | [DIFFUSION_GROUND_TRUTH_INDEX.md](DIFFUSION_GROUND_TRUTH_INDEX.md) | Canonical raw/report/score artifact pointers and hashes |
 | [docs/DIFFUSION_READER_GUIDE.md](docs/DIFFUSION_READER_GUIDE.md) | Reader map for diffusion claims, theory, and validation surfaces |
 | [docs/DIFFUSION_THEORY_CLAIM_LEDGER.md](docs/DIFFUSION_THEORY_CLAIM_LEDGER.md) | Conservative theory ledger with falsifiers and next proof obligations |
-| [meditations/README.md](meditations/README.md) | Private question-first notes used to maintain the paradigm layer of the project |
 | [docs/README.md](docs/README.md) | Single-page documentation index for onboarding and navigation |
+| [docs/ARCHIVE_INDEX.md](docs/ARCHIVE_INDEX.md) | Archive-only areas and when to use them |
+| [meditations/README.md](meditations/README.md) | Private question-first notes used to maintain the paradigm layer of the project |
 | [docs/GATED_ATTENTION_PROBE.md](docs/GATED_ATTENTION_PROBE.md) | Current Qwen3-Next gated-attention probe status and blockers |
 | [docs/reports/diffusion/README.md](docs/reports/diffusion/README.md) | Historical/generated diffusion report archive |
 | [docs/reports/diffusion/DIFFUSION_REPAIR_VALUE_TOMOGRAPHY.md](docs/reports/diffusion/DIFFUSION_REPAIR_VALUE_TOMOGRAPHY.md) | Behavior-tomography audit for the next repair-spend controller |
@@ -63,7 +65,8 @@ If you need quick orientation only, skip everything else and do not open:
 
 Generated one-off reports and raw artifacts are retained for auditability, but
 they are not the front-page navigation path. Start from the files above unless
-you are reproducing a specific historical run.
+you are reproducing a specific historical run and have a matching trail in the
+evidence surfaces.
 
 ## Repository Layout
 

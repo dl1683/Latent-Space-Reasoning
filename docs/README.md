@@ -41,11 +41,13 @@ If you want the same path in one page, read [docs/NAVIGATION.md](NAVIGATION.md) 
 
 - [docs/reports/diffusion/README.md](reports/diffusion/README.md) - generated history and historical diagnostics.
 - [experiments/README.md](../experiments/EXPERIMENTS.md) - experiment roster and reproducibility notes.
+- [ARCHIVE_INDEX.md](ARCHIVE_INDEX.md) - boundaries for archive-only content.
 
 ## What to avoid first
 
 - Deep scans of `docs/reports/diffusion/` (historical archive).  
 - `question_*.md` files in `meditations/` (private reflection layer).
+- Files in `eval_results/` unless a promoted claim surface already points there.
 
 ## How to stay current
 

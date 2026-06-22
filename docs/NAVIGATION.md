@@ -27,9 +27,12 @@ These are the stable, promoted docs updated by recent work:
 
 ## Archive and private spaces (do not read first)
 
-- Historical generated reports: [docs/reports/diffusion/](reports/diffusion/)
-- Private process notes: [meditations/](../meditations/)
-- Deep-session notes: [tesla_session/](../tesla_session/)
+- Historical generated reports: [docs/reports/diffusion/](reports/diffusion/)  
+  Start here for historical archives only: [docs/ARCHIVE_INDEX.md](ARCHIVE_INDEX.md)
+- Private process notes: [meditations/](../meditations/)  
+  Start here for private note classification: [../meditations/README.md](../meditations/README.md)
+- Deep-session notes: [tesla_session/](../tesla_session/)  
+  Start here for historical session history: [docs/ARCHIVE_INDEX.md](ARCHIVE_INDEX.md)
 
 ## If you need to reproduce or check evidence
 
@@ -39,4 +42,3 @@ These are the stable, promoted docs updated by recent work:
   - `python experiments/validate_diffusion_theory_claim_ledger.py`
 - Archive scans:
   - `python experiments/scan_stale_diffusion_docs.py`
-
