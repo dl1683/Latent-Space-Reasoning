@@ -27,6 +27,7 @@ DEFAULT_REALIZED_OUTPUT = Path(
     "eval_results/diffusion_language/latent_aggregation_inference_v1_realized.jsonl"
 )
 DEFAULT_REPORT_OUTPUT = Path("docs/reports/diffusion/LATENT_AGGREGATION_INFERENCE_V1_REPLAY.md")
+DEFAULT_SUPPORT_THRESHOLD = 0.5
 EPSILON = 1e-9
 
 
@@ -39,6 +40,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--components-output", type=Path, default=DEFAULT_COMPONENTS_OUTPUT)
     parser.add_argument("--realized-output", type=Path, default=DEFAULT_REALIZED_OUTPUT)
     parser.add_argument("--report-output", type=Path, default=DEFAULT_REPORT_OUTPUT)
+    parser.add_argument("--support-threshold", type=float, default=DEFAULT_SUPPORT_THRESHOLD)
+    parser.add_argument(
+        "--threshold-source",
+        default="frozen_v1_default",
+        help="Boundary label for how the support threshold was chosen.",
+    )
     return parser.parse_args()
 
 
@@ -48,6 +55,8 @@ def main() -> int:
         freeze_path=args.freeze,
         raw_path=args.raw,
         tasks_path=args.tasks,
+        support_threshold=args.support_threshold,
+        threshold_source=args.threshold_source,
     )
     components = _list_of_dicts(result.get("component_rows"))
     realized_rows = _list_of_dicts(result.get("realized_rows"))
@@ -93,6 +102,8 @@ def run_inference_replay(
     freeze_path: Path,
     raw_path: Path,
     tasks_path: Path,
+    support_threshold: float = DEFAULT_SUPPORT_THRESHOLD,
+    threshold_source: str = "frozen_v1_default",
 ) -> dict[str, object]:
     freeze = json.loads(freeze_path.read_text(encoding="utf-8"))
     frozen_task_ids = [str(task_id) for task_id in freeze.get("task_ids", [])]
@@ -110,7 +121,11 @@ def run_inference_replay(
     if not raw_records:
         raise ValueError(f"no frozen task records found in {raw_path}")
 
-    component_rows = _extract_component_rows(raw_records, tasks)
+    component_rows = _extract_component_rows(
+        raw_records,
+        tasks,
+        support_threshold=support_threshold,
+    )
     aggregation = build_aggregation_scout_from_rows(
         rows=component_rows,
         input_label=str(raw_path),
@@ -123,7 +138,7 @@ def run_inference_replay(
     )
     return {
         "component_rows": component_rows,
-        "evidence_boundary": _evidence_boundary(raw_path),
+        "evidence_boundary": _evidence_boundary(raw_path, threshold_source),
         "extractor": _dict(freeze.get("extractor_contract")).get("name", ""),
         "failure_analysis": _failure_analysis(task_results, component_rows),
         "generated_by": "experiments/run_latent_aggregation_inference_replay.py",
@@ -137,6 +152,8 @@ def run_inference_replay(
         "realizer": _dict(freeze.get("realizer_contract")).get("name", ""),
         "schema": "latent_aggregation_inference_replay.v1",
         "summary": _summary(task_results, component_rows),
+        "support_threshold": support_threshold,
+        "threshold_source": threshold_source,
         "tasks": task_results,
     }
 
@@ -162,6 +179,8 @@ def render_markdown(result: dict[str, object]) -> str:
         "",
         "## Summary",
         "",
+        f"- Support threshold: `{_format_float(result.get('support_threshold'))}`",
+        f"- Threshold source: `{result.get('threshold_source', '')}`",
         f"- Tasks: `{summary.get('task_count', 0)}`",
         f"- Online promoted tasks: `{summary.get('online_promoted_task_count', 0)}`",
         f"- Online promoted fraction: `{_format_float(summary.get('online_promoted_task_fraction'))}`",
@@ -239,6 +258,8 @@ def render_markdown(result: dict[str, object]) -> str:
 def _extract_component_rows(
     records: list[dict[str, object]],
     tasks: dict[str, GeneralReasoningTask],
+    *,
+    support_threshold: float,
 ) -> list[dict[str, object]]:
     rows: list[dict[str, object]] = []
     for index, record in enumerate(records):
@@ -248,7 +269,7 @@ def _extract_component_rows(
         text = str(record.get("text", ""))
         for item_index, item in enumerate(task.rubric_items):
             support_score = _literal_support_score(text, item)
-            support_prediction = support_score >= 0.5
+            support_prediction = support_score >= support_threshold
             rows.append(
                 {
                     "component_id": _component_id(item),
@@ -261,6 +282,7 @@ def _extract_component_rows(
                     "supported": support_prediction,
                     "support_prediction": support_prediction,
                     "support_score": support_score,
+                    "support_threshold": support_threshold,
                     "task_id": task_id,
                     "trajectory_family": _trajectory_family(record),
                     "trajectory_id": _trajectory_id(record, index),
@@ -499,33 +521,47 @@ def _failure_analysis(
     decision_counts = _dict(summary.get("decision_status_counts"))
     component_gap_tasks = int(decision_counts.get("online_components_good_but_realizer_failed", 0))
     blocked_tasks = int(decision_counts.get("blocked_no_component_gain", 0))
+    positive_gain_tasks = sum(1 for row in task_results if int(_float(row.get("component_gain"))) > 0)
+    mean_realized = _float(summary.get("mean_realized_aggregate_score"))
+    mean_best_single = _float(summary.get("mean_best_single_score"))
+    if mean_realized > mean_best_single + EPSILON:
+        score_finding = (
+            "Mean realized aggregate score "
+            f"{_format_float(mean_realized)} exceeded mean best-single score "
+            f"{_format_float(mean_best_single)}, but the online rule still requires task-level "
+            "wins with positive component gain."
+        )
+    else:
+        score_finding = (
+            "Mean realized aggregate score "
+            f"{_format_float(mean_realized)} was below mean best-single score "
+            f"{_format_float(mean_best_single)}."
+        )
     return {
         "blocked_no_component_gain_task_count": blocked_tasks,
         "component_headroom_but_realizer_failed_task_count": component_gap_tasks,
         "extractor_finding": (
-            "Literal extraction was precise but too sparse: precision "
+            "Literal extraction precision/recall under this threshold: precision "
             f"{_format_float(summary.get('component_precision'))}, recall "
             f"{_format_float(summary.get('component_recall'))}, false negatives "
             f"{summary.get('component_false_negative_count', 0)}."
         ),
         "next_change": (
-            "Replace literal rubric overlap with a paraphrase-aware extractor and replace "
-            "rubric-label templating with a task-conditioned realizer before increasing sample size."
+            "Predeclare the lower extractor threshold on a new slice, then improve fusion so selected "
+            "components add non-overlapping value over the best single candidate instead of mostly "
+            "recovering components already present in that candidate."
         ),
         "primary_failure": "no_online_promotions",
+        "positive_component_gain_task_count": positive_gain_tasks,
         "realizer_finding": (
             f"{component_gap_tasks} tasks had component-union headroom, but the final realized "
             "answer still failed to beat the best single candidate."
         ),
-        "score_finding": (
-            "Mean realized aggregate score "
-            f"{_format_float(summary.get('mean_realized_aggregate_score'))} was below mean "
-            f"best-single score {_format_float(summary.get('mean_best_single_score'))}."
-        ),
+        "score_finding": score_finding,
     }
 
 
-def _evidence_boundary(raw_path: Path) -> dict[str, object]:
+def _evidence_boundary(raw_path: Path, threshold_source: str) -> dict[str, object]:
     raw_name = str(raw_path).replace("\\", "/")
     if "smoke" in raw_name or raw_name.startswith("experiments/"):
         return {
@@ -534,6 +570,14 @@ def _evidence_boundary(raw_path: Path) -> dict[str, object]:
                 "do not cite as frozen GPU evidence."
             ),
             "status": "smoke_fixture_only",
+        }
+    if threshold_source != "frozen_v1_default":
+        return {
+            "reason": (
+                "Raw rows are external run output, but the support threshold was chosen "
+                "after inspecting frozen labels; use only as diagnostic transfer evidence."
+            ),
+            "status": "post_hoc_threshold_replay",
         }
     return {
         "reason": "Raw rows are external run output; verify against the freeze manifest before promotion.",

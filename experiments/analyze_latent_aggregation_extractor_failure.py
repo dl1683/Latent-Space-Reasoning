@@ -139,9 +139,11 @@ def render_markdown(result: dict[str, object]) -> str:
             "",
             (
                 "The frozen literal extractor is not mainly hallucinating components; it is "
-                "missing paraphrased components. Lowering the literal threshold improves recall "
-                "only modestly, so the next extractor should add paraphrase-aware matching rather "
-                "than only retune the threshold."
+                "missing low-overlap components. On this frozen slice, lowering the literal "
+                "threshold to 0.1 recovers all labeled components without false positives. "
+                "Because that threshold was found after labels existed, it should become a "
+                "diagnostic replay or a predeclared threshold for a new slice, not a "
+                "retroactive promotion of the failed v1 run."
             ),
         ]
     )

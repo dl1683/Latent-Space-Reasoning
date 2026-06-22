@@ -96,6 +96,40 @@ def test_inference_replay_marks_smoke_fixtures_as_non_gpu_evidence(tmp_path):
     assert "do not cite as frozen GPU evidence" in result["evidence_boundary"]["reason"]
 
 
+def test_inference_replay_marks_post_hoc_thresholds_as_diagnostic(tmp_path):
+    tasks = tmp_path / "tasks.jsonl"
+    freeze = tmp_path / "freeze.json"
+    raw = tmp_path / "raw.jsonl"
+    tasks.write_text(json.dumps(_task("plan_d")) + "\n", encoding="utf-8")
+    freeze.write_text(
+        json.dumps(
+            {
+                "extractor_contract": {"name": "literal_rubric_component_extractor_v1"},
+                "realizer_contract": {"name": "component_provenance_template_realizer_v1"},
+                "task_ids": ["plan_d"],
+            }
+        ),
+        encoding="utf-8",
+    )
+    raw.write_text(
+        json.dumps(_record("plan_d", "a", "preserve baseline", [True, False, False], 0.20))
+        + "\n",
+        encoding="utf-8",
+    )
+
+    result = run_inference_replay(
+        freeze_path=freeze,
+        raw_path=raw,
+        tasks_path=tasks,
+        support_threshold=0.1,
+        threshold_source="post_hoc_extractor_failure_v1",
+    )
+
+    assert result["support_threshold"] == 0.1
+    assert result["threshold_source"] == "post_hoc_extractor_failure_v1"
+    assert result["evidence_boundary"]["status"] == "post_hoc_threshold_replay"
+
+
 def _task(task_id):
     return {
         "answer": None,

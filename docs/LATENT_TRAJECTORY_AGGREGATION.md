@@ -250,6 +250,10 @@ A post-hoc extractor diagnostic on the same frozen labels shows that the first
 literal threshold was too conservative: a lower support threshold recovers the
 frozen rubric components without false positives on this slice. That finding
 must be frozen before reuse; it cannot retroactively promote the failed run.
+When replayed post hoc at support threshold `0.1`, the mean realized aggregate
+score rises above best-single, but the run still fails the frozen promotion
+gate with only `1/16` online promotions because most recovered components do
+not add measured component gain beyond the best single candidate.
 
 Task mix:
 

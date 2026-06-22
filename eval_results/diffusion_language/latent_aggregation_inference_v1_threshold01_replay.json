@@ -1,0 +1,705 @@
+{
+  "evidence_boundary": {
+    "reason": "Raw rows are external run output, but the support threshold was chosen after inspecting frozen labels; use only as diagnostic transfer evidence.",
+    "status": "post_hoc_threshold_replay"
+  },
+  "extractor": "literal_rubric_component_extractor_v1",
+  "failure_analysis": {
+    "blocked_no_component_gain_task_count": 12,
+    "component_headroom_but_realizer_failed_task_count": 3,
+    "extractor_finding": "Literal extraction precision/recall under this threshold: precision 1.000000, recall 1.000000, false negatives 0.",
+    "next_change": "Predeclare the lower extractor threshold on a new slice, then improve fusion so selected components add non-overlapping value over the best single candidate instead of mostly recovering components already present in that candidate.",
+    "positive_component_gain_task_count": 1,
+    "primary_failure": "no_online_promotions",
+    "realizer_finding": "3 tasks had component-union headroom, but the final realized answer still failed to beat the best single candidate.",
+    "score_finding": "Mean realized aggregate score 0.470107 exceeded mean best-single score 0.374018, but the online rule still requires task-level wins with positive component gain."
+  },
+  "gate_evaluation": {
+    "failed_gate_count": 3,
+    "gates": [
+      {
+        "name": "minimum_task_count",
+        "observed": "16",
+        "status": "pass",
+        "threshold": "16"
+      },
+      {
+        "name": "minimum_aggregate_win_count",
+        "observed": "1",
+        "status": "fail",
+        "threshold": "3"
+      },
+      {
+        "name": "minimum_aggregate_win_fraction",
+        "observed": "0.062500",
+        "status": "fail",
+        "threshold": "0.187500"
+      },
+      {
+        "name": "minimum_wilson_lower_bound",
+        "observed": "0.011119",
+        "status": "fail",
+        "threshold": "0.050000"
+      },
+      {
+        "name": "maximum_unsupported_addition_count",
+        "observed": "0",
+        "status": "pass",
+        "threshold": "0"
+      },
+      {
+        "name": "maximum_hard_contradiction_count",
+        "observed": "0",
+        "status": "pass",
+        "threshold": "0"
+      },
+      {
+        "name": "must_report_component_precision_recall",
+        "observed": "reported",
+        "status": "pass",
+        "threshold": "reported"
+      },
+      {
+        "name": "must_report_final_answer_score_not_only_component_union",
+        "observed": "reported",
+        "status": "pass",
+        "threshold": "reported"
+      },
+      {
+        "name": "must_report_wilson95",
+        "observed": "reported",
+        "status": "pass",
+        "threshold": "reported"
+      }
+    ],
+    "measurement_note": "Unsupported additions and hard contradictions are zero by construction for this template realizer because it emits only selected rubric-item strings.",
+    "overall_status": "failed",
+    "passed_gate_count": 6
+  },
+  "generated_by": "experiments/run_latent_aggregation_inference_replay.py",
+  "inputs": {
+    "freeze": "eval_results\\diffusion_language\\latent_aggregation_inference_v1_freeze.json",
+    "raw": "eval_results\\diffusion_language\\latent_aggregation_inference_v1_raw.jsonl",
+    "tasks": "experiments\\general_reasoning_tasks_scout.jsonl"
+  },
+  "realizer": "component_provenance_template_realizer_v1",
+  "schema": "latent_aggregation_inference_replay.v1",
+  "summary": {
+    "component_f1": 1.0,
+    "component_false_negative_count": 0,
+    "component_false_positive_count": 0,
+    "component_precision": 1.0,
+    "component_recall": 1.0,
+    "component_true_positive_count": 230,
+    "decision_status_counts": {
+      "blocked_no_component_gain": 12,
+      "online_components_good_but_realizer_failed": 3,
+      "online_promoted_local": 1
+    },
+    "mean_best_single_score": 0.3740178571428572,
+    "mean_realized_aggregate_score": 0.47010714285714283,
+    "online_promoted_task_count": 1,
+    "online_promoted_task_fraction": 0.0625,
+    "online_promoted_wilson95": [
+      0.011119344764642517,
+      0.2832873757029894
+    ],
+    "task_count": 16
+  },
+  "support_threshold": 0.1,
+  "tasks": [
+    {
+      "best_single_score": 0.35642857142857143,
+      "best_single_trajectory_id": "plan_009:llada-8b-instruct-hf:schedule:repair_candidate",
+      "component_gain": 0,
+      "component_loss": 0,
+      "component_union_score": 1.0,
+      "decision": {
+        "reason": "Extractor/fusion found no net component gain over best single.",
+        "status": "blocked_no_component_gain"
+      },
+      "realized_aggregate_score": 0.46285714285714286,
+      "realized_rubric_hits": [
+        {
+          "hit": true,
+          "item": "identify which citation conflicts with the others"
+        },
+        {
+          "hit": true,
+          "item": "check the original source text before trusting summaries"
+        },
+        {
+          "hit": true,
+          "item": "separate factual correction from citation-format cleanup"
+        },
+        {
+          "hit": true,
+          "item": "define a ship or hold decision rule"
+        },
+        {
+          "hit": true,
+          "item": "preserve an audit trail for the customer review"
+        }
+      ],
+      "selected_component_count": 5,
+      "source_diversity": 1,
+      "task_id": "plan_009"
+    },
+    {
+      "best_single_score": 0.35928571428571426,
+      "best_single_trajectory_id": "plan_010:llada-8b-instruct-hf:schedule:repair_candidate",
+      "component_gain": 0,
+      "component_loss": 0,
+      "component_union_score": 0.6,
+      "decision": {
+        "reason": "Component union had headroom, but the realized answer failed to beat best single.",
+        "status": "online_components_good_but_realizer_failed"
+      },
+      "realized_aggregate_score": 0.3164285714285714,
+      "realized_rubric_hits": [
+        {
+          "hit": true,
+          "item": "rerun old and new dependency versions under the same seed"
+        },
+        {
+          "hit": true,
+          "item": "lock test order and task set before comparing"
+        },
+        {
+          "hit": false,
+          "item": "check whether failures moved between tasks"
+        },
+        {
+          "hit": false,
+          "item": "measure both mean score and regressions"
+        },
+        {
+          "hit": true,
+          "item": "state what evidence would justify keeping the upgrade"
+        }
+      ],
+      "selected_component_count": 3,
+      "source_diversity": 2,
+      "task_id": "plan_010"
+    },
+    {
+      "best_single_score": 0.4114285714285714,
+      "best_single_trajectory_id": "plan_011:llada-8b-instruct-hf:schedule:repair_candidate",
+      "component_gain": 0,
+      "component_loss": 0,
+      "component_union_score": 0.6,
+      "decision": {
+        "reason": "Extractor/fusion found no net component gain over best single.",
+        "status": "blocked_no_component_gain"
+      },
+      "realized_aggregate_score": 0.44842857142857145,
+      "realized_rubric_hits": [
+        {
+          "hit": true,
+          "item": "sample blocked harmless and risky requests separately"
+        },
+        {
+          "hit": true,
+          "item": "identify which new rule caused false positives"
+        },
+        {
+          "hit": false,
+          "item": "ship a narrow rollback or exception instead of disabling all filtering"
+        },
+        {
+          "hit": true,
+          "item": "monitor abuse or false-negative risk"
+        },
+        {
+          "hit": false,
+          "item": "define a follow-up evaluation before broad release"
+        }
+      ],
+      "selected_component_count": 3,
+      "source_diversity": 1,
+      "task_id": "plan_011"
+    },
+    {
+      "best_single_score": 0.44678571428571434,
+      "best_single_trajectory_id": "plan_012:llada-8b-instruct-hf:schedule:repair_candidate",
+      "component_gain": 0,
+      "component_loss": 0,
+      "component_union_score": 0.8,
+      "decision": {
+        "reason": "Extractor/fusion found no net component gain over best single.",
+        "status": "blocked_no_component_gain"
+      },
+      "realized_aggregate_score": 0.5382142857142858,
+      "realized_rubric_hits": [
+        {
+          "hit": true,
+          "item": "compare compressed and uncompressed models on the same multi-step tasks"
+        },
+        {
+          "hit": true,
+          "item": "include memory and latency measurements"
+        },
+        {
+          "hit": false,
+          "item": "inspect examples of degraded reasoning not only aggregate score"
+        },
+        {
+          "hit": true,
+          "item": "set a release threshold for quality loss"
+        },
+        {
+          "hit": true,
+          "item": "keep a rollback path if the compressed model fails"
+        }
+      ],
+      "selected_component_count": 4,
+      "source_diversity": 1,
+      "task_id": "plan_012"
+    },
+    {
+      "best_single_score": 0.31,
+      "best_single_trajectory_id": "plan_013:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "component_gain": 0,
+      "component_loss": 0,
+      "component_union_score": 0.8,
+      "decision": {
+        "reason": "Extractor/fusion found no net component gain over best single.",
+        "status": "blocked_no_component_gain"
+      },
+      "realized_aggregate_score": 0.36142857142857143,
+      "realized_rubric_hits": [
+        {
+          "hit": true,
+          "item": "separate contractor-authored prompts from the rest of the benchmark"
+        },
+        {
+          "hit": false,
+          "item": "rerun a blind or shuffled evaluation split"
+        },
+        {
+          "hit": true,
+          "item": "check for prompt leakage or style overfitting"
+        },
+        {
+          "hit": true,
+          "item": "report uncertainty and regressions instead of only the headline gain"
+        },
+        {
+          "hit": true,
+          "item": "define whether the public claim should be held or narrowed"
+        }
+      ],
+      "selected_component_count": 4,
+      "source_diversity": 3,
+      "task_id": "plan_013"
+    },
+    {
+      "best_single_score": 0.2814285714285715,
+      "best_single_trajectory_id": "plan_014:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "component_gain": 0,
+      "component_loss": 0,
+      "component_union_score": 0.8,
+      "decision": {
+        "reason": "Extractor/fusion found no net component gain over best single.",
+        "status": "blocked_no_component_gain"
+      },
+      "realized_aggregate_score": 0.4092857142857143,
+      "realized_rubric_hits": [
+        {
+          "hit": true,
+          "item": "sample cases with correct answers and inspect intermediate assumptions"
+        },
+        {
+          "hit": true,
+          "item": "compare visible reasoning against source evidence or constraints"
+        },
+        {
+          "hit": true,
+          "item": "separate final-answer accuracy from trace faithfulness"
+        },
+        {
+          "hit": false,
+          "item": "define a mitigation before exposing traces to customers"
+        },
+        {
+          "hit": true,
+          "item": "record examples that falsify trust in the trace"
+        }
+      ],
+      "selected_component_count": 4,
+      "source_diversity": 3,
+      "task_id": "plan_014"
+    },
+    {
+      "best_single_score": 0.47285714285714286,
+      "best_single_trajectory_id": "plan_015:llada-8b-instruct-hf:random_32:candidate_generation",
+      "component_gain": 0,
+      "component_loss": 0,
+      "component_union_score": 1.0,
+      "decision": {
+        "reason": "Extractor/fusion found no net component gain over best single.",
+        "status": "blocked_no_component_gain"
+      },
+      "realized_aggregate_score": 0.6492857142857142,
+      "realized_rubric_hits": [
+        {
+          "hit": true,
+          "item": "identify features that mark a task as easy or risky"
+        },
+        {
+          "hit": true,
+          "item": "measure failure rate with and without verification"
+        },
+        {
+          "hit": true,
+          "item": "keep verification for high-impact or uncertain cases"
+        },
+        {
+          "hit": true,
+          "item": "set a latency-quality tradeoff threshold"
+        },
+        {
+          "hit": true,
+          "item": "monitor rare failures after rollout"
+        }
+      ],
+      "selected_component_count": 5,
+      "source_diversity": 4,
+      "task_id": "plan_015"
+    },
+    {
+      "best_single_score": 0.3639285714285715,
+      "best_single_trajectory_id": "plan_016:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "component_gain": 0,
+      "component_loss": 0,
+      "component_union_score": 0.4,
+      "decision": {
+        "reason": "Extractor/fusion found no net component gain over best single.",
+        "status": "blocked_no_component_gain"
+      },
+      "realized_aggregate_score": 0.48378571428571426,
+      "realized_rubric_hits": [
+        {
+          "hit": true,
+          "item": "choose the experiment that best isolates the failure mechanism"
+        },
+        {
+          "hit": false,
+          "item": "use the same hallucination test set for both baseline and candidate"
+        },
+        {
+          "hit": true,
+          "item": "measure false positives and false negatives of tool-result claims"
+        },
+        {
+          "hit": false,
+          "item": "include cost or latency impact"
+        },
+        {
+          "hit": false,
+          "item": "state the decision rule for adopting the fix"
+        }
+      ],
+      "selected_component_count": 2,
+      "source_diversity": 1,
+      "task_id": "plan_016"
+    },
+    {
+      "best_single_score": 0.3742857142857143,
+      "best_single_trajectory_id": "plan_017:llada-8b-instruct-hf:random_32:candidate_generation",
+      "component_gain": 0,
+      "component_loss": 0,
+      "component_union_score": 1.0,
+      "decision": {
+        "reason": "Extractor/fusion found no net component gain over best single.",
+        "status": "blocked_no_component_gain"
+      },
+      "realized_aggregate_score": 0.4453571428571429,
+      "realized_rubric_hits": [
+        {
+          "hit": true,
+          "item": "separate hidden examples from evaluation tasks"
+        },
+        {
+          "hit": true,
+          "item": "rerun with a clean template and matched token budget"
+        },
+        {
+          "hit": true,
+          "item": "test on held-out prompts not similar to the hidden examples"
+        },
+        {
+          "hit": true,
+          "item": "measure regressions as well as the headline gain"
+        },
+        {
+          "hit": true,
+          "item": "state whether the claim should be narrowed or withdrawn"
+        }
+      ],
+      "selected_component_count": 5,
+      "source_diversity": 1,
+      "task_id": "plan_017"
+    },
+    {
+      "best_single_score": 0.3028571428571429,
+      "best_single_trajectory_id": "plan_018:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "component_gain": 0,
+      "component_loss": 0,
+      "component_union_score": 0.8,
+      "decision": {
+        "reason": "Extractor/fusion found no net component gain over best single.",
+        "status": "blocked_no_component_gain"
+      },
+      "realized_aggregate_score": 0.5932142857142857,
+      "realized_rubric_hits": [
+        {
+          "hit": false,
+          "item": "sample true positives and false positives separately"
+        },
+        {
+          "hit": true,
+          "item": "inspect which verifier features changed"
+        },
+        {
+          "hit": true,
+          "item": "avoid globally lowering the threshold before measuring abuse risk"
+        },
+        {
+          "hit": true,
+          "item": "compare old and new rules on the same locked cases"
+        },
+        {
+          "hit": true,
+          "item": "define a decision rule for threshold or feature rollback"
+        }
+      ],
+      "selected_component_count": 4,
+      "source_diversity": 3,
+      "task_id": "plan_018"
+    },
+    {
+      "best_single_score": 0.41285714285714287,
+      "best_single_trajectory_id": "plan_019:llada-8b-instruct-hf:schedule:repair_candidate",
+      "component_gain": 0,
+      "component_loss": 0,
+      "component_union_score": 0.8,
+      "decision": {
+        "reason": "Component union had headroom, but the realized answer failed to beat best single.",
+        "status": "online_components_good_but_realizer_failed"
+      },
+      "realized_aggregate_score": 0.3028571428571429,
+      "realized_rubric_hits": [
+        {
+          "hit": true,
+          "item": "compare repaired and unrepaired answers on the same tasks"
+        },
+        {
+          "hit": true,
+          "item": "measure answer length or audit burden separately from score"
+        },
+        {
+          "hit": true,
+          "item": "inspect examples where score improves but clarity drops"
+        },
+        {
+          "hit": true,
+          "item": "include user-facing or reviewer-facing acceptance criteria"
+        },
+        {
+          "hit": false,
+          "item": "define when to prefer the shorter baseline"
+        }
+      ],
+      "selected_component_count": 4,
+      "source_diversity": 2,
+      "task_id": "plan_019"
+    },
+    {
+      "best_single_score": 0.3025,
+      "best_single_trajectory_id": "plan_020:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "component_gain": 0,
+      "component_loss": 0,
+      "component_union_score": 0.8,
+      "decision": {
+        "reason": "Extractor/fusion found no net component gain over best single.",
+        "status": "blocked_no_component_gain"
+      },
+      "realized_aggregate_score": 0.34,
+      "realized_rubric_hits": [
+        {
+          "hit": true,
+          "item": "include both math and open-ended planning tasks"
+        },
+        {
+          "hit": false,
+          "item": "keep fixed/random baselines under the same budget"
+        },
+        {
+          "hit": true,
+          "item": "report family-level gains and regressions"
+        },
+        {
+          "hit": true,
+          "item": "avoid selecting only the best family for the headline"
+        },
+        {
+          "hit": true,
+          "item": "define whether the schedule should be family-gated"
+        }
+      ],
+      "selected_component_count": 4,
+      "source_diversity": 2,
+      "task_id": "plan_020"
+    },
+    {
+      "best_single_score": 0.35642857142857143,
+      "best_single_trajectory_id": "plan_021:llada-8b-instruct-hf:schedule:repair_candidate",
+      "component_gain": 0,
+      "component_loss": 0,
+      "component_union_score": 1.0,
+      "decision": {
+        "reason": "Extractor/fusion found no net component gain over best single.",
+        "status": "blocked_no_component_gain"
+      },
+      "realized_aggregate_score": 0.5371428571428571,
+      "realized_rubric_hits": [
+        {
+          "hit": true,
+          "item": "sample high-scoring answers for coherence"
+        },
+        {
+          "hit": true,
+          "item": "separate checklist coverage from causal usefulness"
+        },
+        {
+          "hit": true,
+          "item": "add a penalty for contradictions or irrelevant checklist dumping"
+        },
+        {
+          "hit": true,
+          "item": "compare judge scores against human or rubric review"
+        },
+        {
+          "hit": true,
+          "item": "state what failure would invalidate the judge"
+        }
+      ],
+      "selected_component_count": 5,
+      "source_diversity": 3,
+      "task_id": "plan_021"
+    },
+    {
+      "best_single_score": 0.36642857142857144,
+      "best_single_trajectory_id": "plan_022:llada-8b-instruct-hf:schedule:repair_candidate",
+      "component_gain": 1,
+      "component_loss": 0,
+      "component_union_score": 1.0,
+      "decision": {
+        "reason": "Realized aggregate beats best single with positive component gain.",
+        "status": "online_promoted_local"
+      },
+      "realized_aggregate_score": 0.7357142857142858,
+      "realized_rubric_hits": [
+        {
+          "hit": true,
+          "item": "choose logs that expose the suspected failure mechanism"
+        },
+        {
+          "hit": true,
+          "item": "sample enough final answers to detect user-visible regressions"
+        },
+        {
+          "hit": true,
+          "item": "preserve representative intermediate states for trace audits"
+        },
+        {
+          "hit": true,
+          "item": "set storage limits or sampling rules"
+        },
+        {
+          "hit": true,
+          "item": "define how the logs will validate right-answer-wrong-reason cases"
+        }
+      ],
+      "selected_component_count": 5,
+      "source_diversity": 2,
+      "task_id": "plan_022"
+    },
+    {
+      "best_single_score": 0.35892857142857143,
+      "best_single_trajectory_id": "plan_023:llada-8b-instruct-hf:schedule:repair_candidate",
+      "component_gain": 0,
+      "component_loss": 0,
+      "component_union_score": 0.6,
+      "decision": {
+        "reason": "Component union had headroom, but the realized answer failed to beat best single.",
+        "status": "online_components_good_but_realizer_failed"
+      },
+      "realized_aggregate_score": 0.29592857142857143,
+      "realized_rubric_hits": [
+        {
+          "hit": true,
+          "item": "equalize total GPU budget across model choices"
+        },
+        {
+          "hit": true,
+          "item": "compare first-try accuracy against repaired small-model accuracy"
+        },
+        {
+          "hit": true,
+          "item": "include latency or throughput cost"
+        },
+        {
+          "hit": false,
+          "item": "measure task-level wins and regressions"
+        },
+        {
+          "hit": false,
+          "item": "state which deployment constraint chooses the winner"
+        }
+      ],
+      "selected_component_count": 3,
+      "source_diversity": 2,
+      "task_id": "plan_023"
+    },
+    {
+      "best_single_score": 0.5078571428571429,
+      "best_single_trajectory_id": "plan_024:llada-8b-instruct-hf:schedule:repair_candidate",
+      "component_gain": 0,
+      "component_loss": 0,
+      "component_union_score": 1.0,
+      "decision": {
+        "reason": "Extractor/fusion found no net component gain over best single.",
+        "status": "blocked_no_component_gain"
+      },
+      "realized_aggregate_score": 0.6017857142857143,
+      "realized_rubric_hits": [
+        {
+          "hit": true,
+          "item": "test harmful and harmless edge cases separately"
+        },
+        {
+          "hit": true,
+          "item": "measure false refusals and missed harmful cases"
+        },
+        {
+          "hit": true,
+          "item": "compare against the previous refusal rule on the same prompts"
+        },
+        {
+          "hit": true,
+          "item": "ship a narrow rule only if it preserves harmless requests"
+        },
+        {
+          "hit": true,
+          "item": "define monitoring after release"
+        }
+      ],
+      "selected_component_count": 5,
+      "source_diversity": 2,
+      "task_id": "plan_024"
+    }
+  ],
+  "threshold_source": "post_hoc_extractor_failure_v1"
+}

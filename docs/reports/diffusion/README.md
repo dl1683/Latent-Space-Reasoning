@@ -32,6 +32,10 @@ Current high-signal generated reports:
   post-hoc extractor failure diagnostic showing the current literal threshold
   is too conservative on the frozen replay labels; useful for the next freeze,
   not a promoted online result.
+- [LATENT_AGGREGATION_INFERENCE_V1_THRESHOLD01_REPLAY.md](LATENT_AGGREGATION_INFERENCE_V1_THRESHOLD01_REPLAY.md):
+  post-hoc threshold replay using support threshold `0.1`; component extraction
+  recovers the frozen labels, mean realized score rises, but predeclared
+  promotion gates still fail with only `1/16` online promotions.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.
