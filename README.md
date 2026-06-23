@@ -245,9 +245,14 @@ Active frontier:
   new source family must add at least `13` newly promoted covered tasks on this
   48-task design to satisfy the Wilson gate, so the next run should target the
   `24` currently uncovered tasks rather than spend uniformly. A v8 targeted
-  source contract now freezes exactly those uncovered tasks and emits a
-  `targeted_history_contrast` GPU command; it is source-generation evidence
-  only until replayed against the frozen v7 artifacts.
+  source contract froze exactly those uncovered tasks and ran a
+  `targeted_history_contrast` GPU command. The source run produced positive
+  local repair evidence on the targeted slice: repair coverage `24/24`, repair
+  score `0.292167` versus `0.275045` fixed and `0.281318` evolved. But the
+  diagnostic replay is negative: coverage remains `24/48`, online promotions
+  remain `23`, and `targeted_history_contrast` contributes no selected
+  complements under the expanded extractor. Local repair lift is therefore not
+  the same thing as aggregation-useful complement coverage.
 
 What not to overclaim:
 

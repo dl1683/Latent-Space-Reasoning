@@ -423,6 +423,7 @@ def test_v7_replay_reports_expanded_ontology_and_label_leakage_gates(tmp_path):
     freeze_data["statistical_gates"].update(
         {
             "minimum_aggregate_win_count": 0,
+            "minimum_all_task_mean_non_rubric_lift": 9.0,
             "minimum_complement_coverage_count": 1,
             "minimum_complement_coverage_fraction": 1.0,
             "minimum_wilson_lower_bound": 0.0,
@@ -502,6 +503,78 @@ def test_v7_replay_reports_expanded_ontology_and_label_leakage_gates(tmp_path):
     assert gates["must_report_label_leakage_check"]["status"] == "pass"
     assert "# Latent Aggregation Multi-Aspect V7 Replay" in markdown
     assert "Label-leakage check: `passed_label_free_view_only`" in markdown
+
+
+def test_v8_targeted_history_contrast_extra_raw_gets_diagnostic_boundary(tmp_path):
+    freeze = tmp_path / "freeze.json"
+    raw = tmp_path / "raw.jsonl"
+    targeted_raw = tmp_path / "latent_aggregation_multi_aspect_v8_targeted_history_contrast_raw.jsonl"
+    tasks = tmp_path / "tasks.jsonl"
+    probe = tmp_path / "probe.json"
+    freeze_data = _freeze(["plan_i"])
+    freeze_data["schema"] = "latent_aggregation_multi_aspect_v7_freeze.v1"
+    freeze_data["source_family_contract"] = {
+        "required_outputs": {
+            "label_raw_output": str(raw).replace("/", "\\"),
+        }
+    }
+    freeze_data["statistical_gates"].update(
+        {
+            "minimum_aggregate_win_count": 0,
+            "minimum_complement_coverage_count": 1,
+            "minimum_complement_coverage_fraction": 1.0,
+            "minimum_wilson_lower_bound": 0.0,
+        }
+    )
+    freeze.write_text(json.dumps(freeze_data), encoding="utf-8")
+    tasks.write_text(json.dumps(_task("plan_i")) + "\n", encoding="utf-8")
+    probe.write_text(
+        json.dumps({"summary": {"mean_probe_cost_relative": 0.1875, "measured_probe_count": 0}}),
+        encoding="utf-8",
+    )
+    raw.write_text(
+        json.dumps(
+            _record(
+                "plan_i",
+                "anchor",
+                score=0.30,
+                text="preserve baseline",
+                specificity=0.1,
+            )
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    targeted_raw.write_text(
+        json.dumps(
+            _record(
+                "plan_i",
+                "targeted_history_contrast",
+                score=0.20,
+                text="preserve baseline. Assign an owner and define rollback criteria.",
+                specificity=0.1,
+            )
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    result = run_replay(
+        freeze_path=freeze,
+        raw_path=raw,
+        extra_raw_paths=[targeted_raw],
+        tasks_path=tasks,
+        probe_analysis_path=probe,
+    )
+    markdown = render_markdown(
+        {key: value for key, value in result.items() if key not in {"aspect_rows", "realized_rows"}}
+    )
+
+    assert result["evidence_boundary"]["status"] == "post_failure_v8_targeted_history_contrast_replay"
+    assert result["summary"]["selected_complement_source_family_counts"] == {
+        "targeted_history_contrast": 3
+    }
+    assert "# Latent Aggregation Multi-Aspect V8 Targeted History-Contrast Replay" in markdown
 
 
 def _freeze(task_ids):

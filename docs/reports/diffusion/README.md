@@ -223,6 +223,15 @@ Current high-signal generated reports:
   It freezes the `24` v7 no-complement tasks and emits a
   `targeted_history_contrast` GPU command; this is not a promotion artifact
   until the generated rows are replayed against the frozen v7 evidence.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V8_TARGETED_HISTORY_CONTRAST_REPORT.md](LATENT_AGGREGATION_MULTI_ASPECT_V8_TARGETED_HISTORY_CONTRAST_REPORT.md):
+  targeted GPU source run over the `24` v7 no-complement tasks. The repair arm
+  covers `24/24` tasks and scores `0.292167` versus `0.275045` fixed and
+  `0.281318` evolved; useful local repair evidence, but not a promotion result.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V8_TARGETED_HISTORY_CONTRAST_REPLAY.md](LATENT_AGGREGATION_MULTI_ASPECT_V8_TARGETED_HISTORY_CONTRAST_REPLAY.md):
+  negative post-failure replay adding the targeted history-contrast rows to the
+  frozen v7 source mix. Coverage remains `24/48`, online promotions remain
+  `23`, and source-family ablation shows `targeted_history_contrast` contributes
+  no selected complements under the expanded extractor.
 - [LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md](LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md):
   post-hoc no-generation diagnostic over existing v6 raw rows; the expanded
   ontology recovers `12` of `21` v6 no-complement tasks, motivating v7

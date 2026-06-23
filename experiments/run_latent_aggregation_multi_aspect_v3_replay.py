@@ -825,12 +825,27 @@ def _source_family_for_path(freeze: dict[str, object], path: Path) -> str:
         _normalized_path_key(str(generation.get("anchor_deficit_raw_output", ""))): "anchor_deficit",
         _normalized_path_key(str(generation.get("ontology_probe_raw_output", ""))): "ontology_probe",
         _normalized_path_key(str(generation.get("cross_latent_raw_output", ""))): "cross_latent_perturbation",
+        _normalized_path_key(str(generation.get("targeted_history_contrast_raw_output", ""))): "targeted_history_contrast",
     }
-    return known.get(normalized, "extra_raw")
+    if normalized in known:
+        return known[normalized]
+    if "v8_targeted_history_contrast" in normalized:
+        return "targeted_history_contrast"
+    return "extra_raw"
 
 
 def _evidence_boundary(freeze: dict[str, object], raw_paths: list[Path]) -> dict[str, str]:
     if str(freeze.get("schema", "")) == "latent_aggregation_multi_aspect_v7_freeze.v1":
+        if any("v8_targeted_history_contrast" in _normalized_path_key(str(path)) for path in raw_paths):
+            return {
+                "reason": (
+                    "Post-failure diagnostic replay over the frozen v7 source mix plus "
+                    "the v8 targeted history-contrast rows. This tests whether the "
+                    "targeted source adds extractable complements on the v7 uncovered "
+                    "tasks; it is not a fresh v8 promotion claim."
+                ),
+                "status": "post_failure_v8_targeted_history_contrast_replay",
+            }
         return {
             "reason": (
                 "Fresh v7 replay over the predeclared 48-task label, ontology-probe, "
@@ -888,6 +903,8 @@ def _evidence_boundary(freeze: dict[str, object], raw_paths: list[Path]) -> dict
 
 def _title_for_boundary(evidence_boundary: dict[str, object]) -> str:
     status = evidence_boundary.get("status")
+    if status == "post_failure_v8_targeted_history_contrast_replay":
+        return "V8 Targeted History-Contrast"
     if status == "fresh_predeclared_expanded_ontology_v7_replay":
         return "V7"
     if status == "fresh_predeclared_multi_source_v6_replay":
@@ -1086,6 +1103,24 @@ def _interpretation(
         for row in _list_of_dicts(gate.get("gates"))
         if row.get("status") == "fail"
     ]
+    if evidence_boundary.get("status") == "post_failure_v8_targeted_history_contrast_replay":
+        return (
+            "The targeted history-contrast source does not rescue the v7 aggregation "
+            "failure. The important failure surface remains: "
+            + ", ".join(failed)
+            + ". This is a useful negative source-family result: the targeted rows may "
+            "improve local repair scores, but they do not add selected complementary "
+            "aspects under the expanded replay extractor."
+        )
+    if evidence_boundary.get("status") == "fresh_predeclared_expanded_ontology_v7_replay":
+        return (
+            "The replay does not promote v7. The important failure surface is now "
+            "explicit: "
+            + ", ".join(failed)
+            + ". Conditional realization remains positive and safety checks remain "
+            "clean, but complement coverage and statistical confidence are too weak "
+            "for promotion."
+        )
     return (
         "The replay does not promote the v3 aggregation claim. The important failure "
         "surface is now explicit: "
