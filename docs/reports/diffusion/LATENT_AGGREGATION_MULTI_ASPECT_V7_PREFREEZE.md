@@ -1,8 +1,9 @@
 # Latent Aggregation Multi-Aspect V7 Pre-Freeze
 
 This is a pre-freeze design document, not a frozen promotion contract. It exists
-because v6 failed cleanly enough to identify the next required experiment, but
-the fresh v7 task inventory has not yet been added.
+because v6 failed cleanly enough to identify the next required experiment. The
+fresh v7 task inventory now exists, but the source-family commands and true
+freeze manifest still need to be built before any v7 promotion run.
 
 ## Evidence Boundary
 
@@ -34,7 +35,7 @@ source. It needs new observable complement surfaces.
 
 Before a real v7 freeze is generated:
 
-1. Add fresh `plan_345` through `plan_392` tasks to
+1. Use fresh `plan_345` through `plan_392` tasks from
    `experiments/general_reasoning_tasks_scout.jsonl`.
 2. Hash every frozen task in the v7 manifest.
 3. Verify no v7 output artifacts already exist.
@@ -103,7 +104,6 @@ Additional v7-specific gates:
 
 ## Next Concrete Work
 
-The next commit should create the fresh `plan_345` through `plan_392` task
-inventory and then build a true v7 freeze manifest from that inventory. Until
-that happens, v7 remains a pre-freeze design and should not be used for
-promotion.
+The next implementation step is to build a true v7 freeze manifest from the
+fresh `plan_345` through `plan_392` inventory. Until that happens, v7 remains a
+pre-freeze design and should not be used for promotion.
