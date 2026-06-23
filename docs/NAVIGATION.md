@@ -70,6 +70,7 @@ If you need one-screen onboarding, open [../START_HERE.md](../START_HERE.md) fir
 - For the v7 pre-freeze design: [LATENT_AGGREGATION_MULTI_ASPECT_V7_PREFREEZE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V7_PREFREEZE.md)
 - For the v7 task and ontology freeze: [LATENT_AGGREGATION_MULTI_ASPECT_V7_FREEZE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V7_FREEZE.md)
 - For the v7 baseline label source run: [LATENT_AGGREGATION_MULTI_ASPECT_V7_LABEL_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V7_LABEL_REPORT.md)
+- For the v7 ontology-probe source run: [LATENT_AGGREGATION_MULTI_ASPECT_V7_ONTOLOGY_PROBE_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V7_ONTOLOGY_PROBE_REPORT.md)
 - For near-term roadmap: [NEXT_GENERATION_REASONING_TASKS.md](../NEXT_GENERATION_REASONING_TASKS.md)
 
 ## Current result surfaces
