@@ -62,6 +62,8 @@ def test_multi_aspect_v5_freeze_locks_larger_robustness_replication(tmp_path):
     assert robustness["must_report_leave_one_out_mean_lift_range"] is True
     assert robustness["must_report_source_family_ablation"] is True
     assert manifest["task_mix_contract"]["must_report_theme_bucket_results"] is True
+    assert manifest["task_mix_contract"]["task_theme_by_id"]["plan_249"] == "research_program_design"
+    assert manifest["task_mix_contract"]["task_theme_by_id"]["plan_296"] == "failure_forensics"
     assert "--task-ids plan_249,plan_250" in generation["label_command"]
     assert "--include-revision-schedules" in generation["diversity_extension_command"]
     assert "--extra-raw" in generation["replay_command"]

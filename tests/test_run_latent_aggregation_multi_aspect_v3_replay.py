@@ -206,6 +206,115 @@ def test_v4_replay_marks_predeclared_multi_source_and_reports_diversity_cost(tmp
     assert "Diversity generation cost reported: `True`" in markdown
 
 
+def test_v5_replay_reports_robustness_and_source_family_ablations(tmp_path):
+    freeze = tmp_path / "freeze.json"
+    raw = tmp_path / "raw.jsonl"
+    diversity_raw = tmp_path / "diversity_raw.jsonl"
+    tasks = tmp_path / "tasks.jsonl"
+    probe = tmp_path / "probe.json"
+    freeze_data = _freeze(["plan_e", "plan_f"])
+    freeze_data["schema"] = "latent_aggregation_multi_aspect_v5_freeze.v1"
+    freeze_data["trajectory_generation_contract"] = {
+        "raw_output": str(raw).replace("/", "\\"),
+        "diversity_raw_output": str(diversity_raw).replace("/", "\\"),
+    }
+    freeze_data["statistical_gates"].update(
+        {
+            "minimum_aggregate_win_count": 2,
+            "minimum_complement_coverage_count": 2,
+            "minimum_complement_coverage_fraction": 1.0,
+            "minimum_wilson_lower_bound": 0.0,
+            "must_report_diversity_generation_cost": True,
+            "must_report_theme_bucket_results": True,
+        }
+    )
+    freeze_data["robustness_gates"] = {
+        "maximum_single_task_share_of_total_lift": 0.75,
+        "must_report_complement_yield_per_raw_row": True,
+        "must_report_cost_normalized_lift": True,
+        "must_report_high_leverage_task_ids": True,
+        "must_report_leave_one_out_mean_lift_range": True,
+        "must_report_median_non_rubric_lift": True,
+        "must_report_median_score_lift": True,
+        "must_report_source_family_ablation": True,
+        "must_report_wins_ties_losses": True,
+    }
+    freeze_data["task_mix_contract"] = {
+        "task_theme_by_id": {
+            "plan_e": "statistical_validation",
+            "plan_f": "systems_reliability",
+        }
+    }
+    freeze.write_text(json.dumps(freeze_data), encoding="utf-8")
+    tasks.write_text(
+        json.dumps(_task("plan_e")) + "\n" + json.dumps(_task("plan_f")) + "\n",
+        encoding="utf-8",
+    )
+    probe.write_text(
+        json.dumps({"summary": {"mean_probe_cost_relative": 0.1875, "measured_probe_count": 2}}),
+        encoding="utf-8",
+    )
+    raw.write_text(
+        "\n".join(
+            json.dumps(
+                _record(
+                    task_id,
+                    "anchor",
+                    score=0.30,
+                    text="preserve baseline",
+                    specificity=0.1,
+                )
+            )
+            for task_id in ["plan_e", "plan_f"]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    diversity_raw.write_text(
+        "\n".join(
+            json.dumps(
+                _record(
+                    task_id,
+                    "diversity",
+                    score=0.20,
+                    text="preserve baseline measure risk threshold",
+                    specificity=0.8,
+                )
+            )
+            for task_id in ["plan_e", "plan_f"]
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    result = run_replay(
+        freeze_path=freeze,
+        raw_path=raw,
+        extra_raw_paths=[diversity_raw],
+        tasks_path=tasks,
+        probe_analysis_path=probe,
+    )
+    summary = result["summary"]
+    gates = {row["name"]: row for row in result["gate_evaluation"]["gates"]}
+    markdown = render_markdown(
+        {key: value for key, value in result.items() if key not in {"aspect_rows", "realized_rows"}}
+    )
+
+    assert result["evidence_boundary"]["status"] == "fresh_predeclared_multi_source_v5_replay"
+    assert summary["wins_ties_losses"]["wins"] == 2
+    assert summary["median_score_lift"] > 0
+    assert summary["leave_one_out_mean_score_lift_range"][0] > 0
+    assert summary["maximum_single_task_share_of_total_lift"] <= 0.75
+    assert summary["selected_complement_source_family_counts"] == {"diversity": 2}
+    assert set(summary["source_family_ablation"]) == {"diversity", "label"}
+    assert set(summary["theme_bucket_results"]) == {"statistical_validation", "systems_reliability"}
+    assert gates["must_report_source_family_ablation"]["status"] == "pass"
+    assert gates["must_report_theme_bucket_results"]["status"] == "pass"
+    assert gates["maximum_single_task_share_of_total_lift"]["status"] == "pass"
+    assert "# Latent Aggregation Multi-Aspect V5 Replay" in markdown
+    assert "Source-Family Ablation" in markdown
+
+
 def _freeze(task_ids):
     return {
         "statistical_gates": {

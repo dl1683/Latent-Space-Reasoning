@@ -151,6 +151,7 @@ def build_freeze_manifest(
                 "latent_reasoning_synthesis",
                 "failure_forensics",
             ],
+            "task_theme_by_id": _task_theme_by_id(),
             "must_report_theme_bucket_results": True,
         },
         "trajectory_generation_contract": {
@@ -392,6 +393,21 @@ def _assert_fresh_task_ids(task_ids: tuple[str, ...]) -> None:
     ]
     if stale:
         raise ValueError(f"v5 task ids must be fresh above plan_{PRIOR_PLANNING_TASK_MAX:03d}: {stale}")
+
+
+def _task_theme_by_id() -> dict[str, str]:
+    buckets = (
+        "research_program_design",
+        "statistical_validation",
+        "artifact_governance",
+        "systems_reliability",
+        "latent_reasoning_synthesis",
+        "failure_forensics",
+    )
+    return {
+        task_id: buckets[index // 8]
+        for index, task_id in enumerate(FROZEN_TASK_IDS)
+    }
 
 
 def _diagnostic_ref(path: Path, summary: dict[str, object]) -> dict[str, object]:

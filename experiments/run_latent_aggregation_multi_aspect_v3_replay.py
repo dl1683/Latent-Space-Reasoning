@@ -12,7 +12,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from experiments.run_latent_aggregation_inference_replay import _record_task_id
+from experiments.run_latent_aggregation_inference_replay import _record_task_id, _trajectory_id
 from experiments.run_latent_aggregation_multi_aspect_v2_replay import (
     EPSILON,
     _dict,
@@ -122,16 +122,25 @@ def run_replay(
     for path in raw_paths:
         rows = _read_jsonl(path)
         source_record_counts[str(path)] = len(rows)
+        source_family = _source_family_for_path(freeze, path)
         for record in rows:
             task_id = _record_task_id(record)
             if task_id in frozen_task_ids and _dict(record.get("task_score")).get("details"):
-                rows_by_task[task_id].append(record)
+                enriched = dict(record)
+                enriched["__source_family"] = source_family
+                rows_by_task[task_id].append(enriched)
 
     aspect_rows: list[dict[str, object]] = []
     realized_rows: list[dict[str, object]] = []
     task_results: list[dict[str, object]] = []
     for task_id in frozen_task_ids:
+        source_by_trajectory = {
+            _trajectory_id(record, 0, stable=True): str(record.get("__source_family", "unknown"))
+            for record in rows_by_task[task_id]
+        }
         task_result, task_aspects, realized = _run_task(task_id, rows_by_task[task_id], tasks[task_id])
+        for row in task_aspects:
+            row["source_family"] = source_by_trajectory.get(str(row.get("trajectory_id", "")), "unknown")
         task_results.append(task_result)
         aspect_rows.extend(task_aspects)
         realized_rows.append(realized)
@@ -139,11 +148,18 @@ def run_replay(
     probe_summary = _load_probe_summary(probe_analysis_path)
     unsupported_addition_count = _unsupported_addition_count(realized_rows)
     hard_contradiction_count = _hard_contradiction_count(aspect_rows)
+    source_family_ablations = _source_family_ablations(
+        rows_by_task=rows_by_task,
+        task_ids=frozen_task_ids,
+        tasks=tasks,
+    )
     summary = _summary_v3(
         task_results,
+        aspect_rows=aspect_rows,
         probe_summary=probe_summary,
         freeze=freeze,
         source_record_counts=source_record_counts,
+        source_family_ablations=source_family_ablations,
         unsupported_addition_count=unsupported_addition_count,
         hard_contradiction_count=hard_contradiction_count,
     )
@@ -175,8 +191,7 @@ def render_markdown(result: dict[str, object]) -> str:
     summary = _dict(result.get("summary"))
     gate = _dict(result.get("gate_evaluation"))
     evidence_boundary = _dict(result.get("evidence_boundary"))
-    is_v4 = evidence_boundary.get("status") == "fresh_predeclared_multi_source_v4_replay"
-    title = "V4" if is_v4 else "V3"
+    title = _title_for_boundary(evidence_boundary)
     lines = [
         f"# Latent Aggregation Multi-Aspect {title} Replay",
         "",
@@ -205,13 +220,21 @@ def render_markdown(result: dict[str, object]) -> str:
         f"- Mean anchor score: `{_format_float(summary['mean_anchor_score'])}`",
         f"- Mean realized aggregate score: `{_format_float(summary['mean_realized_score'])}`",
         f"- Mean score lift: `{_format_float(summary['mean_score_lift'])}`",
+        f"- Median score lift: `{_format_float(summary.get('median_score_lift'))}`",
+        f"- Median non-rubric lift: `{_format_float(summary.get('median_non_rubric_lift'))}`",
+        f"- Wins/ties/losses: `{_format_counts(summary.get('wins_ties_losses'))}`",
+        f"- Leave-one-out mean score lift range: `{_format_interval(summary.get('leave_one_out_mean_score_lift_range'))}`",
+        f"- Maximum single-task share of positive score lift: `{_format_float(summary.get('maximum_single_task_share_of_total_lift'))}`",
         f"- Unsupported additions: `{summary['unsupported_addition_count']}`",
         f"- Hard contradictions: `{summary['hard_contradiction_count']}`",
         f"- Probe cost reported: `{bool(summary['probe_cost_reported'])}`",
         f"- Mean probe cost relative: `{_format_float(summary['mean_probe_cost_relative'])}`",
         f"- Diversity generation cost reported: `{bool(summary['diversity_generation_cost_reported'])}`",
         f"- Diversity raw records: `{summary['diversity_raw_record_count']}`",
+        f"- Complement yield per raw row: `{_format_float(summary.get('complement_yield_per_raw_row'))}`",
+        f"- Cost-normalized score lift: `{_format_float(summary.get('cost_normalized_score_lift'))}`",
         f"- Equal-budget best-of control reported: `{bool(summary['equal_budget_best_of_control_reported'])}`",
+        f"- Selected complement source families: `{_format_counts(summary.get('selected_complement_source_family_counts'))}`",
         f"- Decision counts: `{_format_counts(summary['decision_status_counts'])}`",
         "",
         "## Frozen Gate Evaluation",
@@ -231,6 +254,24 @@ def render_markdown(result: dict[str, object]) -> str:
             f"{row['threshold']} | "
             f"`{row['status']}` |"
         )
+    if _dict(summary.get("source_family_ablation")):
+        lines.extend(["", "## Source-Family Ablation", ""])
+        for family, ablation in sorted(_dict(summary.get("source_family_ablation")).items()):
+            data = _dict(ablation)
+            lines.append(
+                f"- `{family}` removed: mean score lift `{_format_float(data.get('mean_score_lift'))}`, "
+                f"coverage `{data.get('complement_coverage_count')}/{data.get('task_count')}`, "
+                f"promotions `{data.get('online_promoted_task_count')}`."
+            )
+    if _dict(summary.get("theme_bucket_results")):
+        lines.extend(["", "## Theme Buckets", ""])
+        for bucket, bucket_summary in sorted(_dict(summary.get("theme_bucket_results")).items()):
+            data = _dict(bucket_summary)
+            lines.append(
+                f"- `{bucket}`: tasks `{data.get('task_count')}`, "
+                f"coverage `{data.get('complement_coverage_count')}`, "
+                f"mean score lift `{_format_float(data.get('mean_score_lift'))}`."
+            )
     lines.extend(
         [
             "",
@@ -268,9 +309,11 @@ def render_markdown(result: dict[str, object]) -> str:
 def _summary_v3(
     tasks: list[dict[str, object]],
     *,
+    aspect_rows: list[dict[str, object]],
     probe_summary: dict[str, object],
     freeze: dict[str, object],
     source_record_counts: dict[str, int],
+    source_family_ablations: dict[str, dict[str, object]],
     unsupported_addition_count: int,
     hard_contradiction_count: int,
 ) -> dict[str, object]:
@@ -283,10 +326,19 @@ def _summary_v3(
     ]
     task_count = len(tasks)
     diversity_record_count = _diversity_record_count(freeze, source_record_counts)
+    score_lifts = [_float(task.get("score_lift")) for task in tasks]
+    non_rubric_lifts = [_float(task.get("non_rubric_lift")) for task in tasks]
+    total_raw_records = sum(source_record_counts.values())
+    selected_aspects = [row for row in aspect_rows if bool(row.get("selected"))]
+    positive_score_lifts = [max(0.0, lift) for lift in score_lifts]
+    total_positive_score_lift = sum(positive_score_lifts)
+    max_positive_score_lift = max(positive_score_lifts) if positive_score_lifts else 0.0
+    theme_bucket_results = _theme_bucket_results(tasks, freeze)
     return {
         "all_task_mean_non_rubric_lift": _mean(_float(task.get("non_rubric_lift")) for task in tasks),
         "complement_coverage_count": len(complement_tasks),
         "complement_coverage_fraction": len(complement_tasks) / task_count if task_count else 0.0,
+        "complement_yield_per_raw_row": len(selected_aspects) / total_raw_records if total_raw_records else 0.0,
         "conditional_mean_non_rubric_lift": _mean(
             _float(task.get("non_rubric_lift")) for task in complement_tasks
         ),
@@ -299,20 +351,39 @@ def _summary_v3(
         "equal_budget_best_of_control": "best_single_anchor_by_pre_rescore_task_score",
         "equal_budget_best_of_control_reported": True,
         "hard_contradiction_count": hard_contradiction_count,
+        "high_leverage_task_ids": _high_leverage_task_ids(tasks, threshold=_high_leverage_threshold(freeze)),
+        "leave_one_out_mean_non_rubric_lift_range": _leave_one_out_range(non_rubric_lifts),
+        "leave_one_out_mean_score_lift_range": _leave_one_out_range(score_lifts),
+        "maximum_single_task_share_of_total_lift": (
+            max_positive_score_lift / total_positive_score_lift
+            if total_positive_score_lift > EPSILON
+            else 0.0
+        ),
         "mean_anchor_score": _mean(_float(task.get("anchor_score")) for task in tasks),
         "mean_probe_cost_relative": _float(probe_summary.get("mean_probe_cost_relative")),
         "mean_realized_score": _mean(_float(task.get("realized_score")) for task in tasks),
         "mean_score_lift": _mean(_float(task.get("score_lift")) for task in tasks),
+        "median_non_rubric_lift": _median(non_rubric_lifts),
+        "median_score_lift": _median(score_lifts),
         "online_promoted_task_count": len(promoted),
         "online_promoted_task_fraction": len(promoted) / task_count if task_count else 0.0,
         "online_promoted_wilson95": _wilson_interval(len(promoted), task_count),
         "probe_cost_reported": bool(probe_summary),
         "probe_measured_count": int(_float(probe_summary.get("measured_probe_count"))),
+        "selected_complement_source_family_counts": _selected_source_family_counts(selected_aspects),
+        "source_family_ablation": source_family_ablations,
+        "source_family_ablation_reported": bool(source_family_ablations),
         "task_count": task_count,
+        "theme_bucket_results": theme_bucket_results,
+        "theme_bucket_results_reported": bool(theme_bucket_results),
         "tasks_with_dimension_gain": sum(1 for task in tasks if int(_float(task.get("dimension_gain_count"))) > 0),
         "tasks_with_rubric_gain": sum(1 for task in tasks if int(_float(task.get("rubric_gain_count"))) > 0),
         "tasks_with_score_lift": sum(1 for task in tasks if _float(task.get("score_lift")) > EPSILON),
+        "total_raw_record_count": total_raw_records,
+        "cost_normalized_score_lift": sum(score_lifts) / total_raw_records if total_raw_records else 0.0,
+        "cost_normalized_non_rubric_lift": sum(non_rubric_lifts) / total_raw_records if total_raw_records else 0.0,
         "unsupported_addition_count": unsupported_addition_count,
+        "wins_ties_losses": _wins_ties_losses(score_lifts),
     }
 
 
@@ -343,12 +414,124 @@ def _gate_evaluation_v3(freeze: dict[str, object], summary: dict[str, object]) -
                 bool(summary["diversity_generation_cost_reported"]),
             )
         )
+    robustness_gates = _dict(freeze.get("robustness_gates"))
+    if robustness_gates:
+        rows.extend(_robustness_gate_rows(robustness_gates, summary))
+    if bool(gates.get("must_report_theme_bucket_results")):
+        rows.append(
+            _gate(
+                "must_report_theme_bucket_results",
+                "reported" if summary["theme_bucket_results_reported"] else "missing",
+                "reported",
+                bool(summary["theme_bucket_results_reported"]),
+            )
+        )
     failed = [row for row in rows if row["status"] == "fail"]
     return {
         "failed_gate_count": len(failed),
         "gates": rows,
         "overall_status": "passed" if not failed else "failed",
         "passed_gate_count": len(rows) - len(failed),
+    }
+
+
+def _robustness_gate_rows(
+    robustness_gates: dict[str, object],
+    summary: dict[str, object],
+) -> list[dict[str, object]]:
+    rows: list[dict[str, object]] = []
+    required_reports = (
+        ("must_report_wins_ties_losses", "wins_ties_losses"),
+        ("must_report_median_score_lift", "median_score_lift"),
+        ("must_report_median_non_rubric_lift", "median_non_rubric_lift"),
+        ("must_report_leave_one_out_mean_lift_range", "leave_one_out_mean_score_lift_range"),
+        ("must_report_high_leverage_task_ids", "high_leverage_task_ids"),
+        ("must_report_source_family_ablation", "source_family_ablation"),
+        ("must_report_complement_yield_per_raw_row", "complement_yield_per_raw_row"),
+        ("must_report_cost_normalized_lift", "cost_normalized_score_lift"),
+    )
+    for gate_name, summary_key in required_reports:
+        if bool(robustness_gates.get(gate_name)):
+            reported = summary_key in summary and summary.get(summary_key) is not None
+            rows.append(
+                _gate(
+                    gate_name,
+                    "reported" if reported else "missing",
+                    "reported",
+                    reported,
+                )
+            )
+    if "maximum_single_task_share_of_total_lift" in robustness_gates:
+        observed = _float(summary.get("maximum_single_task_share_of_total_lift"))
+        threshold = _float(robustness_gates.get("maximum_single_task_share_of_total_lift"))
+        rows.append(
+            _gate(
+                "maximum_single_task_share_of_total_lift",
+                observed,
+                threshold,
+                observed <= threshold + EPSILON,
+            )
+        )
+    return rows
+
+
+def _source_family_ablations(
+    *,
+    rows_by_task: dict[str, list[dict[str, object]]],
+    task_ids: list[str],
+    tasks: dict[str, object],
+) -> dict[str, dict[str, object]]:
+    families = sorted(
+        {
+            str(record.get("__source_family", "unknown"))
+            for task_id in task_ids
+            for record in rows_by_task.get(task_id, [])
+        }
+    )
+    if len(families) <= 1:
+        return {}
+    ablations: dict[str, dict[str, object]] = {}
+    for family in families:
+        task_results: list[dict[str, object]] = []
+        missing_task_ids: list[str] = []
+        for task_id in task_ids:
+            filtered = [
+                record
+                for record in rows_by_task.get(task_id, [])
+                if str(record.get("__source_family", "unknown")) != family
+            ]
+            if not filtered:
+                missing_task_ids.append(task_id)
+                continue
+            task_result, _task_aspects, _realized = _run_task(task_id, filtered, tasks[task_id])
+            task_results.append(task_result)
+        ablations[family] = _ablation_summary(task_results, missing_task_ids)
+    return ablations
+
+
+def _ablation_summary(
+    task_results: list[dict[str, object]],
+    missing_task_ids: list[str],
+) -> dict[str, object]:
+    promoted = [
+        task
+        for task in task_results
+        if _dict(task.get("decision")).get("status") == "online_promoted_local"
+    ]
+    complement_tasks = [
+        task
+        for task in task_results
+        if int(_float(task.get("selected_complement_count"))) > 0
+    ]
+    task_count = len(task_results)
+    return {
+        "complement_coverage_count": len(complement_tasks),
+        "mean_non_rubric_lift": _mean(_float(task.get("non_rubric_lift")) for task in task_results),
+        "mean_score_lift": _mean(_float(task.get("score_lift")) for task in task_results),
+        "missing_task_count": len(missing_task_ids),
+        "missing_task_ids": missing_task_ids,
+        "online_promoted_task_count": len(promoted),
+        "task_count": task_count,
     }
 
 
@@ -374,7 +557,27 @@ def _normalized_path_key(path: str) -> str:
     return str(Path(path)).replace("\\", "/")
 
 
+def _source_family_for_path(freeze: dict[str, object], path: Path) -> str:
+    generation = _dict(freeze.get("trajectory_generation_contract"))
+    normalized = _normalized_path_key(str(path))
+    known = {
+        _normalized_path_key(str(generation.get("raw_output", ""))): "label",
+        _normalized_path_key(str(generation.get("probe_raw_output", ""))): "probe",
+        _normalized_path_key(str(generation.get("diversity_raw_output", ""))): "diversity",
+    }
+    return known.get(normalized, "extra_raw")
+
+
 def _evidence_boundary(freeze: dict[str, object], raw_paths: list[Path]) -> dict[str, str]:
+    if str(freeze.get("schema", "")) == "latent_aggregation_multi_aspect_v5_freeze.v1":
+        return {
+            "reason": (
+                "Fresh v5 replay over the predeclared 48-task label, probe, and "
+                "diversity-extension source mix. V5 keeps the v4 mechanism fixed and "
+                "adds robustness gates for statistical stability."
+            ),
+            "status": "fresh_predeclared_multi_source_v5_replay",
+        }
     if str(freeze.get("schema", "")) == "latent_aggregation_multi_aspect_v4_freeze.v1":
         return {
             "reason": (
@@ -403,6 +606,15 @@ def _evidence_boundary(freeze: dict[str, object], raw_paths: list[Path]) -> dict
     }
 
 
+def _title_for_boundary(evidence_boundary: dict[str, object]) -> str:
+    status = evidence_boundary.get("status")
+    if status == "fresh_predeclared_multi_source_v5_replay":
+        return "V5"
+    if status == "fresh_predeclared_multi_source_v4_replay":
+        return "V4"
+    return "V3"
+
+
 def _unsupported_addition_count(realized_rows: list[dict[str, object]]) -> int:
     unsupported = 0
     for row in realized_rows:
@@ -429,6 +641,87 @@ def _decision_status_counts(tasks: list[dict[str, object]]) -> dict[str, int]:
     return dict(sorted(counts.items()))
 
 
+def _selected_source_family_counts(selected_aspects: list[dict[str, object]]) -> dict[str, int]:
+    counts: dict[str, int] = {}
+    for row in selected_aspects:
+        family = str(row.get("source_family", "unknown"))
+        counts[family] = counts.get(family, 0) + 1
+    return dict(sorted(counts.items()))
+
+
+def _wins_ties_losses(score_lifts: list[float]) -> dict[str, int]:
+    return {
+        "losses": sum(1 for lift in score_lifts if lift < -EPSILON),
+        "ties": sum(1 for lift in score_lifts if abs(lift) <= EPSILON),
+        "wins": sum(1 for lift in score_lifts if lift > EPSILON),
+    }
+
+
+def _median(values: list[float]) -> float:
+    if not values:
+        return 0.0
+    ordered = sorted(values)
+    middle = len(ordered) // 2
+    if len(ordered) % 2:
+        return ordered[middle]
+    return (ordered[middle - 1] + ordered[middle]) / 2
+
+
+def _leave_one_out_range(values: list[float]) -> list[float]:
+    if not values:
+        return [0.0, 0.0]
+    if len(values) == 1:
+        return [values[0], values[0]]
+    means = [
+        _mean(value for index, value in enumerate(values) if index != omitted)
+        for omitted in range(len(values))
+    ]
+    return [min(means), max(means)]
+
+
+def _high_leverage_threshold(freeze: dict[str, object]) -> float:
+    return _float(
+        _dict(freeze.get("robustness_gates")).get("maximum_single_task_share_of_total_lift")
+    ) or 0.25
+
+
+def _high_leverage_task_ids(tasks: list[dict[str, object]], *, threshold: float) -> list[str]:
+    positive = [max(0.0, _float(task.get("score_lift"))) for task in tasks]
+    total = sum(positive)
+    if total <= EPSILON:
+        return []
+    return [
+        str(task.get("task_id"))
+        for task, lift in zip(tasks, positive)
+        if lift / total > threshold + EPSILON
+    ]
+
+
+def _theme_bucket_results(
+    tasks: list[dict[str, object]],
+    freeze: dict[str, object],
+) -> dict[str, dict[str, object]]:
+    task_mix = _dict(freeze.get("task_mix_contract"))
+    by_task = _dict(task_mix.get("task_theme_by_id"))
+    if not by_task:
+        return {}
+    buckets: dict[str, list[dict[str, object]]] = defaultdict(list)
+    for task in tasks:
+        bucket = str(by_task.get(str(task.get("task_id")), "unbucketed"))
+        buckets[bucket].append(task)
+    return {
+        bucket: {
+            "complement_coverage_count": sum(
+                1 for task in bucket_tasks if int(_float(task.get("selected_complement_count"))) > 0
+            ),
+            "mean_non_rubric_lift": _mean(_float(task.get("non_rubric_lift")) for task in bucket_tasks),
+            "mean_score_lift": _mean(_float(task.get("score_lift")) for task in bucket_tasks),
+            "task_count": len(bucket_tasks),
+        }
+        for bucket, bucket_tasks in sorted(buckets.items())
+    }
+
+
 def _list_of_float(value: object) -> list[float]:
     if not isinstance(value, list):
         return []
@@ -442,6 +735,13 @@ def _interpretation(
     evidence_boundary: dict[str, object],
 ) -> str:
     if gate.get("overall_status") == "passed":
+        if evidence_boundary.get("status") == "fresh_predeclared_multi_source_v5_replay":
+            return (
+                "The deterministic replay satisfies the frozen v5 statistical and "
+                "robustness gates under the predeclared 48-task source mix. This is "
+                "replication evidence for the v4 mechanism, still bounded to this "
+                "planning slice and deterministic realization policy."
+            )
         if evidence_boundary.get("status") == "fresh_predeclared_multi_source_v4_replay":
             return (
                 "The deterministic replay satisfies the frozen numeric gates under the "
