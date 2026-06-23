@@ -74,6 +74,12 @@ Current high-signal generated reports:
 - [LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_DRY_RUN_FAILURE.md](LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_DRY_RUN_FAILURE.md):
   failed first GPU probe dry run; the command used `--limit-repair-candidates 0`,
   so the runner skipped the probe gate and generated `0` counterfactual probes.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_REPORT.md](LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_REPORT.md):
+  corrected GPU probe run with `24` counterfactual probe generations over the
+  v3 task slice.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_ANALYSIS.md](LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_ANALYSIS.md):
+  v3 probe analysis showing `23/24` stage-1-valid probe texts, zero full-repair
+  authorizations, and negative mean probe-task utility versus the source.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.

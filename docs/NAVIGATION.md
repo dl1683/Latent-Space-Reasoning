@@ -34,6 +34,8 @@ If you need one-screen onboarding, open [../START_HERE.md](../START_HERE.md) fir
 - For held-out multi-aspect v2 coverage blockers: [LATENT_AGGREGATION_MULTI_ASPECT_V2_COVERAGE_GAP.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V2_COVERAGE_GAP.md)
 - For the pre-label multi-aspect v3 freeze: [LATENT_AGGREGATION_MULTI_ASPECT_V3_FREEZE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V3_FREEZE.md)
 - For the failed v3 probe dry run and corrected command: [LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_DRY_RUN_FAILURE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_DRY_RUN_FAILURE.md)
+- For the corrected v3 probe GPU run: [LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_REPORT.md)
+- For the corrected v3 probe interpretation: [LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_ANALYSIS.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_ANALYSIS.md)
 - For near-term roadmap: [NEXT_GENERATION_REASONING_TASKS.md](../NEXT_GENERATION_REASONING_TASKS.md)
 
 ## Current result surfaces

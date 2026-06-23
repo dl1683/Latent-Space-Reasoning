@@ -306,6 +306,12 @@ therefore generated `0` counterfactual probes. The corrected probe command keeps
 the diagnostic-only trigger but uses `--limit-repair-candidates 1` so the probe
 source path is actually reached.
 
+The corrected probe run generated `24` counterfactual probes. That validates the
+probe measurement path, but not aggregation promotion: `23/24` probe texts were
+stage-1 valid, every row kept `should_run=false`, and bounded probe text task
+score averaged `-0.090247` below its source. V3 therefore has useful coverage
+visibility, not yet useful fused-answer material.
+
 Task mix:
 
 - 8 planning tasks with explicit rubric components.
