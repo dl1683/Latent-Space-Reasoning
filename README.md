@@ -1,19 +1,79 @@
 # Latent Space Reasoning
 
-This repo studies inference-time latent reasoning control: changing a frozen
-model's reasoning trajectory without fine-tuning it.
+This repository studies a simple but important question:
 
-The current promoted result is diffusion-native latent repair. The active
-research question is whether editable latent or denoise trajectories can provide
-reliable reasoning gains while preserving a clean evidence trail.
+**Can we improve a frozen model's reasoning at inference time by steering,
+repairing, or composing its latent trajectories instead of fine-tuning the
+model?**
 
-## Current Result
+The project started with perturbation experiments: change the early token or
+prefix conditions, sample different reasoning paths, and ask whether some paths
+solve tasks that the default path misses. That taught the first useful lesson:
+latent trajectory diversity can expose better reasoning, but diversity by
+itself is not enough. A system also needs attribution, selection, repair, and
+evidence gates.
 
-On the lean GPU mixed benchmark, LLaDA-MoE latent repair beats both greedy/fixed
-denoise and random perturbation:
+The current promoted result is **diffusion-native latent repair**. The active
+research frontier is **multi-latent aggregation**: rather than selecting one
+trajectory, can we extract useful non-overlapping parts from several trajectories
+and synthesize an answer that is stronger than every individual candidate?
+
+## Why This Matters
+
+Most inference-time reasoning systems are winner-take-all. They sample several
+answers, rank them, and keep one. That wastes useful partial work:
+
+- one candidate may have the right plan but miss a constraint;
+- another may catch the constraint but have weak structure;
+- another may surface an edge case or risk;
+- another may preserve an exact number or role;
+- another may be fluent but thin on evidence.
+
+The deeper goal here is not just "pick the best sample." It is to build a
+reasoning system that can:
+
+1. expose multiple latent reasoning trajectories,
+2. identify which parts of each trajectory are actually useful,
+3. repair weak spans when the latent state is editable,
+4. aggregate verified complementary components,
+5. reject contradictions and unsupported additions,
+6. report cost and statistical uncertainty honestly.
+
+If this works, latent reasoning becomes less like sampling many final answers
+and more like operating over a structured search space of partial reasoning
+objects.
+
+## What We Have Tried
+
+### 1. Token and Prefix Perturbations
+
+The early experiments tested whether small input or prefix changes could push a
+model into different reasoning basins. These runs are historically important,
+but they are not promoted headline evidence: many were small exploratory slices,
+some with very low sample size.
+
+What they established:
+
+- perturbations can create useful trajectory diversity;
+- oracle coverage can improve even when the deployed selector is weak;
+- small n results are not enough for serious claims;
+- diversity needs a stronger family around it: selection, attribution,
+  aggregation, and cost accounting.
+
+Those older materials now belong mostly in the archive and in the next
+generation experiment design, not in public claims.
+
+### 2. Diffusion Latent Repair
+
+The project then moved to diffusion-style language models where generation has
+editable denoise states. This opened a stronger intervention surface: instead of
+only sampling another trajectory, repair a localized weak span while preserving
+the useful parts of the existing trajectory.
+
+The current public result is on the `lean_gpu_mixed` benchmark:
 
 | Public arm | Score | Relative GPU cost |
-|------------|------:|------------------:|
+| --- | ---: | ---: |
 | Greedy/fixed denoise | 0.412277 | 1.000000x |
 | Random perturbation | 0.372125 | 1.000000x |
 | Latent repair | 0.531116 | 2.625000x |
@@ -22,67 +82,143 @@ There is also a lower-cost decomposed-selector point at `0.508705` and
 `2.375000x`. Use the top-score point for the headline reasoning-lift claim and
 the lower-cost point for the controller/cost claim.
 
-## If You Are New to This Repo (Start Here)
+Main lesson:
 
-Use [START_HERE.md](START_HERE.md), or this order:
+**Denoise state is not just a hidden implementation detail. It can be used as a
+repairable reasoning surface when the system knows when to spend repair compute
+and how to preserve the useful source content.**
 
-1. [DIFFUSION_PUBLIC_BENCHMARK.md](DIFFUSION_PUBLIC_BENCHMARK.md)  
-2. [CLAIM_EVIDENCE_MAP.md](CLAIM_EVIDENCE_MAP.md)  
-3. [DIFFUSION_GROUND_TRUTH_INDEX.md](DIFFUSION_GROUND_TRUTH_INDEX.md)  
-4. [docs/DIFFUSION_READER_GUIDE.md](docs/DIFFUSION_READER_GUIDE.md)  
+### 3. Candidate Promotion and Spend Gates
 
-Or use the compact map: [docs/NAVIGATION.md](docs/NAVIGATION.md)
+Repair is not free. Much of the project is about deciding when repair compute is
+worth spending. The repo includes experiments around repairability geometry,
+denoise-phase triggers, source-aware selection, candidate-aware promotion, and
+cost-aware controller variants.
 
-Then choose one path:
+Main lesson:
 
-- Evidence review: continue with [docs/DIFFUSION_THEORY_CLAIM_LEDGER.md](docs/DIFFUSION_THEORY_CLAIM_LEDGER.md)
-- Mechanism depth: continue with [docs/DIFFUSION_REASONING_GEOMETRY_THEORY.md](docs/DIFFUSION_REASONING_GEOMETRY_THEORY.md)
-- Next paradigm: continue with [docs/LATENT_TRAJECTORY_AGGREGATION.md](docs/LATENT_TRAJECTORY_AGGREGATION.md)
-- Future work: continue with [NEXT_GENERATION_REASONING_TASKS.md](NEXT_GENERATION_REASONING_TASKS.md)
+**A stronger repair candidate is only useful if the selection policy can promote
+it without also promoting zero-lift or negative-lift candidates.**
 
-If you need quick orientation only, skip everything else and do not open:
+### 4. Multi-Latent Aggregation
 
-- all `archive/tesla_session/*.md` notes,
-- `meditations/question_*.md`,
-- archive-level reports in `docs/reports/diffusion/`.
-- everything in `eval_results/`.
-- historical snapshots in `archive/legacy_notes/` unless you specifically want legacy
-  context.
+The current frontier asks whether we can go beyond repair and selection:
 
-## Read First
+`diverge -> attribute -> aggregate -> repair -> verify -> realize`
 
-| Path | Purpose |
-|------|---------|
-| [DIFFUSION_PUBLIC_BENCHMARK.md](DIFFUSION_PUBLIC_BENCHMARK.md) | Public benchmark table and promoted score/cost claims |
-| [CLAIM_EVIDENCE_MAP.md](CLAIM_EVIDENCE_MAP.md) | Claim-to-artifact ledger for promoted evidence |
-| [DIFFUSION_GROUND_TRUTH_INDEX.md](DIFFUSION_GROUND_TRUTH_INDEX.md) | Canonical raw/report/score artifact pointers and hashes |
-| [docs/DIFFUSION_READER_GUIDE.md](docs/DIFFUSION_READER_GUIDE.md) | Reader map for diffusion claims, theory, and validation surfaces |
-| [docs/DIFFUSION_THEORY_CLAIM_LEDGER.md](docs/DIFFUSION_THEORY_CLAIM_LEDGER.md) | Conservative theory ledger with falsifiers and next proof obligations |
-| [docs/LATENT_TRAJECTORY_AGGREGATION.md](docs/LATENT_TRAJECTORY_AGGREGATION.md) | Next research doctrine for composing useful fragments across multiple latent trajectories |
-| [docs/README.md](docs/README.md) | Single-page documentation index for onboarding and navigation |
-| [docs/ARCHIVE_INDEX.md](docs/ARCHIVE_INDEX.md) | Archive-only areas and when to use them |
-| [meditations/README.md](meditations/README.md) | Private question-first notes used to maintain the paradigm layer of the project |
-| [docs/GATED_ATTENTION_PROBE.md](docs/GATED_ATTENTION_PROBE.md) | Current Qwen3-Next gated-attention probe status and blockers |
-| [docs/reports/diffusion/README.md](docs/reports/diffusion/README.md) | Historical/generated diffusion report archive |
-| [docs/reports/diffusion/DIFFUSION_REPAIR_VALUE_TOMOGRAPHY.md](docs/reports/diffusion/DIFFUSION_REPAIR_VALUE_TOMOGRAPHY.md) | Behavior-tomography audit for the next repair-spend controller |
-| [experiments/EXPERIMENTS.md](experiments/EXPERIMENTS.md) | Chronological experiment log |
+The aggregation line treats token perturbation, diffusion repair, denoise
+history, semantic anchors, candidate promotion, and verifier spans as one
+family of latent trajectory operations. Each source may expose a different
+useful aspect. The goal is to compose those aspects into a final answer that
+beats the best single candidate while introducing no unsupported claims or hard
+contradictions.
 
-Generated one-off reports and raw artifacts are retained for auditability, but
-they are not the front-page navigation path. Start from the files above unless
-you are reproducing a specific historical run and have a matching trail in the
-evidence surfaces.
+The current aggregation evidence is mixed and useful:
+
+- v1 found that naive frozen inference-time aggregation failed.
+- v2 showed local promise but missed the all-task non-rubric lift gate because
+  complement coverage was too low.
+- v3 showed strong conditional gains when complement material was found, but
+  failed its frozen coverage gate: baseline coverage was only `6/24`.
+- Adding probe rows improved coverage only to `7/24`, which showed probes were
+  diagnostic but not enough.
+- Adding a bounded LLaDA diversity-extension source raised v3 replay coverage to
+  `13/24` and cleared the numeric gates, but that was post-failure diagnostic
+  evidence because the diversity source was added after seeing v3 fail.
+- v4 is the clean replication: it freezes the label, probe, diversity-extension,
+  and combined replay sources before labels on fresh tasks `plan_225` through
+  `plan_248`.
+
+The v4 question is the live one:
+
+**Does the diversity-augmented source mix still clear the aggregation gates when
+it is part of the pre-label contract rather than a post-hoc fix?**
+
+## Current Status
+
+Promoted public claim:
+
+- Diffusion-native latent repair improves the lean mixed benchmark from
+  `0.412277` greedy/fixed to `0.531116` at `2.625000x` relative GPU cost.
+- The lower-cost controller point reaches `0.508705` at `2.375000x`.
+- Evidence is tracked in [DIFFUSION_PUBLIC_BENCHMARK.md](DIFFUSION_PUBLIC_BENCHMARK.md),
+  [CLAIM_EVIDENCE_MAP.md](CLAIM_EVIDENCE_MAP.md), and
+  [DIFFUSION_GROUND_TRUTH_INDEX.md](DIFFUSION_GROUND_TRUTH_INDEX.md).
+
+Active frontier:
+
+- Multi-latent aggregation is not yet a promoted public result.
+- v3 diversity-augmented replay is the strongest design evidence so far, but it
+  remains diagnostic because the diversity source was introduced after the first
+  v3 failure.
+- v4 is the fresh predeclared replication currently being run and documented.
+
+What not to overclaim:
+
+- Old token perturbation runs are not sufficient statistical evidence by
+  themselves.
+- Oracle coverage is not a deployment result unless a selector or aggregator can
+  realize the gain without labels unavailable at inference time.
+- Aggregation does not count if it merely writes a longer answer.
+- A passing local slice is not a broad model-general theorem.
+
+## How To Read This Repo
+
+Start with this README, then use the evidence spine:
+
+1. [DIFFUSION_PUBLIC_BENCHMARK.md](DIFFUSION_PUBLIC_BENCHMARK.md) for the public
+   score and cost table.
+2. [CLAIM_EVIDENCE_MAP.md](CLAIM_EVIDENCE_MAP.md) for claim-to-artifact
+   provenance.
+3. [DIFFUSION_GROUND_TRUTH_INDEX.md](DIFFUSION_GROUND_TRUTH_INDEX.md) for
+   canonical hashes, run IDs, and raw artifact pointers.
+4. [docs/DIFFUSION_READER_GUIDE.md](docs/DIFFUSION_READER_GUIDE.md) for the
+   reviewer path through diffusion evidence.
+5. [docs/DIFFUSION_THEORY_CLAIM_LEDGER.md](docs/DIFFUSION_THEORY_CLAIM_LEDGER.md)
+   for conservative theory claims, falsifiers, and next proof obligations.
+6. [docs/LATENT_TRAJECTORY_AGGREGATION.md](docs/LATENT_TRAJECTORY_AGGREGATION.md)
+   for the current aggregation doctrine and v1-v4 history.
+7. [docs/NAVIGATION.md](docs/NAVIGATION.md) for a compact map of the repo.
+
+Generated reports and raw outputs are retained for auditability, but they are
+not the first-read path. Use [docs/reports/diffusion/README.md](docs/reports/diffusion/README.md)
+when you need a specific historical generated report.
+
+## Evidence Discipline
+
+This project is intentionally conservative about claims.
+
+A claim should be treated as exploratory unless it is backed by:
+
+- a predeclared or clearly bounded task slice,
+- generated raw artifacts,
+- score reports,
+- a claim/evidence map entry,
+- cost accounting,
+- explicit failure modes,
+- tests or validators for the artifact builder,
+- a statement of what would falsify the claim.
+
+For aggregation work, the minimum proof shape is stricter:
+
+- aggregate score must beat the best single candidate;
+- component or aspect gain must be reported separately;
+- hard contradictions must be zero;
+- unsupported additions must be zero;
+- cost must include extra generation/probe/diversity sources;
+- post-hoc diagnostic evidence must not be described as a frozen promotion.
 
 ## Repository Layout
 
 ```text
-archive/        Historical notes and legacy snapshots; not part of first-read onboarding
-experiments/     Experiment runners, report builders, validators, and analysis scripts
-eval_results/    Generated run outputs, ledgers, raw generations, and score reports (typically git-ignored)
-docs/            Reader guides, theory docs, runbooks, and consolidated status pages
-meditations/     Question-first research notes; useful for paradigm work, not evidence claims
-paper/           Paper drafts and manuscript materials when present
-tests/           Unit and regression tests for runners, builders, validators, and controls
-src/             Shared package code used by the experiment stack
+archive/        Historical notes and legacy snapshots; not first-read material
+docs/           Reader guides, theory docs, runbooks, and consolidated status pages
+experiments/    Experiment runners, report builders, validators, and analysis scripts
+eval_results/   Generated run outputs, raw generations, ledgers, and score reports
+meditations/    Question-first research notes for paradigm and doctrine work
+paper/          Paper drafts and manuscript materials when present
+src/            Shared package code used by the experiment stack
+tests/          Unit and regression tests for runners, builders, validators, and controls
 ```
 
 ## Reproduce The Public Diffusion Evidence
@@ -93,25 +229,24 @@ python experiments/validate_diffusion_claim_evidence.py
 python experiments/validate_diffusion_theory_claim_ledger.py
 ```
 
-The promoted public result is intentionally narrow: greedy/fixed denoise,
-random perturbation, and selected latent repair, with relative GPU cost reported
-beside score.
-
-## Current Gated-Attention Status
-
-Current blocker/runner status for Qwen3-Next is maintained in
-[docs/GATED_ATTENTION_PROBE.md](docs/GATED_ATTENTION_PROBE.md). Use that file for
-the latest environment and dependency notes.
-
-## Development
+For normal development:
 
 ```bash
 python -m pytest tests -q
 python -m compileall experiments src tests
 ```
 
-For focused gated-attention validation:
+## Current Research Direction
 
-```bash
-python -m pytest tests/test_build_gated_attention_null_probe_freeze.py tests/test_build_gated_attention_probe_execution_plan.py tests/test_build_gated_attention_artifact_decision.py tests/test_build_gated_attention_wsl_bootstrap.py tests/test_run_latent_sensitivity_position_shift.py -q
-```
+The next generation of work should marry the older perturbation insight with
+the newer diffusion and aggregation machinery:
+
+- perturbation supplies cheap trajectory diversity;
+- diffusion repair supplies editable latent state;
+- denoise history supplies intermediate reasoning structure;
+- candidate promotion supplies value estimates;
+- aggregation supplies a way to preserve useful partial work across candidates.
+
+The long-term target is a latent reasoning system that does not merely sample
+answers. It should expose, edit, compose, and verify reasoning structure before
+realizing the final answer.
