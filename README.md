@@ -252,7 +252,15 @@ Active frontier:
   diagnostic replay is negative: coverage remains `24/48`, online promotions
   remain `23`, and `targeted_history_contrast` contributes no selected
   complements under the expanded extractor. Local repair lift is therefore not
-  the same thing as aggregation-useful complement coverage.
+  the same thing as aggregation-useful complement coverage. A follow-up
+  no-generation source-gap diagnostic makes the failure sharper: on the `24`
+  targeted repairs, mean targeted delta versus the original v7 anchor is
+  `-0.049479`, only `1/24` repairs beats the original anchor, only `1/24`
+  supplies an expanded complement against that anchor, and `23/24` are
+  classified as not-stronger/no-new-expanded-aspect. The next aggregation
+  source should be complement-first: generate explicit, source-supported,
+  non-anchor clauses that can survive selection, not merely another standalone
+  repaired answer.
 
 What not to overclaim:
 

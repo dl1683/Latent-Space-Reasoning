@@ -232,6 +232,11 @@ Current high-signal generated reports:
   frozen v7 source mix. Coverage remains `24/48`, online promotions remain
   `23`, and source-family ablation shows `targeted_history_contrast` contributes
   no selected complements under the expanded extractor.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V8_TARGETED_SOURCE_GAP.md](LATENT_AGGREGATION_MULTI_ASPECT_V8_TARGETED_SOURCE_GAP.md):
+  no-generation diagnostic explaining the targeted-source miss. Across the `24`
+  targeted repairs, mean delta versus the original v7 anchor is `-0.049479`,
+  only `1/24` beats the original anchor, only `1/24` adds an expanded complement
+  against that anchor, and `23/24` are not-stronger/no-new-expanded-aspect cases.
 - [LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md](LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md):
   post-hoc no-generation diagnostic over existing v6 raw rows; the expanded
   ontology recovers `12` of `21` v6 no-complement tasks, motivating v7
