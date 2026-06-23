@@ -7,6 +7,7 @@ manifest generation cheap while still giving the repo a real execution path.
 
 from __future__ import annotations
 
+import sys
 from dataclasses import asdict, dataclass, replace
 from math import ceil, isnan
 from typing import Any
@@ -118,6 +119,7 @@ class HFDiffusionBackend:
         dtype = _resolve_torch_dtype(torch, self.dtype, device)
         model_ref = self.model_path or self.candidate.model_id
         tokenizer = AutoTokenizer.from_pretrained(model_ref, trust_remote_code=True)
+        _ensure_torchvision_optional_import_compat()
         _ensure_transformers_default_rope()
         _ensure_generation_config_validate_compat()
         _ensure_all_tied_weights_keys_compat()
@@ -341,6 +343,31 @@ def _ensure_transformers_default_rope() -> None:
         return inv_freq, 1.0
 
     ROPE_INIT_FUNCTIONS["default"] = _compute_default_rope_parameters
+
+
+def _ensure_torchvision_optional_import_compat() -> None:
+    """Treat broken optional torchvision installs as unavailable for text models."""
+    try:
+        import torchvision  # noqa: F401
+
+        return
+    except Exception:
+        pass
+    for module_name in list(sys.modules):
+        if module_name == "torchvision" or module_name.startswith("torchvision."):
+            sys.modules.pop(module_name, None)
+    sys.modules.pop("transformers.image_utils", None)
+    try:
+        import transformers.utils as transformers_utils
+        import transformers.utils.import_utils as import_utils
+    except Exception:
+        return
+
+    def _torchvision_unavailable() -> bool:
+        return False
+
+    import_utils.is_torchvision_available = _torchvision_unavailable
+    transformers_utils.is_torchvision_available = _torchvision_unavailable
 
 
 def _ensure_generation_config_validate_compat() -> None:
