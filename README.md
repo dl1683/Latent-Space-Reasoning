@@ -233,10 +233,14 @@ Active frontier:
   raw rows with `48` counterfactual probe generations under
   `span_tomography_probe_v4`; and the cross-latent run adds `336` raw rows where
   evolved cross-latent selection scores `0.288632` versus `0.270320` fixed and
-  `0.246198` random. The remaining v7 gate is the frozen multi-source replay:
-  can these label, ontology-probe, and cross-latent latent sources produce
-  enough verified complementary aspects, without leakage or contradiction, to
-  clear the expanded aggregation gates?
+  `0.246198` random. The frozen v7 multi-source replay is now complete and
+  does not promote: complement coverage is `24/48` against the `36/48` gate,
+  online promotions are `23`, wins/ties/losses are `24/24/0`, and the Wilson
+  lower bound is `0.344713` against `0.600000`. The negative result is still
+  informative: conditional promoted tasks average `0.072580` non-rubric lift,
+  all-task mean non-rubric lift clears at `0.036290`, unsupported additions and
+  hard contradictions remain `0`, and the label-leakage check passes. The
+  blocker is still reliable complement coverage, not obvious unsafe synthesis.
 
 What not to overclaim:
 

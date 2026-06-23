@@ -193,7 +193,7 @@ Current high-signal generated reports:
   replay support, v7 source-family mapping, and label-leakage gates are now
   implemented in the shared replay runner. The baseline label, ontology-probe,
   and cross-latent source families are populated; the frozen multi-source v7
-  replay is the remaining promotion gate.
+  replay is complete and failed its promotion gates.
 - [LATENT_AGGREGATION_MULTI_ASPECT_V7_LABEL_REPORT.md](LATENT_AGGREGATION_MULTI_ASPECT_V7_LABEL_REPORT.md):
   fresh v7 baseline label/source run over the frozen 48-task slice; selected
   latent repair covers `48/48` eligible tasks with mean task score `0.327170`
@@ -207,6 +207,12 @@ Current high-signal generated reports:
   `336` full model generations and `192` arm selections. Evolved cross-latent
   selection scores `0.288632` versus `0.270320` fixed and `0.246198` random,
   with oracle task score `0.306` and remaining selector regret of `0.017`.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V7_REPLAY.md](LATENT_AGGREGATION_MULTI_ASPECT_V7_REPLAY.md):
+  failed fresh v7 expanded-ontology replay over label, ontology-probe, and
+  cross-latent sources. Coverage is `24/48` against the `36/48` gate, online
+  promotions are `23`, wins/ties/losses are `24/24/0`, and Wilson lower bound
+  is `0.344713` against `0.600000`; safety remains clean with `0` unsupported
+  additions, `0` hard contradictions, and a passing label-leakage check.
 - [LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md](LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md):
   post-hoc no-generation diagnostic over existing v6 raw rows; the expanded
   ontology recovers `12` of `21` v6 no-complement tasks, motivating v7
