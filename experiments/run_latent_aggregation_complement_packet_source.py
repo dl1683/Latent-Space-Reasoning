@@ -149,7 +149,9 @@ def run_complement_packet_source(
             raw_output_path.unlink()
         handle = raw_output_path.open("a", encoding="utf-8")
     for candidate_key in config.candidates:
+        _print_progress("loading_backend", candidate_key=candidate_key)
         backend = backend_factory(candidate_key)
+        _print_progress("loaded_backend", candidate_key=candidate_key)
         for prompt_row in prompts:
             task = tasks[str(prompt_row.get("task_id", ""))]
             for sample_index in range(config.samples_per_task):
@@ -163,9 +165,21 @@ def run_complement_packet_source(
                     sample_index,
                 )
                 _set_generation_seed(seed)
+                _print_progress(
+                    "starting_generation",
+                    candidate_key=candidate_key,
+                    sample_index=sample_index,
+                    task_id=task.task_id,
+                )
                 generation = backend.generate(
                     str(prompt_row.get("prompt", "")),
                     config=_generation_config(config),
+                )
+                _print_progress(
+                    "finished_generation",
+                    candidate_key=candidate_key,
+                    sample_index=sample_index,
+                    task_id=task.task_id,
                 )
                 record = _record_from_generation(
                     generation.to_dict(),
@@ -180,16 +194,11 @@ def run_complement_packet_source(
                 if handle is not None:
                     handle.write(json.dumps(record, sort_keys=True) + "\n")
                     handle.flush()
-                    print(
-                        json.dumps(
-                            {
-                                "generated_record_count": len(records),
-                                "sample_index": sample_index,
-                                "task_id": task.task_id,
-                            },
-                            sort_keys=True,
-                        ),
-                        flush=True,
+                    _print_progress(
+                        "wrote_record",
+                        generated_record_count=len(records),
+                        sample_index=sample_index,
+                        task_id=task.task_id,
                     )
     if handle is not None:
         handle.close()
@@ -304,6 +313,10 @@ def _generation_config(config: RunnerConfig) -> DiffusionGenerationConfig:
         device=config.device,
         dtype=config.dtype,
     )
+
+
+def _print_progress(event: str, **payload: object) -> None:
+    print(json.dumps({"event": event, **payload}, sort_keys=True), flush=True)
 
 
 def _stable_generation_seed(base_seed: int, candidate_key: str, task_id: str, sample_index: int) -> int:

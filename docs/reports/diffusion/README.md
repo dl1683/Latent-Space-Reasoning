@@ -241,7 +241,9 @@ Current high-signal generated reports:
   complement-first source contract derived from the corrected v8 source gap. It
   freezes `24` prompt rows for a named `complement_packet` family and preserves
   the v7 floor of `13` newly promoted covered tasks before any replay can be
-  treated as useful evidence.
+  treated as useful evidence. The prompt artifact, runner, and replay mapping
+  exist, but source generation is currently blocked at the backend-generation
+  diagnostic stage; there are no promoted v9 source rows yet.
 - [LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md](LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md):
   post-hoc no-generation diagnostic over existing v6 raw rows; the expanded
   ontology recovers `12` of `21` v6 no-complement tasks, motivating v7

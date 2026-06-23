@@ -199,7 +199,7 @@ def build_complement_source_contract(
             scores_output_path=scores_output_path,
             source_report_output_path=source_report_output_path,
         ),
-        "command_status": "generation_pending",
+        "command_status": "runner_ready_generation_blocked_pending_backend_diagnostic",
         "family": "complement_packet",
         "prompt_artifact": {
             "path": str(prompts_output_path),
@@ -211,6 +211,12 @@ def build_complement_source_contract(
             "almost no expanded complements. V9 therefore asks for explicit complement "
             "packets: source-supported clauses that add missing aspects beyond the "
             "frozen v7 anchor without rewriting the whole answer."
+        ),
+        "current_blocker": (
+            "The source contract, prompt artifact, replay mapping, and streaming runner "
+            "exist. A one-prompt GPU smoke attempt loaded the backend but produced no "
+            "row while GPU allocation dropped to zero, so the next run must diagnose "
+            "the LLaDA backend generation boundary before treating v9 as populated."
         ),
         "required_outputs": {
             "complement_packet_raw_output": str(raw_output_path),
@@ -341,6 +347,7 @@ def render_markdown(manifest: dict[str, object]) -> str:
         f"- Family: `{source.get('family')}`",
         f"- Command status: `{source.get('command_status')}`",
         f"- Rationale: {source.get('rationale')}",
+        f"- Current blocker: {source.get('current_blocker')}",
         "",
         "```powershell",
         str(source.get("command", "")),

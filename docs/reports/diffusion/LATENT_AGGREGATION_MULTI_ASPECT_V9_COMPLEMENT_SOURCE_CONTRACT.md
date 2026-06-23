@@ -29,8 +29,9 @@ Do not repeat v8-style standalone targeted repair. Generate explicit complement 
 ## Source Family
 
 - Family: `complement_packet`
-- Command status: `generation_pending`
+- Command status: `runner_ready_generation_blocked_pending_backend_diagnostic`
 - Rationale: V8 targeted answer repair usually produced weaker standalone answers and almost no expanded complements. V9 therefore asks for explicit complement packets: source-supported clauses that add missing aspects beyond the frozen v7 anchor without rewriting the whole answer.
+- Current blocker: The source contract, prompt artifact, replay mapping, and streaming runner exist. A one-prompt GPU smoke attempt loaded the backend but produced no row while GPU allocation dropped to zero, so the next run must diagnose the LLaDA backend generation boundary before treating v9 as populated.
 
 ```powershell
 python experiments\run_latent_aggregation_complement_packet_source.py --prompts eval_results\diffusion_language\latent_aggregation_multi_aspect_v9_complement_packet_prompts.jsonl --tasks experiments\general_reasoning_tasks_scout.jsonl --candidates llada-8b-instruct-hf --samples-per-task 3 --max-new-tokens 128 --steps 128 --algorithm entropy --block-length 32 --resume --raw-output eval_results\diffusion_language\latent_aggregation_multi_aspect_v9_complement_packet_raw.jsonl --scores-output eval_results\diffusion_language\latent_aggregation_multi_aspect_v9_complement_packet_scores.json --report-output docs\reports\diffusion\LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPORT.md

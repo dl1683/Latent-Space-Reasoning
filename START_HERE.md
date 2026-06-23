@@ -1,24 +1,31 @@
 # Start Here (No Context)
 
-You do not need to read everything in this repo. Start with this order and stop.
+This repo is about changing the unit of reasoning from "one model completion"
+to an inspectable latent trajectory: sample, repair, aggregate, verify, and
+only then realize an answer.
+
+You do not need to read everything. The generated reports and raw outputs exist
+for auditability, but they are not the onboarding path.
 
 ## Read in this order
 
-1. [DIFFUSION_PUBLIC_BENCHMARK.md](DIFFUSION_PUBLIC_BENCHMARK.md)  
-2. [CLAIM_EVIDENCE_MAP.md](CLAIM_EVIDENCE_MAP.md)  
-3. [DIFFUSION_GROUND_TRUTH_INDEX.md](DIFFUSION_GROUND_TRUTH_INDEX.md)  
-4. [docs/DIFFUSION_READER_GUIDE.md](docs/DIFFUSION_READER_GUIDE.md)
+1. [README.md](README.md) for the project thesis, history, and current status.
+2. [DIFFUSION_PUBLIC_BENCHMARK.md](DIFFUSION_PUBLIC_BENCHMARK.md) for the promoted score/cost claim.
+3. [CLAIM_EVIDENCE_MAP.md](CLAIM_EVIDENCE_MAP.md) for claim-to-artifact provenance.
+4. [DIFFUSION_GROUND_TRUTH_INDEX.md](DIFFUSION_GROUND_TRUTH_INDEX.md) for canonical hashes and run IDs.
+5. [docs/DIFFUSION_READER_GUIDE.md](docs/DIFFUSION_READER_GUIDE.md) for the review path.
 
 ## Then
 
 - For evidence details: [docs/DIFFUSION_READER_GUIDE.md](docs/DIFFUSION_READER_GUIDE.md)  
 - For mechanism depth: [docs/DIFFUSION_REASONING_GEOMETRY_THEORY.md](docs/DIFFUSION_REASONING_GEOMETRY_THEORY.md)  
 - For theory obligations: [docs/DIFFUSION_THEORY_CLAIM_LEDGER.md](docs/DIFFUSION_THEORY_CLAIM_LEDGER.md)
-- For the active aggregation frontier: start with the v7 freeze, source
-  reports, replay report, and failure analysis in
-  [docs/NAVIGATION.md](docs/NAVIGATION.md). V7 is not promoted: the frozen
-  multi-source replay failed coverage and statistical confidence gates, despite
-  positive conditional lift and clean safety checks.
+- For the active aggregation frontier: read the v5, v6, v7, v8, and v9 entries
+  in [docs/NAVIGATION.md](docs/NAVIGATION.md). V5 is the current passing
+  statistical aggregation milestone. V6 and v7 are negative replications that
+  locate the coverage bottleneck. V8 shows why standalone targeted repair did
+  not create complements. V9 is a complement-packet source contract and runner,
+  but its source rows are not populated yet.
 
 ## What to avoid until later
 
