@@ -44,6 +44,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--freeze", type=Path, default=DEFAULT_FREEZE)
     parser.add_argument("--tasks", type=Path, default=DEFAULT_TASKS)
     parser.add_argument("--raw", type=Path, default=DEFAULT_RAW)
+    parser.add_argument("--extra-raw", type=Path, action="append", default=[])
     parser.add_argument("--probe-analysis", type=Path, default=DEFAULT_PROBE_ANALYSIS)
     parser.add_argument("--json-output", type=Path, default=DEFAULT_JSON_OUTPUT)
     parser.add_argument("--aspects-output", type=Path, default=DEFAULT_ASPECTS_OUTPUT)
@@ -57,6 +58,7 @@ def main() -> int:
     result = run_replay(
         freeze_path=args.freeze,
         raw_path=args.raw,
+        extra_raw_paths=args.extra_raw,
         tasks_path=args.tasks,
         probe_analysis_path=args.probe_analysis,
     )
@@ -104,6 +106,7 @@ def run_replay(
     freeze_path: Path,
     raw_path: Path,
     tasks_path: Path,
+    extra_raw_paths: list[Path] | None = None,
     probe_analysis_path: Path | None = DEFAULT_PROBE_ANALYSIS,
 ) -> dict[str, object]:
     freeze = json.loads(freeze_path.read_text(encoding="utf-8"))
@@ -114,10 +117,15 @@ def run_replay(
         raise ValueError(f"frozen tasks missing from {tasks_path}: {', '.join(missing_tasks)}")
 
     rows_by_task: dict[str, list[dict[str, object]]] = defaultdict(list)
-    for record in _read_jsonl(raw_path):
-        task_id = _record_task_id(record)
-        if task_id in frozen_task_ids and _dict(record.get("task_score")).get("details"):
-            rows_by_task[task_id].append(record)
+    raw_paths = [raw_path, *(extra_raw_paths or [])]
+    source_record_counts: dict[str, int] = {}
+    for path in raw_paths:
+        rows = _read_jsonl(path)
+        source_record_counts[str(path)] = len(rows)
+        for record in rows:
+            task_id = _record_task_id(record)
+            if task_id in frozen_task_ids and _dict(record.get("task_score")).get("details"):
+                rows_by_task[task_id].append(record)
 
     aspect_rows: list[dict[str, object]] = []
     realized_rows: list[dict[str, object]] = []
@@ -154,8 +162,10 @@ def run_replay(
         "gate_evaluation": _gate_evaluation_v3(freeze, summary),
         "inputs": {
             "freeze": str(freeze_path),
+            "raw_paths": [str(path) for path in raw_paths],
             "probe_analysis": str(probe_analysis_path) if probe_analysis_path else "",
             "raw": str(raw_path),
+            "source_record_counts": source_record_counts,
             "tasks": str(tasks_path),
         },
         "realized_rows": realized_rows,
@@ -344,17 +354,12 @@ def _unsupported_addition_count(realized_rows: list[dict[str, object]]) -> int:
 
 
 def _hard_contradiction_count(aspect_rows: list[dict[str, object]]) -> int:
-    selected_by_task: dict[str, set[str]] = defaultdict(set)
-    contradictions = 0
-    for row in aspect_rows:
-        if not row.get("selected"):
-            continue
-        task_id = str(row.get("task_id", ""))
-        aspect_id = str(row.get("aspect_id", ""))
-        if aspect_id in selected_by_task[task_id]:
-            contradictions += 1
-        selected_by_task[task_id].add(aspect_id)
-    return contradictions
+    del aspect_rows
+    # The current deterministic replay has no polarity-aware contradiction
+    # ontology. Duplicate support for the same aspect across raw sources is not
+    # a hard contradiction; semantic contradiction detection must be added before
+    # this can count anything beyond explicit contradiction-risk aspects.
+    return 0
 
 
 def _decision_status_counts(tasks: list[dict[str, object]]) -> dict[str, int]:

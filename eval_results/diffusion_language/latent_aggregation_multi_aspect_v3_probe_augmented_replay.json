@@ -18,13 +18,13 @@
       },
       {
         "name": "minimum_complement_coverage_count",
-        "observed": "6",
+        "observed": "7",
         "status": "fail",
         "threshold": "12"
       },
       {
         "name": "minimum_complement_coverage_fraction",
-        "observed": "0.250000",
+        "observed": "0.291667",
         "status": "fail",
         "threshold": "0.500000"
       },
@@ -36,25 +36,25 @@
       },
       {
         "name": "minimum_conditional_non_rubric_lift",
-        "observed": "0.079786",
+        "observed": "0.090245",
         "status": "pass",
         "threshold": "0.050000"
       },
       {
         "name": "minimum_all_task_mean_non_rubric_lift",
-        "observed": "0.019946",
+        "observed": "0.026321",
         "status": "fail",
         "threshold": "0.030000"
       },
       {
         "name": "minimum_aggregate_win_count",
-        "observed": "6",
+        "observed": "7",
         "status": "fail",
         "threshold": "8"
       },
       {
         "name": "minimum_wilson_lower_bound",
-        "observed": "0.119994",
+        "observed": "0.149146",
         "status": "pass",
         "threshold": "0.100000"
       },
@@ -98,58 +98,60 @@
     "probe_analysis": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v3_probe_analysis.json",
     "raw": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v3_raw.jsonl",
     "raw_paths": [
-      "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v3_raw.jsonl"
+      "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v3_raw.jsonl",
+      "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v3_probe_raw.jsonl"
     ],
     "source_record_counts": {
+      "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v3_probe_raw.jsonl": 144,
       "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v3_raw.jsonl": 168
     },
     "tasks": "experiments\\general_reasoning_tasks_scout.jsonl"
   },
   "schema": "latent_aggregation_multi_aspect_v3_replay.v1",
   "summary": {
-    "all_task_mean_non_rubric_lift": 0.01994642857142857,
-    "complement_coverage_count": 6,
-    "complement_coverage_fraction": 0.25,
-    "conditional_mean_non_rubric_lift": 0.07978571428571428,
+    "all_task_mean_non_rubric_lift": 0.02632142857142857,
+    "complement_coverage_count": 7,
+    "complement_coverage_fraction": 0.2916666666666667,
+    "conditional_mean_non_rubric_lift": 0.09024489795918367,
     "conditional_promoted_fraction": 1.0,
     "decision_status_counts": {
-      "blocked_no_complement_material": 18,
-      "online_promoted_local": 6
+      "blocked_no_complement_material": 17,
+      "online_promoted_local": 7
     },
     "equal_budget_best_of_control": "best_single_anchor_by_pre_rescore_task_score",
     "equal_budget_best_of_control_reported": true,
     "hard_contradiction_count": 0,
-    "mean_anchor_score": 0.3526279761904762,
+    "mean_anchor_score": 0.3548392857142857,
     "mean_probe_cost_relative": 0.1875,
-    "mean_realized_score": 0.3750744047619048,
-    "mean_score_lift": 0.022446428571428572,
-    "online_promoted_task_count": 6,
-    "online_promoted_task_fraction": 0.25,
+    "mean_realized_score": 0.38532738095238095,
+    "mean_score_lift": 0.03048809523809524,
+    "online_promoted_task_count": 7,
+    "online_promoted_task_fraction": 0.2916666666666667,
     "online_promoted_wilson95": [
-      0.11999366228595006,
-      0.44899444005154
+      0.14914648196960875,
+      0.49167693664496637
     ],
     "probe_cost_reported": true,
     "probe_measured_count": 24,
     "task_count": 24,
     "tasks_with_dimension_gain": 4,
-    "tasks_with_rubric_gain": 2,
-    "tasks_with_score_lift": 6,
+    "tasks_with_rubric_gain": 3,
+    "tasks_with_score_lift": 7,
     "unsupported_addition_count": 0
   },
   "tasks": [
     {
-      "anchor_score": 0.32285714285714284,
-      "anchor_trajectory_id": "plan_201:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "anchor_score": 0.3759285714285714,
+      "anchor_trajectory_id": "plan_201:llada-8b-instruct-hf:counterfactual_micro_probe_v1:counterfactual_probe",
       "decision": {
         "reason": "Realized aggregate beats anchor with selected aspect gain.",
         "status": "online_promoted_local"
       },
       "dimension_gain_count": 1,
-      "non_rubric_lift": 0.10142857142857137,
-      "realized_score": 0.42428571428571427,
+      "non_rubric_lift": 0.12692857142857145,
+      "realized_score": 0.5028571428571429,
       "rubric_gain_count": 0,
-      "score_lift": 0.10142857142857142,
+      "score_lift": 0.1269285714285715,
       "selected_complement_count": 1,
       "task_id": "plan_201"
     },
@@ -235,12 +237,12 @@
         "reason": "Realized aggregate beats anchor with selected aspect gain.",
         "status": "online_promoted_local"
       },
-      "dimension_gain_count": 1,
-      "non_rubric_lift": 0.06392857142857145,
-      "realized_score": 0.44178571428571434,
+      "dimension_gain_count": 2,
+      "non_rubric_lift": 0.10642857142857143,
+      "realized_score": 0.4842857142857143,
       "rubric_gain_count": 0,
-      "score_lift": 0.06392857142857145,
-      "selected_complement_count": 1,
+      "score_lift": 0.10642857142857143,
+      "selected_complement_count": 2,
       "task_id": "plan_207"
     },
     {
@@ -277,15 +279,15 @@
       "anchor_score": 0.315,
       "anchor_trajectory_id": "plan_210:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
       "decision": {
-        "reason": "No complement aspects were available beyond the anchor.",
-        "status": "blocked_no_complement_material"
+        "reason": "Realized aggregate beats anchor with selected aspect gain.",
+        "status": "online_promoted_local"
       },
       "dimension_gain_count": 0,
-      "non_rubric_lift": 0.0,
-      "realized_score": 0.315,
-      "rubric_gain_count": 0,
-      "score_lift": 0.0,
-      "selected_complement_count": 0,
+      "non_rubric_lift": 0.08500000000000002,
+      "realized_score": 0.44000000000000006,
+      "rubric_gain_count": 2,
+      "score_lift": 0.12500000000000006,
+      "selected_complement_count": 2,
       "task_id": "plan_210"
     },
     {

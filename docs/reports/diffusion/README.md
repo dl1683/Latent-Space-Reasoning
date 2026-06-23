@@ -90,6 +90,12 @@ Current high-signal generated reports:
 - [LATENT_AGGREGATION_MULTI_ASPECT_V3_FAILURE.md](LATENT_AGGREGATION_MULTI_ASPECT_V3_FAILURE.md):
   post-replay v3 failure analysis showing the binding failure is complement
   coverage, not conditional complement quality.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_AUGMENTED_REPLAY.md](LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_AUGMENTED_REPLAY.md):
+  replay that adds the corrected probe raw rows as an extra latent source;
+  coverage improves only from `6/24` to `7/24`, so the frozen gate still fails.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_AUGMENTED_FAILURE.md](LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_AUGMENTED_FAILURE.md):
+  failure analysis for the probe-augmented replay showing that even with probes,
+  the binding gap remains the `12/24` complement-coverage gate.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.

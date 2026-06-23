@@ -329,6 +329,14 @@ multi-aspect fusion exists when complement material is found, but the next
 experiment must increase complement discovery coverage rather than tune
 thresholds or claim a promoted aggregation result from this slice.
 
+Adding the corrected probe raw rows back into the replay as an extra latent
+source improves coverage only from `6/24` to `7/24`. It also raises conditional
+non-rubric lift to `0.090245` and reduces the aggregate-win/global-lift
+shortfall to one covered task, but it still misses the frozen `12/24` coverage
+gate. This means the current probe implementation is useful as a diagnostic and
+occasionally supplies a real complement, but it is not yet the missing
+high-coverage complement generator.
+
 Task mix:
 
 - 8 planning tasks with explicit rubric components.

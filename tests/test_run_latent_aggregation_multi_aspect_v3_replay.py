@@ -87,6 +87,58 @@ def test_v3_replay_fails_probe_cost_gate_when_probe_analysis_missing(tmp_path):
     assert gates["must_report_probe_cost"]["status"] == "fail"
 
 
+def test_v3_replay_can_use_extra_raw_complement_source(tmp_path):
+    freeze = tmp_path / "freeze.json"
+    raw = tmp_path / "raw.jsonl"
+    extra_raw = tmp_path / "extra_raw.jsonl"
+    tasks = tmp_path / "tasks.jsonl"
+    probe = tmp_path / "probe.json"
+    freeze.write_text(json.dumps(_freeze(["plan_c"])), encoding="utf-8")
+    tasks.write_text(json.dumps(_task("plan_c")) + "\n", encoding="utf-8")
+    probe.write_text(
+        json.dumps({"summary": {"mean_probe_cost_relative": 0.1875, "measured_probe_count": 1}}),
+        encoding="utf-8",
+    )
+    raw.write_text(
+        json.dumps(
+            _record(
+                "plan_c",
+                "anchor",
+                score=0.30,
+                text="preserve baseline",
+                specificity=0.1,
+            )
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    extra_raw.write_text(
+        json.dumps(
+            _record(
+                "plan_c",
+                "probe",
+                score=0.20,
+                text="preserve baseline measure risk threshold",
+                specificity=0.8,
+            )
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    result = run_replay(
+        freeze_path=freeze,
+        raw_path=raw,
+        extra_raw_paths=[extra_raw],
+        tasks_path=tasks,
+        probe_analysis_path=probe,
+    )
+
+    assert result["summary"]["complement_coverage_count"] == 1
+    assert result["tasks"][0]["decision"]["status"] == "online_promoted_local"
+    assert result["inputs"]["raw_paths"] == [str(raw), str(extra_raw)]
+
+
 def _freeze(task_ids):
     return {
         "statistical_gates": {

@@ -158,6 +158,17 @@ def render_markdown(analysis: dict[str, object]) -> str:
             ),
         ]
     )
+    lines[-1] = (
+        "The v3 replay failed because complement discovery coverage is still too low, "
+        "not because selected complements are weak. Every covered task promoted locally, "
+        "and the conditional non-rubric lift cleared the frozen quality gate. At the "
+        f"observed conditional lift, the all-task non-rubric gate would need "
+        f"{summary['coverage_needed_for_global_non_rubric_gate']} covered tasks, "
+        f"the aggregate-win gate would need {summary['coverage_needed_for_aggregate_win_gate']}, "
+        f"and the explicit coverage gate requires {summary['coverage_needed_for_frozen_coverage_gate']}. "
+        "The next experiment should therefore target additional complement coverage, "
+        "not lower thresholds or tune the realizer on this slice."
+    )
     return "\n".join(lines) + "\n"
 
 
