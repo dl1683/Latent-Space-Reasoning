@@ -142,6 +142,8 @@ def run_replay(
     summary = _summary_v3(
         task_results,
         probe_summary=probe_summary,
+        freeze=freeze,
+        source_record_counts=source_record_counts,
         unsupported_addition_count=unsupported_addition_count,
         hard_contradiction_count=hard_contradiction_count,
     )
@@ -151,7 +153,7 @@ def run_replay(
             "contradiction_method": "selected_aspect_id_conflict_check",
             "unsupported_addition_method": "deterministic_template_scope_check",
         },
-        "evidence_boundary": _evidence_boundary(raw_paths),
+        "evidence_boundary": _evidence_boundary(freeze, raw_paths),
         "generated_by": "experiments/run_latent_aggregation_multi_aspect_v3_replay.py",
         "gate_evaluation": _gate_evaluation_v3(freeze, summary),
         "inputs": {
@@ -204,6 +206,8 @@ def render_markdown(result: dict[str, object]) -> str:
         f"- Hard contradictions: `{summary['hard_contradiction_count']}`",
         f"- Probe cost reported: `{bool(summary['probe_cost_reported'])}`",
         f"- Mean probe cost relative: `{_format_float(summary['mean_probe_cost_relative'])}`",
+        f"- Diversity generation cost reported: `{bool(summary['diversity_generation_cost_reported'])}`",
+        f"- Diversity raw records: `{summary['diversity_raw_record_count']}`",
         f"- Equal-budget best-of control reported: `{bool(summary['equal_budget_best_of_control_reported'])}`",
         f"- Decision counts: `{_format_counts(summary['decision_status_counts'])}`",
         "",
@@ -262,6 +266,8 @@ def _summary_v3(
     tasks: list[dict[str, object]],
     *,
     probe_summary: dict[str, object],
+    freeze: dict[str, object],
+    source_record_counts: dict[str, int],
     unsupported_addition_count: int,
     hard_contradiction_count: int,
 ) -> dict[str, object]:
@@ -273,6 +279,7 @@ def _summary_v3(
         task for task in complement_tasks if _dict(task.get("decision")).get("status") == "online_promoted_local"
     ]
     task_count = len(tasks)
+    diversity_record_count = _diversity_record_count(freeze, source_record_counts)
     return {
         "all_task_mean_non_rubric_lift": _mean(_float(task.get("non_rubric_lift")) for task in tasks),
         "complement_coverage_count": len(complement_tasks),
@@ -284,6 +291,8 @@ def _summary_v3(
             len(promoted_complement_tasks) / len(complement_tasks) if complement_tasks else 0.0
         ),
         "decision_status_counts": _decision_status_counts(tasks),
+        "diversity_generation_cost_reported": diversity_record_count > 0,
+        "diversity_raw_record_count": diversity_record_count,
         "equal_budget_best_of_control": "best_single_anchor_by_pre_rescore_task_score",
         "equal_budget_best_of_control_reported": True,
         "hard_contradiction_count": hard_contradiction_count,
@@ -322,6 +331,15 @@ def _gate_evaluation_v3(freeze: dict[str, object], summary: dict[str, object]) -
         _gate("must_report_equal_budget_best_of_control", "reported" if summary["equal_budget_best_of_control_reported"] else "missing", "reported", bool(summary["equal_budget_best_of_control_reported"])),
         _gate("must_report_rubric_and_dimension_gain_separately", "reported", "reported", True),
     ]
+    if bool(gates.get("must_report_diversity_generation_cost")):
+        rows.append(
+            _gate(
+                "must_report_diversity_generation_cost",
+                "reported" if summary["diversity_generation_cost_reported"] else "missing",
+                "reported",
+                bool(summary["diversity_generation_cost_reported"]),
+            )
+        )
     failed = [row for row in rows if row["status"] == "fail"]
     return {
         "failed_gate_count": len(failed),
@@ -338,7 +356,25 @@ def _load_probe_summary(path: Path | None) -> dict[str, object]:
     return _dict(data.get("summary"))
 
 
-def _evidence_boundary(raw_paths: list[Path]) -> dict[str, str]:
+def _diversity_record_count(freeze: dict[str, object], source_record_counts: dict[str, int]) -> int:
+    outputs = _dict(freeze.get("runtime_outputs"))
+    diversity_path = str(outputs.get("diversity_raw_output", ""))
+    if not diversity_path:
+        return 0
+    normalized = {Path(path): count for path, count in source_record_counts.items()}
+    return int(normalized.get(Path(diversity_path), 0))
+
+
+def _evidence_boundary(freeze: dict[str, object], raw_paths: list[Path]) -> dict[str, str]:
+    if str(freeze.get("schema", "")) == "latent_aggregation_multi_aspect_v4_freeze.v1":
+        return {
+            "reason": (
+                "Fresh v4 replay over predeclared label, probe, and diversity-extension "
+                "raw sources. The diversity source was frozen before v4 labels, so this is "
+                "a replication test rather than a post-failure v3 augmentation."
+            ),
+            "status": "fresh_predeclared_multi_source_v4_replay",
+        }
     if len(raw_paths) <= 1:
         return {
             "reason": (
@@ -397,6 +433,13 @@ def _interpretation(
     evidence_boundary: dict[str, object],
 ) -> str:
     if gate.get("overall_status") == "passed":
+        if evidence_boundary.get("status") == "fresh_predeclared_multi_source_v4_replay":
+            return (
+                "The deterministic replay satisfies the frozen numeric gates under the "
+                "predeclared v4 label, probe, and diversity-extension source mix. This is "
+                "a fresh replication of the v3 diagnostic design, bounded to this task slice "
+                "and this deterministic realization policy."
+            )
         if evidence_boundary.get("status") != "held_out_multi_aspect_v3_replay":
             return (
                 "The augmented replay satisfies the frozen numeric gates, but its "

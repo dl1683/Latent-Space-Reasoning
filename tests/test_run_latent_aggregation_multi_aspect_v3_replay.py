@@ -139,6 +139,66 @@ def test_v3_replay_can_use_extra_raw_complement_source(tmp_path):
     assert result["inputs"]["raw_paths"] == [str(raw), str(extra_raw)]
 
 
+def test_v4_replay_marks_predeclared_multi_source_and_reports_diversity_cost(tmp_path):
+    freeze = tmp_path / "freeze.json"
+    raw = tmp_path / "raw.jsonl"
+    probe_raw = tmp_path / "probe_raw.jsonl"
+    diversity_raw = tmp_path / "diversity_raw.jsonl"
+    tasks = tmp_path / "tasks.jsonl"
+    probe = tmp_path / "probe.json"
+    freeze_data = _freeze(["plan_d"])
+    freeze_data["schema"] = "latent_aggregation_multi_aspect_v4_freeze.v1"
+    freeze_data["runtime_outputs"] = {"diversity_raw_output": str(diversity_raw)}
+    freeze_data["statistical_gates"]["must_report_diversity_generation_cost"] = True
+    freeze.write_text(json.dumps(freeze_data), encoding="utf-8")
+    tasks.write_text(json.dumps(_task("plan_d")) + "\n", encoding="utf-8")
+    probe.write_text(
+        json.dumps({"summary": {"mean_probe_cost_relative": 0.1875, "measured_probe_count": 1}}),
+        encoding="utf-8",
+    )
+    raw.write_text(
+        json.dumps(
+            _record(
+                "plan_d",
+                "anchor",
+                score=0.30,
+                text="preserve baseline",
+                specificity=0.1,
+            )
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    probe_raw.write_text("", encoding="utf-8")
+    diversity_raw.write_text(
+        json.dumps(
+            _record(
+                "plan_d",
+                "diversity",
+                score=0.20,
+                text="preserve baseline measure risk threshold",
+                specificity=0.8,
+            )
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    result = run_replay(
+        freeze_path=freeze,
+        raw_path=raw,
+        extra_raw_paths=[probe_raw, diversity_raw],
+        tasks_path=tasks,
+        probe_analysis_path=probe,
+    )
+    gates = {row["name"]: row for row in result["gate_evaluation"]["gates"]}
+
+    assert result["evidence_boundary"]["status"] == "fresh_predeclared_multi_source_v4_replay"
+    assert result["summary"]["diversity_generation_cost_reported"] is True
+    assert result["summary"]["diversity_raw_record_count"] == 1
+    assert gates["must_report_diversity_generation_cost"]["status"] == "pass"
+
+
 def _freeze(task_ids):
     return {
         "statistical_gates": {
