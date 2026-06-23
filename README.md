@@ -213,8 +213,12 @@ Active frontier:
   contradictions remain `0`, and the remaining no-complement blockers are `19`
   anchor-dominance cases plus `2` positive-but-below-threshold cases. The
   targeted anchor-deficit source did not close the coverage gap under the
-  current extractor and replay policy, so the next step is not weaker gates; it
-  is a better complement-generation policy or expanded aspect ontology.
+  current extractor and replay policy. A no-generation threshold-sensitivity
+  diagnostic confirms this is not primarily a strict-threshold artifact: even
+  lowering the dimension threshold to any positive delta recovers only
+  `29/48` coverage, still `7` tasks short of the gate, and `19` no-complement
+  tasks have zero positive ontology deltas. The next step is not weaker gates;
+  it is a better complement-generation policy or expanded aspect ontology.
 
 What not to overclaim:
 

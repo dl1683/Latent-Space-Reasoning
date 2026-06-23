@@ -434,8 +434,15 @@ no-complement tasks: `19` anchor-dominance cases and `2`
 positive-but-below-threshold cases. The source-family ablation is especially
 important: removing `anchor_deficit` leaves coverage at `27/48`, so the targeted
 source produced selectable components but did not add the incremental coverage
-needed to promote. The point is not to lower the v5 bar; it is to design a
-better complement-generation policy or expanded aspect ontology for the
+needed to promote.
+
+A follow-up threshold-sensitivity diagnostic closes one tempting but weak
+explanation. Sweeping the dimension-complement threshold from the frozen `0.05`
+down to any positive delta raises coverage only from `27/48` to `29/48`, with
+newly recoverable tasks limited to `plan_303` and `plan_332`. That still misses
+the `36/48` gate by `7` tasks, and `19` base no-complement tasks have zero
+positive ontology deltas. The point is not to lower the v5 bar; it is to design
+a better complement-generation policy or expanded aspect ontology for the
 remaining anchor-dominance region.
 
 ## Relationship To Current Diffusion Work

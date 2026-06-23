@@ -180,6 +180,10 @@ Current high-signal generated reports:
 - [LATENT_AGGREGATION_MULTI_ASPECT_V6_COVERAGE_GAP.md](LATENT_AGGREGATION_MULTI_ASPECT_V6_COVERAGE_GAP.md):
   v6 coverage diagnostic showing the remaining `21` no-complement tasks:
   `19` anchor-dominance cases and `2` positive-but-below-threshold cases.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V6_THRESHOLD_SENSITIVITY.md](LATENT_AGGREGATION_MULTI_ASPECT_V6_THRESHOLD_SENSITIVITY.md):
+  no-generation diagnostic showing the v6 failure is not primarily caused by
+  the frozen dimension threshold; positive-floor coverage is only `29/48`
+  against the `36/48` gate.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.
