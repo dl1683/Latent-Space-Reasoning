@@ -499,6 +499,7 @@ def _generation_command(
         "--candidates llada-8b-instruct-hf "
         "--samples-per-task 3 "
         "--max-new-tokens 128 --steps 128 --algorithm entropy --block-length 32 "
+        "--resume "
         f"--raw-output {raw_output_path} "
         f"--scores-output {scores_output_path} "
         f"--report-output {source_report_output_path}"

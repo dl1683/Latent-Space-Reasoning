@@ -57,6 +57,7 @@ class RunnerConfig:
     generation_seed: int = 1729
     device: str | None = None
     dtype: str | None = None
+    limit_prompts: int | None = None
 
 
 def parse_args() -> argparse.Namespace:
@@ -74,6 +75,8 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--block-length", type=int, default=32)
     parser.add_argument("--temperature", type=float, default=0.0)
     parser.add_argument("--generation-seed", type=int, default=1729)
+    parser.add_argument("--limit-prompts", type=int)
+    parser.add_argument("--resume", action="store_true")
     parser.add_argument("--device")
     parser.add_argument("--dtype")
     return parser.parse_args()
@@ -92,20 +95,19 @@ def main() -> int:
         generation_seed=args.generation_seed,
         device=args.device,
         dtype=args.dtype,
+        limit_prompts=args.limit_prompts,
     )
     records, summary = run_complement_packet_source(
         prompts_path=args.prompts,
         tasks_path=args.tasks,
         config=config,
         backend_factory=_backend_factory(config),
+        raw_output_path=args.raw_output,
+        resume=args.resume,
     )
     args.raw_output.parent.mkdir(parents=True, exist_ok=True)
     args.scores_output.parent.mkdir(parents=True, exist_ok=True)
     args.report_output.parent.mkdir(parents=True, exist_ok=True)
-    args.raw_output.write_text(
-        "\n".join(json.dumps(record, sort_keys=True) for record in records) + "\n",
-        encoding="utf-8",
-    )
     summary = {
         **summary,
         "raw_output": str(args.raw_output),
@@ -124,21 +126,36 @@ def run_complement_packet_source(
     tasks_path: Path,
     config: RunnerConfig,
     backend_factory: Callable[[str], Backend],
+    raw_output_path: Path | None = None,
+    resume: bool = False,
 ) -> tuple[list[dict[str, object]], dict[str, object]]:
     if config.samples_per_task <= 0:
         raise ValueError("samples_per_task must be positive")
     prompts = _read_jsonl(prompts_path)
+    if config.limit_prompts is not None:
+        prompts = prompts[: config.limit_prompts]
     tasks = {task.task_id: task for task in load_tasks(tasks_path)}
     missing = [str(row.get("task_id", "")) for row in prompts if str(row.get("task_id", "")) not in tasks]
     if missing:
         raise ValueError(f"prompt task IDs are missing from {tasks_path}: {', '.join(missing)}")
 
-    records: list[dict[str, object]] = []
+    existing_records = _existing_records(raw_output_path, resume=resume)
+    existing_keys = {_record_key(record) for record in existing_records}
+    records: list[dict[str, object]] = list(existing_records)
+    handle = None
+    if raw_output_path is not None:
+        raw_output_path.parent.mkdir(parents=True, exist_ok=True)
+        if raw_output_path.exists() and not resume:
+            raw_output_path.unlink()
+        handle = raw_output_path.open("a", encoding="utf-8")
     for candidate_key in config.candidates:
         backend = backend_factory(candidate_key)
         for prompt_row in prompts:
             task = tasks[str(prompt_row.get("task_id", ""))]
             for sample_index in range(config.samples_per_task):
+                key = (candidate_key, task.task_id, f"complement_packet_{sample_index:02d}")
+                if key in existing_keys:
+                    continue
                 seed = _stable_generation_seed(
                     config.generation_seed,
                     candidate_key,
@@ -150,16 +167,32 @@ def run_complement_packet_source(
                     str(prompt_row.get("prompt", "")),
                     config=_generation_config(config),
                 )
-                records.append(
-                    _record_from_generation(
-                        generation.to_dict(),
-                        task=task,
-                        prompt_row=prompt_row,
-                        candidate_key=candidate_key,
-                        sample_index=sample_index,
-                        generation_seed=seed,
-                    )
+                record = _record_from_generation(
+                    generation.to_dict(),
+                    task=task,
+                    prompt_row=prompt_row,
+                    candidate_key=candidate_key,
+                    sample_index=sample_index,
+                    generation_seed=seed,
                 )
+                records.append(record)
+                existing_keys.add(key)
+                if handle is not None:
+                    handle.write(json.dumps(record, sort_keys=True) + "\n")
+                    handle.flush()
+                    print(
+                        json.dumps(
+                            {
+                                "generated_record_count": len(records),
+                                "sample_index": sample_index,
+                                "task_id": task.task_id,
+                            },
+                            sort_keys=True,
+                        ),
+                        flush=True,
+                    )
+    if handle is not None:
+        handle.close()
     summary = _summary(records, config=config, prompt_count=len(prompts))
     return records, summary
 
@@ -246,6 +279,7 @@ def _summary(
         "generated_record_count": len(records),
         "mean_task_score": sum(task_scores) / len(task_scores) if task_scores else 0.0,
         "prompt_count": prompt_count,
+        "requested_record_count": prompt_count * len(config.candidates) * config.samples_per_task,
         "samples_per_task": config.samples_per_task,
         "source_family": "complement_packet",
         "task_count": len(task_ids),
@@ -298,6 +332,20 @@ def _read_jsonl(path: Path) -> list[dict[str, object]]:
         if isinstance(row, dict):
             rows.append(row)
     return rows
+
+
+def _existing_records(path: Path | None, *, resume: bool) -> list[dict[str, object]]:
+    if path is None or not resume or not path.exists():
+        return []
+    return _read_jsonl(path)
+
+
+def _record_key(record: dict[str, object]) -> tuple[str, str, str]:
+    schedule = record.get("schedule")
+    schedule_name = str(schedule.get("name", "")) if isinstance(schedule, dict) else ""
+    task = record.get("task")
+    task_id = str(record.get("task_id") or (task.get("task_id", "") if isinstance(task, dict) else ""))
+    return (str(record.get("candidate_key", "")), task_id, schedule_name)
 
 
 def _split_csv(value: str) -> list[str]:
