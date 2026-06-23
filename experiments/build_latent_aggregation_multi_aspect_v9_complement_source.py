@@ -193,7 +193,13 @@ def build_complement_source_contract(
     v7_summary = _dict(v7_failure.get("summary"))
     v8_summary = _dict(v8_gap.get("summary"))
     source_contract = {
-        "command_status": "prompt_artifact_ready_generation_runner_pending",
+        "command": _generation_command(
+            prompts_output_path=prompts_output_path,
+            raw_output_path=raw_output_path,
+            scores_output_path=scores_output_path,
+            source_report_output_path=source_report_output_path,
+        ),
+        "command_status": "generation_pending",
         "family": "complement_packet",
         "prompt_artifact": {
             "path": str(prompts_output_path),
@@ -336,6 +342,10 @@ def render_markdown(manifest: dict[str, object]) -> str:
         f"- Command status: `{source.get('command_status')}`",
         f"- Rationale: {source.get('rationale')}",
         "",
+        "```powershell",
+        str(source.get("command", "")),
+        "```",
+        "",
         "## Success Contract",
         "",
         f"- Minimum new coverage count: `{success.get('minimum_new_coverage_count')}`",
@@ -472,6 +482,26 @@ def _replay_command(
         f"--aspects-output {aspects_output_path} "
         f"--realized-output {realized_output_path} "
         f"--report-output {replay_report_output_path}"
+    )
+
+
+def _generation_command(
+    *,
+    prompts_output_path: Path,
+    raw_output_path: Path,
+    scores_output_path: Path,
+    source_report_output_path: Path,
+) -> str:
+    return (
+        "python experiments\\run_latent_aggregation_complement_packet_source.py "
+        f"--prompts {prompts_output_path} "
+        "--tasks experiments\\general_reasoning_tasks_scout.jsonl "
+        "--candidates llada-8b-instruct-hf "
+        "--samples-per-task 3 "
+        "--max-new-tokens 128 --steps 128 --algorithm entropy --block-length 32 "
+        f"--raw-output {raw_output_path} "
+        f"--scores-output {scores_output_path} "
+        f"--report-output {source_report_output_path}"
     )
 
 
