@@ -1,0 +1,857 @@
+{
+  "evidence_boundary": {
+    "reason": "No-generation diagnostic over the completed fresh v7 expanded-ontology replay. It explains why v7 failed and defines the minimum next-source coverage needed before another promotion attempt.",
+    "status": "fresh_v7_failed_replay_failure_analysis"
+  },
+  "generated_by": "experiments/analyze_latent_aggregation_multi_aspect_v7_failure.py",
+  "inputs": {
+    "aspects": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v7_aspects.jsonl",
+    "realized": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v7_realized.jsonl",
+    "replay": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v7_replay.json"
+  },
+  "schema": "latent_aggregation_multi_aspect_v7_failure_analysis.v1",
+  "summary": {
+    "all_task_mean_non_rubric_lift": 0.03629017857142857,
+    "complement_coverage_count": 24,
+    "coverage_gate_count": 36,
+    "coverage_shortfall_to_gate": 12,
+    "decision_status_counts": {
+      "blocked_no_complement_material": 24,
+      "dimension_gain_not_realized": 1,
+      "online_promoted_local": 23
+    },
+    "gate_status": "failed",
+    "hard_contradiction_count": 0,
+    "label_leakage_check": "passed_label_free_view_only",
+    "minimum_successes_for_wilson_gate": 36,
+    "multi_family_covered_task_count": 3,
+    "next_source_minimum_new_promoted_coverage_floor": 13,
+    "online_promoted_task_count": 23,
+    "promotion_gate_count": 30,
+    "promotion_shortfall_to_gate": 7,
+    "selected_aspect_class_counts": {
+      "expanded": 66
+    },
+    "selected_aspect_type_counts": {
+      "evidence_or_measurement": 20,
+      "owner_assignment": 10,
+      "polarity_or_action_direction": 13,
+      "rollback_or_exit_criteria": 1,
+      "scope_boundary": 19,
+      "timeline_or_sequence": 3
+    },
+    "selected_source_family_counts": {
+      "cross_latent_perturbation": 59,
+      "label": 6,
+      "ontology_probe": 1
+    },
+    "source_ablation": {
+      "cross_latent_perturbation": {
+        "complement_coverage_count": 14,
+        "mean_non_rubric_lift": 0.01908035714285714,
+        "mean_score_lift": 0.01991369047619047,
+        "missing_task_count": 0,
+        "missing_task_ids": [],
+        "online_promoted_task_count": 13,
+        "task_count": 48
+      },
+      "label": {
+        "complement_coverage_count": 24,
+        "mean_non_rubric_lift": 0.037279761904761906,
+        "mean_score_lift": 0.03936309523809524,
+        "missing_task_count": 0,
+        "missing_task_ids": [],
+        "online_promoted_task_count": 24,
+        "task_count": 48
+      },
+      "ontology_probe": {
+        "complement_coverage_count": 23,
+        "mean_non_rubric_lift": 0.03364583333333333,
+        "mean_score_lift": 0.0353125,
+        "missing_task_count": 0,
+        "missing_task_ids": [],
+        "online_promoted_task_count": 22,
+        "task_count": 48
+      }
+    },
+    "task_count": 48,
+    "task_coverage_by_source_family": {
+      "cross_latent_perturbation": 21,
+      "label": 5,
+      "ontology_probe": 1
+    },
+    "uncovered_task_count": 24,
+    "uncovered_task_ids": [
+      "plan_346",
+      "plan_347",
+      "plan_348",
+      "plan_349",
+      "plan_350",
+      "plan_351",
+      "plan_353",
+      "plan_354",
+      "plan_355",
+      "plan_359",
+      "plan_360",
+      "plan_361",
+      "plan_366",
+      "plan_373",
+      "plan_375",
+      "plan_376",
+      "plan_377",
+      "plan_378",
+      "plan_380",
+      "plan_381",
+      "plan_384",
+      "plan_385",
+      "plan_386",
+      "plan_389"
+    ],
+    "unique_task_coverage_by_source_family": {
+      "cross_latent_perturbation": 18,
+      "label": 2,
+      "ontology_probe": 1
+    },
+    "unsupported_addition_count": 0,
+    "wilson_gate_lower_bound": 0.6,
+    "wilson_lower_bound": 0.34471316176951616,
+    "wilson_success_shortfall_to_gate": 13
+  },
+  "tasks": [
+    {
+      "anchor_score": 0.48642857142857143,
+      "aspect_class_counts": {
+        "expanded": 1
+      },
+      "aspect_type_counts": {
+        "scope_boundary": 1
+      },
+      "decision_status": "online_promoted_local",
+      "non_rubric_lift": 0.06392857142857139,
+      "realized_score": 0.5503571428571429,
+      "score_lift": 0.06392857142857145,
+      "selected_complement_count": 1,
+      "source_family_counts": {
+        "cross_latent_perturbation": 1
+      },
+      "task_id": "plan_345"
+    },
+    {
+      "anchor_score": 0.30428571428571427,
+      "aspect_class_counts": {},
+      "aspect_type_counts": {},
+      "decision_status": "blocked_no_complement_material",
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.30428571428571427,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "source_family_counts": {},
+      "task_id": "plan_346"
+    },
+    {
+      "anchor_score": 0.29892857142857143,
+      "aspect_class_counts": {},
+      "aspect_type_counts": {},
+      "decision_status": "blocked_no_complement_material",
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.29892857142857143,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "source_family_counts": {},
+      "task_id": "plan_347"
+    },
+    {
+      "anchor_score": 0.28535714285714286,
+      "aspect_class_counts": {},
+      "aspect_type_counts": {},
+      "decision_status": "blocked_no_complement_material",
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.28535714285714286,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "source_family_counts": {},
+      "task_id": "plan_348"
+    },
+    {
+      "anchor_score": 0.45785714285714285,
+      "aspect_class_counts": {},
+      "aspect_type_counts": {},
+      "decision_status": "blocked_no_complement_material",
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.45785714285714285,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "source_family_counts": {},
+      "task_id": "plan_349"
+    },
+    {
+      "anchor_score": 0.3978571428571429,
+      "aspect_class_counts": {},
+      "aspect_type_counts": {},
+      "decision_status": "blocked_no_complement_material",
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.3978571428571429,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "source_family_counts": {},
+      "task_id": "plan_350"
+    },
+    {
+      "anchor_score": 0.41285714285714287,
+      "aspect_class_counts": {},
+      "aspect_type_counts": {},
+      "decision_status": "blocked_no_complement_material",
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.41285714285714287,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "source_family_counts": {},
+      "task_id": "plan_351"
+    },
+    {
+      "anchor_score": 0.3028571428571429,
+      "aspect_class_counts": {
+        "expanded": 1
+      },
+      "aspect_type_counts": {
+        "owner_assignment": 1
+      },
+      "decision_status": "online_promoted_local",
+      "non_rubric_lift": 0.0853571428571428,
+      "realized_score": 0.3882142857142857,
+      "score_lift": 0.0853571428571428,
+      "selected_complement_count": 1,
+      "source_family_counts": {
+        "label": 1
+      },
+      "task_id": "plan_352"
+    },
+    {
+      "anchor_score": 0.32392857142857145,
+      "aspect_class_counts": {},
+      "aspect_type_counts": {},
+      "decision_status": "blocked_no_complement_material",
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.32392857142857145,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "source_family_counts": {},
+      "task_id": "plan_353"
+    },
+    {
+      "anchor_score": 0.34035714285714286,
+      "aspect_class_counts": {},
+      "aspect_type_counts": {},
+      "decision_status": "blocked_no_complement_material",
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.34035714285714286,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "source_family_counts": {},
+      "task_id": "plan_354"
+    },
+    {
+      "anchor_score": 0.3089285714285714,
+      "aspect_class_counts": {},
+      "aspect_type_counts": {},
+      "decision_status": "blocked_no_complement_material",
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.3089285714285714,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "source_family_counts": {},
+      "task_id": "plan_355"
+    },
+    {
+      "anchor_score": 0.26392857142857146,
+      "aspect_class_counts": {
+        "expanded": 1
+      },
+      "aspect_type_counts": {
+        "polarity_or_action_direction": 1
+      },
+      "decision_status": "online_promoted_local",
+      "non_rubric_lift": 0.06392857142857145,
+      "realized_score": 0.34785714285714286,
+      "score_lift": 0.08392857142857141,
+      "selected_complement_count": 1,
+      "source_family_counts": {
+        "cross_latent_perturbation": 1
+      },
+      "task_id": "plan_356"
+    },
+    {
+      "anchor_score": 0.30142857142857143,
+      "aspect_class_counts": {
+        "expanded": 3
+      },
+      "aspect_type_counts": {
+        "polarity_or_action_direction": 3
+      },
+      "decision_status": "online_promoted_local",
+      "non_rubric_lift": 0.06392857142857142,
+      "realized_score": 0.3653571428571428,
+      "score_lift": 0.06392857142857139,
+      "selected_complement_count": 1,
+      "source_family_counts": {
+        "cross_latent_perturbation": 3
+      },
+      "task_id": "plan_357"
+    },
+    {
+      "anchor_score": 0.3214285714285714,
+      "aspect_class_counts": {
+        "expanded": 6
+      },
+      "aspect_type_counts": {
+        "evidence_or_measurement": 3,
+        "scope_boundary": 3
+      },
+      "decision_status": "online_promoted_local",
+      "non_rubric_lift": 0.06392857142857145,
+      "realized_score": 0.38535714285714284,
+      "score_lift": 0.06392857142857145,
+      "selected_complement_count": 2,
+      "source_family_counts": {
+        "cross_latent_perturbation": 6
+      },
+      "task_id": "plan_358"
+    },
+    {
+      "anchor_score": 0.4442857142857143,
+      "aspect_class_counts": {},
+      "aspect_type_counts": {},
+      "decision_status": "blocked_no_complement_material",
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.4442857142857143,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "source_family_counts": {},
+      "task_id": "plan_359"
+    },
+    {
+      "anchor_score": 0.38035714285714284,
+      "aspect_class_counts": {},
+      "aspect_type_counts": {},
+      "decision_status": "blocked_no_complement_material",
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.38035714285714284,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "source_family_counts": {},
+      "task_id": "plan_360"
+    },
+    {
+      "anchor_score": 0.31,
+      "aspect_class_counts": {},
+      "aspect_type_counts": {},
+      "decision_status": "blocked_no_complement_material",
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.31,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "source_family_counts": {},
+      "task_id": "plan_361"
+    },
+    {
+      "anchor_score": 0.4739285714285714,
+      "aspect_class_counts": {
+        "expanded": 3
+      },
+      "aspect_type_counts": {
+        "scope_boundary": 3
+      },
+      "decision_status": "online_promoted_local",
+      "non_rubric_lift": 0.06392857142857145,
+      "realized_score": 0.5378571428571428,
+      "score_lift": 0.06392857142857139,
+      "selected_complement_count": 1,
+      "source_family_counts": {
+        "cross_latent_perturbation": 3
+      },
+      "task_id": "plan_362"
+    },
+    {
+      "anchor_score": 0.3917857142857143,
+      "aspect_class_counts": {
+        "expanded": 2
+      },
+      "aspect_type_counts": {
+        "owner_assignment": 1,
+        "polarity_or_action_direction": 1
+      },
+      "decision_status": "online_promoted_local",
+      "non_rubric_lift": 0.06392857142857139,
+      "realized_score": 0.4557142857142857,
+      "score_lift": 0.06392857142857139,
+      "selected_complement_count": 2,
+      "source_family_counts": {
+        "cross_latent_perturbation": 2
+      },
+      "task_id": "plan_363"
+    },
+    {
+      "anchor_score": 0.42178571428571426,
+      "aspect_class_counts": {
+        "expanded": 1
+      },
+      "aspect_type_counts": {
+        "owner_assignment": 1
+      },
+      "decision_status": "online_promoted_local",
+      "non_rubric_lift": 0.10642857142857143,
+      "realized_score": 0.5482142857142858,
+      "score_lift": 0.1264285714285715,
+      "selected_complement_count": 1,
+      "source_family_counts": {
+        "cross_latent_perturbation": 1
+      },
+      "task_id": "plan_364"
+    },
+    {
+      "anchor_score": 0.34892857142857137,
+      "aspect_class_counts": {
+        "expanded": 3
+      },
+      "aspect_type_counts": {
+        "polarity_or_action_direction": 3
+      },
+      "decision_status": "online_promoted_local",
+      "non_rubric_lift": 0.04249999999999998,
+      "realized_score": 0.41142857142857137,
+      "score_lift": 0.0625,
+      "selected_complement_count": 1,
+      "source_family_counts": {
+        "cross_latent_perturbation": 3
+      },
+      "task_id": "plan_365"
+    },
+    {
+      "anchor_score": 0.24,
+      "aspect_class_counts": {},
+      "aspect_type_counts": {},
+      "decision_status": "blocked_no_complement_material",
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.24,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "source_family_counts": {},
+      "task_id": "plan_366"
+    },
+    {
+      "anchor_score": 0.3114285714285714,
+      "aspect_class_counts": {
+        "expanded": 2
+      },
+      "aspect_type_counts": {
+        "polarity_or_action_direction": 1,
+        "rollback_or_exit_criteria": 1
+      },
+      "decision_status": "online_promoted_local",
+      "non_rubric_lift": 0.16535714285714287,
+      "realized_score": 0.47678571428571426,
+      "score_lift": 0.16535714285714287,
+      "selected_complement_count": 2,
+      "source_family_counts": {
+        "label": 2
+      },
+      "task_id": "plan_367"
+    },
+    {
+      "anchor_score": 0.32035714285714284,
+      "aspect_class_counts": {
+        "expanded": 4
+      },
+      "aspect_type_counts": {
+        "scope_boundary": 3,
+        "timeline_or_sequence": 1
+      },
+      "decision_status": "online_promoted_local",
+      "non_rubric_lift": 0.06392857142857139,
+      "realized_score": 0.38428571428571423,
+      "score_lift": 0.06392857142857139,
+      "selected_complement_count": 2,
+      "source_family_counts": {
+        "cross_latent_perturbation": 3,
+        "label": 1
+      },
+      "task_id": "plan_368"
+    },
+    {
+      "anchor_score": 0.2825,
+      "aspect_class_counts": {
+        "expanded": 3
+      },
+      "aspect_type_counts": {
+        "evidence_or_measurement": 1,
+        "owner_assignment": 1,
+        "polarity_or_action_direction": 1
+      },
+      "decision_status": "online_promoted_local",
+      "non_rubric_lift": 0.10678571428571429,
+      "realized_score": 0.3892857142857143,
+      "score_lift": 0.10678571428571432,
+      "selected_complement_count": 3,
+      "source_family_counts": {
+        "cross_latent_perturbation": 2,
+        "label": 1
+      },
+      "task_id": "plan_369"
+    },
+    {
+      "anchor_score": 0.37642857142857145,
+      "aspect_class_counts": {
+        "expanded": 2
+      },
+      "aspect_type_counts": {
+        "polarity_or_action_direction": 1,
+        "scope_boundary": 1
+      },
+      "decision_status": "online_promoted_local",
+      "non_rubric_lift": 0.06392857142857145,
+      "realized_score": 0.4403571428571429,
+      "score_lift": 0.06392857142857145,
+      "selected_complement_count": 2,
+      "source_family_counts": {
+        "cross_latent_perturbation": 2
+      },
+      "task_id": "plan_370"
+    },
+    {
+      "anchor_score": 0.30428571428571427,
+      "aspect_class_counts": {
+        "expanded": 1
+      },
+      "aspect_type_counts": {
+        "timeline_or_sequence": 1
+      },
+      "decision_status": "online_promoted_local",
+      "non_rubric_lift": 0.08535714285714285,
+      "realized_score": 0.3896428571428571,
+      "score_lift": 0.08535714285714285,
+      "selected_complement_count": 1,
+      "source_family_counts": {
+        "cross_latent_perturbation": 1
+      },
+      "task_id": "plan_371"
+    },
+    {
+      "anchor_score": 0.4017857142857143,
+      "aspect_class_counts": {
+        "expanded": 5
+      },
+      "aspect_type_counts": {
+        "evidence_or_measurement": 3,
+        "scope_boundary": 1,
+        "timeline_or_sequence": 1
+      },
+      "decision_status": "online_promoted_local",
+      "non_rubric_lift": 0.06392857142857145,
+      "realized_score": 0.46571428571428575,
+      "score_lift": 0.06392857142857145,
+      "selected_complement_count": 3,
+      "source_family_counts": {
+        "cross_latent_perturbation": 5
+      },
+      "task_id": "plan_372"
+    },
+    {
+      "anchor_score": 0.3392857142857143,
+      "aspect_class_counts": {},
+      "aspect_type_counts": {},
+      "decision_status": "blocked_no_complement_material",
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.3392857142857143,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "source_family_counts": {},
+      "task_id": "plan_373"
+    },
+    {
+      "anchor_score": 0.40035714285714286,
+      "aspect_class_counts": {
+        "expanded": 3
+      },
+      "aspect_type_counts": {
+        "evidence_or_measurement": 3
+      },
+      "decision_status": "dimension_gain_not_realized",
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.4203571428571429,
+      "score_lift": 0.020000000000000018,
+      "selected_complement_count": 1,
+      "source_family_counts": {
+        "cross_latent_perturbation": 3
+      },
+      "task_id": "plan_374"
+    },
+    {
+      "anchor_score": 0.4742857142857143,
+      "aspect_class_counts": {},
+      "aspect_type_counts": {},
+      "decision_status": "blocked_no_complement_material",
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.4742857142857143,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "source_family_counts": {},
+      "task_id": "plan_375"
+    },
+    {
+      "anchor_score": 0.40035714285714286,
+      "aspect_class_counts": {},
+      "aspect_type_counts": {},
+      "decision_status": "blocked_no_complement_material",
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.40035714285714286,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "source_family_counts": {},
+      "task_id": "plan_376"
+    },
+    {
+      "anchor_score": 0.29892857142857143,
+      "aspect_class_counts": {},
+      "aspect_type_counts": {},
+      "decision_status": "blocked_no_complement_material",
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.29892857142857143,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "source_family_counts": {},
+      "task_id": "plan_377"
+    },
+    {
+      "anchor_score": 0.3192857142857143,
+      "aspect_class_counts": {},
+      "aspect_type_counts": {},
+      "decision_status": "blocked_no_complement_material",
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.3192857142857143,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "source_family_counts": {},
+      "task_id": "plan_378"
+    },
+    {
+      "anchor_score": 0.2964285714285714,
+      "aspect_class_counts": {
+        "expanded": 4
+      },
+      "aspect_type_counts": {
+        "evidence_or_measurement": 3,
+        "polarity_or_action_direction": 1
+      },
+      "decision_status": "online_promoted_local",
+      "non_rubric_lift": 0.08535714285714291,
+      "realized_score": 0.3817857142857143,
+      "score_lift": 0.08535714285714291,
+      "selected_complement_count": 2,
+      "source_family_counts": {
+        "cross_latent_perturbation": 3,
+        "label": 1
+      },
+      "task_id": "plan_379"
+    },
+    {
+      "anchor_score": 0.33285714285714285,
+      "aspect_class_counts": {},
+      "aspect_type_counts": {},
+      "decision_status": "blocked_no_complement_material",
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.33285714285714285,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "source_family_counts": {},
+      "task_id": "plan_380"
+    },
+    {
+      "anchor_score": 0.35642857142857143,
+      "aspect_class_counts": {},
+      "aspect_type_counts": {},
+      "decision_status": "blocked_no_complement_material",
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.35642857142857143,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "source_family_counts": {},
+      "task_id": "plan_381"
+    },
+    {
+      "anchor_score": 0.30142857142857143,
+      "aspect_class_counts": {
+        "expanded": 6
+      },
+      "aspect_type_counts": {
+        "evidence_or_measurement": 3,
+        "scope_boundary": 3
+      },
+      "decision_status": "online_promoted_local",
+      "non_rubric_lift": 0.042857142857142816,
+      "realized_score": 0.34428571428571425,
+      "score_lift": 0.042857142857142816,
+      "selected_complement_count": 2,
+      "source_family_counts": {
+        "cross_latent_perturbation": 6
+      },
+      "task_id": "plan_382"
+    },
+    {
+      "anchor_score": 0.4453571428571429,
+      "aspect_class_counts": {
+        "expanded": 4
+      },
+      "aspect_type_counts": {
+        "owner_assignment": 3,
+        "scope_boundary": 1
+      },
+      "decision_status": "online_promoted_local",
+      "non_rubric_lift": 0.06392857142857133,
+      "realized_score": 0.5092857142857142,
+      "score_lift": 0.06392857142857133,
+      "selected_complement_count": 2,
+      "source_family_counts": {
+        "cross_latent_perturbation": 4
+      },
+      "task_id": "plan_383"
+    },
+    {
+      "anchor_score": 0.28285714285714286,
+      "aspect_class_counts": {},
+      "aspect_type_counts": {},
+      "decision_status": "blocked_no_complement_material",
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.28285714285714286,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "source_family_counts": {},
+      "task_id": "plan_384"
+    },
+    {
+      "anchor_score": 0.29,
+      "aspect_class_counts": {},
+      "aspect_type_counts": {},
+      "decision_status": "blocked_no_complement_material",
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.29,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "source_family_counts": {},
+      "task_id": "plan_385"
+    },
+    {
+      "anchor_score": 0.15842857142857142,
+      "aspect_class_counts": {},
+      "aspect_type_counts": {},
+      "decision_status": "blocked_no_complement_material",
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.15842857142857142,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "source_family_counts": {},
+      "task_id": "plan_386"
+    },
+    {
+      "anchor_score": 0.35392857142857137,
+      "aspect_class_counts": {
+        "expanded": 1
+      },
+      "aspect_type_counts": {
+        "evidence_or_measurement": 1
+      },
+      "decision_status": "online_promoted_local",
+      "non_rubric_lift": 0.06392857142857145,
+      "realized_score": 0.4178571428571428,
+      "score_lift": 0.06392857142857145,
+      "selected_complement_count": 1,
+      "source_family_counts": {
+        "cross_latent_perturbation": 1
+      },
+      "task_id": "plan_387"
+    },
+    {
+      "anchor_score": 0.177,
+      "aspect_class_counts": {
+        "expanded": 3
+      },
+      "aspect_type_counts": {
+        "scope_boundary": 3
+      },
+      "decision_status": "online_promoted_local",
+      "non_rubric_lift": 0.12692857142857145,
+      "realized_score": 0.30392857142857144,
+      "score_lift": 0.12692857142857145,
+      "selected_complement_count": 1,
+      "source_family_counts": {
+        "cross_latent_perturbation": 3
+      },
+      "task_id": "plan_388"
+    },
+    {
+      "anchor_score": 0.4039285714285714,
+      "aspect_class_counts": {},
+      "aspect_type_counts": {},
+      "decision_status": "blocked_no_complement_material",
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.4039285714285714,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "source_family_counts": {},
+      "task_id": "plan_389"
+    },
+    {
+      "anchor_score": 0.2978571428571429,
+      "aspect_class_counts": {
+        "expanded": 3
+      },
+      "aspect_type_counts": {
+        "owner_assignment": 3
+      },
+      "decision_status": "online_promoted_local",
+      "non_rubric_lift": 0.08535714285714285,
+      "realized_score": 0.38321428571428573,
+      "score_lift": 0.08535714285714285,
+      "selected_complement_count": 1,
+      "source_family_counts": {
+        "cross_latent_perturbation": 3
+      },
+      "task_id": "plan_390"
+    },
+    {
+      "anchor_score": 0.3125,
+      "aspect_class_counts": {
+        "expanded": 1
+      },
+      "aspect_type_counts": {
+        "polarity_or_action_direction": 1
+      },
+      "decision_status": "online_promoted_local",
+      "non_rubric_lift": 0.0639285714285715,
+      "realized_score": 0.37642857142857145,
+      "score_lift": 0.06392857142857145,
+      "selected_complement_count": 1,
+      "source_family_counts": {
+        "ontology_probe": 1
+      },
+      "task_id": "plan_391"
+    },
+    {
+      "anchor_score": 0.4017857142857143,
+      "aspect_class_counts": {
+        "expanded": 3
+      },
+      "aspect_type_counts": {
+        "evidence_or_measurement": 3
+      },
+      "decision_status": "online_promoted_local",
+      "non_rubric_lift": 0.04250000000000004,
+      "realized_score": 0.4442857142857143,
+      "score_lift": 0.04249999999999998,
+      "selected_complement_count": 1,
+      "source_family_counts": {
+        "cross_latent_perturbation": 3
+      },
+      "task_id": "plan_392"
+    }
+  ]
+}

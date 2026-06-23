@@ -241,6 +241,10 @@ Active frontier:
   all-task mean non-rubric lift clears at `0.036290`, unsupported additions and
   hard contradictions remain `0`, and the label-leakage check passes. The
   blocker is still reliable complement coverage, not obvious unsafe synthesis.
+  The v7 failure analysis converts that into the next experimental floor: any
+  new source family must add at least `13` newly promoted covered tasks on this
+  48-task design to satisfy the Wilson gate, so the next run should target the
+  `24` currently uncovered tasks rather than spend uniformly.
 
 What not to overclaim:
 

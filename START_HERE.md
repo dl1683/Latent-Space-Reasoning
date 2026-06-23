@@ -15,9 +15,10 @@ You do not need to read everything in this repo. Start with this order and stop.
 - For mechanism depth: [docs/DIFFUSION_REASONING_GEOMETRY_THEORY.md](docs/DIFFUSION_REASONING_GEOMETRY_THEORY.md)  
 - For theory obligations: [docs/DIFFUSION_THEORY_CLAIM_LEDGER.md](docs/DIFFUSION_THEORY_CLAIM_LEDGER.md)
 - For the active aggregation frontier: start with the v7 freeze, source
-  reports, and replay report in [docs/NAVIGATION.md](docs/NAVIGATION.md). V7 is
-  not promoted: the frozen multi-source replay failed coverage and statistical
-  confidence gates, despite positive conditional lift and clean safety checks.
+  reports, replay report, and failure analysis in
+  [docs/NAVIGATION.md](docs/NAVIGATION.md). V7 is not promoted: the frozen
+  multi-source replay failed coverage and statistical confidence gates, despite
+  positive conditional lift and clean safety checks.
 
 ## What to avoid until later
 

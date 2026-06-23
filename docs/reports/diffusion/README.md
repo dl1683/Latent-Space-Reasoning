@@ -213,6 +213,11 @@ Current high-signal generated reports:
   promotions are `23`, wins/ties/losses are `24/24/0`, and Wilson lower bound
   is `0.344713` against `0.600000`; safety remains clean with `0` unsupported
   additions, `0` hard contradictions, and a passing label-leakage check.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V7_FAILURE.md](LATENT_AGGREGATION_MULTI_ASPECT_V7_FAILURE.md):
+  no-generation diagnostic over the failed v7 replay. It converts the failure
+  into an executable next-source target: at current `n=48`, a new source family
+  needs at least `13` newly promoted covered tasks to clear the Wilson gate, so
+  the next run should target the `24` uncovered tasks directly.
 - [LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md](LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md):
   post-hoc no-generation diagnostic over existing v6 raw rows; the expanded
   ontology recovers `12` of `21` v6 no-complement tasks, motivating v7

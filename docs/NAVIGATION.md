@@ -73,6 +73,7 @@ If you need one-screen onboarding, open [../START_HERE.md](../START_HERE.md) fir
 - For the v7 ontology-probe source run: [LATENT_AGGREGATION_MULTI_ASPECT_V7_ONTOLOGY_PROBE_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V7_ONTOLOGY_PROBE_REPORT.md)
 - For the v7 cross-latent source run: [LATENT_AGGREGATION_MULTI_ASPECT_V7_CROSS_LATENT_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V7_CROSS_LATENT_REPORT.md)
 - For the failed v7 expanded-ontology replay: [LATENT_AGGREGATION_MULTI_ASPECT_V7_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V7_REPLAY.md)
+- For the v7 failure analysis and next-source floor: [LATENT_AGGREGATION_MULTI_ASPECT_V7_FAILURE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V7_FAILURE.md)
 - For near-term roadmap: [NEXT_GENERATION_REASONING_TASKS.md](../NEXT_GENERATION_REASONING_TASKS.md)
 
 ## Current result surfaces
