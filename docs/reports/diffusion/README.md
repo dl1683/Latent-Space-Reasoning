@@ -191,8 +191,13 @@ Current high-signal generated reports:
 - [LATENT_AGGREGATION_MULTI_ASPECT_V7_FREEZE.md](LATENT_AGGREGATION_MULTI_ASPECT_V7_FREEZE.md):
   v7 task and ontology freeze over fresh `plan_345`-`plan_392`. Expanded-aspect
   replay support, v7 source-family mapping, and label-leakage gates are now
-  implemented in the shared replay runner; generation for the predeclared v7
-  source families is still pending.
+  implemented in the shared replay runner. The baseline label source is
+  populated; ontology-probe and cross-latent source families are still pending
+  before the frozen v7 replay.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V7_LABEL_REPORT.md](LATENT_AGGREGATION_MULTI_ASPECT_V7_LABEL_REPORT.md):
+  fresh v7 baseline label/source run over the frozen 48-task slice; selected
+  latent repair covers `48/48` eligible tasks with mean task score `0.327170`
+  versus fixed `0.270320` and random `0.246198` on repair-covered tasks.
 - [LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md](LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md):
   post-hoc no-generation diagnostic over existing v6 raw rows; the expanded
   ontology recovers `12` of `21` v6 no-complement tasks, motivating v7

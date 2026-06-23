@@ -226,9 +226,11 @@ Active frontier:
   result. The replay runner now supports the v7 expanded ontology,
   old-versus-expanded coverage reporting, source-family unique coverage,
   length-normalized complement yield, false-positive auditing, and a
-  label-leakage gate. The next missing artifact is generation for the
-  predeclared v7 source families:
-  baseline label rows, ontology-probe rows, and cross-latent perturbation rows.
+  label-leakage gate. The v7 baseline label source is now populated and pushed:
+  `336` raw rows over the `48` frozen tasks, with selected latent repair scoring
+  `0.327170` on repair-covered tasks versus `0.270320` fixed and `0.246198`
+  random. The remaining missing source artifacts before v7 replay are the
+  ontology-probe rows and cross-latent perturbation rows.
 
 What not to overclaim:
 

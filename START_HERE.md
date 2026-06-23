@@ -14,6 +14,10 @@ You do not need to read everything in this repo. Start with this order and stop.
 - For evidence details: [docs/DIFFUSION_READER_GUIDE.md](docs/DIFFUSION_READER_GUIDE.md)  
 - For mechanism depth: [docs/DIFFUSION_REASONING_GEOMETRY_THEORY.md](docs/DIFFUSION_REASONING_GEOMETRY_THEORY.md)  
 - For theory obligations: [docs/DIFFUSION_THEORY_CLAIM_LEDGER.md](docs/DIFFUSION_THEORY_CLAIM_LEDGER.md)
+- For the active aggregation frontier: start with the v7 freeze and label source
+  report in [docs/NAVIGATION.md](docs/NAVIGATION.md). V7 is not promoted yet:
+  label rows are populated, but ontology-probe and cross-latent rows plus the
+  frozen replay are still required.
 
 ## What to avoid until later
 
