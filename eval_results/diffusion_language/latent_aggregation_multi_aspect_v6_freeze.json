@@ -1,0 +1,421 @@
+{
+  "failure_taxonomy": [
+    "fresh_task_inventory_missing",
+    "v5_result_fails_to_replicate_on_new_slice",
+    "anchor_deficit_source_adds_cost_without_coverage",
+    "coverage_expands_but_quality_falls",
+    "anchor_deficit_rows_only_improve_best_of_anchor",
+    "mean_lift_carried_by_single_outlier",
+    "theme_bucket_failure_hidden_by_global_mean",
+    "realizer_imports_unsupported_anchor_deficit_text",
+    "hard_contradictions_from_targeted_fusion",
+    "cost_dominates_incremental_lift"
+  ],
+  "freshness_contract": {
+    "prior_planning_task_max": 296,
+    "rule": "all v6 planning IDs must be greater than every prior committed aggregation planning slice",
+    "status": "passed"
+  },
+  "generated_by": "experiments/build_latent_aggregation_multi_aspect_v6_freeze.py",
+  "prior_evidence": {
+    "boundary": "v5 is a passing fresh 48-task local replication; v6 keeps that result bounded and tests whether anchor-deficit-targeted source generation can reduce the remaining no-complement coverage gap.",
+    "v5_coverage_gap": {
+      "path": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v5_coverage_gap.json",
+      "sha256": "404dae76614aa7a6d94765f047584c587454138804ea0d6ae394ded32ad12e00",
+      "summary": {
+        "complement_source_counts": {
+          "counterfactual_probe": 5,
+          "low_confidence": 18,
+          "random": 16,
+          "repair_candidate": 7
+        },
+        "max_no_complement_dimension_delta": 0.04464285714285715,
+        "mean_no_complement_max_dimension_delta": 0.003188775510204082,
+        "mean_non_anchor_candidate_count": 18.208333333333332,
+        "mean_nonempty_candidate_count": 14.458333333333334,
+        "no_complement_blockers": {
+          "anchor_dominates_candidate_aspects": 13,
+          "positive_but_below_threshold": 1
+        },
+        "no_complement_tasks_with_near_miss": 1,
+        "task_count": 48,
+        "tasks_with_selected_complement": 34,
+        "tasks_without_selected_complement": 14
+      }
+    },
+    "v5_replay": {
+      "path": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v5_replay.json",
+      "sha256": "5add3d98a92e2292579e5b2a09b6c2ac20219861574484a5c24ff9c9dc332395",
+      "summary": {
+        "all_task_mean_non_rubric_lift": 0.04886904761904762,
+        "complement_coverage_count": 34,
+        "complement_coverage_fraction": 0.7083333333333334,
+        "complement_yield_per_raw_row": 0.08645833333333333,
+        "conditional_mean_non_rubric_lift": 0.06899159663865546,
+        "conditional_promoted_fraction": 1.0,
+        "cost_normalized_non_rubric_lift": 0.002443452380952381,
+        "cost_normalized_score_lift": 0.003089285714285715,
+        "decision_status_counts": {
+          "blocked_no_complement_material": 14,
+          "online_promoted_local": 34
+        },
+        "diversity_generation_cost_reported": true,
+        "diversity_raw_record_count": 336,
+        "equal_budget_best_of_control": "best_single_anchor_by_pre_rescore_task_score",
+        "equal_budget_best_of_control_reported": true,
+        "hard_contradiction_count": 0,
+        "high_leverage_task_ids": [],
+        "leave_one_out_mean_non_rubric_lift_range": [
+          0.04479483282674772,
+          0.04990881458966565
+        ],
+        "leave_one_out_mean_score_lift_range": [
+          0.056709726443769,
+          0.06310030395136779
+        ],
+        "maximum_single_task_share_of_total_lift": 0.10127649325626199,
+        "mean_anchor_score": 0.34096428571428566,
+        "mean_probe_cost_relative": 0.1875,
+        "mean_realized_score": 0.40275,
+        "mean_score_lift": 0.0617857142857143,
+        "median_non_rubric_lift": 0.04250000000000004,
+        "median_score_lift": 0.06250000000000006,
+        "online_promoted_task_count": 34,
+        "online_promoted_task_fraction": 0.7083333333333334,
+        "online_promoted_wilson95": [
+          0.5682074019042831,
+          0.8175842107348348
+        ],
+        "probe_cost_reported": true,
+        "probe_measured_count": 24,
+        "selected_complement_source_family_counts": {
+          "diversity": 70,
+          "label": 8,
+          "probe": 5
+        },
+        "source_family_ablation": {
+          "diversity": {
+            "complement_coverage_count": 19,
+            "mean_non_rubric_lift": 0.02639136904761905,
+            "mean_score_lift": 0.03180803571428572,
+            "missing_task_count": 0,
+            "missing_task_ids": [],
+            "online_promoted_task_count": 19,
+            "task_count": 48
+          },
+          "label": {
+            "complement_coverage_count": 23,
+            "mean_non_rubric_lift": 0.03794940476190476,
+            "mean_score_lift": 0.04711607142857143,
+            "missing_task_count": 0,
+            "missing_task_ids": [],
+            "online_promoted_task_count": 23,
+            "task_count": 48
+          },
+          "probe": {
+            "complement_coverage_count": 34,
+            "mean_non_rubric_lift": 0.04753720238095238,
+            "mean_score_lift": 0.06045386904761905,
+            "missing_task_count": 0,
+            "missing_task_ids": [],
+            "online_promoted_task_count": 34,
+            "task_count": 48
+          }
+        },
+        "source_family_ablation_reported": true,
+        "task_count": 48,
+        "tasks_with_dimension_gain": 22,
+        "tasks_with_rubric_gain": 18,
+        "tasks_with_score_lift": 34,
+        "theme_bucket_results": {
+          "artifact_governance": {
+            "complement_coverage_count": 7,
+            "mean_non_rubric_lift": 0.03727678571428571,
+            "mean_score_lift": 0.05477678571428572,
+            "task_count": 8
+          },
+          "failure_forensics": {
+            "complement_coverage_count": 6,
+            "mean_non_rubric_lift": 0.049464285714285725,
+            "mean_score_lift": 0.05696428571428573,
+            "task_count": 8
+          },
+          "latent_reasoning_synthesis": {
+            "complement_coverage_count": 7,
+            "mean_non_rubric_lift": 0.08535714285714287,
+            "mean_score_lift": 0.10535714285714287,
+            "task_count": 8
+          },
+          "research_program_design": {
+            "complement_coverage_count": 5,
+            "mean_non_rubric_lift": 0.04196428571428572,
+            "mean_score_lift": 0.05196428571428571,
+            "task_count": 8
+          },
+          "statistical_validation": {
+            "complement_coverage_count": 4,
+            "mean_non_rubric_lift": 0.04459821428571428,
+            "mean_score_lift": 0.054598214285714285,
+            "task_count": 8
+          },
+          "systems_reliability": {
+            "complement_coverage_count": 5,
+            "mean_non_rubric_lift": 0.03455357142857143,
+            "mean_score_lift": 0.04705357142857144,
+            "task_count": 8
+          }
+        },
+        "theme_bucket_results_reported": true,
+        "total_raw_record_count": 960,
+        "unsupported_addition_count": 0,
+        "wins_ties_losses": {
+          "losses": 0,
+          "ties": 14,
+          "wins": 34
+        }
+      }
+    }
+  },
+  "realizer_contract": {
+    "name": "anchor_preserve_delta_realizer_v6",
+    "requirements": [
+      "return the anchor unchanged when no complements are selected",
+      "add only selected sourced complements",
+      "record source family for every complement",
+      "record unsupported additions and hard contradictions"
+    ]
+  },
+  "robustness_gates": {
+    "maximum_single_task_share_of_total_lift": 0.25,
+    "must_report_anchor_deficit_incremental_coverage": true,
+    "must_report_complement_yield_per_raw_row": true,
+    "must_report_cost_normalized_lift": true,
+    "must_report_high_leverage_task_ids": true,
+    "must_report_leave_one_out_mean_lift_range": true,
+    "must_report_median_non_rubric_lift": true,
+    "must_report_median_score_lift": true,
+    "must_report_source_family_ablation": true,
+    "must_report_wins_ties_losses": true
+  },
+  "schema": "latent_aggregation_multi_aspect_v6_freeze.v1",
+  "selector_contract": {
+    "anchor": "best single candidate by pre-rescore task score across frozen raw sources",
+    "name": "best_anchor_plus_anchor_deficit_complement_selector_v6",
+    "selection_rule": [
+      "reuse v5 complement thresholds and aspect weights",
+      "add the anchor-deficit raw source as a source family, not as labels",
+      "select at most three complements per task",
+      "report whether new coverage comes from anchor-deficit rows",
+      "do not lower replay gates because v5 had remaining no-complement tasks"
+    ]
+  },
+  "statistical_gates": {
+    "maximum_hard_contradiction_count": 0,
+    "maximum_unsupported_addition_count": 0,
+    "minimum_aggregate_win_count": 30,
+    "minimum_all_task_mean_non_rubric_lift": 0.035,
+    "minimum_complement_coverage_count": 36,
+    "minimum_complement_coverage_fraction": 0.75,
+    "minimum_conditional_non_rubric_lift": 0.05,
+    "minimum_conditional_promoted_fraction": 0.5,
+    "minimum_task_count": 48,
+    "minimum_wilson_lower_bound": 0.6,
+    "must_report_anchor_deficit_generation_cost": true,
+    "must_report_diversity_generation_cost": true,
+    "must_report_equal_budget_best_of_control": true,
+    "must_report_probe_cost": true,
+    "must_report_rubric_and_dimension_gain_separately": true,
+    "must_report_theme_bucket_results": true
+  },
+  "task_count": 48,
+  "task_ids": [
+    "plan_297",
+    "plan_298",
+    "plan_299",
+    "plan_300",
+    "plan_301",
+    "plan_302",
+    "plan_303",
+    "plan_304",
+    "plan_305",
+    "plan_306",
+    "plan_307",
+    "plan_308",
+    "plan_309",
+    "plan_310",
+    "plan_311",
+    "plan_312",
+    "plan_313",
+    "plan_314",
+    "plan_315",
+    "plan_316",
+    "plan_317",
+    "plan_318",
+    "plan_319",
+    "plan_320",
+    "plan_321",
+    "plan_322",
+    "plan_323",
+    "plan_324",
+    "plan_325",
+    "plan_326",
+    "plan_327",
+    "plan_328",
+    "plan_329",
+    "plan_330",
+    "plan_331",
+    "plan_332",
+    "plan_333",
+    "plan_334",
+    "plan_335",
+    "plan_336",
+    "plan_337",
+    "plan_338",
+    "plan_339",
+    "plan_340",
+    "plan_341",
+    "plan_342",
+    "plan_343",
+    "plan_344"
+  ],
+  "task_mix_contract": {
+    "must_report_theme_bucket_results": true,
+    "purpose": "test coverage-targeted latent aggregation without reusing v5 labels or task text",
+    "task_theme_by_id": {
+      "plan_297": "coverage_gap_targeting",
+      "plan_298": "coverage_gap_targeting",
+      "plan_299": "coverage_gap_targeting",
+      "plan_300": "coverage_gap_targeting",
+      "plan_301": "coverage_gap_targeting",
+      "plan_302": "coverage_gap_targeting",
+      "plan_303": "coverage_gap_targeting",
+      "plan_304": "coverage_gap_targeting",
+      "plan_305": "ontology_expansion",
+      "plan_306": "ontology_expansion",
+      "plan_307": "ontology_expansion",
+      "plan_308": "ontology_expansion",
+      "plan_309": "ontology_expansion",
+      "plan_310": "ontology_expansion",
+      "plan_311": "ontology_expansion",
+      "plan_312": "ontology_expansion",
+      "plan_313": "cross_family_transfer",
+      "plan_314": "cross_family_transfer",
+      "plan_315": "cross_family_transfer",
+      "plan_316": "cross_family_transfer",
+      "plan_317": "cross_family_transfer",
+      "plan_318": "cross_family_transfer",
+      "plan_319": "cross_family_transfer",
+      "plan_320": "cross_family_transfer",
+      "plan_321": "safety_contradiction_audit",
+      "plan_322": "safety_contradiction_audit",
+      "plan_323": "safety_contradiction_audit",
+      "plan_324": "safety_contradiction_audit",
+      "plan_325": "safety_contradiction_audit",
+      "plan_326": "safety_contradiction_audit",
+      "plan_327": "safety_contradiction_audit",
+      "plan_328": "safety_contradiction_audit",
+      "plan_329": "cost_routing",
+      "plan_330": "cost_routing",
+      "plan_331": "cost_routing",
+      "plan_332": "cost_routing",
+      "plan_333": "cost_routing",
+      "plan_334": "cost_routing",
+      "plan_335": "cost_routing",
+      "plan_336": "cost_routing",
+      "plan_337": "reproducibility_governance",
+      "plan_338": "reproducibility_governance",
+      "plan_339": "reproducibility_governance",
+      "plan_340": "reproducibility_governance",
+      "plan_341": "reproducibility_governance",
+      "plan_342": "reproducibility_governance",
+      "plan_343": "reproducibility_governance",
+      "plan_344": "reproducibility_governance"
+    },
+    "theme_buckets": [
+      "coverage_gap_targeting",
+      "ontology_expansion",
+      "cross_family_transfer",
+      "safety_contradiction_audit",
+      "cost_routing",
+      "reproducibility_governance"
+    ]
+  },
+  "task_preset": "latent_aggregation_multi_aspect_v6_plan297_344",
+  "task_source": {
+    "path": "experiments\\general_reasoning_tasks_scout.jsonl",
+    "sha256": "37179b197665f25d59b8533e94c7b4b23fbeac1add41838618600a1e73b475a4",
+    "task_hashes": {
+      "plan_297": "8b31564166070cd27268bc3dcb203bb134f0fc012562d5613697ba35e85940b9",
+      "plan_298": "e212cc87ebaf1830bbd55276a7a48d7f7413914a449961231fc8ba87b7e5a3e5",
+      "plan_299": "8b5ef079c4ef5e1633935d21eb9e60843cb4746be9e49e5713e1516a1568e87b",
+      "plan_300": "b21f819c1e43a793a8f4f823eef2ee7580ba373ee2bec34b8ae5e5e16362a2af",
+      "plan_301": "3156ee4a2a2c11cdfc22fd83625fbe236775ca5531581d9df2b5b557075b2f2e",
+      "plan_302": "9e0101f881496b30f1d8564bf93167dc8bff64b83db59d1203f276f46f3e3393",
+      "plan_303": "9a97d3e0d5e185c02d653e93e48a4bb7280a8c8eaecf5cacff4db9416ab1621c",
+      "plan_304": "9d0cd7aec8b093551684dc004aef877a10f97f5f00c57f94c645b40345c67f5b",
+      "plan_305": "66b7512de0185eb1237f11848f8e0395f84d6419555400ad6e657b76e24e09ff",
+      "plan_306": "b83383f7b99505d9273624b43ce342c80e076d528bb4817997977844ae1f88c8",
+      "plan_307": "b382c8b807fcb1aa23d8d216efbc8e2eae53cdc9b50c2afc01aa9421800b0466",
+      "plan_308": "9f8fdb5a079ac078fcaa7dffab2262866772015b5577188678a5d9396fc12829",
+      "plan_309": "27c8e9df4e5565582d9c37baa53fa4298eb74d0e306a56a154c215f80edc37fc",
+      "plan_310": "6360d89e09586811a23e372e4f832846730b725dc59c87002e7be7c9b0eb05f6",
+      "plan_311": "a54402b6e7b526e284228371d09b575bdac3aba11c2ffa07cdcc7f9a2a0fbcdc",
+      "plan_312": "4e6aa2a6fce09e205b5c94a4dbd7edc06b42222ea4e9c277558a797adb087c19",
+      "plan_313": "4cdd7b8f52cae97e2847c2e4f2a1e477ad5b9931d64aa8c5283e1a1d3ffd7d13",
+      "plan_314": "1b155c4c3a928696981e82d9ff29fb2577de2d63d53d78d3c972827c20cf2971",
+      "plan_315": "0c4a3fff8574664c8bbf2b620d4e091ceab69c1426d6d51f386281ede4b41ce8",
+      "plan_316": "4d67d8896f6572c5ca2e5b361963d263a92ac3090167f4b9da0984b18737e964",
+      "plan_317": "7d344bc9e8a5a919ed4d6ab40c9814d18b01e472bac902636f0f8862aa5eb96a",
+      "plan_318": "4c88bffd079a1706ca5ab45d8f5b74bf6f339667c422bca7fd5d1cf58563484c",
+      "plan_319": "5a7bddaa62725261ab70c44576a843e6f4de6a60ff3941680a1b4aa0a4c71db5",
+      "plan_320": "9807fe7c86e35fda1257162e10cac11e92f2505de95a7d76dc1656fc8b1e6271",
+      "plan_321": "c953de02d63c99dd8eadf5a28dc3ab13ce1b36a2d3bc7fc8796ea6942ec64f16",
+      "plan_322": "ef0bb1feb7db1fef96eb255fba9629ff14da94bc02ae9d20293f002953c296d1",
+      "plan_323": "e4079dc51f0cad3ab64d2167b767ee364b9c9be9888f933a4e8c995d9efcfb40",
+      "plan_324": "d7b2428e5f912835820066d64cf69b5870529e1d363faa4d01cdf518a79889cd",
+      "plan_325": "88e39597e8e21c5ba55c0fb9e3f8d976b205d5ef6e07cdc7acf1f5787907915b",
+      "plan_326": "4758db8bf847c836939774934926aed23a2e2cd66657bbdfcba531de45e39d64",
+      "plan_327": "8d8c66bb1674c16f952b26baff1831743e3c4bbdf1cdc5d9e251e9f34fb86735",
+      "plan_328": "b5ec84753ff67225d9c9659be8ab38a133c7ff968a932d298d1abdd4019fd054",
+      "plan_329": "d6921e81aabd1d904b457e2e18a1c76d07838a8d352a74d7c9c22562dbe041a5",
+      "plan_330": "2bed010dd4b337cecac8d0b3cfad15295ee4e113930a7f55025861cbae7dadeb",
+      "plan_331": "f1bde3732605d73a9beac290161fbb5c4ef0afcd3ec33ee22b9c114a968f600c",
+      "plan_332": "8d18e30cd61defc81e2f951e6643f144b29cdb91878d61a7b24927f9772d022e",
+      "plan_333": "7ffe33862e3ff2561db12d097ac2541e7199172f72a2e36e51288b782b837ab2",
+      "plan_334": "4c918108061ea9ab74e93d8012d24c34b56e07f020ef77896ccbc01d37548331",
+      "plan_335": "7fd64f7c29548bfda3e780b109da904c13ab73c87ed378f19c5f45d2e27112f8",
+      "plan_336": "81e3ebd43eb2c9947d39760dc4cb3160f789f94d5326066023a09fba65f2e459",
+      "plan_337": "507ea7d4bfbc3aa955277ee06bef2b1b93b2635695ddfb01cb8e77eb85a4615c",
+      "plan_338": "4906dd8ef5ef9e17172df6a957e2b6b2b305f47a7e180c41fe3be7343448a655",
+      "plan_339": "4796cf3b5ccdb059245263ef95a53dab174c94ad4c28ef1946076c85e95cda50",
+      "plan_340": "934480d82e98e44fc309b4d2fd74342371d49e111ddb5031e93315e67b074070",
+      "plan_341": "dcdfb826b7402e4b3313d92e5c421043af90636c6aabf69d412d2b8ebf68e58c",
+      "plan_342": "0e4a2a6b0468058cfc38de374cd1e1f48bb7263cb55e67e62f5f0d872b290c8e",
+      "plan_343": "b690ad719d8e16f24cee803f972dd75a54e2723cb1ebfb544af9051714266f1c",
+      "plan_344": "929e099769f8bd97e507b16aff0d649a4c447223a4c9e463e6bd8273152ab378"
+    }
+  },
+  "trajectory_generation_contract": {
+    "anchor_deficit_command": "python experiments\\run_diffusion_three_arm_benchmark.py --task-ids plan_297,plan_298,plan_299,plan_300,plan_301,plan_302,plan_303,plan_304,plan_305,plan_306,plan_307,plan_308,plan_309,plan_310,plan_311,plan_312,plan_313,plan_314,plan_315,plan_316,plan_317,plan_318,plan_319,plan_320,plan_321,plan_322,plan_323,plan_324,plan_325,plan_326,plan_327,plan_328,plan_329,plan_330,plan_331,plan_332,plan_333,plan_334,plan_335,plan_336,plan_337,plan_338,plan_339,plan_340,plan_341,plan_342,plan_343,plan_344 --candidates llada-8b-instruct-hf --limit-schedules 2 --limit-evolved-schedules 3 --include-revision-schedules --limit-repair-candidates 1 --repair-pack constraint_gap --repair-spend-trigger always --repair-selector planning_quality --repair-promotion-margin 0.0 --constraint-gap-rescue-trigger prompt_gap --constraint-gap-rescue-limit 1 --constraint-gap-rescue-min-terms 4 --constraint-gap-rescue-source-quality-floor 0.300 --constraint-gap-rescue-source-quality-ceiling 0.550 --constraint-gap-rescue-source-controls low_confidence_32,random_32,evolved_low_confidence_48,evolved_low_confidence_64 --trajectory-selector planning_state --device cuda --dtype bfloat16 --raw-output eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_anchor_deficit_raw.jsonl --scores-output eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_anchor_deficit_scores.json --report-output docs\\reports\\diffusion\\LATENT_AGGREGATION_MULTI_ASPECT_V6_ANCHOR_DEFICIT_REPORT.md",
+    "anchor_deficit_raw_output": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_anchor_deficit_raw.jsonl",
+    "anchor_deficit_scores_output": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_anchor_deficit_scores.json",
+    "coverage_gap_command": "python experiments\\analyze_latent_aggregation_multi_aspect_v3_coverage_gap.py --freeze eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_freeze.json --raw eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_raw.jsonl --extra-raw eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_probe_raw.jsonl --extra-raw eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_diversity_extension_raw.jsonl --extra-raw eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_anchor_deficit_raw.jsonl --json-output eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_coverage_gap.json --report-output docs\\reports\\diffusion\\LATENT_AGGREGATION_MULTI_ASPECT_V6_COVERAGE_GAP.md",
+    "diversity_extension_command": "python experiments\\run_diffusion_three_arm_benchmark.py --task-ids plan_297,plan_298,plan_299,plan_300,plan_301,plan_302,plan_303,plan_304,plan_305,plan_306,plan_307,plan_308,plan_309,plan_310,plan_311,plan_312,plan_313,plan_314,plan_315,plan_316,plan_317,plan_318,plan_319,plan_320,plan_321,plan_322,plan_323,plan_324,plan_325,plan_326,plan_327,plan_328,plan_329,plan_330,plan_331,plan_332,plan_333,plan_334,plan_335,plan_336,plan_337,plan_338,plan_339,plan_340,plan_341,plan_342,plan_343,plan_344 --candidates llada-8b-instruct-hf --limit-schedules 2 --limit-evolved-schedules 4 --include-revision-schedules --revision-remask-fraction 0.25 --revision-steps 8 --limit-repair-candidates 0 --trajectory-selector planning_state --device cuda --dtype bfloat16 --raw-output eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_diversity_extension_raw.jsonl --scores-output eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_diversity_extension_scores.json --report-output docs\\reports\\diffusion\\LATENT_AGGREGATION_MULTI_ASPECT_V6_DIVERSITY_EXTENSION_REPORT.md",
+    "diversity_raw_output": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_diversity_extension_raw.jsonl",
+    "diversity_scores_output": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_diversity_extension_scores.json",
+    "families": [
+      "baseline_dream_llada_low_confidence_random",
+      "counterfactual_span_tomography_probe_v4",
+      "llada_evolved_low_confidence_random_48_64",
+      "llada_revision_low_confidence_random_32",
+      "llada_anchor_deficit_constraint_gap_rescue"
+    ],
+    "label_command": "python experiments\\run_diffusion_three_arm_benchmark.py --task-ids plan_297,plan_298,plan_299,plan_300,plan_301,plan_302,plan_303,plan_304,plan_305,plan_306,plan_307,plan_308,plan_309,plan_310,plan_311,plan_312,plan_313,plan_314,plan_315,plan_316,plan_317,plan_318,plan_319,plan_320,plan_321,plan_322,plan_323,plan_324,plan_325,plan_326,plan_327,plan_328,plan_329,plan_330,plan_331,plan_332,plan_333,plan_334,plan_335,plan_336,plan_337,plan_338,plan_339,plan_340,plan_341,plan_342,plan_343,plan_344 --candidates dream-7b-instruct-hf,llada-8b-instruct-hf --limit-schedules 3 --limit-evolved-schedules 0 --limit-repair-candidates 2 --include-history-repairs --history-repair-fractions 0.25 --repair-pack constraint_span_phase_final_preserve_seeded_gated --repair-spend-trigger denoise_phase_repairability --repair-selector generated_repair_value_v1 --repair-promotion-margin 0.02 --trajectory-selector planning_state --device cuda --dtype bfloat16 --raw-output eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_raw.jsonl --scores-output eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_scores.json --report-output docs\\reports\\diffusion\\LATENT_AGGREGATION_MULTI_ASPECT_V6_LABEL_REPORT.md",
+    "probe_measurement_command": "python experiments\\run_diffusion_three_arm_benchmark.py --task-ids plan_297,plan_298,plan_299,plan_300,plan_301,plan_302,plan_303,plan_304,plan_305,plan_306,plan_307,plan_308,plan_309,plan_310,plan_311,plan_312,plan_313,plan_314,plan_315,plan_316,plan_317,plan_318,plan_319,plan_320,plan_321,plan_322,plan_323,plan_324,plan_325,plan_326,plan_327,plan_328,plan_329,plan_330,plan_331,plan_332,plan_333,plan_334,plan_335,plan_336,plan_337,plan_338,plan_339,plan_340,plan_341,plan_342,plan_343,plan_344 --candidates dream-7b-instruct-hf,llada-8b-instruct-hf --limit-schedules 3 --limit-evolved-schedules 0 --limit-repair-candidates 1 --repair-spend-trigger counterfactual_micro_probe_v1 --counterfactual-probe-mode all --counterfactual-probe-policy span_tomography_probe_v4 --trajectory-selector planning_state --device cuda --dtype bfloat16 --raw-output eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_probe_raw.jsonl --scores-output eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_probe_scores.json --report-output docs\\reports\\diffusion\\LATENT_AGGREGATION_MULTI_ASPECT_V6_PROBE_REPORT.md",
+    "probe_raw_output": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_probe_raw.jsonl",
+    "probe_scores_output": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_probe_scores.json",
+    "raw_output": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_raw.jsonl",
+    "replay_command": "python experiments\\run_latent_aggregation_multi_aspect_v3_replay.py --freeze eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_freeze.json --raw eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_raw.jsonl --extra-raw eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_probe_raw.jsonl --extra-raw eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_diversity_extension_raw.jsonl --extra-raw eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_anchor_deficit_raw.jsonl --json-output eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_replay.json --aspects-output eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_aspects.jsonl --realized-output eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_realized.jsonl --report-output docs\\reports\\diffusion\\LATENT_AGGREGATION_MULTI_ASPECT_V6_REPLAY.md",
+    "scores_output": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_scores.json"
+  }
+}

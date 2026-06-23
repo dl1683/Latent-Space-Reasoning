@@ -286,6 +286,15 @@ def _selected_source_counts(rows: list[dict[str, object]]) -> dict[str, int]:
 
 
 def _evidence_boundary(freeze: dict[str, object], raw_paths: list[Path]) -> dict[str, str]:
+    if str(freeze.get("schema", "")) == "latent_aggregation_multi_aspect_v6_freeze.v1":
+        return {
+            "reason": (
+                "Fresh v6 coverage diagnostic over predeclared 48-task label, probe, "
+                "diversity-extension, and anchor-deficit raw sources. This explains "
+                "the remaining no-complement tasks after the v6 coverage-targeting replay."
+            ),
+            "status": "fresh_predeclared_multi_source_v6_coverage_gap",
+        }
     if str(freeze.get("schema", "")) == "latent_aggregation_multi_aspect_v5_freeze.v1":
         return {
             "reason": (
@@ -323,6 +332,11 @@ def _evidence_boundary(freeze: dict[str, object], raw_paths: list[Path]) -> dict
 
 
 def _boundary_intro(status: str) -> str:
+    if status == "fresh_predeclared_multi_source_v6_coverage_gap":
+        return (
+            "It diagnoses remaining no-complement tasks after the fresh v6 48-task "
+            "coverage-targeting replay."
+        )
     if status == "fresh_predeclared_multi_source_v5_coverage_gap":
         return (
             "It diagnoses remaining no-complement tasks after the fresh v5 48-task "
@@ -334,6 +348,8 @@ def _boundary_intro(status: str) -> str:
 
 
 def _boundary_version_title(status: str) -> str:
+    if status == "fresh_predeclared_multi_source_v6_coverage_gap":
+        return "V6"
     if status == "fresh_predeclared_multi_source_v5_coverage_gap":
         return "V5"
     if status == "fresh_predeclared_multi_source_v4_coverage_gap":

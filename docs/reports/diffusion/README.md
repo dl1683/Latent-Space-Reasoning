@@ -153,6 +153,11 @@ Current high-signal generated reports:
 - [LATENT_AGGREGATION_MULTI_ASPECT_V5_COVERAGE_GAP.md](LATENT_AGGREGATION_MULTI_ASPECT_V5_COVERAGE_GAP.md):
   v5 coverage diagnostic showing the remaining `14` no-complement tasks:
   `13` anchor-dominance cases and `1` positive-below-threshold near miss.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V6_FREEZE.md](LATENT_AGGREGATION_MULTI_ASPECT_V6_FREEZE.md):
+  active fresh `plan_297`-`plan_344` coverage-targeting contract; keeps the v5
+  replay mechanism fixed and adds anchor-deficit constraint-gap rescue rows as
+  a new source family, with stricter coverage and explicit incremental-cost
+  reporting gates.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.

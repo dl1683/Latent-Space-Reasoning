@@ -409,6 +409,17 @@ credible experiment should attack that coverage gap with an anchor-deficit-
 conditioned complement generator or an expanded ontology rather than loosening
 the replay gates.
 
+V6 freezes the first direct attack on that bottleneck. It uses fresh tasks
+`plan_297` through `plan_344`, keeps the v5 selector, realizer, and complement
+thresholds fixed, and adds one new source family: LLaDA anchor-deficit
+constraint-gap rescue rows. This source is motivated by v5 failures but is
+evaluated only on a new slice. The v6 gates require `36/48` complement coverage,
+`30` aggregate wins, Wilson lower bound `0.600000`, all-task non-rubric lift
+`0.035000`, zero unsupported additions, zero hard contradictions, source-family
+ablations, cost-normalized lift, and explicit anchor-deficit incremental
+coverage. The point is not to lower the v5 bar; it is to test whether a targeted
+latent source can make the no-complement region smaller.
+
 ## Relationship To Current Diffusion Work
 
 Diffusion repair remains the strongest current promoted result. Aggregation does

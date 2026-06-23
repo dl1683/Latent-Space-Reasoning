@@ -315,6 +315,95 @@ def test_v5_replay_reports_robustness_and_source_family_ablations(tmp_path):
     assert "Source-Family Ablation" in markdown
 
 
+def test_v6_replay_marks_anchor_deficit_source_family(tmp_path):
+    freeze = tmp_path / "freeze.json"
+    raw = tmp_path / "raw.jsonl"
+    anchor_deficit_raw = tmp_path / "anchor_deficit_raw.jsonl"
+    tasks = tmp_path / "tasks.jsonl"
+    probe = tmp_path / "probe.json"
+    freeze_data = _freeze(["plan_g"])
+    freeze_data["schema"] = "latent_aggregation_multi_aspect_v6_freeze.v1"
+    freeze_data["trajectory_generation_contract"] = {
+        "raw_output": str(raw).replace("/", "\\"),
+        "anchor_deficit_raw_output": str(anchor_deficit_raw).replace("/", "\\"),
+    }
+    freeze_data["statistical_gates"].update(
+        {
+            "minimum_aggregate_win_count": 1,
+            "minimum_complement_coverage_count": 1,
+            "minimum_complement_coverage_fraction": 1.0,
+            "minimum_wilson_lower_bound": 0.0,
+            "must_report_anchor_deficit_generation_cost": True,
+        }
+    )
+    freeze_data["robustness_gates"] = {
+        "maximum_single_task_share_of_total_lift": 1.0,
+        "must_report_complement_yield_per_raw_row": True,
+        "must_report_cost_normalized_lift": True,
+        "must_report_high_leverage_task_ids": True,
+        "must_report_leave_one_out_mean_lift_range": True,
+        "must_report_median_non_rubric_lift": True,
+        "must_report_median_score_lift": True,
+        "must_report_source_family_ablation": True,
+        "must_report_wins_ties_losses": True,
+        "must_report_anchor_deficit_incremental_coverage": True,
+    }
+    freeze.write_text(json.dumps(freeze_data), encoding="utf-8")
+    tasks.write_text(json.dumps(_task("plan_g")) + "\n", encoding="utf-8")
+    probe.write_text(
+        json.dumps({"summary": {"mean_probe_cost_relative": 0.1875, "measured_probe_count": 1}}),
+        encoding="utf-8",
+    )
+    raw.write_text(
+        json.dumps(
+            _record(
+                "plan_g",
+                "anchor",
+                score=0.30,
+                text="preserve baseline",
+                specificity=0.1,
+            )
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    anchor_deficit_raw.write_text(
+        json.dumps(
+            _record(
+                "plan_g",
+                "anchor_deficit",
+                score=0.20,
+                text="preserve baseline measure risk threshold",
+                specificity=0.8,
+            )
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    result = run_replay(
+        freeze_path=freeze,
+        raw_path=raw,
+        extra_raw_paths=[anchor_deficit_raw],
+        tasks_path=tasks,
+        probe_analysis_path=probe,
+    )
+    markdown = render_markdown(
+        {key: value for key, value in result.items() if key not in {"aspect_rows", "realized_rows"}}
+    )
+    gates = {row["name"]: row for row in result["gate_evaluation"]["gates"]}
+
+    assert result["evidence_boundary"]["status"] == "fresh_predeclared_multi_source_v6_replay"
+    assert result["summary"]["anchor_deficit_generation_cost_reported"] is True
+    assert result["summary"]["anchor_deficit_selected_task_count"] == 1
+    assert result["summary"]["selected_complement_source_family_counts"] == {"anchor_deficit": 1}
+    assert set(result["summary"]["source_family_ablation"]) == {"anchor_deficit", "label"}
+    assert gates["must_report_anchor_deficit_generation_cost"]["status"] == "pass"
+    assert gates["must_report_anchor_deficit_incremental_coverage"]["status"] == "pass"
+    assert "# Latent Aggregation Multi-Aspect V6 Replay" in markdown
+    assert "Anchor-deficit selected complement tasks: `1`" in markdown
+
+
 def _freeze(task_ids):
     return {
         "statistical_gates": {

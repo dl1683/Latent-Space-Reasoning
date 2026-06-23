@@ -121,6 +121,47 @@ def test_v5_coverage_gap_marks_fresh_predeclared_boundary(tmp_path):
     assert "fresh v5 48-task replay" in markdown
 
 
+def test_v6_coverage_gap_marks_fresh_predeclared_boundary(tmp_path):
+    raw = tmp_path / "raw.jsonl"
+    extra = tmp_path / "extra.jsonl"
+    freeze = tmp_path / "freeze.json"
+    freeze.write_text(
+        json.dumps(
+            {
+                "schema": "latent_aggregation_multi_aspect_v6_freeze.v1",
+                "task_ids": ["plan_d"],
+            }
+        ),
+        encoding="utf-8",
+    )
+    raw.write_text(
+        json.dumps(_record("plan_d", "anchor", score=0.5, text="anchor", specificity=0.2))
+        + "\n",
+        encoding="utf-8",
+    )
+    extra.write_text(
+        json.dumps(
+            _record(
+                "plan_d",
+                "anchor_deficit",
+                score=0.2,
+                text="candidate",
+                specificity=0.4,
+                generation_stage="candidate_generation",
+            )
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    result = analyze_coverage_gap(raw_path=raw, freeze_path=freeze, extra_raw_paths=[extra])
+    markdown = render_markdown(result)
+
+    assert result["evidence_boundary"]["status"] == "fresh_predeclared_multi_source_v6_coverage_gap"
+    assert "# Latent Aggregation Multi-Aspect V6 Coverage Gap" in markdown
+    assert "fresh v6 48-task coverage-targeting replay" in markdown
+
+
 def _record(
     task_id,
     candidate_key,

@@ -231,6 +231,10 @@ def render_markdown(result: dict[str, object]) -> str:
         f"- Mean probe cost relative: `{_format_float(summary['mean_probe_cost_relative'])}`",
         f"- Diversity generation cost reported: `{bool(summary['diversity_generation_cost_reported'])}`",
         f"- Diversity raw records: `{summary['diversity_raw_record_count']}`",
+        f"- Anchor-deficit generation cost reported: `{bool(summary.get('anchor_deficit_generation_cost_reported'))}`",
+        f"- Anchor-deficit raw records: `{summary.get('anchor_deficit_raw_record_count')}`",
+        f"- Anchor-deficit selected complement tasks: `{summary.get('anchor_deficit_selected_task_count')}`",
+        f"- Anchor-deficit selected complements: `{summary.get('anchor_deficit_selected_complement_count')}`",
         f"- Complement yield per raw row: `{_format_float(summary.get('complement_yield_per_raw_row'))}`",
         f"- Cost-normalized score lift: `{_format_float(summary.get('cost_normalized_score_lift'))}`",
         f"- Equal-budget best-of control reported: `{bool(summary['equal_budget_best_of_control_reported'])}`",
@@ -326,16 +330,29 @@ def _summary_v3(
     ]
     task_count = len(tasks)
     diversity_record_count = _diversity_record_count(freeze, source_record_counts)
+    anchor_deficit_record_count = _anchor_deficit_record_count(freeze, source_record_counts)
     score_lifts = [_float(task.get("score_lift")) for task in tasks]
     non_rubric_lifts = [_float(task.get("non_rubric_lift")) for task in tasks]
     total_raw_records = sum(source_record_counts.values())
     selected_aspects = [row for row in aspect_rows if bool(row.get("selected"))]
+    anchor_deficit_selected_task_ids = {
+        str(row.get("task_id"))
+        for row in selected_aspects
+        if str(row.get("source_family")) == "anchor_deficit"
+    }
     positive_score_lifts = [max(0.0, lift) for lift in score_lifts]
     total_positive_score_lift = sum(positive_score_lifts)
     max_positive_score_lift = max(positive_score_lifts) if positive_score_lifts else 0.0
     theme_bucket_results = _theme_bucket_results(tasks, freeze)
     return {
         "all_task_mean_non_rubric_lift": _mean(_float(task.get("non_rubric_lift")) for task in tasks),
+        "anchor_deficit_generation_cost_reported": anchor_deficit_record_count > 0,
+        "anchor_deficit_incremental_coverage_reported": anchor_deficit_record_count > 0,
+        "anchor_deficit_selected_complement_count": sum(
+            1 for row in selected_aspects if str(row.get("source_family")) == "anchor_deficit"
+        ),
+        "anchor_deficit_selected_task_count": len(anchor_deficit_selected_task_ids),
+        "anchor_deficit_raw_record_count": anchor_deficit_record_count,
         "complement_coverage_count": len(complement_tasks),
         "complement_coverage_fraction": len(complement_tasks) / task_count if task_count else 0.0,
         "complement_yield_per_raw_row": len(selected_aspects) / total_raw_records if total_raw_records else 0.0,
@@ -414,6 +431,15 @@ def _gate_evaluation_v3(freeze: dict[str, object], summary: dict[str, object]) -
                 bool(summary["diversity_generation_cost_reported"]),
             )
         )
+    if bool(gates.get("must_report_anchor_deficit_generation_cost")):
+        rows.append(
+            _gate(
+                "must_report_anchor_deficit_generation_cost",
+                "reported" if summary["anchor_deficit_generation_cost_reported"] else "missing",
+                "reported",
+                bool(summary["anchor_deficit_generation_cost_reported"]),
+            )
+        )
     robustness_gates = _dict(freeze.get("robustness_gates"))
     if robustness_gates:
         rows.extend(_robustness_gate_rows(robustness_gates, summary))
@@ -449,6 +475,7 @@ def _robustness_gate_rows(
         ("must_report_source_family_ablation", "source_family_ablation"),
         ("must_report_complement_yield_per_raw_row", "complement_yield_per_raw_row"),
         ("must_report_cost_normalized_lift", "cost_normalized_score_lift"),
+        ("must_report_anchor_deficit_incremental_coverage", "anchor_deficit_selected_task_count"),
     )
     for gate_name, summary_key in required_reports:
         if bool(robustness_gates.get(gate_name)):
@@ -553,6 +580,17 @@ def _diversity_record_count(freeze: dict[str, object], source_record_counts: dic
     return int(normalized.get(_normalized_path_key(diversity_path), 0))
 
 
+def _anchor_deficit_record_count(freeze: dict[str, object], source_record_counts: dict[str, int]) -> int:
+    outputs = _dict(freeze.get("runtime_outputs"))
+    if not outputs:
+        outputs = _dict(freeze.get("trajectory_generation_contract"))
+    anchor_deficit_path = str(outputs.get("anchor_deficit_raw_output", ""))
+    if not anchor_deficit_path:
+        return 0
+    normalized = {_normalized_path_key(path): count for path, count in source_record_counts.items()}
+    return int(normalized.get(_normalized_path_key(anchor_deficit_path), 0))
+
+
 def _normalized_path_key(path: str) -> str:
     return str(Path(path)).replace("\\", "/")
 
@@ -564,11 +602,22 @@ def _source_family_for_path(freeze: dict[str, object], path: Path) -> str:
         _normalized_path_key(str(generation.get("raw_output", ""))): "label",
         _normalized_path_key(str(generation.get("probe_raw_output", ""))): "probe",
         _normalized_path_key(str(generation.get("diversity_raw_output", ""))): "diversity",
+        _normalized_path_key(str(generation.get("anchor_deficit_raw_output", ""))): "anchor_deficit",
     }
     return known.get(normalized, "extra_raw")
 
 
 def _evidence_boundary(freeze: dict[str, object], raw_paths: list[Path]) -> dict[str, str]:
+    if str(freeze.get("schema", "")) == "latent_aggregation_multi_aspect_v6_freeze.v1":
+        return {
+            "reason": (
+                "Fresh v6 replay over the predeclared 48-task label, probe, "
+                "diversity-extension, and anchor-deficit source mix. V6 keeps "
+                "the v5 mechanism bounded while testing targeted complement "
+                "generation for the remaining coverage gap."
+            ),
+            "status": "fresh_predeclared_multi_source_v6_replay",
+        }
     if str(freeze.get("schema", "")) == "latent_aggregation_multi_aspect_v5_freeze.v1":
         return {
             "reason": (
@@ -608,6 +657,8 @@ def _evidence_boundary(freeze: dict[str, object], raw_paths: list[Path]) -> dict
 
 def _title_for_boundary(evidence_boundary: dict[str, object]) -> str:
     status = evidence_boundary.get("status")
+    if status == "fresh_predeclared_multi_source_v6_replay":
+        return "V6"
     if status == "fresh_predeclared_multi_source_v5_replay":
         return "V5"
     if status == "fresh_predeclared_multi_source_v4_replay":
@@ -735,6 +786,14 @@ def _interpretation(
     evidence_boundary: dict[str, object],
 ) -> str:
     if gate.get("overall_status") == "passed":
+        if evidence_boundary.get("status") == "fresh_predeclared_multi_source_v6_replay":
+            return (
+                "The deterministic replay satisfies the frozen v6 statistical and "
+                "robustness gates under the predeclared 48-task source mix. This is "
+                "coverage-targeting evidence for the anchor-deficit source family, "
+                "still bounded to this planning slice and deterministic realization "
+                "policy."
+            )
         if evidence_boundary.get("status") == "fresh_predeclared_multi_source_v5_replay":
             return (
                 "The deterministic replay satisfies the frozen v5 statistical and "

@@ -194,6 +194,11 @@ Active frontier:
   stronger statistical-rigor replication. The remaining v5 coverage gap is
   `14/48` no-complement tasks: `13` anchor-dominance cases and `1`
   below-threshold near miss.
+- The next frozen experiment is v6: a fresh `plan_297` through `plan_344`
+  coverage-targeting slice that keeps v5 replay thresholds fixed and adds one
+  new source family, anchor-deficit constraint-gap rescue rows, to test whether
+  the remaining coverage gap can be reduced without weakening safety or cost
+  gates.
 
 What not to overclaim:
 
