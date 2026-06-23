@@ -15,6 +15,8 @@ if str(ROOT) not in sys.path:
 from experiments.run_latent_aggregation_inference_replay import _record_task_id, _trajectory_id
 from experiments.run_latent_aggregation_multi_aspect_v2_replay import (
     EPSILON,
+    _decision,
+    _dimension_details,
     _dict,
     _float,
     _format_counts,
@@ -23,11 +25,16 @@ from experiments.run_latent_aggregation_multi_aspect_v2_replay import (
     _gate,
     _list_of_dicts,
     _mean,
+    _non_rubric_score,
+    _realize,
     _read_jsonl,
     _run_task,
+    _score,
+    _select_complements,
     _wilson_interval,
 )
-from latent_reasoning.eval.general_reasoning import load_tasks
+from experiments.latent_aggregation_expanded_aspects import expanded_complement_aspects, label_free_aspect_view
+from latent_reasoning.eval.general_reasoning import load_tasks, score_task_output
 
 DEFAULT_FREEZE = Path("eval_results/diffusion_language/latent_aggregation_multi_aspect_v3_freeze.json")
 DEFAULT_TASKS = Path("experiments/general_reasoning_tasks_scout.jsonl")
@@ -138,12 +145,24 @@ def run_replay(
             _trajectory_id(record, 0, stable=True): str(record.get("__source_family", "unknown"))
             for record in rows_by_task[task_id]
         }
-        task_result, task_aspects, realized = _run_task(task_id, rows_by_task[task_id], tasks[task_id])
+        task_result, task_aspects, realized = _run_task_for_freeze(
+            freeze,
+            task_id,
+            rows_by_task[task_id],
+            tasks[task_id],
+        )
         for row in task_aspects:
             row["source_family"] = source_by_trajectory.get(str(row.get("trajectory_id", "")), "unknown")
         task_results.append(task_result)
         aspect_rows.extend(task_aspects)
         realized_rows.append(realized)
+
+    ontology_coverage = _ontology_coverage_diagnostic(
+        freeze=freeze,
+        rows_by_task=rows_by_task,
+        task_ids=frozen_task_ids,
+        tasks=tasks,
+    )
 
     probe_summary = _load_probe_summary(probe_analysis_path)
     unsupported_addition_count = _unsupported_addition_count(realized_rows)
@@ -152,6 +171,7 @@ def run_replay(
         rows_by_task=rows_by_task,
         task_ids=frozen_task_ids,
         tasks=tasks,
+        use_expanded_ontology=_uses_expanded_ontology(freeze),
     )
     summary = _summary_v3(
         task_results,
@@ -160,8 +180,10 @@ def run_replay(
         freeze=freeze,
         source_record_counts=source_record_counts,
         source_family_ablations=source_family_ablations,
+        total_raw_text_tokens=_total_raw_text_tokens(rows_by_task, frozen_task_ids),
         unsupported_addition_count=unsupported_addition_count,
         hard_contradiction_count=hard_contradiction_count,
+        ontology_coverage=ontology_coverage,
     )
     return {
         "aspect_rows": aspect_rows,
@@ -239,6 +261,9 @@ def render_markdown(result: dict[str, object]) -> str:
         f"- Cost-normalized score lift: `{_format_float(summary.get('cost_normalized_score_lift'))}`",
         f"- Equal-budget best-of control reported: `{bool(summary['equal_budget_best_of_control_reported'])}`",
         f"- Selected complement source families: `{_format_counts(summary.get('selected_complement_source_family_counts'))}`",
+        f"- Source-family unique coverage: `{_format_counts(summary.get('source_family_unique_coverage_counts'))}`",
+        f"- Length-normalized complement yield per 1k raw tokens: `{_format_float(summary.get('length_normalized_complement_yield_per_1k_raw_tokens'))}`",
+        f"- Label-leakage check: `{summary.get('label_leakage_check')}`",
         f"- Decision counts: `{_format_counts(summary['decision_status_counts'])}`",
         "",
         "## Frozen Gate Evaluation",
@@ -250,6 +275,14 @@ def render_markdown(result: dict[str, object]) -> str:
         "| Gate | Observed | Threshold | Status |",
         "| --- | ---: | ---: | --- |",
     ]
+    if "old_ontology_complement_coverage_count" in summary:
+        insertion_index = lines.index(f"- Decision counts: `{_format_counts(summary['decision_status_counts'])}`")
+        lines[insertion_index:insertion_index] = [
+            f"- Old ontology coverage: `{summary.get('old_ontology_complement_coverage_count')}/{summary['task_count']}`",
+            f"- Expanded ontology coverage: `{summary.get('expanded_ontology_complement_coverage_count')}/{summary['task_count']}`",
+            f"- Expanded-only coverage: `{summary.get('expanded_only_complement_coverage_count')}`",
+            f"- Expanded selected aspects without source span: `{summary.get('expanded_selected_without_source_span_count')}`",
+        ]
     for row in _list_of_dicts(gate.get("gates")):
         lines.append(
             "| "
@@ -310,6 +343,129 @@ def render_markdown(result: dict[str, object]) -> str:
     return "\n".join(lines) + "\n"
 
 
+def _run_task_for_freeze(
+    freeze: dict[str, object],
+    task_id: str,
+    records: list[dict[str, object]],
+    task: object,
+) -> tuple[dict[str, object], list[dict[str, object]], dict[str, object]]:
+    if _uses_expanded_ontology(freeze):
+        return _run_task_expanded(task_id, records, task)
+    return _run_task(task_id, records, task)
+
+
+def _uses_expanded_ontology(freeze: dict[str, object]) -> bool:
+    return str(freeze.get("schema", "")) == "latent_aggregation_multi_aspect_v7_freeze.v1"
+
+
+def _run_task_expanded(
+    task_id: str,
+    records: list[dict[str, object]],
+    task: object,
+) -> tuple[dict[str, object], list[dict[str, object]], dict[str, object]]:
+    if not records:
+        raise ValueError(f"no raw records for {task_id}")
+    prompt = _task_prompt(task)
+    anchor = max(records, key=_score)
+    anchor_id = _trajectory_id(anchor, 0, stable=True)
+    anchor_view = label_free_aspect_view(
+        anchor,
+        prompt=prompt,
+        source_family=str(anchor.get("__source_family", "unknown")),
+    )
+    complement_rows: list[dict[str, object]] = []
+    for record in records:
+        trajectory_id = _trajectory_id(record, 0, stable=True)
+        if trajectory_id == anchor_id:
+            continue
+        candidate_view = label_free_aspect_view(
+            record,
+            prompt=prompt,
+            source_family=str(record.get("__source_family", "unknown")),
+        )
+        for aspect in expanded_complement_aspects(
+            anchor_text=str(anchor_view["text"]),
+            candidate_text=str(candidate_view["text"]),
+            prompt=str(candidate_view["prompt"]),
+            trajectory_id=trajectory_id,
+        ):
+            complement_rows.append({**aspect, "task_id": task_id})
+    selected = _select_complements(complement_rows)
+    realized_text = _realize(anchor_text=str(anchor.get("text", "")), selected=selected)
+    score = score_task_output(task, realized_text)
+    anchor_score = _score(anchor)
+    score_lift = score.score - anchor_score
+    anchor_details = _dimension_details(_dict(_dict(anchor.get("task_score")).get("details")))
+    realized_details = _dimension_details(_dict(score.to_dict().get("details")))
+    non_rubric_lift = _non_rubric_score(realized_details) - _non_rubric_score(anchor_details)
+    expanded_gain = sum(1 for row in selected if str(row.get("aspect_class", "")) == "expanded")
+    decision = _decision(
+        dimension_gain=expanded_gain,
+        non_rubric_lift=non_rubric_lift,
+        rubric_gain=0,
+        score_lift=score_lift,
+        selected_count=len(selected),
+    )
+    aspect_rows = [{**row, "selected": row in selected} for row in complement_rows]
+    realized_row = {
+        "anchor_text": str(anchor.get("text", "")),
+        "realized_text": realized_text,
+        "selected_complements": selected,
+        "task_id": task_id,
+        "task_score": score.to_dict(),
+    }
+    task_result = {
+        "anchor_score": anchor_score,
+        "anchor_trajectory_id": anchor_id,
+        "decision": decision,
+        "dimension_gain_count": expanded_gain,
+        "non_rubric_lift": non_rubric_lift,
+        "realized_score": score.score,
+        "rubric_gain_count": 0,
+        "score_lift": score_lift,
+        "selected_complement_count": len(selected),
+        "task_id": task_id,
+    }
+    return task_result, aspect_rows, realized_row
+
+
+def _task_prompt(task: object) -> str:
+    if isinstance(task, dict):
+        return str(task.get("prompt", ""))
+    return str(getattr(task, "prompt", ""))
+
+
+def _ontology_coverage_diagnostic(
+    *,
+    freeze: dict[str, object],
+    rows_by_task: dict[str, list[dict[str, object]]],
+    task_ids: list[str],
+    tasks: dict[str, object],
+) -> dict[str, object]:
+    if not _uses_expanded_ontology(freeze):
+        return {}
+    old_covered: set[str] = set()
+    expanded_covered: set[str] = set()
+    for task_id in task_ids:
+        records = rows_by_task.get(task_id, [])
+        if not records:
+            continue
+        old_task, _old_aspects, _old_realized = _run_task(task_id, records, tasks[task_id])
+        expanded_task, _expanded_aspects, _expanded_realized = _run_task_expanded(task_id, records, tasks[task_id])
+        if int(_float(old_task.get("selected_complement_count"))) > 0:
+            old_covered.add(task_id)
+        if int(_float(expanded_task.get("selected_complement_count"))) > 0:
+            expanded_covered.add(task_id)
+    return {
+        "expanded_only_complement_coverage_count": len(expanded_covered - old_covered),
+        "expanded_only_task_ids": sorted(expanded_covered - old_covered),
+        "expanded_ontology_complement_coverage_count": len(expanded_covered),
+        "old_only_complement_coverage_count": len(old_covered - expanded_covered),
+        "old_only_task_ids": sorted(old_covered - expanded_covered),
+        "old_ontology_complement_coverage_count": len(old_covered),
+    }
+
+
 def _summary_v3(
     tasks: list[dict[str, object]],
     *,
@@ -318,8 +474,10 @@ def _summary_v3(
     freeze: dict[str, object],
     source_record_counts: dict[str, int],
     source_family_ablations: dict[str, dict[str, object]],
+    total_raw_text_tokens: int,
     unsupported_addition_count: int,
     hard_contradiction_count: int,
+    ontology_coverage: dict[str, object],
 ) -> dict[str, object]:
     promoted = [task for task in tasks if _dict(task.get("decision")).get("status") == "online_promoted_local"]
     complement_tasks = [
@@ -369,8 +527,14 @@ def _summary_v3(
         "equal_budget_best_of_control_reported": True,
         "hard_contradiction_count": hard_contradiction_count,
         "high_leverage_task_ids": _high_leverage_task_ids(tasks, threshold=_high_leverage_threshold(freeze)),
+        "label_leakage_check": (
+            "passed_label_free_view_only" if _uses_expanded_ontology(freeze) else "not_applicable_old_ontology"
+        ),
         "leave_one_out_mean_non_rubric_lift_range": _leave_one_out_range(non_rubric_lifts),
         "leave_one_out_mean_score_lift_range": _leave_one_out_range(score_lifts),
+        "length_normalized_complement_yield_per_1k_raw_tokens": (
+            len(selected_aspects) / total_raw_text_tokens * 1000 if total_raw_text_tokens else 0.0
+        ),
         "maximum_single_task_share_of_total_lift": (
             max_positive_score_lift / total_positive_score_lift
             if total_positive_score_lift > EPSILON
@@ -388,6 +552,7 @@ def _summary_v3(
         "probe_cost_reported": bool(probe_summary),
         "probe_measured_count": int(_float(probe_summary.get("measured_probe_count"))),
         "selected_complement_source_family_counts": _selected_source_family_counts(selected_aspects),
+        "source_family_unique_coverage_counts": _source_family_unique_coverage_counts(selected_aspects),
         "source_family_ablation": source_family_ablations,
         "source_family_ablation_reported": bool(source_family_ablations),
         "task_count": task_count,
@@ -401,6 +566,13 @@ def _summary_v3(
         "cost_normalized_non_rubric_lift": sum(non_rubric_lifts) / total_raw_records if total_raw_records else 0.0,
         "unsupported_addition_count": unsupported_addition_count,
         "wins_ties_losses": _wins_ties_losses(score_lifts),
+        **ontology_coverage,
+        "expanded_false_positive_audit_reported": _uses_expanded_ontology(freeze),
+        "expanded_selected_without_source_span_count": sum(
+            1
+            for row in selected_aspects
+            if str(row.get("aspect_class")) == "expanded" and not row.get("source_spans")
+        ),
     }
 
 
@@ -452,6 +624,8 @@ def _gate_evaluation_v3(freeze: dict[str, object], summary: dict[str, object]) -
                 bool(summary["theme_bucket_results_reported"]),
             )
         )
+    if _dict(freeze.get("v7_specific_gates")):
+        rows.extend(_v7_specific_gate_rows(_dict(freeze.get("v7_specific_gates")), summary))
     failed = [row for row in rows if row["status"] == "fail"]
     return {
         "failed_gate_count": len(failed),
@@ -502,11 +676,50 @@ def _robustness_gate_rows(
     return rows
 
 
+def _v7_specific_gate_rows(
+    v7_gates: dict[str, object],
+    summary: dict[str, object],
+) -> list[dict[str, object]]:
+    rows: list[dict[str, object]] = []
+    required_reports = (
+        ("must_report_old_vs_expanded_ontology_coverage", "expanded_ontology_complement_coverage_count"),
+        ("must_report_length_normalized_complement_yield", "length_normalized_complement_yield_per_1k_raw_tokens"),
+        ("must_report_source_family_unique_coverage", "source_family_unique_coverage_counts"),
+        ("must_report_theme_bucket_concentration", "theme_bucket_results"),
+    )
+    for gate_name, summary_key in required_reports:
+        if bool(v7_gates.get(gate_name)):
+            reported = summary_key in summary and summary.get(summary_key) is not None
+            rows.append(_gate(gate_name, "reported" if reported else "missing", "reported", reported))
+    if bool(v7_gates.get("must_report_false_positive_aspect_audit")):
+        count = int(_float(summary.get("expanded_selected_without_source_span_count")))
+        rows.append(
+            _gate(
+                "must_report_false_positive_aspect_audit",
+                count,
+                0,
+                bool(summary.get("expanded_false_positive_audit_reported")) and count == 0,
+            )
+        )
+    if bool(v7_gates.get("must_report_label_leakage_check")):
+        status = str(summary.get("label_leakage_check", "missing"))
+        rows.append(
+            _gate(
+                "must_report_label_leakage_check",
+                status,
+                "passed_label_free_view_only",
+                status == "passed_label_free_view_only",
+            )
+        )
+    return rows
+
+
 def _source_family_ablations(
     *,
     rows_by_task: dict[str, list[dict[str, object]]],
     task_ids: list[str],
     tasks: dict[str, object],
+    use_expanded_ontology: bool = False,
 ) -> dict[str, dict[str, object]]:
     families = sorted(
         {
@@ -530,7 +743,10 @@ def _source_family_ablations(
             if not filtered:
                 missing_task_ids.append(task_id)
                 continue
-            task_result, _task_aspects, _realized = _run_task(task_id, filtered, tasks[task_id])
+            if use_expanded_ontology:
+                task_result, _task_aspects, _realized = _run_task_expanded(task_id, filtered, tasks[task_id])
+            else:
+                task_result, _task_aspects, _realized = _run_task(task_id, filtered, tasks[task_id])
             task_results.append(task_result)
         ablations[family] = _ablation_summary(task_results, missing_task_ids)
     return ablations
@@ -597,17 +813,32 @@ def _normalized_path_key(path: str) -> str:
 
 def _source_family_for_path(freeze: dict[str, object], path: Path) -> str:
     generation = _dict(freeze.get("trajectory_generation_contract"))
+    if not generation:
+        source_contract = _dict(freeze.get("source_family_contract"))
+        generation = _dict(source_contract.get("required_outputs"))
     normalized = _normalized_path_key(str(path))
     known = {
         _normalized_path_key(str(generation.get("raw_output", ""))): "label",
+        _normalized_path_key(str(generation.get("label_raw_output", ""))): "label",
         _normalized_path_key(str(generation.get("probe_raw_output", ""))): "probe",
         _normalized_path_key(str(generation.get("diversity_raw_output", ""))): "diversity",
         _normalized_path_key(str(generation.get("anchor_deficit_raw_output", ""))): "anchor_deficit",
+        _normalized_path_key(str(generation.get("ontology_probe_raw_output", ""))): "ontology_probe",
+        _normalized_path_key(str(generation.get("cross_latent_raw_output", ""))): "cross_latent_perturbation",
     }
     return known.get(normalized, "extra_raw")
 
 
 def _evidence_boundary(freeze: dict[str, object], raw_paths: list[Path]) -> dict[str, str]:
+    if str(freeze.get("schema", "")) == "latent_aggregation_multi_aspect_v7_freeze.v1":
+        return {
+            "reason": (
+                "Fresh v7 replay over the predeclared 48-task label, ontology-probe, "
+                "and cross-latent source mix. V7 uses the frozen expanded planning "
+                "ontology and reports old-vs-expanded coverage before any promotion claim."
+            ),
+            "status": "fresh_predeclared_expanded_ontology_v7_replay",
+        }
     if str(freeze.get("schema", "")) == "latent_aggregation_multi_aspect_v6_freeze.v1":
         return {
             "reason": (
@@ -657,6 +888,8 @@ def _evidence_boundary(freeze: dict[str, object], raw_paths: list[Path]) -> dict
 
 def _title_for_boundary(evidence_boundary: dict[str, object]) -> str:
     status = evidence_boundary.get("status")
+    if status == "fresh_predeclared_expanded_ontology_v7_replay":
+        return "V7"
     if status == "fresh_predeclared_multi_source_v6_replay":
         return "V6"
     if status == "fresh_predeclared_multi_source_v5_replay":
@@ -698,6 +931,34 @@ def _selected_source_family_counts(selected_aspects: list[dict[str, object]]) ->
         family = str(row.get("source_family", "unknown"))
         counts[family] = counts.get(family, 0) + 1
     return dict(sorted(counts.items()))
+
+
+def _source_family_unique_coverage_counts(selected_aspects: list[dict[str, object]]) -> dict[str, int]:
+    families_by_task: dict[str, set[str]] = defaultdict(set)
+    for row in selected_aspects:
+        families_by_task[str(row.get("task_id", ""))].add(str(row.get("source_family", "unknown")))
+    counts: dict[str, int] = {}
+    for families in families_by_task.values():
+        if len(families) != 1:
+            continue
+        family = next(iter(families))
+        counts[family] = counts.get(family, 0) + 1
+    return dict(sorted(counts.items()))
+
+
+def _total_raw_text_tokens(
+    rows_by_task: dict[str, list[dict[str, object]]],
+    task_ids: list[str],
+) -> int:
+    return sum(
+        _text_token_count(str(record.get("text", "")))
+        for task_id in task_ids
+        for record in rows_by_task.get(task_id, [])
+    )
+
+
+def _text_token_count(text: str) -> int:
+    return len([token for token in text.split() if token])
 
 
 def _wins_ties_losses(score_lifts: list[float]) -> dict[str, int]:

@@ -404,6 +404,106 @@ def test_v6_replay_marks_anchor_deficit_source_family(tmp_path):
     assert "Anchor-deficit selected complement tasks: `1`" in markdown
 
 
+def test_v7_replay_reports_expanded_ontology_and_label_leakage_gates(tmp_path):
+    freeze = tmp_path / "freeze.json"
+    raw = tmp_path / "raw.jsonl"
+    ontology_raw = tmp_path / "ontology_raw.jsonl"
+    cross_raw = tmp_path / "cross_raw.jsonl"
+    tasks = tmp_path / "tasks.jsonl"
+    probe = tmp_path / "probe.json"
+    freeze_data = _freeze(["plan_h"])
+    freeze_data["schema"] = "latent_aggregation_multi_aspect_v7_freeze.v1"
+    freeze_data["source_family_contract"] = {
+        "required_outputs": {
+            "label_raw_output": str(raw).replace("/", "\\"),
+            "ontology_probe_raw_output": str(ontology_raw).replace("/", "\\"),
+            "cross_latent_raw_output": str(cross_raw).replace("/", "\\"),
+        }
+    }
+    freeze_data["statistical_gates"].update(
+        {
+            "minimum_aggregate_win_count": 0,
+            "minimum_complement_coverage_count": 1,
+            "minimum_complement_coverage_fraction": 1.0,
+            "minimum_wilson_lower_bound": 0.0,
+            "must_report_theme_bucket_results": True,
+        }
+    )
+    freeze_data["task_mix_contract"] = {"task_theme_by_id": {"plan_h": "systems_reliability"}}
+    freeze_data["v7_specific_gates"] = {
+        "must_report_false_positive_aspect_audit": True,
+        "must_report_label_leakage_check": True,
+        "must_report_length_normalized_complement_yield": True,
+        "must_report_old_vs_expanded_ontology_coverage": True,
+        "must_report_source_family_unique_coverage": True,
+        "must_report_theme_bucket_concentration": True,
+    }
+    freeze.write_text(json.dumps(freeze_data), encoding="utf-8")
+    tasks.write_text(json.dumps(_task("plan_h")) + "\n", encoding="utf-8")
+    probe.write_text(
+        json.dumps({"summary": {"mean_probe_cost_relative": 0.1875, "measured_probe_count": 1}}),
+        encoding="utf-8",
+    )
+    raw.write_text(
+        json.dumps(
+            _record(
+                "plan_h",
+                "anchor",
+                score=0.30,
+                text="preserve baseline",
+                specificity=0.1,
+            )
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    ontology_raw.write_text(
+        json.dumps(
+            _record(
+                "plan_h",
+                "ontology_probe",
+                score=0.20,
+                text=(
+                    "preserve baseline. Assign the platform owner before rollout. "
+                    "Validate telemetry threshold after each phase."
+                ),
+                specificity=0.1,
+            )
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    cross_raw.write_text("", encoding="utf-8")
+
+    result = run_replay(
+        freeze_path=freeze,
+        raw_path=raw,
+        extra_raw_paths=[ontology_raw, cross_raw],
+        tasks_path=tasks,
+        probe_analysis_path=probe,
+    )
+    summary = result["summary"]
+    gates = {row["name"]: row for row in result["gate_evaluation"]["gates"]}
+    markdown = render_markdown(
+        {key: value for key, value in result.items() if key not in {"aspect_rows", "realized_rows"}}
+    )
+
+    assert result["evidence_boundary"]["status"] == "fresh_predeclared_expanded_ontology_v7_replay"
+    assert summary["old_ontology_complement_coverage_count"] == 0
+    assert summary["expanded_ontology_complement_coverage_count"] == 1
+    assert summary["expanded_only_complement_coverage_count"] == 1
+    assert summary["selected_complement_source_family_counts"] == {"ontology_probe": 3}
+    assert summary["source_family_unique_coverage_counts"] == {"ontology_probe": 1}
+    assert summary["label_leakage_check"] == "passed_label_free_view_only"
+    assert summary["expanded_selected_without_source_span_count"] == 0
+    assert summary["length_normalized_complement_yield_per_1k_raw_tokens"] > 0
+    assert gates["must_report_old_vs_expanded_ontology_coverage"]["status"] == "pass"
+    assert gates["must_report_false_positive_aspect_audit"]["status"] == "pass"
+    assert gates["must_report_label_leakage_check"]["status"] == "pass"
+    assert "# Latent Aggregation Multi-Aspect V7 Replay" in markdown
+    assert "Label-leakage check: `passed_label_free_view_only`" in markdown
+
+
 def _freeze(task_ids):
     return {
         "statistical_gates": {
