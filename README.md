@@ -219,6 +219,16 @@ Active frontier:
   `29/48` coverage, still `7` tasks short of the gate, and `19` no-complement
   tasks have zero positive ontology deltas. The next step is not weaker gates;
   it is a better complement-generation policy or expanded aspect ontology.
+- v7 has now frozen fresh `plan_345` through `plan_392` tasks and an expanded
+  planning-aspect ontology. A no-generation v6 backtest found that the expanded
+  ontology would recover `12` of the `21` v6 no-complement tasks under a
+  label-free extractor view, which is useful design evidence but not a promotion
+  result. The replay runner now supports the v7 expanded ontology,
+  old-versus-expanded coverage reporting, source-family unique coverage,
+  length-normalized complement yield, false-positive auditing, and a
+  label-leakage gate. The next missing artifact is generation for the
+  predeclared v7 source families:
+  baseline label rows, ontology-probe rows, and cross-latent perturbation rows.
 
 What not to overclaim:
 
@@ -244,7 +254,7 @@ Start with this README, then use the evidence spine:
 5. [docs/DIFFUSION_THEORY_CLAIM_LEDGER.md](docs/DIFFUSION_THEORY_CLAIM_LEDGER.md)
    for conservative theory claims, falsifiers, and next proof obligations.
 6. [docs/LATENT_TRAJECTORY_AGGREGATION.md](docs/LATENT_TRAJECTORY_AGGREGATION.md)
-   for the current aggregation doctrine and v1-v5 history.
+   for the current aggregation doctrine and v1-v7 history.
 7. [docs/NAVIGATION.md](docs/NAVIGATION.md) for a compact map of the repo.
 
 Generated reports and raw outputs are retained for auditability, but they are

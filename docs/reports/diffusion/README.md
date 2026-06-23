@@ -189,9 +189,10 @@ Current high-signal generated reports:
   `plan_345`-`plan_392` tasks, expanded aspects, and new source families before
   a real promotion freeze can be built.
 - [LATENT_AGGREGATION_MULTI_ASPECT_V7_FREEZE.md](LATENT_AGGREGATION_MULTI_ASPECT_V7_FREEZE.md):
-  v7 task and ontology freeze over fresh `plan_345`-`plan_392`; explicitly
-  blocks generation until expanded-aspect replay and new source-family support
-  are implemented.
+  v7 task and ontology freeze over fresh `plan_345`-`plan_392`. Expanded-aspect
+  replay support, v7 source-family mapping, and label-leakage gates are now
+  implemented in the shared replay runner; generation for the predeclared v7
+  source families is still pending.
 - [LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md](LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md):
   post-hoc no-generation diagnostic over existing v6 raw rows; the expanded
   ontology recovers `12` of `21` v6 no-complement tasks, motivating v7
