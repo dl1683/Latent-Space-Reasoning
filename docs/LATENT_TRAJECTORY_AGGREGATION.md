@@ -381,6 +381,16 @@ generate complements conditioned on anchor deficits, expand the aspect ontology
 so useful differences become visible, or test whether another latent family
 contributes aspects that LLaDA label/probe/diversity rows do not expose.
 
+V5 is now frozen as the immediate statistical-rigor replication before any
+further mechanism changes. It doubles the fresh planning slice to `48` tasks
+(`plan_249` through `plan_296`), keeps the v4 source mix, selector, and realizer
+fixed, and adds robustness gates that v4 did not require: median lift,
+leave-one-out mean lift range, high-leverage task share, wins/ties/losses,
+source-family ablations, theme-bucket results, complement yield per raw row, and
+cost-normalized lift. This freeze deliberately tests whether the v4 mechanism is
+stable on a larger and more varied planning slice before introducing a new
+complement-directed generator or expanded aspect ontology.
+
 ## Relationship To Current Diffusion Work
 
 Diffusion repair remains the strongest current promoted result. Aggregation does

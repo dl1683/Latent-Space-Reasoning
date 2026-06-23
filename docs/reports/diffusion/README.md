@@ -131,6 +131,11 @@ Current high-signal generated reports:
 - [LATENT_AGGREGATION_MULTI_ASPECT_V4_COVERAGE_GAP.md](LATENT_AGGREGATION_MULTI_ASPECT_V4_COVERAGE_GAP.md):
   v4 coverage diagnostic showing the remaining `10` no-complement tasks are
   anchor-dominance cases under the current aspect ontology.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V5_FREEZE.md](LATENT_AGGREGATION_MULTI_ASPECT_V5_FREEZE.md):
+  frozen 48-task v5 replication contract over `plan_249`-`plan_296`; keeps the
+  v4 source mix fixed and adds robustness gates for medians, leave-one-out lift,
+  high-leverage tasks, source-family ablations, theme buckets, and
+  cost-normalized lift before any v5 labels exist.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.

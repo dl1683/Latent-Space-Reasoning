@@ -148,6 +148,11 @@ The current aggregation evidence is mixed and useful:
   and combined replay sources before labels on fresh tasks `plan_225` through
   `plan_248`, then passed the frozen replay gates with `14/24` complement
   coverage and `14` local promotions.
+- v5 is now frozen as the next statistical-rigor step: a 48-task fresh
+  replication on `plan_249` through `plan_296` that keeps the v4 source mix
+  fixed and adds robustness gates for medians, leave-one-out lift range,
+  high-leverage tasks, source-family ablations, theme buckets, and
+  cost-normalized lift.
 
 The v4 result is the current aggregation milestone:
 
@@ -174,6 +179,8 @@ Active frontier:
 
 - Multi-latent aggregation now has a passing fresh v4 local replication, but it
   is still bounded to this task slice and deterministic realization policy.
+- The next aggregation experiment is the predeclared v5 replication freeze; it
+  is not yet a result and should be treated as the current run contract.
 - v3 diversity-augmented replay remains diagnostic because the diversity source
   was introduced after the first v3 failure.
 - v4 is the first clean predeclared replication of that design, with remaining

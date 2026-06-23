@@ -52,6 +52,7 @@ If you need one-screen onboarding, open [../START_HERE.md](../START_HERE.md) fir
 - For the fresh v4 diversity-extension source run: [LATENT_AGGREGATION_MULTI_ASPECT_V4_DIVERSITY_EXTENSION_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V4_DIVERSITY_EXTENSION_REPORT.md)
 - For the passing fresh v4 aggregation replay: [LATENT_AGGREGATION_MULTI_ASPECT_V4_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V4_REPLAY.md)
 - For the remaining fresh v4 coverage blockers: [LATENT_AGGREGATION_MULTI_ASPECT_V4_COVERAGE_GAP.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V4_COVERAGE_GAP.md)
+- For the next 48-task v5 statistical replication freeze: [LATENT_AGGREGATION_MULTI_ASPECT_V5_FREEZE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V5_FREEZE.md)
 - For near-term roadmap: [NEXT_GENERATION_REASONING_TASKS.md](../NEXT_GENERATION_REASONING_TASKS.md)
 
 ## Current result surfaces
