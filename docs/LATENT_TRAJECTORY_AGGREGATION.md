@@ -419,14 +419,17 @@ repair-covered tasks versus fixed `0.263757` and random `0.218954`, and records
 `24/22/2` wins/ties/losses versus fixed. This is source-side evidence only; the
 probe source is also populated with `288` raw rows for replay, and the
 diversity-extension source is populated with evolved task score `0.274015`
-versus fixed `0.263757` and random `0.218954`. The aggregation result still
-depends on populating the anchor-deficit source family and then running the
-frozen replay. The v6 gates require `36/48` complement coverage, `30` aggregate
-wins, Wilson lower bound `0.600000`, all-task non-rubric lift `0.035000`, zero
-unsupported additions, zero hard contradictions, source-family ablations,
-cost-normalized lift, and explicit anchor-deficit incremental coverage. The
-point is not to lower the v5 bar; it is to test whether a targeted latent source
-can make the no-complement region smaller.
+versus fixed `0.263757` and random `0.218954`. The new anchor-deficit source is
+now populated as source-side evidence too: selected repair covers `48/48`, scores
+`0.278735` versus fixed `0.263757` and random `0.218954`, and records
+`17/27/4` wins/ties/losses versus fixed. The aggregation result still depends on
+the frozen replay and coverage-gap analysis. The v6 gates require `36/48`
+complement coverage, `30` aggregate wins, Wilson lower bound `0.600000`,
+all-task non-rubric lift `0.035000`, zero unsupported additions, zero hard
+contradictions, source-family ablations, cost-normalized lift, and explicit
+anchor-deficit incremental coverage. The point is not to lower the v5 bar; it
+is to test whether a targeted latent source can make the no-complement region
+smaller.
 
 ## Relationship To Current Diffusion Work
 

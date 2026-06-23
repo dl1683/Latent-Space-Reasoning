@@ -169,6 +169,9 @@ Current high-signal generated reports:
 - [LATENT_AGGREGATION_MULTI_ASPECT_V6_DIVERSITY_EXTENSION_REPORT.md](LATENT_AGGREGATION_MULTI_ASPECT_V6_DIVERSITY_EXTENSION_REPORT.md):
   fresh v6 LLaDA evolved/revision diversity-extension source run; evolved task
   score is `0.274015` versus fixed `0.263757` and random `0.218954`.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V6_ANCHOR_DEFICIT_REPORT.md](LATENT_AGGREGATION_MULTI_ASPECT_V6_ANCHOR_DEFICIT_REPORT.md):
+  fresh v6 targeted anchor-deficit source run; selected repair covers `48/48`
+  tasks and scores `0.278735` versus fixed `0.263757` and random `0.218954`.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.

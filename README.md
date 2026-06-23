@@ -194,17 +194,19 @@ Active frontier:
   stronger statistical-rigor replication. The remaining v5 coverage gap is
   `14/48` no-complement tasks: `13` anchor-dominance cases and `1`
   below-threshold near miss.
-- v6 is now in progress on a fresh `plan_297` through `plan_344`
-  coverage-targeting slice. The label/source run is complete: selected repair
-  covers `48/48` eligible tasks, reaches `0.306533` task score on
-  repair-covered tasks versus `0.263757` fixed and `0.218954` random, and
-  reports `24/22/2` wins/ties/losses versus fixed. The probe source is also
-  populated with `288` raw rows; it is diagnostic source evidence, not an
-  independently promoted repair result. The diversity-extension source is
-  populated too: evolved rows reach `0.274015` task score versus `0.263757`
-  fixed and `0.218954` random. The remaining v6 work is to populate the
-  anchor-deficit source family, then run the frozen replay without weakening
-  the v5 safety or cost gates.
+- v6 is now populated on a fresh `plan_297` through `plan_344`
+  coverage-targeting slice. The label/source run selected repair covers `48/48`
+  eligible tasks, reaches `0.306533` task score on repair-covered tasks versus
+  `0.263757` fixed and `0.218954` random, and reports `24/22/2`
+  wins/ties/losses versus fixed. The probe source adds `288` raw rows; it is
+  diagnostic source evidence, not an independently promoted repair result. The
+  diversity-extension source reaches evolved task score `0.274015` versus
+  `0.263757` fixed and `0.218954` random. The targeted anchor-deficit source is
+  now populated too: selected repair reaches `0.278735` versus the same fixed
+  and random baselines, with `48/48` repair coverage and `17/27/4`
+  wins/ties/losses versus fixed. The remaining v6 work is the frozen replay and
+  coverage-gap analysis; those decide whether the new source family actually
+  closes the v5 no-complement region without weakening the safety or cost gates.
 
 What not to overclaim:
 
