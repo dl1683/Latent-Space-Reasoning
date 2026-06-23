@@ -117,6 +117,20 @@ Current high-signal generated reports:
   fresh `plan_225`-`plan_248` replication contract that predeclares the
   diversity-extension source mix before labels, removing the v3 post-failure
   caveat.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V4_LABEL_REPORT.md](LATENT_AGGREGATION_MULTI_ASPECT_V4_LABEL_REPORT.md):
+  fresh v4 label/source run over Dream and LLaDA rows; LLaDA selected repair
+  covers `24/24` eligible tasks with mean task score `0.331313`.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V4_PROBE_REPORT.md](LATENT_AGGREGATION_MULTI_ASPECT_V4_PROBE_REPORT.md):
+  fresh v4 counterfactual probe source run with `24` measured probe generations.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V4_DIVERSITY_EXTENSION_REPORT.md](LATENT_AGGREGATION_MULTI_ASPECT_V4_DIVERSITY_EXTENSION_REPORT.md):
+  fresh predeclared v4 LLaDA evolved/revision diversity-extension source run,
+  with evolved mean task score `0.301789`.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V4_REPLAY.md](LATENT_AGGREGATION_MULTI_ASPECT_V4_REPLAY.md):
+  passing fresh predeclared v4 replay over label, probe, and diversity sources:
+  `14/24` complement coverage, `14` local promotions, all frozen gates passed.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V4_COVERAGE_GAP.md](LATENT_AGGREGATION_MULTI_ASPECT_V4_COVERAGE_GAP.md):
+  v4 coverage diagnostic showing the remaining `10` no-complement tasks are
+  anchor-dominance cases under the current aspect ontology.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.

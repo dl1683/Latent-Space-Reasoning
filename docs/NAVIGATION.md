@@ -47,6 +47,11 @@ If you need one-screen onboarding, open [../START_HERE.md](../START_HERE.md) fir
 - For the diversity-augmented v3 replay: [LATENT_AGGREGATION_MULTI_ASPECT_V3_DIVERSITY_AUGMENTED_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V3_DIVERSITY_AUGMENTED_REPLAY.md)
 - For the diversity-augmented v3 coverage diagnosis: [LATENT_AGGREGATION_MULTI_ASPECT_V3_DIVERSITY_AUGMENTED_COVERAGE_GAP.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V3_DIVERSITY_AUGMENTED_COVERAGE_GAP.md)
 - For the fresh v4 diversity-aggregation freeze: [LATENT_AGGREGATION_MULTI_ASPECT_V4_FREEZE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V4_FREEZE.md)
+- For the fresh v4 label source run: [LATENT_AGGREGATION_MULTI_ASPECT_V4_LABEL_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V4_LABEL_REPORT.md)
+- For the fresh v4 probe source run: [LATENT_AGGREGATION_MULTI_ASPECT_V4_PROBE_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V4_PROBE_REPORT.md)
+- For the fresh v4 diversity-extension source run: [LATENT_AGGREGATION_MULTI_ASPECT_V4_DIVERSITY_EXTENSION_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V4_DIVERSITY_EXTENSION_REPORT.md)
+- For the passing fresh v4 aggregation replay: [LATENT_AGGREGATION_MULTI_ASPECT_V4_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V4_REPLAY.md)
+- For the remaining fresh v4 coverage blockers: [LATENT_AGGREGATION_MULTI_ASPECT_V4_COVERAGE_GAP.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V4_COVERAGE_GAP.md)
 - For near-term roadmap: [NEXT_GENERATION_REASONING_TASKS.md](../NEXT_GENERATION_REASONING_TASKS.md)
 
 ## Current result surfaces

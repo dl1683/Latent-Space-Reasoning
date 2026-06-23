@@ -358,39 +358,28 @@ reasoning object. The boundary is important: because this diversity source was
 added after the baseline v3 failure on the same task slice, it is diagnostic
 design evidence for the next freeze, not the original predeclared v3 promotion.
 
-V4 is now frozen to test that design cleanly on fresh tasks `plan_225` through
-`plan_248`. It predeclares the baseline label run, probe run, LLaDA
-evolved/revision diversity run, and combined replay before any v4 labels exist.
-The v4 question is therefore sharper than v3: does the diversity-augmented
-source mix still clear the same aggregation gates when it is part of the
-pre-label contract?
+V4 now tests that design cleanly on fresh tasks `plan_225` through `plan_248`.
+It predeclared the baseline label run, probe run, LLaDA evolved/revision
+diversity run, and combined replay before any v4 labels existed. The result
+passes the frozen replay gates: complement coverage is `14/24`, all `14`
+covered tasks locally promote, conditional non-rubric lift is `0.075352`,
+all-task non-rubric lift is `0.043955`, Wilson lower bound is `0.388347`, and
+unsupported additions and hard contradictions remain `0`.
 
-Task mix:
+This changes the aggregation status. The v3 diversity result was
+hypothesis-generating because the diversity source was added after v3 failed.
+The v4 replay is a fresh predeclared replication of that source mix on a new
+planning slice. It is still bounded to this task family, aspect ontology, and
+deterministic realization policy, but it is no longer merely post-failure
+design evidence.
 
-- 8 planning tasks with explicit rubric components.
-- 8 math/symbolic tasks with exact answer and intermediate-operation checks.
-- 4 science or multiple-choice tasks with answer plus support components.
-
-Trajectory sources:
-
-- Greedy/fixed baseline.
-- 5 random prefix perturbation candidates.
-- 1 diffusion repair candidate when the backend supports it.
-- Optional temperature/self-consistency candidates as a control.
-
-Aggregator:
-
-- Extract components into JSONL rows.
-- Select non-conflicting component winners by verifier score.
-- Realize a final fused answer.
-- Compare against best single candidate and whole-candidate selector.
-
-Promotion condition:
-
-- Aggregate beats best single candidate on score.
-- Aggregate has positive component gain.
-- Aggregate introduces zero hard contradictions.
-- The result survives a second held-out slice without changing thresholds.
+The remaining v4 coverage gap is explicit: `10/24` tasks still have no selected
+complement material, and every no-complement task is an anchor-dominance case
+under the current rubric-plus-dimension aspect ontology. The next experiment
+should therefore move beyond adding more of the same sources. It should either
+generate complements conditioned on anchor deficits, expand the aspect ontology
+so useful differences become visible, or test whether another latent family
+contributes aspects that LLaDA label/probe/diversity rows do not expose.
 
 ## Relationship To Current Diffusion Work
 

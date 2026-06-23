@@ -40,6 +40,46 @@ def test_v3_coverage_gap_uses_extra_raw_sources(tmp_path):
     assert "Complement source counts" in markdown
 
 
+def test_v4_coverage_gap_marks_fresh_predeclared_boundary(tmp_path):
+    raw = tmp_path / "raw.jsonl"
+    extra = tmp_path / "extra.jsonl"
+    freeze = tmp_path / "freeze.json"
+    freeze.write_text(
+        json.dumps(
+            {
+                "schema": "latent_aggregation_multi_aspect_v4_freeze.v1",
+                "task_ids": ["plan_b"],
+            }
+        ),
+        encoding="utf-8",
+    )
+    raw.write_text(
+        json.dumps(_record("plan_b", "anchor", score=0.5, text="anchor", specificity=0.2))
+        + "\n",
+        encoding="utf-8",
+    )
+    extra.write_text(
+        json.dumps(
+            _record(
+                "plan_b",
+                "counterfactual_probe",
+                score=0.2,
+                text="candidate",
+                specificity=0.4,
+                generation_stage="counterfactual_probe",
+            )
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    result = analyze_coverage_gap(raw_path=raw, freeze_path=freeze, extra_raw_paths=[extra])
+    markdown = render_markdown(result)
+
+    assert result["evidence_boundary"]["status"] == "fresh_predeclared_multi_source_v4_coverage_gap"
+    assert "# Latent Aggregation Multi-Aspect V4 Coverage Gap" in markdown
+
+
 def _record(
     task_id,
     candidate_key,

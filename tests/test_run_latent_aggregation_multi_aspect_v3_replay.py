@@ -1,6 +1,6 @@
 import json
 
-from experiments.run_latent_aggregation_multi_aspect_v3_replay import run_replay
+from experiments.run_latent_aggregation_multi_aspect_v3_replay import render_markdown, run_replay
 
 
 def test_v3_replay_reports_coverage_conditional_and_global_gates(tmp_path):
@@ -148,7 +148,9 @@ def test_v4_replay_marks_predeclared_multi_source_and_reports_diversity_cost(tmp
     probe = tmp_path / "probe.json"
     freeze_data = _freeze(["plan_d"])
     freeze_data["schema"] = "latent_aggregation_multi_aspect_v4_freeze.v1"
-    freeze_data["runtime_outputs"] = {"diversity_raw_output": str(diversity_raw)}
+    freeze_data["trajectory_generation_contract"] = {
+        "diversity_raw_output": str(diversity_raw).replace("/", "\\")
+    }
     freeze_data["statistical_gates"]["must_report_diversity_generation_cost"] = True
     freeze.write_text(json.dumps(freeze_data), encoding="utf-8")
     tasks.write_text(json.dumps(_task("plan_d")) + "\n", encoding="utf-8")
@@ -192,11 +194,16 @@ def test_v4_replay_marks_predeclared_multi_source_and_reports_diversity_cost(tmp
         probe_analysis_path=probe,
     )
     gates = {row["name"]: row for row in result["gate_evaluation"]["gates"]}
+    markdown = render_markdown(
+        {key: value for key, value in result.items() if key not in {"aspect_rows", "realized_rows"}}
+    )
 
     assert result["evidence_boundary"]["status"] == "fresh_predeclared_multi_source_v4_replay"
     assert result["summary"]["diversity_generation_cost_reported"] is True
     assert result["summary"]["diversity_raw_record_count"] == 1
     assert gates["must_report_diversity_generation_cost"]["status"] == "pass"
+    assert "# Latent Aggregation Multi-Aspect V4 Replay" in markdown
+    assert "Diversity generation cost reported: `True`" in markdown
 
 
 def _freeze(task_ids):

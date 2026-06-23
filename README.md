@@ -144,18 +144,20 @@ The current aggregation evidence is mixed and useful:
 - Adding a bounded LLaDA diversity-extension source raised v3 replay coverage to
   `13/24` and cleared the numeric gates, but that was post-failure diagnostic
   evidence because the diversity source was added after seeing v3 fail.
-- v4 is the clean replication: it freezes the label, probe, diversity-extension,
+- v4 is the clean replication: it froze the label, probe, diversity-extension,
   and combined replay sources before labels on fresh tasks `plan_225` through
-  `plan_248`.
+  `plan_248`, then passed the frozen replay gates with `14/24` complement
+  coverage and `14` local promotions.
 
-The v4 question is the live one:
+The v4 result is the current aggregation milestone:
 
-**Does the diversity-augmented source mix still clear the aggregation gates when
-it is part of the pre-label contract rather than a post-hoc fix?**
+**A predeclared diversity-augmented source mix can clear the aggregation gates
+on a fresh held-out planning slice, while still leaving anchor-dominance
+coverage as the next bottleneck.**
 
-This is the second reason to care: if v4 works, the project has evidence for a
-move from single-trajectory repair to multi-trajectory composition. That would
-mean useful reasoning is not trapped inside one sampled answer.
+This is the second reason to care: the project now has evidence for a move from
+single-trajectory repair to multi-trajectory composition. Useful reasoning is
+not always trapped inside one sampled answer.
 
 ## Current Status
 
@@ -170,11 +172,12 @@ Promoted public claim:
 
 Active frontier:
 
-- Multi-latent aggregation is not yet a promoted public result.
-- v3 diversity-augmented replay is the strongest design evidence so far, but it
-  remains diagnostic because the diversity source was introduced after the first
-  v3 failure.
-- v4 is the fresh predeclared replication currently being run and documented.
+- Multi-latent aggregation now has a passing fresh v4 local replication, but it
+  is still bounded to this task slice and deterministic realization policy.
+- v3 diversity-augmented replay remains diagnostic because the diversity source
+  was introduced after the first v3 failure.
+- v4 is the first clean predeclared replication of that design, with remaining
+  no-complement coverage gaps documented separately.
 
 What not to overclaim:
 
