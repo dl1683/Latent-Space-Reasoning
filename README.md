@@ -1,10 +1,18 @@
 # Latent Space Reasoning
 
-This repository studies a simple but important question:
+This repository is a research lab for a different way to make models reason.
 
-**Can we improve a frozen model's reasoning at inference time by steering,
-repairing, or composing its latent trajectories instead of fine-tuning the
-model?**
+The bet is that the next jump in reasoning will not come only from bigger
+models or longer chains of thought. It will come from learning how to operate on
+the model's **latent trajectories**: steer them, inspect them, repair them, and
+eventually compose the best parts of several trajectories into a stronger final
+answer.
+
+The central question is:
+
+**Can a frozen model reason better at inference time if we treat its internal
+generation path as an editable search space rather than a one-shot text
+sample?**
 
 The project started with perturbation experiments: change the early token or
 prefix conditions, sample different reasoning paths, and ask whether some paths
@@ -17,6 +25,9 @@ The current promoted result is **diffusion-native latent repair**. The active
 research frontier is **multi-latent aggregation**: rather than selecting one
 trajectory, can we extract useful non-overlapping parts from several trajectories
 and synthesize an answer that is stronger than every individual candidate?
+
+This is not a prompt collection and it is not a benchmark wrapper. It is an
+attempt to build a control layer for reasoning itself.
 
 ## Why This Matters
 
@@ -39,9 +50,10 @@ reasoning system that can:
 5. reject contradictions and unsupported additions,
 6. report cost and statistical uncertainty honestly.
 
-If this works, latent reasoning becomes less like sampling many final answers
-and more like operating over a structured search space of partial reasoning
-objects.
+If this works, the unit of inference changes. The system stops treating a model
+completion as the final object and starts treating it as evidence: a partial,
+inspectable reasoning artifact that can be compared, repaired, merged, or
+rejected. That is the project this repo is trying to make concrete.
 
 ## What We Have Tried
 
@@ -70,7 +82,9 @@ editable denoise states. This opened a stronger intervention surface: instead of
 only sampling another trajectory, repair a localized weak span while preserving
 the useful parts of the existing trajectory.
 
-The current public result is on the `lean_gpu_mixed` benchmark:
+This produced the first strong promoted result. On the `lean_gpu_mixed`
+benchmark, latent repair beats both greedy/fixed denoise and random
+perturbation:
 
 | Public arm | Score | Relative GPU cost |
 | --- | ---: | ---: |
@@ -88,6 +102,10 @@ Main lesson:
 repairable reasoning surface when the system knows when to spend repair compute
 and how to preserve the useful source content.**
 
+That is the first real reason to care about this repo: it shows a frozen model
+can be improved by controlling the latent generation process, not by changing
+the model weights.
+
 ### 3. Candidate Promotion and Spend Gates
 
 Repair is not free. Much of the project is about deciding when repair compute is
@@ -102,7 +120,8 @@ it without also promoting zero-lift or negative-lift candidates.**
 
 ### 4. Multi-Latent Aggregation
 
-The current frontier asks whether we can go beyond repair and selection:
+The current frontier is more ambitious. It asks whether we can go beyond repair
+and selection:
 
 `diverge -> attribute -> aggregate -> repair -> verify -> realize`
 
@@ -133,6 +152,10 @@ The v4 question is the live one:
 
 **Does the diversity-augmented source mix still clear the aggregation gates when
 it is part of the pre-label contract rather than a post-hoc fix?**
+
+This is the second reason to care: if v4 works, the project has evidence for a
+move from single-trajectory repair to multi-trajectory composition. That would
+mean useful reasoning is not trapped inside one sampled answer.
 
 ## Current Status
 
@@ -186,7 +209,10 @@ when you need a specific historical generated report.
 
 ## Evidence Discipline
 
-This project is intentionally conservative about claims.
+The repo is bold about the research direction and strict about the evidence.
+That combination is deliberate. A project about latent reasoning control can
+become hand-wavy very quickly unless every claim is tied to runs, costs,
+failure cases, and falsifiers.
 
 A claim should be treated as exploratory unless it is backed by:
 
