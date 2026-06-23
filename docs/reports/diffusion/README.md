@@ -184,6 +184,10 @@ Current high-signal generated reports:
   no-generation diagnostic showing the v6 failure is not primarily caused by
   the frozen dimension threshold; positive-floor coverage is only `29/48`
   against the `36/48` gate.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V7_PREFREEZE.md](LATENT_AGGREGATION_MULTI_ASPECT_V7_PREFREEZE.md):
+  pre-freeze v7 design derived from the v6 failure; requires fresh
+  `plan_345`-`plan_392` tasks, expanded aspects, and new source families before
+  a real promotion freeze can be built.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.

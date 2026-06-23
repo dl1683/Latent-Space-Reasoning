@@ -66,6 +66,7 @@ If you need one-screen onboarding, open [../START_HERE.md](../START_HERE.md) fir
 - For the failed v6 aggregation replay: [LATENT_AGGREGATION_MULTI_ASPECT_V6_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V6_REPLAY.md)
 - For the remaining v6 coverage blockers: [LATENT_AGGREGATION_MULTI_ASPECT_V6_COVERAGE_GAP.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V6_COVERAGE_GAP.md)
 - For the v6 threshold-sensitivity diagnostic: [LATENT_AGGREGATION_MULTI_ASPECT_V6_THRESHOLD_SENSITIVITY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V6_THRESHOLD_SENSITIVITY.md)
+- For the v7 pre-freeze design: [LATENT_AGGREGATION_MULTI_ASPECT_V7_PREFREEZE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V7_PREFREEZE.md)
 - For near-term roadmap: [NEXT_GENERATION_REASONING_TASKS.md](../NEXT_GENERATION_REASONING_TASKS.md)
 
 ## Current result surfaces

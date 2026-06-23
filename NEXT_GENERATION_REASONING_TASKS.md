@@ -49,6 +49,13 @@ can beat the best individual candidate by preserving non-overlapping verified
 components from different latent trajectories without introducing
 contradictions.
 
+Current aggregation frontier: v5 is the passing 48-task statistical replication;
+v6 is a useful negative coverage-targeting result. V6 failed promotion at
+`27/48` complement coverage, and threshold sensitivity showed positive-floor
+coverage reaches only `29/48`. The next aggregation step is therefore v7:
+create fresh `plan_345`-`plan_392` tasks, freeze an expanded planning-aspect
+ontology, and test new source families rather than weakening v6 gates.
+
 ### Current Narrow Execution Protocol
 
 The next non-ARC execution path is locked in
