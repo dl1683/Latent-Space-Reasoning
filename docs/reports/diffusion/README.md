@@ -102,6 +102,17 @@ Current high-signal generated reports:
 - [LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_AUGMENTED_COVERAGE_GAP.md](LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_AUGMENTED_COVERAGE_GAP.md):
   probe-augmented coverage-gap diagnostic showing probes add one covered task
   but leave `17` anchor-dominance no-complement tasks.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V3_DIVERSITY_EXTENSION_REPORT.md](LATENT_AGGREGATION_MULTI_ASPECT_V3_DIVERSITY_EXTENSION_REPORT.md):
+  GPU diversity-extension run adding LLaDA evolved/revision schedule candidates
+  as post-failure source-generation evidence.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V3_DIVERSITY_AUGMENTED_REPLAY.md](LATENT_AGGREGATION_MULTI_ASPECT_V3_DIVERSITY_AUGMENTED_REPLAY.md):
+  post-failure multi-source replay over label, probe, and diversity-extension
+  rows; numeric v3 gates pass with `13/24` complement coverage and `13` local
+  promotions, but this is diagnostic design evidence rather than the original
+  predeclared v3 promotion.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V3_DIVERSITY_AUGMENTED_COVERAGE_GAP.md](LATENT_AGGREGATION_MULTI_ASPECT_V3_DIVERSITY_AUGMENTED_COVERAGE_GAP.md):
+  coverage-gap diagnostic for the diversity-augmented replay showing remaining
+  no-complement tasks drop to `11`, all still anchor-dominance cases.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.

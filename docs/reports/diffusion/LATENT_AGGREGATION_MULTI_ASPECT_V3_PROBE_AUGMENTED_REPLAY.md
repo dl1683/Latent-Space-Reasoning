@@ -5,8 +5,8 @@ It anchors on the best single answer, adds selected complement aspects, then res
 
 ## Evidence Boundary
 
-- Status: `held_out_multi_aspect_v3_replay`
-- Reason: Held-out v3 replay using predeclared tasks, generated GPU rows, v3 coverage/conditional gates, and deterministic sourced-complement realization.
+- Status: `post_failure_augmented_multi_source_replay`
+- Reason: Replay over the frozen v3 task set augmented with extra raw sources. This is diagnostic evidence for the next source-generation design; it should not be described as the original predeclared v3 promotion unless the extra sources were themselves frozen before labels.
 
 ## Summary
 

@@ -96,13 +96,7 @@ def analyze_coverage_gap(
                 rows_by_task[task_id].append(record)
     tasks = [_analyze_task(task_id, rows_by_task.get(task_id, [])) for task_id in frozen_task_ids]
     return {
-        "evidence_boundary": {
-            "reason": (
-                "Post-replay v3 coverage diagnostic over frozen candidate/probe rows; "
-                "used to choose the next coverage-improvement experiment, not to promote v3."
-            ),
-            "status": "held_out_multi_aspect_v3_coverage_gap",
-        },
+        "evidence_boundary": _evidence_boundary(raw_paths),
         "generated_by": "experiments/analyze_latent_aggregation_multi_aspect_v3_coverage_gap.py",
         "inputs": {
             "freeze": str(freeze_path),
@@ -286,6 +280,25 @@ def _selected_source_counts(rows: list[dict[str, object]]) -> dict[str, int]:
         else:
             counts["other"] += 1
     return dict(sorted(counts.items()))
+
+
+def _evidence_boundary(raw_paths: list[Path]) -> dict[str, str]:
+    if len(raw_paths) <= 1:
+        return {
+            "reason": (
+                "Post-replay v3 coverage diagnostic over frozen label rows; used to choose "
+                "the next coverage-improvement experiment, not to promote v3."
+            ),
+            "status": "held_out_multi_aspect_v3_coverage_gap",
+        }
+    return {
+        "reason": (
+            "Post-replay v3 coverage diagnostic over frozen label rows plus extra raw sources. "
+            "This diagnoses candidate-source design after the baseline failure; it is not the "
+            "original predeclared v3 promotion evidence."
+        ),
+        "status": "post_failure_augmented_v3_coverage_gap",
+    }
 
 
 def _total_source_counts(tasks: list[dict[str, object]]) -> dict[str, int]:

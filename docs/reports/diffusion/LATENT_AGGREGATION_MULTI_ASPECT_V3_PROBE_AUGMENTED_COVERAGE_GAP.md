@@ -5,8 +5,8 @@ It diagnoses why the v3 replay still has too few tasks with selected complement 
 
 ## Evidence Boundary
 
-- Status: `held_out_multi_aspect_v3_coverage_gap`
-- Reason: Post-replay v3 coverage diagnostic over frozen candidate/probe rows; used to choose the next coverage-improvement experiment, not to promote v3.
+- Status: `post_failure_augmented_v3_coverage_gap`
+- Reason: Post-replay v3 coverage diagnostic over frozen label rows plus extra raw sources. This diagnoses candidate-source design after the baseline failure; it is not the original predeclared v3 promotion evidence.
 
 ## Summary
 

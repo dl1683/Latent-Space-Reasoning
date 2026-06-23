@@ -1,7 +1,7 @@
 {
   "evidence_boundary": {
-    "reason": "Post-replay v3 coverage diagnostic over frozen candidate/probe rows; used to choose the next coverage-improvement experiment, not to promote v3.",
-    "status": "held_out_multi_aspect_v3_coverage_gap"
+    "reason": "Post-replay v3 coverage diagnostic over frozen label rows plus extra raw sources. This diagnoses candidate-source design after the baseline failure; it is not the original predeclared v3 promotion evidence.",
+    "status": "post_failure_augmented_v3_coverage_gap"
   },
   "generated_by": "experiments/analyze_latent_aggregation_multi_aspect_v3_coverage_gap.py",
   "inputs": {

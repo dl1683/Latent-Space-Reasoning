@@ -151,13 +151,7 @@ def run_replay(
             "contradiction_method": "selected_aspect_id_conflict_check",
             "unsupported_addition_method": "deterministic_template_scope_check",
         },
-        "evidence_boundary": {
-            "reason": (
-                "Held-out v3 replay using predeclared tasks, generated GPU rows, "
-                "v3 coverage/conditional gates, and deterministic sourced-complement realization."
-            ),
-            "status": "held_out_multi_aspect_v3_replay",
-        },
+        "evidence_boundary": _evidence_boundary(raw_paths),
         "generated_by": "experiments/run_latent_aggregation_multi_aspect_v3_replay.py",
         "gate_evaluation": _gate_evaluation_v3(freeze, summary),
         "inputs": {
@@ -235,7 +229,7 @@ def render_markdown(result: dict[str, object]) -> str:
             "",
             "## Interpretation",
             "",
-            _interpretation(summary, gate),
+            _interpretation(summary, gate, evidence_boundary=_dict(result.get("evidence_boundary"))),
             "",
             "## Task Decisions",
             "",
@@ -344,6 +338,26 @@ def _load_probe_summary(path: Path | None) -> dict[str, object]:
     return _dict(data.get("summary"))
 
 
+def _evidence_boundary(raw_paths: list[Path]) -> dict[str, str]:
+    if len(raw_paths) <= 1:
+        return {
+            "reason": (
+                "Held-out v3 replay using predeclared tasks, generated GPU rows, "
+                "v3 coverage/conditional gates, and deterministic sourced-complement realization."
+            ),
+            "status": "held_out_multi_aspect_v3_replay",
+        }
+    return {
+        "reason": (
+            "Replay over the frozen v3 task set augmented with extra raw sources. "
+            "This is diagnostic evidence for the next source-generation design; "
+            "it should not be described as the original predeclared v3 promotion unless "
+            "the extra sources were themselves frozen before labels."
+        ),
+        "status": "post_failure_augmented_multi_source_replay",
+    }
+
+
 def _unsupported_addition_count(realized_rows: list[dict[str, object]]) -> int:
     unsupported = 0
     for row in realized_rows:
@@ -376,8 +390,20 @@ def _list_of_float(value: object) -> list[float]:
     return [_float(item) for item in value]
 
 
-def _interpretation(summary: dict[str, object], gate: dict[str, object]) -> str:
+def _interpretation(
+    summary: dict[str, object],
+    gate: dict[str, object],
+    *,
+    evidence_boundary: dict[str, object],
+) -> str:
     if gate.get("overall_status") == "passed":
+        if evidence_boundary.get("status") != "held_out_multi_aspect_v3_replay":
+            return (
+                "The augmented replay satisfies the frozen numeric gates, but its "
+                "evidence boundary is diagnostic because extra raw sources were added "
+                "after the baseline v3 failure. Treat this as a source-generation design "
+                "success for the next freeze, not as the original predeclared v3 promotion."
+            )
         return (
             "The deterministic v3 replay satisfies the frozen v3 gates under the "
             "template-scope contradiction and unsupported-addition audit. This is a "

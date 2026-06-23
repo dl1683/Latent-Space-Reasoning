@@ -347,6 +347,17 @@ policy that is conditioned on anchor deficits, or an expanded aspect ontology
 that can expose useful differences invisible to the current rubric-plus-four-
 dimension scorer projection.
 
+A bounded GPU diversity-extension run tested the first option by adding LLaDA
+evolved and revision schedules as extra raw sources, with no repair arm. When
+those rows are replayed together with the original label rows and probe rows,
+the augmented replay clears every numeric v3 gate: complement coverage rises to
+`13/24`, local promotions to `13`, all-task non-rubric lift to `0.053741`, and
+Wilson lower bound to `0.350749`. This is the strongest evidence so far for the
+family-level thesis that multiple latent sources can compose into a richer
+reasoning object. The boundary is important: because this diversity source was
+added after the baseline v3 failure on the same task slice, it is diagnostic
+design evidence for the next freeze, not the original predeclared v3 promotion.
+
 Task mix:
 
 - 8 planning tasks with explicit rubric components.
