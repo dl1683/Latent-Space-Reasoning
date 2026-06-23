@@ -191,9 +191,9 @@ Current high-signal generated reports:
 - [LATENT_AGGREGATION_MULTI_ASPECT_V7_FREEZE.md](LATENT_AGGREGATION_MULTI_ASPECT_V7_FREEZE.md):
   v7 task and ontology freeze over fresh `plan_345`-`plan_392`. Expanded-aspect
   replay support, v7 source-family mapping, and label-leakage gates are now
-  implemented in the shared replay runner. The baseline label and
-  ontology-probe source families are populated; cross-latent source rows are
-  still pending before the frozen v7 replay.
+  implemented in the shared replay runner. The baseline label, ontology-probe,
+  and cross-latent source families are populated; the frozen multi-source v7
+  replay is the remaining promotion gate.
 - [LATENT_AGGREGATION_MULTI_ASPECT_V7_LABEL_REPORT.md](LATENT_AGGREGATION_MULTI_ASPECT_V7_LABEL_REPORT.md):
   fresh v7 baseline label/source run over the frozen 48-task slice; selected
   latent repair covers `48/48` eligible tasks with mean task score `0.327170`
@@ -202,6 +202,11 @@ Current high-signal generated reports:
   fresh v7 ontology-probe source run over the frozen 48-task slice; generated
   `48` counterfactual probe rows with `span_tomography_probe_v4`, plus the
   shared baseline rows needed for source-family replay.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V7_CROSS_LATENT_REPORT.md](LATENT_AGGREGATION_MULTI_ASPECT_V7_CROSS_LATENT_REPORT.md):
+  fresh v7 cross-latent source run over the frozen 48-task slice; generated
+  `336` full model generations and `192` arm selections. Evolved cross-latent
+  selection scores `0.288632` versus `0.270320` fixed and `0.246198` random,
+  with oracle task score `0.306` and remaining selector regret of `0.017`.
 - [LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md](LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md):
   post-hoc no-generation diagnostic over existing v6 raw rows; the expanded
   ontology recovers `12` of `21` v6 no-complement tasks, motivating v7

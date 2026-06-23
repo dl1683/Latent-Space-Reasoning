@@ -226,13 +226,17 @@ Active frontier:
   result. The replay runner now supports the v7 expanded ontology,
   old-versus-expanded coverage reporting, source-family unique coverage,
   length-normalized complement yield, false-positive auditing, and a
-  label-leakage gate. The v7 baseline label source is now populated and pushed:
-  `336` raw rows over the `48` frozen tasks, with selected latent repair scoring
-  `0.327170` on repair-covered tasks versus `0.270320` fixed and `0.246198`
-  random. The v7 ontology-probe source is also populated: `288` raw rows with
-  `48` counterfactual probe generations under `span_tomography_probe_v4`. The
-  remaining missing source artifact before v7 replay is the cross-latent
-  perturbation source.
+  label-leakage gate. The v7 source side is now fully populated for replay:
+  the baseline label run has `336` raw rows over the `48` frozen tasks, with
+  selected latent repair scoring `0.327170` on repair-covered tasks versus
+  `0.270320` fixed and `0.246198` random; the ontology-probe run adds `288`
+  raw rows with `48` counterfactual probe generations under
+  `span_tomography_probe_v4`; and the cross-latent run adds `336` raw rows where
+  evolved cross-latent selection scores `0.288632` versus `0.270320` fixed and
+  `0.246198` random. The remaining v7 gate is the frozen multi-source replay:
+  can these label, ontology-probe, and cross-latent latent sources produce
+  enough verified complementary aspects, without leakage or contradiction, to
+  clear the expanded aggregation gates?
 
 What not to overclaim:
 
