@@ -1,0 +1,410 @@
+{
+  "expanded_aspect_ontology": {
+    "aspects": [
+      {
+        "aspect_id": "owner_assignment",
+        "definition": "names who acts, decides, or owns a follow-up",
+        "false_positive_risk": "invented stakeholder roles"
+      },
+      {
+        "aspect_id": "timeline_or_sequence",
+        "definition": "orders actions by dependency, time, or prerequisite",
+        "false_positive_risk": "generic step numbering"
+      },
+      {
+        "aspect_id": "rollback_or_exit_criteria",
+        "definition": "states when to stop, revert, escalate, or change course",
+        "false_positive_risk": "boilerplate rollback text"
+      },
+      {
+        "aspect_id": "evidence_or_measurement",
+        "definition": "names an observation or metric that proves progress",
+        "false_positive_risk": "vague metric mentions"
+      },
+      {
+        "aspect_id": "scope_boundary",
+        "definition": "limits where the plan applies or does not apply",
+        "false_positive_risk": "unsupported narrowing"
+      },
+      {
+        "aspect_id": "polarity_or_action_direction",
+        "definition": "distinguishes do, avoid, defer, escalate, or rollback",
+        "false_positive_risk": "hidden contradiction"
+      }
+    ],
+    "status": "frozen_before_v7_labels",
+    "support_rules": [
+      "require source-span support",
+      "generic process language does not count by itself",
+      "prompt-term echoing does not count by itself",
+      "report old-ontology and expanded-ontology coverage separately",
+      "report false-positive examples before promotion"
+    ]
+  },
+  "failure_taxonomy": [
+    "expanded_ontology_adds_false_positive_coverage",
+    "new_sources_duplicate_existing_complements",
+    "ontology_probe_copies_prompt_terms_without_support",
+    "cross_latent_source_adds_noise_without_unique_coverage",
+    "coverage_passes_but_conditional_lift_fails",
+    "mean_lift_carried_by_one_theme_bucket",
+    "hard_contradictions_from_polarity_aspects",
+    "length_growth_explains_score_gain",
+    "label_leakage_in_expanded_extractor"
+  ],
+  "freshness_contract": {
+    "prior_planning_task_max": 344,
+    "rule": "all v7 planning IDs must be greater than every prior committed aggregation planning slice",
+    "status": "passed"
+  },
+  "generated_by": "experiments/build_latent_aggregation_multi_aspect_v7_freeze.py",
+  "prior_evidence": {
+    "boundary": "v6 is a fresh negative coverage-targeting result: positive lift and clean safety, but failed coverage, win-count, and Wilson gates. V7 changes observable complement surfaces instead of lowering gates.",
+    "v6_coverage_gap": {
+      "path": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_coverage_gap.json",
+      "sha256": "3c5969578ee23edc178f333ac642bb4dad97436455096d39a7e22cc48a396bb4",
+      "summary": {
+        "complement_source_counts": {
+          "counterfactual_probe": 4,
+          "low_confidence": 17,
+          "random": 13,
+          "repair_candidate": 8
+        },
+        "max_no_complement_dimension_delta": 0.04464285714285714,
+        "mean_no_complement_max_dimension_delta": 0.0042517006802721075,
+        "mean_non_anchor_candidate_count": 25.083333333333332,
+        "mean_nonempty_candidate_count": 20.833333333333332,
+        "no_complement_blockers": {
+          "anchor_dominates_candidate_aspects": 19,
+          "positive_but_below_threshold": 2
+        },
+        "no_complement_tasks_with_near_miss": 2,
+        "task_count": 48,
+        "tasks_with_selected_complement": 27,
+        "tasks_without_selected_complement": 21
+      }
+    },
+    "v6_replay": {
+      "path": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_replay.json",
+      "sha256": "dcb8470dd082a8646936b9db9999fca937b336196d32fd1e822e7220db7b2c86",
+      "summary": {
+        "all_task_mean_non_rubric_lift": 0.04311755952380952,
+        "anchor_deficit_generation_cost_reported": true,
+        "anchor_deficit_incremental_coverage_reported": true,
+        "anchor_deficit_raw_record_count": 386,
+        "anchor_deficit_selected_complement_count": 90,
+        "anchor_deficit_selected_task_count": 26,
+        "complement_coverage_count": 27,
+        "complement_coverage_fraction": 0.5625,
+        "complement_yield_per_raw_row": 0.06983655274888559,
+        "conditional_mean_non_rubric_lift": 0.07665343915343915,
+        "conditional_promoted_fraction": 1.0,
+        "cost_normalized_non_rubric_lift": 0.0015376247081299087,
+        "cost_normalized_score_lift": 0.001953672256421142,
+        "decision_status_counts": {
+          "blocked_no_complement_material": 21,
+          "online_promoted_local": 27
+        },
+        "diversity_generation_cost_reported": true,
+        "diversity_raw_record_count": 336,
+        "equal_budget_best_of_control": "best_single_anchor_by_pre_rescore_task_score",
+        "equal_budget_best_of_control_reported": true,
+        "hard_contradiction_count": 0,
+        "high_leverage_task_ids": [],
+        "leave_one_out_mean_non_rubric_lift_range": [
+          0.04028115501519757,
+          0.04403495440729483
+        ],
+        "leave_one_out_mean_score_lift_range": [
+          0.05049392097264438,
+          0.05594984802431611
+        ],
+        "maximum_single_task_share_of_total_lift": 0.09751460002716285,
+        "mean_anchor_score": 0.32384821428571425,
+        "mean_probe_cost_relative": 0.1875,
+        "mean_realized_score": 0.3786324404761905,
+        "mean_score_lift": 0.05478422619047619,
+        "median_non_rubric_lift": 0.042499999999999996,
+        "median_score_lift": 0.0625,
+        "online_promoted_task_count": 27,
+        "online_promoted_task_fraction": 0.5625,
+        "online_promoted_wilson95": [
+          0.4227501741982777,
+          0.6929873095934576
+        ],
+        "probe_cost_reported": true,
+        "probe_measured_count": 24,
+        "selected_complement_source_family_counts": {
+          "anchor_deficit": 90,
+          "probe": 4
+        },
+        "source_family_ablation": {
+          "anchor_deficit": {
+            "complement_coverage_count": 27,
+            "mean_non_rubric_lift": 0.04311755952380952,
+            "mean_score_lift": 0.054367559523809526,
+            "missing_task_count": 0,
+            "missing_task_ids": [],
+            "online_promoted_task_count": 27,
+            "task_count": 48
+          },
+          "diversity": {
+            "complement_coverage_count": 27,
+            "mean_non_rubric_lift": 0.04311755952380952,
+            "mean_score_lift": 0.05478422619047619,
+            "missing_task_count": 0,
+            "missing_task_ids": [],
+            "online_promoted_task_count": 27,
+            "task_count": 48
+          },
+          "label": {
+            "complement_coverage_count": 24,
+            "mean_non_rubric_lift": 0.04033779761904762,
+            "mean_score_lift": 0.051587797619047616,
+            "missing_task_count": 0,
+            "missing_task_ids": [],
+            "online_promoted_task_count": 24,
+            "task_count": 48
+          },
+          "probe": {
+            "complement_coverage_count": 27,
+            "mean_non_rubric_lift": 0.04337053571428572,
+            "mean_score_lift": 0.05587053571428572,
+            "missing_task_count": 0,
+            "missing_task_ids": [],
+            "online_promoted_task_count": 27,
+            "task_count": 48
+          }
+        },
+        "source_family_ablation_reported": true,
+        "task_count": 48,
+        "tasks_with_dimension_gain": 14,
+        "tasks_with_rubric_gain": 18,
+        "tasks_with_score_lift": 27,
+        "theme_bucket_results": {
+          "cost_routing": {
+            "complement_coverage_count": 5,
+            "mean_non_rubric_lift": 0.04866071428571429,
+            "mean_score_lift": 0.0586607142857143,
+            "task_count": 8
+          },
+          "coverage_gap_targeting": {
+            "complement_coverage_count": 5,
+            "mean_non_rubric_lift": 0.05857142857142857,
+            "mean_score_lift": 0.06607142857142856,
+            "task_count": 8
+          },
+          "cross_family_transfer": {
+            "complement_coverage_count": 4,
+            "mean_non_rubric_lift": 0.031294642857142854,
+            "mean_score_lift": 0.03879464285714286,
+            "task_count": 8
+          },
+          "ontology_expansion": {
+            "complement_coverage_count": 2,
+            "mean_non_rubric_lift": 0.01598214285714286,
+            "mean_score_lift": 0.020982142857142852,
+            "task_count": 8
+          },
+          "reproducibility_governance": {
+            "complement_coverage_count": 5,
+            "mean_non_rubric_lift": 0.043348214285714295,
+            "mean_score_lift": 0.0633482142857143,
+            "task_count": 8
+          },
+          "safety_contradiction_audit": {
+            "complement_coverage_count": 6,
+            "mean_non_rubric_lift": 0.06084821428571428,
+            "mean_score_lift": 0.08084821428571429,
+            "task_count": 8
+          }
+        },
+        "theme_bucket_results_reported": true,
+        "total_raw_record_count": 1346,
+        "unsupported_addition_count": 0,
+        "wins_ties_losses": {
+          "losses": 0,
+          "ties": 21,
+          "wins": 27
+        }
+      }
+    },
+    "v6_threshold_sensitivity": {
+      "path": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_threshold_sensitivity.json",
+      "sha256": "db85058d0d2f77d316eba70db1bee122e25fffb133e95406492f7dcd98647374",
+      "summary": {
+        "base_coverage_count": 27,
+        "base_dimension_threshold": 0.05,
+        "best_relaxed_coverage_count": 29,
+        "best_relaxed_dimension_threshold": 0.0,
+        "coverage_shortfall_at_positive_floor": 7,
+        "gate_coverage_count": 36,
+        "newly_recoverable_task_count_at_positive_floor": 2,
+        "newly_recoverable_task_ids_at_positive_floor": [
+          "plan_303",
+          "plan_332"
+        ],
+        "positive_floor_coverage_count": 29,
+        "threshold_can_explain_failure": false,
+        "thresholds_tested": [
+          0.0,
+          0.01,
+          0.02,
+          0.03,
+          0.04,
+          0.044,
+          0.05,
+          0.075,
+          0.1
+        ],
+        "zero_positive_delta_no_complement_count": 19
+      }
+    }
+  },
+  "schema": "latent_aggregation_multi_aspect_v7_freeze.v1",
+  "source_family_contract": {
+    "command_status": "implementation_required_before_generation",
+    "families": [
+      "baseline_dream_llada_low_confidence_random",
+      "ontology_probe",
+      "cross_latent_perturbation"
+    ],
+    "implementation_requirements": [
+      "add replay support for v7 expanded aspects before scoring v7 promotion",
+      "add source-family mapping for ontology_probe and cross_latent_perturbation",
+      "forbid task_score and rubric-hit labels as extractor inputs",
+      "report duplicate/noise rate for every new source family"
+    ],
+    "required_outputs": {
+      "cross_latent_raw_output": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v7_cross_latent_raw.jsonl",
+      "label_raw_output": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v7_raw.jsonl",
+      "ontology_probe_raw_output": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v7_ontology_probe_raw.jsonl"
+    }
+  },
+  "statistical_gates": {
+    "maximum_hard_contradiction_count": 0,
+    "maximum_unsupported_addition_count": 0,
+    "minimum_aggregate_win_count": 30,
+    "minimum_all_task_mean_non_rubric_lift": 0.035,
+    "minimum_complement_coverage_count": 36,
+    "minimum_complement_coverage_fraction": 0.75,
+    "minimum_conditional_non_rubric_lift": 0.05,
+    "minimum_conditional_promoted_fraction": 0.5,
+    "minimum_task_count": 48,
+    "minimum_wilson_lower_bound": 0.6
+  },
+  "task_count": 48,
+  "task_ids": [
+    "plan_345",
+    "plan_346",
+    "plan_347",
+    "plan_348",
+    "plan_349",
+    "plan_350",
+    "plan_351",
+    "plan_352",
+    "plan_353",
+    "plan_354",
+    "plan_355",
+    "plan_356",
+    "plan_357",
+    "plan_358",
+    "plan_359",
+    "plan_360",
+    "plan_361",
+    "plan_362",
+    "plan_363",
+    "plan_364",
+    "plan_365",
+    "plan_366",
+    "plan_367",
+    "plan_368",
+    "plan_369",
+    "plan_370",
+    "plan_371",
+    "plan_372",
+    "plan_373",
+    "plan_374",
+    "plan_375",
+    "plan_376",
+    "plan_377",
+    "plan_378",
+    "plan_379",
+    "plan_380",
+    "plan_381",
+    "plan_382",
+    "plan_383",
+    "plan_384",
+    "plan_385",
+    "plan_386",
+    "plan_387",
+    "plan_388",
+    "plan_389",
+    "plan_390",
+    "plan_391",
+    "plan_392"
+  ],
+  "task_preset": "latent_aggregation_multi_aspect_v7_plan345_392",
+  "task_source": {
+    "path": "experiments\\general_reasoning_tasks_scout.jsonl",
+    "sha256": "c38dd8f81db44ccd17e0beb0a6ca3e7efff590e5190bb171de6f4b94336ea5b9",
+    "task_hashes": {
+      "plan_345": "ccab093f26159df5051ff086a5e7675bb1f27c240987200ced6e608a45fac9ed",
+      "plan_346": "c9d6647a5698156b5fefa3c169ab8c64a00c9d9ead76c7ff4da5cca230eadc25",
+      "plan_347": "898c41b5a164f07f68e257ee14652ca02c85c0386a754fdb1f5a1e3b3eb718a6",
+      "plan_348": "c3677895bafa9df0c5129c2296187186964ed0b9ab9f0c3de9a3a78a43e119bf",
+      "plan_349": "d0889ecc045849afe3f8451e51aefb94b78f9dccfd209e279f368424b0bf9321",
+      "plan_350": "e2a4c9e8586bbeb8a8610f87f2feb2a8a5cc7206279eeacbcfd5e7ebb7407286",
+      "plan_351": "5b428bfe2fca2382ad7c4b04ee9ed51fbf855622903f73c352e72510c870e02f",
+      "plan_352": "4abbb444c1396db9d040666f3178f3a223698d5cbd85307e1b7b1e66204cd2c2",
+      "plan_353": "c861887dd06e4e02d6d5b2e22325861557ad520975d227b21ddff8caa7db7302",
+      "plan_354": "a797ca9206ffba3271e8a9670028e94aac669d24cbc0cab80357836453943228",
+      "plan_355": "e2166f1ba2fe797038eeb162d3cfba3e6105ffa1383d5e77ec7bf1df82b29e46",
+      "plan_356": "1353fcfbd8d629871b1b321ec55e8a372edd2854413e6fde59dc69079ad7759c",
+      "plan_357": "d456296bc70c8f5ce4ee15e419e2952be35acfabc3d6085731400530cbd4695a",
+      "plan_358": "4c818ad933d3edc4603175b8f85f40e31d59ae3f98d99c7cf3ab2567623d9203",
+      "plan_359": "f1cb6b653e3f372ac0a68aca907cb6e1bcf71dfeb21da91ae56f99799d6fdeaa",
+      "plan_360": "28a902872b71447ef51159d47502acf5330b0fa373d91e6f3e601bc9129302ac",
+      "plan_361": "c70e3d3cbf7a6b1b6312a06c7fc06ab92c49249409c6a9abf5f2a88eff05add0",
+      "plan_362": "0ed8b7be272b740cab1f28c2fe24d175bc4deb1bdca6748767bed35b67f372e1",
+      "plan_363": "ce9b3c0c7bedda8c169970fde2540bb0636e45dd1ee6f30cf065484fedbe6fe2",
+      "plan_364": "0650c335b925f71d6cb96648dda21772b96a674e773b17b5024c34e868e35ca1",
+      "plan_365": "5fba318d9858071e1d9e1d25f24642adf49e2e57db0904e537e8e61ee39e5fcf",
+      "plan_366": "290b740d10a8ee7d06f5110402d5762fd0fb7a3f22d9e3d6a12873e40ffb00c4",
+      "plan_367": "43a02dfd474ac01b5b7aa59cc099e9f755e97015edf3b32f68e105bc9ed483be",
+      "plan_368": "7e48b4a3d38acc1fc97bfc6778dc09c84807d479be6b29983c1bf1aaecdf79ba",
+      "plan_369": "a17af51371985fb2c497dce2345fe02366959e82b15648a9d2d18bf91c17b6d9",
+      "plan_370": "ec71ab3723645f618f8c5f244bfa0822b4bff167da5925d8c9ad1c67b8c2a04b",
+      "plan_371": "9e69a215096b267b4e9d2eaf32499d3ef2d20a56579ba00afe066933b2c9208a",
+      "plan_372": "b0fbae67648043ede373e96a9dedaec77ff83caa9184e0789670c19801c3cf99",
+      "plan_373": "3f20650c6d2e801d8a63597c8f63a7c6d27eea4748422fc22d2f4714a94be6bc",
+      "plan_374": "35c52dc0f142a8c1708a4ab5c9804eed07aaff570245fc051c056706ebaf333e",
+      "plan_375": "acbff0ea57f63378a037b3ebc3bde7f19261ac8c85750ecadb41b483f16e1361",
+      "plan_376": "9d7f6a59c5b8ccf4d0aff0f8ded6cdda781ae97934dc94da26ee45b1d4261b92",
+      "plan_377": "3a954816b4bdf1d21eead85b6392d65d9bb4f2e873d23b4196d64456a5fff3ab",
+      "plan_378": "810506220271fb98e1da9f46fe4d90f984c2a8be3a9790f11168415bf9c5468d",
+      "plan_379": "f5839ab29c0c1f1ab2e2ac41b9de8677c6477015b2233d2a85292bd0c7250295",
+      "plan_380": "5cb6fa0b3a9d23b672753e0ce75ed379b6e1ada8d352cd9ee3c780c80582e1fe",
+      "plan_381": "ccde61c337baead52e02346ae79ffc6f1f323457eea663bd833ec2ceb2b1b5ae",
+      "plan_382": "b1f811e7ec3a3bb99fbd731223fdb32dd43b1efc4b9557ffbe33d36a74e979f9",
+      "plan_383": "258a78b4979d89ddcedf140156c9ebcd44de1583740cc57fc15856cd75498660",
+      "plan_384": "fe2c98329e15b1a8cae28b9e48231e86b72262143472efd246642b0f3edacbaf",
+      "plan_385": "dd3110b3671977fe7f971a6ece37a830a3906e5a57045363adab9b490f06f533",
+      "plan_386": "c870ea13c5d0fb42872364f32a640398a2921a21e1adfcafc6d98b9023f07339",
+      "plan_387": "e0852b5d57bda4344a75ceb335060d9d900182370c19cca22f63fc419e1c656b",
+      "plan_388": "6e907810645d4812e16cfa2f4480560a86042a0de610952f6e5e19bafbb7b02d",
+      "plan_389": "361308d21f07597f861d926b38c368f404eadbfc75220398be71139c268e167f",
+      "plan_390": "3fa7e033397ecb33fb85a4a794c7562a9e9407276946672740b907fa9382f333",
+      "plan_391": "64b52d8667b08fd8682db7f6ec1a1f2c1e7103a3acd402b8b432acbd6f227686",
+      "plan_392": "c38f88ed67827f4cad6d1712d05c2acfe556eb71a6a85e206af95b9a2efb6be5"
+    }
+  },
+  "v7_specific_gates": {
+    "must_report_false_positive_aspect_audit": true,
+    "must_report_label_leakage_check": true,
+    "must_report_length_normalized_complement_yield": true,
+    "must_report_old_vs_expanded_ontology_coverage": true,
+    "must_report_source_family_unique_coverage": true,
+    "must_report_theme_bucket_concentration": true
+  }
+}

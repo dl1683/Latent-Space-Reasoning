@@ -2,8 +2,9 @@
 
 This is a pre-freeze design document, not a frozen promotion contract. It exists
 because v6 failed cleanly enough to identify the next required experiment. The
-fresh v7 task inventory now exists, but the source-family commands and true
-freeze manifest still need to be built before any v7 promotion run.
+fresh v7 task inventory and task/ontology freeze now exist, but the
+source-family commands and expanded-ontology replay support still need to be
+built before any v7 promotion run.
 
 ## Evidence Boundary
 
@@ -104,6 +105,6 @@ Additional v7-specific gates:
 
 ## Next Concrete Work
 
-The next implementation step is to build a true v7 freeze manifest from the
-fresh `plan_345` through `plan_392` inventory. Until that happens, v7 remains a
-pre-freeze design and should not be used for promotion.
+The next implementation step is to build v7 source-family generation and replay
+support against [LATENT_AGGREGATION_MULTI_ASPECT_V7_FREEZE.md](LATENT_AGGREGATION_MULTI_ASPECT_V7_FREEZE.md).
+Until that happens, v7 should not be used for promotion or GPU generation.

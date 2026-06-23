@@ -54,7 +54,10 @@ v6 is a useful negative coverage-targeting result. V6 failed promotion at
 `27/48` complement coverage, and threshold sensitivity showed positive-floor
 coverage reaches only `29/48`. The next aggregation step is therefore v7:
 create fresh `plan_345`-`plan_392` tasks, freeze an expanded planning-aspect
-ontology, and test new source families rather than weakening v6 gates.
+ontology, and test new source families rather than weakening v6 gates. The task
+inventory and task/ontology freeze now exist; source-family generation and
+expanded-ontology replay support are the next implementation boundary before
+GPU generation.
 
 ### Current Narrow Execution Protocol
 

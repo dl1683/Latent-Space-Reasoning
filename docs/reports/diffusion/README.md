@@ -188,6 +188,10 @@ Current high-signal generated reports:
   pre-freeze v7 design derived from the v6 failure; requires fresh
   `plan_345`-`plan_392` tasks, expanded aspects, and new source families before
   a real promotion freeze can be built.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V7_FREEZE.md](LATENT_AGGREGATION_MULTI_ASPECT_V7_FREEZE.md):
+  v7 task and ontology freeze over fresh `plan_345`-`plan_392`; explicitly
+  blocks generation until expanded-aspect replay and new source-family support
+  are implemented.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.
