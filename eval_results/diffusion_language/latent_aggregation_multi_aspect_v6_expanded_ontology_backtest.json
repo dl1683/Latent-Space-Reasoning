@@ -1,0 +1,627 @@
+{
+  "evidence_boundary": {
+    "reason": "Post-hoc no-generation diagnostic over v6 raw rows. It estimates whether the frozen v7 expanded ontology could expose additional text-supported complements, but it cannot promote v6.",
+    "status": "v6_expanded_ontology_backtest_diagnostic"
+  },
+  "generated_by": "experiments/analyze_latent_aggregation_v6_expanded_ontology_backtest.py",
+  "inputs": {
+    "coverage_gap": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_coverage_gap.json",
+    "freeze": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_freeze.json",
+    "raw_paths": [
+      "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_raw.jsonl",
+      "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_probe_raw.jsonl",
+      "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_diversity_extension_raw.jsonl",
+      "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_anchor_deficit_raw.jsonl"
+    ],
+    "source_record_counts": {
+      "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_anchor_deficit_raw.jsonl": 386,
+      "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_diversity_extension_raw.jsonl": 336,
+      "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_probe_raw.jsonl": 288,
+      "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_raw.jsonl": 336
+    },
+    "tasks": "experiments\\general_reasoning_tasks_scout.jsonl"
+  },
+  "schema": "latent_aggregation_v6_expanded_ontology_backtest.v1",
+  "summary": {
+    "base_no_complement_count": 21,
+    "expanded_aspect_counts": {
+      "evidence_or_measurement": 7,
+      "owner_assignment": 5,
+      "polarity_or_action_direction": 12,
+      "scope_boundary": 8,
+      "timeline_or_sequence": 8
+    },
+    "expanded_coverage_count": 30,
+    "expanded_source_family_counts": {
+      "anchor_deficit": 2,
+      "diversity": 16,
+      "label": 21,
+      "probe": 1
+    },
+    "new_no_complement_recovery_count": 12,
+    "new_no_complement_recovery_task_ids": [
+      "plan_302",
+      "plan_303",
+      "plan_305",
+      "plan_307",
+      "plan_310",
+      "plan_312",
+      "plan_315",
+      "plan_316",
+      "plan_319",
+      "plan_320",
+      "plan_332",
+      "plan_340"
+    ],
+    "task_count": 48
+  },
+  "tasks": [
+    {
+      "anchor_score": 0.24142857142857144,
+      "base_no_complement": false,
+      "expanded_aspect_counts": {},
+      "expanded_complement_count": 0,
+      "expanded_covered": false,
+      "expanded_source_family_counts": {},
+      "task_id": "plan_297"
+    },
+    {
+      "anchor_score": 0.38142857142857145,
+      "base_no_complement": true,
+      "expanded_aspect_counts": {},
+      "expanded_complement_count": 0,
+      "expanded_covered": false,
+      "expanded_source_family_counts": {},
+      "task_id": "plan_298"
+    },
+    {
+      "anchor_score": 0.3025,
+      "base_no_complement": false,
+      "expanded_aspect_counts": {
+        "polarity_or_action_direction": 1
+      },
+      "expanded_complement_count": 1,
+      "expanded_covered": true,
+      "expanded_source_family_counts": {
+        "label": 1
+      },
+      "task_id": "plan_299"
+    },
+    {
+      "anchor_score": 0.2628571428571429,
+      "base_no_complement": false,
+      "expanded_aspect_counts": {
+        "owner_assignment": 1,
+        "scope_boundary": 1
+      },
+      "expanded_complement_count": 2,
+      "expanded_covered": true,
+      "expanded_source_family_counts": {
+        "label": 2
+      },
+      "task_id": "plan_300"
+    },
+    {
+      "anchor_score": 0.29,
+      "base_no_complement": false,
+      "expanded_aspect_counts": {
+        "polarity_or_action_direction": 1,
+        "timeline_or_sequence": 1
+      },
+      "expanded_complement_count": 2,
+      "expanded_covered": true,
+      "expanded_source_family_counts": {
+        "label": 2
+      },
+      "task_id": "plan_301"
+    },
+    {
+      "anchor_score": 0.2975,
+      "base_no_complement": true,
+      "expanded_aspect_counts": {
+        "polarity_or_action_direction": 1,
+        "scope_boundary": 1
+      },
+      "expanded_complement_count": 2,
+      "expanded_covered": true,
+      "expanded_source_family_counts": {
+        "diversity": 1,
+        "label": 1
+      },
+      "task_id": "plan_302"
+    },
+    {
+      "anchor_score": 0.3164285714285714,
+      "base_no_complement": true,
+      "expanded_aspect_counts": {
+        "evidence_or_measurement": 1,
+        "polarity_or_action_direction": 1
+      },
+      "expanded_complement_count": 2,
+      "expanded_covered": true,
+      "expanded_source_family_counts": {
+        "diversity": 1,
+        "label": 1
+      },
+      "task_id": "plan_303"
+    },
+    {
+      "anchor_score": 0.3889285714285714,
+      "base_no_complement": false,
+      "expanded_aspect_counts": {},
+      "expanded_complement_count": 0,
+      "expanded_covered": false,
+      "expanded_source_family_counts": {},
+      "task_id": "plan_304"
+    },
+    {
+      "anchor_score": 0.3603571428571428,
+      "base_no_complement": true,
+      "expanded_aspect_counts": {
+        "polarity_or_action_direction": 1,
+        "scope_boundary": 1
+      },
+      "expanded_complement_count": 2,
+      "expanded_covered": true,
+      "expanded_source_family_counts": {
+        "anchor_deficit": 1,
+        "diversity": 1
+      },
+      "task_id": "plan_305"
+    },
+    {
+      "anchor_score": 0.4857142857142857,
+      "base_no_complement": false,
+      "expanded_aspect_counts": {
+        "timeline_or_sequence": 1
+      },
+      "expanded_complement_count": 1,
+      "expanded_covered": true,
+      "expanded_source_family_counts": {
+        "label": 1
+      },
+      "task_id": "plan_306"
+    },
+    {
+      "anchor_score": 0.22,
+      "base_no_complement": true,
+      "expanded_aspect_counts": {
+        "polarity_or_action_direction": 1
+      },
+      "expanded_complement_count": 1,
+      "expanded_covered": true,
+      "expanded_source_family_counts": {
+        "diversity": 1
+      },
+      "task_id": "plan_307"
+    },
+    {
+      "anchor_score": 0.38142857142857145,
+      "base_no_complement": true,
+      "expanded_aspect_counts": {},
+      "expanded_complement_count": 0,
+      "expanded_covered": false,
+      "expanded_source_family_counts": {},
+      "task_id": "plan_308"
+    },
+    {
+      "anchor_score": 0.35642857142857143,
+      "base_no_complement": true,
+      "expanded_aspect_counts": {},
+      "expanded_complement_count": 0,
+      "expanded_covered": false,
+      "expanded_source_family_counts": {},
+      "task_id": "plan_309"
+    },
+    {
+      "anchor_score": 0.36142857142857143,
+      "base_no_complement": true,
+      "expanded_aspect_counts": {
+        "polarity_or_action_direction": 1
+      },
+      "expanded_complement_count": 1,
+      "expanded_covered": true,
+      "expanded_source_family_counts": {
+        "label": 1
+      },
+      "task_id": "plan_310"
+    },
+    {
+      "anchor_score": 0.3432142857142857,
+      "base_no_complement": false,
+      "expanded_aspect_counts": {},
+      "expanded_complement_count": 0,
+      "expanded_covered": false,
+      "expanded_source_family_counts": {},
+      "task_id": "plan_311"
+    },
+    {
+      "anchor_score": 0.26142857142857145,
+      "base_no_complement": true,
+      "expanded_aspect_counts": {
+        "polarity_or_action_direction": 1
+      },
+      "expanded_complement_count": 1,
+      "expanded_covered": true,
+      "expanded_source_family_counts": {
+        "label": 1
+      },
+      "task_id": "plan_312"
+    },
+    {
+      "anchor_score": 0.22142857142857142,
+      "base_no_complement": false,
+      "expanded_aspect_counts": {
+        "timeline_or_sequence": 1
+      },
+      "expanded_complement_count": 1,
+      "expanded_covered": true,
+      "expanded_source_family_counts": {
+        "diversity": 1
+      },
+      "task_id": "plan_313"
+    },
+    {
+      "anchor_score": 0.26142857142857145,
+      "base_no_complement": false,
+      "expanded_aspect_counts": {
+        "evidence_or_measurement": 1
+      },
+      "expanded_complement_count": 1,
+      "expanded_covered": true,
+      "expanded_source_family_counts": {
+        "label": 1
+      },
+      "task_id": "plan_314"
+    },
+    {
+      "anchor_score": 0.40035714285714286,
+      "base_no_complement": true,
+      "expanded_aspect_counts": {
+        "scope_boundary": 1
+      },
+      "expanded_complement_count": 1,
+      "expanded_covered": true,
+      "expanded_source_family_counts": {
+        "diversity": 1
+      },
+      "task_id": "plan_315"
+    },
+    {
+      "anchor_score": 0.2839285714285714,
+      "base_no_complement": true,
+      "expanded_aspect_counts": {
+        "scope_boundary": 1
+      },
+      "expanded_complement_count": 1,
+      "expanded_covered": true,
+      "expanded_source_family_counts": {
+        "label": 1
+      },
+      "task_id": "plan_316"
+    },
+    {
+      "anchor_score": 0.3364285714285714,
+      "base_no_complement": false,
+      "expanded_aspect_counts": {
+        "evidence_or_measurement": 1
+      },
+      "expanded_complement_count": 1,
+      "expanded_covered": true,
+      "expanded_source_family_counts": {
+        "label": 1
+      },
+      "task_id": "plan_317"
+    },
+    {
+      "anchor_score": 0.33785714285714286,
+      "base_no_complement": false,
+      "expanded_aspect_counts": {
+        "timeline_or_sequence": 1
+      },
+      "expanded_complement_count": 1,
+      "expanded_covered": true,
+      "expanded_source_family_counts": {
+        "diversity": 1
+      },
+      "task_id": "plan_318"
+    },
+    {
+      "anchor_score": 0.26142857142857145,
+      "base_no_complement": true,
+      "expanded_aspect_counts": {
+        "polarity_or_action_direction": 1,
+        "scope_boundary": 1
+      },
+      "expanded_complement_count": 2,
+      "expanded_covered": true,
+      "expanded_source_family_counts": {
+        "label": 2
+      },
+      "task_id": "plan_319"
+    },
+    {
+      "anchor_score": 0.3153571428571429,
+      "base_no_complement": true,
+      "expanded_aspect_counts": {
+        "owner_assignment": 1,
+        "timeline_or_sequence": 1
+      },
+      "expanded_complement_count": 2,
+      "expanded_covered": true,
+      "expanded_source_family_counts": {
+        "diversity": 2
+      },
+      "task_id": "plan_320"
+    },
+    {
+      "anchor_score": 0.34678571428571425,
+      "base_no_complement": false,
+      "expanded_aspect_counts": {
+        "timeline_or_sequence": 1
+      },
+      "expanded_complement_count": 1,
+      "expanded_covered": true,
+      "expanded_source_family_counts": {
+        "diversity": 1
+      },
+      "task_id": "plan_321"
+    },
+    {
+      "anchor_score": 0.26142857142857145,
+      "base_no_complement": false,
+      "expanded_aspect_counts": {
+        "evidence_or_measurement": 1
+      },
+      "expanded_complement_count": 1,
+      "expanded_covered": true,
+      "expanded_source_family_counts": {
+        "label": 1
+      },
+      "task_id": "plan_322"
+    },
+    {
+      "anchor_score": 0.28,
+      "base_no_complement": true,
+      "expanded_aspect_counts": {},
+      "expanded_complement_count": 0,
+      "expanded_covered": false,
+      "expanded_source_family_counts": {},
+      "task_id": "plan_323"
+    },
+    {
+      "anchor_score": 0.275,
+      "base_no_complement": false,
+      "expanded_aspect_counts": {
+        "evidence_or_measurement": 1,
+        "owner_assignment": 1,
+        "scope_boundary": 1
+      },
+      "expanded_complement_count": 3,
+      "expanded_covered": true,
+      "expanded_source_family_counts": {
+        "diversity": 2,
+        "label": 1
+      },
+      "task_id": "plan_324"
+    },
+    {
+      "anchor_score": 0.3464285714285714,
+      "base_no_complement": false,
+      "expanded_aspect_counts": {
+        "timeline_or_sequence": 1
+      },
+      "expanded_complement_count": 1,
+      "expanded_covered": true,
+      "expanded_source_family_counts": {
+        "label": 1
+      },
+      "task_id": "plan_325"
+    },
+    {
+      "anchor_score": 0.2839285714285714,
+      "base_no_complement": true,
+      "expanded_aspect_counts": {},
+      "expanded_complement_count": 0,
+      "expanded_covered": false,
+      "expanded_source_family_counts": {},
+      "task_id": "plan_326"
+    },
+    {
+      "anchor_score": 0.2975,
+      "base_no_complement": false,
+      "expanded_aspect_counts": {},
+      "expanded_complement_count": 0,
+      "expanded_covered": false,
+      "expanded_source_family_counts": {},
+      "task_id": "plan_327"
+    },
+    {
+      "anchor_score": 0.4428571428571429,
+      "base_no_complement": false,
+      "expanded_aspect_counts": {
+        "evidence_or_measurement": 1
+      },
+      "expanded_complement_count": 1,
+      "expanded_covered": true,
+      "expanded_source_family_counts": {
+        "diversity": 1
+      },
+      "task_id": "plan_328"
+    },
+    {
+      "anchor_score": 0.42178571428571426,
+      "base_no_complement": true,
+      "expanded_aspect_counts": {},
+      "expanded_complement_count": 0,
+      "expanded_covered": false,
+      "expanded_source_family_counts": {},
+      "task_id": "plan_329"
+    },
+    {
+      "anchor_score": 0.4178571428571428,
+      "base_no_complement": false,
+      "expanded_aspect_counts": {
+        "polarity_or_action_direction": 1,
+        "scope_boundary": 1
+      },
+      "expanded_complement_count": 2,
+      "expanded_covered": true,
+      "expanded_source_family_counts": {
+        "diversity": 1,
+        "label": 1
+      },
+      "task_id": "plan_330"
+    },
+    {
+      "anchor_score": 0.3028571428571429,
+      "base_no_complement": false,
+      "expanded_aspect_counts": {
+        "owner_assignment": 1
+      },
+      "expanded_complement_count": 1,
+      "expanded_covered": true,
+      "expanded_source_family_counts": {
+        "probe": 1
+      },
+      "task_id": "plan_331"
+    },
+    {
+      "anchor_score": 0.29500000000000004,
+      "base_no_complement": true,
+      "expanded_aspect_counts": {
+        "evidence_or_measurement": 1
+      },
+      "expanded_complement_count": 1,
+      "expanded_covered": true,
+      "expanded_source_family_counts": {
+        "anchor_deficit": 1
+      },
+      "task_id": "plan_332"
+    },
+    {
+      "anchor_score": 0.4203571428571429,
+      "base_no_complement": false,
+      "expanded_aspect_counts": {},
+      "expanded_complement_count": 0,
+      "expanded_covered": false,
+      "expanded_source_family_counts": {},
+      "task_id": "plan_333"
+    },
+    {
+      "anchor_score": 0.3384285714285714,
+      "base_no_complement": true,
+      "expanded_aspect_counts": {},
+      "expanded_complement_count": 0,
+      "expanded_covered": false,
+      "expanded_source_family_counts": {},
+      "task_id": "plan_334"
+    },
+    {
+      "anchor_score": 0.30892857142857144,
+      "base_no_complement": false,
+      "expanded_aspect_counts": {
+        "polarity_or_action_direction": 1
+      },
+      "expanded_complement_count": 1,
+      "expanded_covered": true,
+      "expanded_source_family_counts": {
+        "diversity": 1
+      },
+      "task_id": "plan_335"
+    },
+    {
+      "anchor_score": 0.3314285714285714,
+      "base_no_complement": false,
+      "expanded_aspect_counts": {},
+      "expanded_complement_count": 0,
+      "expanded_covered": false,
+      "expanded_source_family_counts": {},
+      "task_id": "plan_336"
+    },
+    {
+      "anchor_score": 0.28500000000000003,
+      "base_no_complement": true,
+      "expanded_aspect_counts": {},
+      "expanded_complement_count": 0,
+      "expanded_covered": false,
+      "expanded_source_family_counts": {},
+      "task_id": "plan_337"
+    },
+    {
+      "anchor_score": 0.47678571428571426,
+      "base_no_complement": false,
+      "expanded_aspect_counts": {},
+      "expanded_complement_count": 0,
+      "expanded_covered": false,
+      "expanded_source_family_counts": {},
+      "task_id": "plan_338"
+    },
+    {
+      "anchor_score": 0.30142857142857143,
+      "base_no_complement": false,
+      "expanded_aspect_counts": {
+        "owner_assignment": 1
+      },
+      "expanded_complement_count": 1,
+      "expanded_covered": true,
+      "expanded_source_family_counts": {
+        "diversity": 1
+      },
+      "task_id": "plan_339"
+    },
+    {
+      "anchor_score": 0.26142857142857145,
+      "base_no_complement": true,
+      "expanded_aspect_counts": {
+        "timeline_or_sequence": 1
+      },
+      "expanded_complement_count": 1,
+      "expanded_covered": true,
+      "expanded_source_family_counts": {
+        "label": 1
+      },
+      "task_id": "plan_340"
+    },
+    {
+      "anchor_score": 0.22592857142857142,
+      "base_no_complement": true,
+      "expanded_aspect_counts": {},
+      "expanded_complement_count": 0,
+      "expanded_covered": false,
+      "expanded_source_family_counts": {},
+      "task_id": "plan_341"
+    },
+    {
+      "anchor_score": 0.44785714285714284,
+      "base_no_complement": false,
+      "expanded_aspect_counts": {},
+      "expanded_complement_count": 0,
+      "expanded_covered": false,
+      "expanded_source_family_counts": {},
+      "task_id": "plan_342"
+    },
+    {
+      "anchor_score": 0.26,
+      "base_no_complement": false,
+      "expanded_aspect_counts": {},
+      "expanded_complement_count": 0,
+      "expanded_covered": false,
+      "expanded_source_family_counts": {},
+      "task_id": "plan_343"
+    },
+    {
+      "anchor_score": 0.24642857142857144,
+      "base_no_complement": false,
+      "expanded_aspect_counts": {
+        "polarity_or_action_direction": 1
+      },
+      "expanded_complement_count": 1,
+      "expanded_covered": true,
+      "expanded_source_family_counts": {
+        "label": 1
+      },
+      "task_id": "plan_344"
+    }
+  ]
+}

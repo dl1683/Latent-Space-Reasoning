@@ -192,6 +192,10 @@ Current high-signal generated reports:
   v7 task and ontology freeze over fresh `plan_345`-`plan_392`; explicitly
   blocks generation until expanded-aspect replay and new source-family support
   are implemented.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md](LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md):
+  post-hoc no-generation diagnostic over existing v6 raw rows; the expanded
+  ontology recovers `12` of `21` v6 no-complement tasks, motivating v7
+  implementation while requiring false-positive audits on fresh tasks.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.

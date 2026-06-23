@@ -57,7 +57,10 @@ create fresh `plan_345`-`plan_392` tasks, freeze an expanded planning-aspect
 ontology, and test new source families rather than weakening v6 gates. The task
 inventory and task/ontology freeze now exist; source-family generation and
 expanded-ontology replay support are the next implementation boundary before
-GPU generation.
+GPU generation. A post-hoc no-generation v6 backtest gives the first sanity
+check for that direction: expanded aspects recover `12` of `21` v6
+no-complement tasks from existing raw text, but polarity and scope hits dominate,
+so fresh v7 promotion must include false-positive and length-normalized audits.
 
 ### Current Narrow Execution Protocol
 
