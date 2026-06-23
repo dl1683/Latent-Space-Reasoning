@@ -80,6 +80,9 @@ Current high-signal generated reports:
 - [LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_ANALYSIS.md](LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_ANALYSIS.md):
   v3 probe analysis showing `23/24` stage-1-valid probe texts, zero full-repair
   authorizations, and negative mean probe-task utility versus the source.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V3_LABEL_REPORT.md](LATENT_AGGREGATION_MULTI_ASPECT_V3_LABEL_REPORT.md):
+  frozen v3 GPU label run showing `24/24` eligible repair coverage, repair task
+  score `0.350000`, and `+0.036042` task-score lift over the selected trajectory.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.

@@ -36,6 +36,7 @@ If you need one-screen onboarding, open [../START_HERE.md](../START_HERE.md) fir
 - For the failed v3 probe dry run and corrected command: [LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_DRY_RUN_FAILURE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_DRY_RUN_FAILURE.md)
 - For the corrected v3 probe GPU run: [LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_REPORT.md)
 - For the corrected v3 probe interpretation: [LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_ANALYSIS.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_ANALYSIS.md)
+- For the frozen v3 GPU label run: [LATENT_AGGREGATION_MULTI_ASPECT_V3_LABEL_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V3_LABEL_REPORT.md)
 - For near-term roadmap: [NEXT_GENERATION_REASONING_TASKS.md](../NEXT_GENERATION_REASONING_TASKS.md)
 
 ## Current result surfaces

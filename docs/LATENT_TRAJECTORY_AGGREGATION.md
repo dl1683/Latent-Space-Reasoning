@@ -312,6 +312,13 @@ stage-1 valid, every row kept `should_run=false`, and bounded probe text task
 score averaged `-0.090247` below its source. V3 therefore has useful coverage
 visibility, not yet useful fused-answer material.
 
+The frozen v3 GPU label run is positive for the repair arm itself. It produced
+`24/24` eligible repair coverage, selected latent repair task score `0.350000`,
+task-score lift `+0.036042` over the selected trajectory/fixed baseline on
+repair-covered tasks, and `10/13/1` wins/ties/losses against the evolved source.
+This is repair-surface evidence; aggregation replay still needs to test whether
+multiple latent aspects can be fused without unsupported additions.
+
 Task mix:
 
 - 8 planning tasks with explicit rubric components.
