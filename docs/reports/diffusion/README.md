@@ -172,6 +172,14 @@ Current high-signal generated reports:
 - [LATENT_AGGREGATION_MULTI_ASPECT_V6_ANCHOR_DEFICIT_REPORT.md](LATENT_AGGREGATION_MULTI_ASPECT_V6_ANCHOR_DEFICIT_REPORT.md):
   fresh v6 targeted anchor-deficit source run; selected repair covers `48/48`
   tasks and scores `0.278735` versus fixed `0.263757` and random `0.218954`.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V6_REPLAY.md](LATENT_AGGREGATION_MULTI_ASPECT_V6_REPLAY.md):
+  failed fresh v6 replay over label, probe, diversity, and anchor-deficit
+  sources; coverage is `27/48` against the `36/48` gate, while all-task
+  non-rubric lift remains positive at `0.043118` with `0` unsupported additions
+  and `0` hard contradictions.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V6_COVERAGE_GAP.md](LATENT_AGGREGATION_MULTI_ASPECT_V6_COVERAGE_GAP.md):
+  v6 coverage diagnostic showing the remaining `21` no-complement tasks:
+  `19` anchor-dominance cases and `2` positive-but-below-threshold cases.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.

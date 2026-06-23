@@ -422,14 +422,21 @@ diversity-extension source is populated with evolved task score `0.274015`
 versus fixed `0.263757` and random `0.218954`. The new anchor-deficit source is
 now populated as source-side evidence too: selected repair covers `48/48`, scores
 `0.278735` versus fixed `0.263757` and random `0.218954`, and records
-`17/27/4` wins/ties/losses versus fixed. The aggregation result still depends on
-the frozen replay and coverage-gap analysis. The v6 gates require `36/48`
-complement coverage, `30` aggregate wins, Wilson lower bound `0.600000`,
-all-task non-rubric lift `0.035000`, zero unsupported additions, zero hard
-contradictions, source-family ablations, cost-normalized lift, and explicit
-anchor-deficit incremental coverage. The point is not to lower the v5 bar; it
-is to test whether a targeted latent source can make the no-complement region
-smaller.
+`17/27/4` wins/ties/losses versus fixed.
+
+The frozen v6 replay is a clean negative on the promotion question. It reaches
+`27/48` complement coverage, `27` online promotions, all-task mean non-rubric
+lift `0.043118`, mean realized aggregate score `0.378632` versus anchor
+`0.323848`, and `0` unsupported additions or hard contradictions. It still
+fails `4` frozen gates: complement coverage count, complement coverage fraction,
+aggregate win count, and Wilson lower bound. The coverage diagnostic leaves `21`
+no-complement tasks: `19` anchor-dominance cases and `2`
+positive-but-below-threshold cases. The source-family ablation is especially
+important: removing `anchor_deficit` leaves coverage at `27/48`, so the targeted
+source produced selectable components but did not add the incremental coverage
+needed to promote. The point is not to lower the v5 bar; it is to design a
+better complement-generation policy or expanded aspect ontology for the
+remaining anchor-dominance region.
 
 ## Relationship To Current Diffusion Work
 

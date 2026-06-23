@@ -204,9 +204,17 @@ Active frontier:
   `0.263757` fixed and `0.218954` random. The targeted anchor-deficit source is
   now populated too: selected repair reaches `0.278735` versus the same fixed
   and random baselines, with `48/48` repair coverage and `17/27/4`
-  wins/ties/losses versus fixed. The remaining v6 work is the frozen replay and
-  coverage-gap analysis; those decide whether the new source family actually
-  closes the v5 no-complement region without weakening the safety or cost gates.
+  wins/ties/losses versus fixed. The frozen v6 replay fails promotion:
+  complement coverage is `27/48` against the `36/48` gate, aggregate
+  wins/ties/losses are `27/21/0` against the `30`-win gate, and the Wilson lower
+  bound is `0.422750` against `0.600000`. It still reports useful bounded
+  evidence: all-task mean non-rubric lift is `0.043118`, mean realized aggregate
+  score is `0.378632` versus `0.323848` anchor, unsupported additions and hard
+  contradictions remain `0`, and the remaining no-complement blockers are `19`
+  anchor-dominance cases plus `2` positive-but-below-threshold cases. The
+  targeted anchor-deficit source did not close the coverage gap under the
+  current extractor and replay policy, so the next step is not weaker gates; it
+  is a better complement-generation policy or expanded aspect ontology.
 
 What not to overclaim:
 

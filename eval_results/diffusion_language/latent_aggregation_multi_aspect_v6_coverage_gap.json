@@ -1,0 +1,782 @@
+{
+  "evidence_boundary": {
+    "reason": "Fresh v6 coverage diagnostic over predeclared 48-task label, probe, diversity-extension, and anchor-deficit raw sources. This explains the remaining no-complement tasks after the v6 coverage-targeting replay.",
+    "status": "fresh_predeclared_multi_source_v6_coverage_gap"
+  },
+  "generated_by": "experiments/analyze_latent_aggregation_multi_aspect_v3_coverage_gap.py",
+  "inputs": {
+    "freeze": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_freeze.json",
+    "raw_paths": [
+      "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_raw.jsonl",
+      "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_probe_raw.jsonl",
+      "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_diversity_extension_raw.jsonl",
+      "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_anchor_deficit_raw.jsonl"
+    ],
+    "source_record_counts": {
+      "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_anchor_deficit_raw.jsonl": 386,
+      "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_diversity_extension_raw.jsonl": 336,
+      "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_probe_raw.jsonl": 288,
+      "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_raw.jsonl": 336
+    }
+  },
+  "schema": "latent_aggregation_multi_aspect_v3_coverage_gap.v1",
+  "summary": {
+    "complement_source_counts": {
+      "counterfactual_probe": 4,
+      "low_confidence": 17,
+      "random": 13,
+      "repair_candidate": 8
+    },
+    "max_no_complement_dimension_delta": 0.04464285714285714,
+    "mean_no_complement_max_dimension_delta": 0.0042517006802721075,
+    "mean_non_anchor_candidate_count": 25.083333333333332,
+    "mean_nonempty_candidate_count": 20.833333333333332,
+    "no_complement_blockers": {
+      "anchor_dominates_candidate_aspects": 19,
+      "positive_but_below_threshold": 2
+    },
+    "no_complement_tasks_with_near_miss": 2,
+    "task_count": 48,
+    "tasks_with_selected_complement": 27,
+    "tasks_without_selected_complement": 21
+  },
+  "tasks": [
+    {
+      "anchor_score": 0.24142857142857144,
+      "anchor_trajectory_id": "plan_297:llada-8b-instruct-hf:evolved_random_48:candidate_generation",
+      "coverage_blocker": "has_selected_complement",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 1.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 26,
+      "nonempty_candidate_count": 20,
+      "positive_delta_aspect_count": 8,
+      "selected_complement_count": 2,
+      "selected_complement_sources": {
+        "repair_candidate": 2
+      },
+      "task_id": "plan_297"
+    },
+    {
+      "anchor_score": 0.38142857142857145,
+      "anchor_trajectory_id": "plan_298:llada-8b-instruct-hf:evolved_low_confidence_48:candidate_generation",
+      "coverage_blocker": "anchor_dominates_candidate_aspects",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 0.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 26,
+      "nonempty_candidate_count": 26,
+      "positive_delta_aspect_count": 0,
+      "selected_complement_count": 0,
+      "selected_complement_sources": {},
+      "task_id": "plan_298"
+    },
+    {
+      "anchor_score": 0.3025,
+      "anchor_trajectory_id": "plan_299:llada-8b-instruct-hf:schedule:repair_candidate",
+      "coverage_blocker": "has_selected_complement",
+      "max_dimension_delta": 0.25,
+      "max_rubric_delta": 0.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 25,
+      "nonempty_candidate_count": 23,
+      "positive_delta_aspect_count": 3,
+      "selected_complement_count": 2,
+      "selected_complement_sources": {
+        "low_confidence": 1,
+        "random": 1
+      },
+      "task_id": "plan_299"
+    },
+    {
+      "anchor_score": 0.2628571428571429,
+      "anchor_trajectory_id": "plan_300:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "coverage_blocker": "has_selected_complement",
+      "max_dimension_delta": 0.25,
+      "max_rubric_delta": 1.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 24,
+      "nonempty_candidate_count": 18,
+      "positive_delta_aspect_count": 7,
+      "selected_complement_count": 2,
+      "selected_complement_sources": {
+        "low_confidence": 1,
+        "repair_candidate": 1
+      },
+      "task_id": "plan_300"
+    },
+    {
+      "anchor_score": 0.29,
+      "anchor_trajectory_id": "plan_301:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "coverage_blocker": "has_selected_complement",
+      "max_dimension_delta": 0.25,
+      "max_rubric_delta": 0.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 24,
+      "nonempty_candidate_count": 20,
+      "positive_delta_aspect_count": 2,
+      "selected_complement_count": 2,
+      "selected_complement_sources": {
+        "repair_candidate": 2
+      },
+      "task_id": "plan_301"
+    },
+    {
+      "anchor_score": 0.2975,
+      "anchor_trajectory_id": "plan_302:llada-8b-instruct-hf:evolved_low_confidence_64:candidate_generation",
+      "coverage_blocker": "anchor_dominates_candidate_aspects",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 0.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 26,
+      "nonempty_candidate_count": 24,
+      "positive_delta_aspect_count": 0,
+      "selected_complement_count": 0,
+      "selected_complement_sources": {},
+      "task_id": "plan_302"
+    },
+    {
+      "anchor_score": 0.3164285714285714,
+      "anchor_trajectory_id": "plan_303:llada-8b-instruct-hf:evolved_random_48:candidate_generation",
+      "coverage_blocker": "positive_but_below_threshold",
+      "max_dimension_delta": 0.04464285714285712,
+      "max_rubric_delta": 0.0,
+      "near_miss_aspect_count": 9,
+      "non_anchor_candidate_count": 26,
+      "nonempty_candidate_count": 20,
+      "positive_delta_aspect_count": 9,
+      "selected_complement_count": 0,
+      "selected_complement_sources": {},
+      "task_id": "plan_303"
+    },
+    {
+      "anchor_score": 0.3889285714285714,
+      "anchor_trajectory_id": "plan_304:llada-8b-instruct-hf:evolved_low_confidence_48:candidate_generation",
+      "coverage_blocker": "has_selected_complement",
+      "max_dimension_delta": 0.21428571428571425,
+      "max_rubric_delta": 0.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 26,
+      "nonempty_candidate_count": 24,
+      "positive_delta_aspect_count": 1,
+      "selected_complement_count": 1,
+      "selected_complement_sources": {
+        "repair_candidate": 1
+      },
+      "task_id": "plan_304"
+    },
+    {
+      "anchor_score": 0.3603571428571428,
+      "anchor_trajectory_id": "plan_305:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "coverage_blocker": "anchor_dominates_candidate_aspects",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 0.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 24,
+      "nonempty_candidate_count": 20,
+      "positive_delta_aspect_count": 0,
+      "selected_complement_count": 0,
+      "selected_complement_sources": {},
+      "task_id": "plan_305"
+    },
+    {
+      "anchor_score": 0.4857142857142857,
+      "anchor_trajectory_id": "plan_306:llada-8b-instruct-hf:schedule:repair_candidate",
+      "coverage_blocker": "has_selected_complement",
+      "max_dimension_delta": 0.5,
+      "max_rubric_delta": 0.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 25,
+      "nonempty_candidate_count": 21,
+      "positive_delta_aspect_count": 1,
+      "selected_complement_count": 1,
+      "selected_complement_sources": {
+        "counterfactual_probe": 1
+      },
+      "task_id": "plan_306"
+    },
+    {
+      "anchor_score": 0.22,
+      "anchor_trajectory_id": "plan_307:llada-8b-instruct-hf:evolved_low_confidence_48:candidate_generation",
+      "coverage_blocker": "anchor_dominates_candidate_aspects",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 0.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 26,
+      "nonempty_candidate_count": 20,
+      "positive_delta_aspect_count": 0,
+      "selected_complement_count": 0,
+      "selected_complement_sources": {},
+      "task_id": "plan_307"
+    },
+    {
+      "anchor_score": 0.38142857142857145,
+      "anchor_trajectory_id": "plan_308:llada-8b-instruct-hf:schedule:repair_candidate",
+      "coverage_blocker": "anchor_dominates_candidate_aspects",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 0.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 25,
+      "nonempty_candidate_count": 23,
+      "positive_delta_aspect_count": 0,
+      "selected_complement_count": 0,
+      "selected_complement_sources": {},
+      "task_id": "plan_308"
+    },
+    {
+      "anchor_score": 0.35642857142857143,
+      "anchor_trajectory_id": "plan_309:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "coverage_blocker": "anchor_dominates_candidate_aspects",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 0.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 24,
+      "nonempty_candidate_count": 20,
+      "positive_delta_aspect_count": 0,
+      "selected_complement_count": 0,
+      "selected_complement_sources": {},
+      "task_id": "plan_309"
+    },
+    {
+      "anchor_score": 0.36142857142857143,
+      "anchor_trajectory_id": "plan_310:llada-8b-instruct-hf:schedule:repair_candidate",
+      "coverage_blocker": "anchor_dominates_candidate_aspects",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 0.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 25,
+      "nonempty_candidate_count": 19,
+      "positive_delta_aspect_count": 0,
+      "selected_complement_count": 0,
+      "selected_complement_sources": {},
+      "task_id": "plan_310"
+    },
+    {
+      "anchor_score": 0.3432142857142857,
+      "anchor_trajectory_id": "plan_311:llada-8b-instruct-hf:schedule:repair_candidate",
+      "coverage_blocker": "has_selected_complement",
+      "max_dimension_delta": 0.25,
+      "max_rubric_delta": 1.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 25,
+      "nonempty_candidate_count": 19,
+      "positive_delta_aspect_count": 4,
+      "selected_complement_count": 2,
+      "selected_complement_sources": {
+        "low_confidence": 1,
+        "random": 1
+      },
+      "task_id": "plan_311"
+    },
+    {
+      "anchor_score": 0.26142857142857145,
+      "anchor_trajectory_id": "plan_312:llada-8b-instruct-hf:evolved_random_48:candidate_generation",
+      "coverage_blocker": "anchor_dominates_candidate_aspects",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 0.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 26,
+      "nonempty_candidate_count": 20,
+      "positive_delta_aspect_count": 0,
+      "selected_complement_count": 0,
+      "selected_complement_sources": {},
+      "task_id": "plan_312"
+    },
+    {
+      "anchor_score": 0.22142857142857142,
+      "anchor_trajectory_id": "plan_313:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "coverage_blocker": "has_selected_complement",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 1.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 24,
+      "nonempty_candidate_count": 18,
+      "positive_delta_aspect_count": 2,
+      "selected_complement_count": 1,
+      "selected_complement_sources": {
+        "random": 1
+      },
+      "task_id": "plan_313"
+    },
+    {
+      "anchor_score": 0.26142857142857145,
+      "anchor_trajectory_id": "plan_314:llada-8b-instruct-hf:evolved_low_confidence_48:candidate_generation",
+      "coverage_blocker": "has_selected_complement",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 1.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 26,
+      "nonempty_candidate_count": 20,
+      "positive_delta_aspect_count": 5,
+      "selected_complement_count": 1,
+      "selected_complement_sources": {
+        "random": 1
+      },
+      "task_id": "plan_314"
+    },
+    {
+      "anchor_score": 0.40035714285714286,
+      "anchor_trajectory_id": "plan_315:llada-8b-instruct-hf:schedule:repair_candidate",
+      "coverage_blocker": "anchor_dominates_candidate_aspects",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 0.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 25,
+      "nonempty_candidate_count": 19,
+      "positive_delta_aspect_count": 0,
+      "selected_complement_count": 0,
+      "selected_complement_sources": {},
+      "task_id": "plan_315"
+    },
+    {
+      "anchor_score": 0.2839285714285714,
+      "anchor_trajectory_id": "plan_316:llada-8b-instruct-hf:evolved_revision_random_32:candidate_generation",
+      "coverage_blocker": "anchor_dominates_candidate_aspects",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 0.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 26,
+      "nonempty_candidate_count": 22,
+      "positive_delta_aspect_count": 0,
+      "selected_complement_count": 0,
+      "selected_complement_sources": {},
+      "task_id": "plan_316"
+    },
+    {
+      "anchor_score": 0.3364285714285714,
+      "anchor_trajectory_id": "plan_317:llada-8b-instruct-hf:evolved_random_48:candidate_generation",
+      "coverage_blocker": "has_selected_complement",
+      "max_dimension_delta": 0.25,
+      "max_rubric_delta": 0.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 26,
+      "nonempty_candidate_count": 22,
+      "positive_delta_aspect_count": 5,
+      "selected_complement_count": 1,
+      "selected_complement_sources": {
+        "random": 1
+      },
+      "task_id": "plan_317"
+    },
+    {
+      "anchor_score": 0.33785714285714286,
+      "anchor_trajectory_id": "plan_318:llada-8b-instruct-hf:schedule:repair_candidate",
+      "coverage_blocker": "has_selected_complement",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 1.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 25,
+      "nonempty_candidate_count": 21,
+      "positive_delta_aspect_count": 2,
+      "selected_complement_count": 1,
+      "selected_complement_sources": {
+        "low_confidence": 1
+      },
+      "task_id": "plan_318"
+    },
+    {
+      "anchor_score": 0.26142857142857145,
+      "anchor_trajectory_id": "plan_319:llada-8b-instruct-hf:random_32:candidate_generation",
+      "coverage_blocker": "anchor_dominates_candidate_aspects",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 0.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 24,
+      "nonempty_candidate_count": 20,
+      "positive_delta_aspect_count": 0,
+      "selected_complement_count": 0,
+      "selected_complement_sources": {},
+      "task_id": "plan_319"
+    },
+    {
+      "anchor_score": 0.3153571428571429,
+      "anchor_trajectory_id": "plan_320:llada-8b-instruct-hf:evolved_revision_low_confidence_32:candidate_generation",
+      "coverage_blocker": "anchor_dominates_candidate_aspects",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 0.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 26,
+      "nonempty_candidate_count": 20,
+      "positive_delta_aspect_count": 0,
+      "selected_complement_count": 0,
+      "selected_complement_sources": {},
+      "task_id": "plan_320"
+    },
+    {
+      "anchor_score": 0.34678571428571425,
+      "anchor_trajectory_id": "plan_321:llada-8b-instruct-hf:schedule:repair_candidate",
+      "coverage_blocker": "has_selected_complement",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 1.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 25,
+      "nonempty_candidate_count": 23,
+      "positive_delta_aspect_count": 16,
+      "selected_complement_count": 2,
+      "selected_complement_sources": {
+        "low_confidence": 2
+      },
+      "task_id": "plan_321"
+    },
+    {
+      "anchor_score": 0.26142857142857145,
+      "anchor_trajectory_id": "plan_322:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "coverage_blocker": "has_selected_complement",
+      "max_dimension_delta": 0.5,
+      "max_rubric_delta": 1.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 24,
+      "nonempty_candidate_count": 18,
+      "positive_delta_aspect_count": 2,
+      "selected_complement_count": 2,
+      "selected_complement_sources": {
+        "counterfactual_probe": 1,
+        "random": 1
+      },
+      "task_id": "plan_322"
+    },
+    {
+      "anchor_score": 0.28,
+      "anchor_trajectory_id": "plan_323:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "coverage_blocker": "anchor_dominates_candidate_aspects",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 0.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 24,
+      "nonempty_candidate_count": 20,
+      "positive_delta_aspect_count": 0,
+      "selected_complement_count": 0,
+      "selected_complement_sources": {},
+      "task_id": "plan_323"
+    },
+    {
+      "anchor_score": 0.275,
+      "anchor_trajectory_id": "plan_324:llada-8b-instruct-hf:random_32:candidate_generation",
+      "coverage_blocker": "has_selected_complement",
+      "max_dimension_delta": 0.04464285714285714,
+      "max_rubric_delta": 1.0,
+      "near_miss_aspect_count": 2,
+      "non_anchor_candidate_count": 24,
+      "nonempty_candidate_count": 18,
+      "positive_delta_aspect_count": 11,
+      "selected_complement_count": 2,
+      "selected_complement_sources": {
+        "counterfactual_probe": 1,
+        "low_confidence": 1
+      },
+      "task_id": "plan_324"
+    },
+    {
+      "anchor_score": 0.3464285714285714,
+      "anchor_trajectory_id": "plan_325:llada-8b-instruct-hf:random_32:candidate_generation",
+      "coverage_blocker": "has_selected_complement",
+      "max_dimension_delta": 0.25,
+      "max_rubric_delta": 0.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 24,
+      "nonempty_candidate_count": 24,
+      "positive_delta_aspect_count": 16,
+      "selected_complement_count": 2,
+      "selected_complement_sources": {
+        "low_confidence": 1,
+        "repair_candidate": 1
+      },
+      "task_id": "plan_325"
+    },
+    {
+      "anchor_score": 0.2839285714285714,
+      "anchor_trajectory_id": "plan_326:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "coverage_blocker": "anchor_dominates_candidate_aspects",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 0.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 24,
+      "nonempty_candidate_count": 18,
+      "positive_delta_aspect_count": 0,
+      "selected_complement_count": 0,
+      "selected_complement_sources": {},
+      "task_id": "plan_326"
+    },
+    {
+      "anchor_score": 0.2975,
+      "anchor_trajectory_id": "plan_327:llada-8b-instruct-hf:random_32:candidate_generation",
+      "coverage_blocker": "has_selected_complement",
+      "max_dimension_delta": 0.10714285714285714,
+      "max_rubric_delta": 0.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 24,
+      "nonempty_candidate_count": 22,
+      "positive_delta_aspect_count": 2,
+      "selected_complement_count": 1,
+      "selected_complement_sources": {
+        "low_confidence": 1
+      },
+      "task_id": "plan_327"
+    },
+    {
+      "anchor_score": 0.4428571428571429,
+      "anchor_trajectory_id": "plan_328:llada-8b-instruct-hf:schedule:repair_candidate",
+      "coverage_blocker": "has_selected_complement",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 1.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 25,
+      "nonempty_candidate_count": 21,
+      "positive_delta_aspect_count": 22,
+      "selected_complement_count": 2,
+      "selected_complement_sources": {
+        "low_confidence": 1,
+        "random": 1
+      },
+      "task_id": "plan_328"
+    },
+    {
+      "anchor_score": 0.42178571428571426,
+      "anchor_trajectory_id": "plan_329:llada-8b-instruct-hf:schedule:repair_candidate",
+      "coverage_blocker": "anchor_dominates_candidate_aspects",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 0.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 25,
+      "nonempty_candidate_count": 19,
+      "positive_delta_aspect_count": 0,
+      "selected_complement_count": 0,
+      "selected_complement_sources": {},
+      "task_id": "plan_329"
+    },
+    {
+      "anchor_score": 0.4178571428571428,
+      "anchor_trajectory_id": "plan_330:llada-8b-instruct-hf:evolved_low_confidence_48:candidate_generation",
+      "coverage_blocker": "has_selected_complement",
+      "max_dimension_delta": 0.25,
+      "max_rubric_delta": 1.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 27,
+      "nonempty_candidate_count": 25,
+      "positive_delta_aspect_count": 23,
+      "selected_complement_count": 4,
+      "selected_complement_sources": {
+        "low_confidence": 1,
+        "random": 2,
+        "repair_candidate": 1
+      },
+      "task_id": "plan_330"
+    },
+    {
+      "anchor_score": 0.3028571428571429,
+      "anchor_trajectory_id": "plan_331:llada-8b-instruct-hf:schedule:repair_candidate",
+      "coverage_blocker": "has_selected_complement",
+      "max_dimension_delta": 0.25,
+      "max_rubric_delta": 0.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 25,
+      "nonempty_candidate_count": 23,
+      "positive_delta_aspect_count": 3,
+      "selected_complement_count": 2,
+      "selected_complement_sources": {
+        "counterfactual_probe": 1,
+        "low_confidence": 1
+      },
+      "task_id": "plan_331"
+    },
+    {
+      "anchor_score": 0.29500000000000004,
+      "anchor_trajectory_id": "plan_332:llada-8b-instruct-hf:evolved_low_confidence_64:candidate_generation",
+      "coverage_blocker": "positive_but_below_threshold",
+      "max_dimension_delta": 0.04464285714285714,
+      "max_rubric_delta": 0.0,
+      "near_miss_aspect_count": 2,
+      "non_anchor_candidate_count": 26,
+      "nonempty_candidate_count": 20,
+      "positive_delta_aspect_count": 2,
+      "selected_complement_count": 0,
+      "selected_complement_sources": {},
+      "task_id": "plan_332"
+    },
+    {
+      "anchor_score": 0.4203571428571429,
+      "anchor_trajectory_id": "plan_333:llada-8b-instruct-hf:schedule:repair_candidate",
+      "coverage_blocker": "has_selected_complement",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 1.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 25,
+      "nonempty_candidate_count": 19,
+      "positive_delta_aspect_count": 18,
+      "selected_complement_count": 1,
+      "selected_complement_sources": {
+        "low_confidence": 1
+      },
+      "task_id": "plan_333"
+    },
+    {
+      "anchor_score": 0.3384285714285714,
+      "anchor_trajectory_id": "plan_334:llada-8b-instruct-hf:counterfactual_micro_probe_v1:counterfactual_probe",
+      "coverage_blocker": "anchor_dominates_candidate_aspects",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 0.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 27,
+      "nonempty_candidate_count": 21,
+      "positive_delta_aspect_count": 0,
+      "selected_complement_count": 0,
+      "selected_complement_sources": {},
+      "task_id": "plan_334"
+    },
+    {
+      "anchor_score": 0.30892857142857144,
+      "anchor_trajectory_id": "plan_335:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "coverage_blocker": "has_selected_complement",
+      "max_dimension_delta": 0.25,
+      "max_rubric_delta": 0.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 24,
+      "nonempty_candidate_count": 18,
+      "positive_delta_aspect_count": 2,
+      "selected_complement_count": 1,
+      "selected_complement_sources": {
+        "random": 1
+      },
+      "task_id": "plan_335"
+    },
+    {
+      "anchor_score": 0.3314285714285714,
+      "anchor_trajectory_id": "plan_336:llada-8b-instruct-hf:schedule:repair_candidate",
+      "coverage_blocker": "has_selected_complement",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 1.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 25,
+      "nonempty_candidate_count": 23,
+      "positive_delta_aspect_count": 8,
+      "selected_complement_count": 1,
+      "selected_complement_sources": {
+        "low_confidence": 1
+      },
+      "task_id": "plan_336"
+    },
+    {
+      "anchor_score": 0.28500000000000003,
+      "anchor_trajectory_id": "plan_337:llada-8b-instruct-hf:schedule:repair_candidate",
+      "coverage_blocker": "anchor_dominates_candidate_aspects",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 0.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 25,
+      "nonempty_candidate_count": 21,
+      "positive_delta_aspect_count": 0,
+      "selected_complement_count": 0,
+      "selected_complement_sources": {},
+      "task_id": "plan_337"
+    },
+    {
+      "anchor_score": 0.47678571428571426,
+      "anchor_trajectory_id": "plan_338:llada-8b-instruct-hf:schedule:repair_candidate",
+      "coverage_blocker": "has_selected_complement",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 1.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 25,
+      "nonempty_candidate_count": 23,
+      "positive_delta_aspect_count": 9,
+      "selected_complement_count": 1,
+      "selected_complement_sources": {
+        "low_confidence": 1
+      },
+      "task_id": "plan_338"
+    },
+    {
+      "anchor_score": 0.30142857142857143,
+      "anchor_trajectory_id": "plan_339:llada-8b-instruct-hf:schedule:repair_candidate",
+      "coverage_blocker": "has_selected_complement",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 1.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 25,
+      "nonempty_candidate_count": 19,
+      "positive_delta_aspect_count": 4,
+      "selected_complement_count": 1,
+      "selected_complement_sources": {
+        "random": 1
+      },
+      "task_id": "plan_339"
+    },
+    {
+      "anchor_score": 0.26142857142857145,
+      "anchor_trajectory_id": "plan_340:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "coverage_blocker": "anchor_dominates_candidate_aspects",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 0.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 24,
+      "nonempty_candidate_count": 24,
+      "positive_delta_aspect_count": 0,
+      "selected_complement_count": 0,
+      "selected_complement_sources": {},
+      "task_id": "plan_340"
+    },
+    {
+      "anchor_score": 0.22592857142857142,
+      "anchor_trajectory_id": "plan_341:llada-8b-instruct-hf:counterfactual_micro_probe_v1:counterfactual_probe",
+      "coverage_blocker": "anchor_dominates_candidate_aspects",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 0.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 27,
+      "nonempty_candidate_count": 21,
+      "positive_delta_aspect_count": 0,
+      "selected_complement_count": 0,
+      "selected_complement_sources": {},
+      "task_id": "plan_341"
+    },
+    {
+      "anchor_score": 0.44785714285714284,
+      "anchor_trajectory_id": "plan_342:llada-8b-instruct-hf:schedule:repair_candidate",
+      "coverage_blocker": "has_selected_complement",
+      "max_dimension_delta": 0.25,
+      "max_rubric_delta": 1.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 25,
+      "nonempty_candidate_count": 19,
+      "positive_delta_aspect_count": 4,
+      "selected_complement_count": 2,
+      "selected_complement_sources": {
+        "low_confidence": 1,
+        "random": 1
+      },
+      "task_id": "plan_342"
+    },
+    {
+      "anchor_score": 0.26,
+      "anchor_trajectory_id": "plan_343:llada-8b-instruct-hf:schedule:repair_candidate",
+      "coverage_blocker": "has_selected_complement",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 1.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 25,
+      "nonempty_candidate_count": 23,
+      "positive_delta_aspect_count": 2,
+      "selected_complement_count": 1,
+      "selected_complement_sources": {
+        "random": 1
+      },
+      "task_id": "plan_343"
+    },
+    {
+      "anchor_score": 0.24642857142857144,
+      "anchor_trajectory_id": "plan_344:llada-8b-instruct-hf:schedule:repair_candidate",
+      "coverage_blocker": "has_selected_complement",
+      "max_dimension_delta": 0.0,
+      "max_rubric_delta": 1.0,
+      "near_miss_aspect_count": 0,
+      "non_anchor_candidate_count": 25,
+      "nonempty_candidate_count": 19,
+      "positive_delta_aspect_count": 4,
+      "selected_complement_count": 1,
+      "selected_complement_sources": {
+        "low_confidence": 1
+      },
+      "task_id": "plan_344"
+    }
+  ]
+}

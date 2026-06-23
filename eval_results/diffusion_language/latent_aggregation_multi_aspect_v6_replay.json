@@ -1,0 +1,1056 @@
+{
+  "audit_boundary": {
+    "contradiction_method": "selected_aspect_id_conflict_check",
+    "unsupported_addition_method": "deterministic_template_scope_check"
+  },
+  "evidence_boundary": {
+    "reason": "Fresh v6 replay over the predeclared 48-task label, probe, diversity-extension, and anchor-deficit source mix. V6 keeps the v5 mechanism bounded while testing targeted complement generation for the remaining coverage gap.",
+    "status": "fresh_predeclared_multi_source_v6_replay"
+  },
+  "gate_evaluation": {
+    "failed_gate_count": 4,
+    "gates": [
+      {
+        "name": "minimum_task_count",
+        "observed": "48",
+        "status": "pass",
+        "threshold": "48"
+      },
+      {
+        "name": "minimum_complement_coverage_count",
+        "observed": "27",
+        "status": "fail",
+        "threshold": "36"
+      },
+      {
+        "name": "minimum_complement_coverage_fraction",
+        "observed": "0.562500",
+        "status": "fail",
+        "threshold": "0.750000"
+      },
+      {
+        "name": "minimum_conditional_promoted_fraction",
+        "observed": "1.000000",
+        "status": "pass",
+        "threshold": "0.500000"
+      },
+      {
+        "name": "minimum_conditional_non_rubric_lift",
+        "observed": "0.076653",
+        "status": "pass",
+        "threshold": "0.050000"
+      },
+      {
+        "name": "minimum_all_task_mean_non_rubric_lift",
+        "observed": "0.043118",
+        "status": "pass",
+        "threshold": "0.035000"
+      },
+      {
+        "name": "minimum_aggregate_win_count",
+        "observed": "27",
+        "status": "fail",
+        "threshold": "30"
+      },
+      {
+        "name": "minimum_wilson_lower_bound",
+        "observed": "0.422750",
+        "status": "fail",
+        "threshold": "0.600000"
+      },
+      {
+        "name": "maximum_unsupported_addition_count",
+        "observed": "0",
+        "status": "pass",
+        "threshold": "0"
+      },
+      {
+        "name": "maximum_hard_contradiction_count",
+        "observed": "0",
+        "status": "pass",
+        "threshold": "0"
+      },
+      {
+        "name": "must_report_probe_cost",
+        "observed": "reported",
+        "status": "pass",
+        "threshold": "reported"
+      },
+      {
+        "name": "must_report_equal_budget_best_of_control",
+        "observed": "reported",
+        "status": "pass",
+        "threshold": "reported"
+      },
+      {
+        "name": "must_report_rubric_and_dimension_gain_separately",
+        "observed": "reported",
+        "status": "pass",
+        "threshold": "reported"
+      },
+      {
+        "name": "must_report_diversity_generation_cost",
+        "observed": "reported",
+        "status": "pass",
+        "threshold": "reported"
+      },
+      {
+        "name": "must_report_anchor_deficit_generation_cost",
+        "observed": "reported",
+        "status": "pass",
+        "threshold": "reported"
+      },
+      {
+        "name": "must_report_wins_ties_losses",
+        "observed": "reported",
+        "status": "pass",
+        "threshold": "reported"
+      },
+      {
+        "name": "must_report_median_score_lift",
+        "observed": "reported",
+        "status": "pass",
+        "threshold": "reported"
+      },
+      {
+        "name": "must_report_median_non_rubric_lift",
+        "observed": "reported",
+        "status": "pass",
+        "threshold": "reported"
+      },
+      {
+        "name": "must_report_leave_one_out_mean_lift_range",
+        "observed": "reported",
+        "status": "pass",
+        "threshold": "reported"
+      },
+      {
+        "name": "must_report_high_leverage_task_ids",
+        "observed": "reported",
+        "status": "pass",
+        "threshold": "reported"
+      },
+      {
+        "name": "must_report_source_family_ablation",
+        "observed": "reported",
+        "status": "pass",
+        "threshold": "reported"
+      },
+      {
+        "name": "must_report_complement_yield_per_raw_row",
+        "observed": "reported",
+        "status": "pass",
+        "threshold": "reported"
+      },
+      {
+        "name": "must_report_cost_normalized_lift",
+        "observed": "reported",
+        "status": "pass",
+        "threshold": "reported"
+      },
+      {
+        "name": "must_report_anchor_deficit_incremental_coverage",
+        "observed": "reported",
+        "status": "pass",
+        "threshold": "reported"
+      },
+      {
+        "name": "maximum_single_task_share_of_total_lift",
+        "observed": "0.097515",
+        "status": "pass",
+        "threshold": "0.250000"
+      },
+      {
+        "name": "must_report_theme_bucket_results",
+        "observed": "reported",
+        "status": "pass",
+        "threshold": "reported"
+      }
+    ],
+    "overall_status": "failed",
+    "passed_gate_count": 22
+  },
+  "generated_by": "experiments/run_latent_aggregation_multi_aspect_v3_replay.py",
+  "inputs": {
+    "freeze": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_freeze.json",
+    "probe_analysis": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v3_probe_analysis.json",
+    "raw": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_raw.jsonl",
+    "raw_paths": [
+      "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_raw.jsonl",
+      "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_probe_raw.jsonl",
+      "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_diversity_extension_raw.jsonl",
+      "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_anchor_deficit_raw.jsonl"
+    ],
+    "source_record_counts": {
+      "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_anchor_deficit_raw.jsonl": 386,
+      "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_diversity_extension_raw.jsonl": 336,
+      "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_probe_raw.jsonl": 288,
+      "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v6_raw.jsonl": 336
+    },
+    "tasks": "experiments\\general_reasoning_tasks_scout.jsonl"
+  },
+  "schema": "latent_aggregation_multi_aspect_v3_replay.v1",
+  "summary": {
+    "all_task_mean_non_rubric_lift": 0.04311755952380952,
+    "anchor_deficit_generation_cost_reported": true,
+    "anchor_deficit_incremental_coverage_reported": true,
+    "anchor_deficit_raw_record_count": 386,
+    "anchor_deficit_selected_complement_count": 90,
+    "anchor_deficit_selected_task_count": 26,
+    "complement_coverage_count": 27,
+    "complement_coverage_fraction": 0.5625,
+    "complement_yield_per_raw_row": 0.06983655274888559,
+    "conditional_mean_non_rubric_lift": 0.07665343915343915,
+    "conditional_promoted_fraction": 1.0,
+    "cost_normalized_non_rubric_lift": 0.0015376247081299087,
+    "cost_normalized_score_lift": 0.001953672256421142,
+    "decision_status_counts": {
+      "blocked_no_complement_material": 21,
+      "online_promoted_local": 27
+    },
+    "diversity_generation_cost_reported": true,
+    "diversity_raw_record_count": 336,
+    "equal_budget_best_of_control": "best_single_anchor_by_pre_rescore_task_score",
+    "equal_budget_best_of_control_reported": true,
+    "hard_contradiction_count": 0,
+    "high_leverage_task_ids": [],
+    "leave_one_out_mean_non_rubric_lift_range": [
+      0.04028115501519757,
+      0.04403495440729483
+    ],
+    "leave_one_out_mean_score_lift_range": [
+      0.05049392097264438,
+      0.05594984802431611
+    ],
+    "maximum_single_task_share_of_total_lift": 0.09751460002716285,
+    "mean_anchor_score": 0.32384821428571425,
+    "mean_probe_cost_relative": 0.1875,
+    "mean_realized_score": 0.3786324404761905,
+    "mean_score_lift": 0.05478422619047619,
+    "median_non_rubric_lift": 0.042499999999999996,
+    "median_score_lift": 0.0625,
+    "online_promoted_task_count": 27,
+    "online_promoted_task_fraction": 0.5625,
+    "online_promoted_wilson95": [
+      0.4227501741982777,
+      0.6929873095934576
+    ],
+    "probe_cost_reported": true,
+    "probe_measured_count": 24,
+    "selected_complement_source_family_counts": {
+      "anchor_deficit": 90,
+      "probe": 4
+    },
+    "source_family_ablation": {
+      "anchor_deficit": {
+        "complement_coverage_count": 27,
+        "mean_non_rubric_lift": 0.04311755952380952,
+        "mean_score_lift": 0.054367559523809526,
+        "missing_task_count": 0,
+        "missing_task_ids": [],
+        "online_promoted_task_count": 27,
+        "task_count": 48
+      },
+      "diversity": {
+        "complement_coverage_count": 27,
+        "mean_non_rubric_lift": 0.04311755952380952,
+        "mean_score_lift": 0.05478422619047619,
+        "missing_task_count": 0,
+        "missing_task_ids": [],
+        "online_promoted_task_count": 27,
+        "task_count": 48
+      },
+      "label": {
+        "complement_coverage_count": 24,
+        "mean_non_rubric_lift": 0.04033779761904762,
+        "mean_score_lift": 0.051587797619047616,
+        "missing_task_count": 0,
+        "missing_task_ids": [],
+        "online_promoted_task_count": 24,
+        "task_count": 48
+      },
+      "probe": {
+        "complement_coverage_count": 27,
+        "mean_non_rubric_lift": 0.04337053571428572,
+        "mean_score_lift": 0.05587053571428572,
+        "missing_task_count": 0,
+        "missing_task_ids": [],
+        "online_promoted_task_count": 27,
+        "task_count": 48
+      }
+    },
+    "source_family_ablation_reported": true,
+    "task_count": 48,
+    "tasks_with_dimension_gain": 14,
+    "tasks_with_rubric_gain": 18,
+    "tasks_with_score_lift": 27,
+    "theme_bucket_results": {
+      "cost_routing": {
+        "complement_coverage_count": 5,
+        "mean_non_rubric_lift": 0.04866071428571429,
+        "mean_score_lift": 0.0586607142857143,
+        "task_count": 8
+      },
+      "coverage_gap_targeting": {
+        "complement_coverage_count": 5,
+        "mean_non_rubric_lift": 0.05857142857142857,
+        "mean_score_lift": 0.06607142857142856,
+        "task_count": 8
+      },
+      "cross_family_transfer": {
+        "complement_coverage_count": 4,
+        "mean_non_rubric_lift": 0.031294642857142854,
+        "mean_score_lift": 0.03879464285714286,
+        "task_count": 8
+      },
+      "ontology_expansion": {
+        "complement_coverage_count": 2,
+        "mean_non_rubric_lift": 0.01598214285714286,
+        "mean_score_lift": 0.020982142857142852,
+        "task_count": 8
+      },
+      "reproducibility_governance": {
+        "complement_coverage_count": 5,
+        "mean_non_rubric_lift": 0.043348214285714295,
+        "mean_score_lift": 0.0633482142857143,
+        "task_count": 8
+      },
+      "safety_contradiction_audit": {
+        "complement_coverage_count": 6,
+        "mean_non_rubric_lift": 0.06084821428571428,
+        "mean_score_lift": 0.08084821428571429,
+        "task_count": 8
+      }
+    },
+    "theme_bucket_results_reported": true,
+    "total_raw_record_count": 1346,
+    "unsupported_addition_count": 0,
+    "wins_ties_losses": {
+      "losses": 0,
+      "ties": 21,
+      "wins": 27
+    }
+  },
+  "tasks": [
+    {
+      "anchor_score": 0.24142857142857144,
+      "anchor_trajectory_id": "plan_297:llada-8b-instruct-hf:evolved_random_48:candidate_generation",
+      "decision": {
+        "reason": "Realized aggregate beats anchor with selected aspect gain.",
+        "status": "online_promoted_local"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.08535714285714283,
+      "realized_score": 0.36678571428571427,
+      "rubric_gain_count": 2,
+      "score_lift": 0.12535714285714283,
+      "selected_complement_count": 2,
+      "task_id": "plan_297"
+    },
+    {
+      "anchor_score": 0.38142857142857145,
+      "anchor_trajectory_id": "plan_298:llada-8b-instruct-hf:evolved_low_confidence_48:candidate_generation",
+      "decision": {
+        "reason": "No complement aspects were available beyond the anchor.",
+        "status": "blocked_no_complement_material"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.38142857142857145,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_298"
+    },
+    {
+      "anchor_score": 0.3025,
+      "anchor_trajectory_id": "plan_299:llada-8b-instruct-hf:schedule:repair_candidate",
+      "decision": {
+        "reason": "Realized aggregate beats anchor with selected aspect gain.",
+        "status": "online_promoted_local"
+      },
+      "dimension_gain_count": 2,
+      "non_rubric_lift": 0.06392857142857142,
+      "realized_score": 0.36642857142857144,
+      "rubric_gain_count": 0,
+      "score_lift": 0.06392857142857145,
+      "selected_complement_count": 2,
+      "task_id": "plan_299"
+    },
+    {
+      "anchor_score": 0.2628571428571429,
+      "anchor_trajectory_id": "plan_300:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "decision": {
+        "reason": "Realized aggregate beats anchor with selected aspect gain.",
+        "status": "online_promoted_local"
+      },
+      "dimension_gain_count": 1,
+      "non_rubric_lift": 0.10642857142857143,
+      "realized_score": 0.3892857142857143,
+      "rubric_gain_count": 1,
+      "score_lift": 0.1264285714285714,
+      "selected_complement_count": 2,
+      "task_id": "plan_300"
+    },
+    {
+      "anchor_score": 0.29,
+      "anchor_trajectory_id": "plan_301:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "decision": {
+        "reason": "Realized aggregate beats anchor with selected aspect gain.",
+        "status": "online_promoted_local"
+      },
+      "dimension_gain_count": 2,
+      "non_rubric_lift": 0.10642857142857143,
+      "realized_score": 0.3964285714285714,
+      "rubric_gain_count": 0,
+      "score_lift": 0.10642857142857143,
+      "selected_complement_count": 2,
+      "task_id": "plan_301"
+    },
+    {
+      "anchor_score": 0.2975,
+      "anchor_trajectory_id": "plan_302:llada-8b-instruct-hf:evolved_low_confidence_64:candidate_generation",
+      "decision": {
+        "reason": "No complement aspects were available beyond the anchor.",
+        "status": "blocked_no_complement_material"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.2975,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_302"
+    },
+    {
+      "anchor_score": 0.3164285714285714,
+      "anchor_trajectory_id": "plan_303:llada-8b-instruct-hf:evolved_random_48:candidate_generation",
+      "decision": {
+        "reason": "No complement aspects were available beyond the anchor.",
+        "status": "blocked_no_complement_material"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.3164285714285714,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_303"
+    },
+    {
+      "anchor_score": 0.3889285714285714,
+      "anchor_trajectory_id": "plan_304:llada-8b-instruct-hf:evolved_low_confidence_48:candidate_generation",
+      "decision": {
+        "reason": "Realized aggregate beats anchor with selected aspect gain.",
+        "status": "online_promoted_local"
+      },
+      "dimension_gain_count": 1,
+      "non_rubric_lift": 0.10642857142857148,
+      "realized_score": 0.49535714285714283,
+      "rubric_gain_count": 0,
+      "score_lift": 0.10642857142857143,
+      "selected_complement_count": 1,
+      "task_id": "plan_304"
+    },
+    {
+      "anchor_score": 0.3603571428571428,
+      "anchor_trajectory_id": "plan_305:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "decision": {
+        "reason": "No complement aspects were available beyond the anchor.",
+        "status": "blocked_no_complement_material"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.3603571428571428,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_305"
+    },
+    {
+      "anchor_score": 0.4857142857142857,
+      "anchor_trajectory_id": "plan_306:llada-8b-instruct-hf:schedule:repair_candidate",
+      "decision": {
+        "reason": "Realized aggregate beats anchor with selected aspect gain.",
+        "status": "online_promoted_local"
+      },
+      "dimension_gain_count": 1,
+      "non_rubric_lift": 0.06392857142857145,
+      "realized_score": 0.5496428571428571,
+      "rubric_gain_count": 0,
+      "score_lift": 0.06392857142857139,
+      "selected_complement_count": 1,
+      "task_id": "plan_306"
+    },
+    {
+      "anchor_score": 0.22,
+      "anchor_trajectory_id": "plan_307:llada-8b-instruct-hf:evolved_low_confidence_48:candidate_generation",
+      "decision": {
+        "reason": "No complement aspects were available beyond the anchor.",
+        "status": "blocked_no_complement_material"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.22,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_307"
+    },
+    {
+      "anchor_score": 0.38142857142857145,
+      "anchor_trajectory_id": "plan_308:llada-8b-instruct-hf:schedule:repair_candidate",
+      "decision": {
+        "reason": "No complement aspects were available beyond the anchor.",
+        "status": "blocked_no_complement_material"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.38142857142857145,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_308"
+    },
+    {
+      "anchor_score": 0.35642857142857143,
+      "anchor_trajectory_id": "plan_309:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "decision": {
+        "reason": "No complement aspects were available beyond the anchor.",
+        "status": "blocked_no_complement_material"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.35642857142857143,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_309"
+    },
+    {
+      "anchor_score": 0.36142857142857143,
+      "anchor_trajectory_id": "plan_310:llada-8b-instruct-hf:schedule:repair_candidate",
+      "decision": {
+        "reason": "No complement aspects were available beyond the anchor.",
+        "status": "blocked_no_complement_material"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.36142857142857143,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_310"
+    },
+    {
+      "anchor_score": 0.3432142857142857,
+      "anchor_trajectory_id": "plan_311:llada-8b-instruct-hf:schedule:repair_candidate",
+      "decision": {
+        "reason": "Realized aggregate beats anchor with selected aspect gain.",
+        "status": "online_promoted_local"
+      },
+      "dimension_gain_count": 1,
+      "non_rubric_lift": 0.06392857142857145,
+      "realized_score": 0.4471428571428571,
+      "rubric_gain_count": 1,
+      "score_lift": 0.10392857142857143,
+      "selected_complement_count": 2,
+      "task_id": "plan_311"
+    },
+    {
+      "anchor_score": 0.26142857142857145,
+      "anchor_trajectory_id": "plan_312:llada-8b-instruct-hf:evolved_random_48:candidate_generation",
+      "decision": {
+        "reason": "No complement aspects were available beyond the anchor.",
+        "status": "blocked_no_complement_material"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.26142857142857145,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_312"
+    },
+    {
+      "anchor_score": 0.22142857142857142,
+      "anchor_trajectory_id": "plan_313:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "decision": {
+        "reason": "Realized aggregate beats anchor with selected aspect gain.",
+        "status": "online_promoted_local"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.06392857142857142,
+      "realized_score": 0.3053571428571429,
+      "rubric_gain_count": 1,
+      "score_lift": 0.08392857142857146,
+      "selected_complement_count": 1,
+      "task_id": "plan_313"
+    },
+    {
+      "anchor_score": 0.26142857142857145,
+      "anchor_trajectory_id": "plan_314:llada-8b-instruct-hf:evolved_low_confidence_48:candidate_generation",
+      "decision": {
+        "reason": "Realized aggregate beats anchor with selected aspect gain.",
+        "status": "online_promoted_local"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.04250000000000001,
+      "realized_score": 0.32392857142857145,
+      "rubric_gain_count": 1,
+      "score_lift": 0.0625,
+      "selected_complement_count": 1,
+      "task_id": "plan_314"
+    },
+    {
+      "anchor_score": 0.40035714285714286,
+      "anchor_trajectory_id": "plan_315:llada-8b-instruct-hf:schedule:repair_candidate",
+      "decision": {
+        "reason": "No complement aspects were available beyond the anchor.",
+        "status": "blocked_no_complement_material"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.40035714285714286,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_315"
+    },
+    {
+      "anchor_score": 0.2839285714285714,
+      "anchor_trajectory_id": "plan_316:llada-8b-instruct-hf:evolved_revision_random_32:candidate_generation",
+      "decision": {
+        "reason": "No complement aspects were available beyond the anchor.",
+        "status": "blocked_no_complement_material"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.2839285714285714,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_316"
+    },
+    {
+      "anchor_score": 0.3364285714285714,
+      "anchor_trajectory_id": "plan_317:llada-8b-instruct-hf:evolved_random_48:candidate_generation",
+      "decision": {
+        "reason": "Realized aggregate beats anchor with selected aspect gain.",
+        "status": "online_promoted_local"
+      },
+      "dimension_gain_count": 1,
+      "non_rubric_lift": 0.10142857142857142,
+      "realized_score": 0.43785714285714283,
+      "rubric_gain_count": 0,
+      "score_lift": 0.10142857142857142,
+      "selected_complement_count": 1,
+      "task_id": "plan_317"
+    },
+    {
+      "anchor_score": 0.33785714285714286,
+      "anchor_trajectory_id": "plan_318:llada-8b-instruct-hf:schedule:repair_candidate",
+      "decision": {
+        "reason": "Realized aggregate beats anchor with selected aspect gain.",
+        "status": "online_promoted_local"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.04249999999999998,
+      "realized_score": 0.40035714285714286,
+      "rubric_gain_count": 1,
+      "score_lift": 0.0625,
+      "selected_complement_count": 1,
+      "task_id": "plan_318"
+    },
+    {
+      "anchor_score": 0.26142857142857145,
+      "anchor_trajectory_id": "plan_319:llada-8b-instruct-hf:random_32:candidate_generation",
+      "decision": {
+        "reason": "No complement aspects were available beyond the anchor.",
+        "status": "blocked_no_complement_material"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.26142857142857145,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_319"
+    },
+    {
+      "anchor_score": 0.3153571428571429,
+      "anchor_trajectory_id": "plan_320:llada-8b-instruct-hf:evolved_revision_low_confidence_32:candidate_generation",
+      "decision": {
+        "reason": "No complement aspects were available beyond the anchor.",
+        "status": "blocked_no_complement_material"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.3153571428571429,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_320"
+    },
+    {
+      "anchor_score": 0.34678571428571425,
+      "anchor_trajectory_id": "plan_321:llada-8b-instruct-hf:schedule:repair_candidate",
+      "decision": {
+        "reason": "Realized aggregate beats anchor with selected aspect gain.",
+        "status": "online_promoted_local"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.3867857142857143,
+      "rubric_gain_count": 2,
+      "score_lift": 0.040000000000000036,
+      "selected_complement_count": 2,
+      "task_id": "plan_321"
+    },
+    {
+      "anchor_score": 0.26142857142857145,
+      "anchor_trajectory_id": "plan_322:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "decision": {
+        "reason": "Realized aggregate beats anchor with selected aspect gain.",
+        "status": "online_promoted_local"
+      },
+      "dimension_gain_count": 1,
+      "non_rubric_lift": 0.06392857142857142,
+      "realized_score": 0.34535714285714286,
+      "rubric_gain_count": 1,
+      "score_lift": 0.08392857142857141,
+      "selected_complement_count": 2,
+      "task_id": "plan_322"
+    },
+    {
+      "anchor_score": 0.28,
+      "anchor_trajectory_id": "plan_323:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "decision": {
+        "reason": "No complement aspects were available beyond the anchor.",
+        "status": "blocked_no_complement_material"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.28,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_323"
+    },
+    {
+      "anchor_score": 0.275,
+      "anchor_trajectory_id": "plan_324:llada-8b-instruct-hf:random_32:candidate_generation",
+      "decision": {
+        "reason": "Realized aggregate beats anchor with selected aspect gain.",
+        "status": "online_promoted_local"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.12750000000000003,
+      "realized_score": 0.4625,
+      "rubric_gain_count": 2,
+      "score_lift": 0.1875,
+      "selected_complement_count": 2,
+      "task_id": "plan_324"
+    },
+    {
+      "anchor_score": 0.3464285714285714,
+      "anchor_trajectory_id": "plan_325:llada-8b-instruct-hf:random_32:candidate_generation",
+      "decision": {
+        "reason": "Realized aggregate beats anchor with selected aspect gain.",
+        "status": "online_promoted_local"
+      },
+      "dimension_gain_count": 2,
+      "non_rubric_lift": 0.08000000000000002,
+      "realized_score": 0.42642857142857143,
+      "rubric_gain_count": 0,
+      "score_lift": 0.08000000000000002,
+      "selected_complement_count": 2,
+      "task_id": "plan_325"
+    },
+    {
+      "anchor_score": 0.2839285714285714,
+      "anchor_trajectory_id": "plan_326:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "decision": {
+        "reason": "No complement aspects were available beyond the anchor.",
+        "status": "blocked_no_complement_material"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.2839285714285714,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_326"
+    },
+    {
+      "anchor_score": 0.2975,
+      "anchor_trajectory_id": "plan_327:llada-8b-instruct-hf:random_32:candidate_generation",
+      "decision": {
+        "reason": "Realized aggregate beats anchor with selected aspect gain.",
+        "status": "online_promoted_local"
+      },
+      "dimension_gain_count": 1,
+      "non_rubric_lift": 0.06392857142857142,
+      "realized_score": 0.36142857142857143,
+      "rubric_gain_count": 0,
+      "score_lift": 0.06392857142857145,
+      "selected_complement_count": 1,
+      "task_id": "plan_327"
+    },
+    {
+      "anchor_score": 0.4428571428571429,
+      "anchor_trajectory_id": "plan_328:llada-8b-instruct-hf:schedule:repair_candidate",
+      "decision": {
+        "reason": "Realized aggregate beats anchor with selected aspect gain.",
+        "status": "online_promoted_local"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.15142857142857136,
+      "realized_score": 0.6342857142857142,
+      "rubric_gain_count": 2,
+      "score_lift": 0.19142857142857134,
+      "selected_complement_count": 2,
+      "task_id": "plan_328"
+    },
+    {
+      "anchor_score": 0.42178571428571426,
+      "anchor_trajectory_id": "plan_329:llada-8b-instruct-hf:schedule:repair_candidate",
+      "decision": {
+        "reason": "No complement aspects were available beyond the anchor.",
+        "status": "blocked_no_complement_material"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.42178571428571426,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_329"
+    },
+    {
+      "anchor_score": 0.4178571428571428,
+      "anchor_trajectory_id": "plan_330:llada-8b-instruct-hf:evolved_low_confidence_48:candidate_generation",
+      "decision": {
+        "reason": "Realized aggregate beats anchor with selected aspect gain.",
+        "status": "online_promoted_local"
+      },
+      "dimension_gain_count": 2,
+      "non_rubric_lift": 0.10142857142857148,
+      "realized_score": 0.5592857142857144,
+      "rubric_gain_count": 2,
+      "score_lift": 0.14142857142857157,
+      "selected_complement_count": 4,
+      "task_id": "plan_330"
+    },
+    {
+      "anchor_score": 0.3028571428571429,
+      "anchor_trajectory_id": "plan_331:llada-8b-instruct-hf:schedule:repair_candidate",
+      "decision": {
+        "reason": "Realized aggregate beats anchor with selected aspect gain.",
+        "status": "online_promoted_local"
+      },
+      "dimension_gain_count": 2,
+      "non_rubric_lift": 0.10142857142857137,
+      "realized_score": 0.40428571428571425,
+      "rubric_gain_count": 0,
+      "score_lift": 0.10142857142857137,
+      "selected_complement_count": 2,
+      "task_id": "plan_331"
+    },
+    {
+      "anchor_score": 0.29500000000000004,
+      "anchor_trajectory_id": "plan_332:llada-8b-instruct-hf:evolved_low_confidence_64:candidate_generation",
+      "decision": {
+        "reason": "No complement aspects were available beyond the anchor.",
+        "status": "blocked_no_complement_material"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.29500000000000004,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_332"
+    },
+    {
+      "anchor_score": 0.4203571428571429,
+      "anchor_trajectory_id": "plan_333:llada-8b-instruct-hf:schedule:repair_candidate",
+      "decision": {
+        "reason": "Realized aggregate beats anchor with selected aspect gain.",
+        "status": "online_promoted_local"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.04250000000000004,
+      "realized_score": 0.4828571428571429,
+      "rubric_gain_count": 1,
+      "score_lift": 0.0625,
+      "selected_complement_count": 1,
+      "task_id": "plan_333"
+    },
+    {
+      "anchor_score": 0.3384285714285714,
+      "anchor_trajectory_id": "plan_334:llada-8b-instruct-hf:counterfactual_micro_probe_v1:counterfactual_probe",
+      "decision": {
+        "reason": "No complement aspects were available beyond the anchor.",
+        "status": "blocked_no_complement_material"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.3384285714285714,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_334"
+    },
+    {
+      "anchor_score": 0.30892857142857144,
+      "anchor_trajectory_id": "plan_335:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "decision": {
+        "reason": "Realized aggregate beats anchor with selected aspect gain.",
+        "status": "online_promoted_local"
+      },
+      "dimension_gain_count": 1,
+      "non_rubric_lift": 0.10142857142857142,
+      "realized_score": 0.41035714285714286,
+      "rubric_gain_count": 0,
+      "score_lift": 0.10142857142857142,
+      "selected_complement_count": 1,
+      "task_id": "plan_335"
+    },
+    {
+      "anchor_score": 0.3314285714285714,
+      "anchor_trajectory_id": "plan_336:llada-8b-instruct-hf:schedule:repair_candidate",
+      "decision": {
+        "reason": "Realized aggregate beats anchor with selected aspect gain.",
+        "status": "online_promoted_local"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.04250000000000004,
+      "realized_score": 0.39392857142857146,
+      "rubric_gain_count": 1,
+      "score_lift": 0.06250000000000006,
+      "selected_complement_count": 1,
+      "task_id": "plan_336"
+    },
+    {
+      "anchor_score": 0.28500000000000003,
+      "anchor_trajectory_id": "plan_337:llada-8b-instruct-hf:schedule:repair_candidate",
+      "decision": {
+        "reason": "No complement aspects were available beyond the anchor.",
+        "status": "blocked_no_complement_material"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.28500000000000003,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_337"
+    },
+    {
+      "anchor_score": 0.47678571428571426,
+      "anchor_trajectory_id": "plan_338:llada-8b-instruct-hf:schedule:repair_candidate",
+      "decision": {
+        "reason": "Realized aggregate beats anchor with selected aspect gain.",
+        "status": "online_promoted_local"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.04250000000000009,
+      "realized_score": 0.5392857142857144,
+      "rubric_gain_count": 1,
+      "score_lift": 0.06250000000000011,
+      "selected_complement_count": 1,
+      "task_id": "plan_338"
+    },
+    {
+      "anchor_score": 0.30142857142857143,
+      "anchor_trajectory_id": "plan_339:llada-8b-instruct-hf:schedule:repair_candidate",
+      "decision": {
+        "reason": "Realized aggregate beats anchor with selected aspect gain.",
+        "status": "online_promoted_local"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.3214285714285714,
+      "rubric_gain_count": 1,
+      "score_lift": 0.019999999999999962,
+      "selected_complement_count": 1,
+      "task_id": "plan_339"
+    },
+    {
+      "anchor_score": 0.26142857142857145,
+      "anchor_trajectory_id": "plan_340:llada-8b-instruct-hf:low_confidence_32:candidate_generation",
+      "decision": {
+        "reason": "No complement aspects were available beyond the anchor.",
+        "status": "blocked_no_complement_material"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.26142857142857145,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_340"
+    },
+    {
+      "anchor_score": 0.22592857142857142,
+      "anchor_trajectory_id": "plan_341:llada-8b-instruct-hf:counterfactual_micro_probe_v1:counterfactual_probe",
+      "decision": {
+        "reason": "No complement aspects were available beyond the anchor.",
+        "status": "blocked_no_complement_material"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.0,
+      "realized_score": 0.22592857142857142,
+      "rubric_gain_count": 0,
+      "score_lift": 0.0,
+      "selected_complement_count": 0,
+      "task_id": "plan_341"
+    },
+    {
+      "anchor_score": 0.44785714285714284,
+      "anchor_trajectory_id": "plan_342:llada-8b-instruct-hf:schedule:repair_candidate",
+      "decision": {
+        "reason": "Realized aggregate beats anchor with selected aspect gain.",
+        "status": "online_promoted_local"
+      },
+      "dimension_gain_count": 1,
+      "non_rubric_lift": 0.06392857142857145,
+      "realized_score": 0.5317857142857143,
+      "rubric_gain_count": 1,
+      "score_lift": 0.08392857142857146,
+      "selected_complement_count": 2,
+      "task_id": "plan_342"
+    },
+    {
+      "anchor_score": 0.26,
+      "anchor_trajectory_id": "plan_343:llada-8b-instruct-hf:schedule:repair_candidate",
+      "decision": {
+        "reason": "Realized aggregate beats anchor with selected aspect gain.",
+        "status": "online_promoted_local"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.17642857142857138,
+      "realized_score": 0.5164285714285715,
+      "rubric_gain_count": 1,
+      "score_lift": 0.25642857142857145,
+      "selected_complement_count": 1,
+      "task_id": "plan_343"
+    },
+    {
+      "anchor_score": 0.24642857142857144,
+      "anchor_trajectory_id": "plan_344:llada-8b-instruct-hf:schedule:repair_candidate",
+      "decision": {
+        "reason": "Realized aggregate beats anchor with selected aspect gain.",
+        "status": "online_promoted_local"
+      },
+      "dimension_gain_count": 0,
+      "non_rubric_lift": 0.06392857142857145,
+      "realized_score": 0.3303571428571429,
+      "rubric_gain_count": 1,
+      "score_lift": 0.08392857142857146,
+      "selected_complement_count": 1,
+      "task_id": "plan_344"
+    }
+  ]
+}
