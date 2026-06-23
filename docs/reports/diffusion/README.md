@@ -113,6 +113,10 @@ Current high-signal generated reports:
 - [LATENT_AGGREGATION_MULTI_ASPECT_V3_DIVERSITY_AUGMENTED_COVERAGE_GAP.md](LATENT_AGGREGATION_MULTI_ASPECT_V3_DIVERSITY_AUGMENTED_COVERAGE_GAP.md):
   coverage-gap diagnostic for the diversity-augmented replay showing remaining
   no-complement tasks drop to `11`, all still anchor-dominance cases.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V4_FREEZE.md](LATENT_AGGREGATION_MULTI_ASPECT_V4_FREEZE.md):
+  fresh `plan_225`-`plan_248` replication contract that predeclares the
+  diversity-extension source mix before labels, removing the v3 post-failure
+  caveat.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.

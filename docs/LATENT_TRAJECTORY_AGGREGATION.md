@@ -358,6 +358,13 @@ reasoning object. The boundary is important: because this diversity source was
 added after the baseline v3 failure on the same task slice, it is diagnostic
 design evidence for the next freeze, not the original predeclared v3 promotion.
 
+V4 is now frozen to test that design cleanly on fresh tasks `plan_225` through
+`plan_248`. It predeclares the baseline label run, probe run, LLaDA
+evolved/revision diversity run, and combined replay before any v4 labels exist.
+The v4 question is therefore sharper than v3: does the diversity-augmented
+source mix still clear the same aggregation gates when it is part of the
+pre-label contract?
+
 Task mix:
 
 - 8 planning tasks with explicit rubric components.
