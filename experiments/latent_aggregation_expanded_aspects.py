@@ -17,6 +17,18 @@ EXPANDED_PLANNING_ASPECTS = (
     "scope_boundary",
     "polarity_or_action_direction",
 )
+ALLOWED_ASPECT_INPUT_KEYS = frozenset({"prompt", "text", "trajectory_id", "source_family"})
+FORBIDDEN_LABEL_KEYS = frozenset(
+    {
+        "combined_selection_score",
+        "details",
+        "extracted_answer",
+        "planning_quality_score",
+        "rubric_hits",
+        "score",
+        "task_score",
+    }
+)
 
 _OWNER_RE = re.compile(
     r"\b(owner|responsib(?:le|ility)|assign(?:ed)?|accountable|lead|team|reviewer|maintainer|stakeholder|operator|on[- ]call)\b",
@@ -108,6 +120,36 @@ def expanded_complement_aspects(
             }
         )
     return complements
+
+
+def label_free_aspect_view(
+    record: dict[str, object],
+    *,
+    prompt: str,
+    source_family: str = "unknown",
+) -> dict[str, object]:
+    """Create the only record view allowed to enter expanded-aspect extraction."""
+
+    view = {
+        "prompt": prompt,
+        "source_family": source_family,
+        "text": str(record.get("text", "")),
+        "trajectory_id": str(record.get("trajectory_id", "")),
+    }
+    assert_label_free_aspect_view(view)
+    return view
+
+
+def assert_label_free_aspect_view(view: dict[str, object]) -> None:
+    """Fail if an expanded-aspect extractor input contains label-bearing fields."""
+
+    keys = set(view)
+    forbidden = sorted(keys & FORBIDDEN_LABEL_KEYS)
+    unknown = sorted(keys - ALLOWED_ASPECT_INPUT_KEYS)
+    if forbidden:
+        raise ValueError(f"expanded-aspect input contains forbidden label fields: {', '.join(forbidden)}")
+    if unknown:
+        raise ValueError(f"expanded-aspect input contains non-whitelisted fields: {', '.join(unknown)}")
 
 
 def _support_spans(text: str, pattern: re.Pattern[str]) -> list[str]:

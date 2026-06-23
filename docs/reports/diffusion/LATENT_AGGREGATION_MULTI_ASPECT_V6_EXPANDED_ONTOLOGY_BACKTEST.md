@@ -16,6 +16,7 @@ It uses existing v6 raw rows only; it is diagnostic and cannot promote v6.
 - Expanded-ontology coverage on base no-complement tasks: `12`
 - Expanded aspect counts: `evidence_or_measurement=7, owner_assignment=5, polarity_or_action_direction=12, scope_boundary=8, timeline_or_sequence=8`
 - Expanded source-family counts: `anchor_deficit=2, diversity=16, label=21, probe=1`
+- Label-leakage check: `passed_label_free_view_only`
 
 ## Interpretation
 

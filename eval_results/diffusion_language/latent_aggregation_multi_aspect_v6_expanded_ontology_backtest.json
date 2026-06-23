@@ -38,6 +38,7 @@
       "label": 21,
       "probe": 1
     },
+    "label_leakage_check": "passed_label_free_view_only",
     "new_no_complement_recovery_count": 12,
     "new_no_complement_recovery_task_ids": [
       "plan_302",

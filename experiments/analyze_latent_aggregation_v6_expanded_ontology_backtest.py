@@ -12,7 +12,10 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from experiments.latent_aggregation_expanded_aspects import expanded_complement_aspects
+from experiments.latent_aggregation_expanded_aspects import (
+    expanded_complement_aspects,
+    label_free_aspect_view,
+)
 from experiments.run_latent_aggregation_inference_replay import _record_task_id, _trajectory_id
 from experiments.run_latent_aggregation_multi_aspect_v2_replay import (
     _dict,
@@ -157,6 +160,7 @@ def render_markdown(result: dict[str, object]) -> str:
         f"- Expanded-ontology coverage on base no-complement tasks: `{summary['new_no_complement_recovery_count']}`",
         f"- Expanded aspect counts: `{_format_counts(summary['expanded_aspect_counts'])}`",
         f"- Expanded source-family counts: `{_format_counts(summary['expanded_source_family_counts'])}`",
+        f"- Label-leakage check: `{summary['label_leakage_check']}`",
         "",
         "## Interpretation",
         "",
@@ -205,19 +209,29 @@ def _analyze_task(
         }
     anchor = max(records, key=_score)
     anchor_id = _trajectory_id(anchor, 0, stable=True)
+    anchor_view = label_free_aspect_view(
+        anchor,
+        prompt=prompt,
+        source_family=str(anchor.get("__source_family", "unknown")),
+    )
     complements = []
     for record in records:
         trajectory_id = _trajectory_id(record, 0, stable=True)
         if trajectory_id == anchor_id:
             continue
-        for row in expanded_complement_aspects(
-            anchor_text=str(anchor.get("text", "")),
-            candidate_text=str(record.get("text", "")),
+        candidate_view = label_free_aspect_view(
+            record,
             prompt=prompt,
+            source_family=str(record.get("__source_family", "unknown")),
+        )
+        for row in expanded_complement_aspects(
+            anchor_text=str(anchor_view["text"]),
+            candidate_text=str(candidate_view["text"]),
+            prompt=str(candidate_view["prompt"]),
             trajectory_id=trajectory_id,
         ):
             enriched = dict(row)
-            enriched["source_family"] = str(record.get("__source_family", "unknown"))
+            enriched["source_family"] = str(candidate_view["source_family"])
             complements.append(enriched)
     best_by_aspect: dict[str, dict[str, object]] = {}
     for row in complements:
@@ -249,6 +263,7 @@ def _summary(tasks: list[dict[str, object]], base_no_complement_ids: set[str]) -
         "expanded_aspect_counts": _merged_counts(tasks, "expanded_aspect_counts"),
         "expanded_coverage_count": len(expanded_covered),
         "expanded_source_family_counts": _merged_counts(tasks, "expanded_source_family_counts"),
+        "label_leakage_check": "passed_label_free_view_only",
         "new_no_complement_recovery_count": len(recovered),
         "new_no_complement_recovery_task_ids": [str(task.get("task_id")) for task in recovered],
         "task_count": len(tasks),

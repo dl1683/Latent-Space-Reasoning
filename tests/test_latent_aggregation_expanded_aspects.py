@@ -1,6 +1,8 @@
 from experiments.latent_aggregation_expanded_aspects import (
+    assert_label_free_aspect_view,
     expanded_aspect_scores,
     expanded_complement_aspects,
+    label_free_aspect_view,
 )
 
 
@@ -46,3 +48,23 @@ def test_expanded_complement_aspects_select_candidate_only_support():
     assert "rollback_or_exit_criteria" in aspect_types
     assert "evidence_or_measurement" in aspect_types
     assert all(row["trajectory_id"] == "candidate-1" for row in complements)
+
+
+def test_label_free_aspect_view_strips_scores_and_rejects_label_fields():
+    record = {
+        "task_score": {"score": 1.0, "details": {"rubric_hits": [{"hit": True}]}},
+        "text": "Assign the platform owner.",
+        "trajectory_id": "candidate-1",
+    }
+
+    view = label_free_aspect_view(record, prompt="Plan owner assignment.", source_family="probe")
+
+    assert set(view) == {"prompt", "source_family", "text", "trajectory_id"}
+    assert "task_score" not in view
+
+    try:
+        assert_label_free_aspect_view({"prompt": "x", "text": "x", "task_score": {"score": 1.0}})
+    except ValueError as exc:
+        assert "forbidden label fields" in str(exc)
+    else:
+        raise AssertionError("expected task_score to be rejected")
