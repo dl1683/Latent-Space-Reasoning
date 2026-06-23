@@ -136,6 +136,23 @@ Current high-signal generated reports:
   v4 source mix fixed and adds robustness gates for medians, leave-one-out lift,
   high-leverage tasks, source-family ablations, theme buckets, and
   cost-normalized lift before any v5 labels exist.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V5_LABEL_REPORT.md](LATENT_AGGREGATION_MULTI_ASPECT_V5_LABEL_REPORT.md):
+  fresh v5 label/source run over the frozen 48-task slice; selected repair
+  reaches `0.323549` task score on repair-covered tasks versus fixed
+  `0.284007`.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V5_PROBE_REPORT.md](LATENT_AGGREGATION_MULTI_ASPECT_V5_PROBE_REPORT.md):
+  fresh v5 probe source run with `48` measured counterfactual probes; useful as
+  replay source evidence, not as an independently promoted repair result.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V5_DIVERSITY_EXTENSION_REPORT.md](LATENT_AGGREGATION_MULTI_ASPECT_V5_DIVERSITY_EXTENSION_REPORT.md):
+  fresh v5 LLaDA evolved/revision diversity-extension source run; evolved task
+  score is `0.309671` versus fixed `0.284007` and random `0.257126`.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V5_REPLAY.md](LATENT_AGGREGATION_MULTI_ASPECT_V5_REPLAY.md):
+  passing fresh 48-task v5 replay over label, probe, and diversity sources:
+  `34/48` complement coverage, `34/14/0` wins/ties/losses, mean realized score
+  `0.402750` versus anchor `0.340964`, and all `24` frozen gates passed.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V5_COVERAGE_GAP.md](LATENT_AGGREGATION_MULTI_ASPECT_V5_COVERAGE_GAP.md):
+  v5 coverage diagnostic showing the remaining `14` no-complement tasks:
+  `13` anchor-dominance cases and `1` positive-below-threshold near miss.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.

@@ -381,15 +381,33 @@ generate complements conditioned on anchor deficits, expand the aspect ontology
 so useful differences become visible, or test whether another latent family
 contributes aspects that LLaDA label/probe/diversity rows do not expose.
 
-V5 is now frozen as the immediate statistical-rigor replication before any
-further mechanism changes. It doubles the fresh planning slice to `48` tasks
-(`plan_249` through `plan_296`), keeps the v4 source mix, selector, and realizer
-fixed, and adds robustness gates that v4 did not require: median lift,
-leave-one-out mean lift range, high-leverage task share, wins/ties/losses,
-source-family ablations, theme-bucket results, complement yield per raw row, and
-cost-normalized lift. This freeze deliberately tests whether the v4 mechanism is
-stable on a larger and more varied planning slice before introducing a new
-complement-directed generator or expanded aspect ontology.
+V5 is the larger statistical-rigor replication before any further mechanism
+changes. It doubles the fresh planning slice to `48` tasks (`plan_249` through
+`plan_296`), keeps the v4 source mix, selector, and realizer fixed, and adds
+robustness gates that v4 did not require: median lift, leave-one-out mean lift
+range, high-leverage task share, wins/ties/losses, source-family ablations,
+theme-bucket results, complement yield per raw row, and cost-normalized lift.
+
+The frozen v5 replay passes all `24` statistical and robustness gates.
+Complement coverage rises to `34/48`, all covered tasks locally promote,
+wins/ties/losses are `34/14/0`, all-task non-rubric lift is `0.048869`, mean
+realized aggregate score is `0.402750` versus anchor `0.340964`, median score
+lift is `0.062500`, the leave-one-out mean score-lift range is
+`0.056710..0.063100`, and maximum single-task share of positive lift is
+`0.101276`, below the frozen `0.250000` limit. Unsupported additions and hard
+contradictions remain `0` under the deterministic template-scope and selected-
+aspect conflict audits.
+
+This makes v5 the current local aggregation milestone: the same predeclared
+diversity-augmented source mix that passed v4 also survives a larger 48-task
+fresh slice with stronger robustness accounting. The result is still bounded to
+planning tasks, the current aspect ontology, and the deterministic
+anchor-preserving realizer. The v5 coverage diagnostic shows the next bottleneck
+clearly: `14/48` tasks still have no selected complement material, split into
+`13` anchor-dominance cases and `1` positive-below-threshold near miss. The next
+credible experiment should attack that coverage gap with an anchor-deficit-
+conditioned complement generator or an expanded ontology rather than loosening
+the replay gates.
 
 ## Relationship To Current Diffusion Work
 

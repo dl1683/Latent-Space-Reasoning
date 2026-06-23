@@ -148,18 +148,19 @@ The current aggregation evidence is mixed and useful:
   and combined replay sources before labels on fresh tasks `plan_225` through
   `plan_248`, then passed the frozen replay gates with `14/24` complement
   coverage and `14` local promotions.
-- v5 is the current statistical-rigor step: a 48-task fresh replication on
+- v5 is the larger statistical-rigor replication: a 48-task fresh slice on
   `plan_249` through `plan_296` that keeps the v4 source mix fixed and adds
   robustness gates for medians, leave-one-out lift range, high-leverage tasks,
-  source-family ablations, theme buckets, and cost-normalized lift. The label,
-  probe, and diversity-extension source runs have been generated; the frozen
-  replay and coverage-gap decision are the next gates before any v5 aggregation
-  claim can be promoted.
+  source-family ablations, theme buckets, and cost-normalized lift. It passes
+  the frozen replay gates with `34/48` complement coverage, `34` online
+  promotions, `34/14/0` wins/ties/losses, mean realized aggregate score
+  `0.402750` versus anchor `0.340964`, and `0` unsupported additions or hard
+  contradictions.
 
-The v4 result is the current aggregation milestone:
+The v5 result is the current aggregation milestone:
 
-**A predeclared diversity-augmented source mix can clear the aggregation gates
-on a fresh held-out planning slice, while still leaving anchor-dominance
+**A predeclared diversity-augmented source mix can clear stricter aggregation
+gates on a fresh 48-task planning slice, while still leaving anchor-dominance
 coverage as the next bottleneck.**
 
 This is the second reason to care: the project now has evidence for a move from
@@ -179,19 +180,20 @@ Promoted public claim:
 
 Active frontier:
 
-- Multi-latent aggregation now has a passing fresh v4 local replication, but it
-  is still bounded to this task slice and deterministic realization policy.
-- The next aggregation experiment is the predeclared v5 replication. Its source
-  side is now populated: label repair reaches `0.323549` task score on
-  repair-covered tasks, probe-source replay input reaches `0.290403`, and the
-  diversity-extension source reaches `0.309671` evolved task score versus
-  `0.284007` fixed and `0.257126` random. These are source-side ingredients,
-  not a promoted aggregation result until the frozen v5 replay clears the
-  robustness and coverage gates.
+- Multi-latent aggregation now has passing fresh v4 and v5 local replications,
+  with v5 adding the stronger 48-task robustness gate set. It is still bounded
+  to planning tasks, this aspect ontology, and deterministic realization.
+- The v5 source side is populated and replayed: label repair reaches `0.323549`
+  task score on repair-covered tasks, probe-source replay input reaches
+  `0.290403`, diversity-extension evolved reaches `0.309671`, and the final
+  deterministic aggregate replay reaches `0.402750` mean score versus
+  `0.340964` anchor.
 - v3 diversity-augmented replay remains diagnostic because the diversity source
   was introduced after the first v3 failure.
-- v4 is the first clean predeclared replication of that design, with remaining
-  no-complement coverage gaps documented separately.
+- v4 is the first clean predeclared replication of that design; v5 is the
+  stronger statistical-rigor replication. The remaining v5 coverage gap is
+  `14/48` no-complement tasks: `13` anchor-dominance cases and `1`
+  below-threshold near miss.
 
 What not to overclaim:
 
@@ -217,7 +219,7 @@ Start with this README, then use the evidence spine:
 5. [docs/DIFFUSION_THEORY_CLAIM_LEDGER.md](docs/DIFFUSION_THEORY_CLAIM_LEDGER.md)
    for conservative theory claims, falsifiers, and next proof obligations.
 6. [docs/LATENT_TRAJECTORY_AGGREGATION.md](docs/LATENT_TRAJECTORY_AGGREGATION.md)
-   for the current aggregation doctrine and v1-v4 history.
+   for the current aggregation doctrine and v1-v5 history.
 7. [docs/NAVIGATION.md](docs/NAVIGATION.md) for a compact map of the repo.
 
 Generated reports and raw outputs are retained for auditability, but they are
