@@ -198,9 +198,11 @@ Active frontier:
   coverage-targeting slice. The label/source run is complete: selected repair
   covers `48/48` eligible tasks, reaches `0.306533` task score on
   repair-covered tasks versus `0.263757` fixed and `0.218954` random, and
-  reports `24/22/2` wins/ties/losses versus fixed. The remaining v6 work is to
-  populate the probe, diversity-extension, and anchor-deficit source families,
-  then run the frozen replay without weakening the v5 safety or cost gates.
+  reports `24/22/2` wins/ties/losses versus fixed. The probe source is also
+  populated with `288` raw rows; it is diagnostic source evidence, not an
+  independently promoted repair result. The remaining v6 work is to populate
+  the diversity-extension and anchor-deficit source families, then run the
+  frozen replay without weakening the v5 safety or cost gates.
 
 What not to overclaim:
 

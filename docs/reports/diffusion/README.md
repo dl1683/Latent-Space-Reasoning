@@ -162,6 +162,10 @@ Current high-signal generated reports:
   fresh v6 label/source run over the coverage-targeting 48-task slice; selected
   repair covers `48/48` eligible tasks with mean task score `0.306533` versus
   fixed `0.263757` and random `0.218954` on repair-covered tasks.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V6_PROBE_REPORT.md](LATENT_AGGREGATION_MULTI_ASPECT_V6_PROBE_REPORT.md):
+  fresh v6 counterfactual probe source run with `288` raw source rows over the
+  coverage-targeting slice; useful as replay source evidence, not as an
+  independently promoted repair result.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.

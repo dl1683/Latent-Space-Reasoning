@@ -60,6 +60,7 @@ If you need one-screen onboarding, open [../START_HERE.md](../START_HERE.md) fir
 - For the remaining v5 coverage blockers: [LATENT_AGGREGATION_MULTI_ASPECT_V5_COVERAGE_GAP.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V5_COVERAGE_GAP.md)
 - For the active v6 coverage-targeting freeze: [LATENT_AGGREGATION_MULTI_ASPECT_V6_FREEZE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V6_FREEZE.md)
 - For the v6 label source run: [LATENT_AGGREGATION_MULTI_ASPECT_V6_LABEL_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V6_LABEL_REPORT.md)
+- For the v6 probe source run: [LATENT_AGGREGATION_MULTI_ASPECT_V6_PROBE_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V6_PROBE_REPORT.md)
 - For near-term roadmap: [NEXT_GENERATION_REASONING_TASKS.md](../NEXT_GENERATION_REASONING_TASKS.md)
 
 ## Current result surfaces
