@@ -166,6 +166,9 @@ Current high-signal generated reports:
   fresh v6 counterfactual probe source run with `288` raw source rows over the
   coverage-targeting slice; useful as replay source evidence, not as an
   independently promoted repair result.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V6_DIVERSITY_EXTENSION_REPORT.md](LATENT_AGGREGATION_MULTI_ASPECT_V6_DIVERSITY_EXTENSION_REPORT.md):
+  fresh v6 LLaDA evolved/revision diversity-extension source run; evolved task
+  score is `0.274015` versus fixed `0.263757` and random `0.218954`.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.
