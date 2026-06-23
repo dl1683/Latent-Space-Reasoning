@@ -37,6 +37,8 @@ If you need one-screen onboarding, open [../START_HERE.md](../START_HERE.md) fir
 - For the corrected v3 probe GPU run: [LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_REPORT.md)
 - For the corrected v3 probe interpretation: [LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_ANALYSIS.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_ANALYSIS.md)
 - For the frozen v3 GPU label run: [LATENT_AGGREGATION_MULTI_ASPECT_V3_LABEL_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V3_LABEL_REPORT.md)
+- For the frozen v3 aggregation replay: [LATENT_AGGREGATION_MULTI_ASPECT_V3_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V3_REPLAY.md)
+- For the v3 aggregation failure diagnosis: [LATENT_AGGREGATION_MULTI_ASPECT_V3_FAILURE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V3_FAILURE.md)
 - For near-term roadmap: [NEXT_GENERATION_REASONING_TASKS.md](../NEXT_GENERATION_REASONING_TASKS.md)
 
 ## Current result surfaces

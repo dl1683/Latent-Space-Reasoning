@@ -83,6 +83,13 @@ Current high-signal generated reports:
 - [LATENT_AGGREGATION_MULTI_ASPECT_V3_LABEL_REPORT.md](LATENT_AGGREGATION_MULTI_ASPECT_V3_LABEL_REPORT.md):
   frozen v3 GPU label run showing `24/24` eligible repair coverage, repair task
   score `0.350000`, and `+0.036042` task-score lift over the selected trajectory.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V3_REPLAY.md](LATENT_AGGREGATION_MULTI_ASPECT_V3_REPLAY.md):
+  deterministic frozen v3 aggregation replay; selected complements promote on
+  `6/6` covered tasks, but the full v3 gate fails because complement coverage is
+  only `6/24`.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V3_FAILURE.md](LATENT_AGGREGATION_MULTI_ASPECT_V3_FAILURE.md):
+  post-replay v3 failure analysis showing the binding failure is complement
+  coverage, not conditional complement quality.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.

@@ -1,0 +1,56 @@
+{
+  "generated_by": "experiments/analyze_latent_aggregation_multi_aspect_v3_failure.py",
+  "inputs": {
+    "freeze": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v3_freeze.json",
+    "replay": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v3_replay.json"
+  },
+  "schema": "latent_aggregation_multi_aspect_v3_failure.v1",
+  "summary": {
+    "binding_failure": "minimum_complement_coverage_count",
+    "conditional_mean_non_rubric_lift": 0.07978571428571428,
+    "conditional_promoted_fraction": 1.0,
+    "coverage_needed_for_aggregate_win_gate": 8,
+    "coverage_needed_for_frozen_coverage_gate": 12,
+    "coverage_needed_for_global_non_rubric_gate": 10,
+    "coverage_shortfall_to_aggregate_win_gate": 2,
+    "coverage_shortfall_to_frozen_gate": 6,
+    "coverage_shortfall_to_global_non_rubric_gate": 4,
+    "failed_gate_count": 4,
+    "failed_gates": [
+      "minimum_complement_coverage_count",
+      "minimum_complement_coverage_fraction",
+      "minimum_all_task_mean_non_rubric_lift",
+      "minimum_aggregate_win_count"
+    ],
+    "no_complement_task_count": 18,
+    "observed_complement_coverage_count": 6,
+    "observed_online_promoted_task_count": 6,
+    "task_count": 24
+  },
+  "threshold_gaps": [
+    {
+      "missing": 6.0,
+      "name": "minimum_complement_coverage_count",
+      "observed": 6,
+      "threshold": 12
+    },
+    {
+      "missing": 0.25,
+      "name": "minimum_complement_coverage_fraction",
+      "observed": 0.25,
+      "threshold": 0.5
+    },
+    {
+      "missing": 0.010053571428571429,
+      "name": "minimum_all_task_mean_non_rubric_lift",
+      "observed": 0.01994642857142857,
+      "threshold": 0.03
+    },
+    {
+      "missing": 2.0,
+      "name": "minimum_aggregate_win_count",
+      "observed": 6,
+      "threshold": 8
+    }
+  ]
+}

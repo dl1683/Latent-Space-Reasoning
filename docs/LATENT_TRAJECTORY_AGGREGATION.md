@@ -316,8 +316,18 @@ The frozen v3 GPU label run is positive for the repair arm itself. It produced
 `24/24` eligible repair coverage, selected latent repair task score `0.350000`,
 task-score lift `+0.036042` over the selected trajectory/fixed baseline on
 repair-covered tasks, and `10/13/1` wins/ties/losses against the evolved source.
-This is repair-surface evidence; aggregation replay still needs to test whether
-multiple latent aspects can be fused without unsupported additions.
+This is repair-surface evidence, not yet a promoted aggregation result.
+
+The deterministic frozen v3 aggregation replay now tests that question directly.
+It keeps unsupported additions and hard contradictions at `0` under the template
+audit and promotes every covered task locally (`6/6`), with conditional
+non-rubric lift `0.079786`. The full v3 gate still fails because complement
+coverage is only `6/24`, below the frozen `12/24` coverage gate, and the all-task
+non-rubric lift is `0.019946` below the `0.030000` gate. The failure analysis
+therefore preserves the same conclusion as v2 but more sharply: useful
+multi-aspect fusion exists when complement material is found, but the next
+experiment must increase complement discovery coverage rather than tune
+thresholds or claim a promoted aggregation result from this slice.
 
 Task mix:
 
