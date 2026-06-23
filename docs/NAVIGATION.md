@@ -78,6 +78,7 @@ If you need one-screen onboarding, open [../START_HERE.md](../START_HERE.md) fir
 - For the v8 targeted history-contrast source run: [LATENT_AGGREGATION_MULTI_ASPECT_V8_TARGETED_HISTORY_CONTRAST_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V8_TARGETED_HISTORY_CONTRAST_REPORT.md)
 - For the negative v8 targeted history-contrast replay: [LATENT_AGGREGATION_MULTI_ASPECT_V8_TARGETED_HISTORY_CONTRAST_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V8_TARGETED_HISTORY_CONTRAST_REPLAY.md)
 - For why v8 targeted repair did not become complement evidence: [LATENT_AGGREGATION_MULTI_ASPECT_V8_TARGETED_SOURCE_GAP.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V8_TARGETED_SOURCE_GAP.md)
+- For the v9 complement-packet source contract: [LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_SOURCE_CONTRACT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_SOURCE_CONTRACT.md)
 - For near-term roadmap: [NEXT_GENERATION_REASONING_TASKS.md](../NEXT_GENERATION_REASONING_TASKS.md)
 
 ## Current result surfaces

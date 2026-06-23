@@ -1,0 +1,129 @@
+{
+  "generated_by": "experiments/build_latent_aggregation_multi_aspect_v9_complement_source.py",
+  "prior_evidence": {
+    "v7_failure_analysis": {
+      "path": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v7_failure_analysis.json",
+      "sha256": "6358dcd5aafb92b6f3147f6078016f7139455a14bdc2f4d10f2f81a4acd3ad44",
+      "summary": {
+        "coverage_shortfall_to_gate": 12,
+        "next_source_minimum_new_promoted_coverage_floor": 13,
+        "uncovered_task_count": 24,
+        "wilson_success_shortfall_to_gate": 13
+      }
+    },
+    "v8_source_gap": {
+      "path": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v8_targeted_source_gap.json",
+      "sha256": "a118be1638045a6d87faaacf43c51a7be8439f270a591be5fb1b3bf3c637b135",
+      "summary": {
+        "anchor_shift_suppression_count": 1,
+        "mean_delta_vs_original_anchor": -0.049479166666666664,
+        "repair_not_stronger_no_new_aspect_count": 23,
+        "targeted_complement_vs_augmented_anchor_count": 0,
+        "targeted_repair_count": 24
+      }
+    }
+  },
+  "replay_contract": {
+    "command": "python experiments\\run_latent_aggregation_multi_aspect_v3_replay.py --freeze eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v7_freeze.json --raw eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v7_raw.jsonl --extra-raw eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v7_ontology_probe_raw.jsonl --extra-raw eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v7_cross_latent_raw.jsonl --extra-raw eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v9_complement_packet_raw.jsonl --json-output eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v9_complement_packet_replay.json --aspects-output eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v9_complement_packet_aspects.jsonl --realized-output eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v9_complement_packet_realized.jsonl --report-output docs\\reports\\diffusion\\LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPLAY.md",
+    "expected_evidence_boundary": "post_failure_v9_complement_packet_replay"
+  },
+  "schema": "latent_aggregation_multi_aspect_v9_complement_source_contract.v1",
+  "source_family_contract": {
+    "command_status": "prompt_artifact_ready_generation_runner_pending",
+    "family": "complement_packet",
+    "prompt_artifact": {
+      "path": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v9_complement_packet_prompts.jsonl",
+      "row_count": 24,
+      "sha256": "a50e7ae5d0b0b85f0efc75fc844f4c23b6bfe3b0b83eca4ae781128ed489db99"
+    },
+    "rationale": "V8 targeted answer repair usually produced weaker standalone answers and almost no expanded complements. V9 therefore asks for explicit complement packets: source-supported clauses that add missing aspects beyond the frozen v7 anchor without rewriting the whole answer.",
+    "required_outputs": {
+      "complement_packet_raw_output": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v9_complement_packet_raw.jsonl",
+      "complement_packet_report_output": "docs\\reports\\diffusion\\LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPORT.md",
+      "complement_packet_scores_output": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v9_complement_packet_scores.json"
+    },
+    "source_shape": {
+      "candidate_unit": "complement_packet_clause_set",
+      "minimum_packet_candidates_per_task": 3,
+      "must_include_anchor_avoidance": true,
+      "must_not_generate_full_answer_only": true,
+      "must_trace_each_clause_to_prompt_or_anchor_gap": true,
+      "target_aspects": [
+        "owner_assignment",
+        "timeline_or_sequence",
+        "rollback_or_exit_criteria",
+        "evidence_or_measurement",
+        "scope_boundary",
+        "polarity_or_action_direction"
+      ]
+    }
+  },
+  "success_contract": {
+    "minimum_new_coverage_count": 12,
+    "minimum_new_promoted_count": 7,
+    "minimum_new_promoted_coverage_floor": 13,
+    "must_keep_hard_contradictions": 0,
+    "must_keep_unsupported_additions": 0,
+    "must_preserve_label_free_extraction": true,
+    "must_report_packet_clause_yield": true,
+    "must_report_source_family_ablation": true,
+    "must_report_target_task_incremental_coverage": true
+  },
+  "task_count": 24,
+  "task_ids": [
+    "plan_346",
+    "plan_347",
+    "plan_348",
+    "plan_349",
+    "plan_350",
+    "plan_351",
+    "plan_353",
+    "plan_354",
+    "plan_355",
+    "plan_359",
+    "plan_360",
+    "plan_361",
+    "plan_366",
+    "plan_373",
+    "plan_375",
+    "plan_376",
+    "plan_377",
+    "plan_378",
+    "plan_380",
+    "plan_381",
+    "plan_384",
+    "plan_385",
+    "plan_386",
+    "plan_389"
+  ],
+  "task_source": {
+    "path": "experiments\\general_reasoning_tasks_scout.jsonl",
+    "sha256": "c38dd8f81db44ccd17e0beb0a6ca3e7efff590e5190bb171de6f4b94336ea5b9",
+    "task_hashes": {
+      "plan_346": "c9d6647a5698156b5fefa3c169ab8c64a00c9d9ead76c7ff4da5cca230eadc25",
+      "plan_347": "898c41b5a164f07f68e257ee14652ca02c85c0386a754fdb1f5a1e3b3eb718a6",
+      "plan_348": "c3677895bafa9df0c5129c2296187186964ed0b9ab9f0c3de9a3a78a43e119bf",
+      "plan_349": "d0889ecc045849afe3f8451e51aefb94b78f9dccfd209e279f368424b0bf9321",
+      "plan_350": "e2a4c9e8586bbeb8a8610f87f2feb2a8a5cc7206279eeacbcfd5e7ebb7407286",
+      "plan_351": "5b428bfe2fca2382ad7c4b04ee9ed51fbf855622903f73c352e72510c870e02f",
+      "plan_353": "c861887dd06e4e02d6d5b2e22325861557ad520975d227b21ddff8caa7db7302",
+      "plan_354": "a797ca9206ffba3271e8a9670028e94aac669d24cbc0cab80357836453943228",
+      "plan_355": "e2166f1ba2fe797038eeb162d3cfba3e6105ffa1383d5e77ec7bf1df82b29e46",
+      "plan_359": "f1cb6b653e3f372ac0a68aca907cb6e1bcf71dfeb21da91ae56f99799d6fdeaa",
+      "plan_360": "28a902872b71447ef51159d47502acf5330b0fa373d91e6f3e601bc9129302ac",
+      "plan_361": "c70e3d3cbf7a6b1b6312a06c7fc06ab92c49249409c6a9abf5f2a88eff05add0",
+      "plan_366": "290b740d10a8ee7d06f5110402d5762fd0fb7a3f22d9e3d6a12873e40ffb00c4",
+      "plan_373": "3f20650c6d2e801d8a63597c8f63a7c6d27eea4748422fc22d2f4714a94be6bc",
+      "plan_375": "acbff0ea57f63378a037b3ebc3bde7f19261ac8c85750ecadb41b483f16e1361",
+      "plan_376": "9d7f6a59c5b8ccf4d0aff0f8ded6cdda781ae97934dc94da26ee45b1d4261b92",
+      "plan_377": "3a954816b4bdf1d21eead85b6392d65d9bb4f2e873d23b4196d64456a5fff3ab",
+      "plan_378": "810506220271fb98e1da9f46fe4d90f984c2a8be3a9790f11168415bf9c5468d",
+      "plan_380": "5cb6fa0b3a9d23b672753e0ce75ed379b6e1ada8d352cd9ee3c780c80582e1fe",
+      "plan_381": "ccde61c337baead52e02346ae79ffc6f1f323457eea663bd833ec2ceb2b1b5ae",
+      "plan_384": "fe2c98329e15b1a8cae28b9e48231e86b72262143472efd246642b0f3edacbaf",
+      "plan_385": "dd3110b3671977fe7f971a6ece37a830a3906e5a57045363adab9b490f06f533",
+      "plan_386": "c870ea13c5d0fb42872364f32a640398a2921a21e1adfcafc6d98b9023f07339",
+      "plan_389": "361308d21f07597f861d926b38c368f404eadbfc75220398be71139c268e167f"
+    }
+  }
+}

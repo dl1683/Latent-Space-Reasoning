@@ -260,7 +260,10 @@ Active frontier:
   classified as not-stronger/no-new-expanded-aspect. The next aggregation
   source should be complement-first: generate explicit, source-supported,
   non-anchor clauses that can survive selection, not merely another standalone
-  repaired answer.
+  repaired answer. V9 now freezes that next step as a complement-packet source
+  contract: `24` target tasks, `24` complement-first prompt rows, a named
+  `complement_packet` source family, and the same `13` newly promoted coverage
+  floor before any replay could count as evidence.
 
 What not to overclaim:
 

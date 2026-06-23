@@ -826,9 +826,12 @@ def _source_family_for_path(freeze: dict[str, object], path: Path) -> str:
         _normalized_path_key(str(generation.get("ontology_probe_raw_output", ""))): "ontology_probe",
         _normalized_path_key(str(generation.get("cross_latent_raw_output", ""))): "cross_latent_perturbation",
         _normalized_path_key(str(generation.get("targeted_history_contrast_raw_output", ""))): "targeted_history_contrast",
+        _normalized_path_key(str(generation.get("complement_packet_raw_output", ""))): "complement_packet",
     }
     if normalized in known:
         return known[normalized]
+    if "v9_complement_packet" in normalized:
+        return "complement_packet"
     if "v8_targeted_history_contrast" in normalized:
         return "targeted_history_contrast"
     return "extra_raw"
@@ -836,6 +839,17 @@ def _source_family_for_path(freeze: dict[str, object], path: Path) -> str:
 
 def _evidence_boundary(freeze: dict[str, object], raw_paths: list[Path]) -> dict[str, str]:
     if str(freeze.get("schema", "")) == "latent_aggregation_multi_aspect_v7_freeze.v1":
+        if any("v9_complement_packet" in _normalized_path_key(str(path)) for path in raw_paths):
+            return {
+                "reason": (
+                    "Post-failure diagnostic replay over the frozen v7 source mix plus "
+                    "the v9 complement-packet rows. This tests whether explicit "
+                    "non-anchor complement packets add extractable source-supported "
+                    "aspects on the v7/v8 failed target tasks; it is not a fresh v9 "
+                    "promotion claim."
+                ),
+                "status": "post_failure_v9_complement_packet_replay",
+            }
         if any("v8_targeted_history_contrast" in _normalized_path_key(str(path)) for path in raw_paths):
             return {
                 "reason": (
@@ -903,6 +917,8 @@ def _evidence_boundary(freeze: dict[str, object], raw_paths: list[Path]) -> dict
 
 def _title_for_boundary(evidence_boundary: dict[str, object]) -> str:
     status = evidence_boundary.get("status")
+    if status == "post_failure_v9_complement_packet_replay":
+        return "V9 Complement-Packet"
     if status == "post_failure_v8_targeted_history_contrast_replay":
         return "V8 Targeted History-Contrast"
     if status == "fresh_predeclared_expanded_ontology_v7_replay":
@@ -1111,6 +1127,14 @@ def _interpretation(
             + ". This is a useful negative source-family result: the targeted rows may "
             "improve local repair scores, but they do not add selected complementary "
             "aspects under the expanded replay extractor."
+        )
+    if evidence_boundary.get("status") == "post_failure_v9_complement_packet_replay":
+        return (
+            "The complement-packet source is a post-failure diagnostic over the frozen "
+            "v7 evidence. The important failure surface is: "
+            + ", ".join(failed)
+            + ". Treat any passing result as source-family design evidence for the next "
+            "fresh freeze unless a separate predeclared promotion contract is built."
         )
     if evidence_boundary.get("status") == "fresh_predeclared_expanded_ontology_v7_replay":
         return (

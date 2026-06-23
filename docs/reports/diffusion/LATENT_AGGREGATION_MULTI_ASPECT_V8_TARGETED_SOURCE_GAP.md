@@ -15,8 +15,8 @@ It uses existing v7/v8 artifacts only; it does not generate new model outputs an
 - Targeted repairs beating original v7 anchor: `1`
 - Targeted repairs becoming augmented anchor: `2`
 - Targeted repairs with complements vs original anchor: `1`
-- Targeted repairs with complements vs augmented anchor: `1`
-- Anchor-shift suppression count: `0`
+- Targeted repairs with complements vs augmented anchor: `0`
+- Anchor-shift suppression count: `1`
 - Repair-lift but no new expanded aspect count: `0`
 - Repair not stronger and no new expanded aspect count: `23`
 - Tasks whose original anchor ID maps to multiple source rows: `19`
@@ -42,7 +42,7 @@ The targeted source should not be repeated as-is when most repaired rows are wea
 | `plan_359` | `repair_not_stronger_no_new_expanded_aspect` | -0.080000 | 0.364286 | 0.444286 | 0.444286 | `False` | 0 | 0 | `none` |
 | `plan_360` | `repair_not_stronger_no_new_expanded_aspect` | 0.000000 | 0.380357 | 0.380357 | 0.380357 | `True` | 0 | 0 | `none` |
 | `plan_361` | `repair_not_stronger_no_new_expanded_aspect` | 0.000000 | 0.310000 | 0.310000 | 0.310000 | `False` | 0 | 0 | `none` |
-| `plan_366` | `extractable_complement_survives` | 0.042500 | 0.282500 | 0.240000 | 0.282500 | `True` | 1 | 1 | `scope_boundary=1` |
+| `plan_366` | `anchor_shift_suppression` | 0.042500 | 0.282500 | 0.240000 | 0.282500 | `True` | 1 | 0 | `scope_boundary=1` |
 | `plan_373` | `repair_not_stronger_no_new_expanded_aspect` | -0.117857 | 0.221429 | 0.339286 | 0.339286 | `False` | 0 | 0 | `none` |
 | `plan_375` | `repair_not_stronger_no_new_expanded_aspect` | -0.140357 | 0.333929 | 0.474286 | 0.474286 | `False` | 0 | 0 | `none` |
 | `plan_376` | `repair_not_stronger_no_new_expanded_aspect` | -0.160357 | 0.240000 | 0.400357 | 0.400357 | `False` | 0 | 0 | `none` |

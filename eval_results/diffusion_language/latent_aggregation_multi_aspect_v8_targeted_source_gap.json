@@ -15,7 +15,7 @@
   },
   "schema": "latent_aggregation_v8_targeted_source_gap.v1",
   "summary": {
-    "anchor_shift_suppression_count": 0,
+    "anchor_shift_suppression_count": 1,
     "mean_delta_vs_original_anchor": -0.049479166666666664,
     "repair_lift_no_new_aspect_count": 0,
     "repair_not_stronger_no_new_aspect_count": 23,
@@ -24,7 +24,7 @@
     "targeted_complement_aspect_types_vs_original_anchor": {
       "scope_boundary": 1
     },
-    "targeted_complement_vs_augmented_anchor_count": 1,
+    "targeted_complement_vs_augmented_anchor_count": 0,
     "targeted_complement_vs_original_anchor_count": 1,
     "targeted_repair_count": 24,
     "tasks_with_original_anchor_id_collisions": 19
@@ -225,14 +225,14 @@
     {
       "augmented_anchor_score": 0.2825,
       "augmented_anchor_trajectory_id": "plan_366:llada-8b-instruct-hf:schedule:repair_candidate",
-      "failure_class": "extractable_complement_survives",
+      "failure_class": "anchor_shift_suppression",
       "original_anchor_score": 0.24,
       "original_anchor_trajectory_collision_count": 2,
       "original_anchor_trajectory_id": "plan_366:llada-8b-instruct-hf:schedule:repair_candidate",
       "targeted_complement_aspect_types_vs_original_anchor": {
         "scope_boundary": 1
       },
-      "targeted_complement_count_vs_augmented_anchor": 1,
+      "targeted_complement_count_vs_augmented_anchor": 0,
       "targeted_complement_count_vs_original_anchor": 1,
       "targeted_delta_vs_original_anchor": 0.04249999999999998,
       "targeted_is_augmented_anchor": true,

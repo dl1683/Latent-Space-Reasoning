@@ -577,6 +577,71 @@ def test_v8_targeted_history_contrast_extra_raw_gets_diagnostic_boundary(tmp_pat
     assert "# Latent Aggregation Multi-Aspect V8 Targeted History-Contrast Replay" in markdown
 
 
+def test_v9_complement_packet_extra_raw_gets_diagnostic_boundary(tmp_path):
+    freeze = tmp_path / "freeze.json"
+    raw = tmp_path / "raw.jsonl"
+    complement_raw = tmp_path / "latent_aggregation_multi_aspect_v9_complement_packet_raw.jsonl"
+    tasks = tmp_path / "tasks.jsonl"
+    probe = tmp_path / "probe.json"
+    freeze_data = _freeze(["plan_j"])
+    freeze_data["schema"] = "latent_aggregation_multi_aspect_v7_freeze.v1"
+    freeze_data["statistical_gates"].update(
+        {
+            "minimum_aggregate_win_count": 0,
+            "minimum_complement_coverage_count": 1,
+            "minimum_complement_coverage_fraction": 1.0,
+            "minimum_wilson_lower_bound": 0.0,
+        }
+    )
+    freeze.write_text(json.dumps(freeze_data), encoding="utf-8")
+    tasks.write_text(json.dumps(_task("plan_j")) + "\n", encoding="utf-8")
+    probe.write_text(
+        json.dumps({"summary": {"mean_probe_cost_relative": 0.1875, "measured_probe_count": 0}}),
+        encoding="utf-8",
+    )
+    raw.write_text(
+        json.dumps(
+            _record(
+                "plan_j",
+                "anchor",
+                score=0.30,
+                text="preserve baseline",
+                specificity=0.1,
+            )
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+    complement_raw.write_text(
+        json.dumps(
+            _record(
+                "plan_j",
+                "complement_packet",
+                score=0.20,
+                text="preserve baseline. Assign an owner, define rollback criteria, and measure a threshold.",
+                specificity=0.1,
+            )
+        )
+        + "\n",
+        encoding="utf-8",
+    )
+
+    result = run_replay(
+        freeze_path=freeze,
+        raw_path=raw,
+        extra_raw_paths=[complement_raw],
+        tasks_path=tasks,
+        probe_analysis_path=probe,
+    )
+    markdown = render_markdown(
+        {key: value for key, value in result.items() if key not in {"aspect_rows", "realized_rows"}}
+    )
+
+    assert result["evidence_boundary"]["status"] == "post_failure_v9_complement_packet_replay"
+    assert "complement_packet" in result["summary"]["selected_complement_source_family_counts"]
+    assert "# Latent Aggregation Multi-Aspect V9 Complement-Packet Replay" in markdown
+
+
 def _freeze(task_ids):
     return {
         "statistical_gates": {

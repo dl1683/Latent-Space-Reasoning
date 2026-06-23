@@ -245,11 +245,11 @@ def _analyze_task(
         trajectory_id=augmented_anchor_id,
         score=augmented_anchor_score,
     )
-    augmented_anchor = _row_for_anchor(
+    augmented_anchor = targeted if targeted_is_augmented_anchor else _row_for_anchor(
         rows_by_trajectory=original_rows,
         trajectory_id=augmented_anchor_id,
         score=augmented_anchor_score,
-        fallback=targeted if targeted_is_augmented_anchor else {},
+        fallback={},
     )
     augmented_anchor_text = str(augmented_anchor.get("text", ""))
     complements_vs_original = expanded_complement_aspects(

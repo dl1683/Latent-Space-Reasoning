@@ -237,6 +237,11 @@ Current high-signal generated reports:
   targeted repairs, mean delta versus the original v7 anchor is `-0.049479`,
   only `1/24` beats the original anchor, only `1/24` adds an expanded complement
   against that anchor, and `23/24` are not-stronger/no-new-expanded-aspect cases.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_SOURCE_CONTRACT.md](LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_SOURCE_CONTRACT.md):
+  complement-first source contract derived from the corrected v8 source gap. It
+  freezes `24` prompt rows for a named `complement_packet` family and preserves
+  the v7 floor of `13` newly promoted covered tasks before any replay can be
+  treated as useful evidence.
 - [LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md](LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md):
   post-hoc no-generation diagnostic over existing v6 raw rows; the expanded
   ontology recovers `12` of `21` v6 no-complement tasks, motivating v7
