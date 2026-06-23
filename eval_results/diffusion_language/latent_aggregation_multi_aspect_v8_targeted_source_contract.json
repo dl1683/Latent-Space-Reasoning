@@ -1,0 +1,98 @@
+{
+  "generated_by": "experiments/build_latent_aggregation_multi_aspect_v8_targeted_source.py",
+  "prior_evidence": {
+    "failure_analysis": {
+      "path": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v7_failure_analysis.json",
+      "sha256": "6358dcd5aafb92b6f3147f6078016f7139455a14bdc2f4d10f2f81a4acd3ad44",
+      "summary": {
+        "coverage_shortfall_to_gate": 12,
+        "promotion_shortfall_to_gate": 7,
+        "uncovered_task_count": 24,
+        "wilson_success_shortfall_to_gate": 13
+      }
+    }
+  },
+  "replay_requirements": [
+    "do not promote from this source report alone",
+    "after generation, replay it as a named extra source family against the frozen v7 artifacts",
+    "compare new coverage specifically on the 24 v7 uncovered task IDs",
+    "report incremental coverage, promotions, Wilson lower bound, safety, and label leakage"
+  ],
+  "schema": "latent_aggregation_multi_aspect_v8_targeted_source_contract.v1",
+  "source_family_contract": {
+    "command": "python experiments\\run_diffusion_three_arm_benchmark.py --task-ids plan_346,plan_347,plan_348,plan_349,plan_350,plan_351,plan_353,plan_354,plan_355,plan_359,plan_360,plan_361,plan_366,plan_373,plan_375,plan_376,plan_377,plan_378,plan_380,plan_381,plan_384,plan_385,plan_386,plan_389 --candidates llada-8b-instruct-hf --limit-schedules 3 --limit-evolved-schedules 2 --include-revision-schedules --revision-steps 8 --evolved-selector planning_quality_fallback --limit-repair-candidates 1 --repair-source-policy non_revision_plus_gap_trajectory --adaptive-source-gate-mode score_efficient --repair-pack constraint_span_history_contrast --repair-spend-trigger always --repair-selector generated_repair_value_v1 --repair-promotion-margin 0.02 --trajectory-selector planning_state --device cuda --dtype bfloat16 --raw-output eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v8_targeted_history_contrast_raw.jsonl --scores-output eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v8_targeted_history_contrast_scores.json --report-output docs\\reports\\diffusion\\LATENT_AGGREGATION_MULTI_ASPECT_V8_TARGETED_HISTORY_CONTRAST_REPORT.md",
+    "command_status": "generation_pending",
+    "family": "targeted_history_contrast",
+    "rationale": "V7 failed because 24 tasks had no selected complements. This source targets only those tasks with final-source span repair plus denoise-history contrast, a different latent surface from baseline repair, ontology probes, and cross-latent schedule perturbations.",
+    "required_outputs": {
+      "targeted_history_contrast_raw_output": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v8_targeted_history_contrast_raw.jsonl",
+      "targeted_history_contrast_report_output": "docs\\reports\\diffusion\\LATENT_AGGREGATION_MULTI_ASPECT_V8_TARGETED_HISTORY_CONTRAST_REPORT.md",
+      "targeted_history_contrast_scores_output": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v8_targeted_history_contrast_scores.json"
+    }
+  },
+  "success_contract": {
+    "minimum_new_coverage_count": 12,
+    "minimum_new_promoted_count": 7,
+    "minimum_new_promoted_coverage_floor": 13,
+    "must_keep_hard_contradictions": 0,
+    "must_keep_unsupported_additions": 0,
+    "must_preserve_label_free_extraction": true
+  },
+  "task_count": 24,
+  "task_ids": [
+    "plan_346",
+    "plan_347",
+    "plan_348",
+    "plan_349",
+    "plan_350",
+    "plan_351",
+    "plan_353",
+    "plan_354",
+    "plan_355",
+    "plan_359",
+    "plan_360",
+    "plan_361",
+    "plan_366",
+    "plan_373",
+    "plan_375",
+    "plan_376",
+    "plan_377",
+    "plan_378",
+    "plan_380",
+    "plan_381",
+    "plan_384",
+    "plan_385",
+    "plan_386",
+    "plan_389"
+  ],
+  "task_source": {
+    "path": "experiments\\general_reasoning_tasks_scout.jsonl",
+    "sha256": "c38dd8f81db44ccd17e0beb0a6ca3e7efff590e5190bb171de6f4b94336ea5b9",
+    "task_hashes": {
+      "plan_346": "c9d6647a5698156b5fefa3c169ab8c64a00c9d9ead76c7ff4da5cca230eadc25",
+      "plan_347": "898c41b5a164f07f68e257ee14652ca02c85c0386a754fdb1f5a1e3b3eb718a6",
+      "plan_348": "c3677895bafa9df0c5129c2296187186964ed0b9ab9f0c3de9a3a78a43e119bf",
+      "plan_349": "d0889ecc045849afe3f8451e51aefb94b78f9dccfd209e279f368424b0bf9321",
+      "plan_350": "e2a4c9e8586bbeb8a8610f87f2feb2a8a5cc7206279eeacbcfd5e7ebb7407286",
+      "plan_351": "5b428bfe2fca2382ad7c4b04ee9ed51fbf855622903f73c352e72510c870e02f",
+      "plan_353": "c861887dd06e4e02d6d5b2e22325861557ad520975d227b21ddff8caa7db7302",
+      "plan_354": "a797ca9206ffba3271e8a9670028e94aac669d24cbc0cab80357836453943228",
+      "plan_355": "e2166f1ba2fe797038eeb162d3cfba3e6105ffa1383d5e77ec7bf1df82b29e46",
+      "plan_359": "f1cb6b653e3f372ac0a68aca907cb6e1bcf71dfeb21da91ae56f99799d6fdeaa",
+      "plan_360": "28a902872b71447ef51159d47502acf5330b0fa373d91e6f3e601bc9129302ac",
+      "plan_361": "c70e3d3cbf7a6b1b6312a06c7fc06ab92c49249409c6a9abf5f2a88eff05add0",
+      "plan_366": "290b740d10a8ee7d06f5110402d5762fd0fb7a3f22d9e3d6a12873e40ffb00c4",
+      "plan_373": "3f20650c6d2e801d8a63597c8f63a7c6d27eea4748422fc22d2f4714a94be6bc",
+      "plan_375": "acbff0ea57f63378a037b3ebc3bde7f19261ac8c85750ecadb41b483f16e1361",
+      "plan_376": "9d7f6a59c5b8ccf4d0aff0f8ded6cdda781ae97934dc94da26ee45b1d4261b92",
+      "plan_377": "3a954816b4bdf1d21eead85b6392d65d9bb4f2e873d23b4196d64456a5fff3ab",
+      "plan_378": "810506220271fb98e1da9f46fe4d90f984c2a8be3a9790f11168415bf9c5468d",
+      "plan_380": "5cb6fa0b3a9d23b672753e0ce75ed379b6e1ada8d352cd9ee3c780c80582e1fe",
+      "plan_381": "ccde61c337baead52e02346ae79ffc6f1f323457eea663bd833ec2ceb2b1b5ae",
+      "plan_384": "fe2c98329e15b1a8cae28b9e48231e86b72262143472efd246642b0f3edacbaf",
+      "plan_385": "dd3110b3671977fe7f971a6ece37a830a3906e5a57045363adab9b490f06f533",
+      "plan_386": "c870ea13c5d0fb42872364f32a640398a2921a21e1adfcafc6d98b9023f07339",
+      "plan_389": "361308d21f07597f861d926b38c368f404eadbfc75220398be71139c268e167f"
+    }
+  }
+}

@@ -218,6 +218,11 @@ Current high-signal generated reports:
   into an executable next-source target: at current `n=48`, a new source family
   needs at least `13` newly promoted covered tasks to clear the Wilson gate, so
   the next run should target the `24` uncovered tasks directly.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V8_TARGETED_SOURCE_CONTRACT.md](LATENT_AGGREGATION_MULTI_ASPECT_V8_TARGETED_SOURCE_CONTRACT.md):
+  predeclared source-generation contract for the next aggregation experiment.
+  It freezes the `24` v7 no-complement tasks and emits a
+  `targeted_history_contrast` GPU command; this is not a promotion artifact
+  until the generated rows are replayed against the frozen v7 evidence.
 - [LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md](LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md):
   post-hoc no-generation diagnostic over existing v6 raw rows; the expanded
   ontology recovers `12` of `21` v6 no-complement tasks, motivating v7

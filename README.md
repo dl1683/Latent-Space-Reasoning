@@ -244,7 +244,10 @@ Active frontier:
   The v7 failure analysis converts that into the next experimental floor: any
   new source family must add at least `13` newly promoted covered tasks on this
   48-task design to satisfy the Wilson gate, so the next run should target the
-  `24` currently uncovered tasks rather than spend uniformly.
+  `24` currently uncovered tasks rather than spend uniformly. A v8 targeted
+  source contract now freezes exactly those uncovered tasks and emits a
+  `targeted_history_contrast` GPU command; it is source-generation evidence
+  only until replayed against the frozen v7 artifacts.
 
 What not to overclaim:
 
