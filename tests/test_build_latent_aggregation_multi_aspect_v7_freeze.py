@@ -13,8 +13,11 @@ def test_multi_aspect_v7_freeze_locks_tasks_and_expanded_ontology(tmp_path):
     coverage = tmp_path / "v6_coverage.json"
     threshold = tmp_path / "v6_threshold.json"
     label_raw = tmp_path / "labels.jsonl"
+    label_scores = tmp_path / "labels.json"
     ontology_probe_raw = tmp_path / "ontology_probe.jsonl"
+    ontology_probe_scores = tmp_path / "ontology_probe.json"
     cross_latent_raw = tmp_path / "cross_latent.jsonl"
+    cross_latent_scores = tmp_path / "cross_latent.json"
     tasks.write_text(
         "\n".join(json.dumps(_task(task_id)) for task_id in FROZEN_TASK_IDS) + "\n",
         encoding="utf-8",
@@ -60,8 +63,11 @@ def test_multi_aspect_v7_freeze_locks_tasks_and_expanded_ontology(tmp_path):
         v6_coverage_path=coverage,
         v6_threshold_path=threshold,
         label_raw_path=label_raw,
+        label_scores_path=label_scores,
         ontology_probe_raw_path=ontology_probe_raw,
+        ontology_probe_scores_path=ontology_probe_scores,
         cross_latent_raw_path=cross_latent_raw,
+        cross_latent_scores_path=cross_latent_scores,
     )
     markdown = render_markdown(manifest)
 
@@ -69,12 +75,17 @@ def test_multi_aspect_v7_freeze_locks_tasks_and_expanded_ontology(tmp_path):
     assert manifest["task_ids"][0] == "plan_345"
     assert manifest["task_ids"][-1] == "plan_392"
     assert manifest["freshness_contract"]["prior_planning_task_max"] == 344
-    assert manifest["source_family_contract"]["command_status"] == "implementation_required_before_generation"
+    assert manifest["source_family_contract"]["command_status"] == "replay_ready_generation_pending"
+    assert "--raw-output " + str(label_raw) in manifest["source_family_contract"]["label_command"]
+    assert "--counterfactual-probe-policy span_tomography_probe_v4" in manifest["source_family_contract"]["ontology_probe_command"]
+    assert "--include-revision-schedules" in manifest["source_family_contract"]["cross_latent_command"]
+    assert "latent_aggregation_multi_aspect_v7_replay.json" in manifest["source_family_contract"]["replay_command"]
+    assert manifest["source_family_contract"]["required_outputs"]["label_scores_output"] == str(label_scores)
     aspect_ids = {aspect["aspect_id"] for aspect in manifest["expanded_aspect_ontology"]["aspects"]}
     assert {"owner_assignment", "timeline_or_sequence", "polarity_or_action_direction"} <= aspect_ids
     assert manifest["statistical_gates"]["minimum_complement_coverage_count"] == 36
     assert manifest["v7_specific_gates"]["must_report_label_leakage_check"] is True
-    assert "does not authorize generation yet" in markdown
+    assert "authorizes only the predeclared v7 source-family generation commands" in markdown
 
 
 def test_multi_aspect_v7_freeze_requires_threshold_failure_boundary(tmp_path):
@@ -103,8 +114,11 @@ def test_multi_aspect_v7_freeze_requires_threshold_failure_boundary(tmp_path):
             v6_coverage_path=coverage,
             v6_threshold_path=threshold,
             label_raw_path=tmp_path / "labels.jsonl",
+            label_scores_path=tmp_path / "labels.json",
             ontology_probe_raw_path=tmp_path / "ontology_probe.jsonl",
+            ontology_probe_scores_path=tmp_path / "ontology_probe.json",
             cross_latent_raw_path=tmp_path / "cross_latent.jsonl",
+            cross_latent_scores_path=tmp_path / "cross_latent.json",
         )
     except ValueError as exc:
         assert "threshold sensitivity" in str(exc)

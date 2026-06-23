@@ -29,8 +29,15 @@ DEFAULT_V6_THRESHOLD = Path(
 DEFAULT_JSON_OUTPUT = Path("eval_results/diffusion_language/latent_aggregation_multi_aspect_v7_freeze.json")
 DEFAULT_REPORT_OUTPUT = Path("docs/reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V7_FREEZE.md")
 DEFAULT_LABEL_RAW = Path("eval_results/diffusion_language/latent_aggregation_multi_aspect_v7_raw.jsonl")
+DEFAULT_LABEL_SCORES = Path("eval_results/diffusion_language/latent_aggregation_multi_aspect_v7_scores.json")
 DEFAULT_ONTOLOGY_PROBE_RAW = Path("eval_results/diffusion_language/latent_aggregation_multi_aspect_v7_ontology_probe_raw.jsonl")
+DEFAULT_ONTOLOGY_PROBE_SCORES = Path(
+    "eval_results/diffusion_language/latent_aggregation_multi_aspect_v7_ontology_probe_scores.json"
+)
 DEFAULT_CROSS_LATENT_RAW = Path("eval_results/diffusion_language/latent_aggregation_multi_aspect_v7_cross_latent_raw.jsonl")
+DEFAULT_CROSS_LATENT_SCORES = Path(
+    "eval_results/diffusion_language/latent_aggregation_multi_aspect_v7_cross_latent_scores.json"
+)
 
 FROZEN_TASK_PRESET = "latent_aggregation_multi_aspect_v7_plan345_392"
 FROZEN_TASK_IDS = tuple(f"plan_{index:03d}" for index in range(345, 393))
@@ -77,8 +84,11 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--v6-coverage", type=Path, default=DEFAULT_V6_COVERAGE)
     parser.add_argument("--v6-threshold", type=Path, default=DEFAULT_V6_THRESHOLD)
     parser.add_argument("--label-raw", type=Path, default=DEFAULT_LABEL_RAW)
+    parser.add_argument("--label-scores", type=Path, default=DEFAULT_LABEL_SCORES)
     parser.add_argument("--ontology-probe-raw", type=Path, default=DEFAULT_ONTOLOGY_PROBE_RAW)
+    parser.add_argument("--ontology-probe-scores", type=Path, default=DEFAULT_ONTOLOGY_PROBE_SCORES)
     parser.add_argument("--cross-latent-raw", type=Path, default=DEFAULT_CROSS_LATENT_RAW)
+    parser.add_argument("--cross-latent-scores", type=Path, default=DEFAULT_CROSS_LATENT_SCORES)
     parser.add_argument("--json-output", type=Path, default=DEFAULT_JSON_OUTPUT)
     parser.add_argument("--report-output", type=Path, default=DEFAULT_REPORT_OUTPUT)
     return parser.parse_args()
@@ -92,8 +102,11 @@ def main() -> int:
         v6_coverage_path=args.v6_coverage,
         v6_threshold_path=args.v6_threshold,
         label_raw_path=args.label_raw,
+        label_scores_path=args.label_scores,
         ontology_probe_raw_path=args.ontology_probe_raw,
+        ontology_probe_scores_path=args.ontology_probe_scores,
         cross_latent_raw_path=args.cross_latent_raw,
+        cross_latent_scores_path=args.cross_latent_scores,
     )
     args.json_output.parent.mkdir(parents=True, exist_ok=True)
     args.report_output.parent.mkdir(parents=True, exist_ok=True)
@@ -122,11 +135,23 @@ def build_freeze_manifest(
     v6_coverage_path: Path,
     v6_threshold_path: Path,
     label_raw_path: Path,
+    label_scores_path: Path,
     ontology_probe_raw_path: Path,
+    ontology_probe_scores_path: Path,
     cross_latent_raw_path: Path,
+    cross_latent_scores_path: Path,
 ) -> dict[str, object]:
     existing_outputs = [
-        path for path in (label_raw_path, ontology_probe_raw_path, cross_latent_raw_path) if path.exists()
+        path
+        for path in (
+            label_raw_path,
+            label_scores_path,
+            ontology_probe_raw_path,
+            ontology_probe_scores_path,
+            cross_latent_raw_path,
+            cross_latent_scores_path,
+        )
+        if path.exists()
     ]
     if existing_outputs:
         paths = ", ".join(str(path) for path in existing_outputs)
@@ -192,20 +217,29 @@ def build_freeze_manifest(
             ],
         },
         "source_family_contract": {
-            "command_status": "implementation_required_before_generation",
+            "command_status": "replay_ready_generation_pending",
             "families": [
                 "baseline_dream_llada_low_confidence_random",
                 "ontology_probe",
                 "cross_latent_perturbation",
             ],
+            "label_command": _label_command(label_raw_path, label_scores_path),
+            "ontology_probe_command": _ontology_probe_command(
+                ontology_probe_raw_path,
+                ontology_probe_scores_path,
+            ),
+            "cross_latent_command": _cross_latent_command(cross_latent_raw_path, cross_latent_scores_path),
+            "replay_command": _replay_command(label_raw_path, ontology_probe_raw_path, cross_latent_raw_path),
             "required_outputs": {
                 "label_raw_output": str(label_raw_path),
+                "label_scores_output": str(label_scores_path),
                 "ontology_probe_raw_output": str(ontology_probe_raw_path),
+                "ontology_probe_scores_output": str(ontology_probe_scores_path),
                 "cross_latent_raw_output": str(cross_latent_raw_path),
+                "cross_latent_scores_output": str(cross_latent_scores_path),
             },
             "implementation_requirements": [
-                "add replay support for v7 expanded aspects before scoring v7 promotion",
-                "add source-family mapping for ontology_probe and cross_latent_perturbation",
+                "run the frozen v7 source-family commands before scoring v7 promotion",
                 "forbid task_score and rubric-hit labels as extractor inputs",
                 "report duplicate/noise rate for every new source family",
             ],
@@ -258,8 +292,9 @@ def render_markdown(manifest: dict[str, object]) -> str:
         "",
         (
             "Freeze the fresh v7 task slice and expanded planning-aspect ontology. "
-            "This manifest does not authorize generation yet: v7 source-family and "
-            "expanded-ontology replay support must be implemented before GPU runs."
+            "Expanded-ontology replay support is implemented; this manifest now "
+            "authorizes only the predeclared v7 source-family generation commands "
+            "and the frozen replay command below."
         ),
         "",
         "## Frozen Tasks",
@@ -301,6 +336,15 @@ def render_markdown(manifest: dict[str, object]) -> str:
             f"- Command status: `{source_contract.get('command_status')}`",
             f"- Families: `{', '.join(source_contract.get('families', []))}`",
             "",
+            "Commands:",
+            "",
+            "```powershell",
+            str(source_contract.get("label_command", "")),
+            str(source_contract.get("ontology_probe_command", "")),
+            str(source_contract.get("cross_latent_command", "")),
+            str(source_contract.get("replay_command", "")),
+            "```",
+            "",
             "Implementation requirements:",
             "",
             *[f"- {item}" for item in source_contract.get("implementation_requirements", [])],
@@ -340,6 +384,64 @@ def _assert_fresh_task_ids(task_ids: tuple[str, ...]) -> None:
 
 def _diagnostic_ref(path: Path, summary: dict[str, object]) -> dict[str, object]:
     return {"path": str(path), "sha256": _sha256(path), "summary": summary}
+
+
+def _label_command(label_raw_path: Path, label_scores_path: Path) -> str:
+    return (
+        "python experiments\\run_diffusion_three_arm_benchmark.py "
+        "--task-ids " + ",".join(FROZEN_TASK_IDS) + " "
+        "--candidates dream-7b-instruct-hf,llada-8b-instruct-hf "
+        "--limit-schedules 3 --limit-evolved-schedules 0 "
+        "--limit-repair-candidates 2 --include-history-repairs "
+        "--history-repair-fractions 0.25 "
+        "--repair-pack constraint_span_phase_final_preserve_seeded_gated "
+        "--repair-spend-trigger denoise_phase_repairability "
+        "--repair-selector generated_repair_value_v1 "
+        "--repair-promotion-margin 0.02 --trajectory-selector planning_state "
+        "--device cuda --dtype bfloat16 "
+        f"--raw-output {label_raw_path} --scores-output {label_scores_path} "
+        "--report-output docs\\reports\\diffusion\\LATENT_AGGREGATION_MULTI_ASPECT_V7_LABEL_REPORT.md"
+    )
+
+
+def _ontology_probe_command(ontology_probe_raw_path: Path, ontology_probe_scores_path: Path) -> str:
+    return (
+        "python experiments\\run_diffusion_three_arm_benchmark.py "
+        "--task-ids " + ",".join(FROZEN_TASK_IDS) + " "
+        "--candidates dream-7b-instruct-hf,llada-8b-instruct-hf "
+        "--limit-schedules 3 --limit-evolved-schedules 0 --limit-repair-candidates 1 "
+        "--repair-spend-trigger counterfactual_micro_probe_v1 "
+        "--counterfactual-probe-mode all --counterfactual-probe-policy span_tomography_probe_v4 "
+        "--trajectory-selector planning_state --device cuda --dtype bfloat16 "
+        f"--raw-output {ontology_probe_raw_path} --scores-output {ontology_probe_scores_path} "
+        "--report-output docs\\reports\\diffusion\\LATENT_AGGREGATION_MULTI_ASPECT_V7_ONTOLOGY_PROBE_REPORT.md"
+    )
+
+
+def _cross_latent_command(cross_latent_raw_path: Path, cross_latent_scores_path: Path) -> str:
+    return (
+        "python experiments\\run_diffusion_three_arm_benchmark.py "
+        "--task-ids " + ",".join(FROZEN_TASK_IDS) + " "
+        "--candidates llada-8b-instruct-hf "
+        "--limit-schedules 2 --limit-evolved-schedules 4 --include-revision-schedules "
+        "--revision-remask-fraction 0.25 --revision-steps 8 "
+        "--limit-repair-candidates 0 --trajectory-selector planning_state "
+        "--device cuda --dtype bfloat16 "
+        f"--raw-output {cross_latent_raw_path} --scores-output {cross_latent_scores_path} "
+        "--report-output docs\\reports\\diffusion\\LATENT_AGGREGATION_MULTI_ASPECT_V7_CROSS_LATENT_REPORT.md"
+    )
+
+
+def _replay_command(label_raw_path: Path, ontology_probe_raw_path: Path, cross_latent_raw_path: Path) -> str:
+    return (
+        "python experiments\\run_latent_aggregation_multi_aspect_v3_replay.py "
+        "--freeze eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v7_freeze.json "
+        f"--raw {label_raw_path} --extra-raw {ontology_probe_raw_path} --extra-raw {cross_latent_raw_path} "
+        "--json-output eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v7_replay.json "
+        "--aspects-output eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v7_aspects.jsonl "
+        "--realized-output eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v7_realized.jsonl "
+        "--report-output docs\\reports\\diffusion\\LATENT_AGGREGATION_MULTI_ASPECT_V7_REPLAY.md"
+    )
 
 
 def _list_of_dicts(value: object) -> list[dict[str, object]]:
