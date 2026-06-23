@@ -96,6 +96,12 @@ Current high-signal generated reports:
 - [LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_AUGMENTED_FAILURE.md](LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_AUGMENTED_FAILURE.md):
   failure analysis for the probe-augmented replay showing that even with probes,
   the binding gap remains the `12/24` complement-coverage gate.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V3_COVERAGE_GAP.md](LATENT_AGGREGATION_MULTI_ASPECT_V3_COVERAGE_GAP.md):
+  baseline v3 coverage-gap diagnostic showing all `18` no-complement tasks are
+  anchor-dominance cases, with no below-threshold near misses.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_AUGMENTED_COVERAGE_GAP.md](LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_AUGMENTED_COVERAGE_GAP.md):
+  probe-augmented coverage-gap diagnostic showing probes add one covered task
+  but leave `17` anchor-dominance no-complement tasks.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.

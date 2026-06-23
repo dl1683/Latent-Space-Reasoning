@@ -337,6 +337,16 @@ gate. This means the current probe implementation is useful as a diagnostic and
 occasionally supplies a real complement, but it is not yet the missing
 high-coverage complement generator.
 
+The v3 coverage-gap diagnostic rules out a simple threshold story. In the
+baseline replay, all `18` no-complement tasks are anchor-dominance cases with
+zero below-threshold near misses. In the probe-augmented replay, probes double
+the mean non-anchor candidate count and add one covered task, but the remaining
+`17` no-complement tasks are still anchor-dominance cases. The next credible
+coverage experiment therefore needs either a complement-directed generation
+policy that is conditioned on anchor deficits, or an expanded aspect ontology
+that can expose useful differences invisible to the current rubric-plus-four-
+dimension scorer projection.
+
 Task mix:
 
 - 8 planning tasks with explicit rubric components.
