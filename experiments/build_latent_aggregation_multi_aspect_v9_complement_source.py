@@ -199,7 +199,7 @@ def build_complement_source_contract(
             scores_output_path=scores_output_path,
             source_report_output_path=source_report_output_path,
         ),
-        "command_status": "runner_ready_generation_blocked_pending_backend_diagnostic",
+        "command_status": "runner_ready_cuda_runtime_required",
         "family": "complement_packet",
         "prompt_artifact": {
             "path": str(prompts_output_path),
@@ -212,11 +212,15 @@ def build_complement_source_contract(
             "packets: source-supported clauses that add missing aspects beyond the "
             "frozen v7 anchor without rewriting the whole answer."
         ),
-        "current_blocker": (
-            "The source contract, prompt artifact, replay mapping, and streaming runner "
-            "exist. A one-prompt GPU smoke attempt loaded the backend but produced no "
-            "row while GPU allocation dropped to zero, so the next run must diagnose "
-            "the LLaDA backend generation boundary before treating v9 as populated."
+        "runtime_note": (
+            "Use the repo `.venv` for GPU generation. The system Python currently has "
+            "CPU-only Torch, while `.venv` reports CUDA Torch 2.11.0+cu128."
+        ),
+        "latest_smoke_note": (
+            "A one-prompt CUDA smoke on 2026-06-23 generated 1 parseable complement "
+            "packet row for plan_346 with non-empty why fields, mean task score "
+            "0.272857, 0/1 exact-three-clause compliance, and 1/1 markdown-fenced "
+            "JSON. Treat this as runner/runtime validation, not source-quality proof."
         ),
         "required_outputs": {
             "complement_packet_raw_output": str(raw_output_path),
@@ -347,7 +351,8 @@ def render_markdown(manifest: dict[str, object]) -> str:
         f"- Family: `{source.get('family')}`",
         f"- Command status: `{source.get('command_status')}`",
         f"- Rationale: {source.get('rationale')}",
-        f"- Current blocker: {source.get('current_blocker')}",
+        f"- Runtime note: {source.get('runtime_note')}",
+        f"- Latest smoke note: {source.get('latest_smoke_note')}",
         "",
         "```powershell",
         str(source.get("command", "")),
@@ -436,14 +441,24 @@ def _complement_prompt(*, task_prompt: str, anchor_text: str, missing_aspects: l
     return (
         f"Task:\n{task_prompt}\n\n"
         f"Current anchor answer:\n{anchor_text}\n\n"
-        "Generate a complement packet, not a replacement final answer. Write 3 short, "
-        "source-supported clauses that add useful information absent from the anchor. "
-        "Each clause must be directly compatible with the task and anchor, must not "
-        "contradict the anchor, and must not restate the anchor in different words.\n\n"
+        "Generate a complement packet, not a replacement final answer.\n"
+        "Hard output rules:\n"
+        "- Return raw JSON only; do not wrap it in markdown fences.\n"
+        "- Return exactly 3 complement clauses.\n"
+        "- Every clause must be one sentence, must add information absent from the anchor, "
+        "and must be directly usable in a final answer.\n"
+        "- Every `why_not_in_anchor` value must be non-empty and must identify the exact "
+        "missing anchor detail.\n"
+        "- Do not omit any object key from any clause.\n"
+        "- Do not restate the anchor, do not contradict it, and do not invent facts outside "
+        "the task.\n\n"
         f"Prioritize missing expanded-aspect types: {aspect_text}.\n\n"
-        "Return JSON with this shape only: "
+        "Return this JSON shape exactly: "
         "{\"complement_clauses\":[{\"aspect_type\":\"...\",\"clause\":\"...\","
-        "\"why_not_in_anchor\":\"...\"}]}."
+        "\"why_not_in_anchor\":\"...\"}]}.\n"
+        "Example clause object: "
+        "{\"aspect_type\":\"owner_assignment\",\"clause\":\"Name a directly responsible owner for the audit step.\","
+        "\"why_not_in_anchor\":\"The anchor mentions the audit step but does not assign responsibility.\"}"
     )
 
 
@@ -500,12 +515,14 @@ def _generation_command(
     source_report_output_path: Path,
 ) -> str:
     return (
-        "python experiments\\run_latent_aggregation_complement_packet_source.py "
+        ".\\.venv\\Scripts\\python.exe experiments\\run_latent_aggregation_complement_packet_source.py "
         f"--prompts {prompts_output_path} "
         "--tasks experiments\\general_reasoning_tasks_scout.jsonl "
         "--candidates llada-8b-instruct-hf "
         "--samples-per-task 3 "
         "--max-new-tokens 128 --steps 128 --algorithm entropy --block-length 32 "
+        "--device cuda --dtype bfloat16 "
+        "--model-path external\\diffusion_models\\LLaDA-8B-Instruct "
         "--resume "
         f"--raw-output {raw_output_path} "
         f"--scores-output {scores_output_path} "

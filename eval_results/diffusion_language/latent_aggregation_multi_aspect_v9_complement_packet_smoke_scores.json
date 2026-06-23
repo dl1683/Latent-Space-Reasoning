@@ -1,0 +1,24 @@
+{
+  "summary": {
+    "candidate_keys": [
+      "llada-8b-instruct-hf"
+    ],
+    "exact_three_clause_packet_count": 0,
+    "fenced_json_packet_count": 1,
+    "generated_record_count": 1,
+    "json_parseable_packet_count": 1,
+    "mean_task_score": 0.27285714285714285,
+    "nonempty_why_packet_count": 1,
+    "prompt_count": 1,
+    "raw_output": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v9_complement_packet_smoke_raw.jsonl",
+    "report_output": "docs\\reports\\diffusion\\LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_SMOKE_REPORT.md",
+    "requested_record_count": 1,
+    "samples_per_task": 1,
+    "scores_output": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v9_complement_packet_smoke_scores.json",
+    "source_family": "complement_packet",
+    "task_count": 1,
+    "task_ids": [
+      "plan_346"
+    ]
+  }
+}

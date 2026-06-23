@@ -57,6 +57,7 @@ class RunnerConfig:
     generation_seed: int = 1729
     device: str | None = None
     dtype: str | None = None
+    model_path: str | None = None
     limit_prompts: int | None = None
 
 
@@ -79,6 +80,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--resume", action="store_true")
     parser.add_argument("--device")
     parser.add_argument("--dtype")
+    parser.add_argument("--model-path", help="Load a materialized local model directory instead of the registry model id.")
     return parser.parse_args()
 
 
@@ -95,6 +97,7 @@ def main() -> int:
         generation_seed=args.generation_seed,
         device=args.device,
         dtype=args.dtype,
+        model_path=args.model_path,
         limit_prompts=args.limit_prompts,
     )
     records, summary = run_complement_packet_source(
@@ -221,6 +224,10 @@ def render_markdown(summary: dict[str, object]) -> str:
         f"- Samples per task: `{summary['samples_per_task']}`",
         f"- Candidate keys: `{', '.join(summary['candidate_keys'])}`",
         f"- Mean task score: `{summary['mean_task_score']:.6f}`",
+        f"- JSON-parseable packets: `{summary['json_parseable_packet_count']}`",
+        f"- Exact-three-clause packets: `{summary['exact_three_clause_packet_count']}`",
+        f"- Non-empty why packets: `{summary['nonempty_why_packet_count']}`",
+        f"- Markdown-fenced packets: `{summary['fenced_json_packet_count']}`",
         "",
         "## Evidence Boundary",
         "",
@@ -239,11 +246,13 @@ def _record_from_generation(
     generation_seed: int,
 ) -> dict[str, object]:
     text = str(generation.get("text", ""))
+    packet_shape = _packet_shape(text)
     task_score = score_task_output(task, text)
     record = dict(generation)
     record.update(
         {
             "candidate_key": candidate_key,
+            "complement_packet_shape": packet_shape,
             "complement_packet_prompt": {
                 "anchor_score": prompt_row.get("anchor_score"),
                 "anchor_trajectory_id": prompt_row.get("anchor_trajectory_id"),
@@ -282,11 +291,20 @@ def _summary(
         for record in records
         if isinstance(record.get("task_score"), dict)
     ]
+    packet_shapes = [
+        record.get("complement_packet_shape")
+        for record in records
+        if isinstance(record.get("complement_packet_shape"), dict)
+    ]
     task_ids = sorted({str(record.get("task_id", "")) for record in records})
     return {
         "candidate_keys": list(config.candidates),
+        "exact_three_clause_packet_count": sum(1 for shape in packet_shapes if shape.get("exact_three_clauses")),
+        "fenced_json_packet_count": sum(1 for shape in packet_shapes if shape.get("has_markdown_fence")),
         "generated_record_count": len(records),
+        "json_parseable_packet_count": sum(1 for shape in packet_shapes if shape.get("json_parseable")),
         "mean_task_score": sum(task_scores) / len(task_scores) if task_scores else 0.0,
+        "nonempty_why_packet_count": sum(1 for shape in packet_shapes if shape.get("all_clauses_have_nonempty_why")),
         "prompt_count": prompt_count,
         "requested_record_count": prompt_count * len(config.candidates) * config.samples_per_task,
         "samples_per_task": config.samples_per_task,
@@ -298,7 +316,12 @@ def _summary(
 
 def _backend_factory(config: RunnerConfig) -> Callable[[str], Backend]:
     def factory(candidate_key: str) -> Backend:
-        return HFDiffusionBackend(candidate_key, device=config.device, dtype=config.dtype)
+        return HFDiffusionBackend(
+            candidate_key,
+            device=config.device,
+            dtype=config.dtype,
+            model_path=config.model_path,
+        )
 
     return factory
 
@@ -313,6 +336,45 @@ def _generation_config(config: RunnerConfig) -> DiffusionGenerationConfig:
         device=config.device,
         dtype=config.dtype,
     )
+
+
+def _packet_shape(text: str) -> dict[str, object]:
+    has_markdown_fence = "```" in text
+    payload = text.strip()
+    first_brace = payload.find("{")
+    last_brace = payload.rfind("}")
+    if first_brace == -1 or last_brace == -1 or last_brace < first_brace:
+        return {
+            "all_clauses_have_nonempty_why": False,
+            "clause_count": 0,
+            "exact_three_clauses": False,
+            "has_markdown_fence": has_markdown_fence,
+            "json_parseable": False,
+        }
+    try:
+        parsed = json.loads(payload[first_brace : last_brace + 1])
+    except json.JSONDecodeError:
+        return {
+            "all_clauses_have_nonempty_why": False,
+            "clause_count": 0,
+            "exact_three_clauses": False,
+            "has_markdown_fence": has_markdown_fence,
+            "json_parseable": False,
+        }
+    clauses = parsed.get("complement_clauses") if isinstance(parsed, dict) else None
+    if not isinstance(clauses, list):
+        clauses = []
+    all_have_why = bool(clauses) and all(
+        isinstance(clause, dict) and bool(str(clause.get("why_not_in_anchor", "")).strip())
+        for clause in clauses
+    )
+    return {
+        "all_clauses_have_nonempty_why": all_have_why,
+        "clause_count": len(clauses),
+        "exact_three_clauses": len(clauses) == 3,
+        "has_markdown_fence": has_markdown_fence,
+        "json_parseable": True,
+    }
 
 
 def _print_progress(event: str, **payload: object) -> None:

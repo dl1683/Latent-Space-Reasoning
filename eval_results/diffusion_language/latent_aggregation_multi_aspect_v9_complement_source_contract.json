@@ -29,14 +29,14 @@
   },
   "schema": "latent_aggregation_multi_aspect_v9_complement_source_contract.v1",
   "source_family_contract": {
-    "command": "python experiments\\run_latent_aggregation_complement_packet_source.py --prompts eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v9_complement_packet_prompts.jsonl --tasks experiments\\general_reasoning_tasks_scout.jsonl --candidates llada-8b-instruct-hf --samples-per-task 3 --max-new-tokens 128 --steps 128 --algorithm entropy --block-length 32 --resume --raw-output eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v9_complement_packet_raw.jsonl --scores-output eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v9_complement_packet_scores.json --report-output docs\\reports\\diffusion\\LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPORT.md",
-    "command_status": "runner_ready_generation_blocked_pending_backend_diagnostic",
-    "current_blocker": "The source contract, prompt artifact, replay mapping, and streaming runner exist. A one-prompt GPU smoke attempt loaded the backend but produced no row while GPU allocation dropped to zero, so the next run must diagnose the LLaDA backend generation boundary before treating v9 as populated.",
+    "command": ".\\.venv\\Scripts\\python.exe experiments\\run_latent_aggregation_complement_packet_source.py --prompts eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v9_complement_packet_prompts.jsonl --tasks experiments\\general_reasoning_tasks_scout.jsonl --candidates llada-8b-instruct-hf --samples-per-task 3 --max-new-tokens 128 --steps 128 --algorithm entropy --block-length 32 --device cuda --dtype bfloat16 --model-path external\\diffusion_models\\LLaDA-8B-Instruct --resume --raw-output eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v9_complement_packet_raw.jsonl --scores-output eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v9_complement_packet_scores.json --report-output docs\\reports\\diffusion\\LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPORT.md",
+    "command_status": "runner_ready_cuda_runtime_required",
     "family": "complement_packet",
+    "latest_smoke_note": "A one-prompt CUDA smoke on 2026-06-23 generated 1 parseable complement packet row for plan_346 with non-empty why fields, mean task score 0.272857, 0/1 exact-three-clause compliance, and 1/1 markdown-fenced JSON. Treat this as runner/runtime validation, not source-quality proof.",
     "prompt_artifact": {
       "path": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v9_complement_packet_prompts.jsonl",
       "row_count": 24,
-      "sha256": "a50e7ae5d0b0b85f0efc75fc844f4c23b6bfe3b0b83eca4ae781128ed489db99"
+      "sha256": "4c30ee71d340970ba267eb73b9f1f01cb6d3c8cc16eda17ef9750f3110570afd"
     },
     "rationale": "V8 targeted answer repair usually produced weaker standalone answers and almost no expanded complements. V9 therefore asks for explicit complement packets: source-supported clauses that add missing aspects beyond the frozen v7 anchor without rewriting the whole answer.",
     "required_outputs": {
@@ -44,6 +44,7 @@
       "complement_packet_report_output": "docs\\reports\\diffusion\\LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPORT.md",
       "complement_packet_scores_output": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v9_complement_packet_scores.json"
     },
+    "runtime_note": "Use the repo `.venv` for GPU generation. The system Python currently has CPU-only Torch, while `.venv` reports CUDA Torch 2.11.0+cu128.",
     "source_shape": {
       "candidate_unit": "complement_packet_clause_set",
       "minimum_packet_candidates_per_task": 3,

@@ -2,6 +2,8 @@ import json
 
 from experiments.run_latent_aggregation_complement_packet_source import (
     RunnerConfig,
+    _backend_factory,
+    _packet_shape,
     render_markdown,
     run_complement_packet_source,
 )
@@ -40,11 +42,17 @@ def test_complement_packet_source_runner_writes_replay_compatible_records(tmp_pa
     assert summary["source_family"] == "complement_packet"
     assert summary["generated_record_count"] == 2
     assert records[0]["source_family"] == "complement_packet"
+    assert records[0]["complement_packet_shape"]["json_parseable"]
     assert records[0]["generation_stage"] == "candidate_generation"
     assert records[0]["schedule"]["name"] == "complement_packet_00"
     assert records[0]["task"]["task_id"] == "plan_a"
     assert records[0]["task_score"]["score"] > 0
     assert records[0]["complement_packet_prompt"]["missing_anchor_aspects"] == ["owner_assignment"]
+    assert summary["json_parseable_packet_count"] == 2
+    assert summary["exact_three_clause_packet_count"] == 2
+    assert summary["nonempty_why_packet_count"] == 2
+    assert summary["fenced_json_packet_count"] == 2
+    assert "JSON-parseable packets" in markdown
     assert "replay is required" in markdown
 
 
@@ -67,6 +75,59 @@ def test_complement_packet_source_runner_rejects_missing_prompt_task(tmp_path):
         raise AssertionError("expected missing task failure")
 
 
+def test_backend_factory_passes_local_model_path(monkeypatch):
+    captured = {}
+
+    class FakeHFDiffusionBackend:
+        def __init__(self, candidate_key, *, device=None, dtype=None, model_path=None):
+            captured.update(
+                {
+                    "candidate_key": candidate_key,
+                    "device": device,
+                    "dtype": dtype,
+                    "model_path": model_path,
+                }
+            )
+
+    monkeypatch.setattr(
+        "experiments.run_latent_aggregation_complement_packet_source.HFDiffusionBackend",
+        FakeHFDiffusionBackend,
+    )
+    backend = _backend_factory(
+        RunnerConfig(
+            device="cuda",
+            dtype="bfloat16",
+            model_path="external/diffusion_models/LLaDA-8B-Instruct",
+        )
+    )("llada-8b-instruct-hf")
+
+    assert isinstance(backend, FakeHFDiffusionBackend)
+    assert captured == {
+        "candidate_key": "llada-8b-instruct-hf",
+        "device": "cuda",
+        "dtype": "bfloat16",
+        "model_path": "external/diffusion_models/LLaDA-8B-Instruct",
+    }
+
+
+def test_packet_shape_accepts_fenced_json_and_counts_clause_quality():
+    shape = _packet_shape(
+        '```json\n{"complement_clauses":['
+        '{"aspect_type":"owner_assignment","clause":"Assign an owner.","why_not_in_anchor":"No owner is named."},'
+        '{"aspect_type":"timeline_or_sequence","clause":"Freeze labels before scoring.","why_not_in_anchor":"No sequence is given."},'
+        '{"aspect_type":"scope_boundary","clause":"Limit the slice to uncovered tasks.","why_not_in_anchor":"No scope boundary is set."}'
+        "]}\n```"
+    )
+
+    assert shape == {
+        "all_clauses_have_nonempty_why": True,
+        "clause_count": 3,
+        "exact_three_clauses": True,
+        "has_markdown_fence": True,
+        "json_parseable": True,
+    }
+
+
 class _FakeGeneration:
     def __init__(self, candidate_key: str, prompt: str):
         self.candidate_key = candidate_key
@@ -80,7 +141,13 @@ class _FakeGeneration:
             "generated_token_ids": [1, 2, 3],
             "model_id": "fake",
             "prompt": self.prompt,
-            "text": "Assign an owner and measure reliability before rollback.",
+            "text": (
+                '```json\n{"complement_clauses":['
+                '{"aspect_type":"owner_assignment","clause":"Assign an owner.","why_not_in_anchor":"No owner is named."},'
+                '{"aspect_type":"timeline_or_sequence","clause":"Measure reliability before rollback.","why_not_in_anchor":"No sequence is given."},'
+                '{"aspect_type":"rollback_or_exit_criteria","clause":"Define rollback criteria.","why_not_in_anchor":"No rollback criteria are named."}'
+                "]}\n```"
+            ),
         }
 
 

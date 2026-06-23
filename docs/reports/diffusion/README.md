@@ -242,8 +242,13 @@ Current high-signal generated reports:
   freezes `24` prompt rows for a named `complement_packet` family and preserves
   the v7 floor of `13` newly promoted covered tasks before any replay can be
   treated as useful evidence. The prompt artifact, runner, and replay mapping
-  exist, but source generation is currently blocked at the backend-generation
-  diagnostic stage; there are no promoted v9 source rows yet.
+  exist; a one-prompt CUDA smoke validates the runtime path while exposing
+  packet-shape risks (`1/1` parseable, `1/1` non-empty why, `0/1`
+  exact-three-clause compliance, `1/1` markdown-fenced JSON). There are no
+  promoted v9 source rows yet.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_SMOKE_REPORT.md](LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_SMOKE_REPORT.md):
+  one-prompt CUDA smoke for the v9 complement-packet runner. This is runtime
+  validation only, not replay or promotion evidence.
 - [LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md](LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md):
   post-hoc no-generation diagnostic over existing v6 raw rows; the expanded
   ontology recovers `12` of `21` v6 no-complement tasks, motivating v7

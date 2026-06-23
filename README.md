@@ -264,10 +264,13 @@ Active frontier:
   contract: `24` target tasks, `24` complement-first prompt rows, a named
   `complement_packet` source family, and the same `13` newly promoted coverage
   floor before any replay could count as evidence. The source runner and replay
-  mapping are implemented, but v9 is not populated evidence yet: a one-prompt
-  GPU smoke attempt loaded the backend and then produced no row while GPU
-  allocation dropped to zero, so the next step is to diagnose the LLaDA
-  generation boundary before running the full complement-packet source.
+  mapping are implemented, and the GPU runtime issue is now isolated: system
+  Python has CPU-only Torch, while the repo `.venv` has CUDA Torch
+  `2.11.0+cu128`. A one-prompt CUDA smoke on `plan_346` produced a parseable
+  complement-packet row with non-empty why fields and score `0.272857`; it also
+  showed source-quality risks before full scaling (`0/1` exact-three-clause
+  compliance and `1/1` markdown-fenced JSON). V9 is therefore runtime-ready but
+  not promoted: the full source generation and replay gates still have to run.
 
 What not to overclaim:
 

@@ -67,6 +67,11 @@ def test_v9_complement_source_contract_emits_complement_packet_prompts(tmp_path)
     assert manifest["task_ids"] == ["plan_a", "plan_b"]
     assert len(prompt_rows) == 2
     assert "Generate a complement packet, not a replacement final answer" in prompt_rows[0]["prompt"]
+    assert "Return raw JSON only; do not wrap it in markdown fences" in prompt_rows[0]["prompt"]
+    assert "Return exactly 3 complement clauses" in prompt_rows[0]["prompt"]
+    assert "Every `why_not_in_anchor` value must be non-empty" in prompt_rows[0]["prompt"]
+    assert "Do not omit any object key" in prompt_rows[0]["prompt"]
+    assert "Example clause object" in prompt_rows[0]["prompt"]
     assert prompt_rows[0]["missing_anchor_aspects"]
     assert "--extra-raw" in manifest["replay_contract"]["command"]
     assert "does not promote v9" in markdown
