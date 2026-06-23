@@ -158,6 +158,10 @@ Current high-signal generated reports:
   replay mechanism fixed and adds anchor-deficit constraint-gap rescue rows as
   a new source family, with stricter coverage and explicit incremental-cost
   reporting gates.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V6_LABEL_REPORT.md](LATENT_AGGREGATION_MULTI_ASPECT_V6_LABEL_REPORT.md):
+  fresh v6 label/source run over the coverage-targeting 48-task slice; selected
+  repair covers `48/48` eligible tasks with mean task score `0.306533` versus
+  fixed `0.263757` and random `0.218954` on repair-covered tasks.
 - [LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md](LATENT_AGGREGATION_INFERENCE_V1_LABEL_REPORT.md):
   generated label report for the frozen Dream/LLaDA trajectory run that feeds
   the inference aggregation replay.

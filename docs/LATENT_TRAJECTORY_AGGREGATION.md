@@ -413,12 +413,18 @@ V6 freezes the first direct attack on that bottleneck. It uses fresh tasks
 `plan_297` through `plan_344`, keeps the v5 selector, realizer, and complement
 thresholds fixed, and adds one new source family: LLaDA anchor-deficit
 constraint-gap rescue rows. This source is motivated by v5 failures but is
-evaluated only on a new slice. The v6 gates require `36/48` complement coverage,
-`30` aggregate wins, Wilson lower bound `0.600000`, all-task non-rubric lift
-`0.035000`, zero unsupported additions, zero hard contradictions, source-family
-ablations, cost-normalized lift, and explicit anchor-deficit incremental
-coverage. The point is not to lower the v5 bar; it is to test whether a targeted
-latent source can make the no-complement region smaller.
+evaluated only on a new slice. The v6 label/source run is complete: selected
+repair covers `48/48` eligible tasks, reaches `0.306533` task score on
+repair-covered tasks versus fixed `0.263757` and random `0.218954`, and records
+`24/22/2` wins/ties/losses versus fixed. This is source-side evidence only; the
+aggregation result still depends on populating the probe, diversity-extension,
+and anchor-deficit source families and then running the frozen replay. The v6
+gates require `36/48` complement coverage, `30` aggregate wins, Wilson lower
+bound `0.600000`, all-task non-rubric lift `0.035000`, zero unsupported
+additions, zero hard contradictions, source-family ablations, cost-normalized
+lift, and explicit anchor-deficit incremental coverage. The point is not to
+lower the v5 bar; it is to test whether a targeted latent source can make the
+no-complement region smaller.
 
 ## Relationship To Current Diffusion Work
 

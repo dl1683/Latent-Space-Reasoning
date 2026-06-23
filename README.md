@@ -194,11 +194,13 @@ Active frontier:
   stronger statistical-rigor replication. The remaining v5 coverage gap is
   `14/48` no-complement tasks: `13` anchor-dominance cases and `1`
   below-threshold near miss.
-- The next frozen experiment is v6: a fresh `plan_297` through `plan_344`
-  coverage-targeting slice that keeps v5 replay thresholds fixed and adds one
-  new source family, anchor-deficit constraint-gap rescue rows, to test whether
-  the remaining coverage gap can be reduced without weakening safety or cost
-  gates.
+- v6 is now in progress on a fresh `plan_297` through `plan_344`
+  coverage-targeting slice. The label/source run is complete: selected repair
+  covers `48/48` eligible tasks, reaches `0.306533` task score on
+  repair-covered tasks versus `0.263757` fixed and `0.218954` random, and
+  reports `24/22/2` wins/ties/losses versus fixed. The remaining v6 work is to
+  populate the probe, diversity-extension, and anchor-deficit source families,
+  then run the frozen replay without weakening the v5 safety or cost gates.
 
 What not to overclaim:
 
