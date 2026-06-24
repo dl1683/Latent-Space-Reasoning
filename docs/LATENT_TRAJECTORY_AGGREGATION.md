@@ -205,10 +205,11 @@ The next clean test is v10. It now has a fresh `plan_393` through `plan_440`
 freeze and a populated anchor/label source run. The label run generated `334`
 raw rows with `48/48` eligible repair coverage and selected latent repair task
 score `0.323302` versus fixed `0.253914` and random `0.224722` on
-repair-covered LLaDA tasks. The remaining transfer test is not complete until
-complement-packet prompts are derived from the fresh source rows without replay
-labels, packet rows are generated, and the frozen replay passes or fails under
-the predeclared gates.
+repair-covered LLaDA tasks. The label-free complement-packet prompt artifact now
+contains `48` prompt rows derived from task text, generated source text, stable
+trajectory ids, and the predeclared expanded-aspect gap policy. The remaining
+transfer test is not complete until packet rows are generated and the frozen
+replay passes or fails under the predeclared gates.
 
 ## Failure Modes
 

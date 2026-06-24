@@ -16,10 +16,10 @@ entry path for new readers. Start with the root [README](../../../README.md),
 - Post-failure packet diagnostic: [LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPLAY.md](LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPLAY.md)
 - Active transfer freeze: [LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_FREEZE.md](LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_FREEZE.md)
 - Populated v10 anchor/label source: [LATENT_AGGREGATION_MULTI_ASPECT_V10_LABEL_REPORT.md](LATENT_AGGREGATION_MULTI_ASPECT_V10_LABEL_REPORT.md)
+- Populated v10 complement prompts: [LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PROMPTS.md](LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PROMPTS.md)
 
-The remaining v10 work is complement-packet prompt derivation, packet
-generation, and frozen replay. The interrupted ontology-probe attempt left no
-committed partial artifact.
+The remaining v10 work is packet generation and frozen replay. The interrupted
+ontology-probe attempt left no committed partial artifact.
 
 ## High-Signal Generated Reports
 
@@ -288,8 +288,13 @@ committed partial artifact.
   `334` raw rows, with selected latent repair scoring `0.323302` versus fixed
   `0.253914` and random `0.224722` on repair-covered LLaDA tasks, `48/48`
   eligible repair coverage, and `34/14/0` repair wins/ties/losses versus
-  random. This is source material for v10 complement-packet prompt derivation,
-  not the final aggregation replay.
+  random. This is source material for v10 complement-packet prompts, not the
+  final aggregation replay.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PROMPTS.md](LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PROMPTS.md):
+  label-free v10 prompt contract with `48` complement-packet prompt rows. It
+  derives from task text, generated source text, stable trajectory ids, and the
+  predeclared expanded-aspect gap policy; it excludes replay labels, packet
+  outputs, and post-packet aggregation outcomes.
 - [LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md](LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md):
   post-hoc no-generation diagnostic over existing v6 raw rows; the expanded
   ontology recovers `12` of `21` v6 no-complement tasks, motivating v7

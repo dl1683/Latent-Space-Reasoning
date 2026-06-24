@@ -46,6 +46,7 @@ If you want the same path in one page, read [docs/NAVIGATION.md](NAVIGATION.md) 
 
 - [reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_FREEZE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_FREEZE.md) - active v10 transfer contract.
 - [reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_LABEL_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_LABEL_REPORT.md) - populated v10 anchor/label source run.
+- [reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PROMPTS.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PROMPTS.md) - populated label-free v10 complement-packet prompt contract.
 - [reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPLAY.md) - post-failure diagnostic that motivates v10.
 - [reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V5_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V5_REPLAY.md) - clean promoted local aggregation milestone.
 

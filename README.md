@@ -45,7 +45,7 @@ This repo explores that family:
 | Multi-latent aggregation v5 | Clean local milestone | A predeclared 48-task aggregation replay passed stricter robustness gates on planning tasks. |
 | Aggregation v6-v8 | Negative transfer evidence | More repair, probes, and targeted standalone repair did not reliably create aggregation-useful complements. |
 | Aggregation v9 | Post-failure design breakthrough | Complement-first packet generation passed frozen numeric replay gates on the failed v7 surface, but remains diagnostic. |
-| Aggregation v10 | Active fresh-transfer test | Fresh `plan_393`-`plan_440` freeze and anchor/label source run are populated; complement-packet prompt derivation and replay are pending. |
+| Aggregation v10 | Active fresh-transfer test | Fresh `plan_393`-`plan_440` freeze, anchor/label source run, and label-free complement-packet prompts are populated; packet generation and replay are pending. |
 
 ## Promoted Result
 
@@ -100,14 +100,19 @@ Current v10 state:
 
 - Freeze: [docs/reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_FREEZE.md](docs/reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_FREEZE.md)
 - Anchor/label source: [docs/reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_LABEL_REPORT.md](docs/reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_LABEL_REPORT.md)
+- Complement prompts: [docs/reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PROMPTS.md](docs/reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PROMPTS.md)
 - Raw source rows: `334`
+- Prompt rows: `48`
+- Prompt leakage boundary: label-free derivation from task text, generated source
+  text, stable trajectory ids, and predeclared expanded-aspect gaps; no replay
+  labels or packet outputs.
 - Eligible repair coverage: `48/48`
 - Selected latent repair task score: `0.323302`
 - Fixed baseline on repair-covered LLaDA tasks: `0.253914`
 - Random baseline on repair-covered LLaDA tasks: `0.224722`
 - Repair wins/ties/losses versus random: `34/14/0`
-- Next required step: derive complement-packet prompts from fresh source rows
-  without using replay labels, then run packet generation and replay.
+- Next required step: run complement-packet generation and frozen replay without
+  changing thresholds, ontology, or realization rules.
 
 ## What Not To Overclaim
 

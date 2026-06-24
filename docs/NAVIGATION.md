@@ -30,11 +30,11 @@ Read this table before the historical report list.
 | v9 complement-packet replay | Passing post-failure diagnostic, not fresh promotion | [LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPLAY.md) |
 | v10 complement freeze | Active fresh-transfer contract | [LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_FREEZE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_FREEZE.md) |
 | v10 label source | Fresh anchor/label source populated | [LATENT_AGGREGATION_MULTI_ASPECT_V10_LABEL_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_LABEL_REPORT.md) |
+| v10 complement prompts | Label-free prompt contract populated | [LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PROMPTS.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PROMPTS.md) |
 
-Current next step: derive v10 complement-packet prompts from the fresh v10
-source rows using only label-free source text, then run packet generation and
-the frozen replay. The interrupted ontology-probe attempt left no committed
-partial artifact.
+Current next step: run v10 complement-packet generation from the populated
+label-free prompt artifact, then run the frozen replay. The interrupted
+ontology-probe attempt left no committed partial artifact.
 
 ## Historical Report Index
 
@@ -105,6 +105,7 @@ partial artifact.
 - For the next fresh v10 complement-packet prefreeze: [LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PREFREEZE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PREFREEZE.md)
 - For the frozen v10 complement-packet transfer contract: [LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_FREEZE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_FREEZE.md)
 - For the fresh v10 anchor/label source run: [LATENT_AGGREGATION_MULTI_ASPECT_V10_LABEL_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_LABEL_REPORT.md)
+- For the populated v10 complement-packet prompts: [LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PROMPTS.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PROMPTS.md)
 - For near-term roadmap: [NEXT_GENERATION_REASONING_TASKS.md](../NEXT_GENERATION_REASONING_TASKS.md)
 
 ## Current result surfaces
