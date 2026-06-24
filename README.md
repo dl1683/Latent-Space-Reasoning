@@ -156,12 +156,28 @@ The current aggregation evidence is mixed and useful:
   promotions, `34/14/0` wins/ties/losses, mean realized aggregate score
   `0.402750` versus anchor `0.340964`, and `0` unsupported additions or hard
   contradictions.
+- v6 and v7 are important negative replications. They show that more repair,
+  more probes, and broader cross-latent generation do not automatically create
+  aggregation-useful complements. The binding failure is complement coverage.
+- v8 targeted the uncovered v7 tasks directly, but standalone targeted repair
+  still did not become complement evidence.
+- v9 changed the source family: instead of asking a model to produce another
+  answer, it generated explicit complement packets. The v9 replay passes the
+  frozen numeric gates with `47/48` complement coverage and `46` online
+  promotions, but it remains post-failure diagnostic evidence because the
+  source was added after the v7/v8 failures.
 
-The v5 result is the current aggregation milestone:
+The clean promoted aggregation milestone is still v5:
 
 **A predeclared diversity-augmented source mix can clear stricter aggregation
 gates on a fresh 48-task planning slice, while still leaving anchor-dominance
 coverage as the next bottleneck.**
+
+The current design frontier is v9 into v10:
+
+**Complement-first packet generation appears to solve the coverage bottleneck on
+the failed v7 surface, and the next real test is whether that policy transfers
+to fresh `plan_393` through `plan_440` tasks without post-hoc tuning.**
 
 This is the second reason to care: the project now has evidence for a move from
 single-trajectory repair to multi-trajectory composition. Useful reasoning is
@@ -180,20 +196,21 @@ Promoted public claim:
 
 Active frontier:
 
-- Multi-latent aggregation now has passing fresh v4 and v5 local replications,
-  with v5 adding the stronger 48-task robustness gate set. It is still bounded
-  to planning tasks, this aspect ontology, and deterministic realization.
+- Multi-latent aggregation has two different kinds of evidence now. The clean
+  promotion evidence is v4/v5, especially v5's 48-task robustness replication.
+  The current design evidence is v9, which shows that complement-first packets
+  can unlock coverage on the failed v7/v8 surface. V10 is the next fresh
+  promotion attempt, not v9.
 - The v5 source side is populated and replayed: label repair reaches `0.323549`
   task score on repair-covered tasks, probe-source replay input reaches
   `0.290403`, diversity-extension evolved reaches `0.309671`, and the final
   deterministic aggregate replay reaches `0.402750` mean score versus
-  `0.340964` anchor.
-- v3 diversity-augmented replay remains diagnostic because the diversity source
-  was introduced after the first v3 failure.
-- v4 is the first clean predeclared replication of that design; v5 is the
-  stronger statistical-rigor replication. The remaining v5 coverage gap is
-  `14/48` no-complement tasks: `13` anchor-dominance cases and `1`
-  below-threshold near miss.
+  `0.340964` anchor. The remaining v5 coverage gap is `14/48`
+  no-complement tasks.
+- v3 diversity-augmented replay and v9 complement-packet replay both remain
+  diagnostic because each added a source family after an earlier failure. Their
+  job is to define the next frozen transfer design, not to become the headline
+  claim by themselves.
 - v6 is now populated on a fresh `plan_297` through `plan_344`
   coverage-targeting slice. The label/source run selected repair covers `48/48`
   eligible tasks, reaches `0.306533` task score on repair-covered tasks versus
@@ -278,7 +295,9 @@ Active frontier:
   `0.351813` anchor, `0` unsupported additions, and `0` hard contradictions.
   This is a strong source-generation design success for the next freeze, not a
   fresh promotion claim, because the complement-packet rows were added after
-  v7/v8 failures.
+  v7/v8 failures. The v10 prefreeze now records the required fresh slice:
+  `plan_393` through `plan_440`, with the v9 complement-packet policy held
+  fixed unless a new pre-label contract changes it.
 
 What not to overclaim:
 
@@ -304,7 +323,7 @@ Start with this README, then use the evidence spine:
 5. [docs/DIFFUSION_THEORY_CLAIM_LEDGER.md](docs/DIFFUSION_THEORY_CLAIM_LEDGER.md)
    for conservative theory claims, falsifiers, and next proof obligations.
 6. [docs/LATENT_TRAJECTORY_AGGREGATION.md](docs/LATENT_TRAJECTORY_AGGREGATION.md)
-   for the current aggregation doctrine and v1-v7 history.
+   for the current aggregation doctrine and v1-v10 history.
 7. [docs/NAVIGATION.md](docs/NAVIGATION.md) for a compact map of the repo.
 
 Generated reports and raw outputs are retained for auditability, but they are

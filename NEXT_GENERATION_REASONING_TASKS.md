@@ -50,17 +50,20 @@ components from different latent trajectories without introducing
 contradictions.
 
 Current aggregation frontier: v5 is the passing 48-task statistical replication;
-v6 is a useful negative coverage-targeting result. V6 failed promotion at
-`27/48` complement coverage, and threshold sensitivity showed positive-floor
-coverage reaches only `29/48`. The next aggregation step is therefore v7:
-create fresh `plan_345`-`plan_392` tasks, freeze an expanded planning-aspect
-ontology, and test new source families rather than weakening v6 gates. The task
-inventory and task/ontology freeze now exist; source-family generation and
-expanded-ontology replay support are the next implementation boundary before
-GPU generation. A post-hoc no-generation v6 backtest gives the first sanity
-check for that direction: expanded aspects recover `12` of `21` v6
-no-complement tasks from existing raw text, but polarity and scope hits dominate,
-so fresh v7 promotion must include false-positive and length-normalized audits.
+v6 and v7 are useful negative transfer studies; v8 shows targeted standalone
+repair is not enough; v9 shows the first strong complement-first source-family
+success. The v9 complement-packet replay passes the frozen numeric gates on the
+failed v7 surface with `47/48` complement coverage and `46` online promotions,
+but it is still post-failure diagnostic evidence because the complement-packet
+source was added after the v7/v8 failures.
+
+The next aggregation step is therefore v10: add fresh `plan_393`-`plan_440`
+tasks, freeze the complement-packet policy before labels exist, generate fresh
+anchor/source rows, derive complement-packet prompts only from the predeclared
+source policy, and replay without changing thresholds or realization rules
+after labels exist. If v10 passes, it can become the clean transfer result for
+complement-first aggregation. If it fails, the failure should become the next
+source-family boundary rather than a prompt-tuning loop.
 
 ### Current Narrow Execution Protocol
 

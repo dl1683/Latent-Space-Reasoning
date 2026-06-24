@@ -20,13 +20,15 @@ for auditability, but they are not the onboarding path.
 - For evidence details: [docs/DIFFUSION_READER_GUIDE.md](docs/DIFFUSION_READER_GUIDE.md)  
 - For mechanism depth: [docs/DIFFUSION_REASONING_GEOMETRY_THEORY.md](docs/DIFFUSION_REASONING_GEOMETRY_THEORY.md)  
 - For theory obligations: [docs/DIFFUSION_THEORY_CLAIM_LEDGER.md](docs/DIFFUSION_THEORY_CLAIM_LEDGER.md)
-- For the active aggregation frontier: read the v5, v6, v7, v8, and v9 entries
+- For the active aggregation frontier: read the v5, v6, v7, v8, v9, and v10 entries
   in [docs/NAVIGATION.md](docs/NAVIGATION.md). V5 is the current passing
   statistical aggregation milestone. V6 and v7 are negative replications that
   locate the coverage bottleneck. V8 shows why standalone targeted repair did
   not create complements. V9 is the post-failure complement-packet diagnostic:
   its 72-row source run and replay pass the frozen numeric gates, but it is not
   a fresh promotion claim because the source was added after the v7/v8 failures.
+  V10 is the fresh-transfer prefreeze that must test whether the v9 policy
+  survives on new `plan_393` through `plan_440` tasks.
 
 ## What to avoid until later
 

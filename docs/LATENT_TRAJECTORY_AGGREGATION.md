@@ -188,6 +188,23 @@ Rules:
   headline claim.
 - Treat any first slice as `validated-local` at most.
 
+## Current Evidence Boundary
+
+The aggregation line now has three distinct evidence classes:
+
+- v4/v5 are clean predeclared local replications. V5 is the current 48-task
+  statistical milestone for the aggregation claim.
+- v6/v7/v8 are negative transfer studies. They show that wider source pools and
+  targeted standalone repair do not automatically create complement coverage.
+- v9 is the current design breakthrough: complement-first packet generation
+  passes the frozen numeric replay gates on the failed v7 surface with `47/48`
+  complement coverage and `46` online promotions. It is not a fresh promotion
+  claim because the source was introduced after the v7/v8 failures.
+
+The next clean test is v10: freeze fresh `plan_393` through `plan_440` tasks,
+hold the v9 complement-packet policy fixed, then test whether the same
+complement-first source family transfers without post-hoc tuning.
+
 ## Failure Modes
 
 Aggregation fails if:
