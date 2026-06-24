@@ -259,6 +259,11 @@ Current high-signal generated reports:
   `0.432344` versus `0.351813` anchor, and `0` unsupported additions or hard
   contradictions. This is a next-freeze design result, not a fresh promotion
   claim.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PREFREEZE.md](LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PREFREEZE.md):
+  prefreeze requirement for the next fresh complement-packet transfer test. It
+  requires new `plan_393`-`plan_440` tasks before any v10 labels exist and keeps
+  the v9 complement-packet source policy fixed unless a new pre-label contract
+  changes it.
 - [LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md](LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md):
   post-hoc no-generation diagnostic over existing v6 raw rows; the expanded
   ontology recovers `12` of `21` v6 no-complement tasks, motivating v7
