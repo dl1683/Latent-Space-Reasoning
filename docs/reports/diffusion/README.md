@@ -242,13 +242,23 @@ Current high-signal generated reports:
   freezes `24` prompt rows for a named `complement_packet` family and preserves
   the v7 floor of `13` newly promoted covered tasks before any replay can be
   treated as useful evidence. The prompt artifact, runner, and replay mapping
-  exist; a one-prompt CUDA smoke validates the runtime path while exposing
-  packet-shape risks (`1/1` parseable, `1/1` non-empty why, `0/1`
-  exact-three-clause compliance, `1/1` markdown-fenced JSON). There are no
-  promoted v9 source rows yet.
+  exist; a one-prompt CUDA smoke validated the runtime path while exposing
+  packet-shape risks.
 - [LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_SMOKE_REPORT.md](LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_SMOKE_REPORT.md):
   one-prompt CUDA smoke for the v9 complement-packet runner. This is runtime
   validation only, not replay or promotion evidence.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPORT.md](LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPORT.md):
+  full v9 complement-packet source run: `72` rows over `24` target tasks, mean
+  task score `0.303155`, `72/72` JSON-parseable packets, `63/72` non-empty-why
+  packets, `6/72` exact-three-clause packets, and `66/72` markdown-fenced JSON
+  packets.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPLAY.md](LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPLAY.md):
+  passing post-failure diagnostic replay over the frozen v7 source mix plus v9
+  complement-packet rows. It passes all `19` frozen gates with `47/48`
+  complement coverage, `46` online promotions, mean realized aggregate score
+  `0.432344` versus `0.351813` anchor, and `0` unsupported additions or hard
+  contradictions. This is a next-freeze design result, not a fresh promotion
+  claim.
 - [LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md](LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md):
   post-hoc no-generation diagnostic over existing v6 raw rows; the expanded
   ontology recovers `12` of `21` v6 no-complement tasks, motivating v7

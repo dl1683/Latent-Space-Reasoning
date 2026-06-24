@@ -269,8 +269,16 @@ Active frontier:
   `2.11.0+cu128`. A one-prompt CUDA smoke on `plan_346` produced a parseable
   complement-packet row with non-empty why fields and score `0.272857`; it also
   showed source-quality risks before full scaling (`0/1` exact-three-clause
-  compliance and `1/1` markdown-fenced JSON). V9 is therefore runtime-ready but
-  not promoted: the full source generation and replay gates still have to run.
+  compliance and `1/1` markdown-fenced JSON). The full v9 source is now
+  populated: `72` rows across `24` target tasks, mean task score `0.303155`,
+  `72/72` JSON-parseable packets, `63/72` non-empty-why packets, `6/72`
+  exact-three-clause packets, and `66/72` markdown-fenced packets. The frozen
+  diagnostic replay passes all `19` gates with `47/48` complement coverage,
+  `46` online promotions, mean realized aggregate score `0.432344` versus
+  `0.351813` anchor, `0` unsupported additions, and `0` hard contradictions.
+  This is a strong source-generation design success for the next freeze, not a
+  fresh promotion claim, because the complement-packet rows were added after
+  v7/v8 failures.
 
 What not to overclaim:
 

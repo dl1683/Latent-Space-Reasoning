@@ -117,6 +117,27 @@ def test_v9_complement_source_contract_refuses_existing_source_outputs(tmp_path)
             replay_report_output_path=replay_report,
         )
 
+    manifest, prompt_rows = build_complement_source_contract(
+        tasks_path=tasks,
+        v7_failure_path=failure,
+        v8_source_gap_path=gap,
+        v7_raw_path=raw,
+        v7_ontology_raw_path=empty,
+        v7_cross_raw_path=empty,
+        prompts_output_path=prompts,
+        raw_output_path=source_raw,
+        scores_output_path=scores,
+        source_report_output_path=source_report,
+        replay_output_path=replay,
+        aspects_output_path=aspects,
+        realized_output_path=realized,
+        replay_report_output_path=replay_report,
+        allow_existing_source_artifacts=True,
+    )
+
+    assert manifest["source_family_contract"]["family"] == "complement_packet"
+    assert len(prompt_rows) == 1
+
 
 def _task(task_id):
     return {

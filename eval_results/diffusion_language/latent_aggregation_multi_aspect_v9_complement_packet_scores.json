@@ -1,0 +1,47 @@
+{
+  "summary": {
+    "candidate_keys": [
+      "llada-8b-instruct-hf"
+    ],
+    "exact_three_clause_packet_count": 6,
+    "fenced_json_packet_count": 66,
+    "generated_record_count": 72,
+    "json_parseable_packet_count": 72,
+    "mean_task_score": 0.30315476190476187,
+    "nonempty_why_packet_count": 63,
+    "prompt_count": 24,
+    "raw_output": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v9_complement_packet_raw.jsonl",
+    "report_output": "docs\\reports\\diffusion\\LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPORT.md",
+    "requested_record_count": 72,
+    "samples_per_task": 3,
+    "scores_output": "eval_results\\diffusion_language\\latent_aggregation_multi_aspect_v9_complement_packet_scores.json",
+    "source_family": "complement_packet",
+    "task_count": 24,
+    "task_ids": [
+      "plan_346",
+      "plan_347",
+      "plan_348",
+      "plan_349",
+      "plan_350",
+      "plan_351",
+      "plan_353",
+      "plan_354",
+      "plan_355",
+      "plan_359",
+      "plan_360",
+      "plan_361",
+      "plan_366",
+      "plan_373",
+      "plan_375",
+      "plan_376",
+      "plan_377",
+      "plan_378",
+      "plan_380",
+      "plan_381",
+      "plan_384",
+      "plan_385",
+      "plan_386",
+      "plan_389"
+    ]
+  }
+}

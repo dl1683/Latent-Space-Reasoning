@@ -24,8 +24,9 @@ for auditability, but they are not the onboarding path.
   in [docs/NAVIGATION.md](docs/NAVIGATION.md). V5 is the current passing
   statistical aggregation milestone. V6 and v7 are negative replications that
   locate the coverage bottleneck. V8 shows why standalone targeted repair did
-  not create complements. V9 is a complement-packet source contract and runner,
-  but its source rows are not populated yet.
+  not create complements. V9 is the post-failure complement-packet diagnostic:
+  its 72-row source run and replay pass the frozen numeric gates, but it is not
+  a fresh promotion claim because the source was added after the v7/v8 failures.
 
 ## What to avoid until later
 

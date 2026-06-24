@@ -1102,6 +1102,13 @@ def _interpretation(
                 "a fresh replication of the v3 diagnostic design, bounded to this task slice "
                 "and this deterministic realization policy."
             )
+        if evidence_boundary.get("status") == "post_failure_v9_complement_packet_replay":
+            return (
+                "The complement-packet source satisfies the frozen diagnostic gates over "
+                "the v7/v8 failed target surface. Treat this as source-family design "
+                "evidence for the next fresh freeze, not as a fresh promotion claim, "
+                "because the complement-packet source was added after the v7/v8 failures."
+            )
         if evidence_boundary.get("status") != "held_out_multi_aspect_v3_replay":
             return (
                 "The augmented replay satisfies the frozen numeric gates, but its "
