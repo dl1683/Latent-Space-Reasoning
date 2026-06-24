@@ -27,8 +27,9 @@ for auditability, but they are not the onboarding path.
   not create complements. V9 is the post-failure complement-packet diagnostic:
   its 72-row source run and replay pass the frozen numeric gates, but it is not
   a fresh promotion claim because the source was added after the v7/v8 failures.
-  V10 is the fresh-transfer prefreeze that must test whether the v9 policy
-  survives on new `plan_393` through `plan_440` tasks.
+  V10 is now frozen over new `plan_393` through `plan_440` tasks; its next
+  step is fresh anchor/source generation before complement-packet prompts and
+  replay can test whether the v9 policy transfers.
 
 ## What to avoid until later
 

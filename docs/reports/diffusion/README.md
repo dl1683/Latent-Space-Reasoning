@@ -264,6 +264,12 @@ Current high-signal generated reports:
   requires new `plan_393`-`plan_440` tasks before any v10 labels exist and keeps
   the v9 complement-packet source policy fixed unless a new pre-label contract
   changes it.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_FREEZE.md](LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_FREEZE.md):
+  frozen 48-task transfer contract over fresh `plan_393`-`plan_440` tasks. It
+  locks the v9 complement-packet policy as the next clean test, preserves v9 as
+  post-failure diagnostic evidence, refuses pre-existing v10 source artifacts,
+  and emits the label/source, packet-generation, and replay commands for the
+  pending fresh run.
 - [LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md](LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md):
   post-hoc no-generation diagnostic over existing v6 raw rows; the expanded
   ontology recovers `12` of `21` v6 no-complement tasks, motivating v7

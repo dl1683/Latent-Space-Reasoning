@@ -82,6 +82,7 @@ If you need one-screen onboarding, open [../START_HERE.md](../START_HERE.md) fir
 - For the v9 complement-packet source run: [LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPORT.md)
 - For the passing post-failure v9 replay: [LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPLAY.md)
 - For the next fresh v10 complement-packet prefreeze: [LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PREFREEZE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PREFREEZE.md)
+- For the frozen v10 complement-packet transfer contract: [LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_FREEZE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_FREEZE.md)
 - For near-term roadmap: [NEXT_GENERATION_REASONING_TASKS.md](../NEXT_GENERATION_REASONING_TASKS.md)
 
 ## Current result surfaces

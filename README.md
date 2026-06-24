@@ -295,9 +295,10 @@ Active frontier:
   `0.351813` anchor, `0` unsupported additions, and `0` hard contradictions.
   This is a strong source-generation design success for the next freeze, not a
   fresh promotion claim, because the complement-packet rows were added after
-  v7/v8 failures. The v10 prefreeze now records the required fresh slice:
-  `plan_393` through `plan_440`, with the v9 complement-packet policy held
-  fixed unless a new pre-label contract changes it.
+  v7/v8 failures. The v10 freeze now exists over the fresh `plan_393` through
+  `plan_440` slice, with the v9 complement-packet policy held fixed unless a
+  new pre-label contract changes it. Its current status is fresh anchor/source
+  generation pending.
 
 What not to overclaim:
 
