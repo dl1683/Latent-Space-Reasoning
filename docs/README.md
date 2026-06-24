@@ -1,11 +1,11 @@
 # Diffusion Documentation Index
 
-Start here before opening individual reports.  
-This folder is organized by **current workflow** first, then **historical archive**.
+Start here before opening individual reports.
+This folder is organized by current workflow first, then historical archive.
 
 ## If you are new to this repo
 
-Read only these four files first, in order:
+Read these files first, in order:
 
 1. [README.md](../README.md)
 2. [DIFFUSION_PUBLIC_BENCHMARK.md](../DIFFUSION_PUBLIC_BENCHMARK.md)
@@ -20,14 +20,14 @@ After this, move to one of:
 
 - mechanism details: `DIFFUSION_REASONING_GEOMETRY_THEORY.md`
 - theory proofs: `DIFFUSION_THEORY_CLAIM_LEDGER.md`
-- next paradigm: `LATENT_TRAJECTORY_AGGREGATION.md`
+- aggregation doctrine: `LATENT_TRAJECTORY_AGGREGATION.md`
 - future work: `NEXT_GENERATION_REASONING_TASKS.md`
 
 If you want the same path in one page, read [docs/NAVIGATION.md](NAVIGATION.md) first.
 
 ## First read (public-facing)
 
-- [README.md](../README.md) - current promoted result and quick entry points.
+- [README.md](../README.md) - thesis, evidence boundaries, and current v10 status.
 - [DIFFUSION_PUBLIC_BENCHMARK.md](../DIFFUSION_PUBLIC_BENCHMARK.md) - latest headline score/cost table.
 - [CLAIM_EVIDENCE_MAP.md](../CLAIM_EVIDENCE_MAP.md) - claim-to-artifact mapping.
 - [DIFFUSION_GROUND_TRUTH_INDEX.md](../DIFFUSION_GROUND_TRUTH_INDEX.md) - canonical file hashes and run IDs.
@@ -41,6 +41,13 @@ If you want the same path in one page, read [docs/NAVIGATION.md](NAVIGATION.md) 
 - [DIFFUSION_NATIVE_REASONING_ARCHITECTURE.md](DIFFUSION_NATIVE_REASONING_ARCHITECTURE.md)
 - [DIFFUSION_REASONING_GEOMETRY_THEORY.md](DIFFUSION_REASONING_GEOMETRY_THEORY.md)
 - [DIFFUSION_REASONING_FIELD_IMPLICATIONS.md](DIFFUSION_REASONING_FIELD_IMPLICATIONS.md)
+
+## Current Aggregation Artifacts
+
+- [reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_FREEZE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_FREEZE.md) - active v10 transfer contract.
+- [reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_LABEL_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_LABEL_REPORT.md) - populated v10 anchor/label source run.
+- [reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPLAY.md) - post-failure diagnostic that motivates v10.
+- [reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V5_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V5_REPLAY.md) - clean promoted local aggregation milestone.
 
 ## Archive and experiments
 

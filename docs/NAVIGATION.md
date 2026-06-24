@@ -17,6 +17,27 @@ If you need one-screen onboarding, open [../START_HERE.md](../START_HERE.md) fir
 - For mechanism and theory: [DIFFUSION_REASONING_GEOMETRY_THEORY.md](DIFFUSION_REASONING_GEOMETRY_THEORY.md)
 - For falsifiers and obligations: [DIFFUSION_THEORY_CLAIM_LEDGER.md](DIFFUSION_THEORY_CLAIM_LEDGER.md)
 - For the next aggregation paradigm: [LATENT_TRAJECTORY_AGGREGATION.md](LATENT_TRAJECTORY_AGGREGATION.md)
+
+## Current Aggregation State
+
+Read this table before the historical report list.
+
+| Artifact | Status | Link |
+| --- | --- | --- |
+| v5 aggregation replay | Clean 48-task local milestone | [LATENT_AGGREGATION_MULTI_ASPECT_V5_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V5_REPLAY.md) |
+| v7 replay | Negative transfer result locating coverage bottleneck | [LATENT_AGGREGATION_MULTI_ASPECT_V7_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V7_REPLAY.md) |
+| v8 targeted source gap | Standalone targeted repair did not create complements | [LATENT_AGGREGATION_MULTI_ASPECT_V8_TARGETED_SOURCE_GAP.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V8_TARGETED_SOURCE_GAP.md) |
+| v9 complement-packet replay | Passing post-failure diagnostic, not fresh promotion | [LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPLAY.md) |
+| v10 complement freeze | Active fresh-transfer contract | [LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_FREEZE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_FREEZE.md) |
+| v10 label source | Fresh anchor/label source populated | [LATENT_AGGREGATION_MULTI_ASPECT_V10_LABEL_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_LABEL_REPORT.md) |
+
+Current next step: derive v10 complement-packet prompts from the fresh v10
+source rows using only label-free source text, then run packet generation and
+the frozen replay. The interrupted ontology-probe attempt left no committed
+partial artifact.
+
+## Historical Report Index
+
 - For the first aggregation scaffold: [LATENT_TRAJECTORY_AGGREGATION_SCOUT.md](reports/diffusion/LATENT_TRAJECTORY_AGGREGATION_SCOUT.md)
 - For the first real-score aggregation replay: [LATENT_AGGREGATION_RUBRIC_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_RUBRIC_REPLAY.md)
 - For the frozen inference-time aggregation run: [LATENT_AGGREGATION_INFERENCE_V1_FREEZE.md](reports/diffusion/LATENT_AGGREGATION_INFERENCE_V1_FREEZE.md)

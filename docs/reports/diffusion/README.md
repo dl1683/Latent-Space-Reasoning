@@ -8,7 +8,20 @@ entry path for new readers. Start with the root [README](../../../README.md),
 [CLAIM_EVIDENCE_MAP.md](../../../CLAIM_EVIDENCE_MAP.md), and
 [DIFFUSION_GROUND_TRUTH_INDEX.md](../../../DIFFUSION_GROUND_TRUTH_INDEX.md).
 
-Current high-signal generated reports:
+## Current Aggregation Chain
+
+- Clean local milestone: [LATENT_AGGREGATION_MULTI_ASPECT_V5_REPLAY.md](LATENT_AGGREGATION_MULTI_ASPECT_V5_REPLAY.md)
+- Coverage bottleneck: [LATENT_AGGREGATION_MULTI_ASPECT_V7_REPLAY.md](LATENT_AGGREGATION_MULTI_ASPECT_V7_REPLAY.md)
+- Targeted repair miss: [LATENT_AGGREGATION_MULTI_ASPECT_V8_TARGETED_SOURCE_GAP.md](LATENT_AGGREGATION_MULTI_ASPECT_V8_TARGETED_SOURCE_GAP.md)
+- Post-failure packet diagnostic: [LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPLAY.md](LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPLAY.md)
+- Active transfer freeze: [LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_FREEZE.md](LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_FREEZE.md)
+- Populated v10 anchor/label source: [LATENT_AGGREGATION_MULTI_ASPECT_V10_LABEL_REPORT.md](LATENT_AGGREGATION_MULTI_ASPECT_V10_LABEL_REPORT.md)
+
+The remaining v10 work is complement-packet prompt derivation, packet
+generation, and frozen replay. The interrupted ontology-probe attempt left no
+committed partial artifact.
+
+## High-Signal Generated Reports
 
 - [LATENT_TRAJECTORY_AGGREGATION_SCOUT.md](LATENT_TRAJECTORY_AGGREGATION_SCOUT.md):
   deterministic component-aggregation scaffold showing one local compositional

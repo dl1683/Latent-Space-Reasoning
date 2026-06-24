@@ -201,9 +201,14 @@ The aggregation line now has three distinct evidence classes:
   complement coverage and `46` online promotions. It is not a fresh promotion
   claim because the source was introduced after the v7/v8 failures.
 
-The next clean test is v10: freeze fresh `plan_393` through `plan_440` tasks,
-hold the v9 complement-packet policy fixed, then test whether the same
-complement-first source family transfers without post-hoc tuning.
+The next clean test is v10. It now has a fresh `plan_393` through `plan_440`
+freeze and a populated anchor/label source run. The label run generated `334`
+raw rows with `48/48` eligible repair coverage and selected latent repair task
+score `0.323302` versus fixed `0.253914` and random `0.224722` on
+repair-covered LLaDA tasks. The remaining transfer test is not complete until
+complement-packet prompts are derived from the fresh source rows without replay
+labels, packet rows are generated, and the frozen replay passes or fails under
+the predeclared gates.
 
 ## Failure Modes
 

@@ -1,15 +1,15 @@
-# Start Here (No Context)
+# Start Here
 
-This repo is about changing the unit of reasoning from "one model completion"
+This repo is about changing the unit of inference from "one model completion"
 to an inspectable latent trajectory: sample, repair, aggregate, verify, and
-only then realize an answer.
+then realize an answer.
 
-You do not need to read everything. The generated reports and raw outputs exist
-for auditability, but they are not the onboarding path.
+You do not need to read every generated report. The reports and raw outputs are
+kept for auditability; the files below are the onboarding path.
 
 ## Read in this order
 
-1. [README.md](README.md) for the project thesis, history, and current status.
+1. [README.md](README.md) for the project thesis, evidence boundaries, and current v10 status.
 2. [DIFFUSION_PUBLIC_BENCHMARK.md](DIFFUSION_PUBLIC_BENCHMARK.md) for the promoted score/cost claim.
 3. [CLAIM_EVIDENCE_MAP.md](CLAIM_EVIDENCE_MAP.md) for claim-to-artifact provenance.
 4. [DIFFUSION_GROUND_TRUTH_INDEX.md](DIFFUSION_GROUND_TRUTH_INDEX.md) for canonical hashes and run IDs.
@@ -20,17 +20,18 @@ for auditability, but they are not the onboarding path.
 - For evidence details: [docs/DIFFUSION_READER_GUIDE.md](docs/DIFFUSION_READER_GUIDE.md)  
 - For mechanism depth: [docs/DIFFUSION_REASONING_GEOMETRY_THEORY.md](docs/DIFFUSION_REASONING_GEOMETRY_THEORY.md)  
 - For theory obligations: [docs/DIFFUSION_THEORY_CLAIM_LEDGER.md](docs/DIFFUSION_THEORY_CLAIM_LEDGER.md)
-- For the active aggregation frontier: read the v5, v6, v7, v8, v9, and v10 entries
-  in [docs/NAVIGATION.md](docs/NAVIGATION.md). V5 is the current passing
-  statistical aggregation milestone. V6 and v7 are negative replications that
-  locate the coverage bottleneck. V8 shows why standalone targeted repair did
-  not create complements. V9 is the post-failure complement-packet diagnostic:
-  its 72-row source run and replay pass the frozen numeric gates, but it is not
-  a fresh promotion claim because the source was added after the v7/v8 failures.
-  V10 is now frozen over new `plan_393` through `plan_440` tasks, and its
-  anchor/label source run is populated. The next step is label-free
-  complement-packet prompt derivation before packet generation and replay can
-  test whether the v9 policy transfers.
+- For the active aggregation frontier: read the current-status section in
+  [README.md](README.md), then the v10 freeze and label reports linked from
+  [docs/NAVIGATION.md](docs/NAVIGATION.md).
+
+Current short version:
+
+- v5 is the clean 48-task aggregation milestone.
+- v6-v8 are negative transfer evidence around complement coverage.
+- v9 is a post-failure complement-packet diagnostic, not a fresh promotion.
+- v10 is the active fresh-transfer test: freeze and anchor/label source are
+  populated; complement-packet prompt derivation, packet generation, and replay
+  are pending.
 
 ## What to avoid until later
 
