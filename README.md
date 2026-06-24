@@ -297,8 +297,12 @@ Active frontier:
   fresh promotion claim, because the complement-packet rows were added after
   v7/v8 failures. The v10 freeze now exists over the fresh `plan_393` through
   `plan_440` slice, with the v9 complement-packet policy held fixed unless a
-  new pre-label contract changes it. Its current status is fresh anchor/source
-  generation pending.
+  new pre-label contract changes it. The v10 anchor/label source is now
+  populated: `334` raw rows, `48/48` eligible repair coverage, selected latent
+  repair task score `0.323302` versus fixed `0.253914` and random `0.224722`
+  on repair-covered LLaDA tasks, and `34/14/0` wins/ties/losses versus random.
+  The next boundary is label-free complement-packet prompt derivation from the
+  fresh source rows.
 
 What not to overclaim:
 

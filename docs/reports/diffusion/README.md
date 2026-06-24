@@ -270,6 +270,13 @@ Current high-signal generated reports:
   post-failure diagnostic evidence, refuses pre-existing v10 source artifacts,
   and emits the label/source, packet-generation, and replay commands for the
   pending fresh run.
+- [LATENT_AGGREGATION_MULTI_ASPECT_V10_LABEL_REPORT.md](LATENT_AGGREGATION_MULTI_ASPECT_V10_LABEL_REPORT.md):
+  fresh v10 anchor/label source run over `plan_393`-`plan_440`; generated
+  `334` raw rows, with selected latent repair scoring `0.323302` versus fixed
+  `0.253914` and random `0.224722` on repair-covered LLaDA tasks, `48/48`
+  eligible repair coverage, and `34/14/0` repair wins/ties/losses versus
+  random. This is source material for v10 complement-packet prompt derivation,
+  not the final aggregation replay.
 - [LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md](LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md):
   post-hoc no-generation diagnostic over existing v6 raw rows; the expanded
   ontology recovers `12` of `21` v6 no-complement tasks, motivating v7
