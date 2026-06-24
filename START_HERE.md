@@ -31,7 +31,7 @@ Current short version:
 - v9 is a post-failure complement-packet diagnostic, not a fresh promotion.
 - v10 is the active fresh-transfer test: freeze, anchor/label source, and
   label-free complement-packet prompts are populated; packet generation and
-  replay are pending.
+  replay are pending and paused until explicit restart.
 
 ## What to avoid until later
 

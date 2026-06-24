@@ -113,6 +113,9 @@ Current v10 state:
 - Repair wins/ties/losses versus random: `34/14/0`
 - Next required step: run complement-packet generation and frozen replay without
   changing thresholds, ontology, or realization rules.
+- Operational note: complement-packet generation is paused until the next
+  explicit restart; no v10 packet raw, score, replay, or packet report artifact
+  is currently committed.
 
 ## What Not To Overclaim
 

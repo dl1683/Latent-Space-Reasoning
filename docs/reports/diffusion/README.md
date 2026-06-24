@@ -18,8 +18,10 @@ entry path for new readers. Start with the root [README](../../../README.md),
 - Populated v10 anchor/label source: [LATENT_AGGREGATION_MULTI_ASPECT_V10_LABEL_REPORT.md](LATENT_AGGREGATION_MULTI_ASPECT_V10_LABEL_REPORT.md)
 - Populated v10 complement prompts: [LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PROMPTS.md](LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PROMPTS.md)
 
-The remaining v10 work is packet generation and frozen replay. The interrupted
-ontology-probe attempt left no committed partial artifact.
+The remaining v10 work is packet generation and frozen replay. This work is
+paused until explicit restart. The interrupted ontology-probe attempt left no
+committed partial artifact, and no v10 packet raw/score/replay artifact is
+committed.
 
 ## High-Signal Generated Reports
 

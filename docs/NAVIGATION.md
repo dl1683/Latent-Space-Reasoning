@@ -33,8 +33,9 @@ Read this table before the historical report list.
 | v10 complement prompts | Label-free prompt contract populated | [LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PROMPTS.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PROMPTS.md) |
 
 Current next step: run v10 complement-packet generation from the populated
-label-free prompt artifact, then run the frozen replay. The interrupted
-ontology-probe attempt left no committed partial artifact.
+label-free prompt artifact, then run the frozen replay. This is paused until
+explicit restart. The interrupted ontology-probe attempt left no committed
+partial artifact, and no v10 packet raw/score/replay artifact is committed.
 
 ## Historical Report Index
 
