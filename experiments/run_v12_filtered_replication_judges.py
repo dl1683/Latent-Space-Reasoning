@@ -35,7 +35,7 @@ JUDGE_CONFIGS = {
     "gemini-2.5-pro": {
         "backend": "gemini",
         "temperature": 0,
-        "max_tokens": 4096,
+        "max_tokens": 65536,
     },
 }
 
@@ -152,6 +152,13 @@ def _parse_json(text: str) -> dict | None:
         text = text.strip()
     try:
         return json.loads(text)
+    except json.JSONDecodeError:
+        pass
+    import re
+    cleaned = re.sub(r'[\x00-\x08\x0b\x0c\x0e-\x1f\x7f]', '', text)
+    cleaned = re.sub(r',\s*([}\]])', r'\1', cleaned)
+    try:
+        return json.loads(cleaned)
     except json.JSONDecodeError:
         return None
 
