@@ -204,7 +204,15 @@ def main() -> int:
         for item_result in existing.get("per_task", []):
             present = set(item_result.get("per_model", {}).keys())
             if models_set.issubset(present):
-                completed[item_result["task_id"]] = item_result
+                sanitized = {"task_id": item_result["task_id"], "per_model": {}}
+                for m, md in item_result.get("per_model", {}).items():
+                    sanitized["per_model"][m] = {
+                        "judge_results": [
+                            {"raw": jr.get("raw"), "parse_failure": jr.get("parse_failure", False)}
+                            for jr in md.get("judge_results", [])
+                        ],
+                    }
+                completed[sanitized["task_id"]] = sanitized
         print(f"Resumed: {len(completed)} tasks fully done for requested models")
 
     for item_idx, item in enumerate(items):
@@ -225,8 +233,6 @@ def main() -> int:
             model_results = []
             for j in range(n_judges):
                 prompt = item["judge_prompts"][j]
-                assignment = item["judge_arm_assignments"][j]
-                label_to_arm = assignment
 
                 print(f"[{item_idx+1}/{len(items)}] {tid} {model} judge {j+1}/{n_judges}...", end=" ", flush=True)
 
