@@ -89,4 +89,4 @@ Root cause of v1→v2 improvement: clause-append realizer uses actual natural-la
 
 **GO for full study.** The clause-append realizer converts complement-packet signal into judge-preferred content.
 
-**UPDATE:** Placebo diagnostic confirms task-specificity. True vs deranged 10/10, true vs generic 7/10, but generic vs anchor 10/10 (boilerplate confound). See [PLACEBO_DIAGNOSTIC.md](PLACEBO_DIAGNOSTIC.md).
+**UPDATE:** Placebo diagnostic confirms task-specificity. True vs deranged 10/10, true vs generic 8/10, but generic vs anchor 10/10 (boilerplate confound). See [PLACEBO_DIAGNOSTIC.md](PLACEBO_DIAGNOSTIC.md).

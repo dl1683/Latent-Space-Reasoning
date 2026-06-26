@@ -8,8 +8,8 @@
     "true_vs_anchor_losses": 2,
     "true_vs_deranged_wins": 10,
     "true_vs_deranged_losses": 0,
-    "true_vs_generic_wins": 7,
-    "true_vs_generic_losses": 3,
+    "true_vs_generic_wins": 8,
+    "true_vs_generic_losses": 2,
     "generic_vs_anchor_wins": 10,
     "generic_vs_anchor_losses": 0,
     "deranged_vs_anchor_wins": 2,
@@ -21,9 +21,9 @@
   "interpretation": {
     "task_specificity_matters": "True vs Deranged 10/10 proves extraction finds task-relevant content, not generic boilerplate",
     "boilerplate_also_helps": "Generic vs Anchor 10/10 means part of v2 win is baseline boilerplate effect on weak anchors",
-    "true_exceeds_boilerplate": "True vs Generic 7/10 shows extraction adds value beyond generic operational sentences",
+    "true_exceeds_boilerplate": "True vs Generic 8/10 shows extraction adds value beyond generic operational sentences",
     "wrong_task_hurts": "Deranged vs Anchor 2/10 — cross-task clauses are caught as off-topic 8/10 times",
-    "loss_explanations": "All 3 true-vs-generic losses have specific causes: plan_516 has prompt echo contamination, plan_446 has tautological clause, plan_481/515 deranged won because source clauses were generic enough to apply"
+    "loss_explanations": "Both true-vs-generic losses have specific causes: plan_516 has prompt echo contamination, plan_446 has tautological clause"
   },
   "per_task": [
     {
@@ -153,7 +153,7 @@
   ],
   "key_findings": [
     "Task-specificity is CONFIRMED: true vs deranged 10/10 wins, with judges independently flagging wrong-task content in 8/10 deranged arms",
-    "True extraction beats generic boilerplate 7/10 — the 3 losses all have identifiable true clause quality issues (contamination, tautology)",
+    "True extraction beats generic boilerplate 8/10 — the 2 losses have identifiable true clause quality issues (contamination, tautology)",
     "Generic boilerplate also beats anchor 10/10 — weak model outputs benefit from ANY operational structure",
     "Wrong-task clauses hurt: deranged loses to anchor 8/10 — off-topic content is worse than no content",
     "Full hierarchy: true >> generic >> anchor >> deranged — this gradient proves extraction adds task-specific value BEYOND generic boilerplate",

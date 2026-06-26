@@ -19,7 +19,7 @@
 |------------|:---:|:---:|----------------|
 | True vs Deranged | **10/10** | 0 | Task-specificity matters — definitively |
 | True vs Anchor | **8/10** | 2 | Consistent with v2 pilot (8/10) |
-| True vs Generic | **7/10** | 3 | True exceeds generic boilerplate |
+| True vs Generic | **8/10** | 2 | True exceeds generic boilerplate |
 | Generic vs Anchor | **10/10** | 0 | ANY operational boilerplate helps weak anchors |
 | Deranged vs Anchor | 2/10 | **8/10** | Wrong-task content usually hurts |
 | Generic vs Deranged | **9/10** | 1 | Generic > wrong-task content |
@@ -45,7 +45,7 @@
 
 1. **Task-specificity is confirmed.** True vs deranged 10/10 wins. Judges independently flag wrong-task content as "irrelevant," "off-topic," "contamination from a different problem" in 8/10 deranged arms. This is definitive: complement extraction finds task-relevant content, not generic boilerplate.
 
-2. **True exceeds generic boilerplate.** True vs generic 7/10 wins. The 3 losses have identifiable quality issues in the true clauses (prompt echo contamination in plan_516, tautological clause in plan_446). When true clauses are clean, they consistently beat generic.
+2. **True exceeds generic boilerplate.** True vs generic 8/10 wins. The 2 losses have identifiable quality issues in the true clauses (prompt echo contamination in plan_516, tautological clause in plan_446). When true clauses are clean, they consistently beat generic.
 
 3. **Generic boilerplate also helps.** Generic vs anchor 10/10. Part of the v2 pilot win IS a baseline boilerplate effect — weak model outputs benefit from ANY operational structure. This is a confound that must be acknowledged.
 
@@ -58,7 +58,7 @@
 The honest claim is now three-part:
 
 1. **Complement extraction discovers task-specific gaps** — proven by true vs deranged 10/10 separation
-2. **Task-specific clauses add value beyond generic boilerplate** — proven by true vs generic 7/10
+2. **Task-specific clauses add value beyond generic boilerplate** — proven by true vs generic 8/10
 3. **Weak model outputs benefit from any operational structure** — proven by generic vs anchor 10/10
 
 The v2 pilot's 8/10 agg-vs-anchor win is REAL but partially confounded by the generic boilerplate effect. The extraction mechanism's unique contribution is the task-specificity gradient: true >> generic >> anchor >> deranged.
