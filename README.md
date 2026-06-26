@@ -47,6 +47,7 @@ This repo explores that family:
 | Aggregation v9 | Post-failure design breakthrough | Complement-first packet generation passed frozen numeric replay gates on the failed v7 surface, but remains diagnostic. |
 | Aggregation v10 | Fresh transfer promotion — ALL 13 GATES PASSED | Complement-first packets on fresh `plan_393`-`plan_440` slice: 40/48 coverage, 38 promotions, 40/8/0 W/T/L, mean lift +0.077, zero contradictions. |
 | Aggregation v11 | 2x replication — ALL 13 GATES PASSED | LLaDA-only 96-task replication on `plan_441`-`plan_536`: 87/96 coverage (90.6%), 87 promotions, 87/9/0 W/T/L, mean lift +0.100, Wilson lower 0.831, zero contradictions. Keyword audit RED — rubric gameable but packets are not keyword-stuffing. |
+| Blinded pairwise evaluation | STATISTICAL_GO — preregistered confirmatory study | N=50, 4 arms, 3 blinded same-model judge calls. Task-specific clause-append preferred over generic boilerplate at 33/50 (66%, p=0.016, Wilson CI [52.2%, 77.6%]). Task-specificity confirmed: true > deranged 47/50. Wrong-task clauses hurt: deranged < anchor 64%. Single-model judge caveat; error gate fails narrowly (6/50 vs ≤5 threshold). |
 
 ## Promoted Result
 
@@ -116,6 +117,13 @@ v10 artifacts:
 - Complement prompts: [docs/reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PROMPTS.md](docs/reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PROMPTS.md)
 - Complement packet report: [docs/reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PACKET_REPORT.md](docs/reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PACKET_REPORT.md)
 - Replay: [docs/reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PACKET_REPLAY.md](docs/reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PACKET_REPLAY.md)
+
+Blinded pairwise evaluation artifacts:
+
+- Preregistration: [docs/reports/diffusion/CONFIRMATORY_STUDY_PREREGISTRATION.md](docs/reports/diffusion/CONFIRMATORY_STUDY_PREREGISTRATION.md)
+- Results: [docs/reports/diffusion/CONFIRMATORY_STUDY_RESULTS.md](docs/reports/diffusion/CONFIRMATORY_STUDY_RESULTS.md)
+- Placebo diagnostic: [docs/reports/diffusion/PLACEBO_DIAGNOSTIC.md](docs/reports/diffusion/PLACEBO_DIAGNOSTIC.md)
+- Pilot v2: [docs/reports/diffusion/LATENT_AGGREGATION_BLINDED_PAIRWISE_PILOT_V2.md](docs/reports/diffusion/LATENT_AGGREGATION_BLINDED_PAIRWISE_PILOT_V2.md)
 
 ## What Not To Overclaim
 

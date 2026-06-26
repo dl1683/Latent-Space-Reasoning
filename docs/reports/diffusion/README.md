@@ -17,6 +17,10 @@ entry path for new readers. Start with the root [README](../../../README.md),
 - Active transfer freeze: [LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_FREEZE.md](LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_FREEZE.md)
 - Populated v10 anchor/label source: [LATENT_AGGREGATION_MULTI_ASPECT_V10_LABEL_REPORT.md](LATENT_AGGREGATION_MULTI_ASPECT_V10_LABEL_REPORT.md)
 - Populated v10 complement prompts: [LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PROMPTS.md](LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PROMPTS.md)
+- Blinded pairwise pilot v2 (clause-append): [LATENT_AGGREGATION_BLINDED_PAIRWISE_PILOT_V2.md](LATENT_AGGREGATION_BLINDED_PAIRWISE_PILOT_V2.md)
+- Placebo diagnostic: [PLACEBO_DIAGNOSTIC.md](PLACEBO_DIAGNOSTIC.md)
+- Confirmatory study preregistration: [CONFIRMATORY_STUDY_PREREGISTRATION.md](CONFIRMATORY_STUDY_PREREGISTRATION.md)
+- Confirmatory study results (STATISTICAL_GO): [CONFIRMATORY_STUDY_RESULTS.md](CONFIRMATORY_STUDY_RESULTS.md)
 
 The remaining v10 work is packet generation and frozen replay. This work is
 paused until explicit restart. The interrupted ontology-probe attempt left no
