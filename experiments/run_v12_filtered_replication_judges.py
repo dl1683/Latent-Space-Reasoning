@@ -13,6 +13,7 @@ import os
 import sys
 import time
 from collections import Counter
+from concurrent.futures import ThreadPoolExecutor, as_completed
 from pathlib import Path
 
 JUDGE_CONFIGS = {
@@ -260,31 +261,29 @@ def main() -> int:
             backend = config["backend"]
             client = clients[backend]
 
-            model_results = []
-            for j in range(n_judges):
-                prompt = item["judge_prompts"][j]
+            def _run_judge(j_idx, mdl=model, bk=backend, cl=client, cf=config):
+                prompt = item["judge_prompts"][j_idx]
+                if bk == "anthropic":
+                    return j_idx, _call_anthropic(cl, mdl, prompt, cf)
+                elif bk == "openai":
+                    return j_idx, _call_openai(cl, mdl, prompt, cf)
+                elif bk == "gemini":
+                    return j_idx, _call_gemini(cl, mdl, prompt, cf)
+                return j_idx, None
 
-                print(f"[{item_idx+1}/{len(items)}] {tid} {model} judge {j+1}/{n_judges}...", end=" ", flush=True)
-
-                if backend == "anthropic":
-                    result = _call_anthropic(client, model, prompt, config)
-                elif backend == "openai":
-                    result = _call_openai(client, model, prompt, config)
-                elif backend == "gemini":
-                    result = _call_gemini(client, model, prompt, config)
-                else:
-                    result = None
-
-                total_calls += 1
-                if result is None:
-                    parse_failures += 1
-                    print("FAIL")
-                    model_results.append({"raw": None, "parse_failure": True})
-                else:
-                    print("OK")
-                    model_results.append({"raw": result, "parse_failure": False})
-
-                time.sleep(1)
+            model_results = [None] * n_judges
+            with ThreadPoolExecutor(max_workers=n_judges) as pool:
+                futures = [pool.submit(_run_judge, j) for j in range(n_judges)]
+                for future in as_completed(futures):
+                    j_idx, result = future.result()
+                    total_calls += 1
+                    if result is None:
+                        parse_failures += 1
+                        print(f"[{item_idx+1}/{len(items)}] {tid} {model} judge {j_idx+1}/{n_judges}... FAIL")
+                        model_results[j_idx] = {"raw": None, "parse_failure": True}
+                    else:
+                        print(f"[{item_idx+1}/{len(items)}] {tid} {model} judge {j_idx+1}/{n_judges}... OK")
+                        model_results[j_idx] = {"raw": result, "parse_failure": False}
 
             task_result["per_model"][model] = {
                 "judge_results": model_results,
