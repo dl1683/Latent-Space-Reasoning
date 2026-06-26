@@ -45,7 +45,7 @@ This repo explores that family:
 | Multi-latent aggregation v5 | Clean local milestone | A predeclared 48-task aggregation replay passed stricter robustness gates on planning tasks. |
 | Aggregation v6-v8 | Negative transfer evidence | More repair, probes, and targeted standalone repair did not reliably create aggregation-useful complements. |
 | Aggregation v9 | Post-failure design breakthrough | Complement-first packet generation passed frozen numeric replay gates on the failed v7 surface, but remains diagnostic. |
-| Aggregation v10 | Active fresh-transfer test | Fresh `plan_393`-`plan_440` freeze, anchor/label source run, and label-free complement-packet prompts are populated; packet generation and replay are pending. |
+| Aggregation v10 | Fresh transfer promotion — ALL 13 GATES PASSED | Complement-first packets on fresh `plan_393`-`plan_440` slice: 40/48 coverage, 38 promotions, 40/8/0 W/T/L, mean lift +0.077, zero contradictions. |
 
 ## Promoted Result
 
@@ -85,37 +85,36 @@ The clean aggregation milestone is v5:
 - mean realized score `0.402750` versus anchor `0.340964`;
 - `0` unsupported additions and `0` hard contradictions.
 
-The current design frontier is v9 into v10:
+The design arc from v7 through v10:
 
 - v7 failed with `24/48` coverage against a `36/48` gate.
 - v8 showed targeted standalone repair did not create complement evidence.
 - v9 changed the source family to explicit complement packets and passed the
   diagnostic replay with `47/48` coverage and `46` online promotions.
-- v9 is still not a fresh promotion because the packet source was added after
+- v9 was still not a fresh promotion because the packet source was added after
   the v7/v8 failures.
-- v10 is the fresh transfer test: new `plan_393` through `plan_440` tasks,
-  frozen before labels, with the v9 packet policy held fixed.
+- v10 is the fresh transfer test — and it **passed all 13 frozen gates**.
 
-Current v10 state:
+v10 result (fresh `plan_393` through `plan_440`, complement-packet policy
+frozen before labels):
+
+- Complement coverage: `40/48` (83%, gate was 75%)
+- Online promotions: `38` (gate was 30)
+- Conditional promotion rate: `95%` (gate was 50%)
+- Wins/ties/losses: `40/8/0`
+- Mean anchor score: `0.365` → mean realized: `0.442` (lift `+0.077`)
+- Wilson 95% CI lower bound: `0.657` (gate was 0.600)
+- Unsupported additions: `0`, hard contradictions: `0`
+- Leave-one-out range: `0.073..0.078` (no single task dominates)
+- Source-family ablation: without complement packets, coverage drops to `15/48`
+
+v10 artifacts:
 
 - Freeze: [docs/reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_FREEZE.md](docs/reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_FREEZE.md)
 - Anchor/label source: [docs/reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_LABEL_REPORT.md](docs/reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_LABEL_REPORT.md)
 - Complement prompts: [docs/reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PROMPTS.md](docs/reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PROMPTS.md)
-- Raw source rows: `334`
-- Prompt rows: `48`
-- Prompt leakage boundary: label-free derivation from task text, generated source
-  text, stable trajectory ids, and predeclared expanded-aspect gaps; no replay
-  labels or packet outputs.
-- Eligible repair coverage: `48/48`
-- Selected latent repair task score: `0.323302`
-- Fixed baseline on repair-covered LLaDA tasks: `0.253914`
-- Random baseline on repair-covered LLaDA tasks: `0.224722`
-- Repair wins/ties/losses versus random: `34/14/0`
-- Next required step: run complement-packet generation and frozen replay without
-  changing thresholds, ontology, or realization rules.
-- Operational note: complement-packet generation is paused until the next
-  explicit restart; no v10 packet raw, score, replay, or packet report artifact
-  is currently committed.
+- Complement packet report: [docs/reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PACKET_REPORT.md](docs/reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PACKET_REPORT.md)
+- Replay: [docs/reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PACKET_REPLAY.md](docs/reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PACKET_REPLAY.md)
 
 ## What Not To Overclaim
 

@@ -31,11 +31,12 @@ Read this table before the historical report list.
 | v10 complement freeze | Active fresh-transfer contract | [LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_FREEZE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_FREEZE.md) |
 | v10 label source | Fresh anchor/label source populated | [LATENT_AGGREGATION_MULTI_ASPECT_V10_LABEL_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_LABEL_REPORT.md) |
 | v10 complement prompts | Label-free prompt contract populated | [LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PROMPTS.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PROMPTS.md) |
+| v10 complement packet report | 144 records, mean score 0.331 | [LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PACKET_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PACKET_REPORT.md) |
+| v10 complement packet replay | ALL 13 GATES PASSED — fresh promotion | [LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PACKET_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PACKET_REPLAY.md) |
 
-Current next step: run v10 complement-packet generation from the populated
-label-free prompt artifact, then run the frozen replay. This is paused until
-explicit restart. The interrupted ontology-probe attempt left no committed
-partial artifact, and no v10 packet raw/score/replay artifact is committed.
+v10 complement-packet generation and frozen replay are complete. All 13 frozen
+gates passed: 40/48 coverage, 38 promotions, 40/8/0 W/T/L, mean lift +0.077.
+This is the first fresh complement-first aggregation promotion.
 
 ## Historical Report Index
 

@@ -52,12 +52,11 @@ contradictions.
 Current aggregation frontier: v5 is the passing 48-task statistical replication;
 v6 and v7 are useful negative transfer studies; v8 shows targeted standalone
 repair is not enough; v9 shows the first strong complement-first source-family
-success. The v9 complement-packet replay passes the frozen numeric gates on the
-failed v7 surface with `47/48` complement coverage and `46` online promotions,
-but it is still post-failure diagnostic evidence because the complement-packet
-source was added after the v7/v8 failures.
+success; v10 is the fresh transfer promotion — all 13 frozen gates passed on
+`plan_393`-`plan_440` with 40/48 coverage, 38 promotions, 40/8/0 W/T/L, and
+mean lift +0.077.
 
-The next aggregation step is therefore v10. The fresh `plan_393`-`plan_440`
+The next aggregation step is therefore beyond v10. The fresh `plan_393`-`plan_440`
 tasks and complement-packet transfer freeze now exist, and the anchor/label
 source run is populated with `334` raw rows. Selected latent repair scores
 `0.323302` versus fixed `0.253914` and random `0.224722` on repair-covered

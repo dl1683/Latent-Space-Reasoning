@@ -29,9 +29,10 @@ Current short version:
 - v5 is the clean 48-task aggregation milestone.
 - v6-v8 are negative transfer evidence around complement coverage.
 - v9 is a post-failure complement-packet diagnostic, not a fresh promotion.
-- v10 is the active fresh-transfer test: freeze, anchor/label source, and
-  label-free complement-packet prompts are populated; packet generation and
-  replay are pending and paused until explicit restart.
+- v10 passed all 13 frozen gates on a fresh 48-task transfer slice: 40/48
+  coverage, 38 promotions, 40/8/0 W/T/L, mean lift +0.077, zero
+  contradictions. This is the first fresh complement-first aggregation
+  promotion.
 
 ## What to avoid until later
 
