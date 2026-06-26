@@ -133,7 +133,10 @@ def _extract_clauses(anchor: str, aggregate: str) -> list[str]:
 
 
 def _build_fixed_generic(count: int) -> list[str]:
-    return GENERIC_POOL[:min(count, len(GENERIC_POOL))]
+    if count <= len(GENERIC_POOL):
+        return GENERIC_POOL[:count]
+    reps = (count // len(GENERIC_POOL)) + 1
+    return (GENERIC_POOL * reps)[:count]
 
 
 def _append_clauses(anchor: str, clauses: list[str]) -> str:

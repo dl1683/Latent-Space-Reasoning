@@ -8,6 +8,7 @@ from __future__ import annotations
 
 import argparse
 import json
+import math
 import os
 import sys
 import time
@@ -36,6 +37,22 @@ JUDGE_CONFIGS = {
         "max_tokens": 4096,
     },
 }
+
+MODEL_FAMILIES = {
+    "claude-sonnet-4-6-20250514": "anthropic",
+    "claude-opus-4-8-20250619": "anthropic",
+    "gpt-5.5": "openai",
+    "gemini-2.5-pro": "google",
+}
+
+
+def _binomial_p(k: int, n: int, p0: float = 0.5) -> float:
+    if n == 0:
+        return 1.0
+    total = 0.0
+    for i in range(k, n + 1):
+        total += math.comb(n, i) * (p0 ** i) * ((1 - p0) ** (n - i))
+    return total
 
 
 def _call_anthropic(client, model: str, prompt: str, config: dict, attempt: int = 0) -> dict | None:
@@ -126,6 +143,8 @@ def _decode_pairwise(judge_result: dict, label_to_arm: dict) -> dict[str, str]:
             winner_arm = label_to_arm[winner_label]
         else:
             winner_arm = winner_label
+        if arm_a > arm_b:
+            arm_a, arm_b = arm_b, arm_a
         decoded[f"{arm_a}_vs_{arm_b}"] = winner_arm
     return decoded
 
@@ -175,14 +194,18 @@ def main() -> int:
             clients["gemini"] = genai
 
     completed: dict[str, dict] = {}
-    if args.resume and args.output.exists():
-        existing = json.loads(args.output.read_text(encoding="utf-8"))
-        for item_result in existing.get("per_task", []):
-            completed[item_result["task_id"]] = item_result
-        print(f"Resumed: {len(completed)} tasks already done")
-
     total_calls = 0
     parse_failures = 0
+    if args.resume and args.output.exists():
+        existing = json.loads(args.output.read_text(encoding="utf-8"))
+        total_calls = existing.get("total_calls", 0)
+        parse_failures = existing.get("parse_failures", 0)
+        models_set = set(args.models)
+        for item_result in existing.get("per_task", []):
+            present = set(item_result.get("per_model", {}).keys())
+            if models_set.issubset(present):
+                completed[item_result["task_id"]] = item_result
+        print(f"Resumed: {len(completed)} tasks fully done for requested models")
 
     for item_idx, item in enumerate(items):
         tid = item["task_id"]
@@ -245,6 +268,88 @@ def main() -> int:
     _save_partial(args.output, manifest, completed, args.models, total_calls, parse_failures)
     print(f"\nDone: {len(completed)} tasks, {total_calls} calls, {parse_failures} failures")
     return 0
+
+
+def _cross_model_family_summary(
+    items: list[dict],
+    completed: dict[str, dict],
+    models: list[str],
+    primary_pair: str,
+) -> dict:
+    families: dict[str, list[str]] = {}
+    for m in models:
+        fam = MODEL_FAMILIES.get(m, m)
+        families.setdefault(fam, []).append(m)
+
+    primary_arms = primary_pair.split("_vs_")
+    if len(primary_arms) != 2:
+        return {}
+    arm_a, arm_b = primary_arms
+
+    family_task_winners: dict[str, dict[str, str]] = {}
+    for fam, fam_models in families.items():
+        task_votes: dict[str, list[str]] = {}
+        for item in items:
+            tid = item["task_id"]
+            if tid not in completed:
+                continue
+            task_result = completed[tid]
+            for m in fam_models:
+                model_data = task_result.get("per_model", {}).get(m, {})
+                for jr in model_data.get("judge_results", []):
+                    winner = jr.get("decoded_pairwise", {}).get(primary_pair)
+                    if winner is not None:
+                        task_votes.setdefault(tid, []).append(winner)
+        family_task_winners[fam] = {
+            tid: _majority_vote(vs) for tid, vs in task_votes.items()
+        }
+
+    cross_family_winners: dict[str, str] = {}
+    all_tids = set()
+    for tw in family_task_winners.values():
+        all_tids.update(tw.keys())
+    for tid in all_tids:
+        fam_votes = [family_task_winners[fam].get(tid) for fam in families if family_task_winners[fam].get(tid)]
+        if fam_votes:
+            cross_family_winners[tid] = _majority_vote(fam_votes)
+
+    n = len(cross_family_winners)
+    wins_b = sum(1 for w in cross_family_winners.values() if w == arm_b)
+    wins_a = sum(1 for w in cross_family_winners.values() if w == arm_a)
+    ties = sum(1 for w in cross_family_winners.values() if w == "tie")
+    p_value = _binomial_p(wins_b, wins_b + wins_a) if (wins_b + wins_a) > 0 else 1.0
+    win_rate = wins_b / max(n, 1)
+
+    agreeing = sum(
+        1 for fam, tw in family_task_winners.items()
+        if sum(1 for w in tw.values() if w == arm_b) > sum(1 for w in tw.values() if w == arm_a)
+    )
+
+    return {
+        "per_family": {
+            fam: {
+                "filtered_wins": sum(1 for w in tw.values() if w == arm_b),
+                "generic_wins": sum(1 for w in tw.values() if w == arm_a),
+                "ties": sum(1 for w in tw.values() if w == "tie"),
+                "n": len(tw),
+            }
+            for fam, tw in family_task_winners.items()
+        },
+        "primary_endpoint": {
+            "pair": primary_pair,
+            "filtered_wins": wins_b,
+            "generic_wins": wins_a,
+            "ties": ties,
+            "n": n,
+            "win_rate": win_rate,
+            "p_value": p_value,
+            "families_agreeing": agreeing,
+            "families_total": len(families),
+            "judge_agreement_met": agreeing >= (2 * len(families) / 3),
+            "statistical_go": p_value < 0.05,
+            "practical_go": win_rate >= 0.60,
+        },
+    }
 
 
 def _save_partial(
@@ -312,19 +417,24 @@ def _save_partial(
         "per_task": list(completed.values()),
     }
 
+    primary = "task_aware_generic_vs_true_clause_filtered"
+
+    family_summary = _cross_model_family_summary(items, completed, models, primary)
+    output["family_summary"] = family_summary
+
     if len(completed) == len(items):
-        primary = "true_clause_filtered_vs_task_aware_generic"
         primary_results = {}
         for model in models:
             pair = per_model_summary.get(model, {}).get(primary, {})
             primary_results[model] = {
-                "filtered_wins": pair.get("wins_a", 0),
-                "generic_wins": pair.get("wins_b", 0),
+                "filtered_wins": pair.get("wins_b", 0),
+                "generic_wins": pair.get("wins_a", 0),
                 "ties": pair.get("ties", 0),
                 "n": pair.get("n", 0),
-                "win_rate": pair.get("win_rate_a", 0),
+                "win_rate": pair.get("wins_b", 0) / max(pair.get("n", 1), 1),
             }
-        output["primary_endpoint"] = primary_results
+        output["primary_endpoint_per_model"] = primary_results
+        output["primary_endpoint"] = family_summary.get("primary_endpoint", {})
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(output, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
