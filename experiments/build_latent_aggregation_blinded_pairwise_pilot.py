@@ -37,6 +37,8 @@ from experiments.run_latent_aggregation_multi_aspect_v2_replay import (
     _score,
     _select_complements,
     _realize,
+    _realize_clause_append_v1,
+    _parse_packet_clauses,
     _dimension_details,
     _non_rubric_score,
     _decision,
@@ -101,11 +103,9 @@ def _read_jsonl(path: Path) -> list[dict]:
 
 
 def _normalize_aggregate(text: str) -> str:
-    """Strip realizer formatting tells from aggregate text."""
-    import re
-    text = re.sub(r"^Plan:\s*\n-\s*Preserve anchor answer:\s*", "", text)
-    text = re.sub(r"\n- Add missing [^:]+:\s*", "\n", text)
-    return text.strip()
+    """Normalize whitespace per line in clause-appended aggregate text."""
+    lines = [" ".join(line.split()) for line in text.splitlines()]
+    return "\n".join(line for line in lines if line).strip()
 
 
 def _corrected_replay_task(
@@ -113,42 +113,49 @@ def _corrected_replay_task(
     records: list[dict],
     task: object,
 ) -> tuple[dict, str]:
-    """Run replay with non-packet anchor, return (task_result, realized_text)."""
+    """Run replay with packet clause parsing and clause-append realizer."""
     prompt = _task_prompt(task)
     non_packet = [r for r in records if str(r.get("__source_family", "")) != "complement_packet"]
     anchor = max(non_packet or records, key=_score)
     anchor_id = _trajectory_id(anchor, 0, stable=True)
-    anchor_view = label_free_aspect_view(
-        anchor,
-        prompt=prompt,
-        source_family=str(anchor.get("__source_family", "unknown")),
-    )
     complement_rows: list[dict] = []
     for record in records:
         trajectory_id = _trajectory_id(record, 0, stable=True)
         if trajectory_id == anchor_id:
             continue
-        candidate_view = label_free_aspect_view(
-            record,
-            prompt=prompt,
-            source_family=str(record.get("__source_family", "unknown")),
-        )
-        for aspect in expanded_complement_aspects(
-            anchor_text=str(anchor_view["text"]),
-            candidate_text=str(candidate_view["text"]),
-            prompt=str(candidate_view["prompt"]),
-            trajectory_id=trajectory_id,
-        ):
-            complement_rows.append({**aspect, "task_id": task_id})
+        source_family = str(record.get("__source_family", ""))
+        if source_family == "complement_packet":
+            for clause_row in _parse_packet_clauses(
+                str(record.get("text", "")),
+                trajectory_id=trajectory_id,
+            ):
+                complement_rows.append({**clause_row, "task_id": task_id})
+        else:
+            anchor_view = label_free_aspect_view(
+                anchor, prompt=prompt,
+                source_family=str(anchor.get("__source_family", "unknown")),
+            )
+            candidate_view = label_free_aspect_view(
+                record, prompt=prompt,
+                source_family=source_family or "unknown",
+            )
+            for aspect in expanded_complement_aspects(
+                anchor_text=str(anchor_view["text"]),
+                candidate_text=str(candidate_view["text"]),
+                prompt=str(candidate_view["prompt"]),
+                trajectory_id=trajectory_id,
+            ):
+                complement_rows.append({**aspect, "task_id": task_id})
     selected = _select_complements(complement_rows)
-    realized_text = _realize(anchor_text=str(anchor.get("text", "")), selected=selected)
+    realized_text = _realize_clause_append_v1(
+        anchor_text=str(anchor.get("text", "")), selected=selected,
+    )
     score = score_task_output(task, realized_text)
     anchor_score = _score(anchor)
     score_lift = score.score - anchor_score
     anchor_details = _dimension_details(_dict(_dict(anchor.get("task_score")).get("details")))
     realized_details = _dimension_details(_dict(score.to_dict().get("details")))
     non_rubric_lift = _non_rubric_score(realized_details) - _non_rubric_score(anchor_details)
-    expanded_gain = sum(1 for row in selected if str(row.get("aspect_class", "")) == "expanded")
     result = {
         "anchor_score": anchor_score,
         "anchor_trajectory_id": anchor_id,

@@ -294,6 +294,53 @@ def _realize(*, anchor_text: str, selected: list[dict[str, object]]) -> str:
     return "\n".join(lines)
 
 
+def _parse_packet_clauses(
+    text: str, *, trajectory_id: str,
+) -> list[dict[str, object]]:
+    """Parse complement packet JSON and return one row per clause."""
+    import re as _re
+    cleaned = _re.sub(r"^```json\s*", "", text.strip())
+    cleaned = _re.sub(r"```\s*$", "", cleaned)
+    try:
+        parsed = json.loads(cleaned)
+    except (json.JSONDecodeError, ValueError):
+        return []
+    clauses = parsed.get("complement_clauses", [])
+    rows: list[dict[str, object]] = []
+    for i, clause_obj in enumerate(clauses):
+        clause_text = str(clause_obj.get("clause", "")).strip()
+        if not clause_text:
+            continue
+        aspect_type = str(clause_obj.get("aspect_type", "unknown"))
+        rows.append({
+            "aspect_class": "packet_clause",
+            "aspect_id": f"packet_clause::{aspect_type}::{i}",
+            "aspect_type": aspect_type,
+            "clause_text": clause_text,
+            "why_not_in_anchor": str(clause_obj.get("why_not_in_anchor", "")),
+            "delta": 1.0,
+            "trajectory_id": trajectory_id,
+        })
+    return rows
+
+
+def _realize_clause_append_v1(
+    *, anchor_text: str, selected: list[dict[str, object]],
+) -> str:
+    """Realize by appending natural-language clause text to the anchor."""
+    clauses: list[str] = []
+    seen: set[str] = set()
+    for row in selected:
+        clause = " ".join(str(row.get("clause_text", "")).split())
+        if clause and clause not in seen:
+            seen.add(clause)
+            clauses.append(clause)
+    anchor_clean = anchor_text.strip()
+    if not clauses:
+        return anchor_text
+    return "\n".join([anchor_clean, *clauses]) if anchor_clean else "\n".join(clauses)
+
+
 def _decision(
     *,
     dimension_gain: int,
