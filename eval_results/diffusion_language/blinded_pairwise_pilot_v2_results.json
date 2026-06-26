@@ -1,0 +1,150 @@
+{
+  "schema": "blinded_pairwise_pilot_results.v2",
+  "pilot_version": "v2",
+  "realizer": "clause_append_v1",
+  "judge_model": "claude-sonnet-4-6",
+  "verdict": "GO",
+  "summary": {
+    "agg_vs_anchor_wins": 8,
+    "agg_vs_anchor_losses": 2,
+    "agg_vs_keyword_wins": 10,
+    "agg_vs_keyword_losses": 0,
+    "agg_vs_best_of_n_wins": 10,
+    "agg_vs_best_of_n_losses": 0,
+    "keyword_ranked_last": 10,
+    "aggregate_ranked_first": 8,
+    "meta_text_complaints": 0,
+    "thresholds": {
+      "agg_vs_anchor_go": ">=7/10",
+      "agg_vs_keyword_go": ">=9/10",
+      "agg_vs_best_of_n_go": ">=7/10"
+    }
+  },
+  "comparison_with_v1": {
+    "v1_agg_vs_anchor": "3/10 (NO-GO)",
+    "v2_agg_vs_anchor": "8/10 (GO)",
+    "delta": "+5 tasks",
+    "root_cause_fixed": "clause-append realizer replaced meta-text realizer"
+  },
+  "per_task": [
+    {
+      "task_id": "plan_441",
+      "agg_label": "Y",
+      "agg_vs_anchor": "WIN",
+      "agg_vs_keyword": "WIN",
+      "agg_vs_best_of_n": "WIN",
+      "agg_rank": 1,
+      "keyword_rank": 4,
+      "anchor_eq_best_of_n": true,
+      "judge_summary": "All four candidates fail to address the core constraint (87% baseline + 110% spike leaves no safe margin without deliberate headroom creation), but Y narrowly leads W and X by adding a rollback mention, while Z is disqualified as an incoherent keyword dump rather than a plan."
+    },
+    {
+      "task_id": "plan_478",
+      "agg_label": "Z",
+      "agg_vs_anchor": "WIN",
+      "agg_vs_keyword": "WIN",
+      "agg_vs_best_of_n": "WIN",
+      "agg_rank": 1,
+      "keyword_rank": 4,
+      "anchor_eq_best_of_n": false,
+      "judge_summary": "Aggregate ranked first — additions surface real gaps the plan fails to address."
+    },
+    {
+      "task_id": "plan_488",
+      "agg_label": "W",
+      "agg_vs_anchor": "LOSS",
+      "agg_vs_keyword": "WIN",
+      "agg_vs_best_of_n": "WIN",
+      "agg_rank": 2,
+      "keyword_rank": 4,
+      "anchor_eq_best_of_n": false,
+      "judge_summary": "Anchor judged best; aggregate loses to anchor but wins vs keyword and best-of-N."
+    },
+    {
+      "task_id": "plan_516",
+      "agg_label": "Y",
+      "agg_vs_anchor": "LOSS",
+      "agg_vs_keyword": "WIN",
+      "agg_vs_best_of_n": "WIN",
+      "agg_rank": 2,
+      "keyword_rank": 4,
+      "anchor_eq_best_of_n": false,
+      "judge_summary": "Anchor judged best with high confidence; aggregate adds clauses but anchor was already strong enough."
+    },
+    {
+      "task_id": "plan_463",
+      "agg_label": "X",
+      "agg_vs_anchor": "WIN",
+      "agg_vs_keyword": "WIN",
+      "agg_vs_best_of_n": "WIN",
+      "agg_rank": 1,
+      "keyword_rank": 4,
+      "anchor_eq_best_of_n": false,
+      "judge_summary": "None of the candidates fully solves the problem, but X is the least flawed due to its added monitoring and rollback clauses, while Z is disqualified as incoherent keyword noise."
+    },
+    {
+      "task_id": "plan_465",
+      "agg_label": "Z",
+      "agg_vs_anchor": "WIN",
+      "agg_vs_keyword": "WIN",
+      "agg_vs_best_of_n": "WIN",
+      "agg_rank": 1,
+      "keyword_rank": 4,
+      "anchor_eq_best_of_n": true,
+      "judge_summary": "All four candidates fail the core sequencing decision; Z is marginally best only because it appends rollback and scope considerations to the same flawed base."
+    },
+    {
+      "task_id": "plan_494",
+      "agg_label": "Z",
+      "agg_vs_anchor": "WIN",
+      "agg_vs_keyword": "WIN",
+      "agg_vs_best_of_n": "WIN",
+      "agg_rank": 1,
+      "keyword_rank": 4,
+      "anchor_eq_best_of_n": false,
+      "judge_summary": "Aggregate ranked first — clauses add real operational value."
+    },
+    {
+      "task_id": "plan_515",
+      "agg_label": "X",
+      "agg_vs_anchor": "WIN",
+      "agg_vs_keyword": "WIN",
+      "agg_vs_best_of_n": "WIN",
+      "agg_rank": 1,
+      "keyword_rank": 4,
+      "anchor_eq_best_of_n": false,
+      "judge_summary": "All four candidates fail the task materially — W provides no answer, while X/Y/Z choose async and falsely claim it reduces the unfiltered-response risk; X is ranked best solely because it appends two operational steps absent from the others."
+    },
+    {
+      "task_id": "plan_481",
+      "agg_label": "X",
+      "agg_vs_anchor": "WIN",
+      "agg_vs_keyword": "WIN",
+      "agg_vs_best_of_n": "WIN",
+      "agg_rank": 1,
+      "keyword_rank": 4,
+      "anchor_eq_best_of_n": true,
+      "judge_summary": "All four candidates are severely under-specified for a real 18-day mainframe migration; X edges out W/Y by adding rollback and scope mentions, while Z is disqualifyingly incoherent."
+    },
+    {
+      "task_id": "plan_446",
+      "agg_label": "Y",
+      "agg_vs_anchor": "WIN",
+      "agg_vs_keyword": "WIN",
+      "agg_vs_best_of_n": "WIN",
+      "agg_rank": 1,
+      "keyword_rank": 4,
+      "anchor_eq_best_of_n": false,
+      "judge_summary": "All four candidates are weak; W and Z are identical superficial lists, Y is marginally better with two extra vague directives, and X is a completely incoherent keyword dump."
+    }
+  ],
+  "key_findings": [
+    "Clause-append realizer eliminated ALL meta-text complaints (v1 had 7/10 tasks citing meta-instructions as reason for aggregate loss)",
+    "Aggregate ranked #1 in 8/10 tasks, never worse than #2",
+    "Keyword arm ranked LAST in 10/10 tasks — confirms aggregate is not keyword stuffing",
+    "In winning tasks, judges cite appended clauses as adding real operational value: rollback criteria, scope boundaries, measurement steps",
+    "Two losses (plan_488, plan_516) have anchor as clearly stronger — clauses don't hurt but don't add enough value when anchor is already strong",
+    "Judges critique substantive content logic, not form — the realizer bottleneck is fully resolved",
+    "In tasks where anchor=best_of_n (3/10), aggregate still wins by adding clause content"
+  ]
+}

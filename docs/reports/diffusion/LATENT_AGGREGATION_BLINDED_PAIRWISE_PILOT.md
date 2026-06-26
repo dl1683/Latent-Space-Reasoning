@@ -53,6 +53,8 @@
 Automatic score framing (+0.093 mean lift) is invalidated as a quality metric by this pilot.
 Next step: clause-based realizer (clause_append_v1) that uses actual clause text from complement packet JSON.
 
+**UPDATE:** Pilot v2 with clause-append realizer scored **8/10 agg vs anchor (GO)**. See [LATENT_AGGREGATION_BLINDED_PAIRWISE_PILOT_V2.md](LATENT_AGGREGATION_BLINDED_PAIRWISE_PILOT_V2.md).
+
 ## Original Go/No-Go Criteria
 
 **Proceed to full study if:**
