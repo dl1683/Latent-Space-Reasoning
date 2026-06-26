@@ -366,7 +366,8 @@ def _run_task_expanded(
     if not records:
         raise ValueError(f"no raw records for {task_id}")
     prompt = _task_prompt(task)
-    anchor = max(records, key=_score)
+    non_packet = [r for r in records if str(r.get("__source_family", "")) != "complement_packet"]
+    anchor = max(non_packet or records, key=_score)
     anchor_id = _trajectory_id(anchor, 0, stable=True)
     anchor_view = label_free_aspect_view(
         anchor,

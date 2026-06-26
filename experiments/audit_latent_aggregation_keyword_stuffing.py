@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parents[1]
 if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
-from src.latent_reasoning.eval.general_reasoning import (
+from latent_reasoning.eval.general_reasoning import (
     GeneralReasoningTask,
     load_tasks,
     score_task_output,
