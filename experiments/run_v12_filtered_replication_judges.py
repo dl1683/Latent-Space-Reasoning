@@ -91,6 +91,21 @@ def _call_openai(client, model: str, prompt: str, config: dict, attempt: int = 0
         return None
 
 
+_GEMINI_SAFETY = None
+
+def _gemini_safety():
+    global _GEMINI_SAFETY
+    if _GEMINI_SAFETY is None:
+        from google.generativeai.types import HarmCategory, HarmBlockThreshold
+        _GEMINI_SAFETY = {
+            HarmCategory.HARM_CATEGORY_HARASSMENT: HarmBlockThreshold.BLOCK_NONE,
+            HarmCategory.HARM_CATEGORY_HATE_SPEECH: HarmBlockThreshold.BLOCK_NONE,
+            HarmCategory.HARM_CATEGORY_SEXUALLY_EXPLICIT: HarmBlockThreshold.BLOCK_NONE,
+            HarmCategory.HARM_CATEGORY_DANGEROUS_CONTENT: HarmBlockThreshold.BLOCK_NONE,
+        }
+    return _GEMINI_SAFETY
+
+
 def _call_gemini(client, model: str, prompt: str, config: dict, attempt: int = 0) -> dict | None:
     try:
         gmodel = client.GenerativeModel(model)
@@ -101,8 +116,22 @@ def _call_gemini(client, model: str, prompt: str, config: dict, attempt: int = 0
                 "max_output_tokens": config["max_tokens"],
                 "response_mime_type": "application/json",
             },
+            safety_settings=_gemini_safety(),
         )
-        return _parse_json(response.text)
+        if not response.candidates or not response.candidates[0].content.parts:
+            block_reason = getattr(response, "prompt_feedback", None)
+            print(f"\n    Blocked: {block_reason}")
+            if attempt == 0:
+                time.sleep(3)
+                return _call_gemini(client, model, prompt, config, attempt=1)
+            return None
+        raw_text = response.text
+        parsed = _parse_json(raw_text)
+        if parsed is None and attempt == 0:
+            print(f"\n    Parse fail (len={len(raw_text)}), first 200: {raw_text[:200]}")
+            time.sleep(3)
+            return _call_gemini(client, model, prompt, config, attempt=1)
+        return parsed
     except Exception as e:
         if attempt == 0:
             print(f"    Retry: {type(e).__name__}: {str(e)[:80]}")
@@ -263,8 +292,8 @@ def main() -> int:
 
         completed[tid] = task_result
 
+        _save_partial(args.output, manifest, completed, args.models, total_calls, parse_failures)
         if (item_idx + 1) % 5 == 0:
-            _save_partial(args.output, manifest, completed, args.models, total_calls, parse_failures)
             print(f"  Saved partial: {len(completed)}/{len(items)} tasks")
 
     _save_partial(args.output, manifest, completed, args.models, total_calls, parse_failures)
