@@ -190,7 +190,8 @@ def main() -> int:
             clients["openai"] = openai.OpenAI()
         elif backend == "gemini" and "gemini" not in clients:
             import google.generativeai as genai
-            genai.configure()
+            gemini_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+            genai.configure(api_key=gemini_key)
             clients["gemini"] = genai
 
     completed: dict[str, dict] = {}
