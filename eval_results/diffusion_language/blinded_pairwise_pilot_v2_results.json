@@ -112,7 +112,7 @@
       "agg_vs_best_of_n": "WIN",
       "agg_rank": 1,
       "keyword_rank": 4,
-      "anchor_eq_best_of_n": false,
+      "anchor_eq_best_of_n": true,
       "judge_summary": "All four candidates fail the task materially — W provides no answer, while X/Y/Z choose async and falsely claim it reduces the unfiltered-response risk; X is ranked best solely because it appends two operational steps absent from the others."
     },
     {
@@ -134,7 +134,7 @@
       "agg_vs_best_of_n": "WIN",
       "agg_rank": 1,
       "keyword_rank": 4,
-      "anchor_eq_best_of_n": false,
+      "anchor_eq_best_of_n": true,
       "judge_summary": "All four candidates are weak; W and Z are identical superficial lists, Y is marginally better with two extra vague directives, and X is a completely incoherent keyword dump."
     }
   ],
@@ -145,6 +145,8 @@
     "In winning tasks, judges cite appended clauses as adding real operational value: rollback criteria, scope boundaries, measurement steps",
     "Two losses (plan_488, plan_516) have anchor as clearly stronger — clauses don't hurt but don't add enough value when anchor is already strong",
     "Judges critique substantive content logic, not form — the realizer bottleneck is fully resolved",
-    "In tasks where anchor=best_of_n (3/10), aggregate still wins by adding clause content"
+    "In tasks where anchor=best_of_n (5/10), aggregate wins 5/5 = 100% purely from clause additions",
+    "Clauses are formulaic: 45% rollback, 23% scope, 23% measurement, 9% other — mean 9.9 words each",
+    "22 total clauses across 10 tasks (2-3 per task), pattern: {Establish|Define|Implement} {rollback|scope|metrics} {for} {task noun}"
   ]
 }
