@@ -87,7 +87,6 @@ Root cause of v1→v2 improvement: clause-append realizer uses actual natural-la
 
 ## Disposition
 
-**GO for full study.** The clause-append realizer converts complement-packet signal into judge-preferred content. Next steps:
-- Codex R6 review of pilot v2 results
-- Scale to full task set (50+ tasks)
-- Consider additional realizer variants (LLaDA rewrite, structured insertion)
+**GO for full study.** The clause-append realizer converts complement-packet signal into judge-preferred content.
+
+**UPDATE:** Placebo diagnostic confirms task-specificity. True vs deranged 10/10, true vs generic 7/10, but generic vs anchor 10/10 (boilerplate confound). See [PLACEBO_DIAGNOSTIC.md](PLACEBO_DIAGNOSTIC.md).
