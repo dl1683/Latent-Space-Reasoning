@@ -201,10 +201,19 @@ def main() -> int:
         total_calls = existing.get("total_calls", 0)
         parse_failures = existing.get("parse_failures", 0)
         models_set = set(args.models)
+        items_by_id = {item["task_id"]: item for item in items}
         for item_result in existing.get("per_task", []):
             present = set(item_result.get("per_model", {}).keys())
             if models_set.issubset(present):
-                completed[item_result["task_id"]] = item_result
+                tid = item_result["task_id"]
+                manifest_item = items_by_id.get(tid)
+                if manifest_item:
+                    for model, md in item_result.get("per_model", {}).items():
+                        for j, jr in enumerate(md.get("judge_results", [])):
+                            if "decoded_pairwise" not in jr and jr.get("raw"):
+                                assignment = manifest_item["judge_arm_assignments"][j]
+                                jr["decoded_pairwise"] = _decode_pairwise(jr["raw"], assignment)
+                completed[tid] = item_result
         print(f"Resumed: {len(completed)} tasks fully done for requested models")
 
     for item_idx, item in enumerate(items):
@@ -246,7 +255,7 @@ def main() -> int:
                     model_results.append({"raw": None, "decoded_pairwise": {}, "parse_failure": True})
                 else:
                     decoded = _decode_pairwise(result, label_to_arm)
-                    print(f"OK best={label_to_arm.get(result.get('best_answer','?'),'?')}")
+                    print("OK")
                     model_results.append({
                         "raw": result,
                         "decoded_pairwise": decoded,
@@ -352,6 +361,21 @@ def _cross_model_family_summary(
     }
 
 
+def _strip_decoded(completed: dict) -> list[dict]:
+    stripped = []
+    for task_result in completed.values():
+        tr = {"task_id": task_result["task_id"], "per_model": {}}
+        for model, model_data in task_result.get("per_model", {}).items():
+            tr["per_model"][model] = {
+                "judge_results": [
+                    {"raw": jr.get("raw"), "parse_failure": jr.get("parse_failure", False)}
+                    for jr in model_data.get("judge_results", [])
+                ],
+            }
+        stripped.append(tr)
+    return stripped
+
+
 def _save_partial(
     output_path: Path,
     manifest: dict,
@@ -361,49 +385,6 @@ def _save_partial(
     parse_failures: int,
 ) -> None:
     items = manifest["items"]
-    arm_names = manifest.get("arm_names", [])
-
-    all_pairwise: dict[str, dict[str, list]] = {}
-    for model in models:
-        all_pairwise[model] = {}
-
-    for item in items:
-        tid = item["task_id"]
-        if tid not in completed:
-            continue
-        task_result = completed[tid]
-        for model in models:
-            model_data = task_result.get("per_model", {}).get(model, {})
-            for jr in model_data.get("judge_results", []):
-                for pair_key, winner in jr.get("decoded_pairwise", {}).items():
-                    all_pairwise[model].setdefault(pair_key, []).append(
-                        {"task_id": tid, "winner": winner}
-                    )
-
-    per_model_summary = {}
-    for model in models:
-        pair_summaries = {}
-        for pair_key, votes_list in all_pairwise[model].items():
-            by_task: dict[str, list] = {}
-            for v in votes_list:
-                by_task.setdefault(v["task_id"], []).append(v["winner"])
-            task_winners = {tid: _majority_vote(ws) for tid, ws in by_task.items()}
-            arms_in_pair = pair_key.split("_vs_")
-            if len(arms_in_pair) == 2:
-                a, b = arms_in_pair
-                wins_a = sum(1 for w in task_winners.values() if w == a)
-                wins_b = sum(1 for w in task_winners.values() if w == b)
-                ties = sum(1 for w in task_winners.values() if w == "tie")
-                n = len(task_winners)
-                pair_summaries[pair_key] = {
-                    "wins_a": wins_a,
-                    "wins_b": wins_b,
-                    "ties": ties,
-                    "n": n,
-                    "win_rate_a": wins_a / max(n, 1),
-                }
-        per_model_summary[model] = pair_summaries
-
     is_complete = len(completed) == len(items)
 
     output = {
@@ -415,13 +396,52 @@ def _save_partial(
         "parse_failures": parse_failures,
         "tasks_completed": len(completed),
         "tasks_total": len(items),
-        "per_task": list(completed.values()),
     }
 
     if is_complete:
-        output["per_model_summary"] = per_model_summary
-        primary = "task_aware_generic_vs_true_clause_filtered"
+        output["per_task"] = list(completed.values())
 
+        all_pairwise: dict[str, dict[str, list]] = {}
+        for model in models:
+            all_pairwise[model] = {}
+        for item in items:
+            tid = item["task_id"]
+            task_result = completed[tid]
+            for model in models:
+                model_data = task_result.get("per_model", {}).get(model, {})
+                for jr in model_data.get("judge_results", []):
+                    for pair_key, winner in jr.get("decoded_pairwise", {}).items():
+                        all_pairwise[model].setdefault(pair_key, []).append(
+                            {"task_id": tid, "winner": winner}
+                        )
+
+        per_model_summary = {}
+        for model in models:
+            pair_summaries = {}
+            for pair_key, votes_list in all_pairwise[model].items():
+                by_task: dict[str, list] = {}
+                for v in votes_list:
+                    by_task.setdefault(v["task_id"], []).append(v["winner"])
+                task_winners = {tid: _majority_vote(ws) for tid, ws in by_task.items()}
+                arms_in_pair = pair_key.split("_vs_")
+                if len(arms_in_pair) == 2:
+                    a, b = arms_in_pair
+                    wins_a = sum(1 for w in task_winners.values() if w == a)
+                    wins_b = sum(1 for w in task_winners.values() if w == b)
+                    ties = sum(1 for w in task_winners.values() if w == "tie")
+                    n = len(task_winners)
+                    pair_summaries[pair_key] = {
+                        "wins_a": wins_a,
+                        "wins_b": wins_b,
+                        "ties": ties,
+                        "n": n,
+                        "win_rate_a": wins_a / max(n, 1),
+                    }
+            per_model_summary[model] = pair_summaries
+
+        output["per_model_summary"] = per_model_summary
+
+        primary = "task_aware_generic_vs_true_clause_filtered"
         family_summary = _cross_model_family_summary(items, completed, models, primary)
         output["family_summary"] = family_summary
 
@@ -437,6 +457,8 @@ def _save_partial(
             }
         output["primary_endpoint_per_model"] = primary_results
         output["primary_endpoint"] = family_summary.get("primary_endpoint", {})
+    else:
+        output["per_task"] = _strip_decoded(completed)
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
     output_path.write_text(json.dumps(output, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
