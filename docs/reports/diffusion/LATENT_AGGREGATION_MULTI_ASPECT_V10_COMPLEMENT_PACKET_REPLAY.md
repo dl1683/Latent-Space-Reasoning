@@ -5,8 +5,8 @@ It anchors on the best single answer, adds selected complement aspects, then res
 
 ## Evidence Boundary
 
-- Status: `post_failure_augmented_multi_source_replay`
-- Reason: Replay over the frozen v3 task set augmented with extra raw sources. This is diagnostic evidence for the next source-generation design; it should not be described as the original predeclared v3 promotion unless the extra sources were themselves frozen before labels.
+- Status: `fresh_predeclared_complement_packet_transfer`
+- Reason: Fresh predeclared complement-packet transfer on held-out planning tasks. Complement-packet policy was frozen before labels. This is a fresh promotion claim, not a diagnostic replay.
 
 ## Summary
 
@@ -40,8 +40,8 @@ It anchors on the best single answer, adds selected complement aspects, then res
 - Complement yield per raw row: `0.158996`
 - Cost-normalized score lift: `0.007705`
 - Equal-budget best-of control reported: `True`
-- Selected complement source families: `extra_raw=38, label=38`
-- Source-family unique coverage: `extra_raw=16, label=16`
+- Selected complement source families: `complement_packet=38, label=38`
+- Source-family unique coverage: `complement_packet=16, label=16`
 - Length-normalized complement yield per 1k raw tokens: `5.015508`
 - Label-leakage check: `not_applicable_old_ontology`
 - Decision counts: `blocked_no_complement_material=8, dimension_gain_not_realized=2, online_promoted_local=38`
@@ -70,7 +70,7 @@ It anchors on the best single answer, adds selected complement aspects, then res
 
 ## Source-Family Ablation
 
-- `extra_raw` removed: mean score lift `0.020521`, coverage `15/48`, promotions `15`.
+- `complement_packet` removed: mean score lift `0.020521`, coverage `15/48`, promotions `15`.
 - `label` removed: mean score lift `0.000000`, coverage `0/48`, promotions `0`.
 
 ## Interpretation
