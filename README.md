@@ -46,6 +46,7 @@ This repo explores that family:
 | Aggregation v6-v8 | Negative transfer evidence | More repair, probes, and targeted standalone repair did not reliably create aggregation-useful complements. |
 | Aggregation v9 | Post-failure design breakthrough | Complement-first packet generation passed frozen numeric replay gates on the failed v7 surface, but remains diagnostic. |
 | Aggregation v10 | Fresh transfer promotion — ALL 13 GATES PASSED | Complement-first packets on fresh `plan_393`-`plan_440` slice: 40/48 coverage, 38 promotions, 40/8/0 W/T/L, mean lift +0.077, zero contradictions. |
+| Aggregation v11 | 2x replication — ALL 13 GATES PASSED | LLaDA-only 96-task replication on `plan_441`-`plan_536`: 87/96 coverage (90.6%), 87 promotions, 87/9/0 W/T/L, mean lift +0.100, Wilson lower 0.831, zero contradictions. Keyword audit RED — rubric gameable but packets are not keyword-stuffing. |
 
 ## Promoted Result
 

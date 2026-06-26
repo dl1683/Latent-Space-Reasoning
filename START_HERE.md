@@ -33,6 +33,11 @@ Current short version:
   coverage, 38 promotions, 40/8/0 W/T/L, mean lift +0.077, zero
   contradictions. This is the first fresh complement-first aggregation
   promotion.
+- v11 replicated v10 at 2x scale (LLaDA-only, 96 tasks): 87/96 coverage
+  (90.6%), 87 promotions, 87/9/0 W/T/L, mean lift +0.100, Wilson lower
+  0.831, zero contradictions. Keyword audit RED — rubric is gameable but
+  complement packets are not keyword-stuffing (gaming ratio 4.7x means
+  keyword bags score much higher than real packets).
 
 ## What to avoid until later
 

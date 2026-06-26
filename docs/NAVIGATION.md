@@ -33,10 +33,17 @@ Read this table before the historical report list.
 | v10 complement prompts | Label-free prompt contract populated | [LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PROMPTS.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PROMPTS.md) |
 | v10 complement packet report | 144 records, mean score 0.331 | [LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PACKET_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PACKET_REPORT.md) |
 | v10 complement packet replay | ALL 13 GATES PASSED — fresh promotion | [LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PACKET_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PACKET_REPLAY.md) |
+| v11 pre-registration | Pre-declared hypotheses and gates | [LATENT_AGGREGATION_MULTI_ASPECT_V11_PREREGISTRATION.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V11_PREREGISTRATION.md) |
+| v11 complement freeze | LLaDA-only 96-task transfer contract | [LATENT_AGGREGATION_MULTI_ASPECT_V11_COMPLEMENT_FREEZE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V11_COMPLEMENT_FREEZE.md) |
+| v11 complement prompts | Label-free prompt contract (96 rows) | [LATENT_AGGREGATION_MULTI_ASPECT_V11_COMPLEMENT_PROMPTS.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V11_COMPLEMENT_PROMPTS.md) |
+| v11 complement packet report | 288 records, LLaDA-only | [LATENT_AGGREGATION_MULTI_ASPECT_V11_COMPLEMENT_PACKET_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V11_COMPLEMENT_PACKET_REPORT.md) |
+| v11 complement packet replay | ALL 13 GATES PASSED — 2x replication | [LATENT_AGGREGATION_MULTI_ASPECT_V11_COMPLEMENT_PACKET_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V11_COMPLEMENT_PACKET_REPLAY.md) |
+| v11 keyword-stuffing audit | RED — rubric gameable, packets clean | [LATENT_AGGREGATION_MULTI_ASPECT_V11_KEYWORD_STUFFING_AUDIT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V11_KEYWORD_STUFFING_AUDIT.md) |
 
-v10 complement-packet generation and frozen replay are complete. All 13 frozen
-gates passed: 40/48 coverage, 38 promotions, 40/8/0 W/T/L, mean lift +0.077.
-This is the first fresh complement-first aggregation promotion.
+v11 is a 2x-scale LLaDA-only replication of v10 on 96 fresh tasks. All 13
+frozen gates passed: 87/96 coverage (90.6%), 87 promotions, 87/9/0 W/T/L,
+mean lift +0.100, Wilson lower 0.831, zero contradictions. Keyword audit RED
+confirms the rubric is gameable but complement packets are not keyword-stuffing.
 
 ## Historical Report Index
 
