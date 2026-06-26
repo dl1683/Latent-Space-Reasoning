@@ -166,7 +166,7 @@ def _generate_task_aware_generic(genai_model, task_prompt: str, count: int) -> l
                 time.sleep(2)
                 continue
             print(f"    Task-aware generic FAILED: {type(e).__name__}: {str(e)[:80]}")
-    return GENERIC_POOL[:count]
+    return _build_fixed_generic(count)
 
 
 def _replay_task(

@@ -404,25 +404,27 @@ def _save_partial(
                 }
         per_model_summary[model] = pair_summaries
 
+    is_complete = len(completed) == len(items)
+
     output = {
         "schema": "v12_filtered_replication_results.v1",
-        "status": "partial" if len(completed) < len(items) else "complete",
+        "status": "complete" if is_complete else "partial",
         "manifest_hash": manifest.get("manifest_hash"),
         "judge_models": models,
         "total_calls": total_calls,
         "parse_failures": parse_failures,
         "tasks_completed": len(completed),
         "tasks_total": len(items),
-        "per_model_summary": per_model_summary,
         "per_task": list(completed.values()),
     }
 
-    primary = "task_aware_generic_vs_true_clause_filtered"
+    if is_complete:
+        output["per_model_summary"] = per_model_summary
+        primary = "task_aware_generic_vs_true_clause_filtered"
 
-    family_summary = _cross_model_family_summary(items, completed, models, primary)
-    output["family_summary"] = family_summary
+        family_summary = _cross_model_family_summary(items, completed, models, primary)
+        output["family_summary"] = family_summary
 
-    if len(completed) == len(items):
         primary_results = {}
         for model in models:
             pair = per_model_summary.get(model, {}).get(primary, {})
