@@ -135,6 +135,56 @@ def fit_basin_model(scaling_metrics: dict) -> dict:
     return {"p_hat": p_hat, "slope": slope, "fit_points": fit_points}
 
 
+def bootstrap_ci(
+    per_task_correct: List[bool],
+    n_boot: int = 10000,
+    alpha: float = 0.05,
+    seed: int = 42,
+) -> dict:
+    """Bootstrap confidence interval for accuracy (resampling tasks)."""
+    import random
+    rng = random.Random(seed)
+    n = len(per_task_correct)
+    if n == 0:
+        return {"mean": 0.0, "ci_lo": 0.0, "ci_hi": 0.0, "n": 0}
+
+    observed = sum(per_task_correct) / n
+    boot_accs = []
+    for _ in range(n_boot):
+        sample = [per_task_correct[rng.randint(0, n - 1)] for _ in range(n)]
+        boot_accs.append(sum(sample) / n)
+    boot_accs.sort()
+    lo = boot_accs[int(n_boot * alpha / 2)]
+    hi = boot_accs[int(n_boot * (1 - alpha / 2))]
+    return {"mean": observed, "ci_lo": lo, "ci_hi": hi, "n": n}
+
+
+def compute_bootstrap_cis(results: dict, candidates: Optional[Dict[str, list]] = None) -> dict:
+    """Compute bootstrap CIs for all selectors at each k.
+
+    Requires per-task correctness data from selector_results.
+    """
+    cis = {}
+    for k_str, selectors in results.get("selector_results", {}).items():
+        if k_str == "temp_baseline":
+            continue
+        k_cis = {}
+        for sel_name, sel_data in selectors.items():
+            if sel_name == "random_mean":
+                continue
+            per_task = sel_data.get("per_task_correct")
+            if per_task is not None:
+                k_cis[sel_name] = bootstrap_ci(per_task)
+            else:
+                acc = sel_data.get("accuracy", 0)
+                total = sel_data.get("total", 0)
+                if total > 0:
+                    per_task_approx = [True] * int(acc * total) + [False] * (total - int(acc * total))
+                    k_cis[sel_name] = bootstrap_ci(per_task_approx)
+        cis[k_str] = k_cis
+    return cis
+
+
 def compute_selector_recovery(results: dict) -> dict:
     """Compute oracle recovery for each selector at each k."""
     recovery = {}
@@ -195,6 +245,18 @@ def main():
             if sel_name in data["selectors"]:
                 s = data["selectors"][sel_name]
                 print(f"  {sel_name:25s}: acc={s['accuracy']:.1%}, recovery={s['recovery']:+.1%}, regret={s['regret']:.1%}")
+
+    # Bootstrap confidence intervals
+    cis = compute_bootstrap_cis(results)
+    if cis:
+        print("\n--- Bootstrap 95% CIs (10,000 resamples) ---")
+        for k_str in sorted(cis.keys(), key=lambda x: int(x)):
+            print(f"\nk={k_str}:")
+            for sel_name in ["greedy", "oracle", "majority", "plurality_confidence",
+                             "consistency_filtered", "composite"]:
+                if sel_name in cis[k_str]:
+                    ci = cis[k_str][sel_name]
+                    print(f"  {sel_name:25s}: {ci['mean']:.1%} [{ci['ci_lo']:.1%}, {ci['ci_hi']:.1%}]")
 
     # k-scaling analysis (requires candidates JSONL)
     if len(sys.argv) >= 3:

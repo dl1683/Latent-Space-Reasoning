@@ -539,6 +539,7 @@ def apply_selectors(
                 "accuracy": correct / total if total > 0 else 0.0,
                 "correct": correct,
                 "total": total,
+                "per_task_correct": [d["correct"] for d in details],
                 "details": details,
             }
 
