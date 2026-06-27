@@ -35,6 +35,56 @@ def load_candidates(jsonl_path: str) -> Dict[str, list]:
     return candidates
 
 
+def compute_answer_anywhere(candidates: Dict[str, list], k_values: List[int]) -> dict:
+    """Answer-anywhere analysis: does correct answer appear anywhere in response?
+
+    Separates convergence (answer placement) from computation (answer derivation).
+    """
+    metrics = {}
+    for k in k_values:
+        greedy_last = 0
+        greedy_anywhere = 0
+        pert_last = 0
+        pert_anywhere = 0
+        total = 0
+
+        for tid, cands in candidates.items():
+            greedy = cands[0]
+            correct_ans = None
+            for c in cands:
+                if c["correct"]:
+                    correct_ans = c["extracted_answer"]
+                    break
+            if correct_ans is None:
+                total += 1
+                continue
+
+            total += 1
+            if greedy["correct"]:
+                greedy_last += 1
+            if correct_ans in greedy.get("all_integers", []):
+                greedy_anywhere += 1
+
+            subset = cands[1:k + 1]
+            any_last = any(c["correct"] for c in subset)
+            any_anywhere = any(
+                correct_ans in c.get("all_integers", []) for c in subset
+            )
+            if any_last:
+                pert_last += 1
+            if any_anywhere:
+                pert_anywhere += 1
+
+        metrics[k] = {
+            "greedy_last_int": greedy_last / total if total else 0,
+            "greedy_answer_anywhere": greedy_anywhere / total if total else 0,
+            "oracle_last_int": pert_last / total if total else 0,
+            "oracle_answer_anywhere": pert_anywhere / total if total else 0,
+            "total": total,
+        }
+    return metrics
+
+
 def compute_scaling_metrics(candidates: Dict[str, list], k_values: List[int]) -> dict:
     """Compute oracle accuracy at each k prefix and fit the basin model."""
     metrics = {}
@@ -271,6 +321,21 @@ def main():
         for k in k_values:
             m = scaling[k]
             print(f"{k:4d}  {m['oracle_acc']:8.1%}  {m['majority_acc']:8.1%}  {m['oracle_not_majority']:14d}  {m['mean_effective_diversity']:13.3f}")
+
+        # Answer-anywhere analysis (convergence vs computation)
+        aa = compute_answer_anywhere(candidates, k_values)
+        print(f"\n--- Answer-Anywhere Analysis (Convergence vs Computation) ---")
+        print(f"{'k':>4s}  {'Greedy-Last':>11s}  {'Greedy-Any':>10s}  {'Oracle-Last':>11s}  {'Oracle-Any':>10s}")
+        for k in k_values:
+            m = aa[k]
+            print(f"{k:4d}  {m['greedy_last_int']:11.1%}  {m['greedy_answer_anywhere']:10.1%}  {m['oracle_last_int']:11.1%}  {m['oracle_answer_anywhere']:10.1%}")
+        max_k = max(k_values)
+        m = aa[max_k]
+        conv_gap = m["oracle_answer_anywhere"] - m["oracle_last_int"]
+        comp_gap = m["oracle_answer_anywhere"] - m["greedy_answer_anywhere"]
+        print(f"\nAt k={max_k}:")
+        print(f"  Convergence gap (oracle any - oracle last): {conv_gap:+.1%}")
+        print(f"  Computation gap (oracle any - greedy any):  {comp_gap:+.1%}")
 
         # Basin model fit
         basin = fit_basin_model(scaling)
