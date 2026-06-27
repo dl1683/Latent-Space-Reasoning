@@ -211,6 +211,28 @@ systems. However, our statistical tests do not confirm the formal
 inverted-U relationship at the task level (Section~\ref{sec:limitations}),
 so we use the more conservative framing of ``non-monotonic optimum.''
 
+\paragraph{Continuous embedding perturbation.}
+Concurrent and independent work confirms our central observation.
+Kim et al.~\cite{kim2026rsp} show that Random Soft Prompts---untrained
+embedding vectors sampled from the pretrained distribution---achieve
+accuracy comparable to trained soft prompts on math reasoning benchmarks.
+Zhu et al.~\cite{zhu2025softreasoning} combine first-token embedding
+perturbation with Bayesian optimization and a trained verifier, achieving
+strong results on GSM8K and related tasks (ICML 2025 Spotlight). Our work
+differs in three ways: (1)~we use deterministic greedy decoding to isolate
+perturbation effects from sampling noise, (2)~we study the
+\emph{selector realization problem}---how much oracle headroom can be
+recovered without external labels or verifiers, and (3)~we demonstrate
+multi-domain generalization beyond arithmetic.
+
+\paragraph{Hidden-state reward models.}
+Guo et al.~\cite{guo2025swift} show that simple linear probes on LLM
+hidden states can score best-of-$N$ candidates more accurately than
+dedicated reward models, using less than 0.005\% of the generating
+model's parameters. Our selector heuristics operate on candidate-level
+output features; combining them with hidden-state probes is a promising
+direction for selector improvement.
+
 % ============================================================================
 \section{Methods} % [LOCKED]
 
@@ -263,6 +285,103 @@ Correctness is determined by \texttt{verify\_answer()}: the last integer
 in the generated response must exactly match the expected answer. All
 experiments with the current codebase store the extracted answer alongside
 the full response (up to 2000 characters) for independent verification.
+
+% ============================================================================
+\section{Theoretical Framework: Basin Model and Selector Gap}
+\label{sec:theory}
+
+We formalize the relationship between perturbation diversity and
+realized accuracy using a \emph{basin model} of deterministic
+trajectory spaces.
+
+\subsection{Perturbation as Deterministic Function}
+
+Let $M$ be a frozen language model with greedy decoding and let $p$
+denote a prompt. A latent perturbation $z \in \mathbb{R}^d$ defines a
+soft prompt prefix that, under greedy decoding, produces a deterministic
+output:
+\[
+y = M(p, z).
+\]
+Since decoding is deterministic, the map $z \mapsto M(p, z)$ partitions
+the latent space into \emph{basins}: regions (not necessarily connected)
+that produce identical or equivalent outputs.
+
+\subsection{Oracle Coverage and Hit Probability}
+
+For a task with prompt $p$ and verifier $V$, define the \emph{success
+set} $S_p = \{z : V(M(p, z)) = 1\}$. Drawing $k$ perturbations
+$z_1, \ldots, z_k$ independently, the \emph{oracle accuracy} is:
+\[
+\text{Acc}_{\text{oracle}}(k) = \Pr\!\left[\exists\, i : z_i \in S_p\right]
+\approx 1 - (1 - \hat{p})^{k_{\text{eff}}},
+\]
+where $\hat{p}$ is the per-candidate hit probability and $k_{\text{eff}}
+= k / (1 + (k-1)\rho)$ is a design-effect approximation that adjusts
+for pairwise correlation $\rho$ among candidates. When candidates are
+independent ($\rho = 0$), $k_{\text{eff}} = k$; when perfectly
+correlated ($\rho = 1$), $k_{\text{eff}} = 1$ regardless of $k$.
+This is an approximation; the exact oracle probability under correlated
+Bernoulli hits depends on the full correlation structure.
+
+Fitting $\log(1 - \text{Acc}_{\text{oracle}})$ versus $k$ estimates
+$\hat{p}$ and reveals whether additional perturbations provide
+diminishing returns (high $\rho$) or near-independent coverage
+(low $\rho$).
+
+\subsection{The Selector Gap}
+
+The oracle provides an upper bound on what perturbation diversity
+\emph{could} achieve, but it requires ground-truth labels. In
+deployment, a \emph{selector} $\sigma$ must choose among candidates
+using only local features (token counts, answer consistency, response
+structure). We define:
+
+\begin{itemize}
+    \item \textbf{Oracle recovery:} $R_\sigma = \frac{\text{Acc}_\sigma - \text{Acc}_{\text{majority}}}{\text{Acc}_{\text{oracle}} - \text{Acc}_{\text{majority}}}$
+    \item \textbf{Regret:} $\text{Acc}_{\text{oracle}} - \text{Acc}_\sigma$
+    \item \textbf{Selector gap:} The difference between oracle coverage and the best realized label-free accuracy.
+\end{itemize}
+
+The selector gap is the central scientific object: it quantifies how
+many of the successful trajectories reachable under this perturbation
+scheme and verifier are \emph{accessible} (oracle) versus
+\emph{realizable} (selector) without external supervision. A narrow
+gap means label-free deployment is viable; a wide gap motivates better
+selector design.
+
+\subsection{Effective Diversity}
+
+Not all $k$ candidates contribute independent information. We measure
+\emph{effective diversity} as the normalized entropy of the answer
+distribution:
+\[
+D_{\text{eff}} = \frac{H(\text{answers})}{\log_2 k},
+\]
+where $H$ is the Shannon entropy over extracted answer clusters.
+$D_{\text{eff}} = 0$ when all candidates agree (no diversity);
+$D_{\text{eff}} = 1$ when all candidates give distinct answers
+(maximum diversity). Note that high diversity is neither necessary
+nor sufficient for oracle coverage: all candidates may agree on
+the correct answer ($D_{\text{eff}} = 0$, oracle hit), or produce
+many distinct wrong answers ($D_{\text{eff}} \approx 1$, oracle miss).
+However, across tasks, effective diversity indicates the degree to
+which perturbation explores distinct trajectories.
+
+\subsection{Task Taxonomy}
+
+The basin model induces a natural task taxonomy based on the success
+set $S_p$:
+\begin{itemize}
+    \item \textbf{Unanimous:} $\hat{p} \approx 1$; greedy already solves the task, and all perturbations agree. No selector needed.
+    \item \textbf{Sensitive:} $0 < \hat{p} < 1$; some perturbations solve the task, others do not. This is the regime where selectors matter.
+    \item \textbf{Frozen:} $\hat{p} \approx 0$; no perturbation reaches the success set. The task requires capabilities beyond what perturbation can access.
+\end{itemize}
+
+The majority failure rate---tasks where the oracle succeeds but
+majority vote fails---directly measures the selector gap for the
+majority-vote selector and motivates the search for better
+label-free selectors.
 
 % ============================================================================
 \section{Results} % [LOCKED sections noted; PENDING sections noted]
@@ -1084,6 +1203,21 @@ Xiao, G., et al.
 Xu, Z., et al.
 \newblock Causal amplification in the residual stream.
 \newblock \emph{arXiv}, 2025.
+
+\bibitem{kim2026rsp}
+Kim, S., et al.
+\newblock From noise to diversity: Random embedding injection in LLM reasoning.
+\newblock \emph{arXiv:2605.11936}, 2026.
+
+\bibitem{zhu2025softreasoning}
+Zhu, Y., et al.
+\newblock Soft reasoning: scalable, model-agnostic reasoning via embedding perturbation.
+\newblock \emph{arXiv:2505.24688}, 2025.
+
+\bibitem{guo2025swift}
+Guo, Z., et al.
+\newblock Mining intrinsic rewards from LLM hidden states for efficient best-of-N sampling.
+\newblock \emph{arXiv:2505.12225}, 2025.
 
 \end{thebibliography}
 
