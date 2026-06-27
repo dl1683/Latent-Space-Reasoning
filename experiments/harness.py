@@ -221,6 +221,38 @@ def generate_nested_expression_tasks(
     return train_tasks, test_tasks
 
 
+def load_gsm8k_tasks(
+    n_test: int = 100,
+    n_train: int = 50,
+    seed: int = 42,
+    split: str = "test",
+) -> Tuple[List[Task], List[Task]]:
+    """Load GSM8K tasks for selector study comparison with Soft Reasoning."""
+    from datasets import load_dataset
+    ds = load_dataset("openai/gsm8k", "main", split=split)
+    rng = random.Random(seed)
+    indices = list(range(len(ds)))
+    rng.shuffle(indices)
+    tasks = []
+    for idx in indices[:n_train + n_test]:
+        ex = ds[idx]
+        answer_str = ex["answer"].split("####")[-1].strip().replace(",", "")
+        try:
+            answer = int(answer_str)
+        except ValueError:
+            continue
+        prompt = f"Solve this math problem step by step.\n\n{ex['question']}"
+        tasks.append(Task(
+            task_id=f"gsm8k_{idx:04d}",
+            prompt=prompt,
+            correct_answer=answer,
+            depth=1,
+        ))
+    test_tasks = tasks[:n_test]
+    train_tasks = tasks[n_test:n_test + n_train]
+    return train_tasks, test_tasks
+
+
 # =====================================================================
 # Answer verification (V11+ canonical form)
 # =====================================================================

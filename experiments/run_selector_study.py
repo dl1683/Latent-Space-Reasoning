@@ -46,6 +46,7 @@ from experiments.harness import (
     decode_latent,
     extract_answer,
     generate_nested_expression_tasks,
+    load_gsm8k_tasks,
     verify_answer,
     _make_noise,
     _apply_mutation,
@@ -603,6 +604,8 @@ def main():
     parser.add_argument("--curvature", type=float, default=0.5)
     parser.add_argument("--max-new-tokens", type=int, default=1024)
     parser.add_argument("--no-think", action="store_true")
+    parser.add_argument("--task-source", choices=["nested", "gsm8k"], default="nested",
+                        help="Task source: nested arithmetic expressions or GSM8K word problems")
     parser.add_argument("--no-temperature-baseline", action="store_true")
     parser.add_argument("--geometry", choices=["hyperbolic", "euclidean"], default="hyperbolic",
                         help="Noise geometry: hyperbolic (Poincare ball) or euclidean (L2 ball)")
@@ -628,11 +631,16 @@ def main():
     print(flush=True)
 
     # Generate tasks
-    print("Generating tasks...", flush=True)
-    _, test_tasks = generate_nested_expression_tasks(
-        n_train=50, n_test=args.n_test,
-        seed=args.seed, difficulty="sweet_spot",
-    )
+    print(f"Generating tasks (source={args.task_source})...", flush=True)
+    if args.task_source == "gsm8k":
+        _, test_tasks = load_gsm8k_tasks(
+            n_test=args.n_test, n_train=50, seed=args.seed,
+        )
+    else:
+        _, test_tasks = generate_nested_expression_tasks(
+            n_train=50, n_test=args.n_test,
+            seed=args.seed, difficulty="sweet_spot",
+        )
     print(f"Test tasks: {len(test_tasks)}", flush=True)
 
     # Load model
@@ -800,6 +808,7 @@ def main():
             "noise_scale": args.noise_scale,
             "curvature": args.curvature,
             "geometry": args.geometry,
+            "task_source": args.task_source,
             "max_new_tokens": args.max_new_tokens,
             "temperature": 0.0,
             "seed": args.seed,
