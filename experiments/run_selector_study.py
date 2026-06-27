@@ -313,6 +313,7 @@ def generate_candidates(
     noise_scale: float = 0.1,
     curvature: float = 0.5,
     seed: int = 42,
+    geometry: str = "hyperbolic",
 ) -> Dict[str, List[CandidateResult]]:
     """Generate greedy baseline + k perturbation candidates per task.
 
@@ -341,7 +342,7 @@ def generate_candidates(
                 (1, d_latent), noise_scale, d_latent, rng, device=encoder._device,
             )
             latent = _apply_mutation(
-                zero_latent, noise, curvature, ball_radius, geometry="hyperbolic",
+                zero_latent, noise, curvature, ball_radius, geometry=geometry,
             )
             response, raw = decode_latent(encoder, latent, task.prompt, decode_cfg)
             candidates.append(_make_candidate(task, p + 1, response, raw, prompt_ints, decode_cfg.max_new_tokens))
@@ -603,6 +604,8 @@ def main():
     parser.add_argument("--max-new-tokens", type=int, default=1024)
     parser.add_argument("--no-think", action="store_true")
     parser.add_argument("--no-temperature-baseline", action="store_true")
+    parser.add_argument("--geometry", choices=["hyperbolic", "euclidean"], default="hyperbolic",
+                        help="Noise geometry: hyperbolic (Poincare ball) or euclidean (L2 ball)")
     parser.add_argument("--output", type=str, default=None)
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument("--resume", type=str, default=None, help="Resume from candidates JSONL")
@@ -619,7 +622,7 @@ def main():
     print("=" * 70, flush=True)
     print(f"Model: {args.model} ({args.quantization})", flush=True)
     print(f"k={args.k} perturbations, {args.n_test} test tasks", flush=True)
-    print(f"noise_scale={args.noise_scale}, curvature={args.curvature}", flush=True)
+    print(f"noise_scale={args.noise_scale}, curvature={args.curvature}, geometry={args.geometry}", flush=True)
     print(f"max_new_tokens={args.max_new_tokens}", flush=True)
     print(f"Output: {output_dir}", flush=True)
     print(flush=True)
@@ -656,7 +659,7 @@ def main():
 
     decode_cfg = DecodeConfig(
         mode=DecodeMode.SOFT_PROMPT,
-        geometry="hyperbolic",
+        geometry=args.geometry,
         curvature=args.curvature,
         W_soft=W,
         embed_dim=cal["embed_dim"],
@@ -679,6 +682,7 @@ def main():
             encoder, test_tasks, decode_cfg,
             k=args.k, noise_scale=args.noise_scale,
             curvature=args.curvature, seed=args.seed,
+            geometry=args.geometry,
         )
 
     gen_time = time.time() - t0
@@ -795,6 +799,7 @@ def main():
             "n_test": args.n_test,
             "noise_scale": args.noise_scale,
             "curvature": args.curvature,
+            "geometry": args.geometry,
             "max_new_tokens": args.max_new_tokens,
             "temperature": 0.0,
             "seed": args.seed,
