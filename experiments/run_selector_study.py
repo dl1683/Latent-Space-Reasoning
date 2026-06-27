@@ -739,13 +739,14 @@ def main():
     print("RESULTS", flush=True)
     print("=" * 70, flush=True)
 
-    greedy_acc = selector_results.get("10", {}).get("greedy", {}).get("accuracy", 0)
-    oracle_acc = selector_results.get("10", {}).get("oracle", {}).get("accuracy", 0)
-    majority_acc = selector_results.get("10", {}).get("majority", {}).get("accuracy", 0)
+    headline_k = str(max(k_values))
+    greedy_acc = selector_results.get(headline_k, {}).get("greedy", {}).get("accuracy", 0)
+    oracle_acc = selector_results.get(headline_k, {}).get("oracle", {}).get("accuracy", 0)
+    majority_acc = selector_results.get(headline_k, {}).get("majority", {}).get("accuracy", 0)
 
-    print(f"\nGreedy baseline: {greedy_acc:.1%}", flush=True)
-    print(f"Oracle (k=10):   {oracle_acc:.1%}", flush=True)
-    print(f"Majority (k=10): {majority_acc:.1%}", flush=True)
+    print(f"\nGreedy baseline:    {greedy_acc:.1%}", flush=True)
+    print(f"Oracle (k={headline_k}):    {oracle_acc:.1%}", flush=True)
+    print(f"Majority (k={headline_k}):  {majority_acc:.1%}", flush=True)
     print(f"Oracle headroom over majority: {oracle_acc - majority_acc:.1%}", flush=True)
     print(f"Oracle-not-majority tasks: {diagnostics['oracle_not_majority_count']}", flush=True)
 

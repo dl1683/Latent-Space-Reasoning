@@ -32,7 +32,7 @@ JUDGE_CONFIGS = {
         "temperature": 0,
         "max_tokens": 4096,
     },
-    "gemini-2.5-pro": {
+    "gemini-3.1-flash-lite": {
         "backend": "gemini",
         "temperature": 0,
         "max_tokens": 65536,
@@ -43,7 +43,7 @@ MODEL_FAMILIES = {
     "claude-sonnet-4-6-20250514": "anthropic",
     "claude-opus-4-8-20250619": "anthropic",
     "gpt-5.5": "openai",
-    "gemini-2.5-pro": "google",
+    "gemini-3.1-flash-lite": "google",
 }
 
 
