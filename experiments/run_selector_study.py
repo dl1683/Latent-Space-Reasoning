@@ -306,6 +306,29 @@ SELECTORS = {
 # Generation — produce all candidates for all tasks
 # =====================================================================
 
+def _append_task_candidates(path: Path, task_id: str, candidates: List[CandidateResult]) -> None:
+    """Append one task's candidates to incremental JSONL (crash-safe)."""
+    with open(path, "a", encoding="utf-8") as f:
+        for c in candidates:
+            record = {
+                "task_id": c.task_id,
+                "perturbation_idx": c.perturbation_idx,
+                "extracted_answer": c.extracted_answer,
+                "correct": c.correct,
+                "token_count": c.token_count,
+                "has_eos": c.has_eos,
+                "truncated": c.truncated,
+                "has_think_tags": c.has_think_tags,
+                "response_length": len(c.stripped_response),
+                "raw_length": len(c.raw_output),
+                "all_integers": c.all_integers,
+                "prompt_integers": c.prompt_integers,
+                "stripped_response": c.stripped_response,
+                "raw_output": c.raw_output,
+            }
+            f.write(json.dumps(record, default=str) + "\n")
+
+
 def generate_candidates(
     encoder: LLMEncoder,
     tasks: List[Task],
@@ -315,18 +338,33 @@ def generate_candidates(
     curvature: float = 0.5,
     seed: int = 42,
     geometry: str = "hyperbolic",
+    incremental_path: Optional[Path] = None,
+    resume_existing: Optional[Dict[str, List[CandidateResult]]] = None,
 ) -> Dict[str, List[CandidateResult]]:
     """Generate greedy baseline + k perturbation candidates per task.
 
     Returns dict mapping task_id -> list of CandidateResult (index 0 = greedy).
+    If incremental_path is set, writes candidates task-by-task for crash safety.
+    If resume_existing is set, skips tasks already present in it.
     """
     d_latent = encoder.latent_dim
     ball_radius = (1.0 / math.sqrt(curvature)) * 0.95
     rng = torch.Generator()
 
     results: Dict[str, List[CandidateResult]] = {}
+    if resume_existing:
+        results.update(resume_existing)
 
     for t_idx, task in enumerate(tasks):
+        if task.task_id in results:
+            n_correct = sum(1 for c in results[task.task_id] if c.correct)
+            print(
+                f"[{t_idx + 1}/{len(tasks)}] {task.task_id}: "
+                f"{n_correct}/{len(results[task.task_id])} correct (RESUMED)",
+                flush=True,
+            )
+            continue
+
         prompt_ints = _parse_integers(task.prompt)
         candidates = []
 
@@ -349,6 +387,10 @@ def generate_candidates(
             candidates.append(_make_candidate(task, p + 1, response, raw, prompt_ints, decode_cfg.max_new_tokens))
 
         results[task.task_id] = candidates
+
+        if incremental_path:
+            _append_task_candidates(incremental_path, task.task_id, candidates)
+
         n_correct = sum(1 for c in candidates if c.correct)
         print(
             f"[{t_idx + 1}/{len(tasks)}] {task.task_id}: "
@@ -356,6 +398,10 @@ def generate_candidates(
             f"greedy={'OK' if candidates[0].correct else 'FAIL'}",
             flush=True,
         )
+
+        gc.collect()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
 
     return results
 
@@ -678,28 +724,51 @@ def main():
         enable_thinking=not args.no_think,
     )
 
-    # Phase 1: Generate all candidates
+    # Phase 1: Generate all candidates (with incremental crash-safe saving)
     print("\n--- Phase 1: Generating perturbation candidates ---", flush=True)
     t0 = time.time()
 
+    candidates_path = output_dir / f"candidates_{model_tag}_{timestamp}.jsonl"
+    resume_existing = None
+
     if args.resume:
         print(f"Resuming from {args.resume}...", flush=True)
-        all_candidates = _load_candidates(args.resume, test_tasks)
+        resume_existing = _load_candidates(args.resume, test_tasks)
+        print(f"  Loaded {len(resume_existing)} completed tasks", flush=True)
     else:
-        all_candidates = generate_candidates(
-            encoder, test_tasks, decode_cfg,
-            k=args.k, noise_scale=args.noise_scale,
-            curvature=args.curvature, seed=args.seed,
-            geometry=args.geometry,
-        )
+        # Check for previous incremental file to auto-resume
+        existing_jsonl = sorted(output_dir.glob("candidates_*.jsonl"))
+        if existing_jsonl:
+            latest = existing_jsonl[-1]
+            try:
+                resume_existing = _load_candidates(str(latest), test_tasks)
+                if resume_existing:
+                    print(f"Auto-resuming from {latest.name} ({len(resume_existing)} tasks)", flush=True)
+                    candidates_path = latest
+            except Exception as e:
+                print(f"Could not resume from {latest}: {e}", flush=True)
+                resume_existing = None
+
+    all_candidates = generate_candidates(
+        encoder, test_tasks, decode_cfg,
+        k=args.k, noise_scale=args.noise_scale,
+        curvature=args.curvature, seed=args.seed,
+        geometry=args.geometry,
+        incremental_path=candidates_path,
+        resume_existing=resume_existing,
+    )
 
     gen_time = time.time() - t0
     print(f"\nGeneration complete in {gen_time:.1f}s", flush=True)
 
-    # Save candidate-level JSONL
-    candidates_path = output_dir / f"candidates_{model_tag}_{timestamp}.jsonl"
-    _save_candidates(all_candidates, candidates_path)
-    print(f"Saved candidates to {candidates_path}", flush=True)
+    # If we used incremental saving, the file already has all data.
+    # Write a clean final copy if we resumed (incremental may have duplicates).
+    if resume_existing:
+        final_path = output_dir / f"candidates_{model_tag}_{timestamp}_final.jsonl"
+        _save_candidates(all_candidates, final_path)
+        print(f"Saved final candidates to {final_path}", flush=True)
+    else:
+        print(f"Candidates saved incrementally to {candidates_path}", flush=True)
 
     # Phase 2: Temperature baseline (if enabled)
     temp_candidates = None
