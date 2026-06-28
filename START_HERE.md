@@ -39,6 +39,10 @@ Current short version:
   complement packets are not keyword-stuffing (gaming ratio 4.7x means
   keyword bags score much higher than real packets).
 
+- Separatrix probe: interpolation between wrong and correct perturbation
+  vectors reveals non-monotonic correctness landscapes with interior islands
+  in 74% of tasks. Exploratory — needs controls before strong claims.
+
 ## What to avoid until later
 
 - `archive/tesla_session/` notes

@@ -48,6 +48,7 @@ This repo explores that family:
 | Aggregation v10 | Fresh transfer promotion — ALL 13 GATES PASSED | Complement-first packets on fresh `plan_393`-`plan_440` slice: 40/48 coverage, 38 promotions, 40/8/0 W/T/L, mean lift +0.077, zero contradictions. |
 | Aggregation v11 | 2x replication — ALL 13 GATES PASSED | LLaDA-only 96-task replication on `plan_441`-`plan_536`: 87/96 coverage (90.6%), 87 promotions, 87/9/0 W/T/L, mean lift +0.100, Wilson lower 0.831, zero contradictions. Keyword audit RED — rubric gameable but packets are not keyword-stuffing. |
 | Blinded pairwise evaluation | STATISTICAL_GO — preregistered confirmatory study | N=50, 4 arms, 3 blinded same-model judge calls. Task-specific clause-append preferred over generic boilerplate at 33/50 (66%, p=0.016, Wilson CI [52.2%, 77.6%]). Task-specificity confirmed: true > deranged 47/50. Wrong-task clauses hurt: deranged < anchor 64%. Single-model judge caveat; error gate fails narrowly (6/50 vs ≤5 threshold). |
+| Separatrix probe (latent interpolation) | Exploratory — interesting structural signal | Interpolating between wrong and correct perturbation vectors reveals non-monotonic correctness landscape: 74% of tasks show interior correctness islands, 47% of transitions involve deep divergence (>50 shared tokens before branching). Two mechanisms coexist (trajectory-level and format-level). Needs controls before strong claims. |
 
 ## Promoted Result
 
@@ -125,6 +126,29 @@ Blinded pairwise evaluation artifacts:
 - Placebo diagnostic: [docs/reports/diffusion/PLACEBO_DIAGNOSTIC.md](docs/reports/diffusion/PLACEBO_DIAGNOSTIC.md)
 - Pilot v2: [docs/reports/diffusion/LATENT_AGGREGATION_BLINDED_PAIRWISE_PILOT_V2.md](docs/reports/diffusion/LATENT_AGGREGATION_BLINDED_PAIRWISE_PILOT_V2.md)
 
+## Exploratory Frontier: Latent Space Geometry
+
+The separatrix probe experiments explore what the behavioral landscape looks like
+*between* perturbation endpoints. Rather than treating each perturbation as an
+independent sample, they ask: what happens when you smoothly interpolate through
+latent space?
+
+Key structural finding: the landscape is fragmented, not smooth. Correctness
+flickers on and off along interpolation paths, and many correctness transitions
+involve long shared reasoning prefixes before the model diverges at what appears
+to be a decision point. This suggests the model's reasoning has richer internal
+structure than endpoint sampling reveals.
+
+This is early exploratory work. The structural signal is interesting but does not
+yet prove computational basins or answer-free detectability. Controls (null
+interpolations, full trace audits, alternative projections) are needed before
+making strong claims. See `experiments/EXPERIMENTS.md` for the full analysis.
+
+Artifacts:
+
+- Results: `eval_results/separatrix_probe_v2/probe_results_v2.json`
+- Driver: `experiments/run_separatrix_probe.py`
+
 ## What Not To Overclaim
 
 - Old token perturbation runs are historically important, but many were small
@@ -136,6 +160,8 @@ Blinded pairwise evaluation artifacts:
   fresh promotion claim.
 - Current aggregation evidence is planning-local until broader transfer slices
   are run.
+- Separatrix probe results show interesting structure but do not yet establish
+  computational basins or answer-free correctness detection. Controls are needed.
 
 ## How To Read This Repo
 

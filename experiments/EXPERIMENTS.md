@@ -9,6 +9,105 @@ Only Codex-validated conclusions are stated as "confirmed."
 
 ---
 
+## Separatrix Probe v2 — Latent Interpolation Basin Mapping (2026-06-28)
+
+**Purpose:** Map the behavioral landscape between wrong and correct perturbation vectors by
+interpolating through latent space. Tests whether correctness transitions are smooth or
+fragmented, and whether interior correctness islands exist between known-wrong and known-correct
+endpoints.
+**Config:** Qwen3-4B Q4, 35 nested arithmetic tasks, 9-point coarse scan (t=0.0 to 1.0),
+linear interpolation z(t) = (1-t)*z_wrong + t*z_correct, think mode enabled, 1024 max_new_tokens.
+**Scripts:** `experiments/run_separatrix_probe.py`
+**Artifacts:**
+- `eval_results/separatrix_probe_v2/probe_results_v2.json` (full results, 35 tasks × 9 points)
+- `eval_results/separatrix_probe_v2/probe_log.txt` (execution log)
+
+### Results
+
+| Metric | Value |
+|--------|-------|
+| Tasks with interior correctness islands | 26/35 (74%) |
+| Endpoint-only tasks | 9/35 (26%) |
+| Endpoint mismatches | 0/35 |
+| Multi-basin topology | 14/35 (40%) |
+| Single-transition topology | 11/35 (31%) |
+| Oscillating topology | 10/35 (29%) |
+| Mean transitions per task | 2.7 |
+| Deep divergence brackets (>50 shared tokens) | 49/105 (47%) |
+| Token-0 divergence brackets | 37/105 (35%) |
+| Mean diverge-from-t0 | 84.5 tokens |
+| EOS rate | 315/315 (100%) |
+| Correct decode mean tokens | 887.6 |
+| Wrong decode mean tokens | 903.7 |
+
+### Topology Classes
+
+All 35 task coarse patterns (0=wrong, 1=correct at each t):
+```
+endpoint-only: nest_004(000000001), nest_039(000000001), nest_022(000000001),
+               nest_027(000000001), nest_036(000000001), nest_003(000000001),
+               nest_000(000000001), nest_011(000000001), nest_020(000000001)
+
+single-transition: nest_002(000000111), nest_012(000011011), nest_007(000011001),
+                   nest_030(001100011), nest_009(000001101), nest_026(011110001)
+                   and others
+
+multi-basin: nest_021(010010001), nest_023(000101001), nest_013(000110101),
+             nest_017(001110101), nest_016(011100101), nest_029(010110101)
+             and others
+
+near-universal: nest_010(011111111), nest_025(011110111), nest_033(010111111)
+```
+
+### Key Observations
+
+1. **Interior correctness islands are common.** 74% of tasks show correct answers at intermediate
+   blend points between wrong and correct endpoints. Against an answer-collision null (expected ~1/35
+   tasks with accidental correctness), 26/35 is far above chance.
+
+2. **The landscape is non-monotonic.** Correctness does not increase smoothly toward t=1.0. Interior
+   correctness rate is flat at ~30% across all intermediate positions — the blend ratio does not act
+   as a smooth semantic interpolation.
+
+3. **Two divergence mechanisms coexist.** 47% of correctness transitions show deep divergence (>50
+   shared generated tokens before branching), while 35% show token-0 divergence (completely different
+   output from the start). This suggests a mixture of trajectory-level branching (potentially
+   meaningful computational forks) and format-level sensitivity.
+
+4. **Fixed branching points appear.** nest_021 shows divergence at exactly token 68 across four
+   consecutive coarse points (t=0.25–0.625), suggesting a stable decision point in the model's
+   computation. Whether this corresponds to a meaningful arithmetic step or a template boundary
+   requires full trace analysis.
+
+5. **Some tasks show near-universal correctness.** nest_010 (011111111) is correct at 8/9 points —
+   the wrong perturbation is a narrow failure mode, not a broad basin. This reframes the selector
+   question: failures may be locally detectable by neighborhood sampling.
+
+### Interpretation
+
+These results show that the behavioral landscape between perturbation endpoints has rich interior
+structure. However, the current data does not distinguish between two competing explanations:
+
+- **Computational basins:** The model traverses genuine decision points in its reasoning, and
+  different perturbation blends cause it to take different branches at these points.
+- **Input sensitivity:** Autoregressive models are chaotically sensitive to soft prompt
+  perturbations, and the "structure" is an artifact of this sensitivity.
+
+The deep divergence cases (47% of transitions, mean 84.5 shared tokens before branching) are harder
+to explain as pure input sensitivity. But the format-level divergence cases (35%) are consistent with
+it. Discriminating between these requires controls (wrong-wrong, correct-correct, random-pair
+interpolations) and full decoded output analysis.
+
+**Status:** Complete. Interesting structural signal that warrants follow-up controls.
+
+**Open questions for future work:**
+- What does a wrong-to-wrong or correct-to-correct interpolation look like? (null controls)
+- Do the deep branching points correspond to meaningful arithmetic steps? (full trace audit)
+- Can neighborhood sampling detect correctness without knowing the answer? (selector features)
+- Does the topology change under different projection matrices W? (geometry controls)
+
+---
+
 ## Legal Reasoning v2 — 3-Way Comparison (2026-04-11, IN PROGRESS)
 
 **Purpose:** Evaluate latent-space interventions on complex legal reasoning tasks to demonstrate

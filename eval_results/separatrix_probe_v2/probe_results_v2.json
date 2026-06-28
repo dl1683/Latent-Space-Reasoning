@@ -1,0 +1,3340 @@
+{
+  "metadata": {
+    "model": "Qwen/Qwen3-4B",
+    "quantization": "4bit",
+    "max_new_tokens": 1024,
+    "n_coarse": 9,
+    "n_bisect": 8,
+    "geometry": "linear",
+    "noise_scale": 0.1,
+    "enable_thinking": true,
+    "skip_bisect": true
+  },
+  "results": [
+    {
+      "task_id": "nest_004",
+      "correct_answer": 5051,
+      "n_transitions": 1,
+      "coarse_pattern": "000000001",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 5141,
+          "n_tokens": 968,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": " (97 * 53) - (15 * 6). Let me break it down into two parts: 97*53 and 15*6. Then subtract the second result from the first one.\n\nStarting with 15*6. That seems straightforward. 15 times 6... well, 10*"
+        },
+        {
+          "t": 0.125,
+          "correct": false,
+          "answer": 53,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": " with 97 * 53. That seems like a big multiplication. Maybe there's a way to break it down? Like using the distributive property or something. Let me think... Oh right! I can use the formula (a + b)(c "
+        },
+        {
+          "t": 0.25,
+          "correct": false,
+          "answer": 5300,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 190,
+          "text_preview": " with 97 * 53. That seems like a big multiplication. Maybe there's a way to break it down? Like using the distributive property or something. Let me think... Oh right! I can use the formula (a + b)(c "
+        },
+        {
+          "t": 0.375,
+          "correct": false,
+          "answer": 97,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 563,
+          "text_preview": " with 97 * 53. That seems like a big multiplication. Maybe there's a way to break it down? Like using the distributive property or something. Let me think... Oh right! I can use the formula (a + b)(c "
+        },
+        {
+          "t": 0.5,
+          "correct": false,
+          "answer": 90,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 349,
+          "text_preview": " with 97 * 53. That seems like a big multiplication. Maybe there's a way to break it down? Like using the distributive property or something. Let me think... Oh right! I can use the formula (a + b)(c "
+        },
+        {
+          "t": 0.625,
+          "correct": false,
+          "answer": 1,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 20,
+          "text_preview": " with 97 * 53. That seems like a big multiplication. Maybe there's a shortcut or a way to break it down. Let me think... Oh right! The distributive property might help here. Like, breaking 97 into 100"
+        },
+        {
+          "t": 0.75,
+          "correct": false,
+          "answer": 0,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": " it down.\n\nFirst, calculating 97 * 53. That seems like a big multiplication. Maybe there's a shortcut or a way to simplify this? Like using the distributive property? For example, 97 is close to 100, "
+        },
+        {
+          "t": 0.875,
+          "correct": false,
+          "answer": 9,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 32,
+          "text_preview": " it down.\n\nFirst, calculating 97 * 53. That seems like a big multiplication. Maybe there's a shortcut or a way to simplify this. Wait, 97 is close to 100, so perhaps using some kind of algebraic ident"
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 5051,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": " with 97 * 53. That seems like a big multiplication. Maybe there's a way to break it down? Like using the distributive property or something. Let me think... Oh right! I can split 97 into 100 - 3, so "
+        }
+      ],
+      "coarse_bracket_divergences": [
+        0
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_021",
+      "correct_answer": 5639,
+      "n_transitions": 5,
+      "coarse_pattern": "010010001",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 4183,
+          "n_tokens": 967,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": " 89.\n\nWait, how do I multiply these numbers? Maybe breaking it down would help. Like using the distributive property. For example, 47 * 89 can be thought of as (40 + 7) * (90 - 1). But that might get "
+        },
+        {
+          "t": 0.125,
+          "correct": true,
+          "answer": 5639,
+          "n_tokens": 967,
+          "diverge_from_t0": 57,
+          "diverge_from_prev": 57,
+          "text_preview": " 89.\n\nWait, how do I multiply these numbers? Maybe breaking it down would help. Like using the distributive property. For example, 47 * 89 can be thought of as (40 + 7) * (90 - 1). Or perhaps another "
+        },
+        {
+          "t": 0.25,
+          "correct": false,
+          "answer": 14,
+          "n_tokens": 967,
+          "diverge_from_t0": 68,
+          "diverge_from_prev": 57,
+          "text_preview": " 89.\n\nWait, how do I multiply these numbers? Maybe breaking it down would help. Like using the distributive property. For example, 47 * 89 can be thought of as (40 + 7) * (90 - 1). But that might get "
+        },
+        {
+          "t": 0.375,
+          "correct": false,
+          "answer": 4,
+          "n_tokens": 967,
+          "diverge_from_t0": 68,
+          "diverge_from_prev": 288,
+          "text_preview": " 89.\n\nWait, how do I multiply these numbers? Maybe breaking it down would help. Like using the distributive property. For example, 47 * 89 can be thought of as (40 + 7) * (90 - 1). But that might get "
+        },
+        {
+          "t": 0.5,
+          "correct": true,
+          "answer": 5639,
+          "n_tokens": 967,
+          "diverge_from_t0": 68,
+          "diverge_from_prev": 288,
+          "text_preview": " 89.\n\nWait, how do I multiply these numbers? Maybe breaking it down would help. Like using the distributive property. For example, 47 * 89 can be thought of as (40 + 7) * (90 - 1). But that might get "
+        },
+        {
+          "t": 0.625,
+          "correct": false,
+          "answer": 5,
+          "n_tokens": 967,
+          "diverge_from_t0": 68,
+          "diverge_from_prev": 288,
+          "text_preview": " 89.\n\nWait, how do I multiply these numbers? Maybe breaking it down would help. Like using the distributive property. For example, 47 * 89 can be thought of as (40 + 7) * (90 - 1). But that might get "
+        },
+        {
+          "t": 0.75,
+          "correct": false,
+          "answer": 1,
+          "n_tokens": 967,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": " is probably to calculate each multiplication separately and then add them together.\n\nStarting with 47 times 89. Let me think about how to do that. Maybe break it down? Like using distributive propert"
+        },
+        {
+          "t": 0.875,
+          "correct": false,
+          "answer": 10,
+          "n_tokens": 967,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 39,
+          "text_preview": " is probably to calculate each multiplication separately and then add them together.\n\nStarting with 47 times 89. Let me think about how to do that. Maybe break it down? Like using the distributive pro"
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 5639,
+          "n_tokens": 967,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 44,
+          "text_preview": " is probably to calculate each multiplication separately and then add them together.\n\nStarting with 47 times 89. Let me think about how to do that. Maybe break it down? Like using the distributive pro"
+        }
+      ],
+      "coarse_bracket_divergences": [
+        57,
+        57,
+        288,
+        288,
+        44
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_028",
+      "correct_answer": 2372,
+      "n_transitions": 3,
+      "coarse_pattern": "001000001",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 2,
+          "n_tokens": 967,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": " to PEMDAS, parentheses and exponents come first, but there are none here. Then multiplication and division, so I'll do those.\n\nSo, breaking it down: 60 * 27 and 16 * 47. Let me calculate each part st"
+        },
+        {
+          "t": 0.125,
+          "correct": false,
+          "answer": 1,
+          "n_tokens": 967,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": " calculate each multiplication separately and then add them together.\n\nStarting with 60 times 27. Let me think about how to do that. Maybe breaking it down? Like 60*20 and 60*7? Yeah, that might work."
+        },
+        {
+          "t": 0.25,
+          "correct": true,
+          "answer": 2372,
+          "n_tokens": 967,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 576,
+          "text_preview": " calculate each multiplication separately and then add them together.\n\nStarting with 60 times 27. Let me think about how to do that. Maybe breaking it down? Like 60*20 and 60*7? Yeah, that might work."
+        },
+        {
+          "t": 0.375,
+          "correct": false,
+          "answer": 7,
+          "n_tokens": 967,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": "Starting with the first part: 60 * 27. I remember that multiplying numbers can sometimes be simplified using distributive property or breaking them into smaller parts. For example, 60 times 27... Well"
+        },
+        {
+          "t": 0.5,
+          "correct": false,
+          "answer": 752,
+          "n_tokens": 967,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 248,
+          "text_preview": "Starting with the first part: 60 * 27. I remember that multiplying numbers can sometimes be simplified using distributive property or breaking them into smaller parts. For example, 60 times 27... Well"
+        },
+        {
+          "t": 0.625,
+          "correct": false,
+          "answer": 1620,
+          "n_tokens": 967,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": " multiplication separately and then add the results together.\n\nStarting with 60 times 27. Let me think about how to do that. Maybe breaking it down? Like 60*20 and 60*7? Because 27 is 20+7. So 60*20 w"
+        },
+        {
+          "t": 0.75,
+          "correct": false,
+          "answer": 50,
+          "n_tokens": 967,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": " calculate each multiplication separately and then add them together.\n\nStarting with 60 times 27. Let me think about how to do that. Maybe breaking it down? Like 60*20 and 60*7? Because 27 is 20+7. So"
+        },
+        {
+          "t": 0.875,
+          "correct": false,
+          "answer": 6,
+          "n_tokens": 967,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": "Starting with the first part: 60 * 27. I remember that multiplying numbers can sometimes be simplified using distributive property or breaking them into smaller components. For example, 60 is a multip"
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 2372,
+          "n_tokens": 908,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 14,
+          "text_preview": "Starting with the first part: 60 * 27. Hmm, how do I calculate that? Well, 60 times 27... Maybe I can think of 27 as 30 minus 3. So 60*30 is 1800, and then subtract 60*3 which is 180. So 1800 - 180 = "
+        }
+      ],
+      "coarse_bracket_divergences": [
+        576,
+        0,
+        14
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_039",
+      "correct_answer": 15,
+      "n_transitions": 1,
+      "coarse_pattern": "000000001",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 16,
+          "n_tokens": 965,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": ", perhaps I should calculate the multiplication part and then add 97, right? So 65 multiplied by 46... Wait, that might get big. Maybe instead of multiplying them directly, I can take modulo 16 at eac"
+        },
+        {
+          "t": 0.125,
+          "correct": false,
+          "answer": 1,
+          "n_tokens": 965,
+          "diverge_from_t0": 139,
+          "diverge_from_prev": 139,
+          "text_preview": ", perhaps I should calculate the multiplication part and then add 97, right? So 65 multiplied by 46... Wait, that might get big. Maybe instead of multiplying them directly, I can take modulo 16 at eac"
+        },
+        {
+          "t": 0.25,
+          "correct": false,
+          "answer": 16,
+          "n_tokens": 965,
+          "diverge_from_t0": 37,
+          "diverge_from_prev": 37,
+          "text_preview": ", perhaps I should calculate the multiplication part and then add 97, right? So 65 multiplied by 46... Wait, that might get big. Maybe instead of doing it all at once, I can take advantage of modulo p"
+        },
+        {
+          "t": 0.375,
+          "correct": false,
+          "answer": 16,
+          "n_tokens": 965,
+          "diverge_from_t0": 37,
+          "diverge_from_prev": 263,
+          "text_preview": ", perhaps I should calculate the multiplication part and then add 97, right? So 65 multiplied by 46... Wait, that might get big. Maybe instead of doing it all at once, I can take advantage of modulo p"
+        },
+        {
+          "t": 0.5,
+          "correct": false,
+          "answer": 16,
+          "n_tokens": 965,
+          "diverge_from_t0": 4,
+          "diverge_from_prev": 4,
+          "text_preview": ", perhaps I should break down the problem into smaller steps. The expression is (65 multiplied by 46 plus 97), and then take that result modulo 16. But doing all that multiplication might lead to very"
+        },
+        {
+          "t": 0.625,
+          "correct": false,
+          "answer": 65,
+          "n_tokens": 965,
+          "diverge_from_t0": 17,
+          "diverge_from_prev": 4,
+          "text_preview": ", perhaps I should calculate the multiplication part and then add 97, right? But if I do that directly, the numbers might get really big. Maybe it's better to take modulo 16 at each step to keep thing"
+        },
+        {
+          "t": 0.75,
+          "correct": false,
+          "answer": 14,
+          "n_tokens": 965,
+          "diverge_from_t0": 14,
+          "diverge_from_prev": 14,
+          "text_preview": ", perhaps I should calculate the multiplication part and then add 97? But that might result in very large numbers. Alternatively, since we're taking modulo 16 at the end, maybe I can apply the modulus"
+        },
+        {
+          "t": 0.875,
+          "correct": false,
+          "answer": 2,
+          "n_tokens": 965,
+          "diverge_from_t0": 17,
+          "diverge_from_prev": 14,
+          "text_preview": ", perhaps I should calculate the multiplication part and then add 97, right? But if I do that directly, the numbers might get really big. Maybe it's better to use properties of modulo operations to br"
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 15,
+          "n_tokens": 965,
+          "diverge_from_t0": 17,
+          "diverge_from_prev": 161,
+          "text_preview": ", perhaps I should calculate the multiplication part and then add 97, right? But if I do that directly, the numbers might get really big. Maybe it's better to use properties of modulo operations to br"
+        }
+      ],
+      "coarse_bracket_divergences": [
+        161
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_005",
+      "correct_answer": 8360,
+      "n_transitions": 3,
+      "coarse_pattern": "000010001",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 9,
+          "n_tokens": 967,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": " sometimes factoring can help with these kinds of problems. Let me look at each term separately. The first part is 99*66 and the second is 83*22. Wait, 99 and 83 are both numbers close to 100 or somet"
+        },
+        {
+          "t": 0.125,
+          "correct": false,
+          "answer": 13,
+          "n_tokens": 967,
+          "diverge_from_t0": 3,
+          "diverge_from_prev": 3,
+          "text_preview": " sometimes factoring or using distributive properties can make calculations easier. Let me look at the numbers: 99 and 66 are both multiples of 33, right? Wait, 99 is 3*33 and 66 is 2*33. Similarly, 8"
+        },
+        {
+          "t": 0.25,
+          "correct": false,
+          "answer": 3,
+          "n_tokens": 967,
+          "diverge_from_t0": 15,
+          "diverge_from_prev": 3,
+          "text_preview": " sometimes factoring can help with these kinds of problems. Let me look at both terms: 99*66 and 83*22. Wait, 99 is close to 100, and 66 is two-thirds of 100. Maybe I can rewrite them in terms of numb"
+        },
+        {
+          "t": 0.375,
+          "correct": false,
+          "answer": 2,
+          "n_tokens": 967,
+          "diverge_from_t0": 15,
+          "diverge_from_prev": 144,
+          "text_preview": " sometimes factoring can help with these kinds of problems. Let me look at both terms: 99*66 and 83*22. Wait, 99 is close to 100, and 66 is two-thirds of 100. Maybe I can rewrite them in terms of numb"
+        },
+        {
+          "t": 0.5,
+          "correct": true,
+          "answer": 8360,
+          "n_tokens": 967,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": " down step by step.\n\nFirst, maybe I should calculate each multiplication separately and then add them together. That seems straightforward. But wait, are there any shortcuts or ways to simplify this? "
+        },
+        {
+          "t": 0.625,
+          "correct": false,
+          "answer": 99,
+          "n_tokens": 967,
+          "diverge_from_t0": 15,
+          "diverge_from_prev": 0,
+          "text_preview": " sometimes factoring can help with these kinds of problems. Let me look at both terms: 99*66 and 83*22. Wait, 99 is close to 100, and 66 is two-thirds of 100. Maybe I can rewrite them in terms of numb"
+        },
+        {
+          "t": 0.75,
+          "correct": false,
+          "answer": 8,
+          "n_tokens": 967,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": " this.\n\nFirst, maybe I should calculate each multiplication separately and then add them together. That seems straightforward. But wait, are there any shortcuts or ways to simplify this? Maybe using d"
+        },
+        {
+          "t": 0.875,
+          "correct": false,
+          "answer": 66,
+          "n_tokens": 967,
+          "diverge_from_t0": 1,
+          "diverge_from_prev": 0,
+          "text_preview": " sometimes you can factor out common terms or use distributive properties. Let me check if there are any common factors in these numbers. The first term is 99*66 and the second is 83*22. Wait, 66 is 3"
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 8360,
+          "n_tokens": 967,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": " this.\n\nFirst, maybe I should calculate each multiplication separately and then add them together. That seems straightforward. But wait, are there any shortcuts or ways to simplify this? Maybe using d"
+        }
+      ],
+      "coarse_bracket_divergences": [
+        0,
+        0,
+        0
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_022",
+      "correct_answer": 7179,
+      "n_transitions": 1,
+      "coarse_pattern": "000000001",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 1,
+          "n_tokens": 967,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": " down step by step.\n\nFirst, maybe I should calculate each multiplication separately and then add them together. That seems straightforward. Starting with 75 times 65. Wait, how do I multiply those? Ma"
+        },
+        {
+          "t": 0.125,
+          "correct": false,
+          "answer": 350,
+          "n_tokens": 967,
+          "diverge_from_t0": 98,
+          "diverge_from_prev": 98,
+          "text_preview": " down step by step.\n\nFirst, maybe I should calculate each multiplication separately and then add them together. That seems straightforward. Starting with 75 times 65. Wait, how do I multiply those? Ma"
+        },
+        {
+          "t": 0.25,
+          "correct": false,
+          "answer": 5,
+          "n_tokens": 967,
+          "diverge_from_t0": 98,
+          "diverge_from_prev": 841,
+          "text_preview": " down step by step.\n\nFirst, maybe I should calculate each multiplication separately and then add them together. That seems straightforward. Starting with 75 times 65. Wait, how do I multiply those? Ma"
+        },
+        {
+          "t": 0.375,
+          "correct": false,
+          "answer": 65,
+          "n_tokens": 967,
+          "diverge_from_t0": 337,
+          "diverge_from_prev": 98,
+          "text_preview": " down step by step.\n\nFirst, maybe I should calculate each multiplication separately and then add them together. That seems straightforward. Starting with 75 times 65. Wait, how do I multiply those? Ma"
+        },
+        {
+          "t": 0.5,
+          "correct": false,
+          "answer": 1,
+          "n_tokens": 967,
+          "diverge_from_t0": 245,
+          "diverge_from_prev": 245,
+          "text_preview": " down step by step.\n\nFirst, maybe I should calculate each multiplication separately and then add them together. That seems straightforward. Starting with 75 times 65. Wait, how do I multiply those? Ma"
+        },
+        {
+          "t": 0.625,
+          "correct": false,
+          "answer": 5,
+          "n_tokens": 967,
+          "diverge_from_t0": 98,
+          "diverge_from_prev": 98,
+          "text_preview": " down step by step.\n\nFirst, maybe I should calculate each multiplication separately and then add them together. That seems straightforward. Starting with 75 times 65. Wait, how do I multiply those? Ma"
+        },
+        {
+          "t": 0.75,
+          "correct": false,
+          "answer": 5,
+          "n_tokens": 967,
+          "diverge_from_t0": 98,
+          "diverge_from_prev": 328,
+          "text_preview": " down step by step.\n\nFirst, maybe I should calculate each multiplication separately and then add them together. That seems straightforward. Starting with 75 times 65. Wait, how do I multiply those? Ma"
+        },
+        {
+          "t": 0.875,
+          "correct": false,
+          "answer": 2,
+          "n_tokens": 967,
+          "diverge_from_t0": 195,
+          "diverge_from_prev": 98,
+          "text_preview": " down step by step.\n\nFirst, maybe I should calculate each multiplication separately and then add them together. That seems straightforward. Starting with 75 times 65. Wait, how do I multiply those? Ma"
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 7179,
+          "n_tokens": 967,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": " is probably to calculate each multiplication separately and then add them together.\n\nStarting with 75 times 65. Let me think about how to do that. Maybe breaking it down? Like 70*65 + 5*65? Wait, 75 "
+        }
+      ],
+      "coarse_bracket_divergences": [
+        0
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_023",
+      "correct_answer": 12,
+      "n_transitions": 5,
+      "coarse_pattern": "000101001",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 19,
+          "n_tokens": 965,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": ". But wait, since we're dealing with modulo 19 later on, perhaps there's a way to simplify before multiplying? Because doing big numbers might be tedious. Let me think.\n\nAlternatively, I can compute e"
+        },
+        {
+          "t": 0.125,
+          "correct": false,
+          "answer": 19,
+          "n_tokens": 965,
+          "diverge_from_t0": 592,
+          "diverge_from_prev": 592,
+          "text_preview": ". But wait, since we're dealing with modulo 19 later on, perhaps there's a way to simplify before multiplying? Because doing big numbers might be tedious. Let me think.\n\nAlternatively, I can compute e"
+        },
+        {
+          "t": 0.25,
+          "correct": false,
+          "answer": 7,
+          "n_tokens": 965,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": "First, maybe I should break down each part step by step. The expression is (71 multiplied by 63 plus 23), and then take that result modulo 19. But doing 71*63 directly might lead to very large numbers"
+        },
+        {
+          "t": 0.375,
+          "correct": true,
+          "answer": 12,
+          "n_tokens": 965,
+          "diverge_from_t0": 237,
+          "diverge_from_prev": 0,
+          "text_preview": ". But wait, since we're dealing with modulo 19 later on, perhaps there's a way to simplify before multiplying? Because doing big numbers might be tedious. Let me think.\n\nAlternatively, I can compute e"
+        },
+        {
+          "t": 0.5,
+          "correct": false,
+          "answer": 200,
+          "n_tokens": 965,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": "First, perhaps I should break down each part step by step. The expression is (71 multiplied by 63 plus 23), and then take that result modulo 19. But doing all that multiplication might lead to very la"
+        },
+        {
+          "t": 0.625,
+          "correct": true,
+          "answer": 12,
+          "n_tokens": 965,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 100,
+          "text_preview": "First, perhaps I should break down each part step by step. The expression is (71 multiplied by 63 plus 23), and then take that result modulo 19. But doing all that multiplication might lead to very la"
+        },
+        {
+          "t": 0.75,
+          "correct": false,
+          "answer": 570,
+          "n_tokens": 965,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 2,
+          "text_preview": "First, maybe I should break down each part step by step. The expression is (71 multiplied by 63 plus 23), and then take that result modulo 19. But doing all that multiplication directly might lead to "
+        },
+        {
+          "t": 0.875,
+          "correct": false,
+          "answer": 1,
+          "n_tokens": 965,
+          "diverge_from_t0": 65,
+          "diverge_from_prev": 0,
+          "text_preview": ". But wait, since we're dealing with modulo 19 later on, perhaps there's a way to simplify before multiplying? Because doing big numbers might be tedious. Let me think.\n\nAlternatively, I can compute e"
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 12,
+          "n_tokens": 965,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": "First, perhaps I should break down each part step by step. The expression is (71 multiplied by 63 plus 23), and then take that result modulo 19. But doing all that directly might involve large numbers"
+        }
+      ],
+      "coarse_bracket_divergences": [
+        0,
+        0,
+        100,
+        2,
+        0
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_008",
+      "correct_answer": 7278,
+      "n_transitions": 3,
+      "coarse_pattern": "000001001",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 7268,
+          "n_tokens": 967,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": " the two separate multiplications: 91*48 and 97*30. Then I'll add those two results together. Let me recall how to multiply numbers like these. For 91 times 48, maybe I can use the standard multiplica"
+        },
+        {
+          "t": 0.125,
+          "correct": false,
+          "answer": 8,
+          "n_tokens": 967,
+          "diverge_from_t0": 179,
+          "diverge_from_prev": 179,
+          "text_preview": " the two separate multiplications: 91*48 and 97*30. Then I'll add those two results together. Let me recall how to multiply numbers like these. For 91 times 48, maybe I can use the standard multiplica"
+        },
+        {
+          "t": 0.25,
+          "correct": false,
+          "answer": 7,
+          "n_tokens": 967,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": "First, I remember that sometimes breaking down numbers can make calculations easier. For example, 91 is close to 90, which is a multiple of 10. Similarly, 48 is 50 minus 2. Maybe I can use some distri"
+        },
+        {
+          "t": 0.375,
+          "correct": false,
+          "answer": 2,
+          "n_tokens": 967,
+          "diverge_from_t0": 9,
+          "diverge_from_prev": 0,
+          "text_preview": " the two separate multiplications: 91 * 48 and 97 * 30. Then I'll add those two results together. Let me take them one at a time.\n\nStarting with 91 times 48. Hmm, how can I calculate this more easily?"
+        },
+        {
+          "t": 0.5,
+          "correct": false,
+          "answer": 0,
+          "n_tokens": 967,
+          "diverge_from_t0": 151,
+          "diverge_from_prev": 9,
+          "text_preview": " the two separate multiplications: 91*48 and 97*30. Then I'll add those two results together. Let me recall how to multiply numbers like these. For 91 times 48, maybe I can use the standard multiplica"
+        },
+        {
+          "t": 0.625,
+          "correct": true,
+          "answer": 7278,
+          "n_tokens": 967,
+          "diverge_from_t0": 340,
+          "diverge_from_prev": 151,
+          "text_preview": " the two separate multiplications: 91*48 and 97*30. Then I'll add those two results together. Let me recall how to multiply numbers like these. For 91 times 48, maybe I can use the standard multiplica"
+        },
+        {
+          "t": 0.75,
+          "correct": false,
+          "answer": 2,
+          "n_tokens": 967,
+          "diverge_from_t0": 103,
+          "diverge_from_prev": 103,
+          "text_preview": " the two separate multiplications: 91*48 and 97*30. Then I'll add those two results together. Let me recall how to multiply numbers like these. For 91 times 48, maybe I can use the standard multiplica"
+        },
+        {
+          "t": 0.875,
+          "correct": false,
+          "answer": 2,
+          "n_tokens": 967,
+          "diverge_from_t0": 103,
+          "diverge_from_prev": 143,
+          "text_preview": " the two separate multiplications: 91*48 and 97*30. Then I'll add those two results together. Let me recall how to multiply numbers like these. For 91 times 48, maybe I can use the standard multiplica"
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 7278,
+          "n_tokens": 967,
+          "diverge_from_t0": 1,
+          "diverge_from_prev": 1,
+          "text_preview": " the first part: 91 * 48. I remember that multiplying two numbers can sometimes be simplified using distributive property or breaking them into easier parts. Let me try that. For example, 91 is close "
+        }
+      ],
+      "coarse_bracket_divergences": [
+        151,
+        103,
+        1
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_013",
+      "correct_answer": 11,
+      "n_transitions": 5,
+      "coarse_pattern": "000110101",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 18,
+          "n_tokens": 965,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": " it down step by step.\n\nFirst, calculate 63 multiplied by 34. Wait, that seems like a big number. Maybe there's a smarter way than just multiplying them directly? But since we're eventually taking mod"
+        },
+        {
+          "t": 0.125,
+          "correct": false,
+          "answer": 63,
+          "n_tokens": 965,
+          "diverge_from_t0": 127,
+          "diverge_from_prev": 127,
+          "text_preview": " it down step by step.\n\nFirst, calculate 63 multiplied by 34. Wait, that seems like a big number. Maybe there's a smarter way than just multiplying them directly? But since we're eventually taking mod"
+        },
+        {
+          "t": 0.25,
+          "correct": false,
+          "answer": 2,
+          "n_tokens": 965,
+          "diverge_from_t0": 43,
+          "diverge_from_prev": 43,
+          "text_preview": " it down step by step.\n\nFirst, calculate 63 multiplied by 34. Wait, that seems like a big number. Maybe there's a smarter way than just multiplying them directly? But since we're going to take modulo "
+        },
+        {
+          "t": 0.375,
+          "correct": true,
+          "answer": 11,
+          "n_tokens": 965,
+          "diverge_from_t0": 127,
+          "diverge_from_prev": 43,
+          "text_preview": " it down step by step.\n\nFirst, calculate 63 multiplied by 34. Wait, that seems like a big number. Maybe there's a smarter way than just multiplying them directly? But since we're eventually taking mod"
+        },
+        {
+          "t": 0.5,
+          "correct": true,
+          "answer": 11,
+          "n_tokens": 965,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": "3 multiplied by 34 plus 47. Then take that whole result modulo 18. But doing all that directly might involve big numbers, so perhaps there's a smarter way using properties of modulus?\n\nWait, maybe I s"
+        },
+        {
+          "t": 0.625,
+          "correct": false,
+          "answer": 34,
+          "n_tokens": 965,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": ". The expression inside the parentheses is 63 multiplied by 34 and then adding 47. After that, take the result modulo 18. So, first calculate 63*34, add 47, then find the remainder when divided by 18."
+        },
+        {
+          "t": 0.75,
+          "correct": true,
+          "answer": 11,
+          "n_tokens": 965,
+          "diverge_from_t0": 91,
+          "diverge_from_prev": 0,
+          "text_preview": " it down step by step.\n\nFirst, calculate 63 multiplied by 34. Wait, that seems like a big number. Maybe there's a smarter way than just multiplying them directly? But since we're eventually taking mod"
+        },
+        {
+          "t": 0.875,
+          "correct": false,
+          "answer": 18,
+          "n_tokens": 965,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": "63 multiplied by 34. Let me calculate that. Wait, 63 times 30 is 1890, and then 63 times 4 is 252. Adding those together gives 1890 + 252 = 2142. So 63*34 equals 2142. Then add 47 to that result. So 2"
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 11,
+          "n_tokens": 965,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": "3 multiplied by 34 plus 47. Then take that whole result modulo 18. But doing all that directly might involve big numbers, so perhaps there's a way to simplify before calculating?\n\nLet me recall some p"
+        }
+      ],
+      "coarse_bracket_divergences": [
+        43,
+        0,
+        0,
+        0,
+        0
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_014",
+      "correct_answer": 20,
+      "n_transitions": 3,
+      "coarse_pattern": "010000001",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 90,
+          "n_tokens": 965,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": "4 and 33. Let me do that multiplication first. Wait, but since we're dealing with modulo 29 later on, maybe there's a way to simplify things before multiplying? Like using properties of modulus?\n\nAlte"
+        },
+        {
+          "t": 0.125,
+          "correct": true,
+          "answer": 20,
+          "n_tokens": 965,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": "84 times 33. Let me do that first. Wait, but since we're dealing with modulo 29 later on, maybe there's a way to simplify before multiplying? Like using properties of modulus?\n\nAlternatively, perhaps "
+        },
+        {
+          "t": 0.25,
+          "correct": false,
+          "answer": 2862,
+          "n_tokens": 965,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": " Let me do that. But wait, since we're going to take modulo 29 at the end, perhaps there's a way to simplify before multiplying? Or maybe not. Maybe it's easier just to compute the entire expression a"
+        },
+        {
+          "t": 0.375,
+          "correct": false,
+          "answer": 2,
+          "n_tokens": 965,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 5,
+          "text_preview": " Let me do that. Wait, but since we're going to take modulo 29 at the end, perhaps there's a way to simplify before multiplying? But maybe it's easier just to compute directly and then apply modulus?\n"
+        },
+        {
+          "t": 0.5,
+          "correct": false,
+          "answer": 84,
+          "n_tokens": 965,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 309,
+          "text_preview": " Let me do that. Wait, but since we're going to take modulo 29 at the end, perhaps there's a way to simplify before multiplying? But maybe it's easier just to compute directly and then apply modulus?\n"
+        },
+        {
+          "t": 0.625,
+          "correct": false,
+          "answer": 87,
+          "n_tokens": 965,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 539,
+          "text_preview": " Let me do that. Wait, but since we're going to take modulo 29 at the end, perhaps there's a way to simplify before multiplying? But maybe it's easier just to compute directly and then apply modulus?\n"
+        },
+        {
+          "t": 0.75,
+          "correct": false,
+          "answer": 29,
+          "n_tokens": 965,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 11,
+          "text_preview": " Let me do that. Wait, but since we're dealing with modulo 29 later on, perhaps there's a way to simplify before multiplying? But maybe it's easier just to compute the full value and then take modulus"
+        },
+        {
+          "t": 0.875,
+          "correct": false,
+          "answer": 29,
+          "n_tokens": 965,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 11,
+          "text_preview": " Let me do that. Wait, but since we're going to take modulo 29 at the end, perhaps there's a way to simplify before multiplying? But maybe it's easier just to compute directly and then apply modulus?\n"
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 20,
+          "n_tokens": 965,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 244,
+          "text_preview": " Let me do that. Wait, but since we're going to take modulo 29 at the end, perhaps there's a way to simplify before multiplying? But maybe it's easier just to compute directly and then apply modulus?\n"
+        }
+      ],
+      "coarse_bracket_divergences": [
+        0,
+        0,
+        244
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_027",
+      "correct_answer": 8100,
+      "n_transitions": 1,
+      "coarse_pattern": "000000001",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 0,
+          "n_tokens": 967,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": " down step by step.\n\nFirst, maybe I should calculate each multiplication separately and then add them together. That seems straightforward. Starting with 91 times 82. Wait, how do I multiply those num"
+        },
+        {
+          "t": 0.125,
+          "correct": false,
+          "answer": 29,
+          "n_tokens": 967,
+          "diverge_from_t0": 80,
+          "diverge_from_prev": 80,
+          "text_preview": " down step by step.\n\nFirst, maybe I should calculate each multiplication separately and then add them together. That seems straightforward. Starting with 91 times 82. Wait, how do I multiply those num"
+        },
+        {
+          "t": 0.25,
+          "correct": false,
+          "answer": 8,
+          "n_tokens": 967,
+          "diverge_from_t0": 80,
+          "diverge_from_prev": 214,
+          "text_preview": " down step by step.\n\nFirst, maybe I should calculate each multiplication separately and then add them together. That seems straightforward. Starting with 91 times 82. Wait, how do I multiply those num"
+        },
+        {
+          "t": 0.375,
+          "correct": false,
+          "answer": 1,
+          "n_tokens": 967,
+          "diverge_from_t0": 86,
+          "diverge_from_prev": 80,
+          "text_preview": " down step by step.\n\nFirst, maybe I should calculate each multiplication separately and then add them together. That seems straightforward. Starting with 91 times 82. Wait, how do I multiply those num"
+        },
+        {
+          "t": 0.5,
+          "correct": false,
+          "answer": 29,
+          "n_tokens": 967,
+          "diverge_from_t0": 80,
+          "diverge_from_prev": 80,
+          "text_preview": " down step by step.\n\nFirst, maybe I should calculate each multiplication separately and then add them together. That seems straightforward. Starting with 91 times 82. Wait, how do I multiply those num"
+        },
+        {
+          "t": 0.625,
+          "correct": false,
+          "answer": 9,
+          "n_tokens": 967,
+          "diverge_from_t0": 80,
+          "diverge_from_prev": 408,
+          "text_preview": " down step by step.\n\nFirst, maybe I should calculate each multiplication separately and then add them together. That seems straightforward. Starting with 91 times 82. Wait, how do I multiply those num"
+        },
+        {
+          "t": 0.75,
+          "correct": false,
+          "answer": 2,
+          "n_tokens": 967,
+          "diverge_from_t0": 80,
+          "diverge_from_prev": 408,
+          "text_preview": " down step by step.\n\nFirst, maybe I should calculate each multiplication separately and then add them together. That seems straightforward. Starting with 91 times 82. Wait, how do I multiply those num"
+        },
+        {
+          "t": 0.875,
+          "correct": false,
+          "answer": 0,
+          "n_tokens": 967,
+          "diverge_from_t0": 86,
+          "diverge_from_prev": 80,
+          "text_preview": " down step by step.\n\nFirst, maybe I should calculate each multiplication separately and then add them together. That seems straightforward. Starting with 91 times 82. Wait, how do I multiply those num"
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 8100,
+          "n_tokens": 967,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": " is probably to calculate each multiplication separately and then add them together.\n\nStarting with 91 times 82. Let me think about how to do that. Maybe breaking it down? Like, 90*82 + 1*82? That mig"
+        }
+      ],
+      "coarse_bracket_divergences": [
+        0
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_032",
+      "correct_answer": 18,
+      "n_transitions": 5,
+      "coarse_pattern": "010010001",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 19,
+          "n_tokens": 965,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": " 32. But wait, since we're dealing with modulo 19 later on, perhaps there's a way to simplify before multiplying? Because if I can reduce each number modulo 19 first, that might make things easier. Le"
+        },
+        {
+          "t": 0.125,
+          "correct": true,
+          "answer": 18,
+          "n_tokens": 965,
+          "diverge_from_t0": 130,
+          "diverge_from_prev": 130,
+          "text_preview": " 32. But wait, since we're dealing with modulo 19 later on, perhaps there's a way to simplify before multiplying? Because if I can reduce each number modulo 19 first, that might make things easier. Le"
+        },
+        {
+          "t": 0.25,
+          "correct": false,
+          "answer": 9,
+          "n_tokens": 965,
+          "diverge_from_t0": 77,
+          "diverge_from_prev": 77,
+          "text_preview": " 32. But wait, since we're dealing with modulo 19 later on, perhaps there's a way to simplify before multiplying? Because if I can reduce each number modulo 19 first, that might make things easier. Le"
+        },
+        {
+          "t": 0.375,
+          "correct": false,
+          "answer": 32,
+          "n_tokens": 965,
+          "diverge_from_t0": 562,
+          "diverge_from_prev": 77,
+          "text_preview": " 32. But wait, since we're dealing with modulo 19 later on, perhaps there's a way to simplify before multiplying? Because if I can reduce each number modulo 19 first, that might make things easier. Le"
+        },
+        {
+          "t": 0.5,
+          "correct": true,
+          "answer": 18,
+          "n_tokens": 965,
+          "diverge_from_t0": 492,
+          "diverge_from_prev": 492,
+          "text_preview": " 32. But wait, since we're dealing with modulo 19 later on, perhaps there's a way to simplify before multiplying? Because if I can reduce each number modulo 19 first, that might make things easier. Le"
+        },
+        {
+          "t": 0.625,
+          "correct": false,
+          "answer": 2,
+          "n_tokens": 965,
+          "diverge_from_t0": 130,
+          "diverge_from_prev": 130,
+          "text_preview": " 32. But wait, since we're dealing with modulo 19 later on, perhaps there's a way to simplify before multiplying? Because if I can reduce each number modulo 19 first, that might make things easier. Le"
+        },
+        {
+          "t": 0.75,
+          "correct": false,
+          "answer": 13,
+          "n_tokens": 965,
+          "diverge_from_t0": 130,
+          "diverge_from_prev": 233,
+          "text_preview": " 32. But wait, since we're dealing with modulo 19 later on, perhaps there's a way to simplify before multiplying? Because if I can reduce each number modulo 19 first, that might make things easier. Le"
+        },
+        {
+          "t": 0.875,
+          "correct": false,
+          "answer": 19,
+          "n_tokens": 965,
+          "diverge_from_t0": 77,
+          "diverge_from_prev": 77,
+          "text_preview": " 32. But wait, since we're dealing with modulo 19 later on, perhaps there's a way to simplify before multiplying? Because if I can reduce each number modulo 19 first, that might make things easier. Le"
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 18,
+          "n_tokens": 965,
+          "diverge_from_t0": 77,
+          "diverge_from_prev": 105,
+          "text_preview": " 32. But wait, since we're dealing with modulo 19 later on, perhaps there's a way to simplify before multiplying? Because if I can reduce each number modulo 19 first, that might make things easier. Le"
+        }
+      ],
+      "coarse_bracket_divergences": [
+        130,
+        77,
+        492,
+        130,
+        105
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_035",
+      "correct_answer": 4806,
+      "n_transitions": 3,
+      "coarse_pattern": "010000001",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 53,
+          "n_tokens": 967,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": " 63.\n\nWait, how do I multiply these numbers? Maybe breaking them down into smaller parts would help. For example, 46 times 60 is easier than 46*63. So 46*60 = (40+6)*60 = 40*60 + 6*60 = 2400 + 360 = 2"
+        },
+        {
+          "t": 0.125,
+          "correct": true,
+          "answer": 4806,
+          "n_tokens": 967,
+          "diverge_from_t0": 17,
+          "diverge_from_prev": 17,
+          "text_preview": " 63.\n\nWait, how do I multiply these numbers? Maybe breaking them down would help. Like, 46 times 60 is easier than 46*63. So 46*60 = (40+6)*60 = 40*60 + 6*60 = 2400 + 360 = 2760. Then, 46*3 is 138. Ad"
+        },
+        {
+          "t": 0.25,
+          "correct": false,
+          "answer": 8,
+          "n_tokens": 967,
+          "diverge_from_t0": 196,
+          "diverge_from_prev": 17,
+          "text_preview": " 63.\n\nWait, how do I multiply these numbers? Maybe breaking them down into smaller parts would help. For example, 46 times 60 is easier than 46*63. So 46*60 = (40+6)*60 = 40*60 + 6*60 = 2400 + 360 = 2"
+        },
+        {
+          "t": 0.375,
+          "correct": false,
+          "answer": 36,
+          "n_tokens": 967,
+          "diverge_from_t0": 196,
+          "diverge_from_prev": 518,
+          "text_preview": " 63.\n\nWait, how do I multiply these numbers? Maybe breaking them down into smaller parts would help. For example, 46 times 60 is easier than 46*63. So 46*60 = (40+6)*60 = 40*60 + 6*60 = 2400 + 360 = 2"
+        },
+        {
+          "t": 0.5,
+          "correct": false,
+          "answer": 9,
+          "n_tokens": 967,
+          "diverge_from_t0": 17,
+          "diverge_from_prev": 17,
+          "text_preview": " 63.\n\nWait, how do I multiply these numbers? Maybe breaking them down would help. Like, 46 times 60 is easier than 46*63. So 46*60 = (40+6)*60 = 40*60 + 6*60 = 2400 + 360 = 2760. Then, 46*3 is 138. Ad"
+        },
+        {
+          "t": 0.625,
+          "correct": false,
+          "answer": 800,
+          "n_tokens": 967,
+          "diverge_from_t0": 17,
+          "diverge_from_prev": 456,
+          "text_preview": " 63.\n\nWait, how do I multiply these numbers? Maybe breaking them down would help. Like, 46 times 60 is easier than 46*63. So 46*60 = (40+6)*60 = 40*60 + 6*60 = 2400 + 360 = 2760. Then, 46*3 is 138. Ad"
+        },
+        {
+          "t": 0.75,
+          "correct": false,
+          "answer": 800,
+          "n_tokens": 967,
+          "diverge_from_t0": 119,
+          "diverge_from_prev": 17,
+          "text_preview": " 63.\n\nWait, how do I multiply these numbers? Maybe breaking them down into smaller parts would help. For example, 46 times 60 is easier than 46*63. So 46*60 = (40+6)*60 = 40*60 + 6*60 = 2400 + 360 = 2"
+        },
+        {
+          "t": 0.875,
+          "correct": false,
+          "answer": 9,
+          "n_tokens": 967,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": " is probably to calculate each multiplication separately and then add them together.\n\nStarting with 46 times 63. Let me think about how to do that. Maybe breaking it down? Like 40*60 + 40*3 + 6*60 + 6"
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 4806,
+          "n_tokens": 967,
+          "diverge_from_t0": 17,
+          "diverge_from_prev": 0,
+          "text_preview": " 63.\n\nWait, how do I multiply these numbers? Maybe breaking them down would help. Like, 46 times 60 is easier than 46*63. So 46*60 = (40+6)*60 = 40*60 + 6*60 = 2400 + 360 = 2760. Then, 46*3 is 138. Ad"
+        }
+      ],
+      "coarse_bracket_divergences": [
+        17,
+        17,
+        0
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_036",
+      "correct_answer": 1032,
+      "n_transitions": 1,
+      "coarse_pattern": "000000001",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 4070,
+          "n_tokens": 966,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": " But in this case, there are no exponents, just parentheses, multiplication, floor division, and addition.\n\nSo starting with the expression inside the parentheses: 74 multiplied by 55. Let me calculat"
+        },
+        {
+          "t": 0.125,
+          "correct": false,
+          "answer": 4,
+          "n_tokens": 966,
+          "diverge_from_t0": 83,
+          "diverge_from_prev": 83,
+          "text_preview": " But in this case, there are no exponents, just parentheses, multiplication, floor division, and addition.\n\nSo starting with the expression inside the parentheses: 74 multiplied by 55. Let me calculat"
+        },
+        {
+          "t": 0.25,
+          "correct": false,
+          "answer": 4,
+          "n_tokens": 966,
+          "diverge_from_t0": 83,
+          "diverge_from_prev": 140,
+          "text_preview": " But in this case, there are no exponents, just parentheses, multiplication, floor division, and addition.\n\nSo starting with the expression inside the parentheses: 74 multiplied by 55. Let me calculat"
+        },
+        {
+          "t": 0.375,
+          "correct": false,
+          "answer": 4,
+          "n_tokens": 966,
+          "diverge_from_t0": 83,
+          "diverge_from_prev": 140,
+          "text_preview": " But in this case, there are no exponents, just parentheses, multiplication, floor division, and addition.\n\nSo starting with the expression inside the parentheses: 74 multiplied by 55. Let me calculat"
+        },
+        {
+          "t": 0.5,
+          "correct": false,
+          "answer": 4,
+          "n_tokens": 966,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": " 74 by 55? Maybe break it down. 70*55 plus 4*55. Let me check that. Yes, because 74 is 70+4. So 70 times 55... Well, 70*50 is 3500 and 70*5 is 350, so adding those together gives 3850. Then 4*55 is 22"
+        },
+        {
+          "t": 0.625,
+          "correct": false,
+          "answer": 4,
+          "n_tokens": 966,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 1,
+          "text_preview": " 55. Let me calculate that.\n\nWait, how do I multiply 74 by 55? Maybe break it down. Like, 70*55 plus 4*55. Let me try that. 70 times 55... Well, 70*50 is 3500 and 70*5 is 350, so adding those together"
+        },
+        {
+          "t": 0.75,
+          "correct": false,
+          "answer": 10,
+          "n_tokens": 966,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 1,
+          "text_preview": " 4 using integer division, and then add 15. Let me break it down step by step.\n\nFirst, calculate 74 times 55. Wait, how do I multiply those numbers? Maybe I can use the standard multiplication method."
+        },
+        {
+          "t": 0.875,
+          "correct": false,
+          "answer": 1017,
+          "n_tokens": 966,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 233,
+          "text_preview": " 4 using integer division, and then add 15. Let me break it down step by step.\n\nFirst, calculate 74 times 55. Wait, how do I multiply those numbers? Maybe I can use the standard multiplication method."
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 1032,
+          "n_tokens": 966,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 233,
+          "text_preview": " 4 using integer division, and then add 15. Let me break it down step by step.\n\nFirst, calculate 74 times 55. Wait, how do I multiply those numbers? Maybe I can use the standard multiplication method."
+        }
+      ],
+      "coarse_bracket_divergences": [
+        233
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_002",
+      "correct_answer": 6193,
+      "n_transitions": 1,
+      "coarse_pattern": "000000111",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 73,
+          "n_tokens": 968,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": "Starting with 89 * 73. Hmm, how do I multiply these numbers? Maybe break it down using the distributive property. Like, 80*73 + 9*73? Wait, or is there another way? Alternatively, I can use standard m"
+        },
+        {
+          "t": 0.125,
+          "correct": false,
+          "answer": 8,
+          "n_tokens": 968,
+          "diverge_from_t0": 360,
+          "diverge_from_prev": 360,
+          "text_preview": "Starting with 89 * 73. Hmm, how do I multiply these numbers? Maybe break it down using the distributive property. Like, 80*73 + 9*73? Wait, or is there another way? Alternatively, I can use standard m"
+        },
+        {
+          "t": 0.25,
+          "correct": false,
+          "answer": 73,
+          "n_tokens": 968,
+          "diverge_from_t0": 341,
+          "diverge_from_prev": 341,
+          "text_preview": "Starting with 89 * 73. Hmm, how do I multiply these numbers? Maybe break it down using the distributive property. Like, 80*73 + 9*73? Wait, or is there another way? Alternatively, I can use standard m"
+        },
+        {
+          "t": 0.375,
+          "correct": false,
+          "answer": 4,
+          "n_tokens": 968,
+          "diverge_from_t0": 272,
+          "diverge_from_prev": 272,
+          "text_preview": "Starting with 89 * 73. Hmm, how do I multiply these numbers? Maybe break it down using the distributive property. Like, 80*73 + 9*73? Wait, or is there another way? Alternatively, I can use standard m"
+        },
+        {
+          "t": 0.5,
+          "correct": false,
+          "answer": 30,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": " subtraction.\n\nStarting with 89 * 73. That seems a bit tricky. Let me think about how to multiply these numbers. Maybe breaking it down using the distributive property would help. Like, 89 can be thou"
+        },
+        {
+          "t": 0.625,
+          "correct": false,
+          "answer": 6497,
+          "n_tokens": 968,
+          "diverge_from_t0": 82,
+          "diverge_from_prev": 0,
+          "text_preview": "Starting with 89 * 73. Hmm, how do I multiply these numbers? Maybe break it down using the distributive property. Like, 80*73 + 9*73? Wait, or is there another way? Alternatively, I can use standard m"
+        },
+        {
+          "t": 0.75,
+          "correct": true,
+          "answer": 6193,
+          "n_tokens": 968,
+          "diverge_from_t0": 82,
+          "diverge_from_prev": 137,
+          "text_preview": "Starting with 89 * 73. Hmm, how do I multiply these numbers? Maybe break it down using the distributive property. Like, 80*73 + 9*73? Wait, or is there another way? Alternatively, I can use standard m"
+        },
+        {
+          "t": 0.875,
+          "correct": true,
+          "answer": 6193,
+          "n_tokens": 968,
+          "diverge_from_t0": 63,
+          "diverge_from_prev": 63,
+          "text_preview": "Starting with 89 * 73. Hmm, how do I multiply these numbers? Maybe break it down using the distributive property. Like, 80*73 + 9*73? Wait, or is there another way? Alternatively, I can use standard m"
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 6193,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": " them.\n\nSo starting with 89 * 73. That seems a bit tricky. Let me think about how to multiply these numbers. Maybe breaking it down using the distributive property would help. Like, 89 is close to 90,"
+        }
+      ],
+      "coarse_bracket_divergences": [
+        137
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_012",
+      "correct_answer": 6114,
+      "n_transitions": 3,
+      "coarse_pattern": "000011011",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 41,
+          "n_tokens": 968,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": " subtract the results. That seems straightforward. So first part is 68 * 96, and the second part is 69 * 6. Then subtract the second product from the first one.\n\nLet me tackle 68 times 96 first. Wait,"
+        },
+        {
+          "t": 0.125,
+          "correct": false,
+          "answer": 42,
+          "n_tokens": 968,
+          "diverge_from_t0": 59,
+          "diverge_from_prev": 59,
+          "text_preview": " subtract the results. That seems straightforward. So first part is 68 * 96, and the second part is 69 * 6. Then subtract the second product from the first one.\n\nLet me tackle 68 times 96 first. Wait,"
+        },
+        {
+          "t": 0.25,
+          "correct": false,
+          "answer": 6,
+          "n_tokens": 968,
+          "diverge_from_t0": 48,
+          "diverge_from_prev": 48,
+          "text_preview": " subtract the results. That seems straightforward. So first part is 68 * 96, and the second part is 69 * 6. Then subtract the second product from the first one.\n\nLet me tackle 68 * 96 first. Hmm, mult"
+        },
+        {
+          "t": 0.375,
+          "correct": false,
+          "answer": 6,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": " 96. That seems like a big multiplication. Maybe there's a shortcut or a way to simplify this? Wait, maybe I can use the distributive property here. Like breaking down one of the numbers into smaller "
+        },
+        {
+          "t": 0.5,
+          "correct": true,
+          "answer": 6114,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 330,
+          "text_preview": " 96. That seems like a big multiplication. Maybe there's a shortcut or a way to simplify this? Wait, maybe I can use the distributive property here. Like breaking down one of the numbers into smaller "
+        },
+        {
+          "t": 0.625,
+          "correct": true,
+          "answer": 6114,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 125,
+          "text_preview": " 96. That seems like a big multiplication. Maybe there's a shortcut or a way to simplify this? Wait, maybe I can use the distributive property here. Like breaking down one of the numbers into smaller "
+        },
+        {
+          "t": 0.75,
+          "correct": false,
+          "answer": 612,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 125,
+          "text_preview": " 96. That seems like a big multiplication. Maybe there's a shortcut or a way to simplify this? Wait, maybe I can use the distributive property here. Like breaking down one of the numbers into smaller "
+        },
+        {
+          "t": 0.875,
+          "correct": true,
+          "answer": 6114,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 125,
+          "text_preview": " 96. That seems like a big multiplication. Maybe there's a shortcut or a way to simplify this? Wait, maybe I can use the distributive property here. Like breaking down one of the numbers into smaller "
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 6114,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 235,
+          "text_preview": " 96. That seems like a big multiplication. Maybe there's a shortcut or a way to simplify this? Wait, maybe I can use the distributive property here. Like breaking down one of the numbers into smaller "
+        }
+      ],
+      "coarse_bracket_divergences": [
+        330,
+        125,
+        125
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_018",
+      "correct_answer": 4,
+      "n_transitions": 3,
+      "coarse_pattern": "000100001",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 15,
+          "n_tokens": 965,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": ". Let me do that. Wait, 45 times 50 is 2250, and then 45 times 9 is 405. So adding those together gives 2250 + 405 = 2655. Is that right? Let me check with another method. Maybe using distributive pro"
+        },
+        {
+          "t": 0.125,
+          "correct": false,
+          "answer": 61,
+          "n_tokens": 965,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": "45 multiplied by 59. Wait, that seems like a big number. Maybe there's a way to simplify this before multiplying? Since we're eventually taking modulo 24, perhaps I can find equivalents of 45 and 59 m"
+        },
+        {
+          "t": 0.25,
+          "correct": false,
+          "answer": 45,
+          "n_tokens": 965,
+          "diverge_from_t0": 8,
+          "diverge_from_prev": 0,
+          "text_preview": ". Let me do that. Wait, but since we're eventually taking modulo 24, perhaps there's a way to simplify before multiplying? Like using properties of modulus?\n\nBut maybe it's easier just to compute the "
+        },
+        {
+          "t": 0.375,
+          "correct": true,
+          "answer": 4,
+          "n_tokens": 965,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": "45 multiplied by 59. Let me calculate that. Wait, doing this directly might result in a large number, and then adding 61 before taking modulo 24 could be cumbersome. Maybe there's a smarter way using "
+        },
+        {
+          "t": 0.5,
+          "correct": false,
+          "answer": 59,
+          "n_tokens": 965,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 455,
+          "text_preview": "45 multiplied by 59. Let me calculate that. Wait, doing this directly might result in a large number, and then adding 61 before taking modulo 24 could be cumbersome. Maybe there's a smarter way using "
+        },
+        {
+          "t": 0.625,
+          "correct": false,
+          "answer": 2,
+          "n_tokens": 965,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 136,
+          "text_preview": "45 multiplied by 59. Let me calculate that. Wait, doing this directly might result in a large number, and then adding 61 before taking modulo 24 could be cumbersome. Maybe there's a smarter way using "
+        },
+        {
+          "t": 0.75,
+          "correct": false,
+          "answer": -45,
+          "n_tokens": 965,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 8,
+          "text_preview": "45 multiplied by 59. Wait, that seems like a big number. Maybe there's a way to simplify this before multiplying? Since we're eventually taking modulo 24, perhaps I can find equivalents of 45 and 59 m"
+        },
+        {
+          "t": 0.875,
+          "correct": false,
+          "answer": 1,
+          "n_tokens": 965,
+          "diverge_from_t0": 115,
+          "diverge_from_prev": 0,
+          "text_preview": ". Let me do that. Wait, 45 times 50 is 2250, and then 45 times 9 is 405. So adding those together gives 2250 + 405 = 2655. Is that right? Let me check with another method. Maybe using distributive pro"
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 4,
+          "n_tokens": 965,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": "45 multiplied by 59. Wait, that seems like a big number. Maybe there's a way to simplify this before multiplying? Since we're eventually taking modulo 24, perhaps I can find equivalents of 45 and 59 m"
+        }
+      ],
+      "coarse_bracket_divergences": [
+        0,
+        455,
+        0
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_006",
+      "correct_answer": 6,
+      "n_transitions": 5,
+      "coarse_pattern": "000010101",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 2,
+          "n_tokens": 965,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": "9 multiplied by 32. Wait, what's 49 times 30? That would be 1470, and then 49 times 2 is 98. So adding those together: 1470 + 98 = 1568. Is that correct? Let me check another way. Maybe break it down "
+        },
+        {
+          "t": 0.125,
+          "correct": false,
+          "answer": 5,
+          "n_tokens": 965,
+          "diverge_from_t0": 62,
+          "diverge_from_prev": 62,
+          "text_preview": "9 multiplied by 32. Wait, what's 49 times 30? That would be 1470, and then 49 times 2 is 98. So adding those together: 1470 + 98 = 1568. Okay, so 49*32=1568. Then I have to add 58 to that. So 1568 + 5"
+        },
+        {
+          "t": 0.25,
+          "correct": false,
+          "answer": 49,
+          "n_tokens": 965,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": "2. Let me do that. Wait, what's 49*32? Well, 50*32 is 1600, right? But since it's 49, which is one less than 50, so subtract 32 from 1600. That would be 1600 - 32 = 1568. So 49*32 is 1568. Okay, got t"
+        },
+        {
+          "t": 0.375,
+          "correct": false,
+          "answer": 1568,
+          "n_tokens": 965,
+          "diverge_from_t0": 78,
+          "diverge_from_prev": 0,
+          "text_preview": "9 multiplied by 32. Wait, what's 49 times 30? That would be 1470, and then 49 times 2 is 98. So adding those together: 1470 + 98 = 1568. Is that correct? Let me check another way. Maybe break it down "
+        },
+        {
+          "t": 0.5,
+          "correct": true,
+          "answer": 6,
+          "n_tokens": 965,
+          "diverge_from_t0": 17,
+          "diverge_from_prev": 17,
+          "text_preview": "9 multiplied by 32. Wait, what's 49 times 32? Maybe break it down. 40*32 = 1280, and 9*32=288. Then adding those together: 1280 + 288. Let me check that again. 1280 plus 288... 1280+200 is 1480, then "
+        },
+        {
+          "t": 0.625,
+          "correct": false,
+          "answer": 27,
+          "n_tokens": 965,
+          "diverge_from_t0": 62,
+          "diverge_from_prev": 17,
+          "text_preview": "9 multiplied by 32. Wait, what's 49 times 30? That would be 1470, and then 49 times 2 is 98. So adding those together: 1470 + 98 = 1568. Okay, so 49*32=1568. Then I have to add 58 to that. So 1568 + 5"
+        },
+        {
+          "t": 0.75,
+          "correct": true,
+          "answer": 6,
+          "n_tokens": 965,
+          "diverge_from_t0": 62,
+          "diverge_from_prev": 104,
+          "text_preview": "9 multiplied by 32. Wait, what's 49 times 30? That would be 1470, and then 49 times 2 is 98. So adding those together: 1470 + 98 = 1568. Okay, so 49*32=1568. Then I have to add 58 to that. So 1568 + 5"
+        },
+        {
+          "t": 0.875,
+          "correct": false,
+          "answer": 32,
+          "n_tokens": 965,
+          "diverge_from_t0": 17,
+          "diverge_from_prev": 17,
+          "text_preview": "9 multiplied by 32. Wait, what's 49 times 32? Maybe break it down. 40*32 = 1280, and 9*32=288. Then adding those together: 1280 + 288. Let me check that again. 1280 plus 288... 1280+200 is 1480, then "
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 6,
+          "n_tokens": 829,
+          "diverge_from_t0": 62,
+          "diverge_from_prev": 17,
+          "text_preview": "9 multiplied by 32. Wait, what's 49 times 30? That would be 1470, and then 49 times 2 is 98. So adding those together: 1470 + 98 = 1568. Okay, so 49*32=1568. Then we have to add 58 to that. So 1568 + "
+        }
+      ],
+      "coarse_bracket_divergences": [
+        17,
+        17,
+        104,
+        17,
+        17
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_007",
+      "correct_answer": 1044,
+      "n_transitions": 3,
+      "coarse_pattern": "000011001",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 2,
+          "n_tokens": 968,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": " probably to calculate each multiplication separately and then subtract the results.\n\nStarting with 54 times 29. Let me think about how to do that. Maybe breaking it down? Like 54*30 would be easier, "
+        },
+        {
+          "t": 0.125,
+          "correct": false,
+          "answer": 0,
+          "n_tokens": 968,
+          "diverge_from_t0": 32,
+          "diverge_from_prev": 32,
+          "text_preview": " probably to calculate each multiplication separately and then subtract the results.\n\nStarting with 54 times 29. Let me think about how to do that. Maybe break it down? Like, 54*30 would be easier, ri"
+        },
+        {
+          "t": 0.25,
+          "correct": false,
+          "answer": 1066,
+          "n_tokens": 968,
+          "diverge_from_t0": 32,
+          "diverge_from_prev": 201,
+          "text_preview": " probably to calculate each multiplication separately and then subtract the results.\n\nStarting with 54 times 29. Let me think about how to do that. Maybe break it down? Like, 54*30 would be easier, ri"
+        },
+        {
+          "t": 0.375,
+          "correct": false,
+          "answer": 5,
+          "n_tokens": 968,
+          "diverge_from_t0": 32,
+          "diverge_from_prev": 234,
+          "text_preview": " probably to calculate each multiplication separately and then subtract the results.\n\nStarting with 54 times 29. Let me think about how to do that. Maybe break it down? Like, 54*30 would be easier, ri"
+        },
+        {
+          "t": 0.5,
+          "correct": true,
+          "answer": 1044,
+          "n_tokens": 968,
+          "diverge_from_t0": 32,
+          "diverge_from_prev": 208,
+          "text_preview": " probably to calculate each multiplication separately and then subtract the results.\n\nStarting with 54 times 29. Let me think about how to do that. Maybe break it down? Like, 54*30 would be easier, ri"
+        },
+        {
+          "t": 0.625,
+          "correct": true,
+          "answer": 1044,
+          "n_tokens": 968,
+          "diverge_from_t0": 32,
+          "diverge_from_prev": 72,
+          "text_preview": " probably to calculate each multiplication separately and then subtract the results.\n\nStarting with 54 times 29. Let me think about how to do that. Maybe break it down? Like, 54*30 would be easier, ri"
+        },
+        {
+          "t": 0.75,
+          "correct": false,
+          "answer": 54,
+          "n_tokens": 968,
+          "diverge_from_t0": 32,
+          "diverge_from_prev": 72,
+          "text_preview": " probably to calculate each multiplication separately and then subtract the results.\n\nStarting with 54 times 29. Let me think about how to do that. Maybe break it down? Like, 54*30 would be easier, ri"
+        },
+        {
+          "t": 0.875,
+          "correct": false,
+          "answer": 29,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": " 54 * 29. Let me think about how to multiply these numbers. Maybe breaking it down using the distributive property would help. Like, 54 times 29 can be thought of as 54*(30 - 1), right? Because 29 is "
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 1044,
+          "n_tokens": 926,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 23,
+          "text_preview": " 54 * 29. Let me think about how to multiply these numbers. Maybe breaking it down using distributive property? Like 54 times 30 would be easier, but since it's 29, that's one less than 30. So, 54*30 "
+        }
+      ],
+      "coarse_bracket_divergences": [
+        208,
+        72,
+        23
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_019",
+      "correct_answer": 232,
+      "n_transitions": 3,
+      "coarse_pattern": "001111011",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 220,
+          "n_tokens": 966,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": " Calculate 28 multiplied by 63. Let me do that. 28 times 60 would be 1680, right? And then 28 times 3 is 84. So adding those together gives 1680 + 84 = 1764. Wait, so 28*63=1764?\n\nLet me check again. "
+        },
+        {
+          "t": 0.125,
+          "correct": false,
+          "answer": 4,
+          "n_tokens": 966,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": ": 28 multiplied by 63. Let me calculate that. 28 times 60 would be 1680, right? And then 28 times 3 is 84. Adding those together gives 1680 + 84 = 1764. So 28*63 equals 1764. Got that part down.\n\nNext"
+        },
+        {
+          "t": 0.25,
+          "correct": true,
+          "answer": 232,
+          "n_tokens": 966,
+          "diverge_from_t0": 49,
+          "diverge_from_prev": 0,
+          "text_preview": " Calculate 28 multiplied by 63. Let me do that. 28 times 60 would be 1680, right? And then 28 times 3 is 84. So adding those together, 1680 + 84 equals... 1764. Wait, so 28*63=1764?\n\nLet me check that"
+        },
+        {
+          "t": 0.375,
+          "correct": true,
+          "answer": 232,
+          "n_tokens": 825,
+          "diverge_from_t0": 193,
+          "diverge_from_prev": 49,
+          "text_preview": " Calculate 28 multiplied by 63. Let me do that. 28 times 60 would be 1680, right? And then 28 times 3 is 84. So adding those together gives 1680 + 84 = 1764. Wait, so 28*63=1764?\n\nLet me check again. "
+        },
+        {
+          "t": 0.5,
+          "correct": true,
+          "answer": 232,
+          "n_tokens": 938,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": ": 28 multiplied by 63. Let me calculate that. 28 times 60 would be 1680, right? And then 28 times 3 is 84. Adding those together gives 1680 + 84 = 1764. So 28*63 equals 1764. Got that part down.\n\nNext"
+        },
+        {
+          "t": 0.625,
+          "correct": true,
+          "answer": 232,
+          "n_tokens": 960,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 131,
+          "text_preview": ": 28 multiplied by 63. Let me calculate that. 28 times 60 would be 1680, right? And then 28 times 3 is 84. Adding those together gives 1680 + 84 = 1764. So 28*63 equals 1764. Got that part down.\n\nNext"
+        },
+        {
+          "t": 0.75,
+          "correct": false,
+          "answer": 6,
+          "n_tokens": 966,
+          "diverge_from_t0": 185,
+          "diverge_from_prev": 0,
+          "text_preview": " Calculate 28 multiplied by 63. Let me do that. 28 times 60 would be 1680, right? And then 28 times 3 is 84. So adding those together gives 1680 + 84 = 1764. Wait, so 28*63=1764?\n\nLet me check again. "
+        },
+        {
+          "t": 0.875,
+          "correct": true,
+          "answer": 232,
+          "n_tokens": 810,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": "3.\n\nWait, how do I multiply 28 and 63? Maybe breaking it down would help. Like, 28 times 60 plus 28 times 3. So that's 28*60 = 1680 and 28*3=84. Then adding those together gives 1680+84=1764. Okay, so"
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 232,
+          "n_tokens": 950,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": " and subtraction. But wait, there are some floor divisions here too. Let me break it down step by step.\n\nFirst, the parentheses part is 28 multiplied by 63. Let me calculate that. So 28 times 60 would"
+        }
+      ],
+      "coarse_bracket_divergences": [
+        0,
+        0,
+        0
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_030",
+      "correct_answer": 2395,
+      "n_transitions": 3,
+      "coarse_pattern": "001100011",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 99,
+          "n_tokens": 968,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": " with 25 * 99. Wait, multiplying 25 by 99... That seems a bit tricky. Maybe there's a shortcut for that? Like, 25 times 100 would be easy because 25*100 is 2500, right? But since it's 99 instead of 10"
+        },
+        {
+          "t": 0.125,
+          "correct": false,
+          "answer": 5,
+          "n_tokens": 968,
+          "diverge_from_t0": 373,
+          "diverge_from_prev": 373,
+          "text_preview": " with 25 * 99. Wait, multiplying 25 by 99... That seems a bit tricky. Maybe there's a shortcut for that? Like, 25 times 100 would be easy because 25*100 is 2500, right? But since it's 99 instead of 10"
+        },
+        {
+          "t": 0.25,
+          "correct": true,
+          "answer": 2395,
+          "n_tokens": 968,
+          "diverge_from_t0": 199,
+          "diverge_from_prev": 199,
+          "text_preview": " with 25 * 99. Wait, multiplying 25 by 99... That seems a bit tricky. Maybe there's a shortcut for that? Like, 25 times 100 would be easy because 25*100 is 2500, right? But since it's 99 instead of 10"
+        },
+        {
+          "t": 0.375,
+          "correct": true,
+          "answer": 2395,
+          "n_tokens": 968,
+          "diverge_from_t0": 199,
+          "diverge_from_prev": 315,
+          "text_preview": " with 25 * 99. Wait, multiplying 25 by 99... That seems a bit tricky. Maybe there's a shortcut for that? Like, 25 times 100 would be easy because 25*100 is 2500, right? But since it's 99 instead of 10"
+        },
+        {
+          "t": 0.5,
+          "correct": false,
+          "answer": 4,
+          "n_tokens": 968,
+          "diverge_from_t0": 438,
+          "diverge_from_prev": 199,
+          "text_preview": " with 25 * 99. Wait, multiplying 25 by 99... That seems a bit tricky. Maybe there's a shortcut for that? Like, 25 times 100 would be easy because 25*100 is 2500, right? But since it's 99 instead of 10"
+        },
+        {
+          "t": 0.625,
+          "correct": false,
+          "answer": 99,
+          "n_tokens": 968,
+          "diverge_from_t0": 144,
+          "diverge_from_prev": 144,
+          "text_preview": " with 25 * 99. Wait, multiplying 25 by 99... That seems a bit tricky. Maybe there's a shortcut for that? Like, 25 times 100 would be easy because 25*100 is 2500, right? But since it's 99 instead of 10"
+        },
+        {
+          "t": 0.75,
+          "correct": false,
+          "answer": 25,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": ".\n\nFirst, maybe I should calculate each part separately. So starting with 25 times 99. Wait, multiplying 25 by 99... That seems a bit tricky. Maybe there's a shortcut? Like, 25 times 100 would be easi"
+        },
+        {
+          "t": 0.875,
+          "correct": true,
+          "answer": 2395,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 159,
+          "text_preview": ".\n\nFirst, maybe I should calculate each part separately. So starting with 25 times 99. Wait, multiplying 25 by 99... That seems a bit tricky. Maybe there's a shortcut? Like, 25 times 100 would be easi"
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 2395,
+          "n_tokens": 702,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": " 25 * 99 - 20 * 4. Let me break it down into two parts: 25*99 and 20*4. Then subtract the second result from the first one.\n\nStarting with 25 times 99. Wait, multiplying 25 by 99... That seems a bit t"
+        }
+      ],
+      "coarse_bracket_divergences": [
+        199,
+        199,
+        159
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_037",
+      "correct_answer": 6712,
+      "n_transitions": 5,
+      "coarse_pattern": "010001011",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 6740,
+          "n_tokens": 968,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": "Starting with 76 * 90. I remember that multiplying by 90 is the same as multiplying by 9 and then by 10. So maybe I can do 76*9 first and then add a zero at the end? Wait, no, actually, since 90 is 9*"
+        },
+        {
+          "t": 0.125,
+          "correct": true,
+          "answer": 6712,
+          "n_tokens": 774,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": " step by step.\n\nFirst, maybe I should calculate each multiplication separately and then subtract the results. That seems straightforward. Starting with 76 times 90. Wait, how do I multiply those? Mayb"
+        },
+        {
+          "t": 0.25,
+          "correct": false,
+          "answer": 2,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 232,
+          "text_preview": " step by step.\n\nFirst, maybe I should calculate each multiplication separately and then subtract the results. That seems straightforward. Starting with 76 times 90. Wait, how do I multiply those? Mayb"
+        },
+        {
+          "t": 0.375,
+          "correct": false,
+          "answer": 6840,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 298,
+          "text_preview": " step by step.\n\nFirst, maybe I should calculate each multiplication separately and then subtract the results. That seems straightforward. Starting with 76 times 90. Wait, how do I multiply those? Mayb"
+        },
+        {
+          "t": 0.5,
+          "correct": false,
+          "answer": 0,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 232,
+          "text_preview": " step by step.\n\nFirst, maybe I should calculate each multiplication separately and then subtract the results. That seems straightforward. Starting with 76 times 90. Wait, how do I multiply those? Mayb"
+        },
+        {
+          "t": 0.625,
+          "correct": true,
+          "answer": 6712,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 253,
+          "text_preview": " step by step.\n\nFirst, maybe I should calculate each multiplication separately and then subtract the results. That seems straightforward. Starting with 76 times 90. Wait, how do I multiply those? Mayb"
+        },
+        {
+          "t": 0.75,
+          "correct": false,
+          "answer": 684,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 305,
+          "text_preview": " step by step.\n\nFirst, maybe I should calculate each multiplication separately and then subtract the results. That seems straightforward. Starting with 76 times 90. Wait, how do I multiply those? Mayb"
+        },
+        {
+          "t": 0.875,
+          "correct": true,
+          "answer": 6712,
+          "n_tokens": 923,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": ". Let me think about how to do that. Maybe breaking it down? Like 70*90 + 6*90? Wait, because 76 is 70 + 6. Yeah, that might work. So 70 times 90... Well, 70*90 is 6300. Then 6*90 is 540. Adding those"
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 6712,
+          "n_tokens": 595,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 287,
+          "text_preview": ". Let me think about how to do that. Maybe breaking it down? Like 70*90 + 6*90? Wait, because 76 is 70 + 6. Yeah, that might work. So 70 times 90... Well, 70*90 is 6300. Then 6*90 is 540. Adding those"
+        }
+      ],
+      "coarse_bracket_divergences": [
+        0,
+        232,
+        253,
+        305,
+        0
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_009",
+      "correct_answer": 6,
+      "n_transitions": 3,
+      "coarse_pattern": "000001101",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 92,
+          "n_tokens": 965,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": ". Let me do that. Wait, 47 times 92... Maybe break it down? Like 47*(90 + 2) = 47*90 + 47*2. So 47*90 is... Well, 47*9 is 423, so 47*90 would be 4230. Then 47*2 is 94. Adding those together gives 4230"
+        },
+        {
+          "t": 0.125,
+          "correct": false,
+          "answer": 92,
+          "n_tokens": 965,
+          "diverge_from_t0": 71,
+          "diverge_from_prev": 71,
+          "text_preview": ". Let me do that. Wait, 47 times 92... Maybe break it down? Like 47*(90 + 2) = 47*90 + 47*2. So 47*90 is... Well, 47*9 is 423, so 423*10 is 4230. Then 47*2 is 94. Adding those together gives 4230 + 94"
+        },
+        {
+          "t": 0.25,
+          "correct": false,
+          "answer": 28,
+          "n_tokens": 965,
+          "diverge_from_t0": 114,
+          "diverge_from_prev": 71,
+          "text_preview": ". Let me do that. Wait, 47 times 92... Maybe break it down? Like 47*(90 + 2) = 47*90 + 47*2. So 47*90 is... Well, 47*9 is 423, so 47*90 would be 4230. Then 47*2 is 94. Adding those together gives 4230"
+        },
+        {
+          "t": 0.375,
+          "correct": false,
+          "answer": 168,
+          "n_tokens": 965,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": "7 and 92. Let me do that multiplication first. Wait, 47 times 92... Maybe there's a shortcut? Like breaking down 92 into 90 + 2? So 47*90 is... Well, 47*90 is 4230, right? And then 47*2 is 94. Adding "
+        },
+        {
+          "t": 0.5,
+          "correct": false,
+          "answer": 1,
+          "n_tokens": 965,
+          "diverge_from_t0": 187,
+          "diverge_from_prev": 0,
+          "text_preview": ". Let me do that. Wait, 47 times 92... Maybe break it down? Like 47*(90 + 2) = 47*90 + 47*2. So 47*90 is... Well, 47*9 is 423, so 47*90 would be 4230. Then 47*2 is 94. Adding those together gives 4230"
+        },
+        {
+          "t": 0.625,
+          "correct": true,
+          "answer": 6,
+          "n_tokens": 965,
+          "diverge_from_t0": 182,
+          "diverge_from_prev": 182,
+          "text_preview": ". Let me do that. Wait, 47 times 92... Maybe break it down? Like 47*(90 + 2) = 47*90 + 47*2. So 47*90 is... Well, 47*9 is 423, so 47*90 would be 4230. Then 47*2 is 94. Adding those together gives 4230"
+        },
+        {
+          "t": 0.75,
+          "correct": true,
+          "answer": 6,
+          "n_tokens": 965,
+          "diverge_from_t0": 182,
+          "diverge_from_prev": 373,
+          "text_preview": ". Let me do that. Wait, 47 times 92... Maybe break it down? Like 47*(90 + 2) = 47*90 + 47*2. So 47*90 is... Well, 47*9 is 423, so 47*90 would be 4230. Then 47*2 is 94. Adding those together gives 4230"
+        },
+        {
+          "t": 0.875,
+          "correct": false,
+          "answer": 1,
+          "n_tokens": 965,
+          "diverge_from_t0": 187,
+          "diverge_from_prev": 182,
+          "text_preview": ". Let me do that. Wait, 47 times 92... Maybe break it down? Like 47*(90 + 2) = 47*90 + 47*2. So 47*90 is... Well, 47*9 is 423, so 47*90 would be 4230. Then 47*2 is 94. Adding those together gives 4230"
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 6,
+          "n_tokens": 965,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": "7 and 92. Let me do that multiplication first. Wait, 47 times 92... Maybe there's a shortcut? Like breaking down 92 into 90 + 2? So 47*90 is 4230, and 47*2 is 94. Then adding those together: 4230 + 94"
+        }
+      ],
+      "coarse_bracket_divergences": [
+        182,
+        182,
+        0
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_015",
+      "correct_answer": 7693,
+      "n_transitions": 5,
+      "coarse_pattern": "010100001",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 5,
+          "n_tokens": 968,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": "87. Wait, those numbers aren't too bad, but maybe there's a shortcut? Like using some algebraic identity or something? Let me think... Oh right! The difference of squares formula might help here. But "
+        },
+        {
+          "t": 0.125,
+          "correct": true,
+          "answer": 7693,
+          "n_tokens": 820,
+          "diverge_from_t0": 51,
+          "diverge_from_prev": 51,
+          "text_preview": "87. Wait, those numbers aren't too bad, but maybe there's a shortcut? Like using some algebraic identity or something? Let me think... Oh right! The difference of squares formula might help here. But "
+        },
+        {
+          "t": 0.25,
+          "correct": false,
+          "answer": 90,
+          "n_tokens": 968,
+          "diverge_from_t0": 5,
+          "diverge_from_prev": 5,
+          "text_preview": "87. Wait, multiplying those two numbers... Maybe there's a shortcut or a way to simplify this? Let me think. Both numbers are close to 90, maybe I can use some algebraic identity here. Like (a + b)(a "
+        },
+        {
+          "t": 0.375,
+          "correct": true,
+          "answer": 7693,
+          "n_tokens": 946,
+          "diverge_from_t0": 7,
+          "diverge_from_prev": 5,
+          "text_preview": "87. Wait, those numbers are both close to 90, maybe there's a shortcut? Like using the formula (a + b)(a - b) = a\u00b2 - b\u00b2 or something? Let me think. Alternatively, just do regular multiplication. Maybe"
+        },
+        {
+          "t": 0.5,
+          "correct": false,
+          "answer": 2,
+          "n_tokens": 968,
+          "diverge_from_t0": 5,
+          "diverge_from_prev": 5,
+          "text_preview": "87. Wait, multiplying those two numbers directly might be a bit tricky. Maybe there's a shortcut or a way to simplify this? Let me think... Oh right! The difference of squares formula could help here."
+        },
+        {
+          "t": 0.625,
+          "correct": false,
+          "answer": 10,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": ". Wait, multiplying those two numbers directly might be a bit tricky. Maybe there's a shortcut or a way to simplify this? Let me think... Oh! These numbers are close to 90. Like, 89 is 90 - 1 and 87 i"
+        },
+        {
+          "t": 0.75,
+          "correct": false,
+          "answer": 87,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 31,
+          "text_preview": ". Wait, multiplying those two numbers directly might be a bit tricky. Maybe there's a shortcut or a way to simplify this? Let me think... Oh right! The difference of squares formula could help here. B"
+        },
+        {
+          "t": 0.875,
+          "correct": false,
+          "answer": 88,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 233,
+          "text_preview": ". Wait, multiplying those two numbers directly might be a bit tricky. Maybe there's a shortcut or a way to simplify this? Let me think... Oh right! The difference of squares formula could help here. B"
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 7693,
+          "n_tokens": 717,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": "7. Wait, multiplying these two numbers... Maybe there's a shortcut? Like using algebraic identities or something? Let me think. Oh right! The difference of squares formula: (a + b)(a - b) = a\u00b2 - b\u00b2. B"
+        }
+      ],
+      "coarse_bracket_divergences": [
+        51,
+        5,
+        5,
+        5,
+        0
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_017",
+      "correct_answer": 491,
+      "n_transitions": 5,
+      "coarse_pattern": "001110101",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 2,
+          "n_tokens": 966,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": " and subtraction. But wait, there are some floor divisions here too. Let me break it down step by step.\n\nFirst, the parentheses part is 36 multiplied by 80. So maybe I should calculate that first. Let"
+        },
+        {
+          "t": 0.125,
+          "correct": false,
+          "answer": 3,
+          "n_tokens": 966,
+          "diverge_from_t0": 250,
+          "diverge_from_prev": 250,
+          "text_preview": " and subtraction. But wait, there are some floor divisions here too. Let me break it down step by step.\n\nFirst, the parentheses part is 36 multiplied by 80. So maybe I should calculate that first. Let"
+        },
+        {
+          "t": 0.25,
+          "correct": true,
+          "answer": 491,
+          "n_tokens": 966,
+          "diverge_from_t0": 25,
+          "diverge_from_prev": 25,
+          "text_preview": " and subtraction. But wait, there are some floor divisions here too. Let me break it down step by step.\n\nFirst, inside the parentheses, there's a multiplication: 36 multiplied by 80. Let me calculate "
+        },
+        {
+          "t": 0.375,
+          "correct": true,
+          "answer": 491,
+          "n_tokens": 966,
+          "diverge_from_t0": 25,
+          "diverge_from_prev": 160,
+          "text_preview": " and subtraction. But wait, there are some floor divisions here too. Let me break it down step by step.\n\nFirst, inside the parentheses, there's a multiplication: 36 multiplied by 80. Let me calculate "
+        },
+        {
+          "t": 0.5,
+          "correct": true,
+          "answer": 491,
+          "n_tokens": 966,
+          "diverge_from_t0": 25,
+          "diverge_from_prev": 135,
+          "text_preview": " and subtraction. But wait, there are some floor divisions here too. Let me break it down step by step.\n\nFirst, inside the parentheses, there's a multiplication: 36 multiplied by 80. Let me calculate "
+        },
+        {
+          "t": 0.625,
+          "correct": false,
+          "answer": 3,
+          "n_tokens": 966,
+          "diverge_from_t0": 576,
+          "diverge_from_prev": 25,
+          "text_preview": " and subtraction. But wait, there are some floor divisions here too. Let me break it down step by step.\n\nFirst, the parentheses part is 36 multiplied by 80. So maybe I should calculate that first. Let"
+        },
+        {
+          "t": 0.75,
+          "correct": true,
+          "answer": 491,
+          "n_tokens": 922,
+          "diverge_from_t0": 201,
+          "diverge_from_prev": 201,
+          "text_preview": " and subtraction. But wait, there are some floor divisions here too. Let me break it down step by step.\n\nFirst, the parentheses part is 36 multiplied by 80. So maybe I should calculate that first. Let"
+        },
+        {
+          "t": 0.875,
+          "correct": false,
+          "answer": 11,
+          "n_tokens": 966,
+          "diverge_from_t0": 576,
+          "diverge_from_prev": 201,
+          "text_preview": " and subtraction. But wait, there are some floor divisions here too. Let me break it down step by step.\n\nFirst, the parentheses part is 36 multiplied by 80. So maybe I should calculate that first. Let"
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 491,
+          "n_tokens": 937,
+          "diverge_from_t0": 4,
+          "diverge_from_prev": 4,
+          "text_preview": " and subtraction. But there are some floor divisions involved too.\n\nSo starting with the parentheses: 36 multiplied by 80. Let me calculate that. 36 times 80... Well, 36*8 is 288, so adding a zero mak"
+        }
+      ],
+      "coarse_bracket_divergences": [
+        25,
+        25,
+        201,
+        201,
+        4
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_003",
+      "correct_answer": 2071,
+      "n_transitions": 1,
+      "coarse_pattern": "000000001",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 21,
+          "n_tokens": 968,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": " with 55 * 39. Let me think about how to multiply these numbers. Maybe breaking it down using distributive property? Like, 55 times 40 would be easier, right? But since it's 39, which is one less than"
+        },
+        {
+          "t": 0.125,
+          "correct": false,
+          "answer": 4,
+          "n_tokens": 968,
+          "diverge_from_t0": 383,
+          "diverge_from_prev": 383,
+          "text_preview": " with 55 * 39. Let me think about how to multiply these numbers. Maybe breaking it down using distributive property? Like, 55 times 40 would be easier, right? But since it's 39, which is one less than"
+        },
+        {
+          "t": 0.25,
+          "correct": false,
+          "answer": 4,
+          "n_tokens": 968,
+          "diverge_from_t0": 23,
+          "diverge_from_prev": 23,
+          "text_preview": " with 55 * 39. Let me think about how to multiply these numbers. Maybe breaking it down would help. Like, 55 times 40 is easier because 40 is a round number. Wait, but that's 55*40 which is 2200. But "
+        },
+        {
+          "t": 0.375,
+          "correct": false,
+          "answer": 2145,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": "5 * 39. Wait, how do I multiply these numbers? Maybe break it down. Like, 55 times 40 would be easier because 40 is a round number. But since it's 39, which is one less than 40, perhaps I can use that"
+        },
+        {
+          "t": 0.5,
+          "correct": false,
+          "answer": 2145,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": "First part: 55 * 39. Hmm, how do I calculate that? Maybe I can use the standard multiplication method. Alternatively, think of 55*40 and then subtract 55 because 39 is one less than 40. That might be "
+        },
+        {
+          "t": 0.625,
+          "correct": false,
+          "answer": 22,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 36,
+          "text_preview": "First part: 55 * 39. Hmm, how do I calculate that? Maybe I can use the standard multiplication method. Alternatively, think of 55*39 as (50 + 5)*(40 -1). Wait, but that might complicate things. Or per"
+        },
+        {
+          "t": 0.75,
+          "correct": false,
+          "answer": 0,
+          "n_tokens": 968,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": " step by step.\n\nFirst, maybe I should calculate each multiplication separately and then subtract the results. That seems straightforward. Starting with 55 times 39. Wait, how do I multiply those numbe"
+        },
+        {
+          "t": 0.875,
+          "correct": false,
+          "answer": 5,
+          "n_tokens": 968,
+          "diverge_from_t0": 9,
+          "diverge_from_prev": 0,
+          "text_preview": " with 55 * 39. That seems like a big number. Maybe there's a way to break it down or use some mental math tricks. Let me think... Oh right, sometimes you can split numbers into easier components. For "
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 2071,
+          "n_tokens": 957,
+          "diverge_from_t0": 9,
+          "diverge_from_prev": 80,
+          "text_preview": " with 55 * 39. That seems like a big number. Maybe there's a way to break it down or use some mental math tricks. Let me think... Oh right, sometimes you can split numbers into easier components. For "
+        }
+      ],
+      "coarse_bracket_divergences": [
+        80
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_016",
+      "correct_answer": 10,
+      "n_transitions": 5,
+      "coarse_pattern": "011100101",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 70,
+          "n_tokens": 965,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": "50 multiplied by 27. Wait, what's 50 times 27? Well, 50*27... Maybe I can think of 50 as 5*10, so 5*27=135, then multiply by 10 gives 1350. So that part is 1350. Then add 40 to that result. So 1350 + "
+        },
+        {
+          "t": 0.125,
+          "correct": true,
+          "answer": 10,
+          "n_tokens": 850,
+          "diverge_from_t0": 120,
+          "diverge_from_prev": 120,
+          "text_preview": "50 multiplied by 27. Wait, what's 50 times 27? Well, 50*27... Maybe I can think of 50 as 5*10, so 5*27=135, then multiply by 10 gives 1350. So that part is 1350. Then add 40 to that result. So 1350 + "
+        },
+        {
+          "t": 0.25,
+          "correct": true,
+          "answer": 10,
+          "n_tokens": 892,
+          "diverge_from_t0": 120,
+          "diverge_from_prev": 346,
+          "text_preview": "50 multiplied by 27. Wait, what's 50 times 27? Well, 50*27... Maybe I can think of 50 as 5*10, so 5*27=135, then multiply by 10 gives 1350. So that part is 1350. Then add 40 to that result. So 1350 + "
+        },
+        {
+          "t": 0.375,
+          "correct": true,
+          "answer": 10,
+          "n_tokens": 919,
+          "diverge_from_t0": 120,
+          "diverge_from_prev": 532,
+          "text_preview": "50 multiplied by 27. Wait, what's 50 times 27? Well, 50*27... Maybe I can think of 50 as 5*10, so 5*27=135, then multiply by 10 gives 1350. So that part is 1350. Then add 40 to that result. So 1350 + "
+        },
+        {
+          "t": 0.5,
+          "correct": false,
+          "answer": 1380,
+          "n_tokens": 965,
+          "diverge_from_t0": 120,
+          "diverge_from_prev": 134,
+          "text_preview": "50 multiplied by 27. Wait, what's 50 times 27? Well, 50*27... Maybe I can think of 50 as 5*10, so 5*27=135, then multiply by 10 gives 1350. So that part is 1350. Then add 40 to that result. So 1350 + "
+        },
+        {
+          "t": 0.625,
+          "correct": false,
+          "answer": 15,
+          "n_tokens": 965,
+          "diverge_from_t0": 120,
+          "diverge_from_prev": 134,
+          "text_preview": "50 multiplied by 27. Wait, what's 50 times 27? Well, 50*27... Maybe I can think of 50 as 5*10, so 5*27=135, then multiply by 10 gives 1350. So that part is 1350. Then add 40 to that result. So 1350 + "
+        },
+        {
+          "t": 0.75,
+          "correct": true,
+          "answer": 10,
+          "n_tokens": 796,
+          "diverge_from_t0": 343,
+          "diverge_from_prev": 120,
+          "text_preview": "50 multiplied by 27. Wait, what's 50 times 27? Well, 50*27... Maybe I can think of 50 as 5*10, so 5*27=135, then multiply by 10 gives 1350. So that part is 1350. Then add 40 to that result. So 1350 + "
+        },
+        {
+          "t": 0.875,
+          "correct": false,
+          "answer": 13,
+          "n_tokens": 965,
+          "diverge_from_t0": 343,
+          "diverge_from_prev": 366,
+          "text_preview": "50 multiplied by 27. Wait, what's 50 times 27? Well, 50*27... Maybe I can think of 50 as 5*10, so 5*27=135, then multiply by 10 gives 1350. So that part is 1350. Then add 40 to that result. So 1350 + "
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 10,
+          "n_tokens": 965,
+          "diverge_from_t0": 120,
+          "diverge_from_prev": 120,
+          "text_preview": "50 multiplied by 27. Wait, what's 50 times 27? Well, 50*27... Maybe I can think of 50 as 5*10, so 5*27=135, then multiply by 10 gives 1350. So that part is 1350. Then add 40 to that result. So 1350 + "
+        }
+      ],
+      "coarse_bracket_divergences": [
+        120,
+        134,
+        120,
+        366,
+        120
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_026",
+      "correct_answer": 358,
+      "n_transitions": 3,
+      "coarse_pattern": "011110001",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 5,
+          "n_tokens": 966,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": " But in this case, there are no exponents, just parentheses, multiplication, floor division, and addition.\n\nSo starting with the expression inside the parentheses: 41 multiplied by 68. Let me calculat"
+        },
+        {
+          "t": 0.125,
+          "correct": true,
+          "answer": 358,
+          "n_tokens": 836,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": " 41 and 68? Maybe break it down. Like, 40*68 plus 1*68. So 40 times 68 is... Well, 40*70 would be 2800, but since it's 68, which is 2 less than 70, so subtract 40*2 = 80 from 2800. That gives 2800 - 8"
+        },
+        {
+          "t": 0.25,
+          "correct": true,
+          "answer": 358,
+          "n_tokens": 805,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 195,
+          "text_preview": " 41 and 68? Maybe break it down. Like, 40*68 plus 1*68. So 40 times 68 is... Well, 40*70 would be 2800, but since it's 68, which is 2 less than 70, so subtract 40*2 = 80 from 2800. That gives 2800 - 8"
+        },
+        {
+          "t": 0.375,
+          "correct": true,
+          "answer": 358,
+          "n_tokens": 837,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 195,
+          "text_preview": " 41 and 68? Maybe break it down. Like, 40*68 plus 1*68. So 40 times 68 is... Well, 40*70 would be 2800, but since it's 68, which is 2 less than 70, so subtract 40*2 = 80 from 2800. That gives 2800 - 8"
+        },
+        {
+          "t": 0.5,
+          "correct": true,
+          "answer": 358,
+          "n_tokens": 837,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 837,
+          "text_preview": " 41 and 68? Maybe break it down. Like, 40*68 plus 1*68. So 40 times 68 is... Well, 40*70 would be 2800, but since it's 68, which is 2 less than 70, so subtract 40*2 = 80 from 2800. That gives 2800 - 8"
+        },
+        {
+          "t": 0.625,
+          "correct": false,
+          "answer": 278,
+          "n_tokens": 966,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 241,
+          "text_preview": " 41 and 68? Maybe break it down. Like, 40*68 plus 1*68. So 40 times 68 is... Well, 40*70 would be 2800, but since it's 68, which is 2 less than 70, so subtract 40*2 = 80 from 2800. That gives 2800 - 8"
+        },
+        {
+          "t": 0.75,
+          "correct": false,
+          "answer": 10,
+          "n_tokens": 966,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 1,
+          "text_preview": " 8 using integer division, and then add 10? Or wait, does the double slash mean something else?\n\nWait, in programming terms sometimes \"//\" can be floor division or integer division. But since this is "
+        },
+        {
+          "t": 0.875,
+          "correct": false,
+          "answer": 8,
+          "n_tokens": 966,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": " and subtraction. But wait, there are some floor divisions here too. Let me break it down step by step.\n\nFirst, the parentheses part is 41 multiplied by 68. Let me calculate that. So 41 times 68... Ma"
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 358,
+          "n_tokens": 917,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": " 8 using integer division, and then add 10? Or wait, does the double slash mean something else?\n\nWait, in programming terms sometimes \"//\" can be a floor division operator. But since this is math, per"
+        }
+      ],
+      "coarse_bracket_divergences": [
+        0,
+        241,
+        0
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_025",
+      "correct_answer": 1451,
+      "n_transitions": 3,
+      "coarse_pattern": "011110111",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 1400,
+          "n_tokens": 967,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": " calculate each multiplication separately and then add them together.\n\nStarting with 21 times 31. Let me think about how to do that. Maybe break it down? Like, 21*30 would be easier, right? Then add 2"
+        },
+        {
+          "t": 0.125,
+          "correct": true,
+          "answer": 1451,
+          "n_tokens": 818,
+          "diverge_from_t0": 65,
+          "diverge_from_prev": 65,
+          "text_preview": " calculate each multiplication separately and then add them together.\n\nStarting with 21 times 31. Let me think about how to do that. Maybe break it down? Like, 21*30 would be easier, right? Then add 2"
+        },
+        {
+          "t": 0.25,
+          "correct": true,
+          "answer": 1451,
+          "n_tokens": 923,
+          "diverge_from_t0": 138,
+          "diverge_from_prev": 65,
+          "text_preview": " calculate each multiplication separately and then add them together.\n\nStarting with 21 times 31. Let me think about how to do that. Maybe break it down? Like, 21*30 would be easier, right? Then add 2"
+        },
+        {
+          "t": 0.375,
+          "correct": true,
+          "answer": 1451,
+          "n_tokens": 927,
+          "diverge_from_t0": 138,
+          "diverge_from_prev": 258,
+          "text_preview": " calculate each multiplication separately and then add them together.\n\nStarting with 21 times 31. Let me think about how to do that. Maybe break it down? Like, 21*30 would be easier, right? Then add 2"
+        },
+        {
+          "t": 0.5,
+          "correct": true,
+          "answer": 1451,
+          "n_tokens": 818,
+          "diverge_from_t0": 65,
+          "diverge_from_prev": 65,
+          "text_preview": " calculate each multiplication separately and then add them together.\n\nStarting with 21 times 31. Let me think about how to do that. Maybe break it down? Like, 21*30 would be easier, right? Then add 2"
+        },
+        {
+          "t": 0.625,
+          "correct": false,
+          "answer": 1,
+          "n_tokens": 967,
+          "diverge_from_t0": 65,
+          "diverge_from_prev": 128,
+          "text_preview": " calculate each multiplication separately and then add them together.\n\nStarting with 21 times 31. Let me think about how to do that. Maybe break it down? Like, 21*30 would be easier, right? Then add 2"
+        },
+        {
+          "t": 0.75,
+          "correct": true,
+          "answer": 1451,
+          "n_tokens": 940,
+          "diverge_from_t0": 138,
+          "diverge_from_prev": 65,
+          "text_preview": " calculate each multiplication separately and then add them together.\n\nStarting with 21 times 31. Let me think about how to do that. Maybe break it down? Like, 21*30 would be easier, right? Then add 2"
+        },
+        {
+          "t": 0.875,
+          "correct": true,
+          "answer": 1451,
+          "n_tokens": 927,
+          "diverge_from_t0": 138,
+          "diverge_from_prev": 304,
+          "text_preview": " calculate each multiplication separately and then add them together.\n\nStarting with 21 times 31. Let me think about how to do that. Maybe break it down? Like, 21*30 would be easier, right? Then add 2"
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 1451,
+          "n_tokens": 967,
+          "diverge_from_t0": 65,
+          "diverge_from_prev": 65,
+          "text_preview": " calculate each multiplication separately and then add them together.\n\nStarting with 21 times 31. Let me think about how to do that. Maybe break it down? Like, 21*30 would be easier, right? Then add 2"
+        }
+      ],
+      "coarse_bracket_divergences": [
+        65,
+        128,
+        65
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_010",
+      "correct_answer": 924,
+      "n_transitions": 1,
+      "coarse_pattern": "011111111",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 1,
+          "n_tokens": 972,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": " calculate 11 times 21. I remember that multiplying numbers can sometimes be simplified using distributive property or other methods. Let me think... Maybe I can rewrite 21 as 20 + 1. So, 11 * (20 + 1"
+        },
+        {
+          "t": 0.125,
+          "correct": true,
+          "answer": 924,
+          "n_tokens": 657,
+          "diverge_from_t0": 334,
+          "diverge_from_prev": 334,
+          "text_preview": " calculate 11 times 21. I remember that multiplying numbers can sometimes be simplified using distributive property or other methods. Let me think... Maybe I can rewrite 21 as 20 + 1. So, 11 * (20 + 1"
+        },
+        {
+          "t": 0.25,
+          "correct": true,
+          "answer": 924,
+          "n_tokens": 668,
+          "diverge_from_t0": 350,
+          "diverge_from_prev": 334,
+          "text_preview": " calculate 11 times 21. I remember that multiplying numbers can sometimes be simplified using distributive property or other methods. Let me think... Maybe I can rewrite 21 as 20 + 1. So, 11 * (20 + 1"
+        },
+        {
+          "t": 0.375,
+          "correct": true,
+          "answer": 924,
+          "n_tokens": 970,
+          "diverge_from_t0": 321,
+          "diverge_from_prev": 321,
+          "text_preview": " calculate 11 times 21. I remember that multiplying numbers can sometimes be simplified using distributive property or other methods. Let me think... Maybe I can rewrite 21 as 20 + 1. So, 11 * (20 + 1"
+        },
+        {
+          "t": 0.5,
+          "correct": true,
+          "answer": 924,
+          "n_tokens": 668,
+          "diverge_from_t0": 350,
+          "diverge_from_prev": 321,
+          "text_preview": " calculate 11 times 21. I remember that multiplying numbers can sometimes be simplified using distributive property or other methods. Let me think... Maybe I can rewrite 21 as 20 + 1. So, 11 * (20 + 1"
+        },
+        {
+          "t": 0.625,
+          "correct": true,
+          "answer": 924,
+          "n_tokens": 871,
+          "diverge_from_t0": 116,
+          "diverge_from_prev": 116,
+          "text_preview": " calculate 11 times 21. I remember that multiplying numbers can sometimes be simplified using distributive property or other methods. Let me think... Maybe I can rewrite 21 as 20 + 1. So, 11 * (20 + 1"
+        },
+        {
+          "t": 0.75,
+          "correct": true,
+          "answer": 924,
+          "n_tokens": 875,
+          "diverge_from_t0": 116,
+          "diverge_from_prev": 631,
+          "text_preview": " calculate 11 times 21. I remember that multiplying numbers can sometimes be simplified using distributive property or other methods. Let me think... Maybe I can rewrite 21 as 20 + 1. So, 11 * (20 + 1"
+        },
+        {
+          "t": 0.875,
+          "correct": true,
+          "answer": 924,
+          "n_tokens": 816,
+          "diverge_from_t0": 352,
+          "diverge_from_prev": 116,
+          "text_preview": " calculate 11 times 21. I remember that multiplying numbers can sometimes be simplified using distributive property or other methods. Let me think... Maybe I can rewrite 21 as 20 + 1. So, 11 * (20 + 1"
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 924,
+          "n_tokens": 784,
+          "diverge_from_t0": 19,
+          "diverge_from_prev": 19,
+          "text_preview": " calculate 11 times 21. I remember that multiplying numbers can sometimes be simplified using different methods. Maybe I can use the distributive property here. Like, 11 is a number close to 10, so pe"
+        }
+      ],
+      "coarse_bracket_divergences": [
+        334
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_000",
+      "correct_answer": 1140,
+      "n_transitions": 1,
+      "coarse_pattern": "000000001",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 220,
+          "n_tokens": 635,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": " do that subtraction. 34 minus 20 would be 14, and then subtract another 3, so 14 - 3 = 11. Wait, no, wait. Actually, 34 minus 23... Maybe it's easier to think of it as 34 - 23. Since 23 + 11 = 34? No"
+        },
+        {
+          "t": 0.125,
+          "correct": false,
+          "answer": 220,
+          "n_tokens": 423,
+          "diverge_from_t0": 36,
+          "diverge_from_prev": 36,
+          "text_preview": " do that subtraction. 34 minus 20 would be 14, and then subtract another 3, so 14 - 3 = 11. So that part is 11.\n\nNow the second part: 45 minus 25. Let me calculate that. 45 minus 20 is 25, then subtra"
+        },
+        {
+          "t": 0.25,
+          "correct": false,
+          "answer": 220,
+          "n_tokens": 443,
+          "diverge_from_t0": 133,
+          "diverge_from_prev": 36,
+          "text_preview": " do that subtraction. 34 minus 20 would be 14, and then subtract another 3, so 14 - 3 = 11. Wait, no, wait. Actually, 34 minus 23... Maybe it's easier to think of it as 34 - 23. Since 23 + 11 = 34? No"
+        },
+        {
+          "t": 0.375,
+          "correct": false,
+          "answer": 220,
+          "n_tokens": 432,
+          "diverge_from_t0": 165,
+          "diverge_from_prev": 133,
+          "text_preview": " do that subtraction. 34 minus 20 would be 14, and then subtract another 3, so 14 - 3 = 11. Wait, no, wait. Actually, 34 minus 23... Maybe it's easier to think of it as 34 - 23. Since 23 + 11 = 34? No"
+        },
+        {
+          "t": 0.5,
+          "correct": false,
+          "answer": 220,
+          "n_tokens": 396,
+          "diverge_from_t0": 36,
+          "diverge_from_prev": 36,
+          "text_preview": " do that subtraction. 34 minus 20 would be 14, and then subtract another 3, so 14 - 3 = 11. So that part is 11.\n\nNow the second part: 45 minus 25. Let me calculate that. 45 minus 20 is 25, then subtra"
+        },
+        {
+          "t": 0.625,
+          "correct": false,
+          "answer": 220,
+          "n_tokens": 525,
+          "diverge_from_t0": 36,
+          "diverge_from_prev": 156,
+          "text_preview": " do that subtraction. 34 minus 20 would be 14, and then subtract another 3, so 14 - 3 = 11. So that part is 11.\n\nNow the second part: 45 minus 25. Let me calculate that. 45 minus 20 is 25, then subtra"
+        },
+        {
+          "t": 0.75,
+          "correct": false,
+          "answer": 220,
+          "n_tokens": 472,
+          "diverge_from_t0": 114,
+          "diverge_from_prev": 36,
+          "text_preview": " do that subtraction. 34 minus 20 would be 14, and then subtract another 3, so 14 - 3 = 11. Wait, no, wait. Actually, 34 minus 23... Maybe it's easier to think of it as 34 - 23. Since 23 + 11 = 34? No"
+        },
+        {
+          "t": 0.875,
+          "correct": false,
+          "answer": 220,
+          "n_tokens": 653,
+          "diverge_from_t0": 500,
+          "diverge_from_prev": 114,
+          "text_preview": " do that subtraction. 34 minus 20 would be 14, and then subtract another 3, so 14 - 3 = 11. Wait, no, wait. Actually, 34 minus 23... Maybe it's easier to think of it as 34 - 23. Since 23 + 11 = 34? No"
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 1140,
+          "n_tokens": 548,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": ", adding those two numbers together. 34 + 23... Well, 30 + 20 is 50, and then 4 + 3 is 7, so total would be 57? Wait, no, that's not right. Because 34 + 23 is like 34 + 20 = 54, then add 3 more makes "
+        }
+      ],
+      "coarse_bracket_divergences": [
+        0
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_033",
+      "correct_answer": 1170,
+      "n_transitions": 3,
+      "coarse_pattern": "010111111",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 3,
+          "n_tokens": 972,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": " 15 times 26 first. But wait, multiplying those two numbers directly might be a bit tricky. Let me think if there's a simpler way. Oh right! The associative property of multiplication allows me to gro"
+        },
+        {
+          "t": 0.125,
+          "correct": true,
+          "answer": 1170,
+          "n_tokens": 560,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": " handle the first two numbers: 15 times 26. I remember that multiplying larger numbers can be done using different methods. Maybe I can use the distributive property here. Like, breaking 26 into 20 + "
+        },
+        {
+          "t": 0.25,
+          "correct": false,
+          "answer": 780,
+          "n_tokens": 972,
+          "diverge_from_t0": 169,
+          "diverge_from_prev": 0,
+          "text_preview": " 15 times 26 first. But wait, multiplying those two numbers directly might be a bit tricky. Let me think if there's a simpler way. Oh right! The associative property of multiplication allows me to gro"
+        },
+        {
+          "t": 0.375,
+          "correct": true,
+          "answer": 1170,
+          "n_tokens": 769,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": " handle the first two numbers: 15 times 26. I remember that multiplying larger numbers can be done using different methods. Maybe I can use the distributive property here. Like, breaking 26 into 20 + "
+        },
+        {
+          "t": 0.5,
+          "correct": true,
+          "answer": 1170,
+          "n_tokens": 921,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 76,
+          "text_preview": " handle the first two numbers: 15 times 26. I remember that multiplying larger numbers can be done using different methods. Maybe I can use the distributive property here. Like, breaking 26 into 20 + "
+        },
+        {
+          "t": 0.625,
+          "correct": true,
+          "answer": 1170,
+          "n_tokens": 972,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 63,
+          "text_preview": " handle the first two numbers: 15 times 26. I remember that multiplying larger numbers can be done using different methods. Maybe I can use the distributive property here. Like, breaking 26 into 20 + "
+        },
+        {
+          "t": 0.75,
+          "correct": true,
+          "answer": 1170,
+          "n_tokens": 560,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 63,
+          "text_preview": " handle the first two numbers: 15 times 26. I remember that multiplying larger numbers can be done using different methods. Maybe I can use the distributive property here. Like, breaking 26 into 20 + "
+        },
+        {
+          "t": 0.875,
+          "correct": true,
+          "answer": 1170,
+          "n_tokens": 677,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 120,
+          "text_preview": " handle the first two numbers: 15 times 26. I remember that multiplying larger numbers can be done using different methods. Maybe I can use the distributive property here. Like, breaking 26 into 20 + "
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 1170,
+          "n_tokens": 688,
+          "diverge_from_t0": 9,
+          "diverge_from_prev": 0,
+          "text_preview": " 15 times 26 first. Let me think about how to do that. I remember that multiplying numbers can sometimes be simplified using distributive property or breaking them apart. For example, 15 is the same a"
+        }
+      ],
+      "coarse_bracket_divergences": [
+        0,
+        0,
+        0
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_011",
+      "correct_answer": -114,
+      "n_transitions": 1,
+      "coarse_pattern": "000000001",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": -52,
+          "n_tokens": 438,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": " do that subtraction. 83 minus 30 would be 53, and then subtract another 1, so 52? Wait, no, wait. Wait, 83-31. Let me write it down:\n\n83  \n-31  \n----  \nSubtracting ones place: 3-1=2. Then tens place:"
+        },
+        {
+          "t": 0.125,
+          "correct": false,
+          "answer": -52,
+          "n_tokens": 409,
+          "diverge_from_t0": 104,
+          "diverge_from_prev": 104,
+          "text_preview": " do that subtraction. 83 minus 30 would be 53, and then subtract another 1, so 52? Wait, no, wait. Wait, 83-31. Let me write it down:\n\n83  \n-31  \n----  \nSubtracting ones place: 3-1=2. Then tens place:"
+        },
+        {
+          "t": 0.25,
+          "correct": false,
+          "answer": -52,
+          "n_tokens": 429,
+          "diverge_from_t0": 62,
+          "diverge_from_prev": 62,
+          "text_preview": " do that subtraction. 83 minus 30 would be 53, and then subtract another 1, so 52? Wait, no, wait. Wait, 83-31. Let me write it down:\n\n83  \n-31  \n----  \nSubtracting 3 from 3 gives 0, but since there's"
+        },
+        {
+          "t": 0.375,
+          "correct": false,
+          "answer": -52,
+          "n_tokens": 409,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": " me do that subtraction. 83 minus 30 would be 53, and then subtract another 1, so 52? Wait, no, wait. Wait, 83-31. Let me write it down:\n\n83  \n-31  \n----  \nSubtracting ones place: 3-1=2. Then tens pla"
+        },
+        {
+          "t": 0.5,
+          "correct": false,
+          "answer": -52,
+          "n_tokens": 419,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 8,
+          "text_preview": " me do that subtraction. 83 take away 30 would be 53, then subtract another 1 makes it 52. Wait, no, wait. Wait, 83-31. Maybe better to write it down:\n\n83  \n-31  \n----  \nSubtracting ones place: 3-1=2."
+        },
+        {
+          "t": 0.625,
+          "correct": false,
+          "answer": -52,
+          "n_tokens": 438,
+          "diverge_from_t0": 438,
+          "diverge_from_prev": 0,
+          "text_preview": " do that subtraction. 83 minus 30 would be 53, and then subtract another 1, so 52? Wait, no, wait. Wait, 83-31. Let me write it down:\n\n83  \n-31  \n----  \nSubtracting ones place: 3-1=2. Then tens place:"
+        },
+        {
+          "t": 0.75,
+          "correct": false,
+          "answer": -52,
+          "n_tokens": 404,
+          "diverge_from_t0": 104,
+          "diverge_from_prev": 104,
+          "text_preview": " do that subtraction. 83 minus 30 would be 53, and then subtract another 1, so 52? Wait, no, wait. Wait, 83-31. Let me write it down:\n\n83  \n-31  \n----  \nSubtracting ones place: 3-1=2. Then tens place:"
+        },
+        {
+          "t": 0.875,
+          "correct": false,
+          "answer": -52,
+          "n_tokens": 429,
+          "diverge_from_t0": 62,
+          "diverge_from_prev": 62,
+          "text_preview": " do that subtraction. 83 minus 30 would be 53, and then subtract another 1, so 52? Wait, no, wait. Wait, 83-31. Let me write it down:\n\n83  \n-31  \n----  \nSubtracting 3 from 3 gives 0, but since there's"
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": -114,
+          "n_tokens": 515,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": "So adding those two numbers together. Let me do that. 80 + 30 is 110, and then 3 + 1 is 4. So 110 + 4 equals 114? Wait, no, wait. Wait, 83 + 31. Maybe breaking it down differently. 83 + 30 would be 11"
+        }
+      ],
+      "coarse_bracket_divergences": [
+        0
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_020",
+      "correct_answer": 456,
+      "n_transitions": 1,
+      "coarse_pattern": "000000001",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": -132,
+          "n_tokens": 369,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": ", 27 minus 49... That would be a negative number because 49 is larger than 27. Let me calculate that. So 49 minus 27 is 22, so since it's 27 minus 49, it should be -22. Right?\n\nThen the second part: 1"
+        },
+        {
+          "t": 0.125,
+          "correct": false,
+          "answer": -132,
+          "n_tokens": 379,
+          "diverge_from_t0": 113,
+          "diverge_from_prev": 113,
+          "text_preview": ", 27 minus 49... That would be a negative number because 49 is larger than 27. Let me calculate that. So 49 minus 27 is 22, so since it's 27 minus 49, it should be -22. Right?\n\nThen the second part: 1"
+        },
+        {
+          "t": 0.25,
+          "correct": false,
+          "answer": -132,
+          "n_tokens": 348,
+          "diverge_from_t0": 111,
+          "diverge_from_prev": 111,
+          "text_preview": ", 27 minus 49... That would be a negative number because 49 is larger than 27. Let me calculate that. So 49 minus 27 is 22, so since it's 27 minus 49, it should be -22. Right?\n\nThen the second part: 1"
+        },
+        {
+          "t": 0.375,
+          "correct": false,
+          "answer": -132,
+          "n_tokens": 351,
+          "diverge_from_t0": 196,
+          "diverge_from_prev": 111,
+          "text_preview": ", 27 minus 49... That would be a negative number because 49 is larger than 27. Let me calculate that. So 49 minus 27 is 22, so since it's 27 minus 49, it should be -22. Right?\n\nThen the second part: 1"
+        },
+        {
+          "t": 0.5,
+          "correct": false,
+          "answer": -132,
+          "n_tokens": 373,
+          "diverge_from_t0": 113,
+          "diverge_from_prev": 113,
+          "text_preview": ", 27 minus 49... That would be a negative number because 49 is larger than 27. Let me calculate that. So 49 minus 27 is 22, so since it's 27 minus 49, it should be -22. Right?\n\nThen the second part: 1"
+        },
+        {
+          "t": 0.625,
+          "correct": false,
+          "answer": -132,
+          "n_tokens": 348,
+          "diverge_from_t0": 111,
+          "diverge_from_prev": 111,
+          "text_preview": ", 27 minus 49... That would be a negative number because 49 is larger than 27. Let me calculate that. So 49 minus 27 is 22, so since it's 27 minus 49, it should be -22. Right?\n\nThen the second part: 1"
+        },
+        {
+          "t": 0.75,
+          "correct": false,
+          "answer": -132,
+          "n_tokens": 348,
+          "diverge_from_t0": 111,
+          "diverge_from_prev": 348,
+          "text_preview": ", 27 minus 49... That would be a negative number because 49 is larger than 27. Let me calculate that. So 49 minus 27 is 22, so since it's 27 minus 49, it should be -22. Right?\n\nThen the second part: 1"
+        },
+        {
+          "t": 0.875,
+          "correct": false,
+          "answer": -132,
+          "n_tokens": 348,
+          "diverge_from_t0": 111,
+          "diverge_from_prev": 348,
+          "text_preview": ", 27 minus 49... That would be a negative number because 49 is larger than 27. Let me calculate that. So 49 minus 27 is 22, so since it's 27 minus 49, it should be -22. Right?\n\nThen the second part: 1"
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 456,
+          "n_tokens": 441,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": "So, adding those two numbers together. Let me do that. 27 + 49... Well, 20 + 40 is 60, and then 7 + 9 is 16. So total would be 60 + 16 = 76? Wait, no, wait. That doesn't seem right. Because 27 + 49 is"
+        }
+      ],
+      "coarse_bracket_divergences": [
+        0
+      ],
+      "transitions": []
+    },
+    {
+      "task_id": "nest_029",
+      "correct_answer": 672,
+      "n_transitions": 7,
+      "coarse_pattern": "010110101",
+      "coarse_results": [
+        {
+          "t": 0.0,
+          "correct": false,
+          "answer": 28,
+          "n_tokens": 973,
+          "diverge_from_t0": -1,
+          "diverge_from_prev": -1,
+          "text_preview": " associative, so the grouping doesn't matter. So whether I do (6*28)*4 or 6*(28*4), it should give the same result. Maybe doing 28*4 first would be easier? Wait, 28 times 4... Well, 28*4 is like 20*4 "
+        },
+        {
+          "t": 0.125,
+          "correct": true,
+          "answer": 672,
+          "n_tokens": 973,
+          "diverge_from_t0": 339,
+          "diverge_from_prev": 339,
+          "text_preview": " associative, so the grouping doesn't matter. So whether I do (6*28)*4 or 6*(28*4), it should give the same result. Maybe doing 28*4 first would be easier? Wait, 28 times 4... Well, 28*4 is like 20*4 "
+        },
+        {
+          "t": 0.25,
+          "correct": false,
+          "answer": 28,
+          "n_tokens": 973,
+          "diverge_from_t0": 460,
+          "diverge_from_prev": 339,
+          "text_preview": " associative, so the grouping doesn't matter. So whether I do (6*28)*4 or 6*(28*4), it should give the same result. Maybe doing 28*4 first would be easier? Wait, 28 times 4... Well, 28*4 is like 20*4 "
+        },
+        {
+          "t": 0.375,
+          "correct": true,
+          "answer": 672,
+          "n_tokens": 563,
+          "diverge_from_t0": 48,
+          "diverge_from_prev": 48,
+          "text_preview": " associative, so the grouping doesn't matter. So whether I do (6*28)*4 or 6*(28*4), it should give the same result. Maybe doing 28*4 first would be easier? Because 28 times 4... Well, 28*4 is like 20*"
+        },
+        {
+          "t": 0.5,
+          "correct": true,
+          "answer": 672,
+          "n_tokens": 929,
+          "diverge_from_t0": 460,
+          "diverge_from_prev": 48,
+          "text_preview": " associative, so the grouping doesn't matter. So whether I do (6*28)*4 or 6*(28*4), it should give the same result. Maybe doing 28*4 first would be easier? Wait, 28 times 4... Well, 28*4 is like 20*4 "
+        },
+        {
+          "t": 0.625,
+          "correct": false,
+          "answer": 4,
+          "n_tokens": 973,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": " multiplication is associative, so the grouping doesn't matter. So whether I do (6*28)*4 or 6*(28*4), it should give the same result. Maybe I can rearrange them for easier calculation. \n\nLet me try br"
+        },
+        {
+          "t": 0.75,
+          "correct": true,
+          "answer": 672,
+          "n_tokens": 875,
+          "diverge_from_t0": 619,
+          "diverge_from_prev": 0,
+          "text_preview": " associative, so the grouping doesn't matter. So whether I do (6*28)*4 or 6*(28*4), it should give the same result. Maybe doing 28*4 first would be easier? Wait, 28 times 4... Well, 28*4 is like 20*4 "
+        },
+        {
+          "t": 0.875,
+          "correct": false,
+          "answer": 2,
+          "n_tokens": 973,
+          "diverge_from_t0": 785,
+          "diverge_from_prev": 619,
+          "text_preview": " associative, so the grouping doesn't matter. So whether I do (6*28)*4 or 6*(28*4), it should give the same result. Maybe doing 28*4 first would be easier? Wait, 28 times 4... Well, 28*4 is like 20*4 "
+        },
+        {
+          "t": 1.0,
+          "correct": true,
+          "answer": 672,
+          "n_tokens": 750,
+          "diverge_from_t0": 0,
+          "diverge_from_prev": 0,
+          "text_preview": "6 times 20 is 120, and 6 times 8 is 48. So adding those together, 120 + 48 equals 168. Wait, no, that's if I split 28 into 20 and 8. But actually, 6*28 is the same as 6*(20+8) which would be 6*20 + 6*"
+        }
+      ],
+      "coarse_bracket_divergences": [
+        339,
+        339,
+        48,
+        0,
+        0,
+        619,
+        0
+      ],
+      "transitions": []
+    }
+  ]
+}
