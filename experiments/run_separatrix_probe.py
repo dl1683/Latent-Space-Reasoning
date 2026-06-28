@@ -481,10 +481,23 @@ def main():
     task_map = {t.task_id: t for t in test_tasks}
 
     all_results = []
+    completed_tids = set()
+    resume_path = output_dir / "probe_results_v2.json"
+    if resume_path.exists():
+        with open(resume_path) as f:
+            prev = json.load(f)
+        all_results = prev.get("results", [])
+        completed_tids = {r["task_id"] for r in all_results}
+        print(f"Resuming: {len(completed_tids)} tasks already complete", flush=True)
+
     endpoint_failures = []
     t0 = time.time()
 
     for task_idx, (tid, pairs) in enumerate(selected):
+        if tid in completed_tids:
+            print(f"\n[{task_idx+1}/{len(selected)}] {tid} — SKIPPED (already complete)", flush=True)
+            continue
+
         task = task_map[tid]
         correct_candidates = pairs["correct"]
         non_greedy_wrong = [i for i in pairs["wrong"] if i > 0]
