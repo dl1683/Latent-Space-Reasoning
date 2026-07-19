@@ -36,12 +36,58 @@ This repo explores that family:
 - proof objects, gates, and cost accounting as the discipline that keeps the
   claims honest.
 
+## Quick Start
+
+Install from source:
+
+```bash
+git clone https://github.com/dl1683/Latent-Space-Reasoning.git
+cd Latent-Space-Reasoning
+pip install -e .
+```
+
+For quantized models (recommended):
+
+```bash
+pip install -e ".[quant]"
+```
+
+Compare baseline versus latent reasoning on any query:
+
+```bash
+latent-reason compare "How do I implement user authentication?"
+latent-reason compare "Design a REST API" --encoder Qwen/Qwen3-4B
+```
+
+Or use the Python API:
+
+```python
+from latent_reasoning import reason, compare
+
+result = reason("How do I implement caching?")
+print(result.plan)
+
+cmp = compare("How do I implement rate limiting?")
+print(cmp["baseline"])
+print(cmp["latent_reasoning"])
+```
+
+Other CLI commands:
+
+```bash
+latent-reason run "Design microservices" --encoder Qwen/Qwen3-1.7B
+latent-reason models          # list recommended models
+latent-reason check-gpu       # check GPU availability
+```
+
+Minimum hardware: ~2GB VRAM (Qwen3-0.6B). Recommended: ~8GB VRAM (Qwen3-4B). CPU-only works but runs slower.
+
 ## Current Evidence
 
 | Area | Status | What It Shows |
 | --- | --- | --- |
 | Diffusion latent repair | Promoted public result | A frozen diffusion language model can improve on a lean mixed benchmark by repairing latent generation state. |
-| Token/prefix perturbation | Historical exploratory evidence | Perturbations create useful diversity, but old runs are small and not promoted as headline proof. |
+| Token/prefix perturbation | Measured across 4 models | 2 random embedding tokens raise Qwen3-4B from 32% to 72% (plurality@10) on nested arithmetic. Parameter scaling from 1.7B to 8B is flat (28%→32%→24%). See below. |
 | Multi-latent aggregation v5 | Clean local milestone | A predeclared 48-task aggregation replay passed stricter robustness gates on planning tasks. |
 | Aggregation v6-v8 | Negative transfer evidence | More repair, probes, and targeted standalone repair did not reliably create aggregation-useful complements. |
 | Aggregation v9 | Post-failure design breakthrough | Complement-first packet generation passed frozen numeric replay gates on the failed v7 surface, but remains diagnostic. |
@@ -49,6 +95,70 @@ This repo explores that family:
 | Aggregation v11 | 2x replication — ALL 13 GATES PASSED | LLaDA-only 96-task replication on `plan_441`-`plan_536`: 87/96 coverage (90.6%), 87 promotions, 87/9/0 W/T/L, mean lift +0.100, Wilson lower 0.831, zero contradictions. Keyword audit RED — rubric gameable but packets are not keyword-stuffing. |
 | Blinded pairwise evaluation | STATISTICAL_GO — preregistered confirmatory study | N=50, 4 arms, 3 blinded same-model judge calls. Task-specific clause-append preferred over generic boilerplate at 33/50 (66%, p=0.016, Wilson CI [52.2%, 77.6%]). Task-specificity confirmed: true > deranged 47/50. Wrong-task clauses hurt: deranged < anchor 64%. Single-model judge caveat; error gate fails narrowly (6/50 vs ≤5 threshold). |
 | Separatrix probe (latent interpolation) | Exploratory — interesting structural signal | Interpolating between wrong and correct perturbation vectors reveals non-monotonic correctness landscape: 74% of tasks show interior correctness islands, 47% of transitions involve deep divergence (>50 shared tokens before branching). Two mechanisms coexist (trajectory-level and format-level). Needs controls before strong claims. |
+
+## Perturbation vs Parameter Scaling
+
+Two random vectors injected into the embedding space before generation,
+scaled to match the model's native embedding RMS. No training, no
+optimization. 25 nested arithmetic tasks (multi-step expressions requiring
+3–6 sequential operations), greedy decoding, max 1024 tokens.
+
+### Parameter scaling is flat; perturbation is not
+
+| Model | Params | Quant | Baseline | Pert mean | Plurality@10 | Oracle@10 |
+| --- | ---: | --- | ---: | ---: | ---: | ---: |
+| Qwen3-1.7B | 1.7B | 4-bit | 28% | 29% | — | — |
+| Qwen3-4B | 4.0B | 4-bit | 32% | 52% | **72%** | **100%** |
+| Qwen3-8B | 8.0B | 4-bit | 24% | 25% | — | — |
+| Qwen3-8B | 8.0B | 8-bit | 16% | 29% | 56% | 80% |
+| DeepSeek-R1-1.5B | 1.5B | 4-bit | 76% | 74% | — | 100% |
+| phi-2 | 2.7B | none | 12% | 19% | — | 28% |
+
+Within the Qwen3 family, quadrupling parameters from 1.7B to 8B gives no
+accuracy gain (28% → 32% → 24%). Perturbation×10 on the smallest viable
+model jumps to 72% via plurality voting. Every task in the benchmark is
+solved correctly by at least one of the 10 seeds (100% oracle coverage).
+
+Parameter scaling adds knowledge. Perturbation unlocks knowledge the model
+already has. On tasks where the bottleneck is convergence — the model
+computes the correct answer but runs out of tokens before stating it —
+more parameters do not help. The model already knows enough. Perturbation
+shifts the generation trajectory so it finishes.
+
+### Compute cost
+
+10 passes of 4B ≈ same FLOPs as 1 pass of a ~40B model (6.8e13 vs
+5.1e13 for 32B). But the 40B model gives one greedy trajectory.
+Perturbation gives 10 diverse trajectories plus a plurality vote.
+
+| Configuration | FLOPs/query | Accuracy | VRAM |
+| --- | ---: | ---: | ---: |
+| 4B baseline ×1 | 7.5e12 | 32% | 2.5 GB |
+| 4B perturbation ×10 | 6.8e13 | 72% | 2.5 GB |
+| 8B baseline ×1 | 1.6e13 | 16–24% | 5–9 GB |
+| 32B single pass (est.) | 5.1e13 | ? | 20 GB |
+| 72B single pass (est.) | 1.1e14 | ? | 42 GB |
+
+The perturbation approach runs on 2.5 GB of VRAM — a laptop GPU, an
+M-series Mac, or a $200 used desktop card. Matching 72% via parameter
+scaling likely requires 20+ GB and a high-end GPU.
+
+Measured throughput on RTX 5090 Laptop: 15.7 tok/s on 4B (59s/task),
+6.9 tok/s on 8B (145s/task). The 10 seeds are embarrassingly parallel.
+
+### What the numbers do not show
+
+- 25 tasks on one task type (nested arithmetic). The flatness of parameter
+  scaling may be specific to this benchmark.
+- Perturbation hurts models that already score well (DeepSeek at 76%
+  baseline shows −1.6pp mean effect).
+- Plurality voting requires individual seed accuracy below 50% to work;
+  majority voting fails (40% on 4B, 12% on 8B — worse than baseline).
+- The 14B and 32B baselines have not been measured yet. Those experiments
+  will pin down the exact crossover point.
+
+Data: `experiments/sensitivity_sweet_spot_random_noise_t2_results.json` and
+cross-model variants in the same directory.
 
 ## Promoted Result
 

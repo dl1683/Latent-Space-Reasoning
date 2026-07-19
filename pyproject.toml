@@ -64,9 +64,9 @@ all = [
 latent-reason = "latent_reasoning.cli.main:app"
 
 [project.urls]
-Homepage = "https://github.com/devansh/latent-space-reasoning"
-Repository = "https://github.com/devansh/latent-space-reasoning"
-Issues = "https://github.com/devansh/latent-space-reasoning/issues"
+Homepage = "https://github.com/dl1683/Latent-Space-Reasoning"
+Repository = "https://github.com/dl1683/Latent-Space-Reasoning"
+Issues = "https://github.com/dl1683/Latent-Space-Reasoning/issues"
 
 [build-system]
 requires = ["setuptools>=68.0", "wheel"]
