@@ -125,6 +125,28 @@ computes the correct answer but runs out of tokens before stating it —
 more parameters do not help. The model already knows enough. Perturbation
 shifts the generation trajectory so it finishes.
 
+### Perturbation vs temperature sampling
+
+The obvious alternative to embedding perturbation is temperature sampling:
+run the same model 10 times with temperature > 0. Same cost, same VRAM,
+same number of passes. The question is which diversity source produces
+better plurality votes.
+
+| Method | Mean | Plurality@10 | Oracle@10 |
+| --- | ---: | ---: | ---: |
+| Greedy baseline ×1 | 32% | — | — |
+| **Perturbation ×10** | **52%** | **72%** | **100%** |
+| Temperature 0.3 ×10 | 38% | 64% | 88% |
+| Temperature 0.6 ×10 | 41% | 60% | 100% |
+| Temperature 0.9 ×10 | 39% | 48% | 96% |
+
+Perturbation wins at every temperature. Higher temperature actually hurts
+plurality — temp=0.9 drops to 48%, worse than greedy baseline with
+perturbation's 72%. Token-level randomness produces different words;
+embedding perturbation shifts the reasoning trajectory from layer 1,
+producing more structurally diverse completions that agree on the right
+answer more often.
+
 ### Compute cost
 
 10 passes of 4B ≈ same FLOPs as 1 pass of a ~40B model (6.8e13 vs
@@ -157,8 +179,9 @@ Measured throughput on RTX 5090 Laptop: 15.7 tok/s on 4B (59s/task),
 - The 14B and 32B baselines have not been measured yet. Those experiments
   will pin down the exact crossover point.
 
-Data: `experiments/sensitivity_sweet_spot_random_noise_t2_results.json` and
-cross-model variants in the same directory.
+Data: `experiments/sensitivity_sweet_spot_random_noise_t2_results.json`,
+`experiments/temperature_vs_perturbation_results.json`, and cross-model
+variants in the same directory.
 
 ## Promoted Result
 

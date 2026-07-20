@@ -126,8 +126,59 @@ def main():
         run_temperature_comparison()
 
 
+def _load_checkpoint(ckpt_path):
+    if ckpt_path.exists():
+        with open(ckpt_path) as f:
+            return json.load(f)
+    return None
+
+
+def _save_checkpoint(ckpt_path, data):
+    tmp = ckpt_path.with_suffix(".tmp")
+    with open(tmp, "w") as f:
+        json.dump(data, f, indent=2, default=str)
+    tmp.replace(ckpt_path)
+
+
+def _compute_temp_stats(seed_results, tasks, n_seeds):
+    import numpy as np
+    from collections import Counter
+
+    accs = [s["accuracy"] for s in seed_results]
+    accs_np = np.array(accs)
+
+    plurality_correct = 0
+    for ti, task in enumerate(tasks):
+        answers = []
+        for sr in seed_results:
+            ext = sr["task_results"][ti]["extracted_answer"]
+            if ext is not None:
+                answers.append(ext)
+        if answers:
+            most_common = Counter(answers).most_common(1)[0][0]
+            if most_common == task.correct_answer:
+                plurality_correct += 1
+    plurality_acc = plurality_correct / len(tasks)
+
+    oracle_correct = 0
+    for ti, task in enumerate(tasks):
+        if any(sr["task_results"][ti]["correct"] for sr in seed_results):
+            oracle_correct += 1
+    oracle_acc = oracle_correct / len(tasks)
+
+    return {
+        "mean_accuracy": float(accs_np.mean()),
+        "std_accuracy": float(accs_np.std()),
+        "min_accuracy": float(accs_np.min()),
+        "max_accuracy": float(accs_np.max()),
+        "plurality_accuracy": plurality_acc,
+        "oracle_accuracy": oracle_acc,
+    }
+
+
 def run_temperature_comparison():
-    """Run temperature sampling comparison on 4B with 10 seeds."""
+    """Run temperature sampling comparison on 4B with 10 seeds.
+    Checkpoints after every seed so progress survives interruptions."""
     print("\n" + "=" * 70)
     print("TEMPERATURE HEAD-TO-HEAD COMPARISON")
     print("=" * 70)
@@ -149,13 +200,11 @@ def run_temperature_comparison():
     tasks = generate_nested_tasks(n_tasks=25, difficulty_filter="sweet_spot")
     print(f"Tasks: {len(tasks)} sweet_spot nested arithmetic")
 
-    # Load 4B model
     print("\nLoading Qwen3-4B 4-bit...")
     encoder = LLMEncoder(model_name="Qwen/Qwen3-4B", quantization="4bit")
     cal = auto_calibrate(encoder)
     print(f"Calibration: embed_dim={cal['embed_dim']}, rms={cal['embedding_rms']:.5f}")
 
-    # Load existing baseline + perturbation results for comparison
     with open(EXISTING_4B_BASELINE) as f:
         existing = json.load(f)
     print(f"Loaded existing baseline: {existing['baseline_accuracy']:.0%}")
@@ -163,20 +212,39 @@ def run_temperature_comparison():
 
     temperatures = [0.3, 0.6, 0.9]
     n_seeds = 10
-    results = {}
 
-    for temp in temperatures:
+    ckpt_path = EXPERIMENTS_DIR / ".temperature_checkpoint.json"
+    ckpt = _load_checkpoint(ckpt_path)
+    results = {}
+    if ckpt:
+        results = ckpt.get("completed_temps", {})
+        resume_temp_idx = ckpt.get("current_temp_idx", 0)
+        resume_seed_idx = ckpt.get("current_seed_idx", 0)
+        partial_seeds = ckpt.get("partial_seeds", [])
+        done = sum(len(v.get("seed_results", [])) for v in results.values())
+        print(f"\nResuming from checkpoint: {done} seeds done, "
+              f"temp_idx={resume_temp_idx}, seed_idx={resume_seed_idx}")
+    else:
+        resume_temp_idx = 0
+        resume_seed_idx = 0
+        partial_seeds = []
+
+    for temp_idx, temp in enumerate(temperatures):
+        if temp_idx < resume_temp_idx:
+            continue
+
         print(f"\n{'=' * 50}")
         print(f"TEMPERATURE = {temp}, {n_seeds} seeds")
         print(f"{'=' * 50}")
 
-        seed_results = []
-        for seed_idx in range(n_seeds):
+        seed_results = partial_seeds if temp_idx == resume_temp_idx else []
+        start_seed = resume_seed_idx if temp_idx == resume_temp_idx else 0
+
+        for seed_idx in range(start_seed, n_seeds):
             torch.manual_seed(42 + seed_idx * 7)
             task_results = []
             for ti, task in enumerate(tasks):
                 t0 = time.time()
-                # Use the same generation infrastructure but with temperature
                 system_msg = "Answer to the best of your ability."
                 messages = [
                     {"role": "system", "content": system_msg},
@@ -241,71 +309,38 @@ def run_temperature_comparison():
                 "task_results": task_results,
             })
 
+            _save_checkpoint(ckpt_path, {
+                "completed_temps": results,
+                "current_temp_idx": temp_idx,
+                "current_seed_idx": seed_idx + 1,
+                "partial_seeds": seed_results,
+            })
+
             gc.collect()
             torch.cuda.empty_cache()
 
-        # Compute statistics for this temperature
-        accs = [s["accuracy"] for s in seed_results]
-        import numpy as np
-        accs_np = np.array(accs)
-
-        # Plurality vote
-        from collections import Counter
-        plurality_correct = 0
-        for ti, task in enumerate(tasks):
-            answers = []
-            for sr in seed_results:
-                ext = sr["task_results"][ti]["extracted_answer"]
-                if ext is not None:
-                    answers.append(ext)
-            if answers:
-                most_common = Counter(answers).most_common(1)[0][0]
-                if most_common == task.correct_answer:
-                    plurality_correct += 1
-        plurality_acc = plurality_correct / len(tasks)
-
-        # Oracle (any seed correct)
-        oracle_correct = 0
-        for ti, task in enumerate(tasks):
-            if any(sr["task_results"][ti]["correct"] for sr in seed_results):
-                oracle_correct += 1
-        oracle_acc = oracle_correct / len(tasks)
-
+        stats = _compute_temp_stats(seed_results, tasks, n_seeds)
         results[f"temp_{temp}"] = {
             "temperature": temp,
             "n_seeds": n_seeds,
-            "mean_accuracy": float(accs_np.mean()),
-            "std_accuracy": float(accs_np.std()),
-            "min_accuracy": float(accs_np.min()),
-            "max_accuracy": float(accs_np.max()),
-            "plurality_accuracy": plurality_acc,
-            "oracle_accuracy": oracle_acc,
+            **stats,
             "seed_results": seed_results,
         }
 
-        print(f"\n  Temperature {temp} summary:")
-        print(f"    Mean: {accs_np.mean():.1%} +/- {accs_np.std():.1%}")
-        print(f"    Plurality@{n_seeds}: {plurality_acc:.0%}")
-        print(f"    Oracle@{n_seeds}: {oracle_acc:.0%}")
+        _save_checkpoint(ckpt_path, {
+            "completed_temps": results,
+            "current_temp_idx": temp_idx + 1,
+            "current_seed_idx": 0,
+            "partial_seeds": [],
+        })
 
-    # Save
-    output = {
-        "experiment": "temperature_vs_perturbation",
-        "model": "Qwen/Qwen3-4B",
-        "quantization": "4bit",
-        "n_tasks": len(tasks),
-        "n_seeds": n_seeds,
-        "max_new_tokens": 1024,
-        "reference": {
-            "perturbation_baseline": existing["baseline_accuracy"],
-            "perturbation_mean": existing["mean_accuracy"],
-            "perturbation_plurality": None,  # compute from existing
-            "perturbation_oracle": None,
-        },
-        "temperature_results": results,
-    }
+        print(f"\n  Temperature {temp} summary:")
+        print(f"    Mean: {stats['mean_accuracy']:.1%} +/- {stats['std_accuracy']:.1%}")
+        print(f"    Plurality@{n_seeds}: {stats['plurality_accuracy']:.0%}")
+        print(f"    Oracle@{n_seeds}: {stats['oracle_accuracy']:.0%}")
 
     # Compute perturbation plurality/oracle from existing data
+    from collections import Counter
     pert_plurality = 0
     pert_oracle = 0
     for ti, task in enumerate(tasks):
@@ -319,22 +354,38 @@ def run_temperature_comparison():
             if tr["correct"]:
                 any_correct = True
         if answers:
-            from collections import Counter
             most_common = Counter(answers).most_common(1)[0][0]
             if most_common == task.correct_answer:
                 pert_plurality += 1
         if any_correct:
             pert_oracle += 1
 
-    output["reference"]["perturbation_plurality"] = pert_plurality / len(tasks)
-    output["reference"]["perturbation_oracle"] = pert_oracle / len(tasks)
+    output = {
+        "experiment": "temperature_vs_perturbation",
+        "model": "Qwen/Qwen3-4B",
+        "quantization": "4bit",
+        "n_tasks": len(tasks),
+        "n_seeds": n_seeds,
+        "max_new_tokens": 1024,
+        "reference": {
+            "perturbation_baseline": existing["baseline_accuracy"],
+            "perturbation_mean": existing["mean_accuracy"],
+            "perturbation_plurality": pert_plurality / len(tasks),
+            "perturbation_oracle": pert_oracle / len(tasks),
+        },
+        "temperature_results": results,
+    }
 
     out_path = EXPERIMENTS_DIR / "temperature_vs_perturbation_results.json"
     with open(out_path, "w") as f:
         json.dump(output, f, indent=2, default=str)
     print(f"\nResults saved to: {out_path}")
 
-    # Summary comparison
+    # Clean up checkpoint
+    if ckpt_path.exists():
+        ckpt_path.unlink()
+        print("Checkpoint removed (experiment complete)")
+
     print(f"\n{'=' * 70}")
     print("FINAL COMPARISON: Temperature vs Perturbation")
     print(f"{'=' * 70}")
