@@ -105,19 +105,28 @@ optimization. 25 nested arithmetic tasks (multi-step expressions requiring
 
 ### Parameter scaling is flat; perturbation is not
 
+![Parameter scaling vs perturbation](docs/figures/scaling_vs_perturbation.png)
+
 | Model | Params | Quant | Baseline | Pert mean | Plurality@10 | Oracle@10 |
 | --- | ---: | --- | ---: | ---: | ---: | ---: |
 | Qwen3-1.7B | 1.7B | 4-bit | 28% | 29% | — | — |
 | Qwen3-4B | 4.0B | 4-bit | 32% | 52% | **72%** | **100%** |
 | Qwen3-8B | 8.0B | 4-bit | 24% | 25% | — | — |
 | Qwen3-8B | 8.0B | 8-bit | 16% | 29% | 56% | 80% |
+| Qwen3-14B | 14.0B | 4-bit | 36% | 40% | — | — |
+| Qwen3-32B | 32.0B | 4-bit | 0% | 0% | — | — |
 | DeepSeek-R1-1.5B | 1.5B | 4-bit | 76% | 74% | — | 100% |
 | phi-2 | 2.7B | none | 12% | 19% | — | 28% |
 
-Within the Qwen3 family, quadrupling parameters from 1.7B to 8B gives no
-accuracy gain (28% → 32% → 24%). Perturbation×10 on the smallest viable
-model jumps to 72% via plurality voting. Every task in the benchmark is
-solved correctly by at least one of the 10 seeds (100% oracle coverage).
+Within the Qwen3 family, scaling parameters from 1.7B to 32B does not
+improve accuracy: 28% → 32% → 24% → 36% → 0%. The 32B model at 4-bit
+quantization degenerates — it produces verbose natural-language
+explanations, exhausts the 1024-token budget, and never states an answer.
+The 14B model at 3.5× the FLOPs of a single 4B pass gains only +4pp.
+
+Perturbation×10 on the smallest viable model jumps to 72% via plurality
+voting. Every task in the benchmark is solved correctly by at least one
+of the 10 seeds (100% oracle coverage).
 
 Parameter scaling adds knowledge. Perturbation unlocks knowledge the model
 already has. On tasks where the bottleneck is convergence — the model
@@ -126,6 +135,8 @@ more parameters do not help. The model already knows enough. Perturbation
 shifts the generation trajectory so it finishes.
 
 ### Perturbation vs temperature sampling
+
+![Perturbation vs temperature sampling](docs/figures/temperature_vs_perturbation.png)
 
 The obvious alternative to embedding perturbation is temperature sampling:
 run the same model 10 times with temperature > 0. Same cost, same VRAM,
@@ -156,14 +167,18 @@ Perturbation gives 10 diverse trajectories plus a plurality vote.
 | Configuration | FLOPs/query | Accuracy | VRAM |
 | --- | ---: | ---: | ---: |
 | 4B baseline ×1 | 7.5e12 | 32% | 2.5 GB |
-| 4B perturbation ×10 | 6.8e13 | 72% | 2.5 GB |
+| **4B perturbation ×10** | **6.8e13** | **72%** | **2.5 GB** |
 | 8B baseline ×1 | 1.6e13 | 16–24% | 5–9 GB |
-| 32B single pass (est.) | 5.1e13 | ? | 20 GB |
-| 72B single pass (est.) | 1.1e14 | ? | 42 GB |
+| 14B baseline ×1 | 2.6e13 | 36% | ~8 GB |
+| 32B baseline ×1 | 5.1e13 | 0% | ~20 GB |
+
+The 32B model at 4-bit uses nearly the same FLOPs as perturbation×10 on
+4B (5.1e13 vs 6.8e13) but scores 0% — quantization degrades it into
+rambling. The 14B model at 3.5× one 4B pass gets 36%, half of what
+perturbation achieves at 2.5 GB of VRAM.
 
 The perturbation approach runs on 2.5 GB of VRAM — a laptop GPU, an
-M-series Mac, or a $200 used desktop card. Matching 72% via parameter
-scaling likely requires 20+ GB and a high-end GPU.
+M-series Mac, or a $200 used desktop card.
 
 Measured throughput on RTX 5090 Laptop: 15.7 tok/s on 4B (59s/task),
 6.9 tok/s on 8B (145s/task). The 10 seeds are embarrassingly parallel.
@@ -176,11 +191,15 @@ Measured throughput on RTX 5090 Laptop: 15.7 tok/s on 4B (59s/task),
   baseline shows −1.6pp mean effect).
 - Plurality voting requires individual seed accuracy below 50% to work;
   majority voting fails (40% on 4B, 12% on 8B — worse than baseline).
-- The 14B and 32B baselines have not been measured yet. Those experiments
-  will pin down the exact crossover point.
+- The 32B result (0%) is likely a quantization artifact — 4-bit may be
+  too aggressive at that scale for this task type. An 8-bit or
+  unquantized 32B run would be a fairer comparison but requires more VRAM
+  than our test hardware (24 GB).
 
 Data: `experiments/sensitivity_sweet_spot_random_noise_t2_results.json`,
-`experiments/temperature_vs_perturbation_results.json`, and cross-model
+`experiments/temperature_vs_perturbation_results.json`,
+`experiments/scaling_ladder_14b_4bit_baseline.json`,
+`experiments/scaling_ladder_32b_4bit_baseline.json`, and cross-model
 variants in the same directory.
 
 ## Promoted Result
