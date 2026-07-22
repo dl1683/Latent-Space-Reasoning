@@ -87,7 +87,7 @@ Minimum hardware: ~2GB VRAM (Qwen3-0.6B). Recommended: ~8GB VRAM (Qwen3-4B). CPU
 | Area | Status | What It Shows |
 | --- | --- | --- |
 | Diffusion latent repair | Promoted public result | A frozen diffusion language model can improve on a lean mixed benchmark by repairing latent generation state. |
-| Token/prefix perturbation | Measured across 6 models | 2 random embedding tokens raise Qwen3-4B from 32% to 72% (plurality@10) on nested arithmetic. Scaling from 1.7B to 32B is flat or worse (28%→36%→0%). Perturbation beats temperature sampling at equal cost (72% vs best 64%). See below. |
+| Token/prefix perturbation | Measured across 6 models + text generation | 2 random embedding tokens raise Qwen3-4B from 32% to 72% (plurality@10) on nested arithmetic. Scaling from 1.7B to 32B is flat or worse (28%→36%→0%). Perturbation beats temperature sampling at equal cost (72% vs best 64%). On text generation, perturbation wins 7/15 vs baseline (1 loss) and 5/15 vs 14B (7 losses). See below. |
 | Multi-latent aggregation v5 | Clean local milestone | A predeclared 48-task aggregation replay passed stricter robustness gates on planning tasks. |
 | Aggregation v6-v8 | Negative transfer evidence | More repair, probes, and targeted standalone repair did not reliably create aggregation-useful complements. |
 | Aggregation v9 | Post-failure design breakthrough | Complement-first packet generation passed frozen numeric replay gates on the failed v7 surface, but remains diagnostic. |
@@ -115,6 +115,14 @@ sequential operations), greedy decoding, max 1024 tokens:
 ### Parameter scaling is flat; perturbation is not
 
 ![Parameter scaling vs perturbation](docs/figures/scaling_vs_perturbation.png)
+
+*Each pair of bars shows how well a model does on the same 25 math
+problems. Blue = the model's default accuracy. Orange = accuracy after
+adding 2 random embedding vectors. The dashed red line is what you get
+when you run the 4B model 10 times with different perturbations and take
+a majority vote. Making the model bigger (moving right) doesn't help —
+the bars stay flat or drop. But perturbation on the smallest model
+jumps to 72%.*
 
 | Model | Params | Quant | Baseline | Pert mean | Plurality@10 | Oracle@10 |
 | --- | ---: | --- | ---: | ---: | ---: | ---: |
@@ -151,6 +159,15 @@ that solves it reliably (72%), using the same weights.
 ### Perturbation vs temperature sampling
 
 ![Perturbation vs temperature sampling](docs/figures/temperature_vs_perturbation.png)
+
+*All five bars use the same model (Qwen3-4B) and the same number of
+attempts (10). The only difference is how diversity is generated.
+Temperature sampling (blue bars) adds randomness at the token level —
+the model rolls dice on each word. Perturbation (orange bar) shifts the
+starting point in embedding space so the model reasons along a
+completely different trajectory. The diamonds show plurality vote
+accuracy; the triangles show oracle (best of 10). Perturbation generates
+more useful diversity at every temperature setting.*
 
 The obvious alternative to embedding perturbation is temperature sampling:
 run the same model 10 times with temperature > 0. Same cost, same VRAM,
@@ -224,6 +241,62 @@ Data: `experiments/sensitivity_sweet_spot_random_noise_t2_results.json`,
 `experiments/scaling_ladder_14b_4bit_baseline.json`,
 `experiments/scaling_ladder_32b_4bit_baseline.json`, and cross-model
 variants in the same directory.
+
+### Text generation: perturbation helps beyond arithmetic
+
+The arithmetic results show perturbation works on tasks with verifiable
+correct answers. But does it help on open-ended text generation where
+there is no single right answer?
+
+15 technical tasks (explanation, analysis, reasoning, debugging, planning,
+creative writing) evaluated via blind LLM-as-judge pairwise comparison.
+Qwen3-4B 4-bit with perturbation (best of 5 seeds) versus the same model
+greedy baseline, and versus Qwen3-14B 4-bit greedy baseline.
+
+![Text generation judge results](docs/figures/text_gen_judge_results.png)
+
+*Left panel: when perturbation competes against the same model's default
+output, it wins 7 out of 15 tasks and only loses 1. Right panel: when
+a small 4B model with perturbation competes against a 14B model (3.5×
+larger), it still wins 5 out of 15. The judge sees both responses
+unlabeled and picks which is better — it doesn't know which model
+produced which response.*
+
+**4B perturbation vs 4B baseline: 7 wins, 1 loss, 7 ties.**
+Perturbation's main advantage: it escapes the `<think>` trap. Baseline
+gets stuck in internal reasoning monologue and exhausts the token budget
+without producing a final answer. Perturbation shifts the trajectory so
+the model produces structured, complete responses.
+
+**4B perturbation vs 14B baseline: 5 wins, 7 losses, 3 ties.**
+A 4B model with perturbation is competitive against a model 3.5× its size
+— winning a third of matchups at 1/3 the VRAM.
+
+![Category win rates](docs/figures/text_gen_category_wins.png)
+
+*Each bar shows how often perturbation wins on that type of task.
+Orange bars = win rate against the same 4B model without perturbation.
+Blue bars = win rate against the larger 14B model. Perturbation helps
+most on reasoning and analysis tasks (left side) — tasks where the
+model knows the answer but gets stuck in verbose thinking. It helps
+least on planning and creative tasks (right side) — tasks where more
+knowledge genuinely matters.*
+
+Where perturbation helps most:
+
+- **Reasoning and analysis** (67% win rate vs both baselines): tasks with
+  clear logical structure where the bottleneck is completing the chain of
+  thought, not knowing more facts.
+- **Explanation** (67% vs 4B, 33% vs 14B): perturbation helps escape
+  verbose thinking; 14B's extra knowledge helps more on some topics.
+- **Planning and creative** (0% win rate vs 14B): open-ended tasks where
+  deeper knowledge matters more than trajectory diversity.
+
+This pattern confirms the mechanism: perturbation unlocks what the model
+already knows. It does not substitute for knowledge the model lacks.
+
+Data: `experiments/text_generation_results.json`,
+`experiments/text_gen_judge_results.json`
 
 ## Promoted Result
 

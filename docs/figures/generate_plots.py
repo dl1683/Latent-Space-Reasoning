@@ -104,6 +104,97 @@ def plot_temperature_vs_perturbation():
     print("Saved temperature_vs_perturbation.png/.svg")
 
 
+def plot_text_gen_judge():
+    """Win/loss chart for text generation blind judge comparisons."""
+    fig, axes = plt.subplots(1, 2, figsize=(12, 5))
+
+    # Comparison 1: perturbation vs 4B baseline
+    ax = axes[0]
+    categories = ["Perturbation\nwins", "Baseline\nwins", "Tie"]
+    counts = [7, 1, 7]
+    colors = ["#e07b54", "#5a7d9a", "#bbbbbb"]
+    bars = ax.bar(categories, counts, color=colors, width=0.55, zorder=3, edgecolor="white", linewidth=1.5)
+    for bar in bars:
+        h = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2, h + 0.2, str(int(h)),
+                ha="center", va="bottom", fontsize=14, fontweight="bold")
+    ax.set_ylim(0, 10)
+    ax.set_ylabel("Tasks (out of 15)")
+    ax.set_title("4B perturbation vs 4B baseline", fontweight="bold", pad=10)
+    ax.grid(axis="y", alpha=0.3, zorder=0)
+
+    # Comparison 2: perturbation vs 14B baseline
+    ax = axes[1]
+    categories = ["4B pert\nwins", "14B base\nwins", "Tie"]
+    counts = [5, 7, 3]
+    colors = ["#e07b54", "#2a78d6", "#bbbbbb"]
+    bars = ax.bar(categories, counts, color=colors, width=0.55, zorder=3, edgecolor="white", linewidth=1.5)
+    for bar in bars:
+        h = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2, h + 0.2, str(int(h)),
+                ha="center", va="bottom", fontsize=14, fontweight="bold")
+    ax.set_ylim(0, 10)
+    ax.set_ylabel("Tasks (out of 15)")
+    ax.set_title("4B perturbation vs 14B baseline", fontweight="bold", pad=10)
+    ax.grid(axis="y", alpha=0.3, zorder=0)
+
+    fig.suptitle("Text Generation: Blind LLM-as-Judge Evaluation",
+                 fontsize=13, fontweight="bold", y=1.02)
+    fig.tight_layout()
+    fig.savefig(OUT / "text_gen_judge_results.png", bbox_inches="tight")
+    fig.savefig(OUT / "text_gen_judge_results.svg", bbox_inches="tight")
+    plt.close(fig)
+    print("Saved text_gen_judge_results.png/.svg")
+
+
+def plot_text_gen_by_category():
+    """Heatmap showing which categories perturbation helps most."""
+    categories = ["Reasoning", "Analysis", "Explanation", "Creative", "Debugging", "Planning"]
+    # vs 4B baseline: wins / total in category
+    vs_base = [2/3, 2/3, 2/3, 1/2, 1/2, 0/2]
+    # vs 14B baseline: wins / total
+    vs_14b = [2/3, 2/3, 1/3, 0/2, 0/2, 0/2]
+
+    fig, ax = plt.subplots(figsize=(8, 4))
+
+    x = np.arange(len(categories))
+    w = 0.32
+
+    bars1 = ax.bar(x - w/2, [v * 100 for v in vs_base], w,
+                   label="Pert win rate vs 4B baseline", color="#e07b54", zorder=3)
+    bars2 = ax.bar(x + w/2, [v * 100 for v in vs_14b], w,
+                   label="Pert win rate vs 14B baseline", color="#2a78d6", zorder=3)
+
+    ax.axhline(50, color="#999999", linestyle=":", linewidth=1, alpha=0.6)
+
+    ax.set_xticks(x)
+    ax.set_xticklabels(categories)
+    ax.set_ylabel("Perturbation win rate (%)")
+    ax.set_title("Where perturbation helps: structured reasoning > open-ended planning",
+                 fontweight="bold", pad=12)
+    ax.set_ylim(0, 85)
+    ax.yaxis.set_major_formatter(mticker.PercentFormatter())
+    ax.legend(loc="upper right", framealpha=0.9, fontsize=9)
+    ax.grid(axis="y", alpha=0.3, zorder=0)
+
+    for bar in bars1:
+        h = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2, h + 1, f"{h:.0f}%",
+                ha="center", va="bottom", fontsize=8, color="#e07b54")
+    for bar in bars2:
+        h = bar.get_height()
+        ax.text(bar.get_x() + bar.get_width()/2, h + 1, f"{h:.0f}%",
+                ha="center", va="bottom", fontsize=8, color="#2a78d6")
+
+    fig.tight_layout()
+    fig.savefig(OUT / "text_gen_category_wins.png", bbox_inches="tight")
+    fig.savefig(OUT / "text_gen_category_wins.svg", bbox_inches="tight")
+    plt.close(fig)
+    print("Saved text_gen_category_wins.png/.svg")
+
+
 if __name__ == "__main__":
     plot_scaling_vs_perturbation()
     plot_temperature_vs_perturbation()
+    plot_text_gen_judge()
+    plot_text_gen_by_category()

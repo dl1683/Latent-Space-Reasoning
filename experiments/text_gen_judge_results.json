@@ -1,0 +1,180 @@
+{
+  "comparisons": {
+    "perturbation_vs_4b_baseline": {
+      "description": "4B perturbation (best of 5) vs 4B greedy baseline",
+      "results": {
+        "text_001": {
+          "winner": "perturbation",
+          "reason": "Baseline stuck in raw thinking notes; perturbation delivers clean formatted answer"
+        },
+        "text_002": {
+          "winner": "perturbation",
+          "reason": "More complete comparison with concrete examples and When to Choose sections"
+        },
+        "text_003": {
+          "winner": "perturbation",
+          "reason": "Baseline cut off mid-calculation; perturbation completes all steps arriving at 38%"
+        },
+        "text_004": {
+          "winner": "tie",
+          "reason": "Both polished complete blog posts at comparable quality"
+        },
+        "text_005": {
+          "winner": "tie",
+          "reason": "Both raw thinking notes that never deliver structured strategy"
+        },
+        "text_006": {
+          "winner": "perturbation",
+          "reason": "Perturbation opens with direct structured answer; baseline mostly internal monologue"
+        },
+        "text_007": {
+          "winner": "perturbation",
+          "reason": "Complete answer with examples and summary table; baseline truncates mid-example"
+        },
+        "text_008": {
+          "winner": "baseline",
+          "reason": "Baseline presents concise proof with information theory; perturbation is extended thinking notes"
+        },
+        "text_009": {
+          "winner": "tie",
+          "reason": "Both similarly structured, both truncated at same depth"
+        },
+        "text_010": {
+          "winner": "tie",
+          "reason": "Both raw thinking notes, neither produces actionable plan"
+        },
+        "text_011": {
+          "winner": "perturbation",
+          "reason": "More precise technical details (OAuth2, Redis, email OTP), no typos"
+        },
+        "text_012": {
+          "winner": "tie",
+          "reason": "Both thinking-mode walkthroughs, same conclusions, similar depth"
+        },
+        "text_013": {
+          "winner": "tie",
+          "reason": "Both extended monologue exploring causes, neither reaches structured conclusion"
+        },
+        "text_014": {
+          "winner": "tie",
+          "reason": "Both structured, both truncate at nearly same point"
+        },
+        "text_015": {
+          "winner": "perturbation",
+          "reason": "Complete coverage of both methods with banking recommendation; baseline truncates"
+        }
+      },
+      "tally": {
+        "perturbation": 7,
+        "baseline": 1,
+        "tie": 7
+      }
+    },
+    "perturbation_vs_14b_baseline": {
+      "description": "4B perturbation (best of 5) vs 14B greedy baseline",
+      "results": {
+        "text_001": {
+          "winner": "tie",
+          "reason": "Both well-structured explanations truncated at similar depth"
+        },
+        "text_002": {
+          "winner": "perturbation",
+          "reason": "Complete comparison with concrete examples; 14B cut off before recommendations"
+        },
+        "text_003": {
+          "winner": "perturbation",
+          "reason": "Complete correct solution; 14B truncated after first calculation"
+        },
+        "text_004": {
+          "winner": "14b",
+          "reason": "14B adds deeper technical detail (B-tree, hash index structures)"
+        },
+        "text_005": {
+          "winner": "14b",
+          "reason": "14B outlines concrete 3-layer architecture; perturbation never reaches structured proposal"
+        },
+        "text_006": {
+          "winner": "14b",
+          "reason": "14B more actionable detail per issue (tree-shaking, code-splitting, React Suspense)"
+        },
+        "text_007": {
+          "winner": "perturbation",
+          "reason": "Complete answer with two examples and summary table; 14B truncated before finishing"
+        },
+        "text_008": {
+          "winner": "perturbation",
+          "reason": "Full proof with information theory and verification; 14B severely truncated"
+        },
+        "text_009": {
+          "winner": "14b",
+          "reason": "14B gets further into GraphQL, names N+1 problem; perturbation cut off at REST"
+        },
+        "text_010": {
+          "winner": "14b",
+          "reason": "14B considers more sophisticated approaches (streaming replication, WAL)"
+        },
+        "text_011": {
+          "winner": "tie",
+          "reason": "Both professional commit messages and PR descriptions, equally strong"
+        },
+        "text_012": {
+          "winner": "tie",
+          "reason": "Both thinking-mode walkthroughs with same correct conclusions"
+        },
+        "text_013": {
+          "winner": "14b",
+          "reason": "14B provides clean structured answer; perturbation is raw thinking notes"
+        },
+        "text_014": {
+          "winner": "14b",
+          "reason": "14B delivers structured explanation with update rule formula; perturbation truncated earlier"
+        },
+        "text_015": {
+          "winner": "perturbation",
+          "reason": "Most complete coverage with clear banking recommendation and hybrid approaches"
+        }
+      },
+      "tally": {
+        "perturbation": 5,
+        "14b": 7,
+        "tie": 3
+      }
+    }
+  },
+  "analysis": {
+    "perturbation_wins_both": [
+      "text_002",
+      "text_003",
+      "text_007",
+      "text_015"
+    ],
+    "perturbation_wins_both_categories": [
+      "analysis",
+      "reasoning",
+      "explanation",
+      "analysis"
+    ],
+    "perturbation_never_wins": [
+      "text_004",
+      "text_005",
+      "text_009",
+      "text_010",
+      "text_012",
+      "text_013",
+      "text_014"
+    ],
+    "category_strength": {
+      "reasoning": "strong - perturbation wins 2/3 vs base, 2/3 vs 14B",
+      "analysis": "strong - perturbation wins 2/3 vs base, 2/3 vs 14B",
+      "explanation": "mixed - wins 2/3 vs base, 1/3 vs 14B",
+      "planning": "weak - ties vs base, loses 2/2 vs 14B",
+      "debugging": "split - wins 1 loses 1 each comparison",
+      "creative": "neutral - ties or loses"
+    },
+    "eos_rates": {
+      "4b_baseline": "2/15",
+      "4b_perturbation_best": "4/15",
+      "14b_baseline": "2/15"
+    }
+  }
+}
