@@ -464,6 +464,93 @@ def generate_nested_tasks(
         return SensitivityTask(
             f"nest_{idx:03d}", prompt, answer, n_ops, "brutal_nested")
 
+    def _make_frontier_nested(idx: int) -> SensitivityTask:
+        """4-digit x 3-digit cores, ~10 operations, three levels of nesting.
+
+        Added because Gemma 4 31B scores 100% on `brutal_nested`, leaving no
+        headroom to measure whether perturbation helps a frontier model. The
+        difficulty knob turned here is multiplicand width, not just operation
+        count: multi-digit multiplication is where carry errors accumulate,
+        while adding more small operations mostly just lengthens the trace.
+
+        Every modulo operand is built from `+` and `*` only, so it is
+        non-negative by construction. This is deliberate: for a negative left
+        operand Python's `%` returns a non-negative residue while C-style
+        remainder does not, and a task whose answer depends on which convention
+        the model assumes tests trivia rather than arithmetic.
+        """
+        a = rng.randint(1000, 9999)
+        b = rng.randint(100, 999)
+        c = rng.randint(1000, 9999)
+        d = rng.randint(100, 999)
+        e = rng.randint(20, 99)
+        g = rng.randint(100, 999)
+        f = rng.randint(3, 19)
+        m1 = rng.choice([53, 67, 71, 83, 97, 101, 113, 127, 139, 151])
+        m2 = rng.choice([13, 17, 19, 23, 29, 31, 37, 41, 43, 47])
+        patterns = [
+            (f"(({a} * {b} + {c} * {d}) % {m1}) * (({e} * {f} + {g}) % {m2})", 9),
+            (f"(({a} * {b}) // {f} + ({c} * {d}) % {m1}) * (({g} + {e}) // {rng.randint(3, 9)})", 9),
+            (f"((({a} + {c}) * {e}) % {m1}) * ((({b} * {d}) % {m2}) + {g})", 9),
+            (f"(({a} * {b} + {g}) % {m1}) * {f} + (({c} * {d} + {e}) % {m2}) * {rng.randint(11, 99)}", 11),
+            (f"((({a} * {b}) % {m1}) * (({c} * {d}) % {m2}) + {g} * {e}) // {rng.randint(2, 7)}", 10),
+        ]
+        expr, n_ops = rng.choice(patterns)
+        answer = _eval_safe(expr)
+        if answer is None or answer < 0:
+            expr = f"(({a} * {b} + {c} * {d}) % {m1}) * {f} + {g}"
+            answer = _eval_safe(expr)
+            n_ops = 7
+        prompt = (
+            f"Compute the following expression carefully. Show every step "
+            f"of your work, then state the final answer as a single number.\n{expr}"
+        )
+        return SensitivityTask(
+            f"nest_{idx:03d}", prompt, answer, n_ops, "frontier_nested")
+
+    def _make_wide_mult(idx: int) -> SensitivityTask:
+        """Few operations, but 4-digit x 4-digit multiplication cores.
+
+        Built for the capability-limited diversity study, which needs a tier
+        that is hard *and* cheap to generate. The other tiers scale difficulty
+        by piling on operations, which lengthens the trace roughly linearly and
+        makes a k-seed study expensive; `frontier_nested` averages ~1250 tokens.
+
+        Wide multiplication is a different axis. A 4-digit by 4-digit product
+        requires four partial products and a carry-heavy sum -- the single most
+        error-prone step for a small model -- but takes only a handful of lines
+        to write out. So accuracy falls while trace length stays short.
+
+        Modulo operands are non-negative by construction, as in
+        `frontier_nested`, to avoid depending on Python's residue convention.
+        """
+        a = rng.randint(1000, 9999)
+        b = rng.randint(1000, 9999)
+        c = rng.randint(1000, 9999)
+        d = rng.randint(100, 999)
+        e = rng.randint(100, 999)
+        m = rng.choice([53, 67, 71, 83, 97, 101, 113, 127])
+        patterns = [
+            (f"{a} * {b} + {c}", 2),
+            (f"{a} * {b} - {c} * {d}", 3),
+            (f"({a} * {b}) % {m} + {c}", 3),
+            (f"{a} * {b} + {c} * {d}", 3),
+            (f"({a} * {b} + {c}) // {rng.randint(3, 9)}", 3),
+            (f"{a} * {b} - {c} * {d} + {e}", 4),
+        ]
+        expr, n_ops = rng.choice(patterns)
+        answer = _eval_safe(expr)
+        if answer is None or answer < 0:
+            expr = f"{a} * {b} + {c}"
+            answer = _eval_safe(expr)
+            n_ops = 2
+        prompt = (
+            f"Compute the following expression. Show your work, "
+            f"then state the final answer as a single number.\n{expr}"
+        )
+        return SensitivityTask(
+            f"nest_{idx:03d}", prompt, answer, n_ops, "wide_mult")
+
     # If a difficulty filter is set, generate all tasks at that level
     if difficulty_filter:
         makers = {
@@ -472,6 +559,8 @@ def generate_nested_tasks(
             "medium_nested": _make_medium_nested,
             "hard_nested": _make_hard_nested,
             "brutal_nested": _make_brutal_nested,
+            "frontier_nested": _make_frontier_nested,
+            "wide_mult": _make_wide_mult,
         }
         maker = makers.get(difficulty_filter)
         if maker is None:
@@ -927,7 +1016,7 @@ def main():
     parser.add_argument(
         "--difficulty", default=None,
         choices=["easy_nested", "sweet_spot", "medium_nested", "hard_nested",
-                 "brutal_nested"],
+                 "brutal_nested", "frontier_nested", "wide_mult"],
         help="Generate ALL nested tasks at this difficulty level")
     parser.add_argument(
         "--decode-mode", default="soft_prompt",

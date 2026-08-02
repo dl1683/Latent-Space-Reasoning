@@ -1,0 +1,237 @@
+{
+  "model": "Qwen/Qwen3-4B",
+  "difficulty": "wide_mult",
+  "k": 8,
+  "tasks": [
+    {
+      "task_id": "nest_000",
+      "correct_answer": 3984522,
+      "repeat_sequential": {
+        "n": 2,
+        "distinct_completions": 1,
+        "distinct_answers": 1,
+        "shared_prefix_chars": 726,
+        "answers": [
+          3984522,
+          3984522
+        ]
+      },
+      "identical_batch": {
+        "n": 8,
+        "distinct_completions": 1,
+        "distinct_answers": 1,
+        "shared_prefix_chars": 725,
+        "answers": [
+          3984522,
+          3984522,
+          3984522,
+          3984522,
+          3984522,
+          3984522,
+          3984522,
+          3984522
+        ]
+      },
+      "perturbed_batch": {
+        "n": 8,
+        "distinct_completions": 3,
+        "distinct_answers": 1,
+        "shared_prefix_chars": 274,
+        "answers": [
+          3984522,
+          3984522,
+          3984522,
+          3984522,
+          3984522,
+          3984522,
+          3984522,
+          3984522
+        ]
+      }
+    },
+    {
+      "task_id": "nest_001",
+      "correct_answer": 23038056,
+      "repeat_sequential": {
+        "n": 2,
+        "distinct_completions": 1,
+        "distinct_answers": 1,
+        "shared_prefix_chars": 931,
+        "answers": [
+          23023776,
+          23023776
+        ]
+      },
+      "identical_batch": {
+        "n": 8,
+        "distinct_completions": 7,
+        "distinct_answers": 5,
+        "shared_prefix_chars": 172,
+        "answers": [
+          23038056,
+          23023956,
+          22942776,
+          22942776,
+          23023956,
+          23024676,
+          23023776,
+          22942776
+        ]
+      },
+      "perturbed_batch": {
+        "n": 8,
+        "distinct_completions": 8,
+        "distinct_answers": 3,
+        "shared_prefix_chars": 7,
+        "answers": [
+          23024676,
+          23038056,
+          23038056,
+          23038056,
+          23038056,
+          23038056,
+          23038056,
+          56
+        ]
+      }
+    },
+    {
+      "task_id": "nest_002",
+      "correct_answer": 16852167,
+      "repeat_sequential": {
+        "n": 2,
+        "distinct_completions": 2,
+        "distinct_answers": 1,
+        "shared_prefix_chars": 666,
+        "answers": [
+          16803,
+          16803
+        ]
+      },
+      "identical_batch": {
+        "n": 8,
+        "distinct_completions": 1,
+        "distinct_answers": 1,
+        "shared_prefix_chars": 1219,
+        "answers": [
+          16852167,
+          16852167,
+          16852167,
+          16852167,
+          16852167,
+          16852167,
+          16852167,
+          16852167
+        ]
+      },
+      "perturbed_batch": {
+        "n": 8,
+        "distinct_completions": 8,
+        "distinct_answers": 2,
+        "shared_prefix_chars": 7,
+        "answers": [
+          16852167,
+          16852167,
+          16852167,
+          16852167,
+          16852167,
+          16852167,
+          16752167,
+          16852167
+        ]
+      }
+    },
+    {
+      "task_id": "nest_003",
+      "correct_answer": 3203432,
+      "repeat_sequential": {
+        "n": 2,
+        "distinct_completions": 1,
+        "distinct_answers": 1,
+        "shared_prefix_chars": 615,
+        "answers": [
+          3207772,
+          3207772
+        ]
+      },
+      "identical_batch": {
+        "n": 8,
+        "distinct_completions": 1,
+        "distinct_answers": 1,
+        "shared_prefix_chars": 1196,
+        "answers": [
+          3203432,
+          3203432,
+          3203432,
+          3203432,
+          3203432,
+          3203432,
+          3203432,
+          3203432
+        ]
+      },
+      "perturbed_batch": {
+        "n": 8,
+        "distinct_completions": 5,
+        "distinct_answers": 1,
+        "shared_prefix_chars": 7,
+        "answers": [
+          3203432,
+          3203432,
+          3203432,
+          3203432,
+          3203432,
+          3203432,
+          3203432,
+          3203432
+        ]
+      }
+    },
+    {
+      "task_id": "nest_004",
+      "correct_answer": 2708,
+      "repeat_sequential": {
+        "n": 2,
+        "distinct_completions": 2,
+        "distinct_answers": 1,
+        "shared_prefix_chars": 1085,
+        "answers": [
+          2708,
+          2708
+        ]
+      },
+      "identical_batch": {
+        "n": 8,
+        "distinct_completions": 3,
+        "distinct_answers": 1,
+        "shared_prefix_chars": 495,
+        "answers": [
+          2708,
+          2708,
+          2708,
+          2708,
+          2708,
+          2708,
+          2708,
+          2708
+        ]
+      },
+      "perturbed_batch": {
+        "n": 8,
+        "distinct_completions": 7,
+        "distinct_answers": 1,
+        "shared_prefix_chars": 28,
+        "answers": [
+          2708,
+          2708,
+          2708,
+          2708,
+          2708,
+          2708,
+          2708,
+          2708
+        ]
+      }
+    }
+  ]
+}
