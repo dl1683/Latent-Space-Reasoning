@@ -257,36 +257,123 @@ def load_gsm8k_tasks(
 # Answer verification (V11+ canonical form)
 # =====================================================================
 
+# Optional sign, then either a comma-grouped number (1,140) or a plain digit run,
+# then an OPTIONAL fractional part. The fractional part must be consumed even
+# though these tasks have integer answers: without it, "412.5" matches twice and
+# yields [412, 5], so `extract_answer` -- which takes the LAST match -- returns
+# the fractional digits. A model that answers 412.5 to a question whose expected
+# answer is 413 should score 0 for being wrong, not 0 for saying ".5".
+_NUMBER = re.compile(r"-?(?:\d{1,3}(?:,\d{3})+|\d+)(?:\.\d+)?")
+
+
+def _parse_numbers(response: str) -> list[float]:
+    """Extract every number in text, treating a decimal as one number."""
+    return [float(s.replace(",", "")) for s in _NUMBER.findall(response)]
+
+
 def _parse_integers(response: str) -> list[int]:
-    """Extract all integers from text, handling comma-formatted numbers like 1,140."""
-    # Match optional minus, then digits possibly separated by commas (e.g. 1,140 or 7,278)
-    raw = re.findall(r"-?(?:\d{1,3}(?:,\d{3})+|\d+)", response)
-    return [int(s.replace(",", "")) for s in raw]
+    """Extract all integers from text, handling comma-formatted numbers like 1,140.
+
+    Non-integral values are dropped rather than truncated: these benchmarks have
+    integer answers, so a decimal is a wrong answer, and silently flooring it
+    would turn "412.5" into a match for 412.
+    """
+    return [int(n) for n in _parse_numbers(response) if n.is_integer()]
 
 
 def verify_answer(response: str, expected: int) -> bool:
-    """Verify that the last number in the response matches expected."""
-    numbers = _parse_integers(response)
+    """Verify that the last number in the response matches expected.
+
+    The comparison is against the last *number*, not the last integer. A model
+    that ends on 412.5 has answered 412.5 -- it is wrong, and it must not be
+    rescued by falling back to some earlier integer in its working.
+    """
+    numbers = _parse_numbers(response)
     if not numbers:
         return False
-    return numbers[-1] == expected
+    return numbers[-1] == float(expected)
 
 
 def extract_answer(response: str) -> int | None:
-    """Extract the last integer from response (same logic as verify_answer)."""
-    numbers = _parse_integers(response)
-    if not numbers:
+    """The integer the response finally states, or None if it states none.
+
+    Returns None when the last number is not an integer. That is a real
+    outcome, not a parse failure: these benchmarks have integer answers, so a
+    final value of 412.5 means the model did not produce one. Scanning backwards
+    for the nearest integer instead would report an intermediate step as if it
+    were the answer.
+    """
+    numbers = _parse_numbers(response)
+    if not numbers or not numbers[-1].is_integer():
         return None
-    return numbers[-1]
+    return int(numbers[-1])
+
+
+# Closing markers for a model's internal reasoning trace, by family. Qwen3
+# closes think mode with ``</think>``; Gemma 4 closes its ``thought`` channel
+# with ``<channel|>``. Both are single special tokens, so the split can be done
+# on token ids rather than on decoded text (where ``skip_special_tokens=True``
+# would already have erased the boundary).
+REASONING_CLOSE_TOKENS = ("</think>", "<channel|>")
+
+
+def stop_token_ids(model, tokenizer) -> list[int]:
+    """Every token id that should end a generation for this model.
+
+    ``tokenizer.eos_token_id`` alone is not sufficient and is actively wrong for
+    some chat models: Gemma 4 ends an assistant turn with ``<turn|>`` (id 106)
+    while its ``eos_token`` is ``<eos>`` (id 1). Passing only the latter to
+    ``generate`` *overrides* the checkpoint's configured stop set, so the model
+    sails past the end of its answer and keeps generating -- which corrupts
+    any last-integer answer extraction downstream.
+    """
+    ids: list[int] = []
+    configured = getattr(getattr(model, "generation_config", None), "eos_token_id", None)
+    if isinstance(configured, int):
+        ids.append(configured)
+    elif configured:
+        ids.extend(int(i) for i in configured)
+    if tokenizer.eos_token_id is not None and tokenizer.eos_token_id not in ids:
+        ids.append(int(tokenizer.eos_token_id))
+    return ids
+
+
+def split_after_reasoning(token_ids, tokenizer) -> list[int] | None:
+    """Return the ids following the model's last closed reasoning block.
+
+    Returns ``None`` when no closing marker is present — either the model never
+    entered a reasoning mode, or it ran out of budget mid-thought. Callers must
+    distinguish those cases themselves; an unterminated trace is a truncation,
+    not an answer.
+    """
+    to_id = getattr(tokenizer, "convert_tokens_to_ids", None)
+    if not callable(to_id):
+        # A tokenizer that cannot map tokens to ids cannot have emitted a
+        # reasoning marker, so there is no trace to split off.
+        return None
+
+    ids = [int(t) for t in token_ids]
+    closers = set()
+    unk = getattr(tokenizer, "unk_token_id", None)
+    for tok in REASONING_CLOSE_TOKENS:
+        tid = to_id(tok)
+        if isinstance(tid, int) and tid != unk:
+            closers.add(tid)
+    if not closers:
+        return None
+    for i in range(len(ids) - 1, -1, -1):
+        if ids[i] in closers:
+            return ids[i + 1:]
+    return None
 
 
 def dense_score(response: str, expected: int) -> float:
     """Dense reward: 1.0 for exact match, 1/(1+distance) otherwise."""
-    numbers = re.findall(r"-?\d+", response)
+    numbers = _parse_numbers(response)
     if not numbers:
         return 0.0
-    last_num = int(numbers[-1])
-    if last_num == expected:
+    last_num = numbers[-1]
+    if last_num == float(expected):
         return 1.0
     distance = abs(last_num - expected)
     return min(1.0 / (1.0 + distance), 0.99)
@@ -302,10 +389,12 @@ def auto_calibrate(encoder: LLMEncoder) -> dict:
     Returns dict with keys: embed_dim, embedding_rms, mean_token_norm.
     Replaces hardcoded Qwen3-4B constants from V13/V14.
     """
+    from latent_reasoning.utils.architecture import hidden_size as text_hidden_size
+
     embed_weight = encoder.model.get_input_embeddings().weight
     return {
         "embed_dim": embed_weight.shape[1],
-        "hidden_dim": encoder.model.config.hidden_size,
+        "hidden_dim": text_hidden_size(encoder.model),
         "vocab_size": embed_weight.shape[0],
         "embedding_rms": embed_weight.float().square().mean().sqrt().item(),
         "mean_token_norm": embed_weight.float().norm(dim=1).mean().item(),

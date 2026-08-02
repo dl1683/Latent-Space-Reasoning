@@ -33,8 +33,14 @@ import torch.nn as nn
 from torch import Tensor
 from transformers import AutoModelForCausalLM, AutoTokenizer
 
+from latent_reasoning.utils.architecture import hidden_size as text_hidden_size
+from latent_reasoning.utils.architecture import num_decoder_layers
 from latent_reasoning.utils.device import get_device, ensure_tensor_device
-from latent_reasoning.utils.quantization import get_default_dtype, get_quantization_kwargs
+from latent_reasoning.utils.quantization import (
+    get_default_dtype,
+    get_quantization_kwargs,
+    resolve_load_dtype,
+)
 from latent_reasoning.decode.steering import (
     DualSteeringProcessor,
     IntermediateLayerSteering,
@@ -252,6 +258,7 @@ class LLMEncoder(Encoder):
         max_length: int = 2048,
         quantization: str = "auto",
         latent_dim: int | None = None,
+        dtype: str | None = None,
     ):
         """
         Initialize the LLM encoder with a transformer model.
@@ -278,6 +285,10 @@ class LLMEncoder(Encoder):
                 are truncated. Typical values: 512-2048 for reasoning tasks.    
             latent_dim: Optional canonical latent dimension. If provided and
                 different from the model hidden size, a projection is applied.
+            dtype: Optional dtype override for unquantized loads ("bfloat16",
+                "float16", "float32"). When omitted the checkpoint's own
+                declared dtype is used, which is what bfloat16-native models
+                (Gemma, Qwen3) require to avoid overflow.
 
         Example:
             Basic usage:
@@ -309,6 +320,7 @@ class LLMEncoder(Encoder):
         self.max_length = max_length
         self.quantization = quantization
         self._target_latent_dim = latent_dim
+        self._dtype_override = dtype
 
         # Get device
         self._device = get_device(device_preference)
@@ -331,9 +343,16 @@ class LLMEncoder(Encoder):
         if self.tokenizer.pad_token is None:
             self.tokenizer.pad_token = self.tokenizer.eos_token
 
+        # NOTE: `output_hidden_states` is deliberately NOT set here. Passing it
+        # to from_pretrained lands it on the *config*, so every forward pass --
+        # including every single decoding step of every generate() call --
+        # materializes and returns all layer hidden states. Measured cost on
+        # Qwen3-4B/bf16: 13.8 tok/s with it vs 23.4 tok/s without, a 41% loss.
+        # It is also redundant: `encode()` and `encode_with_hidden()` request
+        # hidden states explicitly at their own call sites, which is where they
+        # are actually consumed.
         model_kwargs = {
             "trust_remote_code": True,
-            "output_hidden_states": True,
         }
         quant_kwargs, is_quantized, reason = get_quantization_kwargs(
             self.quantization,
@@ -344,7 +363,7 @@ class LLMEncoder(Encoder):
         if is_quantized:
             model_kwargs.update(quant_kwargs)
         else:
-            model_kwargs["torch_dtype"] = get_default_dtype(self._device)
+            model_kwargs["torch_dtype"] = self._unquantized_dtype(model_path)
 
         try:
             self.model = AutoModelForCausalLM.from_pretrained(model_path, **model_kwargs)
@@ -354,7 +373,7 @@ class LLMEncoder(Encoder):
             print(f"Quantized load failed: {exc}. Falling back to default dtype.")
             model_kwargs.pop("quantization_config", None)
             model_kwargs.pop("device_map", None)
-            model_kwargs["torch_dtype"] = get_default_dtype(self._device)
+            model_kwargs["torch_dtype"] = self._unquantized_dtype(model_path)
             self.model = AutoModelForCausalLM.from_pretrained(model_path, **model_kwargs)
             is_quantized = False
 
@@ -362,8 +381,9 @@ class LLMEncoder(Encoder):
             self.model.to(self._device)
         self.model.eval()
 
-        # Cache the hidden size
-        self._model_hidden_dim = self.model.config.hidden_size
+        # Cache the hidden size. Multimodal wrappers (Gemma 4) keep it on
+        # config.text_config rather than on the top-level config.
+        self._model_hidden_dim = text_hidden_size(self.model)
 
         target_dim = self._target_latent_dim or self._model_hidden_dim
         if target_dim <= 0:
@@ -394,6 +414,18 @@ class LLMEncoder(Encoder):
             seed=5678,
         ).to(device=self._device, dtype=self.model.dtype)
         self._layer_steer_projections: dict[int, Tensor] = {}
+
+    def _unquantized_dtype(self, model_path: str) -> torch.dtype:
+        """Load dtype for an unquantized model, honouring the checkpoint."""
+        try:
+            from transformers import AutoConfig
+
+            config = AutoConfig.from_pretrained(model_path, trust_remote_code=True)
+        except Exception:
+            config = None
+        return resolve_load_dtype(
+            self._device, config=config, override=self._dtype_override,
+        )
 
     def _init_latent_projection(self) -> None:
         if self._latent_projection is None:
@@ -480,9 +512,7 @@ class LLMEncoder(Encoder):
         return output_embedding.weight
 
     def _default_steering_layers(self) -> list[int]:
-        if not hasattr(self.model, "model") or not hasattr(self.model.model, "layers"):
-            return []
-        num_layers = len(self.model.model.layers)
+        num_layers = num_decoder_layers(self.model)
         if num_layers <= 0:
             return []
         return sorted({

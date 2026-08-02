@@ -39,6 +39,8 @@ from harness import (
     auto_calibrate,
     decode_latent,
     extract_answer,
+    split_after_reasoning,
+    stop_token_ids,
     verify_answer,
 )
 from latent_reasoning.core.encoder import LLMEncoder
@@ -132,12 +134,13 @@ def decode_with_raw_soft_prompt(
                 [soft_mask, inputs["attention_mask"]], dim=1
             )
 
+        stop_ids = stop_token_ids(encoder.model, encoder.tokenizer)
         generate_kwargs = dict(
             inputs_embeds=combined_embeds,
             attention_mask=combined_mask,
             max_new_tokens=max_new_tokens,
             pad_token_id=encoder.tokenizer.pad_token_id,
-            eos_token_id=encoder.tokenizer.eos_token_id,
+            eos_token_id=stop_ids,
             repetition_penalty=1.2,
         )
         if temperature > 0:
@@ -149,18 +152,31 @@ def decode_with_raw_soft_prompt(
         output_ids = encoder.model.generate(**generate_kwargs)
 
     n_input = combined_embeds.shape[1]
-    n_generated = output_ids.shape[1] - n_input
-    eos_id = encoder.tokenizer.eos_token_id
-    terminated_by_eos = bool(
-        eos_id is not None and output_ids[0, -1].item() == eos_id
-    )
+    # When generate() is driven by inputs_embeds it returns ONLY the newly
+    # generated tokens -- there are no input_ids for it to prepend. The whole
+    # tensor is the completion, which is why `new_tokens` below is not sliced.
+    # Subtracting the prompt length here therefore under-counted every
+    # perturbation generation by n_input (~60 tokens) and made
+    # `generated_tokens >= max_new_tokens` impossible to satisfy, so
+    # truncation looked like it never happened in this arm.
+    n_generated = output_ids.shape[1]
+    terminated_by_eos = bool(output_ids[0, -1].item() in stop_ids)
+    new_tokens = output_ids[0, :]
+
+    # Diagnostic only. Unlike the baseline path this does NOT strip the
+    # reasoning trace -- the published perturbation protocol extracts the last
+    # integer from the full generation, and changing that here would break
+    # comparability with the existing Qwen3 results. Recording whether the
+    # trace closed lets a 0% arm be told apart from an arm that never finished.
     gen_meta = {
         "generated_tokens": n_generated,
         "prompt_tokens": n_input,
         "terminated_by_eos": terminated_by_eos,
+        "closed_reasoning": split_after_reasoning(
+            new_tokens, encoder.tokenizer,
+        ) is not None,
     }
 
-    new_tokens = output_ids[0, :]
     text = encoder.tokenizer.decode(new_tokens, skip_special_tokens=True)
     return text.strip(), gen_meta
 
@@ -838,27 +854,41 @@ def run_zero_shot(
 
     n_prompt = inputs["input_ids"].shape[1]
     n_generated = out[0].shape[0] - n_prompt
-    eos_id = encoder.tokenizer.eos_token_id
-    terminated_by_eos = bool(eos_id is not None and out[0][-1].item() == eos_id)
+    stop_ids = stop_token_ids(encoder.model, encoder.tokenizer)
+    terminated_by_eos = bool(out[0][-1].item() in stop_ids)
+    gen_ids = out[0][n_prompt:]
+
+    raw = encoder.tokenizer.decode(gen_ids, skip_special_tokens=True).strip()
+
+    # Drop the model's internal reasoning trace so answer extraction reads the
+    # stated answer, not an intermediate value. Qwen3 delimits it in plain text
+    # with <think>/</think>; Gemma 4 uses special tokens that
+    # skip_special_tokens=True has already erased, so the split is done on ids.
+    after_reasoning = split_after_reasoning(gen_ids, encoder.tokenizer)
+    closed_reasoning = after_reasoning is not None
+
+    if closed_reasoning:
+        resp = encoder.tokenizer.decode(
+            after_reasoning, skip_special_tokens=True,
+        ).strip()
+    else:
+        resp = raw
+        if "<think>" in resp and "</think>" in resp:
+            think_end = resp.find("</think>") + len("</think>")
+            resp = resp[think_end:].strip()
+            closed_reasoning = True
+        elif resp.startswith("<think>"):
+            for starter in ["1.", "Step 1", "## Step", "Here's", "Here is"]:
+                if starter in resp:
+                    resp = resp[resp.index(starter):]
+                    break
+
     gen_meta = {
         "generated_tokens": n_generated,
         "prompt_tokens": n_prompt,
         "terminated_by_eos": terminated_by_eos,
+        "closed_reasoning": closed_reasoning,
     }
-
-    raw = encoder.tokenizer.decode(
-        out[0][n_prompt:], skip_special_tokens=True,
-    ).strip()
-
-    resp = raw
-    if "<think>" in resp and "</think>" in resp:
-        think_end = resp.find("</think>") + len("</think>")
-        resp = resp[think_end:].strip()
-    elif resp.startswith("<think>"):
-        for starter in ["1.", "Step 1", "## Step", "Here's", "Here is"]:
-            if starter in resp:
-                resp = resp[resp.index(starter):]
-                break
 
     return (resp if resp else "No response"), raw, gen_meta
 
@@ -873,6 +903,11 @@ def main():
     parser = argparse.ArgumentParser(description="Latent sensitivity test")
     parser.add_argument("--model", default="Qwen/Qwen3-4B")
     parser.add_argument("--quantization", default="4bit")
+    parser.add_argument("--dtype", default=None,
+        choices=["float16", "bfloat16", "float32"],
+        help="dtype override for unquantized loads. Default: the dtype the "
+             "checkpoint declares (bfloat16 for Gemma/Qwen3). Ignored when "
+             "--quantization is 4bit/8bit.")
     parser.add_argument("--n-latents", type=int, default=20)
     parser.add_argument("--n-easy", type=int, default=5)
     parser.add_argument("--n-medium", type=int, default=10)
@@ -993,7 +1028,11 @@ def main():
 
     # Load model
     print("\nLoading model...")
-    encoder = LLMEncoder(model_name=args.model, quantization=args.quantization)
+    encoder = LLMEncoder(
+        model_name=args.model,
+        quantization=args.quantization,
+        dtype=args.dtype,
+    )
     cal = auto_calibrate(encoder)
     d_latent = encoder.latent_dim
     embed_dim = cal["embed_dim"]
@@ -1054,6 +1093,7 @@ def main():
                 "generated_tokens": gen_meta["generated_tokens"],
                 "prompt_tokens": gen_meta["prompt_tokens"],
                 "terminated_by_eos": gen_meta["terminated_by_eos"],
+                "closed_reasoning": gen_meta.get("closed_reasoning"),
                 "tokens_per_sec": round(tps, 1),
             })
             mark = "OK" if correct else "WRONG"
@@ -1115,6 +1155,7 @@ def main():
             "experiment": "latent_sensitivity_calibration",
             "model": args.model,
             "quantization": args.quantization,
+            "dtype": str(encoder.model.dtype),
             "task_type": args.task_type,
             "n_tasks": n_tasks,
             "baseline_accuracy": baseline_accuracy,
@@ -1428,6 +1469,7 @@ def main():
                 result_entry["generated_tokens"] = gen_meta["generated_tokens"]
                 result_entry["prompt_tokens"] = gen_meta["prompt_tokens"]
                 result_entry["terminated_by_eos"] = gen_meta["terminated_by_eos"]
+                result_entry["closed_reasoning"] = gen_meta.get("closed_reasoning")
                 result_entry["tokens_per_sec"] = round(tps, 1)
             task_results.append(result_entry)
             mark = "OK" if correct else "X "
@@ -1603,6 +1645,7 @@ def main():
         "experiment": "latent_sensitivity",
         "model": args.model,
         "quantization": args.quantization,
+        "dtype": str(encoder.model.dtype),
         "task_type": args.task_type,
         "decode_mode": args.decode_mode,
         "control_mode": control_mode,
