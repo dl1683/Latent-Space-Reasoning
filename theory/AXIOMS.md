@@ -264,3 +264,40 @@ lexical input embeddings.
 6. Compete closeness against information-geometric and denotational primitives;
    do not add evidence-update or typed composition merely by extending the
    failed lexical-KL instrument.
+
+## Round 12 — residue of the frozen-encoder world
+
+The frozen-encoder line is now closed as a scope decision, with the NLM-006b
+identity gate kept intact. All four displaced image families passed the
+calibrated displacement test and had complete support, but their fine-label
+preservation rates were 0.458, 0.317, 0.185, and 0.416, below the locked
+`p_e >= 0.80` threshold. The chart comparison therefore remains descriptive
+OOD evidence, not a native transport verdict. The small `ST>TS` effect of
+roughly 0.035 on these outside-class edits is a measured order sensitivity,
+not yet a law.
+
+Under the guiding question—what would a denizen of this world need in order to
+navigate it?—the denizen of a trained encoder's world inherits three pieces of
+equipment:
+
+1. a **task-effective chart metric**: chart nearness is the best measured
+   one-step consequence predictor among the tested constructs;
+2. **affine-path smoothness under the trained representation**: chart-straight
+   routes are coherent for the measured trained-world readouts, while the
+   random-init chart loses that regularity; and
+3. a chart that **degrades gracefully under identity-destroying moves**:
+   absolute consequence prediction worsens under crop, inversion, mixing, and
+   occlusion, but the chart remains ahead of the tested native candidates in
+   the descriptive transported-pair comparison.
+
+What we never found is equally important: no native construct we built—probe
+profiles, Fisher pullback, or their transport-aware forms—competes with the
+chart on a held-out endpoint. This is not a proof that native mathematics is
+impossible, nor evidence that cosine is intrinsic. It says that this frozen
+encoder hands its denizen a useful map; it does not show the denizen
+discovering a deeper law of the latent world.
+
+The next navigation primitive should therefore be lawful transport itself:
+LM residual streams, where the forward pass is the world's move and a map must
+predict the successor of a state. This makes dynamics an object of measurement
+rather than treating an analyst-chosen image edit as the move.

@@ -969,6 +969,53 @@ calibrated invariance class, and meets the same support gate.
   enters metric construction, the artifact or calibration subset changes, the
   paired bootstrap is absent, or the support accounting is not auditable.
 
-No NLM-006b scoring is part of this round. The next evidence-bearing action is
-the locked CPU run followed by manual artifact review; until then all four
-predictions remain preregistered.
+No NLM-006b scoring was part of Round 11. Round 12 adjudicates the resulting
+artifact below; the four family predictions remain historical preregistration
+claims, not retrofitted interpretations.
+
+## Round 12 — NLM-006b adjudication and frozen-encoder closure
+
+**Status: NON-DIAGNOSTIC UNDER THE LOCK; PROGRAM CLOSED BY SCOPE, NOT BY A
+NATIVE-LAW VERDICT.** The locked artifact was scored with independent
+candidates, the true fine-label endpoint, paired bootstrap intervals, and
+400/400 supported anchors for every family. The result must be adjudicated
+against the predeclared identity gate before reading the chart comparison.
+
+| family | fine-label preservation (p_e) | label gate | displacement gate | support | TT chart lead over best native |
+| --- | ---: | --- | --- | ---: | ---: |
+| `crop50` | 0.458 | fail; OOD | pass (1.000) | 400/400 | +0.208 |
+| `invert` | 0.317 | fail; OOD | pass (1.000) | 400/400 | +0.227 |
+| `mix50` | 0.185 | fail; OOD | pass (1.000) | 400/400 | +0.090 |
+| `occlude50` | 0.416 | fail; OOD | pass (0.985) | 400/400 | +0.222 |
+
+The predeclared label-preservation threshold was `p_e >= 0.80`. Therefore
+**zero of four families is valid** for the native-transport or gated
+chart-failure branches. The near-identity controls are themselves only
+0.772 (`hflip`) and 0.761 (`shift1px`), which makes this kNN readout a weak
+calibration proxy; it does not permit lowering the locked threshold after
+seeing the outcomes. The displacement result is still clear: all four new
+families pass the calibrated outside-invariance gate, and support is complete.
+
+Descriptively, the chart-survival pattern is strong on the transported pair:
+`cosine_T` leads `F_T` by 0.208, 0.227, 0.090, and 0.222 for the four families,
+with paired 95% intervals for native-minus-chart entirely below zero. But
+these are identity-destroying OOD edits under the lock, not gated evidence
+that the chart survives legal semantic transport. The prior ledger wording
+that this result "closes the replacement line" is corrected: NLM-006b is
+**non-diagnostic for the locked native/chart decision**, and it neither
+reopens native transport nor earns a lock-valid chart-survival closure.
+
+There is one real composition signal outside the measured invariance class:
+the chart's `ST-TS` order effect is about +0.034 to +0.036 for `crop50`,
+`invert`, `mix50`, and `occlude50`, with paired intervals excluding zero.
+The hflip control is about +0.001 with an interval spanning zero. This is a
+small non-commutation signal, not a native-predictor win; because the displaced
+families fail identity preservation, it cannot be promoted to a law of
+semantic transport.
+
+The frozen-encoder program nevertheless closes as a **scope decision**. The
+measured residue is a trained representation's task-effective chart metric,
+affine-path smoothness, and relative chart robustness as edits progressively
+destroy the endpoint identity. No tested native construct competes. No further
+score-chasing on this frozen image encoder is planned. The next program must
+make dynamics—not analyst-imposed image edits—the legal moves.

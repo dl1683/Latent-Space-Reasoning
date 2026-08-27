@@ -200,3 +200,35 @@ invariance class. No further frozen-encoder closeness/map competition is
 planned. No native-map promotion follows from the current residue alone.
 
 Keep `NLM-001` verdict and all gates unchanged.
+
+## Round 12 — NLM-006b adjudication and next program (2026-08-27)
+
+NLM-006b is **non-diagnostic under its lock**. The predeclared
+label-preservation rule was `p_e >= 0.80`, and the measured rates were
+`crop50=0.458`, `invert=0.317`, `mix50=0.185`, and `occlude50=0.416`; all four
+are OOD. The near-identity controls were only `0.772` and `0.761`, a warning
+that this kNN readout is a weak calibration proxy, but the threshold is not
+changed post hoc. All four families passed the calibrated displacement gate
+and all had 400/400 support.
+
+The TT chart-survival pattern is descriptive only: cosine led the best native
+predictor by `0.208`, `0.227`, `0.090`, and `0.222`, with paired intervals away
+from zero. Because zero families are valid, this is not a lock-valid gated
+chart closure, and it cannot support a native-transport claim. The displaced
+families do show a small `ST>TS` chart order effect of about `0.035` with CIs
+excluding zero; hflip does not. This is recorded as outside-class
+non-commutation, not as a native law.
+
+Close the frozen-encoder program as scope management. Residue: a trained
+encoder supplies a task-effective chart metric, affine-path smoothness under
+that trained representation, and graceful relative chart degradation under
+identity-destroying moves; no tested native construct competes. Do not lower
+the identity gate or run another frozen-encoder score comparison.
+
+## Next program — worlds with dynamics
+
+Use LM residual streams, where the forward pass is the lawful transport and
+the map must predict where a state goes. The hypothesis, first measurement,
+decisive result, kill conditions, and CPU cap are registered in
+`theory/dialogue/003.md`. Reuse `experiments/substitution_probe.py`; no run is
+authorized by this documentation-only round.

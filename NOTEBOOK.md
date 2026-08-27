@@ -5,6 +5,21 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-27 — Round 12: NLM-006b is non-diagnostic; pivot to dynamics
+
+- Adjudicated NLM-006b against the locked `p_e >= 0.80` identity gate. The
+  four displaced families measured 0.458, 0.317, 0.185, and 0.416, so all are
+  OOD; calibrated displacement and 400/400 support passed for all four.
+- The TT chart lead of 0.09–0.29 is therefore descriptive OOD evidence, not a
+  gated chart-survival closure. The previous ledger wording is corrected by
+  an append-only entry. The small outside-class chart `ST>TS` effect is about
+  0.035 with CIs excluding zero.
+- Frozen-encoder work closes as a scope decision. The residue is a trained
+  task-effective chart, affine-path smoothness, and graceful relative chart
+  degradation under identity-destroying moves; no native construct competes.
+  Next program: LM residual-stream dynamics, specified in
+  `theory/dialogue/003.md`.
+
 ## 2026-08-27 — Round 2b instrument calibration amendment
 
 - Read the disclosed eight-item full-pipeline calibration. Within-block KL
