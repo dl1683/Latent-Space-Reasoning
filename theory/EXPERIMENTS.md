@@ -687,3 +687,15 @@ encoder time, plus at most ten minutes for feature, ranking, bootstrap, and
 diagnostic scoring. The full lock is budgeted at `15 CPU-minutes`, one process,
 with no GPU. The cached NLM-003 sensitivity rerun is separately budgeted at
 `5 CPU-minutes` and does not count as new evidence.
+
+### NLM-005 artifact lock (Claude, 2026-08-27, before scoring)
+
+- Transports: `experiments/results/vision_cifar100_dinov2s/edits.npz`, sha256
+  `c6d7cd251d716124ada1c1bc2950c84977db61ff9dbdc1272aa930e42a513b13` — test
+  split (2000) under `hflip` (horizontal reflection) and `shift1px` (one-pixel
+  right translation, edge-replicate padding), re-encoded by the frozen
+  DINOv2-small encoder (revision ed25f3a3…) with the same preprocessing.
+- Runner: `experiments/run_nlm002_vision.py --edits <edits.npz> --endpoint
+  fine_label` (measurement 4). Predictors: cosine, Euclidean, F (Fisher
+  pullback, 4 heads), R without `PB_coarse`. 400 anchors × 40 candidates;
+  anchor bootstrap (1000).
