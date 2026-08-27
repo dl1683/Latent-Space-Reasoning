@@ -95,7 +95,7 @@ def render_markdown(result: dict[str, object]) -> str:
             "`experiments/analyze_diffusion_span_probe_signed_value_controls.py`."
         ),
         (
-            "It tests M2 from `docs/DIFFUSION_MOONSHOT_REASONING_ARCHITECTURE_V1.md`: "
+            "It tests M2 from `archive/docs/DIFFUSION_MOONSHOT_REASONING_ARCHITECTURE_V1.md`: "
             "whether the selected signed-value head depends on the measured probe "
             "feature families rather than a slice artifact."
         ),

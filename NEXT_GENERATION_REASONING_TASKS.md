@@ -81,7 +81,7 @@ mix of math, symbolic, and science QA tasks.
 ### Language Diffusion Pivot
 
 The next mechanism layer is documented in
-`docs/DIFFUSION_LATENT_REASONING_ROADMAP.md`. Treat Dream 7B as the first local
+`archive/docs/DIFFUSION_LATENT_REASONING_ROADMAP.md`. Treat Dream 7B as the first local
 GPU target because it exposes `diffusion_generate()` and optional denoising
 history. Treat dense LLaDA 8B as the second architecture check and
 LLaDA-MoE-7B-A1B-Instruct as the next cheap active-parameter check. The

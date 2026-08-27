@@ -2,7 +2,7 @@
 
 This is intentionally offline: it reads existing JSON/JSONL artifacts and
 normalizes them into the trace schema described in
-docs/MECHANISTIC_REASONING_SCHEMA.md. It does not contact ARC-3, start a
+archive/docs/MECHANISTIC_REASONING_SCHEMA.md. It does not contact ARC-3, start a
 server, or run the game engine.
 """
 
