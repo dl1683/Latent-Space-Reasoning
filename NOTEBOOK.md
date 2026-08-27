@@ -39,6 +39,23 @@ was learned, what's next. Canonical state lives in STATE.md.
   hidden-state capture. Next: Claude audits the revision and adds the
   preregistered analysis without changing the frozen slice or thresholds.
 
+## 2026-08-27 — NLM-005 composition: void on support, non-diagnostic, and a design lesson
+
+- Composed moves with hflip / 1-px-shift transports re-encoded by the frozen
+  encoder: ST−TS gaps ≤ 0.006 for every predictor (kill 2), support 129/400
+  (kill 3). Cosine leads both native constructs by 0.32 on every order.
+- Lesson: these transports are exactly the augmentations DINOv2 was trained
+  to be invariant to — near-identity moves in its world — so composition with
+  them cannot reveal a law. Transports must lie outside the trained invariance
+  class (large crops, color inversion, image mixing, occlusion, or a different
+  encoder's edits). And support needs stratified candidates (same-class
+  candidates by construction), not 40 random draws over 100 classes.
+- Standing picture after five measurements: in trained worlds the chart
+  metric is the map for one-step consequences and survives trained-invariant
+  transports; it collapses in an untrained chart (NLM-004). No native
+  construct built so far competes with it. The program's next honest question
+  is whether *any* move outside the invariance class breaks the chart.
+
 ## 2026-08-27 — NLM-003 diagnostics: R's win was the coarse head
 
 - Rerun with audit-#2 diagnostics (same lock, new anchor sample): R without
