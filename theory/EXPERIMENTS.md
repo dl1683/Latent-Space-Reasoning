@@ -483,6 +483,53 @@ bound above 0.
 - **Inference:** anchor bootstrap (1000 resamples) over mean pairwise score differences.
 - **Decision output:** report `(Delta_F_minus_R, CI95, n_pairs, Q)` first, then pass/fail.
 
+## Round 8 — NLM-003 adjudication: the chart still wins
+
+The locked artifact passes the directional NLM-003 gate. On the 6,199 scored
+pairs, `R` reaches 0.7343 mean anchor accuracy and `F` reaches 0.6303, giving
+`Delta_{F-R} = -0.1040` with 95% CI `[-0.1478, -0.0584]`. The interval is
+strictly below zero and its upper endpoint is below the preregistered `-0.05`
+target. This is support for the narrow claim that the tested profile-continuity
+construction predicts this endpoint better than the tested Fisher construction.
+
+It is not support for `R` as the native geometry. On the same supported anchors,
+plain cosine reaches 0.9464 and Euclidean distance 0.9350, both dominating `R`
+and `F` by large margins. Only 130 of 400 possible anchors had common-support
+scores, so even the directional result is conditional on a thin support subset.
+The correct classification is therefore: **NLM-003 directional gate passed;
+native-map claim not established; imported chart metrics remain the best measured
+maps for this endpoint.** `F` is not sufficient here, but `R` has not earned
+replacement status.
+
+Under the guiding question, this means that in this measured world a denizen can
+currently navigate fine-label consequences most accurately by reading ordinary
+distances in DINOv2's chart. Is that already the native geometry because the
+encoder was trained to make it so? **No, not in the strong sense.** The weak
+operational reading is that DINOv2's
+pretraining has made chart proximity carry visual regularities that happen to
+align with fine-label preservation; it is not evidence that the chart is an
+intrinsic native geometry, and DINOv2 was not trained on these CIFAR fine labels.
+A world in which this fails would preserve the same latent states while a
+declared nonlinear re-chart, a domain shift, or a composed/unseen move changes
+cosine and Euclidean rankings and destroys their consequence prediction, while
+a transport- or profile-based map continues to predict the held-out outcome.
+That is the distinction between a chart that is useful in this world and a map
+that belongs to the world.
+
+### Next measurement
+
+Hold the cached DINOv2 states and true fine-label endpoint fixed, apply one
+outcome-blind, predeclared nonlinear invertible reparameterization fitted only on
+calibration states, and compare cosine, Euclidean, `R`, and `F` on held-out
+composition and out-of-distribution substitution moves with the same
+common-support accounting over all 400 anchors. The decisive result is whether
+the chart metrics retain at least a 0.05 lead over the best native candidate on
+both held-out move families with at least 80% of anchors supported; that outcome
+would make the chart operationally native for this world, whereas a lead that
+collapses to 0.02 or less, or an `R`/`F` lead of at least 0.05 after the
+reparameterization, would show that the current chart advantage is
+coordinate- or task-specific.
+
 
 
 

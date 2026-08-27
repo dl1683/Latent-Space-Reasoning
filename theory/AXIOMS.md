@@ -31,10 +31,18 @@ Caveat: linear-head argmax on affine readouts is nearly monotone by construction
 
 Therefore the Round 7 world-path test must include a nonlinear readout and report kNN-fine M1 separation (12.7% same-class, 38.0% cross-class); otherwise the predicate is considered trivial.
 - cost: native move cost is measured on intervention budget (e.g., number of edits, entropy budget, probe-compute), and can be asymmetric; imported: fixed norms or geodesic length; separation: calibration pairs where asymmetry changes order but distance is symmetric.
-- map: native map is a transition model for outcomes of unmade moves; imported: function of coordinates or metric neighborhood expansion; separation: path-specific endpoint predictions (separatrix/interpolation) where coordinate-only surrogates cannot distinguish move order.
+- map: native map is a transition model for outcomes of unmade moves; imported: function of coordinates or metric neighborhood expansion. A map earns the native label only if it predicts held-out consequences beyond simple chart metrics on the same endpoint and remains predictive under a declared presentation change. Separation: path-specific endpoint predictions (separatrix/interpolation), nonlinear re-chart tests, and composed/unseen moves where coordinate-only surrogates should fail if they are only convenient charts.
 - laws: native laws are invariants of trajectory-plus-probe semantics across regions; imported: algebraic identities and smooth manifolds; separation: transport tests of invariants under admissible move families and probe re-indexing.
 
 NLM-001 currently measured only (1), as observation-only substitutability under probe contexts; it did not instantiate moves, costs, maps, or region laws, so it could collapse onto the model's own contextual representation.
+
+Round 8 map consequence: the DINOv2 fine-label result makes cosine and Euclidean
+the best task-effective maps currently measured for that world, while neither
+tested native candidate earns replacement status. This changes the map
+requirement: beating `F` is insufficient; a native map must also beat simple
+chart metrics or show that their lead survives a declared reparameterization and
+new move families. Otherwise the result is a useful chart map, not native
+geometry.
 
 Status: Round 3 audited, 2026-08-27. This file contains only the active
 relational foundation. Dialogue and rejected formulations stay in `dialogue/`.

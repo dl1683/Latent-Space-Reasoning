@@ -61,10 +61,28 @@ Qwen's H2 diagnostic crossed its numerical gate
 than an invariant of the latent space. Registered directedness was not observed
 and broader directedness was not adjudicated. Details: `theory/EXPERIMENTS.md`.
 
+## NLM-003 verdict (Round 8, 2026-08-27)
+
+The locked true-fine endpoint adjudication passes the narrow directional gate:
+`R` profile accuracy is 0.7343 versus 0.6303 for `F` Fisher,
+`Delta_{F-R} = -0.104 [-0.148, -0.058]`, over 6,199 scored pairs. But cosine
+(0.9464) and Euclidean distance (0.9350) dominate both on the same supported
+anchors, and only 130/400 anchors had support. Verdict: directional support for
+`R` over `F`, not a native-geometry result; the DINOv2 chart is currently the
+best task-effective map for fine-label consequences on this artifact.
+
+Under the guiding question, this may reflect DINOv2 pretraining making chart
+proximity useful for visual regularities, but it does not establish intrinsic
+geometry. The next measurement is a predeclared nonlinear re-chart plus held-out
+composition and out-of-distribution moves, with the true fine-label endpoint.
+
 ## Next
 
-**Round 7:** `NLM-003` is LOCKED on the existing artifact (`8de4f0b0...`). Same `F` and `R` constructions are retained, endpoint is the TRUE fine label (`--endpoint fine_label`), and no fine-label head is trained.
-
-Decision target is directional preregistration: \(\Delta_{F-R}\le -0.05\) with paired anchor-bootstrap support checks, `cosine`/`euclid` baselines, and non-trivial world-path gating from nonlinear readout (kNN fine: 12.7% same-class vs 38.0% cross-class flicker; coarse-head 2% same-class flicker is treated as weak only).
+**Round 9 measurement:** hold the cache and endpoint fixed, reparameterize the
+chart nonlinearly using calibration data only, and compare cosine, Euclidean,
+`R`, and `F` across new move families. A chart lead of at least 0.05 on both
+families with at least 80% anchor support would make it operationally native for
+this world; collapse to 0.02 or less, or a native lead of at least 0.05, would
+show the current chart advantage is coordinate- or task-specific.
 
 Keep `NLM-001` verdict and all gates unchanged.
