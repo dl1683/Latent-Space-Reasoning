@@ -139,14 +139,16 @@ class WorldCompleter:
         return (h,) + tuple(output[1:]) if isinstance(output, tuple) else h
 
     def laws(self, probe_idx, states, layer_l, Yhat=None, batch=16):
-        """Final log-laws for `states` under probe_idx; if Yhat (k, D) given, slot at hidden index layer_l+1 is replaced."""
+        """Log-laws for `states` under probe_idx; if Yhat (k, D) given, the slot row at hidden index layer_l+1 is replaced.
+        Returns (slot_law, last_law): the next-token law read at the substituted slot position (the locked endpoint) and
+        at the sequence's last token (secondary, suffix-mediated downstream readout)."""
         p = self.cfg["probes"][probe_idx]
         pre, suf = p["template"].split("<X>"); pre = pre.rstrip()
         from substitution_probe import Probe
         probe = Probe(p["name"], p["block"], pre, suf)
         seq, slot = self.sp._build(probe, states)
         self._slot = slot
-        out = []
+        out_slot, out_last = [], []
         layer = self.model.model.layers[layer_l]
         for i in range(0, seq.shape[0], batch):
             chunk = seq[i:i + batch]
@@ -157,8 +159,9 @@ class WorldCompleter:
                     o = self.model(inputs_embeds=chunk)
             finally:
                 self._handle.remove(); self._replacement = None
-            out.append(torch.log_softmax(o.logits[:, -1, :].float(), dim=-1).numpy())
-        return np.concatenate(out)
+            out_slot.append(torch.log_softmax(o.logits[:, slot, :].float(), dim=-1).numpy())
+            out_last.append(torch.log_softmax(o.logits[:, -1, :].float(), dim=-1).numpy())
+        return np.concatenate(out_slot), np.concatenate(out_last)
 
 
 def kl_rows(logp, logq):
@@ -216,12 +219,13 @@ def main():
         sp = SubstitutionProbe(a.model); completer = WorldCompleter(sp, cfg)
         assert sp.revision == man.get("model_revision"), f"model revision {sp.revision} != capture manifest {man.get('model_revision')}"
         assert int(sp.model.config.num_hidden_layers) == man["num_hidden_layers"]
+        assert man["model"] == a.model and man["config_name"] == cfg["name"] and man["n_probes"] == len(cfg["probes"]), "capture manifest / config mismatch"
         ids = [sp.single_token_id(w) for w in items]; states_emb = torch.stack([sp.state(i) for i in ids])
     results = {"pairs": {}, "manifest": man, "config": a.config, "lock": "theory/EXPERIMENTS.md NLM-007 (Round 13, amended Round 14)",
                "fallback": {"pairs": [f"L{l}->L{l1}" for (l, l1) in pairs], "n_shuffle": a.n_shuffle, "n_boot": a.n_boot}}
     if completer is not None:
         # float16 reload check: fresh float32 laws for probe 0 vs stored float16 laws — KL-ordering agreement must be near 1
-        fresh = completer.laws(0, states_emb, 0, Yhat=None)
+        fresh = completer.laws(0, states_emb, 0, Yhat=None)[1]
         stored = laws[0]
         Rf, Rs = pairwise_kl(fresh), pairwise_kl(stored)
         agree, _ = ordering_preservation(Rf, Rs)
@@ -233,6 +237,7 @@ def main():
         X = np.concatenate([Z[p, l] for p in probe_list]); Y = np.concatenate([Z[p, l + 1] for p in probe_list])
         return X, Y
 
+    true_slot_law = {}     # carrier -> true next-token law at the slot position (unmodified forward)
     for (l, l1) in pairs:
         pair_key = f"L{l}->L{l1}"; print(f"\n=== {pair_key} ===", flush=True)
         fold_out = {}
@@ -318,27 +323,34 @@ def main():
             # ---- completed-law endpoint ----
             comp = {}
             if completer is not None:
+                for tp in test_probes:
+                    if tp not in true_slot_law:
+                        true_slot_law[tp] = completer.laws(tp, states_emb, l, Yhat=None)[0]   # true law at the slot position (n, V); independent of l
+                qmean = {}
                 for k in ("mean", "word_mean", "ridge", "lowrank", "kernel", "chart"):
-                    kl_all, skill_all, ord_all, ord_anchor_all = [], [], [], []
+                    acc = {r: {"kl": [], "skill": [], "ord": [], "ord_anchor": []} for r in ("slot", "last")}
                     for ti, tp in enumerate(test_probes):
                         rows = slice(ti * n, (ti + 1) * n)
-                        q = laws[tp]                                                     # true final law (n, V)
-                        qhat = completer.laws(tp, states_emb, l, Yhat=preds[k][rows])
-                        if k == "mean": qmean = qhat
-                        elif "qmean_probe" not in comp: pass
-                        kl = kl_rows(q, qhat); kl_all.append(kl)
-                        qm = completer.laws(tp, states_emb, l, Yhat=preds["mean"][rows]) if k != "mean" else qhat
-                        klm = kl_rows(q, qm); klm = np.where(klm > 0, klm, np.nan)
-                        skill_all.append(1 - kl / klm)
-                        o, per_anchor = ordering_preservation(pairwise_kl(q), pairwise_kl(qhat)); ord_all.append(o); ord_anchor_all.append(per_anchor)
-                    comp[k] = {"kl": np.concatenate(kl_all), "skill": np.concatenate(skill_all), "ordering_by_carrier": ord_all,
-                               "ordering_per_anchor": np.stack(ord_anchor_all)}      # (carriers, n)
-                    print(f"   {held:12s} {k:8s} succ_cos={succ[k]['cos'].mean():.3f} KL={comp[k]['kl'].mean():.3f} skill={comp[k]['skill'].mean():.3f} ord={np.mean(ord_all):.3f} ({time.time()-t0:.0f}s)", flush=True)
+                        qhat = dict(zip(("slot", "last"), completer.laws(tp, states_emb, l, Yhat=preds[k][rows])))
+                        if k == "mean": qmean[tp] = qhat
+                        for r in ("slot", "last"):
+                            q = true_slot_law[tp] if r == "slot" else laws[tp]              # laws[tp] = stored true law at the last token
+                            kl = kl_rows(q, qhat[r]); acc[r]["kl"].append(kl)
+                            klm = kl_rows(q, qmean[tp][r]); klm = np.where(klm > 0, klm, np.nan)
+                            acc[r]["skill"].append(1 - kl / klm)
+                            o, per_anchor = ordering_preservation(pairwise_kl(q), pairwise_kl(qhat[r])); acc[r]["ord"].append(o); acc[r]["ord_anchor"].append(per_anchor)
+                    comp[k] = {"kl": np.concatenate(acc["slot"]["kl"]), "skill": np.concatenate(acc["slot"]["skill"]), "ordering_by_carrier": acc["slot"]["ord"],
+                               "ordering_per_anchor": np.stack(acc["slot"]["ord_anchor"]),      # (carriers, n)
+                               "kl_last": np.concatenate(acc["last"]["kl"]), "skill_last": np.concatenate(acc["last"]["skill"]), "ordering_last_by_carrier": acc["last"]["ord"],
+                               "ordering_last_per_anchor": np.stack(acc["last"]["ord_anchor"])}
+                    print(f"   {held:12s} {k:8s} succ_cos={succ[k]['cos'].mean():.3f} slot: KL={comp[k]['kl'].mean():.3f} skill={np.nanmean(comp[k]['skill']):.3f} ord={np.mean(acc['slot']['ord']):.3f} | last: skill={np.nanmean(comp[k]['skill_last']):.3f} ord={np.mean(acc['last']['ord']):.3f} ({time.time()-t0:.0f}s)", flush=True)
             # ---- paired two-way cluster bootstrap vs frozen chart ----
             def boot_diff(field, endpoint, against="chart"):
                 if endpoint == "cos": A, B = succ[field]["cos"], succ[against]["cos"]
                 elif endpoint == "skill": A, B = comp[field]["skill"], comp[against]["skill"]
                 elif endpoint == "ordering": A, B = comp[field]["ordering_per_anchor"].ravel(), comp[against]["ordering_per_anchor"].ravel()
+                elif endpoint == "skill_last": A, B = comp[field]["skill_last"], comp[against]["skill_last"]
+                elif endpoint == "ordering_last": A, B = comp[field]["ordering_last_per_anchor"].ravel(), comp[against]["ordering_last_per_anchor"].ravel()
                 else: return None
                 A = A.reshape(len(test_probes), n); B = B.reshape(len(test_probes), n); diff = A - B
                 if not np.isfinite(diff).any(): return None
@@ -355,6 +367,8 @@ def main():
                 if comp:
                     g["skill_vs_chart"] = boot_diff(field, "skill"); g["skill_vs_word_mean"] = boot_diff(field, "skill", "word_mean")
                     g["ordering_vs_chart"] = boot_diff(field, "ordering"); g["ordering_vs_word_mean"] = boot_diff(field, "ordering", "word_mean")
+                    g["secondary_last_token"] = {"skill_vs_chart": boot_diff(field, "skill_last"), "skill_vs_word_mean": boot_diff(field, "skill_last", "word_mean"),
+                                                 "ordering_vs_chart": boot_diff(field, "ordering_last")}
                 gates[field] = g
             # support: a cell is supported iff successor cos, normalized error, and (if computed) completed KL, skill, ordering are all finite
             ok = np.isfinite(succ["lowrank"]["cos"]) & np.isfinite(succ["lowrank"]["nerr"])
@@ -364,7 +378,8 @@ def main():
             fold_out[held] = {"selected": {k: {kk: vv for kk, vv in v.items() if kk != "inner"} for k, v in best.items()},
                               "successor_cos": {k: float(np.nanmean(v["cos"])) for k, v in succ.items()},
                               "normalized_error": {k: float(np.nanmean(v["nerr"])) for k, v in succ.items()},
-                              "completed": {k: {"kl": float(np.nanmean(v["kl"])), "skill": float(np.nanmean(v["skill"])), "ordering": float(np.mean(v["ordering_by_carrier"]))} for k, v in comp.items()},
+                              "completed": {k: {"kl": float(np.nanmean(v["kl"])), "skill": float(np.nanmean(v["skill"])), "ordering": float(np.mean(v["ordering_by_carrier"])),
+                                                "kl_last": float(np.nanmean(v["kl_last"])), "skill_last": float(np.nanmean(v["skill_last"])), "ordering_last": float(np.mean(v["ordering_last_by_carrier"]))} for k, v in comp.items()},
                               "shuffled_null_succ_cos": {k: {"mean": float(np.mean(v)), "q95": float(np.percentile(v, 95))} for k, v in shuf.items()},
                               "oracle_ceiling_succ_cos": float(np.mean(oracle)), "support": support, "support_by_carrier": support_by_carrier, "gates": gates}
             print(f"  fold {held}: succ_cos " + " ".join(f"{k}={v:.3f}" for k, v in fold_out[held]["successor_cos"].items()) + f" | oracle={np.mean(oracle):.3f} shufLR={np.mean(shuf['lowrank']):.3f}", flush=True)
@@ -372,7 +387,7 @@ def main():
         pooled = {}
         for k in fold_out[block_names[0]]["successor_cos"]:
             pooled[k] = float(np.mean([fold_out[b]["successor_cos"][k] for b in block_names]))
-        order = ["mean", "word_mean", "knn1", "knn5", "knn20", "lowrank", "ridge", "kernel"]
+        order = ["mean", "knn1", "knn5", "knn20", "lowrank", "ridge", "kernel"]        # word_mean is a moot-maker, not a ladder member
         ladder = [k for k in order if k in pooled]
         best_score = max(pooled[k] for k in ladder)
         minimal = next((k for k in ladder if pooled[k] >= best_score - 0.02), None)
