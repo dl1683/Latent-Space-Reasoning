@@ -1,0 +1,810 @@
+{
+  "endpoint": "fine_label",
+  "edits": "experiments\\results\\vision_cifar100_dinov2s_edits_v2\\edits.npz",
+  "M4_composition": {
+    "hflip": {
+      "n_anchors_supported": 400,
+      "support_frac": 1.0,
+      "accuracy": {
+        "direct": {
+          "cosine": 0.9360220539125048,
+          "euclid": 0.9240268260194827,
+          "F_fisher": 0.6450486618418991,
+          "R_no_coarse": 0.5673092411820957
+        },
+        "ST": {
+          "cosine": 0.9353278490907312,
+          "euclid": 0.9234798643870963,
+          "F_fisher": 0.6434969069511929,
+          "R_no_coarse": 0.565755008728855
+        },
+        "TS": {
+          "cosine": 0.9345289935227096,
+          "euclid": 0.9227546125695554,
+          "F_fisher": 0.64262298372637,
+          "R_no_coarse": 0.5660898780573679
+        },
+        "TT": {
+          "cosine_T": 0.9340248919069836,
+          "euclid_T": 0.9220063533065662,
+          "F_T": 0.6413942116137648,
+          "R_T_no_coarse": 0.5645737514237998
+        }
+      },
+      "ST_minus_TS": {
+        "cosine": {
+          "mean": 0.0007988555680215914,
+          "ci95": [
+            -0.0014914252061336295,
+            0.0030890166917410316
+          ]
+        },
+        "euclid": {
+          "mean": 0.0007252518175409005,
+          "ci95": [
+            -0.0017646080147761204,
+            0.0031170978184128775
+          ]
+        },
+        "F_fisher": {
+          "mean": 0.0008739232248229892,
+          "ci95": [
+            -0.002484658408743282,
+            0.003932211129983594
+          ]
+        },
+        "R_no_coarse": {
+          "mean": -0.00033486932851290536,
+          "ci95": [
+            -0.007336340292095778,
+            0.007292396233320611
+          ]
+        }
+      },
+      "best_native": "F_fisher",
+      "best_chart": "cosine",
+      "native_minus_chart": {
+        "ST": {
+          "mean": -0.2918309421395383,
+          "ci95": [
+            -0.3057820714669747,
+            -0.27685713276360724
+          ]
+        },
+        "TS": {
+          "mean": -0.2919060097963397,
+          "ci95": [
+            -0.3061025548884058,
+            -0.277426378396903
+          ]
+        }
+      },
+      "displacement": {
+        "mean_cosine_x_to_Tx": 0.9600953459739685,
+        "q10": 0.9321204423904419,
+        "q90": 0.9848294854164124,
+        "frac_above_control_q95": 0.05,
+        "outside_invariance_class": false
+      },
+      "label_preservation": {
+        "knn_fine_label_preserved_frac": 0.772,
+        "coarse_head_preserved_frac": 0.949
+      },
+      "transport_aware_TT": {
+        "best_native": "F_T",
+        "best_chart": "cosine_T",
+        "mean": -0.292630680293219,
+        "ci95": [
+          -0.30690069265631814,
+          -0.27881563893437467
+        ]
+      },
+      "candidates": "independent"
+    },
+    "shift1px": {
+      "n_anchors_supported": 400,
+      "support_frac": 1.0,
+      "accuracy": {
+        "direct": {
+          "cosine": 0.9360220539125048,
+          "euclid": 0.9240268260194827,
+          "F_fisher": 0.6450486618418991,
+          "R_no_coarse": 0.5673092411820957
+        },
+        "ST": {
+          "cosine": 0.9377341984098417,
+          "euclid": 0.925256025422913,
+          "F_fisher": 0.6448754354574305,
+          "R_no_coarse": 0.5693322731775663
+        },
+        "TS": {
+          "cosine": 0.9358114480532582,
+          "euclid": 0.9239543241808286,
+          "F_fisher": 0.6454410185639093,
+          "R_no_coarse": 0.5624590168917447
+        },
+        "TT": {
+          "cosine_T": 0.937383167743312,
+          "euclid_T": 0.9254133711640097,
+          "F_T": 0.645497372230238,
+          "R_T_no_coarse": 0.5646367619829646
+        }
+      },
+      "ST_minus_TS": {
+        "cosine": {
+          "mean": 0.0019227503565835643,
+          "ci95": [
+            -0.0005289165802404687,
+            0.004252026162208537
+          ]
+        },
+        "euclid": {
+          "mean": 0.0013017012420843688,
+          "ci95": [
+            -0.0013999109382512066,
+            0.0036103759869677513
+          ]
+        },
+        "F_fisher": {
+          "mean": -0.0005655831064790002,
+          "ci95": [
+            -0.003935197958176259,
+            0.002567767952184557
+          ]
+        },
+        "R_no_coarse": {
+          "mean": 0.006873256285821591,
+          "ci95": [
+            -0.00047772340932926503,
+            0.013650660977591477
+          ]
+        }
+      },
+      "best_native": "F_fisher",
+      "best_chart": "cosine",
+      "native_minus_chart": {
+        "ST": {
+          "mean": -0.29285876295241137,
+          "ci95": [
+            -0.30778520569816803,
+            -0.2776709812888914
+          ]
+        },
+        "TS": {
+          "mean": -0.2903704294893488,
+          "ci95": [
+            -0.3048603393346473,
+            -0.27654715379371714
+          ]
+        }
+      },
+      "displacement": {
+        "mean_cosine_x_to_Tx": 0.9778987765312195,
+        "q10": 0.9600337147712708,
+        "q90": 0.9917248487472534,
+        "frac_above_control_q95": 0.01,
+        "outside_invariance_class": false
+      },
+      "label_preservation": {
+        "knn_fine_label_preserved_frac": 0.761,
+        "coarse_head_preserved_frac": 0.9555
+      },
+      "transport_aware_TT": {
+        "best_native": "F_T",
+        "best_chart": "cosine_T",
+        "mean": -0.291885795513074,
+        "ci95": [
+          -0.3060368476995678,
+          -0.2786068555934654
+        ]
+      },
+      "candidates": "independent"
+    },
+    "crop50": {
+      "n_anchors_supported": 400,
+      "support_frac": 1.0,
+      "accuracy": {
+        "direct": {
+          "cosine": 0.9360220539125048,
+          "euclid": 0.9240268260194827,
+          "F_fisher": 0.6450486618418991,
+          "R_no_coarse": 0.5673092411820957
+        },
+        "ST": {
+          "cosine": 0.8797253072955812,
+          "euclid": 0.8632525188960076,
+          "F_fisher": 0.6088404952154614,
+          "R_no_coarse": 0.5472700579034292
+        },
+        "TS": {
+          "cosine": 0.843900978736713,
+          "euclid": 0.8229408609799428,
+          "F_fisher": 0.6056373530220425,
+          "R_no_coarse": 0.5494369385669478
+        },
+        "TT": {
+          "cosine_T": 0.8204395047370716,
+          "euclid_T": 0.794346256906793,
+          "F_T": 0.6125745044450732,
+          "R_T_no_coarse": 0.5586100195666155
+        }
+      },
+      "ST_minus_TS": {
+        "cosine": {
+          "mean": 0.03582432855886804,
+          "ci95": [
+            0.0220938458403428,
+            0.05039958621388876
+          ]
+        },
+        "euclid": {
+          "mean": 0.04031165791606484,
+          "ci95": [
+            0.026711121137392664,
+            0.05484910089104651
+          ]
+        },
+        "F_fisher": {
+          "mean": 0.0032031421934189007,
+          "ci95": [
+            -0.012965529316207525,
+            0.01802349483001089
+          ]
+        },
+        "R_no_coarse": {
+          "mean": -0.0021668806635186293,
+          "ci95": [
+            -0.015534647739822794,
+            0.010231753013270159
+          ]
+        }
+      },
+      "best_native": "F_fisher",
+      "best_chart": "cosine",
+      "native_minus_chart": {
+        "ST": {
+          "mean": -0.2708848120801197,
+          "ci95": [
+            -0.284883585154445,
+            -0.25643638915705946
+          ]
+        },
+        "TS": {
+          "mean": -0.2382636257146706,
+          "ci95": [
+            -0.25640279656886367,
+            -0.218697954121727
+          ]
+        }
+      },
+      "displacement": {
+        "mean_cosine_x_to_Tx": 0.6254327297210693,
+        "q10": 0.4494771659374237,
+        "q90": 0.7768219709396362,
+        "frac_above_control_q95": 1.0,
+        "outside_invariance_class": true
+      },
+      "label_preservation": {
+        "knn_fine_label_preserved_frac": 0.4575,
+        "coarse_head_preserved_frac": 0.618
+      },
+      "transport_aware_TT": {
+        "best_native": "F_T",
+        "best_chart": "cosine_T",
+        "mean": -0.20786500029199814,
+        "ci95": [
+          -0.22334432216956915,
+          -0.1924412861138179
+        ]
+      },
+      "candidates": "independent"
+    },
+    "invert": {
+      "n_anchors_supported": 400,
+      "support_frac": 1.0,
+      "accuracy": {
+        "direct": {
+          "cosine": 0.9360220539125048,
+          "euclid": 0.9240268260194827,
+          "F_fisher": 0.6450486618418991,
+          "R_no_coarse": 0.5673092411820957
+        },
+        "ST": {
+          "cosine": 0.8168934521065664,
+          "euclid": 0.7941760966158026,
+          "F_fisher": 0.5640099745837024,
+          "R_no_coarse": 0.5282273421648978
+        },
+        "TS": {
+          "cosine": 0.7831481586975976,
+          "euclid": 0.7559459256725173,
+          "F_fisher": 0.5635527388520277,
+          "R_no_coarse": 0.5242701062162919
+        },
+        "TT": {
+          "cosine_T": 0.8141824425746254,
+          "euclid_T": 0.791977058087144,
+          "F_T": 0.5869786843950253,
+          "R_T_no_coarse": 0.5406850423731325
+        }
+      },
+      "ST_minus_TS": {
+        "cosine": {
+          "mean": 0.03374529340896891,
+          "ci95": [
+            0.020072944245874413,
+            0.048775549257499363
+          ]
+        },
+        "euclid": {
+          "mean": 0.03823017094328529,
+          "ci95": [
+            0.021704293223479186,
+            0.05301463652866795
+          ]
+        },
+        "F_fisher": {
+          "mean": 0.0004572357316745873,
+          "ci95": [
+            -0.014318678095197178,
+            0.014353723559628046
+          ]
+        },
+        "R_no_coarse": {
+          "mean": 0.003957235948605918,
+          "ci95": [
+            -0.00914086089186817,
+            0.017412815175081472
+          ]
+        }
+      },
+      "best_native": "F_fisher",
+      "best_chart": "cosine",
+      "native_minus_chart": {
+        "ST": {
+          "mean": -0.2528834775228641,
+          "ci95": [
+            -0.26791323692020325,
+            -0.23767160935716763
+          ]
+        },
+        "TS": {
+          "mean": -0.21959541984556982,
+          "ci95": [
+            -0.23931417235495253,
+            -0.1994092732140607
+          ]
+        }
+      },
+      "displacement": {
+        "mean_cosine_x_to_Tx": 0.46910086274147034,
+        "q10": 0.23462936282157898,
+        "q90": 0.7245076298713684,
+        "frac_above_control_q95": 1.0,
+        "outside_invariance_class": true
+      },
+      "label_preservation": {
+        "knn_fine_label_preserved_frac": 0.317,
+        "coarse_head_preserved_frac": 0.4705
+      },
+      "transport_aware_TT": {
+        "best_native": "F_T",
+        "best_chart": "cosine_T",
+        "mean": -0.2272037581795999,
+        "ci95": [
+          -0.24326476557298213,
+          -0.21097967621900696
+        ]
+      },
+      "candidates": "independent"
+    },
+    "mix50": {
+      "n_anchors_supported": 400,
+      "support_frac": 1.0,
+      "accuracy": {
+        "direct": {
+          "cosine": 0.9360220539125048,
+          "euclid": 0.9240268260194827,
+          "F_fisher": 0.6450486618418991,
+          "R_no_coarse": 0.5673092411820957
+        },
+        "ST": {
+          "cosine": 0.7524240139998462,
+          "euclid": 0.7345232298016741,
+          "F_fisher": 0.5653995065725038,
+          "R_no_coarse": 0.5295252443240132
+        },
+        "TS": {
+          "cosine": 0.7177817394534646,
+          "euclid": 0.6952444127418634,
+          "F_fisher": 0.55759762968155,
+          "R_no_coarse": 0.5253704621675839
+        },
+        "TT": {
+          "cosine_T": 0.6319854415375217,
+          "euclid_T": 0.6154501081902058,
+          "F_T": 0.5419476375759174,
+          "R_T_no_coarse": 0.5176322247656348
+        }
+      },
+      "ST_minus_TS": {
+        "cosine": {
+          "mean": 0.03464227454638156,
+          "ci95": [
+            0.015803655203505,
+            0.05434470630371788
+          ]
+        },
+        "euclid": {
+          "mean": 0.03927881705981068,
+          "ci95": [
+            0.01838129498997413,
+            0.05935141893946268
+          ]
+        },
+        "F_fisher": {
+          "mean": 0.0078018768909539,
+          "ci95": [
+            -0.007838739600129404,
+            0.022624550965151657
+          ]
+        },
+        "R_no_coarse": {
+          "mean": 0.004154782156429311,
+          "ci95": [
+            -0.01058031072786164,
+            0.01916338333638782
+          ]
+        }
+      },
+      "best_native": "F_fisher",
+      "best_chart": "cosine",
+      "native_minus_chart": {
+        "ST": {
+          "mean": -0.18702450742734217,
+          "ci95": [
+            -0.1999941361664839,
+            -0.1731900918394632
+          ]
+        },
+        "TS": {
+          "mean": -0.1601841097719145,
+          "ci95": [
+            -0.18251627659868083,
+            -0.13885228074408018
+          ]
+        }
+      },
+      "displacement": {
+        "mean_cosine_x_to_Tx": 0.42158830165863037,
+        "q10": 0.2082800418138504,
+        "q90": 0.6306860446929932,
+        "frac_above_control_q95": 1.0,
+        "outside_invariance_class": true
+      },
+      "label_preservation": {
+        "knn_fine_label_preserved_frac": 0.185,
+        "coarse_head_preserved_frac": 0.3205
+      },
+      "transport_aware_TT": {
+        "best_native": "F_T",
+        "best_chart": "cosine_T",
+        "mean": -0.09003780396160427,
+        "ci95": [
+          -0.10308947817137337,
+          -0.07607224440030966
+        ]
+      },
+      "candidates": "independent"
+    },
+    "occlude50": {
+      "n_anchors_supported": 400,
+      "support_frac": 1.0,
+      "accuracy": {
+        "direct": {
+          "cosine": 0.9360220539125048,
+          "euclid": 0.9240268260194827,
+          "F_fisher": 0.6450486618418991,
+          "R_no_coarse": 0.5673092411820957
+        },
+        "ST": {
+          "cosine": 0.8718611517213009,
+          "euclid": 0.8576591476629452,
+          "F_fisher": 0.5954515046464544,
+          "R_no_coarse": 0.5524857572408027
+        },
+        "TS": {
+          "cosine": 0.8362888365407812,
+          "euclid": 0.8155630475379024,
+          "F_fisher": 0.6012691707399282,
+          "R_no_coarse": 0.548532843033085
+        },
+        "TT": {
+          "cosine_T": 0.8108108142303817,
+          "euclid_T": 0.7955887306160042,
+          "F_T": 0.589288771224583,
+          "R_T_no_coarse": 0.546970905801285
+        }
+      },
+      "ST_minus_TS": {
+        "cosine": {
+          "mean": 0.035572315180519516,
+          "ci95": [
+            0.023224600047919274,
+            0.04942162950761828
+          ]
+        },
+        "euclid": {
+          "mean": 0.04209610012504265,
+          "ci95": [
+            0.03019749836356454,
+            0.05514936335590203
+          ]
+        },
+        "F_fisher": {
+          "mean": -0.005817666093473949,
+          "ci95": [
+            -0.017896693344911348,
+            0.00646745597095382
+          ]
+        },
+        "R_no_coarse": {
+          "mean": 0.003952914207717804,
+          "ci95": [
+            -0.00805508992523215,
+            0.016329477544802923
+          ]
+        }
+      },
+      "best_native": "F_fisher",
+      "best_chart": "cosine",
+      "native_minus_chart": {
+        "ST": {
+          "mean": -0.27640964707484633,
+          "ci95": [
+            -0.2895891661776046,
+            -0.2625020312947018
+          ]
+        },
+        "TS": {
+          "mean": -0.2350196658008529,
+          "ci95": [
+            -0.2527770140831069,
+            -0.21627851884855126
+          ]
+        }
+      },
+      "displacement": {
+        "mean_cosine_x_to_Tx": 0.6624258160591125,
+        "q10": 0.44642147421836853,
+        "q90": 0.8299556374549866,
+        "frac_above_control_q95": 0.985,
+        "outside_invariance_class": true
+      },
+      "label_preservation": {
+        "knn_fine_label_preserved_frac": 0.416,
+        "coarse_head_preserved_frac": 0.6195
+      },
+      "transport_aware_TT": {
+        "best_native": "F_T",
+        "best_chart": "cosine_T",
+        "mean": -0.2215220430057988,
+        "ci95": [
+          -0.23684328987453734,
+          -0.20655954158696588
+        ]
+      },
+      "candidates": "independent"
+    }
+  },
+  "cache_manifest_sha256": "b5d8e244414d4ae0d77bce7510321998ed17c6e3a426bfba8cb0f5b755a1fa75",
+  "cache_sha256": "8de4f0b0c47e1272de8c948c770517a66edd7beff933ccc29d995886c8145791",
+  "pixels_path": "experiments\\results\\vision_cifar100_dinov2s\\pixels.npz",
+  "seed": 0,
+  "seconds": 471.4,
+  "heads_trained_on": [
+    "PB_coarse",
+    "PB_rgb_mean",
+    "PB_luma",
+    "PB_edge"
+  ],
+  "fine_label_head_trained": false,
+  "M1_chart_path_closure": {
+    "same_class": {
+      "PB_coarse": {
+        "flicker_frac": 0.02,
+        "n": 300,
+        "ci95": [
+          0.0033333333333333335,
+          0.03666666666666667
+        ]
+      },
+      "PB_rgb_mean": {
+        "flicker_frac": 0.24,
+        "n": 300,
+        "ci95": [
+          0.19,
+          0.2866666666666667
+        ]
+      },
+      "PB_luma": {
+        "flicker_frac": 0.22,
+        "n": 300,
+        "ci95": [
+          0.16666666666666666,
+          0.26666666666666666
+        ]
+      },
+      "PB_edge": {
+        "flicker_frac": 0.21666666666666667,
+        "n": 300,
+        "ci95": [
+          0.17333333333333334,
+          0.25666666666666665
+        ]
+      },
+      "knn_fine_emb": {
+        "flicker_frac": 0.12666666666666668,
+        "n": 300,
+        "ci95": [
+          0.09333333333333334,
+          0.16333333333333333
+        ]
+      },
+      "knn_fine_emb_k8": {
+        "flicker_frac": 0.17666666666666667,
+        "n": 300,
+        "ci95": [
+          0.13666666666666666,
+          0.21666666666666667
+        ]
+      },
+      "knn_fine_emb_k128": {
+        "flicker_frac": 0.1,
+        "n": 300,
+        "ci95": [
+          0.06333333333333334,
+          0.13
+        ]
+      },
+      "any_readout": {
+        "flicker_frac": 0.51,
+        "n": 300,
+        "ci95": [
+          0.45158333333333334,
+          0.5633333333333334
+        ]
+      }
+    },
+    "cross_class": {
+      "PB_coarse": {
+        "flicker_frac": 0.18333333333333332,
+        "n": 300,
+        "ci95": [
+          0.14333333333333334,
+          0.22666666666666666
+        ]
+      },
+      "PB_rgb_mean": {
+        "flicker_frac": 0.31666666666666665,
+        "n": 300,
+        "ci95": [
+          0.26666666666666666,
+          0.3717499999999999
+        ]
+      },
+      "PB_luma": {
+        "flicker_frac": 0.2866666666666667,
+        "n": 300,
+        "ci95": [
+          0.23,
+          0.34508333333333324
+        ]
+      },
+      "PB_edge": {
+        "flicker_frac": 0.2866666666666667,
+        "n": 300,
+        "ci95": [
+          0.24,
+          0.3384166666666666
+        ]
+      },
+      "knn_fine_emb": {
+        "flicker_frac": 0.38,
+        "n": 300,
+        "ci95": [
+          0.3233333333333333,
+          0.43666666666666665
+        ]
+      },
+      "knn_fine_emb_k8": {
+        "flicker_frac": 0.4066666666666667,
+        "n": 300,
+        "ci95": [
+          0.35,
+          0.45666666666666667
+        ]
+      },
+      "knn_fine_emb_k128": {
+        "flicker_frac": 0.37333333333333335,
+        "n": 300,
+        "ci95": [
+          0.32158333333333333,
+          0.4266666666666667
+        ]
+      },
+      "any_readout": {
+        "flicker_frac": 0.78,
+        "n": 300,
+        "ci95": [
+          0.7333333333333333,
+          0.8250833333333333
+        ]
+      }
+    }
+  },
+  "M2_endpoint_independence": {
+    "acc_rawpixel_knn_fine": 0.115,
+    "acc_embedding_knn_fine": 0.761,
+    "agreement_rawpixel_vs_embedding_knn": 0.1205,
+    "head_PB_coarse_test_acc": 0.86,
+    "head_PB_rgb_mean_test_acc": 0.5765,
+    "head_PB_luma_test_acc": 0.5855,
+    "head_PB_edge_test_acc": 0.5185
+  },
+  "M3_F_vs_R": {
+    "F_fisher": {
+      "mean_anchor_acc": 0.6668262038519076,
+      "n_anchors": 129,
+      "tie_frac": 0.0
+    },
+    "R_profile": {
+      "mean_anchor_acc": 0.7618333190548613,
+      "n_anchors": 129,
+      "tie_frac": 0.2198026539639333
+    },
+    "R_profile_no_coarse": {
+      "mean_anchor_acc": 0.5860039024053713,
+      "n_anchors": 129,
+      "tie_frac": 0.332425995236475
+    },
+    "cosine": {
+      "mean_anchor_acc": 0.934067953651797,
+      "n_anchors": 129,
+      "tie_frac": 0.0
+    },
+    "euclid": {
+      "mean_anchor_acc": 0.9326227178124363,
+      "n_anchors": 129,
+      "tie_frac": 0.0
+    },
+    "R_profile_plus_F": {
+      "mean_anchor_acc": 0.7677750719366386,
+      "n_anchors": 129,
+      "tie_frac": 0.0
+    },
+    "pca32_cosine": {
+      "mean_anchor_acc": 0.9408851465155016,
+      "n_anchors": 129,
+      "tie_frac": 0.0
+    },
+    "pixstat_euclid": {
+      "mean_anchor_acc": 0.6243862024155782,
+      "n_anchors": 129,
+      "tie_frac": 0.0
+    },
+    "rawpixel_cosine": {
+      "mean_anchor_acc": 0.621626286864965,
+      "n_anchors": 129,
+      "tie_frac": 0.0
+    },
+    "delta_F_minus_R": {
+      "mean": -0.09500711520295363,
+      "ci95": [
+        -0.14223588820437044,
+        -0.04898909301449081
+      ]
+    },
+    "n_scored_pairs": 5878
+  }
+}

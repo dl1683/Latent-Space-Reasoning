@@ -39,6 +39,22 @@ was learned, what's next. Canonical state lives in STATE.md.
   hidden-state capture. Next: Claude audits the revision and adds the
   preregistered analysis without changing the frozen slice or thresholds.
 
+## 2026-08-28 — NLM-006b: the chart survives every displaced transport
+
+- Uncontaminated run (independent candidates, 400/400 support, calibrated
+  displacement gate passed by all four families): on the transported pair the
+  chart leads the transport-aware natives by 0.09–0.29 with CIs far from zero;
+  natives never compete. Label preservation (readout proxy) is 0.19–0.46 for
+  the four families vs 0.77 for the near-identity controls, so most chart
+  degradation is identity loss, not transport law.
+- One real effect: order sensitivity ST > TS ≈ 0.035 (CIs exclude 0) only
+  outside the invariance class — substituting then transporting the candidate
+  beats transporting the anchor first. Small, but it is the first measured
+  non-commutation in this world.
+- Per the lock's chart-survival branch, the frozen-encoder transport line
+  closes: the trained chart is the operational map for this measured envelope.
+  Round 12 decides what replaces the frozen-encoder program.
+
 ## 2026-08-27 — Tier-3 re-contextualization #3 (Claude, before auditor #3)
 - Infra: the flaky link could not upload the 17 MB transport embeddings (HTTP 408); unpushed history was rewritten to drop them, they are git-ignored, and provenance is the sha256 in the lock. Remote verified in sync via ls-remote (never trust 'Everything up-to-date').
 
