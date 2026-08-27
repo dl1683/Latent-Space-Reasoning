@@ -5,6 +5,58 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
+## NLM-007 — LM residual-stream dynamics; LOCKED, capture done, analysis pending (2026-08-28)
+
+- **Lock.** Round 13, documentation-only (ledger `nlm007_round13_lock`;
+  design `theory/dialogue/003.md`, `theory/EXPERIMENTS.md`). Qwen3-0.6B
+  (28 layers), 80 one-token words × 16 carriers, four carrier-block folds;
+  layer pairs L0→1, L4→5, L8→9, L12→13, L20→21, L27→28; law ladder mean /
+  kNN / ridge / low-rank affine / kernel ridge; per-carrier oracle ceiling;
+  100 within-word carrier permutations (seed 13007); two-way cluster
+  bootstrap. Decision: ≥0.05 lead with lower bound >0 on successor cosine and
+  both completed-law readouts in ≥2 layer pairs. CPU only, 20-minute cap.
+- **Capture.** `experiments/run_lm_dynamics.py` →
+  `experiments/results/lm_dyn_v1/manifest.json` (model revision c1899de2…,
+  batch 16, batched-vs-single nulls ≤ 6.1e-5, 79 s). `states.npz` is
+  git-ignored; sha256 `6ec9520845811bbd…` recorded in the manifest.
+- **Analysis.** `experiments/analyze_lm_dynamics.py` built; not yet scored
+  under the lock. No result is claimed.
+
+## Round 12 closure — frozen-encoder program closed; pivot to worlds with dynamics (2026-08-27)
+
+- Ledger `nlm006b_round12_adjudication`; dialogue `theory/dialogue/003.md`;
+  commit `3294718`. NLM-006b corrected to non-diagnostic under its own
+  label-preservation gate (below); frozen-encoder closeness/map work closes
+  as scope management.
+- **Residue (narrow, this encoder/dataset).** Training supplies a
+  task-effective chart metric, affine-path smoothness, and graceful chart
+  degradation under identity-destroying moves; no native construct tested
+  (substitutability profiles, Fisher pullback, their transported variants)
+  competes with it. Not a general claim about native constructs.
+- Next program: causal-LM residual streams, where the forward pass is the
+  world's own transport (NLM-007).
+
+## NLM-006b — calibrated transport audit; chart survives, NON-DIAGNOSTIC under lock (2026-08-28)
+
+- **Design.** Locked Round 11 (`nlm006b_prereg_transport_audit`): independent
+  candidate strata (20 same-/20 cross-fine-label per anchor), transported-pair
+  predictors F_T / R_T vs cosine_T / euclid_T on (T_e x, T_e y), true
+  fine-label endpoint, label-preservation gate p_e ≥ 0.80, calibrated
+  displacement gate. Ledger `nlm006b_v1`; artifact
+  `experiments/results/nlm006b_v1/analysis.json`; transports
+  `experiments/results/vision_cifar100_dinov2s_edits_v2/` (edits.npz
+  git-ignored, sha256 9cc0e7c0…; displacement.json committed). 471 s, CPU.
+- **Chart survives every displaced transport.** Support 400/400; displacement
+  gate passes for crop50/invert/mix50/occlude50 (0.98–1.0 above control q95).
+  TT chart lead over best native: crop50 +0.208, invert +0.227, occlude50
+  +0.222, mix50 +0.090 (paired CIs exclude 0).
+- **Non-diagnostic (Round 12).** Label preservation 0.19–0.46 for all four
+  displaced families vs the 0.80 gate (controls hflip 0.77, shift 0.76): every
+  family is OOD under the identity gate, so chart survival is descriptive
+  only and no native/chart verdict is issued.
+- **Order effect.** ST−TS cosine ≈ 0.035 for all displaced families (CIs
+  exclude 0); ≈ 0 for hflip. Real, small, outside the invariance class only.
+
 ## NLM-006 v1 — transports outside the invariance class; EXPLORATORY (cosine-selected negatives) (2026-08-28)
 
 - **Design.** Six transport families re-encoded by the frozen encoder
