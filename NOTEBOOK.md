@@ -54,6 +54,33 @@ was learned, what's next. Canonical state lives in STATE.md.
   hidden-state capture. Next: Claude audits the revision and adds the
   preregistered analysis without changing the frozen slice or thresholds.
 
+## 2026-08-28 — NLM-007 (fallback run): an affine transport law at middle depth
+
+- Ran under the declared fallback (L0→L1, L8→L9, L27→L28; 20 shuffles; 500
+  bootstrap); 1427 s, 19% over the cap. Float16 reload check passed
+  (KL-ordering agreement 0.9998).
+- **L0→L1:** word-mean = ridge = kernel = 0.949; shuffled null 0.95. The first
+  block's slot action is carrier-independent: lexical persistence, no law
+  beyond word identity. Minimal class on both endpoints: word_mean.
+- **L8→L9:** ridge/kernel 0.94 vs best static chart (kNN-5) 0.86 and word-mean
+  0.86; world-completed skill 0.90 vs 0.67/0.68; ordering +0.06–0.09 over the
+  chart; every fold's clustered lower bound above zero; shuffled null
+  0.75–0.84. A reusable, carrier-dependent, affine law of transport that
+  clears every single-pair gate including the lexical-persistence moot-maker.
+  Low-rank (rank ≤ 128) trails full ridge by 0.05 — affine yes, low-rank no.
+  Within-carrier oracle (64 words) sits below the cross-carrier field (960
+  cells): the law generalizes across carriers better than any carrier fits
+  itself.
+- **L27→L28:** successor lead +0.07–0.12, but the completed-law endpoint is
+  degenerate by construction — the law is read at the last token and no
+  remaining layer connects the slot to it (KL = 0, skill undefined, support
+  0.42–0.56). The lock's "only norm and head remain" missed this.
+- Verdict within the lock: one pair supports; two are needed; the fallback
+  run is incomplete for the gated verdict. Under the guiding question: at
+  middle depth this world has a law a denizen could learn on some contexts and
+  reuse on others — the first such law the program has found. Bounded to one
+  model and shared words.
+
 ## 2026-08-28 — Tier-3 re-contextualization #4 (Claude, before auditor #4)
 
 **Live question.** In a world with its own dynamics (a causal LM's residual
