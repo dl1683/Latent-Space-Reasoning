@@ -5,6 +5,28 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-28 — Round 15 extension: successor endpoint across depth
+
+- L4→L5, L12→L13, L20→L21 in 1100 s (budget 1800). Successor endpoint valid;
+  completed-law numbers are the last-token secondary readout only.
+- **L12→L13** matched its prediction on the successor endpoint: ridge 0.977 vs
+  chart 0.898 / word-mean 0.888; ≥0.05 over the chart in all four folds with
+  clustered lower bounds above zero; low-rank misses by 0.05; shuffled ridge
+  null 0.67–0.78. Qualifying status waits on the slot-position endpoint.
+- **L4→L5** falsified the prediction: not lexical-persistence dominated
+  (ridge beats the word-mean by 0.03–0.06, LB > 0), yet the chart lead reaches
+  0.05 in one fold only. **L20→L21**: ridge within 0.02 of kernel (prediction
+  "kernel minimal" wrong); chart lead ≥0.05 in two of four folds.
+- Depth pattern (one model, shared words): the word-mean equals the field
+  only at L0; from L4 on a full-dimensional affine field beats both the
+  word-mean and the chart at every depth; the carrier-shuffle penalty grows
+  with depth. Reading under the guiding question: carrier-dependence of the
+  move is not present at the input and is built up by the world's early
+  blocks — the state's dependence on its context is a manufactured quantity,
+  not a given.
+- Two of three Round 15 predictions failed on the class/minimality side; the
+  successor-ordering prediction held. Recorded as such.
+
 ## 2026-08-28 — Tier-3 audit #5 and re-contextualization #5
 
 - Audit #5 (fresh Codex) on the L8→L9 claim: the completed-law endpoint read
