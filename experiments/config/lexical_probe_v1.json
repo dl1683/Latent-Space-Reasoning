@@ -1,0 +1,32 @@
+{
+  "name": "lexical_probe_v1",
+  "note": "Frozen item set and carrier probes for the first native-closeness measurement. All 80 items are exactly one leading-space token in every listed system (checked 2026-08-27). Probes: 4 semantic blocks x 4 paraphrases; slot marked by <X>; the next-token law is read after the suffix.",
+  "systems": ["Qwen/Qwen3-0.6B", "Qwen/Qwen2.5-0.5B", "google/gemma-3-270m", "HuggingFaceTB/SmolLM2-360M", "EleutherAI/pythia-410m"],
+  "items": {
+    "noun": ["dog","cat","house","river","city","book","table","mountain","doctor","child","window","money","music","bread","forest","engine","king","stone","garden","ocean"],
+    "verb": ["run","walk","eat","write","build","break","sleep","think","speak","fly","carry","push","open","close","drive","sing","throw","hold","learn","wash"],
+    "adj":  ["red","blue","big","small","hot","cold","fast","slow","happy","sad","dark","bright","heavy","soft","loud","quiet","old","young","wet","empty"],
+    "func": ["the","of","and","but","because","if","with","from","under","between","although","while","after","before","into","through","without","until","since","than"]
+  },
+  "probes": [
+    {"block": "gloss",        "name": "gloss_1", "template": "The word <X> means"},
+    {"block": "gloss",        "name": "gloss_2", "template": "In this dictionary, <X> is defined as"},
+    {"block": "gloss",        "name": "gloss_3", "template": "The meaning of <X> is"},
+    {"block": "gloss",        "name": "gloss_4", "template": "Here <X> refers to"},
+    {"block": "continuation", "name": "cont_1",  "template": "I saw a <X> that was"},
+    {"block": "continuation", "name": "cont_2",  "template": "She looked at the <X> and"},
+    {"block": "continuation", "name": "cont_3",  "template": "There was a <X> near the"},
+    {"block": "continuation", "name": "cont_4",  "template": "He said the <X> would"},
+    {"block": "association",  "name": "assoc_1", "template": "When I think of <X>, I think of"},
+    {"block": "association",  "name": "assoc_2", "template": "Things related to <X> include"},
+    {"block": "association",  "name": "assoc_3", "template": "The word <X> reminds me of"},
+    {"block": "association",  "name": "assoc_4", "template": "People usually associate <X> with"},
+    {"block": "grammar",      "name": "gram_1",  "template": "Yesterday they <X> and then"},
+    {"block": "grammar",      "name": "gram_2",  "template": "Every day we <X> because"},
+    {"block": "grammar",      "name": "gram_3",  "template": "It is very <X> so"},
+    {"block": "grammar",      "name": "gram_4",  "template": "They went <X> the door"}
+  ],
+  "slot_convention": "The item is inserted as its own embedding row replacing <X>; the template is tokenized with <X> removed and split into prefix/suffix at the slot; all rows of a batch share prefix and suffix so sequence length is fixed.",
+  "calibration_blocks": ["gloss", "continuation"],
+  "heldout_blocks": ["association", "grammar"]
+}
