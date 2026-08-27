@@ -43,17 +43,29 @@ class Standardizer:
 
 class RidgeFamily:
     """Centered ridge Y = b + Xs W for many (lambda, rank): one eigendecomposition of Xc^T Xc, reused. Same math."""
-    def __init__(self, Xs, Y):
+    def __init__(self, Xs, Y, eig=None):
         self.xm = Xs.mean(0); self.ym = Y.mean(0); Xc = Xs - self.xm; Yc = Y - self.ym
-        self.evals, self.evecs = np.linalg.eigh(Xc.T @ Xc)
+        if eig is None:
+            ev, V = torch.linalg.eigh(torch.from_numpy(np.ascontiguousarray(Xc.T @ Xc))); self.evals, self.evecs = ev.numpy(), V.numpy()
+        else:
+            self.evals, self.evecs = eig
         self.XtY_rot = self.evecs.T @ (Xc.T @ Yc)
         self._W = {}
+    @property
+    def eig(self):
+        return (self.evals, self.evecs)
     def W(self, lam, rank=None):
         key = (lam, rank)
         if key not in self._W:
-            W = self.evecs @ (self.XtY_rot / (self.evals + lam)[:, None])
+            if (lam, None) not in self._W:
+                self._W[(lam, None)] = self.evecs @ (self.XtY_rot / (self.evals + lam)[:, None])
+            W = self._W[(lam, None)]
             if rank is not None:
-                U, sv, Vt = np.linalg.svd(W, full_matrices=False); W = (U[:, :rank] * sv[:rank]) @ Vt[:rank]
+                if (lam, "svd") not in self._W:
+                    U, sv, Vh = torch.linalg.svd(torch.from_numpy(np.ascontiguousarray(W)), full_matrices=False)
+                    self._W[(lam, "svd")] = (U.numpy(), sv.numpy(), Vh.numpy())
+                U, sv, Vt = self._W[(lam, "svd")]
+                W = (U[:, :rank] * sv[:rank]) @ Vt[:rank]
             self._W[key] = W
         return self._W[key]
     def predictor(self, lam, rank=None):
@@ -204,7 +216,17 @@ def main():
         assert sp.revision == man.get("model_revision"), f"model revision {sp.revision} != capture manifest {man.get('model_revision')}"
         assert int(sp.model.config.num_hidden_layers) == man["num_hidden_layers"]
         ids = [sp.single_token_id(w) for w in items]; states_emb = torch.stack([sp.state(i) for i in ids])
-    results = {"pairs": {}, "manifest": man, "config": a.config, "lock": "theory/EXPERIMENTS.md NLM-007 (Round 13)"}
+    results = {"pairs": {}, "manifest": man, "config": a.config, "lock": "theory/EXPERIMENTS.md NLM-007 (Round 13, amended Round 14)",
+               "fallback": {"pairs": [f"L{l}->L{l1}" for (l, l1) in pairs], "n_shuffle": a.n_shuffle, "n_boot": a.n_boot}}
+    if completer is not None:
+        # float16 reload check: fresh float32 laws for probe 0 vs stored float16 laws — KL-ordering agreement must be near 1
+        fresh = completer.laws(0, states_emb, 0, Yhat=None)
+        stored = laws[0]
+        Rf, Rs = pairwise_kl(fresh), pairwise_kl(stored)
+        agree, _ = ordering_preservation(Rf, Rs)
+        results["law_reload_check"] = {"max_abs_logp_diff": float(np.max(np.abs(fresh - stored))), "kl_ordering_agreement": agree,
+                                       "max_abs_pairwise_kl_diff": float(np.max(np.abs(Rf - Rs)))}
+        print("law reload check:", json.dumps(results["law_reload_check"]), flush=True)
 
     def cells(probe_list, l):
         X = np.concatenate([Z[p, l] for p in probe_list]); Y = np.concatenate([Z[p, l + 1] for p in probe_list])
@@ -274,7 +296,7 @@ def main():
                 for w in range(n):
                     Yc_perm[:, w, :] = Yc_perm[rng.permutation(n_cal_probes), w, :]
                 Yc_perm = Yc_perm.reshape(-1, D)
-                fams = RidgeFamily(Xcs, Yc_perm)
+                fams = RidgeFamily(Xcs, Yc_perm, eig=famc.eig)
                 shuf["ridge"].append(float(np.mean(cos_rows(fams.predictor(best["ridge"]["lam"])(Xts), Yt))))
                 shuf["lowrank"].append(float(np.mean(cos_rows(fams.predictor(best["lowrank"]["lam"], best["lowrank"]["rank"])(Xts), Yt))))
             print(f"   [{held}] shuffled null done ({time.time()-t0:.0f}s)", flush=True)
