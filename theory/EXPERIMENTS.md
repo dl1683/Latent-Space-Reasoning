@@ -1019,3 +1019,186 @@ affine-path smoothness, and relative chart robustness as edits progressively
 destroy the endpoint identity. No tested native construct competes. No further
 score-chasing on this frozen image encoder is planned. The next program must
 make dynamics—not analyst-imposed image edits—the legal moves.
+
+## NLM-007 — residual-stream dynamics law-complexity audit (LOCK, Round 13)
+
+**Status: LOCKED BEFORE SCORING.** This is a documentation-only lock. No NLM-
+007 scoring or generation is part of Round 13. The narrow question is whether
+the forward-pass transport of a causal LM admits a reusable law across unseen
+carrier contexts. A win by a regressor over a coordinate-nearness control is
+not, by itself, evidence of native mathematics; it must transfer across
+carriers and cash out in the world's completed response law.
+
+### C1--C5 adjudication
+
+- **C1 — concede and amend.** A ridge field and kNN on residual coordinates are
+  both chart constructions. Ridge beating 1-NN establishes, at most, that the
+  measured block action is more smoothly represented by an affine field than
+  by that local chart rule. The old claim that this alone finds a native map is
+  withdrawn.
+- **C2 — concede and adopt.** The primary comparison is a law-complexity
+  ladder: global mean successor; kNN regression with `k={1,5,20}`; affine
+  ridge; low-rank affine; and RBF kernel ridge. The minimal class is reported
+  retrospectively as the first class within `0.02` of the best held-out score,
+  separately for successor and completed-law endpoints; it is not used to
+  choose a result after seeing the data.
+- **C3 — concede and adopt with a ceiling boundary.** The primary split holds
+  out one complete carrier block at a time. A per-carrier, word-cross-fitted
+  oracle is a ceiling for how much predictable structure exists within a
+  carrier, not evidence of a reusable cross-carrier law and not a competing
+  primary method.
+- **C4 — concede and amend for implementation.** A successor cosine is only
+  coordinate forecasting. For each predicted slot successor, the analysis
+  must retain or deterministically reconstruct the actual non-slot hidden
+  sequence at that successor depth, replace only the slot, run the remaining
+  transformer blocks plus final norm and language-model head, and compare that
+  completed law with the true final law by KL and ordering preservation.
+- **C5 — adopt with an instrument boundary.** The existing capture stage
+  records all hidden-state indices and final laws, the batched-vs-single
+  numerical null, and runtime metadata. The lexical configuration supplies 80
+  one-token words and 16 carriers in four blocks of four paraphrases. It must
+  be run as exactly Qwen3-0.6B with 28 hidden layers; the analysis stage is
+  built only after this lock. The current slot-only `states.npz` is sufficient
+  for successor scoring but not, alone, for the world-completed endpoint.
+
+### Locked world, cells, and layer pairs
+
+Use the unchanged `experiments/config/lexical_probe_v1.json`: 80 one-token
+words crossed with the 16 fixed carrier probes
+`{gloss_1..4, cont_1..4, assoc_1..4, gram_1..4}`. A cell is `(carrier, word)`.
+The carrier blocks are `gloss`, `continuation`, `association`, and `grammar`;
+the primary split is therefore four outer folds, each holding out all four
+paraphrase carriers in one block and training on the other 12 carriers. Words
+are intentionally shared across carriers: this is a carrier-transfer law
+test, not a vocabulary-generalization test.
+
+The model is `Qwen/Qwen3-0.6B`, CPU float32 evaluation, with no text
+generation. Require `num_hidden_layers == 28`; hidden-state index 0 is the
+input-embedding state and indices 1--28 are the transformer outputs. Analyze
+these six predeclared adjacent pairs:
+
+| depth region | pair | interpretation |
+|---|---|---|
+| early | `L0→L1`, `L4→L5` | embedding/early block transport |
+| middle | `L8→L9`, `L12→L13` | middle residual transport |
+| late | `L20→L21`, `L27→L28` | late and final-block transport |
+
+For every pair, let `X=z_l,c(w)` and `Y=z_(l+1),c(w)`. Model and tokenizer
+revision, exact config hash/name, batch size, CPU thread count, Python,
+PyTorch, Transformers, dtype, device, layer count, and the capture artifact
+hash must be present before held-out scores are opened. The existing
+batched-vs-single null is mandatory and is reported for states, log laws, and
+KL; missing or non-finite null values void confirmatory interpretation.
+
+### Law-complexity ladder and controls
+
+All coordinate preprocessing is fit on the outer-fold calibration cells only:
+per-coordinate centering/scaling for distance and regression, with zero-scale
+coordinates omitted. Predictions are transformed back to the original
+residual coordinates before endpoint scoring. Hyperparameters are selected by
+leave-one-carrier-block-out validation within the three calibration blocks;
+the held-out block is never used for selection.
+
+1. **Mean:** the calibration mean of `Y`, independent of `X` and carrier.
+2. **Chart-local:** kNN regression for `k=1,5,20`, using standardized
+   Euclidean distance in `X`, with calibration targets only.
+3. **Affine:** centered ridge `Y=b+XW`, with
+   `lambda={1e-4,1e-3,1e-2,1e-1,1,10,100}`; and reduced-rank affine fields
+   with `rank={8,32,128}` and the same ridge grid. The selected ridge and
+   low-rank members are reported separately.
+4. **Nonlinear:** RBF kernel ridge, with regularization from the same grid and
+   `gamma={0.1,1,10}/median(||X_i-X_j||^2)` computed inside calibration.
+
+The static chart controls are 1-NN successor lookup by cosine similarity and
+by negative Euclidean distance in the unmodified residual chart. Their member
+is selected once by the same inner blocked validation and then frozen. They
+are controls, not native candidates. The carrier-shuffled null independently
+permutes the 12 calibration targets across carriers within each word, using
+the fixed RNG seed `13007`; this preserves each word's target marginal while
+breaking carrier pairing. Use 100 such permutations and report their null
+distribution. A shuffled field that matches the unshuffled field indicates a
+marginal-state or presentation artifact, not a transport law.
+
+The per-carrier oracle is fit separately within each carrier using a fixed
+five-way, class-stratified word split over the 80 words; each oracle is tested
+on its held-out words and never supplies predictions to the cross-carrier
+field. Report oracle performance as the within-carrier ceiling. For bounded
+higher-is-better scores, transfer recovery is
+`(field-mean)/(oracle-mean)`; for errors it is
+`(mean-field)/(mean-oracle)`. A non-positive or degenerate denominator is
+reported as undefined rather than repaired.
+
+### Endpoints and exact law predictions
+
+The primary successor endpoint is cosine between predicted and actual `Y`.
+Also report normalized successor error
+`||Yhat-Y|| / ||Y-Ybar_cal||`, where `Ybar_cal` is the outer-fold calibration
+mean. The primary completed-law endpoint is obtained by inserting `Yhat` into
+the actual full hidden sequence at layer `l+1`, retaining all non-slot states,
+and executing layers `l+2..28` followed by the final norm and LM head. For
+`L27→L28`, only the final norm and head remain. Let `q` be the true final
+next-token law and `qhat` the completed predicted law. Report raw
+`KL(q || qhat)` (lower is better), normalized KL skill
+`1 - KL(q || qhat)/KL(q || qmean)`, and ordering preservation.
+
+Ordering preservation is the paired Kendall-style agreement within each
+carrier: for every anchor word `a`, order the other words `b` by
+`KL(q_a || q_b)` and by `KL(qhat_a || qhat_b)`, count a concordant pair as 1,
+discordant as 0, and an exact tie as 0.5. The same ordering is computed from
+the mean and chart controls. The raw law, KL skill, and ordering score are
+all retained; no generated token or generation accuracy is used.
+
+For each outer-fold test cell, retain paired differences against the frozen
+best static chart. Higher-is-better differences are field minus chart;
+error differences are chart minus field. The dynamics-map support criterion
+requires a `>=0.05` lead with a paired 95% lower bound above zero on successor
+cosine and on both completed-law readouts (normalized KL skill and ordering)
+in at least two of the six layer pairs. Normalized successor error is a
+required diagnostic and must not reverse the successor conclusion.
+
+The exact pre-score minimal-class predictions are:
+
+| depth region | predicted minimal transferable class | prediction |
+|---|---|---|
+| early (`L0→L1`, `L4→L5`) | low-rank affine | low-rank affine is within `0.02` of the best successor and completed-law score; the carrier-shuffled null loses it |
+| middle (`L8→L9`, `L12→L13`) | low-rank affine | low-rank affine remains the smallest class within `0.02`, with at least one pair meeting the gated lead |
+| late (`L20→L21`, `L27→L28`) | kernel ridge | nonlinear curvature is needed to reach the best score, while transfer weakens at the final block |
+
+These are registered predictions, not observed results. A successful early or
+late score does not license a claim about all depths or all language models.
+
+### Bootstrap, support, decision, and kill rules
+
+For each outer-fold result, use a paired two-way cluster bootstrap: resample
+the 80 words and the four held-out carriers independently with replacement,
+take their Cartesian cell product, and use 2,000 replicates with seed `13007`.
+Aggregate the four fold estimates with equal fold weight and report foldwise
+and pooled intervals. No cell, layer pair, or bootstrap replicate is treated
+as an independent word-level observation.
+
+Support requires finite predictions, finite completed laws, a non-degenerate
+actual successor, and a defined law-ordering comparison. Require at least
+`95%` of the 320 cells in every held-out block, and report support separately
+for every carrier and layer pair. Failure is non-diagnostic; it is not silently
+repaired by dropping difficult words or carriers.
+
+Kill the reusable dynamics-map candidate if it fails the `+0.05` gate on
+successor or completed-law endpoints in two layer pairs, if the advantage
+disappears on held-out carrier blocks, if the carrier-shuffled null matches it
+within `0.02`, or if the per-carrier oracle shows that the apparent lead is
+only a carrier-specific effect. A successor improvement without completed-law
+improvement is coordinate forecasting only and kills the navigation claim.
+Void the run for endpoint leakage, post-score candidate or hyperparameter
+selection, changed carrier/word membership, absent full-sequence completion
+context, missing numerical or revision metadata, absent word/carrier-clustered
+bootstrap, or incomplete support. These rules do not claim that LM dynamics
+lack lawful transport; they bound this instrument.
+
+### CPU budget
+
+One CPU-only process, one model, fixed recorded thread count, and a hard
+20-minute wall-clock cap cover capture, numerical null, ladder fitting,
+world-completed passes, and clustered bootstrap. No GPU and no generation are
+permitted. If the cap cannot cover all six pairs, the analysis is incomplete
+and earns no gated verdict; pair reduction must be decided before scoring,
+never after seeing outcomes.

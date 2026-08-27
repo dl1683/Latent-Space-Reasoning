@@ -232,3 +232,38 @@ the map must predict where a state goes. The hypothesis, first measurement,
 decisive result, kill conditions, and CPU cap are registered in
 `theory/dialogue/003.md`. Reuse `experiments/substitution_probe.py`; no run is
 authorized by this documentation-only round.
+
+## Round 13 — NLM-007 lock and C1–C5 adjudication (2026-08-27)
+
+Round 13 is documentation-only: no NLM-007 scoring or generation was run.
+Claude's C1 is conceded: ridge versus kNN is chart-versus-chart and cannot
+establish a native map. C2 and C3 are adopted: NLM-007 is a law-complexity
+ladder with mean, kNN `k={1,5,20}`, ridge, low-rank affine, and kernel ridge,
+evaluated primarily by four carrier-block hold-out folds (three blocks in,
+one block out). A per-carrier word-cross-fitted oracle is reported only as a
+ceiling, and a carrier-shuffled null breaks carrier pairing while preserving
+target marginals.
+
+C4 is adopted with an implementation amendment. Successor prediction is only
+coordinate forecasting; the decisive endpoint inserts the predicted slot
+successor into the actual full hidden sequence, runs the remaining layers plus
+final norm/LM head, and compares the completed law to truth by KL and ordering
+preservation. The current capture artifact stores slot states, so missing
+full-sequence completion context voids the completed-law claim. C5 is adopted
+with exact Qwen3-0.6B/28-layer and runtime metadata requirements.
+
+NLM-007 is locked in `theory/EXPERIMENTS.md` before scoring. The six fixed
+pairs are `L0→L1`, `L4→L5`, `L8→L9`, `L12→L13`, `L20→L21`, and `L27→L28`,
+grouped into early, middle, and late regions. The preregistered minimal-class
+prediction is low-rank affine early, low-rank affine middle, and kernel ridge
+late. A gated dynamics-map claim requires a paired `+0.05` lead over the best
+static chart on successor cosine and both completed-law readouts in at least
+two pairs, with carrier-shuffled loss, 95% cell support, and word/carrier
+clustered bootstrap. The run is CPU-only, one process, with a hard 20-minute
+cap and no generation.
+
+## Next
+
+Build the NLM-007 analysis stage only after this lock. Do not score until the
+completion-context path, calibration-only selection, null, metadata, support
+accounting, and clustered bootstrap are implemented and auditable.
