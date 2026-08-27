@@ -189,6 +189,7 @@ def main():
     ap.add_argument("--model", default="Qwen/Qwen3-0.6B"); ap.add_argument("--pairs", type=int, nargs="*", default=None)
     ap.add_argument("--n-boot", type=int, default=2000); ap.add_argument("--n-shuffle", type=int, default=100)
     ap.add_argument("--skip-completion", action="store_true")
+    ap.add_argument("--tag", default="", help="suffix for the output file: analysis_<tag>.json (keeps earlier runs intact)")
     ap.add_argument("--smoke", action="store_true", help="pipeline validation on the first 16 words, pair 0, tiny bootstrap; writes analysis_smoke.json")
     a = ap.parse_args()
     if a.smoke:
@@ -383,10 +384,10 @@ def main():
         minimal_skill = next((k for k in lad_s if pooled_skill[k] >= max(pooled_skill[kk] for kk in lad_s) - 0.02), None) if lad_s else None
         results["pairs"][pair_key] = {"folds": fold_out, "pooled_successor_cos": pooled, "minimal_class_successor_within_0.02": minimal,
                                       "pooled_completed_skill": pooled_skill, "minimal_class_completed_within_0.02": minimal_skill}
-        (run_dir / ("analysis_smoke.json" if a.smoke else "analysis.json")).write_text(json.dumps(results, indent=1, default=float), encoding="utf-8")
+        (run_dir / ("analysis_smoke.json" if a.smoke else "analysis" + ("_" + a.tag if a.tag else "") + ".json")).write_text(json.dumps(results, indent=1, default=float), encoding="utf-8")
         print(f"  pooled: " + " ".join(f"{k}={v:.3f}" for k, v in pooled.items()) + f" | minimal class: {minimal}", flush=True)
     results["seconds"] = round(time.time() - t0, 1)
-    out = run_dir / ("analysis_smoke.json" if a.smoke else "analysis.json")
+    out = run_dir / ("analysis_smoke.json" if a.smoke else "analysis" + ("_" + a.tag if a.tag else "") + ".json")
     out.write_text(json.dumps(results, indent=1, default=float), encoding="utf-8")
     print(f"wrote {out} ({results['seconds']}s)")
 
