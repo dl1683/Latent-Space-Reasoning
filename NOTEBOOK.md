@@ -40,6 +40,8 @@ was learned, what's next. Canonical state lives in STATE.md.
   preregistered analysis without changing the frozen slice or thresholds.
 
 ## 2026-08-27 — Tier-3 re-contextualization #3 (Claude, before auditor #3)
+- Infra: the flaky link could not upload the 17 MB transport embeddings (HTTP 408); unpushed history was rewritten to drop them, they are git-ignored, and provenance is the sha256 in the lock. Remote verified in sync via ls-remote (never trust 'Everything up-to-date').
+
 
 **Where the program stands.** Five measurements in one vision world plus one
 in the LM world converge: a trained encoder hands its denizen a chart metric
