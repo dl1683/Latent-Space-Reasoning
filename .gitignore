@@ -171,3 +171,6 @@ legacy/external/arc-agi-3-just-explore/
 legacy/salvage/
 legacy/docs/DEEP_DIALOGUE_*.md
 legacy/docs/BIFURCATION_ANALYSIS_FINDINGS.md
+
+# Shared agent blackboard state (Iqidis blackboard MCP); internal reasoning, never public
+.blackboard/
