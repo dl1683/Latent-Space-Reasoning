@@ -39,6 +39,36 @@ was learned, what's next. Canonical state lives in STATE.md.
   hidden-state capture. Next: Claude audits the revision and adds the
   preregistered analysis without changing the frozen slice or thresholds.
 
+## 2026-08-27 — Tier-3 re-contextualization #3 (Claude, before auditor #3)
+
+**Where the program stands.** Five measurements in one vision world plus one
+in the LM world converge: a trained encoder hands its denizen a chart metric
+and straight routes that already serve as the one-step map; nothing we built
+from probes competes; an untrained chart has neither. Round 10 closed the
+frozen-encoder closeness line and opened NLM-006 (moves outside the trained
+invariance class).
+
+**Honest tunnel check.** Since the pivot, every measurement has been
+"rank candidates by closeness to an anchor, score against a label". That is
+one instrument shape in two worlds. Alternatives I hold live:
+1. NLM-006 as designed — the last test inside this shape; if the chart
+   survives crops/inversion/mixing/occlusion, closeness-on-frozen-encoders is
+   done for good.
+2. Worlds with dynamics: LM residual streams, where transport *is* the forward
+   pass and the map must predict where the world takes a state — the only
+   setting where "move" is not something we impose.
+3. The denotational primitive on diffusion latents (evidence-update, not
+   closeness) — the legacy program's own repair results are its instrument.
+4. The moot-maker: if "inherited from training" fully explains every result,
+   the honest program is the study of what training objectives install in a
+   chart — encoder-invariance science, not native mathematics. The auditor is
+   asked to say whether we have already become that.
+
+**What reframes earlier work.** The legacy separatrix "islands" and NLM-004's
+95% null-world flicker are the same phenomenon: chart-straight lines are
+routes only where training laid them. The guiding question's "map" is, so
+far, not invented by the denizen — it is issued to it.
+
 ## 2026-08-27 — Round 10: frozen-encoder closeness/map line closed; NLM-006 opens
 
 - Codex round 10 (`fbe7bee`, blackboard-backed): NLM-005 void (support 32%,
