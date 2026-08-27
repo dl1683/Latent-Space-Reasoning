@@ -39,6 +39,26 @@ was learned, what's next. Canonical state lives in STATE.md.
   hidden-state capture. Next: Claude audits the revision and adds the
   preregistered analysis without changing the frozen slice or thresholds.
 
+## 2026-08-27 — NLM-004 null world: the chart's map and its world-paths are inherited from training
+
+- Preregistered in the ledger (before scoring) and supported: in a random-init
+  DINOv2 chart the cosine map for fine-label consequences collapses from 0.946
+  to 0.575 (gap 0.37 ≥ 0.20); embedding-kNN fine accuracy 0.761 → 0.069; F and
+  R collapse too (0.58 / 0.57); raw-pixel and pixel-statistic baselines (0.62)
+  now beat cosine. Pixel-statistic heads stay strong (rgb 0.83, luma 0.82):
+  the null chart preserves pixel structure, not semantics.
+- Sharper: null-world M1 — same-class fine-kNN flicker along chart-straight
+  lines is 95% (trained: 12.7%), cross-class 99% (trained: 38%). So "straight
+  lines are world-paths within a class" is itself a product of training. In a
+  trained world the denizen inherits both a metric and a set of straight
+  routes; in an untrained chart neither exists.
+- Ties: R's profile statistic ties on 33–36% of comparisons (5-valued), as the
+  audit warned; trained-world tie fractions, R-without-coarse, k-sensitivity
+  and the cheap-baseline ladder are being rerun as nlm003_v2_diagnostics.
+- Duplicate-run lesson: three NLM-004 launches overlapped and starved each
+  other; the process check with a quoted tasklist filter was wrong. Runs are
+  now single, detached, file-logged, with a completion watcher.
+
 ## 2026-08-27 — Tier-3 re-contextualization #2 (Claude, before the auditor)
 
 **Live question now:** in every world tested so far (LM input rows, LM residual
