@@ -1,0 +1,155 @@
+{
+  "endpoint": "fine_label",
+  "cache_manifest_sha256": "b5d8e244414d4ae0d77bce7510321998ed17c6e3a426bfba8cb0f5b755a1fa75",
+  "cache_sha256": "8de4f0b0c47e1272de8c948c770517a66edd7beff933ccc29d995886c8145791",
+  "seed": 0,
+  "seconds": 80.7,
+  "heads_trained_on": [
+    "PB_coarse",
+    "PB_rgb_mean",
+    "PB_luma",
+    "PB_edge"
+  ],
+  "fine_label_head_trained": false,
+  "M1_chart_path_closure": {
+    "same_class": {
+      "PB_coarse": {
+        "flicker_frac": 0.02,
+        "n": 300,
+        "ci95": [
+          0.0033333333333333335,
+          0.03666666666666667
+        ]
+      },
+      "PB_rgb_mean": {
+        "flicker_frac": 0.24,
+        "n": 300,
+        "ci95": [
+          0.19,
+          0.2866666666666667
+        ]
+      },
+      "PB_luma": {
+        "flicker_frac": 0.22,
+        "n": 300,
+        "ci95": [
+          0.16666666666666666,
+          0.26666666666666666
+        ]
+      },
+      "PB_edge": {
+        "flicker_frac": 0.21666666666666667,
+        "n": 300,
+        "ci95": [
+          0.17333333333333334,
+          0.25666666666666665
+        ]
+      },
+      "knn_fine_emb": {
+        "flicker_frac": 0.12666666666666668,
+        "n": 300,
+        "ci95": [
+          0.09333333333333334,
+          0.16333333333333333
+        ]
+      },
+      "any_readout": {
+        "flicker_frac": 0.51,
+        "n": 300,
+        "ci95": [
+          0.45825,
+          0.5650833333333333
+        ]
+      }
+    },
+    "cross_class": {
+      "PB_coarse": {
+        "flicker_frac": 0.18333333333333332,
+        "n": 300,
+        "ci95": [
+          0.14,
+          0.22666666666666666
+        ]
+      },
+      "PB_rgb_mean": {
+        "flicker_frac": 0.31666666666666665,
+        "n": 300,
+        "ci95": [
+          0.26666666666666666,
+          0.37
+        ]
+      },
+      "PB_luma": {
+        "flicker_frac": 0.2866666666666667,
+        "n": 300,
+        "ci95": [
+          0.23491666666666666,
+          0.34
+        ]
+      },
+      "PB_edge": {
+        "flicker_frac": 0.2866666666666667,
+        "n": 300,
+        "ci95": [
+          0.23491666666666666,
+          0.33666666666666667
+        ]
+      },
+      "knn_fine_emb": {
+        "flicker_frac": 0.38,
+        "n": 300,
+        "ci95": [
+          0.3233333333333333,
+          0.43508333333333327
+        ]
+      },
+      "any_readout": {
+        "flicker_frac": 0.78,
+        "n": 300,
+        "ci95": [
+          0.7333333333333333,
+          0.8250833333333333
+        ]
+      }
+    }
+  },
+  "M2_endpoint_independence": {
+    "acc_rawpixel_knn_fine": 0.115,
+    "acc_embedding_knn_fine": 0.761,
+    "agreement_rawpixel_vs_embedding_knn": 0.1205,
+    "head_PB_coarse_test_acc": 0.86,
+    "head_PB_rgb_mean_test_acc": 0.5765,
+    "head_PB_luma_test_acc": 0.5855,
+    "head_PB_edge_test_acc": 0.5185
+  },
+  "M3_F_vs_R": {
+    "F_fisher": {
+      "mean_anchor_acc": 0.6303084870139526,
+      "n_anchors": 130
+    },
+    "R_profile": {
+      "mean_anchor_acc": 0.734343938885943,
+      "n_anchors": 130
+    },
+    "cosine": {
+      "mean_anchor_acc": 0.9463927081082951,
+      "n_anchors": 130
+    },
+    "euclid": {
+      "mean_anchor_acc": 0.9350493809754944,
+      "n_anchors": 130
+    },
+    "R_profile_plus_F": {
+      "mean_anchor_acc": 0.7425796202618065,
+      "n_anchors": 130
+    },
+    "delta_F_minus_R": {
+      "mean": -0.10403545187199034,
+      "ci95": [
+        -0.14783125495960772,
+        -0.0583804569128456
+      ]
+    },
+    "n_scored_pairs": 6199
+  }
+}
