@@ -136,3 +136,11 @@ experiments/legal_comparison_results.json
 experiments/eval_all_plans.json
 experiments/planning_3way_outputs.json
 experiments/codex_review_v2_*.txt
+
+# Internal strategy documents (not externally facing)
+internal/
+
+# Local process files (never committed)
+AGENTS.md
+.codex_*
+.claude_*

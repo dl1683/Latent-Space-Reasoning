@@ -1,3 +1,7 @@
+# READ AGENTS.md FIRST
+
+If a local `AGENTS.md` is present in this directory, it holds the operating process and wins over anything below. Read it before any work.
+
 # CRITICAL: Evaluation Guidelines
 
 ## Automated Scorer Scores Are IRRELEVANT
