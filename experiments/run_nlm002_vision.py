@@ -221,9 +221,12 @@ def main():
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--endpoint", choices=["rawpixel_knn", "fine_label"], default="rawpixel_knn",
                     help="consequence endpoint for measurement 3: raw-pixel kNN fine label (NLM-002 lock) or the true fine label, which no head is trained on")
+    ap.add_argument("--pixels", default=None,
+                    help="path to pixels.npz (default: <cache>/pixels.npz); lets an artifact built on the same indices reuse another cache's pixels")
     a = ap.parse_args()
     t0 = time.time(); rng = np.random.default_rng(a.seed)
-    cache = Path(a.cache); d = np.load(cache / "cache.npz"); px = np.load(cache / "pixels.npz")
+    cache = Path(a.cache); d = np.load(cache / "cache.npz")
+    pixels_path = Path(a.pixels) if a.pixels else cache / "pixels.npz"; px = np.load(pixels_path)
     man = json.loads((cache / "manifest.json").read_text(encoding="utf-8"))
     tr = {"emb": d["train_emb"], "fine": d["train_fine"], "coarse": d["train_coarse"], "pixstats": d["train_pixstats"]}
     te = {"emb": d["test_emb"], "fine": d["test_fine"], "coarse": d["test_coarse"], "pixstats": d["test_pixstats"]}
@@ -243,7 +246,7 @@ def main():
     print("M3", json.dumps(m3), flush=True)
     out_dir = RESULTS / a.out; out_dir.mkdir(parents=True, exist_ok=True)
     result = {"endpoint": a.endpoint, "cache_manifest_sha256": hashlib.sha256((cache / "manifest.json").read_bytes()).hexdigest(),
-              "cache_sha256": man.get("cache_sha256"), "seed": a.seed, "seconds": round(time.time() - t0, 1),
+              "cache_sha256": man.get("cache_sha256"), "pixels_path": str(pixels_path), "seed": a.seed, "seconds": round(time.time() - t0, 1),
               "heads_trained_on": list(blocks), "fine_label_head_trained": False,
               "M1_chart_path_closure": m1, "M2_endpoint_independence": m2, "M3_F_vs_R": m3}
     (out_dir / "analysis.json").write_text(json.dumps(result, indent=2), encoding="utf-8")
