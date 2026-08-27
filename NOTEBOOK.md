@@ -39,6 +39,30 @@ was learned, what's next. Canonical state lives in STATE.md.
   hidden-state capture. Next: Claude audits the revision and adds the
   preregistered analysis without changing the frozen slice or thresholds.
 
+## 2026-08-27 — NLM-003: R beats F, both dominated by the chart metric; blackboard live
+
+- NLM-003 (locked `e2a1fb2`, true fine-label endpoint, same artifact): R
+  (substitution-profile agreement) beats F (Fisher pullback) — Δ_F−R = −0.104
+  [−0.148, −0.058], gate met (R 0.734 vs F 0.630). Decisive context: plain cosine
+  in the DINOv2 chart scores 0.946, Euclidean 0.935 — both native constructs
+  lose by 20–30 points to the imported metric on the informative endpoint.
+  Support thin: 130/400 anchors had a same-class candidate among 40 draws.
+- Reading before Codex round 8: DINOv2 is trained so that one chart metric is
+  meaningful; in such a world the denizen's best one-step map *is* that metric.
+  NLM-001 found the same in the LM world (contextual cosine at L14 = 1.000). So
+  far every world tested has a chart metric that already is the map for
+  one-step consequences. Where native structure could still differ from the
+  chart: (i) two-step moves — does substitution-then-transport equal
+  transport-then-substitution (composition / laws), which a one-step metric
+  cannot express; (ii) worlds whose chart was not trained to be metric (raw
+  residual states of a non-contrastive model, or a randomly-initialized
+  encoder as a null world); (iii) cross-class world-paths (M1: 38% detours).
+- Blackboard: `@iqidis/blackboard-mcp` installed globally, registered for
+  Claude Code (user scope) and Codex; mandated in global CLAUDE.md and the
+  setup skill; Codex verified `bb_list`/`bb_create`/`bb_add_entries` and seeded
+  the project board (`.blackboard/5df235ea`, git-ignored). This session cannot
+  call `bb_*` until restart; Codex rounds now use it.
+
 ## 2026-08-27 — NLM-002 non-LM branch run: endpoint killed, chart-path structure found
 
 - Artifact frozen (CIFAR-100 → DINOv2-small, 6000/2000, sha256 8de4f0b0…);
