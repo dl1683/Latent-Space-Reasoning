@@ -2,7 +2,7 @@
   "Qwen/Qwen3-0.6B": {
     "system": "Qwen/Qwen3-0.6B",
     "n": 8,
-    "eta": 1.4781951904296875e-05,
+    "eta": 2.1403616365377684e-05,
     "H1": {
       "frac_pairs_robust_in_ge2_blocks": 0.0,
       "frac_by_block": {
@@ -13,82 +13,68 @@
       }
     },
     "H2": {
-      "kappa": 1,
-      "edges": [],
+      "W": 0.0,
+      "B": 0.0,
+      "Q": null,
+      "Q_ci95": [
+        0.0,
+        0.0
+      ],
+      "n_boot_finite": 34,
+      "support": false,
+      "fail_B_le_W": true,
+      "within_by_block": {
+        "gloss": 0.5,
+        "continuation": 0.0,
+        "association": 0.0,
+        "grammar": 0.0
+      },
+      "between_by_cell": {
+        "gloss|continuation|h1": 0.0,
+        "gloss|continuation|h2": 0.0,
+        "gloss|association|h1": 0.0,
+        "gloss|association|h2": 1.0,
+        "gloss|grammar|h1": 0.0,
+        "gloss|grammar|h2": 0.0,
+        "continuation|association|h1": null,
+        "continuation|association|h2": 0.0,
+        "continuation|grammar|h1": 0.0,
+        "continuation|grammar|h2": 1.0,
+        "association|grammar|h1": 0.0,
+        "association|grammar|h2": 0.0
+      },
+      "kappa_0.10_descriptive": 1,
+      "edges_0.10": [],
       "block_pair_matrix": {
         "gloss|continuation": {
-          "median_anchor_reversal_rate": NaN,
+          "median_anchor_reversal_rate": 0.0,
           "frac_anchors_with_reversal": 0.0,
           "n_pairs_robust_both_median": 0.0
         },
         "gloss|association": {
-          "median_anchor_reversal_rate": NaN,
+          "median_anchor_reversal_rate": null,
           "frac_anchors_with_reversal": 0.0,
           "n_pairs_robust_both_median": 0.0
         },
         "gloss|grammar": {
-          "median_anchor_reversal_rate": NaN,
+          "median_anchor_reversal_rate": 0.0,
           "frac_anchors_with_reversal": 0.0,
           "n_pairs_robust_both_median": 0.0
         },
         "continuation|association": {
-          "median_anchor_reversal_rate": NaN,
+          "median_anchor_reversal_rate": 0.0,
           "frac_anchors_with_reversal": 0.0,
           "n_pairs_robust_both_median": 0.0
         },
         "continuation|grammar": {
-          "median_anchor_reversal_rate": NaN,
+          "median_anchor_reversal_rate": null,
           "frac_anchors_with_reversal": 0.0,
           "n_pairs_robust_both_median": 0.0
         },
         "association|grammar": {
-          "median_anchor_reversal_rate": NaN,
+          "median_anchor_reversal_rate": null,
           "frac_anchors_with_reversal": 0.0,
           "n_pairs_robust_both_median": 0.0
-        }
-      },
-      "diagnostic_within_block_halves": {
-        "gloss": {
-          "median_anchor_reversal_rate": NaN,
-          "frac_anchors_with_reversal": 0.0
-        },
-        "continuation": {
-          "median_anchor_reversal_rate": NaN,
-          "frac_anchors_with_reversal": 0.0
-        },
-        "association": {
-          "median_anchor_reversal_rate": NaN,
-          "frac_anchors_with_reversal": 0.0
-        },
-        "grammar": {
-          "median_anchor_reversal_rate": NaN,
-          "frac_anchors_with_reversal": 0.0
-        }
-      },
-      "diagnostic_between_block_halves": {
-        "gloss|continuation": {
-          "median_anchor_reversal_rate": NaN,
-          "frac_anchors_with_reversal": 0.0
-        },
-        "gloss|association": {
-          "median_anchor_reversal_rate": NaN,
-          "frac_anchors_with_reversal": 0.0
-        },
-        "gloss|grammar": {
-          "median_anchor_reversal_rate": NaN,
-          "frac_anchors_with_reversal": 0.0
-        },
-        "continuation|association": {
-          "median_anchor_reversal_rate": NaN,
-          "frac_anchors_with_reversal": 0.0
-        },
-        "continuation|grammar": {
-          "median_anchor_reversal_rate": NaN,
-          "frac_anchors_with_reversal": 0.0
-        },
-        "association|grammar": {
-          "median_anchor_reversal_rate": NaN,
-          "frac_anchors_with_reversal": 0.0
         }
       }
     },
@@ -98,111 +84,121 @@
         0.0,
         0.0
       ],
-      "delta_rev": NaN,
-      "strongest_baseline": null,
+      "delta_rev": null,
+      "strongest_baseline_full": "cos",
+      "winner_counts_boot": {
+        "cos": 500
+      },
       "delta_rev_ci95": null,
+      "support": false,
       "heldout_acc_all_anchors": {
-        "native_DC": NaN,
-        "cos": NaN,
-        "cos_centered": NaN,
-        "cos_abtt1": NaN,
-        "cos_abtt3": NaN,
-        "ctx_raw_L0": NaN,
-        "ctx_centered_L0": NaN,
-        "ctx_abtt1_L0": NaN,
-        "ctx_abtt3_L0": NaN,
-        "ctx_raw_L7": NaN,
-        "ctx_centered_L7": NaN,
-        "ctx_abtt1_L7": NaN,
-        "ctx_abtt3_L7": NaN,
-        "ctx_raw_L14": NaN,
-        "ctx_centered_L14": NaN,
-        "ctx_abtt1_L14": NaN,
-        "ctx_abtt3_L14": NaN,
-        "ctx_raw_L28": NaN,
-        "ctx_centered_L28": NaN,
-        "ctx_abtt1_L28": NaN,
-        "ctx_abtt3_L28": NaN,
-        "euclid": NaN,
-        "normdiff": NaN,
-        "kl_unembed_sym": NaN,
-        "maha_diag_L0": NaN,
-        "maha_rank16_L0": NaN,
-        "maha_diag_L7": NaN,
-        "maha_rank16_L7": NaN,
-        "maha_diag_L14": NaN,
-        "maha_rank16_L14": NaN,
-        "maha_diag_L28": NaN,
-        "maha_rank16_L28": NaN
+        "native_DC": null,
+        "cos": null,
+        "cos_centered": null,
+        "cos_abtt1": null,
+        "cos_abtt3": null,
+        "ctx_raw_L0": null,
+        "ctx_centered_L0": null,
+        "ctx_abtt1_L0": null,
+        "ctx_abtt3_L0": null,
+        "ctx_raw_L7": null,
+        "ctx_centered_L7": null,
+        "ctx_abtt1_L7": null,
+        "ctx_abtt3_L7": null,
+        "ctx_raw_L14": null,
+        "ctx_centered_L14": null,
+        "ctx_abtt1_L14": null,
+        "ctx_abtt3_L14": null,
+        "ctx_raw_L28": null,
+        "ctx_centered_L28": null,
+        "ctx_abtt1_L28": null,
+        "ctx_abtt3_L28": null,
+        "euclid": null,
+        "normdiff": null,
+        "kl_unembed_sym": null,
+        "maha_diag_L0": null,
+        "maha_rank16_L0": null,
+        "maha_diag_L7": null,
+        "maha_rank16_L7": null,
+        "maha_diag_L14": null,
+        "maha_rank16_L14": null,
+        "maha_diag_L28": null,
+        "maha_rank16_L28": null
       },
       "heldout_acc_active_anchors": {
-        "native_DC": NaN,
-        "cos": NaN,
-        "cos_centered": NaN,
-        "cos_abtt1": NaN,
-        "cos_abtt3": NaN,
-        "ctx_raw_L0": NaN,
-        "ctx_centered_L0": NaN,
-        "ctx_abtt1_L0": NaN,
-        "ctx_abtt3_L0": NaN,
-        "ctx_raw_L7": NaN,
-        "ctx_centered_L7": NaN,
-        "ctx_abtt1_L7": NaN,
-        "ctx_abtt3_L7": NaN,
-        "ctx_raw_L14": NaN,
-        "ctx_centered_L14": NaN,
-        "ctx_abtt1_L14": NaN,
-        "ctx_abtt3_L14": NaN,
-        "ctx_raw_L28": NaN,
-        "ctx_centered_L28": NaN,
-        "ctx_abtt1_L28": NaN,
-        "ctx_abtt3_L28": NaN,
-        "euclid": NaN,
-        "normdiff": NaN,
-        "kl_unembed_sym": NaN,
-        "maha_diag_L0": NaN,
-        "maha_rank16_L0": NaN,
-        "maha_diag_L7": NaN,
-        "maha_rank16_L7": NaN,
-        "maha_diag_L14": NaN,
-        "maha_rank16_L14": NaN,
-        "maha_diag_L28": NaN,
-        "maha_rank16_L28": NaN
+        "native_DC": null,
+        "cos": null,
+        "cos_centered": null,
+        "cos_abtt1": null,
+        "cos_abtt3": null,
+        "ctx_raw_L0": null,
+        "ctx_centered_L0": null,
+        "ctx_abtt1_L0": null,
+        "ctx_abtt3_L0": null,
+        "ctx_raw_L7": null,
+        "ctx_centered_L7": null,
+        "ctx_abtt1_L7": null,
+        "ctx_abtt3_L7": null,
+        "ctx_raw_L14": null,
+        "ctx_centered_L14": null,
+        "ctx_abtt1_L14": null,
+        "ctx_abtt3_L14": null,
+        "ctx_raw_L28": null,
+        "ctx_centered_L28": null,
+        "ctx_abtt1_L28": null,
+        "ctx_abtt3_L28": null,
+        "euclid": null,
+        "normdiff": null,
+        "kl_unembed_sym": null,
+        "maha_diag_L0": null,
+        "maha_rank16_L0": null,
+        "maha_diag_L7": null,
+        "maha_rank16_L7": null,
+        "maha_diag_L14": null,
+        "maha_rank16_L14": null,
+        "maha_diag_L28": null,
+        "maha_rank16_L28": null
       },
       "calib_acc_baselines": {
-        "cos": NaN,
-        "cos_centered": NaN,
-        "cos_abtt1": NaN,
-        "cos_abtt3": NaN,
-        "ctx_raw_L0": NaN,
-        "ctx_centered_L0": NaN,
-        "ctx_abtt1_L0": NaN,
-        "ctx_abtt3_L0": NaN,
-        "ctx_raw_L7": NaN,
-        "ctx_centered_L7": NaN,
-        "ctx_abtt1_L7": NaN,
-        "ctx_abtt3_L7": NaN,
-        "ctx_raw_L14": NaN,
-        "ctx_centered_L14": NaN,
-        "ctx_abtt1_L14": NaN,
-        "ctx_abtt3_L14": NaN,
-        "ctx_raw_L28": NaN,
-        "ctx_centered_L28": NaN,
-        "ctx_abtt1_L28": NaN,
-        "ctx_abtt3_L28": NaN,
-        "euclid": NaN,
-        "normdiff": NaN,
-        "kl_unembed_sym": NaN,
-        "maha_diag_L0": NaN,
-        "maha_rank16_L0": NaN,
-        "maha_diag_L7": NaN,
-        "maha_rank16_L7": NaN,
-        "maha_diag_L14": NaN,
-        "maha_rank16_L14": NaN,
-        "maha_diag_L28": NaN,
-        "maha_rank16_L28": NaN
+        "cos": 1.0,
+        "cos_centered": 1.0,
+        "cos_abtt1": 1.0,
+        "cos_abtt3": 1.0,
+        "ctx_raw_L0": 1.0,
+        "ctx_centered_L0": 1.0,
+        "ctx_abtt1_L0": 1.0,
+        "ctx_abtt3_L0": 0.0,
+        "ctx_raw_L7": 1.0,
+        "ctx_centered_L7": 1.0,
+        "ctx_abtt1_L7": 1.0,
+        "ctx_abtt3_L7": 0.0,
+        "ctx_raw_L14": 1.0,
+        "ctx_centered_L14": 1.0,
+        "ctx_abtt1_L14": 1.0,
+        "ctx_abtt3_L14": 1.0,
+        "ctx_raw_L28": 1.0,
+        "ctx_centered_L28": 1.0,
+        "ctx_abtt1_L28": 1.0,
+        "ctx_abtt3_L28": 1.0,
+        "euclid": 1.0,
+        "normdiff": 1.0,
+        "kl_unembed_sym": 1.0,
+        "maha_diag_L0": 1.0,
+        "maha_rank16_L0": 1.0,
+        "maha_diag_L7": 1.0,
+        "maha_rank16_L7": 1.0,
+        "maha_diag_L14": 1.0,
+        "maha_rank16_L14": 1.0,
+        "maha_diag_L28": 1.0,
+        "maha_rank16_L28": 1.0
       }
     }
   },
-  "H4": {}
+  "H4": {},
+  "_settings": {
+    "rule": "pooled",
+    "scale_normalize": true,
+    "run": "pipeline_smoke_8",
+    "config": "C:/Users/devan/AppData/Local/Temp/claude/C--Users-devan-OneDrive-Desktop-Projects-Latent-Space-Reasoning/4ef03185-d4c0-43a9-a0c4-55e9259cd16e/scratchpad/smoke8.json"
+  }
 }
