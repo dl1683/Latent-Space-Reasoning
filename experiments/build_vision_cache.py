@@ -46,6 +46,7 @@ def main():
     ap.add_argument("--batch", type=int, default=32)
     ap.add_argument("--out", required=True)
     ap.add_argument("--pixels-only", action="store_true", help="dump raw 32x32x3 uint8 pixels for the same split indices (no encoding)")
+    ap.add_argument("--random-init", action="store_true", help="NULL WORLD: same encoder architecture with random weights (seed 0); a chart never trained to be metric")
     a = ap.parse_args()
 
     from datasets import load_dataset
@@ -74,7 +75,12 @@ def main():
         print(json.dumps({"pixels_sha256": hashlib.sha256(path.read_bytes()).hexdigest(), "train_pixels": px["train_pixels"].shape, "test_pixels": px["test_pixels"].shape}, default=str))
         return
 
-    model = AutoModel.from_pretrained(a.encoder).eval()
+    if a.random_init:
+        from transformers import AutoConfig
+        torch.manual_seed(0)
+        model = AutoModel.from_config(AutoConfig.from_pretrained(a.encoder)).eval()
+    else:
+        model = AutoModel.from_pretrained(a.encoder).eval()
     MEAN = np.array([0.485, 0.456, 0.406], dtype=np.float32); STD = np.array([0.229, 0.224, 0.225], dtype=np.float32)
 
     def preprocess(imgs):
@@ -86,7 +92,7 @@ def main():
             x = np.asarray(im.crop((l, t, l + 224, t + 224)), dtype=np.float32) / 255.0
             arr.append(((x - MEAN) / STD).transpose(2, 0, 1))
         return torch.from_numpy(np.stack(arr))
-    enc_rev = getattr(model.config, "_commit_hash", None)
+    enc_rev = ("RANDOM_INIT_seed0_arch=" + a.encoder) if a.random_init else getattr(model.config, "_commit_hash", None)
 
     def encode(split, idx):
         embs, fine, coarse, stats = [], [], [], []
