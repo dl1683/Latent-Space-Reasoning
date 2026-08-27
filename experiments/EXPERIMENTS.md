@@ -5,22 +5,44 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
-## NLM-007 — LM residual-stream dynamics; LOCKED, capture done, analysis pending (2026-08-28)
+## NLM-007 — LM residual-stream dynamics; fallback run: one pair supports, gate incomplete (2026-08-28)
 
 - **Lock.** Round 13, documentation-only (ledger `nlm007_round13_lock`;
-  design `theory/dialogue/003.md`, `theory/EXPERIMENTS.md`). Qwen3-0.6B
-  (28 layers), 80 one-token words × 16 carriers, four carrier-block folds;
-  layer pairs L0→1, L4→5, L8→9, L12→13, L20→21, L27→28; law ladder mean /
-  kNN / ridge / low-rank affine / kernel ridge; per-carrier oracle ceiling;
-  100 within-word carrier permutations (seed 13007); two-way cluster
-  bootstrap. Decision: ≥0.05 lead with lower bound >0 on successor cosine and
-  both completed-law readouts in ≥2 layer pairs. CPU only, 20-minute cap.
+  design `theory/dialogue/003.md`, `theory/EXPERIMENTS.md`); Round 14
+  amendment `097e2df`. Qwen3-0.6B (28 layers), 80 one-token words × 16
+  carriers, four carrier-block folds; six layer pairs; law ladder
+  word-mean / kNN / ridge / low-rank affine / kernel ridge; per-carrier oracle
+  ceiling; within-word carrier permutations; two-way cluster bootstrap.
+  Decision: ≥0.05 lead with lower bound >0 on successor cosine and both
+  completed-law readouts in ≥2 layer pairs. CPU only, 20-minute cap.
 - **Capture.** `experiments/run_lm_dynamics.py` →
   `experiments/results/lm_dyn_v1/manifest.json` (model revision c1899de2…,
   batch 16, batched-vs-single nulls ≤ 6.1e-5, 79 s). `states.npz` is
   git-ignored; sha256 `6ec9520845811bbd…` recorded in the manifest.
-- **Analysis.** `experiments/analyze_lm_dynamics.py` built; not yet scored
-  under the lock. No result is claimed.
+- **Fallback declared before scoring** (ledger `nlm007_fallback_declared`):
+  numpy LAPACK 4–6× slower than torch here, so three pairs (L0→1, L8→9,
+  L27→28), 20 shuffles, 500 bootstrap. Run: ledger `nlm007_v1_fallback`;
+  config `experiments/config/lexical_probe_v1.json`; command
+  `python experiments/analyze_lm_dynamics.py --run lm_dyn_v1 --config experiments/config/lexical_probe_v1.json --pairs 0 2 5 --n-shuffle 20 --n-boot 500`;
+  artifact `experiments/results/lm_dyn_v1/analysis.json`. 1427 s (19% over
+  cap); float16 law-reload check passed (KL-ordering agreement 0.9998).
+- **L0→L1: lexical persistence.** word-mean = ridge = kernel = 0.949; carrier-
+  shuffled null 0.95. The first block's slot action is carrier-independent;
+  minimal class on both endpoints is word_mean — no law beyond word identity.
+- **L8→L9: affine transport law clears every single-pair gate.** Ridge/kernel
+  0.94 vs best static chart (kNN-5) 0.86 and word-mean 0.86; world-completed
+  skill 0.90 vs 0.67/0.68; ordering lead +0.06–0.09; clustered lower bound >0
+  in 4/4 folds; shuffled null 0.75–0.84. Low-rank (rank ≤128) trails full
+  ridge by 0.05. Within-carrier oracle sits below the cross-carrier field.
+- **L27→L28: completed endpoint degenerate by construction.** Successor lead
+  +0.07–0.12, but the law is read at the last token with no remaining layer
+  connecting the slot to it (KL = 0, skill undefined, support 0.42–0.56); the
+  lock's endpoint is invalid at the last pair. Corrected endpoint pending.
+- **What we learned.** At middle depth this model has a reusable,
+  carrier-dependent, affine transport law — the program's first measured
+  law; at L0→L1 there is none beyond word identity. One supporting pair of
+  the two the lock requires: the gated verdict is incomplete (L4→5, L12→13,
+  L20→21 unrun). Bounded to one model and shared words; no general claim.
 
 ## Round 12 closure — frozen-encoder program closed; pivot to worlds with dynamics (2026-08-27)
 
