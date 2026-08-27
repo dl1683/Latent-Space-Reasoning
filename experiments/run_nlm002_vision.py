@@ -100,7 +100,7 @@ def knn_labels(index_X, index_y, query_X, k, metric="euclid"):
 
 
 # ---------- measurement 1: chart-path closure ---------------------------------------
-def measurement_1(tr, te, heads, blocks, rng, n_pairs=300, grid=9, k=32):
+def measurement_1(tr, te, heads, blocks, rng, n_pairs=300, grid=9, k=32, k_sens=(8, 32, 128)):
     Xtr, Xte = tr["emb"], te["emb"]
     fine_te = te["fine"]
     ts = np.linspace(0, 1, grid)
@@ -113,17 +113,21 @@ def measurement_1(tr, te, heads, blocks, rng, n_pairs=300, grid=9, k=32):
         i, j = rng.integers(0, len(Xte), 2)
         if i != j and fine_te[i] != fine_te[j]: pairs_cross.append((i, j))
     for fam, pairs in (("same_class", pairs_same), ("cross_class", pairs_cross)):
-        flick = {name: [] for name in list(heads) + ["knn_fine_emb"]}
+        flick = {name: [] for name in list(heads) + ["knn_fine_emb"] + [f"knn_fine_emb_k{kk}" for kk in k_sens if kk != k]}
         for i, j in pairs:
             path = np.stack([(1 - t) * Xte[i] + t * Xte[j] for t in ts])
             for name, h in heads.items():
                 lab = h.predict(path); flick[name].append(int(np.sum(lab[1:] != lab[:-1]) > 1))
             lab = knn_labels(Xtr, tr["fine"], path, k); flick["knn_fine_emb"].append(int(np.sum(lab[1:] != lab[:-1]) > 1))
+            for kk in k_sens:
+                if kk == k: continue
+                labk = knn_labels(Xtr, tr["fine"], path, kk); flick[f"knn_fine_emb_k{kk}"].append(int(np.sum(labk[1:] != labk[:-1]) > 1))
         fams[fam] = {name: {"flicker_frac": float(np.mean(v)), "n": len(v),
                             "ci95": [float(np.percentile([np.mean(rng.choice(v, len(v))) for _ in range(500)], q)) for q in (2.5, 97.5)]}
                      for name, v in flick.items()}
         # any-readout flicker
-        anyf = [int(any(flick[name][p] for name in flick)) for p in range(len(pairs))]
+        primary = [n for n in flick if not n.startswith("knn_fine_emb_k")]
+        anyf = [int(any(flick[name][p] for name in primary)) for p in range(len(pairs))]
         fams[fam]["any_readout"] = {"flicker_frac": float(np.mean(anyf)), "n": len(anyf),
                                     "ci95": [float(np.percentile([np.mean(rng.choice(anyf, len(anyf))) for _ in range(500)], q)) for q in (2.5, 97.5)]}
     return fams
@@ -145,7 +149,12 @@ def measurement_2(tr, te, pixels, heads, k=32):
 
 
 # ---------- measurement 3: F vs R on substitution consequences -------------------------
-def measurement_3(tr, te, heads, blocks_te, endpoint_label, rng, n_anchor=400, n_cand=40):
+def pca_features(Xtr, X, k=32):
+    mu = Xtr.mean(0); _, _, Vt = np.linalg.svd(Xtr - mu, full_matrices=False)
+    return (X - mu) @ Vt[:k].T
+
+
+def measurement_3(tr, te, heads, blocks_te, endpoint_label, rng, n_anchor=400, n_cand=40, pixstats=None, pixels=None):
     """For anchor x and candidate y (test states): move = substitute x by y. Consequence = whether the
     endpoint label of y equals that of x (raw-pixel kNN fine label). Predictors rank candidates by
     'closeness' to x; scored by pairwise accuracy of predicting which of two candidates preserves the
@@ -155,8 +164,17 @@ def measurement_3(tr, te, heads, blocks_te, endpoint_label, rng, n_anchor=400, n
     G = sum(h.fisher(tr["emb"][:1000]) for h in heads.values()) / len(heads)
     head_pred = {name: h.predict(Xte) for name, h in heads.items()}
     anchors = rng.choice(n, size=n_anchor, replace=False)
-    scores = {"F_fisher": [], "R_profile": [], "cosine": [], "euclid": [], "R_profile_plus_F": []}
+    scores = {"F_fisher": [], "R_profile": [], "R_profile_no_coarse": [], "cosine": [], "euclid": [], "R_profile_plus_F": [],
+              "pca32_cosine": [], "pixstat_euclid": [], "rawpixel_cosine": []}
+    ties = {k: [0, 0] for k in scores}          # [tied comparisons, total comparisons]
     Xn = Xte / np.maximum(np.linalg.norm(Xte, axis=1, keepdims=True), 1e-12)
+    P32 = pca_features(tr["emb"], Xte, 32); P32n = P32 / np.maximum(np.linalg.norm(P32, axis=1, keepdims=True), 1e-12)
+    PS = te["pixstats"] if pixstats is None else pixstats
+    PSz = (PS - tr["pixstats"].mean(0)) / (tr["pixstats"].std(0) + 1e-9)
+    RP = None
+    if pixels is not None:
+        RP = pixels.reshape(len(pixels), -1).astype(np.float32) / 255.0
+        RP = RP / np.maximum(np.linalg.norm(RP, axis=1, keepdims=True), 1e-12)
     n_pairs_total = 0
     for x in anchors:
         cands = rng.choice([c for c in range(n) if c != x], size=n_cand, replace=False)
@@ -167,19 +185,29 @@ def measurement_3(tr, te, heads, blocks_te, endpoint_label, rng, n_anchor=400, n
         dE = np.linalg.norm(diff, axis=1)
         cos = Xn[cands] @ Xn[x]
         prof = np.array([sum(head_pred[nm][c] == head_pred[nm][x] for nm in head_pred) for c in cands], dtype=float)
+        prof_nc = np.array([sum(head_pred[nm][c] == head_pred[nm][x] for nm in head_pred if nm != "PB_coarse") for c in cands], dtype=float)
+        pca_cos = P32n[cands] @ P32n[x]
+        ps_d = np.linalg.norm(PSz[cands] - PSz[x], axis=1)
+        rp_cos = (RP[cands] @ RP[x]) if RP is not None else None
         # pairwise: for (a preserved, b not preserved), predictor correct if it ranks a closer than b
         pos = cands[keep]; neg = cands[~keep]
         ip = np.flatnonzero(keep); ineg = np.flatnonzero(~keep)
-        def pair_acc(closer):  # closer: higher = closer
-            c = 0; t = 0
+        def pair_acc(closer, key):  # closer: higher = closer; ties get 0.5 and are counted
+            c = 0; t = 0; tied = 0
             for a in ip:
                 for b in ineg:
-                    t += 1; c += int(closer[a] > closer[b]) + 0.5 * int(closer[a] == closer[b])
+                    t += 1
+                    if closer[a] == closer[b]: tied += 1; c += 0.5
+                    else: c += int(closer[a] > closer[b])
+            ties[key][0] += tied; ties[key][1] += t
             return c / t
-        scores["F_fisher"].append(pair_acc(-dF)); scores["euclid"].append(pair_acc(-dE)); scores["cosine"].append(pair_acc(cos))
-        scores["R_profile"].append(pair_acc(prof)); scores["R_profile_plus_F"].append(pair_acc(prof - 1e-3 * dF / (dF.std() + 1e-12)))
+        scores["F_fisher"].append(pair_acc(-dF, "F_fisher")); scores["euclid"].append(pair_acc(-dE, "euclid")); scores["cosine"].append(pair_acc(cos, "cosine"))
+        scores["R_profile"].append(pair_acc(prof, "R_profile")); scores["R_profile_no_coarse"].append(pair_acc(prof_nc, "R_profile_no_coarse"))
+        scores["R_profile_plus_F"].append(pair_acc(prof - 1e-3 * dF / (dF.std() + 1e-12), "R_profile_plus_F"))
+        scores["pca32_cosine"].append(pair_acc(pca_cos, "pca32_cosine")); scores["pixstat_euclid"].append(pair_acc(-ps_d, "pixstat_euclid"))
+        if rp_cos is not None: scores["rawpixel_cosine"].append(pair_acc(rp_cos, "rawpixel_cosine"))
         n_pairs_total += len(ip) * len(ineg)
-    res = {k: {"mean_anchor_acc": float(np.mean(v)), "n_anchors": len(v)} for k, v in scores.items()}
+    res = {k: {"mean_anchor_acc": float(np.mean(v)), "n_anchors": len(v), "tie_frac": (ties[k][0] / ties[k][1] if ties[k][1] else None)} for k, v in scores.items() if len(v)}
     F = np.array(scores["F_fisher"]); R = np.array(scores["R_profile"])
     boots = [np.mean((F - R)[rng.integers(0, len(F), len(F))]) for _ in range(1000)]
     res["delta_F_minus_R"] = {"mean": float(np.mean(F - R)), "ci95": [float(np.percentile(boots, 2.5)), float(np.percentile(boots, 97.5))]}
@@ -211,7 +239,7 @@ def main():
     m1 = measurement_1(tr, te, heads, blocks, rng)
     print("M1", json.dumps(m1), flush=True)
     endpoint = knn_pix if a.endpoint == "rawpixel_knn" else te["fine"]
-    m3 = measurement_3(tr, te, heads, te["blocks"], endpoint, rng)
+    m3 = measurement_3(tr, te, heads, te["blocks"], endpoint, rng, pixels=px["test_pixels"])
     print("M3", json.dumps(m3), flush=True)
     out_dir = RESULTS / a.out; out_dir.mkdir(parents=True, exist_ok=True)
     result = {"endpoint": a.endpoint, "cache_manifest_sha256": hashlib.sha256((cache / "manifest.json").read_bytes()).hexdigest(),
