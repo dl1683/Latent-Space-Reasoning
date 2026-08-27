@@ -149,6 +149,14 @@ class WorldCompleter:
         seq, slot = self.sp._build(probe, states)
         self._slot = slot
         out_slot, out_last = [], []
+        if Yhat is not None and layer_l == int(self.model.config.num_hidden_layers) - 1:
+            # Hidden index L (the last entry of output_hidden_states) is POST final-norm in this stack: the captured
+            # L(L-1)->L successor is the normed state, so the completed law is the LM head applied to Yhat directly at
+            # the slot. No layer follows, so the last-token readout is undefined for this pair (NaN).
+            with torch.no_grad():
+                logits = self.model.lm_head(torch.from_numpy(np.asarray(Yhat)).float().to(self.model.lm_head.weight.dtype))
+            slot_law = torch.log_softmax(logits.float(), dim=-1).numpy()
+            return slot_law, np.full_like(slot_law, np.nan)
         layer = self.model.model.layers[layer_l]
         for i in range(0, seq.shape[0], batch):
             chunk = seq[i:i + batch]

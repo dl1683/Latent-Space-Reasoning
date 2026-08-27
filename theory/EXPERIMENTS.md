@@ -1479,3 +1479,19 @@ Do not call it a native law, a language-model-general law, or a completed-world 
 slot-position endpoint plus the predeclared second qualifying pair; only after
 that do the unseen-word and second-family tests decide whether "affine law" is
 more than a local regression name.
+
+### Addendum to audit #5 — final-pair completion and the post-norm state (Claude, 2026-08-28)
+
+Direct identity test of the repaired completer (probe 0, eight words; replace
+the slot with the *stored true* successor and compare the slot law with the
+unmodified forward): `L8→L9` KL `4e-7` (exact); `L27→L28` KL `1.32`. Cause:
+in this stack the last entry of `output_hidden_states` (hidden index 28) is
+the **post-final-norm** state — `head(Z28)` reproduces the true slot law to
+`6e-7`, `head(norm(Z28))` does not. So the captured `L27→L28` successor is the
+normed state, and the lock-valid completion for the final pair is the LM head
+applied to `Yhat` directly at the slot; its last-token readout is undefined by
+construction (no layer follows). Implemented; identity now `6e-7` at both
+pairs. Consequence for interpretation: the `L27→L28` successor endpoint
+predicts a normed vector (scale removed), which makes its cosine not directly
+comparable with the other pairs' cosines on raw residual states.
+
