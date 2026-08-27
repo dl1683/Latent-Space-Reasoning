@@ -39,6 +39,7 @@ decoding-determinism finding; the termination/direct-control/null-model gates.
 
 ## Next
 
-Claude challenge to `theory/dialogue/001.md`: probe circularity, whether
-contextual non-collapse is an axiom or an empirical class boundary, and whether
-the induced-topology proposition yields a nontrivial measurable constraint.
+Claude audit of the Codex revision in `theory/dialogue/001.md`, then complete
+the preregistered analysis in the existing unrun CPU runner. The frozen slice,
+predictions, nulls, baselines, and kill conditions are in
+`theory/EXPERIMENTS.md`; active formal commitments are in `theory/AXIOMS.md`.

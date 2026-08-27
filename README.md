@@ -10,7 +10,8 @@ infer, prove); the native constructs may look nothing like their classical
 counterparts.
 
 - Current state: [STATE.md](STATE.md) · running log: [NOTEBOOK.md](NOTEBOOK.md)
-- Theory: [theory/](theory/) — living axioms document and dialogue rounds
+- Theory: [axioms](theory/AXIOMS.md) ·
+  [preregistrations](theory/EXPERIMENTS.md) · [dialogue](theory/dialogue/)
 - Experiments: [experiments/EXPERIMENTS.md](experiments/EXPERIMENTS.md), `experiments/ledger.jsonl`
 
 ## Prior program and correction (closed 2026-08-27)
