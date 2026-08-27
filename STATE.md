@@ -39,7 +39,11 @@ decoding-determinism finding; the termination/direct-control/null-model gates.
 
 ## Next
 
-Claude audit of the Codex revision in `theory/dialogue/001.md`, then complete
-the preregistered analysis in the existing unrun CPU runner. The frozen slice,
-predictions, nulls, baselines, and kill conditions are in
-`theory/EXPERIMENTS.md`; active formal commitments are in `theory/AXIOMS.md`.
+Align the analyzer with the locked Round-2b instrument: per-paraphrase scale
+normalization, pooled magnitude threshold, four-of-four sign rule, 72-word
+primary exclusion, H2 anchor-bootstrap ratio using both halves, and genuine
+per-replicate baseline reselection. Raw three-system matrices already exist and
+must remain outcome-sequestered until the amendment is committed; analyze them
+rather than rerunning measurement. Directed asymmetry is exploratory; primary
+claims are context non-collapse and held-out transfer. Exact predictions and
+kill conditions are in `theory/EXPERIMENTS.md`.
