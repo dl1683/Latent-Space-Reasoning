@@ -1,0 +1,213 @@
+{
+  "endpoint": "fine_label",
+  "cache_manifest_sha256": "2ef7c64dbbad18933a68eeddb9eab759f9ad9b812599c062d01f8c6888a7a9ec",
+  "cache_sha256": "d5bd67d3de5cea77b7a132a2175aab6bd40b4afff3e677ee7306f471b2c079aa",
+  "pixels_path": "experiments\\results\\vision_cifar100_dinov2s\\pixels.npz",
+  "seed": 0,
+  "seconds": 229.9,
+  "heads_trained_on": [
+    "PB_coarse",
+    "PB_rgb_mean",
+    "PB_luma",
+    "PB_edge"
+  ],
+  "fine_label_head_trained": false,
+  "M1_chart_path_closure": {
+    "same_class": {
+      "PB_coarse": {
+        "flicker_frac": 0.39666666666666667,
+        "n": 300,
+        "ci95": [
+          0.34491666666666665,
+          0.45
+        ]
+      },
+      "PB_rgb_mean": {
+        "flicker_frac": 0.3,
+        "n": 300,
+        "ci95": [
+          0.25,
+          0.3584166666666666
+        ]
+      },
+      "PB_luma": {
+        "flicker_frac": 0.2966666666666667,
+        "n": 300,
+        "ci95": [
+          0.25,
+          0.3466666666666667
+        ]
+      },
+      "PB_edge": {
+        "flicker_frac": 0.24333333333333335,
+        "n": 300,
+        "ci95": [
+          0.19333333333333333,
+          0.2966666666666667
+        ]
+      },
+      "knn_fine_emb": {
+        "flicker_frac": 0.9533333333333334,
+        "n": 300,
+        "ci95": [
+          0.93,
+          0.9733333333333334
+        ]
+      },
+      "knn_fine_emb_k8": {
+        "flicker_frac": 0.9766666666666667,
+        "n": 300,
+        "ci95": [
+          0.9566666666666667,
+          0.9933333333333333
+        ]
+      },
+      "knn_fine_emb_k128": {
+        "flicker_frac": 0.8666666666666667,
+        "n": 300,
+        "ci95": [
+          0.83,
+          0.9066666666666666
+        ]
+      },
+      "any_readout": {
+        "flicker_frac": 0.9633333333333334,
+        "n": 300,
+        "ci95": [
+          0.9415833333333333,
+          0.9833333333333333
+        ]
+      }
+    },
+    "cross_class": {
+      "PB_coarse": {
+        "flicker_frac": 0.5666666666666667,
+        "n": 300,
+        "ci95": [
+          0.51,
+          0.62
+        ]
+      },
+      "PB_rgb_mean": {
+        "flicker_frac": 0.38333333333333336,
+        "n": 300,
+        "ci95": [
+          0.33666666666666667,
+          0.4450833333333333
+        ]
+      },
+      "PB_luma": {
+        "flicker_frac": 0.37,
+        "n": 300,
+        "ci95": [
+          0.32,
+          0.4266666666666667
+        ]
+      },
+      "PB_edge": {
+        "flicker_frac": 0.3933333333333333,
+        "n": 300,
+        "ci95": [
+          0.33666666666666667,
+          0.44333333333333336
+        ]
+      },
+      "knn_fine_emb": {
+        "flicker_frac": 0.9866666666666667,
+        "n": 300,
+        "ci95": [
+          0.9715833333333334,
+          0.9966666666666667
+        ]
+      },
+      "knn_fine_emb_k8": {
+        "flicker_frac": 0.9966666666666667,
+        "n": 300,
+        "ci95": [
+          0.99,
+          1.0
+        ]
+      },
+      "knn_fine_emb_k128": {
+        "flicker_frac": 0.9666666666666667,
+        "n": 300,
+        "ci95": [
+          0.9433333333333334,
+          0.9850833333333332
+        ]
+      },
+      "any_readout": {
+        "flicker_frac": 0.99,
+        "n": 300,
+        "ci95": [
+          0.9766666666666667,
+          1.0
+        ]
+      }
+    }
+  },
+  "M2_endpoint_independence": {
+    "acc_rawpixel_knn_fine": 0.115,
+    "acc_embedding_knn_fine": 0.069,
+    "agreement_rawpixel_vs_embedding_knn": 0.092,
+    "head_PB_coarse_test_acc": 0.2075,
+    "head_PB_rgb_mean_test_acc": 0.8335,
+    "head_PB_luma_test_acc": 0.8205,
+    "head_PB_edge_test_acc": 0.531
+  },
+  "M3_F_vs_R": {
+    "F_fisher": {
+      "mean_anchor_acc": 0.5805812638737975,
+      "n_anchors": 129,
+      "tie_frac": 0.0
+    },
+    "R_profile": {
+      "mean_anchor_acc": 0.5681003242202752,
+      "n_anchors": 129,
+      "tie_frac": 0.32919360326641717
+    },
+    "R_profile_no_coarse": {
+      "mean_anchor_acc": 0.5459767506891131,
+      "n_anchors": 129,
+      "tie_frac": 0.3613473970738346
+    },
+    "cosine": {
+      "mean_anchor_acc": 0.5747085707306026,
+      "n_anchors": 129,
+      "tie_frac": 0.0
+    },
+    "euclid": {
+      "mean_anchor_acc": 0.5747085707306026,
+      "n_anchors": 129,
+      "tie_frac": 0.0
+    },
+    "R_profile_plus_F": {
+      "mean_anchor_acc": 0.5861236436511834,
+      "n_anchors": 129,
+      "tie_frac": 0.0
+    },
+    "pca32_cosine": {
+      "mean_anchor_acc": 0.5809925121430629,
+      "n_anchors": 129,
+      "tie_frac": 0.0
+    },
+    "pixstat_euclid": {
+      "mean_anchor_acc": 0.6243862024155782,
+      "n_anchors": 129,
+      "tie_frac": 0.0
+    },
+    "rawpixel_cosine": {
+      "mean_anchor_acc": 0.621626286864965,
+      "n_anchors": 129,
+      "tie_frac": 0.0
+    },
+    "delta_F_minus_R": {
+      "mean": 0.012480939653522283,
+      "ci95": [
+        -0.02993668540256667,
+        0.053088378723323636
+      ]
+    },
+    "n_scored_pairs": 5878
+  }
+}
