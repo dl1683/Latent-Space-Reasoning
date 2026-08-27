@@ -1,0 +1,208 @@
+{
+  "Qwen/Qwen3-0.6B": {
+    "system": "Qwen/Qwen3-0.6B",
+    "n": 8,
+    "eta": 1.4781951904296875e-05,
+    "H1": {
+      "frac_pairs_robust_in_ge2_blocks": 0.0,
+      "frac_by_block": {
+        "gloss": 0.0,
+        "continuation": 0.0,
+        "association": 0.0,
+        "grammar": 0.0
+      }
+    },
+    "H2": {
+      "kappa": 1,
+      "edges": [],
+      "block_pair_matrix": {
+        "gloss|continuation": {
+          "median_anchor_reversal_rate": NaN,
+          "frac_anchors_with_reversal": 0.0,
+          "n_pairs_robust_both_median": 0.0
+        },
+        "gloss|association": {
+          "median_anchor_reversal_rate": NaN,
+          "frac_anchors_with_reversal": 0.0,
+          "n_pairs_robust_both_median": 0.0
+        },
+        "gloss|grammar": {
+          "median_anchor_reversal_rate": NaN,
+          "frac_anchors_with_reversal": 0.0,
+          "n_pairs_robust_both_median": 0.0
+        },
+        "continuation|association": {
+          "median_anchor_reversal_rate": NaN,
+          "frac_anchors_with_reversal": 0.0,
+          "n_pairs_robust_both_median": 0.0
+        },
+        "continuation|grammar": {
+          "median_anchor_reversal_rate": NaN,
+          "frac_anchors_with_reversal": 0.0,
+          "n_pairs_robust_both_median": 0.0
+        },
+        "association|grammar": {
+          "median_anchor_reversal_rate": NaN,
+          "frac_anchors_with_reversal": 0.0,
+          "n_pairs_robust_both_median": 0.0
+        }
+      },
+      "diagnostic_within_block_halves": {
+        "gloss": {
+          "median_anchor_reversal_rate": NaN,
+          "frac_anchors_with_reversal": 0.0
+        },
+        "continuation": {
+          "median_anchor_reversal_rate": NaN,
+          "frac_anchors_with_reversal": 0.0
+        },
+        "association": {
+          "median_anchor_reversal_rate": NaN,
+          "frac_anchors_with_reversal": 0.0
+        },
+        "grammar": {
+          "median_anchor_reversal_rate": NaN,
+          "frac_anchors_with_reversal": 0.0
+        }
+      },
+      "diagnostic_between_block_halves": {
+        "gloss|continuation": {
+          "median_anchor_reversal_rate": NaN,
+          "frac_anchors_with_reversal": 0.0
+        },
+        "gloss|association": {
+          "median_anchor_reversal_rate": NaN,
+          "frac_anchors_with_reversal": 0.0
+        },
+        "gloss|grammar": {
+          "median_anchor_reversal_rate": NaN,
+          "frac_anchors_with_reversal": 0.0
+        },
+        "continuation|association": {
+          "median_anchor_reversal_rate": NaN,
+          "frac_anchors_with_reversal": 0.0
+        },
+        "continuation|grammar": {
+          "median_anchor_reversal_rate": NaN,
+          "frac_anchors_with_reversal": 0.0
+        },
+        "association|grammar": {
+          "median_anchor_reversal_rate": NaN,
+          "frac_anchors_with_reversal": 0.0
+        }
+      }
+    },
+    "H3": {
+      "R": 0.0,
+      "R_ci95": [
+        0.0,
+        0.0
+      ],
+      "delta_rev": NaN,
+      "strongest_baseline": null,
+      "delta_rev_ci95": null,
+      "heldout_acc_all_anchors": {
+        "native_DC": NaN,
+        "cos": NaN,
+        "cos_centered": NaN,
+        "cos_abtt1": NaN,
+        "cos_abtt3": NaN,
+        "ctx_raw_L0": NaN,
+        "ctx_centered_L0": NaN,
+        "ctx_abtt1_L0": NaN,
+        "ctx_abtt3_L0": NaN,
+        "ctx_raw_L7": NaN,
+        "ctx_centered_L7": NaN,
+        "ctx_abtt1_L7": NaN,
+        "ctx_abtt3_L7": NaN,
+        "ctx_raw_L14": NaN,
+        "ctx_centered_L14": NaN,
+        "ctx_abtt1_L14": NaN,
+        "ctx_abtt3_L14": NaN,
+        "ctx_raw_L28": NaN,
+        "ctx_centered_L28": NaN,
+        "ctx_abtt1_L28": NaN,
+        "ctx_abtt3_L28": NaN,
+        "euclid": NaN,
+        "normdiff": NaN,
+        "kl_unembed_sym": NaN,
+        "maha_diag_L0": NaN,
+        "maha_rank16_L0": NaN,
+        "maha_diag_L7": NaN,
+        "maha_rank16_L7": NaN,
+        "maha_diag_L14": NaN,
+        "maha_rank16_L14": NaN,
+        "maha_diag_L28": NaN,
+        "maha_rank16_L28": NaN
+      },
+      "heldout_acc_active_anchors": {
+        "native_DC": NaN,
+        "cos": NaN,
+        "cos_centered": NaN,
+        "cos_abtt1": NaN,
+        "cos_abtt3": NaN,
+        "ctx_raw_L0": NaN,
+        "ctx_centered_L0": NaN,
+        "ctx_abtt1_L0": NaN,
+        "ctx_abtt3_L0": NaN,
+        "ctx_raw_L7": NaN,
+        "ctx_centered_L7": NaN,
+        "ctx_abtt1_L7": NaN,
+        "ctx_abtt3_L7": NaN,
+        "ctx_raw_L14": NaN,
+        "ctx_centered_L14": NaN,
+        "ctx_abtt1_L14": NaN,
+        "ctx_abtt3_L14": NaN,
+        "ctx_raw_L28": NaN,
+        "ctx_centered_L28": NaN,
+        "ctx_abtt1_L28": NaN,
+        "ctx_abtt3_L28": NaN,
+        "euclid": NaN,
+        "normdiff": NaN,
+        "kl_unembed_sym": NaN,
+        "maha_diag_L0": NaN,
+        "maha_rank16_L0": NaN,
+        "maha_diag_L7": NaN,
+        "maha_rank16_L7": NaN,
+        "maha_diag_L14": NaN,
+        "maha_rank16_L14": NaN,
+        "maha_diag_L28": NaN,
+        "maha_rank16_L28": NaN
+      },
+      "calib_acc_baselines": {
+        "cos": NaN,
+        "cos_centered": NaN,
+        "cos_abtt1": NaN,
+        "cos_abtt3": NaN,
+        "ctx_raw_L0": NaN,
+        "ctx_centered_L0": NaN,
+        "ctx_abtt1_L0": NaN,
+        "ctx_abtt3_L0": NaN,
+        "ctx_raw_L7": NaN,
+        "ctx_centered_L7": NaN,
+        "ctx_abtt1_L7": NaN,
+        "ctx_abtt3_L7": NaN,
+        "ctx_raw_L14": NaN,
+        "ctx_centered_L14": NaN,
+        "ctx_abtt1_L14": NaN,
+        "ctx_abtt3_L14": NaN,
+        "ctx_raw_L28": NaN,
+        "ctx_centered_L28": NaN,
+        "ctx_abtt1_L28": NaN,
+        "ctx_abtt3_L28": NaN,
+        "euclid": NaN,
+        "normdiff": NaN,
+        "kl_unembed_sym": NaN,
+        "maha_diag_L0": NaN,
+        "maha_rank16_L0": NaN,
+        "maha_diag_L7": NaN,
+        "maha_rank16_L7": NaN,
+        "maha_diag_L14": NaN,
+        "maha_rank16_L14": NaN,
+        "maha_diag_L28": NaN,
+        "maha_rank16_L28": NaN
+      }
+    }
+  },
+  "H4": {}
+}
