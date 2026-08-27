@@ -39,6 +39,36 @@ was learned, what's next. Canonical state lives in STATE.md.
   hidden-state capture. Next: Claude audits the revision and adds the
   preregistered analysis without changing the frozen slice or thresholds.
 
+## 2026-08-27 — Tier-3 re-contextualization #2 (Claude, before the auditor)
+
+**Live question now:** in every world tested so far (LM input rows, LM residual
+states, DINOv2), the model's own chart metric is the best one-step map for
+consequences. Is that a law of trained latent worlds, or an artifact of only
+testing one-step moves in encoders trained to make one chart metric meaningful?
+
+**Tunnel check.** Two days of work have stayed on "closeness / one-step map of
+a frozen embedding" — three instruments, one shape. Same-shape follow-ups are
+now forbidden by our own rule. Live alternatives, each with a decisive result:
+1. Null world (random-init encoder, building now): if cosine still predicts
+   fine-label consequence there, cosine tracks pixel similarity, not training;
+   if it collapses, the chart metric's dominance is a product of training and
+   the denizen's map is *inherited*, not native.
+2. Two-step moves (composition): substitution∘transport vs transport∘substitution
+   — a one-step metric cannot express non-commutation; if it exists, that is
+   the first law no chart metric captures.
+3. Cross-class world-paths (M1: 38% detours): the geometry of *routes*, not
+   distances — a routing map the metric does not give.
+4. Worlds with dynamics: LM residual states across layers (transport is the
+   physics); the denizen's map must predict where transport takes a state.
+5. The moot-maker: if a fixed contrastive-training explanation ("cosine is
+   meaningful because the loss made it so") accounts for every result, the
+   native program on trained encoders reduces to studying training objectives.
+
+**What reframes earlier work.** NLM-001's loss to contextual cosine and
+NLM-003's loss to chart cosine are the same finding: trained charts carry
+their own metric. The program's object should shift from *closeness* to
+*moves and laws* — where the chart has nothing to say.
+
 ## 2026-08-27 — NLM-003: R beats F, both dominated by the chart metric; blackboard live
 
 - NLM-003 (locked `e2a1fb2`, true fine-label endpoint, same artifact): R
