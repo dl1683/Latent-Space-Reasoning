@@ -1423,3 +1423,59 @@ SmolLM2 or Gemma, with model and tokenizer revisions pinned and the same
 carrier-transfer, word-mean, shuffled-null, completion, and support gates.
 Only persistence across unseen words and a second family can move this from a
 single-model interpretability result toward a native-law claim.
+
+## Tier-3 audit #5 — NLM-007 fallback claim (2026-08-28, fresh Codex auditor)
+
+**Adopted corrections (verbatim where quoted).**
+
+1. **The completed-law endpoint was contract-invalid at every pair.** The lock
+   (Round 14, above) reads the completed law *at the slot position*; the
+   analyzer read `logits[:, -1, :]` — the last token — for both the true and
+   the completed law. At `L8→L9` the number is therefore "a different
+   suffix-mediated intervention", not the locked endpoint; at `L27→L28` it is
+   void by construction. Repaired in `analyze_lm_dynamics.py`: the primary
+   completed-law endpoint is now the next-token law at the substituted slot
+   position (true law from the unmodified forward at the same position); the
+   last-token readout is kept as a labelled secondary "downstream" endpoint.
+   No completed-law number from the fallback run or the Round 15 extension run
+   counts toward the lock.
+2. **Status wording, adopted verbatim:** Record the result as: "NLM-007 fallback: L8→L9 provides exploratory evidence that a full-dimensional ridge field predicts stored successor states across held-out carrier templates on shared words; the lock-valid completed-law endpoint was not implemented, the fallback lacks the required second pair, and the result is bounded to one model."
+
+Do not call it a native law, a language-model-general law, or a completed-world navigation result. Do not treat L0 as proof of exact context independence. Do not treat L27 as evidence for or against late transport. The next decisive measurement is the corrected slot-position endpoint plus the predeclared second qualifying pair; only after that should the unseen-word and second-family tests decide whether "affine law" is more than a local regression name.
+3. **`L0→L1` wording:** "The tested successor endpoint is dominated by
+   word-conditioned lexical persistence, with no detected carrier-conditioned
+   gain." Not "context-free block action"; not "no law beyond word identity".
+4. **Minimal-class ladder:** `word_mean` was counted as a ladder member,
+   against Round 14. Repaired: it is a moot-maker only.
+5. **Naming:** the defensible name is "a full-dimensional, regularized affine
+   predictor wins within this finite ladder on this artifact" — a
+   coordinate-dependent regression field, not a discovered affine law of latent
+   space. The within-carrier oracle is not a ceiling argument (64 vs 960
+   training cells; different model restrictions).
+6. **Identity gaps:** `tokenizer_revision` in the manifest is the model
+   revision; analysis now asserts model name, config name, and probe count in
+   addition to the model revision. The float16 reload check covers one law
+   matrix, not the scored successors; a full-precision comparison with a
+   predeclared threshold is still owed.
+
+**Strongest alternative explanation (verbatim):** The strongest alternative is not "the shuffle is wrong" or "the ridge leaked the held-out target." It is that the analyzer has found a smooth, implementation-specific conditional regression in one deterministic transformer: the L8 residual state encodes word identity plus carrier/template style, and a high-dimensional regularized field denoises or interpolates that code better than 1-NN and the word mean. The resulting gain can be real, held-out across these four carrier blocks, and still say nothing about a denizen-invented or native affine law. The wrong completed readout makes this alternative especially important, because the observed law gain is a suffix-mediated last-position intervention rather than the preregistered same-slot response.
+
+**Alternative explorations and cheaper baselines (verbatim instructions):**
+
+- Re-run the completed endpoint at the substituted slot position for every scored layer pair, and compare the true and predicted laws at that same position.
+- Complete the predeclared `L4→L5`, `L12→L13`, and `L20→L21` pairs before making any two-pair dynamics-map claim.
+- Run the class-stratified unseen-word split with word identities disjoint between calibration and held-out cells.
+- Repeat the amended protocol on a second model family with independently pinned model and tokenizer revisions.
+- Measure append-token and next-position state transport so the move is the model's forward-time transition rather than only a same-slot layer transition.
+- Report within-word carrier spread and a predeclared numerical tolerance before interpreting the carrier-shuffled null as evidence of carrier dependence.
+- Compare freshly recomputed float32 hidden successors and completed laws against stored float16 artifacts for all probes and all scored pairs, using a threshold fixed before scoring.
+- Fit an identity-plus-residual baseline and a block-local residual baseline before calling the winning map an affine law.
+- Fit a per-carrier affine correction with the same effective training budget and compare it against the cross-carrier field.
+- Fit a fixed PCA-whitened linear map and a low-dimensional ridge field to test whether the apparent full-dimensional advantage is coordinate-scale or rank dependent.
+- Equalize the oracle and cross-carrier field training sample sizes and hyperparameter freedoms before using the oracle as a ceiling argument.
+- Remove carrier-template lexical/style cues or balance them across folds, then test whether the L8 lead survives.
+
+**Continue verdict:** the next decisive measurement is the corrected
+slot-position endpoint plus the predeclared second qualifying pair; only after
+that do the unseen-word and second-family tests decide whether "affine law" is
+more than a local regression name.

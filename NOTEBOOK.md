@@ -5,6 +5,35 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-28 — Tier-3 audit #5 and re-contextualization #5
+
+- Audit #5 (fresh Codex) on the L8→L9 claim: the completed-law endpoint read
+  the last token, not the slot the lock names — invalid at every pair, not
+  only the degenerate late one. Adopted verbatim; analyzer repaired (slot
+  primary, last-token secondary). Status is now: "L8→L9 provides exploratory
+  evidence that a full-dimensional ridge field predicts stored successor
+  states across held-out carrier templates on shared words; the lock-valid
+  completed-law endpoint was not implemented, the fallback lacks the required
+  second pair, and the result is bounded to one model."
+- What still holds: the successor-endpoint lead at L8→L9 over the chart and
+  the word-mean, with clustered lower bounds above zero, and the shuffled
+  drop; L0→L1 dominated by word-conditioned lexical persistence.
+- What is reframed: "first measured law" was premature by one readout
+  position. The same mistake shape as the Igor episode — the endpoint
+  measured a different question from the one claimed — caught this time
+  before any public statement, by the audit cadence.
+- Alternatives now live (audit's list adopted into EXPERIMENTS.md): the
+  strongest rival is a smooth implementation-specific conditional regression
+  (word code + carrier style denoised by a high-dimensional field) that says
+  nothing about a native law; the tests that separate the two are the
+  unseen-word split, a second model family, and forward-time (append-token /
+  next-position) transport — the denizen's actual move, which no NLM-007
+  variant yet measures. Cheaper moot-makers to run first: identity-plus-
+  residual and per-carrier affine baselines at equal training budget.
+- Next: finish the Round 15 extension (successor endpoints valid), smoke the
+  corrected endpoint, then a fresh Codex round to predeclare the corrected
+  full re-run and the forward-time move.
+
 ## 2026-08-28 — NLM-007 (fallback run): an affine transport law at middle depth
 
 - Ran under the declared fallback (L0→L1, L8→L9, L27→L28; 20 shuffles; 500
