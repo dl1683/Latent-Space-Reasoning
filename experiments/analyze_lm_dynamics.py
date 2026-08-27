@@ -41,32 +41,56 @@ class Standardizer:
         return (X[:, self.keep] - self.mu[self.keep]) / self.sd[self.keep]
 
 
+class RidgeFamily:
+    """Centered ridge Y = b + Xs W for many (lambda, rank): one eigendecomposition of Xc^T Xc, reused. Same math."""
+    def __init__(self, Xs, Y):
+        self.xm = Xs.mean(0); self.ym = Y.mean(0); Xc = Xs - self.xm; Yc = Y - self.ym
+        self.evals, self.evecs = np.linalg.eigh(Xc.T @ Xc)
+        self.XtY_rot = self.evecs.T @ (Xc.T @ Yc)
+        self._W = {}
+    def W(self, lam, rank=None):
+        key = (lam, rank)
+        if key not in self._W:
+            W = self.evecs @ (self.XtY_rot / (self.evals + lam)[:, None])
+            if rank is not None:
+                U, sv, Vt = np.linalg.svd(W, full_matrices=False); W = (U[:, :rank] * sv[:rank]) @ Vt[:rank]
+            self._W[key] = W
+        return self._W[key]
+    def predictor(self, lam, rank=None):
+        W = self.W(lam, rank); return lambda Xq: self.ym + (Xq - self.xm) @ W
+
+
 def fit_ridge(Xs, Y, lam, rank=None):
-    """Centered ridge Y = b + Xs W; optional reduced-rank via SVD of the fitted W (rank-r truncation)."""
-    xm = Xs.mean(0); ym = Y.mean(0); Xc = Xs - xm; Yc = Y - ym
-    d = Xc.shape[1]
-    W = np.linalg.solve(Xc.T @ Xc + lam * np.eye(d), Xc.T @ Yc)
-    if rank is not None:
-        U, s, Vt = np.linalg.svd(W, full_matrices=False)
-        W = (U[:, :rank] * s[:rank]) @ Vt[:rank]
-    return lambda Xq: ym + (Xq - xm) @ W
+    return RidgeFamily(Xs, Y).predictor(lam, rank)
+
+
+def sqdist(A, B):
+    return np.maximum((A ** 2).sum(1)[:, None] - 2 * A @ B.T + (B ** 2).sum(1)[None, :], 0.0)
+
+
+class KernelFamily:
+    """RBF kernel ridge for many (gamma_scale, lambda): per gamma one eigendecomposition of K, reused. Same math."""
+    def __init__(self, Xs, Y):
+        self.Xs = Xs; self.ym = Y.mean(0); self.Yc = Y - self.ym
+        sq = sqdist(Xs, Xs); self.med = max(np.median(sq[np.triu_indices(len(Xs), 1)]), 1e-12); self.sq = sq; self._eig = {}
+    def predictor(self, lam, gamma_scale):
+        gamma = gamma_scale / self.med
+        if gamma_scale not in self._eig:
+            ev, V = np.linalg.eigh(np.exp(-gamma * self.sq)); self._eig[gamma_scale] = (ev, V, V.T @ self.Yc)
+        ev, V, VtY = self._eig[gamma_scale]
+        alpha = V @ (VtY / (ev + lam)[:, None])
+        def predict(Xq):
+            return self.ym + np.exp(-gamma * sqdist(Xq, self.Xs)) @ alpha
+        return predict
 
 
 def fit_kernel_ridge(Xs, Y, lam, gamma_scale):
-    sq = ((Xs[:, None, :] - Xs[None, :, :]) ** 2).sum(-1)
-    med = np.median(sq[np.triu_indices(len(Xs), 1)])
-    gamma = gamma_scale / max(med, 1e-12)
-    K = np.exp(-gamma * sq); ym = Y.mean(0)
-    alpha = np.linalg.solve(K + lam * np.eye(len(Xs)), Y - ym)
-    def predict(Xq):
-        sqq = ((Xq[:, None, :] - Xs[None, :, :]) ** 2).sum(-1)
-        return ym + np.exp(-gamma * sqq) @ alpha
-    return predict
+    return KernelFamily(Xs, Y).predictor(lam, gamma_scale)
 
 
 def fit_knn(Xs, Y, k):
     def predict(Xq):
-        d = ((Xq[:, None, :] - Xs[None, :, :]) ** 2).sum(-1)
+        d = sqdist(Xq, Xs)
         nn = np.argsort(d, axis=1)[:, :k]
         return Y[nn].mean(1)
     return predict
@@ -81,8 +105,7 @@ def chart_control(X_raw, Y, metric):
             return Y[np.argmax(Qn @ Xn.T, axis=1)]
     else:
         def predict(Xq):
-            d = ((Xq[:, None, :] - X_raw[None, :, :]) ** 2).sum(-1)
-            return Y[np.argmin(d, axis=1)]
+            return Y[np.argmin(sqdist(Xq, X_raw), axis=1)]
     return predict
 
 
@@ -193,38 +216,42 @@ def main():
             cal_probes = [p for b in cal_blocks for p in probe_ids[b]]; test_probes = probe_ids[held]
             Xc, Yc = cells(cal_probes, l); Xt, Yt = cells(test_probes, l)
             st = Standardizer().fit(Xc); Xcs, Xts = st(Xc), st(Xt)
-            # ---- inner selection: leave one calibration block out ----
-            def inner_score(fit_fn):
-                sc = []
-                for ib in cal_blocks:
-                    ip = [p for b in cal_blocks if b != ib for p in probe_ids[b]]; vp = probe_ids[ib]
-                    Xi, Yi = cells(ip, l); Xv, Yv = cells(vp, l)
-                    sti = Standardizer().fit(Xi)
-                    pred = fit_fn(sti(Xi), Yi, Xi)(sti(Xv), Xv)
-                    sc.append(float(np.mean(cos_rows(pred, Yv))))
-                return float(np.mean(sc))
-            cands = {}
-            cands["mean"] = (lambda Xs, Y, Xr: (lambda Xq, Xqr: np.repeat(Y.mean(0, keepdims=True), len(Xq), 0)))
-            for k in KS: cands[f"knn{k}"] = (lambda k: lambda Xs, Y, Xr: (lambda f: (lambda Xq, Xqr: f(Xq)))(fit_knn(Xs, Y, k)))(k)
+            # ---- inner selection: leave one calibration block out (families built once per inner fold) ----
+            inner = []
+            for ib in cal_blocks:
+                ip = [p for b in cal_blocks if b != ib for p in probe_ids[b]]; vp = probe_ids[ib]
+                Xi, Yi = cells(ip, l); Xv, Yv = cells(vp, l); sti = Standardizer().fit(Xi)
+                inner.append((sti(Xi), Yi, Xi, sti(Xv), Yv, Xv))
+            def score_grid(make):
+                acc = {}
+                for (Xis, Yi, Xi, Xvs, Yv, Xv) in inner:
+                    for key, f in make(Xis, Yi, Xi).items():
+                        acc.setdefault(key, []).append(float(np.mean(cos_rows(f(Xvs, Xv), Yv))))
+                return {k: float(np.mean(v)) for k, v in acc.items()}
             best = {}
-            # ridge
-            sc = {lam: inner_score(lambda Xs, Y, Xr, lam=lam: (lambda f: (lambda Xq, Xqr: f(Xq)))(fit_ridge(Xs, Y, lam))) for lam in LAMBDAS}
-            best["ridge"] = {"lam": max(sc, key=sc.get), "inner": sc}
-            # low-rank
-            sc = {(r, lam): inner_score(lambda Xs, Y, Xr, lam=lam, r=r: (lambda f: (lambda Xq, Xqr: f(Xq)))(fit_ridge(Xs, Y, lam, rank=r))) for r in RANKS for lam in LAMBDAS}
-            (r_b, lam_b) = max(sc, key=sc.get); best["lowrank"] = {"rank": r_b, "lam": lam_b, "inner": {f"{k[0]},{k[1]}": v for k, v in sc.items()}}
-            # kernel ridge
-            sc = {(g, lam): inner_score(lambda Xs, Y, Xr, lam=lam, g=g: (lambda f: (lambda Xq, Xqr: f(Xq)))(fit_kernel_ridge(Xs, Y, lam, g))) for g in GAMMAS for lam in LAMBDAS}
-            (g_b, lam_k) = max(sc, key=sc.get); best["kernel"] = {"gamma": g_b, "lam": lam_k, "inner": {f"{k[0]},{k[1]}": v for k, v in sc.items()}}
-            # chart control member
-            sc = {m: inner_score(lambda Xs, Y, Xr, m=m: (lambda f: (lambda Xq, Xqr: f(Xqr)))(chart_control(Xr, Y, m))) for m in ("cosine", "euclid")}
+            def ridge_grid(Xis, Yi, Xi):
+                fam = RidgeFamily(Xis, Yi)
+                out = {("ridge", lam): (lambda f: (lambda Xq, Xqr: f(Xq)))(fam.predictor(lam)) for lam in LAMBDAS}
+                out.update({("lowrank", r, lam): (lambda f: (lambda Xq, Xqr: f(Xq)))(fam.predictor(lam, r)) for r in RANKS for lam in LAMBDAS})
+                return out
+            sc = score_grid(ridge_grid)
+            rl = {k[1]: v for k, v in sc.items() if k[0] == "ridge"}; best["ridge"] = {"lam": max(rl, key=rl.get), "inner": rl}
+            lr = {(k[1], k[2]): v for k, v in sc.items() if k[0] == "lowrank"}; (r_b, lam_b) = max(lr, key=lr.get)
+            best["lowrank"] = {"rank": r_b, "lam": lam_b, "inner": {f"{k[0]},{k[1]}": v for k, v in lr.items()}}
+            def kernel_grid(Xis, Yi, Xi):
+                fam = KernelFamily(Xis, Yi)
+                return {(g, lam): (lambda f: (lambda Xq, Xqr: f(Xq)))(fam.predictor(lam, g)) for g in GAMMAS for lam in LAMBDAS}
+            sc = score_grid(kernel_grid); (g_b, lam_k) = max(sc, key=sc.get)
+            best["kernel"] = {"gamma": g_b, "lam": lam_k, "inner": {f"{k[0]},{k[1]}": v for k, v in sc.items()}}
+            sc = score_grid(lambda Xis, Yi, Xi: {m: (lambda f: (lambda Xq, Xqr: f(Xqr)))(chart_control(Xi, Yi, m)) for m in ("cosine", "euclid")})
             best["chart"] = {"metric": max(sc, key=sc.get), "inner": sc}
             print(f"   [{held}] inner selection done ({time.time()-t0:.0f}s)", flush=True)
             # ---- fit on full calibration, predict held-out ----
             preds = {"mean": np.repeat(Yc.mean(0, keepdims=True), len(Xt), 0)}
             for k in KS: preds[f"knn{k}"] = fit_knn(Xcs, Yc, k)(Xts)
-            preds["ridge"] = fit_ridge(Xcs, Yc, best["ridge"]["lam"])(Xts)
-            preds["lowrank"] = fit_ridge(Xcs, Yc, best["lowrank"]["lam"], rank=best["lowrank"]["rank"])(Xts)
+            famc = RidgeFamily(Xcs, Yc)
+            preds["ridge"] = famc.predictor(best["ridge"]["lam"])(Xts)
+            preds["lowrank"] = famc.predictor(best["lowrank"]["lam"], best["lowrank"]["rank"])(Xts)
             preds["kernel"] = fit_kernel_ridge(Xcs, Yc, best["kernel"]["lam"], best["kernel"]["gamma"])(Xts)
             preds["chart"] = chart_control(Xc, Yc, best["chart"]["metric"])(Xt)
             ybar = Yc.mean(0); denom = np.linalg.norm(Yt - ybar, axis=1)
@@ -237,8 +264,9 @@ def main():
                 for w in range(n):
                     Yc_perm[:, w, :] = Yc_perm[rng.permutation(n_cal_probes), w, :]
                 Yc_perm = Yc_perm.reshape(-1, D)
-                shuf["ridge"].append(float(np.mean(cos_rows(fit_ridge(Xcs, Yc_perm, best["ridge"]["lam"])(Xts), Yt))))
-                shuf["lowrank"].append(float(np.mean(cos_rows(fit_ridge(Xcs, Yc_perm, best["lowrank"]["lam"], rank=best["lowrank"]["rank"])(Xts), Yt))))
+                fams = RidgeFamily(Xcs, Yc_perm)
+                shuf["ridge"].append(float(np.mean(cos_rows(fams.predictor(best["ridge"]["lam"])(Xts), Yt))))
+                shuf["lowrank"].append(float(np.mean(cos_rows(fams.predictor(best["lowrank"]["lam"], best["lowrank"]["rank"])(Xts), Yt))))
             print(f"   [{held}] shuffled null done ({time.time()-t0:.0f}s)", flush=True)
             # ---- per-carrier oracle ceiling (within held-out carriers, 5-fold class-stratified over words) ----
             oracle = []
