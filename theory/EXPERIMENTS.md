@@ -483,23 +483,24 @@ bound above 0.
 - **Inference:** anchor bootstrap (1000 resamples) over mean pairwise score differences.
 - **Decision output:** report `(Delta_F_minus_R, CI95, n_pairs, Q)` first, then pass/fail.
 
-## Round 8 — NLM-003 adjudication: the chart still wins
+## Round 8 — NLM-003 adjudication: chart wins; R correction
 
-The locked artifact passes the directional NLM-003 gate. On the 6,199 scored
-pairs, `R` reaches 0.7343 mean anchor accuracy and `F` reaches 0.6303, giving
-`Delta_{F-R} = -0.1040` with 95% CI `[-0.1478, -0.0584]`. The interval is
-strictly below zero and its upper endpoint is below the preregistered `-0.05`
-target. This is support for the narrow claim that the tested profile-continuity
-construction predicts this endpoint better than the tested Fisher construction.
+The original lock appeared to pass because `R` reached 0.7343 mean anchor
+accuracy against `F` at 0.6303, with `Delta_{F-R} = -0.1040` and 95% CI
+`[-0.1478, -0.0584]`. The required sensitivity rerun changes the primitive
+interpretation: with `PB_coarse` removed, `R` reaches only 0.5860 while `F`
+reaches 0.6668, with `Delta_{F-R} = -0.0950` and 95% CI
+`[-0.1422, -0.0490]`. The apparent `R` win was a taxonomy leak: fine labels
+nest inside the coarse classes carried by the original profile.
 
-It is not support for `R` as the native geometry. On the same supported anchors,
-plain cosine reaches 0.9464 and Euclidean distance 0.9350, both dominating `R`
-and `F` by large margins. Only 130 of 400 possible anchors had common-support
-scores, so even the directional result is conditional on a thin support subset.
-The correct classification is therefore: **NLM-003 directional gate passed;
-native-map claim not established; imported chart metrics remain the best measured
-maps for this endpoint.** `F` is not sufficient here, but `R` has not earned
-replacement status.
+Therefore the original `R`-over-`F` directional claim is **withdrawn**. Round
+8 retains only the narrower chart-vs-native comparison: cosine (0.9341 in the
+diagnostic artifact; 0.9464 in the original table) and Euclidean distance
+outperform both leak-free native candidates on the same 129 supported anchors.
+The result is still conditional on thin support and does not establish native
+geometry. The correct classification is: **NLM-003 is a corrected narrow
+instrument comparison; `R` without the coarse head does not beat `F`, and no
+tested native candidate earns replacement status.**
 
 Under the guiding question, this means that in this measured world a denizen can
 currently navigate fine-label consequences most accurately by reading ordinary
@@ -518,17 +519,9 @@ that belongs to the world.
 
 ### Next measurement
 
-Hold the cached DINOv2 states and true fine-label endpoint fixed, apply one
-outcome-blind, predeclared nonlinear invertible reparameterization fitted only on
-calibration states, and compare cosine, Euclidean, `R`, and `F` on held-out
-composition and out-of-distribution substitution moves with the same
-common-support accounting over all 400 anchors. The decisive result is whether
-the chart metrics retain at least a 0.05 lead over the best native candidate on
-both held-out move families with at least 80% of anchors supported; that outcome
-would make the chart operationally native for this world, whereas a lead that
-collapses to 0.02 or less, or an `R`/`F` lead of at least 0.05 after the
-reparameterization, would show that the current chart advantage is
-coordinate- or task-specific.
+This next measurement was superseded by the Round 10 closure below. The frozen
+encoder line must not spend another round on arbitrary chart reparameterizations
+or transports already included in the encoder's trained invariance class.
 
 ### Tier-3 audit #2 corrections (2026-08-27, fresh unprimed auditor; adopted verbatim)
 
@@ -699,3 +692,88 @@ with no GPU. The cached NLM-003 sensitivity rerun is separately budgeted at
   fine_label` (measurement 4). Predictors: cosine, Euclidean, F (Fisher
   pullback, 4 heads), R without `PB_coarse`. 400 anchors × 40 candidates;
   anchor bootstrap (1000).
+
+## Round 10 — close the frozen-chart line; move outside invariance
+
+### NLM-005 adjudication
+
+**Status: VOID AND NON-DIAGNOSTIC.** NLM-005 scored only 129/400 anchors
+(`32.25%`), below the locked `80%` common-support requirement. This alone
+triggers kill condition 3 and prevents either a native-rescue or chart-success
+claim from the gate. On `hflip`, every ST−TS gap is at most `0.0064`; on
+`shift1px`, the chart metrics' gaps are at most `0.0036`, while
+`R_no_coarse` is `0.0271`. Thus the shorthand claim that every metric has a
+gap no larger than `0.006` is not literally true for that one sensitivity row,
+but the support failure makes the result void regardless. There is no robust
+order-sensitive composition signal.
+
+Cosine remains ahead of the best native candidate on every scored ST/TS order:
+the native-minus-chart differences range from about `-0.314` to `-0.326` for
+`hflip` and `-0.323` to `-0.325` for `shift1px`. This is descriptive evidence
+on a thin, improperly supported sample, not a confirmation of chart survival
+under general transport. The edits were hflip and one-pixel translation, both
+augmentations the encoder was trained to make approximately invariant to; they
+were near-identity moves in this learned world. The 40-random-candidate design
+over 100 classes also made an 80% support target structurally implausible.
+
+### Program closure and residue
+
+Close the **frozen-encoder closeness/map competition** as a program. This does
+not promote cosine to intrinsic geometry and does not say that every transport
+preserves the chart. It records the five-measurement residue:
+
+1. in a trained world, chart nearness is the best measured one-step map for the
+   tested consequence;
+2. chart-straight paths are coherent under the trained readouts;
+3. the corresponding map and paths collapse in a random-init chart;
+4. the tested native candidates do not compete after the coarse-taxonomy leak
+   is removed; and
+5. the only tested transports were trained-invariant near-identity edits, so
+   NLM-005 cannot extend the conclusion beyond that class.
+
+The honest guiding-question answer is therefore: a denizen inherits a useful
+chart and some chart-path regularities from training. Those are navigation
+equipment supplied by the world's history, not yet laws native to the latent
+world. Further frozen-encoder score-chasing on the same class of moves is
+closed; the transferable residue is the requirement to identify the world's
+admissible moves before calling a chart metric native.
+
+### NLM-006 design: stratified transports outside the invariance class
+
+The replacement line is a transport audit using four predeclared edit families:
+large crops, color inversion, image mixing, and occlusion. Each edit must be
+specified before scoring and must be verified to produce a non-near-identity
+embedding displacement on calibration images. Use held-out image identities,
+the true fine-label outcome, and a stratified candidate pool: 20 same-fine-class
+candidates plus 20 cross-class hard negatives per anchor, with the strata and
+candidate identities frozen before metric scoring. Report each stratum
+separately; stratification makes support achievable but is not itself evidence
+for a semantic claim.
+
+**Hypothesis.** If chart nearness is inherited navigation equipment rather than
+a law of the world, at least one transport family outside the trained
+invariance class will break its held-out consequence ranking or expose a
+transport-aware native predictor that remains stable when cosine/Euclidean do
+not. If all genuinely displaced families preserve the chart lead, the useful
+chart may be the world's operational map for this tested move envelope.
+
+**Decisive result.** Support the replacement hypothesis if at least two of four
+edit families, at `>=80%` anchor support, show either (a) a transport-aware
+native predictor leading the best chart metric by `>=0.05` with a paired
+anchor-bootstrap lower bound above zero, or (b) the chart lead collapsing to
+`<=0.02` on a predeclared composition/order test while the direct control stays
+stable. A chart lead of `>=0.05` on all four families, with measured
+non-near-identity displacement and the same support, closes this replacement
+too and leaves the chart as the operational map for that measured envelope.
+
+**Kill conditions.** Kill the outside-invariance hypothesis if the chart retains
+the preregistered lead on every valid family. Void the run if any edit remains
+inside the encoder's measured invariance class, if candidate selection changes
+after scoring, if support falls below `80%` despite stratification, or if the
+endpoint is not held out from metric construction. A single successful edit is
+not enough to overturn the five-measurement residue.
+
+**CPU cost.** Four edits over the 2,000-image held-out split are approximately
+`280 seconds` of re-encoding at the observed `35 ms/image`, plus at most ten
+minutes for stratified ranking, composition, and anchor-bootstrap scoring: a
+roughly 15-minute CPU run, one process, no GPU.

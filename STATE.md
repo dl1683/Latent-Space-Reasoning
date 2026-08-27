@@ -63,13 +63,15 @@ and broader directedness was not adjudicated. Details: `theory/EXPERIMENTS.md`.
 
 ## NLM-003 verdict (Round 8, 2026-08-27)
 
-The locked true-fine endpoint adjudication passes the narrow directional gate:
-`R` profile accuracy is 0.7343 versus 0.6303 for `F` Fisher,
-`Delta_{F-R} = -0.104 [-0.148, -0.058]`, over 6,199 scored pairs. But cosine
-(0.9464) and Euclidean distance (0.9350) dominate both on the same supported
-anchors, and only 130/400 anchors had support. Verdict: directional support for
-`R` over `F`, not a native-geometry result; the DINOv2 chart is currently the
-best task-effective map for fine-label consequences on this artifact.
+The original true-fine table appeared to pass the narrow directional gate:
+`R` profile accuracy was 0.7343 versus 0.6303 for `F` Fisher,
+`Delta_{F-R} = -0.104 [-0.148, -0.058]`, over 6,199 scored pairs. The required
+sensitivity rerun removes `PB_coarse` and gives `R=0.586` versus `F=0.667`,
+with `Delta_{F-R} = -0.095 [-0.142, -0.049]`. The R win was a taxonomy leak,
+so the R-over-F directional claim is withdrawn. Cosine and Euclidean still
+dominate both leak-free native candidates on the same thin supported subset.
+Verdict: corrected narrow instrument comparison; no native-map result; the
+DINOv2 chart remains the best task-effective map measured for this artifact.
 
 Under the guiding question, this may reflect DINOv2 pretraining making chart
 proximity useful for visual regularities, but it does not establish intrinsic
@@ -121,10 +123,39 @@ order gap below 0.02 or support below 80% is non-diagnostic. Budget: about 140
 seconds of re-encoding for 2,000 held-out images under each of two edits, plus
 at most ten minutes scoring, all CPU-only.
 
+## Round 10 adjudication and direction
+
+NLM-005 is **void and non-diagnostic**: support is 129/400 (`32.25%`), below
+the locked 80% requirement. Hflip has ST−TS gaps no larger than about 0.006;
+shift1px has near-zero chart gaps but `R_no_coarse=0.027` on its sensitivity
+row. Cosine leads the best native candidate by about 0.32 on every scored
+order. Because hflip and one-pixel translation are trained-invariant
+augmentations, these were near-identity moves in the encoder's world; the
+result cannot adjudicate general transport. The 40-random-candidate pool over
+100 classes also made the support target implausible.
+
+Close the frozen-encoder closeness/map competition as a program. Residue:
+training supplies a task-effective chart metric and coherent chart-straight
+routes; those collapse in a random-init chart; and no tested native candidate
+competes after removing the coarse taxonomy leak. A denizen inherits this
+navigation equipment from training; it is an operational map, not an
+established intrinsic law.
+
+The replacement, NLM-006, is a CPU-only, stratified audit of transports outside the
+measured invariance class: large crops, color inversion, image mixing, and
+occlusion. Use 20 same-fine-class and 20 cross-class hard-negative candidates
+per anchor, freeze candidates before scoring, verify non-near-identity
+displacement, and report support by stratum. The hypothesis is supported if at
+least two of four families break chart consequence ranking or yield a
+transport-aware predictor with a >=0.05 lead; it is killed if chart retains a
+>=0.05 lead on every valid family. Invalid edits, endpoint leakage, or support
+below 80% void the run. Estimated cost: about 280 seconds re-encoding plus at
+most ten minutes scoring, no GPU.
+
 ## Next
 
-**Round 9 measurement:** NLM-005 composed transport/substitution gate as locked
-above. Nonlinear re-charting and out-of-distribution moves remain subsequent
-gates; no native-map promotion follows from NLM-004 alone.
+**Replacement design:** stratified transports outside the encoder's measured
+invariance class. No further frozen-encoder closeness/map competition is
+planned. No native-map promotion follows from the current residue alone.
 
 Keep `NLM-001` verdict and all gates unchanged.

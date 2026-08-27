@@ -44,6 +44,16 @@ chart metrics or show that their lead survives a declared reparameterization and
 new move families. Otherwise the result is a useful chart map, not native
 geometry.
 
+Round 10 map requirement: a move-family test is non-diagnostic when its
+transports are known or measured to lie inside the encoder's trained invariance
+class. Candidate support must also be made achievable by a predeclared,
+stratified design rather than interpreted from an under-supported random draw.
+Therefore a native-map claim now requires: (i) at least one transport outside
+the measured invariance class, (ii) held-out endpoint scoring, (iii) explicit
+support and candidate-stratum accounting, and (iv) a lead over simple chart
+metrics on the same supported move family. Stratification is a sampling repair,
+not evidence of semantics.
+
 Status: Round 3 audited, 2026-08-27. This file contains only the active
 relational foundation. Dialogue and rejected formulations stay in `dialogue/`.
 
