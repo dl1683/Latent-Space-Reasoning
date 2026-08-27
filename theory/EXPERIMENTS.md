@@ -2,11 +2,12 @@
 
 ## NLM-001 — contextual substitutability, context rank, and transfer
 
-**Status:** amended and locked after instrument calibration, 2026-08-27. Raw
-80-word matrices were acquired concurrently before this amendment; no NLM-001
-analysis of them has been read here. This is therefore an analysis
-preregistration over sequestered data, not a pre-acquisition registration. The
-analyzer must be aligned with every Round 2/2b rule below before analysis.
+**Status:** closed 2026-08-27 as a bounded negative falsifier of this instrument;
+instrument-void for confirmatory claims under kill condition 8. The historical
+registration below was locked at `fea3a8f` before anyone read the outcome. Raw
+80-word matrices had been acquired concurrently before the Round 2b amendment,
+so this was an analysis preregistration over sequestered data, not a
+pre-acquisition registration. The audited verdict is at the end.
 
 The 12-word smoke and `nlm001_pipeline_smoke_8` are calibration, not evidence.
 The latter ran the full pipeline on eight disclosed words, two per lexical
@@ -276,7 +277,7 @@ baseline reselection before execution. Raw matrices were acquired concurrently
 before this amendment commit. They remain eligible only if no 72-word outcome
 was inspected before the lock; otherwise all of NLM-001 is exploratory.
 
-### Verdict (2026-08-27, primary 72-word analysis; Claude, pending Codex round 3)
+### Verdict (2026-08-27, primary 72-word analysis; Round 3 audited)
 
 Analysis: `experiments/results/nlm001_v1/analysis_primary_72.json` (rule: 4/4
 sign, |median| > max(2ν₀, 10η̃), scale-normalized; 8 calibration words
@@ -284,31 +285,50 @@ excluded). Sensitivity: `analysis_sensitivity_80.json`.
 
 | | Qwen3-0.6B (primary) | gemma-3-270m | SmolLM2-360M |
 | --- | --- | --- | --- |
-| H2 Q = B/W (gate Q≥2, LB>1.5) | **2.12 [1.70, 2.56] — pass** | 1.40 [0.90, 2.55] — fail | 17.1 [10.7, 36.3] — pass, but W = 0.005 |
-| H3 R (gate ≥0.15, LB>0.05) | 0.18 [0.10, 0.28] — pass | 0.14 [0.07, 0.21] — fail | 0.014 — fail |
-| H3 Δ_rev vs strongest baseline (gate ≥0.05, LB>0) | **−0.058 [−0.22, +0.03] — fail** | +0.017 [−0.02, +0.06] — fail | undefined |
-| strongest baseline | diagonal Mahalanobis, layer-7 hidden states | diagonal Mahalanobis, layer 4 | diagonal Mahalanobis, layer 32 |
-| held-out accuracy, native / best | 0.954 / ≈0.99 | 0.987 / ≈0.99 | 0.974 / ≈0.99 |
+| H2 Q = B/W (gate Q≥2, LB>1.5) | **2.12 [1.70, 2.56] — diagnostic gate crossed** | 1.40 [0.90, 2.55] — fail | 17.1 [10.7, 36.3] — denominator pathology: W = 0.005 |
+| H3 R (gate ≥0.15, LB>0.05) | 0.18 [0.10, 0.28] — diagnostic gate crossed | 0.14 [0.07, 0.21] — fail | 0.014 — fail |
+| H3 Δ_rev vs selected baseline (gate ≥0.05, LB>0) | **−0.058 [−0.22, +0.03] — fail** | +0.017 [−0.02, +0.06] — fail | undefined |
+| selected baseline | diagonal Mahalanobis, layer-7 hidden states | diagonal Mahalanobis, layer 4 | diagonal Mahalanobis, layer 32 |
 | H1 (exploratory) robust asymmetric pairs, ≥2 blocks | 0.015 | 0.002 | 0.092 |
-| H4 τ_b median (gate LB>0.20) | Qwen–SmolLM 0.46; Qwen–gemma 0.14; gemma–SmolLM 0.13 | | |
+| H4 median τ_b (descriptive only) | Qwen–SmolLM 0.46; Qwen–gemma 0.14; gemma–SmolLM 0.13 | | |
 
-**Kill condition 3 (predictive novelty) is met in the primary system:** native
-calibration KL does not beat a learned diagonal metric on contextual hidden
-states; kill condition 6 (coordinate confound) applies — a learned Mahalanobis
-metric recovers the held-out orderings within 0.02. **Kill condition 8 applies
-as written:** the runner did not record tokenizer revision, library versions,
-thread count, or batch size at run time; they were recorded post hoc in the
-manifest and flagged. NLM-001 is therefore reported as a bounded negative
-falsifier of this instrument, not as a confirmatory result in either direction.
+**Classification: bounded negative falsifier of this instrument.** Formally,
+kill condition 8 makes NLM-001 instrument-void for confirmatory claims: the
+runner did not record tokenizer revision, library versions, thread count, or
+batch size at run time; those fields were reconstructed post hoc. It is not
+reported as a positive or negative confirmation of the relational hypothesis.
+It is nevertheless a bounded negative falsifier for the decision that matters:
+this lexical next-token-KL instrument did not earn further investment. Under
+the locked analysis, the primary native predictor lost to the preregistered
+diagonal Mahalanobis competitor on reversal-active anchors (0.889 versus 0.947;
+\(\Delta_{\rm rev}=-0.058\), 95% interval \([-0.22,+0.03]\)). Thus predictive
+novelty fails by kill condition 3 and the coordinate-confound verdict in kill
+condition 6 applies. The interval does not strongly kill transfer under kill
+condition 4; it kills the claimed advantage.
 
-What the data support, stated no more strongly than the audit allows: for these
-lexical items and carrier probes, decoder-induced KL orderings vary by context
-more than by paraphrase in two of three systems (Q > 1), and a symmetric learned
-metric on the model's own contextual representation predicts held-out orderings
-at least as well as the native construct. Directedness was not observed.
-Nothing here bears on "cosine is the wrong object for latent spaces".
+The H2 number does not rescue the instrument. Qwen crossed its numerical gate,
+but the 80-word sensitivity value was 1.97, just below the point gate. SmolLM's
+\(Q=17.1\) is dominated by \(W\simeq0.005\), and gemma supported no primary
+gate. More fundamentally, \(B>W\) may recover the hand-authored block taxonomy
+and differently selected robust-pair subsets; it is not evidence that context
+rank is an invariant of the latent space. Near-ceiling performance by the
+leading contextual and learned predictors shows that the retained held-out
+labels were mostly easy, large-gap pairs.
 
-Post-verdict: any endpoint change is NLM-002. Per the Tier-3 audit, the next
-step is not more words; it is a competition among primitives and a
-decoder-aware baseline (see NOTEBOOK 2026-08-27 re-contextualization and
-`.codex_audit_t3_001` alternatives).
+Directedness was not observed by the registered exploratory endpoint. That
+does not establish symmetry or kill context-conditioned directedness; NLM-001
+was already incapable of earning a directedness claim. H4 remains descriptive
+because the required support interval is not present in the result artifact.
+
+The strongest permissible empirical sentence is: **for these lexical items
+and carrier probes, decoder-induced KL orderings differed across authored
+context blocks, while the registered point estimate favored a symmetric
+learned metric on the model's contextual representation over the native
+calibration-KL construct on robust held-out orderings.** Nothing here bears on
+"cosine similarity is the wrong object for latent spaces." No possible NLM-001
+outcome could have earned that sentence because the design lacked a competitive
+decoder-aware geometry, decoder-independent outcomes, presentation changes,
+non-lexical replication, and a confirmatory directedness endpoint.
+
+Post-verdict: any endpoint change is NLM-002. NLM-002 is not more lexical words;
+it is a competition between primitives, specified in `theory/dialogue/002.md`.

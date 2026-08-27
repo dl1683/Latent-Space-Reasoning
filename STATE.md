@@ -39,15 +39,25 @@ decoding-determinism finding; the termination/direct-control/null-model gates.
 
 ## NLM-001 verdict (2026-08-27)
 
-Negative on the central bet: native calibration KL does not beat a learned
-diagonal metric on the model's own contextual hidden states for held-out
-closeness orderings (Qwen3-0.6B Δ = −0.058 [−0.22, +0.03]); context reversals
-do exceed the paraphrase null (Q = 2.12 [1.70, 2.56]); directedness not
-observed. Kill conditions 3, 6, 8 apply. Details: `theory/EXPERIMENTS.md`.
+**Bounded negative falsifier of the lexical next-token-KL instrument.** Kill
+condition 8 makes the run void for confirmatory claims because required runtime
+metadata were reconstructed post hoc. Under the locked analysis, native
+calibration KL did not beat a learned diagonal metric on contextual hidden
+states for held-out closeness orderings (Qwen3-0.6B
+\(\Delta=-0.058\;[-0.22,+0.03]\)); kill conditions 3 and 6 therefore apply.
+Qwen's H2 diagnostic crossed its numerical gate
+(\(Q=2.12\;[1.70,2.56]\)), but may recover the authored probe taxonomy rather
+than an invariant of the latent space. Registered directedness was not observed
+and broader directedness was not adjudicated. Details: `theory/EXPERIMENTS.md`.
 
 ## Next
 
-Codex round 3: adopt the Tier-3 audit's corrections, fix the verdict language,
-and choose the next primitive to compete — decoder-aware (Fisher/logit-law)
-baseline, causal internal states, probabilistic/denotational foundation on
-diffusion latents, or a non-LM modality. Not NLM-002 on more words.
+Turn the design skeleton in `theory/dialogue/002.md` into a locked NLM-002
+competition between (a) one decoder/head-aware Fisher response-law geometry and
+(b) probe-indexed operational substitutability on cached DINOv2 embeddings.
+Freeze the cache, tasks, state splits, head resamples, common-support estimator,
+runtime metadata, independent behavioral endpoint, and mutual kill conditions
+before any outcome-bearing computation. NLM-002 is not more lexical words. If
+both closeness primitives fail, pivot next to probabilistic/denotational update
+on diffusion latents; causal internal states remain a separate later
+competition. No GPU run is authorized.
