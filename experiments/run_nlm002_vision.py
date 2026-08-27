@@ -215,10 +215,67 @@ def measurement_3(tr, te, heads, blocks_te, endpoint_label, rng, n_anchor=400, n
     return res
 
 
+# ---------- measurement 4 (NLM-005): composed substitution and transport -----------------
+def measurement_4(tr, te, heads, endpoint_label, edits, rng, n_anchor=400, n_cand=40):
+    """For anchor x, candidate y, edit e (label-preserving image transport re-encoded by the frozen encoder):
+    ST scores the pair (x, T_e(y)); TS scores (T_e(x), y); direct scores (x, y). Outcome = fine(y)==fine(x)
+    (edits preserve labels). Predictors: cosine, euclid, F, R without coarse head. Per-anchor pairwise accuracy
+    over (preserved, not-preserved) candidate pairs; ST-vs-TS gap and native-vs-chart deltas with anchor bootstrap."""
+    Xte = te["emb"]; n = len(Xte)
+    G = sum(h.fisher(tr["emb"][:1000]) for h in heads.values()) / len(heads)
+    names_nc = [nm for nm in heads if nm != "PB_coarse"]
+    anchors = rng.choice(n, size=n_anchor, replace=False)
+    cand_sets = {int(x): rng.choice([c for c in range(n) if c != x], size=n_cand, replace=False) for x in anchors}
+    edit_names = [k.replace("test_emb_", "") for k in edits.files if k.startswith("test_emb_")]
+    def predictors(A, B):
+        """A: (D,) anchor-side state; B: (m, D) candidate-side states. Returns dict name -> closer-score (higher=closer)."""
+        An = A / max(np.linalg.norm(A), 1e-12); Bn = B / np.maximum(np.linalg.norm(B, axis=1, keepdims=True), 1e-12)
+        diff = B - A
+        out = {"cosine": Bn @ An, "euclid": -np.linalg.norm(diff, axis=1), "F_fisher": -np.einsum("id,de,ie->i", diff, G, diff)}
+        pa = {nm: heads[nm].predict(A[None])[0] for nm in names_nc}; pb = {nm: heads[nm].predict(B) for nm in names_nc}
+        out["R_no_coarse"] = np.array([sum(pb[nm][i] == pa[nm] for nm in names_nc) for i in range(len(B))], dtype=float)
+        return out
+    def pair_acc(closer, keep):
+        ip = np.flatnonzero(keep); ineg = np.flatnonzero(~keep); c = t = 0
+        for a in ip:
+            for b in ineg:
+                t += 1; c += 0.5 if closer[a] == closer[b] else int(closer[a] > closer[b])
+        return c / t
+    results = {}
+    for e in edit_names:
+        TE = edits[f"test_emb_{e}"]
+        acc = {order: {k: [] for k in ("cosine", "euclid", "F_fisher", "R_no_coarse")} for order in ("direct", "ST", "TS")}
+        used = 0
+        for x in anchors:
+            cands = cand_sets[int(x)]
+            keep = np.array([endpoint_label[c] == endpoint_label[x] for c in cands])
+            if keep.all() or (~keep).all(): continue
+            used += 1
+            for order, A, B in (("direct", Xte[x], Xte[cands]), ("ST", Xte[x], TE[cands]), ("TS", TE[x], Xte[cands])):
+                for k, v in predictors(A, B).items(): acc[order][k].append(pair_acc(v, keep))
+        summ = {}
+        for order in acc:
+            summ[order] = {k: float(np.mean(v)) for k, v in acc[order].items()}
+        arr = {order: {k: np.array(v) for k, v in acc[order].items()} for order in acc}
+        def boot(fn):
+            m = len(arr["ST"]["cosine"]); vals = [fn(rng.integers(0, m, m)) for _ in range(1000)]
+            return [float(np.percentile(vals, 2.5)), float(np.percentile(vals, 97.5))]
+        st_ts_gap = {k: {"mean": float(np.mean(arr["ST"][k] - arr["TS"][k])), "ci95": boot(lambda idx, k=k: np.mean(arr["ST"][k][idx] - arr["TS"][k][idx]))} for k in arr["ST"]}
+        best_native = max(("F_fisher", "R_no_coarse"), key=lambda k: min(summ["ST"][k], summ["TS"][k]))
+        best_chart = max(("cosine", "euclid"), key=lambda k: min(summ["ST"][k], summ["TS"][k]))
+        native_minus_chart = {order: {"mean": float(np.mean(arr[order][best_native] - arr[order][best_chart])),
+                                      "ci95": boot(lambda idx, o=order: np.mean(arr[o][best_native][idx] - arr[o][best_chart][idx]))} for order in ("ST", "TS")}
+        results[e] = {"n_anchors_supported": used, "support_frac": used / n_anchor, "accuracy": summ, "ST_minus_TS": st_ts_gap,
+                      "best_native": best_native, "best_chart": best_chart, "native_minus_chart": native_minus_chart}
+        print(f"M4[{e}] support={used}/{n_anchor} direct={ {k: round(v,3) for k,v in summ['direct'].items()} } ST={ {k: round(v,3) for k,v in summ['ST'].items()} } TS={ {k: round(v,3) for k,v in summ['TS'].items()} }", flush=True)
+    return results
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--cache", required=True); ap.add_argument("--out", required=True)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--edits", default=None, help="NLM-005: edits.npz with re-encoded label-preserving transports of the test split; runs measurement 4")
     ap.add_argument("--endpoint", choices=["rawpixel_knn", "fine_label"], default="rawpixel_knn",
                     help="consequence endpoint for measurement 3: raw-pixel kNN fine label (NLM-002 lock) or the true fine label, which no head is trained on")
     ap.add_argument("--pixels", default=None,
@@ -244,8 +301,12 @@ def main():
     endpoint = knn_pix if a.endpoint == "rawpixel_knn" else te["fine"]
     m3 = measurement_3(tr, te, heads, te["blocks"], endpoint, rng, pixels=px["test_pixels"])
     print("M3", json.dumps(m3), flush=True)
+    m4 = None
+    if a.edits:
+        ed = np.load(a.edits); assert np.array_equal(ed["test_idx"], d["test_idx"])
+        m4 = measurement_4(tr, te, heads, endpoint, ed, np.random.default_rng(a.seed + 1))
     out_dir = RESULTS / a.out; out_dir.mkdir(parents=True, exist_ok=True)
-    result = {"endpoint": a.endpoint, "cache_manifest_sha256": hashlib.sha256((cache / "manifest.json").read_bytes()).hexdigest(),
+    result = {"endpoint": a.endpoint, "edits": a.edits, "M4_composition": m4, "cache_manifest_sha256": hashlib.sha256((cache / "manifest.json").read_bytes()).hexdigest(),
               "cache_sha256": man.get("cache_sha256"), "pixels_path": str(pixels_path), "seed": a.seed, "seconds": round(time.time() - t0, 1),
               "heads_trained_on": list(blocks), "fine_label_head_trained": False,
               "M1_chart_path_closure": m1, "M2_endpoint_independence": m2, "M3_F_vs_R": m3}

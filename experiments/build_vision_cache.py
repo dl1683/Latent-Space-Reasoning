@@ -47,6 +47,7 @@ def main():
     ap.add_argument("--out", required=True)
     ap.add_argument("--pixels-only", action="store_true", help="dump raw 32x32x3 uint8 pixels for the same split indices (no encoding)")
     ap.add_argument("--random-init", action="store_true", help="NULL WORLD: same encoder architecture with random weights (seed 0); a chart never trained to be metric")
+    ap.add_argument("--edits", default=None, help="NLM-005 transports: path to pixels.npz; encodes label-preserving edits (hflip, shift1px) of the TEST split and writes edits.npz")
     a = ap.parse_args()
 
     from datasets import load_dataset
@@ -63,6 +64,37 @@ def main():
     rng = np.random.default_rng(a.seed)
     idx_train = np.sort(rng.choice(len(ds["train"]), size=a.n_train, replace=False))
     idx_test = np.sort(rng.choice(len(ds["test"]), size=a.n_test, replace=False))
+
+    if a.edits:
+        px = np.load(a.edits)
+        if a.random_init:
+            from transformers import AutoConfig
+            torch.manual_seed(0); model = AutoModel.from_config(AutoConfig.from_pretrained(a.encoder)).eval()
+        else:
+            model = AutoModel.from_pretrained(a.encoder).eval()
+        MEAN = np.array([0.485, 0.456, 0.406], dtype=np.float32); STD = np.array([0.229, 0.224, 0.225], dtype=np.float32)
+        def prep(arrs):
+            out = []
+            for x in arrs:
+                im = Image.fromarray(x).resize((256, 256), Image.BICUBIC)
+                w, h = im.size; l, t = (w - 224) // 2, (h - 224) // 2
+                z = np.asarray(im.crop((l, t, l + 224, t + 224)), dtype=np.float32) / 255.0
+                out.append(((z - MEAN) / STD).transpose(2, 0, 1))
+            return torch.from_numpy(np.stack(out))
+        edits = {"hflip": lambda x: x[:, ::-1, :].copy(),
+                 "shift1px": lambda x: np.concatenate([np.repeat(x[:, :1, :], 1, axis=1), x[:, :-1, :]], axis=1)}  # right shift, edge padding
+        test_px = px["test_pixels"]; res = {"test_idx": px["test_idx"]}
+        for name, fn in edits.items():
+            embs = []
+            for i in range(0, len(test_px), a.batch):
+                batch = [fn(x) for x in test_px[i:i + a.batch]]
+                with torch.no_grad(): embs.append(model(pixel_values=prep(batch)).pooler_output.float().numpy())
+                if (i // a.batch) % 20 == 0: print(f"  {name} {i + len(batch)}/{len(test_px)} ({time.time() - t0:.0f}s)", flush=True)
+            res[f"test_emb_{name}"] = np.concatenate(embs)
+        out_dir = RESULTS / a.out; out_dir.mkdir(parents=True, exist_ok=True)
+        path = out_dir / "edits.npz"; np.savez_compressed(path, **res)
+        print(json.dumps({"edits_sha256": hashlib.sha256(path.read_bytes()).hexdigest(), "edits": list(edits), "padding": "edge (replicate first column)", "n_test": int(len(test_px)), "seconds": round(time.time() - t0, 1)}))
+        return
 
     if a.pixels_only:
         out_dir = RESULTS / a.out; out_dir.mkdir(parents=True, exist_ok=True)
