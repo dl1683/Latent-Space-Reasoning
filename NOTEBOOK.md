@@ -5,6 +5,20 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-27 — Round 2b instrument calibration amendment
+
+- Read the disclosed eight-item full-pipeline calibration. Within-block KL
+  scale varied up to 16-fold, making the preregistered instance-specific MAD
+  threshold invalid and yielding zero passes.
+- Locked per-paraphrase scale normalization, four-of-four sign agreement, a
+  block-pooled magnitude scale, and the explicit 12.5% random-sign null.
+- Demoted directed asymmetry to exploratory after 0–18% sign agreement at
+  chance. Revised post-calibration predictions to \(Q=2.5\), \(R=0.20\), and
+  \(\Delta_{\rm rev}=+0.07\).
+- The eight inspected words are excluded from primary confirmation; the
+  remaining 72 are primary and all 80 are sensitivity. No confirmatory run was
+  performed.
+
 ## 2026-08-27 — Round 1 revised after Claude attack
 
 - Appended `## Codex — revision` to `theory/dialogue/001.md`, answering A1–A7
@@ -24,6 +38,49 @@ was learned, what's next. Canonical state lives in STATE.md.
   unrun. A concurrent Claude turn added the CPU measurement runner and raw
   hidden-state capture. Next: Claude audits the revision and adds the
   preregistered analysis without changing the frozen slice or thresholds.
+
+## 2026-08-27 — Tier-3 re-contextualization (Claude, before the auditor's answer)
+
+**Live question.** Is closeness in a latent space context-indexed and directed
+in a way no symmetric contextual representation reproduces — and can a native
+invariant (context rank, Q = B/W) say how many orderings are actually required?
+
+**Tunnel check — honest answer: partially tunneled.** In one day the program
+narrowed from "native mathematics of latent spaces" to "next-token-KL
+substitution probes on 80 lexical tokens of three tiny causal LMs". That is a
+fine first instrument; it is not the object. Risks: (i) everything measured is a
+property of one decoder family; (ii) 'latent space' has so far meant 'input
+embedding row', the least latent thing in the model; (iii) the primitive
+(substitutability under probes) was chosen in round 1 and never competed.
+
+**Alternatives now live, each with its decisive result:**
+1. Non-LM latent spaces with downstream-head probes (DINOv2, ESM-2, CLIP,
+   wav2vec are cached). If the same axioms/invariants organize a vision or
+   protein space, this is about latent spaces; if not, it is about LMs.
+2. The probabilistic/denotational axiomatization (dialogue 001 §1B) on
+   diffusion latents — the legacy program left instrumented diffusion stacks
+   that already denote laws. Decisive: evidence-update is definable there and
+   predicts something the relational axioms cannot.
+3. Probe family as the object: states × probes as a formal context (Galois
+   connection / formal concept analysis) — existing mathematics for exactly
+   the (X, C, N) structure. Decisive: the concept lattice of a real system has
+   nontrivial structure that context rank flattens.
+4. Intermediate residual states as latent states (not embedding rows), probes
+   = continuation from that depth. Decisive: context rank changes with depth.
+5. The moot-maker: contextual cosine at the right layer matches native transfer
+   (H3 kill 3/6). Then "native" = "the model's contextual representation" and
+   the program must change primitive or object.
+
+**What reframes earlier work.** The legacy perturbation program was, in these
+terms, a substitution probe with the whole prompt as state and free generation
+as the readout; its withdrawn results were the readout's insensitivity, not the
+state's. Its one surviving residue — measure the stack's numerical noise floor
+before interpreting any latent-space difference — is now a standing gate here
+(η) and belongs in every project that measures representations.
+
+**Direction still makes sense?** Yes as a first falsifiable instrument, with the
+explicit condition that NLM-001's verdict (either way) must be followed by at
+least one of alternatives 1–4, not by NLM-002 on more words.
 
 ## 2026-08-27 — Repository restarted
 
