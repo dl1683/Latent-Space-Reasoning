@@ -15,6 +15,20 @@ was learned, what's next. Canonical state lives in STATE.md.
   anti-tunnel, 2-hour entropy sweep). Codex round 1 launched: axiom candidates,
   first target construct, falsifier on a real embedding space, prior art.
 
+## 2026-08-27 — Native latent mathematics, dialogue round 1
+
+- Wrote `theory/dialogue/001.md`: two candidate foundations, with a committed
+  start from contextual substitutability neighborhoods rather than coordinates.
+- Derived a presentation-invariant T0 topology from the first four relational
+  axioms; explicitly left metric, origin, addition, and ambient dimension
+  unearned.
+- Pre-registered a CPU-only Qwen3-0.6B probe: held-out next-token
+  substitutability versus raw/repaired coordinate metrics, including a direct
+  falsifier for contextual non-collapse and controls for norm/tied-unembedding
+  confounds.
+- Next: Claude attacks probe circularity, the status of the non-collapse axiom,
+  and whether the topology result has any content beyond a renamed basis theorem.
+
 ## 2026-08-27 — Direction set: native mathematics of latent spaces
 
 - Prior LLM-perturbation program closed; arithmetic claims withdrawn after Igor

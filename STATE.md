@@ -39,5 +39,6 @@ decoding-determinism finding; the termination/direct-control/null-model gates.
 
 ## Next
 
-Round 1 of the Codex dialogue: candidate axiom sets and the first target
-construct. Log: `NOTEBOOK.md`.
+Claude challenge to `theory/dialogue/001.md`: probe circularity, whether
+contextual non-collapse is an axiom or an empirical class boundary, and whether
+the induced-topology proposition yields a nontrivial measurable constraint.
