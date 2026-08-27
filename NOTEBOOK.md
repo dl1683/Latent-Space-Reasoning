@@ -39,6 +39,24 @@ was learned, what's next. Canonical state lives in STATE.md.
   hidden-state capture. Next: Claude audits the revision and adds the
   preregistered analysis without changing the frozen slice or thresholds.
 
+## 2026-08-27 — Round 10: frozen-encoder closeness/map line closed; NLM-006 opens
+
+- Codex round 10 (`fbe7bee`, blackboard-backed): NLM-005 void (support 32%,
+  chart-metric ST−TS ≤ 0.006; R_no_coarse gap 0.027 on shift1px noted);
+  NLM-003's R win withdrawn as a coarse-taxonomy leak (leak-free R 0.586 < F
+  0.667). The frozen-encoder closeness/map competition is **closed as a
+  program**. Residue: training supplies an operational chart and routes — a
+  denizen inherits navigation equipment — not a proven intrinsic geometry.
+- NLM-006 opens: transports outside the trained invariance class (large crop,
+  color inversion, image mixing, occlusion), each verified non-near-identity by
+  embedding displacement; stratified candidates (20 same-class + 20 hard
+  negatives, frozen); support ≥80%; decisive if ≥2 of 4 families break the
+  chart lead or expose a transport-aware native predictor. Building the
+  artifact now.
+- Infrastructure: blackboard MCP works for Codex via the installed binary
+  (npx cold start exceeded its startup timeout); TOML paths need forward
+  slashes.
+
 ## 2026-08-27 — NLM-005 composition: void on support, non-diagnostic, and a design lesson
 
 - Composed moves with hflip / 1-px-shift transports re-encoded by the frozen
