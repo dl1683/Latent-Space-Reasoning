@@ -1,3 +1,33 @@
+> **Owner addendum (2026-08-27, repository maintainers).** This document is
+> Igor Rivin's contribution and is preserved as written. Three scope notes,
+> raised in the PR #5 review and recorded here so the document is read
+> correctly:
+>
+> 1. **The "noise floor" arm is a fixed-prefix numerical-noise control, not
+>    "no intervention."** In `run_capability_limited_diversity_study.py` every
+>    control row receives the same random two-token soft prefix
+>    (`identical = [sps[0].clone() for _ in range(args.k)]`). It tests whether
+>    varying the prefix adds diversity beyond floating-point variation around
+>    one fixed prefix — the right question for diversity attribution — but it
+>    is not an unperturbed matched-k null.
+> 2. **The per-generation accuracy difference is not established under
+>    task-level paired analysis.** The unpaired Welch result over ten seed rows
+>    (t = −2.26, p = 0.037) reproduces exactly, but generations are nested in
+>    25 tasks and rows are produced in shared batched calls. Paired on task
+>    means: t = 0.995, p = 0.33; Wilcoxon p = 0.29; control higher on 9 tasks,
+>    perturbation on 5, 11 tied. Point estimates (52.8% vs 58.8%) stand.
+> 3. **The verdict is scoped to this GH200/CUDA-13 stack**, exactly as the
+>    limitations section anticipates. On our RTX 5090 / Windows /
+>    torch 2.11+cu128 stack, the unmodified `probe_greedy_trajectory_stability.py`
+>    decodes byte-identical inputs identically across three independent
+>    processes (condition B: 1/8 distinct on both completed tasks; condition A
+>    identical) while perturbed rows diverge (condition C: 2/8 and 7/8 distinct,
+>    up to 3 distinct answers). The GH200 ensemble-equivalence result stands;
+>    the cross-stack conclusion is that perturbation is a causal diversity
+>    source on deterministic stacks and its usefulness remains unresolved.
+>
+> See [CORRECTION_NESTED_ARITHMETIC_2026_08.md](CORRECTION_NESTED_ARITHMETIC_2026_08.md).
+
 # Is embedding perturbation a real diversity source?
 
 **Verdict:** no. On a capability-limited benchmark, embedding perturbation is

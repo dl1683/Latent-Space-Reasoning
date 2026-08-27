@@ -9,6 +9,31 @@ Only Codex-validated conclusions are stated as "confirmed."
 
 ---
 
+## Correction: Nested-Arithmetic Perturbation Claims Withdrawn (2026-08-27)
+
+**Purpose:** Record the invalidation of the nested-arithmetic scaling/perturbation
+results and the partial cross-stack determinism replication.
+**Trigger:** PRs #4 and #5 (Igor Rivin) — thinking-mode control, un-truncated ladder,
+numerical-noise null. Verified against our stored files: 100/100 EOS-terminated 4B
+generations correct, truncated 22.4%; termination 24%→38% explains the published gain;
+DeepSeek (100% termination) shows −1.6pp. Same coupling in our word-problem run.
+**Withdrawn:** scaling ladder, perturbation-vs-temperature (arithmetic), cost table.
+**Survives:** trajectory-completion effect under a binding cap; judge-based open-ended
+results as uncontrolled hypotheses.
+**New data — 5090 stability probe (Igor's script, unmodified):** Qwen3-4B bf16,
+wide_mult, k=8. Tasks 1–2 of 5: sequential repeat identical; 8 byte-identical batch rows
+1/8 distinct (zero noise floor); perturbed rows 2/8 and 7/8 distinct, up to 3 answers.
+Bit-identical across 3 independent processes. Tasks 3–5 not completed: sustained GPU load
+hard-crashes the laptop (power delivery; see memory protocol). Complete on stable hardware.
+**Artifacts:** `docs/CORRECTION_NESTED_ARITHMETIC_2026_08.md`,
+`docs/BENCHMARK_VALIDITY_ASSESSMENT.md`, `docs/PERTURBATION_DIVERSITY_STUDY.md` (owner
+addendum), `experiments/greedy_trajectory_stability.json` (GH200).
+**What we learned:** report termination beside accuracy, run the cheapest direct control
+first, measure the numerical noise floor per stack, use task-clustered statistics, and
+propagate internal audit downgrades to public claims in the same session.
+
+---
+
 ## Separatrix Probe v2 — Latent Interpolation Basin Mapping (2026-06-28)
 
 **Purpose:** Map the behavioral landscape between wrong and correct perturbation vectors by
