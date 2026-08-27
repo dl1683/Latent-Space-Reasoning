@@ -39,6 +39,20 @@ was learned, what's next. Canonical state lives in STATE.md.
   hidden-state capture. Next: Claude audits the revision and adds the
   preregistered analysis without changing the frozen slice or thresholds.
 
+## 2026-08-27 — NLM-003 diagnostics: R's win was the coarse head
+
+- Rerun with audit-#2 diagnostics (same lock, new anchor sample): R without
+  the coarse head = 0.586, below F (0.667). R's advantage was taxonomy leak —
+  fine labels nest inside coarse classes — exactly as the fresh auditor
+  predicted. Δ_F−R = −0.095 [−0.142, −0.049] marginally fails the strict gate
+  on this resample. R ties on 22–33% of comparisons.
+- Cheap ladder: PCA-32 cosine 0.941 ≈ cosine 0.934; pixel baselines 0.62.
+  k-sensitivity: same-class fine-kNN flicker 0.10–0.18, cross-class 0.37–0.41
+  for k = 8/32/128 — the world-path contrast is robust.
+- Net for the primitives: neither F nor R (leak-free) is a competitive map;
+  the trained chart's metric is. The program's live positive result is
+  NLM-004's: that metric and its straight routes are products of training.
+
 ## 2026-08-27 — NLM-004 null world: the chart's map and its world-paths are inherited from training
 
 - Preregistered in the ledger (before scoring) and supported: in a random-init
