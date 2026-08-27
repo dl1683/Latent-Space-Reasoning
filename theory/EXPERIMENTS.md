@@ -419,5 +419,25 @@ bound above 0.
 
 ### Manifest lock placeholder
 
-- `artifact_manifest_sha256`: TODO_UNSET
-- When this hash is written and frozen, this section may move from DRAFT to locked.
+- `cache_sha256`: 8de4f0b0c47e1272de8c948c770517a66edd7beff933ccc29d995886c8145791
+  (`experiments/results/vision_cifar100_dinov2s/cache.npz`; encoder revision
+  ed25f3a31f01632728cabb09d1542f84ab7b0056; 6000/2000; seed 0; raw pixels in
+  `pixels.npz` for the endpoint).
+- **Locked 2026-08-27 (Claude), before any scoring**, with two implementation
+  decisions the draft left open, recorded here so Codex can object in round 6
+  (if it does, results are relabeled exploratory):
+  1. Along embedding-space chart paths (measurement 1) the consequence readouts
+     are embedding-space: the four trained heads (coarse, rgb, luma, edge) and
+     embedding-space k=32 kNN fine label; interpolated embeddings have no pixels,
+     so the raw-pixel endpoint cannot be read along a path. Flicker = more than
+     one label transition on the 9-point grid; reported per readout and as
+     any-readout. 300 same-class and 300 cross-class test pairs, seed 0.
+  2. Measurement 3 operationalization: a move is substitution of anchor x by
+     candidate y (both test states); its consequence is whether the raw-pixel kNN
+     fine label of y equals that of x. Predictors rank candidates by closeness to
+     x — F: Fisher pullback distance with G = mean of the four heads' exact pooled
+     Fisher on 1000 train states; R: number of trained-head predictions preserved
+     under the substitution (profile agreement); baselines: cosine, Euclidean.
+     Score = pairwise accuracy over (preserved, not-preserved) candidate pairs per
+     anchor, 400 anchors × 40 candidates, anchor bootstrap for Δ_{F−R}.
+- Implementation: `experiments/run_nlm002_vision.py`.

@@ -45,6 +45,7 @@ def main():
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--batch", type=int, default=32)
     ap.add_argument("--out", required=True)
+    ap.add_argument("--pixels-only", action="store_true", help="dump raw 32x32x3 uint8 pixels for the same split indices (no encoding)")
     a = ap.parse_args()
 
     from datasets import load_dataset
@@ -61,6 +62,17 @@ def main():
     rng = np.random.default_rng(a.seed)
     idx_train = np.sort(rng.choice(len(ds["train"]), size=a.n_train, replace=False))
     idx_test = np.sort(rng.choice(len(ds["test"]), size=a.n_test, replace=False))
+
+    if a.pixels_only:
+        out_dir = RESULTS / a.out; out_dir.mkdir(parents=True, exist_ok=True)
+        px = {}
+        for split, idx in (("train", idx_train), ("test", idx_test)):
+            sub = ds[split].select(idx.tolist())
+            px[f"{split}_pixels"] = np.stack([np.asarray(im.convert("RGB"), dtype=np.uint8) for im in sub[img_col]])
+            px[f"{split}_idx"] = idx
+        path = out_dir / "pixels.npz"; np.savez_compressed(path, **px)
+        print(json.dumps({"pixels_sha256": hashlib.sha256(path.read_bytes()).hexdigest(), "train_pixels": px["train_pixels"].shape, "test_pixels": px["test_pixels"].shape}, default=str))
+        return
 
     model = AutoModel.from_pretrained(a.encoder).eval()
     MEAN = np.array([0.485, 0.456, 0.406], dtype=np.float32); STD = np.array([0.229, 0.224, 0.225], dtype=np.float32)
