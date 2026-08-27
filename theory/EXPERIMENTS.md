@@ -1202,3 +1202,27 @@ world-completed passes, and clustered bootstrap. No GPU and no generation are
 permitted. If the cap cannot cover all six pairs, the analysis is incomplete
 and earns no gated verdict; pair reduction must be decided before scoring,
 never after seeing outcomes.
+
+### Tier-3 audit #4 corrections (2026-08-28, fresh unprimed auditor; adopted verbatim)
+
+- **NLM-006b / Round 12:** the frozen-encoder program was not scientifically
+  killed; it is **paused / deprioritized**. NLM-006b is non-diagnostic (every
+  displaced family failed the 0.80 label-preservation gate; the gate's own
+  near-identity controls reached only 0.77, so the kNN proxy is poorly
+  calibrated). "No tested native construct competes" is an OOD ranking
+  observation, not evidence against native transport. "Chart robustness" is
+  withdrawn as a residue claim.
+- **NLM-007 may not be scored until the analyzer implements:** a per-word
+  carrier-average successor baseline (lexical-persistence moot-maker); kNN
+  regression (k = 5, 20) among the static chart controls, member selected by
+  inner validation; model/tokenizer revision pinned against the capture
+  manifest before scoring; support rules that mark degenerate cells undefined
+  (zero denominators, non-finite completed laws) and exclude them rather than
+  repairing with 1e-12; completed-law ordering differences with clustered CIs;
+  minimal-class reporting separately for successor and completed-law
+  endpoints, among ladder members only; a float16-reload check on stored laws
+  against fresh float32 laws; and the full clustered gate.
+- **Scope:** NLM-007's result, either way, is a single-model interpretability
+  result until (i) a class-stratified unseen-word split and (ii) a second
+  model family are run. Both are registered as required follow-ups, not
+  optional.

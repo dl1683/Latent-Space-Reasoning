@@ -193,6 +193,13 @@ close this frozen-encoder transport envelope if every valid family keeps a
 gated chart lead `>=0.05`; fewer than two valid families is non-diagnostic.
 No scoring or experiment was run in Round 11.
 
+## Audit #4 (2026-08-28)
+
+Frozen-encoder program PAUSED, not killed (NLM-006b non-diagnostic; gate
+proxy poorly calibrated). NLM-007 blocked from scoring until the analyzer
+repairs listed in theory/EXPERIMENTS.md are in; unseen-word split and a second
+model family required before any scope claim.
+
 ## Next
 
 **Replacement design:** stratified transports outside the encoder's measured
