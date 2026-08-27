@@ -63,17 +63,25 @@ and broader directedness was not adjudicated. Details: `theory/EXPERIMENTS.md`.
 
 ## Next
 
-Round 5 is now locked in text:
+**Round 6:** non-LM NLM-002 run is scored and adjudicated. The run is partially
+adjudicable: endpoint independence (M2) fails because the independent consequence
+endpoint (`raw-pixel k=32` fine-label) is uninformative (`acc=0.115`, endpoint
+agreement 0.1205), so `F` vs `R` (`M3`) is a tie (`\Delta_{F-R}=-0.0036,
+CI[-0.0343,+0.0261]`) and therefore not decisive.
 
-- Append `Round 5 — moves are what the world permits` to `theory/dialogue/002.md`
-  with point-by-point B1–B5 commitments.
-- Add `NLM-002` DRAFT preregistration in `theory/EXPERIMENTS.md` with
-  artifact-manifest lock gate, move-closure test ordering, endpoint-independence
-  requirement, and F vs R paired comparison on common-support pairs.
-- Update `theory/AXIOMS.md` navigation requirements so moves are exactly
-  substitution, dynamics transport, and composition; chart interpolation is a
-  testable hypothesis under transport/consequence criteria.
-- Keep LM arm explicitly unlockable in this draft until a held-out LM continuation
-  endpoint is frozen.
-- After this artifact-manifest sha256 is recorded, review once and then execute only
-  CPU-only runs in the order in the NLM-002 section.
+The `M1` chart-path result is informative for the guiding question: same-class
+chart-straight paths are mostly monotone at coarse-semantic readout (2.0% flicker),
+while cross-class paths are non-monotone (78% `any_readout` flicker), so future
+primitive claims should treat same-class paths as provisional world-paths and cross-
+class paths as transport breakdowns on this slice.
+
+Priority next step:
+
+- Preserve independence (true fine label as endpoint target, no fine-label head
+  training).
+- Replace the `raw-pixel k=32` consequence target only after re-locking a fixed,
+  label-free but independent endpoint with sufficient baseline predictive power,
+  then rerun `M2` before any definitive primitive decision.
+- Keep `NLM-001` verdict and all gates unchanged; continue next-round.
+
+

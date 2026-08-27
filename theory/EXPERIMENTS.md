@@ -335,9 +335,7 @@ it is a competition between primitives, specified in `theory/dialogue/002.md`.
 
 ## NLM-002 — map primitive competition on CIFAR-100/DINOv2 (DRAFT)
 
-**Status:** DRAFT. Not locked until `artifact_manifest_sha256` for the CIFAR-100
-DINOv2 cache manifest is recorded in this section.
-
+**Status:** Lock remains valid; Round 6 non-LM run is scored and marked `B3`-inconclusive pending endpoint redesign.
 ### Locked scope
 
 - One non-LM branch is lockable in this draft: CIFAR-100/DINOv2 cached embeddings.
@@ -441,3 +439,37 @@ bound above 0.
      Score = pairwise accuracy over (preserved, not-preserved) candidate pairs per
      anchor, 400 anchors × 40 candidates, anchor bootstrap for Δ_{F−R}.
 - Implementation: `experiments/run_nlm002_vision.py`.
+### Round 6 Verdict (2026-08-27)
+
+**Status:** Round 6 scoring complete; non-LM run adjudication is partial.
+
+- **Decision 1 (locked implementation):** accepted. Chart-path flicker is measured on embedding-space readouts as locked, because interpolated points have no pixel support.
+- **Decision 2 (locked implementation):** operationally coherent, but the fixed independent endpoint is too weak for a primitive claim.
+
+#### M1 result vs prediction
+
+- `PB_coarse` same-class flicker is 0.020 (95% CI [0.003, 0.037]); cross-class flicker is 0.183 (95% CI [0.14, 0.227]).
+- `any_readout` flicker is 0.51 same-class and 0.78 cross-class.
+- Preregistered requirement of `>=60%` same-class/cross-class non-monotone is not met for same-class chart-straight paths, but cross-class lines are highly non-monotone.
+- Interpretation: same-class interpolation is operationally stable and can be treated as a *provisional world-path* regime; cross-class interpolation violates world-path behavior by repeatedly crossing third-class structure.
+
+#### M2 endpoint-control
+
+- Raw-pixel fine-label kNN endpoint: 0.115 accuracy vs 0.761 embedding-kNN fine accuracy, with only 0.1205 agreement.
+- This is a >0.02 endpoint swing and exceeds the registered independence-kill threshold.
+- The endpoint remains conceptually clean (true fine label, no fine head), but it is not informative enough to resolve the primitive competition.
+
+#### M3 competition
+
+- With endpoint invalidated, `F` vs `R` is a tie: `F=0.6014`, `R=0.6050`, `\Delta_{F-R}=-0.0036` (95% CI [-0.0343, 0.0261]), `n=16660`.
+
+#### Verdict and next-round design under the guiding question
+
+- Mark `NLM-002` non-LM branch as **B3-inconclusive / exploratory** until endpoint redesign is locked.
+- Keep the true fine-label endpoint idea (no fine-label head trained) as the independence requirement.
+- Redesign the independent consequence target so it is both independent and informative before finalizing any `F` vs `R` decision.
+- Carry forward the path predicate: compare primitives primarily on same-class chart paths that survive the M1 world-path criterion; treat cross-class paths as non-world in this run.
+
+
+
+
