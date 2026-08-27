@@ -332,3 +332,92 @@ non-lexical replication, and a confirmatory directedness endpoint.
 
 Post-verdict: any endpoint change is NLM-002. NLM-002 is not more lexical words;
 it is a competition between primitives, specified in `theory/dialogue/002.md`.
+
+## NLM-002 — map primitive competition on CIFAR-100/DINOv2 (DRAFT)
+
+**Status:** DRAFT. Not locked until `artifact_manifest_sha256` for the CIFAR-100
+DINOv2 cache manifest is recorded in this section.
+
+### Locked scope
+
+- One non-LM branch is lockable in this draft: CIFAR-100/DINOv2 cached embeddings.
+- LM branch remains unlockable until a dedicated held-out LM continuation
+  endpoint is named and frozen.
+- CPU-only path only.
+- Artifact: 6000 train / 2000 test cached-state split, fixed encoder revision.
+
+### Data and probes
+
+- `X_train`: 6000 images with raw pixels, DINOv2 embeddings, fine/coarse labels,
+  and pixel-stat blocks.
+- `X_test`: 2000 images, disjoint and held-out for all evaluation endpoints.
+- Probe blocks for head training and substitution tables:
+  - `PB_fine` (frozen at test time, no head training)
+  - `PB_coarse`
+  - `PB_rgb_mean`
+  - `PB_luma`
+  - `PB_edge`
+- Fine labels and raw-pixel kNN labels are endpoint-only and are not used for head
+  fitting.
+
+### Shared candidate endpoints (endpoint-independence requirement)
+
+Both \(F\) and \(R\) are scored on the same held-out behavioral consequence:
+raw-pixel \(k=32\) nearest-neighbor fine-label prediction on \(X_{\text{train}}\),
+with cosine/Euclidean distance in raw image space and frozen tie-breaking.
+Prediction is whether the kNN label matches the original test fine label after a
+substitution move endpoint.
+
+### Design locks
+
+- F uses exact head Fisher on the three/four trained probe blocks:
+  `PB_coarse`, `PB_rgb_mean`, `PB_luma`, `PB_edge`. No fine-label head is trained.
+- R uses substitution profiles from the same cached pair table and probe blocks.
+- Shared pair support: a pair is admissible only if every block in the comparison
+  has defined directional consequence for both anchors and both directions.
+- Common support estimator:
+\[
+\mathcal S_U=\{(i,j):\forall c\in U,\;E_c(i,j)=1\},\quad
+Q=\frac{B}{W}\text{ on }\mathcal S_{\cdot}
+\]
+with \(\mathcal S_{\cdot}\) reported as a percentage of all candidate pairs.
+
+### Measurement order (CPU prereg)
+
+#### 1) Chart-path closure in non-LM separatrix geometry
+
+- **Hypothesis:** chart-straight interpolation between same-class and cross-class
+  states is not native world transport on this artifact.
+- **Exact prediction:** ≥60% of tested interpolation families show flicker/non-
+  monotone consequence transitions under the legacy 9-point geometry.
+- **Kill condition:** flicker ≤5% with bootstrap CI excluding moderate flicker
+  for both same-class and cross-class families.
+- **CPU bound:** cached-embedding probe sweeps; linear in move count × 9 points ×
+  probe count.
+
+#### 2) Endpoint independence
+
+- **Hypothesis:** raw-pixel fine-label kNN endpoint is not inflated by
+  fine-label training.
+- **Exact prediction:** replacing any head-based endpoint proxy with the same
+  raw-pixel kNN endpoint changes held-out substitution scores by ≤0.02 (paired).
+- **Kill condition:** paired endpoint swing >0.02, or any fine-label influence in
+  the head training block list.
+- **CPU bound:** one index build + one query sweep on CPU.
+
+#### 3) Competitive prediction of fine-label substitution consequence
+
+- **Hypothesis:** one primitive (exact \(F\) or substitution-profile \(R\)) will
+  dominate held-out fine-label substitution consequence on common-support pairs.
+- **Exact prediction:** paired held-out prediction margin
+\(\Delta_{F-R}\ge0.05\) (or \(\Delta_{R-F}\ge0.05\)), with bootstrap CI lower
+bound above 0.
+- **Kill conditions:** both \(|\Delta|<0.05\), or both are within 0.02 and no
+  stable residual \(Q\) contrast is recovered on common support.
+- **CPU bound:** matrix operations on cached embeddings and profiles; no model
+  retraining loop.
+
+### Manifest lock placeholder
+
+- `artifact_manifest_sha256`: TODO_UNSET
+- When this hash is written and frozen, this section may move from DRAFT to locked.
