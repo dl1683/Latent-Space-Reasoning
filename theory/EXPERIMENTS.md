@@ -1020,7 +1020,7 @@ destroy the endpoint identity. No tested native construct competes. No further
 score-chasing on this frozen image encoder is planned. The next program must
 make dynamics—not analyst-imposed image edits—the legal moves.
 
-## NLM-007 — residual-stream dynamics law-complexity audit (LOCK, Round 13)
+## NLM-007 — residual-stream dynamics law-complexity audit (LOCK, amended Round 14)
 
 **Status: LOCKED BEFORE SCORING.** This is a documentation-only lock. No NLM-
 007 scoring or generation is part of Round 13. The narrow question is whether
@@ -1226,3 +1226,107 @@ never after seeing outcomes.
   result until (i) a class-stratified unseen-word split and (ii) a second
   model family are run. Both are registered as required follow-ups, not
   optional.
+
+### Round 14 amendment — re-lock before scoring (2026-08-27)
+
+**Status: LOCKED AGAIN BEFORE SCORING.** Round 14 is documentation-only. The
+repaired analyzer may be inspected, but no NLM-007 score or generation is part
+of this round. The following amendments are binding on the first scored run.
+
+#### Required controls and validity checks
+
+- Add the **word-conditioned mean successor** as a separate lexical-persistence
+  moot-maker. For each word, average the 12 calibration-carrier successors
+  and apply that vector to the held-out carriers. Report it for successor and
+  completed-law endpoints, but do not count it as a ladder member for minimal-
+  class reporting. A candidate field is not transport evidence if it is within
+  `0.02` of this word-mean baseline on successor cosine and both completed-law
+  readouts in the pairs used for the claim. To clear the lexical-persistence
+  gate, the candidate must instead beat the word-mean baseline by at least
+  `0.02`, with a paired clustered 95% lower bound above zero, on all three
+  endpoints in at least two pairs. If neither condition is met, the result is
+  unresolved against lexical persistence and earns no transport claim.
+- Expand the static chart control family to include kNN regression with
+  `k={5,20}` alongside the raw 1-NN cosine and Euclidean lookups. Select the
+  static-control member by the same inner blocked validation and freeze it
+  before held-out scoring. These remain chart controls, not native candidates.
+- Verify both model and tokenizer revisions against the capture manifest,
+  along with the exact config identity, before opening held-out scores. A
+  mismatch or missing pin voids confirmatory interpretation.
+- Treat zero denominators, non-finite successors, non-finite completed laws,
+  and undefined law-ordering cells as undefined. Exclude them from the
+  corresponding endpoint and support denominator, report the undefined-cell
+  counts, and never repair them with `1e-12` or another finite placeholder.
+- Report paired completed-law ordering differences with word/carrier-clustered
+  95% intervals, not only point estimates. Report minimal class separately for
+  successor and completed-law endpoints, and select it only among the ladder
+  members `mean`, `knn1`, `knn5`, `knn20`, `ridge`, `lowrank`, and `kernel`.
+- Reload the stored float16 laws and compare them with the fresh float32 laws
+  before scoring: record maximum law/log-law/KL discrepancies and ordering
+  agreement. Failure of the declared precision check voids the completed-law
+  interpretation.
+
+The class-stratified unseen-word split and a second model family are required
+follow-ups. Until both are run, any NLM-007 result is a single-model
+interpretability result, not a claim about language-model dynamics generally.
+
+#### Carrier-shuffled null: interpretation by depth
+
+The carrier-shuffled null permutes calibration targets across carriers within a
+word, preserving the word's target marginal. Its meaning is conditional on
+whether the block action is carrier-dependent at the depth being scored:
+
+- At a **carrier-independent depth**, targets for a word are exchangeable (up
+  to the recorded numerical/reload noise). Shuffling cannot break the field;
+  `shuffled ~= unshuffled` is therefore a finding about the world —
+  context-free transport at that depth — not a kill. In the 16-word smoke,
+  `shuffled = 0.955` and the field is `0.955`, so this interpretation is
+  explicitly permitted.
+- At a **carrier-dependent depth**, shuffling breaks the carrier pairing. A
+  shuffled field that matches the unshuffled field within `0.02` is then the
+  registered marginal-state/presentation failure and kills the reusable
+  carrier-conditioned transport claim for that depth. Report the within-word
+  carrier spread and the numerical/reload tolerance used to classify the
+  depth; do not infer carrier dependence from the null alone.
+
+“Transfer across carriers” consequently means different things at the two
+  depths. When transport is carrier-independent, it means that one
+  carrier-invariant law learned from some carriers predicts the same word's
+  successor on held-out carriers; it does not mean that the law predicts
+  carrier-specific variation. The word-mean gate still has to be cleared, so
+  carrier independence can be a real world finding without earning a
+  reusable, state-dependent transport claim.
+
+#### CPU-cap contingency
+
+The full plan remains one CPU process, six pairs, 100 shuffles, 2,000 paired
+word/carrier bootstrap replicates, and a hard 20-minute wall-clock cap. Before
+held-out scores are opened, record the planned budget. If a six-pair run is
+projected to exceed the cap, apply a predeclared reduction in this order:
+
+1. reduce layer pairs to one representative per depth region
+   (`L0->L1`, `L8->L9`, `L27->L28`);
+2. if still necessary, reduce the shuffle count from 100 to 20 and label the
+   null diagnostic rather than lock-valid;
+3. if still necessary, reduce the bootstrap from 2,000 to 500 and label all
+   intervals exploratory rather than lock-valid.
+
+Never reduce the held-out carrier split, word-mean/static controls, completion
+endpoint, undefined-cell accounting, or revision/precision checks. Any such
+fallback is an incomplete or exploratory run and cannot earn the six-pair
+gated verdict; the choice must be fixed before scoring and cannot be made
+after seeing outcomes.
+
+#### Exact predictions after the amendment
+
+The pre-score class predictions are unchanged, but every prediction is now
+read alongside the word-mean gate and the depth-specific null interpretation:
+
+| depth region | exact minimal-class prediction among ladder members | required reading of the word-mean/null controls |
+| --- | --- | --- |
+| early (`L0->L1`, `L4->L5`) | low-rank affine is within `0.02` of the best successor and completed-law score | a transport reading requires the `+0.02` word-mean separation gate; a shuffled match is evidence of carrier-independent/context-free transport, not by itself a kill |
+| middle (`L8->L9`, `L12->L13`) | low-rank affine remains the smallest class within `0.02`, with at least one pair meeting the existing `+0.05` chart gate | the same word-mean separation gate applies; a carrier-dependent shuffled match within `0.02` kills the reusable-field reading for that pair |
+| late (`L20->L21`, `L27->L28`) | kernel ridge is needed to reach the best score, while transfer weakens at the final block | the same word-mean separation gate applies, with the predicted weakening allowed to appear as failure at `L27->L28`, not as a post-score reinterpretation |
+
+These remain falsifiable depth-region predictions. No score from the smoke
+artifact is a result: it validates only the 16-word, `L0->L1` pipeline.

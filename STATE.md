@@ -271,6 +271,60 @@ cap and no generation.
 
 ## Next
 
-Build the NLM-007 analysis stage only after this lock. Do not score until the
-completion-context path, calibration-only selection, null, metadata, support
-accounting, and clustered bootstrap are implemented and auditable.
+The analyzer repair is present, but do not score until the amended lock below
+is the active preregistration and the completion-context path, calibration-only
+selection, null, metadata, support accounting, precision check, and clustered
+bootstrap are auditable.
+
+## Round 14 — NLM-007 amendment before scoring (2026-08-27)
+
+Round 14 is documentation-only: no NLM-007 score or generation was run. The
+lock is amended and re-locked before scoring. The word-conditioned mean
+successor is now a separate lexical-persistence moot-maker: average each
+word's 12 calibration-carrier successors, apply that vector to held-out
+carriers, and report successor plus completed-law endpoints. It is not a
+ladder member. A transport reading requires a candidate to beat it by at least
+`0.02`, with a paired clustered 95% lower bound above zero, on successor cosine
+and both completed-law readouts in at least two pairs; a result within `0.02`
+on all three endpoints is lexical persistence, not transport, and an unresolved
+comparison earns no transport claim.
+
+Static controls now include inner-selected kNN regression with `k={5,20}`
+alongside raw 1-NN cosine/Euclidean lookup. Both model and tokenizer revisions
+must match the capture manifest. Zero-denominator, non-finite, and undefined
+cells are excluded and counted, never repaired by epsilon. Completed-law
+ordering differences receive clustered CIs; minimal class is reported
+separately for successor and completed-law endpoints among ladder members only;
+stored float16 laws must pass a reload comparison against fresh float32 laws.
+
+The carrier-shuffled null is interpreted by depth. If a block's slot action is
+carrier-independent, within-word targets are exchangeable and shuffling cannot
+break the field: the smoke's `shuffled = 0.955 = field` is evidence of
+context-free transport at that depth, not a kill. If the action is
+carrier-dependent, a shuffled result within `0.02` of the field is the
+marginal-state/presentation failure. Transfer at a carrier-independent depth
+means a carrier-invariant law learned on some carriers predicts the same
+word's successor on held-out carriers; it does not mean predicting
+carrier-specific variation and still must clear the word-mean gate.
+
+The full CPU plan remains six pairs, 100 shuffles, 2,000 clustered bootstrap
+replicates, one process, and a hard 20-minute cap. If six pairs are projected
+to exceed the cap, decide before scoring: retain one representative pair per
+region (`L0->L1`, `L8->L9`, `L27->L28`), then reduce shuffles to 20, then
+bootstrap replicates to 500 if necessary. Reduced null/interval budgets are
+exploratory and cannot earn the full six-pair gated verdict. Never reduce the
+held-out split, controls, completion endpoint, support accounting, or metadata
+checks, and never reduce after seeing outcomes.
+
+Exact predictions remain low-rank affine as the minimal class early and
+middle, kernel ridge late, with late transfer weakening at the final block.
+Each is conditional on clearing the word-mean separation gate and on the
+depth-specific null interpretation. The unseen-word class-stratified split
+and second model family are required follow-ups; until both are run, NLM-007
+is a single-model interpretability result. The 16-word smoke is pipeline
+validation only, not a result.
+
+## Next
+
+Do not score until the Round 14 amendment is recorded as the active lock and
+all its validity checks are auditable.
