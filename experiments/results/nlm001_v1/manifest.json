@@ -1,0 +1,61 @@
+{
+  "config": "experiments/config/lexical_probe_v1.json",
+  "config_name": "lexical_probe_v1",
+  "torch": "2.11.0+cu128",
+  "device": "cpu",
+  "dtype": "float32",
+  "seed": 0,
+  "systems": [
+    {
+      "system": "Qwen/Qwen3-0.6B",
+      "revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+      "tied": true,
+      "embed_dim": 1024,
+      "vocab": 151936,
+      "n_items": 80,
+      "layers": [
+        0,
+        7,
+        14,
+        28
+      ],
+      "null_logp_batched_vs_single": 1.71661376953125e-05,
+      "null_kl_batched_vs_single": 2.384185791015625e-06,
+      "seconds": 67.6
+    },
+    {
+      "system": "google/gemma-3-270m",
+      "revision": "9b0cfec892e2bc2afd938c98eabe4e4a7b1e0ca1",
+      "tied": true,
+      "embed_dim": 640,
+      "vocab": 262144,
+      "n_items": 80,
+      "layers": [
+        0,
+        4,
+        9,
+        18
+      ],
+      "null_logp_batched_vs_single": 5.14984130859375e-05,
+      "null_kl_batched_vs_single": 1.5735626220703125e-05,
+      "seconds": 33.3
+    },
+    {
+      "system": "HuggingFaceTB/SmolLM2-360M",
+      "revision": "f8027fd0eaeea54caa13c31d31b9fdc459c38b49",
+      "tied": true,
+      "embed_dim": 960,
+      "vocab": 49152,
+      "n_items": 80,
+      "layers": [
+        0,
+        8,
+        16,
+        32
+      ],
+      "null_logp_batched_vs_single": 2.09808349609375e-05,
+      "null_kl_batched_vs_single": 2.86102294921875e-06,
+      "seconds": 80.2
+    }
+  ]
+}
