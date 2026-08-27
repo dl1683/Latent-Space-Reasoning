@@ -82,13 +82,36 @@ latent-reason check-gpu       # check GPU availability
 
 Minimum hardware: ~2GB VRAM (Qwen3-0.6B). Recommended: ~8GB VRAM (Qwen3-4B). CPU-only works but runs slower.
 
+## Correction — 2026-08-27: nested-arithmetic perturbation claims withdrawn
+
+Earlier versions of this README claimed that soft-prefix embedding perturbation
+unlocked arithmetic capability unavailable through model scaling
+("Perturbation Unlocks Capabilities That Scaling Cannot"), outperformed
+temperature sampling, and delivered superior cost-per-capability. **Those
+conclusions are withdrawn.**
+
+The nested-arithmetic benchmark they rested on was dominated by Qwen
+thinking-trace truncation at a 1024-token cap. In our stored data, every
+generation that terminated normally was correct (100/100), truncated
+generations scored near the last-integer base rate, and the measured accuracy
+gains were changes in termination rate. Disabling thinking mode — a control we
+never ran — takes every model on the ladder, including the 32B we reported at
+0%, to 96–100% on the same tasks at a fraction of the cost.
+
+The error was established by controls contributed by Igor Rivin
+([@igorrivin](https://github.com/igorrivin)) in PRs #4 and #5, together with
+reanalysis of our own stored result files. Full record — withdrawn claims,
+evidence, what survives, chronology, and process changes:
+[docs/CORRECTION_NESTED_ARITHMETIC_2026_08.md](docs/CORRECTION_NESTED_ARITHMETIC_2026_08.md).
+
+
 ## Current Evidence
 
 | Area | Status | What It Shows |
 | --- | --- | --- |
 | Diffusion latent repair | Promoted public result | A frozen diffusion language model can improve on a lean mixed benchmark by repairing latent generation state. |
-| Benchmark validity review | **Independent controls — see [docs/BENCHMARK_VALIDITY_ASSESSMENT.md](docs/BENCHMARK_VALIDITY_ASSESSMENT.md) and [docs/PERTURBATION_DIVERSITY_STUDY.md](docs/PERTURBATION_DIVERSITY_STUDY.md)** | The nested-arithmetic rows below were run with Qwen3 thinking mode on against a 1024-token cap, and 76–100% of every rung was truncated. With `--no-think` at the same cap, Qwen3-32B scores 100% (published: 0%) and every rung from 1.7B up scores 96–100%. On a capability-limited tier, perturbation is statistically indistinguishable from a do-nothing null model. Read those two documents alongside the rows below. |
-| Token/prefix perturbation | Measured across 6 models + text generation | 2 random embedding tokens raise Qwen3-4B from 32% to 72% (plurality@10) on nested arithmetic. Scaling from 1.7B to 32B is flat or worse (28%→36%→0%). Perturbation beats temperature sampling at equal cost (72% vs best 64%). On text generation, perturbation wins 7/15 vs baseline (1 loss) and 5/15 vs 14B (7 losses). See below. |
+| Benchmark validity review | **Independent controls — see [docs/BENCHMARK_VALIDITY_ASSESSMENT.md](docs/BENCHMARK_VALIDITY_ASSESSMENT.md) and [docs/PERTURBATION_DIVERSITY_STUDY.md](docs/PERTURBATION_DIVERSITY_STUDY.md)** | The nested-arithmetic rows below were run with Qwen3 thinking mode on against a 1024-token cap, and 76–100% of every rung was truncated. With `--no-think` at the same cap, Qwen3-32B scores 100% (published: 0%) and every rung from 1.7B up scores 96–100%. On a capability-limited tier, perturbation is statistically indistinguishable from a fixed-prefix numerical-noise control on that GH200 stack (see owner addendum in that document). Read those two documents alongside the rows below. |
+| Token/prefix perturbation (nested arithmetic) | **Withdrawn 2026-08-27** — truncation confound; see the correction above | The published 32%→72% gain, the flat scaling ladder, and the temperature/cost comparisons measured termination under a 1024-token cap. What survives is a trajectory-completion effect and untested judge-based results on open-ended tasks — see "Embedding Perturbation: What Survives the Controls". |
 | Multi-latent aggregation v5 | Clean local milestone | A predeclared 48-task aggregation replay passed stricter robustness gates on planning tasks. |
 | Aggregation v6-v8 | Negative transfer evidence | More repair, probes, and targeted standalone repair did not reliably create aggregation-useful complements. |
 | Aggregation v9 | Post-failure design breakthrough | Complement-first packet generation passed frozen numeric replay gates on the failed v7 surface, but remains diagnostic. |
@@ -97,207 +120,78 @@ Minimum hardware: ~2GB VRAM (Qwen3-0.6B). Recommended: ~8GB VRAM (Qwen3-4B). CPU
 | Blinded pairwise evaluation | STATISTICAL_GO — preregistered confirmatory study | N=50, 4 arms, 3 blinded same-model judge calls. Task-specific clause-append preferred over generic boilerplate at 33/50 (66%, p=0.016, Wilson CI [52.2%, 77.6%]). Task-specificity confirmed: true > deranged 47/50. Wrong-task clauses hurt: deranged < anchor 64%. Single-model judge caveat; error gate fails narrowly (6/50 vs ≤5 threshold). |
 | Separatrix probe (latent interpolation) | Exploratory — interesting structural signal | Interpolating between wrong and correct perturbation vectors reveals non-monotonic correctness landscape: 74% of tasks show interior correctness islands, 47% of transitions involve deep divergence (>50 shared tokens before branching). Two mechanisms coexist (trajectory-level and format-level). Needs controls before strong claims. |
 
-## Perturbation Unlocks Capabilities That Scaling Cannot
+## Embedding Perturbation: What Survives the Controls
 
-The standard way to make a model smarter is to make it bigger. But bigger
-models need more VRAM, more expensive hardware, and heavier quantization
-that can degrade quality. Perturbation offers a different trade: instead of
-adding parameters, **unlock the knowledge the model already has** by
-shifting its reasoning trajectory at the embedding level.
+Two random vectors injected into the embedding space before generation, scaled
+to the model's native embedding RMS; no training, frozen model. The method is
+unchanged. What changed is what the evidence supports.
 
-Two random vectors injected into the embedding space before generation,
-scaled to match the model's native embedding RMS. No training, no
-optimization. The model is frozen. The only change is where it starts
-thinking from.
+### Withdrawn (see the correction above)
 
-On 25 nested arithmetic tasks (multi-step expressions requiring 3-6
-sequential operations), greedy decoding, max 1024 tokens:
+The nested-arithmetic scaling ladder, the perturbation-vs-scaling and
+perturbation-vs-temperature comparisons on that benchmark, and the
+cost-per-capability table. All were measurements of termination under a token
+cap. The README's earlier guess that the 32B result was a quantization
+artifact was also wrong: bf16 unquantized scores 4% with thinking on.
 
-### Parameter scaling is flat; perturbation is not
+### What the data does show: a trajectory-completion effect
 
-![Parameter scaling vs perturbation](docs/figures/scaling_vs_perturbation.png)
+Under Qwen thinking mode with a binding token cap, perturbation reliably shifts
+trajectories toward normal completion: on Qwen3-4B it raised the termination
+rate from 24% to 38%, and every generation that completed was correct
+(100/100). This is the "convergence, not knowledge" diagnosis, and it is the
+one part of the original section that the controls confirm. It is moot on
+arithmetic — disabling thinking mode is a cheaper and far more effective
+remedy on every tier tested — and it is not evidence of improved reasoning.
 
-*Each pair of bars shows how well a model does on the same 25 math
-problems. Blue = the model's default accuracy. Orange = accuracy after
-adding 2 random embedding vectors. The dashed red line is what you get
-when you run the 4B model 10 times with different perturbations and take
-a majority vote. Making the model bigger (moving right) doesn't help —
-the bars stay flat or drop. But perturbation on the smallest model
-jumps to 72%.*
+### Diversity source: real but stack-dependent
 
-| Model | Params | Quant | Baseline | Pert mean | Plurality@10 | Oracle@10 |
-| --- | ---: | --- | ---: | ---: | ---: | ---: |
-| Qwen3-1.7B | 1.7B | 4-bit | 28% | 29% | — | — |
-| Qwen3-4B | 4.0B | 4-bit | 32% | 52% | **72%** | **100%** |
-| Qwen3-8B | 8.0B | 4-bit | 24% | 25% | — | — |
-| Qwen3-8B | 8.0B | 8-bit | 16% | 29% | 56% | 80% |
-| Qwen3-14B | 14.0B | 4-bit | 36% | 40% | — | — |
-| Qwen3-32B | 32.0B | 4-bit | 0% | 0% | — | — |
-| DeepSeek-R1-1.5B | 1.5B | 4-bit | 76% | 74% | — | 100% |
-| phi-2 | 2.7B | none | 12% | 19% | — | 28% |
+On a GH200/CUDA-13 stack, randomized soft prefixes did not improve any
+ensemble metric over a fixed-prefix numerical-noise control
+([docs/PERTURBATION_DIVERSITY_STUDY.md](docs/PERTURBATION_DIVERSITY_STUDY.md);
+see the owner addendum in that document for scope and statistics). On our
+RTX 5090 / CUDA 12.8 stack, the same probe decodes byte-identical inputs
+identically across independent processes (zero numerical noise floor) while
+perturbed inputs diverge (up to 7/8 distinct completions, 3 distinct answers
+on a wide-multiplication task). Perturbation is therefore a causal
+intervention on deterministic stacks; whether that diversity is *useful* on
+capability-limited tasks is unresolved on either stack.
 
-Within the Qwen3 family, scaling parameters from 1.7B to 32B does not
-improve accuracy: 28% → 32% → 24% → 36% → 0%. The 32B model at 4-bit
-quantization degenerates — it produces verbose natural-language
-explanations, exhausts the 1024-token budget, and never states an answer.
-The 14B model at 3.5× the FLOPs of a single 4B pass gains only +4pp.
+### Open-ended domains: suggestive, controls pending
 
-Perturbation×10 on the smallest viable model jumps to 72% via plurality
-voting. Every task in the benchmark is solved correctly by at least one
-of the 10 seeds (100% oracle coverage).
+Judge-based studies on hard planning (5 tasks), legal reasoning (12 tasks), and
+open-ended text generation (15 tasks, blind pairwise LLM-as-judge, best of 5
+perturbation seeds vs greedy) favoured perturbation — e.g. 7 wins / 1 loss / 7
+ties vs the same 4B model, and 5/15 wins vs a 14B model. These tasks
+terminated, so the arithmetic truncation confound does not apply directly. But
+the baselines were single greedy generations in thinking mode, and the
+studies lack a no-think baseline, a temperature-matched best-of-k arm, and a
+fixed-prefix null. Until those controls are run they are hypotheses, not
+results. Figures and data remain available:
+`docs/figures/text_gen_judge_results.png`,
+`docs/figures/text_gen_category_wins.png`,
+`experiments/text_generation_results.json`,
+`experiments/text_gen_judge_results.json`,
+`experiments/planning_3way_outputs.json`,
+`experiments/legal_v2_full_clean.json`.
 
-**The bottleneck is not knowledge — it is convergence.** These models
-already know how to solve nested arithmetic. They fail because greedy
-decoding locks them into a verbose reasoning path that exhausts the
-token budget before stating the answer. More parameters do not fix this;
-the 14B and 32B models fail for the same reason, just more expensively.
+### Next study
 
-Perturbation shifts the generation trajectory so the model finishes what
-it already knows how to do. This is not a marginal improvement — it is
-the difference between a model that cannot solve a problem (32%) and one
-that solves it reliably (72%), using the same weights.
+The open question is whether perturbation preserves the benefit of thinking
+mode where thinking is genuinely necessary — tasks on which thinking-on with a
+generous budget beats thinking-off — at lower token cost than either. That
+requires, on held-out tasks: thinking-off, thinking-on at generous and binding
+budgets, temperature-matched best-of-k, a fixed-prefix null, and perturbation,
+with task-clustered paired statistics. Design is pre-registered before any
+run; results land here only after passing the correction document's process
+gates.
 
-### Perturbation vs temperature sampling
-
-![Perturbation vs temperature sampling](docs/figures/temperature_vs_perturbation.png)
-
-*All five bars use the same model (Qwen3-4B) and the same number of
-attempts (10). The only difference is how diversity is generated.
-Temperature sampling (blue bars) adds randomness at the token level —
-the model rolls dice on each word. Perturbation (orange bar) shifts the
-starting point in embedding space so the model reasons along a
-completely different trajectory. The diamonds show plurality vote
-accuracy; the triangles show oracle (best of 10). Perturbation generates
-more useful diversity at every temperature setting.*
-
-The obvious alternative to embedding perturbation is temperature sampling:
-run the same model 10 times with temperature > 0. Same cost, same VRAM,
-same number of passes. The question is which diversity source produces
-better plurality votes.
-
-| Method | Mean | Plurality@10 | Oracle@10 |
-| --- | ---: | ---: | ---: |
-| Greedy baseline ×1 | 32% | — | — |
-| **Perturbation ×10** | **52%** | **72%** | **100%** |
-| Temperature 0.3 ×10 | 38% | 64% | 88% |
-| Temperature 0.6 ×10 | 41% | 60% | 100% |
-| Temperature 0.9 ×10 | 39% | 48% | 96% |
-
-Perturbation wins at every temperature. Higher temperature actually hurts
-plurality — temp=0.9 drops to 48%, worse than greedy baseline with
-perturbation's 72%. Token-level randomness produces different words;
-embedding perturbation shifts the reasoning trajectory from layer 1,
-producing more structurally diverse completions that agree on the right
-answer more often.
-
-### Inference efficiency: more capability per dollar
-
-The conventional path to higher accuracy is a bigger model. But bigger
-models need proportionally more VRAM, more expensive hardware, and
-slower throughput. Perturbation inverts this: spend compute on
-**diversity of reasoning paths** instead of density of parameters.
-
-| Configuration | FLOPs/query | Accuracy | VRAM | Hardware |
-| --- | ---: | ---: | ---: | --- |
-| 4B baseline ×1 | 7.5e12 | 32% | 2.5 GB | Any GPU, M-series Mac |
-| **4B perturbation ×10** | **6.8e13** | **72%** | **2.5 GB** | **Same hardware** |
-| 14B baseline ×1 | 2.6e13 | 36% | ~8 GB | Mid-range GPU |
-| 32B baseline ×1 | 5.1e13 | 0% | ~20 GB | High-end GPU |
-
-At roughly the same FLOP budget as a single 32B pass, perturbation×10
-on 4B achieves 72% vs 0%. The 32B model costs 8× the VRAM and still
-fails. The 14B model at 3.5× the FLOPs gets 36% — half of perturbation's
-accuracy on hardware that costs 3× as much.
-
-**Why this matters for deployment:**
-
-- **VRAM democratization.** 2.5 GB means a laptop GPU, an M-series Mac,
-  a $200 used desktop card, or a free-tier cloud instance. No one is
-  locked out by hardware cost.
-- **Embarrassingly parallel.** The 10 seeds share no state. Run them on
-  10 threads, 10 instances, or 10 cheap devices. Wall-clock time equals
-  one pass.
-- **No retraining.** The model is frozen. Perturbation works on any
-  model out of the box. No fine-tuning data, no training infrastructure,
-  no hyperparameter search.
-
-Measured throughput on RTX 5090 Laptop: 15.7 tok/s on 4B (59s/task),
-6.9 tok/s on 8B (145s/task).
-
-### What the numbers do not show
-
-- 25 tasks on one task type (nested arithmetic). The flatness of parameter
-  scaling may be specific to this benchmark.
-- Perturbation hurts models that already score well (DeepSeek at 76%
-  baseline shows −1.6pp mean effect).
-- Plurality voting requires individual seed accuracy below 50% to work;
-  majority voting fails (40% on 4B, 12% on 8B — worse than baseline).
-- The 32B result (0%) is likely a quantization artifact — 4-bit may be
-  too aggressive at that scale for this task type. An 8-bit or
-  unquantized 32B run would be a fairer comparison but requires more VRAM
-  than our test hardware (24 GB).
-
-Data: `experiments/sensitivity_sweet_spot_random_noise_t2_results.json`,
+Historical data for the withdrawn section:
+`experiments/sensitivity_sweet_spot_random_noise_t2_results.json`,
 `experiments/temperature_vs_perturbation_results.json`,
 `experiments/scaling_ladder_14b_4bit_baseline.json`,
-`experiments/scaling_ladder_32b_4bit_baseline.json`, and cross-model
-variants in the same directory.
+`experiments/scaling_ladder_32b_4bit_baseline.json`, and cross-model variants.
 
-### Text generation: perturbation helps beyond arithmetic
-
-The arithmetic results show perturbation works on tasks with verifiable
-correct answers. But does it help on open-ended text generation where
-there is no single right answer?
-
-15 technical tasks (explanation, analysis, reasoning, debugging, planning,
-creative writing) evaluated via blind LLM-as-judge pairwise comparison.
-Qwen3-4B 4-bit with perturbation (best of 5 seeds) versus the same model
-greedy baseline, and versus Qwen3-14B 4-bit greedy baseline.
-
-![Text generation judge results](docs/figures/text_gen_judge_results.png)
-
-*Left panel: when perturbation competes against the same model's default
-output, it wins 7 out of 15 tasks and only loses 1. Right panel: when
-a small 4B model with perturbation competes against a 14B model (3.5×
-larger), it still wins 5 out of 15. The judge sees both responses
-unlabeled and picks which is better — it doesn't know which model
-produced which response.*
-
-**4B perturbation vs 4B baseline: 7 wins, 1 loss, 7 ties.**
-Perturbation's main advantage: it escapes the `<think>` trap. Baseline
-gets stuck in internal reasoning monologue and exhausts the token budget
-without producing a final answer. Perturbation shifts the trajectory so
-the model produces structured, complete responses.
-
-**4B perturbation vs 14B baseline: 5 wins, 7 losses, 3 ties.**
-A 4B model with perturbation is competitive against a model 3.5× its size
-— winning a third of matchups at 1/3 the VRAM.
-
-![Category win rates](docs/figures/text_gen_category_wins.png)
-
-*Each bar shows how often perturbation wins on that type of task.
-Orange bars = win rate against the same 4B model without perturbation.
-Blue bars = win rate against the larger 14B model. Perturbation helps
-most on reasoning and analysis tasks (left side) — tasks where the
-model knows the answer but gets stuck in verbose thinking. It helps
-least on planning and creative tasks (right side) — tasks where more
-knowledge genuinely matters.*
-
-Where perturbation helps most:
-
-- **Reasoning and analysis** (67% win rate vs both baselines): tasks with
-  clear logical structure where the bottleneck is completing the chain of
-  thought, not knowing more facts.
-- **Explanation** (67% vs 4B, 33% vs 14B): perturbation helps escape
-  verbose thinking; 14B's extra knowledge helps more on some topics.
-- **Planning and creative** (0% win rate vs 14B): open-ended tasks where
-  deeper knowledge matters more than trajectory diversity.
-
-This pattern confirms the mechanism: perturbation unlocks what the model
-already knows. It does not substitute for knowledge the model lacks.
-
-Data: `experiments/text_generation_results.json`,
-`experiments/text_gen_judge_results.json`
 
 ## Promoted Result
 
@@ -400,6 +294,15 @@ Artifacts:
 
 ## What Not To Overclaim
 
+- The withdrawn nested-arithmetic results must not be cited as evidence of
+  capability or of perturbation beating scaling or temperature; they measured
+  termination under a token cap.
+- Judge-based planning, legal, and text-generation results are uncontrolled
+  (no no-think baseline, no temperature-matched best-of-k, no null) and are
+  hypotheses until those arms exist.
+- Perturbation-as-diversity-source is stack-dependent; do not generalize a
+  result from one hardware/kernel stack to another without measuring the
+  numerical noise floor there.
 - Old token perturbation runs are historically important, but many were small
   exploratory slices.
 - Oracle coverage is not a deployment result unless a selector or aggregator
