@@ -336,7 +336,6 @@ def h4_cross(blocks_a, blocks_b, h1a, h1b, eta, n, n_perm=200, seed=0):
     iu = h1a["_iu"]; perm_agrees = []
     for _ in range(n_perm):
         perm = rng.permutation(n)
-        M = np.zeros((n, n), dtype=int)
         a_, t_ = 0, 0
         for B in h1a["_per_block"]:
             sa = np.zeros((n, n)); sb = np.zeros((n, n)); ka = np.zeros((n, n), bool); kb = np.zeros((n, n), bool)
