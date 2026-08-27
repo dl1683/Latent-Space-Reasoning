@@ -5,7 +5,95 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
-## NLM-003 — R beats F on the true fine-label endpoint; cosine dominates both (2026-08-27)
+## NLM-006 v1 — transports outside the invariance class; EXPLORATORY (cosine-selected negatives) (2026-08-28)
+
+- **Design.** Six transport families re-encoded by the frozen encoder
+  (`experiments/results/vision_cifar100_dinov2s_edits_v2/edits.npz`, keyed
+  `test_emb_<family>`: hflip, shift1px, crop50, invert, mix50, occlude50;
+  `displacement.json` alongside), stratified candidates, true fine-label
+  endpoint. Relabeled **exploratory** by Tier-3 audit #3 before results were
+  read: hard negatives were cosine-selected, so the pool is adversarial to any
+  chart-like ranking. Ledger `nlm006_v1_exploratory`; artifact
+  `experiments/results/nlm006_v1/analysis.json`.
+- **Uninterpretable for the primitive contest.** Every predictor scores below
+  0.5 (cosine 0.411, Euclid 0.402, F 0.486, R_no_coarse 0.477) — cosine's
+  "collapse" is manufactured by selecting negatives with the tested metric.
+- **Exploratory signal.** Support 400/400 (stratification fixes NLM-005's
+  support failure). Order sensitivity appears only outside the invariance
+  class: ST−TS cosine 0.05–0.10 with CIs excluding 0 for crop50/invert/mix50/
+  occlude50; 0.00 for hflip/shift1px. Displacement mean cos: hflip 0.96,
+  shift 0.98 vs crop 0.63, invert 0.49, mix 0.43, occlude 0.66.
+- **Next.** NLM-006b (ledger `nlm006b_prereg_transport_audit`): independent
+  candidate strata, transported-pair predictors, label-preservation and
+  calibrated displacement gates. Lesson: candidate pools must never be
+  selected by the metric under test.
+
+## Round 10 closure — frozen-encoder closeness/map line closed (2026-08-27, narrowed by audit #3)
+
+- Ledger `round10_frozen_chart_closure`. The NLM-003 R-over-F claim is
+  withdrawn (coarse-taxonomy leak, see diagnostics below); NLM-005 is void on
+  support; no native construct built so far (substitutability profiles, Fisher
+  pullback) competes with the trained chart metric on this artifact.
+- **Residue as narrowed by Tier-3 audit #3:** training creates a
+  task-effective chart and affine-path smoothness *in this encoder/dataset*
+  (cosine 0.946 trained vs 0.575 random-init; same-class chart-line flicker
+  12.7% vs 95%). Not a general claim that native constructs are dominated, and
+  not proof of intrinsic geometry or of "straight routes inherited from
+  training" beyond this encoder and dataset.
+- Replacement line: NLM-006/006b — stratified transports outside the trained
+  invariance class.
+
+## NLM-005 — composed transport/substitution; VOID on support (2026-08-27)
+
+- **Design.** Locked `a12aad4` (artifact lock `aab0f69`). hflip and 1-px-shift
+  transports re-encoded by the frozen encoder, composed with random
+  substitutions in both orders (ST, TS), true fine-label endpoint. Ledger
+  `nlm005_v1_composition`; artifact `experiments/results/nlm005_v1/analysis.json`.
+  Transport families now live in
+  `experiments/results/vision_cifar100_dinov2s_edits_v2/edits.npz`
+  (`test_emb_hflip`, `test_emb_shift1px`; byte-identical to the original
+  NLM-005 file, which was removed as superseded).
+- **Void by kill condition 3:** support 129/400 (32%) < 80%. Order gaps
+  non-diagnostic: ST−TS cosine ≤ 0.006 (hflip 0.006 [−0.003, 0.017], shift
+  0.004 [−0.003, 0.013]); shift1px R_no_coarse 0.027 [−0.003, 0.057] on a
+  sensitivity row. Cosine leads native candidates by ≈0.32 on every order.
+- **Lessons.** hflip/1-px shift are augmentations DINOv2 was trained to be
+  invariant to, so they are near-identity moves in its world — transports must
+  lie outside the trained invariance class. 40 random candidates over 100
+  classes cannot reach 80% support — candidate sampling must be stratified.
+
+## NLM-003 v2 diagnostics — R's win was a coarse-head leak (2026-08-27)
+
+- **Design.** Same lock, artifact, endpoint as NLM-003; new anchor sample; audit
+  #2 diagnostics (tie accounting, R without coarse head, cheap-baseline ladder,
+  kNN k-sensitivity). Ledger `nlm003_v2_diagnostics` (Round 9: sensitivity
+  accounting, not new evidence); artifact
+  `experiments/results/nlm003_v2_diagnostics/analysis.json`.
+- **Leak.** `R_no_coarse` 0.586 < `F` 0.667 (R with coarse 0.762; fine labels
+  nest inside coarse classes). The NLM-003 R-over-F directional claim is
+  withdrawn. Δ_{F−R} on this resample −0.095 [−0.142, −0.049]. R ties on
+  22–33% of comparisons.
+- **Ladder.** cosine 0.934, PCA-32 cosine 0.941, Euclid 0.933; pixel-stat
+  Euclid 0.624, raw-pixel cosine 0.622. kNN same-class flicker 0.18/0.13/0.10
+  vs cross-class 0.41/0.38/0.37 at k = 8/32/128 — world-path contrast robust to k.
+
+## NLM-004 — random-init null world; SUPPORTED (2026-08-27)
+
+- **Design.** Preregistered in ledger (`nlm004_prereg_null_world`) before
+  scoring: random-init DINOv2-small chart
+  (`experiments/results/vision_cifar100_randinit/`), true fine-label endpoint.
+  Ledger `nlm004_v1_null_world`; adjudication `nlm004_round9_adjudication`
+  (supported, exploratory — bootstrap CIs not in artifact); artifact
+  `experiments/results/nlm004_v1/analysis.json`. CPU, 230 s.
+- **Supported.** Cosine 0.575 in the null chart vs 0.946 trained (gap 0.371;
+  gates ≤ 0.70 and ≥ 0.20). Embedding-kNN fine accuracy 0.069 vs 0.761.
+  Same-class chart-line kNN flicker 95% (null) vs 12.7% (trained). Semantic
+  heads collapse (coarse 0.21) while pixel-statistic heads stay strong (rgb
+  0.83, luma 0.82) — cheap-baseline confound noted.
+- **Reading.** The chart's task-effective metric and affine-path smoothness are
+  created by training in this encoder/dataset; the null chart has neither.
+
+## NLM-003 — R beats F on the true fine-label endpoint; cosine dominates both (2026-08-27) — R-over-F WITHDRAWN (see v2 diagnostics)
 
 - **Design.** Locked at `e2a1fb2` (`theory/EXPERIMENTS.md`, NLM-003). Same
   frozen CIFAR-100/DINOv2-small artifact and runner as NLM-002, endpoint
