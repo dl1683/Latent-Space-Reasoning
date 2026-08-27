@@ -469,6 +469,19 @@ bound above 0.
 - Keep the true fine-label endpoint idea (no fine-label head trained) as the independence requirement.
 - Redesign the independent consequence target so it is both independent and informative before finalizing any `F` vs `R` decision.
 - Carry forward the path predicate: compare primitives primarily on same-class chart paths that survive the M1 world-path criterion; treat cross-class paths as non-world in this run.
+## NLM-003 — true-fine consequence competition (LOCK)
+
+**Status:** LOCKED (`cache_sha256=8de4f0b0c47e1272de8c948c770517a66edd7beff933ccc29d995886c8145791`; unchanged artifact; no GPU).
+
+- **Endpoint:** `--endpoint fine_label` in `run_nlm002_vision.py` (true test fine label), no fine-label head is trained.
+- **Hypothesis:** substitution-transport is better captured by profile continuity than Fisher geometry; paired effect target is `Delta_{F-R} <= -0.05` (R wins by at least 5pp).
+- **Construction (unchanged):** exact-Fisher `F` from `PB_coarse`, `PB_rgb_mean`, `PB_luma`, `PB_edge`; `R` from profile agreement on the same probes.
+- **Common-support rule:** score only on
+  \(S_U = \{(i,j): \forall c\in U, E_c(i,j)=1\}\) (both anchors and both directions defined); abort directional claim if support is empty.
+- **Competitors:** `cosine` and `euclid` remain fixed baselines.
+- **Gate:** require paired `Delta_{F-R}` and bootstrap CI excluding zero with one-sided lower bound `< -0.05`; kill if `|\Delta|<0.02`, if paired endpoint sensitivity `>0.02` in M2, or if support collapses.
+- **Inference:** anchor bootstrap (1000 resamples) over mean pairwise score differences.
+- **Decision output:** report `(Delta_F_minus_R, CI95, n_pairs, Q)` first, then pass/fail.
 
 
 

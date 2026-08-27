@@ -19,7 +19,17 @@ For each requirement, the native target and the imported ℝⁿ construct it mus
 \]
 where \(T\) is one-step dynamics transport and \(m_{\text{sub}}(x,y)\) is a substitution permitted by probe constraints.
 Imported: linear arithmetic and Euclidean segments. Separation:
-\(x_t=(1-t)x+t x'\) is not a primitive; it is a **chart-path hypothesis** tested by transport commutation and consequence monotonicity. A chart path is a world-path only if the same probe consequence appears along equivalent transported paths and does not flicker in the non-LM test.
+\(x_t=(1-t)x+t x'\) is not a primitive; it is a **chart-path hypothesis** tested by transport commutation and consequence monotonicity.
+
+Formal world-path predicate (Round 7):
+\[
+\mathrm{WP}_{h,U}(i,j)=1 \iff (i,j\in\mathcal S_U)\land [\sum_{t=1}^8 I\{h(y_t) != h(y_{t-1})\}\le 1],
+\]
+A pair passes only when same-class holds and is rejected as non-world when cross-class flicker is observed.
+
+Caveat: linear-head argmax on affine readouts is nearly monotone by construction, so coarse-head same-class flicker 2% is treated as weak evidence only.
+
+Therefore the Round 7 world-path test must include a nonlinear readout and report kNN-fine M1 separation (12.7% same-class, 38.0% cross-class); otherwise the predicate is considered trivial.
 - cost: native move cost is measured on intervention budget (e.g., number of edits, entropy budget, probe-compute), and can be asymmetric; imported: fixed norms or geodesic length; separation: calibration pairs where asymmetry changes order but distance is symmetric.
 - map: native map is a transition model for outcomes of unmade moves; imported: function of coordinates or metric neighborhood expansion; separation: path-specific endpoint predictions (separatrix/interpolation) where coordinate-only surrogates cannot distinguish move order.
 - laws: native laws are invariants of trajectory-plus-probe semantics across regions; imported: algebraic identities and smooth manifolds; separation: transport tests of invariants under admissible move families and probe re-indexing.
