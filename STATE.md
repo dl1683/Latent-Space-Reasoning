@@ -83,13 +83,48 @@ dominated" withdrawn as a general claim. Required before any further verdict:
 R without the coarse head, tie accounting, kNN k-sensitivity, the random-init
 null (NLM-004), a cheap-baseline ladder, re-charting, composed moves.
 
+## NLM-004 verdict (Round 9, 2026-08-27)
+
+The random-init null supports the registered point-estimate thresholds: cosine
+fine-label consequence accuracy is 0.575 versus 0.946 trained (gap 0.371), and
+embedding-kNN is 0.069 versus 0.761 trained. Null pixel-statistic heads remain
+strong (RGB 0.8335; luma 0.8205), while the null coarse head is 0.2075, so the
+result separates trained semantic chart structure from cheap image-statistic
+signal. Null same-class fine-kNN chart-path flicker is 0.953 versus 0.127
+trained, showing that training makes both chart nearness predictive and
+chart-straight paths coherent.
+
+Classification: supported exploratory null-world evidence, not a native-geometry
+claim. The ledger preregistration was written before scoring, but the result
+artifact does not report its required anchor-bootstrap CIs for the main trained
+versus null comparisons; the stronger confirmatory clause is therefore not
+auditable. Under the guiding question, DINOv2 has learned a useful chart and
+path regularity for this world. Composition and transport must still decide
+whether those regularities survive beyond the imported chart operation.
+
+## NLM-005 lock (Round 9)
+
+Next gate: held-out composed substitution/transport in the DINOv2 world,
+comparing `ST: x -> y -> T_e(y)` with `TS: x -> T_e(x) -> y`. Transport is
+two fixed image edits—horizontal reflection and one-pixel right translation
+with declared padding—re-encoded by the frozen encoder on CPU at about 35
+ms/image. Keep the true fine-label endpoint and common-support layout fixed;
+compare cosine, Euclidean, `F`, and `R` without the coarse head, with exact tie
+accounting and paired anchor-bootstrap CIs. The
+`nlm003_v2_diagnostics` rerun is sensitivity only, not new evidence; it covers
+R-without-coarse, ties, and kNN-fine M1 at k={8,32,128}.
+
+The native-rescue prediction requires an order-sensitive composed family and a
+native lead of at least 0.05 over the best chart metric; a chart lead of at
+least 0.05 on both orders with at least 80% support kills that rescue. An
+order gap below 0.02 or support below 80% is non-diagnostic. Budget: about 140
+seconds of re-encoding for 2,000 held-out images under each of two edits, plus
+at most ten minutes scoring, all CPU-only.
+
 ## Next
 
-**Round 9 measurement:** hold the cache and endpoint fixed, reparameterize the
-chart nonlinearly using calibration data only, and compare cosine, Euclidean,
-`R`, and `F` across new move families. A chart lead of at least 0.05 on both
-families with at least 80% anchor support would make it operationally native for
-this world; collapse to 0.02 or less, or a native lead of at least 0.05, would
-show the current chart advantage is coordinate- or task-specific.
+**Round 9 measurement:** NLM-005 composed transport/substitution gate as locked
+above. Nonlinear re-charting and out-of-distribution moves remain subsequent
+gates; no native-map promotion follows from NLM-004 alone.
 
 Keep `NLM-001` verdict and all gates unchanged.

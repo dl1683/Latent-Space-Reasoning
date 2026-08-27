@@ -549,3 +549,141 @@ coordinate- or task-specific.
   PCA/color/edge features, nearest-centroid), nonlinear re-charting, and
   composed / out-of-distribution moves. The program continues only if it finds
   a held-out consequence that simple chart metrics cannot explain.
+
+## NLM-004 — random-init null-world adjudication (Round 9)
+
+**Status:** **SUPPORTED AS EXPLORATORY NULL-WORLD EVIDENCE** against the
+registered point-estimate thresholds; no claim of native geometry. The ledger
+preregistration was written before scoring and is not downgraded merely because
+Claude wrote it. However, `analysis.json` does not contain the preregistered
+anchor-bootstrap CIs for the trained-versus-null cosine and embedding-kNN
+comparisons, so the stronger confirmatory CI clause is not auditable here.
+
+The lock's registered predictions are met on the reported estimates:
+
+- cosine fine-label consequence accuracy is `0.575` in the random-init chart
+  versus `0.946` in the trained chart, a trained-minus-null gap of `0.371`
+  (registered thresholds: null `<=0.70`, gap `>=0.20`);
+- embedding-kNN fine-label accuracy is `0.069` in the null versus `0.761` in
+  the trained chart (registered null threshold: `<=0.25`);
+- the null does not make the native candidates competitive: `F=0.581`,
+  `R=0.568`, and `R` without the coarse head `=0.546`, with `R` ties at
+  `0.329` (the tie accounting is now retained as a required diagnostic, not a
+  new native result);
+- the null chart's pixel-statistic heads remain predictive (`PB_rgb_mean`
+  `0.8335`, `PB_luma` `0.8205`, `PB_edge` `0.531`), while its coarse head is
+  only `0.2075`. This is the expected cheap-baseline confound: a random net can
+  carry simple image statistics without carrying the trained semantic map.
+
+The M1 null is the sharper separation. Same-class fine-kNN chart-path flicker
+is `0.953` in the null (`k=32`; `0.977` at `k=8`, `0.867` at `k=128`) versus
+`0.127` in the trained artifact. Null cross-class fine-kNN flicker is `0.987`,
+so the null has no useful same-class world-path separation; the pixel-statistic
+heads' accuracy is not evidence that it has one.
+
+Under the guiding question, training has done two related but distinct things:
+it made chart nearness predict fine-label consequences, and it made straight
+segments in that chart stay on coherent fine-label paths. A denizen of the
+trained world can therefore use the chart both as a local map and as a usable
+first approximation to a path. The null says this is not a generic property of
+random coordinates or pixel-statistic readouts. It still does **not** show that
+chart straightness is an intrinsic law: the path is defined by imported vector
+interpolation, and the readout is itself tied to the trained representation.
+Composition and transport are required to distinguish a learned, useful chart
+from a chart-independent native geometry.
+
+The adjudication therefore supports: **training inherits a semantic chart and
+chart-straight path regularity from the encoder.** It does not support:
+"cosine is native," "cosine is merely arbitrary," or any general claim beyond
+this encoder, endpoint, and one random-init seed. Artifact:
+`experiments/results/nlm004_v1/analysis.json`; preregistration:
+ledger id `nlm004_prereg_null_world`.
+
+## NLM-005 — composed transport/substitution gate (LOCK)
+
+**Status:** LOCKED as the next gate. CPU-only; no experiment is run by this
+lock. The `nlm003_v2_diagnostics` rerun is a **sensitivity rerun of NLM-003,
+not new evidence** and cannot change the Round 8 verdict by itself.
+
+### Hypothesis
+
+Training can make one-step chart nearness and chart-straight paths coherent
+without making vector-chart composition a native law. On a held-out composed
+move, substitution and transport will expose order dependence that a simple
+chart metric cannot explain, while `R` without the coarse head or `F` will be
+more stable. If the chart survives both orders with its current margin, the
+native-map hypothesis is killed for this world and the result is an
+operationally native chart only.
+
+### World, moves, and endpoint
+
+- Keep the NLM-003 DINOv2 cache, true fine-label endpoint, held-out test pool,
+  400-anchor/40-candidate layout, and common-support accounting. No
+  fine-label head is trained.
+- Substitution is the existing move `S_y(x)=y`: replace anchor image `x` by
+  candidate image `y`. Its consequence is the inherited true fine-label
+  relation `fine(y)=fine(x)`, scored by paired candidate ranking.
+- Transport is concrete image-world transport, not a latent proxy. For each
+  test image `I`, apply two fixed, label-preserving edits selected before
+  scoring: horizontal reflection and a one-pixel right translation with
+  declared padding. Re-encode each edited image with the same frozen DINOv2
+  encoder on CPU, `T_e(x)=E(e(I_x))`. The original image and edit parameters
+  are retained so the operation is reproducible and its inherited label is
+  explicit.
+- For each `(x,y,e)`, evaluate both order-conditioned composed pairs:
+  `ST: x -> S_y(x) -> T_e(y)` and `TS: x -> T_e(x) -> S_y`, where the final
+  `S_y` deliberately uses the unedited candidate `y`. Thus the two paths are
+  not assumed to commute: the scored pairs are `(x,T_e(y))` and `(T_e(x),y)`
+  against the same fine-label-preservation outcome. Direct unedited
+  substitution and direct transport are controls.
+- Score cosine, Euclidean, `F`, and `R` without `PB_coarse`; retain raw-pixel,
+  PCA/color/edge, and random-init chart baselines where available. Report
+  anchor-bootstrap CIs, support, pair counts, and all ties.
+
+### Exact predictions and decision rule
+
+- **Primary composition prediction:** on at least one of the two edit families,
+  the trained chart's ST-versus-TS ranking changes by at least `0.05` in
+  paired mean accuracy, while the direct unedited control does not; and the
+  best native candidate (`F` or `R` without coarse) leads the best simple chart
+  metric by at least `0.05` with a paired bootstrap lower bound above zero on
+  that order-sensitive family.
+- **Chart-survival alternative:** if cosine/Euclidean lead the best native
+  candidate by at least `0.05` on both ST and TS, with at least `80%` anchor
+  support, NLM-005 kills the native-rescue hypothesis and records the chart as
+  operationally native for this measured world.
+- **Non-diagnostic outcome:** an ST-versus-TS gap below `0.02`, support below
+  `80%`, or a missing/unstable endpoint makes the composition result void; it
+  cannot be narrated as either native success or chart success.
+
+### Required sensitivity accounting
+
+Rerun the original NLM-003 table with `R` formed from only
+`PB_rgb_mean`, `PB_luma`, and `PB_edge`; report exact tie counts, total
+comparisons, tie fraction, and a tie-by-outcome cross-tab. Report nonlinear
+kNN-fine M1 flicker at `k in {8,32,128}` for same- and cross-class paths.
+These are diagnostics of NLM-003 stability, not fresh evidence. If the
+headline direction or any relevant score moves by more than `0.02` across the
+registered k values, or if ties are not fully accounted for, no native claim
+may be promoted.
+
+### Kill conditions
+
+1. Cosine/Euclidean retain a `>=0.05` lead over both native candidates on both
+   composed orders with `>=80%` support: kill the native-rescue hypothesis.
+2. ST and TS are within `0.02` for every metric: kill the order-sensitive
+   composition claim as non-diagnostic.
+3. Support falls below `80%`, the endpoint is not independent, or either edit
+   is not applied and re-encoded exactly as locked: void the gate.
+4. kNN sensitivity changes the NLM-003 directional interpretation by `>0.02`
+   or tie accounting is incomplete: retain the Round 8 narrow verdict but
+   block any stronger continuation claim.
+
+### CPU cost
+
+Re-encoding the 2,000 held-out test images for each of two edits at the
+observed CPU rate of approximately `35 ms/image` is about `140 seconds` of
+encoder time, plus at most ten minutes for feature, ranking, bootstrap, and
+diagnostic scoring. The full lock is budgeted at `15 CPU-minutes`, one process,
+with no GPU. The cached NLM-003 sensitivity rerun is separately budgeted at
+`5 CPU-minutes` and does not count as new evidence.
