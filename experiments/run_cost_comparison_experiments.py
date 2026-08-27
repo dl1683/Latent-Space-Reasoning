@@ -23,7 +23,9 @@ import time
 from pathlib import Path
 
 EXPERIMENTS_DIR = Path(__file__).parent
-VENV_PYTHON = str(Path(__file__).parent.parent / ".venv" / "Scripts" / "python.exe")
+# Re-invoke whichever interpreter is running this driver. The original hardcoded
+# `.venv/Scripts/python.exe`, which exists only on Windows.
+VENV_PYTHON = sys.executable
 RUNNER = str(EXPERIMENTS_DIR / "run_latent_sensitivity.py")
 
 EXISTING_4B_BASELINE = str(

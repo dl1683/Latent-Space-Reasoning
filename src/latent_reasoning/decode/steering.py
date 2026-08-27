@@ -149,7 +149,8 @@ class IntermediateLayerSteering:
             output = model.generate(...)
 
     Args:
-        model: HuggingFace model with ``model.model.layers`` attribute.
+        model: HuggingFace model whose text decoder layer stack is resolvable
+            by ``latent_reasoning.utils.architecture.decoder_layers``.
         layer_vectors: Dict mapping layer index to steering vector (d_hidden,).
         scale: Global scaling factor for all steering vectors.
     """
@@ -167,12 +168,16 @@ class IntermediateLayerSteering:
 
     def _get_layers(self):
         """Get the list of transformer layers from the model."""
-        if hasattr(self.model, "model") and hasattr(self.model.model, "layers"):
-            return self.model.model.layers
-        raise AttributeError(
-            "Model does not have model.model.layers. "
-            "IntermediateLayerSteering requires a standard HuggingFace transformer."
-        )
+        from latent_reasoning.utils.architecture import decoder_layers
+
+        layers = decoder_layers(self.model)
+        if layers is None:
+            raise AttributeError(
+                "Could not locate the text decoder layer stack on "
+                f"{type(self.model).__name__}. IntermediateLayerSteering "
+                "requires a standard HuggingFace transformer."
+            )
+        return layers
 
     def attach(self):
         """Register forward hooks on specified layers."""
