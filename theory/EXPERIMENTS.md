@@ -805,3 +805,38 @@ roughly 15-minute CPU run, one process, no GPU.
   hypothesis "some move breaks the chart" and is reported as such.
 - Runner: `experiments/run_nlm002_vision.py --edits <edits_v2> --stratified
   --endpoint fine_label`.
+
+### Tier-3 audit #3 corrections (2026-08-27, fresh unprimed auditor; adopted verbatim)
+
+- **Residue narrowed:** "training creates a task-effective chart and
+  affine-path smoothness in this encoder/dataset" — not "native mathematics
+  has been found" and not "the frozen-encoder line is scientifically closed".
+  Round 10's closure is scope management.
+- **NLM-004:** supports training-dependence of the measured behavior (trained
+  cosine 0.934 vs null 0.575; path flicker 0.127 vs 0.953). "Straight routes
+  inherited from training" is too strong: the route is affine interpolation,
+  an imported chart path; the result shows chart smoothness under a trained
+  representation. The random-init network is a narrow null (architecture and
+  preprocessing without learned weights), not a native-geometry null; one
+  seed; anchor-bootstrap CIs for the trained/null comparison are missing.
+- **NLM-006 as locked (v1) cannot support its positive branch:** the
+  transport-aware native predictor was undefined; cross-class hard negatives
+  are selected by cosine and cosine is then scored on them (selection on the
+  tested metric); inversion/mixing/crop/occlusion are not verified
+  label-preserving, so a chart failure could be identity destruction (OOD),
+  not transport law; the invariance threshold was a raw cosine number, not a
+  rule relative to an inside-invariance control. **NLM-006 v1 is relabeled
+  exploratory.** Repaired design (NLM-006b): independently selected candidates
+  (random same-class + random cross-class); explicit transport-aware
+  predictors R_T and F_T (profiles / Fisher distance read on the transported
+  pair (T_e x, T_e y)) with chart-on-transported as the matched control;
+  label-preservation rate per family (embedding-kNN fine label of T_e x equals
+  fine(x); families below a predeclared rate are OOD families, reported
+  separately); displacement gate: the family's q10 displacement
+  d = 1 − cos(E x, E T x) must exceed the near-identity control's q95 on ≥ 80%
+  of calibration images.
+- **Program drift flagged:** the measured line is one-step consequence
+  ranking, affine interpolation, and edits through one frozen encoder — closer
+  to an encoder-invariance study than to native mathematics. NLM-006b restores
+  the question only if legal transport, identity preservation, cost, and the
+  native predictor are defined before scoring.

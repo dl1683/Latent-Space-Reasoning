@@ -152,6 +152,14 @@ transport-aware predictor with a >=0.05 lead; it is killed if chart retains a
 below 80% void the run. Estimated cost: about 280 seconds re-encoding plus at
 most ten minutes scoring, no GPU.
 
+## Audit #3 (2026-08-27)
+
+Residue narrowed to: training creates a task-effective chart and affine-path
+smoothness in this encoder/dataset. NLM-006 v1 relabeled exploratory (cosine-
+selected negatives; undefined native predictor; unverified label preservation).
+NLM-006b to be locked with independent candidates, defined transport-aware
+predictors, label-preservation and calibrated displacement gates.
+
 ## Next
 
 **Replacement design:** stratified transports outside the encoder's measured
