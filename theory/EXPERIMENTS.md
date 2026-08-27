@@ -575,18 +575,19 @@ so the null has no useful same-class world-path separation; the pixel-statistic
 heads' accuracy is not evidence that it has one.
 
 Under the guiding question, training has done two related but distinct things:
-it made chart nearness predict fine-label consequences, and it made straight
-segments in that chart stay on coherent fine-label paths. A denizen of the
+it made chart nearness predict fine-label consequences, and it made affine
+segments in that chart look smooth under the trained readouts. A denizen of the
 trained world can therefore use the chart both as a local map and as a usable
 first approximation to a path. The null says this is not a generic property of
 random coordinates or pixel-statistic readouts. It still does **not** show that
-chart straightness is an intrinsic law: the path is defined by imported vector
-interpolation, and the readout is itself tied to the trained representation.
-Composition and transport are required to distinguish a learned, useful chart
-from a chart-independent native geometry.
+chart straightness is an intrinsic law: affine interpolation
+`(1-t)x + ty` is an imported chart path, and the readout is itself tied to the
+trained representation. Composition and transport are required to distinguish
+a learned, useful chart from a chart-independent native geometry.
 
-The adjudication therefore supports: **training inherits a semantic chart and
-chart-straight path regularity from the encoder.** It does not support:
+The adjudication therefore supports: **training creates a task-effective chart
+and affine-path smoothness under a trained representation for this
+encoder/dataset.** It does not support:
 "cosine is native," "cosine is merely arbitrary," or any general claim beyond
 this encoder, endpoint, and one random-init seed. Artifact:
 `experiments/results/nlm004_v1/analysis.json`; preregistration:
@@ -840,3 +841,134 @@ roughly 15-minute CPU run, one process, no GPU.
   to an encoder-invariance study than to native mathematics. NLM-006b restores
   the question only if legal transport, identity preservation, cost, and the
   native predictor are defined before scoring.
+
+## NLM-006b — calibrated transport audit (LOCK, Round 11)
+
+**Status: LOCKED BEFORE SCORING.** NLM-006 v1 is exploratory only. NLM-006b
+tests whether a transport-aware predictor survives independently selected
+candidates and edits that are both displaced in the encoder and plausibly
+label-preserving. The narrow question is whether the frozen encoder's
+task-effective chart remains the best measured map for this transport envelope;
+the result cannot by itself establish intrinsic native mathematics.
+
+### World, artifact, and candidate lock
+
+- Keep the v2 transport artifact and its stored partner permutation fixed:
+  `experiments/results/vision_cifar100_dinov2s_edits_v2/edits.npz`, sha256
+  `9cc0e7c082dab6c0dfb804198388154eb7c62aaa830ead3e698985e0756d0d0b`.
+  The four test-split families are `crop50`, `invert`, `mix50`, and
+  `occlude50`; `hflip` is the inside-invariance calibration control and
+  `shift1px` is a secondary near-identity control. The artifact's descriptive
+  mean cosine values are respectively `0.604`, `0.467`, `0.422`, and `0.664`
+  for the four new families, versus `0.959` for hflip and `0.976` for shift1px.
+  These means are not the displacement gate.
+- Use 400 held-out anchors and, for each anchor, independently sample without
+  replacement up to 20 random candidates with the same true fine label and 20
+  random candidates with a different true fine label. Candidate identities and
+  the family artifact are frozen before any metric is evaluated. The fine
+  labels define the two sampling strata only; no tested metric may select,
+  reorder, or replace candidates. The endpoint is the true held-out fine label;
+  no fine-label head is trained.
+- The primary run is the runner's `--independent --endpoint fine_label` path
+  with the locked artifact and seed. Direct unedited pairs, `ST=(x,T_e y)`,
+  and `TS=(T_e x,y)` remain controls; the primary transport-aware comparison is
+  `TT=(T_e x,T_e y)`.
+
+### Transport-aware predictors and matched chart controls
+
+Let `E` be the frozen encoder, `\tilde{x}=T_e x`, and `\tilde{y}=T_e y`.
+Higher scores mean "closer" for every predictor. Let `G` be the fixed average
+Fisher pullback computed from the four label-free probe heads on the training
+embeddings, with no test edits or fine labels entering its construction. Define:
+
+- `F_T(x,y;e) = -(\tilde{y}-\tilde{x})^T G (\tilde{y}-\tilde{x})`.
+- `R_T(x,y;e) = sum_{h in U} 1[h(\tilde{x}) = h(\tilde{y})]`, where
+  `U={PB_rgb_mean, PB_luma, PB_edge}` and each `h` is the fixed training-fit
+  head. The coarse head is excluded, so this is the locked `R_no_coarse`
+  construction evaluated after transport.
+- The matched chart controls on the same transported pair are
+  `cosine_T(x,y;e) = cos(E(\tilde{x}),E(\tilde{y}))` and
+  `euclid_T(x,y;e) = -||E(\tilde{y})-E(\tilde{x})||_2`.
+
+For each anchor, pairwise accuracy asks whether the predictor ranks a
+same-fine-label candidate above a different-fine-label candidate. Report
+`F_T`, `R_T`, `cosine_T`, and `euclid_T` on the identical pairs, along with the
+direct, ST, and TS controls. The best native is the larger of `F_T` and `R_T`;
+the best chart is the larger of `cosine_T` and `euclid_T`. Selection of the best
+member is made once from the preregistered family table, not per bootstrap
+replicate.
+
+### Label-preservation and displacement gates
+
+For every family `e`, predeclare
+
+`p_e = mean_i 1[kNN_32(E(T_e x_i), X_train) = fine(x_i)]`
+
+over the full 2,000-image held-out split, using the fixed training embedding
+index and its fine labels. A family counts as **label-preserving** only when
+`p_e >= 0.80`. A family with `p_e < 0.80` is an **OOD family**: report its
+displacement and scores separately, but do not use it as evidence for either a
+native transport law or chart failure. This is a diagnostic gate, not a claim
+that embedding-kNN is the world's true label oracle.
+
+On the fixed 200-image calibration subset, define the image-wise displacement
+`d_e(i)=1-cos(E(x_i),E(T_e x_i))`. Let `q95_hflip` be the 95th percentile of
+the hflip `d` values on that same calibration subset. A family is outside the
+measured invariance class only if its **q10 displacement criterion** is met in
+the calibrated sense
+
+`g_e = mean_i 1[d_e(i) > q95_hflip] >= 0.80`.
+
+Report `q10(d_e)`, `q95_hflip`, and `g_e` for every family. The strict
+image-wise comparison is the gate; the old raw-mean `cosine <= 0.80` rule is
+retired. A family failing this gate is an inside-invariance family and is
+non-diagnostic for the outside-transport question.
+
+### Exact preregistered predictions
+
+The following are predictions, not observed results. They are registered per
+family so that an outcome cannot be retrofitted into the aggregate "two of
+four" statement:
+
+| family | predicted eligibility | predicted transport result |
+|---|---|---|
+| `crop50` | `p_e >= 0.80`, `g_e >= 0.80`, support `>= 320/400` | best-native `TT` lead over best-chart `TT` `>= +0.05`, paired anchor-bootstrap 95% lower bound `> 0` |
+| `invert` | `p_e >= 0.80`, `g_e >= 0.80`, support `>= 320/400` | best-native `TT` lead over best-chart `TT` `>= +0.05`, paired anchor-bootstrap 95% lower bound `> 0` |
+| `mix50` | `p_e < 0.80` (OOD); displacement is expected to pass but is not sufficient for validity | no native/chart verdict; report as OOD and do not count it toward either branch |
+| `occlude50` | `p_e >= 0.80`, `g_e >= 0.80`, support `>= 320/400` | best-native `TT` lead over best-chart `TT` `>= +0.05`, paired anchor-bootstrap 95% lower bound `> 0` |
+
+The family-level native-rescue prediction is therefore at least two valid
+families meeting the `+0.05` criterion. A family that instead has a stable
+direct control but a best-chart-versus-best-native `TT` lead of `<= +0.02`
+counts as chart-breakdown evidence only if it is label-preserving, outside the
+calibrated invariance class, and meets the same support gate.
+
+### Support, decision, and kill rules
+
+- Support is the fraction of the 400 anchors with both a same-label and a
+  different-label candidate and a non-degenerate pairwise comparison. Require
+  `>= 0.80` (`>=320/400`) for each family used in a verdict; report same-label
+  and cross-label stratum counts separately. The stratified design does not
+  itself count as evidence.
+- Reopen the native-transport line only if at least two families simultaneously
+  pass label preservation, calibrated displacement, and support, and each has
+  a best-native `TT` lead `>= +0.05` over the matched chart control with a
+  paired anchor-bootstrap 95% lower bound `> 0`. The direct/ST/TS controls must
+  be reported so a generic endpoint collapse cannot be mistaken for transport
+  structure.
+- Finally close the frozen-encoder transport line for this measured envelope if
+  every valid family retains a best-chart `TT` lead `>= +0.05` over the best
+  native predictor with paired lower bound `> 0`, at `>=320/400` support, and
+  no valid family meets the native-rescue criterion. This closes the narrowed
+  empirical line, not native mathematics in general.
+- A family below `0.80` label preservation or below the displacement gate is
+  OOD/inside-invariance and is reported separately, not counted as a kill or a
+  rescue. If fewer than two families are valid, the round is non-diagnostic,
+  not a closure.
+- Void the run if candidate identities are changed after scoring, the endpoint
+  enters metric construction, the artifact or calibration subset changes, the
+  paired bootstrap is absent, or the support accounting is not auditable.
+
+No NLM-006b scoring is part of this round. The next evidence-bearing action is
+the locked CPU run followed by manual artifact review; until then all four
+predictions remain preregistered.

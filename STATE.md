@@ -94,15 +94,18 @@ strong (RGB 0.8335; luma 0.8205), while the null coarse head is 0.2075, so the
 result separates trained semantic chart structure from cheap image-statistic
 signal. Null same-class fine-kNN chart-path flicker is 0.953 versus 0.127
 trained, showing that training makes both chart nearness predictive and
-chart-straight paths coherent.
+affine paths smooth under the trained representation. Affine interpolation is
+an imported chart path, so this is not evidence of intrinsic straight routes
+or native geometry.
 
 Classification: supported exploratory null-world evidence, not a native-geometry
 claim. The ledger preregistration was written before scoring, but the result
 artifact does not report its required anchor-bootstrap CIs for the main trained
 versus null comparisons; the stronger confirmatory clause is therefore not
 auditable. Under the guiding question, DINOv2 has learned a useful chart and
-path regularity for this world. Composition and transport must still decide
-whether those regularities survive beyond the imported chart operation.
+chart smoothness under a trained representation for this world. Composition
+and transport must still decide whether those regularities survive beyond the
+imported chart operation.
 
 ## NLM-005 lock (Round 9)
 
@@ -159,6 +162,36 @@ smoothness in this encoder/dataset. NLM-006 v1 relabeled exploratory (cosine-
 selected negatives; undefined native predictor; unverified label preservation).
 NLM-006b to be locked with independent candidates, defined transport-aware
 predictors, label-preservation and calibrated displacement gates.
+
+## Round 11 — NLM-006b lock (2026-08-27)
+
+NLM-006b is locked before scoring. It uses independent candidates: up to 20
+random same-fine-label and 20 random cross-fine-label candidates per anchor,
+frozen before metric evaluation, with the true fine-label endpoint and no
+fine-label head. For `\tilde{x}=T_e x` and `\tilde{y}=T_e y`, the transport-aware
+native predictors are `F_T=-(\tilde{y}-\tilde{x})^T G(\tilde{y}-\tilde{x})` and
+`R_T`, the coarse-excluded profile agreement on the transported pair. Matched
+chart controls are `cosine_T` and `euclid_T` on that same pair; direct, ST, and
+TS remain controls.
+
+The label-preservation gate is embedding-kNN fine-label preservation
+`p_e >= 0.80` over the held-out split. Below that, a family is OOD and is
+reported separately, never treated as native evidence. The displacement gate
+uses `d=1-cos(E x,E T_e x)` on the fixed 200-image calibration subset: at least
+80% of family images must exceed hflip's calibration `q95` displacement, with
+`q10(d)`, control `q95`, and the fraction reported. Each valid family also
+requires `>=320/400` supported anchors.
+
+Exact predictions are registered: `crop50`, `invert`, and `occlude50` are
+expected to pass the label/displacement/support gates and each is predicted to
+give a best-native `TT` lead of `>=0.05` over the best matched chart control
+with paired-bootstrap lower bound `>0`; `mix50` is predicted to have label
+preservation `<0.80` and is OOD, with no verdict. Reopen the native-transport
+line only if at least two valid families meet the native `+0.05` criterion (or
+show a gated chart lead collapse to `<=0.02` with stable controls). Finally
+close this frozen-encoder transport envelope if every valid family keeps a
+gated chart lead `>=0.05`; fewer than two valid families is non-diagnostic.
+No scoring or experiment was run in Round 11.
 
 ## Next
 
