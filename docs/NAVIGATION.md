@@ -22,7 +22,7 @@ The single index for this repository. Read [../README.md](../README.md) first.
 **Multi-latent aggregation**
 - [LATENT_TRAJECTORY_AGGREGATION.md](LATENT_TRAJECTORY_AGGREGATION.md) — doctrine, v5 milestone, v9 diagnostic, v10/v11 promotions
 - [CONFIRMATORY_STUDY_RESULTS.md](reports/diffusion/CONFIRMATORY_STUDY_RESULTS.md) — blinded pairwise evaluation (N=50)
-- V12 filtered replication (Gemini-family NO-GO): [V12 freeze](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V12_COMPLEMENT_FREEZE.md) · [judge results](../eval_results/diffusion_language/latent_aggregation_multi_aspect_v12_judge_results.json)
+- [LATENT_AGGREGATION_MULTI_ASPECT_V12_RESULTS.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V12_RESULTS.md) — V12 filtered replication, Gemini-family NO-GO
 - Current aggregation artifacts:
 
 | Artifact | Status | Link |
@@ -48,13 +48,14 @@ The single index for this repository. Read [../README.md](../README.md) first.
 - [DIFFUSION_THEORY_CLAIM_LEDGER.md](DIFFUSION_THEORY_CLAIM_LEDGER.md) — falsifiers and proof obligations
 - [DIFFUSION_NATIVE_REASONING_ARCHITECTURE.md](DIFFUSION_NATIVE_REASONING_ARCHITECTURE.md), [DIFFUSION_REASONING_FIELD_IMPLICATIONS.md](DIFFUSION_REASONING_FIELD_IMPLICATIONS.md)
 
-**Roadmap**
+**Roadmap and operations**
 - [NEXT_GENERATION_REASONING_TASKS.md](../NEXT_GENERATION_REASONING_TASKS.md)
+- [TROUBLESHOOTING.md](../TROUBLESHOOTING.md) — CLI and environment issues
 
 ## Archive (do not start here)
 
 - [ARCHIVE_INDEX.md](ARCHIVE_INDEX.md) — historical aggregation reports (v1–v10 scaffolding), `archive/tesla_session/`, legacy narrative snapshots, `meditations/`
-- Generated report archive: [reports/diffusion/](reports/diffusion/)
+- Generated reports: [reports/diffusion/](reports/diffusion/) — current V10/V11/V12 and confirmatory-study reports are linked above; everything else there is historical
 
 ## Reproduce
 
