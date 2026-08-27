@@ -61,7 +61,7 @@ entry path for new users.
 
 ## Process Notes
 
-If you need one page to start, read [docs/README.md](README.md) first, then return here for the full evidence graph.
+If you need one page to start, read [docs/NAVIGATION.md](NAVIGATION.md) first, then return here for the full evidence graph.
 
 Research-mode and uncertainty questions are tracked separately in
 `meditations/README.md` and `question_*.md`. Promote only claims that pass

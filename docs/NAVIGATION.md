@@ -1,26 +1,29 @@
-# Documentation Navigation
+# Documentation Index
 
-Use this file if you have no context and want the shortest path to current work.
+The single index for this repository. Read [../README.md](../README.md) first.
 
-## Start Here (read in order)
+## Read in order
 
-If you need one-screen onboarding, open [../START_HERE.md](../START_HERE.md) first.
+1. [README.md](../README.md) — thesis, findings table, rules for claims
+2. [CORRECTION_NESTED_ARITHMETIC_2026_08.md](CORRECTION_NESTED_ARITHMETIC_2026_08.md) — withdrawn claims and what survives
+3. [DIFFUSION_PUBLIC_BENCHMARK.md](../DIFFUSION_PUBLIC_BENCHMARK.md) — promoted score/cost claim
+4. [CLAIM_EVIDENCE_MAP.md](../CLAIM_EVIDENCE_MAP.md) — claim-to-artifact provenance
+5. [DIFFUSION_GROUND_TRUTH_INDEX.md](../DIFFUSION_GROUND_TRUTH_INDEX.md) — canonical hashes and run IDs
+6. [DIFFUSION_READER_GUIDE.md](DIFFUSION_READER_GUIDE.md) — review path through the evidence
 
-1. [README.md](../README.md)
-2. [DIFFUSION_PUBLIC_BENCHMARK.md](../DIFFUSION_PUBLIC_BENCHMARK.md)
-3. [CLAIM_EVIDENCE_MAP.md](../CLAIM_EVIDENCE_MAP.md)
-4. [DIFFUSION_GROUND_TRUTH_INDEX.md](../DIFFUSION_GROUND_TRUTH_INDEX.md)
+## By topic
 
-## If you want more detail
+**Perturbation and benchmark validity**
+- [BENCHMARK_VALIDITY_ASSESSMENT.md](BENCHMARK_VALIDITY_ASSESSMENT.md) — thinking-mode/truncation controls, un-truncated ladder, cross-family (Rivin)
+- [PERTURBATION_DIVERSITY_STUDY.md](PERTURBATION_DIVERSITY_STUDY.md) — noise-floor study on GH200, with owner addendum on scope and the RTX 5090 determinism replication
+- [CORRECTION_NESTED_ARITHMETIC_2026_08.md](CORRECTION_NESTED_ARITHMETIC_2026_08.md)
+- [experiments/EXPERIMENTS.md](../experiments/EXPERIMENTS.md) — experiment log
 
-- Read the full path in: [docs/DIFFUSION_READER_GUIDE.md](DIFFUSION_READER_GUIDE.md)
-- For mechanism and theory: [DIFFUSION_REASONING_GEOMETRY_THEORY.md](DIFFUSION_REASONING_GEOMETRY_THEORY.md)
-- For falsifiers and obligations: [DIFFUSION_THEORY_CLAIM_LEDGER.md](DIFFUSION_THEORY_CLAIM_LEDGER.md)
-- For the next aggregation paradigm: [LATENT_TRAJECTORY_AGGREGATION.md](LATENT_TRAJECTORY_AGGREGATION.md)
-
-## Current Aggregation State
-
-Read this table before the historical report list.
+**Multi-latent aggregation**
+- [LATENT_TRAJECTORY_AGGREGATION.md](LATENT_TRAJECTORY_AGGREGATION.md) — doctrine, v5 milestone, v9 diagnostic, v10/v11 promotions
+- [CONFIRMATORY_STUDY_RESULTS.md](reports/diffusion/CONFIRMATORY_STUDY_RESULTS.md) — blinded pairwise evaluation (N=50)
+- V12 filtered replication (Gemini-family NO-GO): [V12 freeze](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V12_COMPLEMENT_FREEZE.md) · [judge results](../eval_results/diffusion_language/latent_aggregation_multi_aspect_v12_judge_results.json)
+- Current aggregation artifacts:
 
 | Artifact | Status | Link |
 | --- | --- | --- |
@@ -40,115 +43,24 @@ Read this table before the historical report list.
 | v11 complement packet replay | ALL 13 GATES PASSED — 2x replication | [LATENT_AGGREGATION_MULTI_ASPECT_V11_COMPLEMENT_PACKET_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V11_COMPLEMENT_PACKET_REPLAY.md) |
 | v11 keyword-stuffing audit | RED — rubric gameable, packets clean | [LATENT_AGGREGATION_MULTI_ASPECT_V11_KEYWORD_STUFFING_AUDIT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V11_KEYWORD_STUFFING_AUDIT.md) |
 
-v11 is a 2x-scale LLaDA-only replication of v10 on 96 fresh tasks. All 13
-frozen gates passed: 87/96 coverage (90.6%), 87 promotions, 87/9/0 W/T/L,
-mean lift +0.100, Wilson lower 0.831, zero contradictions. Keyword audit RED
-confirms the rubric is gameable but complement packets are not keyword-stuffing.
+**Diffusion theory and architecture**
+- [DIFFUSION_REASONING_GEOMETRY_THEORY.md](DIFFUSION_REASONING_GEOMETRY_THEORY.md) — mechanism
+- [DIFFUSION_THEORY_CLAIM_LEDGER.md](DIFFUSION_THEORY_CLAIM_LEDGER.md) — falsifiers and proof obligations
+- [DIFFUSION_NATIVE_REASONING_ARCHITECTURE.md](DIFFUSION_NATIVE_REASONING_ARCHITECTURE.md), [DIFFUSION_REASONING_FIELD_IMPLICATIONS.md](DIFFUSION_REASONING_FIELD_IMPLICATIONS.md)
 
-## Historical Report Index
+**Roadmap**
+- [NEXT_GENERATION_REASONING_TASKS.md](../NEXT_GENERATION_REASONING_TASKS.md)
 
-- For the first aggregation scaffold: [LATENT_TRAJECTORY_AGGREGATION_SCOUT.md](reports/diffusion/LATENT_TRAJECTORY_AGGREGATION_SCOUT.md)
-- For the first real-score aggregation replay: [LATENT_AGGREGATION_RUBRIC_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_RUBRIC_REPLAY.md)
-- For the frozen inference-time aggregation run: [LATENT_AGGREGATION_INFERENCE_V1_FREEZE.md](reports/diffusion/LATENT_AGGREGATION_INFERENCE_V1_FREEZE.md)
-- For the inference aggregation pipeline smoke check: [LATENT_AGGREGATION_INFERENCE_SMOKE_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_INFERENCE_SMOKE_REPLAY.md)
-- For the real frozen inference aggregation result: [LATENT_AGGREGATION_INFERENCE_V1_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_INFERENCE_V1_REPLAY.md)
-- For the post-hoc extractor failure diagnostic: [LATENT_AGGREGATION_EXTRACTOR_FAILURE_V1.md](reports/diffusion/LATENT_AGGREGATION_EXTRACTOR_FAILURE_V1.md)
-- For the post-hoc threshold replay: [LATENT_AGGREGATION_INFERENCE_V1_THRESHOLD01_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_INFERENCE_V1_THRESHOLD01_REPLAY.md)
-- For the remaining aggregation gain bottleneck: [LATENT_AGGREGATION_GAIN_FAILURE_THRESHOLD01.md](reports/diffusion/LATENT_AGGREGATION_GAIN_FAILURE_THRESHOLD01.md)
-- For the rubric-vs-score dimension gap: [LATENT_AGGREGATION_SCORE_DIMENSION_GAP_THRESHOLD01.md](reports/diffusion/LATENT_AGGREGATION_SCORE_DIMENSION_GAP_THRESHOLD01.md)
-- For the next held-out multi-aspect aggregation freeze: [LATENT_AGGREGATION_MULTI_ASPECT_V2_FREEZE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V2_FREEZE.md)
-- For the held-out multi-aspect v2 GPU label run: [LATENT_AGGREGATION_MULTI_ASPECT_V2_LABEL_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V2_LABEL_REPORT.md)
-- For held-out multi-aspect v2 complement headroom: [LATENT_AGGREGATION_MULTI_ASPECT_V2_HEADROOM.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V2_HEADROOM.md)
-- For held-out multi-aspect v2 replay: [LATENT_AGGREGATION_MULTI_ASPECT_V2_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V2_REPLAY.md)
-- For held-out multi-aspect v2 failure analysis: [LATENT_AGGREGATION_MULTI_ASPECT_V2_FAILURE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V2_FAILURE.md)
-- For held-out multi-aspect v2 coverage blockers: [LATENT_AGGREGATION_MULTI_ASPECT_V2_COVERAGE_GAP.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V2_COVERAGE_GAP.md)
-- For the pre-label multi-aspect v3 freeze: [LATENT_AGGREGATION_MULTI_ASPECT_V3_FREEZE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V3_FREEZE.md)
-- For the failed v3 probe dry run and corrected command: [LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_DRY_RUN_FAILURE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_DRY_RUN_FAILURE.md)
-- For the corrected v3 probe GPU run: [LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_REPORT.md)
-- For the corrected v3 probe interpretation: [LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_ANALYSIS.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_ANALYSIS.md)
-- For the frozen v3 GPU label run: [LATENT_AGGREGATION_MULTI_ASPECT_V3_LABEL_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V3_LABEL_REPORT.md)
-- For the frozen v3 aggregation replay: [LATENT_AGGREGATION_MULTI_ASPECT_V3_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V3_REPLAY.md)
-- For the v3 aggregation failure diagnosis: [LATENT_AGGREGATION_MULTI_ASPECT_V3_FAILURE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V3_FAILURE.md)
-- For the probe-augmented v3 aggregation replay: [LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_AUGMENTED_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_AUGMENTED_REPLAY.md)
-- For the probe-augmented v3 failure diagnosis: [LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_AUGMENTED_FAILURE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_AUGMENTED_FAILURE.md)
-- For the v3 coverage-gap diagnosis: [LATENT_AGGREGATION_MULTI_ASPECT_V3_COVERAGE_GAP.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V3_COVERAGE_GAP.md)
-- For the probe-augmented v3 coverage-gap diagnosis: [LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_AUGMENTED_COVERAGE_GAP.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V3_PROBE_AUGMENTED_COVERAGE_GAP.md)
-- For the v3 diversity-extension GPU run: [LATENT_AGGREGATION_MULTI_ASPECT_V3_DIVERSITY_EXTENSION_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V3_DIVERSITY_EXTENSION_REPORT.md)
-- For the diversity-augmented v3 replay: [LATENT_AGGREGATION_MULTI_ASPECT_V3_DIVERSITY_AUGMENTED_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V3_DIVERSITY_AUGMENTED_REPLAY.md)
-- For the diversity-augmented v3 coverage diagnosis: [LATENT_AGGREGATION_MULTI_ASPECT_V3_DIVERSITY_AUGMENTED_COVERAGE_GAP.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V3_DIVERSITY_AUGMENTED_COVERAGE_GAP.md)
-- For the fresh v4 diversity-aggregation freeze: [LATENT_AGGREGATION_MULTI_ASPECT_V4_FREEZE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V4_FREEZE.md)
-- For the fresh v4 label source run: [LATENT_AGGREGATION_MULTI_ASPECT_V4_LABEL_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V4_LABEL_REPORT.md)
-- For the fresh v4 probe source run: [LATENT_AGGREGATION_MULTI_ASPECT_V4_PROBE_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V4_PROBE_REPORT.md)
-- For the fresh v4 diversity-extension source run: [LATENT_AGGREGATION_MULTI_ASPECT_V4_DIVERSITY_EXTENSION_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V4_DIVERSITY_EXTENSION_REPORT.md)
-- For the passing fresh v4 aggregation replay: [LATENT_AGGREGATION_MULTI_ASPECT_V4_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V4_REPLAY.md)
-- For the remaining fresh v4 coverage blockers: [LATENT_AGGREGATION_MULTI_ASPECT_V4_COVERAGE_GAP.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V4_COVERAGE_GAP.md)
-- For the 48-task v5 statistical replication freeze: [LATENT_AGGREGATION_MULTI_ASPECT_V5_FREEZE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V5_FREEZE.md)
-- For the v5 label source run: [LATENT_AGGREGATION_MULTI_ASPECT_V5_LABEL_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V5_LABEL_REPORT.md)
-- For the v5 probe source run: [LATENT_AGGREGATION_MULTI_ASPECT_V5_PROBE_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V5_PROBE_REPORT.md)
-- For the v5 diversity-extension source run: [LATENT_AGGREGATION_MULTI_ASPECT_V5_DIVERSITY_EXTENSION_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V5_DIVERSITY_EXTENSION_REPORT.md)
-- For the passing 48-task v5 aggregation replay: [LATENT_AGGREGATION_MULTI_ASPECT_V5_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V5_REPLAY.md)
-- For the remaining v5 coverage blockers: [LATENT_AGGREGATION_MULTI_ASPECT_V5_COVERAGE_GAP.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V5_COVERAGE_GAP.md)
-- For the active v6 coverage-targeting freeze: [LATENT_AGGREGATION_MULTI_ASPECT_V6_FREEZE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V6_FREEZE.md)
-- For the v6 label source run: [LATENT_AGGREGATION_MULTI_ASPECT_V6_LABEL_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V6_LABEL_REPORT.md)
-- For the v6 probe source run: [LATENT_AGGREGATION_MULTI_ASPECT_V6_PROBE_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V6_PROBE_REPORT.md)
-- For the v6 diversity-extension source run: [LATENT_AGGREGATION_MULTI_ASPECT_V6_DIVERSITY_EXTENSION_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V6_DIVERSITY_EXTENSION_REPORT.md)
-- For the v6 targeted anchor-deficit source run: [LATENT_AGGREGATION_MULTI_ASPECT_V6_ANCHOR_DEFICIT_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V6_ANCHOR_DEFICIT_REPORT.md)
-- For the failed v6 aggregation replay: [LATENT_AGGREGATION_MULTI_ASPECT_V6_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V6_REPLAY.md)
-- For the remaining v6 coverage blockers: [LATENT_AGGREGATION_MULTI_ASPECT_V6_COVERAGE_GAP.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V6_COVERAGE_GAP.md)
-- For the v6 threshold-sensitivity diagnostic: [LATENT_AGGREGATION_MULTI_ASPECT_V6_THRESHOLD_SENSITIVITY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V6_THRESHOLD_SENSITIVITY.md)
-- For the v6 expanded-ontology backtest: [LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V6_EXPANDED_ONTOLOGY_BACKTEST.md)
-- For the v7 pre-freeze design: [LATENT_AGGREGATION_MULTI_ASPECT_V7_PREFREEZE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V7_PREFREEZE.md)
-- For the v7 task and ontology freeze: [LATENT_AGGREGATION_MULTI_ASPECT_V7_FREEZE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V7_FREEZE.md)
-- For the v7 baseline label source run: [LATENT_AGGREGATION_MULTI_ASPECT_V7_LABEL_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V7_LABEL_REPORT.md)
-- For the v7 ontology-probe source run: [LATENT_AGGREGATION_MULTI_ASPECT_V7_ONTOLOGY_PROBE_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V7_ONTOLOGY_PROBE_REPORT.md)
-- For the v7 cross-latent source run: [LATENT_AGGREGATION_MULTI_ASPECT_V7_CROSS_LATENT_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V7_CROSS_LATENT_REPORT.md)
-- For the failed v7 expanded-ontology replay: [LATENT_AGGREGATION_MULTI_ASPECT_V7_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V7_REPLAY.md)
-- For the v7 failure analysis and next-source floor: [LATENT_AGGREGATION_MULTI_ASPECT_V7_FAILURE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V7_FAILURE.md)
-- For the v8 targeted uncovered-task source contract: [LATENT_AGGREGATION_MULTI_ASPECT_V8_TARGETED_SOURCE_CONTRACT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V8_TARGETED_SOURCE_CONTRACT.md)
-- For the v8 targeted history-contrast source run: [LATENT_AGGREGATION_MULTI_ASPECT_V8_TARGETED_HISTORY_CONTRAST_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V8_TARGETED_HISTORY_CONTRAST_REPORT.md)
-- For the negative v8 targeted history-contrast replay: [LATENT_AGGREGATION_MULTI_ASPECT_V8_TARGETED_HISTORY_CONTRAST_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V8_TARGETED_HISTORY_CONTRAST_REPLAY.md)
-- For why v8 targeted repair did not become complement evidence: [LATENT_AGGREGATION_MULTI_ASPECT_V8_TARGETED_SOURCE_GAP.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V8_TARGETED_SOURCE_GAP.md)
-- For the v9 complement-packet source contract: [LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_SOURCE_CONTRACT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_SOURCE_CONTRACT.md)
-- For the v9 complement-packet source run: [LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPORT.md)
-- For the passing post-failure v9 replay: [LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPLAY.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V9_COMPLEMENT_PACKET_REPLAY.md)
-- For the next fresh v10 complement-packet prefreeze: [LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PREFREEZE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PREFREEZE.md)
-- For the frozen v10 complement-packet transfer contract: [LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_FREEZE.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_FREEZE.md)
-- For the fresh v10 anchor/label source run: [LATENT_AGGREGATION_MULTI_ASPECT_V10_LABEL_REPORT.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_LABEL_REPORT.md)
-- For the populated v10 complement-packet prompts: [LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PROMPTS.md](reports/diffusion/LATENT_AGGREGATION_MULTI_ASPECT_V10_COMPLEMENT_PROMPTS.md)
-- For near-term roadmap: [NEXT_GENERATION_REASONING_TASKS.md](../NEXT_GENERATION_REASONING_TASKS.md)
+## Archive (do not start here)
 
-## Current result surfaces
+- [ARCHIVE_INDEX.md](ARCHIVE_INDEX.md) — historical aggregation reports (v1–v10 scaffolding), `archive/tesla_session/`, legacy narrative snapshots, `meditations/`
+- Generated report archive: [reports/diffusion/](reports/diffusion/)
 
-These are the stable, promoted docs updated by recent work:
+## Reproduce
 
-- Current benchmark claims: [DIFFUSION_PUBLIC_BENCHMARK.md](../DIFFUSION_PUBLIC_BENCHMARK.md)
-- Claims with evidence mappings: [CLAIM_EVIDENCE_MAP.md](../CLAIM_EVIDENCE_MAP.md)
-- Canonical artifacts and hashes: [DIFFUSION_GROUND_TRUTH_INDEX.md](../DIFFUSION_GROUND_TRUTH_INDEX.md)
-- Claim-level theory status: [DIFFUSION_THEORY_CLAIM_LEDGER.md](DIFFUSION_THEORY_CLAIM_LEDGER.md)
-
-## Archive and private spaces (do not read first)
-
-- Historical generated reports: [docs/reports/diffusion/](reports/diffusion/)  
-  Start here for historical archives only: [docs/ARCHIVE_INDEX.md](ARCHIVE_INDEX.md)
-- Private process notes: [meditations/](../meditations/)  
-  Start here for private note classification: [../meditations/README.md](../meditations/README.md)
-- Deep-session notes: [archive/tesla_session/](../archive/tesla_session/)  
-  Start here for historical session history: [docs/ARCHIVE_INDEX.md](ARCHIVE_INDEX.md)
-- Historical narrative snapshots: [GOALS.md](../archive/legacy_notes/GOALS.md),
-  [ARTICLE_UPDATE.md](../archive/legacy_notes/ARTICLE_UPDATE.md),
-  [RESEARCH_BRIEF.md](../archive/legacy_notes/RESEARCH_BRIEF.md)  
-  Start here when you need legacy project context: [docs/ARCHIVE_INDEX.md](ARCHIVE_INDEX.md)
-
-## If you need to reproduce or check evidence
-
-- Rebuild evidence tables:
-  - `python experiments/build_diffusion_claim_evidence.py`
-  - `python experiments/validate_diffusion_claim_evidence.py`
-  - `python experiments/validate_diffusion_theory_claim_ledger.py`
-- Rebuild aggregation scaffold:
-  - `python experiments/analyze_latent_trajectory_aggregation.py`
-  - `python experiments/build_latent_aggregation_replay_from_rubric_hits.py`
-  - `python experiments/build_latent_aggregation_inference_v1_freeze.py`
-  - `python experiments/run_latent_aggregation_inference_replay.py`
-- Archive scans:
-  - `python experiments/scan_stale_diffusion_docs.py`
+```bash
+python experiments/build_diffusion_claim_evidence.py
+python experiments/validate_diffusion_claim_evidence.py
+python experiments/validate_diffusion_theory_claim_ledger.py
+python experiments/scan_stale_diffusion_docs.py
+```
