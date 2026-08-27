@@ -530,6 +530,22 @@ collapses to 0.02 or less, or an `R`/`F` lead of at least 0.05 after the
 reparameterization, would show that the current chart advantage is
 coordinate- or task-specific.
 
+### Tier-3 audit #2 corrections (2026-08-27, fresh unprimed auditor; adopted verbatim)
 
-
-
+- NLM-003 is a **narrow instrument comparison**: "these implementations lose to
+  cosine on this endpoint." It is not evidence that native geometry is
+  generally dominated (one encoder, one endpoint, one-step random
+  substitutions, one seed, 130 supported anchors).
+- R has only five possible values (0–4 agreeing heads) and ties receive 0.5
+  credit; tie counts and a tie/outcome cross-tab are not reported and must be.
+  R includes the coarse head, and fine labels are nested inside coarse classes,
+  so R carries taxonomy-derived signal; rerun R without the coarse head.
+- NLM-002 M1: the 2% coarse-head flicker is weak evidence (affine argmax is
+  near-monotone by construction); kNN flicker is reported at k = 32 only — a k
+  sensitivity analysis is required before any world-path claim.
+- Next gate must combine: R without the coarse head, full tie accounting, kNN
+  sensitivity, the random-init null (NLM-004, preregistered in the ledger),
+  a cheap-baseline ladder under the same endpoint (random-init features,
+  PCA/color/edge features, nearest-centroid), nonlinear re-charting, and
+  composed / out-of-distribution moves. The program continues only if it finds
+  a held-out consequence that simple chart metrics cannot explain.

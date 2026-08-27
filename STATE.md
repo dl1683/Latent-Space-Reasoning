@@ -76,6 +76,13 @@ proximity useful for visual regularities, but it does not establish intrinsic
 geometry. The next measurement is a predeclared nonlinear re-chart plus held-out
 composition and out-of-distribution moves, with the true fine-label endpoint.
 
+## Audit #2 (2026-08-27)
+
+NLM-003 reclassified as a narrow instrument comparison; "native constructs are
+dominated" withdrawn as a general claim. Required before any further verdict:
+R without the coarse head, tie accounting, kNN k-sensitivity, the random-init
+null (NLM-004), a cheap-baseline ladder, re-charting, composed moves.
+
 ## Next
 
 **Round 9 measurement:** hold the cache and endpoint fixed, reparameterize the
