@@ -777,3 +777,31 @@ not enough to overturn the five-measurement residue.
 `280 seconds` of re-encoding at the observed `35 ms/image`, plus at most ten
 minutes for stratified ranking, composition, and anchor-bootstrap scoring: a
 roughly 15-minute CPU run, one process, no GPU.
+
+### NLM-006 artifact lock (Claude, 2026-08-27, before scoring)
+
+- Transports: `experiments/results/vision_cifar100_dinov2s_edits_v2/edits.npz`,
+  sha256 `9cc0e7c082dab6c0dfb804198388154eb7c62aaa830ead3e698985e0756d0d0b`;
+  test split (2000) re-encoded by the frozen DINOv2-small encoder under
+  `crop50` (central 50% bicubic-upscaled), `invert` (255−x), `mix50`
+  (0.5·x + 0.5·partner, partner permutation seed 6, stored), `occlude50`
+  (central 50% zeroed); `hflip` and `shift1px` retained as near-identity
+  controls.
+- Displacement check (200 held-out states, `displacement.json`), mean
+  cosine(x, T_e x): hflip 0.959, shift1px 0.976, crop50 0.604, invert 0.467,
+  mix50 0.422, occlude50 0.664. **Predeclared threshold: a family is outside
+  the invariance class iff mean ≤ 0.80.** The four new families qualify; the
+  two controls do not.
+- Candidates: stratified — up to 20 same-fine-class + 20 cross-class hard
+  negatives (nearest by cosine among other classes), frozen by seed; 400
+  anchors; endpoint = true fine label; support gate ≥ 80%.
+- Predictors (unchanged constructions): chart = cosine, Euclidean; native = F
+  (Fisher pullback, 4 heads), R without `PB_coarse`. "Transport-aware" means
+  the predictor is scored on the transported pair (ST: (x, T_e y); TS:
+  (T_e x, y)), i.e. it reads the world's response to the move; the direct
+  pair (x, y) is the control.
+- Note on the hard-negative pool: negatives are selected by cosine, which
+  biases the contest *against* the chart metric; this is conservative for the
+  hypothesis "some move breaks the chart" and is reported as such.
+- Runner: `experiments/run_nlm002_vision.py --edits <edits_v2> --stratified
+  --endpoint fine_label`.
