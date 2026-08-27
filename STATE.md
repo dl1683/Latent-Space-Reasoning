@@ -33,8 +33,8 @@ of those notions, when instantiated on a real embedding space, predicts somethin
 ## Prior program (closed 2026-08-27)
 
 LLM perturbation line: nested-arithmetic claims withdrawn
-(`docs/CORRECTION_NESTED_ARITHMETIC_2026_08.md`). Standing results and
-hypotheses are in `README.md`. Residue carried forward: the hardware-dependent
+(`legacy/docs/CORRECTION_NESTED_ARITHMETIC_2026_08.md`). Standing results and
+hypotheses are in `legacy/README.md`. Residue carried forward: the hardware-dependent
 decoding-determinism finding; the termination/direct-control/null-model gates.
 
 ## NLM-001 verdict (2026-08-27)
