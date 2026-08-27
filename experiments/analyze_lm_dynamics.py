@@ -201,6 +201,8 @@ def main():
     sp = None; completer = None
     if not a.skip_completion:
         sp = SubstitutionProbe(a.model); completer = WorldCompleter(sp, cfg)
+        assert sp.revision == man.get("model_revision"), f"model revision {sp.revision} != capture manifest {man.get('model_revision')}"
+        assert int(sp.model.config.num_hidden_layers) == man["num_hidden_layers"]
         ids = [sp.single_token_id(w) for w in items]; states_emb = torch.stack([sp.state(i) for i in ids])
     results = {"pairs": {}, "manifest": man, "config": a.config, "lock": "theory/EXPERIMENTS.md NLM-007 (Round 13)"}
 
@@ -243,19 +245,27 @@ def main():
                 return {(g, lam): (lambda f: (lambda Xq, Xqr: f(Xq)))(fam.predictor(lam, g)) for g in GAMMAS for lam in LAMBDAS}
             sc = score_grid(kernel_grid); (g_b, lam_k) = max(sc, key=sc.get)
             best["kernel"] = {"gamma": g_b, "lam": lam_k, "inner": {f"{k[0]},{k[1]}": v for k, v in sc.items()}}
-            sc = score_grid(lambda Xis, Yi, Xi: {m: (lambda f: (lambda Xq, Xqr: f(Xqr)))(chart_control(Xi, Yi, m)) for m in ("cosine", "euclid")})
+            def chart_grid(Xis, Yi, Xi):
+                out = {m: (lambda f: (lambda Xq, Xqr: f(Xqr)))(chart_control(Xi, Yi, m)) for m in ("cosine", "euclid")}
+                out.update({f"knn{k}": (lambda f: (lambda Xq, Xqr: f(Xq)))(fit_knn(Xis, Yi, k)) for k in (5, 20)})
+                return out
+            sc = score_grid(chart_grid)
             best["chart"] = {"metric": max(sc, key=sc.get), "inner": sc}
             print(f"   [{held}] inner selection done ({time.time()-t0:.0f}s)", flush=True)
             # ---- fit on full calibration, predict held-out ----
             preds = {"mean": np.repeat(Yc.mean(0, keepdims=True), len(Xt), 0)}
+            # lexical-persistence baseline: per-word mean successor across the 12 calibration carriers, applied to held-out carriers
+            word_mean = Yc.reshape(len(cal_probes), n, D).mean(0)                       # (n, D)
+            preds["word_mean"] = np.tile(word_mean, (len(test_probes), 1))
             for k in KS: preds[f"knn{k}"] = fit_knn(Xcs, Yc, k)(Xts)
             famc = RidgeFamily(Xcs, Yc)
             preds["ridge"] = famc.predictor(best["ridge"]["lam"])(Xts)
             preds["lowrank"] = famc.predictor(best["lowrank"]["lam"], best["lowrank"]["rank"])(Xts)
             preds["kernel"] = fit_kernel_ridge(Xcs, Yc, best["kernel"]["lam"], best["kernel"]["gamma"])(Xts)
-            preds["chart"] = chart_control(Xc, Yc, best["chart"]["metric"])(Xt)
-            ybar = Yc.mean(0); denom = np.linalg.norm(Yt - ybar, axis=1)
-            succ = {k: {"cos": cos_rows(v, Yt), "nerr": np.linalg.norm(v - Yt, axis=1) / np.maximum(denom, 1e-12)} for k, v in preds.items()}
+            cm = best["chart"]["metric"]
+            preds["chart"] = fit_knn(Xcs, Yc, int(cm[3:]))(Xts) if cm.startswith("knn") else chart_control(Xc, Yc, cm)(Xt)
+            ybar = Yc.mean(0); denom = np.linalg.norm(Yt - ybar, axis=1); denom = np.where(denom > 0, denom, np.nan)
+            succ = {k: {"cos": cos_rows(v, Yt), "nerr": np.linalg.norm(v - Yt, axis=1) / denom} for k, v in preds.items()}
             # ---- carrier-shuffled null on the selected low-rank field and ridge ----
             shuf = {"lowrank": [], "ridge": []}
             n_cal_probes = len(cal_probes)
@@ -285,8 +295,8 @@ def main():
             # ---- completed-law endpoint ----
             comp = {}
             if completer is not None:
-                for k in ("mean", "ridge", "lowrank", "kernel", "chart"):
-                    kl_all, skill_all, ord_all = [], [], []
+                for k in ("mean", "word_mean", "ridge", "lowrank", "kernel", "chart"):
+                    kl_all, skill_all, ord_all, ord_anchor_all = [], [], [], []
                     for ti, tp in enumerate(test_probes):
                         rows = slice(ti * n, (ti + 1) * n)
                         q = laws[tp]                                                     # true final law (n, V)
@@ -295,45 +305,62 @@ def main():
                         elif "qmean_probe" not in comp: pass
                         kl = kl_rows(q, qhat); kl_all.append(kl)
                         qm = completer.laws(tp, states_emb, l, Yhat=preds["mean"][rows]) if k != "mean" else qhat
-                        skill_all.append(1 - kl / np.maximum(kl_rows(q, qm), 1e-12))
-                        o, _ = ordering_preservation(pairwise_kl(q), pairwise_kl(qhat)); ord_all.append(o)
-                    comp[k] = {"kl": np.concatenate(kl_all), "skill": np.concatenate(skill_all), "ordering_by_carrier": ord_all}
+                        klm = kl_rows(q, qm); klm = np.where(klm > 0, klm, np.nan)
+                        skill_all.append(1 - kl / klm)
+                        o, per_anchor = ordering_preservation(pairwise_kl(q), pairwise_kl(qhat)); ord_all.append(o); ord_anchor_all.append(per_anchor)
+                    comp[k] = {"kl": np.concatenate(kl_all), "skill": np.concatenate(skill_all), "ordering_by_carrier": ord_all,
+                               "ordering_per_anchor": np.stack(ord_anchor_all)}      # (carriers, n)
                     print(f"   {held:12s} {k:8s} succ_cos={succ[k]['cos'].mean():.3f} KL={comp[k]['kl'].mean():.3f} skill={comp[k]['skill'].mean():.3f} ord={np.mean(ord_all):.3f} ({time.time()-t0:.0f}s)", flush=True)
             # ---- paired two-way cluster bootstrap vs frozen chart ----
-            def boot_diff(field, endpoint):
-                if endpoint == "cos": A, B = succ[field]["cos"], succ["chart"]["cos"]
-                elif endpoint == "skill": A, B = comp[field]["skill"], comp["chart"]["skill"]
+            def boot_diff(field, endpoint, against="chart"):
+                if endpoint == "cos": A, B = succ[field]["cos"], succ[against]["cos"]
+                elif endpoint == "skill": A, B = comp[field]["skill"], comp[against]["skill"]
+                elif endpoint == "ordering": A, B = comp[field]["ordering_per_anchor"].ravel(), comp[against]["ordering_per_anchor"].ravel()
                 else: return None
                 A = A.reshape(len(test_probes), n); B = B.reshape(len(test_probes), n); diff = A - B
+                if not np.isfinite(diff).any(): return None
                 reps = []
                 brng = np.random.default_rng(SEED)
                 for _ in range(a.n_boot):
                     ci = brng.integers(0, len(test_probes), len(test_probes)); wi = brng.integers(0, n, n)
-                    reps.append(float(diff[np.ix_(ci, wi)].mean()))
-                return {"mean": float(diff.mean()), "ci95": [float(np.percentile(reps, 2.5)), float(np.percentile(reps, 97.5))]}
+                    reps.append(float(np.nanmean(diff[np.ix_(ci, wi)])))
+                return {"mean": float(np.nanmean(diff)), "ci95": [float(np.nanpercentile(reps, 2.5)), float(np.nanpercentile(reps, 97.5))],
+                        "n_defined_cells": int(np.isfinite(diff).sum())}
             gates = {}
             for field in ("ridge", "lowrank", "kernel"):
-                g = {"succ_cos": boot_diff(field, "cos")}
+                g = {"succ_cos_vs_chart": boot_diff(field, "cos"), "succ_cos_vs_word_mean": boot_diff(field, "cos", "word_mean")}
                 if comp:
-                    g["skill"] = boot_diff(field, "skill")
-                    g["ordering"] = {"field": float(np.mean(comp[field]["ordering_by_carrier"])), "chart": float(np.mean(comp["chart"]["ordering_by_carrier"]))}
+                    g["skill_vs_chart"] = boot_diff(field, "skill"); g["skill_vs_word_mean"] = boot_diff(field, "skill", "word_mean")
+                    g["ordering_vs_chart"] = boot_diff(field, "ordering"); g["ordering_vs_word_mean"] = boot_diff(field, "ordering", "word_mean")
                 gates[field] = g
-            support = float(np.mean(np.isfinite(succ["lowrank"]["cos"])))
+            # support: a cell is supported iff successor cos, normalized error, and (if computed) completed KL, skill, ordering are all finite
+            ok = np.isfinite(succ["lowrank"]["cos"]) & np.isfinite(succ["lowrank"]["nerr"])
+            if comp:
+                for k in comp: ok &= np.isfinite(comp[k]["kl"]) & np.isfinite(comp[k]["skill"]) & np.isfinite(comp[k]["ordering_per_anchor"].ravel())
+            support = float(np.mean(ok)); support_by_carrier = {str(d["probes"][tp]): float(np.mean(ok[ti * n:(ti + 1) * n])) for ti, tp in enumerate(test_probes)}
             fold_out[held] = {"selected": {k: {kk: vv for kk, vv in v.items() if kk != "inner"} for k, v in best.items()},
-                              "successor_cos": {k: float(v["cos"].mean()) for k, v in succ.items()},
-                              "normalized_error": {k: float(v["nerr"].mean()) for k, v in succ.items()},
-                              "completed": {k: {"kl": float(v["kl"].mean()), "skill": float(v["skill"].mean()), "ordering": float(np.mean(v["ordering_by_carrier"]))} for k, v in comp.items()},
+                              "successor_cos": {k: float(np.nanmean(v["cos"])) for k, v in succ.items()},
+                              "normalized_error": {k: float(np.nanmean(v["nerr"])) for k, v in succ.items()},
+                              "completed": {k: {"kl": float(np.nanmean(v["kl"])), "skill": float(np.nanmean(v["skill"])), "ordering": float(np.mean(v["ordering_by_carrier"]))} for k, v in comp.items()},
                               "shuffled_null_succ_cos": {k: {"mean": float(np.mean(v)), "q95": float(np.percentile(v, 95))} for k, v in shuf.items()},
-                              "oracle_ceiling_succ_cos": float(np.mean(oracle)), "support": support, "gates_vs_chart": gates}
+                              "oracle_ceiling_succ_cos": float(np.mean(oracle)), "support": support, "support_by_carrier": support_by_carrier, "gates": gates}
             print(f"  fold {held}: succ_cos " + " ".join(f"{k}={v:.3f}" for k, v in fold_out[held]["successor_cos"].items()) + f" | oracle={np.mean(oracle):.3f} shufLR={np.mean(shuf['lowrank']):.3f}", flush=True)
         # ---- pool folds (equal weight) and minimal class ----
         pooled = {}
         for k in fold_out[block_names[0]]["successor_cos"]:
             pooled[k] = float(np.mean([fold_out[b]["successor_cos"][k] for b in block_names]))
-        best_score = max(pooled.values())
-        order = ["mean", "knn1", "knn5", "knn20", "lowrank", "ridge", "kernel"]
-        minimal = next((k for k in order if pooled.get(k, -1) >= best_score - 0.02), None)
-        results["pairs"][pair_key] = {"folds": fold_out, "pooled_successor_cos": pooled, "minimal_class_within_0.02": minimal}
+        order = ["mean", "word_mean", "knn1", "knn5", "knn20", "lowrank", "ridge", "kernel"]
+        ladder = [k for k in order if k in pooled]
+        best_score = max(pooled[k] for k in ladder)
+        minimal = next((k for k in ladder if pooled[k] >= best_score - 0.02), None)
+        pooled_skill = {}
+        if all(fold_out[b].get("completed") for b in block_names):
+            for k in fold_out[block_names[0]]["completed"]:
+                pooled_skill[k] = float(np.mean([fold_out[b]["completed"][k]["skill"] for b in block_names]))
+        lad_s = [k for k in order if k in pooled_skill]
+        minimal_skill = next((k for k in lad_s if pooled_skill[k] >= max(pooled_skill[kk] for kk in lad_s) - 0.02), None) if lad_s else None
+        results["pairs"][pair_key] = {"folds": fold_out, "pooled_successor_cos": pooled, "minimal_class_successor_within_0.02": minimal,
+                                      "pooled_completed_skill": pooled_skill, "minimal_class_completed_within_0.02": minimal_skill}
         (run_dir / ("analysis_smoke.json" if a.smoke else "analysis.json")).write_text(json.dumps(results, indent=1, default=float), encoding="utf-8")
         print(f"  pooled: " + " ".join(f"{k}={v:.3f}" for k, v in pooled.items()) + f" | minimal class: {minimal}", flush=True)
     results["seconds"] = round(time.time() - t0, 1)
