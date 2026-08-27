@@ -54,6 +54,31 @@ was learned, what's next. Canonical state lives in STATE.md.
   hidden-state capture. Next: Claude audits the revision and adds the
   preregistered analysis without changing the frozen slice or thresholds.
 
+## 2026-08-28 — Tier-3 re-contextualization #4 (Claude, before auditor #4)
+
+**Live question.** In a world with its own dynamics (a causal LM's residual
+stream), what is the minimal law class that predicts transport across unseen
+contexts — and does prediction cash out in the world's completed response?
+
+**Tunnel check.** The frozen-encoder program ended where every instrument
+pointed: the trained chart is the operational map, and no probe-built
+construct competes. NLM-007 is a different shape (laws, not closeness) but the
+same substrate habit — one small LM, 80 words, 16 carriers. Alternatives held
+live: (1) a second LM family (SmolLM2/gemma) in the same design, since a law
+that holds in one decoder is a fact about that decoder; (2) transport of
+*sequence* states (append a token) rather than layer transport — the move the
+denizen actually makes in time; (3) the denotational primitive on diffusion
+latents, still untouched; (4) the moot-maker: if a low-rank affine field
+explains every layer pair at ceiling, the world's dynamics are locally linear
+in its chart and the native program reduces to "find the chart in which
+dynamics are linear" — a Koopman question, with a literature.
+
+**What reframes earlier work.** The auditor's narrowed residue (task-effective
+chart + affine-path smoothness) and NLM-007's question are the same object
+seen twice: smoothness of the chart *along paths* is exactly what a linear
+transport law would produce. If NLM-007 finds low-rank affine transport at
+early/middle depth, it explains NLM-002's within-class monotone paths.
+
 ## 2026-08-28 — NLM-006b: the chart survives every displaced transport
 
 - Uncontaminated run (independent candidates, 400/400 support, calibrated
