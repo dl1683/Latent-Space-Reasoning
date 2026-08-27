@@ -177,3 +177,6 @@ legacy/docs/BIFURCATION_ANALYSIS_FINDINGS.md
 
 # Transport embeddings (reproducible from cache + build_vision_cache.py --edits; sha256 in theory/EXPERIMENTS.md)
 experiments/results/*/edits.npz
+
+# LM dynamics raw states (reproducible via run_lm_dynamics.py capture; sha256 in manifest)
+experiments/results/*/states.npz
