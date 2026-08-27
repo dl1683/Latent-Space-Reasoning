@@ -48,7 +48,8 @@ def main():
     a = ap.parse_args()
 
     from datasets import load_dataset
-    from transformers import AutoImageProcessor, AutoModel
+    from transformers import AutoModel
+    from PIL import Image
 
     t0 = time.time()
     ds = load_dataset(a.dataset)
@@ -61,8 +62,18 @@ def main():
     idx_train = np.sort(rng.choice(len(ds["train"]), size=a.n_train, replace=False))
     idx_test = np.sort(rng.choice(len(ds["test"]), size=a.n_test, replace=False))
 
-    proc = AutoImageProcessor.from_pretrained(a.encoder)
     model = AutoModel.from_pretrained(a.encoder).eval()
+    MEAN = np.array([0.485, 0.456, 0.406], dtype=np.float32); STD = np.array([0.229, 0.224, 0.225], dtype=np.float32)
+
+    def preprocess(imgs):
+        # DINOv2 default: resize shorter side to 256 (bicubic), center-crop 224, ImageNet normalization
+        arr = []
+        for im in imgs:
+            im = im.resize((256, 256), Image.BICUBIC)
+            w, h = im.size; l, t = (w - 224) // 2, (h - 224) // 2
+            x = np.asarray(im.crop((l, t, l + 224, t + 224)), dtype=np.float32) / 255.0
+            arr.append(((x - MEAN) / STD).transpose(2, 0, 1))
+        return torch.from_numpy(np.stack(arr))
     enc_rev = getattr(model.config, "_commit_hash", None)
 
     def encode(split, idx):
@@ -72,7 +83,7 @@ def main():
             rows = sub[i:i + a.batch]
             imgs = [im.convert("RGB") for im in rows[img_col]]
             with torch.no_grad():
-                out = model(**proc(images=imgs, return_tensors="pt"))
+                out = model(pixel_values=preprocess(imgs))
             embs.append(out.pooler_output.float().numpy())
             fine.extend(rows[fine_col]); coarse.extend(rows[coarse_col])
             stats.extend(pixel_stats(np.asarray(im)) for im in imgs)
@@ -94,7 +105,7 @@ def main():
                 "n_train": a.n_train, "n_test": a.n_test, "seed": a.seed, "batch": a.batch, "device": "cpu", "dtype": "float32",
                 "torch": torch.__version__, "torch_num_threads": torch.get_num_threads(),
                 "transformers": __import__("transformers").__version__, "datasets": __import__("datasets").__version__,
-                "python": sys.version.split()[0], "fine_names": fine_names, "coarse_names": coarse_names,
+                "python": sys.version.split()[0], "fine_names": fine_names, "coarse_names": coarse_names, "preprocess": "resize 256 bicubic, center-crop 224, ImageNet mean/std (manual; no torchvision)",
                 "pixstats_columns": ["mean_r", "mean_g", "mean_b", "mean_luminance", "edge_density"],
                 "cache_sha256": sha, "seconds": round(time.time() - t0, 1)}
     (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
