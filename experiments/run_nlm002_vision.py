@@ -216,7 +216,7 @@ def measurement_3(tr, te, heads, blocks_te, endpoint_label, rng, n_anchor=400, n
 
 
 # ---------- measurement 4 (NLM-005): composed substitution and transport -----------------
-def measurement_4(tr, te, heads, endpoint_label, edits, rng, n_anchor=400, n_cand=40):
+def measurement_4(tr, te, heads, endpoint_label, edits, rng, n_anchor=400, n_cand=40, stratified=False, n_disp=200):
     """For anchor x, candidate y, edit e (label-preserving image transport re-encoded by the frozen encoder):
     ST scores the pair (x, T_e(y)); TS scores (T_e(x), y); direct scores (x, y). Outcome = fine(y)==fine(x)
     (edits preserve labels). Predictors: cosine, euclid, F, R without coarse head. Per-anchor pairwise accuracy
@@ -225,8 +225,27 @@ def measurement_4(tr, te, heads, endpoint_label, edits, rng, n_anchor=400, n_can
     G = sum(h.fisher(tr["emb"][:1000]) for h in heads.values()) / len(heads)
     names_nc = [nm for nm in heads if nm != "PB_coarse"]
     anchors = rng.choice(n, size=n_anchor, replace=False)
-    cand_sets = {int(x): rng.choice([c for c in range(n) if c != x], size=n_cand, replace=False) for x in anchors}
+    Xn_all = Xte / np.maximum(np.linalg.norm(Xte, axis=1, keepdims=True), 1e-12)
+    if stratified:
+        # NLM-006: 20 same-fine-class candidates + 20 cross-class hard negatives (nearest by cosine), frozen by seed
+        cand_sets = {}
+        for x in anchors:
+            same = [c for c in range(n) if c != x and endpoint_label[c] == endpoint_label[x]]
+            same = list(rng.choice(same, size=min(20, len(same)), replace=False)) if same else []
+            others = np.array([c for c in range(n) if endpoint_label[c] != endpoint_label[x]])
+            sims = Xn_all[others] @ Xn_all[x]
+            hard = list(others[np.argsort(-sims)[:20]])
+            cand_sets[int(x)] = np.array(same + hard)
+    else:
+        cand_sets = {int(x): rng.choice([c for c in range(n) if c != x], size=n_cand, replace=False) for x in anchors}
     edit_names = [k.replace("test_emb_", "") for k in edits.files if k.startswith("test_emb_")]
+    # displacement check: is the edit near-identity in the encoder's world? cosine(x, T_e(x)) on n_disp held-out states
+    disp_idx = rng.choice(n, size=min(n_disp, n), replace=False)
+    displacement = {}
+    for e in edit_names:
+        TE = edits[f"test_emb_{e}"]; TEn = TE / np.maximum(np.linalg.norm(TE, axis=1, keepdims=True), 1e-12)
+        cs = np.sum(Xn_all[disp_idx] * TEn[disp_idx], axis=1)
+        displacement[e] = {"mean_cosine_x_to_Tx": float(cs.mean()), "q10": float(np.percentile(cs, 10)), "q90": float(np.percentile(cs, 90))}
     def predictors(A, B):
         """A: (D,) anchor-side state; B: (m, D) candidate-side states. Returns dict name -> closer-score (higher=closer)."""
         An = A / max(np.linalg.norm(A), 1e-12); Bn = B / np.maximum(np.linalg.norm(B, axis=1, keepdims=True), 1e-12)
@@ -266,7 +285,8 @@ def measurement_4(tr, te, heads, endpoint_label, edits, rng, n_anchor=400, n_can
         native_minus_chart = {order: {"mean": float(np.mean(arr[order][best_native] - arr[order][best_chart])),
                                       "ci95": boot(lambda idx, o=order: np.mean(arr[o][best_native][idx] - arr[o][best_chart][idx]))} for order in ("ST", "TS")}
         results[e] = {"n_anchors_supported": used, "support_frac": used / n_anchor, "accuracy": summ, "ST_minus_TS": st_ts_gap,
-                      "best_native": best_native, "best_chart": best_chart, "native_minus_chart": native_minus_chart}
+                      "best_native": best_native, "best_chart": best_chart, "native_minus_chart": native_minus_chart,
+                      "displacement": displacement[e], "stratified": stratified}
         print(f"M4[{e}] support={used}/{n_anchor} direct={ {k: round(v,3) for k,v in summ['direct'].items()} } ST={ {k: round(v,3) for k,v in summ['ST'].items()} } TS={ {k: round(v,3) for k,v in summ['TS'].items()} }", flush=True)
     return results
 
@@ -275,7 +295,8 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--cache", required=True); ap.add_argument("--out", required=True)
     ap.add_argument("--seed", type=int, default=0)
-    ap.add_argument("--edits", default=None, help="NLM-005: edits.npz with re-encoded label-preserving transports of the test split; runs measurement 4")
+    ap.add_argument("--edits", default=None, help="NLM-005/006: edits.npz with re-encoded transports of the test split; runs measurement 4")
+    ap.add_argument("--stratified", action="store_true", help="NLM-006: 20 same-class + 20 hard-negative candidates per anchor")
     ap.add_argument("--endpoint", choices=["rawpixel_knn", "fine_label"], default="rawpixel_knn",
                     help="consequence endpoint for measurement 3: raw-pixel kNN fine label (NLM-002 lock) or the true fine label, which no head is trained on")
     ap.add_argument("--pixels", default=None,
@@ -304,7 +325,7 @@ def main():
     m4 = None
     if a.edits:
         ed = np.load(a.edits); assert np.array_equal(ed["test_idx"], d["test_idx"])
-        m4 = measurement_4(tr, te, heads, endpoint, ed, np.random.default_rng(a.seed + 1))
+        m4 = measurement_4(tr, te, heads, endpoint, ed, np.random.default_rng(a.seed + 1), stratified=a.stratified)
     out_dir = RESULTS / a.out; out_dir.mkdir(parents=True, exist_ok=True)
     result = {"endpoint": a.endpoint, "edits": a.edits, "M4_composition": m4, "cache_manifest_sha256": hashlib.sha256((cache / "manifest.json").read_bytes()).hexdigest(),
               "cache_sha256": man.get("cache_sha256"), "pixels_path": str(pixels_path), "seed": a.seed, "seconds": round(time.time() - t0, 1),

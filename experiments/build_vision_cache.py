@@ -47,6 +47,7 @@ def main():
     ap.add_argument("--out", required=True)
     ap.add_argument("--pixels-only", action="store_true", help="dump raw 32x32x3 uint8 pixels for the same split indices (no encoding)")
     ap.add_argument("--random-init", action="store_true", help="NULL WORLD: same encoder architecture with random weights (seed 0); a chart never trained to be metric")
+    ap.add_argument("--edit-families", nargs="*", default=None, help="subset of edits to encode (default all)")
     ap.add_argument("--edits", default=None, help="NLM-005 transports: path to pixels.npz; encodes label-preserving edits (hflip, shift1px) of the TEST split and writes edits.npz")
     a = ap.parse_args()
 
@@ -81,19 +82,32 @@ def main():
                 z = np.asarray(im.crop((l, t, l + 224, t + 224)), dtype=np.float32) / 255.0
                 out.append(((z - MEAN) / STD).transpose(2, 0, 1))
             return torch.from_numpy(np.stack(out))
-        edits = {"hflip": lambda x: x[:, ::-1, :].copy(),
-                 "shift1px": lambda x: np.concatenate([np.repeat(x[:, :1, :], 1, axis=1), x[:, :-1, :]], axis=1)}  # right shift, edge padding
         test_px = px["test_pixels"]; res = {"test_idx": px["test_idx"]}
+        rng_mix = np.random.default_rng(6)                    # NLM-006: frozen mixing partners
+        partner = rng_mix.permutation(len(test_px)); partner[partner == np.arange(len(test_px))] = (partner[partner == np.arange(len(test_px))] + 1) % len(test_px)
+        res["mix_partner"] = partner
+        def large_crop(x):
+            h, w = x.shape[:2]; c = x[h // 4: h - h // 4, w // 4: w - w // 4]      # central 50%
+            return np.asarray(Image.fromarray(c).resize((w, h), Image.BICUBIC), dtype=np.uint8)
+        def occlude(x):
+            y = x.copy(); h, w = y.shape[:2]; y[h // 4: h - h // 4, w // 4: w - w // 4] = 0; return y   # central 50% black
+        edits = {"hflip": lambda x, i: x[:, ::-1, :].copy(),
+                 "shift1px": lambda x, i: np.concatenate([np.repeat(x[:, :1, :], 1, axis=1), x[:, :-1, :]], axis=1),
+                 "crop50": lambda x, i: large_crop(x),
+                 "invert": lambda x, i: (255 - x).astype(np.uint8),
+                 "mix50": lambda x, i: ((x.astype(np.float32) + test_px[partner[i]].astype(np.float32)) / 2).astype(np.uint8),
+                 "occlude50": lambda x, i: occlude(x)}
+        if a.edit_families: edits = {k: v for k, v in edits.items() if k in a.edit_families}
         for name, fn in edits.items():
             embs = []
             for i in range(0, len(test_px), a.batch):
-                batch = [fn(x) for x in test_px[i:i + a.batch]]
+                batch = [fn(x, i + j) for j, x in enumerate(test_px[i:i + a.batch])]
                 with torch.no_grad(): embs.append(model(pixel_values=prep(batch)).pooler_output.float().numpy())
                 if (i // a.batch) % 20 == 0: print(f"  {name} {i + len(batch)}/{len(test_px)} ({time.time() - t0:.0f}s)", flush=True)
             res[f"test_emb_{name}"] = np.concatenate(embs)
         out_dir = RESULTS / a.out; out_dir.mkdir(parents=True, exist_ok=True)
         path = out_dir / "edits.npz"; np.savez_compressed(path, **res)
-        print(json.dumps({"edits_sha256": hashlib.sha256(path.read_bytes()).hexdigest(), "edits": list(edits), "padding": "edge (replicate first column)", "n_test": int(len(test_px)), "seconds": round(time.time() - t0, 1)}))
+        print(json.dumps({"edits_sha256": hashlib.sha256(path.read_bytes()).hexdigest(), "edits": list(edits), "padding": "edge (replicate first column)", "crop50": "central 50% bicubic-upscaled", "invert": "255-x", "mix50": "0.5*x+0.5*partner (frozen permutation seed 6)", "occlude50": "central 50% zeroed", "n_test": int(len(test_px)), "seconds": round(time.time() - t0, 1)}))
         return
 
     if a.pixels_only:
