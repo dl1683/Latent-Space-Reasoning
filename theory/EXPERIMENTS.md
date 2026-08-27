@@ -2,7 +2,9 @@
 
 ## NLM-001 — directed substitutability, context rank, and transfer
 
-**Status:** preregistered 2026-08-27; confirmatory measurement unrun.
+**Status:** design locked 2026-08-27; confirmatory measurement unrun. The
+analyzer must be aligned with the H2 bootstrap and baseline-selection rules
+below before the run.
 
 The existing 12-word smoke run is calibration, not evidence. It fixed the fact
 that exact repeats are identical while batched-versus-single evaluation is not,
@@ -41,7 +43,9 @@ For probe paraphrase \(j\), insert state \(x\)'s input-embedding row at the
 frozen slot and read the full-vocabulary final next-token law \(K_{B,j}(x)\).
 Compute the 80×80 directed-KL matrix by matrix multiplication, discard the laws,
 and retain only the matrix and registered hidden states. This is exact, requires
-no sampling or generation, and bounds memory to one probe at a time.
+no sampling or generation, and bounds memory to one probe at a time. No outcome
+coarsening is permitted. Retained mass is therefore report-only, never a void
+condition.
 
 Define
 
@@ -65,11 +69,19 @@ For any four paraphrase statistics \(s_j\), define
 \nu=1.4826\operatorname{median}_j|s_j-\operatorname{median}(s)|.
 \]
 
-Let \(\nu_0\) be the block median of \(\nu\) over eligible pairs and \(\eta\)
-the 95th-percentile change in the same statistic under exact-repeat and
-batched-versus-single evaluation. A gap is **robust** iff its sign agrees in at
-least three paraphrases and its absolute median exceeds
-\(\max(3\nu,3\nu_0,10\eta)\).
+Let \(\nu_0\) be the block median of \(\nu\) over eligible pairs. On the first
+probe and first eight states, define the numerical null in KL units by
+
+\[
+\eta=\max_{x,y}\left|r_{\rm batch}(x\to y)-r_{\rm single}(x\to y)\right|.
+\]
+
+The exact-repeat max \(|\Delta\log p|=0\) and batched-versus-single max
+\(|\Delta\log p|=2.3\times10^{-5}\) are reported diagnostics; neither replaces
+the KL-scale \(\eta\). A four-paraphrase gap is **robust** iff its sign agrees in
+at least three paraphrases and its absolute median exceeds
+\(\max(3\nu,3\nu_0,10\eta)\). For a fixed two-paraphrase half, robustness means
+both signs agree and the same magnitude threshold is passed.
 
 ### Measurements and exact predictions
 
@@ -93,19 +105,31 @@ a_{B,j}(x,y)=r_{B,j}(x\to y)-r_{B,j}(y\to x).
 
 #### H2. Context rank
 
-For each block, order candidates by median \(D_B\); frozen config order resolves
-serialization ties but cannot create evidence. Join two blocks when at least 10%
-of anchors contain an opposite candidate ordering that passes the robustness
-rule in both blocks. Let \(G_{0.10}\) be this four-vertex graph and define the
-robust estimate \(\widehat\kappa_{0.10}=\chi(G_{0.10})\). This is a noise- and
-prevalence-thresholded lower bound on exact graded context rank, not the exact
-invariant when incompatibilities are sparse.
+Fix the preregistered split of each block's four paraphrases into halves
+\(B^1=(1,2)\) and \(B^2=(3,4)\). For two halves \(U,V\) and anchor \(x\), let
+\(q_x(U,V)\) be the fraction of candidate pairs robust in both halves whose
+ordering signs oppose; it is undefined when no pair is robust in both. Define
 
-- Point prediction: \(\widehat\kappa_{0.10}=4\) in the primary system: every
-  pair of semantic blocks has a robust incompatibility edge.
-- Cross-realization prediction: \(\widehat\kappa_{0.10}\ge3\) in at least two
-  of three systems.
-- Report the graph and witnesses; the scalar alone is insufficient.
+\[
+W=\operatorname{median}_{x,B}q_x(B^1,B^2),\qquad
+B=\operatorname{median}_{x,A<B,h\in\{1,2\}}q_x(A^h,B^h),\qquad Q=B/W,
+\]
+
+omitting undefined cells. If \(W=0<B\), set \(Q=+\infty\); if \(W=B=0\), H2 is
+undefined and unsupported. Bootstrap anchors and recompute \(W,B,Q\) in every
+replicate.
+
+- Point prediction: \(Q=3.0\) in the primary system.
+- Primary support gate: \(Q\ge2\) and the anchor-bootstrap 95% lower bound is
+  above 1.5. If \(B\le W\), contexts disagree no more than paraphrases do and
+  the measured system is treated as effectively rank one.
+- Still report \(G_{0.10}\), its reversal witnesses, and
+  \(\widehat\kappa_{0.10}=\chi(G_{0.10})\), where an edge requires at least 10%
+  of anchors to have a robust reversal. This statistic localizes which blocks
+  can share an ordering, but it is not evidence for H2 because four noisy
+  vertices can saturate at \(K_4\).
+- Report \(Q\), \(W\), \(B\), and \(\widehat\kappa_{0.10}\) for every system;
+  there is no cross-system H2 support gate in NLM-001.
 
 #### H3. Structured pluralism and held-out transfer
 
@@ -142,16 +166,26 @@ candidate rankings by \(D_B\). Aggregate by the median over anchors and blocks.
 Layer, component count, metric rank, and regularization are selected only by
 leave-one-paraphrase-out calibration. Contextual baselines may compute held-out
 hidden states but never see held-out KL labels; centering and principal
-components are fitted on calibration hidden states only. In each bootstrap
-replicate, compare native KL with the best reselected baseline; do not freeze a
-weak competitor after seeing results.
+components are fitted on calibration hidden states only. Metric fits are done
+once on the full calibration data. Retain per-anchor calibration-label accuracy
+for every baseline. In each anchor-bootstrap replicate, recompute each
+baseline's mean calibration accuracy on the sampled anchors, select the
+strongest (fixed baseline order breaks ties), and compare native KL with that
+baseline on the sampled held-out reversal-active anchors. Thus the bootstrap
+reselects the competitor without refitting it; its interval is conditional on
+the frozen fits.
+
+Held-out pairwise labels exist only when the ordering is robust separately in
+both held-out blocks and the two signs agree. No pooled or one-block label may
+replace this intersection.
 
 ### Kill conditions
 
 1. **Directedness killed:** the 95% upper bound on robust asymmetric-pair
    fraction is below 0.05.
-2. **First non-collapse bet killed:** the robust incompatibility graph is empty
-   (\(\widehat\kappa_{0.10}=1\)) in all three systems.
+2. **First non-collapse bet fails:** \(B\le W\) in the primary system, regardless
+   of \(\widehat\kappa_{0.10}\). It is killed strongly if the 95% upper bound on
+   \(Q\) is at most 1. Graph saturation cannot rescue it.
 3. **Predictive novelty killed:** the strongest contextual or learned metric
    matches or exceeds native calibration KL on held-out accuracy
    (\(\Delta_{\rm rev}\le0\)).
@@ -174,3 +208,14 @@ weak competitor after seeing results.
 No generation accuracy is reported, so the termination gate is not applicable.
 No claim leaves the repository until the held-out, clustered, baseline, and
 cross-realization gates above are actually run.
+
+### Round 2 lock changes
+
+Full-vocabulary laws replace coarsening because the exact computation already
+fits the CPU budget. H2 support now compares between-context reversals with its
+within-context paraphrase null; chromatic number is descriptive. The numerical
+null, two-paraphrase robustness, two-block held-out labels, and bootstrap
+baseline reselection are specified at implementation resolution. The current
+analyzer must add the H2 anchor bootstrap, use both between-block halves, and
+retain per-anchor calibration accuracies for genuine within-replicate baseline
+selection before confirmatory execution.
