@@ -191,6 +191,8 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--cache", required=True); ap.add_argument("--out", required=True)
     ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--endpoint", choices=["rawpixel_knn", "fine_label"], default="rawpixel_knn",
+                    help="consequence endpoint for measurement 3: raw-pixel kNN fine label (NLM-002 lock) or the true fine label, which no head is trained on")
     a = ap.parse_args()
     t0 = time.time(); rng = np.random.default_rng(a.seed)
     cache = Path(a.cache); d = np.load(cache / "cache.npz"); px = np.load(cache / "pixels.npz")
@@ -208,10 +210,11 @@ def main():
     print("M2", json.dumps(m2), flush=True)
     m1 = measurement_1(tr, te, heads, blocks, rng)
     print("M1", json.dumps(m1), flush=True)
-    m3 = measurement_3(tr, te, heads, te["blocks"], knn_pix, rng)
+    endpoint = knn_pix if a.endpoint == "rawpixel_knn" else te["fine"]
+    m3 = measurement_3(tr, te, heads, te["blocks"], endpoint, rng)
     print("M3", json.dumps(m3), flush=True)
     out_dir = RESULTS / a.out; out_dir.mkdir(parents=True, exist_ok=True)
-    result = {"cache_manifest_sha256": hashlib.sha256((cache / "manifest.json").read_bytes()).hexdigest(),
+    result = {"endpoint": a.endpoint, "cache_manifest_sha256": hashlib.sha256((cache / "manifest.json").read_bytes()).hexdigest(),
               "cache_sha256": man.get("cache_sha256"), "seed": a.seed, "seconds": round(time.time() - t0, 1),
               "heads_trained_on": list(blocks), "fine_label_head_trained": False,
               "M1_chart_path_closure": m1, "M2_endpoint_independence": m2, "M3_F_vs_R": m3}
