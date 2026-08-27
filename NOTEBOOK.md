@@ -39,6 +39,27 @@ was learned, what's next. Canonical state lives in STATE.md.
   hidden-state capture. Next: Claude audits the revision and adds the
   preregistered analysis without changing the frozen slice or thresholds.
 
+## 2026-08-27 — NLM-002 non-LM branch run: endpoint killed, chart-path structure found
+
+- Artifact frozen (CIFAR-100 → DINOv2-small, 6000/2000, sha256 8de4f0b0…);
+  locked with two recorded implementation decisions; run in 133 s on CPU.
+- M2: the raw-pixel k=32 kNN fine-label endpoint is nearly uninformative
+  (0.115 accuracy; 0.12 agreement with embedding kNN) → preregistered endpoint
+  kill condition met. M3 (F vs R) is therefore a tie on noise (Δ = −0.004
+  [−0.034, +0.026]); no primitive verdict. Lesson: independence is necessary,
+  informativeness is not optional — the true fine label (no head trained on it)
+  is both and should have been the endpoint.
+- M1 (chart-path closure), the informative result: along chart-straight lines
+  between same-class embeddings the coarse-semantic readout is monotone in 98%
+  of paths (flicker 2% [0.3, 3.7]); between classes, fine-label kNN flickers on
+  38% [32, 44] of lines and any-readout on 78% [73, 83] — straight lines between
+  classes pass through third classes. Within-class chart lines are near
+  world-paths for semantics; cross-class lines are not. Pixel-statistic heads
+  are weak (52–59% test accuracy) and their flicker is partly head noise.
+- Process: Codex sessions are now always fresh with terse file-pointing
+  prompts (Devansh); `_meta/INDEX.md` row for this project updated for sister
+  agents; no blackboard MCP is configured on this machine.
+
 ## 2026-08-27 — NLM-001 closed negative; NLM-002 designed as a primitive competition
 
 - NLM-001 verdict (Codex round 3, `1584514`): instrument-void for confirmation
