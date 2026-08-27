@@ -2,9 +2,10 @@
 
 For each system and each carrier probe p: the next-token law K_p(x) for every
 item x, from which we store the directed-KL matrix R_p[i, j] = KL(K_p(x_i) || K_p(x_j)).
-Also stored, for the imported/contextual baselines: input-embedding cosine,
-centered cosine, all-but-top-k cosine, norms, and hidden-state cosine at the
-substituted slot for several layers, per probe.
+Also stored, for the imported/contextual baselines: the input-embedding matrix
+X of the items, imported metrics on it (cosine, centered, all-but-top-k, norms,
+Euclidean, one-step unembedding KL), and raw hidden states at the substituted
+slot per probe at layers (0, L/4, L/2, L).
 
 Writes one compact .npz per system to experiments/results/<run>/ plus a JSON
 manifest with revisions and the numerical null. Analysis lives in
@@ -47,9 +48,16 @@ def all_but_top(X, k, ref):
     return cosine_matrix(Xc - (Xc @ P.T) @ P)
 
 
-def run_system(system: str, cfg: dict, layers: tuple[int, ...], seed: int, out_dir: Path):
+def default_layers(sp) -> tuple[int, ...]:
+    """Embedding output, quartile, half, final — hidden_states indices."""
+    L = int(sp.model.config.num_hidden_layers)
+    return (0, L // 4, L // 2, L)
+
+
+def run_system(system: str, cfg: dict, layers: tuple[int, ...] | None, seed: int, out_dir: Path):
     t0 = time.time()
     sp = SubstitutionProbe(system)
+    layers = layers or default_layers(sp)
     items = [w for pos in cfg["items"] for w in cfg["items"][pos]]
     pos_of = {w: pos for pos in cfg["items"] for w in cfg["items"][pos]}
     ids = [sp.single_token_id(w) for w in items]
@@ -87,12 +95,12 @@ def run_system(system: str, cfg: dict, layers: tuple[int, ...], seed: int, out_d
         lp, hid = sp.law(probe, states, layers=layers)
         R[p["name"]] = directed_kl(lp).astype(np.float32)
         for l in layers:
-            H[f"{p['name']}__L{l}"] = cosine_matrix(hid[l]).astype(np.float32)
+            H[f"{p['name']}__L{l}"] = hid[l].astype(np.float32)   # raw hidden states at the slot (k, D)
         print(f"  {system} {p['name']:8s} done ({time.time() - t0:.0f}s)", flush=True)
 
     tag = system.replace("/", "__")
     np.savez_compressed(out_dir / f"{tag}.npz", items=np.array(items), pos=np.array([pos_of[w] for w in items]),
-                        **{f"R__{k}": v for k, v in R.items()}, **{f"H__{k}": v for k, v in H.items()},
+                        X=X, **{f"R__{k}": v for k, v in R.items()}, **{f"H__{k}": v for k, v in H.items()},
                         **{f"B__{k}": v for k, v in base.items()})
     return {"system": system, "revision": sp.revision, "tied": sp.tied, "embed_dim": int(sp.E.shape[1]),
             "vocab": int(sp.E.shape[0]), "n_items": len(items), "layers": list(layers),
@@ -104,7 +112,8 @@ def main():
     ap = argparse.ArgumentParser(description=__doc__)
     ap.add_argument("--config", required=True)
     ap.add_argument("--systems", nargs="+", default=None)
-    ap.add_argument("--layers", type=int, nargs="+", default=[1, 4, 8, 12])
+    ap.add_argument("--layers", type=int, nargs="+", default=None,
+                    help="hidden_states indices; default = (0, L/4, L/2, L) per model")
     ap.add_argument("--seed", type=int, default=0)
     ap.add_argument("--out", required=True, help="run name under experiments/results/")
     a = ap.parse_args()
@@ -114,7 +123,7 @@ def main():
     manifest = {"config": a.config, "config_name": cfg["name"], "torch": torch.__version__,
                 "device": "cpu", "dtype": "float32", "seed": a.seed, "systems": []}
     for s in systems:
-        manifest["systems"].append(run_system(s, cfg, tuple(a.layers), a.seed, out_dir))
+        manifest["systems"].append(run_system(s, cfg, tuple(a.layers) if a.layers else None, a.seed, out_dir))
         (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     print(json.dumps(manifest, indent=2))
 
