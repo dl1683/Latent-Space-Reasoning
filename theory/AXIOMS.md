@@ -1,5 +1,25 @@
 # Native latent mathematics — living axioms
 
+## Navigation requirements (what must exist before theorem)
+
+A denizen must first define:
+
+1. identity — when a moved trajectory has returned to the same place;
+2. moves — what interventions are legal (substitution, interpolation, residual edits, composition);
+3. cost — operational effort to execute a legal move;
+4. map — prediction of consequences of moves not yet made;
+5. laws — stable regularities across regions that are reusable for new moves.
+
+For each requirement, the native target and the imported ℝⁿ construct it must beat:
+
+- identity: native relation \(x \sim_c y\) from probe agreement for a fixed probe context \(c\); imported: neighborhood/equivalence from vector distance; separation: probe-swap swapback vs path-reversal tests with fixed anchors.
+- moves: native interventions are probe-indexed edits (substitute residual/probe state, interpolate \(x_t=(1-t)x+t x'\), compose moves, residual edits); imported: linear arithmetic and Euclidean segment arithmetic; separation: non-commuting two-step path vs one-step shortcut and move-closure violations in hidden-coordinate models.
+- cost: native move cost is measured on intervention budget (e.g., number of edits, entropy budget, probe-compute), and can be asymmetric; imported: fixed norms or geodesic length; separation: calibration pairs where asymmetry changes order but distance is symmetric.
+- map: native map is a transition model for outcomes of unmade moves; imported: function of coordinates or metric neighborhood expansion; separation: path-specific endpoint predictions (separatrix/interpolation) where coordinate-only surrogates cannot distinguish move order.
+- laws: native laws are invariants of trajectory-plus-probe semantics across regions; imported: algebraic identities and smooth manifolds; separation: transport tests of invariants under admissible move families and probe re-indexing.
+
+NLM-001 currently measured only (1), as observation-only substitutability under probe contexts; it did not instantiate moves, costs, maps, or region laws, so it could collapse onto the model's own contextual representation.
+
 Status: Round 3 audited, 2026-08-27. This file contains only the active
 relational foundation. Dialogue and rejected formulations stay in `dialogue/`.
 

@@ -30,10 +30,10 @@ starts from this question, not from a theorem we already know.
 
 ## Live question
 
-What is the smallest axiom set under which a latent space has a well-defined
-native notion of (a) closeness, (b) evidence/update, (c) composition — and which
-of those notions, when instantiated on a real embedding space, predicts something
-ℝⁿ-imported math gets wrong?
+What is the smallest native axiom set that makes navigation well-defined:
+identity (when I have returned to the same place), admissible moves, move cost,
+maps that predict unmade moves, and regularity laws across regions — and which
+native instantiation predicts held-out behavior that a fixed ℝⁿ import cannot?
 
 ## Constraints
 
