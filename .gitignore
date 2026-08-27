@@ -174,3 +174,6 @@ legacy/docs/BIFURCATION_ANALYSIS_FINDINGS.md
 
 # Shared agent blackboard state (Iqidis blackboard MCP); internal reasoning, never public
 .blackboard/
+
+# Transport embeddings (reproducible from cache + build_vision_cache.py --edits; sha256 in theory/EXPERIMENTS.md)
+experiments/results/*/edits.npz
