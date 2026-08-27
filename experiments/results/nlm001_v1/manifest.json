@@ -57,5 +57,17 @@
       "null_kl_batched_vs_single": 2.86102294921875e-06,
       "seconds": 80.2
     }
-  ]
+  ],
+  "post_hoc_metadata": {
+    "recorded_after_analysis": true,
+    "reason": "preregistration required tokenizer revision, library versions, thread count, batch size; runner recorded only model config hash and torch version. Values below are recoverable facts of the same run, added 2026-08-27 after the primary analysis and flagged as such.",
+    "transformers": "5.8.1",
+    "torch": "2.11.0+cu128",
+    "python": "3.12.13",
+    "torch_num_threads": 24,
+    "batch_size": 16,
+    "dtype": "float32",
+    "device": "cpu",
+    "model_revision_source": "config._commit_hash = resolved snapshot commit; tokenizer loaded from the same snapshot (same revision)"
+  }
 }

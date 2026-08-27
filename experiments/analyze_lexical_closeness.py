@@ -24,9 +24,18 @@ RESULTS = Path(__file__).parent / "results"
 
 
 # ---------- loading ----------------------------------------------------------------
-def load(run: str, system: str):
+def load(run: str, system: str, exclude=()):
     d = np.load(RESULTS / run / f"{system.replace('/', '__')}.npz", allow_pickle=False)
-    return {k: d[k] for k in d.files}
+    out = {k: d[k] for k in d.files}
+    if exclude:
+        items = [str(w) for w in out["items"]]
+        keep = np.array([w not in set(exclude) for w in items])
+        n = len(items)
+        for k, v in list(out.items()):
+            if k in ("items", "pos"): out[k] = v[keep]
+            elif v.ndim == 2 and v.shape[0] == n and v.shape[1] == n: out[k] = v[np.ix_(keep, keep)]
+            elif v.ndim >= 1 and v.shape[0] == n: out[k] = v[keep]
+    return out
 
 
 def block_probes(cfg):
@@ -62,7 +71,7 @@ def robust(stat_j, eta, min_agree=3):
 
     locked: sign agrees in >= min_agree of J paraphrases and |median| > max(3*nu, 3*nu0, 10*eta),
             nu = pair MAD over paraphrases, nu0 = block median of nu.
-    pooled: sign agrees in ALL J paraphrases (binomial null 2^(1-J)) and |median| > max(3*nu0, 10*eta) —
+    pooled: sign agrees in ALL J paraphrases (binomial null 2^(1-J)) and |median| > max(2*nu0, 10*eta) —
             the pair's own 4-sample MAD is dropped because it measures carrier scale heterogeneity.
     """
     J = stat_j.shape[0]
@@ -72,7 +81,7 @@ def robust(stat_j, eta, min_agree=3):
     nu = mad_scale(stat_j)
     nu0 = np.median(nu[np.isfinite(nu) & (nu > 0)]) if np.any(nu > 0) else 0.0
     if RULE["name"] == "pooled":
-        thr = np.maximum(np.full_like(nu, 3 * nu0), np.full_like(nu, 10 * eta))
+        thr = np.maximum(np.full_like(nu, 2 * nu0), np.full_like(nu, 10 * eta))
         mask = (agree == J) & (np.abs(med) > thr) & (sgn != 0)
     else:
         thr = np.maximum.reduce([3 * nu, np.full_like(nu, 3 * nu0), np.full_like(nu, 10 * eta)])
@@ -300,7 +309,7 @@ def h3_summary(h3, n_boot=500, seed=0):
     return {"R": h3["R"], "R_ci95": [float(np.percentile(Rb, 2.5)), float(np.percentile(Rb, 97.5))],
             "delta_rev": (None if np.isnan(d0) else d0), "strongest_baseline_full": best0, "winner_counts_boot": winners,
             "delta_rev_ci95": [lo, float(np.percentile(boots, 97.5))] if len(boots) else None,
-            "support": bool(h3["R"] >= 0.20 and not np.isnan(d0) and d0 >= 0.05 and lo is not None and lo > 0 and np.percentile(Rb, 2.5) > 0.10),
+            "support": bool(h3["R"] >= 0.15 and not np.isnan(d0) and d0 >= 0.05 and lo is not None and lo > 0 and np.percentile(Rb, 2.5) > 0.05),
             "heldout_acc_all_anchors": {k: (float(np.nanmean(v)) if np.any(np.isfinite(v)) else None) for k, v in acc.items()},
             "heldout_acc_active_anchors": {k: (float(np.nanmean(v[active])) if np.any(np.isfinite(v[active])) else None) for k, v in acc.items()},
             "calib_acc_baselines": {k: (float(np.nanmean(v)) if np.any(np.isfinite(v)) else None) for k, v in calib.items()}}
@@ -343,8 +352,8 @@ def h4_cross(blocks_a, blocks_b, h1a, h1b, eta, n, n_perm=200, seed=0):
 
 
 # ---------- main -----------------------------------------------------------------
-def analyze_system(run, system, cfg, manifest_entry, scale_normalize=False):
-    data = load(run, system)
+def analyze_system(run, system, cfg, manifest_entry, scale_normalize=False, exclude=()):
+    data = load(run, system, exclude)
     n = len(data["items"]); eta = float(manifest_entry["null_kl_batched_vs_single"])
     bp = block_probes(cfg)
     blocks = {B: block_stack(data, names, scale_normalize) for B, names in bp.items()}
@@ -364,13 +373,15 @@ def main():
     ap.add_argument("--run", required=True); ap.add_argument("--config", required=True)
     ap.add_argument("--scale-normalize", action="store_true", help="per-paraphrase KL scale normalization (round 2b)")
     ap.add_argument("--rule", choices=["locked", "pooled"], default="locked", help="robustness rule (see robust())")
+    ap.add_argument("--exclude", nargs="*", default=[], help="items excluded from the primary analysis (round 2b: the 8 calibration words)")
+    ap.add_argument("--tag", default="analysis", help="output file stem")
     a = ap.parse_args()
     RULE["name"] = a.rule
     cfg = json.loads(Path(a.config).read_text(encoding="utf-8"))
     manifest = json.loads((RESULTS / a.run / "manifest.json").read_text(encoding="utf-8"))
     results = {}
     for entry in manifest["systems"]:
-        results[entry["system"]] = analyze_system(a.run, entry["system"], cfg, entry, a.scale_normalize)
+        results[entry["system"]] = analyze_system(a.run, entry["system"], cfg, entry, a.scale_normalize, tuple(a.exclude))
         r = results[entry["system"]]
         print(f"\n=== {entry['system']} ===")
         print("H1", json.dumps(r["H1"])); print("H2", json.dumps({k: v for k, v in r["H2"].items()}))
@@ -383,9 +394,10 @@ def main():
         print("H4", a_, "|", b_, json.dumps(cross[f"{a_}|{b_}"]))
     out = {s: {k: v for k, v in r.items() if not k.startswith("_")} for s, r in results.items()}
     out["H4"] = cross
-    out["_settings"] = {"rule": RULE["name"], "scale_normalize": a.scale_normalize, "run": a.run, "config": a.config}
-    (RESULTS / a.run / "analysis.json").write_text(json.dumps(out, indent=2, default=float), encoding="utf-8")
-    print(f"\nwrote {RESULTS / a.run / 'analysis.json'}")
+    out["_settings"] = {"rule": RULE["name"], "scale_normalize": a.scale_normalize, "run": a.run, "config": a.config,
+                        "exclude": a.exclude, "n_items_analyzed": results[systems[0]]["n"], "H1_status": "exploratory (round 2b)"}
+    (RESULTS / a.run / f"{a.tag}.json").write_text(json.dumps(out, indent=2, default=float), encoding="utf-8")
+    print(f"\nwrote {RESULTS / a.run / (a.tag + '.json')}")
 
 
 if __name__ == "__main__":

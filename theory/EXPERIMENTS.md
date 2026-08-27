@@ -275,3 +275,40 @@ the 72-item primary exclusion, both-half H2 bootstrap, and genuine bootstrap
 baseline reselection before execution. Raw matrices were acquired concurrently
 before this amendment commit. They remain eligible only if no 72-word outcome
 was inspected before the lock; otherwise all of NLM-001 is exploratory.
+
+### Verdict (2026-08-27, primary 72-word analysis; Claude, pending Codex round 3)
+
+Analysis: `experiments/results/nlm001_v1/analysis_primary_72.json` (rule: 4/4
+sign, |median| > max(2ν₀, 10η̃), scale-normalized; 8 calibration words
+excluded). Sensitivity: `analysis_sensitivity_80.json`.
+
+| | Qwen3-0.6B (primary) | gemma-3-270m | SmolLM2-360M |
+| --- | --- | --- | --- |
+| H2 Q = B/W (gate Q≥2, LB>1.5) | **2.12 [1.70, 2.56] — pass** | 1.40 [0.90, 2.55] — fail | 17.1 [10.7, 36.3] — pass, but W = 0.005 |
+| H3 R (gate ≥0.15, LB>0.05) | 0.18 [0.10, 0.28] — pass | 0.14 [0.07, 0.21] — fail | 0.014 — fail |
+| H3 Δ_rev vs strongest baseline (gate ≥0.05, LB>0) | **−0.058 [−0.22, +0.03] — fail** | +0.017 [−0.02, +0.06] — fail | undefined |
+| strongest baseline | diagonal Mahalanobis, layer-7 hidden states | diagonal Mahalanobis, layer 4 | diagonal Mahalanobis, layer 32 |
+| held-out accuracy, native / best | 0.954 / ≈0.99 | 0.987 / ≈0.99 | 0.974 / ≈0.99 |
+| H1 (exploratory) robust asymmetric pairs, ≥2 blocks | 0.015 | 0.002 | 0.092 |
+| H4 τ_b median (gate LB>0.20) | Qwen–SmolLM 0.46; Qwen–gemma 0.14; gemma–SmolLM 0.13 | | |
+
+**Kill condition 3 (predictive novelty) is met in the primary system:** native
+calibration KL does not beat a learned diagonal metric on contextual hidden
+states; kill condition 6 (coordinate confound) applies — a learned Mahalanobis
+metric recovers the held-out orderings within 0.02. **Kill condition 8 applies
+as written:** the runner did not record tokenizer revision, library versions,
+thread count, or batch size at run time; they were recorded post hoc in the
+manifest and flagged. NLM-001 is therefore reported as a bounded negative
+falsifier of this instrument, not as a confirmatory result in either direction.
+
+What the data support, stated no more strongly than the audit allows: for these
+lexical items and carrier probes, decoder-induced KL orderings vary by context
+more than by paraphrase in two of three systems (Q > 1), and a symmetric learned
+metric on the model's own contextual representation predicts held-out orderings
+at least as well as the native construct. Directedness was not observed.
+Nothing here bears on "cosine is the wrong object for latent spaces".
+
+Post-verdict: any endpoint change is NLM-002. Per the Tier-3 audit, the next
+step is not more words; it is a competition among primitives and a
+decoder-aware baseline (see NOTEBOOK 2026-08-27 re-contextualization and
+`.codex_audit_t3_001` alternatives).

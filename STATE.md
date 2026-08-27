@@ -37,13 +37,17 @@ LLM perturbation line: nested-arithmetic claims withdrawn
 hypotheses are in `README.md`. Residue carried forward: the hardware-dependent
 decoding-determinism finding; the termination/direct-control/null-model gates.
 
+## NLM-001 verdict (2026-08-27)
+
+Negative on the central bet: native calibration KL does not beat a learned
+diagonal metric on the model's own contextual hidden states for held-out
+closeness orderings (Qwen3-0.6B Δ = −0.058 [−0.22, +0.03]); context reversals
+do exceed the paraphrase null (Q = 2.12 [1.70, 2.56]); directedness not
+observed. Kill conditions 3, 6, 8 apply. Details: `theory/EXPERIMENTS.md`.
+
 ## Next
 
-Align the analyzer with the locked Round-2b instrument: per-paraphrase scale
-normalization, pooled magnitude threshold, four-of-four sign rule, 72-word
-primary exclusion, H2 anchor-bootstrap ratio using both halves, and genuine
-per-replicate baseline reselection. Raw three-system matrices already exist and
-must remain outcome-sequestered until the amendment is committed; analyze them
-rather than rerunning measurement. Directed asymmetry is exploratory; primary
-claims are context non-collapse and held-out transfer. Exact predictions and
-kill conditions are in `theory/EXPERIMENTS.md`.
+Codex round 3: adopt the Tier-3 audit's corrections, fix the verdict language,
+and choose the next primitive to compete — decoder-aware (Fisher/logit-law)
+baseline, causal internal states, probabilistic/denotational foundation on
+diffusion latents, or a non-LM modality. Not NLM-002 on more words.
