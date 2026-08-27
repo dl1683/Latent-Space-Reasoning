@@ -39,6 +39,33 @@ was learned, what's next. Canonical state lives in STATE.md.
   hidden-state capture. Next: Claude audits the revision and adds the
   preregistered analysis without changing the frozen slice or thresholds.
 
+## 2026-08-27 — NLM-001 closed negative; NLM-002 designed as a primitive competition
+
+- NLM-001 verdict (Codex round 3, `1584514`): instrument-void for confirmation
+  (runtime metadata reconstructed post hoc), bounded negative falsifier of the
+  lexical-KL instrument. Native calibration-KL lost to a symmetric metric on
+  contextual hidden states (Qwen Δ = −0.058 [−0.22, +0.03]; unlearned centered
+  cosine at layer 14 reached 1.000 on held-out orderings vs native 0.954);
+  context reversals exceeded the paraphrase null in 2/3 systems (Qwen Q = 2.12
+  [1.70, 2.56]); directedness absent. T2/T3 demoted to bookkeeping; T1's
+  conjunction-closure premise fixed. Fresh Tier-3 audit adopted.
+- NLM-002 (`theory/dialogue/002.md`, skeleton, not locked): mutual-kill
+  competition between F (one fixed Fisher response-law geometry pulled back
+  through frozen decoders/heads) and R (probe-indexed substitutability tested
+  outside LMs, on DINOv2 image embeddings), each with an independent behavioral
+  endpoint and a common-support Q estimator.
+- Artifact prep for arm R: no image data existed locally. Building
+  `experiments/results/vision_cifar100_dinov2s/` — CIFAR-100 (fine + coarse
+  labels) → DINOv2-small CLS embeddings on CPU (35 ms/image), plus label-free
+  pixel statistics (mean RGB, luminance, edge density) so probe blocks can ask
+  questions not derived from the class taxonomy. Manifest carries dataset and
+  encoder revisions, split indices, seed, sha256.
+- F-arm implementation note for the lock: the LM Fisher pullback can be
+  estimated as G = mean over sampled tokens t~K_c(z) of the outer product of
+  ∇_z log K_c(z)(t) (VJPs through the frozen decoder; ~64 samples per state and
+  calibration probe, D = 1024, CPU-feasible in ~30 min); the DINOv2 arm's Fisher
+  is exact for a linear head (G = mean_z W^T F(p) W).
+
 ## 2026-08-27 — Tier-3 re-contextualization (Claude, before the auditor's answer)
 
 **Live question.** Is closeness in a latent space context-indexed and directed

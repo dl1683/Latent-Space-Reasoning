@@ -1,0 +1,105 @@
+"""Build the frozen non-LM latent-state artifact for NLM-002 arm R.
+
+States: DINOv2 CLS embeddings of CIFAR-100 images (CPU, frozen encoder).
+Labels shipped with the artifact: fine class (100), coarse superclass (20), and
+label-free pixel statistics (mean RGB, luminance, edge density) so that probe
+blocks can ask questions not derived from the class taxonomy.
+
+Nothing here is outcome-bearing: no heads are fit, no distances computed. The
+artifact identity (dataset revision, encoder revision, split sizes, seed, sha256)
+is written to a manifest for the preregistration to freeze.
+
+    python experiments/build_vision_cache.py --n-train 6000 --n-test 2000 --out vision_cifar100_dinov2s
+"""
+from __future__ import annotations
+
+import argparse
+import hashlib
+import json
+import sys
+import time
+from pathlib import Path
+
+import numpy as np
+import torch
+
+RESULTS = Path(__file__).parent / "results"
+
+
+def pixel_stats(img: np.ndarray) -> np.ndarray:
+    """img: (H, W, 3) uint8. Returns mean RGB (3), luminance mean (1), edge density (1)."""
+    x = img.astype(np.float32) / 255.0
+    rgb = x.reshape(-1, 3).mean(0)
+    lum = 0.299 * x[..., 0] + 0.587 * x[..., 1] + 0.114 * x[..., 2]
+    gy, gx = np.gradient(lum)
+    edge = float(np.mean(np.sqrt(gx ** 2 + gy ** 2)))
+    return np.concatenate([rgb, [lum.mean()], [edge]]).astype(np.float32)
+
+
+def main():
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("--dataset", default="uoft-cs/cifar100")
+    ap.add_argument("--encoder", default="facebook/dinov2-small")
+    ap.add_argument("--n-train", type=int, default=6000)
+    ap.add_argument("--n-test", type=int, default=2000)
+    ap.add_argument("--seed", type=int, default=0)
+    ap.add_argument("--batch", type=int, default=32)
+    ap.add_argument("--out", required=True)
+    a = ap.parse_args()
+
+    from datasets import load_dataset
+    from transformers import AutoImageProcessor, AutoModel
+
+    t0 = time.time()
+    ds = load_dataset(a.dataset)
+    print(f"dataset loaded {time.time() - t0:.0f}s: {list(ds.keys())} cols={ds['train'].column_names}", flush=True)
+    fine_col = "fine_label" if "fine_label" in ds["train"].column_names else "label"
+    coarse_col = "coarse_label"
+    img_col = "img" if "img" in ds["train"].column_names else "image"
+
+    rng = np.random.default_rng(a.seed)
+    idx_train = np.sort(rng.choice(len(ds["train"]), size=a.n_train, replace=False))
+    idx_test = np.sort(rng.choice(len(ds["test"]), size=a.n_test, replace=False))
+
+    proc = AutoImageProcessor.from_pretrained(a.encoder)
+    model = AutoModel.from_pretrained(a.encoder).eval()
+    enc_rev = getattr(model.config, "_commit_hash", None)
+
+    def encode(split, idx):
+        embs, fine, coarse, stats = [], [], [], []
+        sub = ds[split].select(idx.tolist())
+        for i in range(0, len(sub), a.batch):
+            rows = sub[i:i + a.batch]
+            imgs = [im.convert("RGB") for im in rows[img_col]]
+            with torch.no_grad():
+                out = model(**proc(images=imgs, return_tensors="pt"))
+            embs.append(out.pooler_output.float().numpy())
+            fine.extend(rows[fine_col]); coarse.extend(rows[coarse_col])
+            stats.extend(pixel_stats(np.asarray(im)) for im in imgs)
+            if (i // a.batch) % 20 == 0:
+                print(f"  {split} {i + len(imgs)}/{len(sub)} ({time.time() - t0:.0f}s)", flush=True)
+        return np.concatenate(embs), np.array(fine), np.array(coarse), np.stack(stats)
+
+    out_dir = RESULTS / a.out; out_dir.mkdir(parents=True, exist_ok=True)
+    arrays = {}
+    for split, idx in (("train", idx_train), ("test", idx_test)):
+        E, f, c, s = encode(split, idx)
+        arrays.update({f"{split}_emb": E, f"{split}_fine": f, f"{split}_coarse": c, f"{split}_pixstats": s, f"{split}_idx": idx})
+    path = out_dir / "cache.npz"
+    np.savez_compressed(path, **arrays)
+    sha = hashlib.sha256(path.read_bytes()).hexdigest()
+    fine_names = ds["train"].features[fine_col].names if hasattr(ds["train"].features[fine_col], "names") else None
+    coarse_names = ds["train"].features[coarse_col].names if hasattr(ds["train"].features[coarse_col], "names") else None
+    manifest = {"dataset": a.dataset, "encoder": a.encoder, "encoder_revision": enc_rev, "embed_dim": int(arrays["train_emb"].shape[1]),
+                "n_train": a.n_train, "n_test": a.n_test, "seed": a.seed, "batch": a.batch, "device": "cpu", "dtype": "float32",
+                "torch": torch.__version__, "torch_num_threads": torch.get_num_threads(),
+                "transformers": __import__("transformers").__version__, "datasets": __import__("datasets").__version__,
+                "python": sys.version.split()[0], "fine_names": fine_names, "coarse_names": coarse_names,
+                "pixstats_columns": ["mean_r", "mean_g", "mean_b", "mean_luminance", "edge_density"],
+                "cache_sha256": sha, "seconds": round(time.time() - t0, 1)}
+    (out_dir / "manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    print(json.dumps({k: v for k, v in manifest.items() if k not in ("fine_names", "coarse_names")}, indent=2))
+
+
+if __name__ == "__main__":
+    main()
