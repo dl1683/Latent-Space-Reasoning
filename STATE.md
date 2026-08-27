@@ -269,7 +269,7 @@ two pairs, with carrier-shuffled loss, 95% cell support, and word/carrier
 clustered bootstrap. The run is CPU-only, one process, with a hard 20-minute
 cap and no generation.
 
-## Next
+## Next (after Round 13)
 
 The analyzer repair is present, but do not score until the amended lock below
 is the active preregistration and the completion-context path, calibration-only
@@ -328,3 +328,50 @@ validation only, not a result.
 
 Do not score until the Round 14 amendment is recorded as the active lock and
 all its validity checks are auditable.
+
+## Round 15 — NLM-007 fallback adjudication (2026-08-28)
+
+Round 15 is documentation-only; no experiment was run. The predeclared CPU
+fallback was scored as `L0->L1`, `L8->L9`, and `L27->L28`, with 20 shuffles and
+500 bootstrap replicates, so it is incomplete for the full six-pair lock and
+overran the 20-minute cap by 19%.
+
+`L0->L1` is lexical persistence: word-mean = field at `0.949`, shuffled null
+`0.95`, support `1.0`. `L8->L9` is the first qualifying pair: ridge reaches
+about `0.941` successor cosine versus chart `0.86` and word mean `0.861`,
+clears the `>=0.05` chart and `>=0.02` word-mean gates on successor plus both
+completed-law readouts with positive clustered lower bounds, support `1.0`,
+and a shuffled null about `0.75–0.84` versus field about `0.94`. Full ridge, not
+rank-`<=128` low-rank affine, is the supported middle-depth complexity; the
+low-rank miss is about `0.05`. The within-carrier oracle is below the
+cross-carrier field.
+
+`L27->L28` is void for the completed-law claim: reading the law at the last
+token disconnects it from the slot after layer 27, yielding degenerate KL,
+undefined skill, ordering `1.0`, and support about `0.42–0.56`. The corrected
+endpoint reads the next-token law at the substituted slot position itself
+through the final norm and head.
+
+Decision: run the remaining three pairs `L4->L5`, `L12->L13`, and `L20->L21`
+next, with the corrected endpoint and a predeclared 30-minute CPU budget for
+the estimated 24-minute extension. Predictions are: `L4->L5` low-rank affine
+but lexical-persistence dominated and gate-failing; `L12->L13` full ridge,
+with the second qualifying pair predicted; `L20->L21` kernel ridge, with
+successor improvement possible but complete late three-endpoint passage
+unlikely.
+
+Under the guiding question, this is the first measured instance of a law in
+Navigation requirement (e): a denizen can learn transport at middle depth on
+some contexts and reuse it on others, then predict the world's downstream law.
+It is not yet native. Required follow-ups are a class-stratified unseen-word
+split with disjoint calibration/test words and the same gates, and replication
+on a second model family (SmolLM2 or Gemma) with pinned revisions and the same
+controls. Until both pass, the claim is limited to one model and shared words.
+
+## Next
+
+Run only the three predeclared remaining pairs after the corrected endpoint and
+30-minute extension budget are recorded before scoring. Do not call the
+two-pair gate until a second pair clears all three endpoints; do not generalize
+the law beyond this model until the unseen-word and second-family follow-ups
+are run.

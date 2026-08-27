@@ -1135,9 +1135,12 @@ Also report normalized successor error
 `||Yhat-Y|| / ||Y-Ybar_cal||`, where `Ybar_cal` is the outer-fold calibration
 mean. The primary completed-law endpoint is obtained by inserting `Yhat` into
 the actual full hidden sequence at layer `l+1`, retaining all non-slot states,
-and executing layers `l+2..28` followed by the final norm and LM head. For
-`L27→L28`, only the final norm and head remain. Let `q` be the true final
-next-token law and `qhat` the completed predicted law. Report raw
+and executing layers `l+2..28` followed by the final norm and LM head at the
+slot position. For `L27→L28`, this means reading the next-token law at the
+substituted slot position itself through the final norm and LM head; it does
+not mean reading the law at the sequence's last token when that is a different
+position. Let `q` be the true next-token law at that same slot position and
+`qhat` the completed predicted law. Report raw
 `KL(q || qhat)` (lower is better), normalized KL skill
 `1 - KL(q || qhat)/KL(q || qmean)`, and ordering preservation.
 
@@ -1330,3 +1333,93 @@ read alongside the word-mean gate and the depth-specific null interpretation:
 
 These remain falsifiable depth-region predictions. No score from the smoke
 artifact is a result: it validates only the 16-word, `L0->L1` pipeline.
+
+## Round 15 — NLM-007 fallback adjudication and corrected late endpoint (2026-08-28)
+
+**Codex, documentation-only adjudication; no experiment was run in Round 15.**
+
+### Fallback verdict
+
+The fallback was declared before scoring as one representative pair per depth
+region, with 20 shuffles and 500 bootstrap replicates. It therefore remains an
+incomplete run for the full six-pair lock, even though its observed middle pair
+is informative.
+
+- **`L0->L1`: lexical persistence.** The word-conditioned mean equals the field
+  (pooled successor cosine `0.949` for both), with support `1.0` and shuffled
+  null `0.95`. This is a carrier-independent/context-free block action, not a
+  state-dependent transport law; it fails the word-mean separation gate.
+- **`L8->L9`: single-pair support.** Ridge reaches about `0.941` successor
+  cosine versus `0.86` for the best static chart and `0.861` for the word mean.
+  Completed-law skill is about `0.905` versus `0.668` for the chart and
+  `0.684` for the word mean. The clustered lower bounds are positive on
+  successor cosine and both completed-law readouts, the shuffled null is about
+  `0.75–0.84` versus field about `0.94`, and support is `1.0`. It clears every
+  single-pair gate, but one pair is not the lock's two-pair verdict.
+- **`L27->L28`: void completed endpoint.** The successor lead is not usable for
+  the navigation claim because the completed law was read at the last token.
+  After layer 27 no remaining layer connects the substituted slot to that
+  location when they differ, producing KL `0`, undefined skill, ordering
+  `1.0` for every predictor, and support only about `0.42–0.56`. This is a
+  design flaw in the endpoint, not evidence about late transport.
+
+The result also corrects two complexity readings. At middle depth the law is
+affine but not low-rank at the tested bound: full ridge beats rank-`<=128`
+prediction by about `0.05`. The within-carrier oracle is below the cross-carrier
+field (64 training words versus 960 cross-carrier cells), so the lead is not
+explained by a carrier-specific oracle. The run exceeded the 20-minute cap by
+`19%`; this is recorded as a budget failure of the fallback, not hidden.
+
+### Corrected final-block endpoint
+
+Before any late-block score is interpreted, the analyzer must insert the
+predicted `L28` slot state into the actual full sequence and read the next-token
+law at the substituted slot position itself through the final norm and language
+model head. The true comparison law is the true law at that same slot position.
+The last-token readout is invalid unless the slot is the last token. The old
+`L27->L28` completed endpoint is not repaired retrospectively; it is void.
+
+### Decision and pre-run predictions
+
+**Decision: run the remaining three pairs** `L4->L5`, `L12->L13`, and
+`L20->L21` in the next measurement, with the corrected final-block endpoint.
+This is the shortest path to the required second qualifying pair; the held-out
+carrier split, word-mean baseline, static controls, support rules, revision
+pins, reload check, completion endpoint, and clustered statistics remain
+unchanged. The estimated cost is about 24 CPU minutes, so this extension is
+predeclared with a 30-minute wall-clock budget and one CPU process. It is not a
+license to reinterpret a run that exceeds that new budget.
+
+The exact predictions are fixed as follows:
+
+| pair | minimal class prediction | endpoint/gate prediction |
+|---|---|---|
+| `L4->L5` | low-rank affine remains within `0.02` of the best ladder score | early transport is lexical-persistence dominated: the word mean remains within `0.02` on successor and both completed-law readouts, so this pair fails the transport gate; a shuffled match is expected and is interpreted as carrier independence |
+| `L12->L13` | full ridge is minimal; rank-`<=128` low-rank affine misses by more than `0.02` | this is the predicted second qualifying pair: ridge beats the chart by `>=0.05` and the word mean by `>=0.02` on successor and both corrected completed-law readouts, with positive clustered lower bounds and a shuffled field below the unshuffled field by more than `0.02` |
+| `L20->L21` | kernel ridge is minimal | successor transfer may beat the chart, but late attenuation is predicted to prevent a complete three-endpoint `+0.05` gate; the corrected endpoint is expected to remain defined and supported, unlike the old `L27->L28` readout |
+
+These predictions are deliberately stronger than the regional class labels and
+must be logged before held-out scores are opened. If `L12->L13` does not supply
+the second qualifying pair, NLM-007 remains single-pair support and earns no
+two-pair dynamics-map verdict.
+
+### What this law means, and what would make it native
+
+Under the guiding question, a denizen of this latent world can learn a rule for
+how a state moves at middle depth from some carrier contexts and reuse that
+rule on carriers it has not seen. The first measured instance is not a new
+geometry: it is a reusable, carrier-transferring affine transport law whose
+full-dimensional ridge form predicts the world's downstream response law. The
+world supplies a move; the denizen supplies a compact predictive regularity for
+that move. The early result shows why reuse alone is insufficient: a word's
+successor can persist without depending on the incoming state.
+
+This is not yet a native law of latent space. It is one model's law on shared
+words and a carrier split. The required follow-ups are now concrete and
+registered: (1) a class-stratified unseen-word split, with calibration and
+held-out word sets disjoint within each carrier-block fold and the same three
+endpoint gates; and (2) the same amended protocol on a second model family,
+SmolLM2 or Gemma, with model and tokenizer revisions pinned and the same
+carrier-transfer, word-mean, shuffled-null, completion, and support gates.
+Only persistence across unseen words and a second family can move this from a
+single-model interpretability result toward a native-law claim.

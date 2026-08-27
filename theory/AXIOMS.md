@@ -301,3 +301,38 @@ The next navigation primitive should therefore be lawful transport itself:
 LM residual streams, where the forward pass is the world's move and a map must
 predict the successor of a state. This makes dynamics an object of measurement
 rather than treating an analyst-chosen image edit as the move.
+
+## Round 15 — first measured instance of Navigation requirement (e), laws
+
+NLM-007 is the first measurement in this program that instantiates requirement
+(e) as a law rather than only as a probe relation or a chart comparison. Its
+world supplies the move: one causal-LM block transports a slot state from
+`z_l,c(w)` to `z_(l+1),c(w)`. Its candidate law is a field fitted on calibration
+words and carrier blocks and tested on held-out carrier blocks; its consequence
+is judged in the world's own currency, the downstream next-token law at the
+same slot position.
+
+The fallback gives bounded evidence for one such law. At `L8->L9`, the ridge
+field clears the amended chart and word-mean gates on successor cosine and both
+completed-law readouts, with positive clustered lower bounds, full support, and
+a carrier-shuffled null below the field. Thus a denizen can learn transport on
+some contexts and reuse it on others. The law is affine but not low-rank at
+rank `<=128`, and the cross-carrier field exceeds the within-carrier oracle;
+the latter makes a carrier-specific explanation less adequate, not impossible.
+
+The boundary is equally part of the result. `L0->L1` is lexical persistence,
+not a reusable state-dependent law. `L27->L28` is not adjudicable because the
+old completed endpoint read at a disconnected last-token location; the
+corrected endpoint reads the next-token law at the substituted slot itself.
+The two-pair gate is therefore not yet met, and the result remains a
+single-model, shared-word interpretability result. The remaining three pairs
+are predeclared for the next measurement, with `L12->L13` predicted to provide
+the second qualifying pair.
+
+What would make this law native rather than an artifact of one model's chart is
+not a more elaborate fit on the same cells. It must survive a class-stratified
+unseen-word split with disjoint calibration/test words inside the same
+carrier-block design, and it must recur under the same amended protocol in a
+second model family (SmolLM2 or Gemma), with revisions, nulls, completed-law
+readouts, and support gates pinned. Until both follow-ups pass, requirement
+(e) has a first measured instance, not a model-independent law of latent space.
