@@ -17,6 +17,17 @@ measurement or posited and tested.
 **Mode.** Codex (real CLI) drives theorems and thoughts; Claude challenges,
 curates, runs cleanup, keeps the loop going. Autonomous, continuous.
 
+## Guiding question (Devansh, 2026-08-27)
+
+Mathematics was invented by inhabitants of a world to navigate it — counting,
+measuring, mapping, predicting — and its laws were shaped by what that world
+made necessary. Invert the dynamic: **take the latent space as the world.** Ask
+what a denizen of that world would have to invent to find its way — what counts
+as the same place, what a move is, what effort a move costs, what a map is, what
+regularities make prediction possible — and let that need decide which
+primitives and laws we build. Every Codex round, audit, and sub-agent brief
+starts from this question, not from a theorem we already know.
+
 ## Live question
 
 What is the smallest axiom set under which a latent space has a well-defined
