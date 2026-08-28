@@ -5,6 +5,41 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-28 — Re-contextualization #10 (LOCO A in; second lens active)
+
+- **Central bet:** native mathematics of latent spaces from what a denizen
+  must invent; **second lens:** holes that make this space hostile to
+  structured reasoning, and what the next latent space must change.
+- **Live question:** is the forward step's regularity a property of the
+  state or of its presentation — and, under the second lens, is
+  "presentation entangled with state" a hole or simply what state *is* in
+  a context-conditioned world?
+- **What still holds:** forward displacement predictable beyond word and
+  token identity from F4 in both arms; within-family LOCO positive at
+  F4–F20 (sentinel '.'); exact completion routing; nonpass (not kill) under
+  the historical ordering gate.
+- **What reframes:** the LOCO result narrows the nuisance rival to "carrier
+  identity encoded in X predicts carrier-specific displacement" — which is
+  hard to distinguish from state-dependence by construction. The
+  unseen-word split changes the axis: if the regularity survives words the
+  field never saw, it is not a lexical lookup either. The real reframing
+  is that the distinction state-vs-presentation may be ill-posed here: a
+  denizen's "place" includes the context it is in.
+- **Candidate holes (for audit #10 to test):** (1) motion invisible to the
+  response law at middle depth — likely a readout property; (2) identity-
+  dominated layer transitions — real, but a property of residual streams,
+  not a hole per se; (3) presentation entangled with state — real, status
+  unclear; (4) laws holding only within template families — not shown
+  (whole-block transfer works); (5) ordering-saturated readouts — proven
+  for our endpoint, not for the world.
+- **Alternatives held live:** the LOCO baseline is a 3-carrier mean (noisy;
+  an equalized baseline may close the gap); a response-space geometry
+  where "same place" = same law; a second family may have a different
+  persistence/consequence profile — the first cross-model native quantity.
+- **Ecosystem deposit:** "state vs presentation may be ill-posed for
+  context-conditioned representations; test it via unseen identities, not
+  via nulls that destroy alignment" → `_meta/INDEX.md`.
+
 ## 2026-08-28 — LOCO control, sentinel '.': within-family state information at F4–F20
 
 - 2902 s of the 4500 s wall; support 1.0. Per the Round 21 rule, **F4, F8,
