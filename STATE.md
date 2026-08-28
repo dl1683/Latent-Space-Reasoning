@@ -482,6 +482,8 @@ ladder**. Correct slot completion upgrades the evidence from successor-only
 forecasting with a void completed endpoint to a bounded corrected
 completed-law result; it does not establish a native affine law, intrinsic
 geometry, or a law of language-model dynamics generally.
+*(Superseded for `L8->L9` and `L12->L13` by Round 18 and audit #7 below;
+the wording is withdrawn at those pairs.)*
 
 The depth profile is the key residue: word-mean slot skill falls
 `0.95, 0.84, 0.78, 0.70, 0.43, 0.40`, while ridge stays near `0.92–0.98`.
@@ -527,10 +529,14 @@ follow-ups before generalizing beyond one model and shared words.
 The six-pair NLM-007 baseline run took `4540.8 s` against its predeclared
 `3300 s` hard budget. Per Round 16, it is budget-incomplete and contributes no
 new gate claim. The predeclared null-making withdrawal still applies:
-identity-plus-residual `Yhat = X + mean_cal(Y-X)` closes the ridge lead on all
-three corrected slot endpoints at `L8->L9` and `L12->L13` (pooled differences
-approximately `-0.008/-0.021/-0.020` and `-0.007/-0.009/-0.013` for successor
-cosine, slot skill, and slot ordering).
+identity-plus-residual `Yhat = X + mean_cal(Y-X)` closes the ridge lead on
+the three recorded comparison metrics (successor cosine, slot skill, slot
+ordering; only the latter two are completed-law slot metrics) at `L8->L9` and
+`L12->L13` (pooled differences approximately `-0.008/-0.021/-0.020` and
+`-0.007/-0.009/-0.013`). Audit #7: the `<=0.02` closure rule is a
+conservative post-hoc one-sided null-making policy, not a preregistered
+equivalence test; the intervals support "no demonstrated positive ridge
+advantage under this margin", not "no lead" or "equivalence".
 
 Those are the two pairs that carried the Round 17 two-pair criterion, so that
 criterion does not survive as a claim. The finite-ladder affine wording and
@@ -540,9 +546,11 @@ endpoints but remain non-qualifying and live; `L27->L28` remains a separate
 post-norm/direct-head family, and its raw-state versus normed-target identity
 comparison is not meaningful.
 
-NLM-007 now establishes a bounded null result: at middle depth the apparent
-ridge advantage is explained by persistence plus a shared displacement under
-this finite, shared-word design. The world's move should be decomposed as
+NLM-007 now establishes a bounded null result: at middle depth the measured
+relation is consistent with identity plus a calibration-mean displacement
+under this shared-word, held-out-carrier design; the experiment does not
+determine whether the displacement is carrier-, state-, or word-dependent
+(audit #7 wording). The world's move should be decomposed as
 `T(X)=X+Δbar_cal+ε(X,w,c)`; “same place” is observational equivalence under
 declared probes and downstream consequences within a fixed tolerance, not
 equality of stored coordinates. Early blocks leave a small residual after this
@@ -577,3 +585,40 @@ support accounting, and clustered gates; if the target is `Δ=Y-X`, make its
 mean displacement the primary decomposition before adding model capacity, and
 block a state-dependent transport claim until it beats that null and the
 lexical moot-maker.
+
+## Audit #7 — the identity-baseline withdrawal (2026-08-28)
+
+Adopted verbatim (full text: `theory/EXPERIMENTS.md`, Tier-3 audit #7). (1) The
+closure rule "pooled ridge − identres ≤ 0.02 on all three comparison metrics"
+was chosen after seeing the scores; it is a **conservative post-hoc one-sided
+null-making policy**, not a preregistered equivalence test, and is labelled so
+wherever the withdrawal is cited. (2) The clustered intervals support "no
+demonstrated positive ridge advantage under this margin", not "no lead" or
+"equivalence". (3) "Persistence plus a shared displacement" is replaced by
+"consistent with identity plus a calibration-mean displacement under this
+shared-word, held-out-carrier design; whether the displacement is carrier-,
+state-, or word-dependent is unresolved". (4) The three comparisons are
+successor cosine, slot skill, slot ordering — only the latter two are
+completed-law slot metrics. (5) "Exact" completion → "routing validated to
+measured precision (per-pair max KL 1.9e-6 to 6.2e-6 over 16 × 80 cells)".
+(6) `L4→L5` and `L20→L21` retain small live point-estimate remainders; not
+killed, not promoted. (7) `L27→L28` identres is not a persistence test.
+
+Durable residue (verbatim): identity is the null for residual-stream
+transport. The present data support persistence plus a calibration-average
+displacement as a competitive finite-design description at `L8` and `L12`,
+retain small unresolved remainders at `L4` and `L20`, and do not yet establish
+a native or generally reusable affine law.
+
+## Status and next (2026-08-28)
+
+- Running: the predeclared five-pair displacement ladder (`--target delta`,
+  ledger `nlm007_delta_predeclared`; artifact
+  `experiments/results/lm_dyn_v1/analysis_delta.json`, 95-minute hard wall).
+  Its pipeline smoke (`analysis_deltasmoke.json`) is validation only, not a
+  result.
+- Order after it (Round 18, endorsed by audit #7): forward-time transport
+  under a stricter contract (sentinel, token/position baselines, endpoint
+  definition); unseen-word and style controls before any semantic or
+  lexical-generalization language; second-family replication before any
+  general language-model claim.

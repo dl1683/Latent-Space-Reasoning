@@ -5,7 +5,7 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
-## NLM-007 — LM residual-stream dynamics; corrected slot-endpoint rerun scored, adjudication pending; "affine law" wording withdrawn at L8→L9 (2026-08-28)
+## NLM-007 — LM residual-stream dynamics; middle-depth ridge lead withdrawn under the identity baseline (post-hoc conservative policy); displacement ladder running (2026-08-28)
 
 - **Lock.** Round 13, documentation-only (ledger `nlm007_round13_lock`;
   design `theory/dialogue/003.md`, `theory/EXPERIMENTS.md`); Round 14
@@ -22,7 +22,7 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   `experiments/results/lm_dyn_v1/manifest.json` (model revision c1899de2…,
   batch 16, batched-vs-single nulls ≤ 6.1e-5, 79 s). `states.npz` is
   git-ignored; sha256 `6ec9520845811bbd…` recorded in the manifest.
-- **Artifacts (all four kept; `experiments/results/lm_dyn_v1/`).**
+- **Artifacts (`experiments/results/lm_dyn_v1/`; all kept).**
   - `analysis.json` — fallback run, pairs L0→1 / L8→9 / L27→28, 20 shuffles,
     500 boot (ledger `nlm007_fallback_declared`, `nlm007_v1_fallback`; 1427 s,
     19% over the 20-min cap). Successor-endpoint numbers valid; completed-law
@@ -31,11 +31,32 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   - `analysis_ext.json` — extension, pairs L4→5 / L12→13 / L20→21 (ledger
     `nlm007_ext_predeclared`, `nlm007_ext_v1`; 1100 s). Same validity split:
     successor valid, completed-law secondary/invalid for the lock.
-  - `analysis_slot.json` — **canonical NLM-007 result**: corrected slot-endpoint
-    rerun over all six pairs, 20 shuffles, 500 boot, seed 13007 (ledger
+  - `analysis_slot.json` — **canonical slot-endpoint result**: corrected rerun
+    over all six pairs, 20 shuffles, 500 boot, seed 13007 (ledger
     `nlm007_slot_v1`; 2145 s of a 3300 s budget; reload check unchanged).
+    Exploratory at the reduced 20/500 budget; its L8/L12 qualification is
+    withdrawn below.
   - `analysis_basesmoke.json` — moot-maker smoke at L8→L9 only, 2 shuffles /
     20 boot, point estimates (ledger `nlm007_baselines_smoke_L8`; 796 s).
+    Pipeline validation; superseded by `analysis_base.json`.
+  - `analysis_base.json` — predeclared six-pair moot-maker run
+    (identity-plus-residual and per-carrier affine; ledger
+    `nlm007_baselines_v1`). Took 4540.8 s against the predeclared 3300 s
+    budget: **budget-incomplete exploratory artifact** — measured values
+    retained, no planned full-budget gate earned; the null-making withdrawal
+    still applies (Round 18, audit #7).
+  - `identity_check.json` — stored-true-successor identity test of the slot
+    completion at every pair and carrier (ledger `nlm007_identity_check_v1`;
+    audit #6 action 3). **Valid**: routing validated to measured precision
+    (per-pair max KL 1.9e-6 to 6.2e-6 over 16 × 80 cells); no per-carrier
+    error profile or fresh-float32 comparison was stored.
+  - `analysis_deltasmoke.json` — `--target delta` pipeline smoke at L8→L9
+    (1 shuffle / 10 boot; ledger `nlm007_delta_smoke_L8`). **Not a result.**
+  - `analysis_delta.json` — **running; predeclared** (ledger
+    `nlm007_delta_predeclared`, Round 18): five-pair displacement ladder,
+    Δ = Y−X predicted from X, mean displacement as zero-order baseline,
+    word-conditioned mean displacement as lexical moot-maker, 95-minute hard
+    wall. No status until scored and adjudicated.
 - **Successor endpoint (valid in all runs).** L0→L1: word-mean = ridge =
   kernel = 0.949, shuffled null 0.95 — lexical persistence, no law beyond
   word identity. From L4 on, full-dimensional ridge beats word-mean and the
@@ -43,32 +64,42 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   0.886; L8 0.941/0.860/0.861; L12 0.977/0.898/0.888; L20 0.965/0.901/0.897;
   L27 0.976/0.883/0.864, the last on normed vectors). Shuffle penalty grows
   with depth.
-- **Mechanical gate reading on `analysis_slot.json` (Claude; Codex
-  adjudication pending, Round 17).** Qualifying pairs: L8→L9, L12→L13,
-  L27→L28 (all six checks true; support 1.0). L4→L5 and L20→L21 clear both
-  slot readouts and the word-mean gate but miss the +0.05 successor-cosine
-  lead in some folds; L0→L1 fails every lead gate. Word-mean slot skill decays
-  with depth (0.95, 0.84, 0.78, 0.70, 0.43, 0.40) while ridge holds 0.92–0.98
-  and the chart collapses late (0.50, 0.51). Round 16 scorecard: five of six
-  predictions held; the L27→L28 attenuation prediction failed. Reduced 20/500
-  budget: corrected-endpoint evidence, not the original full-budget label.
-- **Withdrawal at L8→L9 (ledger `nlm007_baselines_smoke_L8`).** The
-  identity-plus-residual predictor `Yhat = X + mean_cal(Y−X)` matches or
-  beats ridge on every endpoint (successor 0.949 vs 0.941; ridge − identres
-  ≤ +0.013 in every fold, negative in three of four). The "affine transport
-  law" wording is **withdrawn** at this pair: the move is persistence plus a
-  shared displacement. Per-carrier affine (64 training words) is far below
-  both (0.80 / 0.48), so the lead was never carrier-local fitting. This also
-  explains the low-rank miss (rank ≤128 cannot express the identity) and the
-  chart's failure. Smoke only (one pair, point estimates); the full six-pair
-  baselines run and the ladder on Δ = Y−X await Codex predeclaration.
-- **What we learned.** Identity is the obvious null for a residual stream and
-  should have been in the ladder from Round 13. No native-law claim stands:
-  the mechanical three-pair gate reading is unadjudicated and its L8→L9 lead
-  is already explained by a constant displacement; whether the displacement
-  is state-dependent beyond a constant is the open question. Bounded to one
-  model and shared words; unseen-word split and a second family are required
-  before any general claim.
+- **Slot-endpoint gate reading (Round 17, superseded at L8/L12 by Round 18).**
+  On `analysis_slot.json` the pairs L8→L9, L12→L13, L27→L28 cleared every
+  locked gate mechanically (support 1.0); L4→L5 and L20→L21 cleared both slot
+  readouts and the word-mean gate but missed the all-fold +0.05
+  successor-cosine lead (a stricter convention than the original lock, audit
+  #6); L0→L1 fails every lead gate. Word-mean slot skill decays with depth
+  (0.95, 0.84, 0.78, 0.70, 0.43, 0.40) while ridge holds 0.92–0.98 and the
+  chart collapses late (0.50, 0.51). Round 16 scorecard: five of six
+  predictions held; the L27→L28 attenuation prediction failed.
+- **Withdrawal at L8→L9 and L12→L13 (Round 18 + audit #7; ledger
+  `nlm007_baselines_v1`).** Pooled ridge − identres on successor cosine /
+  slot skill / slot ordering: L8 −0.008/−0.021/−0.020; L12 −0.007/−0.009/
+  −0.013 (only slot skill and ordering are completed-law slot metrics). On
+  shared words and held-out carrier blocks, identity-plus-shared-displacement
+  is at least as good as full ridge within a post-hoc one-sided 0.02 pooled
+  margin on the three recorded comparison metrics at L8→L9 and L12→L13; the
+  finite-ladder ridge wording is withdrawn as a conservative policy. The
+  intervals support "no demonstrated positive ridge advantage under this
+  margin", not "no lead" or equivalence. The measured relation is consistent
+  with identity plus a calibration-mean displacement under this design; the
+  experiment does not determine whether the displacement is carrier-, state-,
+  or word-dependent. The Round 17 two-pair criterion does not survive as a
+  claim. Identity-plus-shared-displacement does not meet the chosen margin at
+  L0 (+0.46), L4 (+0.033/+0.019/+0.022), L20 (+0.018/+0.034/+0.032), or L27;
+  L4 and L20 remain non-qualifying but live, while L27 is not a valid
+  raw-residual persistence comparison. Per-carrier affine is far below the
+  cross-carrier field everywhere (within-carrier diagnostic only).
+- **What we learned.** Identity is the null for residual-stream transport.
+  The present data support persistence plus a calibration-average
+  displacement as a competitive finite-design description at L8 and L12,
+  retain small unresolved remainders at L4 and L20, and do not yet establish
+  a native or generally reusable affine law. Bounded to one model and shared
+  words; unseen-word/style controls and a second family are required before
+  any general claim. Next in order: displacement ladder (running) →
+  forward-time transport under a stricter contract → unseen-word/style
+  controls → second family.
 
 ## Round 12 closure — frozen-encoder program closed; pivot to worlds with dynamics (2026-08-27)
 

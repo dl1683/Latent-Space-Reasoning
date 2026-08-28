@@ -377,6 +377,12 @@ Requirement (e) therefore remains unearned as a native law: NLM-007 now gives
 a bounded decomposition of a finite coordinate experiment into persistence plus
 a shared displacement, not a state-dependent affine invariant.
 
+*(Audit #7, 2026-08-28: the closure rule is a conservative post-hoc one-sided
+policy; the required wording is "consistent with identity plus a
+calibration-mean displacement under this shared-word, held-out-carrier design;
+whether the displacement is carrier-, state-, or word-dependent is unresolved".
+Authoritative text: `theory/EXPERIMENTS.md`, Tier-3 audit #7.)*
+
 Under the native-world reading, the lawful object to measure next is the
 displacement `Δ=Y-X`. A denizen's “same place” is observational equivalence
 under declared probes and downstream consequences, not equality of stored
