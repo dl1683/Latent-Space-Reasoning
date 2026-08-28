@@ -5,6 +5,40 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-28 — Re-contextualization #8 (forward-time run in progress)
+
+- **Central bet:** native mathematics of latent spaces from what a denizen
+  must invent. **Live question:** what is the denizen's actual step — the
+  forward-time move from the last context state to the next position — and
+  does it obey a reusable, state-dependent law that the world's response
+  registers? The layer clock was the analyst's; the token clock is the
+  world's.
+- **What still holds:** exact routing of the completion (~1e-5); lexical
+  persistence at L0 on every endpoint; identity + calibration-mean
+  displacement as a competitive description at L8/L12 (post-hoc rule,
+  labelled); state-dependent, nonlinear displacement on its own coordinates
+  from L4 on; one gated pair (L20) where the law feels the displacement.
+- **What reframes earlier work:** the question "is there a law of motion"
+  split into "is there motion" (yes, everywhere from L4) and "does the
+  world's response register it" (only late, under the slot readout). The
+  forward-time preview at F4/F8 (ridge 0.72–0.78 vs word-mean ~0.5, skill
+  ~0.45) suggests the token clock's move is both larger and more
+  consequential than the layer clock's — if it holds under the gates, the
+  native object is the forward step, and the layer-pair program was
+  measuring the wrong move.
+- **Alternatives held live:** (a) carrier/template style, not state,
+  explains displacement leads (style-balancing control pending); (b) the
+  sentinel choice ('.' vs ',') may dominate — the comma arm decides;
+  (c) 'consequential motion' may be a readout artifact (ordering is
+  saturated) rather than a world property; (d) all of this is one small
+  decoder — second family untested; (e) unseen words untested; (f) maybe
+  the denizen's map should be over *responses* (laws) rather than states —
+  a law-space geometry where 'same place' = same response, which would
+  make inconsequential motion literally zero distance.
+- **Ecosystem deposit:** "a move can be large in coordinates and invisible
+  to the world's response — always measure both, and name which one a claim
+  is about" recorded in `_meta/INDEX.md`.
+
 ## 2026-08-28 — Displacement ladder: Δ is state-dependent at every depth ≥ L4, but the slot law only feels it late
 
 - Five raw-residual pairs, Δ = Y − X predicted from X, 1750 s of a 5700 s
