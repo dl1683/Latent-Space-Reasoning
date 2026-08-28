@@ -1921,3 +1921,149 @@ reusable law of language-model dynamics. The next highest-leverage action is
 the existing cheap moot-maker run, followed by spread/style controls and the
 forward-time and unseen-word tests. The scientific line is alive, but the
 native interpretation is not yet earned.
+
+## Round 18 — moot-maker adjudication and displacement preregistration
+
+**Codex, 2026-08-27. Documentation-only; no experiment was run.** This round
+adjudicates the predeclared cheap-moot-maker run from the live JSON and ledger,
+then replaces the withdrawn affine interpretation with a displacement test.
+
+### Budget and withdrawal ruling
+
+The six-pair run took `4540.8 s` against the predeclared `3300 s` (`55 min`)
+hard wall. The unanticipated per-carrier diagnostic cost was about six minutes
+per pair. Under the Round 16 rule, the run is **budget-incomplete**: it earns
+no new gate claim, no restored full-budget label, and no new qualification. The
+withdrawal rule is deliberately null-making rather than claim-making, so it
+remains applicable.
+
+The JSON's pooled ridge-minus-identity-plus-residual differences are:
+
+| pair | successor cosine | slot skill | slot ordering | ruling |
+| --- | ---: | ---: | ---: | --- |
+| `L0->L1` | `+0.463` | `+0.958` | `+0.376` | identity baseline does not explain lexical field |
+| `L4->L5` | `+0.033` | `+0.019` | `+0.022` | small remainder; non-qualifying, live |
+| `L8->L9` | `-0.008` | `-0.021` | `-0.020` | identity-plus-residual closes ridge |
+| `L12->L13` | `-0.007` | `-0.009` | `-0.013` | identity-plus-residual closes ridge |
+| `L20->L21` | `+0.018` | `+0.034` | `+0.032` | small remainder; non-qualifying, live |
+| `L27->L28` | `+0.195` | `+5.173` | `+0.172` | invalid raw-state/post-norm comparison |
+
+The per-carrier affine diagnostic is far below the cross-carrier field across
+the reported endpoints, so it does not supply the explanation and is retained
+only as a within-carrier diagnostic. The predeclared condition is met at
+`L8->L9` and `L12->L13`, exactly the two pairs that carried the Round 17
+two-pair criterion. The wording **“a full-dimensional, regularized affine
+predictor wins within this finite ladder”** is withdrawn for those pairs, as is
+any native-law interpretation attached to them.
+
+The two-pair criterion therefore **does not survive as a claim**. `L4->L5` and
+`L20->L21` retain point-estimate remainders of roughly `0.02–0.03` across the
+three endpoints, but they fail the complete successor/chart convention and
+cannot replace the two withdrawn pairs; they remain non-qualifying, live
+observations rather than kills. `L27->L28` remains a separately labelled
+post-norm/direct-head family, but its identity result is not interpretable:
+`identres` compares a raw `X` with a normed target `Y`, so it is not a meaningful
+persistence baseline there. NLM-007 now establishes a bounded null result:
+the middle-depth ridge advantage at `L8` and `L12` is explained by persistence
+plus a shared displacement under this finite, shared-word design; it does not
+establish a state-dependent affine law, a native law, or a reusable dynamics
+map.
+
+### Guiding question: the move and the place
+
+For a denizen of this world, the middle-depth move is best written as
+
+`T(X) = X + Δbar_cal + ε(X,w,c)`,
+
+where `Δbar_cal` is the shared calibration displacement and `ε` is the part
+that still depends on the incoming state, word, or carrier. The result says
+that, at `L8->L9` and `L12->L13`, the measured move is mostly persistence: the
+state carries its own identity forward and the block adds a common shift. The
+transport content is therefore not the absolute destination `Y`, but the
+displacement `Δ = Y-X`; only a predictor of `Δ` beyond its shared or lexical
+mean can be evidence for state-dependent motion.
+
+The early blocks and the final block do not obey the same simple reading. The
+early blocks leave a small but nonzero residual dependence after the shared
+shift is removed, while the final block changes coordinate family through
+post-normalization and a direct head. A denizen's law of motion must therefore
+be typed by endpoint and representation: persistence, displacement, and
+completion are separate operations, and a law learned in raw residual
+coordinates cannot silently be applied to a normed state.
+
+“Same place” cannot mean equal stored coordinates. It means observational
+identity: two states are the same place when the declared probes and downstream
+response law cannot distinguish them within a fixed, declared tolerance. When a
+move mostly persists, that identity relation is stable under the move's shared
+displacement; the displacement is still a move if it changes the world's
+downstream response. The denizen must discover both the invariant carried along
+the trajectory and the residual that changes consequences, rather than treating
+small Euclidean motion or coordinate equality as primitive.
+
+### Next measurement: displacement ladder (pre-registered)
+
+**Choice and justification.** Choose the displacement ladder before the
+forward-time move because the identity null has now shown that the central
+middle-depth question is whether any state-dependent motion remains after
+persistence and a shared shift are removed. Forward-time append-token transport
+is still the world's more literal move, but measuring it first would confound a
+genuine temporal law with the unresolved decomposition of the already observed
+layer transition.
+
+Use the five raw-residual pairs `L0->L1`, `L4->L5`, `L8->L9`, `L12->L13`, and
+`L20->L21`. Keep `L27->L28` in the experiment register but exclude it from the
+primary displacement ladder: its `Y` is post-norm while `X` is raw, so no
+raw-residual `Y-X` comparison is valid. A compatible pre-norm capture would
+need a separate preregistration; the direct-head endpoint is not silently
+pooled with the other five.
+
+For each eligible pair, predict `Δ=Y-X` from `X` on the existing four
+held-out-carrier folds, then reconstruct `Yhat=X+Δhat` and score the corrected
+law at the substituted slot. The ladder is the constant mean displacement
+`Δbar_cal` (zero-order baseline), kNN `k={1,5,20}`, full ridge, rank-`<=128`
+low-rank affine, and kernel ridge. The word-conditioned mean displacement
+`E_cal[Δ|w]` is a separate lexical moot-maker, not a ladder member; the static
+chart is reported only as a reconstructed-Y reference, not as a displacement
+law.
+
+A candidate is a state-dependent displacement result only if it beats the
+word-conditioned displacement mean by at least `0.02`, with a positive paired
+word/carrier-clustered 95% lower bound, on displacement cosine and on both
+corrected slot-law endpoints (skill and ordering), with finite cells and
+support `>=0.95`. Report the carrier-shuffled field and within-word carrier
+spread at every depth with a fixed numerical/reload tolerance; a shuffle drop
+over `0.02` is diagnostic, not sufficient by itself. A candidate that beats
+the constant mean but not the word-conditioned mean is lexical or marginal
+persistence, not state-dependent transport; no native-law wording follows
+from a pass.
+
+Use the same 80 words, 16 carriers, four folds, revision/config pins, slot
+completion, seed `13007`, 20 carrier shuffles, 500 clustered bootstrap
+replicates, one CPU process, no generation, and no GPU. Set a **95-minute hard
+wall**: the observed baseline run was `75.7 min` for six pairs, including the
+previously unpriced per-carrier diagnostic at about `36 min` total; the new
+budget adds approximately twenty percent margin. If the wall is exceeded,
+record the run as incomplete and draw no displacement gate claim.
+
+Predictions are fixed as follows: `L0` remains lexical persistence, with the
+word-conditioned displacement mean near the field; `L4` and `L20` retain small
+`0.02–0.03`-scale residuals on the three endpoints but do not form a complete
+two-pair transport result; `L8` and `L12` show no qualifying state-dependent
+displacement beyond the word-conditioned mean; and `L27` remains outside the
+raw-residual family. The per-carrier affine arm remains a diagnostic and is
+not expected to explain a held-out-carrier result.
+
+### Think-before-you-run residue
+
+Standing rule text for `AGENTS.md` (Claude to place):
+
+> Before fitting or interpreting a transition law on a residual stream, write
+> down and run the identity-plus-shared-displacement null on the same held-out
+> splits, endpoints, support accounting, and clustered gates. If the target is
+> a difference, promote `Δ=Y-X` and its mean displacement to the primary
+> decomposition before adding model capacity; no state-dependent transport
+> claim is admissible until it beats that null and the lexical moot-maker.
+
+This was the obvious missing control in Rounds 13–17. Its absence allowed a
+predictor that carried `X` through unchanged to be narrated as a learned affine
+law; the standing rule blocks that category error at design time.

@@ -357,3 +357,32 @@ The `L27->L28` successor is on normed vectors and is reported with that
 qualification. The required class-stratified unseen-word split and second
 model-family replication remain before requirement (e) can support a claim
 beyond this one-model interpretability result.
+
+## Round 18 — requirement (e) after the identity null
+
+The predeclared identity-plus-residual moot-maker changes the status of the
+NLM-007 law claim. The six-pair run exceeded its hard budget (`4540.8 s` versus
+`3300 s`), so it earns no new gate claim; however, the conservative withdrawal
+test remains valid. At `L8->L9` and `L12->L13`,
+`Yhat = X + mean_cal(Y-X)` closes the ridge lead on successor cosine, corrected
+slot skill, and corrected slot ordering. The prior finite-ladder wording and
+its native-law interpretation are withdrawn for exactly those pairs, so the
+Round 17 numerical two-pair criterion does not survive as a claim.
+
+`L4->L5` and `L20->L21` retain small `0.02–0.03` point-estimate remainders but
+remain non-qualifying and live; they do not replace the withdrawn pairs.
+`L27->L28` stays in its post-norm/direct-head family, and its identity result is
+not a meaningful baseline because it compares a raw state with a normed target.
+Requirement (e) therefore remains unearned as a native law: NLM-007 now gives
+a bounded decomposition of a finite coordinate experiment into persistence plus
+a shared displacement, not a state-dependent affine invariant.
+
+Under the native-world reading, the lawful object to measure next is the
+displacement `Δ=Y-X`. A denizen's “same place” is observational equivalence
+under declared probes and downstream consequences, not equality of stored
+coordinates; a move may preserve that place's identity while adding a shared
+displacement that changes the response law. The displacement ladder must first
+test whether any state-dependent component remains after the constant and
+word-conditioned displacement means are removed; only then should a forward-time
+append-token move be interpreted as a law rather than another coordinate
+regression.

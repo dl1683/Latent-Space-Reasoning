@@ -521,3 +521,59 @@ that pair and remove any native-law interpretation.
 Run the cheap moot-makers only under this pre-registration. Keep the
 class-stratified unseen-word split and second-family replication as mandatory
 follow-ups before generalizing beyond one model and shared words.
+
+## Round 18 — moot-maker adjudication and displacement next
+
+The six-pair NLM-007 baseline run took `4540.8 s` against its predeclared
+`3300 s` hard budget. Per Round 16, it is budget-incomplete and contributes no
+new gate claim. The predeclared null-making withdrawal still applies:
+identity-plus-residual `Yhat = X + mean_cal(Y-X)` closes the ridge lead on all
+three corrected slot endpoints at `L8->L9` and `L12->L13` (pooled differences
+approximately `-0.008/-0.021/-0.020` and `-0.007/-0.009/-0.013` for successor
+cosine, slot skill, and slot ordering).
+
+Those are the two pairs that carried the Round 17 two-pair criterion, so that
+criterion does not survive as a claim. The finite-ladder affine wording and
+native-law interpretation are withdrawn for those pairs. `L4->L5` and
+`L20->L21` retain small `0.02–0.03` state-dependent remainders across the
+endpoints but remain non-qualifying and live; `L27->L28` remains a separate
+post-norm/direct-head family, and its raw-state versus normed-target identity
+comparison is not meaningful.
+
+NLM-007 now establishes a bounded null result: at middle depth the apparent
+ridge advantage is explained by persistence plus a shared displacement under
+this finite, shared-word design. The world's move should be decomposed as
+`T(X)=X+Δbar_cal+ε(X,w,c)`; “same place” is observational equivalence under
+declared probes and downstream consequences within a fixed tolerance, not
+equality of stored coordinates. Early blocks leave a small residual after this
+decomposition, while the final block changes coordinate family through
+post-normalization and a direct head.
+
+### Next
+
+Choose the displacement ladder before forward-time transport. Predict
+`Δ=Y-X` from `X` on `L0->L1`, `L4->L5`, `L8->L9`, `L12->L13`, and `L20->L21`,
+using the constant mean displacement as zero-order baseline and the
+word-conditioned mean displacement as lexical moot-maker; `L27->L28` stays
+out of the primary raw-residual family. Use kNN `{1,5,20}`, ridge, rank-128
+low-rank, and kernel ridge; reconstruct `Yhat=X+Δhat` and score displacement
+cosine plus corrected slot skill and ordering. A state-dependent result must
+beat the word-conditioned mean by `>=0.02` with a positive clustered 95%
+lower bound on all three endpoints, finite cells, and support `>=0.95`; report
+shuffle and within-word spread diagnostically, with no native-law inference.
+
+Keep the same pins, seed `13007`, 20 shuffles, 500 clustered bootstrap
+replicates, one CPU process, no generation, and no GPU. Set a `95-minute` hard
+wall, based on the observed `75.7-minute` six-pair run including roughly
+`36 minutes` of per-carrier diagnostics plus approximately twenty percent
+margin; an overrun earns no displacement gate claim. Predictions: no
+qualifying residual at `L8/L12`, small live residuals at `L4/L20`, lexical
+persistence at `L0`, and no raw-residual interpretation at `L27`.
+
+Standing process rule for Claude to place in `AGENTS.md`: before fitting or
+interpreting a transition law on a residual stream, run the
+identity-plus-shared-displacement null on the same held-out splits, endpoints,
+support accounting, and clustered gates; if the target is `Δ=Y-X`, make its
+mean displacement the primary decomposition before adding model capacity, and
+block a state-dependent transport claim until it beats that null and the
+lexical moot-maker.
