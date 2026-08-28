@@ -198,40 +198,6 @@ was learned, what's next. Canonical state lives in STATE.md.
   Next program: LM residual-stream dynamics, specified in
   `theory/dialogue/003.md`.
 
-## 2026-08-27 — Round 2b instrument calibration amendment
-
-- Read the disclosed eight-item full-pipeline calibration. Within-block KL
-  scale varied up to 16-fold, making the preregistered instance-specific MAD
-  threshold invalid and yielding zero passes.
-- Locked per-paraphrase scale normalization, four-of-four sign agreement, a
-  block-pooled magnitude scale, and the explicit 12.5% random-sign null.
-- Demoted directed asymmetry to exploratory after 0–18% sign agreement at
-  chance. Revised post-calibration predictions to \(Q=2.5\), \(R=0.20\), and
-  \(\Delta_{\rm rev}=+0.07\).
-- The eight inspected words are excluded from primary confirmation; the
-  remaining 72 are primary and all 80 are sensitivity. No confirmatory run was
-  performed.
-
-## 2026-08-27 — Round 1 revised after Claude attack
-
-- Appended `## Codex — revision` to `theory/dialogue/001.md`, answering A1–A7
-  point by point. Withdrew existential non-collapse as an axiom; adopted finite
-  context rank with anchor-dependent radii.
-- Proved the finite representation theorem: context rank is 1 exactly when
-  every anchor's context neighborhoods form an inclusion chain. Derived the
-  incompatibility-graph coloring characterization.
-- Created `theory/AXIOMS.md` as the living formal surface. Local refinement is
-  now conditional on a completed probe family; cross-realization agreement is a
-  measurement of transportability, not an identity axiom.
-- Created `theory/EXPERIMENTS.md` with the post-smoke, pre-measurement NLM-001
-  preregistration: primary directed asymmetry, graded context rank, held-out
-  transfer against contextual-cosine and learned-metric baselines, paraphrase
-  nulls, cross-system checks, exact predictions, and kill conditions.
-- No experiment was run in this revision; the confirmatory measurement remains
-  unrun. A concurrent Claude turn added the CPU measurement runner and raw
-  hidden-state capture. Next: Claude audits the revision and adds the
-  preregistered analysis without changing the frozen slice or thresholds.
-
 ## 2026-08-28 — Tier-3 re-contextualization #4 (Claude, before auditor #4)
 
 **Live question.** In a world with its own dynamics (a causal LM's residual
@@ -518,6 +484,40 @@ before interpreting any latent-space difference — is now a standing gate here
 **Direction still makes sense?** Yes as a first falsifiable instrument, with the
 explicit condition that NLM-001's verdict (either way) must be followed by at
 least one of alternatives 1–4, not by NLM-002 on more words.
+
+## 2026-08-27 — Round 2b instrument calibration amendment
+
+- Read the disclosed eight-item full-pipeline calibration. Within-block KL
+  scale varied up to 16-fold, making the preregistered instance-specific MAD
+  threshold invalid and yielding zero passes.
+- Locked per-paraphrase scale normalization, four-of-four sign agreement, a
+  block-pooled magnitude scale, and the explicit 12.5% random-sign null.
+- Demoted directed asymmetry to exploratory after 0–18% sign agreement at
+  chance. Revised post-calibration predictions to \(Q=2.5\), \(R=0.20\), and
+  \(\Delta_{\rm rev}=+0.07\).
+- The eight inspected words are excluded from primary confirmation; the
+  remaining 72 are primary and all 80 are sensitivity. No confirmatory run was
+  performed.
+
+## 2026-08-27 — Round 1 revised after Claude attack
+
+- Appended `## Codex — revision` to `theory/dialogue/001.md`, answering A1–A7
+  point by point. Withdrew existential non-collapse as an axiom; adopted finite
+  context rank with anchor-dependent radii.
+- Proved the finite representation theorem: context rank is 1 exactly when
+  every anchor's context neighborhoods form an inclusion chain. Derived the
+  incompatibility-graph coloring characterization.
+- Created `theory/AXIOMS.md` as the living formal surface. Local refinement is
+  now conditional on a completed probe family; cross-realization agreement is a
+  measurement of transportability, not an identity axiom.
+- Created `theory/EXPERIMENTS.md` with the post-smoke, pre-measurement NLM-001
+  preregistration: primary directed asymmetry, graded context rank, held-out
+  transfer against contextual-cosine and learned-metric baselines, paraphrase
+  nulls, cross-system checks, exact predictions, and kill conditions.
+- No experiment was run in this revision; the confirmatory measurement remains
+  unrun. A concurrent Claude turn added the CPU measurement runner and raw
+  hidden-state capture. Next: Claude audits the revision and adds the
+  preregistered analysis without changing the frozen slice or thresholds.
 
 ## 2026-08-27 — Repository restarted
 
