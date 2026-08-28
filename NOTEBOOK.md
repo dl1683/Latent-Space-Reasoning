@@ -44,6 +44,7 @@ population, one move, one sentinel pair. Live alternatives held open:
    family, held out entirely, is a cheaper test than another comparator;
 (c) A two-step writeback test requires a new intervention capture rather than existing captures alone, but current timings suggest roughly 10–20 minutes of CPU capture plus about one hour of targeted scoring.
 (d) The present evidence does not yet prove a structural quotient hole. Failure of two nested nuisance fits shows that the chosen coordinates are incomplete; it does not show that lexical, presentation, and operational coordinates are entangled by construction. The cheapest sharpening is a controlled interchangeability test in which semantically equivalent presentation variants are required to preserve the same moves and downstream laws.
+
 Audit #15 (verbatim in .codex_audit15.md; adopted into theory/EXPERIMENTS.md):
 the queue is "strongly tunnel-visioned" — one decoder, one authored template
 population, one punctuation-append move, one self-readout; the strongest
@@ -66,7 +67,7 @@ pinned decoder. The order change is a Codex decision (round 29).
   fitted out of both X and Δ; unseen-word folds; K = 13; class-preserving
   crossed bootstrap; same-run raw four-null shadow and common-scale
   retention block present.
-- All five correlated checkpoints meet the registered aggregate residual-vs-null gate. F0 is qualitatively weaker — only 2/8 keys clear the full per-key gate — and is not an independent confirmation of the F4–F20 profile. F0 now passes
+- All five correlated checkpoints meet the registered aggregate residual-vs-null gate. F0 is qualitatively weaker — only 2/8 keys clear the full per-key gate — and is not an independent confirmation of the F4–F20 profile. F0 numbers
   (residual cosine 0.34 vs −0.01; block-first skill +0.16 [LB 0.02],
   KL-rank +0.30 [0.12]) — the carrier-mean and subspace coordinates absorb
   what made F0 fail under P_static. F4–F20: X⊥-ridge 0.56–0.62 vs 0.06–0.07;

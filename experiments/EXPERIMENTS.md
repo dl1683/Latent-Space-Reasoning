@@ -5,7 +5,7 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
-## NLM-007 — LM residual-stream dynamics; middle-depth ridge lead withdrawn under the identity baseline; displacement ladder adjudicated (audit #8 wording); forward-time move adjudicated NOT MET = nonpass, not a kill (Round 20, audit #9); within-style null = diagnostic only (both arms); LOCO A/B within-family positive, bounded (audit #10 wording; adjudicated Round 22); equalized addendum defect-affected, descriptive only (audit #11); unseen-word runs A/B mechanical pass, formal gate pending (Round 23, audit #12); corrected equalized reruns contract-correct (A adjudicated Round 25; B pending); residualization A-static contract-valid, adjudicated Round 26 as corrected by audit #14 (registered-presentation sensitivity + surviving X-linked residual predictability; neither state nor presentation-independence); A-augmented running, B-static / B-augmented / patched A-static queued; retention marker non-commensurate (audit #13) (2026-08-29)
+## NLM-007 — LM residual-stream dynamics; middle-depth ridge lead withdrawn under the identity baseline; displacement ladder adjudicated (audit #8 wording); forward-time move adjudicated NOT MET = nonpass, not a kill (Round 20, audit #9); within-style null = diagnostic only (both arms); LOCO A/B within-family positive, bounded (audit #10 wording; adjudicated Round 22); equalized addendum defect-affected, descriptive only (audit #11); unseen-word runs A/B mechanical pass, formal gate pending (Round 23, audit #12); corrected equalized reruns contract-correct (A adjudicated Round 25; B pending); residualization A-static contract-valid, adjudicated Round 26 as corrected by audit #14 (registered-presentation sensitivity + surviving X-linked residual predictability; neither state nor presentation-independence); A-augmented (`P_aug-score4`) adjudicated Round 27 as corrected by audit #15 (nested sensitivity on the same sentinel-A cells, not a replication; outcome-clean but transductive within carrier); B-static adjudicated Round 28 (F4–F20 pass, F0 fails, as A-static); B-augmented running, patched A-static queued; two Round 27 comparators implemented behind analyzer flags (X-free field frozen and queued; Freedman–Lane null ready, not armed pending Codex round 29); retention marker non-commensurate (audit #13) (2026-08-29)
 
 - **Lock.** Round 13, documentation-only (ledger `nlm007_round13_lock`;
   design `theory/dialogue/003.md`, `theory/EXPERIMENTS.md`); Round 14
@@ -144,16 +144,46 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
     as "the predeclared robustness marker is mechanically met" (ledger
     `nlm007_retention_marker_defect`,
     `nlm007_retention_common_scale_predeclared`). Reading below.
-  - `analysis_resAA.json` — A-augmented (`P_aug`), same contract,
-    common-scale retention field present. **Running**; no score opened.
-  - `analysis_resSB.json` / `analysis_resAB.json` — B-static, B-augmented,
-    same contract. **Queued** behind `resAA`, one process at a time; no
-    status until scored and ledgered.
+  - `analysis_resAA.json` — A-augmented (`P_aug-score4`: `P_static` plus at
+    most four scores obtained by projecting a leave-calibration-word-pool
+    carrier mean of `X` into a basis learned from calibration carriers; the
+    full carrier-mean vector is not appended — audit #15), same contract,
+    common-scale retention field present (ledger `nlm007_resid_resAA`;
+    4737.8 s of the 7200 s wall; support 1.0; adjudicated
+    `nlm007_resid_resAA_adjudicated`, Round 27, as corrected by audit #15).
+    **Outcome-clean but transductive within carrier; not unqualifiedly
+    contract-valid** until the pre-result meaning of the lock's
+    carrier-mean clause is resolved. Reading below.
+  - `analysis_resSB.json` — B-static (`P_static`, sentinel ','), same
+    contract, common-scale field present (ledger `nlm007_resid_resSB`;
+    4598.4 s; support 1.0). **Contract-valid; adjudicated Round 28.**
+    Reading below.
+  - `analysis_resAB.json` — B-augmented, same contract. **Running**; no
+    score opened.
   - `analysis_resSA2.json` — patched A-static rerun (identical design to
     `resSA`, common-scale retention block; ledger
     `nlm007_resid_resSA2_predeclared`). **Queued** after `resAB`; required
     for any A-static or symmetric four-cell common-scale retention claim,
     not for the primary residual-vs-null verdict.
+  - `analysis_xf{SA,SB,AA,AB}.json` — Round 27 comparator 2, the
+    **registered X-free field** (`--xfree-field`: calibration-only
+    residual-space field from `P_static` + the rank-4 carrier-summary scores
+    + 16 frozen-embedding PCs + 64 interactions, no cell-level `X⊥`, with a
+    df-matched state ridge; ledger `nlm007_xfree_field_predeclared`,
+    `nlm007_xfree_comparator_implemented`, frozen at analyzer `cddcd47`
+    with the literal command in `nlm007_xfree_comparator_frozen`).
+    **Queued** behind `resSA2`, four cells, 7200 s each; "registered", not
+    "fair" (audit #15: the fixed rank-4/full-prefix omissions remain
+    substantive). No artifact yet.
+  - `analysis_fl{SA,SB,AA,AB}.json` — Round 27 comparator 1, the fully
+    refitted Freedman–Lane residual-geometry null (`--fl-null 20`:
+    layer-level exact test, common cell mask, ridge-only inner grid; ledger
+    `nlm007_freedman_lane_predeclared`,
+    `nlm007_flnull_comparator_implemented`). **Ready, not armed**: audit
+    #15 ranks cheaper external-axis probes (carrier-summary rank ladder,
+    contextual prefix X-free baseline, fresh template population, different
+    move, presentation-interchangeability test) ahead of the ~100 CPU-h
+    four-cell expansion; Codex round 29 decides the order. No artifact.
   - `analysis_unseensmoke.json` — `--unseen-words 2` pipeline smoke at F8, A
     (1 shuffle / 10 boot; ledger `nlm007_unseen_smoke_F8A`, overwritten by
     `nlm007_unseen_smoke2_F8A` with the audit #10 lexical nulls and the
@@ -358,6 +388,53 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   lexical comparator are to be preregistered before any state reading.
   `P_static` pass plus `P_aug` collapse remains the predeclared "static
   coordinates incomplete, not state" branch.
+- **Residualization A-augmented (Round 27 as corrected by audit #15;
+  `analysis_resAA.json`).** Sentinel A, `P_aug-score4` cross-fitted out of
+  both `X` and `Δ`; same folds, K = 13, bootstrap and raw-shadow arm as
+  A-static; common-scale retention block present. All five correlated
+  checkpoints meet the registered aggregate residual-vs-null gate. F4–F20:
+  `X⊥` ridge residual cosine 0.56–0.62 vs 0.06–0.07 for the strongest
+  residualized X-free null; block-first margins cos +0.50–+0.56, skill
+  +0.35–+0.46, KL-rank +0.43–+0.56 with positive lower bounds; full-gate
+  keys 8/8, 7/8, 6/8, 8/8; no block collapse. F0 is qualitatively weaker —
+  residual cosine 0.34 vs −0.01, skill +0.16 [LB 0.02], KL-rank +0.30
+  [0.12], only 2/8 keys clear the full per-key gate — and is not an
+  independent confirmation of the F4–F20 profile; the raw F0 transition
+  remains identity/token dominated (raw ridge exceeds the raw null by only
+  ~0.019 cosine). `P_aug` carrier-summary nuisance arm (`P_aug → Δ`)
+  0.45–0.64 cosine by layer; because its scores are derived from
+  carrier-level `X`, this is not a presentation-only estimate or a variance
+  share. Common-scale retention: the paired bootstrap median of the
+  reassembled residual-model margin over the raw-ridge margin exceeds 0.5 in
+  every layer-endpoint cell; 14 of 15 interval lower bounds exceed 0.5 (F4
+  continuous KL 0.495), so no uniform 95% claim; ratios above one do not show
+  strengthening. Reading (audit #15): A-static and A-aug are nested
+  sensitivities on the same sentinel-A cells, not independent replications;
+  the registered static and rank-4-score nuisance fits do not absorb the
+  `X⊥–Δ⊥` association; broader presentation, carrier-geometry, and
+  prefix-fingerprint explanations remain fully live. Neither result
+  identifies operational state, presentation independence, fresh-style
+  transfer, composition, or a native law. Strongest alternative missed by
+  both queued comparators: a high-dimensional prefix/carrier fingerprint
+  (aligned, cell-level, compatible with unseen-word transfer and law
+  improvement).
+- **Residualization B-static (Round 28; `analysis_resSB.json`).** Sentinel
+  ',', `P_static`, same contract as A-static, common-scale field present.
+  `F4/F8/F12/F20` pass the residual-vs-null gate: `X⊥` ridge residual
+  cosine 0.52–0.58 vs 0.06–0.09 for the strongest residual null;
+  block-first margins cos +0.45–+0.50, skill +0.35–+0.42, KL-rank
+  +0.40–+0.58; 8/8 positive keys at every passing layer; no collapse. `F0`
+  fails (cosine lead +0.27 but pooled skill negative — the −7.5 skill is
+  driven by two association folds near −30, locally ill-conditioned
+  normalization, not uniform failure — and KL-rank lower bound < 0; gloss and
+  association collapse), as under A-static. Presentation-only `P_static→Δ`
+  arm 0.41–0.63 cosine by layer (a cosine, not a variance share).
+  Common-scale retention passes at the bootstrap median for every F4–F20
+  endpoint; F4 continuous-KL lower bound 0.426 blocks a uniform interval
+  claim; joint static retention awaits `resSA2`. Ruling: A-static plus
+  B-static establish two-sentinel registered-presentation sensitivity and
+  surviving X-linked residual predictability under `P_static`; they do not
+  establish state, presentation independence, mediation, or a native law.
 - **Oracle defect (ledger `nlm007_oracle_defect_forward`).** The per-carrier
   oracle read the stored states directly; in forward and delta mode it
   predicted X from X, so the ~0.98 oracle values in `analysis_fwdA/B`,
@@ -387,9 +464,18 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   reassembled consequence beyond the residual X-free lexical nulls at
   F4–F20 — registered-presentation sensitivity plus surviving X-linked
   residual predictability, with the presentation/raw-lead overlap
-  unidentified (Round 26 as corrected by audit #14). Bounded to one model.
-  Next: `resAA` (running) → `resSB` → `resAB` → `resSA2` → Codex
-  adjudication → second family.
+  unidentified (Round 26 as corrected by audit #14). The same survival holds
+  for the second sentinel under `P_static` (Round 28) and, on the same
+  sentinel-A cells, under the nested rank-4-score `P_aug` fit (Round 27 as
+  corrected by audit #15) — correlated sensitivities, not replications; the
+  registered nuisance fits do not absorb the association, and presentation,
+  carrier-geometry, and prefix-fingerprint accounts remain live. Bounded to
+  one decoder and one authored template population. Round 27 locked order:
+  `resAB` (running) → `resSA2` → registered X-free field ×4 → Freedman–Lane
+  ×4 → second family; audit #15 asks that cheaper external-axis probes
+  (carrier-summary rank ladder, contextual prefix X-free baseline, fresh
+  template population, different move, presentation-interchangeability
+  test) precede the Freedman–Lane expansion — Codex round 29 decides.
 
 ## Round 12 closure — frozen-encoder program closed; pivot to worlds with dynamics (2026-08-27)
 
