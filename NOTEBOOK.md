@@ -5,6 +5,24 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Audit #14 adopted: A-static upheld; Round 26's mediation sentence withdrawn
+
+- Upheld: F4–F20 pass; not a residual-geometry mirage (ridge cosine falls
+  under residualization while the nulls collapse; shuffle q95 ≤ 0.13;
+  residual normalized error 0.78–0.83).
+- Withdrawn (over-read in the kill direction): "much of the raw lead may
+  have been presentation-mediated". Licensed joint statement: registered
+  static coordinates predict held-out raw displacement; after their
+  cross-fitted removal X⊥ still predicts Δ⊥ and its reassembled response-law
+  consequence beyond the residual X-free nulls at F4–F20; the overlap
+  between presentation and the raw ridge lead is not identified.
+- Gate is too easy for a *state* claim: next comparators to preregister are
+  a fully refitted Freedman–Lane residual-geometry null and a flexible
+  calibration-only P_aug/lexical interaction field without cell-level X⊥.
+- Demo copy corrected again (nine verbatim replacements) and republished.
+- The two NOTEBOOK entries carrying the withdrawn phrase (Round 26 note;
+  re-contextualization #14) are superseded by this entry.
+
 ## 2026-08-29 — Re-contextualization #14 (A-static in; P_aug running; audit #14 fired)
 
 - **Central bet + second lens:** native mathematics from what a denizen must

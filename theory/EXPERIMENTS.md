@@ -4110,3 +4110,133 @@ passed, an A-augmented collapse is specifically the predeclared **static
 coordinates incomplete, not state** branch. A repaired retention failure
 alone is not a primary-gate collapse and remains interpretive rather than a
 kill condition.
+
+## Tier-3 audit #14 — A-static residualization, Round 26, demo (2026-08-29, fresh Codex auditor)
+
+**Adopted corrections.** (1) Mechanical verdict upheld (F4–F20 pass; F0
+fails). (2) Not a cosine-geometry mirage: residualization lowers the ridge
+cosine at every passing layer (raw 0.65–0.76 → residual 0.56–0.62) while the
+lexical nulls fall to ~0.06, so the margin grows because the selected lexical
+contrast became easier; shuffled q95 ≤ 0.13 and residual normalized error
+0.78–0.83 (vs 1.0) rule out target-shrinkage artifacts. (3) The gate is
+"too easy" for a state claim, not for the registered narrow claim: the fair
+residual comparator is a fully refitted conditional-randomization (Freedman–
+Lane) null preserving nuisance geometry, and a flexible calibration-only
+P_aug/lexical interaction field without cell-level X⊥ — both to be
+preregistered. (4) **Round 26's "much of the raw lead may have been
+presentation-mediated" is an over-read**; a presentation-only cosine gives no
+variance share, fraction, mediation or overlap. Replacement for Round 26's
+ruling: "P_static took the non-collapse branch. Locally, the result
+establishes registered-presentation sensitivity and survival of X-linked
+residual predictability after cross-fitted removal of those registered
+coordinates. It identifies neither the surviving field as operational state
+nor the result as presentation-independent." (5) Full-gate vs positive keys
+must be distinguished (F4 7/8, F8 7/8, F12 6/8, F20 8/8 full-gate; misses
+family-localized in gloss/association); the four checkpoints are correlated
+measurements, not replications. (6) K = 13 KL-rank is coherent for the
+residual gate; skill and KL-rank are two reductions of one KL measurement;
+in residual mode the `identity` candidate is effectively the presentation-
+only completion. (7) F0: "no qualifying conditional gain at F0 under this
+instrument" — a genuine negative control. (8) Demo replacements adopted
+verbatim and republished.
+
+**Joint license (verbatim):**
+
+The current sentence
+
+> “Much of the raw lead may have been presentation-mediated”
+
+is an over-read.
+
+A `P_static→Δ` cosine of `0.43–0.63` shows that block, length and position metadata predict the **direction** of raw displacement on held-out cells. It does not give:
+
+- variance explained;
+- a fraction of the raw ridge advantage;
+- mediation;
+- an additive decomposition;
+- the overlap between what `P_static` and raw `X` predict;
+- a causal effect of presentation;
+- proof that the coordinates are pure presentation rather than operational context.
+
+The residual arm independently shows that the fitted linear `P_static` nuisance maps do not remove all `X–Δ` association: `X⊥` still predicts `Δ⊥`, and the prediction improves the reassembled decoder law.
+
+The precise joint license is:
+
+> Registered static template coordinates predict held-out raw displacement. After cross-fitted removal of those registered coordinates from both `X` and `Δ`, `X⊥` still predicts `Δ⊥` and its reassembled response-law consequence beyond the registered residual X-free lexical nulls at F4–F20. These facts establish presentation sensitivity and residual X-linked predictability; they do not identify how much of the raw ridge advantage is attributable to presentation or whether the remainder is operational state.
+
+This means “P_static took the non-collapse branch; proves neither state nor presentation-independence” is logically correct but under-states the local positive result. Replace it with:
+
+> `P_static` took the non-collapse branch. Locally, the result establishes registered-presentation sensitivity and survival of X-linked residual predictability after cross-fitted removal of those registered coordinates. It identifies neither the surviving field as operational state nor the result as presentation-independent.
+
+Corresponding “much of the raw lead” and “large component” wording in [Round 26](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/theory/EXPERIMENTS.md:4028>) and the two relevant [NOTEBOOK entries](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/NOTEBOOK.md:41>) should be treated as failing this audit.
+
+The strongest upward correction is equally important: it is now unfair to dismiss the result as exact lookup, class mean, frozen-embedding interpolation, noisy mean estimation or a broken completion pipeline. Those explanations have been directly narrowed. What remains live is a smoother and harder alternative.
+
+**Strongest alternative explanation (verbatim):**
+
+> `P_static` removes only an analyst-chosen linear projection of block identity, token lengths and positions. The residual `X⊥` still contains high-dimensional, nonlinear template/carrier geometry and smooth lexical coordinates shared across held-out blocks and words. `Δ⊥` varies along the same implementation-specific geometry. Ridge and kernel recover that relation, and decoder completion registers it because the same decoder is sensitive to those directions. The result therefore survives every registered lexical null and static residualization without requiring a clean operational state variable.
+
+This account explains:
+
+- residual ridge/kernel success;
+- near-zero X-free residual nulls;
+- the substantial presentation-only cosine;
+- transfer across held-out words and blocks;
+- the localized gloss/association failures;
+- F0’s different regime;
+- one-model specificity;
+- reassembled response-law improvement.
+
+It requires neither leakage nor a broken split.
+
+The strongest competing positive explanation is:
+
+> The decoder contains a genuine context-conditioned transition regularity, and presentation is partly legitimate operational state because it changes lawful successors. Quotienting it away indiscriminately removes physics rather than nuisance.
+
+A-static observational residualization cannot choose between these explanations.
+
+**Alternative explorations (verbatim instructions):**
+
+> Add a preregistered residual-geometry null. In every outer block-by-word fold, residualize X and Δ exactly as in the scored arm; permute Δ⊥ across calibration carriers within template family and word; rerun the complete inner selection, refit, and held-out scoring for ridge and kernel. Preserve the crossed class-stratified block-first bootstrap. Gate observed cosine, normalized error, law skill, and continuous KL margin against this fully refitted null distribution.
+
+> Add a fair residual-space X-free comparator. Predict Δ⊥ from a calibration-only nuisance family containing P_static, the predeclared P_aug carrier summaries, frozen lexical embedding, and predeclared low-rank interactions, but no held-out cell X⊥. Match the state field’s tuning discipline and effective-capacity control. Do not use a P-only zero residual as the fair comparator.
+
+> Complete the common-scale decomposition before attributing the raw lead. Score P-only, raw X-ridge, reassembled residual ridge, and every corresponding null against the same raw Δ, the same true law, and the same skill reference. Recompute the strongest-null minimum inside every bootstrap replicate. Report incremental raw-scale squared error or R² and continuous KL improvement; do not infer overlap from two cosines.
+
+> Read A-augmented, B-static, B-augmented, and patched A-static in the locked order without selecting a sentinel, layer, or design after seeing outcomes. Treat A-augmented collapse as “the static coordinates were incomplete, not state.” Treat A-augmented survival as narrowing, not eliminating, the presentation account.
+
+> Run a causal presentation-equivalence test. Construct matched inputs with fixed lexical item and operational task while changing only a predeclared presentation intervention. If the downstream response law and declared moves remain interchangeable, quotient the presentations; if they change reproducibly, treat presentation as operational state. Do not define state by analyst labels alone.
+
+> Freeze a fresh template population and second model family before inspection, repeat the full hierarchy, and then test multi-step composition from F4 through F8 and F12. A one-step field that does not compose is not yet a navigation law.
+
+**Second lens after A-static (verbatim):**
+
+A-static changes the map but does not close the central hole.
+
+Proven locally:
+
+- F0 is an identity/token-dominated transition under this instrument.
+- The inherited ordering endpoint is saturated relative to cosine and consequence-sensitive KL measures.
+- Registered block/length/position coordinates predict raw forward displacement on held-out cells.
+- Those registered coordinates do not exhaust X-linked residual predictability at F4–F20 under the fitted linear nuisance model.
+
+Not proven:
+
+- presentation and operational state are inseparable;
+- the residual is presentation-free;
+- family-only laws;
+- presentation explains a fraction of the raw ridge advantage;
+- the field is native to the latent world;
+- the field composes;
+- another decoder exposes the same structure;
+- structured reasoning cannot live here.
+
+The deeper demonstrated deficiency is epistemic and architectural: the denizen is not given a native quotient. The current analysis needs external block identities, token lengths and positions to propose which places should count as equivalent. That is evidence that the representation has not yet **demonstrated** its own navigation coordinates—not proof that such coordinates cannot be recovered.
+
+The constructive requirement is therefore:
+
+> Build a latent space in which lexical, presentation and operational coordinates are exposed or controllably factorable; define sameness by interchangeability under declared moves and downstream response laws; treat presentation as state exactly when controlled presentation changes alter those laws; require consequence-sensitive metrics, multi-step closure, fresh-style and unseen-word transfer, cross-family replication, and explicit precision/support contracts.
+
+No new axiom is earned. The next object is an operationally testable quotient, not a stronger name for regression success.
+
+No tracked repository file was modified and no experiment was run. Eight typed findings were recorded on the blackboard; convergence and synthesis completed with no open signal or dispute.
