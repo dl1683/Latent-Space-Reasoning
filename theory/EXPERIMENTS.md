@@ -2709,3 +2709,110 @@ predictive consequences: merge two states only when the declared moves and
 response laws remain interchangeable. LOCO tests that question inside one
 sheet; residualization, unseen words, and the whole-block holdout decide
 whether the sheets are intrinsic structure or an artifact of our chart.
+
+## Tier-3 audit #10 — LOCO A, unseen-word branch, second lens (2026-08-28, fresh Codex auditor)
+
+**Adopted corrections.** (1) LOCO A wording: "On already-seen words, within a
+style family, X predicts a held-out carrier's displacement and response-law
+consequence better than the three-carrier per-word family mean at F4–F20" —
+not a presentation-independent state or a native law. (2) The LOCO baseline
+is variance-disadvantaged (three-carrier mean vs a 240-cell regularized
+ridge); before interpretation, compare ridge against the strongest X-free
+lexical baseline: a word-only ridge (word one-hot, inner-selected) and a
+shrunk word mean (shrinkage selected inside calibration carriers), keeping
+the unshrunk block-word mean as the historical baseline. (3) LOCO does not
+distinguish latent state from a smooth carrier/style code; "presentation may
+itself be an operational state coordinate if changing presentation changes
+the lawful successor" — the required control is cross-fitted residualization
+of predeclared presentation coordinates from both X and Δ. (4) The pooled
+LOCO bootstrap (16 carriers nested in 4 blocks treated as exchangeable) is
+secondary; block-first resampling required for any cross-family statement.
+(5) F0: "no detected conditional gain at F0", not "no F0 state dependence".
+(6) Hazards: `per_carrier_affine` uses Z directly (wrong in forward mode —
+now guarded); in delta mode `successor_cos`/`oracle_ceiling_succ_cos` are
+displacement cosine (naming); in forward mode the "last" readout equals the
+slot readout (not independent). (7) Unseen-word branch: the lexical null
+disappears with the word-mean — add a class-mean displacement null and a
+word-only (frozen input-embedding) predictor as the primary X-free lexical
+baselines; fix the KL-rank universe for unseen mode; add fail-fast asserts
+(disjoint ids, every class in every fold, nonzero counts); block-first,
+class-preserving pooled bootstrap; raw KL and skill primary.
+
+**Recommended unseen-word gate and predictions (verbatim):**
+
+### Recommended unseen-word gate
+
+For each sentinel and layer:
+
+- Compare ridge against the strongest X-free lexical baseline: class mean or word-only embedding predictor.
+- Require point lead `>= 0.02` and a positive word/block-clustered 95% lower bound on displacement cosine, response-law skill, and fixed-universe KL-rank.
+- Require the pooled contrast to survive a block-first, class-preserving word bootstrap.
+- Require all eight fold keys to be valid; preferably require at least 6/8 keys to have positive endpoint contrasts, with no systematic collapse in one held-out block.
+- Preserve the existing support threshold and forward locality/reload gates.
+- Report raw KL and skill regardless of rank outcome.
+- Do not call the result lexical generalization unless it beats the lexical baseline, not merely the global mean.
+
+### Predictions to predeclare
+
+State-linked explanation:
+
+- F0 remains near the lexical/token-identity regime.
+- F4–F20 retain positive but possibly attenuated ridge leads over class and word-only lexical baselines.
+- Response-law skill survives better than raw ordering.
+- The effect may weaken substantially because unseen words remove direct word-conditioned lookup.
+
+Lexical/interpolation explanation:
+
+- Ridge approaches the class/word-only baseline on unseen words.
+- X-based kNN may remain competitive because it interpolates lexical identity through the residual representation.
+- Any apparent gain over the global mean but not over the word-only lexical field is not a state-law result.
+
+Carrier/style-nuisance explanation:
+
+- Performance may survive unseen words if the field mainly extrapolates a smooth carrier/style code.
+- Therefore unseen words alone do not resolve state versus presentation; residualization remains necessary.
+
+A failure should be interpreted as failed extrapolation by this field, not proof that no structured law exists.
+
+**Second lens — hostile structural properties (verbatim):**
+
+The Second Lens in [AGENTS.md](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/AGENTS.md:15) asks which properties make structured reasoning difficult and what the next latent space must change.
+
+| Candidate hole | Status | Skeptical reading |
+|---|---|---|
+| Motion invisible to the response law at middle depth | Partly proven, but readout-specific | Middle-depth displacement is directly predictable, while the original ordering endpoint barely changes. The sentinel-position law registers motion in cosine and skill. What is proven is that one response law—especially ordering—is insensitive, not that the world cannot register the motion. |
+| Identity-dominated transitions | Proven locally | F0 and L0 are dominated by lexical/token identity and the word-conditioned mean. This is a real property of the measured input transition, not a theorem about all latent transitions. |
+| Presentation entangled with state | Strong unresolved concern, not proven | `X` contains carrier/template information, and LOCO preserves that information. Whole-block holdout limits trivial block memorization but does not remove smooth style coordinates or carrier-conditioned dynamics. |
+| Laws holding only within template families | Not proven | Whole-block holdout shows some transfer across blocks on shared words. LOCO shows within-family prediction. Neither establishes transfer to unseen words, unseen families, or another model family. |
+| Ordering-saturated readouts | Proven for this endpoint | The same ordering failure recurs across layer displacement and both sentinel arms while cosine and skill lead. This diagnoses an inherited, word-dominated endpoint—not a general saturation theorem about the latent world. |
+
+The most serious current hole is therefore not “there is no motion.” It is that the representation and response law do not yet provide a stable quotient separating:
+
+- lexical content;
+- presentation/style;
+- operational state;
+- consequential motion.
+
+A next-generation latent space should:
+
+- define “same place” by interchangeability of declared moves and response laws;
+- expose or test presentation coordinates rather than silently mixing them into state;
+- provide consequence-sensitive readouts based on raw predictive divergence, not only inherited orderings;
+- support multi-step closure, not only one-step prediction;
+- generalize across unseen lexical identities, style families, and model families;
+- make precision and support part of the representation’s contract.
+
+If changing style changes the lawful successor, style may legitimately be part of operational state. The defect may instead be in our quotient: we may have incorrectly declared differently presented states to be the same place.
+
+**Tunnel-vision assessment (verbatim):**
+
+The current program is at risk of tunnel vision in several ways:
+
+- One decoder family, one model revision, one 80-word probe set, and four highly structured blocks dominate the evidence.
+- Repeated measurements reuse the same residual coordinates and closely related response-law endpoints.
+- Regression success is being treated as evidence about latent-world structure, although it may only show implementation-specific compressibility.
+- “State versus presentation” may be a false dichotomy; the experiment has not yet intervened on presentation while holding operational state fixed.
+- The ordering endpoint was diagnosed only after repeatedly failing to support the desired interpretation, creating a risk of metric migration without an independent consequence calibration.
+- No result yet demonstrates useful navigation, multi-step composition, semantic generalization, or a denizen-level primitive.
+
+The strongest antidote is not another regressor on the same cells. It is orthogonalization: unseen words, style residualization, a fixed lexical baseline, a hierarchical inference rule, multi-step response consequences, and a second model family.

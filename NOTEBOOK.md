@@ -5,6 +5,27 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-28 — Audit #10 adopted: LOCO bounded; unseen-word branch needs a lexical null; second-lens table
+
+- LOCO A = "X predicts a held-out carrier's displacement and consequence
+  better than the three-carrier per-word family mean at F4–F20" — a
+  variance-disadvantaged baseline; equalized X-free lexical baselines
+  (word-only ridge; shrunk word mean) required before interpretation;
+  block-first bootstrap for any cross-family statement; LOCO cannot separate
+  state from a smooth style code — residualization is the next control.
+- Unseen-word branch: correct mechanics, no lexical null once the word-mean
+  is dropped → class-mean displacement null and a word-only input-embedding
+  predictor added as the primary X-free baselines; fixed rank universe;
+  fail-fast asserts; block-first pooled bootstrap.
+- Second lens (auditor's table, adopted): proven — identity-dominated input
+  transition; ordering-saturated readout (for our endpoint). Unproven —
+  presentation entangled with state (strong concern); family-only laws (not
+  shown; whole-block transfer works); motion invisible to the response law
+  (readout-specific). The serious hole: no stable quotient separating
+  lexical content, presentation, operational state, and consequential
+  motion — "we may have incorrectly declared differently presented states
+  to be the same place." Next-generation requirements recorded verbatim.
+
 ## 2026-08-28 — Re-contextualization #10 (LOCO A in; second lens active)
 
 - **Central bet:** native mathematics of latent spaces from what a denizen
