@@ -2459,3 +2459,110 @@ calibration and held-out word identities must be disjoint, with the same
 sentinel pair, folds, null ladder, clustered gates, and response-law endpoint.
 Only after that split is adjudicated is a second model-family replication
 next. No experiment is run in Round 20 itself.
+
+## Tier-3 audit #9 — Round 20 adjudication, KL-rank endpoint, within-style null (2026-08-28, fresh Codex auditor)
+
+**Adopted corrections.** (1) Round 20's "not met" is a **nonpass under the
+historical contract, not a kill of forward transport**; required wording:
+"The period sentinel did not meet the preregistered two-layer, three-endpoint
+qualification criterion: only F20 qualified. … In the shared-word,
+held-out-carrier design, sentinel displacement is predictably improved over
+the word-conditioned mean from F4 onward, and the response law registers that
+variation in cosine and skill. The ordering endpoint was later diagnosed as
+insensitive/saturated, so the qualification failure is not a substantive null
+result." The comma arm falsifies "token identity or position prevents any
+qualifying layer". (2) **KL-rank implementation defect:** the ranked candidate
+set omitted kNN-1/5/20 (K = 7, not the preregistered 10). Repaired in the
+analyzer (kNN candidates now completed and ranked); the style-A run and the
+in-flight style-B run used K = 7 and are labelled so; not contract-valid for
+the KL-rank endpoint. Future reports carry raw KL, skill, pairwise win rate,
+KL-rank under the exact candidate set, and candidate-set sensitivity.
+(3) **The within-style-family null is an alignment-destruction diagnostic,
+not a clean style null**; "beats the within-style null by 0.02" is not
+informative evidence for a state-linked component in the win direction. The
+style-A run's "style-robust" reading is withdrawn as a claim; it stands only
+as the diagnostic it is. (4) The cheapest fair control on the existing
+captures: within each style block hold out one carrier, fit on the other
+three, compare the state-conditioned predictor against a leave-one-carrier-out
+per-word/per-block mean displacement baseline with clustered inference —
+diagnostic of within-family state information, not cross-family transfer; the
+whole-block outer hold-out remains the cross-family test. (5) Priority order
+(verbatim below).
+
+**Round 20 ruling audit (verbatim):**
+
+“Not met” is mechanically correct, but it must not be phrased as a kill.
+
+The registered rule requires at least two qualifying layers for the same sentinel, with positive clustered lower bounds on cosine, skill, and ordering.
+
+- Period (`.`): only F20 qualifies.
+- Comma (`,`): F12 and F20 qualify.
+- Both have complete support.
+
+Thus the period arm did not meet the preregistered criterion. The comma arm cannot retroactively rescue it because it was explicitly a control/replication arm.
+
+However, the ordering endpoint was simultaneously diagnosed as insensitive/saturated. F4–F12 show large cosine and skill leads, while ordering lower bounds hover around zero or become negative. That makes the failure endpoint-limited, not evidence that forward transport is absent.
+
+The strongest defensible wording is:
+
+> The period sentinel did not meet the preregistered two-layer, three-endpoint qualification criterion: only F20 qualified. This is a nonpass under the historical contract, not a kill of forward transport. In the shared-word, held-out-carrier design, sentinel displacement is predictably improved over the word-conditioned mean from F4 onward, and the response law registers that variation in cosine and skill. The ordering endpoint was later diagnosed as insensitive/saturated, so the qualification failure is not a substantive null result.
+
+The comma arm additionally shows that the strong alternative “token identity or position prevents any qualifying layer” is false: F12 and F20 qualify there. It still does not establish a native law, state independence from presentation, unseen-word generalization, or second-family replication.
+
+Sources: [Round 20 contract and adjudication](C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/theory/EXPERIMENTS.md:2330), [period artifact](C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/results/lm_dyn_v1/analysis_fwdA.json), [comma artifact](C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/results/lm_dyn_v1/analysis_fwdB.json).
+
+**Within-style null audit (verbatim):**
+
+The concern is valid. The current null is an alignment-destruction diagnostic, not a clean style null.
+
+The analyzer permutes `Y` or `Δ` across the four carriers within each block and word, then refits ridge/kernel. With four carriers there are only `4! = 24` arrangements per word-block. The scored null predictor uses one seeded permutation; the 20-shuffle result is reported separately for cosine.
+
+This breaks the exact `X ↔ Y` carrier pairing. A flexible predictor then sees one carrier’s state paired with another carrier’s displacement. It is entirely expected that it predicts the wrong carrier and falls below even the shared mean.
+
+That is exactly what the F8 smoke shows:
+
+- shared mean: approximately 0.47;
+- ridge: approximately 0.72;
+- kernel: approximately 0.74;
+- ridge style-null: approximately 0.30;
+- kernel style-null: approximately 0.21.
+
+The null’s low skill and low KL-rank are consequences of the broken target alignment. They do not show that style is absent. Thus:
+
+> “Beats the within-style null by 0.02” is not informative evidence for a state-linked component in the WIN direction unless the null has first been shown to preserve the relevant nuisance structure and to pass for a known truth.
+
+The existing outer fold already holds out an entire four-carrier block, so direct memorization of that block label is restricted. But this does not eliminate:
+
+- style features shared across blocks;
+- template or carrier-specific nuisance;
+- residual style encoded in `X`;
+- carrier-conditioned displacement that the permutation deliberately destroys.
+
+The cheapest useful control on the existing captures is:
+
+1. Within each style block, hold out one carrier.
+2. Fit on the other three carriers.
+3. Compare the state-conditioned predictor against a leave-one-carrier-out per-word/per-block mean displacement baseline.
+4. Use the same clustered inference.
+
+This tests whether state information predicts a carrier beyond the style-family mean. It is diagnostic, not proof of cross-family generalization.
+
+The current whole-block outer holdout should remain the cross-family transfer test. A valid per-block mean cannot be computed for the already-held-out block from zero target examples, so it should not be smuggled into that outer-fold comparison.
+
+A cleaner but more expensive control is cross-fitted residualization of predeclared template/block/style features from `X`, with corresponding nuisance adjustment of `Δ`. A within-block-only fit is cheap but can still exploit carrier identity, so it cannot stand alone.
+
+The smoke is explicitly marked “not a result”; it should not support a style-robust claim.
+
+Source: [style-null code](C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/analyze_lm_dynamics.py:408), [style-null preregistration](C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/theory/EXPERIMENTS.md:2422), [F8 smoke](C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/results/lm_dyn_v1/analysis_stylesmoke.json).
+
+**Priority ordering (verbatim):**
+
+My priority ordering is:
+
+1. Fix the KL-rank candidate-set mismatch.
+2. Replace the current style-null gate with a within-family leave-one-carrier-out analysis against a per-word/per-block mean.
+3. Run cross-fitted style residualization or a genuinely style-preserving conditional permutation.
+4. Run the predeclared unseen-word split.
+5. Only then consider second-family replication.
+
+Bottom line: the data support a bounded held-out-carrier forward-displacement forecasting result. They do not yet distinguish a state-space regularity from a carrier/template-conditioned nuisance law.

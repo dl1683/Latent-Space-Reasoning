@@ -5,6 +5,19 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-28 — Audit #9 adopted: nonpass ≠ kill; KL-rank set defect; style null is a diagnostic only
+
+- "Not met" is a nonpass under the historical contract, not a kill; the
+  comma arm falsifies "token/position prevents any qualifying layer".
+- KL-rank ranked K = 7 candidates instead of the preregistered 10 (kNN-1/5/20
+  omitted): fixed in the analyzer; style-A/B runs labelled K = 7, not
+  contract-valid on that endpoint.
+- The within-style null is an alignment-destruction diagnostic; "style-robust"
+  is withdrawn as a claim. Next fair control: within-family
+  leave-one-carrier-out vs per-word/per-block mean displacement (to be
+  predeclared by Codex), then residualization, then unseen words, then a
+  second family.
+
 ## 2026-08-28 — Within-style null, sentinel '.': F4/F8/F20 style-robust mechanically; the null itself is suspect
 
 - 2213 s, support 1.0. Under the Round 20 gate (≥0.02, LB > 0 over the
