@@ -200,6 +200,7 @@ def main():
     ap.add_argument("--model", default="Qwen/Qwen3-0.6B"); ap.add_argument("--pairs", type=int, nargs="*", default=None)
     ap.add_argument("--n-boot", type=int, default=2000); ap.add_argument("--n-shuffle", type=int, default=100)
     ap.add_argument("--skip-completion", action="store_true")
+    ap.add_argument("--identity-check", action="store_true", help="stored-true-successor identity test at the slot for every pair and carrier (audit #6)")
     ap.add_argument("--baselines", action="store_true", help="Round 16 moot-makers: identity-plus-residual predictor and per-carrier affine diagnostic")
     ap.add_argument("--tag", default="", help="suffix for the output file: analysis_<tag>.json (keeps earlier runs intact)")
     ap.add_argument("--smoke", action="store_true", help="pipeline validation on the first 16 words, pair 0, tiny bootstrap; writes analysis_smoke.json")
@@ -241,6 +242,19 @@ def main():
         results["law_reload_check"] = {"max_abs_logp_diff": float(np.max(np.abs(fresh - stored))), "kl_ordering_agreement": agree,
                                        "max_abs_pairwise_kl_diff": float(np.max(np.abs(Rf - Rs)))}
         print("law reload check:", json.dumps(results["law_reload_check"]), flush=True)
+        if a.identity_check:
+            # Audit #6 action 3: for every scored pair and every carrier, replace the slot with the STORED true successor and
+            # compare the completed slot law with the unmodified forward's slot law. Exact routing => KL ~ float16 noise.
+            ident = {}
+            for (l, l1) in pairs:
+                worst = 0.0
+                for c in range(P):
+                    q = completer.laws(c, states_emb, l, Yhat=None)[0]
+                    qi = completer.laws(c, states_emb, l, Yhat=Z[c, l + 1])[0]
+                    worst = max(worst, float(np.max(kl_rows(q, qi))))
+                ident[f"L{l}->L{l1}"] = worst
+                print(f"identity check L{l}->L{l1}: max KL over {P} carriers x {n} words = {worst:.3e}", flush=True)
+            results["identity_check_max_kl"] = ident
 
     def cells(probe_list, l):
         X = np.concatenate([Z[p, l] for p in probe_list]); Y = np.concatenate([Z[p, l + 1] for p in probe_list])
