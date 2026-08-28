@@ -12,25 +12,9 @@ decoder an operational-state relation, a smooth presentation/lexical
 relation, or an implementation artefact — and what does the answer say about
 holes hostile to structured reasoning.
 
-What holds: the 2×2 residualization table is complete (A-static, A-score4,
-B-static, B-score4 — F4–F20 pass in all four; F0 passes only for A-score4
-with sparse keys); Round 32 licenses only correlated same-population
-sensitivity; B-score4 carries the amended-implementation /
-SVD-telemetry-incomplete labels.
+What holds: the sentinel {A,B} × {P_static,P_aug-score4} table is complete only for the residual-versus-four-word-only-null mechanical gate: F4–F20 pass in all four correlated cells, while F0 fails except for a weak pooled A-score4 association with only 2/8 full-gate keys. This is consistent within-decoder, within-population condition robustness, not replication; B-score4's ridge-only cosine and skill margins are mechanically reportable, while its K=13 KL-rank endpoint and every low-rank interpretation remain amended-implementation and SVD-telemetry-incomplete. (Audit #17 wording.)
 
-What this cycle reframed: (1) the population-validity loop (v1→v4) showed
-that "presentation-only" is a much harder object than the earlier program
-assumed — three adversarial voids before an approved design, and the approved
-design had to retreat to a metalinguistic mention frame to be inert across
-all four inventories; audit #17 is asked whether that retreat changes what
-the interchangeability test can say about the guiding question; (2) the
-numerical-instrument finding (torch SVD non-convergence) forced a telemetry
-gate that now sits in front of every low-rank result — the instrument itself
-is under review, not just the claim; (3) the seven Tier-1 rounds on one
-analyzer are the cost of Round 27-31's decision to keep one canonical path
-rather than fork scripts; the alternative (a separate small op-update/bridge
-module) would have been reviewed faster but would have duplicated the fold,
-null and completion machinery.
+What this cycle reframed (audit #17 wording): the v1–v3 loop showed that an all-inventory ordinary-use presentation contract had not been achieved; v4 instead obtains grammatical core-operation equivalence by placing every item in the same autonymic `the word <X>` frame. Its 48/48 approval therefore licenses a bounded mentioned-string instruction micro-world, not presentation inertness across ordinary noun, verb, adjective, and function-word uses. The operation-verb update is a declared-operation-verb context intervention, not yet a denizen-enacted operational move (source and recipient are separate prefix encodings; no execution consequence is measured). The numerical-instrument finding (torch SVD non-convergence) forced a telemetry gate in front of every low-rank result. Audit #17's allocation ruling: run the contextual-prefix baseline, then one bounded multi-position consequence test BEFORE v4 bridge/interchangeability and before a second decoder; do not author a v5 — the next population should be a typed use-frame task.
 
 Alternatives held live and NOT yet run: a second pinned decoder (cheap
 replication axis; Round 31 order 11); a multi-position consequence law
@@ -52,15 +36,7 @@ and resSA2 finish.
   under the orthographic wrapper failed clause 6 (a whole-word operation swap
   vs a one-glyph presentation edit). Adversary principle: co-design pairs and
   controls under a predeclared surface-distance metric.
-- v4 (`afd6fcc`, fresh outcome-blind author): metalinguistic frames
-  `{Please|Kindly} plan to OP the word <X>` and `{Hello,|Hi,} please plan to
-  OP the word <X>`, OP ∈ {repeat, omit, capitalize, reverse}; declared metric
-  = aligned surface-word edit distance = 1 for every pair and control; frozen
-  `operation_updates` block (8 forward-only rows, 4 trajectory clusters, 4
-  trajectory controls). Independent adversary: **APPROVE 48/48**. Tokenization
-  PASS (pair-2 prefixes 8/8 tokens; greeting token 9707 vs 13048). Approval
-  block written; raw sha256 `f813f9b2…`, git blob `8845f75c…` recorded in the
-  ledger (`nlm007_fresh_v4_frozen`). Any edit voids it.
+- v4 (`afd6fcc`, fresh outcome-blind author): metalinguistic frames `{Please|Kindly} plan to OP the word <X>` and `{Hello,|Hi,} please plan to OP the word <X>`, OP ∈ {repeat, omit, capitalize, reverse}; declared metric = aligned surface-word edit distance = 1 for every pair and control; frozen `operation_updates` block. A separate fresh Codex session approved 48/48 checklist cells for grammaticality, preservation of the explicit string-edit instruction, and matched surface-word distance under the common mention frame; this is outcome-blind procedural approval, not 48 independent linguistic observations or proof that Please/Kindly and Hello,/Hi, are pragmatically or latently inert (audit #17). Tokenization PASS; approval block written; raw sha256 `f813f9b2…`, git blob `8845f75c…` in the ledger (`nlm007_fresh_v4_frozen`). The config's top-level 'not approved for capture' note is historical authoring-time text superseded by the structured approval/hash fields.
 - Next on this population (Round 31 order 5–8, after the order-4 baseline):
   captures A / B / OP_UPDATE → bridge screen → interchangeability → fresh
   analyses A/B → operation-update analysis; chain `run_v4.cmd` written, armed
