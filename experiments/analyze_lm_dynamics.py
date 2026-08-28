@@ -214,6 +214,8 @@ def main():
     ap.add_argument("--identity-only", action="store_true", help="run the identity check and stop (writes identity_check.json)")
     ap.add_argument("--identity-check", action="store_true", help="stored-true-successor identity test at the slot for every pair and carrier (audit #6)")
     ap.add_argument("--baselines", action="store_true", help="Round 16 moot-makers: identity-plus-residual predictor and per-carrier affine diagnostic")
+    ap.add_argument("--fl-deadline-seconds", type=float, default=108000.0, help="Round 27 comparator 1: per-cell hard wall (30 h); when exceeded after a layer, the artifact is written with budget_incomplete=true and the run stops")
+    ap.add_argument("--fl-null", type=int, default=0, help="Round 27 comparator 1: number of fully refitted Freedman-Lane residual-geometry null refits per fold key (calibration Delta_perp permuted across carriers within block and word; inner selection, ridge and kernel refit, held-out scoring on all four statistics); 0 = off")
     ap.add_argument("--xfree-field", action="store_true", help="Round 27 comparator 2: fair residual-space X-free field (P_static + rank-4 carrier scores + 16 frozen-embedding PCs + 64 interactions) fit to Delta_perp, plus the df-matched state ridge sensitivity; needs --residualize and --unseen-words")
     ap.add_argument("--residualize", choices=["", "static", "aug"], default="", help="Round 23 cross-fitted presentation residualization: static = block one-hot + template lengths/positions; aug = static + leave-word-out carrier mean of X + rank-4 carrier-subspace scores")
     ap.add_argument("--unseen-words", type=int, default=0, help="Round 20 unseen-word split: K class-stratified word folds; calibration and held-out word identities disjoint within every carrier-block fold; word-mean baseline omitted (undefined for unseen words); oracle omitted")
@@ -226,6 +228,10 @@ def main():
     ap.add_argument("--tag", default="", help="suffix for the output file: analysis_<tag>.json (keeps earlier runs intact)")
     ap.add_argument("--smoke", action="store_true", help="pipeline validation on the first 16 words, pair 0, tiny bootstrap; writes analysis_smoke.json")
     a = ap.parse_args()
+    if a.fl_null:
+        assert a.fl_deadline_seconds <= 108000.0, "--fl-deadline-seconds cannot exceed the locked 30 h per-cell wall"
+        assert a.fl_null == 20 and sorted(a.pairs) == [0, 1, 2, 3, 4], "--fl-null is locked to 20 refits on --pairs 0 1 2 3 4 (Round 27 comparator-1 lock)"
+        assert a.residualize and a.source == "forward" and a.target == "delta" and a.unseen_words == 2 and not a.skip_completion and not a.smoke, "--fl-null requires --residualize, --source forward, --target delta, --unseen-words 2, completion on (Round 27 comparator-1 lock)"
     if a.xfree_field:
         assert a.residualize and a.source == "forward" and a.target == "delta" and a.unseen_words == 2 and not a.skip_completion and not a.smoke, "--xfree-field requires --residualize, --source forward, --target delta, --unseen-words 2, completion on (Round 27 comparator-2 lock)"
     if a.smoke:
@@ -272,7 +278,7 @@ def main():
         assert int(sp.model.config.num_hidden_layers) == man["num_hidden_layers"]
         assert man["model"] == a.model and man["config_name"] == cfg["name"] and man["n_probes"] == len(cfg["probes"]), "capture manifest / config mismatch"
         ids = [sp.single_token_id(w) for w in items]; states_emb = torch.stack([sp.state(i) for i in ids])
-    results = {"pairs": {}, "source": a.source, "residualize": a.residualize or None, "sentinel_tag": a.sentinel_tag if a.source == "forward" else None, "locality_max_abs_diff": locality, "manifest": man, "config": a.config, "lock": "theory/EXPERIMENTS.md NLM-007 (Round 13, amended Round 14)" + ("; Round 27 comparator 2 (fair residual-space X-free field: P_static + rank-4 carrier scores + 16 embedding PCs + 64 interactions; df-matched state ridge; lambda grid " + str(LAMBDAS) + ")" if a.xfree_field else ""), **({"xfree_field": True} if a.xfree_field else {}), "target": a.target,
+    results = {"pairs": {}, "source": a.source, "residualize": a.residualize or None, "sentinel_tag": a.sentinel_tag if a.source == "forward" else None, "locality_max_abs_diff": locality, "manifest": man, "config": a.config, "lock": "theory/EXPERIMENTS.md NLM-007 (Round 13, amended Round 14)" + ("; Round 27 comparator 2 (fair residual-space X-free field: P_static + rank-4 carrier scores + 16 embedding PCs + 64 interactions; df-matched state ridge; lambda grid " + str(LAMBDAS) + ")" if a.xfree_field else ""), **({"xfree_field": True} if a.xfree_field else {}), **({"fl_null_refits": int(a.fl_null), "fl_deadline_seconds": float(a.fl_deadline_seconds), "fl_null_lock": "Round 27 comparator 1: fully refitted Freedman-Lane residual-geometry null; permutation of calibration Delta_perp across carriers within block and word; inner selection + ridge/kernel refit per permutation; statistics cos/nerr/skill/kl_improvement vs the fixed residual mean reference"} if a.fl_null else {}), "target": a.target,
                "fallback": {"pairs": [f"L{l}->L{l1}" for (l, l1) in pairs], "n_shuffle": a.n_shuffle, "n_boot": a.n_boot}}
     if completer is not None:
         # float16 reload check: fresh float32 laws for probe 0 vs stored float16 laws — KL-ordering agreement must be near 1
@@ -714,7 +720,7 @@ def main():
             def style_permute(Y_cal, rng_):
                 """Permute calibration targets across carriers WITHIN each style-family block and word (Round 20 null)."""
                 Yp = Y_cal.reshape(n_cal_probes, n_c, D).copy()
-                for b in set(cal_block_of):
+                for b in sorted(set(cal_block_of)):                                        # deterministic across processes (string-set order is hash-randomized)
                     rows = np.where(cal_block_of == b)[0]
                     for w in range(n_c):
                         Yp[rows, w, :] = Yp[rows[rng_.permutation(len(rows))], w, :]
@@ -825,6 +831,74 @@ def main():
                             col = KLm[:, c].copy(); col[cands.index(base)] = comp[k]["kl"][c]
                             if np.all(np.isfinite(col)): Rn[c] = 1 - (rankdata(col, method="average")[cands.index(base)] - 1) / (K - 1)
                         comp[k]["klrank"] = Rn
+            # ---- Round 27 comparator 1: fully refitted Freedman-Lane residual-geometry null ----
+            fl = None
+            if a.fl_null:
+                assert resid is not None and comp and "mean" in comp
+                fl_t0 = time.time()
+                kl_ref = comp["mean"]["kl"]                                           # fixed residual X-free reference (the residual shared-mean law)
+                def fl_stats(pred, tag_):
+                    """The four locked statistics per held-out cell for one fitted field on the unchanged held-out cells."""
+                    cos_ = cos_rows(pred, Yt); nerr_ = np.linalg.norm(pred - Yt, axis=1) / denom
+                    kls = []
+                    for ti, tp in enumerate(test_probes):
+                        rows = slice(ti * n_t, (ti + 1) * n_t)
+                        qhat = comp_laws(tp, l, resid["Xt_orig"][rows] + resid["fD_t"][rows] + pred[rows], widx_t)[0]
+                        q = true_slot_law[tp][widx_t]
+                        kls.append(kl_rows(q, qhat))
+                    kl_ = np.concatenate(kls); klm_ = np.where(kl_ref > 0, kl_ref, np.nan)
+                    return {"cos": cos_, "nerr": nerr_, "skill": 1 - kl_ / klm_, "kl": kl_ref - kl_}
+                obs = {"ridge": {"cos": succ["ridge"]["cos"], "nerr": succ["ridge"]["nerr"], "skill": comp["ridge"]["skill"], "kl": kl_ref - comp["ridge"]["kl"]},
+                       "kernel": {"cos": succ["kernel"]["cos"], "nerr": succ["kernel"]["nerr"], "skill": comp["kernel"]["skill"], "kl": kl_ref - comp["kernel"]["kl"]}}
+                perm = {f: {e: [] for e in ("cos", "nerr", "skill", "kl")} for f in ("ridge", "kernel")}; perm_sel = []
+                def ridge_only_grid(Xis, Yi, Xi):
+                    fam = RidgeFamily(Xis, Yi)
+                    return {("ridge", lam): (lambda f: (lambda Xq, Xqr: f(Xq)))(fam.predictor(lam)) for lam in LAMBDAS}
+                held_block_i = block_names.index(held.split("_w")[0]); held_wfold = int(held.rsplit("_w", 1)[1]) if "_w" in held else 0
+                for s_i in range(a.fl_null):
+                    rng_fl = np.random.default_rng(np.random.SeedSequence([SEED, int(l), held_block_i, held_wfold, s_i]))
+                    Yc_p = style_permute(Yc, rng_fl)                                   # calibration Delta_perp permuted across carriers WITHIN block and word
+                    # complete calibration-only inner selection on the permuted targets (families rebuilt per inner fold)
+                    inner_p = [(Xis, rows_for(Yc_p, [q for b in cal_blocks if b != ib for q in probe_ids[b]]), Xi, Xvs, rows_for(Yc_p, probe_ids[ib]), Xv)
+                               for (Xis, _, Xi, Xvs, _, Xv), ib in zip(inner, cal_blocks)]
+                    def score_grid_p(make):
+                        acc = {}
+                        for (Xis, Yi, Xi, Xvs, Yv, Xv) in inner_p:
+                            for key, f in make(Xis, Yi, Xi).items():
+                                acc.setdefault(key, []).append(float(np.mean(cos_rows(f(Xvs, Xv), Yv))))
+                        return {k: float(np.mean(v)) for k, v in acc.items()}
+                    sc_r = score_grid_p(ridge_only_grid); rl_p = {k[1]: v for k, v in sc_r.items() if k[0] == "ridge"}; lam_p = max(rl_p, key=rl_p.get)
+                    sc_k = score_grid_p(kernel_grid); (g_p, lamk_p) = max(sc_k, key=sc_k.get)
+                    pr_r = RidgeFamily(Xcs, Yc_p, eig=famc.eig).predictor(lam_p)(Xts)
+                    pr_k = KernelFamily(Xcs, Yc_p).predictor(lamk_p, g_p)(Xts)
+                    for f, pr in (("ridge", pr_r), ("kernel", pr_k)):
+                        st_ = fl_stats(pr, f)
+                        for e in perm[f]: perm[f][e].append(st_[e])
+                    perm_sel.append({"ridge_lam": float(lam_p), "kernel": [float(g_p), float(lamk_p)]})
+                    print(f"   [{held}] FL null refit {s_i+1}/{a.fl_null}: ridge cos={float(np.nanmean(perm['ridge']['cos'][-1])):.3f} skill={float(np.nanmean(perm['ridge']['skill'][-1])):.3f} ({time.time()-t0:.0f}s)", flush=True)
+                # one common cell mask over the observed and every refit, both fields, all four statistics (same support everywhere)
+                mask = np.ones(len(Yt), dtype=bool)
+                for f in ("ridge", "kernel"):
+                    for e in ("cos", "nerr", "skill", "kl"):
+                        mask &= np.isfinite(obs[f][e]) & np.all(np.isfinite(np.stack(perm[f][e])), axis=0)
+                fl = {"n_refits": int(a.fl_null), "seconds": round(time.time() - fl_t0, 1), "selected_per_refit": perm_sel, "fl_null_support": float(mask.mean()),
+                      "key_complete": bool(mask.mean() >= 0.95), "fields": {}}
+                for f in ("ridge", "kernel"):
+                    fl["fields"][f] = {}
+                    for e in ("cos", "nerr", "skill", "kl"):
+                        P = np.stack(perm[f][e]).astype(float); P[:, ~mask] = np.nan                  # (refits, cells) on the common support
+                        o = obs[f][e].astype(float).copy(); o[~mask] = np.nan
+                        obs_mean = float(np.nanmean(o)); perm_means = np.nanmean(P, axis=1)
+                        beaten = (perm_means < obs_mean) if e != "nerr" else (perm_means > obs_mean)   # observed strictly beats the refit; ties count as not beaten
+                        med = np.nanmedian(P, axis=0)
+                        diff = (o - med) if e != "nerr" else (med - o)                            # improvement over the permutation median, per cell
+                        cell_diffs.setdefault((f, e, "flnull"), {})[held] = diff.reshape(len(test_probes), n_t)
+                        fl["fields"][f][e] = {"observed_mean": obs_mean, "refit_means": [float(x) for x in perm_means],       # kept for the layer-level exact test
+                                              "perm_mean_median": float(np.nanmedian(perm_means)), "perm_mean_max": float(np.nanmax(perm_means)), "perm_mean_min": float(np.nanmin(perm_means)),
+                                              "n_refits_beaten": int(beaten.sum()), "n_refits_not_beaten": int((~beaten).sum()),
+                                              "exact_p_one_sided_key": float((1 + (~beaten).sum()) / (1 + len(perm_means))),
+                                              "improvement_over_perm_median": float(np.nanmean(diff))}
+                print(f"   [{held}] FL null done: support={mask.mean():.3f} ridge key-p = {[fl['fields']['ridge'][e]['exact_p_one_sided_key'] for e in ('cos','nerr','skill','kl')]} ({time.time()-t0:.0f}s)", flush=True)
             # ---- paired two-way cluster bootstrap vs frozen chart ----
             def boot_diff(field, endpoint, against="chart"):
                 if endpoint == "cos": A, B = succ[field]["cos"], succ[against]["cos"]
@@ -871,6 +945,15 @@ def main():
                     g["secondary_last_token"] = {"skill_vs_chart": boot_diff(field, "skill_last"), "skill_vs_word_mean": (boot_diff(field, "skill_last", "word_mean") if "word_mean" in preds else None),
                                                  "ordering_vs_chart": boot_diff(field, "ordering_last")}
                 gates[field] = g
+            if fl is not None:
+                for f in ("ridge", "kernel"):
+                    for e in ("cos", "nerr", "skill", "kl"):
+                        diff = cell_diffs[(f, e, "flnull")][held]; reps = []; brng_ = np.random.default_rng(SEED + 3)
+                        for _ in range(a.n_boot):
+                            ci = brng_.integers(0, len(test_probes), len(test_probes)); wi = draw_words(brng_)
+                            reps.append(float(np.nanmean(diff[np.ix_(ci, wi)])))
+                        fl["fields"][f][e]["improvement_ci95"] = [float(np.nanpercentile(reps, 2.5)), float(np.nanpercentile(reps, 97.5))]
+                gates["fl_null"] = fl
             if "xfree_field" in preds:
                 for field in ("ridge", "ridge_dfmatch", "kernel"):
                     g = gates.setdefault(field, {})
@@ -965,6 +1048,7 @@ def main():
         pooled_gates = {}
         for (field, endpoint, against), per_fold in cell_diffs.items():
             if field not in ("ridge", "kernel", "unres_ridge", "ridge_dfmatch") or endpoint not in ("cos", "skill", "klrank", "nerr", "kl"): continue
+            if against == "flnull" and field not in ("ridge", "kernel"): continue
             by_block = {}
             for fk, M in per_fold.items():
                 fold_key = int(fk.rsplit("_w", 1)[1]) if "_w" in fk else None
@@ -986,7 +1070,8 @@ def main():
                         vals.append(np.nanmean(M[np.ix_(ci, wi)]))
                 reps.append(float(np.nanmean(vals)))
             allv = np.concatenate([M.ravel() for Ms in by_block.values() for _, M in Ms])
-            pooled_gates[f"{field}_{endpoint}_vs_{against}"] = {"mean": float(np.nanmean(allv)), "ci95_block_first": [float(np.nanpercentile(reps, 2.5)), float(np.nanpercentile(reps, 97.5))], "n_blocks": len(blocks_), "n_fold_keys": len(per_fold)}
+            point = float(np.mean([np.nanmean(M) for Ms in by_block.values() for _, M in Ms])) if against == "flnull" else float(np.nanmean(allv))   # FL: key-balanced, as in the bootstrap
+            pooled_gates[f"{field}_{endpoint}_vs_{against}"] = {"mean": point, "ci95_block_first": [float(np.nanpercentile(reps, 2.5)), float(np.nanpercentile(reps, 97.5))], "n_blocks": len(blocks_), "n_fold_keys": len(per_fold)}
         pooled_retention = {}
         try:
             if retention_cells:
@@ -1016,7 +1101,21 @@ def main():
                                             "residual_margin_ci95": [float(np.nanpercentile(rm, 2.5)), float(np.nanpercentile(rm, 97.5))], "raw_margin_ci95": [float(np.nanpercentile(wm, 2.5)), float(np.nanpercentile(wm, 97.5))]}
         except Exception as e_:
             pooled_retention = {"error": repr(e_)}
-        results["pairs"][pair_key] = {"folds": fold_out, "pooled_gates_block_first": pooled_gates, "retention_common_scale_block_first": pooled_retention, "pooled_successor_cos": pooled, "minimal_class_successor_within_0.02": minimal,
+        fl_layer = None
+        if a.fl_null:
+            fl_layer = {"n_refits": int(a.fl_null), "keys": list(fold_out), "all_keys_complete": all(fold_out[b]["gates"]["fl_null"]["key_complete"] for b in fold_out), "fields": {}}
+            for f in ("ridge", "kernel"):
+                fl_layer["fields"][f] = {}
+                for e in ("cos", "nerr", "skill", "kl"):
+                    per_key = [fold_out[b]["gates"]["fl_null"]["fields"][f][e] for b in fold_out]
+                    obs_pooled = float(np.mean([d_["observed_mean"] for d_ in per_key]))                          # equal weight per key (block-balanced)
+                    null_pooled = np.mean(np.stack([d_["refit_means"] for d_ in per_key]), axis=0)               # (refits,) aligned by refit index
+                    beaten = (null_pooled < obs_pooled) if e != "nerr" else (null_pooled > obs_pooled)
+                    fl_layer["fields"][f][e] = {"observed_pooled": obs_pooled, "null_pooled": [float(x) for x in null_pooled],
+                                                "n_refits_beaten": int(beaten.sum()), "n_refits_not_beaten": int((~beaten).sum()),
+                                                "exact_p_one_sided_layer": float((1 + (~beaten).sum()) / (1 + len(null_pooled)))}
+            print(f"  FL layer-level exact p (ridge): " + " ".join(f"{e}={fl_layer['fields']['ridge'][e]['exact_p_one_sided_layer']:.3f}" for e in ('cos', 'nerr', 'skill', 'kl')), flush=True)
+        results["pairs"][pair_key] = {"folds": fold_out, "pooled_gates_block_first": pooled_gates, "retention_common_scale_block_first": pooled_retention, **({"fl_null_layer": fl_layer} if fl_layer else {}), "pooled_successor_cos": pooled, "minimal_class_successor_within_0.02": minimal,
                                       "pooled_completed_skill": pooled_skill, "minimal_class_completed_within_0.02": minimal_skill}
         if a.baselines and a.source != "forward":                                   # per_carrier_affine reads Z directly (audit #10 hazard)
             results["pairs"][pair_key]["per_carrier_affine"] = per_carrier_affine(l)
@@ -1026,6 +1125,10 @@ def main():
             print(f"  loco pooled ridge - blockword_mean: {results['pairs'][pair_key]['loco']['pooled_ridge_vs_blockword_mean']}", flush=True)
         (run_dir / ("analysis_smoke.json" if a.smoke else "analysis" + ("_" + a.tag if a.tag else "") + ".json")).write_text(json.dumps(results, indent=1, default=float), encoding="utf-8")
         print(f"  pooled: " + " ".join(f"{k}={v:.3f}" for k, v in pooled.items()) + f" | minimal class: {minimal}", flush=True)
+        if a.fl_null and (time.time() - t0) > a.fl_deadline_seconds:                      # any overrun, final layer included, is budget-incomplete
+            results["budget_incomplete"] = True; results["seconds"] = round(time.time() - t0, 1)
+            out = run_dir / ("analysis" + ("_" + a.tag if a.tag else "") + ".json"); out.write_text(json.dumps(results, indent=1, default=float), encoding="utf-8")
+            print(f"wrote {out} ({results['seconds']}s) BUDGET_INCOMPLETE: per-cell deadline {a.fl_deadline_seconds:.0f}s exceeded after {pair_key}"); return
     results["seconds"] = round(time.time() - t0, 1)
     out = run_dir / ("analysis_smoke.json" if a.smoke else "analysis" + ("_" + a.tag if a.tag else "") + ".json")
     out.write_text(json.dumps(results, indent=1, default=float), encoding="utf-8")
