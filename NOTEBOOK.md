@@ -5,6 +5,30 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Residualization A-aug: the X⊥ lead survives the augmented presentation design at every layer
+
+- 4738 s of the 7200 s wall; sentinel '.'; P_aug = P_static + leave-word-out
+  carrier mean of X + rank-4 calibration-carrier subspace scores; cross-
+  fitted out of both X and Δ; unseen-word folds; K = 13; class-preserving
+  crossed bootstrap; same-run raw four-null shadow and common-scale
+  retention block present.
+- **F0, F4, F8, F12, F20 all pass** the residual-vs-null gate. F0 now passes
+  (residual cosine 0.34 vs −0.01; block-first skill +0.16 [LB 0.02],
+  KL-rank +0.30 [0.12]) — the carrier-mean and subspace coordinates absorb
+  what made F0 fail under P_static. F4–F20: X⊥-ridge 0.56–0.62 vs 0.06–0.07;
+  block-first leads cos +0.50–0.56, skill +0.35–0.46, KL-rank +0.43–0.56;
+  6–8/8 keys; no block collapse.
+- Presentation-only arm (P_aug → Δ) 0.45–0.64 by layer.
+- Under Round 23's predeclared readings this is the non-collapse branch for
+  P_aug as well: the presentation concern is narrowed, not eliminated
+  (unmeasured presentation remains possible; audit #14's Freedman–Lane
+  residual-geometry null and calibration-only presentation/lexical
+  comparator are the next preregistered tests). Wording per audits
+  #13/#14: residual predictability of X⊥ beyond residualized X-free
+  lexical nulls after removal of the registered static AND augmented
+  coordinates; not presentation-independence; not state.
+- B-static running; then B-aug; then the patched A-static.
+
 ## 2026-08-29 — Audit #14 adopted: A-static upheld; Round 26's mediation sentence withdrawn
 
 - Upheld: F4–F20 pass; not a residual-geometry mirage (ridge cosine falls
