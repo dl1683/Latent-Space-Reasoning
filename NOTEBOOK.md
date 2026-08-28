@@ -5,6 +5,66 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Residualization B-static: the second sentinel reproduces the A-static pattern
+
+- Sentinel ',' with P_static; 4598 s of the 7200 s wall; unseen-word folds,
+  K = 13, class-preserving crossed bootstrap, same-run raw shadow and
+  common-scale retention block.
+- **F4, F8, F12, F20 pass** the residual-vs-null gate (X⊥ ridge 0.52–0.58 vs
+  strongest residual null 0.06–0.09; block-first leads cos +0.45–0.50,
+  skill +0.35–0.42, KL-rank +0.40–0.58; 8/8 positive keys at every passing
+  layer; no collapse). **F0 fails** (cosine lead +0.27 but skill negative and
+  KL-rank LB < 0) — as under A-static.
+- Presentation-only arm (P_static → Δ) 0.41–0.63 by layer.
+- Retention marker mechanically met on all three endpoints at F4–F20.
+- Reading (audit #14 / Round 27 wording): the registered static coordinates
+  predict raw displacement for the second sentinel too, and after their
+  cross-fitted removal X⊥ still predicts Δ⊥ and the reassembled response-law
+  consequence beyond the residual X-free lexical nulls at F4–F20. Presentation
+  sensitivity and surviving X-linked residual predictability, now for both
+  sentinels under the static design; not state; not presentation-independence.
+- B-aug running; then the patched A-static; then the two Round 27 comparators.
+
+## 2026-08-29 — Re-contextualization #15 (2-hour step-back; audit #15 running)
+
+Live question (one project): is the surviving X⊥→Δ⊥ predictability in one small
+decoder an operational-state relation, a smooth presentation/lexical relation
+the registered designs miss, or an implementation artefact of residual
+geometry — and what does either answer say about holes hostile to structured
+reasoning.
+
+What still holds: bounded, audited facts only (presentation sensitivity;
+X-linked residual predictability surviving two registered designs at F4–F20;
+F0 identity-dominated; ordering endpoint saturated). No state, no native law.
+
+What is reframed by A-aug: the "presentation vs state" question is no longer
+answerable by adding registered coordinates — every finite design leaves a
+residual, and the residual keeps predicting. The decisive tests are now the
+two Round 27 comparators: a calibration-only interaction field (can smooth
+presentation×lexical structure do it without cell X⊥?) and a fully refitted
+permutation null (is the aligned relation real or a geometry artefact?).
+Both are implemented; both run after the chain.
+
+Tunnel-vision check — honest: everything queued is one decoder, one template
+population, one move, one sentinel pair. Live alternatives held open:
+(a) the relation is a property of residual-stream geometry generic to any
+   trained decoder → the second family (pinned protocol) decides, cheaply;
+(b) the relation is template-population-specific → a fresh authored style
+   family, held out entirely, is a cheaper test than another comparator;
+(c) "consequence" is under-measured: KL at one slot may miss what structured
+   reasoning needs — a two-step closure test (predict Δ, write back, predict
+   the next Δ from the written state) is the first multi-step measurement
+   and is CPU-feasible on existing captures plus one extra forward pass;
+(d) the hole may already be visible: no quotient in the current space
+   separates lexical / presentation / operational coordinates — the fact that
+   three designs cannot exhaust presentation while X⊥ keeps predicting is
+   itself evidence the coordinates are entangled by construction; the
+   cheapest sharpening is to test whether a controlled presentation change
+   (same word, same block, different carrier) alters the downstream law more
+   than a controlled lexical change of matched displacement norm.
+Audit #15's independent alternatives will be appended verbatim below when it
+lands; none of the above starts before the locked Round 27 order completes.
+
 ## 2026-08-29 — Residualization A-aug: the X⊥ lead survives the augmented presentation design at every layer
 
 - 4738 s of the 7200 s wall; sentinel '.'; P_aug = P_static + leave-word-out
