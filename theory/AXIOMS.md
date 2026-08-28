@@ -429,6 +429,11 @@ a causal next-position move or merely a token/readout artifact.
 
 ## Round 20 — forward-time empirical boundary
 
+*(Tier-3 audit #9: "does not meet" is a nonpass under the historical
+contract, not a kill of forward transport; the within-style-family null
+planned below is an alignment-destruction diagnostic, not a clean style null.
+Authoritative text: `theory/EXPERIMENTS.md`, Tier-3 audit #9.)*
+
 The forward-time experiment is the first measurement whose move is the
 world's own append-token transition and whose consequence is read at the
 resulting next position. In the present one-model, shared-word,

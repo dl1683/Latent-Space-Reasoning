@@ -701,10 +701,16 @@ precision reports are queued ahead of any "state-dependent" claim.
   This cannot rescue the period arm because the preregistration requires two
   layers for the same sentinel. The A/B unappended states and laws are
   bit-identical (`nlm007_forward_AB_equality`, all recorded maxima `0.0`).
-- Allowed forward reading: in this one-model, shared-word, held-out-carrier
-  design, the appended displacement is predictable from the preceding state
-  beyond the word-conditioned mean from `F4` onward and the sentinel-position
-  response registers it in cosine/skill. Audit #8 leaves carrier/template
+- Round 20 ruling, audit #9 wording (adopted verbatim): "The period sentinel
+  did not meet the preregistered two-layer, three-endpoint qualification
+  criterion: only F20 qualified. This is a **nonpass under the historical
+  contract, not a kill of forward transport**. In the shared-word,
+  held-out-carrier design, sentinel displacement is predictably improved over
+  the word-conditioned mean from F4 onward, and the response law registers
+  that variation in cosine and skill. The ordering endpoint was later
+  diagnosed as insensitive/saturated, so the qualification failure is not a
+  substantive null result." The comma arm falsifies "token identity or
+  position prevents any qualifying layer". Audit #8 leaves carrier/template
   presentation versus state dependence unresolved; no native, unseen-word,
   second-family, or general dynamics claim stands.
 - The across-word within-carrier ordering endpoint is ruled
@@ -712,15 +718,29 @@ precision reports are queued ahead of any "state-dependent" claim.
   run. Future runs replace it with a fixed candidate-predictor KL-to-truth
   rank endpoint: normalized rank lead `>=0.02` with a positive
   word/carrier-clustered lower bound, calibration-only selection, and the
-  existing support/finite/reload/locality gates.
-- Next, in order: run the cheapest Audit #8 style control, a within-style-
-  family target null on the existing raw `forward_states_A.npz` and
-  `forward_states_B.npz` captures. Within each calibration style-family
-  block and word, permute `Y` (or `Delta=Y-X`) across carriers; preserve the
-  current folds, fitting, shuffles, bootstraps, and gates. A style-robust
-  candidate must beat both the word mean and this null by `0.02` with
-  positive clustered lower bounds on cosine, skill, and the new rank endpoint.
-  If style explains the lead, the null retains it and the state-conditioned
-  lead collapses; if state-linked variation remains, the null collapses while
-  the original field retains positive leads. Then run the disjoint,
-  class-stratified unseen-word split, followed by the second family.
+  existing support/finite/reload/locality gates. Preregistered candidate set:
+  `{identity, shared mean, word mean, kNN-1/5/20, ridge, low-rank, kernel,
+  chart}` (K = 10).
+- Within-style-family target null (ledger `nlm007_stylenull_predeclared`;
+  smoke `nlm007_stylenull_smoke_F8A`; sentinel A `analysis_styleA.json`,
+  ledger `nlm007_stylenull_styleA`; sentinel B `analysis_styleB.json`,
+  running). Audit #9: (a) the null is an **alignment-destruction diagnostic,
+  not a clean style null** — a field refit on a broken carrier pairing
+  predicts the wrong carrier's displacement and falls below even the shared
+  mean, so "beats the within-style null by 0.02" is not informative evidence
+  for a state-linked component; the style-A "style-robust" reading is
+  withdrawn as a claim and stands only as that diagnostic. (b) The KL-rank
+  endpoint ranked K = 7 candidates (kNN-1/5/20 omitted), not the
+  preregistered 10; repaired in the analyzer (`269e46c`); the style-A and
+  style-B runs are labelled K = 7 and are not contract-valid on that
+  endpoint.
+- Next, in audit #9 order: (1) within-family leave-one-carrier-out control
+  (`--loco`, implemented `3a8b859`; to be predeclared before any run):
+  within each style block hold out one carrier, fit on the other three, and
+  compare the state-conditioned predictor against a leave-one-carrier-out
+  per-word/per-block mean displacement with clustered inference —
+  diagnostic of within-family state information, not cross-family transfer
+  (the whole-block outer hold-out remains the cross-family test);
+  (2) cross-fitted style residualization or a genuinely style-preserving
+  conditional permutation; (3) the disjoint, class-stratified unseen-word
+  split; (4) only then the second model family.

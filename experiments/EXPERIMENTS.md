@@ -5,7 +5,7 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
-## NLM-007 — LM residual-stream dynamics; middle-depth ridge lead withdrawn under the identity baseline; displacement ladder adjudicated (audit #8 wording); forward-time move A scored, adjudication pending; B running (2026-08-28)
+## NLM-007 — LM residual-stream dynamics; middle-depth ridge lead withdrawn under the identity baseline; displacement ladder adjudicated (audit #8 wording); forward-time move adjudicated NOT MET = nonpass, not a kill (Round 20, audit #9); within-style null = diagnostic only; style B running (2026-08-28)
 
 - **Lock.** Round 13, documentation-only (ledger `nlm007_round13_lock`;
   design `theory/dialogue/003.md`, `theory/EXPERIMENTS.md`); Round 14
@@ -66,12 +66,27 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   - `analysis_fwdsmoke.json` — `--source forward` pipeline smoke at F8, A
     (1 shuffle / 10 boot; ledger `nlm007_forward_smoke_F8A`). **Not a
     result.**
-  - `analysis_fwdA.json` — forward-time move, sentinel A, layers
+  - `analysis_fwdA.json` — forward-time move, sentinel A = '.', layers
     0/4/8/12/20, 20 shuffles / 500 boot (ledger `nlm007_forward_fwdA`;
-    2220 s). **Scored; Codex adjudication pending** — mechanical reading
-    below, no verdict.
-  - `analysis_fwdB.json` — sentinel B arm, **running**. No status until
-    scored and adjudicated.
+    2220 s). **Valid; adjudicated Round 20 + audit #9**: the primary arm
+    did not meet the preregistered two-layer same-sentinel criterion (only
+    `F20` qualifies) — a nonpass under the historical contract, not a kill.
+  - `analysis_fwdB.json` — sentinel B = ',' control/replication arm, same
+    settings (ledger `nlm007_forward_fwdB`; 1823 s). **Valid; adjudicated
+    Round 20**: `F12` and `F20` qualify (ridge); cannot rescue the period
+    arm. Reading below.
+  - `analysis_stylesmoke.json` — `--style-null` + KL-rank pipeline smoke at
+    F8, A (2 shuffles / 10 boot; ledger `nlm007_stylenull_smoke_F8A`).
+    **Not a result.**
+  - `analysis_styleA.json` — within-style-family target null, sentinel A,
+    layers 0/4/8/12/20, 20 shuffles / 500 boot (ledger
+    `nlm007_stylenull_predeclared`, `nlm007_stylenull_styleA`; 2213 s;
+    support 1.0). **Diagnostic only (audit #9)**: the null is an
+    alignment-destruction diagnostic, not a clean style null; its KL-rank
+    endpoint ranked K = 7 candidates instead of the preregistered 10 —
+    labelled, **not contract-valid on that endpoint**. No claim.
+  - `analysis_styleB.json` — sentinel B arm of the same control,
+    **running**; carries the same K = 7 label. No status until scored.
 - **Successor endpoint (valid in all runs).** L0→L1: word-mean = ridge =
   kernel = 0.949, shuffled null 0.95 — lexical persistence, no law beyond
   word identity. From L4 on, full-dimensional ridge beats word-mean and the
@@ -121,28 +136,51 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   carrier shuffle is a carrier-alignment diagnostic, not a state-independence
   null (shuffled field reported for ridge/low-rank only). "The slot law
   barely registers it" is a readout fact, not a world fact.
-- **Forward-time move, sentinel '.' (`analysis_fwdA.json`; mechanical, not
-  adjudicated).** `F0` token-identity dominated (shared mean = word-
-  conditioned mean = 0.67 ≈ field 0.69). `F4/F8/F12`: displacement cosine
-  ridge/kernel 0.71–0.78 vs word-conditioned mean 0.48–0.53; law skill at
-  the sentinel position 0.39–0.57 vs 0.01–0.02; carrier-shuffled field
-  0.12–0.32 vs 0.67–0.81; but ordering leads 0.00–0.08 with lower bounds
-  ≤ 0 in half the folds — three-endpoint gate fails. `F20` qualifies
-  mechanically (ridge: +0.16–0.23 / +0.50–0.61 / +0.020–0.058, all LBs > 0);
-  one layer where two are required for the same sentinel. Token-identity
+- **Forward-time move (Round 20 + audit #9; `analysis_fwdA.json`,
+  `analysis_fwdB.json`).** Sentinel '.': `F0` token-identity dominated
+  (shared mean = word-conditioned mean = 0.67 ≈ field 0.69). `F4/F8/F12`:
+  displacement cosine ridge/kernel 0.71–0.78 vs word-conditioned mean
+  0.48–0.53; law skill at the sentinel position 0.39–0.57 vs 0.01–0.02;
+  carrier-shuffled field 0.12–0.32 vs 0.67–0.81; but ordering leads
+  0.00–0.08 with lower bounds ≤ 0 in half the folds — three-endpoint gate
+  fails. `F20` qualifies (ridge: +0.16–0.23 / +0.50–0.61 / +0.020–0.058,
+  all LBs > 0). Sentinel ',': same shape; `F12` and `F20` qualify (ridge),
+  `F8` misses one ordering LB by −0.002, `F4` one skill LB. Token-identity
   control: the '.'-fitted predictor on the ',' target scores 0.43–0.54 vs
-  0.26–0.30 for the shared mean. Ordering is the binding endpoint in both
-  clocks; whether it is an insensitive readout awaits the Codex ruling.
+  0.26–0.30 for the shared mean. Adopted wording: the period sentinel did
+  not meet the preregistered two-layer, three-endpoint qualification
+  criterion — a nonpass under the historical contract, not a kill of forward
+  transport; in the shared-word, held-out-carrier design, sentinel
+  displacement is predictably improved over the word-conditioned mean from
+  F4 onward and the response law registers that variation in cosine and
+  skill; the ordering endpoint was later diagnosed as insensitive/saturated,
+  so the qualification failure is not a substantive null result. The comma
+  arm falsifies "token identity or position prevents any qualifying layer".
+  Carrier/template presentation versus state dependence remains unresolved
+  (audit #8). Ordering is replaced prospectively by KL-to-truth candidate
+  rank (K = 10); no existing run is reclassified.
+- **Within-style-family null, sentinel '.' (`analysis_styleA.json`;
+  diagnostic only).** Mechanically `F4/F8/F20` beat both the word-conditioned
+  mean and the null on cosine, skill, KL-rank (ridge KL-rank 0.82–0.90 vs
+  word-mean 0.31–0.41); `F12` misses one fold's KL-rank LB; `F0` fails. The
+  null collapses below the shared mean (0.16–0.50 vs 0.47–0.62). Audit #9:
+  a field refit on a broken carrier pairing predicts the wrong carrier's
+  displacement, so "beats the within-style null" is not informative evidence
+  for a state-linked component; "style-robust" is withdrawn as a claim. The
+  KL-rank endpoint here ranked K = 7 (kNN-1/5/20 omitted; fixed in
+  `269e46c`) and is not contract-valid.
 - **What we learned.** Identity is the null for residual-stream transport.
   The present data support persistence plus a calibration-average
   displacement as a competitive finite-design description at L8 and L12,
   retain small unresolved remainders at L4 and L20, and do not yet establish
-  a native or generally reusable affine law. Bounded to one model and shared
-  words; unseen-word/style controls and a second family are required before
-  any general claim. Next in order: Codex adjudication of the forward A/B
-  arms → audit #8 style controls (style balancing, within-template null,
-  style-held-out split, Y−X decomposition, float32 precision reports) →
-  unseen-word split → second family.
+  a native or generally reusable affine law. The forward step is a bounded
+  held-out-carrier displacement-forecasting result that does not yet
+  distinguish a state-space regularity from a carrier/template-conditioned
+  nuisance law. A permutation null that a flexible model trivially beats is
+  not a control. Bounded to one model and shared words. Next in audit #9
+  order: within-family leave-one-carrier-out control vs per-word/per-block
+  mean displacement (`--loco`, `3a8b859`; to be predeclared) → cross-fitted
+  style residualization → unseen-word split → second family.
 
 ## Round 12 closure — frozen-encoder program closed; pivot to worlds with dynamics (2026-08-27)
 
