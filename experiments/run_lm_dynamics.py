@@ -105,7 +105,9 @@ def capture_forward(a):
     Hl = np.zeros_like(Hs)                                                   # last pre-append position
     Ht = np.zeros_like(Hs)                                                   # sentinel position
     law_t = np.zeros((len(cfg["probes"]), n, sp.E.shape[0]), dtype=np.float16)   # law at sentinel position
-    law_l = np.zeros_like(law_t)                                             # law at last pre-append position (= original final law)
+    law_l = np.zeros_like(law_t)                                             # law at last pre-append position, appended run
+    Hq = np.zeros_like(Hs)                                                   # last position, UNAPPENDED run (= X per Round 19)
+    law_q = np.zeros_like(law_t)                                             # law at last position, unappended run
     for pi, p in enumerate(cfg["probes"]):
         pre, suf = split_template(p["template"])
         seq, slot = sp._build(Probe(p["name"], p["block"], pre, suf), states)
@@ -114,25 +116,32 @@ def capture_forward(a):
         for i in range(0, n, a.batch):
             with torch.no_grad():
                 o = sp.model(inputs_embeds=seq[i:i + a.batch], output_hidden_states=True)
+                ou = sp.model(inputs_embeds=seq[i:i + a.batch, :-1], output_hidden_states=True)      # unappended run
             for l in range(L + 1):
+                Hq[pi, l, i:i + a.batch] = ou.hidden_states[l][:, last, :].float().numpy().astype(np.float16)
                 h = o.hidden_states[l]
                 Hs[pi, l, i:i + a.batch] = h[:, slot, :].float().numpy().astype(np.float16)
                 Hl[pi, l, i:i + a.batch] = h[:, last, :].float().numpy().astype(np.float16)
                 Ht[pi, l, i:i + a.batch] = h[:, sent, :].float().numpy().astype(np.float16)
             law_t[pi, i:i + a.batch] = torch.log_softmax(o.logits[:, sent, :].float(), -1).numpy().astype(np.float16)
             law_l[pi, i:i + a.batch] = torch.log_softmax(o.logits[:, last, :].float(), -1).numpy().astype(np.float16)
+            law_q[pi, i:i + a.batch] = torch.log_softmax(ou.logits[:, last, :].float(), -1).numpy().astype(np.float16)
         print(f"  {p['name']:8s} forward-captured (slot={slot}, last={last}, sentinel={sent}) ({time.time() - t0:.0f}s)", flush=True)
     out_dir = RESULTS / a.out; out_dir.mkdir(parents=True, exist_ok=True)
-    np.savez_compressed(out_dir / "forward_states.npz", H_slot=Hs, H_last=Hl, H_sent=Ht, law_sent=law_t, law_last=law_l,
+    # locality control (Round 19): appending after q must not alter q. Float32 max abs diff over the last probe's batch is
+    # representative; the stored float16 arrays carry the full comparison.
+    locality = float(np.max(np.abs(Hl.astype(np.float32) - Hq.astype(np.float32))))
+    fname = f"forward_states_{a.tag}.npz" if a.tag else "forward_states.npz"
+    np.savez_compressed(out_dir / fname, H_slot=Hs, H_last=Hl, H_sent=Ht, H_q_unappended=Hq, law_sent=law_t, law_last=law_l, law_q_unappended=law_q,
                         items=np.array(items), pos=np.array(pos), probes=np.array([p["name"] for p in cfg["probes"]]),
                         blocks=np.array([p["block"] for p in cfg["probes"]]))
-    sha = hashlib.sha256((out_dir / "forward_states.npz").read_bytes()).hexdigest()
+    sha = hashlib.sha256((out_dir / fname).read_bytes()).hexdigest()
     manifest = {"stage": "capture_forward", "model": a.model, "model_revision": sp.revision, "sentinel": a.sentinel, "sentinel_id": int(sent_ids[0]),
                 "num_hidden_layers": L, "embed_dim": int(D), "vocab": int(sp.E.shape[0]), "n_items": n, "n_probes": len(cfg["probes"]),
                 "config": a.config, "config_name": cfg["name"], "torch": torch.__version__, "transformers": __import__("transformers").__version__,
                 "torch_num_threads": torch.get_num_threads(), "batch_size": a.batch, "device": "cpu", "dtype": "float32 compute, float16 storage",
-                "forward_states_sha256": sha, "seconds": round(time.time() - t0, 1)}
-    (out_dir / "forward_manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+                "forward_states_sha256": sha, "locality_max_abs_diff_float16_storage": locality, "seconds": round(time.time() - t0, 1)}
+    (out_dir / (f"forward_manifest_{a.tag}.json" if a.tag else "forward_manifest.json")).write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     print(json.dumps(manifest, indent=2))
 
 
@@ -145,6 +154,7 @@ def main():
     f = sub.add_parser("capture_forward")
     f.add_argument("--config", required=True); f.add_argument("--model", default="Qwen/Qwen3-0.6B")
     f.add_argument("--batch", type=int, default=16); f.add_argument("--out", required=True)
+    f.add_argument("--tag", default="", help="artifact suffix, e.g. A / B per sentinel")
     f.add_argument("--sentinel", required=True, help="one fixed single-token sentinel appended after the suffix (declared in the preregistration)")
     a = ap.parse_args()
     if a.stage == "capture":

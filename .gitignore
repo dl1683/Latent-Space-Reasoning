@@ -180,4 +180,4 @@ experiments/results/*/edits.npz
 
 # LM dynamics raw states (reproducible via run_lm_dynamics.py capture; sha256 in manifest)
 experiments/results/*/states.npz
-experiments/results/*/forward_states.npz
+experiments/results/*/forward_states*.npz
