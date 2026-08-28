@@ -337,14 +337,14 @@ fallback was scored as `L0->L1`, `L8->L9`, and `L27->L28`, with 20 shuffles and
 overran the 20-minute cap by 19%.
 
 `L0->L1` is lexical persistence: word-mean = field at `0.949`, shuffled null
-`0.95`, support `1.0`. `L8->L9` is the first qualifying pair: ridge reaches
-about `0.941` successor cosine versus chart `0.86` and word mean `0.861`,
-clears the `>=0.05` chart and `>=0.02` word-mean gates on successor plus both
-completed-law readouts with positive clustered lower bounds, support `1.0`,
-and a shuffled null about `0.75–0.84` versus field about `0.94`. Full ridge, not
-rank-`<=128` low-rank affine, is the supported middle-depth complexity; the
-low-rank miss is about `0.05`. The within-carrier oracle is below the
-cross-carrier field.
+`0.95`, support `1.0`. `L8->L9` is successor-only exploratory evidence: ridge
+reaches about `0.941` successor cosine versus chart `0.86` and word mean
+`0.861`, with the reported successor lead and shuffled drop. The prior
+completed-law numbers are void because they were read at the last token rather
+than the locked slot. Full ridge, not rank-`<=128` low-rank affine, is the
+observed successor-side complexity at this depth; the low-rank miss is about
+`0.05`. The within-carrier oracle comparison remains descriptive, not a ceiling
+argument.
 
 `L27->L28` is void for the completed-law claim: reading the law at the last
 token disconnects it from the slot after layer 27, yielding degenerate KL,
@@ -360,18 +360,95 @@ with the second qualifying pair predicted; `L20->L21` kernel ridge, with
 successor improvement possible but complete late three-endpoint passage
 unlikely.
 
-Under the guiding question, this is the first measured instance of a law in
-Navigation requirement (e): a denizen can learn transport at middle depth on
-some contexts and reuse it on others, then predict the world's downstream law.
-It is not yet native. Required follow-ups are a class-stratified unseen-word
-split with disjoint calibration/test words and the same gates, and replication
-on a second model family (SmolLM2 or Gemma) with pinned revisions and the same
-controls. Until both pass, the claim is limited to one model and shared words.
+Under the guiding question, this is a successor-side sign that a denizen may
+learn transport at middle depth on some contexts and reuse it on others. It is
+not yet a completed-world law or native mathematics: the corrected slot
+endpoint is still unscored. Required follow-ups are a class-stratified
+unseen-word split with disjoint calibration/test words and the same gates, and
+replication on a second model family (SmolLM2 or Gemma) with pinned revisions
+and the same controls. Until both pass, the claim is limited to one model and
+shared words.
+
+## Round 16 — corrected endpoint adjudication and next order (2026-08-27)
+
+Round 16 is documentation-only; no experiment was run. Tier-3 audit #5 found
+that the completed-law endpoint read the sequence's last token rather than the
+locked substituted slot. This invalidates every completed-law number from the
+fallback and the three-pair extension for lock purposes, not only `L27->L28`.
+The successor endpoint is independent of that readout and remains valid as
+scored exploratory coordinate-forecast evidence. The extension outcomes are:
+`L12->L13` matches its successor prediction (ridge `0.977` vs chart `0.898`
+and word mean `0.888`, with the registered foldwise lead and shuffled drop);
+`L4->L5` rejects lexical-persistence dominance but does not clear the chart
+lead in all folds; and `L20->L21` rejects the kernel-minimal prediction while
+ridge remains within `0.02` of kernel. No completed-law number is lock-valid.
+
+The addendum establishes that stored hidden index 28 is post-final-norm. The
+correct `L27->L28` completed law is `head(Yhat)` at the substituted slot, with
+no remaining transformer layer; the old last-token readout is undefined. The
+repaired completer's identity tests pass at `L8->L9` and `L27->L28`. The final
+pair successor predicts a normed vector, so its cosine needs separate
+qualification from raw-residual pair cosines.
+
+### Corrected rerun preregistration
+
+Predeclare a corrected rerun over all six pairs with the slot-position endpoint
+primary throughout, 20 carrier shuffles, 500 word/carrier-clustered bootstrap
+replicates, seed `13007`, one CPU process, and a **55-minute hard wall-clock
+budget**. The budget follows the observed approximately 24 minutes per three
+pairs, or about 48 minutes for six, plus fixed margin. It is exploratory
+relative to the original 100-shuffle/2,000-bootstrap lock and cannot earn the
+original full-budget label. No post-score pair reduction or control removal is
+allowed; an over-budget run is incomplete and earns no two-pair claim.
+
+Fixed slot-endpoint predictions: `L0->L1` remains word-mean dominated;
+`L4->L5` has a successor advantage but fails at least one completed-law gate;
+`L8->L9` remains a full-ridge qualifying pair; `L12->L13` is the predicted
+second qualifying full-ridge pair; `L20->L21` has ridge within `0.02` of
+kernel but fails the complete late gate; and `L27->L28` is finite through the
+direct head but is not predicted to clear the full gate. Slot ordering follows
+the same predictions: no qualifying ordering lead at `L0`, `L4`, `L20`, or
+`L27`, and positive `+0.05`-scale ordering with clustered lower bounds at
+`L8` and `L12`. The word mean may be strong at the slot because the response
+law depends on prefix plus word; if it is within `0.02` of a field on all three
+endpoints, the result is lexical/marginal persistence, not state-conditioned
+transport.
+
+### Alternative order
+
+After the corrected rerun, run the audit alternatives in this order: (1) the
+cheap identity-plus-residual baseline `Yhat = X + mean_cal(Y-X)` and a
+per-carrier affine diagnostic; (2) forward-time append-token/next-position
+transport; (3) the class-stratified unseen-word split; and (4) one second
+model family. For the first step, use the existing artifact and outer folds;
+fit the per-carrier affine model separately on each of the 12 calibration
+carriers with fixed five-way class-stratified word cross-fitting (64 train,
+16 test words), the same ridge selection discipline, and the same successor
+and corrected slot-law endpoints. Treat it as a within-carrier diagnostic,
+not a held-out-carrier competitor. A closed ridge lead is a cheap residual or
+carrier-local explanation.
+
+The forward-time test appends one fixed manifest-pinned sentinel to each
+carrier-plus-word sequence and predicts the sentinel's next-position hidden
+state from the preceding word-position state at selected layers, using the
+same carrier-block holdout and completion law. The unseen-word split keeps
+calibration and held-out word identities disjoint and class-stratified. The
+second-family replication pins model/tokenizer revisions and repeats the
+amended controls. Until both unseen-word and second-family tests pass, this
+remains a one-model, shared-word interpretability result.
+
+Under the guiding question, word identity is the field at `L0`, but by `L4`
+the early blocks have manufactured carrier dependence: full-dimensional
+affine prediction beats word mean and chart, and the growing shuffle penalty
+shows that context matters more with depth. A denizen would need an identity
+test, a context-conditioned transport law, and a completion rule in the
+world's own response currency. It would have to discover when transport is
+lexical, affine, or no longer regular, then test those distinctions on new
+words, forward-time moves, and other realizations.
 
 ## Next
 
-Run only the three predeclared remaining pairs after the corrected endpoint and
-30-minute extension budget are recorded before scoring. Do not call the
-two-pair gate until a second pair clears all three endpoints; do not generalize
-the law beyond this model until the unseen-word and second-family follow-ups
-are run.
+Run the corrected six-pair slot-endpoint rerun only after this preregistration
+is recorded. Do not claim a two-pair completed-law result until two pairs pass
+all three corrected endpoints; do not generalize beyond this model and shared
+words until the unseen-word and second-family follow-ups pass.

@@ -5,6 +5,32 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-27 — Round 16: corrected slot endpoint and next order
+
+- Tier-3 audit #5 applies to every pair: the fallback and extension completed
+  laws were read at the sequence's last token, not the substituted slot named
+  by the lock. All such completed-law numbers are void for lock purposes.
+  Successor scores remain valid exploratory coordinate forecasts under the
+  reduced extension budget; no completed-law number is lock-valid.
+- The addendum shows hidden index 28 is post-final-norm. The final pair's valid
+  completion is `head(Yhat)` at the substituted slot; identity tests pass at
+  `L8->L9` and `L27->L28`. Its successor is a normed-vector prediction and
+  needs separate comparison from raw-residual pairs.
+- Predeclared the corrected full six-pair rerun: slot endpoint, 20 shuffles,
+  500 clustered bootstrap replicates, one CPU process, 55-minute hard budget
+  (about 48 minutes projected from 24 minutes per three pairs plus margin).
+  Fixed predictions and the slot word-mean interpretation are in
+  `theory/EXPERIMENTS.md`.
+- Alternative order: cheap identity-plus-residual and per-carrier-affine
+  diagnostics; forward-time append-token/next-position transport; disjoint
+  class-stratified unseen-word split; second model family. The first baseline
+  step is specified against the existing artifact with 64/16 word
+  cross-fitting per calibration carrier.
+- Under the guiding question, word identity is already a field at L0, while
+  early blocks manufacture increasing carrier dependence. A denizen needs an
+  identity test, context-conditioned transport, and downstream completion,
+  validated across new words, time, and realizations.
+
 ## 2026-08-28 — Round 15 extension: successor endpoint across depth
 
 - L4→L5, L12→L13, L20→L21 in 1100 s (budget 1800). Successor endpoint valid;
@@ -64,24 +90,23 @@ was learned, what's next. Canonical state lives in STATE.md.
 - **L0→L1:** word-mean = ridge = kernel = 0.949; shuffled null 0.95. The first
   block's slot action is carrier-independent: lexical persistence, no law
   beyond word identity. Minimal class on both endpoints: word_mean.
-- **L8→L9:** ridge/kernel 0.94 vs best static chart (kNN-5) 0.86 and word-mean
-  0.86; world-completed skill 0.90 vs 0.67/0.68; ordering +0.06–0.09 over the
-  chart; every fold's clustered lower bound above zero; shuffled null
-  0.75–0.84. A reusable, carrier-dependent, affine law of transport that
-  clears every single-pair gate including the lexical-persistence moot-maker.
-  Low-rank (rank ≤ 128) trails full ridge by 0.05 — affine yes, low-rank no.
-  Within-carrier oracle (64 words) sits below the cross-carrier field (960
-  cells): the law generalizes across carriers better than any carrier fits
-  itself.
+- **L8→L9:** ridge/kernel 0.94 versus best static chart (kNN-5) 0.86 and
+  word-mean 0.86 on successor cosine; the prior world-completed skill and
+  ordering values are void because they used the last-token endpoint. The
+  successor lead and shuffled null 0.75–0.84 remain exploratory evidence of a
+  carrier-transferring regression field. Low-rank (rank ≤ 128) trails full
+  ridge by 0.05 — affine predictor yes, completed-world law not yet shown.
+  The within-carrier comparison is descriptive, not a ceiling argument.
 - **L27→L28:** successor lead +0.07–0.12, but the completed-law endpoint is
   degenerate by construction — the law is read at the last token and no
   remaining layer connects the slot to it (KL = 0, skill undefined, support
   0.42–0.56). The lock's "only norm and head remain" missed this.
-- Verdict within the lock: one pair supports; two are needed; the fallback
-  run is incomplete for the gated verdict. Under the guiding question: at
-  middle depth this world has a law a denizen could learn on some contexts and
-  reuse on others — the first such law the program has found. Bounded to one
-  model and shared words.
+- Verdict within the lock: one successor-only pair supports exploratory
+  regression evidence; two corrected completed-law pairs are needed, and the
+  fallback is incomplete for the gated verdict. Under the guiding question,
+  middle depth may contain a reusable state-transport regularity, but the
+  corrected slot endpoint must show that it cashes out in the world's response
+  law. Bounded to one model and shared words.
 
 ## 2026-08-27 — Round 12: NLM-006b is non-diagnostic; pivot to dynamics
 

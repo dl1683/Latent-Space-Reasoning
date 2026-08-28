@@ -1349,13 +1349,14 @@ is informative.
   (pooled successor cosine `0.949` for both), with support `1.0` and shuffled
   null `0.95`. This is a carrier-independent/context-free block action, not a
   state-dependent transport law; it fails the word-mean separation gate.
-- **`L8->L9`: single-pair support.** Ridge reaches about `0.941` successor
-  cosine versus `0.86` for the best static chart and `0.861` for the word mean.
-  Completed-law skill is about `0.905` versus `0.668` for the chart and
-  `0.684` for the word mean. The clustered lower bounds are positive on
-  successor cosine and both completed-law readouts, the shuffled null is about
-  `0.75–0.84` versus field about `0.94`, and support is `1.0`. It clears every
-  single-pair gate, but one pair is not the lock's two-pair verdict.
+- **`L8->L9`: successor-only single-pair evidence.** Ridge reaches about
+  `0.941` successor cosine versus `0.86` for the best static chart and
+  `0.861` for the word mean. The prior completed-law skill and ordering
+  numbers are void because they were read at the last token rather than the
+  locked slot. The successor lead and shuffled drop remain exploratory; this
+  pair cannot be called a completed-law qualifying pair until the corrected
+  slot endpoint is rerun. One pair would not meet the lock's two-pair verdict
+  in any case.
 - **`L27->L28`: void completed endpoint.** The successor lead is not usable for
   the navigation claim because the completed law was read at the last token.
   After layer 27 no remaining layer connects the substituted slot to that
@@ -1405,14 +1406,15 @@ two-pair dynamics-map verdict.
 
 ### What this law means, and what would make it native
 
-Under the guiding question, a denizen of this latent world can learn a rule for
-how a state moves at middle depth from some carrier contexts and reuse that
-rule on carriers it has not seen. The first measured instance is not a new
-geometry: it is a reusable, carrier-transferring affine transport law whose
-full-dimensional ridge form predicts the world's downstream response law. The
-world supplies a move; the denizen supplies a compact predictive regularity for
-that move. The early result shows why reuse alone is insufficient: a word's
-successor can persist without depending on the incoming state.
+Under the guiding question, a denizen of this latent world may be able to learn
+a rule for how a state moves at middle depth from some carrier contexts and
+reuse that rule on carriers it has not seen. The current evidence is only
+successor forecasting: it is a reusable, carrier-transferring full-dimensional
+regression field on shared words, not yet a completed-world transport law or a
+new geometry. The world supplies a move; the denizen still has to show that its
+prediction cashes out at the correct slot. The early result shows why reuse
+alone is insufficient: a word's successor can persist without depending on the
+incoming state.
 
 This is not yet a native law of latent space. It is one model's law on shared
 words and a carrier split. The required follow-ups are now concrete and
@@ -1494,4 +1496,142 @@ construction (no layer follows). Implemented; identity now `6e-7` at both
 pairs. Consequence for interpretation: the `L27→L28` successor endpoint
 predicts a normed vector (scale removed), which makes its cosine not directly
 comparable with the other pairs' cosines on raw residual states.
+
+## Round 16 — corrected slot-endpoint rerun and alternative order
+
+**Codex, 2026-08-27. Documentation-only; no experiment was run.** Round 16
+adjudicates the two endpoint defects exposed by Tier-3 audit #5 and its
+addendum, and predeclares the next measurement. The old completed-law numbers
+are not repaired retrospectively: the fallback and extension both read the
+law at the sequence's last token, whereas the lock names the substituted slot.
+That is a contract failure at every pair. The last-token values remain labelled
+secondary downstream diagnostics only. The successor endpoint does not use
+that readout, so the extension's successor scores stand as scored, subject to
+the extension's reduced exploratory budgets and its incomplete pair coverage.
+
+The addendum resolves the final-pair implementation separately. Stored hidden
+index 28 is post-final-norm, so for `L27->L28` the completed law is
+`head(Yhat)` at the substituted slot; there is no remaining transformer layer,
+and a last-token completion is undefined unless that slot is the last token.
+The repaired completer's stored-successor identity tests pass at `L8->L9`
+(`KL=4e-7`) and `L27->L28` (`KL=1.32` before the post-norm correction and
+`6e-7` after it). The final-pair successor is a normed-vector prediction;
+its cosine is therefore not directly comparable to the raw-residual pair
+cosines without that qualification.
+
+### Corrected full rerun: preregistration
+
+Run all six fixed pairs — `L0->L1`, `L4->L5`, `L8->L9`, `L12->L13`,
+`L20->L21`, and `L27->L28` — with the same 80 words, 16 carriers, four
+held-out carrier-block folds, ladder and static controls, revision pins,
+support accounting, and float32-versus-stored-float16 checks. For every pair,
+the primary completed endpoint is now the next-token law at the substituted
+slot. For `L27->L28`, use the post-norm `head(Yhat)` path and report the
+last-token endpoint as undefined, not as a secondary score. Do not generate
+text.
+
+Use 20 carrier shuffles and 500 word/carrier-clustered bootstrap replicates,
+seed `13007`, one CPU process, and a **55-minute hard wall-clock budget**.
+The budget is predeclared from the observed approximately 24 minutes per
+three-pair extension, or approximately 48 minutes for six pairs, plus a fixed
+margin. This is an exploratory corrected rerun relative to the original
+100-shuffle/2,000-bootstrap full lock; it can establish corrected endpoint
+evidence, but it cannot retroactively earn the original full-budget label.
+No pair reduction, control removal, or budget change is permitted after scores
+are opened. If the 55-minute budget is exceeded, record the run as incomplete
+and make no two-pair dynamics-map claim.
+
+The primary forecast is fixed below. “Slot skill” means normalized KL skill at
+the substituted slot, and “ordering” means the paired within-carrier law
+ordering at that same slot. The word mean is a separate moot-maker, not a
+ladder member.
+
+| pair | slot-endpoint skill prediction | slot ordering prediction | predeclared reading |
+| --- | --- | --- | --- |
+| `L0->L1` | word mean approximately matches ridge/kernel, within `0.02`; no candidate clears the word-mean separation gate | word mean approximately matches the field; no `+0.05` transport lead | lexical persistence; shuffled field approximately matches unshuffled field |
+| `L4->L5` | ridge/kernel modestly exceed the word mean, but at least one corrected skill comparison fails the `+0.05` chart or `+0.02` word-mean gate | ordering lead is below the full gate or has a non-positive clustered lower bound | a successor advantage may be real, but this pair does not qualify as a completed-law transport pair |
+| `L8->L9` | full ridge remains clearly above chart and word mean; low-rank remains more than `0.02` behind the best field | ridge clears `+0.05` over chart with positive lower bound and beats word mean by `+0.02` | one qualifying pair, conditional on the corrected slot endpoint |
+| `L12->L13` | full ridge is minimal; it clears `+0.05` over chart and `+0.02` over word mean with positive lower bounds | the same three-endpoint gate clears; this is the predicted second qualifying pair | corrected two-pair dynamics evidence if all support and null checks pass |
+| `L20->L21` | ridge remains within `0.02` of kernel; corrected skill may beat chart and word mean, but the complete gate fails | ordering lead is below `+0.05` or uncertain across folds | late attenuation; defined endpoint, no full pair qualification predicted |
+| `L27->L28` | finite `head(Yhat)` skill is expected, but final-block attenuation prevents a complete gate; ridge is within `0.02` of kernel on the ladder | ordering is finite but not predicted to clear `+0.05`; do not compare it with the invalid last-token ordering | corrected final-pair result is interpretable, but not evidence for or against late transport if the gate fails |
+
+At the slot, the word-conditioned mean may still be strong because the true
+slot law is a function of the prefix plus the word. A strong word mean says
+that the carrier-averaged lexical/prefix marginal already predicts much of
+the response; if it is within `0.02` of a field on all three endpoints, the
+result is lexical persistence or a marginal effect, not state-conditioned
+transport. Only a field that separates from that word mean, beats the chart,
+and survives the shuffled-null and clustered gates supports a reusable
+context-conditioned law.
+
+### Alternative explorations: fixed order
+
+1. **Cheap moot-makers on the existing artifact.** First fit an
+   identity-plus-residual baseline, `Yhat = X + mean_cal(Y-X)`, on each outer
+   fold, and a per-carrier affine diagnostic. For the latter, use each of the
+   12 calibration carriers separately, five-way class-stratified word
+   cross-fitting with the same seed and ridge regularization selected only
+   inside the calibration words; train on 64 words and test on 16, so the
+   aggregate uses 12×64 training cells, matching the field's total training
+   cell budget. Score both baselines on successor cosine/error and the
+   corrected slot skill/ordering. The per-carrier result is a within-carrier
+   diagnostic, not a competitor on the held-out carrier block. If either
+   baseline closes the ridge lead, the apparent law is a cheap residual or
+   carrier-local fit and the native-law wording is withdrawn.
+
+2. **Forward-time transport.** Measure the model's actual next-position move,
+   not only same-slot layer transport. For each existing carrier/word cell,
+   append one fixed declared one-token sentinel to the carrier-plus-word
+   sequence. At each selected layer index `l in {0,4,8,12,20,27}`, let `X` be
+   the hidden state at the final word position before the append and `Y` the
+   hidden state at the sentinel's next position after the append. Fit the
+   same carrier-block-held-out ladder, with the sentinel fixed and included
+   in the manifest; compare successor prediction and the next-position law
+   after inserting `Yhat` at that position. This is the first follow-up that
+   tests the denizen's forward-time move rather than an imposed layer move.
+
+3. **Class-stratified unseen-word split.** Keep the amended slot protocol,
+   but make calibration and held-out word identities disjoint within every
+   carrier-block fold, class-stratified with the split seed fixed before
+   scoring. Retain the word mean only where its calibration words exist and
+   report the changed estimand explicitly. This is required before claiming
+   lexical generalization.
+
+4. **Second model family.** Only after the unseen-word result is recorded,
+   repeat the amended protocol on one independently pinned second family
+   (SmolLM2 first if available, otherwise Gemma), including tokenizer/model
+   revisions, all six pairs where the architecture permits them, the slot
+   endpoint, word mean, shuffled null, support, and clustered gates. A second
+   family is required before any claim about language-model dynamics rather
+   than one decoder's implementation.
+
+PCA-whitened/low-dimensional fields, oracle equalization, and carrier-style
+balancing remain later diagnostics. They do not precede the four steps
+above. Until the unseen-word split and second-family replication both pass
+their declared controls, the result remains a bounded, one-model
+interpretability result.
+
+### Guiding question: what this world manufactures
+
+At `L0`, the word mean is already the field: the world's first block carries a
+word-conditioned destination that is largely insensitive to which carrier
+presented it. By `L4` and onward, a full-dimensional affine field beats both
+that word mean and the static chart, while the carrier-shuffled penalty grows
+with depth. The most economical reading is not that context was always hidden
+in a fixed state, but that the early blocks manufacture a context-dependent
+state: they turn the same lexical identity into different destinations as the
+carrier is processed, and later blocks make those distinctions increasingly
+necessary for prediction. The pattern is evidence about how this particular
+world builds contextual dependence, not yet a native law of latent space.
+
+A denizen trying to navigate would therefore have to invent more than a list
+of places or a static chart. It would need an identity test that separates
+word persistence from genuine state dependence, a coordinate- or
+representation-robust rule for transporting a state conditioned on its
+context, and a completion map that predicts what the world says at the moved
+state. It would also need to discover when the move is context-free, when it
+is affine, and when its regularity breaks — and verify all of that on unseen
+words, unseen carriers, forward-time moves, and other realizations of the
+world. That is the beginning of a native navigation calculus: not naming a
+regressor, but learning which distinctions the world itself makes costly.
 
