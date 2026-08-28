@@ -214,6 +214,7 @@ def main():
     ap.add_argument("--identity-only", action="store_true", help="run the identity check and stop (writes identity_check.json)")
     ap.add_argument("--identity-check", action="store_true", help="stored-true-successor identity test at the slot for every pair and carrier (audit #6)")
     ap.add_argument("--baselines", action="store_true", help="Round 16 moot-makers: identity-plus-residual predictor and per-carrier affine diagnostic")
+    ap.add_argument("--style-null", action="store_true", help="Round 20: within-style-family target null (permute calibration targets across carriers within block x word; refit ridge/kernel; completed and gated)")
     ap.add_argument("--source", choices=["layers", "forward"], default="layers", help="forward: Round 19 forward-time move from forward_states_<tag>.npz; X = unappended state at q, Y = sentinel state at r, same layer")
     ap.add_argument("--sentinel-tag", default="A", help="forward mode: which capture (A = period, B = comma)")
     ap.add_argument("--control-tag", default="", help="forward mode: apply the fitted predictor to this capture's target as the token-identity control")
@@ -402,6 +403,21 @@ def main():
             preds["chart"] = fit_knn(Xcs, Yc, int(cm[3:]))(Xts) if cm.startswith("knn") else chart_control(Xc, Yc, cm)(Xt)
             if a.source == "forward":
                 preds["identity"] = np.zeros_like(Xt)                        # Yhat = X  (Round 19 required null; displacement zero)
+            n_cal_probes = len(cal_probes)
+            cal_block_of = np.array([blocks[p] for p in cal_probes])
+            def style_permute(Y_cal, rng_):
+                """Permute calibration targets across carriers WITHIN each style-family block and word (Round 20 null)."""
+                Yp = Y_cal.reshape(n_cal_probes, n, D).copy()
+                for b in set(cal_block_of):
+                    rows = np.where(cal_block_of == b)[0]
+                    for w in range(n):
+                        Yp[rows, w, :] = Yp[rows[rng_.permutation(len(rows))], w, :]
+                return Yp.reshape(-1, D)
+            if a.style_null:
+                rng_style = np.random.default_rng(SEED + 7 + l)
+                Yc_style = style_permute(Yc, rng_style)
+                preds["ridge_stylenull"] = RidgeFamily(Xcs, Yc_style).predictor(best["ridge"]["lam"])(Xts)
+                preds["kernel_stylenull"] = fit_kernel_ridge(Xcs, Yc_style, best["kernel"]["lam"], best["kernel"]["gamma"])(Xts)
             if a.baselines and a.target != "delta":                      # in delta mode the shared displacement IS the mean predictor
                 preds["identres"] = Xt + (Yc - Xc).mean(0, keepdims=True)          # identity-plus-residual moot-maker (Round 16 #1)
             ybar = Yc.mean(0); denom = np.linalg.norm(Yt - ybar, axis=1); denom = np.where(denom > 0, denom, np.nan)
@@ -412,8 +428,11 @@ def main():
                 control_cos = {k: float(np.nanmean(cos_rows(v, Yt_ctrl))) for k, v in preds.items()}
             # ---- carrier-shuffled null on the selected low-rank field and ridge ----
             shuf = {"lowrank": [], "ridge": []}
-            n_cal_probes = len(cal_probes)
+            if a.style_null: shuf["ridge_within_style"] = []
             for s_i in range(a.n_shuffle):
+                if a.style_null:
+                    Yc_sp = style_permute(Yc, rng)
+                    shuf["ridge_within_style"].append(float(np.mean(cos_rows(RidgeFamily(Xcs, Yc_sp, eig=famc.eig).predictor(best["ridge"]["lam"])(Xts), Yt))))
                 Yc_perm = Yc.reshape(n_cal_probes, n, D).copy()
                 for w in range(n):
                     Yc_perm[:, w, :] = Yc_perm[rng.permutation(n_cal_probes), w, :]
@@ -443,7 +462,7 @@ def main():
                     if tp not in true_slot_law:
                         true_slot_law[tp] = comp_laws(tp, l, None)[0]   # true law at the readout position (n, V); independent of l
                 qmean = {}
-                for k in [kk for kk in ("mean", "identity", "word_mean", "ridge", "lowrank", "kernel", "chart", "identres") if kk in preds]:
+                for k in [kk for kk in ("mean", "identity", "word_mean", "ridge", "lowrank", "kernel", "chart", "identres", "ridge_stylenull", "kernel_stylenull") if kk in preds]:
                     acc = {r: {"kl": [], "skill": [], "ord": [], "ord_anchor": []} for r in ("slot", "last")}
                     for ti, tp in enumerate(test_probes):
                         rows = slice(ti * n, (ti + 1) * n)
@@ -461,6 +480,24 @@ def main():
                                "kl_last": np.concatenate(acc["last"]["kl"]), "skill_last": np.concatenate(acc["last"]["skill"]), "ordering_last_by_carrier": acc["last"]["ord"],
                                "ordering_last_per_anchor": np.stack(acc["last"]["ord_anchor"])}
                     print(f"   {held:12s} {k:8s} succ_cos={succ[k]['cos'].mean():.3f} slot: KL={comp[k]['kl'].mean():.3f} skill={np.nanmean(comp[k]['skill']):.3f} ord={np.mean(acc['slot']['ord']):.3f} | last: skill={np.nanmean(comp[k]['skill_last']):.3f} ord={np.mean(acc['last']['ord']):.3f} ({time.time()-t0:.0f}s)", flush=True)
+            # ---- KL-to-truth candidate rank (Round 20 consequence endpoint): R = 1 - (r-1)/(K-1), midranks for ties ----
+            if comp:
+                cands = [k for k in ("identity", "mean", "word_mean", "ridge", "lowrank", "kernel", "chart") if k in comp]
+                KLm = np.stack([comp[k]["kl"] for k in cands])                       # (K, cells)
+                K = len(cands)
+                from scipy.stats import rankdata
+                R = np.full_like(KLm, np.nan)
+                for c in range(KLm.shape[1]):
+                    col = KLm[:, c]
+                    if np.all(np.isfinite(col)): R[:, c] = 1 - (rankdata(col, method="average") - 1) / (K - 1)
+                for i, k in enumerate(cands): comp[k]["klrank"] = R[i]
+                for k in ("ridge_stylenull", "kernel_stylenull"):                 # nulls are scored against the same candidate field, not ranked into it
+                    if k in comp:
+                        base = k.split("_")[0]; Rn = np.full(KLm.shape[1], np.nan)
+                        for c in range(KLm.shape[1]):
+                            col = KLm[:, c].copy(); col[cands.index(base)] = comp[k]["kl"][c]
+                            if np.all(np.isfinite(col)): Rn[c] = 1 - (rankdata(col, method="average")[cands.index(base)] - 1) / (K - 1)
+                        comp[k]["klrank"] = Rn
             # ---- paired two-way cluster bootstrap vs frozen chart ----
             def boot_diff(field, endpoint, against="chart"):
                 if endpoint == "cos": A, B = succ[field]["cos"], succ[against]["cos"]
@@ -468,6 +505,7 @@ def main():
                 elif endpoint == "ordering": A, B = comp[field]["ordering_per_anchor"].ravel(), comp[against]["ordering_per_anchor"].ravel()
                 elif endpoint == "skill_last": A, B = comp[field]["skill_last"], comp[against]["skill_last"]
                 elif endpoint == "ordering_last": A, B = comp[field]["ordering_last_per_anchor"].ravel(), comp[against]["ordering_last_per_anchor"].ravel()
+                elif endpoint == "klrank": A, B = comp[field]["klrank"], comp[against]["klrank"]
                 else: return None
                 A = A.reshape(len(test_probes), n); B = B.reshape(len(test_probes), n); diff = A - B
                 if not np.isfinite(diff).any(): return None
@@ -484,6 +522,12 @@ def main():
                 if "identity" in preds:
                     g["succ_cos_vs_identity"] = boot_diff(field, "cos", "identity")
                     if comp: g["skill_vs_identity"] = boot_diff(field, "skill", "identity"); g["ordering_vs_identity"] = boot_diff(field, "ordering", "identity")
+                if comp and "klrank" in comp.get(field, {}):
+                    g["klrank_vs_word_mean"] = boot_diff(field, "klrank", "word_mean"); g["klrank_vs_chart"] = boot_diff(field, "klrank")
+                sn = field + "_stylenull"
+                if sn in preds:
+                    g["style_null"] = {"succ_cos_vs_stylenull": boot_diff(field, "cos", sn)}
+                    if comp: g["style_null"]["skill_vs_stylenull"] = boot_diff(field, "skill", sn); g["style_null"]["klrank_vs_stylenull"] = boot_diff(field, "klrank", sn)
                 if "identres" in preds:
                     g["succ_cos_vs_identres"] = boot_diff(field, "cos", "identres")
                     if comp: g["skill_vs_identres"] = boot_diff(field, "skill", "identres"); g["ordering_vs_identres"] = boot_diff(field, "ordering", "identres")
@@ -504,6 +548,7 @@ def main():
                               "token_identity_control_cos": control_cos,
                               "normalized_error": {k: float(np.nanmean(v["nerr"])) for k, v in succ.items()},
                               "completed": {k: {"kl": float(np.nanmean(v["kl"])), "skill": float(np.nanmean(v["skill"])), "ordering": float(np.mean(v["ordering_by_carrier"])),
+                                                "klrank": (float(np.nanmean(v["klrank"])) if "klrank" in v else None),
                                                 "kl_last": float(np.nanmean(v["kl_last"])), "skill_last": float(np.nanmean(v["skill_last"])), "ordering_last": float(np.mean(v["ordering_last_by_carrier"]))} for k, v in comp.items()},
                               "shuffled_null_succ_cos": {k: {"mean": float(np.mean(v)), "q95": float(np.percentile(v, 95))} for k, v in shuf.items()},
                               "oracle_ceiling_succ_cos": float(np.mean(oracle)), "support": support, "support_by_carrier": support_by_carrier, "gates": gates}
