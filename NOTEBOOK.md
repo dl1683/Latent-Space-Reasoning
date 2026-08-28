@@ -17,14 +17,7 @@ What still holds: A-static, P_aug-score4, and B-static are bounded, correlated s
 What reframed this cycle: (1) audit #15 moved the program off the
 observational residualization axis onto external axes (fresh population,
 second move, interchangeability) — the queue is now about whether the
-relation is a property of the authored manifold or of the space; (2) the B-aug analysis failed twice in the F8 grammar block; the preserved traceback localizes the second failure to torch SVD of the fitted low-rank coefficient matrix at grammar_w1, while the later ledger row attributes the first loss to the same defect. This is repeatable numerical-instrument non-robustness, not evidence of ill-conditioned X⊥ until finite-input and spectral diagnostics localize the cause (audit #16 wording); (3) the fresh population I authored has a design weakness I
-should have caught before freezing: several "presentation" pairs insert a
-determiner ("the <X>") or change the frame, which alters the syntactic role
-of verbs / adjectives / function words — for those classes the pair is
-operational, not presentational. If audit #16 confirms, the interchangeability
-result must be read per word class (nouns as the clean presentation test;
-other classes as operational-control-like), or the population voided under a
-predeclared rule before capture. No edit of the frozen file.
+relation is a property of the authored manifold or of the space; (2) the B-aug analysis failed twice in the F8 grammar block; the preserved traceback localizes the second failure to torch SVD of the fitted low-rank coefficient matrix at grammar_w1, while the later ledger row attributes the first loss to the same defect. This is repeatable numerical-instrument non-robustness, not evidence of ill-conditioned X⊥ until finite-input and spectral diagnostics localize the cause (audit #16 wording); (3) the frozen fresh population fails its pre-capture linguistic design gate: none of the eight pairs establishes coherent presentation-only equivalence across all four word classes, and several change syntactic licensing, modality, definiteness, degree, or quantification. The population is void for confirmatory probes 2–4 and may be retained unchanged only as an exploratory mixed-frame stress set; no noun-only or pair-only post hoc rescue is confirmatory (audit #16 ruling).
 
 Alternatives held live (not yet run; CPU-only): a second pinned decoder as a
 cheap replication axis; a full-prefix contextual X-free baseline (audit #15);
