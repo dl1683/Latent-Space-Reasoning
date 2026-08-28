@@ -478,6 +478,9 @@ def main():
     ap.add_argument("--fl-deadline-seconds", type=float, default=108000.0, help="Round 27 comparator 1: per-cell hard wall (30 h); when exceeded after a layer, the artifact is written with budget_incomplete=true and the run stops")
     ap.add_argument("--fl-null", type=int, default=0, help="Round 27 comparator 1: number of fully refitted Freedman-Lane residual-geometry null refits per fold key (calibration Delta_perp permuted across carriers within block and word; inner selection, ridge and kernel refit, held-out scoring on all four statistics); 0 = off")
     ap.add_argument("--xfree-field", action="store_true", help="Round 27 comparator 2: fair residual-space X-free field (P_static + rank-4 carrier scores + 16 frozen-embedding PCs + 64 interactions) fit to Delta_perp, plus the df-matched state ridge sensitivity; needs --residualize and --unseen-words")
+    ap.add_argument("--contextual-prefix-xfree", action="store_true", help="Round 31 order-4 baseline: contextual-prefix X-free field (token_ids_v1: position-specific token one-hots for the last 8 prefix / first 4 suffix positions, full-prefix unigram + adjacent-bigram counts, prefix/suffix lengths, slot/readout positions, POS one-hot, POS x boundary-token interactions; no item strings/ids/embeddings, no cell X) fit to the target on calibration families/words, scored against the cell-level X field on the same folds and endpoints")
+    ap.add_argument("--prefix-feature-set", default="token_ids_v1", choices=["token_ids_v1"], help="Round 31: the fixed contextual-prefix feature set")
+    ap.add_argument("--ctx-screen", action="store_true", help="Round 31 order-4 state screen: point-only (completer off, no shuffles/bootstraps) run of the contextual-prefix baseline; cannot earn a claim")
     ap.add_argument("--round30-gates", action="store_true", help="Round 30 probes 2-3: emit continuous-KL gates (kl_vs_<null>) for the four X-free lexical nulls; implied by --source forward_insert; required for the fresh-population sentinel analyses")
     ap.add_argument("--interchangeability", action="store_true", help="Round 30 probe 4: matched presentation interchangeability on the frozen fresh population (early-return mode)")
     ap.add_argument("--append-tags", nargs="*", default=["A", "B"], help="probe 4: sentinel capture tags of the fresh population")
@@ -521,10 +524,19 @@ def main():
         assert not a.identity_only and not a.control_tag, "--screen rejects --identity-only and --control-tag"
     if a.source == "forward_insert":
         assert a.move_tag, "--source forward_insert requires --move-tag"
-        assert a.residualize == "static" and a.unseen_words == 2 and sorted(a.pairs) == [0, 1, 2, 3, 4] and a.target == "delta" and not a.skip_completion and not a.smoke and not a.screen, "forward_insert is locked to --target delta --unseen-words 2 --residualize static --pairs 0 1 2 3 4 with completion on (Round 30)"
+        assert (a.residualize == "static" or (a.contextual_prefix_xfree and a.residualize == "")) and a.unseen_words == 2 and sorted(a.pairs) == [0, 1, 2, 3, 4] and a.target == "delta" and (not a.skip_completion or a.ctx_screen) and not a.smoke and not a.screen, "forward_insert is locked to --target delta --unseen-words 2 --residualize static --pairs 0 1 2 3 4 with completion on (Round 30); the contextual-prefix baseline may use the unresidualized Delta or the point-only screen"
         assert not (a.identity_check or a.identity_only or a.control_tag or a.baselines or a.loco or a.style_null), "forward_insert rejects identity-*, control-tag, baselines, loco and style-null (sentinel/layer-mode diagnostics)"
     FWD = a.source in ("forward", "forward_insert")
     if a.source == "forward_insert": a.round30_gates = True
+    if a.contextual_prefix_xfree or a.ctx_screen:
+        assert a.contextual_prefix_xfree, "--ctx-screen needs --contextual-prefix-xfree"
+        assert a.source in ("forward", "forward_insert") and a.target == "delta" and a.unseen_words == 2 and sorted(a.pairs) == [0, 1, 2, 3, 4], "contextual-prefix baseline is locked to a forward-type source, --target delta, --unseen-words 2, --pairs 0 1 2 3 4"
+        assert a.residualize in ("", "static") and not (a.xfree_field or a.fl_null or a.loco or a.style_null or a.baselines or a.identity_check or a.identity_only or a.control_tag or a.screen or a.aug_full_mean or a.aug_kernel or a.aug_rank != 4 or a.interchangeability or a.smoke), "contextual-prefix baseline rejects interchangeability, ladder, residualizer-selection and permutation-null flags (only '' or a frozen static residual design)"
+        a.round30_gates = True
+        if a.ctx_screen:
+            a.n_boot = 0; a.n_shuffle = 0                                                  # point-only state screen (completer off)
+        else:
+            assert not a.skip_completion and a.n_boot > 0 and a.n_shuffle > 0, "the contextual-prefix completion score needs completion on and bootstraps/shuffles > 0 (use --ctx-screen for the point-only screen)"
     a.probe1 = bool(a.residualize == "aug" and (a.aug_rank != 4 or a.aug_full_mean or a.aug_kernel or a.screen))
     if a.interchangeability:
         assert not a.skip_completion and not a.smoke, "--interchangeability needs the model"
@@ -597,8 +609,8 @@ def main():
     import sys; sys.path.insert(0, str(Path(__file__).parent))
     from substitution_probe import SubstitutionProbe
     sp = None; completer = None
-    if not a.skip_completion or a.screen:
-        sp = SubstitutionProbe(a.model); completer = None if a.screen else WorldCompleter(sp, cfg)
+    if not a.skip_completion or a.screen or a.ctx_screen:
+        sp = SubstitutionProbe(a.model); completer = None if (a.screen or a.ctx_screen) else WorldCompleter(sp, cfg)
         if a.source == "forward" and completer is not None:
             completer_kw = {"append_emb": sp.E[int(fman["sentinel_id"])].detach().clone(), "pos": -1}   # replace and read at r (last)
         if a.source == "forward_insert" and completer is not None:
@@ -607,7 +619,7 @@ def main():
         assert int(sp.model.config.num_hidden_layers) == man["num_hidden_layers"]
         assert man["model"] == a.model and man["config_name"] == cfg["name"] and man["n_probes"] == len(cfg["probes"]), "capture manifest / config mismatch"
         ids = [sp.single_token_id(w) for w in items]; states_emb = torch.stack([sp.state(i) for i in ids])
-    results = {"pairs": {}, "source": a.source, "residualize": a.residualize or None, **({"aug_rank_requested": a.aug_rank, "aug_full_mean": bool(a.aug_full_mean), "aug_kernel": bool(a.aug_kernel), "screen_only": bool(a.screen), "rank_tolerance": "singular values > 1e-6 * s_max", "probe": "Round 29 probe 1 (carrier-summary rank ladder / literal P_aug-full contract / nonlinear carrier kernel)"} if a.probe1 else {}), "sentinel_tag": a.sentinel_tag if a.source == "forward" else None, **({"move_tag": a.move_tag, "move": "fixed single-token operator insertion before the word slot (Round 30 probe 3)", "insert_manifest": fman} if a.source == "forward_insert" else {}), "locality_max_abs_diff": locality, "manifest": man, "config": a.config, "lock": "theory/EXPERIMENTS.md NLM-007 (Round 13, amended Round 14)" + ("; Round 27 comparator 2 (fair residual-space X-free field: P_static + rank-4 carrier scores + 16 embedding PCs + 64 interactions; df-matched state ridge; lambda grid " + str(LAMBDAS) + ")" if a.xfree_field else ""), **({"xfree_field": True} if a.xfree_field else {}), **({"fl_null_refits": int(a.fl_null), "fl_deadline_seconds": float(a.fl_deadline_seconds), "fl_null_lock": "Round 27 comparator 1: fully refitted Freedman-Lane residual-geometry null; permutation of calibration Delta_perp across carriers within block and word; inner selection + ridge/kernel refit per permutation; statistics cos/nerr/skill/kl_improvement vs the fixed residual mean reference"} if a.fl_null else {}), "target": a.target,
+    results = {"pairs": {}, "source": a.source, "residualize": a.residualize or None, **({"aug_rank_requested": a.aug_rank, "aug_full_mean": bool(a.aug_full_mean), "aug_kernel": bool(a.aug_kernel), "screen_only": bool(a.screen), "rank_tolerance": "singular values > 1e-6 * s_max", "probe": "Round 29 probe 1 (carrier-summary rank ladder / literal P_aug-full contract / nonlinear carrier kernel)"} if a.probe1 else {}), "sentinel_tag": a.sentinel_tag if a.source == "forward" else None, **({"move_tag": a.move_tag, "move": "fixed single-token operator insertion before the word slot (Round 30 probe 3)", "insert_manifest": fman} if a.source == "forward_insert" else {}), "locality_max_abs_diff": locality, "manifest": man, "config": a.config, "lock": "theory/EXPERIMENTS.md NLM-007 (Round 13, amended Round 14)" + ("; Round 27 comparator 2 (fair residual-space X-free field: P_static + rank-4 carrier scores + 16 embedding PCs + 64 interactions; df-matched state ridge; lambda grid " + str(LAMBDAS) + ")" if a.xfree_field else ""), **({"xfree_field": True} if a.xfree_field else {}), **({"contextual_prefix_xfree": True, "prefix_feature_set": a.prefix_feature_set, "ctx_screen_only": bool(a.ctx_screen), "ctx_lock": "Round 31 order 4: contextual-prefix X-free field vs the cell-level X field; state-reading gate live only if X beats it by >=0.02 with positive crossed LBs on cosine, nerr, skill and continuous KL, >=6/8 keys, no family collapse, support >=0.95, two common F4-F20 layers for both sentinels"} if a.contextual_prefix_xfree else {}), **({"fl_null_refits": int(a.fl_null), "fl_deadline_seconds": float(a.fl_deadline_seconds), "fl_null_lock": "Round 27 comparator 1: fully refitted Freedman-Lane residual-geometry null; permutation of calibration Delta_perp across carriers within block and word; inner selection + ridge/kernel refit per permutation; statistics cos/nerr/skill/kl_improvement vs the fixed residual mean reference"} if a.fl_null else {}), "target": a.target,
                "fallback": {"pairs": [(f"F{l}" if a.source == "forward_insert" else f"L{l}->L{l1}") for (l, l1) in pairs], "n_shuffle": a.n_shuffle, "n_boot": a.n_boot}}
     if completer is not None:
         # float16 reload check: fresh float32 laws for probe 0 vs stored float16 laws — KL-ordering agreement must be near 1
@@ -659,6 +671,62 @@ def main():
                 rows_.append(onehot + [lp, ls, total, lp, sent_pos, sent_pos / total])
         P_static = np.array(rows_, dtype=np.float32)                                   # (P, 4 + 6)
         P_static[:, :len(block_names)] -= P_static[:, :len(block_names)].mean(0)      # centred block indicators
+    CTX = None
+    if a.contextual_prefix_xfree:
+        # token_ids_v1 (Round 31): per carrier, exact prefix/suffix token ids from the tokenizer (asserted against the manifest when it carries them)
+        ctx_tok = []
+        for pi_, pr_ in enumerate(cfg["probes"]):
+            pre_, suf_ = pr_["template"].split("<X>"); pre_ = pre_.rstrip()
+            ip_ = sp.tok.encode(pre_, add_special_tokens=False); is_ = sp.tok.encode(suf_, add_special_tokens=False)
+            if "prefix_token_ids" in fman: assert list(fman["prefix_token_ids"][pi_]) == ip_ and list(fman["suffix_token_ids"][pi_]) == is_, f"probe {pi_}: tokenizer ids != capture manifest"
+            if a.source == "forward_insert": ip_ = ip_ + [int(fman["operator_id"])]                    # the moved sequence's prefix ends with the operator
+            slot_ = len(ip_); readout_ = (slot_ + 1 + len(is_)) if a.source == "forward" else slot_
+            ctx_tok.append({"pre": ip_, "suf": is_, "slot": slot_, "readout": readout_})
+        POSL = sorted(set(pos)); pos_idx = {c: i for i, c in enumerate(POSL)}
+        def ctx_columns(cal_probe_list):
+            """Column vocabulary from CALIBRATION carriers only: (position, token) one-hots, unigram/bigram counts, boundary tokens."""
+            col = {}
+            def add(k):
+                if k not in col: col[k] = len(col)
+            for pp in cal_probe_list:
+                t = ctx_tok[pp]; pre = t["pre"]; suf = t["suf"]
+                for j, tid in enumerate(pre[-8:]): add(("pre_pos", j - min(8, len(pre)), tid))       # position relative to the slot (-1 = last prefix token)
+                for j, tid in enumerate(suf[:4]): add(("suf_pos", j, tid))
+                for tid in pre: add(("uni", tid))
+                for x_, y_ in zip(pre[:-1], pre[1:]): add(("bi", x_, y_))
+                add(("bnd_pre", pre[-1] if pre else -1)); add(("bnd_suf", suf[0] if suf else -1))
+                for c_ in POSL: add(("pos_bnd_pre", c_, pre[-1] if pre else -1)); add(("pos_bnd_suf", c_, suf[0] if suf else -1))   # token-specific POS x boundary interactions
+            return col
+        def ctx_rows(probe_list, row_idx, col):
+            """(rows, cols) float64: vocabulary block [position/token one-hots, unigram/bigram counts, boundary tokens, token-specific POS x boundary
+            interactions] + numeric [prefix len, suffix len, slot, readout] + POS one-hot. Unseen columns are zero."""
+            row_idx = np.arange(n) if row_idx is None else np.asarray(row_idx); ncol = len(col)
+            rows = []
+            for pp in probe_list:
+                t = ctx_tok[pp]; pre = t["pre"]; suf = t["suf"]; base = np.zeros(ncol, dtype=np.float64)
+                for j, tid in enumerate(pre[-8:]):
+                    k = ("pre_pos", j - min(8, len(pre)), tid)
+                    if k in col: base[col[k]] = 1.0
+                for j, tid in enumerate(suf[:4]):
+                    k = ("suf_pos", j, tid)
+                    if k in col: base[col[k]] = 1.0
+                for tid in pre:
+                    k = ("uni", tid)
+                    if k in col: base[col[k]] += 1.0
+                for x_, y_ in zip(pre[:-1], pre[1:]):
+                    k = ("bi", x_, y_)
+                    if k in col: base[col[k]] += 1.0
+                tb_pre = pre[-1] if pre else -1; tb_suf = suf[0] if suf else -1
+                if ("bnd_pre", tb_pre) in col: base[col[("bnd_pre", tb_pre)]] = 1.0
+                if ("bnd_suf", tb_suf) in col: base[col[("bnd_suf", tb_suf)]] = 1.0
+                num = np.array([len(pre), len(suf), t["slot"], t["readout"]], dtype=np.float64)
+                for wi_ in row_idx:
+                    c_ = pos[wi_]; row = base.astype(np.float64).copy(); ph = np.zeros(len(POSL)); ph[pos_idx[c_]] = 1.0
+                    if ("pos_bnd_pre", c_, tb_pre) in col: row[col[("pos_bnd_pre", c_, tb_pre)]] = 1.0       # token-specific interaction; unseen -> zero
+                    if ("pos_bnd_suf", c_, tb_suf) in col: row[col[("pos_bnd_suf", c_, tb_suf)]] = 1.0
+                    rows.append(np.concatenate([row, num, ph]))
+            Z = np.stack(rows).astype(np.float64); assert np.isfinite(Z).all(), "non-finite contextual-prefix features"; return Z
+        CTX = {"tok": ctx_tok, "columns": ctx_columns, "rows": ctx_rows}
     E_words = None
     if a.unseen_words:
         assert sp is not None, "unseen-word mode needs the model for frozen input embeddings"
@@ -1068,6 +1136,36 @@ def main():
                                            "state_ridge_lam": float(best["ridge"]["lam"]), "state_ridge_df": df_state[best["ridge"]["lam"]],
                                            "dfmatch_lam": float(lam_m), "dfmatch_df": df_state[lam_m], "state_df_grid": {str(k_): v for k_, v in df_state.items()}}
                     print(f"   [{held}] xfree field: lam={lam_z} df={df_z:.1f} cols={Zc.shape[1]} | state ridge lam={best['ridge']['lam']} df={df_state[best['ridge']['lam']]:.1f} | dfmatch lam={lam_m} df={df_state[lam_m]:.1f} ({time.time()-t0:.0f}s)", flush=True)
+                if CTX is not None:
+                    # ---- Round 31 order 4: contextual-prefix X-free field (token_ids_v1); no item id/embedding, no cell X ----
+                    col_out = CTX["columns"](cal_probes)
+                    Zc = CTX["rows"](cal_probes, widx_c, col_out); Zt = CTX["rows"](test_probes, widx_t, col_out)
+                    sc_r, sc_k = {}, {}
+                    for ib in cal_blocks:
+                        ip = [q for b in cal_blocks if b != ib for q in probe_ids[b]]; vp = probe_ids[ib]
+                        col_in = CTX["columns"](ip); Zi, Zv = CTX["rows"](ip, widx_c, col_in), CTX["rows"](vp, widx_c, col_in); stz_ = Standardizer().fit(Zi)   # float64 throughout
+                        Yi_, Yv_ = rows_for(Yc, ip).astype(np.float64), rows_for(Yc, vp).astype(np.float64)
+                        fr = RidgeFamily(stz_(Zi), Yi_); fk = KernelFamily(stz_(Zi), Yi_)
+                        for lam in LAMBDAS:
+                            pr_ = fr.predictor(lam)(stz_(Zv)); sc_r.setdefault(lam, []).append(float(np.mean(cos_rows(pr_, Yv_))) if np.isfinite(pr_).all() else float("-inf"))
+                            for g_ in GAMMAS:
+                                pk_ = fk.predictor(lam, g_)(stz_(Zv)); sc_k.setdefault((g_, lam), []).append(float(np.mean(cos_rows(pk_, Yv_))) if np.isfinite(pk_).all() else float("-inf"))
+                    lam_c = max(sc_r, key=lambda k_: np.mean(sc_r[k_])); (g_c, lamk_c) = max(sc_k, key=lambda k_: np.mean(sc_k[k_]))
+                    assert np.isfinite(np.mean(sc_r[lam_c])) and np.isfinite(np.mean(sc_k[(g_c, lamk_c)])), "no finite contextual-prefix fit on the inner grid"
+                    stz = Standardizer().fit(Zc); Zcs, Zts = stz(Zc), stz(Zt); Yc64 = Yc.astype(np.float64)
+                    fr_all = RidgeFamily(Zcs, Yc64); fk_all = KernelFamily(Zcs, Yc64)
+                    pr_all = fr_all.predictor(lam_c)(Zts); pk_all = fk_all.predictor(lamk_c, g_c)(Zts)
+                    assert np.isfinite(pr_all).all() and np.isfinite(pk_all).all(), "non-finite contextual-prefix prediction"
+                    preds["ctxprefix"] = pr_all; preds["ctxprefix_kernel"] = pk_all                       # float64 through state-space scoring; the completer casts at the model boundary
+                    assert np.isfinite(preds["ctxprefix"]).all() and np.isfinite(preds["ctxprefix_kernel"]).all()
+                    ev_c = np.asarray(fr_all.evals, dtype=np.float64)
+                    ev_k, V_k = np.linalg.eigh(np.exp(-(g_c / fk_all.med) * fk_all.sq)); alpha_k = V_k @ ((V_k.T @ fk_all.Yc) / (ev_k + lamk_c)[:, None])   # dual coefficients of the selected kernel fit
+                    widths = {"n_columns_raw": int(Zc.shape[1]), "n_columns_retained": int(stz.keep.sum()), "n_vocab_columns": len(col_out), "feature_set": a.prefix_feature_set}
+                    best["ctxprefix"] = {"lam": float(lam_c), **widths, "effective_df": float(np.sum(ev_c / (ev_c + lam_c))), "coef_l2": float(np.linalg.norm(fr_all.W(lam_c))), "finite": True,
+                                         "inner_scores": {str(k_): float(np.mean(v)) for k_, v in sc_r.items()}}                      # kept in the artifact (the generic 'inner' key is stripped)
+                    best["ctxprefix_kernel"] = {"gamma": float(g_c), "lam": float(lamk_c), **widths, "effective_df": float(np.sum(ev_k / (ev_k + lamk_c))), "dual_coef_l2": float(np.linalg.norm(alpha_k)),
+                                                "min_regularized_denominator": float((ev_k + lamk_c).min()), "finite": True, "inner_scores": {f"{k_[0]},{k_[1]}": float(np.mean(v)) for k_, v in sc_k.items()}}
+                    print(f"   [{held}] contextual-prefix field: lam={lam_c} df={best['ctxprefix']['effective_df']:.1f} | kernel g={g_c} lam={lamk_c} df={best['ctxprefix_kernel']['effective_df']:.1f} | cols={Zc.shape[1]} (retained {stz.keep.sum()}) ({time.time()-t0:.0f}s)", flush=True)
                 if resid is not None:
                     # ---- raw four-null shadow on the un-residualized targets (Round 24): retention denominator emitted in the same folds ----
                     Yc3_raw = Yc_raw.reshape(len(cal_probes), n_c, D); word_tgt_raw = Yc3_raw.mean(0)
@@ -1162,7 +1260,7 @@ def main():
                     if tp not in true_slot_law:
                         true_slot_law[tp] = comp_laws(tp, l, None)[0]   # true law at the readout position (n, V); independent of l
                 qmean = {}; qmean_raw = {}
-                for k in [kk for kk in ("mean", "identity", "word_mean", "class_mean", "wordonly_knn", "wordonly_ridge_emb", "wordonly_kernel_emb", "knn1", "knn5", "knn20", "ridge", "lowrank", "kernel", "chart", "unres_mean", "unres_ridge", "unres_class_mean", "unres_wordonly_knn", "unres_wordonly_ridge_emb", "unres_wordonly_kernel_emb", "identres", "ridge_stylenull", "kernel_stylenull", "xfree_field", "ridge_dfmatch") if kk in preds]:
+                for k in [kk for kk in ("mean", "identity", "word_mean", "class_mean", "wordonly_knn", "wordonly_ridge_emb", "wordonly_kernel_emb", "knn1", "knn5", "knn20", "ridge", "lowrank", "kernel", "chart", "unres_mean", "unres_ridge", "unres_class_mean", "unres_wordonly_knn", "unres_wordonly_ridge_emb", "unres_wordonly_kernel_emb", "identres", "ridge_stylenull", "kernel_stylenull", "xfree_field", "ridge_dfmatch", "ctxprefix", "ctxprefix_kernel") if kk in preds]:
                     acc = {r: {"kl": [], "skill": [], "ord": [], "ord_anchor": []} for r in ("slot", "last")}
                     for ti, tp in enumerate(test_probes):
                         rows = slice(ti * n_t, (ti + 1) * n_t)
@@ -1199,7 +1297,7 @@ def main():
                     if np.all(np.isfinite(col)): R[:, c] = 1 - (rankdata(col, method="average") - 1) / (K - 1)
                 for i, k in enumerate(cands): comp[k]["klrank"] = R[i]
                 klrank_universe = list(cands)
-                for uk in [kk for kk in comp if kk.startswith("unres_") or kk in ("xfree_field", "ridge_dfmatch")]:
+                for uk in [kk for kk in comp if kk.startswith("unres_") or kk in ("xfree_field", "ridge_dfmatch", "ctxprefix", "ctxprefix_kernel")]:
                     # Keep the fixed K=13 universe while substituting the raw arm into the ridge slot; the raw arms are
                     # comparators for the retention marker, not new candidates in the formal gate universe.
                     Rn = np.full(KLm.shape[1], np.nan)
@@ -1219,7 +1317,7 @@ def main():
                 # Round 30 probe-3 mask: the fixed K=13 universe arms and the three primary quantities (displacement cosine, law skill,
                 # continuous KL); ordering and extra comparators stay outside the mask. Applied identically to points and bootstraps.
                 K13 = ["identity", "mean", "class_mean", "wordonly_knn", "wordonly_ridge_emb", "wordonly_kernel_emb", "knn1", "knn5", "knn20", "ridge", "lowrank", "kernel", "chart"]
-                assert comp and all(k in preds for k in K13) and all(k in comp for k in K13), "the fixed K=13 universe (predictions AND completed laws) is incomplete"
+                assert all(k in preds for k in K13) and (a.ctx_screen or (comp and all(k in comp for k in K13))), "the fixed K=13 universe (predictions AND completed laws) is incomplete"   # screen: state-only mask
                 ins_mask = np.ones(len(Yt), dtype=bool)
                 for k in K13:
                     ins_mask &= np.isfinite(succ[k]["cos"]) & np.isfinite(succ[k]["nerr"])
@@ -1355,6 +1453,13 @@ def main():
                             reps.append(float(np.nanmean(diff[np.ix_(ci, wi)])))
                         fl["fields"][f][e]["improvement_ci95"] = [float(np.nanpercentile(reps, 2.5)), float(np.nanpercentile(reps, 97.5))]
                 gates["fl_null"] = fl
+            if "ctxprefix" in preds:
+                for field in ("ridge", "kernel"):
+                    g = gates.setdefault(field, {})
+                    for cb in ("ctxprefix", "ctxprefix_kernel"):
+                        g[f"succ_cos_vs_{cb}"] = boot_diff(field, "cos", cb); g[f"nerr_vs_{cb}"] = boot_diff(field, "nerr", cb)
+                        if comp: g[f"skill_vs_{cb}"] = boot_diff(field, "skill", cb); g[f"kl_vs_{cb}"] = boot_diff(field, "kl", cb)
+                        if comp and field != "kernel": g[f"klrank_vs_{cb}"] = boot_diff(field, "klrank", cb)
             if "xfree_field" in preds:
                 for field in ("ridge", "ridge_dfmatch", "kernel"):
                     g = gates.setdefault(field, {})
@@ -1421,7 +1526,7 @@ def main():
                                                 "kl_last": float(np.nanmean(v["kl_last"])), "skill_last": float(np.nanmean(v["skill_last"])), "ordering_last": float(np.mean(v["ordering_last_by_carrier"]))} for k, v in comp.items()},
                               "shuffled_null_succ_cos": ({k: {"mean": float(np.mean(v)), "q95": float(np.percentile(v, 95))} for k, v in shuf.items()} if a.n_shuffle > 0 else None),
                               "oracle_ceiling_succ_cos": float(np.mean(oracle)), "support": support, "support_by_carrier": support_by_carrier, "gates": gates}
-            if a.screen:
+            if a.screen or a.ctx_screen:
                 for k_ in ("completed", "klrank_candidate_universe", "shuffled_null_succ_cos", "token_identity_control_cos"): fold_out[held].pop(k_, None)   # no law / CI / shuffle evidence in a screen artifact
             print(f"  fold {held}: succ_cos " + " ".join(f"{k}={v:.3f}" for k, v in fold_out[held]["successor_cos"].items()) + f" | oracle={np.mean(oracle):.3f}" + (f" shufLR={np.mean(shuf['lowrank']):.3f}" if shuf["lowrank"] else ""), flush=True)
         # ---- pool folds (equal weight) and minimal class ----
@@ -1434,7 +1539,7 @@ def main():
         best_score = max(pooled[k] for k in ladder)
         minimal = next((k for k in ladder if pooled[k] >= best_score - 0.02), None)
         pooled_skill = {}
-        if not a.screen and all(fold_out[b].get("completed") for b in fkeys):
+        if not (a.screen or a.ctx_screen) and all(fold_out[b].get("completed") for b in fkeys):
             for k in fold_out[fkeys[0]]["completed"]:
                 pooled_skill[k] = float(np.mean([fold_out[b]["completed"][k]["skill"] for b in fkeys]))
         lad_s = [k for k in order if k in pooled_skill]
@@ -1454,6 +1559,7 @@ def main():
         pooled_gates = {}
         for (field, endpoint, against), per_fold in cell_diffs.items():
             if field not in ("ridge", "kernel", "unres_ridge", "ridge_dfmatch") or endpoint not in ("cos", "skill", "klrank", "nerr", "kl"): continue
+            if against in ("ctxprefix", "ctxprefix_kernel") and field not in ("ridge", "kernel"): continue
             if against == "flnull" and field not in ("ridge", "kernel"): continue
             by_block = {}
             for fk, M in per_fold.items():
@@ -1539,9 +1645,19 @@ def main():
                               "retained_width_outer_by_key": outer_w, "retained_width_inner_by_key": inner_w,
                               "note": "exploratory displacement-cosine screen; no law, CI, shuffle, or retention evidence; cannot earn a law or state claim (Round 29 probe 1)"}
             print(f"  SCREEN {pair_key}: ridge {screen_summary['ridge_cos']:.3f} vs strongest null {max(per.values()):.3f} (margin {screen_summary['strongest_null_margin']:+.3f}) | outer ranks {sorted(set(outer_r.values()))} inner ranks {sorted(set(v for d_ in inner_r.values() for v in d_.values()))}", flush=True)
-        if a.screen: pooled_retention = None
-        results["pairs"][pair_key] = {"folds": fold_out, "pooled_gates_block_first": pooled_gates, "retention_common_scale_block_first": pooled_retention, **({"screen_summary": screen_summary} if screen_summary else {}), **({"fl_null_layer": fl_layer} if fl_layer else {}), "pooled_successor_cos": pooled, "minimal_class_successor_within_0.02": minimal,
-                                      **({} if a.screen else {"pooled_completed_skill": pooled_skill, "minimal_class_completed_within_0.02": minimal_skill})}
+        if a.screen or a.ctx_screen: pooled_retention = None
+        ctx_summary = None
+        if CTX is not None:
+            fk_ = list(fold_out)
+            ctx_summary = {"ridge_cos": float(np.mean([fold_out[b]["successor_cos"]["ridge"] for b in fk_])), "ctxprefix_cos": float(np.mean([fold_out[b]["successor_cos"]["ctxprefix"] for b in fk_])), "ctxprefix_kernel_cos": float(np.mean([fold_out[b]["successor_cos"]["ctxprefix_kernel"] for b in fk_])),
+                           "ridge_nerr": float(np.mean([fold_out[b]["normalized_error"]["ridge"] for b in fk_])), "ctxprefix_nerr": float(np.mean([fold_out[b]["normalized_error"]["ctxprefix"] for b in fk_])),
+                           "ctxprefix_kernel_nerr": float(np.mean([fold_out[b]["normalized_error"]["ctxprefix_kernel"] for b in fk_])),
+                           "support": float(np.mean([fold_out[b]["support"] for b in fk_])), "effective_df_by_key": {b: fold_out[b]["selected"]["ctxprefix"]["effective_df"] for b in fk_}, "kernel_effective_df_by_key": {b: fold_out[b]["selected"]["ctxprefix_kernel"]["effective_df"] for b in fk_},
+                           "columns_by_key": {b: fold_out[b]["selected"]["ctxprefix"]["n_columns_retained"] for b in fk_}, "ridge_selected_by_key": {b: fold_out[b]["selected"]["ctxprefix"]["lam"] for b in fk_}, "kernel_selected_by_key": {b: [fold_out[b]["selected"]["ctxprefix_kernel"]["gamma"], fold_out[b]["selected"]["ctxprefix_kernel"]["lam"]] for b in fk_},
+                           "screen_only": bool(a.ctx_screen), "note": "Round 31 order 4: X field vs contextual-prefix X-free field; a state reading stays live only under the registered four-endpoint gate (completion run), not from this summary"}
+            print(f"  CTX {pair_key}: ridge {ctx_summary['ridge_cos']:.3f} vs contextual-prefix {ctx_summary['ctxprefix_cos']:.3f} (kernel {ctx_summary['ctxprefix_kernel_cos']:.3f}) | nerr {ctx_summary['ridge_nerr']:.3f} vs {ctx_summary['ctxprefix_nerr']:.3f}", flush=True)
+        results["pairs"][pair_key] = {"folds": fold_out, "pooled_gates_block_first": pooled_gates, "retention_common_scale_block_first": pooled_retention, **({"screen_summary": screen_summary} if screen_summary else {}), **({"ctx_summary": ctx_summary} if ctx_summary else {}), **({"fl_null_layer": fl_layer} if fl_layer else {}), "pooled_successor_cos": pooled, "minimal_class_successor_within_0.02": minimal,
+                                      **({} if (a.screen or a.ctx_screen) else {"pooled_completed_skill": pooled_skill, "minimal_class_completed_within_0.02": minimal_skill})}
         if a.baselines and a.source != "forward":                                   # per_carrier_affine reads Z directly (audit #10 hazard)
             results["pairs"][pair_key]["per_carrier_affine"] = per_carrier_affine(l)
             print(f"  per-carrier affine summary: {results['pairs'][pair_key]['per_carrier_affine']['summary']}", flush=True)
