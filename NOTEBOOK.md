@@ -5,6 +5,27 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-28 — Moot-maker #1 smoke: identity plus a shared displacement explains L8→L9
+
+- `Yhat = X + mean_cal(Y−X)` at L8→L9: successor 0.949 pooled vs ridge 0.941;
+  slot skill 0.958–0.975 vs ridge 0.905–0.980; ridge − identres ≤ +0.013 on
+  every endpoint in every fold, negative in three of four. The per-carrier
+  affine diagnostic (64 training words per carrier) sits at 0.80 / 0.48.
+- Round 16 withdrawal condition met at this pair: the "affine law" wording is
+  withdrawn. The move at middle depth is persistence plus a shared
+  displacement — the residual stream behaving as a residual stream. This is
+  why rank ≤ 128 lost by 0.05 (it cannot express the identity) and why the
+  static chart lost (it never sees the held-out state's own coordinates).
+- Lesson logged against think-before-you-run: identity was the obvious null
+  for a residual stream and should have been in the ladder from Round 13.
+- What the question becomes: the transport content is the displacement
+  Y − X. Is it state-dependent beyond a constant? The ladder must be rerun on
+  Δ with the mean displacement as the zero-order baseline, and the depth
+  profile re-read: the word-mean's late collapse (0.40) now says the
+  displacement, not the state, is where context enters.
+- Full six-pair baselines run and the Δ-ladder await a fresh Codex round that
+  has this result in hand (round 17 was launched before it).
+
 ## 2026-08-28 — NLM-007 corrected rerun (slot endpoint): 3 pairs clear every locked gate
 
 - Six pairs, slot-position completed law, 2145 s of a 3300 s budget; support

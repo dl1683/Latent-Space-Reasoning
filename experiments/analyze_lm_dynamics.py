@@ -200,6 +200,7 @@ def main():
     ap.add_argument("--model", default="Qwen/Qwen3-0.6B"); ap.add_argument("--pairs", type=int, nargs="*", default=None)
     ap.add_argument("--n-boot", type=int, default=2000); ap.add_argument("--n-shuffle", type=int, default=100)
     ap.add_argument("--skip-completion", action="store_true")
+    ap.add_argument("--baselines", action="store_true", help="Round 16 moot-makers: identity-plus-residual predictor and per-carrier affine diagnostic")
     ap.add_argument("--tag", default="", help="suffix for the output file: analysis_<tag>.json (keeps earlier runs intact)")
     ap.add_argument("--smoke", action="store_true", help="pipeline validation on the first 16 words, pair 0, tiny bootstrap; writes analysis_smoke.json")
     a = ap.parse_args()
@@ -246,6 +247,48 @@ def main():
         return X, Y
 
     true_slot_law = {}     # carrier -> true next-token law at the slot position (unmodified forward)
+
+    def strat_folds(n_folds, seed):
+        """Class-stratified word folds over the pos labels; returns fold index per word."""
+        rng = np.random.default_rng(seed); fold = np.zeros(n, dtype=int)
+        for c in sorted(set(pos)):
+            idx = np.array([i for i in range(n) if pos[i] == c]); rng.shuffle(idx)
+            for j, i in enumerate(idx): fold[i] = j % n_folds
+        return fold
+
+    def per_carrier_affine(l):
+        out = {}
+        outer = strat_folds(5, SEED)
+        for c in range(P):
+            X, Y = Z[c, l].astype(np.float32), Z[c, l + 1].astype(np.float32)
+            Yhat = np.zeros_like(Y); Ymean = np.zeros_like(Y)
+            for f in range(5):
+                tr = np.where(outer != f)[0]; te = np.where(outer == f)[0]
+                inner = strat_folds(4, SEED + 1)[tr]
+                sc = {}
+                for lam in LAMBDAS:
+                    v = []
+                    for g in range(4):
+                        itr = tr[inner != g]; iva = tr[inner == g]
+                        sti = Standardizer().fit(X[itr]); fam = RidgeFamily(sti(X[itr]), Y[itr])
+                        v.append(float(np.mean(cos_rows(fam.predictor(lam)(sti(X[iva])), Y[iva]))))
+                    sc[lam] = float(np.mean(v))
+                lam_b = max(sc, key=sc.get)
+                st = Standardizer().fit(X[tr]); Yhat[te] = RidgeFamily(st(X[tr]), Y[tr]).predictor(lam_b)(st(X[te]))
+                Ymean[te] = Y[tr].mean(0, keepdims=True)
+            rec = {"succ_cos": float(np.mean(cos_rows(Yhat, Y))), "succ_cos_mean_pred": float(np.mean(cos_rows(Ymean, Y)))}
+            if completer is not None:
+                if c not in true_slot_law:
+                    true_slot_law[c] = completer.laws(c, states_emb, l, Yhat=None)[0]
+                q = true_slot_law[c]
+                qhat = completer.laws(c, states_emb, l, Yhat=Yhat)[0]; qm = completer.laws(c, states_emb, l, Yhat=Ymean)[0]
+                kl = kl_rows(q, qhat); klm = kl_rows(q, qm); klm = np.where(klm > 0, klm, np.nan)
+                rec["slot_skill"] = float(np.nanmean(1 - kl / klm)); rec["slot_ordering"] = float(ordering_preservation(pairwise_kl(q), pairwise_kl(qhat))[0])
+            out[str(d["probes"][c])] = rec
+            print(f"   per-carrier affine {str(d['probes'][c]):10s} succ_cos={rec['succ_cos']:.3f}" + (f" slot_skill={rec['slot_skill']:.3f} ord={rec['slot_ordering']:.3f}" if "slot_skill" in rec else "") + f" ({time.time()-t0:.0f}s)", flush=True)
+        keys = [k for k in ("succ_cos", "slot_skill", "slot_ordering") if k in next(iter(out.values()))]
+        out["summary"] = {k: float(np.mean([v[k] for kk, v in out.items() if kk != "summary"])) for k in keys}
+        return out
     for (l, l1) in pairs:
         pair_key = f"L{l}->L{l1}"; print(f"\n=== {pair_key} ===", flush=True)
         fold_out = {}
@@ -300,6 +343,8 @@ def main():
             preds["kernel"] = fit_kernel_ridge(Xcs, Yc, best["kernel"]["lam"], best["kernel"]["gamma"])(Xts)
             cm = best["chart"]["metric"]
             preds["chart"] = fit_knn(Xcs, Yc, int(cm[3:]))(Xts) if cm.startswith("knn") else chart_control(Xc, Yc, cm)(Xt)
+            if a.baselines:
+                preds["identres"] = Xt + (Yc - Xc).mean(0, keepdims=True)          # identity-plus-residual moot-maker (Round 16 #1)
             ybar = Yc.mean(0); denom = np.linalg.norm(Yt - ybar, axis=1); denom = np.where(denom > 0, denom, np.nan)
             succ = {k: {"cos": cos_rows(v, Yt), "nerr": np.linalg.norm(v - Yt, axis=1) / denom} for k, v in preds.items()}
             # ---- carrier-shuffled null on the selected low-rank field and ridge ----
@@ -335,7 +380,7 @@ def main():
                     if tp not in true_slot_law:
                         true_slot_law[tp] = completer.laws(tp, states_emb, l, Yhat=None)[0]   # true law at the slot position (n, V); independent of l
                 qmean = {}
-                for k in ("mean", "word_mean", "ridge", "lowrank", "kernel", "chart"):
+                for k in [kk for kk in ("mean", "word_mean", "ridge", "lowrank", "kernel", "chart", "identres") if kk in preds]:
                     acc = {r: {"kl": [], "skill": [], "ord": [], "ord_anchor": []} for r in ("slot", "last")}
                     for ti, tp in enumerate(test_probes):
                         rows = slice(ti * n, (ti + 1) * n)
@@ -372,6 +417,9 @@ def main():
             gates = {}
             for field in ("ridge", "lowrank", "kernel"):
                 g = {"succ_cos_vs_chart": boot_diff(field, "cos"), "succ_cos_vs_word_mean": boot_diff(field, "cos", "word_mean")}
+                if "identres" in preds:
+                    g["succ_cos_vs_identres"] = boot_diff(field, "cos", "identres")
+                    if comp: g["skill_vs_identres"] = boot_diff(field, "skill", "identres"); g["ordering_vs_identres"] = boot_diff(field, "ordering", "identres")
                 if comp:
                     g["skill_vs_chart"] = boot_diff(field, "skill"); g["skill_vs_word_mean"] = boot_diff(field, "skill", "word_mean")
                     g["ordering_vs_chart"] = boot_diff(field, "ordering"); g["ordering_vs_word_mean"] = boot_diff(field, "ordering", "word_mean")
@@ -407,6 +455,9 @@ def main():
         minimal_skill = next((k for k in lad_s if pooled_skill[k] >= max(pooled_skill[kk] for kk in lad_s) - 0.02), None) if lad_s else None
         results["pairs"][pair_key] = {"folds": fold_out, "pooled_successor_cos": pooled, "minimal_class_successor_within_0.02": minimal,
                                       "pooled_completed_skill": pooled_skill, "minimal_class_completed_within_0.02": minimal_skill}
+        if a.baselines:
+            results["pairs"][pair_key]["per_carrier_affine"] = per_carrier_affine(l)
+            print(f"  per-carrier affine summary: {results['pairs'][pair_key]['per_carrier_affine']['summary']}", flush=True)
         (run_dir / ("analysis_smoke.json" if a.smoke else "analysis" + ("_" + a.tag if a.tag else "") + ".json")).write_text(json.dumps(results, indent=1, default=float), encoding="utf-8")
         print(f"  pooled: " + " ".join(f"{k}={v:.3f}" for k, v in pooled.items()) + f" | minimal class: {minimal}", flush=True)
     results["seconds"] = round(time.time() - t0, 1)
