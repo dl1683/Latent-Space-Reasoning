@@ -1026,3 +1026,40 @@ predictability survives the static smoke. This sharpens the missing quotient
 between lexical content, presentation, operational state, and consequential
 motion; it does not resolve it. No new axiom, presentation-independent claim,
 native-law claim, or second-family claim is warranted.
+
+## Round 25 — launch ruling and budget amendment (2026-08-29)
+
+No experiment was run. The raw four-null shadow prerequisite is met at
+pipeline level by `analysis_residsmoke.json` / ledger
+`nlm007_resid_shadow_smoke_F8A`: same folds as the residual field, raw
+`unres_*` predictors scored against raw held-out `Delta`, raw skill referenced
+to `unres_mean`, K=13 KL-rank by substitution into the ridge slot, four
+per-null raw margins, and positive block-first pooled `unres_ridge` contrasts
+over four blocks and eight word-fold keys. The smoke is not a formal result.
+
+Retention is now frozen as a conservative minimum over the fixed four nulls,
+per endpoint and identically on raw and residual sides. If `N4` is
+`{class_mean, wordonly_knn, wordonly_ridge_emb, wordonly_kernel_emb}`, then
+`m_raw[e] = min_n(raw_ridge[e] - raw_null_n[e])` and
+`m_res[e] = min_n(ridge[e] - residual_null_n[e])`; endpoint retention passes
+iff `m_raw[e] > 0` and `m_res[e] >= 0.5*m_raw[e]`. The strongest null is the
+one attaining that smallest point margin, with declared-order tie breaking.
+All per-null margins and the same-fold paired block-first `ridge -
+unres_ridge` contrast are reported; the denominator is never reconstructed
+from old Round 22 files.
+
+Measured one-layer times are 756 s before raw ridge, 998 s with raw ridge,
+and 1294 s with all five raw-shadow arms under contention. The old 60-minute
+wall is amended before formal scoring to 120 minutes per run and 8 hours for
+the four serial runs. The fixed K=13 ladder, including `knn1/knn5/knn20`, is
+retained. After corrected equalized rerun B finishes, the conditional launch
+order is A-static, A-augmented, B-static, B-augmented, one process at a time.
+No launch occurs in Round 25 itself.
+
+Corrected equalized A is a valid mechanical positive for the bounded
+sentinel-A seen-word within-family diagnostic: its equalized baselines sit
+0.003–0.01 above the shared mean, and F4/F8/F12/F20 pass while F0 fails.
+Audit #11's inner-centre defect is repaired; “no per-word lexical signal,”
+“context rather than content,” “large state-conditioned component,” and any
+presentation-independent/native-law reading remain withdrawn. Current scope
+remains one decoder, unresolved state-versus-presentation, and no new axiom.

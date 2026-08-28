@@ -3642,3 +3642,148 @@ where sameness means interchangeability of declared moves and downstream
 response laws, with exposed presentation coordinates, consequence-sensitive
 readouts, multi-step closure, and transfer across words, styles, and model
 families. No new native axiom is warranted.
+
+## Round 25 — raw-shadow launch ruling, budget amendment, and equalized-A adjudication (2026-08-29)
+
+**Codex, documentation-only; no experiment was run in this round.** The live
+analyzer, the F8/A residualization smoke, the raw-shadow ledger entry, the
+corrected equalized-A ledger entry, and the Round 24 contract were checked.
+
+### Raw four-null shadow prerequisite
+
+The Round 24 launch prerequisite is **met as a pipeline prerequisite**. The
+same invocation and same outer folds produce the residual field, the raw
+un-residualized ridge shadow, and the raw four-null shadow. In the unseen-word
+delta design, “raw target” means the un-residualized held-out `Delta = Y-X`
+target (`Yt_raw`); the raw completion reconstructs the successor from the
+held-out `X` and that predicted displacement.
+
+The fixed raw arms are:
+
+- `unres_ridge`, with its ridge lambda selected inside calibration folds;
+- `unres_class_mean`;
+- `unres_wordonly_knn`;
+- `unres_wordonly_ridge_emb`; and
+- `unres_wordonly_kernel_emb`.
+
+`unres_mean` is the raw shared-mean completion used as the skill reference,
+not a fifth X-free null in the four-null margin. All four X-free nulls are
+calibration-only fits: the class mean is fit on calibration carriers and
+words, while the embedding kNN/ridge/kernel choices are selected on the
+calibration-word inner split and then refit on calibration words. The raw
+arms score against `Yt_raw`; raw skill is `1 - KL(raw candidate, truth) /
+KL(unres_mean completion, truth)`.
+
+For KL-rank, each `unres_*` arm is substituted into the `ridge` slot of the
+fixed K=13 candidate universe. It is therefore compared on the same rank
+scale without adding raw arms to the formal candidate universe. The raw
+shadow is a comparator/retention arm, not a new ladder member.
+
+The F8/A smoke records 160 defined cells. `unres_ridge` exceeds each of the
+four raw nulls by approximately `+0.190–+0.192` cosine, `+0.291–+0.296`
+skill, and `+0.289–+0.305` KL-rank at the point level. Its
+`pooled_gates_block_first` entries cover four blocks and eight word-fold keys;
+the twelve raw-ridge-versus-null pooled means are approximately
+`+0.187–+0.189` cosine, `+0.335–+0.337` skill, and `+0.302–+0.313` KL-rank,
+with positive block-first 95% intervals. This verifies the arm, support, raw
+target/reference wiring, K=13 substitution, per-null margins, and pooled
+contrast. The smoke remains pipeline validation, not a formal result.
+
+### Retention marker: frozen definition
+
+Let `N4` be the ordered set
+`{class_mean, wordonly_knn, wordonly_ridge_emb, wordonly_kernel_emb}`. For
+each endpoint `e` in `{cosine, skill, KL-rank}`, use the same outer fold/cell
+support and define the point margins
+
+\[
+m^{raw}_e = \min_{n\in N4} \operatorname{mean}\bigl(raw\_ridge_e-raw\_null_{n,e}\bigr),
+\qquad
+m^{res}_e = \min_{n\in N4} \operatorname{mean}\bigl(ridge_e-res\_null_{n,e}\bigr).
+\]
+
+The “strongest null” is thus the fixed null with the **smallest point
+margin** (equivalently, the largest held-out score) for that endpoint. The
+residual and raw sides use exactly the same rule; ties use the declared order
+above. No null is dropped or made the sole gate comparator after seeing a
+favorable endpoint, and no calibration winner replaces this conservative
+minimum: every null is a predeclared arm with its own calibration-only tuning,
+and every per-null margin remains reportable. The strongest-null name is only
+the mechanically derived minimum-margin label.
+
+The retention marker is valid only when `m^{raw}_e > 0`, and passes endpoint
+`e` when `m^{res}_e >= 0.5 * m^{raw}_e`. The run reports all four raw and all
+four residual margins, the strongest-null name for each endpoint, and the
+same-fold paired block-first contrast `ridge - unres_ridge` with its
+clustered interval. The paired contrast is a separate diagnostic; it cannot
+replace or reconstruct the retention denominator from the old Round 22 A/B
+files. Failure of retention is not a kill condition, but means presentation
+removal consumed more than half of that endpoint's raw margin and must be
+read with the residual-vs-null gate.
+
+### Budget amendment before scoring
+
+The measured one-layer full-invocation times are `756 s` before the raw ridge
+arm, `998 s` with the raw ridge arm, and `1294 s` with all five raw-shadow
+arms under CPU contention. A five-layer run therefore projects to roughly
+63–108 minutes before ordinary variance. The Round 24 `60-minute` wall is
+not credible for the locked invocation.
+
+Before any formal score is opened, amend the wall to **120 minutes per
+sentinel/design run and 8 hours for the four serial runs**. Retain the fixed
+design, including `knn1`, `knn5`, and `knn20`; those candidates are part of
+the locked K=13 universe and are not dropped to fit the old wall. One process
+runs at a time. A run exceeding 120 minutes, or missing a fold coordinate,
+is budget-incomplete and cannot earn a gate claim. This is a prospective
+budget amendment, not an outcome-dependent relaxation.
+
+### Conditional launch and locked order
+
+Once the corrected equalized LOCO rerun for sentinel B has finished, launch
+the four CPU-only residualization runs in this order, with no interleaving:
+
+1. sentinel A, `P_static`;
+2. sentinel A, `P_aug`;
+3. sentinel B, `P_static`; and
+4. sentinel B, `P_aug`.
+
+Each run retains `F0/F4/F8/F12/F20`, two unseen-word folds, 20 shuffles,
+500 bootstraps, the K=13 universe, the raw-shadow arms, and the validity
+checks. This round confirms the launch authorization conditionally; no run
+is launched or scored in Round 25 itself. Read validity first, then F0,
+then F4/F8/F12/F20; within each layer read residual margins and gates,
+reassembled law endpoints, the presentation-only diagnostic, and paired
+retention.
+
+### Corrected equalized LOCO addendum A
+
+Under the Round 22/Audit #11 wording, corrected `locoeq2A` is a **valid
+mechanical positive for the sentinel-A seen-word within-family diagnostic**:
+the properly calibrated word-only ridge and shrunk-word-mean baselines sit
+`0.003–0.01` above the shared mean rather than collapsing exactly onto it,
+and the ridge field passes the equalized gate at `F4/F8/F12/F20`; `F0` fails.
+The correction resolves Audit #11's inner-centre defect and removes the
+claim that maximal shrinkage was forced by the implementation. It does not
+license “no per-word lexical signal,” “context rather than content,” “the
+state-conditioned component is large,” or a presentation-independent/native
+law claim. The earned wording remains the bounded Audit #11 object:
+
+> On already-seen words, within sentinel A's style-family design, the
+> context-bearing `X` field predicts the held-out carrier's forward
+> displacement and response-law consequence beyond these properly nested,
+> equalized X-free lexical baselines at `F4–F20`.
+
+The B corrected rerun is required before any combined A/B equalized reading.
+The unseen-word result remains separately bounded as X-conditioned residual
+predictability transferring across held-out word identities; neither result
+establishes clean operational state, a native law, or model generality.
+
+### Second lens
+
+The denizen can now ask whether a move survives removal of measured
+presentation coordinates without silently changing the comparator. That is
+the exciting next step: a latent world becomes navigable only when its
+“same place” relation and move cost survive fixed nulls, raw-vs-residual
+accounting, and held-out response-law tests. The current hole remains a
+missing predictive quotient between lexical content, presentation,
+operational state, and consequential motion. No new axiom is warranted.
