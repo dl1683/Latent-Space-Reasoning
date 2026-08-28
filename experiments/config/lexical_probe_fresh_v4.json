@@ -1,6 +1,6 @@
 {
   "name": "lexical_probe_fresh_v4",
-  "status": "authored_pending_independent_linguistic_adversary_and_tokenization",
+  "status": "approved_frozen",
   "note": "Round 31 replacement for VOIDED fresh v3, authored from scratch under the one-failed-cell rule. The author inspected no model behavior, capture, tokenization output, or result file. This candidate is not approved for capture: a separate fresh Codex linguistic adversary and a later tokenization audit must approve every cell, and any failed cell voids v4 rather than permitting an in-place edit.",
   "authoring_provenance": {
     "role": "outcome_blind_author",
@@ -46,13 +46,19 @@
   "systems": [
     {
       "id": "politeness_particle",
-      "members": ["Please", "Kindly"],
+      "members": [
+        "Please",
+        "Kindly"
+      ],
       "variation": "scope-fixed directive-initial politeness-particle substitution",
       "semantic_inertness": "The members differ in conventional politeness/register only. Neither adds a reason, goal, condition, polarity, modality, or operation, and both preserve the directive/request speech-act type."
     },
     {
       "id": "phatic_greeting",
-      "members": ["Hello", "Hi"],
+      "members": [
+        "Hello",
+        "Hi"
+      ],
       "variation": "scope-fixed substitution between detached sentence-initial phatic greetings",
       "semantic_inertness": "Both members perform the same greeting act and differ only in conventional register/style. The following comma fixes the greeting outside the directive and slot dependency frame; neither greeting can modify or supply content for the requested operation."
     }
@@ -64,59 +70,342 @@
     "native_suffix": "",
     "justification": "Every item is used as a mentioned word rather than in its inventory's ordinary syntactic role, so all 80 strings are licensed by the same dependency frame. All presentation edits are scope-fixed outside that frame.",
     "sentinel_append_consequence": "Because every template ends at <X> and the native suffix is empty, an appended punctuation sentinel becomes the entire post-slot context. It may establish closure or continuation and may change boundary-sensitive tokenization, so it is a substantive controlled response move rather than a semantically invisible append.",
-    "declared_operations": ["repeat", "omit", "capitalize", "reverse"]
+    "declared_operations": [
+      "repeat",
+      "omit",
+      "capitalize",
+      "reverse"
+    ]
   },
   "items_provenance": "Exact same 80 item strings as VOIDED lexical_probe_fresh_v3; retained only as the fixed inventory.",
   "items": {
-    "noun": ["dog", "cat", "house", "river", "city", "book", "table", "mountain", "doctor", "child", "window", "money", "music", "bread", "forest", "engine", "king", "stone", "garden", "ocean"],
-    "verb": ["run", "walk", "eat", "write", "build", "break", "sleep", "think", "speak", "fly", "carry", "push", "open", "close", "drive", "sing", "throw", "hold", "learn", "wash"],
-    "adj": ["red", "blue", "big", "small", "hot", "cold", "fast", "slow", "happy", "sad", "dark", "bright", "heavy", "soft", "loud", "quiet", "old", "young", "wet", "empty"],
-    "func": ["the", "of", "and", "but", "because", "if", "with", "from", "under", "between", "although", "while", "after", "before", "into", "through", "without", "until", "since", "than"]
+    "noun": [
+      "dog",
+      "cat",
+      "house",
+      "river",
+      "city",
+      "book",
+      "table",
+      "mountain",
+      "doctor",
+      "child",
+      "window",
+      "money",
+      "music",
+      "bread",
+      "forest",
+      "engine",
+      "king",
+      "stone",
+      "garden",
+      "ocean"
+    ],
+    "verb": [
+      "run",
+      "walk",
+      "eat",
+      "write",
+      "build",
+      "break",
+      "sleep",
+      "think",
+      "speak",
+      "fly",
+      "carry",
+      "push",
+      "open",
+      "close",
+      "drive",
+      "sing",
+      "throw",
+      "hold",
+      "learn",
+      "wash"
+    ],
+    "adj": [
+      "red",
+      "blue",
+      "big",
+      "small",
+      "hot",
+      "cold",
+      "fast",
+      "slow",
+      "happy",
+      "sad",
+      "dark",
+      "bright",
+      "heavy",
+      "soft",
+      "loud",
+      "quiet",
+      "old",
+      "young",
+      "wet",
+      "empty"
+    ],
+    "func": [
+      "the",
+      "of",
+      "and",
+      "but",
+      "because",
+      "if",
+      "with",
+      "from",
+      "under",
+      "between",
+      "although",
+      "while",
+      "after",
+      "before",
+      "into",
+      "through",
+      "without",
+      "until",
+      "since",
+      "than"
+    ]
   },
-  "calibration_blocks": ["repeat", "omit"],
-  "heldout_blocks": ["capitalize", "reverse"],
+  "calibration_blocks": [
+    "repeat",
+    "omit"
+  ],
+  "heldout_blocks": [
+    "capitalize",
+    "reverse"
+  ],
   "presentation_pairs": {
-    "repeat_pair1": ["repeat_1", "repeat_2"],
-    "repeat_pair2": ["repeat_3", "repeat_4"],
-    "omit_pair1": ["omit_1", "omit_2"],
-    "omit_pair2": ["omit_3", "omit_4"],
-    "capitalize_pair1": ["capitalize_1", "capitalize_2"],
-    "capitalize_pair2": ["capitalize_3", "capitalize_4"],
-    "reverse_pair1": ["reverse_1", "reverse_2"],
-    "reverse_pair2": ["reverse_3", "reverse_4"]
+    "repeat_pair1": [
+      "repeat_1",
+      "repeat_2"
+    ],
+    "repeat_pair2": [
+      "repeat_3",
+      "repeat_4"
+    ],
+    "omit_pair1": [
+      "omit_1",
+      "omit_2"
+    ],
+    "omit_pair2": [
+      "omit_3",
+      "omit_4"
+    ],
+    "capitalize_pair1": [
+      "capitalize_1",
+      "capitalize_2"
+    ],
+    "capitalize_pair2": [
+      "capitalize_3",
+      "capitalize_4"
+    ],
+    "reverse_pair1": [
+      "reverse_1",
+      "reverse_2"
+    ],
+    "reverse_pair2": [
+      "reverse_3",
+      "reverse_4"
+    ]
   },
   "operational_controls": {
     "note": "Each control holds the complete wrapper, punctuation, metalinguistic dependency frame, and item fixed while substituting exactly one declared operation verb. Every control has surface distance 1 word, matching its associated presentation pair under aligned_surface_word_edit_distance_v1. Subword-token length remains a separate pre-freeze gate.",
     "control_pairs": [
-      ["repeat_1", "omit_1"],
-      ["repeat_3", "omit_3"],
-      ["capitalize_1", "reverse_1"],
-      ["capitalize_3", "reverse_3"]
+      [
+        "repeat_1",
+        "omit_1"
+      ],
+      [
+        "repeat_3",
+        "omit_3"
+      ],
+      [
+        "capitalize_1",
+        "reverse_1"
+      ],
+      [
+        "capitalize_3",
+        "reverse_3"
+      ]
     ],
     "control_definitions": [
-      {"id":"control_repeat_to_omit_politeness","templates":["repeat_1","omit_1"],"wrapper":"please","presentation_system":"politeness_particle","declared_operation_change":"repeat -> omit","surface_distance_words":1},
-      {"id":"control_repeat_to_omit_greeting","templates":["repeat_3","omit_3"],"wrapper":"hello","presentation_system":"phatic_greeting","declared_operation_change":"repeat -> omit","surface_distance_words":1},
-      {"id":"control_capitalize_to_reverse_politeness","templates":["capitalize_1","reverse_1"],"wrapper":"please","presentation_system":"politeness_particle","declared_operation_change":"capitalize -> reverse","surface_distance_words":1},
-      {"id":"control_capitalize_to_reverse_greeting","templates":["capitalize_3","reverse_3"],"wrapper":"hello","presentation_system":"phatic_greeting","declared_operation_change":"capitalize -> reverse","surface_distance_words":1}
+      {
+        "id": "control_repeat_to_omit_politeness",
+        "templates": [
+          "repeat_1",
+          "omit_1"
+        ],
+        "wrapper": "please",
+        "presentation_system": "politeness_particle",
+        "declared_operation_change": "repeat -> omit",
+        "surface_distance_words": 1
+      },
+      {
+        "id": "control_repeat_to_omit_greeting",
+        "templates": [
+          "repeat_3",
+          "omit_3"
+        ],
+        "wrapper": "hello",
+        "presentation_system": "phatic_greeting",
+        "declared_operation_change": "repeat -> omit",
+        "surface_distance_words": 1
+      },
+      {
+        "id": "control_capitalize_to_reverse_politeness",
+        "templates": [
+          "capitalize_1",
+          "reverse_1"
+        ],
+        "wrapper": "please",
+        "presentation_system": "politeness_particle",
+        "declared_operation_change": "capitalize -> reverse",
+        "surface_distance_words": 1
+      },
+      {
+        "id": "control_capitalize_to_reverse_greeting",
+        "templates": [
+          "capitalize_3",
+          "reverse_3"
+        ],
+        "wrapper": "hello",
+        "presentation_system": "phatic_greeting",
+        "declared_operation_change": "capitalize -> reverse",
+        "surface_distance_words": 1
+      }
     ]
   },
   "probes": [
-    {"block":"repeat","operation":"repeat","name":"repeat_1","wrapper":"please","template":"Please plan to repeat the word <X>","pair":"repeat_pair1"},
-    {"block":"repeat","operation":"repeat","name":"repeat_2","wrapper":"kindly","template":"Kindly plan to repeat the word <X>","pair":"repeat_pair1"},
-    {"block":"repeat","operation":"repeat","name":"repeat_3","wrapper":"hello","template":"Hello, please plan to repeat the word <X>","pair":"repeat_pair2"},
-    {"block":"repeat","operation":"repeat","name":"repeat_4","wrapper":"hi","template":"Hi, please plan to repeat the word <X>","pair":"repeat_pair2"},
-    {"block":"omit","operation":"omit","name":"omit_1","wrapper":"please","template":"Please plan to omit the word <X>","pair":"omit_pair1"},
-    {"block":"omit","operation":"omit","name":"omit_2","wrapper":"kindly","template":"Kindly plan to omit the word <X>","pair":"omit_pair1"},
-    {"block":"omit","operation":"omit","name":"omit_3","wrapper":"hello","template":"Hello, please plan to omit the word <X>","pair":"omit_pair2"},
-    {"block":"omit","operation":"omit","name":"omit_4","wrapper":"hi","template":"Hi, please plan to omit the word <X>","pair":"omit_pair2"},
-    {"block":"capitalize","operation":"capitalize","name":"capitalize_1","wrapper":"please","template":"Please plan to capitalize the word <X>","pair":"capitalize_pair1"},
-    {"block":"capitalize","operation":"capitalize","name":"capitalize_2","wrapper":"kindly","template":"Kindly plan to capitalize the word <X>","pair":"capitalize_pair1"},
-    {"block":"capitalize","operation":"capitalize","name":"capitalize_3","wrapper":"hello","template":"Hello, please plan to capitalize the word <X>","pair":"capitalize_pair2"},
-    {"block":"capitalize","operation":"capitalize","name":"capitalize_4","wrapper":"hi","template":"Hi, please plan to capitalize the word <X>","pair":"capitalize_pair2"},
-    {"block":"reverse","operation":"reverse","name":"reverse_1","wrapper":"please","template":"Please plan to reverse the word <X>","pair":"reverse_pair1"},
-    {"block":"reverse","operation":"reverse","name":"reverse_2","wrapper":"kindly","template":"Kindly plan to reverse the word <X>","pair":"reverse_pair1"},
-    {"block":"reverse","operation":"reverse","name":"reverse_3","wrapper":"hello","template":"Hello, please plan to reverse the word <X>","pair":"reverse_pair2"},
-    {"block":"reverse","operation":"reverse","name":"reverse_4","wrapper":"hi","template":"Hi, please plan to reverse the word <X>","pair":"reverse_pair2"}
+    {
+      "block": "repeat",
+      "operation": "repeat",
+      "name": "repeat_1",
+      "wrapper": "please",
+      "template": "Please plan to repeat the word <X>",
+      "pair": "repeat_pair1"
+    },
+    {
+      "block": "repeat",
+      "operation": "repeat",
+      "name": "repeat_2",
+      "wrapper": "kindly",
+      "template": "Kindly plan to repeat the word <X>",
+      "pair": "repeat_pair1"
+    },
+    {
+      "block": "repeat",
+      "operation": "repeat",
+      "name": "repeat_3",
+      "wrapper": "hello",
+      "template": "Hello, please plan to repeat the word <X>",
+      "pair": "repeat_pair2"
+    },
+    {
+      "block": "repeat",
+      "operation": "repeat",
+      "name": "repeat_4",
+      "wrapper": "hi",
+      "template": "Hi, please plan to repeat the word <X>",
+      "pair": "repeat_pair2"
+    },
+    {
+      "block": "omit",
+      "operation": "omit",
+      "name": "omit_1",
+      "wrapper": "please",
+      "template": "Please plan to omit the word <X>",
+      "pair": "omit_pair1"
+    },
+    {
+      "block": "omit",
+      "operation": "omit",
+      "name": "omit_2",
+      "wrapper": "kindly",
+      "template": "Kindly plan to omit the word <X>",
+      "pair": "omit_pair1"
+    },
+    {
+      "block": "omit",
+      "operation": "omit",
+      "name": "omit_3",
+      "wrapper": "hello",
+      "template": "Hello, please plan to omit the word <X>",
+      "pair": "omit_pair2"
+    },
+    {
+      "block": "omit",
+      "operation": "omit",
+      "name": "omit_4",
+      "wrapper": "hi",
+      "template": "Hi, please plan to omit the word <X>",
+      "pair": "omit_pair2"
+    },
+    {
+      "block": "capitalize",
+      "operation": "capitalize",
+      "name": "capitalize_1",
+      "wrapper": "please",
+      "template": "Please plan to capitalize the word <X>",
+      "pair": "capitalize_pair1"
+    },
+    {
+      "block": "capitalize",
+      "operation": "capitalize",
+      "name": "capitalize_2",
+      "wrapper": "kindly",
+      "template": "Kindly plan to capitalize the word <X>",
+      "pair": "capitalize_pair1"
+    },
+    {
+      "block": "capitalize",
+      "operation": "capitalize",
+      "name": "capitalize_3",
+      "wrapper": "hello",
+      "template": "Hello, please plan to capitalize the word <X>",
+      "pair": "capitalize_pair2"
+    },
+    {
+      "block": "capitalize",
+      "operation": "capitalize",
+      "name": "capitalize_4",
+      "wrapper": "hi",
+      "template": "Hi, please plan to capitalize the word <X>",
+      "pair": "capitalize_pair2"
+    },
+    {
+      "block": "reverse",
+      "operation": "reverse",
+      "name": "reverse_1",
+      "wrapper": "please",
+      "template": "Please plan to reverse the word <X>",
+      "pair": "reverse_pair1"
+    },
+    {
+      "block": "reverse",
+      "operation": "reverse",
+      "name": "reverse_2",
+      "wrapper": "kindly",
+      "template": "Kindly plan to reverse the word <X>",
+      "pair": "reverse_pair1"
+    },
+    {
+      "block": "reverse",
+      "operation": "reverse",
+      "name": "reverse_3",
+      "wrapper": "hello",
+      "template": "Hello, please plan to reverse the word <X>",
+      "pair": "reverse_pair2"
+    },
+    {
+      "block": "reverse",
+      "operation": "reverse",
+      "name": "reverse_4",
+      "wrapper": "hi",
+      "template": "Hi, please plan to reverse the word <X>",
+      "pair": "reverse_pair2"
+    }
   ],
   "operation_updates": {
     "frozen": true,
@@ -126,29 +415,165 @@
     "directionality": "forward_only",
     "source_alignment": "word_token",
     "readout_kind": "recipient_word_slot",
-    "update_families": ["repeat_to_omit", "capitalize_to_reverse"],
-    "wrappers": ["please", "kindly", "hello", "hi"],
+    "update_families": [
+      "repeat_to_omit",
+      "capitalize_to_reverse"
+    ],
+    "wrappers": [
+      "please",
+      "kindly",
+      "hello",
+      "hi"
+    ],
     "update_pairs": [
-      {"id":"repeat_to_omit__please","update_family":"repeat_to_omit","wrapper":"please","source_template":"repeat_1","recipient_template":"omit_1","source_operation":"repeat","recipient_operation":"omit"},
-      {"id":"repeat_to_omit__kindly","update_family":"repeat_to_omit","wrapper":"kindly","source_template":"repeat_2","recipient_template":"omit_2","source_operation":"repeat","recipient_operation":"omit"},
-      {"id":"repeat_to_omit__hello","update_family":"repeat_to_omit","wrapper":"hello","source_template":"repeat_3","recipient_template":"omit_3","source_operation":"repeat","recipient_operation":"omit"},
-      {"id":"repeat_to_omit__hi","update_family":"repeat_to_omit","wrapper":"hi","source_template":"repeat_4","recipient_template":"omit_4","source_operation":"repeat","recipient_operation":"omit"},
-      {"id":"capitalize_to_reverse__please","update_family":"capitalize_to_reverse","wrapper":"please","source_template":"capitalize_1","recipient_template":"reverse_1","source_operation":"capitalize","recipient_operation":"reverse"},
-      {"id":"capitalize_to_reverse__kindly","update_family":"capitalize_to_reverse","wrapper":"kindly","source_template":"capitalize_2","recipient_template":"reverse_2","source_operation":"capitalize","recipient_operation":"reverse"},
-      {"id":"capitalize_to_reverse__hello","update_family":"capitalize_to_reverse","wrapper":"hello","source_template":"capitalize_3","recipient_template":"reverse_3","source_operation":"capitalize","recipient_operation":"reverse"},
-      {"id":"capitalize_to_reverse__hi","update_family":"capitalize_to_reverse","wrapper":"hi","source_template":"capitalize_4","recipient_template":"reverse_4","source_operation":"capitalize","recipient_operation":"reverse"}
+      {
+        "id": "repeat_to_omit__please",
+        "update_family": "repeat_to_omit",
+        "wrapper": "please",
+        "source_template": "repeat_1",
+        "recipient_template": "omit_1",
+        "source_operation": "repeat",
+        "recipient_operation": "omit"
+      },
+      {
+        "id": "repeat_to_omit__kindly",
+        "update_family": "repeat_to_omit",
+        "wrapper": "kindly",
+        "source_template": "repeat_2",
+        "recipient_template": "omit_2",
+        "source_operation": "repeat",
+        "recipient_operation": "omit"
+      },
+      {
+        "id": "repeat_to_omit__hello",
+        "update_family": "repeat_to_omit",
+        "wrapper": "hello",
+        "source_template": "repeat_3",
+        "recipient_template": "omit_3",
+        "source_operation": "repeat",
+        "recipient_operation": "omit"
+      },
+      {
+        "id": "repeat_to_omit__hi",
+        "update_family": "repeat_to_omit",
+        "wrapper": "hi",
+        "source_template": "repeat_4",
+        "recipient_template": "omit_4",
+        "source_operation": "repeat",
+        "recipient_operation": "omit"
+      },
+      {
+        "id": "capitalize_to_reverse__please",
+        "update_family": "capitalize_to_reverse",
+        "wrapper": "please",
+        "source_template": "capitalize_1",
+        "recipient_template": "reverse_1",
+        "source_operation": "capitalize",
+        "recipient_operation": "reverse"
+      },
+      {
+        "id": "capitalize_to_reverse__kindly",
+        "update_family": "capitalize_to_reverse",
+        "wrapper": "kindly",
+        "source_template": "capitalize_2",
+        "recipient_template": "reverse_2",
+        "source_operation": "capitalize",
+        "recipient_operation": "reverse"
+      },
+      {
+        "id": "capitalize_to_reverse__hello",
+        "update_family": "capitalize_to_reverse",
+        "wrapper": "hello",
+        "source_template": "capitalize_3",
+        "recipient_template": "reverse_3",
+        "source_operation": "capitalize",
+        "recipient_operation": "reverse"
+      },
+      {
+        "id": "capitalize_to_reverse__hi",
+        "update_family": "capitalize_to_reverse",
+        "wrapper": "hi",
+        "source_template": "capitalize_4",
+        "recipient_template": "reverse_4",
+        "source_operation": "capitalize",
+        "recipient_operation": "reverse"
+      }
     ],
     "trajectory_presentation_pair_clusters": [
-      {"id":"trajectory_repeat_to_omit__politeness","update_family":"repeat_to_omit","presentation_system":"politeness_particle","trajectories":["repeat_to_omit__please","repeat_to_omit__kindly"]},
-      {"id":"trajectory_repeat_to_omit__greeting","update_family":"repeat_to_omit","presentation_system":"phatic_greeting","trajectories":["repeat_to_omit__hello","repeat_to_omit__hi"]},
-      {"id":"trajectory_capitalize_to_reverse__politeness","update_family":"capitalize_to_reverse","presentation_system":"politeness_particle","trajectories":["capitalize_to_reverse__please","capitalize_to_reverse__kindly"]},
-      {"id":"trajectory_capitalize_to_reverse__greeting","update_family":"capitalize_to_reverse","presentation_system":"phatic_greeting","trajectories":["capitalize_to_reverse__hello","capitalize_to_reverse__hi"]}
+      {
+        "id": "trajectory_repeat_to_omit__politeness",
+        "update_family": "repeat_to_omit",
+        "presentation_system": "politeness_particle",
+        "trajectories": [
+          "repeat_to_omit__please",
+          "repeat_to_omit__kindly"
+        ]
+      },
+      {
+        "id": "trajectory_repeat_to_omit__greeting",
+        "update_family": "repeat_to_omit",
+        "presentation_system": "phatic_greeting",
+        "trajectories": [
+          "repeat_to_omit__hello",
+          "repeat_to_omit__hi"
+        ]
+      },
+      {
+        "id": "trajectory_capitalize_to_reverse__politeness",
+        "update_family": "capitalize_to_reverse",
+        "presentation_system": "politeness_particle",
+        "trajectories": [
+          "capitalize_to_reverse__please",
+          "capitalize_to_reverse__kindly"
+        ]
+      },
+      {
+        "id": "trajectory_capitalize_to_reverse__greeting",
+        "update_family": "capitalize_to_reverse",
+        "presentation_system": "phatic_greeting",
+        "trajectories": [
+          "capitalize_to_reverse__hello",
+          "capitalize_to_reverse__hi"
+        ]
+      }
     ],
     "trajectory_controls": [
-      {"id":"trajectory_control__please","wrapper":"please","trajectories":["repeat_to_omit__please","capitalize_to_reverse__please"],"ruling":"different declared updates under an identical wrapper"},
-      {"id":"trajectory_control__kindly","wrapper":"kindly","trajectories":["repeat_to_omit__kindly","capitalize_to_reverse__kindly"],"ruling":"different declared updates under an identical wrapper"},
-      {"id":"trajectory_control__hello","wrapper":"hello","trajectories":["repeat_to_omit__hello","capitalize_to_reverse__hello"],"ruling":"different declared updates under an identical wrapper"},
-      {"id":"trajectory_control__hi","wrapper":"hi","trajectories":["repeat_to_omit__hi","capitalize_to_reverse__hi"],"ruling":"different declared updates under an identical wrapper"}
+      {
+        "id": "trajectory_control__please",
+        "wrapper": "please",
+        "trajectories": [
+          "repeat_to_omit__please",
+          "capitalize_to_reverse__please"
+        ],
+        "ruling": "different declared updates under an identical wrapper"
+      },
+      {
+        "id": "trajectory_control__kindly",
+        "wrapper": "kindly",
+        "trajectories": [
+          "repeat_to_omit__kindly",
+          "capitalize_to_reverse__kindly"
+        ],
+        "ruling": "different declared updates under an identical wrapper"
+      },
+      {
+        "id": "trajectory_control__hello",
+        "wrapper": "hello",
+        "trajectories": [
+          "repeat_to_omit__hello",
+          "capitalize_to_reverse__hello"
+        ],
+        "ruling": "different declared updates under an identical wrapper"
+      },
+      {
+        "id": "trajectory_control__hi",
+        "wrapper": "hi",
+        "trajectories": [
+          "repeat_to_omit__hi",
+          "capitalize_to_reverse__hi"
+        ],
+        "ruling": "different declared updates under an identical wrapper"
+      }
     ]
   },
   "linguistic_judgment_legend": {
@@ -159,61 +584,1051 @@
     "status": "These 48 entries are the outcome-blind author's judgments, not independent approval. Each remains pending a separate linguistic adversary and tokenization audit."
   },
   "linguistic_judgment_table": [
-    {"row":1,"cell_id":"repeat_pair1__noun","kind":"presentation_pair","map":"repeat_pair1","templates":["repeat_1","repeat_2"],"pos":"noun","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Please -> Kindly","surface_distance_words":1,"metric_target_words":1,"reason":"All noun strings are mentioned after 'the word'; the two directive-initial particles differ only in conventional register and cannot alter repeat.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":2,"cell_id":"repeat_pair1__verb","kind":"presentation_pair","map":"repeat_pair1","templates":["repeat_1","repeat_2"],"pos":"verb","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Please -> Kindly","surface_distance_words":1,"metric_target_words":1,"reason":"All verb strings are autonyms rather than predicates; Please and Kindly preserve the request and repeat operation while varying register only.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":3,"cell_id":"repeat_pair1__adj","kind":"presentation_pair","map":"repeat_pair1","templates":["repeat_1","repeat_2"],"pos":"adj","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Please -> Kindly","surface_distance_words":1,"metric_target_words":1,"reason":"All adjective strings are mentioned words; the particle substitution supplies no reason, goal, condition, or content for repeat.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":4,"cell_id":"repeat_pair1__func","kind":"presentation_pair","map":"repeat_pair1","templates":["repeat_1","repeat_2"],"pos":"func","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Please -> Kindly","surface_distance_words":1,"metric_target_words":1,"reason":"Function-word strings are grammatical metalinguistic targets; the register-only particle change leaves repeat and continuation demand fixed.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":5,"cell_id":"repeat_pair2__noun","kind":"presentation_pair","map":"repeat_pair2","templates":["repeat_3","repeat_4"],"pos":"noun","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Hello, -> Hi,","surface_distance_words":1,"metric_target_words":1,"reason":"All noun strings are mentioned; detached Hello and Hi perform the same phatic greeting act, vary register/style only, and cannot scope over repeat.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":6,"cell_id":"repeat_pair2__verb","kind":"presentation_pair","map":"repeat_pair2","templates":["repeat_3","repeat_4"],"pos":"verb","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Hello, -> Hi,","surface_distance_words":1,"metric_target_words":1,"reason":"All verb strings are mentioned; the comma-delimited greetings are phatic equivalents and cannot change directive force, modality, or repeat.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":7,"cell_id":"repeat_pair2__adj","kind":"presentation_pair","map":"repeat_pair2","templates":["repeat_3","repeat_4"],"pos":"adj","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Hello, -> Hi,","surface_distance_words":1,"metric_target_words":1,"reason":"All adjective strings share the mention frame; Hello versus Hi is a detached lexical greeting contrast with no purpose, condition, or operation content.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":8,"cell_id":"repeat_pair2__func","kind":"presentation_pair","map":"repeat_pair2","templates":["repeat_3","repeat_4"],"pos":"func","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Hello, -> Hi,","surface_distance_words":1,"metric_target_words":1,"reason":"Function-word strings remain licensed as autonyms; both greetings are scope-fixed outside the directive and leave repeat unchanged.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":9,"cell_id":"omit_pair1__noun","kind":"presentation_pair","map":"omit_pair1","templates":["omit_1","omit_2"],"pos":"noun","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Please -> Kindly","surface_distance_words":1,"metric_target_words":1,"reason":"All noun strings are mentioned; Please and Kindly vary only conventional politeness/register and cannot change omit.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":10,"cell_id":"omit_pair1__verb","kind":"presentation_pair","map":"omit_pair1","templates":["omit_1","omit_2"],"pos":"verb","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Please -> Kindly","surface_distance_words":1,"metric_target_words":1,"reason":"Verb strings are autonyms under the same frame; the particle choice preserves the request type, planning modality, and omit operation.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":11,"cell_id":"omit_pair1__adj","kind":"presentation_pair","map":"omit_pair1","templates":["omit_1","omit_2"],"pos":"adj","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Please -> Kindly","surface_distance_words":1,"metric_target_words":1,"reason":"Adjective strings are mentioned words; the scope-fixed politeness substitution supplies no reason, goal, or condition for omit.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":12,"cell_id":"omit_pair1__func","kind":"presentation_pair","map":"omit_pair1","templates":["omit_1","omit_2"],"pos":"func","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Please -> Kindly","surface_distance_words":1,"metric_target_words":1,"reason":"Function-word strings are grammatical mention targets; Please and Kindly cannot add operational content and leave omit fixed.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":13,"cell_id":"omit_pair2__noun","kind":"presentation_pair","map":"omit_pair2","templates":["omit_3","omit_4"],"pos":"noun","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Hello, -> Hi,","surface_distance_words":1,"metric_target_words":1,"reason":"All noun strings are mentioned; the detached greetings differ only in salutation register/style and cannot supply a purpose for omission.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":14,"cell_id":"omit_pair2__verb","kind":"presentation_pair","map":"omit_pair2","templates":["omit_3","omit_4"],"pos":"verb","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Hello, -> Hi,","surface_distance_words":1,"metric_target_words":1,"reason":"Verb strings are mentioned; Hello and Hi perform the same phatic act and cannot alter the directive, modality, continuation, or omit.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":15,"cell_id":"omit_pair2__adj","kind":"presentation_pair","map":"omit_pair2","templates":["omit_3","omit_4"],"pos":"adj","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Hello, -> Hi,","surface_distance_words":1,"metric_target_words":1,"reason":"Adjective strings occupy the same mention frame; the comma-delimited greeting substitution is operation-inert and scope-fixed.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":16,"cell_id":"omit_pair2__func","kind":"presentation_pair","map":"omit_pair2","templates":["omit_3","omit_4"],"pos":"func","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Hello, -> Hi,","surface_distance_words":1,"metric_target_words":1,"reason":"Function-word strings remain grammatical autonyms; neither greeting can modify omit or contribute a reason, goal, or condition.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":17,"cell_id":"capitalize_pair1__noun","kind":"presentation_pair","map":"capitalize_pair1","templates":["capitalize_1","capitalize_2"],"pos":"noun","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Please -> Kindly","surface_distance_words":1,"metric_target_words":1,"reason":"Noun strings are coherent capitalization targets as mentions; Please and Kindly vary register only and leave capitalize identical.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":18,"cell_id":"capitalize_pair1__verb","kind":"presentation_pair","map":"capitalize_pair1","templates":["capitalize_1","capitalize_2"],"pos":"verb","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Please -> Kindly","surface_distance_words":1,"metric_target_words":1,"reason":"Verb strings are mentioned words; the directive-initial particles preserve the request and capitalization while differing only in register.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":19,"cell_id":"capitalize_pair1__adj","kind":"presentation_pair","map":"capitalize_pair1","templates":["capitalize_1","capitalize_2"],"pos":"adj","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Please -> Kindly","surface_distance_words":1,"metric_target_words":1,"reason":"Adjective strings are licensed by mention; neither particle supplies a purpose, condition, or other content for capitalize.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":20,"cell_id":"capitalize_pair1__func","kind":"presentation_pair","map":"capitalize_pair1","templates":["capitalize_1","capitalize_2"],"pos":"func","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Please -> Kindly","surface_distance_words":1,"metric_target_words":1,"reason":"Function-word strings are coherent capitalization targets as autonyms; the politeness particles change register only.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":21,"cell_id":"capitalize_pair2__noun","kind":"presentation_pair","map":"capitalize_pair2","templates":["capitalize_3","capitalize_4"],"pos":"noun","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Hello, -> Hi,","surface_distance_words":1,"metric_target_words":1,"reason":"Noun strings are mentioned capitalization targets; Hello and Hi are equivalent detached greetings and cannot change capitalization or its purpose.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":22,"cell_id":"capitalize_pair2__verb","kind":"presentation_pair","map":"capitalize_pair2","templates":["capitalize_3","capitalize_4"],"pos":"verb","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Hello, -> Hi,","surface_distance_words":1,"metric_target_words":1,"reason":"Verb strings are autonyms; the phatic greeting substitution changes no syntax, directive force, modality, or capitalization operation.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":23,"cell_id":"capitalize_pair2__adj","kind":"presentation_pair","map":"capitalize_pair2","templates":["capitalize_3","capitalize_4"],"pos":"adj","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Hello, -> Hi,","surface_distance_words":1,"metric_target_words":1,"reason":"Adjective strings share the mention frame; the comma-delimited greeting contrast is lexical-scale but interpretation-free for capitalize.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":24,"cell_id":"capitalize_pair2__func","kind":"presentation_pair","map":"capitalize_pair2","templates":["capitalize_3","capitalize_4"],"pos":"func","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Hello, -> Hi,","surface_distance_words":1,"metric_target_words":1,"reason":"Function-word strings remain grammatical mention targets; greeting choice has no scope over or content for capitalize.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":25,"cell_id":"reverse_pair1__noun","kind":"presentation_pair","map":"reverse_pair1","templates":["reverse_1","reverse_2"],"pos":"noun","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Please -> Kindly","surface_distance_words":1,"metric_target_words":1,"reason":"Noun strings are coherent reversal targets as mentions; Please and Kindly differ only in conventional politeness/register.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":26,"cell_id":"reverse_pair1__verb","kind":"presentation_pair","map":"reverse_pair1","templates":["reverse_1","reverse_2"],"pos":"verb","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Please -> Kindly","surface_distance_words":1,"metric_target_words":1,"reason":"Verb strings are mentioned rather than predicated; the particle choice cannot supply a reason, goal, condition, or change to reverse.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":27,"cell_id":"reverse_pair1__adj","kind":"presentation_pair","map":"reverse_pair1","templates":["reverse_1","reverse_2"],"pos":"adj","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Please -> Kindly","surface_distance_words":1,"metric_target_words":1,"reason":"Adjective strings share the mention frame; Please versus Kindly is register-only and leaves reversal and continuation demand fixed.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":28,"cell_id":"reverse_pair1__func","kind":"presentation_pair","map":"reverse_pair1","templates":["reverse_1","reverse_2"],"pos":"func","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Please -> Kindly","surface_distance_words":1,"metric_target_words":1,"reason":"Function-word strings are licensed as autonyms; both politeness particles request the same reversal without added operational content.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":29,"cell_id":"reverse_pair2__noun","kind":"presentation_pair","map":"reverse_pair2","templates":["reverse_3","reverse_4"],"pos":"noun","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Hello, -> Hi,","surface_distance_words":1,"metric_target_words":1,"reason":"Noun strings are mentioned reversal targets; both greetings perform the same phatic act and cannot change reverse.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":30,"cell_id":"reverse_pair2__verb","kind":"presentation_pair","map":"reverse_pair2","templates":["reverse_3","reverse_4"],"pos":"verb","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Hello, -> Hi,","surface_distance_words":1,"metric_target_words":1,"reason":"Verb strings are mentioned; Hello versus Hi changes only greeting register/style and has no semantic scope over reverse.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":31,"cell_id":"reverse_pair2__adj","kind":"presentation_pair","map":"reverse_pair2","templates":["reverse_3","reverse_4"],"pos":"adj","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Hello, -> Hi,","surface_distance_words":1,"metric_target_words":1,"reason":"Adjective strings remain coherent mentioned targets; the detached greeting contrast cannot supply purpose, reason, condition, or operation content.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":32,"cell_id":"reverse_pair2__func","kind":"presentation_pair","map":"reverse_pair2","templates":["reverse_3","reverse_4"],"pos":"func","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit":"Hello, -> Hi,","surface_distance_words":1,"metric_target_words":1,"reason":"Function-word strings are grammatical reversal targets as autonyms; both greetings are scope-fixed and operation-inert.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":33,"cell_id":"control_repeat_to_omit_politeness__noun","kind":"operational_control","map":"control_repeat_to_omit_politeness","templates":["repeat_1","omit_1"],"pos":"noun","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved_except_operation":true,"wrapper_identical":true,"exactly_one_declared_operation_changed":true,"edit":"repeat -> omit","surface_distance_words":1,"metric_target_words":1,"reason":"The Please wrapper and noun mention frame are identical; exactly one aligned operation word changes, matching the Please/Kindly presentation distance.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":34,"cell_id":"control_repeat_to_omit_politeness__verb","kind":"operational_control","map":"control_repeat_to_omit_politeness","templates":["repeat_1","omit_1"],"pos":"verb","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved_except_operation":true,"wrapper_identical":true,"exactly_one_declared_operation_changed":true,"edit":"repeat -> omit","surface_distance_words":1,"metric_target_words":1,"reason":"Verb strings are mentioned under an unchanged Please wrapper; repeat versus omit is the sole one-word surface and declared-operation change.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":35,"cell_id":"control_repeat_to_omit_politeness__adj","kind":"operational_control","map":"control_repeat_to_omit_politeness","templates":["repeat_1","omit_1"],"pos":"adj","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved_except_operation":true,"wrapper_identical":true,"exactly_one_declared_operation_changed":true,"edit":"repeat -> omit","surface_distance_words":1,"metric_target_words":1,"reason":"Adjective strings occupy the same mention frame; the fixed wrapper isolates one aligned verb substitution at the presentation pair's distance.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":36,"cell_id":"control_repeat_to_omit_politeness__func","kind":"operational_control","map":"control_repeat_to_omit_politeness","templates":["repeat_1","omit_1"],"pos":"func","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved_except_operation":true,"wrapper_identical":true,"exactly_one_declared_operation_changed":true,"edit":"repeat -> omit","surface_distance_words":1,"metric_target_words":1,"reason":"Function-word strings are licensed as mentions; all wording except the one declared operation verb is identical.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":37,"cell_id":"control_repeat_to_omit_greeting__noun","kind":"operational_control","map":"control_repeat_to_omit_greeting","templates":["repeat_3","omit_3"],"pos":"noun","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved_except_operation":true,"wrapper_identical":true,"exactly_one_declared_operation_changed":true,"edit":"repeat -> omit","surface_distance_words":1,"metric_target_words":1,"reason":"The complete Hello, please wrapper and noun mention frame are identical; one operation word changes, matching the Hello/Hi distance.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":38,"cell_id":"control_repeat_to_omit_greeting__verb","kind":"operational_control","map":"control_repeat_to_omit_greeting","templates":["repeat_3","omit_3"],"pos":"verb","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved_except_operation":true,"wrapper_identical":true,"exactly_one_declared_operation_changed":true,"edit":"repeat -> omit","surface_distance_words":1,"metric_target_words":1,"reason":"Verb strings are mentioned under the same greeting, punctuation, and directive; only repeat changes to omit at one aligned word.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":39,"cell_id":"control_repeat_to_omit_greeting__adj","kind":"operational_control","map":"control_repeat_to_omit_greeting","templates":["repeat_3","omit_3"],"pos":"adj","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved_except_operation":true,"wrapper_identical":true,"exactly_one_declared_operation_changed":true,"edit":"repeat -> omit","surface_distance_words":1,"metric_target_words":1,"reason":"Adjective strings share the fixed Hello carrier; the one-word operation substitution equals the greeting presentation edit in the declared metric.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":40,"cell_id":"control_repeat_to_omit_greeting__func","kind":"operational_control","map":"control_repeat_to_omit_greeting","templates":["repeat_3","omit_3"],"pos":"func","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved_except_operation":true,"wrapper_identical":true,"exactly_one_declared_operation_changed":true,"edit":"repeat -> omit","surface_distance_words":1,"metric_target_words":1,"reason":"Function-word strings remain licensed by mention; the wrapper is exactly fixed and only the declared operation word differs.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":41,"cell_id":"control_capitalize_to_reverse_politeness__noun","kind":"operational_control","map":"control_capitalize_to_reverse_politeness","templates":["capitalize_1","reverse_1"],"pos":"noun","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved_except_operation":true,"wrapper_identical":true,"exactly_one_declared_operation_changed":true,"edit":"capitalize -> reverse","surface_distance_words":1,"metric_target_words":1,"reason":"The Please wrapper and noun mention frame are identical; one aligned operation word changes, matching the Please/Kindly distance.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":42,"cell_id":"control_capitalize_to_reverse_politeness__verb","kind":"operational_control","map":"control_capitalize_to_reverse_politeness","templates":["capitalize_1","reverse_1"],"pos":"verb","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved_except_operation":true,"wrapper_identical":true,"exactly_one_declared_operation_changed":true,"edit":"capitalize -> reverse","surface_distance_words":1,"metric_target_words":1,"reason":"Verb strings are mentioned under an unchanged Please wrapper; capitalize versus reverse is the sole one-word surface and operation change.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":43,"cell_id":"control_capitalize_to_reverse_politeness__adj","kind":"operational_control","map":"control_capitalize_to_reverse_politeness","templates":["capitalize_1","reverse_1"],"pos":"adj","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved_except_operation":true,"wrapper_identical":true,"exactly_one_declared_operation_changed":true,"edit":"capitalize -> reverse","surface_distance_words":1,"metric_target_words":1,"reason":"Adjective strings occupy the same mention frame; fixed register and wording isolate exactly one operation-verb substitution.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":44,"cell_id":"control_capitalize_to_reverse_politeness__func","kind":"operational_control","map":"control_capitalize_to_reverse_politeness","templates":["capitalize_1","reverse_1"],"pos":"func","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved_except_operation":true,"wrapper_identical":true,"exactly_one_declared_operation_changed":true,"edit":"capitalize -> reverse","surface_distance_words":1,"metric_target_words":1,"reason":"Function-word strings are coherent mentioned targets; every surface word except the one operation verb is identical.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":45,"cell_id":"control_capitalize_to_reverse_greeting__noun","kind":"operational_control","map":"control_capitalize_to_reverse_greeting","templates":["capitalize_3","reverse_3"],"pos":"noun","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved_except_operation":true,"wrapper_identical":true,"exactly_one_declared_operation_changed":true,"edit":"capitalize -> reverse","surface_distance_words":1,"metric_target_words":1,"reason":"The complete Hello, please wrapper and noun mention frame are identical; one operation word changes, matching the Hello/Hi distance.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":46,"cell_id":"control_capitalize_to_reverse_greeting__verb","kind":"operational_control","map":"control_capitalize_to_reverse_greeting","templates":["capitalize_3","reverse_3"],"pos":"verb","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved_except_operation":true,"wrapper_identical":true,"exactly_one_declared_operation_changed":true,"edit":"capitalize -> reverse","surface_distance_words":1,"metric_target_words":1,"reason":"Verb strings are mentioned under the same greeting, punctuation, and directive; only capitalize changes to reverse at one word.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":47,"cell_id":"control_capitalize_to_reverse_greeting__adj","kind":"operational_control","map":"control_capitalize_to_reverse_greeting","templates":["capitalize_3","reverse_3"],"pos":"adj","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved_except_operation":true,"wrapper_identical":true,"exactly_one_declared_operation_changed":true,"edit":"capitalize -> reverse","surface_distance_words":1,"metric_target_words":1,"reason":"Adjective strings share the fixed Hello carrier; the control's one-word edit equals its greeting presentation edit under the metric.","verdict":"author_pass_pending_adversary_and_tokenization"},
-    {"row":48,"cell_id":"control_capitalize_to_reverse_greeting__func","kind":"operational_control","map":"control_capitalize_to_reverse_greeting","templates":["capitalize_3","reverse_3"],"pos":"func","items":20,"grammatical_both":true,"mention_licensed":true,"invariant_bundle_preserved_except_operation":true,"wrapper_identical":true,"exactly_one_declared_operation_changed":true,"edit":"capitalize -> reverse","surface_distance_words":1,"metric_target_words":1,"reason":"Function-word strings remain licensed by mention; the full wrapper is fixed and the sole difference is the declared operation word.","verdict":"author_pass_pending_adversary_and_tokenization"}
+    {
+      "row": 1,
+      "cell_id": "repeat_pair1__noun",
+      "kind": "presentation_pair",
+      "map": "repeat_pair1",
+      "templates": [
+        "repeat_1",
+        "repeat_2"
+      ],
+      "pos": "noun",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Please -> Kindly",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "All noun strings are mentioned after 'the word'; the two directive-initial particles differ only in conventional register and cannot alter repeat.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 2,
+      "cell_id": "repeat_pair1__verb",
+      "kind": "presentation_pair",
+      "map": "repeat_pair1",
+      "templates": [
+        "repeat_1",
+        "repeat_2"
+      ],
+      "pos": "verb",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Please -> Kindly",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "All verb strings are autonyms rather than predicates; Please and Kindly preserve the request and repeat operation while varying register only.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 3,
+      "cell_id": "repeat_pair1__adj",
+      "kind": "presentation_pair",
+      "map": "repeat_pair1",
+      "templates": [
+        "repeat_1",
+        "repeat_2"
+      ],
+      "pos": "adj",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Please -> Kindly",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "All adjective strings are mentioned words; the particle substitution supplies no reason, goal, condition, or content for repeat.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 4,
+      "cell_id": "repeat_pair1__func",
+      "kind": "presentation_pair",
+      "map": "repeat_pair1",
+      "templates": [
+        "repeat_1",
+        "repeat_2"
+      ],
+      "pos": "func",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Please -> Kindly",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Function-word strings are grammatical metalinguistic targets; the register-only particle change leaves repeat and continuation demand fixed.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 5,
+      "cell_id": "repeat_pair2__noun",
+      "kind": "presentation_pair",
+      "map": "repeat_pair2",
+      "templates": [
+        "repeat_3",
+        "repeat_4"
+      ],
+      "pos": "noun",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Hello, -> Hi,",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "All noun strings are mentioned; detached Hello and Hi perform the same phatic greeting act, vary register/style only, and cannot scope over repeat.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 6,
+      "cell_id": "repeat_pair2__verb",
+      "kind": "presentation_pair",
+      "map": "repeat_pair2",
+      "templates": [
+        "repeat_3",
+        "repeat_4"
+      ],
+      "pos": "verb",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Hello, -> Hi,",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "All verb strings are mentioned; the comma-delimited greetings are phatic equivalents and cannot change directive force, modality, or repeat.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 7,
+      "cell_id": "repeat_pair2__adj",
+      "kind": "presentation_pair",
+      "map": "repeat_pair2",
+      "templates": [
+        "repeat_3",
+        "repeat_4"
+      ],
+      "pos": "adj",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Hello, -> Hi,",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "All adjective strings share the mention frame; Hello versus Hi is a detached lexical greeting contrast with no purpose, condition, or operation content.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 8,
+      "cell_id": "repeat_pair2__func",
+      "kind": "presentation_pair",
+      "map": "repeat_pair2",
+      "templates": [
+        "repeat_3",
+        "repeat_4"
+      ],
+      "pos": "func",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Hello, -> Hi,",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Function-word strings remain licensed as autonyms; both greetings are scope-fixed outside the directive and leave repeat unchanged.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 9,
+      "cell_id": "omit_pair1__noun",
+      "kind": "presentation_pair",
+      "map": "omit_pair1",
+      "templates": [
+        "omit_1",
+        "omit_2"
+      ],
+      "pos": "noun",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Please -> Kindly",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "All noun strings are mentioned; Please and Kindly vary only conventional politeness/register and cannot change omit.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 10,
+      "cell_id": "omit_pair1__verb",
+      "kind": "presentation_pair",
+      "map": "omit_pair1",
+      "templates": [
+        "omit_1",
+        "omit_2"
+      ],
+      "pos": "verb",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Please -> Kindly",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Verb strings are autonyms under the same frame; the particle choice preserves the request type, planning modality, and omit operation.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 11,
+      "cell_id": "omit_pair1__adj",
+      "kind": "presentation_pair",
+      "map": "omit_pair1",
+      "templates": [
+        "omit_1",
+        "omit_2"
+      ],
+      "pos": "adj",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Please -> Kindly",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Adjective strings are mentioned words; the scope-fixed politeness substitution supplies no reason, goal, or condition for omit.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 12,
+      "cell_id": "omit_pair1__func",
+      "kind": "presentation_pair",
+      "map": "omit_pair1",
+      "templates": [
+        "omit_1",
+        "omit_2"
+      ],
+      "pos": "func",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Please -> Kindly",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Function-word strings are grammatical mention targets; Please and Kindly cannot add operational content and leave omit fixed.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 13,
+      "cell_id": "omit_pair2__noun",
+      "kind": "presentation_pair",
+      "map": "omit_pair2",
+      "templates": [
+        "omit_3",
+        "omit_4"
+      ],
+      "pos": "noun",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Hello, -> Hi,",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "All noun strings are mentioned; the detached greetings differ only in salutation register/style and cannot supply a purpose for omission.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 14,
+      "cell_id": "omit_pair2__verb",
+      "kind": "presentation_pair",
+      "map": "omit_pair2",
+      "templates": [
+        "omit_3",
+        "omit_4"
+      ],
+      "pos": "verb",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Hello, -> Hi,",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Verb strings are mentioned; Hello and Hi perform the same phatic act and cannot alter the directive, modality, continuation, or omit.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 15,
+      "cell_id": "omit_pair2__adj",
+      "kind": "presentation_pair",
+      "map": "omit_pair2",
+      "templates": [
+        "omit_3",
+        "omit_4"
+      ],
+      "pos": "adj",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Hello, -> Hi,",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Adjective strings occupy the same mention frame; the comma-delimited greeting substitution is operation-inert and scope-fixed.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 16,
+      "cell_id": "omit_pair2__func",
+      "kind": "presentation_pair",
+      "map": "omit_pair2",
+      "templates": [
+        "omit_3",
+        "omit_4"
+      ],
+      "pos": "func",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Hello, -> Hi,",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Function-word strings remain grammatical autonyms; neither greeting can modify omit or contribute a reason, goal, or condition.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 17,
+      "cell_id": "capitalize_pair1__noun",
+      "kind": "presentation_pair",
+      "map": "capitalize_pair1",
+      "templates": [
+        "capitalize_1",
+        "capitalize_2"
+      ],
+      "pos": "noun",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Please -> Kindly",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Noun strings are coherent capitalization targets as mentions; Please and Kindly vary register only and leave capitalize identical.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 18,
+      "cell_id": "capitalize_pair1__verb",
+      "kind": "presentation_pair",
+      "map": "capitalize_pair1",
+      "templates": [
+        "capitalize_1",
+        "capitalize_2"
+      ],
+      "pos": "verb",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Please -> Kindly",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Verb strings are mentioned words; the directive-initial particles preserve the request and capitalization while differing only in register.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 19,
+      "cell_id": "capitalize_pair1__adj",
+      "kind": "presentation_pair",
+      "map": "capitalize_pair1",
+      "templates": [
+        "capitalize_1",
+        "capitalize_2"
+      ],
+      "pos": "adj",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Please -> Kindly",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Adjective strings are licensed by mention; neither particle supplies a purpose, condition, or other content for capitalize.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 20,
+      "cell_id": "capitalize_pair1__func",
+      "kind": "presentation_pair",
+      "map": "capitalize_pair1",
+      "templates": [
+        "capitalize_1",
+        "capitalize_2"
+      ],
+      "pos": "func",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Please -> Kindly",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Function-word strings are coherent capitalization targets as autonyms; the politeness particles change register only.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 21,
+      "cell_id": "capitalize_pair2__noun",
+      "kind": "presentation_pair",
+      "map": "capitalize_pair2",
+      "templates": [
+        "capitalize_3",
+        "capitalize_4"
+      ],
+      "pos": "noun",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Hello, -> Hi,",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Noun strings are mentioned capitalization targets; Hello and Hi are equivalent detached greetings and cannot change capitalization or its purpose.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 22,
+      "cell_id": "capitalize_pair2__verb",
+      "kind": "presentation_pair",
+      "map": "capitalize_pair2",
+      "templates": [
+        "capitalize_3",
+        "capitalize_4"
+      ],
+      "pos": "verb",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Hello, -> Hi,",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Verb strings are autonyms; the phatic greeting substitution changes no syntax, directive force, modality, or capitalization operation.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 23,
+      "cell_id": "capitalize_pair2__adj",
+      "kind": "presentation_pair",
+      "map": "capitalize_pair2",
+      "templates": [
+        "capitalize_3",
+        "capitalize_4"
+      ],
+      "pos": "adj",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Hello, -> Hi,",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Adjective strings share the mention frame; the comma-delimited greeting contrast is lexical-scale but interpretation-free for capitalize.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 24,
+      "cell_id": "capitalize_pair2__func",
+      "kind": "presentation_pair",
+      "map": "capitalize_pair2",
+      "templates": [
+        "capitalize_3",
+        "capitalize_4"
+      ],
+      "pos": "func",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Hello, -> Hi,",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Function-word strings remain grammatical mention targets; greeting choice has no scope over or content for capitalize.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 25,
+      "cell_id": "reverse_pair1__noun",
+      "kind": "presentation_pair",
+      "map": "reverse_pair1",
+      "templates": [
+        "reverse_1",
+        "reverse_2"
+      ],
+      "pos": "noun",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Please -> Kindly",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Noun strings are coherent reversal targets as mentions; Please and Kindly differ only in conventional politeness/register.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 26,
+      "cell_id": "reverse_pair1__verb",
+      "kind": "presentation_pair",
+      "map": "reverse_pair1",
+      "templates": [
+        "reverse_1",
+        "reverse_2"
+      ],
+      "pos": "verb",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Please -> Kindly",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Verb strings are mentioned rather than predicated; the particle choice cannot supply a reason, goal, condition, or change to reverse.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 27,
+      "cell_id": "reverse_pair1__adj",
+      "kind": "presentation_pair",
+      "map": "reverse_pair1",
+      "templates": [
+        "reverse_1",
+        "reverse_2"
+      ],
+      "pos": "adj",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Please -> Kindly",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Adjective strings share the mention frame; Please versus Kindly is register-only and leaves reversal and continuation demand fixed.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 28,
+      "cell_id": "reverse_pair1__func",
+      "kind": "presentation_pair",
+      "map": "reverse_pair1",
+      "templates": [
+        "reverse_1",
+        "reverse_2"
+      ],
+      "pos": "func",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Please -> Kindly",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Function-word strings are licensed as autonyms; both politeness particles request the same reversal without added operational content.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 29,
+      "cell_id": "reverse_pair2__noun",
+      "kind": "presentation_pair",
+      "map": "reverse_pair2",
+      "templates": [
+        "reverse_3",
+        "reverse_4"
+      ],
+      "pos": "noun",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Hello, -> Hi,",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Noun strings are mentioned reversal targets; both greetings perform the same phatic act and cannot change reverse.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 30,
+      "cell_id": "reverse_pair2__verb",
+      "kind": "presentation_pair",
+      "map": "reverse_pair2",
+      "templates": [
+        "reverse_3",
+        "reverse_4"
+      ],
+      "pos": "verb",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Hello, -> Hi,",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Verb strings are mentioned; Hello versus Hi changes only greeting register/style and has no semantic scope over reverse.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 31,
+      "cell_id": "reverse_pair2__adj",
+      "kind": "presentation_pair",
+      "map": "reverse_pair2",
+      "templates": [
+        "reverse_3",
+        "reverse_4"
+      ],
+      "pos": "adj",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Hello, -> Hi,",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Adjective strings remain coherent mentioned targets; the detached greeting contrast cannot supply purpose, reason, condition, or operation content.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 32,
+      "cell_id": "reverse_pair2__func",
+      "kind": "presentation_pair",
+      "map": "reverse_pair2",
+      "templates": [
+        "reverse_3",
+        "reverse_4"
+      ],
+      "pos": "func",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved": true,
+      "operationally_equivalent": true,
+      "edit": "Hello, -> Hi,",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Function-word strings are grammatical reversal targets as autonyms; both greetings are scope-fixed and operation-inert.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 33,
+      "cell_id": "control_repeat_to_omit_politeness__noun",
+      "kind": "operational_control",
+      "map": "control_repeat_to_omit_politeness",
+      "templates": [
+        "repeat_1",
+        "omit_1"
+      ],
+      "pos": "noun",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved_except_operation": true,
+      "wrapper_identical": true,
+      "exactly_one_declared_operation_changed": true,
+      "edit": "repeat -> omit",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "The Please wrapper and noun mention frame are identical; exactly one aligned operation word changes, matching the Please/Kindly presentation distance.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 34,
+      "cell_id": "control_repeat_to_omit_politeness__verb",
+      "kind": "operational_control",
+      "map": "control_repeat_to_omit_politeness",
+      "templates": [
+        "repeat_1",
+        "omit_1"
+      ],
+      "pos": "verb",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved_except_operation": true,
+      "wrapper_identical": true,
+      "exactly_one_declared_operation_changed": true,
+      "edit": "repeat -> omit",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Verb strings are mentioned under an unchanged Please wrapper; repeat versus omit is the sole one-word surface and declared-operation change.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 35,
+      "cell_id": "control_repeat_to_omit_politeness__adj",
+      "kind": "operational_control",
+      "map": "control_repeat_to_omit_politeness",
+      "templates": [
+        "repeat_1",
+        "omit_1"
+      ],
+      "pos": "adj",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved_except_operation": true,
+      "wrapper_identical": true,
+      "exactly_one_declared_operation_changed": true,
+      "edit": "repeat -> omit",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Adjective strings occupy the same mention frame; the fixed wrapper isolates one aligned verb substitution at the presentation pair's distance.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 36,
+      "cell_id": "control_repeat_to_omit_politeness__func",
+      "kind": "operational_control",
+      "map": "control_repeat_to_omit_politeness",
+      "templates": [
+        "repeat_1",
+        "omit_1"
+      ],
+      "pos": "func",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved_except_operation": true,
+      "wrapper_identical": true,
+      "exactly_one_declared_operation_changed": true,
+      "edit": "repeat -> omit",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Function-word strings are licensed as mentions; all wording except the one declared operation verb is identical.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 37,
+      "cell_id": "control_repeat_to_omit_greeting__noun",
+      "kind": "operational_control",
+      "map": "control_repeat_to_omit_greeting",
+      "templates": [
+        "repeat_3",
+        "omit_3"
+      ],
+      "pos": "noun",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved_except_operation": true,
+      "wrapper_identical": true,
+      "exactly_one_declared_operation_changed": true,
+      "edit": "repeat -> omit",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "The complete Hello, please wrapper and noun mention frame are identical; one operation word changes, matching the Hello/Hi distance.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 38,
+      "cell_id": "control_repeat_to_omit_greeting__verb",
+      "kind": "operational_control",
+      "map": "control_repeat_to_omit_greeting",
+      "templates": [
+        "repeat_3",
+        "omit_3"
+      ],
+      "pos": "verb",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved_except_operation": true,
+      "wrapper_identical": true,
+      "exactly_one_declared_operation_changed": true,
+      "edit": "repeat -> omit",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Verb strings are mentioned under the same greeting, punctuation, and directive; only repeat changes to omit at one aligned word.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 39,
+      "cell_id": "control_repeat_to_omit_greeting__adj",
+      "kind": "operational_control",
+      "map": "control_repeat_to_omit_greeting",
+      "templates": [
+        "repeat_3",
+        "omit_3"
+      ],
+      "pos": "adj",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved_except_operation": true,
+      "wrapper_identical": true,
+      "exactly_one_declared_operation_changed": true,
+      "edit": "repeat -> omit",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Adjective strings share the fixed Hello carrier; the one-word operation substitution equals the greeting presentation edit in the declared metric.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 40,
+      "cell_id": "control_repeat_to_omit_greeting__func",
+      "kind": "operational_control",
+      "map": "control_repeat_to_omit_greeting",
+      "templates": [
+        "repeat_3",
+        "omit_3"
+      ],
+      "pos": "func",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved_except_operation": true,
+      "wrapper_identical": true,
+      "exactly_one_declared_operation_changed": true,
+      "edit": "repeat -> omit",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Function-word strings remain licensed by mention; the wrapper is exactly fixed and only the declared operation word differs.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 41,
+      "cell_id": "control_capitalize_to_reverse_politeness__noun",
+      "kind": "operational_control",
+      "map": "control_capitalize_to_reverse_politeness",
+      "templates": [
+        "capitalize_1",
+        "reverse_1"
+      ],
+      "pos": "noun",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved_except_operation": true,
+      "wrapper_identical": true,
+      "exactly_one_declared_operation_changed": true,
+      "edit": "capitalize -> reverse",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "The Please wrapper and noun mention frame are identical; one aligned operation word changes, matching the Please/Kindly distance.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 42,
+      "cell_id": "control_capitalize_to_reverse_politeness__verb",
+      "kind": "operational_control",
+      "map": "control_capitalize_to_reverse_politeness",
+      "templates": [
+        "capitalize_1",
+        "reverse_1"
+      ],
+      "pos": "verb",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved_except_operation": true,
+      "wrapper_identical": true,
+      "exactly_one_declared_operation_changed": true,
+      "edit": "capitalize -> reverse",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Verb strings are mentioned under an unchanged Please wrapper; capitalize versus reverse is the sole one-word surface and operation change.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 43,
+      "cell_id": "control_capitalize_to_reverse_politeness__adj",
+      "kind": "operational_control",
+      "map": "control_capitalize_to_reverse_politeness",
+      "templates": [
+        "capitalize_1",
+        "reverse_1"
+      ],
+      "pos": "adj",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved_except_operation": true,
+      "wrapper_identical": true,
+      "exactly_one_declared_operation_changed": true,
+      "edit": "capitalize -> reverse",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Adjective strings occupy the same mention frame; fixed register and wording isolate exactly one operation-verb substitution.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 44,
+      "cell_id": "control_capitalize_to_reverse_politeness__func",
+      "kind": "operational_control",
+      "map": "control_capitalize_to_reverse_politeness",
+      "templates": [
+        "capitalize_1",
+        "reverse_1"
+      ],
+      "pos": "func",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved_except_operation": true,
+      "wrapper_identical": true,
+      "exactly_one_declared_operation_changed": true,
+      "edit": "capitalize -> reverse",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Function-word strings are coherent mentioned targets; every surface word except the one operation verb is identical.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 45,
+      "cell_id": "control_capitalize_to_reverse_greeting__noun",
+      "kind": "operational_control",
+      "map": "control_capitalize_to_reverse_greeting",
+      "templates": [
+        "capitalize_3",
+        "reverse_3"
+      ],
+      "pos": "noun",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved_except_operation": true,
+      "wrapper_identical": true,
+      "exactly_one_declared_operation_changed": true,
+      "edit": "capitalize -> reverse",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "The complete Hello, please wrapper and noun mention frame are identical; one operation word changes, matching the Hello/Hi distance.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 46,
+      "cell_id": "control_capitalize_to_reverse_greeting__verb",
+      "kind": "operational_control",
+      "map": "control_capitalize_to_reverse_greeting",
+      "templates": [
+        "capitalize_3",
+        "reverse_3"
+      ],
+      "pos": "verb",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved_except_operation": true,
+      "wrapper_identical": true,
+      "exactly_one_declared_operation_changed": true,
+      "edit": "capitalize -> reverse",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Verb strings are mentioned under the same greeting, punctuation, and directive; only capitalize changes to reverse at one word.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 47,
+      "cell_id": "control_capitalize_to_reverse_greeting__adj",
+      "kind": "operational_control",
+      "map": "control_capitalize_to_reverse_greeting",
+      "templates": [
+        "capitalize_3",
+        "reverse_3"
+      ],
+      "pos": "adj",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved_except_operation": true,
+      "wrapper_identical": true,
+      "exactly_one_declared_operation_changed": true,
+      "edit": "capitalize -> reverse",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Adjective strings share the fixed Hello carrier; the control's one-word edit equals its greeting presentation edit under the metric.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    },
+    {
+      "row": 48,
+      "cell_id": "control_capitalize_to_reverse_greeting__func",
+      "kind": "operational_control",
+      "map": "control_capitalize_to_reverse_greeting",
+      "templates": [
+        "capitalize_3",
+        "reverse_3"
+      ],
+      "pos": "func",
+      "items": 20,
+      "grammatical_both": true,
+      "mention_licensed": true,
+      "invariant_bundle_preserved_except_operation": true,
+      "wrapper_identical": true,
+      "exactly_one_declared_operation_changed": true,
+      "edit": "capitalize -> reverse",
+      "surface_distance_words": 1,
+      "metric_target_words": 1,
+      "reason": "Function-word strings remain licensed by mention; the full wrapper is fixed and the sole difference is the declared operation word.",
+      "verdict": "author_pass_pending_adversary_and_tokenization"
+    }
   ],
   "pre_freeze_gates": {
     "linguistic_adversary": "All 32 presentation pair x POS cells and all 16 control x POS cells must pass independently; one failure voids v4.",
     "tokenization": "All item, slot, prefix/suffix, paired-frame, sentinel-boundary, and control-length checks must pass in a separate later audit; one failure voids v4. No tokenization output was inspected during authoring.",
-    "bridge_ladder": ["positive scalar", "calibration-only diagonal", "calibration-only low-rank", "calibration-only orthogonal"],
+    "bridge_ladder": [
+      "positive scalar",
+      "calibration-only diagonal",
+      "calibration-only low-rank",
+      "calibration-only orthogonal"
+    ],
     "hostile_lower_bound": "Equivalent-swap lower bound must exceed endpoint-specific tau on both primary endpoints.",
     "near_zero_move_norm": "A numerical floor must be frozen from calibration repeat noise before normalized degradation is computed.",
     "version_freeze": "No file digest or Git blob is present in this authored candidate; those are recorded only after linguistic and tokenization approval."
+  },
+  "approval": {
+    "linguistic_adversary": "APPROVE",
+    "linguistic_adversary_report_sha256": "8a236fb87ecac129849b35edcb1a21a6572e2717f1bf5fc0259fc56dbbcaae8e",
+    "linguistic_adversary_cells": "48/48 pass (fresh Codex session, no model/tokenization access)",
+    "tokenization": "PASS",
+    "tokenization_note": "Qwen3-0.6B tokenizer: all prefixes tokenize; suffix empty; pair-1 prefix 6/7 tokens (Please/Kindly), pair-2 8/8 (Hello,/Hi,: one greeting token 9707 vs 13048); 80 single-token items unchanged",
+    "approved_at": "2026-08-29",
+    "hash_rule": "the raw file sha256 and git blob are recorded in the ledger entry nlm007_fresh_v4_frozen after this approval block is written; they are passed to every capture as --expected-config-sha256 and checked against the capture provenance"
   }
 }
