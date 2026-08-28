@@ -5,6 +5,31 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-28 — SVD telemetry gate: repair-round cap tripped; Round 33 consequence test implemented
+
+SVD telemetry re-review #4 (`.codex_svd_review4.md`) returned NOT-READY with
+six open items (mixed `primary_shadow` pooling, support-mask and missing-map
+fail-closed behaviour, completion-off telemetry, a crash-safe record
+validator, unexpected context groups, oracle `fit_id` collisions). That is
+the fourth consecutive repair round without an admissible result, so
+AGENTS.md artifact-precedence rule 7 applies: the low-rank telemetry gate
+is parked, not repaired again, and the question of whether to continue it
+is raised to the user. The gate only blocks low-rank (`--aug-rank`/probe-1
+screen) claims; the analyzer's SVD diff stays uncommitted and
+`run_r31.cmd` stays disarmed.
+
+Round 33's consequence test is implemented as registered: runner stage
+`capture_forward_consequence` (frozen `fixed_tail_v1` eight-token tails
+after each sentinel, readout-equality check against the base capture,
+compact per-position true-law summaries, repeat-law noise) and analyzer
+`--source forward_consequence` (multi-position teacher-forced KL, uniform
+mean over positions 1..k, k ∈ {4, 8}, G_k against the strongest of the four
+word-only nulls and the contextual-prefix fields inside each block-first
+replicate; a layer passes only at both k). Full per-position laws are not
+stored (≈3 GB); the analyzer recomputes the truth per fold. Tier-1
+implementation review #1 is running; nothing has been run. resSA2 is at
+F20.
+
 ## 2026-08-29 — Re-contextualization #17 (2-hour step-back; audit #17 fired and adopted in Round 33)
 
 Live question unchanged: is the surviving X⊥→Δ⊥ predictability in one small
