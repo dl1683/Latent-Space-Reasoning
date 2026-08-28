@@ -345,11 +345,11 @@ def main():
                     sc[lam] = float(np.mean(v))
                 lam_b = max(sc, key=sc.get)
                 # ---- Round 22 addendum: equalized X-free lexical baselines, hyperparameters by inner leave-one-carrier-out ----
-                Y3 = Yc_.reshape(len(tr), n, D); shared = Yc_.mean(0)
-                def wordonly_ridge(lam, Ytr3):                       # one-hot word ridge == per-word mean shrunk toward the shared mean by k/(k+lam)
-                    k_ = Ytr3.shape[0]; return shared + (Ytr3.mean(0) - shared) * (k_ / (k_ + lam))
-                def shrunk_wordmean(alpha, Ytr3):                     # explicit shrinkage alpha in [0,1] toward the calibration shared mean
-                    return shared + (1 - alpha) * (Ytr3.mean(0) - shared)
+                Y3 = Yc_.reshape(len(tr), n, D)
+                def wordonly_ridge(lam, Ytr3):                       # one-hot word ridge == per-word mean shrunk toward ITS OWN training shared mean (audit #11 fix)
+                    k_ = Ytr3.shape[0]; sh = Ytr3.mean(axis=(0, 1)); return sh + (Ytr3.mean(0) - sh) * (k_ / (k_ + lam))
+                def shrunk_wordmean(alpha, Ytr3):                     # explicit shrinkage alpha in [0,1] toward the training shared mean
+                    sh = Ytr3.mean(axis=(0, 1)); return sh + (1 - alpha) * (Ytr3.mean(0) - sh)
                 sc_w, sc_a = {}, {}
                 ALPHAS = [0.0, 0.1, 0.25, 0.5, 0.75, 0.9, 1.0]
                 for q in tr:                                          # inner LOCO within the three training carriers (each validation = one carrier)
@@ -357,14 +357,14 @@ def main():
                     for lam in LAMBDAS: sc_w.setdefault(lam, []).append(float(np.mean(cos_rows(wordonly_ridge(lam, Yi3), Yv_))))
                     for al in ALPHAS: sc_a.setdefault(al, []).append(float(np.mean(cos_rows(shrunk_wordmean(al, Yi3), Yv_))))
                 lam_w = max(sc_w, key=lambda k_: np.mean(sc_w[k_])); al_b = max(sc_a, key=lambda k_: np.mean(sc_a[k_]))
+                strongest_inner = "wordonly_ridge" if np.mean(sc_w[lam_w]) >= np.mean(sc_a[al_b]) else "shrunk_wordmean"   # comparator frozen by calibration score (audit #11)
                 pr = {"identity": np.zeros_like(Xt_), "mean": np.repeat(Yc_.mean(0, keepdims=True), n, 0),
                       "blockword_mean": Y3.mean(0), "wordonly_ridge": wordonly_ridge(lam_w, Y3), "shrunk_wordmean": shrunk_wordmean(al_b, Y3),
                       "ridge": RidgeFamily(Xcs_, Yc_).predictor(lam_b)(Xts_)}
                 rec = {"lam": lam_b, "lam_wordonly": lam_w, "alpha_shrunk": al_b, "succ_cos": {k: float(np.mean(cos_rows(v, Yt_))) for k, v in pr.items()}}
                 diff_cos = cos_rows(pr["ridge"], Yt_) - cos_rows(pr["blockword_mean"], Yt_)
-                cos_eq = {k: cos_rows(pr[k], Yt_) for k in ("wordonly_ridge", "shrunk_wordmean")}
-                strongest_cos = max(cos_eq, key=lambda k_: float(np.mean(cos_eq[k_])))
-                diff_cos_eq = cos_rows(pr["ridge"], Yt_) - cos_eq[strongest_cos]
+                strongest_cos = strongest_inner
+                diff_cos_eq = cos_rows(pr["ridge"], Yt_) - cos_rows(pr[strongest_inner], Yt_)
                 if completer is not None:
                     if c not in true_slot_law: true_slot_law[c] = comp_laws(c, l, None)[0]
                     q_true = true_slot_law[c]
@@ -380,8 +380,7 @@ def main():
                     rec["skill"] = {k: float(np.nanmean(skill[k])) for k in skill}; rec["klrank"] = {k: float(np.nanmean(R[i])) for i, k in enumerate(cands)}
                     rec["kl"] = {k: float(np.nanmean(kl[k])) for k in kl}
                     diff_skill = skill["ridge"] - skill["blockword_mean"]; diff_rank = R[cands.index("ridge")] - R[cands.index("blockword_mean")]
-                    strongest_skill = max(("wordonly_ridge", "shrunk_wordmean"), key=lambda k_: float(np.nanmean(skill[k_])))
-                    strongest_rank = max(("wordonly_ridge", "shrunk_wordmean"), key=lambda k_: float(np.nanmean(R[cands.index(k_)])))
+                    strongest_skill = strongest_rank = strongest_inner                         # frozen by calibration, not by held-out outcomes
                     diff_skill_eq = skill["ridge"] - skill[strongest_skill]; diff_rank_eq = R[cands.index("ridge")] - R[cands.index(strongest_rank)]
                     rec["strongest_equalized"] = {"cos": strongest_cos, "skill": strongest_skill, "klrank": strongest_rank}
                 else:
