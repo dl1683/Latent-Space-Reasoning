@@ -3939,3 +3939,174 @@ A next-generation latent space should therefore:
 No new native axiom is earned. The next constructive target is an operationally testable quotient, not another renaming of regression success.
 
 No repository files were modified, no experiments were run, and none of the excluded result files were opened. Findings were recorded on the blackboard; convergence and synthesis completed successfully.
+
+## Round 26 — A-static residualization adjudication and remaining readout contract (2026-08-29)
+
+**Codex, documentation-only; no experiment was run.** The Round 23
+predeclaration and predictions, the Round 24/25 amendments, Audit #13, the live
+`--residualize` implementation, `analysis_resSA.json`, and the five named
+ledger entries were checked directly. The running/queued `analysis_resAA.json`,
+`analysis_resSB.json`, and `analysis_resAB.json` artifacts were not opened.
+Findings were recorded on the blackboard before this adjudication; convergence
+and synthesis completed with no open signal or dispute.
+
+### Artifact validity and mechanical score
+
+`resSA` is sentinel A (`.`), `P_static`, five forward-layer checkpoints, two
+unseen-word folds, 20 shuffles, and 500 bootstrap replicates. It completed in
+`4405.7 s` of the amended `7200 s` wall. The model/tokenizer pins, CPU/dtype
+metadata, fixed K=13 universe, reload record, eight fold keys, and support
+accounting are present; support is `1.0` in every key.
+
+The primary residual-vs-null gate adjudicates as follows. Each endpoint margin
+is the conservative minimum over the fixed four residualized X-free nulls; the
+reported lower bound belongs to that minimum-margin comparator:
+
+| Layer | `X_perp` ridge cosine | strongest residual null cosine | cosine margin [LB] | skill margin [LB] | KL-rank margin [LB] | full / positive keys | block collapse | verdict |
+|---|---:|---:|---:|---:|---:|---:|---|---|
+| F0 | 0.268 | -0.005 | +0.273 [+0.068] | -3.570 [-12.692] | +0.042 [-0.384] | 2/8 / 6/8 | association | fail |
+| F4 | 0.619 | 0.061 | +0.558 [+0.517] | +0.388 [+0.175] | +0.395 [+0.222] | 7/8 / 7/8 | none | pass |
+| F8 | 0.596 | 0.073 | +0.523 [+0.485] | +0.305 [+0.198] | +0.403 [+0.315] | 7/8 / 8/8 | none | pass |
+| F12 | 0.556 | 0.059 | +0.497 [+0.458] | +0.339 [+0.207] | +0.412 [+0.197] | 6/8 / 8/8 | none | pass |
+| F20 | 0.624 | 0.070 | +0.554 [+0.512] | +0.477 [+0.411] | +0.612 [+0.558] | 8/8 / 8/8 | none | pass |
+
+Thus F4/F8/F12/F20 pass the amended residual gate; F0 fails. The same-fold
+raw shadow is present and reproduces the un-residualized scale. At F4/F8/F12/
+F20 its ridge cosine is `0.712/0.661/0.654/0.764` versus strongest raw-null
+cosine `0.525/0.474/0.504/0.622`. This validates the raw shadow as a comparator;
+it does not repair the retention estimand described below.
+
+### Round 23 prediction scorecard and branch
+
+The `P_static` result takes the **non-collapse, state-linked-side branch of the
+primary gate**: F0 remains in the registered identity/token regime, while
+F4–F20 retain positive residual-field margins beyond the strongest
+residualized X-free lexical null. The registered `P_static` style-nuisance
+prediction of collapse is missed.
+
+That is not a state verdict. Round 23 explicitly reserved the mixed branch
+`P_static` pass plus `P_aug` collapse as “the static coordinates were
+incomplete, not state.” Because `P_aug` is unread, A-static alone does not
+distinguish the state-linked account from that mixed branch. The maximum
+earned statement is:
+
+> In this decoder and probe design, after removal of the **registered static
+> presentation coordinates**, `X_perp` retains held-out predictability of
+> `Delta_perp` and its reassembled response-law consequence beyond the
+> strongest residualized X-free lexical nulls at F4–F20, across held-out word
+> folds and held-out blocks.
+
+This is residual predictability after removal of the registered coordinates.
+It is not presentation independence, clean operational state, a native law,
+model generality, or multi-step navigation.
+
+### Retention-marker ruling
+
+Audit #13 controls the wording for this artifact. `resSA` was produced by the
+pre-patch analyzer and contains neither
+`gates["ridge"]["retention_common_scale"]` nor
+`pairs[*]["retention_common_scale_block_first"]`. Its older raw-versus-residual
+marker is mechanically true at F4–F20 on all three endpoints, but the compared
+targets, skill references, and KL-rank estimands are not commensurate.
+Therefore the only admissible retention statement for `resSA` is:
+
+> The predeclared robustness marker is mechanically met.
+
+Do not say that half of the signal survives, that signal was amplified, or
+that a common-scale retention threshold passed.
+
+A patched A-static rerun is required before any **A-static common-scale
+retention claim** or any symmetric “all four sentinel-by-design cells retain”
+claim. `resAA` and the two B runs cannot substitute for the missing A-static
+cell: sentinel and presentation design are not exchangeable factors. This
+rerun is not required for the valid primary residual-vs-null result above and
+does not precede the already locked chain. Finish A-augmented, B-static, and
+B-augmented first; then run the queued patched A-static analysis before any
+cross-run retention synthesis or second-family launch. This is a future
+CPU-analysis requirement, not an experiment run in Round 26.
+
+### What the presentation-only arm changes
+
+The held-out `P_static -> Delta` cosine averages by layer are
+`0.625/0.491/0.427/0.456/0.584` at F0/F4/F8/F12/F20. These are cosines, not
+variance explained and not percentages. They establish that the registered
+block, length, and position coordinates predict a large component of the raw
+forward displacement.
+
+That changes the scientific reading of the earlier unseen-word result. Its
+recorded raw advantage is reproduced by the same-fold shadow with stronger
+nulls, but lexical novelty never removed presentation. A substantial, and
+possibly much, part of the earlier “X-conditioned” lead may therefore have
+been presentation-mediated. The result did not warrant “context rather than
+presentation” before, and the measured size of this arm makes that caveat
+central rather than peripheral.
+
+`resSA` adds a separate positive fact: the registered `P_static` coordinates
+do not account for the whole X-linked advantage. After their calibration-only
+removal from both `X` and `Delta`, `X_perp` still predicts `Delta_perp` far
+beyond the residualized lexical nulls and restores better response-law
+consequences. It does not identify that remainder as state; unmeasured
+presentation, smooth lexical geometry, operational context, and mixtures
+remain live.
+
+### Guiding question and second lens
+
+For the denizen, the registered template variables are part of the measured
+geography: they change where the forward move tends to go. The local proven
+facts are now:
+
+- registered static presentation coordinates predict a substantial component
+  of held-out forward displacement;
+- those registered coordinates do not exhaust the X-linked residual
+  predictability at F4–F20;
+- F0 identity/token dominance and the inherited ordering readout's saturation
+  remain the two proven local holes.
+
+The structural hole “presentation is entangled with operational state” is
+**not proven**. The measurement establishes presentation sensitivity, not
+inseparability. It has neither supplied an operational definition of state nor
+shown by intervention whether presentation should be quotiented away. A
+presentation variable that changes downstream response laws may be legitimate
+operational state. Conversely, survival after a finite analyst-supplied
+residualization does not show that the remainder is presentation-free. The
+current space still lacks a **demonstrated native quotient** separating lexical
+content, presentation, operational state, and consequential motion; that is a
+measurement limit and constructive target, not a proof that no such quotient
+can exist.
+
+The next latent space must expose those candidate coordinates to its denizen
+rather than require block identities and token-length metadata supplied by an
+analyst. It must define sameness by interchangeability under declared moves
+and downstream response laws; treat presentation as state when controlled
+changes alter those laws and quotient it when they do not; use
+consequence-sensitive divergences; support multi-step composition and closure;
+transfer across unseen words, styles, and model families; and make precision,
+support, and controllability part of the representation contract. No new
+native axiom is earned.
+
+### Remaining three-run readout and `P_aug` branch
+
+Read the remaining artifacts without selecting a favorable arm:
+
+1. A-augmented (`resAA`);
+2. B-static (`resSB`);
+3. B-augmented (`resAB`).
+
+For each run, read the `7200 s` budget, manifest/revision/capture identity,
+reload/locality/support checks, and presence and finiteness of both common-
+scale retention fields first. Then read F0, followed by F4/F8/F12/F20. Within
+each layer read, in order: residual displacement and strongest-four-null
+gates; reassembled skill and KL-rank; key counts and block collapse;
+presentation-only diagnostic; same-fold raw shadow; and the per-fold plus
+block-first common-scale retention ratios. Static is adjudicated before
+augmented for B, and no sentinel or layer may be chosen after seeing outcomes.
+
+For `P_aug`, the style-nuisance branch is broad approach of the residual field
+to the strongest residualized X-free null across F4–F20: failure of the
+`+0.02` and positive clustered-LB requirements on the three endpoints,
+insufficient positive keys and/or block collapse, with loss of the repaired
+common-scale marker as corroborating evidence. Because A-static has now
+passed, an A-augmented collapse is specifically the predeclared **static
+coordinates incomplete, not state** branch. A repaired retention failure
+alone is not a primary-gate collapse and remains interpretive rather than a
+kill condition.

@@ -1127,3 +1127,61 @@ remains one decoder, unresolved state-versus-presentation, and no new axiom.
   status mechanical only; state-versus-presentation unresolved; no native,
   presentation-independent, second-family, or general dynamics claim; no
   new axiom.
+
+## Round 26 — A-static residualization adjudication (2026-08-29)
+
+`analysis_resSA.json` is contract-valid for the primary residual-vs-null
+question: sentinel A, `P_static`, two unseen-word folds, K=13, crossed
+class-preserving bootstrap, 20 shuffles, 500 bootstraps, support `1.0`, and
+`4405.7 s` of the `7200 s` wall. F4/F8/F12/F20 pass; F0 fails. At the passing
+layers `X_perp` ridge residual cosine is `0.56–0.62` versus `0.06–0.07` for
+the strongest residualized X-free null. Block-first margins are cosine
+`+0.50–+0.56`, skill `+0.31–+0.48`, and K=13 KL-rank `+0.40–+0.61`, with
+positive lower bounds, 6–8/8 full keys, support `1.0`, and no block collapse.
+F0 has negative pooled skill and an association-block collapse.
+
+Prediction ruling: `P_static` takes the non-collapse/state-linked-side branch
+of the primary Round 23 gate, but it does not establish state. The maximum
+statement is residual predictability of `X_perp` beyond residualized X-free
+lexical nulls after removal of the **registered static presentation
+coordinates**, across held-out words and blocks. `P_static` pass plus
+`P_aug` collapse remains the predeclared “static coordinates incomplete, not
+state” branch. No presentation-independent, native-law, second-family, or
+general dynamics claim follows.
+
+The presentation-only `P_static -> Delta` arm has held-out cosine
+`0.43–0.63` by layer. This is a large predictable presentation component, not
+a percentage of displacement explained. It sharpens the earlier unseen-word
+reading: much of the raw X-conditioned lead may have been presentation-
+mediated. The residual result adds only that the registered static coordinates
+do not account for the whole X-linked advantage; it does not identify the
+remainder as operational state.
+
+Retention remains bounded by Audit #13. `resSA` predates
+`retention_common_scale` / `retention_common_scale_block_first` and contains
+neither field. For A-static, say only **“the predeclared robustness marker is
+mechanically met.”** A patched A-static rerun is required before any
+common-scale A-static or symmetric four-cell retention claim; `resAA` and the
+B runs cannot substitute for that cell. The rerun is not required for the
+primary residual-vs-null verdict and follows the existing chain.
+
+Second-lens ruling: presentation sensitivity of the measured move is proven
+locally; presentation/operational-state inseparability is not. The current
+space lacks a demonstrated native quotient and required analyst-known block,
+length, and position coordinates for this decomposition. The next latent
+space must expose lexical, presentation, and operational coordinates; define
+sameness by interchangeability under declared moves and response laws; treat
+presentation as state only when controlled changes alter those laws; support
+consequence-sensitive multi-step closure; and transfer across unseen words,
+styles, and model families. No new axiom is earned.
+
+**Next, in order:** read A-augmented (`resAA`), B-static (`resSB`), then
+B-augmented (`resAB`), without outcome selection. For each, read budget and
+manifest/reload/locality/support/common-scale validity first, then F0, then
+F4/F8/F12/F20; within each layer read residual gates, reassembled consequence
+endpoints, key/block accounting, presentation-only arm, raw shadow, and
+repaired common-scale retention. A broad `P_aug` collapse toward the strongest
+residualized X-free null is the style-nuisance outcome and, after the A-static
+pass, the “static coordinates incomplete, not state” branch. After the chain,
+run the patched A-static common-scale repair before cross-run retention
+synthesis or the second-family protocol. No experiment was run in Round 26.
