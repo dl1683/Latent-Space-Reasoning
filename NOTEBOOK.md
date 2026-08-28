@@ -5,6 +5,60 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-28 — NLM-007 corrected rerun (slot endpoint): 3 pairs clear every locked gate
+
+- Six pairs, slot-position completed law, 2145 s of a 3300 s budget; support
+  1.0 everywhere; reload check unchanged.
+- Mechanical gate reading (Codex adjudication pending): qualifying pairs
+  ['L8->L9', 'L12->L13', 'L27->L28']. L0→L1 lexical persistence (word-mean = field on all three
+  endpoints). L4→L5 and L20→L21 clear both slot readouts by wide margins but
+  miss the +0.05 successor-cosine lead in some folds.
+- The word-mean's slot skill decays monotonically with depth (0.95, 0.84,
+  0.78, 0.70, 0.43, 0.40) while the affine field holds 0.92–0.98 and the
+  static chart collapses late (0.50, 0.51): the share of the move that
+  depends on context rather than word identity grows with depth, and by the
+  late blocks a chart is nearly useless while an affine law is nearly exact.
+- Prediction scorecard: five of six Round 16 readings held; the sixth
+  (final-block attenuation at L27→L28) failed — the final pair clears every
+  gate, with the qualification that its successor cosine is on normed
+  vectors.
+- Bounded as before: one model, shared words, reduced 20/500 budget. Next in
+  the fixed order: cheap moot-makers (identity-plus-residual, per-carrier
+  affine; code written, smoke running), forward-time transport, unseen-word
+  split, second family.
+
+## 2026-08-28 — Re-contextualization #6 (step-back, before the corrected rerun lands)
+
+- **Central bet (README):** a native mathematics of latent spaces, built from
+  what a denizen must invent to navigate. **Live question today:** does this
+  LM world have a reusable, context-conditioned law of motion at any depth,
+  or only lexical persistence plus a chart that smooth regression interpolates
+  well?
+- **What still holds:** successor-endpoint lead of a full-dimensional affine
+  field over word-mean and chart from L4 on (one model, shared words), with
+  the carrier-shuffle penalty growing with depth; L0 = lexical persistence.
+- **What reframes earlier work:** the frozen-encoder program (NLM-002…006b)
+  had no move at all — it was a static world, so "law" had no referent. The
+  LM world supplies moves; the question sharpened from "is there a native
+  metric" to "is there a native law", which is the question a denizen would
+  ask first. The audit-#5 defect (right measurement, wrong position) is the
+  same shape as the Igor episode; the cadence caught it before any statement.
+- **Alternatives held live (not one thread):** (a) smooth implementation-
+  specific conditional regression — the strongest rival, testable by the
+  cheap moot-makers now written (identity-plus-residual, per-carrier affine);
+  (b) the slot law structurally favours the word-mean (it depends only on
+  prefix + word) — if so, the last-token readout is the navigation-relevant
+  one and the lock should carry both; (c) the real move is forward-time
+  (append-token / next-position), untested; (d) the law may be a property of
+  this family's training, not of latent worlds — second family pending;
+  (e) the whole layer-pair framing may be the wrong unit — a denizen moves
+  across the full stack, and a composed multi-block law (L4→L12) would be the
+  first genuinely non-local object.
+- **Ecosystem thread:** the "measured law vs interpolated chart" distinction
+  and the endpoint-position lesson are deposited in `_meta/INDEX.md`; they
+  transfer to any project that reads a probe at a position other than the one
+  it perturbs.
+
 ## 2026-08-27 — Round 16: corrected slot endpoint and next order
 
 - Tier-3 audit #5 applies to every pair: the fallback and extension completed
