@@ -214,6 +214,7 @@ def main():
     ap.add_argument("--identity-only", action="store_true", help="run the identity check and stop (writes identity_check.json)")
     ap.add_argument("--identity-check", action="store_true", help="stored-true-successor identity test at the slot for every pair and carrier (audit #6)")
     ap.add_argument("--baselines", action="store_true", help="Round 16 moot-makers: identity-plus-residual predictor and per-carrier affine diagnostic")
+    ap.add_argument("--unseen-words", type=int, default=0, help="Round 20 unseen-word split: K class-stratified word folds; calibration and held-out word identities disjoint within every carrier-block fold; word-mean baseline omitted (undefined for unseen words); oracle omitted")
     ap.add_argument("--loco", action="store_true", help="Audit #9 control: within each style block hold out one carrier, fit on the other three; state-conditioned ridge vs leave-one-carrier-out per-word/per-block mean displacement; KL-rank among {identity, shared mean, block-word mean, ridge}")
     ap.add_argument("--style-null", action="store_true", help="Round 20: within-style-family target null (permute calibration targets across carriers within block x word; refit ridge/kernel; completed and gated)")
     ap.add_argument("--source", choices=["layers", "forward"], default="layers", help="forward: Round 19 forward-time move from forward_states_<tag>.npz; X = unappended state at q, Y = sentinel state at r, same layer")
@@ -295,17 +296,19 @@ def main():
                 out = run_dir / "identity_check.json"; out.write_text(json.dumps(results, indent=1, default=float), encoding="utf-8")
                 print(f"wrote {out}"); return
 
-    def cells(probe_list, l):
-        X = np.concatenate([ZX[p, l] for p in probe_list]); Y = np.concatenate([ZY[p, l + SUCC_OFF] for p in probe_list])
+    def cells(probe_list, l, widx=None):
+        sel = (lambda M: M) if widx is None else (lambda M: M[widx])
+        X = np.concatenate([sel(ZX[p, l]) for p in probe_list]); Y = np.concatenate([sel(ZY[p, l + SUCC_OFF]) for p in probe_list])
         return (X, Y - X) if a.target == "delta" else (X, Y)
 
 
     true_slot_law = {}     # carrier -> true next-token law at the slot position (unmodified forward)
-    def comp_laws(tp, l, Yhat):
+    def comp_laws(tp, l, Yhat, widx=None):
         """Completion call for the current source: layer-pair mode hooks layer l (hidden l+1); forward mode inserts at hidden index l."""
+        st_ = states_emb if widx is None else states_emb[torch.as_tensor(widx)]
         if a.source == "forward":
-            return completer.laws(tp, states_emb, l - 1, Yhat=Yhat, **completer_kw)
-        return completer.laws(tp, states_emb, l, Yhat=Yhat)
+            return completer.laws(tp, st_, l - 1, Yhat=Yhat, **completer_kw)
+        return completer.laws(tp, st_, l, Yhat=Yhat)
 
     def strat_folds(n_folds, seed):
         """Class-stratified word folds over the pos labels; returns fold index per word."""
@@ -416,16 +419,22 @@ def main():
     for (l, l1) in pairs:
         pair_key = f"L{l}->L{l1}" if a.source != "forward" else f"F{l}"; print(f"\n=== {pair_key} ===", flush=True)
         fold_out = {}
-        for held in block_names:
-            cal_blocks = [b for b in block_names if b != held]
+        word_fold = strat_folds(a.unseen_words, SEED + 3) if a.unseen_words else None
+        fold_specs = [(b, None) for b in block_names] if not a.unseen_words else [(b, j) for b in block_names for j in range(a.unseen_words)]
+        for held_block, wj in fold_specs:
+            held = held_block if wj is None else f"{held_block}_w{wj}"
+            widx_c = None if wj is None else np.where(word_fold != wj)[0]      # calibration word identities
+            widx_t = None if wj is None else np.where(word_fold == wj)[0]      # held-out word identities (disjoint)
+            n_c = n if wj is None else len(widx_c); n_t = n if wj is None else len(widx_t)
+            cal_blocks = [b for b in block_names if b != held_block]
             cal_probes = [p for b in cal_blocks for p in probe_ids[b]]; test_probes = probe_ids[held]
-            Xc, Yc = cells(cal_probes, l); Xt, Yt = cells(test_probes, l)
+            Xc, Yc = cells(cal_probes, l, widx_c); Xt, Yt = cells(test_probes, l, widx_t)
             st = Standardizer().fit(Xc); Xcs, Xts = st(Xc), st(Xt)
             # ---- inner selection: leave one calibration block out (families built once per inner fold) ----
             inner = []
             for ib in cal_blocks:
                 ip = [p for b in cal_blocks if b != ib for p in probe_ids[b]]; vp = probe_ids[ib]
-                Xi, Yi = cells(ip, l); Xv, Yv = cells(vp, l); sti = Standardizer().fit(Xi)
+                Xi, Yi = cells(ip, l, widx_c); Xv, Yv = cells(vp, l, widx_c); sti = Standardizer().fit(Xi)
                 inner.append((sti(Xi), Yi, Xi, sti(Xv), Yv, Xv))
             def score_grid(make):
                 acc = {}
@@ -458,8 +467,9 @@ def main():
             # ---- fit on full calibration, predict held-out ----
             preds = {"mean": np.repeat(Yc.mean(0, keepdims=True), len(Xt), 0)}
             # lexical-persistence baseline: per-word mean successor across the 12 calibration carriers, applied to held-out carriers
-            word_mean = Yc.reshape(len(cal_probes), n, D).mean(0)                       # (n, D)
-            preds["word_mean"] = np.tile(word_mean, (len(test_probes), 1))
+            if wj is None:                                                               # word-mean undefined for unseen words
+                word_mean = Yc.reshape(len(cal_probes), n_c, D).mean(0)                     # (n, D)
+                preds["word_mean"] = np.tile(word_mean, (len(test_probes), 1))
             for k in KS: preds[f"knn{k}"] = fit_knn(Xcs, Yc, k)(Xts)
             famc = RidgeFamily(Xcs, Yc)
             preds["ridge"] = famc.predictor(best["ridge"]["lam"])(Xts)
@@ -473,10 +483,10 @@ def main():
             cal_block_of = np.array([blocks[p] for p in cal_probes])
             def style_permute(Y_cal, rng_):
                 """Permute calibration targets across carriers WITHIN each style-family block and word (Round 20 null)."""
-                Yp = Y_cal.reshape(n_cal_probes, n, D).copy()
+                Yp = Y_cal.reshape(n_cal_probes, n_c, D).copy()
                 for b in set(cal_block_of):
                     rows = np.where(cal_block_of == b)[0]
-                    for w in range(n):
+                    for w in range(n_c):
                         Yp[rows, w, :] = Yp[rows[rng_.permutation(len(rows))], w, :]
                 return Yp.reshape(-1, D)
             if a.style_null:
@@ -490,7 +500,7 @@ def main():
             succ = {k: {"cos": cos_rows(v, Yt), "nerr": np.linalg.norm(v - Yt, axis=1) / denom} for k, v in preds.items()}
             control_cos = None
             if ZY_ctrl is not None:                                          # token-identity control: same predictor, other sentinel's target
-                Yt_ctrl = np.concatenate([ZY_ctrl[p, l] for p in test_probes]) - Xt
+                Yt_ctrl = np.concatenate([(ZY_ctrl[p, l] if widx_t is None else ZY_ctrl[p, l][widx_t]) for p in test_probes]) - Xt
                 control_cos = {k: float(np.nanmean(cos_rows(v, Yt_ctrl))) for k, v in preds.items()}
             # ---- carrier-shuffled null on the selected low-rank field and ridge ----
             shuf = {"lowrank": [], "ridge": []}
@@ -499,8 +509,8 @@ def main():
                 if a.style_null:
                     Yc_sp = style_permute(Yc, rng)
                     shuf["ridge_within_style"].append(float(np.mean(cos_rows(RidgeFamily(Xcs, Yc_sp, eig=famc.eig).predictor(best["ridge"]["lam"])(Xts), Yt))))
-                Yc_perm = Yc.reshape(n_cal_probes, n, D).copy()
-                for w in range(n):
+                Yc_perm = Yc.reshape(n_cal_probes, n_c, D).copy()
+                for w in range(n_c):
                     Yc_perm[:, w, :] = Yc_perm[rng.permutation(n_cal_probes), w, :]
                 Yc_perm = Yc_perm.reshape(-1, D)
                 fams = RidgeFamily(Xcs, Yc_perm, eig=famc.eig)
@@ -512,14 +522,15 @@ def main():
             classes = np.array(pos); folds = np.zeros(n, dtype=int)
             for c in np.unique(classes):
                 idx = np.flatnonzero(classes == c); rng2 = np.random.default_rng(SEED); rng2.shuffle(idx); folds[idx] = np.arange(len(idx)) % 5
-            for tp in test_probes:
-                Xo, Yo = Z[tp, l], Z[tp, l1]; sc = []
+            for tp in (test_probes if wj is None else []):
+                Xo, Yo = cells([tp], l); sc = []                                          # source-aware (was Z[tp,l], Z[tp,l1]: wrong in forward/delta modes)
                 for f in range(5):
                     tr_i = folds != f; te_i = folds == f
                     sto = Standardizer().fit(Xo[tr_i])
                     pr = fit_ridge(sto(Xo[tr_i]), Yo[tr_i], best["lowrank"]["lam"], rank=min(best["lowrank"]["rank"], int(tr_i.sum()) - 1))(sto(Xo[te_i]))
                     sc.append(float(np.mean(cos_rows(pr, Yo[te_i]))))
                 oracle.append(float(np.mean(sc)))
+            if not oracle: oracle = [float("nan")]
             print(f"   [{held}] oracle done ({time.time()-t0:.0f}s)", flush=True)
             # ---- completed-law endpoint ----
             comp = {}
@@ -531,12 +542,13 @@ def main():
                 for k in [kk for kk in ("mean", "identity", "word_mean", "knn1", "knn5", "knn20", "ridge", "lowrank", "kernel", "chart", "identres", "ridge_stylenull", "kernel_stylenull") if kk in preds]:
                     acc = {r: {"kl": [], "skill": [], "ord": [], "ord_anchor": []} for r in ("slot", "last")}
                     for ti, tp in enumerate(test_probes):
-                        rows = slice(ti * n, (ti + 1) * n)
+                        rows = slice(ti * n_t, (ti + 1) * n_t)
                         yhat_rows = (Xt[rows] + preds[k][rows]) if a.target == "delta" else preds[k][rows]     # reconstruct the successor from the displacement
-                        qhat = dict(zip(("slot", "last"), comp_laws(tp, l, yhat_rows)))
+                        qhat = dict(zip(("slot", "last"), comp_laws(tp, l, yhat_rows, widx_t)))
                         if k == "mean": qmean[tp] = qhat
                         for r in ("slot", "last"):
                             q = true_slot_law[tp] if r == "slot" else laws[tp]              # laws[tp] = stored true law at the last token
+                            if widx_t is not None: q = q[widx_t]
                             kl = kl_rows(q, qhat[r]); acc[r]["kl"].append(kl)
                             klm = kl_rows(q, qmean[tp][r]); klm = np.where(klm > 0, klm, np.nan)
                             acc[r]["skill"].append(1 - kl / klm)
@@ -574,23 +586,23 @@ def main():
                 elif endpoint == "ordering_last": A, B = comp[field]["ordering_last_per_anchor"].ravel(), comp[against]["ordering_last_per_anchor"].ravel()
                 elif endpoint == "klrank": A, B = comp[field]["klrank"], comp[against]["klrank"]
                 else: return None
-                A = A.reshape(len(test_probes), n); B = B.reshape(len(test_probes), n); diff = A - B
+                A = A.reshape(len(test_probes), n_t); B = B.reshape(len(test_probes), n_t); diff = A - B
                 if not np.isfinite(diff).any(): return None
                 reps = []
                 brng = np.random.default_rng(SEED)
                 for _ in range(a.n_boot):
-                    ci = brng.integers(0, len(test_probes), len(test_probes)); wi = brng.integers(0, n, n)
+                    ci = brng.integers(0, len(test_probes), len(test_probes)); wi = brng.integers(0, n_t, n_t)
                     reps.append(float(np.nanmean(diff[np.ix_(ci, wi)])))
                 return {"mean": float(np.nanmean(diff)), "ci95": [float(np.nanpercentile(reps, 2.5)), float(np.nanpercentile(reps, 97.5))],
                         "n_defined_cells": int(np.isfinite(diff).sum())}
             gates = {}
             for field in ("ridge", "lowrank", "kernel"):
-                g = {"succ_cos_vs_chart": boot_diff(field, "cos"), "succ_cos_vs_word_mean": boot_diff(field, "cos", "word_mean")}
+                g = {"succ_cos_vs_chart": boot_diff(field, "cos"), "succ_cos_vs_word_mean": (boot_diff(field, "cos", "word_mean") if "word_mean" in preds else None)}
                 if "identity" in preds:
                     g["succ_cos_vs_identity"] = boot_diff(field, "cos", "identity")
                     if comp: g["skill_vs_identity"] = boot_diff(field, "skill", "identity"); g["ordering_vs_identity"] = boot_diff(field, "ordering", "identity")
                 if comp and "klrank" in comp.get(field, {}):
-                    g["klrank_vs_word_mean"] = boot_diff(field, "klrank", "word_mean"); g["klrank_vs_chart"] = boot_diff(field, "klrank")
+                    g["klrank_vs_word_mean"] = (boot_diff(field, "klrank", "word_mean") if "word_mean" in preds else None); g["klrank_vs_chart"] = boot_diff(field, "klrank")
                 sn = field + "_stylenull"
                 if sn in preds:
                     g["style_null"] = {"succ_cos_vs_stylenull": boot_diff(field, "cos", sn)}
@@ -599,16 +611,16 @@ def main():
                     g["succ_cos_vs_identres"] = boot_diff(field, "cos", "identres")
                     if comp: g["skill_vs_identres"] = boot_diff(field, "skill", "identres"); g["ordering_vs_identres"] = boot_diff(field, "ordering", "identres")
                 if comp:
-                    g["skill_vs_chart"] = boot_diff(field, "skill"); g["skill_vs_word_mean"] = boot_diff(field, "skill", "word_mean")
-                    g["ordering_vs_chart"] = boot_diff(field, "ordering"); g["ordering_vs_word_mean"] = boot_diff(field, "ordering", "word_mean")
-                    g["secondary_last_token"] = {"skill_vs_chart": boot_diff(field, "skill_last"), "skill_vs_word_mean": boot_diff(field, "skill_last", "word_mean"),
+                    g["skill_vs_chart"] = boot_diff(field, "skill"); g["skill_vs_word_mean"] = (boot_diff(field, "skill", "word_mean") if "word_mean" in preds else None)
+                    g["ordering_vs_chart"] = boot_diff(field, "ordering"); g["ordering_vs_word_mean"] = (boot_diff(field, "ordering", "word_mean") if "word_mean" in preds else None)
+                    g["secondary_last_token"] = {"skill_vs_chart": boot_diff(field, "skill_last"), "skill_vs_word_mean": (boot_diff(field, "skill_last", "word_mean") if "word_mean" in preds else None),
                                                  "ordering_vs_chart": boot_diff(field, "ordering_last")}
                 gates[field] = g
             # support: a cell is supported iff successor cos, normalized error, and (if computed) completed KL, skill, ordering are all finite
             ok = np.isfinite(succ["lowrank"]["cos"]) & np.isfinite(succ["lowrank"]["nerr"])
             if comp:
                 for k in comp: ok &= np.isfinite(comp[k]["kl"]) & np.isfinite(comp[k]["skill"]) & np.isfinite(comp[k]["ordering_per_anchor"].ravel())
-            support = float(np.mean(ok)); support_by_carrier = {str(d["probes"][tp]): float(np.mean(ok[ti * n:(ti + 1) * n])) for ti, tp in enumerate(test_probes)}
+            support = float(np.mean(ok)); support_by_carrier = {str(d["probes"][tp]): float(np.mean(ok[ti * n_t:(ti + 1) * n_t])) for ti, tp in enumerate(test_probes)}
             fold_out[held] = {"selected": {k: {kk: vv for kk, vv in v.items() if kk != "inner"} for k, v in best.items()},
                               "successor_cos": {k: float(np.nanmean(v["cos"])) for k, v in succ.items()},        # in delta mode: displacement cosine
                               "reconstructed_successor_cos": ({k: float(np.mean(cos_rows(Xt + v, Xt + Yt))) for k, v in preds.items()} if a.target == "delta" else None),
@@ -623,16 +635,17 @@ def main():
             print(f"  fold {held}: succ_cos " + " ".join(f"{k}={v:.3f}" for k, v in fold_out[held]["successor_cos"].items()) + f" | oracle={np.mean(oracle):.3f} shufLR={np.mean(shuf['lowrank']):.3f}", flush=True)
         # ---- pool folds (equal weight) and minimal class ----
         pooled = {}
-        for k in fold_out[block_names[0]]["successor_cos"]:
-            pooled[k] = float(np.mean([fold_out[b]["successor_cos"][k] for b in block_names]))
+        fkeys = list(fold_out)
+        for k in fold_out[fkeys[0]]["successor_cos"]:
+            pooled[k] = float(np.mean([fold_out[b]["successor_cos"][k] for b in fkeys]))
         order = ["mean", "knn1", "knn5", "knn20", "lowrank", "ridge", "kernel"]        # word_mean is a moot-maker, not a ladder member
         ladder = [k for k in order if k in pooled]
         best_score = max(pooled[k] for k in ladder)
         minimal = next((k for k in ladder if pooled[k] >= best_score - 0.02), None)
         pooled_skill = {}
-        if all(fold_out[b].get("completed") for b in block_names):
-            for k in fold_out[block_names[0]]["completed"]:
-                pooled_skill[k] = float(np.mean([fold_out[b]["completed"][k]["skill"] for b in block_names]))
+        if all(fold_out[b].get("completed") for b in fkeys):
+            for k in fold_out[fkeys[0]]["completed"]:
+                pooled_skill[k] = float(np.mean([fold_out[b]["completed"][k]["skill"] for b in fkeys]))
         lad_s = [k for k in order if k in pooled_skill]
         minimal_skill = next((k for k in lad_s if pooled_skill[k] >= max(pooled_skill[kk] for kk in lad_s) - 0.02), None) if lad_s else None
         results["pairs"][pair_key] = {"folds": fold_out, "pooled_successor_cos": pooled, "minimal_class_successor_within_0.02": minimal,
