@@ -200,6 +200,7 @@ def main():
     ap.add_argument("--model", default="Qwen/Qwen3-0.6B"); ap.add_argument("--pairs", type=int, nargs="*", default=None)
     ap.add_argument("--n-boot", type=int, default=2000); ap.add_argument("--n-shuffle", type=int, default=100)
     ap.add_argument("--skip-completion", action="store_true")
+    ap.add_argument("--identity-only", action="store_true", help="run the identity check and stop (writes identity_check.json)")
     ap.add_argument("--identity-check", action="store_true", help="stored-true-successor identity test at the slot for every pair and carrier (audit #6)")
     ap.add_argument("--baselines", action="store_true", help="Round 16 moot-makers: identity-plus-residual predictor and per-carrier affine diagnostic")
     ap.add_argument("--tag", default="", help="suffix for the output file: analysis_<tag>.json (keeps earlier runs intact)")
@@ -246,15 +247,18 @@ def main():
             # Audit #6 action 3: for every scored pair and every carrier, replace the slot with the STORED true successor and
             # compare the completed slot law with the unmodified forward's slot law. Exact routing => KL ~ float16 noise.
             ident = {}
-            for (l, l1) in pairs:
+            q_true = {c: completer.laws(c, states_emb, 0, Yhat=None)[0] for c in range(P)}      # true slot law per carrier (l-independent)
+            for (l, l1) in PAIRS:                                                            # all six fixed pairs, regardless of --pairs
                 worst = 0.0
                 for c in range(P):
-                    q = completer.laws(c, states_emb, l, Yhat=None)[0]
                     qi = completer.laws(c, states_emb, l, Yhat=Z[c, l + 1])[0]
-                    worst = max(worst, float(np.max(kl_rows(q, qi))))
+                    worst = max(worst, float(np.max(kl_rows(q_true[c], qi))))
                 ident[f"L{l}->L{l1}"] = worst
-                print(f"identity check L{l}->L{l1}: max KL over {P} carriers x {n} words = {worst:.3e}", flush=True)
+                print(f"identity check L{l}->L{l1}: max KL over {P} carriers x {n} words = {worst:.3e} ({time.time()-t0:.0f}s)", flush=True)
             results["identity_check_max_kl"] = ident
+            if a.identity_only:
+                out = run_dir / "identity_check.json"; out.write_text(json.dumps(results, indent=1, default=float), encoding="utf-8")
+                print(f"wrote {out}"); return
 
     def cells(probe_list, l):
         X = np.concatenate([Z[p, l] for p in probe_list]); Y = np.concatenate([Z[p, l + 1] for p in probe_list])
