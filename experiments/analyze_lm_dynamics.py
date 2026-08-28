@@ -427,7 +427,7 @@ def main():
             widx_t = None if wj is None else np.where(word_fold == wj)[0]      # held-out word identities (disjoint)
             n_c = n if wj is None else len(widx_c); n_t = n if wj is None else len(widx_t)
             cal_blocks = [b for b in block_names if b != held_block]
-            cal_probes = [p for b in cal_blocks for p in probe_ids[b]]; test_probes = probe_ids[held]
+            cal_probes = [p for b in cal_blocks for p in probe_ids[b]]; test_probes = probe_ids[held_block]
             Xc, Yc = cells(cal_probes, l, widx_c); Xt, Yt = cells(test_probes, l, widx_t)
             st = Standardizer().fit(Xc); Xcs, Xts = st(Xc), st(Xt)
             # ---- inner selection: leave one calibration block out (families built once per inner fold) ----
