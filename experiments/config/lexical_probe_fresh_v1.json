@@ -1,0 +1,266 @@
+{
+  "name": "lexical_probe_fresh_v1",
+  "note": "Round 29 probe 2: fresh frozen template population authored 2026-08-29 BEFORE any capture, from the family definitions below and without consulting per-template result files. Same 80 items as lexical_probe_v1. Four new semantic/operational families (question, instruction, comparison, enumeration), each of four templates forming two matched presentation pairs: the two members of a pair keep the same operational content (same speech act, same role for <X>, same continuation demand) and differ only in surface presentation (politeness/register, article/determiner form, framing clause). Pairs and families are frozen here; no template may be edited or dropped after capture except by a predeclared protocol failure (non-single-token operator ' not' in some carrier, or a tokenization split of the slot), which voids the whole population. Sentinels: '.' (A) and ',' (B). Second move: single-token ' not' inserted immediately before the word slot (probe 3).",
+  "systems": [
+    "Qwen/Qwen3-0.6B"
+  ],
+  "items_from": "experiments/config/lexical_probe_v1.json",
+  "items": {
+    "noun": [
+      "dog",
+      "cat",
+      "house",
+      "river",
+      "city",
+      "book",
+      "table",
+      "mountain",
+      "doctor",
+      "child",
+      "window",
+      "money",
+      "music",
+      "bread",
+      "forest",
+      "engine",
+      "king",
+      "stone",
+      "garden",
+      "ocean"
+    ],
+    "verb": [
+      "run",
+      "walk",
+      "eat",
+      "write",
+      "build",
+      "break",
+      "sleep",
+      "think",
+      "speak",
+      "fly",
+      "carry",
+      "push",
+      "open",
+      "close",
+      "drive",
+      "sing",
+      "throw",
+      "hold",
+      "learn",
+      "wash"
+    ],
+    "adj": [
+      "red",
+      "blue",
+      "big",
+      "small",
+      "hot",
+      "cold",
+      "fast",
+      "slow",
+      "happy",
+      "sad",
+      "dark",
+      "bright",
+      "heavy",
+      "soft",
+      "loud",
+      "quiet",
+      "old",
+      "young",
+      "wet",
+      "empty"
+    ],
+    "func": [
+      "the",
+      "of",
+      "and",
+      "but",
+      "because",
+      "if",
+      "with",
+      "from",
+      "under",
+      "between",
+      "although",
+      "while",
+      "after",
+      "before",
+      "into",
+      "through",
+      "without",
+      "until",
+      "since",
+      "than"
+    ]
+  },
+  "slot_convention": "The item is inserted as its own embedding row replacing <X>; the template is tokenized with <X> removed and split into prefix/suffix at the slot; all rows of a batch share prefix and suffix so sequence length is fixed.",
+  "calibration_blocks": [
+    "question",
+    "instruction"
+  ],
+  "heldout_blocks": [
+    "comparison",
+    "enumeration"
+  ],
+  "presentation_pairs": {
+    "q_pair1": [
+      "question_1",
+      "question_2"
+    ],
+    "q_pair2": [
+      "question_3",
+      "question_4"
+    ],
+    "i_pair1": [
+      "instruction_1",
+      "instruction_2"
+    ],
+    "i_pair2": [
+      "instruction_3",
+      "instruction_4"
+    ],
+    "c_pair1": [
+      "comparison_1",
+      "comparison_2"
+    ],
+    "c_pair2": [
+      "comparison_3",
+      "comparison_4"
+    ],
+    "e_pair1": [
+      "enumeration_1",
+      "enumeration_2"
+    ],
+    "e_pair2": [
+      "enumeration_3",
+      "enumeration_4"
+    ]
+  },
+  "operational_controls": {
+    "note": "Negative controls for the interchangeability test (probe 4): pairs of templates with the same presentation register but a genuinely different operational role for <X> (question vs instruction; comparison vs enumeration). Frozen before capture.",
+    "control_pairs": [
+      [
+        "question_1",
+        "instruction_1"
+      ],
+      [
+        "question_3",
+        "instruction_3"
+      ],
+      [
+        "comparison_1",
+        "enumeration_1"
+      ],
+      [
+        "comparison_3",
+        "enumeration_3"
+      ]
+    ]
+  },
+  "probes": [
+    {
+      "block": "question",
+      "name": "question_1",
+      "template": "What does <X> mean to",
+      "pair": "q_pair1"
+    },
+    {
+      "block": "question",
+      "name": "question_2",
+      "template": "What could the <X> mean to",
+      "pair": "q_pair1"
+    },
+    {
+      "block": "question",
+      "name": "question_3",
+      "template": "Why would anyone <X> when",
+      "pair": "q_pair2"
+    },
+    {
+      "block": "question",
+      "name": "question_4",
+      "template": "Why on earth would anyone <X> when",
+      "pair": "q_pair2"
+    },
+    {
+      "block": "instruction",
+      "name": "instruction_1",
+      "template": "Describe <X> to",
+      "pair": "i_pair1"
+    },
+    {
+      "block": "instruction",
+      "name": "instruction_2",
+      "template": "Please describe the <X> to",
+      "pair": "i_pair1"
+    },
+    {
+      "block": "instruction",
+      "name": "instruction_3",
+      "template": "You should <X> before",
+      "pair": "i_pair2"
+    },
+    {
+      "block": "instruction",
+      "name": "instruction_4",
+      "template": "You really ought to <X> before",
+      "pair": "i_pair2"
+    },
+    {
+      "block": "comparison",
+      "name": "comparison_1",
+      "template": "Compared with <X>, this is",
+      "pair": "c_pair1"
+    },
+    {
+      "block": "comparison",
+      "name": "comparison_2",
+      "template": "Compared to the <X>, this one is",
+      "pair": "c_pair1"
+    },
+    {
+      "block": "comparison",
+      "name": "comparison_3",
+      "template": "It is more <X> than",
+      "pair": "c_pair2"
+    },
+    {
+      "block": "comparison",
+      "name": "comparison_4",
+      "template": "It is far more <X> than",
+      "pair": "c_pair2"
+    },
+    {
+      "block": "enumeration",
+      "name": "enumeration_1",
+      "template": "First <X>, then",
+      "pair": "e_pair1"
+    },
+    {
+      "block": "enumeration",
+      "name": "enumeration_2",
+      "template": "First the <X>, and then",
+      "pair": "e_pair1"
+    },
+    {
+      "block": "enumeration",
+      "name": "enumeration_3",
+      "template": "Examples include <X> and",
+      "pair": "e_pair2"
+    },
+    {
+      "block": "enumeration",
+      "name": "enumeration_4",
+      "template": "Some examples would include <X> and also",
+      "pair": "e_pair2"
+    }
+  ],
+  "frozen_sha256": "c6edaa92ddb522278d5a1ea3cbd8251ec4723c2b2f41d4225e402101c4dd1080",
+  "frozen_at": "2026-08-29 (before any capture)",
+  "not_token_ids": [
+    537
+  ],
+  "not_single_token_in_every_carrier": true
+}
