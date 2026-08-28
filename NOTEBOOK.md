@@ -33,54 +33,48 @@ the registered designs miss, or an implementation artefact of residual
 geometry — and what does either answer say about holes hostile to structured
 reasoning.
 
-What still holds: bounded, audited facts only (presentation sensitivity;
-X-linked residual predictability surviving two registered designs at F4–F20;
-F0 identity-dominated; ordering endpoint saturated). No state, no native law.
+Current bounded result: in the same sentinel-A cells and folds, X-linked residual predictability survives the registered `P_static` fit and the implemented rank-4-score `P_aug` fit at F4–F20. The raw F0 transition remains identity/token dominated, and the specific across-word within-carrier pairwise-KL ordering statistic is insensitive in this probe. These are correlated sensitivity results, not replications, and they identify neither operational state nor a native law. (Audit #15 wording.)
 
-What is reframed by A-aug: the "presentation vs state" question is no longer
-answerable by adding registered coordinates — every finite design leaves a
-residual, and the residual keeps predicting. The decisive tests are now the
-two Round 27 comparators: a calibration-only interaction field (can smooth
-presentation×lexical structure do it without cell X⊥?) and a fully refitted
-permutation null (is the aligned relation real or a geometry artefact?).
-Both are implemented; both run after the chain.
+What is reframed by A-aug (audit #15 wording): A-aug shows only that two nested, registered linear/low-rank nuisance fits on the same sentinel-A cells do not absorb the `X⊥–Δ⊥` association. It does not show that every finite presentation design will leave a predictive residual or that the residual is operational state. The two Round 27 comparators are the next within-dataset controls: the registered X-free interaction field tests whether a fixed low-rank presentation/lexical family can reproduce the association without cell-level `X⊥`, and the refitted permutation null tests whether the observed alignment exceeds residual-geometry null refits. Neither is decisive for operational state, because an aligned cell-level prefix/carrier fingerprint can beat both.
 
 Tunnel-vision check — honest: everything queued is one decoder, one template
 population, one move, one sentinel pair. Live alternatives held open:
-(a) the relation is a property of residual-stream geometry generic to any
-   trained decoder → the second family (pinned protocol) decides, cheaply;
+(a) A second pinned decoder is a relatively cheap replication check for decoder specificity; one additional decoder cannot decide whether the relation is generic or identify its mechanism.
 (b) the relation is template-population-specific → a fresh authored style
    family, held out entirely, is a cheaper test than another comparator;
-(c) "consequence" is under-measured: KL at one slot may miss what structured
-   reasoning needs — a two-step closure test (predict Δ, write back, predict
-   the next Δ from the written state) is the first multi-step measurement
-   and is CPU-feasible on existing captures plus one extra forward pass;
-(d) the hole may already be visible: no quotient in the current space
-   separates lexical / presentation / operational coordinates — the fact that
-   three designs cannot exhaust presentation while X⊥ keeps predicting is
-   itself evidence the coordinates are entangled by construction; the
-   cheapest sharpening is to test whether a controlled presentation change
-   (same word, same block, different carrier) alters the downstream law more
-   than a controlled lexical change of matched displacement norm.
-Audit #15's independent alternatives will be appended verbatim below when it
-lands; none of the above starts before the locked Round 27 order completes.
+(c) A two-step writeback test requires a new intervention capture rather than existing captures alone, but current timings suggest roughly 10–20 minutes of CPU capture plus about one hour of targeted scoring.
+(d) The present evidence does not yet prove a structural quotient hole. Failure of two nested nuisance fits shows that the chosen coordinates are incomplete; it does not show that lexical, presentation, and operational coordinates are entangled by construction. The cheapest sharpening is a controlled interchangeability test in which semantically equivalent presentation variants are required to preserve the same moves and downstream laws.
+Audit #15 (verbatim in .codex_audit15.md; adopted into theory/EXPERIMENTS.md):
+the queue is "strongly tunnel-visioned" — one decoder, one authored template
+population, one punctuation-append move, one self-readout; the strongest
+alternative both queued comparators miss is a high-dimensional prefix/carrier
+fingerprint (aligned, cell-level, compatible with unseen-word transfer and law
+improvement); CPU-only alternatives it ranks ahead of the ~100 CPU-h
+Freedman–Lane expansion: full carrier-summary rank ladder {1,2,4,8,full} +
+nonlinear carrier kernel; contextual X-free baseline from full tokenized
+prefix features; a fresh frozen template population (16×80); a different
+move (content-bearing append, negation/operator insertion, binding update);
+a matched presentation-interchangeability test; two-step writeback; second
+pinned decoder. The order change is a Codex decision (round 29).
 
 ## 2026-08-29 — Residualization A-aug: the X⊥ lead survives the augmented presentation design at every layer
 
-- 4738 s of the 7200 s wall; sentinel '.'; P_aug = P_static + leave-word-out
-  carrier mean of X + rank-4 calibration-carrier subspace scores; cross-
+- 4738 s of the 7200 s wall; sentinel '.'; `P_aug` uses `P_static` plus at most four scores obtained by
+  projecting a leave-calibration-word-pool carrier mean of `X` into a basis
+  learned from calibration carriers; the full carrier-mean vector is not
+  appended (audit #15); cross-
   fitted out of both X and Δ; unseen-word folds; K = 13; class-preserving
   crossed bootstrap; same-run raw four-null shadow and common-scale
   retention block present.
-- **F0, F4, F8, F12, F20 all pass** the residual-vs-null gate. F0 now passes
+- All five correlated checkpoints meet the registered aggregate residual-vs-null gate. F0 is qualitatively weaker — only 2/8 keys clear the full per-key gate — and is not an independent confirmation of the F4–F20 profile. F0 now passes
   (residual cosine 0.34 vs −0.01; block-first skill +0.16 [LB 0.02],
   KL-rank +0.30 [0.12]) — the carrier-mean and subspace coordinates absorb
   what made F0 fail under P_static. F4–F20: X⊥-ridge 0.56–0.62 vs 0.06–0.07;
   block-first leads cos +0.50–0.56, skill +0.35–0.46, KL-rank +0.43–0.56;
   6–8/8 keys; no block collapse.
-- Presentation-only arm (P_aug → Δ) 0.45–0.64 by layer.
+- `P_aug` nuisance-only carrier-summary arm (P_aug → Δ) 0.45–0.64 by layer; because its scores are derived from carrier-level X, this is not a presentation-only estimate or a variance share.
 - Under Round 23's predeclared readings this is the non-collapse branch for
-  P_aug as well: the presentation concern is narrowed, not eliminated
+  P_aug as well: the registered static and rank-4-score nuisance fits do not absorb the association; broader presentation, carrier-geometry, and prefix-fingerprint explanations remain fully live
   (unmeasured presentation remains possible; audit #14's Freedman–Lane
   residual-geometry null and calibration-only presentation/lexical
   comparator are the next preregistered tests). Wording per audits
