@@ -84,6 +84,101 @@ def capture(a):
     print(json.dumps(manifest, indent=2))
 
 
+def op_update_expected_structure(cfg, rows, src_idx, rec_idx, slot_pos, read_pos, seq_len, f0_diff):
+    """The exact update_structure records (shared definition with the analyzer; order = frozen row order)."""
+    return [{"id": r_["id"], "family": r_["family"], "wrapper": r_["wrapper"], "source": r_["source"], "recipient": r_["recipient"], "source_slot": int(slot_pos[si]), "recipient_slot": int(slot_pos[ri]),
+             "source_len": int(seq_len[si]), "recipient_len": int(seq_len[ri]), "same_items": True, "f0_max_abs_diff_float32": float(f0_diff[k_])} for k_, (r_, si, ri) in enumerate(zip(rows, src_idx, rec_idx))]
+
+
+def op_update_rows(cfg):
+    """Normalized view of cfg['operation_updates'] (v4 schema): rows [{id, source, recipient, family, wrapper}], trajectory pairs
+    {cluster_id: [row_id, row_id]}, trajectory controls [[row_id, row_id], ...]. Order is the config's order (frozen by the contract)."""
+    u = cfg["operation_updates"]
+    rows = [{"id": r["id"], "source": r["source_template"], "recipient": r["recipient_template"], "family": r["update_family"], "wrapper": r["wrapper"]} for r in u["update_pairs"]]
+    tpairs = {c["id"]: list(c["trajectories"]) for c in u["trajectory_presentation_pair_clusters"]}
+    tctrls = [list(c["trajectories"]) for c in u["trajectory_controls"]]
+    return rows, tpairs, tctrls
+
+
+def capture_op_update(a):
+    """Stage 1 (layer-mode capture): for each carrier template and item, the hidden state at the word slot at every hidden index and the
+    next-token law at the word slot (the last position when the suffix is empty). Legacy invocation writes states.npz / manifest.json.
+    Round 31 operation-update invocation (--tag OP_UPDATE --repeat-null --expected-config-sha256 <approved raw sha>) writes
+    states_<tag>.npz / manifest_<tag>.json with the locked extra arrays and provenance; it refuses populations that are not approved
+    (v1 NOT machinery, voided v2, or any config without an 'operation_updates' block and an approval record)."""
+    t0 = time.time()
+    if True:
+        cfg, prov = load_config_checked(a)
+        assert a.tag == "OP_UPDATE" and a.repeat_null and a.expected_config_sha256, "the operation-update capture is invoked as: capture --tag OP_UPDATE --repeat-null --expected-config-sha256 <approved raw sha>"
+        assert "operation_updates" in cfg and cfg.get("approval", {}).get("linguistic_adversary") == "APPROVE" and cfg.get("approval", {}).get("tokenization") == "PASS" and cfg.get("status") == "approved_frozen", "operation-update capture requires an approved, frozen population (adversary APPROVE + tokenization PASS + status approved_frozen) with an 'operation_updates' block"
+        _u = cfg["operation_updates"]; _rows, _tp, _tc = op_update_rows(cfg)
+        assert _u.get("directionality") == "forward_only" and _u.get("move_kind") == "operation_verb_update" and _u.get("move_tag") == "OP_UPDATE", "operation_updates block: directionality/move_kind/move_tag"
+        assert len(_rows) == 8 and len({r_["id"] for r_ in _rows}) == 8 and list(_u["update_families"]) == ["repeat_to_omit", "capitalize_to_reverse"] and len(_u["wrappers"]) == 4 and all(sum(1 for r_ in _rows if r_["wrapper"] == w) == 2 for w in _u["wrappers"]), "operation_updates block: exactly eight unique rows, two per wrapper"
+        assert all(r_["source_operation"] != r_["recipient_operation"] for r_ in _u["update_pairs"]) and len(_tp) == 4 and len(_tc) == 4, "operation_updates block: source/recipient operations and trajectory maps"
+        assert cfg["name"] not in ("lexical_probe_fresh_v1", "lexical_probe_fresh_v2", "lexical_probe_fresh_v3"), "v1, v2 and v3 populations are void for this capture"
+    sp = SubstitutionProbe(a.model)
+    L = int(sp.model.config.num_hidden_layers)
+    items = [w for pos in cfg["items"] for w in cfg["items"][pos]]
+    pos = [p for p in cfg["items"] for _ in cfg["items"][p]]
+    ids = [sp.single_token_id(w) for w in items]
+    if not all(i is not None for i in ids): raise PopulationVoid("non-single-token item")
+    states = torch.stack([sp.state(i) for i in ids]); n = len(items); D = sp.E.shape[1]; V = sp.E.shape[0]; P = len(cfg["probes"])
+    Z = np.zeros((P, L + 1, n, D), dtype=np.float16); laws = np.zeros((P, n, V), dtype=np.float16)
+    rep_l2 = np.full((P, L + 1, n), np.nan, dtype=np.float32) if a.repeat_null else None; rep_kl = np.full((P, n), np.nan, dtype=np.float32) if a.repeat_null else None
+    slot_pos, read_pos, seq_len, tok_pre, tok_suf, null_max = [], [], [], [], [], 0.0
+    H0 = np.zeros((P, n, D), dtype=np.float32)                                                      # layer-0 word-slot states in float32 for the F0 control
+    for pi, p in enumerate(cfg["probes"]):
+        pre, suf = split_template(p["template"])
+        pre_ids = sp.tok.encode(pre, add_special_tokens=False); suf_ids = sp.tok.encode(suf, add_special_tokens=False)
+        seq, slot = sp._build(Probe(p["name"], p["block"], pre, suf), states)
+        if slot != len(pre_ids): raise PopulationVoid(f"{p['name']}: word slot {slot} != prefix length {len(pre_ids)}")
+        readout = seq.shape[1] - 1                                                   # law read at the last position (== slot when the suffix is empty)
+        slot_pos.append(int(slot)); read_pos.append(int(readout)); seq_len.append(int(seq.shape[1])); tok_pre.append(pre_ids); tok_suf.append(suf_ids)
+        for i in range(0, n, a.batch):
+            with torch.no_grad():
+                o = sp.model(inputs_embeds=seq[i:i + a.batch], output_hidden_states=True)
+                o2 = sp.model(inputs_embeds=seq[i:i + a.batch], output_hidden_states=True) if a.repeat_null else None
+            H0[pi, i:i + a.batch] = o.hidden_states[0][:, slot, :].float().numpy()
+            for l in range(L + 1):
+                h = o.hidden_states[l][:, slot, :].float(); Z[pi, l, i:i + a.batch] = h.numpy().astype(np.float16)
+                if o2 is not None: rep_l2[pi, l, i:i + a.batch] = (o2.hidden_states[l][:, slot, :].float() - h).norm(dim=1).numpy()   # absolute float32 L2 (normalized later by the analyzer)
+            q = torch.log_softmax(o.logits[:, readout, :].float(), -1); laws[pi, i:i + a.batch] = q.numpy().astype(np.float16)
+            if o2 is not None:
+                q2 = torch.log_softmax(o2.logits[:, readout, :].float(), -1); rep_kl[pi, i:i + a.batch] = (q.exp() * (q - q2)).sum(-1).numpy()
+            if i == 0 and pi == 0:                                                   # batched-vs-single numerical null (legacy manifest field)
+                with torch.no_grad():
+                    o1 = sp.model(inputs_embeds=seq[:1], output_hidden_states=True)
+                null_max = float((o1.hidden_states[L][0, slot, :].float() - o.hidden_states[L][0, slot, :].float()).abs().max())
+        print(f"  {p['name']:14s} captured (slot={slot}, readout={readout}, len={seq.shape[1]}) ({time.time() - t0:.0f}s)", flush=True)
+    out_dir = RESULTS / a.out; out_dir.mkdir(parents=True, exist_ok=True)
+    # ---- Round 31 operation-update artifact ----
+    upd = cfg["operation_updates"]; name2idx = {pr["name"]: i for i, pr in enumerate(cfg["probes"])}
+    rows, tpairs, tctrls = op_update_rows(cfg); src_idx = [name2idx[r["source"]] for r in rows]; rec_idx = [name2idx[r["recipient"]] for r in rows]
+    for r_, si, ri in zip(rows, src_idx, rec_idx):
+        if not (suf_empty := (len(tok_suf[si]) == 0 and len(tok_suf[ri]) == 0)): raise PopulationVoid(f"{r_['id']}: suffix must be empty (template-final slot)")
+        if not (slot_pos[si] == read_pos[si] == seq_len[si] - 1 and slot_pos[ri] == read_pos[ri] == seq_len[ri] - 1): raise PopulationVoid(f"{r_['id']}: slot = readout = len-1 must hold")
+    f0_diff = [float(np.abs(H0[ri] - H0[si]).max()) for si, ri in zip(src_idx, rec_idx)]        # float32 forward states: same mentioned-word embedding -> exactly zero
+    if not all(np.isfinite(v) and v == 0.0 for v in f0_diff): raise PopulationVoid(f"F0 alignment control violated: {f0_diff}")
+    fname = f"states_{a.tag}.npz"
+    arrays = {"Z": Z, "laws": laws, "slot_position": np.array(slot_pos), "readout_position": np.array(read_pos), "sequence_len": np.array(seq_len),
+              "items": np.array(items), "pos": np.array(pos), "probes": np.array([p["name"] for p in cfg["probes"]]), "blocks": np.array([p["block"] for p in cfg["probes"]])}
+    if a.repeat_null: arrays.update({"repeat_slot_l2": rep_l2, "repeat_readout_kl": rep_kl})
+    np.savez_compressed(out_dir / fname, **arrays)
+    h = lambda obj: hashlib.sha256(json.dumps(obj, ensure_ascii=False).encode()).hexdigest()
+    extra = {"stage": "capture", "move_kind": "operation_verb_update", "move_tag": a.tag, "directionality": upd.get("directionality", "forward_only"), "source_alignment": "word_token", "readout_kind": "recipient_word_slot",
+             "approval": cfg.get("approval"), "update_rows": rows, "update_row_order": [r["id"] for r in rows], "source_probe_idx": src_idx, "recipient_probe_idx": rec_idx,
+             "update_families": upd.get("update_families"), "wrappers": upd.get("wrappers"), "trajectory_pairs": tpairs, "trajectory_controls": tctrls,
+             "update_rows_sha256": h(rows), "trajectory_pairs_sha256": h(tpairs), "trajectory_controls_sha256": h(tctrls), "presentation_pairs_sha256": h(cfg.get("presentation_pairs")), "punctuation_controls_sha256": h(cfg.get("operational_controls", {}).get("control_pairs")),
+             "prefix_token_ids": tok_pre, "suffix_token_ids": tok_suf, "slot_position": slot_pos, "readout_position": read_pos, "sequence_len": seq_len,
+             "suffix_empty_all": True, "slot_eq_readout_eq_len_minus_1_all": True, "f0_max_abs_diff_by_update": f0_diff,
+             "update_structure": op_update_expected_structure(cfg, rows, src_idx, rec_idx, slot_pos, read_pos, seq_len, f0_diff),
+             "repeat_null": ({"repeat_slot_l2_q99_layers_4_20": float(np.nanpercentile(rep_l2[:, [4, 8, 12, 20]], 99)), "repeat_readout_kl_q99": float(np.nanpercentile(rep_kl, 99)), "note": "full per-cell arrays stored in the npz"} if a.repeat_null else None),
+             "n_items": n, "batched_vs_single_max_abs_diff_final_layer": null_max, "seconds": round(time.time() - t0, 1)}
+    manifest = common_manifest(a, sp, cfg, prov, arrays, out_dir, fname, extra)
+    (out_dir / f"manifest_{a.tag}.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    print(json.dumps({k: v for k, v in manifest.items() if k not in ("prefix_token_ids", "suffix_token_ids", "argv", "update_rows")}, indent=2))
+
+
 class PopulationVoid(RuntimeError):
     """A prospective-population validity control failed: the whole population is void (no replacement, no retry)."""
 
@@ -109,8 +204,11 @@ def load_config_checked(a):
     if blob != head_blob: raise PopulationVoid(f"config bytes blob {blob} != {head[:7]}:{rel} blob {head_blob}: commit the frozen config first")
     h = lambda obj: hashlib.sha256(json.dumps(obj, ensure_ascii=False).encode()).hexdigest()          # insertion order preserved (no key sorting)
     items_flat = [w for pos in cfg["items"] for w in cfg["items"][pos]]
-    prov = {"config_path": a.config, "config_sha256_raw": raw_sha, "config_git_blob": blob, "config_git_commit": head, "config_declared_sha256": cfg.get("frozen_sha256"),
-            "items_sha256": h(items_flat), "templates_sha256": h([[pr["name"], pr["block"], pr["template"], pr.get("pair")] for pr in cfg["probes"]]),
+    declared = getattr(a, "expected_config_sha256", "") or cfg.get("frozen_sha256")
+    if declared: assert declared == raw_sha, f"declared/expected digest {declared} != raw sha256 {raw_sha}"
+    prov = {"config_path": a.config, "config_sha256_raw": raw_sha, "config_git_blob": blob, "config_git_commit": head, "config_declared_sha256": declared,
+            "approval": cfg.get("approval"), "status": cfg.get("status"),
+            "items_sha256": h(items_flat), "templates_sha256": h([[pr["name"], pr["block"], pr.get("operation"), pr["template"], pr.get("pair")] for pr in cfg["probes"]]),
             "presentation_pairs_sha256": h(cfg.get("presentation_pairs")), "operational_controls_sha256": h(cfg.get("operational_controls"))}
     return cfg, prov
 
@@ -139,6 +237,7 @@ def capture_insert(a):
     the population before anything is saved. No sentinel. No scoring."""
     t0 = time.time()
     cfg, prov = load_config_checked(a)
+    if cfg["name"] != "lexical_probe_fresh_v1" or a.tag == "OP_UPDATE": raise PopulationVoid("capture_insert is v1 NOT-insertion machinery only (historical); v2/v3 are void and OP_UPDATE uses the capture stage")
     sp = SubstitutionProbe(a.model)
     L = int(sp.model.config.num_hidden_layers)
     items = [w for pos in cfg["items"] for w in cfg["items"][pos]]
@@ -304,6 +403,9 @@ def main():
     c = sub.add_parser("capture")
     c.add_argument("--config", required=True); c.add_argument("--model", default="Qwen/Qwen3-0.6B")
     c.add_argument("--batch", type=int, default=16); c.add_argument("--out", required=True)
+    c.add_argument("--tag", default="", help="Round 31: OP_UPDATE writes states_<tag>.npz / manifest_<tag>.json with the operation-update contract")
+    c.add_argument("--repeat-null", action="store_true", help="Round 31: store repeat_slot_l2[P,L+1,N] and repeat_readout_kl[P,N] fixed-input noise arrays")
+    c.add_argument("--expected-config-sha256", default="", help="Round 31 provenance: fail before loading the model if the raw config bytes differ")
     f = sub.add_parser("capture_forward")
     f.add_argument("--config", required=True); f.add_argument("--model", default="Qwen/Qwen3-0.6B")
     f.add_argument("--batch", type=int, default=16); f.add_argument("--out", required=True)
@@ -315,7 +417,7 @@ def main():
     f.add_argument("--expected-config-sha256", default="", help="Round 30 provenance: fail before loading the model if the raw config bytes differ")
     a = ap.parse_args()
     if a.stage == "capture":
-        capture(a)
+        capture_op_update(a) if a.tag else capture(a)
     elif a.stage == "capture_forward":
         capture_insert(a) if a.insert_before_slot else capture_forward(a)
 
