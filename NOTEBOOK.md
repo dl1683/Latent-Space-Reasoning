@@ -5,7 +5,7 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
-## 2026-08-29 — Re-contextualization #16 (2-hour step-back; audit #16 running)
+## 2026-08-29 — Re-contextualization #16 (2-hour step-back; audit #16 fired and adopted in Round 31)
 
 Live question unchanged: is the surviving X⊥→Δ⊥ predictability in one small
 decoder an operational-state relation, a smooth presentation/lexical relation
@@ -41,11 +41,10 @@ Nothing in probes 2–4 starts on fresh v1: finish the protected running chain, 
   (4) fresh-population analysis; (5) different-move analysis; (6) registered
   X-free field ×4; (7) Freedman–Lane on A-static only, conditionally; (8)
   second pinned decoder. The armed X-free chain was killed.
-- Probe 2 population was prospectively authored and committed before any new capture or score, but not independently blind to prior results. Its declared digest `c6edaa92…` is not the raw file SHA-256 (`12c72401…`), and audit #16 voids its eight-pair presentation-equivalence claim before capture. Original note: frozen before any capture
-  (`experiments/config/lexical_probe_fresh_v1.json`, sha256 c6edaa92…):
+- Probe 2 population (`experiments/config/lexical_probe_fresh_v1.json`;
   families question / instruction / comparison / enumeration, 8 matched
   presentation pairs, 4 operational control pairs, same 80 words; ` not`
-  (id 537) appends as exactly one token to every prefix.
+  (id 537) appends as exactly one token to every prefix) was prospectively authored and committed before any new capture or score, but not independently blind to prior results. Its declared digest `c6edaa92…` is not the raw file SHA-256 (`12c72401…`), and audit #16 voids its eight-pair presentation-equivalence claim before capture. The file stays unchanged as an exploratory stress set only; a v2 population under a predeclared all-POS contract replaces it (Round 31).
 - Round 30 completed its review and ruled probe 1 NOT-READY; its six repairs remain a prerequisite, while probes 2–4 are additionally paused by audit #16's population-validity failure.
 
 ## 2026-08-29 — Residualization B-static: a correlated second-sentinel check takes the same bounded P_static branch
@@ -72,7 +71,7 @@ reasoning.
 
 Current bounded result: in the same sentinel-A cells and folds, X-linked residual predictability survives the registered `P_static` fit and the implemented rank-4-score `P_aug` fit at F4–F20. The raw F0 transition remains identity/token dominated, and the specific across-word within-carrier pairwise-KL ordering statistic is insensitive in this probe. These are correlated sensitivity results, not replications, and they identify neither operational state nor a native law. (Audit #15 wording.)
 
-What is reframed by A-aug (audit #15 wording): A-aug shows only that one registered P_static fit and one implemented, contract-qualified P_aug-score4 sensitivity on the same sentinel-A cells on the same sentinel-A cells do not absorb the `X⊥–Δ⊥` association. It does not show that every finite presentation design will leave a predictive residual or that the residual is operational state. The two Round 27 comparators are the next within-dataset controls: the registered X-free interaction field tests whether a fixed low-rank presentation/lexical family can reproduce the association without cell-level `X⊥`, and the refitted permutation null tests whether the observed alignment exceeds residual-geometry null refits. Neither is decisive for operational state, because an aligned cell-level prefix/carrier fingerprint can beat both.
+What is reframed by A-aug (audit #15 wording): A-aug shows only that one registered P_static fit and one implemented, contract-qualified P_aug-score4 sensitivity on the same sentinel-A cells do not absorb the `X⊥–Δ⊥` association. It does not show that every finite presentation design will leave a predictive residual or that the residual is operational state. The two Round 27 comparators are the next within-dataset controls: the registered X-free interaction field tests whether a fixed low-rank presentation/lexical family can reproduce the association without cell-level `X⊥`, and the refitted permutation null tests whether the observed alignment exceeds residual-geometry null refits. Neither is decisive for operational state, because an aligned cell-level prefix/carrier fingerprint can beat both.
 
 Tunnel-vision check — honest: everything queued is one decoder, one template
 population, one move, one sentinel pair. Live alternatives held open:
@@ -100,8 +99,7 @@ pinned decoder. The order change is a Codex decision (round 29).
 - 4738 s of the 7200 s wall; sentinel '.'; `P_aug` uses `P_static` plus at most four scores obtained by
   projecting a leave-calibration-word-pool carrier mean of `X` into a basis
   learned from calibration carriers; the full carrier-mean vector is not
-  appended (audit #15); cross-
-  fitted out of both X and Δ; unseen-word folds; K = 13; class-preserving
+  appended (audit #15); cross-fitted out of both X and Δ; unseen-word folds; K = 13; class-preserving
   crossed bootstrap; same-run raw four-null shadow and common-scale
   retention block present.
 - All five correlated checkpoints meet the registered aggregate residual-vs-null gate. F0 is qualitatively weaker — only 2/8 keys clear the full per-key gate — and is not an independent confirmation of the F4–F20 profile. F0 numbers

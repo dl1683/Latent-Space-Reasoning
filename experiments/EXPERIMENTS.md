@@ -5,7 +5,7 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
-## NLM-007 — LM residual-stream dynamics; middle-depth ridge lead withdrawn under the identity baseline; displacement ladder adjudicated (audit #8 wording); forward-time move adjudicated NOT MET = nonpass, not a kill (Round 20, audit #9); within-style null = diagnostic only (both arms); LOCO A/B within-family positive, bounded (audit #10 wording; adjudicated Round 22); equalized addendum defect-affected, descriptive only (audit #11); unseen-word runs A/B mechanical pass, formal gate pending (Round 23, audit #12); corrected equalized reruns contract-correct (A adjudicated Round 25; B pending); residualization A-static contract-valid, adjudicated Round 26 as corrected by audit #14 (registered-presentation sensitivity + surviving X-linked residual predictability; neither state nor presentation-independence); A-augmented (`P_aug-score4`) adjudicated Round 27 as corrected by audit #15 (nested sensitivity on the same sentinel-A cells, not a replication; outcome-clean but transductive within carrier); B-static adjudicated Round 28 (F4–F20 pass, F0 fails, as A-static); B-augmented running, patched A-static queued; two Round 27 comparators implemented behind analyzer flags (X-free field frozen and queued; Freedman–Lane null ready, not armed pending Codex round 29); retention marker non-commensurate (audit #13) (2026-08-29)
+## NLM-007 — LM residual-stream dynamics; middle-depth ridge lead withdrawn under the identity baseline; displacement ladder adjudicated (audit #8 wording); forward-time move adjudicated NOT MET = nonpass, not a kill (Round 20, audit #9); within-style null = diagnostic only (both arms); LOCO A/B within-family positive, bounded (audit #10 wording; adjudicated Round 22); equalized addendum defect-affected, descriptive only (audit #11); unseen-word runs A/B mechanical pass, formal gate pending (Round 23, audit #12); corrected equalized reruns contract-correct (A adjudicated Round 25; B pending); residualization A-static contract-valid, adjudicated Round 26 as corrected by audit #14 (registered-presentation sensitivity + surviving X-linked residual predictability; neither state nor presentation-independence); A-augmented (`P_aug-score4`) adjudicated Round 27 as corrected by audit #15 (nested sensitivity on the same sentinel-A cells, not a replication; outcome-clean but transductive within carrier); B-static adjudicated Round 28 as corrected by audit #16 (F4–F20 pass, F0 fails; a correlated two-sentinel check, not replication); B-augmented relaunched after two torch-SVD non-convergence failures (not a result); patched A-static queued; Round 29 order in force (audit #15): X-free chain disarmed, Freedman–Lane conditional on one A-static cell; capture extension committed (`4137258`); fresh population v1 frozen then design-void for confirmatory probes 2–4 (audit #16; exploratory stress set only); retention marker non-commensurate (audit #13) (2026-08-29)
 
 - **Lock.** Round 13, documentation-only (ledger `nlm007_round13_lock`;
   design `theory/dialogue/003.md`, `theory/EXPERIMENTS.md`); Round 14
@@ -158,8 +158,16 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
     contract, common-scale field present (ledger `nlm007_resid_resSB`;
     4598.4 s; support 1.0). **Contract-valid; adjudicated Round 28.**
     Reading below.
-  - `analysis_resAB.json` — B-augmented, same contract. **Running**; no
-    score opened.
+  - `analysis_resAB.json` — B-augmented, same contract. **Relaunched; not
+    a result.** Two launches died at the same fold key (F8 grammar_w1,
+    22–23/40 keys): torch `linalg.svd` failed to converge on the fitted
+    low-rank coefficient matrix (ledger `nlm007_resid_resAB_crash`,
+    `nlm007_resid_resAB_crash2`; the first loss was misread as a silent
+    process death). Audit #16 wording: repeatable numerical-instrument
+    non-robustness, not evidence of ill-conditioned `X⊥` until finite-input
+    and spectral diagnostics localize the cause. Third launch runs with a
+    numpy float64 LAPACK SVD fallback (identical factorization where torch
+    converges); no score opened.
   - `analysis_resSA2.json` — patched A-static rerun (identical design to
     `resSA`, common-scale retention block; ledger
     `nlm007_resid_resSA2_predeclared`). **Queued** after `resAB`; required
@@ -172,18 +180,36 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
     df-matched state ridge; ledger `nlm007_xfree_field_predeclared`,
     `nlm007_xfree_comparator_implemented`, frozen at analyzer `cddcd47`
     with the literal command in `nlm007_xfree_comparator_frozen`).
-    **Queued** behind `resSA2`, four cells, 7200 s each; "registered", not
-    "fair" (audit #15: the fixed rank-4/full-prefix omissions remain
-    substantive). No artifact yet.
+    Four cells, 7200 s each; "registered", not "fair" (audit #15: the fixed
+    rank-4/full-prefix omissions remain substantive). **Disarmed** (ledger
+    `nlm007_xfree_chain_disarmed`): the armed chain was killed under the
+    Round 29 order and sits behind the external-axis probes. No artifact.
   - `analysis_fl{SA,SB,AA,AB}.json` — Round 27 comparator 1, the fully
     refitted Freedman–Lane residual-geometry null (`--fl-null 20`:
     layer-level exact test, common cell mask, ridge-only inner grid; ledger
     `nlm007_freedman_lane_predeclared`,
-    `nlm007_flnull_comparator_implemented`). **Ready, not armed**: audit
-    #15 ranks cheaper external-axis probes (carrier-summary rank ladder,
-    contextual prefix X-free baseline, fresh template population, different
-    move, presentation-interchangeability test) ahead of the ~100 CPU-h
-    four-cell expansion; Codex round 29 decides the order. No artifact.
+    `nlm007_flnull_comparator_implemented`). **Ready, not armed**: Round 29
+    (adopting audit #15) limits it to one conditional A-static cell, run
+    only if the external-axis probes leave the state reading live. No
+    artifact.
+  - `experiments/config/lexical_probe_fresh_v1.json` — Round 29 probe-2
+    population (ledger `nlm007_fresh_population_frozen`): four families
+    question / instruction / comparison / enumeration, 8 matched
+    presentation pairs + 4 operational control pairs, same 80 words; ` not`
+    (id 537) is a single token on every prefix. Prospectively authored and
+    committed before any new capture or score, not independently blind to
+    prior results; the declared digest `c6edaa92…` is not the raw file
+    SHA-256 (`12c72401…`). **Design-void for confirmatory probes 2–4
+    (audit #16)**: no pair establishes presentation-only equivalence across
+    all four word classes, and several change syntactic licensing, modality,
+    definiteness, degree, or quantification. Retained unchanged as an
+    exploratory mixed-frame stress set only; no post hoc subset rescue is
+    confirmatory. No capture. A v2 population under a predeclared 12-point
+    all-POS contract replaces it (Round 31).
+  - Capture extension (`4137258`, Round 30; no artifact): `run_lm_dynamics.py`
+    gains a config provenance guard (`--expected-config-sha256`), the ` not`
+    operator-insertion capture, repeat-noise arrays, and population-void
+    hard controls. RUN-READY; nothing captured under it yet.
   - `analysis_unseensmoke.json` — `--unseen-words 2` pipeline smoke at F8, A
     (1 shuffle / 10 boot; ledger `nlm007_unseen_smoke_F8A`, overwritten by
     `nlm007_unseen_smoke2_F8A` with the audit #10 lexical nulls and the
@@ -372,8 +398,9 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   negative control. Not a cosine-geometry mirage (audit #14): the ridge
   cosine falls from raw 0.65–0.76 to residual 0.56–0.62 while the nulls
   fall to ~0.06; shuffled q95 ≤ 0.13; residual normalized error 0.78–0.83.
-  Presentation-only `P_static→Δ` arm: held-out cosine 0.43–0.63 by layer —
-  a cosine, never a variance share, fraction, or "explains 42%". Adopted
+  Registered-static-metadata arm (`P_static→Δ`): held-out cosine 0.43–0.63
+  by layer — a cosine, never a variance share, fraction, or "explains 42%";
+  not a pure presentation component (audit #16). Adopted
   ruling: "`P_static` took the non-collapse branch. Locally, the result
   establishes registered-presentation sensitivity and survival of X-linked
   residual predictability after cross-fitted removal of those registered
@@ -427,14 +454,20 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   fails (cosine lead +0.27 but pooled skill negative — the −7.5 skill is
   driven by two association folds near −30, locally ill-conditioned
   normalization, not uniform failure — and KL-rank lower bound < 0; gloss and
-  association collapse), as under A-static. Presentation-only `P_static→Δ`
-  arm 0.41–0.63 cosine by layer (a cosine, not a variance share).
+  association collapse), as under A-static. Registered-static-metadata arm
+  (`P_static→Δ`) 0.41–0.63 cosine by layer (a cosine, not a variance share
+  or a pure presentation component).
   Common-scale retention passes at the bootstrap median for every F4–F20
   endpoint; F4 continuous-KL lower bound 0.426 blocks a uniform interval
-  claim; joint static retention awaits `resSA2`. Ruling: A-static plus
-  B-static establish two-sentinel registered-presentation sensitivity and
-  surviving X-linked residual predictability under `P_static`; they do not
-  establish state, presentation independence, mediation, or a native law.
+  claim; joint static retention awaits `resSA2`; the ratios are
+  robustness ratios, not retained signal, state, or mediation. Ruling
+  (Round 28 as corrected by audit #16): across the correlated A/B static
+  runs, registered block/length/position metadata predict raw
+  displacement, and `X⊥` retains predictive association with `Δ⊥` beyond
+  four X-free lexical nulls at F4–F20. This is a two-sentinel robustness
+  result within one decoder and authored population — a correlated
+  second-sentinel check, not independent replication, state, presentation
+  independence, mediation, or a native law.
 - **Oracle defect (ledger `nlm007_oracle_defect_forward`).** The per-carrier
   oracle read the stored states directly; in forward and delta mode it
   predicted X from X, so the ~0.98 oracle values in `analysis_fwdA/B`,
@@ -470,12 +503,19 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   corrected by audit #15) — correlated sensitivities, not replications; the
   registered nuisance fits do not absorb the association, and presentation,
   carrier-geometry, and prefix-fingerprint accounts remain live. Bounded to
-  one decoder and one authored template population. Round 27 locked order:
-  `resAB` (running) → `resSA2` → registered X-free field ×4 → Freedman–Lane
-  ×4 → second family; audit #15 asks that cheaper external-axis probes
-  (carrier-summary rank ladder, contextual prefix X-free baseline, fresh
-  template population, different move, presentation-interchangeability
-  test) precede the Freedman–Lane expansion — Codex round 29 decides.
+  one decoder and one authored template population. Round 29 order
+  (adopting audit #15; ledger `nlm007_round29_order`): `resAB` (relaunched)
+  → `resSA2` → probe 1 (carrier-summary rank ladder {1,2,4,8,full} +
+  nonlinear kernel screen; one `P_aug-full` cell, sentinel A; repairs
+  required per Round 30) → a linguistically valid v2 population under the
+  12-point contract (v1 void, audit #16) → contextual-prefix X-free
+  baseline + bridge screen → interchangeability → registered X-free field
+  ×4 → Freedman–Lane on A-static only, conditionally → second decoder.
+  Two further lessons: a numerical instrument that fails to converge is a
+  finding about the instrument until diagnostics say otherwise (B-aug), and
+  a template population must pass a predeclared linguistic contract before
+  any capture, or the presentation axis it is meant to test is not defined
+  (audit #16).
 
 ## Round 12 closure — frozen-encoder program closed; pivot to worlds with dynamics (2026-08-27)
 
