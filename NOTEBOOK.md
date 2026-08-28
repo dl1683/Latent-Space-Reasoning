@@ -5,6 +5,15 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Equalized LOCO addendum, sentinel ',' (defect-affected; descriptive only)
+
+- 2977 s. Same pattern as the '.' arm under the audit #11 defect (inner
+  centre included the validation carrier): equalized baselines equal the
+  shared mean at every layer; F12/F20 pass the mechanical gate, F4/F8 miss
+  on skill/KL-rank lower bounds, F0 fails. Outer margins are descriptive
+  only; the corrected rerun (locoeq2A/B) is queued behind the unseen-word
+  runs, which are now executing.
+
 ## 2026-08-29 — Audit #11 adopted: equalized addendum has an inner-centre bug; wording withdrawn
 
 - The equalized baselines' inner selection centred on the outer three-carrier
