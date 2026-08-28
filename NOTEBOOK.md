@@ -5,6 +5,24 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-28 — Audit #7 adopted; displacement run launched
+
+- The ≤0.02 closure rule was post-hoc: the withdrawal at L8/L12 stands as a
+  conservative one-sided policy, not a preregistered equivalence. Wording
+  corrected throughout: "no demonstrated positive ridge advantage under this
+  margin"; "consistent with identity plus a calibration-mean displacement;
+  the structure of Δ is unresolved"; completion "validated to measured
+  precision". L4/L20 live remainders; L27 not a persistence test.
+- Audit #7 endorses Round 18's order: displacement ladder first, then
+  forward-time transport under a stricter contract (sentinel, token/position
+  baselines, endpoint definition), then unseen-word/style controls, then a
+  second family.
+- Δ-mode smoke at L8→L9 (2 shuffles/10 boot): displacement cosine — shared
+  shift 0.40, word-conditioned displacement mean 0.58, chart 0.64, ridge
+  0.71, kernel 0.76 — but slot ordering moves by only 0.003–0.02 over the
+  word-conditioned mean: the slot law is nearly saturated by the identity.
+  The predeclared five-pair run (95-minute wall) is executing.
+
 ## 2026-08-28 — Re-contextualization #7 (after the identity baseline)
 
 - **Central bet:** native mathematics of latent spaces from what a denizen

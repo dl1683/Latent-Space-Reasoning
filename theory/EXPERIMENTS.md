@@ -2067,3 +2067,44 @@ Standing rule text for `AGENTS.md` (Claude to place):
 This was the obvious missing control in Rounds 13–17. Its absence allowed a
 predictor that carried `X` through unchanged to be narrated as a learned affine
 law; the standing rule blocks that category error at design time.
+
+## Tier-3 audit #7 — the identity-baseline withdrawal (2026-08-28, fresh Codex auditor)
+
+**Adopted corrections.** (1) The closure rule "pooled ridge − identres ≤ 0.02 on
+all three comparison metrics" was chosen by Claude after seeing the scores; it
+is a **conservative post-hoc one-sided null-making policy**, not a preregistered
+equivalence test, and is labelled so wherever the withdrawal is cited. (2) The
+clustered intervals support "no demonstrated positive ridge advantage under
+this margin", not "no lead" or "equivalence". (3) "Persistence plus a shared
+displacement" is replaced by "consistent with identity plus a calibration-mean
+displacement under this shared-word, held-out-carrier design; whether the
+displacement is carrier-, state-, or word-dependent is unresolved". (4) The
+three comparisons are successor cosine, slot skill, slot ordering — only the
+latter two are completed-law slot metrics. (5) "Exact" completion → "routing
+validated to measured precision (per-pair max KL 1.9e-6 to 6.2e-6 over 16 × 80
+cells)"; no per-carrier error profile or fresh-float32 comparison was stored.
+(6) `L4→L5` and `L20→L21` retain small live point-estimate remainders; not
+killed, not promoted. (7) `L27→L28` identres is not a persistence test.
+
+**Claim-by-claim verdict (verbatim):**
+
+| Claim | Verdict | Required wording |
+|---|---|---|
+| (a) Identity-plus-residual closes ridge at `L8→L9` and `L12→L13` | Supported as a conservative point-estimate withdrawal; overclaimed as “no lead” or equivalence | “On shared words and held-out carrier blocks, identity-plus-shared-displacement is at least as good as full ridge within a post-hoc one-sided 0.02 pooled margin on the three recorded comparison metrics at `L8→L9` and `L12→L13`; the finite-ladder ridge wording is withdrawn as a conservative policy.” |
+| (a) “All three slot endpoints” | Slightly imprecise | The three comparisons are successor cosine, slot skill, and slot ordering. Only slot skill and slot ordering are completed-law slot metrics; successor cosine is a separate endpoint. |
+| (a) “Persistence plus a shared displacement” | Descriptive null, not established law | “The measured relation is consistent with identity plus a calibration-mean displacement under this shared-word, held-out-carrier design. The experiment does not determine whether displacement is carrier-, state-, or word-dependent.” |
+| (b) Does not close at `L0`, `L4`, `L20`, `L27` | Numerically true under the post-hoc rule, but interpretation differs by pair | “Identity-plus-shared-displacement does not meet the chosen pooled one-sided margin at `L0`, `L4`, `L20`, or `L27`; `L4` and `L20` remain non-qualifying but live, while `L27` is not a valid raw-residual persistence comparison.” |
+| (c) Slot completion is exact | Routing is strongly confirmed; “exact” is too strong | “Stored-true-successor substitution reproduces the unmodified slot law with per-pair maximum KL approximately `1.9e-6` to `6.2e-6` over the checked carriers and words, validating completion routing to measured precision.” |
+| (c) “At every carrier” | The maximum covers every checked cell, but per-carrier distributions are not stored | Report the per-pair maximum over `16 × 80` cells. Do not imply that a carrier-wise error distribution or fresh float32 successor comparison was recorded. |
+| (d) Run overran budget and is budget-incomplete | Confirmed | “The baseline run took `4540.8 s` against the predeclared `3300 s` budget and remains a budget-incomplete exploratory artifact. Its measured values are retained, but it does not earn the planned full-budget gate.” |
+
+**Ordering judgment (verbatim):** Use this order:
+
+1. displacement ladder first, to adjudicate whether anything beyond identity plus average displacement remains;
+2. forward-time transport second, to test whether same-slot layer motion is the right notion of motion at all;
+3. unseen-word and style controls before semantic or lexical-generalization language;
+4. second-family replication before any general language-model claim.
+
+The durable residue is:
+
+> Identity is the null for residual-stream transport. The present data support persistence plus a calibration-average displacement as a competitive finite-design description at `L8` and `L12`, retain small unresolved remainders at `L4` and `L20`, and do not yet establish a native or generally reusable affine law.
