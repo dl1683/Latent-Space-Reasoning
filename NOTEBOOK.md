@@ -5,6 +5,32 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-28 — Forward-time move, sentinel '.': state-dependent everywhere, gated only at F20
+
+- Five layers, 2220 s, support 1.0, locality passes under the Round 20
+  clause. **F0** token-identity dominated (shared mean = word-conditioned
+  mean = 0.67 ≈ field 0.69), as predicted.
+- **F4 / F8 / F12:** displacement cosine ridge/kernel 0.71–0.78 vs
+  word-conditioned mean 0.48–0.53 (leads +0.17–0.27, clustered LBs > 0.15
+  every fold); law skill at the sentinel position 0.39–0.57 vs 0.01–0.02;
+  carrier-shuffled null 0.12–0.32 vs field 0.67–0.81; within-carrier oracle
+  ~0.98. The world's forward step is strongly state-dependent beyond word
+  identity and beyond token identity. But ordering leads are 0.00–0.08 with
+  LBs ≤ 0 in half the folds → the three-endpoint gate fails.
+- **F20 qualifies** (ridge: +0.16–0.23 / +0.50–0.61 / +0.020–0.058, all
+  LBs > 0). One layer; two required for the same sentinel.
+- Token-identity control: the '.'-fitted predictor applied to the ','
+  target scores 0.43–0.54 vs 0.26–0.30 for the shared mean — the learned
+  displacement carries a sentinel-independent, state-dependent component.
+- Structural reading: identical to the layer-clock displacement ladder —
+  cosine and skill say "large state-dependent motion, registered by the
+  law"; ordering says almost nothing until late. Ordering (per-anchor
+  concordance of KL orderings across words) is dominated by word identity,
+  which every predictor preserves; it is the binding gate in both clocks
+  and may be an insensitive endpoint rather than evidence of
+  inconsequential motion. Codex round 20 must rule on the endpoint before
+  the gate is read as a world fact. Sentinel ',' arm running.
+
 ## 2026-08-28 — Re-contextualization #8 (forward-time run in progress)
 
 - **Central bet:** native mathematics of latent spaces from what a denizen
