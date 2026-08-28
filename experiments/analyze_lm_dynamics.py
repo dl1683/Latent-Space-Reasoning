@@ -462,7 +462,7 @@ def main():
                     if tp not in true_slot_law:
                         true_slot_law[tp] = comp_laws(tp, l, None)[0]   # true law at the readout position (n, V); independent of l
                 qmean = {}
-                for k in [kk for kk in ("mean", "identity", "word_mean", "ridge", "lowrank", "kernel", "chart", "identres", "ridge_stylenull", "kernel_stylenull") if kk in preds]:
+                for k in [kk for kk in ("mean", "identity", "word_mean", "knn1", "knn5", "knn20", "ridge", "lowrank", "kernel", "chart", "identres", "ridge_stylenull", "kernel_stylenull") if kk in preds]:
                     acc = {r: {"kl": [], "skill": [], "ord": [], "ord_anchor": []} for r in ("slot", "last")}
                     for ti, tp in enumerate(test_probes):
                         rows = slice(ti * n, (ti + 1) * n)
@@ -482,7 +482,7 @@ def main():
                     print(f"   {held:12s} {k:8s} succ_cos={succ[k]['cos'].mean():.3f} slot: KL={comp[k]['kl'].mean():.3f} skill={np.nanmean(comp[k]['skill']):.3f} ord={np.mean(acc['slot']['ord']):.3f} | last: skill={np.nanmean(comp[k]['skill_last']):.3f} ord={np.mean(acc['last']['ord']):.3f} ({time.time()-t0:.0f}s)", flush=True)
             # ---- KL-to-truth candidate rank (Round 20 consequence endpoint): R = 1 - (r-1)/(K-1), midranks for ties ----
             if comp:
-                cands = [k for k in ("identity", "mean", "word_mean", "ridge", "lowrank", "kernel", "chart") if k in comp]
+                cands = [k for k in ("identity", "mean", "word_mean", "knn1", "knn5", "knn20", "ridge", "lowrank", "kernel", "chart") if k in comp]   # preregistered K=10 universe (Round 20)
                 KLm = np.stack([comp[k]["kl"] for k in cands])                       # (K, cells)
                 K = len(cands)
                 from scipy.stats import rankdata
@@ -491,6 +491,7 @@ def main():
                     col = KLm[:, c]
                     if np.all(np.isfinite(col)): R[:, c] = 1 - (rankdata(col, method="average") - 1) / (K - 1)
                 for i, k in enumerate(cands): comp[k]["klrank"] = R[i]
+                klrank_universe = list(cands)
                 for k in ("ridge_stylenull", "kernel_stylenull"):                 # nulls are scored against the same candidate field, not ranked into it
                     if k in comp:
                         base = k.split("_")[0]; Rn = np.full(KLm.shape[1], np.nan)
@@ -547,6 +548,7 @@ def main():
                               "reconstructed_successor_cos": ({k: float(np.mean(cos_rows(Xt + v, Xt + Yt))) for k, v in preds.items()} if a.target == "delta" else None),
                               "token_identity_control_cos": control_cos,
                               "normalized_error": {k: float(np.nanmean(v["nerr"])) for k, v in succ.items()},
+                              "klrank_candidate_universe": (klrank_universe if comp else None),
                               "completed": {k: {"kl": float(np.nanmean(v["kl"])), "skill": float(np.nanmean(v["skill"])), "ordering": float(np.mean(v["ordering_by_carrier"])),
                                                 "klrank": (float(np.nanmean(v["klrank"])) if "klrank" in v else None),
                                                 "kl_last": float(np.nanmean(v["kl_last"])), "skill_last": float(np.nanmean(v["skill_last"])), "ordering_last": float(np.mean(v["ordering_last_by_carrier"]))} for k, v in comp.items()},
