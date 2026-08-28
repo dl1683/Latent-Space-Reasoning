@@ -5,7 +5,7 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
-## NLM-007 — LM residual-stream dynamics; middle-depth ridge lead withdrawn under the identity baseline; displacement ladder adjudicated (audit #8 wording); forward-time move adjudicated NOT MET = nonpass, not a kill (Round 20, audit #9); within-style null = diagnostic only (both arms); LOCO A/B within-family positive, bounded (audit #10 wording; adjudicated Round 22); equalized addendum defect-affected, descriptive only (audit #11); corrected rerun and unseen-word runs queued/running (2026-08-29)
+## NLM-007 — LM residual-stream dynamics; middle-depth ridge lead withdrawn under the identity baseline; displacement ladder adjudicated (audit #8 wording); forward-time move adjudicated NOT MET = nonpass, not a kill (Round 20, audit #9); within-style null = diagnostic only (both arms); LOCO A/B within-family positive, bounded (audit #10 wording; adjudicated Round 22); equalized addendum defect-affected, descriptive only (audit #11); unseen-word runs A/B mechanical pass, formal gate pending (Round 23, audit #12); corrected equalized reruns running; residualization predeclared (2026-08-29)
 
 - **Lock.** Round 13, documentation-only (ledger `nlm007_round13_lock`;
   design `theory/dialogue/003.md`, `theory/EXPERIMENTS.md`); Round 14
@@ -108,14 +108,25 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
     `nlm007_locoeq_defect_inner_centre`): outer margins descriptive only**,
     inner-selection claim invalid. The equalized smoke
     (`nlm007_locoeq_smoke_F8A`) artifact was deleted; log numbers only.
-  - `analysis_locoeqB.json` — sentinel B arm of the addendum, **running**
-    under the same defect: descriptive only once scored.
+  - `analysis_locoeqB.json` — sentinel B arm of the addendum (ledger
+    `nlm007_loco_locoeqB`; 2977 s; support 1.0). **Defect-affected (audit
+    #11): descriptive only**; `F12/F20` mechanical, `F4/F8` miss on
+    skill/KL-rank lower bounds, `F0` fails.
   - `analysis_unseenA.json` / `analysis_unseenB.json` — Round 22 unseen-word
-    runs (ledger `nlm007_unseen_predeclared`), **running/queued**; no status
-    until scored.
+    runs, sentinel A = '.' (ledger `nlm007_unseen_unseenA`; 2239 s) and
+    B = ',' (ledger `nlm007_unseen_unseenB`; 2256 s; predeclared
+    `nlm007_unseen_predeclared`); support 1.0, eight block × word-fold keys.
+    **Mechanical pass at `F4/F8/F12/F20`, `F0` fails; formal gate pending
+    (audit #12)** — status "mechanical pass under the recorded reduction;
+    formal gate pending a contract-correct bootstrap". Reading below.
   - `analysis_locoeq2A.json` / `analysis_locoeq2B.json` — corrected equalized
     addendum (analyzer `d10fc66`: inner two-carrier centre; comparator frozen
-    by calibration score), **queued** behind the unseen runs.
+    by calibration score), **running (A) / queued (B)**; no status until
+    scored and ledgered.
+  - `analysis_residsmoke.json` — smoke of the audit #12 bootstrap repair,
+    the stronger unseen-word lexical nulls, and `--residualize` (Round 23;
+    ledger `nlm007_residualization_predeclared`), **in progress; not a
+    result**.
   - `analysis_unseensmoke.json` — `--unseen-words 2` pipeline smoke at F8, A
     (1 shuffle / 10 boot; ledger `nlm007_unseen_smoke_F8A`, overwritten by
     `nlm007_unseen_smoke2_F8A` with the audit #10 lexical nulls and the
@@ -238,6 +249,35 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   wording: the word-conditioned component captured by the tested estimators
   is negligible for the measured forward displacement in this design; the
   positive object is X-conditioned residual predictability.
+- **Unseen-word runs (Round 23 + audit #12; `analysis_unseenA.json`,
+  `analysis_unseenB.json`).** Calibration and held-out word identities
+  disjoint; the class-mean and frozen-input-embedding `wordonly_knn` nulls
+  sit at the shared mean at every layer. Block-first pooled ridge − stronger
+  X-free lexical null: A cos +0.14–0.19, skill +0.33–0.47, K = 11 KL-rank
+  +0.35–0.57 (lower bounds > 0.12; full-gate keys 7/8, 7/8, 8/8, 8/8 at
+  F4/F8/F12/F20); B cos +0.11–0.17, skill +0.31–0.41, KL-rank +0.31–0.52
+  (lower bounds > 0.09; 5/8, 6/8, 8/8, 8/8). `F0`: A's continuation block
+  collapses, B's cosine lead 0.018 is below the 0.02 point gate — audit #12
+  wording "non-qualifying, with the continuation held-out block providing the
+  strongest local failure pattern". Round 23 adjudication: the state-linked
+  prediction is held only as X-conditioned residual predictability,
+  generalizing across unseen word identities; the tested
+  lexical-interpolation prediction fails; the presentation/style nuisance
+  prediction remains live. Audit #12: the predeclared class-preserving word
+  bootstrap was not implemented (words resampled without class strata and
+  nested within blocks) and the lexical null family is weak, so the status
+  is **mechanical pass under the recorded reduction; formal gate pending a
+  contract-correct bootstrap** and stronger nulls (nested
+  frozen-embedding→Δ ridge, nested embedding-conditioned kernel, k ladder).
+  Adopted wording: "not exact held-out-word lookup and not the tested lexical
+  interpolator" — never "not word lookup" or "not lexical" unqualified; "the
+  tested lexical nulls fail", not "lexical content is absent"; the ~0.06
+  seen→unseen drop is a point comparison at F8 only; positive object =
+  X-conditioned residual predictability transferring across the held-out
+  word fold and held-out block. Strongest alternative: `X` contains smooth
+  lexical and presentation coordinates along which the later displacement
+  varies; the coarse nulls collapse for coarseness, not because the
+  variation is operational state.
 - **Oracle defect (ledger `nlm007_oracle_defect_forward`).** The per-carrier
   oracle read the stored states directly; in forward and delta mode it
   predicted X from X, so the ~0.98 oracle values in `analysis_fwdA/B`,
@@ -254,10 +294,14 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   not a control. Within one style family the state carries predictive
   variation beyond the family's per-word mean for seen words (LOCO A), which
   narrows but does not remove the carrier/template alternative; the
-  positive object is X-conditioned residual predictability (audit #11).
-  Bounded to one model and shared words. Next: unseen-word runs A/B (running)
-  → corrected equalized rerun `locoeq2A/B` → Codex adjudication →
-  cross-fitted residualization of presentation coordinates → second family.
+  positive object is X-conditioned residual predictability (audit #11). On
+  words never seen in calibration the same object transfers across the
+  held-out word fold and held-out block against the tested X-free lexical
+  nulls — a mechanical pass whose formal gate awaits a contract-correct
+  bootstrap and stronger lexical nulls (audit #12). Bounded to one model.
+  Next: corrected equalized reruns `locoeq2A/B` (running) → Codex round 24
+  gate amendment for the stronger lexical nulls → residualization static/aug
+  → second family.
 
 ## Round 12 closure — frozen-encoder program closed; pivot to worlds with dynamics (2026-08-27)
 

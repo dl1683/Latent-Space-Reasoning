@@ -899,12 +899,9 @@ styles, and model families. No new axiom is warranted this round.
   saturation (a readout hole); the missing quotient. The next latent space
   must define "same place" by interchangeability of declared moves and
   downstream response laws.
-- **Next, in order:** unseen-word runs A/B (running; ledger
-  `nlm007_unseen_predeclared`) → corrected equalized rerun `locoeq2A/B` →
-  Codex adjudication → cross-fitted residualization of presentation
-  coordinates → second model family. Scope until then: one model, shared
-  words; no native, unseen-word, second-family, presentation-independent, or
-  general dynamics claim.
+- **Next, in order:** superseded — see "Status after Round 23 and audit
+  #12" below. Scope until the pending controls pass: one model; no native,
+  second-family, presentation-independent, or general dynamics claim.
 
 ## Round 23 — current state after unseen words (2026-08-28)
 
@@ -938,3 +935,48 @@ residualize both `X` and `Delta`, and retain the same three endpoints, K=11
 unseen-word null comparison, block-first bootstrap, and a paired comparison
 with the un-residualized field. Then repeat the protocol in a pinned second
 model family. No new axiom is warranted in Round 23.
+
+## Status after Round 23 and audit #12 (2026-08-29)
+
+- Unseen-word runs, sentinel A = '.' (`analysis_unseenA.json`, ledger
+  `nlm007_unseen_unseenA`; 2239 s) and B = ',' (`analysis_unseenB.json`,
+  ledger `nlm007_unseen_unseenB`; 2256 s; predeclared
+  `nlm007_unseen_predeclared`): `F4/F8/F12/F20` pass the Round 22 gate
+  mechanically, `F0` fails, support 1.0. Audit #12 status (adopted):
+  **"mechanical pass under the recorded reduction; formal gate pending a
+  contract-correct bootstrap"** — the predeclared class-preserving word
+  bootstrap was not implemented (words resampled without class strata and
+  nested within blocks although crossed with them; only four block
+  clusters, so intervals are sensitivity summaries), repaired prospectively
+  in the analyzer; the lexical null family (four class means; k = 5
+  frozen-embedding kNN over 40 words) is weak, and nested frozen-embedding→Δ
+  ridge, nested embedding-conditioned kernel, and a predeclared k ladder are
+  required before any "not lexical" reading.
+- Wording (audit #12): "not exact held-out-word lookup and not the tested
+  lexical interpolator" — never "not word lookup" unqualified; "the tested
+  lexical nulls fail", not "lexical content is absent"; the ~0.06
+  seen→unseen drop is a point comparison at F8 only; `F0` = "non-qualifying,
+  with the continuation held-out block providing the strongest local failure
+  pattern" (no formal collapse statistic exists). The positive object remains
+  **X-conditioned residual predictability, transferring across the held-out
+  word fold and held-out block**. Rejected formulations and the strongest
+  alternative (smooth lexical and presentation coordinates in `X` along which
+  the later displacement varies; the coarse nulls collapse for coarseness):
+  `theory/EXPERIMENTS.md`, Tier-3 audit #12.
+- Equalized LOCO addendum, sentinel B (`analysis_locoeqB.json`, ledger
+  `nlm007_loco_locoeqB`; 2977 s): defect-affected like A (audit #11);
+  descriptive only; `F12/F20` mechanical. Corrected reruns
+  `analysis_locoeq2A/B.json` (analyzer `d10fc66`) are executing — per Round
+  23 a repair and diagnostic of the seen-word comparison, not a veto on the
+  unseen-word result.
+- Residualization predeclared (ledger `nlm007_residualization_predeclared`;
+  Round 23 design in `theory/EXPERIMENTS.md`); analyzer `--residualize
+  static|aug`, the class-preserving crossed bootstrap, and the stronger
+  unseen-word lexical nulls are under smoke test (`analysis_residsmoke.json`,
+  not a result).
+- **Next, in order:** corrected equalized reruns `locoeq2A/B` (running) →
+  Codex round 24 amendment of the unseen-word gate for the stronger lexical
+  nulls and the contract-correct bootstrap → residualization `static` then
+  `aug` → second model family. Scope until then: one model; unseen-word
+  status mechanical only; no native, presentation-independent,
+  second-family, or general dynamics claim.

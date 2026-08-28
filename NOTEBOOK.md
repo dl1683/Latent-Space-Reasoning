@@ -70,6 +70,8 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ## 2026-08-29 — Unseen-word run, sentinel '.': F4/F8/F12/F20 pass the full gate on words never seen
 
+*Qualified by audit #12 (see the 2026-08-29 audit #12 entry): the pass is mechanical under the recorded reduction, formal gate pending a contract-correct bootstrap; "not word lookup and not class lookup" reads "not exact held-out-word lookup and not the tested lexical interpolator".*
+
 - 2239 s; eight block × word-fold keys; support 1.0; calibration and
   held-out word identities disjoint; lexical nulls = class mean and
   frozen-input-embedding kNN (both ≈ shared mean at every layer).
