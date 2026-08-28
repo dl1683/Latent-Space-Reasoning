@@ -5,6 +5,35 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Re-contextualization #13 (residualization launching; demo audited)
+
+- **Central bet + second lens:** native mathematics from what a denizen must
+  invent; holes hostile to structured reasoning; the next latent space.
+- **Live question:** the forward step's regularity transfers across
+  carriers, families and unseen words, and every content null sits at the
+  mean — is what X carries operational state or a smooth presentation
+  coordinate? The four residualization runs (static/aug × two sentinels)
+  are the first direct test; they start automatically after the corrected
+  equalized rerun B.
+- **What reframes:** the single-template walkthroughs for the demo showed
+  something the pooled numbers hide — in a gloss template the context
+  predictor wins on the state but the next-token law barely moves; in
+  continuation and grammar templates the law moves a lot. "Consequential
+  motion" varies by template family, not just by layer. That is a
+  template-level version of the middle-depth finding, and it is exactly
+  the kind of structure a next-generation latent space would need to make
+  explicit: when does a move matter to the world's response?
+- **Alternatives held live:** (a) the residual field recovers a smooth
+  presentation coordinate P_static/P_aug miss (unmeasured presentation);
+  (b) the gloss/continuation difference is a readout-sensitivity artifact
+  rather than a world property; (c) multi-step composition may fail even
+  if one-step prediction holds; (d) a second family may reorder everything;
+  (e) response-space geometry ("same place" = same law) as the native
+  metric — the demo's third panel is a first look at exactly that object.
+- **Ecosystem deposit:** "whether a move is consequential varies by
+  context family, not only by depth — measure consequence per family" →
+  `_meta/INDEX.md`.
+
 ## 2026-08-29 — Corrected equalized LOCO addendum, sentinel '.': ridge lead unchanged under contract-correct baselines
 
 - 3753 s of the 4500 s wall. With the audit #11 fix (inner centre = the
