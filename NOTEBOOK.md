@@ -5,6 +5,35 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-28 — Displacement ladder: Δ is state-dependent at every depth ≥ L4, but the slot law only feels it late
+
+- Five raw-residual pairs, Δ = Y − X predicted from X, 1750 s of a 5700 s
+  wall, support 1.0.
+- **L0→L1:** Δ is lexical persistence — the word-conditioned displacement
+  mean equals every field (0.948) and the carrier shuffle changes nothing.
+- **L8→L9 / L12→L13:** on the displacement's own coordinates the field beats
+  the word-conditioned displacement mean by +0.07–0.22 (lower bounds >0.05
+  in every fold), the carrier-shuffled null collapses (0.35–0.52 vs
+  0.60–0.85), and the minimal class is **kernel** — the displacement is
+  state-dependent beyond word identity and not affine. But the slot law
+  barely registers it: ordering leads 0.003–0.022, slot-skill lower bounds
+  mixed. Gate fails as predicted, for a reason the prediction did not name:
+  the identity component saturates the law at middle depth, so the
+  denizen's law of motion is invisible to the world's own next-token
+  response there.
+- **L20→L21 qualifies** (kernel: +0.025–0.051 / +0.13–0.32 / +0.023–0.038,
+  all lower bounds >0) — falsifying "small residuals, no complete result".
+  Late in the stack the displacement changes the law.
+- **L4→L5:** kernel leads on cosine (+0.02–0.03) with tiny ordering
+  differences; gate fails as predicted.
+- Reading under the guiding question: the world moves its states in a
+  state-dependent, nonlinear way from L4 on, but at middle depth those
+  moves are along directions the readout is nearly blind to; only late
+  moves are "consequential". A denizen would need two notions: motion
+  (which exists everywhere) and consequential motion (which is manufactured
+  late). Codex round 19 adjudicates; next in the fixed order is the
+  forward-time move under a stricter contract.
+
 ## 2026-08-28 — Audit #7 adopted; displacement run launched
 
 - The ≤0.02 closure rule was post-hoc: the withdrawal at L8/L12 stands as a
