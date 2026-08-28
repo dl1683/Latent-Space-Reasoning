@@ -610,21 +610,6 @@ displacement as a competitive finite-design description at `L8` and `L12`,
 retain small unresolved remainders at `L4` and `L20`, and do not yet establish
 a native or generally reusable affine law.
 
-## Status and next (2026-08-28)
-
-- Completed: the predeclared five-pair displacement ladder (`--target delta`,
-  ledger `nlm007_delta_v1`; artifact
-  `experiments/results/lm_dyn_v1/analysis_delta.json`) finished in `1750.3 s`
-  of the recorded `5700 s` wall with support `1.0`. Only `L20->L21` passes the
-  three-endpoint gate; `L8/L12` separate on displacement coordinates but fail
-  the consequence gate. The smoke (`analysis_deltasmoke.json`) remains
-  validation only.
-- Next: forward-time transport under the Round 19 stricter contract
-  (period/comma sentinel identity control, original-terminal-position locality
-  control, sentinel-position endpoint); unseen-word and style controls before
-  semantic or lexical-generalization language; second-family replication
-  before any general language-model claim.
-
 ## Round 19 — displacement adjudication and forward-time next move
 
 Round 18's JSON was checked directly. The run finished in `1750.3 s` of the
@@ -643,6 +628,8 @@ skill, and slot ordering under held-out carriers. “Kernel minimal” is only a
 finite ladder label; the result does not establish an ontologically nonlinear
 or native law. The preferred wording is “state-dependent displacement beyond
 the word-conditioned mean, with a kernel as the minimal tested predictor.”
+*(Narrowed by audit #8 below: “displacement variation beyond the
+word-conditioned mean; carrier/template vs state dependence unresolved.”)*
 The middle-depth result is not only a readout artifact because displacement
 cosine is a direct target, but its downstream consequence is readout-dependent
 and identity-saturated.
@@ -665,3 +652,56 @@ word-conditioned mean, positive clustered lower bounds, support `>=0.95`,
 finite/reload cells, and a null original-terminal-position control. Capture is
 about two CPU minutes; analysis is about 30 CPU minutes per five layer points
 at 20 shuffles and 500 bootstraps. The unseen-word split stays separate.
+
+## Round 20 ruling — forward locality tolerance (2026-08-28)
+
+The absolute `1e-4` state tolerance was mis-scaled for residual coordinates of
+magnitude up to about `378`. Corrected clause (settled before any forward score
+was opened): state `<= max(1e-6 * M_q, epsilon_state_floor)` and log-law
+`<= max(1e-4, epsilon_loglaw_floor)`, floors being the measured
+batched-vs-single numerical floors at `q`. Here `3.624e-4 <= 3.78e-4` and
+`6.58e-5 <= 1e-4`: both pass; the forward endpoint stays eligible. Read as
+"no detectable causal nonlocality beyond measured numerical/kernel-path
+variation under this run's corrected tolerance" (audit #8: the margin is
+narrow, ~1.8e-5). Ledger `nlm007_forward_locality_control`,
+`nlm007_forward_locality_ruling`; full text `theory/EXPERIMENTS.md`.
+
+## Audit #8 — displacement claims and forward-time implementation (2026-08-28)
+
+Adopted verbatim (full text: `theory/EXPERIMENTS.md`, Tier-3 audit #8).
+Displacement result retained as: held-out-carrier evidence for predictable
+displacement variation beyond a word-conditioned mean, with a kernel as the
+minimal tested predictor; carrier/template versus state dependence remains
+unresolved. `L20->L21` retained as one bounded qualifying pair under the
+registered displacement-and-slot-law gate. The carrier shuffle is a
+carrier-alignment diagnostic, not a state-independence null (shuffled field
+reported for ridge/low-rank only). "The slot law barely registers it" is a
+readout fact. "Consequential motion" is a derived predicate relative to a
+declared law and tolerance. Strongest alternative: a carrier/template-
+conditioned nuisance law encoded in the residual state. Forward-time
+implementation verified; the missing A/B unappended-state equality check
+passes bit-exactly (ledger `nlm007_forward_AB_equality`). Style-balancing /
+within-template null / style-held-out split / Y−X decomposition / float32
+precision reports are queued ahead of any "state-dependent" claim.
+
+## Status and next (2026-08-28)
+
+- Displacement ladder (`analysis_delta.json`, ledger `nlm007_delta_v1`):
+  adjudicated Round 19; wording per audit #8 above.
+- Forward-time move, sentinel A = '.' (`analysis_fwdA.json`, ledger
+  `nlm007_forward_fwdA`; predeclared `nlm007_forward_predeclared`): scored,
+  **Codex adjudication pending**. Mechanical reading only: support `1.0`,
+  locality passes under the Round 20 clause; `F0` token-identity dominated;
+  `F4/F8/F12` displacement-cosine and law-skill leads over the
+  word-conditioned mean but ordering leads `0.00–0.08` with lower bounds
+  `<= 0` in half the folds, so the three-endpoint gate fails there; `F20`
+  qualifies mechanically (ridge). Ordering is the binding endpoint in both
+  clocks; whether it is an insensitive readout is for Codex to rule before
+  any "inconsequential motion" language. The token-identity control (the
+  '.'-fitted predictor on the ',' target) transfers partially.
+- Running: sentinel B = ',' arm (`analysis_fwdB.json`). Smoke
+  `analysis_fwdsmoke.json` is validation only.
+- Next, in order: Codex adjudication of A/B → audit #8 style controls
+  (style balancing, within-template null, style-held-out split, Y−X
+  decomposition, per-layer float32 precision reports) → unseen-word split →
+  second model family. No native-law claim stands.

@@ -403,6 +403,11 @@ regression.
 
 ## Round 19 — motion and consequence as navigation requirements
 
+*(Wording narrowed by Tier-3 audit #8: “displacement variation beyond the
+word-conditioned mean; carrier/template vs state dependence unresolved”;
+`L20->L21` = one bounded qualifying pair. Authoritative text:
+`theory/EXPERIMENTS.md`, Tier-3 audit #8.)*
+
 The displacement ladder gives one bounded qualifying pair at `L20->L21` and
 strong displacement-coordinate separation at `L8/L12`, but the same-slot law
 barely registers the middle-depth direction. This does not warrant a new

@@ -5,7 +5,7 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
-## NLM-007 — LM residual-stream dynamics; middle-depth ridge lead withdrawn under the identity baseline (post-hoc conservative policy); displacement ladder running (2026-08-28)
+## NLM-007 — LM residual-stream dynamics; middle-depth ridge lead withdrawn under the identity baseline; displacement ladder adjudicated (audit #8 wording); forward-time move A scored, adjudication pending; B running (2026-08-28)
 
 - **Lock.** Round 13, documentation-only (ledger `nlm007_round13_lock`;
   design `theory/dialogue/003.md`, `theory/EXPERIMENTS.md`); Round 14
@@ -52,11 +52,26 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
     error profile or fresh-float32 comparison was stored.
   - `analysis_deltasmoke.json` — `--target delta` pipeline smoke at L8→L9
     (1 shuffle / 10 boot; ledger `nlm007_delta_smoke_L8`). **Not a result.**
-  - `analysis_delta.json` — **running; predeclared** (ledger
-    `nlm007_delta_predeclared`, Round 18): five-pair displacement ladder,
-    Δ = Y−X predicted from X, mean displacement as zero-order baseline,
-    word-conditioned mean displacement as lexical moot-maker, 95-minute hard
-    wall. No status until scored and adjudicated.
+  - `analysis_delta.json` — **valid, adjudicated (Round 19, audit #8)**:
+    five-pair displacement ladder (ledger `nlm007_delta_predeclared`,
+    `nlm007_delta_v1`; 1750.3 s of the 5700 s wall; support 1.0). Reading
+    below.
+  - `forward_manifest_A.json` / `forward_manifest_B.json` — forward-time
+    captures, sentinel A = '.' and B = ',' (ledger
+    `nlm007_forward_predeclared`, `nlm007_forward_locality_control`);
+    `forward_states_A/B.npz` git-ignored. Locality control passes under the
+    Round 20 corrected clause (ledger `nlm007_forward_locality_ruling`);
+    A/B unappended q-states and laws identical bit-exactly (ledger
+    `nlm007_forward_AB_equality`).
+  - `analysis_fwdsmoke.json` — `--source forward` pipeline smoke at F8, A
+    (1 shuffle / 10 boot; ledger `nlm007_forward_smoke_F8A`). **Not a
+    result.**
+  - `analysis_fwdA.json` — forward-time move, sentinel A, layers
+    0/4/8/12/20, 20 shuffles / 500 boot (ledger `nlm007_forward_fwdA`;
+    2220 s). **Scored; Codex adjudication pending** — mechanical reading
+    below, no verdict.
+  - `analysis_fwdB.json` — sentinel B arm, **running**. No status until
+    scored and adjudicated.
 - **Successor endpoint (valid in all runs).** L0→L1: word-mean = ridge =
   kernel = 0.949, shuffled null 0.95 — lexical persistence, no law beyond
   word identity. From L4 on, full-dimensional ridge beats word-mean and the
@@ -91,15 +106,43 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   L4 and L20 remain non-qualifying but live, while L27 is not a valid
   raw-residual persistence comparison. Per-carrier affine is far below the
   cross-carrier field everywhere (within-carrier diagnostic only).
+- **Displacement ladder (Round 19 + audit #8; `analysis_delta.json`).**
+  Only `L20->L21` passes the predeclared three-endpoint gate (kernel;
+  positive clustered lower bounds on displacement cosine, slot skill, slot
+  ordering) — retained as one bounded qualifying pair under the registered
+  displacement-and-slot-law gate. `L0` is lexical persistence. `L4` has a
+  small live remainder but fails the gate. `L8/L12` separate strongly from
+  the word-conditioned displacement mean on displacement coordinates, with
+  kernel minimal among the tested ladder, but slot-ordering leads are only
+  0.003–0.022 and slot-skill lower bounds are mixed — the gate fails. Adopted
+  wording: held-out-carrier evidence for predictable displacement variation
+  beyond a word-conditioned mean, with a kernel as the minimal tested
+  predictor; carrier/template versus state dependence remains unresolved. The
+  carrier shuffle is a carrier-alignment diagnostic, not a state-independence
+  null (shuffled field reported for ridge/low-rank only). "The slot law
+  barely registers it" is a readout fact, not a world fact.
+- **Forward-time move, sentinel '.' (`analysis_fwdA.json`; mechanical, not
+  adjudicated).** `F0` token-identity dominated (shared mean = word-
+  conditioned mean = 0.67 ≈ field 0.69). `F4/F8/F12`: displacement cosine
+  ridge/kernel 0.71–0.78 vs word-conditioned mean 0.48–0.53; law skill at
+  the sentinel position 0.39–0.57 vs 0.01–0.02; carrier-shuffled field
+  0.12–0.32 vs 0.67–0.81; but ordering leads 0.00–0.08 with lower bounds
+  ≤ 0 in half the folds — three-endpoint gate fails. `F20` qualifies
+  mechanically (ridge: +0.16–0.23 / +0.50–0.61 / +0.020–0.058, all LBs > 0);
+  one layer where two are required for the same sentinel. Token-identity
+  control: the '.'-fitted predictor on the ',' target scores 0.43–0.54 vs
+  0.26–0.30 for the shared mean. Ordering is the binding endpoint in both
+  clocks; whether it is an insensitive readout awaits the Codex ruling.
 - **What we learned.** Identity is the null for residual-stream transport.
   The present data support persistence plus a calibration-average
   displacement as a competitive finite-design description at L8 and L12,
   retain small unresolved remainders at L4 and L20, and do not yet establish
   a native or generally reusable affine law. Bounded to one model and shared
   words; unseen-word/style controls and a second family are required before
-  any general claim. Next in order: displacement ladder (running) →
-  forward-time transport under a stricter contract → unseen-word/style
-  controls → second family.
+  any general claim. Next in order: Codex adjudication of the forward A/B
+  arms → audit #8 style controls (style balancing, within-template null,
+  style-held-out split, Y−X decomposition, float32 precision reports) →
+  unseen-word split → second family.
 
 ## Round 12 closure — frozen-encoder program closed; pivot to worlds with dynamics (2026-08-27)
 
