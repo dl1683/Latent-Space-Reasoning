@@ -5,6 +5,45 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Re-contextualization #16 (2-hour step-back; audit #16 running)
+
+Live question unchanged: is the surviving X⊥→Δ⊥ predictability in one small
+decoder an operational-state relation, a smooth presentation/lexical relation
+the registered designs miss, or an implementation artefact — and what does
+either answer say about holes hostile to structured reasoning.
+
+What still holds: A-static, A-aug (P_aug-score4), B-static — all bounded,
+correlated same-population sensitivities on one decoder; presentation
+sensitivity proven; state not identified; ordering statistic a measurement
+hole; raw F0 identity-dominated.
+
+What reframed this cycle: (1) audit #15 moved the program off the
+observational residualization axis onto external axes (fresh population,
+second move, interchangeability) — the queue is now about whether the
+relation is a property of the authored manifold or of the space; (2) the
+B-aug run died twice from torch SVD non-convergence at F8 grammar_w1 — an
+ill-conditioned low-rank fit on residualized B-cells — which is itself a
+small finding about that cell's geometry, to be reported, not hidden behind
+the fallback; (3) the fresh population I authored has a design weakness I
+should have caught before freezing: several "presentation" pairs insert a
+determiner ("the <X>") or change the frame, which alters the syntactic role
+of verbs / adjectives / function words — for those classes the pair is
+operational, not presentational. If audit #16 confirms, the interchangeability
+result must be read per word class (nouns as the clean presentation test;
+other classes as operational-control-like), or the population voided under a
+predeclared rule before capture. No edit of the frozen file.
+
+Alternatives held live (not yet run; CPU-only): a second pinned decoder as a
+cheap replication axis; a full-prefix contextual X-free baseline (audit #15);
+a two-step writeback composition test; a fresh population authored by Codex
+(not by me) with a linguistic presentation-only rule for all four classes;
+and the direct "consequence-sensitive divergence" question — whether the KL
+readout at one position is the right notion of consequence for a denizen at
+all, or whether a multi-position law (next k tokens) is the honest one.
+
+Nothing starts before the running chain and the Round 29 order; audit #16's
+verbatim corrections and alternatives are appended when it lands.
+
 ## 2026-08-29 — Round 29 reorders the queue; fresh matched population frozen
 
 - Codex Round 29 (`4907a85`), adopting audit #15: Round 23's literal `P_aug`
