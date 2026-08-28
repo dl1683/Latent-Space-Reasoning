@@ -4041,6 +4041,8 @@ been presentation-mediated. The result did not warrant “context rather than
 presentation” before, and the measured size of this arm makes that caveat
 central rather than peripheral.
 
+*Audit #14 (Tier-3, `theory/EXPERIMENTS.md`, ledger `nlm007_audit14_adopted`) withdrew the sentence "much of the raw lead may have been presentation-mediated" as an over-read and replaced the ruling; read this paragraph as corrected there.*
+
 `resSA` adds a separate positive fact: the registered `P_static` coordinates
 do not account for the whole X-linked advantage. After their calibration-only
 removal from both `X` and `Delta`, `X_perp` still predicts `Delta_perp` far

@@ -1090,10 +1090,11 @@ remains one decoder, unresolved state-versus-presentation, and no new axiom.
   per run, 8 hours for four serial runs, K=13, retention = minimum-margin
   rule over the same-run raw four-null shadow): the raw-shadow prerequisite
   is met at pipeline level by `analysis_residsmoke.json` (ledger
-  `nlm007_resid_shadow_smoke_F8A`; not a result). The chain is **running**
-  in the locked order A-static (`analysis_resSA.json`) → A-augmented
-  (`resAA`) → B-static (`resSB`) → B-augmented (`resAB`), one process at a
-  time; no residualization score has been opened or adjudicated.
+  `nlm007_resid_shadow_smoke_F8A`; not a result). The chain runs in the
+  locked order A-static (`analysis_resSA.json`) → A-augmented (`resAA`) →
+  B-static (`resSB`) → B-augmented (`resAB`), one process at a time.
+  *Superseded for A-static: see "Status after Round 26 and audit #14"
+  below.*
 - Retention marker (audit #13, ledger `nlm007_retention_marker_defect`):
   raw and residual margins are not commensurate (cosine on different
   targets; skill against different references; KL-rank by ridge-slot
@@ -1157,6 +1158,8 @@ mediated. The residual result adds only that the registered static coordinates
 do not account for the whole X-linked advantage; it does not identify the
 remainder as operational state.
 
+*Audit #14 (Tier-3, `theory/EXPERIMENTS.md`, ledger `nlm007_audit14_adopted`) withdrew the sentence "much of the raw lead may have been presentation-mediated" as an over-read and replaced the ruling; read this paragraph as corrected there.*
+
 Retention remains bounded by Audit #13. `resSA` predates
 `retention_common_scale` / `retention_common_scale_block_first` and contains
 neither field. For A-static, say only **“the predeclared robustness marker is
@@ -1185,3 +1188,64 @@ residualized X-free null is the style-nuisance outcome and, after the A-static
 pass, the “static coordinates incomplete, not state” branch. After the chain,
 run the patched A-static common-scale repair before cross-run retention
 synthesis or the second-family protocol. No experiment was run in Round 26.
+
+## Status after Round 26 and audit #14 (2026-08-29)
+
+- Residualization A-static (`analysis_resSA.json`, ledger
+  `nlm007_resid_resSA`; 4405.7 s of the 7200 s wall; support 1.0):
+  **contract-valid for the primary residual-vs-null question; adjudicated
+  Round 26 as corrected by Tier-3 audit #14** (ledger
+  `nlm007_audit14_adopted`). `F4/F8/F12/F20` pass (full-gate keys 7/8, 7/8,
+  6/8, 8/8; misses family-localized in gloss/association; the four
+  checkpoints are correlated measurements, not replications); `F0` = "no
+  qualifying conditional gain at F0 under this instrument" — a genuine
+  negative control. Not a cosine-geometry mirage: residualization lowers the
+  ridge cosine (raw 0.65–0.76 → residual 0.56–0.62) while the lexical nulls
+  fall to ~0.06; shuffled q95 ≤ 0.13; residual normalized error 0.78–0.83.
+- Adopted ruling (audit #14, replacing Round 26's): "`P_static` took the
+  non-collapse branch. Locally, the result establishes
+  registered-presentation sensitivity and survival of X-linked residual
+  predictability after cross-fitted removal of those registered coordinates.
+  It identifies neither the surviving field as operational state nor the
+  result as presentation-independent." Joint license: registered static
+  template coordinates predict held-out raw displacement; after cross-fitted
+  removal of those registered coordinates from both `X` and `Δ`, `X⊥` still
+  predicts `Δ⊥` and its reassembled response-law consequence beyond the
+  registered residual X-free lexical nulls at F4–F20; these facts establish
+  presentation sensitivity and residual X-linked predictability and do not
+  identify how much of the raw ridge advantage is attributable to
+  presentation or whether the remainder is operational state. **Withdrawn**
+  (over-read): "much of the raw lead may have been presentation-mediated";
+  a `P_static→Δ` cosine of 0.43–0.63 gives no variance share, fraction,
+  mediation, decomposition, overlap, causal effect, or proof of pure
+  presentation.
+- Retention for `resSA`: **"the predeclared robustness marker is
+  mechanically met"** only (pre-patch analyzer; audit #13). The patched
+  A-static rerun `analysis_resSA2.json` is predeclared (ledger
+  `nlm007_resid_resSA2_predeclared`; identical design, common-scale
+  retention block) and queued after B-augmented; required for any A-static
+  or symmetric four-cell common-scale retention claim.
+- The gate is too easy for a *state* claim, not for the registered narrow
+  claim. To be preregistered by Codex before any state reading: a fully
+  refitted Freedman–Lane residual-geometry null preserving nuisance
+  geometry, and a flexible calibration-only `P_aug`/lexical interaction
+  comparator without cell-level `X⊥` (a P-only zero residual is not the fair
+  comparator); the common-scale decomposition must be completed before the
+  raw lead is attributed.
+- Strongest live alternative (audit #14): `X⊥` still contains
+  high-dimensional nonlinear template/carrier geometry and smooth lexical
+  coordinates shared across held-out blocks and words, along which `Δ⊥`
+  varies; ridge/kernel recover it and the decoder registers it. Competing
+  positive: a genuine context-conditioned transition regularity with
+  presentation partly legitimate operational state. A-static observational
+  residualization cannot choose between them.
+- Public demo corrected again per audit #14 (nine verbatim replacements)
+  and republished at the same URL.
+- **Chain order:** `resAA` (A-augmented, **running**) → `resSB` → `resAB` →
+  `resSA2` (patched A-static) → Codex adjudication of the four runs, the
+  patched cell, and corrected equalized B → second model family (pinned
+  revisions, same controls). Read validity, then F0, then F4–F20, without
+  sentinel/layer/design selection after outcomes. Scope until then: one
+  decoder; unseen-word status mechanical only; state-versus-presentation
+  unresolved; no native, presentation-independent, second-family, or general
+  dynamics claim; no new axiom.

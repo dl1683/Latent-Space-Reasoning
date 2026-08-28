@@ -5,7 +5,7 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
-## NLM-007 — LM residual-stream dynamics; middle-depth ridge lead withdrawn under the identity baseline; displacement ladder adjudicated (audit #8 wording); forward-time move adjudicated NOT MET = nonpass, not a kill (Round 20, audit #9); within-style null = diagnostic only (both arms); LOCO A/B within-family positive, bounded (audit #10 wording; adjudicated Round 22); equalized addendum defect-affected, descriptive only (audit #11); unseen-word runs A/B mechanical pass, formal gate pending (Round 23, audit #12); corrected equalized reruns contract-correct (A adjudicated Round 25; B pending); residualization chain running under the Round 25 budget, retention marker non-commensurate (audit #13) (2026-08-29)
+## NLM-007 — LM residual-stream dynamics; middle-depth ridge lead withdrawn under the identity baseline; displacement ladder adjudicated (audit #8 wording); forward-time move adjudicated NOT MET = nonpass, not a kill (Round 20, audit #9); within-style null = diagnostic only (both arms); LOCO A/B within-family positive, bounded (audit #10 wording; adjudicated Round 22); equalized addendum defect-affected, descriptive only (audit #11); unseen-word runs A/B mechanical pass, formal gate pending (Round 23, audit #12); corrected equalized reruns contract-correct (A adjudicated Round 25; B pending); residualization A-static contract-valid, adjudicated Round 26 as corrected by audit #14 (registered-presentation sensitivity + surviving X-linked residual predictability; neither state nor presentation-independence); A-augmented running, B-static / B-augmented / patched A-static queued; retention marker non-commensurate (audit #13) (2026-08-29)
 
 - **Lock.** Round 13, documentation-only (ledger `nlm007_round13_lock`;
   design `theory/dialogue/003.md`, `theory/EXPERIMENTS.md`); Round 14
@@ -137,14 +137,23 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   - `analysis_resSA.json` — residualization, sentinel A, `P_static`
     (Round 25 launch ruling, ledger `nlm007_residualization_budget_amended`:
     120-minute wall, K = 13, five layers, two unseen-word folds, 20 shuffles
-    / 500 boot). **Running**; pre-patch analyzer, so its retention is
-    reported only as "the predeclared robustness marker is mechanically
-    met" (ledger `nlm007_retention_marker_defect`,
-    `nlm007_retention_common_scale_predeclared`). No score opened.
-  - `analysis_resAA.json` / `analysis_resSB.json` / `analysis_resAB.json` —
-    A-augmented, B-static, B-augmented, same contract, common-scale
-    retention field present. **Queued** behind `resSA`, one process at a
-    time; no status until scored and ledgered.
+    / 500 boot; ledger `nlm007_resid_resSA`; 4405.7 s; support 1.0).
+    **Contract-valid for the primary residual-vs-null question; scored and
+    adjudicated Round 26 as corrected by audit #14** (ledger
+    `nlm007_audit14_adopted`). Pre-patch analyzer: retention reported only
+    as "the predeclared robustness marker is mechanically met" (ledger
+    `nlm007_retention_marker_defect`,
+    `nlm007_retention_common_scale_predeclared`). Reading below.
+  - `analysis_resAA.json` — A-augmented (`P_aug`), same contract,
+    common-scale retention field present. **Running**; no score opened.
+  - `analysis_resSB.json` / `analysis_resAB.json` — B-static, B-augmented,
+    same contract. **Queued** behind `resAA`, one process at a time; no
+    status until scored and ledgered.
+  - `analysis_resSA2.json` — patched A-static rerun (identical design to
+    `resSA`, common-scale retention block; ledger
+    `nlm007_resid_resSA2_predeclared`). **Queued** after `resAB`; required
+    for any A-static or symmetric four-cell common-scale retention claim,
+    not for the primary residual-vs-null verdict.
   - `analysis_unseensmoke.json` — `--unseen-words 2` pipeline smoke at F8, A
     (1 shuffle / 10 boot; ledger `nlm007_unseen_smoke_F8A`, overwritten by
     `nlm007_unseen_smoke2_F8A` with the audit #10 lexical nulls and the
@@ -318,6 +327,37 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   lexical and presentation coordinates along which the later displacement
   varies; the coarse nulls collapse for coarseness, not because the
   variation is operational state.
+- **Residualization A-static (Round 26 as corrected by audit #14;
+  `analysis_resSA.json`).** Sentinel A, `P_static` (centred block one-hot,
+  tokenized lengths, slot/sentinel positions) cross-fitted out of both `X`
+  and `Δ`; two unseen-word folds; K = 13; crossed class-preserving
+  bootstrap. `F4/F8/F12/F20` pass the residual-vs-null gate: `X⊥` ridge
+  residual cosine 0.56–0.62 vs 0.06–0.07 for the strongest residualized
+  X-free null; block-first margins cos +0.50–+0.56, skill +0.31–+0.48,
+  KL-rank +0.40–+0.61 with positive lower bounds; full-gate keys 7/8, 7/8,
+  6/8, 8/8 (misses family-localized in gloss/association; the four
+  checkpoints are correlated measurements, not replications); no block
+  collapse. `F0` fails (negative pooled skill; association-block collapse)
+  — "no qualifying conditional gain at F0 under this instrument", a genuine
+  negative control. Not a cosine-geometry mirage (audit #14): the ridge
+  cosine falls from raw 0.65–0.76 to residual 0.56–0.62 while the nulls
+  fall to ~0.06; shuffled q95 ≤ 0.13; residual normalized error 0.78–0.83.
+  Presentation-only `P_static→Δ` arm: held-out cosine 0.43–0.63 by layer —
+  a cosine, never a variance share, fraction, or "explains 42%". Adopted
+  ruling: "`P_static` took the non-collapse branch. Locally, the result
+  establishes registered-presentation sensitivity and survival of X-linked
+  residual predictability after cross-fitted removal of those registered
+  coordinates. It identifies neither the surviving field as operational
+  state nor the result as presentation-independent." Withdrawn (audit #14):
+  Round 26's "much of the raw lead may have been presentation-mediated" —
+  the overlap between presentation and the raw ridge lead is not
+  identified. Retention: "the predeclared robustness marker is mechanically
+  met" only (audit #13; pre-patch analyzer; patched rerun `resSA2` queued).
+  The gate is too easy for a state claim: a fully refitted Freedman–Lane
+  residual-geometry null and a flexible calibration-only presentation/
+  lexical comparator are to be preregistered before any state reading.
+  `P_static` pass plus `P_aug` collapse remains the predeclared "static
+  coordinates incomplete, not state" branch.
 - **Oracle defect (ledger `nlm007_oracle_defect_forward`).** The per-carrier
   oracle read the stored states directly; in forward and delta mode it
   predicted X from X, so the ~0.98 oracle values in `analysis_fwdA/B`,
@@ -342,8 +382,13 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   addendum removes the audit #11 defect without changing any verdict (Round
   25, audit #13). Residualization runs may state only that the predeclared
   robustness marker is mechanically met until the common-scale retention
-  marker is scored (audit #13). Bounded to one model. Next: residualization
-  A-static → A-augmented → B-static → B-augmented (running) → Codex
+  marker is scored (audit #13). After cross-fitted removal of the registered
+  static presentation coordinates, `X⊥` still predicts `Δ⊥` and its
+  reassembled consequence beyond the residual X-free lexical nulls at
+  F4–F20 — registered-presentation sensitivity plus surviving X-linked
+  residual predictability, with the presentation/raw-lead overlap
+  unidentified (Round 26 as corrected by audit #14). Bounded to one model.
+  Next: `resAA` (running) → `resSB` → `resAB` → `resSA2` → Codex
   adjudication → second family.
 
 ## Round 12 closure — frozen-encoder program closed; pivot to worlds with dynamics (2026-08-27)

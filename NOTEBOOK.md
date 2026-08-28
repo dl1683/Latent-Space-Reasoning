@@ -25,6 +25,8 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ## 2026-08-29 — Re-contextualization #14 (A-static in; P_aug running; audit #14 fired)
 
+*Audit #14 (Tier-3, `theory/EXPERIMENTS.md`, ledger `nlm007_audit14_adopted`) withdrew the sentence "much of the raw lead may have been presentation-mediated" as an over-read and replaced the ruling; read this paragraph as corrected there.*
+
 - **Central bet + second lens:** native mathematics from what a denizen must
   invent; the holes that make this space hostile to structured reasoning
   and what the next latent space must change.
@@ -57,6 +59,8 @@ was learned, what's next. Canonical state lives in STATE.md.
   residual is X-predictable at r' separately" → `_meta/INDEX.md`.
 
 ## 2026-08-29 — Round 26: A-static adjudicated; the presentation-only arm revises the earlier reading
+
+*Audit #14 (Tier-3, `theory/EXPERIMENTS.md`, ledger `nlm007_audit14_adopted`) withdrew the sentence "much of the raw lead may have been presentation-mediated" as an over-read and replaced the ruling; read this paragraph as corrected there.*
 
 - P_static took the non-collapse branch of the primary gate at F4–F20; this
   proves neither operational state nor presentation-independence.
