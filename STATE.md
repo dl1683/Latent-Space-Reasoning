@@ -1462,3 +1462,54 @@ the missing quotient is a constructive target, not a proof that structured
 reasoning cannot live here. No new axiom is earned. No experiment was run in
 Round 29; the excluded artifacts were not opened and the analyzer diff was not
 modified.
+
+## Round 30 — probe-1 review and fresh-move design lock
+
+Round 30 is documentation-only. The excluded running/queued artifacts were not
+opened, the probe-1 analyzer diff was reviewed but not changed, and no
+experiment was run.
+
+**Probe-1 verdict: NOT-READY.** The current `--screen` path sets zero shuffles
+but still takes an empty-list percentile and will crash. Fixed rank 8 also
+requests eight inner carrier directions where only seven are estimable (outer
+full rank is at most 11; inner full rank at most 7). The nonlinear arm must be
+bound to the literal full-mean-plus-score design, the wide float32 ridge needs
+stable-solve/effective-rank telemetry, flag-off schema drift must be gated or
+versioned, and screen mode needs a locked run shape plus an explicit point-only
+summary. The nuisance construction otherwise uses no held-out outcome: it is
+outcome-clean but transductive within carrier.
+
+**Probes 2–3 design lock.** Extend `capture_forward`, not a new script. The
+committed fresh config supplies four families, 16 templates, eight presentation
+pairs, four operational controls, 80 words, two sentinels, and the frozen
+single-token `not` insertion. Sentinel capture keeps X at the unappended last
+suffix position and Y at the appended sentinel. Insertion capture aligns X at
+the original word slot with Y at the same word token after insertion. Its
+completion writes `X+Delta_hat` into the moved sequence at the moved word
+position by hooking block `l-1` for hidden index `l`, then reads the moved
+sequence's true law there. Insertion F0 has zero displacement by construction
+and is a structural check only.
+
+Primary analysis uses four leave-one-family-out folds crossed with two
+class-stratified unseen-word folds; the config's question/instruction to
+comparison/enumeration split is a secondary directional diagnostic. The exact
+K=13 universe, identity and shared-displacement baselines, four X-free lexical
+nulls, `P_static` coordinates, common support, reload/locality, and crossed
+block-first bootstrap are frozen in Round 30 of `theory/EXPERIMENTS.md`. Capture
+manifests must store raw config/Git/hash provenance; the config's declared hash
+is not silently treated as the raw file hash.
+
+**Probe-4 design lock.** One early-return analyzer mode consumes sentinel A,
+sentinel B, and insertion captures. For each pair direction, calibration words
+set an RMS displacement-norm ratio; the scaled donor move is written into the
+recipient's own moved sequence. Primary degradations are normalized successor
+error and continuous KL relative to same-presentation writeback. Identical
+capture/completion repeats set endpoint-specific q99 noise. Only the four frozen
+control pairs are negative controls. Family-first, pair-within-family, crossed
+class-preserving word bootstrap intervals support the stable, hostile-hole,
+and inconclusive regions already registered in Round 29, now made executable
+without outcome-conditioned matching.
+
+**Next:** repair and re-review probe 1; then retain the Round 29 order. Probes
+2–4 are designs, not implemented instruments or evidence. No new axiom or
+state/navigation claim is licensed.

@@ -5101,3 +5101,371 @@ the same place only if declared moves and downstream laws are interchangeable,
 while genuinely different operational states remain distinguishable. The
 queue now asks that question before spending roughly 100 CPU hours refining a
 single observational axis. `theory/AXIOMS.md` remains unchanged.
+
+## Round 30 — probe-1 Tier-1 review and probes 2–4 design gate
+
+**Codex, documentation-only; no experiment was run.** The excluded running or
+queued result artifacts were not opened. The uncommitted
+`experiments/analyze_lm_dynamics.py` diff was reviewed but not edited. This
+round fixes the capture, completion, fold, null, and interchangeability
+contracts before implementation or scoring.
+
+### Part 1 — Tier-1 review of the Round 29 probe-1 diff
+
+**Verdict: NOT-READY.** The calibration-only construction is outcome-clean,
+and the literal `P_aug-full` ridge is mathematically regularized, but two
+execution/correctness defects block the rank screen and one contract ambiguity
+blocks the nonlinear arm. Two additional numerical/provenance repairs are
+required before the literal full-mean law cell.
+
+1. **Fatal zero-shuffle screen path.** `--screen` sets `n_shuffle=0`, but fold
+   serialization unconditionally evaluates `np.percentile(v, 95)` for each
+   empty shuffled-null list. The first completed fold therefore raises before
+   an artifact can be written. The retention diagnostic also enters a
+   zero-bootstrap calculation and catches its own empty-percentile error,
+   leaving an avoidable error payload. Minimal fix: when `n_shuffle==0`, emit
+   `null`, `n=0`, and no quantile; when `n_boot==0`, emit point estimates only
+   and do not enter any retention, LOCO, style-null, or pooled-bootstrap path.
+   Add a tiny no-completion fixture that reaches JSON serialization with
+   `n_boot=n_shuffle=0`.
+
+2. **Rank 8 is not fold-locally estimable in the inner loop.** An outer
+   leave-one-family-out fold has 12 calibration carriers, hence at most 11
+   centered carrier-mean directions. Each inner leave-one-calibration-family-
+   out fold has 8 carriers, hence at most 7. The `full` branch estimates this
+   numerical rank, but a fixed `--aug-rank 8` slices eight inner SVD rows and
+   includes the centered null/non-identifiable direction. Minimal fix: compute
+   `r_est` in every outer and inner basis and use
+   `r_used=min(r_requested,r_est)`; `full` means exactly `r_est`. Record
+   requested rank, fold-local realized rank, tolerance, singular values (or
+   their extrema), and retained standardized column count. The rank-8 outer
+   fit may remain rank 8 while its inner tuning folds are rank 7; that fact is
+   part of the estimand, not a reason to reuse an outer basis inside inner
+   validation.
+
+3. **The nonlinear flag does not by itself select the registered carrier-mean
+   kernel.** `--aug-kernel` switches the nuisance regressor to RBF kernel ridge
+   on whatever augmented design the other flags happen to create. By default
+   that is `P_static + score4`, with no 1024-dimensional carrier mean, whereas
+   Round 29 registers one nonlinear arm on the calibration-word carrier mean.
+   Minimal fix: either make `--aug-kernel` imply `--aug-full-mean` and fixed
+   rank 4, or fail unless they are supplied together. Freeze the nonlinear arm
+   as RBF kernel ridge on literal `P_aug-full = P_static + score4 + full mean`,
+   with `(gamma, lambda)` selected only inside the calibration folds.
+
+4. **The full-mean ridge is well-posed in mathematics but under-instrumented
+   numerically.** Appending 1024 mean coordinates creates a wide, collinear
+   nuisance design. `Standardizer` removes zero-variance columns and every
+   registered ridge `lambda` is strictly positive, so neither linear ridge nor
+   kernel ridge is singular or non-unique in exact arithmetic. The present
+   primal `X^T X` eigensolve is float32, however, and does not report effective
+   rank, retained columns, negative roundoff eigenvalues, or the smallest
+   regularized denominator. Minimal fix: use a float64 primal solve or a
+   sample-space dual/SVD solve for the wide design, clamp only roundoff-negative
+   eigenvalues under a declared tolerance, assert finite predictions for every
+   grid point, and store the diagnostics. The positive lambda grid handles
+   rank deficiency; it does not by itself audit float32 spectral error.
+
+5. **The flag-off numerical path is unchanged, but exact artifact identity is
+   not.** With all four new flags off, rank 4, linear `RidgeFamily`, basis
+   placement, inner selection, predictions, shuffles, completion, and
+   bootstraps take the prior numerical path. A process already running is also
+   unaffected by later source edits after import. A queued flag-off process
+   will, however, add `n_design_cols` and `carrier_rank` to every residualized
+   fold, so the output schema is not byte-identical. Minimal fix: emit new
+   probe-1 metadata only when a probe-1 flag is active, or version the schema
+   explicitly. Run a frozen-fixture equality test over selected parameters,
+   predictions, gates, and support for the all-flags-off path.
+
+6. **`--screen` does not lock its own registered run shape or supply a single
+   screen summary.** It currently relies on later assertions and can be mixed
+   with unrelated modes; the intended ranks, layers, source, target, word
+   split, and point-only outputs are not fail-fast enforced. Minimal fix:
+   require `--source forward --target delta --unseen-words 2 --residualize aug
+   --pairs 0 1 2 3 4`, reject `--loco`, `--style-null`, `--baselines`,
+   `--identity-*`, `--xfree-field`, and `--fl-null`, and write one explicit
+   `screen_summary` per F0/F4/F8/F12/F20 with residual ridge cosine, each of the
+   four residual X-free-null cosines and their maximum, margin, normalized
+   error, support, requested/realized rank, and fold counts. CIs and law fields
+   are absent, not NaN evidence.
+
+**Leakage ruling.** No held-out `Y`, `Delta`, law, screen score, bootstrap, or
+completion output enters a basis, standardizer, hyperparameter choice, or
+nuisance fit. Outer bases and nuisance targets use calibration carriers and
+calibration words; inner bases and fits are rebuilt on the inner training
+families. A held-out carrier's design does use that carrier's `X` states on the
+outer calibration-word pool, with the current calibration word left out when
+applicable. This is the registered outcome-clean, within-carrier transductive
+summary, not target leakage and not inductive transfer to a wholly unseen
+carrier. The artifact and every claim must retain that qualifier.
+
+After fixes 1–6, the fixed screen consists of linear ranks
+`{1,2,4,8,full}` and the one literal-full-mean kernel arm. The preselected law
+cell remains sentinel A, linear `--aug-rank 4 --aug-full-mean`, completion on,
+with the existing F0/F4/F8/F12/F20 K=13 and crossed-gate contract. No screen
+outcome may select that cell or change its regularization grid.
+
+### Part 2 — probes 2 and 3 capture and analysis design lock
+
+#### Frozen population and provenance
+
+Use the committed derived config
+`experiments/config/lexical_probe_fresh_v1.json`; do not create a new runner
+or alter any template, item, pair, control, family, sentinel, or move after
+capture. The current self-declared `frozen_sha256` is not the raw file SHA-256
+(the live raw file hash at review time is
+`12c724015218bedf58644d0fcbbf5eef68f4db3bd1f16a9977f42007aec2fd06`).
+Before capture, provenance must therefore define rather than guess the hash
+domain. Every capture manifest stores:
+
+- `config_sha256_raw`, the bytes actually read; `config_git_blob` and the
+  containing commit; and the config's `frozen_sha256` separately as
+  `config_declared_sha256`;
+- canonical hashes over ordered item strings, ordered `(name, block,
+  template, pair)` rows, the presentation-pair map, and the operational-
+  control map;
+- model and tokenizer revision, layer count, embedding/vocabulary dimensions,
+  library versions, device, compute/storage dtype, thread count, batch size,
+  command, elapsed time, array filename/hash, array shapes, and the exact
+  token IDs and per-probe positions described below.
+
+Add `--expected-config-sha256` to `capture_forward` and fail before model work
+if the raw bytes differ. The literal expected value is recorded in the launch
+ledger after the capture implementation commit; it is not taken from the
+self-referential field.
+
+#### One capture path, three prospective artifacts
+
+Extend `experiments/run_lm_dynamics.py::capture_forward`; add no capture
+script. Preserve the current sentinel path when the new flag is absent. The
+new flags are:
+
+- `--insert-before-slot TOKEN`: mutually exclusive with `--sentinel`; require
+  exactly one non-special tokenizer token and insert its embedding row
+  immediately before the independently inserted word row;
+- `--repeat-null`: repeat the identical moved-sequence batches once and store
+  calibration-cell state/law numerical-noise arrays rather than only maxima;
+- `--expected-config-sha256 HASH`: the pre-model raw-config guard above.
+
+`--tag` remains the artifact identifier. The three fixed calls are sentinel A,
+sentinel B, and `--insert-before-slot " not" --tag NOT`, all on the same fresh
+config, one CPU process at a time. The operator must encode as the already
+frozen single token ID 537; any mismatch, special-token status, word-slot
+split, array misalignment, or config/hash mismatch voids the whole prospective
+population. There is no replacement operator.
+
+For the two sentinel captures, retain the existing arrays and meanings:
+`H_q_unappended` is `X` at the original last suffix position,
+`H_sent` is `Y` at the appended sentinel position, and `law_sent` is the true
+moved-sequence law at that sentinel readout. Retain `H_slot`, `H_last`,
+`law_last`, and `law_q_unappended` as diagnostics. Add per-probe source/readout
+positions and `repeat_target_nerr` / `repeat_readout_kl` arrays when
+`--repeat-null` is active.
+
+For insertion capture, write `insert_states_NOT.npz` with these exact arrays:
+
+- `H_word_original[P,L+1,N,D]`: original-sequence word-slot state `X`;
+- `H_word_moved[P,L+1,N,D]`: the same word token after the inserted token,
+  aligned by token identity rather than absolute index, and used as `Y`;
+- `law_word_original[P,N,V]` and `law_word_moved[P,N,V]`: laws read at the
+  original and moved word positions; the latter is the true response law;
+- `law_last_moved[P,N,V]`, secondary only; `slot_original[P]`,
+  `slot_moved[P]`, `sequence_len_original[P]`, and
+  `sequence_len_moved[P]`;
+- `items`, `pos`, `probes`, and `blocks` in frozen order; and, under
+  `--repeat-null`, `repeat_target_nerr[P,L+1,N]` plus
+  `repeat_readout_kl[P,N]`.
+
+The matching `insert_manifest_NOT.json` additionally stores `move_kind =
+insert_before_slot`, operator text/ID, `source_alignment = word_token`, every
+original/moved slot, the prefix/suffix token IDs, and two controls: all states
+strictly before the insertion are identical in float32, and layer-0 original
+versus moved word embeddings are identical. Because this architecture has no
+absolute position added to the embedding row, insertion `F0` has `Delta=0` by
+construction; displacement cosine and normalized-error denominators there are
+undefined. Report F0 as a structural alignment/null check, never as a passing
+or failing move layer.
+
+#### Analyzer source and completion semantics
+
+Add `forward_insert` to `--source` and add `--move-tag` (required for that
+source; fixed to `NOT` here). The regular two punctuation analyses continue to
+use `--source forward --sentinel-tag A|B`. All three use `--target delta
+--unseen-words 2 --residualize static --pairs 0 1 2 3 4`; insertion F0 is
+retained only as the structural null above.
+
+For insertion at layer index `l`, set
+
+`X = H_word_original[:,l]`, `Y = H_word_moved[:,l]`, and `Delta = Y - X`.
+
+Extend `WorldCompleter.laws` with an `insert_before_slot_emb` argument. It must
+rebuild the **moved** sequence `prefix + inserted-token + word + suffix`, set
+the replacement/readout position to `original_slot + 1`, and install
+`Yhat = X + Delta_hat` there. Hidden index `l` is written by a forward hook on
+decoder block `l-1`; for `l=0`, replace the moved sequence's embedding row
+directly. Read logits at the moved word position. With `Yhat=None`, the
+unmodified moved sequence supplies `q_true`; the stored
+`law_word_moved` is only the reload target. Never complete the original
+sequence, write at the old absolute slot, or compare against an original-
+sequence law. Under `P_static` residualization, reassemble
+`Delta_hat = f_Delta(P_static) + Delta_perp_hat` before writeback.
+
+The primary response-law quantities are `KL(q_true || qhat)`, skill relative
+to the same-fold shared-displacement completion, and continuous improvement
+`KL(null)-KL(candidate)`. The probe-3 three-endpoint gate uses displacement
+cosine, response-law skill margin, and continuous-KL margin. Last-suffix laws
+are diagnostic and cannot satisfy a gate.
+
+#### Folds, `P_static`, nulls, K=13, and inference
+
+The primary fold contract remains the one implied by Round 29's frozen gates:
+four leave-one-family-out outer carrier folds (`question`, `instruction`,
+`comparison`, `enumeration`) crossed with two class-stratified unseen-word
+folds. Each key has 12 calibration carriers × 40 calibration words and four
+held-family carriers × 40 held-out words; nuisance bases, standardizers, and
+all hyperparameters are rebuilt in the inner leave-one-of-three-calibration-
+families-out loop. This yields the registered eight fold keys. The config's
+directional `calibration_blocks = {question,instruction}` and
+`heldout_blocks = {comparison,enumeration}` is also reported once as a
+secondary frozen external-split diagnostic; it does not replace the fourfold
+primary, enter model selection, or count toward the `6/8` or `12/16` gates.
+
+For the sentinel move, fresh `P_static` has ten coordinates in this fixed
+order: four family indicators, centered over all 16 carriers, then
+`[prefix_token_count, suffix_token_count, moved_sequence_length,
+word_slot_position, sentinel_readout_position,
+sentinel_readout_position/moved_sequence_length]`, all zero-based positions.
+For insertion use the same schema and family centering with
+`[prefix_token_count, suffix_token_count, moved_sequence_length,
+original_word_slot_position, moved_word_slot_position,
+moved_word_slot_position/moved_sequence_length]`; the manifest records both
+slots. No text embedding, hidden state, result, pair label, or outcome is a
+`P_static` coordinate.
+
+The cheapest forward-move nulls carry over without reinterpretation:
+
+1. identity, `Delta_hat=0`;
+2. identity plus the calibration shared displacement,
+   `Yhat=X+mean(Delta_cal)`;
+3. POS-class mean residual displacement;
+4. frozen-input-embedding word-only cosine kNN;
+5. frozen-input-embedding word-only ridge; and
+6. frozen-input-embedding word-only RBF kernel ridge.
+
+Items 3–6 are the four registered X-free lexical nulls; all their tuning is
+nested inside calibration words/families. The fixed unseen-word response-law
+rank universe is exactly K=13:
+`identity`, `mean`, `class_mean`, `wordonly_knn`,
+`wordonly_ridge_emb`, `wordonly_kernel_emb`, `knn1`, `knn5`, `knn20`,
+`ridge`, `lowrank`, `kernel`, and `chart`. The word-conditioned and shared-
+displacement arms are moot-makers, not evidence that an X-conditioned field
+exists.
+
+Support requires finite displacement cosine/error and finite primary law
+values on one common K=13 cell mask. Reload compares fresh float32 moved laws
+with stored float16 laws; sentinel locality keeps the existing causal check,
+and insertion locality checks every pre-insertion position. The block-first
+bootstrap resamples families first, templates within the sampled held family,
+and POS-stratified held-out words with one word draw crossed across every
+sampled family carrying that word-fold key. Gates remain exactly Round 29:
+two qualifying F4–F20 layers; positive point and crossed lower-bound margins
+against the strongest of the four X-free lexical nulls on all three endpoints;
+`6/8` all-endpoint-positive keys; no family collapse; support `>=0.95`.
+Probe 2 additionally requires both sentinels and `12/16` template breadth.
+
+### Part 3 — probe-4 matched-interchangeability design lock
+
+Implement this as an early-return `--interchangeability` mode in
+`experiments/analyze_lm_dynamics.py`, not as another runner. New flags are
+`--interchangeability`, `--append-tags A B`, `--insert-tag NOT`, and
+`--repeat-completions 2`. In this mode, reject ladder/residualization/null
+flags other than the existing `--n-boot` and `--tag`; require the frozen fresh
+config, all three capture/manifest hashes, F4/F8/F12/F20, and at least two
+identical completion passes. The fixed output is
+`analysis_interchangeability_fresh_v1.json`.
+
+For move source `m`, layer `l`, word `w`, and carrier/presentation `p`, define
+`d[p,w] = Y[p,w]-X[p,w]` from the appropriate aligned capture. For every
+ordered direction donor `a` to recipient `b` in a frozen matched pair, compute
+one positive scalar using **calibration words only**:
+
+`alpha[a->b] = sqrt(sum_w ||d[b,w]||^2 / sum_w ||d[a,w]||^2)`.
+
+The sums use the current outer word-fold's calibration words; scales are
+separate by move source, sentinel, layer, pair, and direction, with no clipping
+or held-out norm. A zero/non-finite denominator voids that layer/source. The
+swapped target is `Yswap[b,w] = X[b,w] + alpha[a->b] d[a,w]`. Repeat in the
+reverse direction. Apply the identical rule in both directions of every
+frozen `operational_controls.control_pairs` pair; those are the only negative
+controls and may not be rematched after capture.
+
+Write `Yswap[b,w]` into carrier `b`'s **own moved sequence** at its own target
+readout position. Punctuation uses the appended sequence and sentinel position;
+insertion uses the inserted-token sequence and aligned moved word position.
+The hidden-index rule is the same as probe 3: hook block `l-1`, or replace the
+embedding row at `l=0` (which is not gated). The true target is `Y[b,w]`; the
+true law is the unmodified recipient moved sequence's law at that readout.
+The same-presentation reference writes stored `Y[b,w]` through the identical
+hook and sequence, so hook/reload error is shared rather than silently treated
+as interchangeability failure.
+
+For each held-out cell, the two primary degradations are:
+
+- `D_state = ||Yswap-Y|| / ||Y-X|| - ||Ysame-Y|| / ||Y-X||`;
+- `D_KL = KL(q_true || q_swap) - KL(q_true || q_same)` in nats.
+
+Zero move norms are unsupported. No cosine, pairwise ordering, automated
+quality score, or last-token readout can replace either primary quantity.
+Run the identical moved-sequence capture twice on calibration cells to obtain
+state-repeat normalized errors, and run identical `Ysame` completions
+`--repeat-completions` times at every gated hook for law-repeat KL differences.
+For each source/layer/endpoint, set
+`tau = max(0.02, 2 * calibration fixed-input q99 noise)`. Store the complete
+noise distribution summaries, q99, `tau`, and supported counts; never estimate
+the threshold from held-out swaps.
+
+Aggregate the two directions of a matched pair as one pair cluster. The
+bootstrap is family-first: resample four families, resample the two frozen
+matched pairs within each sampled family, and use one POS-stratified held-out-
+word draw crossed across all sampled pairs for a word-fold key. Directions
+remain paired. Operational-control intervals resample the four frozen control
+pairs with the same crossed word draws; report each target family separately
+so a control-rich family cannot hide a reversal. Punctuation A and B are
+reported separately; a punctuation layer qualifies only when both sentinels
+meet the clause, so no sentinel averaging or selection is allowed. Operator
+insertion is the second move class. Joint summaries never replace either
+class.
+
+**Stable-interchangeability gate.** A layer passes for one source only if, on
+both `D_state` and `D_KL`, the equivalent-swap upper 95% bound is `<=tau`, the
+different-operational-control lower 95% bound is at least the equivalent upper
+bound plus `0.02`, at least `6/8` matched pairs satisfy the point criterion in
+both directions, and every family has equivalent degradation `<=tau` with
+positive control separation. The punctuation clause must pass for A and B at
+the same layer. Stable interchangeability requires at least two common
+F4–F20 punctuation layers and at least two F4–F20 insertion layers.
+
+**Hostile-hole gate.** A layer passes for one source only if the equivalent-
+swap point degradation is `>=0.02` and its lower 95% bound is positive on both
+primary quantities; at least `6/8` matched pairs meet both conditions in both
+directions; every family's point degradation is `>=0.02` with a positive
+family lower bound; and every frozen different-operational control remains
+above its endpoint's `tau` with a positive lower bound. Again A and B must
+pass at the same punctuation layer. The hostile-hole verdict requires at least
+two F4–F20 layers in both move classes. Anything else is inconclusive.
+
+The insertion is called the fixed **`not`-token insertion**, not semantic
+negation: across the frozen noun, verb, adjective, and function-word cells it
+is not guaranteed to implement one coherent linguistic operation. The two
+gates concern interchangeability of these measured moves and response laws in
+this decoder/population only. Stable passage would support a local operational
+quotient; hostile passage would establish a presentation-obstructed identity
+relation in scope and pivot construction toward exposed quotient coordinates.
+Neither licenses a generic reasoning-quality or model-family claim.
+
+### Round 30 disposition
+
+Probe 1 remains ahead of capture but is **NOT-READY** until the six minimal
+repairs above receive a new Tier-1 review. Probes 2–4 now have a design lock,
+not an implementation or result. After a repaired probe-1 diff, the order from
+Round 29 is unchanged. No axiom or empirical claim is added.
