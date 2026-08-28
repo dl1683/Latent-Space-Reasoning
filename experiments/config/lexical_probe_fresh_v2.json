@@ -1,0 +1,407 @@
+{
+  "name": "lexical_probe_fresh_v2",
+  "status": "authored_pending_independent_linguistic_adversary_and_tokenization",
+  "note": "Round 31 replacement for fresh v1. This file is authored before any v2 capture, tokenization-derived selection, per-template model behavior, or score. It is not frozen: an independent fresh Codex linguistic adversary and a tokenization audit come next, and the raw-file hash/Git blob are computed only after approval. Any failed cell voids this entire version and requires a new version from scratch.",
+  "authoring_provenance": {
+    "role": "outcome-blind_author",
+    "session": "fresh Codex Round 31 author session",
+    "new_template_model_behavior_seen": false,
+    "new_template_tokenization_seen": false,
+    "per_template_outcomes_seen": false,
+    "prior_program_results_known": true,
+    "independent_linguistic_adversary_required": true,
+    "adversary_must_be_separate_fresh_codex_session": true,
+    "adversary_new_template_model_behavior_access": "forbidden",
+    "hash_timing": "after independent linguistic approval and tokenization approval; before capture"
+  },
+  "replacement_contract": [
+    "Create an entirely new version; never mutate or relabel v1.",
+    "Require pre-capture approval of all 8 pairs x 4 POS classes = 32 cells.",
+    "Within every cell, preserve syntactic dependency, category licensing, polarity, modality, definiteness, quantification, degree, tense, speech act, and continuation demand.",
+    "Both members must be independently judged grammatical and operationally equivalent; equally malformed does not count.",
+    "Presentation edits must be limited to predeclared non-truth-conditional discourse, register, or orthographic variation outside the slot's dependency frame.",
+    "Controls must match register, grammaticality, approximate token length, and surface-edit magnitude while changing one declared operation.",
+    "Use an outcome-blind author and a separate linguistic adversary who have no access to new-template model behavior.",
+    "Freeze texts, pair maps, cell-level linguistic judgments, controls, tokenization, raw file hash, Git blob, gates, and commands before capture.",
+    "Any failed linguistic or tokenization cell voids the entire candidate version before model work; generate a new version from scratch rather than substituting a template.",
+    "Predeclare a scalar bridge and a calibration-only diagonal/low-rank/orthogonal bridge ladder. A hostile-hole verdict is unavailable unless the simple bridge ladder also fails.",
+    "Require the hostile equivalent-swap lower bound to exceed the endpoint-specific numerical threshold tau, not merely zero.",
+    "Predeclare a near-zero move-norm floor before computing normalized degradation."
+  ],
+  "frame_design": {
+    "decision": "metalinguistic_mention",
+    "slot_dependency_frame": "the word <X>",
+    "justification": "Every item is used as a mentioned word rather than as a noun, verb, adjective, or function word in the surrounding syntax. Therefore every one of the 80 strings is licensed by the same dependency frame. The paired edits occur only in the initial register or discourse wrapper; the core 'plan to OPERATION the word <X>' remains literal and unchanged within each pair.",
+    "presentation_pair_1_edit": "Please -> Kindly (register only; one wrapper-word substitution)",
+    "presentation_pair_2_edit": "For reference -> For clarity (discourse framing only; one wrapper-word substitution)",
+    "control_edit": "one operation-verb substitution with the wrapper and slot dependency frame held literal",
+    "declared_operations": [
+      "repeat",
+      "omit",
+      "capitalize",
+      "reverse"
+    ]
+  },
+  "items_from": "experiments/config/lexical_probe_v1.json",
+  "items": {
+    "noun": [
+      "dog",
+      "cat",
+      "house",
+      "river",
+      "city",
+      "book",
+      "table",
+      "mountain",
+      "doctor",
+      "child",
+      "window",
+      "money",
+      "music",
+      "bread",
+      "forest",
+      "engine",
+      "king",
+      "stone",
+      "garden",
+      "ocean"
+    ],
+    "verb": [
+      "run",
+      "walk",
+      "eat",
+      "write",
+      "build",
+      "break",
+      "sleep",
+      "think",
+      "speak",
+      "fly",
+      "carry",
+      "push",
+      "open",
+      "close",
+      "drive",
+      "sing",
+      "throw",
+      "hold",
+      "learn",
+      "wash"
+    ],
+    "adj": [
+      "red",
+      "blue",
+      "big",
+      "small",
+      "hot",
+      "cold",
+      "fast",
+      "slow",
+      "happy",
+      "sad",
+      "dark",
+      "bright",
+      "heavy",
+      "soft",
+      "loud",
+      "quiet",
+      "old",
+      "young",
+      "wet",
+      "empty"
+    ],
+    "func": [
+      "the",
+      "of",
+      "and",
+      "but",
+      "because",
+      "if",
+      "with",
+      "from",
+      "under",
+      "between",
+      "although",
+      "while",
+      "after",
+      "before",
+      "into",
+      "through",
+      "without",
+      "until",
+      "since",
+      "than"
+    ]
+  },
+  "slot_convention": "The item is inserted as its own embedding row replacing <X>. Every v2 carrier uses the identical metalinguistic dependency frame 'the word <X>'. Tokenization, slot alignment, prefix/suffix identity within each presentation pair, and all item rows remain pending the independent pre-freeze tokenization audit.",
+  "calibration_blocks": [
+    "repeat",
+    "omit"
+  ],
+  "heldout_blocks": [
+    "capitalize",
+    "reverse"
+  ],
+  "presentation_pairs": {
+    "repeat_pair1": [
+      "repeat_1",
+      "repeat_2"
+    ],
+    "repeat_pair2": [
+      "repeat_3",
+      "repeat_4"
+    ],
+    "omit_pair1": [
+      "omit_1",
+      "omit_2"
+    ],
+    "omit_pair2": [
+      "omit_3",
+      "omit_4"
+    ],
+    "capitalize_pair1": [
+      "capitalize_1",
+      "capitalize_2"
+    ],
+    "capitalize_pair2": [
+      "capitalize_3",
+      "capitalize_4"
+    ],
+    "reverse_pair1": [
+      "reverse_1",
+      "reverse_2"
+    ],
+    "reverse_pair2": [
+      "reverse_3",
+      "reverse_4"
+    ]
+  },
+  "operational_controls": {
+    "note": "Each frozen candidate control keeps the complete register/discourse wrapper and the metalinguistic slot dependency frame literal while substituting exactly one declared operation verb. The four controls are linguistically matched now; tokenizer-length matching remains a pre-freeze gate.",
+    "control_pairs": [
+      [
+        "repeat_1",
+        "omit_1"
+      ],
+      [
+        "repeat_3",
+        "omit_3"
+      ],
+      [
+        "capitalize_1",
+        "reverse_1"
+      ],
+      [
+        "capitalize_3",
+        "reverse_3"
+      ]
+    ],
+    "control_definitions": [
+      {
+        "id": "control_repeat_to_omit_plain",
+        "templates": ["repeat_1", "omit_1"],
+        "declared_operation_change": "repeat -> omit"
+      },
+      {
+        "id": "control_repeat_to_omit_discourse",
+        "templates": ["repeat_3", "omit_3"],
+        "declared_operation_change": "repeat -> omit"
+      },
+      {
+        "id": "control_capitalize_to_reverse_plain",
+        "templates": ["capitalize_1", "reverse_1"],
+        "declared_operation_change": "capitalize -> reverse"
+      },
+      {
+        "id": "control_capitalize_to_reverse_discourse",
+        "templates": ["capitalize_3", "reverse_3"],
+        "declared_operation_change": "capitalize -> reverse"
+      }
+    ]
+  },
+  "probes": [
+    {
+      "block": "repeat",
+      "operation": "repeat",
+      "name": "repeat_1",
+      "template": "Please plan to repeat the word <X>",
+      "pair": "repeat_pair1"
+    },
+    {
+      "block": "repeat",
+      "operation": "repeat",
+      "name": "repeat_2",
+      "template": "Kindly plan to repeat the word <X>",
+      "pair": "repeat_pair1"
+    },
+    {
+      "block": "repeat",
+      "operation": "repeat",
+      "name": "repeat_3",
+      "template": "For reference, please plan to repeat the word <X>",
+      "pair": "repeat_pair2"
+    },
+    {
+      "block": "repeat",
+      "operation": "repeat",
+      "name": "repeat_4",
+      "template": "For clarity, please plan to repeat the word <X>",
+      "pair": "repeat_pair2"
+    },
+    {
+      "block": "omit",
+      "operation": "omit",
+      "name": "omit_1",
+      "template": "Please plan to omit the word <X>",
+      "pair": "omit_pair1"
+    },
+    {
+      "block": "omit",
+      "operation": "omit",
+      "name": "omit_2",
+      "template": "Kindly plan to omit the word <X>",
+      "pair": "omit_pair1"
+    },
+    {
+      "block": "omit",
+      "operation": "omit",
+      "name": "omit_3",
+      "template": "For reference, please plan to omit the word <X>",
+      "pair": "omit_pair2"
+    },
+    {
+      "block": "omit",
+      "operation": "omit",
+      "name": "omit_4",
+      "template": "For clarity, please plan to omit the word <X>",
+      "pair": "omit_pair2"
+    },
+    {
+      "block": "capitalize",
+      "operation": "capitalize",
+      "name": "capitalize_1",
+      "template": "Please plan to capitalize the word <X>",
+      "pair": "capitalize_pair1"
+    },
+    {
+      "block": "capitalize",
+      "operation": "capitalize",
+      "name": "capitalize_2",
+      "template": "Kindly plan to capitalize the word <X>",
+      "pair": "capitalize_pair1"
+    },
+    {
+      "block": "capitalize",
+      "operation": "capitalize",
+      "name": "capitalize_3",
+      "template": "For reference, please plan to capitalize the word <X>",
+      "pair": "capitalize_pair2"
+    },
+    {
+      "block": "capitalize",
+      "operation": "capitalize",
+      "name": "capitalize_4",
+      "template": "For clarity, please plan to capitalize the word <X>",
+      "pair": "capitalize_pair2"
+    },
+    {
+      "block": "reverse",
+      "operation": "reverse",
+      "name": "reverse_1",
+      "template": "Please plan to reverse the word <X>",
+      "pair": "reverse_pair1"
+    },
+    {
+      "block": "reverse",
+      "operation": "reverse",
+      "name": "reverse_2",
+      "template": "Kindly plan to reverse the word <X>",
+      "pair": "reverse_pair1"
+    },
+    {
+      "block": "reverse",
+      "operation": "reverse",
+      "name": "reverse_3",
+      "template": "For reference, please plan to reverse the word <X>",
+      "pair": "reverse_pair2"
+    },
+    {
+      "block": "reverse",
+      "operation": "reverse",
+      "name": "reverse_4",
+      "template": "For clarity, please plan to reverse the word <X>",
+      "pair": "reverse_pair2"
+    }
+  ],
+  "linguistic_judgment_legend": {
+    "scope": "Every row covers all 20 items in the named POS inventory.",
+    "pair_pass": "Both templates are independently grammatical; the item is metalinguistically licensed; the core dependency frame, declared operation, polarity, modality, definiteness, quantification, degree, tense, speech act, and continuation demand are identical; only the declared wrapper edit differs.",
+    "control_pass": "Both templates are independently grammatical in the same register and frame; exactly one declared operation verb differs; word count and edit magnitude are matched at authoring time, with tokenizer-length equality still pending.",
+    "status": "These are the outcome-blind author's judgments, not independent approval. Every row remains pending the separate fresh Codex adversary and tokenization audit."
+  },
+  "presentation_pair_cell_judgments": [
+    {"cell_id":"repeat_pair1__noun","pair":"repeat_pair1","pos":"noun","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"register","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"repeat_pair1__verb","pair":"repeat_pair1","pos":"verb","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"register","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"repeat_pair1__adj","pair":"repeat_pair1","pos":"adj","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"register","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"repeat_pair1__func","pair":"repeat_pair1","pos":"func","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"register","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"repeat_pair2__noun","pair":"repeat_pair2","pos":"noun","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"discourse","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"repeat_pair2__verb","pair":"repeat_pair2","pos":"verb","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"discourse","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"repeat_pair2__adj","pair":"repeat_pair2","pos":"adj","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"discourse","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"repeat_pair2__func","pair":"repeat_pair2","pos":"func","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"discourse","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"omit_pair1__noun","pair":"omit_pair1","pos":"noun","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"register","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"omit_pair1__verb","pair":"omit_pair1","pos":"verb","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"register","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"omit_pair1__adj","pair":"omit_pair1","pos":"adj","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"register","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"omit_pair1__func","pair":"omit_pair1","pos":"func","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"register","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"omit_pair2__noun","pair":"omit_pair2","pos":"noun","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"discourse","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"omit_pair2__verb","pair":"omit_pair2","pos":"verb","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"discourse","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"omit_pair2__adj","pair":"omit_pair2","pos":"adj","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"discourse","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"omit_pair2__func","pair":"omit_pair2","pos":"func","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"discourse","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"capitalize_pair1__noun","pair":"capitalize_pair1","pos":"noun","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"register","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"capitalize_pair1__verb","pair":"capitalize_pair1","pos":"verb","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"register","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"capitalize_pair1__adj","pair":"capitalize_pair1","pos":"adj","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"register","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"capitalize_pair1__func","pair":"capitalize_pair1","pos":"func","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"register","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"capitalize_pair2__noun","pair":"capitalize_pair2","pos":"noun","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"discourse","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"capitalize_pair2__verb","pair":"capitalize_pair2","pos":"verb","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"discourse","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"capitalize_pair2__adj","pair":"capitalize_pair2","pos":"adj","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"discourse","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"capitalize_pair2__func","pair":"capitalize_pair2","pos":"func","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"discourse","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"reverse_pair1__noun","pair":"reverse_pair1","pos":"noun","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"register","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"reverse_pair1__verb","pair":"reverse_pair1","pos":"verb","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"register","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"reverse_pair1__adj","pair":"reverse_pair1","pos":"adj","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"register","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"reverse_pair1__func","pair":"reverse_pair1","pos":"func","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"register","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"reverse_pair2__noun","pair":"reverse_pair2","pos":"noun","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"discourse","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"reverse_pair2__verb","pair":"reverse_pair2","pos":"verb","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"discourse","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"reverse_pair2__adj","pair":"reverse_pair2","pos":"adj","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"discourse","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"reverse_pair2__func","pair":"reverse_pair2","pos":"func","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"discourse","verdict":"author_pass_pending_adversary"}
+  ],
+  "operational_control_cell_judgments": [
+    {"cell_id":"control_repeat_to_omit_plain__noun","control":"control_repeat_to_omit_plain","pos":"noun","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","verdict":"author_pass_pending_adversary_and_tokenization"},
+    {"cell_id":"control_repeat_to_omit_plain__verb","control":"control_repeat_to_omit_plain","pos":"verb","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","verdict":"author_pass_pending_adversary_and_tokenization"},
+    {"cell_id":"control_repeat_to_omit_plain__adj","control":"control_repeat_to_omit_plain","pos":"adj","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","verdict":"author_pass_pending_adversary_and_tokenization"},
+    {"cell_id":"control_repeat_to_omit_plain__func","control":"control_repeat_to_omit_plain","pos":"func","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","verdict":"author_pass_pending_adversary_and_tokenization"},
+    {"cell_id":"control_repeat_to_omit_discourse__noun","control":"control_repeat_to_omit_discourse","pos":"noun","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","verdict":"author_pass_pending_adversary_and_tokenization"},
+    {"cell_id":"control_repeat_to_omit_discourse__verb","control":"control_repeat_to_omit_discourse","pos":"verb","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","verdict":"author_pass_pending_adversary_and_tokenization"},
+    {"cell_id":"control_repeat_to_omit_discourse__adj","control":"control_repeat_to_omit_discourse","pos":"adj","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","verdict":"author_pass_pending_adversary_and_tokenization"},
+    {"cell_id":"control_repeat_to_omit_discourse__func","control":"control_repeat_to_omit_discourse","pos":"func","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","verdict":"author_pass_pending_adversary_and_tokenization"},
+    {"cell_id":"control_capitalize_to_reverse_plain__noun","control":"control_capitalize_to_reverse_plain","pos":"noun","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","verdict":"author_pass_pending_adversary_and_tokenization"},
+    {"cell_id":"control_capitalize_to_reverse_plain__verb","control":"control_capitalize_to_reverse_plain","pos":"verb","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","verdict":"author_pass_pending_adversary_and_tokenization"},
+    {"cell_id":"control_capitalize_to_reverse_plain__adj","control":"control_capitalize_to_reverse_plain","pos":"adj","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","verdict":"author_pass_pending_adversary_and_tokenization"},
+    {"cell_id":"control_capitalize_to_reverse_plain__func","control":"control_capitalize_to_reverse_plain","pos":"func","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","verdict":"author_pass_pending_adversary_and_tokenization"},
+    {"cell_id":"control_capitalize_to_reverse_discourse__noun","control":"control_capitalize_to_reverse_discourse","pos":"noun","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","verdict":"author_pass_pending_adversary_and_tokenization"},
+    {"cell_id":"control_capitalize_to_reverse_discourse__verb","control":"control_capitalize_to_reverse_discourse","pos":"verb","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","verdict":"author_pass_pending_adversary_and_tokenization"},
+    {"cell_id":"control_capitalize_to_reverse_discourse__adj","control":"control_capitalize_to_reverse_discourse","pos":"adj","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","verdict":"author_pass_pending_adversary_and_tokenization"},
+    {"cell_id":"control_capitalize_to_reverse_discourse__func","control":"control_capitalize_to_reverse_discourse","pos":"func","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","verdict":"author_pass_pending_adversary_and_tokenization"}
+  ],
+  "pre_freeze_gates": {
+    "linguistic_adversary": "all 32 presentation pair x POS cells and all 16 control x POS cells must pass independently; one failure voids v2",
+    "tokenization": "all slot, item, prefix/suffix, paired-frame, and approximate control-length checks must pass; one failure voids v2",
+    "bridge_ladder": [
+      "positive scalar",
+      "calibration-only diagonal",
+      "calibration-only low-rank",
+      "calibration-only orthogonal"
+    ],
+    "hostile_lower_bound": "equivalent-swap lower bound must exceed endpoint-specific tau on both primary endpoints",
+    "near_zero_move_norm": "a numerical floor must be frozen from calibration repeat noise before normalized degradation is computed",
+    "hash": "absent until adversary and tokenization approval"
+  }
+}

@@ -5469,3 +5469,228 @@ Probe 1 remains ahead of capture but is **NOT-READY** until the six minimal
 repairs above receive a new Tier-1 review. Probes 2–4 now have a design lock,
 not an implementation or result. After a repaired probe-1 diff, the order from
 Round 29 is unchanged. No axiom or empirical claim is added.
+
+## Tier-3 audit #16 — B-static wording, fresh-population void, and bridge requirement (fresh Codex auditor)
+
+### Verdict
+
+Round 28's B-static numerical result survives direct verification, but its interpretation needs tightening:
+
+> Across the two correlated punctuation sentinels in one decoder and one authored population, registered block/length/position metadata predict raw displacement direction, and `X_perp` retains predictive association with `Delta_perp` after those metadata are cross-fitted out at F4–F20. This is sensitivity to registered presentation-derived metadata plus surviving X-linked residual predictability under `P_static`; it is not independent replication, a presentation decomposition, operational state, or a native law.
+
+The fresh population does not survive design audit. Zero of its eight pairs establishes presentation-only equivalence across all four declared word classes. It is voided before capture for confirmatory probes 2–4 and retained unchanged only as a design negative or exploratory mixed-frame stress set.
+
+The B-aug crashes are a first-class numerical-instrument finding. They are not a kill of B-aug, but neither are they harmless execution noise.
+
+No representation-level hole hostile to structured reasoning is established. The Round 30 probe-4 design could at most test raw interchangeability up to scalar rescaling; it misses recoverable presentation-conditioned chart transitions.
+
+The audit did not open `analysis_resAB.json` or the working analyzer.
+
+### B-static wording corrections
+
+- F4–F20 pass the registered residual-versus-null gate.
+- All passing layers have `8/8` point-positive keys and no family collapse.
+- B-static weakens an A-sentinel-only accident, but it remains a correlated same-population robustness check.
+- The two sentinels share decoder, word inventory, authored templates, folds, analysis, and move class. Calling B-static a replication or saying it "reproduces" A-static is too strong.
+
+The direct `P_static → Delta` cosines are `0.628/0.508/0.413/0.444/0.622` at F0/F4/F8/F12/F20. These are not a "presentation-only arm." `P_static` contains registered block, length, and position metadata. The result shows predictability from those presentation-derived static coordinates—not pure presentation, variance explained, mediation, causal attribution, or a presentation fraction.
+
+The F0 sentence is:
+
+> B-static F0 is non-qualifying; its extreme pooled skill is driven by two association keys and is consistent with unstable cellwise normalization, so the magnitude is not a comparable effect size.
+
+That normalization diagnosis remains an inference because the artifact does not expose every cell denominator.
+
+The retention sentence is:
+
+> All twelve F4–F20 ratio medians exceed 0.5, but no uniform interval claim is earned; these are ratios between fitted predictive-margin systems, not fractions of retained signal, variance, state, or mediation.
+
+### B-aug crashes: numerical-instrument non-robustness
+
+> The registered B-aug low-rank path is numerically non-robust in the F8 grammar block: torch SVD of the fitted coefficient matrix failed to converge twice. The failure is not a B-aug result and does not prove ill-conditioned `X_perp`; localization requires finite-input checks, effective rank, singular-spectrum or condition telemetry, and backend-sensitivity validation.
+
+The first crash row's "cause unknown" wording is superseded. A fallback result cannot silently erase the finding. It must retain:
+
+- the original two failures;
+- the failed fold and matrix;
+- finite-input and spectral diagnostics;
+- agreement where both backends converge; and
+- explicit amended-implementation status for the failed cell.
+
+### Fresh-population linguistic audit
+
+| Pair | Noun | Verb | Adjective | Function word | All-class verdict |
+|---|---|---|---|---|---|
+| `q_pair1` | Modality and definiteness change: "does X" → "could the X" | Bare mention/coercion → definite nominal | Nominalization/coercion changes | Mostly ill-formed or nominalized | Reject |
+| `q_pair2` | Slot coerces noun toward a verb | Closest clean case; "on earth" changes pragmatic intensity only | Coerced/ill-formed in a verb slot | Ill-formed in a verb slot | Reject all-class; verb-only exploratory |
+| `i_pair1` | Bare object → definite object; politeness also added | Nominalized rather than verb role | Nominalized/ill-formed | Ill-formed | Reject |
+| `i_pair2` | Coerced into verb position | `should` → `really ought to` changes deontic force | Coerced/ill-formed | Ill-formed | Reject |
+| `c_pair1` | Bare/mentioned noun → definite noun; comparison frame also changes | Nominalized/coerced | Nominalized/coerced | Ill-formed | Reject |
+| `c_pair2` | Coerced degree reading | Ill-formed/coerced | `far` changes comparison magnitude | Ill-formed | Reject |
+| `e_pair1` | Definiteness changes | Imperative/event reading → definite nominal | Ill-formed/coerced | Ill-formed | Reject |
+| `e_pair2` | `some` and `would` change quantification/modality | Nominalized/coerced | Nominalized/coerced | Ill-formed | Reject |
+
+A linguist would reject all eight as all-four-class matched-presentation pairs. `q_pair2` is the sole structurally plausible edit, but only for verb cells; rescuing that subset after outcomes would be exploratory.
+
+The four controls are genuinely different frames, but not clean "same register, different operation" controls across all classes. They change speech act, syntax, length, category licensing, syntactic role, frame shape, or surface distance. They can serve only as coarse far-difference controls and cannot attribute separation specifically to operational state.
+
+"Authored blind" is withdrawn. The licensed provenance statement is:
+
+> The population was prospectively authored and committed before any new capture or score.
+
+No direct new-template outcome conditioning is demonstrated, but the author knew prior results and responded to audit #15. The config's declared digest also differs from its raw SHA-256.
+
+### Void ruling and 12-point replacement rule
+
+The current v1 population is void before capture for confirmatory probes 2–4. The frozen file remains unchanged. It may remain a permanent negative design artifact or an explicitly exploratory mixed-grammaticality stress population whose results cannot earn presentation or hostile-hole claims.
+
+The replacement rule is registered before replacement texts are authored:
+
+1. Create an entirely new version; never mutate or relabel v1.
+2. Require pre-capture approval of all `8 pairs × 4 POS classes = 32` cells.
+3. Within every cell, preserve syntactic dependency, category licensing, polarity, modality, definiteness, quantification, degree, tense, speech act, and continuation demand.
+4. Both members must be independently judged grammatical and operationally equivalent; "equally malformed" does not count.
+5. Presentation edits must be limited to predeclared non-truth-conditional discourse, register, or orthographic variation outside the slot's dependency frame.
+6. Controls must match register, grammaticality, approximate token length, and surface-edit magnitude while changing one declared operation.
+7. Use an outcome-blind author and a separate linguistic adversary who have no access to new-template model behavior.
+8. Freeze texts, pair maps, cell-level linguistic judgments, controls, tokenization, raw file hash, Git blob, gates, and commands before capture.
+9. Any failed linguistic or tokenization cell voids the entire candidate version before model work; generate a new version from scratch rather than substituting a template.
+10. Predeclare a scalar bridge and a calibration-only diagonal/low-rank/orthogonal bridge ladder. A hostile-hole verdict is unavailable unless the simple bridge ladder also fails.
+11. Require the hostile equivalent-swap lower bound to exceed the endpoint-specific numerical threshold `tau`, not merely zero.
+12. Predeclare a near-zero move-norm floor before computing normalized degradation.
+
+### Mandatory caveats if v1 probe 4 is run anyway
+
+> The frozen v1 "presentation pairs" were not linguistically validated as operationally equivalent across noun, verb, adjective, and function-word cells; several change syntactic licensing, modality, definiteness, degree, or quantification.
+
+> Accordingly, this probe measures interchangeability under a mixed presentation-and-operation perturbation, not presentation-only interchangeability.
+
+> A swap failure cannot be attributed to presentation and cannot establish a presentation-obstructed identity relation or hostile quotient hole.
+
+> The operational controls are coarse different-frame controls confounded by grammaticality, syntactic role, length, and surface distance; their separation does not isolate operational difference.
+
+> The scalar RMS bridge tests equality up to rescaling only; failure remains compatible with a recoverable presentation-conditioned chart transition.
+
+> Even a stable pass would establish only robustness across these mixed frames under two local moves and one-position readouts, not a presentation quotient.
+
+> All pair-by-POS cells are reported without post-outcome rescue; any noun-only, verb-only, pair-only, family-only, sentinel-only, or layer-only interpretation is exploratory.
+
+> The reported intervals are internal sensitivity summaries over four authored families, not confidence intervals for a population of presentation families.
+
+### Round 29–30 design validity
+
+What was good:
+
+- Moving fresh populations, a second move, and interchangeability ahead of a roughly 100-CPU-hour four-cell permutation expansion was correct.
+- Round 30 correctly ruled probe 1 NOT-READY.
+- The insertion alignment and F0 structural-null interpretation are explicit.
+- Round 30 correctly stopped calling the `not` insertion semantic negation.
+- It caught the raw-hash mismatch and wide-design numerical risks.
+
+Blocking defects:
+
+1. **The linguistic design gate happened after freezing.** The population was frozen before its claimed equivalence relation was adversarially checked.
+2. **Probe 4 assumes too much coordinate identity.** It maps donor moves with one positive scalar. A latent world may use presentation-conditioned gauges connected by a simple chart-transition map. Raw swaps can fail while a stable operational quotient remains recoverable.
+3. **The hostile gate is not guaranteed to beat measured noise.** Stable passage uses `tau=max(0.02,2×q99 noise)`, but hostile passage requires only a point degradation `≥0.02` and a lower bound above zero. If `tau>0.02`, a "hostile" result can remain inside the declared noise region.
+4. **Normalized successor error has a near-zero-denominator risk.** Zero moves are excluded, but arbitrarily small moves can still inflate the ratio.
+5. **The controls do not isolate operation.** They are gross frame changes with POS-dependent grammaticality.
+6. **Four families do not support population-style inference.** Family-first bootstrap bounds remain internal authored-family stability summaries.
+7. **Probe 3 is not one coherent operation.** Inserting `not` before nouns, verbs, adjectives, and function words creates different or malformed constructions. Round 30's wording caveat is correct, but the result cannot serve as a clean second operational move.
+8. **Fresh-population "replication" is too strong.** It would refit within one decoder on the same 80 words and related synthetic slot-filling paradigm. Call it a fresh authored-population stress test.
+
+Correct order now:
+
+- Finish the protected running chain without opening excluded artifacts.
+- Record and audit the B-aug numerical amendment.
+- Repair and re-review probe 1.
+- Void fresh v1 before capture.
+- Register and freeze a linguistically valid v2 plus the bridge/noise repairs.
+- Run the contextual-prefix baseline and bridge screen before full interchangeability.
+- Only then retain the remainder of the Round 29 external-axis order.
+
+### Alternatives and tunnel-vision ruling
+
+The program remains one decoder, one 80-word inventory, synthetic slot filling, one-position self-readout, one-step interventions, and analyst-authored equivalence. The strongest mechanism-level alternative is a recoverable presentation-conditioned gauge; the strongest immediate confound is full-prefix syntactic licensing.
+
+| Exploration | CPU-only estimate | What it decides |
+|---|---:|---|
+| Tokenized full-prefix/syntactic-licensing X-free screen | 10–30 min; about 1 h with completion | Whether surface grammar and slot licensing explain the relation |
+| Calibration-only scalar → diagonal → low-rank/orthogonal bridge ladder | 15–30 min state screen; ≤1 h with writeback | Whether raw swap failure is repaired by a chart-transition map |
+| Well-formed operational micro-world with binding, polarity, or quantifier updates | 15–30 min capture; 2–4 h analysis | Whether a coherent operation supports transfer across presentations |
+| Multi-position teacher-forced consequence law, next `k={4,8}` positions | 20–40 min capture; 1–2 h scoring | Whether one-position KL is hiding or manufacturing consequence |
+| Two-step move composition/writeback | 10–20 min capture; about 1 h scoring | Whether the field composes rather than acting as a local fingerprint |
+| Second pinned decoder | About 3 h | Decoder specificity only—not mechanism or genericity |
+
+### Second-lens ruling
+
+A correctly designed interchangeability test is the right kind of denizen question: two presentations count as the same place only if declared moves and response laws survive transport between them while genuinely different operational states remain distinct.
+
+It can prove, locally:
+
+- that one declared identity relation is stable or obstructed;
+- that raw presentation variants do or do not share measured moves and local laws; and
+- that a candidate next latent space needs explicit quotient or bridge coordinates.
+
+It cannot prove:
+
+- that no nonlinear or gauge-transformed quotient exists;
+- that structured reasoning cannot live in the representation;
+- that donor writebacks are on-manifold;
+- that the relation composes across multiple moves;
+- that a one-position decoder law is the correct consequence currency; or
+- model-family, task-family, or generic reasoning claims.
+
+With the v1 pairs, it cannot prove even the local presentation-obstruction claim. The pair premise fails before the latent measurement begins.
+
+## Round 31 — audit #16 adoption, valid-population authoring, and corrected external-axis order
+
+**Codex, documentation/configuration only; no experiment was run.** `analysis_resAB.json` was not opened, and the uncommitted analyzer diff under separate Tier-1 review was not read or edited. Audit #16 is adopted above. Fresh v1 is void for confirmatory probes 2–4 and remains unchanged as an exploratory mixed-frame stress set. Its provenance is "prospectively authored and committed before any new capture or score," not "authored blind."
+
+### Think-before-any-future-run
+
+The expected first outcome is that v2 survives an independent all-cell linguistic adversary and tokenization audit; failure voids the entire version, while approval only makes it eligible for capture. If the contextual-prefix X-free field closes the X-linked association, full-prefix grammar/licensing is the cheapest explanation. If the association survives, that confound is narrowed but operational state remains unidentified. If a calibration-only bridge repairs raw swaps, the space has recoverable presentation-conditioned charts; only bridge failure beyond the numerical threshold with equivalent pairs and intact controls can support a local hostile identity result. The single simplest confound capable of explaining every row is that the tokenized full prefix and its POS-licensing relation—not operational state—predict the move and response.
+
+### V2 population contract and outcome-blind authoring
+
+`experiments/config/lexical_probe_fresh_v2.json` instantiates the 12-point rule without a frozen hash. It contains the same 80 items, four declared-operation families (`repeat`, `omit`, `capitalize`, `reverse`), four templates per family, eight matched presentation pairs, four operation controls, 32 explicit pair-by-POS author judgments, and 16 explicit control-by-POS author judgments. The author is this fresh Codex session and has not seen any per-template behavior, tokenization-derived selection, or score for these texts. A separate fresh Codex linguistic adversary with no access to new-template model behavior must review every cell next; tokenization is checked only after that review; the raw hash and Git blob are recorded only after both approve. One failed cell voids v2 and requires v3 rather than an edit.
+
+The frame is deliberately metalinguistic: every inventory string occupies the literal dependency frame `the word <X>`. Thus `dog`, `run`, `red`, and `because` are all mentioned words rather than being forced into noun, verb, adjective, or function-word roles. Pair 1 changes only initial register (`Please`/`Kindly`); pair 2 changes only initial discourse framing (`For reference`/`For clarity`). The core `plan to OPERATION the word <X>` remains literal within every pair. Each control retains that wrapper and core and substitutes one operation verb only. This is the author's linguistic judgment, not independent approval.
+
+The fixed `not`-token insertion is withdrawn as the clean second operation. The replacement coherent move is an **operation-verb update in the metalinguistic micro-world**: under matched wrappers, `repeat → omit` and `capitalize → reverse`, with the same mentioned word and aligned word-slot readout. This changes one declared operation for all four POS inventories. Its capture/completion contract must be implemented and Tier-1 reviewed before use; no v1 insertion result can substitute for it.
+
+### Contextual-prefix X-free analyzer mode
+
+Implement one flag-gated analyzer mode, `--contextual-prefix-xfree`, with `--prefix-feature-set token_ids_v1`, the existing `--source`, move/sentinel tag, layer list, unseen-word folds, bootstrap count, and output tag; reject interchangeability, ladder, residualizer-selection, and permutation-null flags in the same call. Inputs are the frozen config plus capture manifests' exact prefix/suffix token IDs and positions, POS label, move alignment, calibration/test folds, and target `Delta` (or the already fixed `Delta_perp` when explicitly paired with a frozen residual design); the mode must never consume item strings/IDs, item embeddings, cell-level `X`, held-out outcomes for feature construction, or a model representation. `token_ids_v1` is fixed as position-specific one-hot token IDs for the last eight prefix and first four suffix positions, full-prefix unigram and adjacent-bigram counts, prefix/suffix lengths and slot/readout positions, POS one-hot, and POS-by-boundary-token interactions; unseen columns map to zero, standardization and ridge/kernel tuning are rebuilt only inside calibration families/words. Output, at every F0/F4/F8/F12/F20 cell, the contextual X-free prediction's displacement cosine, normalized error, response-law skill, continuous-KL improvement, support, fold/key/family values, coefficient/effective-df diagnostics, and paired margins against the cell-level `X` field. A state-reading gate remains live only when the `X` field beats this baseline by `>=0.02` with positive crossed lower bounds on cosine, normalized error, skill, and continuous KL, at least `6/8` jointly positive keys, no family collapse, support `>=0.95`, and at least two common F4–F20 layers for both punctuation sentinels; otherwise the full-prefix licensing account closes or materially narrows the line. Run the fixed all-layer state screen first (`10–30 min`) and the predeclared all-layer completion score second (about `1 h`); no screen-selected layer promotion.
+
+### Calibration-only bridge-screen analyzer mode
+
+Implement a separate early-return `--bridge-screen` mode with `--bridge-ladder scalar diagonal lowrank orthogonal`, fixed `--bridge-ranks 1 2 4 8 16`, both punctuation tags, the operation-update move tag, `--repeat-completions`, `--n-boot`, and output tag; reject residualization, X-free, ladder, and permutation-null flags. Inputs are only frozen v2 matched pairs/controls, approved tokenization and capture hashes, aligned donor/recipient `X,Y,Delta`, calibration-word folds, repeat-noise arrays, and recipient moved-sequence completion context. Every map is zero-preserving and fitted per move/source/layer/pair direction on calibration words only: positive scalar RMS; diagonal ridge shrunk toward that scalar; `alpha I + UV^T` with calibration-selected fixed rank; and scaled orthogonal Procrustes. Inner calibration folds select regularization/rank/branch, never held-out swaps. Before normalized degradation, freeze `rho_move=max(q99 calibration absolute repeat-state difference, 1e-6 × median calibration move norm)` per source/layer/recipient and mark `||Delta||<=rho_move` unsupported. For each endpoint freeze `tau=max(0.02,2×calibration fixed-input q99 noise)`. Output every bridge's held-out normalized successor degradation and continuous-KL degradation relative to same-presentation writeback, repeat/noise summaries, `rho_move`, `tau`, support, pair/direction/family/control rows, selected bridge complexity, and family-first crossed intervals. Scalar failure alone is never hostile. Stable repair by any calibration-selected bridge blocks a hole verdict. A hostile layer requires the best simple bridge's equivalent-swap lower 95% bound to exceed endpoint-specific `tau` on both endpoints—not merely zero—at `>=6/8` pairs in both directions and every family, while all controls remain separated above `tau`; the final hostile verdict still requires two common F4–F20 layers in both punctuation and coherent operation-update move classes. Budget: `15–30 min` state screen and `<=1 h` fixed all-layer writeback.
+
+### Corrected fixed order and budgets
+
+| Order | Work | Expected CPU | Hard wall / launch rule |
+|---:|---|---:|---|
+| 0 | Finish protected `resAB → resSA2` | existing per-cell budget | Do not open excluded artifacts early; one CPU process |
+| 1 | Preserve and audit the B-aug numerical amendment | inside the protected rerun plus review | Retain both failures, failed fold/matrix, finite/spectrum/backend telemetry, and amended-cell status |
+| 2 | Repair probe 1's six Round 30 defects and obtain fresh Tier-1 RUN-READY review | review only before execution | Then fixed rank screen in minutes; preselected `P_aug-full` law cell about `1.5 h`, `2 h` wall |
+| 3 | Independent v2 linguistic adversary, tokenization audit, then hash/Git/config/commands freeze | no model work | Any failed pair/control/tokenization cell voids v2 and creates a new version |
+| 4 | Contextual-prefix X-free screen and completion on the existing relation | `10–30 min`; about `1 h` with completion | Fixed all layers; no promotion from screen outcomes |
+| 5 | Capture approved v2 for both punctuation sentinels and the coherent operation-verb update | `15–30 min` | One CPU process; approved raw hash required before model load |
+| 6 | Calibration-only bridge ladder | `15–30 min` state; `<=1 h` writeback | Must precede full interchangeability; scalar failure cannot earn hostility |
+| 7 | Full v2 interchangeability | about `1 h` | `90 min` wall; hostile LB must exceed `tau`, move floor enforced, both move classes required |
+| 8 | Full fresh-population stress analysis, then coherent operation-update analysis | about `3 h`, then `2–4 h` | `4 h` each; both sentinels, no pair/family/POS rescue |
+| 9 | Registered X-free field on four existing cells | `4.9–5.3 h` | existing `8 h` wall |
+| 10 | Freedman–Lane `A-static` only, conditionally | `24.4–26.3 h` | `30 h`; only if every earlier state-reading gate remains live |
+| 11 | Second pinned decoder | about `3 h` | Decoder-specific replication only |
+
+The four-cell Freedman–Lane expansion remains unauthorized. Multi-position consequence (`k={4,8}`), two-step composition/writeback, and a second decoder remain live alternatives if the one-position/one-step program stays ambiguous.
+
+### Second lens after audit #16
+
+**Proven locally:** raw F0 remains identity/token dominated under the tested move; the inherited across-word within-carrier ordering statistic is insensitive for this probe; registered block/length/position metadata predict raw displacement; the tested static and score-4 nuisance fits do not exhaust X-linked residual predictability at F4–F20; B-aug's fitted low-rank path is numerically non-robust at one repeated cell; and fresh v1 fails its linguistic premise before capture.
+
+**Unproven:** operational state; presentation independence or structural presentation/state inseparability; a presentation-free residual; failure of every recoverable quotient or gauge; composition; on-manifold donor writeback; the adequacy of one-position KL as consequence; family/model/task generality; or hostility of this representation to structured reasoning.
+
+The next latent space must provide either explicit quotient coordinates that identify operationally equivalent places across presentation or explicit bridge coordinates/maps connecting presentation-conditioned charts. Those coordinates must be available to the denizen rather than supplied post hoc by the analyst, must preserve declared moves and response laws across equivalent presentations while separating genuinely different operations, must expose a calibrated move norm and consequence currency, and must support multi-step composition. A valid v2 hostile result would motivate that construction locally; it would not prove that no richer quotient exists.
+
+No new axiom is earned. No experiment was run in Round 31.

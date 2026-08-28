@@ -1006,7 +1006,7 @@ No experiment was run. `analysis_locoeq2A/B.json` remains unopened.
   values alone cannot supply the retention marker. The prospective patch adds
   the raw arm, but the raw four-null shadow margin still must be emitted
   before that marker is complete and before launch.
-- The F8 sentinel-`.` static smoke is a pipeline preview: presentation-only
+- The F8 sentinel-`.` static smoke is a pipeline preview: registered-static-metadata
   `P -> Delta` cosine `0.42`, residual ridge about `0.60` versus nulls about
   `0.06–0.07`, skill about `0.36` versus `0.015`, and KL-rank lead about
   `+0.44–+0.50`. It supports survival after this static removal but does not
@@ -1015,7 +1015,7 @@ No experiment was run. `analysis_locoeq2A/B.json` remains unopened.
   B-static, B-augmented; five layers `F0/F4/F8/F12/F20`, two unseen-word
   folds, 20 shuffles, 500 bootstraps, and a 60-minute wall per
   sentinel/design. Read validity, then F0, then F4–F20; within each layer
-  read residual margins/gates, reassembled law endpoints, presentation-only
+  read residual margins/gates, reassembled law endpoints, registered-static-metadata
   diagnostic, and paired raw-field retention. No GPU or new capture.
 
 **Current answer after Round 24:** presentation explains a substantial
@@ -1108,7 +1108,7 @@ remains one decoder, unresolved state-versus-presentation, and no new axiom.
   analyzer and reports retention only as "robustness marker mechanically
   met". The raw four-null shadow remains valid for the amended raw
   unseen-word comparison; the residual-vs-null gate, law reassembly, and
-  presentation-only arm are coherent; `P_static→Δ` = 0.427 is a held-out
+  registered-static-metadata arm are coherent; `P_static→Δ` = 0.427 is a held-out
   cosine, never "explains 42%".
 - Public demo (audit #13): the published "Content vs Context" page had
   violated audits #10–#12 ("context state", "context takes over",
@@ -1150,13 +1150,7 @@ coordinates**, across held-out words and blocks. `P_static` pass plus
 state” branch. No presentation-independent, native-law, second-family, or
 general dynamics claim follows.
 
-The presentation-only `P_static -> Delta` arm has held-out cosine
-`0.43–0.63` by layer. This is a large predictable presentation component, not
-a percentage of displacement explained. It sharpens the earlier unseen-word
-reading: much of the raw X-conditioned lead may have been presentation-
-mediated. The residual result adds only that the registered static coordinates
-do not account for the whole X-linked advantage; it does not identify the
-remainder as operational state.
+The `P_static → Delta` arm has held-out cosine 0.43–0.63 by layer. This is predictability from registered block/length/position metadata, not a presentation-only component, variance share, mediation, or attribution of the raw ridge advantage. The residual result shows only that those registered coordinates do not exhaust X-linked residual predictability; it does not identify the remainder as operational state.
 
 *Audit #14 (Tier-3, `theory/EXPERIMENTS.md`, ledger `nlm007_audit14_adopted`) withdrew the sentence "much of the raw lead may have been presentation-mediated" as an over-read and replaced the ruling; read this paragraph as corrected there.*
 
@@ -1168,8 +1162,7 @@ common-scale A-static or symmetric four-cell retention claim; `resAA` and the
 B runs cannot substitute for that cell. The rerun is not required for the
 primary residual-vs-null verdict and follows the existing chain.
 
-Second-lens ruling: presentation sensitivity of the measured move is proven
-locally; presentation/operational-state inseparability is not. The current
+Second-lens ruling: Registered presentation-derived metadata predict the measured move locally; presentation/operational-state inseparability is not proven. The current
 space lacks a demonstrated native quotient and required analyst-known block,
 length, and position coordinates for this decomposition. The next latent
 space must expose lexical, presentation, and operational coordinates; define
@@ -1182,7 +1175,7 @@ styles, and model families. No new axiom is earned.
 B-augmented (`resAB`), without outcome selection. For each, read budget and
 manifest/reload/locality/support/common-scale validity first, then F0, then
 F4/F8/F12/F20; within each layer read residual gates, reassembled consequence
-endpoints, key/block accounting, presentation-only arm, raw shadow, and
+endpoints, key/block accounting, registered-static-metadata arm, raw shadow, and
 repaired common-scale retention. A broad `P_aug` collapse toward the strongest
 residualized X-free null is the style-nuisance outcome and, after the A-static
 pass, the “static coordinates incomplete, not state” branch. After the chain,
@@ -1272,12 +1265,9 @@ cosine is `0.617/0.595/0.555/0.612` versus strongest-null
 skill margins `+0.458/+0.346/+0.369/+0.457`, and KL-rank margins
 `+0.485/+0.432/+0.425/+0.557`, all with positive lower bounds. Full-gate keys
 are `8/8`, `7/8`, `6/8`, and `8/8`; every key is positive and no block
-collapses. The `P_aug` carrier-summary nuisance arm → `Δ` cosine is
-`0.639/0.498/0.446/0.475/0.608` at F0/F4/F8/F12/F20.
+collapses.
 
-Under the implemented designs, A-static and A-aug take the predeclared both-design non-collapse branch. They are nested sensitivity analyses on the same sentinel-A cells, not independent replications. `P_static` metadata predict raw displacement, and adding the implemented rank-4 X-derived carrier-summary scores still does not absorb the residual `X–Δ` association at F4–F20. On the same folds, `X⊥` predicts `Δ⊥` and improves the reassembled response-law prediction beyond the four registered X-free lexical estimators after either nuisance fit. This narrows only those registered nuisance families; it does not estimate presentation's contribution, identify operational state, establish presentation independence, or test fresh carriers or styles.
-
-No direct held-out-`Y` or held-out-`Δ` leakage was found in F0. The registered augmented residualization produces a positive pooled conditional residual association, but it also changes the target and reference geometry by subtracting a dominant carrier-associated fitted component. Raw ridge exceeds the raw null by only about 0.019 cosine, and only 2/8 keys clear the full residual gate. The raw first transition therefore remains identity/token dominated, and the exposed residual is not identified as operational state.
+The `P_aug-score4` carrier-summary nuisance arm predicts raw Delta at the reported cosines. Under one registered P_static design and one implemented, contract-qualified P_aug-score4 sensitivity, the same-data X–Delta association survives at F4–F20; the literal P_aug-full design remains unrun.
 
 The repaired common-scale retention block is present. Bootstrap-median ratios
 `residual margin / raw margin` [95% CI] for cosine, skill, and continuous KL
@@ -1317,7 +1307,7 @@ reading:
 
 **Next, in order:** Finish the already-running chain without opening excluded artifacts, then freeze the X-free comparator to an immutable code hash and literal command. Before committing roughly 100 CPU hours to four Freedman–Lane cells, prospectively add the full-available-rank carrier-summary baseline and run at least one frozen fresh-template or different-move probe. Expand the refitted null only if those cheaper external-axis tests leave the interpretation live.
 
-`P_static` proves local association between registered template metadata and raw displacement. The implemented `P_aug` sensitivity shows that four additional X-derived carrier-summary scores do not absorb the residual association; it does not independently establish presentation sensitivity. Presentation/operational-state entanglement and a representation-level hostile quotient hole remain unproven. The only proven hole here is instrumental: the specific inherited across-word ordering statistic is insensitive for this probe. The cheapest representation-level test is controlled interchangeability across frozen presentation variants and a second move.
+The artifacts support a local held-out association between registered static template metadata and raw displacement. The implemented P_aug-score4 sensitivity shows that four additional transductive X-derived carrier-summary scores do not absorb the residual association; it neither independently establishes presentation sensitivity nor identifies operational state.
 
 No new axiom is earned, so `theory/AXIOMS.md` is unchanged. No experiment was
 run in Round 27.
@@ -1334,41 +1324,13 @@ strongest-null `0.061/0.075/0.064/0.089`. Block-first cosine margins are
 `+0.349/+0.361/+0.405/+0.415`, and KL-rank margins
 `+0.396/+0.419/+0.492/+0.577`, all with positive lower bounds. Full/positive
 keys are `4/8 / 8/8`, `7/8 / 8/8`, `8/8 / 8/8`, and `8/8 / 8/8`; no block
-collapses at F4–F20. Presentation-only `P_static -> Delta` cosine is
-`0.628/0.508/0.413/0.444/0.622` at F0/F4/F8/F12/F20.
+collapses at F4–F20. The registered-static-metadata `P_static → Delta` cosine is `0.628/0.508/0.413/0.444/0.622` at F0/F4/F8/F12/F20; these values are directional predictability, not a presentation-only component.
 
-Round 23 ruling: A-static and B-static take the same registered `P_static`
-non-collapse branch. Across both sentinels, static block/length/position
-coordinates predict held-out raw displacement direction; after cross-fitted
-removal from both `X` and `Delta`, `X_perp` still predicts `Delta_perp` and its
-reassembled response-law consequence beyond the four registered residual
-X-free lexical nulls at F4–F20. This establishes two-sentinel registered-
-presentation sensitivity and residual X-linked predictability within one
-decoder/template population. It identifies neither a presentation fraction
-or mediation nor operational state or presentation independence, and it is
-not independent replication, composition, a native law, or cross-family
-generality.
+Across both correlated punctuation sentinels, registered block/length/position coordinates predict held-out raw displacement direction; after cross-fitted removal from X and Delta, X⊥ still predicts Delta⊥ and its reassembled response-law consequence beyond four registered residual X-free lexical nulls at F4–F20. This supports two-sentinel sensitivity to registered presentation-derived metadata plus surviving X-linked residual predictability within one decoder and authored population; it is not independent replication, mediation, operational state, presentation independence, composition, or a native law.
 
-F0 is heterogeneous and non-qualifying. Its block-first cosine margin is
-`+0.267 [LB 0.050]`, but skill is `-7.465 [-26.697]` and KL-rank lower bound
-is `-0.286`; only `4/8` keys are full or point-positive, and gloss plus
-association collapse. The pooled skill is driven by association fold skills
-near `-30`, while the other six folds are modest. Fold-mean reference KL is
-finite, so this is local cellwise denominator ill-conditioning in normalized
-skill, not a globally zero reference or a uniform `-7.5` effect. Do not
-compare that magnitude across residualization cells. The joint consequence
-gate still fails; the correct wording is **no qualifying conditional gain at
-B-static F0 under this instrument**.
+The two association keys drive the pooled skill with values near −30 while the other six keys are modest and fold-mean reference KL is finite. This is consistent with unstable cellwise normalization inside the association folds, but the artifact does not expose every denominator; the directly established result is no qualifying conditional gain at B-static F0.
 
-The repaired common-scale field is present for B-static. At F4–F20 every
-cosine, skill, and continuous-KL residual/raw predictive-margin ratio median
-exceeds `0.5`. Eleven of twelve 95% lower bounds exceed `0.5`; F4 continuous
-KL is the exception at `0.426`. B-static therefore retains at least half of
-the same-run raw ridge-versus-strongest-null predictive margin at the
-bootstrap median on all three endpoints at F4–F20, without a uniform interval
-claim. This is not a fraction of signal, variance, state, or mediation. No
-joint A-static/B-static common-scale claim is licensed until `resSA2` fills
-the missing A-static field.
+At F4–F20 all twelve residual/raw predictive-margin ratio medians exceed 0.5, while eleven of twelve lower bounds do so; F4 continuous KL is the exception at 0.426. This is a mechanical ratio summary between fitted estimator systems, not evidence that half of signal, variance, state, or mediation is retained.
 
 Sentinel specificity: B-static's F4 strict count is `4/8`, weaker than
 A-static's `7/8`, despite `8/8` B point-positive keys and no collapse. B and A
@@ -1386,11 +1348,7 @@ remain unproven. The current architectural/epistemic deficit is that analyst-
 known coordinates are still required to propose equivalence; that is a
 constructive target, not proof no quotient exists. No new axiom is earned.
 
-**Next, unchanged:** finish and adjudicate `resAB` -> `resSA2`, then run the
-registered residual-space X-free field on all four cells, then the fully refitted
-Freedman–Lane null on all four cells, then the pinned second-model-family
-protocol. The running/queued artifacts were not opened, the analyzer diff was
-not modified, and no experiment was run in Round 28.
+Superseded by Rounds 29–30 and audit #16: finish the protected running chain, record the B-aug numerical failure and amendment, repair and re-review probe 1, and do not capture fresh v1.
 
 ## Round 29 — audit #15 adoption and amended order
 
@@ -1428,13 +1386,9 @@ all frozen encoders, native maps, or quotients.
    by the fixed sentinel-A literal `P_aug-full` law cell (`~1.5 h`, `2 h`
    wall). This is not redundant with the X-free field: it tests nuisance-rank
    underfit and repairs the lock.
-3. Freeze 16 blind fresh templates as eight matched presentation pairs across
-   four families; capture the same 80 words for both sentinels plus the fixed
-   single-token `not` insertion (`~15–20 min` total capture).
-4. Run matched interchangeability across the fresh pairs and both move classes
-   (`<=1 h`, `90 min` wall), before any outcome can redefine equivalence.
-5. Run the full fresh-population contract (`~3 h`, `4 h` wall), then the full
-   different-move contract (`2–3 h`, `4 h` wall).
+3. Void fresh v1 before capture because its all-POS presentation-equivalence premise fails.
+4. Register, independently review, hash, and freeze a wholly new linguistically valid population and matched controls.
+5. Run the contextual-prefix baseline and calibration-only bridge ladder before any full interchangeability or hostile-hole score.
 6. Run the four registered X-free cells (`4.9–5.3 h`, existing `8 h` wall).
 7. Run only Freedman–Lane `A-static` (`24.4–26.3 h`, `30 h` wall), and only if
    the full-mean cell, fresh population, different move, interchangeability,
@@ -1452,16 +1406,9 @@ keys, no collapse, and support `>=0.95`; interchangeability uses explicit
 stable, hostile-hole, and inconclusive regions against a fixed-input noise
 floor.
 
-Second lens: no representation-level hostile hole is yet proven. The local
-measurement hole is the insensitive inherited ordering statistic. The
-single fastest line-mooting test is matched interchangeability across a fresh
-presentation family and a second move: systematic equivalent-presentation
-swap failure with intact different-state controls would show that presentation
-obstructs a stable identity relation in this scope. Until that gate is met,
-the missing quotient is a constructive target, not a proof that structured
-reasoning cannot live here. No new axiom is earned. No experiment was run in
-Round 29; the excluded artifacts were not opened and the analyzer diff was not
-modified.
+With genuinely equivalent pairs, valid controls, noise-clearing thresholds, and failure of a predeclared simple bridge ladder, systematic swap failure could support a local presentation-obstructed identity relation. Raw scalar swap failure on the current mixed-operation pairs cannot do so.
+
+No new axiom is earned. No experiment was run in Round 29; the excluded artifacts were not opened and the analyzer diff was not modified.
 
 ## Round 30 — probe-1 review and fresh-move design lock
 
@@ -1479,37 +1426,83 @@ versioned, and screen mode needs a locked run shape plus an explicit point-only
 summary. The nuisance construction otherwise uses no held-out outcome: it is
 outcome-clean but transductive within carrier.
 
-**Probes 2–3 design lock.** Extend `capture_forward`, not a new script. The
-committed fresh config supplies four families, 16 templates, eight presentation
-pairs, four operational controls, 80 words, two sentinels, and the frozen
-single-token `not` insertion. Sentinel capture keeps X at the unappended last
-suffix position and Y at the appended sentinel. Insertion capture aligns X at
-the original word slot with Y at the same word token after insertion. Its
-completion writes `X+Delta_hat` into the moved sequence at the moved word
-position by hooking block `l-1` for hidden index `l`, then reads the moved
-sequence's true law there. Insertion F0 has zero displacement by construction
-and is a structural check only.
+The committed fresh config labels eight presentation pairs and four operational controls, but audit #16 finds that none establishes all-four-class operational equivalence and that the controls are syntactically confounded. Probes 2–4 are therefore design-void on fresh v1 before capture. In addition, the hostile-hole lower bound must exceed endpoint-specific tau, near-zero move norms require a frozen floor, and a calibration-only chart-transition bridge must precede any hole verdict.
 
-Primary analysis uses four leave-one-family-out folds crossed with two
-class-stratified unseen-word folds; the config's question/instruction to
-comparison/enumeration split is a secondary directional diagnostic. The exact
-K=13 universe, identity and shared-displacement baselines, four X-free lexical
-nulls, `P_static` coordinates, common support, reload/locality, and crossed
-block-first bootstrap are frozen in Round 30 of `theory/EXPERIMENTS.md`. Capture
-manifests must store raw config/Git/hash provenance; the config's declared hash
-is not silently treated as the raw file hash.
+Next: repair and re-review probe 1, audit the B-aug numerical amendment, void fresh v1 before capture, and register a linguistically valid replacement plus bridge/noise controls; only then resume the external-axis order.
 
-**Probe-4 design lock.** One early-return analyzer mode consumes sentinel A,
-sentinel B, and insertion captures. For each pair direction, calibration words
-set an RMS displacement-norm ratio; the scaled donor move is written into the
-recipient's own moved sequence. Primary degradations are normalized successor
-error and continuous KL relative to same-presentation writeback. Identical
-capture/completion repeats set endpoint-specific q99 noise. Only the four frozen
-control pairs are negative controls. Family-first, pair-within-family, crossed
-class-preserving word bootstrap intervals support the stable, hostile-hole,
-and inconclusive regions already registered in Round 29, now made executable
-without outcome-conditioned matching.
+## Round 31 — audit #16 adoption and replacement population (2026-08-28)
 
-**Next:** repair and re-review probe 1; then retain the Round 29 order. Probes
-2–4 are designs, not implemented instruments or evidence. No new axiom or
-state/navigation claim is licensed.
+Round 31 is documentation/configuration-only. `analysis_resAB.json` was not
+opened, and the uncommitted analyzer diff under separate Tier-1 review was not
+read or edited. Tier-3 audit #16 is adopted in full in
+`theory/EXPERIMENTS.md`.
+
+Fresh v1 is **void before capture for confirmatory probes 2–4**: zero of eight
+pairs establishes presentation-only operational equivalence across all noun,
+verb, adjective, and function-word cells, and its four controls are
+syntactically confounded. The file remains unchanged as an exploratory
+mixed-frame stress set. Its licensed provenance is "prospectively authored
+and committed before any new capture or score," not "authored blind."
+
+The replacement `experiments/config/lexical_probe_fresh_v2.json` is authored
+but not frozen. It uses the same 80 items in the common metalinguistic frame
+`the word <X>`, four declared-operation families (`repeat`, `omit`,
+`capitalize`, `reverse`), eight presentation pairs whose edits are confined
+to an initial register/discourse wrapper, and four controls that change one
+operation verb. It records all 32 pair-by-POS and 16 control-by-POS author
+judgments. A separate fresh Codex linguistic adversary with no access to v2
+model behavior must approve every cell; tokenization comes next; the raw hash
+and Git blob are computed only after both approvals. One failure voids the
+whole version and requires a new version.
+
+B-static remains a correlated two-sentinel robustness result, not a
+replication. Across the two punctuation sentinels, registered
+block/length/position metadata predict raw displacement direction and
+X-linked residual predictability survives their cross-fitted removal at
+F4–F20. This establishes neither a presentation decomposition nor operational
+state. B-static F0 is non-qualifying; the two association keys drive the
+extreme pooled skill, and denominator instability is an inference. All twelve
+F4–F20 ratio medians exceed 0.5, but they are fitted-system robustness ratios,
+not retained signal, variance, state, or mediation.
+
+The B-aug low-rank path is numerically non-robust in the F8 grammar block:
+torch SVD of fitted `W` failed twice. A fallback must retain both failures,
+the failed fold/matrix, finite/spectral diagnostics, backend agreement where
+both converge, and amended-cell status. This is not a B-aug result and does
+not establish ill-conditioned `X_perp`.
+
+Two analyzer contracts now precede full interchangeability. The contextual-
+prefix X-free mode uses tokenized full-prefix/suffix boundary and POS-
+licensing features without cell-level `X`; the state reading stays live only
+if the X field beats it on the fixed four endpoints and clustered gates. The
+bridge mode fits calibration-only positive-scalar, diagonal, low-rank, and
+scaled-orthogonal zero-preserving maps. It freezes a repeat-noise/scale move-
+norm floor and endpoint `tau=max(0.02,2×q99 noise)` before scoring. Scalar
+failure is insufficient; a hostile lower bound must exceed `tau` after the
+entire simple bridge ladder fails.
+
+The coherent replacement for v1's heterogeneous `not` insertion is an
+operation-verb update in the metalinguistic micro-world (`repeat→omit` and
+`capitalize→reverse`) under matched wrappers and at the aligned mentioned-word
+readout. It requires its own implemented and Tier-1-reviewed capture/completion
+contract.
+
+**Corrected order:** finish protected `resAB→resSA2`; preserve and audit the
+B-aug amendment; repair and re-review probe 1; independently approve,
+tokenize, hash, and freeze v2; run the contextual-prefix baseline; capture v2
+punctuation plus the operation update; run the bridge screen; then full
+interchangeability, fresh-population and coherent-move analyses, four X-free
+cells, conditional Freedman–Lane A-static, and one second decoder. Budgets and
+launch gates are fixed in Round 31 of `theory/EXPERIMENTS.md`; the four-cell
+Freedman–Lane expansion remains unauthorized.
+
+Second lens: proven locally are raw F0 identity/token dominance, the inherited
+ordering-statistic measurement hole, registered-metadata predictability,
+survival under the tested nuisance fits, B-aug numerical non-robustness, and
+v1 linguistic-design failure. Operational state, presentation independence
+or inseparability, a presentation-free residual, absence of any recoverable
+quotient, composition, and hostility to structured reasoning remain unproven.
+The next latent space must expose either quotient coordinates for operational
+identity or bridge coordinates between presentation-conditioned charts, in a
+form the denizen can use to transport and compose declared moves and their
+response-law consequences. No new axiom is earned; no experiment was run.
