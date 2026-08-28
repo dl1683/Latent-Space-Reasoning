@@ -1506,3 +1506,95 @@ The next latent space must expose either quotient coordinates for operational
 identity or bridge coordinates between presentation-conditioned charts, in a
 form the denizen can use to transport and compose declared moves and their
 response-law consequences. No new axiom is earned; no experiment was run.
+
+## Round 32 — completed residualization 2x2 and numerical amendment (2026-08-28)
+
+`analysis_resAB.json` completes the mechanical sentinel-by-nuisance 2x2 with
+an amendment qualification. B `P_aug-score4` finishes on its third launch in
+`5073.8 s`; support is `1.0` in all eight keys. F4/F8/F12/F20 pass: residual
+ridge cosine is `0.570/0.567/0.523/0.566` versus strongest residual X-free
+null `0.061/0.075/0.065/0.089`; block-first cosine margins are
+`+0.509/+0.492/+0.459/+0.477`, skill margins
+`+0.411/+0.399/+0.441/+0.399`, and KL-rank margins
+`+0.455/+0.451/+0.510/+0.543`, all with positive lower bounds. Full/positive
+keys are `6/8 / 8/8`, `7/8 / 8/8`, `8/8 / 8/8`, and `8/8 / 8/8`, with no
+block collapse. F0 fails: cosine margin `+0.333 [LB +0.217]`, skill
+`+0.091 [-0.039]`, KL-rank `+0.310 [+0.066]`, `4/8` full and `6/8` positive
+keys, with gloss collapse. The score-4 nuisance-to-`Delta` cosines are
+`0.641/0.513/0.424/0.456/0.640` at F0/F4/F8/F12/F20.
+
+Against Round 23, this supports the bounded F4–F20 residual-survival
+prediction and the F0 identity/token prediction under the implemented
+sensitivity. It does not adjudicate literal `P_aug-full`: the completed cell
+appends four carrier-summary scores, is outcome-clean but transductive within
+carrier, and remains contract-qualified. Its nuisance-to-`Delta` values are
+directional predictability from X-derived summaries, not a presentation-only
+component or state fraction.
+
+The first B-aug launch was recorded as disappearing after `22/40` keys while
+entering `F8 grammar_w0`, without a traceback. The second failed after `23/40`
+and directly localized torch SVD non-convergence at `F8 grammar_w1` to the
+fitted low-rank coefficient matrix `W`; the later ledger row attributes the
+first loss to the same defect. Safe scope: repeated numerical non-robustness
+in the F8 grammar block, with only the second exact fold/matrix localization
+direct. The successful code has a float64 NumPy fallback and assigns
+`svd_provider` internally, but the artifact serializes no per-fit/fold
+provider, matrix shape/dtype, finite/spectral/effective-rank/condition data,
+fallback exception, or backend-agreement record. The live exception tuple also
+catches generic `RuntimeError`; before another result the fallback must be
+restricted to the actual torch linear-algebra convergence exception, with all
+other runtime errors propagated.
+
+Therefore the B-score4 cell is **amended-implementation** and
+**SVD-telemetry-incomplete**. Its ridge table is mechanically reportable; it
+does not establish low-rank robustness, and the K=13 endpoint remains
+amendment-qualified. Before any further low-rank result, add and Tier-1 review
+per-fit/fold provider and numerical telemetry plus a predeclared shadow check
+on every torch-convergent `W`: compare float64 NumPy against torch on the same
+matrix at spectrum/full reconstruction, every used rank, predictions,
+downstream metrics, and decisions. Required discrepancies are `<=1e-5` for
+full reconstruction/spectrum and `<=1e-4` for rank/prediction/metrics, with
+identical gate decisions; otherwise the fit is backend-sensitive.
+
+The four-cell mechanical synthesis is now:
+
+- A-static: F0 fails; F4–F20 pass under registered `P_static`.
+- A-score4: all aggregate layers pass, but F0 has only `2/8` full keys and is
+  a weak pooled conditional association; F4–F20 pass.
+- B-static: F0 fails; F4–F20 pass under registered `P_static`.
+- B-score4: F0 fails; F4–F20 pass under the amended score-only sensitivity.
+
+Across the correlated A/B sentinels in one decoder and authored population,
+registered block/length/position metadata predict raw displacement direction;
+after their cross-fitted removal, X-linked residual predictability survives
+beyond four registered word-only X-free lexical nulls at F4–F20. Four
+additional within-carrier transductive X-derived scores also fail to absorb
+the relation. This is a 2x2 of correlated same-population sensitivities, not
+replication, operational state, presentation independence, a presentation
+decomposition, composition, or a native law.
+
+Common scale does not expand the license. `resSA` has no repaired block, so
+the common-scale 2x2 remains incomplete pending protected `resSA2`. At
+F4–F20 all twelve ratio medians exceed `0.5` in each of A-score4, B-static,
+and B-score4; each has one F4 continuous-KL lower-bound exception (`0.495`,
+`0.426`, `0.458`). These are fitted-system predictive-margin robustness
+ratios, not retained signal, variance, state, or mediation.
+
+Second lens: no new representation-level hostile hole is proven. The
+inherited ordering statistic remains a local measurement hole, and the SVD
+path is a numerical-instrument hole. Raw F0 identity/token dominance is a
+bounded regime and constructive warning, not by itself proof that structured
+reasoning cannot live here. Presentation/state inseparability, a
+presentation-free residual, absence of every quotient or gauge, composition,
+and model/family generality remain unproven. No new axiom is earned.
+
+**Current order:** finish protected `resSA2`; add/review the SVD telemetry and
+backend check before further low-rank output; run the fixed probe-1 screens
+plus preselected sentinel-A `P_aug-full`; run the all-layer contextual-prefix
+baseline. V2 and v3 were voided; v4 has now passed the independent linguistic
+adversary `48/48`, passed tokenization, and is frozen by raw SHA-256/Git blob,
+so that gate is already complete. After operation-update and bridge Tier-1
+review: capture v4 A/B/`OP_UPDATE` -> bridge -> interchangeability -> fresh
+A/B and coherent-move analyses -> four registered X-free cells -> conditional
+Freedman–Lane A-static -> one second decoder. The four-cell Freedman–Lane
+expansion remains unauthorized. No experiment was run in Round 32.

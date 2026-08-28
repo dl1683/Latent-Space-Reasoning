@@ -6075,3 +6075,200 @@ No claim is earned by this addendum. Its “so what” is that the denizen now h
 a coherent candidate move—change the declared operation while holding the
 mentioned object and wrapper fixed—whose portability across presentations can
 be tested without confusing it with malformed negation or punctuation.
+
+## Round 32 — B-score4 adjudication, amended numerical instrument, and the completed residualization 2x2
+
+**Codex adjudication, documentation only; no experiment was launched or
+rerun.** The four permitted residual artifacts were reduced directly from
+JSON. The two crash rows, the successful `resAB` ledger row, the live
+`RidgeFamily.W` fallback, Rounds 23 and 27–31, and audits #15–#16 were checked
+independently. `analysis_resSA2.json` and every running/queued
+`analysis_scr_*`, `ctx*`, or `resAFull` artifact remained unopened. The
+uncommitted capture/analyzer work was not edited.
+
+### B `P_aug-score4`: mechanical adjudication
+
+`analysis_resAB.json` is sentinel B (`,`), the implemented score-4 augmented
+design, five fixed checkpoints, two unseen-word folds, eight block-by-word
+keys, K=13, 20 shuffles, and 500 bootstrap replicates. It finished on the
+third launch in `5073.8 s` of the `7200 s` wall. Support is `1.0` in every
+key. Reload ordering agreement is `0.9996511`, maximum pairwise-KL difference
+is `0.0013232`, and the model/tokenizer revisions are pinned in the artifact.
+
+Each endpoint below uses the weakest ridge margin over the four registered
+residual X-free lexical nulls; each lower bound belongs to that endpoint's
+weakest comparator.
+
+| Layer | `X_perp` ridge cosine | strongest residual-null cosine | cosine margin [LB] | skill margin [LB] | K=13 KL-rank margin [LB] | full / positive keys | score-4 nuisance `-> Delta` cosine | verdict |
+|---|---:|---:|---:|---:|---:|---:|---:|---|
+| F0 | 0.335 | 0.003 | +0.333 [+0.217] | +0.091 [-0.039] | +0.310 [+0.066] | 4/8 / 6/8 | 0.641 | fail |
+| F4 | 0.570 | 0.061 | +0.509 [+0.447] | +0.411 [+0.290] | +0.455 [+0.334] | 6/8 / 8/8 | 0.513 | pass |
+| F8 | 0.567 | 0.075 | +0.492 [+0.439] | +0.399 [+0.333] | +0.451 [+0.352] | 7/8 / 8/8 | 0.424 | pass |
+| F12 | 0.523 | 0.065 | +0.459 [+0.415] | +0.441 [+0.379] | +0.510 [+0.438] | 8/8 / 8/8 | 0.456 | pass |
+| F20 | 0.566 | 0.089 | +0.477 [+0.427] | +0.399 [+0.335] | +0.543 [+0.483] | 8/8 / 8/8 | 0.640 | pass |
+
+No block collapses at F4–F20. F0 is non-qualifying: its skill lower bound is
+negative, only `4/8` keys clear the full gate, and gloss collapses even though
+the pooled cosine is positive. The passing checkpoints are a correlated depth
+profile, not four replications.
+
+Against Round 23, the bounded state-linked-side mechanical prediction holds
+at F4–F20 and the predicted F0 identity/token regime holds. The four
+word-only X-free nulls do not close the relation, but audit #15's contextual
+prefix/licensing alternative remains untested. The score-4 nuisance fit does
+not produce the predicted collapse, but this does **not** adjudicate the
+literal registered `P_aug`: Round 23 registered the full carrier mean plus
+rank-4 scores, whereas this run appends only the four scores. Call the cell
+`P_aug-score4`; `P_aug-full` remains unrun. Its nuisance-to-`Delta` cosines are
+directional predictability from transductive X-derived carrier summaries, not
+a presentation-only component, variance share, mediation effect, or state
+fraction.
+
+### Common-scale block
+
+The B-score4 block was read directly rather than inferred from the ledger:
+
+| Layer | cosine ratio median [95% CI] | skill ratio median [95% CI] | continuous-KL ratio median [95% CI] |
+|---|---:|---:|---:|
+| F0 | 2.566 [1.364, 5.493] | 1.223 [0.174, 5.266] | 1.849 [0.632, 22.726] |
+| F4 | 1.285 [1.137, 1.602] | 1.322 [0.862, 2.978] | 0.846 [0.458, 1.276] |
+| F8 | 1.209 [1.085, 1.442] | 1.252 [0.895, 1.706] | 1.253 [0.798, 1.766] |
+| F12 | 1.246 [1.133, 1.494] | 1.215 [0.912, 1.588] | 1.232 [0.913, 1.620] |
+| F20 | 1.141 [1.064, 1.259] | 0.932 [0.743, 1.232] | 0.964 [0.747, 1.190] |
+
+All twelve F4–F20 medians exceed `0.5`; eleven of twelve lower bounds do, with
+F4 continuous KL at `0.458`. Across all five layers, thirteen of fifteen lower
+bounds exceed `0.5`; F0 skill is the other exception. Audit #15's wording rule
+is binding: these are robustness ratios between different fitted
+predictive-margin systems and strongest-null competitions. They are not
+fractions of retained signal, variance, operational state, or mediation.
+
+### B-aug numerical amendment audit
+
+The two failures must remain in the result's provenance.
+
+1. `nlm007_resid_resAB_crash` records the first process disappearing after
+   `22/40` completed keys while entering `F8 grammar_w0`, with no traceback.
+   The later row attributes it to the SVD defect, but the first row alone does
+   not directly localize a matrix failure.
+2. `nlm007_resid_resAB_crash2` records `23/40` completed keys and directly
+   localizes `torch._C._LinAlgError: linalg.svd failed to converge` at
+   `F8 grammar_w1` to `RidgeFamily.W`'s fitted low-rank coefficient matrix
+   `W`. The successful artifact selects rank `128`, lambda `100` in that fold.
+
+The safe common localization is therefore the **F8 grammar block**; only the
+second failure is directly localized to `grammar_w1/W`. “Both failed at the
+same exact fold” and “ill-conditioned `X_perp`” are not established. The
+artifact also does not record the actual `W` shape after standardization.
+
+The amended code catches `torch._C._LinAlgError` **and the broader
+`RuntimeError`**, runs `numpy.linalg.svd` on float64 `W`, casts the factors
+back to `W.dtype`, and sets `self.svd_provider`. The broad catch can relabel an
+unrelated runtime failure as an SVD fallback and must be narrowed to the
+actual convergence exception before another result. The provider is never serialized. The result file
+contains no per-fit/fold provider, fallback exception, finite-input check,
+`W` shape/dtype/norm, singular spectrum, effective rank, condition estimate,
+rank-boundary gap, or backend-agreement record.
+
+The third-launch artifact may be reported as the B `P_aug-score4` cell only
+with the labels **amended-implementation** and **SVD-telemetry-incomplete**.
+Its ridge-vs-null table is mechanically reportable; it is not a clean
+low-rank robustness result, and its K=13 endpoint remains amendment-qualified
+because the low-rank candidate is in that universe. The completed artifact
+does not erase either failure.
+
+Before any further low-rank result, every outer and inner `RidgeFamily.W` SVD
+must serialize layer, held block, word fold, fit scope, target, lambda, rank,
+provider, exception/fallback status, input and `W` shape/dtype, finite checks,
+norm/range, singular extrema and retained spectrum, effective rank/condition,
+rank-boundary gap, and reconstruction residual. A no-result instrumentation
+review must also verify that only `torch._C._LinAlgError` activates the
+fallback and that all other exceptions propagate, then predeclare and
+implement this shadow-backend check without selecting from outcomes:
+
+- for every `W` where torch converges, run the float64 NumPy backend on the
+  identical frozen matrix and compare singular values and full reconstruction;
+- compare reconstructed rank-`r` matrices for every used rank and their
+  predictions on the identical validation/held-out design, not raw singular
+  vectors whose signs or degenerate-subspace bases are non-identifiable;
+- require relative full-reconstruction and singular-value discrepancies
+  `<=1e-5`, rank-`r` matrix and prediction discrepancies `<=1e-4`, absolute
+  downstream metric discrepancies `<=1e-4`, and identical gate decisions;
+  otherwise mark the fit backend-sensitive and ineligible for a low-rank
+  claim; and
+- preserve the failed torch exception and NumPy diagnostics for a fallback
+  fold rather than manufacturing torch agreement where torch does not
+  converge.
+
+No such check was run in Round 32.
+
+### Four-cell synthesis
+
+| Cell | Design status | F0 | F4–F20 | common-scale status |
+|---|---|---|---|---|
+| A-static | registered `P_static` | fail | pass at all four layers | absent from `resSA`; `resSA2` still required |
+| A-score4 | implemented, outcome-clean, within-carrier transductive, contract-qualified | aggregate pass but only 2/8 full keys; weak pooled conditional association | pass at all four layers | all 12 passing-layer medians >0.5; F4 KL LB 0.495 is the sole passing-layer exception |
+| B-static | registered `P_static`; correlated sentinel check | fail | pass at all four layers | all 12 passing-layer medians >0.5; F4 KL LB 0.426 is the sole exception |
+| B-score4 | implemented score-only sensitivity; amended implementation and telemetry-incomplete | fail | pass at all four layers | all 12 passing-layer medians >0.5; F4 KL LB 0.458 is the sole exception |
+
+The 2x2 is complete for the residual-vs-null mechanical question, not for the
+common-scale question: the A-static repaired block is still missing. Its
+maximum joint license under audits #15–#16 is:
+
+> Across two correlated punctuation sentinels in one decoder and one authored
+> population, registered block/length/position metadata predict held-out raw
+> displacement direction. After those registered coordinates are cross-fitted
+> out, `X_perp` retains predictive association with `Delta_perp` and improves
+> the reassembled response-law prediction beyond four registered word-only
+> X-free lexical nulls at F4–F20. Adding four outcome-clean but within-carrier
+> transductive X-derived carrier-summary scores also does not absorb that
+> association. These are correlated same-population sensitivities, not
+> replications; they identify neither operational state, presentation
+> independence, a presentation decomposition, composition, nor a native law.
+
+`P_static` is the registered-static-metadata arm. `P_aug-score4` cannot
+independently establish presentation sensitivity because its added coordinates
+derive from X. The literal `P_aug-full`, contextual-prefix baseline, fresh
+population behavior, coherent operation update, second decoder, and
+composition remain unrun.
+
+### Second lens and corrected order
+
+The completed 2x2 adds no representation-level hole hostile to structured
+reasoning. It strengthens the local facts that registered metadata predict
+the measured move and that the tested nuisance fits do not exhaust X-linked
+predictability at F4–F20. It does not prove presentation/state inseparability,
+a presentation-free residual, absence of a recoverable quotient or gauge, or
+that structured reasoning cannot live here. Raw F0 identity/token dominance
+is a proven bounded regime and constructive warning, not by itself a hostile
+hole. The inherited across-word ordering statistic remains a proven local
+measurement hole; the repeated SVD failure is a numerical-instrument hole,
+not a latent-space hole. No new axiom is earned.
+
+The Round 31 order is confirmed in substance with two current-state
+amendments: the SVD telemetry/backend gate is inserted before any further
+low-rank output, and v4 approval/freeze is already complete. V2 and v3 were
+voided at their design gates; v4 passed the independent linguistic adversary
+`48/48`, passed tokenization, and is frozen by raw SHA-256/Git blob. From the
+current state the order is:
+
+1. finish protected `resSA2` without early inspection;
+2. add the SVD telemetry/shadow-backend contract above and obtain Tier-1
+   numerical review before further low-rank output;
+3. run the fixed probe-1 rank screens and the preselected sentinel-A
+   `P_aug-full` law cell after probe 1's existing RUN-READY gate;
+4. run the fixed all-layer contextual-prefix screen and completion baseline;
+5. treat v4 linguistic approval, tokenization, hash, and Git freeze as an
+   already-satisfied immutable gate—do not edit or reselect it;
+6. after operation-update and bridge code pass Tier-1 review, capture v4 A,
+   B, and `OP_UPDATE` with the approved raw-hash guard;
+7. run the calibration-only bridge ladder before full interchangeability;
+8. run full interchangeability, then the fresh A/B stress analyses and the
+   coherent operation-update analysis;
+9. run the four registered X-free cells, conditional Freedman–Lane
+   A-static only if every earlier state-reading gate remains live, and then
+   one pinned second decoder.
+
+The four-cell Freedman–Lane expansion remains unauthorized. Multi-position
+consequence and two-step composition/writeback remain live alternatives if
+the one-position, one-step line stays ambiguous.
