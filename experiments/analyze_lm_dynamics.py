@@ -344,10 +344,27 @@ def main():
                         v.append(float(np.mean(cos_rows(RidgeFamily(sti_(Xi_), Yi_).predictor(lam)(sti_(Xv_)), Yv_))))
                     sc[lam] = float(np.mean(v))
                 lam_b = max(sc, key=sc.get)
+                # ---- Round 22 addendum: equalized X-free lexical baselines, hyperparameters by inner leave-one-carrier-out ----
+                Y3 = Yc_.reshape(len(tr), n, D); shared = Yc_.mean(0)
+                def wordonly_ridge(lam, Ytr3):                       # one-hot word ridge == per-word mean shrunk toward the shared mean by k/(k+lam)
+                    k_ = Ytr3.shape[0]; return shared + (Ytr3.mean(0) - shared) * (k_ / (k_ + lam))
+                def shrunk_wordmean(alpha, Ytr3):                     # explicit shrinkage alpha in [0,1] toward the calibration shared mean
+                    return shared + (1 - alpha) * (Ytr3.mean(0) - shared)
+                sc_w, sc_a = {}, {}
+                ALPHAS = [0.0, 0.1, 0.25, 0.5, 0.75, 0.9, 1.0]
+                for q in tr:                                          # inner LOCO within the three training carriers (each validation = one carrier)
+                    itr = [qq for qq in tr if qq != q]; Yi3 = np.stack([cells([qq], l)[1] for qq in itr]); Yv_ = cells([q], l)[1]
+                    for lam in LAMBDAS: sc_w.setdefault(lam, []).append(float(np.mean(cos_rows(wordonly_ridge(lam, Yi3), Yv_))))
+                    for al in ALPHAS: sc_a.setdefault(al, []).append(float(np.mean(cos_rows(shrunk_wordmean(al, Yi3), Yv_))))
+                lam_w = max(sc_w, key=lambda k_: np.mean(sc_w[k_])); al_b = max(sc_a, key=lambda k_: np.mean(sc_a[k_]))
                 pr = {"identity": np.zeros_like(Xt_), "mean": np.repeat(Yc_.mean(0, keepdims=True), n, 0),
-                      "blockword_mean": Yc_.reshape(len(tr), n, D).mean(0), "ridge": RidgeFamily(Xcs_, Yc_).predictor(lam_b)(Xts_)}
-                rec = {"lam": lam_b, "succ_cos": {k: float(np.mean(cos_rows(v, Yt_))) for k, v in pr.items()}}
+                      "blockword_mean": Y3.mean(0), "wordonly_ridge": wordonly_ridge(lam_w, Y3), "shrunk_wordmean": shrunk_wordmean(al_b, Y3),
+                      "ridge": RidgeFamily(Xcs_, Yc_).predictor(lam_b)(Xts_)}
+                rec = {"lam": lam_b, "lam_wordonly": lam_w, "alpha_shrunk": al_b, "succ_cos": {k: float(np.mean(cos_rows(v, Yt_))) for k, v in pr.items()}}
                 diff_cos = cos_rows(pr["ridge"], Yt_) - cos_rows(pr["blockword_mean"], Yt_)
+                cos_eq = {k: cos_rows(pr[k], Yt_) for k in ("wordonly_ridge", "shrunk_wordmean")}
+                strongest_cos = max(cos_eq, key=lambda k_: float(np.mean(cos_eq[k_])))
+                diff_cos_eq = cos_rows(pr["ridge"], Yt_) - cos_eq[strongest_cos]
                 if completer is not None:
                     if c not in true_slot_law: true_slot_law[c] = comp_laws(c, l, None)[0]
                     q_true = true_slot_law[c]
@@ -356,27 +373,32 @@ def main():
                     klm = np.where(kl["mean"] > 0, kl["mean"], np.nan)
                     skill = {k: 1 - kl[k] / klm for k in kl}
                     from scipy.stats import rankdata
-                    cands = ["identity", "mean", "blockword_mean", "ridge"]; KLm = np.stack([kl[k] for k in cands]); K = len(cands)
+                    cands = ["identity", "mean", "blockword_mean", "wordonly_ridge", "shrunk_wordmean", "ridge"]; KLm = np.stack([kl[k] for k in cands]); K = len(cands)   # K=6 addendum universe (K=4 historical)
                     R = np.full_like(KLm, np.nan)
                     for j in range(KLm.shape[1]):
                         if np.all(np.isfinite(KLm[:, j])): R[:, j] = 1 - (rankdata(KLm[:, j], method="average") - 1) / (K - 1)
                     rec["skill"] = {k: float(np.nanmean(skill[k])) for k in skill}; rec["klrank"] = {k: float(np.nanmean(R[i])) for i, k in enumerate(cands)}
                     rec["kl"] = {k: float(np.nanmean(kl[k])) for k in kl}
                     diff_skill = skill["ridge"] - skill["blockword_mean"]; diff_rank = R[cands.index("ridge")] - R[cands.index("blockword_mean")]
+                    strongest_skill = max(("wordonly_ridge", "shrunk_wordmean"), key=lambda k_: float(np.nanmean(skill[k_])))
+                    strongest_rank = max(("wordonly_ridge", "shrunk_wordmean"), key=lambda k_: float(np.nanmean(R[cands.index(k_)])))
+                    diff_skill_eq = skill["ridge"] - skill[strongest_skill]; diff_rank_eq = R[cands.index("ridge")] - R[cands.index(strongest_rank)]
+                    rec["strongest_equalized"] = {"cos": strongest_cos, "skill": strongest_skill, "klrank": strongest_rank}
                 else:
-                    diff_skill = diff_rank = None
+                    diff_skill = diff_rank = diff_skill_eq = diff_rank_eq = None
                 brng = np.random.default_rng(SEED + c)
                 def wboot(dv):
                     if dv is None: return None
                     reps = [float(np.nanmean(dv[brng.integers(0, n, n)])) for _ in range(a.n_boot)]
                     return {"mean": float(np.nanmean(dv)), "ci95": [float(np.nanpercentile(reps, 2.5)), float(np.nanpercentile(reps, 97.5))]}
                 rec["ridge_vs_blockword_mean"] = {"cos": wboot(diff_cos), "skill": wboot(diff_skill), "klrank": wboot(diff_rank)}
-                rec["_cells"] = {"cos": diff_cos, "skill": diff_skill, "klrank": diff_rank}
+                rec["ridge_vs_strongest_equalized"] = {"cos": wboot(diff_cos_eq), "skill": wboot(diff_skill_eq), "klrank": wboot(diff_rank_eq)}
+                rec["_cells"] = {"cos": diff_cos, "skill": diff_skill, "klrank": diff_rank, "cos_eq": diff_cos_eq, "skill_eq": diff_skill_eq, "klrank_eq": diff_rank_eq}
                 out[str(d["probes"][c])] = rec
                 print(f"   loco {str(d['probes'][c]):10s} cos ridge={rec['succ_cos']['ridge']:.3f} bw={rec['succ_cos']['blockword_mean']:.3f} mean={rec['succ_cos']['mean']:.3f}" + (f" | skill ridge={rec['skill']['ridge']:.3f} bw={rec['skill']['blockword_mean']:.3f} | klrank ridge={rec['klrank']['ridge']:.3f} bw={rec['klrank']['blockword_mean']:.3f}" if "skill" in rec else "") + f" ({time.time()-t0:.0f}s)", flush=True)
         # pooled two-way (carrier x word) clustered bootstrap of ridge - blockword_mean over all 16 held-out carriers
         pooled = {}
-        for ep in ("cos", "skill", "klrank"):
+        for ep in ("cos", "skill", "klrank", "cos_eq", "skill_eq", "klrank_eq"):
             mats = [v["_cells"][ep] for v in out.values() if v["_cells"][ep] is not None]
             if not mats: pooled[ep] = None; continue
             M = np.stack(mats); brng = np.random.default_rng(SEED + 99)
@@ -384,7 +406,7 @@ def main():
             pooled[ep] = {"mean": float(np.nanmean(M)), "ci95": [float(np.nanpercentile(reps, 2.5)), float(np.nanpercentile(reps, 97.5))]}
         for v in out.values(): del v["_cells"]
         out["pooled_ridge_vs_blockword_mean"] = pooled
-        out["summary"] = {k: float(np.mean([v["succ_cos"][k] for kk, v in out.items() if kk not in ("pooled_ridge_vs_blockword_mean", "summary")])) for k in ("identity", "mean", "blockword_mean", "ridge")}
+        out["summary"] = {k: float(np.mean([v["succ_cos"][k] for kk, v in out.items() if kk not in ("pooled_ridge_vs_blockword_mean", "summary")])) for k in ("identity", "mean", "blockword_mean", "wordonly_ridge", "shrunk_wordmean", "ridge")}
         return out
 
     def per_carrier_affine(l):
