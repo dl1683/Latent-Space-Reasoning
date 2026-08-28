@@ -5,7 +5,7 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
-## 2026-08-29 — Re-contextualization #17 (2-hour step-back; audit #17 running)
+## 2026-08-29 — Re-contextualization #17 (2-hour step-back; audit #17 fired and adopted in Round 33)
 
 Live question unchanged: is the surviving X⊥→Δ⊥ predictability in one small
 decoder an operational-state relation, a smooth presentation/lexical
@@ -20,11 +20,13 @@ Alternatives held live and NOT yet run: a second pinned decoder (cheap
 replication axis; Round 31 order 11); a multi-position consequence law
 (next k∈{4,8} tokens, teacher-forced) as a different notion of consequence
 (audit #16's alternative); two-step writeback composition; a full-prefix
-contextual baseline is now implemented and queued (order 4). If audit #17
-rules the metalinguistic frame non-probative for the guiding question, the
-right move is a use-frame population under a weaker but honest contract
-(presentation-only within ONE inventory, reported per inventory) rather than
-another all-inventory search.
+contextual baseline is now implemented and queued (order 4). Audit #17 fired
+after this note was written: the multi-position consequence law is promoted
+to the one bounded test that precedes v4 bridge/interchangeability and the
+second decoder (Round 33 registers it); the v4 frame is a bounded
+mentioned-string instruction micro-world; no v5 — the next population, when
+one is authored, is a typed use-frame task, not another all-inventory
+search.
 
 Nothing starts before the two Tier-1 gates (op-update/bridge; SVD telemetry)
 and resSA2 finish.
@@ -37,18 +39,21 @@ and resSA2 finish.
   vs a one-glyph presentation edit). Adversary principle: co-design pairs and
   controls under a predeclared surface-distance metric.
 - v4 (`afd6fcc`, fresh outcome-blind author): metalinguistic frames `{Please|Kindly} plan to OP the word <X>` and `{Hello,|Hi,} please plan to OP the word <X>`, OP ∈ {repeat, omit, capitalize, reverse}; declared metric = aligned surface-word edit distance = 1 for every pair and control; frozen `operation_updates` block. A separate fresh Codex session approved 48/48 checklist cells for grammaticality, preservation of the explicit string-edit instruction, and matched surface-word distance under the common mention frame; this is outcome-blind procedural approval, not 48 independent linguistic observations or proof that Please/Kindly and Hello,/Hi, are pragmatically or latently inert (audit #17). Tokenization PASS; approval block written; raw sha256 `f813f9b2…`, git blob `8845f75c…` in the ledger (`nlm007_fresh_v4_frozen`). The config's top-level 'not approved for capture' note is historical authoring-time text superseded by the structured approval/hash fields.
-- Next on this population (Round 31 order 5–8, after the order-4 baseline):
-  captures A / B / OP_UPDATE → bridge screen → interchangeability → fresh
-  analyses A/B → operation-update analysis; chain `run_v4.cmd` written, armed
-  only when the operation-update and bridge code pass Tier-1 review.
+- Next on this population (Round 31 order 5–8, after the order-4 baseline;
+  reordered by audit #17 / Round 33: one bounded multi-position consequence
+  test comes first): captures A / B / OP_UPDATE → bridge screen →
+  interchangeability → fresh analyses A/B → operation-update analysis; chain
+  `run_v4.cmd` written, armed only when the operation-update and bridge code
+  pass Tier-1 review.
 
 ## 2026-08-29 — Residualization B P_aug-score4 completes the 2×2 table; third launch with the SVD fallback
 
 - Sentinel ',' with the implemented score-4 augmented design; 5074 s of the
-  7200 s wall on the third launch (the first two died at F8 grammar_w1 with
-  torch SVD non-convergence on the fitted low-rank coefficient matrix; the
-  committed analyzer now falls back to a float64 LAPACK SVD — this cell is an
-  amended-implementation cell and is reported as such).
+  7200 s wall on the third launch (the first two died in the F8 grammar
+  block; only the second is directly localized to torch SVD non-convergence
+  on the fitted low-rank coefficient matrix at grammar_w1 — audit #17
+  erratum; the committed analyzer now falls back to a float64 LAPACK SVD —
+  this cell is an amended-implementation cell and is reported as such).
 - **F4, F8, F12, F20 pass** the residual-vs-null gate (X⊥ ridge 0.52–0.57 vs
   strongest residual null 0.06–0.09; block-first leads cos +0.46–0.51,
   skill +0.40–0.44, KL-rank +0.45–0.54; 6–8/8 full keys; no collapse).
@@ -64,7 +69,10 @@ and resSA2 finish.
   identify neither operational state nor presentation independence.
 - The chain continues automatically: resSA2 (patched A-static common-scale
   cell), then run_r31.cmd (probe-1 screens, P_aug-full cell A,
-  contextual-prefix screens and completions). Codex round 32 adjudicates.
+  contextual-prefix screens and completions). Codex round 32 adjudicated the
+  cell as amended-implementation / SVD-telemetry-incomplete and forbade
+  further low-rank output before an SVD telemetry gate; run_r31.cmd was
+  disarmed (ledger `nlm007_r31_chain_disarmed_pending_svd_gate`).
 
 ## 2026-08-29 — Round 31 adopts audit #16; v2 population authored, then voided by the independent adversary
 
@@ -86,7 +94,8 @@ and resSA2 finish.
   pass. Design principle for v3 (verbatim): vary only a scope-fixed form whose
   interpretation cannot supply a reason, goal, condition, or other content for
   the requested operation; semantic inertness must hold independently in every
-  POS cell. v3 is being authored from scratch by a fresh session.
+  POS cell. v3 was authored from scratch by a fresh session (later voided
+  on control edit-magnitude; see the v4 entry above).
 - Implementation: the reviewed analyzer (probe-1 options, insertion source,
   interchangeability, SVD fallback) is committed (`0c774c0`); the
   contextual-prefix baseline is implemented and under Tier-1 review; the
