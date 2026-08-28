@@ -1481,11 +1481,8 @@ norm floor and endpoint `tau=max(0.02,2×q99 noise)` before scoring. Scalar
 failure is insufficient; a hostile lower bound must exceed `tau` after the
 entire simple bridge ladder fails.
 
-The coherent replacement for v1's heterogeneous `not` insertion is an
-operation-verb update in the metalinguistic micro-world (`repeat→omit` and
-`capitalize→reverse`) under matched wrappers and at the aligned mentioned-word
-readout. It requires its own implemented and Tier-1-reviewed capture/completion
-contract.
+The replacement is a coherent declared-operation-verb context intervention in the metalinguistic micro-world (`repeat→omit` and `capitalize→reverse`) under matched wrappers and at the aligned mentioned-word readout. Because source and recipient are produced by separate prefix encodings and no execution consequence is yet measured, it is not yet a denizen-enacted operational move.
+It requires its own implemented and Tier-1-reviewed capture/completion contract.
 
 **Corrected order:** finish protected `resAB→resSA2`; preserve and audit the
 B-aug amendment; repair and re-review probe 1; independently approve,
@@ -1589,12 +1586,142 @@ presentation-free residual, absence of every quotient or gauge, composition,
 and model/family generality remain unproven. No new axiom is earned.
 
 **Current order:** finish protected `resSA2`; add/review the SVD telemetry and
-backend check before further low-rank output; run the fixed probe-1 screens
-plus preselected sentinel-A `P_aug-full`; run the all-layer contextual-prefix
-baseline. V2 and v3 were voided; v4 has now passed the independent linguistic
-adversary `48/48`, passed tokenization, and is frozen by raw SHA-256/Git blob,
-so that gate is already complete. After operation-update and bridge Tier-1
-review: capture v4 A/B/`OP_UPDATE` -> bridge -> interchangeability -> fresh
-A/B and coherent-move analyses -> four registered X-free cells -> conditional
+backend check before further low-rank output; run the all-layer contextual-prefix
+baseline; then run the bounded multi-position consequence gate registered in
+Round 33 before probe 1, v4 capture/bridge/interchangeability, or a second
+decoder. V2 and v3 were voided. V4 has passed a separate fresh-Codex `48/48` checklist for grammaticality, core-operation equivalence, and matched surface edit in one common mention frame, passed tokenization, and is frozen by raw SHA-256 and Git blob. This gate licenses capture of a mentioned-string instruction population; it does not establish ordinary-POS use equivalence, pragmatic or latent-state inertness, or independent linguistic replication.
+
+V4 freeze erratum: the config’s top-level “not approved for capture” note is historical authoring-time text and is superseded by its structured `approved_frozen` status, approval block, verified adversary-report hash, raw SHA-256, Git blob, and ledger freeze entry.
+
+After the consequence gate keeps the response currency live and the
+operation-update/bridge code passes Tier-1 review: fixed probe-1 screens plus
+the preselected sentinel-A `P_aug-full` cell -> capture v4 A/B/`OP_UPDATE` ->
+bridge -> interchangeability -> fresh A/B and declared-operation-verb context-
+intervention analyses -> four registered X-free cells -> conditional
 Freedman–Lane A-static -> one second decoder. The four-cell Freedman–Lane
 expansion remains unauthorized. No experiment was run in Round 32.
+
+## Round 33 — audit #17 adoption and consequence-first allocation (2026-08-28)
+
+Tier-3 audit #17 is adopted verbatim in `theory/EXPERIMENTS.md`. Its numerical
+verdict is PASS, qualified: the residual-versus-four-word-only-null 2x2 is
+complete mechanically at F4–F20, ridge cosine/skill margins are reportable,
+low-rank conclusions are not cleanly reportable, and K=13 remains amendment-
+qualified. V4 approval is upheld only for a bounded mentioned-string
+instruction micro-world. `Please`/`Kindly` and `Hello,`/`Hi,` preserve the
+registered core instruction but are intentionally non-identical in pragmatic
+or discourse state; `48/48` is a procedural checklist count, not ordinary-POS
+use evidence or independent linguistic replication. V4 A/B can be a fresh-
+population stress test of the same token-level append construction, never a
+pooled or direct replication of `lm_dyn_v1`.
+
+Audit #17 also corrects prior kill language. V2 remains a useful pragmatic-
+purpose stress set; v3's presentation pairs passed and its void arose from
+control-design mismatch; withdrawal of heterogeneous `not` insertion does not
+kill typed negation. The strongest live explanation is a generic prefix-edit
+response or Jacobian: smooth propagation of wrapper, operation verb, length,
+and position can make the recipient state predictable without exposing an
+operational quotient.
+
+### Corrected order
+
+1. Finish protected `resSA2` without early inspection.
+2. Complete the SVD telemetry/shadow-backend gate and Tier-1 numerical review
+   before further low-rank output.
+3. Run the fixed all-layer contextual-prefix X-free screen and completion.
+4. Run and adjudicate one bounded multi-position teacher-forced consequence
+   test on the existing sentinel-A/B `P_static` relation.
+5. Only if that test keeps the consequence currency live, run the fixed
+   probe-1 screens and preselected sentinel-A `P_aug-full` cell, then proceed
+   through v4 capture, bridge, interchangeability, fresh A/B, and the
+   declared-operation-verb context-intervention analysis.
+6. Retain the four registered X-free cells and conditional Freedman–Lane
+   A-static behind all earlier state-reading gates; run a second pinned
+   decoder only after construct validity and v4 portability remain live.
+
+No v5 mentioned-string population will be authored. The next population
+direction is a typed use-frame task, with polarity first: predicates or
+propositions are used in a truth-evaluable frame, a polarity update changes a
+declared truth condition, and success is measured by a frozen behavioral
+consequence rather than by another local word-slot law. Binding and quantifier
+updates remain separate typed successor populations, not pooled controls or
+post-outcome rescue. No texts or config are authored in Round 33.
+
+### Bounded multi-position consequence gate
+
+The denizen-level consequence is the future response-law trajectory caused by
+a proposed readout-state move, not only the law at the writeback position.
+For positions `j=1..k` after that readout, with `k∈{4,8}`, the instrument will
+teacher-force a frozen continuation and report
+`KL(q_true_j || q_hat_j)` at every position. The fixed aggregate is the
+uniform mean over positions `1..k`; no position weighting, best-prefix choice,
+layer promotion, or sentinel selection is allowed.
+
+The existing `lm_dyn_v1` sentinel A/B captures are necessary but not
+sufficient. The extension reuses their exact population, source/readout
+states, folds, sentinels, model/tokenizer pins, and `P_static` ridge/null
+fits. It requires new forward passes with two manifest-frozen eight-token
+tails: the first eight tokenizer tokens (no special tokens) of ` The same
+continuation follows in every case.` after sentinel A and ` and the same
+continuation follows in every case.` after sentinel B. Tokenization must be
+frozen before model load and must yield at least eight tokens; otherwise the
+lock is amended before any run, never after outcomes. Causality predicts the
+old and extended source/readout states are identical within the registered
+reload/locality tolerance; failure voids the consequence score.
+
+The future runner extension is `capture_forward_consequence` with
+`--source-tags fwdA fwdB --consequence-k 4 8 --teacher-forced-tail-set
+fixed_tail_v1 --expected-base-manifest-sha256 <frozen hash>`. It writes
+`states_conseqA/B.npz` and `manifest_conseqA/B.json`, including tail token IDs,
+true per-position laws, readout-equality checks, repeat-law noise, exact pins,
+and hashes. The analyzer source is `--source forward_consequence` with
+`--consequence-mode teacher_forced_v1 --consequence-k 4 8
+--consequence-aggregation uniform_mean --residualize static
+--contextual-prefix-tag <completed tag> --pairs 0 4 8 12 20 --n-boot 500`.
+It is an early-return mode and rejects interchangeability, bridge,
+residualizer-selection, screen, and permutation-null flags.
+
+The fixed field is `P_static` residual ridge, reassembled to raw displacement
+before writeback. Its competitors are the same four word-only X-free nulls
+plus the completed contextual-prefix X-free field. At each `k`, the strongest
+null is the one with the smallest uniform-mean KL inside each bootstrap
+replicate. The gated margin is the normalized KL reduction
+`G_k=(D_null-D_ridge)/D_null`, where `D` is the uniform-mean KL. A cell is
+unsupported rather than epsilon-repaired when `D_null` does not exceed
+`max(q99 repeat-law KL, 1e-6)`. A layer passes only when `G_4` and `G_8` are
+each at least `0.02` with positive crossed 95% lower bounds, at least `6/8`
+keys are jointly positive, no family collapses or reverses, and support is at
+least `0.95`. A sustained consequence license requires two common F4–F20
+layers in both sentinels. F0 remains a structural diagnostic.
+
+If a layer passes the existing one-position endpoint but both `G_4` and `G_8`
+have crossed 95% upper bounds at or below zero under valid support/noise
+checks, that is evidence that the one-position instrument locally
+manufactures consequence under this fixed tail. Mere gate failure is
+ambiguous. If a predeclared one-position-nonpassing F4–F20 layer passes both
+multi-position gates, the one-position law hid a delayed consequence. Passage
+at both horizons keeps the consequence currency live; mixed horizon/layer
+results are reported as decay or instrument dependence and cannot unlock a
+hostile-hole claim.
+
+Prediction: after the contextual-prefix comparator is admitted, the generic
+prefix-edit/Jacobian account predicts no joint sustained gate and especially
+decay by `k=8`. The operational-regularity account predicts common F8–F20
+passage at both horizons and both sentinels. The hidden-consequence branch is
+possible but not predicted. The simplest confound is the artificial frozen
+tail itself; therefore every conclusion is local to these tails and this
+decoder. Budget: `20–40 min` capture plus `1–2 h` scoring, one CPU process,
+with hard walls of `45 min` and `2 h`; no GPU and no generation claim.
+
+### Second lens after audit #17
+
+No new representation-level hostile hole is proven. The strongest current
+holes are still instruments: the inherited ordering readout and the SVD path;
+raw F0 token identity is a bounded structural regime. V4 can expose only a
+candidate local obstruction to wrapper-equivalence in a mentioned-string
+instruction world, and only after adequate move norms, intact controls, both
+directions, common layers, failure of the full simple bridge ladder, and a
+consequence currency that survives Round 33. The next latent space should
+expose denizen-available quotient or bridge coordinates and make typed moves
+carry truth-conditional, multi-position consequences that compose. No new
+axiom is earned. Round 33 is documentation-only; no experiment was run.

@@ -6272,3 +6272,367 @@ current state the order is:
 The four-cell Freedman–Lane expansion remains unauthorized. Multi-position
 consequence and two-step composition/writeback remain live alternatives if
 the one-position, one-step line stays ambiguous.
+
+## Tier-3 audit #17 — v4 scope, numerical qualification, and consequence-first allocation (fresh Codex auditor)
+
+### Verdict
+
+**Numerical integrity: PASS, qualified.** Round 32’s B-score4 values reproduce directly from [analysis_resAB.json](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/results/lm_dyn_v1/analysis_resAB.json>). The four-cell table is complete for the **residual-versus-four-word-only-null mechanical gate**, not for common-scale retention, literal `P_aug-full`, or independent replication.
+
+**V4 linguistic gate: APPROVAL UPHELD, but materially narrowed.** V4 is eligible for capture under its registered contract. The adversary established grammaticality, a constant mentioned-word dependency, preserved explicit string-edit instructions, and matched surface-word edit distance. It did **not** establish that `Please`/`Kindly` or `Hello,`/`Hi,` are pragmatically or latently inert, nor that the four inventories are tested in their ordinary syntactic uses.
+
+**Operation-update construct: DOWNGRADE.** It is a coherent **declared-operation-verb context intervention**. It is not yet a denizen-enacted operational move: source and recipient states come from separately re-encoding two prefixes, and the endpoint does not show that repeat/omit/capitalize/reverse was executed.
+
+**Representation-level hostile hole: NOT PROVEN.** A hostile v4 result could establish only a local obstruction to this identity relation under this bridge family and response currency. A stable result could establish only local portability in an autonymic instruction micro-world.
+
+**Public/demo propagation: FAIL.** The v9 lede is incomplete and the body contains two statements made false by Round 32. The footer is closer to current truth but should carry the amendment partition explicitly.
+
+I did not inspect `analysis_resSA2.json` or the live uncommitted analyzer/capture files or diffs. Pre-existing Tier-1 material present on the mandatory blackboard was excluded from this verdict.
+
+### 1. Direct verification of Round 32
+
+Direct reduction gives:
+
+| Layer | Ridge | Strongest residual null | Cos margin [LB] | Skill margin [LB] | K=13 KL-rank margin [LB] | Full / positive keys | Score-4 → Δ | Verdict |
+|---|---:|---:|---:|---:|---:|---:|---:|---|
+| F0 | 0.335 | 0.003 | 0.333 [0.217] | 0.091 [−0.039] | 0.310 [0.066] | 4/8 / 6/8 | 0.641 | fail |
+| F4 | 0.570 | 0.061 | 0.509 [0.447] | 0.411 [0.290] | 0.455 [0.334] | 6/8 / 8/8 | 0.513 | pass |
+| F8 | 0.567 | 0.075 | 0.492 [0.439] | 0.399 [0.333] | 0.451 [0.352] | 7/8 / 8/8 | 0.424 | pass |
+| F12 | 0.523 | 0.065 | 0.459 [0.415] | 0.441 [0.379] | 0.510 [0.438] | 8/8 / 8/8 | 0.456 | pass |
+| F20 | 0.566 | 0.089 | 0.477 [0.427] | 0.399 [0.335] | 0.543 [0.483] | 8/8 / 8/8 | 0.640 | pass |
+
+Support is `1.0` in every key. Reload ordering agreement `0.9996511`, pairwise-KL difference `0.0013232`, and runtime `5073.8 s` also match [Round 32](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/theory/EXPERIMENTS.md:6079>).
+
+The resulting 2×2 is:
+
+- A-static: F0 fail; F4–F20 pass.
+- A-score4: F0 aggregate pass but only `2/8` full keys; F4–F20 pass.
+- B-static: F0 fail; F4–F20 pass.
+- B-score4: F0 fail; F4–F20 pass.
+
+“Correlated same-population sensitivities” is correct and should stay. It is conservative without erasing the positive result: the pattern is robust across two sentinel tokens and two nuisance specifications, but all cells reuse one decoder, population, folds, task, and analysis family.
+
+The common-scale 2×2 is **not** complete because A-static lacks the repaired block. “Completed residualization 2×2” must always be followed by “for the residual-versus-null mechanical question.”
+
+#### SVD qualification
+
+`amended-implementation` and `SVD-telemetry-incomplete` are supported. The artifact contains no serialized provider, exception, spectrum, effective rank, condition estimate, reconstruction residual, or backend comparison.
+
+The qualification should be partitioned:
+
+- Ridge-versus-four-X-free-null cosine and skill margins are mechanically reportable.
+- Low-rank conclusions are not cleanly reportable.
+- The K=13 KL-rank endpoint is amendment-qualified because low-rank is a member of that ranked universe.
+- A blanket implication that the ridge-only table is numerically invalid would be an over-claimed kill.
+
+Two ledger defects remain:
+
+1. `nlm007_resid_resAB_crash2` says the first loss was the same defect and “same fold.” The first loss occurred while entering `F8 grammar_w0` without traceback; the second directly localized SVD failure at `F8 grammar_w1/W`. The safe common localization is only the F8 grammar block.
+
+2. `nlm007_fresh_v2_voided` says “all 32 pair-1 cells” passed, while its own metrics correctly say 16 pair cells passed, 16 failed, and 16 controls passed. “32” must become “16” in an append-only erratum.
+
+### 2. Adversary of the v4 adversary
+
+The live [v4 config](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/config/lexical_probe_fresh_v4.json:1>) is clean. Its raw SHA-256, Git blob, and adversary-report SHA-256 exactly match the ledger and approval block. The freeze itself is sound.
+
+#### `Please` versus `Kindly`
+
+This pair passes the narrow contract:
+
+- Both produce grammatical directives.
+- Both preserve `plan to OP the word <X>`.
+- Neither changes polarity, explicit modality, quantification, tense, or the named operation.
+
+It does **not** justify “genuinely inert” without qualification. `Kindly` and `Please` differ in politeness strategy, formality, interpersonal stance, and potentially directive force. They also tokenize to different prefix lengths, moving the word slot. Those are legitimate presentation variables for the experiment to test; they are not properties the linguistic reviewer can declare absent from the latent state.
+
+Correct ruling: **core-operation equivalent; presentation/pragmatic variation intentionally non-identical.**
+
+#### `Hello,` versus `Hi,`
+
+This also passes narrowly:
+
+- Both are detached greetings followed by the same directive.
+- Neither supplies a reason, condition, or explicit operation content.
+- The comma keeps the greeting outside the mentioned-word dependency.
+
+But they encode register and social/deictic stance. They are not globally inert. A latent difference under these greetings would not automatically be pathological; the empirical question is whether that difference is bridgeable while operation-specific consequences remain distinct.
+
+Correct ruling: **same greeting-plus-directive structure and explicit operation; not identical discourse state.**
+
+#### The “four inventories” claim
+
+The adversary correctly notices that every item becomes an autonym under `the word <X>`. That is also the design’s central limitation.
+
+Nouns, verbs, adjectives, and function words are no longer tested as nouns, verbs, adjectives, or function words. All are objects of the same metalinguistic NP. POS is provenance, not carrier syntax. Therefore:
+
+- `48/48` is a checklist count, not 48 independent linguistic observations.
+- The 32 presentation cells do not constitute four distinct syntactic-use validations.
+- The design solves the all-POS licensing problem by removing ordinary POS use from the experiment.
+
+This is legitimate if named honestly: **a mentioned-string instruction micro-world**. It is not a test of presentation invariance across ordinary linguistic uses.
+
+#### Mention versus use under the guiding question
+
+Interchangeability here would mean:
+
+> Two wrapper-conditioned descriptions of the same intended string operation admit portable word-slot trajectories and response laws, while descriptions of different intended string operations remain distinguishable.
+
+That is a meaningful denizen question in a small constructed world. It could identify a local equivalence or obstruction for representations of instructions about strings.
+
+It would not show that:
+
+- ordinary semantic uses share a quotient;
+- the denizen actually executes the named operation;
+- the relation survives truth-conditional reasoning, binding, negation, or quantification;
+- POS-sensitive structured reasoning can live in the representation;
+- presentation is globally separable from state.
+
+#### Operation-verb update
+
+`repeat→omit` and `capitalize→reverse` are coherent as directed changes in declared instruction. But they are also, literally, one-word prefix substitutions followed by separate forward passes. Moreover, every carrier says **“plan to”** perform the operation; the operation is not performed.
+
+Thus the current endpoint measures a transition between two instruction-conditioned encodings, not an operation on the mentioned word. Until downstream consequences demonstrate repeat/omit/capitalize/reverse behavior, call it a:
+
+> declared-operation-verb context update
+
+Do not call it an unqualified operational move or denizen navigation primitive.
+
+#### Sentinel comparability
+
+The formal token action is unchanged: append `.` or `,` after the complete sequence. Its semantic role has changed.
+
+- In `lm_dyn_v1`, the source `q` is the terminal token of a heterogeneous suffix following `<X>`—for example `means`, `and`, `because`, or `the`.
+- In v4, the suffix is empty and `q` is the mentioned word itself at the end of a complete directive.
+
+So the sentinel is now a transition directly from the mentioned-word state into punctuation, whereas previously it followed diverse suffix terminals and continuation demands. V4 A/B results may be called a **fresh-population stress test of the same token-level append construction**. They must not be pooled with or called a direct replication of `lm_dyn_v1` sentinel dynamics.
+
+The config’s statement that the append is substantive rather than invisible is correct.
+
+### 3. Over-claimed kills
+
+#### V2
+
+The void is procedurally correct under the registered one-failed-cell contract. `For reference` versus `For clarity` can introduce different discourse purposes, violating the unusually strict “cannot supply reason or goal” clause.
+
+But this kills v2 only for the confirmatory presentation-only claim. It does not establish that the pair is scientifically worthless. V2 remains a useful harder pragmatic-purpose or presentation-gauge stress set.
+
+#### V3
+
+The whole-version void is also procedurally correct because the frozen contract required passing controls. But its linguistic presentation pairs passed. What failed was the orthographic-control match: a one-glyph apostrophe edit was compared with a whole-operation-word substitution.
+
+Therefore v3 is not a linguistic failure. It remains usable descriptively for:
+
+- orthographic near-invariance;
+- numerical-noise calibration;
+- a presentation-only test without operation-attribution claims.
+
+“Three adversarial voids” is technically true but misleading unless it distinguishes v3’s control-design failure from v1/v2’s equivalence failures.
+
+#### `not` insertion
+
+Withdrawal is correct as a single all-inventory confirmatory move. Insertion before heterogeneous ordinary noun, verb, adjective, and function-word uses does not define one coherent operation.
+
+It does **not** kill negation as a research direction. Negation remains a strong typed operation in a use-frame population of predicates or propositions with behavioral truth-conditional consequences.
+
+### 4. Research-integrity findings
+
+1. **Frozen-config prose contradiction.** The config says `status: approved_frozen` and contains the completed approval block, but its top-level note still says “This candidate is not approved for capture.” Do not mutate the frozen file. Add a ledger/STATE erratum saying the note is historical authoring-time text and that the structured approval/hash fields are authoritative.
+
+2. **Adversary independence is procedural, not epistemic.** Author and reviewer were separate fresh sessions without v4 outcomes, which is good. They nevertheless share the Codex model family, the contract, and the adaptive v1–v3 design history. “Independent” should mean “separate-session and outcome-blind,” not independent linguistic expertise.
+
+3. **Design adaptivity remains.** V4 is prospective for its own model outcomes, but the overall population family was iteratively selected to survive prior conceptual criticism. That is not leakage, but it is adaptive instrument development, not a pristine one-shot confirmation.
+
+4. **Demo inconsistency violates the propagation rule.** [The demo](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/.claude_demo_content_vs_context.html:69>) omits B-score4 in the lede, says no symmetric A/B residualization is available at line 154, and refers to only two A-side residualizations at line 160. The footer already says both B cells are complete.
+
+### 5. Tunnel vision and strongest missed explanation
+
+Yes, the program is tunnel-visioned.
+
+Three replacement populations and seven review rounds bought real rigor, but the marginal work is now increasingly devoted to making one synthetic instrument internally admissible. The program still has:
+
+- one decoder;
+- one 80-word inventory;
+- one autonymic template family;
+- analyst-authored equivalence;
+- one-position response laws;
+- one-step interventions;
+- one code path with substantial review burden.
+
+The strongest alternative explanation v4 still misses is a **generic prefix-edit response or Jacobian**:
+
+> Transformer states smoothly propagate lexical differences in the prefix. The word-slot `X` therefore contains a high-dimensional summary of wrapper, operation verb, length, and position; ridge or a bridge predicts the recipient state because re-encoding a one-word prefix edit has regular geometry, not because the world exposes an operational quotient.
+
+The queued token-ID/bigram contextual baseline helps, but may still miss pretrained token-embedding similarity, contextual prefix summaries, and nonlinear prefix effects.
+
+#### CPU-only alternatives
+
+| Exploration | Estimated CPU | Decides |
+|---|---:|---|
+| Existing contextual-prefix screen + completion | 10–30 min + about 1 h | Whether tokenized grammar/licensing closes the current relation |
+| Frozen input-embedding/edit-kernel prefix baseline | 15–45 min; ≤1 h with completion | Whether smooth lexical prefix geometry explains v4 without cell-level `X` |
+| Operation-token causal patch/ablation at two fixed layers | about 1–3 h | Whether the operation verb causally carries the measured transition |
+| Multi-position teacher-forced consequence, `k={4,8}` | 20–40 min capture + 1–2 h scoring | Whether the one-position law hides or manufactures consequence |
+| Typed use-frame task: polarity, binding, or quantifier update | 15–30 min capture + 2–4 h analysis | Whether a real semantic operation transfers outside mention |
+| Two-step composition/writeback | 10–20 min capture + about 1 h scoring | Whether the field composes |
+| Second pinned decoder | about 3 h | Decoder specificity only |
+
+#### Allocation ruling
+
+Elevate the **multi-position consequence law before the second decoder**. Construct validity precedes replication: a second decoder can reproduce the same wrong one-position instrument.
+
+Recommended order:
+
+1. Finish the protected existing work and SVD instrumentation gate.
+2. Run the contextual-prefix baseline.
+3. Run one bounded multi-position consequence test.
+4. If consequence is informative, run v4 bridge/interchangeability and then a second decoder.
+5. In parallel with neither, stop authoring v5; the next population should instead be a typed use-frame task.
+
+### 6. Second-lens ruling
+
+A stable v4 interchangeability result could prove locally that the two wrapper systems admit a common raw or simply bridged representation of these described string-operation trajectories, while distinct update families remain separated.
+
+A hostile result—equivalent-swap degradation beyond `tau`, intact controls, adequate move norms, both directions, two common layers, and failure of the full simple bridge ladder—could support:
+
+> a local obstruction to the registered wrapper-equivalence relation for mentioned-string instruction trajectories in this decoder.
+
+It could motivate a next latent space with explicit quotient or bridge coordinates.
+
+It could not prove:
+
+- a hole hostile to structured reasoning generally;
+- presentation/state inseparability;
+- absence of nonlinear or learned gauges;
+- ordinary-use linguistic failure;
+- operation execution;
+- composition;
+- on-manifold donor writeback;
+- correct consequence currency;
+- model-, task-, or population-level generality.
+
+The strongest current holes remain measurement/instrument holes: the inherited ordering statistic and the SVD path. Raw F0 token identity is a bounded structural regime. V4 may expose a candidate representational obstruction; it cannot yet promote one to a hostile structural hole.
+
+## Round 33 — audit #17 adoption and consequence-first allocation (2026-08-28)
+
+Tier-3 audit #17 is adopted verbatim in `theory/EXPERIMENTS.md`. Its numerical
+verdict is PASS, qualified: the residual-versus-four-word-only-null 2x2 is
+complete mechanically at F4–F20, ridge cosine/skill margins are reportable,
+low-rank conclusions are not cleanly reportable, and K=13 remains amendment-
+qualified. V4 approval is upheld only for a bounded mentioned-string
+instruction micro-world. `Please`/`Kindly` and `Hello,`/`Hi,` preserve the
+registered core instruction but are intentionally non-identical in pragmatic
+or discourse state; `48/48` is a procedural checklist count, not ordinary-POS
+use evidence or independent linguistic replication. V4 A/B can be a fresh-
+population stress test of the same token-level append construction, never a
+pooled or direct replication of `lm_dyn_v1`.
+
+Audit #17 also corrects prior kill language. V2 remains a useful pragmatic-
+purpose stress set; v3's presentation pairs passed and its void arose from
+control-design mismatch; withdrawal of heterogeneous `not` insertion does not
+kill typed negation. The strongest live explanation is a generic prefix-edit
+response or Jacobian: smooth propagation of wrapper, operation verb, length,
+and position can make the recipient state predictable without exposing an
+operational quotient.
+
+### Corrected order
+
+1. Finish protected `resSA2` without early inspection.
+2. Complete the SVD telemetry/shadow-backend gate and Tier-1 numerical review
+   before further low-rank output.
+3. Run the fixed all-layer contextual-prefix X-free screen and completion.
+4. Run and adjudicate one bounded multi-position teacher-forced consequence
+   test on the existing sentinel-A/B `P_static` relation.
+5. Only if that test keeps the consequence currency live, run the fixed
+   probe-1 screens and preselected sentinel-A `P_aug-full` cell, then proceed
+   through v4 capture, bridge, interchangeability, fresh A/B, and the
+   declared-operation-verb context-intervention analysis.
+6. Retain the four registered X-free cells and conditional Freedman–Lane
+   A-static behind all earlier state-reading gates; run a second pinned
+   decoder only after construct validity and v4 portability remain live.
+
+No v5 mentioned-string population will be authored. The next population
+direction is a typed use-frame task, with polarity first: predicates or
+propositions are used in a truth-evaluable frame, a polarity update changes a
+declared truth condition, and success is measured by a frozen behavioral
+consequence rather than by another local word-slot law. Binding and quantifier
+updates remain separate typed successor populations, not pooled controls or
+post-outcome rescue. No texts or config are authored in Round 33.
+
+### Bounded multi-position consequence gate
+
+The denizen-level consequence is the future response-law trajectory caused by
+a proposed readout-state move, not only the law at the writeback position.
+For positions `j=1..k` after that readout, with `k∈{4,8}`, the instrument will
+teacher-force a frozen continuation and report
+`KL(q_true_j || q_hat_j)` at every position. The fixed aggregate is the
+uniform mean over positions `1..k`; no position weighting, best-prefix choice,
+layer promotion, or sentinel selection is allowed.
+
+The existing `lm_dyn_v1` sentinel A/B captures are necessary but not
+sufficient. The extension reuses their exact population, source/readout
+states, folds, sentinels, model/tokenizer pins, and `P_static` ridge/null
+fits. It requires new forward passes with two manifest-frozen eight-token
+tails: the first eight tokenizer tokens (no special tokens) of ` The same
+continuation follows in every case.` after sentinel A and ` and the same
+continuation follows in every case.` after sentinel B. Tokenization must be
+frozen before model load and must yield at least eight tokens; otherwise the
+lock is amended before any run, never after outcomes. Causality predicts the
+old and extended source/readout states are identical within the registered
+reload/locality tolerance; failure voids the consequence score.
+
+The future runner extension is `capture_forward_consequence` with
+`--source-tags fwdA fwdB --consequence-k 4 8 --teacher-forced-tail-set
+fixed_tail_v1 --expected-base-manifest-sha256 <frozen hash>`. It writes
+`states_conseqA/B.npz` and `manifest_conseqA/B.json`, including tail token IDs,
+true per-position laws, readout-equality checks, repeat-law noise, exact pins,
+and hashes. The analyzer source is `--source forward_consequence` with
+`--consequence-mode teacher_forced_v1 --consequence-k 4 8
+--consequence-aggregation uniform_mean --residualize static
+--contextual-prefix-tag <completed tag> --pairs 0 4 8 12 20 --n-boot 500`.
+It is an early-return mode and rejects interchangeability, bridge,
+residualizer-selection, screen, and permutation-null flags.
+
+The fixed field is `P_static` residual ridge, reassembled to raw displacement
+before writeback. Its competitors are the same four word-only X-free nulls
+plus the completed contextual-prefix X-free field. At each `k`, the strongest
+null is the one with the smallest uniform-mean KL inside each bootstrap
+replicate. The gated margin is the normalized KL reduction
+`G_k=(D_null-D_ridge)/D_null`, where `D` is the uniform-mean KL. A cell is
+unsupported rather than epsilon-repaired when `D_null` does not exceed
+`max(q99 repeat-law KL, 1e-6)`. A layer passes only when `G_4` and `G_8` are
+each at least `0.02` with positive crossed 95% lower bounds, at least `6/8`
+keys are jointly positive, no family collapses or reverses, and support is at
+least `0.95`. A sustained consequence license requires two common F4–F20
+layers in both sentinels. F0 remains a structural diagnostic.
+
+If a layer passes the existing one-position endpoint but both `G_4` and `G_8`
+have crossed 95% upper bounds at or below zero under valid support/noise
+checks, that is evidence that the one-position instrument locally
+manufactures consequence under this fixed tail. Mere gate failure is
+ambiguous. If a predeclared one-position-nonpassing F4–F20 layer passes both
+multi-position gates, the one-position law hid a delayed consequence. Passage
+at both horizons keeps the consequence currency live; mixed horizon/layer
+results are reported as decay or instrument dependence and cannot unlock a
+hostile-hole claim.
+
+Prediction: after the contextual-prefix comparator is admitted, the generic
+prefix-edit/Jacobian account predicts no joint sustained gate and especially
+decay by `k=8`. The operational-regularity account predicts common F8–F20
+passage at both horizons and both sentinels. The hidden-consequence branch is
+possible but not predicted. The simplest confound is the artificial frozen
+tail itself; therefore every conclusion is local to these tails and this
+decoder. Budget: `20–40 min` capture plus `1–2 h` scoring, one CPU process,
+with hard walls of `45 min` and `2 h`; no GPU and no generation claim.
+
+### Second lens after audit #17
+
+No new representation-level hostile hole is proven. The strongest current
+holes are still instruments: the inherited ordering readout and the SVD path;
+raw F0 token identity is a bounded structural regime. V4 can expose only a
+candidate local obstruction to wrapper-equivalence in a mentioned-string
+instruction world, and only after adequate move norms, intact controls, both
+directions, common layers, failure of the full simple bridge ladder, and a
+consequence currency that survives Round 33. The next latent space should
+expose denizen-available quotient or bridge coordinates and make typed moves
+carry truth-conditional, multi-position consequences that compose. No new
+axiom is earned. Round 33 is documentation-only; no experiment was run.
