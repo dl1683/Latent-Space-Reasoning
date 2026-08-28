@@ -3787,3 +3787,155 @@ the exciting next step: a latent world becomes navigable only when its
 accounting, and held-out response-law tests. The current hole remains a
 missing predictive quotient between lexical content, presentation,
 operational state, and consequential motion. No new axiom is warranted.
+
+## Tier-3 audit #13 — equalized A, residualization instrument, public demo (2026-08-29, fresh Codex auditor)
+
+**Adopted corrections.** (1) Equalized A: "Audit #11's inner-centre *defect*
+concern is resolved by the corrected sentinel-A data" — not "audit #11 is
+resolved"; the comparator is the **calibration-selected equalized comparator**
+(chosen by inner cosine, frozen for all endpoints), not "the stronger" one; the
+baselines sit roughly 0.002–0.009 above the shared mean; the pooled equalized
+interval is secondary (carriers, not blocks first). Maximum wording: "On
+already-seen words, within sentinel A's style-family design, the
+context-bearing X field predicts the held-out carrier's forward displacement
+and response-law consequence beyond the properly nested, calibration-selected
+X-free lexical comparator at F4–F20." (2) **Retention marker defect:** raw and
+residual margins are not commensurate (cosine on different targets; skill
+against different references; KL-rank by ridge-slot substitution). Until a
+common-scale repair (reassemble residual predictions to full Δ and score
+against raw Δ with a common skill reference; recompute the strongest-null
+minimum inside every bootstrap replicate; a coherent raw universe or a
+continuous KL margin), the runs may say only "the predeclared robustness
+marker is mechanically met", never "half of the signal survives". The raw
+four-null shadow is valid for the amended raw unseen-word comparison. The
+residual-vs-null gate, law reassembly and the presentation-only arm are
+coherent; `P_static→Δ` = 0.427 is a held-out cosine, never "explains 42%".
+(3) **Public demo:** materially violated audits #10–#12 ("context state",
+"context takes over", "manufactures", "presentation explains 0.42"; nearest-
+state predictor coloured as content); every replacement adopted verbatim and
+republished; named-word rows labelled as selected illustrations. (4) Reverse
+tunnel: it would now be unfair to dismiss the X-conditioned advantage as
+lookup, noisy-mean artifact, class mean, embedding interpolation or pipeline
+accident; and presentation may itself be part of operational state — the
+target is an operational equivalence relation defined by moves and
+consequences, not presentation invariance at all costs.
+
+**Retention-marker defect (verbatim):**
+
+The present numerator and denominator do not compare like with like.
+
+#### Displacement cosine
+
+Raw:
+
+\[
+\cos(\widehat\Delta,\Delta)
+\]
+
+Residual:
+
+\[
+\cos(\widehat\Delta_\perp,\Delta_\perp)
+\]
+
+Residualization changes the target geometry and scale. A margin can become larger after removing an easy common component even when less raw predictive information remains. The smoke demonstrates exactly this: the nominal cosine “retention” is about \(0.523/0.187\approx2.8\), which cannot mean 280% of a signal survived.
+
+#### Law skill
+
+The residual arms normalize skill against the reassembled residual mean completion. Raw arms normalize against `unres_mean`. Because the denominators differ, subtracting or ratioing the resulting skills is not an apples-to-apples retention measurement.
+
+#### KL-rank
+
+Each raw arm is separately substituted into the residual K=13 universe’s `ridge` slot. This gives raw arms a common ordinal reference, but it is not the same estimand as the jointly ranked residual ridge-versus-residual-null margin:
+
+- the raw ridge and raw null are never jointly present;
+- both are compared against residual competitors;
+- a raw null can be ranked against its residual counterpart;
+- the residual null occupies its own candidate slot, whereas the raw null replaces ridge.
+
+This is adequate as a coarse diagnostic, not as a formal KL-rank retention denominator.
+
+### Required repair
+
+Keep residual-space cosine as the residual predictability gate. For retention, add a common-scale comparison:
+
+1. Reassemble every residual prediction as
+   \[
+   \widehat\Delta_{\rm full}=f_\Delta(P)+\widehat\Delta_\perp.
+   \]
+2. Reassemble every residual lexical null with the same \(f_\Delta(P)\).
+3. Score raw and reassembled-residual arms against the same raw \(\Delta\), same true law, and same skill reference.
+4. For rank, either build a coherent full raw K=13 shadow universe or use a common continuous KL margin rather than separate ridge-slot substitutions.
+5. Bootstrap the paired common-scale margins and, if using “strongest null,” recompute the minimum inside each replicate.
+
+Until then, use:
+
+> The predeclared robustness marker is mechanically met.
+
+Do not use:
+
+> At least half of the predictive signal survives residualization.
+
+**Strongest alternative explanation (verbatim):**
+
+> \(X\) contains smooth lexical and presentation/template coordinates. The later displacement and response-law consequence vary systematically along those coordinates. Ridge and kernel learn this implementation-specific geometry. The class mean and frozen-embedding lexical nulls collapse because they are too coarse, not because the variation is necessarily operational state.
+
+This explains:
+
+- F4–F20 success;
+- F0 weakness;
+- cross-block transfer;
+- unseen-word interpolation;
+- near-mean lexical nulls;
+- generic ridge/kernel success;
+- the sizeable \(P_{\rm static}\to\Delta\) cosine;
+- survival after incomplete static residualization.
+
+It does not require leakage or broken splits.
+
+The strongest competing explanation in the positive direction is:
+
+> The model has a real context-conditioned transition regularity; presentation affects the lawful successor because presentation is part of operational state, and the analyst’s attempt to quotient it away removes legitimate state information.
+
+The current observational residualization cannot decide between those accounts.
+
+---
+
+**Second lens (verbatim):**
+
+### Proven locally
+
+- **F0 identity/token dominance:** no qualifying conditional gain at the first forward transition under this instrument.
+- **Ordering-endpoint saturation:** the inherited ordering readout repeatedly fails to register motion captured by displacement cosine and response-law skill.
+
+### Strong concerns, not proven holes
+
+- presentation entangled with operational state;
+- smooth lexical geometry surviving unseen-word transfer;
+- one model-specific conditional field;
+- reliance on externally supplied template metadata;
+- only one-step, decoder-specific consequence.
+
+### Not proven
+
+- family-only laws;
+- presentation explains the whole X-conditioned advantage;
+- motion is invisible to the world;
+- the latent space cannot support structured reasoning;
+- the residual field is a native law.
+
+The deeper structural problem is that the denizen does not receive a native quotient. `P_static` uses analyst-known block identities, prefix lengths, suffix lengths, and positions. If “same place” can only be defined using metadata outside the latent world, the representation itself has not exposed the coordinates needed for navigation.
+
+A next-generation latent space should therefore:
+
+- expose lexical, presentation, and operational coordinates rather than requiring external reconstruction;
+- define sameness through interchangeability of declared moves and downstream response laws;
+- treat presentation as state when it causally changes those laws, and quotient it only when it does not;
+- include consequence-sensitive divergences;
+- support multi-step composition and closure;
+- transfer across unseen words, styles, and model families;
+- make precision, support, and controllability part of the representation contract.
+
+No new native axiom is earned. The next constructive target is an operationally testable quotient, not another renaming of regression success.
+
+No repository files were modified, no experiments were run, and none of the excluded result files were opened. Findings were recorded on the blackboard; convergence and synthesis completed successfully.

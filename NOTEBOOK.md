@@ -5,6 +5,22 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Audit #13 adopted: demo corrected; retention marker not commensurate
+
+- The published demo over-claimed ("context state", "context takes over",
+  "manufactures", "presentation explains 0.42"); every replacement adopted
+  verbatim and republished at the same URL; the nearest-state predictor is
+  now coloured as X-conditioned; named-word rows labelled as selected.
+- Retention marker: raw and residual margins live on different scales;
+  until the common-scale repair is in place the residualization runs may
+  say only "the predeclared robustness marker is mechanically met". The
+  raw shadow remains valid for the amended unseen-word comparison; the
+  residual-vs-null gate and the law reassembly are coherent.
+- Equalized A wording tightened (defect concern resolved; calibration-
+  selected comparator; 0.002–0.009 above the mean).
+- Reverse-tunnel note adopted: the X-conditioned advantage can no longer be
+  dismissed as lookup or artifact; presentation may be part of state.
+
 ## 2026-08-29 — Corrected equalized LOCO addendum, sentinel ',': F12/F20 pass; baselines just above the shared mean
 
 - 4196 s of the 4500 s wall. Contract-correct equalized baselines sit
