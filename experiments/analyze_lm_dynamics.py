@@ -214,6 +214,7 @@ def main():
     ap.add_argument("--identity-only", action="store_true", help="run the identity check and stop (writes identity_check.json)")
     ap.add_argument("--identity-check", action="store_true", help="stored-true-successor identity test at the slot for every pair and carrier (audit #6)")
     ap.add_argument("--baselines", action="store_true", help="Round 16 moot-makers: identity-plus-residual predictor and per-carrier affine diagnostic")
+    ap.add_argument("--loco", action="store_true", help="Audit #9 control: within each style block hold out one carrier, fit on the other three; state-conditioned ridge vs leave-one-carrier-out per-word/per-block mean displacement; KL-rank among {identity, shared mean, block-word mean, ridge}")
     ap.add_argument("--style-null", action="store_true", help="Round 20: within-style-family target null (permute calibration targets across carriers within block x word; refit ridge/kernel; completed and gated)")
     ap.add_argument("--source", choices=["layers", "forward"], default="layers", help="forward: Round 19 forward-time move from forward_states_<tag>.npz; X = unappended state at q, Y = sentinel state at r, same layer")
     ap.add_argument("--sentinel-tag", default="A", help="forward mode: which capture (A = period, B = comma)")
@@ -313,6 +314,71 @@ def main():
             idx = np.array([i for i in range(n) if pos[i] == c]); rng.shuffle(idx)
             for j, i in enumerate(idx): fold[i] = j % n_folds
         return fold
+
+    def loco_control(l):
+        """Within-family leave-one-carrier-out (audit #9). For each block b and carrier c in b: fit on the other three carriers of b
+        (240 cells), predict carrier c (80 cells). Predictors: identity (delta 0), shared mean displacement of the three, per-word
+        block mean displacement of the three (the baseline), ridge (lambda selected by inner leave-one-carrier-out within the three).
+        Endpoints: displacement cosine; law skill at the readout position relative to the shared-mean completion; KL-rank among the
+        four; paired differences ridge - blockword_mean with a word-clustered bootstrap per held-out carrier, then pooled over carriers."""
+        out = {}
+        for b in block_names:
+            for c in probe_ids[b]:
+                tr = [q for q in probe_ids[b] if q != c]
+                Xc_, Yc_ = cells(tr, l); Xt_, Yt_ = cells([c], l)
+                st_ = Standardizer().fit(Xc_); Xcs_, Xts_ = st_(Xc_), st_(Xt_)
+                # inner leave-one-carrier-out over the three training carriers for lambda
+                sc = {}
+                for lam in LAMBDAS:
+                    v = []
+                    for q in tr:
+                        itr = [qq for qq in tr if qq != q]
+                        Xi_, Yi_ = cells(itr, l); Xv_, Yv_ = cells([q], l); sti_ = Standardizer().fit(Xi_)
+                        v.append(float(np.mean(cos_rows(RidgeFamily(sti_(Xi_), Yi_).predictor(lam)(sti_(Xv_)), Yv_))))
+                    sc[lam] = float(np.mean(v))
+                lam_b = max(sc, key=sc.get)
+                pr = {"identity": np.zeros_like(Xt_), "mean": np.repeat(Yc_.mean(0, keepdims=True), n, 0),
+                      "blockword_mean": Yc_.reshape(len(tr), n, D).mean(0), "ridge": RidgeFamily(Xcs_, Yc_).predictor(lam_b)(Xts_)}
+                rec = {"lam": lam_b, "succ_cos": {k: float(np.mean(cos_rows(v, Yt_))) for k, v in pr.items()}}
+                diff_cos = cos_rows(pr["ridge"], Yt_) - cos_rows(pr["blockword_mean"], Yt_)
+                if completer is not None:
+                    if c not in true_slot_law: true_slot_law[c] = comp_laws(c, l, None)[0]
+                    q_true = true_slot_law[c]
+                    laws_ = {k: comp_laws(c, l, (Xt_ + v) if a.target == "delta" else v)[0] for k, v in pr.items()}
+                    kl = {k: kl_rows(q_true, v) for k, v in laws_.items()}
+                    klm = np.where(kl["mean"] > 0, kl["mean"], np.nan)
+                    skill = {k: 1 - kl[k] / klm for k in kl}
+                    from scipy.stats import rankdata
+                    cands = ["identity", "mean", "blockword_mean", "ridge"]; KLm = np.stack([kl[k] for k in cands]); K = len(cands)
+                    R = np.full_like(KLm, np.nan)
+                    for j in range(KLm.shape[1]):
+                        if np.all(np.isfinite(KLm[:, j])): R[:, j] = 1 - (rankdata(KLm[:, j], method="average") - 1) / (K - 1)
+                    rec["skill"] = {k: float(np.nanmean(skill[k])) for k in skill}; rec["klrank"] = {k: float(np.nanmean(R[i])) for i, k in enumerate(cands)}
+                    rec["kl"] = {k: float(np.nanmean(kl[k])) for k in kl}
+                    diff_skill = skill["ridge"] - skill["blockword_mean"]; diff_rank = R[cands.index("ridge")] - R[cands.index("blockword_mean")]
+                else:
+                    diff_skill = diff_rank = None
+                brng = np.random.default_rng(SEED + c)
+                def wboot(dv):
+                    if dv is None: return None
+                    reps = [float(np.nanmean(dv[brng.integers(0, n, n)])) for _ in range(a.n_boot)]
+                    return {"mean": float(np.nanmean(dv)), "ci95": [float(np.nanpercentile(reps, 2.5)), float(np.nanpercentile(reps, 97.5))]}
+                rec["ridge_vs_blockword_mean"] = {"cos": wboot(diff_cos), "skill": wboot(diff_skill), "klrank": wboot(diff_rank)}
+                rec["_cells"] = {"cos": diff_cos, "skill": diff_skill, "klrank": diff_rank}
+                out[str(d["probes"][c])] = rec
+                print(f"   loco {str(d['probes'][c]):10s} cos ridge={rec['succ_cos']['ridge']:.3f} bw={rec['succ_cos']['blockword_mean']:.3f} mean={rec['succ_cos']['mean']:.3f}" + (f" | skill ridge={rec['skill']['ridge']:.3f} bw={rec['skill']['blockword_mean']:.3f} | klrank ridge={rec['klrank']['ridge']:.3f} bw={rec['klrank']['blockword_mean']:.3f}" if "skill" in rec else "") + f" ({time.time()-t0:.0f}s)", flush=True)
+        # pooled two-way (carrier x word) clustered bootstrap of ridge - blockword_mean over all 16 held-out carriers
+        pooled = {}
+        for ep in ("cos", "skill", "klrank"):
+            mats = [v["_cells"][ep] for v in out.values() if v["_cells"][ep] is not None]
+            if not mats: pooled[ep] = None; continue
+            M = np.stack(mats); brng = np.random.default_rng(SEED + 99)
+            reps = [float(np.nanmean(M[np.ix_(brng.integers(0, M.shape[0], M.shape[0]), brng.integers(0, n, n))])) for _ in range(a.n_boot)]
+            pooled[ep] = {"mean": float(np.nanmean(M)), "ci95": [float(np.nanpercentile(reps, 2.5)), float(np.nanpercentile(reps, 97.5))]}
+        for v in out.values(): del v["_cells"]
+        out["pooled_ridge_vs_blockword_mean"] = pooled
+        out["summary"] = {k: float(np.mean([v["succ_cos"][k] for kk, v in out.items() if kk not in ("pooled_ridge_vs_blockword_mean", "summary")])) for k in ("identity", "mean", "blockword_mean", "ridge")}
+        return out
 
     def per_carrier_affine(l):
         out = {}
@@ -573,6 +639,9 @@ def main():
                                       "pooled_completed_skill": pooled_skill, "minimal_class_completed_within_0.02": minimal_skill}
         if a.baselines:
             results["pairs"][pair_key]["per_carrier_affine"] = per_carrier_affine(l)
+        if a.loco:
+            results["pairs"][pair_key]["loco"] = loco_control(l)
+            print(f"  loco pooled ridge - blockword_mean: {results['pairs'][pair_key]['loco']['pooled_ridge_vs_blockword_mean']}", flush=True)
             print(f"  per-carrier affine summary: {results['pairs'][pair_key]['per_carrier_affine']['summary']}", flush=True)
         (run_dir / ("analysis_smoke.json" if a.smoke else "analysis" + ("_" + a.tag if a.tag else "") + ".json")).write_text(json.dumps(results, indent=1, default=float), encoding="utf-8")
         print(f"  pooled: " + " ".join(f"{k}={v:.3f}" for k, v in pooled.items()) + f" | minimal class: {minimal}", flush=True)
