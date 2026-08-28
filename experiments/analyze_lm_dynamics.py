@@ -303,6 +303,10 @@ def main():
 
 
     true_slot_law = {}     # carrier -> true next-token law at the slot position (unmodified forward)
+    E_words = None
+    if a.unseen_words:
+        assert not a.skip_completion, "unseen-word mode needs the model for frozen input embeddings"
+        E_words = np.stack([sp.state(sp.single_token_id(w)).float().numpy() for w in items])      # (n, D) frozen input embeddings
     def comp_laws(tp, l, Yhat, widx=None):
         """Completion call for the current source: layer-pair mode hooks layer l (hidden l+1); forward mode inserts at hidden index l."""
         st_ = states_emb if widx is None else states_emb[torch.as_tensor(widx)]
@@ -470,6 +474,21 @@ def main():
             if wj is None:                                                               # word-mean undefined for unseen words
                 word_mean = Yc.reshape(len(cal_probes), n_c, D).mean(0)                     # (n, D)
                 preds["word_mean"] = np.tile(word_mean, (len(test_probes), 1))
+            else:
+                # fail-fast checks (audit #10): disjoint identities, every class in every fold, nonzero counts
+                assert len(set(widx_c.tolist()) & set(widx_t.tolist())) == 0 and n_c > 0 and n_t > 0
+                assert set(pos[i] for i in widx_t) == set(pos) and set(pos[i] for i in widx_c) == set(pos), "every lexical class must appear in both word folds"
+                # class-mean displacement null: per lexical class, mean target over calibration carriers x calibration words of that class
+                Yc3 = Yc.reshape(len(cal_probes), n_c, D); cls_c = np.array([pos[i] for i in widx_c]); cls_t = np.array([pos[i] for i in widx_t])
+                cm = {c: Yc3[:, cls_c == c, :].mean(axis=(0, 1)) for c in set(cls_t)}
+                preds["class_mean"] = np.tile(np.stack([cm[c] for c in cls_t]), (len(test_probes), 1))
+                # word-only predictor: kNN (k=5, cosine) over FROZEN INPUT EMBEDDINGS of calibration words -> mean calibration target of the
+                # neighbours (averaged over calibration carriers). X-free: uses no residual-state or carrier information.
+                E_c = E_words[widx_c]; E_t = E_words[widx_t]
+                En_c = E_c / np.linalg.norm(E_c, axis=1, keepdims=True); En_t = E_t / np.linalg.norm(E_t, axis=1, keepdims=True)
+                nn_ = np.argsort(-(En_t @ En_c.T), axis=1)[:, :5]
+                word_tgt = Yc3.mean(0)                                                       # (n_c, D): per calibration word, mean over carriers
+                preds["wordonly_knn"] = np.tile(word_tgt[nn_].mean(1), (len(test_probes), 1))
             for k in KS: preds[f"knn{k}"] = fit_knn(Xcs, Yc, k)(Xts)
             famc = RidgeFamily(Xcs, Yc)
             preds["ridge"] = famc.predictor(best["ridge"]["lam"])(Xts)
@@ -539,7 +558,7 @@ def main():
                     if tp not in true_slot_law:
                         true_slot_law[tp] = comp_laws(tp, l, None)[0]   # true law at the readout position (n, V); independent of l
                 qmean = {}
-                for k in [kk for kk in ("mean", "identity", "word_mean", "knn1", "knn5", "knn20", "ridge", "lowrank", "kernel", "chart", "identres", "ridge_stylenull", "kernel_stylenull") if kk in preds]:
+                for k in [kk for kk in ("mean", "identity", "word_mean", "class_mean", "wordonly_knn", "knn1", "knn5", "knn20", "ridge", "lowrank", "kernel", "chart", "identres", "ridge_stylenull", "kernel_stylenull") if kk in preds]:
                     acc = {r: {"kl": [], "skill": [], "ord": [], "ord_anchor": []} for r in ("slot", "last")}
                     for ti, tp in enumerate(test_probes):
                         rows = slice(ti * n_t, (ti + 1) * n_t)
@@ -560,7 +579,7 @@ def main():
                     print(f"   {held:12s} {k:8s} succ_cos={succ[k]['cos'].mean():.3f} slot: KL={comp[k]['kl'].mean():.3f} skill={np.nanmean(comp[k]['skill']):.3f} ord={np.mean(acc['slot']['ord']):.3f} | last: skill={np.nanmean(comp[k]['skill_last']):.3f} ord={np.mean(acc['last']['ord']):.3f} ({time.time()-t0:.0f}s)", flush=True)
             # ---- KL-to-truth candidate rank (Round 20 consequence endpoint): R = 1 - (r-1)/(K-1), midranks for ties ----
             if comp:
-                cands = [k for k in ("identity", "mean", "word_mean", "knn1", "knn5", "knn20", "ridge", "lowrank", "kernel", "chart") if k in comp]   # preregistered K=10 universe (Round 20)
+                cands = [k for k in ("identity", "mean", "word_mean", "class_mean", "wordonly_knn", "knn1", "knn5", "knn20", "ridge", "lowrank", "kernel", "chart") if k in comp]   # seen-word K=10 (Round 20); unseen-word K=11 (audit #10: word_mean replaced by class_mean + wordonly_knn)
                 KLm = np.stack([comp[k]["kl"] for k in cands])                       # (K, cells)
                 K = len(cands)
                 from scipy.stats import rankdata
@@ -601,6 +620,10 @@ def main():
                 if "identity" in preds:
                     g["succ_cos_vs_identity"] = boot_diff(field, "cos", "identity")
                     if comp: g["skill_vs_identity"] = boot_diff(field, "skill", "identity"); g["ordering_vs_identity"] = boot_diff(field, "ordering", "identity")
+                for nul in ("class_mean", "wordonly_knn"):
+                    if nul in preds:
+                        g[f"succ_cos_vs_{nul}"] = boot_diff(field, "cos", nul)
+                        if comp: g[f"skill_vs_{nul}"] = boot_diff(field, "skill", nul); g[f"klrank_vs_{nul}"] = boot_diff(field, "klrank", nul)
                 if comp and "klrank" in comp.get(field, {}):
                     g["klrank_vs_word_mean"] = (boot_diff(field, "klrank", "word_mean") if "word_mean" in preds else None); g["klrank_vs_chart"] = boot_diff(field, "klrank")
                 sn = field + "_stylenull"
@@ -650,7 +673,7 @@ def main():
         minimal_skill = next((k for k in lad_s if pooled_skill[k] >= max(pooled_skill[kk] for kk in lad_s) - 0.02), None) if lad_s else None
         results["pairs"][pair_key] = {"folds": fold_out, "pooled_successor_cos": pooled, "minimal_class_successor_within_0.02": minimal,
                                       "pooled_completed_skill": pooled_skill, "minimal_class_completed_within_0.02": minimal_skill}
-        if a.baselines:
+        if a.baselines and a.source != "forward":                                   # per_carrier_affine reads Z directly (audit #10 hazard)
             results["pairs"][pair_key]["per_carrier_affine"] = per_carrier_affine(l)
             print(f"  per-carrier affine summary: {results['pairs'][pair_key]['per_carrier_affine']['summary']}", flush=True)
         if a.loco:
