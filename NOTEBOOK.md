@@ -5,6 +5,33 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Round 31 adopts audit #16; v2 population authored, then voided by the independent adversary
+
+- Round 31 (Codex, `71b5ce3`): audit #16 adopted verbatim; fresh v1 voided for
+  confirmatory probes 2–4 (ledger `nlm007_fresh_v1_voided`); the ` not`
+  insertion withdrawn as the second move, replaced by the operation-verb
+  update in a metalinguistic micro-world (repeat→omit, capitalize→reverse
+  under matched wrappers); contextual-prefix X-free baseline (token_ids_v1)
+  and calibration-only bridge ladder registered as analyzer modes; corrected
+  order 0–11 (baseline before any fresh capture; bridge before
+  interchangeability; hostile lower bound must exceed τ; move-norm floor).
+- v2 (`lexical_probe_fresh_v2.json`, Codex as outcome-blind author):
+  `Please/Kindly | For reference,/For clarity, … plan to {repeat|omit|
+  capitalize|reverse} the word <X>`; tokenization pre-check passed (slot
+  template-final, ` not` clean). The independent linguistic adversary
+  (fresh session, no model access) VOIDED it: all 16 pair-2 cells fail — “For
+  reference” vs “For clarity” introduce distinguishable discourse purposes
+  that can scope over the operation; pair-1 (Please/Kindly) and all controls
+  pass. Design principle for v3 (verbatim): vary only a scope-fixed form whose
+  interpretation cannot supply a reason, goal, condition, or other content for
+  the requested operation; semantic inertness must hold independently in every
+  POS cell. v3 is being authored from scratch by a fresh session.
+- Implementation: the reviewed analyzer (probe-1 options, insertion source,
+  interchangeability, SVD fallback) is committed (`0c774c0`); the
+  contextual-prefix baseline is implemented and under Tier-1 review; the
+  operation-update move is at its design gate. B-aug's third launch passed
+  the fold that failed twice (fallback held); resSA2 follows automatically.
+
 ## 2026-08-29 — Re-contextualization #16 (2-hour step-back; audit #16 fired and adopted in Round 31)
 
 Live question unchanged: is the surviving X⊥→Δ⊥ predictability in one small
