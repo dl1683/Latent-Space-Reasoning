@@ -5,6 +5,36 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Re-contextualization #11 (equalized addendum in; audit #11 fired)
+
+- **Central bet + second lens:** native mathematics from what a denizen must
+  invent; holes that make this space hostile to structured reasoning.
+- **Live question:** the forward step's within-family regularity is not
+  lexical (equalized lexical baselines collapse to the shared mean) — so it
+  is either the contextual state or a smooth style coordinate. The
+  unseen-word runs (in the chain) remove lexical lookup entirely; the
+  residualization control after them is the only thing that can separate
+  state from style, and audit #10 already warned the separation may be
+  ill-posed here.
+- **What reframes earlier work:** every lexical null in this program has
+  come out at the shared mean on the forward move (word-conditioned mean,
+  class mean, word-only kNN, word-only ridge, shrunk word mean). The
+  forward step of this world is about context, not content: what the next
+  position does depends on the state the context has built, not on which
+  word was inserted. Under the second lens this is a candidate structural
+  fact — and possibly a hole: a denizen cannot navigate by content alone,
+  because content barely moves the next step; only context does.
+- **Alternatives held live:** (a) maximal shrinkage is forced by selecting on
+  two-carrier means (audit #11 asked); (b) the only surviving competitor is
+  the shared mean, so the LOCO gate may be trivially passable — a fair
+  competitor might be a carrier-code-only or style-coordinate predictor;
+  (c) a second family may show a different content/context balance — the
+  first cross-model native quantity would be "how much of the next step is
+  content"; (d) the response-space geometry idea (same place = same law)
+  would make this balance a metric property.
+- **Ecosystem deposit:** "on the forward move, content nulls collapse to the
+  shared mean; the next step is governed by context state" → `_meta`.
+
 ## 2026-08-29 — Equalized LOCO addendum, sentinel '.': the lexical baselines collapse to the shared mean; ridge's lead is unchanged
 
 - 2911 s of the 4500 s wall. Both equalized X-free baselines (word-only
