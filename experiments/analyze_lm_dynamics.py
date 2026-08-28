@@ -624,6 +624,27 @@ def main():
                 preds["wordonly_ridge_emb"] = np.tile(RidgeFamily(ste_all(E_c), word_tgt).predictor(lam_e)(ste_all(E_t)), (len(test_probes), 1))
                 preds["wordonly_kernel_emb"] = np.tile(KernelFamily(ste_all(E_c), word_tgt).predictor(lam_ge, g_e)(ste_all(E_t)), (len(test_probes), 1))
                 best["lexical_nulls"] = {"knn_k": int(k_b), "ridge_emb_lam": float(lam_e), "kernel_emb": [float(g_e), float(lam_ge)]}
+                if resid is not None:
+                    # ---- raw four-null shadow on the un-residualized targets (Round 24): retention denominator emitted in the same folds ----
+                    Yc3_raw = Yc_raw.reshape(len(cal_probes), n_c, D); word_tgt_raw = Yc3_raw.mean(0)
+                    cm_raw = {c: Yc3_raw[:, cls_c == c, :].mean(axis=(0, 1)) for c in set(cls_t)}
+                    preds["unres_mean"] = np.repeat(Yc_raw.mean(0, keepdims=True), len(Xt_raw), 0)
+                    preds["unres_class_mean"] = np.tile(np.stack([cm_raw[c] for c in cls_t]), (len(test_probes), 1))
+                    sc_k2, sc_l2, sc_g2 = {}, {}, {}
+                    for g_ in (0, 1):
+                        ia = np.where(inner_wf != g_)[0]; ib = np.where(inner_wf == g_)[0]
+                        for k_ in (1, 3, 5, 10, 20):
+                            sc_k2.setdefault(k_, []).append(float(np.mean(cos_rows(emb_knn(min(k_, len(ia)), E_c[ia], E_c[ib], word_tgt_raw[ia]), word_tgt_raw[ib]))))
+                        ste2 = Standardizer().fit(E_c[ia]); fam_e2 = RidgeFamily(ste2(E_c[ia]), word_tgt_raw[ia])
+                        for lam in LAMBDAS: sc_l2.setdefault(lam, []).append(float(np.mean(cos_rows(fam_e2.predictor(lam)(ste2(E_c[ib])), word_tgt_raw[ib]))))
+                        kf2 = KernelFamily(ste2(E_c[ia]), word_tgt_raw[ia])
+                        for gmm in GAMMAS:
+                            for lam in LAMBDAS: sc_g2.setdefault((gmm, lam), []).append(float(np.mean(cos_rows(kf2.predictor(lam, gmm)(ste2(E_c[ib])), word_tgt_raw[ib]))))
+                    k_b2 = max(sc_k2, key=lambda k_: np.mean(sc_k2[k_])); lam_e2 = max(sc_l2, key=lambda k_: np.mean(sc_l2[k_])); (g_e2, lam_ge2) = max(sc_g2, key=lambda k_: np.mean(sc_g2[k_]))
+                    preds["unres_wordonly_knn"] = np.tile(emb_knn(k_b2, E_c, E_t, word_tgt_raw), (len(test_probes), 1))
+                    preds["unres_wordonly_ridge_emb"] = np.tile(RidgeFamily(ste_all(E_c), word_tgt_raw).predictor(lam_e2)(ste_all(E_t)), (len(test_probes), 1))
+                    preds["unres_wordonly_kernel_emb"] = np.tile(KernelFamily(ste_all(E_c), word_tgt_raw).predictor(lam_ge2, g_e2)(ste_all(E_t)), (len(test_probes), 1))
+                    best["raw_lexical_nulls"] = {"knn_k": int(k_b2), "ridge_emb_lam": float(lam_e2), "kernel_emb": [float(g_e2), float(lam_ge2)]}
             for k in KS: preds[f"knn{k}"] = fit_knn(Xcs, Yc, k)(Xts)
             famc = RidgeFamily(Xcs, Yc)
             preds["ridge"] = famc.predictor(best["ridge"]["lam"])(Xts)
@@ -653,7 +674,7 @@ def main():
             ybar = Yc.mean(0); denom = np.linalg.norm(Yt - ybar, axis=1); denom = np.where(denom > 0, denom, np.nan)
             succ = {}
             for k, v in preds.items():
-                target_k, mean_k = (Yt_raw, Yc_raw.mean(0)) if k == "unres_ridge" else (Yt, ybar)
+                target_k, mean_k = (Yt_raw, Yc_raw.mean(0)) if k.startswith("unres_") else (Yt, ybar)
                 denom_k = np.linalg.norm(target_k - mean_k, axis=1); denom_k = np.where(denom_k > 0, denom_k, np.nan)
                 succ[k] = {"cos": cos_rows(v, target_k), "nerr": np.linalg.norm(v - target_k, axis=1) / denom_k}
             control_cos = None
@@ -696,12 +717,12 @@ def main():
                 for tp in test_probes:
                     if tp not in true_slot_law:
                         true_slot_law[tp] = comp_laws(tp, l, None)[0]   # true law at the readout position (n, V); independent of l
-                qmean = {}
-                for k in [kk for kk in ("mean", "identity", "word_mean", "class_mean", "wordonly_knn", "wordonly_ridge_emb", "wordonly_kernel_emb", "knn1", "knn5", "knn20", "ridge", "lowrank", "kernel", "chart", "unres_ridge", "identres", "ridge_stylenull", "kernel_stylenull") if kk in preds]:
+                qmean = {}; qmean_raw = {}
+                for k in [kk for kk in ("mean", "identity", "word_mean", "class_mean", "wordonly_knn", "wordonly_ridge_emb", "wordonly_kernel_emb", "knn1", "knn5", "knn20", "ridge", "lowrank", "kernel", "chart", "unres_mean", "unres_ridge", "unres_class_mean", "unres_wordonly_knn", "unres_wordonly_ridge_emb", "unres_wordonly_kernel_emb", "identres", "ridge_stylenull", "kernel_stylenull") if kk in preds]:
                     acc = {r: {"kl": [], "skill": [], "ord": [], "ord_anchor": []} for r in ("slot", "last")}
                     for ti, tp in enumerate(test_probes):
                         rows = slice(ti * n_t, (ti + 1) * n_t)
-                        if resid is not None and k != "unres_ridge":
+                        if resid is not None and not k.startswith("unres_"):
                             yhat_rows = resid["Xt_orig"][rows] + resid["fD_t"][rows] + preds[k][rows]         # Yhat = X + f_Delta(P) + Delta_perp_hat (Round 23)
                         elif resid is not None:
                             yhat_rows = resid["Xt_orig"][rows] + preds[k][rows]
@@ -709,11 +730,12 @@ def main():
                             yhat_rows = (Xt[rows] + preds[k][rows]) if a.target == "delta" else preds[k][rows]     # reconstruct the successor from the displacement
                         qhat = dict(zip(("slot", "last"), comp_laws(tp, l, yhat_rows, widx_t)))
                         if k == "mean": qmean[tp] = qhat
+                        if k == "unres_mean": qmean_raw[tp] = qhat
                         for r in ("slot", "last"):
                             q = true_slot_law[tp] if r == "slot" else laws[tp]              # laws[tp] = stored true law at the last token
                             if widx_t is not None: q = q[widx_t]
                             kl = kl_rows(q, qhat[r]); acc[r]["kl"].append(kl)
-                            klm = kl_rows(q, qmean[tp][r]); klm = np.where(klm > 0, klm, np.nan)
+                            klm = kl_rows(q, (qmean_raw[tp][r] if (k.startswith("unres_") and tp in qmean_raw) else qmean[tp][r])); klm = np.where(klm > 0, klm, np.nan)
                             acc[r]["skill"].append(1 - kl / klm)
                             o, per_anchor = ordering_preservation(pairwise_kl(q), pairwise_kl(qhat[r])); acc[r]["ord"].append(o); acc[r]["ord_anchor"].append(per_anchor)
                     comp[k] = {"kl": np.concatenate(acc["slot"]["kl"]), "skill": np.concatenate(acc["slot"]["skill"]), "ordering_by_carrier": acc["slot"]["ord"],
@@ -733,15 +755,14 @@ def main():
                     if np.all(np.isfinite(col)): R[:, c] = 1 - (rankdata(col, method="average") - 1) / (K - 1)
                 for i, k in enumerate(cands): comp[k]["klrank"] = R[i]
                 klrank_universe = list(cands)
-                if "unres_ridge" in comp:
-                    # Keep the fixed K=13 universe while replacing the ridge
-                    # slot for the paired comparator; do not rank the arm as a
-                    # new candidate or alter the formal gate universe.
+                for uk in [kk for kk in comp if kk.startswith("unres_")]:
+                    # Keep the fixed K=13 universe while substituting the raw arm into the ridge slot; the raw arms are
+                    # comparators for the retention marker, not new candidates in the formal gate universe.
                     Rn = np.full(KLm.shape[1], np.nan)
                     for c in range(KLm.shape[1]):
-                        col = KLm[:, c].copy(); col[cands.index("ridge")] = comp["unres_ridge"]["kl"][c]
+                        col = KLm[:, c].copy(); col[cands.index("ridge")] = comp[uk]["kl"][c]
                         if np.all(np.isfinite(col)): Rn[c] = 1 - (rankdata(col, method="average")[cands.index("ridge")] - 1) / (K - 1)
-                    comp["unres_ridge"]["klrank"] = Rn
+                    comp[uk]["klrank"] = Rn
                 for k in ("ridge_stylenull", "kernel_stylenull"):                 # nulls are scored against the same candidate field, not ranked into it
                     if k in comp:
                         base = k.split("_")[0]; Rn = np.full(KLm.shape[1], np.nan)
@@ -794,6 +815,8 @@ def main():
                                                  "ordering_vs_chart": boot_diff(field, "ordering_last")}
                 gates[field] = g
             if resid is not None and "unres_ridge" in preds:
+                gates["ridge"]["raw_shadow_margins"] = {nul: {"succ_cos": boot_diff("unres_ridge", "cos", nul), "skill": boot_diff("unres_ridge", "skill", nul), "klrank": boot_diff("unres_ridge", "klrank", nul)}
+                                                       for nul in ("unres_class_mean", "unres_wordonly_knn", "unres_wordonly_ridge_emb", "unres_wordonly_kernel_emb") if nul in preds}
                 gates["ridge"]["paired_vs_unresidualized"] = {
                     "succ_cos": boot_diff("ridge", "cos", "unres_ridge"),
                     "skill": boot_diff("ridge", "skill", "unres_ridge"),
@@ -846,7 +869,7 @@ def main():
             return _strata_cache[key]
         pooled_gates = {}
         for (field, endpoint, against), per_fold in cell_diffs.items():
-            if field not in ("ridge", "kernel") or endpoint not in ("cos", "skill", "klrank"): continue
+            if field not in ("ridge", "kernel", "unres_ridge") or endpoint not in ("cos", "skill", "klrank"): continue
             by_block = {}
             for fk, M in per_fold.items():
                 fold_key = int(fk.rsplit("_w", 1)[1]) if "_w" in fk else None
