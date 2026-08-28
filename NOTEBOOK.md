@@ -5,6 +5,23 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Unseen-word run, sentinel ',': F4/F8/F12/F20 pass — both arms clear the criterion
+
+- 2256 s. Same structure as the '.' arm: on disjoint held-out words the
+  stronger X-free lexical null sits at the shared mean at every layer; ridge
+  leads it by cos +0.11–0.17, skill +0.31–0.41, KL-rank +0.31–0.52 (block-
+  first lower bounds > 0.09); 5–8/8 keys pass the full per-key gate, 8/8
+  positive at F12/F20; no block collapse; F0 fails (cos lead 0.018).
+- Both sentinels meet the Round 22 two-of-five criterion with four layers.
+  The forward-step regularity of this decoder generalizes across carriers,
+  across style families, and across word identities it never saw; every
+  content null sits at the mean. Adopted wording remains: X-conditioned
+  residual predictability, generalizing across unseen lexical identities;
+  not yet separated from a smooth presentation coordinate; one decoder.
+- Corrected equalized reruns (locoeq2A/B) now executing; Codex round 23
+  adjudicates the unseen pair and predeclares residualization and the
+  second model family.
+
 ## 2026-08-29 — Re-contextualization #12 (unseen words in; audit #12 fired)
 
 - **Central bet + second lens:** native mathematics from what a denizen must
