@@ -5,6 +5,25 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Unseen-word run, sentinel '.': F4/F8/F12/F20 pass the full gate on words never seen
+
+- 2239 s; eight block × word-fold keys; support 1.0; calibration and
+  held-out word identities disjoint; lexical nulls = class mean and
+  frozen-input-embedding kNN (both ≈ shared mean at every layer).
+- Under the Round 22 gate (≥0.02 over the stronger X-free lexical null with
+  positive lower bounds on cosine, law skill, K = 11 KL-rank; block-first
+  pooled contrast positive; ≥6/8 keys; no block collapse): **F4, F8, F12, F20
+  pass** — block-first pooled leads cos +0.14–0.19, skill +0.33–0.47, KL-rank
+  +0.35–0.57 (lower bounds > 0.12); 7–8/8 keys positive; F0 fails (cos lead
+  0.019; the continuation block collapses). Two of five met with four.
+- Reading (bounded per audit #10/#11): the forward-step regularity survives
+  lexical novelty — it is not word lookup and not class lookup. What X
+  carries about the next step generalizes across words it never saw, with a
+  ~0.06 drop from the seen-word runs. Still one decoder, one style-family
+  set; state vs smooth style code unresolved (residualization next).
+- Sentinel ',' arm running; corrected equalized reruns follow; Codex round
+  23 adjudicates all.
+
 ## 2026-08-29 — Equalized LOCO addendum, sentinel ',' (defect-affected; descriptive only)
 
 - 2977 s. Same pattern as the '.' arm under the audit #11 defect (inner
