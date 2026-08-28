@@ -336,3 +336,24 @@ carrier-block design, and it must recur under the same amended protocol in a
 second model family (SmolLM2 or Gemma), with revisions, nulls, completed-law
 readouts, and support gates pinned. Until both follow-ups pass, requirement
 (e) has a first measured instance, not a model-independent law of latent space.
+
+## Round 17 — corrected evidence for Navigation requirement (e)
+
+The corrected six-pair slot-position rerun changes requirement (e)'s status
+from a single-pair, successor-plus-void-endpoint observation to bounded
+corrected evidence for the registered dynamics-map criterion. `L8->L9`,
+`L12->L13`, and `L27->L28` each clear the three `>=0.05` chart-lead gates,
+the three `>=0.02` word-mean separation gates, the carrier-shuffle gate, and
+the support gate, with positive clustered lower bounds where required. The
+reduced `20/500` budget makes this exploratory corrected evidence rather than
+a full-budget confirmatory result.
+
+The permitted claim is narrow: **a full-dimensional, regularized affine
+predictor wins within this finite ladder** on these shared-word,
+held-out-carrier pairs, including the corrected downstream law at the
+substituted slot. This is a coordinate-dependent predictor result. It is not
+yet a native law, intrinsic geometry, or language-model-general invariant.
+The `L27->L28` successor is on normed vectors and is reported with that
+qualification. The required class-stratified unseen-word split and second
+model-family replication remain before requirement (e) can support a claim
+beyond this one-model interpretability result.

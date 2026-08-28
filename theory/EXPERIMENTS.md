@@ -1635,3 +1635,166 @@ words, unseen carriers, forward-time moves, and other realizations of the
 world. That is the beginning of a native navigation calculus: not naming a
 regressor, but learning which distinctions the world itself makes costly.
 
+## Round 17 — NLM-007 corrected six-pair adjudication and cheap moot-makers
+
+**Codex, documentation-only adjudication; no experiment was run in Round 17.**
+The scored artifact is `experiments/results/lm_dyn_v1/analysis_slot.json`,
+the corrected slot-position rerun predeclared in Round 16. I checked its raw
+pooled endpoint values, per-fold clustered endpoint records, support values,
+and metadata directly; the ledger's mechanical labels are not the source of
+this verdict. The run took `2145.1 s` of the predeclared `3300 s` budget, used
+20 shuffles and 500 bootstrap replicates, and has support `1.0` for every
+pair. The law reload check is present (`max_abs_logp_diff=0.0078125`,
+`max_abs_pairwise_kl_diff=0.0020809`, ordering agreement `0.9998174`), and the
+model/config/revision pins match the capture artifact.
+
+### Gate adjudication
+
+The chart columns below require the `>=0.05` lead on all three endpoints,
+with positive clustered lower bounds. The word-mean column requires a
+`>=0.02` lead on all three endpoints, also with positive clustered lower
+bounds. `Y` means the JSON's raw per-fold records clear the stated threshold;
+`N` means at least one required endpoint/fold does not. The shuffle gate is
+the selected ridge field's successor-cosine drop; support is the minimum
+held-out-block support.
+
+| pair | chart: cosine / slot skill / ordering | word mean: all three | shuffle >0.02 | support >=0.95 | qualifies |
+| --- | --- | --- | --- | --- | --- |
+| `L0->L1` | N / N / N | N | N | Y | No |
+| `L4->L5` | N / Y / Y | Y | Y | Y | No |
+| `L8->L9` | Y / Y / Y | Y | Y | Y | Yes |
+| `L12->L13` | Y / Y / Y | Y | Y | Y | Yes |
+| `L20->L21` | N / Y / Y | Y | Y | Y | No |
+| `L27->L28` | Y / Y / Y | Y | Y | Y | Yes |
+
+The `L4->L5` successor-cosine lead is below `0.05` in three outer folds.
+`L20->L21` clears that threshold in three folds but has an association fold
+at `0.044`, so it does not clear the all-fold successor gate. This is why
+their strong corrected slot skills do not qualify them. At `L27->L28`, the
+successor cosine is computed on the post-final-norm state; it is a valid
+endpoint under the declared `head(Yhat)` completion, but it is not directly
+comparable in scale to raw-residual successor cosines.
+
+### Minimal class, word mean excluded from the ladder
+
+The first ladder member within `0.02` of the best ladder score is reported
+separately for each endpoint. The ladder is `mean`, `knn1`, `knn5`, `knn20`,
+`ridge`, `lowrank`, `kernel`; `word_mean` is a moot-maker and `chart` is a
+control, neither a minimal-class member.
+
+| pair | successor endpoint | corrected slot-law endpoint |
+| --- | --- | --- |
+| `L0->L1` | `knn5` | `lowrank` |
+| `L4->L5` | `ridge` | `ridge` |
+| `L8->L9` | `ridge` | `ridge` |
+| `L12->L13` | `ridge` | `ridge` |
+| `L20->L21` | `ridge` | `ridge` |
+| `L27->L28` | `ridge` | `ridge` |
+
+These labels do not say that ridge is the world's native law. They say only
+which member of this finite, coordinate-dependent ladder is first within the
+declared tolerance of the best score. For example, kernel is numerically best
+or near-best at several depths, but full ridge is already within `0.02` and
+therefore is the minimal class under the registered rule.
+
+### Prediction scorecard and decision
+
+The Round 16 per-pair predictions are held in five cases and falsified in one:
+
+- `L0->L1`: held — word mean matches the field, no separation, and the
+  shuffled field matches; this is lexical persistence under the tested
+  successor endpoint.
+- `L4->L5`: held — the field separates from the word mean and clears the slot
+  readouts, but fails the complete chart gate through successor cosine.
+- `L8->L9`: held — full ridge is the minimal qualifying field and clears all
+  three endpoint gates; low-rank remains more than `0.02` behind the best
+  field.
+- `L12->L13`: held — full ridge is minimal, low-rank misses by more than
+  `0.02`, and all gates clear.
+- `L20->L21`: held — ridge is within `0.02` of kernel, the slot readouts are
+  strong, but the complete gate fails at successor cosine.
+- `L27->L28`: **falsified** — the predicted final-block attenuation did not
+  prevent a complete gate; this pair clears every gate at the corrected slot.
+
+Thus NLM-007 meets the numerical two-pair dynamics-map criterion on the
+corrected endpoint: in fact, `L8->L9`, `L12->L13`, and `L27->L28` qualify.
+This is a corrected, exploratory result at the reduced `20/500` budget, not a
+retroactive full-budget confirmatory result under the original `100/2,000`
+lock. The exact permitted object-level wording is: **a full-dimensional,
+regularized affine predictor wins within this finite ladder** on these three
+pairs, against the selected static chart and the word-mean moot-maker, on
+shared words and held-out carrier blocks. The corrected slot evidence changes
+the result from successor-only evidence with a void completed endpoint to
+corrected completed-law evidence, but it does not change the object into a
+native affine law, intrinsic geometry, or a language-model-general law.
+
+The final pair is evidence for the stated finite-ladder result despite the
+normed-vector qualification. It is not evidence that final-block attenuation
+never occurs: the endpoint and parameterization differ from raw-residual
+pairs, and the result still awaits the registered unseen-word and second-
+family tests.
+
+### What depth manufactures
+
+The word-mean slot skill falls with depth as
+`0.95, 0.84, 0.78, 0.70, 0.43, 0.40`, while ridge remains about
+`0.92–0.98`. The static chart's slot skill is already only about `0.50` and
+`0.51` at `L20->L21` and `L27->L28`, while ridge is about `0.93` and `0.95`.
+The economical reading is that the first block preserves a word-conditioned
+destination, then early blocks manufacture carrier-dependent distinctions;
+later blocks make those distinctions increasingly necessary and a static
+chart increasingly uninformative. This is a depth profile of one decoder on
+shared words, not a causal proof that context is created from nothing.
+
+Under the guiding question, the denizen therefore needs an identity test that
+separates lexical persistence from state dependence, a context-conditioned
+transport rule, and a completion map that cashes a predicted move out in the
+world's own response law. It must also learn where the rule is context-free,
+where an affine field is sufficient, and whether the distinction survives new
+words, forward-time moves, and another realization.
+
+### Next measurement: cheap moot-makers (pre-registered)
+
+The next measurement in the Round 16 order is the existing-artifact baseline
+run behind `--baselines`; the current smoke test is pipeline validation only
+and is not a result. Run all six fixed pairs, with the same 80 words, 16
+carriers, four held-out carrier-block folds, corrected slot completion,
+support accounting, revision pins, and one CPU process. Use the predeclared
+reduced `20` shuffles and `500` clustered bootstrap replicates, with a hard
+`55-minute` wall-clock budget inherited from the corrected six-pair run; no
+GPU and no generation. The identity-plus-residual predictor is
+
+`Yhat = X + mean_cal(Y - X)`.
+
+The per-carrier affine diagnostic fits a separate ridge field on each of the
+12 calibration carriers, with five-way class-stratified word cross-fitting
+(`64` training words and `16` test words per carrier), the same seed and
+within-calibration regularization selection. It is scored on successor cosine
+and error plus corrected slot skill and ordering. It is a within-carrier
+diagnostic, not a competitor on the held-out carrier block; report its
+carrier-wise values and aggregate summary separately from the cross-carrier
+field.
+
+Pre-run predictions for the full six-pair run: identity-plus-residual will be
+competitive where the residual is stable, may be competitive at `L0` and
+`L4`, and is not expected to close the ridge lead at `L12`, `L20`, or `L27`.
+The per-carrier affine diagnostic will be strong within carrier and may
+approach ridge, especially at later depths, but will not explain away the
+cross-carrier result unless its within-carrier advantage is matched by the
+cross-carrier baseline under the same endpoint. These predictions are fixed
+for the not-yet-scored full run; the existing one-pair `L8->L9` smoke artifact
+is pipeline validation and is not silently folded into the six-pair result.
+That smoke nevertheless already points the other way at `L8`: its
+identity-plus-residual point scores exceed ridge on successor cosine and slot
+skill, and its foldwise endpoint differences close the ridge lead. This is a
+withdrawal flag for `L8`, pending the full baseline run's declared endpoint
+and budget accounting, not a new corrected-rerun gate result.
+
+The null-making outcome is predeclared: if either baseline closes the corrected
+ridge lead on the relevant three endpoints in the full baseline run, the
+wording “a full-dimensional, regularized affine predictor wins within this
+finite ladder” is withdrawn for the affected pair(s), and no native-law
+interpretation survives there. A failure to close the lead does not prove
+nativeness; it only leaves the stronger alternative less economical and
+advances the next registered tests.
+
