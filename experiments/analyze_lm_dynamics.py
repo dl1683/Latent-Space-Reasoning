@@ -214,6 +214,7 @@ def main():
     ap.add_argument("--identity-only", action="store_true", help="run the identity check and stop (writes identity_check.json)")
     ap.add_argument("--identity-check", action="store_true", help="stored-true-successor identity test at the slot for every pair and carrier (audit #6)")
     ap.add_argument("--baselines", action="store_true", help="Round 16 moot-makers: identity-plus-residual predictor and per-carrier affine diagnostic")
+    ap.add_argument("--xfree-field", action="store_true", help="Round 27 comparator 2: fair residual-space X-free field (P_static + rank-4 carrier scores + 16 frozen-embedding PCs + 64 interactions) fit to Delta_perp, plus the df-matched state ridge sensitivity; needs --residualize and --unseen-words")
     ap.add_argument("--residualize", choices=["", "static", "aug"], default="", help="Round 23 cross-fitted presentation residualization: static = block one-hot + template lengths/positions; aug = static + leave-word-out carrier mean of X + rank-4 carrier-subspace scores")
     ap.add_argument("--unseen-words", type=int, default=0, help="Round 20 unseen-word split: K class-stratified word folds; calibration and held-out word identities disjoint within every carrier-block fold; word-mean baseline omitted (undefined for unseen words); oracle omitted")
     ap.add_argument("--loco", action="store_true", help="Audit #9 control: within each style block hold out one carrier, fit on the other three; state-conditioned ridge vs leave-one-carrier-out per-word/per-block mean displacement; KL-rank among {identity, shared mean, block-word mean, ridge}")
@@ -225,6 +226,8 @@ def main():
     ap.add_argument("--tag", default="", help="suffix for the output file: analysis_<tag>.json (keeps earlier runs intact)")
     ap.add_argument("--smoke", action="store_true", help="pipeline validation on the first 16 words, pair 0, tiny bootstrap; writes analysis_smoke.json")
     a = ap.parse_args()
+    if a.xfree_field:
+        assert a.residualize and a.source == "forward" and a.target == "delta" and a.unseen_words == 2 and not a.skip_completion and not a.smoke, "--xfree-field requires --residualize, --source forward, --target delta, --unseen-words 2, completion on (Round 27 comparator-2 lock)"
     if a.smoke:
         a.pairs = [0]; a.n_boot = 20; a.n_shuffle = 3; a.skip_completion = True
     t0 = time.time()
@@ -269,7 +272,7 @@ def main():
         assert int(sp.model.config.num_hidden_layers) == man["num_hidden_layers"]
         assert man["model"] == a.model and man["config_name"] == cfg["name"] and man["n_probes"] == len(cfg["probes"]), "capture manifest / config mismatch"
         ids = [sp.single_token_id(w) for w in items]; states_emb = torch.stack([sp.state(i) for i in ids])
-    results = {"pairs": {}, "source": a.source, "residualize": a.residualize or None, "sentinel_tag": a.sentinel_tag if a.source == "forward" else None, "locality_max_abs_diff": locality, "manifest": man, "config": a.config, "lock": "theory/EXPERIMENTS.md NLM-007 (Round 13, amended Round 14)", "target": a.target,
+    results = {"pairs": {}, "source": a.source, "residualize": a.residualize or None, "sentinel_tag": a.sentinel_tag if a.source == "forward" else None, "locality_max_abs_diff": locality, "manifest": man, "config": a.config, "lock": "theory/EXPERIMENTS.md NLM-007 (Round 13, amended Round 14)" + ("; Round 27 comparator 2 (fair residual-space X-free field: P_static + rank-4 carrier scores + 16 embedding PCs + 64 interactions; df-matched state ridge; lambda grid " + str(LAMBDAS) + ")" if a.xfree_field else ""), **({"xfree_field": True} if a.xfree_field else {}), "target": a.target,
                "fallback": {"pairs": [f"L{l}->L{l1}" for (l, l1) in pairs], "n_shuffle": a.n_shuffle, "n_boot": a.n_boot}}
     if completer is not None:
         # float16 reload check: fresh float32 laws for probe 0 vs stored float16 laws — KL-ordering agreement must be near 1
@@ -624,6 +627,58 @@ def main():
                 preds["wordonly_ridge_emb"] = np.tile(RidgeFamily(ste_all(E_c), word_tgt).predictor(lam_e)(ste_all(E_t)), (len(test_probes), 1))
                 preds["wordonly_kernel_emb"] = np.tile(KernelFamily(ste_all(E_c), word_tgt).predictor(lam_ge, g_e)(ste_all(E_t)), (len(test_probes), 1))
                 best["lexical_nulls"] = {"knn_k": int(k_b), "ridge_emb_lam": float(lam_e), "kernel_emb": [float(g_e), float(lam_ge)]}
+                if a.xfree_field:
+                    # ---- Round 27 comparator 2: fair residual-space X-free presentation/lexical interaction field ----
+                    # Calibration-only feature family, no held-out cell X_perp: the ten registered P_static columns, the rank-<=4
+                    # leave-current-word-out carrier-summary scores (as in P_aug), the first 16 principal scores of the frozen input
+                    # embedding (basis on calibration words), and the fixed 4x16 carrier-score x lexical-score outer products.
+                    assert resid is not None, "--xfree-field needs --residualize"
+                    XF_RANK, XF_CAR = 16, 4
+                    def car_rows(probe_list, row_idx, V):
+                        pool = np.asarray(widx_c); rows = []
+                        for pp in probe_list:
+                            Xall = ZX[pp, l]
+                            for wi_ in row_idx:
+                                other = pool[pool != wi_]; assert len(other) > 0
+                                rows.append(Xall[other].mean(0))
+                        return np.stack(rows) @ V
+                    def emb_basis(word_idx):
+                        Ec_ = E_words[np.asarray(word_idx)]; mu_ = Ec_.mean(0)
+                        _, _, Vt_ = np.linalg.svd(Ec_ - mu_, full_matrices=False)
+                        return mu_, Vt_[:min(XF_RANK, Vt_.shape[0])].T
+                    def xfree_design(probe_list, row_idx, V_car, eb):
+                        row_idx = np.asarray(row_idx); mu_, Ve = eb
+                        Pp = np.repeat(P_static[probe_list], len(row_idx), axis=0)                       # (rows, 10)
+                        C = car_rows(probe_list, row_idx, V_car)                                          # (rows, <=4)
+                        Lx = np.tile((E_words[row_idx] - mu_) @ Ve, (len(probe_list), 1))                # (rows, <=16)
+                        inter = (C[:, :, None] * Lx[:, None, :]).reshape(len(C), -1)                      # (rows, <=64) fixed outer products
+                        return np.concatenate([Pp, C, Lx, inter], axis=1)
+                    def ridge_df(evals, lam):
+                        return float(np.sum(evals / (evals + lam)))
+                    # inner selection: leave one calibration block out; bases and standardizers rebuilt on the inner training fold
+                    sc_z = {}
+                    for ib in cal_blocks:
+                        ip = [q for b in cal_blocks if b != ib for q in probe_ids[b]]; vp = probe_ids[ib]
+                        Vi = carrier_basis(ip, widx_c)[:, :XF_CAR]; ebi = emb_basis(widx_c)
+                        Zi, Zv = xfree_design(ip, widx_c, Vi, ebi), xfree_design(vp, widx_c, Vi, ebi); stz_ = Standardizer().fit(Zi)
+                        fam_z = RidgeFamily(stz_(Zi), rows_for(Yc, ip))
+                        for lam in LAMBDAS: sc_z.setdefault(lam, []).append(float(np.mean(cos_rows(fam_z.predictor(lam)(stz_(Zv)), rows_for(Yc, vp)))))
+                    lam_z = max(sc_z, key=lambda k_: np.mean(sc_z[k_]))
+                    V_out = carrier_basis(cal_probes, widx_c)[:, :XF_CAR]; eb_out = emb_basis(widx_c)
+                    Zc, Zt = xfree_design(cal_probes, widx_c, V_out, eb_out), xfree_design(test_probes, widx_t, V_out, eb_out)
+                    stz = Standardizer().fit(Zc); fam_zc = RidgeFamily(stz(Zc), Yc)
+                    preds["xfree_field"] = fam_zc.predictor(lam_z)(stz(Zt))
+                    df_z = ridge_df(fam_zc.evals, lam_z)
+                    # df-matched state ridge sensitivity: lambda from the same frozen grid whose calibration-design df is closest to the
+                    # comparator's selected df, ties toward smaller df; no held-out target is used.
+                    fam_state = RidgeFamily(Xcs, Yc)
+                    df_state = {lam: ridge_df(fam_state.evals, lam) for lam in LAMBDAS}
+                    lam_m = min(LAMBDAS, key=lambda lam: (abs(df_state[lam] - df_z), df_state[lam]))
+                    preds["ridge_dfmatch"] = fam_state.predictor(lam_m)(Xts)
+                    best["xfree_field"] = {"lam": float(lam_z), "df": df_z, "n_cols": int(Zc.shape[1]), "inner": {str(k_): float(np.mean(v)) for k_, v in sc_z.items()},
+                                           "state_ridge_lam": float(best["ridge"]["lam"]), "state_ridge_df": df_state[best["ridge"]["lam"]],
+                                           "dfmatch_lam": float(lam_m), "dfmatch_df": df_state[lam_m], "state_df_grid": {str(k_): v for k_, v in df_state.items()}}
+                    print(f"   [{held}] xfree field: lam={lam_z} df={df_z:.1f} cols={Zc.shape[1]} | state ridge lam={best['ridge']['lam']} df={df_state[best['ridge']['lam']]:.1f} | dfmatch lam={lam_m} df={df_state[lam_m]:.1f} ({time.time()-t0:.0f}s)", flush=True)
                 if resid is not None:
                     # ---- raw four-null shadow on the un-residualized targets (Round 24): retention denominator emitted in the same folds ----
                     Yc3_raw = Yc_raw.reshape(len(cal_probes), n_c, D); word_tgt_raw = Yc3_raw.mean(0)
@@ -718,7 +773,7 @@ def main():
                     if tp not in true_slot_law:
                         true_slot_law[tp] = comp_laws(tp, l, None)[0]   # true law at the readout position (n, V); independent of l
                 qmean = {}; qmean_raw = {}
-                for k in [kk for kk in ("mean", "identity", "word_mean", "class_mean", "wordonly_knn", "wordonly_ridge_emb", "wordonly_kernel_emb", "knn1", "knn5", "knn20", "ridge", "lowrank", "kernel", "chart", "unres_mean", "unres_ridge", "unres_class_mean", "unres_wordonly_knn", "unres_wordonly_ridge_emb", "unres_wordonly_kernel_emb", "identres", "ridge_stylenull", "kernel_stylenull") if kk in preds]:
+                for k in [kk for kk in ("mean", "identity", "word_mean", "class_mean", "wordonly_knn", "wordonly_ridge_emb", "wordonly_kernel_emb", "knn1", "knn5", "knn20", "ridge", "lowrank", "kernel", "chart", "unres_mean", "unres_ridge", "unres_class_mean", "unres_wordonly_knn", "unres_wordonly_ridge_emb", "unres_wordonly_kernel_emb", "identres", "ridge_stylenull", "kernel_stylenull", "xfree_field", "ridge_dfmatch") if kk in preds]:
                     acc = {r: {"kl": [], "skill": [], "ord": [], "ord_anchor": []} for r in ("slot", "last")}
                     for ti, tp in enumerate(test_probes):
                         rows = slice(ti * n_t, (ti + 1) * n_t)
@@ -755,7 +810,7 @@ def main():
                     if np.all(np.isfinite(col)): R[:, c] = 1 - (rankdata(col, method="average") - 1) / (K - 1)
                 for i, k in enumerate(cands): comp[k]["klrank"] = R[i]
                 klrank_universe = list(cands)
-                for uk in [kk for kk in comp if kk.startswith("unres_")]:
+                for uk in [kk for kk in comp if kk.startswith("unres_") or kk in ("xfree_field", "ridge_dfmatch")]:
                     # Keep the fixed K=13 universe while substituting the raw arm into the ridge slot; the raw arms are
                     # comparators for the retention marker, not new candidates in the formal gate universe.
                     Rn = np.full(KLm.shape[1], np.nan)
@@ -778,6 +833,8 @@ def main():
                 elif endpoint == "skill_last": A, B = comp[field]["skill_last"], comp[against]["skill_last"]
                 elif endpoint == "ordering_last": A, B = comp[field]["ordering_last_per_anchor"].ravel(), comp[against]["ordering_last_per_anchor"].ravel()
                 elif endpoint == "klrank": A, B = comp[field]["klrank"], comp[against]["klrank"]
+                elif endpoint == "nerr": A, B = succ[against]["nerr"], succ[field]["nerr"]             # improvement: lower error is better
+                elif endpoint == "kl": A, B = comp[against]["kl"], comp[field]["kl"]                   # continuous KL improvement (nats)
                 else: return None
                 A = A.reshape(len(test_probes), n_t); B = B.reshape(len(test_probes), n_t); diff = A - B
                 if not np.isfinite(diff).any(): return None
@@ -814,6 +871,14 @@ def main():
                     g["secondary_last_token"] = {"skill_vs_chart": boot_diff(field, "skill_last"), "skill_vs_word_mean": (boot_diff(field, "skill_last", "word_mean") if "word_mean" in preds else None),
                                                  "ordering_vs_chart": boot_diff(field, "ordering_last")}
                 gates[field] = g
+            if "xfree_field" in preds:
+                for field in ("ridge", "ridge_dfmatch", "kernel"):
+                    g = gates.setdefault(field, {})
+                    g["succ_cos_vs_xfree_field"] = boot_diff(field, "cos", "xfree_field"); g["nerr_vs_xfree_field"] = boot_diff(field, "nerr", "xfree_field")
+                    if comp:
+                        g["skill_vs_xfree_field"] = boot_diff(field, "skill", "xfree_field"); g["kl_vs_xfree_field"] = boot_diff(field, "kl", "xfree_field")
+                        if field != "kernel":                                        # comparator KL-rank is a ridge-slot substitution; kernel is ranked with ridge present
+                            g["klrank_vs_xfree_field"] = boot_diff(field, "klrank", "xfree_field")
             if resid is not None and "unres_ridge" in preds:
                 try:
                     RESN = ("class_mean", "wordonly_knn", "wordonly_ridge_emb", "wordonly_kernel_emb"); RAWN = tuple("unres_" + x for x in RESN)
@@ -899,7 +964,7 @@ def main():
             return _strata_cache[key]
         pooled_gates = {}
         for (field, endpoint, against), per_fold in cell_diffs.items():
-            if field not in ("ridge", "kernel", "unres_ridge") or endpoint not in ("cos", "skill", "klrank"): continue
+            if field not in ("ridge", "kernel", "unres_ridge", "ridge_dfmatch") or endpoint not in ("cos", "skill", "klrank", "nerr", "kl"): continue
             by_block = {}
             for fk, M in per_fold.items():
                 fold_key = int(fk.rsplit("_w", 1)[1]) if "_w" in fk else None
