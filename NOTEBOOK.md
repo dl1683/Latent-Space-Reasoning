@@ -5,6 +5,34 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-28 — Re-contextualization #7 (after the identity baseline)
+
+- **Central bet:** native mathematics of latent spaces from what a denizen
+  must invent. **Live question now:** in a world whose middle blocks mostly
+  leave a state where it is and add a shared shift, what is the law of
+  motion — and is the residual motion (Δ beyond the shared shift) the object
+  a denizen would care about, or is the real move forward-time?
+- **What still holds:** exact slot completion (identity KL ~1e-5); lexical
+  persistence at L0; the ridge/chart/word-mean ordering as a descriptive
+  fact; L0 and L27 as transforming blocks in their own coordinate families.
+- **What is reframed:** the "affine transport law" was the residual stream's
+  identity plus a constant. Every earlier NLM-007 reading of "law" at middle
+  depth is re-read as "persistence". The frozen-encoder residue (chart
+  smoothness, affine-path robustness) and this one now rhyme: in both worlds
+  the cheapest map (identity / straight line) explains most of what the
+  fancier map explained. The recurring lesson is about our ladders, not the
+  worlds: the null must be the cheapest thing the world could be doing.
+- **Alternatives held live:** (a) Δ-ladder — is any state-dependent motion
+  present beyond the shared shift, per depth; (b) forward-time move — the
+  denizen's actual step; (c) the displacement may be word-dependent rather
+  than state-dependent (word-conditioned mean displacement decides); (d) the
+  whole "layer = time" framing may be the wrong clock for a denizen; (e) a
+  second family may show a different persistence profile — if persistence
+  depth-profiles differ across families, "where the world moves" becomes the
+  first cross-model native quantity.
+- **Ecosystem deposit:** "identity is the null for any residual-stream
+  measurement" recorded in `_meta/INDEX.md` as a portfolio-wide rule.
+
 ## 2026-08-28 — Six-pair moot-maker run: persistence plus a shared displacement is the middle-depth "law"
 
 - `Yhat = X + mean_cal(Y−X)` vs ridge on the corrected slot endpoint, pooled
