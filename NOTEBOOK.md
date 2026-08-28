@@ -5,6 +5,24 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-28 — Within-style null, sentinel '.': F4/F8/F20 style-robust mechanically; the null itself is suspect
+
+- 2213 s, support 1.0. Under the Round 20 gate (≥0.02, LB > 0 over the
+  word-conditioned mean AND over the within-style-family null, on cosine,
+  skill, KL-rank): **F4, F8, F20 pass**; F12 misses one fold's KL-rank LB
+  (−0.053); F0 fails (style null = shared mean = word-mean = field).
+- KL-rank (new endpoint) separates cleanly where ordering never did: ridge
+  0.82–0.90 vs word-mean 0.31–0.41 at F4/F8/F20, LBs > 0.16.
+- The within-style null collapses below the shared mean (0.16–0.50 vs
+  0.47–0.62): a field refit on a broken pairing predicts the wrong
+  carrier's displacement. That makes "beats the null" easy — audit #9 is
+  asked whether the null is a straw man and what a fair style control is.
+  Note for that ruling: the outer fold already holds out a whole style
+  family (the four config blocks), so transfer to a held-out block cannot
+  use that block's style code; the residual confound is style shared
+  across families.
+- Sentinel ',' arm running; Codex round 21 adjudicates both with audit #9.
+
 ## 2026-08-28 — Re-contextualization #9 (style null running; audit #9 fired)
 
 - **Central bet:** native mathematics of latent spaces from what a denizen
