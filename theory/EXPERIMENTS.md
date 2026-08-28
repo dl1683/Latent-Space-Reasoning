@@ -4401,6 +4401,18 @@ the remaining chain's outcomes.
   permuted residual targets, and score the unchanged held-out cells. No fit or
   prediction may be reused across permutations except the already frozen
   nuisance residualization and true-law cache.
+  *Clarification (Tier-1 review of the implementation, 2026-08-29, applied by
+  Claude at Codex's recommendation before any run): deterministic X-only
+  preprocessing and factorizations — the calibration standardizers of X⊥ and
+  the eigendecomposition of the centred standardized X⊥ Gram — may be reused
+  across refits because they do not depend on the permuted targets; every
+  target-dependent quantity (target means, cross-products, weights, kernel
+  coefficients, predictions, inner-selection scores) is recomputed per refit.
+  The exact test is layer-level: the 20 refit statistics are pooled
+  block-balanced by aligned refit index across the eight keys, and the
+  one-sided exact p is (1 + #refits not beaten)/21; per-key p-values are
+  diagnostics. Observed and null statistics share one common cell mask per
+  key (support reported as `fl_null_support`; a key below 0.95 is incomplete).*
 - Preserve the class-stratified crossed bootstrap: one word draw per word-fold
   key shared across sampled blocks, carriers resampled within block. Report
   every per-key statistic and the block-first pool.
@@ -4531,3 +4543,194 @@ X-free presentation/lexical interaction field**. It directly tests the
 strongest surviving explanation on the same held-out task without cell-level
 `X_perp`, and it is the cheapest comparator that can moot the state reading.
 No new axiom is earned, so `theory/AXIOMS.md` is unchanged.
+
+## Round 28 — B-static adjudication and two-sentinel static ruling (2026-08-29)
+
+**Codex, documentation-only; no experiment was run.** The Round 23
+predictions, Rounds 24–27, Tier-3 audit #14, `analysis_resSB.json`, the
+permitted `analysis_resSA.json` and `analysis_resAA.json` comparison artifacts,
+and ledger entry `nlm007_resid_resSB` were checked directly. Every mechanical
+number below was reduced from the JSON. The running/queued
+`analysis_resAB.json` and `analysis_resSA2.json` artifacts were not opened, and
+the uncommitted analyzer change under separate review was not modified.
+
+### Artifact validity and mechanical score
+
+`resSB` is sentinel B (`,`), `P_static`, five forward-layer checkpoints, two
+unseen-word folds, 20 shuffles, and 500 bootstrap replicates. It completed in
+`4598.4 s` of the amended `7200 s` wall. The model/tokenizer pins, fixed K=13
+universe, reload record, eight block-by-word keys, and support accounting are
+present; support is `1.0` in every key. The locality maximum is `0.125`, and
+the reload record gives maximum log-probability difference `0.0078125`, KL
+ordering agreement `0.999651`, and maximum pairwise-KL difference `0.001323`.
+
+Each endpoint margin below is the conservative minimum over the four fixed
+residualized X-free lexical nulls. Each lower bound belongs to that endpoint's
+minimum-margin comparator.
+
+| Layer | `X_perp` ridge cosine | strongest residual-null cosine | cosine margin [LB] | skill margin [LB] | K=13 KL-rank margin [LB] | full / positive keys | `P_static -> Delta` cosine | verdict |
+|---|---:|---:|---:|---:|---:|---:|---:|---|
+| F0 | 0.268 | 0.001 | +0.267 [+0.050] | -7.465 [-26.697] | +0.113 [-0.286] | 4/8 / 4/8 | 0.628 | fail |
+| F4 | 0.558 | 0.061 | +0.497 [+0.438] | +0.349 [+0.224] | +0.396 [+0.251] | 4/8 / 8/8 | 0.508 | pass |
+| F8 | 0.564 | 0.075 | +0.489 [+0.442] | +0.361 [+0.295] | +0.419 [+0.339] | 7/8 / 8/8 | 0.413 | pass |
+| F12 | 0.517 | 0.064 | +0.453 [+0.409] | +0.405 [+0.318] | +0.492 [+0.434] | 8/8 / 8/8 | 0.444 | pass |
+| F20 | 0.578 | 0.089 | +0.489 [+0.440] | +0.415 [+0.335] | +0.577 [+0.498] | 8/8 / 8/8 | 0.622 | pass |
+
+No held-out block collapses at F4–F20. Thus F4/F8/F12/F20 pass the amended
+residual-vs-null gate and F0 fails. At each passing layer all eight keys have
+the correct point sign; strict full-gate coverage is nevertheless only `4/8`
+at F4. Full-gate and point-positive counts remain distinct, and the four
+passing checkpoints are correlated measurements rather than replications.
+The presentation-only values are held-out directional cosines, not variance
+shares, fractions, mediation, overlap, or causal effects.
+
+### Round 23 prediction scorecard and the static-pair license
+
+For the second sentinel, the registered state-linked-side mechanical
+prediction holds in its bounded form: F0 remains non-qualifying, while
+F4–F20 retain positive residual-field margins and reassembled response-law
+improvements beyond the strongest of all four residual X-free lexical nulls.
+The tested lexical-interpolation account again misses: class mean,
+frozen-embedding kNN, frozen-embedding ridge, and frozen-embedding kernel do
+not close the B-static gap. The registered `P_static` style-nuisance collapse
+prediction also misses. This does not adjudicate B-augmented or eliminate a
+nonlinear presentation-by-lexical field.
+
+A-static and B-static therefore take the same `P_static` non-collapse branch.
+Audit #14's joint license can now be stated across the registered sentinel
+pair:
+
+> Across both registered punctuation sentinels in this decoder and template
+> population, static block, length, and position coordinates predict the
+> direction of held-out raw displacement. After cross-fitted removal of those
+> registered coordinates from both `X` and `Delta`, `X_perp` still predicts
+> `Delta_perp` and its reassembled response-law consequence beyond the four
+> registered residual X-free lexical nulls at F4–F20. These facts establish
+> two-sentinel registered-presentation sensitivity and residual X-linked
+> predictability; they do not identify how much of the raw ridge advantage is
+> attributable to presentation, whether the remainder is operational state,
+> or whether the result is presentation-independent.
+
+The sentinel pair is a robustness check within one decoder, move, authored
+template population, and shared set of folds. It is not two independent
+replications and earns no intrinsic/native-law, composition, fresh-style,
+cross-family, or general structured-reasoning claim.
+
+### F0: a locally degenerate skill ratio, not a uniform `-7.5` effect
+
+The B-static F0 skill deserves a narrower reading than its pooled value. The
+eight fold-key ridge skills are:
+
+- gloss: `-0.042/-0.048`;
+- continuation: `+0.298/+0.307`;
+- association: `-30.093/-30.304`; and
+- grammar: `+0.083/+0.079`.
+
+Their arithmetic average is the reported `-7.465`. The fold-mean residual
+mean-law KL values themselves remain finite (`0.607–1.155`), so the artifact
+does not show a globally zero pooled reference. Instead, the combination of
+moderate pooled KL, extreme association-fold skill, and the very wide
+block-first interval is the signature of **local cellwise denominator
+ill-conditioning** in the normalized skill: some association cells make the
+mean-law reference too close to truth for the ratio to be a stable magnitude.
+The JSON stores fold reductions rather than every cell denominator, so the
+claim is local degeneracy of the normalized statistic, not a count of exactly
+which cells have a near-zero reference.
+
+Consequently, `-7.5` must not be compared as an effect size across sentinels or
+presentation designs, and it does not mean every B-static F0 key is
+catastrophically wrong. But it also does not rescue F0: only `4/8` keys are
+full-gate or point-positive, both gloss and association collapse at the block
+level, and the KL-rank lower bound is negative. The correct layer ruling is
+still **no qualifying conditional gain at B-static F0 under this instrument**.
+Across cells, F0 remains cell-specific: A-static fails, A-augmented has the
+already-adjudicated sparse conditional pass, B-static fails, and B-augmented
+is unread. Do not pool those distinct residual estimands into one F0 verdict;
+read the joint gate and absolute/continuous KL evidence beside normalized
+skill.
+
+### Repaired common-scale retention for B-static
+
+The same-run `retention_common_scale_block_first` field is present and finite.
+Direct residual/raw strongest-null predictive-margin ratios are:
+
+| Layer | cosine ratio median [95% CI] | skill ratio median [95% CI] | continuous-KL-margin ratio median [95% CI] |
+|---|---:|---:|---:|
+| F0 | -1.800 [-14.927, 3.578] | -23.428 [-94.863, 6.386] | -3.682 [-17.529, 14.834] |
+| F4 | 1.237 [1.051, 1.628] | 1.234 [0.806, 2.445] | 0.780 [0.426, 1.125] |
+| F8 | 1.221 [1.092, 1.453] | 1.158 [0.864, 1.464] | 1.111 [0.741, 1.436] |
+| F12 | 1.251 [1.106, 1.535] | 1.139 [0.884, 1.349] | 1.102 [0.835, 1.332] |
+| F20 | 1.261 [1.118, 1.488] | 1.053 [0.954, 1.224] | 1.033 [0.959, 1.163] |
+
+Every F4–F20 ratio median exceeds the predeclared `0.5` threshold. Eleven of
+the twelve interval lower bounds also exceed `0.5`; F4 continuous KL is the
+exception at `0.426`. The licensed statement is therefore:
+
+> Under the amended common-scale marker, B-static retains at least half of the
+> same-run raw ridge-versus-strongest-null predictive margin at the bootstrap
+> median on cosine, law skill, and continuous KL improvement at F4–F20. A
+> uniform 95%-interval statement across all passing layer-endpoint cells is
+> not earned because the F4 continuous-KL interval crosses `0.5`.
+
+This is a predictive-margin statement on a common raw-`Delta` scale, not a
+fraction of latent signal, variance, state, or mediation. It does not license
+a joint A-static/B-static retention claim: the original `resSA` artifact lacks
+this repaired field, and only `resSA2` can fill that static cell.
+
+### Sentinel asymmetries
+
+The strict full/point-positive key counts for A-static versus B-static are:
+
+| Layer | A-static | B-static |
+|---|---:|---:|
+| F0 | 2/8 / 6/8 | 4/8 / 4/8 |
+| F4 | 7/8 / 7/8 | 4/8 / 8/8 |
+| F8 | 7/8 / 8/8 | 7/8 / 8/8 |
+| F12 | 6/8 / 8/8 | 8/8 / 8/8 |
+| F20 | 8/8 / 8/8 | 8/8 / 8/8 |
+
+B-static is consistently lower in residual ridge cosine than A-static at
+F4–F20, by about `0.03–0.06`, and its F4 strict coverage is materially weaker:
+`4/8` versus `7/8`. The missing B F4 intervals are spread across gloss,
+association, and grammar rather than forming a point-sign or block collapse.
+Conversely, B has `8/8` full keys at F12 where A has `6/8`. The presentation-
+only directions are similar across the static sentinels. These are useful
+specificity facts, but no layer verdict differs and no favorable sentinel or
+layer is selected.
+
+### Second lens: what the sentinel pair adds
+
+The second sentinel makes an A-specific punctuation accident less plausible.
+Proven locally now under `P_static`: registered presentation coordinates
+predict raw displacement direction for both sentinels; those registered
+coordinates do not exhaust X-linked residual predictability at F4–F20 for
+either sentinel; and the raw F0 transition remains identity/token dominated,
+with B-static also failing its consequence gate. The previously proven
+ordering-readout saturation is unchanged.
+
+No new hostile structural hole is proved by this replication. In particular,
+presentation and operational state remain unproven as inseparable; the
+residual is not shown to be presentation-free; family-only laws, failure of
+composition, and inability of structured reasoning to live in the space are
+not established. The stronger two-sentinel fact is still an architectural and
+epistemic deficiency: the denizen has not been given a demonstrated native
+quotient, while the analyst must supply block, length, and position
+coordinates to propose equivalence. That is a constructive requirement for
+the next latent space, not proof that no recoverable quotient exists.
+
+The next space should expose or controllably factor lexical, presentation,
+and operational coordinates; define sameness by interchangeability under
+declared moves and downstream response laws; treat presentation as state only
+when controlled changes alter those laws; and support consequence-sensitive
+multi-step closure with fresh-style, unseen-word, and cross-family transfer.
+No new axiom is earned.
+
+### Locked order after B-static
+
+The Round 27 order is confirmed without amendment. Finish and adjudicate
+`resAB` (B-augmented), then `resSA2` (patched A-static common-scale cell).
+Next run the fair residual-space X-free field on all four cells as the cheapest
+direct moot-maker, followed by the fully refitted Freedman–Lane null on all
+four cells. Both comparator families precede the pinned second-model-family
+protocol. No sentinel, layer, or presentation design is selected after
+outcomes.

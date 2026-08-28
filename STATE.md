@@ -1350,3 +1350,73 @@ with transfer across unseen words, fresh styles, and model families. The
 single most sharpening immediate measurement is the fair residual-space
 X-free presentation/lexical interaction field. No new axiom is earned, so
 `theory/AXIOMS.md` is unchanged. No experiment was run in Round 27.
+
+## Round 28 — B-static adjudication and two-sentinel static result (2026-08-29)
+
+`analysis_resSB.json` is contract-valid for the registered B-static
+residual-vs-null question: sentinel B (`,`), `P_static`, two unseen-word folds,
+K=13, crossed class-preserving bootstrap, 20 shuffles, 500 bootstraps, support
+`1.0`, and `4598.4 s` of the `7200 s` wall. F4/F8/F12/F20 pass; F0 fails. At
+the passing layers residual ridge cosine is `0.558/0.564/0.517/0.578` versus
+strongest-null `0.061/0.075/0.064/0.089`. Block-first cosine margins are
+`+0.497/+0.489/+0.453/+0.489`, skill margins
+`+0.349/+0.361/+0.405/+0.415`, and KL-rank margins
+`+0.396/+0.419/+0.492/+0.577`, all with positive lower bounds. Full/positive
+keys are `4/8 / 8/8`, `7/8 / 8/8`, `8/8 / 8/8`, and `8/8 / 8/8`; no block
+collapses at F4–F20. Presentation-only `P_static -> Delta` cosine is
+`0.628/0.508/0.413/0.444/0.622` at F0/F4/F8/F12/F20.
+
+Round 23 ruling: A-static and B-static take the same registered `P_static`
+non-collapse branch. Across both sentinels, static block/length/position
+coordinates predict held-out raw displacement direction; after cross-fitted
+removal from both `X` and `Delta`, `X_perp` still predicts `Delta_perp` and its
+reassembled response-law consequence beyond the four registered residual
+X-free lexical nulls at F4–F20. This establishes two-sentinel registered-
+presentation sensitivity and residual X-linked predictability within one
+decoder/template population. It identifies neither a presentation fraction
+or mediation nor operational state or presentation independence, and it is
+not independent replication, composition, a native law, or cross-family
+generality.
+
+F0 is heterogeneous and non-qualifying. Its block-first cosine margin is
+`+0.267 [LB 0.050]`, but skill is `-7.465 [-26.697]` and KL-rank lower bound
+is `-0.286`; only `4/8` keys are full or point-positive, and gloss plus
+association collapse. The pooled skill is driven by association fold skills
+near `-30`, while the other six folds are modest. Fold-mean reference KL is
+finite, so this is local cellwise denominator ill-conditioning in normalized
+skill, not a globally zero reference or a uniform `-7.5` effect. Do not
+compare that magnitude across residualization cells. The joint consequence
+gate still fails; the correct wording is **no qualifying conditional gain at
+B-static F0 under this instrument**.
+
+The repaired common-scale field is present for B-static. At F4–F20 every
+cosine, skill, and continuous-KL residual/raw predictive-margin ratio median
+exceeds `0.5`. Eleven of twelve 95% lower bounds exceed `0.5`; F4 continuous
+KL is the exception at `0.426`. B-static therefore retains at least half of
+the same-run raw ridge-versus-strongest-null predictive margin at the
+bootstrap median on all three endpoints at F4–F20, without a uniform interval
+claim. This is not a fraction of signal, variance, state, or mediation. No
+joint A-static/B-static common-scale claim is licensed until `resSA2` fills
+the missing A-static field.
+
+Sentinel specificity: B-static's F4 strict count is `4/8`, weaker than
+A-static's `7/8`, despite `8/8` B point-positive keys and no collapse. B and A
+both have `7/8` full keys at F8; B has `8/8` at F12 versus A's `6/8`; both
+have `8/8` at F20. B residual ridge cosine is about `0.03–0.06` lower across
+F4–F20. These differences are recorded without changing any layer verdict or
+selecting a favorable sentinel.
+
+Second lens: the second sentinel makes A-specific idiosyncrasy less plausible
+and reinforces local F0 identity/token dominance plus the absence of a
+demonstrated native quotient. It proves no new hostile structural hole:
+presentation/state inseparability, a presentation-free residual, family-only
+law, non-composition, and inability of structured reasoning to live here
+remain unproven. The current architectural/epistemic deficit is that analyst-
+known coordinates are still required to propose equivalence; that is a
+constructive target, not proof no quotient exists. No new axiom is earned.
+
+**Next, unchanged:** finish and adjudicate `resAB` -> `resSA2`, then run the
+fair residual-space X-free field on all four cells, then the fully refitted
+Freedman–Lane null on all four cells, then the pinned second-model-family
+protocol. The running/queued artifacts were not opened, the analyzer diff was
+not modified, and no experiment was run in Round 28.
