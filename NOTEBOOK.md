@@ -5,6 +5,24 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-28 — Forward-time move, sentinel ',': F12 and F20 clear the gate; the two arms disagree only at the ordering margin
+
+- 1823 s, support 1.0. Same shape as the '.' arm: F0 token-identity
+  dominated; F4–F20 displacement cosine ridge/kernel 0.68–0.80 vs
+  word-conditioned mean 0.46–0.66 (LBs > 0.1), law skill at the sentinel
+  0.46–0.57 vs 0.01–0.02, shuffle collapses.
+- Gate (mechanical): **F12 and F20 pass** for ridge (ordering +0.022–0.074,
+  LBs 0.004–0.037 at F12); F8 misses on one fold's ordering LB (−0.002); F4
+  on one fold's skill LB. The '.' arm passed F20 only. Two of five layers
+  for the same sentinel is met by the control arm, not the primary.
+- Reading: the forward step is predictable from the state beyond word and
+  token identity at every layer from F4 in both arms; whether a layer
+  "qualifies" is decided by ordering lower bounds within ±0.02 of zero.
+  Ordering is the binding endpoint in every program so far (layer
+  displacement, forward A, forward B). Codex round 20 must rule on whether
+  the primary/control asymmetry is a failure of the primary arm or a
+  property of the ordering endpoint, before anything is claimed.
+
 ## 2026-08-28 — Audit #8 adopted (displacement wording; forward implementation verified)
 
 - Forward-time implementation verified line by line by a fresh auditor
