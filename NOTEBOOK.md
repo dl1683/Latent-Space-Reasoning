@@ -5,6 +5,39 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Re-contextualization #14 (A-static in; P_aug running; audit #14 fired)
+
+- **Central bet + second lens:** native mathematics from what a denizen must
+  invent; the holes that make this space hostile to structured reasoning
+  and what the next latent space must change.
+- **Live question:** after the registered template coordinates are removed
+  from both state and displacement, X⊥ still predicts Δ⊥ far beyond every
+  residual content null (F4–F20). Does that survive the augmented
+  presentation design (carrier mean + carrier subspace) and the ',' arm?
+  And what, jointly, do the presentation-only arm (0.43–0.63) and the
+  residual lead license — "presentation is a large part of the raw move,
+  and what remains is still X-predictable" — without either side
+  over-reading?
+- **What reframes:** the pooled story has quietly changed shape. The
+  earlier framing "content vs context" is now "content vs presentation vs
+  the residual of X after presentation" — three layers, of which content
+  is the smallest, presentation is large, and the X⊥ residual is what a
+  denizen would actually need a map of. The demo's 42%-style intuition was
+  wrong (cosine ≠ variance), and Round 26's "much of the raw lead may have
+  been presentation" may itself be an over-read in the other direction —
+  audit #14 is asked to fix the joint statement.
+- **Alternatives held live:** (a) residual-space cosines are geometrically
+  easy (nulls at ~0.06 because residual targets are near-zero-mean) — the
+  fair residual comparator may be a residual-space shared mean or a
+  P-only predictor scored in residual space; (b) unmeasured presentation
+  remains in X⊥ (P_aug tests part of this); (c) presentation is part of
+  operational state and quotienting it removes physics — the operational-
+  equivalence target (same moves, same consequences) is the honest
+  definition; (d) second family; (e) multi-step composition.
+- **Ecosystem deposit:** "cosine of a presentation-only predictor is not a
+  variance share; state 'presentation predicts the move at c' and 'the
+  residual is X-predictable at r' separately" → `_meta/INDEX.md`.
+
 ## 2026-08-29 — Round 26: A-static adjudicated; the presentation-only arm revises the earlier reading
 
 - P_static took the non-collapse branch of the primary gate at F4–F20; this
