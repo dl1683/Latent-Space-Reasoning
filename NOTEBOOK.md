@@ -5,6 +5,46 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Re-contextualization #17 (2-hour step-back; audit #17 running)
+
+Live question unchanged: is the surviving X⊥→Δ⊥ predictability in one small
+decoder an operational-state relation, a smooth presentation/lexical
+relation, or an implementation artefact — and what does the answer say about
+holes hostile to structured reasoning.
+
+What holds: the 2×2 residualization table is complete (A-static, A-score4,
+B-static, B-score4 — F4–F20 pass in all four; F0 passes only for A-score4
+with sparse keys); Round 32 licenses only correlated same-population
+sensitivity; B-score4 carries the amended-implementation /
+SVD-telemetry-incomplete labels.
+
+What this cycle reframed: (1) the population-validity loop (v1→v4) showed
+that "presentation-only" is a much harder object than the earlier program
+assumed — three adversarial voids before an approved design, and the approved
+design had to retreat to a metalinguistic mention frame to be inert across
+all four inventories; audit #17 is asked whether that retreat changes what
+the interchangeability test can say about the guiding question; (2) the
+numerical-instrument finding (torch SVD non-convergence) forced a telemetry
+gate that now sits in front of every low-rank result — the instrument itself
+is under review, not just the claim; (3) the seven Tier-1 rounds on one
+analyzer are the cost of Round 27-31's decision to keep one canonical path
+rather than fork scripts; the alternative (a separate small op-update/bridge
+module) would have been reviewed faster but would have duplicated the fold,
+null and completion machinery.
+
+Alternatives held live and NOT yet run: a second pinned decoder (cheap
+replication axis; Round 31 order 11); a multi-position consequence law
+(next k∈{4,8} tokens, teacher-forced) as a different notion of consequence
+(audit #16's alternative); two-step writeback composition; a full-prefix
+contextual baseline is now implemented and queued (order 4). If audit #17
+rules the metalinguistic frame non-probative for the guiding question, the
+right move is a use-frame population under a weaker but honest contract
+(presentation-only within ONE inventory, reported per inventory) rather than
+another all-inventory search.
+
+Nothing starts before the two Tier-1 gates (op-update/bridge; SVD telemetry)
+and resSA2 finish.
+
 ## 2026-08-29 — Population v4 approved and frozen (after v2 and v3 were voided)
 
 - v3 (`a8b14a8`) VOID: all 32 presentation cells passed (Please/Kindly;
