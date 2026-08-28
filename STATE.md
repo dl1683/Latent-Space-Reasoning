@@ -980,3 +980,49 @@ model family. No new axiom is warranted in Round 23.
   `aug` → second model family. Scope until then: one model; unseen-word
   status mechanical only; no native, presentation-independent,
   second-family, or general dynamics claim.
+
+## Round 24 — audit #12 repairs and residualization ruling (2026-08-28)
+
+No experiment was run. `analysis_locoeq2A/B.json` remains unopened.
+
+- Audit #12 repair: the four stronger X-free lexical nulls are fair and nested
+  on calibration words (class mean, frozen-input-embedding kNN, embedding-to-
+  displacement ridge, and embedding-conditioned kernel). Standardization and
+  k/lambda/gamma selection use only a two-fold class-stratified calibration-
+  word split. The unseen-word gate is amended to beat the strongest of all
+  four nulls with the fixed K=13 KL-rank universe and the existing clustered
+  gates.
+- The old A/B artifacts remain mechanical-only/descriptive under K=11, two
+  nulls, and the old bootstrap. They need not be discarded or rerun as a
+  separate historical repair; the amended gate is carried into the
+  residualization runs, where a raw shadow margin must be retained in the same
+  folds.
+- The pre-amendment pooled bootstrap was class-preserving but only
+  approximately crossed because it drew words independently per block. The
+  analyzer is prospectively tightened to share one class-stratified draw per
+  word-fold key across blocks, with carriers resampled within block.
+- Residualization is accepted as the intended decomposition, with binding
+  repairs: calibration-word-only augmented carrier coordinates and inner
+  training-carrier subspaces, residual-space ladder selection, and a same-fold
+  un-residualized ridge arm plus paired block-first contrast. Round 22 fold
+  values alone cannot supply the retention marker. The prospective patch adds
+  the raw arm, but the raw four-null shadow margin still must be emitted
+  before that marker is complete and before launch.
+- The F8 sentinel-`.` static smoke is a pipeline preview: presentation-only
+  `P -> Delta` cosine `0.42`, residual ridge about `0.60` versus nulls about
+  `0.06–0.07`, skill about `0.36` versus `0.015`, and KL-rank lead about
+  `+0.44–+0.50`. It supports survival after this static removal but does not
+  establish the formal gate, causal state structure, or a native law.
+- Confirmed readout order for the four CPU-only runs: A-static, A-augmented,
+  B-static, B-augmented; five layers `F0/F4/F8/F12/F20`, two unseen-word
+  folds, 20 shuffles, 500 bootstraps, and a 60-minute wall per
+  sentinel/design. Read validity, then F0, then F4–F20; within each layer
+  read residual margins/gates, reassembled law endpoints, presentation-only
+  diagnostic, and paired raw-field retention. No GPU or new capture.
+
+**Current answer after Round 24:** presentation explains a substantial
+measured part of the raw displacement, while residual X-conditioned
+predictability survives the static smoke. This sharpens the missing quotient
+between lexical content, presentation, operational state, and consequential
+motion; it does not resolve it. No new axiom, presentation-independent claim,
+native-law claim, or second-family claim is warranted.

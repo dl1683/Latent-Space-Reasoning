@@ -3482,3 +3482,163 @@ The constructive requirement for the next latent space is therefore:
 That space should expose presentation coordinates, use consequence-sensitive divergence, support multi-step closure, and generalize across lexical identities, style families, and model families.
 
 Final disposition: retain the unseen-word result as a valuable mechanical and descriptive finding; block the stronger “not lexical,” “state-conditioned,” and “native forward law” readings until the stronger lexical controls and contract-correct hierarchical bootstrap are run. No experiments were run and no repository files were modified.
+
+## Round 24 — audit #12 repair ruling and residualization contract (2026-08-28)
+
+**Codex, documentation and prospective analyzer amendment; no experiment was
+run.** The running `analysis_locoeq2A/B.json` artifacts were not opened. The
+Round 23 smoke was read as a pipeline preview only.
+
+### 1. Audit #12 repairs
+
+#### Crossed bootstrap
+
+The class-preserving repair in the pre-amendment analyzer was not literally
+crossed. It stratified word positions by lexical class, but the pooled
+block-first loop drew a new word vector independently for each block/fold
+matrix. That is a valid class-preserving sensitivity bootstrap, not the
+predeclared crossed word-by-block bootstrap, because a crossed factor must use
+the same word draw across the blocks in a replicate.
+
+The prospective repair is now contract-correct: for each bootstrap replicate,
+draw one class-stratified word resample for each held-out word-fold key and
+reuse it for every sampled block carrying that key; resample carriers within
+the sampled block. The word draw is shared across the block factor, while the
+carrier draw remains nested in block. The per-key bootstrap remains
+class-preserving. The K=13 word-fold layout is checked rather than inferred
+from width alone. Until this amended analyzer is run, the old A/B intervals
+remain sensitivity summaries.
+
+#### Stronger lexical nulls
+
+The four nulls are fair and nested for the claim they test:
+
+- `class_mean` is the calibration-carrier/calibration-word class mean;
+- `wordonly_knn` is an X-free frozen-input-embedding interpolator;
+- `wordonly_ridge_emb` maps frozen input embeddings to calibration-word mean
+  displacement; and
+- `wordonly_kernel_emb` is the corresponding embedding-conditioned kernel.
+
+The embedding standardizer is fit on calibration words only. The k ladder
+(`1, 3, 5, 10, 20`), ridge lambda grid, and kernel gamma/lambda grid are
+selected by a two-fold class-stratified split of calibration words, then
+refit on all calibration words. No held-out target enters selection or fit.
+These are strong X-free lexical baselines, but still test the chosen frozen
+embedding representation rather than every possible lexical account.
+
+#### Amended unseen-word gate
+
+Round 22 is amended: at every headline unseen-word layer, the state-conditioned
+field must beat the **strongest of all four** X-free nulls
+(`class_mean`, `wordonly_knn`, `wordonly_ridge_emb`,
+`wordonly_kernel_emb`) by the locked margin, with positive clustered lower
+bounds on cosine, law skill, and the fixed **K=13** KL-rank universe. The
+block-first pooled contrast, at least 6/8 positive all-three keys, support,
+and no-block-collapse requirements remain unchanged.
+
+The existing A/B artifacts (`K=11`, two nulls, and the old nested-within-block
+word bootstrap) do not need to be deleted or rerun as historical artifacts.
+They remain mechanical-only/descriptive under the old reduction and cannot
+support the amended formal gate. The amended gate is folded into the four
+residualization runs, which must emit the stronger nulls, K=13 universe, and
+contract-correct bootstrap. The raw un-residualized shadow field and its raw
+four-null margin must also be retained in those same folds so that the amended
+unseen gate and the retention denominator are not reconstructed from old
+fold summaries. The current prospective patch adds the raw ridge arm and
+paired contrasts; the raw four-null shadow remains a launch prerequisite and
+is not yet claimed as implemented.
+
+### 2. Residualization implementation ruling
+
+The implementation is directionally faithful to Round 23, but the following
+prospective repairs are binding before scoring:
+
+- `P_static` has the declared centered four-block indicators, tokenized prefix,
+  suffix, and total lengths, slot index, sentinel position, and relative
+  position. This coordinate set is correct.
+- `P_aug` is an X-only sensitivity with a leave-current-word-out carrier mean
+  and a rank-4 carrier-mean subspace. To make it genuinely cross-fitted, the
+  carrier mean now uses the outer calibration-word pool, and the PCA basis is
+  fit on calibration carriers and calibration words only; the rank is truncated
+  only when fewer directions are estimable. This is stricter than using all
+  words merely because their X values are observable.
+- Nuisance maps are `P -> X` and `P -> Delta`, with separate lambda selection
+  by inner leave-one-calibration-block-out scoring. The augmented basis is
+  refit on each inner training-carrier set. The main field ladder is selected
+  in residual space, not by the raw `X -> Delta` inner folds.
+- Displacement scoring uses `X_perp` and `Delta_perp`. The lexical nulls are
+  fit to `Delta_perp` without `X_perp`, so they remain X-free within the
+  residualized problem.
+- Law completion uses the required reassembly
+  `Yhat = X + f_Delta(P) + Delta_perp_hat`. The presentation-only `P ->
+  Delta` cosine is retained as a diagnostic and cannot be relabelled as a
+  state predictor.
+- A same-fold, same-invocation un-residualized ridge arm is required. Comparing
+  only against Round 22 artifact fold values is not adequate: it cannot give
+  a paired block-first contrast or guarantee identical fold-level selection.
+  The prospective analyzer patch adds this raw arm and paired contrasts. The
+  raw four-null shadow margin must still be emitted alongside it for the
+  retention marker, not inferred from the residualized nulls; until then the
+  four runs are not ready to launch.
+
+The retention marker is therefore: for each endpoint and the same outer
+folds, the residual ridge-minus-strongest-residual-null point margin retains at
+least half of the un-residualized ridge-minus-strongest-raw-null point margin;
+the paired block-first contrast against the same-run raw ridge is reported
+with its clustered interval. Failure of retention is not a kill condition,
+but it is evidence that presentation removal consumed the signal. A paired
+contrast or denominator reconstructed from the old A/B artifacts is not a
+pass.
+
+### 3. Smoke preview and predictions
+
+The F8, sentinel-`.` static smoke is consistent with the state-linked
+prediction: presentation-only `P -> Delta` cosine is `0.42`; residual-space
+X-free nulls are about `0.06–0.07`, while ridge is `0.60` (the corresponding
+un-residualized preview is `0.66`). Skill is `0.36` versus about `0.015`, and
+ridge leads the strongest null by about `+0.56` cosine, `+0.34` skill, and
+`+0.44–+0.50` KL-rank.
+
+This preview shows that the static residualization path is wired plausibly
+and that a large X-conditioned signal survives this one test. It does not
+establish a formal gate: it is one sentinel, one layer, one design, and a
+tiny smoke bootstrap. It does not establish causal presentation removal,
+state structure, model generality, or a native law. It confirms the Round 23
+prediction as a preview, not as evidence sufficient to adjudicate it.
+
+### 4. Locked run order
+
+No run is launched in Round 24. The four CPU-only runs are, in order:
+
+1. sentinel A, `P_static`;
+2. sentinel A, `P_aug`;
+3. sentinel B, `P_static`; and
+4. sentinel B, `P_aug`.
+
+Each uses the existing captures, five layers `F0/F4/F8/F12/F20`,
+`--unseen-words 2`, 20 shuffles, 500 bootstrap replicates, and a 60-minute
+hard wall per sentinel/design. One process runs at a time. The readout order
+is manifest/reload/locality/support validity; then F0; then F4, F8, F12, F20;
+within each layer, residual displacement, strongest-four-null margins and
+clustered gates, reassembled law endpoints, presentation-only diagnostic,
+and paired raw-field retention. Adjudicate static before augmented, and read
+both sentinel arms without choosing the favorable arm. An overrun or missing
+fold coordinate is budget-incomplete, not a pass.
+
+### 5. Second lens
+
+The statement “presentation explains `0.42` of the raw forward displacement
+while `X_perp` explains the residual far beyond content nulls” changes the
+diagnostic resolution, not the answer. It makes presentation a measured,
+substantial coordinate and makes survival after its static removal worth
+testing. It does not prove that the remainder is operational state: smooth
+lexical geometry, unmeasured presentation, and their mixture remain live.
+
+The hole is now more explicit: this latent space lacks a stable predictive
+quotient separating lexical content, presentation, operational state, and
+consequential motion. A denizen still cannot define “same place” by lexical
+identity or by raw similarity alone. The constructive target remains a space
+where sameness means interchangeability of declared moves and downstream
+response laws, with exposed presentation coordinates, consequence-sensitive
+readouts, multi-step closure, and transfer across words, styles, and model
+families. No new native axiom is warranted.

@@ -467,25 +467,37 @@ def main():
             cal_blocks = [b for b in block_names if b != held_block]
             cal_probes = [p for b in cal_blocks for p in probe_ids[b]]; test_probes = probe_ids[held_block]
             Xc, Yc = cells(cal_probes, l, widx_c); Xt, Yt = cells(test_probes, l, widx_t)
+            Xc_raw, Yc_raw, Xt_raw, Yt_raw = Xc.copy(), Yc.copy(), Xt.copy(), Yt.copy()
             resid = None
             if a.residualize:
                 # ---- Round 23 cross-fitted presentation residualization ----
-                def design(probe_list, widx):
-                    Pc = np.repeat(P_static[probe_list], (n_c if widx is widx_c else n_t), axis=0)
+                def carrier_basis(probe_list, word_idx):
+                    word_idx = np.arange(n) if word_idx is None else np.asarray(word_idx)
+                    cm_cal = np.stack([ZX[pp, l][word_idx].mean(0) for pp in probe_list])
+                    cm_mu = cm_cal.mean(0)
+                    _, _, Vt_ = np.linalg.svd(cm_cal - cm_mu, full_matrices=False)
+                    return Vt_[:min(4, Vt_.shape[0])].T
+                def design(probe_list, widx, basis=None):
+                    row_idx = np.arange(n) if widx is None else np.asarray(widx)
+                    Pc = np.repeat(P_static[probe_list], len(row_idx), axis=0)
                     if a.residualize == "aug":
-                        # leave-test-word-out carrier mean of X over the other words (X-only covariate; no targets)
+                        # Cross-fitted leave-one-word-out carrier mean: use only the
+                        # outer calibration word pool, and never the current word.
+                        pool = np.arange(n) if not a.unseen_words else np.asarray(widx_c)
+                        V = V4 if basis is None else basis
                         rows = []
                         for pp in probe_list:
                             Xall = ZX[pp, l]                                                  # (n, D) all words
-                            for wi_ in (widx if widx is not None else range(n)):
-                                m_ = (Xall.sum(0) - Xall[wi_]) / (n - 1); rows.append(m_)
+                            for wi_ in row_idx:
+                                other = pool[pool != wi_]
+                                assert len(other) > 0, "augmented carrier mean has no calibration words"
+                                rows.append(Xall[other].mean(0))
                         CM = np.stack(rows)
-                        Pc = np.concatenate([Pc, CM @ V4], axis=1)
+                        Pc = np.concatenate([Pc, CM @ V], axis=1)
                     return Pc
                 if a.residualize == "aug":
-                    # carrier subspace basis from CALIBRATION carriers only: PCA (rank 4) of their mean states
-                    cm_cal = np.stack([ZX[pp, l].mean(0) for pp in cal_probes]); cm_mu = cm_cal.mean(0)
-                    _, _, Vt_ = np.linalg.svd(cm_cal - cm_mu, full_matrices=False); V4 = Vt_[:min(4, Vt_.shape[0])].T
+                    # carrier subspace basis from calibration carriers and words only
+                    V4 = carrier_basis(cal_probes, widx_c)
                 Pc_ = design(cal_probes, widx_c); Pt_ = design(test_probes, widx_t)
                 stP = Standardizer().fit(Pc_); Pcs, Pts = stP(Pc_), stP(Pt_)
                 # nuisance maps P -> X and P -> Delta, lambda by inner leave-one-calibration-block-out (calibration only)
@@ -494,7 +506,8 @@ def main():
                     sc_ = {}
                     for ib in cal_blocks:
                         ip = [q for b in cal_blocks if b != ib for q in probe_ids[b]]; vp = probe_ids[ib]
-                        Pi, Pv = design(ip, widx_c), design(vp, widx_c); sti_ = Standardizer().fit(Pi)
+                        V_inner = carrier_basis(ip, widx_c) if a.residualize == "aug" else None
+                        Pi, Pv = design(ip, widx_c, V_inner), design(vp, widx_c, V_inner); sti_ = Standardizer().fit(Pi)
                         Ti = target(ip); Tv = target(vp); fam_ = RidgeFamily(sti_(Pi), Ti)
                         for lam in LAMBDAS: sc_.setdefault(lam, []).append(float(np.mean(cos_rows(fam_.predictor(lam)(sti_(Pv)), Tv))))
                     return max(sc_, key=lambda k_: np.mean(sc_[k_]))
@@ -512,10 +525,19 @@ def main():
                 """class-preserving word bootstrap draw over the held-out word columns (audit #12)"""
                 return np.concatenate([st_[rng_.integers(0, len(st_), len(st_))] for st_ in class_strata])
             # ---- inner selection: leave one calibration block out (families built once per inner fold) ----
+            def rows_for(arr, probe_list, probe_order=cal_probes, width=None):
+                width = n_c if width is None else width
+                offsets = {p: i for i, p in enumerate(probe_order)}
+                return np.concatenate([arr[offsets[p] * width:(offsets[p] + 1) * width] for p in probe_list])
             inner = []
             for ib in cal_blocks:
                 ip = [p for b in cal_blocks if b != ib for p in probe_ids[b]]; vp = probe_ids[ib]
-                Xi, Yi = cells(ip, l, widx_c); Xv, Yv = cells(vp, l, widx_c); sti = Standardizer().fit(Xi)
+                if resid is None:
+                    Xi, Yi = cells(ip, l, widx_c); Xv, Yv = cells(vp, l, widx_c)
+                else:
+                    Xi, Yi = rows_for(Xc, ip), rows_for(Yc, ip)
+                    Xv, Yv = rows_for(Xc, vp), rows_for(Yc, vp)
+                sti = Standardizer().fit(Xi)
                 inner.append((sti(Xi), Yi, Xi, sti(Xv), Yv, Xv))
             def score_grid(make):
                 acc = {}
@@ -547,6 +569,23 @@ def main():
             print(f"   [{held}] inner selection done ({time.time()-t0:.0f}s)", flush=True)
             # ---- fit on full calibration, predict held-out ----
             preds = {"mean": np.repeat(Yc.mean(0, keepdims=True), len(Xt), 0)}
+            if resid is not None:
+                # Same-fold comparator for the Round 23 retention marker. It is
+                # fit and lambda-selected on the un-residualized calibration
+                # cells, but shares the outer carrier/word fold with the field.
+                sc_unres = {}
+                for ib in cal_blocks:
+                    ip = [p for b in cal_blocks if b != ib for p in probe_ids[b]]; vp = probe_ids[ib]
+                    Xi, Yi = rows_for(Xc_raw, ip), rows_for(Yc_raw, ip)
+                    Xv, Yv = rows_for(Xc_raw, vp), rows_for(Yc_raw, vp)
+                    sti = Standardizer().fit(Xi)
+                    for lam in LAMBDAS:
+                        sc_unres.setdefault(lam, []).append(float(np.mean(cos_rows(RidgeFamily(sti(Xi), Yi).predictor(lam)(sti(Xv)), Yv))))
+                lam_unres = max(sc_unres, key=lambda k: np.mean(sc_unres[k]))
+                st_unres = Standardizer().fit(Xc_raw)
+                preds["unres_ridge"] = RidgeFamily(st_unres(Xc_raw), Yc_raw).predictor(lam_unres)(st_unres(Xt_raw))
+            else:
+                lam_unres = None
             # lexical-persistence baseline: per-word mean successor across the 12 calibration carriers, applied to held-out carriers
             if wj is None:                                                               # word-mean undefined for unseen words
                 word_mean = Yc.reshape(len(cal_probes), n_c, D).mean(0)                     # (n, D)
@@ -612,7 +651,11 @@ def main():
             if a.baselines and a.target != "delta":                      # in delta mode the shared displacement IS the mean predictor
                 preds["identres"] = Xt + (Yc - Xc).mean(0, keepdims=True)          # identity-plus-residual moot-maker (Round 16 #1)
             ybar = Yc.mean(0); denom = np.linalg.norm(Yt - ybar, axis=1); denom = np.where(denom > 0, denom, np.nan)
-            succ = {k: {"cos": cos_rows(v, Yt), "nerr": np.linalg.norm(v - Yt, axis=1) / denom} for k, v in preds.items()}
+            succ = {}
+            for k, v in preds.items():
+                target_k, mean_k = (Yt_raw, Yc_raw.mean(0)) if k == "unres_ridge" else (Yt, ybar)
+                denom_k = np.linalg.norm(target_k - mean_k, axis=1); denom_k = np.where(denom_k > 0, denom_k, np.nan)
+                succ[k] = {"cos": cos_rows(v, target_k), "nerr": np.linalg.norm(v - target_k, axis=1) / denom_k}
             control_cos = None
             if ZY_ctrl is not None:                                          # token-identity control: same predictor, other sentinel's target
                 Yt_ctrl = np.concatenate([(ZY_ctrl[p, l] if widx_t is None else ZY_ctrl[p, l][widx_t]) for p in test_probes]) - Xt
@@ -654,12 +697,14 @@ def main():
                     if tp not in true_slot_law:
                         true_slot_law[tp] = comp_laws(tp, l, None)[0]   # true law at the readout position (n, V); independent of l
                 qmean = {}
-                for k in [kk for kk in ("mean", "identity", "word_mean", "class_mean", "wordonly_knn", "wordonly_ridge_emb", "wordonly_kernel_emb", "knn1", "knn5", "knn20", "ridge", "lowrank", "kernel", "chart", "identres", "ridge_stylenull", "kernel_stylenull") if kk in preds]:
+                for k in [kk for kk in ("mean", "identity", "word_mean", "class_mean", "wordonly_knn", "wordonly_ridge_emb", "wordonly_kernel_emb", "knn1", "knn5", "knn20", "ridge", "lowrank", "kernel", "chart", "unres_ridge", "identres", "ridge_stylenull", "kernel_stylenull") if kk in preds]:
                     acc = {r: {"kl": [], "skill": [], "ord": [], "ord_anchor": []} for r in ("slot", "last")}
                     for ti, tp in enumerate(test_probes):
                         rows = slice(ti * n_t, (ti + 1) * n_t)
-                        if resid is not None:
+                        if resid is not None and k != "unres_ridge":
                             yhat_rows = resid["Xt_orig"][rows] + resid["fD_t"][rows] + preds[k][rows]         # Yhat = X + f_Delta(P) + Delta_perp_hat (Round 23)
+                        elif resid is not None:
+                            yhat_rows = resid["Xt_orig"][rows] + preds[k][rows]
                         else:
                             yhat_rows = (Xt[rows] + preds[k][rows]) if a.target == "delta" else preds[k][rows]     # reconstruct the successor from the displacement
                         qhat = dict(zip(("slot", "last"), comp_laws(tp, l, yhat_rows, widx_t)))
@@ -688,6 +733,15 @@ def main():
                     if np.all(np.isfinite(col)): R[:, c] = 1 - (rankdata(col, method="average") - 1) / (K - 1)
                 for i, k in enumerate(cands): comp[k]["klrank"] = R[i]
                 klrank_universe = list(cands)
+                if "unres_ridge" in comp:
+                    # Keep the fixed K=13 universe while replacing the ridge
+                    # slot for the paired comparator; do not rank the arm as a
+                    # new candidate or alter the formal gate universe.
+                    Rn = np.full(KLm.shape[1], np.nan)
+                    for c in range(KLm.shape[1]):
+                        col = KLm[:, c].copy(); col[cands.index("ridge")] = comp["unres_ridge"]["kl"][c]
+                        if np.all(np.isfinite(col)): Rn[c] = 1 - (rankdata(col, method="average")[cands.index("ridge")] - 1) / (K - 1)
+                    comp["unres_ridge"]["klrank"] = Rn
                 for k in ("ridge_stylenull", "kernel_stylenull"):                 # nulls are scored against the same candidate field, not ranked into it
                     if k in comp:
                         base = k.split("_")[0]; Rn = np.full(KLm.shape[1], np.nan)
@@ -739,6 +793,12 @@ def main():
                     g["secondary_last_token"] = {"skill_vs_chart": boot_diff(field, "skill_last"), "skill_vs_word_mean": (boot_diff(field, "skill_last", "word_mean") if "word_mean" in preds else None),
                                                  "ordering_vs_chart": boot_diff(field, "ordering_last")}
                 gates[field] = g
+            if resid is not None and "unres_ridge" in preds:
+                gates["ridge"]["paired_vs_unresidualized"] = {
+                    "succ_cos": boot_diff("ridge", "cos", "unres_ridge"),
+                    "skill": boot_diff("ridge", "skill", "unres_ridge"),
+                    "klrank": boot_diff("ridge", "klrank", "unres_ridge")
+                }
             # support: a cell is supported iff successor cos, normalized error, and (if computed) completed KL, skill, ordering are all finite
             ok = np.isfinite(succ["lowrank"]["cos"]) & np.isfinite(succ["lowrank"]["nerr"])
             if comp:
@@ -746,8 +806,8 @@ def main():
             support = float(np.mean(ok)); support_by_carrier = {str(d["probes"][tp]): float(np.mean(ok[ti * n_t:(ti + 1) * n_t])) for ti, tp in enumerate(test_probes)}
             fold_out[held] = {"selected": {k: {kk: vv for kk, vv in v.items() if kk != "inner"} for k, v in best.items()},
                               "successor_cos": {k: float(np.nanmean(v["cos"])) for k, v in succ.items()},        # in delta mode: displacement cosine
-                              "reconstructed_successor_cos": ({k: float(np.mean(cos_rows((resid["Xt_orig"] + resid["fD_t"] + v) if resid else (Xt + v), (resid["Xt_orig"] + resid["Yt_orig"]) if resid else (Xt + Yt)))) for k, v in preds.items()} if a.target == "delta" else None),
-                              "residualization": ({"design": a.residualize, "lamX": resid["lamX"], "lamD": resid["lamD"], "presentation_only_delta_cos": resid["pres_only_cos"]} if resid else None),
+                              "reconstructed_successor_cos": ({k: float(np.mean(cos_rows((resid["Xt_orig"] + v) if (resid and k == "unres_ridge") else ((resid["Xt_orig"] + resid["fD_t"] + v) if resid else (Xt + v)), (resid["Xt_orig"] + resid["Yt_orig"]) if resid else (Xt + Yt)))) for k, v in preds.items()} if a.target == "delta" else None),
+                              "residualization": ({"design": a.residualize, "lamX": resid["lamX"], "lamD": resid["lamD"], "lam_unres_ridge": lam_unres, "presentation_only_delta_cos": resid["pres_only_cos"]} if resid else None),
                               "token_identity_control_cos": control_cos,
                               "normalized_error": {k: float(np.nanmean(v["nerr"])) for k, v in succ.items()},
                               "klrank_candidate_universe": (klrank_universe if comp else None),
@@ -774,32 +834,40 @@ def main():
         minimal_skill = next((k for k in lad_s if pooled_skill[k] >= max(pooled_skill[kk] for kk in lad_s) - 0.02), None) if lad_s else None
         # ---- block-first pooled bootstrap (audit #10/#12): resample style blocks, then carriers within, then words (class-preserving)
         _strata_cache = {}
-        def _strata_for_width(w):
-            if w not in _strata_cache:
-                if a.unseen_words and w != n:
-                    # held-out word fold columns: recover the class layout from the fold with that width (all word folds share the class counts)
-                    wf_cols = np.where(word_fold == 0)[0] if len(np.where(word_fold == 0)[0]) == w else np.where(word_fold == 1)[0]
-                    labels = np.array([pos[i] for i in wf_cols])
+        def _strata_for_fold(fold_key, w):
+            key = (fold_key, w)
+            if key not in _strata_cache:
+                if a.unseen_words:
+                    labels = np.array([pos[i] for i in np.where(word_fold == fold_key)[0]])
+                    assert len(labels) == w
                 else:
                     labels = np.array(pos)
-                _strata_cache[w] = [np.where(labels == c)[0] for c in sorted(set(labels))]
-            return _strata_cache[w]
+                _strata_cache[key] = [np.where(labels == c)[0] for c in sorted(set(labels))]
+            return _strata_cache[key]
         pooled_gates = {}
         for (field, endpoint, against), per_fold in cell_diffs.items():
             if field not in ("ridge", "kernel") or endpoint not in ("cos", "skill", "klrank"): continue
             by_block = {}
-            for fk, M in per_fold.items(): by_block.setdefault(fk.split("_w")[0], []).append(M)
+            for fk, M in per_fold.items():
+                fold_key = int(fk.rsplit("_w", 1)[1]) if "_w" in fk else None
+                by_block.setdefault(fk.split("_w")[0], []).append((fold_key, M))
             blocks_ = list(by_block); brng = np.random.default_rng(SEED + 11); reps = []
             for _ in range(a.n_boot):
                 vals = []
+                word_draws = {}
                 for b in brng.choice(blocks_, len(blocks_), replace=True):
-                    for M in by_block[b]:
+                    for fold_key, M in by_block[b]:
                         ci = brng.integers(0, M.shape[0], M.shape[0])
-                        # crossed design: word draw shared across blocks within the replicate is approximated per fold-key width; class-preserving
-                        wi = np.concatenate([st_[brng.integers(0, len(st_), len(st_))] for st_ in _strata_for_width(M.shape[1])])
+                        # Exact crossed word factor: one class-stratified draw
+                        # per word-fold key is shared by every sampled block
+                        # carrying that key. Carriers remain nested in blocks.
+                        if fold_key not in word_draws:
+                            word_draws[fold_key] = np.concatenate([st_[brng.integers(0, len(st_), len(st_))]
+                                                                    for st_ in _strata_for_fold(fold_key, M.shape[1])])
+                        wi = word_draws[fold_key]
                         vals.append(np.nanmean(M[np.ix_(ci, wi)]))
                 reps.append(float(np.nanmean(vals)))
-            allv = np.concatenate([M.ravel() for Ms in by_block.values() for M in Ms])
+            allv = np.concatenate([M.ravel() for Ms in by_block.values() for _, M in Ms])
             pooled_gates[f"{field}_{endpoint}_vs_{against}"] = {"mean": float(np.nanmean(allv)), "ci95_block_first": [float(np.nanpercentile(reps, 2.5)), float(np.nanpercentile(reps, 97.5))], "n_blocks": len(blocks_), "n_fold_keys": len(per_fold)}
         results["pairs"][pair_key] = {"folds": fold_out, "pooled_gates_block_first": pooled_gates, "pooled_successor_cos": pooled, "minimal_class_successor_within_0.02": minimal,
                                       "pooled_completed_skill": pooled_skill, "minimal_class_completed_within_0.02": minimal_skill}
