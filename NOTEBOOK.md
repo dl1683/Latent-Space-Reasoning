@@ -5,6 +5,37 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Re-contextualization #12 (unseen words in; audit #12 fired)
+
+- **Central bet + second lens:** native mathematics from what a denizen must
+  invent; holes hostile to structured reasoning and what the next space must
+  change.
+- **Live question:** the forward-step regularity survives unseen words
+  (sentinel '.'; ',' finishing). What remains between it and a "law": is it
+  a property of the contextual state or of a smooth presentation coordinate
+  (residualization, next), and is it a property of this decoder or of
+  decoders (second family, after).
+- **What reframes:** the sequence of nulls this program has run — identity,
+  shared mean, word-mean, class mean, word-only embedding kNN, word-only
+  ridge, shrunk word mean, alignment-destroying permutation, three-carrier
+  block mean — all sit at the shared mean on the forward move except the
+  identity (which is catastrophic there). Only X-conditioned predictors
+  move. The honest statement is narrow (audit #11): X-conditioned residual
+  predictability, generalizing across carriers, families, and now words.
+  The old "native law" ambition has become a concrete object with three
+  remaining tests, which is progress of the right kind.
+- **Alternatives held live:** (a) embedding-neighbourhood interpolation —
+  an unseen word is near seen words in embedding space; audit #12 asked;
+  (b) a stronger X-free lexical model (embedding→displacement ridge) may
+  close part of the gap; (c) the sentinel pair may still share style
+  ('.' and ',' are both punctuation) — a non-punctuation sentinel would
+  test it; (d) the response-space geometry ("same place = same law") as a
+  native metric; (e) multi-step closure — a one-step law is not yet
+  navigation; the denizen needs composition (F4→F8→F12 along the token
+  clock), never tested.
+- **Ecosystem:** "when every content null sits at the mean, the object is
+  X-conditioned predictability; name it that, not a law" → `_meta`.
+
 ## 2026-08-29 — Unseen-word run, sentinel '.': F4/F8/F12/F20 pass the full gate on words never seen
 
 - 2239 s; eight block × word-fold keys; support 1.0; calibration and
