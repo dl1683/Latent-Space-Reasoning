@@ -5,6 +5,21 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Round 26: A-static adjudicated; the presentation-only arm revises the earlier reading
+
+- P_static took the non-collapse branch of the primary gate at F4–F20; this
+  proves neither operational state nor presentation-independence.
+- The presentation-only arm (0.43–0.63 cosine) materially revises the
+  earlier unseen-word interpretation: much of the raw X-conditioned lead
+  may have been presentation-mediated; residualization shows only that the
+  registered static coordinates do not explain all of it.
+- For resSA only "the predeclared robustness marker is mechanically met" is
+  admissible; a patched A-static rerun (common-scale retention) is required
+  for any A-static or four-cell retention claim — queued after B-aug.
+- Presentation sensitivity is proven locally; presentation/state
+  inseparability remains unproven. Read order: A-aug → B-static → B-aug →
+  patched A-static.
+
 ## 2026-08-29 — Residualization A-static: the X⊥ lead survives removal of the registered template coordinates
 
 - 4406 s of the 7200 s wall; sentinel '.'; P_static (block one-hot, lengths,
