@@ -5,6 +5,20 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Corrected equalized LOCO addendum, sentinel '.': ridge lead unchanged under contract-correct baselines
+
+- 3753 s of the 4500 s wall. With the audit #11 fix (inner centre = the
+  inner training carriers' own mean; comparator frozen by calibration
+  score), the equalized baselines (word-only one-hot ridge; shrunk word
+  mean) no longer collapse exactly onto the shared mean — they land
+  0.003–0.01 above it (e.g. F8: shared 0.499, word-only ridge 0.506, shrunk
+  0.508, ridge 0.620). The per-word lexical component captured by these
+  estimators is small but not identically zero; audit #11's "forced
+  maximal shrinkage" concern is resolved by data rather than by wording.
+- Gated against the stronger equalized baseline: **F4, F8, F12, F20 pass**
+  (cos +0.09–0.13, skill +0.23–0.31, KL-rank +0.30–0.43, LBs > 0.08;
+  11–14/16 carriers); F0 fails. Run-level positive. The ',' arm follows.
+
 ## 2026-08-29 — Audit #12 adopted: unseen-word gate is mechanical-only until the bootstrap is contract-correct and the lexical nulls are stronger
 
 - Status of both unseen-word runs: mechanical pass under the recorded
