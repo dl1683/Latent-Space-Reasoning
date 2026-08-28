@@ -5,6 +5,28 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Round 29 reorders the queue; fresh matched population frozen
+
+- Codex Round 29 (`4907a85`), adopting audit #15: Round 23's literal `P_aug`
+  meant full carrier mean + rank-4 scores → the observed run is
+  `P_aug-score4` (outcome-clean, transductive, contract-validity qualified);
+  `P_aug-full` is unrun. New fixed order: (0) finish resAB → resSA2;
+  (1) carrier-summary rank ladder {1,2,4,8,full} + nonlinear carrier kernel
+  as a cosine screen, plus one preselected full-law cell (sentinel A,
+  `P_aug-full`); (2) fresh frozen population + ` not`-insertion capture;
+  (3) matched presentation interchangeability (stable vs hostile-hole gates);
+  (4) fresh-population analysis; (5) different-move analysis; (6) registered
+  X-free field ×4; (7) Freedman–Lane on A-static only, conditionally; (8)
+  second pinned decoder. The armed X-free chain was killed.
+- Probe 2 population authored blind and frozen before any capture
+  (`experiments/config/lexical_probe_fresh_v1.json`, sha256 c6edaa92…):
+  families question / instruction / comparison / enumeration, 8 matched
+  presentation pairs, 4 operational control pairs, same 80 words; ` not`
+  (id 537) appends as exactly one token to every prefix.
+- Probe 1 implemented behind `--aug-rank`, `--aug-full-mean`, `--aug-kernel`,
+  `--screen`; Round 30 (running) reviews it and specifies the move and
+  interchangeability contracts.
+
 ## 2026-08-29 — Residualization B-static: the second sentinel reproduces the A-static pattern
 
 - Sentinel ',' with P_static; 4598 s of the 7200 s wall; unseen-word folds,
