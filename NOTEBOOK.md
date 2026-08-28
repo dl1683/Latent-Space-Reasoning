@@ -5,6 +5,18 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Corrected equalized LOCO addendum, sentinel ',': F12/F20 pass; baselines just above the shared mean
+
+- 4196 s of the 4500 s wall. Contract-correct equalized baselines sit
+  0.002–0.007 above the shared mean; ridge's lead is unchanged: **F12 and
+  F20 pass** against the stronger equalized baseline, F4/F8 miss on
+  skill/KL-rank lower bounds (cosine leads hold), F0 fails. Run-level
+  positive (2/5). Both arms of the addendum are now contract-correct and
+  agree with the defect-affected runs' numbers — the defect changed the
+  baselines by ≤0.01 and no verdict.
+- The residualization chain (A-static → A-aug → B-static → B-aug, 120-min
+  wall each) has started.
+
 ## 2026-08-29 — Re-contextualization #13 (residualization launching; demo audited)
 
 - **Central bet + second lens:** native mathematics from what a denizen must
