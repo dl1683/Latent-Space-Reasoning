@@ -5,6 +5,22 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-28 — LOCO control, sentinel ',': F12/F20 pass; weaker than the '.' arm
+
+- 3091 s of the 4500 s wall; support 1.0. **F12 and F20 pass** the Round 21
+  rule (pooled ridge − per-word block mean: cos +0.07–0.10, skill +0.15–0.20,
+  KL-rank +0.20–0.26, lower bounds > 0; 12–13/16 carriers pass all three).
+  F4 and F8 keep cosine leads (+0.08–0.11, LB > 0.06) but miss on skill /
+  KL-rank lower bounds; F0 fails. Run-level positive (2/5).
+- Both arms positive; the '.' arm at four layers, the ',' arm at two. Under
+  audit #10 the wording stays: on seen words, within a style family, X
+  predicts a held-out carrier's forward step better than the three-carrier
+  per-word family mean — a variance-disadvantaged baseline; equalized
+  word-only baselines are owed before interpretation, and LOCO cannot
+  separate state from a smooth style code.
+- Codex round 22 adjudicates both arms and predeclares the unseen-word run
+  (lexical nulls, K = 11 universe, block-first bootstrap all implemented).
+
 ## 2026-08-28 — Audit #10 adopted: LOCO bounded; unseen-word branch needs a lexical null; second-lens table
 
 - LOCO A = "X predicts a held-out carrier's displacement and consequence
