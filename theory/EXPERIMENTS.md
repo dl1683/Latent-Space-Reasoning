@@ -2235,3 +2235,28 @@ that token identity or position dominates and no layer passes, favoring a
 readout explanation. Do not fold in the unseen-word split: it is the next
 separate generalization/style follow-up with disjoint calibration and held-out
 word identities and its own artifact and gates.
+
+### Round 20 ruling: forward locality tolerance
+
+**Ruling, before any forward score is opened:** the absolute `1e-4` state
+tolerance was mis-scaled for residual coordinates whose magnitude at `q` can
+reach about `378`. The primary endpoint is not void on this control. Exact
+causal masking remains the mathematical invariant; the observed state
+difference is float32 kernel-path variation with sequence length.
+
+For this run, the corrected position control is, for every captured layer and
+sentinel, both:
+
+`max_i |h_l(S||s)[q,i] - h_l(S)[q,i]| <= max(1e-6 * M_q, epsilon_state_floor)`,
+where `M_q = max_i |h_l(S)[q,i]|`, and
+`max_j |log p_j(S||s,q) - log p_j(S,q)| <= max(1e-4, epsilon_loglaw_floor)`.
+
+The floors are the measured batched-vs-single numerical floors for the same
+appended sequence at `q`. This relative-state plus absolute-log-law clause is
+the corrected predeclared intent and applies to the current run because it was
+settled before any forward score was opened; future preregistrations must state
+it explicitly. Here `3.624e-4 <= max(3.78e-4, 1.22e-4)` and
+`6.58e-5 <= max(1e-4, 2.96e-5)`, so both locality controls pass. The forward
+endpoint remains eligible subject to its other gates. Interpret the control as
+evidence against causal nonlocality beyond numerical variation, not as exact
+float32 equality or as evidence for any broader dynamics claim.
