@@ -5694,3 +5694,384 @@ The four-cell Freedman–Lane expansion remains unauthorized. Multi-position con
 The next latent space must provide either explicit quotient coordinates that identify operationally equivalent places across presentation or explicit bridge coordinates/maps connecting presentation-conditioned charts. Those coordinates must be available to the denizen rather than supplied post hoc by the analyst, must preserve declared moves and response laws across equivalent presentations while separating genuinely different operations, must expose a calibrated move norm and consequence currency, and must support multi-step composition. A valid v2 hostile result would motivate that construction locally; it would not prove that no richer quotient exists.
 
 No new axiom is earned. No experiment was run in Round 31.
+
+### Operation-update move contract (Round 31 addendum)
+
+**Status and supersession.** This is a documentation-only design lock. No
+capture, model load, score, or result inspection is authorized by this
+addendum. It replaces only the Round 30 `not`-insertion clauses in Part 2,
+Part 3, `forward_insert`, and the second-move branches of the bridge and
+interchangeability designs. The punctuation-A/B contracts are unchanged.
+`capture_insert` and `--source forward_insert` remain historical v1 machinery
+and must hard-reject v2, v3, or the `OP_UPDATE` tag; no `NOT` artifact can
+satisfy this contract.
+
+**Population ruling during this design gate.** The independent linguistic
+adversary has now voided `lexical_probe_fresh_v2`: all 16
+`For reference`/`For clarity` pair-by-POS cells fail the population's own
+operational-equivalence/edit-scope rule because those phrases can contribute
+different discourse purposes. No v2 capture is permitted. The live authored
+successor is `lexical_probe_fresh_v3.json`, with `Please`/`Kindly` and
+straight/typographic-apostrophe presentation systems; it remains pending its
+own independent adversary and tokenization approval. The mechanics below are
+locked for the first successor population which clears those gates, presently
+v3. The v2 facts asked about here—metalinguistic word alignment,
+template-final slot, and empty native suffix—are retained unchanged by v3.
+
+The expected useful result is a coherent word-slot transition which either
+transfers across wrappers and unseen words or fails in a way that localizes a
+presentation-conditioned hole. A pass would establish only a bounded
+operation-update regularity in this decoder and population. A failure would
+not show that operation updates are impossible in residual streams. The
+simplest confound capable of explaining every positive row is that the full
+tokenized prefix, including the operation verb and wrapper, supplies a smooth
+template fingerprint which predicts both the source state and the recipient
+law without exposing an operational coordinate to the denizen. The
+contextual-prefix X-free arm and bridge ladder remain ahead of any state or
+hostile-hole wording for that reason.
+
+#### Declared update population and direction
+
+The primary universe is **all eight same-wrapper rows belonging to the two
+declared updates**, not the four existing
+`operational_controls.control_pairs`, and not every arbitrary cross-operation
+pair. The operation direction is frozen one way only:
+
+| Update ID | Source template `T_a` | Recipient template `T_b` | Wrapper |
+|---|---|---|---|
+| `repeat_to_omit__please` | `repeat_1` | `omit_1` | `please` |
+| `repeat_to_omit__kindly` | `repeat_2` | `omit_2` | `kindly` |
+| `repeat_to_omit__apostrophe_straight` | `repeat_3` | `omit_3` | `apostrophe_straight` |
+| `repeat_to_omit__apostrophe_curly` | `repeat_4` | `omit_4` | `apostrophe_curly` |
+| `capitalize_to_reverse__please` | `capitalize_1` | `reverse_1` | `please` |
+| `capitalize_to_reverse__kindly` | `capitalize_2` | `reverse_2` | `kindly` |
+| `capitalize_to_reverse__apostrophe_straight` | `capitalize_3` | `reverse_3` | `apostrophe_straight` |
+| `capitalize_to_reverse__apostrophe_curly` | `capitalize_4` | `reverse_4` | `apostrophe_curly` |
+
+Thus probe 3 never adds `omit -> repeat` or `reverse -> capitalize` as extra
+samples: those are algebraic inverse reuse of the same authored cells, were
+not the move declared in Round 31, and would create pseudo-replication.
+“Both directions” below means donor-to-recipient and recipient-to-donor
+**presentation transport of the same directed update**, not reversal of the
+operation update itself.
+
+Before capture, the approved successor config must add an `operation_updates`
+object which freezes the eight ordered rows above,
+`directionality = forward_only`, the two update-family labels, the four
+wrapper labels, the trajectory-level presentation pairs, and the trajectory-
+level negative controls defined below. The existing four
+`operational_controls.control_pairs` remain the punctuation move's controls;
+they are only the `please` and `apostrophe_straight` subset of the update rows
+and cannot be overloaded as the update universe.
+
+For update row `u=(T_a,T_b)`, word `w`, and hidden index `l`:
+
+`X[u,l,w] = H_slot[T_a,l,w]`,
+
+`Y[u,l,w] = H_slot[T_b,l,w]`, and
+
+`Delta[u,l,w] = Y[u,l,w] - X[u,l,w]`.
+
+The source and recipient are aligned by the same item/token identity, never
+by equal absolute position. Their word-slot indices may differ if the
+operation verbs tokenize to different lengths.
+
+#### Capture source, true law, and completed-law writeback
+
+Use the plain `experiments/run_lm_dynamics.py capture` stage, extended in the
+same runner; do not use a sentinel-appended state as the canonical source and
+do not create another runner. Add `--tag`, `--repeat-null`, and
+`--expected-config-sha256` to `capture` with the same fail-before-model-work
+semantics as `capture_forward`. The locked call shape is:
+
+```text
+python experiments/run_lm_dynamics.py capture --config experiments/config/lexical_probe_fresh_v3.json --out <run> --tag OP_UPDATE --repeat-null --expected-config-sha256 <approved-raw-sha256>
+```
+
+It writes `states_OP_UPDATE.npz` and `manifest_OP_UPDATE.json`. Preserve the
+current array names `Z[P,L+1,N,D]` and `laws[P,N,V]`, but pin their semantics
+as `H_slot` and `law_at_word_slot` in the manifest. Add arrays
+`slot_position[P]`, `readout_position[P]`, `sequence_len[P]`,
+`repeat_slot_l2[P,L+1,N]`, and `repeat_readout_kl[P,N]`, plus the existing
+ordered `items`, `pos`, `probes`, and `blocks`. `repeat_slot_l2` is the
+float32 L2 difference between two identical sequence forwards at the word
+slot; it is absolute, not normalized by any update norm. The analyzer derives
+recipient-specific normalized repeat errors only after the update rows and
+move norms are known.
+
+For the voided v2 and current v3 designs, every suffix must tokenize to the
+empty list and every word slot must equal `sequence_len - 1`. Therefore the
+current plain capture's last-position law is exactly the law at the word
+position. The true response law for update row `u` is
+
+`q_true[u,w] = laws[T_b,w]`,
+
+the unmodified recipient `T_b` law at its word position. It is not the source
+law, an appended-sentinel law, or a separate last-token-after-suffix law.
+`capture_forward`'s `H_slot`, `H_last`, and `H_q_unappended` should agree for
+this empty-suffix population up to the registered causal/reload tolerance and
+may be reported as a cross-capture diagnostic, but `law_sent` is the
+punctuation move's endpoint and cannot gate operation update.
+
+For a prediction `Delta_hat`, first reassemble the raw displacement under
+static residualization,
+
+`Delta_hat = f_Delta(P_static) + Delta_perp_hat`,
+
+then form `Yhat = X + Delta_hat`. Complete in the **recipient template's own
+unappended sequence**. At hidden index `l`, write `Yhat` at `T_b`'s word slot,
+hook decoder block `l-1`, and read the law at that same word slot. The exact
+calls which Claude must implement are:
+
+```python
+q_true = completer.laws(
+    recipient_probe_idx, states_emb[widx], l - 1, Yhat=None
+)[0]
+q_hat = completer.laws(
+    recipient_probe_idx, states_emb[widx], l - 1, Yhat=Yhat
+)[0]
+```
+
+No `append_emb`, `pos`, or `insert_before_slot_emb` kwarg is supplied. Passing
+`l - 1` is required because `WorldCompleter` hooks block `l-1` to replace
+hidden index `l`; at `l=0`, its existing `layer_l < 0` branch replaces the
+recipient embedding row directly. `[0]` is the slot law. Although `[1]` is
+numerically the same position for an empty suffix, it is not the registered
+API endpoint and must not be substituted. The fresh unmodified `q_true` must
+be checked against stored float16 `laws[T_b]`; stored laws are reload targets,
+not a shortcut around the recipient completion path.
+
+#### Analyzer source, coordinates, folds, nulls, and probe-3 gate
+
+Add `op_update` to `--source`. Add
+`--update-pairs` with the sole confirmatory value `from_config`; require
+`--move-tag OP_UPDATE`. The confirmatory invocation is exactly the existing
+fresh-move analysis shape:
+
+```text
+python experiments/analyze_lm_dynamics.py --run <run> --config experiments/config/lexical_probe_fresh_v3.json --source op_update --move-tag OP_UPDATE --update-pairs from_config --target delta --unseen-words 2 --residualize static --pairs 0 1 2 3 4 --n-boot 500 --tag op_update_v3
+```
+
+`op_update` implies the Round 30 continuous-KL gates. It rejects sentinel,
+insert, control-tag, identity-check, baselines, LOCO, style-null, screen,
+residualizer-selection, and permutation-null options. It requires completion,
+all five fixed checkpoints `F0/F4/F8/F12/F20`, the approved successor raw
+hash, and the manifest/array contract below. No screen outcome may select a
+layer or an update subset.
+
+For each of the eight update rows, `P_static` has these 14 coordinates in
+fixed order:
+
+1. two centered update-family indicators:
+   `repeat_to_omit`, `capitalize_to_reverse`;
+2. four centered wrapper indicators: `please`, `kindly`,
+   `apostrophe_straight`, `apostrophe_curly`;
+3. `source_prefix_token_count`, `recipient_prefix_token_count`,
+   `source_sequence_length`, `recipient_sequence_length`,
+   `source_word_slot_position`, `recipient_word_slot_position`,
+   `source_word_slot_position/source_sequence_length`, and
+   `recipient_word_slot_position/recipient_sequence_length`.
+
+Positions are zero-based. One-hots are centered over the eight frozen update
+rows; numerical columns and nuisance fits are standardized strictly inside
+each calibration fold. Empty source/recipient suffixes are manifest
+assertions rather than two constant feature columns. No template name, pair
+ID, raw text, token ID, word ID, item embedding, hidden state, result, or
+outcome is a `P_static` coordinate.
+
+An operation family cannot be the primary held-out unit because each move
+crosses two operation families. Define an **update carrier** as
+`(update_family, wrapper)`. The primary outer split is four
+leave-one-wrapper-out folds. Each held wrapper contributes two test carriers,
+one for `repeat_to_omit` and one for `capitalize_to_reverse`; calibration uses
+the six carriers from the other three wrappers. Cross those folds with the
+same two POS-stratified unseen-word folds. Each of the eight keys therefore
+has `6 carriers x 40 calibration words` and `2 carriers x 40 held-out words`,
+with both source and recipient templates absent from the other side and word
+identities disjoint. Inner selection leaves one of the three calibration
+wrappers out and rebuilds every nuisance basis, standardizer, and
+hyperparameter. The config's `repeat/omit` versus `capitalize/reverse`
+directional split may be reported once as a secondary frozen
+cross-update-family diagnostic; it cannot enter selection or count toward the
+eight-key gate.
+
+The crossed bootstrap resamples the four held-wrapper units first, resamples
+the two update carriers within a sampled wrapper, and uses one POS-stratified
+held-word draw for a word-fold key crossed across all sampled wrappers.
+Report each update family separately; a pooled mean cannot hide either
+family's reversal.
+
+The fixed unseen-word universe remains exactly K=13:
+`identity`, `mean`, `class_mean`, `wordonly_knn`,
+`wordonly_ridge_emb`, `wordonly_kernel_emb`, `knn1`, `knn5`, `knn20`,
+`ridge`, `lowrank`, `kernel`, and `chart`. The four X-free lexical nulls are
+unchanged: POS-class mean residual displacement, frozen-input-embedding
+word-only cosine kNN, word-only ridge, and word-only RBF kernel ridge. All
+feature construction and tuning are nested in calibration wrappers and
+calibration words. `mean` is the shared calibration displacement. A
+per-word mean is unavailable in the unseen-word test and does not enter K=13.
+
+The identity null means literally `Delta_hat=0`, hence `Yhat=X`: changing the
+operation verb is predicted to make no word-slot move. At supported F4-F20
+cells its normalized error is one and its recipient law is completed by
+writing source `X` into `T_b`. A zero prediction has no defined displacement
+cosine, so identity is not manufactured into a cosine comparator; it remains
+in K=13 and must be beaten with positive crossed lower bounds on normalized
+error improvement and continuous-KL improvement before any X-conditioned
+reading. The four X-free nulls remain the primary three-endpoint competitors.
+
+At F0 the same mentioned word supplies the same embedding row in `T_a` and
+`T_b`. In the pinned architecture no absolute-position vector is added to
+that row, so `Delta_0=0` structurally even if the two word slots have different
+indices. The capture manifest records the float32 maximum absolute difference
+for every update row. F0 reports that control, move-norm quantiles, reload
+error, and unsupported denominators only; it cannot pass or fail probe 3.
+
+For F4/F8/F12/F20, select the primary field family among
+`ridge/lowrank/kernel` by the mean displacement cosine over the inner
+leave-one-wrapper-out validation folds, after each family's own
+hyperparameters have been selected on those same inner folds. Break an exact
+tie in the fixed cheaper order `ridge`, `lowrank`, `kernel`, and expose the
+selected name and all inner scores per outer key; held-out model-family
+selection is forbidden. A layer qualifies only if that preselected field
+beats the strongest of the
+four X-free lexical nulls by `>=0.02`, with positive crossed lower bounds, on
+all three registered endpoints: displacement cosine, response-law skill
+relative to the same-fold shared-displacement completion, and continuous-KL
+improvement `KL(null)-KL(field)`. The strongest-null minimum is taken inside
+each bootstrap replicate. It must also beat identity as just specified, have
+at least `6/8` fold keys jointly positive on all three primary margins, show
+no collapse or sign reversal in either update family, and retain common K=13
+support `>=0.95`. The operation-update move qualifies only with at least two
+qualifying F4-F20 layers. A pass remains one directed move class in one
+decoder and does not establish composition, presentation independence, or a
+native law.
+
+#### Bridge and interchangeability source contract
+
+Both early-return modes consume the same materialized source entry. With the
+eight config rows in frozen order, the entry is semantically:
+
+```python
+sources["op_update"] = {
+    "X": Z[source_probe_idx].astype(np.float32),       # [8,L+1,N,D]
+    "Y": Z[recipient_probe_idx].astype(np.float32),    # [8,L+1,N,D]
+    "law": laws[recipient_probe_idx].astype(np.float32),  # [8,N,V]
+    "cls": "operation_update",
+    "source_probe_idx": source_probe_idx,
+    "recipient_probe_idx": recipient_probe_idx,
+    "kw": {},
+    "repeat_slot_l2": repeat_slot_l2[recipient_probe_idx],
+    "repeat_readout_kl": repeat_readout_kl[recipient_probe_idx],
+    "man": manifest,
+}
+```
+
+`laws_at(source, u, l, Yhat, widx)` must translate update-row index `u` to
+`recipient_probe_idx[u]`, call `WorldCompleter.laws` with the empty `kw` and
+`l-1`, and take `[0]`. The recipient's target template, slot, and word law are
+used for same-presentation, swapped, bridge, control, and truth calls. The
+same-presentation reference writes stored `Y[u,l,w]` through the identical
+hook; hook/reload error is therefore shared.
+
+Freeze these four equivalent trajectory-pair clusters:
+
+- `repeat_to_omit__please` with `repeat_to_omit__kindly`;
+- `repeat_to_omit__apostrophe_straight` with
+  `repeat_to_omit__apostrophe_curly`;
+- `capitalize_to_reverse__please` with
+  `capitalize_to_reverse__kindly`;
+- `capitalize_to_reverse__apostrophe_straight` with
+  `capitalize_to_reverse__apostrophe_curly`.
+
+Each is transported in both presentation donor directions using calibration
+words only. Freeze four trajectory-level negative controls by pairing
+`repeat_to_omit` with `capitalize_to_reverse` under the identical wrapper,
+once for each of `please`, `kindly`, `apostrophe_straight`, and
+`apostrophe_curly`.
+These replace `operational_controls.control_pairs` only for the operation-
+update source. They test whether a bridge or swap also collapses two genuinely
+different declared updates while wrapper is fixed.
+
+The bridge ladder remains positive scalar, diagonal ridge toward the scalar,
+`alpha I + UV^T` at fixed ranks `{1,2,4,8,16}`, and scaled orthogonal
+Procrustes, selected inside calibration words per source/layer/trajectory-pair
+direction. Apply the same calibration-only fitting discipline to equivalent
+and negative-control comparisons. For operation update,
+`rho_move=max(q99 recipient repeat_slot_l2, 1e-6 x median calibration move
+norm)` per layer/recipient; cells with `||Delta||<=rho_move` are unsupported.
+Endpoint `tau=max(0.02, 2 x calibration fixed-input q99 noise)` is frozen
+before held-out swaps. Scalar failure alone is not hostile, and repair by any
+calibration-selected simple bridge blocks a hostile verdict.
+
+Because the directed update universe yields four unordered equivalent
+trajectory-pair clusters, the stale generic `6/8 matched pairs` phrase cannot
+be copied literally to this source. For operation update, the breadth clause
+is at least `3/4` clusters satisfying the point criterion in **both**
+presentation donor directions, with both update families represented and no
+family reversal. All four trajectory-level controls must remain separated
+above endpoint-specific `tau`. Punctuation retains its existing `6/8`
+matched-pair clause and requires A and B at the same layer. Stable or hostile
+joint passage requires at least two layers in the intersection of the
+punctuation-A, punctuation-B, and operation-update passing-layer sets. All
+other pooled, interval, move-floor, bridge, control, and local-scope clauses
+from Round 31 remain unchanged.
+
+#### Manifest, provenance, and Tier-1 acceptance checklist
+
+`load_config_checked` and `common_manifest` must cover the operation capture;
+legacy `capture` provenance is insufficient. Every OP_UPDATE manifest stores:
+
+- `config_sha256_raw`, `config_git_blob`, `config_git_commit`, and the
+  separately named `config_declared_sha256`, all checked before model load;
+- successor-version linguistic-adversary approval and tokenization-approval
+  identifiers and statuses; capture refuses v2, any pending/failed
+  population, or an absent approved raw hash;
+- canonical hashes over ordered items, ordered
+  `(name, block, operation, template, pair)` template rows, where `operation`
+  is explicit or is asserted equal to `block` before hashing,
+  `presentation_pairs`, `operational_controls`, all eight ordered
+  `operation_updates.update_pairs`, the four update trajectory-pair clusters,
+  and the four update trajectory controls;
+- `move_kind=operation_verb_update`, `move_tag=OP_UPDATE`,
+  `directionality=forward_only`, `source_alignment=word_token`,
+  `readout_kind=recipient_word_slot`, the two allowed update-family labels,
+  all eight source/recipient probe indices and names, wrapper labels, and the
+  fixed update-row order;
+- per template exact prefix/suffix token IDs, zero-based word slot and readout
+  position, sequence length, the assertion `suffix_token_ids=[]`, and the
+  assertion `word_slot=readout_position=sequence_len-1`; plus per update row
+  both source and recipient slots/lengths and same-item alignment;
+- per-update-row float32 F0 word-state maximum absolute difference, its
+  required zero/registered numerical status, repeat-state and repeat-law
+  summary quantiles, and the fact that full per-cell repeat arrays are in the
+  NPZ;
+- model and tokenizer revisions, tokenizer class, layer count, embedding and
+  vocabulary dimensions, Python/NumPy/PyTorch/Transformers versions, device,
+  compute/storage dtype, thread count, batch size, exact argv, elapsed time,
+  array filename/hash, every array name/shape, and the approved config path.
+
+The A/B sentinel manifests used jointly with this source must share the same
+raw config hash, Git blob/commit, model revision, tokenizer revision,
+item/template/map hashes, layer/dimension pins, and ordered probe/item axes.
+For the empty-suffix successor population they additionally record and verify
+`source_position=word_slot`, `readout_position=word_slot+1`, and sentinel
+append after the word. In punctuation analysis `law_sent` remains primary;
+the fact that `law_last` is now the pre-sentinel word law does not change the
+punctuation endpoint.
+
+A Tier-1 reviewer returns **NOT-READY** unless all of the following are
+literal in code and a no-model fixture test: eight forward-only update rows,
+the four wrapper-held-out by two unseen-word folds, 14 ordered `P_static`
+columns, exact K=13 and four X-free nulls, structural F0 handling, recipient-
+template `WorldCompleter(..., l-1)[0]` with empty kwargs, target-law reload,
+common support and strongest-null-inside-replicate gating, operation-specific
+trajectory pair/control maps, bridge move floor and `tau`, all required
+manifest hashes/positions, and hard rejection of v1 `NOT` artifacts. The
+review must also verify that no experiment was run during implementation or
+review and that flag-off punctuation behavior is unchanged.
+
+No claim is earned by this addendum. Its “so what” is that the denizen now has
+a coherent candidate move—change the declared operation while holding the
+mentioned object and wrapper fixed—whose portability across presentations can
+be tested without confusing it with malformed negation or punctuation.
