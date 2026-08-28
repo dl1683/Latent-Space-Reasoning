@@ -5,6 +5,30 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Residualization B P_aug-score4 completes the 2×2 table; third launch with the SVD fallback
+
+- Sentinel ',' with the implemented score-4 augmented design; 5074 s of the
+  7200 s wall on the third launch (the first two died at F8 grammar_w1 with
+  torch SVD non-convergence on the fitted low-rank coefficient matrix; the
+  committed analyzer now falls back to a float64 LAPACK SVD — this cell is an
+  amended-implementation cell and is reported as such).
+- **F4, F8, F12, F20 pass** the residual-vs-null gate (X⊥ ridge 0.52–0.57 vs
+  strongest residual null 0.06–0.09; block-first leads cos +0.46–0.51,
+  skill +0.40–0.44, KL-rank +0.45–0.54; 6–8/8 full keys; no collapse).
+  **F0 fails** (cos +0.33 but skill LB −0.04; 4/8 full keys).
+- Registered-static-metadata + carrier-summary nuisance arm (P_aug → Δ)
+  0.42–0.64 by layer (not a presentation-only component).
+- Same-run common-scale ratios exceed 0.5 at the median at F4–F20 (F0 wide).
+- Reading (audit #16 discipline): within one decoder and one authored
+  population, under both sentinels and both registered nuisance designs,
+  X⊥ retains predictive association with Δ⊥ beyond the four X-free lexical
+  nulls at F4–F20; F0 passes only for the A score-4 cell (sparse keys). These
+  are four correlated same-population sensitivities, not replications; they
+  identify neither operational state nor presentation independence.
+- The chain continues automatically: resSA2 (patched A-static common-scale
+  cell), then run_r31.cmd (probe-1 screens, P_aug-full cell A,
+  contextual-prefix screens and completions). Codex round 32 adjudicates.
+
 ## 2026-08-29 — Round 31 adopts audit #16; v2 population authored, then voided by the independent adversary
 
 - Round 31 (Codex, `71b5ce3`): audit #16 adopted verbatim; fresh v1 voided for
