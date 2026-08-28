@@ -1,0 +1,428 @@
+{
+  "name": "lexical_probe_fresh_v3",
+  "status": "authored_pending_independent_linguistic_adversary_and_tokenization",
+  "note": "Round 31 replacement for VOIDED fresh v2. This new file was authored from scratch after reading only the Round 31 population contract, the voided v2 structure and passing elements, and the independent v2 linguistic-adversary report. The author did not inspect any model behavior, capture, tokenization-derived selection, or result file. It is not frozen: a separate fresh Codex linguistic adversary and a tokenization audit must approve every cell before any capture, and any failed cell voids this entire version rather than permitting an edit.",
+  "authoring_provenance": {
+    "role": "outcome-blind_author",
+    "session": "fresh Codex Round 31 v3 author session",
+    "allowed_sources": [
+      "theory/EXPERIMENTS.md#Round 31",
+      "experiments/config/lexical_probe_fresh_v2.json",
+      ".codex_v2_linguistic_adversary.md"
+    ],
+    "v3_template_model_behavior_seen": false,
+    "v3_template_tokenization_seen": false,
+    "capture_or_result_files_seen": false,
+    "independent_linguistic_adversary_required": true,
+    "adversary_must_be_separate_fresh_codex_session": true,
+    "adversary_v3_model_behavior_access": "forbidden",
+    "freeze_timing": "only after independent linguistic approval and tokenization approval; before capture"
+  },
+  "replacement_contract": [
+    "Create an entirely new version; never mutate or relabel v2.",
+    "Require pre-capture approval of all 8 pairs x 4 POS classes = 32 cells.",
+    "Within every cell, preserve syntactic dependency, category licensing, polarity, modality, definiteness, quantification, degree, tense, speech act, and continuation demand.",
+    "Both members must be independently judged grammatical and operationally equivalent; equally malformed does not count.",
+    "Presentation edits must be limited to predeclared non-truth-conditional register or orthographic variation outside the slot dependency frame, and the varied form must be unable to supply a reason, goal, condition, or other content for the operation.",
+    "Controls must match register, grammaticality, approximate token length, and surface-edit magnitude while changing one declared operation.",
+    "Use an outcome-blind author and a separate linguistic adversary who have no access to v3 model behavior.",
+    "Freeze texts, pair maps, cell-level linguistic judgments, controls, tokenization, raw file digest, Git blob, gates, and commands before capture.",
+    "Any failed linguistic or tokenization cell voids the entire candidate version before model work; generate a new version from scratch rather than substituting a template.",
+    "Predeclare a scalar bridge and a calibration-only diagonal/low-rank/orthogonal bridge ladder. A hostile-hole verdict is unavailable unless the simple bridge ladder also fails.",
+    "Require the hostile equivalent-swap lower bound to exceed the endpoint-specific numerical threshold tau, not merely zero.",
+    "Predeclare a near-zero move-norm floor before computing normalized degradation."
+  ],
+  "systems": [
+    {
+      "id": "politeness_particle",
+      "members": [
+        "Please",
+        "Kindly"
+      ],
+      "variation": "scope-fixed directive-initial politeness particle",
+      "semantic_inertness": "The members differ only in conventional politeness/register; neither contributes a reason, goal, condition, polarity, modality, or operation."
+    },
+    {
+      "id": "apostrophe_orthography",
+      "members": [
+        "You're",
+        "You’re"
+      ],
+      "variation": "U+0027 straight apostrophe versus U+2019 typographic apostrophe in the same contraction",
+      "semantic_inertness": "The glyph choice has no syntactic or semantic scope and cannot contribute any content to the requested operation."
+    }
+  ],
+  "frame_design": {
+    "decision": "metalinguistic_mention",
+    "slot_dependency_frame": "the word <X>",
+    "justification": "Every item is used as a mentioned word rather than as a noun, verb, adjective, or function word in the surrounding syntax. Therefore all 80 strings are licensed by the same dependency frame. Every paired edit is scope-fixed outside that frame and independently inert for every inventory.",
+    "presentation_pair_1_edit": "Please -> Kindly; one directive-initial politeness-particle substitution",
+    "presentation_pair_2_edit": "You're -> You’re; one apostrophe glyph substitution, U+0027 -> U+2019, with every letter and syntactic position unchanged",
+    "control_edit": "one operation-verb substitution under an identical wrapper and literal slot dependency frame",
+    "declared_operations": [
+      "repeat",
+      "omit",
+      "capitalize",
+      "reverse"
+    ]
+  },
+  "items_from": "experiments/config/lexical_probe_fresh_v2.json",
+  "items": {
+    "noun": [
+      "dog",
+      "cat",
+      "house",
+      "river",
+      "city",
+      "book",
+      "table",
+      "mountain",
+      "doctor",
+      "child",
+      "window",
+      "money",
+      "music",
+      "bread",
+      "forest",
+      "engine",
+      "king",
+      "stone",
+      "garden",
+      "ocean"
+    ],
+    "verb": [
+      "run",
+      "walk",
+      "eat",
+      "write",
+      "build",
+      "break",
+      "sleep",
+      "think",
+      "speak",
+      "fly",
+      "carry",
+      "push",
+      "open",
+      "close",
+      "drive",
+      "sing",
+      "throw",
+      "hold",
+      "learn",
+      "wash"
+    ],
+    "adj": [
+      "red",
+      "blue",
+      "big",
+      "small",
+      "hot",
+      "cold",
+      "fast",
+      "slow",
+      "happy",
+      "sad",
+      "dark",
+      "bright",
+      "heavy",
+      "soft",
+      "loud",
+      "quiet",
+      "old",
+      "young",
+      "wet",
+      "empty"
+    ],
+    "func": [
+      "the",
+      "of",
+      "and",
+      "but",
+      "because",
+      "if",
+      "with",
+      "from",
+      "under",
+      "between",
+      "although",
+      "while",
+      "after",
+      "before",
+      "into",
+      "through",
+      "without",
+      "until",
+      "since",
+      "than"
+    ]
+  },
+  "slot_convention": "The item is inserted as its own embedding row replacing <X>. Every v3 carrier uses the identical metalinguistic dependency frame 'the word <X>' and ends exactly at <X>, so the native suffix is empty. This template-final choice avoids adding suffix content to the population, but it means an appended punctuation sentinel becomes the entire post-slot context: it is a controlled response move, not a semantically invisible append, and its boundary-sensitive tokenization must be audited. Slot alignment, paired prefix identity apart from the declared edit, sentinel tokenization, and all item rows remain pending the independent pre-freeze tokenization audit.",
+  "calibration_blocks": [
+    "repeat",
+    "omit"
+  ],
+  "heldout_blocks": [
+    "capitalize",
+    "reverse"
+  ],
+  "presentation_pairs": {
+    "repeat_pair1": [
+      "repeat_1",
+      "repeat_2"
+    ],
+    "repeat_pair2": [
+      "repeat_3",
+      "repeat_4"
+    ],
+    "omit_pair1": [
+      "omit_1",
+      "omit_2"
+    ],
+    "omit_pair2": [
+      "omit_3",
+      "omit_4"
+    ],
+    "capitalize_pair1": [
+      "capitalize_1",
+      "capitalize_2"
+    ],
+    "capitalize_pair2": [
+      "capitalize_3",
+      "capitalize_4"
+    ],
+    "reverse_pair1": [
+      "reverse_1",
+      "reverse_2"
+    ],
+    "reverse_pair2": [
+      "reverse_3",
+      "reverse_4"
+    ]
+  },
+  "operational_controls": {
+    "note": "Each candidate control keeps the complete wrapper and metalinguistic dependency frame identical while substituting exactly one declared operation verb. The four controls are linguistically matched at authoring time; subword-token length remains a separate pre-freeze gate.",
+    "control_pairs": [
+      [
+        "repeat_1",
+        "omit_1"
+      ],
+      [
+        "repeat_3",
+        "omit_3"
+      ],
+      [
+        "capitalize_1",
+        "reverse_1"
+      ],
+      [
+        "capitalize_3",
+        "reverse_3"
+      ]
+    ],
+    "control_definitions": [
+      {
+        "id": "control_repeat_to_omit_politeness",
+        "templates": [
+          "repeat_1",
+          "omit_1"
+        ],
+        "declared_operation_change": "repeat -> omit"
+      },
+      {
+        "id": "control_repeat_to_omit_orthographic",
+        "templates": [
+          "repeat_3",
+          "omit_3"
+        ],
+        "declared_operation_change": "repeat -> omit"
+      },
+      {
+        "id": "control_capitalize_to_reverse_politeness",
+        "templates": [
+          "capitalize_1",
+          "reverse_1"
+        ],
+        "declared_operation_change": "capitalize -> reverse"
+      },
+      {
+        "id": "control_capitalize_to_reverse_orthographic",
+        "templates": [
+          "capitalize_3",
+          "reverse_3"
+        ],
+        "declared_operation_change": "capitalize -> reverse"
+      }
+    ]
+  },
+  "probes": [
+    {
+      "block": "repeat",
+      "name": "repeat_1",
+      "template": "Please plan to repeat the word <X>",
+      "pair": "repeat_pair1"
+    },
+    {
+      "block": "repeat",
+      "name": "repeat_2",
+      "template": "Kindly plan to repeat the word <X>",
+      "pair": "repeat_pair1"
+    },
+    {
+      "block": "repeat",
+      "name": "repeat_3",
+      "template": "You're asked to plan to repeat the word <X>",
+      "pair": "repeat_pair2"
+    },
+    {
+      "block": "repeat",
+      "name": "repeat_4",
+      "template": "You’re asked to plan to repeat the word <X>",
+      "pair": "repeat_pair2"
+    },
+    {
+      "block": "omit",
+      "name": "omit_1",
+      "template": "Please plan to omit the word <X>",
+      "pair": "omit_pair1"
+    },
+    {
+      "block": "omit",
+      "name": "omit_2",
+      "template": "Kindly plan to omit the word <X>",
+      "pair": "omit_pair1"
+    },
+    {
+      "block": "omit",
+      "name": "omit_3",
+      "template": "You're asked to plan to omit the word <X>",
+      "pair": "omit_pair2"
+    },
+    {
+      "block": "omit",
+      "name": "omit_4",
+      "template": "You’re asked to plan to omit the word <X>",
+      "pair": "omit_pair2"
+    },
+    {
+      "block": "capitalize",
+      "name": "capitalize_1",
+      "template": "Please plan to capitalize the word <X>",
+      "pair": "capitalize_pair1"
+    },
+    {
+      "block": "capitalize",
+      "name": "capitalize_2",
+      "template": "Kindly plan to capitalize the word <X>",
+      "pair": "capitalize_pair1"
+    },
+    {
+      "block": "capitalize",
+      "name": "capitalize_3",
+      "template": "You're asked to plan to capitalize the word <X>",
+      "pair": "capitalize_pair2"
+    },
+    {
+      "block": "capitalize",
+      "name": "capitalize_4",
+      "template": "You’re asked to plan to capitalize the word <X>",
+      "pair": "capitalize_pair2"
+    },
+    {
+      "block": "reverse",
+      "name": "reverse_1",
+      "template": "Please plan to reverse the word <X>",
+      "pair": "reverse_pair1"
+    },
+    {
+      "block": "reverse",
+      "name": "reverse_2",
+      "template": "Kindly plan to reverse the word <X>",
+      "pair": "reverse_pair1"
+    },
+    {
+      "block": "reverse",
+      "name": "reverse_3",
+      "template": "You're asked to plan to reverse the word <X>",
+      "pair": "reverse_pair2"
+    },
+    {
+      "block": "reverse",
+      "name": "reverse_4",
+      "template": "You’re asked to plan to reverse the word <X>",
+      "pair": "reverse_pair2"
+    }
+  ],
+  "linguistic_judgment_legend": {
+    "scope": "Every row covers all 20 items in the named POS inventory.",
+    "pair_pass": "Both templates are independently grammatical; the item is metalinguistically licensed; the invariant bundle is preserved; only the declared scope-fixed politeness or apostrophe form differs; and that form cannot supply content for the operation.",
+    "control_pass": "Both templates are independently grammatical under an identical wrapper and dependency frame; wrapper meaning is inert/equivalent; exactly one declared operation verb differs; word count and edit magnitude are matched at authoring time, with subword-token length still pending.",
+    "invariant_bundle": "syntactic dependency, category licensing, polarity, modality, definiteness, quantification, degree, tense, speech act, and continuation demand",
+    "status": "These are the outcome-blind author's explicit cell judgments, not independent approval. Every row remains pending a separate fresh Codex adversary and tokenization audit."
+  },
+  "presentation_pair_cell_judgments": [
+    {"cell_id":"repeat_pair1__noun","pair":"repeat_pair1","pos":"noun","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"politeness_particle","reason":"All noun strings are mentioned after 'the word'; Please and Kindly are directive-initial politeness particles differing only in register and cannot add operational content.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"repeat_pair1__verb","pair":"repeat_pair1","pos":"verb","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"politeness_particle","reason":"All verb strings are mentioned rather than used as predicates; the politeness-particle substitution changes register only and cannot alter repeat.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"repeat_pair1__adj","pair":"repeat_pair1","pos":"adj","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"politeness_particle","reason":"All adjective strings are licensed as mentioned words; Please and Kindly have no scope that can supply a reason, goal, condition, or change to repeat.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"repeat_pair1__func","pair":"repeat_pair1","pos":"func","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"politeness_particle","reason":"Even function-word strings are grammatical autonyms after 'the word'; the two politeness particles change register only and leave repeat identical.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"repeat_pair2__noun","pair":"repeat_pair2","pos":"noun","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"apostrophe_orthography","reason":"All noun strings are mentioned after 'the word'; U+0027 and U+2019 spell the same contraction You're and have no semantic scope over repeat.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"repeat_pair2__verb","pair":"repeat_pair2","pos":"verb","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"apostrophe_orthography","reason":"All verb strings are mentioned, so category licensing is unchanged; the apostrophe glyph is purely orthographic and cannot alter repeat or directive force.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"repeat_pair2__adj","pair":"repeat_pair2","pos":"adj","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"apostrophe_orthography","reason":"All adjective strings occupy the same mention frame; straight versus typographic apostrophe changes no word, parse, purpose, condition, or operation.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"repeat_pair2__func","pair":"repeat_pair2","pos":"func","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"apostrophe_orthography","reason":"Function-word strings remain grammatical metalinguistic targets; the apostrophe code point has no interpretation that can change repeat.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"omit_pair1__noun","pair":"omit_pair1","pos":"noun","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"politeness_particle","reason":"All noun strings are mentioned; Please and Kindly only vary conventional politeness and cannot change the declared omit operation.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"omit_pair1__verb","pair":"omit_pair1","pos":"verb","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"politeness_particle","reason":"All verb strings are autonyms in the same frame; the particle choice changes register only and supplies no reason, goal, or condition for omit.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"omit_pair1__adj","pair":"omit_pair1","pos":"adj","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"politeness_particle","reason":"All adjective strings are mentioned words; the politeness substitution is outside the dependency frame and leaves omit and every invariant unchanged.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"omit_pair1__func","pair":"omit_pair1","pos":"func","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"politeness_particle","reason":"Function-word strings are licensed by mention; Please and Kindly cannot supply operational content and leave omit identical.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"omit_pair2__noun","pair":"omit_pair2","pos":"noun","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"apostrophe_orthography","reason":"All noun strings are mentioned; straight and typographic apostrophes encode the same contraction and cannot contribute a purpose or alter omit.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"omit_pair2__verb","pair":"omit_pair2","pos":"verb","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"apostrophe_orthography","reason":"All verb strings are mentioned; only the apostrophe glyph differs, so the parse, directive force, continuation demand, and omit operation are identical.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"omit_pair2__adj","pair":"omit_pair2","pos":"adj","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"apostrophe_orthography","reason":"All adjective strings occupy the same mention frame; U+0027 versus U+2019 is interpretation-free orthography and leaves omit unchanged.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"omit_pair2__func","pair":"omit_pair2","pos":"func","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"apostrophe_orthography","reason":"All function-word strings are grammatical autonyms; the apostrophe variant has no scope and cannot add a reason, goal, condition, or operation content.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"capitalize_pair1__noun","pair":"capitalize_pair1","pos":"noun","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"politeness_particle","reason":"All noun strings are coherent capitalization targets when mentioned; Please and Kindly vary politeness only and leave capitalize identical.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"capitalize_pair1__verb","pair":"capitalize_pair1","pos":"verb","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"politeness_particle","reason":"All verb strings are mentioned words; the register-only particle choice cannot alter the requested capitalization.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"capitalize_pair1__adj","pair":"capitalize_pair1","pos":"adj","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"politeness_particle","reason":"All adjective strings are licensed in the mention frame; neither politeness particle supplies a purpose or other content for capitalize.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"capitalize_pair1__func","pair":"capitalize_pair1","pos":"func","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"politeness_particle","reason":"Function-word strings are coherent capitalization targets as mentioned strings; Please versus Kindly changes only register.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"capitalize_pair2__noun","pair":"capitalize_pair2","pos":"noun","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"apostrophe_orthography","reason":"All noun strings are mentioned; the two apostrophe glyphs spell the same contraction and cannot change capitalization or its purpose.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"capitalize_pair2__verb","pair":"capitalize_pair2","pos":"verb","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"apostrophe_orthography","reason":"All verb strings are autonyms; straight versus typographic apostrophe changes no lexical item, syntax, directive force, or capitalization operation.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"capitalize_pair2__adj","pair":"capitalize_pair2","pos":"adj","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"apostrophe_orthography","reason":"All adjective strings are mentioned; the glyph substitution is purely orthographic and interpretation-free in this cell.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"capitalize_pair2__func","pair":"capitalize_pair2","pos":"func","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"apostrophe_orthography","reason":"All function-word strings remain grammatical mention targets; apostrophe style has no scope over or content for capitalize.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"reverse_pair1__noun","pair":"reverse_pair1","pos":"noun","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"politeness_particle","reason":"All noun strings are coherent reversal targets as mentioned strings; Please and Kindly differ only in politeness/register.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"reverse_pair1__verb","pair":"reverse_pair1","pos":"verb","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"politeness_particle","reason":"All verb strings are mentioned rather than predicated; the particle choice cannot supply a reason, goal, condition, or change to reverse.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"reverse_pair1__adj","pair":"reverse_pair1","pos":"adj","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"politeness_particle","reason":"All adjective strings share the mention frame; Please versus Kindly is register-only and leaves the reversal operation and continuation demand unchanged.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"reverse_pair1__func","pair":"reverse_pair1","pos":"func","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"politeness_particle","reason":"Function-word strings are licensed as autonyms; both politeness particles request the same reversal with no added operational content.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"reverse_pair2__noun","pair":"reverse_pair2","pos":"noun","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"apostrophe_orthography","reason":"All noun strings are mentioned; U+0027 and U+2019 encode the same apostrophe and cannot change the requested reversal.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"reverse_pair2__verb","pair":"reverse_pair2","pos":"verb","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"apostrophe_orthography","reason":"All verb strings are mentioned; apostrophe style changes no word or interpretation and has no semantic scope over reverse.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"reverse_pair2__adj","pair":"reverse_pair2","pos":"adj","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"apostrophe_orthography","reason":"All adjective strings remain coherent mentioned targets; the orthographic code-point choice cannot supply purpose, reason, condition, or operation content.","verdict":"author_pass_pending_adversary"},
+    {"cell_id":"reverse_pair2__func","pair":"reverse_pair2","pos":"func","items":20,"grammatical_a":true,"grammatical_b":true,"metalinguistic_license":true,"same_dependency_frame":true,"invariant_bundle_preserved":true,"operationally_equivalent":true,"edit_outside_slot_dependency_frame":true,"edit_type":"apostrophe_orthography","reason":"Function-word strings are grammatical metalinguistic reversal targets; the two apostrophe glyphs are syntactically and semantically identical.","verdict":"author_pass_pending_adversary"}
+  ],
+  "operational_control_cell_judgments": [
+    {"cell_id":"control_repeat_to_omit_politeness__noun","control":"control_repeat_to_omit_politeness","pos":"noun","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"wrapper_inert_and_equivalent":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","reason":"The identical Please wrapper and mention frame contribute no differential content; only repeat changes to omit for all noun strings.","verdict":"author_pass_pending_adversary_and_tokenization"},
+    {"cell_id":"control_repeat_to_omit_politeness__verb","control":"control_repeat_to_omit_politeness","pos":"verb","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"wrapper_inert_and_equivalent":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","reason":"Verb strings are mentioned under the identical Please wrapper; the sole semantic and surface edit is repeat to omit.","verdict":"author_pass_pending_adversary_and_tokenization"},
+    {"cell_id":"control_repeat_to_omit_politeness__adj","control":"control_repeat_to_omit_politeness","pos":"adj","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"wrapper_inert_and_equivalent":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","reason":"Adjective strings occupy the same mention frame and the complete wrapper is identical; exactly repeat versus omit differs.","verdict":"author_pass_pending_adversary_and_tokenization"},
+    {"cell_id":"control_repeat_to_omit_politeness__func","control":"control_repeat_to_omit_politeness","pos":"func","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"wrapper_inert_and_equivalent":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","reason":"Function-word strings are licensed as mentions; the identical politeness wrapper is inert and only the declared verb changes.","verdict":"author_pass_pending_adversary_and_tokenization"},
+    {"cell_id":"control_repeat_to_omit_orthographic__noun","control":"control_repeat_to_omit_orthographic","pos":"noun","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"wrapper_inert_and_equivalent":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","reason":"Both templates use the identical straight-apostrophe You're asked wrapper and noun mention frame; only repeat changes to omit.","verdict":"author_pass_pending_adversary_and_tokenization"},
+    {"cell_id":"control_repeat_to_omit_orthographic__verb","control":"control_repeat_to_omit_orthographic","pos":"verb","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"wrapper_inert_and_equivalent":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","reason":"The full orthographic wrapper and metalinguistic frame are identical for verb strings; the single operation lexeme changes from repeat to omit.","verdict":"author_pass_pending_adversary_and_tokenization"},
+    {"cell_id":"control_repeat_to_omit_orthographic__adj","control":"control_repeat_to_omit_orthographic","pos":"adj","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"wrapper_inert_and_equivalent":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","reason":"Adjective strings are mentioned under identical syntax and apostrophe style; only the requested operation changes.","verdict":"author_pass_pending_adversary_and_tokenization"},
+    {"cell_id":"control_repeat_to_omit_orthographic__func","control":"control_repeat_to_omit_orthographic","pos":"func","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"wrapper_inert_and_equivalent":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","reason":"Function-word strings remain metalinguistically licensed; the wrapper is exactly identical and only repeat versus omit differs.","verdict":"author_pass_pending_adversary_and_tokenization"},
+    {"cell_id":"control_capitalize_to_reverse_politeness__noun","control":"control_capitalize_to_reverse_politeness","pos":"noun","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"wrapper_inert_and_equivalent":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","reason":"The identical Please wrapper and noun mention frame are inert across the control; only capitalize changes to reverse.","verdict":"author_pass_pending_adversary_and_tokenization"},
+    {"cell_id":"control_capitalize_to_reverse_politeness__verb","control":"control_capitalize_to_reverse_politeness","pos":"verb","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"wrapper_inert_and_equivalent":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","reason":"Verb strings are mentioned under the same wrapper; the only changed word and declared content is capitalize versus reverse.","verdict":"author_pass_pending_adversary_and_tokenization"},
+    {"cell_id":"control_capitalize_to_reverse_politeness__adj","control":"control_capitalize_to_reverse_politeness","pos":"adj","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"wrapper_inert_and_equivalent":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","reason":"Adjective strings share the same mention frame and politeness wrapper; exactly one operation verb changes.","verdict":"author_pass_pending_adversary_and_tokenization"},
+    {"cell_id":"control_capitalize_to_reverse_politeness__func","control":"control_capitalize_to_reverse_politeness","pos":"func","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"wrapper_inert_and_equivalent":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","reason":"Function-word strings are coherent mentioned targets; identical register and frame isolate capitalize versus reverse.","verdict":"author_pass_pending_adversary_and_tokenization"},
+    {"cell_id":"control_capitalize_to_reverse_orthographic__noun","control":"control_capitalize_to_reverse_orthographic","pos":"noun","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"wrapper_inert_and_equivalent":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","reason":"Both noun templates use the identical straight-apostrophe wrapper and mention frame; only capitalize changes to reverse.","verdict":"author_pass_pending_adversary_and_tokenization"},
+    {"cell_id":"control_capitalize_to_reverse_orthographic__verb","control":"control_capitalize_to_reverse_orthographic","pos":"verb","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"wrapper_inert_and_equivalent":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","reason":"The complete wrapper, apostrophe style, and mention syntax are fixed for verb strings; only the operation lexeme differs.","verdict":"author_pass_pending_adversary_and_tokenization"},
+    {"cell_id":"control_capitalize_to_reverse_orthographic__adj","control":"control_capitalize_to_reverse_orthographic","pos":"adj","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"wrapper_inert_and_equivalent":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","reason":"Adjective strings are mentioned under identical indirect-directive wording; exactly capitalize versus reverse changes.","verdict":"author_pass_pending_adversary_and_tokenization"},
+    {"cell_id":"control_capitalize_to_reverse_orthographic__func","control":"control_capitalize_to_reverse_orthographic","pos":"func","items":20,"grammatical_a":true,"grammatical_b":true,"register_matched":true,"same_dependency_frame":true,"wrapper_inert_and_equivalent":true,"one_declared_operation_changed":true,"approximate_length_matched":true,"surface_edit":"one operation verb","reason":"Function-word strings remain licensed by mention; the identical orthographic wrapper contributes no contrast and the sole change is capitalize to reverse.","verdict":"author_pass_pending_adversary_and_tokenization"}
+  ],
+  "pre_freeze_gates": {
+    "linguistic_adversary": "all 32 presentation pair x POS cells and all 16 control x POS cells must pass independently; one failure voids v3",
+    "tokenization": "all slot, item, prefix/suffix, paired-frame, apostrophe-code-point, sentinel-boundary, and approximate control-length checks must pass; one failure voids v3",
+    "bridge_ladder": [
+      "positive scalar",
+      "calibration-only diagonal",
+      "calibration-only low-rank",
+      "calibration-only orthogonal"
+    ],
+    "hostile_lower_bound": "equivalent-swap lower bound must exceed endpoint-specific tau on both primary endpoints",
+    "near_zero_move_norm": "a numerical floor must be frozen from calibration repeat noise before normalized degradation is computed",
+    "version_freeze": "no raw-file digest or Git blob is present in this authored candidate; both are recorded only after linguistic and tokenization approval"
+  }
+}
