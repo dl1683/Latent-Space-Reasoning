@@ -5,6 +5,17 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-28 — Second lens added (Devansh): holes, and the next latent space
+
+- Standing instruction: structural properties that make current latent
+  spaces hostile to structured reasoning are first-class findings; if
+  proven, the constructive program is a next-generation latent space in which
+  they are closed. Candidate holes already on the table from NLM-007: motion
+  the world's response cannot register (middle-depth displacement invisible to
+  the slot law); identity-dominated transitions; presentation entangled with
+  state; laws that may hold only within a template family. Each is now a
+  question for every Codex round and audit.
+
 ## 2026-08-28 — Within-style null, sentinel ',': F8/F12/F20 mechanically pass (diagnostic only)
 
 - 2238 s, support 1.0, K = 7 KL-rank label. Same shape as the '.' arm: the
