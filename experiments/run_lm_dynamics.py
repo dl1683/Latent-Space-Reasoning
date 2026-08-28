@@ -108,6 +108,7 @@ def capture_forward(a):
     law_l = np.zeros_like(law_t)                                             # law at last pre-append position, appended run
     Hq = np.zeros_like(Hs)                                                   # last position, UNAPPENDED run (= X per Round 19)
     law_q = np.zeros_like(law_t)                                             # law at last position, unappended run
+    locality32 = 0.0; locality32_law = 0.0                                   # float32 locality control (Round 19): appending must not alter q
     for pi, p in enumerate(cfg["probes"]):
         pre, suf = split_template(p["template"])
         seq, slot = sp._build(Probe(p["name"], p["block"], pre, suf), states)
@@ -119,10 +120,12 @@ def capture_forward(a):
                 ou = sp.model(inputs_embeds=seq[i:i + a.batch, :-1], output_hidden_states=True)      # unappended run
             for l in range(L + 1):
                 Hq[pi, l, i:i + a.batch] = ou.hidden_states[l][:, last, :].float().numpy().astype(np.float16)
+                locality32 = max(locality32, float((o.hidden_states[l][:, last, :].float() - ou.hidden_states[l][:, last, :].float()).abs().max()))
                 h = o.hidden_states[l]
                 Hs[pi, l, i:i + a.batch] = h[:, slot, :].float().numpy().astype(np.float16)
                 Hl[pi, l, i:i + a.batch] = h[:, last, :].float().numpy().astype(np.float16)
                 Ht[pi, l, i:i + a.batch] = h[:, sent, :].float().numpy().astype(np.float16)
+            locality32_law = max(locality32_law, float((torch.log_softmax(o.logits[:, last, :].float(), -1) - torch.log_softmax(ou.logits[:, last, :].float(), -1)).abs().max()))
             law_t[pi, i:i + a.batch] = torch.log_softmax(o.logits[:, sent, :].float(), -1).numpy().astype(np.float16)
             law_l[pi, i:i + a.batch] = torch.log_softmax(o.logits[:, last, :].float(), -1).numpy().astype(np.float16)
             law_q[pi, i:i + a.batch] = torch.log_softmax(ou.logits[:, last, :].float(), -1).numpy().astype(np.float16)
@@ -130,7 +133,7 @@ def capture_forward(a):
     out_dir = RESULTS / a.out; out_dir.mkdir(parents=True, exist_ok=True)
     # locality control (Round 19): appending after q must not alter q. Float32 max abs diff over the last probe's batch is
     # representative; the stored float16 arrays carry the full comparison.
-    locality = float(np.max(np.abs(Hl.astype(np.float32) - Hq.astype(np.float32))))
+    locality = float(np.max(np.abs(Hl.astype(np.float32) - Hq.astype(np.float32))))      # float16-storage version (reference only)
     fname = f"forward_states_{a.tag}.npz" if a.tag else "forward_states.npz"
     np.savez_compressed(out_dir / fname, H_slot=Hs, H_last=Hl, H_sent=Ht, H_q_unappended=Hq, law_sent=law_t, law_last=law_l, law_q_unappended=law_q,
                         items=np.array(items), pos=np.array(pos), probes=np.array([p["name"] for p in cfg["probes"]]),
@@ -140,7 +143,7 @@ def capture_forward(a):
                 "num_hidden_layers": L, "embed_dim": int(D), "vocab": int(sp.E.shape[0]), "n_items": n, "n_probes": len(cfg["probes"]),
                 "config": a.config, "config_name": cfg["name"], "torch": torch.__version__, "transformers": __import__("transformers").__version__,
                 "torch_num_threads": torch.get_num_threads(), "batch_size": a.batch, "device": "cpu", "dtype": "float32 compute, float16 storage",
-                "forward_states_sha256": sha, "locality_max_abs_diff_float16_storage": locality, "seconds": round(time.time() - t0, 1)}
+                "forward_states_sha256": sha, "locality_max_abs_diff_float16_storage": locality, "locality_max_abs_diff_float32": locality32, "locality_max_abs_logp_diff_float32": locality32_law, "seconds": round(time.time() - t0, 1)}
     (out_dir / (f"forward_manifest_{a.tag}.json" if a.tag else "forward_manifest.json")).write_text(json.dumps(manifest, indent=2), encoding="utf-8")
     print(json.dumps(manifest, indent=2))
 
