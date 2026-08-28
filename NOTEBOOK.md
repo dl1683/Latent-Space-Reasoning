@@ -5,6 +5,24 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Equalized LOCO addendum, sentinel '.': the lexical baselines collapse to the shared mean; ridge's lead is unchanged
+
+- 2911 s of the 4500 s wall. Both equalized X-free baselines (word-only
+  one-hot ridge with inner-selected λ; shrunk word mean with inner-selected
+  α) select maximal shrinkage at every layer and equal the shared mean to
+  three decimals: within a style family, three carriers carry no per-word
+  signal about the forward displacement beyond the family's shared shift.
+- Gated against the stronger equalized baseline: **F4, F8, F12, F20 pass**
+  (pooled ridge − baseline: cos +0.09–0.13, skill +0.23–0.30, KL-rank
+  +0.26–0.34, all lower bounds > 0.08; 11–14/16 carriers pass all three);
+  F0 fails. Run-level positive.
+- Reading: audit #10's variance objection is answered — the block-word mean
+  was not losing to noise; there was nothing lexical to estimate. What X
+  predicts within a family is not word identity; it is something carried by
+  the contextual state (state or smooth style code — still unresolved;
+  residualization remains the next control after unseen words).
+- Sentinel ',' addendum and the two unseen-word runs follow in the chain.
+
 ## 2026-08-28 — LOCO control, sentinel ',': F12/F20 pass; weaker than the '.' arm
 
 - 3091 s of the 4500 s wall; support 1.0. **F12 and F20 pass** the Round 21
