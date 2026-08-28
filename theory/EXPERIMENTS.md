@@ -2566,3 +2566,146 @@ My priority ordering is:
 5. Only then consider second-family replication.
 
 Bottom line: the data support a bounded held-out-carrier forward-displacement forecasting result. They do not yet distinguish a state-space regularity from a carrier/template-conditioned nuisance law.
+
+## Round 21 — LOCO within-family control pre-registration (2026-08-28)
+
+**Codex, documentation-only; no experiment is run in this round.** This round
+adjudicates the two Round 20 within-style-family runs and locks the next
+measurement requested by Tier-3 audit #9. The live JSONs and ledger readings
+are confirmed: style A (`.`) lists `F4`, `F8`, and `F20` as mechanical passes;
+style B (`,`) lists `F8`, `F12`, and `F20`. Both have complete support. In both
+arms the within-style-family target null falls below the shared/word mean from
+`F4` on while ridge and kernel remain high.
+Across the two JSONs, the pooled null cosine is approximately `0.16–0.54`,
+versus `0.45–0.66` for the shared/word means and `0.68–0.82` for ridge/kernel
+over `F4–F20`; support is `1.0` throughout.
+
+### Adjudication of the Round 20 style runs
+
+The observed pattern is mechanically the **state-linked branch** of the Round
+20 prediction: the null collapses and the original field retains positive
+cosine, skill, and KL-rank separation. The style-A mechanical `style_robust`
+label and the analogous style-B label are nevertheless withdrawn as claims.
+Audit #9 establishes why: the null permutes `Y` (or `Delta`) across carriers
+within block and word, so it pairs one carrier's state with another carrier's
+displacement. A flexible field is then expected to predict the wrong carrier.
+Its collapse below the shared mean is an alignment-destruction diagnostic,
+not evidence that style has been removed. The registered prediction is
+therefore scored as “state-linked branch occurred mechanically, but the
+branch is uninformative for the causal interpretation.” The runs establish
+only that the original held-out-carrier displacement signal survives comparison
+with this broken-pairing diagnostic; they do not establish style robustness or
+a state-linked component.
+
+The KL-rank endpoint has a separate contract defect. The style-A and style-B
+JSONs rank `K=7` candidates because `knn-1`, `knn-5`, and `knn-20` were omitted;
+the analyzer repair in commit `269e46c` restores the preregistered `K=10`
+candidate universe prospectively. These existing runs are therefore labelled
+`K=7` and are not valid for a Round 20 KL-rank gate. This does not erase their
+mechanical descriptive values, but it blocks any contract-valid style claim.
+The historical period result remains a nonpass, not a kill: only `F20`
+qualified for `.`, while `F12` and `F20` qualified for `,`; the comma arm does
+not retroactively rescue the same-sentinel period rule.
+
+### LOCO design ruling
+
+The implemented `--loco` control is the fair cheapest test Audit #9 asked for,
+with a deliberately narrower question. Within each of the four style blocks,
+it holds out one carrier, fits on the other three (240 cells), selects ridge
+lambda by inner leave-one-carrier-out over those three, and evaluates the
+held-out carrier's 80 words. It compares identity, the shared mean of the
+three training carriers, the per-word/per-block mean of those carriers
+(`blockword_mean`), and ridge. It reports displacement cosine, response-law
+skill relative to the shared mean, and KL-rank among exactly four candidates,
+then computes ridge minus `blockword_mean` with word-clustered bootstrap per
+held-out carrier and a pooled carrier-by-word bootstrap over the 16 held-out
+carriers. This is a valid diagnostic of within-family state information
+conditional on the observed words and family; it is not a test of cross-family
+transfer. The existing whole-block outer holdout remains the cross-family
+test.
+
+The control is fair for that conditional question, but not a clean causal
+style-separation experiment. The block-word baseline is allowed to look up
+the held-out carrier's word identities; that is intentional protection
+against calling lexical persistence “state,” but means the result cannot
+generalize to unseen words or a denizen that does not possess the word key.
+The ridge sees only 240 training cells and can still exploit carrier/template
+identity or style encoded in `X`; LOCO tests prediction to another carrier in
+the same family, not removal of those nuisance coordinates. Standardization
+is correctly fit only on the three training carriers (and separately on the
+inner two during lambda selection), so it does not leak held-out states, but
+the three-carrier inner selection is noisy. The pooled bootstrap treats the
+16 carrier rows as exchangeable; because they are nested in only four style
+blocks, its interval is secondary to the per-carrier word-clustered records
+and cannot by itself prove family-independent state information. These are
+scope limitations, not reasons to reject the control.
+
+### Locked LOCO run
+
+Run both sentinels (`.` and `,`) at `F0`, `F4`, `F8`, `F12`, and `F20`, using
+the existing raw forward captures and unchanged 80-word held-out sets. For
+each layer there are 16 outer held-out-carrier fits, each trained on 240
+cells, with inner three-carrier leave-one-out lambda selection; each held-out
+carrier receives four 80-word predictor completions. Use `500` word-clustered
+bootstrap replicates for every per-carrier contrast and the pooled carrier-
+by-word bootstrap. The expected runtime is about 60 minutes by scaling the
+roughly 37-minute, five-layer style runs from 40 to 64 completion batches per
+layer and accounting for the extra ridge fits. Set a hard CPU wall of
+`75 minutes`; an overrun is budget-incomplete and earns no gate claim. No GPU,
+generation, new words, or second model family is included.
+
+A held-out carrier passes an endpoint if ridge minus `blockword_mean` has a
+point estimate at least `0.02` and a positive word-clustered 95% lower bound.
+A layer is a LOCO pass only if the pooled contrast meets that rule on all
+three endpoints—displacement cosine, law skill, and four-candidate KL-rank—
+and at least `8/16` held-out carriers pass all three endpoint checks. The
+run-level within-family diagnostic is positive only if at least `2/5` layers
+pass for each sentinel. This is a breadth rule for this diagnostic, not a new
+native-law claim. Preserve support `>=0.95`, finite cell accounting,
+calibration-only selection, float reload, and forward locality checks; any
+failed validity gate blocks the corresponding layer. Report raw KL, skill,
+cosine, carrier-level contrasts, the `K=4` candidate universe, and both
+bootstrap forms. Do not compare this four-candidate rank numerically to the
+invalid `K=7` style ranks or the prospective `K=10` endpoint.
+
+Predictions are locked before scoring, for both sentinels:
+
+| Layer | State-linked explanation | Carrier/template-nuisance explanation |
+| --- | --- | --- |
+| `F0` | No LOCO pass; ridge and block-word mean are near the lexical/token-identity regime. | Same: no conditional state advantage is expected. |
+| `F4` | Positive ridge-minus-block-word-mean contrasts on all three endpoints; expected to pass the breadth rule. | The block-word mean closes the apparent advantage; no layer pass. |
+| `F8` | Positive contrasts and a pass expected. | Ridge advantage collapses toward zero or below `0.02`; no pass. |
+| `F12` | Positive contrasts and a pass expected. | Block-word mean remains competitive; no pass. |
+| `F20` | Positive contrasts and a pass expected, possibly with the largest law consequence. | Any remaining ridge lead is carrier/template nuisance encoded in `X`; no pass. |
+
+These predictions concern within-family conditional information only. A LOCO
+pass would say that the state contains predictive variation beyond the family
+mean for already-seen words; it would not say that the variation transfers to
+a held-out style family, survives style residualization, generalizes to new
+words, or is native to the latent world. A LOCO failure would leave both
+explanations viable if the predictor is underpowered, while a pass would
+narrow—but not eliminate—the carrier/template alternative. The next controls
+remain cross-fitted style residualization or a genuinely style-preserving
+conditional permutation, then the disjoint class-stratified unseen-word
+split, then a second model family.
+
+### Guiding-question interpretation
+
+If the forward step is predictable within a style family beyond that family's
+mean but not across families, a denizen would have to treat style as part of
+the operational state of its world: the same lexical content presented in
+different styles would not be the same navigational place if it changes the
+lawful successor. But this would be a local, stratified state coordinate, not
+evidence for a universal state variable. The denizen would need a family-
+conditioned map and an identity test that asks “same content and same style
+sheet?” before applying a move law.
+
+That outcome would not by itself reveal a defect in the world. It could expose
+a defect in our quotient—our notion of “same place” may have erased a
+presentation coordinate that the world's dynamics preserve—or it could show
+that the world genuinely has separate sheets whose laws do not transfer. The
+mathematical task is therefore to choose observational equivalence from
+predictive consequences: merge two states only when the declared moves and
+response laws remain interchangeable. LOCO tests that question inside one
+sheet; residualization, unseen words, and the whole-block holdout decide
+whether the sheets are intrinsic structure or an artifact of our chart.

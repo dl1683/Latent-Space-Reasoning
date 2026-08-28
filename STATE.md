@@ -744,3 +744,44 @@ precision reports are queued ahead of any "state-dependent" claim.
   (2) cross-fitted style residualization or a genuinely style-preserving
   conditional permutation; (3) the disjoint, class-stratified unseen-word
   split; (4) only then the second model family.
+
+## Round 21 — LOCO ruling and pre-registration (2026-08-28)
+
+Round 21 is documentation-only; no experiment was run. The live style-A and
+style-B JSONs confirm the ledger's mechanical readings: `.` passes `F4/F8/F20`
+and `,` passes `F8/F12/F20` under the historical style gate, with support 1.0.
+Across `F4–F20`, the pooled JSONs put the null cosine at approximately
+`0.16–0.54`, versus `0.45–0.66` for shared/word means and `0.68–0.82` for
+ridge/kernel.
+The observed pattern is mechanically the Round 20 state-linked branch—the
+within-style null collapses below the shared mean from `F4` onward while the
+original field remains strong—but Audit #9 rules that branch uninformative.
+The target permutation breaks the exact carrier/state pairing, so a flexible
+field is expected to predict the wrong carrier. “Style-robust” is withdrawn;
+the runs establish only an alignment-destruction diagnostic. Their KL-rank
+endpoint is labelled `K=7`, not contract-valid `K=10`; `269e46c` repairs the
+candidate universe prospectively.
+
+The implemented `--loco` is the fair cheapest within-family diagnostic: one
+carrier held out within each style block, 240 training cells from the other
+three, inner leave-one-carrier-out lambda selection, and comparisons against
+identity, shared mean, per-word/block mean displacement, and ridge. It tests
+state information conditional on observed word identities and within-family
+training data, not cross-family transfer, style independence, unseen-word
+generalization, or a native law. The word/block baseline intentionally uses
+the held-out word identities; ridge can still use carrier/style nuisance
+encoded in `X`; standardization is training-only; the three-carrier inner
+selection is noisy; and the pooled 16-carrier bootstrap is secondary because
+the rows are nested in four style blocks.
+
+The LOCO run is predeclared for both sentinels and `F0/F4/F8/F12/F20`, with
+500 word-clustered bootstrap replicates, an expected runtime near 60 minutes,
+and a 75-minute hard CPU wall. A layer requires ridge minus block-word mean
+of at least `0.02` with positive clustered lower bounds on displacement
+cosine, law skill, and four-candidate KL-rank, plus `8/16` held-out carriers
+passing all three; the diagnostic requires at least two layers per sentinel.
+The state-linked prediction is a pass at `F4/F8/F12/F20` and no pass at `F0`;
+the carrier/template-nuisance prediction is no pass, with block-word mean
+closing ridge. Any result remains conditional within-family evidence. Next:
+cross-fitted style residualization or conditional permutation, unseen words,
+then a second model family.
