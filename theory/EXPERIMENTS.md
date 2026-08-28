@@ -2978,3 +2978,141 @@ validity of the response law must be part of the representation's contract.
 
 No new axiom is warranted in Round 22. This is a sharper empirical boundary
 and a locked measurement plan, not a demonstrated invariant of latent space.
+
+## Tier-3 audit #11 — LOCO B and the equalized addendum (2026-08-29, fresh Codex auditor)
+
+**Adopted corrections.** (1) LOCO B: F12/F20 pass; F4 misses skill and
+KL-rank; **F8 misses skill only** (its KL-rank LB is +0.021); F0 fails; B is
+weaker in breadth (2/5 vs 4/5) — a sentinel-specific instrument result, not
+evidence that B carries less state information. (2) **Implementation defect
+in the equalized addendum:** the inner leave-one-carrier-out selection
+centred the word-only ridge and the shrunk word mean on the outer
+three-carrier shared mean, which includes the validation carrier's targets —
+a direct pressure toward maximal shrinkage. Outer margins are not leaked, but
+"the data selected maximal shrinkage" is invalid as implemented; the
+addendum must be rerun with the inner two-carrier centre. (3) The
+`strongest_equalized` comparator was chosen on held-out outcomes
+(conservative for ridge but without nominal coverage); the corrected version
+selects the baseline inside calibration, freezes it, and evaluates once.
+(4) KL-rank universes differ (B: K = 4; equalized A: K = 6) — breadth
+comparable, KL-rank effect sizes not. (5) Wording: "the word-conditioned
+component captured by these tested estimators is negligible for the measured
+forward displacement in this design" — not "no per-word lexical signal"; the
+positive object is **X-conditioned residual predictability**, not
+state-conditioned structure; "the forward law is about context rather than
+content", "the state-conditioned component is large", and "audit #10's
+variance objection is answered" are withdrawn as over-claims. (6) Fair
+competitors once word means carry nothing: fixed shared/class mean; a properly
+nested word-only estimator; frozen-input-embedding lexical interpolator; a
+predictor using predeclared style/template coordinates only; a hierarchical
+carrier/style random-effect model.
+
+**Equalized-A audit (verbatim):**
+
+The artifact reports:
+
+| Layer | Cosine margin | Skill margin | KL-rank margin | Carriers passing all 3 |
+|---|---:|---:|---:|---:|
+| F0 | −0.039 [−0.141, +0.040] | −0.709 [−2.502, +0.228] | −0.012 [−0.220, +0.179] | 3/16 |
+| F4 | +0.127 [+0.111, +0.144] | +0.301 [+0.167, +0.433] | +0.276 [+0.140, +0.389] | 13/16 |
+| F8 | +0.120 [+0.104, +0.135] | +0.228 [+0.129, +0.314] | +0.264 [+0.163, +0.353] | 11/16 |
+| F12 | +0.098 [+0.086, +0.112] | +0.267 [+0.192, +0.352] | +0.328 [+0.252, +0.397] | 13/16 |
+| F20 | +0.087 [+0.076, +0.099] | +0.242 [+0.164, +0.316] | +0.341 [+0.261, +0.413] | 14/16 |
+
+So the mechanical claim is accurate. The A run is stronger than B under the stated rule.
+
+But all 80 folds select:
+
+- `lam_wordonly = 100.0`, the largest value in the grid;
+- `alpha_shrunk = 1.0`, the exact shared-mean endpoint.
+
+The critical implementation problem is in [`loco_control`](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/analyze_lm_dynamics.py:349):
+
+```python
+Y3 = Yc_.reshape(len(tr), n, D)
+shared = Yc_.mean(0)
+```
+
+Inside the inner leave-one-carrier-out loop, `Yi3` contains only two carriers, but both equalized helpers continue using the outer three-carrier `shared`:
+
+```python
+wordonly_ridge(lam, Yi3)
+shrunk_wordmean(al, Yi3)
+```
+
+The functions therefore center inner-validation predictions on a mean that includes the validation carrier’s targets. At maximal shrinkage, the inner predictor moves toward:
+
+\[
+m_3 = \frac{y_{\mathrm{validation}}+y_1+y_2}{3},
+\]
+
+which is explicitly pulled toward the validation target. This creates a direct pressure toward maximal shrinkage.
+
+This does not constitute outer-held-out-carrier target leakage: the final outer predictor still uses only the three outer-training carriers. Therefore the recorded outer margins are not automatically meaningless. But it invalidates the claimed inner calibration procedure and the conclusion that the data independently selected maximal shrinkage. The persistence of maximal shrinkage after using the proper two-carrier center is unknown.
+
+The proper inner calculation would use the two-carrier calibration mean separately for each inner fold. No corrected run was performed here.
+
+**Under- and over-claims (verbatim):**
+
+Under-claimed:
+
+- If the equalized result survives corrected calibration, it would support a meaningful statement that residual `X` prediction exceeds tested X-free lexical prediction.
+- The consistent collapse of word-conditioned means across the seen-word runs is a real design-level pattern.
+- The B/A contrast is useful as a sentinel-sensitivity diagnostic.
+
+Over-claimed:
+
+- “No per-word lexical signal.”
+- “The variance objection is answered.”
+- “The state-conditioned component is large.”
+- “The forward law is about context rather than content.”
+- Any presentation-independent or native-law claim.
+- Any claim that F0 has no state dependence; the correct wording remains “no detected conditional gain at F0.”
+
+The current positive object should be called `X-conditioned residual predictability`, not state-conditioned structure.
+
+**Strongest alternative explanation (verbatim):**
+
+The strongest alternative is:
+
+> `X` contains a smooth presentation/template coordinate that varies systematically across carriers within each family, and the forward displacement and response-law consequence also vary along that coordinate. Ridge learns this carrier/style geometry. The equalized lexical baselines collapse because word identity is not the source of the variation, but that does not make the variation operational state.
+
+This explanation accounts for:
+
+- LOCO A passing within families;
+- B being weaker but still positive late;
+- the shared/per-word means collapsing together;
+- ridge retaining a large advantage;
+- whole-block transfer not being sufficient to rule out style, because a smooth style coordinate can transfer across blocks.
+
+The unresolved causal distinction is therefore not “word versus state.” It is:
+
+\[
+\text{lexical content} \quad\text{vs}\quad
+\text{presentation} \quad\text{vs}\quad
+\text{contextual operational state}.
+\]
+
+**Second lens (verbatim):**
+
+The result does say something important, but narrower than the current narrative:
+
+> In this design, lexical content is not a sufficient predictor of the later forward step; context-bearing `X` contains predictable variation that word-conditioned means do not capture.
+
+That is potentially exciting for the latent-world program: a denizen may need to navigate by operational context, not lexical content. But it is not yet a proven state law.
+
+The current local holes are:
+
+- F0 identity/token dominance: lexical identity overwhelms reusable movement at the first forward transition.
+- Ordering saturation: the ordering readout repeatedly fails to register motion that cosine and response-law skill can detect. This is a hole in that readout, not proof that the latent world cannot register motion.
+- Missing quotient: the representation does not yet provide a stable predictive separation between content, presentation, state, and consequential motion.
+
+Presentation entanglement and family-only laws remain unresolved, not proven.
+
+The constructive requirement for the next latent space is therefore:
+
+> Define “same place” by interchangeability of declared moves and downstream response laws, rather than by lexical identity or superficial representational similarity.
+
+If changing presentation changes the lawful successor, presentation may legitimately be part of operational state. The defect may be in our quotient, not necessarily in the world.
+
+No experiments were run and no repository files were modified in this audit. The findings were recorded on the blackboard, and its convergence and synthesis checks completed successfully.

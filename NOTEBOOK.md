@@ -5,6 +5,27 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Audit #11 adopted: equalized addendum has an inner-centre bug; wording withdrawn
+
+- The equalized baselines' inner selection centred on the outer three-carrier
+  mean (contains the validation carrier) → maximal shrinkage forced by
+  construction; comparator chosen on held-out outcomes. Fixed in the
+  analyzer; both arms rerun behind the running chain. The '.' addendum's
+  outer margins stand as descriptive numbers only.
+- Withdrawn from my previous two entries: "no per-word lexical signal",
+  "variance objection answered", "the forward step is about context, not
+  content", "the state-conditioned component is large". Adopted wording:
+  the word-conditioned component captured by the tested estimators is
+  negligible in this design; the positive object is X-conditioned residual
+  predictability. The `_meta` deposit is corrected to match.
+- LOCO B precision: F8 misses skill only (KL-rank LB +0.021).
+- Second lens (auditor): the narrower true statement — lexical content is not
+  a sufficient predictor of the later forward step; context-bearing X
+  contains predictable variation that word-conditioned means do not capture;
+  the next latent space must define "same place" by interchangeability of
+  moves and response laws, not lexical identity or representational
+  similarity.
+
 ## 2026-08-29 — Re-contextualization #11 (equalized addendum in; audit #11 fired)
 
 - **Central bet + second lens:** native mathematics from what a denizen must
