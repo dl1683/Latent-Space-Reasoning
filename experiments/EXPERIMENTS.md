@@ -5,7 +5,7 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
-## NLM-007 — LM residual-stream dynamics; middle-depth ridge lead withdrawn under the identity baseline; displacement ladder adjudicated (audit #8 wording); forward-time move adjudicated NOT MET = nonpass, not a kill (Round 20, audit #9); within-style null = diagnostic only; style B running (2026-08-28)
+## NLM-007 — LM residual-stream dynamics; middle-depth ridge lead withdrawn under the identity baseline; displacement ladder adjudicated (audit #8 wording); forward-time move adjudicated NOT MET = nonpass, not a kill (Round 20, audit #9); within-style null = diagnostic only (both arms); LOCO A within-family positive, bounded (audit #10 wording), Codex adjudication pending; LOCO B running (2026-08-28)
 
 - **Lock.** Round 13, documentation-only (ledger `nlm007_round13_lock`;
   design `theory/dialogue/003.md`, `theory/EXPERIMENTS.md`); Round 14
@@ -71,10 +71,11 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
     2220 s). **Valid; adjudicated Round 20 + audit #9**: the primary arm
     did not meet the preregistered two-layer same-sentinel criterion (only
     `F20` qualifies) — a nonpass under the historical contract, not a kill.
+    Oracle field meaningless (ledger `nlm007_oracle_defect_forward`).
   - `analysis_fwdB.json` — sentinel B = ',' control/replication arm, same
     settings (ledger `nlm007_forward_fwdB`; 1823 s). **Valid; adjudicated
     Round 20**: `F12` and `F20` qualify (ridge); cannot rescue the period
-    arm. Reading below.
+    arm. Oracle field meaningless. Reading below.
   - `analysis_stylesmoke.json` — `--style-null` + KL-rank pipeline smoke at
     F8, A (2 shuffles / 10 boot; ledger `nlm007_stylenull_smoke_F8A`).
     **Not a result.**
@@ -84,9 +85,26 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
     support 1.0). **Diagnostic only (audit #9)**: the null is an
     alignment-destruction diagnostic, not a clean style null; its KL-rank
     endpoint ranked K = 7 candidates instead of the preregistered 10 —
-    labelled, **not contract-valid on that endpoint**. No claim.
-  - `analysis_styleB.json` — sentinel B arm of the same control,
-    **running**; carries the same K = 7 label. No status until scored.
+    labelled, **not contract-valid on that endpoint**. No claim. Oracle
+    field meaningless.
+  - `analysis_styleB.json` — sentinel B arm of the same control (ledger
+    `nlm007_stylenull_styleB`; 2238 s; support 1.0): `F8/F12/F20` pass the
+    historical style gate mechanically, `F4` misses, `F0` fails. **Diagnostic
+    only**, same K = 7 label, no claim (Round 21). Oracle field meaningless.
+  - `analysis_locoA.json` — within-family leave-one-carrier-out control,
+    sentinel A, layers 0/4/8/12/20, 500 word-clustered boot (ledger
+    `nlm007_loco_predeclared`, `nlm007_loco_locoA`; 2902 s of the 4500 s
+    wall; support 1.0). **Scored under the Round 21 rule; Codex adjudication
+    pending.** Reading below (audit #10 wording). Oracle field meaningless.
+    The LOCO smoke (`nlm007_loco_smoke_F8A`) crashed before writing a JSON;
+    log numbers only.
+  - `analysis_locoB.json` — sentinel B arm of the LOCO control, **running**.
+    No status until scored. Oracle field meaningless.
+  - `analysis_unseensmoke.json` — `--unseen-words 2` pipeline smoke at F8, A
+    (1 shuffle / 10 boot; ledger `nlm007_unseen_smoke_F8A`, overwritten by
+    `nlm007_unseen_smoke2_F8A` with the audit #10 lexical nulls and the
+    K = 11 rank universe). **Not a result**; the full run awaits Codex
+    predeclaration.
 - **Successor endpoint (valid in all runs).** L0→L1: word-mean = ridge =
   kernel = 0.949, shuffled null 0.95 — lexical persistence, no law beyond
   word identity. From L4 on, full-dimensional ridge beats word-mean and the
@@ -168,7 +186,26 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   displacement, so "beats the within-style null" is not informative evidence
   for a state-linked component; "style-robust" is withdrawn as a claim. The
   KL-rank endpoint here ranked K = 7 (kNN-1/5/20 omitted; fixed in
-  `269e46c`) and is not contract-valid.
+  `269e46c`) and is not contract-valid. Sentinel ',' (`analysis_styleB.json`)
+  has the same shape: `F8/F12/F20` mechanical, same label, same verdict.
+- **LOCO control, sentinel '.' (`analysis_locoA.json`; Round 21 rule;
+  adjudication pending).** Pooled ridge − per-word block mean: `F4`
+  +0.126 / +0.313 / +0.300, `F8` +0.118 / +0.232 / +0.292 (cosine / law
+  skill / K = 4 KL-rank), `F12` and `F20` in the same range, all lower
+  bounds > 0.08, 11–15 of 16 held-out carriers passing all three; `F0`
+  no pass (block mean ≥ ridge). Audit #10 wording: on already-seen words,
+  within a style family, X predicts a held-out carrier's displacement and
+  response-law consequence better than the three-carrier per-word family
+  mean at F4–F20 — not a presentation-independent state or a native law.
+  The baseline is variance-disadvantaged; equalized X-free lexical baselines
+  (word-only ridge, shrunk word mean) are required before interpretation;
+  LOCO does not separate state from a smooth carrier/style code; the pooled
+  16-carrier bootstrap is secondary. `F0` = "no detected conditional gain".
+- **Oracle defect (ledger `nlm007_oracle_defect_forward`).** The per-carrier
+  oracle read the stored states directly; in forward and delta mode it
+  predicted X from X, so the ~0.98 oracle values in `analysis_fwdA/B`,
+  `analysis_styleA/B`, `analysis_locoA/B` are meaningless. Fixed
+  prospectively; diagnostic only, no result changes.
 - **What we learned.** Identity is the null for residual-stream transport.
   The present data support persistence plus a calibration-average
   displacement as a competitive finite-design description at L8 and L12,
@@ -177,10 +214,13 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   held-out-carrier displacement-forecasting result that does not yet
   distinguish a state-space regularity from a carrier/template-conditioned
   nuisance law. A permutation null that a flexible model trivially beats is
-  not a control. Bounded to one model and shared words. Next in audit #9
-  order: within-family leave-one-carrier-out control vs per-word/per-block
-  mean displacement (`--loco`, `3a8b859`; to be predeclared) → cross-fitted
-  style residualization → unseen-word split → second family.
+  not a control. Within one style family the state carries predictive
+  variation beyond the family's per-word mean for seen words (LOCO A), which
+  narrows but does not remove the carrier/template alternative. Bounded to
+  one model and shared words. Next: Codex adjudication of LOCO A/B →
+  unseen-word run under the audit #10 gates (X-free lexical nulls
+  `class_mean` / `wordonly_knn`, K = 11 universe, block-first bootstrap) →
+  cross-fitted residualization of presentation coordinates → second family.
 
 ## Round 12 closure — frozen-encoder program closed; pivot to worlds with dynamics (2026-08-27)
 

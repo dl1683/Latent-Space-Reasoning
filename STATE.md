@@ -724,7 +724,8 @@ precision reports are queued ahead of any "state-dependent" claim.
 - Within-style-family target null (ledger `nlm007_stylenull_predeclared`;
   smoke `nlm007_stylenull_smoke_F8A`; sentinel A `analysis_styleA.json`,
   ledger `nlm007_stylenull_styleA`; sentinel B `analysis_styleB.json`,
-  running). Audit #9: (a) the null is an **alignment-destruction diagnostic,
+  ledger `nlm007_stylenull_styleB`, `F8/F12/F20` mechanical). Audit #9: (a)
+  the null is an **alignment-destruction diagnostic,
   not a clean style null** — a field refit on a broken carrier pairing
   predicts the wrong carrier's displacement and falls below even the shared
   mean, so "beats the within-style null by 0.02" is not informative evidence
@@ -734,16 +735,12 @@ precision reports are queued ahead of any "state-dependent" claim.
   preregistered 10; repaired in the analyzer (`269e46c`); the style-A and
   style-B runs are labelled K = 7 and are not contract-valid on that
   endpoint.
-- Next, in audit #9 order: (1) within-family leave-one-carrier-out control
-  (`--loco`, implemented `3a8b859`; to be predeclared before any run):
-  within each style block hold out one carrier, fit on the other three, and
-  compare the state-conditioned predictor against a leave-one-carrier-out
-  per-word/per-block mean displacement with clustered inference —
-  diagnostic of within-family state information, not cross-family transfer
-  (the whole-block outer hold-out remains the cross-family test);
+- Audit #9 order: (1) within-family leave-one-carrier-out control
+  (`--loco`, `3a8b859`) — predeclared and run under Round 21 below;
   (2) cross-fitted style residualization or a genuinely style-preserving
   conditional permutation; (3) the disjoint, class-stratified unseen-word
-  split; (4) only then the second model family.
+  split; (4) only then the second model family. Current order after audit
+  #10 is in "Status after Round 21 and audit #10" below.
 
 ## Round 21 — LOCO ruling and pre-registration (2026-08-28)
 
@@ -785,3 +782,48 @@ the carrier/template-nuisance prediction is no pass, with block-word mean
 closing ridge. Any result remains conditional within-family evidence. Next:
 cross-fitted style residualization or conditional permutation, unseen words,
 then a second model family.
+
+## Status after Round 21 and audit #10 (2026-08-28)
+
+- LOCO, sentinel A = '.' (`analysis_locoA.json`, ledger `nlm007_loco_locoA`;
+  predeclared `nlm007_loco_predeclared`; 2902 s of the 4500 s wall; support
+  1.0): `F4/F8/F12/F20` pass the Round 21 rule (pooled ridge − block-word
+  mean: cosine +0.09–0.13, law skill +0.23–0.31, KL-rank +0.29–0.40, lower
+  bounds > 0.08; 11–15 of 16 held-out carriers pass all three); `F0` no
+  pass. **Codex adjudication pending.** Audit #10 wording (adopted): "On
+  already-seen words, within a style family, X predicts a held-out carrier's
+  displacement and response-law consequence better than the three-carrier
+  per-word family mean at F4–F20" — not a presentation-independent state or
+  a native law. The block-word baseline is variance-disadvantaged; before
+  interpretation ridge must be compared against equalized X-free lexical
+  baselines (word-only ridge; shrunk word mean). LOCO does not distinguish
+  latent state from a smooth carrier/style code; the pooled 16-carrier
+  bootstrap is secondary (block-first resampling for any cross-family
+  statement). `F0` = "no detected conditional gain at F0".
+- LOCO, sentinel B = ',' (`analysis_locoB.json`): **running**.
+- Oracle defect (ledger `nlm007_oracle_defect_forward`): the per-carrier
+  "oracle" values in `analysis_fwdA/B`, `analysis_styleA/B`,
+  `analysis_locoA/B` are meaningless (forward/delta mode predicted X from X);
+  never cite them. Fixed prospectively; the oracle is a diagnostic, not a
+  gate, so no result changes.
+- Unseen-word split: `--unseen-words K` implemented with the audit #10
+  X-free lexical nulls (`class_mean`, `wordonly_knn`), fixed K = 11 rank
+  universe, fail-fast asserts, block-first pooled bootstrap. Smokes only
+  (`analysis_unseensmoke.json`, ledger `nlm007_unseen_smoke_F8A`,
+  `nlm007_unseen_smoke2_F8A`) — not a result; predeclaration by Codex
+  required before the run, gates per audit #10 (lead ≥0.02 with positive
+  clustered lower bound over the strongest X-free lexical baseline on
+  displacement cosine, law skill, and fixed-universe KL-rank; block-first
+  bootstrap; all eight fold keys valid).
+- Second lens (Devansh; `AGENTS.md`): structural holes that make current
+  latent spaces hostile to structured reasoning are first-class findings.
+  Audit #10 table (adopted): proven — identity-dominated input transition
+  (locally); ordering-saturated readout (for this endpoint). Unproven —
+  presentation entangled with state (strong unresolved concern);
+  family-only laws; motion invisible to the response law (readout-specific).
+  The serious hole: no stable quotient separating lexical content,
+  presentation, operational state, and consequential motion.
+- **Next, in order:** Codex adjudication of LOCO A/B → unseen-word run under
+  the audit #10 gates → cross-fitted residualization of presentation
+  coordinates → second model family. Scope until then: one model, shared
+  words; no native, unseen-word, second-family, or general dynamics claim.
