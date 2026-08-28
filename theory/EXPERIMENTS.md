@@ -2816,3 +2816,165 @@ The current program is at risk of tunnel vision in several ways:
 - No result yet demonstrates useful navigation, multi-step composition, semantic generalization, or a denizen-level primitive.
 
 The strongest antidote is not another regressor on the same cells. It is orthogonalization: unseen words, style residualization, a fixed lexical baseline, a hierarchical inference rule, multi-step response consequences, and a second model family.
+
+## Round 22 — LOCO adjudication, unseen-word lock, and second lens (2026-08-28)
+
+**Codex, documentation-only; no experiment is run.** The requested JSONs,
+ledger entries, analyzer path, and Round 21 contract were checked directly.
+The forward-mode oracle values in the historical artifacts remain excluded:
+`nlm007_oracle_defect_forward` records that those diagnostics predicted `X`
+from `X` and are not evidence or a gate.
+
+### LOCO A/B adjudication
+
+The Round 21 mechanical rule is satisfied by both sentinel runs, but with an
+important asymmetry:
+
+| Sentinel | `F0` | `F4` | `F8` | `F12` | `F20` | run-level prediction |
+| --- | --- | --- | --- | --- | --- | --- |
+| `.` (A) | fail | pass, 12/16 | pass, 11/16 | pass, 15/16 | pass, 15/16 | positive; 4/5 layers |
+| `,` (B) | fail | fail | fail | pass, 13/16 | pass, 12/16 | positive; 2/5 layers |
+
+All folds have support `1.0`; A took `2902.1 s` and B `3090.8 s`, both below
+the `4500 s` wall. The pooled A contrasts over `F4–F20` are approximately
+`+0.09–+0.13` cosine, `+0.23–+0.31` law skill, and `+0.29–+0.40` KL-rank,
+with 11–15 of 16 carriers passing all three. B has positive cosine at `F4`
+and `F8`, but their skill or KL-rank lower bounds miss; its qualifying layers
+have approximately `+0.07–+0.10`, `+0.15–+0.20`, and `+0.20–+0.26` on the
+three pooled contrasts, with 12–13 of 16 carriers passing all three.
+
+Audit #10's established wording is therefore the maximum current claim:
+
+> On already-seen words, within a style family, `X` predicts a held-out
+> carrier's displacement and response-law consequence better than the
+> three-carrier per-word family mean at `F4–F20`.
+
+This is a bounded within-family diagnostic. It is not evidence for a
+presentation-independent state variable, a native law, unseen-word
+generalization, or general dynamics. The result is also not yet interpretable
+as state information because the three-carrier block-word mean is
+variance-disadvantaged relative to a 240-cell regularized ridge, and `X` may
+encode a smooth carrier/style coordinate.
+
+### Round 21 prediction score
+
+The state-linked prediction is **partially held mechanically**: its `F0`
+failure is held in both arms; A passes all four predicted later layers, while B
+passes only `F12/F20`. Both runs are positive under the two-of-five diagnostic
+rule, but the sentinel asymmetry weakens any claim of a universal layer profile.
+The carrier/template-nuisance prediction of “no layer pass” is **not held
+mechanically**: the block-word mean did not close ridge in either run. That is
+not evidence against the nuisance explanation, because the historical baseline
+is the unfair comparator and LOCO retains carrier/style information in `X`.
+The correct score is therefore “mechanically contradicted, scientifically
+unresolved.”
+
+The equalized X-free lexical baselines demanded by Audit #10 **must be run as
+a LOCO addendum before interpreting the LOCO gap as conditional state
+information**. The addendum will preserve the same 16 held-out-carrier folds,
+five layers, both sentinels, delta target, three endpoints, support and reload
+checks, and 500 word-clustered bootstrap replicates. It will add:
+
+1. **word-only ridge:** one-hot word features only, with its regularization
+   selected by inner leave-one-carrier-out calibration within the three
+   training carriers; and
+2. **shrunk word mean:** the per-word calibration mean shrunk toward the
+   calibration shared mean, with shrinkage selected inside calibration only.
+
+Report both against the historical unshrunk block-word mean, and gate the
+state-conditioned field against the stronger of the two equalized X-free
+baselines for each endpoint while retaining raw KL, skill, cosine, carrier
+contrasts, and block-first diagnostics. Budget: one CPU process per sentinel,
+`500` bootstrap replicates, with a `75-minute` hard wall per sentinel (`150`
+minutes total); an overrun is budget-incomplete and earns no interpretation
+gate. The unseen-word split does **not** supersede this addendum: it removes
+word-conditioned lookup for its own claim, but cannot repair the seen-word
+LOCO comparison or adjudicate its unfair baseline.
+
+### Unseen-word run: locked predeclaration
+
+The next run is predeclared with the already implemented analyzer path:
+
+- `--unseen-words 2`, both sentinels, and `F0/F4/F8/F12/F20`;
+- eight block-by-word-fold keys (`gloss`, `continuation`, `association`,
+  `grammar` crossed with `w0/w1`), with calibration and held-out word IDs
+  disjoint and every lexical class present in both sides;
+- `20` shuffles, `500` bootstrap replicates, seed `13007`, support/finite,
+  reload, and forward-locality gates unchanged;
+- primary X-free lexical nulls `class_mean` and `wordonly_knn`, where the
+  latter is frozen input-embedding cosine kNN with `k=5` over calibration
+  words, averaged over their calibration targets;
+- fixed `K=11` KL-rank universe: `{identity, mean, class_mean, wordonly_knn,
+  knn1, knn5, knn20, ridge, lowrank, kernel, chart}`; and
+- fail-fast disjoint-ID, class-coverage, and nonzero-count assertions plus
+  block-first, class-preserving pooled bootstrap (blocks, then carriers,
+  then words).
+
+The smoke is pipeline validation only: it took `634.8 s` for one sentinel,
+`F8`, one shuffle, and ten bootstrap replicates; it is not evidence. The
+scale budget is approximately `6350 s` (`106 minutes`) for ten
+layer-sentinel slices at the smoke's base rate, so reserve a `150-minute`
+hard CPU wall for the full two-sentinel run. No post-hoc budget reduction
+earns a gate claim. The gate is adopted from Audit #10 with one operational
+clarification: report both nulls, and compare ridge with the stronger
+X-free baseline per fold/endpoint. Require a point lead of at least `0.02`
+and a positive word/block-clustered 95% lower bound on displacement cosine,
+law skill, and fixed-universe KL-rank; the block-first pooled contrast must
+also be positive, at least `6/8` fold keys must have positive endpoint
+contrasts, no held-out block may systematically collapse, and all validity
+gates must pass. A failure is failed extrapolation by this field, not proof
+that no structured law exists.
+
+Predictions are fixed by layer and explanation:
+
+| Layer | State-linked | Lexical interpolation | Carrier/style nuisance |
+| --- | --- | --- | --- |
+| `F0` | no gate pass; lexical/token-identity regime | ridge closes to class/word-only nulls; no pass | no conditional gain expected |
+| `F4` | positive but attenuated lead; pass remains expected | closes to the strongest X-free null; no pass | smooth style code may preserve a positive lead |
+| `F8` | positive lead and law skill survive; pass expected | X-based field closes to null, though residual kNN may compete | lead may survive across unseen words; unresolved without residualization |
+| `F12` | positive lead; pass expected, possibly stronger than F8 | no lead over the strongest X-free null | persistent style-coded lead remains possible |
+| `F20` | positive lead; pass expected and potentially most stable | closes to null; no pass | persistent late style-coded lead remains possible |
+
+These are predictions, not results. A pass would show that the field is not
+merely a word-conditioned lookup, but would still not separate state from
+presentation. The single measurement that would most sharpen the second lens
+is a cross-fitted presentation intervention/residualization that holds lexical
+identity and operational task fixed while changing or removing predeclared
+style coordinates from both `X` and `Delta`, then tests the same held-out
+response-law consequences. The unseen-word run is the immediate lexical gate;
+this style-controlled measurement is the sharper discriminator of the central
+state-versus-presentation hole.
+
+### Second lens: current answer
+
+The latent world is hostile to structured reasoning when a denizen cannot tell
+which differences matter for lawful navigation. The current evidence supports
+two local holes: the input transition is identity-dominated at `F0` (lexical
+content overwhelms a reusable move), and the across-word ordering readout is
+saturated for this endpoint (it fails to register middle-depth motion that
+cosine and law skill do register). The latter is a hole in the response
+instrument, not proof that the world itself cannot register motion.
+
+Two stronger concerns remain unproven. Presentation is entangled with
+operational state: whole-block transfer rules out only trivial held-block
+memorization, while LOCO shows seen-word carrier prediction that can still be
+a smooth style code. Laws restricted to template families are also not proven:
+whole-block transfer is evidence against the strongest family-only story, but
+unseen lexical identities and a second model family remain untested. Thus the
+serious current hole is a missing predictive quotient separating lexical
+content, presentation, operational state, and consequential motion. We may
+have declared differently presented states to be the same place even when
+their lawful successors differ.
+
+The next-generation latent space must make “same place” observational and
+predictive: two states are equivalent only when declared moves and downstream
+response laws remain interchangeable. It must expose or factor presentation
+coordinates, use consequence-sensitive divergence rather than inherited
+orderings alone, support multi-step closure, and generalize across unseen
+lexical identities, style families, and model families. If style changes the
+lawful successor, style may belong to operational state; the defect would then
+be our quotient, not necessarily the world. Precision, support, and the
+validity of the response law must be part of the representation's contract.
+
+No new axiom is warranted in Round 22. This is a sharper empirical boundary
+and a locked measurement plan, not a demonstrated invariant of latent space.

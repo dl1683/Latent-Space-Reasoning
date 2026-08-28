@@ -790,7 +790,7 @@ then a second model family.
   1.0): `F4/F8/F12/F20` pass the Round 21 rule (pooled ridge − block-word
   mean: cosine +0.09–0.13, law skill +0.23–0.31, KL-rank +0.29–0.40, lower
   bounds > 0.08; 11–15 of 16 held-out carriers pass all three); `F0` no
-  pass. **Codex adjudication pending.** Audit #10 wording (adopted): "On
+  pass. **Adjudicated in Round 22.** Audit #10 wording (adopted): "On
   already-seen words, within a style family, X predicts a held-out carrier's
   displacement and response-law consequence better than the three-carrier
   per-word family mean at F4–F20" — not a presentation-independent state or
@@ -800,7 +800,8 @@ then a second model family.
   latent state from a smooth carrier/style code; the pooled 16-carrier
   bootstrap is secondary (block-first resampling for any cross-family
   statement). `F0` = "no detected conditional gain at F0".
-- LOCO, sentinel B = ',' (`analysis_locoB.json`): **running**.
+- LOCO, sentinel B = ',' (`analysis_locoB.json`): **adjudicated in Round 22**;
+  `F12/F20` pass and `F0/F4/F8` fail the complete rule.
 - Oracle defect (ledger `nlm007_oracle_defect_forward`): the per-carrier
   "oracle" values in `analysis_fwdA/B`, `analysis_styleA/B`,
   `analysis_locoA/B` are meaningless (forward/delta mode predicted X from X);
@@ -810,8 +811,8 @@ then a second model family.
   X-free lexical nulls (`class_mean`, `wordonly_knn`), fixed K = 11 rank
   universe, fail-fast asserts, block-first pooled bootstrap. Smokes only
   (`analysis_unseensmoke.json`, ledger `nlm007_unseen_smoke_F8A`,
-  `nlm007_unseen_smoke2_F8A`) — not a result; predeclaration by Codex
-  required before the run, gates per audit #10 (lead ≥0.02 with positive
+  `nlm007_unseen_smoke2_F8A`) — not a result; predeclared in Round 22, gates
+  per audit #10 (lead ≥0.02 with positive
   clustered lower bound over the strongest X-free lexical baseline on
   displacement cosine, law skill, and fixed-universe KL-rank; block-first
   bootstrap; all eight fold keys valid).
@@ -823,7 +824,43 @@ then a second model family.
   family-only laws; motion invisible to the response law (readout-specific).
   The serious hole: no stable quotient separating lexical content,
   presentation, operational state, and consequential motion.
-- **Next, in order:** Codex adjudication of LOCO A/B → unseen-word run under
-  the audit #10 gates → cross-fitted residualization of presentation
-  coordinates → second model family. Scope until then: one model, shared
-  words; no native, unseen-word, second-family, or general dynamics claim.
+- **Next, in order:** equalized LOCO addendum → unseen-word run under the
+  audit #10 gates → cross-fitted residualization of presentation coordinates
+  → second model family. Scope until then: one model, shared words; no native,
+  unseen-word, second-family, or general dynamics claim.
+
+## Round 22 — current state (2026-08-28)
+
+LOCO A and B are adjudicated as positive within-family diagnostics, not native
+law results. On already-seen words, within a style family, `X` predicts a
+held-out carrier's displacement and response-law consequence better than the
+three-carrier per-word family mean at `F4–F20`: A passes `F4/F8/F12/F20`, B
+passes `F12/F20`, and both fail `F0`, with support `1.0`. The state-linked
+prediction is partially held mechanically; the nuisance prediction of no
+layer pass is mechanically missed but scientifically unresolved.
+
+Before interpreting this as conditional state information, run the equalized
+LOCO addendum: word-only one-hot ridge with inner calibration selection and a
+calibration-selected shrunk word mean. The unseen-word split does not replace
+this addendum; it removes word-conditioned lookup for a separate claim.
+
+Round 22 predeclares the unseen-word run: `--unseen-words 2`, both sentinels,
+`F0/F4/F8/F12/F20`, 20 shuffles, 500 bootstraps, seed `13007`, eight fold keys,
+the `class_mean` and frozen-input-embedding `wordonly_knn` nulls, fixed `K=11`
+rank universe, fail-fast split/class checks, and block-first class-preserving
+bootstrap. The smoke (`634.8 s`) is pipeline validation only; the full scale
+budget is a `150-minute` CPU wall.
+
+Second-lens ruling: identity-dominated input transition and the
+ordering-saturated readout are proven locally; presentation/state entanglement
+and family-only laws remain unresolved. The central hostile property is the
+absence of a stable predictive quotient separating lexical content,
+presentation, operational state, and consequential motion. The next latent
+space must define identity by interchangeability of declared moves and
+downstream laws, expose presentation coordinates, use consequence-sensitive
+divergence, support multi-step closure, and generalize across unseen words,
+styles, and model families. No new axiom is warranted this round.
+
+**Next:** run the equalized LOCO addendum, then the predeclared unseen-word
+experiment; keep all interpretation scoped until those controls and later
+style residualization are complete.
