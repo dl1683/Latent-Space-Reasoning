@@ -422,7 +422,7 @@ def main():
         return out
     for (l, l1) in pairs:
         pair_key = f"L{l}->L{l1}" if a.source != "forward" else f"F{l}"; print(f"\n=== {pair_key} ===", flush=True)
-        fold_out = {}
+        fold_out = {}; cell_diffs = {}          # (field, endpoint, against) -> {fold_key: diff matrix (carriers x words)} for the block-first pooled bootstrap
         word_fold = strat_folds(a.unseen_words, SEED + 3) if a.unseen_words else None
         fold_specs = [(b, None) for b in block_names] if not a.unseen_words else [(b, j) for b in block_names for j in range(a.unseen_words)]
         for held_block, wj in fold_specs:
@@ -607,6 +607,7 @@ def main():
                 else: return None
                 A = A.reshape(len(test_probes), n_t); B = B.reshape(len(test_probes), n_t); diff = A - B
                 if not np.isfinite(diff).any(): return None
+                cell_diffs.setdefault((field, endpoint, against), {})[held] = diff
                 reps = []
                 brng = np.random.default_rng(SEED)
                 for _ in range(a.n_boot):
@@ -671,7 +672,23 @@ def main():
                 pooled_skill[k] = float(np.mean([fold_out[b]["completed"][k]["skill"] for b in fkeys]))
         lad_s = [k for k in order if k in pooled_skill]
         minimal_skill = next((k for k in lad_s if pooled_skill[k] >= max(pooled_skill[kk] for kk in lad_s) - 0.02), None) if lad_s else None
-        results["pairs"][pair_key] = {"folds": fold_out, "pooled_successor_cos": pooled, "minimal_class_successor_within_0.02": minimal,
+        # ---- block-first pooled bootstrap (audit #10): resample style blocks, then carriers within, then words; 16 carriers are nested in 4 blocks
+        pooled_gates = {}
+        for (field, endpoint, against), per_fold in cell_diffs.items():
+            if field not in ("ridge", "kernel") or endpoint not in ("cos", "skill", "klrank"): continue
+            by_block = {}
+            for fk, M in per_fold.items(): by_block.setdefault(fk.split("_w")[0], []).append(M)
+            blocks_ = list(by_block); brng = np.random.default_rng(SEED + 11); reps = []
+            for _ in range(a.n_boot):
+                vals = []
+                for b in brng.choice(blocks_, len(blocks_), replace=True):
+                    for M in by_block[b]:
+                        ci = brng.integers(0, M.shape[0], M.shape[0]); wi = brng.integers(0, M.shape[1], M.shape[1])
+                        vals.append(np.nanmean(M[np.ix_(ci, wi)]))
+                reps.append(float(np.nanmean(vals)))
+            allv = np.concatenate([M.ravel() for Ms in by_block.values() for M in Ms])
+            pooled_gates[f"{field}_{endpoint}_vs_{against}"] = {"mean": float(np.nanmean(allv)), "ci95_block_first": [float(np.nanpercentile(reps, 2.5)), float(np.nanpercentile(reps, 97.5))], "n_blocks": len(blocks_), "n_fold_keys": len(per_fold)}
+        results["pairs"][pair_key] = {"folds": fold_out, "pooled_gates_block_first": pooled_gates, "pooled_successor_cos": pooled, "minimal_class_successor_within_0.02": minimal,
                                       "pooled_completed_skill": pooled_skill, "minimal_class_completed_within_0.02": minimal_skill}
         if a.baselines and a.source != "forward":                                   # per_carrier_affine reads Z directly (audit #10 hazard)
             results["pairs"][pair_key]["per_carrier_affine"] = per_carrier_affine(l)
