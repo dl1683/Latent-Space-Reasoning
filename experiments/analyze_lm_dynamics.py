@@ -456,7 +456,7 @@ def main():
         return out
     for (l, l1) in pairs:
         pair_key = f"L{l}->L{l1}" if a.source != "forward" else f"F{l}"; print(f"\n=== {pair_key} ===", flush=True)
-        fold_out = {}; cell_diffs = {}          # (field, endpoint, against) -> {fold_key: diff matrix (carriers x words)} for the block-first pooled bootstrap
+        fold_out = {}; cell_diffs = {}; retention_cells = {}          # (field, endpoint, against) -> {fold_key: diff matrix (carriers x words)} for the block-first pooled bootstrap
         word_fold = strat_folds(a.unseen_words, SEED + 3) if a.unseen_words else None
         fold_specs = [(b, None) for b in block_names] if not a.unseen_words else [(b, j) for b in block_names for j in range(a.unseen_words)]
         for held_block, wj in fold_specs:
@@ -815,6 +815,35 @@ def main():
                                                  "ordering_vs_chart": boot_diff(field, "ordering_last")}
                 gates[field] = g
             if resid is not None and "unres_ridge" in preds:
+                try:
+                    RESN = ("class_mean", "wordonly_knn", "wordonly_ridge_emb", "wordonly_kernel_emb"); RAWN = tuple("unres_" + x for x in RESN)
+                    full = {k: (resid["fD_t"] + preds[k]) for k in ("ridge",) + RESN if k in preds}            # reassembled residual arms, full-Delta scale
+                    full.update({k: preds[k] for k in ("unres_ridge",) + RAWN if k in preds})                  # raw arms already on that scale
+                    cos_c = {k: cos_rows(v, resid["Yt_orig"]) for k, v in full.items()}
+                    kl_c = {k: comp[k]["kl"] for k in full if k in comp}                                        # all laws are on the decoder manifold vs the same true law
+                    ref = comp["unres_mean"]["kl"] if "unres_mean" in comp else None
+                    skill_c = {k: 1 - kl_c[k] / np.where(ref > 0, ref, np.nan) for k in kl_c} if ref is not None else {}
+                    def side(field, nulls, arr):
+                        M = np.stack([arr[field] - arr[nl] for nl in nulls if nl in arr])                        # (nulls, cells): margin over each null
+                        return M
+                    cs = {}
+                    for ep, arr in (("cos", cos_c), ("skill", skill_c), ("kl_margin", {k: -v for k, v in kl_c.items()})):
+                        if not arr or "ridge" not in arr or "unres_ridge" not in arr: continue
+                        Mres = side("ridge", RESN, arr); Mraw = side("unres_ridge", RAWN, arr)
+                        Rr = Mres.reshape(Mres.shape[0], len(test_probes), n_t); Rw = Mraw.reshape(Mraw.shape[0], len(test_probes), n_t)
+                        brng2 = np.random.default_rng(SEED + 23); ratios = []; res_m = []; raw_m = []
+                        for _ in range(a.n_boot):
+                            ci = brng2.integers(0, len(test_probes), len(test_probes)); wi = draw_words(brng2)
+                            r_ = float(np.nanmin(np.nanmean(Rr[:, ci][:, :, wi], axis=(1, 2))))               # strongest-null minimum INSIDE the replicate
+                            w_ = float(np.nanmin(np.nanmean(Rw[:, ci][:, :, wi], axis=(1, 2))))
+                            res_m.append(r_); raw_m.append(w_); ratios.append(r_ / w_ if w_ > 0 else np.nan)
+                        cs[ep] = {"residual_margin_min": float(np.nanmin(np.nanmean(Rr, axis=(1, 2)))), "raw_margin_min": float(np.nanmin(np.nanmean(Rw, axis=(1, 2)))),
+                                  "ratio": float(np.nanmedian(ratios)), "ratio_ci95": [float(np.nanpercentile(ratios, 2.5)), float(np.nanpercentile(ratios, 97.5))],
+                                  "residual_ci95": [float(np.nanpercentile(res_m, 2.5)), float(np.nanpercentile(res_m, 97.5))], "raw_ci95": [float(np.nanpercentile(raw_m, 2.5)), float(np.nanpercentile(raw_m, 97.5))]}
+                    gates["ridge"]["retention_common_scale"] = cs
+                    gates["ridge"]["_retention_cells"] = {ep: {"res": side("ridge", RESN, arr), "raw": side("unres_ridge", RAWN, arr)} for ep, arr in (("cos", cos_c), ("skill", skill_c), ("kl_margin", {k: -v for k, v in kl_c.items()})) if arr and "ridge" in arr and "unres_ridge" in arr}
+                except Exception as e_:                                                         # additive diagnostic: never break the primary results
+                    gates["ridge"]["retention_common_scale"] = {"error": repr(e_)}
                 gates["ridge"]["raw_shadow_margins"] = {nul: {"succ_cos": boot_diff("unres_ridge", "cos", nul), "skill": boot_diff("unres_ridge", "skill", nul), "klrank": boot_diff("unres_ridge", "klrank", nul)}
                                                        for nul in ("unres_class_mean", "unres_wordonly_knn", "unres_wordonly_ridge_emb", "unres_wordonly_kernel_emb") if nul in preds}
                 gates["ridge"]["paired_vs_unresidualized"] = {
@@ -827,6 +856,7 @@ def main():
             if comp:
                 for k in comp: ok &= np.isfinite(comp[k]["kl"]) & np.isfinite(comp[k]["skill"]) & np.isfinite(comp[k]["ordering_per_anchor"].ravel())
             support = float(np.mean(ok)); support_by_carrier = {str(d["probes"][tp]): float(np.mean(ok[ti * n_t:(ti + 1) * n_t])) for ti, tp in enumerate(test_probes)}
+            if "_retention_cells" in gates.get("ridge", {}): retention_cells[held] = gates["ridge"].pop("_retention_cells")
             fold_out[held] = {"selected": {k: {kk: vv for kk, vv in v.items() if kk != "inner"} for k, v in best.items()},
                               "successor_cos": {k: float(np.nanmean(v["cos"])) for k, v in succ.items()},        # in delta mode: displacement cosine
                               "reconstructed_successor_cos": ({k: float(np.mean(cos_rows((resid["Xt_orig"] + v) if (resid and k == "unres_ridge") else ((resid["Xt_orig"] + resid["fD_t"] + v) if resid else (Xt + v)), (resid["Xt_orig"] + resid["Yt_orig"]) if resid else (Xt + Yt)))) for k, v in preds.items()} if a.target == "delta" else None),
@@ -892,7 +922,36 @@ def main():
                 reps.append(float(np.nanmean(vals)))
             allv = np.concatenate([M.ravel() for Ms in by_block.values() for _, M in Ms])
             pooled_gates[f"{field}_{endpoint}_vs_{against}"] = {"mean": float(np.nanmean(allv)), "ci95_block_first": [float(np.nanpercentile(reps, 2.5)), float(np.nanpercentile(reps, 97.5))], "n_blocks": len(blocks_), "n_fold_keys": len(per_fold)}
-        results["pairs"][pair_key] = {"folds": fold_out, "pooled_gates_block_first": pooled_gates, "pooled_successor_cos": pooled, "minimal_class_successor_within_0.02": minimal,
+        pooled_retention = {}
+        try:
+            if retention_cells:
+                for ep in ("cos", "skill", "kl_margin"):
+                    by_block = {}
+                    for fk, d_ in retention_cells.items():
+                        if ep not in d_: continue
+                        fold_key = int(fk.rsplit("_w", 1)[1]) if "_w" in fk else None
+                        by_block.setdefault(fk.split("_w")[0], []).append((fold_key, d_[ep]["res"], d_[ep]["raw"]))
+                    if not by_block: continue
+                    blocks_ = list(by_block); brng3 = np.random.default_rng(SEED + 29); ratios = []; rm = []; wm = []
+                    for _ in range(a.n_boot):
+                        word_draws = {}; res_vals = []; raw_vals = []
+                        for b in brng3.choice(blocks_, len(blocks_), replace=True):
+                            for fold_key, Mres, Mraw in by_block[b]:
+                                nc = Mres.shape[1] // (n_t if a.unseen_words else n)
+                                ci = brng3.integers(0, nc, nc)
+                                w = Mres.shape[1] // nc
+                                if fold_key not in word_draws:
+                                    word_draws[fold_key] = np.concatenate([st_[brng3.integers(0, len(st_), len(st_))] for st_ in _strata_for_fold(fold_key, w)])
+                                wi = word_draws[fold_key]
+                                res_vals.append(np.nanmean(Mres.reshape(Mres.shape[0], nc, w)[:, ci][:, :, wi], axis=(1, 2)))
+                                raw_vals.append(np.nanmean(Mraw.reshape(Mraw.shape[0], nc, w)[:, ci][:, :, wi], axis=(1, 2)))
+                        r_ = float(np.nanmin(np.nanmean(np.stack(res_vals), axis=0))); w_ = float(np.nanmin(np.nanmean(np.stack(raw_vals), axis=0)))
+                        rm.append(r_); wm.append(w_); ratios.append(r_ / w_ if w_ > 0 else np.nan)
+                    pooled_retention[ep] = {"ratio_median": float(np.nanmedian(ratios)), "ratio_ci95": [float(np.nanpercentile(ratios, 2.5)), float(np.nanpercentile(ratios, 97.5))],
+                                            "residual_margin_ci95": [float(np.nanpercentile(rm, 2.5)), float(np.nanpercentile(rm, 97.5))], "raw_margin_ci95": [float(np.nanpercentile(wm, 2.5)), float(np.nanpercentile(wm, 97.5))]}
+        except Exception as e_:
+            pooled_retention = {"error": repr(e_)}
+        results["pairs"][pair_key] = {"folds": fold_out, "pooled_gates_block_first": pooled_gates, "retention_common_scale_block_first": pooled_retention, "pooled_successor_cos": pooled, "minimal_class_successor_within_0.02": minimal,
                                       "pooled_completed_skill": pooled_skill, "minimal_class_completed_within_0.02": minimal_skill}
         if a.baselines and a.source != "forward":                                   # per_carrier_affine reads Z directly (audit #10 hazard)
             results["pairs"][pair_key]["per_carrier_affine"] = per_carrier_affine(l)
