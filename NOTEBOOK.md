@@ -5,6 +5,30 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-28 — Six-pair moot-maker run: persistence plus a shared displacement is the middle-depth "law"
+
+- `Yhat = X + mean_cal(Y−X)` vs ridge on the corrected slot endpoint, pooled
+  ridge − identres (cos / slot skill / slot ordering): L0 +0.46/+0.96/+0.38;
+  L4 +0.033/+0.019/+0.022; **L8 −0.008/−0.021/−0.020; L12 −0.007/−0.009/−0.013**;
+  L20 +0.018/+0.034/+0.032; L27 +0.20/large/+0.17 (post-norm target — not a
+  persistence family). The per-carrier affine diagnostic is far below both
+  everywhere (0.63–0.87 / 0.42–0.55).
+- Withdrawal condition met at L8→L9 and L12→L13 — the two pairs that carried
+  the corrected two-pair criterion. The "full-dimensional affine predictor"
+  residue there was the residual-stream identity plus a constant shift. At
+  L4 and L20 a state-dependent remainder of 0.02–0.03 survives the identity
+  baseline but sits under every gate. L0 and L27 are transforming blocks in
+  different coordinate families.
+- Round 17's prediction that identity-plus-residual would not close the lead
+  at L12/L20/L27 failed at L12. Run overran the 55-minute budget (4541 s):
+  budget-incomplete, no gate claim drawn; the withdrawal is null-making and
+  stands.
+- What the question becomes: the transport content of a middle block is the
+  displacement Y − X; the ladder must be rerun on Δ (mean displacement as the
+  zero-order law) to ask whether any state-dependent motion exists at all
+  beyond persistence. And the move a denizen actually makes is forward-time,
+  not layer-to-layer — untested. Codex round 18 adjudicates and re-orders.
+
 ## 2026-08-28 — Tier-3 audit #6 adopted
 
 - Code repair confirmed; L8/L12 qualification stands as bounded exploratory
