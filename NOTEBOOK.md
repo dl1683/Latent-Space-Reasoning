@@ -5,6 +5,26 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Residualization A-static: the X⊥ lead survives removal of the registered template coordinates
+
+- 4406 s of the 7200 s wall; sentinel '.'; P_static (block one-hot, lengths,
+  positions) cross-fitted out of both X and Δ; unseen-word folds; K = 13
+  universe; class-preserving crossed bootstrap.
+- **F4, F8, F12, F20 pass** the residual-vs-null gate: X⊥-ridge 0.56–0.62
+  residual cosine vs 0.06–0.07 for the strongest residual X-free null;
+  block-first leads cos +0.50–0.56, skill +0.31–0.48, KL-rank +0.40–0.61
+  (lower bounds > 0.17); 6–8/8 keys positive; no block collapse. F0 fails
+  (skill negative).
+- Presentation-only arm (P_static → Δ) held-out cosine 0.43–0.63 by layer:
+  the registered template coordinates are a large part of the raw
+  displacement; what remains after their removal is still predicted from
+  X⊥ far beyond any content null.
+- Retention: "the predeclared robustness marker is mechanically met" on all
+  three endpoints at F4–F20 (audit #13: not a fraction of signal; this run
+  predates the common-scale block, which A-aug and the B runs carry).
+- Remaining: P_aug (adds the leave-word-out carrier mean and a rank-4
+  carrier subspace), both B arms; Codex round 26 adjudicates A-static now.
+
 ## 2026-08-29 — Audit #13 adopted: demo corrected; retention marker not commensurate
 
 - The published demo over-claimed ("context state", "context takes over",
