@@ -5,6 +5,21 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Audit #12 adopted: unseen-word gate is mechanical-only until the bootstrap is contract-correct and the lexical nulls are stronger
+
+- Status of both unseen-word runs: mechanical pass under the recorded
+  reduction; formal gate pending a class-preserving, crossed word bootstrap
+  (being implemented) and stronger X-free lexical nulls (frozen-embedding→Δ
+  ridge; embedding-conditioned kernel; k ladder — being implemented).
+- Wording: "not exact held-out-word lookup and not the tested lexical
+  interpolator"; the positive object is X-conditioned residual
+  predictability transferring across held-out words and blocks; F0
+  "non-qualifying, continuation the strongest local failure pattern".
+- Strongest rival (verbatim in EXPERIMENTS.md): X contains smooth lexical
+  and presentation coordinates along which the later displacement varies;
+  ridge/kernel recover that geometry; the coarse nulls collapse for
+  coarseness, not because the variation is operational state.
+
 ## 2026-08-29 — Unseen-word run, sentinel ',': F4/F8/F12/F20 pass — both arms clear the criterion
 
 - 2256 s. Same structure as the '.' arm: on disjoint held-out words the

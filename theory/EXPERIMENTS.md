@@ -3371,3 +3371,114 @@ cross-fitted presentation residualization above. Multi-step composition
 (`F4 -> F8 -> F12` along the token clock) is the next navigation test after
 the state/presentation ambiguity is narrowed; a non-punctuation sentinel is a
 useful later style-family stress test. No new axiom is warranted in Round 23.
+
+## Tier-3 audit #12 — unseen-word result, sentinel '.' (2026-08-29, fresh Codex auditor)
+
+**Adopted corrections.** (1) Mechanical pass confirmed (F4–F20; F0 fails);
+status: **"mechanical pass under the recorded reduction; formal gate pending a
+contract-correct bootstrap"** — the predeclared class-preserving word
+bootstrap was not implemented (words resampled without class strata and
+nested within blocks although they are crossed with blocks); only four
+block clusters exist, so intervals are sensitivity summaries. Repaired
+prospectively in the analyzer (class-stratified, crossed word draws).
+(2) The lexical null family is weak (four class means; k = 5 frozen-embedding
+kNN over 40 words); required before "not lexical": nested frozen-embedding→Δ
+ridge, nested embedding-conditioned kernel, a predeclared k ladder.
+(3) Wording: "not exact held-out-word lookup and not the tested lexical
+interpolator" — never "not word lookup" unqualified; "the tested lexical nulls
+fail", not "lexical content is absent"; the ~0.06 seen→unseen drop is a point
+comparison at F8 only. (4) F0: "non-qualifying, with the continuation
+held-out block providing the strongest local failure pattern"; no formal
+collapse statistic exists. (5) The positive object remains X-conditioned
+residual predictability, now "transferring across the held-out word fold and
+held-out block".
+
+**Overclaims to reject (verbatim):**
+
+These formulations are not supported:
+
+- “Not word lookup” without saying “not exact lookup and not the tested lexical interpolator.”
+- “Not class lookup” as a statement about all class-conditioned lexical models.
+- “The forward law is about context rather than content.”
+- “The state-conditioned component is large.”
+- “A native law generalizes across unseen words.”
+- “F0 has no state dependence.”
+- “Presentation has been ruled out.”
+- “The latent space supports content-based structured reasoning.”
+
+The positive object should remain:
+
+> `X`-conditioned residual predictability.
+
+That is stronger and more honest than a generic regression result, but weaker than state-conditioned structure.
+
+**Strongest alternative explanation (verbatim):**
+
+The strongest single explanation is a combined smooth-coordinate account:
+
+> `X` contains smooth lexical and presentation/template coordinates. The later displacement and response-law consequence vary systematically along those coordinates. Ridge and kernel learn this implementation-specific geometry. The class mean and five-neighbor embedding nulls collapse because they are too coarse, not because the variation is necessarily operational state.
+
+This explains:
+
+- F4–F20 success;
+- F0’s weak result;
+- continuation’s F0 failure;
+- the near-shared-mean lexical nulls;
+- the success of a generic kernel;
+- transfer across the four blocks;
+- survival to unseen words through interpolation in contextualized embedding space.
+
+This alternative does not require leakage or a broken split. It only requires that the current residual representation entangles lexical content, presentation, and operational context.
+
+**Alternative explorations and cheaper baselines (verbatim):**
+
+The repository’s verbatim alternative instructions remain appropriate:
+
+- A fixed-input style-balance control: match or residualize carrier/template features before fitting displacement.
+- A within-style or within-template null that preserves carrier style while removing state pairing.
+- A style-held-out split, not only a carrier-held-out split.
+- A per-word, per-style mean displacement baseline.
+- A low-dimensional block/template-only predictor.
+- A direct `Δ = Y − X` decomposition into word mean, carrier mean, shared mean, and residual.
+- A target permutation preserving carrier-level marginal structure rather than destroying all carrier alignment.
+- Per-layer and per-sentinel locality and precision reports using fresh float32 values.
+- Replication on a second model family before any general language-model claim.
+
+For this specific audit, the highest-value additions are:
+
+1. Nested frozen-embedding-to-`Δ` ridge.
+2. Nested embedding-conditioned kernel.
+3. Predeclared embedding-k sensitivity.
+4. Cross-fitted residualization of frozen lexical embedding and presentation coordinates from both `X` and `Δ`.
+5. A corrected crossed, class-preserving bootstrap.
+6. Multi-step forward composition, not only one-step prediction.
+
+**Second lens (verbatim):**
+
+The result says something important but narrow:
+
+> Lexical content alone is not a sufficient predictor of the later forward step; context-bearing `X` contains predictable variation that the tested word-only and class-only predictors do not capture.
+
+For a denizen, this means lexical identity is not yet a reliable definition of “same place.” The denizen may need to navigate by operational context and by the response laws attached to that context.
+
+But the result does not show that the context is a clean state variable. It may be:
+
+- operational state;
+- presentation/style;
+- smooth lexical geometry;
+- or an inseparable mixture.
+
+So the current space gives evidence for context-conditioned structure, but not yet for content-based structured reasoning in the strong sense. It lacks a stable predictive quotient separating:
+
+- lexical content;
+- presentation;
+- operational state;
+- consequential motion.
+
+The constructive requirement for the next latent space is therefore:
+
+> Define “same place” by interchangeability of declared moves and downstream response laws, rather than by lexical identity or superficial representational similarity.
+
+That space should expose presentation coordinates, use consequence-sensitive divergence, support multi-step closure, and generalize across lexical identities, style families, and model families.
+
+Final disposition: retain the unseen-word result as a valuable mechanical and descriptive finding; block the stronger “not lexical,” “state-conditioned,” and “native forward law” readings until the stronger lexical controls and contract-correct hierarchical bootstrap are run. No experiments were run and no repository files were modified.
