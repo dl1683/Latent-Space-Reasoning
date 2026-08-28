@@ -612,13 +612,56 @@ a native or generally reusable affine law.
 
 ## Status and next (2026-08-28)
 
-- Running: the predeclared five-pair displacement ladder (`--target delta`,
-  ledger `nlm007_delta_predeclared`; artifact
-  `experiments/results/lm_dyn_v1/analysis_delta.json`, 95-minute hard wall).
-  Its pipeline smoke (`analysis_deltasmoke.json`) is validation only, not a
-  result.
-- Order after it (Round 18, endorsed by audit #7): forward-time transport
-  under a stricter contract (sentinel, token/position baselines, endpoint
-  definition); unseen-word and style controls before any semantic or
-  lexical-generalization language; second-family replication before any
-  general language-model claim.
+- Completed: the predeclared five-pair displacement ladder (`--target delta`,
+  ledger `nlm007_delta_v1`; artifact
+  `experiments/results/lm_dyn_v1/analysis_delta.json`) finished in `1750.3 s`
+  of the recorded `5700 s` wall with support `1.0`. Only `L20->L21` passes the
+  three-endpoint gate; `L8/L12` separate on displacement coordinates but fail
+  the consequence gate. The smoke (`analysis_deltasmoke.json`) remains
+  validation only.
+- Next: forward-time transport under the Round 19 stricter contract
+  (period/comma sentinel identity control, original-terminal-position locality
+  control, sentinel-position endpoint); unseen-word and style controls before
+  semantic or lexical-generalization language; second-family replication
+  before any general language-model claim.
+
+## Round 19 — displacement adjudication and forward-time next move
+
+Round 18's JSON was checked directly. The run finished in `1750.3 s` of the
+recorded `5700 s` wall with support `1.0`; the ledger's mechanical reading is
+correct that only `L20->L21` passes the predeclared three-endpoint displacement
+gate. `L0` remains lexical persistence. `L4` retains a small live remainder
+but fails the gate. `L8/L12` show strong displacement-coordinate separation
+from the word-conditioned displacement mean and a collapsed shuffled null,
+with kernel minimal, but their slot-ordering leads are only `0.003–0.022` and
+slot-skill lower bounds are mixed, so the complete gate fails. `L20` clears all
+three endpoints with kernel. `L27` remains outside the raw-residual family.
+
+`L20` is one bounded finite-design qualifying pair: a kernel-class predictor
+beats the word-conditioned displacement mean on displacement cosine, slot
+skill, and slot ordering under held-out carriers. “Kernel minimal” is only a
+finite ladder label; the result does not establish an ontologically nonlinear
+or native law. The preferred wording is “state-dependent displacement beyond
+the word-conditioned mean, with a kernel as the minimal tested predictor.”
+The middle-depth result is not only a readout artifact because displacement
+cosine is a direct target, but its downstream consequence is readout-dependent
+and identity-saturated.
+
+Under the guiding question, consequential motion is a required derived
+navigation predicate, not a sixth primitive: it says whether a move changes a
+declared downstream response law beyond tolerance. Same place is observational
+equivalence under those probes and laws, not equal coordinates.
+
+Next, in fixed order, is forward-time append-token transport. Use period as a
+fixed one-token sentinel and comma at the same appended position as the token
+identity control. Let `X` be the final original-position state before append
+and `Y` the sentinel next-position state after append, at layers
+`{0,4,8,12,20}`. Run identity, shared-mean displacement,
+word-conditioned-mean displacement, kNN, ridge, low-rank, and kernel on the
+same held-out carrier folds. Complete at the sentinel position and read its
+next-token law. The three gates remain displacement cosine, law skill relative
+to shared-mean completion, and law ordering: at least `+0.02` over the
+word-conditioned mean, positive clustered lower bounds, support `>=0.95`,
+finite/reload cells, and a null original-terminal-position control. Capture is
+about two CPU minutes; analysis is about 30 CPU minutes per five layer points
+at 20 shuffles and 500 bootstraps. The unseen-word split stays separate.

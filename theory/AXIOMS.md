@@ -34,6 +34,14 @@ Therefore the Round 7 world-path test must include a nonlinear readout and repor
 - map: native map is a transition model for outcomes of unmade moves; imported: function of coordinates or metric neighborhood expansion. A map earns the native label only if it predicts held-out consequences beyond simple chart metrics on the same endpoint and remains predictive under a declared presentation change. Separation: path-specific endpoint predictions (separatrix/interpolation), nonlinear re-chart tests, and composed/unseen moves where coordinate-only surrogates should fail if they are only convenient charts.
 - laws: native laws are invariants of trajectory-plus-probe semantics across regions; imported: algebraic identities and smooth manifolds; separation: transport tests of invariants under admissible move families and probe re-indexing.
 
+Consequential motion is not added as a sixth ontological primitive. It is a
+required derived predicate on an admissible move, relative to a declared
+downstream response law and tolerance: a move is consequential when the
+response law distinguishes its endpoint from the start. Navigation needs this
+predicate because coordinate displacement and change of navigational
+consequence can come apart; the primitive is the observational response
+relation, not “importance” attached to a vector difference.
+
 NLM-001 currently measured only (1), as observation-only substitutability under probe contexts; it did not instantiate moves, costs, maps, or region laws, so it could collapse onto the model's own contextual representation.
 
 Round 8 map consequence: the DINOv2 fine-label result makes cosine and Euclidean
@@ -392,3 +400,24 @@ test whether any state-dependent component remains after the constant and
 word-conditioned displacement means are removed; only then should a forward-time
 append-token move be interpreted as a law rather than another coordinate
 regression.
+
+## Round 19 — motion and consequence as navigation requirements
+
+The displacement ladder gives one bounded qualifying pair at `L20->L21` and
+strong displacement-coordinate separation at `L8/L12`, but the same-slot law
+barely registers the middle-depth direction. This does not warrant a new
+primitive called consequential motion. Instead, navigation requires a typed
+consequence predicate over a move and a response law: whether the endpoint is
+observationally distinguishable from the start under the declared probes and
+downstream law. “Same place” is consequently an observational quotient, while
+“consequential motion” is a relation on transitions in that quotient. It may
+become a useful native definition if stable across endpoints and presentations,
+but it is not yet an axiom or an established invariant.
+
+The next test is forward-time transport. For an appended sentinel, measure the
+state at the final original position before append against the sentinel's state
+at the next position, and read the completed law at that sentinel position.
+Identity, shared-mean displacement, and word-conditioned displacement are the
+required null ladder before a richer law. A sentinel token-identity control and
+an original-terminal-position locality control decide whether a result reflects
+a causal next-position move or merely a token/readout artifact.

@@ -2108,3 +2108,130 @@ killed, not promoted. (7) `L27→L28` identres is not a persistence test.
 The durable residue is:
 
 > Identity is the null for residual-stream transport. The present data support persistence plus a calibration-average displacement as a competitive finite-design description at `L8` and `L12`, retain small unresolved remainders at `L4` and `L20`, and do not yet establish a native or generally reusable affine law.
+
+## Round 19 — displacement adjudication and forward-time transport contract
+
+**Codex, documentation-only; no experiment run in this round.** Round 18 is
+adjudicated directly from `experiments/results/lm_dyn_v1/analysis_delta.json`;
+the ledger entries `nlm007_delta_predeclared` and `nlm007_delta_v1` are checked
+against that JSON.
+
+### Round 18 prediction scorecard
+
+The run finished in `1750.3 s` of the recorded `5700 s` wall, with support
+`1.0` for every eligible pair and fold. The ledger's mechanical reading is
+correct: only `L20->L21` passes the registered three-endpoint gate. In delta
+mode those endpoints are displacement cosine, slot skill, and slot ordering;
+slot skill is relative to the mean-displacement completion and is not on the
+successor-mode skill scale.
+
+| prediction | adjudication | reading |
+| --- | --- | --- |
+| `L0->L1` remains lexical persistence | held | Word-conditioned displacement equals the field (`0.948`); shuffle changes nothing. |
+| `L4->L5` retains a small residual without a complete result | held | Kernel has a small cosine lead and tiny ordering change; it is live and non-qualifying, not killed. |
+| `L8/L12` show no qualifying displacement beyond the word mean | mixed | The strict three-endpoint gate holds, but displacement cosine beats the word mean by about `0.07–0.22`, with clustered lower bounds above `0.05` in every fold; shuffled fields are `0.35–0.52` versus fields `0.60–0.85`. Kernel is minimal. Ordering leads are only `0.003–0.022` and slot-skill lower bounds are mixed. |
+| `L20->L21` retains a small residual without a complete result | falsified | Kernel clears all three: about `+0.025–0.051` cosine, `+0.13–0.32` slot skill, and `+0.023–0.038` ordering, all with positive clustered lower bounds. |
+| `L27->L28` remains outside the raw-residual family | held | Its target is post-norm while `X` is raw. |
+
+`L20->L21` is one bounded qualifying pair. It establishes, in this one-model,
+shared-word, held-out-carrier design, a kernel-class predictor of `Delta=Y-X`
+that beats the word-conditioned displacement mean on the measured coordinates
+and downstream slot-law readout. “Kernel minimal” is a finite-ladder label,
+not proof that the underlying world law is nonlinear. The preferred name is
+**state-dependent displacement beyond the word-conditioned mean, with a kernel
+as the minimal tested predictor**. Do not promote “state-dependent nonlinear
+displacement” as an established law; “nonlinear” is only a model-class
+description here. No general dynamics-map, native-law, unseen-word, or
+second-family claim follows.
+
+### Motion versus consequence under the guiding question
+
+The middle-depth result is not only a readout artifact: displacement cosine is
+a direct target and the state-conditioned field separates from the
+word-conditioned mean on held-out carriers. But “large state-dependent
+displacement” is not yet “large consequence.” The same-slot next-token law is
+nearly saturated by the identity component, so a changed displacement can
+leave that law nearly unchanged. Slot skill is already the more sensitive
+residual readout because it compares against the mean-displacement completion,
+but its mixed middle-depth intervals prevent treating it as a universal
+consequence certificate.
+
+A denizen needs the distinction between motion and consequential motion, but
+consequential motion should not be added as a sixth ontological primitive. It
+is a typed derived predicate on an admissible move, relative to a declared
+downstream response law and tolerance: the move is consequential when that law
+distinguishes its endpoint from its start. “Same place” therefore means
+observational equivalence under the denizen's probes and response law, not
+equal stored coordinates. The sentence “motion everywhere from L4,
+consequential motion only late” remains conditional: it may describe the
+world, or it may expose a same-slot readout insensitive to displacement
+direction. Forward-time transport is the discriminator.
+
+### Next measurement: forward-time append-token transport
+
+This is the next measurement in the fixed order. It tests the move a causal
+world actually makes, rather than another same-slot layer transition. It is
+CPU-only and documentation-only here; no capture or scoring is authorized in
+Round 19.
+
+**Inputs and sentinel.** Reuse the frozen `lexical_probe_v1` 80 one-token
+items and 16 carrier templates. For each complete token sequence
+`S=(t_0,...,t_{m-1})`, append the one-token ASCII period `.` as primary
+sentinel `s_A`; freeze and record its tokenizer ID in the capture manifest.
+Run ASCII comma `,` as `s_B` at the same appended position as the token
+identity control, also recording its ID. Both must be exactly one non-special
+token under the pinned tokenizer. If not, invalidate the run rather than
+substituting a token after inspection.
+
+**States and endpoint.** Let `q=m-1` and `r=m`. At each selected layer
+`l in {0,4,8,12,20}`, define `X=h_l(S)[:,q,:]` and
+`Y_s=h_l(S||s)[:,r,:]`. Thus `X` is the final original-position state
+before append, while `Y` is the sentinel's next-position state. Predict
+`Delta_s=Y_s-X` on held-out carrier blocks. Store `h_l(S||s)[:,q,:]` and its
+law as the causal locality check: appending after `q` must not alter `q`
+beyond tolerance.
+
+Fit and score both sentinels at identical positions. Apply the period-trained
+predictor to the comma target without refitting as the negative token-identity
+control. The position control is the original terminal position `q` in the
+same appended run: compare appended versus unappended state and law there,
+and complete there only as a negative endpoint. The primary endpoint is the
+next-token law at `r`, where the predicted sentinel state is inserted and the
+completed law is read.
+
+**Residual-rule ladder.** Use the same four carrier-block folds, 80 words,
+support accounting, and calibration-only inner selection. For each sentinel
+and layer fit: identity `Yhat=X`; shared mean displacement
+`Yhat=X+mean_cal(Delta)`; word-conditioned mean displacement
+`Yhat=X+mean_cal(Delta|w)`; kNN `k={1,5,20}`; ridge; rank-`<=128` low-rank
+affine; and kernel ridge. Identity and shared mean are the required nulls;
+the word-conditioned mean is a separate lexical/marginal null. Shuffle `Y`
+within each word across calibration carriers as the diagnostic carrier null.
+
+For each `Yhat`, insert it at `r` in the appended sequence at layer `l`, run
+the remaining layers, and read the law at `r`. Score displacement cosine,
+law skill relative to the shared-mean-displacement completion, law ordering,
+and raw KL. Store fresh-float32/reload checks, finite cells, per-carrier
+support, within-word carrier spread, and both controls.
+
+**Gates, budget, and predictions.** A candidate passes a layer only if it
+beats the word-conditioned displacement mean by `0.02`, with a positive
+paired word/carrier-clustered 95% lower bound on all three primary endpoints,
+finite cells, support `>=0.95`, and passing reload/locality controls. A
+forward-time result requires this at two of the five selected layers for the
+same sentinel; the comma arm is a control/replication, not a post-hoc token
+selection. The position-control difference must be at most predeclared
+`1e-4` in absolute float32 units (or the measured batched-vs-single numerical
+floor if larger), or the primary endpoint is void. A pass earns no native or
+cross-model claim.
+
+Capture both sentinels in about two CPU minutes. Analysis is about 30 CPU
+minutes per five layer points at 20 shuffles and 500 clustered bootstrap
+replicates, one process, no generation, and no GPU. Predict early movement to
+be token-identity/shared-mean dominated, with middle/late sentinel-position
+laws more sensitive to the L8/L12 direction than the original-slot law and a
+kernel field the leading middle-depth candidate. The cautious alternative is
+that token identity or position dominates and no layer passes, favoring a
+readout explanation. Do not fold in the unseen-word split: it is the next
+separate generalization/style follow-up with disjoint calibration and held-out
+word identities and its own artifact and gates.
