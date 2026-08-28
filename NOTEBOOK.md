@@ -5,6 +5,17 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-28 — Within-style null, sentinel ',': F8/F12/F20 mechanically pass (diagnostic only)
+
+- 2238 s, support 1.0, K = 7 KL-rank label. Same shape as the '.' arm: the
+  within-style null collapses below the shared mean from F4 on (0.21–0.54 vs
+  0.45–0.65) while ridge/kernel hold 0.68–0.80; F8/F12/F20 clear the
+  mechanical gate, F4 misses, F0 fails.
+- Per audit #9 this is an alignment-destruction diagnostic, not a style
+  control; no "style-robust" claim. Both arms recorded; Codex round 21
+  adjudicates and predeclares the leave-one-carrier-out control (`--loco`,
+  implemented, smoke pending).
+
 ## 2026-08-28 — Audit #9 adopted: nonpass ≠ kill; KL-rank set defect; style null is a diagnostic only
 
 - "Not met" is a nonpass under the historical contract, not a kill; the
