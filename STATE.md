@@ -800,8 +800,12 @@ then a second model family.
   latent state from a smooth carrier/style code; the pooled 16-carrier
   bootstrap is secondary (block-first resampling for any cross-family
   statement). `F0` = "no detected conditional gain at F0".
-- LOCO, sentinel B = ',' (`analysis_locoB.json`): **adjudicated in Round 22**;
-  `F12/F20` pass and `F0/F4/F8` fail the complete rule.
+- LOCO, sentinel B = ',' (`analysis_locoB.json`, ledger `nlm007_loco_locoB`;
+  3091 s; support 1.0): **adjudicated in Round 22**; `F12/F20` pass; `F4`
+  misses skill and KL-rank; `F8` misses skill only (KL-rank LB +0.021; audit
+  #11 precision); `F0` fails. Weaker in breadth (2/5 vs 4/5) — a
+  sentinel-specific instrument result, not evidence that B carries less
+  state information.
 - Oracle defect (ledger `nlm007_oracle_defect_forward`): the per-carrier
   "oracle" values in `analysis_fwdA/B`, `analysis_styleA/B`,
   `analysis_locoA/B` are meaningless (forward/delta mode predicted X from X);
@@ -824,10 +828,7 @@ then a second model family.
   family-only laws; motion invisible to the response law (readout-specific).
   The serious hole: no stable quotient separating lexical content,
   presentation, operational state, and consequential motion.
-- **Next, in order:** equalized LOCO addendum → unseen-word run under the
-  audit #10 gates → cross-fitted residualization of presentation coordinates
-  → second model family. Scope until then: one model, shared words; no native,
-  unseen-word, second-family, or general dynamics claim.
+- Next order and scope: see "Status after Round 22 and audit #11" below.
 
 ## Round 22 — current state (2026-08-28)
 
@@ -861,6 +862,46 @@ downstream laws, expose presentation coordinates, use consequence-sensitive
 divergence, support multi-step closure, and generalize across unseen words,
 styles, and model families. No new axiom is warranted this round.
 
-**Next:** run the equalized LOCO addendum, then the predeclared unseen-word
-experiment; keep all interpretation scoped until those controls and later
-style residualization are complete.
+**Next:** see "Status after Round 22 and audit #11" below.
+
+## Status after Round 22 and audit #11 (2026-08-29)
+
+- Equalized LOCO addendum, sentinel A = '.' (`analysis_locoeqA.json`, ledger
+  `nlm007_loco_addendum_predeclared`, `nlm007_loco_locoeqA`; 2911 s; support
+  1.0): **defect-affected (ledger `nlm007_locoeq_defect_inner_centre`)** —
+  the inner leave-one-carrier-out selection centred the word-only ridge and
+  the shrunk word mean on the outer three-carrier shared mean, which includes
+  the validation carrier's targets (direct pressure toward maximal
+  shrinkage), and the `strongest_equalized` comparator was chosen on held-out
+  outcomes. Outer margins are not leaked and stand as **descriptive numbers
+  only** (F4–F20 ridge − equalized baseline: cosine +0.09–0.13, skill
+  +0.23–0.30, KL-rank +0.26–0.34; F0 negative); "the data selected maximal
+  shrinkage" is invalid as implemented. Sentinel B (`analysis_locoeqB.json`)
+  carries the same defect. KL-rank universes differ across runs (LOCO K = 4,
+  equalized K = 6): breadth comparable, KL-rank effect sizes not.
+- Analyzer fixed prospectively (`d10fc66`: inner two-carrier centre;
+  comparator frozen by calibration score); corrected rerun `locoeq2A/B`
+  queued behind the unseen-word runs.
+- Withdrawn as over-claims (audit #11): "no per-word lexical signal", "the
+  variance objection is answered", "the state-conditioned component is
+  large", "the forward law is about context rather than content". Adopted
+  wording: the word-conditioned component captured by the tested estimators
+  is negligible for the measured forward displacement in this design; the
+  positive object is **X-conditioned residual predictability**, not
+  state-conditioned structure. Strongest alternative: `X` carries a smooth
+  presentation/template coordinate along which displacement and consequence
+  vary; the unresolved distinction is lexical content vs presentation vs
+  contextual operational state.
+- Second lens (audit #11): the narrower true statement is that lexical
+  content is not a sufficient predictor of the later forward step —
+  context-bearing `X` contains predictable variation that word-conditioned
+  means do not capture. Local holes: F0 identity/token dominance; ordering
+  saturation (a readout hole); the missing quotient. The next latent space
+  must define "same place" by interchangeability of declared moves and
+  downstream response laws.
+- **Next, in order:** unseen-word runs A/B (running; ledger
+  `nlm007_unseen_predeclared`) → corrected equalized rerun `locoeq2A/B` →
+  Codex adjudication → cross-fitted residualization of presentation
+  coordinates → second model family. Scope until then: one model, shared
+  words; no native, unseen-word, second-family, presentation-independent, or
+  general dynamics claim.

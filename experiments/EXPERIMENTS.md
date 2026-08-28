@@ -5,7 +5,7 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
-## NLM-007 — LM residual-stream dynamics; middle-depth ridge lead withdrawn under the identity baseline; displacement ladder adjudicated (audit #8 wording); forward-time move adjudicated NOT MET = nonpass, not a kill (Round 20, audit #9); within-style null = diagnostic only (both arms); LOCO A within-family positive, bounded (audit #10 wording), Codex adjudication pending; LOCO B running (2026-08-28)
+## NLM-007 — LM residual-stream dynamics; middle-depth ridge lead withdrawn under the identity baseline; displacement ladder adjudicated (audit #8 wording); forward-time move adjudicated NOT MET = nonpass, not a kill (Round 20, audit #9); within-style null = diagnostic only (both arms); LOCO A/B within-family positive, bounded (audit #10 wording; adjudicated Round 22); equalized addendum defect-affected, descriptive only (audit #11); corrected rerun and unseen-word runs queued/running (2026-08-29)
 
 - **Lock.** Round 13, documentation-only (ledger `nlm007_round13_lock`;
   design `theory/dialogue/003.md`, `theory/EXPERIMENTS.md`); Round 14
@@ -94,12 +94,28 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   - `analysis_locoA.json` — within-family leave-one-carrier-out control,
     sentinel A, layers 0/4/8/12/20, 500 word-clustered boot (ledger
     `nlm007_loco_predeclared`, `nlm007_loco_locoA`; 2902 s of the 4500 s
-    wall; support 1.0). **Scored under the Round 21 rule; Codex adjudication
-    pending.** Reading below (audit #10 wording). Oracle field meaningless.
+    wall; support 1.0). **Scored under the Round 21 rule; adjudicated Round
+    22.** Reading below (audit #10 wording). Oracle field meaningless.
     The LOCO smoke (`nlm007_loco_smoke_F8A`) crashed before writing a JSON;
     log numbers only.
-  - `analysis_locoB.json` — sentinel B arm of the LOCO control, **running**.
-    No status until scored. Oracle field meaningless.
+  - `analysis_locoB.json` — sentinel B arm of the LOCO control (ledger
+    `nlm007_loco_locoB`; 3091 s; support 1.0). **Scored; adjudicated Round
+    22** (audit #11 precision). Reading below. Oracle field meaningless.
+  - `analysis_locoeqA.json` — Round 22 equalized-baseline LOCO addendum,
+    sentinel A (word-only one-hot ridge; shrunk word mean; ledger
+    `nlm007_loco_addendum_predeclared`, `nlm007_loco_locoeqA`; 2911 s;
+    support 1.0). **Defect-affected (audit #11; ledger
+    `nlm007_locoeq_defect_inner_centre`): outer margins descriptive only**,
+    inner-selection claim invalid. The equalized smoke
+    (`nlm007_locoeq_smoke_F8A`) artifact was deleted; log numbers only.
+  - `analysis_locoeqB.json` — sentinel B arm of the addendum, **running**
+    under the same defect: descriptive only once scored.
+  - `analysis_unseenA.json` / `analysis_unseenB.json` — Round 22 unseen-word
+    runs (ledger `nlm007_unseen_predeclared`), **running/queued**; no status
+    until scored.
+  - `analysis_locoeq2A.json` / `analysis_locoeq2B.json` — corrected equalized
+    addendum (analyzer `d10fc66`: inner two-carrier centre; comparator frozen
+    by calibration score), **queued** behind the unseen runs.
   - `analysis_unseensmoke.json` — `--unseen-words 2` pipeline smoke at F8, A
     (1 shuffle / 10 boot; ledger `nlm007_unseen_smoke_F8A`, overwritten by
     `nlm007_unseen_smoke2_F8A` with the audit #10 lexical nulls and the
@@ -189,7 +205,7 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   `269e46c`) and is not contract-valid. Sentinel ',' (`analysis_styleB.json`)
   has the same shape: `F8/F12/F20` mechanical, same label, same verdict.
 - **LOCO control, sentinel '.' (`analysis_locoA.json`; Round 21 rule;
-  adjudication pending).** Pooled ridge − per-word block mean: `F4`
+  adjudicated Round 22).** Pooled ridge − per-word block mean: `F4`
   +0.126 / +0.313 / +0.300, `F8` +0.118 / +0.232 / +0.292 (cosine / law
   skill / K = 4 KL-rank), `F12` and `F20` in the same range, all lower
   bounds > 0.08, 11–15 of 16 held-out carriers passing all three; `F0`
@@ -201,6 +217,27 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   (word-only ridge, shrunk word mean) are required before interpretation;
   LOCO does not separate state from a smooth carrier/style code; the pooled
   16-carrier bootstrap is secondary. `F0` = "no detected conditional gain".
+- **LOCO control, sentinel ',' (`analysis_locoB.json`; Round 22, audit
+  #11).** `F12/F20` pass (pooled ridge − block-word mean: cosine +0.07–0.10,
+  skill +0.15–0.20, KL-rank +0.20–0.26, lower bounds > 0; 12–13 of 16
+  carriers); `F4` misses skill and KL-rank; `F8` misses skill only (KL-rank
+  LB +0.021); `F0` fails. Run-level positive (2/5); weaker in breadth than
+  A — a sentinel-specific instrument result, not evidence that B carries
+  less state information. Same audit #10 wording as A.
+- **Equalized LOCO addendum, sentinel '.' (`analysis_locoeqA.json`;
+  defect-affected, audit #11).** All 80 folds selected maximal shrinkage
+  (`lam_wordonly = 100`, `alpha_shrunk = 1`), i.e. the equalized baselines
+  equal the shared mean; ridge − equalized baseline at `F4–F20`: cosine
+  +0.09–0.13, skill +0.23–0.30, KL-rank +0.26–0.34 (11–14/16 carriers);
+  `F0` negative. **Descriptive only:** the inner centre included the
+  validation carrier and the comparator was chosen on held-out outcomes, so
+  "the data selected maximal shrinkage" is invalid as implemented; whether
+  maximal shrinkage persists under the corrected centre is unknown. Withdrawn
+  (audit #11): "no per-word lexical signal", "variance objection answered",
+  "context not content", "the state-conditioned component is large". Adopted
+  wording: the word-conditioned component captured by the tested estimators
+  is negligible for the measured forward displacement in this design; the
+  positive object is X-conditioned residual predictability.
 - **Oracle defect (ledger `nlm007_oracle_defect_forward`).** The per-carrier
   oracle read the stored states directly; in forward and delta mode it
   predicted X from X, so the ~0.98 oracle values in `analysis_fwdA/B`,
@@ -216,10 +253,10 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   nuisance law. A permutation null that a flexible model trivially beats is
   not a control. Within one style family the state carries predictive
   variation beyond the family's per-word mean for seen words (LOCO A), which
-  narrows but does not remove the carrier/template alternative. Bounded to
-  one model and shared words. Next: Codex adjudication of LOCO A/B →
-  unseen-word run under the audit #10 gates (X-free lexical nulls
-  `class_mean` / `wordonly_knn`, K = 11 universe, block-first bootstrap) →
+  narrows but does not remove the carrier/template alternative; the
+  positive object is X-conditioned residual predictability (audit #11).
+  Bounded to one model and shared words. Next: unseen-word runs A/B (running)
+  → corrected equalized rerun `locoeq2A/B` → Codex adjudication →
   cross-fitted residualization of presentation coordinates → second family.
 
 ## Round 12 closure — frozen-encoder program closed; pivot to worlds with dynamics (2026-08-27)

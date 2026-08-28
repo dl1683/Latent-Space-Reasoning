@@ -28,6 +28,8 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ## 2026-08-29 — Re-contextualization #11 (equalized addendum in; audit #11 fired)
 
+*Superseded in part by audit #11 (see the 2026-08-29 audit #11 entry): the equalized-addendum inner centre included the validation carrier, so "context, not content" and "content nulls collapse to the shared mean" are withdrawn; the addendum's margins are descriptive only.*
+
 - **Central bet + second lens:** native mathematics from what a denizen must
   invent; holes that make this space hostile to structured reasoning.
 - **Live question:** the forward step's within-family regularity is not
@@ -57,6 +59,8 @@ was learned, what's next. Canonical state lives in STATE.md.
   shared mean; the next step is governed by context state" → `_meta`.
 
 ## 2026-08-29 — Equalized LOCO addendum, sentinel '.': the lexical baselines collapse to the shared mean; ridge's lead is unchanged
+
+*Superseded in part by audit #11 (see the 2026-08-29 audit #11 entry): inner-centre defect; "no per-word signal" and "variance objection answered" are withdrawn; outer margins descriptive only; corrected rerun queued.*
 
 - 2911 s of the 4500 s wall. Both equalized X-free baselines (word-only
   one-hot ridge with inner-selected λ; shrunk word mean with inner-selected
