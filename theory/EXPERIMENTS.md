@@ -2326,3 +2326,136 @@ The L20 result should be retained as:
 > One bounded qualifying pair under the registered displacement-and-slot-law gate.
 
 The forward result, before its scores are inspected, is procedurally eligible provided all other gates pass. Its most important interpretive test is whether sentinel-position law sensitivity survives the token-identity control and remains after style and precision concerns are addressed.
+
+## Round 20 — forward-time adjudication, endpoint ruling, and next control (2026-08-28)
+
+**Codex, documentation-only; no experiment run.** The forward JSON artifacts
+and the four requested ledger entries were checked directly. The Round 20
+locality ruling is applied before interpreting the scores: the corrected
+scale-aware state and log-law tolerances pass, so the endpoint is eligible.
+This means only that there is no detectable causal nonlocality beyond measured
+numerical/kernel-path variation under that tolerance; it is not exact float32
+locality. The A/B unappended-state audit is stronger: `H_q_unappended`, its
+law, and `H_slot` are bit-identical across captures (all recorded maxima are
+`0.0`).
+
+### Round 19 preregistration ruling
+
+The locked rule requires at least two of the five layers for the **same
+sentinel**. The comma arm is a control/replication, not a post-hoc token
+selection. The primary period arm therefore **does not meet** the
+forward-time result: `analysis_fwdA.json` has only `F20` as a mechanical
+qualifying layer, with ridge. `F0` is token-identity/lexical dominated;
+`F4`, `F8`, and `F12` have large displacement-cosine and law-skill leads but
+fail the complete gate because ordering lower bounds are not positive in the
+required folds. Support is `1.0` throughout.
+
+The comma arm has a secondary replication result: `analysis_fwdB.json` has
+two qualifying layers, `F12` and `F20`, both with ridge. `F4` passes its three
+endpoints in the point estimate but misses a skill lower bound in one fold;
+`F8` misses one ordering lower bound by `-0.002`; `F0` remains
+token-identity/lexical dominated. This does not rescue the period arm and does
+not change the same-sentinel rule. The overall preregistered forward-time
+claim is therefore **not met**, not indeterminate.
+
+| Round 19 prediction | Adjudication | Exact reading |
+| --- | --- | --- |
+| Early layers are token-identity/shared-mean dominated | Held | `F0` is the lexical/token-identity regime in both sentinels. |
+| Sentinel-position laws are more sensitive to the middle/late direction than the original-slot law | Partly held | Cosine and law-skill leads are large from `F4` onward, but the full three-endpoint gate is not met at every such layer. |
+| Kernel is the leading middle-depth candidate | Partly held / mixed | Kernel is the minimal tested class at several middle-depth endpoints, but ridge is minimal at other endpoints and the tendency is not a native-class result. |
+| No layer passes because token identity or position dominates | Falsified in the strong form | `F20` passes for `.`, and `F12/F20` pass for `,`; locality passes under the corrected tolerance. Token identity remains a real component, not the whole explanation. |
+
+The allowed claim is narrow. In this one-model, shared-word,
+held-out-carrier design, the forward sentinel displacement is predictable from
+the preceding state beyond the word-conditioned mean from `F4` onward, and the
+sentinel-position response law registers that variation in the cosine and
+skill readouts. The no-refit token-identity control transfers partially across
+sentinels (about `0.43–0.54` versus about `0.26–0.30` for the shared mean), so
+the signal is not explained by sentinel identity alone. The period arm earns
+one bounded qualifying layer; the comma arm earns two-layer replication under
+the same mechanical gate. No state-independent-of-presentation claim,
+unseen-word claim, second-family claim, native-law claim, or general dynamics
+claim follows. Per Audit #8, “state-dependent” must remain qualified because
+`X` carries carrier/template presentation context; the strongest live
+alternative is a carrier/template-conditioned nuisance law encoded in the
+residual state.
+
+### The ordering endpoint
+
+The per-anchor concordance of within-carrier KL orderings across words is now
+ruled **insensitive/saturated for this question**, as a measurement diagnosis,
+not as a retroactive gate change. The same pattern recurs in the layer
+displacement ladder and both forward sentinels: cosine and law skill can be
+large while the ordering lead stays near zero or within roughly `±0.02`.
+Word identity and inherited law order dominate the across-word ranking, and
+every predictor preserves much of that order. The historical ordering gate
+therefore remains binding for the claims it governed; no failed layer is
+passed after the fact.
+
+For future runs, replace that endpoint with a fixed **KL-to-truth rank among
+candidate predictors**. At each held-out response-law cell, rank the fixed
+candidate set `{identity, shared mean, word mean, kNN-1, kNN-5, kNN-20,
+ridge, low-rank, kernel, chart}` by finite `KL(q_truth || q_hat)`, lower is
+better, with midranks for ties. Convert rank `r` among `K` candidates to
+`R = 1 - (r-1)/(K-1)`. Compare the preselected candidate's `R` against the
+word-conditioned mean on the same cells; the future endpoint requires a point
+lead of at least `0.02` and a positive word/carrier-clustered 95% lower bound,
+with support, finite-cell, reload, and locality gates unchanged. Candidate
+selection remains calibration-only. This is a future endpoint contract and
+does not reclassify any existing result.
+
+### Guiding-question ruling: motion, consequence, and nativeness
+
+The forward-time experiment identifies the most natural measured move so far:
+the world advances from the final original-position state to the appended
+sentinel's next-position state. Its response registers the move at the
+sentinel position, not merely at an analyst-chosen layer transition. In that
+limited sense, this is the first serious candidate for a native law of motion.
+It is not yet a native law. A denizen would need the regularity to survive the
+Audit #8 style controls, a class-stratified unseen-word split, and a second
+model family, with the same null ladder and response-law endpoint. It must
+also remain predictive after carrier/template presentation is balanced or
+held out. The exciting but bounded “so what” is: the latent world appears to
+have a forward step whose consequences can be forecast, but we have not yet
+shown that the forecast belongs to the world rather than to its presentation.
+
+### Next measurement, fixed in order
+
+The next measurement is the cheapest Audit #8 style control: a
+**within-style-family target null** on the existing raw forward captures
+`forward_states_A.npz` and `forward_states_B.npz`, with their existing
+`analysis_fwdA.json` and `analysis_fwdB.json` as the comparison artifacts.
+Because each individual template occurs once, the declared style family is
+the four-probe config block (`gloss`, `continuation`, `association`, or
+`grammar`), not an invented within-template replicate.
+
+For each outer held-out-block fold, sentinel, and selected layer, preserve the
+80 words, all original folds, calibration-only standardization and model
+selection, and the existing 20 shuffles/500 clustered bootstrap structure.
+On calibration carriers only, permute `Y` (equivalently `Delta=Y-X`) across
+carriers **within each style-family block and word**. This preserves the
+style-family marginal while removing the exact state/carrier pairing that the
+current all-carrier shuffle destroys. Refit the same selected ridge and
+kernel fields to each null and evaluate on the unchanged held-out carriers.
+Retain displacement cosine and law skill as primary diagnostics; use the new
+KL-rank endpoint in place of across-word ordering for the future consequence
+gate. A style-robust result must still beat the word-conditioned mean by
+`0.02` with positive clustered lower bounds on cosine, skill, and KL-rank, and
+must additionally beat the within-style-family null by `0.02` with a positive
+clustered lower bound on those three endpoints. Support remains `>=0.95`, all
+cells finite, and reload/locality controls must pass.
+
+Predictions are fixed as follows. If carrier/template style explains the
+lead, the within-style-family null will retain much of the original lead and
+the style-balanced state-conditioned advantage will collapse toward the
+word-conditioned mean; no two-layer native-law reading is earned. If a
+state-linked component remains beyond style, the style-preserving null will
+collapse toward the lexical mean while the original field retains positive
+cosine, skill, and KL-rank leads, possibly attenuated. Either outcome is a
+control result, not a retroactive pass of the period arm.
+
+After this control, run the predeclared class-stratified unseen-word split:
+calibration and held-out word identities must be disjoint, with the same
+sentinel pair, folds, null ladder, clustered gates, and response-law endpoint.
+Only after that split is adjudicated is a second model-family replication
+next. No experiment is run in Round 20 itself.

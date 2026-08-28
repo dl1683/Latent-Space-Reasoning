@@ -426,3 +426,29 @@ Identity, shared-mean displacement, and word-conditioned displacement are the
 required null ladder before a richer law. A sentinel token-identity control and
 an original-terminal-position locality control decide whether a result reflects
 a causal next-position move or merely a token/readout artifact.
+
+## Round 20 — forward-time empirical boundary
+
+The forward-time experiment is the first measurement whose move is the
+world's own append-token transition and whose consequence is read at the
+resulting next position. In the present one-model, shared-word,
+held-out-carrier design, the sentinel displacement is predictable from the
+preceding state beyond the word-conditioned mean from `F4` onward, and the
+sentinel-position law registers that variation in cosine and skill. This is a
+candidate instance of a native law of motion, not an earned native law.
+
+The primary period arm does not meet its preregistered two-of-five same-
+sentinel criterion: only `F20` qualifies. The comma control/replication has
+two qualifying layers, `F12` and `F20`, but cannot rescue the primary arm.
+The evidence therefore adds no new axiom. It sharpens the empirical boundary:
+state-predictive forward motion is compatible with a native law, while
+carrier/template-conditioned nuisance encoded in the state remains an equally
+live explanation. A native-law claim requires survival under presentation/style
+controls, a disjoint unseen-word split, and a second model family, with the
+same null ladder and downstream response-law test.
+
+The across-word within-carrier ordering endpoint is retained for historical
+audit but is diagnosed as saturated for this question because word identity
+dominates it. Future consequence testing should use a predeclared rank of
+candidate completions by held-out KL to truth; this is a measurement redesign,
+not a change to any earlier gate or axiom.

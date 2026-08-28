@@ -689,19 +689,38 @@ precision reports are queued ahead of any "state-dependent" claim.
 - Displacement ladder (`analysis_delta.json`, ledger `nlm007_delta_v1`):
   adjudicated Round 19; wording per audit #8 above.
 - Forward-time move, sentinel A = '.' (`analysis_fwdA.json`, ledger
-  `nlm007_forward_fwdA`; predeclared `nlm007_forward_predeclared`): scored,
-  **Codex adjudication pending**. Mechanical reading only: support `1.0`,
-  locality passes under the Round 20 clause; `F0` token-identity dominated;
-  `F4/F8/F12` displacement-cosine and law-skill leads over the
-  word-conditioned mean but ordering leads `0.00–0.08` with lower bounds
-  `<= 0` in half the folds, so the three-endpoint gate fails there; `F20`
-  qualifies mechanically (ridge). Ordering is the binding endpoint in both
-  clocks; whether it is an insensitive readout is for Codex to rule before
-  any "inconsequential motion" language. The token-identity control (the
-  '.'-fitted predictor on the ',' target) transfers partially.
-- Running: sentinel B = ',' arm (`analysis_fwdB.json`). Smoke
-  `analysis_fwdsmoke.json` is validation only.
-- Next, in order: Codex adjudication of A/B → audit #8 style controls
-  (style balancing, within-template null, style-held-out split, Y−X
-  decomposition, per-layer float32 precision reports) → unseen-word split →
-  second model family. No native-law claim stands.
+  `nlm007_forward_fwdA`; predeclared `nlm007_forward_predeclared`):
+  adjudicated **not met** for the primary same-sentinel rule. Support is
+  `1.0`, locality passes under the corrected Round 20 clause, `F0` is
+  token-identity dominated, `F4/F8/F12` have large cosine and law-skill
+  leads but fail the ordering gate, and only `F20` qualifies mechanically
+  (ridge).
+- Sentinel B = ',' (`analysis_fwdB.json`, ledger `nlm007_forward_fwdB`) is a
+  secondary replication: `F12` and `F20` qualify (ridge); `F8` misses one
+  ordering lower bound by `-0.002`, and `F4` misses one skill lower bound.
+  This cannot rescue the period arm because the preregistration requires two
+  layers for the same sentinel. The A/B unappended states and laws are
+  bit-identical (`nlm007_forward_AB_equality`, all recorded maxima `0.0`).
+- Allowed forward reading: in this one-model, shared-word, held-out-carrier
+  design, the appended displacement is predictable from the preceding state
+  beyond the word-conditioned mean from `F4` onward and the sentinel-position
+  response registers it in cosine/skill. Audit #8 leaves carrier/template
+  presentation versus state dependence unresolved; no native, unseen-word,
+  second-family, or general dynamics claim stands.
+- The across-word within-carrier ordering endpoint is ruled
+  insensitive/saturated for this question, without retroactively passing any
+  run. Future runs replace it with a fixed candidate-predictor KL-to-truth
+  rank endpoint: normalized rank lead `>=0.02` with a positive
+  word/carrier-clustered lower bound, calibration-only selection, and the
+  existing support/finite/reload/locality gates.
+- Next, in order: run the cheapest Audit #8 style control, a within-style-
+  family target null on the existing raw `forward_states_A.npz` and
+  `forward_states_B.npz` captures. Within each calibration style-family
+  block and word, permute `Y` (or `Delta=Y-X`) across carriers; preserve the
+  current folds, fitting, shuffles, bootstraps, and gates. A style-robust
+  candidate must beat both the word mean and this null by `0.02` with
+  positive clustered lower bounds on cosine, skill, and the new rank endpoint.
+  If style explains the lead, the null retains it and the state-conditioned
+  lead collapses; if state-linked variation remains, the null collapses while
+  the original field retains positive leads. Then run the disjoint,
+  class-stratified unseen-word split, followed by the second family.
