@@ -1252,15 +1252,17 @@ synthesis or the second-family protocol. No experiment was run in Round 26.
 
 ## Round 27 — A-augmented adjudication and next comparator locks (2026-08-29)
 
-`analysis_resAA.json` is contract-valid for the registered A-augmented
-residual-vs-null question: sentinel A (`.`), `P_aug`, two unseen-word folds,
-K=13, crossed class-preserving bootstrap, 20 shuffles, 500 bootstraps, support
-`1.0`, and `4737.8 s` of the `7200 s` wall. The live implementation fits the
-rank-at-most-4 carrier basis only on calibration carriers and calibration
-words and scores a leave-current-word-out carrier mean in that basis; it
-rebuilds the basis inside inner carrier folds.
+`analysis_resAA.json` is internally valid for the implemented sentinel-A rank-4-score augmented residualization: its manifest, reload, locality, support, eight-key, K=13, shuffle, bootstrap, and runtime records are present. The implementation appends at most four scores derived from a carrier mean rather than the full carrier-mean vector described ambiguously in the earlier lock. The basis and target maps use calibration outcomes only, but each held-out carrier's score uses that carrier's `X` values on calibration words, so the result is outcome-clean and transductive within carrier. Do not call it unqualifiedly contract-valid until the pre-result meaning of the carrier-mean clause is resolved.
 
-All five layers pass. At F0, `X_perp` ridge residual cosine is `0.335` versus
+The Round 23 preregistration resolves that wording honestly: its two bullets
+registered (1) the carrier mean itself and (2) rank-4 scores of that mean.
+The observed run is therefore named `P_aug-score4`: it is internally valid for
+the implemented sensitivity, but it is not the literal registered `P_aug`
+design. The full-mean-plus-score design, `P_aug-full`, remains unrun.
+
+All five correlated checkpoints meet the registered aggregate residual-vs-null gate. F4–F20 have 6–8/8 full-gate keys; F0 has 7/8 positive keys but only 2/8 full-gate keys and is reported separately as a weak pooled residual association.
+
+At F0, `X_perp` ridge residual cosine is `0.335` versus
 `-0.006` for the strongest residualized X-free null; crossed block-first
 margins are cosine `+0.341 [LB 0.246]`, skill `+0.156 [0.022]`, and K=13
 KL-rank `+0.303 [0.122]`. Only `2/8` keys clear the full per-key gate, although
@@ -1270,28 +1272,12 @@ cosine is `0.617/0.595/0.555/0.612` versus strongest-null
 skill margins `+0.458/+0.346/+0.369/+0.457`, and KL-rank margins
 `+0.485/+0.432/+0.425/+0.557`, all with positive lower bounds. Full-gate keys
 are `8/8`, `7/8`, `6/8`, and `8/8`; every key is positive and no block
-collapses. The presentation-only `P_aug -> Delta` cosine is
+collapses. The `P_aug` carrier-summary nuisance arm → `Δ` cosine is
 `0.639/0.498/0.446/0.475/0.608` at F0/F4/F8/F12/F20.
 
-Round 23 branch: A-static and A-augmented jointly take the **both-design
-non-collapse branch**. The four registered X-free lexical nulls and the
-registered static-plus-augmented presentation collapse prediction both miss.
-The positive object is X-linked residual predictability after removal of the
-registered coordinates, not operational state. Audit #14's joint license is
-extended accordingly: registered static and augmented coordinates predict
-held-out raw displacement, and after cross-fitted removal of either design
-from both `X` and `Delta`, `X_perp` still predicts `Delta_perp` and its
-reassembled response-law consequence beyond the residual X-free nulls at
-F4–F20. The pair establishes presentation sensitivity and residual X-linked
-predictability; it identifies neither overlap/fraction/mediation nor state or
-presentation independence.
+Under the implemented designs, A-static and A-aug take the predeclared both-design non-collapse branch. They are nested sensitivity analyses on the same sentinel-A cells, not independent replications. `P_static` metadata predict raw displacement, and adding the implemented rank-4 X-derived carrier-summary scores still does not absorb the residual `X–Δ` association at F4–F20. On the same folds, `X⊥` predicts `Δ⊥` and improves the reassembled response-law prediction beyond the four registered X-free lexical estimators after either nuisance fit. This narrows only those registered nuisance families; it does not estimate presentation's contribution, identify operational state, establish presentation independence, or test fresh carriers or styles.
 
-F0's augmented pass is a real cross-fitted **conditional residual** gain, not
-held-out-target leakage, but it does not reverse raw identity dominance. The
-same-run raw ridge cosine is `0.687` versus a raw null near `0.669`, and
-`P_aug -> Delta` is `0.639`: the carrier-mean/subspace coordinates remove an
-identity/carrier-dominated component and expose a different residual problem.
-The `2/8` full-key count blocks a broad robust-F0 reading.
+No direct held-out-`Y` or held-out-`Δ` leakage was found in F0. The registered augmented residualization produces a positive pooled conditional residual association, but it also changes the target and reference geometry by subtracting a dominant carrier-associated fitted component. Raw ridge exceeds the raw null by only about 0.019 cosine, and only 2/8 keys clear the full residual gate. The raw first transition therefore remains identity/token dominated, and the exposed residual is not identified as operational state.
 
 The repaired common-scale retention block is present. Bootstrap-median ratios
 `residual margin / raw margin` [95% CI] for cosine, skill, and continuous KL
@@ -1308,12 +1294,7 @@ are:
 - F20: `1.105 [1.020,1.248]`, `0.951 [0.787,1.073]`,
   `0.974 [0.784,1.098]`.
 
-Thus A-augmented retains at least half of the same-run raw
-ridge-versus-strongest-null **predictive margin on the common raw-Delta scale
-at the bootstrap median** for every layer and endpoint. A uniform 95%-interval
-claim is not earned because F4 continuous KL dips to `0.495`. This is not a
-fraction of latent signal, variance, state, or mediation, and it cannot fill
-the missing A-static common-scale cell.
+In every measured layer-endpoint cell, the paired bootstrap median of the reassembled residual-model margin divided by the raw-ridge margin exceeds 0.5. Fourteen of fifteen interval lower bounds exceed 0.5; F4 continuous KL is 0.495. Ratios above one do not show strengthening or recovery of a latent component, because numerator and denominator come from different fitted estimator systems and strongest-null competitions. This is a robustness ratio for predictive margins, not retained signal, variance, state, or mediation.
 
 Two existing-capture comparators are now preregistered before any state
 reading:
@@ -1334,22 +1315,12 @@ reading:
    key/block gates; estimated `24.4–26.3 h` per cell,
    `97.8–105.3 CPU h` for four, `120 h` hard wall.
 
-**Next, in order:** finish and adjudicate `resSB` → `resAB` → `resSA2` without
-opening a running/queued artifact early. Then run the X-free field on all four
-cells as the cheapest direct moot-maker, followed by the Freedman–Lane null on
-all four cells. Both precede the pinned second-model-family protocol; no arm or
-layer is selected after outcomes.
+**Next, in order:** Finish the already-running chain without opening excluded artifacts, then freeze the X-free comparator to an immutable code hash and literal command. Before committing roughly 100 CPU hours to four Freedman–Lane cells, prospectively add the full-available-rank carrier-summary baseline and run at least one frozen fresh-template or different-move probe. Expand the refitted null only if those cheaper external-axis tests leave the interpretation live.
 
-Second lens: presentation sensitivity is proven locally under both registered
-designs; presentation entangled with operational state remains unproven. The
-current representation still lacks a demonstrated native quotient. The next
-latent space must expose or controllably factor lexical, presentation, and
-operational coordinates, define sameness by interchangeability under declared
-moves and response laws, and support consequence-sensitive multi-step closure
-with transfer across unseen words, fresh styles, and model families. The
-single most sharpening immediate measurement is the fair residual-space
-X-free presentation/lexical interaction field. No new axiom is earned, so
-`theory/AXIOMS.md` is unchanged. No experiment was run in Round 27.
+`P_static` proves local association between registered template metadata and raw displacement. The implemented `P_aug` sensitivity shows that four additional X-derived carrier-summary scores do not absorb the residual association; it does not independently establish presentation sensitivity. Presentation/operational-state entanglement and a representation-level hostile quotient hole remain unproven. The only proven hole here is instrumental: the specific inherited across-word ordering statistic is insensitive for this probe. The cheapest representation-level test is controlled interchangeability across frozen presentation variants and a second move.
+
+No new axiom is earned, so `theory/AXIOMS.md` is unchanged. No experiment was
+run in Round 27.
 
 ## Round 28 — B-static adjudication and two-sentinel static result (2026-08-29)
 
@@ -1416,7 +1387,78 @@ known coordinates are still required to propose equivalence; that is a
 constructive target, not proof no quotient exists. No new axiom is earned.
 
 **Next, unchanged:** finish and adjudicate `resAB` -> `resSA2`, then run the
-fair residual-space X-free field on all four cells, then the fully refitted
+registered residual-space X-free field on all four cells, then the fully refitted
 Freedman–Lane null on all four cells, then the pinned second-model-family
 protocol. The running/queued artifacts were not opened, the analyzer diff was
 not modified, and no experiment was run in Round 28.
+
+## Round 29 — audit #15 adoption and amended order
+
+Tier-3 audit #15 is adopted in `theory/EXPERIMENTS.md`. The verified A-aug
+numbers stand, but the interpretation is narrowed. `P_aug-score4` is
+outcome-clean and transductive within carrier: basis and target fitting use
+calibration outcomes only, while each held-out carrier's scores use that
+carrier's `X` values on calibration words. Round 23's literal two-bullet lock
+meant the full carrier mean **plus** rank-4 scores. The implemented score-only
+run is therefore internally valid for its implemented sensitivity but is not
+the literal registered `P_aug`; `P_aug-full` remains unrun.
+
+Current maximum claim: in sentinel A and the fixed authored template
+population, `P_static` and `P_aug-score4` do not absorb the X–Delta association
+at F4–F20. On the same correlated folds, `X_perp` predicts `Delta_perp` and
+improves the reassembled law beyond four registered X-free lexical predictors.
+This is an outcome-clean, transductive, same-data sensitivity result—not
+operational state, presentation independence, fresh-style transfer,
+composition, or a native law. The strongest live alternative is an aligned
+high-dimensional prefix/carrier fingerprint that can beat both queued
+internal comparators.
+
+Audit #15 also limits the kill claims. Only the inherited across-word,
+within-carrier pairwise-KL ordering statistic is insensitive; broader ordering
+and multi-step structure remain open. Only four word-only lexical estimators
+fail; contextual/full-prefix lexical fields remain open. The prior
+frozen-encoder program closed its tested candidate/edit/readout envelope, not
+all frozen encoders, native maps, or quotients.
+
+**Amended order:**
+
+1. Finish `resAB -> resSA2` without opening either excluded artifact early.
+2. On existing captures, run the carrier-summary rank ladder
+   `{1,2,4,8,full}` plus nonlinear carrier kernel as a cosine screen, followed
+   by the fixed sentinel-A literal `P_aug-full` law cell (`~1.5 h`, `2 h`
+   wall). This is not redundant with the X-free field: it tests nuisance-rank
+   underfit and repairs the lock.
+3. Freeze 16 blind fresh templates as eight matched presentation pairs across
+   four families; capture the same 80 words for both sentinels plus the fixed
+   single-token `not` insertion (`~15–20 min` total capture).
+4. Run matched interchangeability across the fresh pairs and both move classes
+   (`<=1 h`, `90 min` wall), before any outcome can redefine equivalence.
+5. Run the full fresh-population contract (`~3 h`, `4 h` wall), then the full
+   different-move contract (`2–3 h`, `4 h` wall).
+6. Run the four registered X-free cells (`4.9–5.3 h`, existing `8 h` wall).
+7. Run only Freedman–Lane `A-static` (`24.4–26.3 h`, `30 h` wall), and only if
+   the full-mean cell, fresh population, different move, interchangeability,
+   and A-static X-free gates all leave the state reading live.
+8. Run the second pinned decoder after that one-cell refitted null. The
+   four-cell Freedman–Lane expansion is not authorized by Round 29.
+
+The exact gates and predictions are preregistered in Round 29 of
+`theory/EXPERIMENTS.md`. The key decisions are: fewer than two F4–F20
+`P_aug-full` passes supports rank-4 truncation; fresh transfer requires both
+sentinels, two layers each, at least 12/16 jointly positive templates, and no
+family collapse; the operator move requires two layers, `>=0.02` three-
+endpoint margins with positive crossed lower bounds, `6/8` jointly positive
+keys, no collapse, and support `>=0.95`; interchangeability uses explicit
+stable, hostile-hole, and inconclusive regions against a fixed-input noise
+floor.
+
+Second lens: no representation-level hostile hole is yet proven. The local
+measurement hole is the insensitive inherited ordering statistic. The
+single fastest line-mooting test is matched interchangeability across a fresh
+presentation family and a second move: systematic equivalent-presentation
+swap failure with intact different-state controls would show that presentation
+obstructs a stable identity relation in this scope. Until that gate is met,
+the missing quotient is a constructive target, not a proof that structured
+reasoning cannot live here. No new axiom is earned. No experiment was run in
+Round 29; the excluded artifacts were not opened and the analyzer diff was not
+modified.

@@ -4446,7 +4446,7 @@ field and blocks at least one of the four statistics. A real aligned
 still does not identify state: a nonlinear presentation/carrier relation can
 be aligned and therefore also reject permutation.
 
-### Comparator 2 lock: fair residual-space X-free field
+### Comparator 2 lock: registered residual-space X-free field
 
 This is the cheaper and more interpretation-specific moot-maker. In every
 outer fold, form a calibration-only feature family with no held-out cell
@@ -4500,7 +4500,7 @@ reading.
 
 Do not interrupt or inspect the remaining chain. Finish and adjudicate in the
 existing order `resSB` (B-static) -> `resAB` (B-augmented) -> `resSA2`
-(patched A-static common-scale cell). Then run the fair X-free field on all
+(patched A-static common-scale cell). Then run the registered X-free field on all
 four cells as the cheapest direct moot-maker, followed by the fully refitted
 Freedman–Lane null on all four cells. Both comparator families precede any
 second-model capture or state wording; no sentinel, layer, or presentation
@@ -4538,7 +4538,7 @@ provide consequence-sensitive divergences and multi-step closure; transfer
 across unseen words, fresh styles, and model families; and include precision,
 support, and controllability in the representation contract.
 
-The single most sharpening immediate measurement is the **fair residual-space
+The single most sharpening immediate measurement is the **registered residual-space
 X-free presentation/lexical interaction field**. It directly tests the
 strongest surviving explanation on the same held-out task without cell-level
 `X_perp`, and it is the cheapest comparator that can moot the state reading.
@@ -4729,8 +4729,375 @@ No new axiom is earned.
 
 The Round 27 order is confirmed without amendment. Finish and adjudicate
 `resAB` (B-augmented), then `resSA2` (patched A-static common-scale cell).
-Next run the fair residual-space X-free field on all four cells as the cheapest
+Next run the registered residual-space X-free field on all four cells as the cheapest
 direct moot-maker, followed by the fully refitted Freedman–Lane null on all
 four cells. Both comparator families precede the pinned second-model-family
 protocol. No sentinel, layer, or presentation design is selected after
 outcomes.
+
+## Tier-3 audit #15 — A-augmented validity, tunnel vision, and the second lens (fresh Codex auditor)
+
+**Adopted verdict.** The A-augmented numerical association is real under the
+implemented analysis, but several interpretations are withdrawn or narrowed.
+The aggregate residual-vs-null gate is mechanically met at all five correlated
+checkpoints, and no direct held-out `Y` or `Delta` leakage was found. The
+maximum defensible statement is:
+
+> In sentinel A and this fixed authored template population, the registered
+> static nuisance model and the implemented rank-4 carrier-summary nuisance
+> model do not absorb the X–Delta association at F4–F20. On the same
+> correlated folds, `X_perp` predicts `Delta_perp` and improves the reassembled
+> decoder-law prediction beyond four registered X-free lexical predictors.
+> This is an outcome-clean but transductive, same-data sensitivity result; it
+> establishes neither operational state, presentation independence,
+> fresh-style transfer, composition, nor a native law.
+
+The current queue is strongly tunnel-visioned: one decoder, one authored
+template population, one punctuation-append move, one sentinel pair, and one
+decoder self-readout. No representation-level hole hostile to structured
+reasoning is established by the residualizations. The specific inherited
+ordering statistic is a proven local measurement hole.
+
+### Direct numerical verification
+
+The audit independently reduced `analysis_resAA.json` and confirmed the Round
+27 table:
+
+| Layer | Ridge / strongest null cosine | Cosine margin [LB] | Skill margin [LB] | KL-rank margin [LB] | Full / positive keys |
+|---|---:|---:|---:|---:|---:|
+| F0 | 0.335 / -0.006 | +0.341 [0.246] | +0.156 [0.022] | +0.303 [0.122] | 2/8 / 7/8 |
+| F4 | 0.617 / 0.062 | +0.555 [0.513] | +0.458 [0.310] | +0.485 [0.352] | 8/8 / 8/8 |
+| F8 | 0.595 / 0.074 | +0.521 [0.480] | +0.346 [0.239] | +0.432 [0.312] | 7/8 / 8/8 |
+| F12 | 0.555 / 0.060 | +0.495 [0.455] | +0.369 [0.254] | +0.425 [0.238] | 6/8 / 8/8 |
+| F20 | 0.612 / 0.071 | +0.541 [0.494] | +0.457 [0.377] | +0.557 [0.471] | 8/8 / 8/8 |
+
+Runtime was `4737.8 / 7200 s`; support was `1.0` in every key; the run used
+eight block-by-word keys but only four top-level template-family clusters, 20
+shuffles, and 500 bootstrap replicates. Reload ordering agreement was
+`0.9996166`, with maximum pairwise-KL difference `0.001494`. The stored
+float16 locality maximum was `0.125`; the authoritative float32 manifest value
+was `0.0003624`, narrowly within the historical `0.000378` tolerance.
+
+The common-scale ratios were also copied correctly:
+
+| Layer | Cosine | Skill | Continuous KL |
+|---|---|---|---|
+| F0 | 2.513 [1.337, 5.098] | 1.460 [0.871, 4.559] | 1.255 [0.612, 5.393] |
+| F4 | 1.105 [0.968, 1.323] | 1.062 [0.811, 1.758] | 0.778 [0.495, 1.195] |
+| F8 | 1.166 [1.044, 1.326] | 1.137 [0.792, 1.618] | 0.942 [0.652, 1.249] |
+| F12 | 1.231 [1.102, 1.428] | 1.160 [0.957, 1.353] | 1.127 [0.996, 1.243] |
+| F20 | 1.105 [1.020, 1.248] | 0.951 [0.787, 1.073] | 0.974 [0.784, 1.098] |
+
+Fourteen of fifteen interval lower bounds exceed `0.5`; F4 continuous KL is
+`0.495`.
+
+### A-aug design integrity and the Round 23 lock
+
+The implementation is outcome-clean: the basis, nuisance maps, and
+regularization use calibration data; the current calibration word is excluded
+where applicable; inner nuisance selection rebuilds the basis on inner
+training carriers; and held-out `Y`, `Delta`, law outcomes, and bootstrap
+results do not construct the features. Direct held-out-target leakage is not
+supported.
+
+It is nevertheless transductive. Every held-out word on a held-out carrier
+receives carrier-summary scores made from that same carrier's `X` states over
+the calibration-word pool. The target outcome is held out, but the carrier is
+not an unseen input distribution. “Held-out block” therefore means held-out
+outcomes, not a wholly unseen carrier or presentation.
+
+The pre-result Round 23 text is not ultimately neutral between the two
+readings. It says that `P_aug` “adds two carrier-level coordinates” and then
+lists (1) the carrier mean of `X` and (2) rank-4 scores of that mean. Its
+literal meaning was **full carrier mean plus rank-4 scores**. The code appended
+only `CM @ V`, at most four score columns; the 1024-dimensional carrier mean
+was an intermediate. Therefore:
+
+- name the observed run `P_aug-score4`;
+- mark A-aug **outcome-clean, transductive, contract-validity qualified**;
+- treat it as internally valid for the implemented score-only sensitivity,
+  not as the literal registered `P_aug` result; and
+- record the literal full-mean-plus-score `P_aug-full` sensitivity as unrun.
+
+### Claim adjudications
+
+- **Both-design non-collapse:** mechanically correct only for the implemented
+  nested designs. `P_static` and `P_aug-score4` reuse the same sentinel-A cells
+  and folds. This is one experiment surviving two nested nuisance fits, not
+  two demonstrations.
+- **Joint license:** asymmetric. `P_static` is analyst-metadata-only;
+  `P_aug-score4` includes X-derived carrier information and cannot
+  independently establish presentation sensitivity. Registered static
+  metadata predict raw displacement. Adding four transductive, X-derived
+  carrier-summary scores still does not absorb the residual X–Delta
+  association. Operational state, unmeasured presentation, a carrier/prefix
+  fingerprint, and mixtures all remain live.
+- **F0:** no direct target leakage was found, but this is only a positive
+  pooled association for the registered residualized estimand. Raw ridge
+  exceeds the raw null by about `0.019` cosine, only `2/8` keys clear the full
+  gate, and the skill lower bound is `0.022`. Raw F0 remains identity/token
+  dominated.
+- **Common-scale retention:** the bootstrap-median ratio exceeds `0.5` in
+  every cell. “Retains at least half” is withdrawn because numerator and
+  denominator come from different fitted estimator systems and strongest-null
+  competitions. Ratios above one do not show strengthening, recovery, or more
+  latent information. The field is a robustness ratio for predictive margins.
+- **Layers and endpoints:** the five checkpoints share decoder, captures,
+  folds, move, sentinel, nuisance fits, and null family. They are a correlated
+  depth profile, not five replications. Cosine/error and skill/KL reductions
+  are likewise related views of the same vector prediction and decoder-law
+  discrepancy. Four template families make the block-first intervals internal
+  sensitivity summaries, not style-population confidence intervals.
+
+### Strongest missed alternative
+
+The strongest alternative missed by both queued comparators is a
+high-dimensional prefix/carrier fingerprint. `X_perp` and `Delta_perp` are
+deterministic descendants of the same authored input, and the decoder readout
+is sensitive to the same implementation-specific directions. This account is
+aligned enough to beat a Freedman–Lane null, cell-level enough to beat an
+X-free field, compatible with unseen-word transfer on a smooth authored
+manifold, and compatible with decoder-law improvement. It is not a causally
+sufficient reusable operational state, and it is not a navigation law unless
+it survives intervention and composition.
+
+### CPU-only alternatives
+
+| Exploration | Estimated cost | What it decides |
+|---|---:|---|
+| Full available carrier-summary rank ladder `{1,2,4,8,full}` plus nonlinear carrier kernel | Cosine screen in minutes; full law gate about 1–1.5 h/cell | Whether rank-4 truncation created the apparent survival |
+| Contextual X-free baseline from full tokenized prefix features or an earlier frozen prefix representation | Under 30 min screen; about 1–1.5 h with completion/bootstrap | Whether the four word-only lexical nulls are simply too coarse |
+| Fresh frozen template population, 16 templates × 80 words | About 5 min capture/sentinel; roughly 1–3 h focused analysis | Whether the relation transfers beyond the authored template manifold |
+| Different move: content-bearing append, negation/operator insertion, or binding update | About 5 min capture/move plus 1–2 h analysis | Whether this is punctuation-position mechanics |
+| Matched presentation-interchangeability test | Roughly 10 min capture plus ≤1 h targeted scoring | Whether presentation variants are genuinely interchangeable under moves and laws |
+| Two-step writeback/composition | Roughly 10–20 min new capture plus about 1 h scoring | Whether the one-step field composes or is merely a local fingerprint |
+| Second pinned decoder | Existing lock allows about 3 CPU h | Replication across one more decoder—not genericity or mechanism |
+
+The fresh-template, different-move, and full-rank carrier baseline outrank the
+approximately 100-CPU-hour four-cell Freedman–Lane expansion. The refitted
+null remains useful for residual geometry, but it is not the next dollar of
+CPU.
+
+### Over-claimed kills and second-lens ruling
+
+- **Ordering:** only the across-word, within-carrier pairwise-KL statistic is
+  insensitive. Ordering-sensitive navigation, move order, commutativity, and
+  multi-step ordinal structure remain open.
+- **Lexical interpolation:** only the four registered word-only estimators
+  fail. Contextual lexical structure, full-prefix representations, subword
+  interactions, and high-dimensional lexical/presentation fields remain open.
+- **Frozen encoder:** stopping the prior assay was defensible scope
+  management. It closes the tested candidate/edit/readout envelope, not frozen
+  encoders, native maps, or operational quotients generally.
+
+A representation-level hole hostile to structured reasoning is not yet
+proven. Proven locally: the inherited ordering statistic is insensitive; raw
+F0 is identity/token dominated under this move and instrument; static metadata
+predict raw displacement; and two fitted nuisance families do not exhaust the
+X-linked association. Not proven: presentation and operational state are
+structurally inseparable, the space lacks every recoverable quotient, the
+residual is presentation-free, or structured reasoning cannot live here.
+
+The cheapest representation-level hole test is controlled interchangeability:
+freeze semantically and operationally equivalent presentation variants, match
+their displacement norms without held-out outcomes, swap or write back their
+states or moves, and test whether downstream moves and laws remain
+interchangeable while genuinely different operational states remain
+separable. Failure across a held-out presentation family and a second move,
+with operational controls intact, would be direct evidence that presentation
+obstructs a stable identity relation. Observational residualization cannot
+establish that.
+
+## Round 29 — contract repair and external-axis steering
+
+**Codex, documentation-only; no experiment was run.** The excluded
+`analysis_resAB.json` and `analysis_resSA2.json` artifacts were not opened, and
+the uncommitted analyzer diff under separate Tier-1 review was not touched.
+Audit #15 changes the order before any Freedman–Lane run.
+
+### Steering adjudication
+
+The rank ladder is **not redundant** with the registered X-free field. The
+rank ladder changes the nuisance family used to residualize both `X` and
+`Delta` and asks whether rank-4 underfitting manufactured the remainder; it
+also repairs the literal Round 23 full-mean contract. The X-free field leaves
+the scored residual geometry fixed and asks whether a calibration-only field
+without cell-level `X_perp` can predict `Delta_perp`. They can close different
+failure modes.
+
+The fresh template population **precedes** the four armed X-free cells. It is
+cheaper (`~3 h` focused analysis versus `4.9–5.3 h`) and is the first test on
+an external axis. Existing arming is an operational convenience, not a reason
+to postpone the more informative measurement.
+
+The interchangeability test is designed **now**, before its templates or
+second-move outcomes exist. The 16 fresh templates will be authored as eight
+blind matched presentation pairs so the fresh-population capture also supplies
+the intervention test. This avoids outcome-conditioned definitions of
+“equivalent presentation.”
+
+The single measurement capable of making the state/navigation line moot
+fastest is the matched interchangeability test across a frozen fresh
+presentation family and a second move. If equivalent variants systematically
+fail swap/writeback while genuinely different operational controls remain
+separable, the current observational regression ladder becomes
+characterization of a presentation-bound fingerprint, not a route to a stable
+operational quotient. Its incremental targeted score is at most about one CPU
+hour once the two captures exist.
+
+### Amended fixed order and budgets
+
+| Order | Work | Expected CPU | Hard wall / launch rule |
+|---:|---|---:|---|
+| 0 | Finish `resAB -> resSA2` without early inspection | existing budgets | Do not alter or open the excluded artifacts early |
+| 1 | Carrier-summary rank/contract probe on existing captures | cosine screen in minutes; one full-law A cell `~1.5 h` | `2 h`; fixed full-law cell, no screen-selected promotion |
+| 2 | Freeze and capture 16 fresh templates × 80 words for both sentinels; capture the fixed second move | about `10 min` fresh capture plus `5–10 min` second-move capture | Hash texts/items/config before capture; one CPU process |
+| 3 | Matched presentation-interchangeability score across both move classes | `<=1 h` targeted scoring | `90 min`; no full analysis outcome may redefine pairs or controls |
+| 4 | Full fresh-population analysis under the same contract | about `3 h` | `4 h`; both sentinels, no favorable-sentinel selection |
+| 5 | Full different-move analysis | `2–3 h` | `4 h`; one fixed move, no replacement after scoring |
+| 6 | Registered X-free field on all four existing cells | `4.9–5.3 h` | existing `8 h` total wall and gate; retained even if its role becomes nuisance characterization |
+| 7 | Freedman–Lane on `A-static` only, conditionally | `24.4–26.3 h` | existing `30 h` cell wall; launch only if every prior state-reading gate remains live |
+| 8 | Second pinned decoder | about `3 h` | after the one-cell refitted null; replication only |
+
+No four-cell Freedman–Lane expansion is authorized by Round 29. The single
+`A-static` cell launches only if: the fixed full-mean contract cell retains at
+least two F4–F20 passes; the fresh population and different move each retain
+their gates; interchangeability does not meet the hostile-hole criterion; and
+the A-static registered X-free comparison does not close the cell-level field.
+If any condition fails, the refitted null is not the highest-leverage next
+measurement.
+
+### Probe 1 — carrier-summary rank ladder and literal contract repair
+
+On existing captures, fit `P_aug-score-r` for fixed ranks `{1,2,4,8,full}`,
+where `full` means every estimable calibration-carrier direction, plus one
+nonlinear kernel on the calibration-word carrier mean. Rebuild every basis,
+standardizer, and nuisance fit inside the existing outer and inner folds. No
+held-out `Y`, `Delta`, law, screen score, or bootstrap result may construct a
+feature or choose regularization.
+
+The rank/kernel pass is an exploratory held-out displacement-cosine screen
+only. It reports residual ridge cosine, strongest residual X-free-null cosine,
+normalized error, support, and the full rank-response curve for every layer
+and sentinel/design cell; it cannot earn a law or state claim. Independently
+of that screen, the one preselected full-law cell is sentinel A with the
+literal Round 23 `P_aug-full` design: append the full leave-calibration-word-
+pool carrier mean **and** the rank-4 scores. It uses the existing K=13,
+crossed block-first, support, reload/locality, completion, and common-scale
+contract at F0/F4/F8/F12/F20.
+
+**Gate.** Rank-4 truncation remains an adequate explanation if `P_aug-full`
+leaves fewer than two qualifying layers among F4–F20 under the existing
+three-endpoint residual-vs-null gate, or if any apparent pass is closed by the
+strongest residual X-free null with margin `<0.02`. Two or more full-law
+passes with at least `6/8` all-endpoint-positive keys, no block collapse,
+support `>=0.95`, and the existing positive crossed lower bounds rule out only
+this fixed truncation account. F0 remains separate.
+
+**Predictions.** The nuisance-underfit account predicts monotone absorption as
+rank rises and a `P_aug-full` collapse at F4–F20. The context/fingerprint
+accounts predict survival at at least two layers, possibly with attenuation;
+survival does not distinguish them.
+
+### Probe 2 — fresh frozen template population
+
+Before any capture or new score, author 16 new templates blind to all result
+files, organized as four semantic/operational families and eight matched
+presentation pairs. Freeze the literal texts, pair map, family labels, the
+same 80-word list, both sentinels, tokenization checks, and hashes. No template
+may be edited or dropped after capture except a predeclared protocol failure,
+which voids the population rather than triggering substitution.
+
+Run the same unseen-word folds, K=13 candidate universe, `P_static` residual
+contract, four X-free lexical nulls, crossed class-preserving bootstrap,
+support/reload/locality checks, and three endpoints. This is a fresh-population
+replication of the relation, not a zero-shot coefficient-transfer claim; a
+frozen old-to-fresh coefficient score may be reported only as a secondary
+diagnostic.
+
+**Gate.** A sentinel qualifies only if at least two of F4/F8/F12/F20 clear the
+existing residual-vs-null point and crossed-lower-bound gates, at least `12/16`
+fresh templates have the correct sign on cosine, skill, and continuous KL, no
+one four-template family collapses, and support is `>=0.95`. The external-axis
+result is positive only if both sentinels qualify. F0 is reported separately.
+
+**Predictions.** A reusable operational relation predicts two-sentinel
+qualification with breadth across all four fresh families. A smooth
+prefix/carrier fingerprint predicts collapse, family concentration, or marked
+attenuation. A pass narrows template-population specificity but does not prove
+genericity or state; a fail caps all current positive wording to the original
+authored manifold.
+
+### Probe 3 — fixed different move
+
+The second move is fixed now as insertion of tokenizer-single-token `not`
+immediately before the registered word slot. `X` is the original word-slot
+state and `Y` is the aligned word-token state after insertion; `Delta=Y-X`.
+If the pinned tokenizer does not encode the operator as exactly one token in
+every frozen carrier, the probe is void and no replacement is chosen after
+outcomes. Capture uses the same 80 words and frozen fresh matched population.
+
+Analyze F0/F4/F8/F12/F20 with the same unseen-word split, identity-plus-shared-
+displacement and word-conditioned moot-makers, four X-free lexical nulls,
+K=13 response-law endpoints, crossed block-first bootstrap, support,
+reload/locality, and no post-score layer selection.
+
+**Gate.** The move qualifies only if at least two F4–F20 layers beat the
+strongest X-free lexical null by `>=0.02` with positive crossed lower bounds on
+displacement cosine, response-law skill, and continuous KL improvement, at
+least `6/8` fold keys are jointly positive, no family collapses, and support
+is `>=0.95`. F0 is separate.
+
+**Predictions.** A punctuation-position fingerprint predicts no qualifying
+operator-insertion layer or family-local collapse. A more reusable
+context-conditioned relation predicts at least two qualifying layers, perhaps
+at different depths. Either outcome remains one move in one decoder and does
+not establish composition.
+
+### Probe 4 — matched presentation interchangeability
+
+Use the eight fresh matched pairs, both punctuation sentinels, and the fixed
+operator insertion. Match displacement norms using calibration words only.
+For each held-out word and direction of each pair, write the calibrated,
+norm-matched move from presentation variant A into variant B's state and vice
+versa, then complete the actual decoder law. Fixed-input repeat completions
+measure the numerical noise floor. Negative controls swap a matched-norm move
+from a genuinely different operational condition; pair and control mappings
+are frozen before capture.
+
+Primary quantities are normalized successor error and continuous-KL
+degradation relative to the same-presentation held-out move. Intervals resample
+matched pair, word, and family; the two move classes are reported separately
+and jointly. No latent-scorer quality claim is made.
+
+**Stable-interchangeability gate.** At at least two F4–F20 layers in each move
+class, the upper 95% bound on equivalent-presentation swap degradation must be
+`<= max(0.02, 2 × fixed-input q99 noise)` on both primary quantities, while
+the lower 95% bound for different-operational-state degradation must exceed
+that equivalence bound by `>=0.02`; at least `6/8` matched pairs must agree and
+no family may reverse the separation.
+
+**Hostile-hole gate.** At at least two F4–F20 layers in **both** move classes,
+equivalent-presentation swaps must degrade both primary quantities by
+`>=0.02` with positive lower bounds in at least `6/8` pairs and every family,
+while different operational controls remain separable above the numerical
+floor. This directly establishes a presentation-obstructed identity relation
+for the frozen population and moves. Anything between the stable and hostile
+gates is inconclusive.
+
+**Predictions.** A recoverable operational quotient predicts stable
+interchangeability for equivalent presentations and separation for different
+operational states. The prefix/carrier-fingerprint account predicts systematic
+equivalent-pair swap failure, especially across the fresh families and second
+move. Passing the hostile-hole gate makes further observational residualizer
+refinement non-decisive for state and pivots the constructive program toward a
+latent space with explicit quotient coordinates.
+
+### Second-lens conclusion
+
+Round 29 does not add an axiom or claim a representation-level hole. It makes
+the denizen's required identity test operational: two presentations count as
+the same place only if declared moves and downstream laws are interchangeable,
+while genuinely different operational states remain distinguishable. The
+queue now asks that question before spending roughly 100 CPU hours refining a
+single observational axis. `theory/AXIOMS.md` remains unchanged.
