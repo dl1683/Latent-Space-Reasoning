@@ -2260,3 +2260,69 @@ it explicitly. Here `3.624e-4 <= max(3.78e-4, 1.22e-4)` and
 endpoint remains eligible subject to its other gates. Interpret the control as
 evidence against causal nonlocality beyond numerical variation, not as exact
 float32 equality or as evidence for any broader dynamics claim.
+
+## Tier-3 audit #8 — displacement claims and forward-time implementation (2026-08-28, fresh Codex auditor)
+
+**Adopted corrections.** (1) Displacement wording: "a kernel predictor captures
+held-out-carrier displacement variation beyond the word-conditioned
+displacement mean on the measured residual coordinates; whether that variation
+is state-, carrier-, template-, or word-dependent remains unresolved." "Kernel
+minimal" = minimal among the tested finite ladder under the registered metric
+and tolerance, not intrinsic nonlinearity. (2) The carrier shuffle (permute Y
+across calibration carriers within word) is a **carrier-alignment diagnostic,
+not a state-independence null**; it also destroys a carrier/template-style
+explanation. The shuffled field is reported for ridge and low-rank only —
+"kernel beats its shuffled null" is not established. (3) "The slot law barely
+registers it" is a fact about the declared same-slot readout, not about the
+world. (4) `L20→L21` = "one bounded qualifying pair under the registered
+displacement-and-slot-law gate" — no "learned nonlinear law". (5)
+"Consequential motion" is a derived predicate, relative to a declared response
+law and tolerance. (6) Forward-time implementation verified: X = h_l(S)[q]
+(unappended), Y = h_l(S‖s)[r]; insertion at hidden index l at r (hook on layer
+l−1; embedding row for l = 0); law read at r; identity/shared-mean nulls;
+no-refit token-identity control; calibration-only standardization and
+selection. Missing check (now run, see ledger `nlm007_forward_AB_equality`):
+A/B `H_q_unappended` equality. (7) Round 20 locality pass is narrow (margin
+~1.8e-5 against a global-max-magnitude bound); wording: "no detectable causal
+nonlocality beyond measured numerical/kernel-path variation under this run's
+corrected tolerance." (8) Float16 storage bounds small displacement/ordering
+effects; not precision-independent.
+
+**Strongest alternative explanation (verbatim):** The strongest alternative is a carrier/template-conditioned nuisance law encoded in the residual state.
+
+Under this explanation:
+
+- the word-conditioned mean captures lexical identity;
+- `X` carries presentation/style context;
+- kernel learns a nonlinear carrier- or template-conditioned correction;
+- the carrier shuffle collapses because it destroys the carrier pairing;
+- the same-slot law ignores much of that correction at middle depth;
+- L20 passes because the late stack’s readout is more sensitive to the same nuisance direction.
+
+This explanation fits all current displacement observations without requiring a reusable state-space law.
+
+**Alternative explorations and cheaper baselines (verbatim):**
+
+The highest-value controls are:
+
+- A fixed-input style-balance control: match or residualize carrier/template features before fitting displacement.
+- A within-style or within-template null that preserves carrier style while removing state pairing.
+- A style-held-out split, not only a carrier-held-out split.
+- A per-word, per-style mean displacement baseline.
+- A low-dimensional block/template-only predictor to test whether style variables explain the kernel lead.
+- A direct \(Y-X\) decomposition into word mean, carrier mean, shared mean, and residual.
+- A target permutation preserving carrier-level marginal structure rather than destroying all carrier alignment.
+- Explicit A/B equality checks for `H_q_unappended`.
+- Per-layer/per-sentinel locality and precision reports using fresh float32 values.
+- Unseen-word evaluation before any lexical or semantic generalization language.
+- Replication on a second model family before any general language-model claim.
+
+**Final status (verbatim):** The displacement result should be retained as:
+
+> Held-out-carrier evidence for predictable displacement variation beyond a word-conditioned mean, with a kernel as the minimal tested predictor; carrier/template versus state dependence remains unresolved.
+
+The L20 result should be retained as:
+
+> One bounded qualifying pair under the registered displacement-and-slot-law gate.
+
+The forward result, before its scores are inspected, is procedurally eligible provided all other gates pass. Its most important interpretive test is whether sentinel-position law sensitivity survives the token-identity control and remains after style and precision concerns are addressed.

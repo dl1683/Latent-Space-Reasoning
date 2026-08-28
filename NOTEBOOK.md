@@ -5,6 +5,21 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-28 — Audit #8 adopted (displacement wording; forward implementation verified)
+
+- Forward-time implementation verified line by line by a fresh auditor
+  before its scores were interpreted; the one missing check (A/B unappended
+  states identical) passes bit-exactly.
+- Displacement wording narrowed and adopted verbatim: kernel captures
+  held-out-carrier displacement variation beyond the word-conditioned mean;
+  carrier/template vs state dependence unresolved; the carrier shuffle is a
+  carrier-alignment diagnostic, not a state-independence null; "the slot law
+  barely registers it" is a readout fact; L20 = one bounded qualifying pair.
+- Its cheaper controls (style balancing / residualization, within-template
+  null, style-held-out split, Y−X decomposition into word/carrier/shared/
+  residual, per-layer float32 precision reports) are recorded verbatim in
+  EXPERIMENTS.md and enter the queue ahead of any "state-dependent" claim.
+
 ## 2026-08-28 — Forward-time move, sentinel '.': state-dependent everywhere, gated only at F20
 
 - Five layers, 2220 s, support 1.0, locality passes under the Round 20
