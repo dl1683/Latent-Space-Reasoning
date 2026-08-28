@@ -35,6 +35,8 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ## 2026-08-29 — Re-contextualization #13 (residualization launching; demo audited)
 
+*Wording per audit #13 (see the 2026-08-29 audit #13 entry): "the context predictor" reads "the X-conditioned predictor"; the retention marker is not commensurate, so residualization runs may say only "the predeclared robustness marker is mechanically met".*
+
 - **Central bet + second lens:** native mathematics from what a denizen must
   invent; holes hostile to structured reasoning; the next latent space.
 - **Live question:** the forward step's regularity transfers across
@@ -63,6 +65,8 @@ was learned, what's next. Canonical state lives in STATE.md.
   `_meta/INDEX.md`.
 
 ## 2026-08-29 — Corrected equalized LOCO addendum, sentinel '.': ridge lead unchanged under contract-correct baselines
+
+*Tightened by audit #13 (see the 2026-08-29 audit #13 entry): "audit #11's inner-centre defect concern is resolved by the corrected sentinel-A data", the comparator is the calibration-selected equalized comparator, baselines roughly 0.002–0.009 above the shared mean.*
 
 - 3753 s of the 4500 s wall. With the audit #11 fix (inner centre = the
   inner training carriers' own mean; comparator frozen by calibration
@@ -192,7 +196,7 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ## 2026-08-29 — Re-contextualization #11 (equalized addendum in; audit #11 fired)
 
-*Superseded in part by audit #11 (see the 2026-08-29 audit #11 entry): the equalized-addendum inner centre included the validation carrier, so "context, not content" and "content nulls collapse to the shared mean" are withdrawn; the addendum's margins are descriptive only.*
+*Superseded in part by audit #11 (see the 2026-08-29 audit #11 entry): the equalized-addendum inner centre included the validation carrier, so "context, not content" and "content nulls collapse to the shared mean" are withdrawn; the addendum's margins are descriptive only. Audit #13 also withdraws "governed by context state"; the object is X-conditioned residual predictability.*
 
 - **Central bet + second lens:** native mathematics from what a denizen must
   invent; holes that make this space hostile to structured reasoning.

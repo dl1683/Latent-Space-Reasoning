@@ -5,7 +5,7 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
-## NLM-007 — LM residual-stream dynamics; middle-depth ridge lead withdrawn under the identity baseline; displacement ladder adjudicated (audit #8 wording); forward-time move adjudicated NOT MET = nonpass, not a kill (Round 20, audit #9); within-style null = diagnostic only (both arms); LOCO A/B within-family positive, bounded (audit #10 wording; adjudicated Round 22); equalized addendum defect-affected, descriptive only (audit #11); unseen-word runs A/B mechanical pass, formal gate pending (Round 23, audit #12); corrected equalized reruns running; residualization predeclared (2026-08-29)
+## NLM-007 — LM residual-stream dynamics; middle-depth ridge lead withdrawn under the identity baseline; displacement ladder adjudicated (audit #8 wording); forward-time move adjudicated NOT MET = nonpass, not a kill (Round 20, audit #9); within-style null = diagnostic only (both arms); LOCO A/B within-family positive, bounded (audit #10 wording; adjudicated Round 22); equalized addendum defect-affected, descriptive only (audit #11); unseen-word runs A/B mechanical pass, formal gate pending (Round 23, audit #12); corrected equalized reruns contract-correct (A adjudicated Round 25; B pending); residualization chain running under the Round 25 budget, retention marker non-commensurate (audit #13) (2026-08-29)
 
 - **Lock.** Round 13, documentation-only (ledger `nlm007_round13_lock`;
   design `theory/dialogue/003.md`, `theory/EXPERIMENTS.md`); Round 14
@@ -119,14 +119,32 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
     **Mechanical pass at `F4/F8/F12/F20`, `F0` fails; formal gate pending
     (audit #12)** — status "mechanical pass under the recorded reduction;
     formal gate pending a contract-correct bootstrap". Reading below.
-  - `analysis_locoeq2A.json` / `analysis_locoeq2B.json` — corrected equalized
-    addendum (analyzer `d10fc66`: inner two-carrier centre; comparator frozen
-    by calibration score), **running (A) / queued (B)**; no status until
-    scored and ledgered.
+  - `analysis_locoeq2A.json` — corrected equalized addendum, sentinel A
+    (analyzer `d10fc66`: inner two-carrier centre; comparator frozen by
+    calibration score; ledger `nlm007_loco_locoeq2A`; 3753 s of the 4500 s
+    wall; support 1.0). **Contract-correct; adjudicated Round 25** (audit
+    #13 wording). Reading below.
+  - `analysis_locoeq2B.json` — sentinel B arm of the corrected addendum
+    (ledger `nlm007_loco_locoeq2B`; 4196 s; support 1.0).
+    **Contract-correct; Codex adjudication pending** (required before any
+    combined A/B equalized reading). Reading below.
   - `analysis_residsmoke.json` — smoke of the audit #12 bootstrap repair,
-    the stronger unseen-word lexical nulls, and `--residualize` (Round 23;
-    ledger `nlm007_residualization_predeclared`), **in progress; not a
-    result**.
+    the stronger unseen-word lexical nulls, `--residualize static`, and the
+    Round 24 raw four-null shadow arm (sentinel A, F8, 1 shuffle / 10 boot;
+    ledger `nlm007_resid_smoke_F8A`, `nlm007_resid_shadow_smoke_F8A`;
+    design `nlm007_residualization_predeclared`). **Not a result**; meets
+    the Round 25 raw-shadow launch prerequisite at pipeline level.
+  - `analysis_resSA.json` — residualization, sentinel A, `P_static`
+    (Round 25 launch ruling, ledger `nlm007_residualization_budget_amended`:
+    120-minute wall, K = 13, five layers, two unseen-word folds, 20 shuffles
+    / 500 boot). **Running**; pre-patch analyzer, so its retention is
+    reported only as "the predeclared robustness marker is mechanically
+    met" (ledger `nlm007_retention_marker_defect`,
+    `nlm007_retention_common_scale_predeclared`). No score opened.
+  - `analysis_resAA.json` / `analysis_resSB.json` / `analysis_resAB.json` —
+    A-augmented, B-static, B-augmented, same contract, common-scale
+    retention field present. **Queued** behind `resSA`, one process at a
+    time; no status until scored and ledgered.
   - `analysis_unseensmoke.json` — `--unseen-words 2` pipeline smoke at F8, A
     (1 shuffle / 10 boot; ledger `nlm007_unseen_smoke_F8A`, overwritten by
     `nlm007_unseen_smoke2_F8A` with the audit #10 lexical nulls and the
@@ -249,6 +267,28 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   wording: the word-conditioned component captured by the tested estimators
   is negligible for the measured forward displacement in this design; the
   positive object is X-conditioned residual predictability.
+- **Corrected equalized LOCO addendum (Round 25 + audit #13;
+  `analysis_locoeq2A.json`, `analysis_locoeq2B.json`).** With the inner
+  two-carrier centre and the comparator frozen by calibration score, the
+  equalized baselines no longer collapse onto the shared mean: A's
+  calibration-selected equalized comparator sits roughly 0.002–0.009 above
+  it, B's 0.002–0.007. A: `F4/F8/F12/F20` pass against the equalized
+  comparator (cos +0.09–0.13, skill +0.23–0.31, KL-rank +0.30–0.43, lower
+  bounds > 0.08; 11–14/16 carriers), `F0` fails — Round 25: a valid
+  mechanical positive for the bounded sentinel-A seen-word within-family
+  diagnostic; audit #13: audit #11's inner-centre *defect* concern is
+  resolved by the corrected sentinel-A data (not "audit #11 is resolved");
+  the pooled equalized interval is secondary. B: `F12/F20` pass, `F4/F8`
+  miss on skill/KL-rank lower bounds (cosine leads hold), `F0` fails;
+  run-level positive (2/5); adjudication pending. Both arms agree with the
+  defect-affected runs' numbers (baselines moved by ≤0.01, no verdict
+  changed). Maximum wording (audit #13): "On already-seen words, within
+  sentinel A's style-family design, the context-bearing X field predicts
+  the held-out carrier's forward displacement and response-law consequence
+  beyond the properly nested, calibration-selected X-free lexical
+  comparator at F4–F20." Still withdrawn: "no per-word lexical signal",
+  "context rather than content", "the state-conditioned component is
+  large", any presentation-independent or native-law reading.
 - **Unseen-word runs (Round 23 + audit #12; `analysis_unseenA.json`,
   `analysis_unseenB.json`).** Calibration and held-out word identities
   disjoint; the class-mean and frozen-input-embedding `wordonly_knn` nulls
@@ -298,10 +338,13 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   words never seen in calibration the same object transfers across the
   held-out word fold and held-out block against the tested X-free lexical
   nulls — a mechanical pass whose formal gate awaits a contract-correct
-  bootstrap and stronger lexical nulls (audit #12). Bounded to one model.
-  Next: corrected equalized reruns `locoeq2A/B` (running) → Codex round 24
-  gate amendment for the stronger lexical nulls → residualization static/aug
-  → second family.
+  bootstrap and stronger lexical nulls (audit #12). The corrected equalized
+  addendum removes the audit #11 defect without changing any verdict (Round
+  25, audit #13). Residualization runs may state only that the predeclared
+  robustness marker is mechanically met until the common-scale retention
+  marker is scored (audit #13). Bounded to one model. Next: residualization
+  A-static → A-augmented → B-static → B-augmented (running) → Codex
+  adjudication → second family.
 
 ## Round 12 closure — frozen-encoder program closed; pivot to worlds with dynamics (2026-08-27)
 

@@ -974,10 +974,8 @@ model family. No new axiom is warranted in Round 23.
   static|aug`, the class-preserving crossed bootstrap, and the stronger
   unseen-word lexical nulls are under smoke test (`analysis_residsmoke.json`,
   not a result).
-- **Next, in order:** corrected equalized reruns `locoeq2A/B` (running) →
-  Codex round 24 amendment of the unseen-word gate for the stronger lexical
-  nulls and the contract-correct bootstrap → residualization `static` then
-  `aug` → second model family. Scope until then: one model; unseen-word
+- **Next, in order:** superseded — see "Status after Round 25 and audit
+  #13" below. Scope until the pending controls pass: one model; unseen-word
   status mechanical only; no native, presentation-independent,
   second-family, or general dynamics claim.
 
@@ -1063,3 +1061,69 @@ Audit #11's inner-centre defect is repaired; “no per-word lexical signal,”
 “context rather than content,” “large state-conditioned component,” and any
 presentation-independent/native-law reading remain withdrawn. Current scope
 remains one decoder, unresolved state-versus-presentation, and no new axiom.
+
+## Status after Round 25 and audit #13 (2026-08-29)
+
+- Corrected equalized LOCO addendum, sentinel A = '.'
+  (`analysis_locoeq2A.json`, ledger `nlm007_loco_locoeq2A`; 3753 s of the
+  4500 s wall; support 1.0): **contract-correct; adjudicated Round 25** as a
+  valid mechanical positive for the bounded sentinel-A seen-word
+  within-family diagnostic — the calibration-selected equalized comparator
+  sits roughly 0.002–0.009 above the shared mean; `F4/F8/F12/F20` pass,
+  `F0` fails. Audit #13 wording: audit #11's inner-centre *defect* concern
+  is resolved by the corrected sentinel-A data (not "audit #11 is
+  resolved"); the pooled equalized interval is secondary. Maximum wording:
+  "On already-seen words, within sentinel A's style-family design, the
+  context-bearing X field predicts the held-out carrier's forward
+  displacement and response-law consequence beyond the properly nested,
+  calibration-selected X-free lexical comparator at F4–F20."
+- Corrected equalized LOCO addendum, sentinel B = ','
+  (`analysis_locoeq2B.json`, ledger `nlm007_loco_locoeq2B`; 4196 s; support
+  1.0): **contract-correct**; equalized baselines 0.002–0.007 above the
+  shared mean; `F12/F20` pass, `F4/F8` miss on skill/KL-rank lower bounds
+  (cosine leads hold), `F0` fails; run-level positive (2/5). Codex
+  adjudication pending; Round 25 requires it before any combined A/B
+  equalized reading. Both arms agree with the defect-affected runs' numbers
+  (baselines moved by ≤0.01, no verdict changed).
+- Residualization (Round 23 design; Round 24 contract; Round 25 launch
+  ruling, ledger `nlm007_residualization_budget_amended`: 120-minute wall
+  per run, 8 hours for four serial runs, K=13, retention = minimum-margin
+  rule over the same-run raw four-null shadow): the raw-shadow prerequisite
+  is met at pipeline level by `analysis_residsmoke.json` (ledger
+  `nlm007_resid_shadow_smoke_F8A`; not a result). The chain is **running**
+  in the locked order A-static (`analysis_resSA.json`) → A-augmented
+  (`resAA`) → B-static (`resSB`) → B-augmented (`resAB`), one process at a
+  time; no residualization score has been opened or adjudicated.
+- Retention marker (audit #13, ledger `nlm007_retention_marker_defect`):
+  raw and residual margins are not commensurate (cosine on different
+  targets; skill against different references; KL-rank by ridge-slot
+  substitution). Until the common-scale repair is scored, the residualization
+  runs may say only **"the predeclared robustness marker is mechanically
+  met"** — never "half of the signal survives". The common-scale marker
+  (residual arms reassembled to full Δ and scored against raw Δ with a common
+  skill reference; strongest-null minimum recomputed inside each replicate)
+  is predeclared (ledger `nlm007_retention_common_scale_predeclared`) and
+  implemented for `resAA/resSB/resAB`; `resSA` started on the pre-patch
+  analyzer and reports retention only as "robustness marker mechanically
+  met". The raw four-null shadow remains valid for the amended raw
+  unseen-word comparison; the residual-vs-null gate, law reassembly, and
+  presentation-only arm are coherent; `P_static→Δ` = 0.427 is a held-out
+  cosine, never "explains 42%".
+- Public demo (audit #13): the published "Content vs Context" page had
+  violated audits #10–#12 ("context state", "context takes over",
+  "manufactures", "presentation explains 0.42"); every replacement was
+  adopted verbatim and republished at the same URL.
+- Reverse tunnel (audit #13): the X-conditioned advantage can no longer be
+  dismissed as lookup, noisy-mean artifact, class mean, embedding
+  interpolation, or pipeline accident; presentation may itself be part of
+  operational state — the target is an operational equivalence relation
+  defined by moves and consequences, not presentation invariance at all
+  costs. The current observational residualization cannot decide between
+  the smooth-coordinate and the context-conditioned-regularity accounts.
+- **Next, in order:** residualization A-static → A-augmented → B-static →
+  B-augmented (read validity, then F0, then F4–F20) → Codex adjudication of
+  the four runs and of corrected equalized B → second model family (pinned
+  revisions, same controls). Scope until then: one decoder; unseen-word
+  status mechanical only; state-versus-presentation unresolved; no native,
+  presentation-independent, second-family, or general dynamics claim; no
+  new axiom.
