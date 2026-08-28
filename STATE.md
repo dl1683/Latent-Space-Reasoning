@@ -1249,3 +1249,104 @@ synthesis or the second-family protocol. No experiment was run in Round 26.
   decoder; unseen-word status mechanical only; state-versus-presentation
   unresolved; no native, presentation-independent, second-family, or general
   dynamics claim; no new axiom.
+
+## Round 27 — A-augmented adjudication and next comparator locks (2026-08-29)
+
+`analysis_resAA.json` is contract-valid for the registered A-augmented
+residual-vs-null question: sentinel A (`.`), `P_aug`, two unseen-word folds,
+K=13, crossed class-preserving bootstrap, 20 shuffles, 500 bootstraps, support
+`1.0`, and `4737.8 s` of the `7200 s` wall. The live implementation fits the
+rank-at-most-4 carrier basis only on calibration carriers and calibration
+words and scores a leave-current-word-out carrier mean in that basis; it
+rebuilds the basis inside inner carrier folds.
+
+All five layers pass. At F0, `X_perp` ridge residual cosine is `0.335` versus
+`-0.006` for the strongest residualized X-free null; crossed block-first
+margins are cosine `+0.341 [LB 0.246]`, skill `+0.156 [0.022]`, and K=13
+KL-rank `+0.303 [0.122]`. Only `2/8` keys clear the full per-key gate, although
+`7/8` are positive, and no block collapses. At F4/F8/F12/F20, ridge residual
+cosine is `0.617/0.595/0.555/0.612` versus strongest-null
+`0.062/0.074/0.060/0.071`; cosine margins are `+0.555/+0.521/+0.495/+0.541`,
+skill margins `+0.458/+0.346/+0.369/+0.457`, and KL-rank margins
+`+0.485/+0.432/+0.425/+0.557`, all with positive lower bounds. Full-gate keys
+are `8/8`, `7/8`, `6/8`, and `8/8`; every key is positive and no block
+collapses. The presentation-only `P_aug -> Delta` cosine is
+`0.639/0.498/0.446/0.475/0.608` at F0/F4/F8/F12/F20.
+
+Round 23 branch: A-static and A-augmented jointly take the **both-design
+non-collapse branch**. The four registered X-free lexical nulls and the
+registered static-plus-augmented presentation collapse prediction both miss.
+The positive object is X-linked residual predictability after removal of the
+registered coordinates, not operational state. Audit #14's joint license is
+extended accordingly: registered static and augmented coordinates predict
+held-out raw displacement, and after cross-fitted removal of either design
+from both `X` and `Delta`, `X_perp` still predicts `Delta_perp` and its
+reassembled response-law consequence beyond the residual X-free nulls at
+F4–F20. The pair establishes presentation sensitivity and residual X-linked
+predictability; it identifies neither overlap/fraction/mediation nor state or
+presentation independence.
+
+F0's augmented pass is a real cross-fitted **conditional residual** gain, not
+held-out-target leakage, but it does not reverse raw identity dominance. The
+same-run raw ridge cosine is `0.687` versus a raw null near `0.669`, and
+`P_aug -> Delta` is `0.639`: the carrier-mean/subspace coordinates remove an
+identity/carrier-dominated component and expose a different residual problem.
+The `2/8` full-key count blocks a broad robust-F0 reading.
+
+The repaired common-scale retention block is present. Bootstrap-median ratios
+`residual margin / raw margin` [95% CI] for cosine, skill, and continuous KL
+are:
+
+- F0: `2.513 [1.337,5.098]`, `1.460 [0.871,4.559]`,
+  `1.255 [0.612,5.393]`;
+- F4: `1.105 [0.968,1.323]`, `1.062 [0.811,1.758]`,
+  `0.778 [0.495,1.195]`;
+- F8: `1.166 [1.044,1.326]`, `1.137 [0.792,1.618]`,
+  `0.942 [0.652,1.249]`;
+- F12: `1.231 [1.102,1.428]`, `1.160 [0.957,1.353]`,
+  `1.127 [0.996,1.243]`; and
+- F20: `1.105 [1.020,1.248]`, `0.951 [0.787,1.073]`,
+  `0.974 [0.784,1.098]`.
+
+Thus A-augmented retains at least half of the same-run raw
+ridge-versus-strongest-null **predictive margin on the common raw-Delta scale
+at the bootstrap median** for every layer and endpoint. A uniform 95%-interval
+claim is not earned because F4 continuous KL dips to `0.495`. This is not a
+fraction of latent signal, variance, state, or mediation, and it cannot fill
+the missing A-static common-scale cell.
+
+Two existing-capture comparators are now preregistered before any state
+reading:
+
+1. a calibration-only residual-space X-free field with `P_static`, the same
+   rank-4 carrier summaries, 16 calibration-word PCA scores of the frozen
+   lexical embedding, and fixed 4-by-16 interactions, matched inner tuning
+   and a degrees-of-freedom sensitivity; the cell-level field must beat it on
+   cosine, normalized error, skill, and continuous KL with crossed
+   block-first lower bounds, `6/8` positive keys, no collapse, and at least
+   two F4–F20 layers per cell; estimated `4.9–5.3 CPU h` for four cells,
+   `8 h` hard wall; and
+2. a fully refitted Freedman–Lane residual-geometry null with 20 null refits
+   per outer fold-key, permuting calibration `Delta_perp` across carriers
+   within template family and word and rerunning inner selection, ridge/kernel
+   refit, and held-out scoring; observed cosine, normalized error, skill, and
+   continuous KL must beat all 20 nulls (`p <= 1/21`) and the same crossed
+   key/block gates; estimated `24.4–26.3 h` per cell,
+   `97.8–105.3 CPU h` for four, `120 h` hard wall.
+
+**Next, in order:** finish and adjudicate `resSB` → `resAB` → `resSA2` without
+opening a running/queued artifact early. Then run the X-free field on all four
+cells as the cheapest direct moot-maker, followed by the Freedman–Lane null on
+all four cells. Both precede the pinned second-model-family protocol; no arm or
+layer is selected after outcomes.
+
+Second lens: presentation sensitivity is proven locally under both registered
+designs; presentation entangled with operational state remains unproven. The
+current representation still lacks a demonstrated native quotient. The next
+latent space must expose or controllably factor lexical, presentation, and
+operational coordinates, define sameness by interchangeability under declared
+moves and response laws, and support consequence-sensitive multi-step closure
+with transfer across unseen words, fresh styles, and model families. The
+single most sharpening immediate measurement is the fair residual-space
+X-free presentation/lexical interaction field. No new axiom is earned, so
+`theory/AXIOMS.md` is unchanged. No experiment was run in Round 27.

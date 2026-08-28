@@ -4242,3 +4242,292 @@ The constructive requirement is therefore:
 No new axiom is earned. The next object is an operationally testable quotient, not a stronger name for regression success.
 
 No tracked repository file was modified and no experiment was run. Eight typed findings were recorded on the blackboard; convergence and synthesis completed with no open signal or dispute.
+
+## Round 27 — A-augmented adjudication and comparator preregistration (2026-08-29)
+
+**Codex, documentation-only; no experiment was run.** The Round 23
+three-branch predictions, Rounds 24–26, Tier-3 audit #14, the live augmented
+residualization and common-scale code, the permitted `analysis_resAA.json` and
+`analysis_resSA.json` artifacts, and the four named ledger entries were checked
+directly. The running/queued `analysis_resSB.json`, `analysis_resAB.json`, and
+`analysis_resSA2.json` artifacts were not opened. Mechanical reductions below
+were recomputed from the JSON rather than copied from the ledger.
+
+### Artifact validity and mechanical score
+
+`resAA` is sentinel A (`.`), `P_aug`, five forward-layer checkpoints, two
+unseen-word folds, 20 shuffles, and 500 bootstrap replicates. It completed in
+`4737.8 s` of the amended `7200 s` wall. The model/tokenizer pins, fixed K=13
+universe, reload record, eight fold keys, and support accounting are present;
+support is `1.0` in every key.
+
+The augmented coordinates are cross-fitted as implemented. `carrier_basis`
+forms a rank-at-most-4 SVD basis from carrier-mean `X` states on calibration
+carriers and calibration words. For each probe-word cell, `design` computes a
+carrier mean over the outer calibration-word pool with the current word left
+out, then appends that mean's scores in the frozen basis. The basis is rebuilt
+on the inner training carriers during nuisance-lambda selection. Thus the
+added design columns are rank-4 scores of a leave-current-word-out carrier
+summary; the full carrier-mean vector is an intermediate, not an appended
+1024-dimensional feature.
+
+The primary residual-vs-null gate adjudicates as follows. Each endpoint margin
+is the conservative minimum over the four fixed residualized X-free lexical
+nulls, and each lower bound is the crossed class-stratified block-first lower
+bound for that minimum-margin comparator.
+
+| Layer | `X_perp` ridge cosine | strongest residual-null cosine | cosine margin [LB] | skill margin [LB] | K=13 KL-rank margin [LB] | full / positive keys | `P_aug -> Delta` cosine | verdict |
+|---|---:|---:|---:|---:|---:|---:|---:|---|
+| F0 | 0.335 | -0.006 | +0.341 [+0.246] | +0.156 [+0.022] | +0.303 [+0.122] | 2/8 / 7/8 | 0.639 | pass |
+| F4 | 0.617 | 0.062 | +0.555 [+0.513] | +0.458 [+0.310] | +0.485 [+0.352] | 8/8 / 8/8 | 0.498 | pass |
+| F8 | 0.595 | 0.074 | +0.521 [+0.480] | +0.346 [+0.239] | +0.432 [+0.312] | 7/8 / 8/8 | 0.446 | pass |
+| F12 | 0.555 | 0.060 | +0.495 [+0.455] | +0.369 [+0.254] | +0.425 [+0.238] | 6/8 / 8/8 | 0.475 | pass |
+| F20 | 0.612 | 0.071 | +0.541 [+0.494] | +0.457 [+0.377] | +0.557 [+0.471] | 8/8 / 8/8 | 0.608 | pass |
+
+No held-out block collapses at any layer. Thus all five layers pass the
+registered residual gate. As in audit #14, full-gate and merely positive keys
+are distinct; the five checkpoints are correlated measurements, not
+replications. The presentation-only numbers are held-out directional cosines,
+not variance shares, fractions, mediation, overlap, or causal effects.
+
+### Round 23 three-branch adjudication
+
+The static-plus-augmented pair takes the predeclared **both-design
+non-collapse branch**.
+
+1. **State-linked prediction:** the registered mechanical prediction holds,
+   including the mandatory `P_aug` sensitivity: at F4–F20, `X_perp` predicts
+   `Delta_perp` and the reassembled response-law consequence beyond the four
+   registered residual X-free lexical nulls after either registered
+   presentation design is removed. In audit #14's terms the positive object
+   is surviving **X-linked residual predictability**, not identified state.
+2. **Lexical-interpolation prediction:** the amended tested version misses.
+   Class mean, frozen-embedding kNN, frozen-embedding ridge, and
+   frozen-embedding kernel do not close the gap. This narrows those fixed
+   X-free lexical accounts; it does not eliminate every smooth lexical field
+   or presentation-by-lexical interaction.
+3. **Carrier/style-nuisance prediction:** its registered collapse prediction
+   misses for both `P_static` and `P_aug`. The presentation concern is thereby
+   narrowed, not eliminated. A finite rank-4 carrier-summary design does not
+   remove high-dimensional nonlinear template/carrier geometry, smooth
+   lexical coordinates, or their interactions from `X_perp`.
+
+The audit #14 joint license therefore extends to the augmented coordinates:
+
+> Registered static template coordinates and registered augmented
+> carrier-summary coordinates predict held-out raw displacement. After
+> cross-fitted removal of either registered design from both `X` and `Delta`,
+> `X_perp` still predicts `Delta_perp` and its reassembled response-law
+> consequence beyond the registered residual X-free lexical nulls at
+> F4–F20. These facts establish presentation sensitivity and residual X-linked
+> predictability; they do not identify how much of the raw ridge advantage is
+> attributable to presentation, whether the remainder is operational state,
+> or whether the result is presentation-independent.
+
+This is stronger than A-static alone because the mandatory augmented
+sensitivity also survives. It is still observational evidence in one decoder
+and one authored template population, not a native-law or state verdict.
+
+### F0 ruling
+
+F0's augmented pass is a **real conditional gain for the predeclared
+residualized estimand**, not a held-out-target or carrier-mean leakage artifact.
+The augmented carrier summary is X-only and cross-fitted; the residual field
+and every X-free null receive the same fitted presentation displacement on
+reassembly. Its residual normalized error is `0.923` versus approximately
+`1.0` for the residual null, and the maximum ridge shuffled q95 is `0.122`.
+
+It is not a rescue of the raw F0 field or a refutation of identity/token
+dominance. On the same folds, un-residualized ridge cosine is `0.687` versus a
+strongest raw-null cosine near `0.669`, while `P_aug -> Delta` is `0.639`.
+The carrier-mean/subspace scores absorb a carrier-level, lexically averaged
+component of `X` that is entangled with the identity-dominated first move;
+subtracting its fitted image changes the target and reference geometry and
+exposes a smaller conditional residual problem. Only `2/8` keys clear the
+full per-key gate although `7/8` have the correct sign. The admissible
+statement is therefore:
+
+> Under the registered A-augmented residualization, F0 has a positive pooled
+> conditional residual gain and no block collapse, but the strict key-level
+> evidence is sparse. The raw first transition remains identity/token
+> dominated; the result does not identify the exposed residual as operational
+> state.
+
+### Repaired common-scale retention
+
+The same-run common-scale block is present and finite. It reassembles each
+residual field and residual null to full `Delta`, scores raw and residual arms
+against the same raw `Delta`, true decoder law, and `unres_mean` skill
+reference, uses continuous KL improvement, and recomputes the strongest-null
+minimum inside each bootstrap replicate. Direct readings of
+`pairs[*]["retention_common_scale_block_first"]` are:
+
+| Layer | cosine ratio median [95% CI] | skill ratio median [95% CI] | continuous-KL-margin ratio median [95% CI] |
+|---|---:|---:|---:|
+| F0 | 2.513 [1.337, 5.098] | 1.460 [0.871, 4.559] | 1.255 [0.612, 5.393] |
+| F4 | 1.105 [0.968, 1.323] | 1.062 [0.811, 1.758] | 0.778 [0.495, 1.195] |
+| F8 | 1.166 [1.044, 1.326] | 1.137 [0.792, 1.618] | 0.942 [0.652, 1.249] |
+| F12 | 1.231 [1.102, 1.428] | 1.160 [0.957, 1.353] | 1.127 [0.996, 1.243] |
+| F20 | 1.105 [1.020, 1.248] | 0.951 [0.787, 1.073] | 0.974 [0.784, 1.098] |
+
+Every ratio median exceeds the predeclared `0.5` threshold. Fourteen of the
+fifteen interval lower bounds also exceed `0.5`; F4's continuous-KL lower
+bound is `0.495`. The licensed retention statement is:
+
+> Under the amended common-scale marker, A-augmented retains at least half of
+> the same-run raw ridge-versus-strongest-null margin at the bootstrap median
+> on cosine, law skill, and continuous KL improvement at every measured
+> layer. A uniform 95%-interval claim across all layer-endpoint cells is not
+> earned because the F4 continuous-KL interval narrowly crosses `0.5`.
+
+This is retention of a declared **predictive margin on a common scale**, not
+a fraction of latent “signal,” variance, state, or mediation. It does not
+substitute for the still-missing A-static common-scale cell in `resSA2`.
+
+### Comparator 1 lock: fully refitted Freedman–Lane residual-geometry null
+
+This is preregistered now for the existing captures and must not be tuned from
+the remaining chain's outcomes.
+
+- Scope: all four sentinel-by-design cells (`A/B x P_static/P_aug`), five
+  layers, the same two unseen-word folds, eight outer block-by-word keys,
+  support rules, and K=13 capture/law contract. F0 is reported separately and
+  cannot supply the F4–F20 state-reading criterion.
+- In every outer key, fit the nuisance coordinates and maps exactly as in the
+  scored arm. Hold `X_perp`, the held-out `Delta_perp`, and the held-out law
+  fixed. For each of 20 deterministic-seed null refits, permute calibration
+  `Delta_perp` across carriers **within template family and word**. Rerun the
+  complete calibration-only inner selection, refit ridge and kernel on the
+  permuted residual targets, and score the unchanged held-out cells. No fit or
+  prediction may be reused across permutations except the already frozen
+  nuisance residualization and true-law cache.
+- Preserve the class-stratified crossed bootstrap: one word draw per word-fold
+  key shared across sampled blocks, carriers resampled within block. Report
+  every per-key statistic and the block-first pool.
+- Four primary statistics, all predeclared: displacement cosine (higher),
+  normalized residual error (lower), response-law skill on the reassembled
+  successor (higher), and continuous KL improvement over the same fixed
+  residual X-free reference (higher). Ridge is primary; kernel is a mandatory
+  sensitivity reported under the same rule.
+- A layer passes the null only if the observed ridge is more extreme than all
+  20 fully refitted nulls on all four statistics (one-sided exact
+  `p <= 1/21`), the crossed block-first 95% interval for observed minus the
+  permutation median is positive on cosine, skill, and continuous KL and
+  negative on normalized error, cosine/skill/error improvements over the
+  permutation median are each at least `0.02`, at least `6/8` keys have the
+  correct sign on all four statistics, no block collapses, and support is at
+  least `0.95`. Continuous KL requires only a positive margin and lower bound,
+  not an arbitrary `0.02`-nat threshold. A cell-level positive requires at
+  least two of F4/F8/F12/F20; F0 is a diagnostic.
+
+With one residualized run costing `4400–4740 s`, 20 complete refits per
+fold-key conservatively project to `88,000–94,800 s` (`24.4–26.3 h`) per
+sentinel/design cell and `97.8–105.3 CPU h` for all four. The hard budget is
+`30 h` per cell and `120 CPU h` total, one CPU process at a time, no new
+capture and no GPU. An overrun or fewer than 20 complete refits in any key is
+budget-incomplete, not a pass.
+
+Predictions are discriminating. A target-shrinkage or residual-geometry
+artifact predicts that the refitted null approaches the observed residual
+field and blocks at least one of the four statistics. A real aligned
+`X_perp–Delta_perp` relation predicts rejection of this null. That rejection
+still does not identify state: a nonlinear presentation/carrier relation can
+be aligned and therefore also reject permutation.
+
+### Comparator 2 lock: fair residual-space X-free field
+
+This is the cheaper and more interpretation-specific moot-maker. In every
+outer fold, form a calibration-only feature family with no held-out cell
+`X_perp`:
+
+- the ten registered `P_static` columns;
+- the same rank-at-most-4 leave-current-word-out carrier-summary scores used
+  by `P_aug`;
+- the first 16 principal scores of the frozen input embedding, with the basis
+  fit on calibration words only; and
+- the fixed 4-by-16 carrier-summary/lexical-score outer products (64
+  interaction columns).
+
+The rank `16` and the interaction form are fixed now. Standardizers, lexical
+bases, carrier bases, and all interaction columns are rebuilt in each outer
+fold and each inner training fold. Fit a multivariate ridge map to
+`Delta_perp`; choose lambda from the state field's existing grid by the same
+inner leave-one-calibration-block-out criterion, with the class-stratified
+calibration-word split retained. Fit the cell-level `X_perp` ridge under the
+same inner procedure. Report each fit's effective ridge degrees of freedom
+`df = tr[Z (Z^T Z + lambda I)^-1 Z^T]`. For the mandatory matched-capacity
+sensitivity, take the comparator's calibration-selected `df` as the target
+and choose the state ridge lambda from the same frozen grid whose
+calibration-design `df` is closest, breaking ties toward smaller `df`; this
+matching uses no held-out target. No held-out outcome chooses features, rank,
+lambda, capacity match, or which fit is reported.
+
+A layer passes this comparator only if the cell-level `X_perp` ridge beats the
+X-free field by at least `0.02` with a positive crossed block-first lower bound
+on displacement cosine, normalized-error improvement, and response-law skill,
+has a positive continuous-KL improvement with positive lower bound, has at
+least `6/8` all-four positive keys, no block collapse, and support at least
+`0.95`. The same result must hold in the degrees-of-freedom-matched
+sensitivity. A sentinel/design cell requires at least two qualifying layers
+among F4/F8/F12/F20; F0 remains separate.
+
+A comparator-only reanalysis is estimated at approximately one present
+residualized-run cost per cell: `4400–4740 s`, or `4.9–5.3 CPU h` for four
+cells. Allow a `7200 s` hard wall per cell and `8 CPU h` total for interaction
+construction, law completion, and bootstrap overhead. Run one CPU process at
+a time; no new capture and no GPU.
+
+The strongest nuisance prediction is that this field closes F0 and much of
+F4–F12, showing that smooth carrier/presentation-by-lexical structure does not
+require held-out cell `X_perp`. The context-conditioned prediction is that the
+cell-level field retains the registered margins, perhaps attenuated. A mixed
+sentinel/layer result is reported as specificity and earns no general state
+reading.
+
+### Locked order and decision boundary
+
+Do not interrupt or inspect the remaining chain. Finish and adjudicate in the
+existing order `resSB` (B-static) -> `resAB` (B-augmented) -> `resSA2`
+(patched A-static common-scale cell). Then run the fair X-free field on all
+four cells as the cheapest direct moot-maker, followed by the fully refitted
+Freedman–Lane null on all four cells. Both comparator families precede any
+second-model capture or state wording; no sentinel, layer, or presentation
+design may be selected after outcomes. Only after the two comparators and the
+four-cell common-scale synthesis are adjudicated may the pinned second-family
+protocol begin. A comparator collapse closes the state-reading branch but
+remains a transferable nuisance-law result.
+
+### Second lens after A-augmented
+
+Proven locally now:
+
+- registered static and augmented presentation/carrier-summary coordinates
+  predict held-out raw displacement direction;
+- after cross-fitted removal of either registered design, X-linked residual
+  predictability survives at F4–F20 beyond the registered X-free lexical
+  nulls and improves the reassembled response law;
+- the raw F0 transition remains identity/token dominated, although `P_aug`
+  exposes a pooled conditional residual gain with weak full-key coverage; and
+- the inherited ordering endpoint remains saturated relative to cosine and
+  consequence-sensitive KL measurements.
+
+Still unproven: presentation and operational state are inseparable; the
+residual is presentation-free; the field is intrinsic rather than a smooth
+implementation-specific carrier/lexical relation; the field composes;
+another decoder exposes it; or structured reasoning cannot live here.
+Presentation sensitivity is proven; **presentation entangled with state is
+not**.
+
+The next latent space must expose or controllably factor lexical,
+presentation, and operational coordinates to its denizen; define sameness by
+interchangeability under declared moves and downstream response laws; treat
+presentation as state exactly when controlled changes alter those laws;
+provide consequence-sensitive divergences and multi-step closure; transfer
+across unseen words, fresh styles, and model families; and include precision,
+support, and controllability in the representation contract.
+
+The single most sharpening immediate measurement is the **fair residual-space
+X-free presentation/lexical interaction field**. It directly tests the
+strongest surviving explanation on the same held-out task without cell-level
+`X_perp`, and it is the cheapest comparator that can moot the state reading.
+No new axiom is earned, so `theory/AXIOMS.md` is unchanged.
