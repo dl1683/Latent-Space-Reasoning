@@ -5,6 +5,27 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Population v4 approved and frozen (after v2 and v3 were voided)
+
+- v3 (`a8b14a8`) VOID: all 32 presentation cells passed (Please/Kindly;
+  ASCII vs typographic apostrophe, rated near-degenerate), but the controls
+  under the orthographic wrapper failed clause 6 (a whole-word operation swap
+  vs a one-glyph presentation edit). Adversary principle: co-design pairs and
+  controls under a predeclared surface-distance metric.
+- v4 (`afd6fcc`, fresh outcome-blind author): metalinguistic frames
+  `{Please|Kindly} plan to OP the word <X>` and `{Hello,|Hi,} please plan to
+  OP the word <X>`, OP ∈ {repeat, omit, capitalize, reverse}; declared metric
+  = aligned surface-word edit distance = 1 for every pair and control; frozen
+  `operation_updates` block (8 forward-only rows, 4 trajectory clusters, 4
+  trajectory controls). Independent adversary: **APPROVE 48/48**. Tokenization
+  PASS (pair-2 prefixes 8/8 tokens; greeting token 9707 vs 13048). Approval
+  block written; raw sha256 `f813f9b2…`, git blob `8845f75c…` recorded in the
+  ledger (`nlm007_fresh_v4_frozen`). Any edit voids it.
+- Next on this population (Round 31 order 5–8, after the order-4 baseline):
+  captures A / B / OP_UPDATE → bridge screen → interchangeability → fresh
+  analyses A/B → operation-update analysis; chain `run_v4.cmd` written, armed
+  only when the operation-update and bridge code pass Tier-1 review.
+
 ## 2026-08-29 — Residualization B P_aug-score4 completes the 2×2 table; third launch with the SVD fallback
 
 - Sentinel ',' with the implemented score-4 augmented design; 5074 s of the
