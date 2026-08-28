@@ -5,6 +5,19 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-28 — Tier-3 audit #6 adopted
+
+- Code repair confirmed; L8/L12 qualification stands as bounded exploratory
+  evidence at the reduced budget; L27 kept in its own post-norm family.
+- Corrections adopted verbatim: L4/L20 non-qualifying but live (not killed);
+  the all-fold +0.05 rule is a stricter convention than the original lock and
+  is labelled so; "wins" = minimal within 0.02 (kernel numerically best on
+  some endpoints); no manufactured-context causal language from the shuffle
+  profile without spread/style controls; identity test to be extended across
+  probes and pairs and stored.
+- Its ordered next actions match the Round 16/17 order; the baselines run is
+  executing now.
+
 ## 2026-08-28 — Moot-maker #1 smoke: identity plus a shared displacement explains L8→L9
 
 - `Yhat = X + mean_cal(Y−X)` at L8→L9: successor 0.949 pooled vs ridge 0.941;

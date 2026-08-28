@@ -1798,3 +1798,126 @@ interpretation survives there. A failure to close the lead does not prove
 nativeness; it only leaves the stronger alternative less economical and
 advances the next registered tests.
 
+## Tier-3 audit #6 — corrected slot rerun and extension (2026-08-28, fresh Codex auditor)
+
+**Adopted corrections.** (1) `L4→L5` and `L20→L21` are *non-qualifying but
+live*; "killed" is rejected. (2) The all-fold `+0.05` rule used in Round 17 is
+a **stricter adjudication convention** than the Round 13 aggregate gate and is
+labelled as such wherever it is applied. (3) `L27→L28` is reported in its own
+post-norm / direct-head endpoint family and never as an ordinary point on the
+depth curve. (4) "Ridge wins" means *first ladder member within 0.02 of the
+best*; kernel is numerically best on some endpoints. (5) "Context-free" at
+`L0` is replaced by "word-conditioned lexical persistence with no detected
+carrier-conditioned gain". (6) "The shuffle penalty grows with depth" is a
+descriptive statement about this score; no manufactured-context causal
+language without within-word carrier spread, a predeclared tolerance, and
+template/style controls. (7) The identity test (probe 0, eight words) is
+narrow; it must be extended across probes and pairs and stored in the artifact.
+
+**Claim-by-claim verdict (verbatim):**
+
+| claim | verdict | required wording |
+|---|---|---|
+| Extension L12 ridge .977 vs chart .898 and word mean .888 | CONFIRMED, successor only | Four fold point leads exceed .05; all recorded lower bounds are positive; one lower bound is .0435. This is held-out-carrier coordinate forecasting. |
+| Extension L12 completed-law advantage | VOID for the lock | The extension read the last token; no completed-law number from `analysis_ext.json` counts. |
+| Corrected slot implementation | CONFIRMED as a code repair | Same-slot true/predicted law is now computed; identity tests are strong but narrow. |
+| L8 and L12 corrected qualifying pairs | SUPPORTED, exploratory | Three-endpoint finite-ladder evidence at reduced 20/500 budget; not native-law evidence. |
+| L27 corrected qualification | SUPPORTED only within its endpoint family | Direct post-norm head completion is valid, but not comparable to raw-residual pairs and not evidence of remaining transformer transport. |
+| Three qualifying pairs prove a reusable dynamics map | TOO STRONG | They support a bounded finite-ladder result, not a general dynamics map. |
+| L0 is context-free | OVERSTATED if exact | Use “word-conditioned lexical persistence with no detected carrier-conditioned gain.” |
+| Shuffle penalty grows with depth | DESCRIPTIVE/EXPLORATORY | Report the score pattern; do not identify it with manufactured semantic context without spread/style controls. |
+| L4 is killed | REJECT | It fails a stringent qualification threshold but has positive corrected slot evidence. Keep it non-qualifying, not killed. |
+| L20 is killed | REJECT | Same. Its one .044 successor fold blocks the stricter all-fold convention; this is not a scientific null. |
+| Full ridge wins | QUALIFY THE WORD “wins” | Ridge is minimal within .02; kernel is numerically best on some endpoints. |
+| Native affine law / intrinsic geometry / LM-general law | NOT SUPPORTED | Block until cheap moot-makers, unseen-word split, forward-time move, and second family are completed. |
+
+**Tunnel-vision audit and strongest alternative (verbatim):**
+
+The current program has corrected its most obvious tunnel—mistaking a
+successor forecast and a last-token suffix intervention for a same-slot world
+law—but it still concentrates on one family of instruments: adjacent layer
+pairs, coordinate regression, carrier-block holdout, and cosine/KL readouts.
+The strongest alternative, already named in Tier-3 audit #5, is:
+
+> The residual state encodes word identity plus carrier/template style, and a
+> high-dimensional regularized field denoises or interpolates that code better
+> than 1-NN and the word mean. The gain can be real and transferable across
+> these four carrier blocks while saying nothing about a denizen-invented or
+> native affine law.
+
+This alternative is more economical than a native-law explanation until the
+cheap tests are run. It also explains why the word mean is strong at L0 and
+why its performance declines as the representation becomes more carrier-
+specific. It does not require leakage or a broken shuffle.
+
+Other live alternatives that must not be collapsed into one claim are:
+
+1. Identity plus a shared displacement, `Yhat = X + mean_cal(Y-X)`, may close
+   the L8 or other ridge lead. The current corrected artifact contains no
+   `identres` output.
+2. A per-carrier affine field may be strong within carrier but is not a
+   held-out-carrier competitor. Its value is diagnostic unless it closes the
+   same outer-fold endpoint under an equalized design. The current artifact
+   contains no `per_carrier_affine` output.
+3. Carrier-template lexical/style cues may drive the apparent dependence.
+   Balancing/removing those cues is required before semantic language is used.
+4. The actual move may be forward-time append-token transport, not same-slot
+   layer transport. This is untested.
+5. The result may disappear when word identities are disjoint between
+   calibration and held-out sets. This is untested.
+6. The result may be specific to one decoder family. A second independently
+   pinned family is untested.
+7. A PCA-whitened or lower-dimensional field may reproduce the apparent
+   advantage, showing coordinate scaling or effective-rank dependence rather
+   than a full-dimensional law.
+8. The per-carrier oracle comparison cannot decide this: it has a different
+   sample size and restriction from the cross-carrier field, so it is not a
+   valid ceiling argument.
+
+**Required next actions (verbatim):**
+
+1. Run the already predeclared `--baselines` path on all six existing pairs,
+   with no new generation: identity-plus-residual and the per-carrier affine
+   diagnostic, same slot endpoint, same support and clustered reporting. The
+   analyzer gates these outputs behind `--baselines`
+   (`experiments/analyze_lm_dynamics.py:200-208`, `347`, and `459`); their
+   absence from `analysis_slot.json` is confirmed. If identity-plus-residual
+   closes ridge on a pair's three endpoints, withdraw the finite-ladder ridge
+   wording for that pair.
+2. Report within-word carrier spread at every depth and a predeclared
+   numerical/reload tolerance before interpreting shuffled drops as evidence
+   of carrier dependence. Keep 20 shuffles explicitly diagnostic, or expand
+   under a new preregistration.
+3. Extend the identity test across all probes and all six pairs, and record
+   it in the result artifact. Separately compare freshly recomputed float32
+   states and laws—not only one law matrix—with stored float16 artifacts under
+   a threshold fixed before inspection.
+4. Preserve L4 and L20 as non-qualifying but live. Do not call their failure a
+   kill unless a new preregistered test specifically tests those hypotheses.
+   Clarify whether the all-fold .05 convention is a new robustness rule or
+   the intended original aggregate gate.
+5. Run forward-time append-token/next-position transport. This is the move a
+   denizen of the causal world actually makes and separates a model law from
+   an analyst-imposed layer transition.
+6. Run the class-stratified unseen-word split with disjoint calibration and
+   held-out word identities. Until then, no lexical-generalization claim is
+   permitted.
+7. Repeat the amended slot protocol on one independently pinned second model
+   family. Until then, no claim about language-model dynamics generally is
+   permitted.
+8. Keep L27 in a separately labelled post-norm/direct-head endpoint family in
+   every chart and narrative. Do not use its raw cosine as an ordinary point
+   on the same depth effect-size curve.
+
+**Final audit disposition (verbatim):** The corrected run should remain in the ledger as a valuable exploratory
+artifact. Its most defensible residue is: lexical persistence at L0; a
+carrier-transfer regression advantage over the selected chart and word-mean
+controls at several later pairs; and a repaired same-slot completion test that
+supports that finite comparison at L8, L12, and the special final pair.
+
+The report must not say that the project discovered a native affine law, proved
+that early blocks manufacture semantic context, or established a generally
+reusable law of language-model dynamics. The next highest-leverage action is
+the existing cheap moot-maker run, followed by spread/style controls and the
+forward-time and unseen-word tests. The scientific line is alive, but the
+native interpretation is not yet earned.
