@@ -5,6 +5,25 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-28 — LOCO control, sentinel '.': within-family state information at F4–F20
+
+- 2902 s of the 4500 s wall; support 1.0. Per the Round 21 rule, **F4, F8,
+  F12, F20 pass** (pooled ridge − per-word block mean: cosine +0.09–0.13,
+  law skill +0.23–0.31, KL-rank +0.29–0.40, all lower bounds > 0.08; 11–15
+  of 16 held-out carriers pass all three). F0 fails as predicted (block mean
+  ≥ ridge). Run-level within-family diagnostic: positive.
+- Reading: inside a style family, with one carrier held out, the state
+  predicts that carrier's forward step better than the family's own per-word
+  mean displacement — on the displacement, on the law, and on rank. Together
+  with the whole-block hold-out (transfer to an unseen family), the
+  "presentation-only" rival now has to explain both a cross-family transfer
+  and a within-family carrier-specific gain. What remains of it: carrier-
+  specific presentation encoded in X that predicts carrier-specific
+  displacement — which is close to saying the state knows its context, i.e.
+  is state. Codex round 22 rules, with the second lens: is "style entangled
+  with state" a hole, or the definition of state in this world?
+- Sentinel ',' arm running.
+
 ## 2026-08-28 — Second lens added (Devansh): holes, and the next latent space
 
 - Standing instruction: structural properties that make current latent
