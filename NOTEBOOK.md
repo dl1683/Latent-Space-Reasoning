@@ -5,6 +5,26 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-28 — resSA2 complete: the common-scale sentinel × nuisance table is filled
+
+`analysis_resSA2.json` (sentinel A, P_static, amended K=13 candidate universe,
+four word-only nulls, crossed block-first bootstrap; 5825 s, committed
+analyzer) passes the residual-versus-strongest-null gate at F4, F8, F12 and
+F20 (block-first lower bounds: cos ≥ 0.46, skill ≥ 0.18, KL-rank ≥ 0.20;
+keys jointly positive 7–8/8 at every passing layer; retention marker held on
+all three endpoints) and fails F0 (skill and KL-rank margins negative, 2/8
+full-gate keys). Read with resAA, resSB and resAB this completes the
+{A,B} × {P_static, P_aug-score4} table on ONE common scale: F4–F20 pass in
+all four correlated same-population cells, F0 fails in every cell except the
+weak A-score4 association. Audit #17 wording stands unchanged: consistent
+within-decoder, within-population condition robustness, not replication,
+operational state, or presentation independence; B-score4 stays
+amended-implementation and SVD-telemetry-incomplete. The residual F0 failure
+in all four cells is the one structural regularity of the table. The
+Evidence-gate adjudication of the four-cell synthesis is launched; the
+contextual-prefix chain (`run_ctx.cmd`, committed analyzer copy) starts
+automatically now that resSA2 has written.
+
 ## 2026-08-28 — SVD telemetry gate: repair-round cap tripped; Round 33 consequence test implemented
 
 SVD telemetry re-review #4 (`.codex_svd_review4.md`) returned NOT-READY with
