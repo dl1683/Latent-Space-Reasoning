@@ -12,6 +12,7 @@ push the predicted successor through the remaining layers and compare the final 
 (KL and ordering) to the truth. Implemented after the preregistration lock.
 
     python experiments/run_lm_dynamics.py capture --config experiments/config/lexical_probe_v1.json --out lm_dyn_v1
+    python experiments/run_lm_dynamics.py capture_forward --config ... --out lm_dyn_v1 --sentinel " ."   (forward-time move)
 """
 from __future__ import annotations
 
@@ -83,15 +84,73 @@ def capture(a):
     print(json.dumps(manifest, indent=2))
 
 
+def capture_forward(a):
+    """Forward-time capture (Round 16 #2 / Round 19): carrier + word + suffix + one fixed single-token sentinel appended.
+    Stores, for every layer index, the hidden state at the slot (word) position, at the last pre-append position, and at
+    the sentinel position; plus the next-token law at the sentinel position and at the last pre-append position. Every
+    candidate (X, Y) definition can be assembled from this file without re-capture. No scoring."""
+    t0 = time.time()
+    cfg = json.loads(Path(a.config).read_text(encoding="utf-8"))
+    sp = SubstitutionProbe(a.model)
+    L = int(sp.model.config.num_hidden_layers)
+    items = [w for pos in cfg["items"] for w in cfg["items"][pos]]
+    pos = [p for p in cfg["items"] for _ in cfg["items"][p]]
+    ids = [sp.single_token_id(w) for w in items]
+    assert all(i is not None for i in ids), "non-single-token item"
+    sent_ids = sp.tok.encode(a.sentinel, add_special_tokens=False)
+    assert len(sent_ids) == 1, f"sentinel {a.sentinel!r} is not a single token: {sent_ids}"
+    sent_e = sp.E[torch.tensor(sent_ids)]                                   # (1, D)
+    states = torch.stack([sp.state(i) for i in ids]); n = len(items); D = sp.E.shape[1]
+    Hs = np.zeros((len(cfg["probes"]), L + 1, n, D), dtype=np.float16)     # slot position
+    Hl = np.zeros_like(Hs)                                                   # last pre-append position
+    Ht = np.zeros_like(Hs)                                                   # sentinel position
+    law_t = np.zeros((len(cfg["probes"]), n, sp.E.shape[0]), dtype=np.float16)   # law at sentinel position
+    law_l = np.zeros_like(law_t)                                             # law at last pre-append position (= original final law)
+    for pi, p in enumerate(cfg["probes"]):
+        pre, suf = split_template(p["template"])
+        seq, slot = sp._build(Probe(p["name"], p["block"], pre, suf), states)
+        seq = torch.cat([seq, sent_e.unsqueeze(0).expand(seq.shape[0], -1, -1)], dim=1)
+        last = seq.shape[1] - 2; sent = seq.shape[1] - 1
+        for i in range(0, n, a.batch):
+            with torch.no_grad():
+                o = sp.model(inputs_embeds=seq[i:i + a.batch], output_hidden_states=True)
+            for l in range(L + 1):
+                h = o.hidden_states[l]
+                Hs[pi, l, i:i + a.batch] = h[:, slot, :].float().numpy().astype(np.float16)
+                Hl[pi, l, i:i + a.batch] = h[:, last, :].float().numpy().astype(np.float16)
+                Ht[pi, l, i:i + a.batch] = h[:, sent, :].float().numpy().astype(np.float16)
+            law_t[pi, i:i + a.batch] = torch.log_softmax(o.logits[:, sent, :].float(), -1).numpy().astype(np.float16)
+            law_l[pi, i:i + a.batch] = torch.log_softmax(o.logits[:, last, :].float(), -1).numpy().astype(np.float16)
+        print(f"  {p['name']:8s} forward-captured (slot={slot}, last={last}, sentinel={sent}) ({time.time() - t0:.0f}s)", flush=True)
+    out_dir = RESULTS / a.out; out_dir.mkdir(parents=True, exist_ok=True)
+    np.savez_compressed(out_dir / "forward_states.npz", H_slot=Hs, H_last=Hl, H_sent=Ht, law_sent=law_t, law_last=law_l,
+                        items=np.array(items), pos=np.array(pos), probes=np.array([p["name"] for p in cfg["probes"]]),
+                        blocks=np.array([p["block"] for p in cfg["probes"]]))
+    sha = hashlib.sha256((out_dir / "forward_states.npz").read_bytes()).hexdigest()
+    manifest = {"stage": "capture_forward", "model": a.model, "model_revision": sp.revision, "sentinel": a.sentinel, "sentinel_id": int(sent_ids[0]),
+                "num_hidden_layers": L, "embed_dim": int(D), "vocab": int(sp.E.shape[0]), "n_items": n, "n_probes": len(cfg["probes"]),
+                "config": a.config, "config_name": cfg["name"], "torch": torch.__version__, "transformers": __import__("transformers").__version__,
+                "torch_num_threads": torch.get_num_threads(), "batch_size": a.batch, "device": "cpu", "dtype": "float32 compute, float16 storage",
+                "forward_states_sha256": sha, "seconds": round(time.time() - t0, 1)}
+    (out_dir / "forward_manifest.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+    print(json.dumps(manifest, indent=2))
+
+
 def main():
     ap = argparse.ArgumentParser(description=__doc__)
     sub = ap.add_subparsers(dest="stage", required=True)
     c = sub.add_parser("capture")
     c.add_argument("--config", required=True); c.add_argument("--model", default="Qwen/Qwen3-0.6B")
     c.add_argument("--batch", type=int, default=16); c.add_argument("--out", required=True)
+    f = sub.add_parser("capture_forward")
+    f.add_argument("--config", required=True); f.add_argument("--model", default="Qwen/Qwen3-0.6B")
+    f.add_argument("--batch", type=int, default=16); f.add_argument("--out", required=True)
+    f.add_argument("--sentinel", required=True, help="one fixed single-token sentinel appended after the suffix (declared in the preregistration)")
     a = ap.parse_args()
     if a.stage == "capture":
         capture(a)
+    elif a.stage == "capture_forward":
+        capture_forward(a)
 
 
 if __name__ == "__main__":
