@@ -3116,3 +3116,258 @@ The constructive requirement for the next latent space is therefore:
 If changing presentation changes the lawful successor, presentation may legitimately be part of operational state. The defect may be in our quotient, not necessarily in the world.
 
 No experiments were run and no repository files were modified in this audit. The findings were recorded on the blackboard, and its convergence and synthesis checks completed successfully.
+
+## Round 23 — unseen-word adjudication and presentation residualization (2026-08-28)
+
+**Codex, documentation-only; no experiment is run.** The Round 22 unseen-word
+artifacts, analyzer path, four requested ledger entries, and Round 22 contract
+were checked directly. The running corrected equalized LOCO artifacts
+(`analysis_locoeq2A/B.json`) were deliberately not opened.
+
+### Adjudication of the Round 22 lock
+
+The predeclared gate is met by both sentinel arms at four of five layers:
+
+| Sentinel | F0 | F4 | F8 | F12 | F20 | full-gate keys at F4/F8/F12/F20 |
+|---|---|---|---|---|---|---|
+| `.` (A) | fail; continuation block collapses | pass | pass | pass | pass | 7/8, 7/8, 8/8, 8/8 |
+| `,` (B) | fail | pass | pass | pass | pass | 5/8, 6/8, 8/8, 8/8 |
+
+All eight block-by-word-fold keys have support `1.0`. At the passing layers,
+7–8/8 keys are positive on all three endpoints; the block-first pooled
+contrasts are positive and clear the point and lower-bound requirements. The
+pooled ridge-minus-strongest-X-free-null margins are approximately:
+
+- A: cosine `+0.14–+0.19`, skill `+0.33–+0.47`, and K=11 KL-rank
+  `+0.35–+0.57`, with block-first lower bounds above `0.09`;
+- B: cosine `+0.11–+0.17`, skill `+0.31–+0.41`, and K=11 KL-rank
+  `+0.31–+0.52`, with block-first lower bounds above `0.09`.
+
+At F0, A's pooled cosine lead is only about `0.019` and its continuation
+block collapses; B's lead is about `0.018`. Both therefore fail the locked
+layer gate. The class-mean and frozen-input-embedding `wordonly_knn` nulls
+are effectively the shared-mean predictor at every layer in both artifacts.
+The model revision, tokenizer revision, capture hash, CPU setting, reload
+check, and locality metadata are present in each result manifest. This is a
+valid Round 22 result, not a smoke inference.
+
+The three locked predictions adjudicate as follows:
+
+1. **State-linked:** held mechanically, but only in the permitted bounded
+   form. The forward displacement `Delta = Y-X` remains conditionally
+   predictable from `X`, and its downstream response-law consequence remains
+   better predicted than either tested X-free lexical null at F4/F8/F12/F20.
+   The same pattern transfers to word identities absent from calibration.
+2. **Lexical interpolation:** the predeclared version did not hold. A
+   class-conditioned mean and a frozen-input-embedding kNN field do not close
+   the ridge gap on unseen words. This retires “the result is merely a
+   word-conditioned lookup” for these tested lexical fields, not every
+   conceivable lexical predictor; an embedding-to-displacement ridge or
+   another lexical representation has not been run.
+3. **Carrier/style nuisance:** remains live. Its prediction was that a smooth
+   presentation coordinate could survive unseen-word transfer, and the
+   observed survival is compatible with exactly that account. Unseen words
+   remove word identity, not block/template coordinates. This prediction is
+   therefore non-discriminating, not confirmed as causal.
+
+The maximum earned statement is:
+
+> In this decoder and probe design, `X` carries residual predictability of the
+> forward displacement and its response-law consequence that generalizes
+> across unseen word identities, beyond the tested class-mean and
+> frozen-input-embedding lexical nulls.
+
+In Audit #11's terminology, the object is **X-conditioned residual
+predictability**, extended by **generalizing across unseen word identities**.
+It is not yet presentation-independent state structure. Presentation
+independence, model generality, a native law, useful multi-step navigation,
+and a law that is intrinsic rather than decoder-specific remain unearned.
+
+### Ruling on the equalized LOCO addendum
+
+The unseen-word result changes the role of the addendum but does not erase it.
+It is no longer a prerequisite for the separate unseen-word claim: that claim
+already removes word-conditioned lookup and passes against the two locked
+X-free lexical nulls. The corrected equalized LOCO rerun remains required to
+interpret the **seen-word LOCO gap**, because the recorded addendum was
+defect-affected: inner selection used a centre containing the validation
+carrier, and the historical comparator was selected on held-out outcomes.
+
+Thus `locoeq2A/B` is now a repair and a diagnostic of estimator variance and
+the seen-word presentation/state alternative, not a gate that can veto the
+unseen-word result. Its status remains “must complete before making a fair
+seen-word equalized-LOCO interpretation.” The historical outer margins remain
+descriptive only, exactly as Audit #11 ruled.
+
+### Next measurement: cross-fitted presentation residualization
+
+This is the next measurement in the fixed order, after the corrected
+equalized LOCO reruns and before a second model family. It reuses the existing
+forward captures, sentinel arms, layer checkpoints, `Delta` target, eight
+block-by-word-fold keys, and three consequence endpoints.
+
+#### Predeclared coordinates
+
+The primary presentation design `P_static` contains only lexical-free
+coordinates available in the captures:
+
+- centered one-hot indicators for the four template blocks;
+- tokenized prefix length, suffix length, total template length, and the slot
+  index;
+- sentinel/readout position and its relative position in the tokenized
+  template.
+
+The fixed augmented sensitivity design `P_aug` adds two carrier-level
+coordinates without using any target `Y` or `Delta` from the test cell:
+
+- the carrier mean of `X` over the other available lexical items, with the
+  current test word left out; and
+- rank-4 scores of that carrier-mean state in a carrier subspace whose basis
+  is fitted on calibration carriers only. If a split has fewer than four
+  estimable directions, the rank is truncated to the predeclared available
+  rank; it is never selected from held-out outcomes.
+
+`P_static` is the primary test of explicit template/presentation removal;
+`P_aug` is a mandatory sensitivity, not a post-hoc choice between favorable
+results. The carrier summary is an X-only covariate, not an X-free lexical
+null; the lexical nulls remain separately defined and are not silently
+relabelled as presentation-free.
+
+#### Cross-fitted residualization procedure
+
+For every outer block-by-word fold and each sentinel/layer, standardize the
+chosen `P` using calibration cells only. Fit two multivariate nuisance maps,
+
+\[
+X = f_X(P)+X_\perp, \qquad
+Delta = f_\Delta(P)+Delta_\perp,
+\]
+
+with the nuisance regularization selected inside the calibration portion and
+then frozen. Estimate the carrier subspace and all map parameters afresh in
+each outer fold. Apply the frozen maps to held-out cells; no held-out
+`Y`, `Delta`, response law, bootstrap outcome, or comparator score may enter
+coordinate construction, rank selection, or nuisance fitting.
+
+Fit the existing state-conditioned field on `X_perp` to predict `Delta_perp`.
+For displacement, score in residual space. For response-law endpoints,
+restore only the calibration-fitted presentation displacement component when
+constructing the candidate successor for the original decoder law, so that
+the consequence test stays on the decoder's state manifold:
+
+\[
+\widehat Y = X + f_\Delta(P) + \widehat{Delta}_\perp.
+\]
+
+The strongest X-free lexical nulls predict `Delta_perp` without `X_perp`, are
+reassembled with the same frozen presentation component, and are evaluated
+on the same held-out law. A presentation-only `P -> Delta` arm is reported as
+a diagnostic; it is not allowed to become the state claim by renaming.
+
+#### Gate and interpretation
+
+Use the same three primary endpoints: displacement cosine, response-law
+skill against the shared-mean completion, and fixed-universe K=11 KL-rank.
+Use the same support, finite/reload, locality, and eight-key validity checks.
+For both `P_static` and `P_aug`, the residual field must beat the stronger of
+the residualized `class_mean` and `wordonly_knn` nulls by at least `0.02` with
+a positive word/block-clustered 95% lower bound on all three endpoints;
+the block-first pooled contrast must be positive, at least 6/8 keys must be
+positive on all three, and no held-out block may collapse. These are the
+primary pass requirements.
+
+Report the paired block-first contrast against the un-residualized Round 22
+field on all three endpoints using the same bootstrap. Treat retention of at
+least half of the un-residualized point margin on each endpoint as the
+predeclared state-linked retention marker; failure of that marker is not a
+new kill condition, but is evidence that presentation removal consumed the
+signal and must be interpreted alongside the residual-vs-null gate. A
+residualized pass with retention is the state-linked prediction. Collapse to
+the X-free null, especially under `P_aug`, is the style-nuisance prediction.
+If `P_static` passes but `P_aug` collapses, the result says the static
+coordinates were incomplete; it does not establish state. If both pass, the
+presentation concern is narrowed but not eliminated because unmeasured
+presentation coordinates remain possible.
+
+Budget: analysis of the existing captures, one CPU process per sentinel,
+`20` shuffles and `500` bootstrap replicates, with a `60-minute` hard wall per
+sentinel (`120` minutes total). No new capture is permitted in this budget;
+an overrun or missing coordinate for a fold is budget-incomplete, not a pass.
+
+#### Predictions
+
+Under the state-linked account, F0 remains in the identity/token regime, while
+F4–F20 retain positive residual-field margins over the X-free nulls and retain
+at least half of the un-residualized margins, perhaps with attenuation. Under
+the style-nuisance account, residualization removes most of the F4–F20 lead:
+the residual field approaches the X-free null and loses the retention marker,
+with the presentation-only arm explaining much of the original margin. A
+mixed outcome is possible and will be reported as such, not forced into
+either explanation.
+
+#### Second model family
+
+After residualization is adjudicated, repeat the full locked protocol in
+`SmolLM2-360M` as the second family, subject to the same CPU-only hardware
+constraint. Before capture, pin the exact model and tokenizer revisions, all
+weights, framework versions, dtype, device, thread count, capture hash,
+template/config file, literal item list and one-token checks, sentinel token
+IDs, probe text and tokenization, and the normalized layer map. Use the five
+checkpoints corresponding to normalized depths `0, 4/28, 8/28, 12/28,
+20/28`, rounded once and frozen before looking at outcomes. Use the same two
+sentinels, `Delta = Y-X`, block-by-word folds, `P_static` and `P_aug`, nulls,
+three endpoints, K=11 universe, bootstrap, and residual-vs-unresidualized
+comparison. If either sentinel is not a single token under the pinned
+tokenizer, record a protocol failure and preregister any replacement before
+scoring; do not silently substitute it.
+
+Budget: one CPU capture/analysis process, `20` shuffles and `500` bootstrap
+replicates, with a `180-minute` hard wall for the second-family run. A
+second-family claim requires the pinned manifests and validity gates plus the
+same two-of-five layer rule for both sentinel arms; otherwise the result is a
+bounded family-specific diagnostic. State-linked prediction is transfer of
+the residualized F4–F20 pattern. Style-nuisance prediction is collapse after
+residualization. Neither prediction licenses a native-law claim without
+cross-family consistency and the remaining consequence/composition checks.
+
+### Second lens: holes after unseen words
+
+The unseen-word result sharpens the answer to the guiding question: a denizen
+can sometimes predict the world's next move from context-bearing `X` even
+when the inserted word identity was never seen during calibration. The
+exciting consequence is that navigation may require an operational context,
+not a dictionary key—but only if that predictive context survives removal of
+presentation coordinates.
+
+The proven local holes are:
+
+- **F0 identity/token dominance:** the first transition remains dominated by
+  lexical/token identity; both sentinels fail the conditional-gain gate there.
+- **Ordering-saturated readout:** the inherited across-word ordering endpoint
+  fails to register motion that cosine and response-law skill detect. This is
+  proven for this endpoint and design, not for the latent world as a whole.
+
+Several apparent holes are now classified more carefully. “The surviving
+signal is word lookup” is not supported by the unseen-word result for the
+tested class-mean and embedding-kNN nulls. The earlier equalized-LOCO reading
+that maximal shrinkage was data-selected is an implementation artifact and
+remains withdrawn. “Motion is invisible” is a readout artifact, not a proof
+that motion cannot be consequential. Presentation entanglement and
+template-family-only laws remain unresolved, not proven and not dismissed;
+the unseen split crosses word identities and block folds but remains one
+decoder and one probe design.
+
+The remaining structural hole is a missing predictive quotient separating
+lexical content, presentation, operational state, and consequential motion.
+The next-generation latent space must define “same place” by interchangeability
+of declared moves and downstream response laws; expose or factor presentation
+coordinates; use consequence-sensitive divergence rather than inherited
+ordering alone; support multi-step composition; and generalize across unseen
+words, styles, and model families. Precision, support, and response-law
+validity must be part of the representation's contract.
+
+The single measurement that most sharpens this now is the predeclared
+cross-fitted presentation residualization above. Multi-step composition
+(`F4 -> F8 -> F12` along the token clock) is the next navigation test after
+the state/presentation ambiguity is narrowed; a non-punctuation sentinel is a
+useful later style-family stress test. No new axiom is warranted in Round 23.

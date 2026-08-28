@@ -905,3 +905,36 @@ styles, and model families. No new axiom is warranted this round.
   coordinates → second model family. Scope until then: one model, shared
   words; no native, unseen-word, second-family, presentation-independent, or
   general dynamics claim.
+
+## Round 23 — current state after unseen words (2026-08-28)
+
+The Round 22 unseen-word gate is met by both sentinels at `F4/F8/F12/F20` and
+fails at `F0`. Calibration and held-out word identities are disjoint,
+support is `1.0` for every key, the class-mean and frozen-input-embedding
+`wordonly_knn` nulls sit at the shared mean, and the block-first pooled
+contrasts are positive on displacement cosine, response-law skill, and fixed
+`K=11` KL-rank. A has `7/8, 7/8, 8/8, 8/8` full-gate keys across those layers;
+B has `5/8, 6/8, 8/8, 8/8`; both have 7–8/8 positive-all-three keys at the
+passing layers. A's F0 continuation block collapses; B's F0 cosine lead is
+below the `0.02` point gate.
+
+Adjudication: the state-linked prediction is held only as **X-conditioned
+residual predictability, generalizing across unseen word identities**. The
+tested lexical-interpolation prediction fails; the presentation/style
+nuisance prediction remains live because unseen words do not remove
+presentation coordinates. This earns no presentation-independent,
+model-general, native-law, or multi-step navigation claim.
+
+The equalized LOCO addendum is still required for a fair interpretation of
+the seen-word LOCO gap and its audit #11 defect. It is no longer a prerequisite
+for the unseen-word result; the corrected `locoeq2A/B` runs are a diagnostic
+and repair of the seen-word comparison.
+
+**Next, in order:** after `locoeq2A/B`, run the predeclared cross-fitted
+presentation residualization on existing captures, using primary centered
+block/template coordinates and a mandatory augmented carrier-mean/rank-4
+calibration-carrier subspace sensitivity. Fit nuisance maps calibration-only,
+residualize both `X` and `Delta`, and retain the same three endpoints, K=11
+unseen-word null comparison, block-first bootstrap, and a paired comparison
+with the un-residualized field. Then repeat the protocol in a pinned second
+model family. No new axiom is warranted in Round 23.
