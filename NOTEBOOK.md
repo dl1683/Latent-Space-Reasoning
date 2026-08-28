@@ -5,6 +5,37 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-28 — Re-contextualization #9 (style null running; audit #9 fired)
+
+- **Central bet:** native mathematics of latent spaces from what a denizen
+  must invent. **Live question:** is the world's forward step (last context
+  state → next position) governed by a regularity that belongs to the state
+  rather than to the presentation (carrier/template style)? The style null
+  is the first test; unseen words and a second family follow.
+- **What still holds:** forward displacement predictable beyond word and
+  token identity from F4 in both sentinel arms; law skill at the sentinel
+  registers it; the preregistered two-layer criterion not met for the
+  primary arm (Round 20), ordering ruled saturated and replaced
+  prospectively by KL-rank.
+- **What reframes earlier work:** every gate failure so far has come from
+  the ordering endpoint, in every program; the world may have been "saying
+  yes" through cosine and skill all along while our consequence endpoint
+  could not hear it. The lesson is about endpoints, again: a consequence
+  measure must be able to fail for the null and pass for the truth — a
+  calibration we never ran for ordering.
+- **Alternatives held live:** (a) the within-style permutation null is a
+  straw man — a refit field on a broken pairing must predict the wrong
+  carrier's displacement and fall below even the mean, so "beats the null"
+  is uninformative; a fair style control holds out style *families* or
+  residualizes a block code from X (audit #9 asked); (b) style explains the
+  lead — testable by a per-block-mean displacement baseline (cheapest);
+  (c) the KL-rank endpoint may be biased by including the compared field
+  in the ranked set; (d) the whole "law" is one decoder's habit — second
+  family; (e) the denizen's map might be over responses, not states.
+- **Ecosystem deposit:** "a permutation null that a flexible model trivially
+  beats is not a control; calibrate every null by checking it can pass for
+  the truth and fail for the confound" → `_meta/INDEX.md`.
+
 ## 2026-08-28 — Forward-time move, sentinel ',': F12 and F20 clear the gate; the two arms disagree only at the ordering margin
 
 - 1823 s, support 1.0. Same shape as the '.' arm: F0 token-identity
