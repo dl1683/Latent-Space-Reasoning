@@ -138,7 +138,7 @@ class WorldCompleter:
         h = h.clone(); h[:, self._slot, :] = self._replacement.to(h.dtype)
         return (h,) + tuple(output[1:]) if isinstance(output, tuple) else h
 
-    def laws(self, probe_idx, states, layer_l, Yhat=None, batch=16):
+    def laws(self, probe_idx, states, layer_l, Yhat=None, batch=16, append_emb=None, pos=None):
         """Log-laws for `states` under probe_idx; if Yhat (k, D) given, the slot row at hidden index layer_l+1 is replaced.
         Returns (slot_law, last_law): the next-token law read at the substituted slot position (the locked endpoint) and
         at the sequence's last token (secondary, suffix-mediated downstream readout)."""
@@ -147,8 +147,19 @@ class WorldCompleter:
         from substitution_probe import Probe
         probe = Probe(p["name"], p["block"], pre, suf)
         seq, slot = self.sp._build(probe, states)
+        if append_emb is not None:                                   # forward-time mode: sentinel appended after the suffix
+            seq = torch.cat([seq, append_emb.view(1, 1, -1).expand(seq.shape[0], -1, -1)], dim=1)
+        if pos is not None: slot = pos                               # replacement and readout position (Round 19: r = sentinel position)
         self._slot = slot
         out_slot, out_last = [], []
+        if Yhat is not None and layer_l < 0:                          # hidden index 0 = the embedding row itself: replace it directly
+            seq = seq.clone(); seq[:, slot, :] = torch.from_numpy(np.asarray(Yhat)).float()
+            for i in range(0, seq.shape[0], batch):
+                with torch.no_grad():
+                    o = self.model(inputs_embeds=seq[i:i + batch])
+                out_slot.append(torch.log_softmax(o.logits[:, slot, :].float(), dim=-1).numpy())
+                out_last.append(torch.log_softmax(o.logits[:, -1, :].float(), dim=-1).numpy())
+            return np.concatenate(out_slot), np.concatenate(out_last)
         if Yhat is not None and layer_l == int(self.model.config.num_hidden_layers) - 1:
             # Hidden index L (the last entry of output_hidden_states) is POST final-norm in this stack: the captured
             # L(L-1)->L successor is the normed state, so the completed law is the LM head applied to Yhat directly at
@@ -203,6 +214,9 @@ def main():
     ap.add_argument("--identity-only", action="store_true", help="run the identity check and stop (writes identity_check.json)")
     ap.add_argument("--identity-check", action="store_true", help="stored-true-successor identity test at the slot for every pair and carrier (audit #6)")
     ap.add_argument("--baselines", action="store_true", help="Round 16 moot-makers: identity-plus-residual predictor and per-carrier affine diagnostic")
+    ap.add_argument("--source", choices=["layers", "forward"], default="layers", help="forward: Round 19 forward-time move from forward_states_<tag>.npz; X = unappended state at q, Y = sentinel state at r, same layer")
+    ap.add_argument("--sentinel-tag", default="A", help="forward mode: which capture (A = period, B = comma)")
+    ap.add_argument("--control-tag", default="", help="forward mode: apply the fitted predictor to this capture's target as the token-identity control")
     ap.add_argument("--target", choices=["successor", "delta"], default="successor", help="delta: predict the displacement Y-X from X (Round 18); mean = shared displacement, word_mean = word-conditioned mean displacement; completion uses X + delta_hat")
     ap.add_argument("--tag", default="", help="suffix for the output file: analysis_<tag>.json (keeps earlier runs intact)")
     ap.add_argument("--smoke", action="store_true", help="pipeline validation on the first 16 words, pair 0, tiny bootstrap; writes analysis_smoke.json")
@@ -214,14 +228,30 @@ def main():
     run_dir = RESULTS / a.run
     man = json.loads((run_dir / "manifest.json").read_text(encoding="utf-8"))
     assert man["num_hidden_layers"] == 28, "lock requires Qwen3-0.6B with 28 layers"
-    d = np.load(run_dir / "states.npz")
-    Z = d["Z"].astype(np.float32); laws = d["laws"].astype(np.float32)          # Z: (P, L+1, n, D); laws: (P, n, V)
+    if a.source == "forward":
+        assert a.target == "delta", "forward mode is defined on the displacement (Round 19 residual rule)"
+        d = np.load(run_dir / f"forward_states_{a.sentinel_tag}.npz")
+        ZX = d["H_q_unappended"].astype(np.float32); ZY = d["H_sent"].astype(np.float32); laws = d["law_sent"].astype(np.float32)
+        Z = ZX; SUCC_OFF = 0
+        fman = json.loads((run_dir / f"forward_manifest_{a.sentinel_tag}.json").read_text(encoding="utf-8"))
+        locality = float(np.max(np.abs(d["H_last"].astype(np.float32) - ZX)))
+        print(f"forward mode: sentinel {fman['sentinel']!r} id {fman['sentinel_id']} | locality max|h(S||s)[q]-h(S)[q]| = {locality:.3e} (float16 storage)", flush=True)
+        ZY_ctrl = None
+        if a.control_tag:
+            dc = np.load(run_dir / f"forward_states_{a.control_tag}.npz"); ZY_ctrl = dc["H_sent"].astype(np.float32)
+    else:
+        d = np.load(run_dir / "states.npz")
+        Z = d["Z"].astype(np.float32); laws = d["laws"].astype(np.float32)          # Z: (P, L+1, n, D); laws: (P, n, V)
+        ZX = ZY = Z; SUCC_OFF = 1; ZY_ctrl = None; locality = None
+    completer_kw = {}
     items = [str(w) for w in d["items"]]; pos = [str(p) for p in d["pos"]]; blocks = [str(b) for b in d["blocks"]]
     if a.smoke:
         Z = Z[:, :, :16]; laws = laws[:, :16]; items = items[:16]; pos = pos[:16]
     P, _, n, D = Z.shape
     block_names = list(dict.fromkeys(blocks)); probe_ids = {b: [i for i in range(P) if blocks[i] == b] for b in block_names}
     pairs = [PAIRS[i] for i in a.pairs] if a.pairs else PAIRS
+    if a.source == "forward":
+        pairs = [(l, l) for (l, _) in pairs if l < 27]                 # forward move at the same layer; final block excluded (post-norm)
     rng = np.random.default_rng(SEED)
 
     import sys; sys.path.insert(0, str(Path(__file__).parent))
@@ -229,22 +259,24 @@ def main():
     sp = None; completer = None
     if not a.skip_completion:
         sp = SubstitutionProbe(a.model); completer = WorldCompleter(sp, cfg)
+        if a.source == "forward":
+            completer_kw = {"append_emb": sp.E[int(fman["sentinel_id"])].detach().clone(), "pos": -1}   # replace and read at r (last)
         assert sp.revision == man.get("model_revision"), f"model revision {sp.revision} != capture manifest {man.get('model_revision')}"
         assert int(sp.model.config.num_hidden_layers) == man["num_hidden_layers"]
         assert man["model"] == a.model and man["config_name"] == cfg["name"] and man["n_probes"] == len(cfg["probes"]), "capture manifest / config mismatch"
         ids = [sp.single_token_id(w) for w in items]; states_emb = torch.stack([sp.state(i) for i in ids])
-    results = {"pairs": {}, "manifest": man, "config": a.config, "lock": "theory/EXPERIMENTS.md NLM-007 (Round 13, amended Round 14)", "target": a.target,
+    results = {"pairs": {}, "source": a.source, "sentinel_tag": a.sentinel_tag if a.source == "forward" else None, "locality_max_abs_diff": locality, "manifest": man, "config": a.config, "lock": "theory/EXPERIMENTS.md NLM-007 (Round 13, amended Round 14)", "target": a.target,
                "fallback": {"pairs": [f"L{l}->L{l1}" for (l, l1) in pairs], "n_shuffle": a.n_shuffle, "n_boot": a.n_boot}}
     if completer is not None:
         # float16 reload check: fresh float32 laws for probe 0 vs stored float16 laws — KL-ordering agreement must be near 1
-        fresh = completer.laws(0, states_emb, 0, Yhat=None)[1]
+        fresh = completer.laws(0, states_emb, 0, Yhat=None, **completer_kw)[0 if a.source == "forward" else 1]
         stored = laws[0]
         Rf, Rs = pairwise_kl(fresh), pairwise_kl(stored)
         agree, _ = ordering_preservation(Rf, Rs)
         results["law_reload_check"] = {"max_abs_logp_diff": float(np.max(np.abs(fresh - stored))), "kl_ordering_agreement": agree,
                                        "max_abs_pairwise_kl_diff": float(np.max(np.abs(Rf - Rs)))}
         print("law reload check:", json.dumps(results["law_reload_check"]), flush=True)
-        if a.identity_check:
+        if a.identity_check and a.source != "forward":
             # Audit #6 action 3: for every scored pair and every carrier, replace the slot with the STORED true successor and
             # compare the completed slot law with the unmodified forward's slot law. Exact routing => KL ~ float16 noise.
             ident = {}
@@ -262,10 +294,16 @@ def main():
                 print(f"wrote {out}"); return
 
     def cells(probe_list, l):
-        X = np.concatenate([Z[p, l] for p in probe_list]); Y = np.concatenate([Z[p, l + 1] for p in probe_list])
+        X = np.concatenate([ZX[p, l] for p in probe_list]); Y = np.concatenate([ZY[p, l + SUCC_OFF] for p in probe_list])
         return (X, Y - X) if a.target == "delta" else (X, Y)
 
+
     true_slot_law = {}     # carrier -> true next-token law at the slot position (unmodified forward)
+    def comp_laws(tp, l, Yhat):
+        """Completion call for the current source: layer-pair mode hooks layer l (hidden l+1); forward mode inserts at hidden index l."""
+        if a.source == "forward":
+            return completer.laws(tp, states_emb, l - 1, Yhat=Yhat, **completer_kw)
+        return completer.laws(tp, states_emb, l, Yhat=Yhat)
 
     def strat_folds(n_folds, seed):
         """Class-stratified word folds over the pos labels; returns fold index per word."""
@@ -309,7 +347,7 @@ def main():
         out["summary"] = {k: float(np.mean([v[k] for kk, v in out.items() if kk != "summary"])) for k in keys}
         return out
     for (l, l1) in pairs:
-        pair_key = f"L{l}->L{l1}"; print(f"\n=== {pair_key} ===", flush=True)
+        pair_key = f"L{l}->L{l1}" if a.source != "forward" else f"F{l}"; print(f"\n=== {pair_key} ===", flush=True)
         fold_out = {}
         for held in block_names:
             cal_blocks = [b for b in block_names if b != held]
@@ -362,10 +400,16 @@ def main():
             preds["kernel"] = fit_kernel_ridge(Xcs, Yc, best["kernel"]["lam"], best["kernel"]["gamma"])(Xts)
             cm = best["chart"]["metric"]
             preds["chart"] = fit_knn(Xcs, Yc, int(cm[3:]))(Xts) if cm.startswith("knn") else chart_control(Xc, Yc, cm)(Xt)
+            if a.source == "forward":
+                preds["identity"] = np.zeros_like(Xt)                        # Yhat = X  (Round 19 required null; displacement zero)
             if a.baselines and a.target != "delta":                      # in delta mode the shared displacement IS the mean predictor
                 preds["identres"] = Xt + (Yc - Xc).mean(0, keepdims=True)          # identity-plus-residual moot-maker (Round 16 #1)
             ybar = Yc.mean(0); denom = np.linalg.norm(Yt - ybar, axis=1); denom = np.where(denom > 0, denom, np.nan)
             succ = {k: {"cos": cos_rows(v, Yt), "nerr": np.linalg.norm(v - Yt, axis=1) / denom} for k, v in preds.items()}
+            control_cos = None
+            if ZY_ctrl is not None:                                          # token-identity control: same predictor, other sentinel's target
+                Yt_ctrl = np.concatenate([ZY_ctrl[p, l] for p in test_probes]) - Xt
+                control_cos = {k: float(np.nanmean(cos_rows(v, Yt_ctrl))) for k, v in preds.items()}
             # ---- carrier-shuffled null on the selected low-rank field and ridge ----
             shuf = {"lowrank": [], "ridge": []}
             n_cal_probes = len(cal_probes)
@@ -397,14 +441,14 @@ def main():
             if completer is not None:
                 for tp in test_probes:
                     if tp not in true_slot_law:
-                        true_slot_law[tp] = completer.laws(tp, states_emb, l, Yhat=None)[0]   # true law at the slot position (n, V); independent of l
+                        true_slot_law[tp] = comp_laws(tp, l, None)[0]   # true law at the readout position (n, V); independent of l
                 qmean = {}
-                for k in [kk for kk in ("mean", "word_mean", "ridge", "lowrank", "kernel", "chart", "identres") if kk in preds]:
+                for k in [kk for kk in ("mean", "identity", "word_mean", "ridge", "lowrank", "kernel", "chart", "identres") if kk in preds]:
                     acc = {r: {"kl": [], "skill": [], "ord": [], "ord_anchor": []} for r in ("slot", "last")}
                     for ti, tp in enumerate(test_probes):
                         rows = slice(ti * n, (ti + 1) * n)
                         yhat_rows = (Xt[rows] + preds[k][rows]) if a.target == "delta" else preds[k][rows]     # reconstruct the successor from the displacement
-                        qhat = dict(zip(("slot", "last"), completer.laws(tp, states_emb, l, Yhat=yhat_rows)))
+                        qhat = dict(zip(("slot", "last"), comp_laws(tp, l, yhat_rows)))
                         if k == "mean": qmean[tp] = qhat
                         for r in ("slot", "last"):
                             q = true_slot_law[tp] if r == "slot" else laws[tp]              # laws[tp] = stored true law at the last token
@@ -437,6 +481,9 @@ def main():
             gates = {}
             for field in ("ridge", "lowrank", "kernel"):
                 g = {"succ_cos_vs_chart": boot_diff(field, "cos"), "succ_cos_vs_word_mean": boot_diff(field, "cos", "word_mean")}
+                if "identity" in preds:
+                    g["succ_cos_vs_identity"] = boot_diff(field, "cos", "identity")
+                    if comp: g["skill_vs_identity"] = boot_diff(field, "skill", "identity"); g["ordering_vs_identity"] = boot_diff(field, "ordering", "identity")
                 if "identres" in preds:
                     g["succ_cos_vs_identres"] = boot_diff(field, "cos", "identres")
                     if comp: g["skill_vs_identres"] = boot_diff(field, "skill", "identres"); g["ordering_vs_identres"] = boot_diff(field, "ordering", "identres")
@@ -454,6 +501,7 @@ def main():
             fold_out[held] = {"selected": {k: {kk: vv for kk, vv in v.items() if kk != "inner"} for k, v in best.items()},
                               "successor_cos": {k: float(np.nanmean(v["cos"])) for k, v in succ.items()},        # in delta mode: displacement cosine
                               "reconstructed_successor_cos": ({k: float(np.mean(cos_rows(Xt + v, Xt + Yt))) for k, v in preds.items()} if a.target == "delta" else None),
+                              "token_identity_control_cos": control_cos,
                               "normalized_error": {k: float(np.nanmean(v["nerr"])) for k, v in succ.items()},
                               "completed": {k: {"kl": float(np.nanmean(v["kl"])), "skill": float(np.nanmean(v["skill"])), "ordering": float(np.mean(v["ordering_by_carrier"])),
                                                 "kl_last": float(np.nanmean(v["kl_last"])), "skill_last": float(np.nanmean(v["skill_last"])), "ordering_last": float(np.mean(v["ordering_last_by_carrier"]))} for k, v in comp.items()},
