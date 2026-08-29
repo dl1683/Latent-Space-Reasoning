@@ -5,7 +5,7 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
-## NLM-007 — LM residual-stream dynamics; middle-depth ridge lead withdrawn under the identity baseline; displacement ladder adjudicated (audit #8 wording); forward-time move adjudicated NOT MET = nonpass, not a kill (Round 20, audit #9); within-style null = diagnostic only (both arms); LOCO A/B within-family positive, bounded (audit #10 wording; adjudicated Round 22); equalized addendum defect-affected, descriptive only (audit #11); unseen-word runs A/B mechanical pass, formal gate pending (Round 23, audit #12); corrected equalized reruns contract-correct (A adjudicated Round 25; B pending); residualization A-static contract-valid, adjudicated Round 26 as corrected by audit #14 (registered-presentation sensitivity + surviving X-linked residual predictability; neither state nor presentation-independence); A-augmented (`P_aug-score4`) adjudicated Round 27 as corrected by audit #15 (nested sensitivity on the same sentinel-A cells, not a replication; outcome-clean but transductive within carrier); B-static adjudicated Round 28 as corrected by audit #16 (F4–F20 pass, F0 fails; a correlated two-sentinel check, not replication); B-augmented (`P_aug-score4`) scored on the third launch after two losses in the F8 grammar block, adjudicated Round 32 as amended-implementation and SVD-telemetry-incomplete (F4–F20 pass, F0 fails); the sentinel {A,B} × {P_static, P_aug-score4} table is complete only for the residual-versus-four-word-only-null mechanical gate — within-decoder, within-population condition robustness, not replication (audit #17); patched A-static `resSA2` complete and ADJUDICATED (Evidence gate 2026-08-28, PASS qualified: the four-cell table is complete on one common K=13/four-null/crossed-bootstrap scale; F4–F20 pass in all four correlated cells; F0 non-qualifying in three cells with a weak pooled A-score4 exception; audit #18: F0 is a model-class-sensitive diagnostic, not an all-field dead end); contextual-prefix screens `ctxscr_A/B` = point-only screens that did not triage the X-conditioned hypothesis out at F4–F20 (ctx effective df ~42.7 vs state ridge ~210–406; no state-reading gate passed; audit #18); SVD telemetry gate PARKED and unpassed by allocation (repair cap = global CLAUDE.md §2.7, not an AGENTS.md rule); Round 33 consequence instrument implemented, UNRUN, PARKED and unpassed after Tier-1 re-review #4 NOT-READY (joint-key rule closed; provenance/parity blockers open; repair cap applied as an allocation decision, ledger `nlm007_consequence_instrument_parked`; branch `conseq-instrument`, main analyzer at HEAD); contextual-prefix completions `ctx_A/ctx_B` (unresidualized) COMPLETE, scored pending adjudication, audit #19 wording: descriptive higher-EDF predictor comparisons — at F4–F20 the higher-EDF state predictor retained a positive held-out score difference from the registered `token_ids_v1` context-only pair with positive crossed lower bounds, 8/8 point-positive keys, no family collapse, support 1.0; state ridge ~5–10× the contextual ridge's effective df; F0 non-qualifying; NOT evidence that context failed, that capacity is the sole confound, or that operational state is identified (the phrase "did not close the gap" is withdrawn); Round 34 capacity-matched audit registered (`d493cf2`) and implemented (`9eb1301`; producer RUN-READY, joint reducer flagged) but HELD pending the preregistered Round 34a matched-EDF core screen (`f97a533`; K=13 KL-rank diagnostic, raw continuous KL confirmatory; implementation in progress; audit #19 staging); chain running on the committed-analyzer copy: `ctxS_A/ctxS_B` (static-residualized), then the parity check (`parity_head`/`parity_ref` A/B, parity verdict); capture extension committed (`4137258`); contextual-prefix X-free baseline committed (`eab0a68`); populations: v1 design-void (audit #16), v2 and v3 voided by the independent linguistic adversary, v4 approved 48/48 and frozen — a bounded mentioned-string instruction micro-world (audit #17); operation-verb update = declared-operation-verb context intervention; Round 31 chain and X-free chain disarmed; Freedman–Lane conditional on one A-static cell; audit #17 allocation ruling in force (Round 33); retention marker non-commensurate (audit #13) (2026-08-28)
+## NLM-007 — LM residual-stream dynamics; middle-depth ridge lead withdrawn under the identity baseline; displacement ladder adjudicated (audit #8 wording); forward-time move adjudicated NOT MET = nonpass, not a kill (Round 20, audit #9); within-style null = diagnostic only (both arms); LOCO A/B within-family positive, bounded (audit #10 wording; adjudicated Round 22); equalized addendum defect-affected, descriptive only (audit #11); unseen-word runs A/B mechanical pass, formal gate pending (Round 23, audit #12); corrected equalized reruns contract-correct (A adjudicated Round 25; B pending); residualization A-static contract-valid, adjudicated Round 26 as corrected by audit #14 (registered-presentation sensitivity + surviving X-linked residual predictability; neither state nor presentation-independence); A-augmented (`P_aug-score4`) adjudicated Round 27 as corrected by audit #15 (nested sensitivity on the same sentinel-A cells, not a replication; outcome-clean but transductive within carrier); B-static adjudicated Round 28 as corrected by audit #16 (F4–F20 pass, F0 fails; a correlated two-sentinel check, not replication); B-augmented (`P_aug-score4`) scored on the third launch after two losses in the F8 grammar block, adjudicated Round 32 as amended-implementation and SVD-telemetry-incomplete (F4–F20 pass, F0 fails); the sentinel {A,B} × {P_static, P_aug-score4} table is complete only for the residual-versus-four-word-only-null mechanical gate — within-decoder, within-population condition robustness, not replication (audit #17); patched A-static `resSA2` complete and ADJUDICATED (Evidence gate 2026-08-28, PASS qualified: the four-cell table is complete on one common K=13/four-null/crossed-bootstrap scale; F4–F20 pass in all four correlated cells; F0 non-qualifying in three cells with a weak pooled A-score4 exception; audit #18: F0 is a model-class-sensitive diagnostic, not an all-field dead end); contextual-prefix screens `ctxscr_A/B` = point-only screens that did not triage the X-conditioned hypothesis out at F4–F20 (ctx effective df ~42.7 vs state ridge ~210–406; no state-reading gate passed; audit #18); SVD telemetry gate PARKED and unpassed by allocation (repair cap = global CLAUDE.md §2.7, not an AGENTS.md rule); Round 33 consequence instrument implemented, UNRUN, PARKED and unpassed after Tier-1 re-review #4 NOT-READY (joint-key rule closed; provenance/parity blockers open; repair cap applied as an allocation decision, ledger `nlm007_consequence_instrument_parked`; branch `conseq-instrument`, main analyzer at HEAD); contextual-prefix completions `ctx_A/ctx_B` (unresidualized) COMPLETE, scored pending adjudication, audit #19 wording upheld by audit #20: descriptive higher-EDF predictor comparisons — at F4–F20 the higher-EDF state predictor retained a positive held-out score difference from the registered `token_ids_v1` context-only pair with positive crossed lower bounds, 8/8 point-positive keys, no family collapse, support 1.0; state ridge ~5–10× the contextual ridge's effective df; F0 non-qualifying; NOT evidence that context failed, that capacity is the sole confound, or that operational state is identified (the phrase "did not close the gap" is withdrawn); Round 34 capacity-matched audit registered (`d493cf2`) and implemented (`9eb1301`; producer RUN-READY, joint reducer flagged) but HELD pending the preregistered Round 34a matched-EDF core screen (`f97a533`; K=13 KL-rank diagnostic, raw continuous KL confirmatory; audit #19 staging); `ctxS_A` (P_static-residualized) COMPLETE, scored pending adjudication, audit #20 wording: the registered token-context ridge/kernel falls to held-out cosine ~0.04–0.07 and normalized error ~1.00 while the residual `X_perp` ridge keeps cosine ~0.56–0.62 and normalized error 0.78–0.83; raw context performance is highly non-robust to the registered `P_static` residualization and therefore `P_static`-aligned in this fitted design — NEVER "beyond template metadata", "presentation removed", "largely by construction", or "same feature space"; licensed positive wording: a higher-capacity predictor from `X_perp` carries held-out predictive information beyond the registered `P_static` nuisance projection and this fixed `token_ids_v1` context field; Round 34a matched-EDF core screen RUN-READY (`6b93ff1`, four Tier-1 rounds; six runs queued: `ctxcapA_raw`, `ctxcapB_raw`, `ctxcap_raw_joint`, `ctxcapA_static`, `ctxcapB_static`, `ctxcap_static_joint`; both estimands required, no cross-estimand verdict); Round 34b (P/C partial-overlap screen) and Round 34c (item-embedding-by-P_static X-free comparator) being registered before the full Round 34 (held); Round 33 parked; chain running on the committed-analyzer copy: `ctxS_B` (scoring), then the parity check (`parity_head`/`parity_ref` A/B, parity verdict), then the six Round 34a runs; capture extension committed (`4137258`); contextual-prefix X-free baseline committed (`eab0a68`); populations: v1 design-void (audit #16), v2 and v3 voided by the independent linguistic adversary, v4 approved 48/48 and frozen — a bounded mentioned-string instruction micro-world (audit #17); operation-verb update = declared-operation-verb context intervention; Round 31 chain and X-free chain disarmed; Freedman–Lane conditional on one A-static cell; audit #17 allocation ruling in force (Round 33); retention marker non-commensurate (audit #13) (2026-08-29)
 
 - **Lock.** Round 13, documentation-only (ledger `nlm007_round13_lock`;
   design `theory/dialogue/003.md`, `theory/EXPERIMENTS.md`); Round 14
@@ -235,11 +235,42 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
     context-only pair — a descriptive predictor comparison, not evidence that
     context failed, capacity is the sole confound, or operational state has
     been identified. Never "did not close the gap"; never "gate live".
-    `analysis_ctxS_A.json`, `analysis_ctxS_B.json` — the same with
-    `--residualize static`: **running on the committed-analyzer copy**, do
-    not open early; then `parity_head` / `parity_ref` A/B and a parity
-    verdict (HEAD-versus-refactor CPU parity). Same audit #19 reading; none
-    is a state-reading gate adjudication.
+    Audit #20 upholds this reading for `ctx_B`.
+  - `analysis_ctxS_A.json` (ledger `nlm007_ctxprefix_ctxS_A`; 5655 s;
+    `--residualize static`, 20 shuffles / 500 boot; committed-analyzer copy)
+    — **complete, scored pending adjudication; audit #20 wording governs.**
+    The corresponding sentinel-A comparison on the `P_static`-residualized
+    relation. At F4–F20, the registered token-context ridge/kernel falls to
+    held-out cosine approximately 0.04–0.07 and normalized error
+    approximately 1.00, while the residual `X_perp` ridge has cosine
+    approximately 0.56–0.62 and normalized error 0.78–0.83; the crossed
+    cosine, normalized-error, skill, and continuous-KL margins are positive
+    (cosine +0.51 to +0.58, LB ≥ 0.46; normalized error +0.17 to +0.23;
+    skill +0.32 to +0.49; continuous KL +0.26 to +0.48; 8/8 keys), with
+    support 1.0 and no family collapse. The contextual ridge is already at
+    approximately 47 EDF in every F4–F20 key and the contextual kernel is
+    approximately 48 EDF at F8–F20, so the collapse is not a
+    low-selected-EDF artefact. F0: cosine margin positive, normalized-error,
+    skill, and continuous-KL margins negative — model-class-sensitive
+    diagnostic. `P_static` is a ten-column block/length/position nuisance
+    design; `token_ids_v1` is a distinct approximately 205–222-column
+    carrier/POS token-context design (at most 48 distinct training rows,
+    omitting the item token and cell `X`); only `X` and `Delta` are
+    residualized. Licensed reading: the registered context field's raw
+    predictive signal is highly non-robust to `P_static` residualization
+    and is therefore `P_static`-aligned within this fitted design; a
+    higher-capacity predictor from `X_perp` carries held-out predictive
+    information beyond the registered `P_static` nuisance projection and
+    this fixed `token_ids_v1` context field. Never "largely by
+    construction", "beyond template metadata", "presentation removed",
+    "same feature space", a quantified presentation share, mediation, or
+    causal attribution; not an identified state contribution, native law,
+    or representation-level hostile hole.
+    `analysis_ctxS_B.json` — the same for sentinel B: **scoring on the
+    committed-analyzer copy**, do not open early; then `parity_head` /
+    `parity_ref` A/B and a parity verdict (HEAD-versus-refactor CPU
+    parity), then the six Round 34a runs. None is a state-reading gate
+    adjudication.
   - Round 34 capacity-matched state-versus-context audit (registered
     `d493cf2`, `theory/EXPERIMENTS.md`; implemented on the main analyzer as
     `--context-capacity-audit round34_v1`, commit `9eb1301`; ledger
@@ -256,10 +287,25 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
     `ctxcapB_static` separately; token ridge/kernel only, state ridge
     bisected to the selected contextual EDF and to the 47/48 rank ceiling,
     same outer folds, cosine + normalized error with paired block-first
-    crossed intervals, no completion): **registered; implementation in
-    progress; no run authorized until RUN-READY.** If matched margins close,
-    the full Round 34 and the Round 33 queue stop; if they survive, a narrow
+    crossed intervals, no completion): **RUN-READY at `6b93ff1`** after four
+    Tier-1 rounds (ledger `nlm007_round34a_registered_implemented`,
+    `_review1..3`, `_fix1`, `nlm007_round34a_run_ready`; sentinel artifacts
+    non-claiming, joint reducer read-only, hash-bound per-cell evidence
+    sidecars `round34a_evidence_<tag>.npz`). Audit #20: raw and static are
+    separate required screens — raw stages the `ctx_A`/`ctx_B` comparison,
+    static stages the `ctxS` and future consequence estimand; neither
+    substitutes for the other and no cross-estimand verdict is permitted.
+    **Six runs queued** behind `ctxS_B` and the parity check:
+    `ctxcapA_raw`, `ctxcapB_raw`, `ctxcap_raw_joint`, `ctxcapA_static`,
+    `ctxcapB_static`, `ctxcap_static_joint`. If matched margins close, the
+    full Round 34 and the Round 33 queue stop; if they survive, a narrow
     completion comparison precedes the embedding/edit feature-family audit.
+  - **Round 34b / 34c (audit #20; being preregistered by Codex in
+    `theory/EXPERIMENTS.md`):** before interpreting the static collapse as
+    contextual redundancy and before the full Round 34, a cheap same-fold
+    `P_static`/context partial-overlap screen (`P`, `C`, `P+C`, and
+    `C_perp -> Delta_perp`; 34b) and an item-embedding-by-`P_static` X-free
+    comparator (34c). Full Round 34 and Round 33 remain held/parked.
   - SVD telemetry / shadow-backend gate — **parked and unpassed** after
     re-review #4 (ledger `nlm007_svd_telemetry_review4`): a discretionary
     allocation decision under the global CLAUDE.md §2.7 repair-round cap,
