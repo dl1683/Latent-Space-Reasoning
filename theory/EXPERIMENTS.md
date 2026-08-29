@@ -8674,6 +8674,20 @@ about natural language, residual streams, or latent spaces generally; and
 assigned retained encoder/readout, and `POSITIVE-CONTROL` scope must appear
 beside every gate table and verdict.
 
+### Audit #26 amendment to the Round 36d claim wall (2026-08-29)
+
+Audit #26 upholds the hash-valid `FAIL — INTERCHANGEABILITY` and every stored
+gate count. Eight individual predicates pass under a privileged full-table
+frozen-chart control; the joint certificate does not. The 147 misses are
+confined to depth-2 rolled representatives followed by H3 and occur in
+future-response signatures, not immediate endpoint responses. The
+diagnostic adequacy ratio cannot be called a PASS and does not rule out
+optimization, capacity, residual accumulation, extrapolation, or threshold
+sensitivity. This result validates narrow individual-gate passability for
+the registered optimizer-fitted head; it is not behavior-only quotient
+learning, composition discovery, a complete learned PASS, or authorization
+for another Round 36 cell.
+
 ### Audit #25 amendment to the Round 36c claim wall (2026-08-29)
 
 This note appends audit #25 rather than rewriting the prospective Round 36c
@@ -8923,3 +8937,26 @@ population; and **not** authorization for an NLP wrapper, scale ladder, or
 external claim. A FAIL is **not** evidence that quotient worlds are hostile to
 structured reasoning generally, and a baseline FAIL is **not** proof that
 unrestricted carriers cannot learn presentation-invariant navigation.
+
+### Audit #26 diagnostic-only amendment to Round 37 (2026-08-29; pre-outcome)
+
+Rolled-history interchangeability is the primary structural question of
+Round 37. Before any Round 37 outcome, the producer/reducer evidence contract
+must add and report the following non-gating diagnostics:
+
+- representative/presentation history depth;
+- H2 versus H3 continuation depth;
+- first divergence step;
+- immediate terminal-response versus future-signature failure;
+- unsupported versus wrong-supported components; and
+- factored-versus-unrestricted signed margins on each matched seed-by-role
+  unit.
+
+These fields are diagnostic only. They create no gate, threshold, eligibility
+condition, stopping rule, retry, adaptive cell, branch selector, comparison
+rule, or verdict change. All five exact certificates, the behavior/support
+eligibility stage, the four locked architecture-by-role cells, and the
+`INVALID`/`FAIL`/`PASS` semantics above remain unchanged. The pre-outcome lock
+is re-taken after this amendment; no Round 37 outcome may be inspected until
+the amended module passes Tier-1 correctness and performance review and its
+final config and module hashes are recorded.
