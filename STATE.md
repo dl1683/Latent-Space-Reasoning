@@ -2,6 +2,17 @@
 
 Canonical current state. Updated every session; history in NOTEBOOK.md.
 
+## Program status 2026-08-29
+
+- **NLM-007 (LM residual-stream dynamics, Qwen3-0.6B): CLOSED** under the program's terminal allocation rule, not by a scientific null. The terminal ladder ran 34a raw (CONTINUE) → 34a static (CONTINUE) → 34b (INCONCLUSIVE, terminal rung); 34c did not run. Audit #22 closing statement, verbatim, in the section "NLM-007 — CLOSED" below; audits #18–#22 wording rules stand. No operational state, native law, composition, representation-level hostile hole, or independent replication was identified.
+- **Round 36 (minimal operational-quotient world) is the constructive program.** v1 (`073037f`) is a valid registered FAIL of its frozen `0.10/0.90` exact reducer. The only licensed reading is audit #23's paragraph (verbatim in "Round 36" below): a behavior-, calibration-, and exactness-confounded non-certification of the registered operational quotient — not evidence of no approximate composable structure; the confidence-free replay numbers (148–174/176 per seed; 11/176, 112/176, 175/176 cross-seed) are DIAGNOSTIC only.
+- **Round 36b** (behaviour-fit ladder S16/S64/LR64/W64) is a prospectively locked, post-outcome, outcome-informed successor — exploratory, not confirmatory. Status: lock recorded (`f95ff01`) → Tier-1 lock review #1 NOT-READY (`70b58a7`) → audit #23 amendment registered in theory (`9edb892`) and being carried into the runner/fixture by Codex; runs held until a new lock, review, and RUN-READY.
+- **Round 35** (typed truth-evaluable world, `c74bfab`) is a requirements envelope only; it authors nothing.
+- **Governance:** producer/reducer separation is mandatory (frozen non-claiming producer; separate declarative fail-closed reducer); Round 36b reducers apply the three-stage status tree (behaviour underfit / signature unsupported / supported non-congruence / PASS) before any outcome is named.
+
+Everything from "NLM-001 verdict" through "Status after audit #20" is the adoption-order record of the measurement rounds; orders and queues inside those sections are superseded by the closed record at the end of this file, and each is marked where it was superseded.
+
+
 ## Direction (set 2026-08-27)
 
 **Native mathematics of latent spaces.** Build the mathematics of latent/embedding
@@ -1804,7 +1815,7 @@ The full Round 34 design is unrun and remains under Tier-1 review. Its KL-rank e
 
 The Round 33 consequence instrument remains parked and unpassed, not killed. Parking after four NOT-READY rounds was a defensible allocation decision because the final review still found a real legacy-manifest crash, unproved exact-fit reuse, incomplete preflight/binding, wall gaps, and missing CPU parity. The branch is salvageable only if a later matched-capacity result makes the consequence test worth reopening. Even a future pass would license persistence of downstream predictive accuracy under frozen tails, not operational or semantic state. No native law or representation-level hostile hole is established.
 
-### Staging ruling (audit #19) — SUPERSEDED by the program continuation ruling (2026-08-29; current state in the final section below; kept for history)
+### Staging ruling (audit #19) — SUPERSEDED by the program continuation ruling (2026-08-29; closed record in the "NLM-007 — CLOSED" section below; kept for history)
 
 1. **Round 34a first.** The preregistered matched-EDF core screen (Codex preregistration in `theory/EXPERIMENTS.md`, commit `f97a533`; tags `ctxcapA_raw` / `ctxcapB_raw` for the unresidualized `ctx_A`/`ctx_B` estimand, `ctxcapA_static` / `ctxcapB_static` separately for the `P_static`-residualized relation; no cross-estimand pooling) runs before any full Round 34 arm. RUN-READY at commit `6b93ff1` after four Tier-1 rounds (ledger `nlm007_round34a_run_ready`; sentinel artifacts non-claiming; joint reducer read-only; hash-bound per-cell evidence sidecars `round34a_evidence_<tag>.npz`). Round 34a raw and static remain separate required screens (audit #20): six runs are queued behind the parity check — `ctxcapA_raw`, `ctxcapB_raw`, `ctxcap_raw_joint`, `ctxcapA_static`, `ctxcapB_static`, `ctxcap_static_joint` — with no cross-estimand pooling and no cross-estimand verdict.
 2. **KL-rank diagnostic.** Before any Round 34 or 34a outcome is read, K=13 KL-rank is diagnostic and raw continuous KL is the confirmatory endpoint, unless the parked SVD/low-rank gate is reopened and passed.
@@ -1833,43 +1844,6 @@ Round 34a raw and static remain separate required screens. Raw directly stages t
 
 Round 34a is RUN-READY at commit `6b93ff1` (Tier-1 re-review #3's reducer-binding blocker — exact binding of candidate `state_match.rank`, `rank_tolerance`, and `retained_columns` to `selected_state` — was closed in the fourth round; ledger `nlm007_round34a_run_ready`). Both Round 34a estimands run: six runs (`ctxcapA_raw`, `ctxcapB_raw`, `ctxcap_raw_joint`, `ctxcapA_static`, `ctxcapB_static`, `ctxcap_static_joint`) are queued behind the parity check (`ctxS_B` complete). Round 34b (the `P`/`C` partial-overlap screen) and Round 34c (the item-embedding-by-`P_static` X-free comparator) are preregistered (`3b49321`, `ff69d82`), implemented on the main analyzer, unrun, and under Tier-1 repair (review #1 NOT-READY on four items); they run after the Round 34a screens and before the full Round 34, which stays held; Round 33 stays parked. Round 35 (typed truth-evaluable world) is preregistered docs-only at `c74bfab` and authors nothing until the 34a/34b/34c ladder resolves. (This execution paragraph is superseded by the program continuation ruling below: the parity check completed and its gate is cut; full Round 34, Round 33, the random-weight null and a second decoder are cut; 34b/34c are conditional rungs of a terminal ladder; Round 35 is a requirements envelope.)
 
-## NLM-007 — current state after the program continuation ruling (2026-08-29; supersedes every queue, order, and staging item above)
-
-**Ruling (Codex program continuation review, ledger `nlm007_program_continuation_ruling`, commit `6e74798`; adopted verbatim in NOTEBOOK.md).** NLM-007 is STOPPED as an open-ended research program: infrastructure drift by the constitution's tripwire (measurement/infrastructure units 6 : artifact-facing units 1; the runnable central artifact count is zero). It receives one terminal closeout ladder and then closes regardless of outcome:
-
-1. Round 34a raw — run once. **DONE, CONTINUE** (below).
-2. Round 34a static — run once, separately; no cross-estimand pooling. **RUNNING** on the frozen analyzer copy (`ctxcapA_static`, `ctxcapB_static`, `ctxcap_static_joint`).
-3. Round 34b — only if both 34a estimands return CONTINUE and its final bounded repair (fix pass 2, re-review #3 = repair round 3 of 3, in flight; ledger `nlm007_round34bc_fix2`) is RUN-READY without scope expansion. Otherwise cut.
-4. Round 34c — only after a 34b CONTINUE under the same readiness condition.
-
-The first STOP/MOOT/REDUNDANT or INCONCLUSIVE rung ends the ladder (an INCONCLUSIVE rung is scientifically inconclusive but an allocation stop; it must not trigger a more elaborate instrument). An all-CONTINUE ladder records one narrow measurement claim — "the predictor separation survived these registered controls" — and NLM-007 closes anyway.
-
-**CUT:** the full six-arm Round 34 (registered `d493cf2`, implemented `9eb1301`; never run); the Round 33 consequence instrument (branch `conseq-instrument` archived as tag `archive/conseq-instrument-parked`, not deleted; never run); the parity check as a gate (completed outputs preserved as evidence); the architecture-matched random-weight null; a second decoder. Nothing in the cut list is reopened by a CONTINUE.
-
-**Parity verdict (ledger `nlm007_parity_verdict`, commit `cbed1ee`).** The HEAD-vs-refactor CPU parity check requested by Tier-1 review #4 of the parked consequence branch — contextual-prefix static screens, sentinels A and B, committed analyzer copy versus the branch's refactored analyzer, decision JSON compared after scrubbing timing/SVD/shadow fields — returned IDENTICAL for A and B (`analysis_parity_head_A/B.json`, `analysis_parity_ref_A/B.json`). The branch's legacy-parity question is answered in its favour; the gate itself is cut and the result is evidence only.
-
-**Round 34a raw result (ledger `nlm007_round34a_raw`, commit `60d06f7`; `analysis_ctxcapA_raw.json`, `analysis_ctxcapB_raw.json`, `analysis_ctxcap_raw_joint.json`, sidecars `round34a_evidence_ctxcapA_raw.npz` / `round34a_evidence_ctxcapB_raw.npz`; frozen analyzer copy = blob `6b93ff1`; 291 s / 254 s, tokenizer only).** With the state ridge bisected down to the contextual arm's selected effective df, the strongest (smallest) matched margin per layer is: sentinel A cosine +0.072 / +0.057 / +0.045 / +0.042 at F4 / F8 / F12 / F20 (crossed lower bounds 0.034 / 0.024 / 0.019 / 0.024), normalized error +0.073 / +0.047 / +0.040 / +0.054; sentinel B cosine +0.082 / +0.064 / +0.047 / +0.043 (lower bounds 0.049 / 0.034 / 0.023 / 0.022), normalized error +0.088 / +0.054 / +0.042 / +0.067. All 8/8 keys are jointly positive at every F4–F20 layer; the strongest contextual arm is the token-id kernel at most layers. F0 is INCONCLUSIVE — the selected-context-EDF match is undefined there; diagnostic only. Per-layer verdicts F4/F8/F12/F20 CONTINUE in both sentinels; joint raw reduction COMPLETE / SCREEN-ONLY, CONTINUE, common layers F4/F8/F12/F20. One reducer defect (a stored NaN at the F0 diagnostic compared unequal to its own replay) was fixed on the main analyzer without touching the producer and the joint re-run (ledger `nlm007_round34a_reducer_nan_fix`).
-
-Plain reading: capacity matching removed most of the unmatched raw gap (`ctx_A`/`ctx_B` cosine margins were +0.11 to +0.20); what survives is a +0.04 to +0.08 cosine separation with lower bounds just above the 0.02 threshold at F12/F20. CONTINUE by the registered rule — a narrow survival, not a strong one, and not a state claim. Every audit #18–#20 never-say rule stands; no Round 34a result identifies operational state.
-
-**Round 35** (typed truth-evaluable world, `c74bfab`) is retained as a requirements envelope only — the right direction but the wrong first artifact (it bundles linguistic authoring, adversarial approval, two surface systems, two query families, matched-EDF ladders, causal patches, transfer and composition before any runnable world exists). It authors nothing.
-
-**Round 36 — minimal operational-quotient world (the constructive program; design registered in `theory/EXPERIMENTS.md` at `c26eee4`, ledger `round36_design_registered`; implementation in progress by Codex; no run yet).** The first distance-0 artifact after the ruling: a runnable CPU-only latent transition system on the 16 four-bit states with toggle / swap / no-op actions, trained from behaviour only; identity defined solely by equality of future response signatures under allowed actions (bisimulation). Falsifiers, with thresholds registered in theory: quotient-equivalent states cease to be interchangeable on held-out action sequences, or actions do not descend to well-defined maps on the quotient; also involution, the non-commutation table, held-out two- and three-step closure, and cross-seed action-table invariance. Per the registered design the implementation is exactly one module, `experiments/run_operational_quotient.py`, with a JSON config `experiments/config/operational_quotient_v1.json`, three config-driven processes (`produce` / `reduce` / `fixture`), and results under `experiments/results/operational_quotient_v1/`. It runs in parallel with the NLM-007 closeout ladder.
-
-**Governance (mandatory from this ruling): producer/reducer separation.** A frozen, non-claiming producer receives execution readiness independently; claim readiness belongs to a separate declarative, fail-closed reducer. Reducer defects may block interpretation but do not rewrite or block an otherwise sound producer.
-
-## Audit #21 correction — Round 34a raw/static closeout outcomes
-
-Independent replay of `round34a_evidence_ctxcapA_raw.npz`, `round34a_evidence_ctxcapB_raw.npz`, `round34a_evidence_ctxcapA_static.npz`, and `round34a_evidence_ctxcapB_static.npz` through the registered reducer exactly reproduces both joint `CONTINUE` verdicts. In both estimands, both sentinels return `CONTINUE` at F4/F8/F12/F20, every eligible sentinel-layer has 8/8 jointly positive outer keys, and every required match is valid.
-
-**Raw.** The strongest matched cosine margins are A +0.072/+0.057/+0.045/+0.042 and B +0.082/+0.064/+0.047/+0.043 at F4/F8/F12/F20; the corresponding cosine lower bounds are A 0.034/0.024/0.019/0.024 and B 0.049/0.034/0.023/0.022. The registered rule requires point margin `>=0.02` and lower bound `>0`; it does not require the lower bound to exceed 0.02. Across both endpoints the smallest point margin is 0.0397 and the smallest lower bound is 0.0146. Capacity matching therefore removed most of the unmatched raw gap but did not exhaust it. The strongest fair reading is a small-magnitude but systematic within-design survival: both endpoints remain positive in all eight keys at every F4–F20 layer in both correlated sentinels. This is not an operational-state claim.
-
-**Static.** The strongest matched margins are A cosine +0.306/+0.383/+0.373/+0.435 and nerr +0.047/+0.089/+0.084/+0.115; B cosine +0.329/+0.352/+0.337/+0.367 and nerr +0.065/+0.082/+0.077/+0.100. The selected state ridge has 202–384 EDF depending on sentinel/layer. The selected contextual ridge target is approximately 47 EDF throughout F4–F20. The selected contextual-kernel target is approximately 48 EDF at F8–F20, but at F4 it is approximately 4.36 in 4/8 A keys and 2/8 B keys; the separate ceiling candidate remains 48 EDF. After the state ridge is shrunk to these registered targets, both margins remain positive in all eight keys at every eligible layer. The correct interpretation is that the residual predictor separation was not eliminated by this registered EDF match within these fixed feature classes. Because the registered context field is near-null on `Delta_perp` and omits richer item-by-context activation structure, this does not establish general capacity equivalence, feature adequacy, an intrinsic state contribution, or operational state.
-
-**F0.** F0 is `INCONCLUSIVE — diagnostic only` because the selected state EDF is below at least the selected contextual-ridge target, so a required downward match is unreachable and its margin evidence is NaN. F0 was predeclared ineligible and is not an allocation stop.
-
-**Ladder.** Both 34a estimands returned `CONTINUE`. Round 34b proceeds only if its final bounded review returns `RUN-READY`; Round 34c proceeds only after a 34b `CONTINUE` and the same readiness condition. Nothing here reopens full Round 34, Round 33, the random-weight null, or a second decoder. Even an all-`CONTINUE` ladder closes NLM-007.
-
 ## NLM-007 — CLOSED (2026-08-29; audit #22 closing statement, verbatim)
 
 NLM-007 is closed under the program’s terminal allocation rule, not by a scientific null.
@@ -1880,9 +1854,35 @@ This line did not identify operational state, a denizen-usable or native law, co
 
 Round 36 now asks the constructive question directly: can behavior alone support a well-defined operational quotient and composable action table in the minimal 16-state world?
 
-### Audit #22 wording corrections (verbatim)
+### Closed record — the terminal ladder
 
-### Round 34b interpretation
+**Program continuation ruling (Codex program continuation review, ledger `nlm007_program_continuation_ruling`, commit `6e74798`; adopted verbatim in NOTEBOOK.md; supersedes every queue, order, and staging item above).** NLM-007 is STOPPED as an open-ended research program: infrastructure drift by the constitution's tripwire (measurement/infrastructure units 6 : artifact-facing units 1; the runnable central artifact count is zero). It receives one terminal closeout ladder and then closes regardless of outcome: (1) Round 34a raw — run once; (2) Round 34a static — run once, separately; no cross-estimand pooling; (3) Round 34b — only if both 34a estimands return CONTINUE and its final bounded repair is RUN-READY without scope expansion, otherwise cut; (4) Round 34c — only after a 34b CONTINUE under the same readiness condition. The first STOP/MOOT/REDUNDANT or INCONCLUSIVE rung ends the ladder (an INCONCLUSIVE rung is scientifically inconclusive but an allocation stop; it must not trigger a more elaborate instrument). An all-CONTINUE ladder records one narrow measurement claim — "the predictor separation survived these registered controls" — and NLM-007 closes anyway.
+
+**Outcome:** 34a raw CONTINUE → 34a static CONTINUE → 34b INCONCLUSIVE (terminal rung) → 34c not run → closed.
+
+**CUT:** the full six-arm Round 34 (registered `d493cf2`, implemented `9eb1301`; never run); the Round 33 consequence instrument (branch `conseq-instrument` archived as tag `archive/conseq-instrument-parked`, not deleted; never run); the parity check as a gate (completed outputs preserved as evidence); the architecture-matched random-weight null; a second decoder. Nothing in the cut list is reopened by a CONTINUE.
+
+**Parity verdict (ledger `nlm007_parity_verdict`, commit `cbed1ee`).** The HEAD-vs-refactor CPU parity check requested by Tier-1 review #4 of the parked consequence branch — contextual-prefix static screens, sentinels A and B, committed analyzer copy versus the branch's refactored analyzer, decision JSON compared after scrubbing timing/SVD/shadow fields — returned IDENTICAL for A and B (`analysis_parity_head_A/B.json`, `analysis_parity_ref_A/B.json`). The branch's legacy-parity question is answered in its favour; the gate itself is cut and the result is evidence only.
+
+### Round 34a — raw and static (audit #21 wording, verbatim)
+
+Artifacts: raw — ledger `nlm007_round34a_raw`, commit `60d06f7`; `analysis_ctxcapA_raw.json`, `analysis_ctxcapB_raw.json`, `analysis_ctxcap_raw_joint.json`, sidecars `round34a_evidence_ctxcapA_raw.npz` / `round34a_evidence_ctxcapB_raw.npz`; frozen analyzer copy = blob `6b93ff1`; 291 s / 254 s, tokenizer only. Static — `analysis_ctxcapA_static.json` / `analysis_ctxcapB_static.json` (314 s / 304 s) and `analysis_ctxcap_static_joint.json` (COMPLETE/SCREEN-ONLY, CONTINUE, common layers F4/F8/F12/F20), sidecars `round34a_evidence_ctxcapA_static.npz` / `round34a_evidence_ctxcapB_static.npz`. Both joints were re-run on the main analyzer after one reducer defect (a stored NaN at the F0 diagnostic compared unequal to its own replay) was fixed without touching the producer (ledger `nlm007_round34a_reducer_nan_fix`). Static crossed cosine lower bounds: A 0.227 / 0.315 / 0.305 / 0.353, B 0.262 / 0.278 / 0.275 / 0.264 at F4/F8/F12/F20.
+
+Independent replay of `round34a_evidence_ctxcapA_raw.npz`, `round34a_evidence_ctxcapB_raw.npz`, `round34a_evidence_ctxcapA_static.npz`, and `round34a_evidence_ctxcapB_static.npz` through the registered reducer exactly reproduces both joint `CONTINUE` verdicts. In both estimands, both sentinels return `CONTINUE` at F4/F8/F12/F20, every eligible sentinel-layer has 8/8 jointly positive outer keys, and every required match is valid.
+
+**Raw.** The strongest matched cosine margins are A +0.072/+0.057/+0.045/+0.042 and B +0.082/+0.064/+0.047/+0.043 at F4/F8/F12/F20; the corresponding cosine lower bounds are A 0.034/0.024/0.019/0.024 and B 0.049/0.034/0.023/0.022. The registered rule requires point margin `>=0.02` and lower bound `>0`; it does not require the lower bound to exceed 0.02. Across both endpoints the smallest point margin is 0.0397 and the smallest lower bound is 0.0146. Capacity matching therefore removed most of the unmatched raw gap but did not exhaust it. The strongest fair reading is a small-magnitude but systematic within-design survival: both endpoints remain positive in all eight keys at every F4–F20 layer in both correlated sentinels. This is not an operational-state claim.
+
+**Static.** The strongest matched margins are A cosine +0.306/+0.383/+0.373/+0.435 and nerr +0.047/+0.089/+0.084/+0.115; B cosine +0.329/+0.352/+0.337/+0.367 and nerr +0.065/+0.082/+0.077/+0.100. The selected state ridge has 202–384 EDF depending on sentinel/layer. The selected contextual ridge target is approximately 47 EDF throughout F4–F20. The selected contextual-kernel target is approximately 48 EDF at F8–F20, but at F4 it is approximately 4.36 in 4/8 A keys and 2/8 B keys; the separate ceiling candidate remains 48 EDF. After the state ridge is shrunk to these registered targets, both margins remain positive in all eight keys at every eligible layer. The correct interpretation is that the residual predictor separation was not eliminated by this registered EDF match within these fixed feature classes. Because the registered context field is near-null on `Delta_perp` and omits richer item-by-context activation structure, this does not establish general capacity equivalence, feature adequacy, an intrinsic state contribution, or operational state.
+
+**F0.** F0 is `INCONCLUSIVE — diagnostic only` because the selected state EDF is below at least the selected contextual-ridge target, so a required downward match is unreachable and its margin evidence is NaN. F0 was predeclared ineligible and is not an allocation stop.
+
+Raw normalized-error matched margins (mechanical): A +0.073/+0.047/+0.040/+0.054, B +0.088/+0.054/+0.042/+0.067; the strongest contextual arm is the token-id kernel at most layers. Never say (audit #21): "lower bounds just above the 0.02 threshold" (the 0.02 applies to the point margin; the LB criterion is > 0); "the residual separation is not a capacity artefact" (say: not eliminated by this registered slope-EDF match within these fixed feature classes); "context arms saturate at 47/48 EDF everywhere"; "Round 34a identifies operational state"; "the state signal survived capacity matching" unqualified (say: the matched predictor separation survived this registered control); "F0 passed/failed" (INCONCLUSIVE, diagnostic). Every audit #18–#20 never-say rule stands.
+
+### Round 34b — INCONCLUSIVE in both sentinels (terminal rung)
+
+`analysis_ctxoverlap_A.json` (444 s) and `analysis_ctxoverlap_B.json` (595 s), static estimand, producers run-ready (Round 34b preregistered `3b49321`; final bounded repair RUN-READY without scope expansion). Every F4–F20 layer is INCONCLUSIVE in both sentinels. Sentinel A (block-first means, F4/F8/F12/F20): `P_static→Δ` alone reaches cosine 0.49/0.43/0.46/0.58; the token-context ridge alone 0.51/0.47/0.50/0.62; the nested `P+C` 0.51/0.46/0.49/0.61 — so `P+C − P` fails the redundancy STOP (needs ≤ 0.02 with crossed UB < 0.02), while `C⊥→Δ⊥` fails the retention rule. Reading under the registered rules: the registered raw context field is neither `P_static`-redundant nor clearly retaining residual signal in this design; neither the "by construction" nor the "fitting-artefact" account is licensed. Joint: `analysis_ctxoverlap_joint.json` COMPLETE/SCREEN-ONLY, decision INCONCLUSIVE, no common retaining layer (ridge or kernel), no common stop layer (ledger `nlm007_round34b_joint`; commit `21ecb3f`). Round 34c (`ff69d82`; implemented, never run) does not run.
+
+#### Audit #22 wording corrections (verbatim)
 
 The numerical shorthand needs slight tightening:
 
@@ -1892,15 +1892,13 @@ The numerical shorthand needs slight tightening:
 
 The positive `P+C − P` increments are evidence **against the registered strict-redundancy account**, but not evidence for operational state: `P+C` has greater capacity, while the residual partial relation fails its joint gate.
 
-### EDF correction
-
-The correction is mathematically justified. The producer sums all nonnegative eigenvalues for EDF but defines rank only above tolerance; therefore EDF can exceed numerical rank by a small sub-tolerance tail. The old fit bound is violated in eight selected-state fits, all at excluded F0, by only `2.93–2.94×10⁻⁵`. No eligible F4–F20 fit violates it.
+**EDF correction.** The correction is mathematically justified. The producer sums all nonnegative eigenvalues for EDF but defines rank only above tolerance; therefore EDF can exceed numerical rank by a small sub-tolerance tail. The old fit bound is violated in eight selected-state fits, all at excluded F0, by only `2.93–2.94×10⁻⁵`. No eligible F4–F20 fit violates it.
 
 Producer JSON, sidecars, reductions, and gate functions were unchanged. Strictly, the old joint reducer had no verdict—it was `INCOMPLETE`. The repair changed reducer status to `COMPLETE`, while preserving the already-recorded sentinel decisions and recomputing the same joint `INCONCLUSIVE`.
 
 Do not call the repair literally outcome-blind: it was triggered after seeing the artifacts. The defensible wording is **post-outcome but not outcome-selective**. Its formula follows the pre-existing producer definition, applies symmetrically, and affects only diagnostic F0 telemetry.
 
-## Overclaim and underclaim audit
+#### Overclaim and underclaim audit (audit #22, verbatim)
 
 - Round 34a raw is a genuine registered survival, but small: capacity matching removed most of the unmatched gap. Its lower bounds clear zero, not uniformly `0.02`.
 - Round 34a static supports only “not eliminated by the registered EDF match within these fixed feature classes.” It does not prove capacity independence or feature adequacy.
@@ -1910,7 +1908,21 @@ Do not call the repair literally outcome-blind: it was triggered after seeing th
 
 One durability defect remains: `.codex_audit21.md` is only a 327-byte self-referential completion stub. Audit #21’s substantive text survives in `NOTEBOOK.md`, `STATE.md`, and the ledger, but the named output itself should not be treated as evidence.
 
-## Audit #23 — Round 36 status (2026-08-29, verbatim; supersedes the Round 36 sentences above)
+### Round 35 — requirements envelope only
+
+**Round 35** (typed truth-evaluable world, `c74bfab`) is retained as a requirements envelope only — the right direction but the wrong first artifact (it bundles linguistic authoring, adversarial approval, two surface systems, two query families, matched-EDF ladders, causal patches, transfer and composition before any runnable world exists). It authors nothing.
+
+### Governance (mandatory from the continuation ruling)
+
+**Producer/reducer separation.** A frozen, non-claiming producer receives execution readiness independently; claim readiness belongs to a separate declarative, fail-closed reducer. Reducer defects may block interpretation but do not rewrite or block an otherwise sound producer. Audit #23 adds the three-stage status discipline for Round 36b (below).
+
+## Round 36 — minimal operational-quotient world (the constructive program)
+
+**Design** (registered in `theory/EXPERIMENTS.md` at `c26eee4`, ledger `round36_design_registered`; run-ready `a383a45`). The first distance-0 artifact after the ruling: a runnable CPU-only latent transition system on the 16 four-bit states with toggle / swap / no-op actions, trained from behaviour only; identity defined solely by equality of future response signatures under allowed actions (bisimulation). Falsifiers, with thresholds registered in theory: quotient-equivalent states cease to be interchangeable on held-out action sequences, or actions do not descend to well-defined maps on the quotient; also involution, the non-commutation table, held-out two- and three-step closure, and cross-seed action-table invariance. Per the registered design the implementation is exactly one module, `experiments/run_operational_quotient.py`, with a JSON config `experiments/config/operational_quotient_v1.json`, three config-driven processes (`produce` / `reduce` / `fixture`), and results under `experiments/results/operational_quotient_v1/`. Round 36 handoff (audit #22): a PASS demonstrates operational recovery and congruent action maps, not compression into a nontrivial quotient (depth-1 signatures already separate all 16 simulator states); the first scientific falsifier is action descent on rolled representatives, then held-out H2/H3 interchangeability against the response-memorization alternative.
+
+**v1 first run (commit `073037f`; ledger `round36_first_run`; adjudication `e69ac72`, ledger `round36_adjudication1`).** `produce` (five registered seeds 11/23/37/53/71, CPU only, one process) completed non-claiming in 52.6 s (train 41.7 s, evidence 11.0 s; wall 900 s); the separate `reduce` returned FAIL on every gate — quotient availability, quotient well-definedness, toggle involution, swap/toggle table, held-out depth-2 and depth-3 closure, interchangeability, action-table truth (0/5 seeds; 14–56% of 176 cells at the registered `0.10/0.90` thresholds), and the cross-seed whole-table gate. Behaviour: train `96.563–98.546%`, held-out `97.009–98.259%`, depth-3 93.8–96.3%, loss still falling at step 4,000. Artifacts: `experiments/results/operational_quotient_v1/` (`config.json`, `manifest.json`, `evidence.json`, `verdict.json`, `weights.npz`). No tuning was done on v1.
+
+### Audit #23 — Round 36 status (2026-08-29, verbatim; the only licensed reading of v1)
 
 > **Round 36 v1 — valid registered FAIL, interpretation narrowed (audit #23).**
 > The retained five-seed artifact is complete and the frozen `0.10/0.90`
@@ -1932,3 +1944,11 @@ One durability defect remains: `.codex_audit21.md` is only a 327-byte self-refer
 > underconfidence, and supported action non-congruence must receive separate
 > statuses; exact `0.5` behavior followed only by a `0.10/0.90` support failure
 > must not be called `FIT BUT NON-CONGRUENT LATENT`.
+
+**DIAGNOSTIC (confidence-free replay, read-only, not a gate; ledger `round36_audit23`):** at `p>0.5` the retained weights recover 148–174/176 truthful one-step action cells per seed (84.1–98.9%); cells identical across all five seeds: 11/176 at the registered `0.10/0.90` thresholds, 112/176 at `p>0.5`; a 175/176 cross-seed bitwise-majority table. Every exact structural gate still fails on the same weights.
+
+**Never say (audit #23):** "did not supply ... a fully supported operational identity or composable action algebra" — the adjudication's licensed sentence is REPLACED by the audit #23 paragraph above (say: failed to certify the exact confidence-qualified algebra); "0/176 cross-seed agreement" as a cell count (all-or-none whole-table gate); "FIT BUT NON-CONGRUENT" for a failure caused only by probabilities in (0.10, 0.90); "the latent was non-congruent"; "the architecture cannot represent the quotient"; "36b rescues v1"; "pure calibration failure"; "no composable structure".
+
+### Round 36b — amended before any outcome; runs held
+
+Preregistered `f9dea33` (`round36b-behavior-fit-ladder-v1`, `theory/EXPERIMENTS.md`): a four-cell behaviour-fit ladder — `S16` (16k steps, lr 0.003, width 32), `S64` (64k / 0.003 / 32), `LR64` (64k / 0.001 / 32), `W64` (64k / 0.003 / 64); walls 8 / 20 / 20 / 30 min; every cell run and visible; no pooling or best-cell selection; configs `experiments/config/operational_quotient_36b_{S16,S64,LR64,W64}.json` plus the runner revision hash-locked before any outcome (lock block `ROUND36B_BEHAVIOR_FIT_LOCK_V1`, ledger `round36b_lock`, commit `f95ff01`). Status: Tier-1 lock review #1 NOT-READY (ledger `round36b_review1`, commit `70b58a7`; one blocking defect — behavioural eligibility, exact 21,184/21,184 train and 2,240/2,240 held-out, is validated from producer-supplied aggregate counts rather than recomputed from serialized per-row logits/probabilities). The audit #23 amendment (`theory/EXPERIMENTS.md` "Round 36b amendment (audit #23; before any outcome)", registered `9edb892`) is being carried into the runner and fixture by Codex: three-stage status tree (behaviour underfit / operational signature unsupported / supported non-congruence / PASS), confidence-free diagnostic table, literal cellwise cross-seed accounting, depth-wise training diagnostics. The lock recorded at `f95ff01` is superseded by that amendment; a new lock, review, and RUN-READY precede any 36b run. No 36b run has started. Orthogonal controls to register alongside: learned lookup baseline; explicit quotient-trained positive control; nontrivial-quotient world; depth 4–6 algebraic holdouts; second transition architecture.
