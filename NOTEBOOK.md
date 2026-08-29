@@ -5,6 +5,16 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Re-contextualization #28: one day on the frozen residual stream, and the pivot to a built state
+
+Project and live question. Latent-Space-Reasoning: is there a native mathematics of latent spaces — and, after today, the sharper form: does a real model's residual stream *contain* a persistent, interchangeable state, or must such a state be *built* alongside it? Today's evidence: three baseline kills on frozen models (instruction polarity on 0.6B; number on 1.7B; the raw-sign probe gate for paraphrase interchangeability) and one gate-passing intervention (coordinate_v3) that a fresh audit reclassified as late lexical steering living in the unembedding. Codex (round 7) ruled the frozen-mining line not working and moved the central artifact to `state_bus_v1r1` — a <100k-parameter bus co-trained with frozen Qwen3-1.7B-Base, judged by whether swapped state moves a consequence never used in training. It is training now under a Tier-1-reviewed lock.
+
+What reframes earlier work. The toy program (Rounds 36–37) and the frozen-model line failed in the same shape: behaviour-supervised or pretrained carriers realise the *immediate* response but not a state that survives and composes — the depth-3 horizon hole in the toys and the non-persisting one-token patches in Qwen are the same lesson from two directions. That is the strongest argument for building the state explicitly and then asking whether it is native-like (paraphrase-stable, interchangeable, persistent, generalising to an untrained consequence) rather than hunting for it ready-made.
+
+Alternatives held live (not narrowed to one thread): (a) the frozen line may have died of construction choices — instruct models, single-token readouts, anchor replacement, bias-laden probes — and audit #28 (running, unprimed) is asked for the single cheapest frozen-model experiment that would make the pivot moot; (b) native latent mathematics need not reduce to interchangeability at all — audit #28 is asked for three alternative framings with CPU-feasible first tests; (c) if the bus turns out to be a supervised response controller (only trained outputs move), the honest reading is that a 16-d linear bus cannot carry an abstract state through a frozen model, which points at trajectory-level operators rather than a bigger bus.
+
+Foundational thread advanced: the governance amendment itself (exact certificates diagnostic-only; one audit per result; ratio tripwire; narrative gate) — applied today it produced three honest kills and one reclassification in eight hours, versus two days of apparatus before it.
+
 ## 2026-08-29 — Direction round 7 (Codex, verbatim): interchange_v1 dead; frozen-residual mining is not working; central artifact becomes `state_bus_v1`
 
 # Direction round 7 — ruling
