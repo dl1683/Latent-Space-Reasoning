@@ -5,6 +5,258 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Audit #29 on state_bus_v1r1 (fresh, unprimed; verbatim): FAIL upheld with corrections both ways; residue = pair-specific lexical steering
+
+My 'partial taxonomy transfer', '76% decay' and 'sequential semantic controller' wordings are withdrawn per the audit; the status string omitted the heldout-taxonomy failure (display defect, now fixed in code).
+
+## Executive verdict
+
+The registered construction-level FAIL is upheld, but its interpretation requires correction in both directions.
+
+- The displayed status—`FAIL — same_swap, persistence`—is mechanically incomplete. Every seed also fails the registered heldout-taxonomy gate: uplift consistency is `9/16`, `9/16`, and `8/16`, below the required `10/16`; seed 37 also misses the gain threshold. `summary.fails` records `heldout_consequence`, but the status-building branch suppresses it whenever another failure is present.
+- The same-swap failure does not show categorical same-state interchangeability failed. Same and self codes produce the correct recipient choice on all three decisions for all 16 rows in every seed. What fails is preservation of fine-grained confidence signatures under a tolerance calibrated on optimized training contexts.
+- The taxonomy residue is real as a fixed-choice intervention effect, but “partial taxonomy transfer” is too state-general. The raw `7/16` is always the same cat→dog and cow→horse rows; all-pair re-evaluation shows that every taxonomy success targets only canine or equine, never feline or bovine.
+- The persistence gate fails as registered, but “76% state decay” is not identified. It compares a directly trained sound decision against an untrained taxonomy decision with different verbalizers, scales, positions, and contradictory history while reinjecting the code continuously.
+- The predeclared “sequential semantic controller” reading is therefore too strong about mechanism, though correct in denying persistent, abstract, or generally interchangeable state.
+
+The bus construction and budget should close. The broader program should continue, but it is not yet working as a native-mathematics discovery program.
+
+## 1. Positive-residue overclaim audit
+
+### The fixed-cycle taxonomy result is pair-specific
+
+The raw taxonomy choice pattern is identical across all three seeds:
+
+| Recipient → donor | Raw donor choices |
+|---|---:|
+| cat → dog | `3/4` |
+| dog → cow | `0/4` |
+| cow → horse | `4/4` |
+| horse → cat | `0/4` |
+
+Thus `7/16` is not a diffuse effect replicated across four states. It is two stable lexical/semantic edges and two complete failures.
+
+The uplift result is similarly concentrated:
+
+| Seed | Cat cluster | Dog cluster | Cow cluster | Horse cluster | Total |
+|---:|---:|---:|---:|---:|---:|
+| 11 | `3/4` | `1/4` | `4/4` | `1/4` | `9/16` |
+| 23 | `4/4` | `1/4` | `4/4` | `0/4` | `9/16` |
+| 37 | `4/4` | `0/4` | `4/4` | `0/4` | `8/16` |
+
+The fixed cycle happens to include the robust cat→dog and cow→horse edges. Those are also the semantically close pet and farm-animal pairings; the cross-group dog→cow and horse→cat edges fail.
+
+### Exact chance model
+
+The descriptive `4/16` chance floor corresponds to the explicit model
+
+\[
+I_i\overset{\mathrm{iid}}{\sim}\operatorname{Bernoulli}(1/4),
+\qquad
+X=\sum_{i=1}^{16}I_i\sim\operatorname{Binomial}(16,1/4),
+\]
+
+where every four-way candidate argmax is assumed independent and uniformly distributed.
+
+Under that model:
+
+| Result | One-sided exact tail | Two-sided exact binomial |
+|---|---:|---:|
+| `7/16` raw choice | `0.079557` | `0.089580` |
+| `9/16` uplift argmax | `0.007470` | `0.007470` |
+| `8/16` uplift argmax | `0.027130` | `0.037153` |
+
+This is not a valid confirmatory model for the experiment. The 16 rows are four paraphrases nested within four semantic states; verbalizer priors and token lengths make the four argmax outcomes non-uniform; and the donor map is fixed.
+
+### Clustered inference
+
+Using the four recipient states as the inferential units:
+
+- Raw-choice state proportions are `[0.75, 0, 1, 0]`. A one-sided state-level t test against `0.25` gives `p=0.260`; a four-cluster sign-flip sensitivity gives `p=0.3125`.
+- Uplift state proportions give one-sided cluster-t values `p=0.097`, `0.156`, and `0.225` across the three seeds. The four-cluster sign-flip sensitivity is `p=0.25` in each seed.
+- Pooling seeds would be pseudoreplication: the same prompts and the same successful state pairs recur. Seeds demonstrate optimizer reproducibility, not additional semantic sample size.
+
+The sign-flip numbers are sensitivities under a symmetry assumption, not exact design-randomization tests. Because the cyclic donor assignment was fixed and the unobserved donor interventions are absent from `result.json`, no valid exact clustered causal p-value can be reconstructed. The result is descriptive, not statistically established state-general transfer.
+
+### All-pair, on-manifold sensitivity
+
+The completed eval-only addendum returns `FAIL` in all seeds:
+
+| Seed | Taxonomy raw donor choice | Also clears 0.5-nat floor | On-manifold wrong-code control | Sound donor choice | Young donor choice |
+|---:|---:|---:|---:|---:|---:|
+| 11 | `15/48` | `15/48` | `1/96` | `46/48` | `35/48` |
+| 23 | `14/48` | `14/48` | `1/96` | `48/48` | `30/48` |
+| 37 | `7/48` | `7/48` | `2/96` | `46/48` | `27/48` |
+
+This rules out a tiny numerical-noise explanation for the changed choices and shows code specificity relative to wrong learned codes. It does not rescue abstraction:
+
+- Every raw taxonomy success across all pairs and seeds targets dog/canine or horse/equine.
+- Donor cat/feline and cow/bovine never win a raw taxonomy choice.
+- The per-state minimum fails in every seed.
+- Even all-pair transfer of the trained young consequence is only `56–73%`.
+
+The addendum is also not cryptographically bound to the original result: it reads untracked checkpoints whose hashes are absent from `result.json`, and `audit_result.json` does not record checkpoint or post-result runner hashes. It is a useful local sensitivity, never a confirmatory rescue.
+
+### Lexical and control alternatives
+
+Token length contributes but cannot explain everything. Canine is one token and may benefit in raw summed-word likelihood, but equine is two tokens and succeeds while two-token bovine and feline targets fail. The stronger explanation is donor-verbalizer and pretrained lexical geometry.
+
+The off-manifold shuffled and Gaussian controls were too easy. The all-pair learned-code control improves specificity evidence, but the extreme canine/equine asymmetry still rejects a state-general reading.
+
+The parsimonious positive residue is:
+
+> Repeated learned codes can causally steer particular taxonomy-word choices through the frozen model’s existing lexical/semantic geometry.
+
+That is valuable, but it is not an abstract state result.
+
+## 2. Over-claimed KILL audit
+
+### Same-swap
+
+The registered gate failure is real, not numerical:
+
+| Seed | Tau | Median same distance | Median/tau | Same/cross median ratio |
+|---:|---:|---:|---:|---:|
+| 11 | `0.268` | `3.267` | `12.2×` | `0.128` |
+| 23 | `0.377` | `2.560` | `6.8×` | `0.100` |
+| 37 | `0.228` | `1.970` | `8.6×` | `0.085` |
+
+But the tolerance is calibrated on training contexts whose codes were explicitly collapsed by the prototype and same-swap objectives. On held-out paraphrases:
+
+- self and same raw accuracy are both `1.0` for all three choices;
+- same-code changes are only roughly `8.5–12.8%` as large as cross-code changes.
+
+Correct wording:
+
+> Categorical same-state behavior transferred perfectly in this four-way evaluation, while fine-grained confidence-signature equality did not generalize within the training-derived tolerance.
+
+Never call this “same-state interchangeability failed” without naming the response-law metric. Conversely, do not say the signatures generalized.
+
+### Persistence
+
+The registered third/first ratio fails decisively:
+
+- `12.20 → 9.80 → 2.92`
+- `13.86 → 8.70 → 2.97`
+- `11.91 → 7.29 → 3.09`
+
+But this is not an identified temporal decay experiment:
+
+1. Decision one is trained sound; decision three is out-of-loss taxonomy.
+2. Candidate word lengths and intrinsic likelihood scales differ.
+3. Decision order is fixed and not counterbalanced.
+4. Taxonomy sees contradictory recipient sound and young history.
+5. The same `Jz` is injected at every continuation position.
+6. Each fixed-choice score is recomputed from a teacher-forced sequence rather than continuing one autonomous hidden-state trajectory.
+
+Therefore it licenses:
+
+> The registered cross-consequence movement ratio is low at the third, heldout taxonomy decision under contradictory recipient history.
+
+It forbids:
+
+- “The latent state decayed by 76%.”
+- “The state was erased by generation.”
+- “The bus cannot persist under neutral or donor-consistent history.”
+- “Autonomous persistence failed.”
+- Any comparison treating the first and third summed-nat effects as scale-equivalent.
+
+The reported `15/16`, `16/16`, and `15/16` rollouts are constrained four-way candidate selections. The directly trained donor sound and young words become visible history before taxonomy. They are evidence of a self-reinforcing, text-mediated control loop, not free generation or unmediated state survival.
+
+Reader MSE adds no independent persistence evidence: the reader is trained for that reconstruction, evaluated only under self code, has no sham or scale baseline, and reads after visible state-specific words.
+
+### Assessment of the predeclared sentence
+
+The sentence is:
+
+- Correct in denying validated persistent, abstract, or generally interchangeable state.
+- Too strong in calling the mechanism a “sequential semantic controller.”
+- Too strong in calling the across-decision metric “sharply decaying.”
+- Too broad in saying “partial taxonomy transfer” without the two-transition and donor-verbalizer concentration.
+- Too weak because it omits the registered heldout-taxonomy failure hidden by the displayed-status bug.
+
+Replace “sequential semantic controller” with “repeatedly injected supervised response controller,” and “partial taxonomy transfer” with “pair-specific taxonomy-word steering.”
+
+## 3. Tunnel vision, alternatives, and order
+
+The strongest unified alternative explanation of today’s results is:
+
+> The frozen model supplies a biased lexical-semantic response geometry; late residual interventions and trained injection vectors move candidate-word likelihoods within that geometry, while visible selected words mediate later decisions—no persistent interchangeable state is needed.
+
+This explains:
+
+- `coordinate_v3`: direct late verb-token steering.
+- `interchange_v1`: fixed verbalizer offsets defeating raw-zero classification despite calibration-relative separation.
+- `state_bus_v1r1`: trained sound/young control, canine/equine-only taxonomy changes, fixed-pair asymmetry, and strong constrained rollouts once donor words enter history.
+
+The cheapest state-bus moot-maker is a switch-off mediation ablation: score taxonomy after teacher-forced donor sound and young history with `z=None`, beside the same donor history with the cross code. If no-bus donor history reproduces the `15/16–16/16` taxonomy rollout, that strong positive residue is textual mediation. If it does not, only the incremental bus-over-history effect survives. Because the bus line already crosses the governance ratio and fails its gates, run this only if the mediated-rollout sentence is intended for a public surface; otherwise close without another measurement.
+
+The intended high-level order—one frozen interchange discriminator, then reachability/control cost—is right. The inspected `interchange_v2` lock, however, was not confirmatory-run-ready:
+
+- Cat recipients compare dog cross donors against cow third donors; dog recipients compare cat against horse. Cross and third identities are not randomized or counterbalanced.
+- Consequently, the claimed exact `2^8` donor-label test relies on an unverified exchangeability assumption and cannot eliminate animal-pair lexical geometry.
+- All intervention gates are pooled across cat and dog, so one direction could fail while the status says operational interchangeability.
+- The preregistered short decodes are not implemented.
+
+At final filesystem check, an untracked `experiments/results/interchange_v2/` directory had appeared concurrently. I did not inspect or adjudicate it; one-result/one-audit governance requires a separate review. If that is the locked run, do not treat it as confirmatory until these design discrepancies are adjudicated.
+
+## 4. Licensed wording
+
+### Exact licensed sentence
+
+> **`state_bus_v1r1` is a fixed-construction FAIL: a 98,400-parameter supervised interface repeatedly injected a 16-dimensional code into frozen Qwen3-1.7B-Base, and across three seeds held-out same-state donors preserved every four-way categorical choice but failed the training-derived confidence-signature tolerance on 15–16/16 rows, while fixed-cycle cross codes changed taxonomy choice on 7/16 rows—always cat→dog in 3/4 and cow→horse in 4/4—and the complete registered gate vector also failed heldout taxonomy and the cross-consequence third/first movement criterion; taxonomy verbalizers were absent from the bus loss, but the all-pair sensitivity was donor-verbalizer-specific rather than state-general, so the licensed residue is a repeatedly maintained supervised response controller with pair-specific lexical/semantic steering, not autonomous persistence, abstraction, general interchangeability, or native latent mathematics.**
+
+### Never-say list
+
+- “Partial taxonomy transfer” without “pair-specific” and the cat→dog/cow→horse concentration.
+- “`7/16` beat chance” or “`9/16` is statistically significant.”
+- “Three independent semantic replications.”
+- “Same-state interchangeability failed.”
+- “Same-state confidence signatures generalized.”
+- “The state decayed by 76%.”
+- “The state survived through generation.”
+- “The bus learned autonomous persistence.”
+- “The rollouts freely generated all donor words.”
+- “The heldout consequence was unseen”; only its verbalizers were absent from the bus loss.
+- “All four states” or “all donor pairs” transferred.
+- “The controls rule out lexical or output-space steering.”
+- “Token length explains the whole effect.”
+- “Reader MSE proves a persistent readable state.”
+- “Trained-consequence accuracy was 1.0” without saying this is the self-code statistic.
+- “Qwen learned the bus”; Qwen was frozen.
+- “The bus establishes abstraction, interchangeability, or native latent mathematics.”
+- “This FAIL refutes co-developed interfaces or persistent state generally.”
+
+### README wording
+
+> **`state_bus_v1r1` is closed as a fixed-construction FAIL: held-out same-state code swaps preserved all categorical choices but not the preregistered confidence-signature tolerance, while cross-state taxonomy choice changes were confined to two fixed-cycle transitions and the registered heldout-taxonomy and third/first movement gates failed. The result supports only a repeatedly injected supervised response controller with pair-specific lexical/semantic steering—not autonomous persistence, abstraction, general interchangeability, or native latent mathematics.**
+
+### STATE wording
+
+> **`state_bus_v1r1` — REGISTERED FAIL.** The displayed status reports `same_swap, persistence`, but every seed also fails the registered heldout-consequence gate; this third failure is present in `summary.fails` and omitted from the status string by control flow. Same-state donors preserve all three raw categorical choices on `16/16` held-out rows in every seed, although their confidence signatures lie outside the training-derived tau on `16/15/16`. Fixed-cycle cross donors change taxonomy choice on `7/16` rows per seed, always cat→dog `3/4` and cow→horse `4/4`; the completed all-pair, 0.5-nat-floor, on-manifold sensitivity is also `FAIL` in all seeds (`15/48`, `14/48`, `7/48` taxonomy choices). The cross-consequence movement statistic falls from `11.9–13.9` nats at trained sound to `2.9–3.1` at heldout taxonomy under contradictory recipient history, but this does not identify autonomous temporal decay because consequence, scale, order, history, and continuous reinjection are confounded. Licensed residue: repeatedly maintained supervised response control with donor-verbalizer-specific lexical/semantic steering.
+
+## Ranked next increments
+
+1. Freeze this adjudication, record the status-display defect, and close the state-bus construction; no bus v2.
+2. If the mediated-rollout claim will be retained publicly, run only the no-bus donor-history switch-off ablation; otherwise skip it.
+3. Adjudicate and, if still prospective, repair `interchange_v2`’s third-donor exchangeability, per-direction gates, and missing-decode discrepancy; allow one run and no v3.
+4. Move to reachability and control cost regardless of interchange outcome.
+5. Consider distributed transformation operators only after reachability produces an artifact and with a direct lexical-gradient baseline preregistered.
+
+## Program and leverage ruling
+
+The broader program should continue because the real-model interventions have exposed a reproducible control surface and increasingly precise falsifiers. The state-bus line should not continue.
+
+This is not working yet as a native-mathematics discovery program. Continuing becomes highest leverage only by closing the bus, conducting at most one valid frozen interchange discriminator, and then changing the denizen question from identity to reachability and effort.
+
+Scoped measurement-to-artifact ratio:
+
+- Runner-only: about `171` apparatus/evaluation lines to `48` artifact-bearing bus/routing/training lines, approximately `3.6:1`.
+- Including the 159-line locked config and 41-line audit-stage addition: approximately `330:48`, or `6.9:1`.
+- At least four design/measurement/audit rounds have accumulated around one build/training round.
+
+This exceeds both governance tripwires and mandates the pivot. No tracked repository or source file was edited by this audit.
+
 ## 2026-08-29 — interchange_v2 (locked, bias-controlled): FAIL — the single-anchor replacement transfers no class state
 
 Native centred validity passed (cat 11/12, dog 12/12; the calibration-centred statistic removes the verbalizer bias that killed v1). Same-state donors stay within tolerance (8/8; median distance 0.35 vs τ 3.38 — τ is generous). But replacing the block-12 residual at the anchor token with the *opposite class's* anchor residual moves the three-probe signature by a median fractional 0.009 of the class separation, with 0/8 recipients flipping two decisions; on-manifold cow/horse donors nudge recipients slightly toward neutral (|T| 0.10–0.21) and the cross-vs-third specificity test is null (p = 0.47). Pre-declared status: FAIL — FIXED BLOCK-12 SINGLE-ANCHOR INTERCHANGE CONSTRUCTION; no v3.

@@ -173,7 +173,7 @@ def verdict(rows, tau, cfg, log):
     if cross_two < K["cross_two_of_three_min"]: fails.append("cross_swap")
     if not (m1 > 0 and m3 > 0 and m3 >= K["third_over_first_min"] * m1): fails.append("persistence")
     tax_fail = ho_cons < K["heldout_consistent_min"] or gain < K["heldout_gain_min"]
-    status = "FAIL — " + ", ".join(fails) if fails else ("SUPERVISED RESPONSE CONTROLLER — STOP" if tax_fail else "BOUNDED POSITIVE — PERSISTENT INTERCHANGEABLE STATE BUS (this construction)")
+    status = "FAIL — " + ", ".join(fails + (["heldout_consequence"] if tax_fail else [])) if fails else ("SUPERVISED RESPONSE CONTROLLER — STOP" if tax_fail else "BOUNDED POSITIVE — PERSISTENT INTERCHANGEABLE STATE BUS (this construction)")   # audit #29: list every failed gate
     summary["fails"] = fails + (["heldout_consequence"] if tax_fail else []); log(json.dumps({k: v for k, v in summary.items() if k != "same_distances"}, indent=1)); log(f"STATUS: {status}")
     return summary, status
 
