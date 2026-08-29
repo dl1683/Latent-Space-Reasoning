@@ -202,7 +202,9 @@ day converting one descriptive separation (state ridge vs token-context
 field, raw and residualized) into a ladder of cheap, preregistered
 capacity/feature controls — 34a (matched EDF), 34b (P/C partial overlap),
 34c (item-by-context) — with the expensive instruments (six-arm Round 34,
-Round 33 consequence) held or parked. That is the right shape: the cheapest
+Round 33 consequence) held or parked (superseded by the continuation ruling:
+full Round 34 and Round 33 are cut; 34b/34c conditional rungs of a terminal
+ladder). That is the right shape: the cheapest
 moot-makers run first. Reframing: every result so far is a statement about
 readers of one residual relation, not about a latent-space law; the second
 lens (holes hostile to structured reasoning) has produced an instrument
@@ -210,9 +212,12 @@ boundary, not a representation-level hole.
 
 Alternatives held live: item-by-carrier fingerprint + local Jacobian
 (strongest); pure capacity; decoder specificity; architecture-matched
-random-weight null. Foundational thread advanced this cycle: opening the
+random-weight null (superseded by the continuation ruling: the random-weight
+null and a second decoder are cut from NLM-007). Foundational thread advanced this cycle: opening the
 design gate for the typed truth-evaluable world (audit #19 alternative 3 /
-audit #20 tunnel ruling) as a docs-only Round 35 preregistration — a
+audit #20 tunnel ruling) as a docs-only Round 35 preregistration (superseded
+by the continuation ruling: Round 35 is a requirements envelope; the first
+constructive artifact is Round 36) — a
 four-bit finite-state world with toggle/swap/no-op, held-out predicates and
 templates, frozen forced-choice yes/no log-odds, wrapper and same-length
 controls, causal patching, involution and one non-commuting two-step
@@ -263,11 +268,16 @@ artefact of the comparison, not a fact about the state. Alternatives held
 live otherwise unchanged (capacity; Jacobian account; decoder specificity;
 typed truth-evaluable world; random-weight architecture null). Instrument
 governance status: Round 34a in repair round 2 of 3 (superseded: RUN-READY at 6b93ff1 after round 4); consequence parked;
-full Round 34 held. Foundational thread advanced: the estimand question
+full Round 34 held (superseded by the continuation ruling: full Round 34 cut,
+Round 33 archived, random-weight null cut). Foundational thread advanced: the estimand question
 (raw vs residualized) is now explicit rather than implicit in tag names.
 Audit #20 (fired, unprimed) returned CONDITIONAL (one overclaim, one underclaim); its correction block, its execution priorities / strongest alternative / tunnel ruling, and its final ruling follow verbatim.
 
 ## 2026-08-29 — Audit #20 adversarial correction
+
+(Queue items in this entry — full Round 34 held, Round 33 parked, the
+random-weight null, Round 35 as the constructive program — are superseded by
+the continuation ruling; the wording rules stand.)
 
 `ctx_B` mirrors `ctx_A` only as a bounded raw predictor comparison: at F4–F20 the higher-EDF cell-state ridge retains positive outer-held-out cosine, normalized-error, skill, and continuous-KL differences from the registered `token_ids_v1` ridge/kernel pair; F0 remains non-qualifying. This does not identify state or reject the contextual/Jacobian account.
 
