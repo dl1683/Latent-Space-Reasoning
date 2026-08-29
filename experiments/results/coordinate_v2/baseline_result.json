@@ -1,0 +1,26 @@
+{
+ "config": "coordinate_v2",
+ "sha256": {
+  "runner": "ac97dcfe939010f956be7c63688e79553654a9807e2fb3ea630d2895d6208310",
+  "config": "9b0a844f6242370bf1119547a43facbe6af016c54e48053e70a2abc59a1f8a65"
+ },
+ "revision": "70d244cc86ccca08cf5af4e1e306ecf908b1ad5e",
+ "baseline": {
+  "00": {
+   "hits": 16,
+   "ended": 16,
+   "n": 16
+  },
+  "10": {
+   "hits": 16,
+   "ended": 16,
+   "n": 16
+  },
+  "01": {
+   "hits": 12,
+   "ended": 16,
+   "n": 16
+  }
+ },
+ "passed": false
+}

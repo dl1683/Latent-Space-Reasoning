@@ -17,10 +17,19 @@ STATES = ["00", "10", "01", "11"]  # tense bit, polarity bit
 
 
 def sentence(f, s):
+    """Canonical form of family f in state s = tense bit + axis-2 bit (polarity or number, by family fields)."""
     a, b = s[0], s[1]
+    if "sg" in f:                                                  # number axis: subject changes, verb agrees
+        subj = f["sg"] if b == "0" else f["pl"]
+        verb = f["past"] if a == "1" else (f["pres_sg"] if b == "0" else f["pres_pl"])
+        return f"{subj} {verb}{f['object']}."
     if b == "0": verb = f["present"] if a == "0" else f["past"]
     else: verb = ("did" if a == "1" else ("do" if f["plural"] else "does")) + " not " + f["base"]
     return f"{f['subject']} {verb}{f['object']}."
+
+
+def label(f):
+    return f.get("subject") or f["sg"]
 
 
 def normalize(t):
@@ -38,8 +47,8 @@ class Runner:
         self.decodes = 0
 
     def prompt_ids(self, wording, src, s):
-        w = self.cfg["state_words"]; text = self.cfg["wordings"][wording].format(
-            tense=w["tense"][s[0]], polarity=w["polarity"][s[1]], src=src)
+        w = self.cfg["state_words"]; ax2 = [k for k in w if k != "tense"][0]
+        text = self.cfg["wordings"][wording].format(**{"tense": w["tense"][s[0]], ax2: w[ax2][s[1]], "src": src})
         msgs = [{"role": "user", "content": text}]
         ids = self.tok.apply_chat_template(msgs, add_generation_prompt=True, enable_thinking=False, tokenize=True)
         ids = ids["input_ids"] if hasattr(ids, "keys") else ids
@@ -129,7 +138,7 @@ def run_arm(R, layer, vT, vN, fams, wordings, transports=TRANSPORTS, scale=1.0, 
                 delta = (fixed[(start, tgt)] if rand is not None else cT * vT + cN * vN) * scale
                 if explicit: txt, ended = R.decode(R.prompt_ids(w, sentence(f, start), tgt))
                 else: txt, ended = R.decode(R.prompt_ids(w, sentence(f, start), start), layer, delta)
-                rows.append({"family": f["subject"], "wording": w, "start": start, "target": tgt, "text": txt,
+                rows.append({"family": label(f), "wording": w, "start": start, "target": tgt, "text": txt,
                              "hit": R.score(txt, f) == tgt, "matched": R.score(txt, f), "ended": ended})
     return rows
 
@@ -150,6 +159,17 @@ def main():
     def log(m): print(m, flush=True); logf.write(m + "\n"); logf.flush()
     t0 = time.time(); R = Runner(cfg); log(f"loaded {cfg['model_id']} rev={R.sp.revision} in {time.time()-t0:.0f}s; threads={torch.get_num_threads()}")
     cal, test, W0 = cfg["calibration"], cfg["test"], cfg["calibration_wording"]
+    if a.stage == "baseline":                                      # capability gate: explicit W0 on 00/10/01 only; 11 never prompted
+        g = cfg["baseline_gate"]; per = {}
+        for st in ["00", "10", "01"]:
+            hits = ended = 0
+            for f in cal:
+                txt, e = R.decode(R.prompt_ids(W0, sentence(f, "00"), st)); ok = R.score(txt, f) == st; hits += ok; ended += e
+                if not ok: log(f"  miss {st} {label(f)}: {txt!r}")
+            per[st] = {"hits": hits, "ended": ended, "n": len(cal)}; log(f"baseline {st}: {per[st]}")
+        passed = all(v["hits"] >= g["per_state_min"] and v["ended"] >= g["termination_min"] for v in per.values())
+        json.dump({"config": cfg["name"], "sha256": shas, "revision": R.sp.revision, "baseline": per, "passed": passed}, open(os.path.join(out_dir, "baseline_result.json"), "w"), indent=1)
+        log(f"BASELINE {'PASS' if passed else 'FAIL - KILL ARTIFACT'} ({R.decodes} decodes, {time.time()-t0:.0f}s)"); return
     H = calibrate(R, cal, W0); log(f"calibration hidden states captured: {tuple(H['00'].shape)} ({time.time()-t0:.0f}s)")
     layer, table = select_layer(R, H, cal, W0, log)
     result = {"config": cfg["name"], "sha256": shas, "revision": R.sp.revision, "layer": layer, "layer_table": table}
