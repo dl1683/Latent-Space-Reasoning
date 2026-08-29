@@ -7105,8 +7105,8 @@ word, or target voids the affected key and makes the reducer fail closed.
 
 The execution order is fixed:
 
-1. repair only Round 34a's already-reported telemetry-binding invariant and
-   obtain Tier-1 RUN-READY;
+1. use the current Round 34a Tier-1 RUN-READY core, whose fourth re-review
+   closed the telemetry-binding invariant, and do not expand that instrument;
 2. run and jointly reduce Round 34a raw A/B first, then Round 34a static A/B;
 3. run and jointly reduce 34b;
 4. run and jointly reduce 34c; and
