@@ -5,6 +5,24 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-28 — ctx_B complete: contextual-prefix completion comparator, sentinel B (audit #19 wording)
+
+`analysis_ctx_B.json` (committed analyzer, unresidualized form, 20 shuffles,
+500 bootstraps, 4476 s): on sentinel B's outer-held-out keys the higher-EDF
+cell-state ridge retained a positive held-out score difference from the
+registered `token_ids_v1` context-only pair at F4–F20 on displacement
+cosine (+0.11 to +0.18, LB ≥ 0.09), normalized error (+0.11 to +0.16),
+completion skill (+0.33 to +0.41, LB ≥ 0.12) and continuous KL (+0.24 to
++0.40, LB ≥ 0.13); 8/8 keys point-positive, no family collapse, support
+1.0. F0: cosine +0.018 (LB 0.010), continuous-KL LB below zero. Per audit
+#19 this is a descriptive predictor comparison between arms of very
+different effective df and feature class — not an identified state
+contribution, not a rejection of the contextual-response account, and not a
+live gate. Together with ctx_A it fixes the two-sentinel picture at
+unmatched capacity; Round 34a's matched-EDF core screen is the registered
+next step. Chain now running: ctxS_A/B (static form), then the parity
+check.
+
 ## 2026-08-28 — Re-contextualization #19 (2-hour step-back; audit #19 fired, unprimed)
 
 Live question unchanged: is the surviving X⊥→Δ⊥ predictability in one small
