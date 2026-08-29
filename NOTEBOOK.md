@@ -26,6 +26,22 @@ with what the registration permits next WITHOUT outcome-contingent tuning
 frozen before any 36b outcome). No tuning has been done. Artifacts committed
 (`073037f`).
 
+Adjudicated (Codex, `.codex_round36_adjudication1.md`): classification (a)
+— incomplete behavioural fit under the frozen recipe (train accuracy
+96.6–98.5%, held-out 97.0–98.3%, depth-3 93.8–96.3%, loss still falling at
+step 4,000; the 12-cell support requirement amplifies residual errors into
+1–58% support). The v1 FAIL stands permanently; licensed claim, verbatim:
+"Under the exact 4,000-step v1 recipe, the produced latent artifact did not
+supply its denizen with a fully supported operational identity or
+composable action algebra." Round 36b is preregistered (`f9dea33`) as a
+successor design, not a repair: a four-cell behaviour-fit ladder (S16,
+S64, LR64, W64), every cell run and visible, quotient gates eligible only
+at exact behavioural fit (21,184/21,184 train, 2,240/2,240 held-out),
+otherwise "FAIL — BEHAVIOR UNDERFIT; QUOTIENT INELIGIBLE"; exact fit
+followed by a quotient failure would be the first legitimate
+FIT-BUT-NON-CONGRUENT result. Configs and runner revision are hash-locked
+before any 36b outcome.
+
 ## 2026-08-29 — NLM-007 closed: audit #22 upholds the terminal stop; closing statement adopted verbatim
 
 NLM-007 is closed under the program’s terminal allocation rule, not by a scientific null.
