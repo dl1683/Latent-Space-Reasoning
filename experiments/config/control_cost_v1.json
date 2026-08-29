@@ -1,0 +1,36 @@
+{
+ "name": "control_cost_v1",
+ "purpose": "Control cost = minimum model-scaled energy of a one-time block-12 residual field broadcast over the prefix span needed to move a three-probe response signature to the opposite class; first-order minimum-energy solve, fixed alpha grid, unoptimized transfer signature B, direct lexical-gradient control, random fields. Codex direction round 9 (2026-08-29), locked before any result.",
+ "model_id": "Qwen/Qwen3-1.7B-Base",
+ "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
+ "layer": 12,
+ "anchor": " The animal",
+ "contexts_from": "experiments/config/interchange_v2.json",
+ "probes_A": [
+  [" makes a meowing sound", " makes a barking sound"],
+  [" has babies called kittens", " has babies called puppies"],
+  [" belongs to the feline family", " belongs to the canine family"]
+ ],
+ "probes_B": [
+  [" is commonly kept to catch mice", " is commonly trained to guard homes"],
+  [" usually uses a litter box", " usually goes outside on a leash"],
+  [" can retract its claws", " cannot fully retract its claws"]
+ ],
+ "positive_class": "cat",
+ "sigma_floor_fraction": 0.1,
+ "rcond": 1e-6,
+ "alphas": [0.0, 0.25, 0.5, 1.0, 2.0, 4.0],
+ "realize": {"movement_min": 0.5, "flips_min": 2},
+ "within_class_realize_fraction": 0.5,
+ "n_random": 20,
+ "hard_wall_minutes": 75,
+ "gates": {
+  "native_total_min": 20, "native_per_class_min": 9,
+  "local_realized_min": 6, "local_per_direction_min": 3, "spearman_min": 0.7, "ratio_range": [0.5, 2.0],
+  "cross_gt_within_min": 7, "cross_within_ratio_min": 2.0, "per_direction_positive_min": 3,
+  "shared_alpha_max": 2.0, "shared_attain_per_direction_min": 3, "shared_cost_factor_max": 2.0, "shared_B_move_min": 0.3, "shared_B_flip_min": 2, "shared_B_per_direction_min": 3,
+  "lex_B_advantage_median_min": 0.3, "lex_positive_min": 7, "lex_per_direction_min": 3, "lex_perm_p_max": 0.05,
+  "random_p_max": 0.0476,
+  "asymmetry_ratio_min": 1.5
+ }
+}
