@@ -5,6 +5,26 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Round 34b result: INCONCLUSIVE in both sentinels — the terminal rung
+
+`analysis_ctxoverlap_A.json` (444 s) and `analysis_ctxoverlap_B.json`
+(595 s), static estimand, producers run-ready. Every F4–F20 layer is
+INCONCLUSIVE in both sentinels. Sentinel A (block-first means, F4/F8/F12/
+F20): P_static→Δ alone reaches cosine 0.49/0.43/0.46/0.58; the token-context
+ridge alone 0.51/0.47/0.50/0.62; the nested P+C 0.51/0.46/0.49/0.61 — so
+P+C − P ≈ +0.02 to +0.04, which fails the redundancy STOP (needs ≤ 0.02 with
+crossed UB < 0.02) — while C⊥→Δ⊥ keeps only ≈ +0.03 to +0.10 cosine by
+block, which fails the retention rule. Reading under the registered rules:
+the registered raw context field is neither P_static-redundant nor clearly
+retaining residual signal in this design; neither the "by construction"
+nor the "fitting-artefact" account is licensed. Under the continuation
+ruling an INCONCLUSIVE rung is an allocation stop: the NLM-007 terminal
+ladder ends here (pending the joint artifact, whose reducer currently
+rejects the valid producer artifacts on a rank/EDF telemetry bound — a
+bounded reducer repair is with Codex; producers untouched). Round 34c does
+not run. NLM-007's closing statement is drafted after the joint and the
+next fresh audit.
+
 ## 2026-08-29 — Audit #21 adversarial correction: both 34a verdicts upheld, claim boundaries tightened
 
 The four float32 evidence sidecars replay exactly through the registered reduction and decision code. RAW and STATIC both return `CONTINUE` at F4/F8/F12/F20 in both sentinels, with 8/8 jointly positive keys at every eligible sentinel-layer. F0 is correctly `INCONCLUSIVE` and diagnostic because at least one required context-EDF target exceeds the selected F0 state EDF, making a downward match undefined; F0 is excluded from the ladder gate.
