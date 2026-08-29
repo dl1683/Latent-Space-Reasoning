@@ -26,7 +26,10 @@ perfect latent) — the gate may be measuring confidence, not structure;
 (2) the exact-fit eligibility rule could be a post-hoc rescue, and exact
 fit could let a lookup-table-like fit pass; (3) the opposite under-read:
 0/176 cross-seed action-table agreement may mean there is no composable
-structure at all even where behaviour is right. Foundational thread
+structure at all even where behaviour is right (corrected by audit #23: the
+stored 0/176 is an all-or-none whole-table gate, not a cell count — 11/176
+cells identical at the registered thresholds, 112/176 at p>0.5, 175/176 by
+majority). Foundational thread
 advanced: the constructive program now has a real falsifier loop
 (artifact → FAIL → adjudicated cause → preregistered successor), which is
 what the constitution demanded and NLM-007 never had. Audit #23 (fired, unprimed) returned: valid registered FAIL; behaviour-, calibration- and exactness-confounded; substantial but imperfect operational structure remains (a confidence-free replay at p>0.5 recovers 84.1-98.9% of the one-step action table while every exact gate still fails); the licensed sentence is REPLACED, the '0/176' phrase is withdrawn as misleading bookkeeping, and Round 36b's status logic is NOT READY AS WORDED (three-stage decision required). Replacement paragraph, sections 4-6 and the final verdict follow verbatim.
@@ -156,7 +159,8 @@ evidence 11.0 s; wall 900 s); the separate `reduce` returned FAIL on every
 gate — quotient availability, quotient well-definedness, toggle involution,
 swap/toggle table, held-out depth-2 and depth-3 closure, interchangeability,
 action-table truth (0/5 seeds; 14–56% of 176 cells), cross-seed action table
-(0/176 identical). Signatures carry many unsupported ("?") responses.
+(0/176 identical — corrected by audit #23: an all-or-none whole-table gate,
+not a cell count). Signatures carry many unsupported ("?") responses.
 Registered meaning: this training recipe did not produce a well-defined
 operational quotient in this latent space — a constructive hole here, not a
 hostile hole in general. The obvious alternative reading is the boring one:
@@ -176,7 +180,9 @@ step 4,000; the 12-cell support requirement amplifies residual errors into
 1–58% support). The v1 FAIL stands permanently; licensed claim, verbatim:
 "Under the exact 4,000-step v1 recipe, the produced latent artifact did not
 supply its denizen with a fully supported operational identity or
-composable action algebra." Round 36b is preregistered (`f9dea33`) as a
+composable action algebra." (Corrected by audit #23: this sentence is
+REPLACED by the audit #23 paragraph in the entry above — say: failed to
+certify the exact confidence-qualified algebra.) Round 36b is preregistered (`f9dea33`) as a
 successor design, not a repair: a four-cell behaviour-fit ladder (S16,
 S64, LR64, W64), every cell run and visible, quotient gates eligible only
 at exact behavioural fit (21,184/21,184 train, 2,240/2,240 held-out),
