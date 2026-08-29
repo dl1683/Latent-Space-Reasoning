@@ -16,7 +16,7 @@ What holds: the adjudicated four-cell table; ctx_A/ctx_B (descriptive
 higher-EDF predictor comparisons, audit #19 wording); ctxS_A. What ctxS_A
 reframes: on the residualized relation the token-context arms have nothing
 left (cos ≈ 0.05) while the residual ridge keeps cos ≈ 0.6. Two readings
-are live and audit #20 is asked to choose: (i) "by construction" — P_static
+are live and audit #20 is asked to choose (corrected by audit #20: (i) withdrawn as an underclaim, (ii)'s "re-measuring presentation" withdrawn as a variance-share reading; the ruling is "highly non-robust to P_static residualization, P_static-aligned in this fitted design"): (i) "by construction" — P_static
 and the token-id field encode the same template metadata, so the collapse
 is expected and says little; (ii) the collapse is informative — it shows
 the raw-relation contextual comparators were largely re-measuring
@@ -221,9 +221,14 @@ strongest contextual arm: cosine +0.51 to +0.58 (LB ≥ 0.46), nerr +0.17 to
 0.13); 8/8 keys, support 1.0. F0: cosine +0.26 but nerr/skill/KL margins
 negative (structural regime, as before). Reading (audit #19 discipline): the
 collapse of the contextual arms is largely by construction — P_static is
-built from the same template metadata the token-id field encodes — so this
-is a descriptive comparison showing the residual X⊥ carries held-out
-predictive information beyond template metadata; it is not an identified
+built from the same template metadata the token-id field encodes (corrected
+by audit #20: withdrawn as an underclaim; the two are distinct feature
+spaces and the collapse is an empirical non-robustness to P_static
+residualization) — so this is a descriptive comparison showing the residual
+X⊥ carries held-out predictive information beyond template metadata
+(corrected by audit #20: withdrawn as an overclaim; say "beyond the
+registered P_static projection and this fixed token_ids_v1 context field");
+it is not an identified
 state contribution and not capacity-matched (the residual ridge still has
 far more effective df than a near-null context arm). It is the static-form
 input the parked consequence loader and the Round 34a static screen were
