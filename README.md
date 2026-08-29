@@ -10,6 +10,8 @@ infer, prove); the native constructs may look nothing like their classical
 counterparts.
 
 - Current state: [STATE.md](STATE.md) · running log: [NOTEBOOK.md](NOTEBOOK.md)
+
+Status 2026-08-29: the LM residual-stream line (NLM-007) is closed under the program's terminal allocation rule — see the closing statement in STATE.md; the constructive program is Round 36 (minimal operational-quotient world, `theory/EXPERIMENTS.md`).
 - Theory: [axioms](theory/AXIOMS.md) ·
   [preregistrations](theory/EXPERIMENTS.md) · [dialogue](theory/dialogue/)
 - Experiments: [experiments/EXPERIMENTS.md](experiments/EXPERIMENTS.md), `experiments/ledger.jsonl`

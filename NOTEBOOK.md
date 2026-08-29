@@ -5,6 +5,58 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — NLM-007 closed: audit #22 upholds the terminal stop; closing statement adopted verbatim
+
+NLM-007 is closed under the program’s terminal allocation rule, not by a scientific null.
+
+Within one pinned decoder and authored population, the correlated A/B punctuation sentinels established bounded F4–F20 condition robustness: the qualified four-cell ridge table retained X-linked predictive separation across held-out blocks and words. The raw token-context comparator was highly non-robust to P_static residualization and therefore P_static-aligned in this fitted design. Round 34a found a small but systematic raw separation surviving the registered EDF match (+0.04–0.08 cosine), while the larger static separation was not eliminated by that match within the fixed feature classes. Round 34b did not resolve the interpretation: P+C improved on P by roughly +0.02–0.04, defeating the redundancy STOP, but C_perp→Δ_perp failed the joint retention gate; every eligible layer and the joint reducer were INCONCLUSIVE. Under the pre-adopted ruling, that is an allocation stop, so Round 34c does not run.
+
+This line did not identify operational state, a denizen-usable or native law, composition, a representation-level hostile hole, or independent replication. It leaves frozen captures; raw/static, matched-EDF, and partial-overlap analyzer modes; hash-bound cell sidecars; block-first held-out evidence; and fail-closed producer/reducer discipline.
+
+Round 36 now asks the constructive question directly: can behavior alone support a well-defined operational quotient and composable action table in the minimal 16-state world?
+
+#### Audit #22 — Round 34b wording corrections, EDF-correction ruling, and Round 36 handoff (verbatim)
+
+### Round 34b interpretation
+
+The numerical shorthand needs slight tightening:
+
+- `P+C − P` cosine is A `+0.0178–+0.0373` and B `+0.0238–+0.0355`. A/F4 falls just below the point threshold, but its upper interval exceeds `0.02`; the other means exceed `0.02`. Thus the redundancy STOP fails.
+- Residual-context cosine is approximately `+0.019–+0.089`, not quite `+0.03–+0.10`.
+- Residual normalized-error gain is negative for every ridge/kernel, sentinel, and F4–F20 cell. Clustered key/block requirements also fail. Thus retention fails.
+
+The positive `P+C − P` increments are evidence **against the registered strict-redundancy account**, but not evidence for operational state: `P+C` has greater capacity, while the residual partial relation fails its joint gate.
+
+### EDF correction
+
+The correction is mathematically justified. The producer sums all nonnegative eigenvalues for EDF but defines rank only above tolerance; therefore EDF can exceed numerical rank by a small sub-tolerance tail. The old fit bound is violated in eight selected-state fits, all at excluded F0, by only `2.93–2.94×10⁻⁵`. No eligible F4–F20 fit violates it.
+
+Producer JSON, sidecars, reductions, and gate functions were unchanged. Strictly, the old joint reducer had no verdict—it was `INCOMPLETE`. The repair changed reducer status to `COMPLETE`, while preserving the already-recorded sentinel decisions and recomputing the same joint `INCONCLUSIVE`.
+
+Do not call the repair literally outcome-blind: it was triggered after seeing the artifacts. The defensible wording is **post-outcome but not outcome-selective**. Its formula follows the pre-existing producer definition, applies symmetrically, and affects only diagnostic F0 telemetry.
+
+## Overclaim and underclaim audit
+
+- Round 34a raw is a genuine registered survival, but small: capacity matching removed most of the unmatched gap. Its lower bounds clear zero, not uniformly `0.02`.
+- Round 34a static supports only “not eliminated by the registered EDF match within these fixed feature classes.” It does not prove capacity independence or feature adequacy.
+- `ctxS` supports high non-robustness of the raw context comparator to `P_static` residualization—hence `P_static` alignment in this fitted design—not presentation share, mediation, or causal explanation.
+- The four-cell table supports qualified within-decoder condition robustness. It remains correlated, same-population evidence; B-score4’s KL-rank/low-rank qualification and F0’s model-class sensitivity remain.
+- Closing now is correct under the prospectively adopted allocation constitution. Scientifically, it deliberately leaves the item-by-carrier fingerprint/local-Jacobian explanation unresolved. Round 34c might have clarified that account, but the constitution explicitly forbids escalating an `INCONCLUSIVE` rung.
+
+One durability defect remains: `.codex_audit21.md` is only a 327-byte self-referential completion stub. Audit #21’s substantive text survives in `NOTEBOOK.md`, `STATE.md`, and the ledger, but the named output itself should not be treated as evidence.
+
+## Round 36 handoff
+
+**Tunnel vision:** NLM-007 remained scientifically tunnel-visioned around increasingly refined readers of one punctuation relation. Closing it is correct.
+
+**Strongest alternative:** Round 36 could fit the finite response table without organizing a composable latent world. Also, its depth-1 signatures distinguish all 16 simulator states, so the oracle quotient has singleton hidden-state classes. A PASS demonstrates operational recovery and congruent action maps—not compression into a nontrivial quotient.
+
+**What should run:** first close Round 36 review #1’s CLI, wall-metadata, and fixture-isolation blockers. Then run the registered reducer fixture. After it returns `PASS / INVALID / INVALID / FAIL` on the exact and three mutation cases, run the exact five-seed CPU producer and separate reducer—no pilot or seed replacement.
+
+The first scientific falsifier is action descent on rolled representatives: if any two supported points with the same `Σ₁` signature reach different or unsupported quotient classes under one primitive action, the quotient action is not well-defined. Held-out H2/H3 interchangeability should follow immediately to attack the response-memorization alternative.
+
+Blackboard entries e673–e683 were recorded; convergence reached 100%, and synthesis was read. This audit edited no project source/result file and made no commit.
+
 ## 2026-08-29 — Round 34b result: INCONCLUSIVE in both sentinels — the terminal rung
 
 `analysis_ctxoverlap_A.json` (444 s) and `analysis_ctxoverlap_B.json`
