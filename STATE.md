@@ -1832,3 +1832,27 @@ Round 34a raw and static remain separate required screens. Raw directly stages t
 `ctxS_B` mechanical margins (ledger `nlm007_ctxprefix_ctxS_B`, `scored_pending_adjudication`; 4784 s; same audit #20 wording): sentinel B mirrors sentinel A on the `P_static`-residualized relation. At F4–F20 the registered `token_ids_v1` ridge/kernel falls to held-out cosine approximately 0.04–0.08 and normalized error approximately 1.00, while the residual `X_perp` ridge keeps cosine approximately 0.52–0.58 and normalized error 0.82–0.86; residual ridge minus the strongest contextual arm is cosine +0.46 to +0.51 (crossed lower bound ≥ 0.42), normalized error +0.14 to +0.19, completion skill +0.34 to +0.45, continuous KL +0.24 to +0.41; 8/8 keys, support 1.0, no family collapse. At F0 the cosine margin is positive but the normalized-error, skill, and continuous-KL margins are negative. Licensed reading, verbatim from audit #20: raw context performance is highly non-robust to the registered `P_static` residualization and therefore `P_static`-aligned in this fitted design; not identified as presentation; not by construction; not a state contribution; the residual predictor separation is descriptive and unmatched in capacity.
 
 Round 34a is RUN-READY at commit `6b93ff1` (Tier-1 re-review #3's reducer-binding blocker — exact binding of candidate `state_match.rank`, `rank_tolerance`, and `retained_columns` to `selected_state` — was closed in the fourth round; ledger `nlm007_round34a_run_ready`). Both Round 34a estimands run: six runs (`ctxcapA_raw`, `ctxcapB_raw`, `ctxcap_raw_joint`, `ctxcapA_static`, `ctxcapB_static`, `ctxcap_static_joint`) are queued behind the parity check (`ctxS_B` complete). Round 34b (the `P`/`C` partial-overlap screen) and Round 34c (the item-embedding-by-`P_static` X-free comparator) are preregistered (`3b49321`, `ff69d82`), implemented on the main analyzer, unrun, and under Tier-1 repair (review #1 NOT-READY on four items); they run after the Round 34a screens and before the full Round 34, which stays held; Round 33 stays parked. Round 35 (typed truth-evaluable world) is preregistered docs-only at `c74bfab` and authors nothing until the 34a/34b/34c ladder resolves.
+
+## Program continuation ruling (2026-08-29, Codex; adopted verbatim — supersedes the queue above)
+
+NLM-007 is STOPPED as an open-ended research program (infrastructure drift by the
+constitution's tripwire: measurement/infrastructure units 6 : artifact-facing units 1).
+It receives one terminal closeout ladder and then closes regardless of outcome:
+Round 34a raw (run once) → Round 34a static (run once, separately; no cross-estimand
+pooling) → Round 34b (only if both 34a estimands return CONTINUE and its final bounded
+repair is RUN-READY without scope expansion) → Round 34c (only after a 34b CONTINUE
+under the same condition). Cut: full six-arm Round 34; the Round 33 consequence
+instrument (branch `conseq-instrument` archived, not deleted); the parity check as a
+gate (completed outputs preserved); the random-weight architecture null; a second
+decoder. The first STOP/MOOT/REDUNDANT or INCONCLUSIVE rung ends the ladder; an
+all-CONTINUE ladder records a narrow measurement claim ("the predictor separation
+survived these registered controls") and NLM-007 closes anyway. Round 35 is the
+right direction but the wrong first artifact: it is retained as a requirements
+envelope. Next constructive artifact (design gate open): a minimal operational
+quotient / bisimulation world — a tiny latent transition system on the 16 four-bit
+states with toggle/swap/no-op, identity defined solely by equality of future response
+signatures under allowed actions; falsifier: quotient-equivalent states cease to be
+interchangeable on held-out action sequences, or actions do not descend to
+well-defined maps on the quotient. Governance: mandatory producer/reducer separation —
+a frozen non-claiming producer receives execution readiness independently; claim
+readiness belongs to a separate declarative fail-closed reducer.

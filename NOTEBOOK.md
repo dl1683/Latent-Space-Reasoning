@@ -21,6 +21,133 @@ asked exactly that, portfolio-level, with Round 35 (typed truth-evaluable
 world) on the table as the constructive alternative and the audit #19/#20
 alternatives (random-weight architecture null; item-by-context null) as the
 cheap moot-makers. Its answer is recorded verbatim below when it lands.
+
+Its answer landed and is adopted as the Codex program ruling (verbatim
+below): STOP NLM-007 as an open-ended program — infrastructure drift by the
+constitution's own tripwire (measurement:artifact ≥ 6:1) — and run only a
+terminal closeout ladder: Round 34a raw and static once; 34b then 34c only
+on CONTINUE and only if their final bounded repair is RUN-READY; full Round
+34, Round 33 (branch archived), the parity gate, the random-weight null and
+a second decoder are cut. Any INCONCLUSIVE rung is an allocation stop. Round
+35 becomes a requirements envelope; the next artifact is a minimal
+operational-quotient / bisimulation world on the 16 four-bit states (design
+gate opened). Governance: mandatory producer/reducer separation.
+
+#### Program continuation ruling (Codex, verbatim)
+
+# Program continuation ruling — NLM-007
+
+## Executive ruling
+
+**STOP NLM-007 as an open-ended research program.** It is in infrastructure drift under the project constitution.
+
+Authorize only a tightly bounded **terminal adjudication** using the already-built cheap screens. Regardless of whether those screens return STOP, INCONCLUSIVE, or CONTINUE, NLM-007 then closes. A CONTINUE result may earn a narrow measurement claim; it does not justify full Round 34, Round 33, another decoder, or further work on this punctuation relation.
+
+The decisive issue is not that NLM-007 failed. It is that it has already yielded its transferable result—bounded within-decoder condition robustness plus several instrument boundaries—while further work increasingly measures the measurement rather than building the README’s stated artifact: a native mathematics of latent spaces ([README.md](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/README.md:3)).
+
+## 1. Distance-from-claim accounting
+
+The constitution defines distance 0 as the central artifact, 1 as something it directly needs, 2 as a measurement, and 3+ as measurement infrastructure. It requires a raise above 2:1 and a halt above 5:1 ([CLAUDE.md](/C:/Users/devan/.claude/CLAUDE.md:143)).
+
+| Workstream | Distance | Reason |
+|---|---:|---|
+| SVD telemetry gate | 3+ | Numerical telemetry and backend validation for one candidate inside an already secondary measurement endpoint. |
+| Round 33 consequence instrument | 3+ | Implementation, compatibility, provenance, parity, wall, and reducer machinery for an unrun measurement. The eventual run would be distance 2. |
+| Full Round 34 | 3+ | Six-arm measurement apparatus and custom claiming reducer; no outcome exists. |
+| Round 34a | 3+ so far | Design, implementation, evidence sidecars, reducer, fixtures, and four reviews. Its queued run would be distance 2. |
+| Round 34b | 3+ so far | Custom partial-overlap measurement apparatus and reviews. |
+| Round 34c | 3+ so far | Custom item/context comparator, PCA provenance, EDF telemetry, reducer, and reviews. |
+| Round 35 docs-only design | 1, generously | Directly specifies a possible constructive artifact, but nothing runnable exists and no population has been authored. |
+| Central runnable mathematics artifact | 0 units | No native law, operational quotient, composition law, new axiom, or representation-level hostile hole was produced. |
+
+Conservative workstream ratio:
+
+- Measurement/infrastructure units: **6**
+- Artifact-facing units, counting the docs-only Round 35 design generously: **1**
+- Ratio: **6:1**
+
+If “artifact” means the constitution’s runnable central artifact, the denominator is zero and the ratio is unbounded. If 34b/34c are combined as one unit, the parity instrument or completed contextual measurements immediately restore a ratio above 5:1. This is not sensitive to reasonable unitization.
+
+Therefore the program is **in infrastructure drift by definition**. The ledger’s assertion that “the artifact here IS the measured relation” is constitutionally invalid: rule 6 says the heartbeat must anchor on the README’s central bet, not the current cycle’s internal frame.
+
+## 2. Should NLM-007 continue?
+
+### Strongest STOP case
+
+NLM-007 has already produced:
+
+- A bounded result: within one decoder and authored population, a residual ridge remains predictive under several conditions.
+- Withdrawal of the stronger affine-law reading once identity plus shared displacement was tested.
+- Context comparisons still confounded by capacity and feature adequacy.
+- No operational state, denizen-usable quotient, composition, native law, new axiom, or representation-level hostile hole.
+- Proven instrument problems: an insensitive ordering readout, SVD fragility, reducer/provenance complexity, and construct ambiguity.
+- Repeated review cycles increasingly concerned with hashes, schema mirrors, telemetry binding, evidence packing, wall semantics, and custom reducers.
+
+Audits #19 and #20 independently call the program tunnel-visioned ([audit #19](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/.codex_audit19.md:228), [audit #20](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/.codex_audit20.md:379)). The evidence discipline prevented overclaims, but further reducer perfection does not build the denizen’s mathematics.
+
+### Strongest CONTINUE case
+
+The 34a/34b/34c sequence is cheap relative to prior work, uses existing captures, and targets the strongest live alternatives:
+
+- 34a: capacity sensitivity.
+- 34b: `P_static`/context redundancy or projection artefact.
+- 34c: omitted item-by-context features.
+
+A terminal MOOT or REDUNDANT verdict would close the relation cleanly. Survival would justify the narrow statement that the predictor separation survived these registered controls.
+
+### Rule
+
+**NLM-007 does not continue as a program. It receives one terminal closeout ladder.** Even an all-CONTINUE ladder ends with a bounded measurement claim and closure; it does not reopen the broader queue.
+
+An INCONCLUSIVE result remains scientifically inconclusive, but it is an allocation stop. It must not trigger a more elaborate instrument.
+
+## 3. Exact queue ruling
+
+| Item | Ruling | Reason |
+|---|---|---|
+| Round 34a raw | **RUN once** | Already RUN-READY; cheapest direct adjudication of the historical raw comparison. |
+| Round 34a static | **RUN once, separately** | Settles the distinct residualized relation; no cross-estimand pooling or rescue. |
+| Round 34b | **CONDITIONAL RUN** | Run only if both 34a estimands return CONTINUE and the current final bounded repair receives RUN-READY without scope expansion. Otherwise cut. |
+| Round 34c | **CONDITIONAL RUN** | Run only after a 34b CONTINUE and the same final readiness condition; it tests the strongest omitted-feature account. |
+| Full Round 34 | **CUT** | Over-bundled, farther from the central artifact, and cannot upgrade survival into operational state. |
+| Round 33 consequence | **CUT / archive parked branch** | Four-review instrument debt; even a pass licenses only frozen-tail predictive persistence. |
+| Parity check | **CUT as a gate** | Preserve any completed output, but do not restart, repair, or delay 34a for it; it served the now-cut consequence branch. |
+| Random-weight architecture null | **CUT from NLM-007** | Another diagnostic of the same ambiguous relation; it cannot produce a native construct. Reuse the idea inside a future constructive world if needed. |
+| Second decoder | **CUT** | Replicating an unresolved construct does not resolve the construct. Reconsider only after a behaviorally valid native-world artifact exists. |
+
+After the first STOP/MOOT/REDUNDANT or INCONCLUSIVE rung, stop the ladder. If all rungs return CONTINUE, record the narrow result and close NLM-007 anyway.
+
+## 4. Round 35 and better constructive programs
+
+Round 35 is the **right direction but the wrong first artifact**. It supplies known state, moves, consequences, and composition, but the registered design already combines linguistic authoring, adversarial approval, tokenization parity, two surface systems, two query families, matched-EDF ladders, causal patches, transfer, composition, and a 20-hour CPU envelope ([Round 35](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/theory/EXPERIMENTS.md:7427)). That risks reproducing infrastructure-first drift before the smallest runnable world exists.
+
+Use the Round 35 document as a requirements envelope, but build a reduced first artifact. Three concrete alternatives are:
+
+1. **Minimal operational quotient / bisimulation world.**  
+   Train a tiny latent transition system on the 16 four-bit states and fixed toggle/swap/no-op actions. Define identity solely by equality of future response signatures under allowed actions.  
+   **Falsifier:** quotient-equivalent states cease to be interchangeable on held-out action sequences, or actions do not descend to well-defined maps on the quotient.
+
+2. **Cross-seed gauge-invariant action algebra.**  
+   Train several independent latent realizations of the same finite world and recover the transition semigroup without coordinate alignment.  
+   **Falsifier:** the purported identity classes or operation/composition table changes with seed or chart despite identical behavioral truth tables. That would show the “law” is representation-specific, not native.
+
+3. **Denizen-available controllability and closure graph.**  
+   Give the model a small declared intervention set, construct the reachable-state graph from behavioral response signatures, and test held-out two- and three-step closure.  
+   **Falsifier:** single-step moves cannot be composed into stable equivalence classes, or predicted reachable states cannot causally enact the registered consequences. That would be a genuine local composition/controllability hole.
+
+My recommendation is alternative 1 first. It is the smallest runnable object that can falsify the central bet. Add natural-language transfer, elaborate X-free ladders, and multiple query families only after the quotient and action table work at all.
+
+## 5. Governance ruling
+
+**Yes, review has become a bottleneck—but the deeper cause is the coupling of scientific producers to bespoke claiming reducers.** Reviewers were finding real defects, so simply reviewing less would weaken the gates.
+
+The single most useful change is:
+
+> **Mandatory producer/reducer separation.** A frozen, non-claiming producer receives execution readiness independently. Claim readiness belongs to a separate declarative, fail-closed reducer. Reducer defects may block interpretation, but they do not repeatedly rewrite or block an otherwise sound producer.
+
+Audit #19 already demonstrated the value of this split ([audit #19](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/.codex_audit19.md:192)). It preserves every evidence gate—no claim is issued before reducer validation—while eliminating the dominant producer/reducer review-loop coupling.
+
+Blackboard findings were recorded; convergence returned 100% with no open signals or disputes, and synthesis was read before this ruling. No project source or tracked file was edited, and no commit was made.
 Alternatives held live otherwise unchanged. Foundational thread advanced:
 program-level continuation review as a standing artifact, not an implicit
 assumption.
