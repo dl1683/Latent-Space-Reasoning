@@ -5,6 +5,26 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Re-contextualization #22 (2-hour step-back; audit skipped — still no new claim)
+
+No Round 34a outcome exists yet (the parity screens are on their last
+layer), Round 34b/34c are in repair round 2 of 3, and no new result has
+been claimed since audit #20; the fresh auditor is held for the first 34a
+outcome. Live question unchanged; direction unchanged (cheap capacity /
+feature-adequacy ladder first, expensive instruments held or parked).
+
+What this pause is used for: the one review the constitution requires per
+cycle that has NOT been fired explicitly during this long instrument phase
+— "should this program continue at all, and is this the highest-leverage
+thing to be doing?" (global CLAUDE.md §2.7 rule 5). A fresh Codex session is
+asked exactly that, portfolio-level, with Round 35 (typed truth-evaluable
+world) on the table as the constructive alternative and the audit #19/#20
+alternatives (random-weight architecture null; item-by-context null) as the
+cheap moot-makers. Its answer is recorded verbatim below when it lands.
+Alternatives held live otherwise unchanged. Foundational thread advanced:
+program-level continuation review as a standing artifact, not an implicit
+assumption.
+
 ## 2026-08-29 — Re-contextualization #21 (2-hour step-back; audit skipped — no new claim since audit #20)
 
 Audit: the only new artifact since audit #20 is ctxS_B, a replicate of
