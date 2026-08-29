@@ -38,6 +38,12 @@ ROUND34_ENDPOINTS = ("cos", "nerr", "skill", "kl", "klrank")
 ROUND34_CONFIRMATORY = ("cos", "skill", "kl")                         # Audit #19: paired raw continuous-KL is confirmatory; KL-rank is diagnostic
 ROUND34_LAYERS = ("F4", "F8", "F12", "F20")
 ROUND34_WALL_SECONDS = 4 * 60 * 60
+
+
+def _f34(v, spec):
+    """Progress-print formatter: None / non-finite cells print as 'nan' instead of crashing a producer."""
+    try: return format(float(v), spec)
+    except (TypeError, ValueError): return "nan"
 ROUND34A_CANDIDATES = ("token_ids_v1_ridge_selected_edf", "token_ids_v1_ridge_rank47", "token_ids_v1_kernel_selected_edf", "token_ids_v1_kernel_rank48")
 ROUND34A_ENDPOINTS = ("cos", "nerr")
 ROUND34A_WALL_SECONDS = 90 * 60
@@ -1762,7 +1768,7 @@ def round34b_overlap_analysis(a, cfg, run_dir, results, results_binding34, ZX, Z
                 for m in ROUND34B_EVIDENCE_MEASURES: layer_cells[m][outer_key] = masked[m]
                 layer_telemetry[outer_key] = telemetry; fold_out[outer_key] = {"context_capacity": {"telemetry": telemetry, "key_record": record, "cell_means": points}}
                 results["pairs"][layer_name] = {"folds": fold_out, "context_capacity": {"status": "RUNNING/NON-CLAIMING", "completed_outer_keys": list(fold_out)}}; checkpoint()
-                print(f"   [{outer_key}] raw P+C-P cos={points['raw_pc_cos']:+.3f}; C_perp ridge/kernel cos={points['residual_ridge_cos']:+.3f}/{points['residual_kernel_cos']:+.3f}; support={record['common_support']:.3f} ({results['seconds']:.0f}s)", flush=True)
+                print(f"   [{outer_key}] raw P+C-P cos={_f34(points['raw_pc_cos'], '+.3f')}; C_perp ridge/kernel cos={_f34(points['residual_ridge_cos'], '+.3f')}/{_f34(points['residual_kernel_cos'], '+.3f')}; support={_f34(record['common_support'], '.3f')} ({results['seconds']:.0f}s)", flush=True)
                 deadline(layer_name, outer_key, "next_outer_key")
         def strata_for_fold(fold_key, width):
             groups = [np.asarray(g, dtype=int) for g in word_strata[str(int(fold_key))]]; assert sorted(np.concatenate(groups).tolist()) == list(range(width)); return groups
@@ -1872,7 +1878,7 @@ def round34c_itemctx_analysis(a, cfg, run_dir, results, results_binding34, ZX, Z
                 for m in ROUND34C_EVIDENCE_MEASURES: layer_cells[m][outer_key] = masked[m]
                 layer_telemetry[outer_key] = telemetry; fold_out[outer_key] = {"context_capacity": {"telemetry": telemetry, "key_record": record, "cell_means": points}}
                 results["pairs"][layer_name] = {"folds": fold_out, "context_capacity": {"status": "RUNNING/NON-CLAIMING", "completed_outer_keys": list(fold_out)}}; checkpoint()
-                print(f"   [{outer_key}] itemctx df={meta_item['training_edf']:.2f}; state matched df={match.get('achieved_edf')}; margins cos/nerr={points['margin_cos']:+.3f}/{points['margin_nerr']:+.3f}; support={record['common_support']:.3f} ({results['seconds']:.0f}s)", flush=True)
+                print(f"   [{outer_key}] itemctx df={meta_item['training_edf']:.2f}; state matched df={match.get('achieved_edf')}; margins cos/nerr={_f34(points['margin_cos'], '+.3f')}/{_f34(points['margin_nerr'], '+.3f')}; support={_f34(record['common_support'], '.3f')} ({results['seconds']:.0f}s)", flush=True)
                 deadline(layer_name, outer_key, "next_outer_key")
         def strata_for_fold(fold_key, width):
             groups = [np.asarray(g, dtype=int) for g in word_strata[str(int(fold_key))]]; assert sorted(np.concatenate(groups).tolist()) == list(range(width)); return groups
