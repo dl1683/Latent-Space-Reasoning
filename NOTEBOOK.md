@@ -5,6 +5,12 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — control_cost_v1 (locked): FAIL — the first-order minimum-energy law does not hold; construction closed
+
+Native A validity passed (23/24); native B validity failed (17/24), voiding every B-based gate. The local cost law failed: only 1 of 8 prompt-specific first-order fields moved a held-out context to the opposite-class target within α ≤ 4 (7 censored); the predicted cost ranks realized cost (Spearman 0.76) but under-predicts it more than fourfold — the model's response to a uniform span field is strongly nonlinear at the magnitudes needed. Cross-vs-within passed formally (8/8) but on mostly censored costs, so it is not evidence. Shared calibration fields attained the A target in half the recipients per direction at α = 2; on the (void) B readout the semantic field beat the lexical-gradient field in 7/8 but norm-matched random fields moved B just as much (random p = 0.14). Asymmetry: cat→dog cheaper than dog→cat (log ratio −0.62), diagnostic only. Status by the pre-declared ladder: FAIL — FIXED BLOCK-12 SPAN CONTROL CONSTRUCTION; every status closes this construction.
+
+Reading (mine, pending audit #31): the actuator and the linear cost model were the wrong objects — a uniform field over 23 positions is an inefficient move, and the Jacobian at v = 0 does not predict what happens at the norms required. Per audit #30's ranked list, an apparatus-only negative here is the point to stop and reconsider the latent-space substrate rather than open another construction; that is a program-level decision and is being put to Codex (round 10) and to the user.
+
 ## 2026-08-29 — Audit #30 on interchange_v2 (fresh, unprimed; verbatim): FAIL upheld; my 'distributed state / probes read the prefix via attention' reading WITHDRAWN; third-state 'toward neutral' reading WRONG
 
 Correction to the interchange_v2 entry below: the null does not localize class information; same-state PASS is non-discriminating (all arms within τ); horse donors moved dog recipients farther dogward, not toward neutral; the sign-flip p is a sensitivity, not an exact test; decodes were not implemented.
