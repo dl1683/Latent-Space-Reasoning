@@ -38,6 +38,7 @@ SCHEMA_VERDICT = "round36-operational-quotient-verdict-v1"
 REGISTRATION_ID = "round36-minimal-operational-quotient-v1"
 ROUND36B_REGISTRATION_ID = "round36b-behavior-fit-ladder-v1"
 ROUND36C_REGISTRATION_ID = "round36c-quotient-trained-positive-control-v1"
+ROUND36D_REGISTRATION_ID = "round36d-frozen-target-head-only-positive-control-v1"
 POSITIVE_CONTROL_SCOPE = "POSITIVE-CONTROL"
 PASS_STATUS = "PASS — MINIMAL OPERATIONAL QUOTIENT WORLD"
 UNDERFIT_STATUS = "FAIL — BEHAVIOR UNDERFIT; QUOTIENT INELIGIBLE"
@@ -51,6 +52,43 @@ DIAGNOSTIC_LABEL = (
     "DIAGNOSTIC ONLY — p>0.5; cannot alter the primary 0.10/0.90 status"
 )
 ROUND36B_DEPTH_TRACE_INTERVAL = 1000
+ROUND36D_TRACE_INTERVAL = 250
+ROUND36D_OPTIMIZED_PARAMETERS = [
+    "action_embedding.weight",
+    "b1",
+    "w2.bias",
+    "w2.weight",
+    "w_z.weight",
+]
+ROUND36D_FROZEN_PARAMETERS = [
+    "encoder.weight",
+    "response.bias",
+    "response.weight",
+]
+ROUND36D_DISCARDED_TRANSITION_PARAMETERS = list(ROUND36D_OPTIMIZED_PARAMETERS)
+ROUND36D_SOURCE_LOCK = {
+    "directory": "experiments/results/operational_quotient_36b_W64",
+    "registration_id": ROUND36B_REGISTRATION_ID,
+    "config_sha256": "3b1fd82cf2801ea6d8f75c12acdc6aac038492bf0712a8c66900a243e9caa2a0",
+    "producer_code_sha256": "e5e88d9c8dcec06a66ed251a9666a65e3a4abb0cf693f4af9a648172b6281f5b",
+    "manifest_sha256": "c11d5d5a40f9f3e67352192985d74931c0640fdaf4b1285cf0b9238c31ffde69",
+    "evidence_sha256": "76d8252486d4156e4df5f84e2a83a3f40805b333116fa7f2eee177af5f1a128c",
+    "weights_sha256": "dadfff34d9b6941bd8d6f4acf25668e3604f1caa5cdd4b8011a320914e58547a",
+    "retained_seed_weights_sha256": {
+        "11": "f48b3eb2d52cd9564949e627b8d477cc55f43e63db4ee975eecc4179553f0191",
+        "23": "85aea1ee4ff1684bdf2c99a2e1973a4990d6d0de2d5b55eaf28e06bcdcb7546c",
+        "37": "d92851c880b77a23ae49b27d77467e68d491f9a48e96ec4dcea6bf2669ad647c",
+        "53": "52033515a52708ab119253fac517488357cc0676fc1e7921ad58fe84197098d0",
+        "71": "fdb7ad779201736384f07c14abe14ffc9e191d86b7ade5a76d96c102ceefb716",
+    },
+    "assigned_frozen_seed_sha256": {
+        "11": "c28a9f0cb9899db5c4cfbc375e208e9bd77ef904d59841064ad9adaf930034b7",
+        "23": "363dab30ac34f5b17034fcc676def68601295d4999fcc8fdeac91fe2828469ce",
+        "37": "a49d9f7a06bccf5d63e9b171dda14fc0e8af6fe115ab1e613097d0505ac4e931",
+        "53": "73484c774ba1655403218f36ddbbc0914f1e153db510770460d6e3ecc3d7a40c",
+        "71": "237ce592ddbec41ed64f6222b8ac42aa0353afda13b2065458f08203d99293e0",
+    },
+}
 INTEGRITY_SCOPE = (
     "integrity relative to retained manifest; producer authenticity out of scope"
 )
@@ -226,6 +264,10 @@ def _is_round36c(config: dict[str, Any]) -> bool:
     return _registration_id(config) == ROUND36C_REGISTRATION_ID
 
 
+def _is_round36d(config: dict[str, Any]) -> bool:
+    return _registration_id(config) == ROUND36D_REGISTRATION_ID
+
+
 def _validate_config(config: Any) -> dict[str, Any]:
     is_round36b = (
         isinstance(config, dict)
@@ -234,6 +276,10 @@ def _validate_config(config: Any) -> dict[str, Any]:
     is_round36c = (
         isinstance(config, dict)
         and config.get("registration_id") == ROUND36C_REGISTRATION_ID
+    )
+    is_round36d = (
+        isinstance(config, dict)
+        and config.get("registration_id") == ROUND36D_REGISTRATION_ID
     )
     root_keys = [
         "schema_version",
@@ -246,9 +292,9 @@ def _validate_config(config: Any) -> dict[str, Any]:
         "training",
         "thresholds",
     ]
-    if is_round36b or is_round36c:
+    if is_round36b or is_round36c or is_round36d:
         root_keys.append("registration_id")
-    if is_round36c:
+    if is_round36c or is_round36d:
         root_keys.append("positive_control")
     root = _require_keys(
         config,
@@ -317,6 +363,58 @@ def _validate_config(config: Any) -> dict[str, Any]:
             "transition_cells_per_step": 176,
             "successor_target": "stop_gradient_encoder_of_true_successor_handle",
             "hidden_state_use": "successor_handle_pairing_only",
+        }
+        _expect(
+            positive_control,
+            expected_positive_control,
+            "config.positive_control",
+        )
+    elif is_round36d:
+        _expect(
+            root["registration_id"],
+            ROUND36D_REGISTRATION_ID,
+            "config.registration_id",
+        )
+        positive_control = _require_keys(
+            root["positive_control"],
+            [
+                "cell",
+                "activation",
+                "result_scope",
+                "purpose_gate",
+                "supervision",
+                "behavioral_loss_weight",
+                "transition_cells_per_step",
+                "successor_target",
+                "transition_init_seed_offset",
+                "trace_interval_steps",
+                "adequacy_ratio_diagnostic",
+                "input_qualification",
+                "retained_source",
+            ],
+            "config.positive_control",
+        )
+        expected_positive_control = {
+            "cell": "36d-w64",
+            "activation": "after_valid_36c_w64_positive_control_fail",
+            "result_scope": POSITIVE_CONTROL_SCOPE,
+            "purpose_gate": "FROZEN-CHART-REACHABILITY",
+            "supervision": "stationary_full_176_cell_fixed_target_transition_mse",
+            "behavioral_loss_weight": 0.0,
+            "transition_cells_per_step": 176,
+            "successor_target": "immutable_snapshot_of_frozen_successor_encoder_row",
+            "transition_init_seed_offset": 360000,
+            "trace_interval_steps": ROUND36D_TRACE_INTERVAL,
+            "adequacy_ratio_diagnostic": {
+                "definition": "L_fixed/L_identity",
+                "reference_max": 0.0001,
+                "status_effect": "none",
+            },
+            "input_qualification": {
+                "required_encoder_places_per_seed": 16,
+                "required_canonical_action_cells_per_seed": 176,
+            },
+            "retained_source": ROUND36D_SOURCE_LOCK,
         }
         _expect(
             positive_control,
@@ -439,8 +537,6 @@ def _validate_config(config: Any) -> dict[str, Any]:
         "weight_decay": 0.00001,
         "betas": [0.9, 0.999],
         "epsilon": 1e-08,
-        "batch_size": 512,
-        "loss": "binary_cross_entropy_with_logits",
         "device": "cpu",
         "threads": 1,
         "deterministic_algorithms": True,
@@ -448,11 +544,27 @@ def _validate_config(config: Any) -> dict[str, Any]:
     }
     for key, expected in expected_training.items():
         _expect(training[key], expected, f"config.training.{key}")
+    if is_round36d:
+        _expect(training["batch_size"], 176, "config.training.batch_size")
+        _expect(
+            training["loss"],
+            "fixed_target_transition_mse",
+            "config.training.loss",
+        )
+    else:
+        _expect(training["batch_size"], 512, "config.training.batch_size")
+        _expect(
+            training["loss"],
+            "binary_cross_entropy_with_logits",
+            "config.training.loss",
+        )
     expected_target_cpu_minutes = (
         [12, 16]
         if is_round36c and model["transition_hidden_width"] == 32
         else [14, 20]
         if is_round36c
+        else [2, 5]
+        if is_round36d
         else [3, 8]
     )
     _expect(
@@ -487,6 +599,12 @@ def _validate_config(config: Any) -> dict[str, Any]:
             raise ContractError(
                 "Round 36c config knobs do not match the registered w32/w64 cells"
             )
+    elif is_round36d:
+        _expect(
+            registered_knobs,
+            (16000, 0.003, 64, 480),
+            "Round 36d registered knobs",
+        )
     else:
         _expect(
             registered_knobs,
@@ -1195,6 +1313,289 @@ def _loss_trace_sha(np: Any, trace: Sequence[float]) -> str:
     return _sha256_bytes(np.asarray(trace, dtype="<f8").tobytes(order="C"))
 
 
+def _hash_named_arrays(np: Any, arrays: dict[str, Any]) -> str:
+    digest = hashlib.sha256()
+    for name in sorted(arrays):
+        array = np.ascontiguousarray(arrays[name])
+        if not np.issubdtype(array.dtype, np.number) or not np.isfinite(array).all():
+            raise ContractError(f"array {name!r} is not finite numeric provenance")
+        digest.update(
+            _canonical_bytes(
+                {
+                    "dtype": array.dtype.str,
+                    "name": name,
+                    "shape": list(array.shape),
+                }
+            )
+        )
+        digest.update(array.tobytes(order="C"))
+    return digest.hexdigest()
+
+
+def _round36d_parameter_disposition() -> list[dict[str, str]]:
+    rows = [
+        {"name": name, "disposition": "optimized"}
+        for name in ROUND36D_OPTIMIZED_PARAMETERS
+    ]
+    rows.extend(
+        {"name": name, "disposition": "assigned_frozen"}
+        for name in ROUND36D_FROZEN_PARAMETERS
+    )
+    rows.append(
+        {"name": "fixed_successor_targets", "disposition": "fixed_target"}
+    )
+    rows.extend(
+        {
+            "name": f"retained.{name}",
+            "disposition": "discarded_retained_transition",
+        }
+        for name in ROUND36D_DISCARDED_TRANSITION_PARAMETERS
+    )
+    return sorted(rows, key=lambda row: row["name"])
+
+
+def _round36d_control_arrays(np: Any, config: dict[str, Any]) -> dict[str, Any]:
+    if not _is_round36d(config):
+        raise ContractError("frozen-target arrays require a Round 36d config")
+    handle_to_state = _handle_to_state(config)
+    state_to_handle = {
+        state_index: handle for handle, state_index in enumerate(handle_to_state)
+    }
+    states = _states()
+    source_handles: list[int] = []
+    action_ids: list[int] = []
+    successor_handles: list[int] = []
+    for handle, state_index in enumerate(handle_to_state):
+        for action_id, action in enumerate(ACTION_NAMES):
+            successor_state = _apply_action(states[state_index], action)
+            source_handles.append(handle)
+            action_ids.append(action_id)
+            successor_handles.append(
+                state_to_handle[_state_index(successor_state)]
+            )
+    expected_cells = config["positive_control"]["transition_cells_per_step"]
+    if len(source_handles) != expected_cells:
+        raise ContractError("Round 36d control does not contain exactly 176 cells")
+    if len(set(zip(source_handles, action_ids))) != expected_cells:
+        raise ContractError("Round 36d control repeats a source/action cell")
+    return {
+        "source_handles": np.asarray(source_handles, dtype=np.int64),
+        "action_ids": np.asarray(action_ids, dtype=np.int64),
+        "successor_handles": np.asarray(successor_handles, dtype=np.int64),
+    }
+
+
+def _round36d_source_directory(config: dict[str, Any]) -> Path:
+    repository = Path(__file__).resolve().parents[1]
+    source = (repository / config["positive_control"]["retained_source"]["directory"]).resolve()
+    try:
+        source.relative_to(repository)
+    except ValueError as exc:
+        raise ContractError("Round 36d retained source escapes the repository") from exc
+    return source
+
+
+def _validate_round36d_retained_source(config: dict[str, Any]) -> dict[str, Any]:
+    source = _round36d_source_directory(config)
+    paths = {
+        "config": source / "config.json",
+        "manifest": source / "manifest.json",
+        "evidence": source / "evidence.json",
+        "weights": source / "weights.npz",
+    }
+    for name, path in paths.items():
+        if not path.is_file():
+            raise ContractError(f"Round 36d retained source is missing {name}: {path}")
+    lock = config["positive_control"]["retained_source"]
+    actual_hashes = {name: _sha256_file(path) for name, path in paths.items()}
+    for name in ("config", "manifest", "evidence", "weights"):
+        _expect(
+            actual_hashes[name],
+            lock[f"{name}_sha256"],
+            f"Round 36d retained {name} SHA-256",
+        )
+    retained_config = _validate_config(_read_json(paths["config"]))
+    if not _is_round36b(retained_config):
+        raise ContractError("Round 36d retained config is not Round 36b")
+    _expect(
+        retained_config["model"]["transition_hidden_width"],
+        64,
+        "Round 36d retained transition width",
+    )
+    manifest = _validate_manifest(_read_json(paths["manifest"]), retained_config)
+    _expect(
+        manifest["registration_id"],
+        lock["registration_id"],
+        "Round 36d retained registration",
+    )
+    _expect(
+        manifest["code_sha256"],
+        lock["producer_code_sha256"],
+        "Round 36d retained producer code",
+    )
+    _expect(
+        manifest["weights_sha256"],
+        lock["weights_sha256"],
+        "Round 36d retained manifest weights",
+    )
+    _expect(
+        manifest["evidence_sha256"],
+        lock["evidence_sha256"],
+        "Round 36d retained manifest evidence",
+    )
+    evidence = _read_json(paths["evidence"])
+    if not isinstance(evidence, dict):
+        raise ContractError("Round 36d retained evidence must be an object")
+    _expect(
+        evidence.get("registration_id"),
+        lock["registration_id"],
+        "Round 36d retained evidence registration",
+    )
+    _expect(
+        evidence.get("weights_sha256"),
+        lock["weights_sha256"],
+        "Round 36d retained evidence weights",
+    )
+    seeds = evidence.get("seeds")
+    if not isinstance(seeds, list) or [row.get("seed") for row in seeds] != [11, 23, 37, 53, 71]:
+        raise ContractError("Round 36d retained evidence seed order is invalid")
+    oracle_signatures = evidence.get("world", {}).get("oracle_signatures")
+    oracle_action_table = evidence.get("world", {}).get("oracle_action_table")
+    if oracle_signatures != _world_evidence(config)["oracle_signatures"]:
+        raise ContractError("Round 36d retained oracle signatures are invalid")
+    if oracle_action_table != _world_evidence(config)["oracle_action_table"]:
+        raise ContractError("Round 36d retained oracle action table is invalid")
+    qualification: dict[str, Any] = {}
+    for row in seeds:
+        seed = row["seed"]
+        representatives = row.get("representative_signatures")
+        if not isinstance(representatives, list) or len(representatives) != 944:
+            raise ContractError(f"Round 36d seed {seed} retained representatives are invalid")
+        encoder_signatures = [representatives[handle * 59] for handle in range(16)]
+        expected_encoder = [
+            oracle_signatures[state_index]
+            for state_index in _handle_to_state(config)
+        ]
+        supported_truthful_places = sum(
+            int(_supported(signature) and signature == truth)
+            for signature, truth in zip(encoder_signatures, expected_encoder)
+        )
+        recovered = row.get("recovered_action_table")
+        truthful_cells = (
+            sum(
+                int(cell == truth)
+                for recovered_row, truth_row in zip(recovered, oracle_action_table)
+                for cell, truth in zip(recovered_row, truth_row)
+            )
+            if isinstance(recovered, list) and len(recovered) == 16
+            else -1
+        )
+        if supported_truthful_places != 16 or truthful_cells != 176:
+            raise ContractError(
+                f"Round 36d seed {seed} retained input qualification failed: "
+                f"places={supported_truthful_places}/16 cells={truthful_cells}/176"
+            )
+        qualification[str(seed)] = {
+            "supported_truthful_encoder_places": supported_truthful_places,
+            "required_encoder_places": 16,
+            "truthful_canonical_action_cells": truthful_cells,
+            "required_canonical_action_cells": 176,
+            "passed": True,
+        }
+    return {
+        "directory": lock["directory"],
+        "file_sha256": actual_hashes,
+        "producer_code_sha256": manifest["code_sha256"],
+        "registration_id": manifest["registration_id"],
+        "input_qualification": qualification,
+        "weights_path": paths["weights"],
+    }
+
+
+def _model_named_arrays(np: Any, model: Any, names: Sequence[str]) -> dict[str, Any]:
+    state = model.state_dict()
+    return {
+        name: np.ascontiguousarray(state[name].detach().cpu().numpy())
+        for name in names
+    }
+
+
+def _round36d_signature_margin_summary(
+    probabilities: Sequence[Sequence[float]],
+    successor_handles: Sequence[int],
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    handle_to_state = _handle_to_state(config)
+    oracle = _world_evidence(config)["oracle_signatures"]
+    margins: list[float] = []
+    for row, successor_handle in zip(probabilities, successor_handles):
+        truth = oracle[handle_to_state[int(successor_handle)]]
+        for probability, bit in zip(row, truth):
+            margins.append(
+                float(probability) - 0.90
+                if bit == "1"
+                else 0.10 - float(probability)
+            )
+    ordered = sorted(margins)
+    midpoint = len(ordered) // 2
+    median = (
+        ordered[midpoint]
+        if len(ordered) % 2
+        else (ordered[midpoint - 1] + ordered[midpoint]) / 2.0
+    )
+    return {
+        "minimum_signed_margin": ordered[0],
+        "median_signed_margin": median,
+        "mean_signed_margin": math.fsum(ordered) / len(ordered),
+        "maximum_signed_margin": ordered[-1],
+        "negative_margin_count": sum(value < 0.0 for value in ordered),
+        "component_count": len(ordered),
+    }
+
+
+def _round36d_checkpoint(
+    np: Any,
+    torch: Any,
+    model: Any,
+    control_tensors: dict[str, Any],
+    config: dict[str, Any],
+    optimizer_step: int,
+    identity_mse: float,
+    deadline: float | ProducerDeadline,
+) -> dict[str, Any]:
+    _check_deadline(deadline)
+    with torch.no_grad():
+        source_latent = model.encoder(control_tensors["source_handles"])
+        predicted = model.transition(source_latent, control_tensors["action_ids"])
+        residual = predicted - control_tensors["fixed_targets"]
+        fixed_mse = float(torch.mean(residual.square()).cpu())
+        maximum_residual = float(torch.max(torch.abs(residual)).cpu())
+    _, probabilities = _signature_batches(
+        torch,
+        model,
+        predicted,
+        config,
+        include_probabilities=True,
+        deadline=deadline,
+    )
+    assert probabilities is not None
+    depth = _training_depth_checkpoint(
+        np, torch, model, config, optimizer_step, deadline
+    )
+    return {
+        "optimizer_step": optimizer_step,
+        "fixed_target_mse": fixed_mse,
+        "maximum_coordinate_residual": maximum_residual,
+        "adequacy_ratio_l_fixed_over_l_identity": fixed_mse / identity_mse,
+        "behavior_by_training_word_depth": depth["by_word_depth"],
+        "signature_margins": _round36d_signature_margin_summary(
+            probabilities,
+            control_tensors["successor_handles"].cpu().tolist(),
+            config,
+        ),
+    }
+
+
 def _dependency_versions(np: Any | None = None, torch: Any | None = None) -> dict[str, str]:
     return {
         "python": platform.python_version(),
@@ -1243,6 +1644,312 @@ def _ledger_entry(
     }
 
 
+def _train_round36d(
+    config: dict[str, Any],
+    output_dir: Path,
+    np: Any,
+    torch: Any,
+    *,
+    producer_started: float,
+    deadline: float | ProducerDeadline,
+) -> dict[str, Any]:
+    _check_deadline(deadline)
+    source = _validate_round36d_retained_source(config)
+    control_arrays = _round36d_control_arrays(np, config)
+    input_table_sha256 = _hash_named_arrays(np, control_arrays)
+    base_control_tensors = {
+        key: torch.from_numpy(value) for key, value in control_arrays.items()
+    }
+    saved: dict[str, Any] = {}
+    seed_summaries: list[dict[str, Any]] = []
+    parameter_devices: set[str] = set()
+    all_model_names = list(_state_dict_keys(0))
+    lock = config["positive_control"]["retained_source"]
+    expected_source_archive_keys = {
+        f"seed_{seed}__loss_trace"
+        for seed in config["training"]["model_seeds"]
+    }
+    for seed in config["training"]["model_seeds"]:
+        expected_source_archive_keys.update(_state_dict_keys(seed).values())
+
+    with np.load(source["weights_path"], allow_pickle=False) as retained:
+        if set(retained.files) != expected_source_archive_keys:
+            raise ContractError(
+                "Round 36d retained weights archive has missing or extra arrays"
+            )
+        for seed in config["training"]["model_seeds"]:
+            _check_deadline(deadline)
+            retained_arrays = {
+                name: retained[_state_dict_keys(seed)[name]]
+                for name in all_model_names
+            }
+            retained_seed_hash = _hash_named_arrays(np, retained_arrays)
+            _expect(
+                retained_seed_hash,
+                lock["retained_seed_weights_sha256"][str(seed)],
+                f"Round 36d retained seed {seed} weights SHA-256",
+            )
+            assigned_arrays = {
+                name: retained_arrays[name]
+                for name in ROUND36D_FROZEN_PARAMETERS
+            }
+            assigned_hash = _hash_named_arrays(np, assigned_arrays)
+            _expect(
+                assigned_hash,
+                lock["assigned_frozen_seed_sha256"][str(seed)],
+                f"Round 36d assigned seed {seed} frozen SHA-256",
+            )
+
+            transition_init_seed = (
+                config["positive_control"]["transition_init_seed_offset"] + seed
+            )
+            torch.manual_seed(transition_init_seed)
+            model = _make_model(torch, config).cpu()
+            parameter_devices.update(_assert_cpu_model(model))
+            initial_transition_hash = _hash_named_arrays(
+                np,
+                _model_named_arrays(
+                    np, model, ROUND36D_OPTIMIZED_PARAMETERS
+                ),
+            )
+            named_parameters = dict(model.named_parameters())
+            with torch.no_grad():
+                for name in ROUND36D_FROZEN_PARAMETERS:
+                    named_parameters[name].copy_(
+                        torch.from_numpy(np.ascontiguousarray(assigned_arrays[name]))
+                    )
+            for name, parameter in named_parameters.items():
+                parameter.requires_grad_(name in ROUND36D_OPTIMIZED_PARAMETERS)
+            optimized_names = sorted(
+                name for name, parameter in named_parameters.items()
+                if parameter.requires_grad
+            )
+            frozen_names = sorted(
+                name for name, parameter in named_parameters.items()
+                if not parameter.requires_grad
+            )
+            _expect(
+                optimized_names,
+                ROUND36D_OPTIMIZED_PARAMETERS,
+                f"Round 36d seed {seed} optimized parameter list",
+            )
+            _expect(
+                frozen_names,
+                ROUND36D_FROZEN_PARAMETERS,
+                f"Round 36d seed {seed} frozen parameter list",
+            )
+            frozen_snapshots = {
+                name: named_parameters[name].detach().clone()
+                for name in ROUND36D_FROZEN_PARAMETERS
+            }
+            target_snapshot = model.encoder.weight.detach().clone()
+            target_snapshot.requires_grad_(False)
+            target_snapshot_sha256 = _hash_named_arrays(
+                np,
+                {
+                    "fixed_successor_targets": (
+                        target_snapshot.detach().cpu().numpy()
+                    )
+                },
+            )
+            control_tensors = dict(base_control_tensors)
+            control_tensors["fixed_targets"] = target_snapshot[
+                control_tensors["successor_handles"]
+            ].detach().clone()
+            control_tensors["fixed_targets"].requires_grad_(False)
+            with torch.no_grad():
+                identity_residual = (
+                    model.encoder(control_tensors["source_handles"])
+                    - control_tensors["fixed_targets"]
+                )
+                identity_mse = float(torch.mean(identity_residual.square()).cpu())
+            if not math.isfinite(identity_mse) or identity_mse <= 0.0:
+                raise ContractError(
+                    f"Round 36d seed {seed} has invalid identity-null MSE"
+                )
+            optimizer_parameters = [
+                named_parameters[name] for name in ROUND36D_OPTIMIZED_PARAMETERS
+            ]
+            optimizer = torch.optim.AdamW(
+                optimizer_parameters,
+                lr=config["training"]["learning_rate"],
+                weight_decay=config["training"]["weight_decay"],
+                betas=tuple(config["training"]["betas"]),
+                eps=config["training"]["epsilon"],
+            )
+            trace = [
+                _round36d_checkpoint(
+                    np,
+                    torch,
+                    model,
+                    control_tensors,
+                    config,
+                    0,
+                    identity_mse,
+                    deadline,
+                )
+            ]
+            for step in range(config["training"]["optimizer_steps_per_seed"]):
+                if step % 25 == 0:
+                    _check_deadline(deadline)
+                optimizer.zero_grad(set_to_none=True)
+                source_latent = model.encoder(control_tensors["source_handles"])
+                predicted = model.transition(
+                    source_latent, control_tensors["action_ids"]
+                )
+                loss = torch.nn.functional.mse_loss(
+                    predicted, control_tensors["fixed_targets"]
+                )
+                loss.backward()
+                if any(
+                    named_parameters[name].grad is not None
+                    for name in ROUND36D_FROZEN_PARAMETERS
+                ):
+                    raise ContractError(
+                        f"Round 36d seed {seed} produced a frozen-parameter gradient"
+                    )
+                optimizer.step()
+                if any(
+                    not torch.equal(named_parameters[name], frozen_snapshots[name])
+                    for name in ROUND36D_FROZEN_PARAMETERS
+                ):
+                    raise ContractError(
+                        f"Round 36d seed {seed} changed an assigned frozen parameter"
+                    )
+                if not torch.equal(target_snapshot, model.encoder.weight):
+                    raise ContractError(
+                        f"Round 36d seed {seed} changed its fixed target snapshot"
+                    )
+                completed_steps = step + 1
+                if completed_steps % ROUND36D_TRACE_INTERVAL == 0:
+                    trace.append(
+                        _round36d_checkpoint(
+                            np,
+                            torch,
+                            model,
+                            control_tensors,
+                            config,
+                            completed_steps,
+                            identity_mse,
+                            deadline,
+                        )
+                    )
+            expected_trace_steps = list(
+                range(
+                    0,
+                    config["training"]["optimizer_steps_per_seed"] + 1,
+                    ROUND36D_TRACE_INTERVAL,
+                )
+            )
+            _expect(
+                [row["optimizer_step"] for row in trace],
+                expected_trace_steps,
+                f"Round 36d seed {seed} trace cadence",
+            )
+            assigned_after_hash = _hash_named_arrays(
+                np,
+                _model_named_arrays(np, model, ROUND36D_FROZEN_PARAMETERS),
+            )
+            if assigned_after_hash != assigned_hash:
+                raise ContractError(
+                    f"Round 36d seed {seed} frozen-parameter guard failed"
+                )
+            target_after_hash = _hash_named_arrays(
+                np,
+                {
+                    "fixed_successor_targets": (
+                        target_snapshot.detach().cpu().numpy()
+                    )
+                },
+            )
+            if target_after_hash != target_snapshot_sha256:
+                raise ContractError(
+                    f"Round 36d seed {seed} fixed-target guard failed"
+                )
+            final_ratio = trace[-1][
+                "adequacy_ratio_l_fixed_over_l_identity"
+            ]
+            adequacy_ratio_diagnostic = {
+                "label": "DIAGNOSTIC ONLY — cannot alter PASS, FAIL, or INVALID",
+                "identity_mse": identity_mse,
+                "final_fixed_target_mse": trace[-1]["fixed_target_mse"],
+                "final_ratio_l_fixed_over_l_identity": final_ratio,
+                "reference_max": config["positive_control"][
+                    "adequacy_ratio_diagnostic"
+                ][
+                    "reference_max"
+                ],
+                "status_effect": "none",
+            }
+            final_transition_hash = _hash_named_arrays(
+                np,
+                _model_named_arrays(
+                    np, model, ROUND36D_OPTIMIZED_PARAMETERS
+                ),
+            )
+            final_model_hash = _hash_named_arrays(
+                np,
+                _model_named_arrays(np, model, all_model_names),
+            )
+            trace_sha256 = _sha256_bytes(_canonical_bytes(trace))
+            control_record = {
+                "transition_init_seed": transition_init_seed,
+                "retained_seed_weights_sha256": retained_seed_hash,
+                "assigned_frozen_sha256_before": assigned_hash,
+                "assigned_frozen_sha256_after": assigned_after_hash,
+                "target_snapshot_sha256_before": target_snapshot_sha256,
+                "target_snapshot_sha256_after": target_after_hash,
+                "transition_initial_sha256": initial_transition_hash,
+                "transition_final_sha256": final_transition_hash,
+                "final_model_sha256": final_model_hash,
+                "input_table_sha256": input_table_sha256,
+                "parameter_disposition": _round36d_parameter_disposition(),
+                "adequacy_ratio_diagnostic": adequacy_ratio_diagnostic,
+                "trace": trace,
+                "trace_sha256": trace_sha256,
+            }
+            for name, tensor in model.state_dict().items():
+                key = f"seed_{seed}__{name.replace('.', '_')}"
+                saved[key] = tensor.detach().cpu().numpy()
+            sparse_mse_trace = [row["fixed_target_mse"] for row in trace]
+            saved[f"seed_{seed}__loss_trace"] = np.asarray(
+                sparse_mse_trace, dtype=np.float64
+            )
+            seed_summaries.append(
+                {
+                    "seed": seed,
+                    "steps": config["training"]["optimizer_steps_per_seed"],
+                    "final_loss": trace[-1]["fixed_target_mse"],
+                    "loss_trace_sha256": _loss_trace_sha(np, sparse_mse_trace),
+                    "training_by_word_depth": [
+                        {
+                            "optimizer_step": row["optimizer_step"],
+                            "by_word_depth": row[
+                                "behavior_by_training_word_depth"
+                            ],
+                        }
+                        for row in trace
+                    ],
+                    "frozen_target_control": control_record,
+                }
+            )
+            parameter_devices.update(_assert_cpu_model(model))
+
+    weights_path = output_dir / "weights.npz"
+    np.savez_compressed(weights_path, **saved)
+    _check_deadline(deadline)
+    return {
+        "wall_seconds": time.monotonic() - producer_started,
+        "weights_sha256": _sha256_file(weights_path),
+        "parameter_devices": sorted(parameter_devices),
+        "seeds": seed_summaries,
+        "round36d_source": {
+            key: value for key, value in source.items() if key != "weights_path"
+        },
+        "round36d_input_table_sha256": input_table_sha256,
+    }
+
+
 def _train(
     config: dict[str, Any],
     output_dir: Path,
@@ -1252,6 +1959,15 @@ def _train(
     producer_started: float,
     deadline: float,
 ) -> dict[str, Any]:
+    if _is_round36d(config):
+        return _train_round36d(
+            config,
+            output_dir,
+            np,
+            torch,
+            producer_started=producer_started,
+            deadline=deadline,
+        )
     _check_deadline(deadline)
     arrays = _training_arrays(np, config)
     handles = torch.from_numpy(arrays["handles"])
@@ -1605,6 +2321,8 @@ def _evaluate_seed(
     universe = _word_universe(config)
     world = _world_evidence(config)
     is_round36b = _is_round36b(config)
+    is_round36d = _is_round36d(config)
+    include_extended_diagnostics = is_round36b or is_round36d
     with torch.no_grad():
         handles = torch.arange(16, dtype=torch.long)
         encoder_latent = model.encoder(handles)
@@ -1634,7 +2352,7 @@ def _evaluate_seed(
         model,
         primitive_latent,
         config,
-        is_round36b,
+        include_extended_diagnostics,
         deadline=deadline,
     )
     primitive = [primitive_flat[index * 11 : (index + 1) * 11] for index in range(944)]
@@ -1659,7 +2377,7 @@ def _evaluate_seed(
         model,
         double_latent,
         config,
-        is_round36b,
+        include_extended_diagnostics,
         deadline=deadline,
     )
     toggle_twice = [double_flat[index * 4 : (index + 1) * 4] for index in range(944)]
@@ -1695,7 +2413,7 @@ def _evaluate_seed(
         universe["heldout"],
         config,
         deadline,
-        heldout_probabilities if is_round36b else None,
+        heldout_probabilities if include_extended_diagnostics else None,
     )
     representative_continuation_probabilities: list[list[list[float]]] = []
     representative_endpoints, representative_bits = _roll_grid_signatures(
@@ -1705,7 +2423,9 @@ def _evaluate_seed(
         universe["heldout"],
         config,
         deadline,
-        representative_continuation_probabilities if is_round36b else None,
+        representative_continuation_probabilities
+        if include_extended_diagnostics
+        else None,
     )
     canonical_endpoints, canonical_bits = _roll_grid_signatures(
         torch, model, canonical_latent, universe["heldout"], config, deadline
@@ -1724,7 +2444,14 @@ def _evaluate_seed(
     if loss_key not in archive.files:
         raise ContractError(f"weights archive missing {loss_key}")
     loss_trace = archive[loss_key]
-    if loss_trace.shape != (config["training"]["optimizer_steps_per_seed"],):
+    expected_loss_trace_length = (
+        config["training"]["optimizer_steps_per_seed"]
+        // ROUND36D_TRACE_INTERVAL
+        + 1
+        if is_round36d
+        else config["training"]["optimizer_steps_per_seed"]
+    )
+    if loss_trace.shape != (expected_loss_trace_length,):
         raise ContractError(f"loss trace for seed {seed} has wrong shape")
     law_probabilities: list[list[list[float]]] = []
     law_rows = _law_rows_from_model(
@@ -1733,7 +2460,7 @@ def _evaluate_seed(
         encoder_latent,
         config,
         deadline,
-        law_probabilities if is_round36b else None,
+        law_probabilities if include_extended_diagnostics else None,
     )
     record = {
         "seed": seed,
@@ -1755,7 +2482,7 @@ def _evaluate_seed(
         "recovered_action_table": recovered_table,
     }
     record["support_flags"] = _support_flags_for_seed(record)
-    if is_round36b:
+    if include_extended_diagnostics:
         record["diagnostic_response_probabilities"] = {
             "primitive_successors": primitive_probabilities,
             "toggle_twice": toggle_twice_probabilities,
@@ -1774,6 +2501,49 @@ def _evaluate_seed(
             config,
             deadline,
         )
+    if is_round36d:
+        control_summary = training_summary["frozen_target_control"]
+        _expect(
+            _hash_named_arrays(
+                np,
+                _model_named_arrays(
+                    np, model, ROUND36D_OPTIMIZED_PARAMETERS
+                ),
+            ),
+            control_summary["transition_final_sha256"],
+            f"Round 36d seed {seed} serialized transition hash",
+        )
+        _expect(
+            _hash_named_arrays(
+                np,
+                _model_named_arrays(np, model, ROUND36D_FROZEN_PARAMETERS),
+            ),
+            control_summary["assigned_frozen_sha256_after"],
+            f"Round 36d seed {seed} serialized frozen hash",
+        )
+        _expect(
+            _hash_named_arrays(
+                np,
+                {
+                    "fixed_successor_targets": (
+                        model.encoder.weight.detach().cpu().numpy()
+                    )
+                },
+            ),
+            control_summary["target_snapshot_sha256_after"],
+            f"Round 36d seed {seed} serialized target hash",
+        )
+        _expect(
+            _hash_named_arrays(
+                np,
+                _model_named_arrays(np, model, list(_state_dict_keys(seed))),
+            ),
+            control_summary["final_model_sha256"],
+            f"Round 36d seed {seed} serialized final-model hash",
+        )
+        record["frozen_target_control"] = training_summary[
+            "frozen_target_control"
+        ]
     return record
 
 
@@ -1799,6 +2569,23 @@ def _expected_counts() -> dict[str, int]:
         "heldout_depth2_cells": 1184,
         "heldout_depth3_cells": 1056,
         "interchangeability_cells_per_seed": 132160,
+    }
+
+
+def _round36d_evidence_control(
+    training: dict[str, Any],
+    seed_evidence: Sequence[dict[str, Any]],
+) -> dict[str, Any]:
+    return {
+        "locked_source": training["round36d_source"],
+        "input_table_sha256": training["round36d_input_table_sha256"],
+        "parameter_disposition": _round36d_parameter_disposition(),
+        "seed_control_sha256": {
+            str(seed["seed"]): _sha256_bytes(
+                _canonical_bytes(seed["frozen_target_control"])
+            )
+            for seed in seed_evidence
+        },
     }
 
 
@@ -1869,6 +2656,13 @@ def _evidence(
         "seeds": seed_evidence,
         "producer_counts": {},
     }
+    if _is_round36d(config):
+        evidence["frozen_target_control"] = _round36d_evidence_control(
+            training, seed_evidence
+        )
+        evidence["control_provenance_sha256"] = _sha256_bytes(
+            _canonical_bytes(evidence["frozen_target_control"])
+        )
     _attach_producer_counts(evidence, config, deadline)
     _check_deadline(deadline)
     evidence_path = run_dir / "evidence.json"
@@ -1910,6 +2704,10 @@ def _evidence(
         },
         "expected_counts": _expected_counts(),
     }
+    if _is_round36d(config):
+        manifest["control_provenance_sha256"] = evidence[
+            "control_provenance_sha256"
+        ]
     _write_json(run_dir / "manifest.json", manifest)
     _check_deadline(deadline)
     return manifest
@@ -1947,10 +2745,18 @@ def _produce(config_path: Path, output_dir: Path) -> dict[str, Any]:
         deadline=deadline,
         training=training,
     )
+    event_id = "round36_operational_quotient_produce"
+    purpose = "Round 36 non-claiming CPU training and evidence producer"
+    if _is_round36d(config):
+        event_id = "round36d_frozen_chart_positive_control_produce"
+        purpose = (
+            "Round 36d non-claiming POSITIVE-CONTROL producer: frozen retained "
+            "W64 encoder/readout, fixed targets, and head-only transition MSE"
+        )
     _append_ledger(
         _ledger_entry(
-            "round36_operational_quotient_produce",
-            "Round 36 non-claiming CPU training and evidence producer",
+            event_id,
+            purpose,
             config_path,
             " ".join(sys.argv),
             {"wall_seconds": manifest["wall_seconds"], "seeds": config["training"]["model_seeds"]},
@@ -2050,11 +2856,22 @@ def _fixture_behavior_fit(config: dict[str, Any]) -> dict[str, Any]:
         + split_metrics["h3"]["row_logits"],
         include_row_logits=False,
     )
+    trace_steps = (
+        list(
+            range(
+                0,
+                config["training"]["optimizer_steps_per_seed"] + 1,
+                ROUND36D_TRACE_INTERVAL,
+            )
+        )
+        if _is_round36d(config)
+        else [0]
+    )
     return {
-        "loss_trace": [],
+        "loss_trace": [0.0] * len(trace_steps) if _is_round36d(config) else [],
         "training_by_word_depth": [
             {
-                "optimizer_step": 0,
+                "optimizer_step": step,
                 "by_word_depth": {
                     "0": exact(16),
                     "1": exact(176),
@@ -2062,6 +2879,7 @@ def _fixture_behavior_fit(config: dict[str, Any]) -> dict[str, Any]:
                     "3": exact(20240),
                 },
             }
+            for step in trace_steps
         ],
         "training": split_metrics["training"],
         "h2": split_metrics["h2"],
@@ -2161,9 +2979,20 @@ def _fixture_seed(seed: int, config: dict[str, Any]) -> dict[str, Any]:
     ]
     terminal_bits = [[int(signature[0]) for signature in row] for row in continuation]
     law_rows = _fixture_law_rows(config)
+    fixture_behavior = _fixture_behavior_fit(config) if _is_round36d(config) else None
+    loss_trace_sha256 = (
+        _sha256_bytes(
+            b"".join(
+                struct.pack("<d", value)
+                for value in fixture_behavior["loss_trace"]
+            )
+        )
+        if fixture_behavior is not None
+        else _sha256_bytes(f"fixture-loss-trace|{seed}".encode("utf-8"))
+    )
     record = {
         "seed": seed,
-        "loss_trace_sha256": _sha256_bytes(f"fixture-loss-trace|{seed}".encode("utf-8")),
+        "loss_trace_sha256": loss_trace_sha256,
         "representative_ids": layout["ids"],
         "representative_prefixes": layout["prefix_spellings"],
         "representative_oracle_states": layout["oracle_states"],
@@ -2181,7 +3010,7 @@ def _fixture_seed(seed: int, config: dict[str, Any]) -> dict[str, Any]:
         "recovered_action_table": world["oracle_action_table"],
     }
     record["support_flags"] = _support_flags_for_seed(record)
-    if _is_round36b(config):
+    if _is_round36b(config) or _is_round36d(config):
         record["diagnostic_response_probabilities"] = {
             "primitive_successors": [
                 [[float(cell) for cell in signature] for signature in row]
@@ -2211,7 +3040,73 @@ def _fixture_seed(seed: int, config: dict[str, Any]) -> dict[str, Any]:
                 for row in continuation
             ],
         }
-        record["behavior_fit"] = _fixture_behavior_fit(config)
+        record["behavior_fit"] = (
+            fixture_behavior
+            if fixture_behavior is not None
+            else _fixture_behavior_fit(config)
+        )
+    if _is_round36d(config):
+        assert fixture_behavior is not None
+        input_table_sha256 = _sha256_bytes(
+            _canonical_bytes({"fixture_round36d_input_table": True})
+        )
+        control_trace = [
+            {
+                "optimizer_step": checkpoint["optimizer_step"],
+                "fixed_target_mse": 0.0,
+                "maximum_coordinate_residual": 0.0,
+                "adequacy_ratio_l_fixed_over_l_identity": 0.0,
+                "behavior_by_training_word_depth": checkpoint[
+                    "by_word_depth"
+                ],
+                "signature_margins": {
+                    "minimum_signed_margin": 0.1,
+                    "median_signed_margin": 0.1,
+                    "mean_signed_margin": 0.1,
+                    "maximum_signed_margin": 0.1,
+                    "negative_margin_count": 0,
+                    "component_count": 2112,
+                },
+            }
+            for checkpoint in fixture_behavior["training_by_word_depth"]
+        ]
+        assigned_sha = config["positive_control"]["retained_source"][
+            "assigned_frozen_seed_sha256"
+        ][str(seed)]
+        target_sha = _sha256_bytes(
+            f"fixture-round36d-target|{seed}".encode("utf-8")
+        )
+        record["frozen_target_control"] = {
+            "transition_init_seed": 360000 + seed,
+            "retained_seed_weights_sha256": config["positive_control"][
+                "retained_source"
+            ]["retained_seed_weights_sha256"][str(seed)],
+            "assigned_frozen_sha256_before": assigned_sha,
+            "assigned_frozen_sha256_after": assigned_sha,
+            "target_snapshot_sha256_before": target_sha,
+            "target_snapshot_sha256_after": target_sha,
+            "transition_initial_sha256": _sha256_bytes(
+                f"fixture-round36d-init|{seed}".encode("utf-8")
+            ),
+            "transition_final_sha256": _sha256_bytes(
+                f"fixture-round36d-final|{seed}".encode("utf-8")
+            ),
+            "final_model_sha256": _sha256_bytes(
+                f"fixture-round36d-model|{seed}".encode("utf-8")
+            ),
+            "input_table_sha256": input_table_sha256,
+            "parameter_disposition": _round36d_parameter_disposition(),
+            "adequacy_ratio_diagnostic": {
+                "label": "DIAGNOSTIC ONLY — cannot alter PASS, FAIL, or INVALID",
+                "identity_mse": 1.0,
+                "final_fixed_target_mse": 0.0,
+                "final_ratio_l_fixed_over_l_identity": 0.0,
+                "reference_max": 0.0001,
+                "status_effect": "none",
+            },
+            "trace": control_trace,
+            "trace_sha256": _sha256_bytes(_canonical_bytes(control_trace)),
+        }
     return record
 
 
@@ -2235,6 +3130,44 @@ def _fixture_evidence(config: dict[str, Any], config_sha: str) -> dict[str, Any]
         "seeds": [_fixture_seed(seed, config) for seed in config["training"]["model_seeds"]],
         "producer_counts": {},
     }
+    if _is_round36d(config):
+        lock = config["positive_control"]["retained_source"]
+        evidence["frozen_target_control"] = {
+            "locked_source": {
+                "directory": lock["directory"],
+                "file_sha256": {
+                    "config": lock["config_sha256"],
+                    "manifest": lock["manifest_sha256"],
+                    "evidence": lock["evidence_sha256"],
+                    "weights": lock["weights_sha256"],
+                },
+                "producer_code_sha256": lock["producer_code_sha256"],
+                "registration_id": lock["registration_id"],
+                "input_qualification": {
+                    str(seed): {
+                        "supported_truthful_encoder_places": 16,
+                        "required_encoder_places": 16,
+                        "truthful_canonical_action_cells": 176,
+                        "required_canonical_action_cells": 176,
+                        "passed": True,
+                    }
+                    for seed in config["training"]["model_seeds"]
+                },
+            },
+            "input_table_sha256": evidence["seeds"][0][
+                "frozen_target_control"
+            ]["input_table_sha256"],
+            "parameter_disposition": _round36d_parameter_disposition(),
+            "seed_control_sha256": {
+                str(seed["seed"]): _sha256_bytes(
+                    _canonical_bytes(seed["frozen_target_control"])
+                )
+                for seed in evidence["seeds"]
+            },
+        }
+        evidence["control_provenance_sha256"] = _sha256_bytes(
+            _canonical_bytes(evidence["frozen_target_control"])
+        )
     _attach_producer_counts(evidence, config)
     return evidence
 
@@ -2244,7 +3177,7 @@ def _fixture_manifest(config: dict[str, Any], config_sha: str, evidence: dict[st
     word_hashes = {
         key: value for key, value in evidence["words"].items() if key.endswith("_list_sha256")
     }
-    return {
+    manifest = {
         "schema_version": SCHEMA_MANIFEST,
         "registration_id": _registration_id(config),
         "producer_status": "complete_nonclaiming",
@@ -2277,6 +3210,11 @@ def _fixture_manifest(config: dict[str, Any], config_sha: str, evidence: dict[st
         "word_list_hashes": word_hashes,
         "expected_counts": _expected_counts(),
     }
+    if _is_round36d(config):
+        manifest["control_provenance_sha256"] = evidence[
+            "control_provenance_sha256"
+        ]
+    return manifest
 
 
 def _write_fixture_artifact(
@@ -2294,33 +3232,36 @@ def _write_fixture_artifact(
 
 
 def _validate_manifest(value: Any, config: dict[str, Any]) -> dict[str, Any]:
+    manifest_keys = [
+        "schema_version",
+        "registration_id",
+        "producer_status",
+        "producer_kind",
+        "integrity_scope",
+        "command",
+        "config_sha256",
+        "config_copy_sha256",
+        "code_sha256",
+        "weights_sha256",
+        "evidence_sha256",
+        "git_commit",
+        "started_at",
+        "ended_at",
+        "wall_seconds",
+        "platform",
+        "dependencies",
+        "cpu_settings",
+        "data_seed",
+        "model_seeds",
+        "action_order",
+        "word_list_hashes",
+        "expected_counts",
+    ]
+    if _is_round36d(config):
+        manifest_keys.append("control_provenance_sha256")
     manifest = _require_keys(
         value,
-        [
-            "schema_version",
-            "registration_id",
-            "producer_status",
-            "producer_kind",
-            "integrity_scope",
-            "command",
-            "config_sha256",
-            "config_copy_sha256",
-            "code_sha256",
-            "weights_sha256",
-            "evidence_sha256",
-            "git_commit",
-            "started_at",
-            "ended_at",
-            "wall_seconds",
-            "platform",
-            "dependencies",
-            "cpu_settings",
-            "data_seed",
-            "model_seeds",
-            "action_order",
-            "word_list_hashes",
-            "expected_counts",
-        ],
+        manifest_keys,
         "manifest",
     )
     _expect(manifest["schema_version"], SCHEMA_MANIFEST, "manifest.schema_version")
@@ -2343,6 +3284,11 @@ def _validate_manifest(value: Any, config: dict[str, Any]) -> dict[str, Any]:
         "evidence_sha256",
     ):
         _expect_sha(manifest[key], f"manifest.{key}")
+    if _is_round36d(config):
+        _expect_sha(
+            manifest["control_provenance_sha256"],
+            "manifest.control_provenance_sha256",
+        )
     wall = _require_keys(manifest["wall_seconds"], ["train", "evidence", "total"], "manifest.wall_seconds")
     train_wall = _expect_number(wall["train"], "manifest.wall_seconds.train")
     evidence_wall = _expect_number(wall["evidence"], "manifest.wall_seconds.evidence")
@@ -2640,6 +3586,10 @@ def _validate_behavior_fit(
         raise ContractError(f"{where}.loss_trace must be a list")
     expected_trace_length = (
         config["training"]["optimizer_steps_per_seed"]
+        // ROUND36D_TRACE_INTERVAL
+        + 1
+        if _is_round36d(config)
+        else config["training"]["optimizer_steps_per_seed"]
         if producer_kind == "learned"
         else 0
     )
@@ -2703,10 +3653,14 @@ def _validate_behavior_fit(
             range(
                 0,
                 config["training"]["optimizer_steps_per_seed"] + 1,
-                ROUND36B_DEPTH_TRACE_INTERVAL,
+                (
+                    ROUND36D_TRACE_INTERVAL
+                    if _is_round36d(config)
+                    else ROUND36B_DEPTH_TRACE_INTERVAL
+                ),
             )
         )
-        if producer_kind == "learned"
+        if producer_kind == "learned" or _is_round36d(config)
         else [0]
     )
     if len(depth_trace) != len(expected_steps):
@@ -2765,6 +3719,236 @@ def _validate_behavior_fit(
     return recomputed
 
 
+def _validate_round36d_seed_control(
+    value: Any,
+    seed: int,
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    where = f"evidence.seeds[{seed}].frozen_target_control"
+    control = _require_keys(
+        value,
+        [
+            "transition_init_seed",
+            "retained_seed_weights_sha256",
+            "assigned_frozen_sha256_before",
+            "assigned_frozen_sha256_after",
+            "target_snapshot_sha256_before",
+            "target_snapshot_sha256_after",
+            "transition_initial_sha256",
+            "transition_final_sha256",
+            "final_model_sha256",
+            "input_table_sha256",
+            "parameter_disposition",
+            "adequacy_ratio_diagnostic",
+            "trace",
+            "trace_sha256",
+        ],
+        where,
+    )
+    _expect(
+        control["transition_init_seed"],
+        config["positive_control"]["transition_init_seed_offset"] + seed,
+        f"{where}.transition_init_seed",
+    )
+    for key in (
+        "retained_seed_weights_sha256",
+        "assigned_frozen_sha256_before",
+        "assigned_frozen_sha256_after",
+        "target_snapshot_sha256_before",
+        "target_snapshot_sha256_after",
+        "transition_initial_sha256",
+        "transition_final_sha256",
+        "final_model_sha256",
+        "input_table_sha256",
+        "trace_sha256",
+    ):
+        _expect_sha(control[key], f"{where}.{key}")
+    source_lock = config["positive_control"]["retained_source"]
+    _expect(
+        control["retained_seed_weights_sha256"],
+        source_lock["retained_seed_weights_sha256"][str(seed)],
+        f"{where}.retained_seed_weights_sha256",
+    )
+    _expect(
+        control["assigned_frozen_sha256_before"],
+        source_lock["assigned_frozen_seed_sha256"][str(seed)],
+        f"{where}.assigned_frozen_sha256_before",
+    )
+    _expect(
+        control["assigned_frozen_sha256_after"],
+        control["assigned_frozen_sha256_before"],
+        f"{where} frozen-parameter guard",
+    )
+    _expect(
+        control["target_snapshot_sha256_after"],
+        control["target_snapshot_sha256_before"],
+        f"{where} fixed-target guard",
+    )
+    _expect(
+        control["parameter_disposition"],
+        _round36d_parameter_disposition(),
+        f"{where}.parameter_disposition",
+    )
+    adequacy_diagnostic = _require_keys(
+        control["adequacy_ratio_diagnostic"],
+        [
+            "label",
+            "identity_mse",
+            "final_fixed_target_mse",
+            "final_ratio_l_fixed_over_l_identity",
+            "reference_max",
+            "status_effect",
+        ],
+        f"{where}.adequacy_ratio_diagnostic",
+    )
+    _expect(
+        adequacy_diagnostic["label"],
+        "DIAGNOSTIC ONLY — cannot alter PASS, FAIL, or INVALID",
+        f"{where}.adequacy_ratio_diagnostic.label",
+    )
+    _expect(
+        adequacy_diagnostic["status_effect"],
+        "none",
+        f"{where}.adequacy_ratio_diagnostic.status_effect",
+    )
+    identity_mse = _expect_number(
+        adequacy_diagnostic["identity_mse"],
+        f"{where}.adequacy_ratio_diagnostic.identity_mse",
+    )
+    if identity_mse <= 0.0:
+        raise ContractError(
+            f"{where}.adequacy_ratio_diagnostic.identity_mse must be positive"
+        )
+    reference_max = _expect_number(
+        adequacy_diagnostic["reference_max"],
+        f"{where}.adequacy_ratio_diagnostic.reference_max",
+    )
+    _expect(
+        reference_max,
+        config["positive_control"]["adequacy_ratio_diagnostic"][
+            "reference_max"
+        ],
+        f"{where}.adequacy_ratio_diagnostic.reference_max",
+    )
+    trace = control["trace"]
+    expected_steps = list(
+        range(
+            0,
+            config["training"]["optimizer_steps_per_seed"] + 1,
+            ROUND36D_TRACE_INTERVAL,
+        )
+    )
+    if not isinstance(trace, list) or len(trace) != len(expected_steps):
+        raise ContractError(
+            f"{where}.trace must contain exactly {len(expected_steps)} checkpoints"
+        )
+    depth_totals = {"0": 16, "1": 176, "2": 752, "3": 20240}
+    for index, (checkpoint, expected_step) in enumerate(zip(trace, expected_steps)):
+        checkpoint_where = f"{where}.trace[{index}]"
+        row = _require_keys(
+            checkpoint,
+            [
+                "optimizer_step",
+                "fixed_target_mse",
+                "maximum_coordinate_residual",
+                "adequacy_ratio_l_fixed_over_l_identity",
+                "behavior_by_training_word_depth",
+                "signature_margins",
+            ],
+            checkpoint_where,
+        )
+        _expect(row["optimizer_step"], expected_step, f"{checkpoint_where}.optimizer_step")
+        fixed_mse = _expect_number(
+            row["fixed_target_mse"], f"{checkpoint_where}.fixed_target_mse"
+        )
+        maximum_residual = _expect_number(
+            row["maximum_coordinate_residual"],
+            f"{checkpoint_where}.maximum_coordinate_residual",
+        )
+        if fixed_mse < 0.0 or maximum_residual < 0.0:
+            raise ContractError(f"{checkpoint_where} residual diagnostics must be nonnegative")
+        _expect(
+            _expect_number(
+                row["adequacy_ratio_l_fixed_over_l_identity"],
+                f"{checkpoint_where}.adequacy_ratio_l_fixed_over_l_identity",
+            ),
+            fixed_mse / identity_mse,
+            f"{checkpoint_where} adequacy-ratio replay",
+        )
+        depths = _require_keys(
+            row["behavior_by_training_word_depth"],
+            depth_totals,
+            f"{checkpoint_where}.behavior_by_training_word_depth",
+        )
+        for depth, total in depth_totals.items():
+            _validate_behavior_metric(
+                depths[depth],
+                f"{checkpoint_where}.behavior_by_training_word_depth.{depth}",
+                total,
+            )
+        margins = _require_keys(
+            row["signature_margins"],
+            [
+                "minimum_signed_margin",
+                "median_signed_margin",
+                "mean_signed_margin",
+                "maximum_signed_margin",
+                "negative_margin_count",
+                "component_count",
+            ],
+            f"{checkpoint_where}.signature_margins",
+        )
+        margin_values = [
+            _expect_number(margins[key], f"{checkpoint_where}.signature_margins.{key}")
+            for key in (
+                "minimum_signed_margin",
+                "median_signed_margin",
+                "mean_signed_margin",
+                "maximum_signed_margin",
+            )
+        ]
+        if not (
+            margin_values[0]
+            <= margin_values[1]
+            <= margin_values[3]
+            and margin_values[0]
+            <= margin_values[2]
+            <= margin_values[3]
+        ):
+            raise ContractError(f"{checkpoint_where} signature margins are inconsistent")
+        component_count = _expect_int(
+            margins["component_count"],
+            f"{checkpoint_where}.signature_margins.component_count",
+            minimum=1,
+        )
+        _expect(component_count, 2112, f"{checkpoint_where} signature component count")
+        negative_count = _expect_int(
+            margins["negative_margin_count"],
+            f"{checkpoint_where}.signature_margins.negative_margin_count",
+            minimum=0,
+        )
+        if negative_count > component_count:
+            raise ContractError(f"{checkpoint_where} negative margin count is invalid")
+    _expect(
+        control["trace_sha256"],
+        _sha256_bytes(_canonical_bytes(trace)),
+        f"{where}.trace_sha256 replay",
+    )
+    final_mse = trace[-1]["fixed_target_mse"]
+    final_ratio = trace[-1]["adequacy_ratio_l_fixed_over_l_identity"]
+    _expect(
+        adequacy_diagnostic["final_fixed_target_mse"],
+        final_mse,
+        f"{where}.adequacy_ratio_diagnostic.final_fixed_target_mse replay",
+    )
+    _expect(
+        adequacy_diagnostic["final_ratio_l_fixed_over_l_identity"],
+        final_ratio,
+        f"{where}.adequacy_ratio_diagnostic.final_ratio replay",
+    )
+    return control
+
+
 def _validate_seed_record(
     value: Any,
     index: int,
@@ -2793,8 +3977,10 @@ def _validate_seed_record(
         "recovered_action_table",
         "support_flags",
     ]
-    if _is_round36b(config):
+    if _is_round36b(config) or _is_round36d(config):
         seed_keys.extend(["behavior_fit", "diagnostic_response_probabilities"])
+    if _is_round36d(config):
+        seed_keys.append("frozen_target_control")
     seed = _require_keys(
         value,
         seed_keys,
@@ -2869,7 +4055,7 @@ def _validate_seed_record(
         f"{where}.support_flags",
     )
     _expect(support_flags, _support_flags_for_seed(seed), f"{where}.support_flags replay")
-    if _is_round36b(config):
+    if _is_round36b(config) or _is_round36d(config):
         diagnostic_probabilities = _require_keys(
             seed["diagnostic_response_probabilities"],
             [
@@ -2934,6 +4120,28 @@ def _validate_seed_record(
             producer_kind,
             seed["loss_trace_sha256"],
         )
+        if _is_round36d(config):
+            control = _validate_round36d_seed_control(
+                seed["frozen_target_control"], seed["seed"], config
+            )
+            _expect(
+                seed["behavior_fit"]["loss_trace"],
+                [row["fixed_target_mse"] for row in control["trace"]],
+                f"{where} fixed-MSE trace replay",
+            )
+            _expect(
+                seed["behavior_fit"]["training_by_word_depth"],
+                [
+                    {
+                        "optimizer_step": row["optimizer_step"],
+                        "by_word_depth": row[
+                            "behavior_by_training_word_depth"
+                        ],
+                    }
+                    for row in control["trace"]
+                ],
+                f"{where} behavior-depth trace replay",
+            )
         return recomputed_behavior_fit
     return None
 
@@ -3522,28 +4730,173 @@ def _attach_producer_counts(
     )
 
 
+def _validate_round36d_evidence_control(
+    evidence: dict[str, Any],
+    manifest: dict[str, Any],
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    control = _require_keys(
+        evidence["frozen_target_control"],
+        [
+            "locked_source",
+            "input_table_sha256",
+            "parameter_disposition",
+            "seed_control_sha256",
+        ],
+        "evidence.frozen_target_control",
+    )
+    _expect_sha(
+        control["input_table_sha256"],
+        "evidence.frozen_target_control.input_table_sha256",
+    )
+    _expect(
+        control["parameter_disposition"],
+        _round36d_parameter_disposition(),
+        "evidence.frozen_target_control.parameter_disposition",
+    )
+    locked_source = _require_keys(
+        control["locked_source"],
+        [
+            "directory",
+            "file_sha256",
+            "producer_code_sha256",
+            "registration_id",
+            "input_qualification",
+        ],
+        "evidence.frozen_target_control.locked_source",
+    )
+    source_lock = config["positive_control"]["retained_source"]
+    _expect(
+        locked_source["directory"],
+        source_lock["directory"],
+        "evidence frozen source directory",
+    )
+    _expect(
+        locked_source["registration_id"],
+        source_lock["registration_id"],
+        "evidence frozen source registration",
+    )
+    _expect(
+        locked_source["producer_code_sha256"],
+        source_lock["producer_code_sha256"],
+        "evidence frozen source producer code",
+    )
+    expected_file_hashes = {
+        "config": source_lock["config_sha256"],
+        "manifest": source_lock["manifest_sha256"],
+        "evidence": source_lock["evidence_sha256"],
+        "weights": source_lock["weights_sha256"],
+    }
+    _expect(
+        locked_source["file_sha256"],
+        expected_file_hashes,
+        "evidence frozen source file hashes",
+    )
+    qualification = _require_keys(
+        locked_source["input_qualification"],
+        [str(seed) for seed in config["training"]["model_seeds"]],
+        "evidence frozen source input qualification",
+    )
+    expected_qualification = {
+        "supported_truthful_encoder_places": 16,
+        "required_encoder_places": 16,
+        "truthful_canonical_action_cells": 176,
+        "required_canonical_action_cells": 176,
+        "passed": True,
+    }
+    for seed in config["training"]["model_seeds"]:
+        _expect(
+            qualification[str(seed)],
+            expected_qualification,
+            f"evidence frozen source seed {seed} qualification",
+        )
+    seed_hashes = _require_keys(
+        control["seed_control_sha256"],
+        [str(seed) for seed in config["training"]["model_seeds"]],
+        "evidence.frozen_target_control.seed_control_sha256",
+    )
+    for seed in evidence["seeds"]:
+        seed_key = str(seed["seed"])
+        _expect_sha(
+            seed_hashes[seed_key],
+            f"evidence frozen seed {seed_key} control SHA-256",
+        )
+        _expect(
+            seed_hashes[seed_key],
+            _sha256_bytes(_canonical_bytes(seed["frozen_target_control"])),
+            f"evidence frozen seed {seed_key} control hash replay",
+        )
+        _expect(
+            seed["frozen_target_control"]["input_table_sha256"],
+            control["input_table_sha256"],
+            f"evidence frozen seed {seed_key} input-table hash",
+        )
+    provenance_sha = _expect_sha(
+        evidence["control_provenance_sha256"],
+        "evidence.control_provenance_sha256",
+    )
+    _expect(
+        provenance_sha,
+        _sha256_bytes(_canonical_bytes(control)),
+        "evidence control provenance hash replay",
+    )
+    _expect(
+        manifest["control_provenance_sha256"],
+        provenance_sha,
+        "manifest/evidence control provenance hash",
+    )
+    return control
+
+
+def _round36d_adequacy_ratio_diagnostic(
+    evidence: dict[str, Any], config: dict[str, Any]
+) -> dict[str, Any]:
+    per_seed = {
+        str(seed["seed"]): seed["frozen_target_control"][
+            "adequacy_ratio_diagnostic"
+        ]
+        for seed in evidence["seeds"]
+    }
+    return {
+        "label": "DIAGNOSTIC ONLY — cannot alter PASS, FAIL, or INVALID",
+        "definition": config["positive_control"]["adequacy_ratio_diagnostic"][
+            "definition"
+        ],
+        "reference_max": config["positive_control"][
+            "adequacy_ratio_diagnostic"
+        ]["reference_max"],
+        "status_effect": "none",
+        "per_seed": per_seed,
+    }
+
+
 def _validate_evidence(
     value: Any, manifest: dict[str, Any], config: dict[str, Any]
 ) -> tuple[dict[str, Any], dict[str, Any], dict[str, dict[str, Any]]]:
+    evidence_keys = [
+        "schema_version",
+        "registration_id",
+        "producer_kind",
+        "config_sha256",
+        "code_sha256",
+        "weights_sha256",
+        "action_order",
+        "data_seed",
+        "model_seeds",
+        "expected_counts",
+        "world",
+        "words",
+        "construction",
+        "seeds",
+        "producer_counts",
+    ]
+    if _is_round36d(config):
+        evidence_keys.extend(
+            ["frozen_target_control", "control_provenance_sha256"]
+        )
     evidence = _require_keys(
         value,
-        [
-            "schema_version",
-            "registration_id",
-            "producer_kind",
-            "config_sha256",
-            "code_sha256",
-            "weights_sha256",
-            "action_order",
-            "data_seed",
-            "model_seeds",
-            "expected_counts",
-            "world",
-            "words",
-            "construction",
-            "seeds",
-            "producer_counts",
-        ],
+        evidence_keys,
         "evidence",
     )
     _expect(evidence["schema_version"], SCHEMA_EVIDENCE, "evidence.schema_version")
@@ -3572,10 +4925,12 @@ def _validate_evidence(
         recomputed = _validate_seed_record(
             seed, index, config, layout, evidence["producer_kind"]
         )
-        if _is_round36b(config):
+        if _is_round36b(config) or _is_round36d(config):
             if recomputed is None:
-                raise ContractError("Round 36b behavior rows were not recomputed")
+                raise ContractError("extended behavior rows were not recomputed")
             recomputed_behavior_fit[str(seed["seed"])] = recomputed
+    if _is_round36d(config):
+        _validate_round36d_evidence_control(evidence, manifest, config)
     gates = _scientific_gates(evidence, config)
     _expect(
         evidence["producer_counts"],
@@ -3633,7 +4988,7 @@ def _verdict_result_scope(
 ) -> str:
     if producer_kind == "fixture":
         return "FIXTURE-ONLY"
-    if config is not None and _is_round36c(config):
+    if config is not None and (_is_round36c(config) or _is_round36d(config)):
         return POSITIVE_CONTROL_SCOPE
     if producer_kind == "learned":
         return "SCIENTIFIC"
@@ -3652,6 +5007,13 @@ def _verdict_claim_boundary(
             "POSITIVE-CONTROL ONLY — privileged true-successor handle pairings "
             "directly supervised transition consistency; gate reachability only, "
             "not quotient learning from behavior."
+        )
+    if config is not None and _is_round36d(config):
+        return (
+            "POSITIVE-CONTROL ONLY — a retained behavior-derived W64 encoder/readout "
+            "was assigned and frozen, successor coordinates were fixed, and only a "
+            "fresh width-64 transition head was optimized; this tests frozen-chart "
+            "head/reducer reachability, not quotient learning from behavior."
         )
     if status == PASS_STATUS and producer_kind == "learned":
         return (
@@ -3674,6 +5036,7 @@ def _reduce_directory(
     operational_signature_support: dict[str, Any] = {}
     primary_cellwise_accounting: dict[str, Any] = {}
     confidence_free_diagnostic: dict[str, Any] = {}
+    adequacy_ratio_diagnostic: dict[str, Any] = {}
     status = "INVALID"
     config: dict[str, Any] | None = None
     producer_kind: str | None = None
@@ -3714,6 +5077,13 @@ def _reduce_directory(
             confidence_free_diagnostic = _confidence_free_diagnostic_table(
                 evidence, config
             )
+        elif _is_round36d(config):
+            behavior_fit_eligibility = _behavior_fit_eligibility(
+                recomputed_behavior_fit
+            )
+            adequacy_ratio_diagnostic = _round36d_adequacy_ratio_diagnostic(
+                evidence, config
+            )
         failed = [name for name, gate in gates.items() if not gate["passed"]]
         if _is_round36b(config) and not behavior_fit_eligibility["passed"]:
             status = UNDERFIT_STATUS
@@ -3752,20 +5122,37 @@ def _reduce_directory(
         verdict["operational_signature_support"] = operational_signature_support
         verdict["cross_seed_cellwise_accounting"] = primary_cellwise_accounting
         verdict["confidence_free_diagnostic"] = confidence_free_diagnostic
+    if config is not None and _is_round36d(config):
+        verdict["behavior_evaluation_diagnostic"] = behavior_fit_eligibility
+        verdict["adequacy_ratio_diagnostic"] = adequacy_ratio_diagnostic
     if write_verdict:
         evidence_dir.mkdir(parents=True, exist_ok=True)
         _write_json(evidence_dir / "verdict.json", verdict)
     if record_ledger and config is not None:
         control_scoped = str(verdict.get("result_scope", "")).upper().startswith("POSITIVE-CONTROL")
         if control_scoped:
-            # Round 36c claim wall: the ledger event itself is control-scoped so a bare gate table can never be read as a behaviour-only result.
-            event_id = "round36c_positive_control_reduce"
-            purpose = ("Round 36c POSITIVE-CONTROL (gate REACHABILITY) reduction of stored evidence: privileged transition supervision was used in training; "
-                       "this is NOT a behaviour-only result, NOT a quotient-from-behaviour claim, and does not activate Round 35. A PASS means the exact gates are "
-                       "reachable by this carrier + reducer; a FAIL means this registered learned-target reachability control did not reach the certificate — it does not "
-                       "distinguish control-objective failure, optimization failure, carrier capacity, or learned reducer/gate reachability, and it has no behavior-only interpretation.")
+            if _is_round36d(config):
+                event_id = "round36d_frozen_chart_positive_control_reduce"
+                purpose = (
+                    "Round 36d POSITIVE-CONTROL frozen-chart reduction: retained "
+                    "W64 encoder/readout assigned frozen, fixed successor targets, "
+                    "and head-only MSE optimization. This is control-only and not "
+                    "quotient learning from behavior."
+                )
+            else:
+                # Round 36c claim wall: the ledger event itself is control-scoped so a bare gate table can never be read as a behaviour-only result.
+                event_id = "round36c_positive_control_reduce"
+                purpose = ("Round 36c POSITIVE-CONTROL (gate REACHABILITY) reduction of stored evidence: privileged transition supervision was used in training; "
+                           "this is NOT a behaviour-only result, NOT a quotient-from-behaviour claim, and does not activate Round 35. A PASS means the exact gates are "
+                           "reachable by this carrier + reducer; a FAIL means this registered learned-target reachability control did not reach the certificate — it does not "
+                           "distinguish control-objective failure, optimization failure, carrier capacity, or learned reducer/gate reachability, and it has no behavior-only interpretation.")
             ledger_status = f"POSITIVE-CONTROL / REACHABILITY: {status}"
             metrics = {"result_scope": verdict.get("result_scope"), "control_status": status, "gates": {name: gate["passed"] for name, gate in gates.items()}}
+            if _is_round36d(config):
+                metrics["adequacy_ratio_diagnostic"] = adequacy_ratio_diagnostic
+                metrics["behavior_evaluation_diagnostic"] = (
+                    behavior_fit_eligibility
+                )
         else:
             event_id = "round36_operational_quotient_reduce"; purpose = "Round 36 declarative reduction of stored evidence"; ledger_status = status
             metrics = {"status": status, "gates": {name: gate["passed"] for name, gate in gates.items()}}
@@ -3791,6 +5178,24 @@ def _reduce_directory(
 def _refresh_fixture_hash(directory: Path, manifest: dict[str, Any]) -> None:
     manifest["evidence_sha256"] = _sha256_file(directory / "evidence.json")
     _write_json(directory / "manifest.json", manifest)
+
+
+def _refresh_round36d_fixture_provenance(
+    evidence: dict[str, Any], manifest: dict[str, Any]
+) -> None:
+    control = evidence["frozen_target_control"]
+    control["seed_control_sha256"] = {
+        str(seed["seed"]): _sha256_bytes(
+            _canonical_bytes(seed["frozen_target_control"])
+        )
+        for seed in evidence["seeds"]
+    }
+    evidence["control_provenance_sha256"] = _sha256_bytes(
+        _canonical_bytes(control)
+    )
+    manifest["control_provenance_sha256"] = evidence[
+        "control_provenance_sha256"
+    ]
 
 
 def _run_fixture(config_path: Path, output_dir: Path | None) -> dict[str, Any]:
@@ -3845,6 +5250,35 @@ def _run_fixture(config_path: Path, output_dir: Path | None) -> dict[str, Any]:
             ):
                 raise ContractError(
                     "Round 36c learned verdict claim boundary is not control-only"
+                )
+        if _is_round36d(config):
+            adequacy = pass_verdict.get("adequacy_ratio_diagnostic")
+            if (
+                not isinstance(adequacy, dict)
+                or adequacy.get("label")
+                != "DIAGNOSTIC ONLY — cannot alter PASS, FAIL, or INVALID"
+                or adequacy.get("status_effect") != "none"
+                or len(adequacy.get("per_seed", {})) != 5
+            ):
+                raise ContractError(
+                    "Round 36d exact fixture did not retain diagnostic-only adequacy telemetry"
+                )
+            learned_scope = _verdict_result_scope("learned", config)
+            learned_claim_boundary = _verdict_claim_boundary(
+                PASS_STATUS, "learned", config
+            )
+            if learned_scope != POSITIVE_CONTROL_SCOPE:
+                raise ContractError(
+                    "Round 36d learned verdicts are not forced to POSITIVE-CONTROL"
+                )
+            if (
+                not isinstance(learned_claim_boundary, str)
+                or not learned_claim_boundary.startswith("POSITIVE-CONTROL ONLY")
+                or "frozen-chart" not in learned_claim_boundary
+                or "not quotient learning from behavior" not in learned_claim_boundary
+            ):
+                raise ContractError(
+                    "Round 36d learned verdict claim boundary is not control-only"
                 )
         if _is_round36b(config):
             diagnostic = pass_verdict.get("confidence_free_diagnostic")
@@ -3919,7 +5353,7 @@ def _run_fixture(config_path: Path, output_dir: Path | None) -> dict[str, Any]:
                 if signature != original_successor
             ]
             evidence["seeds"][0]["primitive_successor_signatures"][1][0] = alternatives[0]
-            if _is_round36b(config):
+            if _is_round36b(config) or _is_round36d(config):
                 evidence["seeds"][0]["diagnostic_response_probabilities"][
                     "primitive_successors"
                 ][1][0] = [float(component) for component in alternatives[0]]
@@ -3935,6 +5369,97 @@ def _run_fixture(config_path: Path, output_dir: Path | None) -> dict[str, Any]:
             results["rehashed_representative_successor_mutation"] = mutation_verdict[
                 "status"
             ]
+
+        if _is_round36d(config):
+            with _temporary_directory("round36d_fixture_frozen_guard_") as temporary:
+                branch = temporary / "artifact"
+                shutil.copytree(directory, branch)
+                evidence = _read_json(branch / "evidence.json")
+                manifest = _read_json(branch / "manifest.json")
+                evidence["seeds"][0]["frozen_target_control"][
+                    "assigned_frozen_sha256_after"
+                ] = _sha256_bytes(b"fixture-frozen-parameter-mutation")
+                _refresh_round36d_fixture_provenance(evidence, manifest)
+                _write_json(branch / "evidence.json", evidence)
+                _refresh_fixture_hash(branch, manifest)
+                frozen_guard_verdict = _reduce_directory(
+                    config_path, branch, write_verdict=True, record_ledger=False
+                )
+                results["frozen_parameter_guard"] = frozen_guard_verdict["status"]
+                if not any(
+                    "frozen-parameter guard" in error
+                    for error in frozen_guard_verdict["errors"]
+                ):
+                    raise ContractError(
+                        "Round 36d frozen-parameter mutation did not hit the guard"
+                    )
+
+            with _temporary_directory(
+                "round36d_fixture_adequacy_diagnostic_"
+            ) as temporary:
+                branch = temporary / "artifact"
+                shutil.copytree(directory, branch)
+                evidence = _read_json(branch / "evidence.json")
+                manifest = _read_json(branch / "manifest.json")
+                seed = evidence["seeds"][0]
+                control = seed["frozen_target_control"]
+                final_trace = control["trace"][-1]
+                final_trace["fixed_target_mse"] = 1.0
+                final_trace["maximum_coordinate_residual"] = 1.0
+                final_trace["adequacy_ratio_l_fixed_over_l_identity"] = 1.0
+                control["trace_sha256"] = _sha256_bytes(
+                    _canonical_bytes(control["trace"])
+                )
+                control["adequacy_ratio_diagnostic"][
+                    "final_fixed_target_mse"
+                ] = 1.0
+                control["adequacy_ratio_diagnostic"][
+                    "final_ratio_l_fixed_over_l_identity"
+                ] = 1.0
+                seed["behavior_fit"]["loss_trace"][-1] = 1.0
+                _refresh_round36d_fixture_provenance(evidence, manifest)
+                _write_json(branch / "evidence.json", evidence)
+                _refresh_fixture_hash(branch, manifest)
+                diagnostic_verdict = _reduce_directory(
+                    config_path, branch, write_verdict=True, record_ledger=False
+                )
+                results["adequacy_diagnostic_non_gating"] = diagnostic_verdict[
+                    "status"
+                ]
+                first_seed = str(config["training"]["model_seeds"][0])
+                replayed_ratio = diagnostic_verdict.get(
+                    "adequacy_ratio_diagnostic", {}
+                ).get(
+                    "per_seed", {}
+                ).get(first_seed, {}).get(
+                    "final_ratio_l_fixed_over_l_identity"
+                )
+                if replayed_ratio != 1.0:
+                    raise ContractError(
+                        "Round 36d adequacy diagnostic did not replay the ratio"
+                    )
+
+            with _temporary_directory("round36d_fixture_provenance_") as temporary:
+                branch = temporary / "artifact"
+                shutil.copytree(directory, branch)
+                evidence = _read_json(branch / "evidence.json")
+                manifest = _read_json(branch / "manifest.json")
+                evidence["seeds"][0]["frozen_target_control"][
+                    "transition_initial_sha256"
+                ] = _sha256_bytes(b"fixture-provenance-tamper")
+                _write_json(branch / "evidence.json", evidence)
+                _refresh_fixture_hash(branch, manifest)
+                provenance_verdict = _reduce_directory(
+                    config_path, branch, write_verdict=True, record_ledger=False
+                )
+                results["provenance_tamper"] = provenance_verdict["status"]
+                if not any(
+                    "control hash replay" in error
+                    for error in provenance_verdict["errors"]
+                ):
+                    raise ContractError(
+                        "Round 36d provenance tamper did not fail its hash chain"
+                    )
 
         if _is_round36b(config):
             with _temporary_directory("round36b_fixture_unsupported_") as temporary:
@@ -4037,6 +5562,10 @@ def _run_fixture(config_path: Path, output_dir: Path | None) -> dict[str, Any]:
             expected["behavior_fit_signature_unsupported"] = (
                 SIGNATURE_UNSUPPORTED_STATUS
             )
+        if _is_round36d(config):
+            expected["frozen_parameter_guard"] = "INVALID"
+            expected["adequacy_diagnostic_non_gating"] = PASS_STATUS
+            expected["provenance_tamper"] = "INVALID"
         for key, expected_status in expected.items():
             if results[key] != expected_status:
                 raise ContractError(f"fixture branch {key} returned {results[key]!r}")
@@ -4082,6 +5611,21 @@ def _run_fixture(config_path: Path, output_dir: Path | None) -> dict[str, Any]:
             )
             branches["positive_control_scope_guard"] = (
                 "FIXTURE-ONLY — learned verdicts forced to POSITIVE-CONTROL"
+            )
+        if _is_round36d(config):
+            branches["frozen_parameter_guard"] = (
+                "FIXTURE-ONLY — any assigned-frozen hash change rejected as INVALID"
+            )
+            branches["adequacy_diagnostic_non_gating"] = (
+                "FIXTURE-ONLY — L_fixed/L_identity replayed as diagnostic-only "
+                "telemetry without changing the exact PASS"
+            )
+            branches["provenance_tamper"] = (
+                "FIXTURE-ONLY — rehashed outer evidence with stale control provenance "
+                "rejected as INVALID"
+            )
+            branches["positive_control_scope_guard"] = (
+                "FIXTURE-ONLY — learned frozen-chart verdicts forced to POSITIVE-CONTROL"
             )
         return {
             "fixture_status": "FIXTURE-ONLY",
