@@ -27,10 +27,12 @@ from __future__ import annotations
 import ast
 import hashlib
 import inspect
+import io
 import json
 import shutil
 import sys
 import tempfile
+import time
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -317,6 +319,354 @@ def round34_cases():
         pass
 
 
+def round34bc_cases():
+    """No-model Round 34b/34c evidence, decision, leakage, and fail-closed reducer cases."""
+    blocks = list(analyzer.ROUND34BC_BLOCK_ORDER); probe_map = {b: list(analyzer.ROUND34BC_BLOCK_TO_PROBE_MAP[b]) for b in blocks}
+    locked_config_raw = (HERE / "config" / "lexical_probe_v1.json").read_bytes()
+    assert hashlib.sha256(locked_config_raw).hexdigest() == analyzer.ROUND34_CONFIG_SHA256
+    locked_config = json.loads(locked_config_raw); locked_items = [word for group in locked_config["items"].values() for word in group]
+    word_fold = np.asarray(analyzer.ROUND34BC_WORD_FOLD_BY_INDEX, dtype=int)
+    scope_lock = analyzer.round34bc_scope_lock(word_fold, blocks, probe_map, locked_items, analyzer.ROUND34_CONFIG_SHA256)
+    fkeys = [f"{b}_w{f}" for b in blocks for f in (0, 1)]
+    strata = lambda fold_key, width: [np.arange(10 * i, 10 * (i + 1)) for i in range(4)]
+    word_strata = {str(f): [list(range(10 * i, 10 * (i + 1))) for i in range(4)] for f in (0, 1)}
+    def cells(mode, value, shape=(4, 40)):
+        measures = analyzer.round34bc_contract(mode)["measures"]
+        return {m: {fk: np.full(shape, value, dtype=np.float32) for fk in fkeys} for m in measures}
+    def records(mode, layer_cells):
+        out = {}
+        for fk in fkeys:
+            key = {m: layer_cells[m][fk] for m in layer_cells}
+            out[fk] = (analyzer.round34b_key_record(key, True) if mode == "round34b_overlap" else analyzer.round34c_key_record(key, True))[0]
+        return out
+
+    pos_b, zero_b = cells("round34b_overlap", 0.03), cells("round34b_overlap", 0.0)
+    red_b, redzero_b = analyzer.round34bc_reduce_cells(pos_b, strata), analyzer.round34bc_reduce_cells(zero_b, strata)
+    dec_b, stop_b = analyzer.round34b_decide_layer(red_b, records("round34b_overlap", pos_b)), analyzer.round34b_decide_layer(redzero_b, records("round34b_overlap", zero_b))
+    assert dec_b["decision"] == "CONTINUE" and set(dec_b["retaining_candidates"]) == {"ridge", "kernel"}
+    assert stop_b["decision"] == "CAPACITY/OVERLAP-SENSITIVE SCREEN; STOP" and stop_b["keys_jointly_redundant"] == 8
+    assert analyzer.round34b_decide_joint({"A": {l: dec_b for l in analyzer.ROUND34_LAYERS}, "B": {l: dec_b for l in analyzer.ROUND34_LAYERS}})["decision"] == "CONTINUE"
+    assert analyzer.round34b_decide_joint({"A": {l: stop_b for l in analyzer.ROUND34_LAYERS}, "B": {l: stop_b for l in analyzer.ROUND34_LAYERS}})["decision"].endswith("STOP")
+
+    pos_c, zero_c = cells("round34c_itemctx", 0.03), cells("round34c_itemctx", 0.0)
+    red_c, redzero_c = analyzer.round34bc_reduce_cells(pos_c, strata), analyzer.round34bc_reduce_cells(zero_c, strata)
+    dec_c, stop_c = analyzer.round34c_decide_layer(red_c, records("round34c_itemctx", pos_c)), analyzer.round34c_decide_layer(redzero_c, records("round34c_itemctx", zero_c))
+    assert dec_c["decision"] == "CONTINUE" and stop_c["decision"] == "ITEM/CONTEXT-FEATURE-SENSITIVE; STOP"
+    bad_support = records("round34c_itemctx", pos_c); bad_support[fkeys[0]]["common_support"] = 0.94
+    assert analyzer.round34c_decide_layer(red_c, bad_support)["decision"] == "INCONCLUSIVE"
+
+    # Round-local cosine leaves zero/non-finite prediction, target, and alignment rows undefined.
+    safe = analyzer.round34bc_safe_cos_rows(np.array([[1.0, 0.0], [0.0, 0.0], [1.0, np.nan]]), np.array([[1.0, 0.0], [1.0, 0.0], [1.0, 0.0]]))
+    assert safe[0] == 1.0 and np.isnan(safe[1:]).all() and analyzer.cos_rows(np.array([[0.0, 0.0]]), np.array([[1.0, 0.0]]))[0] == 0.0
+    score = analyzer.round34_score_arrays(np.array([[1.0, 0.0]]), np.array([[0.0, 0.0]]), np.array([[2.0, 0.0], [2.0, 0.0]]))
+    assert np.isnan(score["cos"][0]) and np.isfinite(score["nerr"][0])
+
+    finite_grid = {lam: [0.2 if lam == 1.0 else 0.1] for lam in analyzer.LAMBDAS}
+    assert analyzer.round34bc_select_finite(finite_grid, analyzer.LAMBDAS, "fixture")[0] == 1.0
+    for bad_grid in ({**finite_grid, analyzer.LAMBDAS[0]: [np.nan]}, {**finite_grid, 999.0: [1.0]}):
+        try: analyzer.round34bc_select_finite(bad_grid, analyzer.LAMBDAS, "fixture bad grid"); raise RuntimeError("Round 34b/c selected a non-finite/off-grid winner")
+        except AssertionError: pass
+    assert analyzer.round34bc_check_deadline(0.0, 60.0, "fixture", now=59.999) < 60.0
+    try: analyzer.round34bc_check_deadline(0.0, 60.0, "fixture", now=60.0); raise RuntimeError("Round 34b/c wall was not literal")
+    except analyzer.Round34BCDeadlineExceeded: pass
+    assert analyzer.ROUND34B_WALL_SECONDS == 60 * 60 and analyzer.ROUND34C_WALL_SECONDS == 45 * 60
+
+    # An already-expired producer emits a bound non-claiming checkpoint before unwinding.
+    class WallMemPath:
+        def __init__(self, store, name): self.store, self.name = store, name
+        def write_bytes(self, value): self.store[self.name] = bytes(value)
+        def write_text(self, value, encoding=None): self.store[self.name] = value.encode(encoding or "utf-8")
+        def __str__(self): return self.name
+    class WallMemDir:
+        def __init__(self, store): self.store = store
+        def __truediv__(self, name): return WallMemPath(self.store, name)
+    wall_store = {}; deadline_tmp = WallMemDir(wall_store); dummy = np.zeros((16, 1, 80, 2), dtype=np.float64)
+    dummy_P = np.zeros((16, 10), dtype=np.float64); dummy_pos = ["noun"] * 20 + ["verb"] * 20 + ["adj"] * 20 + ["func"] * 20
+    args_b = SimpleNamespace(context_capacity_audit="round34b_overlap", residualize="static", tag="deadline_b")
+    deadline_binding = {"config_sha256_raw": analyzer.ROUND34_CONFIG_SHA256}
+    try: analyzer.round34b_overlap_analysis(args_b, {}, deadline_tmp, {}, deadline_binding, dummy, dummy, dummy_P, {"unused": True}, locked_items, dummy_pos, [], blocks, probe_map, [(0, 1)], time.time() - analyzer.ROUND34B_WALL_SECONDS)
+    except analyzer.Round34BCDeadlineExceeded: pass
+    art_b = json.loads(wall_store["analysis_deadline_b.json"])
+    assert art_b["budget_incomplete"] is True and art_b["context_capacity_complete"] is False and art_b["context_capacity_status"] == "INCOMPLETE/NON-CLAIMING" and art_b["context_capacity_incomplete_after"]["stage"] == "outer_key"
+    args_c = SimpleNamespace(context_capacity_audit="round34c_itemctx", residualize="static", tag="deadline_c")
+    try: analyzer.round34c_itemctx_analysis(args_c, {}, deadline_tmp, {}, deadline_binding, dummy, dummy, dummy_P, {"unused": True}, np.zeros((80, 32)), {}, locked_items, dummy_pos, [], blocks, probe_map, [(0, 1)], time.time() - analyzer.ROUND34C_WALL_SECONDS)
+    except analyzer.Round34BCDeadlineExceeded: pass
+    art_c = json.loads(wall_store["analysis_deadline_c.json"])
+    assert art_c["budget_incomplete"] is True and art_c["context_capacity_complete"] is False and art_c["context_capacity_status"] == "INCOMPLETE/NON-CLAIMING" and art_c["context_capacity_incomplete_after"]["stage"] == "outer_key"
+
+    # PCA is fit on exactly the 40 calibration words; all-word, overlapping, or rank-deficient inputs fail closed.
+    rng = np.random.default_rng(3403); E = rng.standard_normal((80, 32)); tr, te = np.where(word_fold != 0)[0], np.where(word_fold == 0)[0]; identities = [locked_items[i] for i in tr]
+    pca = analyzer.round34c_fit_item_pca(E, tr, te, identities); assert analyzer.round34c_validate_pca_meta(pca["meta"], tr, te, locked_items)
+    assert pca["basis"].shape == (32, 16) and pca["meta"]["training_word_indices"] == tr.tolist()
+    for bad_tr, bad_te, why in ((np.arange(80), np.array([], dtype=int), "all words"), (tr, np.arange(20, 60), "overlap")):
+        try: analyzer.round34c_fit_item_pca(E, bad_tr, bad_te, [locked_items[i] for i in bad_tr]); raise RuntimeError(f"PCA accepted {why}")
+        except AssertionError: pass
+    try: analyzer.round34c_fit_item_pca(np.ones((80, 32)), tr, te, identities); raise RuntimeError("PCA silently reduced below 16 PCs")
+    except AssertionError: pass
+    pca_by_fold = {0: pca}
+    tr1, te1 = np.where(word_fold != 1)[0], np.where(word_fold == 1)[0]
+    pca_by_fold[1] = analyzer.round34c_fit_item_pca(E, tr1, te1, [locked_items[i] for i in tr1])
+    rank40 = json.loads(json.dumps(pca["meta"])); rank40["rank"] = 40
+    try: analyzer.round34c_validate_pca_meta(rank40, tr, te, locked_items); raise RuntimeError("PCA metadata exceeded the centered 40-word rank ceiling")
+    except AssertionError: pass
+
+    # Static nuisance helper exposes the nested boundary: 3-block outer selection and 2-block downstream-inner selection.
+    nuisance_blocks = ["b0", "b1", "b2", "b3"]; nuisance_probe_ids = {b: [2 * i, 2 * i + 1] for i, b in enumerate(nuisance_blocks)}; Pn = rng.standard_normal((8, 10)); Wn = rng.standard_normal((10, 5))
+    def nuisance_target(probes, row_idx, vocabulary_probes): return np.repeat(Pn[probes], len(row_idx), axis=0) @ Wn
+    guard_stages = []
+    _, outer_apply, outer_meta = analyzer.round34_static_nuisance_fit(Pn, nuisance_blocks[:3], nuisance_probe_ids, tr, nuisance_probe_ids["b3"], "Delta", nuisance_target, apply_word_idx=te, deadline_check=guard_stages.append)
+    _, _, inner_meta = analyzer.round34_static_nuisance_fit(Pn, nuisance_blocks[:2], nuisance_probe_ids, tr, nuisance_probe_ids["b2"], "Delta", nuisance_target)
+    assert len(outer_meta["selection_folds"]) == 3 and all(len(f["training_blocks"]) == 2 for f in outer_meta["selection_folds"])
+    assert len(inner_meta["selection_folds"]) == 2 and all(len(f["training_blocks"]) == 1 for f in inner_meta["selection_folds"])
+    assert outer_meta["training_word_indices"] == tr.tolist() and outer_meta["apply_word_indices"] == te.tolist() and len(outer_apply) == len(nuisance_probe_ids["b3"]) * len(te)
+    assert any(stage.endswith("ridge_eigensolve") for stage in guard_stages) and len(guard_stages) == 4
+
+    ctx = [{"pre": [1, 2], "suf": [3], "slot": 2, "readout": 4}, {"pre": [4], "suf": [5], "slot": 1, "readout": 3}]
+    pos = (["noun"] * 20 + ["verb"] * 20 + ["adj"] * 20 + ["adv"] * 20); pos_levels = sorted(set(pos)); P = rng.standard_normal((2, 10))
+    floor_col = analyzer.round34c_floor_columns(ctx, [0, 1], pos_levels); comp = analyzer.round34c_itemctx_components(P, ctx, [0, 1], tr, pos, pos_levels, E, pca, floor_col)
+    assert comp["design"].shape[1] == 10 + 16 + 160 + comp["floor"].shape[1] and comp["interaction"].shape[1] == 160
+    forbidden_names = ("item_token", "item_ids", "item_strings", "cell_X", "hidden_states", "held_out_outcomes", "position_specific_tokens", "unigrams", "bigrams")
+    for forbidden in forbidden_names:
+        payload = {forbidden: np.zeros((1, 1))}
+        for fn, args in ((analyzer.round34c_floor_columns, (ctx, [0], pos_levels)),
+                         (analyzer.round34c_floor_rows, (ctx, [0], tr[:2], pos, pos_levels, floor_col)),
+                         (analyzer.round34c_itemctx_components, (P, ctx, [0], tr[:2], pos, pos_levels, E, pca, floor_col)),
+                         (analyzer.round34c_fit_item_pca, (E, tr, te, identities))):
+            try: fn(*args, forbidden_inputs=payload); raise RuntimeError(f"Round 34c builder accepted {forbidden}")
+            except AssertionError: pass
+
+    # Producers are AST-audited: no model/completion/shuffle route is callable from either early branch.
+    forbidden_calls = {"SubstitutionProbe", "WorldCompleter", "fit_knn", "fit_kernel_ridge", "chart_control", "comp_laws", "interchangeability"}
+    for producer in (analyzer.round34b_overlap_analysis, analyzer.round34c_itemctx_analysis):
+        tree = ast.parse(inspect.getsource(producer)); calls = {n.func.id for n in ast.walk(tree) if isinstance(n, ast.Call) and isinstance(n.func, ast.Name)}
+        names = {n.id for n in ast.walk(tree) if isinstance(n, ast.Name)}
+        assert not (calls & forbidden_calls) and not ({"completer", "laws", "n_shuffle", "states_emb"} & names), f"forbidden early-branch input/call in {producer.__name__}"
+
+    class MemPath:
+        def __init__(self, store, name): self.store, self.name = store, name
+        def read_bytes(self): return self.store[self.name]
+        def write_text(self, value, encoding=None): self.store[self.name] = value.encode(encoding or "utf-8")
+    class MemDir:
+        def __init__(self, store): self.store = store
+        def __truediv__(self, name): return MemPath(self.store, name)
+    def grid_scores(kernel=False):
+        if kernel: return {f"{gamma},{lam}": (0.2 if (gamma, lam) == (1.0, 1.0) else 0.1) for lam in analyzer.LAMBDAS for gamma in analyzer.GAMMAS}
+        return {str(lam): (0.2 if lam == 1.0 else 0.1) for lam in analyzer.LAMBDAS}
+    def fit_meta(family="ridge", raw_columns=24, retained_columns=20, n_rows=120):
+        rank = min(20, retained_columns, n_rows if family == "rbf_kernel" else n_rows - 1)
+        out = {"family": family, "lambda": 1.0, "training_edf": float(min(10, rank)), "rank": rank, "rank_tolerance": 1e-10,
+               "retained_columns": retained_columns, "n_columns_raw": raw_columns, "n_training_rows": n_rows, "valid": True,
+               "finite_checks": {"features": True, "prediction": True, "spectrum": True}, "inner_scores": grid_scores(family == "rbf_kernel")}
+        if family == "rbf_kernel": out.update({"gamma": 1.0, "median_sqdist": 2.0})
+        return out
+    def residualizer(name, training_blocks, apply_probes, training_words, apply_words, target_dimension):
+        training_probes = [p for b in training_blocks for p in probe_map[b]]; selection_folds = []
+        for held in training_blocks:
+            fold_blocks = [b for b in training_blocks if b != held]; fold_probes = [p for b in fold_blocks for p in probe_map[b]]
+            selection_folds.append({"held_validation_block": held, "training_blocks": fold_blocks, "target": name,
+                                    "training_probes": fold_probes, "apply_probes": list(probe_map[held]),
+                                    "training_word_indices": list(training_words), "apply_word_indices": list(training_words),
+                                    "vocabulary_training_probes": (fold_probes if name == "C" else None),
+                                    "vocabulary_training_word_indices": (list(training_words) if name == "C" else None), "scores": grid_scores()})
+        return {"target": name, "lambda": 1.0, "training_only": True, "training_blocks": list(training_blocks), "training_probes": training_probes,
+                "apply_probes": list(apply_probes), "training_word_indices": list(training_words), "apply_word_indices": list(apply_words),
+                "vocabulary_training_probes": (training_probes if name == "C" else None),
+                "vocabulary_training_word_indices": (list(training_words) if name == "C" else None), "target_dimension": target_dimension,
+                "selection_folds": selection_folds, "retained_P_static_columns": 9, "P_static_columns_raw": 10,
+                "inner_score_means": grid_scores(), "finite_checks": {"features": True, "target": True, "prediction": True}}
+    def match():
+        return {"valid": True, "target_edf": 10.0, "achieved_edf": 10.003, "edf_error": 0.003, "lambda": 2.0, "bracket": [0.0, 4.0], "iterations": 10,
+                "bracket_doublings": 2, "rank": 20, "rank_tolerance": 1e-10, "retained_columns": 20, "downward_from_selected": True,
+                "selected_state_edf": 15.0, "selected_state_lambda": 1.0, "finite_checks": {"eigenvalues": True, "target_edf": True, "bracket": True, "lambda": True, "achieved_edf": True, "prediction": True}}
+    selected_spectrum = {**fit_meta(), "training_edf": 15.0}
+    assert analyzer._round34bc_validate_edf_match(match(), selected_spectrum, "fixture/good_match") is True
+    for field, value in (("rank_tolerance", 2e-10), ("bracket", [3.0, 4.0]), ("achieved_edf", -1.0)):
+        bad_match = match(); bad_match[field] = value
+        try: analyzer._round34bc_validate_edf_match(bad_match, selected_spectrum, f"fixture/bad_{field}"); raise RuntimeError(f"EDF match accepted bad {field}")
+        except AssertionError: pass
+    def inner_refits(mode, outer):
+        targets = ("C", "Delta", "X") if mode == "round34b_overlap" else ("Delta", "X")
+        out = []
+        for held in outer["training_blocks"]:
+            training_blocks = [x for x in outer["training_blocks"] if x != held]
+            training_probes = [p for b in training_blocks for p in probe_map[b]]
+            nuisance = {}
+            for target in targets:
+                nuisance[target] = residualizer(target, training_blocks, probe_map[held], outer["training_word_indices"], outer["training_word_indices"], 24 if target == "C" else 5)
+            rec = {"held_validation_block": held, "training_blocks": training_blocks, "downstream_training_only": True,
+                   "nuisance_refit_inside_fold": True, "nuisance": nuisance}
+            if mode == "round34b_overlap":
+                rec.update({"context_vocabulary_training_probes": training_probes, "context_vocabulary_training_word_indices": outer["training_word_indices"],
+                            "context_vocabulary_columns": 16, "context_numeric_columns": 4, "context_pos_columns": 4, "context_design_columns": 24,
+                            "P_static_columns": 10, "C_raw_columns": 24, "C_perp_raw_columns": 24, "P_plus_C_raw_columns": 34, "P_plus_C_one_standardizer": True})
+            else:
+                rec.update({"floor_vocabulary_training_probes": training_probes, "floor_vocabulary_training_word_indices": outer["training_word_indices"],
+                            "floor_vocabulary_columns": 4, "floor_pos_one_hot_columns": 4, "floor_columns": 8,
+                            "pca_scope_sha256": pca_by_fold[outer["held_out_word_fold"]]["meta"]["basis_sha256"]})
+            out.append(rec)
+        return out
+    def telemetry(mode, fk):
+        outer = analyzer.round34bc_outer_scope(scope_lock, fk); cal_probes = outer["training_probes"]
+        residual_targets = ("C", "Delta", "X") if mode == "round34b_overlap" else ("Delta", "X")
+        residuals = {name: residualizer(name, outer["training_blocks"], outer["test_probes"], outer["training_word_indices"], outer["held_out_word_indices"], 24 if name == "C" else 5) for name in residual_targets}
+        if mode == "round34b_overlap":
+            return {"mode": mode, "outer_key": fk, "scope_lock_sha256": scope_lock["sha256"], "outer_scope": outer, "all_fits_valid": True, "inner_refits": inner_refits(mode, outer),
+                    "residualizers": residuals,
+                    "fits": {"P": fit_meta(raw_columns=10, retained_columns=9), "C_ridge": fit_meta(), "C_kernel": fit_meta("rbf_kernel"),
+                             "P_plus_C": fit_meta(raw_columns=34), "residual_ridge": fit_meta(), "residual_kernel": fit_meta("rbf_kernel"),
+                             "state_selected": {**fit_meta(), "training_edf": 15.0}}, "state_matches": {"ridge": match(), "kernel": match()},
+                    "context_vocabulary_training_probes": cal_probes, "context_vocabulary_training_word_indices": outer["training_word_indices"],
+                    "context_vocabulary_columns": 16, "context_numeric_columns": 4, "context_pos_columns": 4, "context_design_columns": 24,
+                    "P_static_columns": 10, "P_plus_C_raw_columns": 34, "combined_field_one_standardizer": True}
+        return {"mode": mode, "outer_key": fk, "scope_lock_sha256": scope_lock["sha256"], "outer_scope": outer, "all_fits_valid": True, "inner_refits": inner_refits(mode, outer), "residualizers": residuals,
+                "pca": pca_by_fold[outer["held_out_word_fold"]]["meta"], "fits": {"itemctx": fit_meta(raw_columns=194), "state_selected": {**fit_meta(), "training_edf": 15.0}}, "state_match": match(),
+                "item_embedding": {"source": "pinned_input_embedding_safetensors_only", "model_revision": "fixture", "tensor_key": "model.embed_tokens.weight",
+                                   "table_shape": [151936, 1024], "item_token_ids_sha256": "d" * 64, "n_items": 80, "causal_model_loaded": False, "model_forward_performed": False},
+                "design": {"raw_columns": 194, "retained_columns": 20, "P_static_columns": 10, "item_pc_columns": 16, "interaction_columns": 160, "floor_columns": 8,
+                           "matrix_rank": 20, "interaction_rank": 18, "n_training_rows": 120, "matrix_rank_tolerance": 1e-10, "interaction_rank_tolerance": 1e-10,
+                           "finite_checks": {"raw_design": True, "standardized_design": True, "interaction": True}},
+                "floor_vocabulary_training_probes": cal_probes, "floor_vocabulary_training_word_indices": outer["training_word_indices"],
+                "floor_vocabulary_columns": 4, "floor_pos_one_hot_columns": 4}
+    def make_artifact(store, mode, sentinel, tag, value=0.03):
+        layer_cells = cells(mode, value); tele = {l: {fk: telemetry(mode, fk) for fk in fkeys} for l in analyzer.ROUND34A_LAYERS_ALL}; all_cells = {l: layer_cells for l in analyzer.ROUND34A_LAYERS_ALL}
+        raw, info = analyzer.round34bc_pack_evidence(mode, tag, all_cells, tele, word_strata, scope_lock); store[info["file"]] = raw
+        common_recs = records(mode, layer_cells); common_red = analyzer.round34bc_reduce_cells(layer_cells, strata)
+        common_dec = analyzer.round34b_decide_layer(common_red, common_recs) if mode == "round34b_overlap" else analyzer.round34c_decide_layer(common_red, common_recs)
+        pairs, decisions = {}, {}
+        for l in analyzer.ROUND34A_LAYERS_ALL:
+            recs, red, dec = common_recs, common_red, common_dec; decisions[l] = dec["decision"]
+            folds = {}
+            for fk in fkeys:
+                key_cells = {m: layer_cells[m][fk] for m in layer_cells}; _, _, points = (analyzer.round34b_key_record(key_cells, True) if mode == "round34b_overlap" else analyzer.round34c_key_record(key_cells, True))
+                folds[fk] = {"context_capacity": {"telemetry": tele[l][fk], "key_record": recs[fk], "cell_means": points}}
+            pairs[l] = {"folds": folds, "context_capacity": {"status": "COMPLETE/PER-LAYER", "measures": red, "outer_keys": recs, **dec}}
+        art = {"context_capacity_audit": mode, "context_capacity_complete": True, "context_capacity_status": "COMPLETE/SENTINEL-SCREEN/NON-CLAIMING", "source": "forward", "target": "delta", "residualize": "static", "sentinel_tag": sentinel,
+               "context_capacity_wall_seconds": analyzer.round34bc_contract(mode)["wall_seconds"], "context_capacity_endpoints": ["cos", "nerr"], "world_completer_constructed": False, "model_forward_performed": False, "causal_model_loaded": False, "substitution_probe_constructed": False, "tokenizer_only": True,
+               "context_capacity_candidates": list(analyzer.ROUND34B_GATE_FIELDS) if mode == "round34b_overlap" else ["itemctx"],
+               "fallback": {"n_boot": 500, "n_shuffle": 0}, "config": "fixture.json", "manifest": {"model_revision": "fixture"}, "context_capacity_evidence": info, "context_capacity_layer_decisions": decisions,
+               "context_capacity_binding": {"config_sha256_raw": analyzer.ROUND34_CONFIG_SHA256, "forward_states_sha256": ("a" if sentinel == "A" else "b") * 64, "forward_manifest_sha256": "c" * 64, "model": "Qwen/Qwen3-0.6B", "model_revision": "fixture", "sentinel": analyzer.ROUND34_SENTINEL[sentinel], "sentinel_id": 13 if sentinel == "A" else 11, "completer_model_revision": "fixture", "sentinel_id_rederived_from_tokenizer": True, "items": list(locked_items), "items_sha256": analyzer.ROUND34_ITEM_IDENTITIES_SHA256}, "pairs": pairs}
+        store[f"analysis_{tag}.json"] = json.dumps(art, default=float).encode(); return art
+    def repack_consistent_telemetry(store, tag, layer, fk, mutate):
+        """Mutate the JSON and hash-bound sidecar telemetry together, then issue a valid new evidence hash."""
+        art_name = f"analysis_{tag}.json"; art = json.loads(store[art_name]); info = art["context_capacity_evidence"]; ev_name = info["file"]
+        with np.load(io.BytesIO(store[ev_name]), allow_pickle=False) as z:
+            arrays = {name: np.asarray(z[name]).copy() for name in z.files if name != "metadata_json_utf8"}
+            meta = json.loads(z["metadata_json_utf8"].tobytes().decode("utf-8"))
+        json_tele = art["pairs"][layer]["folds"][fk]["context_capacity"]["telemetry"]
+        evidence_tele = meta["telemetry"][layer][fk]
+        mutate(json_tele); mutate(evidence_tele); assert json_tele == evidence_tele
+        meta_raw = json.dumps(meta, sort_keys=True, separators=(",", ":"), default=float).encode("utf-8")
+        arrays["metadata_json_utf8"] = np.frombuffer(meta_raw, dtype=np.uint8)
+        bio = io.BytesIO(); np.savez_compressed(bio, **arrays); raw = bio.getvalue()
+        info["sha256"] = hashlib.sha256(raw).hexdigest(); store[ev_name] = raw; store[art_name] = json.dumps(art, default=float).encode()
+    def assert_repacked_telemetry_rejected(store, tag, mode, layer, fk):
+        art = json.loads(store[f"analysis_{tag}.json"]); evidence = analyzer.round34bc_load_evidence(MemDir(store), art, tag, mode)
+        assert art["pairs"][layer]["folds"][fk]["context_capacity"]["telemetry"] == evidence["telemetry"][layer][fk]
+        try:
+            analyzer.round34bc_validate_telemetry(mode, evidence["telemetry"][layer][fk], fk, evidence["scope_lock"], "fixture")
+            raise RuntimeError("Round 34b/c validator accepted consistently repacked erroneous telemetry")
+        except AssertionError: pass
+    def assert_repacked_joint_incomplete(store, input_tags, output_tag):
+        _, rejected = analyzer.context_capacity_joint_artifact(MemDir(store), input_tags, output_tag)
+        assert rejected["status"] == "INCOMPLETE/NON-CLAIMING" and rejected["decision"] is None, rejected
+    store = {}; make_artifact(store, "round34b_overlap", "A", "ctxoverlap_A"); make_artifact(store, "round34b_overlap", "B", "ctxoverlap_B")
+    _, joint_b = analyzer.context_capacity_joint_artifact(MemDir(store), ["ctxoverlap_A", "ctxoverlap_B"], "ctxoverlap_joint"); assert joint_b["status"] == "COMPLETE/SCREEN-ONLY" and joint_b["decision"] == "CONTINUE", joint_b
+    good_b, good_b_ev = store["analysis_ctxoverlap_B.json"], store["round34b_evidence_ctxoverlap_B.npz"]
+    for mutation in ("sentinel", "folds", "candidates", "residualizer_provenance", "inner_nuisance_provenance", "stored_decision", "evidence_hash", "edf_telemetry"):
+        mart = json.loads(good_b); store["round34b_evidence_ctxoverlap_B.npz"] = good_b_ev
+        if mutation == "sentinel": mart["sentinel_tag"] = "A"
+        if mutation == "folds": del mart["pairs"]["F0"]["folds"][fkeys[0]]
+        if mutation == "candidates": mart["context_capacity_candidates"] = ["raw_pc"]
+        if mutation == "residualizer_provenance": mart["pairs"]["F0"]["folds"][fkeys[0]]["context_capacity"]["telemetry"]["residualizers"]["Delta"]["training_only"] = False
+        if mutation == "inner_nuisance_provenance": mart["pairs"]["F0"]["folds"][fkeys[0]]["context_capacity"]["telemetry"]["inner_refits"][0]["nuisance"]["Delta"]["training_only"] = False
+        if mutation == "stored_decision": mart["pairs"]["F0"]["context_capacity"]["decision"] = "INCONCLUSIVE"
+        if mutation == "evidence_hash": store["round34b_evidence_ctxoverlap_B.npz"] = good_b_ev + b"tamper"
+        if mutation == "edf_telemetry": mart["pairs"]["F0"]["folds"][fkeys[0]]["context_capacity"]["telemetry"]["state_matches"]["ridge"]["target_edf"] = 9.0
+        store["analysis_ctxoverlap_B.json"] = json.dumps(mart).encode()
+        _, rejected = analyzer.context_capacity_joint_artifact(MemDir(store), ["ctxoverlap_A", "ctxoverlap_B"], f"ctxoverlap_bad_{mutation}")
+        assert rejected["status"] == "INCOMPLETE/NON-CLAIMING" and rejected["decision"] is None, f"Round 34b reducer accepted {mutation}"
+    store["analysis_ctxoverlap_B.json"], store["round34b_evidence_ctxoverlap_B.npz"] = good_b, good_b_ev
+    # Consistently repacked JSON+sidecar leakage/selection/dimension artifacts must still fail.
+    target_fk = fkeys[0]; target_outer = analyzer.round34bc_outer_scope(scope_lock, target_fk)
+    wrong_blocks = [target_outer["held_out_block"], *target_outer["training_blocks"][:2]]
+    def leak_outer_residualizer(tele):
+        tele["residualizers"]["Delta"] = residualizer("Delta", wrong_blocks, target_outer["test_probes"], target_outer["training_word_indices"], target_outer["held_out_word_indices"], 5)
+    repack_consistent_telemetry(store, "ctxoverlap_B", "F0", target_fk, leak_outer_residualizer)
+    assert_repacked_telemetry_rejected(store, "ctxoverlap_B", "round34b_overlap", "F0", target_fk)
+    store["analysis_ctxoverlap_B.json"], store["round34b_evidence_ctxoverlap_B.npz"] = good_b, good_b_ev
+    def off_grid_winner(tele):
+        fit = tele["fits"]["P"]; fit["lambda"] = 999.0; fit["inner_scores"].pop(str(analyzer.LAMBDAS[0])); fit["inner_scores"]["999.0"] = 1.0
+    repack_consistent_telemetry(store, "ctxoverlap_B", "F0", target_fk, off_grid_winner)
+    assert_repacked_telemetry_rejected(store, "ctxoverlap_B", "round34b_overlap", "F0", target_fk)
+    store["analysis_ctxoverlap_B.json"], store["round34b_evidence_ctxoverlap_B.npz"] = good_b, good_b_ev
+    def break_combined_field(tele): tele["combined_field_one_standardizer"] = False
+    repack_consistent_telemetry(store, "ctxoverlap_B", "F0", target_fk, break_combined_field)
+    assert_repacked_telemetry_rejected(store, "ctxoverlap_B", "round34b_overlap", "F0", target_fk)
+    store["analysis_ctxoverlap_B.json"], store["round34b_evidence_ctxoverlap_B.npz"] = good_b, good_b_ev
+    def impossible_b_match_spectrum(tele):
+        tele["state_matches"]["ridge"]["rank"] = 999; tele["state_matches"]["ridge"]["retained_columns"] = 0
+    repack_consistent_telemetry(store, "ctxoverlap_B", "F0", target_fk, impossible_b_match_spectrum)
+    assert_repacked_joint_incomplete(store, ["ctxoverlap_B", "ctxoverlap_A"], "ctxoverlap_bad_repacked_spectrum")
+    store["analysis_ctxoverlap_B.json"], store["round34b_evidence_ctxoverlap_B.npz"] = good_b, good_b_ev
+    mixed = json.loads(good_b); mixed["residualize"] = None; store["analysis_ctxoverlap_B.json"] = json.dumps(mixed).encode()
+    _, rejected_estimand = analyzer.context_capacity_joint_artifact(MemDir(store), ["ctxoverlap_A", "ctxoverlap_B"], "ctxoverlap_mixed"); assert rejected_estimand["status"] == "INCOMPLETE/NON-CLAIMING" and rejected_estimand["decision"] is None
+    store["analysis_ctxoverlap_B.json"] = good_b; make_artifact(store, "round34c_itemctx", "A", "itemctx_A"); make_artifact(store, "round34c_itemctx", "B", "itemctx_B")
+    _, joint_c = analyzer.context_capacity_joint_artifact(MemDir(store), ["itemctx_A", "itemctx_B"], "itemctx_joint"); assert joint_c["status"] == "COMPLETE/SCREEN-ONLY" and joint_c["decision"] == "CONTINUE", joint_c
+    good_c, good_c_ev = store["analysis_itemctx_B.json"], store["round34c_evidence_itemctx_B.npz"]
+    for mutation in ("pc_basis_digest", "selected_state_edf", "evidence_hash"):
+        mart = json.loads(good_c); store["round34c_evidence_itemctx_B.npz"] = good_c_ev
+        tele = mart["pairs"]["F0"]["folds"][fkeys[0]]["context_capacity"]["telemetry"]
+        if mutation == "pc_basis_digest": tele["pca"]["basis_sha256"] = "0" * 64
+        if mutation == "selected_state_edf": tele["fits"]["state_selected"]["training_edf"] = 9.0
+        if mutation == "evidence_hash": store["round34c_evidence_itemctx_B.npz"] = good_c_ev + b"tamper"
+        store["analysis_itemctx_B.json"] = json.dumps(mart).encode()
+        _, rejected = analyzer.context_capacity_joint_artifact(MemDir(store), ["itemctx_A", "itemctx_B"], f"itemctx_bad_{mutation}")
+        assert rejected["status"] == "INCOMPLETE/NON-CLAIMING" and rejected["decision"] is None, f"Round 34c reducer accepted {mutation}"
+    store["analysis_itemctx_B.json"], store["round34c_evidence_itemctx_B.npz"] = good_c, good_c_ev
+    def change_inner_pca_digest(tele): tele["inner_refits"][0]["pca_scope_sha256"] = "f" * 64
+    repack_consistent_telemetry(store, "itemctx_B", "F0", target_fk, change_inner_pca_digest)
+    assert_repacked_joint_incomplete(store, ["itemctx_B", "itemctx_A"], "itemctx_bad_repacked_inner_pca")
+    store["analysis_itemctx_B.json"], store["round34c_evidence_itemctx_B.npz"] = good_c, good_c_ev
+    def replace_pca_identities(tele):
+        pca_meta = tele["pca"]; identities_ = [f"repacked_{i:02d}" for i in pca_meta["training_word_indices"]]
+        pca_meta["training_word_identities"] = identities_
+        pca_meta["training_word_identities_sha256"] = hashlib.sha256(json.dumps(identities_, ensure_ascii=False, separators=(",", ":")).encode("utf-8")).hexdigest()
+    repack_consistent_telemetry(store, "itemctx_B", "F0", target_fk, replace_pca_identities)
+    assert_repacked_joint_incomplete(store, ["itemctx_B", "itemctx_A"], "itemctx_bad_repacked_pca_identities")
+    store["analysis_itemctx_B.json"], store["round34c_evidence_itemctx_B.npz"] = good_c, good_c_ev
+    def impossible_c_match_spectrum(tele):
+        tele["state_match"]["rank"] = 999; tele["state_match"]["retained_columns"] = 0
+    repack_consistent_telemetry(store, "itemctx_B", "F0", target_fk, impossible_c_match_spectrum)
+    assert_repacked_joint_incomplete(store, ["itemctx_B", "itemctx_A"], "itemctx_bad_repacked_spectrum")
+    store["analysis_itemctx_B.json"], store["round34c_evidence_itemctx_B.npz"] = good_c, good_c_ev
+    wrong_pca = pca_by_fold[target_outer["held_out_word_fold"] ^ 1]["meta"]
+    def leak_pca_words(tele): tele["pca"] = json.loads(json.dumps(wrong_pca))
+    repack_consistent_telemetry(store, "itemctx_B", "F0", target_fk, leak_pca_words)
+    assert_repacked_telemetry_rejected(store, "itemctx_B", "round34c_itemctx", "F0", target_fk)
+    store["analysis_itemctx_B.json"], store["round34c_evidence_itemctx_B.npz"] = good_c, good_c_ev
+    def wrong_semantic_dimensions(tele):
+        tele["design"]["P_static_columns"] = 9; tele["design"]["raw_columns"] = 193; tele["fits"]["itemctx"]["n_columns_raw"] = 193
+    repack_consistent_telemetry(store, "itemctx_B", "F0", target_fk, wrong_semantic_dimensions)
+    assert_repacked_telemetry_rejected(store, "itemctx_B", "round34c_itemctx", "F0", target_fk)
+    store["analysis_itemctx_B.json"], store["round34c_evidence_itemctx_B.npz"] = good_c, good_c_ev
+    _, rejected_round = analyzer.context_capacity_joint_artifact(MemDir(store), ["ctxoverlap_A", "itemctx_B"], "mixed_rounds"); assert rejected_round["status"] == "INCOMPLETE/NON-CLAIMING" and rejected_round["decision"] is None
+
+    # Evidence dimensional locks reject a 4x39 cell matrix even when its sidecar hash is internally consistent.
+    bad_cells = {l: cells("round34c_itemctx", 0.03, shape=(4, 39)) for l in analyzer.ROUND34A_LAYERS_ALL}; bad_tele = {l: {fk: telemetry("round34c_itemctx", fk) for fk in fkeys} for l in analyzer.ROUND34A_LAYERS_ALL}
+    raw, info = analyzer.round34bc_pack_evidence("round34c_itemctx", "bad_dims", bad_cells, bad_tele, word_strata, scope_lock); bad_store = {info["file"]: raw}
+    try: analyzer.round34bc_load_evidence(MemDir(bad_store), {"context_capacity_evidence": info}, "bad_dims", "round34c_itemctx"); raise RuntimeError("Round 34c loader accepted 4x39 evidence")
+    except AssertionError: pass
+    assert analyzer.ROUND34B_N_MATRICES == 5 * 8 * len(analyzer.ROUND34B_EVIDENCE_MEASURES) and analyzer.ROUND34C_N_MATRICES == 5 * 8 * len(analyzer.ROUND34C_EVIDENCE_MEASURES)
+
+    # The pre-existing reducers/producers remain source-identical to the registered frozen copy when it is present.
+    frozen_path = HERE / "analyze_r34a_frozen.py"
+    if frozen_path.exists():
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("analyze_r34a_frozen_fixture", frozen_path); frozen = importlib.util.module_from_spec(spec); spec.loader.exec_module(frozen)
+        for name in ("round34_joint_artifact", "round34a_joint_artifact", "round34a_core_analysis", "round34a_pack_evidence", "round34a_load_evidence", "round34_matched_margin_reduce"):
+            assert inspect.getsource(getattr(analyzer, name)) == inspect.getsource(getattr(frozen, name)), f"flag-off parity drift in {name}"
+
+
 def synthetic_artifact(cfg, cfg_sha, run_dir, tag="OP_UPDATE", tamper=None):
     """Write a synthetic states_<tag>.npz + manifest_<tag>.json with the runner's exact field builders (no model)."""
     rows, tp, tc = runner.op_update_rows(cfg); name2idx = {pr["name"]: i for i, pr in enumerate(cfg["probes"])}
@@ -367,9 +717,10 @@ class FakeCompleter:
 
 def main():
     round34_cases()
+    round34bc_cases()
     op_helpers = ("op_update_rows", "validate_op_update_artifact", "op_update_recipient_probe", "reload_check_recipients", "stratified_word_folds", "probe3_reduce", "fit_bridge_ladder", "noise_floor")
     if not all(hasattr(analyzer, name) for name in op_helpers):
-        print("op_update fixture: Round 34/34a no-model checks passed; branch-only operation-update checks not present")
+        print("op_update fixture: Round 34/34a/34b/34c no-model checks passed; branch-only operation-update checks not present")
         return
     cfg = json.loads(CFG.read_text(encoding="utf-8")); cfg_sha = hashlib.sha256(CFG.read_bytes()).hexdigest()
     # 1. parser agreement + block structure
