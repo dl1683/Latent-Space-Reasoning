@@ -80,7 +80,7 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   12.2→9.8→2.9, 13.9→8.7→3.0, 11.9→7.3→3.1 nats; constrained own-choice
   rollouts all-donor on 15/16/15. Artifacts
   `experiments/results/state_bus_v1r1/result.json` (checkpoints and logs
-  local only).
+  tracked at `bd1d9de`).
 - **Audit-stage re-adjudication (`556b47c`; eval-only sensitivity beside the
   registered FAIL; 0.5-nat floor declared pre-result).** All-pair raw
   taxonomy donor choice 15/48, 14/48, 7/48; on-manifold wrong-code control

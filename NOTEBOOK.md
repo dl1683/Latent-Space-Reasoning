@@ -5,6 +5,180 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Audit #30 on interchange_v2 (fresh, unprimed; verbatim): FAIL upheld; my 'distributed state / probes read the prefix via attention' reading WITHDRAWN; third-state 'toward neutral' reading WRONG
+
+Correction to the interchange_v2 entry below: the null does not localize class information; same-state PASS is non-discriminating (all arms within τ); horse donors moved dog recipients farther dogward, not toward neutral; the sign-flip p is a sensitivity, not an exact test; decodes were not implemented.
+
+## Executive verdict
+
+**UPHOLD:** `FAIL — FIXED BLOCK-12 SINGLE-ANCHOR INTERCHANGE CONSTRUCTION`.
+
+**REJECT:** “there is no class state at the anchor” and “the result shows the state is distributed across the prefix.” Neither mechanism is identified.
+
+**DOWNGRADE:** the same-state `PASS` is mechanically correct but evidentially non-discriminating. The same tolerance also accepts every cross-state and every cow/horse donor.
+
+**CORRECT:** the result does not show both third-state donor groups moving recipients toward neutral. Under the implemented sign convention, cow donors move cat recipients dogward, while horse donors move dog recipients farther dogward. The claimed exact specificity test is also not design-exact because donor identities were fixed rather than randomized or exchangeable.
+
+The broader program should continue, but this interchange construction should close. The planned move to a genuine intervention-based reachability/control-cost artifact is the highest-leverage next step. This is not working yet as a native-mathematics discovery program.
+
+## 2. Over-claimed KILL audit
+
+### “No class state at the anchor” is not licensed
+
+The experiment excludes one narrow causal proposition:
+
+> In these eight contexts, the entire block-12 residual at the final generic ` The animal` token is not sufficient, under coefficient-one donor replacement and with the recipient prefix intact, to interchange the three registered cat/dog probe decisions at the preregistered effect size.
+
+It does not establish where class information is absent or present. In particular:
+
+- The anchor could encode class information that is causally redundant with the unchanged prefix.
+- Layers after block 12 could reconstruct or restore the recipient interpretation from earlier tokens.
+- The class-relevant deciding tokens occur during continuation scoring, after the prefill hook has been removed; those tokens can still attend to the recipient prefix through cached representations.
+- Block 12 or the generic anchor may simply be the wrong site.
+- Donor activations may be context-bound rather than valid modular variables when inserted into an inconsistent recipient context.
+- An effective intervention may require coordinated changes across positions, layers, or time rather than a coefficient change at one point.
+- Effects may occur outside the three calibration-derived readouts or orthogonally to their class-separation direction.
+- There may be no unitary “animal state” at all: the model may recompute each consequence from several lexical cues.
+
+Therefore the null does not license “no class state at the anchor,” “the replacement was overwritten,” or any general conclusion about frozen residual streams.
+
+### Effect on the earlier pivot
+
+`interchange_v2` strengthens the **allocation** case for ending the single-anchor frozen-residual repair ladder: unlike `interchange_v1`, an actual donor intervention ran and failed hard.
+
+It does not convert that pivot into a scientific conclusion. The governing statement remains correct: stopping is an apparatus-budget decision, not evidence that pretrained residual streams lack usable structure ([STATE](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/STATE.md:3>)). It also does not show that persistent state must be added through training.
+
+## 3. Same-state PASS and specificity overclaims
+
+### Same-state `PASS`
+
+The stored-row replay gives:
+
+- Same-state displacement: median `0.3525`
+- Cross-state displacement: median `0.2597`
+- Third-state displacement: median `1.1007`
+- Tolerance: `3.384`
+
+All eight same-state, all eight opposite-state, and all eight third-state arms lie within the same-state tolerance. The cross-state median displacement is actually smaller than the same-state median.
+
+Consequently:
+
+> The same-state gate passed, but it did not discriminate semantic equivalence from an intervention that was broadly ineffectual.
+
+It is permissible to report “same-state gate PASS.” It is not permissible to report “same-state interchangeability passed” or to treat the arm as positive evidence for a stable shared state.
+
+### Third-state interpretation and specificity test
+
+The result and ledger say cow/horse donors moved both classes toward neutral. That is incorrect.
+
+The runner defines positive \(T\) as motion toward the opposite cat/dog class. Therefore:
+
+- Cat recipients: `T_third = +0.10…+0.21`, movement dogward.
+- Dog recipients: `T_third = −0.11…−0.20`, movement farther dogward, not toward cat or neutral.
+
+Moreover, every cat recipient has `T_cross−T_third < 0`, while every dog recipient has it `> 0`. The `4/8` split is exactly the class split.
+
+Cat recipients always compare dog cross-donors against cow controls; dog recipients compare cat against horse. These labels were neither randomized nor counterbalanced. Thus the reported \(2^8\) calculation is a sign-symmetry sensitivity, not an exact design-randomization test. It cannot eliminate animal-pair lexical geometry. This design issue was already identified before this audit in the Notebook ([NOTEBOOK](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/NOTEBOOK.md:194>)).
+
+The specificity gate still fails descriptively, but never say that `p=.47` proves no specificity or accepts the null.
+
+## 4. Is “distributed animal state” supported?
+
+No. It is one plausible explanation among several:
+
+1. Class-relevant information is redundantly distributed across prefix positions.
+2. The prefix contains multiple direct lexical cues—purr, mice, bark, fetch—without a unitary animal-state variable.
+3. Each probe consequence is recomputed separately from those cues.
+4. Later layers restore recipient evidence after the anchor replacement.
+5. Continuation tokens recover recipient evidence through unchanged cached prefix pathways.
+6. The class state exists at another position or layer.
+7. The donor residual is informative but not context-invariant or causally modular.
+8. A coordinated nonlinear or multi-position intervention is required.
+9. The chosen probe axis misses relevant output changes.
+
+The most parsimonious current reading is not “distributed state.” It is **redundant lexical-semantic evidence with response-specific readout**.
+
+## 5. Tunnel vision and unified alternative
+
+The strongest alternative explanation of the day’s results is:
+
+> The frozen model supplies a biased, causally redundant lexical-semantic response geometry. Late or repeatedly applied interventions can move selected verbalizers within that geometry, while cue-rich prefix tokens and subsequently visible words continue to determine later decisions; no persistent, interchangeable, or even unitary animal-state object is required.
+
+This accounts for:
+
+- `coordinate_v3`: direct late verb-token steering.
+- `interchange_v1`: fixed verbalizer offsets defeat raw-zero classification despite calibration-relative separation.
+- `state_bus_v1r1`: trained injections control trained outputs and yield pair-specific canine/equine steering, with visible chosen words mediating later decisions.
+- `interchange_v2`: one generic anchor replacement cannot overcome the intact cue-rich prefix.
+
+This explanation does not prove that no distributed state exists. It is simply the strongest explanation that requires no unobserved state object.
+
+## 6. Cheapest localization experiment
+
+No single experiment can literally settle “where the animal state lives.” The cheapest discriminator of the immediate distributed-prefix hypothesis is:
+
+> Capture and coefficient-one replace the **entire 25-position block-12 residual span** with a length-matched donor span, using self, different-paraphrase same-state, opposite-state, and third-state arms, and compare directly against the existing anchor-only rows.
+
+Interpretation must remain bounded:
+
+- Cross-span movement with same-span preservation would show that class-relevant causal information is available across the block-12 span under this readout.
+- It would not establish an abstract or interchangeable animal state; the intervention also transplants lexical and presentation information.
+- A span null would not prove absence elsewhere because lower-layer cached pathways, layer choice, and probe choice would remain live.
+- Do not sweep layers, positions, or coefficients, and do not call this `interchange_v3`.
+
+Because the measurement-to-artifact ratio was already approximately `6.9:1` before this result and has only worsened ([NOTEBOOK](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/NOTEBOOK.md:252>)), run this discriminator only if a public “distributed-prefix state” mechanism sentence is to be retained. Otherwise withdraw that sentence and move directly to reachability/control cost.
+
+## 7. Exact licensed sentence
+
+> **In Qwen3-1.7B-Base, with calibration-relative three-probe validity on 23/24 decisions, coefficient-one replacement of the block-12 residual at only the final generic ` The animal` token by matched opposite-class donors moved the standardized probe signature a median 0.0087 class separations and changed none of 24 probe signs across eight recipients, so `interchange_v2` fails its preregistered fixed single-anchor construction; because same-, cross-, and cow/horse third-state donor perturbations all fell within the same-state tolerance and the unchanged prefix remained causally available, this result does not establish absence of class information at the anchor, a distributed animal state, or failure of frozen-residual interchangeability outside this site, layer, coefficient, donor pairing, and readout.**
+
+## 8. Never-say list
+
+- “There is no class state at the anchor.”
+- “The animal state lives across the prefix.”
+- “The probes read the class from earlier tokens through attention” as an established mechanism.
+- “Later layers overwrote the donor state.”
+- “Block 12 is the wrong layer” as a result rather than a hypothesis.
+- “Same-state interchangeability passed.”
+- “Same-state signatures were preserved.”
+- “Cow and horse donors moved both classes toward neutral.”
+- “The exact `p=.47` proves no specificity.”
+- “Interchangeability failed in Qwen3-1.7B-Base.”
+- “Frozen residual streams lack native state or native mathematics.”
+- “Persistent state must be trained.”
+- “Native animal classification was 23/24” without “calibration-relative.”
+- “Twenty-four independent decisions” or “three independent probes.”
+- “The preregistration was executed completely”; the short decodes are absent.
+
+## 9. Proposed README wording
+
+Replace the stale training/current-artifact language in [README.md](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/README.md:14>) with:
+
+> **Status 2026-08-29: no native latent mathematics has been demonstrated. `coordinate_v3` establishes only a narrow late lexical-control effect; `state_bus_v1r1` is closed as a fixed-construction FAIL with pair-specific lexical/semantic steering; and `interchange_v2` found that replacing only the block-12 residual at the final generic anchor moved the calibration-centred cat/dog probe signature by a median 0.0087 class separations and changed none of 24 probe decisions. This closes that fixed single-anchor construction, not frozen residual structure, class information at the anchor, or distributed alternatives. The program now moves from interchangeability to an intervention-based reachability/control-cost artifact.**
+
+## 10. Proposed STATE wording
+
+> **`interchange_v2` — REGISTERED CONSTRUCTION-LEVEL FAIL.** On fresh exactly 25-token contexts, calibration-centred validity passed for cat `11/12` and dog `12/12`. Replacing only the final generic anchor token’s block-12 residual with an opposite-class donor produced median donor-directed movement `T=0.0087` and changed no centred probe sign across eight recipients. The registered same-state gate passed (`8/8`, median distance `0.352`, `τ=3.384`), but it is non-discriminating because every cross-state and every cow/horse third-state arm also lies within that tolerance. The fixed cross-versus-third donor assignment makes `p=.4727` a descriptive sign-symmetry sensitivity rather than an exact randomized test, and horse donors moved dog recipients farther dogward rather than toward neutral. Licensed scope: this fixed block-12, single-anchor, coefficient-one donor replacement did not operationally interchange the registered probe responses. It does not localize class information or establish absence, distribution, overwriting, or general failure of frozen-residual interchangeability.
+
+Because the current ledger and Notebook contain the unsupported neutral/distributed reading ([ledger](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/ledger.jsonl:273>), [NOTEBOOK](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/NOTEBOOK.md:260>)), governance propagation requires an append-only ledger correction and corresponding Notebook correction whenever this wording is adopted.
+
+## 11. Ranked next increments
+
+1. Freeze this audit, correct public surfaces and append a ledger correction; no deletion or rewriting of the original result row.
+2. Build the intervention-based reachability/control-cost artifact. Define endpoints behaviorally and preregister the cheapest lexical/readout baselines before introducing a geometric cost.
+3. Only if retaining the distributed-prefix mechanism claim, run the single full-span block-12 localization discriminator above; no sweep and no `interchange_v3`.
+4. Consider span-level transformation operators only after reachability produces an artifact, with direct lexical-gradient and visible-text mediation baselines.
+5. If reachability produces another apparatus-only negative, stop and reconsider the latent-space substrate rather than opening another repair ladder.
+
+## Program and leverage ruling
+
+- **Should the broader program continue? Yes.** The interventions have exposed reproducible causal control surfaces and increasingly sharp falsifiers.
+- **Should this interchange line continue? No.** The registered fixed construction failed; no layer/position/coefficient repair ladder is warranted.
+- **Is the program presently working as native mathematics? No. This is not working yet.**
+- **Is the planned next action highest leverage? Yes, if it is the reachability/control-cost intervention artifact.** Another open-ended localization or span sweep would violate both the no-v3 commitment and the measurement-to-artifact tripwire.
+
+No tracked repository file was edited. I recorded the requested evidence and synthesis only in the mandatory git-ignored blackboard.
+
 ## 2026-08-29 — Audit #29 on state_bus_v1r1 (fresh, unprimed; verbatim): FAIL upheld with corrections both ways; residue = pair-specific lexical steering
 
 My 'partial taxonomy transfer', '76% decay' and 'sequential semantic controller' wordings are withdrawn per the audit; the status string omitted the heldout-taxonomy failure (display defect, now fixed in code).
