@@ -5,6 +5,55 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Round 36d frozen-chart control: exact certificate reached on 8 of 9 gates; residue = interchangeability
+
+The one capped cell (frozen behaviour-trained W64 encoder and readout;
+only the transition head trained, on the stationary 176-cell fixed-target
+MSE; 16,000 steps; 93 s of training) is the first learned artifact to
+reach the exact certificate on every gate but one. All five seeds fit
+behaviour exactly (21,184/21,184 train, 2,240/2,240 held-out), the
+adequacy ratio L_fixed/L_identity is 3×10⁻⁶–3×10⁻⁵ (diagnostic only), and
+quotient availability, well-definedness, toggle involution, the
+swap/toggle table, held-out depth-2 and depth-3 closure and action-table
+truth pass in 5/5 seeds. Interchangeability passes in 1/5 seeds, so the
+primary status is "FAIL — INTERCHANGEABILITY". Registered reading:
+adequacy passed and one gate failed, so the residue localises to
+fixed-chart transition/signature realizability on rolled representatives,
+not to control optimisation. Scope: POSITIVE-CONTROL — privileged
+transition supervision on a frozen chart; not a behaviour-only result, not
+a quotient-from-behaviour claim. What it changes: learned gate
+reachability, unvalidated this morning, is now validated for eight of nine
+gates; the ninth (interchangeability of quotient-equivalent points under
+held-out action sequences on rolled representatives) is the precise
+remaining question. A fresh auditor (#26) is on it; per audit #25 this was
+the last permitted control on the trivial-quotient world — Round 37 (the
+nontrivial, presentation-duplicated world) is being implemented in
+parallel and proceeds regardless.
+
+## 2026-08-29 — Re-contextualization #26 (2-hour step-back; audit #26 fired on the 36d result)
+
+Live question unchanged. Whole picture: today's constructive line went
+v1 FAIL → 36b ineligible with a canonical skeleton → 36c controls worse
+than behaviour → 36d frozen-chart control that reaches the exact
+certificate on 8/9 gates. The reframing: the exact reducer is passable by
+a learned artifact after all, so the earlier "measuring the reducer"
+worry is answered in the reducer's favour; the single residue,
+interchangeability on rolled representatives, is the first gate that a
+correctly-fit chart plus an exactly-fit transition head does NOT satisfy —
+which is itself the interesting object (what rolled representatives carry
+that the canonical chart does not). Alternatives held live for the
+auditor: (1) interchangeability's exactness/threshold makes it the
+strictest gate (near-miss statistics); (2) the frozen chart's canonical
+signatures are exact but rolled points drift off the chart (a manifold /
+off-distribution question); (3) the residue is a reducer-side
+representative-sampling artefact; (4) it is a genuine local
+non-interchangeability — quotient-equivalent points that are not
+interchangeable under held-out sequences — which would be a real hole in
+this latent world. Not narrowed: Round 37 is being built; NLM-007's
+instruments remain on record. Foundational thread advanced: a learned
+artifact has now passed a registered reachability control; the program's
+gates are no longer untestable.
+
 ## 2026-08-29 — Round 36c positive control (w64): FAIL; Round 36c complete
 
 The conditional width-64 control cell finished in 988 s (wall 2400 s) and

@@ -190,3 +190,5 @@ experiments/results/operational_quotient_36b_*/evidence.json
 experiments/results/operational_quotient_36b_*/weights.npz
 experiments/results/operational_quotient_36c_*/evidence.json
 experiments/results/operational_quotient_36c_*/weights.npz
+experiments/results/operational_quotient_36d_*/evidence.json
+experiments/results/operational_quotient_36d_*/weights.npz
