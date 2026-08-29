@@ -5,6 +5,73 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Audit #27 on coordinate_v3 (verbatim): NEGATIVE for the coordinate artifact; narrow late lexical-control effect
+
+My design error, found by the auditor: the corner transports flip the number bit without changing the visible subject, so every scored token disagrees with its prefix (`The writer were`); the grammar gate is 0/32, and `run_base` never enforced `test_gate`. My provisional 'positive' and my '~30/32 grammatical' reading are withdrawn.
+
+## Verdict
+
+The causal next-token effect is real and exactly reproducible, but the provisional coordinate claim does not pass audit.
+
+The experiment demonstrates strong, template-specific late lexical steering of four verb tokens. It does not yet demonstrate a grammatical, persistent latent state or a general two-dimensional coordinate. More seriously, every corner transport changes the target’s number without changing the visible subject, making all 32 prompt-plus-continuation outputs ungrammatical at the scored token. The predeclared 28/32 grammatical-continuation rule therefore fails systematically, not marginally.
+
+Classification: **negative for the coordinate artifact; positive as a narrow lexical-control diagnostic.**
+
+## Decisive integrity failure: the grammar gate
+
+The passage is constructed from the **start** state’s subject number, while every corner transport flips that number bit:
+
+- `00 → 11`: `The writer were`
+- `11 → 00`: `The writers is`
+- `10 → 01`: `The writer are`
+- `01 → 10`: `The writers was`
+
+This follows directly from the passage construction at [run_coordinate.py](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_coordinate.py:35>) and the corner mapping at [run_coordinate.py](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_coordinate.py:131>).
+
+The log displays only the generated fragment—such as `" were happy..."`—which obscures the unchanged prompt subject. Once concatenated, every successful target disagrees with that subject. Thus the predeclared continuation-quality result is **0/32 grammatical at the intervention site**, not approximately 30/32.
+
+The configuration declares `grammatical_min: 28`, but `run_base` never reads or enforces `test_gate` and stores no manual-review labels ([coordinate_v3.json](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/config/coordinate_v3.json:11>)). This is the exact failed stage.
+
+The governance amendment makes exact certificates diagnostic rather than absolute verdicts, but this is not a borderline threshold failure: the endpoint is structurally incompatible with the visible sentence in every row.
+
+## Exact licensed sentence
+
+> At a fixed final-token prediction site in Qwen3‑1.7B‑Base, a coefficient‑1 block‑20 patch built by adding or subtracting two mean residual differences estimated from 12 calibration families using only states 00/10/01 changed the full-vocabulary greedy next token to the predeclared member of {is, was, are, were} in all 32 held-out noun/complement-template cases, versus 0/32 for the zero arm and each of three seeded random-axis-pair arms, but the vectors project directly onto those verb logits and every corner token disagrees in number with the unchanged visible subject, so the result is a narrow late lexical-control effect rather than a grammatical, persistent, or general latent coordinate.
+
+## Never-say list
+
+- “A two-dimensional latent grammatical coordinate was discovered.”
+- “Two hidden grammatical states composed to produce an unseen state.”
+- “The intervention generated grammatical native continuations.”
+- “The state persisted through generation.”
+- “The result generalizes to held-out tasks, verbs, templates, models, or layers.”
+- “Random controls prove the learned direction is uniquely meaningful.”
+- “A small perturbation produced the effect.”
+- “Number is represented abstractly earlier than tense.”
+- “State 11 was unseen by the model”; only the experiment’s calibration and selection omitted it.
+
+## Ranked next increments
+
+1. **Run the lexical moot-maker:** compare the learned vectors against direct unembedding-row-difference patches and matched output-logit biases on the same prompts and dose response. If they match, calibration adds no coordinate evidence.
+
+2. **Build a grammatically coherent, lexeme-varying task:** hold out verb lemmas and morphology, vary target tokens, and ensure every counterfactual target remains compatible with the visible prefix.
+
+3. **Require persistence:** intervene upstream and test multiple downstream agreement decisions, preferably with donor activation interchange as a cheaper causal baseline.
+
+4. **Decompose the early number effect:** separate final-noun morphology, example-subject morphology, and example-verb contributions while matching final-token identity.
+
+5. **If the learned vector does not beat the lexical baseline, pivot to an operational causal quotient/interchangeability artifact; do not sweep more layers, coefficients, prompts, or model sizes.**
+
+## Program and leverage decision
+
+The broader real-latent-space program should continue because the intervention reveals a reproducible causal control surface. This specific two-bit single-site mean-difference coordinate line should not continue as a positive coordinate claim.
+
+The current line is not the highest-leverage work. Its cheapest explanatory baseline—late lexical readout steering—is already strongly supported, and its grammatical endpoint is invalid. The framing has become tunnel-visioned around Cartesian coordinates. Direct lexical steering, causal donor interchange, and a task with varied target lexemes and persistent consequences are the alternatives most capable of making this line moot.
+
+Scoped measurement-to-artifact ratio: approximately 107 new runner/config lines to 16 artifact-bearing construction/intervention lines, or 6.7:1; approximately four design/measurement/audit rounds to one artifact-building round. This exceeds the governance pivot threshold.
+
+No repository file was edited.
+
 ## 2026-08-29 — coordinate_v3 (Qwen3-1.7B-Base, prediction site, tense × number): every pre-declared gate met; composition explained by the unembedding (audit #27 pending)
 
 Run (`experiments/results/coordinate_v3/full.log`, ledger `coordinate_v3_result`): baseline 12/12 on 00/10/01 (11 never prompted); LOFO grid at coefficient 1: blocks 8/12/16 pass number (12/12 both directions) but tense 0/12; block 20 passes all four signed single-axis transports 12/12 → frozen. Held-out 8 families × 4 corner transports: 8/8, 8/8, 8/8, 8/8; zero control 0/8; three fixed norm-matched random directions 0/8 each; ~30/32 six-token continuations grammatical (two degenerate). By the round-5 rule this is a positive.

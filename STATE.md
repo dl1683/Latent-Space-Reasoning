@@ -2105,3 +2105,33 @@ Registered by Codex in `theory/EXPERIMENTS.md` (ledger `round36d_37_registered`;
 **Never say (Round 37 audit):** every failure was future-signature / terminal responses never failed (128 factored and 69 unrestricted failure cells involve a terminal error; four cells are terminal-only) / the factorization constraint is harmful / unrestricted is the architectural winner / the Round 36d mechanism reproduced (only the horizon localization recurred) / the hole is a property of behaviour-supervised learning (hypothesis only) / anything about real residual streams based on Round 37.
 
 Toy program ENDS here; the program continues only as the real-model intervention artifact named in Program status.
+
+## coordinate_v3 — audit #27 status (2026-08-29, verbatim; supersedes any coordinate wording above)
+
+Status: NEGATIVE for the coordinate artifact; positive only as a narrow lexical-control diagnostic. Artifact: `experiments/run_coordinate.py` + `config/coordinate_v3.json`; results `experiments/results/coordinate_v3/`; ledger `coordinate_v3_result`, `coordinate_v3_audit27`.
+
+## Exact licensed sentence
+
+> At a fixed final-token prediction site in Qwen3‑1.7B‑Base, a coefficient‑1 block‑20 patch built by adding or subtracting two mean residual differences estimated from 12 calibration families using only states 00/10/01 changed the full-vocabulary greedy next token to the predeclared member of {is, was, are, were} in all 32 held-out noun/complement-template cases, versus 0/32 for the zero arm and each of three seeded random-axis-pair arms, but the vectors project directly onto those verb logits and every corner token disagrees in number with the unchanged visible subject, so the result is a narrow late lexical-control effect rather than a grammatical, persistent, or general latent coordinate.
+
+## Never-say list
+
+- “A two-dimensional latent grammatical coordinate was discovered.”
+- “Two hidden grammatical states composed to produce an unseen state.”
+- “The intervention generated grammatical native continuations.”
+- “The state persisted through generation.”
+- “The result generalizes to held-out tasks, verbs, templates, models, or layers.”
+- “Random controls prove the learned direction is uniquely meaningful.”
+- “A small perturbation produced the effect.”
+- “Number is represented abstractly earlier than tense.”
+- “State 11 was unseen by the model”; only the experiment’s calibration and selection omitted it.
+
+## Program and leverage decision
+
+The broader real-latent-space program should continue because the intervention reveals a reproducible causal control surface. This specific two-bit single-site mean-difference coordinate line should not continue as a positive coordinate claim.
+
+The current line is not the highest-leverage work. Its cheapest explanatory baseline—late lexical readout steering—is already strongly supported, and its grammatical endpoint is invalid. The framing has become tunnel-visioned around Cartesian coordinates. Direct lexical steering, causal donor interchange, and a task with varied target lexemes and persistent consequences are the alternatives most capable of making this line moot.
+
+Scoped measurement-to-artifact ratio: approximately 107 new runner/config lines to 16 artifact-bearing construction/intervention lines, or 6.7:1; approximately four design/measurement/audit rounds to one artifact-building round. This exceeds the governance pivot threshold.
+
+No repository file was edited.
