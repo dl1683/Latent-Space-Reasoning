@@ -5,6 +5,26 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — ctxS_A complete: contextual-prefix comparator on the P_static-residualized relation, sentinel A
+
+`analysis_ctxS_A.json` (committed analyzer, `--residualize static`, 20
+shuffles, 500 bootstraps, 5655 s): on the residualized X⊥→Δ⊥ relation the
+token_ids_v1 contextual arms retain almost nothing (held-out cosine 0.04–0.07
+at F4–F20, normalized error ≈ 1.00), while the residual state ridge keeps
+cosine 0.56–0.62 and normalized error 0.78–0.83; block-first margins vs the
+strongest contextual arm: cosine +0.51 to +0.58 (LB ≥ 0.46), nerr +0.17 to
++0.23, skill +0.32 to +0.49 (LB ≥ 0.16), continuous KL +0.26 to +0.48 (LB ≥
+0.13); 8/8 keys, support 1.0. F0: cosine +0.26 but nerr/skill/KL margins
+negative (structural regime, as before). Reading (audit #19 discipline): the
+collapse of the contextual arms is largely by construction — P_static is
+built from the same template metadata the token-id field encodes — so this
+is a descriptive comparison showing the residual X⊥ carries held-out
+predictive information beyond template metadata; it is not an identified
+state contribution and not capacity-matched (the residual ridge still has
+far more effective df than a near-null context arm). It is the static-form
+input the parked consequence loader and the Round 34a static screen were
+registered to use. ctxS_B is running next, then the parity check.
+
 ## 2026-08-28 — ctx_B complete: contextual-prefix completion comparator, sentinel B (audit #19 wording)
 
 `analysis_ctx_B.json` (committed analyzer, unresidualized form, 20 shuffles,
