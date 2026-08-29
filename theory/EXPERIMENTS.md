@@ -6682,3 +6682,269 @@ unchanged: contextual-prefix X-free baseline, then the bounded multi-position
 teacher-forced consequence test. The four-cell table resolves neither the
 generic prefix-fingerprint alternative nor the validity of the one-position
 consequence currency.
+
+## Round 34 — capacity-matched state-versus-context preregistration (2026-08-28)
+
+**Codex design gate; documentation only. No experiment was run.** This round
+adopts Audit #18's first execution priority. The point-only
+`analysis_ctxscr_A.json` and `analysis_ctxscr_B.json` screens leave the
+F4-F20 state-versus-context difference unidentified: their selected
+`token_ids_v1` ridge has about `42.2-42.7` effective degrees of freedom (EDF),
+whereas the selected state ridge has about `210-406`. The observed cosine and
+normalized-error gaps therefore do not yet isolate cell-state information.
+This round authorizes an analyzer-only extension after Tier-1 review; it does
+not authorize a result claim, the Round 33 consequence run, or any new
+capture.
+
+### Existing mechanics and missing telemetry
+
+The live analyzer already supplies the required implementation seam.
+`Standardizer` is fit on the current training design only. `RidgeFamily` then
+centres that standardized design and stores the eigenvalues of
+`X_centre.T @ X_centre`; both the contextual ridge and the Round 27
+`ridge_dfmatch` sensitivity define slope EDF as
+
+`df(lambda) = sum_i e_i / (e_i + lambda)`.
+
+The intercept is excluded for every arm; adding one to every EDF would not
+change a match. The existing `--xfree-field` path chooses the state lambda
+whose EDF is closest on the seven-value `LAMBDAS` grid. Round 34 replaces only
+that coarse selection principle for this mode with a continuous solve; it
+does not change `select_ridge_lambda`, `RidgeFamily`, or historical results.
+
+The two `analysis_ctxscr_*.json` artifacts serialize contextual EDF by outer
+fold key but do **not** serialize state EDF. State EDF is recomputable without
+new capture: rebuild the exact outer carrier-by-unseen-word fold from
+`forward_states_A/B.npz` and the frozen config, rebuild `P_static`, fit the
+outer-training `Standardizer` on `X_c`, construct `RidgeFamily(X_cs, Y_c)`,
+read that fold's `selected.ridge.lam`, and apply the formula above to the
+eigenspectrum in memory. Round 34 output must serialize this value, the
+spectrum's numerical rank, and the selected lambda for every layer and fold.
+
+### Primary foldwise EDF match
+
+The primary relation is the same `P_static` residual relation that would feed
+Round 33: `X_perp -> Delta_perp`, with the existing four carrier-block by two
+unseen-word outer keys, the same inner carrier folds, endpoints, completion
+semantics, support accounting, and block-first crossed bootstrap. The raw
+unresidualized screens remain diagnostics and are not substituted for this
+test.
+
+For every outer layer/fold and every predeclared contextual candidate `j`:
+
+1. Build and standardize the contextual training design using training rows
+   only; select its ordinary hyperparameters using the existing inner
+   calibration folds only.
+2. Compute its attained training EDF `d_j`. For a primal ridge use
+   `tr[Z(Z.T Z + lambda I)^-1 Z.T]`; for a kernel ridge use
+   `tr[K(K + lambda I)^-1]` at its inner-selected kernel scale.
+3. On the separately training-standardized state design, solve
+   `sum_i e_i/(e_i + lambda_state_j) = d_j` by float64 bisection. Clip only
+   negative roundoff eigenvalues to zero; define numerical rank with
+   `tol_eig = eps * max(n,p) * max(e_i)`; double the upper lambda bracket until
+   it is below the target; stop at absolute EDF error `<=0.01` or 80
+   iterations. The solve consumes no validation or held-out target.
+4. Fit the state ridge at that lambda and score the matched pair on the same
+   held-out cells. Serialize target/achieved EDF, absolute error, bracket,
+   iterations, rank, retained columns, lambda, and finite checks. Any
+   unreachable target or EDF error above `0.01` makes that key unsupported;
+   it is never rounded into a match.
+
+This continuous ridge solve is the primary design. A training-only PCA-rank
+constraint is less clean: it adds an unsupervised basis, rounds a fractional
+EDF to an integer, and still needs a decision about post-PCA ridge shrinkage.
+If retained as a sensitivity, the PCA basis must be fit separately inside
+every outer and inner training fold and never on held-out rows; it cannot
+replace the bisection result.
+
+### Symmetric contextual ladder and fixed moot-makers
+
+The upward contextual comparison has a hard rank ceiling. In an outer fold,
+these context-only fields contain 12 calibration carriers and four POS groups
+and are invariant across words within POS. They therefore have at most 48
+distinct rows: centred primal-ridge rank is at most 47 and uncentred kernel
+rank at most 48. Lowering contextual lambda cannot honestly reach a
+`210-406` state EDF. The analyzer must report this capacity shortfall; it must
+not add jitter, sample IDs, held-out word IDs, or random features to manufacture
+rank. Symmetry is obtained by matching the state ridge downward to every
+attainable contextual EDF.
+
+One fixed mode, `--context-capacity-audit round34_v1`, adds these six
+contextual candidates to the existing completed comparison:
+
+1. `sentinel_position_v1`: ridge on sentinel ID, prefix length, suffix length,
+   slot, readout, and readout-minus-slot only. In a single-sentinel run the
+   sentinel column is constant and is correctly removed by training-only
+   standardization. It contains no POS, token identity, item feature, or
+   state.
+2. `token_ids_v1_selected`: the exact locked Round 31 field at its
+   inner-selected lambda.
+3. `token_ids_v1_ceiling`: the same field with lambda solved downward to
+   `min(df_state_selected, rank_ctx - 0.01)`. Together with item 2 this is the
+   fixed contextual-ridge capacity ladder; failure to approach the ordinary
+   state EDF is recorded as `capacity_shortfall`, not hidden.
+4. `token_ids_v1_kernel`: the existing RBF contextual kernel, with gamma and
+   lambda selected only on the existing inner calibration folds.
+5. `embedseq_rbf_v1`: an RBF ridge field over the frozen input-embedding
+   sequence for the last eight prefix and first four suffix tokens, in fixed
+   relative positions, with zero padding plus presence masks, the four
+   length/position numerics, and POS one-hot. Each token embedding is
+   unit-normalized before concatenation; remaining columns are standardized
+   on training rows only. The item token, cell `X`, hidden representations,
+   item strings/IDs, and held-out outcomes are forbidden. The existing fixed
+   gamma grid and inner folds select gamma/lambda.
+6. `template_edit_kernel_v1`: kernel ridge on the exact prefix/suffix token-ID
+   sequences, with prefix and suffix kept separate. Distance is the mean of
+   their two length-normalized token-level Levenshtein distances plus the POS
+   mismatch indicator; `K=exp(-gamma*d)`. The existing fixed gamma/lambda grid
+   is selected on inner calibration folds only.
+
+Every candidate is paired with its own same-EDF state ridge. The completed
+candidate list is fixed before scoring; no arm or layer is promoted from a
+point-only screen. `embedseq_rbf_v1`, the edit kernel, and the sentinel/position
+field are cheap X-free moot-makers, not evidence of an operational state. The
+existing word-only nulls remain in the fixed completion universe but are not
+renamed as contextual fields.
+
+### Endpoints, strongest comparator, and exact decisions
+
+All six pairs report displacement cosine and normalized error. With completion
+on, they also report response-law skill, continuous KL, and KL-rank. KL-rank
+uses the unchanged fixed K=13 universe by substituting each new prediction
+into the ridge slot rather than enlarging the universe; it consequently keeps
+the existing low-rank/SVD qualification. The confirmatory endpoints are
+`cos`, `skill`, and `klrank`; normalized error and continuous KL are required
+diagnostics but do not silently replace a failed confirmatory endpoint.
+
+For endpoint `e`, candidate `j`, and a bootstrap replicate, define the matched
+margin `m_ej = score(state at d_j) - score(context_j)` (with the existing sign
+convention that larger is better). The strongest-context margin is
+`m_e* = min_j m_ej`, with the minimum taken **inside** each replicate. Thus the
+contextual winner may differ by endpoint or replicate, which is conservative
+for the state hypothesis and avoids a held-out winner-selection claim.
+
+A layer qualifies for **KEEP X-CONDITIONED HYPOTHESIS ALIVE** only when all of
+the following hold:
+
+- the block-first pooled `m_e*` is at least `0.02` and its crossed 95% lower
+  bound is above zero for each of cosine, skill, and KL-rank;
+- at least `6/8` outer keys are jointly point-positive on all three endpoints;
+- no carrier block collapses (each block has at least one of its two word-fold
+  keys jointly positive); and
+- common support is at least `0.95` in every key, with all EDF matches valid.
+
+The hypothesis stays alive only with at least **two common qualifying layers
+among F4, F8, F12, and F20 in both sentinels A and B**. F0 is reported as a
+structural/model-class diagnostic and never supplies one of the two layers.
+Passing licenses only the narrow statement that cell state contains
+held-out predictive information beyond this fixed, capacity-matched
+contextual set. It does not identify operational or semantic state, a quotient,
+composition, task/model generality, or a native law.
+
+The contextual account **MAKES THE CURRENT X-CONDITIONED INTERPRETATION MOOT**
+when at least two common F4-F20 layers in both sentinels satisfy the converse
+non-inferiority closure: for all three endpoints the strongest-context margin
+has point estimate `<=0.02` and crossed 95% upper bound `<0.02`, at least
+`6/8` keys are jointly below `0.02`, no carrier block collapses, support is
+`>=0.95`, and EDF matches are valid. A contextual arm that significantly
+beats its matched state arm also satisfies this rule. In that branch, generic
+deterministic input context is sufficient at matched capacity and Round 33
+cannot recover a state interpretation. If neither KEEP nor MOOT passes, the
+result is explicitly **INCONCLUSIVE/CAPACITY-SENSITIVE**; mere KEEP failure is
+not called closure, and the consequence test cannot resolve the missing
+capacity contrast.
+
+### Ordering ruling
+
+**Round 34 runs before Round 33.** This supersedes the Round 33 shorthand
+`context baseline -> consequence` by completing the capacity part of that
+baseline; it does not reverse the underlying order. Round 33 writes the fitted
+state prediction into a frozen decoder tail. Under Audit #18's generic
+contextual-response/Jacobian account, a better one-step reconstruction is
+expected to remain closer under later smooth transformations, so downstream
+persistence cannot identify state while the predictor's advantage is still
+capacity-confounded. Round 34 reuses existing captures, is cheaper than a new
+consequence capture plus scoring, and can make that run scientifically moot.
+Moreover, the live Round 33 implementation remains NOT-READY under Tier-1
+review. Only a Round 34 KEEP verdict can return Round 33 to the queue, and only
+after its joint-key, provenance, hard-wall, exact-reuse, and parity blockers
+are independently cleared.
+
+### Analyzer contract, cost, and exact commands
+
+Implementation stays in `experiments/analyze_lm_dynamics.py`; no new runner or
+script is permitted. Add the single locked mode above plus a read-only joint
+reducer flag `--context-capacity-joint TAG_A TAG_B`. The mode requires
+`--contextual-prefix-xfree --prefix-feature-set token_ids_v1 --source forward
+--target delta --unseen-words 2 --residualize static --pairs 0 1 2 3 4
+--n-shuffle 20 --n-boot 500`, completion on, and rejects screen, smoke,
+interchangeability, residualizer-selection, permutation-null, and consequence
+flags. It checkpoints only at completed outer keys, has a fixed four-hour wall
+per sentinel, and writes no claiming joint verdict from an incomplete arm.
+
+The existing point screens took about 10 and 15 minutes. With the fixed K=13
+completion universe plus six contextual/state-matched pairs, expect about
+`2-3.5 h` per sentinel and `4-7 h` total sequential CPU time; the hard bound is
+`4 h` per sentinel. Use one CPU process, no GPU, and never overlap A and B.
+
+After implementation is Tier-1 RUN-READY, run exactly:
+
+```powershell
+$env:PYTHONUNBUFFERED="1"
+$env:PYTHONIOENCODING="utf-8"
+.venv\Scripts\python.exe experiments\analyze_lm_dynamics.py --run lm_dyn_v1 --config experiments/config/lexical_probe_v1.json --source forward --sentinel-tag A --target delta --unseen-words 2 --residualize static --contextual-prefix-xfree --prefix-feature-set token_ids_v1 --context-capacity-audit round34_v1 --pairs 0 1 2 3 4 --n-shuffle 20 --n-boot 500 --tag ctxcap_A
+```
+
+```powershell
+$env:PYTHONUNBUFFERED="1"
+$env:PYTHONIOENCODING="utf-8"
+.venv\Scripts\python.exe experiments\analyze_lm_dynamics.py --run lm_dyn_v1 --config experiments/config/lexical_probe_v1.json --source forward --sentinel-tag B --target delta --unseen-words 2 --residualize static --contextual-prefix-xfree --prefix-feature-set token_ids_v1 --context-capacity-audit round34_v1 --pairs 0 1 2 3 4 --n-shuffle 20 --n-boot 500 --tag ctxcap_B
+```
+
+Then reduce the two completed artifacts only:
+
+```powershell
+.venv\Scripts\python.exe experiments\analyze_lm_dynamics.py --run lm_dyn_v1 --config experiments/config/lexical_probe_v1.json --context-capacity-joint ctxcap_A ctxcap_B --tag ctxcap_joint
+```
+
+Expected outputs are `analysis_ctxcap_A.json`, `analysis_ctxcap_B.json`, and
+`analysis_ctxcap_joint.json`. This preregistration creates none of them.
+
+### Risks, confounds, and second-lens limit
+
+- **Standardization defines the penalty geometry.** EDF is computed after each
+  arm's training-only standardization and after `RidgeFamily` centring. Any
+  scaler, retained-column mask, eigenspectrum, PCA basis, kernel median, or
+  vocabulary touched by a held-out carrier/word invalidates the key. Equal EDF
+  still does not make two feature maps the same hypothesis class.
+- **PCA leakage and ambiguity.** A global PCA, even if described as
+  unsupervised, leaks held-out geometry. A training-only PCA sensitivity must
+  rebuild bases inside outer and inner folds. Integer rank and subsequent
+  shrinkage prevent it from being the primary equality mechanism.
+- **Kernel EDF is conditional.** `tr[K(K+lambda I)^-1]` depends on gamma,
+  duplicated rows, and whether `K` is centred. Round 34 uses the analyzer's
+  uncentred training Gram convention, clips negative eigensolver roundoff for
+  EDF only, and records gamma and numerical rank. Kernel EDF is a
+  regularization diagnostic, not proof of equal nonlinear function-class
+  richness.
+- **The contextual ceiling is real.** Context-only rows repeat across words
+  within POS. Jitter, sample IDs, or held-out word identities would defeat the
+  comparison. The existing word-embedding and Round 27 X-free fields remain
+  separate lexical controls; survival here may still be item-specific state,
+  not operational state.
+- **Inference remains clustered and local.** The two sentinels reuse one
+  population, folds, decoder, append construction, and analysis family. They
+  are correlated sensitivities, not replications. The strongest comparator is
+  selected inside each bootstrap replicate, and F0 cannot rescue F4-F20.
+- **KL-rank remains qualified.** Ridge-slot substitution preserves the fixed
+  K=13 scale but also its live low-rank/SVD qualification. Cosine and skill
+  must carry the same decision; no KL-rank-only wording is allowed.
+
+Under the guiding question, Round 34 asks whether the denizen's apparent
+state-dependent move survives when the map reader and the context reader are
+given the same attainable flexibility. Closure is a useful hole diagnosis:
+the present residual space may expose deterministic input context more readily
+than a distinct navigation state. Survival earns only a narrower measurement
+claim and sends the program to the consequence instrument; it does not yet
+show that structured reasoning lives in this latent world. No new axiom is
+earned.
