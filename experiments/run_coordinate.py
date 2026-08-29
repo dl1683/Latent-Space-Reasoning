@@ -25,14 +25,14 @@ def sentence(f, s):
 
 def normalize(t):
     t = unicodedata.normalize("NFKC", t).lower().strip()
-    if len(t) >= 2 and t[0] == t[-1] and t[0] in "\"'“”‘’": t = t[1:-1].strip()
+    if len(t) >= 2 and (t[0], t[-1]) in {('"', '"'), ("'", "'"), ("“", "”"), ("‘", "’")}: t = t[1:-1].strip()
     t = re.sub(r"\s+", " ", t)
     return t[:-1].strip() if t and t[-1] in ".!?" else t
 
 
 class Runner:
     def __init__(self, cfg):
-        self.cfg = cfg; self.sp = SubstitutionProbe(cfg["model_id"]); self.model = self.sp.model; self.tok = self.sp.tok
+        self.cfg = cfg; self.sp = SubstitutionProbe(cfg["model_id"], revision=cfg["revision"]); self.model = self.sp.model; self.tok = self.sp.tok
         assert self.sp.revision == cfg["revision"], (self.sp.revision, cfg["revision"])
         self.layers = self.model.model.layers; self.eos = {self.tok.eos_token_id, self.tok.convert_tokens_to_ids("<|im_end|>")}
         self.decodes = 0
@@ -56,7 +56,7 @@ class Runner:
         if delta is not None:
             def hook(m, i, o):
                 h = o[0] if isinstance(o, tuple) else o
-                h = h.clone(); h[:, -1, :] += delta.to(h.dtype)
+                h = h.clone(); h[:, -1, :] += delta.to(device=h.device, dtype=h.dtype)
                 return (h,) + tuple(o[1:]) if isinstance(o, tuple) else h
             handle = self.layers[layer].register_forward_hook(hook)
         try: out = self.model(input_ids=ids, use_cache=True)
@@ -96,34 +96,39 @@ def vectors(H, idx, layer):
 def select_layer(R, H, fams, wording, log):
     """Earliest block where leave-one-family-out single-axis transports clear the calibration thresholds."""
     thr = R.cfg["layer_rule"]; n = len(fams); table = []
-    for layer in range(len(R.layers)):
-        hits = {"T": 0, "N": 0}; ended = 0
+    for layer in range(len(R.layers) - 1):                       # final block excluded: hidden_states[-1] is post-norm
+        hits = {"T": 0, "N": 0}; ended = {"T": 0, "N": 0}
         for i, f in enumerate(fams):
             vT, vN = vectors(H, [j for j in range(n) if j != i], layer)
             ids = R.prompt_ids(wording, sentence(f, "00"), "00")
             for key, v, tgt in (("T", vT, "10"), ("N", vN, "01")):
-                txt, e = R.decode(ids, layer, v); ended += e; hits[key] += (R.score(txt, f) == tgt)
-        accT, accN, term = hits["T"] / n, hits["N"] / n, ended / (2 * n)
-        row = {"layer": layer, "acc_T": accT, "acc_N": accN, "termination": term}; table.append(row); log(f"layer {layer}: {row}")
+                txt, e = R.decode(ids, layer, v); ended[key] += e; hits[key] += (R.score(txt, f) == tgt)
+        accT, accN, term = hits["T"] / n, hits["N"] / n, (ended["T"] + ended["N"]) / (2 * n)
+        row = {"layer": layer, "acc_T": accT, "acc_N": accN, "termination": term, "termination_T": ended["T"] / n, "termination_N": ended["N"] / n}
+        table.append(row); log(f"layer {layer}: {row}")
         if accT >= thr["calibration_threshold"] and accN >= thr["calibration_threshold"] and term >= thr["termination_threshold"]:
             return layer, table
     return None, table
 
 
 TRANSPORTS = [("00", (1, 1), "11"), ("11", (-1, -1), "00"), ("10", (-1, 1), "01"), ("01", (1, -1), "10")]
+SINGLE_AXES = [("00", (1, 0), "10"), ("00", (0, 1), "01")]
 
 
-def run_arm(R, layer, vT, vN, fams, wordings, scale=1.0, rand=None):
-    """One pass over test families x wordings x transports. rand: torch.Generator -> norm-matched Gaussian direction."""
-    rows = []
+def run_arm(R, layer, vT, vN, fams, wordings, transports=TRANSPORTS, scale=1.0, rand=None, explicit=False):
+    """One pass over families x wordings x transports. rand: torch.Generator -> ONE fixed norm-matched Gaussian
+    direction per transport (negated for inverse arms), reused for every family and wording.
+    explicit: matched no-patch baseline, the target state given by instruction from the same start sentence."""
+    rows = []; fixed = {}
+    if rand is not None:
+        g = torch.randn(vT.shape, generator=rand); g = g / g.norm()
+        for start, (cT, cN), tgt in transports: fixed[(start, tgt)] = g * (cT * vT + cN * vN).norm() * (1 if cT + cN >= 0 else -1)
     for f in fams:
         for w in wordings:
-            for start, (cT, cN), tgt in TRANSPORTS:
-                delta = cT * vT + cN * vN
-                if rand is not None:
-                    g = torch.randn(delta.shape, generator=rand); delta = g / g.norm() * delta.norm()
-                delta = delta * scale
-                txt, ended = R.decode(R.prompt_ids(w, sentence(f, start), start), layer, delta)
+            for start, (cT, cN), tgt in transports:
+                delta = (fixed[(start, tgt)] if rand is not None else cT * vT + cN * vN) * scale
+                if explicit: txt, ended = R.decode(R.prompt_ids(w, sentence(f, start), tgt))
+                else: txt, ended = R.decode(R.prompt_ids(w, sentence(f, start), start), layer, delta)
                 rows.append({"family": f["subject"], "wording": w, "start": start, "target": tgt, "text": txt,
                              "hit": R.score(txt, f) == tgt, "matched": R.score(txt, f), "ended": ended})
     return rows
@@ -132,7 +137,7 @@ def run_arm(R, layer, vT, vN, fams, wordings, scale=1.0, rand=None):
 def summarize(rows, key="target"):
     out = {}
     for r in rows:
-        k = f"{r['start']}->{r[key]}"; d = out.setdefault(k, [0, 0, 0]); d[0] += r["hit"]; d[1] += 1; d[2] += r["ended"]
+        k = f"{r['start']}->{r[key]}@{r['wording']}"; d = out.setdefault(k, [0, 0, 0]); d[0] += r["hit"]; d[1] += 1; d[2] += r["ended"]
     return {k: {"acc": v[0] / v[1], "n": v[1], "termination": v[2] / v[1]} for k, v in out.items()}
 
 
@@ -140,41 +145,37 @@ def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--config", required=True); ap.add_argument("--stage", default="demo")
     ap.add_argument("--out", default=None); a = ap.parse_args()
     cfg = json.load(open(a.config)); out_dir = a.out or f"experiments/results/{cfg['name']}"; os.makedirs(out_dir, exist_ok=True)
-    logf = open(os.path.join(out_dir, f"{a.stage}.log"), "a")
+    logf = open(os.path.join(out_dir, f"{a.stage}.log"), "w")
+    import hashlib; shas = {k: hashlib.sha256(open(v, "rb").read()).hexdigest() for k, v in (("runner", __file__), ("config", a.config))}
     def log(m): print(m, flush=True); logf.write(m + "\n"); logf.flush()
     t0 = time.time(); R = Runner(cfg); log(f"loaded {cfg['model_id']} rev={R.sp.revision} in {time.time()-t0:.0f}s; threads={torch.get_num_threads()}")
     cal, test, W0 = cfg["calibration"], cfg["test"], cfg["calibration_wording"]
     H = calibrate(R, cal, W0); log(f"calibration hidden states captured: {tuple(H['00'].shape)} ({time.time()-t0:.0f}s)")
     layer, table = select_layer(R, H, cal, W0, log)
-    result = {"config": cfg["name"], "revision": R.sp.revision, "layer": layer, "layer_table": table}
+    result = {"config": cfg["name"], "sha256": shas, "revision": R.sp.revision, "layer": layer, "layer_table": table}
+    save = lambda: json.dump(result, open(os.path.join(out_dir, f"{a.stage}_result.json"), "w"), indent=1)
     if layer is None:
-        log("NO LAYER CLEARS THE CALIBRATION RULE — stop."); json.dump(result, open(os.path.join(out_dir, "result.json"), "w"), indent=1); return
+        log("NO LAYER CLEARS THE CALIBRATION RULE - stop."); save(); return
     log(f"frozen layer {layer} ({time.time()-t0:.0f}s, {R.decodes} decodes)")
-    rng = np.random.default_rng(cfg["seeds"][0]); idx = sorted(rng.choice(len(cal), cfg["calibration_subset_size"], replace=False).tolist())
-    vT, vN = vectors(H, idx, layer)
+    subsets = {seed: sorted(np.random.default_rng(seed).choice(len(cal), cfg["calibration_subset_size"], replace=False).tolist()) for seed in cfg["seeds"]}
+    result["calibration_subsets"] = subsets; idx = subsets[cfg["seeds"][0]]; vT, vN = vectors(H, idx, layer)
+    demo_fams, full_fams = test[:cfg["demo_families"]], test[cfg["demo_families"]:]      # demo families are development examples
     if a.stage == "demo":
-        rows = run_arm(R, layer, vT, vN, test[:4], [cfg["test_wordings"][0]])
+        rows = run_arm(R, layer, vT, vN, demo_fams, [cfg["test_wordings"][0]], transports=SINGLE_AXES + TRANSPORTS)
         for r in rows: log(f"[{r['start']}->{r['target']}] {r['family']}: {r['text']!r}  hit={r['hit']} matched={r['matched']}")
         result["demo"] = rows; result["demo_summary"] = summarize(rows)
     else:
-        arms = {}
-        base = []
-        for f in test:                                             # explicit-instruction baseline, no patch
-            for w in cfg["test_wordings"]:
-                for s in STATES:
-                    txt, e = R.decode(R.prompt_ids(w, sentence(f, "00"), s)); base.append({"family": f["subject"], "wording": w, "start": s, "target": s, "text": txt, "hit": R.score(txt, f) == s, "matched": R.score(txt, f), "ended": e})
-        arms["explicit_baseline"] = base; log(f"explicit baseline: {summarize(base)}")
-        for seed in cfg["seeds"]:
-            rng = np.random.default_rng(seed); idx = sorted(rng.choice(len(cal), cfg["calibration_subset_size"], replace=False).tolist())
-            sT, sN = vectors(H, idx, layer); rows = run_arm(R, layer, sT, sN, test, cfg["test_wordings"])
-            arms[f"seed_{seed}"] = rows; log(f"seed {seed} idx={idx}: {summarize(rows)}")
-        arms["sham"] = run_arm(R, layer, vT, vN, test, cfg["test_wordings"], scale=0.0); log(f"sham: {summarize(arms['sham'])}")
-        for k in range(cfg["random_controls"]):
-            g = torch.Generator().manual_seed(1000 + k); rows = run_arm(R, layer, vT, vN, test, cfg["test_wordings"], rand=g)
-            arms[f"random_{k}"] = rows; log(f"random {k}: {summarize(rows)}")
-        result["arms"] = arms; result["summary"] = {k: summarize(v) for k, v in arms.items()}
+        arms = result["arms"] = {}; W = cfg["test_wordings"]; ALL = SINGLE_AXES + TRANSPORTS
+        def arm(name, **kw):
+            arms[name] = run_arm(R, layer, kw.pop("vT", vT), kw.pop("vN", vN), full_fams, W, **kw); log(f"{name}: {summarize(arms[name])}"); save()
+        arm("explicit_matched_baseline", transports=ALL, explicit=True)          # same start sentences, target by instruction, no patch
+        for seed, idx in subsets.items():
+            sT, sN = vectors(H, idx, layer); arm(f"subset_{seed}", vT=sT, vN=sN, transports=ALL)
+        arm("sham", transports=ALL, scale=0.0)
+        for k in range(cfg["random_controls"]): arm(f"random_{k}", transports=ALL, rand=torch.Generator().manual_seed(1000 + k))
+        result["summary"] = {k: summarize(v) for k, v in arms.items()}
     result["decodes"] = R.decodes; result["seconds"] = time.time() - t0
-    json.dump(result, open(os.path.join(out_dir, f"{a.stage}_result.json"), "w"), indent=1); log(f"done in {time.time()-t0:.0f}s, {R.decodes} decodes")
+    save(); log(f"done in {time.time()-t0:.0f}s, {R.decodes} decodes")
 
 
 if __name__ == "__main__":

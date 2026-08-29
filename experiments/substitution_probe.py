@@ -33,11 +33,11 @@ class Probe:
 
 
 class SubstitutionProbe:
-    def __init__(self, model_id: str = DEFAULT_MODEL, dtype=torch.float32):
+    def __init__(self, model_id: str = DEFAULT_MODEL, dtype=torch.float32, revision=None):
         from transformers import AutoModelForCausalLM, AutoTokenizer
         self.model_id = model_id
-        self.tok = AutoTokenizer.from_pretrained(model_id)
-        self.model = AutoModelForCausalLM.from_pretrained(model_id, dtype=dtype).eval()
+        self.tok = AutoTokenizer.from_pretrained(model_id, revision=revision)
+        self.model = AutoModelForCausalLM.from_pretrained(model_id, dtype=dtype, revision=revision).eval()
         self.E = self.model.get_input_embeddings().weight.detach()          # (V, D)
         cfg = self.model.config
         self.tied = bool(getattr(cfg, "tie_word_embeddings", False))

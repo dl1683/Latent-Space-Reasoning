@@ -1,64 +1,364 @@
 {
-  "name": "coordinate_v1",
-  "purpose": "Two-bit causal coordinate (tense x polarity) in the Qwen3-0.6B residual stream. Calibration uses states 00/10/01 only; state 11 never enters any adaptive decision.",
-  "model_id": "Qwen/Qwen3-0.6B",
-  "revision": "c1899de289a04d12100db370d81485cdf75e47ca",
-  "max_new_tokens": 24,
-  "calibration_wording": "W0",
-  "test_wordings": ["W1", "W2"],
-  "wordings": {
-    "W0": "Rewrite the sentence below in the {tense} tense and the {polarity} form. Reply with the rewritten sentence only.\nSentence: {src}",
-    "W1": "Task: change this sentence so that it is in the {tense} tense and is {polarity}. Give only the new sentence.\n{src}",
-    "W2": "Here is a sentence: \"{src}\"\nWrite the same sentence in the {tense} tense, {polarity} form. Output nothing except the sentence."
+ "name": "coordinate_v1",
+ "purpose": "Two-bit causal coordinate (tense x polarity) in the Qwen3-0.6B residual stream. Calibration uses states 00/10/01 only; state 11 never enters any adaptive decision.",
+ "model_id": "Qwen/Qwen3-0.6B",
+ "revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+ "max_new_tokens": 24,
+ "calibration_wording": "W0",
+ "test_wordings": [
+  "W1",
+  "W2"
+ ],
+ "wordings": {
+  "W0": "Rewrite the sentence below in the {tense} tense and the {polarity} form. Reply with the rewritten sentence only; do not repeat the original sentence; do not use contractions.\nSentence: {src}",
+  "W1": "Task: change this sentence so that it is in the {tense} tense and is {polarity}. Give only the new sentence; do not repeat the original; do not use contractions.\n{src}",
+  "W2": "Here is a sentence: \"{src}\"\nWrite the same sentence in the {tense} tense, {polarity} form. Output nothing except the sentence; do not repeat the original; do not use contractions."
+ },
+ "state_words": {
+  "tense": {
+   "0": "present",
+   "1": "past"
   },
-  "state_words": {"tense": {"0": "present", "1": "past"}, "polarity": {"0": "affirmative", "1": "negative"}},
-  "layer_rule": {"calibration_threshold": 0.70, "termination_threshold": 0.95},
-  "seeds": [11, 23, 37],
-  "calibration_subset_size": 12,
-  "random_controls": 5,
-  "families_note": "fields: subject, plural, present, past, base, object. 00=present affirmative, 10=past affirmative, 01=present negative, 11=past negative.",
-  "calibration": [
-    {"subject": "The robin", "plural": false, "present": "sings", "past": "sang", "base": "sing", "object": ""},
-    {"subject": "The children", "plural": true, "present": "play", "past": "played", "base": "play", "object": " outside"},
-    {"subject": "The chef", "plural": false, "present": "cooks", "past": "cooked", "base": "cook", "object": " dinner"},
-    {"subject": "The dogs", "plural": true, "present": "bark", "past": "barked", "base": "bark", "object": ""},
-    {"subject": "The teacher", "plural": false, "present": "writes", "past": "wrote", "base": "write", "object": " a letter"},
-    {"subject": "The boys", "plural": true, "present": "swim", "past": "swam", "base": "swim", "object": ""},
-    {"subject": "The farmer", "plural": false, "present": "grows", "past": "grew", "base": "grow", "object": " corn"},
-    {"subject": "The girls", "plural": true, "present": "laugh", "past": "laughed", "base": "laugh", "object": ""},
-    {"subject": "The baker", "plural": false, "present": "sells", "past": "sold", "base": "sell", "object": " bread"},
-    {"subject": "The birds", "plural": true, "present": "fly", "past": "flew", "base": "fly", "object": ""},
-    {"subject": "The student", "plural": false, "present": "reads", "past": "read", "base": "read", "object": " the book"},
-    {"subject": "The workers", "plural": true, "present": "build", "past": "built", "base": "build", "object": " a wall"},
-    {"subject": "The cat", "plural": false, "present": "sleeps", "past": "slept", "base": "sleep", "object": ""},
-    {"subject": "The nurses", "plural": true, "present": "help", "past": "helped", "base": "help", "object": " the patient"},
-    {"subject": "The driver", "plural": false, "present": "stops", "past": "stopped", "base": "stop", "object": " the bus"},
-    {"subject": "The horses", "plural": true, "present": "run", "past": "ran", "base": "run", "object": ""}
-  ],
-  "test": [
-    {"subject": "The pilot", "plural": false, "present": "flies", "past": "flew", "base": "fly", "object": " the plane"},
-    {"subject": "The twins", "plural": true, "present": "dance", "past": "danced", "base": "dance", "object": ""},
-    {"subject": "The painter", "plural": false, "present": "paints", "past": "painted", "base": "paint", "object": " the fence"},
-    {"subject": "The soldiers", "plural": true, "present": "march", "past": "marched", "base": "march", "object": ""},
-    {"subject": "The girl", "plural": false, "present": "drinks", "past": "drank", "base": "drink", "object": " milk"},
-    {"subject": "The lawyers", "plural": true, "present": "speak", "past": "spoke", "base": "speak", "object": ""},
-    {"subject": "The boy", "plural": false, "present": "breaks", "past": "broke", "base": "break", "object": " the window"},
-    {"subject": "The singers", "plural": true, "present": "wait", "past": "waited", "base": "wait", "object": ""},
-    {"subject": "The doctor", "plural": false, "present": "visits", "past": "visited", "base": "visit", "object": " the village"},
-    {"subject": "The frogs", "plural": true, "present": "jump", "past": "jumped", "base": "jump", "object": ""},
-    {"subject": "The king", "plural": false, "present": "wears", "past": "wore", "base": "wear", "object": " a crown"},
-    {"subject": "The sailors", "plural": true, "present": "sing", "past": "sang", "base": "sing", "object": ""},
-    {"subject": "The woman", "plural": false, "present": "buys", "past": "bought", "base": "buy", "object": " flowers"},
-    {"subject": "The players", "plural": true, "present": "win", "past": "won", "base": "win", "object": " the game"},
-    {"subject": "The clerk", "plural": false, "present": "counts", "past": "counted", "base": "count", "object": " the coins"},
-    {"subject": "The owls", "plural": true, "present": "hunt", "past": "hunted", "base": "hunt", "object": ""},
-    {"subject": "The guard", "plural": false, "present": "opens", "past": "opened", "base": "open", "object": " the gate"},
-    {"subject": "The monks", "plural": true, "present": "pray", "past": "prayed", "base": "pray", "object": ""},
-    {"subject": "The mother", "plural": false, "present": "holds", "past": "held", "base": "hold", "object": " the baby"},
-    {"subject": "The wolves", "plural": true, "present": "howl", "past": "howled", "base": "howl", "object": ""},
-    {"subject": "The judge", "plural": false, "present": "listens", "past": "listened", "base": "listen", "object": ""},
-    {"subject": "The cooks", "plural": true, "present": "cut", "past": "cut", "base": "cut", "object": " the onions"},
-    {"subject": "The child", "plural": false, "present": "cries", "past": "cried", "base": "cry", "object": ""},
-    {"subject": "The thieves", "plural": true, "present": "steal", "past": "stole", "base": "steal", "object": " the jewels"}
-  ]
+  "polarity": {
+   "0": "affirmative",
+   "1": "negative"
+  }
+ },
+ "layer_rule": {
+  "calibration_threshold": 0.7,
+  "termination_threshold": 0.95
+ },
+ "seeds": [
+  11,
+  23,
+  37
+ ],
+ "calibration_subset_size": 12,
+ "random_controls": 5,
+ "families_note": "fields: subject, plural, present, past, base, object. 00=present affirmative, 10=past affirmative, 01=present negative, 11=past negative.",
+ "calibration": [
+  {
+   "subject": "The robin",
+   "plural": false,
+   "present": "sings",
+   "past": "sang",
+   "base": "sing",
+   "object": ""
+  },
+  {
+   "subject": "The children",
+   "plural": true,
+   "present": "play",
+   "past": "played",
+   "base": "play",
+   "object": " outside"
+  },
+  {
+   "subject": "The chef",
+   "plural": false,
+   "present": "cooks",
+   "past": "cooked",
+   "base": "cook",
+   "object": " dinner"
+  },
+  {
+   "subject": "The dogs",
+   "plural": true,
+   "present": "bark",
+   "past": "barked",
+   "base": "bark",
+   "object": ""
+  },
+  {
+   "subject": "The teacher",
+   "plural": false,
+   "present": "writes",
+   "past": "wrote",
+   "base": "write",
+   "object": " a letter"
+  },
+  {
+   "subject": "The boys",
+   "plural": true,
+   "present": "swim",
+   "past": "swam",
+   "base": "swim",
+   "object": ""
+  },
+  {
+   "subject": "The farmer",
+   "plural": false,
+   "present": "grows",
+   "past": "grew",
+   "base": "grow",
+   "object": " corn"
+  },
+  {
+   "subject": "The girls",
+   "plural": true,
+   "present": "laugh",
+   "past": "laughed",
+   "base": "laugh",
+   "object": ""
+  },
+  {
+   "subject": "The baker",
+   "plural": false,
+   "present": "sells",
+   "past": "sold",
+   "base": "sell",
+   "object": " bread"
+  },
+  {
+   "subject": "The birds",
+   "plural": true,
+   "present": "fly",
+   "past": "flew",
+   "base": "fly",
+   "object": ""
+  },
+  {
+   "subject": "The student",
+   "plural": false,
+   "present": "reads",
+   "past": "read",
+   "base": "read",
+   "object": " the book"
+  },
+  {
+   "subject": "The workers",
+   "plural": true,
+   "present": "build",
+   "past": "built",
+   "base": "build",
+   "object": " a wall"
+  },
+  {
+   "subject": "The cat",
+   "plural": false,
+   "present": "sleeps",
+   "past": "slept",
+   "base": "sleep",
+   "object": ""
+  },
+  {
+   "subject": "The nurses",
+   "plural": true,
+   "present": "help",
+   "past": "helped",
+   "base": "help",
+   "object": " the patient"
+  },
+  {
+   "subject": "The driver",
+   "plural": false,
+   "present": "stops",
+   "past": "stopped",
+   "base": "stop",
+   "object": " the bus"
+  },
+  {
+   "subject": "The horses",
+   "plural": true,
+   "present": "run",
+   "past": "ran",
+   "base": "run",
+   "object": ""
+  }
+ ],
+ "test": [
+  {
+   "subject": "The pilot",
+   "plural": false,
+   "present": "flies",
+   "past": "flew",
+   "base": "fly",
+   "object": " the plane"
+  },
+  {
+   "subject": "The twins",
+   "plural": true,
+   "present": "dance",
+   "past": "danced",
+   "base": "dance",
+   "object": ""
+  },
+  {
+   "subject": "The painter",
+   "plural": false,
+   "present": "paints",
+   "past": "painted",
+   "base": "paint",
+   "object": " the fence"
+  },
+  {
+   "subject": "The soldiers",
+   "plural": true,
+   "present": "march",
+   "past": "marched",
+   "base": "march",
+   "object": ""
+  },
+  {
+   "subject": "The girl",
+   "plural": false,
+   "present": "drinks",
+   "past": "drank",
+   "base": "drink",
+   "object": " milk"
+  },
+  {
+   "subject": "The lawyers",
+   "plural": true,
+   "present": "speak",
+   "past": "spoke",
+   "base": "speak",
+   "object": ""
+  },
+  {
+   "subject": "The boy",
+   "plural": false,
+   "present": "breaks",
+   "past": "broke",
+   "base": "break",
+   "object": " the window"
+  },
+  {
+   "subject": "The singers",
+   "plural": true,
+   "present": "wait",
+   "past": "waited",
+   "base": "wait",
+   "object": ""
+  },
+  {
+   "subject": "The doctor",
+   "plural": false,
+   "present": "visits",
+   "past": "visited",
+   "base": "visit",
+   "object": " the village"
+  },
+  {
+   "subject": "The frogs",
+   "plural": true,
+   "present": "jump",
+   "past": "jumped",
+   "base": "jump",
+   "object": ""
+  },
+  {
+   "subject": "The king",
+   "plural": false,
+   "present": "wears",
+   "past": "wore",
+   "base": "wear",
+   "object": " a crown"
+  },
+  {
+   "subject": "The sailors",
+   "plural": true,
+   "present": "sing",
+   "past": "sang",
+   "base": "sing",
+   "object": ""
+  },
+  {
+   "subject": "The woman",
+   "plural": false,
+   "present": "buys",
+   "past": "bought",
+   "base": "buy",
+   "object": " flowers"
+  },
+  {
+   "subject": "The players",
+   "plural": true,
+   "present": "win",
+   "past": "won",
+   "base": "win",
+   "object": " the game"
+  },
+  {
+   "subject": "The clerk",
+   "plural": false,
+   "present": "counts",
+   "past": "counted",
+   "base": "count",
+   "object": " the coins"
+  },
+  {
+   "subject": "The owls",
+   "plural": true,
+   "present": "hunt",
+   "past": "hunted",
+   "base": "hunt",
+   "object": ""
+  },
+  {
+   "subject": "The guard",
+   "plural": false,
+   "present": "opens",
+   "past": "opened",
+   "base": "open",
+   "object": " the gate"
+  },
+  {
+   "subject": "The monks",
+   "plural": true,
+   "present": "pray",
+   "past": "prayed",
+   "base": "pray",
+   "object": ""
+  },
+  {
+   "subject": "The mother",
+   "plural": false,
+   "present": "holds",
+   "past": "held",
+   "base": "hold",
+   "object": " the baby"
+  },
+  {
+   "subject": "The wolves",
+   "plural": true,
+   "present": "howl",
+   "past": "howled",
+   "base": "howl",
+   "object": ""
+  },
+  {
+   "subject": "The judge",
+   "plural": false,
+   "present": "listens",
+   "past": "listened",
+   "base": "listen",
+   "object": ""
+  },
+  {
+   "subject": "The cooks",
+   "plural": true,
+   "present": "chop",
+   "past": "chopped",
+   "base": "chop",
+   "object": " the onions"
+  },
+  {
+   "subject": "The child",
+   "plural": false,
+   "present": "cries",
+   "past": "cried",
+   "base": "cry",
+   "object": ""
+  },
+  {
+   "subject": "The thieves",
+   "plural": true,
+   "present": "steal",
+   "past": "stole",
+   "base": "steal",
+   "object": " the jewels"
+  }
+ ],
+ "demo_families": 4
 }
