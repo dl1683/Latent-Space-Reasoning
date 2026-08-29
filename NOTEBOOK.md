@@ -34,14 +34,20 @@ What holds: the adjudicated four-cell table; both contextual screens; ctx_A
 (ridge beats the strongest contextual-prefix arm on every endpoint at F4–F20
 with crossed LBs > 0, at unmatched capacity). What is reframed: the whole
 line now hinges on ONE identified confound — capacity (state ridge ~5–10×
-the contextual arm's effective df). Round 34 is the registered answer and
-runs before the consequence test; the consequence instrument is parked on a
+the contextual arm's effective df) (corrected by audit #19: capacity is not
+the sole confound — the difference is compatible with state information,
+unmatched capacity, missing contextual features, or a mixture). Round 34 is
+the registered answer and runs before the consequence test (corrected by
+audit #19: the Round 34a matched-EDF core screen runs first; the full Round
+34 is held; Round 34 is `P_static`-residualized and cannot retroactively
+capacity-match `ctx_A`); the consequence instrument is parked on a
 branch after four NOT-READY rounds, which I read as partly a
 reviewer-escalation artefact (each round raised a new bar) and partly real
 (legacy-base pins, exact-fit reuse). Instrument reviews are now the main
 consumer of the program's time; the repair cap is doing its job.
 
-Alternatives held live: (1) capacity explains the gap (Round 34 MOOT) — then
+Alternatives held live: (1) capacity explains the gap (Round 34 MOOT;
+corrected by audit #19: the decisive first check is Round 34a) — then
 the line collapses to "context vectors predict context-vector displacements"
 and the constructive program moves to a typed use-frame task; (2) capacity
 does not explain it (KEEP) — then the consequence question returns, but
@@ -220,9 +226,16 @@ F4–F20 with crossed 95% lower bounds above zero — cosine margin +0.15 to
 (LB ≥ 0.25), continuous KL +0.27 to +0.45 (LB ≥ 0.17); support 1.0. At F0
 the cosine margin is +0.019 (LB 0.011) while the skill and KL lower bounds
 fall below zero. Audit #18 wording governs: this completed comparator did not
-close the ridge-versus-context gap at the registered (unmatched) capacity;
-the state ridge still carries ~5–10× the contextual arm's effective df, so
-the gap remains unidentified until Round 34's capacity-matched comparison.
+close the ridge-versus-context gap at the registered (unmatched) capacity
+(corrected by audit #19: the phrase "did not close the gap" is withdrawn;
+say "the higher-EDF state predictor retained a positive held-out score
+difference from the registered context-only pair" — a descriptive predictor
+comparison, not evidence that context failed or that capacity is the sole
+confound); the state ridge still carries ~5–10× the contextual arm's
+effective df, so the gap remains unidentified until Round 34's
+capacity-matched comparison (corrected by audit #19: Round 34 is
+`P_static`-residualized and cannot retroactively capacity-match `ctx_A`;
+the Round 34a matched-EDF core screen runs first).
 Not a "live gate"; not a state-reading result. ctx_B is running next, then
 the static-residualized forms ctxS_A/ctxS_B, then the parity check.
 
@@ -246,11 +259,16 @@ sentinels; MOOT needs the strongest matched margin ≤ 0.02 with crossed UB
 < 0.02 under the same key rules; otherwise INCONCLUSIVE/CAPACITY-SENSITIVE.
 Ruling: Round 34 runs BEFORE Round 33 (the consequence test cannot identify
 state while the predictor advantage is capacity-confounded); only a KEEP
-verdict returns Round 33 to the queue. Cost 2–3.5 h CPU per sentinel, four-hour
+verdict returns Round 33 to the queue. (Corrected by audit #19: the full
+six-arm Round 34 is HELD; a preregistered Round 34a matched-EDF core screen
+runs first, K=13 KL-rank is diagnostic in favor of raw continuous KL, and
+Round 33 stays parked as an allocation decision, not a kill.) Cost 2–3.5 h CPU per sentinel, four-hour
 wall. The consequence instrument is parked on branch `conseq-instrument`
 after four NOT-READY Tier-1 rounds (decision raised to the user). Round 34
 implementation is being written against the committed main analyzer; Tier-1
-review before any run.
+review before any run. (Later the same day: implemented as
+`--context-capacity-audit round34_v1`, commit `9eb1301`; producer path
+RUN-READY, joint reducer flagged for one more review; run held by audit #19.)
 
 ## 2026-08-28 — Re-contextualization #18 (2-hour step-back; audit #18 fired, unprimed)
 
