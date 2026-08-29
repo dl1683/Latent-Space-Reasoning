@@ -15,7 +15,9 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   independent replication was identified. Every bullet under the NLM-007
   heading below is the closed record; its queue/order language is historical.
 - **Round 36 v1 — valid registered FAIL** of its frozen `0.10/0.90` exact
-  reducer, every gate (`073037f`; adjudicated `e69ac72`). Only licensed
+  reducer, every gate (`073037f`; adjudicated `e69ac72`; config
+  `experiments/config/operational_quotient_v1.json`; artifacts
+  `experiments/results/operational_quotient_v1/`). Only licensed
   reading = audit #23, verbatim in `STATE.md`: a behavior-, calibration-, and
   exactness-confounded non-certification of the registered operational
   quotient — not evidence of no approximate composable structure; the
@@ -24,7 +26,9 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   cell count, or "FIT BUT NON-CONGRUENT" for a support-only failure.
 - **Round 36b — complete; all four cells behaviour-ineligible** (lock V3,
   review #2 RUN-READY, `61e2430`; results `abef6cf`; ledger
-  `round36b_ladder`; audit #24 `round36b_audit24`, adopted `57b0961`).
+  `round36b_ladder`; audit #24 `round36b_audit24`, adopted `57b0961`;
+  configs `experiments/config/operational_quotient_36b_{S16,S64,LR64,W64}.json`;
+  artifacts `experiments/results/operational_quotient_36b_*/`).
   Every cell `FAIL — BEHAVIOR UNDERFIT; QUOTIENT INELIGIBLE`; no eligible
   cell, no PASS. Only licensed reading = audit #24, verbatim in `STATE.md`:
   the ladder did not reach exact held-out eligibility, while the
@@ -53,12 +57,46 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   "not reachable even with direct supervision", "certification-regime
   problem" as the cause, "the auxiliary objective caused it" (leading
   hypothesis only), or "W64 beat the control". No further moving-target cells.
-- **Round 36d / Round 37 — registering (Codex, `theory/EXPERIMENTS.md`).**
-  36d = frozen-chart transition control on the hash-pinned W64 checkpoints
-  (freeze encoder + readout, re-init the width-64 transition head, stationary
-  176-cell MSE only, BCE as evaluation gate; ONE capped cell). 37 =
-  presentation-duplicated 32->16 quotient world, quotient-factored carrier vs
-  unrestricted baseline. Neither has run.
+- **Round 36d — complete; joint FAIL — INTERCHANGEABILITY (POSITIVE-CONTROL,
+  frozen chart; audit #26 governs).** The one permitted frozen-target
+  head-only calibration (audit #25 rank 1): hash-pinned behaviour-only W64
+  encoder/readout frozen, fresh width-64 transition head trained on the
+  stationary 176-cell successor table for 16,000 steps, BCE as an evaluation
+  gate, unchanged exact reducer; ONE capped cell. Registered before any
+  outcome (ledger `round36d_37_registered` -> `round36d_impl_discrepancy` ->
+  lock V2 `round36d_lock_v2` -> review #1 RUN-READY `round36d_run_ready`;
+  runner + config `6a95c29`,
+  `experiments/config/operational_quotient_36d_w64.json`). Run `7a5ce35`
+  (ledger `round36d_frozen_chart_positive_control_produce` / `_reduce`,
+  `round36d_frozen_chart_control`; `118.454 s` of a `480 s` wall; artifacts
+  `experiments/results/operational_quotient_36d_w64/` — `config.json`,
+  `manifest.json`, `verdict.json` committed; `evidence.json`, `weights.npz`
+  git-ignored, sha256-pinned): exact behaviour in all five seeds
+  (`21,184/21,184` train, `2,240/2,240` held out); exact PASS on quotient
+  availability, well-definedness, toggle involution, swap/toggle table, H2
+  closure, H3 closure, canonical action-table truth, and the cross-seed
+  table; interchangeability misses `16/5/28/98/0` of `132,160` cells
+  (`147/660,800`; all depth-2 rolled histories followed by H3; 89
+  confidence-only, 58 with a future-probe truth error; no immediate
+  endpoint error), so `1/5` seeds pass and the joint status is
+  `FAIL — INTERCHANGEABILITY`. Only licensed reading = audit #26
+  (`round36d_audit26`, adopted `cad85ef`; verbatim in `STATE.md`): narrow
+  individual-gate reachability under privileged full-table supervision, not
+  quotient discovery or a complete learned certificate; no complete learned
+  artifact has passed the joint reducer (only the oracle fixture has); the
+  adequacy ratio is diagnostic and does not identify cause. Never say
+  "reached the exact certificate", "the learned-pass gap is closed", "the
+  quotient/action algebra was learned", "eight independent gates", or
+  "interchangeability generally fails". Round 36 calibration is closed; no
+  further Round 36 cells.
+- **Round 37 — registered next move; not run.** Presentation-duplicated
+  32->16 quotient world (32 presentations, true 16-class quotient;
+  quotient-factored carrier vs unrestricted baseline), registered in
+  `theory/EXPERIMENTS.md` (ledger `round36d_37_registered`); rolled
+  interchangeability, carried from the Round 36d residue, is its primary
+  structural question. Runner `experiments/run_presentation_quotient.py` and
+  config `experiments/config/presentation_quotient_v1.json` are being
+  authored by Codex. No outcome exists.
 
 ## NLM-007 — LM residual-stream dynamics; middle-depth ridge lead withdrawn under the identity baseline; displacement ladder adjudicated (audit #8 wording); forward-time move adjudicated NOT MET = nonpass, not a kill (Round 20, audit #9); within-style null = diagnostic only (both arms); LOCO A/B within-family positive, bounded (audit #10 wording; adjudicated Round 22); equalized addendum defect-affected, descriptive only (audit #11); unseen-word runs A/B mechanical pass, formal gate pending (Round 23, audit #12); corrected equalized reruns contract-correct (A adjudicated Round 25; B pending); residualization A-static contract-valid, adjudicated Round 26 as corrected by audit #14 (registered-presentation sensitivity + surviving X-linked residual predictability; neither state nor presentation-independence); A-augmented (`P_aug-score4`) adjudicated Round 27 as corrected by audit #15 (nested sensitivity on the same sentinel-A cells, not a replication; outcome-clean but transductive within carrier); B-static adjudicated Round 28 as corrected by audit #16 (F4–F20 pass, F0 fails; a correlated two-sentinel check, not replication); B-augmented (`P_aug-score4`) scored on the third launch after two losses in the F8 grammar block, adjudicated Round 32 as amended-implementation and SVD-telemetry-incomplete (F4–F20 pass, F0 fails); the sentinel {A,B} × {P_static, P_aug-score4} table is complete only for the residual-versus-four-word-only-null mechanical gate — within-decoder, within-population condition robustness, not replication (audit #17); patched A-static `resSA2` complete and ADJUDICATED (Evidence gate 2026-08-28, PASS qualified: the four-cell table is complete on one common K=13/four-null/crossed-bootstrap scale; F4–F20 pass in all four correlated cells; F0 non-qualifying in three cells with a weak pooled A-score4 exception; audit #18: F0 is a model-class-sensitive diagnostic, not an all-field dead end); contextual-prefix screens `ctxscr_A/B` = point-only screens that did not triage the X-conditioned hypothesis out at F4–F20 (ctx effective df ~42.7 vs state ridge ~210–406; no state-reading gate passed; audit #18); SVD telemetry gate PARKED and unpassed by allocation (repair cap = global CLAUDE.md §2.7, not an AGENTS.md rule); Round 33 consequence instrument implemented, UNRUN, PARKED and unpassed after Tier-1 re-review #4 NOT-READY (joint-key rule closed; provenance/parity blockers open; repair cap applied as an allocation decision, ledger `nlm007_consequence_instrument_parked`; branch `conseq-instrument`, main analyzer at HEAD); contextual-prefix completions `ctx_A/ctx_B` (unresidualized) COMPLETE, scored pending adjudication, audit #19 wording upheld by audit #20: descriptive higher-EDF predictor comparisons — at F4–F20 the higher-EDF state predictor retained a positive held-out score difference from the registered `token_ids_v1` context-only pair with positive crossed lower bounds, 8/8 point-positive keys, no family collapse, support 1.0; state ridge ~5–10× the contextual ridge's effective df; F0 non-qualifying; NOT evidence that context failed, that capacity is the sole confound, or that operational state is identified (the phrase "did not close the gap" is withdrawn); Round 34 capacity-matched audit registered (`d493cf2`) and implemented (`9eb1301`; producer RUN-READY, joint reducer flagged) but HELD pending the preregistered Round 34a matched-EDF core screen (`f97a533`; K=13 KL-rank diagnostic, raw continuous KL confirmatory; audit #19 staging); `ctxS_A` and `ctxS_B` (P_static-residualized) COMPLETE, scored pending adjudication, audit #20 wording (sentinel B mirrors A: context cosine ~0.04–0.08 / nerr ~1.00 vs residual ridge cosine ~0.52–0.58 / nerr 0.82–0.86): the registered token-context ridge/kernel falls to held-out cosine ~0.04–0.07 and normalized error ~1.00 while the residual `X_perp` ridge keeps cosine ~0.56–0.62 and normalized error 0.78–0.83; raw context performance is highly non-robust to the registered `P_static` residualization and therefore `P_static`-aligned in this fitted design — NEVER "beyond template metadata", "presentation removed", "largely by construction", or "same feature space"; licensed positive wording: a higher-capacity predictor from `X_perp` carries held-out predictive information beyond the registered `P_static` nuisance projection and this fixed `token_ids_v1` context field; Round 34a matched-EDF core screen RUN-READY (`6b93ff1`, four Tier-1 rounds; six runs queued: `ctxcapA_raw`, `ctxcapB_raw`, `ctxcap_raw_joint`, `ctxcapA_static`, `ctxcapB_static`, `ctxcap_static_joint`; both estimands required, no cross-estimand verdict); Round 34b (P/C partial-overlap screen) and Round 34c (item-embedding-by-P_static X-free comparator) preregistered (`3b49321`, `ff69d82`), implemented on the main analyzer, UNRUN and under Tier-1 repair (review #1 NOT-READY on four items), to run after Round 34a and before the full Round 34 (held); Round 35 typed truth-evaluable world preregistered docs-only (`c74bfab`; authors nothing until the 34a/34b/34c ladder resolves); Round 33 parked; chain running on the frozen analyzer copy (`6b93ff1` blob): parity check (`parity_head` A/B done, `parity_ref` A running, then B and a parity verdict), then the six Round 34a runs; capture extension committed (`4137258`); contextual-prefix X-free baseline committed (`eab0a68`); populations: v1 design-void (audit #16), v2 and v3 voided by the independent linguistic adversary, v4 approved 48/48 and frozen — a bounded mentioned-string instruction micro-world (audit #17); operation-verb update = declared-operation-verb context intervention; Round 31 chain and X-free chain disarmed; Freedman–Lane conditional on one A-static cell; audit #17 allocation ruling in force (Round 33); retention marker non-commensurate (audit #13); **PROGRAM CONTINUATION RULING (2026-08-29, ledger `nlm007_program_continuation_ruling`; supersedes every queue item before it in this header): NLM-007 STOPPED as an open-ended program (infrastructure drift 6:1); terminal closeout ladder only — Round 34a raw (DONE, CONTINUE) -> Round 34a static (RUNNING) -> Round 34b (conditional on both 34a CONTINUE + final bounded repair RUN-READY) -> Round 34c (conditional on a 34b CONTINUE); first STOP/MOOT/REDUNDANT/INCONCLUSIVE rung ends it; all-CONTINUE = one narrow measurement claim then closure; CUT: full Round 34, Round 33 (branch archived as tag `archive/conseq-instrument-parked`), the parity check as a gate, the random-weight null, a second decoder; parity verdict IDENTICAL A/B (`analysis_parity_*.json`; evidence only); Round 34a RAW CONTINUE at F4–F20 in both sentinels with capacity-matched cosine margins +0.04 to +0.08 (LBs 0.02–0.05), 8/8 keys, F0 INCONCLUSIVE/diagnostic, joint COMPLETE/SCREEN-ONLY CONTINUE — capacity matching removed most of the unmatched raw gap; a narrow survival, not a strong one, not a state claim; Round 35 = requirements envelope only; Round 36 minimal operational-quotient world = the constructive program (design registered `c26eee4`; implementation in progress); producer/reducer separation mandatory** (2026-08-29); **CLOSED 2026-08-29 at the Round 34b INCONCLUSIVE rung — see the program status above and the 34a-static / 34b bullets below**
 
