@@ -8,7 +8,8 @@ Canonical current state. Updated every session; history in NOTEBOOK.md.
 - **Round 36 (minimal operational-quotient world) is the constructive program.** v1 (`073037f`) is a valid registered FAIL of its frozen `0.10/0.90` exact reducer. The only licensed reading is audit #23's paragraph (verbatim in "Round 36" below): a behavior-, calibration-, and exactness-confounded non-certification of the registered operational quotient — not evidence of no approximate composable structure; the confidence-free replay numbers (148–174/176 per seed; 11/176, 112/176, 175/176 cross-seed) are DIAGNOSTIC only.
 - **Round 36b** (behaviour-fit ladder S16/S64/LR64/W64) is COMPLETE under lock V3 / review #2 RUN-READY (`61e2430`; results `abef6cf`): all four cells `FAIL — BEHAVIOR UNDERFIT; QUOTIENT INELIGIBLE`; no eligible cell, no PASS. The only licensed reading is audit #24's paragraph (verbatim in "Round 36b" below): the ladder did not reach exact held-out eligibility, while the reachability of that exact learned precondition remains unvalidated — not proven unsatisfiable; W64's cross-seed-stable canonical one-step skeleton is informational only, not a certified operational quotient/action algebra. A prospectively locked, post-outcome, outcome-informed successor — exploratory, not confirmatory.
 - **Round 36c** (explicitly transition-supervised learned positive control, `result_scope = POSITIVE-CONTROL`, unchanged exact reducer) is COMPLETE: w32 FAIL on every exact gate in every seed (action-table truth 0/5, cross-seed table FAIL); w64 FAIL (swap/toggle 4/5, depth-2 closure 3/5, all else 0/5). The only licensed reading is audit #25 (verbatim in the Round 36c subsection): the registered joint moving-target learned-target recipe did not reach the certificate; learned gate reachability remains unresolved — not proof that the carrier or exact gates are unreachable; no behaviour-only interpretation; W64's canonical skeleton remains informational only under audit #24. Only the oracle fixture has passed the reducer. No further moving-target cells.
-- **Round 36d** (frozen-chart transition control on the hash-pinned W64 checkpoints; ONE capped cell) and **Round 37** (presentation-duplicated 32->16 quotient world, quotient-factored carrier vs unrestricted baseline) are being registered by Codex in `theory/EXPERIMENTS.md`; neither has run.
+- **Round 36d** (frozen-chart, head-only `POSITIVE-CONTROL`; the one permitted frozen-target calibration; config `experiments/config/operational_quotient_36d_w64.json`, results `experiments/results/operational_quotient_36d_w64/`, ledger `round36d_frozen_chart_control`, audit `round36d_audit26`, adopted `cad85ef`) is COMPLETE and reducer-valid: exact behaviour in all five seeds; eight individual gate predicates pass exactly; interchangeability passes only `1/5` (misses `16/5/28/98/0` of `132,160` cells; `147/660,800` total), so the joint status is `FAIL — INTERCHANGEABILITY`. The only licensed reading is audit #26 (verbatim in the Round 36d subsection): the control validates narrow individual-gate reachability under privileged full-table supervision, not quotient discovery or a complete learned certificate; no complete learned artifact has passed the joint reducer; only the oracle fixture has. Round 36 calibration is closed — no further Round 36 cells.
+- **Round 37** (presentation-duplicated 32->16 quotient world, quotient-factored carrier vs unrestricted baseline; registered in `theory/EXPERIMENTS.md`; runner `experiments/run_presentation_quotient.py` and config `experiments/config/presentation_quotient_v1.json` being authored by Codex) is the registered next move; rolled interchangeability, carried from the Round 36d residue, is its primary structural question. It has not run.
 - **Round 35** (typed truth-evaluable world, `c74bfab`) is a requirements envelope only; it authors nothing.
 - **Governance:** producer/reducer separation is mandatory (frozen non-claiming producer; separate declarative fail-closed reducer); Round 36b reducers apply the three-stage status tree (behaviour underfit / signature unsupported / supported non-congruence / PASS) before any outcome is named.
 
@@ -2027,32 +2028,11 @@ calibration, then pivot to a genuinely nontrivial quotient world.
 
 **Never say (audit #25 + adjudication):** "the exact gates are not reachable by this carrier even with direct supervision" (say: the registered joint learned-target recipe did not reach the certificate; reachability unresolved); "certification-regime problem" as the cause (say: the reachability control failed to validate the regime); "the auxiliary objective caused it" / "signature collapse occurred" (leading hypothesis only); "W64 beat the control" as rehabilitation of behaviour-only; "learned artifacts cannot pass the reducer" (learned-pass reachability gap, not impossibility); "certificate/reducer/gates/carrier intrinsically unreachable"; "seed 23 fit exactly"; "MSE converged across seeds"; "0/176 = every response wrong"; "W64 overturned/rescued/promoted"; "36b admissibly non-congruent"; "the w64 FAIL proves width cannot help".
 
-### Round 36d and Round 37 — registering (2026-08-29)
-
-Codex is registering in `theory/EXPERIMENTS.md`: **Round 36d** (frozen-chart transition control, ONE capped cell — audit #25's single frozen-target learned-pass calibration): on the hash-pinned behaviour-only W64 checkpoints, freeze encoder + readout, re-initialise only the width-64 transition head, train on the stationary 176-cell MSE only (BCE kept as an evaluation gate), 5 seeds, 64k steps, telemetry every 1k steps, adequacy `L_fixed/L_identity <= 1e-4` in every seed; PASS additionally requires exact behaviour + every unchanged gate; 10–15 CPU min, 20-min wall. Then **Round 37** (presentation-duplicated 32->16 quotient world: 32 presentations with a true 16-class quotient, quotient-factored carrier vs unrestricted baseline) — the pivot away from the singleton-quotient toy. Neither has run.
-
-## Round 36d — audit #26 status (2026-08-29, verbatim; supersedes the Round 36d/37 sentences above)
-
-**Round 36d** (frozen-chart, head-only `POSITIVE-CONTROL`) is COMPLETE and
-reducer-valid: the assigned behavior-derived W64 encoder/readout stayed
-frozen, a fresh width-64 transition head was optimized on all 176 fixed
-canonical successor coordinates for 16,000 steps, and behavior is exact in
-all five seeds. Eight individual gate predicates pass exactly, but
-interchangeability passes only `1/5`, so the joint status is
-`FAIL — INTERCHANGEABILITY`. Audit #26 governs: the control validates narrow
-individual-gate reachability under privileged full-table supervision, not
-quotient discovery or a complete learned certificate. The residue is 147 of
-660,800 registered cells, entirely depth-2 rolled histories followed by H3;
-89 are confidence-only and 58 contain a future-probe truth error, with no
-immediate terminal-response error. The diagnostic MSE ratio does not rule
-out optimization or identify cause. No further Round 36 calibration.
-**Round 37** remains the registered next move: carry rolled
-interchangeability into the presentation-duplicated 32-to-16 quotient world
-as its primary structural question.
-
 ### Round 36d — frozen-chart positive control: complete; joint FAIL (audit #26 governs)
 
-The one locked cell completed in `118.454 s` under its `480 s` wall. The
+**Registration (Codex, `theory/EXPERIMENTS.md`; ledger `round36d_37_registered` -> implementation/registration discrepancy caught pre-run `round36d_impl_discrepancy` -> lock V2 `round36d_lock_v2` recorded before any outcome -> Tier-1 review #1 RUN-READY `round36d_run_ready`; runner + config `6a95c29`, `experiments/config/operational_quotient_36d_w64.json`).** Audit #25's single frozen-target learned-pass calibration, ONE capped cell: on the hash-pinned behaviour-only W64 checkpoints, freeze encoder + readout, re-initialise only the width-64 transition head, train on the stationary 176-cell MSE only (BCE kept as an evaluation gate), 5 seeds, 16,000 full-table steps, telemetry every 1k steps, adequacy `L_fixed/L_identity <= 1e-4` diagnostic-only and non-gating; PASS additionally requires exact behaviour + every unchanged gate; `result_scope = POSITIVE-CONTROL` (frozen chart), never read as behaviour-only.
+
+**Run (ledger `round36d_frozen_chart_positive_control_produce` / `_reduce`, `round36d_frozen_chart_control`; commit `7a5ce35`; artifacts `experiments/results/operational_quotient_36d_w64/`: `config.json`, `manifest.json`, `verdict.json` committed; `evidence.json`, `weights.npz` git-ignored, retained locally, sha256-pinned).** The one locked cell completed in `118.454 s` under its `480 s` wall. The
 retained W64 encoder/readout and immutable target snapshots passed every
 provenance guard; only the fresh transition head was optimized for 16,000
 full-table steps. Read-only reduction reproduces `errors=[]`, exact behavior
@@ -2076,3 +2056,57 @@ non-gating and does not identify optimization, capacity, extrapolation, or
 threshold sensitivity as cause. No complete learned artifact has passed the
 joint reducer. Round 36d is closed; Round 37 proceeds with rolled
 presentation interchangeability as its primary structural question.
+
+#### Audit #26 — Round 36d status (2026-08-29, verbatim; the only licensed reading of 36d; ledger `round36d_audit26`, adopted `cad85ef`)
+
+**Round 36d** (frozen-chart, head-only `POSITIVE-CONTROL`) is COMPLETE and
+reducer-valid: the assigned behavior-derived W64 encoder/readout stayed
+frozen, a fresh width-64 transition head was optimized on all 176 fixed
+canonical successor coordinates for 16,000 steps, and behavior is exact in
+all five seeds. Eight individual gate predicates pass exactly, but
+interchangeability passes only `1/5`, so the joint status is
+`FAIL — INTERCHANGEABILITY`. Audit #26 governs: the control validates narrow
+individual-gate reachability under privileged full-table supervision, not
+quotient discovery or a complete learned certificate. The residue is 147 of
+660,800 registered cells, entirely depth-2 rolled histories followed by H3;
+89 are confidence-only and 58 contain a future-probe truth error, with no
+immediate terminal-response error. The diagnostic MSE ratio does not rule
+out optimization or identify cause. No further Round 36 calibration.
+**Round 37** remains the registered next move: carry rolled
+interchangeability into the presentation-duplicated 32-to-16 quotient world
+as its primary structural question.
+
+**Never say (audit #26, verbatim):**
+
+- “Round 36d reached the exact certificate” or “passed the reducer.”
+- “A learned artifact has now passed the registered reachability control”
+  without immediately saying “eight individual predicates; joint FAIL.”
+- “The learned-pass gap is closed.” No learned artifact has passed the joint
+  exact reducer.
+- “The quotient/action algebra was learned” or “the table was discovered.”
+  Every canonical transition cell was taught on an already qualified chart.
+- “H2/H3 proves composition” or “arbitrary-length closure.”
+- “Eight independent gates validated the construction.” The gates are
+  correlated consequences of the complete taught edge table.
+- “Interchangeability generally fails,” “the quotient is non-congruent,” or
+  “rolled points move to the wrong place.” The finding is finite, rare,
+  history-local, and 146/147 failed endpoints remain nearest the right chart
+  landmark.
+- “The FAIL is threshold-only.” Fifty-eight failed rows contain a
+  confidence-free future-probe truth error and 12 components are supported but
+  wrong.
+- “Behavior fails at depth five.” The immediate endpoint response is correct;
+  the future-response signature fails.
+- “The reducer oversampled a bug.” It intentionally enumerated histories;
+  rates are population-dependent, but the registered exact counterexamples
+  are real.
+- “Adequacy passed,” “optimization is ruled out,” or “the cause is fixed-chart
+  realizability.” The adequacy ratio is diagnostic and causal attribution is
+  unresolved.
+- “Round 36d rescues, promotes, or reclassifies W64/36b,” or anything about
+  language models, residual streams, natural latent spaces, or a general
+  axiom.
+
+### Round 37 — presentation-duplicated 32->16 quotient world: registered next move (not run)
+
+Registered by Codex in `theory/EXPERIMENTS.md` (ledger `round36d_37_registered`): 32 presentations with a true 16-class quotient; quotient-factored carrier vs unrestricted baseline — the pivot away from the singleton-quotient toy. Per audit #26 the Round 36d residue (147 depth-2-history x H3 interchangeability misses) is carried in as Round 37's primary rolled-structure question, with pre-outcome diagnostics separating representative/presentation history depth, H2 vs H3 continuation depth, first divergence step, immediate terminal response vs future-signature failure, and unsupported vs wrong supported components. Runner `experiments/run_presentation_quotient.py` and config `experiments/config/presentation_quotient_v1.json` are being authored by Codex. No Round 37 outcome exists.
