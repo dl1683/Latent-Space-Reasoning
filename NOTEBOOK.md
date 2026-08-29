@@ -5,6 +5,18 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Parity verdict: refactored analyzer reproduces HEAD; Round 34a runs begin
+
+The HEAD-vs-refactor CPU parity check (contextual-prefix static screens,
+sentinels A and B, committed analyzer copy vs the parked branch's
+refactored analyzer, decision JSON scrubbed of timing/SVD/shadow fields)
+returned IDENTICAL for both sentinels. The parked consequence branch's
+legacy-parity question is therefore answered in its favour; the gate itself
+is cut by the continuation ruling and the result is kept as evidence only.
+The Round 34a closeout ladder started immediately on the frozen analyzer
+copy: ctxcapA_raw is running (raw B, raw joint, static A/B, static joint
+follow; minutes each).
+
 ## 2026-08-29 — Re-contextualization #22 (2-hour step-back; audit skipped — still no new claim)
 
 No Round 34a outcome exists yet (the parity screens are on their last
