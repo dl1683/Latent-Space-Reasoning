@@ -1,0 +1,50 @@
+{
+ "name": "interchange_v1",
+ "purpose": "Operational interchangeability: do paraphrases of the same fact become one causally interchangeable place? Donor block-12 activation replaces the recipient's at the anchor token; readout = three downstream probe margins. Codex direction round 6 (2026-08-29). All text frozen before results.",
+ "model_id": "Qwen/Qwen3-1.7B-Base",
+ "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
+ "layer": 12,
+ "anchor": " The animal",
+ "probes": [
+  [" makes a meowing sound", " makes a barking sound"],
+  [" has babies called kittens", " has babies called puppies"],
+  [" belongs to the feline family", " belongs to the canine family"]
+ ],
+ "positive_class": "cat",
+ "baseline_gate": {"total_min": 20, "per_class_min": 9},
+ "gates": {"same_within_tau_min": 6, "cross_flip_two_min": 6, "cross_median_fraction_min": 0.5, "cross_minus_unrelated_min": 0.3, "tau_percentile": 90},
+ "calibration": {
+  "cat": [
+   "A small furry pet that purrs softly, chases mice, and sleeps in sunny spots most of the day.",
+   "This little house pet purrs when content, hunts mice at night, and naps in warm sunshine.",
+   "It is a compact furry companion that purrs, stalks mice, and dozes for hours in the sun.",
+   "A gentle indoor pet with soft fur, it purrs, pounces on mice, and rests in patches of sunlight."
+  ],
+  "dog": [
+   "A loyal furry pet that barks loudly, fetches sticks, and wags its tail when the owner returns.",
+   "This faithful house pet barks at strangers, chases thrown sticks, and wags its tail happily.",
+   "It is a devoted furry companion that barks, retrieves sticks, and wags its tail in greeting.",
+   "A friendly outdoor pet with thick fur, it barks, runs after sticks, and wags its tail at people."
+  ]
+ },
+ "test": {
+  "cat": [
+   "A quiet furry pet that purrs on laps, catches mice in the barn, and curls up in sunny windows.",
+   "This small pet purrs when stroked, hunts mice around the house, and sleeps in the afternoon sun.",
+   "It is a sleek furry companion that purrs, chases mice, and stretches out in warm sunlight.",
+   "A calm indoor pet with soft paws, it purrs, watches mice, and naps in bright patches of sun."
+  ],
+  "dog": [
+   "A playful furry pet that barks at the door, fetches balls, and wags its tail for its owner.",
+   "This big pet barks when excited, chases thrown balls, and wags its tail all afternoon.",
+   "It is a sturdy furry companion that barks, retrieves balls, and wags its tail at friends.",
+   "A happy outdoor pet with strong legs, it barks, runs after balls, and wags its tail at visitors."
+  ]
+ },
+ "unrelated": [
+  "A small feathered creature that sings at dawn, builds nests in trees, and flies south in winter.",
+  "A silent scaly creature that swims in cold rivers, breathes through gills, and lays eggs in gravel.",
+  "A tall hoofed creature that gallops across fields, eats hay in the stable, and carries riders.",
+  "A large grazing creature that chews grass all day, gives milk each morning, and rests in the barn."
+ ]
+}

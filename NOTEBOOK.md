@@ -5,6 +5,10 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — interchange_v1 (operational interchangeability, Qwen3-1.7B-Base block 12): baseline FAIL by raw sign; gate semantics referred
+
+Built per Codex round 6 (`experiments/run_interchange.py`, `config/interchange_v1.json`; all text frozen before results; context lengths 23–27 tokens, approximately matched — a deviation from "exactly matched"). Native held-out probe decisions by raw margin sign: cat 8/12, dog 7/12 → FAIL under the coded gate; no swap arm was run. The native signatures are nonetheless strongly class-separated on all three probes; two probes carry a constant lexical bias (` makes a meowing sound` is less likely than ` barking` for every context including cats; ` kittens` more likely than ` puppies` for every context including dogs), so raw sign confounds class with lexical frequency. Codex's design specified standardization with calibration-only scale estimates; whether a calibration-centred decision statistic is the pre-declared rule or a post-hoc repair is referred to Codex (round 7) before any rerun. Today's tally on the frozen residual stream: three baseline kills (v1, v2, interchange_v1) and one gate-passing result reclassified as late lexical steering (v3).
+
 ## 2026-08-29 — Audit #27 on coordinate_v3 (verbatim): NEGATIVE for the coordinate artifact; narrow late lexical-control effect
 
 My design error, found by the auditor: the corner transports flip the number bit without changing the visible subject, so every scored token disagrees with its prefix (`The writer were`); the grammar gate is 0/32, and `run_base` never enforced `test_gate`. My provisional 'positive' and my '~30/32 grammatical' reading are withdrawn.
