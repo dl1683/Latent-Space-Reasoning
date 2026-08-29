@@ -7885,3 +7885,317 @@ factorized truth coordinates, bound operation arguments, an explicit
 presentation quotient, composable transitions, and a causal truth readout.
 None alone proves that every representation of this decoder—or every decoder—
 is incapable of providing them. No new axiom is earned at the design gate.
+
+## Round 36 — minimal operational-quotient world (constructive artifact, distance 0) (2026-08-29)
+
+**Design gate; theory change only. No code, config, population, result, or
+claiming artifact was created or run in this round.** The next implementation
+is the README's central artifact itself, so its distance from claim is **0**.
+It is the smallest runnable world in which identity and action can be wrong,
+not infrastructure for measuring a later artifact.
+
+The non-expert “so what” is: can a tiny learner discover what counts as the
+same place and which moves obey stable laws using only what its world lets it
+do and observe, without being handed the world's hidden coordinates?
+
+### Activation and ordering
+
+Round 36 **starts now**, in parallel with the terminal NLM-007 closeout ladder
+authorized by the Program continuation ruling. The two lines share no code,
+config, evidence, reducer, or scientific verdict. They may coexist as work,
+but CPU jobs remain sequential: only one process runs at a time. No NLM-007
+outcome changes this design, its thresholds, or its activation.
+
+Round 35 is retained as a later requirements envelope. Its linguistic
+population, tokenization, model capture, surface/query transfer, and causal
+patch design are not part of Round 36. There will be **no Codex design of NLP
+surface forms until the operational quotient below passes**. This ordering
+supersedes Round 35's former activation branch wherever that branch conflicts
+with the adopted Program continuation ruling.
+
+### The world and the denizen's only sensor
+
+The hidden simulator state is
+
+`s = (s_1, s_2, s_3, s_4) in S = {0,1}^4`.
+
+The ordered primitive-action alphabet is frozen as
+
+`A = [no-op, toggle(1), toggle(2), toggle(3), toggle(4), swap(1,2),
+swap(1,3), swap(1,4), swap(2,3), swap(2,4), swap(3,4)]`.
+
+`toggle(i)` complements bit `i`; `swap(i,j)` exchanges bits `i` and
+`j`; and `no-op` changes nothing. Action words are applied left to right.
+The simulator is total and deterministic.
+
+The denizen has one binary response law,
+
+`rho(s) = s_1`.
+
+It is not shown `s`, the other bits, a state number, an endpoint state, or a
+four-bit target. Each hidden state is assigned an opaque start handle by one
+fixed seeded permutation (`data_seed = 3601`). A behavioral row contains only
+
+`(opaque_start_handle, action_word, terminal_response)`
+
+where `terminal_response = rho(delta_word(s))`. The simulator may use its
+hidden bits to produce this truth, but the learner's interface and loss may
+receive only those three fields. In particular, there is no state-label loss,
+next-handle loss, latent-target loss, coordinate reconstruction, contrastive
+state label, or privileged endpoint lookup.
+
+The learned latent transition system is deliberately small and fixed:
+
+- a state encoder `E_theta`: a learned `16 x 8` table mapping opaque handles
+  into `R^8`;
+- one shared action-conditioned transition
+  `T_theta(z,a) = z + W_2 tanh(W_z z + W_a onehot(a) + b_1) + b_2`, with
+  hidden width `32`; and
+- one binary response readout
+  `R_theta(z) = sigmoid(w_r^T z + b_r)`.
+
+For a word `a_1 ... a_k`, the same `T_theta` is iterated without a
+composition-specific fit. All parameters are trained jointly only by binary
+cross-entropy between `R_theta(T_word(E_theta(handle)))` and the observed
+terminal response. The architecture, dimension, width, loss, split, and
+optimizer are fixed across seeds. Increasing capacity after seeing a failure
+is a successor design, not a repair inside Round 36.
+
+### Outcome-blind train/holdout split and CPU lock
+
+All empty and one-step words are training rows. Two- and three-step words are
+split by action spelling alone, before responses or model output exist:
+
+1. `H_2` contains all four `toggle(i), toggle(i)` words and both orders of
+   every `swap(i,j)`/`toggle(k)` pair (`4 + 2*6*4 = 52` words). From the
+   remaining two-step words, add the two smallest SHA-256 values within each
+   first-action stratum under salt `round36-h2-v1` (`22` more). Thus
+   `|H_2| = 74`.
+2. `H_3` contains the six smallest SHA-256 values within each first-action
+   stratum under salt `round36-h3-v1`. Thus `|H_3| = 66`.
+3. Every word in `H_2` or `H_3` is absent from training for all 16 starts and
+   every seed. All other words of length at most three are training rows.
+
+For both selections, hash the exact UTF-8 encoding of
+`salt + "|" + ">".join(action_word)`, using the canonical action spellings
+printed above; ties break by the lexicographic action-word tuple. This is the
+complete split algorithm, not a licence for an implementation-specific
+serializer.
+
+This gives `1 + 11 + (121-74) + (1331-66) = 1324` training words and
+`1324*16 = 21,184` behavioral training rows, plus `140*16 = 2,240`
+held-out closure rows. The ordered word lists and their hashes are evidence,
+not implementation-defined conveniences.
+
+The five model seeds are frozen as `[11, 23, 37, 53, 71]`. One process uses
+CPU only, one thread, deterministic algorithms, AdamW (`lr=0.003`,
+`weight_decay=1e-5`), batches of `512`, and exactly `4,000` optimizer steps
+per seed. There is no early-stop selection, pilot-based threshold change, GPU
+path, or seed replacement. The target full runtime is `3-8 min` of CPU and the
+hard wall is `15 min`; exceeding it makes the artifact `INVALID — BUDGET`,
+not evidence for a scientific gate.
+
+Before the run, the expectation is that behavioral supervision through many
+action words is sufficient to organize the eight-dimensional carrier into an
+operational quotient and a composable action table. A PASS would support that
+expectation in this finite world. A complete FAIL would show that this fixed
+training recipe and carrier did not produce it. The simplest global confound
+is response memorization without a composable state; the held-out word split,
+rolled representatives, and exact action-law table are the direct test of that
+confound.
+
+### Identity is the depth-1 response signature
+
+The registered identity depth is `D_id = 1`. For a latent point `z`, evaluate
+the response probability after the empty word and after each of the 11 actions
+in the frozen order. A component is supported only when it is at most `0.10`
+or at least `0.90`; its response bit is then the corresponding `0` or `1`.
+If any component lies in `(0.10,0.90)`, the point has no supported signature.
+The resulting supported 12-bit vector is `Sigma_1(z)`.
+
+Identity is **defined**, not estimated from chart proximity:
+
+`z ~_1 z'  iff  Sigma_1(z) = Sigma_1(z')`, with both sides supported.
+
+No Euclidean or cosine threshold, coordinate equality, clustering algorithm,
+nearest-neighbor rule, hidden state label, or cross-seed alignment may enter
+this definition. Equality of finite response signatures is reflexive,
+symmetric, and transitive, so it defines the operational quotient on the
+supported latent points.
+
+This sensor is small but sufficient in the true world. `rho(s)` reads `s_1`,
+and `rho(swap(1,j)(s))` reads `s_j`; therefore the depth-1 signatures of the
+16 hidden states are all distinct. Before any action-law claim, every seed
+must recover all 16 supported oracle signatures on the 16 encoder points,
+with no collision or extra class. This is the **quotient-availability gate**.
+
+The representative set `P_theta` contains every encoder point and every point
+obtained from it by a training prefix of length one or two. Rolled points are
+assigned to places only by `Sigma_1`; the simulator endpoint is retained
+outside training solely to score the preregistered truth table. Thus one
+operational place normally has many coordinate representatives, making
+descent and interchangeability non-vacuous even though the true quotient has
+16 classes.
+
+### Existing axioms instantiated, and the one candidate addition
+
+This artifact instantiates the current relational foundation as follows.
+
+- **L1. Self-substitution — instantiated.** Every supported signature equals
+  itself, so each point substitutes for itself under every registered response
+  probe.
+- **L2. Finite conjunction — instantiated for this completed probe family.**
+  The completed family contains equality tests for the empty/one-action
+  responses and all of their finite conjunctions; signature equality is their
+  full conjunction.
+- **L3. Local refinement — instantiated only in the finite, definition-driven
+  sense.** The full signature conjunction isolates one quotient class and
+  refines every single response cell containing it. This earns no nontrivial
+  topology or geometry.
+- **L4. Observational separation — instantiated by quotient.** Points agreeing
+  under the complete registered response signature are one place by
+  definition; distinct quotient places have different signatures.
+- **L5. Presentation covariance — not instantiated.** Independent training
+  seeds are not declared members of `G` and are not coordinate-aligned.
+  Cross-seed action-table agreement below is evidence about an operational
+  invariant, not an assumption of isomorphism.
+
+The existing axioms name an observational quotient and admissible composed
+moves but do not require actions to be compatible with identity. Round 36
+therefore proposes exactly one minimal new primitive:
+
+> **`A^*`, admissible action words acting on latent presentations — candidate,
+> not earned.** Its required congruence law is
+> `z ~_1 z' => T_a(z) ~_1 T_a(z')` for every primitive `a`.
+
+Only if that falsifiable law passes does each action descend to a map
+`bar(T)_a([z]) = [T_a(z)]` on the operational quotient. Composition is then
+iteration in `A^*`, not a separately fitted primitive. The primitive and law
+remain candidates until the reducer returns PASS; they are not added to
+`theory/AXIOMS.md` at this design gate.
+
+### Pretraining theorem and law table
+
+Every threshold below is frozen before training. The world is finite and
+fully enumerated, so a law is not rescued by an average, confidence interval,
+majority seed, or post-hoc unsupported cell. “Exact” means `1.000` of the
+declared finite cells with `1.000` support in **each of all five seeds**.
+
+| Gate | Falsifiable prediction and population | Pre-declared threshold | Exact falsifier |
+|---|---|---|---|
+| Quotient availability | The 16 encoder points have supported `Sigma_1` signatures equal to the 16 distinct oracle signatures. | Exact in every seed; every component also satisfies the `<=0.10`/`>=0.90` confidence rule. | Any unsupported component, wrong bit, collision, missing signature, or extra signature. |
+| Actions descend / quotient well-definedness | For every recovered class, primitive action, and representative in `P_theta`, the successor has one supported class; all representatives of the source class reach the same class, and that class is the simulator's behavioral successor. | Exact over all representatives, `16*11` class/action cells, and every seed. | Any unsupported successor, representative disagreement, or wrong successor class. |
+| Toggle involution | For every `z in P_theta` and each `i`, `bar(T)_toggle(i)(bar(T)_toggle(i)([z])) = [z]`. | Exact in every cell and seed. | One double-toggle ends in a different or unsupported quotient class. |
+| Full swap/toggle table | For every state, swap `sigma_ij`, and toggle `tau_k`: the two orders commute when `k notin {i,j}`; when `k in {i,j}` they differ and obey `sigma_ij tau_i = tau_j sigma_ij` and `sigma_ij tau_j = tau_i sigma_ij`. | Exact for all `6*4*16 = 384` swap/toggle/state cells and every seed. | A declared commuting cell differs, a declared noncommuting cell agrees, either conjugacy identity fails, or any endpoint is unsupported. |
+| Held-out closure | Iterating the one learned primitive map on every start and every word in `H_2` and `H_3` reaches the oracle quotient class; no two- or three-step map is fitted. | Depth 2: exact `74*16` cells. Depth 3: exact `66*16` cells. Both exact in every seed. | Any wrong or unsupported held-out endpoint at either depth. |
+| Interchangeability | For each `z in P_theta`, its canonical encoder representative `z_q` with the same signature, and every `w in H_2 union H_3`, the two rolled endpoints have the same supported `Sigma_1` and the same terminal response bit. This probes behavior beyond the depth used to define identity. | Exact over all declared representatives, held-out words, and seeds. | One quotient-equivalent pair ceases to be interchangeable or becomes unsupported under a held-out continuation. |
+| Cross-seed recovered action table (alternative 2, secondary) | Name quotient classes only by their 12-bit operational signatures and compare the recovered `16 x 11` action table without coordinate alignment. | All `176` entries are identical across all five seeds and equal the behavioral truth table. | Any seed changes a class/action entry, lacks a class, or requires a chart alignment to agree. |
+
+Held-out closure and representative interchangeability are the reduced
+alternative-3 controllability/closure falsifier family. They are not an extra
+model arm and do not import Round 35's causal-patch machinery.
+
+The no-op rows participate in quotient availability, action descent, closure,
+and cross-seed comparison. A no-op failure is not silently excluded. The
+swap/toggle table's convention is fixed: juxtaposition `ba` means apply `a`
+first and `b` second, matching ordinary function composition.
+
+The joint scientific verdict is **`PASS — MINIMAL OPERATIONAL QUOTIENT
+WORLD`** only when every gate passes in all five seeds. A complete run with
+one scientific gate failure returns a gate-specific **`FAIL`**. Missing rows,
+non-finite values, hash/schema/count mismatch, producer exceptions, or budget
+overrun return **`INVALID`** and cannot be interpreted as either PASS or FAIL.
+
+### One new module, one canonical entry, and separate producer/reducer
+
+The future implementation may add exactly one Python module:
+
+`experiments/run_operational_quotient.py`.
+
+This new file is justified under CLAUDE.md section 6.1 because it creates the
+reusable finite-world boundary `behavior -> latent transition system ->
+operational quotient`, formalizes a stable evidence interface, and prevents
+the toy artifact from being duplicated inside LM capture/analyzer code. No
+existing module provides a model-independent learned transition world;
+extending `run_lm_dynamics.py` would import the very NLP/model infrastructure
+this distance-0 artifact is meant to precede. The JSON config is data, not a
+second code module, and all future variation belongs there.
+
+That module is the single canonical runner, with three config-driven process
+entries:
+
+```text
+python experiments/run_operational_quotient.py produce --config experiments/config/operational_quotient_v1.json --out experiments/results/operational_quotient_v1
+python experiments/run_operational_quotient.py reduce  --config experiments/config/operational_quotient_v1.json --evidence experiments/results/operational_quotient_v1
+python experiments/run_operational_quotient.py fixture --config experiments/config/operational_quotient_v1.json --out experiments/results/operational_quotient_fixture
+```
+
+`produce` trains and evaluates, but it is **non-claiming**: it may write
+measurements and completeness status but never `PASS`, `FAIL`, or claim text.
+`reduce` runs as a separate process, receives no trainer or live model object,
+and reads only the frozen config plus serialized evidence. Its reducer is a
+pure, declarative conjunction of the gates above. It must validate required
+keys, exact row counts, action/word ordering, hashes, seeds, finite values,
+support, and the hard wall before evaluating scientific predicates. Unknown,
+missing, duplicate, malformed, or extra claiming fields fail closed as
+`INVALID`. A reducer defect may block interpretation but may not rewrite or
+rerun a sound producer.
+
+The minimal result directory contains:
+
+- the exact raw config copy and SHA-256;
+- `manifest.json`: code/blob/config hashes, command, platform, dependency
+  versions, CPU/thread/determinism settings, action order, word-list hashes,
+  data/model seeds, expected counts, start/end time, and wall time;
+- `evidence.json`: per-seed loss trace checksum, every base and rolled
+  signature, support flag, recovered class/action table, law-cell booleans,
+  held-out endpoints, and complete numerator/denominator counts;
+- `weights.npz`: the five small parameter sets and hashes, for reproduction
+  but never as reducer input; and
+- `verdict.json`: written only by the separate reducer, binding its own code
+  hash and the hashes of every input it reduced.
+
+The `fixture` entry uses no optimizer or learned model. It serializes an exact
+eight-dimensional realization (the four bits followed by four zero pads),
+exact affine toggle/swap/no-op maps, and the `s_1` readout through the same
+evidence schema. The declarative reducer must return PASS on this fixture. The
+fixture command then makes in-memory copies with (i) one missing required row,
+(ii) one non-finite response, and (iii) one schema-valid, re-hashed
+representative-specific successor mutation; the reducer must return INVALID,
+INVALID, and FAIL respectively. This proves schema closure and scientific
+fail-closure before learned evidence is interpreted.
+
+No other runner, analyzer, fixture module, notebook, or custom claiming script
+is authorized. Implementation and execution require their own readiness and
+evidence gates; this section does not silently authorize code in the current
+theory-only commit.
+
+### Claim boundary under the guiding question and second lens
+
+A PASS licenses this bounded statement: **in one tiny learned finite latent
+world, a denizen with access only to actions and a binary response can recover
+a 16-place operational quotient; the primitive actions descend to a
+coordinate-free, cross-seed-stable quotient table under this recipe that
+obeys the registered involution, swap/toggle, closure, interchangeability, and
+cross-seed laws.**
+That is a native quotient plus action algebra in a toy latent space, available
+through the world's own behavior rather than hidden coordinates. It is the
+first constructive distance-0 artifact after the NLM-007 continuation ruling.
+
+A PASS does **not** establish anything about language models, residual streams,
+natural language, semantic reasoning, learned world models in general,
+arbitrary actions, longer-horizon closure, metrics, move cost, topology with
+nontrivial content, presentation covariance, or a universal axiom of latent
+space. It does not activate Round 35 automatically. NLP surface-form design
+requires a separate post-PASS ruling.
+
+A complete FAIL means the fixed behavioral training recipe and eight-
+dimensional learned carrier cannot produce the registered operational quotient
+and action algebra. Under the second lens that is a **constructive hole in THIS
+learned latent space**: response fitting did not organize a denizen-usable
+world. It is not evidence that the exact simulator lacks the algebra, not a
+hostile hole in latent spaces generally, and not evidence about any LM. The
+gate-specific residue determines the successor: unavailable identity,
+non-congruent actions, non-composable transitions, representation-specific
+tables, or unstable responses. No larger carrier, new sensor, or NLP wrapper
+is added inside Round 36 after seeing the failure.
