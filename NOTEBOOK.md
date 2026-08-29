@@ -126,7 +126,9 @@ exact on training) but held-out spellings still miss by 1–24 rows per seed,
 so the ladder never reached the point where the quotient question could be
 asked; what to make of that — exact held-out fit as a precondition may
 simply be unreachable for this recipe on unseen spellings — is with the
-fresh auditor. Row-level evidence (≈170 MB per cell) and weights are
+fresh auditor (corrected by audit #24: eligibility not reached under this
+ladder; reachability of the exact learned certificate unvalidated, not
+unsatisfiable). Row-level evidence (≈170 MB per cell) and weights are
 retained locally and hash-pinned; only config/manifest/verdict are
 committed (`abef6cf`).
 
