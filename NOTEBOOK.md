@@ -5,6 +5,38 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Re-contextualization #21 (2-hour step-back; audit skipped — no new claim since audit #20)
+
+Audit: the only new artifact since audit #20 is ctxS_B, a replicate of
+ctxS_A already worded under audit #20's correction; the instruments (Round
+34a run-ready and queued; 34b/34c under Tier-1 review) carry no outcome. No
+fresh auditor fired this cycle; the next fires when the first Round 34a
+outcome exists.
+
+Live question unchanged. Whole-picture check: the program has spent this
+day converting one descriptive separation (state ridge vs token-context
+field, raw and residualized) into a ladder of cheap, preregistered
+capacity/feature controls — 34a (matched EDF), 34b (P/C partial overlap),
+34c (item-by-context) — with the expensive instruments (six-arm Round 34,
+Round 33 consequence) held or parked. That is the right shape: the cheapest
+moot-makers run first. Reframing: every result so far is a statement about
+readers of one residual relation, not about a latent-space law; the second
+lens (holes hostile to structured reasoning) has produced an instrument
+boundary, not a representation-level hole.
+
+Alternatives held live: item-by-carrier fingerprint + local Jacobian
+(strongest); pure capacity; decoder specificity; architecture-matched
+random-weight null. Foundational thread advanced this cycle: opening the
+design gate for the typed truth-evaluable world (audit #19 alternative 3 /
+audit #20 tunnel ruling) as a docs-only Round 35 preregistration — a
+four-bit finite-state world with toggle/swap/no-op, held-out predicates and
+templates, frozen forced-choice yes/no log-odds, wrapper and same-length
+controls, causal patching, involution and one non-commuting two-step
+composition — so that when the capacity ladder resolves, the next
+population is a world with known state, move, consequence and composition
+laws rather than another mentioned-string micro-world. No texts or config
+authored; no GPU.
+
 ## 2026-08-29 — ctxS_B complete: contextual-prefix comparator on the P_static-residualized relation, sentinel B (audit #20 wording)
 
 `analysis_ctxS_B.json` (committed analyzer, `--residualize static`, 20
