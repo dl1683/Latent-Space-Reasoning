@@ -5,6 +5,37 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Re-contextualization #24 (2-hour step-back; audit #24 already in flight on the only new claim)
+
+Audit: the only new capability result since audit #23 is the Round 36b
+ladder outcome; a fresh, unprimed auditor (#24) was fired on it the moment
+the reducers finished and is still running — no second auditor is fired on
+the same claim. Its corrections and alternatives are appended verbatim
+when it lands.
+
+Whole picture. Two lines are now closed or near-closed by their own
+registered rules: NLM-007 (terminal ladder, closing statement adopted) and
+Round 36 v1/36b, where the constructive artifact exists, runs in minutes,
+fits training exactly at width 64, and yet is never eligible for the
+quotient question because the registered precondition (exact fit on 2,240
+unseen spellings) is missed by 1–24 rows per seed. The reframing this
+forces: the program's gates are themselves under test. A precondition that
+a behaviour-only learner may be structurally unable to satisfy converts
+every outcome into "ineligible" and tells us nothing about the latent's
+organisation — the same shape of failure audit #23 found in the 0.10/0.90
+support rule. So the live question is no longer only "does behaviour yield
+a quotient?" but "what certification regime makes that question askable
+without becoming a rescue?" Alternatives held live for audit #24 to rank:
+(1) eligibility = exact training fit + a registered held-out tolerance;
+(2) the explicit quotient-trained positive control (does the reducer PASS
+anything at all?); (3) the learned lookup baseline (how much closure is
+composition vs finite lookup?); (4) a nontrivial-quotient world where
+identity actually compresses; (5) a second transition architecture.
+Foundational thread advanced: gate reachability as a first-class
+preregistration item — every future gate must ship with a positive control
+that can pass it. Not narrowed: NLM-007's residue (instruments, wording
+discipline) and Round 35 (requirements envelope) remain on record.
+
 ## 2026-08-29 — Round 36b result: every cell BEHAVIOR UNDERFIT; QUOTIENT INELIGIBLE
 
 All four cells completed inside their walls (174 / 606 / 618 / 696 s) and
