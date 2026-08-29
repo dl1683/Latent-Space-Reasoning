@@ -25,11 +25,159 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   retired from the active path (`f6dac0e`; git history); verdicts retained
   under `experiments/results/operational_quotient_*/` and
   `experiments/results/presentation_quotient_v1_*/`. Entries below.
-- **Current artifact line — `coordinate_v1` -> `coordinate_v2`**
-  (`experiments/run_coordinate.py`): v1 (Qwen3-0.6B, tense × polarity) is
-  `UNINTERPRETABLE — INVALID POLARITY BASELINE`; v2 (Qwen3-1.7B, tense ×
-  grammatical number) was KILLED at its pre-declared baseline gate. Entries
-  below. Next step is a Codex decision; nothing further is authorized.
+- **Real-model line (2026-08-29) — frozen-residual-stream constructions
+  STOPPED as an allocation pivot (audit #28), not a scientific conclusion.**
+  `coordinate_v1` UNINTERPRETABLE — INVALID POLARITY BASELINE; `coordinate_v2`
+  KILLED at its baseline gate; `coordinate_v3` mechanics reproduced but
+  audited (#27) into a narrow late lexical-control effect; `interchange_v1`
+  closed by its locked raw-sign baseline, no swap arm ran. Verbatim
+  replacement wording (audit #28): "Under the current apparatus budget, this
+  sequence of frozen residual-stream constructions is not yielding a
+  native-mathematics artifact, so open-ended layer, task, and decision-rule
+  repair stops here. This is an allocation pivot, not evidence that frozen
+  pretrained residual streams lack usable native structure." Entries below.
+- **Current artifact — `state_bus_v1r1`** (`experiments/run_state_bus.py`,
+  `experiments/config/state_bus_v1.json`; lock `d9d1513`, ledger
+  `state_bus_v1r1_lock`): TRAINING UNDER LOCK; no outcome inspected; no
+  claim. Pre-outcome licensed sentence (audit #28) in the entry below and in
+  `STATE.md`.
+
+## state_bus_v1r1 — co-developed 16-d state bus on frozen Qwen3-1.7B-Base: LOCKED, TRAINING; no claim (2026-08-29; ledger `state_bus_v1r1_lock`, `audit28`)
+
+- **Design (Codex direction round 7, ledger `direction_r7_ruling`; runner
+  `experiments/run_state_bus.py` `c64cd67`; config
+  `experiments/config/state_bus_v1.json`).** Frozen Qwen3-1.7B-Base; block-12
+  16-d bus with <100k trainable parameters (encoder E, four prototypes,
+  injector J at every continuation position, reader R); four states
+  cat/dog/cow/horse, 8 training + 4 held-out paraphrases each; trained
+  consequences sound + young; held-out consequence taxonomic adjective
+  (verbalizers absent from the bus loss); loss = prototype + native +
+  same-swap + cross-swap + persistence; three seeds × 600 AdamW steps,
+  4-hour wall cap, no sweeps; arms none/self/same-donor/cross-donor/
+  shuffled/random; kill rule and POSITIVE/CONTROLLER/FAIL status language
+  registered before any result.
+- **Lock (`d9d1513`; Codex Tier-1 review `.codex_statebus_review.md`, "not
+  audit-ready" → fixes applied before any result):** identical
+  recipient-conditioned history for every arm; held-out gain = donor-label
+  fraction vs mean(shuffled, random); candidate-word-token-only summed LL
+  with matched-baseline uplift and donor-vs-recipient DiD, raw argmax
+  reported separately; tau = max(1e-3, Q95 of training-context same-vs-self
+  distances); persistence loss at both decision boundaries; movement gate
+  m1>0, m3>0, m3>=0.5·m1; LayerNorm before E and R. The earlier unreviewed
+  run (`experiments/results/state_bus_v1/`, smoke/train log only) was
+  stopped with no evaluation inspected and its outputs discarded. Results
+  land in `experiments/results/state_bus_v1r1/`.
+- **Pre-outcome licensed sentence (audit #28, verbatim):** `state_bus_v1r1`
+  is a fixed three-seed training run of a 98,400-parameter supervised
+  interface attached to frozen Qwen3-1.7B-Base. Training and held-out
+  paraphrases are index-separated, and taxonomy verbalizers are absent from
+  its loss. Its registered hard gates nevertheless use donor-directed
+  relative-likelihood uplift rather than actual behavioral choice, lack a
+  nontrivial magnitude floor, compare against off-manifold controls, and
+  permit unsafe incomplete-seed aggregation; therefore no “persistent
+  interchangeable state bus” claim is licensed from the registered status
+  alone.
+- **Post-outcome ceiling (audit #28):** positive → at most "descriptive
+  evidence for a supervised semantic steering interface"; fail → closes this
+  construction and budget only. Eval-only addendum after the run (actual
+  choice change, magnitude floor, all-three-seeds rule, on-manifold
+  wrong-state control, all donor pairs, per-state minimum) reported alongside
+  the registered status. Full wordings and the state-bus never-say list:
+  `STATE.md` "Real-model line". Audit #28: "Finish and audit the current run
+  once; do not scale it."
+
+## interchange_v1 — operational interchangeability, Qwen3-1.7B-Base block 12, cat/dog paraphrases: closed by the locked raw-sign baseline; no swap arm (2026-08-29; ledger `interchange_v1_baseline`, `direction_r7_ruling`, `audit28`)
+
+- **Design (Codex direction round 6; all text frozen before results).**
+  `experiments/run_interchange.py`, `experiments/config/interchange_v1.json`
+  (`0f252f8`); block-12 residual at a fixed anchor (` The animal`); three
+  probe margins; native held-out probe decisions by raw margin sign, gate
+  `>=20/24` and `>=9` per class before any donor-swap arm; context lengths
+  23–27 tokens (approximately, not exactly, matched — a deviation).
+- **Result** (`experiments/results/interchange_v1/result.json`): cat 8/12,
+  dog 7/12 (15/24) → BASELINE FAIL; no swap arm ran. Diagnostic only: the
+  native signatures are strongly class-separated on all three probes
+  relative to a calibration midpoint (24/24), but two probes carry a
+  constant lexical bias, so raw sign confounds class with lexical frequency.
+- **Ruling (direction round 7, `b9e4581`):** raw sign was the intended
+  native-behaviour statistic; calibration-centring would change the estimand
+  post hoc; also exact length matching missed and `cross_toward_other`
+  divides by separation rather than its square; no corrected gate, no swap
+  arm, artifact DEAD.
+- **Licensed sentence (audit #28, verbatim):** The locked raw-zero baseline
+  failed and closes `interchange_v1`; no swap arm ran. Calibration-relative
+  class separation is a diagnostic design finding, not a rescue and not
+  evidence for interchangeability. Audit #28: kill UPHELD for the locked
+  construction only; evidence against interchangeability: NONE.
+- **Never say (audit #28):** "interchangeability failed in Qwen3-1.7B-Base";
+  "three independent causal interventions failed". Cheapest moot-maker
+  (not authorized): a bias-controlled `interchange_v2` with
+  calibration-midpoint/paired contrasts preregistered, on-manifold
+  wrong-donor control, clustered reporting.
+
+## coordinate_v3 — prediction-site two-bit coordinate (tense × number), Qwen3-1.7B-Base: gates met mechanically; audit #27 = narrow late lexical-control effect (2026-08-29; ledger `coordinate_v3_result`, `coordinate_v3_audit27`)
+
+- **Design (Codex direction round 5).** Base model rev `ea980cb0…`; native
+  next-token readout {is, was, are, were} at a fixed final-token prediction
+  site; two mean residual differences estimated from 12 calibration families
+  using only states 00/10/01 (11 never prompted); LOFO layer rule at
+  coefficient 1; held-out 8 noun/complement families × 4 corner transports;
+  zero arm and three seeded norm-matched random-axis-pair arms. Config
+  `experiments/config/coordinate_v3.json` (`c8beee9`).
+- **Result** (`experiments/results/coordinate_v3/baseline_result.json`,
+  `full_result.json`): baseline 12/12 ×3; blocks 8/12/16 pass number 12/12
+  but tense 0/12; block 20 passes all four signed single-axis transports →
+  frozen (|v_T| 214, |v_S| 281); corner transports 8/8, 8/8, 8/8, 8/8; zero
+  0/8; three random arms 0/8 each. Logit lens: W_U·(v_T+v_S) top token =
+  ` were`; dose response is a threshold (0.25 → 0/32, 0.5 → 1/32, 1.0 →
+  32/32).
+- **Audit #27 (`2799efb`/`d44b1de`): NEGATIVE for the coordinate artifact;
+  positive only as a narrow lexical-control diagnostic.** Design error: every
+  corner transport flips the number bit without changing the visible
+  subject, so the grammar gate is 0/32 (not ~30/32) and `test_gate` was
+  never enforced. **Licensed sentence, verbatim:** At a fixed final-token
+  prediction site in Qwen3‑1.7B‑Base, a coefficient‑1 block‑20 patch built
+  by adding or subtracting two mean residual differences estimated from 12
+  calibration families using only states 00/10/01 changed the
+  full-vocabulary greedy next token to the predeclared member of {is, was,
+  are, were} in all 32 held-out noun/complement-template cases, versus 0/32
+  for the zero arm and each of three seeded random-axis-pair arms, but the
+  vectors project directly onto those verb logits and every corner token
+  disagrees in number with the unchanged visible subject, so the result is
+  a narrow late lexical-control effect rather than a grammatical,
+  persistent, or general latent coordinate.
+- **Never say (audit #27):** “A two-dimensional latent grammatical coordinate
+  was discovered.” / “Two hidden grammatical states composed to produce an
+  unseen state.” / “The intervention generated grammatical native
+  continuations.” / “The state persisted through generation.” / “The result
+  generalizes to held-out tasks, verbs, templates, models, or layers.” /
+  “Random controls prove the learned direction is uniquely meaningful.” /
+  “A small perturbation produced the effect.” / “Number is represented
+  abstractly earlier than tense.” / “State 11 was unseen by the model”; only
+  the experiment’s calibration and selection omitted it.
+- **What we learned:** the cheapest explanation (late lexical readout
+  steering living in the unembedding) is strongly supported; scoped
+  measurement-to-artifact ratio 6.7:1 exceeded the governance threshold and
+  was raised to the user.
+
+## Direction rounds 5–7 (Codex direction dialogue, 2026-08-29) — rulings
+
+- **Round 5** (`.codex_direction_r5`, not committed; no separate ledger row —
+  the round-5 rule is recorded in ledger `coordinate_v3_result`): after the
+  two instruct-model baseline kills, move to a base model's native
+  next-token readout at the prediction site; a positive requires all four
+  corner transports with zero and random controls at 0, plus one fresh audit
+  before any claim.
+- **Round 6** (`.codex_direction_r6`, not committed; no separate ledger row —
+  design recorded in ledger `interchange_v1_baseline`): pivot from Cartesian
+  coordinates to operational interchangeability (donor code swap between
+  paraphrases at block 12), native-behaviour gate by raw probe sign before
+  calibration-scale standardization.
+- **Round 7** (ledger `direction_r7_ruling`, `b9e4581`; verbatim in
+  NOTEBOOK): `interchange_v1` dead; frozen-residual mining ruled "not
+  working" (audit #28 reclassified this as an allocation pivot, not a
+  scientific conclusion); central artifact becomes the co-developed latent
+  interface `state_bus_v1`; frozen-model interventions become controls.
 
 ## coordinate_v2 — tense × grammatical number, Qwen3-1.7B: KILLED at the pre-declared baseline gate (2026-08-29; ledger `coordinate_v2_baseline`)
 
