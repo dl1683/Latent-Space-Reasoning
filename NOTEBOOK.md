@@ -78,7 +78,7 @@ to exploit — then the collapse of the ctx arm is a df/feature-space
 artefact of the comparison, not a fact about the state. Alternatives held
 live otherwise unchanged (capacity; Jacobian account; decoder specificity;
 typed truth-evaluable world; random-weight architecture null). Instrument
-governance status: Round 34a in repair round 2 of 3; consequence parked;
+governance status: Round 34a in repair round 2 of 3 (superseded: RUN-READY at 6b93ff1 after round 4); consequence parked;
 full Round 34 held. Foundational thread advanced: the estimand question
 (raw vs residualized) is now explicit rather than implicit in tag names.
 Audit #20 (fired, unprimed) returned CONDITIONAL (one overclaim, one underclaim); its correction block, its execution priorities / strongest alternative / tunnel ruling, and its final ruling follow verbatim.
