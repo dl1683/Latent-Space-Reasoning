@@ -5,6 +5,32 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-28 — Round 34 registered: capacity-matched state-versus-context (audit #18's first control)
+
+Codex design gate (`.codex_dfmatch_design.md`, registered in
+theory/EXPERIMENTS.md, `d493cf2`): the ridge-versus-context gap is
+unidentified because the state ridge carries ~210–406 effective df against
+~42 for the token-id contextual ridge. Round 34 matches capacity foldwise —
+for each of six fixed contextual candidates (sentinel/position only; the
+Round 31 token-id ridge at its selected lambda and at a lowered "ceiling"
+lambda with capacity-shortfall telemetry; the contextual RBF kernel; a frozen
+input-embedding sequence RBF arm; a template-edit Levenshtein kernel) a
+separately standardized state ridge is solved by bisection to the same
+training EDF. The context-only rows repeat within POS (≤48 distinct rows per
+fold), so the contextual ladder cannot reach the state EDF; the state is
+matched downward, never the context inflated. KEEP needs matched margins
+≥ 0.02 with crossed LB > 0 on cos/skill/KL-rank, ≥ 6/8 jointly positive keys,
+no block collapse, support ≥ 0.95, two common F4–F20 layers in both
+sentinels; MOOT needs the strongest matched margin ≤ 0.02 with crossed UB
+< 0.02 under the same key rules; otherwise INCONCLUSIVE/CAPACITY-SENSITIVE.
+Ruling: Round 34 runs BEFORE Round 33 (the consequence test cannot identify
+state while the predictor advantage is capacity-confounded); only a KEEP
+verdict returns Round 33 to the queue. Cost 2–3.5 h CPU per sentinel, four-hour
+wall. The consequence instrument is parked on branch `conseq-instrument`
+after four NOT-READY Tier-1 rounds (decision raised to the user). Round 34
+implementation is being written against the committed main analyzer; Tier-1
+review before any run.
+
 ## 2026-08-28 — Re-contextualization #18 (2-hour step-back; audit #18 fired, unprimed)
 
 Live question unchanged: is the surviving X⊥→Δ⊥ predictability in one small
