@@ -20,8 +20,16 @@ already carries half or more of the raw displacement cosine, so the
 X-conditioned surplus is a gap of ~0.1–0.2 cosine and, more sharply, the
 ctx field cannot beat identity on norm-error at all — the state-reading
 claim now rests on that norm/scale margin as much as on direction. F0 is
-nearly closed by prefix ids (0.65 vs 0.69), which is the token-identity
-regime reading, not a new fact.
+nearly closed by prefix ids on displacement direction only (0.65 vs 0.69;
+normalized error ~1.00 vs 0.97), which is the token-identity regime reading,
+not a new fact — (corrected by audit #18: a screen-level directional
+near-closure, not proof that "prefix IDs explain F0" or the full
+transition; F0 is a model-class-sensitive diagnostic, since a post hoc
+kernel-field reduction passes the analogous rule at F0 in all four cells).
+The screens do not establish that the state-reading gate is live: the
+state ridge has ~210–406 effective df at F4–F20 versus ~42 for the
+contextual ridge, and the completion endpoints, crossed intervals, joint
+key count, and collapse checks remain unscored (corrected by audit #18).
 
 Alternatives held live (not run): (1) the ridge–ctx gap is a
 capacity/standardization artefact (df-matched ridge vs sparse token field)
@@ -137,7 +145,12 @@ weak A-score4 association. Audit #17 wording stands unchanged: consistent
 within-decoder, within-population condition robustness, not replication,
 operational state, or presentation independence; B-score4 stays
 amended-implementation and SVD-telemetry-incomplete. The residual F0 failure
-in all four cells is the one structural regularity of the table. The
+in all four cells was read as the one structural regularity of the table
+(corrected by audit #18: the designated ridge field is non-qualifying in
+three cells with a weak pooled A-score4 exception, but a post hoc kernel
+reduction passes the analogous rule at F0 in all four cells — F0 is a
+model-class-sensitive diagnostic, not an all-field dead end or a
+structural identity law). The
 Evidence-gate adjudication of the four-cell synthesis is launched; the
 contextual-prefix chain (`run_ctx.cmd`, committed analyzer copy) starts
 automatically now that resSA2 has written.
@@ -172,10 +185,12 @@ SVD telemetry re-review #4 (`.codex_svd_review4.md`) returned NOT-READY with
 six open items (mixed `primary_shadow` pooling, support-mask and missing-map
 fail-closed behaviour, completion-off telemetry, a crash-safe record
 validator, unexpected context groups, oracle `fit_id` collisions). That is
-the fourth consecutive repair round without an admissible result, so
-AGENTS.md artifact-precedence rule 7 applies: the low-rank telemetry gate
-is parked, not repaired again, and the question of whether to continue it
-is raised to the user. The gate only blocks low-rank (`--aug-rank`/probe-1
+the fourth consecutive repair round without an admissible result, so the
+repair-round cap (global CLAUDE.md §2.7; corrected by audit #18: no such
+rule exists in AGENTS.md, and the parking is a discretionary allocation
+decision, not a rule-triggered closure) applies: the low-rank telemetry
+gate is parked and unpassed, not repaired again, and the question of
+whether to continue it is raised to the user. The gate only blocks low-rank (`--aug-rank`/probe-1
 screen) claims; the analyzer's SVD diff stays uncommitted and
 `run_r31.cmd` stays disarmed.
 
