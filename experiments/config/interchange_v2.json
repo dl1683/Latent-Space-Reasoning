@@ -1,0 +1,74 @@
+{
+ "name": "interchange_v2",
+ "purpose": "Bias-controlled operational interchangeability (Codex direction round 8, locked): fresh cat/dog paraphrases, fresh cow/horse on-manifold third-state donors, calibration-centred standardized probe statistic, fractional donor movement with squared-separation denominator, exact 2^8 recipient sign-flip test. One construction; no v3.",
+ "model_id": "Qwen/Qwen3-1.7B-Base",
+ "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
+ "layer": 12,
+ "anchor": " The animal",
+ "probes": [
+  [
+   " makes a meowing sound",
+   " makes a barking sound"
+  ],
+  [
+   " has babies called kittens",
+   " has babies called puppies"
+  ],
+  [
+   " belongs to the feline family",
+   " belongs to the canine family"
+  ]
+ ],
+ "positive_class": "cat",
+ "baseline_gate": {
+  "total_min": 20,
+  "per_class_min": 9
+ },
+ "gates": {
+  "tau_percentile": 90,
+  "same_within_tau_min": 6,
+  "cross_T_median_min": 0.5,
+  "cross_flip_two_min": 6,
+  "specificity_median_min": 0.3,
+  "specificity_paired_positive_min": 7,
+  "perm_p_max": 0.05
+ },
+ "calibration": {
+  "cat": [
+   "A very small purring pet that often hunts mice at night and also sleeps in warm sunny spots during the day.",
+   "This furry pet purrs on laps, chases mice through the barn, and naps in the afternoon sun.",
+   "It is a quiet whiskered pet that purrs, stalks mice, and rests for hours in the sunlight.",
+   "A sleek pet with sharp claws that purrs, pounces on mice, and dozes by the sunny window."
+  ],
+  "dog": [
+   "A loyal barking pet that fetches sticks in the park and wags its tail when the family comes home.",
+   "This big furry pet barks at strangers, chases sticks across the yard, and wags its tail happily.",
+   "It is a friendly floppy-eared pet that barks, retrieves sticks, and wags its tail at visitors.",
+   "A sturdy playful pet with a wet nose that often barks, runs after sticks, and wags its tail."
+  ]
+ },
+ "test": {
+  "cat": [
+   "A very graceful purring pet that often catches mice in the garden and also curls up asleep on sunny windowsills.",
+   "This nimble furry pet purrs when stroked, hunts mice in the cellar, and sleeps in the sun.",
+   "It is a calm whiskered pet that often purrs, watches mice, and stretches out in the bright sunlight.",
+   "A lazy little pet with soft paws that purrs, traps mice, and lounges in the afternoon sun."
+  ],
+  "dog": [
+   "A brave barking pet that often guards the gate at night and also wags its tail when the children arrive.",
+   "This eager furry pet barks at the mailman, chases balls, and wags its tail all day.",
+   "It is a gentle floppy-eared pet that barks, fetches balls, and wags its tail at the neighbours.",
+   "A happy playful pet with strong legs that barks, runs after balls, and wags its tail at everyone."
+  ]
+ },
+ "third": [
+  "A large grazing farm animal that often moos in the meadow and gives fresh milk to the farmer each morning.",
+  "This heavy spotted animal chews cud all day, moos at dusk, and gives rich milk in the barn.",
+  "It is a slow patient animal that moos, eats hay, and gives milk to the village dairy every day.",
+  "A calm broad animal with a wet nose that moos, chews grass, and gives milk twice each day.",
+  "A tall hoofed farm animal that often neighs in the paddock and also carries riders along the country roads.",
+  "This very strong swift animal gallops over the hills, neighs at dawn, and also carries riders to town.",
+  "It is a proud sleek animal that often neighs, gallops, and also carries riders across the open plains.",
+  "A gentle fast animal with a long mane that often neighs, gallops, and also carries riders every morning."
+ ]
+}

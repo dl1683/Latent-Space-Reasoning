@@ -1,13 +1,15 @@
 """Operational interchangeability of paraphrases in a real residual stream (Qwen3-1.7B-Base, CPU).
 
 Donor block-L output at the anchor token REPLACES the recipient's during prefill; the readout is a signature of three
-downstream probe margins (mean log-likelihood of continuation A minus B). Arms: self-swap sham, same-class donor,
-matched cross-class donor, unrelated-class donor. All text and gates are fixed in the config before any result.
+downstream probe margins (mean log-likelihood of continuation A minus B). v2 (locked, direction round 8): probe margins
+are centred by a calibration-only midpoint and scaled by a calibration-only pooled-within SD floored by the self-swap
+numerical floor; fractional donor movement T = ((u_arm - u_native) . d) / |delta|^2; arms native / self-sham /
+same-state donor / opposite-state donor / on-manifold third-state donor; exact 2^8 recipient sign-flip test.
 
-    python experiments/run_interchange.py --config experiments/config/interchange_v1.json
+    python experiments/run_interchange.py --config experiments/config/interchange_v2.json
 """
 from __future__ import annotations
-import argparse, hashlib, itertools, json, os, sys, time
+import argparse, copy, hashlib, itertools, json, os, sys, time
 import numpy as np, torch
 sys.path.insert(0, os.path.dirname(__file__))
 from substitution_probe import SubstitutionProbe
@@ -21,7 +23,6 @@ class Model:
     def ids(self, text): return self.tok.encode(text, add_special_tokens=False)
 
     def capture(self, ctx_ids):
-        """Block-L output at the final (anchor) token of a context."""
         out = self.m(input_ids=torch.tensor([ctx_ids]), output_hidden_states=True); self.forwards += 1
         return out.hidden_states[self.cfg["layer"] + 1][0, -1].clone()
 
@@ -38,15 +39,11 @@ class Model:
             if handle: handle.remove()
         past, last = out.past_key_values, out.logits[0, -1]
         def ll(cont):
-            toks = self.ids(cont); lp = torch.log_softmax(last.float(), -1)[toks[0]].item(); p = _clone(past)
-            o = self.m(input_ids=torch.tensor([toks]), past_key_values=p, use_cache=True); self.forwards += 1
+            toks = self.ids(cont); lp = torch.log_softmax(last.float(), -1)[toks[0]].item()
+            o = self.m(input_ids=torch.tensor([toks]), past_key_values=copy.deepcopy(past), use_cache=True); self.forwards += 1
             lps = torch.log_softmax(o.logits[0, :-1].float(), -1); lp += sum(lps[i, toks[i + 1]].item() for i in range(len(toks) - 1))
             return lp / len(toks)
         return np.array([ll(a) - ll(b) for a, b in self.cfg["probes"]])
-
-
-def _clone(past):
-    import copy; return copy.deepcopy(past)
 
 
 def main():
@@ -58,50 +55,57 @@ def main():
     t0 = time.time(); M = Model(cfg); log(f"loaded {cfg['model_id']} rev={M.sp.revision} ({time.time()-t0:.0f}s)")
     classes = ["cat", "dog"]; pos = cfg["positive_class"]; sign = {c: (1 if c == pos else -1) for c in classes}
     ctx = lambda text: M.ids(text + cfg["anchor"])
-    lengths = {k: [len(ctx(t)) for c in classes for t in cfg[k][c]] for k in ("calibration", "test")}; lengths["unrelated"] = [len(ctx(t)) for t in cfg["unrelated"]]
-    log(f"context token lengths: {lengths}")
+    lengths = {k: [len(ctx(t)) for c in classes for t in cfg[k][c]] for k in ("calibration", "test")}; lengths["third"] = [len(ctx(t)) for t in cfg["third"]]
+    log(f"context token lengths: {lengths}"); assert len({l for v in lengths.values() for l in v}) == 1, "contexts must be exactly length-matched"
     res = {"config": cfg["name"], "sha256": shas, "revision": M.sp.revision, "lengths": lengths}
     save = lambda: json.dump(res, open(os.path.join(out_dir, "result.json"), "w"), indent=1, default=float)
-    # native signatures
-    nat = {k: {c: [M.signature(ctx(t)) for t in cfg[k][c]] for c in classes} for k in ("calibration", "test")}
-    res["native"] = {k: {c: [s.tolist() for s in v[c]] for c in classes} for k, v in nat.items()}
-    correct = {c: int(sum((np.sign(s) == sign[c]).sum() for s in nat["test"][c])) for c in classes}
-    g = cfg["baseline_gate"]; ok = sum(correct.values()) >= g["total_min"] and all(v >= g["per_class_min"] for v in correct.values())
-    log(f"native held-out probe decisions correct: {correct} (of 12 each) -> BASELINE {'PASS' if ok else 'FAIL - ABANDON TASK'}"); res["baseline"] = {"correct": correct, "passed": ok}; save()
-    if not ok: return
-    # calibration-only scale and tolerance
-    cal = np.array([s for c in classes for s in nat["calibration"][c]]); scale = cal.std(0, ddof=1) + 1e-6
-    z = lambda s: s / scale
-    within = [np.linalg.norm(z(x) - z(y)) for c in classes for x, y in itertools.combinations(nat["calibration"][c], 2)]
-    cent = {c: np.mean([z(s) for s in nat["calibration"][c]], 0) for c in classes}; sep = float(np.linalg.norm(cent["cat"] - cent["dog"]))
-    # arms on held-out recipients
-    donors = {c: [M.capture(ctx(t)) for t in cfg["calibration"][c]] for c in classes}; unrel = [M.capture(ctx(t)) for t in cfg["unrelated"]]
-    rows = []; floor = []
-    for c in classes:
-        other = classes[1 - classes.index(c)]
-        for i, t in enumerate(cfg["test"][c]):
-            r = ctx(t); own = M.capture(r); native = z(nat["test"][c][i])
-            selfswap = z(M.signature(r, own)); floor.append(float(np.linalg.norm(selfswap - native)))
-            same = z(M.signature(r, donors[c][i])); cross = z(M.signature(r, donors[other][i])); un = z(M.signature(r, unrel[i]))
-            row = {"class": c, "i": i, "native": native.tolist(), "self": selfswap.tolist(), "same": same.tolist(), "cross": cross.tolist(), "unrelated": un.tolist(),
-                   "d_same": float(np.linalg.norm(same - native)), "d_cross": float(np.linalg.norm(cross - native)), "d_unrelated": float(np.linalg.norm(un - native)),
-                   "cross_flips": int((np.sign(cross) != np.sign(native)).sum()), "cross_toward_other": float(np.dot(native - cross, cent[c] - cent[other]) / sep)}
-            rows.append(row); log(f"{c}{i}: d_self={floor[-1]:.3f} d_same={row['d_same']:.3f} d_cross={row['d_cross']:.3f} d_unrel={row['d_unrelated']:.3f} flips={row['cross_flips']} toward_other={row['cross_toward_other']:.2f}"); res["rows"] = rows; save()
-    tau = float(np.percentile(within, cfg["gates"]["tau_percentile"]) + np.median(floor))
-    G = cfg["gates"]; d_same = [r["d_same"] for r in rows]; frac = [r["cross_toward_other"] for r in rows]
-    summary = {"tau": tau, "within_calibration_90pct": float(np.percentile(within, 90)), "self_swap_floor_median": float(np.median(floor)), "class_separation": sep,
-               "same_median": float(np.median(d_same)), "same_within_tau": int(sum(d <= tau for d in d_same)),
-               "cross_median_fraction": float(np.median(frac)), "cross_flip_two": int(sum(r["cross_flips"] >= 2 for r in rows)),
-               "cross_minus_unrelated_median": float(np.median([(r["d_cross"] - r["d_unrelated"]) / sep for r in rows]))}
-    passed = {"same_class_interchangeable": summary["same_median"] <= tau and summary["same_within_tau"] >= G["same_within_tau_min"],
-              "cross_class_moves": summary["cross_median_fraction"] >= G["cross_median_fraction_min"] and summary["cross_flip_two"] >= G["cross_flip_two_min"],
-              "cross_beats_unrelated": summary["cross_minus_unrelated_median"] >= G["cross_minus_unrelated_min"]}
-    # exact permutation of donor-class labels over the 8 recipients (paired same-vs-cross distance)
-    diffs = np.array([r["d_cross"] - r["d_same"] for r in rows]); obs = diffs.mean()
-    perm = np.mean([np.mean(diffs * np.array(sgn)) >= obs for sgn in itertools.product([1, -1], repeat=len(diffs))])
-    summary["perm_p_cross_gt_same"] = float(perm); res["summary"] = summary; res["gates"] = passed
-    status = "BOUNDED POSITIVE — OPERATIONAL INTERCHANGEABILITY (this construction)" if all(passed.values()) else "FAIL — " + ", ".join(k for k, v in passed.items() if not v)
-    res["status"] = status; save(); log(json.dumps(summary, indent=1)); log(f"gates: {passed}"); log(f"STATUS: {status} ({M.forwards} forwards, {time.time()-t0:.0f}s)")
+    with torch.no_grad():
+        # --- calibration-only centring and scale ---
+        cal = {c: np.array([M.signature(ctx(t)) for t in cfg["calibration"][c]]) for c in classes}
+        b = (cal["cat"].mean(0) + cal["dog"].mean(0)) / 2; within = np.sqrt(((cal["cat"] - cal["cat"].mean(0)) ** 2).sum(0) + ((cal["dog"] - cal["dog"].mean(0)) ** 2).sum(0)) / np.sqrt(6)
+        floor = []
+        for c in classes:                                                   # self-swap numerical floor on calibration contexts
+            for t in cfg["calibration"][c]:
+                r = ctx(t); floor.append(np.abs(M.signature(r, M.capture(r)) - M.signature(r)))
+        eta = np.median(np.array(floor), 0) + 1e-6; s = np.maximum(within, eta); u = lambda m: (m - b) / s
+        ucal = {c: np.array([u(m) for m in cal[c]]) for c in classes}; delta = ucal["cat"].mean(0) - ucal["dog"].mean(0); sep2 = float(delta @ delta)
+        tau_pairs = [float(np.linalg.norm(x - y)) for c in classes for x, y in itertools.combinations(ucal[c], 2)]
+        tau = float(np.percentile(tau_pairs, cfg["gates"]["tau_percentile"]) + np.median([np.linalg.norm(f / s) for f in floor]))
+        res["calibration"] = {"midpoint": b.tolist(), "scale": s.tolist(), "eta": eta.tolist(), "delta": delta.tolist(), "sep2": sep2, "tau": tau}; save()
+        log(f"midpoint={np.round(b,3).tolist()} scale={np.round(s,3).tolist()} delta={np.round(delta,2).tolist()} tau={tau:.3f}")
+        # --- native held-out validity (centred decisions) ---
+        nat = {c: [u(M.signature(ctx(t))) for t in cfg["test"][c]] for c in classes}
+        correct = {c: int(sum((np.sign(x) == sign[c]).sum() for x in nat[c])) for c in classes}
+        g = cfg["baseline_gate"]; ok = sum(correct.values()) >= g["total_min"] and all(v >= g["per_class_min"] for v in correct.values())
+        res["native"] = {"u": {c: [x.tolist() for x in nat[c]] for c in classes}, "correct": correct, "passed": ok}; save()
+        log(f"native held-out centred probe decisions correct: {correct} (of 12 each) -> BASELINE {'PASS' if ok else 'FAIL'}")
+        if not ok: res["status"] = "FAIL — FIXED BLOCK-12 SINGLE-ANCHOR INTERCHANGE CONSTRUCTION (native validity)"; save(); log(res["status"]); return
+        # --- arms on held-out recipients ---
+        donors = {c: [M.capture(ctx(t)) for t in cfg["calibration"][c]] for c in classes}; third = [M.capture(ctx(t)) for t in cfg["third"]]
+        rows = []
+        for ci, c in enumerate(classes):
+            other = classes[1 - ci]; d = delta * sign[c] * -1                        # desired donor direction: toward the opposite class
+            for i, t in enumerate(cfg["test"][c]):
+                r = ctx(t); own = M.capture(r); native = nat[c][i]
+                arms = {"self": u(M.signature(r, own)), "same": u(M.signature(r, donors[c][i])), "cross": u(M.signature(r, donors[other][i])), "third": u(M.signature(r, third[ci * 4 + i]))}
+                T = {k: float(((v - native) @ d) / sep2) for k, v in arms.items()}
+                flips = int(((np.sign(arms["cross"]) != np.sign(native)) & (np.sign(arms["cross"]) == sign[other])).sum())
+                row = {"class": c, "i": i, "native": native.tolist(), **{k: v.tolist() for k, v in arms.items()}, "T": T, "d_same": float(np.linalg.norm(arms["same"] - native)), "d_self": float(np.linalg.norm(arms["self"] - native)), "cross_flips": flips}
+                rows.append(row); log(f"{c}{i}: d_self={row['d_self']:.3f} d_same={row['d_same']:.3f} T_same={T['same']:.2f} T_cross={T['cross']:.2f} T_third={T['third']:.2f} flips={flips}"); res["rows"] = rows; save()
+        G = cfg["gates"]; d_same = [r["d_same"] for r in rows]; Tc = [r["T"]["cross"] for r in rows]; Tt = [r["T"]["third"] for r in rows]; diff = np.array(Tc) - np.array(Tt)
+        obs = diff.mean(); perm = float(np.mean([np.mean(diff * np.array(sg)) >= obs for sg in itertools.product([1, -1], repeat=len(diff))]))
+        summary = {"same_median": float(np.median(d_same)), "same_within_tau": int(sum(x <= tau for x in d_same)), "tau": tau,
+                   "cross_T_median": float(np.median(Tc)), "cross_flip_two": int(sum(r["cross_flips"] >= 2 for r in rows)),
+                   "specificity_median": float(np.median(diff)), "specificity_paired_positive": int((diff > 0).sum()), "perm_p": perm,
+                   "by_class": {c: {"T_cross": [r["T"]["cross"] for r in rows if r["class"] == c], "T_third": [r["T"]["third"] for r in rows if r["class"] == c]} for c in classes}}
+        gates = {"same_state": summary["same_median"] <= tau and summary["same_within_tau"] >= G["same_within_tau_min"],
+                 "cross_state": summary["cross_T_median"] >= G["cross_T_median_min"] and summary["cross_flip_two"] >= G["cross_flip_two_min"],
+                 "specificity": summary["specificity_median"] >= G["specificity_median_min"] and summary["specificity_paired_positive"] >= G["specificity_paired_positive_min"] and perm <= G["perm_p_max"]}
+        status = ("BOUNDED POSITIVE — OPERATIONAL INTERCHANGEABILITY (this construction)" if all(gates.values()) else
+                  "STATE-DIRECTED STEERING WITHOUT INTERCHANGEABILITY" if (gates["cross_state"] and gates["specificity"] and not gates["same_state"]) else
+                  "FAIL — FIXED BLOCK-12 SINGLE-ANCHOR INTERCHANGE CONSTRUCTION")
+        res["summary"] = summary; res["gates"] = gates; res["status"] = status; save()
+        log(json.dumps(summary, indent=1)); log(f"gates: {gates}"); log(f"STATUS: {status} ({M.forwards} forwards, {time.time()-t0:.0f}s)")
 
 
 if __name__ == "__main__":
