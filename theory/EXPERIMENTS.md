@@ -8298,3 +8298,75 @@ This registration does not erase v1's FAIL. It separates two questions that
 v1 could not: whether the tiny learner first fits its behavioral world exactly,
 and, conditional on that fit, whether its latent moves respect the denizen's
 operational identity.
+
+## Round 36b amendment (audit #23; before any outcome) (2026-08-29)
+
+**Prospective amendment; theory change only.** This amendment is registered
+before any Round 36b producer or reducer outcome. Round 36b is a
+**prospectively locked, post-outcome, outcome-informed successor** to the v1
+FAIL. It is exploratory, not confirmatory: it is neither a retroactive repair
+of v1 nor a confirmatory replication.
+
+### Three-stage status tree
+
+The reducer must apply the following ordered tree independently to every 36b
+cell:
+
+1. If any seed misses exact behavioral fit on either the `21,184` training
+   responses or the `2,240` held-out responses at the frozen `0.5` decision
+   threshold, report `FAIL — BEHAVIOR UNDERFIT; QUOTIENT INELIGIBLE`.
+2. If behavior is exact but any response-signature component required by an
+   inherited structural gate is unsupported under the frozen
+   `<=0.10`/`>=0.90` rule, report
+   `FAIL — BEHAVIOR FIT; OPERATIONAL SIGNATURE UNSUPPORTED`.
+3. Only when behavior is exact and the complete domain required by every
+   inherited structural gate is supported may a structural failure be named.
+   Report
+   `FAIL — BEHAVIOR AND SIGNATURE SUPPORTED; NON-CONGRUENT ACTIONS — <failed
+   inherited structural gate names>`, naming only failures evaluated on that
+   fully supported domain.
+4. Report `PASS — MINIMAL OPERATIONAL QUOTIENT WORLD` only after every
+   inherited Round 36 structural gate passes. No diagnostic field can change
+   any branch of this primary tree.
+
+### Confidence-free reducer diagnostic
+
+Alongside, but outside, the primary tree, the 36b reducer must recompute from
+serialized response probabilities a complete confidence-free gate table using
+the literal decision rule `p > 0.5` (`p == 0.5` decodes as `0`). The table must
+be labelled `DIAGNOSTIC ONLY`, must report every inherited gate, component
+error counts, and decision margins from `0.5`, and must be emitted on every
+valid 36b reduction. It can diagnose whether errors are confidence- or
+truth-driven, but it can never rescue, replace, soften, or otherwise alter a
+primary `0.10/0.90` FAIL.
+
+For each diagnostic gate, report its complete numerator/denominator table and
+the corresponding error count; for each serialized probability domain,
+report the component count and the minimum, median, mean, and maximum absolute
+margin `|p-0.5|`, including the count exactly at zero margin. These quantities
+are descriptive diagnostics, not additional success gates.
+
+### Literal cross-seed cell accounting
+
+Beside the inherited whole-table exact cross-seed gate, the reducer must
+report literal cellwise counts over the `16 x 11 = 176` recovered action-table
+cells: (a) cells identical across all five seeds, (b) cells identical and
+supported across all five seeds, (c) cells supported and truthful in all five
+seeds, and (d) bitwise-majority truth, reported both as exact truthful cells
+out of `176` and truthful bits out of `2,112`. A primary-threshold majority bit
+exists only when at least three of the five seeds emit that literal `0` or `1`;
+`?` is an abstention, not a vote. Report this accounting for both the primary
+`0.10/0.90` tables and the confidence-free diagnostic tables. None of these
+cellwise fields replaces the inherited all-or-none whole-table gate.
+
+### Training diagnostics by word depth
+
+For every 36b seed, report full-dataset binary cross-entropy loss, response
+accuracy, and primary-threshold response support separately for training-word
+depths `0`, `1`, `2`, and `3` throughout optimization. The frozen trace cadence
+is the initialized model at optimizer step `0` and every completed `1,000`
+steps through the cell's final registered step. Support means the fraction of
+responses with probability `<=0.10` or `>=0.90`, independent of correctness;
+accuracy continues to use the frozen strict decision rule under which a logit
+of exactly zero is incorrect. This depth trace is diagnostic and does not
+change the behavioral-fit or structural gates.
