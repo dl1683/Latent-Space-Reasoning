@@ -1,6 +1,8 @@
 """No-model fixture for the Round 31 operation-update contract (Tier-1 acceptance item: 'no-model fixtures').
 
 Exercises the PRODUCTION helpers factored out of the analyzer/runner with synthetic arrays and a fake completer — no model, no result file:
+  0. on committed main, the Round 34 EDF solver, context-only feature builders and forbidden-input guards, matched-margin reducer,
+     per-layer KEEP/MOOT/INCONCLUSIVE rules, and two-sentinel joint rule;
   1. shared operation_updates parser agreement (runner vs analyzer) and the frozen v4 block structure;
   2. leave-one-wrapper-out folds over the eight pseudo-carriers (rows / source / recipient / wrapper disjointness; 6 / 2 carriers);
   3. the registered POS-stratified word folds (stratified_word_folds): 40 / 40, every class 10 / 10;
@@ -38,6 +40,144 @@ import run_lm_dynamics as runner  # noqa: E402
 import analyze_lm_dynamics as analyzer  # noqa: E402
 
 CFG = HERE / "config" / "lexical_probe_fresh_v4.json"
+
+
+def round34_cases():
+    """Committed-main, no-model acceptance cases for the Round 34 analyzer helpers."""
+    rng = np.random.default_rng(34)
+    X = rng.standard_normal((48, 17)).astype(np.float64); X[:, -1] = X[:, 0]                  # one exact duplicate -> rank 16 after centring
+    Y = rng.standard_normal((48, 9)).astype(np.float64); st = analyzer.Standardizer().fit(X); fam = analyzer.RidgeFamily(st(X), Y)
+    df0, spec = analyzer.round34_effective_df(fam.evals, 0.0, len(X), int(st.keep.sum()))
+    assert spec["valid"] and spec["rank"] == 16 and df0 == 16.0
+    for target in (3.25, 9.5, 15.99):
+        m = analyzer.round34_solve_edf_lambda(fam.evals, target, len(X), int(st.keep.sum()), int(st.keep.sum()))
+        assert m["valid"] and m["edf_error"] <= 0.01 and m["rank"] == 16 and all(m["finite_checks"][k] for k in ("eigenvalues", "target_edf", "bracket", "lambda", "achieved_edf"))
+    assert not analyzer.round34_solve_edf_lambda(fam.evals, 0.0, len(X), int(st.keep.sum()), int(st.keep.sum()))["valid"], "zero EDF is only attained at infinite lambda"
+    assert not analyzer.round34_solve_edf_lambda(fam.evals, 16.02, len(X), int(st.keep.sum()), int(st.keep.sum()))["valid"]
+    bad = np.array([2.0, -0.5]); assert not analyzer.round34_solve_edf_lambda(bad, 1.0, 2, 2, 2)["valid"], "substantial negative eigenvalues are unsupported"
+
+    ctx = [{"pre": [1, 2, 3], "suf": [4], "slot": 3, "readout": 5}, {"pre": [1, 5], "suf": [6, 7], "slot": 2, "readout": 5}]
+    pos = ["noun", "verb"]; idx = np.array([0, 1]); lookup = lambda tid: np.array([tid, 1.0, -tid], dtype=np.float64)
+    S = analyzer.round34_sentinel_position_features(ctx, [0, 1], idx, 99)
+    assert S.shape == (4, 6) and np.array_equal(S[0], S[1]), "sentinel-position field must be invariant to POS/word row"
+    E = analyzer.round34_embedseq_features(ctx, [0, 1], idx, pos, ["noun", "verb"], lookup)
+    assert E.shape == (4, 12 * 3 + 12 + 4 + 2) and np.isfinite(E).all()
+    R = analyzer.round34_template_edit_rows(ctx, [0, 1], idx, pos); D = analyzer.round34_template_edit_distances(R, R)
+    assert np.allclose(np.diag(D), 0.0) and D[0, 1] == 1.0 and np.allclose(D, D.T)
+    ef = analyzer.TemplateEditKernelFamily(R, rng.standard_normal((len(R), 4))); ep = ef.predictor(1.0, 1.0)(R)
+    assert ep.shape == (len(R), 4) and np.isfinite(ep).all()
+    for forbidden in ("item_token", "cell_X", "hidden_states", "item_ids", "item_strings", "held_out_outcomes"):
+        for fn, args in ((analyzer.round34_sentinel_position_features, (ctx, [0], idx, 99)),
+                         (analyzer.round34_embedseq_features, (ctx, [0], idx, pos, ["noun", "verb"], lookup)),
+                         (analyzer.round34_template_edit_rows, (ctx, [0], idx, pos))):
+            try: fn(*args, forbidden_inputs={forbidden: np.zeros((1, 1))}); raise RuntimeError(f"Round 34 builder accepted {forbidden}")
+            except AssertionError: pass
+
+    blocks = ["lexical", "grammar", "semantic", "instruction"]; fkeys = [f"{b}_w{f}" for b in blocks for f in (0, 1)]
+    strata = lambda fold_key, w: [np.arange(w)]
+    def margins(value):
+        return {e: {c: {fk: np.full((4, 10), value + 0.001 * j, dtype=np.float64) for fk in fkeys} for j, c in enumerate(analyzer.ROUND34_CANDIDATES)} for e in analyzer.ROUND34_ENDPOINTS}
+    positive = margins(0.03); reduced = analyzer.round34_matched_margin_reduce(positive, strata, 120, 34)
+    crossed = margins(0.2); c0, c1 = analyzer.ROUND34_CANDIDATES[:2]
+    for e in analyzer.ROUND34_ENDPOINTS:
+        for fk in fkeys:
+            crossed[e][c0][fk][:2] = -0.02; crossed[e][c1][fk][2:] = -0.02
+    crossed_reduced = analyzer.round34_matched_margin_reduce(crossed, strata, 200, 35)
+    assert crossed_reduced["cos"]["winner_counts_bootstrap"][c0] > 0 and crossed_reduced["cos"]["winner_counts_bootstrap"][c1] > 0, "context winner must be selected inside each replicate"
+    keys = {fk: {"common_support": 1.0, "all_matches_valid": True, "jointly_point_positive": True, "jointly_below_0.02": False} for fk in fkeys}
+    keep = analyzer.round34_decide_layer(reduced, keys); assert keep["decision"] == "KEEP X-CONDITIONED HYPOTHESIS ALIVE" and keep["keep"]
+    small = analyzer.round34_matched_margin_reduce(margins(0.0), strata, 120, 34)
+    keys_small = {fk: {**v, "jointly_point_positive": False, "jointly_below_0.02": True} for fk, v in keys.items()}
+    moot = analyzer.round34_decide_layer(small, keys_small); assert moot["decision"] == "MAKES THE CURRENT X-CONDITIONED INTERPRETATION MOOT" and moot["moot"]
+    keys_bad = {fk: dict(v) for fk, v in keys.items()}; keys_bad[fkeys[0]]["common_support"] = 0.94
+    assert analyzer.round34_decide_layer(reduced, keys_bad)["decision"] == "INCONCLUSIVE/CAPACITY-SENSITIVE"
+    keys_invalid = {fk: dict(v) for fk, v in keys.items()}; keys_invalid[fkeys[0]]["all_matches_valid"] = False
+    assert analyzer.round34_decide_layer(reduced, keys_invalid)["decision"] == "INCONCLUSIVE/CAPACITY-SENSITIVE"
+    keys_collapse = {fk: dict(v) for fk, v in keys.items()}
+    for fk in fkeys[:2]: keys_collapse[fk]["jointly_point_positive"] = False
+    assert analyzer.round34_decide_layer(reduced, keys_collapse)["decision"] == "INCONCLUSIVE/CAPACITY-SENSITIVE"
+    joint_keep = analyzer.round34_decide_joint({"A": {"F4": keep["decision"], "F8": keep["decision"], "F12": moot["decision"], "F20": moot["decision"]},
+                                                 "B": {"F4": keep["decision"], "F8": keep["decision"], "F12": keep["decision"], "F20": moot["decision"]}})
+    assert joint_keep["decision"] == "KEEP X-CONDITIONED HYPOTHESIS ALIVE" and joint_keep["keep_common_layers"] == ["F4", "F8"]
+    joint_moot = analyzer.round34_decide_joint({"A": {"F0": keep["decision"], "F4": moot["decision"], "F8": moot["decision"], "F12": keep["decision"], "F20": keep["decision"]},
+                                                 "B": {"F0": keep["decision"], "F4": moot["decision"], "F8": moot["decision"], "F12": moot["decision"], "F20": keep["decision"]}})
+    assert joint_moot["decision"] == "MAKES THE CURRENT X-CONDITIONED INTERPRETATION MOOT" and "F0" not in joint_moot["eligible_layers"]
+    class MemPath:
+        def __init__(self, store, name): self.store, self.name = store, name
+        def read_bytes(self): return self.store[self.name]
+        def write_text(self, text, encoding=None): self.store[self.name] = text.encode(encoding or "utf-8")
+    class MemDir:
+        def __init__(self, store): self.store = store
+        def __truediv__(self, name): return MemPath(self.store, name)
+    store = {}; decisions_a = {"F0": "INCONCLUSIVE/CAPACITY-SENSITIVE", "F4": keep["decision"], "F8": keep["decision"], "F12": moot["decision"], "F20": moot["decision"]}
+    decisions_b = {**decisions_a, "F12": keep["decision"]}
+    for sentinel, tag in (("A", "ctxcap_A"), ("B", "ctxcap_B")):
+        decisions = decisions_a if sentinel == "A" else decisions_b
+        def layer_cc(d):
+            red_, recs_ = (reduced, keys) if d == keep["decision"] else ((small, keys_small) if d == moot["decision"] else (reduced, keys_bad))
+            return {"status": "COMPLETE/PER-LAYER", "endpoints": red_, "outer_keys": recs_, "decision": d}
+        def cand_for(c):
+            fam_, fc_ = {"sentinel_position_v1": ("ridge", ("features", "prediction", "spectrum")), "token_ids_v1_selected": ("ridge", ("features", "prediction", "spectrum")), "token_ids_v1_ceiling": ("ridge", ("prediction", "spectrum")),
+                         "token_ids_v1_kernel": ("rbf_kernel", ("features", "prediction", "spectrum")), "embedseq_rbf_v1": ("rbf_kernel", ("features", "prediction", "spectrum")), "template_edit_kernel_v1": ("template_edit_kernel", ("distance", "prediction", "spectrum"))}[c]
+            return {"supported": True, "state_match": {"valid": True, "target_edf": 42.5, "achieved_edf": 42.503, "edf_error": 0.003, "lambda": 3.1, "bracket": [0.0, 8.0], "retained_columns": 1024, "iterations": 31, "selected_state_edf": 300.0, "selected_state_lambda": 10.0,
+                                                       "finite_checks": {"eigenvalues": True, "target_edf": True, "bracket": True, "lambda": True, "achieved_edf": True, "prediction": True}},
+                    "context": {"family": fam_, "training_edf": 42.5, "lambda": 100.0, "rank": 47, "distinct_training_rows": 48, "finite_checks": {k_: True for k_ in fc_}}}
+        def fold_cc_for(recs_, fk_):
+            return {"all_matches_valid": True, "candidates": {c: cand_for(c) for c in analyzer.ROUND34_CANDIDATES}, **{k_: recs_[fk_][k_] for k_ in ("common_support", "jointly_point_positive", "jointly_below_0.02")}}
+        art = {"context_capacity_audit": "round34_v1", "context_capacity_complete": True, "source": "forward", "target": "delta", "residualize": "static", "sentinel_tag": sentinel,
+               "context_capacity_candidates": list(analyzer.ROUND34_CANDIDATES), "fallback": {"n_boot": 500, "n_shuffle": 20}, "config": "fixture.json", "manifest": {"model_revision": "fixture"},
+               "context_capacity_binding": {"config_sha256_raw": analyzer.ROUND34_CONFIG_SHA256, "forward_states_sha256": ("a" if sentinel == "A" else "b") * 64, "forward_manifest_sha256": "c" * 64, "model": "Qwen/Qwen3-0.6B", "model_revision": "fixture", "sentinel": analyzer.ROUND34_SENTINEL[sentinel], "sentinel_id": 13 if sentinel == "A" else 11, "completer_model_revision": "fixture", "sentinel_id_rederived_from_tokenizer": True},
+               "pairs": {l: {"folds": {fk: {"context_capacity": fold_cc_for(layer_cc(d)["outer_keys"], fk)} for fk in fkeys}, "context_capacity": layer_cc(d)} for l, d in decisions.items()}}
+        store[f"analysis_{tag}.json"] = json.dumps(art, default=float).encode()
+    _, joint_art = analyzer.round34_joint_artifact(MemDir(store), ["ctxcap_A", "ctxcap_B"], "ctxcap_joint")
+    assert joint_art["status"] == "COMPLETE" and joint_art["decision"] == keep["decision"] and "analysis_ctxcap_joint.json" in store
+    good_b = store["analysis_ctxcap_B.json"]
+    for mutate in ("flag", "empty_folds", "decision", "binding", "nan", "empty_candidate", "missing_endpoint", "list_outer_keys", "bad_json", "f0_broken", "edf_error", "same_capture", "binding_incomplete",
+                   "overflow_int", "means_inconsistent", "support_out_of_range", "bool_sentinel", "fold_flag_mismatch", "edf_error_stored_wrong", "context_edf_mismatch",
+                   "impossible_capacity", "negative_state_edf", "missing_bracket", "wrong_family_checks"):
+        mart = json.loads(good_b)
+        c0 = mart["pairs"]["F8"]["folds"][fkeys[3]]["context_capacity"]["candidates"]
+        if mutate == "impossible_capacity":
+            for k_ in ("target_edf", "achieved_edf"): c0[analyzer.ROUND34_CANDIDATES[1]]["state_match"][k_] = 100.0
+            c0[analyzer.ROUND34_CANDIDATES[1]]["state_match"]["edf_error"] = 0.0; c0[analyzer.ROUND34_CANDIDATES[1]]["context"]["training_edf"] = 100.0
+        if mutate == "negative_state_edf": c0[analyzer.ROUND34_CANDIDATES[4]]["state_match"]["selected_state_edf"] = -5.0
+        if mutate == "missing_bracket": del c0[analyzer.ROUND34_CANDIDATES[5]]["state_match"]["bracket"]
+        if mutate == "wrong_family_checks": c0[analyzer.ROUND34_CANDIDATES[5]]["context"]["finite_checks"] = {"prediction": True, "spectrum": True}
+        if mutate == "overflow_int": mart["pairs"]["F8"]["context_capacity"]["endpoints"]["cos"]["strongest_margin"]["mean"] = 10 ** 400
+        if mutate == "means_inconsistent": mart["pairs"]["F8"]["context_capacity"]["endpoints"]["cos"]["candidate_means"][analyzer.ROUND34_CANDIDATES[4]] = -10.0
+        if mutate == "support_out_of_range": mart["pairs"]["F8"]["context_capacity"]["outer_keys"][fkeys[0]]["common_support"] = 2.0; mart["pairs"]["F8"]["folds"][fkeys[0]]["context_capacity"]["common_support"] = 2.0
+        if mutate == "bool_sentinel": mart["context_capacity_binding"]["sentinel_id"] = True
+        if mutate == "fold_flag_mismatch": mart["pairs"]["F4"]["folds"][fkeys[2]]["context_capacity"]["jointly_point_positive"] = not mart["pairs"]["F4"]["folds"][fkeys[2]]["context_capacity"]["jointly_point_positive"]
+        if mutate == "edf_error_stored_wrong": mart["pairs"]["F4"]["folds"][fkeys[1]]["context_capacity"]["candidates"][analyzer.ROUND34_CANDIDATES[0]]["state_match"]["edf_error"] = 0.0
+        if mutate == "context_edf_mismatch": mart["pairs"]["F4"]["folds"][fkeys[1]]["context_capacity"]["candidates"][analyzer.ROUND34_CANDIDATES[3]]["context"]["training_edf"] = 40.0
+        if mutate == "empty_candidate": mart["pairs"]["F8"]["folds"][fkeys[0]]["context_capacity"]["candidates"][analyzer.ROUND34_CANDIDATES[2]] = {}
+        if mutate == "missing_endpoint": del mart["pairs"]["F8"]["context_capacity"]["endpoints"]["nerr"]
+        if mutate == "list_outer_keys": mart["pairs"]["F8"]["context_capacity"]["outer_keys"] = list(mart["pairs"]["F8"]["context_capacity"]["outer_keys"].values())
+        if mutate == "f0_broken": mart["pairs"]["F0"]["context_capacity"]["endpoints"]["skill"]["strongest_margin"]["mean"] = float("nan")
+        if mutate == "edf_error": mart["pairs"]["F4"]["folds"][fkeys[1]]["context_capacity"]["candidates"][analyzer.ROUND34_CANDIDATES[0]]["state_match"]["achieved_edf"] = 43.0
+        if mutate == "same_capture": mart["context_capacity_binding"]["forward_states_sha256"] = "a" * 64
+        if mutate == "binding_incomplete": del mart["context_capacity_binding"]["completer_model_revision"]
+        if mutate == "bad_json":
+            store["analysis_ctxcap_B.json"] = b"{not json"
+            _, jm = analyzer.round34_joint_artifact(MemDir(store), ["ctxcap_A", "ctxcap_B"], "ctxcap_joint_bad"); assert jm["status"] == "INCOMPLETE/NON-CLAIMING" and jm["decision"] is None, "invalid JSON must fail closed"; continue
+        if mutate == "flag": mart["context_capacity_complete"] = False
+        if mutate == "empty_folds": mart["pairs"]["F8"]["folds"] = {fk: {} for fk in fkeys}
+        if mutate == "decision": mart["pairs"]["F8"]["context_capacity"]["decision"] = moot["decision"]
+        if mutate == "binding": mart["context_capacity_binding"]["config_sha256_raw"] = "0" * 64
+        if mutate == "nan": mart["pairs"]["F8"]["context_capacity"]["endpoints"]["cos"]["strongest_margin"]["mean"] = None
+        store["analysis_ctxcap_B.json"] = json.dumps(mart).encode()
+        _, jm = analyzer.round34_joint_artifact(MemDir(store), ["ctxcap_A", "ctxcap_B"], "ctxcap_joint_bad")
+        assert jm["status"] == "INCOMPLETE/NON-CLAIMING" and jm["decision"] is None, f"joint reducer must fail closed on {mutate}"
+    store["analysis_ctxcap_B.json"] = good_b
+    incomplete_art = json.loads(store["analysis_ctxcap_B.json"]); incomplete_art["context_capacity_complete"] = False; store["analysis_ctxcap_B.json"] = json.dumps(incomplete_art).encode()
+    try:
+        analyzer.round34_joint_artifact(MemDir(store), ["ctxcap_A", "ctxcap_B"], "ctxcap_A"); raise RuntimeError("joint output tag equal to an input tag must be rejected")
+    except AssertionError:
+        pass
+    _, joint_incomplete = analyzer.round34_joint_artifact(MemDir(store), ["ctxcap_A", "ctxcap_B"], "ctxcap_joint_incomplete")
+    assert joint_incomplete["status"] == "INCOMPLETE/NON-CLAIMING" and joint_incomplete["decision"] is None
+    pooled = analyzer.pooled_block_first({fk: positive["cos"][analyzer.ROUND34_CANDIDATES[0]][fk] for fk in fkeys}, strata, 50, 34)
+    assert np.isclose(pooled["mean"], 0.03) and len(pooled["ci95_block_first"]) == 2
 
 
 def synthetic_artifact(cfg, cfg_sha, run_dir, tag="OP_UPDATE", tamper=None):
@@ -89,6 +229,11 @@ class FakeCompleter:
 
 
 def main():
+    round34_cases()
+    op_helpers = ("op_update_rows", "validate_op_update_artifact", "op_update_recipient_probe", "reload_check_recipients", "stratified_word_folds", "probe3_reduce", "fit_bridge_ladder", "noise_floor")
+    if not all(hasattr(analyzer, name) for name in op_helpers):
+        print("op_update fixture: Round 34 committed-main checks passed; branch-only operation-update checks not present")
+        return
     cfg = json.loads(CFG.read_text(encoding="utf-8")); cfg_sha = hashlib.sha256(CFG.read_bytes()).hexdigest()
     # 1. parser agreement + block structure
     rows_r, tp_r, tc_r = runner.op_update_rows(cfg); rows, tp, tc = analyzer.op_update_rows(cfg)
