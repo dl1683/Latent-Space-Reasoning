@@ -5,6 +5,50 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Direction round 10 (Codex, verbatim): STOP for the frozen-residual line; next = `necessity_navigator_v1` (constructive substrate)
+
+## Program ruling
+
+Yes. This is the stop point for the frozen-pretrained residual-stream line as currently constituted—not a proof that pretrained models contain no latent mathematics.
+
+`control_cost_v1` supplies no usable cost law. Readout B is invalid at 17/24. Seven of eight local costs are censored at the maximum intervention strength, so Spearman 0.76, the 8/8 cross-over-within ordering, and the reported asymmetry cannot be interpreted as native geometry. The semantic field beating the lexical field is neutralized by random fields moving B comparably. The licensed result is narrower:
+
+> At block 12, a uniform prefix-span intervention optimized through the three-probe signature did not yield a locally accurate, transferable control-cost construction.
+
+Today’s measurement-to-artifact ratio is six rounds to one. That crosses the governance halt threshold and fulfills the prior commitment to reconsider the substrate after another apparatus-only negative. Audit #31 may tighten the construction-level wording, but absent a data-integrity reversal it should not reopen this allocation decision.
+
+### The next artifact
+
+Build `necessity_navigator_v1`: a compact sequence model trained from scratch to navigate a partially observable world whose action algebra is known but never supplied as latent supervision.
+
+Use a noncommutative world such as \(\mathbb Z_{11}^{2}\rtimes C_4\): turn, move, and inverse actions genuinely depend on order. Observations should be aliased and their symbols randomly permuted between episodes, so the present tokens cannot reveal location and no stable word embedding can carry the answer. The model receives only behavioral training through a recurrent state bottleneck. After training, ask whether approximate moves, composition, inverses, reachability distance, and causal state swaps can be read from that learned state on held-out trajectories and symbol systems. The known world algebra is the external yardstick, not an architecture component.
+
+This is a one-round constructive substrate benchmark, not evidence about pretrained language models. It avoids today’s repeated failure mode because:
+
+- Persistent hidden state is necessary for behavior rather than redundant with visible cues.
+- The outcome is multi-step navigation, not candidate-word logits.
+- The causal object is the model’s recurrent state, not an arbitrary single token or fixed transformer block.
+- Surface symbols are randomized, directly defeating lexical-semantic geometry.
+- A positive supplies concrete invariants that can later be sought in pretrained models; a negative would challenge the constructive mission itself.
+
+Conditional wow line, narrative score **9/10**:
+
+> “A network forced to navigate a hidden world invents a map of its own: its hidden distance predicts the moves between unseen places, and swapping the state moves it there.”
+
+Do not run full-span replacement, a nonlinear optimizer, or a larger frozen model next. Those change the actuator, solver, or scale after the same substrate/readout family failed. They are legitimate later discriminators once a constructive model provides a real invariant to compare—not the next experiment.
+
+### Exact program wording
+
+README:
+
+> Across today’s Qwen3-0.6B/1.7B interventions, we did not demonstrate native coordinates, interchangeable state, persistent state, or a transferable control-cost law; we observed only late lexical steering, pair-specific supervised response control, and null or failing fixed block-12 anchor/span constructions.
+
+What should be said tonight:
+
+> This is not working: after six measurement rounds for one artifact-building round, we should stop mining this pretrained residual stream with lexical probes and build a state-bearing world-model substrate before asking whether pretrained models share its mathematics.
+
+Today does **not** establish that the mission is impossible or that latent mathematics must universally be engineered. It establishes that these pretrained-model interventions were ineffective as a discovery engine. The honest next position is constructive: build a latent space in which navigation mathematics is causally necessary, recover that mathematics without supervising its coordinates, and only then test whether pretrained models independently share it. Real-model interventions remain the required causal test; they should no longer be where the foundational object is guessed from scratch.
+
 ## 2026-08-29 — control_cost_v1 (locked): FAIL — the first-order minimum-energy law does not hold; construction closed
 
 Native A validity passed (23/24); native B validity failed (17/24), voiding every B-based gate. The local cost law failed: only 1 of 8 prompt-specific first-order fields moved a held-out context to the opposite-class target within α ≤ 4 (7 censored); the predicted cost ranks realized cost (Spearman 0.76) but under-predicts it more than fourfold — the model's response to a uniform span field is strongly nonlinear at the magnitudes needed. Cross-vs-within passed formally (8/8) but on mostly censored costs, so it is not evidence. Shared calibration fields attained the A target in half the recipients per direction at α = 2; on the (void) B readout the semantic field beat the lexical-gradient field in 7/8 but norm-matched random fields moved B just as much (random p = 0.14). Asymmetry: cat→dog cheaper than dog→cat (log ratio −0.62), diagnostic only. Status by the pre-declared ladder: FAIL — FIXED BLOCK-12 SPAN CONTROL CONSTRUCTION; every status closes this construction.
