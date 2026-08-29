@@ -29,7 +29,13 @@ def sentence(f, s):
 
 
 def label(f):
-    return f.get("subject") or f["sg"]
+    x = f.get("subject") or f["sg"]; return x if isinstance(x, str) else x[-1]
+
+
+def passage(f, s, targets):
+    """Base mode: two same-state example sentences then the query subject; the next token is the verb."""
+    subj = f["sg"] if s[1] == "0" else f["pl"]; v = targets[s].strip()
+    return f"{subj[0]} {v} {f['comp'][0]}. {subj[1]} {v} {f['comp'][1]}. {subj[2]}"
 
 
 def normalize(t):
@@ -47,6 +53,8 @@ class Runner:
         self.decodes = 0
 
     def prompt_ids(self, wording, src, s):
+        if self.cfg.get("mode") == "base":                           # raw completion prompt; src is the passage, s unused
+            return torch.tensor([self.tok.encode(src, add_special_tokens=False)])
         w = self.cfg["state_words"]; ax2 = [k for k in w if k != "tense"][0]
         text = self.cfg["wordings"][wording].format(**{"tense": w["tense"][s[0]], ax2: w[ax2][s[1]], "src": src})
         msgs = [{"role": "user", "content": text}]
@@ -59,7 +67,7 @@ class Runner:
         out = self.model(input_ids=ids, output_hidden_states=True)
         return torch.stack([h[0, -1] for h in out.hidden_states[1:]])
 
-    def decode(self, ids, layer=None, delta=None):
+    def decode(self, ids, layer=None, delta=None, max_new=None):
         """Greedy decode; if delta given, add it to block `layer`'s output at the final prompt token during prefill."""
         handle = None
         if delta is not None:
@@ -72,8 +80,8 @@ class Runner:
         finally:
             if handle: handle.remove()
         past, toks, ended = out.past_key_values, [], False
-        nxt = int(out.logits[0, -1].argmax())
-        for _ in range(self.cfg["max_new_tokens"]):
+        nxt = int(out.logits[0, -1].argmax()); self.last_first = nxt
+        for _ in range(max_new or self.cfg["max_new_tokens"]):
             if nxt in self.eos: ended = True; break
             toks.append(nxt)
             out = self.model(input_ids=torch.tensor([[nxt]]), past_key_values=past, use_cache=True)
@@ -150,6 +158,62 @@ def summarize(rows, key="target"):
     return {k: {"acc": v[0] / v[1], "n": v[1], "termination": v[2] / v[1]} for k, v in out.items()}
 
 
+BASE_AXES = [("00", (1, 0), "10"), ("10", (-1, 0), "00"), ("00", (0, 1), "01"), ("01", (0, -1), "00")]
+
+
+def run_base(R, cfg, stage, log, out_dir, shas, t0):
+    """Prediction-site coordinate: baseline gate -> LOFO grid on four signed single axes -> held-out corner transports."""
+    T = cfg["targets"]; tid = {s: R.tok.encode(T[s], add_special_tokens=False) for s in STATES}
+    assert all(len(v) == 1 for v in tid.values()), tid; tid = {s: v[0] for s, v in tid.items()}
+    cal, test, K = cfg["calibration"], cfg["test"], cfg["continuation_tokens"]
+    ids = lambda f, s: R.prompt_ids(None, passage(f, s, T), s)
+    def first(f, s, layer=None, delta=None):
+        txt, _ = R.decode(ids(f, s), layer, delta, max_new=K); return R.last_first, txt
+    result = {"config": cfg["name"], "sha256": shas, "revision": R.sp.revision, "targets": tid}
+    save = lambda: json.dump(result, open(os.path.join(out_dir, f"{stage}_result.json"), "w"), indent=1)
+    base = {}
+    for st in ["00", "10", "01"]:                                    # baseline gate: 11 never prompted
+        hits = 0
+        for f in cal:
+            tok, txt = first(f, st); ok = tok == tid[st]; hits += ok
+            if not ok: log(f"  miss {st} {label(f)}: {R.tok.decode([tok])!r} | {txt!r}")
+        base[st] = hits; log(f"baseline {st}: {hits}/{len(cal)}")
+    result["baseline"] = base; passed = all(v >= cfg["baseline_gate"]["per_state_min"] for v in base.values())
+    log(f"BASELINE {'PASS' if passed else 'FAIL - KILL ARTIFACT'} ({R.decodes} decodes, {time.time()-t0:.0f}s)"); save()
+    if not passed or stage == "baseline": return
+    H = {s: torch.stack([R.hidden(ids(f, s)) for f in cal]) for s in ["00", "10", "01"]}   # (n, L, D); no 11
+    log(f"calibration hidden states captured: {tuple(H['00'].shape)} ({time.time()-t0:.0f}s)")
+    n, c, table, layer = len(cal), cfg["grid"]["coefficient"], [], None
+    for L in cfg["grid"]["layers"]:
+        hits = {}
+        for i, f in enumerate(cal):
+            vT, vS = vectors(H, [j for j in range(n) if j != i], L)
+            for start, (aT, aS), tgt in BASE_AXES:
+                tok, _ = first(f, start, L, c * (aT * vT + aS * vS)); hits[f"{start}->{tgt}"] = hits.get(f"{start}->{tgt}", 0) + (tok == tid[tgt])
+        row = {"layer": L, **hits}; table.append(row); log(f"layer {L}: {hits}"); result["layer_table"] = table; save()
+        if all(v >= cfg["grid"]["single_axis_min"] for v in hits.values()): layer = L; break
+    result["layer"] = layer
+    if layer is None: log("NO LAYER CLEARS THE SINGLE-AXIS GRID - kill this coordinate line."); save(); return
+    vT, vS = vectors(H, list(range(n)), layer); log(f"frozen layer {layer}; |vT|={vT.norm():.2f} |vS|={vS.norm():.2f}")
+    def arm(name, mk):
+        rows = []
+        for f in test:
+            for start, (aT, aS), tgt in TRANSPORTS:
+                tok, txt = first(f, start, layer, mk(aT, aS))
+                rows.append({"family": label(f), "start": start, "target": tgt, "first": R.tok.decode([tok]), "hit": tok == tid[tgt], "continuation": txt})
+        acc = {}
+        for r in rows: acc[f"{r['start']}->{r['target']}"] = acc.get(f"{r['start']}->{r['target']}", 0) + r["hit"]
+        result.setdefault("arms", {})[name] = rows; result.setdefault("summary", {})[name] = acc; log(f"{name}: {acc}"); save()
+    arm("intervention", lambda aT, aS: aT * vT + aS * vS)
+    arm("zero", lambda aT, aS: 0 * vT)
+    for k in range(cfg["random_controls"]):                          # fixed random directions norm-matched to vT and vS
+        gen = torch.Generator().manual_seed(1000 + k); gT, gS = torch.randn(vT.shape, generator=gen), torch.randn(vS.shape, generator=gen)
+        gT, gS = gT / gT.norm() * vT.norm(), gS / gS.norm() * vS.norm()
+        arm(f"random_{k}", lambda aT, aS, gT=gT, gS=gS: aT * gT + aS * gS)
+    for r in result["arms"]["intervention"]: log(f"  [{r['start']}->{r['target']}] {r['family']}: {r['first']!r} + {r['continuation']!r} hit={r['hit']}")
+    log(f"done in {time.time()-t0:.0f}s, {R.decodes} decodes")
+
+
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--config", required=True); ap.add_argument("--stage", default="demo")
     ap.add_argument("--out", default=None); a = ap.parse_args()
@@ -158,6 +222,7 @@ def main():
     import hashlib; shas = {k: hashlib.sha256(open(v, "rb").read()).hexdigest() for k, v in (("runner", __file__), ("config", a.config))}
     def log(m): print(m, flush=True); logf.write(m + "\n"); logf.flush()
     t0 = time.time(); R = Runner(cfg); log(f"loaded {cfg['model_id']} rev={R.sp.revision} in {time.time()-t0:.0f}s; threads={torch.get_num_threads()}")
+    if cfg.get("mode") == "base": return run_base(R, cfg, a.stage, log, out_dir, shas, t0)
     cal, test, W0 = cfg["calibration"], cfg["test"], cfg["calibration_wording"]
     if a.stage == "baseline":                                      # capability gate: explicit W0 on 00/10/01 only; 11 never prompted
         g = cfg["baseline_gate"]; per = {}

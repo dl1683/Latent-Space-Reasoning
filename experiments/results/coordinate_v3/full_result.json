@@ -1,0 +1,1374 @@
+{
+ "config": "coordinate_v3",
+ "sha256": {
+  "runner": "b15348865bdb96872800381752c23b7297a38b1a2e6b9d6fd3e5a0ecc28e107e",
+  "config": "bbb21d76fe7c481e976709746d28d8b26308a07430f63f28b88539d4ab314674"
+ },
+ "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
+ "targets": {
+  "00": 374,
+  "10": 572,
+  "01": 525,
+  "11": 1033
+ },
+ "baseline": {
+  "00": 12,
+  "10": 12,
+  "01": 12
+ },
+ "layer_table": [
+  {
+   "layer": 8,
+   "00->10": 0,
+   "10->00": 0,
+   "00->01": 12,
+   "01->00": 12
+  },
+  {
+   "layer": 12,
+   "00->10": 0,
+   "10->00": 0,
+   "00->01": 12,
+   "01->00": 12
+  },
+  {
+   "layer": 16,
+   "00->10": 0,
+   "10->00": 0,
+   "00->01": 12,
+   "01->00": 12
+  },
+  {
+   "layer": 20,
+   "00->10": 12,
+   "10->00": 12,
+   "00->01": 12,
+   "01->00": 12
+  }
+ ],
+ "layer": 20,
+ "arms": {
+  "intervention": [
+   {
+    "family": "The writer",
+    "start": "00",
+    "target": "11",
+    "first": " were",
+    "hit": true,
+    "continuation": " were happy. The singer is"
+   },
+   {
+    "family": "The writer",
+    "start": "11",
+    "target": "00",
+    "first": " is",
+    "hit": true,
+    "continuation": " is a bit of a mystery"
+   },
+   {
+    "family": "The writer",
+    "start": "10",
+    "target": "01",
+    "first": " are",
+    "hit": true,
+    "continuation": " are shy. The singer was"
+   },
+   {
+    "family": "The writer",
+    "start": "01",
+    "target": "10",
+    "first": " was",
+    "hit": true,
+    "continuation": " was nervous. The director was"
+   },
+   {
+    "family": "The bear",
+    "start": "00",
+    "target": "11",
+    "first": " were",
+    "hit": true,
+    "continuation": " were in the woods. The"
+   },
+   {
+    "family": "The bear",
+    "start": "11",
+    "target": "00",
+    "first": " is",
+    "hit": true,
+    "continuation": " is in the forest. The"
+   },
+   {
+    "family": "The bear",
+    "start": "10",
+    "target": "01",
+    "first": " are",
+    "hit": true,
+    "continuation": " are in the forest. The"
+   },
+   {
+    "family": "The bear",
+    "start": "01",
+    "target": "10",
+    "first": " was",
+    "hit": true,
+    "continuation": " was in the woods. The"
+   },
+   {
+    "family": "The uncle",
+    "start": "00",
+    "target": "11",
+    "first": " were",
+    "hit": true,
+    "continuation": " were in the army. The"
+   },
+   {
+    "family": "The uncle",
+    "start": "11",
+    "target": "00",
+    "first": " is",
+    "hit": true,
+    "continuation": " is a bit of a mystery"
+   },
+   {
+    "family": "The uncle",
+    "start": "10",
+    "target": "01",
+    "first": " are",
+    "hit": true,
+    "continuation": " are in the hospital. The"
+   },
+   {
+    "family": "The uncle",
+    "start": "01",
+    "target": "10",
+    "first": " was",
+    "hit": true,
+    "continuation": " was in the army. The"
+   },
+   {
+    "family": "The referee",
+    "start": "00",
+    "target": "11",
+    "first": " were",
+    "hit": true,
+    "continuation": " were fair. The referee was"
+   },
+   {
+    "family": "The referee",
+    "start": "11",
+    "target": "00",
+    "first": " is",
+    "hit": true,
+    "continuation": " is fair. The referees were"
+   },
+   {
+    "family": "The referee",
+    "start": "10",
+    "target": "01",
+    "first": " are",
+    "hit": true,
+    "continuation": " are fair. The referee was"
+   },
+   {
+    "family": "The referee",
+    "start": "01",
+    "target": "10",
+    "first": " was",
+    "hit": true,
+    "continuation": " was fair. The referees were"
+   },
+   {
+    "family": "The witness",
+    "start": "00",
+    "target": "11",
+    "first": " were",
+    "hit": true,
+    "continuation": " were all killed. The police"
+   },
+   {
+    "family": "The witness",
+    "start": "11",
+    "target": "00",
+    "first": " is",
+    "hit": true,
+    "continuation": " is dead. The police were"
+   },
+   {
+    "family": "The witness",
+    "start": "10",
+    "target": "01",
+    "first": " are",
+    "hit": true,
+    "continuation": " are dead. The police are"
+   },
+   {
+    "family": "The witness",
+    "start": "01",
+    "target": "10",
+    "first": " was",
+    "hit": true,
+    "continuation": " was killed. The police are"
+   },
+   {
+    "family": "The climber",
+    "start": "00",
+    "target": "11",
+    "first": " were",
+    "hit": true,
+    "continuation": " were exhausted. The cyclist was"
+   },
+   {
+    "family": "The climber",
+    "start": "11",
+    "target": "00",
+    "first": " is",
+    "hit": true,
+    "continuation": " is what? Choose the most"
+   },
+   {
+    "family": "The climber",
+    "start": "10",
+    "target": "01",
+    "first": " are",
+    "hit": true,
+    "continuation": " are exhausted. The cyclist was"
+   },
+   {
+    "family": "The climber",
+    "start": "01",
+    "target": "10",
+    "first": " was",
+    "hit": true,
+    "continuation": " was cold. The runners are"
+   },
+   {
+    "family": "The professor",
+    "start": "00",
+    "target": "11",
+    "first": " were",
+    "hit": true,
+    "continuation": " were to be certain. The"
+   },
+   {
+    "family": "The professor",
+    "start": "11",
+    "target": "00",
+    "first": " is",
+    "hit": true,
+    "continuation": " is confident. The students are"
+   },
+   {
+    "family": "The professor",
+    "start": "10",
+    "target": "01",
+    "first": " are",
+    "hit": true,
+    "continuation": " are ________.\nA."
+   },
+   {
+    "family": "The professor",
+    "start": "01",
+    "target": "10",
+    "first": " was",
+    "hit": true,
+    "continuation": " was right. The students are"
+   },
+   {
+    "family": "The sheriff",
+    "start": "00",
+    "target": "11",
+    "first": " were",
+    "hit": true,
+    "continuation": " were here. The judge is"
+   },
+   {
+    "family": "The sheriff",
+    "start": "11",
+    "target": "00",
+    "first": " is",
+    "hit": true,
+    "continuation": " is present. The judges were"
+   },
+   {
+    "family": "The sheriff",
+    "start": "10",
+    "target": "01",
+    "first": " are",
+    "hit": true,
+    "continuation": " are present. The judge was"
+   },
+   {
+    "family": "The sheriff",
+    "start": "01",
+    "target": "10",
+    "first": " was",
+    "hit": true,
+    "continuation": " was present. The judges are"
+   }
+  ],
+  "zero": [
+   {
+    "family": "The writer",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is a genius. The singer"
+   },
+   {
+    "family": "The writer",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were worried. The director was"
+   },
+   {
+    "family": "The writer",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was a genius. The painter"
+   },
+   {
+    "family": "The writer",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are in love. The director"
+   },
+   {
+    "family": "The bear",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is in the cave. The"
+   },
+   {
+    "family": "The bear",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were in their dens. The"
+   },
+   {
+    "family": "The bear",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was in the woods. The"
+   },
+   {
+    "family": "The bear",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are in the woods. The"
+   },
+   {
+    "family": "The uncle",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is a doctor. The aunt"
+   },
+   {
+    "family": "The uncle",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were dead. The children were"
+   },
+   {
+    "family": "The uncle",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was a doctor. The aunt"
+   },
+   {
+    "family": "The uncle",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are dead. The children are"
+   },
+   {
+    "family": "The referee",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is fair. The referee is"
+   },
+   {
+    "family": "The referee",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were fair. The game was"
+   },
+   {
+    "family": "The referee",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was fair. The referee was"
+   },
+   {
+    "family": "The referee",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are tough. The fans are"
+   },
+   {
+    "family": "The witness",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is dead. The police are"
+   },
+   {
+    "family": "The witness",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were gone. The police were"
+   },
+   {
+    "family": "The witness",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was dead. The police were"
+   },
+   {
+    "family": "The witness",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are dead. The police are"
+   },
+   {
+    "family": "The climber",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is tired. The runner is"
+   },
+   {
+    "family": "The climber",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were exhausted. But the "
+   },
+   {
+    "family": "The climber",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was tired. The runner was"
+   },
+   {
+    "family": "The climber",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are tired. The runners are"
+   },
+   {
+    "family": "The professor",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is confident. The mathematician"
+   },
+   {
+    "family": "The professor",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were sure. The students were"
+   },
+   {
+    "family": "The professor",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was ______.\nA. curious"
+   },
+   {
+    "family": "The professor",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are brilliant. The students are"
+   },
+   {
+    "family": "The sheriff",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is here. The judge is"
+   },
+   {
+    "family": "The sheriff",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were there. The judges were"
+   },
+   {
+    "family": "The sheriff",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was there. The judge was"
+   },
+   {
+    "family": "The sheriff",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are in attendance. The judges"
+   }
+  ],
+  "random_0": [
+   {
+    "family": "The writer",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is a genius. The singer"
+   },
+   {
+    "family": "The writer",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were worried. The director was"
+   },
+   {
+    "family": "The writer",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was a genius. The painter"
+   },
+   {
+    "family": "The writer",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are in love. The director"
+   },
+   {
+    "family": "The bear",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is in the cave. The"
+   },
+   {
+    "family": "The bear",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were in their dens. The"
+   },
+   {
+    "family": "The bear",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was in the cave. The"
+   },
+   {
+    "family": "The bear",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are in the woods. The"
+   },
+   {
+    "family": "The uncle",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is a doctor. The aunt"
+   },
+   {
+    "family": "The uncle",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were dead. The children were"
+   },
+   {
+    "family": "The uncle",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was a doctor. The aunt"
+   },
+   {
+    "family": "The uncle",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are dead. The children are"
+   },
+   {
+    "family": "The referee",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is fair. The umpire"
+   },
+   {
+    "family": "The referee",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were fair. The referees were"
+   },
+   {
+    "family": "The referee",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was fair. The referee was"
+   },
+   {
+    "family": "The referee",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are tough. The fans are"
+   },
+   {
+    "family": "The witness",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is dead. The police are"
+   },
+   {
+    "family": "The witness",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were gone. The police were"
+   },
+   {
+    "family": "The witness",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was dead. The police were"
+   },
+   {
+    "family": "The witness",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are dead. The police are"
+   },
+   {
+    "family": "The climber",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is tired. The runner is"
+   },
+   {
+    "family": "The climber",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were exhausted. But the "
+   },
+   {
+    "family": "The climber",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was tired. The cyclist was"
+   },
+   {
+    "family": "The climber",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are tired. The runners are"
+   },
+   {
+    "family": "The professor",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is confident. The mathematician"
+   },
+   {
+    "family": "The professor",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were sure. The students were"
+   },
+   {
+    "family": "The professor",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was ______.\nA. curious"
+   },
+   {
+    "family": "The professor",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are brilliant. The students are"
+   },
+   {
+    "family": "The sheriff",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is here. The judge is"
+   },
+   {
+    "family": "The sheriff",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were there. The judges were"
+   },
+   {
+    "family": "The sheriff",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was there. The judge was"
+   },
+   {
+    "family": "The sheriff",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are on the scene. The"
+   }
+  ],
+  "random_1": [
+   {
+    "family": "The writer",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is a genius. The singer"
+   },
+   {
+    "family": "The writer",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were worried. The director was"
+   },
+   {
+    "family": "The writer",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was a genius. The painter"
+   },
+   {
+    "family": "The writer",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are in love. The director"
+   },
+   {
+    "family": "The bear",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is in the woods. The"
+   },
+   {
+    "family": "The bear",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were in their dens. The"
+   },
+   {
+    "family": "The bear",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was in the woods. The"
+   },
+   {
+    "family": "The bear",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are in the trees. The"
+   },
+   {
+    "family": "The uncle",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is a doctor. The aunt"
+   },
+   {
+    "family": "The uncle",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were dead. The children were"
+   },
+   {
+    "family": "The uncle",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was a doctor. The aunt"
+   },
+   {
+    "family": "The uncle",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are dead. The children are"
+   },
+   {
+    "family": "The referee",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is fair. The referee is"
+   },
+   {
+    "family": "The referee",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were impartial. The game was"
+   },
+   {
+    "family": "The referee",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was fair. The referee was"
+   },
+   {
+    "family": "The referee",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are tough. The fans are"
+   },
+   {
+    "family": "The witness",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is dead. The police are"
+   },
+   {
+    "family": "The witness",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were gone. The police were"
+   },
+   {
+    "family": "The witness",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was dead. The police were"
+   },
+   {
+    "family": "The witness",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are dead. The police are"
+   },
+   {
+    "family": "The climber",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is tired. The runner is"
+   },
+   {
+    "family": "The climber",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were exhausted. But the "
+   },
+   {
+    "family": "The climber",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was tired. The cyclist was"
+   },
+   {
+    "family": "The climber",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are tired. The runners are"
+   },
+   {
+    "family": "The professor",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is a genius. The mathematic"
+   },
+   {
+    "family": "The professor",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were sure. The students were"
+   },
+   {
+    "family": "The professor",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was ______.\nA. curious"
+   },
+   {
+    "family": "The professor",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are brilliant. The students are"
+   },
+   {
+    "family": "The sheriff",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is here. The judge is"
+   },
+   {
+    "family": "The sheriff",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were there. The judges were"
+   },
+   {
+    "family": "The sheriff",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was there. The judge was"
+   },
+   {
+    "family": "The sheriff",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are in attendance. The judges"
+   }
+  ],
+  "random_2": [
+   {
+    "family": "The writer",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is a genius. The singer"
+   },
+   {
+    "family": "The writer",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were in love. The director"
+   },
+   {
+    "family": "The writer",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was a genius. The painter"
+   },
+   {
+    "family": "The writer",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are in love. The director"
+   },
+   {
+    "family": "The bear",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is in the cave. The"
+   },
+   {
+    "family": "The bear",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were in their dens. The"
+   },
+   {
+    "family": "The bear",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was in the forest. The"
+   },
+   {
+    "family": "The bear",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are in the trees. The"
+   },
+   {
+    "family": "The uncle",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is a doctor. The aunt"
+   },
+   {
+    "family": "The uncle",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were dead. The children were"
+   },
+   {
+    "family": "The uncle",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was a doctor. The aunt"
+   },
+   {
+    "family": "The uncle",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are dead. The brothers are"
+   },
+   {
+    "family": "The referee",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is fair. The referee is"
+   },
+   {
+    "family": "The referee",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were fair. The game was"
+   },
+   {
+    "family": "The referee",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was fair. The referee was"
+   },
+   {
+    "family": "The referee",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are tough. The fans are"
+   },
+   {
+    "family": "The witness",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is dead. The police are"
+   },
+   {
+    "family": "The witness",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were dead. The police were"
+   },
+   {
+    "family": "The witness",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was gone. The police were"
+   },
+   {
+    "family": "The witness",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are dead. The police are"
+   },
+   {
+    "family": "The climber",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is tired. The runner is"
+   },
+   {
+    "family": "The climber",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were exhausted. But the "
+   },
+   {
+    "family": "The climber",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was tired. The cyclist was"
+   },
+   {
+    "family": "The climber",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are exhausted. The runners are"
+   },
+   {
+    "family": "The professor",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is confident. The mathematician"
+   },
+   {
+    "family": "The professor",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were sure. The students were"
+   },
+   {
+    "family": "The professor",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was ______.\nA. curious"
+   },
+   {
+    "family": "The professor",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are brilliant. The students are"
+   },
+   {
+    "family": "The sheriff",
+    "start": "00",
+    "target": "11",
+    "first": " is",
+    "hit": false,
+    "continuation": " is here. The judge is"
+   },
+   {
+    "family": "The sheriff",
+    "start": "11",
+    "target": "00",
+    "first": " were",
+    "hit": false,
+    "continuation": " were there. The judges were"
+   },
+   {
+    "family": "The sheriff",
+    "start": "10",
+    "target": "01",
+    "first": " was",
+    "hit": false,
+    "continuation": " was there. The judge was"
+   },
+   {
+    "family": "The sheriff",
+    "start": "01",
+    "target": "10",
+    "first": " are",
+    "hit": false,
+    "continuation": " are on the job. The"
+   }
+  ]
+ },
+ "summary": {
+  "intervention": {
+   "00->11": 8,
+   "11->00": 8,
+   "10->01": 8,
+   "01->10": 8
+  },
+  "zero": {
+   "00->11": 0,
+   "11->00": 0,
+   "10->01": 0,
+   "01->10": 0
+  },
+  "random_0": {
+   "00->11": 0,
+   "11->00": 0,
+   "10->01": 0,
+   "01->10": 0
+  },
+  "random_1": {
+   "00->11": 0,
+   "11->00": 0,
+   "10->01": 0,
+   "01->10": 0
+  },
+  "random_2": {
+   "00->11": 0,
+   "11->00": 0,
+   "10->01": 0,
+   "01->10": 0
+  }
+ }
+}

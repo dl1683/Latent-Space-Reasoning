@@ -1,0 +1,19 @@
+{
+ "config": "coordinate_v3",
+ "sha256": {
+  "runner": "b15348865bdb96872800381752c23b7297a38b1a2e6b9d6fd3e5a0ecc28e107e",
+  "config": "bbb21d76fe7c481e976709746d28d8b26308a07430f63f28b88539d4ab314674"
+ },
+ "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
+ "targets": {
+  "00": 374,
+  "10": 572,
+  "01": 525,
+  "11": 1033
+ },
+ "baseline": {
+  "00": 12,
+  "10": 12,
+  "01": 12
+ }
+}

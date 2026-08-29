@@ -1,0 +1,38 @@
+{
+ "name": "coordinate_v3",
+ "purpose": "Prediction-site two-bit coordinate (tense x number) in Qwen3-1.7B-Base: two same-state example sentences then a query subject; the native next token (is/was/are/were) is the readout. Calibration uses 00/10/01 only; 11 never enters baseline, vectors or layer choice. Codex direction round 5 (2026-08-29).",
+ "mode": "base",
+ "model_id": "Qwen/Qwen3-1.7B-Base",
+ "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
+ "targets": {"00": " is", "10": " was", "01": " are", "11": " were"},
+ "continuation_tokens": 6,
+ "baseline_gate": {"per_state_min": 11},
+ "grid": {"layers": [8, 12, 16, 20], "coefficient": 1.0, "single_axis_min": 9},
+ "test_gate": {"transport_min": 6, "margin_min": 3, "grammatical_min": 28},
+ "random_controls": 3,
+ "families_note": "sg/pl: three subjects (two examples + query) in singular and plural; comp: two complements. Passage = 'S1 V C1. S2 V C2. S3' and the target is the leading-space verb token.",
+ "calibration": [
+  {"sg": ["The doctor", "The baker", "The pilot"], "pl": ["The doctors", "The bakers", "The pilots"], "comp": ["ready", "calm"]},
+  {"sg": ["The teacher", "The farmer", "The nurse"], "pl": ["The teachers", "The farmers", "The nurses"], "comp": ["tired", "busy"]},
+  {"sg": ["The child", "The guard", "The singer"], "pl": ["The children", "The guards", "The singers"], "comp": ["happy", "quiet"]},
+  {"sg": ["The lawyer", "The clerk", "The driver"], "pl": ["The lawyers", "The clerks", "The drivers"], "comp": ["late", "polite"]},
+  {"sg": ["The soldier", "The monk", "The sailor"], "pl": ["The soldiers", "The monks", "The sailors"], "comp": ["brave", "silent"]},
+  {"sg": ["The student", "The painter", "The judge"], "pl": ["The students", "The painters", "The judges"], "comp": ["careful", "proud"]},
+  {"sg": ["The dog", "The cat", "The horse"], "pl": ["The dogs", "The cats", "The horses"], "comp": ["hungry", "asleep"]},
+  {"sg": ["The king", "The queen", "The prince"], "pl": ["The kings", "The queens", "The princes"], "comp": ["angry", "rich"]},
+  {"sg": ["The cook", "The waiter", "The guest"], "pl": ["The cooks", "The waiters", "The guests"], "comp": ["early", "cheerful"]},
+  {"sg": ["The boy", "The girl", "The baby"], "pl": ["The boys", "The girls", "The babies"], "comp": ["awake", "warm"]},
+  {"sg": ["The worker", "The builder", "The miner"], "pl": ["The workers", "The builders", "The miners"], "comp": ["strong", "dirty"]},
+  {"sg": ["The bird", "The frog", "The owl"], "pl": ["The birds", "The frogs", "The owls"], "comp": ["loud", "small"]}
+ ],
+ "test": [
+  {"sg": ["The actor", "The dancer", "The writer"], "pl": ["The actors", "The dancers", "The writers"], "comp": ["famous", "nervous"]},
+  {"sg": ["The wolf", "The fox", "The bear"], "pl": ["The wolves", "The foxes", "The bears"], "comp": ["wild", "hidden"]},
+  {"sg": ["The mother", "The father", "The uncle"], "pl": ["The mothers", "The fathers", "The uncles"], "comp": ["kind", "old"]},
+  {"sg": ["The player", "The coach", "The referee"], "pl": ["The players", "The coaches", "The referees"], "comp": ["fast", "fair"]},
+  {"sg": ["The thief", "The spy", "The witness"], "pl": ["The thieves", "The spies", "The witnesses"], "comp": ["nervous", "gone"]},
+  {"sg": ["The runner", "The swimmer", "The climber"], "pl": ["The runners", "The swimmers", "The climbers"], "comp": ["fit", "cold"]},
+  {"sg": ["The scientist", "The engineer", "The professor"], "pl": ["The scientists", "The engineers", "The professors"], "comp": ["curious", "certain"]},
+  {"sg": ["The priest", "The mayor", "The sheriff"], "pl": ["The priests", "The mayors", "The sheriffs"], "comp": ["serious", "present"]}
+ ]
+}
