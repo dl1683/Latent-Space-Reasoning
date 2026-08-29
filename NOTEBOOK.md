@@ -5,6 +5,21 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Round 36c positive control (w64): FAIL; Round 36c complete
+
+The conditional width-64 control cell finished in 988 s (wall 2400 s) and
+FAILS the exact certificate: per-seed exact passes are swap/toggle table
+4/5 and held-out depth-2 closure 3/5, with every other gate 0/5 (action-
+table truth 0/5; cross-seed table not identical). Audit #25's wording
+governs: this registered joint learned-target recipe did not reach the
+certificate; the run does not distinguish control-objective failure,
+optimisation failure, carrier capacity, or learned reducer/gate
+reachability, and has no behaviour-only interpretation. Round 36c is
+complete; no further moving-target cells will be run. Next, as ruled: one
+capped frozen-target head-only calibration (Round 36d), then the pivot to
+the presentation-duplicated quotient world (Round 37) — both being
+registered.
+
 ## 2026-08-29 — Re-contextualization #25 (2-hour step-back; audit #25 fired on the positive-control FAIL)
 
 Project: the native mathematics of latent spaces. Live question (Round

@@ -3762,7 +3762,8 @@ def _reduce_directory(
             event_id = "round36c_positive_control_reduce"
             purpose = ("Round 36c POSITIVE-CONTROL (gate REACHABILITY) reduction of stored evidence: privileged transition supervision was used in training; "
                        "this is NOT a behaviour-only result, NOT a quotient-from-behaviour claim, and does not activate Round 35. A PASS means the exact gates are "
-                       "reachable by this carrier + reducer; a FAIL means a certification-regime problem, not a latent-organisation result.")
+                       "reachable by this carrier + reducer; a FAIL means this registered learned-target reachability control did not reach the certificate — it does not "
+                       "distinguish control-objective failure, optimization failure, carrier capacity, or learned reducer/gate reachability, and it has no behavior-only interpretation.")
             ledger_status = f"POSITIVE-CONTROL / REACHABILITY: {status}"
             metrics = {"result_scope": verdict.get("result_scope"), "control_status": status, "gates": {name: gate["passed"] for name, gate in gates.items()}}
         else:
