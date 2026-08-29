@@ -5,6 +5,33 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Re-contextualization #23 (2-hour step-back; audit #23 fired on the Round 36 FAIL)
+
+Project and live question: the native mathematics of latent spaces; the
+constructive question is now whether behaviour alone can make a latent
+world's places and moves well-defined (an operational quotient with a
+composable action table) — Round 36 — with NLM-007 closed behind its
+closing statement.
+
+Whole-picture check: the day converted a stalled instrument program into
+(i) a closed, honestly bounded line and (ii) a runnable distance-0
+artifact that ran in under a minute and FAILED. That FAIL is the first
+result of the constructive program and it is where tunnel vision would be
+most dangerous: the adjudication reads it as under-fitting, and the
+registered successor (36b) adds training budget with an exact-fit
+eligibility rule. Alternatives held live and put to the fresh auditor:
+(1) the 12-cell all-supported signature rule turns a 98%-calibrated model
+into a support failure by arithmetic (≈21% of rows fail support even with a
+perfect latent) — the gate may be measuring confidence, not structure;
+(2) the exact-fit eligibility rule could be a post-hoc rescue, and exact
+fit could let a lookup-table-like fit pass; (3) the opposite under-read:
+0/176 cross-seed action-table agreement may mean there is no composable
+structure at all even where behaviour is right. Foundational thread
+advanced: the constructive program now has a real falsifier loop
+(artifact → FAIL → adjudicated cause → preregistered successor), which is
+what the constitution demanded and NLM-007 never had. Audit #23's
+corrections and alternatives will be appended verbatim below.
+
 ## 2026-08-29 — Round 36 first run: the constructive artifact exists and FAILS every gate
 
 The first distance-0 artifact ran end to end: `produce` (five registered
