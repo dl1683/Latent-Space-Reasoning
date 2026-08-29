@@ -8608,6 +8608,16 @@ or more signed signature margins remain negative localizes the mismatch to the
 coordinate-residual/signature-margin interface. Neither branch licenses a
 post-hoc threshold or another cell.
 
+**Diagnostic-only amendment (2026-08-29, Codex-owned; pre-outcome).** At each
+registered checkpoint, also record the normalized ratio
+`L_fixed/L_identity`, where `L_identity` is the fixed-target MSE of the
+identity map at initialization. Audit #25's `1e-4` value is retained only as
+a descriptive reference. The ratio cannot alter PASS, FAIL, or INVALID;
+cannot act as a gate, eligibility condition, stopping rule, retry trigger, or
+branch selector; and cannot replace the unchanged exact Round 36 reducer.
+The audit addendum's separate control-optimization/fixed-chart-residue status
+split and final-1,000-step condition are not part of this registration.
+
 ### Unchanged reducer, provenance, and decision
 
 After the final head is frozen, the producer constructs every original Round
