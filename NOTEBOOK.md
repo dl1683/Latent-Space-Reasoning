@@ -5,6 +5,23 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Round 36b launched under lock V3 (review #2 RUN-READY)
+
+The behaviour-fit ladder runs now: four cells (S16 16k steps; S64 64k; LR64
+64k at lr .001; W64 64k at width 64), five seeds each, sequential on one
+CPU process, then four separate reducers. Before any outcome existed: the
+audit-#23 amendment (three-stage primary status; DIAGNOSTIC-only p>0.5
+table; cellwise cross-seed accounting; depth traces) was registered
+(`9edb892`) and implemented; the lock-review defect (eligibility from
+producer aggregates) was closed by row-level logit replay; lock V3 recorded
+(`ff8eaa7`); review #2 returned RUN-READY with dynamic probes of every
+status branch and a byte-identical v1 fixture; runner and configs
+committed (`61e2430`). Outcomes are not inspected until all four producers
+finish. Status of the design, verbatim from audit #23: a prospectively
+locked, post-outcome, outcome-informed successor — exploratory, not
+confirmatory; a PASS would show operational recovery and congruent action
+maps in a finite world, not compression into a nontrivial quotient.
+
 ## 2026-08-29 — Re-contextualization #23 (2-hour step-back; audit #23 fired on the Round 36 FAIL)
 
 Project and live question: the native mathematics of latent spaces; the
