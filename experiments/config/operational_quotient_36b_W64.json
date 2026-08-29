@@ -1,0 +1,78 @@
+{
+  "schema_version": "round36-operational-quotient-config-v1",
+  "name": "operational_quotient_v1",
+  "registration": "Round 36 — minimal operational-quotient world",
+  "world": {
+    "bit_count": 4,
+    "state_count": 16,
+    "response_bit": 1,
+    "data_seed": 3601,
+    "handle_permutation": "numpy-pcg64-permutation-v1"
+  },
+  "actions": [
+    {"name": "no-op", "kind": "no-op", "indices": []},
+    {"name": "toggle(1)", "kind": "toggle", "indices": [1]},
+    {"name": "toggle(2)", "kind": "toggle", "indices": [2]},
+    {"name": "toggle(3)", "kind": "toggle", "indices": [3]},
+    {"name": "toggle(4)", "kind": "toggle", "indices": [4]},
+    {"name": "swap(1,2)", "kind": "swap", "indices": [1, 2]},
+    {"name": "swap(1,3)", "kind": "swap", "indices": [1, 3]},
+    {"name": "swap(1,4)", "kind": "swap", "indices": [1, 4]},
+    {"name": "swap(2,3)", "kind": "swap", "indices": [2, 3]},
+    {"name": "swap(2,4)", "kind": "swap", "indices": [2, 4]},
+    {"name": "swap(3,4)", "kind": "swap", "indices": [3, 4]}
+  ],
+  "split": {
+    "max_word_depth": 3,
+    "identity_response_depth": 1,
+    "h2_salt": "round36-h2-v1",
+    "h2_per_first_action": 2,
+    "h3_salt": "round36-h3-v1",
+    "h3_per_first_action": 6,
+    "expected_training_words": 1324,
+    "expected_training_rows": 21184,
+    "expected_h2_words": 74,
+    "expected_h3_words": 66,
+    "expected_heldout_rows": 2240,
+    "representative_prefix_depths": [0, 1, 2],
+    "expected_representatives_per_seed": 944
+  },
+  "model": {
+    "latent_dim": 8,
+    "transition_hidden_width": 64,
+    "state_table_rows": 16,
+    "shared_transition": true,
+    "response_outputs": 1
+  },
+  "training": {
+    "model_seeds": [11, 23, 37, 53, 71],
+    "optimizer": "AdamW",
+    "learning_rate": 0.003,
+    "weight_decay": 0.00001,
+    "betas": [0.9, 0.999],
+    "epsilon": 1e-08,
+    "batch_size": 512,
+    "optimizer_steps_per_seed": 64000,
+    "loss": "binary_cross_entropy_with_logits",
+    "device": "cpu",
+    "threads": 1,
+    "deterministic_algorithms": true,
+    "evaluation_batch_size": 4096,
+    "target_cpu_minutes": [3, 8],
+    "hard_wall_seconds": 1800
+  },
+  "thresholds": {
+    "signature_low": 0.10,
+    "signature_high": 0.90,
+    "quotient_availability_fraction": 1.0,
+    "quotient_well_definedness_fraction": 1.0,
+    "toggle_involution_fraction": 1.0,
+    "swap_toggle_table_fraction": 1.0,
+    "heldout_depth2_fraction": 1.0,
+    "heldout_depth3_fraction": 1.0,
+    "interchangeability_fraction": 1.0,
+    "cross_seed_action_table_fraction": 1.0,
+    "required_seed_fraction": 1.0
+  },
+  "registration_id": "round36b-behavior-fit-ladder-v1"
+}

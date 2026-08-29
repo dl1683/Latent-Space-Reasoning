@@ -21,6 +21,7 @@ import os
 import platform
 import re
 import shutil
+import struct
 import subprocess
 import sys
 import tempfile
@@ -35,7 +36,19 @@ SCHEMA_MANIFEST = "round36-operational-quotient-manifest-v1"
 SCHEMA_EVIDENCE = "round36-operational-quotient-evidence-v1"
 SCHEMA_VERDICT = "round36-operational-quotient-verdict-v1"
 REGISTRATION_ID = "round36-minimal-operational-quotient-v1"
+ROUND36B_REGISTRATION_ID = "round36b-behavior-fit-ladder-v1"
 PASS_STATUS = "PASS — MINIMAL OPERATIONAL QUOTIENT WORLD"
+UNDERFIT_STATUS = "FAIL — BEHAVIOR UNDERFIT; QUOTIENT INELIGIBLE"
+SIGNATURE_UNSUPPORTED_STATUS = (
+    "FAIL — BEHAVIOR FIT; OPERATIONAL SIGNATURE UNSUPPORTED"
+)
+SUPPORTED_NONCONGRUENT_PREFIX = (
+    "FAIL — BEHAVIOR AND SIGNATURE SUPPORTED; NON-CONGRUENT ACTIONS"
+)
+DIAGNOSTIC_LABEL = (
+    "DIAGNOSTIC ONLY — p>0.5; cannot alter the primary 0.10/0.90 status"
+)
+ROUND36B_DEPTH_TRACE_INTERVAL = 1000
 INTEGRITY_SCOPE = (
     "integrity relative to retained manifest; producer authenticity out of scope"
 )
@@ -67,9 +80,25 @@ class BudgetExceeded(RuntimeError):
     """The registered full producer wall was exceeded."""
 
 
-def _check_deadline(deadline: float) -> None:
-    if time.monotonic() > deadline:
-        raise BudgetExceeded("registered 900-second full producer wall exceeded")
+class ProducerDeadline:
+    def __init__(self, expires_at: float, hard_wall_seconds: int) -> None:
+        self.expires_at = expires_at
+        self.hard_wall_seconds = hard_wall_seconds
+
+
+def _check_deadline(deadline: float | ProducerDeadline) -> None:
+    expires_at = (
+        deadline.expires_at if isinstance(deadline, ProducerDeadline) else deadline
+    )
+    hard_wall_seconds = (
+        deadline.hard_wall_seconds
+        if isinstance(deadline, ProducerDeadline)
+        else 900
+    )
+    if time.monotonic() > expires_at:
+        raise BudgetExceeded(
+            f"registered {hard_wall_seconds}-second full producer wall exceeded"
+        )
 
 
 @contextlib.contextmanager
@@ -183,20 +212,35 @@ def _expect_sha(value: Any, where: str) -> str:
     return value
 
 
+def _registration_id(config: dict[str, Any]) -> str:
+    return config.get("registration_id", REGISTRATION_ID)
+
+
+def _is_round36b(config: dict[str, Any]) -> bool:
+    return _registration_id(config) == ROUND36B_REGISTRATION_ID
+
+
 def _validate_config(config: Any) -> dict[str, Any]:
+    is_round36b = (
+        isinstance(config, dict)
+        and config.get("registration_id") == ROUND36B_REGISTRATION_ID
+    )
+    root_keys = [
+        "schema_version",
+        "name",
+        "registration",
+        "world",
+        "actions",
+        "split",
+        "model",
+        "training",
+        "thresholds",
+    ]
+    if is_round36b:
+        root_keys.append("registration_id")
     root = _require_keys(
         config,
-        [
-            "schema_version",
-            "name",
-            "registration",
-            "world",
-            "actions",
-            "split",
-            "model",
-            "training",
-            "thresholds",
-        ],
+        root_keys,
         "config",
     )
     _expect(root["schema_version"], SCHEMA_CONFIG, "config.schema_version")
@@ -206,6 +250,12 @@ def _validate_config(config: Any) -> dict[str, Any]:
         "Round 36 — minimal operational-quotient world",
         "config.registration",
     )
+    if is_round36b:
+        _expect(
+            root["registration_id"],
+            ROUND36B_REGISTRATION_ID,
+            "config.registration_id",
+        )
 
     world = _require_keys(
         root["world"],
@@ -288,7 +338,6 @@ def _validate_config(config: Any) -> dict[str, Any]:
     )
     expected_model = {
         "latent_dim": 8,
-        "transition_hidden_width": 32,
         "state_table_rows": 16,
         "shared_transition": True,
         "response_outputs": 1,
@@ -320,22 +369,43 @@ def _validate_config(config: Any) -> dict[str, Any]:
     expected_training = {
         "model_seeds": [11, 23, 37, 53, 71],
         "optimizer": "AdamW",
-        "learning_rate": 0.003,
         "weight_decay": 0.00001,
         "betas": [0.9, 0.999],
         "epsilon": 1e-08,
         "batch_size": 512,
-        "optimizer_steps_per_seed": 4000,
         "loss": "binary_cross_entropy_with_logits",
         "device": "cpu",
         "threads": 1,
         "deterministic_algorithms": True,
         "evaluation_batch_size": 4096,
         "target_cpu_minutes": [3, 8],
-        "hard_wall_seconds": 900,
     }
     for key, expected in expected_training.items():
         _expect(training[key], expected, f"config.training.{key}")
+
+    registered_knobs = (
+        training["optimizer_steps_per_seed"],
+        training["learning_rate"],
+        model["transition_hidden_width"],
+        training["hard_wall_seconds"],
+    )
+    if is_round36b:
+        allowed_round36b_knobs = {
+            (16000, 0.003, 32, 480),
+            (64000, 0.003, 32, 1200),
+            (64000, 0.001, 32, 1200),
+            (64000, 0.003, 64, 1800),
+        }
+        if registered_knobs not in allowed_round36b_knobs:
+            raise ContractError(
+                "Round 36b config knobs do not match a registered S16/S64/LR64/W64 cell"
+            )
+    else:
+        _expect(
+            registered_knobs,
+            (4000, 0.003, 32, 900),
+            "Round 36 v1 registered knobs",
+        )
 
     thresholds = _require_keys(
         root["thresholds"],
@@ -726,6 +796,259 @@ def _training_arrays(np: Any, config: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _behavior_arrays(
+    np: Any,
+    config: dict[str, Any],
+    words_to_score: Sequence[Sequence[str]],
+) -> dict[str, Any]:
+    handle_to_state = _handle_to_state(config)
+    states = _states()
+    action_ids = {name: index for index, name in enumerate(ACTION_NAMES)}
+    handles: list[int] = []
+    words: list[list[int]] = []
+    lengths: list[int] = []
+    targets: list[float] = []
+    for word in words_to_score:
+        padded = [action_ids[action] for action in word] + [0] * (3 - len(word))
+        for handle, state_index in enumerate(handle_to_state):
+            handles.append(handle)
+            words.append(padded)
+            lengths.append(len(word))
+            targets.append(float(_apply_word(states[state_index], word)[0]))
+    return {
+        "handles": np.asarray(handles, dtype=np.int64),
+        "words": np.asarray(words, dtype=np.int64),
+        "lengths": np.asarray(lengths, dtype=np.int64),
+        "targets": np.asarray(targets, dtype=np.float32),
+    }
+
+
+def _behavior_target_bits(
+    config: dict[str, Any],
+    words_to_score: Sequence[Sequence[str]],
+) -> list[int]:
+    """Reconstruct the frozen word-major, handle-minor behavioral targets."""
+    handle_to_state = _handle_to_state(config)
+    states = _states()
+    return [
+        int(_apply_word(states[state_index], word)[0])
+        for word in words_to_score
+        for state_index in handle_to_state
+    ]
+
+
+def _sigmoid_from_logit(logit: float) -> float:
+    if logit >= 0.0:
+        exp_negative = math.exp(-logit)
+        return 1.0 / (1.0 + exp_negative)
+    exp_positive = math.exp(logit)
+    return exp_positive / (1.0 + exp_positive)
+
+
+def _behavior_metric_from_logits(
+    config: dict[str, Any],
+    words_to_score: Sequence[Sequence[str]],
+    raw_logits: Sequence[Any],
+    *,
+    include_row_logits: bool,
+) -> dict[str, Any]:
+    targets = _behavior_target_bits(config, words_to_score)
+    if not isinstance(raw_logits, list) or len(raw_logits) != len(targets):
+        raise ContractError(
+            "behavior row_logits must be a list in frozen word-major, "
+            f"handle-minor order with exactly {len(targets)} rows"
+        )
+    logits = [
+        _expect_number(value, f"behavior row_logits[{index}]")
+        for index, value in enumerate(raw_logits)
+    ]
+    low = config["thresholds"]["signature_low"]
+    high = config["thresholds"]["signature_high"]
+    correct = 0
+    supported = 0
+    correct_and_supported = 0
+    losses: list[float] = []
+    for logit, target in zip(logits, targets):
+        is_correct = (logit > 0.0 and target == 1) or (
+            logit < 0.0 and target == 0
+        )
+        probability = _sigmoid_from_logit(logit)
+        is_supported = probability <= low or probability >= high
+        correct += int(is_correct)
+        supported += int(is_supported)
+        correct_and_supported += int(is_correct and is_supported)
+        losses.append(
+            max(logit, 0.0)
+            - logit * target
+            + math.log1p(math.exp(-abs(logit)))
+        )
+    total = len(logits)
+    try:
+        full_dataset_bce = math.fsum(losses) / total
+    except OverflowError as exc:
+        raise ContractError("behavior row_logits yield non-finite BCE") from exc
+    if not math.isfinite(full_dataset_bce):
+        raise ContractError("behavior row_logits yield non-finite BCE")
+    metric = {
+        "full_dataset_bce": full_dataset_bce,
+        "correct_responses": correct,
+        "total_responses": total,
+        "response_accuracy": correct / total,
+        "supported_responses": supported,
+        "support_fraction": supported / total,
+        "correct_and_supported_responses": correct_and_supported,
+        "correct_and_supported_fraction": correct_and_supported / total,
+    }
+    if include_row_logits:
+        metric["row_logits"] = logits
+    return metric
+
+
+def _score_behavior_rows(
+    np: Any,
+    torch: Any,
+    model: Any,
+    config: dict[str, Any],
+    words_to_score: Sequence[Sequence[str]],
+    deadline: float | ProducerDeadline,
+    *,
+    serialize_row_logits: bool = False,
+) -> dict[str, Any]:
+    arrays = _behavior_arrays(np, config, words_to_score)
+    handles = torch.from_numpy(arrays["handles"])
+    words = torch.from_numpy(arrays["words"])
+    lengths = torch.from_numpy(arrays["lengths"])
+    targets = torch.from_numpy(arrays["targets"])
+    batch_size = config["training"]["evaluation_batch_size"]
+    correct = 0
+    supported = 0
+    correct_and_supported = 0
+    loss_sum = 0.0
+    row_logits: list[float] = []
+    with torch.no_grad():
+        for start in range(0, handles.shape[0], batch_size):
+            _check_deadline(deadline)
+            stop = min(handles.shape[0], start + batch_size)
+            batch_targets = targets[start:stop]
+            logits = model.run_word(
+                handles[start:stop], words[start:stop], lengths[start:stop]
+            )
+            if serialize_row_logits:
+                row_logits.extend(float(value) for value in logits.cpu().tolist())
+            loss_sum += float(
+                torch.nn.functional.binary_cross_entropy_with_logits(
+                    logits, batch_targets, reduction="sum"
+                ).cpu()
+            )
+            correct_mask = ((logits > 0.0) & (batch_targets == 1.0)) | (
+                (logits < 0.0) & (batch_targets == 0.0)
+            )
+            probabilities = torch.sigmoid(logits)
+            supported_mask = (
+                (probabilities <= config["thresholds"]["signature_low"])
+                | (probabilities >= config["thresholds"]["signature_high"])
+            )
+            correct += int(correct_mask.sum().cpu())
+            supported += int(supported_mask.sum().cpu())
+            correct_and_supported += int((correct_mask & supported_mask).sum().cpu())
+    total = int(handles.shape[0])
+    if serialize_row_logits:
+        return _behavior_metric_from_logits(
+            config,
+            words_to_score,
+            row_logits,
+            include_row_logits=True,
+        )
+    return {
+        "full_dataset_bce": loss_sum / total,
+        "correct_responses": correct,
+        "total_responses": total,
+        "response_accuracy": correct / total,
+        "supported_responses": supported,
+        "support_fraction": supported / total,
+        "correct_and_supported_responses": correct_and_supported,
+        "correct_and_supported_fraction": correct_and_supported / total,
+    }
+
+
+def _behavior_fit_record(
+    np: Any,
+    torch: Any,
+    model: Any,
+    loss_trace: Any,
+    training_by_word_depth: list[dict[str, Any]],
+    config: dict[str, Any],
+    deadline: float,
+) -> dict[str, Any]:
+    universe = _word_universe(config)
+    training = _score_behavior_rows(
+        np,
+        torch,
+        model,
+        config,
+        universe["training"],
+        deadline,
+        serialize_row_logits=True,
+    )
+    h2 = _score_behavior_rows(
+        np,
+        torch,
+        model,
+        config,
+        universe["h2"],
+        deadline,
+        serialize_row_logits=True,
+    )
+    h3 = _score_behavior_rows(
+        np,
+        torch,
+        model,
+        config,
+        universe["h3"],
+        deadline,
+        serialize_row_logits=True,
+    )
+    heldout = _behavior_metric_from_logits(
+        config,
+        universe["heldout"],
+        h2["row_logits"] + h3["row_logits"],
+        include_row_logits=False,
+    )
+    return {
+        "loss_trace": [float(value) for value in loss_trace],
+        "training_by_word_depth": training_by_word_depth,
+        "training": training,
+        "h2": h2,
+        "h3": h3,
+        "heldout": heldout,
+    }
+
+
+def _training_depth_checkpoint(
+    np: Any,
+    torch: Any,
+    model: Any,
+    config: dict[str, Any],
+    optimizer_step: int,
+    deadline: float | ProducerDeadline,
+) -> dict[str, Any]:
+    training_words = _word_universe(config)["training"]
+    return {
+        "optimizer_step": optimizer_step,
+        "by_word_depth": {
+            str(depth): _score_behavior_rows(
+                np,
+                torch,
+                model,
+                config,
+                [word for word in training_words if len(word) == depth],
+                deadline,
+            )
+            for depth in range(4)
+        },
+    }
+
+
 def _prepare_empty_directory(path: Path) -> None:
     if path.exists() and any(path.iterdir()):
         raise ContractError(f"refusing to overwrite non-empty output directory {path}")
@@ -818,6 +1141,13 @@ def _train(
         generator = torch.Generator(device="cpu")
         generator.manual_seed(seed)
         trace: list[float] = []
+        depth_trace: list[dict[str, Any]] = []
+        if _is_round36b(config):
+            depth_trace.append(
+                _training_depth_checkpoint(
+                    np, torch, model, config, 0, deadline
+                )
+            )
         for step in range(config["training"]["optimizer_steps_per_seed"]):
             if step % 25 == 0:
                 _check_deadline(deadline)
@@ -835,19 +1165,35 @@ def _train(
             loss.backward()
             optimizer.step()
             trace.append(float(loss.detach().cpu()))
+            completed_steps = step + 1
+            if (
+                _is_round36b(config)
+                and completed_steps % ROUND36B_DEPTH_TRACE_INTERVAL == 0
+            ):
+                depth_trace.append(
+                    _training_depth_checkpoint(
+                        np,
+                        torch,
+                        model,
+                        config,
+                        completed_steps,
+                        deadline,
+                    )
+                )
         parameter_devices.update(_assert_cpu_model(model))
         for name, tensor in model.state_dict().items():
             key = f"seed_{seed}__{name.replace('.', '_')}"
             saved[key] = tensor.detach().cpu().numpy()
         saved[f"seed_{seed}__loss_trace"] = np.asarray(trace, dtype=np.float64)
-        seed_summaries.append(
-            {
-                "seed": seed,
-                "steps": len(trace),
-                "final_loss": trace[-1],
-                "loss_trace_sha256": _loss_trace_sha(np, trace),
-            }
-        )
+        seed_summary = {
+            "seed": seed,
+            "steps": len(trace),
+            "final_loss": trace[-1],
+            "loss_trace_sha256": _loss_trace_sha(np, trace),
+        }
+        if _is_round36b(config):
+            seed_summary["training_by_word_depth"] = depth_trace
+        seed_summaries.append(seed_summary)
 
     weights_path = output_dir / "weights.npz"
     np.savez_compressed(weights_path, **saved)
@@ -932,10 +1278,12 @@ def _roll_grid_signatures(
     words: list[tuple[str, ...]],
     config: dict[str, Any],
     deadline: float | None = None,
+    probability_sink: list[list[list[float]]] | None = None,
 ) -> tuple[list[list[str]], list[list[int | None]]]:
     batch_size = config["training"]["evaluation_batch_size"]
     total = initial.shape[0] * len(words)
     flat_signatures: list[str] = []
+    flat_probabilities: list[list[float]] = []
     action_ids = {name: index for index, name in enumerate(ACTION_NAMES)}
     word_ids = [[action_ids[action] for action in word] for word in words]
     with torch.no_grad():
@@ -956,20 +1304,29 @@ def _roll_grid_signatures(
                     ids.append(row[position] if position < len(row) else 0)
                 proposed = model.transition(latent, torch.tensor(ids, dtype=torch.long))
                 latent = torch.where(torch.tensor(active).unsqueeze(1), proposed, latent)
-            batch_signatures, _ = _signature_batches(
+            batch_signatures, batch_probabilities = _signature_batches(
                 torch,
                 model,
                 latent,
                 config,
-                include_probabilities=False,
+                include_probabilities=probability_sink is not None,
                 deadline=deadline,
             )
             flat_signatures.extend(batch_signatures)
+            if batch_probabilities is not None:
+                flat_probabilities.extend(batch_probabilities)
     rows = [
         flat_signatures[index * len(words) : (index + 1) * len(words)]
         for index in range(initial.shape[0])
     ]
     bits = [[int(sig[0]) if _supported(sig) else None for sig in row] for row in rows]
+    if probability_sink is not None:
+        probability_sink.extend(
+            [
+                flat_probabilities[index * len(words) : (index + 1) * len(words)]
+                for index in range(initial.shape[0])
+            ]
+        )
     return rows, bits
 
 
@@ -979,6 +1336,7 @@ def _law_rows_from_model(
     encoder_latent: Any,
     config: dict[str, Any],
     deadline: float | None = None,
+    probability_sink: list[list[list[float]]] | None = None,
 ) -> list[dict[str, Any]]:
     rows: list[dict[str, Any]] = []
     starts = []
@@ -1006,6 +1364,7 @@ def _law_rows_from_model(
                 })
     latent = encoder_latent[torch.tensor(starts, dtype=torch.long)]
     endpoints = []
+    endpoint_probabilities: list[list[list[float]]] = []
     for words in (words_a, words_b, words_c):
         pieces = []
         with torch.no_grad():
@@ -1014,10 +1373,17 @@ def _law_rows_from_model(
                     _check_deadline(deadline)
                 pieces.append(_transition_word(torch, model, latent[index : index + 1], word))
         combined = torch.cat(pieces, dim=0)
-        signatures, _ = _signature_batches(
-            torch, model, combined, config, False, deadline=deadline
+        signatures, probabilities = _signature_batches(
+            torch,
+            model,
+            combined,
+            config,
+            probability_sink is not None,
+            deadline=deadline,
         )
         endpoints.append(signatures)
+        if probabilities is not None:
+            endpoint_probabilities.append(probabilities)
     handle_to_state = _handle_to_state(config)
     states = _states()
     for index, row in enumerate(rows):
@@ -1052,6 +1418,13 @@ def _law_rows_from_model(
             and relation
             and row["swap_after_toggle"] == row["conjugate_after_swap"]
         )
+    if probability_sink is not None:
+        probability_sink.extend(
+            [
+                [endpoint_probabilities[column][row] for column in range(3)]
+                for row in range(len(rows))
+            ]
+        )
     return rows
 
 
@@ -1063,11 +1436,13 @@ def _evaluate_seed(
     seed: int,
     config: dict[str, Any],
     deadline: float,
+    training_summary: dict[str, Any],
 ) -> dict[str, Any]:
     _check_deadline(deadline)
     layout = _representative_layout(config)
     universe = _word_universe(config)
     world = _world_evidence(config)
+    is_round36b = _is_round36b(config)
     with torch.no_grad():
         handles = torch.arange(16, dtype=torch.long)
         encoder_latent = model.encoder(handles)
@@ -1092,10 +1467,23 @@ def _evaluate_seed(
         expanded = representatives[:, None, :].expand(-1, 11, -1).reshape(-1, 8)
         action_ids = torch.arange(11, dtype=torch.long).repeat(representatives.shape[0])
         primitive_latent = model.transition(expanded, action_ids)
-    primitive_flat, _ = _signature_batches(
-        torch, model, primitive_latent, config, False, deadline=deadline
+    primitive_flat, primitive_probability_flat = _signature_batches(
+        torch,
+        model,
+        primitive_latent,
+        config,
+        is_round36b,
+        deadline=deadline,
     )
     primitive = [primitive_flat[index * 11 : (index + 1) * 11] for index in range(944)]
+    primitive_probabilities = (
+        [
+            primitive_probability_flat[index * 11 : (index + 1) * 11]
+            for index in range(944)
+        ]
+        if primitive_probability_flat is not None
+        else []
+    )
 
     double_parts = []
     with torch.no_grad():
@@ -1104,10 +1492,23 @@ def _evaluate_seed(
             once = model.transition(representatives, ids)
             double_parts.append(model.transition(once, ids))
     double_latent = torch.stack(double_parts, dim=1).reshape(-1, 8)
-    double_flat, _ = _signature_batches(
-        torch, model, double_latent, config, False, deadline=deadline
+    double_flat, double_probability_flat = _signature_batches(
+        torch,
+        model,
+        double_latent,
+        config,
+        is_round36b,
+        deadline=deadline,
     )
     toggle_twice = [double_flat[index * 4 : (index + 1) * 4] for index in range(944)]
+    toggle_twice_probabilities = (
+        [
+            double_probability_flat[index * 4 : (index + 1) * 4]
+            for index in range(944)
+        ]
+        if double_probability_flat is not None
+        else []
+    )
 
     encoder_signatures = [signatures[handle * 59] for handle in range(16)]
     signature_to_handle = {
@@ -1124,11 +1525,25 @@ def _evaluate_seed(
         dim=0,
     )
 
+    heldout_probabilities: list[list[list[float]]] = []
     heldout_signatures, _ = _roll_grid_signatures(
-        torch, model, encoder_latent, universe["heldout"], config, deadline
+        torch,
+        model,
+        encoder_latent,
+        universe["heldout"],
+        config,
+        deadline,
+        heldout_probabilities if is_round36b else None,
     )
+    representative_continuation_probabilities: list[list[list[float]]] = []
     representative_endpoints, representative_bits = _roll_grid_signatures(
-        torch, model, representatives, universe["heldout"], config, deadline
+        torch,
+        model,
+        representatives,
+        universe["heldout"],
+        config,
+        deadline,
+        representative_continuation_probabilities if is_round36b else None,
     )
     canonical_endpoints, canonical_bits = _roll_grid_signatures(
         torch, model, canonical_latent, universe["heldout"], config, deadline
@@ -1149,6 +1564,15 @@ def _evaluate_seed(
     loss_trace = archive[loss_key]
     if loss_trace.shape != (config["training"]["optimizer_steps_per_seed"],):
         raise ContractError(f"loss trace for seed {seed} has wrong shape")
+    law_probabilities: list[list[list[float]]] = []
+    law_rows = _law_rows_from_model(
+        torch,
+        model,
+        encoder_latent,
+        config,
+        deadline,
+        law_probabilities if is_round36b else None,
+    )
     record = {
         "seed": seed,
         "loss_trace_sha256": _sha256_bytes(np.asarray(loss_trace, dtype="<f8").tobytes()),
@@ -1159,9 +1583,7 @@ def _evaluate_seed(
         "representative_signatures": signatures,
         "primitive_successor_signatures": primitive,
         "toggle_twice_signatures": toggle_twice,
-        "law_rows": _law_rows_from_model(
-            torch, model, encoder_latent, config, deadline
-        ),
+        "law_rows": law_rows,
         "heldout_endpoint_signatures": heldout_signatures,
         "canonical_handles": canonical_handles,
         "representative_continuation_signatures": representative_endpoints,
@@ -1171,6 +1593,25 @@ def _evaluate_seed(
         "recovered_action_table": recovered_table,
     }
     record["support_flags"] = _support_flags_for_seed(record)
+    if is_round36b:
+        record["diagnostic_response_probabilities"] = {
+            "primitive_successors": primitive_probabilities,
+            "toggle_twice": toggle_twice_probabilities,
+            "law_endpoints": law_probabilities,
+            "heldout_endpoints": heldout_probabilities,
+            "representative_continuations": (
+                representative_continuation_probabilities
+            ),
+        }
+        record["behavior_fit"] = _behavior_fit_record(
+            np,
+            torch,
+            model,
+            loss_trace,
+            training_summary["training_by_word_depth"],
+            config,
+            deadline,
+        )
     return record
 
 
@@ -1237,14 +1678,21 @@ def _evidence(
             _load_model_from_npz(torch, model, archive, seed)
             parameter_devices.update(_assert_cpu_model(model))
             seed_record = _evaluate_seed(
-                np, torch, model, archive, seed, config, deadline
+                np,
+                torch,
+                model,
+                archive,
+                seed,
+                config,
+                deadline,
+                training["seeds"][seed_index],
             )
             if seed_record["loss_trace_sha256"] != training["seeds"][seed_index]["loss_trace_sha256"]:
                 raise ContractError(f"loss trace checksum mismatch for seed {seed}")
             seed_evidence.append(seed_record)
     evidence = {
         "schema_version": SCHEMA_EVIDENCE,
-        "registration_id": REGISTRATION_ID,
+        "registration_id": _registration_id(config),
         "producer_kind": "learned",
         "config_sha256": config_sha,
         "code_sha256": _module_sha256(),
@@ -1269,7 +1717,7 @@ def _evidence(
     evidence_seconds = total_seconds - train_seconds
     manifest = {
         "schema_version": SCHEMA_MANIFEST,
-        "registration_id": REGISTRATION_ID,
+        "registration_id": _registration_id(config),
         "producer_status": "complete_nonclaiming",
         "producer_kind": "learned",
         "integrity_scope": INTEGRITY_SCOPE,
@@ -1310,7 +1758,10 @@ def _produce(config_path: Path, output_dir: Path) -> dict[str, Any]:
     producer_started = time.monotonic()
     config_bytes = config_path.read_bytes()
     config = _validate_config(_read_json(config_path))
-    deadline = producer_started + config["training"]["hard_wall_seconds"]
+    deadline = ProducerDeadline(
+        producer_started + config["training"]["hard_wall_seconds"],
+        config["training"]["hard_wall_seconds"],
+    )
     _prepare_empty_directory(output_dir)
     (output_dir / "config.json").write_bytes(config_bytes)
     _check_deadline(deadline)
@@ -1404,6 +1855,115 @@ def _fixture_law_rows(config: dict[str, Any]) -> list[dict[str, Any]]:
     return rows
 
 
+def _fixture_behavior_fit(config: dict[str, Any]) -> dict[str, Any]:
+    def exact(total: int) -> dict[str, Any]:
+        return {
+            "full_dataset_bce": 0.0,
+            "correct_responses": total,
+            "total_responses": total,
+            "response_accuracy": 1.0,
+            "supported_responses": total,
+            "support_fraction": 1.0,
+            "correct_and_supported_responses": total,
+            "correct_and_supported_fraction": 1.0,
+        }
+
+    universe = _word_universe(config)
+    split_metrics = {
+        split_name: _behavior_metric_from_logits(
+            config,
+            universe[split_name],
+            [
+                1000.0 if target == 1 else -1000.0
+                for target in _behavior_target_bits(config, universe[split_name])
+            ],
+            include_row_logits=True,
+        )
+        for split_name in ("training", "h2", "h3")
+    }
+    heldout = _behavior_metric_from_logits(
+        config,
+        universe["heldout"],
+        split_metrics["h2"]["row_logits"]
+        + split_metrics["h3"]["row_logits"],
+        include_row_logits=False,
+    )
+    return {
+        "loss_trace": [],
+        "training_by_word_depth": [
+            {
+                "optimizer_step": 0,
+                "by_word_depth": {
+                    "0": exact(16),
+                    "1": exact(176),
+                    "2": exact(752),
+                    "3": exact(20240),
+                },
+            }
+        ],
+        "training": split_metrics["training"],
+        "h2": split_metrics["h2"],
+        "h3": split_metrics["h3"],
+        "heldout": heldout,
+    }
+
+
+def _replace_behavior_summary(
+    destination: dict[str, Any], source: dict[str, Any]
+) -> None:
+    for key in (
+        "full_dataset_bce",
+        "correct_responses",
+        "total_responses",
+        "response_accuracy",
+        "supported_responses",
+        "support_fraction",
+        "correct_and_supported_responses",
+        "correct_and_supported_fraction",
+    ):
+        destination[key] = source[key]
+
+
+def _refresh_fixture_behavior_summaries_from_rows(
+    seed: dict[str, Any], config: dict[str, Any]
+) -> None:
+    behavior = seed["behavior_fit"]
+    universe = _word_universe(config)
+    recomputed: dict[str, dict[str, Any]] = {}
+    for split_name in ("training", "h2", "h3"):
+        recomputed[split_name] = _behavior_metric_from_logits(
+            config,
+            universe[split_name],
+            behavior[split_name]["row_logits"],
+            include_row_logits=False,
+        )
+        _replace_behavior_summary(behavior[split_name], recomputed[split_name])
+    recomputed["heldout"] = _behavior_metric_from_logits(
+        config,
+        universe["heldout"],
+        behavior["h2"]["row_logits"] + behavior["h3"]["row_logits"],
+        include_row_logits=False,
+    )
+    _replace_behavior_summary(behavior["heldout"], recomputed["heldout"])
+
+    cursor = 0
+    final_depths = behavior["training_by_word_depth"][-1]["by_word_depth"]
+    for depth in range(4):
+        depth_words = [word for word in universe["training"] if len(word) == depth]
+        depth_rows = len(depth_words) * 16
+        depth_logits = behavior["training"]["row_logits"][
+            cursor : cursor + depth_rows
+        ]
+        cursor += depth_rows
+        depth_metric = _behavior_metric_from_logits(
+            config,
+            depth_words,
+            depth_logits,
+            include_row_logits=False,
+        )
+        _replace_behavior_summary(final_depths[str(depth)], depth_metric)
+
+
 def _fixture_seed(seed: int, config: dict[str, Any]) -> dict[str, Any]:
     layout = _representative_layout(config)
     universe = _word_universe(config)
@@ -1438,6 +1998,7 @@ def _fixture_seed(seed: int, config: dict[str, Any]) -> dict[str, Any]:
         for state_index in layout["oracle_states"]
     ]
     terminal_bits = [[int(signature[0]) for signature in row] for row in continuation]
+    law_rows = _fixture_law_rows(config)
     record = {
         "seed": seed,
         "loss_trace_sha256": _sha256_bytes(f"fixture-loss-trace|{seed}".encode("utf-8")),
@@ -1448,7 +2009,7 @@ def _fixture_seed(seed: int, config: dict[str, Any]) -> dict[str, Any]:
         "representative_signatures": signatures,
         "primitive_successor_signatures": primitive,
         "toggle_twice_signatures": toggle_twice,
-        "law_rows": _fixture_law_rows(config),
+        "law_rows": law_rows,
         "heldout_endpoint_signatures": heldout,
         "canonical_handles": canonical_handles,
         "representative_continuation_signatures": continuation,
@@ -1458,6 +2019,37 @@ def _fixture_seed(seed: int, config: dict[str, Any]) -> dict[str, Any]:
         "recovered_action_table": world["oracle_action_table"],
     }
     record["support_flags"] = _support_flags_for_seed(record)
+    if _is_round36b(config):
+        record["diagnostic_response_probabilities"] = {
+            "primitive_successors": [
+                [[float(cell) for cell in signature] for signature in row]
+                for row in primitive
+            ],
+            "toggle_twice": [
+                [[float(cell) for cell in signature] for signature in row]
+                for row in toggle_twice
+            ],
+            "law_endpoints": [
+                [
+                    [float(cell) for cell in row[key]]
+                    for key in (
+                        "swap_after_toggle",
+                        "toggle_after_swap",
+                        "conjugate_after_swap",
+                    )
+                ]
+                for row in law_rows
+            ],
+            "heldout_endpoints": [
+                [[float(cell) for cell in signature] for signature in row]
+                for row in heldout
+            ],
+            "representative_continuations": [
+                [[float(cell) for cell in signature] for signature in row]
+                for row in continuation
+            ],
+        }
+        record["behavior_fit"] = _fixture_behavior_fit(config)
     return record
 
 
@@ -1466,7 +2058,7 @@ def _fixture_evidence(config: dict[str, Any], config_sha: str) -> dict[str, Any]
     weights_sha = _sha256_bytes(_canonical_bytes(construction))
     evidence = {
         "schema_version": SCHEMA_EVIDENCE,
-        "registration_id": REGISTRATION_ID,
+        "registration_id": _registration_id(config),
         "producer_kind": "fixture",
         "config_sha256": config_sha,
         "code_sha256": _module_sha256(),
@@ -1492,7 +2084,7 @@ def _fixture_manifest(config: dict[str, Any], config_sha: str, evidence: dict[st
     }
     return {
         "schema_version": SCHEMA_MANIFEST,
-        "registration_id": REGISTRATION_ID,
+        "registration_id": _registration_id(config),
         "producer_status": "complete_nonclaiming",
         "producer_kind": "fixture",
         "integrity_scope": INTEGRITY_SCOPE,
@@ -1570,7 +2162,11 @@ def _validate_manifest(value: Any, config: dict[str, Any]) -> dict[str, Any]:
         "manifest",
     )
     _expect(manifest["schema_version"], SCHEMA_MANIFEST, "manifest.schema_version")
-    _expect(manifest["registration_id"], REGISTRATION_ID, "manifest.registration_id")
+    _expect(
+        manifest["registration_id"],
+        _registration_id(config),
+        "manifest.registration_id",
+    )
     _expect(manifest["producer_status"], "complete_nonclaiming", "manifest.producer_status")
     if manifest["producer_kind"] not in ("learned", "fixture"):
         raise ContractError("manifest.producer_kind must be learned or fixture")
@@ -1594,7 +2190,9 @@ def _validate_manifest(value: Any, config: dict[str, Any]) -> dict[str, Any]:
     if abs((train_wall + evidence_wall) - total_wall) > 1e-6:
         raise ContractError("manifest total wall does not equal train + evidence wall")
     if total_wall > config["training"]["hard_wall_seconds"]:
-        raise ContractError("registered 900-second hard wall was exceeded")
+        raise ContractError(
+            f"registered {config['training']['hard_wall_seconds']}-second hard wall was exceeded"
+        )
     _expect(manifest["data_seed"], 3601, "manifest.data_seed")
     _expect(manifest["model_seeds"], [11, 23, 37, 53, 71], "manifest.model_seeds")
     _expect(manifest["action_order"], ACTION_NAMES, "manifest.action_order")
@@ -1656,6 +2254,40 @@ def _validate_probability(value: Any, where: str) -> None:
     number = _expect_number(value, where)
     if not 0.0 <= number <= 1.0:
         raise ContractError(f"{where} must lie in [0,1]")
+
+
+def _validate_probability_signature_table(
+    value: Any,
+    expected_signatures: list[list[str]],
+    where: str,
+    low: float,
+    high: float,
+) -> list[list[list[float]]]:
+    if not isinstance(value, list) or len(value) != len(expected_signatures):
+        raise ContractError(f"{where} row count does not match its signature table")
+    for row_index, (row, signature_row) in enumerate(
+        zip(value, expected_signatures)
+    ):
+        if not isinstance(row, list) or len(row) != len(signature_row):
+            raise ContractError(
+                f"{where}[{row_index}] column count does not match its signature table"
+            )
+        for column_index, (probabilities, signature) in enumerate(
+            zip(row, signature_row)
+        ):
+            cell_where = f"{where}[{row_index}][{column_index}]"
+            if not isinstance(probabilities, list) or len(probabilities) != 12:
+                raise ContractError(f"{cell_where} must contain 12 probabilities")
+            for component_index, probability in enumerate(probabilities):
+                _validate_probability(
+                    probability, f"{cell_where}[{component_index}]"
+                )
+            _expect(
+                _signature_from_probabilities(probabilities, low, high),
+                signature,
+                f"{cell_where} primary-signature replay",
+            )
+    return value
 
 
 def _validate_bit(value: Any, where: str) -> None:
@@ -1738,35 +2370,272 @@ def _validate_construction(
     return construction
 
 
+def _validate_behavior_metric(
+    value: Any,
+    where: str,
+    expected_total: int,
+    *,
+    require_row_logits: bool = False,
+) -> dict[str, Any]:
+    expected_keys = [
+        "full_dataset_bce",
+        "correct_responses",
+        "total_responses",
+        "response_accuracy",
+        "supported_responses",
+        "support_fraction",
+        "correct_and_supported_responses",
+        "correct_and_supported_fraction",
+    ]
+    if require_row_logits:
+        expected_keys.append("row_logits")
+    metric = _require_keys(
+        value,
+        expected_keys,
+        where,
+    )
+    total = _expect_int(metric["total_responses"], f"{where}.total_responses", minimum=1)
+    _expect(total, expected_total, f"{where}.total_responses")
+    correct = _expect_int(metric["correct_responses"], f"{where}.correct_responses", minimum=0)
+    supported = _expect_int(
+        metric["supported_responses"], f"{where}.supported_responses", minimum=0
+    )
+    correct_supported = _expect_int(
+        metric["correct_and_supported_responses"],
+        f"{where}.correct_and_supported_responses",
+        minimum=0,
+    )
+    if (
+        correct > total
+        or supported > total
+        or correct_supported > correct
+        or correct_supported > supported
+    ):
+        raise ContractError(f"{where} response counts are inconsistent")
+    bce = _expect_number(metric["full_dataset_bce"], f"{where}.full_dataset_bce")
+    if bce < 0.0:
+        raise ContractError(f"{where}.full_dataset_bce must be nonnegative")
+    if require_row_logits:
+        row_logits = metric["row_logits"]
+        if not isinstance(row_logits, list) or len(row_logits) != expected_total:
+            raise ContractError(
+                f"{where}.row_logits must contain exactly {expected_total} rows"
+            )
+        for index, logit in enumerate(row_logits):
+            _expect_number(logit, f"{where}.row_logits[{index}]")
+    for key, expected in (
+        ("response_accuracy", correct / total),
+        ("support_fraction", supported / total),
+        ("correct_and_supported_fraction", correct_supported / total),
+    ):
+        _expect(
+            _expect_number(metric[key], f"{where}.{key}"),
+            expected,
+            f"{where}.{key} replay",
+        )
+    return metric
+
+
+def _expect_behavior_summary_replay(
+    supplied: dict[str, Any],
+    recomputed: dict[str, Any],
+    where: str,
+) -> None:
+    for key in (
+        "full_dataset_bce",
+        "correct_responses",
+        "total_responses",
+        "response_accuracy",
+        "supported_responses",
+        "support_fraction",
+        "correct_and_supported_responses",
+        "correct_and_supported_fraction",
+    ):
+        _expect(supplied[key], recomputed[key], f"{where}.{key} row replay")
+
+
+def _validate_behavior_fit(
+    value: Any,
+    where: str,
+    config: dict[str, Any],
+    producer_kind: str,
+    loss_trace_sha256: str,
+) -> dict[str, Any]:
+    behavior = _require_keys(
+        value,
+        [
+            "loss_trace",
+            "training_by_word_depth",
+            "training",
+            "h2",
+            "h3",
+            "heldout",
+        ],
+        where,
+    )
+    trace = behavior["loss_trace"]
+    if not isinstance(trace, list):
+        raise ContractError(f"{where}.loss_trace must be a list")
+    expected_trace_length = (
+        config["training"]["optimizer_steps_per_seed"]
+        if producer_kind == "learned"
+        else 0
+    )
+    if len(trace) != expected_trace_length:
+        raise ContractError(
+            f"{where}.loss_trace must contain exactly {expected_trace_length} values"
+        )
+    trace_values = [
+        _expect_number(item, f"{where}.loss_trace[{index}]")
+        for index, item in enumerate(trace)
+    ]
+    if producer_kind == "learned":
+        trace_bytes = b"".join(struct.pack("<d", item) for item in trace_values)
+        _expect(
+            _sha256_bytes(trace_bytes),
+            loss_trace_sha256,
+            f"{where}.loss_trace checksum replay",
+        )
+
+    expected_totals = {
+        "training": config["split"]["expected_training_rows"],
+        "h2": config["split"]["expected_h2_words"] * 16,
+        "h3": config["split"]["expected_h3_words"] * 16,
+        "heldout": config["split"]["expected_heldout_rows"],
+    }
+    for split_name, expected_total in expected_totals.items():
+        _validate_behavior_metric(
+            behavior[split_name],
+            f"{where}.{split_name}",
+            expected_total,
+            require_row_logits=split_name != "heldout",
+        )
+
+    universe = _word_universe(config)
+    recomputed: dict[str, dict[str, Any]] = {}
+    for split_name in ("training", "h2", "h3"):
+        recomputed[split_name] = _behavior_metric_from_logits(
+            config,
+            universe[split_name],
+            behavior[split_name]["row_logits"],
+            include_row_logits=False,
+        )
+    recomputed["heldout"] = _behavior_metric_from_logits(
+        config,
+        universe["heldout"],
+        behavior["h2"]["row_logits"] + behavior["h3"]["row_logits"],
+        include_row_logits=False,
+    )
+    for split_name in ("training", "h2", "h3", "heldout"):
+        _expect_behavior_summary_replay(
+            behavior[split_name],
+            recomputed[split_name],
+            f"{where}.{split_name}",
+        )
+
+    depth_trace = behavior["training_by_word_depth"]
+    if not isinstance(depth_trace, list):
+        raise ContractError(f"{where}.training_by_word_depth must be a list")
+    expected_steps = (
+        list(
+            range(
+                0,
+                config["training"]["optimizer_steps_per_seed"] + 1,
+                ROUND36B_DEPTH_TRACE_INTERVAL,
+            )
+        )
+        if producer_kind == "learned"
+        else [0]
+    )
+    if len(depth_trace) != len(expected_steps):
+        raise ContractError(
+            f"{where}.training_by_word_depth must contain exactly "
+            f"{len(expected_steps)} checkpoints"
+        )
+    depth_totals = {"0": 16, "1": 176, "2": 752, "3": 20240}
+    for checkpoint_index, (checkpoint, expected_step) in enumerate(
+        zip(depth_trace, expected_steps)
+    ):
+        checkpoint_where = (
+            f"{where}.training_by_word_depth[{checkpoint_index}]"
+        )
+        row = _require_keys(
+            checkpoint,
+            ["optimizer_step", "by_word_depth"],
+            checkpoint_where,
+        )
+        _expect(row["optimizer_step"], expected_step, f"{checkpoint_where}.optimizer_step")
+        depths = _require_keys(
+            row["by_word_depth"], depth_totals, f"{checkpoint_where}.by_word_depth"
+        )
+        for depth, total in depth_totals.items():
+            _validate_behavior_metric(
+                depths[depth], f"{checkpoint_where}.by_word_depth.{depth}", total
+            )
+
+    final_depths = depth_trace[-1]["by_word_depth"]
+    for count_key in (
+        "correct_responses",
+        "supported_responses",
+        "correct_and_supported_responses",
+    ):
+        _expect(
+            sum(final_depths[depth][count_key] for depth in depth_totals),
+            behavior["training"][count_key],
+            f"{where}.final depth trace {count_key}",
+        )
+    _expect(
+        behavior["heldout"]["correct_responses"],
+        behavior["h2"]["correct_responses"] + behavior["h3"]["correct_responses"],
+        f"{where}.heldout correct response count",
+    )
+    _expect(
+        behavior["heldout"]["correct_and_supported_responses"],
+        behavior["h2"]["correct_and_supported_responses"]
+        + behavior["h3"]["correct_and_supported_responses"],
+        f"{where}.heldout correct-and-supported response count",
+    )
+    _expect(
+        behavior["heldout"]["supported_responses"],
+        behavior["h2"]["supported_responses"] + behavior["h3"]["supported_responses"],
+        f"{where}.heldout supported response count",
+    )
+    return recomputed
+
+
 def _validate_seed_record(
     value: Any,
     index: int,
     config: dict[str, Any],
     layout: dict[str, Any],
-) -> dict[str, Any]:
+    producer_kind: str,
+) -> dict[str, dict[str, Any]] | None:
     where = f"evidence.seeds[{index}]"
+    seed_keys = [
+        "seed",
+        "loss_trace_sha256",
+        "representative_ids",
+        "representative_prefixes",
+        "representative_oracle_states",
+        "representative_response_probabilities",
+        "representative_signatures",
+        "primitive_successor_signatures",
+        "toggle_twice_signatures",
+        "law_rows",
+        "heldout_endpoint_signatures",
+        "canonical_handles",
+        "representative_continuation_signatures",
+        "canonical_continuation_signatures",
+        "representative_terminal_bits",
+        "canonical_terminal_bits",
+        "recovered_action_table",
+        "support_flags",
+    ]
+    if _is_round36b(config):
+        seed_keys.extend(["behavior_fit", "diagnostic_response_probabilities"])
     seed = _require_keys(
         value,
-        [
-            "seed",
-            "loss_trace_sha256",
-            "representative_ids",
-            "representative_prefixes",
-            "representative_oracle_states",
-            "representative_response_probabilities",
-            "representative_signatures",
-            "primitive_successor_signatures",
-            "toggle_twice_signatures",
-            "law_rows",
-            "heldout_endpoint_signatures",
-            "canonical_handles",
-            "representative_continuation_signatures",
-            "canonical_continuation_signatures",
-            "representative_terminal_bits",
-            "canonical_terminal_bits",
-            "recovered_action_table",
-            "support_flags",
-        ],
+        seed_keys,
         where,
     )
     _expect(seed["seed"], config["training"]["model_seeds"][index], f"{where}.seed")
@@ -1838,7 +2707,73 @@ def _validate_seed_record(
         f"{where}.support_flags",
     )
     _expect(support_flags, _support_flags_for_seed(seed), f"{where}.support_flags replay")
-    return seed
+    if _is_round36b(config):
+        diagnostic_probabilities = _require_keys(
+            seed["diagnostic_response_probabilities"],
+            [
+                "primitive_successors",
+                "toggle_twice",
+                "law_endpoints",
+                "heldout_endpoints",
+                "representative_continuations",
+            ],
+            f"{where}.diagnostic_response_probabilities",
+        )
+        _validate_probability_signature_table(
+            diagnostic_probabilities["primitive_successors"],
+            seed["primitive_successor_signatures"],
+            f"{where}.diagnostic_response_probabilities.primitive_successors",
+            low,
+            high,
+        )
+        _validate_probability_signature_table(
+            diagnostic_probabilities["toggle_twice"],
+            seed["toggle_twice_signatures"],
+            f"{where}.diagnostic_response_probabilities.toggle_twice",
+            low,
+            high,
+        )
+        law_signatures = [
+            [
+                row["swap_after_toggle"],
+                row["toggle_after_swap"],
+                row["conjugate_after_swap"],
+            ]
+            for row in seed["law_rows"]
+        ]
+        _validate_probability_signature_table(
+            diagnostic_probabilities["law_endpoints"],
+            law_signatures,
+            f"{where}.diagnostic_response_probabilities.law_endpoints",
+            low,
+            high,
+        )
+        _validate_probability_signature_table(
+            diagnostic_probabilities["heldout_endpoints"],
+            seed["heldout_endpoint_signatures"],
+            f"{where}.diagnostic_response_probabilities.heldout_endpoints",
+            low,
+            high,
+        )
+        _validate_probability_signature_table(
+            diagnostic_probabilities["representative_continuations"],
+            seed["representative_continuation_signatures"],
+            (
+                f"{where}.diagnostic_response_probabilities."
+                "representative_continuations"
+            ),
+            low,
+            high,
+        )
+        recomputed_behavior_fit = _validate_behavior_fit(
+            seed["behavior_fit"],
+            f"{where}.behavior_fit",
+            config,
+            producer_kind,
+            seed["loss_trace_sha256"],
+        )
+        return recomputed_behavior_fit
+    return None
 
 
 def _gate_result(numerator: int, denominator: int, details: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -1853,10 +2788,280 @@ def _gate_result(numerator: int, denominator: int, details: dict[str, Any] | Non
     return result
 
 
+def _confidence_free_signature(probabilities: Sequence[Any]) -> str:
+    if len(probabilities) != 12:
+        raise ContractError("a confidence-free signature requires 12 probabilities")
+    bits: list[str] = []
+    for value in probabilities:
+        probability = _expect_number(value, "diagnostic response probability")
+        if not 0.0 <= probability <= 1.0:
+            raise ContractError("diagnostic response probabilities must lie in [0,1]")
+        bits.append("1" if probability > 0.5 else "0")
+    return "".join(bits)
+
+
+def _confidence_free_table(
+    probabilities: list[list[list[float]]],
+) -> list[list[str]]:
+    return [
+        [_confidence_free_signature(cell) for cell in row]
+        for row in probabilities
+    ]
+
+
+def _diagnostic_seed_view(seed: dict[str, Any], evidence: dict[str, Any]) -> dict[str, Any]:
+    probability_tables = seed["diagnostic_response_probabilities"]
+    representatives = [
+        _confidence_free_signature(row)
+        for row in seed["representative_response_probabilities"]
+    ]
+    primitive = _confidence_free_table(
+        probability_tables["primitive_successors"]
+    )
+    toggle_twice = _confidence_free_table(probability_tables["toggle_twice"])
+    law_endpoints = _confidence_free_table(probability_tables["law_endpoints"])
+    heldout = _confidence_free_table(probability_tables["heldout_endpoints"])
+    representative_continuations = _confidence_free_table(
+        probability_tables["representative_continuations"]
+    )
+
+    law_rows: list[dict[str, Any]] = []
+    for row, endpoint_row in zip(seed["law_rows"], law_endpoints):
+        diagnostic_row = dict(row)
+        diagnostic_row["swap_after_toggle"] = endpoint_row[0]
+        diagnostic_row["toggle_after_swap"] = endpoint_row[1]
+        diagnostic_row["conjugate_after_swap"] = endpoint_row[2]
+        law_rows.append(diagnostic_row)
+
+    encoder_indices = [handle * 59 for handle in range(16)]
+    signature_to_handle = {
+        representatives[index]: handle
+        for handle, index in enumerate(encoder_indices)
+    }
+    canonical_handles = [
+        signature_to_handle.get(signature, -1) for signature in representatives
+    ]
+    unknown_row = ["?" * 12] * 140
+    canonical_continuations = [
+        heldout[handle] if handle >= 0 else list(unknown_row)
+        for handle in canonical_handles
+    ]
+    representative_terminal_bits = [
+        [int(signature[0]) for signature in row]
+        for row in representative_continuations
+    ]
+    canonical_terminal_bits = [
+        [int(signature[0]) if _supported(signature) else None for signature in row]
+        for row in canonical_continuations
+    ]
+    recovered_action_table: list[list[str]] = []
+    for oracle_signature in evidence["world"]["oracle_signatures"]:
+        handle = signature_to_handle.get(oracle_signature, -1)
+        recovered_action_table.append(
+            primitive[handle * 59] if handle >= 0 else ["?" * 12] * 11
+        )
+
+    return {
+        **seed,
+        "representative_signatures": representatives,
+        "primitive_successor_signatures": primitive,
+        "toggle_twice_signatures": toggle_twice,
+        "law_rows": law_rows,
+        "heldout_endpoint_signatures": heldout,
+        "canonical_handles": canonical_handles,
+        "representative_continuation_signatures": representative_continuations,
+        "canonical_continuation_signatures": canonical_continuations,
+        "representative_terminal_bits": representative_terminal_bits,
+        "canonical_terminal_bits": canonical_terminal_bits,
+        "recovered_action_table": recovered_action_table,
+    }
+
+
+def _signature_support_summary(signatures: Sequence[str]) -> dict[str, Any]:
+    signature_count = len(signatures)
+    supported_signatures = sum(int(_supported(signature)) for signature in signatures)
+    supported_components = sum(
+        sum(int(component != "?") for component in signature)
+        for signature in signatures
+    )
+    total_components = signature_count * 12
+    return {
+        "supported_signatures": supported_signatures,
+        "total_signatures": signature_count,
+        "supported_components": supported_components,
+        "total_components": total_components,
+        "unsupported_component_count": total_components - supported_components,
+        "passed": total_components > 0 and supported_components == total_components,
+    }
+
+
+def _flatten_signature_rows(rows: Sequence[Sequence[str]]) -> list[str]:
+    return [signature for row in rows for signature in row]
+
+
+def _operational_signature_support(evidence: dict[str, Any]) -> dict[str, Any]:
+    per_seed: dict[str, Any] = {}
+    passed_seeds = 0
+    for seed in evidence["seeds"]:
+        representatives = seed["representative_signatures"]
+        encoder = [representatives[handle * 59] for handle in range(16)]
+        primitive = _flatten_signature_rows(seed["primitive_successor_signatures"])
+        toggles = _flatten_signature_rows(seed["toggle_twice_signatures"])
+        law = [
+            row[key]
+            for row in seed["law_rows"]
+            for key in (
+                "swap_after_toggle",
+                "toggle_after_swap",
+                "conjugate_after_swap",
+            )
+        ]
+        heldout = seed["heldout_endpoint_signatures"]
+        h2 = [signature for row in heldout for signature in row[:74]]
+        h3 = [signature for row in heldout for signature in row[74:]]
+        representative_continuations = _flatten_signature_rows(
+            seed["representative_continuation_signatures"]
+        )
+        canonical_continuations = _flatten_signature_rows(
+            seed["canonical_continuation_signatures"]
+        )
+        action_table = _flatten_signature_rows(seed["recovered_action_table"])
+        domains = {
+            "quotient_availability": _signature_support_summary(encoder),
+            "quotient_well_definedness": _signature_support_summary(
+                list(representatives) + primitive
+            ),
+            "toggle_involution": _signature_support_summary(
+                list(representatives) + toggles
+            ),
+            "swap_toggle_table": _signature_support_summary(law),
+            "heldout_depth2_closure": _signature_support_summary(h2),
+            "heldout_depth3_closure": _signature_support_summary(h3),
+            "interchangeability": _signature_support_summary(
+                list(representatives)
+                + representative_continuations
+                + canonical_continuations
+            ),
+            "action_table_truth": _signature_support_summary(action_table),
+            "cross_seed_action_table": _signature_support_summary(action_table),
+        }
+        seed_passed = all(domain["passed"] for domain in domains.values())
+        passed_seeds += int(seed_passed)
+        per_seed[str(seed["seed"])] = {
+            "passed": seed_passed,
+            "domains": domains,
+        }
+    return {
+        "passed_seeds": passed_seeds,
+        "required_seeds": 5,
+        "passed": passed_seeds == 5,
+        "per_seed": per_seed,
+    }
+
+
+def _cross_seed_cellwise_accounting(
+    recovered_tables: list[list[list[str]]],
+    truth_table: list[list[str]],
+) -> dict[str, Any]:
+    identical_cells = 0
+    identical_supported_cells = 0
+    all_five_truthful_cells = 0
+    majority_truthful_cells = 0
+    majority_truthful_bits = 0
+    majority_resolved_bits = 0
+    for state_index in range(16):
+        for action_index in range(11):
+            values = [
+                table[state_index][action_index] for table in recovered_tables
+            ]
+            truth = truth_table[state_index][action_index]
+            identical = all(value == values[0] for value in values[1:])
+            identical_cells += int(identical)
+            identical_supported_cells += int(identical and _supported(values[0]))
+            all_five_truthful_cells += int(
+                all(_supported(value) and value == truth for value in values)
+            )
+            majority_bits: list[str] = []
+            for component_index in range(12):
+                zeros = sum(value[component_index] == "0" for value in values)
+                ones = sum(value[component_index] == "1" for value in values)
+                majority = "0" if zeros >= 3 else "1" if ones >= 3 else "?"
+                majority_bits.append(majority)
+                if majority != "?":
+                    majority_resolved_bits += 1
+                    majority_truthful_bits += int(
+                        majority == truth[component_index]
+                    )
+            majority_truthful_cells += int("".join(majority_bits) == truth)
+    return {
+        "identical_cells": {"numerator": identical_cells, "denominator": 176},
+        "identical_supported_cells": {
+            "numerator": identical_supported_cells,
+            "denominator": 176,
+        },
+        "all_five_truthful_cells": {
+            "numerator": all_five_truthful_cells,
+            "denominator": 176,
+        },
+        "bitwise_majority_truthful_cells": {
+            "numerator": majority_truthful_cells,
+            "denominator": 176,
+        },
+        "bitwise_majority_truthful_bits": {
+            "numerator": majority_truthful_bits,
+            "denominator": 2112,
+            "resolved_bits": majority_resolved_bits,
+        },
+        "note": (
+            "Literal cellwise accounting; the inherited whole-table exact gate "
+            "remains separate and all-or-none."
+        ),
+    }
+
+
+def _iter_probabilities(value: Any) -> Iterator[float]:
+    if isinstance(value, list):
+        for item in value:
+            yield from _iter_probabilities(item)
+    else:
+        yield float(value)
+
+
+def _diagnostic_margin_table(evidence: dict[str, Any]) -> dict[str, Any]:
+    result: dict[str, Any] = {}
+    for seed in evidence["seeds"]:
+        domains = {
+            "representatives": seed["representative_response_probabilities"],
+            **seed["diagnostic_response_probabilities"],
+        }
+        seed_result: dict[str, Any] = {}
+        for name, raw in domains.items():
+            margins = sorted(abs(value - 0.5) for value in _iter_probabilities(raw))
+            count = len(margins)
+            midpoint = count // 2
+            median = (
+                margins[midpoint]
+                if count % 2
+                else (margins[midpoint - 1] + margins[midpoint]) / 2.0
+            )
+            seed_result[name] = {
+                "component_count": count,
+                "minimum_absolute_margin": margins[0],
+                "median_absolute_margin": median,
+                "mean_absolute_margin": math.fsum(margins) / count,
+                "maximum_absolute_margin": margins[-1],
+                "zero_margin_count": sum(margin == 0.0 for margin in margins),
+            }
+        result[str(seed["seed"])] = seed_result
+    return result
+
+
 def _scientific_gates(
     evidence: dict[str, Any],
     config: dict[str, Any],
     deadline: float | None = None,
+    *,
+    enforce_registered_law_flag: bool = True,
 ) -> dict[str, Any]:
     states = _states()
     handle_to_state = evidence["world"]["handle_to_state"]
@@ -1947,7 +3152,13 @@ def _scientific_gates(
             )
             conjugacy = row["swap_after_toggle"] == row["conjugate_after_swap"]
             replayed_cell = supported and exact and relation and conjugacy
-            law_ok += int(replayed_cell and row["registered_cell_pass"] == replayed_cell)
+            law_ok += int(
+                replayed_cell
+                and (
+                    not enforce_registered_law_flag
+                    or row["registered_cell_pass"] == replayed_cell
+                )
+            )
         law_gate = _gate_result(law_ok, 384)
 
         h2_ok = 0
@@ -2051,6 +3262,72 @@ def _scientific_gates(
     return joint
 
 
+def _diagnostic_component_error_counts(
+    gates: dict[str, Any],
+    cellwise: dict[str, Any],
+) -> dict[str, Any]:
+    errors: dict[str, Any] = {}
+    for gate_name, gate in gates.items():
+        if gate_name == "cross_seed_action_table":
+            truthful = cellwise["all_five_truthful_cells"]["numerator"]
+            errors[gate_name] = {
+                "truth_cell_error_count": 176 - truthful,
+                "whole_table_gate_failed": not gate["passed"],
+                "note": "Cell errors are literal; the primary gate is all-or-none.",
+            }
+            continue
+        per_seed = {
+            seed: {
+                "error_count": row["denominator"] - row["numerator"],
+                "component_count": row["denominator"],
+            }
+            for seed, row in gate["per_seed"].items()
+        }
+        errors[gate_name] = {
+            "error_count": sum(row["error_count"] for row in per_seed.values()),
+            "component_count": sum(
+                row["component_count"] for row in per_seed.values()
+            ),
+            "failed_seed_count": gate["required_seeds"] - gate["passed_seeds"],
+            "per_seed": per_seed,
+        }
+    return errors
+
+
+def _confidence_free_diagnostic_table(
+    evidence: dict[str, Any],
+    config: dict[str, Any],
+) -> dict[str, Any]:
+    diagnostic_evidence = {
+        **evidence,
+        "seeds": [
+            _diagnostic_seed_view(seed, evidence) for seed in evidence["seeds"]
+        ],
+    }
+    gates = _scientific_gates(
+        diagnostic_evidence,
+        config,
+        enforce_registered_law_flag=False,
+    )
+    recovered_tables = [
+        seed["recovered_action_table"] for seed in diagnostic_evidence["seeds"]
+    ]
+    cellwise = _cross_seed_cellwise_accounting(
+        recovered_tables, evidence["world"]["oracle_action_table"]
+    )
+    return {
+        "label": DIAGNOSTIC_LABEL,
+        "decision_rule": "1 iff p > 0.5; p == 0.5 decodes as 0",
+        "can_alter_primary_status": False,
+        "gates": gates,
+        "component_error_counts": _diagnostic_component_error_counts(
+            gates, cellwise
+        ),
+        "decision_margins_from_0_5": _diagnostic_margin_table(evidence),
+        "cross_seed_cellwise_accounting": cellwise,
+    }
+
+
 def _producer_counts_from_gates(gates: dict[str, Any]) -> dict[str, Any]:
     per_seed: dict[str, Any] = {}
     for seed in (11, 23, 37, 53, 71):
@@ -2085,7 +3362,7 @@ def _attach_producer_counts(
 
 def _validate_evidence(
     value: Any, manifest: dict[str, Any], config: dict[str, Any]
-) -> tuple[dict[str, Any], dict[str, Any]]:
+) -> tuple[dict[str, Any], dict[str, Any], dict[str, dict[str, Any]]]:
     evidence = _require_keys(
         value,
         [
@@ -2108,7 +3385,11 @@ def _validate_evidence(
         "evidence",
     )
     _expect(evidence["schema_version"], SCHEMA_EVIDENCE, "evidence.schema_version")
-    _expect(evidence["registration_id"], REGISTRATION_ID, "evidence.registration_id")
+    _expect(
+        evidence["registration_id"],
+        _registration_id(config),
+        "evidence.registration_id",
+    )
     _expect(evidence["producer_kind"], manifest["producer_kind"], "evidence.producer_kind")
     for key in ("config_sha256", "code_sha256", "weights_sha256"):
         _expect_sha(evidence[key], f"evidence.{key}")
@@ -2124,15 +3405,22 @@ def _validate_evidence(
     if not isinstance(seeds, list) or len(seeds) != 5:
         raise ContractError("evidence.seeds must contain exactly five seed records")
     layout = _representative_layout(config)
+    recomputed_behavior_fit: dict[str, dict[str, Any]] = {}
     for index, seed in enumerate(seeds):
-        _validate_seed_record(seed, index, config, layout)
+        recomputed = _validate_seed_record(
+            seed, index, config, layout, evidence["producer_kind"]
+        )
+        if _is_round36b(config):
+            if recomputed is None:
+                raise ContractError("Round 36b behavior rows were not recomputed")
+            recomputed_behavior_fit[str(seed["seed"])] = recomputed
     gates = _scientific_gates(evidence, config)
     _expect(
         evidence["producer_counts"],
         _producer_counts_from_gates(gates),
         "evidence.producer_counts replay",
     )
-    return evidence, gates
+    return evidence, gates, recomputed_behavior_fit
 
 
 def _input_hashes(config_path: Path, evidence_dir: Path) -> dict[str, str]:
@@ -2145,6 +3433,38 @@ def _input_hashes(config_path: Path, evidence_dir: Path) -> dict[str, str]:
     return {name: _sha256_file(path) for name, path in paths.items() if path.is_file()}
 
 
+def _behavior_fit_eligibility(
+    recomputed_behavior_fit: dict[str, dict[str, Any]],
+) -> dict[str, Any]:
+    per_seed: dict[str, Any] = {}
+    passed_seeds = 0
+    for seed in (11, 23, 37, 53, 71):
+        behavior = recomputed_behavior_fit[str(seed)]
+        training = behavior["training"]
+        heldout = behavior["heldout"]
+        training_exact = (
+            training["correct_responses"] == training["total_responses"] == 21184
+        )
+        heldout_exact = (
+            heldout["correct_responses"] == heldout["total_responses"] == 2240
+        )
+        passed = training_exact and heldout_exact
+        passed_seeds += int(passed)
+        per_seed[str(seed)] = {
+            "training_correct": training["correct_responses"],
+            "training_total": training["total_responses"],
+            "heldout_correct": heldout["correct_responses"],
+            "heldout_total": heldout["total_responses"],
+            "passed": passed,
+        }
+    return {
+        "passed_seeds": passed_seeds,
+        "required_seeds": 5,
+        "passed": passed_seeds == 5,
+        "per_seed": per_seed,
+    }
+
+
 def _reduce_directory(
     config_path: Path,
     evidence_dir: Path,
@@ -2154,6 +3474,10 @@ def _reduce_directory(
 ) -> dict[str, Any]:
     errors: list[str] = []
     gates: dict[str, Any] = {}
+    behavior_fit_eligibility: dict[str, Any] = {}
+    operational_signature_support: dict[str, Any] = {}
+    primary_cellwise_accounting: dict[str, Any] = {}
+    confidence_free_diagnostic: dict[str, Any] = {}
     status = "INVALID"
     config: dict[str, Any] | None = None
     producer_kind: str | None = None
@@ -2179,20 +3503,44 @@ def _reduce_directory(
             key: value for key, value in word_pack.items() if key.endswith("_list_sha256")
         }
         _expect(manifest["word_list_hashes"], expected_word_hashes, "manifest.word_list_hashes")
-        evidence, gates = _validate_evidence(_read_json(evidence_path), manifest, config)
-        del evidence
+        evidence, gates, recomputed_behavior_fit = _validate_evidence(
+            _read_json(evidence_path), manifest, config
+        )
+        if _is_round36b(config):
+            behavior_fit_eligibility = _behavior_fit_eligibility(
+                recomputed_behavior_fit
+            )
+            operational_signature_support = _operational_signature_support(evidence)
+            primary_cellwise_accounting = _cross_seed_cellwise_accounting(
+                [seed["recovered_action_table"] for seed in evidence["seeds"]],
+                evidence["world"]["oracle_action_table"],
+            )
+            confidence_free_diagnostic = _confidence_free_diagnostic_table(
+                evidence, config
+            )
         failed = [name for name, gate in gates.items() if not gate["passed"]]
-        if not failed:
+        if _is_round36b(config) and not behavior_fit_eligibility["passed"]:
+            status = UNDERFIT_STATUS
+        elif _is_round36b(config) and not operational_signature_support["passed"]:
+            status = SIGNATURE_UNSUPPORTED_STATUS
+        elif not failed:
             status = PASS_STATUS
+        elif _is_round36b(config):
+            status = SUPPORTED_NONCONGRUENT_PREFIX + " — " + ", ".join(
+                name.upper().replace("_", " ") for name in failed
+            )
         else:
             status = "FAIL — " + ", ".join(name.upper().replace("_", " ") for name in failed)
+        del evidence
     except (ContractError, OSError) as exc:
         errors.append(str(exc))
         status = "INVALID"
 
     verdict = {
         "schema_version": SCHEMA_VERDICT,
-        "registration_id": REGISTRATION_ID,
+        "registration_id": (
+            _registration_id(config) if config is not None else REGISTRATION_ID
+        ),
         "reducer_code_sha256": _module_sha256(),
         "reduced_at": _utc_now(),
         "input_sha256": _input_hashes(config_path, evidence_dir),
@@ -2213,6 +3561,11 @@ def _reduce_directory(
             else None
         ),
     }
+    if config is not None and _is_round36b(config):
+        verdict["behavior_fit_eligibility"] = behavior_fit_eligibility
+        verdict["operational_signature_support"] = operational_signature_support
+        verdict["cross_seed_cellwise_accounting"] = primary_cellwise_accounting
+        verdict["confidence_free_diagnostic"] = confidence_free_diagnostic
     if write_verdict:
         evidence_dir.mkdir(parents=True, exist_ok=True)
         _write_json(evidence_dir / "verdict.json", verdict)
@@ -2257,6 +3610,33 @@ def _run_fixture(config_path: Path, output_dir: Path | None) -> dict[str, Any]:
             raise ContractError("fixture reducer emitted learned-world claim text")
         if pass_verdict["result_scope"] != "FIXTURE-ONLY":
             raise ContractError("fixture reducer did not label its result FIXTURE-ONLY")
+        if _is_round36b(config):
+            diagnostic = pass_verdict.get("confidence_free_diagnostic")
+            if (
+                not isinstance(diagnostic, dict)
+                or diagnostic.get("label") != DIAGNOSTIC_LABEL
+                or diagnostic.get("can_alter_primary_status") is not False
+                or set(diagnostic.get("gates", {})) != set(pass_verdict["gates"])
+            ):
+                raise ContractError(
+                    "Round 36b fixture did not emit the complete DIAGNOSTIC table"
+                )
+            for accounting in (
+                pass_verdict["cross_seed_cellwise_accounting"],
+                diagnostic["cross_seed_cellwise_accounting"],
+            ):
+                expected_cellwise = {
+                    "identical_cells": 176,
+                    "identical_supported_cells": 176,
+                    "all_five_truthful_cells": 176,
+                    "bitwise_majority_truthful_cells": 176,
+                    "bitwise_majority_truthful_bits": 2112,
+                }
+                for key, expected_count in expected_cellwise.items():
+                    if accounting[key]["numerator"] != expected_count:
+                        raise ContractError(
+                            f"Round 36b fixture cellwise accounting failed for {key}"
+                        )
 
         with _temporary_directory("round36_fixture_missing_") as temporary:
             branch = temporary / "artifact"
@@ -2303,6 +3683,10 @@ def _run_fixture(config_path: Path, output_dir: Path | None) -> dict[str, Any]:
                 if signature != original_successor
             ]
             evidence["seeds"][0]["primitive_successor_signatures"][1][0] = alternatives[0]
+            if _is_round36b(config):
+                evidence["seeds"][0]["diagnostic_response_probabilities"][
+                    "primitive_successors"
+                ][1][0] = [float(component) for component in alternatives[0]]
             evidence["seeds"][0]["support_flags"] = _support_flags_for_seed(
                 evidence["seeds"][0]
             )
@@ -2316,18 +3700,116 @@ def _run_fixture(config_path: Path, output_dir: Path | None) -> dict[str, Any]:
                 "status"
             ]
 
+        if _is_round36b(config):
+            with _temporary_directory("round36b_fixture_unsupported_") as temporary:
+                branch = temporary / "artifact"
+                shutil.copytree(directory, branch)
+                evidence = _read_json(branch / "evidence.json")
+                manifest = _read_json(branch / "manifest.json")
+                seed = evidence["seeds"][0]
+                truth_bit = seed["representative_signatures"][0][0]
+                seed["representative_response_probabilities"][0][0] = (
+                    0.51 if truth_bit == "1" else 0.49
+                )
+                seed["representative_signatures"][0] = (
+                    _signature_from_probabilities(
+                        seed["representative_response_probabilities"][0],
+                        config["thresholds"]["signature_low"],
+                        config["thresholds"]["signature_high"],
+                    )
+                )
+                seed["support_flags"] = _support_flags_for_seed(seed)
+                _attach_producer_counts(evidence, config)
+                _write_json(branch / "evidence.json", evidence)
+                _refresh_fixture_hash(branch, manifest)
+                unsupported_verdict = _reduce_directory(
+                    config_path, branch, write_verdict=True, record_ledger=False
+                )
+                results["behavior_fit_signature_unsupported"] = (
+                    unsupported_verdict["status"]
+                )
+                diagnostic_gates = unsupported_verdict[
+                    "confidence_free_diagnostic"
+                ]["gates"]
+                if not all(gate["passed"] for gate in diagnostic_gates.values()):
+                    raise ContractError(
+                        "correct low-confidence fixture did not pass the p>0.5 diagnostic"
+                    )
+
+            with _temporary_directory("round36b_fixture_underfit_") as temporary:
+                branch = temporary / "artifact"
+                shutil.copytree(directory, branch)
+                evidence = _read_json(branch / "evidence.json")
+                manifest = _read_json(branch / "manifest.json")
+                seed = evidence["seeds"][0]
+                training_logits = seed["behavior_fit"]["training"]["row_logits"]
+                training_logits[-1] = -training_logits[-1]
+                _refresh_fixture_behavior_summaries_from_rows(seed, config)
+                _write_json(branch / "evidence.json", evidence)
+                _refresh_fixture_hash(branch, manifest)
+                underfit_verdict = _reduce_directory(
+                    config_path, branch, write_verdict=True, record_ledger=False
+                )
+                results["behavior_underfit_quotient_ineligible"] = underfit_verdict[
+                    "status"
+                ]
+                first_seed = str(config["training"]["model_seeds"][0])
+                replayed_fit = underfit_verdict["behavior_fit_eligibility"][
+                    "per_seed"
+                ][first_seed]
+                if replayed_fit != {
+                    "training_correct": 21183,
+                    "training_total": 21184,
+                    "heldout_correct": 2240,
+                    "heldout_total": 2240,
+                    "passed": False,
+                }:
+                    raise ContractError(
+                        "raw-row underfit fixture did not drive recomputed eligibility"
+                    )
+
+            with _temporary_directory("round36b_fixture_summary_tamper_") as temporary:
+                branch = temporary / "artifact"
+                shutil.copytree(directory, branch)
+                evidence = _read_json(branch / "evidence.json")
+                manifest = _read_json(branch / "manifest.json")
+                evidence["seeds"][0]["behavior_fit"]["training"][
+                    "full_dataset_bce"
+                ] = 1.0
+                _write_json(branch / "evidence.json", evidence)
+                _refresh_fixture_hash(branch, manifest)
+                tamper_verdict = _reduce_directory(
+                    config_path, branch, write_verdict=True, record_ledger=False
+                )
+                results["behavior_summary_only_tamper"] = tamper_verdict["status"]
+                if not any(
+                    "full_dataset_bce row replay" in error
+                    for error in tamper_verdict["errors"]
+                ):
+                    raise ContractError(
+                        "summary-only tamper was not rejected by behavioral-row replay"
+                    )
+
         expected = {
             "exact_fixture": PASS_STATUS,
             "missing_required_row": "INVALID",
             "nonfinite_response": "INVALID",
         }
+        if _is_round36b(config):
+            expected["behavior_underfit_quotient_ineligible"] = UNDERFIT_STATUS
+            expected["behavior_summary_only_tamper"] = "INVALID"
+            expected["behavior_fit_signature_unsupported"] = (
+                SIGNATURE_UNSUPPORTED_STATUS
+            )
         for key, expected_status in expected.items():
             if results[key] != expected_status:
                 raise ContractError(f"fixture branch {key} returned {results[key]!r}")
-        if (
-            results["rehashed_representative_successor_mutation"]
-            != "FAIL — QUOTIENT WELL DEFINEDNESS"
-        ):
+        expected_successor_status = (
+            SUPPORTED_NONCONGRUENT_PREFIX + " — QUOTIENT WELL DEFINEDNESS"
+            if _is_round36b(config)
+            else "FAIL — QUOTIENT WELL DEFINEDNESS"
+        )
+        if results["rehashed_representative_successor_mutation"] != expected_successor_status:
             raise ContractError(
                 "schema-valid rehashed successor mutation did not return the exact "
                 "quotient-well-definedness failure"
@@ -2335,17 +3817,30 @@ def _run_fixture(config_path: Path, output_dir: Path | None) -> dict[str, Any]:
         torch_imported_by_fixture = not torch_loaded_before and "torch" in sys.modules
         if torch_imported_by_fixture:
             raise ContractError("the no-model fixture imported torch")
+        branches = {
+            "exact_fixture": "FIXTURE-ONLY — exact synthetic branch accepted",
+            "missing_required_row": "FIXTURE-ONLY — missing row rejected as INVALID",
+            "nonfinite_response": "FIXTURE-ONLY — non-finite response rejected as INVALID",
+            "rehashed_representative_successor_mutation": (
+                "FIXTURE-ONLY — successor mutation rejected by QUOTIENT WELL DEFINEDNESS"
+            ),
+        }
+        if _is_round36b(config):
+            branches["behavior_fit_signature_unsupported"] = (
+                "FIXTURE-ONLY — exact behavior with correct low-confidence "
+                "probabilities rejected as OPERATIONAL SIGNATURE UNSUPPORTED"
+            )
+            branches["behavior_underfit_quotient_ineligible"] = (
+                "FIXTURE-ONLY — a raw behavioral-row error made quotient "
+                "interpretation ineligible"
+            )
+            branches["behavior_summary_only_tamper"] = (
+                "FIXTURE-ONLY — rehashed producer-summary tamper rejected as INVALID"
+            )
         return {
             "fixture_status": "FIXTURE-ONLY",
             "torch_imported_by_fixture": False,
-            "branches": {
-                "exact_fixture": "FIXTURE-ONLY — exact synthetic branch accepted",
-                "missing_required_row": "FIXTURE-ONLY — missing row rejected as INVALID",
-                "nonfinite_response": "FIXTURE-ONLY — non-finite response rejected as INVALID",
-                "rehashed_representative_successor_mutation": (
-                    "FIXTURE-ONLY — successor mutation rejected by QUOTIENT WELL DEFINEDNESS"
-                ),
-            },
+            "branches": branches,
         }
 
     if output_dir is not None:
