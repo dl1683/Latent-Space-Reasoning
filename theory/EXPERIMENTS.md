@@ -7423,3 +7423,465 @@ directions at all; 34c asks whether the apparent state map is merely a richer
 chart of item-by-context regularities. Closure is useful: it identifies an
 instrument/feature hole before downstream spend. Survival earns only the full
 Round 34 feature-adequacy audit. No new axiom is earned.
+
+## Round 35 — typed truth-evaluable world (design gate; docs only) (2026-08-29)
+
+**Codex design gate and preregistration; documentation only. No population was
+authored, no text or item was selected, no config or code was written, no model
+was loaded, and no experiment was run.** This round registers the population
+direction named by audits #19 and #20 without activating it. Its purpose is to
+replace the bounded mentioned-string relation with a world in which state,
+move, consequence, and composition have finite truth conditions known before
+any latent measurement.
+
+The non-expert “so what” is: if a model has a usable inner world, changing a
+declared fact should change the right answer, changing it twice should restore
+the old answer, and reversing two noncommuting moves should produce the other
+answer—even under new predicate names and new ways of asking.
+
+### Ordering and activation lock
+
+Round 35 **authors nothing until the Round 34a/34b/34c ladder resolves**. The
+current order remains 34a raw A/B, 34a static A/B, then 34b, then 34c whenever
+the preceding registered gate permits the next one. No Round 35 author may see
+those outcomes and then choose names, templates, controls, query wording,
+thresholds, layers, or folds to accommodate them.
+
+The branch is fixed:
+
+- If a registered 34a/34b/34c reducer returns its terminal `STOP`, `MOOT`, or
+  redundant/capacity-sensitive verdict, the mentioned-string line closes. Do
+  not run Round 33 or escalate the same relation. Round 35 then becomes the
+  constructive program and may begin its separate outcome-blind population
+  approval loop.
+- If every cheap rung returns `CONTINUE`, follow the already registered full
+  Round 34 ordering. Round 35 remains a frozen design, not an outcome-dependent
+  rescue population.
+- `INCONCLUSIVE` is not survival and is not closure. It requires a new design
+  ruling or an orthogonal pivot; it does not automatically authorize either
+  full Round 34 or Round 35 authoring.
+
+There will be no v5 mentioned-string population in any branch. The future
+typed population, if activated, starts its own version sequence and is never
+pooled with `lexical_probe_v1` or fresh v2-v4.
+
+### The finite world and the denizen's problem
+
+The world state is the four-bit vector
+
+`s = (s_1, s_2, s_3, s_4) in {0,1}^4`.
+
+Each coordinate is carried by a typed predicate name, not by a mentioned word
+slot. A declared-state prefix asserts the truth value of all four predicates
+of one fixed world individual. A move clause follows that prefix, ends at a
+registered post-move readout boundary, and is followed by a typed query asking
+whether one named predicate is true in the post-move state. The answer set is
+the frozen forced choice `{yes, no}`. The legal primitive operations are:
+
+- `toggle(i)`: replace `s_i` by `1-s_i` and leave every other bit fixed;
+- `swap(i,j)`: exchange `s_i` and `s_j` and leave the other bits fixed;
+- `no-op`: leave all four bits fixed.
+
+A two-step program applies two primitives from left to right. In algebraic
+notation, `b ∘ a` means apply `a` first and `b` second. Every primitive clause
+ends at the same typed state-register boundary. A two-step capture therefore
+has an observed intermediate boundary after move one and a final boundary
+after move two; the learned one-step map is applied twice without refitting.
+
+The single-step population contains all 16 initial states, all four toggles,
+all six unordered swaps, and no-op. Every post-move state is queried on all
+four bits. The exact logical answer table is derived from these definitions,
+frozen and hashed before capture, and never inferred from model output.
+
+The denizen must therefore read four distinct things:
+
+1. **state:** which of four typed propositions are currently true;
+2. **move:** which operation and arguments update that state;
+3. **consequence:** which forced-choice answers the updated state entails; and
+4. **composition:** whether sequential moves obey the predeclared laws.
+
+Polarity is first because `toggle` changes a truth value in use. Predicate
+binding and quantified updates are successor worlds. They are not extra arms,
+pooled controls, or post-outcome repairs in Round 35.
+
+### Population, folds, wrappers, and frozen query tails
+
+The future outcome-blind author must instantiate exactly 24 predicate names,
+arranged as six disjoint four-name panels. The panels are partitioned into two
+equal predicate-name folds before tokenization. Across the four carrier blocks,
+a frozen Latin-square assignment rotates names through bit indices so every
+name occupies every coordinate once and neither name nor token position can
+identify a bit. An outer key holds out one entire carrier block and one entire
+predicate-name fold. No held-out name, string, token ID, frozen embedding, PCA
+score, or row may enter fitting, standardization, vocabulary construction,
+hyperparameter selection, EDF matching, or threshold calibration. The four
+held-carrier blocks by two held-name folds produce the inherited eight outer
+keys. Each outer training split retains 12 predicate names, so the registered
+eight-PC X-free field below is attainable without manufacturing rank.
+
+There are exactly four paired state/move carrier blocks. Each block has one
+surface realization in system `S_A` and a separately authored realization in
+system `S_B`; these are the source/target surface-template families for the
+bidirectional transfer. Each realization must contain:
+
+- two independently grammatical realizations of the same logical program
+  under a predeclared truth-conditionally irrelevant wrapper contrast;
+- a paired same-token-length control whose state, readout position, query
+  position, and total tokenizer length match but whose declared operation
+  changes at least one queried truth value; and
+- length-matched no-op scaffolds for the one-step and two-step comparisons.
+
+The irrelevant-wrapper pair must preserve the individual, four declarations,
+operation, arguments, scope, polarity, modality, tense, query, answer demand,
+and token positions. The same-length control must preserve everything except
+the one declared move change. Equal length is checked on the pinned tokenizer,
+not by whitespace. A control that is merely equally awkward, changes scope, or
+changes no queried truth value is a failed cell.
+
+Two query-tail families, `Q_A` and `Q_B`, are authored independently and then
+frozen with `S_A` and `S_B`, respectively. Each contains one tail template per
+carrier block with one typed predicate-name slot and the same `{yes,no}`
+answer convention. The families must be disjoint template inventories and
+distinct syntactic constructions; after tokenization they may share the
+predicate slot and unavoidable function tokens, but no non-slot token bigram.
+A/B is not a paraphrase pair created by a one-word substitution. For
+`A -> B`, every fit and selection uses only outer-training rows from `S_A` and
+the held-out programs are realized with `S_B` and scored through `Q_B`; the
+reverse direction swaps the systems. Query-tail tokens occur strictly after
+`Y` and are forbidden from every transition or context fit. The direct and
+true-state-patch behaviors are measured in both families, and no directional
+artifact or verdict is pooled.
+
+All 16 states and all 11 single-step moves occur in every carrier block and
+name panel. The two-step law rows are fixed below. Sampling or thinning after
+tokenization is forbidden. Duplicate logical states are retained as clustered
+surface realizations, not treated as independent evidence.
+
+### Outcome-blind authoring, adversary, tokenization, and freeze
+
+Activation starts a new typed-world version; it does not edit v4. The approval
+loop inherits the v2-v4 separation and tightens it:
+
+1. A fresh outcome-blind author sees this preregistration and the linguistic
+   failure rules, but no model behavior, hidden state, capture, tokenizer
+   output, or result artifact. The author creates all names, carrier blocks,
+   wrapper pairs, same-length controls, both query-tail families, fold maps,
+   and cell-level truth tables in one candidate.
+2. A separate fresh linguistic adversary, with no model or tokenizer access,
+   audits every state-declaration, move, composition, query, wrapper, and
+   control cell. It must verify grammaticality, typed predicate use, unique
+   operation scope and arguments, the declared logical answer, wrapper
+   irrelevance, and the intended truth difference of the matched control.
+3. One failed linguistic cell voids the whole candidate. A successor is
+   authored from scratch by a new author; no in-place substitution, relabel,
+   or local repair is allowed.
+4. Only after linguistic `APPROVE`, a separate tokenization audit checks the
+   pinned Qwen3-0.6B tokenizer: predicate-name eligibility, exact yes/no answer
+   IDs (each answer must be exactly one non-special token under the same
+   boundary convention), every boundary and readout position, exact paired
+   token lengths, query-family bigram disjointness, and batch-shape parity.
+   One failed cell voids the candidate before model work.
+5. Only after both approvals are the raw config bytes, Git blob, logical answer
+   matrix, names, text inventories, pair/control maps, fold assignment, query
+   tails, answer IDs, model/tokenizer revisions, and both approval reports
+   SHA-256 frozen. Every future capture receives the expected raw-config hash
+   and refuses an uncommitted or mismatched blob.
+
+Neither author nor adversary may revise the population after any model output.
+There is no outcome-contingent prompt repair, answer-token replacement,
+template deletion, layer selection, or query-family promotion. This Round 35
+section itself authors none of those artifacts.
+
+### Capture and forced-choice measurement
+
+Future implementation reuses the canonical machinery rather than creating a
+new runner. `experiments/run_lm_dynamics.py` remains the capture entry point;
+its `load_config_checked`, `common_manifest`, pinned
+`SubstitutionProbe`, batched-versus-single null, repeat-null arrays,
+position telemetry, float32 causal checks, float16 hidden-state storage, and
+fail-before-save `PopulationVoid` discipline remain mandatory. The future
+analyzer reuses the current folds, training-only transforms, ridge/kernel
+families, static residualizer, matched-EDF solver, evidence sidecars,
+block-first bootstrap, and read-only A/B reducer. This paragraph authorizes no
+code change.
+
+For a rendered program at layer `l`:
+
+- `X_l` is the hidden state at the frozen boundary after the complete declared
+  state and before the first move;
+- `Y_l` is the observed hidden state at the homologous boundary after the
+  final move and before the query tail;
+- for two-step rows, `Y_l^(1)` is also stored at the homologous boundary after
+  the first move, while `Y_l^(2)=Y_l` is the final observed state;
+- `Delta_l = Y_l - X_l`; and
+- `Yhat_l = X_l + Deltahat_l` is a training-fold prediction of the post-move
+  state.
+
+Here “true post-move state” means the stored `Y_l` produced by the actual
+move-bearing forward pass. It is a causal patch ceiling, not an assertion that
+the activation is a semantically true or canonical state.
+
+Appending a query tail must not alter any earlier `X_l` or `Y_l` beyond the
+registered float32 causal-locality tolerance. The direct run and a patch of
+the stored true `Y_l` into the same sequence must reproduce the same answer
+log-odds within `max(5*q99(repeat-log-odds error), 1e-4)` nats. A failed
+locality or true-state-patch parity check makes that key unsupported; it is not
+epsilon-repaired.
+
+Every query token is teacher-forced. At the frozen answer position store only
+
+`ell_i = log p(yes | program, query_i) - log p(no | program, query_i)`
+
+for `i=1..4`, plus the two answer logits needed to reproduce it. Define the
+truth-signed margin `g_i = (2*s'_i-1)*ell_i` and binary log loss
+`BCE_i = softplus(-g_i)`. No generated answer, full-vocabulary law, KL,
+KL-rank, best-token set, or vocabulary-wide endpoint is captured or scored.
+Termination is therefore not an applicable endpoint; this is a teacher-forced
+forced-choice task, not a generation claim.
+
+At the same layer, readout site, rows, folds, and query tails, patch and score:
+
+1. the stored true post-move state `Y_l` (causal ceiling);
+2. the foldwise state prediction `Yhat_l`, separately raw and static-
+   residualized/reassembled;
+3. identity `X_l`;
+4. identity plus the training-fold shared displacement `X_l + mean(Delta_l)`;
+5. each registered X-free context prediction, reassembled at the same site;
+   and
+6. 20 manifest-seeded isotropic random directions, each scaled per cell to the
+   exact norm of `Yhat_l-X_l` before patching.
+
+Random directions, seeds, norms, and finite checks are frozen before scoring.
+The random arm reports both its median and strongest replicate; it is never
+redrawn after seeing a result. Every patch uses the same frozen downstream
+blocks and teacher-forced query tokens. A hidden-state reconstruction that
+does not change the correct forced-choice consequence receives no causal
+credit.
+
+### Estimands and inherited X-free ladder
+
+The raw transition estimand is `X_l -> Delta_l`. The static estimand is the
+separate `P35_static` relation `X_perp_l -> Delta_perp_l`; its prediction is
+reassembled to raw space before patching. Raw and static fits, artifacts, and
+verdicts are separate. They may not be pooled, and one cannot retroactively
+capacity-match or rescue the other.
+
+`P35_static` is the typed-world analogue of `P_static`: a training-fold design
+containing carrier-block and A/B surface-system indicators, state/move token
+lengths, source and readout positions, wrapper identity, and operation arity.
+It excludes query-tail tokens, query identity, all four truth values,
+predicate names or IDs, move identity and arguments, the queried coordinate,
+the correct answer, `X`, and held-out outcomes. Its exact columns and rank
+tolerance are frozen before capture.
+
+The X-free ladder is fixed:
+
+- **identity plus shared displacement:** the cheapest residual-stream null,
+  fit on the same training rows and patched at the same boundary;
+- **token-context field:** the training-vocabulary token sequence of the
+  declared-state and move context through the `Y` boundary, its lengths,
+  positions, and operation surface, with registered ridge and RBF-kernel
+  families; query-tail tokens, the queried bit, and the answer are forbidden;
+- **predicate-item-by-context field:** the Round 34c construction adapted only
+  by replacing item word with predicate name: eight training-name-only PCs of
+  pinned input embeddings, `P35_static`, all fixed PC-by-`P35_static`
+  interactions, and the frozen boundary-token/type floor; and
+- **matched-EDF state ridge:** for every selected context ridge/kernel, solve
+  the state ridge downward by the existing float64 bisection, numerical-rank
+  definition, and absolute EDF-error `<=0.01`. Unreachable matches are
+  unsupported, never rounded into support.
+
+All vocabularies, PCA means/bases, nuisance maps, scalers, kernels,
+hyperparameters, ranks, and EDFs are rebuilt at the relevant outer and inner
+training boundary. The predicate-item field may encode lexical identity and
+authored structure; closure by it diagnoses feature sensitivity, not a causal
+semantic variable. The strongest X-free candidate is selected inside each
+bootstrap replicate. As in Round 34a, such a synthetic oracle can establish
+capacity/context-family sensitivity, but only one predeclared candidate that
+wins every endpoint may be described as a single sufficient map.
+
+The latent endpoints remain displacement cosine and normalized-error gain. The
+primary causal endpoint compares patches by mean four-bit binary log loss. For
+candidate `a`, strongest null `r`, and true-state patch `Y`, define
+
+`G(a;r) = (BCE_r - BCE_a) / BCE_r`
+
+and, only when the denominator exceeds the noise floor,
+
+`R_oracle(a;r) = (BCE_r - BCE_a) / (BCE_r - BCE_Y)`.
+
+A cell is unsupported when `BCE_r <= 0`, when
+`BCE_r-BCE_Y <= max(q99(repeat BCE difference), 1e-4)`, or when any common
+finite-support condition fails. Ratios are not clipped. Accuracy, signed
+log-odds, per-bit BCE, wrapper disagreement, and same-length-control
+selectivity are all serialized beside the aggregate.
+
+### Laws and bidirectional transfer
+
+The one-step transition map is fitted only on one-step rows. The composition
+rows are held out from every fit and hyperparameter choice.
+
+1. **Involution.** For every `i in {1,2,3,4}` and all 16 initial states, test
+   `toggle(i) ∘ toggle(i) = identity`. Compare its all-bit consequence with
+   the registered
+   length-matched two-step no-op scaffold and with the exact logical state.
+2. **One noncommuting composition.** Freeze
+   `a=toggle(1)` and `b=swap(1,2)`. Score both `b ∘ a` and `a ∘ b`. They have
+   the same operation-token multiset and length but different order, and their
+   correct final values at bits 1 and 2 differ for every initial state. No
+   other pair may be promoted after outcomes.
+3. **Bidirectional transfer.** Fit state/context models, EDF matches, nuisance
+   maps, and all selection quantities on outer-training `S_A` rows, then
+   evaluate the untouched held-block/held-name `S_B` programs through `Q_B`;
+   reverse A/B for the other direction. Query tokens enter only the frozen
+   downstream consequence call, never the transition fit. Both directions
+   must independently pass. Within-family scores are diagnostics, not
+   substitutes for transfer.
+
+For composition, patch both the sequential one-step prediction and the stored
+true intermediate/final states `Y^(1),Y^(2)`. Apply the frozen one-step map to
+`X` for move one and to its own predicted intermediate state for move two;
+there is no two-step refit. The comparison therefore separates three
+questions: does the decoder answer the composed truth table, does the one-step
+latent map compose to the right state, and can that predicted state causally
+enact the answer under a new query family?
+
+### Validity and decision rules
+
+All intervals use 500 paired block-first crossed bootstrap replicates over the
+four carrier blocks and two predicate-name folds. The four bits and repeated
+logical states stay nested inside their outer key. Every state-versus-null
+comparison uses common cells and requires support `>=0.95`. A qualifying layer
+requires at least `6/8` jointly qualifying outer keys and no carrier-block
+collapse: every block has at least one qualifying name-fold key. F0 is always
+diagnostic. A joint latent verdict requires at least two common layers among
+F4, F8, F12, and F20 in both transfer directions.
+
+Before a latent claim, the direct unpatched and true-`Y` behavior must each
+pass the **world-validity gate** in both query families:
+
+- pooled four-bit forced-choice accuracy is at least `0.90` with crossed 95%
+  lower bound at least `0.85`;
+- every bit and each of `toggle`, `swap`, and no-op has accuracy at least
+  `0.80` (the behavioral no-collapse floor);
+- irrelevant-wrapper answer disagreement is at most `0.05`, with crossed 95%
+  upper bound at most `0.10`;
+- the same-length control changes the required bit in the correct direction
+  with accuracy at least `0.90` and lower bound at least `0.85`; and
+- true-state patch parity, causal locality, exact truth-table, tokenization,
+  support, and repeat-noise checks all pass.
+
+Failure of this gate is **`BEHAVIORALLY VOID FOR STATE CLAIMS`**. It does not
+become evidence for or against a latent state, and no larger model or revised
+text is tried inside the frozen version.
+
+For each raw or static sentinel-layer and transfer direction, the
+**state-and-causal layer gate** requires all of:
+
+- strongest-X-free state-minus-context displacement cosine and normalized-
+  error margins each have point estimate `>=0.02` and crossed 95% lower bound
+  `>0`;
+- `G(Yhat;r)` has point estimate `>=0.02` and crossed lower bound `>0`;
+- oracle recovery has point estimate `R_oracle>=0.80` and crossed lower bound
+  `>=0.60`;
+- at least `6/8` keys are jointly positive on both latent endpoints and causal
+  gain, with no carrier collapse; and
+- common support, every EDF match, patch norm, true-state ceiling, random
+  control, and finite check are valid.
+
+The `0.02`, crossed-interval, `6/8`, no-collapse, two-common-layer, and
+`STOP`/`CONTINUE`/`INCONCLUSIVE` semantics are inherited exactly from Rounds
+34a-c. The new `0.90/0.85` behavioral floors and `0.80/0.60` oracle-recovery
+floors are absolute prospective thresholds, not estimates to be tuned on a
+pilot.
+
+The **involution gate** requires, separately in both tails and both transfer
+directions, all-bit forced-choice agreement between double-toggle and the
+logical/no-op identity of at least `0.95` with crossed lower bound at least
+`0.90`; median absolute all-bit log-odds difference at most `0.10` nats with
+crossed upper bound at most `0.20` nats; and the state-and-causal layer gate on
+the composed prediction. The **noncommuting gate** requires truth-correct bits
+1 and 2 in each order with accuracy at least `0.90` and lower bound at least
+`0.85`, exact four-bit-vector accuracy at least `0.80` with lower bound at
+least `0.70`, and correct signed order separation on bits 1 and 2 of at least
+`0.20` nats with crossed lower bound above `0.10` nats, plus the composed
+state-and-causal layer gate. Operation orders, bits, and thresholds are never
+changed after capture.
+
+The joint outcomes are:
+
+- **`PASS — BOUNDED TYPED WORLD`** only if the world-validity gate, raw and
+  static state-and-causal gates, involution, noncommuting composition, wrapper
+  and length controls, and both `Q_A -> Q_B` and `Q_B -> Q_A` directions all
+  pass at the required common layers.
+- **`X-FREE MOOT / FEATURE-REDUNDANT`** when one predeclared X-free candidate,
+  or the explicitly synthetic strongest-candidate oracle with the narrower
+  wording, closes both latent margins and causal gain: point estimates
+  `<=0.02`, crossed upper bounds `<0.02`, at least `6/8` jointly closing keys,
+  no collapse, valid support/EDF, and two common F4-F20 layers in both
+  directions. Mere failure to PASS is not MOOT.
+- **`COMPOSITION HOLE, LOCAL`** when the valid one-step state-and-causal gates
+  pass in both directions but either fixed composition gate fails with valid
+  controls and adequate direct behavior.
+- **`PRESENTATION/QUERY-TRANSFER HOLE, LOCAL`** when the corresponding
+  within-family gates pass but either predeclared transfer direction fails
+  under valid support.
+- Every other complete outcome is **`INCONCLUSIVE`**. Candidate families,
+  endpoints, layers, bits, operations, query tails, or transfer directions may
+  not be spliced to manufacture a verdict.
+
+### CPU-only budget and artifact discipline
+
+The only model in this preregistration is the pinned Qwen3-0.6B revision with
+its pinned tokenizer, float32 CPU compute, and one process. **GPU use is
+forbidden for Round 35.** Prefix states are captured once and reused across
+the four teacher-forced queries; query tails and patches are batched without
+generation. Score only F0/F4/F8/F12/F20, although the canonical capture may
+retain all hidden indices for parity with the current artifact schema.
+
+After activation, approved population, Tier-1 RUN-READY implementation, and a
+clean provenance preflight, the expected budget is `2-4 h` capture per query-
+surface family and `2-4 h` patch/scoring per transfer direction. Hard walls are
+`5 h` for each capture family, `5 h` for each scoring direction, and `20 h`
+total sequential CPU time. Only complete outer keys checkpoint; an overrun or
+partial direction is non-claiming. A and B never overlap. No second model,
+larger model, GPU rerun, generated-answer arm, or post-outcome population
+repair is inside this budget.
+
+Artifacts must bind the raw config and Git blob, model/tokenizer revisions,
+logical answer-matrix hash, name/template/fold/tail hashes, answer IDs,
+position arrays, repeat and batch nulls, exact command, array shapes and
+hashes, per-cell four-bit log-odds, every patch norm/seed, nuisance/PCA/context
+provenance, EDF telemetry, compressed paired evidence, and claiming reducer
+inputs. Until future results are entered in both the ledger and the canonical
+experiment index, nothing happened.
+
+### Guiding-question and second-lens claim boundary
+
+A PASS would license one bounded statement: in this frozen finite world and
+decoder, at common middle/deep layers, a held-out-name and held-out-template
+state reader carries causally usable information beyond the registered
+capacity-matched X-free maps; its predicted post-move state produces correct
+four-bit consequences, respects one involution and one noncommuting
+composition, and transfers in both directions between two frozen query-tail
+families. In the guiding question's terms, that is a provisional local map,
+move, consequence, and composition table available to the denizen.
+
+A PASS would **not** establish semantic understanding, natural-language
+reasoning, a global latent quotient, a metric or effort law, arbitrary
+composition, binding, quantification, decoder/model/task generality, a native
+mathematics, a new axiom, or closure of the current architecture's hostile
+holes. The two query families and four carrier blocks are correlated
+realizations of one authored micro-world, not independent replications.
+
+Under the second lens, a valid local composition or transfer failure is a
+first-class diagnosis, but still a local one. Behavioral failure locates the
+problem before the latent instrument. X-free closure says the apparent state
+is redundant with accessible context/features. One-step survival followed by
+composition failure says the representation supports isolated moves but not
+the registered law. Tail-transfer failure says consequence is entangled with
+presentation. Those outcomes specify what a next latent space should expose:
+factorized truth coordinates, bound operation arguments, an explicit
+presentation quotient, composable transitions, and a causal truth readout.
+None alone proves that every representation of this decoder—or every decoder—
+is incapable of providing them. No new axiom is earned at the design gate.
