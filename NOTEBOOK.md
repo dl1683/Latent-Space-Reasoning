@@ -5,6 +5,12 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Round 37 result: NO ARCHITECTURAL WIN; both carriers FAIL (underfit); last toy-world round
+
+Four-cell matrix run on CPU (35 min wall, one process). Both the quotient-factored z=(q,p) carrier and the unrestricted carrier reduce to `FAIL — BEHAVIOR UNDERFIT OR BASE SIGNATURE UNSUPPORTED`; comparison label `NO ARCHITECTURAL WIN`. Diagnostic-only (non-gating) numbers: H2 held-out supported-truthful cells factored 867–1184/1184 vs unrestricted 795–1184/1184; H3 factored 365–754/1056 vs unrestricted 485–992/1056 — the unrestricted carrier is better on 9 of 10 seed × role units, i.e. the factorization constraint hurt. First divergence is overwhelmingly at step 3 of H3 (the Round 36d horizon-localised pattern reproduces in a different world and different carriers); terminal responses essentially never fail (min signed margin 0.079); every failure is a future-signature failure. Rolled-history interchangeability across presentations was not reached by either carrier.
+
+Reading (mine, pending the Codex dialogue): the hole is a property of the learning setup — behaviour-supervised continuous carriers fit depth-1/2 responses and lose exact future signatures at depth 3 — not of any particular world or carrier. Under the 2026-08-29 governance amendment this is the last round in the Round 36 mould: exact certificates become diagnostics, and the central artifact moves to a real model's latent space demonstrated by intervention. The one-audit-per-result review of this outcome is folded into the direction dialogue with Codex (round 2), which must also answer whether the program continues.
+
 ## 2026-08-29 — Round 36d frozen-chart control (audit #26 replacement entry, verbatim; my original headline 'exact certificate reached on 8 of 9 gates' is withdrawn)
 
 ## 2026-08-29 — Round 36d frozen-chart control: joint FAIL; eight gate predicates pass, deepest rolled interchangeability does not
