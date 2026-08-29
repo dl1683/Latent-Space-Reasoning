@@ -7077,3 +7077,349 @@ advantage survives when the state reader is reduced to the registered context
 reader's attainable flexibility. Closure is evidence about a measurement
 hole—capacity/context-family sensitivity—not proof that context is the world's
 state. Survival only earns the narrow completion check. No new axiom is earned.
+
+## Round 34b/34c — partial-overlap and item-by-context controls (audit #20 priorities 1-2) (2026-08-29)
+
+**Codex design gate and preregistration; documentation only. No experiment was
+run.** Audit #20 withdrew both “by construction” and “beyond template
+metadata.” The cheapest live explanation is now that `P_static` removes a
+coarse block/length/position response while `X_perp` retains a dense
+item-by-carrier activation fingerprint and local punctuation Jacobian that the
+registered `token_ids_v1` field cannot express. These two controls test that
+explanation before the six-arm Round 34. They can expose redundancy or feature
+inadequacy; neither identifies presentation causally, operational state, a
+denizen-usable operation, a native law, or a representation-level hostile
+hole.
+
+The expectation is that 34b will determine whether the useful raw context
+prediction is incrementally redundant with `P_static`, and 34c will determine
+whether a fairer X-free item-by-context field closes the static state margin.
+If either cheap control closes the margin, the expensive consequence/full-
+feature queue stops. If both survive, the generic fingerprint account is
+narrowed but not removed: activation geometry and a local Jacobian still
+remain live. Any PCA basis, contextual vocabulary, nuisance map, scaler,
+hyperparameter, EDF, or interaction basis touched by an outer held-out carrier,
+word, or target voids the affected key and makes the reducer fail closed.
+
+### Locked order and common envelope
+
+The execution order is fixed:
+
+1. repair only Round 34a's already-reported telemetry-binding invariant and
+   obtain Tier-1 RUN-READY;
+2. run and jointly reduce Round 34a raw A/B first, then Round 34a static A/B;
+3. run and jointly reduce 34b;
+4. run and jointly reduce 34c; and
+5. run the full six-arm Round 34 only if the raw and static 34a reducers, the
+   34b reducer, and the 34c reducer all return `CONTINUE`.
+
+A `STOP` or `INCONCLUSIVE` at any cheap screen does not authorize full Round
+34. `INCONCLUSIVE` is not scientific closure; it requires a design ruling or
+orthogonal pivot, not escalation by default. Round 33 remains parked
+throughout. It returns to the queue only after a full Round 34 `KEEP` verdict
+and independent clearance of its own instrument blockers.
+
+Both controls reuse the exact sentinel-A/B captures, F0/F4/F8/F12/F20 layers,
+four held-carrier-block by two held-word-fold outer keys, disjoint calibration
+and test words, inner leave-one-calibration-block-out folds, and class-
+stratified word strata already locked for Round 34a. All transformations are
+fit on the relevant training rows only. Both use 500 paired block-first crossed
+bootstraps, `n_shuffle=0`, cosine and normalized error only, and no completion,
+K=13 universe, shuffle null, causal-model forward, new capture, or Round 33
+call. F0 is diagnostic and never supplies a common qualifying layer.
+
+Every gate below uses higher-is-better scores. For a prediction `Dhat` and
+target `D`, define
+
+`cos = cosine(Dhat, D)` and
+`nerr_gain = 1 - ||Dhat-D|| / ||D-mean_train(D)||`.
+
+For a paired comparison, cosine is the rowwise score difference and normalized
+error uses the equivalent reversed sign. Each key is supported only on the
+common finite cells, and common support must be at least `0.95`; this explicit
+floor is the only addition to Round 34a's decision predicates and is required
+because residual cosine and its normalization can be undefined near a zero
+target. No unsupported key is rounded into support.
+
+### Round 34b — `P/C` partial-overlap screen
+
+**Estimands and order.** The first estimand is raw incremental context:
+whether a nested `P_static + token_ids_v1` field improves prediction of raw
+`Delta` over `P_static` alone. The second, co-required estimand is the static
+partial relation: whether the component of `token_ids_v1` orthogonal to
+`P_static` predicts `Delta_perp`. Report raw first and partial static second in
+the same sentinel artifact, but never pool their scores. The raw estimand
+adjudicates redundancy; the static estimand guards against falsely calling the
+existing `ctxS` collapse `P_static` alignment when it was caused by fitting or
+feature projection.
+
+For each layer and outer key, fit exactly:
+
+1. **`P`:** training-standardize the ten-column `P_static` design and fit
+   `RidgeFamily(P_static, Delta)`. Select lambda on the existing `LAMBDAS` grid
+   using only the inner carrier folds.
+2. **`C`:** rebuild the `token_ids_v1` column vocabulary from the current
+   training carriers with `ctx_columns`, build rows with `ctx_rows`, and fit the
+   registered `RidgeFamily` and `KernelFamily` directly to raw `Delta`.
+   Select ridge lambda and RBF gamma/lambda on the same inner folds.
+3. **`P+C`:** concatenate the raw `P_static` columns and the current training-
+   vocabulary `token_ids_v1` columns, apply one training-only `Standardizer`,
+   and fit one `RidgeFamily` to raw `Delta`, with lambda selected on the inner
+   folds. This is the single fixed nested combined field; no post-outcome
+   kernelized or interaction expansion is permitted.
+4. **`C_perp -> Delta_perp`:** in every inner fit and again on the complete
+   outer calibration rows, separately fit `P_static -> C` and
+   `P_static -> Delta` nuisance maps in the style of the forward path's static
+   residualizer. Each target's nuisance lambda is selected using only that
+   fit's training/validation carrier rows. Form both feature and target
+   residuals with those maps, then training-standardize `C_perp` and fit the
+   registered ridge and RBF-kernel families to `Delta_perp`. The contextual
+   vocabulary is also rebuilt inside every inner training fold. Every
+   target-dependent residualizer is therefore refit inside the downstream
+   inner folds; the current outer-only two-stage shortcut is forbidden here.
+5. **same-EDF `X_perp` reference:** fit `P_static -> X` and
+   `P_static -> Delta` under the identical nested discipline, fit the selected
+   `X_perp` ridge, and use `round34_solve_edf_lambda` to match it downward to
+   each selected `C_perp` ridge/kernel EDF. Report its cosine/nerr scores and
+   state-minus-context margins as a reference only; they are not the 34b claim
+   target.
+
+On held-out rows also serialize the rowwise cosine alignment between each raw
+`C` prediction and the `P` prediction, with the same block-first crossed
+interval and common-support accounting. This is an alignment diagnostic, not
+a variance share, mediation estimate, or causal presentation fraction.
+
+For raw incremental overlap define
+`m_PC = score(P+C) - score(P)`. For residual context candidate
+`j in {ridge,kernel}`, use its absolute `cos` and `nerr_gain` against
+`Delta_perp`. A sentinel-layer is **jointly redundant** only when:
+
+- both `m_PC` endpoints have point estimate `<=0.02` and crossed 95% upper
+  bound `<0.02`;
+- both residual candidates are null on both endpoints under the same
+  `<=0.02` / upper-bound-`<0.02` rule;
+- at least `6/8` outer keys jointly meet all endpoint conditions;
+- every carrier block has at least one qualifying word-fold key; and
+- all fits, residualizers, EDF references, and the `>=0.95` support floor are
+  valid.
+
+The 34b joint verdict is **`CAPACITY/OVERLAP-SENSITIVE SCREEN; STOP`** only if
+at least two common layers among F4/F8/F12/F20 are jointly redundant in both
+sentinels. The exact conclusion is:
+
+> **registered raw context field is `P_static`-redundant in this design**
+
+This is 34b's Round-34a-style `STOP` semantics. It does not identify
+presentation causally.
+
+A fixed residual candidate **retains signal** only when its cosine and
+`nerr_gain` point estimates are each `>=0.02`, both crossed 95% lower bounds
+are `>0`, at least `6/8` keys are jointly positive, no carrier block collapses,
+support is `>=0.95`, and all fits are valid. The 34b joint verdict is
+**`CONTINUE`** only if the same predeclared candidate family (ridge or kernel)
+retains signal at at least two common F4-F20 layers in both sentinels. The
+exact conclusion is:
+
+> **the `ctxS` collapse is a fitting/feature-projection artifact;
+> `P_static`-aligned context is too strong**
+
+If both joint branches fire, or neither fires, the verdict is
+**`INCONCLUSIVE`**. A failed `STOP` is not retention and a failed `CONTINUE` is
+not redundancy. Candidate families, endpoints, layers, or sentinels may not be
+spliced to manufacture a verdict.
+
+**Analyzer contract and cost.** Add
+`--context-capacity-audit round34b_overlap` as a third early-return audit mode.
+It requires the exact Round 34a forward/delta/unseen-word/pair contract,
+`--residualize static`, `--contextual-prefix-xfree`,
+`--prefix-feature-set token_ids_v1`, `--skip-completion`, `--n-boot 500`, and
+`--n-shuffle 0`. The mode keeps raw copies before residualization, constructs
+both registered estimands internally, and reuses `P_static`, `ctx_columns`,
+`RidgeFamily`, `KernelFamily`, `round34_solve_edf_lambda`,
+`pooled_block_first`, the compressed per-cell evidence sidecar, and the
+read-only joint-reducer dispatcher. Expected CPU time is `20-40 min` per
+sentinel and `40-80 min` total sequentially; the hard wall is `60 min` per
+sentinel. Use one CPU process, no GPU, and never overlap A and B.
+
+After Tier-1 RUN-READY, run exactly:
+
+```powershell
+$env:PYTHONUNBUFFERED="1"
+$env:PYTHONIOENCODING="utf-8"
+.venv\Scripts\python.exe experiments\analyze_lm_dynamics.py --run lm_dyn_v1 --config experiments/config/lexical_probe_v1.json --source forward --sentinel-tag A --target delta --unseen-words 2 --residualize static --contextual-prefix-xfree --prefix-feature-set token_ids_v1 --context-capacity-audit round34b_overlap --pairs 0 1 2 3 4 --skip-completion --n-shuffle 0 --n-boot 500 --tag ctxoverlap_A
+```
+
+```powershell
+$env:PYTHONUNBUFFERED="1"
+$env:PYTHONIOENCODING="utf-8"
+.venv\Scripts\python.exe experiments\analyze_lm_dynamics.py --run lm_dyn_v1 --config experiments/config/lexical_probe_v1.json --source forward --sentinel-tag B --target delta --unseen-words 2 --residualize static --contextual-prefix-xfree --prefix-feature-set token_ids_v1 --context-capacity-audit round34b_overlap --pairs 0 1 2 3 4 --skip-completion --n-shuffle 0 --n-boot 500 --tag ctxoverlap_B
+```
+
+```powershell
+.venv\Scripts\python.exe experiments\analyze_lm_dynamics.py --run lm_dyn_v1 --config experiments/config/lexical_probe_v1.json --context-capacity-joint ctxoverlap_A ctxoverlap_B --tag ctxoverlap_joint
+```
+
+The expected artifacts are `analysis_ctxoverlap_A.json`,
+`analysis_ctxoverlap_B.json`, `analysis_ctxoverlap_joint.json`,
+`round34b_evidence_ctxoverlap_A.npz`, and
+`round34b_evidence_ctxoverlap_B.npz`. An incomplete producer is non-claiming
+and cannot enter the joint reducer.
+
+### Round 34c — item-by-context X-free comparator
+
+**Primary estimand.** Round 34c is static only and runs after a 34b `CONTINUE`.
+It compares a state ridge from `X_perp` with a richer X-free ridge on the same
+`Delta_perp` target. `P_static -> X` and `P_static -> Delta` are fit on the
+outer calibration rows and refit inside every downstream inner carrier fold,
+as in 34b. There is no raw 34c gate: the question is specifically whether
+item/context features omitted by `token_ids_v1` explain the surviving static
+margin.
+
+For every outer key, construct one fixed X-free design from:
+
+1. the ten raw `P_static` columns;
+2. exactly 16 principal scores of the pinned frozen input embedding of the
+   item token, after centring and fitting a float64 SVD on the outer calibration
+   words only;
+3. every fixed outer product between the ten `P_static` columns and the 16
+   item-PC scores (`10 x 16 = 160` nominal interaction columns); and
+4. the audit's optional floor, adopted now as a mandatory part of the single
+   registered field: training-vocabulary prefix/suffix boundary-token
+   indicators, POS one-hot, and POS-by-boundary-token interactions from
+   `token_ids_v1`. Position-specific token one-hots, unigrams, bigrams, item
+   IDs/strings, cell `X`, hidden states, and held-out outcomes are forbidden.
+
+The PCA mean/basis is refit for every outer word split. Inner carrier folds use
+the same outer-calibration word set, so their admissible PCA basis is identical
+in data scope; the implementation must nevertheless bind or recompute that
+basis and may never fit on all 80 words. Transfer to held-out words occurs only
+by projecting their pinned frozen item embeddings through the calibration-word
+basis. If 16 nondegenerate training PCs are unavailable, the key is
+unsupported rather than silently reducing rank. Concatenate the fixed fields,
+apply one training-only `Standardizer`, select the X-free ridge lambda on the
+inner carrier folds, and fit on calibration words only.
+
+Compute the comparator's slope EDF after standardization and `RidgeFamily`
+centring. Match the `X_perp` state ridge downward to that EDF with
+`round34_solve_edf_lambda` and its `<=0.01` absolute EDF-error rule. Serialize
+raw/retained column counts, matrix rank and tolerance, all 16 singular values,
+PCA training-word identities/digest, interaction rank, selected comparator
+lambda/EDF, selected state lambda/EDF, matched state lambda/EDF, and finite
+checks. No integer PCA-rank approximation or nearest-grid state match may
+replace the continuous solve.
+
+For each cell and endpoint define
+`m = score(state_at_itemctx_EDF) - score(itemctx)`. A layer has Round-34a-style
+**`STOP`** status only when both margins have point estimate `<=0.02` and
+crossed 95% upper bound `<0.02`, at least `6/8` outer keys are jointly below
+`0.02`, every carrier block has at least one such key, support is `>=0.95`, and
+all PCA, fit, and EDF telemetry is valid. The joint 34c verdict is
+**`ITEM/CONTEXT-FEATURE-SENSITIVE; STOP`** only with at least two common
+F4-F20 `STOP` layers in both sentinels. The exact conclusion is:
+
+> **item/context-feature-sensitive; stop the consequence queue**
+
+A layer is **`CONTINUE`** only when both margins have point estimate `>=0.02`
+and crossed 95% lower bound `>0`, at least `6/8` keys are jointly positive, no
+carrier block collapses, support is `>=0.95`, and every match is valid. The
+joint verdict is `CONTINUE` only with at least two common F4-F20 layers in both
+sentinels. The exact conclusion is:
+
+> **survived a fairer X-free feature test; still not operational state**
+
+Every other outcome is **`INCONCLUSIVE`**. These are exactly Round 34a's
+`0.02`, crossed-interval, `6/8`, no-block-collapse, two-common-layer, and
+`STOP`/`CONTINUE`/`INCONCLUSIVE` semantics, plus the common finite-support
+floor declared above.
+
+**Analyzer contract and cost.** Add
+`--context-capacity-audit round34c_itemctx` as a fourth early-return audit mode.
+It reuses the `round34a_core` capture binding, folds, state/static residualizer,
+evidence-sidecar writer, joint reducer, block-first bootstrap,
+`RidgeFamily`, and `round34_solve_edf_lambda`. Move only the existing frozen-
+item-embedding lookup needed by the Round 27 X-free field into a reusable
+tokenizer/embedding-table helper available before the early return; loading
+the pinned input-embedding table is allowed, but no causal-model forward or
+`WorldCompleter` construction is. Expected CPU time is `15-30 min` per
+sentinel and `30-60 min` total sequentially; the hard wall is `45 min` per
+sentinel. Use one CPU process, no GPU, and never overlap A and B.
+
+After a joint 34b `CONTINUE` and Tier-1 RUN-READY, run exactly:
+
+```powershell
+$env:PYTHONUNBUFFERED="1"
+$env:PYTHONIOENCODING="utf-8"
+.venv\Scripts\python.exe experiments\analyze_lm_dynamics.py --run lm_dyn_v1 --config experiments/config/lexical_probe_v1.json --source forward --sentinel-tag A --target delta --unseen-words 2 --residualize static --contextual-prefix-xfree --prefix-feature-set token_ids_v1 --context-capacity-audit round34c_itemctx --pairs 0 1 2 3 4 --skip-completion --n-shuffle 0 --n-boot 500 --tag itemctx_A
+```
+
+```powershell
+$env:PYTHONUNBUFFERED="1"
+$env:PYTHONIOENCODING="utf-8"
+.venv\Scripts\python.exe experiments\analyze_lm_dynamics.py --run lm_dyn_v1 --config experiments/config/lexical_probe_v1.json --source forward --sentinel-tag B --target delta --unseen-words 2 --residualize static --contextual-prefix-xfree --prefix-feature-set token_ids_v1 --context-capacity-audit round34c_itemctx --pairs 0 1 2 3 4 --skip-completion --n-shuffle 0 --n-boot 500 --tag itemctx_B
+```
+
+```powershell
+.venv\Scripts\python.exe experiments\analyze_lm_dynamics.py --run lm_dyn_v1 --config experiments/config/lexical_probe_v1.json --context-capacity-joint itemctx_A itemctx_B --tag itemctx_joint
+```
+
+The expected artifacts are `analysis_itemctx_A.json`,
+`analysis_itemctx_B.json`, `analysis_itemctx_joint.json`,
+`round34c_evidence_itemctx_A.npz`, and
+`round34c_evidence_itemctx_B.npz`. An incomplete producer is non-claiming and
+cannot enter the joint reducer.
+
+### Minimal code delta and registered risks
+
+No new script is permitted. The only authorized future code change is inside
+`experiments/analyze_lm_dynamics.py`:
+
+- extend the `--context-capacity-audit` choices and early dispatcher with
+  `round34b_overlap` and `round34c_itemctx`;
+- factor the live `P_static` builder, `token_ids_v1` `ctx_columns`/`ctx_rows`,
+  static nuisance fit, and frozen item-embedding lookup only enough for both
+  early modes to call them;
+- add one small 34b producer/reducer and one small 34c producer/reducer while
+  reusing the Round 34a evidence packing, hash binding, checkpoint, and A/B
+  joint-dispatch machinery; and
+- add negative mutation/parity tests for sentinel, estimand, folds, candidates,
+  PC-basis digest, residualizer provenance, EDF telemetry, and evidence hash.
+
+The following confounds remain registered:
+
+- **PC leakage:** fitting the item PCA on all words, held-out words, or a basis
+  cached across outer keys leaks test geometry. PCA is unsupervised but not
+  exempt from the training boundary.
+- **Interaction rank:** 160 nominal products do not imply 160 independent
+  directions. Repeated carriers/POS rows and only 40 calibration words can
+  sharply cap rank. No jitter, sample ID, word ID, or random feature may
+  manufacture capacity; report raw columns, retained columns, numerical rank,
+  and EDF separately.
+- **Combined-field EDF:** 34b `P+C` EDF is the centred `RidgeFamily` slope EDF
+  after one fold-specific standardization, with the intercept excluded. It is
+  reported but not matched to `P`; failure of the larger nested field to
+  improve is diagnostic, while improvement alone may reflect its extra
+  capacity.
+- **Kernel EDF:** contextual-kernel EDF uses the analyzer's uncentred training
+  Gram convention, `tr[K(K+lambda I)^-1]`, at the inner-selected gamma/lambda.
+  It is conditional on gamma, duplicate rows, and Gram rank and is not proof
+  of equal nonlinear function-class richness. Record median distance,
+  eigenspectrum tolerance, numerical rank, and finite checks.
+- **Residualizer and vocabulary stability:** a target residualizer, contextual
+  vocabulary, or standardizer fit once on the complete outer calibration set
+  and reused during inner selection would bias the comparison. Each must be
+  rebuilt at the relevant inner training boundary.
+- **Feature meaning:** frozen item PCs can encode lexical identity and the
+  mandatory boundary/POS floor can encode authored micro-world structure.
+  Closing the margin therefore diagnoses feature sensitivity, not a causal
+  context variable; survival still leaves nonlinear activation geometry and a
+  local Jacobian untested.
+- **Local scope:** A and B share one model, item population, template family,
+  folds, and append operation. They are correlated sentinels, not
+  replications. No result generalizes to another move, decoder, latent space,
+  or composed operation.
+
+Under the guiding question, 34b asks whether two proposed maps name distinct
+directions at all; 34c asks whether the apparent state map is merely a richer
+chart of item-by-context regularities. Closure is useful: it identifies an
+instrument/feature hole before downstream spend. Survival earns only the full
+Round 34 feature-adequacy audit. No new axiom is earned.
