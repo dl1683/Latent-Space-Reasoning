@@ -5,6 +5,24 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — ctxS_B complete: contextual-prefix comparator on the P_static-residualized relation, sentinel B (audit #20 wording)
+
+`analysis_ctxS_B.json` (committed analyzer, `--residualize static`, 20
+shuffles, 500 bootstraps, 4784 s): sentinel B mirrors sentinel A. On the
+residualized X⊥→Δ⊥ relation the registered `token_ids_v1` context arms fall
+to held-out cosine 0.04–0.08 and normalized error ≈ 1.00 at F4–F20, while the
+residual state ridge keeps cosine 0.52–0.58 and normalized error 0.82–0.86;
+block-first margins vs the strongest context arm: cosine +0.46 to +0.51 (LB
+≥ 0.42), nerr +0.14 to +0.19, skill +0.34 to +0.45 (LB ≥ 0.19), continuous KL
++0.24 to +0.41 (LB ≥ 0.08); 8/8 keys, support 1.0. F0: cosine +0.26 but nerr,
+skill and KL margins negative. Licensed reading (audit #20, verbatim
+discipline): raw context performance is highly non-robust to the registered
+P_static residualization and therefore P_static-aligned in this fitted
+design; not identified as presentation, not by construction, not a state
+contribution; the residual predictor separation is descriptive and
+unmatched in capacity. Both static-form comparators are now complete; the
+parity check runs next, then Round 34a (raw and static forms).
+
 ## 2026-08-29 — Re-contextualization #20 (2-hour step-back; audit #20 fired, unprimed)
 
 Live question unchanged: is the surviving X⊥→Δ⊥ predictability in one small
