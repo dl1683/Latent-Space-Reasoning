@@ -25,16 +25,37 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   retired from the active path (`f6dac0e`; git history); verdicts retained
   under `experiments/results/operational_quotient_*/` and
   `experiments/results/presentation_quotient_v1_*/`. Entries below.
-- **Current artifact — `coordinate_v1`** (`experiments/run_coordinate.py`,
-  `experiments/config/coordinate_v1.json`): demo stopped at calibration; the
-  explicit baseline is invalid for polarity on Qwen3-0.6B; direction decision
-  pending with Codex (entry below). No successor run is authorized.
+- **Current artifact line — `coordinate_v1` -> `coordinate_v2`**
+  (`experiments/run_coordinate.py`): v1 (Qwen3-0.6B, tense × polarity) is
+  `UNINTERPRETABLE — INVALID POLARITY BASELINE`; v2 (Qwen3-1.7B, tense ×
+  grammatical number) was KILLED at its pre-declared baseline gate. Entries
+  below. Next step is a Codex decision; nothing further is authorized.
 
-## coordinate_v1 — two-bit causal coordinate (tense × polarity), Qwen3-0.6B residual stream (2026-08-29; registered artifact; demo stopped at calibration)
+## coordinate_v2 — tense × grammatical number, Qwen3-1.7B: KILLED at the pre-declared baseline gate (2026-08-29; ledger `coordinate_v2_baseline`)
+
+- **Design (Codex direction round 4; wording frozen before any result).**
+  Qwen3-1.7B rev `70d244cc…`; states `00` present-singular, `10`
+  past-singular, `01` present-plural, `11` past-plural; intervention =
+  persistent-current-position (final prompt position at prefill, then the
+  sole current position at every decoding step); baseline-first kill gate:
+  W0 only, no `11` prompted, each of `00/10/01` must reach `>=14/16`
+  normalized exact single-sentence outputs with `16/16` termination; on any
+  failure the artifact is killed with no further prompt repair. Config
+  `experiments/config/coordinate_v2.json` (`97504bf`).
+- **Result** (`experiments/results/coordinate_v2/baseline_result.json`,
+  `baseline.log`; 78 s): `00` 16/16, `10` 16/16, `01` 12/16, termination
+  48/48 -> `passed: false`; **artifact KILLED** by the pre-declared rule. No
+  hidden capture, no intervention run. Misses on `01`: two items pluralized
+  the definite object along with the subject (canonical-form ambiguity), two
+  ignored the instruction.
+- **What we learned:** the second candidate two-bit task also fails its
+  capability baseline on the model at hand; next step is a Codex decision.
+
+## coordinate_v1 — two-bit causal coordinate (tense × polarity), Qwen3-0.6B: UNINTERPRETABLE — INVALID POLARITY BASELINE (2026-08-29; ledger `coordinate_v1_result`)
 
 - **Registration.** NOTEBOOK re-contextualization #27; Codex direction
   dialogue rounds 1–4 (`.codex_direction_r1..r4`, not committed); runner
-  `experiments/run_coordinate.py` (`7f66f55`, matched explicit baseline /
+  `experiments/run_coordinate.py` (`7f66f55`; matched explicit baseline /
   held-out single axes / fixed random directions / hash-stamped results
   `ddb5eee`), config `experiments/config/coordinate_v1.json`. Design: two
   moves `v_T`, `v_N` estimated leave-one-family-out from single-axis
@@ -44,23 +65,26 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   controls; explicit-instruction baseline.
 - **Demo outcome** (`experiments/results/coordinate_v1/demo.log`,
   `result.json`; Qwen3-0.6B rev `c1899de2…`, CPU): calibration hidden states
-  captured `(16, 28, 1024)`; **no block cleared the calibration rule** —
+  captured `(16, 28, 1024)`; no block cleared the calibration rule —
   `acc_T = acc_N = 0.0` with termination `1.0` at every block 0–27 — so the
-  run stopped before any held-out transport; `layer: null`. Not a result
-  about residual-stream coordinates generally: a bounded negative for this
-  exact one-shot final-token intervention at coefficient one.
-- **Baseline validity** (Codex direction round 4 numerical check, not a
-  registered run): on Qwen3-0.6B the explicit-instruction baseline scored
-  `14/32` (`00` 8, `10` 6, `01` 0, `11` 0) under the wording repair and the
-  polarity states failed under the original wording as well, so tense ×
-  polarity was **not a valid two-bit task on this model**; a 1.7B check
-  reached `29/32` with `01` at `5/8`, still below a per-state gate. Codex's
-  proposed headline for this artifact: `UNINTERPRETABLE — INVALID POLARITY
-  BASELINE`, with "stopped at calibration" as the execution subfinding.
-- **Status:** direction decision pending with Codex (model/axis change
-  proposed in round 4); nothing in `coordinate_v1` is a positive or negative
-  claim about a residual-stream coordinate. Ledger: `ops_heartbeat`
-  2026-08-29T18:49Z records the demo stage; no result row yet.
+  run stopped before any held-out transport; `layer: null`.
+- **Licensed headline and sentence (Codex direction round 4; verbatim):**
+  `UNINTERPRETABLE — INVALID POLARITY BASELINE`; "stopped at calibration" is
+  the execution subfinding. **Coordinate-v1 is uninterpretable:** Qwen3-0.6B
+  failed the explicit polarity capability gate, so tense × polarity was not a
+  valid two-bit task; independently, no block cleared the coefficient-one
+  final-prompt-token calibration rule (`0/16` for both LOFO axes at every
+  block, termination `1.0`), so no held-out transport was run. The valid
+  tense subtask therefore supplies a bounded negative for that exact
+  one-shot intervention, not for residual-stream coordinates generally.
+- **Diagnostics (read-only, calibration families; not results):** explicit
+  polarity instruction fails on Qwen3-0.6B (`01` 0/8 in every wording tried);
+  final-token and 9-token-tail patches inert at blocks 6–18, coefficients
+  1–3; all-position injection inert at blocks 4–12, degrading at 16/20 with
+  one tense hit (L20 ×2). Qwen3-1.7B: tense 8/8, polarity `01` 5/8 under a
+  repaired wording — below the gate.
+- **Never say:** the model re-reads instruction tokens; no additive
+  instruction state is present; a stable tense direction has been found.
 
 ## Round 37 — presentation-duplicated 32->16 quotient world: NO ARCHITECTURAL WIN; last toy-world round (2026-08-29; ledger `round37_lock`, `round37_result`, `round37_audit`)
 
