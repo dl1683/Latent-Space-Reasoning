@@ -1,0 +1,158 @@
+{
+ "name": "state_bus_v1",
+ "purpose": "Co-developed latent interface: a 16-d persistent state bus at block 12 of frozen Qwen3-1.7B-Base. Paraphrases write the same state; the state is injected at every continuation position; donor interchange replaces z. Trained consequences: sound, young. Never-trained consequence: taxonomic adjective. Codex direction round 7 (2026-08-29).",
+ "model_id": "Qwen/Qwen3-1.7B-Base",
+ "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
+ "layer": 12,
+ "state_dim": 16,
+ "anchor": " The animal",
+ "states": [
+  "cat",
+  "dog",
+  "cow",
+  "horse"
+ ],
+ "consequences": {
+  "sound": {
+   "prefix": " makes a",
+   "suffix": " sound.",
+   "words": {
+    "cat": " meowing",
+    "dog": " barking",
+    "cow": " mooing",
+    "horse": " neighing"
+   }
+  },
+  "young": {
+   "prefix": " has babies called",
+   "suffix": ".",
+   "words": {
+    "cat": " kittens",
+    "dog": " puppies",
+    "cow": " calves",
+    "horse": " foals"
+   }
+  },
+  "taxonomy": {
+   "prefix": " belongs to the",
+   "suffix": " family.",
+   "words": {
+    "cat": " feline",
+    "dog": " canine",
+    "cow": " bovine",
+    "horse": " equine"
+   }
+  }
+ },
+ "trained_consequences": [
+  "sound",
+  "young"
+ ],
+ "heldout_consequence": "taxonomy",
+ "decision_order": [
+  "sound",
+  "young",
+  "taxonomy"
+ ],
+ "train": {
+  "seeds": [
+   11,
+   23,
+   37
+  ],
+  "steps": 600,
+  "lr": 0.003,
+  "weight_decay": 0.01,
+  "wall_cap_hours": 4,
+  "loss_weights": {
+   "prototype": 1.0,
+   "native": 1.0,
+   "same_swap": 1.0,
+   "cross_swap": 1.0,
+   "persistence": 0.5
+  },
+  "prototype_margin": 4.0
+ },
+ "kill": {
+  "trained_min": 0.85,
+  "same_out_of_tolerance_max": 4,
+  "cross_two_of_three_min": 12,
+  "heldout_consistent_min": 10,
+  "heldout_gain_min": 0.25,
+  "third_over_first_min": 0.5
+ },
+ "contexts": {
+  "cat": [
+   "A small furry pet that often purrs softly, chases mice, and also sleeps in sunny spots all day.",
+   "This very little house pet purrs when content, hunts mice at night, and also naps in warm sunshine.",
+   "It is a compact furry companion that purrs, stalks mice, and dozes for hours in the sun.",
+   "A gentle indoor pet with soft fur that often purrs, pounces on mice, and rests in bright sunlight.",
+   "A quiet furry pet that purrs on laps, catches mice in the barn, and curls up in sunny windows.",
+   "This small pet purrs when stroked, hunts mice around the house, and also sleeps in the afternoon sun.",
+   "It is a sleek furry companion that often purrs, chases mice, and also stretches out in warm sunlight.",
+   "A calm indoor pet with soft paws that purrs, watches mice, and naps in patches of sun.",
+   "A playful furry pet that often purrs loudly, chases mice, and also sleeps curled up in sunny corners.",
+   "This graceful house pet purrs at night, hunts mice in the garden, and naps on warm windowsills.",
+   "It is a nimble furry companion that purrs, traps mice, and lounges for hours in the sun.",
+   "A lazy indoor pet with soft fur that purrs, stalks mice, and dozes in bright afternoon sunlight."
+  ],
+  "dog": [
+   "A loyal furry pet that barks loudly, fetches sticks, and wags its tail when the owner returns.",
+   "This very faithful house pet barks at strangers, chases thrown sticks, and also wags its tail happily.",
+   "It is a devoted furry companion that often barks, retrieves sticks, and also wags its tail in greeting.",
+   "A friendly outdoor pet with thick fur that barks, runs after sticks, and wags its tail at people.",
+   "A playful pet that barks at the door, fetches balls, and wags its tail for its owner.",
+   "This very big pet barks when excited, chases thrown balls, and also wags its tail all afternoon.",
+   "It is a sturdy furry companion that often barks, retrieves balls, and also wags its tail at friends.",
+   "A happy outdoor pet with strong legs that barks, runs after balls, and wags its tail at visitors.",
+   "A brave furry pet that barks at night, fetches sticks, and wags its tail when guests arrive.",
+   "This eager house pet barks at the mailman, chases thrown sticks, and also wags its tail.",
+   "It is a loyal furry companion that often barks, guards the yard, and wags its tail in welcome.",
+   "A gentle outdoor pet with floppy ears that barks, runs after sticks, and wags its tail at children."
+  ],
+  "cow": [
+   "A very large grazing farm animal that often moos loudly, chews grass, and also gives milk every morning.",
+   "This very heavy pasture animal moos at dawn, chews cud all day, and also gives fresh milk daily.",
+   "It is a slow grazing animal that often moos, eats hay, and gives milk to the farmer each day.",
+   "A calm field animal with an udder that moos, chews grass, and gives milk each day.",
+   "A gentle grazing farm animal that often moos softly, chews clover, and gives milk in the barn.",
+   "This very large pasture animal moos in the evening, chews cud slowly, and also gives rich milk daily.",
+   "It is a broad grazing animal that often moos, eats grass, and gives milk to the dairy each morning.",
+   "A patient field animal with black spots that often moos, chews hay, and gives milk to the farm.",
+   "A heavy grazing farm animal that often moos at dusk, chews grass, and also gives milk every evening.",
+   "This very spotted pasture animal moos across the field, slowly chews cud, and also gives fresh milk daily.",
+   "It is a sturdy grazing animal that moos, eats clover, and gives milk to the village each day.",
+   "A quiet field animal with a wet nose that moos, chews hay, and gives milk to the dairy."
+  ],
+  "horse": [
+   "A very tall hoofed farm animal that often neighs loudly, gallops across fields, and also carries riders.",
+   "This very strong stable animal neighs at dawn, freely gallops through meadows, and also carries riders daily.",
+   "It is a swift hoofed animal that often neighs, gallops, and carries riders along the country roads.",
+   "A proud field animal with a long mane that often neighs, gallops, and also carries riders to town.",
+   "A graceful hoofed farm animal that often neighs softly, gallops in the paddock, and carries riders.",
+   "This very fast stable animal neighs in the morning, freely gallops over hills, and also carries riders far.",
+   "It is a sleek hoofed animal that often neighs, gallops, and carries riders across the open plains.",
+   "A gentle field animal with a flowing tail that often neighs, gallops, and also carries riders each day.",
+   "A powerful hoofed farm animal that often neighs at night, gallops in the field, and carries riders.",
+   "This very spirited stable animal neighs at strangers, freely gallops down the track, and also carries riders home.",
+   "It is a sturdy hoofed animal that often neighs, gallops, and carries riders through the mountain pass.",
+   "A calm field animal with a braided mane that neighs, gallops, and carries riders to the fair."
+  ]
+ },
+ "train_indices": [
+  0,
+  1,
+  2,
+  3,
+  4,
+  5,
+  6,
+  7
+ ],
+ "heldout_indices": [
+  8,
+  9,
+  10,
+  11
+ ]
+}
