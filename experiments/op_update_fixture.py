@@ -17,7 +17,10 @@ Exercises the PRODUCTION helpers factored out of the analyzer/runner with synthe
      family no-reversal, support and low-rank eligibility clauses (positive synthetic margins qualify; a reversed family does not);
  10. the bridge ladder (fit_bridge_ladder): every member maps zero to zero; selection record; recovery of a known diagonal map;
      the noise floor (noise_floor): per (recipient, fold) q99, fold floor = max over recipients, layer = max over folds;
- 11. capture_insert refuses non-v1 populations and the OP_UPDATE tag BEFORE any model is constructed.
+ 11. capture_insert refuses non-v1 populations and the OP_UPDATE tag BEFORE any model is constructed;
+ 12. the Round 33 reducer, parser-default lock, exact A+B pins, q=r-1 coordinate, reload selection, and fail-closed artifact loader;
+ 13. law_argmax tampering and same-sentinel joint adjudication are rejected;
+ 14. a complete mocked consequence score reaches only ridge plus six nulls through the dedicated early-return path.
 Run:  .venv/Scripts/python.exe experiments/op_update_fixture.py
 """
 from __future__ import annotations
@@ -27,6 +30,7 @@ import json
 import shutil
 import sys
 import tempfile
+import time
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -192,6 +196,229 @@ def main():
             pass
     finally:
         runner.SubstitutionProbe = orig
+    # 12. Round 33 consequence reducer on per-cell D matrices: smallest-D_null selection inside each replicate, both-k rule, family reversal, manufactured / delayed semantics
+    blocks8 = ["b1", "b2", "b3", "b4"]; fold_c = [f"{b}_w{w}" for b in blocks8 for w in (0, 1)]; NC = analyzer.CONSEQ_NULLS
+    def build_c(g4, g8, reverse_block=None, weak_null="ctxprefix", drop_null=None, nan_frac=0.0):
+        cd = {}; r_ = np.random.default_rng(4)
+        for k_, g in ((4, g4), (8, g8)):
+            for fk in fold_c:
+                dn = 1.0 + 0.01 * r_.standard_normal((4, 16)); dr = dn * (1.0 - g)                      # ridge D = (1 - g) * strongest-null D
+                if reverse_block and fk.startswith(reverse_block): dr = dn * 1.5
+                if nan_frac: dr[r_.random((4, 16)) < nan_frac] = np.nan
+                cd.setdefault(("conseq", f"D{k_}", "ridge"), {})[fk] = dr.astype(np.float32)
+                for nul in NC:
+                    if nul == drop_null: continue
+                    cd.setdefault(("conseq", f"D{k_}", nul), {})[fk] = (dn * (1.5 if nul == weak_null else 1.0)).astype(np.float32)   # the weak null has a LARGER D and must never be selected
+        return cd
+    strata_c = lambda fold_key, w: [np.arange(w)]
+    cr = analyzer.consequence_reduce(build_c(0.08, 0.06), fold_c, blocks8, [4, 8], 100, strata_c, 7, one_position_pass=True)
+    assert cr["layer_passes"] and cr["counts_toward_license"] and cr["per_k"]["G4"]["keys_positive"] == 8 and abs(cr["per_k"]["G4"]["margin_vs_strongest_null"] - 0.08) < 0.01 and cr["per_k"]["G4"]["selected_null_point"] != "ctxprefix", "clean signal passes at both k against the smallest-D_null null"
+    assert not cr["manufactured_flag"] and not cr["delayed_consequence"]
+    assert not analyzer.consequence_reduce(build_c(0.08, 0.005), fold_c, blocks8, [4, 8], 100, strata_c, 7)["layer_passes"], "a layer needs both k"
+    cj = build_c(0.08, 0.08)                                                                             # six positive keys per horizon but only four jointly positive
+    for k_, neg in ((4, ["b1_w0", "b1_w1"]), (8, ["b2_w0", "b2_w1"])):
+        for fk in neg: cj[("conseq", f"D{k_}", "ridge")][fk] = (cj[("conseq", f"D{k_}", "class_mean")][fk] * 1.3).astype(np.float32)
+    cjr = analyzer.consequence_reduce(cj, fold_c, blocks8, [4, 8], 100, strata_c, 7)
+    assert cjr["per_k"]["G4"]["keys_positive"] == 6 and cjr["per_k"]["G8"]["keys_positive"] == 6 and cjr["n_keys_jointly_positive_across_horizons"] == 4 and not cjr["layer_passes"], "6/8 keys must be jointly positive across BOTH horizons"
+    cc = analyzer.consequence_reduce(build_c(0.08, 0.08, reverse_block="b3"), fold_c, blocks8, [4, 8], 100, strata_c, 7)
+    assert not cc["per_k"]["G4"]["no_family_collapse_or_reversal"] and not cc["layer_passes"], "a reversed family must block"
+    cm = analyzer.consequence_reduce(build_c(-0.05, -0.05), fold_c, blocks8, [4, 8], 100, strata_c, 7, one_position_pass=True)
+    assert cm["manufactured_flag"] and not cm["layer_passes"], "one-position pass + both upper bounds <= 0 -> manufactured"
+    assert not analyzer.consequence_reduce(build_c(-0.05, -0.05), fold_c, blocks8, [4, 8], 100, strata_c, 7, one_position_pass=False)["manufactured_flag"], "manufactured needs the prior one-position pass"
+    cdl = analyzer.consequence_reduce(build_c(0.08, 0.06), fold_c, blocks8, [4, 8], 100, strata_c, 7, one_position_pass=False)
+    assert cdl["delayed_consequence"] and cdl["layer_passes"], "one-position non-pass + both k pass -> delayed consequence"
+    c0 = analyzer.consequence_reduce(build_c(0.08, 0.06), fold_c, blocks8, [4, 8], 100, strata_c, 7, one_position_pass=False, structural_only=True)
+    assert c0["layer_passes"] and not c0["counts_toward_license"] and not c0["delayed_consequence"], "F0 is structural only"
+    assert not analyzer.consequence_reduce(build_c(0.08, 0.06, nan_frac=0.2), fold_c, blocks8, [4, 8], 100, strata_c, 7)["per_k"]["G4"]["passes"], "support < 0.95 fails"
+    try:
+        analyzer.consequence_reduce(build_c(0.08, 0.06, drop_null="wordonly_knn"), fold_c, blocks8, [4, 8], 100, strata_c, 7); raise RuntimeError("five nulls must be rejected")
+    except AssertionError:
+        pass
+    # 13. registered parser-default contract, exact A+B pins, base source coordinate, reload selection, one-position verdict
+    parsed = analyzer.build_parser().parse_args(["--run", "fixture", "--config", str(CFG), "--source", "forward_consequence", "--consequence-mode", "teacher_forced_v1",
+                                                  "--consequence-k", "4", "8", "--consequence-aggregation", "uniform_mean", "--residualize", "static",
+                                                  "--contextual-prefix-tag", "ctx_A", "--pairs", "0", "4", "8", "12", "20"])
+    parsed = analyzer.consequence_lock(parsed)
+    assert parsed.target == "delta" and parsed.unseen_words == 2 and parsed.contextual_prefix_xfree and parsed.n_boot == 500 and parsed.n_shuffle == 0 and parsed.pairs == [0, 1, 2, 3, 4], "registered command must work from parser defaults"
+    def args_c(**kw):
+        base = dict(consequence_mode="teacher_forced_v1", consequence_k=[4, 8], consequence_aggregation="uniform_mean", residualize="static", contextual_prefix_tag="ctx_A", pairs=[0, 4, 8, 12, 20], n_boot=2000, target="successor", unseen_words=0, skip_completion=False, smoke=False,
+                    interchangeability=False, bridge_screen=False, xfree_field=False, fl_null=0, loco=False, style_null=False, baselines=False, identity_check=False, identity_only=False, control_tag="", screen=False, ctx_screen=False, aug_full_mean=False, aug_kernel=False, aug_rank="4", move_tag="", contextual_prefix_xfree=False, n_shuffle=100, round30_gates=False)
+        base.update(kw); return SimpleNamespace(**base)
+    ok = analyzer.consequence_lock(args_c()); assert ok.pairs == [0, 1, 2, 3, 4] and ok.target == "delta" and ok.unseen_words == 2 and ok.n_boot == 500 and ok.contextual_prefix_xfree and ok.n_shuffle == 0 and not ok.round30_gates, "layer list -> PAIRS indices; all source implications set before validation"
+    for bad in (dict(pairs=[0, 1, 2, 3, 4]), dict(bridge_screen=True), dict(contextual_prefix_tag=""), dict(consequence_k=[4]), dict(screen=True), dict(move_tag="X")):
+        try:
+            analyzer.consequence_lock(args_c(**bad)); raise RuntimeError(f"lock must reject {bad}")
+        except AssertionError:
+            pass
+    hx = "a" * 64; hy = "b" * 64
+    assert runner.parse_expected_base_hashes(f"A:{hx},B:{hy}") == {"A": hx, "B": hy}
+    for bad in ("", hx, f"A:{hx}", f"B:{hy}", f"A:{hx},A:{hy}", f"C:{hx},B:{hy}", f"A:{hx[:10]},B:{hy}"):
+        try:
+            runner.parse_expected_base_hashes(bad); raise RuntimeError(f"hash spec must reject {bad!r}")
+        except AssertionError:
+            pass
+    assert analyzer.resolve_slot(20, -9) == 11 and analyzer.resolve_slot(20, 3) == 3
+    legacy_b = {"stage": "capture_forward", "model": "m", "model_revision": "r", "forward_states_sha256": "x", "sentinel": ".", "sentinel_id": 1, "config_name": "c", "num_hidden_layers": 28, "embed_dim": 6, "vocab": 5}
+    keys_b = {"H_sent", "H_q_unappended", "law_sent", "items", "pos", "probes", "blocks"}
+    assert runner.consequence_base_preflight(legacy_b, keys_b) == "lm_dyn_v1_legacy"
+    full_b = {**legacy_b, "tokenizer_revision": "r", "tokenizer_class": "T", "provenance": {"config_sha256_raw": "y"}, "source_position": [1], "readout_position": [2]}
+    assert runner.consequence_base_preflight(full_b, keys_b | {"source_position", "readout_position"}) == "full"
+    for bad_b, bad_k in (({**legacy_b, "tokenizer_revision": "r"}, keys_b), (full_b, keys_b), ({k_: v_ for k_, v_ in legacy_b.items() if k_ != "sentinel_id"}, keys_b), ({**legacy_b, "stage": "capture"}, keys_b)):
+        try:
+            runner.consequence_base_preflight(bad_b, bad_k); raise RuntimeError("preflight must reject mixed/missing schemas")
+        except AssertionError:
+            pass
+    live_sel = {"ridge": {"lam": 10.0}, "lexical_nulls": {"knn_k": 3, "ridge_emb_lam": 0.1, "kernel_emb": [0.1, 0.0001]}, "ctxprefix": {"lam": 100.0}, "ctxprefix_kernel": {"lam": 1.0, "gamma": 0.1}, "residualization": {"lamX": 1.0, "lamD": 10.0}}
+    ctx_ent = {"selected": {"ridge": {"lam": 10.0}, "lexical_nulls": {"knn_k": 3, "ridge_emb_lam": 0.1, "kernel_emb": [0.1, 0.0001]}, "ctxprefix": {"lam": 100.0, "effective_df": 42.7}, "ctxprefix_kernel": {"lam": 1.0, "gamma": 0.1, "inner": {}}}, "residualization": {"lamX": 1.0, "lamD": 10.0, "presentation_only_delta_cos": 0.4}}
+    assert analyzer.check_fit_reuse(live_sel, ctx_ent, "t")["ridge.lam"] == 10.0
+    for mut in ({"ridge": {"lam": 1.0}}, {"lexical_nulls": {"knn_k": 5, "ridge_emb_lam": 0.1, "kernel_emb": [0.1, 0.0001]}}, {"residualization": {"lamX": 1.0, "lamD": 100.0}}):
+        try:
+            analyzer.check_fit_reuse({**live_sel, **mut}, ctx_ent, "t"); raise RuntimeError(f"fit reuse must reject {mut}")
+        except AssertionError:
+            pass
+    try:
+        analyzer.check_fit_reuse(live_sel, None, "t"); raise RuntimeError("missing ctx fold entry must fail")
+    except AssertionError:
+        pass
+    assert runner.consequence_source_coordinate(11, 10) == 10
+    for bad_q in (9, 11):
+        try:
+            runner.consequence_source_coordinate(11, bad_q); raise RuntimeError("source equality must use pinned q=r-1")
+        except AssertionError:
+            pass
+    reload_multi = np.zeros((3, 8, 5)); reload_last = np.ones((3, 5)); assert analyzer.select_reload_law((reload_multi, reload_last), "forward_consequence").shape == (3, 5) and np.all(analyzer.select_reload_law((reload_multi, reload_last), "forward_consequence") == 0)
+    try:
+        analyzer.resolve_slot(8, -9); raise RuntimeError("out-of-range slot must fail")
+    except AssertionError:
+        pass
+    def fake_pair(margin, lb, supp=1.0, collapse_block=None):
+        keys = [f"{b}_w{w}" for b in blocks8 for w in (0, 1)]; gates = {}
+        for fk in keys:
+            m = margin if not (collapse_block and fk.startswith(collapse_block)) else -0.1
+            gates[fk] = {"gates": {"ridge": {f"{ep}_vs_{nul}": {"mean": m + (0.3 if nul == "ctxprefix_kernel" else 0.0), "ci95": [m - 0.01, m + 0.01]} for ep in ("succ_cos", "skill", "klrank") for nul in NC}}, "support": supp}
+        bf = {f"ridge_{ep}_vs_{nul}": {"mean": margin + (0.3 if nul == "ctxprefix_kernel" else 0.0), "ci95_block_first": [lb, margin + 0.05]} for ep in ("cos", "skill", "klrank") for nul in NC}
+        return {"folds": gates, "pooled_gates_block_first": bf}
+    assert analyzer.one_position_layer_pass(fake_pair(0.10, 0.05)) and not analyzer.one_position_layer_pass(fake_pair(0.10, -0.01)) and not analyzer.one_position_layer_pass(fake_pair(0.10, 0.05, supp=0.9)) and not analyzer.one_position_layer_pass(fake_pair(0.10, 0.05, collapse_block="b2"))
+    # 14. consequence artifact loader: synthetic base + consequence + contextual-prefix analysis; tamper cases fail closed
+    cdir = Path(tempfile.mkdtemp()) / "conseq_fixture"; cdir.mkdir(parents=True)
+    Pc, nc, Vc = 8, 12, 128; r2 = np.random.default_rng(9); H = r2.standard_normal((Pc, 29, nc, 6)).astype(np.float16)
+    lawA = np.log(r2.dirichlet(np.ones(Vc), size=(Pc, nc))).astype(np.float16)
+    source_pos = np.arange(Pc) + 10; readout_pos = source_pos + 1
+    base_arrays = {"H_slot": H, "H_last": H, "H_sent": H, "H_q_unappended": H, "law_sent": lawA, "law_last": lawA, "law_q_unappended": lawA, "items": np.array([f"w{i}" for i in range(nc)]), "pos": np.array(["noun"] * nc), "probes": np.array([f"p{i}" for i in range(Pc)]), "blocks": np.array([b for b in blocks8 for _ in (0, 1)]), "source_position": source_pos, "readout_position": readout_pos}
+    np.savez_compressed(cdir / "forward_states_A.npz", **base_arrays); fsha = hashlib.sha256((cdir / "forward_states_A.npz").read_bytes()).hexdigest()
+    fman = {"stage": "capture_forward", "model": "Qwen/Qwen3-0.6B", "model_revision": "fixture", "tokenizer_revision": "fixture_tok", "tokenizer_class": "FixtureTokenizer", "num_hidden_layers": 28, "embed_dim": 6, "vocab": Vc,
+            "sentinel": ".", "sentinel_id": 13, "config_name": "lexical_probe_v1", "forward_states_sha256": fsha, "locality_max_abs_diff_float16_storage": 0.05,
+            "source_position": source_pos.tolist(), "readout_position": readout_pos.tolist(), "provenance": {"config_sha256_raw": "c" * 64}}
+    (cdir / "forward_manifest_A.json").write_text(json.dumps(fman), encoding="utf-8"); fman_sha = hashlib.sha256((cdir / "forward_manifest_A.json").read_bytes()).hexdigest()
+    lf = lawA.astype(np.float32); fresh_all = np.repeat(lf[:, :, None, :], 8, axis=2); ent = (-(np.exp(fresh_all) * fresh_all).sum(-1)).astype(np.float32); top = fresh_all.argmax(-1); tail_truth = np.stack([fresh_all[:, :, j, 100 + j] for j in range(8)], axis=2)
+    def write_conseq(tamper=None):
+        for f_ in cdir.glob("*conseqA*"): f_.unlink()
+        law_top = top.copy();
+        if tamper == "argmax": law_top[0, 0, 0] = (law_top[0, 0, 0] + 1) % Vc
+        arrays = {"law_entropy": ent + (0.2 if tamper == "entropy" else 0.0), "law_argmax": law_top, "tail_logp": tail_truth, "tail_token_ids": np.arange(100, 108), "items": base_arrays["items"], "pos": base_arrays["pos"], "probes": base_arrays["probes"], "blocks": base_arrays["blocks"], "source_position": source_pos, "readout_position": readout_pos,
+                  "readout_max_abs_diff_vs_base_by_probe": np.full(Pc, 0.01, dtype=np.float32), "source_max_abs_diff_vs_base_by_probe": np.full(Pc, 0.01, dtype=np.float32), "repeat_law_kl": (np.full((Pc, nc, 8), np.nan, dtype=np.float32) if tamper == "noise" else np.abs(r2.standard_normal((Pc, nc, 8))).astype(np.float32) * 1e-4)}
+        np.savez_compressed(cdir / "states_conseqA.npz", **arrays)
+        man = {"stage": "capture_forward_consequence", "source_tag": "A", "capture_complete": True, "budget_incomplete": False, "model": "Qwen/Qwen3-0.6B", "model_revision": "fixture", "tokenizer_revision": "fixture_tok", "tokenizer_class": "FixtureTokenizer", "num_hidden_layers": 28, "embed_dim": 6, "vocab": Vc, "config_name": "lexical_probe_v1", "sentinel": ".", "sentinel_id": 13, "teacher_forced_tail_set": "fixed_tail_v1", "tail_text": analyzer.TAIL_TEXT["A"],
+               "tail_token_ids": list(range(100, 108)) if tamper != "tail" else list(range(100, 107)) + [1], "consequence_k": [4, 8], "k_max": 8, "base_schema": "full", "positions_source": "base_arrays", "tokenizer_pin": "tokenizer_revision", "base_config_byte_pin": "present", "source_position": source_pos.tolist(), "readout_position": readout_pos.tolist(), "readout_max_abs_diff_vs_base_by_probe": [0.01] * Pc, "source_max_abs_diff_vs_base_by_probe": [0.01 if tamper != "causality" else 0.5] * Pc, "readout_equality_tolerance": 0.13,
+               "provenance": {"base_manifest_sha256": fman_sha if tamper != "prov" else "0" * 64, "base_states_sha256": fsha, "config_sha256_raw": "c" * 64}, "array_file_sha256": hashlib.sha256((cdir / "states_conseqA.npz").read_bytes()).hexdigest() if tamper != "array" else "0" * 64, "wall_exceeded": tamper == "wall"}
+        (cdir / "manifest_conseqA.json").write_text(json.dumps(man), encoding="utf-8")
+    ctx = {"source": "forward", "sentinel_tag": "A", "seconds": 1.0, "target": "delta", "residualize": "static", "fallback": {"n_boot": 500, "n_shuffle": 100}, "manifest": fman,
+           "contextual_prefix_xfree": True, "prefix_feature_set": "token_ids_v1", "ctx_screen_only": False, "ctx_lock": "fixture explicit lock", "pairs": {f"F{l_}": fake_pair(0.10 if l_ in (8, 12) else -0.05, 0.05 if l_ in (8, 12) else -0.1) for l_ in (0, 4, 8, 12, 20)}}
+    (cdir / "analysis_ctxfix.json").write_text(json.dumps(ctx), encoding="utf-8")
+    write_conseq(); dA = np.load(cdir / "forward_states_A.npz")
+    C = analyzer.load_consequence_artifact(cdir, "A", dA, fman, [4, 8], "ctxfix")
+    assert C["tail_ids"] == list(range(100, 108)) and C["one_position_pass"] == {"F0": False, "F4": False, "F8": True, "F12": True, "F20": False} and C["k_max"] == 8
+    analyzer.validate_consequence_truth_summaries(fresh_all[0], C, 0)
+    for tamper in ("entropy", "noise", "tail", "causality", "prov", "array", "wall"):
+        write_conseq(tamper)
+        try:
+            analyzer.load_consequence_artifact(cdir, "A", dA, fman, [4, 8], "ctxfix"); raise RuntimeError(f"loader must reject tamper={tamper}")
+        except AssertionError:
+            pass
+    write_conseq()
+    write_conseq("argmax"); C_bad_top = analyzer.load_consequence_artifact(cdir, "A", dA, fman, [4, 8], "ctxfix")
+    try:
+        analyzer.validate_consequence_truth_summaries(fresh_all[0], C_bad_top, 0); raise RuntimeError("law_argmax tamper must fail against fresh laws")
+    except AssertionError:
+        pass
+    write_conseq()
+    try:
+        analyzer.load_consequence_artifact(cdir, "A", dA, fman, [4, 8], "missing_ctx"); raise RuntimeError("missing contextual-prefix run must fail")
+    except AssertionError:
+        pass
+    joint_summary = {"sentinel": "A", "passing_layers_F4_F20": ["F8", "F12"], "license": False, "compatibility": C["compatibility"]}
+    for tg in ("sameA1", "sameA2"):
+        (cdir / f"analysis_{tg}.json").write_text(json.dumps({"source": "forward_consequence", "analysis_complete": True, "budget_incomplete": False, "sentinel_tag": "A", "consequence_summary": joint_summary}), encoding="utf-8")
+    try:
+        analyzer.consequence_joint_verdict(cdir, ["sameA1", "sameA2"]); raise RuntimeError("same-sentinel joint inputs must be rejected")
+    except AssertionError:
+        pass
+    dA.close(); shutil.rmtree(cdir.parent, ignore_errors=True)
+
+    # 15. mocked complete consequence fold through the dedicated early-return path; every legacy-only primitive is poisoned
+    Pq, nq, Dq, Vq = 8, 16, 4, 11; rq = np.random.default_rng(22); blocks_q = [b for b in blocks8 for _ in (0, 1)]; pos_q = ["noun"] * 8 + ["verb"] * 8
+    ZXq = rq.standard_normal((Pq, 21, nq, Dq)).astype(np.float32); carrier = rq.standard_normal((Pq, Dq)).astype(np.float32); lexical = rq.standard_normal((nq, Dq)).astype(np.float32)
+    ZYq = ZXq + carrier[:, None, None, :] * 0.15 + lexical[None, None, :, :] * 0.10 + 0.03 * np.tanh(ZXq)
+    Pq_static = np.stack([[float(i % 2), float((i // 2) % 2), float(i // 4), float(i), float(i * i), float((i + 1) / 9)] for i in range(Pq)]).astype(np.float32); Pq_static[:, :3] -= Pq_static[:, :3].mean(0)
+    Eq = rq.standard_normal((nq, Dq)).astype(np.float32); probe_ids_q = {b: [i for i, bb in enumerate(blocks_q) if bb == b] for b in blocks8}
+    def cells_q(probes, layer, widx=None):
+        wi = np.arange(nq) if widx is None else np.asarray(widx); X = np.concatenate([ZXq[p, layer, wi] for p in probes]); Y = np.concatenate([ZYq[p, layer, wi] for p in probes]); return X, Y - X
+    def ctx_cols_q(probes): return {("probe", p): i for i, p in enumerate(probes)}
+    def ctx_rows_q(probes, widx, cols):
+        wi = np.arange(nq) if widx is None else np.asarray(widx); rows_ = []
+        for p in probes:
+            for w in wi:
+                one = np.zeros(len(cols), dtype=np.float64)
+                if ("probe", p) in cols: one[cols[("probe", p)]] = 1.0
+                rows_.append(np.concatenate([one, [float(w), float(w % 2), float((p + 1) * (w + 1))]]))
+        return np.stack(rows_)
+    CTXq = {"columns": ctx_cols_q, "rows": ctx_rows_q}
+    class FakeConsequenceCompleter:
+        def __init__(self): self.calls = []
+        def laws(self, tp, layer, Yhat, widx=None):
+            wi = np.arange(nq) if widx is None else np.asarray(widx); self.calls.append({"tp": tp, "truth": Yhat is None, "n": len(wi)})
+            v = np.arange(Vq, dtype=np.float64)[None, None, :]; j = np.arange(8, dtype=np.float64)[None, :, None]; w = wi.astype(np.float64)[:, None, None]
+            logits = np.cos((v + 1) * (0.07 * (tp + 1) + 0.03 * (w + 1) + 0.02 * (j + 1)))
+            if Yhat is not None:
+                yh = np.asarray(Yhat, dtype=np.float64); logits = logits + 0.04 * yh[:, None, :1] * np.sin((v + 1) * 0.3)
+            logits -= logits.max(-1, keepdims=True); lp = logits - np.log(np.exp(logits).sum(-1, keepdims=True)); return lp.astype(np.float32), lp[:, -1].astype(np.float32)
+    fcq = FakeConsequenceCompleter(); truth_q = np.stack([fcq.laws(p, 0, None)[0] for p in range(Pq)]); fcq.calls.clear(); tail_q = list(range(8))
+    consequence_q = {"law_entropy": -(np.exp(truth_q) * truth_q).sum(-1), "law_argmax": truth_q.argmax(-1), "tail_logp": np.stack([truth_q[:, :, j, tail_q[j]] for j in range(8)], axis=2), "tail_ids": tail_q, "k_max": 8, "ks": [4, 8],
+                     "rep_kl": np.full((Pq, nq, 8), 1e-8, dtype=np.float32), "one_position_pass": {f"F{l}": False for l in analyzer.CONSEQ_LAYERS}, "ctx_sha256": "d" * 64,
+                     "compatibility": {"population_sha256": "e" * 64, "horizons": [4, 8], "nulls": list(analyzer.CONSEQ_NULLS), "layers": analyzer.CONSEQ_LAYERS, "pins": {"model_revision": "fixture"}, "config_sha256_raw": "f" * 64, "residualizer": "P_static", "contextual_feature_set": "token_ids_v1", "tail_set": "fixed_tail_v1"}}
+    aq = SimpleNamespace(unseen_words=2, n_boot=20, prefix_feature_set="token_ids_v1", sentinel_tag="A", contextual_prefix_tag="ctx_fixture", tag="fixture")
+    consequence_q.update({"ctx_selected": {}, "ctx_manifest_schema": "forward_manifest", "manifest": {"base_schema": "full"},
+                          "artifact_hashes": {"consequence_manifest_sha256": "1" * 64, "consequence_states_sha256": "2" * 64, "base_manifest_sha256": "3" * 64, "base_states_sha256": "4" * 64, "contextual_prefix_analysis_sha256": "d" * 64}})
+    # exact-fit reuse: a capture pass records the live selections as the 'completed contextual-prefix run'; the real pass must match them exactly; a mutated record must fail closed
+    captured = {}; real_check = analyzer.check_fit_reuse
+    def capture_check(live, ctx_entry, where):
+        pk_, fk_ = where.split("/"); captured.setdefault(pk_, {})[fk_] = {"selected": {k_: v_ for k_, v_ in live.items() if k_ != "residualization"}, "residualization": live["residualization"]}; return {}
+    analyzer.check_fit_reuse = capture_check
+    try:
+        analyzer.score_forward_consequence(aq, {"pairs": {}, "source": "forward_consequence", "sentinel_tag": "A", "residualize": "static"}, Path("."), [(l, l) for l in analyzer.CONSEQ_LAYERS], blocks8, probe_ids_q, pos_q, nq, Dq, Pq_static, Eq, CTXq, cells_q, fcq.laws, consequence_q, time.time(), output_path=None)
+    finally:
+        analyzer.check_fit_reuse = real_check
+    consequence_q["ctx_selected"] = captured; fcq.calls.clear()
+    mutated = json.loads(json.dumps(captured, default=float)); mutated["F8"]["b2_w0"]["selected"]["ridge"]["lam"] = -1.0
+    try:
+        analyzer.score_forward_consequence(aq, {"pairs": {}, "source": "forward_consequence", "sentinel_tag": "A", "residualize": "static"}, Path("."), [(l, l) for l in analyzer.CONSEQ_LAYERS], blocks8, probe_ids_q, pos_q, nq, Dq, Pq_static, Eq, CTXq, cells_q, fcq.laws, {**consequence_q, "ctx_selected": mutated}, time.time(), output_path=None)
+        raise RuntimeError("a contextual-prefix selection mismatch must fail closed")
+    except AssertionError as e_:
+        assert "exact-fit reuse violated" in str(e_)
+    fcq.calls.clear()
+    result_q = {"pairs": {}, "source": "forward_consequence", "sentinel_tag": "A", "residualize": "static"}
+    poison = {"_svd": analyzer.RidgeFamily._svd, "fit_kernel_ridge": analyzer.fit_kernel_ridge, "fit_knn": analyzer.fit_knn, "chart_control": analyzer.chart_control}
+    analyzer.RidgeFamily._svd = lambda *a_, **k_: (_ for _ in ()).throw(RuntimeError("legacy low-rank/SVD path entered"))
+    analyzer.fit_kernel_ridge = lambda *a_, **k_: (_ for _ in ()).throw(RuntimeError("legacy state-kernel path entered"))
+    analyzer.fit_knn = lambda *a_, **k_: (_ for _ in ()).throw(RuntimeError("legacy state-kNN path entered"))
+    analyzer.chart_control = lambda *a_, **k_: (_ for _ in ()).throw(RuntimeError("legacy chart path entered"))
+    try:
+        scored = analyzer.score_forward_consequence(aq, result_q, Path("."), [(l, l) for l in analyzer.CONSEQ_LAYERS], blocks8, probe_ids_q, pos_q, nq, Dq, Pq_static, Eq, CTXq, cells_q, fcq.laws, consequence_q, time.time(), output_path=None)
+    finally:
+        analyzer.RidgeFamily._svd = poison["_svd"]; analyzer.fit_kernel_ridge = poison["fit_kernel_ridge"]; analyzer.fit_knn = poison["fit_knn"]; analyzer.chart_control = poison["chart_control"]
+    assert scored["analysis_complete"] and not scored["budget_incomplete"] and set(scored["pairs"]) == {f"F{l}" for l in analyzer.CONSEQ_LAYERS} and "consequence_summary" in scored
+    assert all(pv["bounded_early_return"]["svd_records_added"] == 0 and pv["bounded_early_return"]["candidates"] == ["ridge", *analyzer.CONSEQ_NULLS] for pv in scored["pairs"].values())
+    assert sum(c["truth"] for c in fcq.calls) == 80 and sum(not c["truth"] for c in fcq.calls) == 560, "fake completer must see only truth plus ridge/six-null completion groups"
     print("op_update fixture: all checks passed")
 
 

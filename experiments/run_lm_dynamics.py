@@ -314,6 +314,152 @@ def capture_insert(a):
     print(json.dumps({k: v for k, v in manifest.items() if k not in ("prefix_token_ids", "suffix_token_ids", "argv")}, indent=2))
 
 
+def parse_expected_base_hashes(spec):
+    """'A:<sha256>,B:<sha256>' -> exact A/B pins; no missing or extra tag is admissible."""
+    out = {}
+    assert spec, "--expected-base-manifest-sha256 is mandatory (A:<sha>,B:<sha>)"
+    for part in spec.split(","):
+        assert ":" in part, f"expected tag-bound hash, got {part!r}"
+        tag_, sha_ = part.split(":", 1); tag_ = tag_.strip(); sha_ = sha_.strip().lower()
+        assert tag_ in ("A", "B") and len(sha_) == 64 and all(c in "0123456789abcdef" for c in sha_) and tag_ not in out, f"bad expected hash entry {part!r}"
+        out[tag_] = sha_
+    assert set(out) == {"A", "B"}, "--expected-base-manifest-sha256 must contain exactly one A pin and one B pin"
+    return out
+
+
+TAIL_SET = {"fixed_tail_v1": {"A": " The same continuation follows in every case.", "B": " and the same continuation follows in every case."}}
+
+
+LEGACY_BASE_REQUIRED = ("stage", "model", "model_revision", "forward_states_sha256", "sentinel", "sentinel_id", "config_name", "num_hidden_layers", "embed_dim", "vocab")
+
+
+def consequence_base_preflight(bman, base_keys):
+    """Pre-model schema preflight for a base forward capture (Round 33 amendment base_compat_v1, registered before any consequence outcome):
+    the frozen lm_dyn_v1 captures predate tokenizer/config-byte/position pins. 'full' bases carry tokenizer_revision, tokenizer_class,
+    provenance.config_sha256_raw and source/readout position arrays; 'lm_dyn_v1_legacy' bases carry none of them and are pinned instead by
+    forward_states_sha256 + model_revision (tokenizer revision must then equal the model revision) + config_name, with positions derived from
+    the tokenizer layout and recorded in the consequence manifest. Any other shape is rejected before the model loads."""
+    missing = [k for k in LEGACY_BASE_REQUIRED if k not in bman]; assert not missing, f"base manifest lacks {missing}"
+    assert bman["stage"] == "capture_forward", "base is not a capture_forward manifest"
+    for k in ("H_sent", "H_q_unappended", "law_sent", "items", "pos", "probes", "blocks"): assert k in base_keys, f"base states lack {k}"
+    full_keys = ("tokenizer_revision", "tokenizer_class"); pos_keys = ("source_position", "readout_position")
+    has_full = all(k in bman for k in full_keys) and "config_sha256_raw" in bman.get("provenance", {}) and all(k in base_keys for k in pos_keys) and all(k in bman for k in pos_keys)
+    has_none = not any(k in bman for k in full_keys) and "config_sha256_raw" not in bman.get("provenance", {}) and not any(k in base_keys for k in pos_keys) and not any(k in bman for k in pos_keys)
+    assert has_full or has_none, "base manifest mixes full and legacy pin schemas"
+    return "full" if has_full else "lm_dyn_v1_legacy"
+
+
+def consequence_source_coordinate(readout_position, pinned_base_source_position):
+    """The Round 33 source is q=r-1 (the last pre-sentinel coordinate), pinned by the base capture."""
+    q = int(readout_position) - 1
+    assert q == int(pinned_base_source_position), f"consequence source q=r-1={q} != pinned base source {pinned_base_source_position}"
+    return q
+
+
+def capture_forward_consequence(a):
+    """Round 33 bounded multi-position consequence capture; aborts to an authoritative non-claiming manifest at 45 minutes."""
+    t0 = time.time(); K_MAX = max(a.consequence_k); assert sorted(a.consequence_k) == [4, 8], "the consequence horizons are fixed at k in {4, 8}"
+    tails = TAIL_SET[a.teacher_forced_tail_set]; sp = None; CAPTURE_WALL = 2700.0
+    expected = parse_expected_base_hashes(a.expected_base_manifest_sha256)
+    assert list(a.source_tags) == ["fwdA", "fwdB"], "--source-tags is locked to exactly: fwdA fwdB"
+    raw_cfg = Path(a.config).read_bytes(); cfg = json.loads(raw_cfg.decode("utf-8")); cfg_sha = hashlib.sha256(raw_cfg).hexdigest()
+    if a.expected_config_sha256: assert cfg_sha == a.expected_config_sha256.lower(), f"live config sha {cfg_sha} != --expected-config-sha256 {a.expected_config_sha256}"
+    out_dir = RESULTS / a.out; out_dir.mkdir(parents=True, exist_ok=True)
+
+    def abort_for_wall(src_tag, bman, base_sha, where):
+        elapsed = time.time() - t0
+        if elapsed <= CAPTURE_WALL: return False
+        nonclaim = {"stage": "capture_forward_consequence", "source_tag": src_tag, "capture_complete": False, "budget_incomplete": True,
+                    "wall_exceeded": True, "capture_wall_seconds": CAPTURE_WALL, "seconds": round(elapsed, 1), "abort_point": where,
+                    "model": a.model, "model_revision": bman.get("model_revision"), "tokenizer_revision": bman.get("tokenizer_revision"),
+                    "config": a.config, "config_name": cfg.get("name"), "consequence_k": sorted(a.consequence_k), "k_max": K_MAX,
+                    "teacher_forced_tail_set": a.teacher_forced_tail_set,
+                    "provenance": {"base_manifest_sha256": base_sha, "base_states_sha256": bman.get("forward_states_sha256"), "config_sha256_raw": cfg_sha},
+                    "note": "Non-claiming manifest: capture aborted at the registered 45-minute wall; no consequence score may load this tag."}
+        (out_dir / f"manifest_conseq{src_tag}.json").write_text(json.dumps(nonclaim, indent=2), encoding="utf-8")
+        print(f"capture_forward_consequence aborted at {where}: {elapsed:.1f}s exceeds {CAPTURE_WALL:.0f}s; wrote non-claiming manifest", flush=True)
+        return True
+
+    for tag in a.source_tags:
+        src_tag = tag[-1]; base_npz = out_dir / f"forward_states_{src_tag}.npz"; base_man_path = out_dir / f"forward_manifest_{src_tag}.json"
+        base_sha = hashlib.sha256(base_man_path.read_bytes()).hexdigest(); assert base_sha == expected[src_tag], f"base manifest {src_tag} sha {base_sha} != pinned {expected[src_tag]}"
+        bman = json.loads(base_man_path.read_text(encoding="utf-8")); base = np.load(base_npz)
+        assert hashlib.sha256(base_npz.read_bytes()).hexdigest() == bman["forward_states_sha256"], f"base states {src_tag}: file hash != manifest"
+        base_schema = consequence_base_preflight(bman, set(base.files))                                   # cheap failure before any model load
+        assert Path(bman["config"]).resolve() == Path(a.config).resolve() or bman["config_name"] == cfg["name"], f"{src_tag}: config != base capture config"
+        if sp is None: sp = SubstitutionProbe(a.model)
+        tok_rev = getattr(sp.tok, "_commit_hash", None) or getattr(getattr(sp.tok, "init_kwargs", {}), "get", lambda k, d=None: d)("_commit_hash", None) or sp.revision
+        assert bman.get("stage") == "capture_forward" and bman.get("model") == a.model and sp.revision == bman.get("model_revision"), f"{src_tag}: model/stage pin != base capture"
+        if base_schema == "full":
+            assert tok_rev == bman.get("tokenizer_revision") and type(sp.tok).__name__ == bman.get("tokenizer_class"), f"{src_tag}: tokenizer revision/class != base capture"
+            assert cfg["name"] == bman.get("config_name") and cfg_sha == bman.get("provenance", {}).get("config_sha256_raw"), f"{src_tag}: live config bytes/name != base capture pin"
+        else:                                                                                              # lm_dyn_v1_legacy: tokenizer pinned through the model revision; config pinned by name + live bytes recorded
+            assert tok_rev == sp.revision and cfg["name"] == bman.get("config_name"), f"{src_tag}: legacy base pin failed (tokenizer revision != model revision or config name)"
+        assert int(sp.model.config.num_hidden_layers) == int(bman.get("num_hidden_layers")) and int(sp.E.shape[1]) == int(bman.get("embed_dim")) and int(sp.E.shape[0]) == int(bman.get("vocab")), f"{src_tag}: architecture pins != base capture"
+        if abort_for_wall(src_tag, bman, base_sha, "before_tag"): base.close(); return
+        L = int(sp.model.config.num_hidden_layers); items = [w for p_ in cfg["items"] for w in cfg["items"][p_]]; pos = [p_ for p_ in cfg["items"] for _ in cfg["items"][p_]]
+        assert [str(x) for x in base["items"]] == items and [str(x) for x in base["pos"]] == pos, f"{src_tag}: item/POS order != base capture"
+        assert [str(x) for x in base["probes"]] == [p["name"] for p in cfg["probes"]] and [str(x) for x in base["blocks"]] == [p["block"] for p in cfg["probes"]], f"{src_tag}: probe/block order != base capture"
+        if base_schema == "full":
+            assert [int(x) for x in base["source_position"]] == [int(x) for x in bman["source_position"]] and [int(x) for x in base["readout_position"]] == [int(x) for x in bman["readout_position"]], f"{src_tag}: position arrays != manifest"
+            src_positions = [int(x) for x in base["source_position"]]; read_positions = [int(x) for x in base["readout_position"]]
+        else:                                                                                              # tokenizer_layout_v1: r = |prefix| + 1 + |suffix| (appended sentinel), q = r - 1
+            lay = [(len(sp.tok.encode(split_template(p["template"])[0], add_special_tokens=False)), len(sp.tok.encode(split_template(p["template"])[1], add_special_tokens=False))) for p in cfg["probes"]]
+            read_positions = [lp + 1 + ls for lp, ls in lay]; src_positions = [rp - 1 for rp in read_positions]
+        assert len(src_positions) == len(read_positions) == len(cfg["probes"]) and all(0 < q < rp for q, rp in zip(src_positions, read_positions)), f"{src_tag}: invalid pinned positions" # for x in bman["readout_position"]], f"{src_tag}: base source/readout positions are not pinned"
+        ids = [sp.single_token_id(w) for w in items]; states = torch.stack([sp.state(i) for i in ids]); n = len(items); P = len(cfg["probes"])
+        sent_ids = sp.tok.encode(bman["sentinel"], add_special_tokens=False); assert sent_ids == [int(bman["sentinel_id"])], "sentinel id != base manifest"
+        tail_ids_full = sp.tok.encode(tails[src_tag], add_special_tokens=False); assert len(tail_ids_full) >= K_MAX, f"tail text yields {len(tail_ids_full)} < {K_MAX} tokens: amend the lock before any run"
+        tail_ids = tail_ids_full[:K_MAX]; assert not (set(tail_ids) & set(getattr(sp.tok, "all_special_ids", []))), "tail contains a special token"
+        ext_e = sp.E[torch.tensor(sent_ids + tail_ids)]
+        law_ent = np.zeros((P, n, K_MAX), dtype=np.float32); law_top = np.zeros((P, n, K_MAX), dtype=np.int64); tail_lp = np.zeros((P, n, K_MAX), dtype=np.float32)
+        read_eq = []; src_eq = []; rep_kl = np.full((P, n, K_MAX), np.nan, dtype=np.float32)
+        for pi, p in enumerate(cfg["probes"]):
+            if abort_for_wall(src_tag, bman, base_sha, f"before_probe_{pi}"): base.close(); return
+            pre, suf = split_template(p["template"]); seq, slot = sp._build(Probe(p["name"], p["block"], pre, suf), states)
+            seq = torch.cat([seq, ext_e.unsqueeze(0).expand(seq.shape[0], -1, -1)], dim=1); r_pos = seq.shape[1] - 1 - K_MAX
+            lp_ = len(sp.tok.encode(pre, add_special_tokens=False)); ls_ = len(sp.tok.encode(suf, add_special_tokens=False))
+            assert slot == lp_ and r_pos == lp_ + 1 + ls_ and seq.shape[1] == lp_ + 1 + ls_ + 1 + K_MAX, f"probe {pi}: slot/readout positions != locked layout"
+            assert r_pos == read_positions[pi], f"probe {pi}: extended readout {r_pos} != pinned base readout {read_positions[pi]}"
+            q_pos = consequence_source_coordinate(r_pos, src_positions[pi]); mx = 0.0; mxs = 0.0
+            for i in range(0, n, a.batch):
+                if abort_for_wall(src_tag, bman, base_sha, f"probe_{pi}_batch_{i}"): base.close(); return
+                with torch.no_grad():
+                    o = sp.model(inputs_embeds=seq[i:i + a.batch], output_hidden_states=True)
+                    o2 = sp.model(inputs_embeds=seq[i:i + a.batch], output_hidden_states=True) if pi == 0 else None
+                if abort_for_wall(src_tag, bman, base_sha, f"probe_{pi}_batch_{i}_after_forward"): base.close(); return
+                for l in range(L + 1):
+                    hr = o.hidden_states[l][:, r_pos, :].float(); hq = o.hidden_states[l][:, q_pos, :].float()
+                    mx = max(mx, float((hr - base["H_sent"][pi, l, i:i + a.batch].astype(np.float32)).abs().max()))
+                    mxs = max(mxs, float((hq - base["H_q_unappended"][pi, l, i:i + a.batch].astype(np.float32)).abs().max()))
+                lg = torch.log_softmax(o.logits[:, r_pos:r_pos + K_MAX, :].float(), -1)
+                law_ent[pi, i:i + a.batch] = (-(lg.exp() * lg).sum(-1)).numpy(); law_top[pi, i:i + a.batch] = lg.argmax(-1).numpy(); tail_lp[pi, i:i + a.batch] = lg[:, torch.arange(K_MAX), torch.tensor(tail_ids)].numpy()
+                if o2 is not None:
+                    lg2 = torch.log_softmax(o2.logits[:, r_pos:r_pos + K_MAX, :].float(), -1); rep_kl[pi, i:i + a.batch] = (lg.exp() * (lg - lg2)).sum(-1).numpy()
+            read_eq.append(mx); src_eq.append(mxs); print(f"  {p['name']:14s} consequence-captured (r={r_pos}, q={q_pos}, tail={K_MAX}, readout/source diff {mx:.2e}/{mxs:.2e}) ({time.time() - t0:.0f}s)", flush=True)
+        tol = max(float(bman.get("locality_max_abs_diff_float16_storage", 0.0)) + 1e-3, 0.13)
+        assert max(read_eq) <= tol and max(src_eq) <= tol, f"readout/source state differs from base beyond tolerance: {max(read_eq)} / {max(src_eq)}"
+        assert np.isfinite(rep_kl[0]).all(), "repeat-law noise incomplete"
+        if abort_for_wall(src_tag, bman, base_sha, "before_write"): base.close(); return
+        fname = f"states_conseq{src_tag}.npz"
+        arrays = {"law_entropy": law_ent, "law_argmax": law_top, "tail_logp": tail_lp, "tail_token_ids": np.array(tail_ids), "items": np.array(items), "pos": np.array(pos),
+                  "probes": np.array([p["name"] for p in cfg["probes"]]), "blocks": np.array([p["block"] for p in cfg["probes"]]),
+                  "source_position": np.asarray(src_positions, dtype=np.int64), "readout_position": np.asarray(read_positions, dtype=np.int64),
+                  "readout_max_abs_diff_vs_base_by_probe": np.array(read_eq, dtype=np.float32), "source_max_abs_diff_vs_base_by_probe": np.array(src_eq, dtype=np.float32), "repeat_law_kl": rep_kl}
+        np.savez_compressed(out_dir / fname, **arrays)
+        prov = {"base_manifest_sha256": base_sha, "base_states_sha256": bman["forward_states_sha256"], "config": bman["config"], "config_name": cfg["name"], "config_sha256_raw": cfg_sha}
+        extra = {"stage": "capture_forward_consequence", "source_tag": src_tag, "sentinel": bman["sentinel"], "sentinel_id": int(sent_ids[0]), "teacher_forced_tail_set": a.teacher_forced_tail_set, "tail_text": tails[src_tag],
+                 "tail_token_ids": tail_ids, "tail_token_count_full": len(tail_ids_full), "consequence_k": sorted(a.consequence_k), "k_max": K_MAX,
+                 "source_position": src_positions, "readout_position": read_positions, "base_schema": base_schema, "positions_source": ("base_arrays" if base_schema == "full" else "tokenizer_layout_v1"),
+                 "live_config_sha256_raw": cfg_sha, "base_config_byte_pin": ("present" if base_schema == "full" else "absent"), "tokenizer_pin": ("tokenizer_revision" if base_schema == "full" else "model_revision"),
+                 "readout_max_abs_diff_vs_base_by_probe": read_eq, "source_max_abs_diff_vs_base_by_probe": src_eq, "readout_equality_tolerance": tol,
+                 "repeat_null": {"repeat_law_kl_q99_by_position": [float(np.percentile(rep_kl[0, :, j], 99)) for j in range(K_MAX)], "note": "first calibration carrier, identical inputs; full array in NPZ"},
+                 "n_items": n, "seconds": round(time.time() - t0, 1), "capture_wall_seconds": CAPTURE_WALL, "capture_complete": True, "budget_incomplete": False, "wall_exceeded": False}
+        manifest = common_manifest(a, sp, cfg, prov, arrays, out_dir, fname, extra)
+        (out_dir / f"manifest_conseq{src_tag}.json").write_text(json.dumps(manifest, indent=2), encoding="utf-8")
+        print(json.dumps({k: v for k, v in manifest.items() if k not in ("argv",)}, indent=2)[:1500]); base.close()
+
+
 def capture_forward(a):
     """Forward-time capture (Round 16 #2 / Round 19): carrier + word + suffix + one fixed single-token sentinel appended.
     Stores, for every layer index, the hidden state at the slot (word) position, at the last pre-append position, and at
@@ -414,12 +560,18 @@ def main():
     g.add_argument("--sentinel", help="one fixed single-token sentinel appended after the suffix (declared in the preregistration)")
     g.add_argument("--insert-before-slot", help="Round 30 probe 3: one fixed single-token operator inserted immediately before the word slot (e.g. ' not'); writes insert_states_<tag>.npz instead of forward_states")
     f.add_argument("--repeat-null", action="store_true", help="Round 30 probe 4: store a fixed-input repeat-completion noise floor (states and laws) in the manifest")
+    q = sub.add_parser("capture_forward_consequence")
+    q.add_argument("--config", required=True); q.add_argument("--model", default="Qwen/Qwen3-0.6B"); q.add_argument("--batch", type=int, default=16); q.add_argument("--out", required=True)
+    q.add_argument("--source-tags", nargs="+", default=["fwdA", "fwdB"]); q.add_argument("--consequence-k", nargs="+", type=int, default=[4, 8]); q.add_argument("--teacher-forced-tail-set", default="fixed_tail_v1", choices=list(TAIL_SET))
+    q.add_argument("--expected-base-manifest-sha256", required=True, help="tag-bound pins: A:<sha256 of forward_manifest_A.json>,B:<sha256 of forward_manifest_B.json>"); q.add_argument("--expected-config-sha256", default="")
     f.add_argument("--expected-config-sha256", default="", help="Round 30 provenance: fail before loading the model if the raw config bytes differ")
     a = ap.parse_args()
     if a.stage == "capture":
         capture_op_update(a) if a.tag else capture(a)
     elif a.stage == "capture_forward":
         capture_insert(a) if a.insert_before_slot else capture_forward(a)
+    elif a.stage == "capture_forward_consequence":
+        capture_forward_consequence(a)
 
 
 if __name__ == "__main__":
