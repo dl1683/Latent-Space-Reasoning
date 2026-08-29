@@ -1,5 +1,5 @@
 {
- "name": "state_bus_v1",
+ "name": "state_bus_v1r1",
  "purpose": "Co-developed latent interface: a 16-d persistent state bus at block 12 of frozen Qwen3-1.7B-Base. Paraphrases write the same state; the state is injected at every continuation position; donor interchange replaces z. Trained consequences: sound, young. Never-trained consequence: taxonomic adjective. Codex direction round 7 (2026-08-29).",
  "model_id": "Qwen/Qwen3-1.7B-Base",
  "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
@@ -154,5 +154,6 @@
   9,
   10,
   11
- ]
+ ],
+ "revision_note": "r1 (2026-08-29): Tier-1 review fixes before any result - candidate-word-only scoring; identical recipient history across arms; uplift/DiD adjudication; tau from training contexts; persistence at both boundaries for all arms; word-span task loss; LayerNorm before E and R (numerical scale); majority-of-seeds status; global deadline. The uncorrected run was stopped at seed 11 step 400 with no evaluation inspected."
 }
