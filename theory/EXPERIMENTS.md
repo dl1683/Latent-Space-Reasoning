@@ -6655,8 +6655,9 @@ common-scale checks. B-score4 nevertheless remains amended-implementation and
 SVD-telemetry-incomplete: ridge cosine/skill are mechanically reportable, but
 low-rank is not cleanly reportable and K=13 KL-rank is amendment-qualified.
 Ledger row `nlm007_resid_resSA2` has a provenance typo (`--sentinel-tag 2`),
-whereas the JSON records sentinel `A`; this requires a future append-only
-erratum and does not change the artifact-scale verdict.
+whereas the JSON records sentinel `A`; concurrent append-only row
+`nlm007_erratum_resSA2_sentinel_label` now records the correction. The defect
+does not change the artifact-scale verdict.
 
 Adopted synthesis:
 

@@ -1758,8 +1758,9 @@ block-by-word-fold keys, and the same 4-block/8-key crossed-bootstrap scheme
 with 500 replicates. B-score4 remains endpoint-qualified because the amended
 SVD path touches a member of the K=13 universe. A separate provenance defect
 does not alter the JSON ruling: ledger row `nlm007_resid_resSA2` says sentinel
-`2`, while the artifact itself records `sentinel_tag: A`; the append-only
-ledger needs a future erratum.
+`2`, while the artifact itself records `sentinel_tag: A`; concurrent
+append-only row `nlm007_erratum_resSA2_sentinel_label` now records the
+correction.
 
 Do not promote “uniform F0 failure” to a structural law. Three cells fail the
 aggregate gate, while A-score4 is a weak pooled exception with only `2/8`
