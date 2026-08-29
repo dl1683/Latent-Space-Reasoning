@@ -5,6 +5,30 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Round 34a STATIC result: CONTINUE at F4–F20 with large matched margins; the "match" sits at the context rank ceiling
+
+`analysis_ctxcapA_static.json` / `analysis_ctxcapB_static.json` (frozen
+analyzer copy; 314 s / 304 s) and the static joint (`analysis_ctxcap_static_joint.json`,
+re-run on the main analyzer after the NaN-replay fix: COMPLETE/SCREEN-ONLY,
+CONTINUE, common layers F4/F8/F12/F20). On the P_static-residualized
+relation the strongest matched margin is: A cosine +0.306 / +0.383 / +0.373
+/ +0.435 at F4/F8/F12/F20 (LBs 0.227 / 0.315 / 0.305 / 0.353), nerr +0.047
+/ +0.089 / +0.084 / +0.115; B cosine +0.329 / +0.352 / +0.337 / +0.367 (LBs
+0.262 / 0.278 / 0.275 / 0.264), nerr +0.065 / +0.082 / +0.077 / +0.100; 8/8
+keys; F0 INCONCLUSIVE (diagnostic).
+
+What the match telemetry says: on this relation the context arms saturate
+at their rank ceiling (target EDF 47 for the ridge, 48 for the kernel) while
+the selected residual state ridge has EDF ≈ 267 — so the "matched" state
+arm is the residual ridge shrunk to 47–48 df, and it still keeps ≈ 0.35
+held-out cosine that the token-context arms cannot supply at any attainable
+capacity. Provisional reading (audit #21 fired on both forms, wording
+pending): the residual separation is not a capacity artefact; the raw
+separation mostly was (raw matched margins +0.04–0.08). Neither is a state
+claim — feature adequacy (item-by-context) is untested until 34c. Both
+estimands returned CONTINUE, so under the continuation ruling the ladder
+proceeds to 34b (conditional on its final RUN-READY), then 34c.
+
 ## 2026-08-29 — Round 34a RAW result: CONTINUE at F4–F20, but the matched margin is small
 
 `analysis_ctxcapA_raw.json` / `analysis_ctxcapB_raw.json` (frozen analyzer
