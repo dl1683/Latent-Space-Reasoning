@@ -11,7 +11,7 @@ counterparts.
 
 - Current state: [STATE.md](STATE.md) · running log: [NOTEBOOK.md](NOTEBOOK.md)
 
-Status 2026-08-29: Round 36's v1 and 36b outcomes remain governed by audits #23 and #24. Round 36c-w32, a privileged transition-supervised positive control, validly failed every exact gate; audit #25 finds that its co-moving target and unablated joint loss leave learned gate reachability unresolved, rather than proving the carrier or reducer unreachable. W64's behavior-only canonical skeleton remains informational and ineligible. After one frozen-target learned-pass calibration, the constructive program should move to a genuinely nontrivial quotient world.
+Status 2026-08-29: Round 36 v1 and 36b remain governed by audits #23 and #24; Round 36c remains a failed moving-target positive control under audit #25. Round 36d, the one frozen-chart head-only calibration, is complete: a fresh optimizer-fitted head on an assigned behavior-derived chart achieved exact behavior and eight individual gate predicates, but the joint status is `FAIL — INTERCHANGEABILITY` (`1/5` exact seeds). Audit #26 limits this to a privileged individual-gate reachability result, not quotient discovery or a learned certificate. No complete learned artifact has passed the exact reducer. Round 36 calibration is closed; the constructive program moves to Round 37's presentation-duplicated 32-to-16 quotient world.
 
 ## Prior program and correction (closed 2026-08-27)
 

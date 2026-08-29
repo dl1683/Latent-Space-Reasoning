@@ -5,54 +5,262 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
-## 2026-08-29 — Round 36d frozen-chart control: exact certificate reached on 8 of 9 gates; residue = interchangeability
+## 2026-08-29 — Round 36d frozen-chart control (audit #26 replacement entry, verbatim; my original headline 'exact certificate reached on 8 of 9 gates' is withdrawn)
 
-The one capped cell (frozen behaviour-trained W64 encoder and readout;
-only the transition head trained, on the stationary 176-cell fixed-target
-MSE; 16,000 steps; 93 s of training) is the first learned artifact to
-reach the exact certificate on every gate but one. All five seeds fit
-behaviour exactly (21,184/21,184 train, 2,240/2,240 held-out), the
-adequacy ratio L_fixed/L_identity is 3×10⁻⁶–3×10⁻⁵ (diagnostic only), and
-quotient availability, well-definedness, toggle involution, the
-swap/toggle table, held-out depth-2 and depth-3 closure and action-table
-truth pass in 5/5 seeds. Interchangeability passes in 1/5 seeds, so the
-primary status is "FAIL — INTERCHANGEABILITY". Registered reading:
-adequacy passed and one gate failed, so the residue localises to
-fixed-chart transition/signature realizability on rolled representatives,
-not to control optimisation. Scope: POSITIVE-CONTROL — privileged
-transition supervision on a frozen chart; not a behaviour-only result, not
-a quotient-from-behaviour claim. What it changes: learned gate
-reachability, unvalidated this morning, is now validated for eight of nine
-gates; the ninth (interchangeability of quotient-equivalent points under
-held-out action sequences on rolled representatives) is the precise
-remaining question. A fresh auditor (#26) is on it; per audit #25 this was
-the last permitted control on the trivial-quotient world — Round 37 (the
-nontrivial, presentation-duplicated world) is being implemented in
-parallel and proceeds regardless.
+## 2026-08-29 — Round 36d frozen-chart control: joint FAIL; eight gate predicates pass, deepest rolled interchangeability does not
+
+The locked `POSITIVE-CONTROL` cell completed hash-validly in `118.454 s`.
+With the behavior-derived W64 encoder/readout assigned and frozen, a fresh
+width-64 transition head trained for 16,000 steps on all 176 fixed canonical
+successor coordinates. Behavior is exact in every seed, and quotient
+availability, well-definedness, involution, the swap/toggle table, H2/H3
+closure, canonical action truth, and the cross-seed table pass exactly.
+Interchangeability passes only seed 71; misses are `16/5/28/98/0` of
+`132,160`, so the joint verdict is `FAIL — INTERCHANGEABILITY`.
+
+Audit #26 governs the reading. Say that eight individual predicates are
+reachable under this privileged full-table control; do not say that the
+exact certificate or reducer passed. The chart already carried exact
+canonical signatures and every canonical edge was taught, so this is an
+optimizer-fitted table realization, not quotient discovery or learned
+composition. All 147 misses occur only for depth-2 rolled representatives
+followed by H3 and appear only after the third continuation action; 89 are
+confidence-only, 58 include a future-probe truth error, and none changes the
+immediate terminal response. The MSE ratio fell below its descriptive
+reference but is non-gating and does not rule out optimization. Round 36d is
+closed. Round 37 proceeds and inherits rolled interchangeability as its
+primary structural question.
 
 ## 2026-08-29 — Re-contextualization #26 (2-hour step-back; audit #26 fired on the 36d result)
 
-Live question unchanged. Whole picture: today's constructive line went
-v1 FAIL → 36b ineligible with a canonical skeleton → 36c controls worse
-than behaviour → 36d frozen-chart control that reaches the exact
-certificate on 8/9 gates. The reframing: the exact reducer is passable by
-a learned artifact after all, so the earlier "measuring the reducer"
-worry is answered in the reducer's favour; the single residue,
-interchangeability on rolled representatives, is the first gate that a
-correctly-fit chart plus an exactly-fit transition head does NOT satisfy —
-which is itself the interesting object (what rolled representatives carry
-that the canonical chart does not). Alternatives held live for the
-auditor: (1) interchangeability's exactness/threshold makes it the
-strictest gate (near-miss statistics); (2) the frozen chart's canonical
-signatures are exact but rolled points drift off the chart (a manifold /
-off-distribution question); (3) the residue is a reducer-side
-representative-sampling artefact; (4) it is a genuine local
-non-interchangeability — quotient-equivalent points that are not
-interchangeable under held-out sequences — which would be a real hole in
-this latent world. Not narrowed: Round 37 is being built; NLM-007's
-instruments remain on record. Foundational thread advanced: a learned
-artifact has now passed a registered reachability control; the program's
-gates are no longer untestable.
+Audit #26 replacement paragraph (verbatim; supersedes my interpretive paragraph):
+
+Audit #26 rejects the claim that the exact reducer is now passable by a
+learned artifact: the registered control's joint verdict is still FAIL, so
+no learned artifact has passed the complete reducer. What changed is
+narrower and still useful. A prospectively locked optimizer-fitted head on a
+frozen behavior-derived chart passed eight individual gate predicates under
+complete privileged canonical supervision. The sole measured residue is
+rare and horizon-local—147 depth-2-history × H3 future-signature cells, with
+no immediate-response error—but it is not purely threshold-driven. The
+coordinate replay supports local off-chart drift, while cause remains open
+because the adequacy ratio is diagnostic only. Do not spend another control
+on this singleton-quotient world. Carry the history/presentation question
+into Round 37's genuine 32-to-16 quotient.
+
+#### Audit #26 — licensed sentence, never-say list, interchangeability residue analysis, Round 37 ruling, final verdict (verbatim)
+
+**Round 36d is a valid `POSITIVE-CONTROL` FAIL with a narrow reachability
+gain: reusing an assigned behavior-derived W64 encoder/readout whose 16
+canonical signatures were already exact, a fresh optimizer-fitted width-64
+transition head taught all 176 canonical successor coordinates made exact
+behavior and eight registered gate predicates hold in all five seeds. The
+joint certificate still failed rolled interchangeability in four seeds—147
+of 660,800 finite cells, all depth-2-history × H3 continuations, with no
+immediate-response error. This validates individual-gate passability for
+this privileged finite table-realization control and localizes the measured
+residue to rare history-dependent off-chart future-signature instability;
+it does not validate quotient discovery, behavior-only construction,
+arbitrary-length composition, or a complete operational quotient.**
+
+Under the guiding question, the denizen-level lesson is modest but useful:
+canonical landmarks and taught moves can support nearly perfect finite
+navigation while “same place” still fails to be stable for a few deeper
+histories. A next latent world needs identity and action descent to be robust
+to how a place was reached, not merely exact on its canonical presentation.
+
+Never say:
+
+- “Round 36d reached the exact certificate” or “passed the reducer.”
+- “A learned artifact has now passed the registered reachability control”
+  without immediately saying “eight individual predicates; joint FAIL.”
+- “The learned-pass gap is closed.” No learned artifact has passed the joint
+  exact reducer.
+- “The quotient/action algebra was learned” or “the table was discovered.”
+  Every canonical transition cell was taught on an already qualified chart.
+- “H2/H3 proves composition” or “arbitrary-length closure.”
+- “Eight independent gates validated the construction.” The gates are
+  correlated consequences of the complete taught edge table.
+- “Interchangeability generally fails,” “the quotient is non-congruent,” or
+  “rolled points move to the wrong place.” The finding is finite, rare,
+  history-local, and 146/147 failed endpoints remain nearest the right chart
+  landmark.
+- “The FAIL is threshold-only.” Fifty-eight failed rows contain a
+  confidence-free future-probe truth error and 12 components are supported but
+  wrong.
+- “Behavior fails at depth five.” The immediate endpoint response is correct;
+  the future-response signature fails.
+- “The reducer oversampled a bug.” It intentionally enumerated histories;
+  rates are population-dependent, but the registered exact counterexamples
+  are real.
+- “Adequacy passed,” “optimization is ruled out,” or “the cause is fixed-chart
+  realizability.” The adequacy ratio is diagnostic and causal attribution is
+  unresolved.
+- “Round 36d rescues, promotes, or reclassifies W64/36b,” or anything about
+  language models, residual streams, natural latent spaces, or a general
+  axiom.
+
+## 3. Interchangeability residue
+
+### Exact near-miss table
+
+| Seed | Failed / 132,160 | Failure rate | confidence-only rows | rows with a `p>0.5` future-probe truth error | unique failed representatives | unique operational source/word cells |
+|---:|---:|---:|---:|---:|---:|---:|
+| 11 | `16` | `0.01211%` | 5 | 11 | 16 | 2 |
+| 23 | `5` | `0.00378%` | 3 | 2 | 5 | 2 |
+| 37 | `28` | `0.02119%` | 17 | 11 | 20 | 14 |
+| 53 | `98` | `0.07415%` | 64 | 34 | 47 | 32 |
+| 71 | `0` | `0%` | 0 | 0 | 0 | 0 |
+| **Total** | **`147 / 660,800`** | **`0.02225%`** | **89** | **58** | — | — |
+
+At the exact signature level, 138 failed endpoints are unsupported and nine
+are fully supported but wrong. Across all failed endpoints there are 157 bad
+signature components: 145 lie inside the unsupported band and 12 are
+supported on the wrong side. Their shortfalls from a truthful support boundary
+are not uniformly tiny:
+
+| Shortfall | Bad components |
+|---:|---:|
+| `<0.01` | 4 |
+| `0.01–0.10` | 44 |
+| `0.10–0.40` | 47 |
+| `0.40–0.80` | 50 |
+| `>=0.80` | 12 |
+
+The closest miss is `0.00189`; the largest is `0.89434`. Median worst-cell
+shortfall per failed endpoint is `0.52546`, `0.07864`, `0.32198`, and
+`0.24016` in seeds 11, 23, 37, and 53. This rejects a blanket
+“one epsilon over the threshold” explanation.
+
+No bad component is the empty-response component. The immediate binary
+response at all 147 rolled endpoints is correct at `p>0.5`; the failures occur
+in the one-action future probes used to name the endpoint's operational place.
+Of the 157 bad components, 119 are the no-op probe or swaps involving response
+bit 1. The defect is therefore future-response identity instability, not a
+failure of the observed terminal response on the H3 word itself.
+
+### The residue is exactly horizon-localized
+
+Every failure has the same shape:
+
+- representative prefix depth: 2;
+- held-out continuation depth: 3;
+- signature after continuation action 1: equal and supported;
+- signature after continuation action 2: equal and supported;
+- signature after continuation action 3: divergent or unsupported.
+
+The stepwise replay pattern is `EED` in all 147 cases. No encoder
+representative, depth-1 rolled representative, H2 continuation, or earlier H3
+step fails. Starting from a depth-2 history, the registered continuation
+therefore preserves place through total action depth 4 and loses a future
+signature at total depth 5; because the signature includes another primitive
+probe, the failing component exposes response instability at effective depth
+6.
+
+This is what interchangeability adds beyond the other gates. Quotient
+well-definedness checks one primitive from the registered representative set.
+H2/H3 closure checks canonical starts. Interchangeability asks whether the
+same held-out continuation has the same future-response signature when begun
+from noncanonical histories naming the same place. The answer is exact for
+all registered cells in seed 71 and non-exact, though extremely close in rate,
+in the other four seeds.
+
+### Rolled points are locally off chart
+
+Euclidean distances are not the native identity rule and cannot alter the
+verdict. As a read-only coordinate diagnostic, however, they identify the
+shape of the residue:
+
+| Seed | median encoder-landmark spacing | median failing representative-to-landmark distance before H3 | median failing rolled-to-canonical trajectory distance after H3 | median passing rolled-to-canonical trajectory distance | failed endpoints nearest wrong landmark |
+|---:|---:|---:|---:|---:|---:|
+| 11 | `5.027` | `0.0327` | `0.8238` | `0.0545` | 0/16 |
+| 23 | `4.634` | `0.0409` | `0.5552` | `0.0508` | 0/5 |
+| 37 | `4.694` | `0.0736` | `0.8640` | `0.0781` | 0/28 |
+| 53 | `4.785` | `0.0647` | `0.8696` | `0.0808` | 1/98 |
+| 71 | `4.983` | — | — | `0.0262` | 0/0 |
+
+The failing histories begin farther from their matched landmarks than typical
+depth-2 representatives, and the H3 rollout amplifies this separation by an
+order of magnitude relative to passing cells. Yet 146/147 failed endpoints
+remain closest to the correct canonical landmark. The fair diagnosis is local
+off-chart drift through the frozen readout's exact signature boundaries, not
+gross migration to another canonical place.
+
+### Not a reducer duplication bug
+
+The reducer enumerates every registered `(representative, held-out word)` pair
+once. There are no duplicate IDs or omitted cells. Several failures collapse
+to the same operational source-state/word pair because different rolled
+histories name the same source place: seed 11's 16 failed rows reduce to two
+operational cells with 7 and 9 failing histories; the maximum history
+multiplicity is 4, 6, and 10 in seeds 23, 37, and 53. That multiplicity affects
+rates and forbids treating the 132,160 rows as independent statistical
+replicates. It is not an artifact under the registered exact conjunction:
+representative-history dependence is precisely what the gate tests.
+
+The scientific scope remains finite. The verdict covers the declared 944
+representatives and 140 held-out words, not every latent point or every word.
+Changing this population would change the descriptive rate, though one
+registered counterexample is sufficient for the frozen exact FAIL.
+
+## 6. Constructive-program ruling and Round 37
+
+The fair constructive statement now is:
+
+> **A prospectively locked learned artifact passed eight individual exact
+> gate predicates in a registered, privileged frozen-chart reachability
+> control; the control's joint verdict remained `FAIL — INTERCHANGEABILITY`.**
+
+This changes audit #25's inventory in one way: individual learned-gate
+passability is no longer wholly unvalidated. It does **not** change the whole-
+reducer inventory: the oracle fixture remains the only complete PASS.
+
+Do not resolve interchangeability with another Round 36 optimization cell,
+rolled-target loss, longer schedule, wider head, or threshold branch. That
+would teach the last exam on a singleton-quotient toy and deepen the tunnel
+audit #25 already found. Preserve the 147 cells as a permanent negative result
+and transfer the question.
+
+Round 37 should proceed. Its presentation-duplicated world turns the current
+history/presentation issue into the scientific object: two genuinely distinct
+presentations must name one operational place and remain interchangeable under
+held-out actions. The Round 36d residue should be carried into Round 37 as its
+primary rolled-structure question, with pre-outcome diagnostics separating:
+
+- representative/presentation history depth;
+- H2 versus H3 continuation depth;
+- first divergence step;
+- immediate terminal response versus future-signature failure;
+- unsupported versus wrong supported components; and
+- factored versus unrestricted carrier margins on the same seed/role unit.
+
+These diagnostics should not alter Round 37's locked exact certificates or
+create an adaptive fifth cell.
+
+## 7. Ranked next increments
+
+| Rank | Increment | Cost | Decision value |
+|---:|---|---|---|
+| 1 | **Adopt audit #26 language and close Round 36d permanently.** Update `STATE.md`, `NOTEBOOK.md`, README, theory amendment, ledger, and project memory; retain the 147-cell result. No rerun. | `30–60 min`, docs/ledger only, zero CPU training | Prevents a component-gate WIN from becoming a joint-certificate claim and restores current-state truth. |
+| 2 | **Before any Round 37 outcome, add non-gating horizon/role diagnostics and receive a Tier-1 lock review.** Reuse the existing runner/evidence surface; preserve every primary gate and cell. | `1–2 h` implementation/review, negligible CPU | Makes the exact question raised by 36d directly visible in the nontrivial quotient world without teaching it. |
+| 3 | **Run the registered Round 37 factored-versus-unrestricted four-cell matrix.** No adaptive cell and no outcome inspection until the locked matrix completes. | Registered `24–32 CPU-min`; `45 min` total wall, plus implementation | Tests genuine 32-to-16 identity, presentation transfer, action descent, and rolled interchangeability—the program's strongest scientific increment. |
+| 4 | **If Round 37 is non-exact after behavior/support eligibility, perform a read-only clustered localization on the ten seed×role units.** Separate rates, margins, first divergence, and carrier contrast; do not pool endpoint rows as replicates. | `30–90 min`, no retraining | Distinguishes presentation non-congruence, generic horizon drift, support sensitivity, and carrier-specific failure before designing a successor. |
+| 5 | **Only after Round 37 adjudication, design the next latent-space primitive around the observed hole.** Examples: contractive quotient fibers, history-stable transitions, or explicit presentation covariance, each with a matched unrestricted control. | Moderate theory/design; new CPU cost prospectively locked | Converts a proven hole into a constructive latent-space requirement rather than another exam calibration. |
+
+Explicitly do **not** run another Round 36d schedule, width, loss, rolled-target,
+or tolerance cell.
+
+## Final verdict
+
+- **Hash/integrity/provenance:** **UPHELD.**
+- **Exact behavior in all five seeds:** **UPHELD.**
+- **Eight individual gate predicates pass:** **UPHELD.**
+- **Joint status `FAIL — INTERCHANGEABILITY`:** **UPHELD.**
+- **“Reached the exact certificate on 8 of 9 gates”:** **REPLACE WITH
+  “EIGHT COMPONENT PREDICATES PASS; JOINT CERTIFICATE FAILS.”**
+- **“Learned gate reachability validated”:** **NARROW TO THIS PRIVILEGED,
+  FULL-TABLE, FROZEN-CHART HEAD AND EIGHT INDIVIDUAL PREDICATES.**
+- **“Learned composition/action algebra”:** **REJECTED.**
 
 ## 2026-08-29 — Round 36c positive control (w64): FAIL; Round 36c complete
 
