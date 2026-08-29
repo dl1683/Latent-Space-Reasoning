@@ -5,6 +5,34 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Re-contextualization #20 (2-hour step-back; audit #20 fired, unprimed)
+
+Live question unchanged: is the surviving X⊥→Δ⊥ predictability in one small
+decoder an operational-state relation, a generic contextual-response
+relation, a capacity artefact, or an instrument artefact — and what does the
+answer say about holes hostile to structured reasoning.
+
+What holds: the adjudicated four-cell table; ctx_A/ctx_B (descriptive
+higher-EDF predictor comparisons, audit #19 wording); ctxS_A. What ctxS_A
+reframes: on the residualized relation the token-context arms have nothing
+left (cos ≈ 0.05) while the residual ridge keeps cos ≈ 0.6. Two readings
+are live and audit #20 is asked to choose: (i) "by construction" — P_static
+and the token-id field encode the same template metadata, so the collapse
+is expected and says little; (ii) the collapse is informative — it shows
+the raw-relation contextual comparators were largely re-measuring
+presentation, which would make the static form the right estimand for
+Round 34a and the raw form a secondary check. A third reading: P_static
+(~10 columns) is a much smaller nuisance design than the token field (~220
+columns), so residualization could leave token-level signal for the ridge
+to exploit — then the collapse of the ctx arm is a df/feature-space
+artefact of the comparison, not a fact about the state. Alternatives held
+live otherwise unchanged (capacity; Jacobian account; decoder specificity;
+typed truth-evaluable world; random-weight architecture null). Instrument
+governance status: Round 34a in repair round 2 of 3; consequence parked;
+full Round 34 held. Foundational thread advanced: the estimand question
+(raw vs residualized) is now explicit rather than implicit in tag names.
+Audit #20's corrections and alternatives will be appended verbatim below.
+
 ## 2026-08-29 — ctxS_A complete: contextual-prefix comparator on the P_static-residualized relation, sentinel A
 
 `analysis_ctxS_A.json` (committed analyzer, `--residualize static`, 20
