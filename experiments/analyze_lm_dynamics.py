@@ -15,6 +15,7 @@ For each predeclared layer pair (l -> l+1) and each outer fold (one carrier bloc
 from __future__ import annotations
 
 import argparse
+import io
 import itertools
 import hashlib
 import json
@@ -34,9 +35,19 @@ SEED = 13007
 FRESH_CONFIG_SHA256 = "12c724015218bedf58644d0fcbbf5eef68f4db3bd1f16a9977f42007aec2fd06"      # Round 30: raw sha256 of experiments/config/lexical_probe_fresh_v1.json (locked before capture)
 ROUND34_CANDIDATES = ("sentinel_position_v1", "token_ids_v1_selected", "token_ids_v1_ceiling", "token_ids_v1_kernel", "embedseq_rbf_v1", "template_edit_kernel_v1")
 ROUND34_ENDPOINTS = ("cos", "nerr", "skill", "kl", "klrank")
-ROUND34_CONFIRMATORY = ("cos", "skill", "klrank")
+ROUND34_CONFIRMATORY = ("cos", "skill", "kl")                         # Audit #19: paired raw continuous-KL is confirmatory; KL-rank is diagnostic
 ROUND34_LAYERS = ("F4", "F8", "F12", "F20")
 ROUND34_WALL_SECONDS = 4 * 60 * 60
+ROUND34A_CANDIDATES = ("token_ids_v1_ridge_selected_edf", "token_ids_v1_ridge_rank47", "token_ids_v1_kernel_selected_edf", "token_ids_v1_kernel_rank48")
+ROUND34A_ENDPOINTS = ("cos", "nerr")
+ROUND34A_WALL_SECONDS = 90 * 60
+ROUND34A_BOOTSTRAP_SEED = SEED + 34
+ROUND34A_EVIDENCE_SCHEMA = "round34a_cell_evidence_v1"
+ROUND34A_KEY_THRESHOLD_F32 = float(np.float32(0.02))
+ROUND34A_LAYERS_ALL = ("F0", "F4", "F8", "F12", "F20")
+ROUND34A_EVIDENCE_SHAPE = (4, 40)                 # carriers per held block x held-out words per unseen-word fold (lexical_probe_v1: 16 carriers / 4 blocks, 80 words / 2 folds)
+ROUND34A_STRATA_SIZES = (10, 10, 10, 10)          # four POS strata of ten held-out words per fold
+ROUND34A_N_MATRICES = 5 * 8 * 4 * 2               # layers x outer keys x candidates x endpoints
 ROUND34_CONFIG_SHA256 = "c4861230a3112deb4fe20df774986c3385948b46dd5dd6e8ed3f85a826bd8561"   # raw sha256 of experiments/config/lexical_probe_v1.json (Round 34 lock)
 ROUND34_SENTINEL = {"A": ".", "B": ","}
 ROUND34_BINDING_KEYS = ("config_sha256_raw", "forward_states_sha256", "forward_manifest_sha256", "model", "model_revision", "sentinel", "sentinel_id", "completer_model_revision")
@@ -416,10 +427,10 @@ def pooled_block_first(per_fold, strata_for_fold, n_boot, seed, shared_carrier_d
     out["ci95_block_first"] = [float(np.nanpercentile(reps, 2.5)), float(np.nanpercentile(reps, 97.5))]; return out
 
 
-def round34_matched_margin_reduce(margins, strata_for_fold, n_boot, seed):
+def round34_matched_margin_reduce(margins, strata_for_fold, n_boot, seed, expected_candidates=ROUND34_CANDIDATES):
     """Reduce all candidate margins together so min_j is taken inside every crossed bootstrap replicate."""
     endpoints = list(margins); candidates = list(margins[endpoints[0]])
-    assert tuple(candidates) == ROUND34_CANDIDATES and all(list(margins[e]) == candidates for e in endpoints)
+    assert tuple(candidates) == tuple(expected_candidates) and all(list(margins[e]) == candidates for e in endpoints)
     fold_keys = list(margins[endpoints[0]][candidates[0]])
     assert all(list(margins[e][c]) == fold_keys for e in endpoints for c in candidates)
     by_block = {}
@@ -431,9 +442,10 @@ def round34_matched_margin_reduce(margins, strata_for_fold, n_boot, seed):
     out = {e: {"candidate_means": {c: float(np.nanmean(np.concatenate([np.asarray(margins[e][c][fk]).ravel() for fk in fold_keys]))) for c in candidates}} for e in endpoints}
     for e in endpoints:
         vals = out[e]["candidate_means"]; winner = min(candidates, key=lambda c: vals[c])
+        if tuple(candidates) == ROUND34A_CANDIDATES: out[e]["candidate_reductions"] = {c: {"mean": float(vals[c])} for c in candidates}     # Round 34a only; the round34_v1 schema stays as committed
         out[e].update({"strongest_margin": {"mean": float(vals[winner]), "candidate": winner}, "winner_counts_bootstrap": {c: 0 for c in candidates}})
     if n_boot <= 0: return out
-    brng = np.random.default_rng(seed); reps = {e: [] for e in endpoints}; blocks = list(by_block)
+    brng = np.random.default_rng(seed); reps = {e: [] for e in endpoints}; candidate_reps = {e: {c: [] for c in candidates} for e in endpoints}; blocks = list(by_block)
     for _ in range(n_boot):
         vals = {e: {c: [] for c in candidates} for e in endpoints}; word_draws = {}
         for b in brng.choice(blocks, len(blocks), replace=True):
@@ -446,8 +458,12 @@ def round34_matched_margin_reduce(margins, strata_for_fold, n_boot, seed):
                     for c in candidates: vals[e][c].append(float(np.nanmean(np.asarray(margins[e][c][fk])[np.ix_(ci, wi)])))
         for e in endpoints:
             means = {c: float(np.nanmean(vals[e][c])) for c in candidates}; winner = min(candidates, key=lambda c: means[c])
+            for c in candidates: candidate_reps[e][c].append(means[c])
             out[e]["winner_counts_bootstrap"][winner] += 1; reps[e].append(means[winner])
-    for e in endpoints: out[e]["strongest_margin"]["ci95_block_first"] = [float(np.nanpercentile(reps[e], 2.5)), float(np.nanpercentile(reps[e], 97.5))]
+    for e in endpoints:
+        if "candidate_reductions" in out[e]:
+            for c in candidates: out[e]["candidate_reductions"][c]["ci95_block_first"] = [float(np.nanpercentile(candidate_reps[e][c], 2.5)), float(np.nanpercentile(candidate_reps[e][c], 97.5))]
+        out[e]["strongest_margin"]["ci95_block_first"] = [float(np.nanpercentile(reps[e], 2.5)), float(np.nanpercentile(reps[e], 97.5))]
     return out
 
 
@@ -479,13 +495,176 @@ def round34_decide_joint(sentinel_layers):
     return {"decision": decision, "keep_common_layers": keep_common, "moot_common_layers": moot_common, "eligible_layers": list(ROUND34_LAYERS), "f0_excluded": True}
 
 
+def round34a_decide_layer(reduction, key_records):
+    """Audit #19 core-screen decision. Invalid/incomplete matches always fail closed to INCONCLUSIVE."""
+    keys = list(key_records); blocks = sorted({k.rsplit("_w", 1)[0] for k in keys})
+    complete = len(keys) == 8 and len(blocks) == 4 and all(len([k for k in keys if k.startswith(b + "_w")]) == 2 for b in blocks)
+    all_matches_valid = bool(complete and all(r["all_matches_valid"] for r in key_records.values()))
+    n_positive = sum(bool(r["jointly_point_positive"]) for r in key_records.values())
+    n_below = sum(bool(r["jointly_below_0.02"]) for r in key_records.values())
+    no_collapse_continue = bool(complete and all(any(key_records[k]["jointly_point_positive"] for k in keys if k.startswith(b + "_w")) for b in blocks))
+    no_collapse_stop = bool(complete and all(any(key_records[k]["jointly_below_0.02"] for k in keys if k.startswith(b + "_w")) for b in blocks))
+    continue_ep = {e: bool(reduction[e]["strongest_margin"]["mean"] >= 0.02 and reduction[e]["strongest_margin"]["ci95_block_first"][0] > 0.0) for e in ROUND34A_ENDPOINTS}
+    stop_ep = {e: bool(reduction[e]["strongest_margin"]["mean"] <= 0.02 and reduction[e]["strongest_margin"]["ci95_block_first"][1] < 0.02) for e in ROUND34A_ENDPOINTS}
+    cont = bool(all(continue_ep.values()) and n_positive >= 6 and no_collapse_continue and all_matches_valid)
+    stop = bool(all(stop_ep.values()) and n_below >= 6 and no_collapse_stop and all_matches_valid)
+    decision = "CONTINUE" if cont and not stop else ("CAPACITY-SENSITIVE SCREEN; STOP" if stop and not cont else "INCONCLUSIVE")
+    return {"decision": decision, "continue": cont, "stop": stop, "complete_eight_keys": complete, "all_matches_valid": all_matches_valid,
+            "keys_jointly_point_positive": int(n_positive), "keys_jointly_below_0.02": int(n_below),
+            "no_block_collapse_continue": no_collapse_continue, "no_block_collapse_stop": no_collapse_stop,
+            "continue_endpoints": continue_ep, "stop_endpoints": stop_ep}
+
+
+def round34a_decide_joint(sentinel_layers):
+    assert len(sentinel_layers) == 2
+    continue_common = [l for l in ROUND34_LAYERS if all(sentinel_layers[s].get(l) == "CONTINUE" for s in sentinel_layers)]
+    stop_common = [l for l in ROUND34_LAYERS if all(sentinel_layers[s].get(l) == "CAPACITY-SENSITIVE SCREEN; STOP" for s in sentinel_layers)]
+    cont = len(continue_common) >= 2; stop = len(stop_common) >= 2
+    decision = "CONTINUE" if cont and not stop else ("CAPACITY-SENSITIVE SCREEN; STOP" if stop and not cont else "INCONCLUSIVE")
+    return {"decision": decision, "continue_common_layers": continue_common, "stop_common_layers": stop_common,
+            "eligible_layers": list(ROUND34_LAYERS), "required_common_layers": 2, "f0_excluded": True,
+            "stop_instruction": ("do not run full Round 34 or Round 33" if stop and not cont else None)}
+
+
+def round34a_assert_equal(actual, expected, where="value"):
+    """Exact structural comparison with tight finite-float tolerance for JSON-replayed evidence."""
+    if isinstance(expected, dict):
+        assert isinstance(actual, dict) and set(actual) == set(expected), f"{where}: object keys differ"
+        for key in expected: round34a_assert_equal(actual[key], expected[key], f"{where}/{key}")
+        return
+    if isinstance(expected, (list, tuple)):
+        assert isinstance(actual, (list, tuple)) and len(actual) == len(expected), f"{where}: sequence differs"
+        for i, (av, ev) in enumerate(zip(actual, expected)): round34a_assert_equal(av, ev, f"{where}/{i}")
+        return
+    if isinstance(expected, bool) or expected is None or isinstance(expected, str):
+        assert actual == expected and type(actual) is type(expected), f"{where}: {actual!r} != {expected!r}"
+        return
+    if isinstance(expected, (int, float)) and not isinstance(expected, bool):
+        assert isinstance(actual, (int, float)) and not isinstance(actual, bool), f"{where}: not numeric"
+        assert np.isfinite(float(actual)) and np.isfinite(float(expected)) and abs(float(actual) - float(expected)) <= 1e-12, f"{where}: {actual!r} != {expected!r}"
+        return
+    assert actual == expected, f"{where}: values differ"
+
+
+def round34a_key_record(margins_for_key, all_matches_valid):
+    """Recompute common support and strict key predicates from float32 cell matrices."""
+    assert set(margins_for_key) == set(ROUND34A_ENDPOINTS)
+    shape = None; common = None
+    for endpoint in ROUND34A_ENDPOINTS:
+        assert set(margins_for_key[endpoint]) == set(ROUND34A_CANDIDATES)
+        for candidate in ROUND34A_CANDIDATES:
+            M = np.asarray(margins_for_key[endpoint][candidate])
+            assert M.dtype == np.float32 and M.ndim == 2 and M.shape[0] > 0 and M.shape[1] > 0
+            shape = M.shape if shape is None else shape; assert M.shape == shape, "Round 34a evidence matrices disagree in shape"
+            common = np.isfinite(M) if common is None else (common & np.isfinite(M))
+    points = {e: {} for e in ROUND34A_ENDPOINTS}
+    for endpoint in ROUND34A_ENDPOINTS:
+        for candidate in ROUND34A_CANDIDATES:
+            masked = np.where(common, margins_for_key[endpoint][candidate], np.nan)
+            points[endpoint][candidate] = float(np.nanmean(masked, dtype=np.float64)) if np.isfinite(masked).any() else None
+    strongest = {e: (min(v for v in points[e].values() if v is not None) if any(v is not None for v in points[e].values()) else None) for e in ROUND34A_ENDPOINTS}
+    positive = bool(all(strongest[e] is not None and strongest[e] > 0.0 for e in ROUND34A_ENDPOINTS))
+    # The evidence is float32. Comparing with the float32 representation of 0.02 preserves the registered strict boundary:
+    # an evidence cell written as np.float32(0.02) is equal to, not below, the threshold.
+    below = bool(all(strongest[e] is not None and strongest[e] < ROUND34A_KEY_THRESHOLD_F32 for e in ROUND34A_ENDPOINTS))
+    record = {"common_support": float(np.mean(common)), "all_matches_valid": bool(all_matches_valid),
+              "jointly_point_positive": positive, "jointly_below_0.02": below}
+    return record, points, strongest
+
+
+def round34a_pack_evidence(tag, margins_by_layer, telemetry_by_layer, word_strata):
+    """Return a compressed, hash-bound float32 evidence sidecar and its analysis-JSON descriptor."""
+    assert tag and all(ch.isalnum() or ch in "_.-" for ch in tag), "unsafe Round 34a evidence tag"
+    assert set(margins_by_layer) == set(telemetry_by_layer)
+    arrays = {}; array_map = {}; outer_keys_by_layer = {}; serial = 0
+    layer_order = [l for l in ("F0",) + ROUND34_LAYERS if l in margins_by_layer]
+    for layer in layer_order:
+        lm = margins_by_layer[layer]; assert set(lm) == set(ROUND34A_ENDPOINTS)
+        key_sets = [set(lm[e][c]) for e in ROUND34A_ENDPOINTS for c in ROUND34A_CANDIDATES]
+        keys = [k for k in telemetry_by_layer[layer] if all(k in s for s in key_sets)]
+        assert all(s == set(keys) for s in key_sets), f"{layer}: incomplete evidence candidate/key product"
+        assert set(telemetry_by_layer[layer]) == set(keys), f"{layer}: telemetry/evidence keys differ"
+        outer_keys_by_layer[layer] = keys
+        array_map[layer] = {}
+        for outer_key in keys:
+            array_map[layer][outer_key] = {}
+            for candidate in ROUND34A_CANDIDATES:
+                array_map[layer][outer_key][candidate] = {}
+                for endpoint in ROUND34A_ENDPOINTS:
+                    M = np.asarray(lm[endpoint][candidate][outer_key])
+                    assert M.dtype == np.float32 and M.ndim == 2 and M.shape[0] > 0 and M.shape[1] > 0
+                    name = f"margin_{serial:04d}"; serial += 1; arrays[name] = M
+                    array_map[layer][outer_key][candidate][endpoint] = {"array": name, "shape": list(M.shape), "dtype": "float32"}
+    strata_json = {str(k): [[int(i) for i in group] for group in groups] for k, groups in word_strata.items()}
+    meta = {"schema": ROUND34A_EVIDENCE_SCHEMA, "tag": tag, "matrix_axes": ["held_out_carrier", "held_out_word"],
+            "dtype": "float32", "layers": layer_order, "candidates": list(ROUND34A_CANDIDATES), "endpoints": list(ROUND34A_ENDPOINTS),
+            "bootstrap": {"kind": "replicate-min block-first crossed carrier/POS-word bootstrap", "n_boot": 500, "seed": ROUND34A_BOOTSTRAP_SEED},
+            "word_strata_by_fold": strata_json, "outer_keys_by_layer": outer_keys_by_layer,
+            "margin_arrays": array_map, "telemetry": telemetry_by_layer}
+    meta_raw = json.dumps(meta, sort_keys=True, separators=(",", ":"), default=float).encode("utf-8")
+    arrays["metadata_json_utf8"] = np.frombuffer(meta_raw, dtype=np.uint8)
+    bio = io.BytesIO(); np.savez_compressed(bio, **arrays); raw = bio.getvalue()
+    filename = f"round34a_evidence_{tag}.npz"
+    descriptor = {"schema": ROUND34A_EVIDENCE_SCHEMA, "file": filename, "sha256": hashlib.sha256(raw).hexdigest(), "format": "npz",
+                  "dtype": "float32", "matrix_axes": ["held_out_carrier", "held_out_word"], "metadata_member": "metadata_json_utf8",
+                  "layers": layer_order, "candidates": list(ROUND34A_CANDIDATES), "endpoints": list(ROUND34A_ENDPOINTS), "n_margin_matrices": serial,
+                  "bootstrap_n": 500, "bootstrap_seed": ROUND34A_BOOTSTRAP_SEED}
+    return raw, descriptor
+
+
+def round34a_load_evidence(run_dir, artifact, expected_tag):
+    """Verify a sentinel's sidecar hash/schema and return cell matrices plus hash-bound telemetry."""
+    info = artifact.get("context_capacity_evidence"); assert isinstance(info, dict)
+    assert info.get("schema") == ROUND34A_EVIDENCE_SCHEMA and info.get("file") == f"round34a_evidence_{expected_tag}.npz"
+    assert info.get("format") == "npz" and info.get("dtype") == "float32" and info.get("matrix_axes") == ["held_out_carrier", "held_out_word"]
+    assert info.get("metadata_member") == "metadata_json_utf8" and info.get("bootstrap_n") == 500 and info.get("bootstrap_seed") == ROUND34A_BOOTSTRAP_SEED
+    path = run_dir / info["file"]; raw = path.read_bytes(); sha = hashlib.sha256(raw).hexdigest()
+    assert sha == info.get("sha256") and isinstance(sha, str) and len(sha) == 64, "Round 34a evidence sha256 mismatch"
+    with np.load(io.BytesIO(raw), allow_pickle=False) as z:
+        assert "metadata_json_utf8" in z.files and z["metadata_json_utf8"].dtype == np.uint8 and z["metadata_json_utf8"].ndim == 1
+        meta = json.loads(z["metadata_json_utf8"].tobytes().decode("utf-8")); assert isinstance(meta, dict)
+        assert meta.get("schema") == ROUND34A_EVIDENCE_SCHEMA and meta.get("tag") == expected_tag
+        assert meta.get("dtype") == "float32" and meta.get("matrix_axes") == ["held_out_carrier", "held_out_word"]
+        assert meta.get("candidates") == list(ROUND34A_CANDIDATES) and meta.get("endpoints") == list(ROUND34A_ENDPOINTS)
+        assert meta.get("bootstrap") == {"kind": "replicate-min block-first crossed carrier/POS-word bootstrap", "n_boot": 500, "seed": ROUND34A_BOOTSTRAP_SEED}
+        assert info.get("layers") == meta.get("layers") and info.get("candidates") == meta.get("candidates") and info.get("endpoints") == meta.get("endpoints")
+        amap = meta.get("margin_arrays"); key_order = meta.get("outer_keys_by_layer")
+        assert isinstance(amap, dict) and set(amap) == set(meta.get("layers", []))
+        assert isinstance(key_order, dict) and set(key_order) == set(meta.get("layers", []))
+        expected_members = {"metadata_json_utf8"}; margins = {}
+        for layer in meta["layers"]:
+            layer_map = amap[layer]; ordered_keys = key_order[layer]
+            assert isinstance(layer_map, dict) and isinstance(ordered_keys, list) and len(ordered_keys) == len(set(ordered_keys)) and set(layer_map) == set(ordered_keys)
+            assert len(ordered_keys) == 8 and all(isinstance(k_, str) and k_.rsplit("_w", 1)[-1] in ("0", "1") for k_ in ordered_keys) and len({k_.rsplit("_w", 1)[0] for k_ in ordered_keys}) == 4, f"{layer}: evidence must carry exactly eight outer keys over four carrier blocks"
+            margins[layer] = {e: {c: {} for c in ROUND34A_CANDIDATES} for e in ROUND34A_ENDPOINTS}
+            for outer_key in ordered_keys:
+                key_map = layer_map[outer_key]
+                assert isinstance(key_map, dict) and set(key_map) == set(ROUND34A_CANDIDATES)
+                for candidate in ROUND34A_CANDIDATES:
+                    assert set(key_map[candidate]) == set(ROUND34A_ENDPOINTS)
+                    for endpoint in ROUND34A_ENDPOINTS:
+                        rec = key_map[candidate][endpoint]; assert isinstance(rec, dict) and rec.get("dtype") == "float32"
+                        name = rec.get("array"); assert isinstance(name, str) and name not in expected_members; expected_members.add(name)
+                        M = np.asarray(z[name]); assert M.dtype == np.float32 and M.ndim == 2 and list(M.shape) == rec.get("shape") and tuple(M.shape) == ROUND34A_EVIDENCE_SHAPE, f"{layer}/{outer_key}/{candidate}/{endpoint}: evidence matrix shape {M.shape} != locked {ROUND34A_EVIDENCE_SHAPE}"
+                        margins[layer][endpoint][candidate][outer_key] = M.copy()
+        assert set(z.files) == expected_members and info.get("n_margin_matrices") == len(expected_members) - 1 == ROUND34A_N_MATRICES, f"evidence must carry exactly {ROUND34A_N_MATRICES} margin matrices"
+    assert set(margins) == set(ROUND34A_LAYERS_ALL), "evidence must carry exactly the five registered layers"
+    strata = meta.get("word_strata_by_fold"); assert isinstance(strata, dict) and set(strata) == {"0", "1"}
+    for fold, groups in strata.items():
+        assert isinstance(groups, list) and tuple(len(g) if isinstance(g, list) else -1 for g in groups) == ROUND34A_STRATA_SIZES, f"fold {fold}: strata sizes must be {ROUND34A_STRATA_SIZES}"
+        flat = [i for g in groups for i in g]; assert all(isinstance(i, int) and not isinstance(i, bool) and i >= 0 for i in flat) and sorted(flat) == list(range(ROUND34A_EVIDENCE_SHAPE[1]))
+    telemetry = meta.get("telemetry"); assert isinstance(telemetry, dict) and set(telemetry) == set(margins)
+    return {"margins": margins, "telemetry": telemetry, "word_strata": strata, "sha256": sha, "file": info["file"]}
+
+
 def round34_joint_artifact(run_dir, input_tags, output_tag):
     assert output_tag and len(input_tags) == 2 and len(set(input_tags)) == 2
     assert all(tag and all(ch.isalnum() or ch in "_.-" for ch in tag) for tag in (*input_tags, output_tag)), "unsafe analysis tag"
     assert output_tag and output_tag not in set(input_tags) and len(set(input_tags)) == 2, "joint output tag must be distinct from both input tags"
     sources, payloads = [], []
     base = {"context_capacity_joint": "round34_v1", "inputs": sources, "eligible_layers": list(ROUND34_LAYERS), "required_common_layers": 2,
-            "note": "read-only two-sentinel reducer; A/B are correlated sensitivities, not replications"}
+            "note": "read-only two-sentinel reducer; A/B are correlated sensitivities, not replications",
+            "moot_claim_boundary": "the endpoint/replicate-wise minimum is a synthetic oracle: it supports family/capacity sensitivity, not sufficiency of one contextual map unless one fixed candidate wins jointly under every registered rule"}
     ALL_LAYERS = ("F0",) + ROUND34_LAYERS
     def fin(v):
         if not isinstance(v, (int, float)) or isinstance(v, bool): return False
@@ -560,7 +739,341 @@ def round34_joint_artifact(run_dir, input_tags, output_tag):
     out = run_dir / f"analysis_{output_tag}.json"; out.write_text(json.dumps(base, indent=1, default=float), encoding="utf-8"); return out, base
 
 
+def round34a_joint_artifact(run_dir, input_tags, output_tag):
+    """Read-only, fail-closed A/B reducer that replays the complete Round 34a gate from cell evidence."""
+    assert output_tag and len(input_tags) == 2 and len(set(input_tags)) == 2
+    assert all(tag and all(ch.isalnum() or ch in "_.-" for ch in tag) for tag in (*input_tags, output_tag)), "unsafe analysis tag"
+    assert output_tag not in set(input_tags), "joint output tag must be distinct from both input tags"
+    sources, payloads, evidences = [], [], []
+    base = {"context_capacity_joint": "round34a_core", "inputs": sources, "eligible_layers": list(ROUND34_LAYERS), "required_common_layers": 2,
+            "status": "INCOMPLETE/NON-CLAIMING", "decision": None,
+            "note": "read-only two-sentinel audit #19 reducer; every support flag, crossed interval, layer decision, and joint decision is replayed from sha256-bound float32 cell evidence"}
+    all_layers = ("F0",) + ROUND34_LAYERS
+
+    def fin(v):
+        if not isinstance(v, (int, float)) or isinstance(v, bool): return False
+        try: return bool(np.isfinite(float(v)))
+        except (OverflowError, ValueError, TypeError): return False
+    def nni(v, hi=None): return isinstance(v, int) and not isinstance(v, bool) and v >= 0 and (hi is None or v <= hi)
+
+    def validate_selected_state(selected, where):
+        assert isinstance(selected, dict)
+        for k_ in ("lambda", "training_edf", "rank_tolerance"): assert fin(selected.get(k_)), f"{where}: selected-state {k_}"
+        assert float(selected["lambda"]) >= 0.0 and float(selected["training_edf"]) >= 0.0
+        assert nni(selected.get("rank")) and nni(selected.get("retained_columns"))
+        fc = selected.get("finite_checks"); assert isinstance(fc, dict) and all(fc.get(k_) is True for k_ in ("features", "spectrum"))
+
+    def validate_candidate(rec, candidate, selected, where):
+        assert isinstance(rec, dict) and isinstance(rec.get("supported"), bool) and rec.get("match_kind") in ("selected_context_edf", "rank_ceiling")
+        cm, sm = rec.get("context"), rec.get("state_match"); assert isinstance(cm, dict) and isinstance(sm, dict) and isinstance(sm.get("valid"), bool)
+        is_ridge = candidate.startswith("token_ids_v1_ridge_"); ceiling = 47 if is_ridge else 48
+        assert cm.get("family") == ("ridge" if is_ridge else "rbf_kernel") and cm.get("capacity_rank_ceiling") == ceiling, f"{where}: context family/ceiling"
+        assert fin(cm.get("training_edf")) and fin(cm.get("lambda")) and float(cm["lambda"]) >= 0.0 and nni(cm.get("rank"), ceiling) and nni(cm.get("distinct_training_rows"), 48)
+        assert 0.0 <= float(cm["training_edf"]) <= float(cm["rank"]) + 1e-9
+        if not is_ridge: assert fin(cm.get("gamma")) and float(cm["gamma"]) > 0.0
+        cfc = cm.get("finite_checks"); assert isinstance(cfc, dict) and all(cfc.get(k_) is True for k_ in ("features", "prediction", "spectrum"))
+        assert fin(sm.get("target_edf")) and fin(sm.get("selected_state_edf")) and fin(sm.get("selected_state_lambda")) and fin(sm.get("rank_tolerance"))
+        assert abs(float(sm["selected_state_edf"]) - float(selected["training_edf"])) <= 1e-12 and abs(float(sm["selected_state_lambda"]) - float(selected["lambda"])) <= 1e-12, f"{where}: shared selected-state telemetry differs"
+        for k_ in ("rank", "rank_tolerance", "retained_columns"):
+            assert k_ in selected and sm.get(k_) == selected[k_], f"{where}: shared state-spectrum telemetry {k_} differs from selected_state"
+        expected_target = float(cm["training_edf"]) if rec["match_kind"] == "selected_context_edf" else min(float(ceiling), float(selected["training_edf"]))
+        assert abs(float(sm["target_edf"]) - expected_target) <= 1e-9 and candidate.endswith("selected_edf") == (rec["match_kind"] == "selected_context_edf")
+        assert nni(sm.get("rank")) and nni(sm.get("retained_columns")) and nni(sm.get("iterations"), 80) and nni(sm.get("bracket_doublings"), 80)
+        sfc = sm.get("finite_checks"); assert isinstance(sfc, dict) and all(k_ in sfc and isinstance(sfc[k_], bool) for k_ in ("eigenvalues", "target_edf", "bracket", "lambda", "achieved_edf", "prediction"))
+        if rec["supported"]:
+            assert sm["valid"] is True and all(sfc[k_] is True for k_ in ("eigenvalues", "target_edf", "bracket", "lambda", "achieved_edf", "prediction"))
+            for k_ in ("achieved_edf", "edf_error", "lambda"): assert fin(sm.get(k_)), f"{where}: valid match missing {k_}"
+            assert float(sm["lambda"]) >= 0.0 and abs(float(sm["edf_error"]) - abs(float(sm["achieved_edf"]) - float(sm["target_edf"]))) <= 1e-9 and float(sm["edf_error"]) <= 0.01 + 1e-9
+            assert isinstance(sm.get("bracket"), list) and len(sm["bracket"]) == 2 and all(fin(v) for v in sm["bracket"]) and float(sm["bracket"][0]) <= float(sm["lambda"]) <= float(sm["bracket"][1])
+        else:
+            assert sm["valid"] is False and sfc.get("prediction") is False, f"{where}: unsupported match must have invalid/non-finite prediction telemetry"
+        return cm
+
+    def validate_layer(p, evidence, layer):
+        pair = p["pairs"][layer]; folds, cc = pair.get("folds"), pair.get("context_capacity")
+        assert isinstance(folds, dict) and isinstance(cc, dict) and cc.get("status") == "COMPLETE/PER-LAYER"
+        stored_red, stored_recs = cc.get("endpoints"), cc.get("outer_keys")
+        assert isinstance(stored_red, dict) and set(stored_red) == set(ROUND34A_ENDPOINTS) and isinstance(stored_recs, dict) and set(stored_recs) == set(folds) and len(stored_recs) == 8
+        blocks = {fk.rsplit("_w", 1)[0] for fk in stored_recs}; assert len(blocks) == 4 and all({fk for fk in stored_recs if fk.startswith(b + "_w")} == {f"{b}_w0", f"{b}_w1"} for b in blocks), f"{layer}: outer fold keys"
+        margins = evidence["margins"][layer]; telemetry = evidence["telemetry"][layer]
+        assert set(telemetry) == set(stored_recs) and all(set(margins[e][c]) == set(stored_recs) for e in ROUND34A_ENDPOINTS for c in ROUND34A_CANDIDATES)
+        recomputed_recs = {}
+        for outer_key in stored_recs:
+            fc = folds[outer_key].get("context_capacity") if isinstance(folds[outer_key], dict) else None
+            assert isinstance(fc, dict) and isinstance(fc.get("candidates"), dict) and set(fc["candidates"]) == set(ROUND34A_CANDIDATES)
+            selected = fc.get("selected_state"); validate_selected_state(selected, f"{layer}/{outer_key}")
+            contexts = {}
+            for candidate in ROUND34A_CANDIDATES:
+                contexts[candidate] = validate_candidate(fc["candidates"][candidate], candidate, selected, f"{layer}/{outer_key}/{candidate}")
+            round34a_assert_equal(contexts["token_ids_v1_ridge_rank47"], contexts["token_ids_v1_ridge_selected_edf"], f"{layer}/{outer_key}/duplicated ridge context")
+            round34a_assert_equal(contexts["token_ids_v1_kernel_rank48"], contexts["token_ids_v1_kernel_selected_edf"], f"{layer}/{outer_key}/duplicated kernel context")
+            expected_telemetry = {"selected_state": selected, "contexts": {"ridge": contexts["token_ids_v1_ridge_selected_edf"], "kernel": contexts["token_ids_v1_kernel_selected_edf"]}}
+            round34a_assert_equal(telemetry[outer_key], expected_telemetry, f"{layer}/{outer_key}/hash-bound telemetry")
+            key_margins = {e: {c: margins[e][c][outer_key] for c in ROUND34A_CANDIDATES} for e in ROUND34A_ENDPOINTS}
+            all_valid = bool(all(fc["candidates"][c]["supported"] and fc["candidates"][c]["state_match"]["valid"] for c in ROUND34A_CANDIDATES))
+            record, points, strongest = round34a_key_record(key_margins, all_valid); recomputed_recs[outer_key] = record
+            for k_ in ("common_support", "jointly_point_positive", "jointly_below_0.02", "all_matches_valid"):
+                round34a_assert_equal(fc.get(k_), record[k_], f"{layer}/{outer_key}/fold {k_}")
+                round34a_assert_equal(stored_recs[outer_key].get(k_), record[k_], f"{layer}/{outer_key}/layer {k_}")
+            round34a_assert_equal(fc.get("candidate_matched_margin_means"), points, f"{layer}/{outer_key}/candidate means")
+            round34a_assert_equal(fc.get("strongest_matched_margin_means"), strongest, f"{layer}/{outer_key}/strongest means")
+        def strata_for_fold(fold_key, width):
+            fold = str(int(fold_key)); groups = [np.asarray(g, dtype=int) for g in evidence["word_strata"][fold]]
+            assert sorted(np.concatenate(groups).tolist()) == list(range(width)), f"{layer}/{fold_key}: word strata do not cover evidence columns"
+            return groups
+        recomputed_red = round34_matched_margin_reduce(margins, strata_for_fold, 500, ROUND34A_BOOTSTRAP_SEED, ROUND34A_CANDIDATES)
+        round34a_assert_equal(stored_red, recomputed_red, f"{layer}/stored reduction")
+        decision = round34a_decide_layer(recomputed_red, recomputed_recs)
+        for k_, v_ in decision.items(): round34a_assert_equal(cc.get(k_), v_, f"{layer}/stored gate/{k_}")
+        return decision["decision"]
+
+    reason = None
+    try:
+        for tag in input_tags:
+            path = run_dir / f"analysis_{tag}.json"; raw = path.read_bytes(); art = json.loads(raw.decode("utf-8")); assert isinstance(art, dict)
+            source = {"tag": tag, "file": path.name, "sha256": hashlib.sha256(raw).hexdigest()}; sources.append(source); payloads.append(art)
+            ev = round34a_load_evidence(run_dir, art, tag); evidences.append(ev); source.update({"evidence_file": ev["file"], "evidence_sha256": ev["sha256"]})
+        assert all(p.get("context_capacity_audit") == "round34a_core" and p.get("context_capacity_complete") is True and p.get("context_capacity_status") == "COMPLETE/SENTINEL-SCREEN/NON-CLAIMING" and not p.get("budget_incomplete") for p in payloads)
+        assert all(p.get("source") == "forward" and p.get("target") == "delta" and p.get("residualize") in (None, "static") for p in payloads)
+        estimands = [p.get("residualize") for p in payloads]; assert len(set(estimands)) == 1, "raw/static estimands cannot be pooled"
+        residualize = estimands[0]; expected_tags = {f"ctxcapA_{'static' if residualize else 'raw'}", f"ctxcapB_{'static' if residualize else 'raw'}"}; assert set(input_tags) == expected_tags
+        assert all(p.get("context_capacity_candidates") == list(ROUND34A_CANDIDATES) and p.get("context_capacity_endpoints") == list(ROUND34A_ENDPOINTS) and p.get("context_capacity_wall_seconds") == ROUND34A_WALL_SECONDS for p in payloads)
+        assert all(p.get("world_completer_constructed") is False and p.get("model_forward_performed") is False and p.get("causal_model_loaded") is False and p.get("substitution_probe_constructed") is False and p.get("tokenizer_only") is True and isinstance(p.get("fallback"), dict) and p["fallback"].get("n_boot") == 500 and p["fallback"].get("n_shuffle") == 0 for p in payloads)
+        assert payloads[0].get("config") == payloads[1].get("config") and isinstance(payloads[0].get("manifest"), dict) and isinstance(payloads[1].get("manifest"), dict) and payloads[0]["manifest"].get("model_revision") == payloads[1]["manifest"].get("model_revision")
+        sentinels = [p.get("sentinel_tag") for p in payloads]; assert set(sentinels) == {"A", "B"}
+        assert all(tag == f"ctxcap{p['sentinel_tag']}_{'static' if residualize else 'raw'}" for tag, p in zip(input_tags, payloads)), "artifact tag/sentinel mismatch"
+        bindings = {sn: round34_validate_binding(p.get("context_capacity_binding"), sn) for sn, p in zip(sentinels, payloads)}
+        assert bindings["A"]["model"] == bindings["B"]["model"] and bindings["A"]["model_revision"] == bindings["B"]["model_revision"] and bindings["A"]["forward_states_sha256"] != bindings["B"]["forward_states_sha256"]
+        assert all(isinstance(p.get("pairs"), dict) and set(p["pairs"]) == set(all_layers) and ev["telemetry"].keys() == p["pairs"].keys() for p, ev in zip(payloads, evidences))
+        layers_all = {sn: {l: validate_layer(p, ev, l) for l in all_layers} for sn, p, ev in zip(sentinels, payloads, evidences)}
+        for sn, p in zip(sentinels, payloads):
+            round34a_assert_equal(p.get("context_capacity_layer_decisions"), layers_all[sn], f"{sn}/stored layer decisions")
+            round34a_assert_equal(p.get("context_capacity_continue_layers_F4_F20"), [l for l in ROUND34_LAYERS if layers_all[sn][l] == "CONTINUE"], f"{sn}/stored continue layers")
+            round34a_assert_equal(p.get("context_capacity_stop_layers_F4_F20"), [l for l in ROUND34_LAYERS if layers_all[sn][l] == "CAPACITY-SENSITIVE SCREEN; STOP"], f"{sn}/stored stop layers")
+        layers = {sn: {l: layers_all[sn][l] for l in ROUND34_LAYERS} for sn in layers_all}
+        joint = round34a_decide_joint(layers)
+    except (AssertionError, KeyError, TypeError, ValueError, AttributeError, OSError, OverflowError, IndexError, ArithmeticError) as e_:
+        reason = f"{type(e_).__name__}: {e_}"
+    if reason is not None:
+        base["reason"] = reason
+    else:
+        base.update({"status": "COMPLETE/SCREEN-ONLY", "estimand": ("P_static-residualized X_perp -> Delta_perp" if residualize else "unresidualized X -> Delta"),
+                     "sentinel_layer_decisions": layers, "f0_diagnostic_decisions": {sn: layers_all[sn]["F0"] for sn in layers_all},
+                     "bindings": bindings, "complete_gate_recomputed_from_cell_evidence": True, "bootstrap_seed": ROUND34A_BOOTSTRAP_SEED,
+                     "evidence_schema": ROUND34A_EVIDENCE_SCHEMA, **joint})
+    out = run_dir / f"analysis_{output_tag}.json"; out.write_text(json.dumps(base, indent=1, default=float), encoding="utf-8"); return out, base
+
+
+def context_capacity_joint_artifact(run_dir, input_tags, output_tag):
+    """Dispatch the shared CLI reducer without weakening either mode's fail-closed validator."""
+    try:
+        modes = {json.loads((run_dir / f"analysis_{tag}.json").read_bytes().decode("utf-8")).get("context_capacity_audit") for tag in input_tags}
+    except (OSError, ValueError, TypeError, AttributeError):
+        modes = set()
+    if modes == {"round34a_core"}: return round34a_joint_artifact(run_dir, input_tags, output_tag)
+    if modes == {"round34_v1"}: return round34_joint_artifact(run_dir, input_tags, output_tag)
+    assert output_tag and output_tag not in set(input_tags) and all(tag and all(ch.isalnum() or ch in "_.-" for ch in tag) for tag in (*input_tags, output_tag)), "unsafe/distinct output tag required"
+    out = run_dir / f"analysis_{output_tag}.json"; art = {"context_capacity_joint": "unknown", "inputs": list(input_tags), "status": "INCOMPLETE/NON-CLAIMING", "decision": None, "reason": "input artifacts are unreadable, mixed-mode, or unsupported"}
+    out.write_text(json.dumps(art, indent=1), encoding="utf-8"); return out, art
+
+
 # ---------------- main analysis ----------------
+
+def round34a_core_analysis(a, cfg, run_dir, results, results_binding34, ZX, ZY, P_static, CTX,
+                           pos, blocks, block_names, probe_ids, pairs, t0):
+    """Audit-#19 early branch: only static-or-none residualization, state ridge, token ridge/kernel, EDF matches, and two endpoints."""
+    assert a.context_capacity_audit == "round34a_core" and CTX is not None and a.unseen_words == 2 and a.source == "forward" and a.target == "delta"
+    P, _, n, D = ZX.shape; assert ZY.shape == ZX.shape
+    if a.residualize == "static": assert P_static is not None
+    evidence_margins, evidence_telemetry = {}, {}
+
+    def cells(probe_list, layer, widx):
+        take = np.asarray(widx)
+        X = np.concatenate([ZX[p, layer][take] for p in probe_list]); Y = np.concatenate([ZY[p, layer][take] for p in probe_list])
+        return X, Y - X
+
+    def strat_folds(n_folds, seed):
+        rng = np.random.default_rng(seed); fold = np.zeros(n, dtype=int)
+        for cls in sorted(set(pos)):
+            idx = np.array([i for i in range(n) if pos[i] == cls]); rng.shuffle(idx)
+            for j, i in enumerate(idx): fold[i] = j % n_folds
+        return fold
+
+    word_fold = strat_folds(2, SEED + 3)
+    word_strata = {}
+    for wj in (0, 1):
+        held_words = np.where(word_fold == wj)[0]; held_pos = np.array([pos[i] for i in held_words])
+        word_strata[str(wj)] = [[int(i) for i in np.where(held_pos == cls)[0]] for cls in sorted(set(held_pos))]
+        assert sorted(i for group in word_strata[str(wj)] for i in group) == list(range(len(held_words)))
+
+    out_path = run_dir / f"analysis_{a.tag}.json"; evidence_path = run_dir / f"round34a_evidence_{a.tag}.npz"
+    def checkpoint():
+        raw, descriptor = round34a_pack_evidence(a.tag, evidence_margins, evidence_telemetry, word_strata)
+        evidence_path.write_bytes(raw); results["context_capacity_evidence"] = descriptor
+        results["seconds"] = round(time.time() - t0, 1); out_path.write_text(json.dumps(results, indent=1, default=float), encoding="utf-8")
+
+    def fail_wall(layer, outer_key):
+        results.update({"budget_incomplete": True, "context_capacity_complete": False, "context_capacity_status": "INCOMPLETE/NON-CLAIMING",
+                        "context_capacity_incomplete_after": {"layer": layer, "outer_key": outer_key}})
+        checkpoint(); print(f"wrote {out_path} ({results['seconds']}s) INCOMPLETE/NON-CLAIMING: round34a_core wall exceeded at {layer}/{outer_key}"); return
+
+    for layer, _ in pairs:
+        layer_name = f"F{layer}"; print(f"\n=== {layer_name} (Round 34a core) ===", flush=True)
+        fold_out = {}; margins = {e: {c: {} for c in ROUND34A_CANDIDATES} for e in ROUND34A_ENDPOINTS}; telemetry = {}
+        evidence_margins[layer_name] = margins; evidence_telemetry[layer_name] = telemetry
+        for held_block in block_names:
+            for wj in (0, 1):
+                outer_key = f"{held_block}_w{wj}"
+                if time.time() - t0 > ROUND34A_WALL_SECONDS:
+                    results["pairs"][layer_name] = {"folds": fold_out, "context_capacity": {"status": "INCOMPLETE/NON-CLAIMING", "decision": None, "completed_outer_keys": list(fold_out)}}
+                    fail_wall(layer_name, None); return
+                widx_c, widx_t = np.where(word_fold != wj)[0], np.where(word_fold == wj)[0]
+                n_c, n_t = len(widx_c), len(widx_t); assert n_c > 0 and n_t > 0 and not (set(widx_c) & set(widx_t))
+                cal_blocks = [b for b in block_names if b != held_block]
+                cal_probes = [p for b in cal_blocks for p in probe_ids[b]]; test_probes = probe_ids[held_block]
+                Xc, Yc = cells(cal_probes, layer, widx_c); Xt, Yt = cells(test_probes, layer, widx_t)
+                residualization = None
+
+                def rows_for(arr, probe_list, probe_order=cal_probes):
+                    offsets = {p: i for i, p in enumerate(probe_order)}
+                    return np.concatenate([arr[offsets[p] * n_c:(offsets[p] + 1) * n_c] for p in probe_list])
+
+                if a.residualize == "static":
+                    def design(probe_list, row_idx): return np.repeat(P_static[probe_list], len(row_idx), axis=0)
+                    Pc, Pt = design(cal_probes, widx_c), design(test_probes, widx_t); stp = Standardizer().fit(Pc); Pcs, Pts = stp(Pc), stp(Pt)
+                    fam_x, fam_d = RidgeFamily(Pcs, Xc), RidgeFamily(Pcs, Yc)
+                    def select_nuisance(target_index):
+                        scores = {}
+                        for inner_block in cal_blocks:
+                            ip = [p for b in cal_blocks if b != inner_block for p in probe_ids[b]]; vp = probe_ids[inner_block]
+                            Pi, Pv = design(ip, widx_c), design(vp, widx_c); sti = Standardizer().fit(Pi)
+                            Ti = cells(ip, layer, widx_c)[target_index]; Tv = cells(vp, layer, widx_c)[target_index]
+                            fam = RidgeFamily(sti(Pi), Ti)
+                            for lam in LAMBDAS:
+                                pr = fam.predictor(lam)(sti(Pv)); scores.setdefault(lam, []).append(float(np.mean(cos_rows(pr, Tv))) if np.isfinite(pr).all() else float("-inf"))
+                        best = max(scores, key=lambda k: np.mean(scores[k])); assert np.isfinite(np.mean(scores[best])); return best
+                    lam_x, lam_d = select_nuisance(0), select_nuisance(1)
+                    fx_c, fx_t = fam_x.predictor(lam_x)(Pcs), fam_x.predictor(lam_x)(Pts)
+                    fd_c, fd_t = fam_d.predictor(lam_d)(Pcs), fam_d.predictor(lam_d)(Pts)
+                    assert all(np.isfinite(v).all() for v in (fx_c, fx_t, fd_c, fd_t))
+                    fx_c, fx_t, fd_c, fd_t = (np.asarray(v, dtype=np.float32) for v in (fx_c, fx_t, fd_c, fd_t))
+                    Xc, Xt, Yc, Yt = Xc - fx_c, Xt - fx_t, Yc - fd_c, Yt - fd_t
+                    residualization = {"design": "static", "lambda_X": float(lam_x), "lambda_Delta": float(lam_d), "training_only": True}
+                else:
+                    assert a.residualize == ""
+
+                # State ridge lambda selection, and nothing else from the legacy ladder.
+                state_scores = {lam: [] for lam in LAMBDAS}
+                for inner_block in cal_blocks:
+                    ip = [p for b in cal_blocks if b != inner_block for p in probe_ids[b]]; vp = probe_ids[inner_block]
+                    if residualization is None:
+                        Xi, Yi = cells(ip, layer, widx_c); Xv, Yv = cells(vp, layer, widx_c)
+                    else:
+                        Xi, Yi, Xv, Yv = rows_for(Xc, ip), rows_for(Yc, ip), rows_for(Xc, vp), rows_for(Yc, vp)
+                    sti = Standardizer().fit(Xi); fam = RidgeFamily(sti(Xi), Yi)
+                    for lam in LAMBDAS:
+                        pr = fam.predictor(lam)(sti(Xv)); state_scores[lam].append(float(np.mean(cos_rows(pr, Yv))) if np.isfinite(pr).all() else float("-inf"))
+                state_lam = max(state_scores, key=lambda k: np.mean(state_scores[k])); assert np.isfinite(np.mean(state_scores[state_lam]))
+
+                # The already-registered token_ids_v1 ridge/kernel, selected only on inner carrier folds.
+                col_out = CTX["columns"](cal_probes); Zc = CTX["rows"](cal_probes, widx_c, col_out); Zt = CTX["rows"](test_probes, widx_t, col_out)
+                ridge_scores, kernel_scores = {}, {}
+                for inner_block in cal_blocks:
+                    ip = [p for b in cal_blocks if b != inner_block for p in probe_ids[b]]; vp = probe_ids[inner_block]
+                    col_in = CTX["columns"](ip); Zi, Zv = CTX["rows"](ip, widx_c, col_in), CTX["rows"](vp, widx_c, col_in); stzi = Standardizer().fit(Zi)
+                    Yi, Yv = rows_for(Yc, ip).astype(np.float64), rows_for(Yc, vp).astype(np.float64)
+                    fr, fk = RidgeFamily(stzi(Zi), Yi), KernelFamily(stzi(Zi), Yi)
+                    for lam in LAMBDAS:
+                        pr = fr.predictor(lam)(stzi(Zv)); ridge_scores.setdefault(lam, []).append(float(np.mean(cos_rows(pr, Yv))) if np.isfinite(pr).all() else float("-inf"))
+                        for gamma in GAMMAS:
+                            pk = fk.predictor(lam, gamma)(stzi(Zv)); kernel_scores.setdefault((gamma, lam), []).append(float(np.mean(cos_rows(pk, Yv))) if np.isfinite(pk).all() else float("-inf"))
+                ridge_lam = max(ridge_scores, key=lambda k: np.mean(ridge_scores[k])); kernel_gamma, kernel_lam = max(kernel_scores, key=lambda k: np.mean(kernel_scores[k]))
+                assert np.isfinite(np.mean(ridge_scores[ridge_lam])) and np.isfinite(np.mean(kernel_scores[(kernel_gamma, kernel_lam)]))
+                stz = Standardizer().fit(Zc); Zcs, Zts = stz(Zc), stz(Zt); Yc64 = np.asarray(Yc, dtype=np.float64)
+                context_ridge, context_kernel = RidgeFamily(Zcs, Yc64), KernelFamily(Zcs, Yc64)
+                pred_ridge = context_ridge.predictor(ridge_lam)(Zts); pred_kernel = context_kernel.predictor(kernel_lam, kernel_gamma)(Zts)
+                assert np.isfinite(pred_ridge).all() and np.isfinite(pred_kernel).all()
+
+                state_st = Standardizer().fit(np.asarray(Xc, dtype=np.float64)); Xc_state, Xt_state = state_st(np.asarray(Xc, dtype=np.float64)), state_st(np.asarray(Xt, dtype=np.float64))
+                state_fam = RidgeFamily(Xc_state, Yc64); state_edf, state_spec = round34_effective_df(state_fam.evals, state_lam, len(Xc_state), Xc_state.shape[1])
+                ridge_edf, ridge_spec = round34_effective_df(context_ridge.evals, ridge_lam, len(Zcs), Zcs.shape[1])
+                kernel_evals = context_kernel._eig[kernel_gamma][0]; kernel_edf, kernel_spec = round34_effective_df(kernel_evals, kernel_lam, len(Zcs), len(Zcs))
+                distinct_context = round34_distinct_rows(Zc)
+                assert state_spec["valid"] and ridge_spec["valid"] and kernel_spec["valid"] and ridge_spec["rank"] <= 47 and kernel_spec["rank"] <= 48 and distinct_context <= 48
+                selected_state = {"lambda": float(state_lam), "training_edf": float(state_edf), "rank": state_spec["rank"], "rank_tolerance": state_spec["tolerance"],
+                                  "retained_columns": int(state_st.keep.sum()), "finite_checks": {"features": bool(np.isfinite(Xc_state).all() and np.isfinite(Xt_state).all()), "spectrum": state_spec["valid"]},
+                                  "inner_scores": {str(k): float(np.mean(v)) for k, v in state_scores.items()}}
+                ridge_meta = {"family": "ridge", "lambda": float(ridge_lam), "training_edf": float(ridge_edf), "rank": ridge_spec["rank"], "rank_tolerance": ridge_spec["tolerance"],
+                              "distinct_training_rows": distinct_context, "retained_columns": int(stz.keep.sum()), "n_columns_raw": int(Zc.shape[1]), "capacity_rank_ceiling": 47,
+                              "finite_checks": {"features": bool(np.isfinite(Zcs).all() and np.isfinite(Zts).all()), "prediction": True, "spectrum": ridge_spec["valid"]},
+                              "inner_scores": {str(k): float(np.mean(v)) for k, v in ridge_scores.items()}, "recomputed_registered_field": "ctxprefix"}
+                kernel_meta = {"family": "rbf_kernel", "gamma": float(kernel_gamma), "lambda": float(kernel_lam), "training_edf": float(kernel_edf), "rank": kernel_spec["rank"], "rank_tolerance": kernel_spec["tolerance"],
+                               "distinct_training_rows": distinct_context, "retained_columns": int(stz.keep.sum()), "n_columns_raw": int(Zc.shape[1]), "capacity_rank_ceiling": 48, "median_sqdist": float(context_kernel.med),
+                               "finite_checks": {"features": bool(np.isfinite(Zcs).all() and np.isfinite(Zts).all()), "prediction": True, "spectrum": kernel_spec["valid"]},
+                               "inner_scores": {f"{k[0]},{k[1]}": float(np.mean(v)) for k, v in kernel_scores.items()}, "recomputed_registered_field": "ctxprefix_kernel"}
+                specs = {"token_ids_v1_ridge_selected_edf": (pred_ridge, ridge_meta, "selected_context_edf", float(ridge_edf)),
+                         "token_ids_v1_ridge_rank47": (pred_ridge, ridge_meta, "rank_ceiling", min(47.0, float(state_edf))),
+                         "token_ids_v1_kernel_selected_edf": (pred_kernel, kernel_meta, "selected_context_edf", float(kernel_edf)),
+                         "token_ids_v1_kernel_rank48": (pred_kernel, kernel_meta, "rank_ceiling", min(48.0, float(state_edf)))}
+                candidates, predictions = {}, {}
+                for candidate in ROUND34A_CANDIDATES:
+                    context_pred, context_meta, match_kind, target_edf = specs[candidate]
+                    match = round34_solve_edf_lambda(state_fam.evals, target_edf, len(Xc_state), Xc_state.shape[1], int(state_st.keep.sum()))
+                    state_pred = state_fam.predictor(match["lambda"])(Xt_state) if match["valid"] else np.full_like(context_pred, np.nan)
+                    match["finite_checks"]["prediction"] = bool(np.isfinite(state_pred).all())
+                    supported = bool(match["valid"] and match["finite_checks"]["prediction"] and context_meta["finite_checks"]["prediction"])
+                    if not supported: match["valid"] = False
+                    candidates[candidate] = {"match_kind": match_kind, "context": dict(context_meta),
+                                             "state_match": {**match, "selected_state_lambda": float(state_lam), "selected_state_edf": float(state_edf)}, "supported": supported}
+                    predictions[candidate] = (np.asarray(context_pred, dtype=np.float64), np.asarray(state_pred, dtype=np.float64))
+
+                ybar = Yc.mean(0); denominator = np.linalg.norm(Yt - ybar, axis=1); denominator = np.where(denominator > 0, denominator, np.nan)
+                raw = {e: {} for e in ROUND34A_ENDPOINTS}; common = np.ones(len(Yt), dtype=bool)
+                for candidate, (context_pred, state_pred) in predictions.items():
+                    raw["cos"][candidate] = cos_rows(state_pred, Yt) - cos_rows(context_pred, Yt)
+                    raw["nerr"][candidate] = (np.linalg.norm(context_pred - Yt, axis=1) - np.linalg.norm(state_pred - Yt, axis=1)) / denominator
+                    for endpoint in ROUND34A_ENDPOINTS: common &= np.isfinite(raw[endpoint][candidate])
+                key_margins = {e: {} for e in ROUND34A_ENDPOINTS}
+                for endpoint in ROUND34A_ENDPOINTS:
+                    for candidate in ROUND34A_CANDIDATES:
+                        M = np.where(common, raw[endpoint][candidate], np.nan).reshape(len(test_probes), n_t).astype(np.float32)
+                        margins[endpoint][candidate][outer_key] = M; key_margins[endpoint][candidate] = M
+                all_valid = bool(all(candidates[c]["supported"] and candidates[c]["state_match"]["valid"] for c in ROUND34A_CANDIDATES))
+                key_record, points, strongest = round34a_key_record(key_margins, all_valid)
+                fold_fit = {"selected_state": selected_state, "candidates": candidates, "world_completer_constructed": False,
+                            "candidate_matched_margin_means": points, "strongest_matched_margin_means": strongest, **key_record}
+                telemetry[outer_key] = {"selected_state": selected_state, "contexts": {"ridge": ridge_meta, "kernel": kernel_meta}}
+                fold_out[outer_key] = {"residualization": residualization, "context_capacity": fold_fit}
+                results["pairs"][layer_name] = {"folds": fold_out, "context_capacity": {"status": "RUNNING/NON-CLAIMING", "completed_outer_keys": list(fold_out)}}
+                checkpoint()
+                print(f"   [{outer_key}] state df={state_edf:.2f}; token ridge/kernel df={ridge_edf:.2f}/{kernel_edf:.2f}; support={key_record['common_support']:.3f} ({results['seconds']:.0f}s)", flush=True)
+                if time.time() - t0 > ROUND34A_WALL_SECONDS:
+                    results["pairs"][layer_name]["context_capacity"].update({"status": "INCOMPLETE/NON-CLAIMING", "decision": None})
+                    fail_wall(layer_name, outer_key); return
+
+        def strata_for_fold(fold_key, width):
+            groups = [np.asarray(g, dtype=int) for g in word_strata[str(int(fold_key))]]
+            assert sorted(np.concatenate(groups).tolist()) == list(range(width)); return groups
+        reduction = round34_matched_margin_reduce(margins, strata_for_fold, 500, ROUND34A_BOOTSTRAP_SEED, ROUND34A_CANDIDATES)
+        outer_records = {key: {k: fold_out[key]["context_capacity"][k] for k in ("common_support", "all_matches_valid", "jointly_point_positive", "jointly_below_0.02")} for key in fold_out}
+        decision = round34a_decide_layer(reduction, outer_records)
+        layer_record = {"status": "COMPLETE/PER-LAYER", "matched_margin_definition": "score(state at selected/rank-ceiling EDF) - score(selected token context); nerr sign reversed so larger is better",
+                        "strongest_context_reduced_inside_each_bootstrap": True, "endpoints": reduction, "outer_keys": outer_records, **decision}
+        results["pairs"][layer_name] = {"folds": fold_out, "context_capacity": layer_record}; checkpoint()
+        print(f"  ROUND34A {layer_name}: {decision['decision']} | strongest " + " ".join(f"{e}={reduction[e]['strongest_margin']['mean']:+.3f}" for e in ROUND34A_ENDPOINTS), flush=True)
+
+    if time.time() - t0 > ROUND34A_WALL_SECONDS: fail_wall("final", None); return
+    assert list(results["pairs"]) == ["F0", "F4", "F8", "F12", "F20"] and all(len(results["pairs"][l]["folds"]) == 8 for l in results["pairs"])
+    per_layer = {l: results["pairs"][l]["context_capacity"]["decision"] for l in results["pairs"]}
+    results.update({"context_capacity_binding": results_binding34, "context_capacity_complete": True, "context_capacity_status": "COMPLETE/SENTINEL-SCREEN/NON-CLAIMING",
+                    "context_capacity_layer_decisions": per_layer, "context_capacity_continue_layers_F4_F20": [l for l in ROUND34_LAYERS if per_layer[l] == "CONTINUE"],
+                    "context_capacity_stop_layers_F4_F20": [l for l in ROUND34_LAYERS if per_layer[l] == "CAPACITY-SENSITIVE SCREEN; STOP"],
+                    "joint_verdict": None, "joint_requirement": "two common F4-F20 layers in completed A/B artifacts from this exact raw or static estimand; use --context-capacity-joint",
+                    "screen_scope": "tokenizer-only early branch; no completion, causal model, legacy ladder, K=13, new context family, raw shadow, oracle, shuffle, or Round 33 consequence",
+                    "round34a_executed_families": ["static_residualizer" if a.residualize == "static" else "no_residualizer", "state_ridge", "token_ids_v1_ridge", "token_ids_v1_rbf_kernel", "four_state_edf_matches"],
+                    "round34a_scored_endpoints": list(ROUND34A_ENDPOINTS)})
+    checkpoint(); print(f"wrote {out_path} and {evidence_path} ({results['seconds']}s)")
+
 
 class Deadline(RuntimeError):
     pass
@@ -828,8 +1341,8 @@ def main():
     ap.add_argument("--contextual-prefix-xfree", action="store_true", help="Round 31 order-4 baseline: contextual-prefix X-free field (token_ids_v1: position-specific token one-hots for the last 8 prefix / first 4 suffix positions, full-prefix unigram + adjacent-bigram counts, prefix/suffix lengths, slot/readout positions, POS one-hot, POS x boundary-token interactions; no item strings/ids/embeddings, no cell X) fit to the target on calibration families/words, scored against the cell-level X field on the same folds and endpoints")
     ap.add_argument("--prefix-feature-set", default="token_ids_v1", choices=["token_ids_v1"], help="Round 31: the fixed contextual-prefix feature set")
     ap.add_argument("--ctx-screen", action="store_true", help="Round 31 order-4 state screen: point-only (completer off, no shuffles/bootstraps) run of the contextual-prefix baseline; cannot earn a claim")
-    ap.add_argument("--context-capacity-audit", choices=["round34_v1"], help="Round 34: locked six-arm capacity-matched state-versus-context audit")
-    ap.add_argument("--context-capacity-joint", nargs=2, metavar=("TAG_A", "TAG_B"), help="Round 34: read-only joint reducer over two completed sentinel artifacts")
+    ap.add_argument("--context-capacity-audit", choices=["round34_v1", "round34a_core"], help="Round 34: locked full audit or audit-#19 matched-EDF core screen")
+    ap.add_argument("--context-capacity-joint", nargs=2, metavar=("TAG_A", "TAG_B"), help="Round 34/34a: read-only joint reducer over two completed same-estimand sentinel artifacts")
     ap.add_argument("--round30-gates", action="store_true", help="Round 30 probes 2-3: emit continuous-KL gates (kl_vs_<null>) for the four X-free lexical nulls; implied by --source forward_insert; required for the fresh-population sentinel analyses")
     ap.add_argument("--interchangeability", action="store_true", help="Round 30 probe 4: matched presentation interchangeability on the frozen fresh population (early-return mode)")
     ap.add_argument("--append-tags", nargs="*", default=["A", "B"], help="probe 4: sentinel capture tags of the fresh population")
@@ -850,21 +1363,25 @@ def main():
     ap.add_argument("--target", choices=["successor", "delta"], default="successor", help="delta: predict the displacement Y-X from X (Round 18); mean = shared displacement, word_mean = word-conditioned mean displacement; completion uses X + delta_hat")
     ap.add_argument("--tag", default="", help="suffix for the output file: analysis_<tag>.json (keeps earlier runs intact)")
     ap.add_argument("--smoke", action="store_true", help="pipeline validation on the first 16 words, pair 0, tiny bootstrap; writes analysis_smoke.json")
-    a = ap.parse_args()
+    a = ap.parse_args(); core34a = a.context_capacity_audit == "round34a_core"
     if a.context_capacity_joint:
         assert not a.context_capacity_audit and not any((a.identity_only, a.identity_check, a.baselines, a.fl_null, a.xfree_field, a.contextual_prefix_xfree, a.ctx_screen,
                                                          a.round30_gates, a.interchangeability, a.move_tag, a.aug_full_mean, a.aug_kernel, a.screen, a.residualize,
                                                          a.unseen_words, a.loco, a.style_null, a.control_tag, a.smoke)), "--context-capacity-joint is an early-return reducer and rejects analysis modes"
         assert a.pairs is None and not a.skip_completion and a.source == "layers" and a.target == "successor", "--context-capacity-joint accepts only --run, --config, its two tags, and --tag"
-        out, joint = round34_joint_artifact(RESULTS / a.run, a.context_capacity_joint, a.tag)
+        out, joint = context_capacity_joint_artifact(RESULTS / a.run, a.context_capacity_joint, a.tag)
         print(f"wrote {out} ({joint['status']})"); return
     if a.context_capacity_audit:
-        assert a.context_capacity_audit == "round34_v1" and a.source == "forward" and a.target == "delta" and a.unseen_words == 2 and a.residualize == "static", "round34_v1 is locked to --source forward --target delta --unseen-words 2 --residualize static"
-        assert a.contextual_prefix_xfree and a.prefix_feature_set == "token_ids_v1" and list(a.pairs or []) == [0, 1, 2, 3, 4], "round34_v1 requires --contextual-prefix-xfree --prefix-feature-set token_ids_v1 --pairs 0 1 2 3 4 (exact order)"
-        assert not a.skip_completion and a.n_boot == 500 and a.n_shuffle == 20 and a.sentinel_tag in ("A", "B"), "round34_v1 requires completion on, --n-boot 500, --n-shuffle 20, and sentinel A or B"
-        assert a.aug_rank == "4", "round34_v1 rejects residualizer-selection --aug-rank"
+        assert a.source == "forward" and a.target == "delta" and a.unseen_words == 2, "Round 34 modes require --source forward --target delta --unseen-words 2"
+        assert a.contextual_prefix_xfree and a.prefix_feature_set == "token_ids_v1" and list(a.pairs or []) == [0, 1, 2, 3, 4], "Round 34 modes require --contextual-prefix-xfree --prefix-feature-set token_ids_v1 --pairs 0 1 2 3 4 (exact order)"
+        assert a.aug_rank == "4", "Round 34 modes reject residualizer-selection --aug-rank"
         assert not any((a.identity_only, a.identity_check, a.baselines, a.fl_null, a.xfree_field, a.ctx_screen, a.round30_gates, a.interchangeability, a.move_tag,
-                        a.aug_full_mean, a.aug_kernel, a.screen, a.loco, a.style_null, a.control_tag, a.smoke)), "round34_v1 rejects screen, consequence/interchangeability, residualizer-selection, permutation-null, and ancillary modes"
+                        a.aug_full_mean, a.aug_kernel, a.screen, a.loco, a.style_null, a.control_tag, a.smoke)), "Round 34 modes reject screen, consequence/interchangeability, residualizer-selection, permutation-null, and ancillary modes"
+        if core34a:
+            assert a.residualize in ("", "static") and a.skip_completion and a.n_boot == 500 and a.n_shuffle == 0 and a.sentinel_tag in ("A", "B"), "round34a_core requires raw or static residualization, --skip-completion, --n-boot 500, --n-shuffle 0, and sentinel A or B"
+            expected_tag = f"ctxcap{a.sentinel_tag}_{'static' if a.residualize == 'static' else 'raw'}"; assert a.tag == expected_tag, f"round34a_core fixes --tag {expected_tag}"
+        else:
+            assert a.residualize == "static" and not a.skip_completion and a.n_boot == 500 and a.n_shuffle == 20 and a.sentinel_tag in ("A", "B"), "round34_v1 requires --residualize static, completion on, --n-boot 500, --n-shuffle 20, and sentinel A or B"
     if a.fl_null:
         assert a.fl_deadline_seconds <= 108000.0, "--fl-deadline-seconds cannot exceed the locked 30 h per-cell wall"
         assert a.fl_null == 20 and sorted(a.pairs) == [0, 1, 2, 3, 4], "--fl-null is locked to 20 refits on --pairs 0 1 2 3 4 (Round 27 comparator-1 lock)"
@@ -898,7 +1415,7 @@ def main():
         a.round30_gates = True
         if a.ctx_screen:
             a.n_boot = 0; a.n_shuffle = 0                                                  # point-only state screen (completer off)
-        else:
+        elif not core34a:
             assert not a.skip_completion and a.n_boot > 0 and a.n_shuffle > 0, "the contextual-prefix completion score needs completion on and bootstraps/shuffles > 0 (use --ctx-screen for the point-only screen)"
     a.probe1 = bool(a.residualize == "aug" and (a.aug_rank != 4 or a.aug_full_mean or a.aug_kernel or a.screen))
     if a.interchangeability:
@@ -937,11 +1454,11 @@ def main():
     elif a.source == "forward":
         assert a.target == "delta", "forward mode is defined on the displacement (Round 19 residual rule)"
         d = np.load(run_dir / f"forward_states_{a.sentinel_tag}.npz")
-        ZX = d["H_q_unappended"].astype(np.float32); ZY = d["H_sent"].astype(np.float32); laws = d["law_sent"].astype(np.float32)
+        ZX = d["H_q_unappended"].astype(np.float32); ZY = d["H_sent"].astype(np.float32); laws = None if core34a else d["law_sent"].astype(np.float32)
         Z = ZX; SUCC_OFF = 0
         fman = json.loads((run_dir / f"forward_manifest_{a.sentinel_tag}.json").read_text(encoding="utf-8"))
-        locality = float(np.max(np.abs(d["H_last"].astype(np.float32) - ZX)))
-        print(f"forward mode: sentinel {fman['sentinel']!r} id {fman['sentinel_id']} | locality max|h(S||s)[q]-h(S)[q]| = {locality:.3e} (float16 storage)", flush=True)
+        locality = None if core34a else float(np.max(np.abs(d["H_last"].astype(np.float32) - ZX)))
+        print((f"forward mode: sentinel {fman['sentinel']!r} id {fman['sentinel_id']} | Round 34a state-only load (law/H_last arrays untouched)" if core34a else f"forward mode: sentinel {fman['sentinel']!r} id {fman['sentinel_id']} | locality max|h(S||s)[q]-h(S)[q]| = {locality:.3e} (float16 storage)"), flush=True)
         ZY_ctrl = None
         if a.control_tag:
             dc = np.load(run_dir / f"forward_states_{a.control_tag}.npz"); ZY_ctrl = dc["H_sent"].astype(np.float32)
@@ -971,10 +1488,16 @@ def main():
     rng = np.random.default_rng(SEED)
 
     import sys; sys.path.insert(0, str(Path(__file__).parent))
-    from substitution_probe import SubstitutionProbe
-    sp = None; completer = None
-    if not a.skip_completion or a.screen or a.ctx_screen:
-        sp = SubstitutionProbe(a.model); completer = None if (a.screen or a.ctx_screen) else WorldCompleter(sp, cfg)
+    sp = None; completer = None; tok = None
+    if core34a:
+        from transformers import AutoTokenizer
+        assert fman["model"] == a.model and isinstance(fman.get("model_revision"), str) and fman["model_revision"], "Round 34a tokenizer pin != forward manifest"
+        tok = AutoTokenizer.from_pretrained(a.model, revision=fman["model_revision"])
+        sid_ = tok.encode(fman["sentinel"], add_special_tokens=False); assert sid_ == [results_binding34["sentinel_id"]], f"Round 34a tokenizer sentinel id {sid_} != manifest {results_binding34['sentinel_id']}"
+        results_binding34.update({"completer_model_revision": fman["model_revision"], "tokenizer_requested_revision": fman["model_revision"], "sentinel_id_rederived_from_tokenizer": True})
+    elif not a.skip_completion or a.screen or a.ctx_screen:
+        from substitution_probe import SubstitutionProbe
+        sp = SubstitutionProbe(a.model); completer = None if (a.screen or a.ctx_screen or core34a) else WorldCompleter(sp, cfg)
         if a.context_capacity_audit:                                                         # Round 34 binding: the loaded completer must be the captured model
             assert fman["model"] == a.model and fman["model_revision"] == sp.revision, f"Round 34: loaded model/revision ({a.model}, {sp.revision}) != forward manifest ({fman['model']}, {fman['model_revision']})"
             sid_ = sp.tok.encode(fman["sentinel"], add_special_tokens=False); assert sid_ == [results_binding34["sentinel_id"]], f"Round 34: tokenizer sentinel id {sid_} != manifest {results_binding34['sentinel_id']}"
@@ -986,13 +1509,20 @@ def main():
         assert sp.revision == man.get("model_revision"), f"model revision {sp.revision} != capture manifest {man.get('model_revision')}"
         assert int(sp.model.config.num_hidden_layers) == man["num_hidden_layers"]
         assert man["model"] == a.model and man["config_name"] == cfg["name"] and man["n_probes"] == len(cfg["probes"]), "capture manifest / config mismatch"
-        ids = [sp.single_token_id(w) for w in items]; states_emb = torch.stack([sp.state(i) for i in ids])
-    results = {"pairs": {}, "source": a.source, "residualize": a.residualize or None, **({"aug_rank_requested": a.aug_rank, "aug_full_mean": bool(a.aug_full_mean), "aug_kernel": bool(a.aug_kernel), "screen_only": bool(a.screen), "rank_tolerance": "singular values > 1e-6 * s_max", "probe": "Round 29 probe 1 (carrier-summary rank ladder / literal P_aug-full contract / nonlinear carrier kernel)"} if a.probe1 else {}), "sentinel_tag": a.sentinel_tag if a.source == "forward" else None, **({"move_tag": a.move_tag, "move": "fixed single-token operator insertion before the word slot (Round 30 probe 3)", "insert_manifest": fman} if a.source == "forward_insert" else {}), "locality_max_abs_diff": locality, "manifest": man, "config": a.config, "lock": "theory/EXPERIMENTS.md NLM-007 (Round 13, amended Round 14)" + ("; Round 27 comparator 2 (fair residual-space X-free field: P_static + rank-4 carrier scores + 16 embedding PCs + 64 interactions; df-matched state ridge; lambda grid " + str(LAMBDAS) + ")" if a.xfree_field else ""), **({"xfree_field": True} if a.xfree_field else {}), **({"contextual_prefix_xfree": True, "prefix_feature_set": a.prefix_feature_set, "ctx_screen_only": bool(a.ctx_screen), "ctx_lock": "Round 31 order 4: contextual-prefix X-free field vs the cell-level X field; state-reading gate live only if X beats it by >=0.02 with positive crossed LBs on cosine, nerr, skill and continuous KL, >=6/8 keys, no family collapse, support >=0.95, two common F4-F20 layers for both sentinels"} if a.contextual_prefix_xfree else {}), **({"fl_null_refits": int(a.fl_null), "fl_deadline_seconds": float(a.fl_deadline_seconds), "fl_null_lock": "Round 27 comparator 1: fully refitted Freedman-Lane residual-geometry null; permutation of calibration Delta_perp across carriers within block and word; inner selection + ridge/kernel refit per permutation; statistics cos/nerr/skill/kl_improvement vs the fixed residual mean reference"} if a.fl_null else {}), "target": a.target,
+        if not core34a:
+            ids = [sp.single_token_id(w) for w in items]; states_emb = torch.stack([sp.state(i) for i in ids])
+        tok = sp.tok
+    results = {"pairs": {}, "source": a.source, "residualize": a.residualize or None, **({"aug_rank_requested": a.aug_rank, "aug_full_mean": bool(a.aug_full_mean), "aug_kernel": bool(a.aug_kernel), "screen_only": bool(a.screen), "rank_tolerance": "singular values > 1e-6 * s_max", "probe": "Round 29 probe 1 (carrier-summary rank ladder / literal P_aug-full contract / nonlinear carrier kernel)"} if a.probe1 else {}), "sentinel_tag": a.sentinel_tag if a.source == "forward" else None, **({"move_tag": a.move_tag, "move": "fixed single-token operator insertion before the word slot (Round 30 probe 3)", "insert_manifest": fman} if a.source == "forward_insert" else {}), "locality_max_abs_diff": locality, "manifest": man, "config": a.config, "lock": "theory/EXPERIMENTS.md NLM-007 (Round 13, amended Round 14)" + ("; Round 27 comparator 2 (fair residual-space X-free field: P_static + rank-4 carrier scores + 16 embedding PCs + 64 interactions; df-matched state ridge; lambda grid " + str(LAMBDAS) + ")" if a.xfree_field else ""), **({"xfree_field": True} if a.xfree_field else {}), **({"contextual_prefix_xfree": True, "prefix_feature_set": a.prefix_feature_set, "ctx_screen_only": bool(a.ctx_screen or core34a), "ctx_lock": ("Round 34a audit-#19 screen: selected token_ids_v1 ridge/kernel only; cosine/nerr matched-EDF decisions; no completion" if core34a else "Round 31 order 4: contextual-prefix X-free field vs the cell-level X field; state-reading gate live only if X beats it by >=0.02 with positive crossed LBs on cosine, nerr, skill and continuous KL, >=6/8 keys, no family collapse, support >=0.95, two common F4-F20 layers for both sentinels")} if a.contextual_prefix_xfree else {}), **({"fl_null_refits": int(a.fl_null), "fl_deadline_seconds": float(a.fl_deadline_seconds), "fl_null_lock": "Round 27 comparator 1: fully refitted Freedman-Lane residual-geometry null; permutation of calibration Delta_perp across carriers within block and word; inner selection + ridge/kernel refit per permutation; statistics cos/nerr/skill/kl_improvement vs the fixed residual mean reference"} if a.fl_null else {}), "target": a.target,
                "fallback": {"pairs": [(f"F{l}" if a.source == "forward_insert" else f"L{l}->L{l1}") for (l, l1) in pairs], "n_shuffle": a.n_shuffle, "n_boot": a.n_boot}}
     if a.context_capacity_audit:
-        results.update({"context_capacity_audit": "round34_v1", "context_capacity_complete": False, "context_capacity_status": "RUNNING/NON-CLAIMING",
-                        "context_capacity_candidates": list(ROUND34_CANDIDATES), "context_capacity_wall_seconds": ROUND34_WALL_SECONDS,
-                        "context_capacity_lock": "theory/EXPERIMENTS.md Round 34; P_static residual relation; six fixed context candidates; separately standardized float64 state ridge matched downward by training EDF; K=13 ridge-slot KL-rank substitution"})
+        results.update({"context_capacity_audit": a.context_capacity_audit, "context_capacity_complete": False, "context_capacity_status": "RUNNING/NON-CLAIMING",
+                        "context_capacity_candidates": list(ROUND34A_CANDIDATES if core34a else ROUND34_CANDIDATES),
+                        "context_capacity_endpoints": list(ROUND34A_ENDPOINTS if core34a else ROUND34_ENDPOINTS),
+                        "context_capacity_wall_seconds": (ROUND34A_WALL_SECONDS if core34a else ROUND34_WALL_SECONDS),
+                        "world_completer_constructed": bool(completer is not None),
+                        **({"model_forward_performed": False, "causal_model_loaded": False, "substitution_probe_constructed": False, "tokenizer_only": True} if core34a else {}),
+                        "context_capacity_lock": ("theory/EXPERIMENTS.md Round 34a; raw or separately tagged P_static relation; selected token_ids_v1 ridge/kernel only; state matched to selected EDF and fixed 47/48 ceiling; cosine/nerr only; non-claiming sentinel screen"
+                                                  if core34a else "theory/EXPERIMENTS.md Round 34 as amended by Round 34a; P_static residual relation; six fixed context candidates; separately standardized float64 state ridge matched downward by training EDF; continuous KL confirmatory and KL-rank diagnostic")})
     if completer is not None:
         # float16 reload check: fresh float32 laws for probe 0 vs stored float16 laws — KL-ordering agreement must be near 1
         fresh = completer.laws(0, states_emb, 0, Yhat=None, **completer_kw)[0 if a.source in ("forward", "forward_insert") else 1]
@@ -1028,11 +1558,11 @@ def main():
     true_slot_law = {}     # carrier -> true next-token law at the slot position (unmodified forward)
     P_static = None
     if a.residualize:
-        assert sp is not None and a.source in ("forward", "forward_insert"), "residualization needs the tokenizer (completion on, or --screen) and a forward-type source"
+        assert tok is not None and a.source in ("forward", "forward_insert"), "residualization needs the tokenizer and a forward-type source"
         rows_ = []
         for pi_, pr_ in enumerate(cfg["probes"]):
             pre_, suf_ = pr_["template"].split("<X>"); pre_ = pre_.rstrip()
-            lp = len(sp.tok.encode(pre_, add_special_tokens=False)); ls = len(sp.tok.encode(suf_, add_special_tokens=False))
+            lp = len(tok.encode(pre_, add_special_tokens=False)); ls = len(tok.encode(suf_, add_special_tokens=False))
             onehot = [1.0 if blocks[pi_] == b else 0.0 for b in block_names]
             if a.source == "forward_insert":                                                  # Round 30: [prefix, suffix, moved length, original slot, moved slot, normalized moved slot]
                 total_m = lp + 1 + 1 + ls
@@ -1049,8 +1579,10 @@ def main():
         ctx_tok = []
         for pi_, pr_ in enumerate(cfg["probes"]):
             pre_, suf_ = pr_["template"].split("<X>"); pre_ = pre_.rstrip()
-            ip_ = sp.tok.encode(pre_, add_special_tokens=False); is_ = sp.tok.encode(suf_, add_special_tokens=False)
+            ip_ = tok.encode(pre_, add_special_tokens=False); is_ = tok.encode(suf_, add_special_tokens=False)
             if "prefix_token_ids" in fman: assert list(fman["prefix_token_ids"][pi_]) == ip_ and list(fman["suffix_token_ids"][pi_]) == is_, f"probe {pi_}: tokenizer ids != capture manifest"
+            elif pi_ == 0 and a.context_capacity_audit: results["context_capacity_token_binding"] = {"prefix_suffix_ids": "pinned_rederivation", "note": "the frozen lm_dyn_v1 forward manifests carry the model/tokenizer revision and the sentinel id but no prefix/suffix token ids; prefix/suffix ids are re-derived from the locked config bytes with the tokenizer at the pinned revision and are not capture-validated", "sentinel_id": "capture_validated"}
+            elif pi_ == 0 and a.context_capacity_audit is None: pass
             if a.source == "forward_insert": ip_ = ip_ + [int(fman["operator_id"])]                    # the moved sequence's prefix ends with the operator
             slot_ = len(ip_); readout_ = (slot_ + 1 + len(is_)) if a.source == "forward" else slot_
             ctx_tok.append({"pre": ip_, "suf": is_, "slot": slot_, "readout": readout_})
@@ -1099,6 +1631,9 @@ def main():
                     rows.append(np.concatenate([row, num, ph]))
             Z = np.stack(rows).astype(np.float64); assert np.isfinite(Z).all(), "non-finite contextual-prefix features"; return Z
         CTX = {"tok": ctx_tok, "columns": ctx_columns, "rows": ctx_rows}
+    if core34a:
+        round34a_core_analysis(a, cfg, run_dir, results, results_binding34, ZX, ZY, P_static, CTX, pos, blocks, block_names, probe_ids, pairs, t0)
+        return
     E_words = None
     if a.unseen_words:
         assert sp is not None, "unseen-word mode needs the model for frozen input embeddings"
@@ -1248,16 +1783,19 @@ def main():
                                                               "n_cells": int(nrm.size), "n_zero_norm_cells": int(np.sum(nrm == 0)), "n_supported_cells": int(np.sum(nrm > 0))}}
             print(f"  insertion F0 structural null: max|Delta| = {float(np.abs(Dl).max()):.3e}; zero-norm cells {int(np.sum(nrm == 0))}/{nrm.size}", flush=True); continue
         fold_out = {}; cell_diffs = {}; retention_cells = {}          # (field, endpoint, against) -> {fold_key: diff matrix (carriers x words)} for the block-first pooled bootstrap
-        round34_margin_cells = ({e: {c: {} for c in ROUND34_CANDIDATES} for e in ROUND34_ENDPOINTS} if a.context_capacity_audit else None)
+        active_capacity_candidates = ROUND34A_CANDIDATES if core34a else ROUND34_CANDIDATES
+        active_capacity_endpoints = ROUND34A_ENDPOINTS if core34a else ROUND34_ENDPOINTS
+        capacity_wall_seconds = ROUND34A_WALL_SECONDS if core34a else ROUND34_WALL_SECONDS
+        round34_margin_cells = ({e: {c: {} for c in active_capacity_candidates} for e in active_capacity_endpoints} if a.context_capacity_audit else None)
         round34_key_records = {}
         word_fold = strat_folds(a.unseen_words, SEED + 3) if a.unseen_words else None
         fold_specs = [(b, None) for b in block_names] if not a.unseen_words else [(b, j) for b in block_names for j in range(a.unseen_words)]
         for held_block, wj in fold_specs:
-            if a.context_capacity_audit and (time.time() - t0) > ROUND34_WALL_SECONDS:                  # 2. never start another outer key past the wall
+            if a.context_capacity_audit and (time.time() - t0) > capacity_wall_seconds:                  # never start another outer key past the locked wall
                 results["pairs"][pair_key] = {"folds": fold_out, "context_capacity": {"status": "INCOMPLETE/NON-CLAIMING", "decision": None, "completed_outer_keys": list(fold_out)}}
                 results.update({"budget_incomplete": True, "context_capacity_complete": False, "context_capacity_status": "INCOMPLETE/NON-CLAIMING", "context_capacity_incomplete_after": {"layer": pair_key, "outer_key": None}, "seconds": round(time.time() - t0, 1)})
                 out_ckpt = run_dir / ("analysis" + ("_" + a.tag if a.tag else "") + ".json"); out_ckpt.write_text(json.dumps(results, indent=1, default=float), encoding="utf-8")
-                print(f"wrote {out_ckpt} ({results['seconds']}s) INCOMPLETE/NON-CLAIMING: Round 34 four-hour sentinel wall exceeded before {pair_key}/{held_block}_w{wj}"); return
+                print(f"wrote {out_ckpt} ({results['seconds']}s) INCOMPLETE/NON-CLAIMING: {a.context_capacity_audit} wall exceeded before {pair_key}/{held_block}_w{wj}"); return
             held = held_block if wj is None else f"{held_block}_w{wj}"
             widx_c = None if wj is None else np.where(word_fold != wj)[0]      # calibration word identities
             widx_t = None if wj is None else np.where(word_fold == wj)[0]      # held-out word identities (disjoint)
@@ -1578,7 +2116,49 @@ def main():
             n_cal_probes = len(cal_probes)
             cal_block_of = np.array([blocks[p] for p in cal_probes])
             round34_fold_fit = None; round34_completion_fields = []; round34_completion_aliases = {}; round34_unsupported_completion_fields = []
-            if a.context_capacity_audit:
+            if core34a:
+                # ---- Round 34a: audit-#19 token_ids_v1-only core screen; no completion or new contextual family ----
+                assert CTX is not None and widx_c is not None and widx_t is not None and completer is None
+                Yc64 = np.asarray(Yc, dtype=np.float64); state_st = Standardizer().fit(np.asarray(Xc, dtype=np.float64))
+                Xc_state, Xt_state = state_st(np.asarray(Xc, dtype=np.float64)), state_st(np.asarray(Xt, dtype=np.float64))
+                state_fam = RidgeFamily(Xc_state, Yc64); state_selected_lam = float(best["ridge"]["lam"])
+                state_selected_df, state_spec = round34_effective_df(state_fam.evals, state_selected_lam, len(Xc_state), Xc_state.shape[1])
+                assert state_spec["valid"] and np.isfinite(state_selected_df), "Round 34a selected state spectrum is unsupported"
+
+                tok_df, tok_spec = round34_effective_df(fr_all.evals, lam_c, len(Zcs), Zcs.shape[1])
+                ev_tok_k = fk_all._eig[g_c][0]; tok_k_df, tok_k_spec = round34_effective_df(ev_tok_k, lamk_c, len(Zcs), len(Zcs))
+                distinct_ctx = round34_distinct_rows(Zc)
+                assert tok_spec["valid"] and tok_k_spec["valid"] and tok_spec["rank"] <= 47 and tok_k_spec["rank"] <= 48 and distinct_ctx <= 48, "Round 34a token context exceeds the honest 47/48 ceiling"
+                ridge_meta = {"family": "ridge", "lambda": float(lam_c), "training_edf": tok_df, "rank": tok_spec["rank"], "rank_tolerance": tok_spec["tolerance"],
+                              "distinct_training_rows": distinct_ctx, "retained_columns": int(stz.keep.sum()), "n_columns_raw": int(Zc.shape[1]), "capacity_rank_ceiling": 47,
+                              "finite_checks": {"features": bool(np.isfinite(Zcs).all() and np.isfinite(Zts).all()), "prediction": bool(np.isfinite(preds["ctxprefix"]).all()), "spectrum": tok_spec["valid"]},
+                              "inner_scores": {str(k_): float(np.mean(v_)) for k_, v_ in sc_r.items()}, "recomputed_registered_field": "ctxprefix"}
+                kernel_meta = {"family": "rbf_kernel", "gamma": float(g_c), "lambda": float(lamk_c), "training_edf": tok_k_df, "rank": tok_k_spec["rank"], "rank_tolerance": tok_k_spec["tolerance"],
+                               "distinct_training_rows": distinct_ctx, "retained_columns": int(stz.keep.sum()), "n_columns_raw": int(Zc.shape[1]), "capacity_rank_ceiling": 48, "median_sqdist": float(fk_all.med),
+                               "finite_checks": {"features": bool(np.isfinite(Zcs).all() and np.isfinite(Zts).all()), "prediction": bool(np.isfinite(preds["ctxprefix_kernel"]).all()), "spectrum": tok_k_spec["valid"]},
+                               "inner_scores": {f"{k_[0]},{k_[1]}": float(np.mean(v_)) for k_, v_ in sc_k.items()}, "recomputed_registered_field": "ctxprefix_kernel"}
+                specs34a = {
+                    "token_ids_v1_ridge_selected_edf": (preds["ctxprefix"], ridge_meta, "selected_context_edf", float(tok_df)),
+                    "token_ids_v1_ridge_rank47": (preds["ctxprefix"], ridge_meta, "rank_ceiling", min(47.0, float(state_selected_df))),
+                    "token_ids_v1_kernel_selected_edf": (preds["ctxprefix_kernel"], kernel_meta, "selected_context_edf", float(tok_k_df)),
+                    "token_ids_v1_kernel_rank48": (preds["ctxprefix_kernel"], kernel_meta, "rank_ceiling", min(48.0, float(state_selected_df))),
+                }
+                round34_fold_fit = {"selected_state": {"lambda": state_selected_lam, "training_edf": state_selected_df, "rank": state_spec["rank"], "rank_tolerance": state_spec["tolerance"],
+                                                               "retained_columns": int(state_st.keep.sum()), "finite_checks": {"features": bool(np.isfinite(Xc_state).all() and np.isfinite(Xt_state).all()), "spectrum": state_spec["valid"]}},
+                                    "candidates": {}, "all_matches_valid": True, "world_completer_constructed": False}
+                for candidate in ROUND34A_CANDIDATES:
+                    context_pred, context_meta, match_kind, target_df = specs34a[candidate]
+                    match = round34_solve_edf_lambda(state_fam.evals, target_df, len(Xc_state), Xc_state.shape[1], int(state_st.keep.sum()))
+                    state_pred = state_fam.predictor(match["lambda"])(Xt_state) if match["valid"] else np.full_like(np.asarray(context_pred), np.nan)
+                    match["finite_checks"]["prediction"] = bool(np.isfinite(state_pred).all())
+                    supported = bool(match["valid"] and match["finite_checks"]["prediction"] and context_meta["finite_checks"]["prediction"])
+                    if not supported: match["valid"] = False
+                    ck, sk = f"ctxcap_context__{candidate}", f"ctxcap_state__{candidate}"; preds[ck] = np.asarray(context_pred, dtype=np.float64); preds[sk] = np.asarray(state_pred, dtype=np.float64)
+                    round34_fold_fit["candidates"][candidate] = {"context_field": ck, "state_field": sk, "match_kind": match_kind, "context": dict(context_meta),
+                                                                  "state_match": {**match, "selected_state_lambda": state_selected_lam, "selected_state_edf": state_selected_df}, "supported": supported}
+                    round34_fold_fit["all_matches_valid"] &= supported
+                print(f"   [{held}] Round 34a token/state matches: " + " ".join(f"{c}={round34_fold_fit['candidates'][c]['state_match']['target_edf']:.2f}" for c in ROUND34A_CANDIDATES) + f" | state selected df={state_selected_df:.2f} ({time.time()-t0:.0f}s)", flush=True)
+            if a.context_capacity_audit == "round34_v1":
                 # ---- Round 34: fixed six-arm context ladder, added only AFTER every legacy candidate fit ----
                 assert CTX is not None and resid is not None and widx_c is not None and widx_t is not None
                 Yc64 = np.asarray(Yc, dtype=np.float64); state_st = Standardizer().fit(np.asarray(Xc, dtype=np.float64))
@@ -1843,30 +2423,34 @@ def main():
                     for e_ in ("kl", "skill", "klrank"):
                         if e_ in comp[k]: comp[k][e_] = np.where(ins_mask, comp[k][e_], np.nan)
             if a.context_capacity_audit:
-                common = np.ones(len(Yt), dtype=bool); raw_margins = {e: {} for e in ROUND34_ENDPOINTS}
-                for candidate in ROUND34_CANDIDATES:
+                common = np.ones(len(Yt), dtype=bool); raw_margins = {e: {} for e in active_capacity_endpoints}
+                for candidate in active_capacity_candidates:
                     ck, sk = f"ctxcap_context__{candidate}", f"ctxcap_state__{candidate}"
                     raw_margins["cos"][candidate] = succ[sk]["cos"] - succ[ck]["cos"]
                     raw_margins["nerr"][candidate] = succ[ck]["nerr"] - succ[sk]["nerr"]
-                    raw_margins["skill"][candidate] = comp[sk]["skill"] - comp[ck]["skill"]
-                    raw_margins["kl"][candidate] = comp[ck]["kl"] - comp[sk]["kl"]
-                    raw_margins["klrank"][candidate] = comp[sk]["klrank"] - comp[ck]["klrank"]
-                    for e_ in ROUND34_ENDPOINTS: common &= np.isfinite(raw_margins[e_][candidate])
-                common_support = float(np.mean(common)); key_points = {e_: {} for e_ in ROUND34_ENDPOINTS}
-                for e_ in ROUND34_ENDPOINTS:
-                    for candidate in ROUND34_CANDIDATES:
+                    if not core34a:
+                        raw_margins["skill"][candidate] = comp[sk]["skill"] - comp[ck]["skill"]
+                        raw_margins["kl"][candidate] = comp[ck]["kl"] - comp[sk]["kl"]
+                        raw_margins["klrank"][candidate] = comp[sk]["klrank"] - comp[ck]["klrank"]
+                    for e_ in active_capacity_endpoints: common &= np.isfinite(raw_margins[e_][candidate])
+                common_support = float(np.mean(common)); key_points = {e_: {} for e_ in active_capacity_endpoints}
+                for e_ in active_capacity_endpoints:
+                    for candidate in active_capacity_candidates:
                         M = np.where(common, raw_margins[e_][candidate], np.nan).reshape(len(test_probes), n_t)
                         round34_margin_cells[e_][candidate][held] = M
                         key_points[e_][candidate] = float(np.nanmean(M)) if np.isfinite(M).any() else None
-                strongest = {e_: (min(v for v in key_points[e_].values() if v is not None) if any(v is not None for v in key_points[e_].values()) else None) for e_ in ROUND34_ENDPOINTS}
-                jointly_positive = bool(all(strongest[e_] is not None and strongest[e_] > 0.0 for e_ in ROUND34_CONFIRMATORY))
-                jointly_below = bool(all(strongest[e_] is not None and strongest[e_] <= 0.02 for e_ in ROUND34_CONFIRMATORY))
+                strongest = {e_: (min(v for v in key_points[e_].values() if v is not None) if any(v is not None for v in key_points[e_].values()) else None) for e_ in active_capacity_endpoints}
+                confirmatory_ = ROUND34A_ENDPOINTS if core34a else ROUND34_CONFIRMATORY
+                jointly_positive = bool(all(strongest[e_] is not None and strongest[e_] > 0.0 for e_ in confirmatory_))
+                jointly_below = bool(all(strongest[e_] is not None and strongest[e_] < ROUND34A_KEY_THRESHOLD_F32 for e_ in confirmatory_)) if core34a else bool(all(strongest[e_] is not None and strongest[e_] <= 0.02 for e_ in confirmatory_))
                 round34_key_records[held] = {"common_support": common_support, "all_matches_valid": bool(round34_fold_fit["all_matches_valid"]),
                                              "jointly_point_positive": jointly_positive, "jointly_below_0.02": jointly_below}
                 round34_fold_fit.update({"common_support": common_support, "candidate_matched_margin_means": key_points, "strongest_matched_margin_means": strongest,
-                                         "jointly_point_positive": jointly_positive, "jointly_below_0.02": jointly_below,
-                                         "klrank_universe": list(klrank_universe), "klrank_ridge_slot_substitution": True, "klrank_K": len(klrank_universe)})
-                assert len(klrank_universe) == 13, "Round 34 KL-rank requires the fixed K=13 completion universe"
+                                         "jointly_point_positive": jointly_positive, "jointly_below_0.02": jointly_below})
+                if not core34a:
+                    round34_fold_fit.update({"klrank_universe": list(klrank_universe), "klrank_ridge_slot_substitution": True, "klrank_K": len(klrank_universe),
+                                             "confirmatory_endpoints": list(ROUND34_CONFIRMATORY), "diagnostic_endpoints": ["nerr", "klrank"]})
+                    assert len(klrank_universe) == 13, "Round 34 KL-rank requires the fixed K=13 completion universe"
             # ---- Round 27 comparator 1: fully refitted Freedman-Lane residual-geometry null ----
             fl = None
             if a.fl_null:
@@ -2067,7 +2651,7 @@ def main():
                               "shuffled_null_succ_cos": ({k: {"mean": float(np.mean(v)), "q95": float(np.percentile(v, 95))} for k, v in shuf.items()} if a.n_shuffle > 0 else None),
                               "oracle_ceiling_succ_cos": float(np.mean(oracle)), "support": support, "support_by_carrier": support_by_carrier, "gates": gates,
                               **({"context_capacity": round34_fold_fit} if a.context_capacity_audit else {})}
-            if a.screen or a.ctx_screen:
+            if a.screen or a.ctx_screen or core34a:
                 for k_ in ("completed", "klrank_candidate_universe", "shuffled_null_succ_cos", "token_identity_control_cos"): fold_out[held].pop(k_, None)   # no law / CI / shuffle evidence in a screen artifact
             print(f"  fold {held}: succ_cos " + " ".join(f"{k}={v:.3f}" for k, v in fold_out[held]["successor_cos"].items()) + f" | oracle={np.mean(oracle):.3f}" + (f" shufLR={np.mean(shuf['lowrank']):.3f}" if shuf["lowrank"] else ""), flush=True)
             if a.context_capacity_audit:
@@ -2076,12 +2660,12 @@ def main():
                 results["pairs"][pair_key] = {"folds": fold_out, "context_capacity": {"status": "RUNNING/NON-CLAIMING", "completed_outer_keys": list(fold_out)}}
                 results["seconds"] = round(elapsed, 1)
                 out_ckpt = run_dir / ("analysis" + ("_" + a.tag if a.tag else "") + ".json"); out_ckpt.write_text(json.dumps(results, indent=1, default=float), encoding="utf-8")
-                if elapsed > ROUND34_WALL_SECONDS:
+                if elapsed > capacity_wall_seconds:
                     results.update({"budget_incomplete": True, "context_capacity_complete": False, "context_capacity_status": "INCOMPLETE/NON-CLAIMING",
                                     "context_capacity_incomplete_after": {"layer": pair_key, "outer_key": held}})
                     results["pairs"][pair_key]["context_capacity"].update({"status": "INCOMPLETE/NON-CLAIMING", "decision": None})
                     out_ckpt.write_text(json.dumps(results, indent=1, default=float), encoding="utf-8")
-                    print(f"wrote {out_ckpt} ({results['seconds']}s) INCOMPLETE/NON-CLAIMING: Round 34 four-hour sentinel wall exceeded after {pair_key}/{held}"); return
+                    print(f"wrote {out_ckpt} ({results['seconds']}s) INCOMPLETE/NON-CLAIMING: {a.context_capacity_audit} wall exceeded after {pair_key}/{held}"); return
         # ---- pool folds (equal weight) and minimal class ----
         pooled = {}
         fkeys = list(fold_out)
@@ -2092,7 +2676,7 @@ def main():
         best_score = max(pooled[k] for k in ladder)
         minimal = next((k for k in ladder if pooled[k] >= best_score - 0.02), None)
         pooled_skill = {}
-        if not (a.screen or a.ctx_screen) and all(fold_out[b].get("completed") for b in fkeys):
+        if not (a.screen or a.ctx_screen or core34a) and all(fold_out[b].get("completed") for b in fkeys):
             for k in fold_out[fkeys[0]]["completed"]:
                 pooled_skill[k] = float(np.mean([fold_out[b]["completed"][k]["skill"] for b in fkeys]))
         lad_s = [k for k in order if k in pooled_skill]
@@ -2111,11 +2695,11 @@ def main():
             return _strata_cache[key]
         round34_layer = None
         if a.context_capacity_audit:
-            reduction34 = round34_matched_margin_reduce(round34_margin_cells, _strata_for_fold, a.n_boot, SEED + 34)
-            decision34 = round34_decide_layer(reduction34, round34_key_records)
-            round34_layer = {"status": "COMPLETE/PER-LAYER", "matched_margin_definition": "score(state at candidate training EDF) - score(context candidate); nerr and KL signs reversed so larger is better",
+            reduction34 = round34_matched_margin_reduce(round34_margin_cells, _strata_for_fold, a.n_boot, SEED + 34, active_capacity_candidates)
+            decision34 = round34a_decide_layer(reduction34, round34_key_records) if core34a else round34_decide_layer(reduction34, round34_key_records)
+            round34_layer = {"status": "COMPLETE/PER-LAYER", "matched_margin_definition": ("score(state at selected/rank-ceiling EDF) - score(selected token context); nerr sign reversed so larger is better" if core34a else "score(state at candidate training EDF) - score(context candidate); nerr and KL signs reversed so larger is better"),
                              "strongest_context_reduced_inside_each_bootstrap": True, "endpoints": reduction34, "outer_keys": round34_key_records, **decision34}
-            print(f"  ROUND34 {pair_key}: {decision34['decision']} | strongest " + " ".join(f"{e}={reduction34[e]['strongest_margin']['mean']:+.3f}" for e in ROUND34_CONFIRMATORY), flush=True)
+            print(f"  {'ROUND34A' if core34a else 'ROUND34'} {pair_key}: {decision34['decision']} | strongest " + " ".join(f"{e}={reduction34[e]['strongest_margin']['mean']:+.3f}" for e in (ROUND34A_ENDPOINTS if core34a else ROUND34_CONFIRMATORY)), flush=True)
         pooled_gates = {}
         for (field, endpoint, against), per_fold in cell_diffs.items():
             if field not in ("ridge", "kernel", "unres_ridge", "ridge_dfmatch") or endpoint not in ("cos", "skill", "klrank", "nerr", "kl"): continue
@@ -2205,7 +2789,7 @@ def main():
                               "retained_width_outer_by_key": outer_w, "retained_width_inner_by_key": inner_w,
                               "note": "exploratory displacement-cosine screen; no law, CI, shuffle, or retention evidence; cannot earn a law or state claim (Round 29 probe 1)"}
             print(f"  SCREEN {pair_key}: ridge {screen_summary['ridge_cos']:.3f} vs strongest null {max(per.values()):.3f} (margin {screen_summary['strongest_null_margin']:+.3f}) | outer ranks {sorted(set(outer_r.values()))} inner ranks {sorted(set(v for d_ in inner_r.values() for v in d_.values()))}", flush=True)
-        if a.screen or a.ctx_screen: pooled_retention = None
+        if a.screen or a.ctx_screen or core34a: pooled_retention = None
         ctx_summary = None
         if CTX is not None:
             fk_ = list(fold_out)
@@ -2214,10 +2798,10 @@ def main():
                            "ctxprefix_kernel_nerr": float(np.mean([fold_out[b]["normalized_error"]["ctxprefix_kernel"] for b in fk_])),
                            "support": float(np.mean([fold_out[b]["support"] for b in fk_])), "effective_df_by_key": {b: fold_out[b]["selected"]["ctxprefix"]["effective_df"] for b in fk_}, "kernel_effective_df_by_key": {b: fold_out[b]["selected"]["ctxprefix_kernel"]["effective_df"] for b in fk_},
                            "columns_by_key": {b: fold_out[b]["selected"]["ctxprefix"]["n_columns_retained"] for b in fk_}, "ridge_selected_by_key": {b: fold_out[b]["selected"]["ctxprefix"]["lam"] for b in fk_}, "kernel_selected_by_key": {b: [fold_out[b]["selected"]["ctxprefix_kernel"]["gamma"], fold_out[b]["selected"]["ctxprefix_kernel"]["lam"]] for b in fk_},
-                           "screen_only": bool(a.ctx_screen), "note": "Round 31 order 4: X field vs contextual-prefix X-free field; a state reading stays live only under the registered four-endpoint gate (completion run), not from this summary"}
+                           "screen_only": bool(a.ctx_screen or core34a), "note": ("Round 34a audit-#19 state-space screen; only the registered token ridge/kernel enter matched-EDF decisions; no completion claim" if core34a else "Round 31 order 4: X field vs contextual-prefix X-free field; a state reading stays live only under the registered four-endpoint gate (completion run), not from this summary")}
             print(f"  CTX {pair_key}: ridge {ctx_summary['ridge_cos']:.3f} vs contextual-prefix {ctx_summary['ctxprefix_cos']:.3f} (kernel {ctx_summary['ctxprefix_kernel_cos']:.3f}) | nerr {ctx_summary['ridge_nerr']:.3f} vs {ctx_summary['ctxprefix_nerr']:.3f}", flush=True)
         results["pairs"][pair_key] = {"folds": fold_out, "pooled_gates_block_first": pooled_gates, "retention_common_scale_block_first": pooled_retention, **({"screen_summary": screen_summary} if screen_summary else {}), **({"ctx_summary": ctx_summary} if ctx_summary else {}), **({"fl_null_layer": fl_layer} if fl_layer else {}), **({"context_capacity": round34_layer} if round34_layer else {}), "pooled_successor_cos": pooled, "minimal_class_successor_within_0.02": minimal,
-                                      **({} if (a.screen or a.ctx_screen) else {"pooled_completed_skill": pooled_skill, "minimal_class_completed_within_0.02": minimal_skill})}
+                                      **({} if (a.screen or a.ctx_screen or core34a) else {"pooled_completed_skill": pooled_skill, "minimal_class_completed_within_0.02": minimal_skill})}
         if a.baselines and a.source != "forward":                                   # per_carrier_affine reads Z directly (audit #10 hazard)
             results["pairs"][pair_key]["per_carrier_affine"] = per_carrier_affine(l)
             print(f"  per-carrier affine summary: {results['pairs'][pair_key]['per_carrier_affine']['summary']}", flush=True)
@@ -2231,17 +2815,26 @@ def main():
             out = run_dir / ("analysis" + ("_" + a.tag if a.tag else "") + ".json"); out.write_text(json.dumps(results, indent=1, default=float), encoding="utf-8")
             print(f"wrote {out} ({results['seconds']}s) BUDGET_INCOMPLETE: per-cell deadline {a.fl_deadline_seconds:.0f}s exceeded after {pair_key}"); return
     if a.context_capacity_audit:
-        if (time.time() - t0) > ROUND34_WALL_SECONDS:                                                     # 2. the wall is re-checked immediately before completion/claim eligibility
+        capacity_wall_seconds = ROUND34A_WALL_SECONDS if core34a else ROUND34_WALL_SECONDS
+        if (time.time() - t0) > capacity_wall_seconds:                                                     # wall re-check before screen/completion eligibility
             results.update({"budget_incomplete": True, "context_capacity_complete": False, "context_capacity_status": "INCOMPLETE/NON-CLAIMING", "context_capacity_incomplete_after": {"layer": "final", "outer_key": None}, "seconds": round(time.time() - t0, 1)})
             out = run_dir / ("analysis" + ("_" + a.tag if a.tag else "") + ".json"); out.write_text(json.dumps(results, indent=1, default=float), encoding="utf-8")
-            print(f"wrote {out} ({results['seconds']}s) INCOMPLETE/NON-CLAIMING: Round 34 four-hour sentinel wall exceeded before completion"); return
-        assert list(results["pairs"]) == ["F0", "F4", "F8", "F12", "F20"] and all(len(results["pairs"][p]["folds"]) == 8 for p in results["pairs"]), "Round 34 completion requires five layers and eight outer keys per layer"
+            print(f"wrote {out} ({results['seconds']}s) INCOMPLETE/NON-CLAIMING: {a.context_capacity_audit} wall exceeded before completion"); return
+        assert list(results["pairs"]) == ["F0", "F4", "F8", "F12", "F20"] and all(len(results["pairs"][p]["folds"]) == 8 for p in results["pairs"]), "Round 34 modes require five layers and eight outer keys per layer"
         results["context_capacity_binding"] = results_binding34
         per_layer = {p: results["pairs"][p]["context_capacity"]["decision"] for p in results["pairs"]}
-        results.update({"context_capacity_complete": True, "context_capacity_status": "COMPLETE/SENTINEL-ONLY/NON-CLAIMING", "context_capacity_layer_decisions": per_layer,
-                        "context_capacity_keep_layers_F4_F20": [p for p in ROUND34_LAYERS if per_layer[p] == "KEEP X-CONDITIONED HYPOTHESIS ALIVE"],
-                        "context_capacity_moot_layers_F4_F20": [p for p in ROUND34_LAYERS if per_layer[p] == "MAKES THE CURRENT X-CONDITIONED INTERPRETATION MOOT"],
-                        "joint_verdict": None, "joint_requirement": "two common qualifying F4-F20 layers in completed sentinel A and B artifacts; use --context-capacity-joint"})
+        if core34a:
+            results.update({"context_capacity_complete": True, "context_capacity_status": "COMPLETE/SENTINEL-SCREEN/NON-CLAIMING", "context_capacity_layer_decisions": per_layer,
+                            "context_capacity_continue_layers_F4_F20": [p for p in ROUND34_LAYERS if per_layer[p] == "CONTINUE"],
+                            "context_capacity_stop_layers_F4_F20": [p for p in ROUND34_LAYERS if per_layer[p] == "CAPACITY-SENSITIVE SCREEN; STOP"],
+                            "joint_verdict": None, "joint_requirement": "two common F4-F20 layers in completed A/B artifacts from this exact raw or static estimand; use --context-capacity-joint",
+                            "screen_scope": "sentinel-local non-claiming artifact; no completion, K=13, new context family, model forward, or Round 33 consequence"})
+        else:
+            results.update({"context_capacity_complete": True, "context_capacity_status": "COMPLETE/SENTINEL-ONLY/NON-CLAIMING", "context_capacity_layer_decisions": per_layer,
+                            "context_capacity_keep_layers_F4_F20": [p for p in ROUND34_LAYERS if per_layer[p] == "KEEP X-CONDITIONED HYPOTHESIS ALIVE"],
+                            "context_capacity_moot_layers_F4_F20": [p for p in ROUND34_LAYERS if per_layer[p] == "MAKES THE CURRENT X-CONDITIONED INTERPRETATION MOOT"],
+                            "round34_confirmatory_endpoints": list(ROUND34_CONFIRMATORY), "round34_diagnostic_endpoints": ["nerr", "klrank"],
+                            "joint_verdict": None, "joint_requirement": "two common qualifying F4-F20 layers in completed sentinel A and B artifacts; use --context-capacity-joint"})
     results["seconds"] = round(time.time() - t0, 1)
     out = run_dir / ("analysis_smoke.json" if a.smoke else "analysis" + ("_" + a.tag if a.tag else "") + ".json")
     out.write_text(json.dumps(results, indent=1, default=float), encoding="utf-8")

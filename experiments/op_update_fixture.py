@@ -24,7 +24,9 @@ Run:  .venv/Scripts/python.exe experiments/op_update_fixture.py
 """
 from __future__ import annotations
 
+import ast
 import hashlib
+import inspect
 import json
 import shutil
 import sys
@@ -44,6 +46,7 @@ CFG = HERE / "config" / "lexical_probe_fresh_v4.json"
 
 def round34_cases():
     """Committed-main, no-model acceptance cases for the Round 34 analyzer helpers."""
+    assert analyzer.ROUND34_CONFIRMATORY == ("cos", "skill", "kl"), "audit #19 makes continuous KL confirmatory and KL-rank diagnostic"
     rng = np.random.default_rng(34)
     X = rng.standard_normal((48, 17)).astype(np.float64); X[:, -1] = X[:, 0]                  # one exact duplicate -> rank 16 after centring
     Y = rng.standard_normal((48, 9)).astype(np.float64); st = analyzer.Standardizer().fit(X); fam = analyzer.RidgeFamily(st(X), Y)
@@ -179,6 +182,140 @@ def round34_cases():
     pooled = analyzer.pooled_block_first({fk: positive["cos"][analyzer.ROUND34_CANDIDATES[0]][fk] for fk in fkeys}, strata, 50, 34)
     assert np.isclose(pooled["mean"], 0.03) and len(pooled["ci95_block_first"]) == 2
 
+    # Round 34a no-model decisions from REAL float32 per-cell evidence, including the exact 0.02 key boundary.
+    strata34a = lambda fold_key, w: [np.arange(10 * i_, 10 * (i_ + 1)) for i_ in range(4)]
+    def margins34a(value, shape=(4, 40)):
+        return {e: {c: {fk: np.full(shape, value, dtype=np.float32) for fk in fkeys} for c in analyzer.ROUND34A_CANDIDATES} for e in analyzer.ROUND34A_ENDPOINTS}
+    def key_records34a(margins_):
+        recs_ = {}
+        for fk in fkeys:
+            km = {e: {c: margins_[e][c][fk] for c in analyzer.ROUND34A_CANDIDATES} for e in analyzer.ROUND34A_ENDPOINTS}
+            recs_[fk] = analyzer.round34a_key_record(km, True)[0]
+        return recs_
+    pos34a, zero34a, boundary34a = margins34a(0.03), margins34a(0.0), margins34a(0.02)
+    red34a = analyzer.round34_matched_margin_reduce(pos34a, strata34a, 500, analyzer.ROUND34A_BOOTSTRAP_SEED, analyzer.ROUND34A_CANDIDATES)
+    redzero34a = analyzer.round34_matched_margin_reduce(zero34a, strata34a, 500, analyzer.ROUND34A_BOOTSTRAP_SEED, analyzer.ROUND34A_CANDIDATES)
+    redboundary34a = analyzer.round34_matched_margin_reduce(boundary34a, strata34a, 500, analyzer.ROUND34A_BOOTSTRAP_SEED, analyzer.ROUND34A_CANDIDATES)
+    keys34a, keysstop34a, keysboundary34a = key_records34a(pos34a), key_records34a(zero34a), key_records34a(boundary34a)
+    assert all(set(red34a[e]["candidate_reductions"]) == set(analyzer.ROUND34A_CANDIDATES) and all(len(v["ci95_block_first"]) == 2 for v in red34a[e]["candidate_reductions"].values()) for e in analyzer.ROUND34A_ENDPOINTS)
+    cont34a = analyzer.round34a_decide_layer(red34a, keys34a); assert cont34a["decision"] == "CONTINUE" and cont34a["continue"]
+    stop34a = analyzer.round34a_decide_layer(redzero34a, keysstop34a); assert stop34a["decision"] == "CAPACITY-SENSITIVE SCREEN; STOP" and stop34a["stop"]
+    boundary_gate34a = analyzer.round34a_decide_layer(redboundary34a, keysboundary34a)
+    assert boundary_gate34a["decision"] == "INCONCLUSIVE" and boundary_gate34a["keys_jointly_below_0.02"] == 0 and not any(v["jointly_below_0.02"] for v in keysboundary34a.values()), "eight exact-0.02 keys must not STOP"
+    core_tree = ast.parse(inspect.getsource(analyzer.round34a_core_analysis)); forbidden_calls = {"SubstitutionProbe", "WorldCompleter", "fit_knn", "fit_kernel_ridge", "chart_control", "round34_embedseq_features", "round34_template_edit_rows"}
+    called = {n.func.id for n in ast.walk(core_tree) if isinstance(n, ast.Call) and isinstance(n.func, ast.Name)}
+    names = {n.id for n in ast.walk(core_tree) if isinstance(n, ast.Name)}
+    assert not (called & forbidden_calls) and "E_words" not in names and "states_emb" not in names, f"Round 34a core contains a forbidden legacy/model path: calls={called & forbidden_calls}"
+    main_source = inspect.getsource(analyzer.main); assert "AutoTokenizer.from_pretrained(a.model, revision=fman[\"model_revision\"])" in main_source and main_source.index("round34a_core_analysis(") < main_source.index("E_words = None")
+    bad34a = {fk: dict(v) for fk, v in keys34a.items()}; bad34a[fkeys[0]]["all_matches_valid"] = False
+    assert analyzer.round34a_decide_layer(red34a, bad34a)["decision"] == "INCONCLUSIVE"
+    collapse34a = {fk: dict(v) for fk, v in keys34a.items()}
+    for fk in fkeys[:2]: collapse34a[fk]["jointly_point_positive"] = False
+    assert analyzer.round34a_decide_layer(red34a, collapse34a)["decision"] == "INCONCLUSIVE"
+    jcont34a = analyzer.round34a_decide_joint({"A": {"F4": "CONTINUE", "F8": "CONTINUE", "F12": "INCONCLUSIVE", "F20": "CAPACITY-SENSITIVE SCREEN; STOP"},
+                                                "B": {"F4": "CONTINUE", "F8": "CONTINUE", "F12": "CONTINUE", "F20": "CAPACITY-SENSITIVE SCREEN; STOP"}})
+    assert jcont34a["decision"] == "CONTINUE" and jcont34a["continue_common_layers"] == ["F4", "F8"]
+    jstop34a = analyzer.round34a_decide_joint({"A": {"F0": "CONTINUE", "F4": "CAPACITY-SENSITIVE SCREEN; STOP", "F8": "CAPACITY-SENSITIVE SCREEN; STOP", "F12": "CONTINUE", "F20": "INCONCLUSIVE"},
+                                                "B": {"F0": "CONTINUE", "F4": "CAPACITY-SENSITIVE SCREEN; STOP", "F8": "CAPACITY-SENSITIVE SCREEN; STOP", "F12": "INCONCLUSIVE", "F20": "CONTINUE"}})
+    assert jstop34a["decision"] == "CAPACITY-SENSITIVE SCREEN; STOP" and "F0" not in jstop34a["eligible_layers"] and jstop34a["stop_instruction"]
+
+    store34a = {}; layer_values_a = {"F0": 0.02, "F4": 0.03, "F8": 0.03, "F12": 0.0, "F20": 0.0}; layer_values_b = {"F0": 0.02, "F4": 0.03, "F8": 0.03, "F12": 0.02, "F20": 0.03}
+    selected34a = {"lambda": 10.0, "training_edf": 300.0, "rank": 120, "rank_tolerance": 1e-9, "retained_columns": 256,
+                   "finite_checks": {"features": True, "spectrum": True}, "inner_scores": {"10.0": 0.5}}
+    def candidate34a(candidate, ridge_context, kernel_context):
+        ridge_ = candidate.startswith("token_ids_v1_ridge_"); selected_ = candidate.endswith("selected_edf")
+        context = ridge_context if ridge_ else kernel_context; context_edf = context["training_edf"]; target = context_edf if selected_ else (47.0 if ridge_ else 48.0)
+        return {"supported": True, "match_kind": ("selected_context_edf" if selected_ else "rank_ceiling"),
+                "state_match": {"valid": True, "target_edf": target, "achieved_edf": target + 0.003, "edf_error": 0.003, "lambda": 3.1, "bracket": [0.0, 8.0],
+                                "bracket_doublings": 3, "iterations": 31, "rank": 120, "rank_tolerance": 1e-9, "retained_columns": 256,
+                                "selected_state_edf": 300.0, "selected_state_lambda": 10.0,
+                                "finite_checks": {"eigenvalues": True, "target_edf": True, "bracket": True, "lambda": True, "achieved_edf": True, "prediction": True}},
+                "context": dict(context)}
+    layer_cache34a = {}
+    def build_layer34a(value):
+        if value in layer_cache34a: return layer_cache34a[value]
+        margins_ = margins34a(value); recs_, folds_, telemetry_ = {}, {}, {}
+        ridge_context = {"family": "ridge", "training_edf": 42.5, "lambda": 100.0, "rank": 47, "rank_tolerance": 1e-10, "distinct_training_rows": 48, "retained_columns": 47,
+                         "capacity_rank_ceiling": 47, "finite_checks": {"features": True, "prediction": True, "spectrum": True}}
+        kernel_context = {"family": "rbf_kernel", "training_edf": 24.0, "lambda": 100.0, "gamma": 1.0, "rank": 48, "rank_tolerance": 1e-10, "distinct_training_rows": 48, "retained_columns": 47,
+                          "capacity_rank_ceiling": 48, "finite_checks": {"features": True, "prediction": True, "spectrum": True}}
+        for fk in fkeys:
+            candidates = {c: candidate34a(c, ridge_context, kernel_context) for c in analyzer.ROUND34A_CANDIDATES}
+            km = {e: {c: margins_[e][c][fk] for c in analyzer.ROUND34A_CANDIDATES} for e in analyzer.ROUND34A_ENDPOINTS}
+            rec, points, strongest = analyzer.round34a_key_record(km, True); recs_[fk] = rec
+            folds_[fk] = {"context_capacity": {"selected_state": dict(selected34a), "candidates": candidates, "candidate_matched_margin_means": points, "strongest_matched_margin_means": strongest, **rec}}
+            telemetry_[fk] = {"selected_state": dict(selected34a), "contexts": {"ridge": dict(ridge_context), "kernel": dict(kernel_context)}}
+        reduction = analyzer.round34_matched_margin_reduce(margins_, strata34a, 500, analyzer.ROUND34A_BOOTSTRAP_SEED, analyzer.ROUND34A_CANDIDATES)
+        decision = analyzer.round34a_decide_layer(reduction, recs_)
+        cc = {"status": "COMPLETE/PER-LAYER", "matched_margin_definition": "fixture", "strongest_context_reduced_inside_each_bootstrap": True, "endpoints": reduction, "outer_keys": recs_, **decision}
+        layer_cache34a[value] = (margins_, telemetry_, {"folds": folds_, "context_capacity": cc}); return layer_cache34a[value]
+    def make_artifact34a(sentinel, tag, residualize):
+        values = layer_values_a if sentinel == "A" else layer_values_b; margin_layers, telemetry_layers, pair_layers = {}, {}, {}
+        for layer, value in values.items(): margin_layers[layer], telemetry_layers[layer], pair_layers[layer] = build_layer34a(value)
+        evidence_raw, evidence_info = analyzer.round34a_pack_evidence(tag, margin_layers, telemetry_layers, {"0": [list(range(10 * i_, 10 * (i_ + 1))) for i_ in range(4)], "1": [list(range(10 * i_, 10 * (i_ + 1))) for i_ in range(4)]})
+        decisions = {layer: pair_layers[layer]["context_capacity"]["decision"] for layer in pair_layers}
+        art = {"context_capacity_audit": "round34a_core", "context_capacity_complete": True, "context_capacity_status": "COMPLETE/SENTINEL-SCREEN/NON-CLAIMING", "source": "forward", "target": "delta", "residualize": None, "sentinel_tag": sentinel,
+               "context_capacity_candidates": list(analyzer.ROUND34A_CANDIDATES), "context_capacity_endpoints": list(analyzer.ROUND34A_ENDPOINTS), "context_capacity_wall_seconds": analyzer.ROUND34A_WALL_SECONDS,
+               "world_completer_constructed": False, "model_forward_performed": False, "causal_model_loaded": False, "substitution_probe_constructed": False, "tokenizer_only": True,
+               "fallback": {"n_boot": 500, "n_shuffle": 0}, "config": "fixture.json", "manifest": {"model_revision": "fixture"}, "context_capacity_evidence": evidence_info,
+               "context_capacity_binding": {"config_sha256_raw": analyzer.ROUND34_CONFIG_SHA256, "forward_states_sha256": ("a" if sentinel == "A" else "b") * 64, "forward_manifest_sha256": "c" * 64,
+                                            "model": "Qwen/Qwen3-0.6B", "model_revision": "fixture", "sentinel": analyzer.ROUND34_SENTINEL[sentinel], "sentinel_id": 13 if sentinel == "A" else 11,
+                                            "completer_model_revision": "fixture", "sentinel_id_rederived_from_tokenizer": True},
+               "context_capacity_layer_decisions": decisions, "context_capacity_continue_layers_F4_F20": [l for l in analyzer.ROUND34_LAYERS if decisions[l] == "CONTINUE"],
+               "context_capacity_stop_layers_F4_F20": [l for l in analyzer.ROUND34_LAYERS if decisions[l] == "CAPACITY-SENSITIVE SCREEN; STOP"], "pairs": pair_layers}
+        art["residualize"] = residualize
+        store34a[evidence_info["file"]] = evidence_raw
+        replayed = analyzer.round34a_load_evidence(MemDir(store34a), {"context_capacity_evidence": evidence_info}, tag)
+        assert list(replayed["margins"]["F0"]["cos"][analyzer.ROUND34A_CANDIDATES[0]]) == fkeys, "sidecar must preserve registered carrier-block bootstrap order"
+        store34a[f"analysis_{tag}.json"] = json.dumps(art, default=float).encode()
+    for residualize, suffix in ((None, "raw"), ("static", "static")):
+        for sentinel in ("A", "B"): make_artifact34a(sentinel, f"ctxcap{sentinel}_{suffix}", residualize)
+    # locked evidence dimensions: wrong matrix shape / wrong strata / wrong matrix count must be rejected by the loader
+    for bad_shape, bad_strata in (((4, 10), None), ((3, 40), None), (None, {"0": [list(range(40))], "1": [list(range(40))]})):
+        ml_, tl_ = {}, {}
+        for layer in ("F0", "F4", "F8", "F12", "F20"):
+            ml_[layer] = margins34a(0.03, bad_shape or (4, 40)); tl_[layer] = build_layer34a(0.03)[1]
+        st_ = bad_strata or {"0": [list(range(10 * i_, 10 * (i_ + 1))) for i_ in range(4)], "1": [list(range(10 * i_, 10 * (i_ + 1))) for i_ in range(4)]}
+        raw_, info_ = analyzer.round34a_pack_evidence("bad34a", ml_, tl_, st_); store_bad = {info_["file"]: raw_}
+        try:
+            analyzer.round34a_load_evidence(MemDir(store_bad), {"context_capacity_evidence": info_}, "bad34a"); raise RuntimeError(f"loader must reject shape={bad_shape} strata={bad_strata}")
+        except AssertionError:
+            pass
+    # round34_v1 reduction schema parity: the six-candidate reducer must not carry the Round 34a-only candidate_reductions field
+    red_v1 = analyzer.round34_matched_margin_reduce({e: {c: {fk: np.full((4, 40), 0.03, dtype=np.float32) for fk in fkeys} for c in analyzer.ROUND34_CANDIDATES} for e in analyzer.ROUND34_ENDPOINTS}, strata34a, 20, 34)
+    assert all("candidate_reductions" not in red_v1[e] for e in red_v1) and all(set(red_v1[e]) == {"candidate_means", "strongest_margin", "winner_counts_bootstrap"} for e in red_v1), "round34_v1 reduction schema must match HEAD"
+    red_34a = analyzer.round34_matched_margin_reduce(margins34a(0.03), strata34a, 20, analyzer.ROUND34A_BOOTSTRAP_SEED, analyzer.ROUND34A_CANDIDATES)
+    assert all("candidate_reductions" in red_34a[e] for e in red_34a)
+    _, joint34a = analyzer.context_capacity_joint_artifact(MemDir(store34a), ["ctxcapA_raw", "ctxcapB_raw"], "ctxcap_raw_joint")
+    assert joint34a["status"] == "COMPLETE/SCREEN-ONLY" and joint34a["decision"] == "CONTINUE" and "analysis_ctxcap_raw_joint.json" in store34a, joint34a
+    _, joint34a_static = analyzer.context_capacity_joint_artifact(MemDir(store34a), ["ctxcapA_static", "ctxcapB_static"], "ctxcap_static_joint")
+    assert joint34a_static["status"] == "COMPLETE/SCREEN-ONLY" and joint34a_static["estimand"] == "P_static-residualized X_perp -> Delta_perp"
+    good34a_b, good34a_ev = store34a["analysis_ctxcapB_raw.json"], store34a["round34a_evidence_ctxcapB_raw.npz"]
+    for mutate in ("mixed_estimand", "bad_target", "wrong_ceiling", "missing_endpoint", "completer", "incomplete", "stored_decision", "stored_key_flag", "selected_state_mismatch", "duplicated_context", "sidecar_hash", "state_rank_drift", "state_retained_drift", "state_tolerance_drift"):
+        mart = json.loads(good34a_b); store34a["round34a_evidence_ctxcapB_raw.npz"] = good34a_ev
+        if mutate == "state_rank_drift": mart["pairs"]["F8"]["folds"][fkeys[2]]["context_capacity"]["candidates"][analyzer.ROUND34A_CANDIDATES[0]]["state_match"]["rank"] -= 1
+        if mutate == "state_retained_drift": mart["pairs"]["F8"]["folds"][fkeys[2]]["context_capacity"]["candidates"][analyzer.ROUND34A_CANDIDATES[2]]["state_match"]["retained_columns"] += 1
+        if mutate == "state_tolerance_drift": mart["pairs"]["F8"]["folds"][fkeys[2]]["context_capacity"]["candidates"][analyzer.ROUND34A_CANDIDATES[1]]["state_match"]["rank_tolerance"] *= 2.0
+        if mutate == "mixed_estimand": mart["residualize"] = "static"
+        if mutate == "bad_target": mart["pairs"]["F0"]["folds"][fkeys[0]]["context_capacity"]["candidates"][analyzer.ROUND34A_CANDIDATES[1]]["state_match"]["target_edf"] = 46.0
+        if mutate == "wrong_ceiling": mart["pairs"]["F0"]["folds"][fkeys[0]]["context_capacity"]["candidates"][analyzer.ROUND34A_CANDIDATES[3]]["context"]["capacity_rank_ceiling"] = 47
+        if mutate == "missing_endpoint": del mart["pairs"]["F0"]["context_capacity"]["endpoints"]["nerr"]
+        if mutate == "completer": mart["world_completer_constructed"] = True
+        if mutate == "incomplete": mart["context_capacity_complete"] = False
+        if mutate == "stored_decision": mart["pairs"]["F0"]["context_capacity"]["decision"] = "CONTINUE"
+        if mutate == "stored_key_flag": mart["pairs"]["F0"]["context_capacity"]["outer_keys"][fkeys[0]]["jointly_point_positive"] = False
+        if mutate == "selected_state_mismatch": mart["pairs"]["F0"]["folds"][fkeys[0]]["context_capacity"]["candidates"][analyzer.ROUND34A_CANDIDATES[0]]["state_match"]["selected_state_edf"] = 299.0
+        if mutate == "duplicated_context": mart["pairs"]["F0"]["folds"][fkeys[0]]["context_capacity"]["candidates"][analyzer.ROUND34A_CANDIDATES[1]]["context"]["lambda"] = 10.0
+        if mutate == "sidecar_hash": store34a["round34a_evidence_ctxcapB_raw.npz"] = good34a_ev + b"tamper"
+        store34a["analysis_ctxcapB_raw.json"] = json.dumps(mart).encode()
+        _, bad_joint34a = analyzer.context_capacity_joint_artifact(MemDir(store34a), ["ctxcapA_raw", "ctxcapB_raw"], f"ctxcap_bad_{mutate}")
+        assert bad_joint34a["status"] == "INCOMPLETE/NON-CLAIMING" and bad_joint34a["decision"] is None, f"Round 34a reducer accepted {mutate}"
+    store34a["analysis_ctxcapB_raw.json"], store34a["round34a_evidence_ctxcapB_raw.npz"] = good34a_b, good34a_ev
+    try:
+        analyzer.round34a_joint_artifact(MemDir(store34a), ["ctxcapA_raw", "ctxcapB_raw"], "ctxcapA_raw"); raise RuntimeError("Round 34a joint output tag equal to input must fail")
+    except AssertionError:
+        pass
+
 
 def synthetic_artifact(cfg, cfg_sha, run_dir, tag="OP_UPDATE", tamper=None):
     """Write a synthetic states_<tag>.npz + manifest_<tag>.json with the runner's exact field builders (no model)."""
@@ -232,7 +369,7 @@ def main():
     round34_cases()
     op_helpers = ("op_update_rows", "validate_op_update_artifact", "op_update_recipient_probe", "reload_check_recipients", "stratified_word_folds", "probe3_reduce", "fit_bridge_ladder", "noise_floor")
     if not all(hasattr(analyzer, name) for name in op_helpers):
-        print("op_update fixture: Round 34 committed-main checks passed; branch-only operation-update checks not present")
+        print("op_update fixture: Round 34/34a no-model checks passed; branch-only operation-update checks not present")
         return
     cfg = json.loads(CFG.read_text(encoding="utf-8")); cfg_sha = hashlib.sha256(CFG.read_bytes()).hexdigest()
     # 1. parser agreement + block structure
