@@ -5,6 +5,36 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Re-contextualization #25 (2-hour step-back; audit #25 fired on the positive-control FAIL)
+
+Project: the native mathematics of latent spaces. Live question (Round
+36): can a latent world built from behaviour alone carry a well-defined
+operational quotient and composable action table — and, after today, the
+prior question: is the certification regime itself passable by any learned
+artifact?
+
+Whole picture. The constructive program has now produced four registered
+outcomes in one day: v1 FAIL (confidence-confounded), 36b all-ineligible
+with a cross-seed-stable one-step skeleton in W64, and a positive control
+that fails every exact gate — worse than behaviour alone. Read together,
+the honest picture is that nothing learned has passed the exact reducer,
+and the one artifact designed to pass it made things worse. That is where
+tunnel vision would say "add another control"; the audit is asked instead
+whether the program is measuring its reducer rather than building a latent
+space. Alternatives held live: (1) the control objective is defective
+(moving-target supervision in the encoder's own coordinates; loss
+interference) — then the gates are still unvalidated, not unreachable;
+(2) the exact 12-cell 0.10/0.90 signature reducer is too strict for any
+learned artifact — a certification-regime problem; (3) supervise the
+signature/quotient directly, or freeze a behaviour-trained encoder and fit
+a transition head, to obtain a learned artifact that passes; (4) change the
+world (nontrivial quotient) so that identity actually compresses and the
+test is about structure, not exactness. Foundational thread advanced: the
+positive-control discipline itself — every gate now has a registered
+reachability test, and the first one failed; that is a fact about the
+gates the program did not have this morning. Audit #25's corrections and
+ranked alternatives are appended verbatim when it lands.
+
 ## 2026-08-29 — Round 36c positive control (w32): FAIL on every exact gate
 
 The learned, explicitly quotient-trained control (behavioural BCE + MSE of
