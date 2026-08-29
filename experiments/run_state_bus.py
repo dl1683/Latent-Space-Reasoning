@@ -178,6 +178,51 @@ def verdict(rows, tau, cfg, log):
     return summary, status
 
 
+FLOOR_NATS = 0.5   # audit #28 magnitude floor on donor-vs-recipient DiD (summed word log-likelihood), declared pre-result
+
+
+def audit_stage(W, cfg, out, log):
+    """Audit-#28 re-adjudication from saved bus weights: raw choice change, magnitude floor, all donor pairs, on-manifold control."""
+    S, ho, order = W.S, cfg["heldout_indices"], cfg["decision_order"]; k_tax = order.index(cfg["heldout_consequence"]); res = {}
+    for seed in cfg["train"]["seeds"]:
+        path = os.path.join(out, f"bus_seed{seed}.pt")
+        if not os.path.exists(path): log(f"seed {seed}: no saved bus"); continue
+        W.bus = Bus(W.m.config.hidden_size, cfg["state_dim"], len(S)); W.bus.load_state_dict(torch.load(path)); W.bus.eval(); rows = []
+        with torch.no_grad():
+            for s in S:
+                for i in ho:
+                    sc = {"none": signature_scores(W, cfg, s, i, None), "self": signature_scores(W, cfg, s, i, W.z_of(s, i))}
+                    for d in S:
+                        if d != s: sc[f"cross_{d}"] = signature_scores(W, cfg, s, i, W.z_of(d, i))
+                    rows.append({"state": s, "i": i, "scores": sc})
+        raw = lambda r, a, k: max(r["scores"][a][k], key=r["scores"][a][k].get)
+        did = lambda r, a, k, d: (r["scores"][a][k][d] - r["scores"]["none"][k][d]) - (r["scores"][a][k][r["state"]] - r["scores"]["none"][k][r["state"]])
+        per_pair = {}; tax_choice = []; tax_floor = []; ctrl = []; per_state = {st: 0 for st in S}
+        for r in rows:
+            s = r["state"]
+            for d in S:
+                if d == s: continue
+                a = f"cross_{d}"; ch = [raw(r, a, k) == d for k in range(len(order))]; m = did(r, a, k_tax, d)
+                per_pair.setdefault(f"{s}->{d}", []).append({"choices": ch, "did_tax": m})
+                tax_choice.append(ch[k_tax]); tax_floor.append(ch[k_tax] and m >= FLOOR_NATS)
+                for d2 in S:                                   # on-manifold control: third-state code pushing toward d?
+                    if d2 not in (s, d): ctrl.append(raw(r, f"cross_{d2}", k_tax) == d)
+            per_state[s] += sum(raw(r, f"cross_{d}", k_tax) == d for d in S if d != s) >= 2   # recipient counts if >=2 of 3 donors move its taxonomy choice
+        summ = {"n_rows": len(rows), "taxonomy_raw_choice_donor_fraction": float(np.mean(tax_choice)), "taxonomy_raw_choice_with_floor_fraction": float(np.mean(tax_floor)),
+                "on_manifold_control_fraction": float(np.mean(ctrl)), "gain_over_on_manifold_control": float(np.mean(tax_choice) - np.mean(ctrl)),
+                "trained_raw_choice_donor_fraction": [float(np.mean([raw(r, f"cross_{d}", k) == d for r in rows for d in S if d != r["state"]])) for k in range(len(order))],
+                "per_state_recipients_moved": per_state, "did_tax_median": float(np.median([x["did_tax"] for v in per_pair.values() for x in v])),
+                "per_pair_taxonomy_fraction": {k: float(np.mean([x["choices"][k_tax] for x in v])) for k, v in per_pair.items()}}
+        ok_tax = summ["taxonomy_raw_choice_with_floor_fraction"] >= 10 / 16 and summ["gain_over_on_manifold_control"] >= 0.25 and all(v >= 2 for v in per_state.values())
+        ok_trained = all(f >= 0.85 for f in summ["trained_raw_choice_donor_fraction"][:k_tax])
+        summ["class"] = "POSITIVE" if (ok_tax and ok_trained) else ("CONTROLLER" if ok_trained else "FAIL"); res[seed] = {"summary": summ, "rows": rows}
+        log(f"seed {seed} audit-stage: {json.dumps({k: v for k, v in summ.items() if k != 'per_pair_taxonomy_fraction'})}")
+    kinds = [v["summary"]["class"] for v in res.values()]
+    overall = "INCOMPLETE - NO VERDICT" if len(kinds) < 3 else (max(set(kinds), key=kinds.count) if max(kinds.count(k) for k in set(kinds)) >= 2 else "SPLIT - NO VERDICT")
+    json.dump({"floor_nats": FLOOR_NATS, "seeds": res, "overall": overall, "per_seed": kinds}, open(os.path.join(out, "audit_result.json"), "w"), indent=1, default=float)
+    log(f"AUDIT-STAGE OVERALL: {overall} per seed {kinds}")
+
+
 def main():
     ap = argparse.ArgumentParser(); ap.add_argument("--config", required=True); ap.add_argument("--stage", default="smoke"); a = ap.parse_args()
     cfg = json.load(open(a.config, encoding="utf-8")); out = f"experiments/results/{cfg['name']}"; os.makedirs(out, exist_ok=True)
@@ -185,6 +230,7 @@ def main():
     def log(m): print(m, flush=True); logf.write(m + "\n"); logf.flush()
     shas = {k: hashlib.sha256(open(v, "rb").read()).hexdigest() for k, v in (("runner", __file__), ("config", a.config), ("substitution_probe", os.path.join(os.path.dirname(__file__), "substitution_probe.py")))}
     T0 = time.time(); deadline = T0 + cfg["train"]["wall_cap_hours"] * 3600; W = World(cfg); log(f"loaded {cfg['model_id']} rev={W.sp.revision}; P={W.P}; read layer {W.read_layer} ({time.time()-T0:.0f}s)")
+    if a.stage == "audit": return audit_stage(W, cfg, out, log)
     if a.stage == "smoke":
         cfg = dict(cfg); cfg["train"] = dict(cfg["train"], steps=3); cfg["heldout_indices"] = cfg["heldout_indices"][:1]; cfg["train_indices"] = cfg["train_indices"][:2]
         hist, n = train(W, cfg, 11, log, 600); log(f"bus params {n}"); W.bus.eval(); rows, tau = evaluate(W, cfg, log); verdict(rows, tau, cfg, log); log(f"smoke ok {W.forwards} forwards {time.time()-T0:.0f}s"); return
