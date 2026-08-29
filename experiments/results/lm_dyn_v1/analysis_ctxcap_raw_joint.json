@@ -1,0 +1,86 @@
+{
+ "context_capacity_joint": "round34a_core",
+ "inputs": [
+  {
+   "tag": "ctxcapA_raw",
+   "file": "analysis_ctxcapA_raw.json",
+   "sha256": "081c842ad3ce9293e81388e6ebc02b8ea8fc9fcbfd9e86467933407da9c2c09a",
+   "evidence_file": "round34a_evidence_ctxcapA_raw.npz",
+   "evidence_sha256": "7d2406e3545fa9f3797f6d948553e02606895176161c54b8e2ecc4bcc961f1cb"
+  },
+  {
+   "tag": "ctxcapB_raw",
+   "file": "analysis_ctxcapB_raw.json",
+   "sha256": "8aac0d8b57f19eac64ce07b36871f42a8c5e3bcbdb84357d342cb30b45f28174",
+   "evidence_file": "round34a_evidence_ctxcapB_raw.npz",
+   "evidence_sha256": "4cfe51d601b4cb1027e81b50985b9b1df96b59f2a505d442579d7082cccc8df6"
+  }
+ ],
+ "eligible_layers": [
+  "F4",
+  "F8",
+  "F12",
+  "F20"
+ ],
+ "required_common_layers": 2,
+ "status": "COMPLETE/SCREEN-ONLY",
+ "decision": "CONTINUE",
+ "note": "read-only two-sentinel audit #19 reducer; every support flag, crossed interval, layer decision, and joint decision is replayed from sha256-bound float32 cell evidence",
+ "estimand": "unresidualized X -> Delta",
+ "sentinel_layer_decisions": {
+  "A": {
+   "F4": "CONTINUE",
+   "F8": "CONTINUE",
+   "F12": "CONTINUE",
+   "F20": "CONTINUE"
+  },
+  "B": {
+   "F4": "CONTINUE",
+   "F8": "CONTINUE",
+   "F12": "CONTINUE",
+   "F20": "CONTINUE"
+  }
+ },
+ "f0_diagnostic_decisions": {
+  "A": "INCONCLUSIVE",
+  "B": "INCONCLUSIVE"
+ },
+ "bindings": {
+  "A": {
+   "config_sha256_raw": "c4861230a3112deb4fe20df774986c3385948b46dd5dd6e8ed3f85a826bd8561",
+   "forward_states_sha256": "bd7a44956548224d81a8ab038370e20542eec5c94c459a16d92131b00fd93658",
+   "forward_manifest_sha256": "72bd5175f4d18497981416f7816f1cdf68df131cb9821147d0ca3a0234e385ba",
+   "model": "Qwen/Qwen3-0.6B",
+   "model_revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+   "sentinel": ".",
+   "sentinel_id": 13,
+   "completer_model_revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+   "tokenizer_requested_revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+   "sentinel_id_rederived_from_tokenizer": true
+  },
+  "B": {
+   "config_sha256_raw": "c4861230a3112deb4fe20df774986c3385948b46dd5dd6e8ed3f85a826bd8561",
+   "forward_states_sha256": "b6e1a18486d685cc35ab2eae12064dc76f7096d3e1d7297d1ff5c5f1f84c29b7",
+   "forward_manifest_sha256": "fc81092eebae5ebc047e037772edae35e352f62bc11b72f0fc9ef6fab1d90efb",
+   "model": "Qwen/Qwen3-0.6B",
+   "model_revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+   "sentinel": ",",
+   "sentinel_id": 11,
+   "completer_model_revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+   "tokenizer_requested_revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+   "sentinel_id_rederived_from_tokenizer": true
+  }
+ },
+ "complete_gate_recomputed_from_cell_evidence": true,
+ "bootstrap_seed": 13041,
+ "evidence_schema": "round34a_cell_evidence_v1",
+ "continue_common_layers": [
+  "F4",
+  "F8",
+  "F12",
+  "F20"
+ ],
+ "stop_common_layers": [],
+ "f0_excluded": true,
+ "stop_instruction": null
+}

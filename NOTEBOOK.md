@@ -5,6 +5,31 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Round 34a RAW result: CONTINUE at F4–F20, but the matched margin is small
+
+`analysis_ctxcapA_raw.json` / `analysis_ctxcapB_raw.json` (frozen analyzer
+copy 6b93ff1; 291 s and 254 s; tokenizer only, no model forward) and the
+raw joint reduction (`analysis_ctxcap_raw_joint.json`: COMPLETE/SCREEN-ONLY,
+CONTINUE, common layers F4/F8/F12/F20). With the state ridge bisected down
+to the contextual arm's effective df, the strongest matched margin is:
+sentinel A cosine +0.072 / +0.057 / +0.045 / +0.042 at F4/F8/F12/F20 (crossed
+LBs 0.034 / 0.024 / 0.019 / 0.024), normalized error +0.073 / +0.047 / +0.040
+/ +0.054; sentinel B cosine +0.082 / +0.064 / +0.047 / +0.043 (LBs 0.049 /
+0.034 / 0.023 / 0.022), nerr +0.088 / +0.054 / +0.042 / +0.067; 8/8 keys
+jointly positive at every F4–F20 layer; F0 INCONCLUSIVE (the
+selected-context-EDF match is undefined there; diagnostic only). The
+strongest arm is the token-id kernel at most layers.
+
+Plain reading: capacity matching removed most of the unmatched raw gap
+(ctx_A/ctx_B cosine margins were +0.11 to +0.20); what survives is a
++0.04 to +0.08 cosine separation with lower bounds just above the 0.02
+threshold at F12/F20. CONTINUE by the registered rule — a narrow survival,
+not a strong one, and not a state claim. Interpretation waits for the
+static form (running now) and the fresh auditor. One reducer defect
+surfaced and was fixed on the main analyzer without touching the producer
+(a stored NaN at the F0 diagnostic compared unequal to its replay); the
+joint was re-run in seconds.
+
 ## 2026-08-29 — Parity verdict: refactored analyzer reproduces HEAD; Round 34a runs begin
 
 The HEAD-vs-refactor CPU parity check (contextual-prefix static screens,
