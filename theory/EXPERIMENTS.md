@@ -6948,3 +6948,132 @@ than a distinct navigation state. Survival earns only a narrower measurement
 claim and sends the program to the consequence instrument; it does not yet
 show that structured reasoning lives in this latent world. No new axiom is
 earned.
+
+## Round 34a — matched-EDF core screen (audit #19 staging) (2026-08-28)
+
+**Codex preregistration; documentation only. No experiment was run.** Audit
+#19 places this short-circuit screen before the full Round 34 feature-adequacy
+audit and the parked Round 33 consequence instrument. The screen asks only
+whether the held-out state-versus-registered-context margin survives an honest
+foldwise capacity match. It is a non-claiming sentinel screen, not a new state
+gate or a search over contextual maps.
+
+### Estimands, tags, and order
+
+The primary audit-#19 screen is the **unresidualized** contextual relation used
+by `ctx_A`: the held-out comparison is `X -> Delta` with the registered
+contextual predictors fit directly to `Delta`. Run and reduce this form first,
+under tags `ctxcapA_raw` and `ctxcapB_raw`. This is the only Round 34a form that
+can stage the capacity objection to the raw `ctx_A`/`ctx_B` comparison.
+
+The `P_static`-residualized relation is separately registered under tags
+`ctxcapA_static` and `ctxcapB_static`: it tests `X_perp -> Delta_perp` after the
+existing training-fold static residualization. It neither substitutes for nor
+retroactively capacity-matches the raw estimand. Its result is reported under
+its own tag and reduced only with the other sentinel's static artifact. No
+cross-estimand pooling or joint verdict is permitted.
+
+### Locked core screen
+
+For each sentinel and each of F0, F4, F8, F12, and F20:
+
+1. Reuse exactly the existing four carrier-block by two unseen-word outer
+   folds, the existing inner carrier folds, and training-only standardization.
+   No held-out carrier, word, target, or outcome may enter a standardizer,
+   hyperparameter choice, EDF calculation, rank calculation, or lambda solve.
+2. Recompute **only** the registered `token_ids_v1` contextual ridge at its
+   inner-selected lambda and the registered `token_ids_v1` contextual RBF
+   kernel at its inner-selected gamma/lambda. Serialize their per-fold
+   predictions, training EDF, numerical rank, distinct training rows,
+   hyperparameters, retained columns, and finite checks. No stored aggregate
+   JSON is treated as if it contained reusable cell predictions.
+3. On the separately training-standardized state design, fit four continuous-
+   bisection ridge matches: state EDF matched to the selected contextual ridge
+   EDF; state EDF matched to `min(47, selected state EDF)` for the ridge's
+   honest centred-primal rank ceiling; state EDF matched to the selected
+   contextual-kernel EDF; and state EDF matched to `min(48, selected state
+   EDF)` for the kernel's honest training-row ceiling. Use the registered
+   float64 Round 34 solve and its `<=0.01` EDF-error rule. An unreachable or
+   non-finite match makes that candidate/key unsupported; it is never rounded
+   into support. Serialize target and achieved EDF, absolute error, bracket,
+   bracket doublings, iterations, rank and tolerance, retained columns,
+   selected-state EDF/lambda, matched lambda, prediction finite check, and the
+   full contextual telemetry for every match.
+4. Score only held-out displacement cosine and normalized error. Define every
+   paired cell margin as `state_matched - context`; reverse the normalized-
+   error sign so larger is better, i.e. `nerr_context - nerr_state_matched`.
+   Reduce with the existing paired block-first crossed bootstrap. For each
+   endpoint report every candidate and the strongest contextual comparator,
+   defined as the minimum state-minus-context margin **inside each bootstrap
+   replicate**.
+5. The producer is sentinel-local and non-claiming. It uses 500 bootstraps and
+   zero shuffles, has a 90-minute hard wall, checkpoints only complete outer
+   keys, and emits no claiming artifact after an overrun. A tiny read-only
+   reducer may combine only completed A/B artifacts from the same estimand;
+   it fails closed on any schema, binding, support, match, layer, fold, tag, or
+   estimand mismatch and writes to a tag distinct from both inputs.
+
+There is **no completion**, completer construction, K=13 candidate universe,
+new contextual feature family, model forward, Round 33 consequence call, or
+full-Round-34 joint claiming reducer in Round 34a. The only contextual feature
+map is the already registered `token_ids_v1` ridge/kernel pair. F0 is reported
+as a diagnostic and cannot supply a common qualifying layer.
+
+### Precommitted screen decisions
+
+For one sentinel-layer, define `m_cos*` and `m_nerr*` by the replicate-wise
+minimum over the four registered matches. The layer is **STOP / CAPACITY-
+SENSITIVE SCREEN** only if both strongest margins have point estimates
+`<=0.02` and crossed 95% upper bounds `<0.02`, at least `6/8` outer keys are
+jointly below `0.02` on both endpoints, every carrier block has at least one
+such key, and every required match is valid with no block collapse. The raw
+screen stops the line only if at least two common layers among F4, F8, F12, and
+F20 qualify in both sentinels: report **capacity-sensitive screen; stop; do not
+run full Round 34 or Round 33**.
+
+The layer is **CONTINUE** only if both strongest margins have point estimates
+`>=0.02` and crossed 95% lower bounds `>0`, at least `6/8` outer keys are
+jointly positive on both endpoints, every carrier block has at least one such
+key, and every required match is valid with no block collapse. Continue only
+if at least two common F4-F20 layers qualify in both sentinels. That branch
+authorizes a narrow completion pass for the inner-selected `token_ids_v1`
+ridge/kernel pairs only: paired raw continuous-KL difference is confirmatory,
+skill is diagnostic, and no richer contextual family is yet authorized. The
+static screen receives the same within-estimand decision logic but cannot
+change the raw-screen verdict.
+
+Every other outcome is **INCONCLUSIVE**. A failed STOP rule is not survival; a
+failed CONTINUE rule is not closure. No Round 34a result identifies operational
+state, contextual insufficiency, missing coordinates, a native law, or a
+representation-level hostile hole.
+
+### Pre-outcome amendment to full Round 34
+
+Before any `round34_v1` outcome exists, amend its confirmatory set. KL-rank is
+now **diagnostic**, because making it decisive would reopen the parked K=13
+low-rank/SVD telemetry gate. The three full-Round-34 confirmatory endpoints are
+displacement cosine, completion skill, and the **paired raw continuous-KL
+difference** (`KL_context - KL_state_matched`, larger is better). Normalized
+error and KL-rank remain serialized diagnostics. All existing key-count,
+carrier-block, common-support, EDF-validity, and two-common-F4-F20-layer rules
+otherwise remain in force. This amendment is prospective and precedes every
+Round 34 outcome.
+
+### Strongest-comparator claim boundary
+
+Taking the minimum over candidates separately by endpoint and bootstrap
+replicate is a synthetic oracle. It is appropriately conservative for a full
+Round 34 **KEEP** decision: the state margin must survive whichever fixed
+candidate is strongest in that resample. A **MOOT** decision from that oracle
+supports only the sentence that the comparison is capacity/context-family
+sensitive. The stronger sentence that one sufficient deterministic contextual
+map closes the state margin requires one predeclared candidate to win jointly
+across every confirmatory endpoint under the same `6/8` key, no-block-collapse,
+support, and two-common-layer rules. Endpoint- or replicate-specific winners
+cannot be spliced into such a map.
+
+Under the guiding question, this screen tests whether the apparent navigation
+advantage survives when the state reader is reduced to the registered context
+reader's attainable flexibility. Closure is evidence about a measurement
+hole—capacity/context-family sensitivity—not proof that context is the world's
+state. Survival only earns the narrow completion check. No new axiom is earned.
