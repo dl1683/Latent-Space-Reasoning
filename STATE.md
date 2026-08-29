@@ -1725,3 +1725,53 @@ consequence currency that survives Round 33. The next latent space should
 expose denizen-available quotient or bridge coordinates and make typed moves
 carry truth-conditional, multi-position consequences that compose. No new
 axiom is earned. Round 33 is documentation-only; no experiment was run.
+
+## Evidence gate — NLM-007 four-cell common-scale adjudication (2026-08-28)
+
+Direct artifact reduction passes, with qualifications. `analysis_resSA2.json`
+is the repaired sentinel-A `P_static` cell: runtime `5824.8 s`; F4/F8/F12/F20
+pass; F0 fails. Across the four passing layers, the minimum crossed block-first
+lower bounds are cosine `0.458`, skill `0.175`, and K=13 KL-rank `0.197`;
+jointly positive keys are `7/8, 8/8, 8/8, 8/8`, while strict full-gate keys
+are `7/8, 7/8, 6/8, 8/8`. Every F4-F20 common-scale ratio median exceeds
+`0.5`; this is a fitted-system robustness-ratio result, not a uniform interval
+claim or a retained-signal statement. At F0, cosine remains positive but skill
+and KL-rank fail and only `2/8` keys clear the full gate.
+
+**Canonical wording, also suitable for project memory:**
+
+> The sentinel {A,B} x {P_static,P_aug-score4} table is complete on a common
+> K=13/four-word-only-null/crossed-bootstrap scale for the residual-versus-null
+> mechanical gate. F4-F20 pass in all four correlated cells; F0 is
+> non-qualifying in three cells and yields only a weak pooled A-score4
+> association with 2/8 full-gate keys. This is consistent within-decoder,
+> within-population condition robustness. It is not replication and does not
+> identify operational state, presentation independence, a presentation
+> decomposition, composition, a native law, or a representation-level hostile
+> hole. B-score4's ridge cosine and skill results are mechanically reportable;
+> its K=13 KL-rank endpoint and every low-rank interpretation remain
+> amended-implementation and SVD-telemetry-incomplete.
+
+No cell fails the named structural common-scale checks: all four use the same
+fixed K=13 universe, the same four word-only nulls, the same eight
+block-by-word-fold keys, and the same 4-block/8-key crossed-bootstrap scheme
+with 500 replicates. B-score4 remains endpoint-qualified because the amended
+SVD path touches a member of the K=13 universe. A separate provenance defect
+does not alter the JSON ruling: ledger row `nlm007_resid_resSA2` says sentinel
+`2`, while the artifact itself records `sentinel_tag: A`; the append-only
+ledger needs a future erratum.
+
+Do not promote “uniform F0 failure” to a structural law. Three cells fail the
+aggregate gate, while A-score4 is a weak pooled exception with only `2/8`
+full-gate keys. The leading reading is a bounded pre-context token-identity and
+position regime; alternatives are a local F0-to-F4 contextual-emergence
+boundary, an endpoint/normalized-skill pathology, and a score4 transductive
+alignment effect. These are hypotheses to separate prospectively, not a new
+hostile-hole claim.
+
+The Round 33 order is unchanged. `resSA2` closes the protected common-scale
+bookkeeping item, but it does not answer the generic prefix-edit/context-
+fingerprint alternative or validate one-position law as consequence. Run the
+contextual-prefix X-free baseline first, then the bounded multi-position
+teacher-forced consequence test. F0 remains diagnostic and supplies no basis
+to reverse or bypass those gates.

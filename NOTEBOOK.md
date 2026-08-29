@@ -25,6 +25,30 @@ Evidence-gate adjudication of the four-cell synthesis is launched; the
 contextual-prefix chain (`run_ctx.cmd`, committed analyzer copy) starts
 automatically now that resSA2 has written.
 
+Adjudicated (Evidence gate, `.codex_fourcell_adjudication.md`): PASS,
+qualified. Licensed wording, verbatim: "The sentinel {A,B} x
+{P_static,P_aug-score4} table is complete on a common
+K=13/four-word-only-null/crossed-bootstrap scale for the
+residual-versus-null mechanical gate. F4-F20 pass in all four correlated
+cells; F0 is non-qualifying in three cells and yields only a weak pooled
+A-score4 association with 2/8 full-gate keys. This is consistent
+within-decoder, within-population condition robustness. It is not
+replication and does not identify operational state, presentation
+independence, a presentation decomposition, composition, a native law, or a
+representation-level hostile hole. B-score4's ridge cosine and skill results
+are mechanically reportable; its K=13 KL-rank endpoint and every low-rank
+interpretation remain amended-implementation and SVD-telemetry-incomplete."
+Additionally licensed: all 48 F4-F20 layer x endpoint bootstrap-median
+common-scale ratios exceed 0.5 (estimator/null competition ratios, not
+retained signal; each cell has one F4 continuous-KL interval LB below 0.5).
+The phrase "uniform F0 failure" is withdrawn from the entry above: F0 is a
+bounded diagnostic, not a structural law (A-score4 clears the pooled gate;
+four live readings: token-identity endpoint regime, local emergence boundary,
+readout/normalization pathology, score4 instrument specificity). The
+EXPERIMENTS.md "7-8/8 keys" reads as jointly positive keys; strict full-gate
+counts are 7/8, 7/8, 6/8, 8/8. Ledger erratum appended (resSA2 row wrote
+"sentinel 2"). Round 33 order unchanged.
+
 ## 2026-08-28 — SVD telemetry gate: repair-round cap tripped; Round 33 consequence test implemented
 
 SVD telemetry re-review #4 (`.codex_svd_review4.md`) returned NOT-READY with

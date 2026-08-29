@@ -6636,3 +6636,48 @@ consequence currency that survives Round 33. The next latent space should
 expose denizen-available quotient or bridge coordinates and make typed moves
 carry truth-conditional, multi-position consequences that compose. No new
 axiom is earned. Round 33 is documentation-only; no experiment was run.
+
+## Evidence gate — NLM-007 four-cell common-scale adjudication (2026-08-28)
+
+**PASS, qualified.** Direct reduction of `analysis_resSA2.json` reproduces the
+published runtime (`5824.8 s`, rounded to `5825`), F4-F20 gate passage, F0
+failure, and rounded minimum crossed lower bounds (`0.458` cosine, `0.175`
+skill, `0.197` K=13 KL-rank). Jointly positive keys are
+`7/8, 8/8, 8/8, 8/8`; strict full-gate keys are
+`7/8, 7/8, 6/8, 8/8`. All twelve F4-F20 common-scale ratio medians exceed
+`0.5`; F4 continuous-KL has ratio LB `0.409`, so this is not a uniform
+interval claim.
+
+All four cells use the identical K=13 universe, four registered word-only
+nulls, eight block-by-word-fold keys, 20 shuffles, 500 bootstraps, and
+4-block/8-key crossed summaries. No cell fails those named structural
+common-scale checks. B-score4 nevertheless remains amended-implementation and
+SVD-telemetry-incomplete: ridge cosine/skill are mechanically reportable, but
+low-rank is not cleanly reportable and K=13 KL-rank is amendment-qualified.
+Ledger row `nlm007_resid_resSA2` has a provenance typo (`--sentinel-tag 2`),
+whereas the JSON records sentinel `A`; this requires a future append-only
+erratum and does not change the artifact-scale verdict.
+
+Adopted synthesis:
+
+> The sentinel {A,B} x {P_static,P_aug-score4} table is complete on a common
+> K=13/four-word-only-null/crossed-bootstrap scale for the residual-versus-null
+> mechanical gate. F4-F20 pass in all four correlated cells; F0 is
+> non-qualifying in three cells and yields only a weak pooled A-score4
+> association with 2/8 full-gate keys. This is consistent within-decoder,
+> within-population condition robustness. It is not replication and does not
+> identify operational state, presentation independence, a presentation
+> decomposition, composition, a native law, or a representation-level hostile
+> hole. B-score4's ridge cosine and skill results are mechanically reportable;
+> its K=13 KL-rank endpoint and every low-rank interpretation remain
+> amended-implementation and SVD-telemetry-incomplete.
+
+“Uniform F0 failure” is not promoted: A-score4 is a sparse aggregate exception,
+and the three nonpasses have different endpoint mechanisms. F0 remains a
+bounded diagnostic consistent with a pre-context token-identity/position
+regime, a local contextual-emergence boundary, normalized-skill/readout
+pathology, or score4 transductive alignment. The Round 33 allocation is
+unchanged: contextual-prefix X-free baseline, then the bounded multi-position
+teacher-forced consequence test. The four-cell table resolves neither the
+generic prefix-fingerprint alternative nor the validity of the one-position
+consequence currency.
