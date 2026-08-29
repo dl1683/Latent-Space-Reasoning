@@ -5,6 +5,30 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Round 36b result: every cell BEHAVIOR UNDERFIT; QUOTIENT INELIGIBLE
+
+All four cells completed inside their walls (174 / 606 / 618 / 696 s) and
+every cell returns the registered primary status "FAIL — BEHAVIOR UNDERFIT;
+QUOTIENT INELIGIBLE". Behavioural fit (train correct / 21,184; held-out /
+2,240; five seeds): S16 train 20,894–21,184 with one exact seed, held-out
+2,179–2,218; S64 train 21,078–21,184 with two exact, held-out 2,184–2,226;
+LR64 train 21,088–21,184 with four exact, held-out 2,198–2,225; W64 train
+exact on all five seeds, held-out 2,216–2,239 (98.9–99.96%) — none exact.
+Under the registered rule no cell is eligible for a quotient
+interpretation, so no PASS, no FIT-BUT-NON-CONGRUENT, and no reading of the
+DIAGNOSTIC tables as verdicts. Informational only: W64's ineligible gate
+flags show action-table truth, cross-seed action-table identity and
+quotient availability passing while well-definedness, involution, the
+swap/toggle table, held-out closure and interchangeability fail. Plain
+reading: more budget and width move behaviour toward exact fit (W64 is
+exact on training) but held-out spellings still miss by 1–24 rows per seed,
+so the ladder never reached the point where the quotient question could be
+asked; what to make of that — exact held-out fit as a precondition may
+simply be unreachable for this recipe on unseen spellings — is with the
+fresh auditor. Row-level evidence (≈170 MB per cell) and weights are
+retained locally and hash-pinned; only config/manifest/verdict are
+committed (`abef6cf`).
+
 ## 2026-08-29 — Round 36b launched under lock V3 (review #2 RUN-READY)
 
 The behaviour-fit ladder runs now: four cells (S16 16k steps; S64 64k; LR64
