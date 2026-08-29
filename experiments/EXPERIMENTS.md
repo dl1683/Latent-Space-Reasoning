@@ -36,13 +36,79 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   native-mathematics artifact, so open-ended layer, task, and decision-rule
   repair stops here. This is an allocation pivot, not evidence that frozen
   pretrained residual streams lack usable native structure." Entries below.
-- **Current artifact — `state_bus_v1r1`** (`experiments/run_state_bus.py`,
-  `experiments/config/state_bus_v1.json`; lock `d9d1513`, ledger
-  `state_bus_v1r1_lock`): TRAINING UNDER LOCK; no outcome inspected; no
-  claim. Pre-outcome licensed sentence (audit #28) in the entry below and in
-  `STATE.md`.
+- **`state_bus_v1r1` — REGISTERED FAIL, CLOSED (audit #29; ledger
+  `state_bus_v1r1_result`, `state_bus_v1r1_audit_stage`,
+  `state_bus_v1r1_audit29`); no bus v2.** Licensed sentence (verbatim):
+  **`state_bus_v1r1` is a fixed-construction FAIL: a 98,400-parameter supervised interface repeatedly injected a 16-dimensional code into frozen Qwen3-1.7B-Base, and across three seeds held-out same-state donors preserved every four-way categorical choice but failed the training-derived confidence-signature tolerance on 15–16/16 rows, while fixed-cycle cross codes changed taxonomy choice on 7/16 rows—always cat→dog in 3/4 and cow→horse in 4/4—and the complete registered gate vector also failed heldout taxonomy and the cross-consequence third/first movement criterion; taxonomy verbalizers were absent from the bus loss, but the all-pair sensitivity was donor-verbalizer-specific rather than state-general, so the licensed residue is a repeatedly maintained supervised response controller with pair-specific lexical/semantic steering, not autonomous persistence, abstraction, general interchangeability, or native latent mathematics.**
+- **`interchange_v2` — pre-declared FAIL** (`FAIL — FIXED BLOCK-12
+  SINGLE-ANCHOR INTERCHANGE CONSTRUCTION`; ledger `interchange_v2_lock`,
+  `interchange_v2_result`); audit #30 pending; no v3. Next artifact:
+  reachability / control cost (direction round 8; round 9 design pending).
 
-## state_bus_v1r1 — co-developed 16-d state bus on frozen Qwen3-1.7B-Base: LOCKED, TRAINING; no claim (2026-08-29; ledger `state_bus_v1r1_lock`, `audit28`)
+## interchange_v2 — bias-controlled operational interchangeability, Qwen3-1.7B-Base block 12: pre-declared FAIL; audit pending (2026-08-29; ledger `interchange_v2_lock`, `interchange_v2_result`)
+
+- **Design (Codex direction round 8, `d069955`; runner
+  `experiments/run_interchange.py` + config
+  `experiments/config/interchange_v2.json`, locked `f7e3d18` with no outcome
+  inspected; contexts re-matched `7beeb2b`).** Same Qwen3-1.7B-Base
+  revision, CPU fp32, block 12, final anchor ` The animal`, coefficient-one
+  replacement; fresh cat/dog calibration and held-out paraphrases, all
+  exactly 25 tokens; fresh length-matched cow/horse contexts as on-manifold
+  third-state donors; calibration-centred standardized probe statistic
+  (removes the verbalizer bias that killed `interchange_v1`); fractional
+  donor movement with squared-separation denominator; exact 2^8 recipient
+  sign-flip specificity test. One construction; no v3.
+- **Result** (`experiments/results/interchange_v2/result.json`; `65680e5`):
+  native centred validity passed (cat 11/12, dog 12/12; gate met), same-state donors within tolerance 8/8 (median distance 0.35, tau 3.38), but replacing the block-12 anchor residual with the opposite class's anchor residual moved the three-probe signature by a median fractional 0.009 of the class separation with 0/8 recipients flipping two decisions; on-manifold cow/horse third-state donors moved recipients |T| 0.10–0.21 and the cross-vs-third specificity test was null (4/8 paired positive; exact sign-flip p = 0.47). Pre-declared status, verbatim: `FAIL — FIXED BLOCK-12 SINGLE-ANCHOR INTERCHANGE CONSTRUCTION` (480 forwards, 105 s). Gates: same_state True, cross_state False,
+  specificity False.
+- **Status:** audit #30 pending. Audit #29 (on the bus, without inspecting
+  this run) flagged the lock as not confirmatory-run-ready (third-donor
+  identities not counterbalanced; gates pooled across classes; preregistered
+  short decodes not implemented). No reading beyond the pre-declared status
+  is licensed until the audit lands.
+
+## state_bus_v1r1 — result, audit-stage re-adjudication and audit #29: REGISTERED FAIL, CLOSED (2026-08-29; ledger `state_bus_v1r1_result`, `state_bus_v1r1_audit_stage`, `state_bus_v1r1_audit29`)
+
+- **Registered result (`7beeb2b`; unanimous, seeds 11/23/37).** Stored
+  status `FAIL — same_swap, persistence`; `summary.fails` also records
+  `heldout_consequence` in every seed. Per seed: same-swap outside the
+  training-derived tau (0.268/0.377/0.228) on 16/15/16 rows while self and
+  same-donor raw choice accuracy is 1.0 on all three decisions; cross
+  uplift-consistent ≥2/3 on 15/16/16; heldout-taxonomy uplift-consistent
+  9/9/8 of 16 (gate ≥10), gain +0.34/+0.38/+0.19; taxonomy raw choice
+  follows the donor on 7/16 in every seed; cross-consequence movement
+  12.2→9.8→2.9, 13.9→8.7→3.0, 11.9→7.3→3.1 nats; constrained own-choice
+  rollouts all-donor on 15/16/15. Artifacts
+  `experiments/results/state_bus_v1r1/result.json` (checkpoints and logs
+  local only).
+- **Audit-stage re-adjudication (`556b47c`; eval-only sensitivity beside the
+  registered FAIL; 0.5-nat floor declared pre-result).** All-pair raw
+  taxonomy donor choice 15/48, 14/48, 7/48; on-manifold wrong-code control
+  1/96, 1/96, 2/96; per-state recipients moved cat/dog/cow/horse =
+  1/0/2/0, 2/0/1/0, 0/0/0/0; class `FAIL` in all seeds
+  (`experiments/results/state_bus_v1r1/audit_result.json`). Not a rescue.
+- **Audit #29 (fresh, unprimed; adopted verbatim `4087742`).** FAIL upheld
+  with corrections both ways: the status string omitted the registered
+  heldout-taxonomy failure (control-flow defect, fixed post hoc in
+  `experiments/run_state_bus.py` `verdict()`; stored results unchanged);
+  categorical same-state behaviour transferred while fine-grained
+  confidence signatures did not; the raw 7/16 is always cat→dog 3/4 and
+  cow→horse 4/4 and every all-pair taxonomy success targets canine or
+  equine only; the movement ratio is not an identified temporal decay.
+  Pre-declared round-8 reading ("sequential semantic controller", "partial
+  taxonomy transfer", "76% decay") withdrawn. **Licensed sentence
+  (verbatim):** **`state_bus_v1r1` is a fixed-construction FAIL: a 98,400-parameter supervised interface repeatedly injected a 16-dimensional code into frozen Qwen3-1.7B-Base, and across three seeds held-out same-state donors preserved every four-way categorical choice but failed the training-derived confidence-signature tolerance on 15–16/16 rows, while fixed-cycle cross codes changed taxonomy choice on 7/16 rows—always cat→dog in 3/4 and cow→horse in 4/4—and the complete registered gate vector also failed heldout taxonomy and the cross-consequence third/first movement criterion; taxonomy verbalizers were absent from the bus loss, but the all-pair sensitivity was donor-verbalizer-specific rather than state-general, so the licensed residue is a repeatedly maintained supervised response controller with pair-specific lexical/semantic steering, not autonomous persistence, abstraction, general interchangeability, or native latent mathematics.**
+- **Never say (audit #29):** “Partial taxonomy transfer” without “pair-specific” and the cat→dog/cow→horse concentration. “`7/16` beat chance” or “`9/16` is statistically significant.” “Three independent semantic replications.” “Same-state interchangeability failed.” “Same-state confidence signatures generalized.” “The state decayed by 76%.” “The state survived through generation.” “The bus learned autonomous persistence.” “The rollouts freely generated all donor words.” “The heldout consequence was unseen”; only its verbalizers were absent from the bus loss. “All four states” or “all donor pairs” transferred. “The controls rule out lexical or output-space steering.” “Token length explains the whole effect.” “Reader MSE proves a persistent readable state.” “Trained-consequence accuracy was 1.0” without saying this is the self-code statistic. “Qwen learned the bus”; Qwen was frozen. “The bus establishes abstraction, interchangeability, or native latent mathematics.” “This FAIL refutes co-developed interfaces or persistent state generally.”
+- **What we learned:** the bus construction and budget are closed; no bus
+  v2. Strongest unified alternative for the day's real-model results (audit
+  #29): the frozen model supplies a biased lexical-semantic response
+  geometry within which late interventions and trained injection vectors
+  move candidate-word likelihoods, with visible selected words mediating
+  later decisions — no persistent interchangeable state is needed. Ratio
+  about 3.6:1 (runner-only) to 6.9:1 (with config and audit stage) exceeds
+  both tripwires; pivot to reachability / control cost mandated.
+
+## state_bus_v1r1 — design, lock and pre-outcome record (historical; 2026-08-29; ledger `state_bus_v1r1_lock`, `audit28`)
 
 - **Design (Codex direction round 7, ledger `direction_r7_ruling`; runner
   `experiments/run_state_bus.py` `c64cd67`; config
@@ -64,9 +130,9 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   reported separately; tau = max(1e-3, Q95 of training-context same-vs-self
   distances); persistence loss at both decision boundaries; movement gate
   m1>0, m3>0, m3>=0.5·m1; LayerNorm before E and R. The earlier unreviewed
-  run (`experiments/results/state_bus_v1/`, smoke/train log only) was
-  stopped with no evaluation inspected and its outputs discarded. Results
-  land in `experiments/results/state_bus_v1r1/`.
+  run was stopped with no evaluation inspected and its outputs discarded
+  (its smoke/train log directory `experiments/results/state_bus_v1/` was
+  deleted in the 2026-08-29 sweep). Results: `experiments/results/state_bus_v1r1/`.
 - **Pre-outcome licensed sentence (audit #28, verbatim):** `state_bus_v1r1`
   is a fixed three-seed training run of a 98,400-parameter supervised
   interface attached to frozen Qwen3-1.7B-Base. Training and held-out
@@ -84,7 +150,7 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   wrong-state control, all donor pairs, per-state minimum) reported alongside
   the registered status. Full wordings and the state-bus never-say list:
   `STATE.md` "Real-model line". Audit #28: "Finish and audit the current run
-  once; do not scale it."
+  once; do not scale it." Outcome and audit #29: entry above.
 
 ## interchange_v1 — operational interchangeability, Qwen3-1.7B-Base block 12, cat/dog paraphrases: closed by the locked raw-sign baseline; no swap arm (2026-08-29; ledger `interchange_v1_baseline`, `direction_r7_ruling`, `audit28`)
 
@@ -110,10 +176,11 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   evidence for interchangeability. Audit #28: kill UPHELD for the locked
   construction only; evidence against interchangeability: NONE.
 - **Never say (audit #28):** "interchangeability failed in Qwen3-1.7B-Base";
-  "three independent causal interventions failed". Cheapest moot-maker
-  (not authorized): a bias-controlled `interchange_v2` with
-  calibration-midpoint/paired contrasts preregistered, on-manifold
-  wrong-donor control, clustered reporting.
+  "three independent causal interventions failed". Cheapest moot-maker: a
+  bias-controlled `interchange_v2` with calibration-midpoint/paired
+  contrasts preregistered, on-manifold wrong-donor control, clustered
+  reporting — authorized by direction round 8 and run (entry above;
+  pre-declared FAIL, audit pending).
 
 ## coordinate_v3 — prediction-site two-bit coordinate (tense × number), Qwen3-1.7B-Base: gates met mechanically; audit #27 = narrow late lexical-control effect (2026-08-29; ledger `coordinate_v3_result`, `coordinate_v3_audit27`)
 
