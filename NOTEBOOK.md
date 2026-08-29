@@ -26,7 +26,9 @@ Project: the native mathematics of latent spaces. Live question (Round
 36): can a latent world built from behaviour alone carry a well-defined
 operational quotient and composable action table — and, after today, the
 prior question: is the certification regime itself passable by any learned
-artifact?
+artifact? (corrected by audit #25: a learned-pass reachability gap, not a
+"certification-regime problem"; the w32 control failed to validate the
+regime, it did not indict it.)
 
 Audit #25 replacement paragraph (verbatim; supersedes my interpretive paragraph):
 
@@ -212,7 +214,10 @@ truth (0/5 seeds) and cross-seed table identity, which the behaviour-only
 this is not a behaviour-only result and not a quotient-from-behaviour
 claim. Registered meaning of a control FAIL: the exact gates are not
 reachable by this carrier even with direct transition supervision — a
-certification-regime problem, not a latent-organisation result. Audit #25 replacement (verbatim; supersedes the interpretive tail of this entry):
+certification-regime problem, not a latent-organisation result. (corrected by
+audit #25: "not reachable ... even with direct supervision" rejected as
+unproven; "certification-regime problem" narrowed to "the reachability
+control failed to validate the regime".) Audit #25 replacement (verbatim; supersedes the interpretive tail of this entry):
 
 Registered mechanical meaning: the width-32 positive-control recipe did not
 reach the exact certificate. Audit #25 rejects the stronger sentence that the
