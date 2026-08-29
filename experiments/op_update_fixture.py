@@ -484,6 +484,28 @@ def round34bc_cases():
         bad_match = match(); bad_match[field] = value
         try: analyzer._round34bc_validate_edf_match(bad_match, selected_spectrum, f"fixture/bad_{field}"); raise RuntimeError(f"EDF match accepted bad {field}")
         except AssertionError: pass
+
+    # Live Round 34b F0 shape: EDF includes a legal sub-tolerance spectral tail above thresholded rank.
+    real_f0_scores = {str(lam): 0.4650686670341159 - i * 1e-6 for i, lam in enumerate(analyzer.LAMBDAS)}
+    real_f0_state = {"family": "ridge", "lambda": 0.0001, "training_edf": 11.00002932963442, "rank": 11,
+                     "rank_tolerance": 2.1634023912111565e-08, "retained_columns": 1024, "n_columns_raw": 1024,
+                     "n_training_rows": 480, "valid": True, "finite_checks": {"features": True, "prediction": True, "spectrum": True},
+                     "inner_scores": real_f0_scores}
+    analyzer._round34bc_validate_fit(real_f0_state, "fixture/ctxoverlap_A/F0/association_w0/state_selected", "ridge")
+    real_f0_unreachable_match = {"valid": False, "target_edf": 47.99882557611156, "achieved_edf": None, "edf_error": None,
+                                 "lambda": None, "bracket": None, "iterations": 0, "bracket_doublings": 0, "rank": 11,
+                                 "rank_tolerance": 2.1634023912111565e-08, "retained_columns": 1024,
+                                 "downward_from_selected": False, "selected_state_edf": 11.00002932963442,
+                                 "selected_state_lambda": 0.0001,
+                                 "finite_checks": {"eigenvalues": True, "target_edf": True, "bracket": False,
+                                                   "lambda": False, "achieved_edf": False, "prediction": False}}
+    assert analyzer._round34bc_validate_edf_match(real_f0_unreachable_match, real_f0_state, "fixture/ctxoverlap_A/F0/association_w0/state_match/kernel") is False
+
+    # These reducer entry points must never regress to an empty AssertionError.
+    for validator in (analyzer._round34bc_validate_fit, analyzer.round34bc_validate_telemetry):
+        validator_tree = ast.parse(inspect.getsource(validator))
+        missing_messages = [node.lineno for node in ast.walk(validator_tree) if isinstance(node, ast.Assert) and node.msg is None]
+        assert not missing_messages, f"empty AssertionError messages in {validator.__name__}: relative lines={missing_messages}"
     def inner_refits(mode, outer):
         targets = ("C", "Delta", "X") if mode == "round34b_overlap" else ("Delta", "X")
         out = []

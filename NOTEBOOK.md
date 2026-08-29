@@ -25,6 +25,13 @@ bounded reducer repair is with Codex; producers untouched). Round 34c does
 not run. NLM-007's closing statement is drafted after the joint and the
 next fresh audit.
 
+Joint (reducer repaired — the EDF≤rank bound was producer-inconsistent by
+~3×10⁻⁵ at F0's state_selected fit; producers correct, no rerun):
+`analysis_ctxoverlap_joint.json` COMPLETE/SCREEN-ONLY, decision
+INCONCLUSIVE, no common retaining layer (ridge or kernel), no common stop
+layer. The terminal ladder therefore ends at Round 34b. Audit #22 fired on
+the terminal outcome and on the draft closing statement.
+
 ## 2026-08-29 — Audit #21 adversarial correction: both 34a verdicts upheld, claim boundaries tightened
 
 The four float32 evidence sidecars replay exactly through the registered reduction and decision code. RAW and STATIC both return `CONTINUE` at F4/F8/F12/F20 in both sentinels, with 8/8 jointly positive keys at every eligible sentinel-layer. F0 is correctly `INCONCLUSIVE` and diagnostic because at least one required context-EDF target exceeds the selected F0 state EDF, making a downward match undefined; F0 is excluded from the ladder gate.

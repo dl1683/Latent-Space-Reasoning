@@ -1314,8 +1314,14 @@ def _round34bc_validate_edf_match(match, selected_state, where):
     assert isinstance(selected_state, dict)
     for key in ("rank", "rank_tolerance", "retained_columns"):
         assert match.get(key) == selected_state.get(key), f"{where}: match {key} differs from fits.state_selected"
-    for key in ("target_edf", "selected_state_edf"):
-        assert 0.0 <= float(match[key]) <= float(match["rank"]) + 1e-9, f"{where}: {key} outside spectrum rank"
+    assert 0.0 <= float(match["target_edf"]), f"{where}: negative target_edf: target_edf={match['target_edf']!r}"
+    selected_state_edf_ceiling = _round34bc_fit_edf_ceiling(selected_state)
+    assert 0.0 <= float(match["selected_state_edf"]) <= selected_state_edf_ceiling + 1e-9, (
+        f"{where}: selected_state_edf outside producer-consistent spectral bound: "
+        f"selected_state_edf={match['selected_state_edf']!r}, rank={match['rank']!r}, "
+        f"edf_ceiling={selected_state_edf_ceiling!r}, rank_tolerance={match['rank_tolerance']!r}, "
+        f"selected_state_lambda={match['selected_state_lambda']!r}, retained_columns={match['retained_columns']!r}"
+    )
     checks = match.get("finite_checks"); assert isinstance(checks, dict) and all(isinstance(checks.get(k), bool) for k in ("eigenvalues", "target_edf", "bracket", "lambda", "achieved_edf", "prediction"))
     assert isinstance(match.get("downward_from_selected"), bool)
     achieved, error, lam, bracket = match.get("achieved_edf"), match.get("edf_error"), match.get("lambda"), match.get("bracket")
@@ -1331,6 +1337,7 @@ def _round34bc_validate_edf_match(match, selected_state, where):
         lo, hi = (float(v) for v in bracket)
         assert 0.0 <= lo <= float(lam) <= hi, f"{where}: unordered bracket or lambda outside bracket"
     if match["valid"]:
+        assert float(match["target_edf"]) <= float(match["rank"]) + 1e-9, f"{where}: valid match target_edf outside matchable spectrum rank: target_edf={match['target_edf']!r}, rank={match['rank']!r}"
         for key in ("achieved_edf", "edf_error", "lambda"):
             assert isinstance(match.get(key), (int, float)) and not isinstance(match.get(key), bool) and np.isfinite(float(match[key])), f"{where}: {key}"
         assert float(match["lambda"]) >= 0.0 and abs(float(match["edf_error"]) - abs(float(match["achieved_edf"]) - float(match["target_edf"]))) <= 1e-9 and float(match["edf_error"]) <= 0.01 + 1e-9
@@ -1340,28 +1347,54 @@ def _round34bc_validate_edf_match(match, selected_state, where):
     return bool(match["valid"])
 
 
+def _round34bc_fit_rank_ceiling(meta):
+    """Maximum slope-spectrum slots under the producer's centered design contract."""
+    if meta.get("family") == "rbf_kernel":
+        return int(meta["n_training_rows"])
+    return min(int(meta["retained_columns"]), max(int(meta["n_training_rows"]) - 1, 0))
+
+
+def _round34bc_fit_edf_ceiling(meta, rank_ceiling=None):
+    """Bound EDF including the producer's nonnegative sub-tolerance spectral tail."""
+    rank_ceiling = _round34bc_fit_rank_ceiling(meta) if rank_ceiling is None else int(rank_ceiling)
+    rank, lam, tol = int(meta["rank"]), float(meta["lambda"]), float(meta["rank_tolerance"])
+    if lam == 0.0:
+        return float(rank)
+    tail_slots = max(rank_ceiling - rank, 0)
+    return float(rank) + float(tail_slots) * tol / (tol + lam)
+
+
 def _round34bc_validate_fit(meta, where, family=None):
-    assert isinstance(meta, dict) and meta.get("valid") is True, f"{where}: invalid fit"
-    if family is not None: assert meta.get("family") == family, f"{where}: wrong family"
+    assert isinstance(meta, dict) and meta.get("valid") is True, f"{where}: invalid fit: meta_type={type(meta).__name__}, valid={(meta.get('valid') if isinstance(meta, dict) else None)!r}"
+    if family is not None:
+        assert meta.get("family") == family, f"{where}: wrong family: expected={family!r}, actual={meta.get('family')!r}"
     for key in ("lambda", "training_edf", "rank", "rank_tolerance", "retained_columns", "n_columns_raw", "n_training_rows"):
-        value = meta.get(key); assert isinstance(value, (int, float)) and not isinstance(value, bool) and np.isfinite(float(value)) and float(value) >= 0.0, f"{where}: {key}"
-    assert isinstance(meta["rank"], int) and isinstance(meta["retained_columns"], int) and isinstance(meta["n_columns_raw"], int) and isinstance(meta["n_training_rows"], int)
-    assert 0 <= meta["retained_columns"] <= meta["n_columns_raw"] and meta["n_training_rows"] > 0
-    rank_ceiling = meta["n_training_rows"] if meta.get("family") == "rbf_kernel" else min(meta["retained_columns"], max(meta["n_training_rows"] - 1, 0))
-    assert 0 <= meta["rank"] <= rank_ceiling and 0.0 <= float(meta["training_edf"]) <= float(meta["rank"]) + 1e-9
-    assert all(meta.get("finite_checks", {}).get(k) is True for k in ("features", "prediction", "spectrum")), f"{where}: finite checks"
-    assert float(meta["lambda"]) in LAMBDAS, f"{where}: selected lambda is off-grid"
-    inner_scores = meta.get("inner_scores"); assert isinstance(inner_scores, dict), f"{where}: missing inner grid"
+        value = meta.get(key)
+        assert isinstance(value, (int, float)) and not isinstance(value, bool) and np.isfinite(float(value)) and float(value) >= 0.0, f"{where}: invalid {key}: value={value!r}"
+    integer_values = {key: meta[key] for key in ("rank", "retained_columns", "n_columns_raw", "n_training_rows")}
+    assert all(isinstance(value, int) and not isinstance(value, bool) for value in integer_values.values()), f"{where}: integer telemetry required: values={integer_values!r}"
+    assert 0 <= meta["retained_columns"] <= meta["n_columns_raw"] and meta["n_training_rows"] > 0, f"{where}: invalid fit dimensions: retained_columns={meta['retained_columns']!r}, n_columns_raw={meta['n_columns_raw']!r}, n_training_rows={meta['n_training_rows']!r}"
+    rank_ceiling = _round34bc_fit_rank_ceiling(meta)
+    assert 0 <= meta["rank"] <= rank_ceiling, f"{where}: rank outside family ceiling: family={meta.get('family')!r}, rank={meta['rank']!r}, rank_ceiling={rank_ceiling!r}, retained_columns={meta['retained_columns']!r}, n_training_rows={meta['n_training_rows']!r}"
+    edf_ceiling = _round34bc_fit_edf_ceiling(meta, rank_ceiling)
+    assert 0.0 <= float(meta["training_edf"]) <= edf_ceiling + 1e-9, f"{where}: training EDF outside producer-consistent spectral bound: training_edf={meta['training_edf']!r}, rank={meta['rank']!r}, rank_ceiling={rank_ceiling!r}, edf_ceiling={edf_ceiling!r}, rank_tolerance={meta['rank_tolerance']!r}, lambda={meta['lambda']!r}, retained_columns={meta['retained_columns']!r}"
+    finite_checks = meta.get("finite_checks", {})
+    assert all(finite_checks.get(k) is True for k in ("features", "prediction", "spectrum")), f"{where}: finite checks failed: finite_checks={finite_checks!r}"
+    assert float(meta["lambda"]) in LAMBDAS, f"{where}: selected lambda is off-grid: lambda={meta['lambda']!r}, grid={LAMBDAS!r}"
+    inner_scores = meta.get("inner_scores")
+    assert isinstance(inner_scores, dict), f"{where}: missing inner grid: inner_scores_type={type(inner_scores).__name__}, inner_scores={inner_scores!r}"
     if family == "rbf_kernel":
         expected = {f"{gamma},{lam}" for gamma in GAMMAS for lam in LAMBDAS}
-        assert set(inner_scores) == expected and all(np.isfinite(v) for v in inner_scores.values()), f"{where}: incomplete/non-finite kernel grid"
-        assert float(meta.get("gamma")) in GAMMAS and np.isfinite(meta.get("median_sqdist")) and float(meta["median_sqdist"]) > 0.0
+        assert set(inner_scores) == expected and all(np.isfinite(v) for v in inner_scores.values()), f"{where}: incomplete/non-finite kernel grid: keys={sorted(inner_scores)!r}, expected={sorted(expected)!r}, values={inner_scores!r}"
+        assert isinstance(meta.get("gamma"), (int, float)) and not isinstance(meta.get("gamma"), bool) and float(meta["gamma"]) in GAMMAS, f"{where}: invalid kernel gamma: gamma={meta.get('gamma')!r}, grid={GAMMAS!r}"
+        assert isinstance(meta.get("median_sqdist"), (int, float)) and not isinstance(meta.get("median_sqdist"), bool) and np.isfinite(float(meta["median_sqdist"])) and float(meta["median_sqdist"]) > 0.0, f"{where}: invalid kernel median_sqdist: median_sqdist={meta.get('median_sqdist')!r}"
         winner = max(((gamma, lam) for lam in LAMBDAS for gamma in GAMMAS), key=lambda key: float(inner_scores[f"{key[0]},{key[1]}"]))
-        assert (float(meta["gamma"]), float(meta["lambda"])) == winner, f"{where}: selected kernel hyperparameters are not the finite grid winner"
+        assert (float(meta["gamma"]), float(meta["lambda"])) == winner, f"{where}: selected kernel hyperparameters are not the finite grid winner: selected={(float(meta['gamma']), float(meta['lambda']))!r}, winner={winner!r}, scores={inner_scores!r}"
     else:
-        assert set(inner_scores) == {str(lam) for lam in LAMBDAS} and all(np.isfinite(v) for v in inner_scores.values()), f"{where}: incomplete/non-finite ridge grid"
+        expected = {str(lam) for lam in LAMBDAS}
+        assert set(inner_scores) == expected and all(np.isfinite(v) for v in inner_scores.values()), f"{where}: incomplete/non-finite ridge grid: keys={sorted(inner_scores)!r}, expected={sorted(expected)!r}, values={inner_scores!r}"
         winner = max(LAMBDAS, key=lambda lam: float(inner_scores[str(lam)]))
-        assert float(meta["lambda"]) == winner, f"{where}: selected ridge lambda is not the finite grid winner"
+        assert float(meta["lambda"]) == winner, f"{where}: selected ridge lambda is not the finite grid winner: selected={meta['lambda']!r}, winner={winner!r}, scores={inner_scores!r}"
 
 
 def _round34bc_validate_residualizer(rec, target, training_blocks, apply_probes, training_words, apply_words, block_map, where):
@@ -1397,88 +1430,147 @@ def _round34bc_validate_residualizer(rec, target, training_blocks, apply_probes,
 
 
 def round34bc_validate_telemetry(mode, telemetry, outer_key, scope_lock, expected_model_revision=None):
-    assert isinstance(telemetry, dict) and telemetry.get("mode") == mode and telemetry.get("outer_key") == outer_key and isinstance(telemetry.get("all_fits_valid"), bool)
-    round34bc_validate_scope_lock(scope_lock); assert telemetry.get("scope_lock_sha256") == scope_lock["sha256"], f"{outer_key}: scope-lock binding"
-    expected_outer = round34bc_outer_scope(scope_lock, outer_key); round34a_assert_equal(telemetry.get("outer_scope"), expected_outer, f"{outer_key}/outer scope")
+    def message(label, **values):
+        details = ", ".join(f"{key}={value!r}" for key, value in values.items())
+        return f"{outer_key}: {label}" + (f": {details}" if details else "")
+
+    assert isinstance(telemetry, dict), message("telemetry must be a mapping", telemetry_type=type(telemetry).__name__, telemetry=telemetry)
+    assert telemetry.get("mode") == mode, message("telemetry mode mismatch", expected=mode, actual=telemetry.get("mode"))
+    assert telemetry.get("outer_key") == outer_key, message("telemetry outer key mismatch", expected=outer_key, actual=telemetry.get("outer_key"))
+    assert isinstance(telemetry.get("all_fits_valid"), bool), message("all_fits_valid must be boolean", value=telemetry.get("all_fits_valid"))
+    round34bc_validate_scope_lock(scope_lock)
+    assert telemetry.get("scope_lock_sha256") == scope_lock["sha256"], message("scope-lock binding mismatch", expected=scope_lock["sha256"], actual=telemetry.get("scope_lock_sha256"))
+    expected_outer = round34bc_outer_scope(scope_lock, outer_key)
+    round34a_assert_equal(telemetry.get("outer_scope"), expected_outer, f"{outer_key}/outer scope")
     block_map, cal_blocks = scope_lock["block_to_probe_map"], expected_outer["training_blocks"]
     training_words, held_words = expected_outer["training_word_indices"], expected_outer["held_out_word_indices"]
     pca_meta = None
     if mode == "round34c_itemctx":
         pca_meta = telemetry.get("pca")
         round34c_validate_pca_meta(pca_meta, training_words, held_words, scope_lock["items"])
-    inner = telemetry.get("inner_refits"); assert isinstance(inner, list) and [rec.get("held_validation_block") for rec in inner] == cal_blocks
+    inner = telemetry.get("inner_refits")
+    assert isinstance(inner, list), message("inner_refits must be a list", value_type=type(inner).__name__, value=inner)
+    inner_blocks = [rec.get("held_validation_block") for rec in inner]
+    assert inner_blocks == cal_blocks, message("inner refit block order mismatch", expected=cal_blocks, actual=inner_blocks)
     for rec in inner:
         inner_held = rec["held_validation_block"]; expected_training_blocks = [block for block in cal_blocks if block != inner_held]
         expected_training_probes = [p for block in expected_training_blocks for p in block_map[block]]
-        assert rec.get("downstream_training_only") is True and rec.get("training_blocks") == expected_training_blocks and rec.get("nuisance_refit_inside_fold") is True
-        expected_inner = {"C", "Delta", "X"} if mode == "round34b_overlap" else {"Delta", "X"}; nuisance = rec.get("nuisance")
-        assert isinstance(nuisance, dict) and set(nuisance) == expected_inner
+        assert rec.get("downstream_training_only") is True, message("inner refit is not training-only", inner_held=inner_held, value=rec.get("downstream_training_only"))
+        assert rec.get("training_blocks") == expected_training_blocks, message("inner refit training blocks mismatch", inner_held=inner_held, expected=expected_training_blocks, actual=rec.get("training_blocks"))
+        assert rec.get("nuisance_refit_inside_fold") is True, message("nuisance was not refit inside fold", inner_held=inner_held, value=rec.get("nuisance_refit_inside_fold"))
+        expected_inner = {"C", "Delta", "X"} if mode == "round34b_overlap" else {"Delta", "X"}
+        nuisance = rec.get("nuisance")
+        assert isinstance(nuisance, dict), message("inner nuisance metadata must be a mapping", inner_held=inner_held, value_type=type(nuisance).__name__, value=nuisance)
+        assert set(nuisance) == expected_inner, message("inner nuisance targets mismatch", inner_held=inner_held, expected=sorted(expected_inner), actual=sorted(nuisance))
         for target, nrec in nuisance.items():
             _round34bc_validate_residualizer(nrec, target, expected_training_blocks, block_map[inner_held], training_words, training_words, block_map, f"{outer_key}/inner/{inner_held}/{target}")
         if mode == "round34b_overlap":
             vocabulary_columns, context_columns = rec.get("context_vocabulary_columns"), rec.get("context_design_columns")
-            assert rec.get("context_vocabulary_training_probes") == expected_training_probes and rec.get("context_vocabulary_training_word_indices") == training_words
-            assert isinstance(vocabulary_columns, int) and vocabulary_columns > 0 and rec.get("context_numeric_columns") == rec.get("context_pos_columns") == 4
-            assert context_columns == vocabulary_columns + 8 and rec.get("P_static_columns") == 10
-            assert rec.get("C_raw_columns") == rec.get("C_perp_raw_columns") == context_columns
-            assert rec.get("P_plus_C_raw_columns") == 10 + context_columns and rec.get("P_plus_C_one_standardizer") is True
-            assert nuisance["C"]["target_dimension"] == context_columns
+            assert rec.get("context_vocabulary_training_probes") == expected_training_probes, message("inner context vocabulary probes mismatch", inner_held=inner_held, expected=expected_training_probes, actual=rec.get("context_vocabulary_training_probes"))
+            assert rec.get("context_vocabulary_training_word_indices") == training_words, message("inner context vocabulary words mismatch", inner_held=inner_held, expected=training_words, actual=rec.get("context_vocabulary_training_word_indices"))
+            assert isinstance(vocabulary_columns, int) and not isinstance(vocabulary_columns, bool) and vocabulary_columns > 0, message("invalid inner context vocabulary width", inner_held=inner_held, value=vocabulary_columns)
+            assert rec.get("context_numeric_columns") == rec.get("context_pos_columns") == 4, message("invalid inner fixed context widths", inner_held=inner_held, numeric=rec.get("context_numeric_columns"), pos=rec.get("context_pos_columns"), expected=4)
+            assert context_columns == vocabulary_columns + 8, message("inner context design width mismatch", inner_held=inner_held, context_columns=context_columns, vocabulary_columns=vocabulary_columns, expected=vocabulary_columns + 8)
+            assert rec.get("P_static_columns") == 10, message("inner P_static width mismatch", inner_held=inner_held, expected=10, actual=rec.get("P_static_columns"))
+            assert rec.get("C_raw_columns") == rec.get("C_perp_raw_columns") == context_columns, message("inner context residual widths mismatch", inner_held=inner_held, C_raw=rec.get("C_raw_columns"), C_perp_raw=rec.get("C_perp_raw_columns"), expected=context_columns)
+            assert rec.get("P_plus_C_raw_columns") == 10 + context_columns, message("inner combined design width mismatch", inner_held=inner_held, expected=10 + context_columns, actual=rec.get("P_plus_C_raw_columns"))
+            assert rec.get("P_plus_C_one_standardizer") is True, message("inner combined design did not use one standardizer", inner_held=inner_held, value=rec.get("P_plus_C_one_standardizer"))
+            assert nuisance["C"]["target_dimension"] == context_columns, message("inner C residualizer dimension mismatch", inner_held=inner_held, expected=context_columns, actual=nuisance["C"]["target_dimension"])
         else:
             floor_vocab_columns = rec.get("floor_vocabulary_columns"); pos_columns = rec.get("floor_pos_one_hot_columns")
-            assert rec.get("floor_vocabulary_training_probes") == expected_training_probes and rec.get("floor_vocabulary_training_word_indices") == training_words
-            assert isinstance(floor_vocab_columns, int) and floor_vocab_columns >= 0 and pos_columns == 4 and rec.get("floor_columns") == floor_vocab_columns + pos_columns
-            assert rec.get("pca_scope_sha256") == pca_meta["basis_sha256"], f"{outer_key}/inner/{inner_held}: PCA basis differs from outer key"
-    residualizers = telemetry.get("residualizers"); assert isinstance(residualizers, dict)
+            assert rec.get("floor_vocabulary_training_probes") == expected_training_probes, message("inner floor vocabulary probes mismatch", inner_held=inner_held, expected=expected_training_probes, actual=rec.get("floor_vocabulary_training_probes"))
+            assert rec.get("floor_vocabulary_training_word_indices") == training_words, message("inner floor vocabulary words mismatch", inner_held=inner_held, expected=training_words, actual=rec.get("floor_vocabulary_training_word_indices"))
+            assert isinstance(floor_vocab_columns, int) and not isinstance(floor_vocab_columns, bool) and floor_vocab_columns >= 0, message("invalid inner floor vocabulary width", inner_held=inner_held, value=floor_vocab_columns)
+            assert pos_columns == 4, message("invalid inner floor POS width", inner_held=inner_held, expected=4, actual=pos_columns)
+            assert rec.get("floor_columns") == floor_vocab_columns + pos_columns, message("inner floor width mismatch", inner_held=inner_held, expected=floor_vocab_columns + pos_columns, actual=rec.get("floor_columns"))
+            assert rec.get("pca_scope_sha256") == pca_meta["basis_sha256"], message("inner PCA basis differs from outer key", inner_held=inner_held, expected=pca_meta["basis_sha256"], actual=rec.get("pca_scope_sha256"))
+    residualizers = telemetry.get("residualizers")
+    assert isinstance(residualizers, dict), message("outer residualizers must be a mapping", value_type=type(residualizers).__name__, value=residualizers)
     expected_resid = ("C", "Delta", "X") if mode == "round34b_overlap" else ("Delta", "X")
-    assert set(residualizers) == set(expected_resid)
+    assert set(residualizers) == set(expected_resid), message("outer residualizer targets mismatch", expected=sorted(expected_resid), actual=sorted(residualizers))
     for name, rec in residualizers.items():
         _round34bc_validate_residualizer(rec, name, cal_blocks, expected_outer["test_probes"], training_words, held_words, block_map, f"{outer_key}/outer/{name}")
-    fits = telemetry.get("fits"); assert isinstance(fits, dict)
+    fits = telemetry.get("fits")
+    assert isinstance(fits, dict), message("fits must be a mapping", value_type=type(fits).__name__, value=fits)
     if mode == "round34b_overlap":
-        assert set(fits) == {"P", "C_ridge", "C_kernel", "P_plus_C", "residual_ridge", "residual_kernel", "state_selected"}
+        expected_fits = {"P", "C_ridge", "C_kernel", "P_plus_C", "residual_ridge", "residual_kernel", "state_selected"}
+        assert set(fits) == expected_fits, message("Round 34b fit families mismatch", expected=sorted(expected_fits), actual=sorted(fits))
         for name in ("P", "C_ridge", "P_plus_C", "residual_ridge", "state_selected"): _round34bc_validate_fit(fits[name], f"{outer_key}/{name}", "ridge")
         for name in ("C_kernel", "residual_kernel"): _round34bc_validate_fit(fits[name], f"{outer_key}/{name}", "rbf_kernel")
-        matches = telemetry.get("state_matches"); assert isinstance(matches, dict) and set(matches) == {"ridge", "kernel"}
+        matches = telemetry.get("state_matches")
+        assert isinstance(matches, dict), message("state_matches must be a mapping", value_type=type(matches).__name__, value=matches)
+        assert set(matches) == {"ridge", "kernel"}, message("state match candidates mismatch", expected=["kernel", "ridge"], actual=sorted(matches))
         match_valid = []
         for candidate, match in matches.items():
             match_valid.append(_round34bc_validate_edf_match(match, fits["state_selected"], f"{outer_key}/state_match/{candidate}"))
-            assert abs(float(match["target_edf"]) - float(fits[f"residual_{candidate}"]["training_edf"])) <= 1e-9
-            assert abs(float(match["selected_state_edf"]) - float(fits["state_selected"]["training_edf"])) <= 1e-9 and float(match["selected_state_lambda"]) == float(fits["state_selected"]["lambda"])
+            candidate_edf = fits[f"residual_{candidate}"]["training_edf"]
+            assert abs(float(match["target_edf"]) - float(candidate_edf)) <= 1e-9, message("state match target differs from candidate EDF", candidate=candidate, target_edf=match["target_edf"], candidate_training_edf=candidate_edf)
+            selected_edf = fits["state_selected"]["training_edf"]
+            assert abs(float(match["selected_state_edf"]) - float(selected_edf)) <= 1e-9, message("state match selected EDF differs from selected fit", candidate=candidate, match_selected_state_edf=match["selected_state_edf"], fit_training_edf=selected_edf)
+            assert float(match["selected_state_lambda"]) == float(fits["state_selected"]["lambda"]), message("state match selected lambda differs from selected fit", candidate=candidate, match_selected_state_lambda=match["selected_state_lambda"], fit_lambda=fits["state_selected"]["lambda"])
         vocabulary_columns, context_columns = telemetry.get("context_vocabulary_columns"), telemetry.get("context_design_columns")
-        assert telemetry.get("context_vocabulary_training_probes") == expected_outer["training_probes"] and telemetry.get("context_vocabulary_training_word_indices") == training_words
-        assert isinstance(vocabulary_columns, int) and vocabulary_columns > 0 and telemetry.get("context_numeric_columns") == telemetry.get("context_pos_columns") == 4
-        assert context_columns == vocabulary_columns + 8 and telemetry.get("P_static_columns") == 10
-        assert telemetry.get("combined_field_one_standardizer") is True and telemetry.get("P_plus_C_raw_columns") == 10 + context_columns
-        assert fits["P"]["n_columns_raw"] == 10
-        assert fits["C_ridge"]["n_columns_raw"] == fits["C_kernel"]["n_columns_raw"] == context_columns
-        assert fits["P_plus_C"]["n_columns_raw"] == 10 + context_columns
-        assert fits["residual_ridge"]["n_columns_raw"] == fits["residual_kernel"]["n_columns_raw"] == context_columns
-        assert residualizers["C"]["target_dimension"] == context_columns
+        assert telemetry.get("context_vocabulary_training_probes") == expected_outer["training_probes"], message("outer context vocabulary probes mismatch", expected=expected_outer["training_probes"], actual=telemetry.get("context_vocabulary_training_probes"))
+        assert telemetry.get("context_vocabulary_training_word_indices") == training_words, message("outer context vocabulary words mismatch", expected=training_words, actual=telemetry.get("context_vocabulary_training_word_indices"))
+        assert isinstance(vocabulary_columns, int) and not isinstance(vocabulary_columns, bool) and vocabulary_columns > 0, message("invalid outer context vocabulary width", value=vocabulary_columns)
+        assert telemetry.get("context_numeric_columns") == telemetry.get("context_pos_columns") == 4, message("invalid outer fixed context widths", numeric=telemetry.get("context_numeric_columns"), pos=telemetry.get("context_pos_columns"), expected=4)
+        assert context_columns == vocabulary_columns + 8, message("outer context design width mismatch", context_columns=context_columns, vocabulary_columns=vocabulary_columns, expected=vocabulary_columns + 8)
+        assert telemetry.get("P_static_columns") == 10, message("outer P_static width mismatch", expected=10, actual=telemetry.get("P_static_columns"))
+        assert telemetry.get("combined_field_one_standardizer") is True, message("combined field did not use one standardizer", value=telemetry.get("combined_field_one_standardizer"))
+        assert telemetry.get("P_plus_C_raw_columns") == 10 + context_columns, message("outer combined design width mismatch", expected=10 + context_columns, actual=telemetry.get("P_plus_C_raw_columns"))
+        assert fits["P"]["n_columns_raw"] == 10, message("P fit raw width mismatch", fit="P", expected=10, actual=fits["P"]["n_columns_raw"])
+        assert fits["C_ridge"]["n_columns_raw"] == fits["C_kernel"]["n_columns_raw"] == context_columns, message("context fit raw widths mismatch", C_ridge=fits["C_ridge"]["n_columns_raw"], C_kernel=fits["C_kernel"]["n_columns_raw"], expected=context_columns)
+        assert fits["P_plus_C"]["n_columns_raw"] == 10 + context_columns, message("combined fit raw width mismatch", fit="P_plus_C", expected=10 + context_columns, actual=fits["P_plus_C"]["n_columns_raw"])
+        assert fits["residual_ridge"]["n_columns_raw"] == fits["residual_kernel"]["n_columns_raw"] == context_columns, message("residual context fit raw widths mismatch", residual_ridge=fits["residual_ridge"]["n_columns_raw"], residual_kernel=fits["residual_kernel"]["n_columns_raw"], expected=context_columns)
+        assert residualizers["C"]["target_dimension"] == context_columns, message("outer C residualizer dimension mismatch", expected=context_columns, actual=residualizers["C"]["target_dimension"])
         recomputed_valid = bool(all(match_valid))
     else:
-        assert set(fits) == {"itemctx", "state_selected"}
+        expected_fits = {"itemctx", "state_selected"}
+        assert set(fits) == expected_fits, message("Round 34c fit families mismatch", expected=sorted(expected_fits), actual=sorted(fits))
         _round34bc_validate_fit(fits["itemctx"], f"{outer_key}/itemctx", "ridge"); _round34bc_validate_fit(fits["state_selected"], f"{outer_key}/state_selected", "ridge")
-        embedding = telemetry.get("item_embedding"); assert isinstance(embedding, dict)
-        assert embedding.get("source") == "pinned_input_embedding_safetensors_only" and embedding.get("tensor_key") == "model.embed_tokens.weight"
-        assert embedding.get("n_items") == 80 and embedding.get("causal_model_loaded") is False and embedding.get("model_forward_performed") is False
-        assert isinstance(embedding.get("table_shape"), list) and len(embedding["table_shape"]) == 2 and all(isinstance(v, int) and v > 0 for v in embedding["table_shape"])
-        assert isinstance(embedding.get("item_token_ids_sha256"), str) and len(embedding["item_token_ids_sha256"]) == 64
-        if expected_model_revision is not None: assert embedding.get("model_revision") == expected_model_revision, f"{outer_key}: item embedding revision mismatch"
-        design = telemetry.get("design"); assert isinstance(design, dict) and design.get("retained_columns") == fits["itemctx"]["retained_columns"]
+        embedding = telemetry.get("item_embedding")
+        assert isinstance(embedding, dict), message("item embedding metadata must be a mapping", value_type=type(embedding).__name__, value=embedding)
+        assert embedding.get("source") == "pinned_input_embedding_safetensors_only", message("item embedding source mismatch", expected="pinned_input_embedding_safetensors_only", actual=embedding.get("source"))
+        assert embedding.get("tensor_key") == "model.embed_tokens.weight", message("item embedding tensor key mismatch", expected="model.embed_tokens.weight", actual=embedding.get("tensor_key"))
+        assert embedding.get("n_items") == 80, message("item embedding item count mismatch", expected=80, actual=embedding.get("n_items"))
+        assert embedding.get("causal_model_loaded") is False, message("item embedding path loaded causal model", value=embedding.get("causal_model_loaded"))
+        assert embedding.get("model_forward_performed") is False, message("item embedding path performed model forward", value=embedding.get("model_forward_performed"))
+        table_shape = embedding.get("table_shape")
+        assert isinstance(table_shape, list) and len(table_shape) == 2 and all(isinstance(v, int) and not isinstance(v, bool) and v > 0 for v in table_shape), message("invalid item embedding table shape", table_shape=table_shape)
+        item_digest = embedding.get("item_token_ids_sha256")
+        assert isinstance(item_digest, str) and len(item_digest) == 64, message("invalid item-token digest", value=item_digest)
+        if expected_model_revision is not None:
+            assert embedding.get("model_revision") == expected_model_revision, message("item embedding revision mismatch", expected=expected_model_revision, actual=embedding.get("model_revision"))
+        design = telemetry.get("design")
+        assert isinstance(design, dict), message("item-context design metadata must be a mapping", value_type=type(design).__name__, value=design)
+        assert design.get("retained_columns") == fits["itemctx"]["retained_columns"], message("item-context retained columns mismatch", design_retained=design.get("retained_columns"), fit_retained=fits["itemctx"]["retained_columns"])
         floor_columns = design.get("floor_columns")
-        assert design.get("P_static_columns") == 10 and design.get("item_pc_columns") == 16 and design.get("interaction_columns") == 160
-        assert isinstance(floor_columns, int) and floor_columns >= 4 and design.get("raw_columns") == 186 + floor_columns
-        assert fits["itemctx"]["n_columns_raw"] == design["raw_columns"] and isinstance(design.get("n_training_rows"), int) and design["n_training_rows"] == fits["itemctx"]["n_training_rows"]
-        assert 0 <= design["retained_columns"] <= design["raw_columns"] and isinstance(design.get("matrix_rank"), int) and isinstance(design.get("interaction_rank"), int)
-        assert 0 <= design["matrix_rank"] <= min(design["raw_columns"], design["n_training_rows"])
-        assert 0 <= design["interaction_rank"] <= min(160, design["n_training_rows"])
-        assert np.isfinite(design.get("matrix_rank_tolerance")) and np.isfinite(design.get("interaction_rank_tolerance")) and all(design.get("finite_checks", {}).get(k) is True for k in ("raw_design", "standardized_design", "interaction"))
-        assert telemetry.get("floor_vocabulary_training_probes") == expected_outer["training_probes"] and telemetry.get("floor_vocabulary_training_word_indices") == training_words
-        assert telemetry.get("floor_vocabulary_columns") + telemetry.get("floor_pos_one_hot_columns") == floor_columns and telemetry.get("floor_pos_one_hot_columns") == 4
+        assert design.get("P_static_columns") == 10, message("item-context P_static width mismatch", expected=10, actual=design.get("P_static_columns"))
+        assert design.get("item_pc_columns") == 16, message("item-context PC width mismatch", expected=16, actual=design.get("item_pc_columns"))
+        assert design.get("interaction_columns") == 160, message("item-context interaction width mismatch", expected=160, actual=design.get("interaction_columns"))
+        assert isinstance(floor_columns, int) and not isinstance(floor_columns, bool) and floor_columns >= 4, message("invalid item-context floor width", floor_columns=floor_columns)
+        assert design.get("raw_columns") == 186 + floor_columns, message("item-context raw width mismatch", expected=186 + floor_columns, actual=design.get("raw_columns"), floor_columns=floor_columns)
+        assert fits["itemctx"]["n_columns_raw"] == design["raw_columns"], message("itemctx fit raw width differs from design", fit="itemctx", fit_raw=fits["itemctx"]["n_columns_raw"], design_raw=design["raw_columns"])
+        assert isinstance(design.get("n_training_rows"), int) and not isinstance(design.get("n_training_rows"), bool), message("invalid design training row count", value=design.get("n_training_rows"))
+        assert design["n_training_rows"] == fits["itemctx"]["n_training_rows"], message("itemctx fit training rows differ from design", fit="itemctx", fit_rows=fits["itemctx"]["n_training_rows"], design_rows=design["n_training_rows"])
+        assert 0 <= design["retained_columns"] <= design["raw_columns"], message("item-context retained columns outside raw width", retained_columns=design["retained_columns"], raw_columns=design["raw_columns"])
+        assert isinstance(design.get("matrix_rank"), int) and not isinstance(design.get("matrix_rank"), bool), message("invalid item-context matrix rank type", matrix_rank=design.get("matrix_rank"))
+        assert isinstance(design.get("interaction_rank"), int) and not isinstance(design.get("interaction_rank"), bool), message("invalid interaction rank type", interaction_rank=design.get("interaction_rank"))
+        assert 0 <= design["matrix_rank"] <= min(design["raw_columns"], design["n_training_rows"]), message("item-context matrix rank outside ceiling", matrix_rank=design["matrix_rank"], rank_ceiling=min(design["raw_columns"], design["n_training_rows"]), raw_columns=design["raw_columns"], n_training_rows=design["n_training_rows"])
+        assert 0 <= design["interaction_rank"] <= min(160, design["n_training_rows"]), message("interaction rank outside ceiling", interaction_rank=design["interaction_rank"], rank_ceiling=min(160, design["n_training_rows"]), n_training_rows=design["n_training_rows"])
+        matrix_tol, interaction_tol = design.get("matrix_rank_tolerance"), design.get("interaction_rank_tolerance")
+        assert isinstance(matrix_tol, (int, float)) and not isinstance(matrix_tol, bool) and np.isfinite(float(matrix_tol)), message("invalid matrix rank tolerance", value=matrix_tol)
+        assert isinstance(interaction_tol, (int, float)) and not isinstance(interaction_tol, bool) and np.isfinite(float(interaction_tol)), message("invalid interaction rank tolerance", value=interaction_tol)
+        design_finite = design.get("finite_checks", {})
+        assert all(design_finite.get(k) is True for k in ("raw_design", "standardized_design", "interaction")), message("item-context design finite checks failed", finite_checks=design_finite)
+        assert telemetry.get("floor_vocabulary_training_probes") == expected_outer["training_probes"], message("outer floor vocabulary probes mismatch", expected=expected_outer["training_probes"], actual=telemetry.get("floor_vocabulary_training_probes"))
+        assert telemetry.get("floor_vocabulary_training_word_indices") == training_words, message("outer floor vocabulary words mismatch", expected=training_words, actual=telemetry.get("floor_vocabulary_training_word_indices"))
+        assert telemetry.get("floor_pos_one_hot_columns") == 4, message("outer floor POS width mismatch", expected=4, actual=telemetry.get("floor_pos_one_hot_columns"))
+        assert telemetry.get("floor_vocabulary_columns") + telemetry.get("floor_pos_one_hot_columns") == floor_columns, message("outer floor width mismatch", vocabulary_columns=telemetry.get("floor_vocabulary_columns"), pos_columns=telemetry.get("floor_pos_one_hot_columns"), expected=floor_columns)
         recomputed_valid = _round34bc_validate_edf_match(telemetry.get("state_match"), fits["state_selected"], f"{outer_key}/state_match")
-        assert abs(float(telemetry["state_match"]["target_edf"]) - float(fits["itemctx"]["training_edf"])) <= 1e-9
-        assert abs(float(telemetry["state_match"]["selected_state_edf"]) - float(fits["state_selected"]["training_edf"])) <= 1e-9 and float(telemetry["state_match"]["selected_state_lambda"]) == float(fits["state_selected"]["lambda"])
-    assert telemetry["all_fits_valid"] is bool(recomputed_valid), f"{outer_key}: stored all_fits_valid mismatch"
+        assert abs(float(telemetry["state_match"]["target_edf"]) - float(fits["itemctx"]["training_edf"])) <= 1e-9, message("state match target differs from itemctx EDF", target_edf=telemetry["state_match"]["target_edf"], itemctx_training_edf=fits["itemctx"]["training_edf"])
+        assert abs(float(telemetry["state_match"]["selected_state_edf"]) - float(fits["state_selected"]["training_edf"])) <= 1e-9, message("state match selected EDF differs from selected fit", match_selected_state_edf=telemetry["state_match"]["selected_state_edf"], fit_training_edf=fits["state_selected"]["training_edf"])
+        assert float(telemetry["state_match"]["selected_state_lambda"]) == float(fits["state_selected"]["lambda"]), message("state match selected lambda differs from selected fit", match_selected_state_lambda=telemetry["state_match"]["selected_state_lambda"], fit_lambda=fits["state_selected"]["lambda"])
+    assert telemetry["all_fits_valid"] is bool(recomputed_valid), message("stored all_fits_valid mismatch", stored=telemetry["all_fits_valid"], recomputed=bool(recomputed_valid))
     return bool(recomputed_valid)
 
 

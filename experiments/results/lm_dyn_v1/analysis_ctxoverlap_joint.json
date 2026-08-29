@@ -1,0 +1,611 @@
+{
+ "context_capacity_joint": "round34b_overlap",
+ "inputs": [
+  {
+   "tag": "ctxoverlap_A",
+   "file": "analysis_ctxoverlap_A.json",
+   "sha256": "0f386eaed68ffdee305cae33da13ccb53fdd7af6749891de2839110280f68efb",
+   "evidence_file": "round34b_evidence_ctxoverlap_A.npz",
+   "evidence_sha256": "8a45da4ce402ca8bc8ad9cef1059591d4a065a0545292177b8d55bd22e3a0659"
+  },
+  {
+   "tag": "ctxoverlap_B",
+   "file": "analysis_ctxoverlap_B.json",
+   "sha256": "d12ecb8c83c11388dfda8176909f88fbaac4af39c76f4e7cee56829f5a325ce2",
+   "evidence_file": "round34b_evidence_ctxoverlap_B.npz",
+   "evidence_sha256": "7ff08cc8a09b280dd0896c6a6ac12c7ecab5e62c07db45f1962848782091faa9"
+  }
+ ],
+ "eligible_layers": [
+  "F4",
+  "F8",
+  "F12",
+  "F20"
+ ],
+ "required_common_layers": 2,
+ "status": "COMPLETE/SCREEN-ONLY",
+ "decision": "INCONCLUSIVE",
+ "note": "read-only two-sentinel reducer; every support flag, crossed interval, layer decision, and joint decision is replayed from sha256-bound float32 cell evidence",
+ "estimand": "raw Delta overlap plus separately residualized C_perp -> Delta_perp",
+ "sentinel_layer_records": {
+  "A": {
+   "F4": {
+    "decision": "INCONCLUSIVE",
+    "stop": false,
+    "stop_measure_pass": {
+     "raw_pc_cos": false,
+     "raw_pc_nerr": false,
+     "residual_ridge_cos": false,
+     "residual_ridge_nerr": true,
+     "residual_kernel_cos": false,
+     "residual_kernel_nerr": true
+    },
+    "keys_jointly_redundant": 2,
+    "stop_no_carrier_block_collapse": false,
+    "retention_candidates": {
+     "ridge": {
+      "passes": false,
+      "endpoint_pass": {
+       "cos": true,
+       "nerr": false
+      },
+      "keys_jointly_positive": 0,
+      "no_carrier_block_collapse": false
+     },
+     "kernel": {
+      "passes": false,
+      "endpoint_pass": {
+       "cos": true,
+       "nerr": false
+      },
+      "keys_jointly_positive": 0,
+      "no_carrier_block_collapse": false
+     }
+    },
+    "retaining_candidates": [],
+    "all_fits_valid": true,
+    "support_ok": true
+   },
+   "F8": {
+    "decision": "INCONCLUSIVE",
+    "stop": false,
+    "stop_measure_pass": {
+     "raw_pc_cos": false,
+     "raw_pc_nerr": false,
+     "residual_ridge_cos": false,
+     "residual_ridge_nerr": true,
+     "residual_kernel_cos": false,
+     "residual_kernel_nerr": true
+    },
+    "keys_jointly_redundant": 0,
+    "stop_no_carrier_block_collapse": false,
+    "retention_candidates": {
+     "ridge": {
+      "passes": false,
+      "endpoint_pass": {
+       "cos": true,
+       "nerr": false
+      },
+      "keys_jointly_positive": 2,
+      "no_carrier_block_collapse": false
+     },
+     "kernel": {
+      "passes": false,
+      "endpoint_pass": {
+       "cos": true,
+       "nerr": false
+      },
+      "keys_jointly_positive": 2,
+      "no_carrier_block_collapse": false
+     }
+    },
+    "retaining_candidates": [],
+    "all_fits_valid": true,
+    "support_ok": true
+   },
+   "F12": {
+    "decision": "INCONCLUSIVE",
+    "stop": false,
+    "stop_measure_pass": {
+     "raw_pc_cos": false,
+     "raw_pc_nerr": false,
+     "residual_ridge_cos": false,
+     "residual_ridge_nerr": true,
+     "residual_kernel_cos": false,
+     "residual_kernel_nerr": true
+    },
+    "keys_jointly_redundant": 1,
+    "stop_no_carrier_block_collapse": false,
+    "retention_candidates": {
+     "ridge": {
+      "passes": false,
+      "endpoint_pass": {
+       "cos": false,
+       "nerr": false
+      },
+      "keys_jointly_positive": 2,
+      "no_carrier_block_collapse": false
+     },
+     "kernel": {
+      "passes": false,
+      "endpoint_pass": {
+       "cos": false,
+       "nerr": false
+      },
+      "keys_jointly_positive": 2,
+      "no_carrier_block_collapse": false
+     }
+    },
+    "retaining_candidates": [],
+    "all_fits_valid": true,
+    "support_ok": true
+   },
+   "F20": {
+    "decision": "INCONCLUSIVE",
+    "stop": false,
+    "stop_measure_pass": {
+     "raw_pc_cos": false,
+     "raw_pc_nerr": false,
+     "residual_ridge_cos": false,
+     "residual_ridge_nerr": true,
+     "residual_kernel_cos": false,
+     "residual_kernel_nerr": true
+    },
+    "keys_jointly_redundant": 2,
+    "stop_no_carrier_block_collapse": false,
+    "retention_candidates": {
+     "ridge": {
+      "passes": false,
+      "endpoint_pass": {
+       "cos": false,
+       "nerr": false
+      },
+      "keys_jointly_positive": 2,
+      "no_carrier_block_collapse": false
+     },
+     "kernel": {
+      "passes": false,
+      "endpoint_pass": {
+       "cos": false,
+       "nerr": false
+      },
+      "keys_jointly_positive": 0,
+      "no_carrier_block_collapse": false
+     }
+    },
+    "retaining_candidates": [],
+    "all_fits_valid": true,
+    "support_ok": true
+   }
+  },
+  "B": {
+   "F4": {
+    "decision": "INCONCLUSIVE",
+    "stop": false,
+    "stop_measure_pass": {
+     "raw_pc_cos": false,
+     "raw_pc_nerr": false,
+     "residual_ridge_cos": false,
+     "residual_ridge_nerr": true,
+     "residual_kernel_cos": false,
+     "residual_kernel_nerr": true
+    },
+    "keys_jointly_redundant": 0,
+    "stop_no_carrier_block_collapse": false,
+    "retention_candidates": {
+     "ridge": {
+      "passes": false,
+      "endpoint_pass": {
+       "cos": true,
+       "nerr": false
+      },
+      "keys_jointly_positive": 3,
+      "no_carrier_block_collapse": false
+     },
+     "kernel": {
+      "passes": false,
+      "endpoint_pass": {
+       "cos": true,
+       "nerr": false
+      },
+      "keys_jointly_positive": 4,
+      "no_carrier_block_collapse": false
+     }
+    },
+    "retaining_candidates": [],
+    "all_fits_valid": true,
+    "support_ok": true
+   },
+   "F8": {
+    "decision": "INCONCLUSIVE",
+    "stop": false,
+    "stop_measure_pass": {
+     "raw_pc_cos": false,
+     "raw_pc_nerr": false,
+     "residual_ridge_cos": false,
+     "residual_ridge_nerr": true,
+     "residual_kernel_cos": false,
+     "residual_kernel_nerr": true
+    },
+    "keys_jointly_redundant": 0,
+    "stop_no_carrier_block_collapse": false,
+    "retention_candidates": {
+     "ridge": {
+      "passes": false,
+      "endpoint_pass": {
+       "cos": true,
+       "nerr": false
+      },
+      "keys_jointly_positive": 2,
+      "no_carrier_block_collapse": false
+     },
+     "kernel": {
+      "passes": false,
+      "endpoint_pass": {
+       "cos": true,
+       "nerr": false
+      },
+      "keys_jointly_positive": 2,
+      "no_carrier_block_collapse": false
+     }
+    },
+    "retaining_candidates": [],
+    "all_fits_valid": true,
+    "support_ok": true
+   },
+   "F12": {
+    "decision": "INCONCLUSIVE",
+    "stop": false,
+    "stop_measure_pass": {
+     "raw_pc_cos": false,
+     "raw_pc_nerr": false,
+     "residual_ridge_cos": false,
+     "residual_ridge_nerr": true,
+     "residual_kernel_cos": false,
+     "residual_kernel_nerr": true
+    },
+    "keys_jointly_redundant": 0,
+    "stop_no_carrier_block_collapse": false,
+    "retention_candidates": {
+     "ridge": {
+      "passes": false,
+      "endpoint_pass": {
+       "cos": true,
+       "nerr": false
+      },
+      "keys_jointly_positive": 2,
+      "no_carrier_block_collapse": false
+     },
+     "kernel": {
+      "passes": false,
+      "endpoint_pass": {
+       "cos": true,
+       "nerr": false
+      },
+      "keys_jointly_positive": 1,
+      "no_carrier_block_collapse": false
+     }
+    },
+    "retaining_candidates": [],
+    "all_fits_valid": true,
+    "support_ok": true
+   },
+   "F20": {
+    "decision": "INCONCLUSIVE",
+    "stop": false,
+    "stop_measure_pass": {
+     "raw_pc_cos": false,
+     "raw_pc_nerr": false,
+     "residual_ridge_cos": false,
+     "residual_ridge_nerr": true,
+     "residual_kernel_cos": false,
+     "residual_kernel_nerr": true
+    },
+    "keys_jointly_redundant": 0,
+    "stop_no_carrier_block_collapse": false,
+    "retention_candidates": {
+     "ridge": {
+      "passes": false,
+      "endpoint_pass": {
+       "cos": true,
+       "nerr": false
+      },
+      "keys_jointly_positive": 2,
+      "no_carrier_block_collapse": false
+     },
+     "kernel": {
+      "passes": false,
+      "endpoint_pass": {
+       "cos": true,
+       "nerr": false
+      },
+      "keys_jointly_positive": 4,
+      "no_carrier_block_collapse": false
+     }
+    },
+    "retaining_candidates": [],
+    "all_fits_valid": true,
+    "support_ok": true
+   }
+  }
+ },
+ "f0_diagnostic_records": {
+  "A": {
+   "decision": "INCONCLUSIVE",
+   "stop": false,
+   "stop_measure_pass": {
+    "raw_pc_cos": false,
+    "raw_pc_nerr": false,
+    "residual_ridge_cos": false,
+    "residual_ridge_nerr": false,
+    "residual_kernel_cos": false,
+    "residual_kernel_nerr": false
+   },
+   "keys_jointly_redundant": 0,
+   "stop_no_carrier_block_collapse": false,
+   "retention_candidates": {
+    "ridge": {
+     "passes": false,
+     "endpoint_pass": {
+      "cos": false,
+      "nerr": false
+     },
+     "keys_jointly_positive": 0,
+     "no_carrier_block_collapse": false
+    },
+    "kernel": {
+     "passes": false,
+     "endpoint_pass": {
+      "cos": false,
+      "nerr": false
+     },
+     "keys_jointly_positive": 0,
+     "no_carrier_block_collapse": false
+    }
+   },
+   "retaining_candidates": [],
+   "all_fits_valid": false,
+   "support_ok": false
+  },
+  "B": {
+   "decision": "INCONCLUSIVE",
+   "stop": false,
+   "stop_measure_pass": {
+    "raw_pc_cos": false,
+    "raw_pc_nerr": false,
+    "residual_ridge_cos": false,
+    "residual_ridge_nerr": false,
+    "residual_kernel_cos": false,
+    "residual_kernel_nerr": false
+   },
+   "keys_jointly_redundant": 0,
+   "stop_no_carrier_block_collapse": false,
+   "retention_candidates": {
+    "ridge": {
+     "passes": false,
+     "endpoint_pass": {
+      "cos": false,
+      "nerr": false
+     },
+     "keys_jointly_positive": 0,
+     "no_carrier_block_collapse": false
+    },
+    "kernel": {
+     "passes": false,
+     "endpoint_pass": {
+      "cos": false,
+      "nerr": false
+     },
+     "keys_jointly_positive": 0,
+     "no_carrier_block_collapse": false
+    }
+   },
+   "retaining_candidates": [],
+   "all_fits_valid": false,
+   "support_ok": false
+  }
+ },
+ "bindings": {
+  "A": {
+   "config_sha256_raw": "c4861230a3112deb4fe20df774986c3385948b46dd5dd6e8ed3f85a826bd8561",
+   "forward_states_sha256": "bd7a44956548224d81a8ab038370e20542eec5c94c459a16d92131b00fd93658",
+   "forward_manifest_sha256": "72bd5175f4d18497981416f7816f1cdf68df131cb9821147d0ca3a0234e385ba",
+   "model": "Qwen/Qwen3-0.6B",
+   "model_revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+   "sentinel": ".",
+   "sentinel_id": 13,
+   "completer_model_revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+   "tokenizer_requested_revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+   "sentinel_id_rederived_from_tokenizer": true,
+   "items": [
+    "dog",
+    "cat",
+    "house",
+    "river",
+    "city",
+    "book",
+    "table",
+    "mountain",
+    "doctor",
+    "child",
+    "window",
+    "money",
+    "music",
+    "bread",
+    "forest",
+    "engine",
+    "king",
+    "stone",
+    "garden",
+    "ocean",
+    "run",
+    "walk",
+    "eat",
+    "write",
+    "build",
+    "break",
+    "sleep",
+    "think",
+    "speak",
+    "fly",
+    "carry",
+    "push",
+    "open",
+    "close",
+    "drive",
+    "sing",
+    "throw",
+    "hold",
+    "learn",
+    "wash",
+    "red",
+    "blue",
+    "big",
+    "small",
+    "hot",
+    "cold",
+    "fast",
+    "slow",
+    "happy",
+    "sad",
+    "dark",
+    "bright",
+    "heavy",
+    "soft",
+    "loud",
+    "quiet",
+    "old",
+    "young",
+    "wet",
+    "empty",
+    "the",
+    "of",
+    "and",
+    "but",
+    "because",
+    "if",
+    "with",
+    "from",
+    "under",
+    "between",
+    "although",
+    "while",
+    "after",
+    "before",
+    "into",
+    "through",
+    "without",
+    "until",
+    "since",
+    "than"
+   ],
+   "items_sha256": "6229945b431c38cce9bc3f0bb7b30c1ebd4398a794008e4392c27d6ce695fd12"
+  },
+  "B": {
+   "config_sha256_raw": "c4861230a3112deb4fe20df774986c3385948b46dd5dd6e8ed3f85a826bd8561",
+   "forward_states_sha256": "b6e1a18486d685cc35ab2eae12064dc76f7096d3e1d7297d1ff5c5f1f84c29b7",
+   "forward_manifest_sha256": "fc81092eebae5ebc047e037772edae35e352f62bc11b72f0fc9ef6fab1d90efb",
+   "model": "Qwen/Qwen3-0.6B",
+   "model_revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+   "sentinel": ",",
+   "sentinel_id": 11,
+   "completer_model_revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+   "tokenizer_requested_revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+   "sentinel_id_rederived_from_tokenizer": true,
+   "items": [
+    "dog",
+    "cat",
+    "house",
+    "river",
+    "city",
+    "book",
+    "table",
+    "mountain",
+    "doctor",
+    "child",
+    "window",
+    "money",
+    "music",
+    "bread",
+    "forest",
+    "engine",
+    "king",
+    "stone",
+    "garden",
+    "ocean",
+    "run",
+    "walk",
+    "eat",
+    "write",
+    "build",
+    "break",
+    "sleep",
+    "think",
+    "speak",
+    "fly",
+    "carry",
+    "push",
+    "open",
+    "close",
+    "drive",
+    "sing",
+    "throw",
+    "hold",
+    "learn",
+    "wash",
+    "red",
+    "blue",
+    "big",
+    "small",
+    "hot",
+    "cold",
+    "fast",
+    "slow",
+    "happy",
+    "sad",
+    "dark",
+    "bright",
+    "heavy",
+    "soft",
+    "loud",
+    "quiet",
+    "old",
+    "young",
+    "wet",
+    "empty",
+    "the",
+    "of",
+    "and",
+    "but",
+    "because",
+    "if",
+    "with",
+    "from",
+    "under",
+    "between",
+    "although",
+    "while",
+    "after",
+    "before",
+    "into",
+    "through",
+    "without",
+    "until",
+    "since",
+    "than"
+   ],
+   "items_sha256": "6229945b431c38cce9bc3f0bb7b30c1ebd4398a794008e4392c27d6ce695fd12"
+  }
+ },
+ "complete_gate_recomputed_from_cell_evidence": true,
+ "bootstrap_seed": 13041,
+ "evidence_schema": "round34b_cell_evidence_v1",
+ "conclusion": null,
+ "stop_common_layers": [],
+ "retaining_common_layers_by_candidate": {
+  "ridge": [],
+  "kernel": []
+ },
+ "retaining_candidates": [],
+ "f0_excluded": true
+}
