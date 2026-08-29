@@ -5,6 +5,27 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Round 36 first run: the constructive artifact exists and FAILS every gate
+
+The first distance-0 artifact ran end to end: `produce` (five registered
+seeds, CPU only, one process) completed non-claiming in 52.6 s (train 41.7 s,
+evidence 11.0 s; wall 900 s); the separate `reduce` returned FAIL on every
+gate — quotient availability, quotient well-definedness, toggle involution,
+swap/toggle table, held-out depth-2 and depth-3 closure, interchangeability,
+action-table truth (0/5 seeds; 14–56% of 176 cells), cross-seed action table
+(0/176 identical). Signatures carry many unsupported ("?") responses.
+Registered meaning: this training recipe did not produce a well-defined
+operational quotient in this latent space — a constructive hole here, not a
+hostile hole in general. The obvious alternative reading is the boring one:
+the recipe underfit (a 1,041-parameter model trained ~8 s per seed may not
+have fit the behavioural data at all), in which case the quotient gates were
+never really eligible. That question — underfit vs fit-but-non-congruent vs
+gate construction — is with Codex as an evidence/design ruling, together
+with what the registration permits next WITHOUT outcome-contingent tuning
+(a preregistered budget ladder with a behaviour-fit eligibility criterion
+frozen before any 36b outcome). No tuning has been done. Artifacts committed
+(`073037f`).
+
 ## 2026-08-29 — NLM-007 closed: audit #22 upholds the terminal stop; closing statement adopted verbatim
 
 NLM-007 is closed under the program’s terminal allocation rule, not by a scientific null.
