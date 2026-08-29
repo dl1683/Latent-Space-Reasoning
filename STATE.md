@@ -1,5 +1,16 @@
 # STATE
 
+## Current statement (2026-08-29, audit #28 wording governs)
+
+- Toy quotient program (Rounds 36–37): ENDED. NLM-007: CLOSED.
+- Frozen-residual-stream line (coordinate_v1/v2/v3, interchange_v1): **stopped as an allocation pivot, not as a scientific conclusion.** Verbatim: "Under the current apparatus budget, this sequence of frozen residual-stream constructions is not yielding a native-mathematics artifact, so open-ended layer, task, and decision-rule repair stops here. This is an allocation pivot, not evidence that frozen pretrained residual streams lack usable native structure." coordinate_v3 = narrow late lexical-control effect (audit #27). interchange_v1: "The locked raw-zero baseline failed and closes `interchange_v1`; no swap arm ran. Calibration-relative class separation is a diagnostic design finding, not a rescue and not evidence for interchangeability."
+- Current artifact: `state_bus_v1r1` (`experiments/run_state_bus.py`, `config/state_bus_v1.json`; training under lock `d9d1513`). Pre-outcome licensed sentence (audit #28): "`state_bus_v1r1` is a fixed three-seed training run of a 98,400-parameter supervised interface attached to frozen Qwen3-1.7B-Base. Training and held-out paraphrases are index-separated, and taxonomy verbalizers are absent from its loss. Its registered hard gates nevertheless use donor-directed relative-likelihood uplift rather than actual behavioral choice, lack a nontrivial magnitude floor, compare against off-manifold controls, and permit unsafe incomplete-seed aggregation; therefore no 'persistent interchangeable state bus' claim is licensed from the registered status alone."
+- Cheapest experiment that would moot the pivot (audit #28): a fresh bias-controlled `interchange_v2` (calibration-midpoint or paired contrasts preregistered; on-manifold wrong-donor control; clustered reporting). Live alternative framings (verbatim in NOTEBOOK, audit #28 §3): predictive dynamics/flow; reachability and control cost; response-law topology / concept lattice; distributed transformation operators.
+- Never say (audit #28): "frozen pretrained residual streams do not contain native mathematics"; "persistent state must be built"; "three independent causal interventions failed"; "interchangeability failed in Qwen3-1.7B-Base"; "the bus changed the held-out consequence" unless raw choices changed; "the held-out consequence was never seen" (only its verbalizers were absent from the bus loss); "the state survived through generation" without saying it was re-injected at every position.
+
+Everything below this statement is the historical record; where it conflicts, this statement and the verbatim audit blocks govern.
+
+
 Canonical current state. Updated every session; history in NOTEBOOK.md.
 
 ## Program status 2026-08-29

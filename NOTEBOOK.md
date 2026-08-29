@@ -5,6 +5,313 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Audit #28 (fresh, unprimed; verbatim): kills scoped, program KILL = allocation pivot not science, tunnel vision found, state-bus gates not clean enough for their headline
+
+My re-contextualization #28 claims ('the same lesson from two directions'; 'built rather than found') are REPLACED by the audit's wording below (section 'Exact replacement wording').
+
+## Executive verdict
+
+| Question | Verdict |
+|---|---|
+| `interchange_v1` kill | **UPHELD for the locked construction only.** |
+| Evidence against interchangeability | **NONE.** No swap arm ran. |
+| Frozen-residual program KILL | **UPHELD as an allocation pivot; rejected as a scientific conclusion.** |
+| Tunnel vision | **FOUND.** Interchangeability has become privileged as the foundational object. |
+| State-bus integrity | **No direct train/test or taxonomy-token leakage found, but the registered positive adjudication is not clean enough for its headline.** |
+| Continue program? | **Yes.** Finish and audit the current run once; do not scale it. |
+| Highest-leverage next discriminator | **One fresh, bias-controlled frozen-model donor-interchange experiment.** |
+
+## 1. `interchange_v1`
+
+### Mechanical adjudication
+
+The locked baseline unquestionably failed:
+
+- Cat: `8/12`
+- Dog: `7/12`
+- Total: `15/24`, below `20/24`
+- Both classes below the required `9/12`
+- No donor-swap intervention ran
+
+The raw-sign statistic was indeed preregistered. Round 6 placed the native-behavior gate before calibration-scale standardization, and [run_interchange.py](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_interchange.py:66>) applies `np.sign` before computing any calibration scale. Centering now would be a post-outcome change of estimand and cannot rescue `interchange_v1`.
+
+But the stored signatures show something importantly different from baseline incapability:
+
+- Every held-out cat signature exceeds every held-out dog signature on every probe: `16/16` cat–dog cross-pairs for each of three probes.
+- Cat-minus-dog held-out mean gaps are `+0.238`, `+0.942`, and `+0.633`.
+- A calibration-only class midpoint classifies all `24/24` held-out probe decisions correctly.
+- The calibration midpoint is `[-0.211, +0.767, +0.305]`, far from raw zero on all three probes.
+
+The first probe always prefers barking over meowing; the second always prefers kittens over puppies. Raw zero therefore measures the conjunction of semantic context and fixed verbalizer prior. It is a valid locked statistic but a poor design for testing whether the response signatures discriminate the two states.
+
+Two additional implementation defects are real but did not cause the baseline failure:
+
+- Contexts span 23–27 tokens despite the exact-length lock.
+- `cross_toward_other` divides its projection by class separation rather than separation squared, so it is not the declared fractional movement.
+
+### Scope of the kill
+
+The correct ruling is:
+
+> **`interchange_v1` failed its prospectively locked raw-zero native-behavior gate, so the fixed block-12, single-anchor, fixed-verbalizer construction is closed and no swap result exists. The stored native signatures nevertheless separate cat from dog on all three probes relative to a calibration-derived midpoint. Because that midpoint statistic was not preregistered, it is diagnostic only and cannot rescue `interchange_v1`. This experiment provides no evidence for or against causal interchangeability in the frozen model.**
+
+That is a construction failure, not an interchangeability result.
+
+### What the preregistration should have used
+
+The better primary baseline was available prospectively:
+
+1. Estimate a per-probe lexical intercept from calibration only:
+
+   \[
+   b_p=\frac{\bar m_{p,\mathrm{cat}}+\bar m_{p,\mathrm{dog}}}{2}.
+   \]
+
+2. Standardize by a calibration-only scale and classify fresh held-out signatures using `sign((m_p-b_p)/s_p)`.
+
+3. Equivalently, use matched cat-minus-dog paired contrasts. Fixed verbalizer offsets cancel in that statistic.
+
+4. Run swaps on centered signatures:
+
+   - Same-state donor remains within calibration-derived natural variation.
+   - Cross-state donor moves toward the donor centroid.
+   - Cross-state movement exceeds unrelated-donor movement.
+   - Require effect magnitudes and actual behavioral changes, not signs alone.
+
+5. Freeze fresh contexts and preferably fresh probe wording before testing. Existing held-out rows cannot become confirmatory through post-hoc centering.
+
+A counterbalanced yes/no probe family or a calibration-selected, bias-balanced verbalizer bank would also have been defensible.
+
+### Never say
+
+- “Interchangeability failed in Qwen3-1.7B-Base.”
+- “Block 12 contains no semantic or persistent state.”
+- “The model cannot treat paraphrases as the same place.”
+- “The 15/24 score shows the classes were not represented.”
+- “Calibration centering rescues or passes `interchange_v1`.”
+- “The 24/24 centered diagnostic establishes interchangeability.”
+- “Token-length mismatch or the projection bug caused the baseline failure.”
+- “This result proves that a trained state bus is necessary.”
+- “Raw sign is the scientifically correct statistic”; it was the locked statistic.
+- “The model preferred dog facts for cat contexts” without identifying the fixed verbalizer bias.
+
+## 2. Program-level frozen-residual KILL
+
+### Scientific ruling: premature
+
+Only one of the four named constructions reached a causal intervention:
+
+- `coordinate_v1`: the instruct model failed the polarity capability premise; no held-out causal transport ran.
+- `coordinate_v2`: the instruct model missed a prompt-sensitive grammatical-number baseline; no hidden capture or intervention ran.
+- `coordinate_v3`: the sole causal result, at a late final-token prediction site, used four fixed verb tokens and produced ungrammatical counterfactuals. Its vectors projected directly onto those verb logits.
+- `interchange_v1`: stopped at a lexical-bias-confounded native baseline; no swap ran.
+
+The strongest case against a scientific KILL is therefore strong:
+
+- Two “kills” are failures of instructed task execution, not representation tests.
+- One is a late, single-position lexical intervention expressly suited to finding output control.
+- One is a flawed verbalizer gate before intervention.
+- Three experiments focus on single-token sites.
+- No distributed token-span state, layer trajectory, multi-position donor state, or larger model was tested.
+- Qwen3-0.6B and 1.7B are insufficient to generalize across model scale.
+- The interchange construction fixed one anchor and one layer and never exercised them causally.
+
+This evidence cannot establish that frozen residual streams lack native mathematics, persistent state, or useful operational structure.
+
+### Allocation ruling: justified
+
+Round 7 was nevertheless justified in saying “this is not working” in the governance sense. The sequence accumulated invalid constructions and apparatus, and the measured ratio exceeded the mandatory pivot threshold. Continuing to repair layers, prompts, coefficients, and decision rules adaptively would have been low-integrity and low-leverage.
+
+The honest distinction is:
+
+> **The frozen-residual sequence is stopped as an open-ended allocation because its current constructions have not yielded a native-mathematics artifact at an acceptable apparatus cost. This is not evidence that frozen pretrained residual streams lack native structure; most registered constructions never reached a valid causal test.**
+
+The state bus is consequently a constructive branch, not a demonstrated necessity.
+
+### Cheapest frozen-model experiment that could moot the pivot
+
+Run one fresh `interchange_v2`, with no layer or model sweep:
+
+- Same Qwen3-1.7B-Base revision and one fixed upstream block.
+- Fresh, exactly length-matched calibration and held-out paraphrases.
+- Calibration-midpoint or matched-pair signature contrasts preregistered before held-out scoring.
+- Same-state, cross-state, unrelated, and self donors.
+- Three consequences with bias-controlled verbalizers.
+- Actual donor-consistent choices plus continuous donor-versus-recipient effect sizes.
+- A numerical floor and on-manifold wrong-donor control.
+- Recipient/state-clustered reporting.
+
+A result in which same-state donor codes preserve several consequences while cross-state donors change them coherently and beat unrelated donors would directly show a native operational state in the frozen model. That would make the scientific rationale for “we had to build the state” moot.
+
+### Never say
+
+- “Frozen pretrained residual streams do not contain native mathematics.”
+- “The model never learned to keep a state.”
+- “Persistent state must be built.”
+- “Three independent causal interventions failed.”
+- “Single-token global sentence state was refuted.”
+- “Small-model failure generalizes to language models.”
+- “The state bus addresses a proven architectural hole.”
+- “A state-bus positive would retrospectively validate the frozen-model KILL.”
+
+## 3. Tunnel vision
+
+Tunnel vision is present. The guiding question distinguishes identity, moves, effort, maps, and regularities. The current program has elevated one candidate identity notion—“a state swappable between paraphrases”—into the apparent foundation.
+
+Interchangeability is a legitimate operational object, but it is not uniquely foundational. A trained bus also partially guarantees that object by construction: same-state collapse and swap behavior are explicit losses. Its result cannot decide that interchangeability is the latent world’s native mathematics.
+
+Four live alternatives are:
+
+| Alternative native object | Cheapest CPU-feasible first test |
+|---|---|
+| **Predictive dynamics or flow** | At one fixed block pair, capture residual trajectories for 24 matched prompts. Test identity-plus-shared-displacement first, then a small state-dependent predictor on held-out lexical families. Causally patch the predicted displacement and score later consequences. |
+| **Reachability and control cost** | Compute local residual-to-logit Jacobians for a small fixed prompt slice. Solve minimum-norm interventions for coherent targets, then test whether predicted control cost and direction transfer to held-out prompts. Include direct-unembedding and random controls. |
+| **Response-law topology / concept lattice** | Score a frozen family of roughly 12 downstream probes for paraphrases and semantic neighbors. Build calibration-only observational neighborhoods, then compare matched-norm within-neighborhood and cross-boundary interventions. |
+| **Distributed transformation operators** | At one upstream block, patch whole token spans for two grammatically coherent transformations across held-out lexemes. Test each operator, their composition, and commutator against direct lexical-logit controls. |
+
+These ask different denizen questions: where motion carries a state, how much effort a move costs, which observations define neighborhoods, and which transformations compose. None reduces to swapping paraphrase codes.
+
+## 4. Locked state-bus pre-outcome integrity
+
+### Checks that pass
+
+The corrected runner closes the earlier direct leakage paths:
+
+- Qwen weights are frozen and revision-pinned.
+- Training contexts are indices `0–7`; evaluation contexts are `8–11`.
+- Training loss uses only sound and young.
+- The exact taxonomy verbalizers do not occur in constructed training strings.
+- Every primary evaluation arm sees identical recipient-conditioned history.
+- Tau is calculated from training contexts, not held-out recipients.
+- Taxonomy does not affect training, stopping, layer selection, or hyperparameters.
+- Self, same, cross, no-bus, shuffled, and random arms are all emitted.
+- The three initialization seeds and fixed training budget are declared.
+
+The pretrained model already knowing feline/canine/bovine/equine relations is not leakage. It is the mechanism through which semantic transfer could occur. The precise phrase must be “taxonomy verbalizers were absent from the bus loss,” not “taxonomy was unseen by the model.”
+
+### Critical positive-manufacture risks
+
+1. **The positive gates do not require the behavioral choice to change.**
+
+   In [run_state_bus.py](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_state_bus.py:154>), `cross_two` and `heldout_consistent_cross` use the argmax of `arm − none` uplift. Raw arm choices are stored but report-only.
+
+   A donor taxonomy string can receive the largest uplift while the model still chooses the recipient taxonomy string. The status can therefore say “persistent interchangeable state bus” without a swapped consequence.
+
+2. **There is no minimum causal effect or numerical floor.**
+
+   An arbitrarily small positive donor-versus-recipient uplift can win `up_arg`. The first/third movement gate requires only positivity and a ratio, not a nontrivial magnitude. Tiny numerical or optimizer effects can satisfy the discrete gates.
+
+3. **Overall seed adjudication is unsafe.**
+
+   [Lines 194–201](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_state_bus.py:194>) skip seeds near the deadline but calculate the mode of however many completed:
+
+   - One completed positive seed can become an overall positive.
+   - Two split seeds produce a tie chosen by set iteration.
+   - A three-way `POSITIVE`/`CONTROLLER`/`FAIL` split also receives an arbitrary “majority.”
+
+   A construction verdict requires all three seeds to complete and at least two to share the same class. Otherwise the result is `INCOMPLETE — NO VERDICT`.
+
+### High-risk claim and control weaknesses
+
+4. **Candidate token lengths are unequal.**
+
+   The locked review verified token counts of:
+
+   - Sound: `2/2/2/2`
+   - Young: `1/1/1/2`
+   - Taxonomy: `2/1/2/2`
+
+   Summed word-LL is meaningful for exact strings, but argmax of *uplift* across strings of unequal token length is not a categorical choice probability and can scale with the number of affected tokens.
+
+5. **The shuffled and random controls are off-manifold.**
+
+   “Shuffled” permutes dimensions within the recipient code; “random” is Gaussian norm-matched. Neither is a wrong but valid learned code. Cross codes can beat these controls merely because they remain on the learned code manifold.
+
+   A stronger control is an on-manifold code from a preassigned wrong state or an exact donor-code/label permutation.
+
+6. **Only four cyclic donor transitions are tested.**
+
+   Evaluation tests cat→dog, dog→cow, cow→horse, and horse→cat. It does not test the other eight ordered cross-state pairs. The pooled gates have no per-state minimum, allowing one complete state failure while passing.
+
+7. **Tau can adaptively widen.**
+
+   Same-swap tolerance is the fitted training Q95 without an absolute cap, cross-state normalization, or per-probe scale standardization. Poorly collapsed training behavior can create an easy held-out tolerance.
+
+8. **A lexical response-controller explanation remains open.**
+
+   `Jz` is a learned linear injection repeatedly applied upstream. Training rewards two semantically aligned output families, and the frozen model already links those families to taxonomy. A positive may therefore be a learned semantic/logit controller whose output geometry generalizes from “meow/kitten” to “feline.” No direct-output or unembedding control distinguishes this from an abstract state interface.
+
+### Negative-force and scope risks
+
+9. **Recipient history makes the held-out test adversarial.**
+
+   For cross arms, taxonomy is scored after visible recipient sound and young words. This removes donor-history leakage but places the donor code in conflict with accumulating textual evidence. Third-decision decay can therefore measure resistance to contradictory recipient history, not persistence alone.
+
+   A negative licenses failure under this contradictory-history test. It does not show that the bus would fail with neutral history or its own donor-consistent rollout.
+
+10. **“Persistence” is continuous maintenance, not autonomous survival.**
+
+    `Jz` is re-injected at every continuation position. The design never switches the bus off after a write. Reader reconstruction and third-decision movement therefore show that repeated control remains decodable/effective, not that a state survives unaided through the frozen model.
+
+11. **The global cap can force incomplete evidence.**
+
+    The runner recomputes the frozen prefix rather than using the fully cached block-12 suffix design, increasing the chance that later seeds are skipped. Combined with the majority bug, this affects both fairness and verdict integrity.
+
+### Pre-outcome ruling
+
+The runner is suitable for collecting descriptive evidence, but its registered positive status is not sufficient for the claimed headline.
+
+Exact licensed pre-outcome sentence:
+
+> **`state_bus_v1r1` is a fixed three-seed training run of a 98,400-parameter supervised interface attached to frozen Qwen3-1.7B-Base. Training and held-out paraphrases are index-separated, and taxonomy verbalizers are absent from its loss. Its registered hard gates nevertheless use donor-directed relative-likelihood uplift rather than actual behavioral choice, lack a nontrivial magnitude floor, compare against off-manifold controls, and permit unsafe incomplete-seed aggregation; therefore no “persistent interchangeable state bus” claim is licensed from the registered status alone.**
+
+If the stored status is positive, the maximum licensed wording without a new experiment is:
+
+> **In this fixed four-animal world and fixed cyclic donor map, a supervised 98,400-parameter interface repeatedly injected a 16-dimensional code and produced donor-directed relative-likelihood changes on taxonomy verbalizers absent from its loss. Because the primary gate did not require actual choice changes or a minimum effect magnitude and used token-length-mismatched verbalizers and off-manifold controls, this is descriptive evidence for a supervised semantic steering interface, not validated autonomous persistence, general interchangeability, or native latent mathematics.**
+
+If it fails:
+
+> **This fixed interface, training budget, contradictory recipient-history evaluation, and cyclic donor construction failed one or more registered gates. That closes this construction and budget; it does not establish that co-developed latent interfaces or persistent state are impossible.**
+
+### State-bus never-say list
+
+- “The bus changed the held-out consequence” unless raw choices actually changed.
+- “The held-out consequence was never seen”; only its verbalizers were absent from the bus loss.
+- “The state survived through generation” without saying it was re-injected at every position.
+- “The bus learned autonomous persistence.”
+- “All four states are interchangeable”; only one directed cycle was tested.
+- “The controls rule out lexical or output-space steering.”
+- “The held-out taxonomy result proves abstraction.”
+- “Sixteen independent held-out samples”; there are four semantic-state clusters.
+- “Three-seed majority” unless all three completed and two agree.
+- “Qwen learned the state bus”; Qwen is frozen and the added interface is trained.
+- “A bus positive validates a hostile hole in pretrained residual space.”
+- “A bus negative refutes trained latent interfaces generally.”
+
+## Exact replacement wording for current surfaces
+
+For the broad Round 7 ruling:
+
+> **Under the current apparatus budget, this sequence of frozen residual-stream constructions is not yielding a native-mathematics artifact, so open-ended layer, task, and decision-rule repair stops here. This is an allocation pivot, not evidence that frozen pretrained residual streams lack usable native structure.**
+
+For NOTEBOOK’s claimed common failure shape:
+
+> **The toy-world results and frozen-model attempts both failed to establish persistent interchangeability, but for different reasons: the toy artifacts exhibited bounded deeper future-signature failures, whereas most frozen-model constructions failed task or instrument validity before testing persistence or interchangeability. No common latent-space hole is established.**
+
+For NOTEBOOK’s “must be built” dichotomy:
+
+> **Today’s locked constructions did not reveal a persistent interchangeable state at the tested sites. They do not determine whether such structure exists elsewhere, is distributed across positions or trajectories, or must be added by training.**
+
+For `interchange_v1`:
+
+> **The locked raw-zero baseline failed and closes `interchange_v1`; no swap arm ran. Calibration-relative class separation is a diagnostic design finding, not a rescue and not evidence for interchangeability.**
+
+For the state-bus lay description:
+
+> **We built a tiny supervised interface that continuously re-injects a 16-dimensional code while a frozen model makes several decisions; the test asks whether swapping codes across held-out paraphrases produces a nontrivial direct effect on taxonomy verbalizers absent from the interface’s loss.**
+
+Finally, [STATE.md](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/STATE.md:5>) is currently stale at its canonical top: it still names `coordinate_v1 → coordinate_v2` as the current line and says the next step awaits Codex, while coordinate-v3 appears only in a late appendix and the interchange/state-bus transition is absent. That is not an overclaim about interchangeability, but it is a current-state integrity defect.
+
 ## 2026-08-29 — Re-contextualization #28: one day on the frozen residual stream, and the pivot to a built state
 
 Project and live question. Latent-Space-Reasoning: is there a native mathematics of latent spaces — and, after today, the sharper form: does a real model's residual stream *contain* a persistent, interchangeable state, or must such a state be *built* alongside it? Today's evidence: three baseline kills on frozen models (instruction polarity on 0.6B; number on 1.7B; the raw-sign probe gate for paraphrase interchangeability) and one gate-passing intervention (coordinate_v3) that a fresh audit reclassified as late lexical steering living in the unembedding. Codex (round 7) ruled the frozen-mining line not working and moved the central artifact to `state_bus_v1r1` — a <100k-parameter bus co-trained with frozen Qwen3-1.7B-Base, judged by whether swapped state moves a consequence never used in training. It is training now under a Tier-1-reviewed lock.
