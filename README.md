@@ -11,7 +11,7 @@ counterparts.
 
 - Current state: [STATE.md](STATE.md) · running log: [NOTEBOOK.md](NOTEBOOK.md)
 
-Status 2026-08-29: the LM residual-stream line (NLM-007) is closed under the program's terminal allocation rule — see the closing statement in STATE.md; the constructive program is Round 36 (minimal operational-quotient world, `theory/EXPERIMENTS.md`).
+Status 2026-08-29: the LM residual-stream line (NLM-007) is closed under the program's terminal allocation rule — see the closing statement in STATE.md; the constructive program is Round 36 (minimal operational-quotient world, `theory/EXPERIMENTS.md`). Its first run (v1) is a valid registered FAIL of the frozen exact reducer, read only under audit #23 (STATE.md): a behavior-, calibration-, and exactness-confounded non-certification of the registered operational quotient, not evidence of no approximate composable structure. Round 36b (behaviour-fit ladder) is amended before any outcome and held.
 - Theory: [axioms](theory/AXIOMS.md) ·
   [preregistrations](theory/EXPERIMENTS.md) · [dialogue](theory/dialogue/)
 - Experiments: [experiments/EXPERIMENTS.md](experiments/EXPERIMENTS.md), `experiments/ledger.jsonl`
