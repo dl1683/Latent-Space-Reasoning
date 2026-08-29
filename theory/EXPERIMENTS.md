@@ -8199,3 +8199,102 @@ gate-specific residue determines the successor: unavailable identity,
 non-congruent actions, non-composable transitions, representation-specific
 tables, or unstable responses. No larger carrier, new sensor, or NLP wrapper
 is added inside Round 36 after seeing the failure.
+
+## Round 36b — preregistered optimization/capacity ladder after the v1 FAIL (2026-08-29)
+
+**Evidence ruling and design gate; theory change only.** The first Round 36
+artifact remains a complete scientific **FAIL** for its frozen v1 recipe. It
+is not rerun, repaired, relabelled, or pooled with this successor. Round 36b
+is a new registered increment authorized by Round 36's own successor-design
+rule: increasing steps or capacity after a failure is not allowed inside
+Round 36, but it may be tested prospectively under a new lock. No code,
+config, result, ledger, `STATE.md`, or `NOTEBOOK.md` change is part of this
+design gate.
+
+### Why v1 is optimization-confounded
+
+The retained `weights.npz` contains all five 4,000-step loss traces, so no
+producer rerun was needed. Loading those exact weights through the registered
+runner and scoring every registered behavioral row was a diagnostic replay,
+not a new result. The 100-step trailing mean losses at steps
+`100/500/1000/2000/3000/4000` were:
+
+| seed | loss curve | final raw minibatch loss | full-train response accuracy | held-out response accuracy |
+|---:|---|---:|---:|---:|
+| 11 | `.660/.252/.154/.104/.078/.053` | `.0621` | `98.112%` | `98.259%` |
+| 23 | `.673/.282/.176/.104/.075/.054` | `.0351` | `97.758%` | `97.679%` |
+| 37 | `.660/.311/.201/.138/.105/.087` | `.0828` | `96.563%` | `97.009%` |
+| 53 | `.679/.272/.154/.080/.053/.038` | `.0478` | `98.546%` | `97.902%` |
+| 71 | `.674/.288/.189/.123/.099/.084` | `.0905` | `96.743%` | `97.455%` |
+
+The curves were still improving at the stop. Held-out depth-2 response
+accuracy was `99.747-100%`, but depth-3 response accuracy was only
+`93.750-96.307%`. The exact depth-1 encoder signatures were supported for
+only `11/16`, `7/16`, `4/16`, `8/16`, and `6/16` points. Thus the model did
+learn most terminal behavior, but the finite behavioral task was not fitted
+exactly and the registered `0.10/0.90` confidence conjunction was not
+saturated. This is category **(a), optimization/behavioral underfit under the
+v1 recipe**. It does not yet distinguish category (b), a behaviorally fitted
+but non-congruent latent. The clean fixture PASS, the learned artifact's valid
+hash/schema/count reduction, and the absence of reducer errors reject category
+(c), an evidence/gate construction failure, for this adjudication.
+
+### Prospective lock: all cells fixed before any outcome
+
+The world, opaque handles, behavioral population, train/H2/H3 spelling split,
+action order, five seeds, batch size `512`, AdamW betas/epsilon,
+`weight_decay=1e-5`, eight-dimensional carrier except where explicitly stated,
+response sensor, signature thresholds, representative population, exact law
+tables, reducer schema closure, and every Round 36 scientific falsifier remain
+unchanged. No sensor, target, reweighting, curriculum, extra supervision,
+seed replacement, early stopping, or best-checkpoint selection is permitted.
+
+Before any Round 36b producer is launched, the implementation must create,
+review, and hash-lock all four configs and the one canonical runner revision.
+All four cells then run sequentially on CPU and all four are reduced and
+reported. Later cells may not be changed, skipped, or stopped because of an
+earlier cell's outcome, and no scientific output is inspected until all
+producer cells have terminated. The retained v1 artifact is the 4,000-step
+reference and is not regenerated.
+
+| cell | optimizer steps/seed | learning rate | transition width | parameters | expected full-cell CPU | hard wall |
+|---|---:|---:|---:|---:|---:|---:|
+| `S16` cheapest budget remedy | `16,000` | `0.003` | `32` | `1,041` | about `3 min` | `8 min` |
+| `S64` primary budget cell | `64,000` | `0.003` | `32` | `1,041` | about `11-12 min` | `20 min` |
+| `LR64` step-size sensitivity | `64,000` | `0.001` | `32` | `1,041` | about `11-12 min` | `20 min` |
+| `W64` capacity sensitivity | `64,000` | `0.003` | `64` | `1,937` | about `16-22 min` | `30 min` |
+
+The estimate is anchored to v1's measured `41.667 s` for `5*4,000` steps
+plus `10.966 s` of evidence construction. The first two cells isolate training
+budget with learning rate and architecture held fixed; `LR64` tests whether
+the inherited step size prevents late convergence; `W64` asks whether the
+fixed 32-wide transition is the bottleneck only after the direct budget arms.
+The expected total is approximately `42-49 CPU-minutes`, one process and one
+thread at a time, with no GPU. A per-cell wall overrun is `INVALID — BUDGET`,
+not a reason to alter the remaining cells.
+
+### Behavioral-fit eligibility precedes quotient interpretation
+
+For each seed and cell, serialize the full loss trace, full-dataset BCE, and
+response accuracy on all `21,184` training rows, all `1,184` H2 rows, all
+`1,056` H3 rows, and their held-out union. A probability of exactly `0.5`
+counts as incorrect. Also serialize the fraction both correct and supported
+under the inherited `<=0.10`/`>=0.90` rule.
+
+A cell becomes eligible for any quotient/action-law interpretation only if
+**every seed scores exactly `21,184/21,184` on train and `2,240/2,240` on the
+held-out union** at the `0.5` response threshold. If either condition fails,
+the cell is `FAIL — BEHAVIOR UNDERFIT; QUOTIENT INELIGIBLE`. Quotient counts
+may be retained as diagnostics but cannot be described as non-congruence. If
+behavior is exact and any inherited quotient gate fails, that cell is the
+first admissible category-(b) result: `FAIL — FIT BUT NON-CONGRUENT LATENT`,
+followed by the exact inherited gate names. Only a behavior-eligible cell that
+passes every unchanged Round 36 gate earns the original bounded
+recipe-specific operational-quotient claim, indexed by that cell. There is no
+best-cell selection and no joint PASS assembled by pooling cells; mixed
+outcomes remain mixed and every cell stays visible.
+
+This registration does not erase v1's FAIL. It separates two questions that
+v1 could not: whether the tiny learner first fits its behavioral world exactly,
+and, conditional on that fit, whether its latent moves respect the denizen's
+operational identity.
