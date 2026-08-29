@@ -5,6 +5,12 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — interchange_v2 (locked, bias-controlled): FAIL — the single-anchor replacement transfers no class state
+
+Native centred validity passed (cat 11/12, dog 12/12; the calibration-centred statistic removes the verbalizer bias that killed v1). Same-state donors stay within tolerance (8/8; median distance 0.35 vs τ 3.38 — τ is generous). But replacing the block-12 residual at the anchor token with the *opposite class's* anchor residual moves the three-probe signature by a median fractional 0.009 of the class separation, with 0/8 recipients flipping two decisions; on-manifold cow/horse donors nudge recipients slightly toward neutral (|T| 0.10–0.21) and the cross-vs-third specificity test is null (p = 0.47). Pre-declared status: FAIL — FIXED BLOCK-12 SINGLE-ANCHOR INTERCHANGE CONSTRUCTION; no v3.
+
+Reading (mine, pending audit): the downstream probes read the animal from the prefix tokens through attention, not from the anchor token's residual at block 12 — so a single-anchor replacement is the wrong site for a state that is distributed across the context. This is exactly audit #28's 'distributed token-span state' alternative, now with a number behind it. It also explains why the trained bus had to be re-injected at every position to have any effect. Next: audit; then the reachability/control-cost artifact (Codex round 8 rank 2) and a Codex round on whether the object should be a span-level operator rather than a stored point.
+
 ## 2026-08-29 — Re-contextualization #29: after the bus verdict
 
 Project and live question. Latent-Space-Reasoning. The whole day's chain — three frozen-model baseline kills, coordinate_v3 as late lexical steering, a trained 16-d bus that controls its trained outputs perfectly yet moves the never-trained consequence's actual choice in only 7/16 and loses ~76% of its push by the third decision — converges on one honest sentence for the README: no native latent mathematics has been demonstrated. The live question is unchanged in words but sharpened in form: is there any construction — frozen or co-trained — in which a state written from one presentation survives and is interchangeable with another's, judged by several downstream consequences? Neither the frozen anchor-token replacement (never reached intervention) nor the repeatedly injected bus (partial, decaying, mediated) has shown it.
