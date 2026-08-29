@@ -35,7 +35,162 @@ partly inherit the skill-denominator pathology flagged at F0; (5) decoder
 specificity remains untested. Foundational thread advanced: instrument
 governance itself — split producer/joint verdicts so a read-only reducer
 cannot block a producer run, and the repair cap as a standing rule.
-Audit #19's corrections and alternatives will be appended verbatim below.
+Audit #19 (fired, unprimed) returned CONDITIONAL; its correction block and its staging ruling / alternatives follow verbatim.
+
+## 2026-08-28 — Audit #19 adversarial correction
+
+`ctx_A` contains a real outer-held-out score difference at F4–F20, but only between a higher-EDF state ridge and this fixed lower-EDF context-only pair. Replace “the contextual arm did not close the gap” with: “the higher-EDF state predictor retained a positive held-out score difference from the registered context-only predictors.” The result is descriptive and does not identify state, reject the contextual/Jacobian account, or make a state-reading gate live. Inner selection used calibration-only displacement cosine and the completion readouts were scored on outer keys, so the proposed same-test-fold tuning objection does not apply. The endpoints are correlated consequences of the same prediction. F0 remains non-qualifying: skill and continuous-KL lower bounds cross zero and one family collapses.
+
+Round 34 is over-bundled for the first capacity question. Its primary relation is `P_static`-residualized, not the raw `ctx_A` estimand; its six arms combine a matched-capacity test with a context-feature-family search; and its confirmatory KL-rank reimports the parked K=13/SVD qualification. Put a matched-EDF core screen first: existing token ridge/kernel only, state matched to their selected EDF and 47/48 ceiling, same A/B outer folds, cosine and normalized error, no completion. A state-only solve against stored aggregate JSON is a screen, not a crossed gate, unless the contextual cell predictions are recomputed. Run narrow completion only if that screen survives; run the embedding/edit arms only after that.
+
+Parking the Round 33 consequence instrument is upheld as allocation, not as a kill. Review scope escalated, but the final blockers included a real legacy-manifest crash and unproved fit reuse, so it was not run-ready. The strongest alternative remains a generic contextual-response/Jacobian relation in which a continuous residual fingerprint predicts the local punctuation response and propagates smoothly. The next orthogonal measurements are a CPU architecture-matched random-weight depth screen and a typed truth-evaluable finite-state task with forced-choice behavior, causal patching, and two-step composition. No representation-level hostile hole is proven.
+
+#### Audit #19 — staging ruling, Round 33 parking assessment, tunnel-vision verdict, and alternatives (verbatim, sections 3-6)
+
+## 3. Run the cheaper decisive check first
+
+Do not discard the registered Round 34 design. Put a preregistered
+short-circuit screen in front of it.
+
+### Round 34a — matched-EDF core screen
+
+1. Use the exact existing A/B outer carrier-by-word folds and training-only
+   standardization.
+2. Recompute only the registered `token_ids_v1` ridge and kernel predictions.
+   Fit state ridges by continuous bisection to (a) the selected contextual EDF
+   and (b) the honest 47/48 context rank ceiling.
+3. Score only displacement cosine and normalized error with paired,
+   block-first crossed intervals. No completion, K=13 universe, new context
+   feature family, model forward, or joint claiming reducer is needed.
+4. If matched margins shrink to at most 0.02 with crossed upper bounds below
+   0.02 in two common F4–F20 layers for both sentinels, report
+   **capacity-sensitive screen; stop**. Do not run the full six-arm audit or
+   Round 33.
+5. If the margins retain positive crossed lower bounds, run a completion pass
+   for only the selected token ridge/kernel pairs, using raw continuous KL and
+   treating skill as a diagnostic. Then decide whether the richer context
+   feature audit is worth the remaining compute.
+
+A literal “state-only one solve against the existing JSON” is acceptable only
+as a point screen. `analysis_ctx_A.json` stores fold summaries and intervals,
+not reusable per-cell contextual predictions, so it cannot support a new exact
+paired crossed gate without recomputing the context predictions. Recomputing
+those cheap context fits is still far smaller than the six-arm completion run.
+
+If the scientific target is specifically the primary `P_static` residual
+relation rather than the raw `ctx_A` sentence, use the same staged design under
+`--residualize static` after the protected contextual residual artifacts are
+complete. Do not claim that one answers the other.
+
+### Round 34b — feature-adequacy audit, conditional
+
+Only if Round 34a survives should the input-embedding sequence and
+template-edit kernels run. Label this a fixed context-family adequacy audit,
+not “capacity matching.” Keep the sentinel/position field as a cheap floor.
+The forced low-lambda `token_ids_v1_ceiling` is useful telemetry but is not an
+inner-selected fair predictor.
+
+The current producer/joint split requested for Tier-1 review #4 is good
+software governance: a read-only reducer should not block a safe producer.
+It does not answer the scientific staging question. No producer run is
+authorized until it separately receives RUN-READY.
+
+## 4. Round 33 parking: justified, not a kill
+
+There is some reviewer escalation. Later rounds increasingly audited schema
+mirrors, hashes, fail-closed reducers, and hard-wall semantics rather than the
+core consequence estimand. The repair process was consuming the program.
+
+But the parking decision was not arbitrary. Review #4 still found:
+
+- a deterministic analyzer crash on the real legacy manifests;
+- only hyperparameter-selection equality, not exact contextual-fit reuse;
+- incomplete two-base preflight and legacy compatibility binding;
+- hard-wall paths that could emit claiming artifacts after overruns; and
+- no real HEAD-versus-refactor CPU parity result.
+
+The legacy crash and fit-reuse failure alone make the instrument not run-ready.
+Parking after four rounds was therefore a defensible allocation stop. It did
+not falsify the consequence hypothesis, invalidate the design idea, or justify
+deleting the branch.
+
+If a later matched-capacity result earns reopening, salvage the smallest path:
+preflight both bases before model load, rerun/serialize the exact contextual
+fits with fingerprints, keep the consequence producer separate from the
+joint reducer, and perform one real CPU parity comparison. Do not resume the
+entire review-grown diff by default.
+
+Even a repaired PASS would license only persistence of predictive accuracy
+under frozen tails. It would not distinguish operational state from a smoother
+reconstruction propagated through deterministic decoder layers.
+
+## 5. Tunnel-vision and strongest alternative
+
+**Yes, the program is tunnel-visioned.** It has spent many rounds on one local
+relation in one small decoder, one authored 80-word population, sixteen related
+templates, two punctuation tokens, one append move, one readout position, and
+one completion mechanism. The recent history is now dominated by instrument
+and reducer reviews. That is a governance success compared with running broken
+claims, but it is not progress toward a denizen's mathematics.
+
+No representation-level hostile hole has been proven. The current holes are
+primarily in measurement: raw identity dominance, presentation/context
+entanglement, low-rank numerical fragility, and inability to distinguish a
+useful state variable from a high-dimensional fingerprint.
+
+The strongest alternative remains the **generic contextual-response/Jacobian
+account**:
+
+> The residual vector contains a rich continuous fingerprint of template,
+> token, position, lexical class, and local activation geometry. Appending a
+> fixed punctuation token induces a deterministic local response. A
+> high-capacity ridge reconstructs that response better than a low-rank
+> hand-built context map, and the better reconstruction remains closer after
+> smooth downstream transformations. No operational quotient or denizen-usable
+> state is required.
+
+`ctx_A` strengthens this account in one respect: context alone already reaches
+cosine 0.46–0.62 at F4–F20. Its normalized error remains about 1.00, so the
+current state advantage may be continuous activation/magnitude information,
+but that information can still be generic local geometry rather than
+structured reasoning.
+
+## 6. What should run instead of or alongside full Round 34
+
+Priority order:
+
+1. **Run Round 34a, not the full six-arm completion, first.** This is the
+   cheapest direct capacity moot-maker and can terminate the line cleanly.
+2. **Run an architecture-matched random-weight depth-profile screen on CPU.**
+   Use the same tokenizer, templates, sentinel moves, outer folds, identity +
+   shared-displacement null, and matched-EDF state/context predictors at
+   F0/F4/F8/F12/F20. Score only displacement cosine and normalized error. A
+   similar middle/deep-layer profile or matched state surplus in a random
+   decoder would strongly support architecture/local-smoothness rather than
+   learned operational structure. No completion or generation claim is
+   needed; any GPU version still requires explicit approval.
+3. **Design a typed truth-evaluable world instead of another mentioned-string
+   population.** A concrete CPU-scale successor is a four-bit finite-state
+   world with operations `toggle(i)`, `swap(i,j)`, and no-op. Hold out predicate
+   names and surface templates. Measure frozen forced-choice yes/no log-odds
+   for all four bits, not full-vocabulary KL. Require irrelevant-wrapper and
+   same-length token controls, causal patching of predicted versus true moves,
+   the involution `toggle(i) o toggle(i) = identity`, one noncommuting
+   two-step composition, and transfer across two disjoint query-tail families.
+   This gives the denizen a known state, move, consequence, and composition
+   law and directly exposes where the decoder's latent world fails them.
+4. **Use causal consequence, not only predictive persistence.** Patch the
+   predicted post-move state into the frozen decoder and compare behavioral
+   log-odds against the true post-move state, shared-displacement prediction,
+   context-only prediction, and same-norm random patch. This distinguishes a
+   state estimate that can enact the move from one that merely reconstructs
+   nearby activations.
+5. **Only then use a second trained decoder.** It tests model specificity but
+   does not solve the current construct ambiguity.
+
+The architecture null can run alongside the docs-only typed-world design. Do
+not spend the next increment on another increasingly elaborate reducer for the
+same punctuation relation.
 
 ## 2026-08-28 — ctx_A complete: contextual-prefix completion comparator, sentinel A (unmatched capacity)
 
