@@ -5,6 +5,151 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — state_bus_v1r1 seed 11 (interim, registered FAIL) and direction round 8 (verbatim)
+
+Seed 11: trained-consequence accuracy 1.0; same-swap 16/16 outside a training-derived τ=0.268 (same-arm raw accuracy 1.0/1.0/1.0 like self); cross uplift-consistent ≥2/3 in 15/16; taxonomy uplift-consistent 9/16, gain +0.34 over shuffled/random; taxonomy raw choice = donor 7/16; movement 12.2 → 9.8 → 2.9 nats; own-choice rollouts all-donor in 15/16 (mediated). Seeds 23/37 pending; audit-stage re-adjudication after the run; no rescue.
+
+# Direction round 8 — ruling
+
+No state-bus verdict is authorized until all three seeds finish. Seed 11 is an interim construction diagnosis only.
+
+## 1. Honest reading of seed 11
+
+The same-swap and persistence failures are not equally informative.
+
+**Same-swap: mostly a tolerance-construction failure.** Tau `0.268` was estimated from fitted training contexts and is dramatically narrower than held-out same-donor variation, producing `16/16` failures. Yet self and same-donor raw accuracy are both `1.0/1.0/1.0`. Thus seed 11 does not show that same-state codes cease to be behaviorally interchangeable at the tested choices. It does show that fine-grained confidence signatures failed to generalize within the training-derived tolerance. Licensed distinction: categorical same-state behavior transfers; calibrated signature equality does not.
+
+**Persistence: confounded, but substantively negative.** Recipient-conditioned history is deliberately hostile to the donor code, so decay measures resistance to accumulating contradictory textual evidence as well as persistence. But `12.2 → 9.8 → 2.9` nats is a roughly 76% decline, not a threshold accident, and horse reverses at decision three. Seed 11 therefore fails direct, unmediated persistence under the registered history. The `15/16` complete donor rollouts show something different: once sound and young become donor words, those visible words mediate taxonomy. That is impressive sequential control, but not direct held-out state transfer.
+
+**Taxonomy raw choice `7/16`: substantive partial transfer.** It exceeds the descriptive four-way chance floor of `4/16`, but it is below the audit-#28 standard, is only one seed, and has four state clusters rather than sixteen independent trials. Uplift consistency `9/16` and gain `+0.34` show a real donor-directed tendency; they do not show reliable behavioral replacement.
+
+If seeds 23 and 37 agree, the licensed result is:
+
+> **A supervised, repeatedly injected 16-dimensional interface learned strong state-specific control of its trained consequences, generalized same-state categorical behavior across held-out paraphrases, and produced partial taxonomy transfer that was strong in mediated rollouts but incomplete and sharply decaying in the direct contradictory-history test. It is a sequential semantic controller, not a validated persistent, abstract, or generally interchangeable state.**
+
+The planned audit-#28 re-adjudication is correct. It must remain an eval-only sensitivity reported beside the registered FAIL, never a rescue.
+
+## 2. Ranked next directions
+
+I agree with `interchange_v2`, with one pushback: the pivot never scientifically rested on “native state is absent”; it was an allocation decision. A positive would not prove the pivot was mistaken at the time, but it would overturn the rationale for making the trained interface central. That makes one final, clean frozen interchange test exceptionally valuable.
+
+| Rank | Direction | Narrative score | Ruling |
+|---:|---|---:|---|
+| 1 | **Bias-controlled `interchange_v2`** | **8.5/10** | Highest immediate decision value and lowest compute. It directly tests the unanswered native-state question. Exactly one construction; no `v3` repair ladder. |
+| 2 | **Reachability and control cost** | **8/10** | Best distinct wow-to-cost ratio: “How much hidden effort does a thought require?” Produces a native notion of move and effort rather than another identity test. Run after interchange regardless of its result. |
+| 3 | **Distributed transformation operators** | **9/10** | Highest positive wow—two hidden moves composing over token spans—but more implementation and severe lexical-control confounds. |
+| 4 | **Predictive dynamics/flow** | **6.5/10** | Scientifically sound if it first beats identity-plus-shared-displacement, but risks returning to the prior apparatus-heavy predictor program. |
+| 5 | **Response-law topology/concept lattice** | **5.5/10** | Cheap and mathematically native, but the first test is largely measurement rather than a compelling real-model intervention artifact. |
+
+Decision: run `interchange_v2` next, then leave interchangeability. The following artifact should be reachability/control cost whether `v2` passes or fails.
+
+## 3. Locked next artifact: `interchange_v2`
+
+### Object and fixed world
+
+Use the same Qwen3-1.7B-Base revision, CPU fp32, block 12, final anchor position, and coefficient-one replacement. No model, layer, position, strength, or probe sweep.
+
+Use fresh cat/dog calibration and held-out paraphrases, all exactly tokenizer-length matched and ending with the identical anchor. Add fresh, style- and length-matched cow/horse contexts as on-manifold third-state donors. Existing `interchange_v1` held-out rows are diagnostic history and cannot enter confirmation.
+
+Reuse `run_interchange.py` as the canonical runner, but correct the projection denominator and add the locked statistic/control. “Reuse” does not mean running the existing code unchanged.
+
+### Preregistered statistic
+
+For probe \(p\), using calibration only:
+
+\[
+b_p=\frac{\bar m_{p,\mathrm{cat}}+\bar m_{p,\mathrm{dog}}}{2},
+\qquad
+s_p=\max(s_{p,\mathrm{pooled\ within}},\eta_p),
+\qquad
+u_p(x)=\frac{m_p(x)-b_p}{s_p},
+\]
+
+where \(\eta_p\) is the self-swap numerical floor. Let
+
+\[
+\delta=\bar u_{\mathrm{cat}}-\bar u_{\mathrm{dog}}.
+\]
+
+For recipient \(r\), arm \(a\), and desired donor direction \(d_r\in\{\delta,-\delta\}\), define fractional donor movement:
+
+\[
+T_{r,a}
+=
+\frac{(u_{r,a}-u_{r,\mathrm{native}})\cdot d_r}
+     {\|\delta\|^2}.
+\]
+
+The squared denominator fixes the `v1` projection error. All raw margins, centered margins, categorical probe decisions, short decodes, and continuous effects are stored.
+
+### Arms and controls
+
+- Native/no replacement
+- Self-swap numerical sham
+- Different-paraphrase same-state donor
+- Matched opposite-state donor
+- Preassigned, on-manifold cow/horse third-state donor
+
+The third-state donor must use a real block-12 activation from the same anchor world—not a Gaussian vector or dimension permutation.
+
+### Gates
+
+Native validity:
+
+- At least `20/24` centered held-out probe decisions correct.
+- Neither cat nor dog below `9/12`.
+- Probe rows remain recipient-clustered; no claim treats them as `n=24`.
+
+Same-state interchange:
+
+- Calibration tau = Q90 of calibration same-state signature distances plus the median self-swap floor.
+- Median same-donor distance no greater than tau.
+- At least `6/8` recipients within tau.
+
+Cross-state movement:
+
+- Median \(T_{\mathrm{cross}}\ge0.5\).
+- At least `6/8` recipients flip at least two of three centered probe decisions toward the donor.
+- Report raw forced-choice changes and decodes; do not claim literal output replacement from centered movement alone.
+
+Specificity over the on-manifold control:
+
+- Median \(T_{\mathrm{cross}}-T_{\mathrm{third}}\ge0.3\) class separations.
+- At least `7/8` recipient-paired differences are positive.
+- Exact paired donor-label sign-flip test has one-sided \(p\le0.05\).
+
+### Chance and inference
+
+Per-probe descriptive chance is `1/2`, but the probes are correlated. The primary null exchanges cross-state and third-state donor labels within each of eight recipients and enumerates all \(2^8=256\) assignments. Recipients—not probe rows or forwards—are the inferential units. Cat and dog effects are reported separately.
+
+### Status and kill rule
+
+A bounded positive requires every native, same-state, cross-state, and specificity gate.
+
+If cross movement passes but same-state preservation fails, report:
+
+> `STATE-DIRECTED STEERING WITHOUT INTERCHANGEABILITY`
+
+If any other gate fails:
+
+> `FAIL — FIXED BLOCK-12 SINGLE-ANCHOR INTERCHANGE CONSTRUCTION`
+
+No new layer, position, model, coefficient, task wording, centering rule, or `interchange_v3` follows. A negative transfers the program to reachability/control cost.
+
+### Lay one-liner
+
+> **Can two descriptions be the same place inside a frozen language model? Swap the hidden place: a paraphrase should leave three facts alone, a different animal should change them together, and a third animal should not fake the move.**
+
+## 4. Program honesty
+
+The one README sentence should be:
+
+> **After today, no native latent mathematics has been demonstrated: the only established real-model causal result is a narrow late lexical-control effect, while frozen donor interchange never ran and the supervised state-bus verdict remains pending.**
+
+What should be said to the user:
+
+> **This is not working yet as a native-mathematics discovery program. Seed 11 suggests that the added bus is a strong supervised sequential controller with partial out-of-loss semantic transfer, but it does not establish persistent interchangeable state. We will finish and audit the locked run without rescue, run one clean 30-minute frozen donor-interchange test because the earlier experiment never reached intervention, and then move to the distinct question of latent reachability and control cost rather than continuing an interchangeability ladder.**
+
 ## 2026-08-29 — Audit #28 (fresh, unprimed; verbatim): kills scoped, program KILL = allocation pivot not science, tunnel vision found, state-bus gates not clean enough for their headline
 
 My re-contextualization #28 claims ('the same lesson from two directions'; 'built rather than found') are REPLACED by the audit's wording below (section 'Exact replacement wording').
