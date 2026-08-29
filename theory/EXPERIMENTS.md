@@ -8508,3 +8508,408 @@ Audit #24's rank-2 tolerance-based approximate branch is a separate future
 prospective registration. If authored later, it must keep the original exact
 PASS untouched, carry its own non-PASS status and claim boundary, and may
 never replace, rescue, soften, or retroactively reclassify an exact result.
+
+## Round 36d — frozen-target head-only learned-pass calibration (2026-08-29)
+
+**Prospective design gate and registration; theory change only. No code,
+config, producer, reducer, result, or ledger event is part of this commit.**
+This is audit #25 rank 1 and is the last authorized learned-pass calibration
+on the Round 36 world. It is one capped cell, where one cell means the same
+locked recipe over all five retained seed-matched producers. It is never a
+width, learning-rate, step, loss-weight, or seed ladder. Round 37 follows only
+after Round 36d has one valid reduced verdict; an `INVALID` is repaired under
+this same lock and does not authorize a different cell.
+
+The non-expert “so what” is: hold a learned map and its landmarks still, then
+ask whether a freshly learned mover can reach the landmarks closely enough
+for the world's own exact navigation exam to recognize every move.
+
+### Retained producer, exact weights, and fixed targets
+
+The sole retained source is
+`experiments/results/operational_quotient_36b_W64/`. The producer tuple is
+frozen as:
+
+- config SHA-256
+  `3b1fd82cf2801ea6d8f75c12acdc6aac038492bf0712a8c66900a243e9caa2a0`;
+- producer-code SHA-256
+  `e5e88d9c8dcec06a66ed251a9666a65e3a4abb0cf693f4af9a648172b6281f5b`;
+  and
+- `weights.npz` SHA-256
+  `dadfff34d9b6941bd8d6f4acf25668e3604f1caa5cdd4b8011a320914e58547a`.
+
+The implementation must verify all three pins and the retained manifest before
+loading a tensor. For each retained seed `s in [11, 23, 37, 53, 71]`, the
+Round 36d producer loads exactly these same-seed arrays:
+
+- `seed_s__encoder_weight` as the assigned, frozen `16 x 8` encoder table;
+- `seed_s__response_weight` and `seed_s__response_bias` as the assigned,
+  frozen response readout; and
+- none of the retained transition arrays or retained loss trace as trainable
+  state.
+
+The retained W64 artifact is eligible only for this privileged control because
+its canonical signatures and all `176/176` canonical action-table cells are
+supported and truthful in all five seeds. Its behavioral-fit and rolled-law
+FAILs remain exactly as adjudicated by audit #24; this reuse does not
+rehabilitate or reclassify them.
+
+Immediately after the frozen encoder is loaded, copy its 16 handle-indexed
+rows, in opaque-handle order `0..15`, into an immutable `16 x 8` target tensor
+`Z_s^*`. The target for canonical cell `(h,a)` is the row of `Z_s^*` indexed
+by the true successor handle already defined by Round 36's fixed simulator and
+`data_seed=3601`. The producer hashes the exact target tensor once per seed.
+No encoder call supplies a target after optimization starts; targets therefore
+cannot chase the learned head.
+
+Only the width-64 transition head is re-initialized. Its optimized parameter
+names are exactly `w_z.weight`, `action_embedding.weight`, `b1`, `w2.weight`,
+and `w2.bias`. For retained seed `s`, set the dedicated transition-init seed
+to `360000+s`, instantiate the existing W64 model in its canonical module
+order, overwrite the encoder and response arrays with the retained values,
+and freeze those assigned arrays before the optimizer is constructed. Hash the
+five initial transition arrays in name-sorted, dtype-and-shape-bound C-order.
+The assigned encoder/readout, fixed targets, and every simulator table have
+`requires_grad=False`; the five named transition arrays are the complete and
+only optimizer parameter list.
+
+### One capped optimization cell and separate diagnostics
+
+The loss is only the full-batch fixed-target transition MSE over all 176
+canonical source/action cells:
+
+`L_fixed = mean_{h,a,j} (T_phi(E_s(h),a)_j - Z_s^*[delta(h,a),j])^2`.
+
+There is no behavioral BCE, moving encoder target, signature loss, hidden-bit
+target, curriculum, sampling of the 176 cells, early stopping, checkpoint
+selection, or second attempt. The locked optimizer is deterministic,
+single-threaded CPU AdamW with `lr=0.003`, `weight_decay=1e-5`, betas
+`[0.9,0.999]`, epsilon `1e-8`, and exactly `16,000` steps per seed. The target
+full-cell cost is `2-5 CPU-minutes`; the hard wall is `8 min` (`480 s`) for all
+five seeds plus evidence production. A wall overrun is `INVALID — BUDGET`.
+
+At initialization, every 250 completed steps, and the final step, serialize
+three distinct traces per seed rather than a combined loss:
+
+1. the scalar `L_fixed` transition MSE;
+2. the maximum canonical-cell coordinate residual
+   `max_{h,a} max_j |T_phi(E_s(h),a)_j-Z_s^*[delta(h,a),j]|`; and
+3. response-signature margins on the 176 predicted successors under the
+   unchanged empty-plus-11-action probe suite. For oracle bit `y` and response
+   probability `p`, the signed support-and-truth margin is `p-0.90` when
+   `y=1` and `0.10-p` when `y=0`. Report the minimum, median, mean, and maximum
+   signed margin and the negative-margin count separately from coordinate
+   residuals.
+
+These traces are diagnostic, not a substitute reducer. A FAIL with residuals
+that remain materially above zero leaves head capacity versus optimization as
+the immediate fork. A FAIL after residuals approach the fixed targets but one
+or more signed signature margins remain negative localizes the mismatch to the
+coordinate-residual/signature-margin interface. Neither branch licenses a
+post-hoc threshold or another cell.
+
+### Unchanged reducer, provenance, and decision
+
+After the final head is frozen, the producer constructs every original Round
+36 representative, signature, held-out endpoint, law row, and
+interchangeability row. The **unchanged exact Round 36 reducer computation**,
+including the `0.10/0.90` support rule, all original denominators, all five
+seeds, and the all-gates conjunction, scores the evidence. Its input remains
+only the frozen config copy, manifest, and evidence; `weights.npz` remains
+outside the reducer. A schema extension may require the provenance below and
+bind its hashes, but it may not alter `_scientific_gates`, a threshold, a
+population, an exact falsifier, or the meaning of PASS.
+
+Every producer artifact must declare `result_scope="POSITIVE-CONTROL"` and
+retain:
+
+- the locked source directory and source config/code/weights hashes above;
+- hashes of the action/successor input table and, per seed, the assigned
+  encoder/readout arrays, the 16-row target snapshot, and the fresh transition
+  initialization;
+- the complete, separately named MSE, maximum-residual, and signature-margin
+  traces plus their hashes;
+- a parameter-disposition table naming every array as `optimized`,
+  `assigned_frozen`, `fixed_target`, or `discarded_retained_transition`;
+- final arrays for all five seed-matched models, a per-seed hash, and one final
+  `weights.npz` SHA-256; and
+- command, registration/config/code hashes, dependency and deterministic CPU
+  settings, start/end/wall times, and a manifest-to-evidence hash chain.
+
+Producer authenticity remains outside the declarative reducer's inference, so
+these prospectively locked records are mandatory evidence for calling the
+artifact learned. Missing, extra, mutable, non-finite, or hash-mismatched
+provenance is `INVALID`, never FAIL.
+
+- **Positive-control PASS:** every unchanged exact gate passes in every seed.
+  This validates learned width-64 transition-head plus reducer reachability
+  when a retained learned encoder/readout and fixed successor coordinates are
+  supplied. It does not validate the retained transition, the W64 behavioral
+  recipe, or quotient discovery.
+- **Positive-control FAIL:** this capped head-only recipe did not reach the
+  certificate. The registered traces localize the next theoretical question
+  to head capacity/optimization or to the gap between coordinate residual and
+  response-signature margin; they do not establish reducer or carrier
+  impossibility.
+- **INVALID:** no reachability conclusion. Repair only the integrity or budget
+  defect under this exact registration.
+
+The never-say list is permanent. Round 36d is **not** behavior-only learning;
+**not** evidence that W64 learned a quotient or fitted its behavioral world;
+**not** a rescue, softening, or retroactive PASS for Round 36, 36b, or 36c;
+**not** proof that fixed coordinate MSE is a native objective; **not** proof
+that any learned artifact can generally pass the reducer; **not** a result
+about natural language, residual streams, or latent spaces generally; and
+**not** authorization for another calibration ladder. The frozen targets,
+assigned retained encoder/readout, and `POSITIVE-CONTROL` scope must appear
+beside every gate table and verdict.
+
+### Audit #25 amendment to the Round 36c claim wall (2026-08-29)
+
+This note appends audit #25 rather than rewriting the prospective Round 36c
+registration. It governs the Round 36c ledger purpose wherever the earlier
+text is broader:
+
+> A FAIL means this registered learned-target reachability control did not
+> reach the certificate. It does not distinguish control-objective failure,
+> optimization failure, carrier capacity, or learned reducer/gate reachability,
+> and it has no behavior-only interpretation.
+
+## Round 37 — presentation-duplicated quotient world (design gate) (2026-08-29)
+
+**Prospective design gate and registration; theory change only. No code,
+config, population artifact, producer, reducer, result, or ledger event is part
+of this commit.** This is audit #25 rank 2. It begins only after Round 36d has
+one valid reduced verdict. It is a matched factored-versus-unrestricted design,
+not a capacity ladder; all four architecture-by-presentation-role cells are
+locked before any is run, run sequentially on CPU, and reported regardless of
+earlier outcomes.
+
+The registered so-what is: **keep what a place means separate from how it is
+presented, so inhabitants can move reliably across two views.**
+
+### The 32-state, 16-place world
+
+The hidden simulator state is
+
+`s=(q,p) in S={0,1}^4 x {0,1}`,
+
+where `q=(q_1,q_2,q_3,q_4)` is operational state and `p` is a
+presentation/nuisance bit. A fixed seeded permutation (`data_seed=3701`)
+assigns 32 opaque handles to the 32 tuples. Pair membership, `q`, `p`, state
+indices, and successor handles never enter the learner interface or loss.
+There are two hidden representatives of each operational state and therefore
+32 hidden states but exactly 16 true operational places.
+
+The ordered task-action alphabet is the unchanged Round 36 list
+`[no-op, toggle(1), toggle(2), toggle(3), toggle(4), swap(1,2),
+swap(1,3), swap(1,4), swap(2,3), swap(2,4), swap(3,4)]`. Each task action
+changes only `q` and leaves `p` fixed. A twelfth primitive presentation move
+`present` flips only `p` and leaves `q` fixed. Words are applied left to right.
+The sole response and every future task response ignore nuisance:
+
+`rho(q,p)=q_1`.
+
+A behavioral row contains only
+
+`(opaque_start_handle, action_word, terminal_response)`.
+
+Training is behavior-only binary cross-entropy. There is no hidden-state,
+operational-bit, presentation-bit, state-index, next-handle, endpoint,
+duplicate-pair, pair-contrast, coordinate, signature, or quotient target. The
+simulator retains hidden tuples and pairs only for prospective reduction.
+
+### Outcome-blind presentation-role transfer
+
+Let `B` be the existing 1,324 Round 36 training-word list over task actions and
+let `H=H_2 union H_3` be the existing 140 hash-selected held-out task words,
+with the same salts, serialization, ordering, and list hashes. Both lists were
+selected by spelling without responses or model outputs and remain frozen.
+
+There are two complementary role folds `r in {0,1}`. In fold `r`:
+
+1. every word in `B` is trained from all 32 opaque starts;
+2. every word in `H` is trained from the 16 starts with presentation `p=r` and
+   is held out from the paired 16 starts with `p=1-r`; and
+3. the presentation-only word `[present]` and the 22 primitive compositions
+   `[present,a]` and `[a,present]` for each of the 11 task actions are trained
+   from all 32 starts.
+
+Thus each role fold has `42,368 + 2,240 + 736 = 45,344` behavioral training
+rows and exactly `2,240` primary held-out presentation-transfer rows. Fold 0
+trains the selected action words through presentation 0 and tests presentation
+1; fold 1 swaps those roles. Rows are generated and minibatched in a frozen
+canonical order. Neither fold is selected by outcome and neither may rescue
+the other.
+
+Before structural interpretation, every architecture/role/seed must score
+exactly on all `45,344` training responses at the strict decision rule
+`p>0.5` and must support every empty/primitive response used in the operational
+signature. Otherwise its structural fields remain descriptive and its status
+is `FAIL — BEHAVIOR UNDERFIT OR BASE SIGNATURE UNSUPPORTED`.
+
+### Quotient-factored carrier and matched unrestricted baseline
+
+Both carriers use a learned `32 x 8` opaque-handle table, total latent width
+eight, deterministic seed, residual-tanh transitions, one binary response,
+the same training rows and minibatch indices, and the same optimizer and step
+budget. The only intended difference is the structural factorization.
+
+The quotient-factored carrier writes `z=(q_z,p_z)` with `q_z in R^6` and
+`p_z in R^2`:
+
+- a task move has form `T_a(q_z,p_z)=(q_z+F_a(q_z),p_z)` and the response is
+  `R(q_z,p_z)=sigmoid(r_q^T q_z+b)`;
+- the presentation move has form
+  `T_present(q_z,p_z)=(q_z,p_z+F_present(p_z))`; and
+- no task transition or response path may read `p_z`, while no presentation
+  transition may alter or read `q_z`.
+
+Use a total hidden-unit budget of 64, split prospectively as 48 task units and
+16 presentation units. The split is an architectural prior, not a hidden-label
+loss: the two handles for one `q` still have independent learned table rows and
+receive no equality or pairing target. Presentation information may live in
+`p_z`, but neither its presence nor a literal encoded nuisance bit is assumed.
+
+The unrestricted baseline uses the same eight-dimensional carrier and a
+single width-64 residual-tanh transition over all eight coordinates and all 12
+actions; its response reads all eight coordinates. It removes the fixed block
+masks and is therefore a weakly more expressive superset, not a capacity-
+starved foil. Match data, seeds, initialization family, batches, optimizer,
+steps, CPU settings, and evaluation exactly; serialize and report both models'
+active trainable-parameter counts. A factored advantage cannot be attributed
+to giving the factored carrier more effective parameters.
+
+The five model seeds remain `[11,23,37,53,71]`. Each of the four
+architecture-by-role cells uses deterministic single-threaded CPU AdamW,
+`lr=0.003`, `weight_decay=1e-5`, betas `[0.9,0.999]`, epsilon `1e-8`, batch
+size `512`, and exactly `32,000` steps per seed, with no early stopping,
+checkpoint selection, seed replacement, or adaptive fifth cell. The target is
+`24-32 CPU-minutes` for the full four-cell matrix; the hard wall is `12 min`
+per cell and `45 min` total. An overrun is `INVALID — BUDGET` and cannot alter
+another cell.
+
+### Operational signatures, rates, margins, and exact certificates
+
+The operational signature excludes `present`. For any point `z`,
+`Sigma_task(z)` is the 12-bit response vector under the empty word and the 11
+task primitives in their frozen order. A component is supported only at
+`p<=0.10` or `p>=0.90`. For oracle bit `y`, its signed certificate margin is
+`p-0.90` if `y=1` and `0.10-p` if `y=0`; a supported truthful component has
+nonnegative margin. Every endpoint below reports the complete numerator and
+denominator, the unsupported and wrong counts separately, and minimum,
+median, mean, and maximum signed margins per seed and role before any exact
+conjunction is formed.
+
+The primary questions and exact finite certificates are:
+
+| Question | Rate and margin | Exact certificate in every seed and both role folds |
+|---|---|---|
+| Paired presentations name one place | Fraction of the 16 hidden `q` pairs whose two encoder points have supported, truthful, equal `Sigma_task`; signed margins over all `32*12` components. | `16/16` paired operational signatures, each equal to the oracle signature. Coordinate equality is neither required nor scored. |
+| Task actions descend independently of presentation | Fraction of `16*11=176` operational-state/action cells for which both presentation starts, and the corresponding `present`-before/after paths, reach one supported truthful successor signature; endpoint signed margins reported separately. | `176/176` cells agree across presentation and equal the oracle task successor. |
+| Held-out presentation transfer | Supported truthful signature rate and terminal-response accuracy on the `140*16=2,240` rows trained only through the opposite presentation; signed endpoint margins. | `2,240/2,240` held-out endpoints and responses in each role fold. |
+| Rolled interchangeability | For each `q` and `w in H`, compare the two presentation-start endpoints: supported equal signature, equal response, and equality to the oracle place; report rate and margins for each side. | `2,240/2,240` paired continuations in each role fold. |
+| Presentation move preserves place | Fraction of 32 encoder starts for which `Sigma_task(T_present(z))` is supported and equals both `Sigma_task(z)` and the oracle operational signature. | `32/32` presentation moves leave operational place unchanged. |
+
+For the factored-versus-unrestricted comparison, report paired differences
+`factored-unrestricted` in held-out-transfer rate, rolled-interchangeability
+rate, and minimum signed margin for each of the ten seed-by-role units. Do not
+pool generation rows or treat endpoints as independent replicates. The exact
+comparison is the two carriers' separate all-cell certificates:
+
+- factored exact and unrestricted non-exact supports a bounded
+  **`FACTORED ADVANTAGE IN THIS MATCH`**;
+- both exact is **`SOLVED BY BOTH — NO FACTORIZATION ADVANTAGE SHOWN`**;
+- factored non-exact and unrestricted exact is
+  **`UNRESTRICTED ADVANTAGE IN THIS MATCH`**; and
+- both non-exact is **`NO ARCHITECTURAL WIN`**, with behavior eligibility,
+  support, wrong cells, rates, and margins kept separate.
+
+The primary world verdict is **`PASS — PRESENTATION-DUPLICATED OPERATIONAL
+QUOTIENT`** only if the quotient-factored carrier is behavior-eligible and all
+five exact certificates pass in all five seeds and both role folds. The matched
+baseline label is reported beside, not folded into, that verdict. Missing,
+duplicate, malformed, non-finite, hash-mismatched, incomplete, or over-budget
+evidence is `INVALID`.
+
+### Axioms, candidates, and the second lens
+
+On supported `Sigma_task` classes, L1 self-substitution, L2 finite conjunction,
+L3's finite definition-driven refinement, and L4 separation by quotient are
+instantiated exactly as in Round 36; none earns geometry. The declared
+simulator presentation group is `G={id,present}`. L5 presentation covariance
+is tested, not assumed, on the learned carrier: it is instantiated for this
+finite probe family only if paired identity, presentation-place invariance,
+presentation-independent action descent, and rolled interchangeability all
+pass.
+
+The task-word action family, the presentation move on learned carriers, the
+factor split `z=(q_z,p_z)`, and their commutation/descent laws remain
+**candidate primitives, not earned** at this design gate. A block mask is an
+inductive bias, not evidence that the nuisance coordinate was learned. No
+origin, norm, distance, dimension invariant, move cost, geometry, general map,
+or model-independent law is added to `theory/AXIOMS.md` by this registration.
+
+The expectation is that the factored carrier will preserve operational place
+and compose task moves across presentations more reliably than the unrestricted
+carrier. A PASS would show that a tiny behavior-trained world with an explicit
+quotient-compatible inductive bias can support stable navigation across two
+opaque views. The simplest global confound is that both carriers merely
+memorize terminal responses; the complementary presentation-role holdout,
+exact action descent, rolled interchangeability, and unrestricted superset
+baseline are the direct controls. If both carriers pass, factorization was not
+needed here. If both fail after exact behavioral fit, presentation/action
+congruence remains a proven hole of these recipes and motivates a different
+latent-space design rather than more scale on this matrix.
+
+### Minimal future code delta and artifact contract
+
+The future implementation should be a config- and `registration_id`-driven
+extension of the existing canonical
+`experiments/run_operational_quotient.py`, not a new sibling runner. CLAUDE.md
+section 6.1 defaults to existing modules unless a new reusable boundary is
+necessary; this world reuses the existing finite simulator, opaque handles,
+action words, CPU producer, serialized evidence, hash chain, fixture posture,
+and producer/reducer separation. A sibling module would duplicate those stable
+interfaces. The extension may add a Round 37 state/action/model branch and a
+versioned Round 37 evidence/gate schema, but the legacy Round 36 config
+validation, artifacts, and `_scientific_gates` path must replay unchanged.
+
+The non-claiming producer must serialize the hidden truth table only in the
+reducer-scored evidence layer, the exact role-fold row lists and hashes,
+per-component loss/support traces, per-cell endpoint probabilities and
+signatures, active parameter counts, initial/final weight hashes, model and
+data seeds, platform/dependencies, CPU settings, and wall accounting. The
+separate reducer recomputes all rates, margins, exact certificates, carrier
+comparison labels, and the joint verdict from config/manifest/evidence only;
+weights remain reproduction material, not reducer input. A fixture must pass
+all factored certificates and the same missing/non-finite/rehash-corruption
+fail-closure tests before learned evidence is interpreted.
+
+### Claim license and never-say list
+
+A factored PASS licenses only: **in this one finite 32-state behavior-trained
+world, under an explicitly quotient-factored carrier, two opaque presentations
+of each of 16 operational places acquired the same supported response
+signature, task actions descended independently of presentation, held-out
+presentation transfer and rolled interchangeability were exact, and the
+presentation move preserved operational place under the registered probes.**
+
+A valid factored FAIL licenses the named recipe-specific failure after its
+behavior/support stage: underfit, unsupported signature, wrong paired identity,
+non-descending task action, failed transfer/interchangeability, or failed
+presentation-place invariance. It does not show that a 32-to-16 quotient is
+unlearnable. A carrier comparison licenses only its registered matched label;
+one baseline outcome cannot establish architectural necessity.
+
+The never-say list is permanent. A PASS is **not** spontaneous discovery of
+factorization; **not** coordinate collapse of paired handles; **not** proof
+that `p_z` encodes the nuisance bit or that the learned `present` move flips a
+latent presentation coordinate; **not** proof that factorization is necessary,
+optimal, or universal; **not** semantic/style disentanglement in language
+models; **not** evidence about residual streams or natural latent spaces;
+**not** a general L5 theorem; **not** robustness beyond the enumerated finite
+population; and **not** authorization for an NLP wrapper, scale ladder, or
+external claim. A FAIL is **not** evidence that quotient worlds are hostile to
+structured reasoning generally, and a baseline FAIL is **not** proof that
+unrestricted carriers cannot learn presentation-invariant navigation.
