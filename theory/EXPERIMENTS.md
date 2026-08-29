@@ -8370,3 +8370,141 @@ responses with probability `<=0.10` or `>=0.90`, independent of correctness;
 accuracy continues to use the frozen strict decision rule under which a logit
 of exactly zero is incorrect. This depth trace is diagnostic and does not
 change the behavioral-fit or structural gates.
+
+## Round 36c — learned quotient-trained positive control (2026-08-29)
+
+**Prospective reachability-control registration; theory change only. No code,
+config, fixture, producer, reducer, or result is part of this registration
+commit.** This is the explicitly quotient-trained learned positive control
+ranked first by audit #24 and required by audit #23 item 6. It is not a rescue,
+continuation, or relabelling of either the Round 36 v1 artifact or any Round
+36b behavior-only cell.
+
+### Purpose: test gate reachability, not behavior-only learning
+
+Round 36c tests one question only: **can the same eight-dimensional learned
+carrier, encoder/transition/readout architecture, optimizer, reducer, seeds,
+world, and exact certificate reach every registered Round 36 gate when the
+training objective directly supervises the state-transition congruence?**
+This is the `REACHABILITY` gate for the certification regime. It is not
+designed to produce a scientific PASS for the behavior-only program.
+
+The non-expert “so what” is: before blaming a learner for failing to organize
+its world from behavior alone, first show that the proposed body and exam can
+actually realize a perfect, law-abiding map when the correct moves are taught
+directly.
+
+The simplest confound is that the positive control could pass only because it
+was given privileged successor pairings. That is intentional and is why every
+output is labelled `POSITIVE-CONTROL`: the cell tests learned certificate
+reachability, not discovery from behavior. Conversely, a positive-control
+FAIL cannot be interpreted as a hole in latent organization because the
+architecture/optimizer and exact certification regime remain entangled.
+
+### The one changed signal: canonical transition consistency
+
+The ordinary behavioral term remains the unchanged binary cross-entropy on
+the unchanged Round 36 training rows and unchanged seeded minibatch stream.
+Round 36c adds exactly one privileged term. For every one of the `16 * 11 =
+176` canonical opaque-handle/action cells on every optimizer step, let `h_s`
+be the opaque handle assigned to hidden simulator state `s`, and let
+`h_{delta(s,a)}` be the opaque handle assigned to its true primitive
+successor. The registered auxiliary loss is
+
+`L_transition = mean_{s in S, a in A, j=1..8}
+  (T_theta(E_theta(h_s), a)_j
+   - stop_gradient(E_theta(h_{delta(s,a)}))_j)^2`.
+
+The complete optimized objective is
+
+`L_36c = L_behavioral_BCE + 1.0 * L_transition`.
+
+The full 176-cell transition term is evaluated once per optimizer step; it is
+not sampled or reweighted. `stop_gradient` applies only to the successor
+encoder target in that occurrence. Encoder vectors remain learned parameters
+and receive gradients through the behavioral term and whenever they appear as
+the source of a transition. The simulator's hidden state is used only to form
+the registered successor-handle pairing. No fixed bit chart, latent
+coordinate target, state reconstruction term, response-signature tolerance,
+best-checkpoint selection, extra readout, or separate transition head is
+introduced.
+
+This learned-target transition-consistency loss is the minimal control because
+zero loss is exactly the desired canonical congruence equation while leaving
+the eight carrier coordinates free. A fixed oracle embedding would test a
+stronger chart-reconstruction control; a response-signature consistency loss
+would add the reducer's multi-probe sensor inside training. Neither is needed
+for this first reachability test.
+
+Everything else is frozen. The hidden world, opaque-handle permutation,
+action order, behavioral population, training/H2/H3 spelling split, response
+sensor, depth-1 identity definition, `0.10/0.90` support thresholds, all exact
+fractions, representative construction, held-out continuations, cross-seed
+comparison, schema closure, and declarative reducer are unchanged. The five
+model seeds remain exactly `[11, 23, 37, 53, 71]`. Training remains CPU-only,
+single-threaded, deterministic AdamW with `lr=0.003`, `weight_decay=1e-5`,
+betas `[0.9, 0.999]`, epsilon `1e-8`, behavioral batch size `512`, and no
+early stopping or seed replacement.
+
+### Width policy, cells, and walls
+
+Both cells use exactly `64,000` optimizer steps per seed so the supervision
+signal, not a shortened budget, is the primary change from the strongest
+Round 36b comparisons.
+
+| cell | order and authorization | transition width | parameters | expected full-cell CPU | hard wall |
+|---|---|---:|---:|---:|---:|
+| `36c-w32` | Run first and reduce before any `w64` producer | `32` | `1,041` | about `12-16 min` | `30 min` (`1,800 s`) |
+| `36c-w64` | Conditional only: run iff `36c-w32` completes validly and returns an exact-gate positive-control FAIL | `64` | `1,937` | about `14-20 min` | `40 min` (`2,400 s`) |
+
+A `36c-w32` PASS stops the control and does not authorize `36c-w64`. An
+`INVALID`, producer exception, missing artifact, or budget overrun also does
+not authorize `w64`; repair the implementation/artifact defect and rerun the
+same locked `w32` cell. Only a valid complete `w32` FAIL activates the already
+locked `w64` sensitivity cell. The conditional cell may not be edited after
+the `w32` result is known. Both configs and the shared runner must therefore
+be implemented, fixture-tested, reviewed, and hash-locked before any producer
+launch.
+
+The expectation is that direct congruence supervision will make rolled
+representatives coincide operationally with their canonical successors and
+therefore allow every exact gate to pass. A PASS supports that reachability
+expectation. A valid FAIL means the current learned carrier/optimizer plus the
+exact gate/reducer regime did not reach its own certificate even under direct
+supervision; the immediate problem is then the certification regime or its
+realizability under this recipe, not a result about latent organization.
+
+### Decision semantics and permanent claim walls
+
+The unchanged reducer still computes the original exact Round 36 gates and
+the original `PASS — MINIMAL OPERATIONAL QUOTIENT WORLD` conjunction. For a
+learned Round 36c artifact, its result scope and claim boundary must be
+labelled `POSITIVE-CONTROL` so the same gate values cannot be read as a
+behavior-only result.
+
+- **Positive-control PASS:** every exact gate is reachable by this learned
+  carrier/optimizer/reducer combination under direct transition supervision.
+  The gate-reachability control is validated. The retained behavior-only
+  FAILs may then be interpreted as limits of their registered behavioral
+  objective/optimization recipes rather than evidence that the carrier or
+  reducer could never pass.
+- **Positive-control FAIL:** this carrier/optimizer/reducer combination did
+  not reach the exact certificate even with direct supervision. That is a
+  certification-regime or learned-realizability problem requiring redesign or
+  a sharper control. It is not a latent-organization result and does not make
+  the behavior-only failures structurally interpretable.
+- **INVALID:** no reachability conclusion. Integrity and budget failures are
+  repaired under the same lock; they do not trigger the conditional cell or a
+  scientific successor.
+
+The never-say list is permanent. A Round 36c PASS is **not** a behavior-only
+result; **not** evidence that a quotient was learned from behavior; **not** a
+rescue, softening, or retroactive PASS for v1 or Round 36b; **not** evidence
+about natural language, residual streams, or latent spaces generally; and
+**not** activation of Round 35. The privileged successor pairing must be
+named beside every reported Round 36c gate table or verdict.
+
+Audit #24's rank-2 tolerance-based approximate branch is a separate future
+prospective registration. If authored later, it must keep the original exact
+PASS untouched, carry its own non-PASS status and claim boundary, and may
+never replace, rescue, soften, or retroactively reclassify an exact result.
