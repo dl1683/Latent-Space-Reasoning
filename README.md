@@ -11,7 +11,7 @@ counterparts.
 
 - Current state: [STATE.md](STATE.md) · running log: [NOTEBOOK.md](NOTEBOOK.md)
 
-Status 2026-08-29: Round 36 is the constructive program. Its v1 FAIL remains governed by audit #23. Round 36b completed under lock: all four cells are `FAIL — BEHAVIOR UNDERFIT; QUOTIENT INELIGIBLE`, with no PASS. Audit #24 finds a cross-seed-stable canonical one-step action skeleton in W64 but no certified representative-independent quotient algebra; exact learned-gate reachability remains unvalidated. The next registered increment is the explicitly quotient-trained learned positive control.
+Status 2026-08-29: Round 36's v1 and 36b outcomes remain governed by audits #23 and #24. Round 36c-w32, a privileged transition-supervised positive control, validly failed every exact gate; audit #25 finds that its co-moving target and unablated joint loss leave learned gate reachability unresolved, rather than proving the carrier or reducer unreachable. W64's behavior-only canonical skeleton remains informational and ineligible. After one frozen-target learned-pass calibration, the constructive program should move to a genuinely nontrivial quotient world.
 
 ## Prior program and correction (closed 2026-08-27)
 

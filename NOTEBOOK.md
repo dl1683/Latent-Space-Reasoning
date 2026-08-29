@@ -13,27 +13,178 @@ operational quotient and composable action table — and, after today, the
 prior question: is the certification regime itself passable by any learned
 artifact?
 
-Whole picture. The constructive program has now produced four registered
-outcomes in one day: v1 FAIL (confidence-confounded), 36b all-ineligible
-with a cross-seed-stable one-step skeleton in W64, and a positive control
-that fails every exact gate — worse than behaviour alone. Read together,
-the honest picture is that nothing learned has passed the exact reducer,
-and the one artifact designed to pass it made things worse. That is where
-tunnel vision would say "add another control"; the audit is asked instead
-whether the program is measuring its reducer rather than building a latent
-space. Alternatives held live: (1) the control objective is defective
-(moving-target supervision in the encoder's own coordinates; loss
-interference) — then the gates are still unvalidated, not unreachable;
-(2) the exact 12-cell 0.10/0.90 signature reducer is too strict for any
-learned artifact — a certification-regime problem; (3) supervise the
-signature/quotient directly, or freeze a behaviour-trained encoder and fit
-a transition head, to obtain a learned artifact that passes; (4) change the
-world (nontrivial quotient) so that identity actually compresses and the
-test is about structure, not exactness. Foundational thread advanced: the
-positive-control discipline itself — every gate now has a registered
-reachability test, and the first one failed; that is a fact about the
-gates the program did not have this morning. Audit #25's corrections and
-ranked alternatives are appended verbatim when it lands.
+Audit #25 replacement paragraph (verbatim; supersedes my interpretive paragraph):
+
+Audit #25 upholds the w32 exact FAIL and its `POSITIVE-CONTROL` scope, but
+narrows both reactions to it. As of the audit cutoff, no evaluated learned
+artifact has passed the exact reducer and only the oracle fixture has; that is
+a learned-pass reachability gap, not proof that learned artifacts cannot pass.
+The w32 control is not a clean reachability proof because its successor
+targets co-moved with the jointly trained encoder and its weight-1.0 MSE could
+interfere with BCE. W64 remains descriptively superior on its canonical
+table, but audit #24's behavior-ineligible, informational-only boundary is
+unchanged. The program should spend one capped increment on a frozen-target,
+head-only learned-pass calibration, then move to a presentation-duplicated
+32-state world with a true 16-class quotient rather than add another control
+ladder to the singleton-quotient toy.
+
+#### Audit #25 — honest sentence, reducer inventory, tunnel ruling, strongest direction, ranked increments, final verdict (verbatim)
+
+**Round 36c-w32 is a valid positive-control FAIL for its registered joint
+learned-target objective: this width-32 optimizer recipe did not reach the
+exact certificate. Because the successor coordinates co-moved with the
+encoder, behavioral BCE and transition MSE were combined at an unablated
+weight, and separate component traces were not retained, the run does not
+show that the carrier or exact gates are unreachable under direct
+supervision. It leaves learned gate reachability unresolved and is not a
+behavior-only latent-organization result.**
+
+“The auxiliary objective is now the leading hypothesis” may follow that
+sentence. It must remain a hypothesis until a frozen-target or loss-weight
+ablation identifies it.
+
+## 4. What the reducer has and has not demonstrated
+
+The fair current inventory is:
+
+| Artifact type | Has passed? | What it establishes |
+|---|---:|---|
+| Oracle-authored affine fixture | Yes | The declarative reducer has at least one exact accepting assignment and rejects selected corruptions. |
+| Behavior-only learned v1/36b | No | These registered recipes did not reach their eligible exact certificates. |
+| Joint learned-target 36c-w32 | No | This moving-target, weight-1.0 joint recipe did not validate learned reachability. |
+| Any frozen-target learned head | Untested | Would test transition-head/optimizer reachability without target chasing or BCE interference. |
+| Any direct signature-supervised learned artifact | Untested | Would test whether optimizer-produced parameters can pass the exact response-signature exam when the exam is taught directly. |
+| Any hand-constructed parameter assignment in the current neural architecture | Untested | Would test architecture representability, not optimizer learnability. |
+
+Accordingly, this sentence is licensed:
+
+> **As of audit #25, the exact reducer has accepted its oracle fixture but no
+> evaluated learned artifact; learned-pass reachability is unvalidated.**
+
+This sentence is not:
+
+> “The exact reducer is a reducer that learned artifacts cannot pass.”
+
+There is also a provenance boundary. The reducer says producer authenticity is
+out of scope and does not consume `weights.npz`. `producer_kind="learned"` is
+validated metadata, not proof of how parameters were obtained. A learned-pass
+demonstration therefore needs a prospectively locked producer, input and
+initialization hashes, component traces, a final weights hash, and a clear
+statement of which parameters were optimized versus assigned.
+
+### Three useful learned-pass controls
+
+1. **Frozen behavior encoder/readout; supervised transition head — run first.**
+   Freeze a retained behavior-trained encoder and readout whose canonical
+   signatures are supported and truthful; snapshot the 16 successor targets;
+   reinitialize only the transition head; train against fixed target embeddings.
+   Log transition MSE, maximum cell residual, and signature margins separately.
+   This removes both identified confounds while retaining a genuinely learned
+   encoder and a learned head. PASS validates learned head/reducer reachability;
+   FAIL localizes the next question to head capacity/optimization or the gap
+   between coordinate residual and signature margins.
+
+2. **Explicit signature/quotient supervision — final exam calibration.**
+   Train against the fixed oracle 12-bit signatures on every reducer-relevant
+   domain, not just the 176 canonical coordinate pairs. This is deliberately
+   circular and privileged: it teaches the exact exam. A PASS demonstrates
+   optimizer-produced reducer passability, nothing about quotient discovery.
+   Use it only if control 1 fails or if an immediate reducer calibration is
+   required.
+
+3. **Hand-constructed current-architecture solution — representability only.**
+   Assign or solve parameters for a fixed bit/signature chart inside the
+   current residual-tanh architecture. If exact gates pass, the architecture
+   can represent an accepting solution. Unless a locked optimizer produced the
+   parameters from declared targets, label this `SYNTHETIC-PARAMETER CONTROL`,
+   not `LEARNED`.
+
+The existing fixture is not a substitute for any of these: it uses per-action
+affine maps outside the learned shared residual-tanh parameterization.
+
+## 5. Tunnel vision and the strongest alternative direction
+
+### Ruling: found
+
+The program's guiding question is what a denizen needs to navigate a latent
+world. Round 36's empirical loop has narrowed to whether a particular learner
+can satisfy a particular exact examiner. The true depth-1 signature already
+separates all 16 states, so the “quotient” has no nontrivial compression. Every
+additional control on this world has diminishing scientific value unless it
+closes the learned-pass reachability gap once and then stops.
+
+### Strongest cheap research direction: a presentation-duplicated quotient world
+
+Build the next world as `S = {0,1}^4 x {0,1}`: four operational bits plus one
+presentation/nuisance bit. Give each operational state two opaque handles.
+Primitive task actions change only the four operational bits; a presentation
+move changes only the nuisance bit. The binary response and all future task
+responses ignore nuisance. The true operational quotient is therefore
+nontrivial: 32 hidden states, 16 denizen places, two representatives per place.
+
+Use a quotient-factored carrier `z = (q, p)`:
+
+- response and task transition operate through `q`;
+- presentation information may live in `p`;
+- no coordinate equality between the two representatives is required;
+- behavior-only training receives no hidden state labels or duplicate-pair
+  target; and
+- an unrestricted carrier is the matched baseline.
+
+Predeclare held-out presentation transfer: train selected action words through
+one presentation and test the paired presentation, then swap roles. Primary
+questions become substantive:
+
+- do the two presentations acquire the same operational signature;
+- do actions descend independently of presentation;
+- does the quotient-factored carrier outperform the unrestricted carrier on
+  held-out presentation transfer and rolled interchangeability; and
+- can presentation be changed without changing operational place?
+
+This is still a tiny CPU world—32 embeddings and the existing action family—so
+it should cost minutes, not a new infrastructure cycle. Its “so what” is:
+
+> **Can we build a latent world that keeps what a place means separate from how
+> that place is presented, so its inhabitants can move reliably across two
+> views of the same world?**
+
+Keep the current exact reducer as a secondary certificate only after one
+learned-pass calibration. The next world's primary inquiry should report
+predeclared rates and margins alongside exactness; it must not let one
+all-cells conjunction erase the distinction between learned structure and
+certificate saturation.
+
+## 6. Ranked next increments
+
+| Rank | Increment | Cost | Decision value |
+|---:|---|---|---|
+| 1 | **One frozen-target, head-only learned-pass calibration** | One tiny CPU cell; reuse current runner/config surface | Removes moving targets and BCE interference. This is the cleanest remaining test of learned reducer reachability. Instrument separate losses and max residuals. Stop after one prospectively locked width/capacity choice; do not start another ladder. |
+| 2 | **Presentation-duplicated 32-to-16 quotient world with factored and unrestricted carriers** | Low design; minutes of CPU | Returns the program to building a latent space, makes identity genuinely nontrivial, and directly tests the presentation/state hole. This is the strongest research direction. |
+| 3 | **Direct full-domain signature-supervised exam calibration, only if rank 1 fails** | Low CPU; moderate circularity | Demonstrates that optimizer-produced parameters can pass the reducer when every assessed signature is explicitly taught. It calibrates the exam; it is not a scientific quotient-learning result. |
+| 4 | **Prospective approximate-inquiry branch** | Near-zero reducer work after design | Preserve exact PASS. Report fixed rates/margins as a separate non-PASS status on new runs only. Never reclassify W64 or 36c. Use it in the nontrivial world to avoid conflating structure with all-cell saturation. |
+| 5 | **Hand-constructed current-network parameter solution** | Very low to moderate | Useful only to separate architecture representability from optimizer reachability. Label synthetic unless a locked optimizer produced it. |
+| 6 | **Further longer/wider behavior-only or moving-target control cells** | Low code, low information | Do not run next. They repeat the same architecture/reducer confounds and deepen tunnel vision. The already authorized 36c-w64 result, if it completes, is retained and reported but does not authorize another cell. |
+
+## Final verdict
+
+- **Mechanical w32 all-gate FAIL:** **UPHELD.**
+- **Action-table truth `0/5`; cross-seed table FAIL:** **UPHELD.**
+- **“Exact gates are not reachable by this carrier”:** **REJECTED AS
+  UNPROVEN.** The registered joint optimizer failed; reachability remains
+  unresolved.
+- **“Certification-regime problem”:** **NARROW TO “THE REACHABILITY CONTROL
+  FAILED TO VALIDATE THE REGIME.”** Do not blame the reducer or carrier yet.
+- **Auxiliary-objective explanation:** **LEADING HYPOTHESIS, NOT IDENTIFIED
+  CAUSE.** Moving targets and loss interference are real design confounds;
+  universal signature collapse is not found.
+- **“W64 behavior-only beat the control”:** **DESCRIPTIVELY TRUE ON CANONICAL
+  GATES; NO SCIENTIFIC REHABILITATION.** Audit #24 remains unchanged.
+- **Only an oracle fixture has passed:** **FOUND FOR THE ARTIFACTS READ.** This
+  is a learned-pass reachability gap, not an impossibility theorem.
+- **Tunnel vision:** **FOUND.** One capped calibration remains justified; a new
+  control ladder does not.
+- **Strongest research direction:** **A PRESENTATION-DUPLICATED, GENUINELY
+  NONTRIVIAL QUOTIENT WORLD WITH A QUOTIENT-FACTORED CARRIER.**
 
 ## 2026-08-29 — Round 36c positive control (w32): FAIL on every exact gate
 
@@ -46,13 +197,19 @@ truth (0/5 seeds) and cross-seed table identity, which the behaviour-only
 this is not a behaviour-only result and not a quotient-from-behaviour
 claim. Registered meaning of a control FAIL: the exact gates are not
 reachable by this carrier even with direct transition supervision — a
-certification-regime problem, not a latent-organisation result. The
-surprise is the direction: direct supervision made things worse than
-behaviour alone, which points at the auxiliary objective (target chasing
-through the stop-gradient successor encoding, or signature collapse) rather
-than at the gates — that is with Codex as an adjudication. The registered
-conditional w64 cell runs now (its precondition, a valid complete w32
-exact-gate FAIL, is met). A fresh audit follows both cells.
+certification-regime problem, not a latent-organisation result. Audit #25 replacement (verbatim; supersedes the interpretive tail of this entry):
+
+Registered mechanical meaning: the width-32 positive-control recipe did not
+reach the exact certificate. Audit #25 rejects the stronger sentence that the
+gates are “not reachable by this carrier even with direct supervision.” The
+auxiliary target was the stop-gradient value of an encoder that continued to
+move through its source roles and behavioral loss; BCE and MSE were combined
+at weight `1.0` without an ablation; and separate component traces were not
+serialized. The leading hypothesis is therefore objective/optimization
+interference, but its mechanism is not identified. This is a failure of the
+registered reachability control, not a behavior-only latent-organization
+result, a reducer impossibility result, or a rehabilitation of 36b.
+
 
 ## 2026-08-29 — Re-contextualization #24 (2-hour step-back; audit #24 already in flight on the only new claim)
 

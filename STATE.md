@@ -1986,3 +1986,32 @@ control before any longer/wider behavior-only cell.
 ### Round 36c — quotient-trained positive control (registering/implementing)
 
 Codex is registering Round 36c in `theory/EXPERIMENTS.md` and implementing it in `experiments/run_operational_quotient.py` with configs `experiments/config/operational_quotient_36c_*.json`: the same 8-D carrier, width, seeds, and representatives as 36b with explicit state-transition / quotient-consistency supervision, scored by the unchanged exact reducer. A PASS shows the learned architecture/optimizer can reach the certificate and localizes the behaviour-only gap to the objective; a FAIL says the architecture or gate regime is itself the immediate problem. The affine fixture is not this control. No 36c run has started.
+
+## Round 36c — audit #25 status (2026-08-29, verbatim; supersedes the Round 36c sentences above)
+
+**Round 36c-w32** (learned positive control; privileged true-successor
+pairings; same exact reducer) completed validly and returned a
+`POSITIVE-CONTROL` FAIL on every exact gate in every seed, including
+canonical action-table truth `0/5` and the whole cross-seed table. Audit #25
+governs interpretation: this is a valid failure of the registered width-32
+joint `BCE + 1.0 * learned-target MSE` recipe, not evidence that the carrier
+or exact gates are unreachable under direct supervision. The successor
+encoder targets co-moved during training, the two losses were not ablated,
+and separate component traces were not retained, so learned gate
+reachability remains unresolved. This result is not behavior-only and does
+not alter audit #24's ineligible, informational-only W64 ruling. At audit #25
+cutoff no 36c-w64 verdict was present.
+
+**Audit #25 — Round 36c-w32 status.** The hash-valid w32 producer completed in
+`819.844 s`; read-only reduction reproduces `FAIL` on quotient availability,
+well-definedness, involution, the swap/toggle table, H2/H3 closure,
+interchangeability, canonical action-table truth, and cross-seed table
+identity/truth, with zero exact seeds on every per-seed gate. The registered
+reachability control therefore failed to validate learned passability. It
+did not establish non-reachability: the supervised successor encoding was a
+moving target, all parameters were jointly optimized under an unablated
+weight-1.0 BCE/MSE objective, and the artifact retained no separate component
+curves. Licensed reading: this optimizer/control recipe did not reach its
+certificate; cause remains unresolved. Only the oracle fixture has passed the
+reducer so far. Run at most one frozen-target, head-only learned-pass
+calibration, then pivot to a genuinely nontrivial quotient world.
