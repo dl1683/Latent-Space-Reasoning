@@ -1952,3 +1952,26 @@ One durability defect remains: `.codex_audit21.md` is only a 327-byte self-refer
 ### Round 36b — amended before any outcome; runs held
 
 Preregistered `f9dea33` (`round36b-behavior-fit-ladder-v1`, `theory/EXPERIMENTS.md`): a four-cell behaviour-fit ladder — `S16` (16k steps, lr 0.003, width 32), `S64` (64k / 0.003 / 32), `LR64` (64k / 0.001 / 32), `W64` (64k / 0.003 / 64); walls 8 / 20 / 20 / 30 min; every cell run and visible; no pooling or best-cell selection; configs `experiments/config/operational_quotient_36b_{S16,S64,LR64,W64}.json` plus the runner revision hash-locked before any outcome (lock block `ROUND36B_BEHAVIOR_FIT_LOCK_V1`, ledger `round36b_lock`, commit `f95ff01`). Status: Tier-1 lock review #1 NOT-READY (ledger `round36b_review1`, commit `70b58a7`; one blocking defect — behavioural eligibility, exact 21,184/21,184 train and 2,240/2,240 held-out, is validated from producer-supplied aggregate counts rather than recomputed from serialized per-row logits/probabilities). The audit #23 amendment (`theory/EXPERIMENTS.md` "Round 36b amendment (audit #23; before any outcome)", registered `9edb892`) is being carried into the runner and fixture by Codex: three-stage status tree (behaviour underfit / operational signature unsupported / supported non-congruence / PASS), confidence-free diagnostic table, literal cellwise cross-seed accounting, depth-wise training diagnostics. The lock recorded at `f95ff01` is superseded by that amendment; a new lock, review, and RUN-READY precede any 36b run. No 36b run has started. Orthogonal controls to register alongside: learned lookup baseline; explicit quotient-trained positive control; nontrivial-quotient world; depth 4–6 algebraic holdouts; second transition architecture.
+
+## Round 36b — audit #24 status (2026-08-29, verbatim; supersedes the Round 36b sentences above)
+
+**Round 36b — complete; all cells behavior-ineligible under the registered
+exact rule (audit #24).** The prospectively locked, post-v1 exploratory
+ladder S16/S64/LR64/W64 completed under lock V3 and review #2 RUN-READY. The
+byte-matching reducer replays all four cells without integrity errors as
+`FAIL — BEHAVIOR UNDERFIT; QUOTIENT INELIGIBLE`; no cell is eligible and
+there is no PASS. W64 fits all `21,184` training rows in all five seeds and
+misses `1–24` of `2,240` held-out rows per seed; all misses are H3, with no
+erroneous row common to all five seeds. Audit #24 therefore upholds the
+registered statuses but narrows their scientific meaning: the ladder did
+not reach exact held-out eligibility, while the reachability of that exact
+learned precondition remains unvalidated—not proven unsatisfiable. W64's
+ineligible primary tables recover all 16 encoder identities and the truthful
+`16 x 11` canonical action table identically across five seeds, but
+well-definedness on rolled representatives, involution, H2/H3 signature
+closure, and interchangeability remain non-exact even at diagnostic
+`p>0.5`. This is a cross-seed-stable canonical one-step skeleton, not a
+certified operational quotient/action algebra. All diagnostic and cellwise
+tables are informational only and cannot alter the primary status. Next:
+register the same-architecture, explicitly quotient-trained learned positive
+control before any longer/wider behavior-only cell.

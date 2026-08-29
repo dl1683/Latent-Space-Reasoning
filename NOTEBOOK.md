@@ -13,28 +13,98 @@ the reducers finished and is still running — no second auditor is fired on
 the same claim. Its corrections and alternatives are appended verbatim
 when it lands.
 
-Whole picture. Two lines are now closed or near-closed by their own
-registered rules: NLM-007 (terminal ladder, closing statement adopted) and
-Round 36 v1/36b, where the constructive artifact exists, runs in minutes,
-fits training exactly at width 64, and yet is never eligible for the
-quotient question because the registered precondition (exact fit on 2,240
-unseen spellings) is missed by 1–24 rows per seed. The reframing this
-forces: the program's gates are themselves under test. A precondition that
-a behaviour-only learner may be structurally unable to satisfy converts
-every outcome into "ineligible" and tells us nothing about the latent's
-organisation — the same shape of failure audit #23 found in the 0.10/0.90
-support rule. So the live question is no longer only "does behaviour yield
-a quotient?" but "what certification regime makes that question askable
-without becoming a rescue?" Alternatives held live for audit #24 to rank:
-(1) eligibility = exact training fit + a registered held-out tolerance;
-(2) the explicit quotient-trained positive control (does the reducer PASS
-anything at all?); (3) the learned lookup baseline (how much closure is
-composition vs finite lookup?); (4) a nontrivial-quotient world where
-identity actually compresses; (5) a second transition architecture.
-Foundational thread advanced: gate reachability as a first-class
-preregistration item — every future gate must ship with a positive control
-that can pass it. Not narrowed: NLM-007's residue (instruments, wording
-discipline) and Round 35 (requirements envelope) remain on record.
+Audit #24 replacement paragraph (verbatim; supersedes my interpretive paragraph, which prematurely called the line 'closed or near-closed' and equated exact-truth eligibility with the audit-#23 confidence defect):
+
+Audit #24 upholds every Round 36b reducer status and finds no PASS, but it
+does not close behavior-only quotient construction. W64 is exact on training
+and all H2 held-out terminal rows; its `1–24` remaining errors per seed are
+all H3, seed-variable, and share no single row across all five seeds. The
+exact held-out gate was therefore not reached, but is not shown
+unsatisfiable. Informationally only, W64 recovers all 16 canonical identities
+and the complete truthful `16 x 11` action table identically across seeds.
+It still fails exact rolled-representative descent, involution, closure, and
+interchangeability even in the `p>0.5` diagnostic, so the result is a stable
+canonical one-step skeleton rather than a certified quotient algebra. The
+next registered increment is the learned, explicitly quotient-trained
+positive control scored by the unchanged reducer; a separate prospective
+approximate-inquiry branch may use exact training plus a fixed held-out
+tolerance, while the original exact PASS remains unchanged.
+
+The existing “Round 36b result” entry can remain after this audit is appended;
+its informational/diagnostic labels are disciplined.
+
+#### Audit #24 — W64 section, ranked next increments, and final verdict (verbatim)
+
+## 2. What W64 does and does not mean
+
+W64's ineligible primary flags are unusually informative. At the registered
+support threshold, every seed passes:
+
+- quotient availability: all 16 encoder signatures are supported and truthful;
+- action-table truth: `176/176` canonical state/action cells;
+- cross-seed action table: the five complete tables are identical and truthful.
+
+This is stronger than “approximately 99% behavior.” It says that behavior-only
+training found the same canonical one-step operational table across five
+random initializations. The result is still informational rather than a
+verdict because the frozen eligibility tree says so.
+
+The opposite reading is equally important. At `p>0.5`, W64's ranges are:
+
+| Gate | Per-seed range | Exact seeds |
+|---|---:|---:|
+| Quotient availability | `17/17` | 5/5 |
+| Quotient well-definedness | `7540–9965 / 10560` (71.4–94.4%) | 0/5 |
+| Toggle involution | `1724–3178 / 3776` (45.7–84.2%) | 0/5 |
+| Swap/toggle table | `372–384 / 384` (96.9–100%) | 1/5 |
+| H2 signature closure | `1167–1183 / 1184` (98.6–99.9%) | 0/5 |
+| H3 signature closure | `643–972 / 1056` (60.9–92.0%) | 0/5 |
+| Interchangeability | `50928–101706 / 132160` (38.5–77.0%) | 0/5 |
+| Canonical action-table truth | `176/176` | 5/5 |
+| Whole-table cross-seed identity and truth | `176/176` | PASS |
+
+Thus the correct structural description is:
+
+> **A cross-seed-stable canonical one-step skeleton emerged, but action on the
+> full representative population did not become an exact well-defined,
+> involutive, closed, interchangeable quotient action.**
+
+“The latent is organized” is licensed only with that local/canonical scope.
+“The exact structural gates are unreachable” is not licensed until a learned
+positive control tests reachability. “The latent is unorganized” is contradicted
+by the canonical table.
+
+## 7. Ranked next registered increments
+
+| Rank | Increment | Cost | Why / decision value |
+|---:|---|---|---|
+| 1 | **Explicit learned quotient-trained positive control** | Low–moderate implementation; roughly one five-seed CPU cell, likely `<15 min` after review | Use the same 8-D carrier, same width (run 32 first; 64 only if prospectively conditional), same seeds, same representatives, and unchanged exact reducer. Add direct state-transition or quotient-consistency supervision. PASS shows the learned architecture/optimizer can reach the certificate and localizes the behavior-only gap to the objective. FAIL says the architecture or gate regime is itself the immediate problem. The affine fixture is not this control. |
+| 2 | **Separate exact certification from approximate-structure eligibility** | Near-zero compute for a reducer design/replay; medium governance; a new prospective behavior run costs about 10–15 CPU min | Keep the original exact PASS unchanged. Add a distinct inquiry branch requiring exact `21184/21184` training in every seed, exact H2 terminal behavior, and at least `1046/1056` (99.0%) H3 terminal behavior in every seed. It may report structural rates but can never emit the exact PASS. This threshold is a transparent post-36b successor rule and must not retroactively reclassify W64; W64 would still miss it in seeds 11 and 71. |
+| 3 | **Learned lookup baseline** | Very low; minutes | Fit handle × observed-word behavior with a frozen default for unseen spellings. Exact train plus poor H2/H3 establishes the memorization floor; comparing it with W64 quantifies what the shared transition gained. Run it alongside rank 2 if convenient. |
+| 4 | **Genuinely nontrivial quotient world** | Medium design and implementation; approximately 30–60 CPU min after controls | Add nuisance bits or duplicate hidden states with identical response futures and require independent representatives to collapse. This is the first world that tests quotient formation rather than recovery of a singleton 16-state identity table. It becomes interpretable only after rank 1 establishes gate reachability. |
+| 5 | **Longer/wider behavior-only cell** | Low code cost but another 15–30+ CPU min; low information gain | W64 already saturates training and canonical action truth while rolled structural errors remain large. More scale would again conflate optimizer luck, capacity, and gate reachability. Register only as a later sensitivity after ranks 1–3, not as the next move. |
+
+The concrete next registration should therefore be the learned positive
+control. The approximate eligibility branch is the next **certification-rule**
+increment, but it is not a rescue and does not replace exact PASS.
+
+## Final verdict
+
+- **Mechanical four-cell status:** **UPHELD.**
+- **No eligible cell / no PASS:** **UPHELD.**
+- **“Behavior underfit” as the registered status:** **UPHELD, but for W64 say
+  held-out exactness missed after exact training.**
+- **“Exact-held-out eligibility is unsatisfiable by construction”:**
+  **REJECTED AS UNPROVEN.** Gate reachability is unvalidated.
+- **W64 canonical organization:** **FOUND, INFORMATIONAL ONLY.** Exact encoder
+  identity and exact truthful cross-seed canonical action table.
+- **W64 exact quotient/action algebra:** **NOT FOUND.** Rolled descent,
+  involution, closure, and interchangeability remain non-exact.
+- **Over-claimed WIN in result notebook/ledger wording:** **NOT FOUND.**
+- **Premature closure / stale public state:** **FOUND.** Re-contextualization
+  #24 needs narrowing; README, STATE, and project memory need propagation.
+- **Next registered increment:** **explicit learned quotient-trained positive
+  control, before further scaling.**
 
 ## 2026-08-29 — Round 36b result: every cell BEHAVIOR UNDERFIT; QUOTIENT INELIGIBLE
 
