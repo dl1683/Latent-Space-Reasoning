@@ -5,6 +5,123 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-28 — Re-contextualization #18 (2-hour step-back; audit #18 fired, unprimed)
+
+Live question unchanged: is the surviving X⊥→Δ⊥ predictability in one small
+decoder an operational-state relation, a smooth presentation/lexical
+relation, a generic prefix-edit response, or an instrument artefact — and
+what does the answer say about holes hostile to structured reasoning.
+
+What holds: the four-cell common-scale table (adjudicated wording in
+STATE.md); the contextual-prefix state screens in both sentinels (token-id
+field cos 0.45–0.65 vs ridge 0.62–0.76 at F4–F20; ctx norm-error ≥ 1.0 vs
+ridge 0.81–0.89). What is reframed by the screens: a token-id-only field
+already carries half or more of the raw displacement cosine, so the
+X-conditioned surplus is a gap of ~0.1–0.2 cosine and, more sharply, the
+ctx field cannot beat identity on norm-error at all — the state-reading
+claim now rests on that norm/scale margin as much as on direction. F0 is
+nearly closed by prefix ids (0.65 vs 0.69), which is the token-identity
+regime reading, not a new fact.
+
+Alternatives held live (not run): (1) the ridge–ctx gap is a
+capacity/standardization artefact (df-matched ridge vs sparse token field)
+— the completed ctx_A/ctx_B completion scores and the df-matched X-free
+field are the direct checks; (2) the gap is a smooth lexical relation the
+four word-only nulls under-fit (kernel/knn already in the K=13 universe say
+no, but only at their tuned capacity); (3) the gap is real but a
+one-position readout artefact — Round 33's consequence test is exactly this
+falsifier; (4) decoder-specific — a second pinned decoder remains the
+cheapest replication axis and is deliberately behind the consequence test;
+(5) the whole line is a well-measured triviality (context vectors predict
+context-vector displacements) — the hostile-hole program only earns
+anything if the consequence currency survives AND a typed use-frame task
+shows a move with multi-position consequences that the bridge ladder cannot
+absorb. Foundational thread advanced this cycle: the licensed-wording
+discipline (adjudication → STATE/memory verbatim) and the repair-round cap
+stop on the SVD gate — instruments are not allowed to consume the program.
+Audit #18 (fired, unprimed) returned CONDITIONAL / wording corrections required; its correction block and its alternatives follow verbatim.
+
+### 2026-08-28 — Audit #18 adversarial correction
+
+The contextual-prefix results are screens only. At F4–F20 they do not triage the X-conditioned hypothesis out, but they do not make a state-reading gate evidentially live: completion endpoints, crossed gates, joint key support, collapse checks, and capacity matching are missing. The state ridge uses approximately 5–10 times the contextual arm's effective degrees of freedom, so the ridge-versus-context gap is not yet identified as state information.
+
+At F0, contextual token-sequence metadata nearly closes ridge direction but not magnitude; “prefix IDs explain F0” is too broad. The designated F0 ridge field fails three four-cell conditions, but the stored kernel field passes an analogous post hoc reduction in all four. F0 is a model-class-sensitive diagnostic, not an all-field kill.
+
+SVD telemetry is parked by allocation choice, not by an AGENTS.md repair-round rule, and its gate remains unpassed. The Round 33 consequence instrument exists but is unrun and NOT-READY: the joint-positive-key rule is not implemented correctly, and Tier-1 provenance/parity blockers require closure. A future consequence pass would show persistence of predictive accuracy, not by itself operational or semantic state.
+
+#### Audit #18 — tunnel-vision verdict, strongest alternative, and recommended execution order (verbatim)
+
+## Tunnel-vision verdict
+
+Yes. The program is currently concentrated on one residual \(X_\perp \rightarrow \Delta_\perp\) relationship in:
+
+- one 0.6B decoder;
+- one 80-word inventory;
+- sixteen closely related templates;
+- two punctuation sentinels;
+- one append operation;
+- one readout position;
+- one-step local response;
+- one heavily repaired analysis path.
+
+The strongest alternative explanation is a **generic contextual-response/Jacobian account**:
+
+> The high-dimensional residual state encodes template, token, position, and lexical context. Appending a fixed punctuation token induces a locally predictable architectural response. A high-capacity ridge learns that deterministic response. Accurate reconstruction then remains closer under later smooth decoder dynamics, without any quotient, operational state, or latent-world law being present.
+
+The contextual screen’s cosine of approximately 0.45–0.65 strengthens this alternative rather than weakening it.
+
+## Recommended execution order
+
+1. **Capacity-match before interpreting Round 33.**  
+   On every existing outer fold, constrain the state ridge to the contextual arm’s effective degrees of freedom—approximately 42—either by solving for a state-ridge lambda satisfying  
+   \(\mathrm{tr}[X(X^\top X+\lambda I)^{-1}X^\top]\approx df_{\text{ctx}}\),  
+   or by a training-only rank/PCA constraint. Preserve the same held-out splits, endpoints, and crossed gates. Add a contextual-capacity ladder as the symmetric control.
+
+2. **Run cheaper X-free moot-makers.**
+
+   - Sentinel/terminal-token plus absolute and relative position only.
+   - Template/edit-kernel baseline.
+   - Frozen input-embedding sequence baseline over the last-eight prefix and first-four suffix tokens.
+   - Contextual nonlinear capacity ladder.
+
+   If these close the state arm after capacity matching, the current interpretation becomes moot.
+
+3. **Use an architecture null.**  
+   Repeat the capture and screen in an architecture-matched randomly initialized decoder. A similar depth profile would show that the effect arises from residual architecture and local smoothness rather than learned operational structure. Any GPU execution still requires explicit approval.
+
+4. **Change the measurement.**  
+   Replace full-vocabulary KL under one artificial tail with a behavior-bearing readout:
+
+   - frozen yes/no log-odds;
+   - a typed operation-specific target;
+   - causal patch/ablation effects;
+   - at least two disjoint frozen tail families.
+
+5. **Change the task family.**  
+   A stronger operational-state test would use a world with known transitions, such as a controlled finite-state machine, modular arithmetic, or truth-evaluable propositions. Require:
+
+   - held-out predicates and templates;
+   - matched wrapper-edit and irrelevant-token controls;
+   - bidirectional transfer;
+   - involution where appropriate;
+   - two-step composition;
+   - prediction of an externally scored behavior.
+
+6. **Only then test a second trained decoder.**  
+   A second decoder checks model specificity, but it does not fix the present construct-validity ambiguity.
+
+The completed contextual commands should be run only after the current provenance/parity review blockers are closed:
+
+```powershell
+.venv\Scripts\python.exe experiments\analyze_lm_dynamics.py --run lm_dyn_v1 --config experiments/config/lexical_probe_v1.json --source forward --sentinel-tag A --target delta --unseen-words 2 --residualize static --contextual-prefix-xfree --pairs 0 1 2 3 4 --n-shuffle 20 --n-boot 500 --tag ctx_A
+```
+
+```powershell
+.venv\Scripts\python.exe experiments\analyze_lm_dynamics.py --run lm_dyn_v1 --config experiments/config/lexical_probe_v1.json --source forward --sentinel-tag B --target delta --unseen-words 2 --residualize static --contextual-prefix-xfree --pairs 0 1 2 3 4 --n-shuffle 20 --n-boot 500 --tag ctx_B
+```
+
+Do not run the current consequence command until the joint-key defect and Tier-1 blockers are closed.
+
 ## 2026-08-28 — resSA2 complete: the common-scale sentinel × nuisance table is filled
 
 `analysis_resSA2.json` (sentinel A, P_static, amended K=13 candidate universe,

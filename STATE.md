@@ -1776,3 +1776,17 @@ fingerprint alternative or validate one-position law as consequence. Run the
 contextual-prefix X-free baseline first, then the bounded multi-position
 teacher-forced consequence test. F0 remains diagnostic and supplies no basis
 to reverse or bypass those gates.
+
+## Audit #18 wording (2026-08-28, adopted verbatim; supersedes conflicting NLM-007 sentences above)
+
+### Audit #18 correction — contextual screens, F0, SVD, and consequence status
+
+`analysis_ctxscr_A.json` and `analysis_ctxscr_B.json` are point-only screens, not gate adjudications. At F4–F20, the cell-state ridge exceeds the strongest `token_ids_v1` field by approximately 0.11–0.20 cosine and 0.11–0.20 normalized-error reduction in both sentinels, so the screen does not triage the X-conditioned hypothesis out. It does not establish that the state-reading gate is live: the completed skill and continuous-KL endpoints, crossed intervals, joint key count, family-collapse checks, and a capacity-matched comparison remain unscored. The state ridge has approximately 210–406 effective degrees of freedom across F4–F20 versus approximately 42 for the contextual ridge; both arms use training-only standardization. The current gap is therefore compatible with state information, unmatched capacity, missing contextual features, or a mixture.
+
+At F0, the strongest contextual token-sequence field nearly closes the state ridge on displacement direction (A/B cosine gaps approximately 0.019/0.018), while its normalized error remains approximately 1.00 versus 0.97 for the state ridge. This is a screen-level directional near-closure by prefix-and-suffix token, length, position, and POS metadata, not proof that “prefix IDs explain F0” or the full transition.
+
+The four-cell table remains a qualified common-scale ridge result at F4–F20. Its F0 wording is narrowed: the designated ridge field is non-qualifying in A-static, B-static, and B-score4, with a weak pooled A-score4 exception; however, a post hoc audit reduction of the kernel field passes the analogous three-endpoint, key-count, and no-collapse rule at F0 in all four cells. B-score4 KL-rank remains amendment-qualified. F0 is therefore a model-class-sensitive diagnostic, not an all-field dead end or a structural identity law.
+
+The SVD telemetry work is parked as a discretionary allocation decision, not under an AGENTS.md repair-round rule; no such rule is present in the live file. The low-rank gate remains unpassed, and every affected low-rank/K=13 claim retains its qualification.
+
+The Round 33 consequence code exists but is unrun and NOT-READY under Tier-1 review #3. In particular, the reducer does not yet enforce six keys jointly positive across both horizons. No consequence run is authorized until the review blockers are closed. Even after repair, a pass licenses only persistence of downstream predictive accuracy under frozen tails, not an operational-state interpretation.
