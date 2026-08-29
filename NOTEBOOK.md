@@ -5,6 +5,38 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-28 — Re-contextualization #19 (2-hour step-back; audit #19 fired, unprimed)
+
+Live question unchanged: is the surviving X⊥→Δ⊥ predictability in one small
+decoder an operational-state relation, a generic contextual-response
+(Jacobian) relation, a capacity artefact, or an instrument artefact — and
+what does the answer say about holes hostile to structured reasoning.
+
+What holds: the adjudicated four-cell table; both contextual screens; ctx_A
+(ridge beats the strongest contextual-prefix arm on every endpoint at F4–F20
+with crossed LBs > 0, at unmatched capacity). What is reframed: the whole
+line now hinges on ONE identified confound — capacity (state ridge ~5–10×
+the contextual arm's effective df). Round 34 is the registered answer and
+runs before the consequence test; the consequence instrument is parked on a
+branch after four NOT-READY rounds, which I read as partly a
+reviewer-escalation artefact (each round raised a new bar) and partly real
+(legacy-base pins, exact-fit reuse). Instrument reviews are now the main
+consumer of the program's time; the repair cap is doing its job.
+
+Alternatives held live: (1) capacity explains the gap (Round 34 MOOT) — then
+the line collapses to "context vectors predict context-vector displacements"
+and the constructive program moves to a typed use-frame task; (2) capacity
+does not explain it (KEEP) — then the consequence question returns, but
+audit #18's construct-validity limit stands (persistence ≠ state); (3) the
+cheapest decisive check may be smaller than Round 34: df-match the state
+ridge alone against the EXISTING ctx artifacts (one arm, one solve) — audit
+#19 is asked whether that should run first; (4) the skill margins may
+partly inherit the skill-denominator pathology flagged at F0; (5) decoder
+specificity remains untested. Foundational thread advanced: instrument
+governance itself — split producer/joint verdicts so a read-only reducer
+cannot block a producer run, and the repair cap as a standing rule.
+Audit #19's corrections and alternatives will be appended verbatim below.
+
 ## 2026-08-28 — ctx_A complete: contextual-prefix completion comparator, sentinel A (unmatched capacity)
 
 `analysis_ctx_A.json` (committed analyzer, unresidualized form, 20 shuffles,
