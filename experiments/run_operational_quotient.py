@@ -37,6 +37,8 @@ SCHEMA_EVIDENCE = "round36-operational-quotient-evidence-v1"
 SCHEMA_VERDICT = "round36-operational-quotient-verdict-v1"
 REGISTRATION_ID = "round36-minimal-operational-quotient-v1"
 ROUND36B_REGISTRATION_ID = "round36b-behavior-fit-ladder-v1"
+ROUND36C_REGISTRATION_ID = "round36c-quotient-trained-positive-control-v1"
+POSITIVE_CONTROL_SCOPE = "POSITIVE-CONTROL"
 PASS_STATUS = "PASS — MINIMAL OPERATIONAL QUOTIENT WORLD"
 UNDERFIT_STATUS = "FAIL — BEHAVIOR UNDERFIT; QUOTIENT INELIGIBLE"
 SIGNATURE_UNSUPPORTED_STATUS = (
@@ -220,10 +222,18 @@ def _is_round36b(config: dict[str, Any]) -> bool:
     return _registration_id(config) == ROUND36B_REGISTRATION_ID
 
 
+def _is_round36c(config: dict[str, Any]) -> bool:
+    return _registration_id(config) == ROUND36C_REGISTRATION_ID
+
+
 def _validate_config(config: Any) -> dict[str, Any]:
     is_round36b = (
         isinstance(config, dict)
         and config.get("registration_id") == ROUND36B_REGISTRATION_ID
+    )
+    is_round36c = (
+        isinstance(config, dict)
+        and config.get("registration_id") == ROUND36C_REGISTRATION_ID
     )
     root_keys = [
         "schema_version",
@@ -236,8 +246,10 @@ def _validate_config(config: Any) -> dict[str, Any]:
         "training",
         "thresholds",
     ]
-    if is_round36b:
+    if is_round36b or is_round36c:
         root_keys.append("registration_id")
+    if is_round36c:
+        root_keys.append("positive_control")
     root = _require_keys(
         config,
         root_keys,
@@ -255,6 +267,61 @@ def _validate_config(config: Any) -> dict[str, Any]:
             root["registration_id"],
             ROUND36B_REGISTRATION_ID,
             "config.registration_id",
+        )
+    elif is_round36c:
+        _expect(
+            root["registration_id"],
+            ROUND36C_REGISTRATION_ID,
+            "config.registration_id",
+        )
+        positive_control = _require_keys(
+            root["positive_control"],
+            [
+                "cell",
+                "activation",
+                "result_scope",
+                "purpose_gate",
+                "supervision",
+                "transition_loss_weight",
+                "transition_cells_per_step",
+                "successor_target",
+                "hidden_state_use",
+            ],
+            "config.positive_control",
+        )
+        model_value = root.get("model")
+        transition_width = (
+            model_value.get("transition_hidden_width")
+            if isinstance(model_value, dict)
+            else None
+        )
+        expected_cell = (
+            "36c-w32"
+            if transition_width == 32
+            else "36c-w64"
+            if transition_width == 64
+            else "invalid-width"
+        )
+        expected_activation = (
+            "primary_run_first"
+            if expected_cell == "36c-w32"
+            else "conditional_on_valid_36c_w32_fail"
+        )
+        expected_positive_control = {
+            "cell": expected_cell,
+            "activation": expected_activation,
+            "result_scope": POSITIVE_CONTROL_SCOPE,
+            "purpose_gate": "REACHABILITY",
+            "supervision": "canonical_next_encoder_transition_consistency_mse",
+            "transition_loss_weight": 1.0,
+            "transition_cells_per_step": 176,
+            "successor_target": "stop_gradient_encoder_of_true_successor_handle",
+            "hidden_state_use": "successor_handle_pairing_only",
+        }
+        _expect(
+            positive_control,
+            expected_positive_control,
+            "config.positive_control",
         )
 
     world = _require_keys(
@@ -378,10 +445,21 @@ def _validate_config(config: Any) -> dict[str, Any]:
         "threads": 1,
         "deterministic_algorithms": True,
         "evaluation_batch_size": 4096,
-        "target_cpu_minutes": [3, 8],
     }
     for key, expected in expected_training.items():
         _expect(training[key], expected, f"config.training.{key}")
+    expected_target_cpu_minutes = (
+        [12, 16]
+        if is_round36c and model["transition_hidden_width"] == 32
+        else [14, 20]
+        if is_round36c
+        else [3, 8]
+    )
+    _expect(
+        training["target_cpu_minutes"],
+        expected_target_cpu_minutes,
+        "config.training.target_cpu_minutes",
+    )
 
     registered_knobs = (
         training["optimizer_steps_per_seed"],
@@ -399,6 +477,15 @@ def _validate_config(config: Any) -> dict[str, Any]:
         if registered_knobs not in allowed_round36b_knobs:
             raise ContractError(
                 "Round 36b config knobs do not match a registered S16/S64/LR64/W64 cell"
+            )
+    elif is_round36c:
+        allowed_round36c_knobs = {
+            (64000, 0.003, 32, 1800),
+            (64000, 0.003, 64, 2400),
+        }
+        if registered_knobs not in allowed_round36c_knobs:
+            raise ContractError(
+                "Round 36c config knobs do not match the registered w32/w64 cells"
             )
     else:
         _expect(
@@ -796,6 +883,55 @@ def _training_arrays(np: Any, config: dict[str, Any]) -> dict[str, Any]:
     }
 
 
+def _positive_control_arrays(np: Any, config: dict[str, Any]) -> dict[str, Any]:
+    if not _is_round36c(config):
+        raise ContractError("positive-control arrays require a Round 36c config")
+    handle_to_state = _handle_to_state(config)
+    state_to_handle = {
+        state_index: handle for handle, state_index in enumerate(handle_to_state)
+    }
+    states = _states()
+    source_handles: list[int] = []
+    action_ids: list[int] = []
+    successor_handles: list[int] = []
+    for handle, state_index in enumerate(handle_to_state):
+        for action_id, action in enumerate(ACTION_NAMES):
+            successor_state = _apply_action(states[state_index], action)
+            successor_state_index = _state_index(successor_state)
+            source_handles.append(handle)
+            action_ids.append(action_id)
+            successor_handles.append(state_to_handle[successor_state_index])
+    expected_cells = config["positive_control"]["transition_cells_per_step"]
+    if len(source_handles) != expected_cells:
+        raise ContractError(
+            "Round 36c transition supervision does not contain exactly 176 cells"
+        )
+    if len(set(zip(source_handles, action_ids))) != expected_cells:
+        raise ContractError(
+            "Round 36c transition supervision repeats a source/action cell"
+        )
+    for action_id in range(len(ACTION_NAMES)):
+        action_successors = {
+            successor_handles[index]
+            for index, observed_action_id in enumerate(action_ids)
+            if observed_action_id == action_id
+        }
+        if len(action_successors) != 16:
+            raise ContractError(
+                "Round 36c transition supervision does not encode an action permutation"
+            )
+    for index, action_id in enumerate(action_ids):
+        if action_id == 0 and successor_handles[index] != source_handles[index]:
+            raise ContractError(
+                "Round 36c no-op supervision does not preserve the opaque handle"
+            )
+    return {
+        "source_handles": np.asarray(source_handles, dtype=np.int64),
+        "action_ids": np.asarray(action_ids, dtype=np.int64),
+        "successor_handles": np.asarray(successor_handles, dtype=np.int64),
+    }
+
+
 def _behavior_arrays(
     np: Any,
     config: dict[str, Any],
@@ -1122,6 +1258,13 @@ def _train(
     words = torch.from_numpy(arrays["words"])
     lengths = torch.from_numpy(arrays["lengths"])
     targets = torch.from_numpy(arrays["targets"])
+    positive_control_tensors: dict[str, Any] | None = None
+    if _is_round36c(config):
+        positive_control_arrays = _positive_control_arrays(np, config)
+        positive_control_tensors = {
+            key: torch.from_numpy(value)
+            for key, value in positive_control_arrays.items()
+        }
     saved: dict[str, Any] = {}
     seed_summaries: list[dict[str, Any]] = []
     parameter_devices: set[str] = set()
@@ -1162,6 +1305,25 @@ def _train(
             loss = torch.nn.functional.binary_cross_entropy_with_logits(
                 logits, targets[indices]
             )
+            if positive_control_tensors is not None:
+                source_latent = model.encoder(
+                    positive_control_tensors["source_handles"]
+                )
+                predicted_successors = model.transition(
+                    source_latent,
+                    positive_control_tensors["action_ids"],
+                )
+                successor_targets = model.encoder(
+                    positive_control_tensors["successor_handles"]
+                ).detach()
+                transition_loss = torch.nn.functional.mse_loss(
+                    predicted_successors,
+                    successor_targets,
+                )
+                loss = loss + (
+                    config["positive_control"]["transition_loss_weight"]
+                    * transition_loss
+                )
             loss.backward()
             optimizer.step()
             trace.append(float(loss.detach().cpu()))
@@ -3465,6 +3627,40 @@ def _behavior_fit_eligibility(
     }
 
 
+def _verdict_result_scope(
+    producer_kind: str | None,
+    config: dict[str, Any] | None,
+) -> str:
+    if producer_kind == "fixture":
+        return "FIXTURE-ONLY"
+    if config is not None and _is_round36c(config):
+        return POSITIVE_CONTROL_SCOPE
+    if producer_kind == "learned":
+        return "SCIENTIFIC"
+    return "UNKNOWN"
+
+
+def _verdict_claim_boundary(
+    status: str,
+    producer_kind: str | None,
+    config: dict[str, Any] | None,
+) -> str | None:
+    if producer_kind == "fixture":
+        return None
+    if config is not None and _is_round36c(config):
+        return (
+            "POSITIVE-CONTROL ONLY — privileged true-successor handle pairings "
+            "directly supervised transition consistency; gate reachability only, "
+            "not quotient learning from behavior."
+        )
+    if status == PASS_STATUS and producer_kind == "learned":
+        return (
+            "One tiny learned finite world recovered the registered operational "
+            "quotient and action algebra."
+        )
+    return None
+
+
 def _reduce_directory(
     config_path: Path,
     evidence_dir: Path,
@@ -3545,21 +3741,11 @@ def _reduce_directory(
         "reduced_at": _utc_now(),
         "input_sha256": _input_hashes(config_path, evidence_dir),
         "integrity_scope": INTEGRITY_SCOPE,
-        "result_scope": (
-            "FIXTURE-ONLY"
-            if producer_kind == "fixture"
-            else "SCIENTIFIC"
-            if producer_kind == "learned"
-            else "UNKNOWN"
-        ),
+        "result_scope": _verdict_result_scope(producer_kind, config),
         "status": status,
         "gates": gates,
         "errors": errors,
-        "claim_boundary": (
-            "One tiny learned finite world recovered the registered operational quotient and action algebra."
-            if status == PASS_STATUS and producer_kind == "learned"
-            else None
-        ),
+        "claim_boundary": _verdict_claim_boundary(status, producer_kind, config),
     }
     if config is not None and _is_round36b(config):
         verdict["behavior_fit_eligibility"] = behavior_fit_eligibility
@@ -3570,15 +3756,27 @@ def _reduce_directory(
         evidence_dir.mkdir(parents=True, exist_ok=True)
         _write_json(evidence_dir / "verdict.json", verdict)
     if record_ledger and config is not None:
+        control_scoped = str(verdict.get("result_scope", "")).upper().startswith("POSITIVE-CONTROL")
+        if control_scoped:
+            # Round 36c claim wall: the ledger event itself is control-scoped so a bare gate table can never be read as a behaviour-only result.
+            event_id = "round36c_positive_control_reduce"
+            purpose = ("Round 36c POSITIVE-CONTROL (gate REACHABILITY) reduction of stored evidence: privileged transition supervision was used in training; "
+                       "this is NOT a behaviour-only result, NOT a quotient-from-behaviour claim, and does not activate Round 35. A PASS means the exact gates are "
+                       "reachable by this carrier + reducer; a FAIL means a certification-regime problem, not a latent-organisation result.")
+            ledger_status = f"POSITIVE-CONTROL / REACHABILITY: {status}"
+            metrics = {"result_scope": verdict.get("result_scope"), "control_status": status, "gates": {name: gate["passed"] for name, gate in gates.items()}}
+        else:
+            event_id = "round36_operational_quotient_reduce"; purpose = "Round 36 declarative reduction of stored evidence"; ledger_status = status
+            metrics = {"status": status, "gates": {name: gate["passed"] for name, gate in gates.items()}}
         _append_ledger(
             _ledger_entry(
-                "round36_operational_quotient_reduce",
-                "Round 36 declarative reduction of stored evidence",
+                event_id,
+                purpose,
                 config_path,
                 " ".join(sys.argv),
-                {"status": status, "gates": {name: gate["passed"] for name, gate in gates.items()}},
+                metrics,
                 [str(evidence_dir / "verdict.json")],
-                status,
+                ledger_status,
                 str(evidence_dir),
                 (
                     "Reducer read only config, manifest, and evidence; weights were not "
@@ -3610,6 +3808,43 @@ def _run_fixture(config_path: Path, output_dir: Path | None) -> dict[str, Any]:
             raise ContractError("fixture reducer emitted learned-world claim text")
         if pass_verdict["result_scope"] != "FIXTURE-ONLY":
             raise ContractError("fixture reducer did not label its result FIXTURE-ONLY")
+        if _is_round36c(config):
+            control_arrays = _positive_control_arrays(
+                __import__("numpy"),
+                config,
+            )
+            if any(value.shape != (176,) for value in control_arrays.values()):
+                raise ContractError(
+                    "Round 36c fixture did not reconstruct the exact 176-cell signal"
+                )
+            drifted_config = json.loads(json.dumps(config))
+            drifted_config["positive_control"]["transition_loss_weight"] = 0.5
+            try:
+                _validate_config(drifted_config)
+            except ContractError:
+                pass
+            else:
+                raise ContractError(
+                    "Round 36c fixture accepted a drifted transition-loss weight"
+                )
+            learned_scope = _verdict_result_scope("learned", config)
+            learned_claim_boundary = _verdict_claim_boundary(
+                PASS_STATUS,
+                "learned",
+                config,
+            )
+            if learned_scope != POSITIVE_CONTROL_SCOPE:
+                raise ContractError(
+                    "Round 36c learned verdicts are not forced to POSITIVE-CONTROL"
+                )
+            if (
+                not isinstance(learned_claim_boundary, str)
+                or not learned_claim_boundary.startswith("POSITIVE-CONTROL ONLY")
+                or "not quotient learning from behavior" not in learned_claim_boundary
+            ):
+                raise ContractError(
+                    "Round 36c learned verdict claim boundary is not control-only"
+                )
         if _is_round36b(config):
             diagnostic = pass_verdict.get("confidence_free_diagnostic")
             if (
@@ -3836,6 +4071,16 @@ def _run_fixture(config_path: Path, output_dir: Path | None) -> dict[str, Any]:
             )
             branches["behavior_summary_only_tamper"] = (
                 "FIXTURE-ONLY — rehashed producer-summary tamper rejected as INVALID"
+            )
+        if _is_round36c(config):
+            branches["transition_supervision_mapping"] = (
+                "FIXTURE-ONLY — exact 176-cell successor-handle mapping validated"
+            )
+            branches["registration_drift_rejection"] = (
+                "FIXTURE-ONLY — changed transition-loss weight rejected"
+            )
+            branches["positive_control_scope_guard"] = (
+                "FIXTURE-ONLY — learned verdicts forced to POSITIVE-CONTROL"
             )
         return {
             "fixture_status": "FIXTURE-ONLY",
