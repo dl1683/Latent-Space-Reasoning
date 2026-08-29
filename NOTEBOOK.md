@@ -5,6 +5,22 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-28 — ctx_A complete: contextual-prefix completion comparator, sentinel A (unmatched capacity)
+
+`analysis_ctx_A.json` (committed analyzer, unresidualized form, 20 shuffles,
+500 bootstraps, 5783 s): the X-conditioned ridge beats the strongest
+contextual-prefix arm (token_ids_v1 ridge / kernel) on every endpoint at
+F4–F20 with crossed 95% lower bounds above zero — cosine margin +0.15 to
++0.20 (LB ≥ 0.13), normalized error +0.14 to +0.20, skill +0.34 to +0.46
+(LB ≥ 0.25), continuous KL +0.27 to +0.45 (LB ≥ 0.17); support 1.0. At F0
+the cosine margin is +0.019 (LB 0.011) while the skill and KL lower bounds
+fall below zero. Audit #18 wording governs: this completed comparator did not
+close the ridge-versus-context gap at the registered (unmatched) capacity;
+the state ridge still carries ~5–10× the contextual arm's effective df, so
+the gap remains unidentified until Round 34's capacity-matched comparison.
+Not a "live gate"; not a state-reading result. ctx_B is running next, then
+the static-residualized forms ctxS_A/ctxS_B, then the parity check.
+
 ## 2026-08-28 — Round 34 registered: capacity-matched state-versus-context (audit #18's first control)
 
 Codex design gate (`.codex_dfmatch_design.md`, registered in
