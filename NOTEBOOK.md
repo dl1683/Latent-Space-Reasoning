@@ -31,7 +31,183 @@ typed truth-evaluable world; random-weight architecture null). Instrument
 governance status: Round 34a in repair round 2 of 3; consequence parked;
 full Round 34 held. Foundational thread advanced: the estimand question
 (raw vs residualized) is now explicit rather than implicit in tag names.
-Audit #20's corrections and alternatives will be appended verbatim below.
+Audit #20 (fired, unprimed) returned CONDITIONAL (one overclaim, one underclaim); its correction block, its execution priorities / strongest alternative / tunnel ruling, and its final ruling follow verbatim.
+
+## 2026-08-29 — Audit #20 adversarial correction
+
+`ctx_B` mirrors `ctx_A` only as a bounded raw predictor comparison: at F4–F20 the higher-EDF cell-state ridge retains positive outer-held-out cosine, normalized-error, skill, and continuous-KL differences from the registered `token_ids_v1` ridge/kernel pair; F0 remains non-qualifying. This does not identify state or reject the contextual/Jacobian account.
+
+`ctxS_A` is not “largely by construction.” `P_static` and `token_ids_v1` are different feature spaces, and the residual contextual ridge is already at its approximately 47-EDF ceiling at F4–F20 while its held-out cosine collapses to approximately 0.04–0.07. The empirical finding is that the registered raw context signal is highly non-robust to `P_static` residualization. The maximum positive wording is: “a higher-capacity predictor from `X_perp` retains held-out predictive information beyond the registered `P_static` projection and this fixed context field.” Withdraw “beyond template metadata”: `X_perp` may still carry item-token, nonlinear template/carrier, activation-geometry, and interaction signal omitted by both controls.
+
+The specific same-template leakage worry is not supported: every outer key holds out an entire carrier block and a disjoint word fold, and residual ridge cosine does not rise after residualization; the margin expands because the context arm collapses. Related-template authorship and changed target geometry remain limitations. Raw Round 34a is still required for `ctx_A`/`ctx_B`; static Round 34a is separately required for `ctxS`; neither is the universal “right” estimand. Alongside them, run a no-completion `P`/`C`/`P+C`/`C_perp` partial-overlap screen and a frozen-item-embedding-by-`P_static` comparator before full Round 34 or Round 33.
+
+Round 34a remains unrun and Tier-1 re-review #3 is NOT-READY on one exact telemetry-binding invariant. Use one narrow final repair; do not expand the reducer or launch before RUN-READY. The strongest alternative is now an item-by-carrier activation fingerprint plus local punctuation Jacobian, not capacity alone. No native law or representation-level hostile hole is established.
+
+#### Audit #20 — sections 6-8 verbatim
+
+## 6. What should run instead of or alongside Round 34a
+
+### Priority 1 — `P/C` partial-overlap screen on existing captures
+
+This is the cheapest missing scientific control and directly adjudicates the
+“by construction” interpretation. Use the identical A/B outer block-by-word
+folds, training-only transformations, 500 crossed bootstraps, cosine and nerr
+only, no completion, no shuffle, and no model forward.
+
+For each layer and outer key, fit:
+
+1. `P`: `P_static -> Delta`;
+2. `C`: registered `token_ids_v1` ridge/kernel `-> Delta`;
+3. `P+C`: a nested combined field `-> Delta`;
+4. `C_perp -> Delta_perp`, where both `C` and `Delta` are residualized on
+   `P_static` using maps fit only on the relevant training rows; and
+5. the same-EDF `X_perp` ridge as a reference, not as the claim target.
+
+Also report, on held-out rows, the alignment between the raw context
+prediction and the `P_static` prediction. Refit every target-dependent
+residualizer inside the downstream inner folds for this diagnostic.
+
+Interpretation:
+
+- If `P+C` does not improve over `P` and `C_perp` is null in both sentinels,
+  the correct conclusion is that the registered raw context field is
+  `P_static`-redundant in this design.
+- If `C_perp` retains signal, the current `ctxS_A` collapse is a fitting or
+  feature-projection artifact; “P_static-aligned context” is too strong.
+- In neither case does the result identify presentation causally.
+
+This screen is more directly diagnostic of the estimand than adding another
+completion reducer.
+
+### Priority 2 — cheap item-by-context X-free comparator
+
+The registered context field omits the item token, while `X_perp` necessarily
+contains its activation consequences. Run a no-completion ridge comparator on
+existing captures with:
+
+- `P_static`;
+- 16 training-only PCs of the frozen item embedding;
+- fixed `P_static x item-PC` interactions; and
+- optionally the boundary-token/POS floor from `token_ids_v1`.
+
+Fit on calibration words only, transfer to held-out words through the frozen
+embedding, match state EDF downward, and score cosine/nerr on the same outer
+keys. This is the cheapest direct test of the hypothesis that the residual
+ridge is exploiting lexical/item-by-template structure omitted by the context
+field. It is narrower and cheaper than the full six-arm Round 34 and avoids
+the parked K=13/SVD path.
+
+If this arm closes the static state margin, classify the current result as
+**item/context-feature-sensitive** and stop the consequence queue. If it does
+not, the result is still not operational state; it has only survived a much
+fairer X-free feature test.
+
+### Priority 3 — architecture-matched random-weight depth screen
+
+Only if the residual margin survives Priorities 1–2, run the already-proposed
+CPU random-weight null: same architecture, tokenizer, templates, sentinel,
+folds, identity-plus-shared-displacement null, and matched-EDF state/context
+predictors; score F0/F4/F8/F12/F20 cosine and nerr only. No completion and no
+generation.
+
+A similar middle/deep residual profile in a random decoder would strongly
+support architecture/local-smoothness and fingerprint propagation. A trained-
+only profile would keep learned structure live but would still not identify
+operational state.
+
+### Do not run next
+
+- Do not run the full six-arm Round 34 before the core and partial-overlap
+  screens.
+- Do not reopen Round 33 merely because `ctxS_A` has a large unmatched
+  margin. A smoother high-dimensional reconstruction is expected to remain
+  closer under a deterministic tail.
+- Do not spend another long review loop on K=13 or low-rank telemetry for this
+  question; cosine/nerr and raw continuous KL are sufficient.
+
+## 7. Strongest alternative explanation now
+
+The strongest alternative is a sharpened **item-by-carrier fingerprint plus
+local Jacobian** account:
+
+> `P_static` removes a coarse block/length/position response. The remaining
+> `X_perp` retains a dense continuous fingerprint of the item token, the
+> held-out carrier, lexical class, activation scale, and their interactions.
+> Appending a fixed punctuation token produces a deterministic local response
+> `Delta_perp = J(X_perp, context) + noise`. A high-EDF ridge can learn a
+> transferable linear readout of that already nonlinear activation feature
+> map. The fixed `token_ids_v1` field has only carrier-by-POS rows, omits the
+> item token and dense interactions, and therefore collapses on the residual
+> target. No denizen-usable state, quotient, operation, or composition law is
+> required.
+
+This account explains all three current observations at once:
+
+1. raw context predicts a moderate component;
+2. that component disappears after coarse nuisance residualization; and
+3. the rich activation still predicts the local residual response.
+
+It is stronger now than the generic “capacity alone” objection. Matched EDF is
+necessary, but feature adequacy — especially item-by-context information — is
+the more important remaining confound.
+
+## 8. Tunnel-vision and second-lens ruling
+
+**The program remains tunnel-visioned.** It has spent many rounds on one
+relation in one small decoder, one authored 80-word population, sixteen
+related templates, two punctuation tokens, one append operation, one readout
+site, and one completion path. Audit/reducer loops now consume a material
+fraction of the research effort. The review discipline has prevented invalid
+claims, but increasingly perfect reducers for this one relation do not build a
+denizen's mathematics.
+
+The remaining Round 34a defect is worth one exact repair because the screen is
+cheap and already registered. Beyond that, the next scientific increment
+should be orthogonal: the item-by-context comparator, the random-weight null,
+or a typed truth-evaluable finite-state world with forced-choice consequences,
+causal patching, and two-step composition.
+
+Under the second lens, `ctxS_A` proves no representation-level hostile hole.
+It exposes an **instrument boundary**: the registered context reader spans the
+raw coarse response but not the residual response, while the activation reader
+does. Whether that is a missing quotient, useful operational state, or merely
+a richer fingerprint remains unresolved. A next latent space should make the
+factorization denizen-available — lexical/item coordinates, presentation
+coordinates, and operation-bearing state with behavioral consequences — but
+the current decoder has not been shown incapable of such a factorization.
+
+#### Audit #20 — final ruling (verbatim)
+
+## Final ruling
+
+- **Upheld:** `ctx_B` mirrors `ctx_A` as a descriptive higher-EDF raw
+  predictor comparison; `ctxS_A` has a real F4–F20 residual predictor
+  separation; F0 is non-qualifying.
+- **Withdrawn as overclaim:** “beyond template metadata,” “presentation has
+  been removed,” any state contribution, and any causal or variance-share
+  interpretation.
+- **Withdrawn as underclaim:** “largely by construction” and any implication
+  that `P_static` and `token_ids_v1` are the same feature space.
+- **Reframed:** raw context performance is highly non-robust to the registered
+  `P_static` residualization and therefore `P_static`-aligned in this fitted
+  design; it is not thereby identified as presentation.
+- **Leakage ruling:** no exact template or word identity is shared across the
+  outer fit/test boundary; absolute ridge cosine does not inflate. Related
+  authored structure, changed target geometry, and non-fully-nested downstream
+  preprocessing remain qualifications.
+- **Estimand ruling:** run both raw and static Round 34a; neither substitutes
+  for the other. Add the cheaper partial-overlap and item-by-context controls
+  before full Round 34.
+- **Implementation ruling:** Round 34a remains unrun and NOT-READY until the
+  single review-#3 telemetry-binding invariant is closed.
+- **Tunnel ruling:** one final narrow repair and the cheap screens are
+  justified; another broad reducer loop on the same punctuation relation is
+  not. Pivot the next substantive work toward the item/context null, the
+  architecture null, or a typed truth-evaluable world.
+
+Blackboard findings were recorded. `bb_convergence` returned 100% with no open
+signals, disputes, unread documents, or partial documents, and `bb_synthesis`
+was read before this verdict.
 
 ## 2026-08-29 — ctxS_A complete: contextual-prefix comparator on the P_static-residualized relation, sentinel A
 
