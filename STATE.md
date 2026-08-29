@@ -1909,3 +1909,26 @@ Do not call the repair literally outcome-blind: it was triggered after seeing th
 - Closing now is correct under the prospectively adopted allocation constitution. Scientifically, it deliberately leaves the item-by-carrier fingerprint/local-Jacobian explanation unresolved. Round 34c might have clarified that account, but the constitution explicitly forbids escalating an `INCONCLUSIVE` rung.
 
 One durability defect remains: `.codex_audit21.md` is only a 327-byte self-referential completion stub. Audit #21’s substantive text survives in `NOTEBOOK.md`, `STATE.md`, and the ledger, but the named output itself should not be treated as evidence.
+
+## Audit #23 — Round 36 status (2026-08-29, verbatim; supersedes the Round 36 sentences above)
+
+> **Round 36 v1 — valid registered FAIL, interpretation narrowed (audit #23).**
+> The retained five-seed artifact is complete and the frozen `0.10/0.90`
+> all-supported reducer validly fails every exact gate. Behavior did not reach
+> exact saturation under the 4,000-step recipe (train `96.563–98.546%`,
+> held-out `97.009–98.259%`), so no fit-but-non-congruent claim is licensed.
+> The reducer is also confidence-sensitive: a read-only `p>0.5` diagnostic on
+> the same weights recovers `148–174/176` truthful one-step action cells per
+> seed and `112/176` cells that are identical and truthful across all five,
+> while every exact descent, closure, interchangeability, and whole-table gate
+> still fails. Thus v1 is a behavior-, calibration-, and exactness-confounded
+> non-certification of the registered operational quotient—not evidence of no
+> approximate composable structure. The stored cross-seed `0/176` field is an
+> all-or-none whole-table gate, not a literal cell-agreement count.
+>
+> **Round 36b** is a prospectively locked but post-v1, outcome-informed
+> successor, not a retroactive repair or confirmatory replication. Before any
+> 36b outcome is interpreted, behavior underfit, operational-signature
+> underconfidence, and supported action non-congruence must receive separate
+> statuses; exact `0.5` behavior followed only by a `0.10/0.90` support failure
+> must not be called `FIT BUT NON-CONGRUENT LATENT`.

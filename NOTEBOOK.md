@@ -29,8 +29,124 @@ fit could let a lookup-table-like fit pass; (3) the opposite under-read:
 structure at all even where behaviour is right. Foundational thread
 advanced: the constructive program now has a real falsifier loop
 (artifact → FAIL → adjudicated cause → preregistered successor), which is
-what the constitution demanded and NLM-007 never had. Audit #23's
-corrections and alternatives will be appended verbatim below.
+what the constitution demanded and NLM-007 never had. Audit #23 (fired, unprimed) returned: valid registered FAIL; behaviour-, calibration- and exactness-confounded; substantial but imperfect operational structure remains (a confidence-free replay at p>0.5 recovers 84.1-98.9% of the one-step action table while every exact gate still fails); the licensed sentence is REPLACED, the '0/176' phrase is withdrawn as misleading bookkeeping, and Round 36b's status logic is NOT READY AS WORDED (three-stage decision required). Replacement paragraph, sections 4-6 and the final verdict follow verbatim.
+
+> Audit #23 upholds the v1 artifact and its all-gate FAIL but narrows the
+> meaning. Under the exact 4,000-step recipe, the artifact failed the registered
+> confidence-qualified certificate for a fully supported operational identity
+> and exact composable action algebra. It did not reach exact behavioral fit,
+> and the 12-cell `0.10/0.90` support conjunction strongly amplifies marginal
+> confidence defects. A read-only `p>0.5` diagnostic nevertheless recovers
+> `84.1–98.9%` of the one-step action table per seed; `112/176` cells are
+> identical and truthful across all five seeds, while every exact structural
+> gate still fails. Therefore neither “pure calibration failure” nor “no
+> composable structure” is licensed. The v1 result is a permanent,
+> recipe-specific nonpass with substantial but imperfect structure. Round 36b
+> is a transparent post-outcome successor and cannot rescue or overturn it.
+
+#### Audit #23 — sections 4-6 and final verdict (verbatim)
+
+## 4. Strongest alternative explanation
+
+The strongest single explanation is not “the latent has no algebra.” It is:
+
+> The BCE objective, finite sampling distribution, and 4,000-step stop learned
+> a mostly correct, partially compositional response system, but left a small
+> number of low-margin or wrong response cells. The 12-way confidence
+> conjunction and exact all-cell/all-seed reducer magnified those local defects
+> into universal gate failures. The remaining seed-dependent errors, especially
+> at depth 3 and rolled representatives, show that the transition law itself is
+> also incomplete.
+
+This explains every row more economically than either pure-calibration or
+no-structure narratives. The population also heavily weights length-3 words:
+training contains 1 empty, 11 one-step, 47 two-step, and 1,265 three-step words.
+Only `176/21,184` training rows directly supervise the empty/one-step action
+signature. More optimization may help, but the ladder does not distinguish
+budget from depth weighting or objective geometry.
+
+## 5. Tunnel-vision ruling
+
+The constructive program is scientifically tunnel-visioned despite being much
+closer to its claim than NLM-007:
+
+- one 16-state toy;
+- one binary response sensor;
+- one learned handle table and one residual transition architecture;
+- one optimizer family;
+- one action algebra;
+- one horizon (`<=3` for behavioral rows, with registered rolled probes);
+- a singleton oracle quotient, because depth-1 signatures distinguish all 16
+  hidden states.
+
+That last point is decisive. A PASS would show bounded state recovery and a
+congruent action table, not nontrivial quotient formation. There are no two
+different hidden simulator states that the denizen must identify as one place,
+and no nuisance state that the quotient must discard.
+
+## 6. What should run alongside Round 36b
+
+### Register before any 36b outcome
+
+1. **Confidence-free diagnostic reducer.** Keep the `0.10/0.90` primary gate
+   frozen, but prospectively report the complete `p>0.5` gate table, component
+   error counts, and margins. It is diagnostic only and cannot rescue a primary
+   FAIL.
+2. **Literal cellwise cross-seed accounting.** Report (a) identical cells,
+   (b) identical supported cells, (c) all-five truthful cells, and (d) bitwise
+   majority truth, beside the existing whole-table exact gate.
+3. **Three-stage decision status.** Separate behavior underfit, signature
+   underconfidence, and supported non-congruence as above.
+4. **Depth-balanced diagnostic.** Either add a prospectively frozen
+   depth-balanced sampling arm or, minimally, report loss/accuracy/support by
+   word depth throughout training. The current four-cell ladder changes budget,
+   learning rate, and width but never tests the severe depth imbalance.
+
+### Orthogonal controls
+
+5. **Learned lookup baseline.** A handle-by-observed-word memorizer should fit
+   train and fail held-out spellings; this calibrates how much closure comes
+   from composition rather than finite lookup.
+6. **Explicit finite-state/quotient-trained positive control.** Train the same
+   carrier with direct state-transition or quotient-consistency supervision,
+   scored by the unchanged reducer. The existing fixture is oracle-authored,
+   not a learned representability/control arm. If the explicit control passes
+   and behavior-only training fails, the gap belongs to the learning objective,
+   not representability.
+7. **A genuinely nontrivial quotient world.** Add nuisance hidden bits or
+   duplicate simulator states with identical response futures, require several
+   hidden states to collapse into each operational place, and demand action
+   descent across those independently generated representatives.
+8. **Longer, algebraically novel continuations.** Hold out depth 4–6 and word
+   families selected by algebraic relation, not only spelling hashes, to attack
+   finite-horizon lookup and behavioral redundancy.
+9. **A second transition architecture.** A linear/affine action model or a
+   small recurrent alternative should be fixed before outcome. One
+   architecture cannot distinguish a world property from an inductive-bias
+   accident.
+
+A 36b PASS should trigger a fresh preregistration on the nontrivial-quotient
+world, not immediate activation of Round 35.
+
+## Final verdict
+
+- **Claim (a), mechanical FAIL:** **UPHELD.**
+- **Claim (a), “incomplete behavioral fit”:** **UPHELD, with optimization not
+  proven as the sole cause.**
+- **Licensed sentence:** **REPLACE** with the confidence-qualified
+  non-certification wording above.
+- **Over-claimed KILL:** **FOUND.** The primary reducer materially conflates
+  confidence/support with structure; the current prose suppresses strong
+  approximate action-table recovery.
+- **Under-read FAIL:** **ALSO FOUND.** Confidence-free exact composition and
+  cross-seed invariance still fail; the artifact is not merely underconfident.
+- **Claim (b), successor legitimacy:** **UPHELD only as a transparent,
+  exploratory post-outcome successor.** It is not a v1 repair and not
+  confirmatory.
+- **Round 36b exact-fit/non-congruence rule:** **NOT READY AS WORDED.** Split
+  calibration from supported non-congruence before any 36b interpretation.
+- **Tunnel vision:** **FOUND.** A singleton quotient in one toy and one
+  architecture cannot carry the constructive program alone.
 
 ## 2026-08-29 — Round 36 first run: the constructive artifact exists and FAILS every gate
 
