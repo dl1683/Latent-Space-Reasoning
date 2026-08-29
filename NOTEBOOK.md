@@ -5,6 +5,88 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Audit #21 adversarial correction: both 34a verdicts upheld, claim boundaries tightened
+
+The four float32 evidence sidecars replay exactly through the registered reduction and decision code. RAW and STATIC both return `CONTINUE` at F4/F8/F12/F20 in both sentinels, with 8/8 jointly positive keys at every eligible sentinel-layer. F0 is correctly `INCONCLUSIVE` and diagnostic because at least one required context-EDF target exceeds the selected F0 state EDF, making a downward match undefined; F0 is excluded from the ladder gate.
+
+RAW is a valid registered `CONTINUE`, not a numerical boundary artefact. The `0.02` threshold applies to the point margin; the lower-bound criterion is `>0`. The smallest raw point over cosine/nerr is 0.0397, the smallest lower bound is 0.0146, and float32 resolution is immaterial at that distance. The replicate-wise minimum over the four predeclared candidates is conservative for survival, not multiplicity inflation. Correct wording: capacity matching removed most of the unmatched raw gap but did not exhaust it; the +0.04 to +0.08 cosine separation is small in magnitude but systematic within this locked design, with both endpoints positive in all eight keys at every F4–F20 layer in both correlated sentinels. It is not a state claim.
+
+STATIC also mechanically survives, but withdraw the provisional sentence “the residual separation is not a capacity artefact.” The selected contextual ridge target is approximately 47 EDF throughout; the selected kernel is approximately 48 EDF at F8–F20 but falls to approximately 4.36 in 4/8 A and 2/8 B F4 keys. The selected state ridge ranges from approximately 202 to 384 EDF and is therefore heavily shrunk for the comparison. Honest wording: “the residual predictor separation was not eliminated by the registered EDF match within these fixed feature classes.” This rejects a simple unmatched-slope-EDF explanation, but the fixed context arm is near-null on `Delta_perp`, equal EDF does not equal feature adequacy, and the item-by-carrier fingerprint/local-Jacobian account remains live. No operational state, native law, or representation-level hostile hole is identified.
+
+Both 34a estimands returned `CONTINUE`, so the terminal ladder may proceed to 34b only after its final bounded `RUN-READY`; 34c remains conditional on a 34b `CONTINUE`. These results make neither control moot and reopen none of the cut queue. Round 36 remains the higher-leverage constructive line.
+
+#### Audit #21 — section 6 (tunnel vision, strongest alternative, run order) and final ruling, verbatim
+
+## 6. Tunnel vision, strongest alternative, and what should run
+
+### Tunnel-vision ruling
+
+The program remains tunnel-visioned at the scientific level even though the
+continuation ruling has now contained the allocation error. These outcomes
+refine one predictor comparison in one decoder, one authored micro-world, two
+punctuation tokens, one append move, and correlated depths. The static margin
+does not justify another control family beyond the already terminal 34b/34c
+ladder.
+
+The strongest live scientific alternative explanation remains:
+
+> `P_static` removes a coarse block/length/position response, while `X_perp`
+> retains a dense item-by-carrier activation fingerprint and a local
+> punctuation Jacobian. A low-EDF ridge can extract a few high-signal directions
+> from that learned nonlinear feature map. The registered token-context field,
+> even at its rank ceiling, omits the item token and dense interactions and is
+> near-null on `Delta_perp`. No denizen-usable state or operation is required.
+
+The strongest program-level alternative is already registered: Round 36's
+minimal operational quotient. It directly tests whether identity and actions
+descend to a behaviorally available quotient in a runnable world, instead of
+perfecting another reader of the punctuation relation.
+
+### Concrete, cheap run order
+
+1. **34b first, if and only if RUN-READY.** Expectation: determine whether raw
+   context is `P_static`-redundant and whether residual context retains signal
+   under the fully nested projection. A redundant result stops the ladder; a
+   retained-signal result continues but revises the static interpretation.
+   The simplest fatal confound is nuisance/vocabulary reuse across an inner or
+   outer held-out boundary.
+2. **34c only after 34b CONTINUE and RUN-READY.** Expectation: test the
+   item-by-context fingerprint account with the registered richer X-free field.
+   Closure means feature sensitivity, not causal context; survival still does
+   not identify state. The simplest fatal confound is PCA or vocabulary leakage
+   from held-out words.
+3. **Keep Round 36 moving as the higher-leverage constructive line.** Run its
+   reducer fixture before learned evidence, then the CPU producer and separate
+   reducer, one process at a time. No NLM-007 result changes Round 36.
+4. **Run no new NLM-007 arm.** The five-seed bootstrap replay above is enough
+   to answer the immediate numerical-boundary worry as an audit diagnostic.
+   A 10,000-bootstrap polish, random-weight decoder, second decoder, or richer
+   context family would be more measurement infrastructure and violate the
+   terminal allocation ruling.
+
+## Final ruling
+
+- **Raw mechanical verdict:** upheld.
+- **Raw claim:** small but systematic within-design survival; not a state claim.
+- **Raw correction:** lower bounds clear zero, not necessarily 0.02.
+- **Candidate multiplicity:** conservative for `CONTINUE`; synthetic-oracle
+  wording boundary remains mandatory.
+- **Static mechanical verdict:** upheld.
+- **Static claim:** not eliminated by this registered EDF match; do not call it
+  generally capacity-free.
+- **Static telemetry correction:** kernel selected EDF has material low-EDF F4
+  exceptions; selected state EDF varies from about 202 to 384.
+- **F0:** correctly undefined/diagnostic and excluded from the ladder.
+- **Queue:** 34b if finally `RUN-READY`, then 34c only on 34b `CONTINUE`; no
+  cut item reopens.
+- **Tunnel ruling:** finish the bounded closeout without adding arms; prioritize
+  Round 36 as the distance-0 constructive program.
+
+Blackboard findings e649–e655 were recorded with provenance. `bb_convergence`
+returned 100% with no open signals, disputes, unread documents, or partial
+documents, and `bb_synthesis` was read before this verdict. No project source
+or tracked file was edited, and no commit was made.
+
 ## 2026-08-29 — Round 34a STATIC result: CONTINUE at F4–F20 with large matched margins; the "match" sits at the context rank ceiling
 
 `analysis_ctxcapA_static.json` / `analysis_ctxcapB_static.json` (frozen
