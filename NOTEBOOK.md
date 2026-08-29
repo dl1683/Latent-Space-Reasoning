@@ -5,6 +5,182 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Audit #31 on control_cost_v1 (fresh, unprimed; verbatim): FAIL upheld; 'the first-order law does not hold', the Spearman/ratio/asymmetry residues, and '4x under-prediction' are WITHDRAWN
+
+Correction to the control_cost_v1 entry below: seven censored costs were stored as 4x predicted, so the rank agreement and the ratio are artefacts of censoring; the cross-vs-within gate compared censoring bounds; B was invalid; the only licensed residue is bounded causal responsiveness of the A readout with a construction-conditioned directional difference. The auditor's alternative next artifact class (a real-model co-designed causally addressable state) is recorded verbatim beside Codex round 10's from-scratch navigator; the required dialogue precedes implementation.
+
+## Executive verdict
+
+- **UPHOLD:** `FAIL — FIXED BLOCK-12 SPAN CONTROL CONSTRUCTION`.
+- **REJECT:** “the first-order minimum-energy law does not hold.” The experiment does not isolate such a law from its actuator, metric, solver truncation, endpoint definition, or coefficient cap.
+- **REJECT as evidence:** the reported Spearman cost ranking, cross-versus-within gate, semantic-B advantage, and directional cost asymmetry.
+- **LICENSED residue:** the frozen model’s registered A readout responds causally and directionally to these constructed fields, with much stronger continuous dog→cat movement than cat→dog movement. This is an actuator/readout-specific response asymmetry, not an effort geometry.
+- **Program ruling:** this is not working as a native-mathematics discovery program. The broader research question may continue, but this construction family should not. The highest-leverage action is to reconsider the substrate now.
+
+## 1. The KILL is valid, but its interpretation is over-claimed
+
+The formula
+
+\[
+v^\star=J^\top(JJ^\top)^+r
+\]
+
+is a minimum-norm solution inside the retained linearized system. The run tested whether that tangent solution, extrapolated through a nonlinear model using one particular actuator and coefficient grid, realizes a behavioral endpoint. It did not test a substrate-independent “first-order minimum-energy law.”
+
+The registered endpoint was attained in only `1/8` recipients. That robustly closes the fixed construction. But at least six construction choices remain jointly responsible:
+
+- **Uniform broadcast:** one vector was imposed on 23 heterogeneous token positions. Nothing establishes that the positions share an actuator or should receive equal displacement.
+- **Sigma scaling:** per-channel calibration variance defines both field direction and cost. It is a legitimate operational metric, but not a neutral measure of intrinsic effort.
+- **Jacobian at zero:** the target can lie well outside the local fidelity radius. The smallest nonzero evaluation was already `α=.25`; no infinitesimal finite-difference validation was saved.
+- **Coefficient cap:** seven costs are right-censored at `>4‖v*‖`. This establishes failure under the budget, not unreachability.
+- **Mixed endpoint:** success requires both `0.5` class-separation movement and `2/3` sign flips. Dog0, dog2, and dog3 moved `1.005`, `1.076`, and `0.601` separations at their terminal rows but flipped only one probe. Cat1 flipped two while moving `−0.291` in the wrong direction. The gate mixes two distinct failure modes.
+- **Pseudoinverse conditioning:** the runner applies `pinv` to `JJᵀ` in fp32 with `rcond=1e-6`, which squares conditioning relative to operating directly on `J`. No singular values, retained rank, or `‖Jv-r‖` residuals were stored, so solver truncation cannot be separated from curvature.
+
+Therefore the null is compatible with an inefficient actuator, inappropriate metric, local-linear extrapolation failure, solver conditioning, inadequate budget, or endpoint construction. It is not a general physical verdict about first-order control.
+
+## 2. Censor-aware replay
+
+### Spearman `0.76` is not a realized-cost law
+
+Seven censored observations are serialized numerically as exactly
+
+\[
+\text{stored realized}=4\times\text{predicted}.
+\]
+
+The eighth equals `2 × predicted`. Consequently, seven response ranks inherit the predictor ranks mechanically. With only one actual realized cost, neither the cost ranking nor a rank correlation between predicted and realized costs is empirically identified.
+
+Likewise, `median realized/predicted = 4.0` is a censoring boundary, not an estimated calibration ratio. The actual median is only known to exceed four under the construction’s cost convention.
+
+### Cross-versus-within is not `8/8` evidence
+
+The runner compares stored censoring bounds as though they were observed costs.
+
+- Only cat3 and dog2 definitely have cross-class cost greater than an uncensored within-class cost.
+- Cat0 has an observed cross cost but only a lower bound on its within cost, so its ordering is unknown.
+- Five further pairs are censored on both sides and are unordered.
+
+Thus the evidence is **2 definite, 6 unidentified**, not an evidential `8/8`. The reported median ratio `3.679` is not an estimable cross/within cost ratio.
+
+### Directional residue
+
+There is a real descriptive asymmetry in continuous A response:
+
+| Alpha | Mean cat→dog movement | Mean dog→cat movement |
+|---:|---:|---:|
+| `0.25` | `0.038` | `0.280` |
+| `0.5` | `0.111` | `0.399` |
+| `1` | `0.144` | `0.542` |
+| `2` | `0.159` | `0.670` |
+
+Shared fields also attain A in `2/4` recipients per direction at `α=2`.
+
+This licenses: **the registered fields causally affect the registered response signature, with a construction-conditioned directional difference.**
+
+It does not license a cost asymmetry. The reported log ratio `−0.619` is computed from mostly censored bounds. Moreover, the preregistration required agreement between calibration and held-out asymmetry signs, while the runner’s `asymmetry_licensed` check tests only whether the held-out absolute log ratio exceeds `log(1.5)`.
+
+## 3. Positive-residue overclaim audit
+
+| Proposed residue | Audit |
+|---|---|
+| Spearman rank agreement | Not evidence: largely generated by storing censored costs as `4 × predicted`. |
+| Cross class costs more than presentation | Not established: only `2/8` pairwise orderings are identified. |
+| Semantic B transfer | Void: B native validity failed `17/24`, including cat `7/12`. |
+| Semantic beats lexical on B | Descriptive only. Advantage is positive `7/8`, but median `0.175` misses the registered `0.3` effect threshold, and B is invalid. |
+| `p=.008` proves semantic structure | No. It is a sign-flip sensitivity on an invalid readout and cannot override the failed effect-size or random-control gates. |
+| Random fields move B “just as much” | Too strong. The registered random rejection failed (`p=.143`); failure to reject is not equivalence. |
+| Dog→cat costs more | Not identified because costs are censored and the required calibration agreement was never evaluated. |
+
+The B result is especially asymmetric: cat→dog semantic B movement has median `−0.075`, whereas dog→cat has median `0.742`. The apparent semantic-over-lexical advantage on cat recipients mostly means “less negative than the lexical field,” not successful semantic transfer.
+
+## 4. Execution and preregistration integrity
+
+The design was written before the full run, and the current runner, config, and context hashes match those bound in [result.json](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/results/control_cost_v1/result.json>). But this was not a fully clean confirmatory execution:
+
+- The ledger lock followed a smoke run that had already exposed all held-out A/B native-validity outcomes and one recipient per direction. The lock also added operational definitions not fully fixed in the design.
+- The design promised all raw and centred margins. They are absent, as are Jacobians, singular spectra, sigma diagnostics, shared A trajectories, and solver residuals.
+- The twenty random fields were supposed to be fixed fields applied across recipients. The runner samples a new Gaussian field inside each recipient loop, so random column `k` aggregates eight different fields.
+- The registered `α=0` numerical sham was not executed. The runner simply substitutes the stored baseline `u0` rather than traversing the hook with a zero field.
+- Calibration/held-out asymmetry agreement was not implemented.
+- The primary status ladder uses all-or-none prompt counts and sharp thresholds without seed spread, contrary to the governance amendment making exact certificates diagnostic rather than verdict-bearing.
+
+These discrepancies do not rescue the construction: `1/8` endpoint realization and invalid B are large descriptive failures. They do prevent stronger confirmatory claims about why it failed.
+
+## 5. Program-level audit
+
+The strongest unified hypothesis across the five constructions is:
+
+> The frozen model provides a cue-rich, causally redundant lexical-semantic response geometry: late or probe-aligned interventions can move selected token-likelihood readouts, while context, position, and visible autoregressive history preserve multiple competing causal routes; a reusable point-like state, coordinate, donor residual, bus code, or broadcast field is therefore not required to explain the observed effects.
+
+This accounts parsimoniously for:
+
+- `coordinate_v3`: late control aligned with verb logits.
+- `interchange_v1`: fixed verbalizer bias invalidating the raw-zero instrument.
+- `interchange_v2`: one anchor residual unable to overcome the intact cue-rich prefix.
+- `state_bus_v1r1`: repeatedly injected supervised control concentrated on particular verbalizers and mediated by visible history.
+- `control_cost_v1`: probe-derived fields moving response margins without furnishing transferable endpoint control or an identifiable cost law.
+
+This is a unifying **hypothesis**, not proof of a hostile substrate. The five constructions share models, lexical tasks, readout conventions, and intervention assumptions; they are not five independent demonstrations that pretrained residual streams lack usable structure.
+
+### Continue? Highest leverage?
+
+- **Should the current construction family continue? No.**
+- **Should the broader scientific question continue? Yes, but only after a substrate-level allocation pivot.**
+- **Is the present work highest leverage? No.**
+- **Is there one more experiment worth running before reconsidering the substrate? No.**
+
+No alpha extension, rcond sensitivity, layer scan, nonuniform span, nonlinear optimizer, probe repair, or control-cost v2 should precede reconsideration.
+
+The single post-reconsideration artifact class worth considering is a real-model, causally addressable substrate co-designed so that a state must be written, preserved, and used for held-out consequences—rather than another external vector applied to a frozen response geometry. Its binding narrative question is:
+
+> **Can we build a model whose hidden state can be written once, survive new wording, and causally govern consequences it was not directly optimized to name?**
+
+That direction requires the mandated 2–3-round dialogue before implementation.
+
+### Measurement-to-artifact ratio
+
+`control_cost_v1` has 156 nonblank runner lines plus 36 config lines. Counting approximately 26 lines as the actuator/Jacobian/solve/field-construction core leaves roughly `166:26`, or **6.4:1**, apparatus/config to artifact-bearing code. Direction design, smoke/lock/full measurement, and audit add at least **3 measurement/governance rounds per build round**. The classification is approximate, but safely beyond the `5:1` halt threshold.
+
+## 6. Exact licensed sentence
+
+> **At fixed block 12 in Qwen3-1.7B-Base, the registered sigma-scaled uniform 23-token prefix-span field derived from the v=0 three-probe Jacobian attained the joint A endpoint in 1/8 held-out recipients by α≤4, while B was not a native-valid readout; because seven local costs and six within-class costs were right-censored, the saved data do not establish a realized-cost rank law, cross-versus-within effort geometry, semantic transfer, or directional cost asymmetry, so this closes the registered actuator/solver/readout/budget construction—not first-order control, span reachability, or latent effort generally.**
+
+## 7. Never-say list
+
+- “The first-order minimum-energy law does not hold.”
+- “The model’s response is strongly nonlinear at the magnitudes needed” without naming the unresolved solver, scaling, actuator, and censoring alternatives.
+- “Predicted cost ranked realized cost.”
+- “The method underpredicted realized cost fourfold.”
+- “Cross-class moves cost more than presentation changes.”
+- “The semantic field transferred to unoptimized consequences.”
+- “The semantic field beat lexical steering.”
+- “`p=.008` establishes semantic structure.”
+- “Random fields moved B just as much.”
+- “Cat→dog is intrinsically cheaper than dog→cat.”
+- “Span control failed” or “reachability failed” without the complete registered scope.
+- “The preregistration was executed completely.”
+- “Five independent interventions prove the substrate lacks native structure.”
+- “Frozen residual streams cannot support structured reasoning.”
+- “The next latent space must be trained” as a scientific conclusion rather than an allocation hypothesis.
+
+## 8. Exact README wording
+
+> **Status 2026-08-29: no native latent mathematics has been demonstrated. After `coordinate_v3`, `interchange_v1/v2`, `state_bus_v1r1`, and `control_cost_v1`, this is not working as a native-mathematics discovery program under the current frozen-residual intervention substrate. In `control_cost_v1`, the fixed block-12 uniform prefix-span Jacobian field attained its registered A endpoint in 1/8 held-out recipients, B was not a native-valid readout, and censoring prevents claims about cost ranking, cross-versus-within effort, transfer, or directional cost asymmetry. This closes that construction family and triggers a substrate-reconsideration dialogue; it is an allocation pivot, not evidence that pretrained residual streams lack usable structure.**
+
+## 9. Exact STATE wording
+
+> **`control_cost_v1` — REGISTERED CONSTRUCTION-LEVEL FAIL, CLOSED.** Calibration-centred A validity passed `23/24`; B validity failed `17/24` (`cat 7/12`, `dog 10/12`), voiding all B-based gates. The registered prompt-specific uniform 23-token prefix-span Jacobian field attained the joint A endpoint in `1/8` recipients by `α≤4`. Seven local costs and six within-class costs are right-censored: the reported Spearman `0.762` is largely induced by storing censored bounds as `4×predicted`, while only two cross/within orderings are identified. Shared fields attained A in `2/4` recipients per direction at `α=2`; B comparisons are descriptive only and additionally use a random-field implementation that resamples per recipient rather than applying fixed shared null fields. The log cost ratio `−0.619` is not licensed directional asymmetry because the costs are censored and calibration-sign agreement was not evaluated. Licensed residue: bounded causal responsiveness and construction-conditioned directional differences in the registered A readout. This closes the fixed actuator, solver, readout, and budget—not first-order control, span reachability, latent effort, or frozen residual structure generally. Program allocation: this is not working under the current substrate; stop repair runs and begin the mandated substrate-reconsideration dialogue.
+
+## 10. Ranked next increments
+
+1. Adopt the licensed correction and propagate it to README, STATE, NOTEBOOK, and an append-only ledger correction; retain the original result row.
+2. Close `control_cost_v1` and prohibit alpha, rcond, layer, span, probe, or optimizer repair.
+3. Run the required 2–3-round direction dialogue on whether the next object is a causally bottlenecked state or a trajectory-level controller.
+4. If that dialogue produces a binding artifact design, build exactly one real-model substrate intervention with held-out consequences, seed spread, lexical controls, and visible-text mediation controls.
+5. Fire one fresh audit; continue only if the artifact demonstrates approximate intervention effects beyond those controls.
+
+No repository file was edited. The evidence and synthesis were recorded in the mandatory git-ignored blackboard `5f76e3ae`.
+
 ## 2026-08-29 — Direction round 10 (Codex, verbatim): STOP for the frozen-residual line; next = `necessity_navigator_v1` (constructive substrate)
 
 ## Program ruling
