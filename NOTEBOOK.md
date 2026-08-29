@@ -7,11 +7,79 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ## 2026-08-29 — Direction round 7 (Codex, verbatim): interchange_v1 dead; frozen-residual mining is not working; central artifact becomes `state_bus_v1`
 
-Direction dialogue round 7. Use the blackboard MCP: bb_list first; record; bb_synthesis before concluding. Read .codex_direction_r6.txt (your design), experiments/run_interchange.py, experiments/config/interchange_v1.json, experiments/results/interchange_v1/run.log and result.json (native signatures for calibration and test), and the NOTEBOOK.md top entry.
+# Direction round 7 — ruling
 
-FACT: I built your operational-interchangeability artifact exactly as specified except that context token lengths are 23-27 (approximately, not exactly, matched). Native held-out probe decisions by RAW SIGN of the margin: cat 8/12, dog 7/12 -> the coded baseline gate (>=20/24, >=9 per class) FAILS; no swap arm ran. But the native signatures are strongly class-separated on all three probes (cat probe-2 margins 1.11-1.22 vs dog 0.17-0.28; probe-3 cat 0.43-0.63 vs dog -0.20-0.08; probe-1 cat -0.18..-0.01 vs dog -0.40..-0.25), and two probes carry a constant lexical bias (meowing < barking for every context; kittens > puppies for every context). Your design said margins are standardized with calibration-only scale estimates and that the native held-out behaviour must reach 20/24 correct probe decisions.
+## 1. `interchange_v1` is dead
 
-Ruling needed, as the pre-registration authority, not as a rescuer: (1) Is a calibration-centred decision statistic (sign of the margin after subtracting the calibration grand mean per probe - computed from calibration contexts only, never from held-out) the rule you intended, in which case my raw-sign coding was the error and the run may proceed with the corrected gate under a new lock - or is any change now a post-hoc repair and the task is dead by your own kill rule? Decide and say why in a paragraph; if the former, state the exact corrected gate text so it is frozen before the swap arms run. (2) Independently of (1): after today - three baseline kills (v1 polarity, v2 number, interchange_v1 raw sign) and one gate-passing result that audit #27 reclassified as late lexical steering - give your honest program ruling in one paragraph: does "mine the frozen pretrained residual stream for native mathematics" survive, or does the central artifact become the co-developed latent interface you named in round 6? (3) If the latter, specify that artifact in one page: what is trained, on what, with what objective that makes persistent interchangeable state the thing being built rather than measured; the smallest runnable version (CPU-feasible, hours not days); how it is demonstrated causally in a real model; the kill rule; and the lay one-liner with an honest narrative-gate score. No registration prose.
+The intended baseline statistic was the raw sign, not calibration-centered sign. Round 6 defined the probes as sequence preferences, placed “native held-out behavior” before calibration-only standardization, and referred specifically to calibration **scale** estimates; the runner implements that contract exactly—raw `np.sign` first, division by calibration SD only after a pass. Subtracting the calibration grand mean would change the estimand from “does the model natively prefer the correct continuation?” to “is this context above or below the calibration lexical-bias reference?” That relative separation is real and useful, but it is not native behavior or interchangeability. Indeed, centering would convert the inspected data from 15/24 to 24/24, which is precisely why introducing it now would be a post-hoc rescue. No corrected gate is authorized and no swap arm should run. Independently, exact token-length matching was missed, and `cross_toward_other` divides by class separation rather than its square, so it is not actually the declared fractional movement; these defects did not cause the baseline failure, but they eliminate any argument for merely resuming under a new lock.
+
+## 2. Program ruling
+
+This is not working as a program of mining a frozen pretrained residual stream for native mathematics. Three constructions died before causal evaluation, while the only gate-passing construction was audited into late lexical steering; `interchange_v1` added another 108 runner lines and 50 config lines but produced no intervention behavior, worsening an already over-threshold measurement-to-artifact ratio. The strong calibration-relative signature separation can remain a diagnostic observation, but it does not justify another frozen-layer, token, task, or decision-rule attempt. The broader mission survives; its central artifact now becomes the co-developed latent interface. Frozen-model interventions remain controls used to validate that interface, not an open-ended discovery program.
+
+## 3. Smallest constructive artifact: `state_bus_v1`
+
+**Object being built.** Freeze Qwen3-1.7B-Base completely. At block 12 add a persistent 16-dimensional state bus with fewer than 100,000 trainable parameters:
+
+- encoder \(E:\mathbb{R}^{2048}\rightarrow\mathbb{R}^{16}\);
+- four learned semantic prototypes \(c_s\);
+- injector \(J:\mathbb{R}^{16}\rightarrow\mathbb{R}^{2048}\);
+- reader \(R:\mathbb{R}^{2048}\rightarrow\mathbb{R}^{16}\).
+
+A context ending at a fixed anchor writes \(z=E(h_{12}(p))\). The same \(Jz\) is injected at block 12 at every subsequent continuation position, rather than hoping a one-shot native activation persists. Donor interchange replaces \(z\), not the residual directly. This is explicitly an added state interface, not a claim that Qwen already contained one.
+
+**Training world.** Use four ordinary semantic states—cat, dog, cow, and horse—with eight training and four held-out paraphrases per state. All contexts end with identical anchor text and are exactly tokenizer-length matched. Train on two varied consequence families:
+
+- characteristic sound: meow, bark, moo, neigh;
+- name of the young: kitten, puppy, calf, foal.
+
+Reserve a third consequence family completely from training:
+
+- taxonomic adjective: feline, canine, bovine, equine.
+
+The held-out consequence is essential: without it, the bus could merely memorize two output controllers.
+
+**Objective.**
+
+\[
+L=L_{\text{prototype}}+L_{\text{native}}+L_{\text{same-swap}}
+  +L_{\text{cross-swap}}+L_{\text{persistence}}.
+\]
+
+- `prototype`: same-state paraphrases collapse toward the same \(c_s\); different states have a fixed margin.
+- `native`: the encoded state supports correct sound and young continuations.
+- `same-swap`: replacing a context’s \(z\) with another paraphrase’s same-state \(z\) preserves both continuations.
+- `cross-swap`: replacing \(z\) with another state’s code changes both continuations to the donor state.
+- `persistence`: after each downstream decision, \(R(h_t)\) must reconstruct the same \(z\).
+
+The Qwen weights never move. The identical code, injector, and loss weights serve every state and consequence.
+
+**CPU-bounded implementation.** Cache block-12 activations for teacher-forced sequences of at most 48 tokens, then train only the state bus through the frozen suffix. Use three predeclared initialization seeds, 600 AdamW steps each, microbatch one with accumulation, one process, and a four-hour total wall-clock cap. No layer, state dimension, learning-rate family, dataset, objective, or model sweep follows the cap.
+
+**Causal demonstration.** On held-out paraphrases, generate or score one three-decision continuation under:
+
+- no bus;
+- self code;
+- same-state donor code;
+- cross-state donor code;
+- shuffled learned code;
+- random norm-matched code.
+
+Same-state swaps should preserve all three consequences. Cross-state swaps should change sound and young—the trained consequences—and also the never-trained taxonomic adjective. Show the decoded continuations beside clustered effect sizes; do not adjudicate from a latent-distance table alone.
+
+**Kill rule.** Kill the persistent interchangeable-state claim if any of these holds:
+
+- the fixed training budget fails to reach 85% on the trained consequences;
+- same-state swaps leave calibration-derived tolerance in more than 4/16 held-out contexts;
+- cross-state donors fail to produce donor-consistent choices on at least two of three consequences in 12/16 contexts;
+- the never-trained taxonomic consequence is donor-consistent in fewer than 10/16 contexts or gains less than 0.25 over shuffled/random codes;
+- causal movement at the third decision is less than half its magnitude at the first.
+
+If only sound and young move, classify the artifact as a supervised response controller and stop. Do not add dimensions, probes, epochs, or another layer to rescue it.
+
+**Lay one-liner:** “We stopped hunting for a hidden state the model never learned to keep and built it a tiny internal state bus: paraphrases write the same state, it survives several decisions, and swapping it changes even a consequence never used to train the bus.”
+
+Narrative-gate score: **8/10 if the never-trained consequence moves; 5/10 if only trained outputs move.**
 
 ## 2026-08-29 — interchange_v1 (operational interchangeability, Qwen3-1.7B-Base block 12): baseline FAIL by raw sign; gate semantics referred
 
