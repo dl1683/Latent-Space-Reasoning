@@ -5,6 +5,25 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Round 36c positive control (w32): FAIL on every exact gate
+
+The learned, explicitly quotient-trained control (behavioural BCE + MSE of
+the transition output to the stop-gradient encoding of the true successor
+over all 176 canonical transitions; same carrier, seeds, reducer) finished
+in 820 s and FAILS every exact gate in every seed — including action-table
+truth (0/5 seeds) and cross-seed table identity, which the behaviour-only
+36b W64 cell had passed informationally. result_scope = POSITIVE-CONTROL:
+this is not a behaviour-only result and not a quotient-from-behaviour
+claim. Registered meaning of a control FAIL: the exact gates are not
+reachable by this carrier even with direct transition supervision — a
+certification-regime problem, not a latent-organisation result. The
+surprise is the direction: direct supervision made things worse than
+behaviour alone, which points at the auxiliary objective (target chasing
+through the stop-gradient successor encoding, or signature collapse) rather
+than at the gates — that is with Codex as an adjudication. The registered
+conditional w64 cell runs now (its precondition, a valid complete w32
+exact-gate FAIL, is met). A fresh audit follows both cells.
+
 ## 2026-08-29 — Re-contextualization #24 (2-hour step-back; audit #24 already in flight on the only new claim)
 
 Audit: the only new capability result since audit #23 is the Round 36b
