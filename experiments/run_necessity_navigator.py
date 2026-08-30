@@ -41,15 +41,16 @@ class World:
         x, y, r = self.dec(g); t = 2 * np.pi / self.n; return np.array([np.cos(t * x), np.sin(t * x), np.cos(t * y), np.sin(t * y), np.cos(np.pi * r / 2), np.sin(np.pi * r / 2)])
 
 
-def episodes(W, cfg, perms, rng, B):
-    """Batch of episodes: goal word (12 actions from identity) -> RESET -> 48-step walk. Returns token arrays and labels."""
+def episodes(W, cfg, perms, rng, B, goal_words=None, pidx=None):
+    """Batch of episodes: goal word (12 actions from identity) -> RESET -> 48-step walk. Returns token arrays and labels.
+    goal_words/pidx (optional) fix the goal words and permutation indices (swap manifest)."""
     Lg, Lw = cfg["world"]["goal_word_len"], cfg["world"]["walk_len"]; T = Lg + 1 + Lw
     act = np.full((B, T), 4, dtype=np.int64); obs = np.zeros((B, T), dtype=np.int64); phase = np.zeros((B, T), dtype=np.int64)
-    pose = np.zeros((B, T), dtype=np.int64); goal = np.zeros(B, dtype=np.int64); optm = np.zeros((B, T, 4), dtype=bool); pidx = rng.integers(len(perms), size=B)
+    pose = np.zeros((B, T), dtype=np.int64); goal = np.zeros(B, dtype=np.int64); optm = np.zeros((B, T, 4), dtype=bool); pidx = rng.integers(len(perms), size=B) if pidx is None else np.asarray(pidx)
     for b in range(B):
         P = perms[pidx[b]]; g = 0
         for t in range(Lg):                                                                    # goal word: observations along the goal path
-            a = rng.integers(4); act[b, t] = a; obs[b, t] = P[W.symbol(g)]; phase[b, t] = 0; g = W.step_tab[g, a]
+            a = rng.integers(4) if goal_words is None else goal_words[b][t]; act[b, t] = a; obs[b, t] = P[W.symbol(g)]; phase[b, t] = 0; g = W.step_tab[g, a]
         goal[b] = g; act[b, Lg] = 5; obs[b, Lg] = P[W.symbol(0)]; phase[b, Lg] = 1; g = 0; prev = 4
         for t in range(Lg + 1, T):                                                             # walk: input = current observation + previous executed action
             act[b, t] = prev; obs[b, t] = P[W.symbol(g)]; phase[b, t] = 2; pose[b, t] = g; optm[b, t] = W.opt[g, goal[b]]
@@ -145,13 +146,21 @@ def readouts(W, cfg, model, untrained, perms, seed, log):
     rho = float(np.nanmedian(rhos)); rho_lb = float(np.quantile([np.nanmedian(rng.choice(rhos, len(rhos))) for _ in range(R["bootstraps"])], 0.025)); sh95 = float(np.nanquantile(rho_sh, 0.95)); gap = float(np.median(gaps))
     out["distance"] = {"spearman": rho, "spearman_lb": rho_lb, "shuffled_95": sh95, "near_far_gap_mad": gap, "pass": rho >= G["distance"]["spearman_min"] and rho_lb > G["distance"]["spearman_lb_min"] and rho - sh95 >= G["distance"]["margin_over_shuffled_min"] and gap >= G["distance"]["near_far_gap_min"]}
     # (e) causal state swap: donor hidden (perm p2, pose g_d) into a recipient episode (perm p1, same goal); environment continues at g_d
-    K = R["swap_steps"]; E = test["E"]; Lg = cfg["world"]["goal_word_len"]; arms = {k: [] for k in ("swap", "noswap", "wrong", "random", "self")}; mass = {k: [] for k in arms}
-    by_goal = collections.defaultdict(list)
-    for b in range(len(test["goal"])): by_goal[test["goal"][b]].append(b)
-    pairs = [(r, d) for bs in by_goal.values() for r in bs for d in bs if r != d and test["perm"][r] != test["perm"][d]][:200]
-    for r, d in pairs:
-        t = rng.integers(5, test["H"].shape[1] - K - 1); P1 = perms["test"][test["perm"][r]]; gd = test["pose"][d, t]; G_ = test["goal"][r]
-        wrong_b = rng.choice([b for b in by_goal[G_] if b not in (r, d)] or [d]); states = {"swap": test["H"][d, t], "noswap": test["H"][r, t], "wrong": test["H"][wrong_b, t], "random": None, "self": None}
+    K = R["swap_steps"]; Lg = cfg["world"]["goal_word_len"]; arms = {k: [] for k in ("swap", "noswap", "wrong", "random", "self")}; mass = {k: [] for k in arms}
+    mrng = np.random.default_rng(cfg["readout"].get("swap_manifest_seed", 8080)); n_pairs = cfg["readout"].get("swap_pairs", 200)     # frozen, outcome-independent manifest
+    gw = [mrng.integers(4, size=Lg) for _ in range(n_pairs)]; pk = [mrng.choice(len(perms["test"]), 3, replace=False) for _ in range(n_pairs)]
+    E = episodes(W, cfg, perms["test"], mrng, 3 * n_pairs, goal_words=[g for g in gw for _ in range(3)], pidx=[i for trip in pk for i in trip])
+    with torch.no_grad(): _, Hm = model(torch.tensor(E["act"]), torch.tensor(E["obs"]), torch.tensor(E["phase"]))
+    test = dict(H=Hm[:, Lg + 1:].numpy(), pose=E["pose"][:, Lg + 1:], a=E["walk_actions"][:, Lg + 1:], goal=E["goal"], perm=E["perm"], E=E)
+    pairs = []; ts = []
+    for k in range(n_pairs):
+        r, d, w = 3 * k, 3 * k + 1, 3 * k + 2
+        cand = [t for t in range(5, test["H"].shape[1] - K - 1) if test["pose"][d, t] != test["pose"][r, t] and test["pose"][w, t] not in (test["pose"][r, t], test["pose"][d, t])]
+        if cand: pairs.append((r, d)); ts.append(int(mrng.choice(cand)))
+    manifest_hash = hashlib.sha256(json.dumps({"gw": [g.tolist() for g in gw], "pk": [p.tolist() for p in pk], "t": ts}).encode()).hexdigest(); log(f"  swap manifest: {len(pairs)} triplets, hash {manifest_hash[:12]}")
+    for (r, d), t in zip(pairs, ts):
+        P1 = perms["test"][test["perm"][r]]; gd = test["pose"][d, t]; G_ = test["goal"][r]; wrong_b = r + 2
+        states = {"swap": test["H"][d, t], "noswap": test["H"][r, t], "wrong": test["H"][wrong_b, t], "random": None, "self": None}
         rnd = rng.standard_normal(test["H"].shape[-1]); states["random"] = rnd / np.linalg.norm(rnd) * np.linalg.norm(states["swap"])
         # self reference: a recipient-presentation state at the donor pose, obtained by replaying the recipient episode's prefix... approximated by donor episode re-rendered under P1
         Ed = E["act"][d:d + 1, :Lg + 1 + t + 1].copy(); Od = E["obs"][d:d + 1, :Lg + 1 + t + 1].copy(); Pd = perms["test"][test["perm"][d]]; inv = np.argsort(Pd); Od = P1[inv[Od]]
@@ -167,7 +176,7 @@ def readouts(W, cfg, model, untrained, perms, seed, log):
             arms[name].append(hits); mass[name].append(ms)
     acc = {k: float(np.mean(v)) for k, v in arms.items()}; acc4 = {k: float(np.mean([x[-1] for x in v])) for k, v in arms.items()}; m = {k: float(np.mean(v)) for k, v in mass.items()}
     best = max(acc[k] for k in ("noswap", "wrong", "random")); bestm = max(m[k] for k in ("noswap", "wrong", "random"))
-    out["swap"] = {"acc": acc, "acc_decision4": acc4, "mass_nat": m, "n_pairs": len(pairs), "pass": acc["swap"] >= G["swap"]["top1_min"] and acc4["swap"] >= G["swap"]["decision4_min"] and acc["swap"] - best >= G["swap"]["uplift_min"] and m["swap"] - bestm >= G["swap"]["mass_uplift_nat_min"]}
+    out["swap"] = {"acc": acc, "acc_decision4": acc4, "mass_nat": m, "n_pairs": len(pairs), "manifest_hash": manifest_hash, "pass": acc["swap"] >= G["swap"]["top1_min"] and acc4["swap"] >= G["swap"]["decision4_min"] and acc["swap"] - best >= G["swap"]["uplift_min"] and m["swap"] - bestm >= G["swap"]["mass_uplift_nat_min"]}
     J = lambda o: o.item() if hasattr(o, "item") else (float(o) if isinstance(o, (np.floating,)) else str(o))
     for k, v in out.items(): log(f"  seed {seed} {k}: {json.dumps(v, default=J)}")
     return out, test
