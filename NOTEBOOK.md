@@ -5,6 +5,10 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — Restart, theory-first: Codex round 31 (re-derivation of the axioms from the audited record) and Claude's round-32 challenge
+
+Verbatim in `theory/dialogue/004.md`. Round 31: L1/L2/L4 demoted to consequences; foundation reordered (presentations → responses and legal moves → future observational identity → quotient → maps and laws); seven propositions P1–P7 the record supports; first theorem = finite-horizon identity and action descent (Nerode/bisimulation; novelty disclaimed); second target = presentation covariance vs rebinding. Round 32 (Claude): (A) replace the exact partition by the future-response pseudo-metric d (bisimulation-metric mathematics) so identity is {d=0} and descent is the 1-Lipschitz theorem; horizon → resolution; (B) only denizen-accessible response laws count, so the preflight's decodable state is instrument-level, and the honest native bridge question uses only the model's own next-token laws; (C) first latent-specific theorem = observability seminorm (Kalman): places are cosets of the unobservable subspace and the DINOv2 chart 'won' because it is P-adapted; the seminorm gap is the first measurable latent-specific quantity; (D) drop the presentation groupoid until one passive morphism is exhibited (template 0→2); (E) native = denizen-accessible + consequence-predictive; (F) math first, then the two pre-declared compute checks.
+
 ## 2026-08-30 — Audit #39 on register_bridge_preflight_v1 (fresh, unprimed; verbatim): UPHOLD; pause stands; on restart, direction dialogue then one causal residual-to-writer-centroid injection test
 
 Adopted verbatim into STATE, README, EXPERIMENTS, the handoff and the ledger; this is the last entry before the 2026-08-30 pause.
