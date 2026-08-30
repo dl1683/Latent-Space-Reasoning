@@ -15,6 +15,23 @@ Codex dialogue on information-geometric D7 completed. Ruling: specialize D7, don
 
 Key properties: seminorm (pullback of inner product through linear differential); for softmax laws, measures Var_{A~π}[dℓ_A]; Markov contraction (full channel dominates any fixed grouping); boundary singularity when π_a = 0; Finsler not Riemannian; Open Problem 7 still open. Does NOT collapse instrument/native, does NOT promote reachability_v1, does NOT change the bridge specification or locked estimands. Audit #48 pending.
 
+## 2026-08-30 — Codex should-continue review: STOP the current program form
+
+Mandatory §2.7 rule 5 review. Fresh Codex (no prior context) reads README, STATE, NOTEBOOK, AXIOMS, EXPERIMENTS. Verdict verbatim:
+
+> No — not in its current form. The broad research question is worth preserving, but this program has become infrastructure drift. Stop the `native_bridge_v1` review loop, preserve the negative record, and permit only an artifact-first successor with a hard one-result stop rule.
+
+Key findings (verbatim summary):
+1. **Central bet untested.** native_bridge_v1 cannot answer the central question even if it passes — its centroid is analyst-authored, its edit is a surgeon move, and its claim wall forbids licensing native latent mathematics.
+2. **Review loop is negative-value.** Six review rounds, three fix iterations, six smoke attempts, zero scientific calls. More review improves auditability of an experiment whose best outcome cannot establish the central artifact.
+3. **Ratio is infinite.** 16,026 lines of theory/apparatus, zero central artifacts. The project's own >5:1 halt rule is exceeded.
+4. **Two defensible paths:** (a) terminal salvage — regenerate smoke/lock once, execute one immutable run, close regardless of outcome; (b) stop immediately.
+5. **Strongest alternative:** predictive-state (Shalizi & Crutchfield), causal abstraction (DAS/Geiger et al.), Myhill-Nerode diagnostics (Vafa et al.), function vectors (Todd et al.) on OthelloGPT or a lawful sequence model.
+
+Codex slightly favors the terminal run (bounded marginal CPU cost, apparatus already exists) but states it does not justify continuing the program.
+
+This review is recorded. The D7 specialization (round 43) is independent foundational theory that does not depend on native_bridge_v1. The decision on whether to execute the terminal run or stop immediately is the user's. Audit #48 (D7) is still pending.
+
 ## 2026-08-30 — Re-contextualization (2-hour check-in, runner engineering)
 
 **What still holds:** The adopted theory stack (D1–D9, Theorems 1–8) is unchanged and sound by audits #42/#44. The native_bridge_v1 preregistration is LOCK-READY (audit #47). The runner code has all 6 Codex-identified blockers fixed (committed 44d8c1a). The scientific run is the correct next empirical step.
