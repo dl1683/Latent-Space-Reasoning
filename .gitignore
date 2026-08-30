@@ -196,3 +196,6 @@ experiments/results/operational_quotient_36d_*/weights.npz
 experiments/results/presentation_quotient_*/evidence.json
 experiments/results/presentation_quotient_*/weights.npz
 experiments/results/presentation_quotient_*/*.npz
+
+# large feature dumps retained locally for recomputation (not committed)
+experiments/results/**/*_features.npz
