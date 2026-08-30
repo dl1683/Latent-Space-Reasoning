@@ -1,0 +1,7542 @@
+{
+ "config": "onewrite_recall_rung1",
+ "sha256": {
+  "runner": "03f7962a25be9e764e86133fd6f641bd4cf510c275f2d4a81fa162e6d81ac6a3",
+  "config": "0f76833c95f009f177e2e6a7a4657b9918a5ee2979446ae8c427f80cf64eb609",
+  "machinery": "ba4aedfdd8458204d7abfd5de585c4b1be3d1e9986582a47428c91822c51bd7f"
+ },
+ "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
+ "seeds": {
+  "11": {
+   "summary": {
+    "loss_history": [
+     2.1663005352020264,
+     1.814862847328186,
+     2.3387110233306885,
+     2.0215022563934326,
+     1.6809707880020142,
+     1.8031524419784546,
+     1.4039583206176758,
+     1.0920168161392212,
+     1.4098105430603027,
+     1.2023922204971313,
+     0.8111643195152283,
+     0.884768545627594,
+     1.0935473442077637,
+     1.5724304914474487,
+     1.6325984001159668,
+     1.4851161241531372,
+     1.2822091579437256,
+     1.1720200777053833,
+     1.1491763591766357,
+     1.185744047164917,
+     1.0489978790283203,
+     1.066327452659607,
+     1.2177220582962036,
+     1.2420403957366943,
+     1.1229475736618042,
+     1.1442848443984985,
+     1.145544171333313,
+     1.2780823707580566,
+     1.2362475395202637,
+     1.2832977771759033,
+     1.356406331062317,
+     1.1927820444107056,
+     1.0585150718688965,
+     1.051138162612915,
+     1.6218682527542114,
+     1.338408350944519,
+     1.0631064176559448,
+     1.0574144124984741,
+     0.9340499043464661,
+     1.2880717515945435,
+     1.2905545234680176,
+     0.9827231168746948,
+     1.2376999855041504,
+     1.3776373863220215,
+     0.9224843978881836,
+     0.9864858388900757,
+     1.3374099731445312,
+     1.4794912338256836,
+     0.9513614177703857,
+     1.2968353033065796,
+     0.9092333316802979,
+     1.2443751096725464,
+     0.8952342867851257,
+     0.9664478302001953,
+     1.0205740928649902,
+     0.8612796664237976,
+     0.8439741134643555,
+     0.9432138800621033,
+     1.194305419921875,
+     1.3547508716583252,
+     0.9167311787605286,
+     0.8776863813400269,
+     0.8821057677268982,
+     1.1147379875183105,
+     1.1451866626739502,
+     0.6722716689109802,
+     1.192706823348999,
+     1.49391508102417,
+     1.0069390535354614,
+     0.8631042242050171,
+     2.205401659011841,
+     2.75984525680542,
+     0.6738699674606323,
+     1.4915052652359009,
+     0.7939528226852417,
+     1.400190830230713,
+     1.9971178770065308,
+     1.3429226875305176,
+     1.1626663208007812,
+     1.29935622215271,
+     1.1410841941833496,
+     1.672878384590149,
+     1.0119407176971436,
+     1.2007193565368652,
+     1.4541925191879272,
+     1.4549636840820312,
+     1.1503421068191528,
+     1.1570558547973633,
+     1.278033971786499,
+     1.2741827964782715,
+     1.268397569656372,
+     1.02884042263031,
+     1.4985634088516235,
+     0.9898204803466797,
+     1.0491687059402466,
+     1.222888708114624,
+     1.1685858964920044,
+     1.6313655376434326,
+     1.2768727540969849,
+     1.052385687828064,
+     1.021012783050537,
+     1.1983351707458496,
+     1.2490273714065552,
+     1.1326934099197388,
+     0.9841204285621643,
+     1.123619556427002,
+     0.9604974389076233,
+     1.0646270513534546,
+     1.2045727968215942,
+     1.2430341243743896,
+     1.0175002813339233,
+     1.032192587852478,
+     1.1180400848388672,
+     1.0656671524047852,
+     1.2477526664733887,
+     1.2391278743743896,
+     1.4328447580337524,
+     1.1305108070373535,
+     0.982911229133606,
+     1.0414807796478271,
+     0.9877195358276367,
+     1.0844186544418335,
+     1.0102542638778687,
+     1.0667997598648071,
+     0.8799525499343872,
+     1.0858216285705566,
+     0.938187837600708,
+     1.0001401901245117,
+     1.0762122869491577,
+     1.3039783239364624,
+     1.0476036071777344,
+     0.9440832138061523,
+     1.5669900178909302,
+     0.8782961368560791,
+     0.8803989887237549,
+     1.2171703577041626,
+     1.1953463554382324,
+     0.8571451902389526,
+     1.1059341430664062,
+     1.148621678352356,
+     1.2786099910736084,
+     1.2683461904525757,
+     0.9360261559486389,
+     0.8270657658576965,
+     0.8907147645950317,
+     0.9535239338874817,
+     1.313821792602539,
+     0.898675799369812,
+     0.8306300640106201,
+     1.2853546142578125,
+     0.8042333126068115,
+     1.2302571535110474,
+     0.9578551054000854,
+     0.7943366169929504,
+     1.0652371644973755,
+     1.0340496301651,
+     0.9513627290725708,
+     1.3071787357330322,
+     1.6752591133117676,
+     1.0043635368347168,
+     1.0811443328857422,
+     1.4977866411209106,
+     0.899919331073761,
+     1.0073449611663818,
+     1.1005154848098755,
+     1.163407802581787,
+     1.202298641204834,
+     1.224653720855713,
+     1.1776950359344482,
+     1.0331131219863892,
+     1.0620791912078857,
+     1.2312664985656738,
+     0.9798347353935242,
+     1.1241599321365356,
+     1.2580995559692383,
+     1.1315618753433228,
+     1.0869598388671875,
+     1.0045239925384521,
+     1.0053887367248535,
+     0.9441006779670715,
+     0.975597083568573,
+     0.9696775078773499,
+     1.0604079961776733,
+     0.8328302502632141,
+     1.1025203466415405,
+     1.1102147102355957,
+     0.8163865208625793,
+     1.11091947555542,
+     0.6950012445449829,
+     0.9169285893440247,
+     1.024580955505371,
+     1.0039173364639282,
+     1.098080039024353,
+     0.9902741312980652,
+     1.0881502628326416,
+     1.1076539754867554,
+     1.9863166809082031,
+     1.5416598320007324,
+     1.091431975364685,
+     0.9091426134109497,
+     1.1792868375778198,
+     1.4148837327957153,
+     1.396601676940918,
+     1.1582481861114502,
+     1.1353397369384766,
+     1.1939105987548828,
+     1.1749677658081055,
+     0.8891423344612122,
+     1.118140697479248,
+     0.8914773464202881,
+     1.138446569442749,
+     0.5626391172409058,
+     1.4219835996627808,
+     1.3919398784637451,
+     1.2650861740112305,
+     0.4952262341976166,
+     1.2825981378555298,
+     1.3264974355697632,
+     1.3732479810714722,
+     1.4064851999282837,
+     1.1718698740005493,
+     1.0829331874847412,
+     1.1556286811828613,
+     1.3179857730865479,
+     1.0482767820358276,
+     0.9514761567115784,
+     1.0327222347259521,
+     1.2381290197372437,
+     1.2628834247589111,
+     1.0844464302062988,
+     1.0487959384918213,
+     0.9162563681602478,
+     0.9643624424934387,
+     1.0036898851394653,
+     0.9550685882568359,
+     1.1839100122451782,
+     1.2303903102874756,
+     1.2512362003326416,
+     1.1695497035980225,
+     0.9194464087486267,
+     0.8770338892936707,
+     0.9764014482498169,
+     1.4652899503707886,
+     0.9807921648025513,
+     1.1675164699554443,
+     1.1579258441925049,
+     1.0308164358139038,
+     1.0309470891952515,
+     1.0513129234313965,
+     0.979546070098877,
+     0.9005470275878906,
+     1.0546629428863525,
+     0.9857654571533203,
+     0.8055314421653748,
+     0.9793962240219116,
+     0.9639900922775269,
+     1.205003261566162,
+     0.9573842883110046,
+     1.299279808998108,
+     1.2907015085220337,
+     1.073357105255127,
+     0.9737790822982788,
+     0.972710132598877,
+     1.1215070486068726,
+     1.117215871810913,
+     1.170007586479187,
+     0.7982227206230164,
+     1.1545644998550415,
+     1.066291093826294,
+     1.234963059425354,
+     1.2579294443130493,
+     0.9923369288444519,
+     1.0878047943115234,
+     1.057824969291687,
+     1.1864324808120728,
+     1.0669981241226196,
+     1.157625436782837,
+     1.1836401224136353,
+     1.0663198232650757,
+     1.0827302932739258,
+     0.9809919595718384,
+     1.0075196027755737,
+     0.9699248671531677,
+     1.1007362604141235,
+     1.0125889778137207,
+     0.963726818561554,
+     1.074416995048523,
+     0.9711203575134277,
+     0.9872953295707703,
+     1.0109776258468628,
+     0.9868703484535217,
+     1.0238722562789917,
+     0.9702883362770081,
+     1.1270219087600708,
+     1.1158708333969116,
+     0.9026216864585876,
+     0.9031075835227966,
+     1.114766240119934,
+     0.9727333784103394,
+     0.9524614214897156,
+     0.8272410035133362,
+     1.1265106201171875,
+     1.571332573890686,
+     1.1463181972503662,
+     0.7880710363388062,
+     0.7980111837387085,
+     0.8892179727554321,
+     0.8353166580200195,
+     0.9774320721626282,
+     1.0541120767593384,
+     1.1487839221954346,
+     1.4449286460876465,
+     1.3257142305374146,
+     1.041949987411499,
+     1.2043098211288452,
+     1.1874233484268188,
+     0.926658034324646,
+     1.4442052841186523,
+     0.971992015838623,
+     1.416778326034546,
+     1.0192134380340576,
+     0.9938868880271912,
+     1.0567232370376587,
+     0.9788527488708496,
+     1.0565601587295532,
+     0.6115502715110779,
+     0.9856181740760803,
+     0.904394268989563,
+     0.910197913646698,
+     1.2214021682739258,
+     0.928892195224762,
+     0.842887282371521,
+     0.8293129205703735,
+     1.3594551086425781,
+     0.9958340525627136,
+     1.0631062984466553,
+     1.399530291557312,
+     0.7902205586433411,
+     1.2296408414840698,
+     0.8091524243354797,
+     1.101701259613037,
+     0.9247078895568848,
+     0.841005802154541,
+     1.0566298961639404,
+     0.9990438222885132,
+     0.8776307702064514,
+     1.2801671028137207,
+     0.9118767976760864,
+     0.8516878485679626,
+     1.2348787784576416,
+     1.0121679306030273,
+     1.018553376197815,
+     0.8638883233070374,
+     1.1539226770401,
+     1.0652542114257812,
+     1.125908374786377,
+     0.9852898120880127,
+     1.3790266513824463,
+     0.8261233568191528,
+     0.8996220827102661,
+     0.893123984336853,
+     0.9926841259002686,
+     1.2579046487808228,
+     0.9672089219093323,
+     0.7991092205047607,
+     1.0728071928024292,
+     1.204174518585205,
+     0.9781872034072876,
+     0.7076416015625,
+     0.8956664204597473,
+     0.9659658074378967,
+     1.179738998413086,
+     1.0011261701583862,
+     0.990776002407074,
+     1.1929216384887695,
+     1.0819547176361084,
+     0.9494435787200928,
+     1.0700979232788086,
+     0.9767310619354248,
+     1.0199507474899292,
+     1.3611139059066772,
+     1.0083595514297485,
+     0.864450991153717,
+     0.8596895933151245,
+     0.9064844250679016,
+     0.7436991930007935,
+     1.1618226766586304,
+     1.1863806247711182,
+     1.2873919010162354,
+     1.1694118976593018,
+     0.7060763239860535,
+     0.9224575757980347,
+     1.176806926727295,
+     0.6356512904167175,
+     1.1872280836105347,
+     1.1846227645874023,
+     0.7617349624633789,
+     0.725929319858551,
+     1.3207439184188843,
+     1.0710735321044922
+    ],
+    "acc": {
+     "write": 0.16666666666666666,
+     "cue": 0.125,
+     "zero_hooked": 0.125,
+     "wrong": 0.16666666666666666,
+     "random": 0.16666666666666666,
+     "visible": 1.0
+    },
+    "completion": {
+     "write": 1.0,
+     "cue": 0.9583333333333334,
+     "zero_hooked": 0.9583333333333334,
+     "wrong": 1.0,
+     "random": 1.0,
+     "visible": 1.0
+    },
+    "write_sub": {
+     "source0": 0.16666666666666666,
+     "source1": 0.16666666666666666,
+     "wordingtrain": 0.16666666666666666
+    },
+    "write_minus_cue": 0.041666666666666664,
+    "write_minus_cue_lb": -0.16666666666666666,
+    "write_minus_random": 0.0,
+    "write_minus_random_lb": 0.0,
+    "recovery": 0.04761904761904761,
+    "cf_follow": 0.08333333333333333,
+    "cue_cf_rate": 0.08333333333333333,
+    "zero_hook_matches_cue": true,
+    "gates": {
+     "core": false,
+     "wording": false,
+     "specificity": false,
+     "completion": true
+    },
+    "class": "FAIL"
+   },
+   "rows": [
+    {
+     "fact": 0,
+     "source": 0,
+     "wording": "train",
+     "tag": "HESK",
+     "cf_tag": "VORN",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 0,
+     "source": 1,
+     "wording": "train",
+     "tag": "HESK",
+     "cf_tag": "VORN",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 1,
+     "source": 0,
+     "wording": "train",
+     "tag": "NIMB",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 1,
+     "source": 1,
+     "wording": "train",
+     "tag": "NIMB",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 2,
+     "source": 0,
+     "wording": "train",
+     "tag": "FASK",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 2,
+     "source": 1,
+     "wording": "train",
+     "tag": "FASK",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 3,
+     "source": 0,
+     "wording": "train",
+     "tag": "NIMB",
+     "cf_tag": "TWYL",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " 1",
+      "choice": null,
+      "completed": false,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " 1",
+      "choice": null,
+      "completed": false,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 3,
+     "source": 1,
+     "wording": "train",
+     "tag": "NIMB",
+     "cf_tag": "TWYL",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " 1",
+      "choice": null,
+      "completed": false,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " 1",
+      "choice": null,
+      "completed": false,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 4,
+     "source": 0,
+     "wording": "train",
+     "tag": "GORM",
+     "cf_tag": "NIMB",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 4,
+     "source": 1,
+     "wording": "train",
+     "tag": "GORM",
+     "cf_tag": "NIMB",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 5,
+     "source": 0,
+     "wording": "train",
+     "tag": "FASK",
+     "cf_tag": "HESK",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 5,
+     "source": 1,
+     "wording": "train",
+     "tag": "FASK",
+     "cf_tag": "HESK",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 6,
+     "source": 0,
+     "wording": "train",
+     "tag": "VORN",
+     "cf_tag": "HESK",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " vorn",
+      "choice": "VORN",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 6,
+     "source": 1,
+     "wording": "train",
+     "tag": "VORN",
+     "cf_tag": "HESK",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " vorn",
+      "choice": "VORN",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 7,
+     "source": 0,
+     "wording": "train",
+     "tag": "RUZZ",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " vorn",
+      "choice": "VORN",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " vorn",
+      "choice": "VORN",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " vorn",
+      "choice": "VORN",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " ruzz",
+      "choice": "RUZZ",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 7,
+     "source": 1,
+     "wording": "train",
+     "tag": "RUZZ",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " vorn",
+      "choice": "VORN",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " vorn",
+      "choice": "VORN",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " vorn",
+      "choice": "VORN",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " ruzz",
+      "choice": "RUZZ",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 8,
+     "source": 0,
+     "wording": "train",
+     "tag": "HESK",
+     "cf_tag": "FASK",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 8,
+     "source": 1,
+     "wording": "train",
+     "tag": "HESK",
+     "cf_tag": "FASK",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 9,
+     "source": 0,
+     "wording": "train",
+     "tag": "RUZZ",
+     "cf_tag": "TWYL",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " ruzz",
+      "choice": "RUZZ",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 9,
+     "source": 1,
+     "wording": "train",
+     "tag": "RUZZ",
+     "cf_tag": "TWYL",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " ruzz",
+      "choice": "RUZZ",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 10,
+     "source": 0,
+     "wording": "train",
+     "tag": "NIMB",
+     "cf_tag": "TWYL",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 10,
+     "source": 1,
+     "wording": "train",
+     "tag": "NIMB",
+     "cf_tag": "TWYL",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 11,
+     "source": 0,
+     "wording": "train",
+     "tag": "PELT",
+     "cf_tag": "FASK",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " pelt",
+      "choice": "PELT",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 11,
+     "source": 1,
+     "wording": "train",
+     "tag": "PELT",
+     "cf_tag": "FASK",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " pelt",
+      "choice": "PELT",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 12,
+     "source": 0,
+     "wording": "train",
+     "tag": "HESK",
+     "cf_tag": "GORM",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 12,
+     "source": 1,
+     "wording": "train",
+     "tag": "HESK",
+     "cf_tag": "GORM",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 13,
+     "source": 0,
+     "wording": "train",
+     "tag": "PELT",
+     "cf_tag": "RUZZ",
+     "write": {
+      "text": " ruzz",
+      "choice": "RUZZ",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " ruzz",
+      "choice": "RUZZ",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " pelt",
+      "choice": "PELT",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 13,
+     "source": 1,
+     "wording": "train",
+     "tag": "PELT",
+     "cf_tag": "RUZZ",
+     "write": {
+      "text": " ruzz",
+      "choice": "RUZZ",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " pelt",
+      "choice": "PELT",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 14,
+     "source": 0,
+     "wording": "train",
+     "tag": "RUZZ",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " ruzz",
+      "choice": "RUZZ",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 14,
+     "source": 1,
+     "wording": "train",
+     "tag": "RUZZ",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " ruzz",
+      "choice": "RUZZ",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 15,
+     "source": 0,
+     "wording": "train",
+     "tag": "TWYL",
+     "cf_tag": "VORN",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 15,
+     "source": 1,
+     "wording": "train",
+     "tag": "TWYL",
+     "cf_tag": "VORN",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 16,
+     "source": 0,
+     "wording": "train",
+     "tag": "FASK",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 16,
+     "source": 1,
+     "wording": "train",
+     "tag": "FASK",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 17,
+     "source": 0,
+     "wording": "train",
+     "tag": "TWYL",
+     "cf_tag": "NIMB",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 17,
+     "source": 1,
+     "wording": "train",
+     "tag": "TWYL",
+     "cf_tag": "NIMB",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 18,
+     "source": 0,
+     "wording": "train",
+     "tag": "VORN",
+     "cf_tag": "GORM",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " vorn",
+      "choice": "VORN",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 18,
+     "source": 1,
+     "wording": "train",
+     "tag": "VORN",
+     "cf_tag": "GORM",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " vorn",
+      "choice": "VORN",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 19,
+     "source": 0,
+     "wording": "train",
+     "tag": "TWYL",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 19,
+     "source": 1,
+     "wording": "train",
+     "tag": "TWYL",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 20,
+     "source": 0,
+     "wording": "train",
+     "tag": "GORM",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": true
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 20,
+     "source": 1,
+     "wording": "train",
+     "tag": "GORM",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": true
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 21,
+     "source": 0,
+     "wording": "train",
+     "tag": "PELT",
+     "cf_tag": "GORM",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " pelt",
+      "choice": "PELT",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 21,
+     "source": 1,
+     "wording": "train",
+     "tag": "PELT",
+     "cf_tag": "GORM",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " pelt",
+      "choice": "PELT",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 22,
+     "source": 0,
+     "wording": "train",
+     "tag": "VORN",
+     "cf_tag": "NIMB",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " vorn",
+      "choice": "VORN",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 22,
+     "source": 1,
+     "wording": "train",
+     "tag": "VORN",
+     "cf_tag": "NIMB",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " vorn",
+      "choice": "VORN",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 23,
+     "source": 0,
+     "wording": "train",
+     "tag": "GORM",
+     "cf_tag": "VORN",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 23,
+     "source": 1,
+     "wording": "train",
+     "tag": "GORM",
+     "cf_tag": "VORN",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": true
+     }
+    }
+   ]
+  },
+  "23": {
+   "summary": {
+    "loss_history": [
+     1.6409852504730225,
+     1.8065440654754639,
+     1.6710559129714966,
+     1.6518064737319946,
+     1.7099117040634155,
+     1.2490119934082031,
+     1.2150225639343262,
+     1.2858011722564697,
+     1.4981380701065063,
+     1.3787156343460083,
+     1.1482716798782349,
+     0.9144730567932129,
+     1.3940578699111938,
+     1.5569708347320557,
+     1.1622471809387207,
+     1.4806922674179077,
+     0.9984919428825378,
+     0.8732789754867554,
+     1.0805060863494873,
+     1.1452040672302246,
+     0.7858332991600037,
+     1.0275115966796875,
+     1.1017537117004395,
+     1.4544655084609985,
+     1.4698036909103394,
+     1.4204986095428467,
+     1.2598810195922852,
+     0.7699276804924011,
+     0.9157955646514893,
+     1.3570241928100586,
+     1.382665753364563,
+     1.0314258337020874,
+     1.2351856231689453,
+     1.2880289554595947,
+     0.9789571166038513,
+     1.2173213958740234,
+     0.8137239813804626,
+     1.5517841577529907,
+     1.314058780670166,
+     0.7847397923469543,
+     0.9871212244033813,
+     1.2907668352127075,
+     0.7588501572608948,
+     0.7252495884895325,
+     1.175330638885498,
+     1.459154486656189,
+     1.6267529726028442,
+     1.141447901725769,
+     0.6054965257644653,
+     1.209109902381897,
+     1.385688066482544,
+     0.4904228150844574,
+     1.2148616313934326,
+     1.411138892173767,
+     1.1552106142044067,
+     1.3600939512252808,
+     1.6033213138580322,
+     1.2673742771148682,
+     0.5376453995704651,
+     1.4454482793807983,
+     1.1737723350524902,
+     1.1590882539749146,
+     0.653128981590271,
+     1.0565850734710693,
+     1.1120781898498535,
+     1.024769902229309,
+     1.0294309854507446,
+     0.6219021677970886,
+     1.15700364112854,
+     1.1435625553131104,
+     1.0644948482513428,
+     1.597032904624939,
+     1.400971531867981,
+     1.2010736465454102,
+     1.2160921096801758,
+     1.2750165462493896,
+     1.0516974925994873,
+     1.2533222436904907,
+     1.1233185529708862,
+     0.7500057220458984,
+     0.8521597981452942,
+     1.2823939323425293,
+     1.0273984670639038,
+     1.11118483543396,
+     0.8392171859741211,
+     1.2971580028533936,
+     1.0235049724578857,
+     1.096505045890808,
+     1.092699646949768,
+     1.224755048751831,
+     1.3565075397491455,
+     0.8167349100112915,
+     1.3251359462738037,
+     1.325788974761963,
+     1.2103065252304077,
+     1.2037771940231323,
+     1.0746278762817383,
+     0.9730326533317566,
+     1.2112853527069092,
+     1.203801155090332,
+     0.933116614818573,
+     0.9426860213279724,
+     1.1080082654953003,
+     0.926024317741394,
+     1.0445594787597656,
+     1.164512276649475,
+     0.9540045261383057,
+     0.892781674861908,
+     1.2752478122711182,
+     1.2923765182495117,
+     0.9617587924003601,
+     1.2304164171218872,
+     1.0109323263168335,
+     0.9626591205596924,
+     1.0227575302124023,
+     0.8779356479644775,
+     1.1923003196716309,
+     1.2971506118774414,
+     0.8366957902908325,
+     1.090703010559082,
+     0.916284441947937,
+     1.3099762201309204,
+     0.911026656627655,
+     1.2727848291397095,
+     1.1611645221710205,
+     1.076135277748108,
+     0.956601083278656,
+     0.9639698266983032,
+     0.8357118964195251,
+     0.918445348739624,
+     0.8534684181213379,
+     1.1678192615509033,
+     1.3511321544647217,
+     0.868320107460022,
+     1.0384670495986938,
+     1.3693859577178955,
+     1.3667008876800537,
+     0.7385714650154114,
+     1.0041210651397705,
+     1.167852520942688,
+     1.2581316232681274,
+     1.001392126083374,
+     1.2577728033065796,
+     1.240606427192688,
+     1.0337013006210327,
+     0.8275519013404846,
+     1.0593881607055664,
+     1.1523808240890503,
+     1.14494788646698,
+     0.9951311945915222,
+     1.0487333536148071,
+     0.9226399064064026,
+     1.3595471382141113,
+     1.0330190658569336,
+     1.4539053440093994,
+     1.0392992496490479,
+     1.0152218341827393,
+     0.864585280418396,
+     1.1697511672973633,
+     1.0291084051132202,
+     1.069571852684021,
+     1.016371488571167,
+     0.8822676539421082,
+     1.0331547260284424,
+     1.0519020557403564,
+     1.2854944467544556,
+     1.2641618251800537,
+     1.0757602453231812,
+     0.8876793384552002,
+     1.1954973936080933,
+     0.8105931282043457,
+     1.1015890836715698,
+     1.1903151273727417,
+     1.2791446447372437,
+     1.0763726234436035,
+     1.1751714944839478,
+     1.0638861656188965,
+     0.9351499676704407,
+     0.9339272379875183,
+     1.1325047016143799,
+     1.1460002660751343,
+     1.2549420595169067,
+     1.0712099075317383,
+     0.9806373119354248,
+     0.9276962876319885,
+     1.2244205474853516,
+     0.7313864231109619,
+     1.1352014541625977,
+     1.4328769445419312,
+     0.9114307761192322,
+     1.1359615325927734,
+     0.7632182240486145,
+     1.045503854751587,
+     0.7866637706756592,
+     1.1953924894332886,
+     1.2393410205841064,
+     1.0721843242645264,
+     1.1299232244491577,
+     1.0744470357894897,
+     0.9552692174911499,
+     1.0384138822555542,
+     0.957988440990448,
+     1.080102562904358,
+     0.9939412474632263,
+     1.038203477859497,
+     1.1702098846435547,
+     0.8529000282287598,
+     1.2921737432479858,
+     1.1021276712417603,
+     1.0985872745513916,
+     1.1108523607254028,
+     1.1772125959396362,
+     1.092059850692749,
+     0.9376375675201416,
+     1.0405809879302979,
+     0.8510255217552185,
+     0.8066042065620422,
+     1.0206056833267212,
+     1.0724363327026367,
+     1.0928397178649902,
+     0.9917047619819641,
+     0.7665525078773499,
+     0.907077968120575,
+     0.7438504099845886,
+     1.0008212327957153,
+     0.9771067500114441,
+     0.8521308898925781,
+     1.0550658702850342,
+     1.0658650398254395,
+     1.0694284439086914,
+     1.0188281536102295,
+     1.501305341720581,
+     0.9226507544517517,
+     1.0128477811813354,
+     1.6767311096191406,
+     0.7291896939277649,
+     0.3879346549510956,
+     1.545667290687561,
+     1.057000994682312,
+     1.1883028745651245,
+     1.0205705165863037,
+     1.1992677450180054,
+     1.318785309791565,
+     1.3314845561981201,
+     1.11119544506073,
+     1.0999666452407837,
+     0.6991057395935059,
+     1.0808954238891602,
+     1.1796002388000488,
+     0.9904224872589111,
+     1.1689460277557373,
+     0.9506862163543701,
+     1.4305753707885742,
+     0.7619125843048096,
+     1.148637056350708,
+     0.8711658716201782,
+     1.159228801727295,
+     0.6432387828826904,
+     0.8136305809020996,
+     0.7193810343742371,
+     1.179179072380066,
+     1.2597993612289429,
+     0.48653000593185425,
+     1.213817834854126,
+     0.46620863676071167,
+     1.4371962547302246,
+     1.1839618682861328,
+     0.853516161441803,
+     1.348556637763977,
+     1.0895477533340454,
+     1.2323756217956543,
+     1.015655517578125,
+     1.1618537902832031,
+     1.2210932970046997,
+     0.9811289310455322,
+     0.6576751470565796,
+     1.1768778562545776,
+     1.1059255599975586,
+     0.7894183993339539,
+     1.1014506816864014,
+     1.3632413148880005,
+     1.0655268430709839,
+     1.4715089797973633,
+     1.0900156497955322,
+     1.0614763498306274,
+     1.0253335237503052,
+     1.1294426918029785,
+     1.074068546295166,
+     1.0130627155303955,
+     0.641352117061615,
+     0.9823288321495056,
+     0.9821756482124329,
+     0.9909483194351196,
+     0.9673472046852112,
+     1.1318198442459106,
+     1.076416015625,
+     0.9634112119674683,
+     0.927331268787384,
+     1.131822943687439,
+     0.8224093914031982,
+     1.0039339065551758,
+     1.221428394317627,
+     0.9453065991401672,
+     0.9009925127029419,
+     0.8408381938934326,
+     1.2700040340423584,
+     1.1116985082626343,
+     0.9018006324768066,
+     0.847359836101532,
+     0.8868443965911865,
+     0.9964990615844727,
+     0.8943558931350708,
+     0.9639982581138611,
+     0.9405455589294434,
+     1.1409751176834106,
+     1.2172333002090454,
+     1.185476303100586,
+     1.4433645009994507,
+     0.9561448097229004,
+     1.1431528329849243,
+     1.100749135017395,
+     0.7639654874801636,
+     1.1170454025268555,
+     1.0797978639602661,
+     0.8349889516830444,
+     0.9237133860588074,
+     1.1070953607559204,
+     0.9259823560714722,
+     0.6730855107307434,
+     0.7869718670845032,
+     0.9802446961402893,
+     1.0969477891921997,
+     1.0285969972610474,
+     0.9008017778396606,
+     0.5574188828468323,
+     0.44257596135139465,
+     0.9138498902320862,
+     0.3807142376899719,
+     1.4798709154129028,
+     1.3610036373138428,
+     1.3286290168762207,
+     1.1784263849258423,
+     0.9543144106864929,
+     1.458219289779663,
+     1.1700078248977661,
+     1.0936565399169922,
+     1.035825490951538,
+     1.0324538946151733,
+     1.126108169555664,
+     1.1168915033340454,
+     1.2168266773223877,
+     1.0845551490783691,
+     0.5963822603225708,
+     1.0003259181976318,
+     0.9624464511871338,
+     1.2977269887924194,
+     0.9573296904563904,
+     0.970736563205719,
+     1.24326491355896,
+     1.29923415184021,
+     0.9221593737602234,
+     1.0506113767623901,
+     0.9305784702301025,
+     0.9716380834579468,
+     1.0039094686508179,
+     1.1004639863967896,
+     0.7676217555999756,
+     0.810459315776825,
+     1.103930115699768,
+     1.2497246265411377,
+     1.260672926902771,
+     0.9244155883789062,
+     0.6314330697059631,
+     1.1781787872314453,
+     1.0076688528060913,
+     1.2502601146697998,
+     1.0923875570297241,
+     1.114376425743103,
+     1.1957472562789917,
+     0.9664657711982727,
+     0.9675915837287903,
+     0.9770601987838745,
+     0.7476086616516113,
+     1.07143235206604,
+     0.7644572854042053,
+     1.0644659996032715,
+     1.2217048406600952,
+     1.083708643913269,
+     1.059502363204956,
+     1.0694442987442017,
+     1.181725025177002,
+     0.947113573551178,
+     1.1698247194290161,
+     1.0326310396194458,
+     0.9638771414756775,
+     0.8758450150489807,
+     1.0515694618225098,
+     0.7927135229110718,
+     1.2278364896774292,
+     1.038670539855957
+    ],
+    "acc": {
+     "write": 0.1875,
+     "cue": 0.125,
+     "zero_hooked": 0.125,
+     "wrong": 0.1875,
+     "random": 0.20833333333333334,
+     "visible": 1.0
+    },
+    "completion": {
+     "write": 1.0,
+     "cue": 0.9583333333333334,
+     "zero_hooked": 0.9583333333333334,
+     "wrong": 1.0,
+     "random": 1.0,
+     "visible": 1.0
+    },
+    "write_sub": {
+     "source0": 0.16666666666666666,
+     "source1": 0.20833333333333334,
+     "wordingtrain": 0.1875
+    },
+    "write_minus_cue": 0.0625,
+    "write_minus_cue_lb": -0.125,
+    "write_minus_random": -0.020833333333333332,
+    "write_minus_random_lb": -0.125,
+    "recovery": 0.07142857142857142,
+    "cf_follow": 0.16666666666666666,
+    "cue_cf_rate": 0.08333333333333333,
+    "zero_hook_matches_cue": true,
+    "gates": {
+     "core": false,
+     "wording": false,
+     "specificity": false,
+     "completion": true
+    },
+    "class": "FAIL"
+   },
+   "rows": [
+    {
+     "fact": 0,
+     "source": 0,
+     "wording": "train",
+     "tag": "HESK",
+     "cf_tag": "VORN",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 0,
+     "source": 1,
+     "wording": "train",
+     "tag": "HESK",
+     "cf_tag": "VORN",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 1,
+     "source": 0,
+     "wording": "train",
+     "tag": "NIMB",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 1,
+     "source": 1,
+     "wording": "train",
+     "tag": "NIMB",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 2,
+     "source": 0,
+     "wording": "train",
+     "tag": "FASK",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 2,
+     "source": 1,
+     "wording": "train",
+     "tag": "FASK",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 3,
+     "source": 0,
+     "wording": "train",
+     "tag": "NIMB",
+     "cf_tag": "TWYL",
+     "write": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " 1",
+      "choice": null,
+      "completed": false,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " 1",
+      "choice": null,
+      "completed": false,
+      "correct": false
+     },
+     "wrong": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 3,
+     "source": 1,
+     "wording": "train",
+     "tag": "NIMB",
+     "cf_tag": "TWYL",
+     "write": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " 1",
+      "choice": null,
+      "completed": false,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " 1",
+      "choice": null,
+      "completed": false,
+      "correct": false
+     },
+     "wrong": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 4,
+     "source": 0,
+     "wording": "train",
+     "tag": "GORM",
+     "cf_tag": "NIMB",
+     "write": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 4,
+     "source": 1,
+     "wording": "train",
+     "tag": "GORM",
+     "cf_tag": "NIMB",
+     "write": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 5,
+     "source": 0,
+     "wording": "train",
+     "tag": "FASK",
+     "cf_tag": "HESK",
+     "write": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "wrong": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "random": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 5,
+     "source": 1,
+     "wording": "train",
+     "tag": "FASK",
+     "cf_tag": "HESK",
+     "write": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "wrong": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "random": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 6,
+     "source": 0,
+     "wording": "train",
+     "tag": "VORN",
+     "cf_tag": "HESK",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " vorn",
+      "choice": "VORN",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 6,
+     "source": 1,
+     "wording": "train",
+     "tag": "VORN",
+     "cf_tag": "HESK",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " vorn",
+      "choice": "VORN",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 7,
+     "source": 0,
+     "wording": "train",
+     "tag": "RUZZ",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " ruzz",
+      "choice": "RUZZ",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 7,
+     "source": 1,
+     "wording": "train",
+     "tag": "RUZZ",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " ruzz",
+      "choice": "RUZZ",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 8,
+     "source": 0,
+     "wording": "train",
+     "tag": "HESK",
+     "cf_tag": "FASK",
+     "write": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 8,
+     "source": 1,
+     "wording": "train",
+     "tag": "HESK",
+     "cf_tag": "FASK",
+     "write": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 9,
+     "source": 0,
+     "wording": "train",
+     "tag": "RUZZ",
+     "cf_tag": "TWYL",
+     "write": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " ruzz",
+      "choice": "RUZZ",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 9,
+     "source": 1,
+     "wording": "train",
+     "tag": "RUZZ",
+     "cf_tag": "TWYL",
+     "write": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " ruzz",
+      "choice": "RUZZ",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 10,
+     "source": 0,
+     "wording": "train",
+     "tag": "NIMB",
+     "cf_tag": "TWYL",
+     "write": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 10,
+     "source": 1,
+     "wording": "train",
+     "tag": "NIMB",
+     "cf_tag": "TWYL",
+     "write": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 11,
+     "source": 0,
+     "wording": "train",
+     "tag": "PELT",
+     "cf_tag": "FASK",
+     "write": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " pelt",
+      "choice": "PELT",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 11,
+     "source": 1,
+     "wording": "train",
+     "tag": "PELT",
+     "cf_tag": "FASK",
+     "write": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " pelt",
+      "choice": "PELT",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 12,
+     "source": 0,
+     "wording": "train",
+     "tag": "HESK",
+     "cf_tag": "GORM",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 12,
+     "source": 1,
+     "wording": "train",
+     "tag": "HESK",
+     "cf_tag": "GORM",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 13,
+     "source": 0,
+     "wording": "train",
+     "tag": "PELT",
+     "cf_tag": "RUZZ",
+     "write": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " pelt",
+      "choice": "PELT",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 13,
+     "source": 1,
+     "wording": "train",
+     "tag": "PELT",
+     "cf_tag": "RUZZ",
+     "write": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " pelt",
+      "choice": "PELT",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 14,
+     "source": 0,
+     "wording": "train",
+     "tag": "RUZZ",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " ruzz",
+      "choice": "RUZZ",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 14,
+     "source": 1,
+     "wording": "train",
+     "tag": "RUZZ",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " ruzz",
+      "choice": "RUZZ",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 15,
+     "source": 0,
+     "wording": "train",
+     "tag": "TWYL",
+     "cf_tag": "VORN",
+     "write": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": true
+     },
+     "random": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 15,
+     "source": 1,
+     "wording": "train",
+     "tag": "TWYL",
+     "cf_tag": "VORN",
+     "write": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": true
+     },
+     "random": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 16,
+     "source": 0,
+     "wording": "train",
+     "tag": "FASK",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "wrong": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 16,
+     "source": 1,
+     "wording": "train",
+     "tag": "FASK",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "wrong": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 17,
+     "source": 0,
+     "wording": "train",
+     "tag": "TWYL",
+     "cf_tag": "NIMB",
+     "write": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 17,
+     "source": 1,
+     "wording": "train",
+     "tag": "TWYL",
+     "cf_tag": "NIMB",
+     "write": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": true
+     },
+     "random": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 18,
+     "source": 0,
+     "wording": "train",
+     "tag": "VORN",
+     "cf_tag": "GORM",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " vorn",
+      "choice": "VORN",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 18,
+     "source": 1,
+     "wording": "train",
+     "tag": "VORN",
+     "cf_tag": "GORM",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " vorn",
+      "choice": "VORN",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 19,
+     "source": 0,
+     "wording": "train",
+     "tag": "TWYL",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 19,
+     "source": 1,
+     "wording": "train",
+     "tag": "TWYL",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 20,
+     "source": 0,
+     "wording": "train",
+     "tag": "GORM",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 20,
+     "source": 1,
+     "wording": "train",
+     "tag": "GORM",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 21,
+     "source": 0,
+     "wording": "train",
+     "tag": "PELT",
+     "cf_tag": "GORM",
+     "write": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " pelt",
+      "choice": "PELT",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 21,
+     "source": 1,
+     "wording": "train",
+     "tag": "PELT",
+     "cf_tag": "GORM",
+     "write": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " pelt",
+      "choice": "PELT",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 22,
+     "source": 0,
+     "wording": "train",
+     "tag": "VORN",
+     "cf_tag": "NIMB",
+     "write": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " vorn",
+      "choice": "VORN",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 22,
+     "source": 1,
+     "wording": "train",
+     "tag": "VORN",
+     "cf_tag": "NIMB",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " vorn",
+      "choice": "VORN",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 23,
+     "source": 0,
+     "wording": "train",
+     "tag": "GORM",
+     "cf_tag": "VORN",
+     "write": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 23,
+     "source": 1,
+     "wording": "train",
+     "tag": "GORM",
+     "cf_tag": "VORN",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": true
+     }
+    }
+   ]
+  },
+  "37": {
+   "summary": {
+    "loss_history": [
+     2.1663005352020264,
+     1.811772108078003,
+     1.7618261575698853,
+     1.5919471979141235,
+     1.4842849969863892,
+     1.5191545486450195,
+     1.5212053060531616,
+     1.2971489429473877,
+     1.2411715984344482,
+     1.6102160215377808,
+     1.7484910488128662,
+     1.175721526145935,
+     1.359049916267395,
+     1.0861588716506958,
+     1.412333607673645,
+     1.1156474351882935,
+     1.0359125137329102,
+     1.3550798892974854,
+     1.0081429481506348,
+     1.0684189796447754,
+     1.1781543493270874,
+     1.4638066291809082,
+     1.314335823059082,
+     1.0792938470840454,
+     0.9901497960090637,
+     1.0652176141738892,
+     1.3666272163391113,
+     0.9012048244476318,
+     0.8693771958351135,
+     1.281137466430664,
+     0.8498565554618835,
+     1.1725767850875854,
+     1.2819548845291138,
+     0.9760048985481262,
+     0.8272737860679626,
+     0.7753728628158569,
+     0.7161158919334412,
+     1.3479969501495361,
+     1.1952835321426392,
+     1.19658362865448,
+     1.3101516962051392,
+     0.9063083529472351,
+     1.048226237297058,
+     1.2540258169174194,
+     1.9241549968719482,
+     0.5611758232116699,
+     0.5529688000679016,
+     0.958587646484375,
+     0.9165900945663452,
+     0.48635607957839966,
+     0.9029662609100342,
+     1.9276469945907593,
+     1.3987698554992676,
+     1.5945675373077393,
+     0.4840739965438843,
+     0.6860154271125793,
+     1.6481965780258179,
+     2.2140986919403076,
+     0.7826303839683533,
+     1.1544866561889648,
+     1.3504751920700073,
+     0.9200697541236877,
+     0.9249354004859924,
+     0.662600040435791,
+     1.0168242454528809,
+     1.0964586734771729,
+     1.296656608581543,
+     1.2699553966522217,
+     1.2282795906066895,
+     1.3097807168960571,
+     1.3306169509887695,
+     0.940335214138031,
+     1.147370457649231,
+     0.8848718404769897,
+     1.359034538269043,
+     0.85480135679245,
+     1.8797080516815186,
+     1.0197081565856934,
+     1.2307056188583374,
+     0.8260550498962402,
+     0.9327531456947327,
+     0.9912843108177185,
+     1.0844863653182983,
+     1.161887288093567,
+     0.7543338537216187,
+     1.3604739904403687,
+     1.155663251876831,
+     1.3563015460968018,
+     1.1395857334136963,
+     1.1324776411056519,
+     1.1203079223632812,
+     1.0541143417358398,
+     1.0214897394180298,
+     1.088473916053772,
+     1.2442328929901123,
+     0.8853155374526978,
+     0.7702205181121826,
+     1.090429425239563,
+     1.3724591732025146,
+     1.0023820400238037,
+     0.8474713563919067,
+     1.3018035888671875,
+     1.1420719623565674,
+     1.4511221647262573,
+     1.1228653192520142,
+     1.109235167503357,
+     1.5058567523956299,
+     1.2297419309616089,
+     1.1905494928359985,
+     1.1659778356552124,
+     1.0470319986343384,
+     1.0875988006591797,
+     1.1638292074203491,
+     0.9879665970802307,
+     0.7997525334358215,
+     1.234610915184021,
+     0.755630373954773,
+     1.0325160026550293,
+     0.943512499332428,
+     1.2082529067993164,
+     0.9557226896286011,
+     1.1859679222106934,
+     0.9676181674003601,
+     0.9629378318786621,
+     0.9389607310295105,
+     0.9481383562088013,
+     1.5554227828979492,
+     0.9352948665618896,
+     1.1449850797653198,
+     1.0476933717727661,
+     1.169058918952942,
+     0.9138535261154175,
+     1.1061075925827026,
+     0.9081480503082275,
+     0.8866499066352844,
+     1.1226307153701782,
+     1.1241575479507446,
+     1.049013614654541,
+     0.8943231701850891,
+     1.242590308189392,
+     1.2245286703109741,
+     1.15216863155365,
+     1.2241603136062622,
+     0.8951412439346313,
+     1.1561248302459717,
+     0.9974340200424194,
+     1.161996841430664,
+     0.9797452688217163,
+     0.9298156499862671,
+     1.0432990789413452,
+     1.102181077003479,
+     0.8662264347076416,
+     1.207173466682434,
+     0.9860880970954895,
+     0.9533489346504211,
+     1.183850884437561,
+     1.0297390222549438,
+     1.0661957263946533,
+     0.9809233546257019,
+     1.0581547021865845,
+     1.0257508754730225,
+     1.0233289003372192,
+     0.8082424402236938,
+     0.8915367126464844,
+     0.7435078620910645,
+     0.8570812940597534,
+     0.8296252489089966,
+     2.0017261505126953,
+     0.7606635689735413,
+     0.8071157336235046,
+     0.8251199722290039,
+     1.4365403652191162,
+     1.2082122564315796,
+     1.0061136484146118,
+     1.3808832168579102,
+     1.1421114206314087,
+     0.9864097833633423,
+     1.0808911323547363,
+     1.057974100112915,
+     0.9446790814399719,
+     1.4986034631729126,
+     1.4646207094192505,
+     0.8402355313301086,
+     1.2194286584854126,
+     0.9331774711608887,
+     1.2764253616333008,
+     1.1653213500976562,
+     1.0016919374465942,
+     0.999005138874054,
+     0.8288508057594299,
+     0.8463431000709534,
+     0.9293107986450195,
+     1.6017463207244873,
+     1.1924781799316406,
+     1.0929685831069946,
+     0.9875439405441284,
+     0.8576553463935852,
+     1.3013582229614258,
+     0.8150291442871094,
+     1.2154589891433716,
+     1.178357481956482,
+     1.3149933815002441,
+     1.083130955696106,
+     0.9772326350212097,
+     0.9741117358207703,
+     1.112358808517456,
+     1.1918389797210693,
+     1.1906770467758179,
+     1.0180940628051758,
+     1.045116901397705,
+     0.947147786617279,
+     0.8244081735610962,
+     0.9987748265266418,
+     1.072465419769287,
+     0.9288249015808105,
+     0.6385841369628906,
+     1.272177815437317,
+     1.0296540260314941,
+     1.1481150388717651,
+     0.896451473236084,
+     1.6870328187942505,
+     1.1612581014633179,
+     0.8633667826652527,
+     1.1808372735977173,
+     0.8545081615447998,
+     0.9792903065681458,
+     0.9697215557098389,
+     0.9538305401802063,
+     1.0356041193008423,
+     0.8992839455604553,
+     0.9697329998016357,
+     1.1326959133148193,
+     0.9341830015182495,
+     1.3911069631576538,
+     0.9542521834373474,
+     0.923639178276062,
+     0.9570678472518921,
+     0.655908465385437,
+     0.9919399619102478,
+     1.258328914642334,
+     1.2608368396759033,
+     0.9699110984802246,
+     0.9524201154708862,
+     0.4498917758464813,
+     1.2768810987472534,
+     1.3772566318511963,
+     0.9765973687171936,
+     1.1172893047332764,
+     0.8172094821929932,
+     0.5159147381782532,
+     0.5239698886871338,
+     0.9103153944015503,
+     0.9943717122077942,
+     1.192086100578308,
+     0.8505159020423889,
+     0.7084581851959229,
+     0.9906241297721863,
+     1.128221869468689,
+     0.8979318737983704,
+     1.0393153429031372,
+     1.4821449518203735,
+     1.0892689228057861,
+     1.0470370054244995,
+     0.7135448455810547,
+     0.9359241724014282,
+     1.5618290901184082,
+     1.2290586233139038,
+     0.9253076314926147,
+     0.875139057636261,
+     0.8678005933761597,
+     0.8612008094787598,
+     1.2703756093978882,
+     0.5726627111434937,
+     1.1020379066467285,
+     1.1682692766189575,
+     0.9183428287506104,
+     1.227238416671753,
+     1.1024353504180908,
+     0.9696409702301025,
+     1.0960890054702759,
+     1.057921051979065,
+     0.8645392060279846,
+     1.0591468811035156,
+     0.8253795504570007,
+     1.080179214477539,
+     1.0600268840789795,
+     0.6188333034515381,
+     1.1117534637451172,
+     1.0246151685714722,
+     0.7004398703575134,
+     0.8670604825019836,
+     0.9703568816184998,
+     0.9923701882362366,
+     1.0677316188812256,
+     1.479276418685913,
+     0.90253746509552,
+     0.6753151416778564,
+     1.0027580261230469,
+     0.9745706915855408,
+     0.7988464832305908,
+     0.8992484211921692,
+     0.8559994697570801,
+     0.7468186020851135,
+     1.0341492891311646,
+     1.6916673183441162,
+     1.1420520544052124,
+     0.6597111821174622,
+     0.7976115942001343,
+     1.505860447883606,
+     0.7115124464035034,
+     1.2706595659255981,
+     0.7213432192802429,
+     0.7065003514289856,
+     0.8750818371772766,
+     0.7534512281417847,
+     0.9577198028564453,
+     1.0845518112182617,
+     0.7550512552261353,
+     1.4381581544876099,
+     0.9739844799041748,
+     1.074475646018982,
+     1.2653175592422485,
+     1.7951668500900269,
+     0.9931021332740784,
+     1.0199967622756958,
+     0.5465149283409119,
+     1.1800651550292969,
+     0.57554030418396,
+     0.929880678653717,
+     1.070009708404541,
+     2.0558130741119385,
+     1.1334422826766968,
+     1.0136200189590454,
+     1.1623250246047974,
+     0.8871592283248901,
+     1.3731094598770142,
+     1.130247712135315,
+     1.1156615018844604,
+     1.438949704170227,
+     0.64989173412323,
+     1.1916686296463013,
+     0.8796178698539734,
+     1.25718355178833,
+     1.2297557592391968,
+     1.3565105199813843,
+     0.8779557943344116,
+     1.0259957313537598,
+     0.7511870265007019,
+     0.595173716545105,
+     0.5706662535667419,
+     1.125395655632019,
+     0.8999375700950623,
+     1.0963102579116821,
+     0.9495717883110046,
+     1.2575632333755493,
+     0.780688464641571,
+     1.1695010662078857,
+     0.8781293034553528,
+     1.1232126951217651,
+     1.2351493835449219,
+     1.284117579460144,
+     0.5804661512374878,
+     0.8934649229049683,
+     0.8697197437286377,
+     1.2618597745895386,
+     0.9619200825691223,
+     1.1882919073104858,
+     0.8212795257568359,
+     0.9646246433258057,
+     1.2356493473052979,
+     1.0487968921661377,
+     1.1029192209243774,
+     1.0627907514572144,
+     0.483853816986084,
+     0.7828351855278015,
+     1.0528532266616821,
+     0.9165943264961243,
+     0.948630154132843,
+     1.166446328163147,
+     0.5518561601638794,
+     1.1385775804519653,
+     0.7702065110206604,
+     0.8210225701332092,
+     0.9715918898582458,
+     1.0532089471817017,
+     1.0452481508255005,
+     1.185632348060608,
+     0.9036250710487366,
+     0.8632530570030212,
+     0.8760949969291687,
+     1.1358039379119873,
+     0.8560814261436462,
+     0.9909195303916931,
+     0.8243546485900879,
+     0.8340197205543518,
+     0.6556846499443054,
+     0.7577148079872131,
+     0.668032705783844,
+     0.8724249005317688,
+     1.3186454772949219
+    ],
+    "acc": {
+     "write": 0.2916666666666667,
+     "cue": 0.125,
+     "zero_hooked": 0.125,
+     "wrong": 0.2708333333333333,
+     "random": 0.3333333333333333,
+     "visible": 1.0
+    },
+    "completion": {
+     "write": 1.0,
+     "cue": 0.9583333333333334,
+     "zero_hooked": 0.9583333333333334,
+     "wrong": 1.0,
+     "random": 1.0,
+     "visible": 1.0
+    },
+    "write_sub": {
+     "source0": 0.25,
+     "source1": 0.3333333333333333,
+     "wordingtrain": 0.2916666666666667
+    },
+    "write_minus_cue": 0.16666666666666666,
+    "write_minus_cue_lb": -0.020833333333333332,
+    "write_minus_random": -0.041666666666666664,
+    "write_minus_random_lb": -0.10416666666666667,
+    "recovery": 0.1904761904761905,
+    "cf_follow": 0.16666666666666666,
+    "cue_cf_rate": 0.08333333333333333,
+    "zero_hook_matches_cue": true,
+    "gates": {
+     "core": false,
+     "wording": false,
+     "specificity": false,
+     "completion": true
+    },
+    "class": "FAIL"
+   },
+   "rows": [
+    {
+     "fact": 0,
+     "source": 0,
+     "wording": "train",
+     "tag": "HESK",
+     "cf_tag": "VORN",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 0,
+     "source": 1,
+     "wording": "train",
+     "tag": "HESK",
+     "cf_tag": "VORN",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 1,
+     "source": 0,
+     "wording": "train",
+     "tag": "NIMB",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 1,
+     "source": 1,
+     "wording": "train",
+     "tag": "NIMB",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 2,
+     "source": 0,
+     "wording": "train",
+     "tag": "FASK",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 2,
+     "source": 1,
+     "wording": "train",
+     "tag": "FASK",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 3,
+     "source": 0,
+     "wording": "train",
+     "tag": "NIMB",
+     "cf_tag": "TWYL",
+     "write": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " 1",
+      "choice": null,
+      "completed": false,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " 1",
+      "choice": null,
+      "completed": false,
+      "correct": false
+     },
+     "wrong": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     },
+     "random": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 3,
+     "source": 1,
+     "wording": "train",
+     "tag": "NIMB",
+     "cf_tag": "TWYL",
+     "write": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " 1",
+      "choice": null,
+      "completed": false,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " 1",
+      "choice": null,
+      "completed": false,
+      "correct": false
+     },
+     "wrong": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     },
+     "random": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 4,
+     "source": 0,
+     "wording": "train",
+     "tag": "GORM",
+     "cf_tag": "NIMB",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": true
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 4,
+     "source": 1,
+     "wording": "train",
+     "tag": "GORM",
+     "cf_tag": "NIMB",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": true
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 5,
+     "source": 0,
+     "wording": "train",
+     "tag": "FASK",
+     "cf_tag": "HESK",
+     "write": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "wrong": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "random": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 5,
+     "source": 1,
+     "wording": "train",
+     "tag": "FASK",
+     "cf_tag": "HESK",
+     "write": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "wrong": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "random": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 6,
+     "source": 0,
+     "wording": "train",
+     "tag": "VORN",
+     "cf_tag": "HESK",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " vorn",
+      "choice": "VORN",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 6,
+     "source": 1,
+     "wording": "train",
+     "tag": "VORN",
+     "cf_tag": "HESK",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " vorn",
+      "choice": "VORN",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 7,
+     "source": 0,
+     "wording": "train",
+     "tag": "RUZZ",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " ruzz",
+      "choice": "RUZZ",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 7,
+     "source": 1,
+     "wording": "train",
+     "tag": "RUZZ",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " ruzz",
+      "choice": "RUZZ",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 8,
+     "source": 0,
+     "wording": "train",
+     "tag": "HESK",
+     "cf_tag": "FASK",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 8,
+     "source": 1,
+     "wording": "train",
+     "tag": "HESK",
+     "cf_tag": "FASK",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 9,
+     "source": 0,
+     "wording": "train",
+     "tag": "RUZZ",
+     "cf_tag": "TWYL",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " ruzz",
+      "choice": "RUZZ",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 9,
+     "source": 1,
+     "wording": "train",
+     "tag": "RUZZ",
+     "cf_tag": "TWYL",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " ruzz",
+      "choice": "RUZZ",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 10,
+     "source": 0,
+     "wording": "train",
+     "tag": "NIMB",
+     "cf_tag": "TWYL",
+     "write": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     },
+     "random": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 10,
+     "source": 1,
+     "wording": "train",
+     "tag": "NIMB",
+     "cf_tag": "TWYL",
+     "write": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     },
+     "random": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " nimb",
+      "choice": "NIMB",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 11,
+     "source": 0,
+     "wording": "train",
+     "tag": "PELT",
+     "cf_tag": "FASK",
+     "write": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " pelt",
+      "choice": "PELT",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 11,
+     "source": 1,
+     "wording": "train",
+     "tag": "PELT",
+     "cf_tag": "FASK",
+     "write": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " pelt",
+      "choice": "PELT",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 12,
+     "source": 0,
+     "wording": "train",
+     "tag": "HESK",
+     "cf_tag": "GORM",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 12,
+     "source": 1,
+     "wording": "train",
+     "tag": "HESK",
+     "cf_tag": "GORM",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 13,
+     "source": 0,
+     "wording": "train",
+     "tag": "PELT",
+     "cf_tag": "RUZZ",
+     "write": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " pelt",
+      "choice": "PELT",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 13,
+     "source": 1,
+     "wording": "train",
+     "tag": "PELT",
+     "cf_tag": "RUZZ",
+     "write": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " pelt",
+      "choice": "PELT",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 14,
+     "source": 0,
+     "wording": "train",
+     "tag": "RUZZ",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " ruzz",
+      "choice": "RUZZ",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 14,
+     "source": 1,
+     "wording": "train",
+     "tag": "RUZZ",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " ruzz",
+      "choice": "RUZZ",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 15,
+     "source": 0,
+     "wording": "train",
+     "tag": "TWYL",
+     "cf_tag": "VORN",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 15,
+     "source": 1,
+     "wording": "train",
+     "tag": "TWYL",
+     "cf_tag": "VORN",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 16,
+     "source": 0,
+     "wording": "train",
+     "tag": "FASK",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "wrong": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "random": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 16,
+     "source": 1,
+     "wording": "train",
+     "tag": "FASK",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "wrong": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "random": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     },
+     "visible": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 17,
+     "source": 0,
+     "wording": "train",
+     "tag": "TWYL",
+     "cf_tag": "NIMB",
+     "write": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 17,
+     "source": 1,
+     "wording": "train",
+     "tag": "TWYL",
+     "cf_tag": "NIMB",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 18,
+     "source": 0,
+     "wording": "train",
+     "tag": "VORN",
+     "cf_tag": "GORM",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " vorn",
+      "choice": "VORN",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 18,
+     "source": 1,
+     "wording": "train",
+     "tag": "VORN",
+     "cf_tag": "GORM",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " vorn",
+      "choice": "VORN",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 19,
+     "source": 0,
+     "wording": "train",
+     "tag": "TWYL",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 19,
+     "source": 1,
+     "wording": "train",
+     "tag": "TWYL",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " twyl",
+      "choice": "TWYL",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 20,
+     "source": 0,
+     "wording": "train",
+     "tag": "GORM",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 20,
+     "source": 1,
+     "wording": "train",
+     "tag": "GORM",
+     "cf_tag": "PELT",
+     "write": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 21,
+     "source": 0,
+     "wording": "train",
+     "tag": "PELT",
+     "cf_tag": "GORM",
+     "write": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " pelt",
+      "choice": "PELT",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 21,
+     "source": 1,
+     "wording": "train",
+     "tag": "PELT",
+     "cf_tag": "GORM",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " pelt",
+      "choice": "PELT",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 22,
+     "source": 0,
+     "wording": "train",
+     "tag": "VORN",
+     "cf_tag": "NIMB",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " vorn",
+      "choice": "VORN",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 22,
+     "source": 1,
+     "wording": "train",
+     "tag": "VORN",
+     "cf_tag": "NIMB",
+     "write": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " vorn",
+      "choice": "VORN",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 23,
+     "source": 0,
+     "wording": "train",
+     "tag": "GORM",
+     "cf_tag": "VORN",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": true
+     }
+    },
+    {
+     "fact": 23,
+     "source": 1,
+     "wording": "train",
+     "tag": "GORM",
+     "cf_tag": "VORN",
+     "write": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "cue": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "zero_hooked": {
+      "text": " fask",
+      "choice": "FASK",
+      "completed": true,
+      "correct": false
+     },
+     "wrong": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "random": {
+      "text": " hesk",
+      "choice": "HESK",
+      "completed": true,
+      "correct": false
+     },
+     "visible": {
+      "text": " gorm",
+      "choice": "GORM",
+      "completed": true,
+      "correct": true
+     }
+    }
+   ]
+  }
+ },
+ "status": "FAIL \u2014 ONE-WRITE RECALL CONSTRUCTION",
+ "per_seed": [
+  "FAIL",
+  "FAIL",
+  "FAIL"
+ ],
+ "seconds": 1819.7593851089478
+}
