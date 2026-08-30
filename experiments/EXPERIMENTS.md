@@ -5,7 +5,7 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
-## Program status (2026-08-29)
+## Program status (2026-08-30, early)
 
 - **NLM-007 — CLOSED** under the program's terminal allocation rule, not by a
   scientific null (audit #22 closing statement, verbatim in `STATE.md`; ledger
@@ -62,11 +62,87 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 - **`necessity_navigator_v1` — BUILT; audit-#32 blockers FIXED; post-fix
   smoke only; DEFERRED, not cancelled** (round 19; ledger
   `navigator_smoke_r32fixes`, `direction_r19_ruling`). Entries below.
-- **`onewrite_recall_rung1` — staircase RUNG 1, LOCKED, CLOSED — REGISTERED CONSTRUCTION-LEVEL FAIL (audit #33); no result
-  yet** (governance amendment 8; ledger `onewrite_recall_rung1_lock`).
+- **`onewrite_recall_rung1` — staircase RUNG 1 — REGISTERED
+  CONSTRUCTION-LEVEL FAIL, CLOSED** (unanimous, seeds 11/23/37; audit #33
+  adopted verbatim `25f65ac`; ledger `onewrite_recall_rung1_lock`,
+  `onewrite_recall_rung1_result`, `onewrite_recall_rung1_audit33`,
+  `onewrite_recall_rung1_rung0_diag`, `onewrite_recall_rung1_z_localization`).
+  The one-write E/J interface stops under its predeclared rule. Entry below.
+- **`oracle_actuator_rung0` — staircase RUNG 0 — REGISTERED FAIL
+  (`FAIL — ORACLE ACTUATOR/SITE/RETRIEVAL CONSTRUCTION`), unanimous; audit #34
+  PENDING** (Codex round 20 design; ledger `direction_r20_rung0_design`,
+  `oracle_actuator_rung0_preflight`, `oracle_actuator_rung0_lock`,
+  `oracle_actuator_rung0_seed11`, `oracle_actuator_rung0_result`,
+  `oracle_actuator_rung0_diag`). Nothing beyond the ledger row is licensed.
   Entry below.
+- **Direction rounds 19–20** (ledger `direction_r19_ruling`,
+  `direction_r20_rung0_design`): round 19 = navigator comparator rule (self
+  = ceiling), navigator deferred, rung 1 built and locked; round 20 = oracle-
+  code actuator rung 0 designed as the one next locked artifact, rung 0b
+  (encoder on tag-token positions) only after a bounded rung-0 pass. NEXT:
+  audit #34 -> Codex round 21.
 
-## onewrite_recall_rung1 — positive-control staircase rung 1 (training entities, training wording, zero delay): LOCKED, RUNNING, no result yet (2026-08-29 night; ledger `direction_r19_ruling`, `onewrite_recall_rung1_lock`; commit `c71d44a`)
+## oracle_actuator_rung0 — positive-control staircase rung 0 (oracle code, no encoder; actuator/site/retrieval control): REGISTERED FAIL, unanimous; audit #34 PENDING (2026-08-30; ledger `direction_r20_rung0_design`, `oracle_actuator_rung0_preflight`, `oracle_actuator_rung0_lock`, `oracle_actuator_rung0_seed11`, `oracle_actuator_rung0_result`, `oracle_actuator_rung0_diag`; commits `2939d39`, `2ed1f5a`, `3a66506`, `0576717`, `c986668`, `aaba738`, `df8827e`)
+
+- **Why (audit #33 + rung-0 localization; Codex round 20).** Rung 1 failed
+  and its failure was not localized among encoder, actuator, cap, site,
+  propagation and decoding; the localization check found only weak tag
+  information at the chosen source anchor. Round 20 removed the encoder
+  entirely: can a *known* hidden code, written once through a trainable
+  linear map, make the frozen model recall its matching tag?
+- **Lock (`0576717`; ledger `oracle_actuator_rung0_lock`).** Runner
+  `experiments/run_oracle_actuator.py` (70 nonblank lines; cap telemetry
+  added to the shared write hook), config
+  `experiments/config/oracle_actuator_rung0.json` (config/module/machinery
+  sha256 in the ledger row). Frozen Qwen3-1.7B-Base, block 12, final-token
+  `Internal record:` slot; fixed immutable hashed codebook of eight unit
+  centred-simplex codes c_k = sqrt(8/7)(e_k − 1/8, 0_8) (hash `3f2381fe…`);
+  only a zero-init biasless J (16→2048) trained 400 balanced entity×code
+  steps, lr 3e-3, seeds 11/23/37; 0.25×slot-norm cap in primary with per-step
+  and per-row telemetry; one uncapped replay of the frozen J as diagnostic.
+  Eval per seed: 24 training entities × 8 codes (own code = the entity's
+  assigned code; the other 7 = wrong codes) + cue + zero-hook + 8 fixed
+  off-code unit random vectors; training query wording, zero configured
+  filler (~36 prompt tokens; never "zero delay"); entities = bootstrap
+  clusters. Gates per seed: completion >= 0.95 (code/wrong/random);
+  code-follow >= 0.85 (LB > 0.75; >= 0.75 per code); own-code >= 0.85;
+  wrong-code follow >= 0.85 over 168 rows with uplift >= 0.65 over the cue
+  matching rate (LB > 0.50); cue and random true-tag <= 0.20; own − random
+  >= 0.60 (LB > 0.50); zero-hook = cue row-for-row; every gate in >= 2 of 3
+  seeds. Statuses: `BOUNDED ACTUATOR PASS — ORACLE CODE` / `CAP-LIMITED
+  ACTUATOR` (uncapped passes, capped fails) / `FAIL — ORACLE
+  ACTUATOR/SITE/RETRIEVAL CONSTRUCTION` (both fail; this J/site/retrieval
+  line stops). No repair run.
+- **Preflight (eight zero-J rows only; `experiments/results/onewrite_recall_rung1/oracle_preflight.log`): PASS** —
+  codebook Gram diag 1.0, off-diagonal −0.143; hook fires once per hooked
+  prefill; pre-cap ‖Jc‖ = 0 on all rows; zero-hook = cue on 8/8. (A first
+  pass reported FAIL only because it read the hook counter after a cue decode
+  had reset it; the corrected run is the record.)
+- **Result (`experiments/results/oracle_actuator_rung0/run_result.json`;
+  `J_seed{11,23,37}.pt`; 2903 s; ledger `oracle_actuator_rung0_result`).**
+  `FAIL — ORACLE ACTUATOR/SITE/RETRIEVAL CONSTRUCTION`; capped passes 0/3,
+  uncapped passes 0/3. Cap never active in any seed (pre-cap ‖Jc‖ <= 14 vs
+  threshold 43), so capped and uncapped evaluations are identical. Code-follow
+  0.219/0.245/0.245; per code: code 0 0.96/0.96/0.96, code 6 0.75/0.96/0.96,
+  codes 1–5 0.0, code 7 0.04 in every seed; own-code 0.25 in every seed;
+  wrong-code follow 0.21/0.24/0.24 (uplift 0.10/0.125/0.125 over the cue
+  matching rate); cue true-tag 0.125 (the cue decode is the base prior
+  `fask`, code 0's tag); random-vector true-tag 0.13/0.13/0.125; completion
+  0.96 in code/random/cue arms; zero-hook = cue row-for-row; training loss
+  flat 1.5–1.75.
+- **Read-only diagnostic on the saved J's (ledger
+  `oracle_actuator_rung0_diag`; `diag_logit_lens.log`).** The eight write
+  vectors J c_k are near-orthogonal (mean pairwise cosine −0.14) with norms
+  12–23; the raw logit lens of each write does not point at the code's tag
+  (own-tag first-token rank ~10^5 of 151k in all codes and seeds);
+  late-training loss by code: code 0 1.20–1.22, code 6 1.41–1.56, all others
+  1.59–2.10; every tag is two tokens with distinct first tokens. Diagnostic
+  only; feeds audit #34.
+- **Status.** Registered FAIL; audit #34 (fresh, unprimed) pending — its
+  wording will govern; then Codex direction round 21. Nothing licensed beyond
+  the ledger row.
+
+## onewrite_recall_rung1 — positive-control staircase rung 1 (training entities, training wording, zero configured filler): REGISTERED CONSTRUCTION-LEVEL FAIL, CLOSED (2026-08-29 night; unanimous seeds 11/23/37; ledger `direction_r19_ruling`, `onewrite_recall_rung1_lock`, `onewrite_recall_rung1_result`, `onewrite_recall_rung1_rung0_diag`, `onewrite_recall_rung1_audit33`, `onewrite_recall_rung1_z_localization`; commits `c71d44a`, `15758aa`, `9c14c7b`, `25f65ac`, `844676b`)
 
 - **Why (governance amendment 8, `AGENTS.md`; audit #32).** The common
   explanation of the day's closures is that bespoke instruments and actuators
@@ -94,8 +170,67 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   visible 1.0, cue 0.125 (chance), visible completion 1.0, cue completion
   0.96, zero-hook = cue. No outcome inspected before the lock.
 - **Rule.** If rung 1 fails, this interface stops without testing later rungs;
-  if it passes, the next rung changes exactly one difficulty. Status: running;
-  nothing licensed.
+  if it passes, the next rung changes exactly one difficulty.
+- **Result (`experiments/results/onewrite_recall_rung1/train_result.json`;
+  `iface_seed{11,23,37}.pt`; 1820 s; ledger `onewrite_recall_rung1_result`,
+  `15758aa`).** Unanimous FAIL. Visible 1.0; cue 0.125 (chance); own write
+  0.167/0.188/0.292 (8/48, 9/48, 14/48) vs same-entity counterfactual write
+  0.167/0.188/0.271 (8/48, 9/48, 13/48) vs fixed random write
+  0.167/0.208/0.333 (8/48, 10/48, 16/48); counterfactual follow
+  0.083/0.167/0.167; completion 1.0 under any write, 0.96 cue; zero-hook =
+  cue row-for-row; single-example loss 2.2/1.6/2.2 -> ~1.0. The interface
+  stops under the round-19 rule.
+- **Audit #33 (fresh, unprimed; `.codex_audit33.md`; adopted verbatim
+  `25f65ac`; ledger `onewrite_recall_rung1_audit33`).** FAIL upheld. My
+  "learns no fact-specific control" was withdrawn as unqualified (own and
+  counterfactual writes changed the greedy tag on 6/144 paired rows; no pair
+  followed both intended directions; own write never beat the fixed random
+  write; each seed emitted only 4 of 8 tags); "zero delay" withdrawn (36
+  prompt tokens of VALID TAGS/instruction block separate slot and query — say
+  "zero configured filler"); the loss near 1.0 is the two-token
+  chance-first-token null (1.04), not learned tag identity; evaluation used 2
+  of 3 training source templates; failure NOT localized among encoder,
+  actuator, cap, site, propagation, decoding. Program: stop this interface
+  family; run one no-training localization check on the saved encoders; keep
+  the navigator deferred.
+- **Licensed sentence (audit #33, verbatim):** `onewrite_recall_rung1` is a
+  unanimous registered construction-level FAIL: in frozen Qwen3-1.7B-Base, on
+  24 training entities evaluated under two of the three training source
+  templates, the training query wording, and zero configured filler,
+  own-write true-tag accuracy was 0.167/0.188/0.292 across seeds 11/23/37,
+  versus 0.167/0.188/0.271 for same-entity counterfactual-tag writes and
+  0.167/0.208/0.333 for one fixed random write; own and counterfactual writes
+  changed the greedy tag on 6/144 paired rows, but no pair simultaneously
+  followed the true and counterfactual tags, so this exact 65,552-parameter
+  linear E/J, generic block-12 slot, 0.25-norm-capped, 400-step construction
+  did not establish reliable control-relative tag recall and stops under its
+  predeclared rule.
+- **Never say (audit #33, verbatim):** “The interface learns no fact-specific
+  control,” without specifying the registered construction and greedy
+  readout. “Correct and counterfactual writes are identical row-for-row.”
+  “There is no tag-specific effect at all.” “The loss implies about 35–38%
+  correct-tag probability.” “The training loss proves that `E` learned tag
+  identity.” “This was a literal zero-delay or immediate-query test.” “All
+  training source phrasings were evaluated.” “The fixed random arm rules out
+  random interventions generally.” “The 0.25 cap was adequate” or “the cap
+  caused the failure.” “The encoder failed,” “the writer failed,” or “the
+  state was written but could not be retrieved.” “A linear one-write channel,
+  block 12, a 16-dimensional state, or frozen-model memory is unlearnable.”
+  “This establishes that current pretrained latent spaces are hostile to
+  structured reasoning.” “This closes the real-model program.”
+- **Rung-0 localization on the saved encoders (read-only; ledger
+  `onewrite_recall_rung1_rung0_diag`, `onewrite_recall_rung1_z_localization`;
+  `z_localization.log`; `9c14c7b`, `844676b`).** Entity-grouped,
+  source-template-held-out nearest-centroid tag accuracy: raw block-12
+  residual at the final ` Internal record:` source token 0.340 (shuffled
+  95th pct 0.181; chance 0.125); learned z = E(LN(h)) 0.333/0.153/0.194
+  (random 16-d projection 0.17/0.23/0.19); earlier leave-one-out on training
+  sources 0.36/0.14/0.12; write lift of the correct tag +1.36/+1.42/+1.56
+  nats vs counterfactual-tag lift +1.27/+1.31/+1.29; pre-cap |Jz|
+  ~1900–2100 against the 0.25×slot-norm cap. Recorded branch (ledger, not
+  audited wording): the tag signal at the chosen source anchor is weak and
+  the encoder recovers at most that signal; downstream stages untested. Led
+  to Codex round 20 (oracle-code actuator rung 0; entry above).
 
 ## necessity_navigator_v1 — audit-#32 blockers fixed; post-fix smoke (code-path validation, NOT a result); comparator rule; DEFERRED (2026-08-29 night; ledger `navigator_smoke_r32fixes`, `direction_r19_ruling`; commits `faa7a64`, `c71d44a`)
 
@@ -344,8 +479,10 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   next artifact `onewrite_recall_v1`; navigator not now.
 - **Round 16** (ledger `direction_r16_recall_gates`, `95fb53e`):
   `onewrite_recall_v1` locked amendments and gates (entry above).
-- **Round 17** (RUNNING; no ledger row yet): ruling on the
-  `onewrite_recall_v1` pre-lock cue-completion criterion.
+- **Round 17** (ledger `direction_r17_amendment`): amended the
+  `onewrite_recall_v1` pre-lock cue-completion criterion (cue completion
+  diagnostic only; zero-hook must reproduce cue row-for-row); locked
+  `1f2fcba` (result entry above).
 
 ## interchange_v2 — bias-controlled operational interchangeability, Qwen3-1.7B-Base block 12: REGISTERED CONSTRUCTION-LEVEL FAIL, CLOSED (2026-08-29; ledger `interchange_v2_lock`, `interchange_v2_result`; audit #30 adopted `fe3c541`)
 
