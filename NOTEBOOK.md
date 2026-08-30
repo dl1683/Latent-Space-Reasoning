@@ -5,6 +5,10 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — site_oracle_v1: FAIL — the block-12 slot/prompt closes for actuator repair
+
+Cross-fitted margin-gradient directions (derived on 16 names, injected once on the other 8, bounded at 0.25 of the slot residual, cap active on 21% of rows) select the target tag ~36 tokens later in 0.26 of cases (LB 0.21): fask 0.96 (the cue prior), hesk 0.54, vorn 0.46, all other tags ≤0.08; per fold 0.23–0.28; cue and random-direction matching 0.12; completion ≥0.95; zero-hook = cue. By the round-21 rule this slot/prompt is closed for further actuator repair. Reading (pending audit #35): with no learned map at all, the same tag-selective narrowness appears — the slot exposes a narrow causal channel to the query under the bounded norm — which is the cleanest statement yet of what this site can and cannot do. Fresh audit next; then the pivot dialogue (round 22).
+
 ## 2026-08-30 — Round 21 (Codex, verbatim): the cross-fitted site-oracle control runs next; spectrum deferred; rung 0b and navigator off
 
 ## Ruling: run the cross-fitted site-oracle control

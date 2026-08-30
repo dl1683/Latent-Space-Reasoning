@@ -1,0 +1,3767 @@
+{
+ "config": "site_oracle_v1",
+ "sha256": {
+  "runner": "6c6627735bd97682947eed1078cdf83050bab2b3c55025972e50822075d183a4",
+  "config": "764dbe20a0471d9594d8c1824c1e603b64e0864152abbed2395c7a6aef539c87",
+  "machinery": "741dd8fb0126f8ffd0c98d9901d295bc31d7b915d4d90eaa716c8cf089190665"
+ },
+ "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
+ "fold_hash": "6b44dcbe3c8aa1c05f9cec996a452920d534891aabf5bd6166d44f5fa36f670f",
+ "direction_hash": "e8fff089b8073ff8c53e66fb911b59a9b6d6fb5b30ab46eec6297a3a48b8a13a",
+ "rows": [
+  {
+   "name": "Velmora",
+   "fold": 0,
+   "cue": "FASK",
+   "cue_ok": true,
+   "zero_eq": true,
+   "target": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "3": {
+     "choice": "VORN",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "4": {
+     "choice": "VORN",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "5": {
+     "choice": "VORN",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "6": {
+     "choice": "HESK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "7": {
+     "choice": "VORN",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    }
+   },
+   "random": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "match": true
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "7": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    }
+   }
+  },
+  {
+   "name": "Kindrath",
+   "fold": 0,
+   "cue": null,
+   "cue_ok": false,
+   "zero_eq": true,
+   "target": {
+    "0": {
+     "choice": null,
+     "ok": false,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "1": {
+     "choice": null,
+     "ok": false,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "2": {
+     "choice": null,
+     "ok": false,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "3": {
+     "choice": null,
+     "ok": false,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "4": {
+     "choice": null,
+     "ok": false,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "5": {
+     "choice": null,
+     "ok": false,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "6": {
+     "choice": null,
+     "ok": false,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "7": {
+     "choice": null,
+     "ok": false,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    }
+   },
+   "random": {
+    "0": {
+     "choice": null,
+     "ok": false,
+     "match": false
+    },
+    "1": {
+     "choice": null,
+     "ok": false,
+     "match": false
+    },
+    "2": {
+     "choice": null,
+     "ok": false,
+     "match": false
+    },
+    "3": {
+     "choice": null,
+     "ok": false,
+     "match": false
+    },
+    "4": {
+     "choice": null,
+     "ok": false,
+     "match": false
+    },
+    "5": {
+     "choice": null,
+     "ok": false,
+     "match": false
+    },
+    "6": {
+     "choice": null,
+     "ok": false,
+     "match": false
+    },
+    "7": {
+     "choice": null,
+     "ok": false,
+     "match": false
+    }
+   }
+  },
+  {
+   "name": "Marvenne",
+   "fold": 0,
+   "cue": "FASK",
+   "cue_ok": true,
+   "zero_eq": true,
+   "target": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "5": {
+     "choice": "HESK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "6": {
+     "choice": "HESK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "7": {
+     "choice": "VORN",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    }
+   },
+   "random": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "match": true
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "7": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    }
+   }
+  },
+  {
+   "name": "Caprindo",
+   "fold": 0,
+   "cue": "FASK",
+   "cue_ok": true,
+   "zero_eq": true,
+   "target": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "7": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    }
+   },
+   "random": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "match": true
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "7": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    }
+   }
+  },
+  {
+   "name": "Quenlith",
+   "fold": 0,
+   "cue": "FASK",
+   "cue_ok": true,
+   "zero_eq": true,
+   "target": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "5": {
+     "choice": "HESK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "6": {
+     "choice": "HESK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "7": {
+     "choice": "HESK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    }
+   },
+   "random": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "match": true
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "7": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    }
+   }
+  },
+  {
+   "name": "Hollmere",
+   "fold": 0,
+   "cue": "FASK",
+   "cue_ok": true,
+   "zero_eq": true,
+   "target": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "5": {
+     "choice": "HESK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "6": {
+     "choice": "HESK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "7": {
+     "choice": "HESK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    }
+   },
+   "random": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "match": true
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "7": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    }
+   }
+  },
+  {
+   "name": "Gastwyn",
+   "fold": 0,
+   "cue": "FASK",
+   "cue_ok": true,
+   "zero_eq": true,
+   "target": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "5": {
+     "choice": "HESK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "6": {
+     "choice": "HESK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "7": {
+     "choice": "VORN",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    }
+   },
+   "random": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "match": true
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "7": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    }
+   }
+  },
+  {
+   "name": "Brelcott",
+   "fold": 0,
+   "cue": "FASK",
+   "cue_ok": true,
+   "zero_eq": true,
+   "target": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "7": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    }
+   },
+   "random": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "match": true
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "7": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    }
+   }
+  },
+  {
+   "name": "Tasquin",
+   "fold": 1,
+   "cue": "FASK",
+   "cue_ok": true,
+   "zero_eq": true,
+   "target": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "7": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.25539779663086
+     }
+    }
+   },
+   "random": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "match": true
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "7": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    }
+   }
+  },
+  {
+   "name": "Sablyn",
+   "fold": 1,
+   "cue": "FASK",
+   "cue_ok": true,
+   "zero_eq": true,
+   "target": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "6": {
+     "choice": "HESK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "7": {
+     "choice": "VORN",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.25539779663086
+     }
+    }
+   },
+   "random": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "match": true
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "7": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    }
+   }
+  },
+  {
+   "name": "Dulcair",
+   "fold": 1,
+   "cue": "FASK",
+   "cue_ok": true,
+   "zero_eq": true,
+   "target": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "7": {
+     "choice": "VORN",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.25539779663086
+     }
+    }
+   },
+   "random": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "match": true
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "7": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    }
+   }
+  },
+  {
+   "name": "Fennwick",
+   "fold": 1,
+   "cue": "FASK",
+   "cue_ok": true,
+   "zero_eq": true,
+   "target": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "7": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.25539779663086
+     }
+    }
+   },
+   "random": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "match": true
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "7": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    }
+   }
+  },
+  {
+   "name": "Ravosk",
+   "fold": 1,
+   "cue": "FASK",
+   "cue_ok": true,
+   "zero_eq": true,
+   "target": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "2": {
+     "choice": "RUZZ",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "3": {
+     "choice": null,
+     "ok": false,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "5": {
+     "choice": "RUZZ",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "6": {
+     "choice": "HESK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "7": {
+     "choice": "VORN",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.25539779663086
+     }
+    }
+   },
+   "random": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "match": true
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "7": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    }
+   }
+  },
+  {
+   "name": "Zephrand",
+   "fold": 1,
+   "cue": "FASK",
+   "cue_ok": true,
+   "zero_eq": true,
+   "target": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "7": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.25539779663086
+     }
+    }
+   },
+   "random": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "match": true
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "7": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    }
+   }
+  },
+  {
+   "name": "Nerival",
+   "fold": 1,
+   "cue": "FASK",
+   "cue_ok": true,
+   "zero_eq": true,
+   "target": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "6": {
+     "choice": "HESK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "7": {
+     "choice": "VORN",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.25539779663086
+     }
+    }
+   },
+   "random": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "match": true
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "7": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    }
+   }
+  },
+  {
+   "name": "Ilsavane",
+   "fold": 1,
+   "cue": "FASK",
+   "cue_ok": true,
+   "zero_eq": true,
+   "target": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "5": {
+     "choice": "HESK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "6": {
+     "choice": "HESK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255393981933594,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "7": {
+     "choice": "VORN",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.25539779663086
+     }
+    }
+   },
+   "random": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "match": true
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "7": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    }
+   }
+  },
+  {
+   "name": "Orbelle",
+   "fold": 2,
+   "cue": "FASK",
+   "cue_ok": true,
+   "zero_eq": true,
+   "target": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "3": {
+     "choice": "PELT",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "5": {
+     "choice": "HESK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539016723633,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539016723633
+     }
+    },
+    "6": {
+     "choice": "HESK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "7": {
+     "choice": "HESK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    }
+   },
+   "random": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "match": true
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "7": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    }
+   }
+  },
+  {
+   "name": "Pherox",
+   "fold": 2,
+   "cue": "FASK",
+   "cue_ok": true,
+   "zero_eq": true,
+   "target": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "3": {
+     "choice": "PELT",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "5": {
+     "choice": "RUZZ",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539016723633,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539016723633
+     }
+    },
+    "6": {
+     "choice": "HESK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "7": {
+     "choice": "PELT",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    }
+   },
+   "random": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "match": true
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "7": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    }
+   }
+  },
+  {
+   "name": "Yostrel",
+   "fold": 2,
+   "cue": "FASK",
+   "cue_ok": true,
+   "zero_eq": true,
+   "target": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539016723633,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539016723633
+     }
+    },
+    "6": {
+     "choice": "HESK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "7": {
+     "choice": "VORN",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    }
+   },
+   "random": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "match": true
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "7": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    }
+   }
+  },
+  {
+   "name": "Lorbast",
+   "fold": 2,
+   "cue": "FASK",
+   "cue_ok": true,
+   "zero_eq": true,
+   "target": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539016723633,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539016723633
+     }
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "7": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    }
+   },
+   "random": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "match": true
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "7": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    }
+   }
+  },
+  {
+   "name": "Tiberune",
+   "fold": 2,
+   "cue": "FASK",
+   "cue_ok": true,
+   "zero_eq": true,
+   "target": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539016723633,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539016723633
+     }
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "7": {
+     "choice": "VORN",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    }
+   },
+   "random": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "match": true
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "7": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    }
+   }
+  },
+  {
+   "name": "Ambrosil",
+   "fold": 2,
+   "cue": "FASK",
+   "cue_ok": true,
+   "zero_eq": true,
+   "target": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539016723633,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539016723633
+     }
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "7": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    }
+   },
+   "random": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "match": true
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "7": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    }
+   }
+  },
+  {
+   "name": "Ophandre",
+   "fold": 2,
+   "cue": "FASK",
+   "cue_ok": true,
+   "zero_eq": true,
+   "target": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "5": {
+     "choice": "HESK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539016723633,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539016723633
+     }
+    },
+    "6": {
+     "choice": "HESK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "7": {
+     "choice": "HESK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    }
+   },
+   "random": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "match": true
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "7": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    }
+   }
+  },
+  {
+   "name": "Wexmoor",
+   "fold": 2,
+   "cue": "FASK",
+   "cue_ok": true,
+   "zero_eq": true,
+   "target": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.255401611328125,
+      "threshold": 43.25539779663086,
+      "cap_active": true,
+      "scale": 0.9999999403953552,
+      "post_cap_norm": 43.255393981933594
+     }
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539016723633,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539016723633
+     }
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "follow": false,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    },
+    "7": {
+     "choice": "VORN",
+     "ok": true,
+     "follow": true,
+     "tele": {
+      "slot_norm": 173.02159118652344,
+      "pre_cap_norm": 43.25539779663086,
+      "threshold": 43.25539779663086,
+      "cap_active": false,
+      "scale": 1.0,
+      "post_cap_norm": 43.25539779663086
+     }
+    }
+   },
+   "random": {
+    "0": {
+     "choice": "FASK",
+     "ok": true,
+     "match": true
+    },
+    "1": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "2": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "3": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "4": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "5": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "6": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    },
+    "7": {
+     "choice": "FASK",
+     "ok": true,
+     "match": false
+    }
+   }
+  }
+ ],
+ "summary": {
+  "follow": 0.2604166666666667,
+  "follow_lb": 0.21354166666666666,
+  "per_tag": [
+   0.9583333333333334,
+   0.0,
+   0.041666666666666664,
+   0.08333333333333333,
+   0.0,
+   0.0,
+   0.5416666666666666,
+   0.4583333333333333
+  ],
+  "per_fold": [
+   0.234375,
+   0.28125,
+   0.265625
+  ],
+  "cue_match": 0.11979166666666667,
+  "random_match": 0.11979166666666667,
+  "uplift_cue": 0.140625,
+  "uplift_cue_lb": 0.09375,
+  "uplift_random": 0.140625,
+  "uplift_random_lb": 0.09375,
+  "completion": {
+   "target": 0.953125,
+   "random": 0.9583333333333334,
+   "cue": 0.9583333333333334
+  },
+  "zero_hook_matches_cue": true,
+  "cap_active_rate": 0.20833333333333334
+ },
+ "status": "FAIL \u2014 BLOCK-12 SLOT/PROMPT EIGHT-WAY BOUNDED CONTROL",
+ "seconds": 486.7866449356079
+}
