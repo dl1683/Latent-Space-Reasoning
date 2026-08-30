@@ -5,13 +5,24 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
-## 2026-08-30 — Runner built, SMOKE_VALID, lock row bound; science-grade fixes applied; Codex v6 review pending before Phase D
+## 2026-08-30 — Codex v6 REVISE → 3 blockers fixed (44d8c1a); smoke rerun blocked by CPU contention
 
-Runner (`experiments/run_native_bridge.py`, committed 83b7267) built with full science-grade hardening per Codex v4/v5 reviews: per-call checkpoint journal (call_checkpoints.jsonl with ordinal, identity, law_hash, payload_hash, donor_hash, timing); bootstrap resample index precommitted at Stage 2 (PCG64(4141), 2000×24, hash f9032529...); expanded manifest with tokenizer file hashes, library versions (transformers/tokenizers/numpy), resample_index_hash, canonical_science_argv, status_tree_version, stop_rule, smoke_commitment; strengthened Stage 4 row/span/donor validation (formula checks, retokenization, span_text decode, donor membership); stage-independent manifest with smoke_commitment section (resolves Blocker 0: smoke/science manifest mismatch); monotonic hard-wall clock (science_t0 after all verification, deadline = H_CPU × 60).
+Codex v6 design-gate review (REVISE) identified 3 remaining blockers, all genuine, all fixed in commit 44d8c1a:
+1. **Token IDs in call identity** — `call_identity()` now includes a hash of materialized token IDs; call table hashes are token-bearing
+2. **Donor label validation** — `build_row_manifest()` and Stage 4 now verify correct donors carry `target_label` and wrong donors carry `wrong_label`
+3. **Per-entity checkpoint markers** — entity-level completion markers emitted in both Phase D and Phase E loops
 
-32-call mechanical smoke: SMOKE_VALID. η_smoke = 8.71e-9, ε_smoke = 1e-5, s_plain = 1.219s, s_hooked = 1.225s, s_smoke = 1.225s, F_CPU = 82.3 min, H_CPU = 85 min, forecast_ok = true (within 90-min ceiling). Lock row rebuilt with science-grade runner hash (13307607...) and science call table hash (262307700c...).
+Codex v6 also confirmed 3 prior items resolved: Blocker 0 (manifest mismatch), Item 3 (bootstrap precommitment), Item 2 (expanded manifest).
 
-Authorized sequence steps 1–6 complete. Next: Codex v6 design-gate review confirms all 6 blockers resolved → scientific Phase D/E execution (~85 min CPU).
+**Smoke rerun needed but blocked by CPU contention.** CivilizationV running in background → CPU throttling → s_smoke ≈ 1.6s/call → F_CPU ≈ 109 min > 90 min ceiling. Needs s_smoke ≤ 1.34s (achieved at 1.225s when CPU was uncontended). The committed smoke result / manifest / lock row (from 83b7267) bind to the pre-v7 runner hash and pre-token-ID call table hashes — they must be regenerated after a successful smoke with the v7 runner.
+
+**Next when CPU available:** rerun smoke → rebuild manifest with smoke_commitment → rebuild lock row → Codex v7 final review → Phase D/E scientific execution.
+
+## 2026-08-30 — Runner built, SMOKE_VALID, lock row bound (pre-v7); science-grade fixes applied
+
+Runner (`experiments/run_native_bridge.py`, committed 83b7267) built with full science-grade hardening per Codex v4/v5 reviews: per-call checkpoint journal; bootstrap resample index precommitted; expanded manifest with tokenizer hashes, library versions, resample_index_hash; strengthened validation; stage-independent manifest; monotonic hard-wall clock.
+
+32-call mechanical smoke (pre-v7 runner): SMOKE_VALID. η_smoke = 8.71e-9, ε_smoke = 1e-5, s_smoke = 1.225s, F_CPU = 82.3 min, H_CPU = 85 min. Lock row built with that runner hash.
 
 ---
 
