@@ -62,7 +62,7 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 - **`necessity_navigator_v1` — BUILT; audit-#32 blockers FIXED; post-fix
   smoke only; DEFERRED, not cancelled** (round 19; ledger
   `navigator_smoke_r32fixes`, `direction_r19_ruling`). Entries below.
-- **`onewrite_recall_rung1` — staircase RUNG 1, LOCKED, RUNNING; no result
+- **`onewrite_recall_rung1` — staircase RUNG 1, LOCKED, CLOSED — REGISTERED CONSTRUCTION-LEVEL FAIL (audit #33); no result
   yet** (governance amendment 8; ledger `onewrite_recall_rung1_lock`).
   Entry below.
 

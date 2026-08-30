@@ -5,11 +5,179 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Audit #33 on rung 1 (fresh, unprimed; verbatim): FAIL upheld; 'no fact-specific control' and 'zero delay' withdrawn; loss ~1.0 is a two-token artefact; failure not yet localized
+
+## Verdict
+
+The unanimous registered **FAIL is upheld**, and the predeclared stop applies to this exact construction.
+
+The stronger claim—“this interface learns no fact-specific control”—is not licensed without qualification. Changing only the source tag changed the greedy output on 6/144 paired rows, so the pipeline has sparse source-tag sensitivity. What it did not establish is **reliable, directionally correct, control-relative tag recall**.
+
+The broader program should continue, but plainly: **this is not working, and another repair of this interface is not the highest-leverage next step.** Retire the registered E/J + generic block-12 slot + 0.25 norm-cap construction. First run one no-training localization check on the saved encoders; if it yields a clear branch, move to a different, factorized real-model write mechanism. Keep the synthetic navigator deferred.
+
+The blackboard converged with no unresolved signals. No tracked repository files were edited; blackboard findings were recorded as requested.
+
+## Integrity and registered adjudication
+
+The live runner, config, and shared machinery hashes exactly match those stored in [train_result.json](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/results/onewrite_recall_rung1/train_result.json>). The model revision is pinned, all three registered seeds are present, and zero-hook reproduces cue row-for-row. This is a valid result for the locked construction.
+
+| Seed | Own write → true | CF write → true | Random → true | CF write → CF tag | Own/CF choices equal | Own choice stable across sources |
+|---|---:|---:|---:|---:|---:|---:|
+| 11 | 8/48 | 8/48 | 8/48 | 4/48 | 46/48 | 22/24 |
+| 23 | 9/48 | 9/48 | 10/48 | 8/48 | 48/48 | 21/24 |
+| 37 | 14/48 | 13/48 | 16/48 | 8/48 | 44/48 | 20/24 |
+| Pooled | 31/144 | 30/144 | 34/144 | 20/144 | 138/144 | 63/72 |
+
+Other decisive facts:
+
+- Visible-copy accuracy is 1.0 and cue accuracy is 0.125.
+- Every nonzero-write arm completes with a valid tag on 100% of rows.
+- Each seed emits only four of the eight tags under its own write.
+- Own write never outperforms the fixed random write.
+- Of the six rows where own and counterfactual writes differ, own follows the true tag once and counterfactual follows its tag once. No row shows both intended directional responses.
+- The fixed random write is stable across source phrasings on 72/72 entity/seed pairs. Own-write consistency of 63/72 is therefore mostly stability supplied by the unchanged target prompt, not evidence of a stable encoded fact.
+
+Thus the raw outputs reject literal “indistinguishable row-for-row,” but they decisively reject usable fact-specific control.
+
+Post-hoc, entity-clustered permutation checks do not rescue the result. Seed 37’s own-write accuracy is nominally above randomized assignments (`p≈.007`), but its fixed-random arm is higher still (`0.333`, `p≈.003`). Own-write mutual information is nominal in seeds 11 and 37 but not 23; counterfactual outputs do not correlate significantly with their actual counterfactual source tags in any seed. These uncorrected, non-replicated 24-entity signals are compatible with finite-assignment coincidences and entity-prompt effects.
+
+## Why loss near 1.0 is consistent with chance-like greedy accuracy
+
+The apparent loss/accuracy conflict is mechanical.
+
+All eight tags tokenize into **two tokens**. The shared [label-loss implementation](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_onewrite_state.py:49>) averages teacher-forced cross-entropy over both token positions. Therefore `exp(-1)≈0.37` is a geometric mean of two conditional token probabilities—not a 37% probability for the complete tag.
+
+A particularly relevant null is:
+
+\[
+\frac{-\log(1/8)-\log(1)}{2}=1.0397.
+\]
+
+That is exactly the loss obtained when the first tag token remains at eight-way chance while the second suffix token is nearly certain once the first prefix is supplied by teacher forcing. The observed last-50 means—`1.015`, `1.029`, and `0.965`—sit almost exactly at this null.
+
+Consequently:
+
+- The decline from the step-zero samples `2.166/1.641/2.166` to approximately `1.0` does not imply learned tag identity.
+- It can represent learning the “emit one of these tag-shaped strings” mode and the easy suffix transition.
+- Greedy decoding still depends on the correct first token beating the full vocabulary. The JSON stores no logits or margins, so ties cannot be diagnosed, but exact ties are unnecessary to explain the gap.
+- The loss history is an online sequence of different sampled examples, not a terminal full-training-set evaluation.
+
+Training and evaluation are also not identical distributions. Training samples all three training source templates, while evaluation is hard-coded to templates 0 and 1 in [run_onewrite_recall.py](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_onewrite_recall.py:63>). Reconstructed sampled losses show no consistent advantage for template 2, so this mismatch is not the leading explanation, but it prevents treating the loss and greedy evaluation as measurements on exactly the same cases.
+
+## Strongest explanation of the null
+
+The strongest explanation is **a largely source-insensitive output-mode solution**: joint optimization learned to make the model emit valid two-token tags without learning a stable eight-way source-tag code.
+
+That explanation fits:
+
+- 100% tag completion under correct, counterfactual, and random writes;
+- emission collapse to four tags per seed;
+- 138/144 own/counterfactual choice equality;
+- zero intended bidirectional own/counterfactual pairs;
+- random accuracy matching or exceeding own-write accuracy;
+- the two-token chance-plus-easy-suffix loss baseline.
+
+The six own/counterfactual differences show the source tag sometimes perturbs the output. They do not show that the perturbation represents the tag.
+
+Several construction choices could independently produce this null even if some linear one-write channel is learnable:
+
+1. **Unvalidated source code.** `E` reads only the block-12 residual at the final generic `Internal record:` anchor token. No check established that `z=E(LN(h))` separates tags.
+
+2. **Uncalibrated actuator cap.** The write is capped at `0.25‖h_slot‖`, but no cap-activation rate, pre/post-cap norm, or dose-response telemetry was saved.
+
+3. **The “zero-delay” rung is not zero-token delay.** It has zero configured filler, but local tokenization shows 36 prompt tokens between the written slot token and the query, comprising the newline and VALID TAGS/instruction block. Public wording should say “zero configured filler,” not literal “zero delay.”
+
+4. **Generic write site.** The write occurs at slot position 2 of `Internal record:`, rather than at the entity name or query decision position. Only upper-layer causal paths can make that write available to the later query.
+
+5. **Joint underlocalized optimization.** The 65,552 parameters are trained for 400 batch-one steps at `lr=3e-3`. Entities receive only 7–30 samples per seed. `J` is zero-initialized, so `E` receives no gradient on the first update; early learning is necessarily actuator-first and can settle into a generic output shift.
+
+None of these explanations is independently established. The result does not localize failure to `E`, `J`, the cap, the site, propagation, or decoding.
+
+## Single decisive rung-0 check
+
+Before any new training, load the three saved interfaces and evaluate whether their learned codes separate source tags:
+
+- Recompute the 72 training source states per seed: 24 entities × three source templates, plus matched same-entity counterfactual sources.
+- Compute `z = E(LN(h))`.
+- Use an entity-grouped, source-template-held-out nearest-centroid or small linear readout, with shuffled-label controls.
+- Compare separability in `z` with separability in the raw block-12 source residual.
+
+This is decisive for the next branch:
+
+- If `z` is at chance, the learned source extractor/code failed; do not spend on cap, site, or retrieval repairs.
+- If `z` reliably separates tags, source extraction succeeded and the failure lies downstream in `J`, the cap, write site, propagation, or readout.
+
+This check is cheaper than another training run and uses the already-saved checkpoints. It does not establish memory by itself.
+
+## Exact licensed sentence
+
+> **`onewrite_recall_rung1` is a unanimous registered construction-level FAIL:** in frozen Qwen3-1.7B-Base, on 24 training entities evaluated under two of the three training source templates, the training query wording, and zero configured filler, own-write true-tag accuracy was 0.167/0.188/0.292 across seeds 11/23/37, versus 0.167/0.188/0.271 for same-entity counterfactual-tag writes and 0.167/0.208/0.333 for one fixed random write; own and counterfactual writes changed the greedy tag on 6/144 paired rows, but no pair simultaneously followed the true and counterfactual tags, so this exact 65,552-parameter linear E/J, generic block-12 slot, 0.25-norm-capped, 400-step construction did not establish reliable control-relative tag recall and stops under its predeclared rule.
+
+## Never-say list
+
+Do not say:
+
+- “The interface learns no fact-specific control,” without specifying the registered construction and greedy readout.
+- “Correct and counterfactual writes are identical row-for-row.”
+- “There is no tag-specific effect at all.”
+- “The loss implies about 35–38% correct-tag probability.”
+- “The training loss proves that `E` learned tag identity.”
+- “This was a literal zero-delay or immediate-query test.”
+- “All training source phrasings were evaluated.”
+- “The fixed random arm rules out random interventions generally.”
+- “The 0.25 cap was adequate” or “the cap caused the failure.”
+- “The encoder failed,” “the writer failed,” or “the state was written but could not be retrieved.”
+- “A linear one-write channel, block 12, a 16-dimensional state, or frozen-model memory is unlearnable.”
+- “This establishes that current pretrained latent spaces are hostile to structured reasoning.”
+- “This closes the real-model program.”
+
+## Program ruling
+
+This is the day’s eleventh closed construction and the first rung of the new staircase. The staircase worked procedurally: it exposed the failure before held-out names, unseen wording, or longer delay were attempted. Scientifically, however, the current loop is still not producing the intended artifact.
+
+The program should:
+
+- Stop this exact interface family as promised.
+- Run only the saved-checkpoint `z` localization next.
+- If localization is clean, move to a **different, factorized real-model write mechanism** whose actuator passes an oracle-code positive control before a learned source encoder is introduced.
+- Keep the navigator deferred. Its synthetic causal-swap result cannot diagnose this real-model source/write failure and should remain a bounded secondary calibration.
+
+Narrative gate:
+
+> Can a language model be told a private fact once, carry it only in hidden state, and later act on it after the words are gone?
+
+That remains a compelling question; this construction did not answer it.
+
+Measurement-to-artifact heartbeat, with declared classification:
+
+- Starting from round 19’s declared `6 measurement/governance : 2 artifact-building`, counting rung 1 as one artifact round and this audit as one measurement round gives `7:3 = 2.33:1`, still above the 2:1 warning.
+- Incremental code classification is worse: the rung changed 19 runner lines plus configuration but no E/J artifact-core lines. Its incremental apparatus/artifact-core denominator is therefore zero. That is another reason to pivot rather than repair this implementation.
+
+## Exact public-surface wording
+
+[README.md](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/README.md:14>) is stale—it still says rung 1 is running. Replace its rung clause with:
+
+> **`onewrite_recall_rung1` — REGISTERED CONSTRUCTION-LEVEL FAIL, CLOSED.** On 24 training entities evaluated under two of the three training source templates with zero configured filler, own-write accuracy was 0.167/0.188/0.292 across seeds, versus 0.167/0.188/0.271 for same-entity counterfactual-tag writes and 0.167/0.208/0.333 for one fixed random write. Own and counterfactual writes differed on 6/144 greedy decodes but showed no intended bidirectional tag following, so the exact linear E/J, generic block-12 slot, 0.25-norm-capped construction did not establish reliable control-relative tag recall and stops. This does not close linear one-write control, block-12 capacity, or hidden-state memory generally.
+
+Replace the current rung bullet in [STATE.md](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/STATE.md:21>) with:
+
+> **`onewrite_recall_rung1` — REGISTERED CONSTRUCTION-LEVEL FAIL, CLOSED.** Visible-copy accuracy was 1.0 and cue accuracy 0.125. Across seeds 11/23/37, own-write true-tag accuracy was 8/48, 9/48, and 14/48; same-entity counterfactual-write true-tag accuracy was 8/48, 9/48, and 13/48; fixed-random-write accuracy was 8/48, 10/48, and 16/48. Own and counterfactual writes differed on 6/144 paired greedy decodes, but no pair simultaneously followed its true and counterfactual tags. Every nonzero write completed with a valid tag. The loss near 1.0 is compatible with chance selection of the first token of these two-token tags plus easy teacher-forced suffix completion. The exact registered construction stops; encoder, actuator, cap, site, and retrieval failure remain unlocalized.
+
+[experiments/EXPERIMENTS.md](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/EXPERIMENTS.md:65>) also remains stale as “RUNNING,” and the [NOTEBOOK headline](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/NOTEBOOK.md:8>) should replace “learns no fact-specific control” with “did not establish reliable control-relative tag recall.”
+
+## Ranked next increments
+
+1. Propagate the licensed correction to README, STATE, NOTEBOOK, EXPERIMENTS, and an append-only ledger audit row.
+2. Run the single saved-checkpoint `z`-separability diagnostic; no training or intervention sweep.
+3. Use its branch result to specify one different, factorized real-model write mechanism with an oracle actuator control.
+4. Lock that mechanism at its proximal training-item rung before introducing delay, held-out names, or new wording.
+5. Keep the navigator deferred unless the direction dialogue concludes that no credible real-model mechanism remains.
+
 ## 2026-08-29 — Rung-0 diagnostic on the rung-1 interfaces (read-only): the failure is at the encoder/cap, not at persistence
 
 Saved seeds 11/23/37: the encoder's 16-d codes separate tags on *training* sources at only 0.36/0.14/0.12 (nearest-centroid leave-one-out; chance 0.125); the write lifts the correct tag's log-probability by +1.4 nats but a counterfactual-tag write lifts its own tag by the same +1.3 — a generic "emit a tag" direction; and |Jz| before the 0.25-residual cap is ~2000, so the cap rescales every write to nearly the same small vector. The proximal failure is that no tag-separated code was ever obtained from the final anchor token of a short source sentence, and the cap collapses direction differences — a rung-0 check the staircase should start from tomorrow. Not a repair; recorded for audit #33 and round 20.
 
-## 2026-08-29 — Staircase rung 1: FAIL, unanimous — the one-write interface learns no fact-specific control even on training entities at zero delay
+## 2026-08-29 — Staircase rung 1: FAIL, unanimous — the construction did not establish reliable control-relative tag recall on training entities with zero configured filler (headline corrected per audit #33)
 
 On the 24 training entities, training wording, and zero intervening tokens (the easiest rung): write accuracy 0.17/0.19/0.29 vs counterfactual write 0.17/0.19/0.27 vs random write 0.17/0.21/0.33 (cue = chance 0.125; visible 1.0); counterfactual follow ≤0.17; completion 1.0 under any write; zero-hook = cue. The single-example loss fell from ~2.2 to ~1.0, but greedy decodes show the write is content-independent. By the round-19 rule this interface (16-d linear E/J, block-12 slot addition, norm-capped, label-CE) stops here; no later rung is tested. Fresh audit next; Codex round 20 decides tomorrow's rung-1 candidate (a different write mechanism) or the navigator.
 
