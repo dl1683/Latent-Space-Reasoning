@@ -5,6 +5,78 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Round 20 (Codex, verbatim): tomorrow's locked artifact = the oracle-code actuator (rung 0); rung 0b = encoder on tag-token positions; navigator deferred
+
+## Tomorrow’s locked artifact: oracle-code actuator rung
+
+### Rung 0 — actuator/site/retrieval control
+
+Use frozen Qwen3-1.7B-Base, block 12, and the existing final-token `Internal record:` write slot. Remove `E` entirely and train only the zero-initialized, biasless \(J:16\rightarrow2048\) for 400 balanced steps across seeds 11/23/37.
+
+Fix eight unit centered-simplex codes:
+
+\[
+c_k=\sqrt{8/7}\left(e_k-\tfrac18\mathbf1_8,\;0_8\right).
+\]
+
+The codebook is immutable and hashed. Train on all 24 training entities crossed with all eight codes; the requested output is always the injected code’s tag. Use the training query wording and zero configured filler—still approximately 36 prompt tokens, never called literal zero delay. Evaluate all 192 entity–code combinations, plus cue, zero-hook, fixed off-code random vectors, and all seven wrong codes per entity. Entities are the bootstrap clusters.
+
+Per-seed gates:
+
+- Valid-tag completion ≥0.95 for capped-code, wrong-code, and random-code arms.
+- Capped code-follow accuracy ≥0.85, entity-bootstrap 95% LB >0.75, and ≥0.75 for every code.
+- Own-code accuracy ≥0.85.
+- Wrong-code follow ≥0.85 across the 168 counterfactual rows; uplift over the cue’s matching rate ≥0.65 with clustered LB >0.50.
+- Cue and off-code-random true-tag accuracy ≤0.20.
+- Own-code minus random true-tag accuracy ≥0.60 with clustered LB >0.50.
+- Zero-hook reproduces cue row-for-row.
+
+`BOUNDED ACTUATOR PASS — ORACLE CODE` requires every gate in at least two of three seeds. No repair run.
+
+### Norm-cap ruling
+
+Keep the inherited \(0.25\lVert h_{\text{slot}}\rVert\) cap in the primary training and evaluation. Removing it as the only arm would allow an arbitrarily large lexical-forcing intervention to manufacture a positive.
+
+For every training checkpoint and evaluation row, log:
+
+- \(\lVert h_{\text{slot}}\rVert\)
+- pre-cap \(\lVert Jc\rVert\)
+- cap threshold and activation flag
+- applied scale
+- post-cap norm
+- pre/post norms divided by slot norm
+- summaries by code, seed, and step.
+
+Replay the frozen trained \(J\) once without the cap as a diagnostic:
+
+- Capped pass: `BOUNDED ACTUATOR PASS`; permit rung 0b.
+- Uncapped pass but capped fail: `CAP-LIMITED ACTUATOR`; do not introduce an encoder.
+- Both fail: `FAIL — ORACLE ACTUATOR/SITE/RETRIEVAL CONSTRUCTION`; this J/site/retrieval line stops.
+
+Tonight’s only permitted preflight is eight zero-\(J\) rows: verify the codebook Gram matrix, hook fires once, telemetry is zero, and zero-hook decoding exactly matches cue. Do not inspect any nonzero-write behavior.
+
+### Rung 0b — source encoder
+
+Only after bounded rung-0 success, read the mean LayerNormed block-12 residual over both tokenizer-identified tag-token positions—not the generic anchor. Train \(E:2048\rightarrow16\) source-only to map normalized \(z\) onto the fixed oracle codebook. Keep the oracle-trained \(J\) frozen; there is no joint tuning.
+
+Before any injection evaluation, require:
+
+- Entity-grouped, held-out-source-template nearest-code accuracy \(X\ge0.80\).
+- Every held-out template fold ≥0.70.
+- Margin over shuffled-label 95th percentile ≥0.50.
+- Per-tag recall ≥0.60.
+- All gates in at least two of three seeds.
+
+If this passes, inject \(E\)’s codes through frozen \(J\) and reuse the rung-0 own/counterfactual gates. Failure before injection closes source extraction; separability followed by behavioral failure localizes failure to source–actuator composition.
+
+The navigator remains deferred.
+
+Ratio heartbeat: localization plus this ruling moves the declared round ratio from 7:3 to **9:3 = 3:1**, above the warning. Tomorrow’s incremental code budget is ≤80 nonblank lines, with at least 40 artifact-bearing mechanism lines and no more than 40 apparatus lines: ≤1:1 incremental apparatus/artifact.
+
+### Three sentences for the user
+
+The current mechanism is not working: today’s clean negative and localization showed that the generic block-12 source anchor carries only weak tag information, while the learned code usually carries no more. The key constraint is now explicit—persistence cannot be judged until a reliably identified hidden code can drive the frozen model through a bounded one-write actuator. Tomorrow’s single artifact is the oracle-code actuator: **“Can a known hidden symbol, written once, make the model recall its matching tag after the source words are gone?”**
+
 ## 2026-08-29 — Rung-0 localization (audit #33's check): the source signal at the anchor token is weak; the encoder recovers at most that
 
 Entity-grouped, source-template-held-out nearest-centroid separability with shuffled-label controls: the raw block-12 residual at the final ` Internal record:` token of a source sentence classifies the tag at 0.340 (shuffled 95th percentile 0.181; chance 0.125); the learned 16-d codes reach 0.333 (seed 11) / 0.153 / 0.194 — no better than the raw signal, and two seeds at chance; a random 16-d projection gives 0.17–0.23. Branch: source *extraction* is the proximal failure — the chosen read position carries little tag information and the interface never obtained a tag code; downstream stages (cap, site, propagation, decoding) remain untested. Per audit #33, the next mechanism reads the source at a tag-bearing position (or injects an oracle code) and must pass an oracle-code actuator control before a learned encoder is introduced. Codex round 20 specifies it.
