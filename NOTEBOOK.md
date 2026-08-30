@@ -5,6 +5,16 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Re-contextualization #31 (late night)
+
+Audit: skipped — no new capability result since audit #32 (the navigator smoke is code-path validation and is logged as such).
+
+Project and live question. Latent-Space-Reasoning: is there a native mathematics of latent spaces, and can it be found or built? The day's ten closed constructions now have a single audited explanation (audit #32): the loop kept changing bespoke instruments and actuators before establishing that the proximal mechanism was learnable at all — the one-write interface, for instance, never learned tag identity even on training entities (own-write 4/24, own vs counterfactual outputs identical 24/24), so every held-out and delay claim built on it was untestable from the start. That reframes the day: most kills are not facts about latent spaces; they are facts about untested rungs skipped.
+
+What changed structurally. Governance amendment 8 (AGENTS.md): one cumulative artifact and a positive-control staircase — content specificity on training items at zero delay, then delay, held-out names, unseen wording, long delay — one difficulty per rung, each locked and audited once. This replaces "one artifact per day" and is the single change most likely to convert tomorrow into a decisive result rather than more closures.
+
+Not narrowed. Two live objects remain: (a) the real-model one-write channel, restarted at rung 1 of the staircase; (b) the navigator as a one-round calibration control — its post-fix smoke shows the recurrent state is causally swappable across symbol permutations (0.90 vs ≤0.47 controls) while its algebraic readouts sit at chance, which is itself a useful alternative interpretation: a state can be *portable* without being *algebraically readable*, and the mission's object may be portability first, algebra second. Alternatives still on record: predictive dynamics/flow, distributed span operators, response-law topology, a larger base for rule-dependent readouts (8B-Base / 4B-Instruct screen). Round 19 decides tonight's last action; nothing runs before it.
+
 ## 2026-08-29 — Audit #32 on onewrite_recall_v1 (fresh, unprimed; verbatim): FAIL upheld; sentence corrected; navigator not run-ready; loop change = positive-control staircase
 
 The round-18 sentence is replaced by the audit's; the navigator has four pre-run blockers and the 'one artifact per day' rule is replaced by the cumulative positive-control staircase.
