@@ -5,6 +5,183 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — Audit #37 on necessary_register_v1 rung 0 (fresh, unprimed; verbatim): qualified uphold; 'compositional' withdrawn; evaluator marginally balanced; one writer rung only, with a real-model preflight alongside
+
+My rung-0 headline is corrected by this audit: the consumer is a permutation-generalizing oracle-code label selector (code → map position → copy label), not a compositional consumer; the evaluator coupled template to state and state to panel; the alternatives below are recorded verbatim and feed round 27.
+
+## Verdict
+
+**Qualified uphold; headline narrowed.** The locked scalar gates mechanically pass in all three seeds, and the inspected runner/config hashes match the saved result. The central effect is real: changing only the valid injected code changes the selected abstract state under unseen visible permutations.
+
+The defensible classification is:
+
+**`QUALIFIED INSTRUMENT PASS — PERMUTATION-GENERALIZING ORACLE-CODE LABEL SELECTOR`**
+
+“Compositional oracle register consumer” is too broad. The learned operation is specifically code-to-map-position selection followed by visible-label retrieval. The qualification is necessary because the evaluator is not fully crossed, counterfactual/control termination is unreported, raw rows and checkpoints were not retained, and the identity check is decoded-only.
+
+## Split and leakage
+
+The permutation split is genuine.
+
+- Regenerating the banks from `perm_seed=5151` reproduced the saved permutation hash exactly.
+- Each panel has 128 unique training and 16 unique evaluation permutations with zero overlap.
+- Recalculation also found zero accidental overlap between every evaluation-panel bank and every training-panel bank.
+- Every seed sampled all 16 evaluation permutations in every panel, with 24–51 appearances per permutation-panel cell.
+
+The visible map does not directly reveal the target: all eight labels appear exactly once and the target state is supplied only through the injected code. But map position encodes abstract-state index. Consequently, the cheapest successful algorithm is:
+
+`oracle code → fixed state index → attend to that map position → copy its visible label`
+
+That algorithm passes unseen permutations and is more than a fixed code-to-label table, but it is still a permutation-generalizing in-context lookup.
+
+There is an evaluator defect: the claimed “full balance” is marginal, not factorial. The arrays cover only 16 of 128 possible `(state, template, panel)` combinations:
+
+- `template = state mod 4`;
+- states 0–3 occur only in panels 0/2;
+- states 4–7 occur only in panels 1/3.
+
+Entity × state is fully crossed. The same-prompt `cf1–cf7` results strongly rule out these correlations as the main cause of success, but the per-state, per-panel, per-template, and agreement summaries are not independent invariance tests.
+
+## Mask and identity
+
+The mask direction is correct in [run_necessary_register.py](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_necessary_register.py:24):
+
+- Rows are query positions; columns are attended positions.
+- The lower triangle implements causal attention.
+- With `R=1`, `m[R+1:, :R] = -inf` blocks post-register positions from attending column 0, the `<BOS>` token.
+- It deliberately does not block column 1, so later positions can attend the register.
+- The register row can attend `<BOS>` and itself but cannot attend the future map, query, answer, or target.
+
+No multi-layer backflow exposes future tokens to the register because the same causal mask applies at every layer.
+
+The stronger “register is the only source-to-answer path” statement is not yet tested: rung 0 has no source before the register. At present, the restriction merely blocks `<BOS>`.
+
+The zero-hook test is meaningful only as a narrow wiring smoke test. It injects exactly the learned register token embedding plus its position embedding and compares it with the untouched path. However, it checks only the inverse-mapped answer argmax—not logits, EOS, all positions, or the zero-vector arm. Different out-of-panel predictions would both map to `-1` and appear equal.
+
+## Controls and per-group
+
+The valid-code counterfactuals are the strongest evidence:
+
+- Each `cf1–cf7` arm uses the identical prompt and changes only the register code.
+- The desired inferred state is correctly shifted to `(s+j) mod 8`.
+- Seed 11 follows 15,514/16,128 counterfactuals and passes the paired criterion on 2,124/2,304 episodes.
+- Seeds 23 and 37 are perfect.
+
+This substantially excludes template, entity, map text, or evaluation-order leakage as the primary explanation.
+
+The zero/random controls are properly prompt-matched but weakly summarized. “At chance” means assigned-target match was approximately 1/8. A zero or random code could deterministically select one state and still score exactly 1/8 against balanced targets. Only three fixed random vectors were used, and their output-state distributions were not saved.
+
+Seed 11’s aggregate 0.955 hides a coherent 104-error concentration:
+
+- panel 3: 472/576 = 0.819;
+- state 5/template 1: 37 errors;
+- state 6/template 2: 24 errors;
+- state 7/template 3: 43 errors.
+
+Because of the evaluator coupling, every error is simultaneously attributable to panel 3, a high-numbered state, and its fixed template. The result therefore shows one seed’s real presentation-specific brittleness but cannot localize it. Agreement 0.918 is likewise only 0.018 above its gate and covers two panels—not all four—for each `(state, entity, template)` key.
+
+Two evidence limitations remain:
+
+- Termination is retained and gated only for `own`; it is absent beside counterfactual, zero, and random accuracies.
+- The uplift lower bound bootstraps own-code entity accuracy and subtracts a fixed global control rate, rather than bootstrapping paired entity-level own-minus-control differences.
+
+## Wording audit in both directions
+
+**Overclaims:**
+
+- Replace unqualified “compositional” with “permutation-generalizing lookup composition.”
+- Do not call the evaluator fully balanced or fully presentation-invariant.
+- Do not say zero/random codes “behave at chance”; only their assigned-target accuracy is near chance.
+- Do not call zero-hook “row-for-row identity” without saying decoded answer-state identity.
+- Do not say the mask has validated source isolation; no source exists at this rung.
+- Do not imply held-out permutations defeat all lookup strategies. They defeat fixed code-to-label tables, while requiring an episode-conditioned lookup.
+
+**Underclaims:**
+
+Calling this merely “a construction designed to pass” is too weak. Across three independently initialized learned consumers, valid code replacement causally controls first-label state selection under globally unseen mappings, including all seven same-prompt counterfactual codes. That is a genuine positive engineering calibration and a stronger result than memorizing four panel tables.
+
+It remains neither evidence about pretrained latent spaces nor evidence for writing, memory, delay, abstraction, learned moves, or general compositional reasoning.
+
+## Continue-or-not
+
+**Continue for exactly one more constructed rung: the zero-delay, training-entity source writer.** That rung tests the missing mechanism—whether text can produce the code consumed here—and follows the required proximal staircase.
+
+The entire four-rung synthetic sequence before touching Qwen is not presently the highest-leverage allocation. Governance requires the central artifact to return to a real model, while the structured negative localized weak source extraction as a central problem. A cheap CPU real-model source-span decodability/bridge-feasibility preflight should therefore run alongside the writer work, without being described as staircase advancement.
+
+Before the next result, the cumulative runner should fully cross state × template × panel, retain row-level outputs and a checkpoint, report termination for every arm, and use paired clustered uplift. This need not trigger a separate rung-0 repair experiment; it can be an oracle-consumer regression check within the writer run.
+
+The team is **moderately tunnel-visioned**: it recognizes the toy-world risk and has mandated a bridge, but placing the bridge after four synthetic difficulties risks polishing a designed substrate before learning whether the real model can enter its coordinates.
+
+## Alternatives
+
+The strongest alternative explanation is the intended cheap one: the transformer learned a fixed eight-way code decoder plus a positional pointer/copy operation over the visible map.
+
+Alternatives to run instead of or alongside prolonged synthetic development:
+
+- Fit a rank-at-most-eight linear decoder from Qwen source-span representations to the eight abstract states/codes on training entities at zero delay, against matched token/context and shuffled-coordinate controls.
+- Include a minimal analytic pointer or linear-attention consumer baseline; matching performance would clarify that rung 0 validates the interface, not a distinctive transformer capability.
+- In the writer rung, compare the learned writer with entity/token lookup and same-entity wrong-state controls so memorization cannot masquerade as source-conditioned writing.
+- After the zero-delay writer audit, use the required direction dialogue to consider moving `register_bridge_v1` earlier rather than automatically spending on delay, held-out entities, and unseen wording.
+- Do not reopen frozen-model site/layer/actuator sweeps; the structured negative already supports that allocation stop.
+
+## Exact licensed sentence
+
+> In this locked synthetic task, three independently initialized two-layer causal transformers trained from scratch used fixed orthonormal vectors injected at a dedicated register position to select the intended abstract state under globally unseen visible state-to-label permutations, with own-code first-label accuracy 0.955/1.000/1.000 and all-seven same-prompt counterfactual-code following 0.962/1.000/1.000; this establishes a learned permutation-generalizing oracle-code-to-visible-label consumer for the tested schedule, not general compositional reasoning, learned writing or persistence, a fully crossed presentation-invariance result, or structure in a pretrained model.
+
+## Never-say list
+
+- “The model learned compositional reasoning.”
+- “No lookup strategy can pass the held-out gate.”
+- “The evaluation fully crossed every state, panel, and template.”
+- “Zero and random codes had no systematic effect.”
+- “Zero/random-code behavior was at chance” without “assigned-target accuracy.”
+- “Zero-hook proved exact logit-level identity” or “zero-hook equals the zero-vector arm.”
+- “The mask proved that source information flows only through the register.”
+- “Seed 11 was uniformly robust across presentations.”
+- “The register learned to write, retain, or retrieve state.”
+- “This establishes an abstract state representation in a pretrained model.”
+- “The constructed ladder will transfer to Qwen.”
+- “Instrument valid” without the synthetic, first-label, schedule, and evidence-retention qualifications.
+
+## Copy-ready README wording
+
+> `necessary_register_v1` rung 0 mechanically passed its locked synthetic gates in all three seeds: a learned two-layer causal consumer followed fixed oracle-code interventions under globally unseen visible state-to-label permutations, reaching own-code first-label accuracy 0.955/1.000/1.000 and all-seven same-prompt counterfactual following 0.962/1.000/1.000. This is a qualified calibration result—a permutation-generalizing oracle-code label selector—not evidence of general composition, learned writing or persistence, or structure in a pretrained model; presentation groups were only marginally balanced, and arm-specific termination and row-level outputs were not retained.
+
+## Copy-ready STATE wording
+
+> - **`necessary_register_v1` rung 0 — QUALIFIED INSTRUMENT PASS.** The locked scalar gates mechanically passed in seeds 11/23/37, with own-code first-label accuracy 0.955/1.000/1.000 and same-prompt all-seven counterfactual following 0.962/1.000/1.000 on globally unseen state-to-label permutations. The result establishes a learned synthetic permutation-generalizing oracle-code-to-visible-label consumer, not general composition, source writing, persistence, or pretrained-model structure. Qualification: state/template/panel evaluation was marginally rather than factorially balanced; zero/random results are assigned-target accuracies only; zero-hook is decoded-state identity; and termination/raw rows were not retained for every arm. NEXT: one zero-delay training-entity writer rung, with fully crossed evaluation and complete evidence retention, alongside a cheap real-model source-span bridge-feasibility preflight; then audit once and stop on failure.
+
+## Ranked next increments
+
+1. Make full crossing, raw rows, checkpoint retention, per-arm termination, logit-level identity, and paired clustered uplift requirements of the next locked cumulative run.
+2. Run only the training-entity, zero-delay source-writer rung against same-entity counterfactual states and lookup baselines.
+3. Alongside it, run a cheap CPU Qwen source-span linear-decodability preflight with token/context and shuffled-coordinate controls.
+4. Audit the writer result once. Failure closes the constructed architecture; a lookup-only pass also stops advancement.
+5. If writer and real-model feasibility both survive, conduct the mandated direction dialogue over short delay versus an earlier `register_bridge_v1`. Do not automatically run the remaining synthetic staircase.
+6. Defer moves, algebra, effort, maps, and long delay until a real-model bridge and subsequent causal intervention exist.
+
+## Ratio heartbeat
+
+Declared runner classification:
+
+- **Artifact-bearing:** 90 nonblank lines covering the world, model, mask, permutation/code construction, training, interventions, metrics, and gates.
+- **Apparatus:** 23 nonblank lines covering the module description, imports, CLI/configuration, smoke mode, I/O, logging, hashes, deadline, and entrypoint.
+- **Apparatus:artifact:** **23:90 = 0.26:1**, below the 2:1 line warning.
+
+Using the audited structured-negative baseline of 15 measurement/governance rounds to five building rounds, then adding direction rounds 24–25 as governance, rung 0 as one building round, and this audit as measurement gives **18:6 = 3.0:1**. That remains above the 2:1 warning threshold but below the greater-than-5:1 mandatory halt. The next completed round must build or test the cumulative writer artifact, not add another free-standing measurement.
+
+## 2026-08-30 — Re-contextualization (2-hour check-in) after necessary_register_v1 rung 0; audit #37 in flight
+
+Live question: does any substrate carry a causally addressable, content-specific state register — and can that be shown by a staircase that a frozen model failed at rung 0? Today's result is not about latent mathematics; it is an instrument check on a substrate we built to have the property by construction.
+
+What still holds: twelve frozen-Qwen3 constructions closed (audits #27–#36); the structured negative is the only licensed statement about real models. What is new: a 2-layer hard-masked register transformer consumes 8 orthonormal oracle codes on held-out state-to-label permutations (0.955/1.0/1.0). Provisional readings, each with the alternative that would make it hollow:
+1. "Compositional consumer" — alternative: the visible permutation makes this a two-hop lookup (code -> state index -> label) that any attention layer solves; passing says nothing beyond trainability. The word "compositional" awaits audit #37.
+2. "Substrate ready for a source writer" — alternative: the codes are orthonormal and given for free; the hard part (extracting a code from text, keeping it across delay) is exactly what the frozen line failed, so rung 0 has removed the difficult step rather than tested it.
+3. "The ladder will bridge to Qwen3-1.7B-Base" — alternative: nothing in a from-scratch 128-d model transfers; the bridge may be the only rung that matters and it is last. Cheaper baseline that could make the line moot: train a one-layer linear writer on frozen Qwen3-1.7B-Base residuals to predict the 8 codes directly (probe-level), which tells us whether source information even exists at the write site before any consumer is built.
+4. Different measurement: if the writer rung passes at zero delay, the delay rung is the first place the constructed substrate can actually fail; the informative failure is there, not here.
+Tunnel check: one thread is live by governance (staircase, one rung at a time), which is deliberate; the anti-tunnel content is the alternatives above and the Codex round-26 pushback. Ratio flag: this is layer-1 work (building the artifact) after a long layer-2/3 stretch.
+Status: audit #37 (fresh, unprimed; includes continue-or-not and alternatives) and round 26 (writer-rung spec) running in parallel; nothing built until both land.
+
 ## 2026-08-30 — Round 25 (Codex, verbatim): round 24 amended — the register ladder is a calibration line with a mandatory bridge back to Qwen; rung 0 is an instrument check whose real content is generalization to unseen label permutations
 
 ## Ruling: amend, do not ratify Round 24 unchanged
