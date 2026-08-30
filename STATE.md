@@ -1,8 +1,9 @@
 # STATE
 
-## Current statement (2026-08-30, PAUSED; audits #27–#39 adopted; `docs/HANDOFF_2026_08_30.md` is the restart authority; no experiment is running)
+## Current statement (2026-08-30, RESTARTED in THEORY-FIRST mode; audits #27–#39 adopted; `docs/HANDOFF_2026_08_30.md` remains the orientation document; no heavy LLM work; no experiment is running)
 
-- **PAUSE / RESTART AUTHORITY.** This program is paused. The adopted `register_bridge_preflight_v1` result and audit #39 wording below govern any restart. No embedded `NEXT` sentence from audits #27–#38 authorizes work; those sentences are historical. A restart begins with `bb_list`, the handoff and this Current statement, followed by the direction dialogue required by audit #39 before any build or run.
+- **RESTART 2026-08-30 (Devansh): theory-first.** Focus is theoretical, ground-up exploration of the native mathematics (foundation: `theory/AXIOMS.md`, `theory/dialogue/`), with no heavy LLM runs; the audit-#39 causal bridge test remains a pre-declared option, not a queued run (ledger `restart_2026_08_30_theory_focus`; Codex round 31 opens the program). The previous pause bullet is retained below for the record.
+- **PAUSE / RESTART AUTHORITY (historical, 2026-08-30 pause).** This program was paused. The adopted `register_bridge_preflight_v1` result and audit #39 wording below govern any restart. No embedded `NEXT` sentence from audits #27–#38 authorizes work; those sentences are historical. A restart begins with `bb_list`, the handoff and this Current statement, followed by the direction dialogue required by audit #39 before any build or run.
 
 - Toy quotient program (Rounds 36–37): ENDED 2026-08-29 under the governance amendment in `AGENTS.md`; licensed wording under "Closed toy program" below.
 - NLM-007: CLOSED 2026-08-29 under the terminal allocation rule; audit #22 closing statement verbatim under "NLM-007 — CLOSED" below.
