@@ -5,6 +5,10 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Rung-0 localization (audit #33's check): the source signal at the anchor token is weak; the encoder recovers at most that
+
+Entity-grouped, source-template-held-out nearest-centroid separability with shuffled-label controls: the raw block-12 residual at the final ` Internal record:` token of a source sentence classifies the tag at 0.340 (shuffled 95th percentile 0.181; chance 0.125); the learned 16-d codes reach 0.333 (seed 11) / 0.153 / 0.194 — no better than the raw signal, and two seeds at chance; a random 16-d projection gives 0.17–0.23. Branch: source *extraction* is the proximal failure — the chosen read position carries little tag information and the interface never obtained a tag code; downstream stages (cap, site, propagation, decoding) remain untested. Per audit #33, the next mechanism reads the source at a tag-bearing position (or injects an oracle code) and must pass an oracle-code actuator control before a learned encoder is introduced. Codex round 20 specifies it.
+
 ## 2026-08-29 — Audit #33 on rung 1 (fresh, unprimed; verbatim): FAIL upheld; 'no fact-specific control' and 'zero delay' withdrawn; loss ~1.0 is a two-token artefact; failure not yet localized
 
 ## Verdict
