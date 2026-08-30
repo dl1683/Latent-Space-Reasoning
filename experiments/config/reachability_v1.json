@@ -1,0 +1,24 @@
+{
+ "name": "reachability_v1",
+ "purpose": "Nulled reachable-dimension characterization of the CLOSED block-12 'Internal record:' slot (Codex round 22). Measurement, not pass/fail: how many independent behavioural directions does this early residual position expose to the eight-tag decision ~36 tokens later? G_{n,s} = 0.25||h_{n,s}|| P dl/dh; nulls = 8 hash-selected pre-answer positions and 4 permuted-VALID-TAGS prompt controls; finite-dose validation along the top three shared right-singular directions.",
+ "model_id": "Qwen/Qwen3-1.7B-Base",
+ "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
+ "layer": 12,
+ "state_dim": 16,
+ "norm_clamp_fraction": 0.25,
+ "slot": "Internal record:",
+ "tags": ["fask", "nimb", "ruzz", "pelt", "gorm", "twyl", "hesk", "vorn"],
+ "names_train": ["Velmora", "Tasquin", "Orbelle", "Kindrath", "Sablyn", "Pherox", "Marvenne", "Dulcair", "Yostrel", "Caprindo", "Fennwick", "Lorbast", "Quenlith", "Ravosk", "Tiberune", "Hollmere", "Zephrand", "Ambrosil", "Gastwyn", "Nerival", "Ophandre", "Brelcott", "Ilsavane", "Wexmoor"],
+ "filler": "Internal record:\n",
+ "valid_line_template": "VALID TAGS: {tags}\nANSWER WITH ONE VALID TAG ONLY.\n",
+ "query": "TAG OF {NAME}:",
+ "decode": {"max_new_tokens": 6},
+ "null_positions": {"count": 8, "min_before_answer": 8, "max_before_answer": 64, "seed": 4411},
+ "prompt_controls": {"count": 4, "seed": 4412},
+ "finite_dose_modes": 3,
+ "eval": {"bootstraps": 2000},
+ "classes": {
+  "narrow": {"top_energy_lb_min": 0.75, "eff_rank_ub_max": 2.0, "mode1_cos_median_min": 0.70, "modes23_rel_norm_max": 0.25},
+  "multi": {"eff_rank_lb_min": 3.0, "s3_over_s1_lb_min": 0.25, "modes_cos_median_min": 0.60, "modes23_rel_norm_min": 0.25}
+ }
+}
