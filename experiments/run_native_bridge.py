@@ -86,18 +86,24 @@ def build_row_manifest(cfg: dict, rows_data: list[dict]) -> dict | str:
             return f"INVALID — ROW/TOKENIZATION MANIFEST: target_label mismatch entity {i}"
         if e["wrong_label"] != ((i + 1) % 8 + 1) % 8:
             return f"INVALID — ROW/TOKENIZATION MANIFEST: wrong_label mismatch entity {i}"
+        target_label = e["target_label"]
+        wrong_label = e["wrong_label"]
         for dr in e["correct_centroid_donor_rows"]:
             r = rows_data[dr]
             if r["destroyed"]:
                 return f"INVALID — ROW/TOKENIZATION MANIFEST: correct donor row {dr} destroyed"
             if r["e"] == i:
                 return f"INVALID — ROW/TOKENIZATION MANIFEST: correct donor row {dr} is own entity"
+            if r.get("s") != target_label:
+                return f"INVALID — ROW/TOKENIZATION MANIFEST: correct donor row {dr} has label {r.get('s')} not target_label {target_label}"
         for dr in e["wrong_centroid_donor_rows"]:
             r = rows_data[dr]
             if r["destroyed"]:
                 return f"INVALID — ROW/TOKENIZATION MANIFEST: wrong donor row {dr} destroyed"
             if r["e"] == i:
                 return f"INVALID — ROW/TOKENIZATION MANIFEST: wrong donor row {dr} is own entity"
+            if r.get("s") != wrong_label:
+                return f"INVALID — ROW/TOKENIZATION MANIFEST: wrong donor row {dr} has label {r.get('s')} not wrong_label {wrong_label}"
     assert len(rows) == len(entities) * 4, f"Manifest rows {len(rows)} != {len(entities) * 4}"
     manifest_hash = hashlib.sha256(json.dumps(rows, sort_keys=True).encode()).hexdigest()
     return {"rows": rows, "count": len(rows), "entities": len(entities), "hash": manifest_hash}
@@ -207,8 +213,12 @@ def phase_e_calls(calls: list[dict], replay: str) -> list[dict]:
 
 
 def call_identity(c: dict) -> str:
-    return (f"{c['run_phase']}|{c['replay']}|{c['entity_id']}|{c['family']}|{c['word']}"
+    base = (f"{c['run_phase']}|{c['replay']}|{c['entity_id']}|{c['family']}|{c['word']}"
             f"|{c['hook_mode']}|{c.get('recipe_hash') or ''}")
+    if "input_ids" in c:
+        ids_hash = hashlib.sha256(json.dumps(c["input_ids"]).encode()).hexdigest()[:16]
+        return f"{base}|{ids_hash}"
+    return base
 
 # --------------- hook state machine ---------------
 
@@ -629,18 +639,29 @@ def main():
                 if decoded != span_text:
                     log(f"INVALID — ROW/TOKENIZATION MANIFEST: span_text mismatch row {row_idx}")
                     return
-        # Verify donor membership
+        # Verify donor membership and label correctness
         all_phase_d_target_rows = set()
+        target_rows_by_label = {}
         for ent in cfg["entities"]:
             for tr in ent["target_rows"]:
                 all_phase_d_target_rows.add(tr)
+                r = rows_data[tr]
+                target_rows_by_label.setdefault(r.get("s"), set()).add(tr)
         for dr in e["correct_centroid_donor_rows"]:
             if dr not in all_phase_d_target_rows:
                 log(f"INVALID — ROW/TOKENIZATION MANIFEST: correct donor {dr} not a Phase D target row")
                 return
+            r = rows_data[dr]
+            if r.get("s") != e["target_label"]:
+                log(f"INVALID — ROW/TOKENIZATION MANIFEST: correct donor {dr} label {r.get('s')} != target_label {e['target_label']}")
+                return
         for dr in e["wrong_centroid_donor_rows"]:
             if dr not in all_phase_d_target_rows:
                 log(f"INVALID — ROW/TOKENIZATION MANIFEST: wrong donor {dr} not a Phase D target row")
+                return
+            r = rows_data[dr]
+            if r.get("s") != e["wrong_label"]:
+                log(f"INVALID — ROW/TOKENIZATION MANIFEST: wrong donor {dr} label {r.get('s')} != wrong_label {e['wrong_label']}")
                 return
     # Verify numeral tokens
     for i, d in enumerate(cfg["numerals"]):
@@ -914,9 +935,15 @@ def main():
     for replay in ["A", "B"]:
         log(f"Replay {replay}: Phase D (72 target-epsilon calls)...")
         d_calls = phase_d_calls(calls, replay)
+        prev_entity_d = None
         for ci, c in enumerate(d_calls):
             if _check_wall():
                 return
+            if prev_entity_d is not None and c["entity_id"] != prev_entity_d:
+                entity_d_count = sum(1 for k in laws if k[0] == replay and k[1] == prev_entity_d)
+                ckpt_f.write(json.dumps({"marker": f"entity_d_complete_{replay}_{prev_entity_d}", "entity_calls": entity_d_count}) + "\n")
+                ckpt_f.flush()
+            prev_entity_d = c["entity_id"]
             e = cfg["entities"][c["entity_id"]]
             tgt_family_idx = FAMILIES.index(c["family"])
             tgt_row = e["target_rows"][tgt_family_idx]
@@ -931,15 +958,24 @@ def main():
             if ci % 12 == 0:
                 log(f"  D-{replay} call {ci}/{len(d_calls)} entity={c['entity_id']} ({time.monotonic()-science_t0:.0f}s)")
 
-        # Entity checkpoint after Phase D
+        if prev_entity_d is not None:
+            entity_d_count = sum(1 for k in laws if k[0] == replay and k[1] == prev_entity_d)
+            ckpt_f.write(json.dumps({"marker": f"entity_d_complete_{replay}_{prev_entity_d}", "entity_calls": entity_d_count}) + "\n")
+            ckpt_f.flush()
         ckpt_f.write(json.dumps({"marker": f"phase_d_complete_{replay}", "calls": len(laws)}) + "\n")
         ckpt_f.flush()
 
         log(f"Replay {replay}: Phase E (1272 remaining calls)...")
         e_calls = phase_e_calls(calls, replay)
+        prev_entity_e = None
         for ci, c in enumerate(e_calls):
             if _check_wall():
                 return
+            if prev_entity_e is not None and c["entity_id"] != prev_entity_e:
+                entity_e_count = sum(1 for k in laws if k[0] == replay and k[1] == prev_entity_e)
+                ckpt_f.write(json.dumps({"marker": f"entity_complete_{replay}_{prev_entity_e}", "entity_calls": entity_e_count}) + "\n")
+                ckpt_f.flush()
+            prev_entity_e = c["entity_id"]
             e = cfg["entities"][c["entity_id"]]
             src_row = e["source_row"]
             src_site_pos = bm.get_site_pos(src_row)
@@ -1014,6 +1050,10 @@ def main():
             if ci % 100 == 0:
                 log(f"  E-{replay} call {ci}/{len(e_calls)} ({time.monotonic()-science_t0:.0f}s)")
 
+        if prev_entity_e is not None:
+            entity_e_count = sum(1 for k in laws if k[0] == replay and k[1] == prev_entity_e)
+            ckpt_f.write(json.dumps({"marker": f"entity_complete_{replay}_{prev_entity_e}", "entity_calls": entity_e_count}) + "\n")
+            ckpt_f.flush()
         replay_count = sum(1 for k in laws if k[0] == replay)
         ckpt_f.write(json.dumps({"marker": f"replay_complete_{replay}", "calls": replay_count}) + "\n")
         ckpt_f.flush()
