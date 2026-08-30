@@ -9876,15 +9876,15 @@ repository's prior accounting is approximately 28 measurement/governance
 rounds to 10 build rounds, or \(2.80{:}1\), above the \(2{:}1\) warning. This
 correction pass is theory/build work, not another measurement.
 
-## Round 41 — native_bridge_v1 (DRAFT - not locked; pending audit #46)
+## Round 41 — native_bridge_v1 (DRAFT - not locked; repair pass 2 applied; pending audit #47)
 
 ### Status and narrative gate
 
-This is repair pass 1 of the native bridge specification after audit #45.
+This is repair pass 2 of the native bridge specification after audit #46.
 It is a preregistration **draft**, not a lock: no runner, manifest, lock row,
-scientific smoke, or model output is created or authorized here. Audit #45's
-ruling remains `REVISE; NO LOCK, NO COMPUTE` until a fresh audit #46 rules on
-this repair.
+smoke, or model output is created or authorized here. Audit #46's ruling
+remains `REVISE — REPAIR PASS 2 OF 3; NO LOCK, RUNNER, SMOKE, OR COMPUTE`
+until a fresh lock-readiness audit #47 rules on this repair.
 
 The non-expert so-what is: *if a model's internal state for a naturally written
 fact is moved into another prompt, does the model behave like native examples
@@ -9995,8 +9995,9 @@ The manifest materializes the donor row IDs for every correct centroid
 \(\mathcal Y_{t_i,-e_i}\), where \(t_i=(s_i+1)\bmod8\). Correct-centroid
 sets have six rows because two other registered entities share \(s_i\);
 wrong-centroid sets have nine rows because three entities have target label
-\(t_i\) and entity \(i\) is not one of them. Donor capture is reused from the
-72 clean target evaluations and never creates a hidden extra call family.
+\(t_i\) and entity \(i\) is not one of them. Within each replay, donor capture
+is reused from that replay's 72 Phase-D clean target-epsilon calls and never
+creates a hidden extra call family.
 
 ### Registered words, channels, site, and canonical execution
 
@@ -10023,27 +10024,41 @@ The primitive endpoint is the full-vocabulary float32 log-softmax at the final
 next-token position, \(c_{\rm full}\). The manifest binds the eight numeral
 token IDs and asserts that each numeral is exactly one token. The derived
 \(c_9\) sums those eight probabilities and assigns all remaining vocabulary
-mass to `other`. Both channels use normalized square-root Jensen--Shannon
-distance; \(c_9\) is derived from the same law and adds no model call or
-independent refutation power.
+mass to `other`. Using natural logarithms and \(m=(p+q)/2\), both channels use
+
+\[
+D_{\sqrt{\rm JS}}(p,q)
+=
+\sqrt{
+\frac{\operatorname{KL}(p\|m)+\operatorname{KL}(q\|m)}
+{2\ln2}},
+\]
+
+with the standard \(0\log0=0\) convention. Thus
+\(D_{\sqrt{\rm JS}}\in[0,1]\). The \(c_9\) channel is derived from the same
+law and adds no model call or independent refutation power.
 
 The sole edit site is the output of `model.model.layers[16]` at the final token
 of the final record-tag span, equivalent to `hidden_states[17][:, p, :]`.
 This single-position site remains unvalidated until the conjectured proximal
 site-sufficiency control passes. The registered implementation is a complete
-batch-one forward with the `run_onewrite_state.py` post-block hook pattern:
-the hook replaces only `[:, p, :]`, then the frozen forward computes every
-descendant. The canonical policy is `add_special_tokens=False`, no padding,
-an all-ones attention mask, position IDs \(0,\ldots,L-1\),
+batch-one forward with a new post-block hook adapted from the
+`run_onewrite_state.py` hook machinery. That existing hook adds a delta; the
+new hook replaces exactly one `[:, p, :]` position and asserts exactly one
+matched write per call, after which the frozen forward computes every
+descendant. The canonical policy is `add_special_tokens=False`, no padding, an
+all-ones attention mask, position IDs \(0,\ldots,L-1\),
 `past_key_values=None`, and `use_cache=False` for every plain and hooked call.
 
-The manifest must also serialize the architecture-resolved canonical DAG cut
-from `theory/AXIOMS.md`: every non-descendant boundary input needed to
-recompute all descendants of the edited post-block residual, no descendant,
-the module path and tensor shape, and the canonical token/mask/position/cache
-construction above. Faithful continuation and lift intertwining remain
-conditional premises tested by fixtures, not consequences of merely naming
-the cut.
+The manifest must serialize the declared architecture-dependency specification
+for the canonical DAG cut from `theory/AXIOMS.md`: every non-descendant
+boundary-input dependency needed to recompute all descendants of the edited
+post-block residual, no descendant dependency, the module path and tensor
+shape, and the canonical token/mask/position/cache construction above. This
+declaration is not an actually serialized per-call cut record; the artifact
+uses the complete canonical no-cache forward with a one-position replacement
+hook. Faithful continuation and response-level intertwining remain conditional
+premises tested by fixtures, not consequences of merely naming the cut.
 
 ### Eight endpoint families and exact call accounting
 
@@ -10066,7 +10081,7 @@ produces one full-vocabulary law for one unique
 includes capture/replacement/upper continuation in that one invocation; it is
 not counted once per block. Deriving \(c_9\), metrics, medians, centroids, or
 pairwise comparisons adds no call. Donor residuals are captured in the clean
-target calls and reused.
+target calls and reused only within the same replay.
 
 The pre-deduplication count is
 
@@ -10077,19 +10092,29 @@ The pre-deduplication count is
 Deduplication keys include execution mode and replay schedule. Plain
 `target_1` and hooked `pasteback` are intentionally distinct fixture paths,
 and the two replay schedules are intentionally repeated. The prospective tuple
-table has no duplicate key or tokenized input within the same execution mode,
-so the exact deduplicated scientific count is also **2,688 call units**.
-The manifest stores the complete tuple table and rejects any disagreement
-between enumerated and formula counts as `INVALID — CALL MANIFEST`.
+table has no duplicate complete call identity. A complete identity is
+`(replay, entity, endpoint family, word, execution mode, token IDs,
+intervention-payload recipe/hash)`. Source-derived hook families
+intentionally share token IDs and execution mode but have distinct
+intervention payloads; they are not deduplicated. There are **2,688 complete
+call identities** and **1,680 token/mode combinations**. The manifest stores
+the complete tuple table and rejects any disagreement between enumerated and
+formula counts as `INVALID — CALL MANIFEST`.
 
 ### Replay envelopes, exact estimands, and bound constants
 
-Replay A executes tuples in ascending
-`(entity_id, endpoint_family, word_id)` order. Replay B executes the identical
-tuples in the exact reverse order. Both use batch size one and the canonical
-execution policy. Let \(\eta\) be the maximum same-tuple replay discrepancy
-over every endpoint, word, and both channels. If \(\eta>10^{-4}\), the result
-is `INVALID — NUMERICAL REPLAY`.
+Each replay has two dependency-locked phases. Phase D executes the 72
+`(target_1|target_2|target_3, epsilon)` tuples first, ascending by
+`(entity_id, target_family)` in replay A and descending in replay B; each call
+supplies both its registered endpoint law and that replay's donor residual.
+Phase E executes the remaining 1,272 tuples in ascending key order in replay A
+and descending key order in replay B. Native and centroid edits use donors
+captured in the same replay. Phase-D calls are their existing target-epsilon
+call units, so no additional model invocation is introduced. Both replays use
+batch size one and the canonical execution policy. Let \(\eta\) be the maximum
+same-tuple replay discrepancy over every entity, endpoint, word, and both
+channels. If \(\eta>10^{-4}\), the result is
+`INVALID — NUMERICAL REPLAY`.
 
 Compute every estimand and stability resample separately in A and B. For each
 quantity, the registered upper bound is the larger of the two schedule-specific
@@ -10116,9 +10141,9 @@ All numerical constants are bound now:
 | \(\varepsilon_0\) | \(10^{-5}\) | A nonzero float32 floor prevents exact-zero language while staying far below the material criterion. |
 | \(k_B\) | \(2\) | Two endpoint laws can each move by \(\eta\), giving the metric triangle-inequality factor \(2\). |
 | \(k_E\) | \(4\) | Both \(R_i\) and \(V_i\) can move by \(2\eta\), so their difference needs factor \(4\). |
-| \(\delta\) | \(0.02\) | Two percent of normalized square-root-JS range is the predeclared material slack beyond native target variation. |
-| \(\delta_{\rm move}\) | \(0.02\) | An edit must improve the paired excess criterion over no edit by a material 0.02, not merely change sign. |
-| \(\delta_{\rm spec}\) | \(0.02\) | Correct-label centroids must beat the cycled wrong label by the same material margin. |
+| \(\delta\) | \(0.02\) | Prospective policy threshold: two percent of the normalized square-root-JS range is the predeclared material slack beyond native target variation. |
+| \(\delta_{\rm move}\) | \(0.02\) | Prospective policy threshold: an edit must improve the paired excess criterion over no edit by a material 0.02, not merely change sign. |
+| \(\delta_{\rm spec}\) | \(0.02\) | Prospective policy threshold: correct-label centroids must beat the cycled wrong-label centroid by the same material margin. |
 | replay invalidity ceiling | \(10^{-4}\) | Replay drift above ten times the fixed floor voids the deterministic numerical implementation. |
 | resamples \(B\) | 2,000 | This matches the repository's registered cluster-resampling resolution without adding model calls. |
 | stability tail \(\alpha\) | 0.05 | The 5th/95th one-sided descriptive bounds are stringent but are not sampling intervals. |
@@ -10152,7 +10177,7 @@ contrast.
 
 1. `INVALID` applies to any manifest/hash/row/token/site/shape/nonfinite-law,
    numeral-token, response-totality, call-table, replay, DAG-cut continuation,
-   plain-versus-hook, lift/intertwining, `Q P` token-order, or paste-back
+   plain-versus-hook, response-level intertwining, `Q P` token-order, or paste-back
    fixture failure. Any `INVALID` closes the run with no scientific verdict.
 2. `NATIVE PASTE PASS` requires both \(U_E(m^{\rm nat})\le\tau\) and
    \(U_{\rm src}(m^{\rm nat})\le-(\varepsilon_E+0.02)\). It says the
@@ -10199,13 +10224,21 @@ same-carrier paste-back \(y_i^*\): exactly 32 mechanical call units. These
 outputs are used only for the three fixtures and timing, never for a
 scientific effect or population status.
 
-The fixtures are:
+Let \(\eta_{\rm smoke}\) be the maximum same-tuple A/B discrepancy over all 32
+smoke calls and both channels, and put
 
-1. same-carrier paste-back equals its plain \(y_i^*\) law to the replay floor;
-2. registered DAG-cut/hook continuation on unedited \(x_i\) equals plain
-   forward execution to the replay floor; and
-3. the stored execution-order IDs for `Q P` equal
-   `ids(a_P) || ids(a_Q)` under D1 rightmost-first execution.
+\[
+\varepsilon_{\rm smoke}
+=\max(10^{-5},2\eta_{\rm smoke}).
+\]
+
+If \(\eta_{\rm smoke}>10^{-4}\), the smoke is
+`INVALID — NUMERICAL REPLAY`. In each schedule and channel, both plain-target
+versus same-carrier paste-back and plain-source versus unchanged-hook source
+must have distance at most \(\varepsilon_{\rm smoke}\); otherwise the smoke is
+`INVALID — SITE CARRIER/HOOK`. The \(a_Qa_P\) (`Q P`) token-ID fixture remains
+exact: its stored execution-order IDs equal `ids(a_P) || ids(a_Q)` under D1
+rightmost-first execution.
 
 Let \(s_{\rm smoke}\) be the larger of mean wall seconds per plain invocation
 and mean wall seconds per hooked invocation across the 32 calls; model load,
@@ -10236,11 +10269,11 @@ There is no lock row in Round 41.
 1. Load the draft config, verify source hashes, and build the 96-row manifest table without loading the model.
 2. Enumerate and hash all words, endpoint tuples, replay orders, donor sets, constants, and the 2,688-call table.
 3. Load the pinned tokenizer and `SubstitutionProbe` model, assert resolved identities, freeze parameters, and disable gradients.
-4. Retokenize every row and word, assert numeral tokens, site positions, masks, positions, no-cache policy, and the registered DAG cut.
-5. Register the block-16 post-block replacement hook using the existing `run_onewrite_state.py` hook pattern and enforce exactly one matched write per hooked call.
+4. Retokenize every row and word, assert numeral tokens, site positions, masks, positions, and no-cache policy, and distinguish the declared architecture-dependency specification from an actually serialized per-call cut, which this artifact does not require.
+5. Register a block-16 post-block hook that **replaces** exactly one `[:, p, :]` position—the existing `run_onewrite_state.py` hook **adds** a delta—and assert exactly one matched write per hooked call.
 6. Run only the 32-call mechanical smoke, evaluate the three fixtures, and compute the smoke-derived CPU forecast and hard wall.
 7. Refuse scientific mode unless audit authorization and the complete pre-science lock row match every manifest, runner, config, count, and timing hash.
-8. Execute replay A then replay B with per-call and per-entity checkpoints, caching each full law and donor residual once under its unique tuple key.
+8. Execute each replay's donor-first Phase D and remaining Phase E in the locked schedule, using only same-replay donor residuals, with per-call and per-entity checkpoints; store each full law under its complete call identity and each donor under `(replay, target_row_id)`.
 9. Validate replay, totality, and completeness, then derive `c_9`, bridge discrepancies, exact finite-population estimands, paired contrasts, and entity-cluster stability bounds.
 10. Apply the immutable status tree, write the result/manifest/checkpoint hashes, and stop without post-outcome repair, rerun, or population adaptation.
 
@@ -10263,7 +10296,7 @@ Audit #46 must check:
 2. the 96 explicit row IDs, three-target nonindependence wording, donor-set
    cardinalities, cycled wrong label, and tokenization assertions;
 3. the canonical DAG-cut/no-descendant definition and the conditional status
-   of faithful continuation and lift intertwining;
+   of faithful continuation and response-level intertwining;
 4. the batch-one token/mask/position/no-cache construction and whether the
    existing hook pattern really instantiates that cut without a descendant in
    the continuation record;

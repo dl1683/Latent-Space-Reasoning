@@ -1441,18 +1441,19 @@ is audited may a small real-model refutation-oriented bridge artifact be
 considered. Exact bridge equality remains diagnostic; `native_horizon_v1`
 remains unselected; no computation is authorized.
 
-### Native bridge specification (proposed, rounds 40-41; audit #45 corrections applied; pending lock-readiness audit #46)
+### Native bridge specification (proposed, rounds 40-42; audits #45-#46 corrections applied; pending lock-readiness audit #47)
 
 **Status.** The carrier, actions, restricted distance, excess-discrepancy
 estimands, controls, and outcome meanings below are **defined**. Totality and
 unchanged denizen maps are **proved from the case definitions**, and the
 finite registered lower-bound property is **proved**. Faithful transformer
-continuation and the lift-intertwining identity are **conditional** on the
+continuation and response-level intertwining are **conditional** on the
 registered computation-DAG cut and canonical token/mask/position/cache
 construction; deterministic fixtures must test those premises. The
 cross-prompt native paste and both centroid predictions are **conjectured**.
-This is repair pass 1 of at most three consecutive repair rounds. No manifest
-or lock row exists, and no scientific forward pass is authorized.
+This is repair pass 2 of at most three consecutive repair rounds after audit
+#46. No manifest or lock row exists, and no scientific forward pass is
+authorized.
 
 #### One-model, one-site population — defined
 
@@ -1539,9 +1540,10 @@ needed to recompute all descendants of the edited residual, and no descendant
 of that residual.
 
 A continuation record \(\kappa\in K_\ell\) is exactly the registered values
-and construction metadata on that canonical cut, the fixed tokens after
-\(p\), and the accumulated append suffix. In particular, \(K_\ell\) is not
-defined as an arbitrary bag of tensors that happens to make replay work.
+and construction metadata on that canonical cut, the exact provenance-bound
+token IDs of the originating registered input, the fixed tokens after \(p\),
+and the accumulated append suffix. In particular, \(K_\ell\) is not defined as
+an arbitrary bag of tensors that happens to make replay work.
 Define
 
 \[
@@ -1550,12 +1552,13 @@ H_\ell=K_\ell\times\mathbb R^d,
 Z=\mathsf P\;\sqcup\;H_\ell\;\sqcup\;F.
 \]
 
-Conditional on the cut being faithfully registered, the deterministic
-response constructor \(\operatorname{Cont}_\ell(\kappa,h)\) substitutes
-\(h\) for \(v_{\ell,p}\), recomputes every descendant from the cut, processes
-the stored suffix, and returns the full next-token law at the answer position.
-Invalid records return their declared failure law. This is a total response
-constructor on valid site states, not a transition or an endomap.
+Conditional on the registered construction being faithful, the deterministic
+response constructor \(\operatorname{Cont}_\ell(\kappa,h)\) executes the
+complete canonical no-cache forward for the provenance-bound input and stored
+suffix with \(h\) substituted at \(v_{\ell,p}\), and returns the full
+next-token law at the answer position. Invalid records return their declared
+failure law. This is a total response constructor on valid site states, not a
+transition or an endomap.
 
 Define the total site lift
 
@@ -1574,9 +1577,9 @@ For \(a\in\mathcal A_D\), define \(T_a^D:Z\to Z\) by cases:
 
 1. on \(\mathsf P\), append the registered macro and remain in \(\mathsf P\),
    or enter the declared token/overflow failure;
-2. on \((\kappa,h)\in H_\ell\), append the same macro tokens to the suffix in
-   \(\kappa\), retain \(h\), and remain in \(H_\ell\), or enter the same
-   declared failure; and
+2. on \((\kappa,h)\in H_\ell\), append the same macro tokens to the
+   provenance-bound suffix in \(\kappa\), retain \(h\), and remain in
+   \(H_\ell\), or enter the same declared failure; and
 3. on \(f\in F\), return \(f\).
 
 A denizen append on \(H_\ell\) therefore adds future tokens under the same
@@ -1612,16 +1615,25 @@ returns an edited site state, a declared failure, or the same absorbing
 failure. Thus every denizen and surgeon action is a total endomap of \(Z\),
 and the case-defined response laws are total.
 
-**Conditional transformer premises.** Faithful continuation and the identity
+**Conditional transformer premises.** For every valid continuation record, the
+registered continuation constructor appends the macro to its provenance-bound
+suffix and executes the complete canonical no-cache forward with \(h\)
+substituted at \(v_{\ell,p}\). The 32-call fixtures test the conditional
+response-level intertwining
 
 \[
-T_w^D\iota_\ell(u)=\iota_\ell(T_w^D u)
+r_c(T_w^D\iota_\ell(u))
+=
+r_c(\iota_\ell(T_w^D u)),
+\qquad c\in C_0,
 \]
 
-for valid registered prompt/word pairs before overflow are conditional on the
-registered DAG cut and the canonical token/mask/position/cache construction.
-Deterministic fixtures test cut continuation against plain forward execution,
-same-carrier paste-back, and D1 token order. Any failure is carrier
+on their registered subset. No equality of \(H_\ell\) records is claimed. A
+stronger state-level identity requires a separately defined canonical
+cut-update map \(U_w\), with
+\(U_w(\kappa_u)=\kappa_{T_wu}\), and direct cut-record comparison. These
+claims are conditional on the registered DAG cut and the canonical
+token/mask/position/cache construction. Any fixture failure is carrier
 implementation invalidity, not a scientific model result.
 
 #### Finite registered bridge lower bound — defined; lower-bound property proved
@@ -1690,8 +1702,9 @@ replay schedules define the endpoint-law replay discrepancy
 
 \[
 \eta=
-\max_{\substack{q\in\mathcal Q,\,w\in W_0,\,c\in C_0}}
-D_c\!\left(r_c^{(A)}(q,w),r_c^{(B)}(q,w)\right).
+\max_{\substack{i\in\{1,\ldots,24\},\,q\in\mathcal Q,\\
+w\in W_0,\,c\in C_0}}
+D_c\!\left(r_{i,c}^{(A)}(q,w),r_{i,c}^{(B)}(q,w)\right).
 \]
 
 The registered envelopes are
@@ -1807,7 +1820,7 @@ bounds on \(\Delta_{\rm src}(m)\), and
 \(L_{\rm spec},U_{\rm spec}\) for those on \(\Delta_{\rm spec}\).
 
 1. Any manifest, row, tokenization, site, shape, response-totality, replay,
-   DAG-cut continuation, lift/intertwining, token-order, or same-carrier
+   DAG-cut continuation, response-level intertwining, token-order, or same-carrier
    paste-back failure makes the run **INVALID**. No scientific edit verdict
    survives.
 2. Native paste **PASSES** only if both target-fiber fit
@@ -1899,7 +1912,7 @@ the \(2:1\) warning and below the \(5:1\) halt.
 Audit #46 must verify: (1) the \(\mathsf P,a_P,a_Q\) typing and exhaustive
 case proofs; (2) the canonical DAG cut, no-descendant rule, canonical
 token/mask/position/cache construction, and conditional status of faithful
-continuation and lift intertwining; (3) the exact prospective row IDs and the
+continuation and response-level intertwining; (3) the exact prospective row IDs and the
 nonindependence wording for three targets; (4) the \(2\eta/4\eta\) triangle-
 inequality propagation, \(\varepsilon_B,\varepsilon_E,\tau\), and fixed-
 population stability semantics; (5) the explicit centroid populations,
