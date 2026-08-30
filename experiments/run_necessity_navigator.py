@@ -177,8 +177,8 @@ def readouts(W, cfg, model, untrained, perms, seed, log):
                     p = torch.softmax(lg[0, -1], -1).numpy(); o = W.opt[gg, G_]; hits.append(bool(o[p.argmax()])); ms.append(float(np.log(p[o].sum() + 1e-12))); pv = int(acts[k]); gg = W.step_tab[gg, pv]
             arms[name].append(hits); mass[name].append(ms)
     acc = {k: float(np.mean(v)) for k, v in arms.items()}; acc4 = {k: float(np.mean([x[-1] for x in v])) for k, v in arms.items()}; m = {k: float(np.mean(v)) for k, v in mass.items()}
-    best = max(acc[k] for k in ("noswap", "wrong", "random", "self")); bestm = max(m[k] for k in ("noswap", "wrong", "random", "self"))      # lock text: uplift over ALL controls incl. self
-    out["swap"] = {"acc": acc, "acc_decision4": acc4, "mass_nat": m, "n_pairs": len(pairs), "manifest_hash": manifest_hash, "pass": acc["swap"] >= G["swap"]["top1_min"] and acc4["swap"] >= G["swap"]["decision4_min"] and acc["swap"] - best >= G["swap"]["uplift_min"] and m["swap"] - bestm >= G["swap"]["mass_uplift_nat_min"]}
+    best = max(acc[k] for k in ("noswap", "wrong", "random")); bestm = max(m[k] for k in ("noswap", "wrong", "random"))      # round 19: self = oracle ceiling, excluded from comparators
+    out["swap"] = {"acc": acc, "acc_decision4": acc4, "mass_nat": m, "n_pairs": len(pairs), "manifest_hash": manifest_hash, "swap_over_self": acc["swap"] / max(acc["self"], 1e-9), "pass": acc["swap"] >= G["swap"]["top1_min"] and acc4["swap"] >= G["swap"]["decision4_min"] and acc["swap"] - best >= G["swap"]["uplift_min"] and m["swap"] - bestm >= G["swap"]["mass_uplift_nat_min"] and acc["swap"] / max(acc["self"], 1e-9) >= G["swap"].get("swap_over_self_min", 0.80)}
     J = lambda o: o.item() if hasattr(o, "item") else (float(o) if isinstance(o, (np.floating,)) else str(o))
     for k, v in out.items(): log(f"  seed {seed} {k}: {json.dumps(v, default=J)}")
     return out, test

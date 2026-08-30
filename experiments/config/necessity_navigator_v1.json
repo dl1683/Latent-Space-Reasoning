@@ -1,18 +1,87 @@
 {
  "name": "necessity_navigator_v1",
  "purpose": "Constructive substrate benchmark (Codex direction rounds 10-12): a GRU trained from scratch, behaviour-only, to navigate Z_11^2 x| C_4 under aliased, per-episode-permuted observations; then read moves, composition/noncommutativity, inverses, reachability distance and causal state swaps from the learned state on held-out trajectories and symbol permutations. The world algebra is the yardstick and never enters inputs or losses.",
- "world": {"n": 11, "headings": 4, "n_symbols": 8, "alias_seed": 1104, "goal_word_len": 12, "walk_len": 48},
- "permutation_banks": {"train": 1024, "fit": 64, "test": 64, "seed": 2211},
- "model": {"hidden": 64, "emb_action": 12, "emb_obs": 8, "emb_phase": 4, "obs_null_prob": 0.2},
- "train": {"seeds": [11, 23, 37], "steps": 4000, "lr": 0.002, "weight_decay": 0.0001, "clip": 1.0, "batch": 128, "hard_wall_minutes": 120},
- "behavioural_gate": {"top1_min": 0.85, "margin_over_control_min": 0.20},
- "readout": {"traj_per_perm": 32, "bootstraps": 2000, "randomizations": 200, "ridge_lambda": 0.001, "swap_steps": 4},
+ "world": {
+  "n": 11,
+  "headings": 4,
+  "n_symbols": 8,
+  "alias_seed": 1104,
+  "goal_word_len": 12,
+  "walk_len": 48
+ },
+ "permutation_banks": {
+  "train": 1024,
+  "fit": 64,
+  "test": 64,
+  "seed": 2211
+ },
+ "model": {
+  "hidden": 64,
+  "emb_action": 12,
+  "emb_obs": 8,
+  "emb_phase": 4,
+  "obs_null_prob": 0.2
+ },
+ "train": {
+  "seeds": [
+   11,
+   23,
+   37
+  ],
+  "steps": 4000,
+  "lr": 0.002,
+  "weight_decay": 0.0001,
+  "clip": 1.0,
+  "batch": 128,
+  "hard_wall_minutes": 120
+ },
+ "behavioural_gate": {
+  "top1_min": 0.85,
+  "margin_over_control_min": 0.2
+ },
+ "readout": {
+  "traj_per_perm": 32,
+  "bootstraps": 2000,
+  "randomizations": 200,
+  "ridge_lambda": 0.001,
+  "swap_steps": 4
+ },
  "gates": {
-  "moves": {"R_min": 0.25, "R_lb_min": 0.10, "margin_min": 0.10},
-  "composition": {"two_step_nrmse_max": 0.70, "order_acc_min": 0.75, "order_margin_min": 0.50, "commuting_ratio_max": 0.25},
-  "inverses": {"ratio_max": 0.40, "ratio_ub_max": 0.60, "improvement_min": 0.15},
-  "distance": {"spearman_min": 0.60, "spearman_lb_min": 0.40, "margin_over_shuffled_min": 0.20, "near_far_gap_min": 0.80},
-  "swap": {"top1_min": 0.75, "decision4_min": 0.65, "uplift_min": 0.25, "mass_uplift_nat_min": 0.50},
-  "seeds_required": 2, "readouts_for_positive": 4, "mandatory": ["composition", "swap"]
+  "moves": {
+   "R_min": 0.25,
+   "R_lb_min": 0.1,
+   "margin_min": 0.1
+  },
+  "composition": {
+   "two_step_nrmse_max": 0.7,
+   "order_acc_min": 0.75,
+   "order_margin_min": 0.5,
+   "commuting_ratio_max": 0.25
+  },
+  "inverses": {
+   "ratio_max": 0.4,
+   "ratio_ub_max": 0.6,
+   "improvement_min": 0.15
+  },
+  "distance": {
+   "spearman_min": 0.6,
+   "spearman_lb_min": 0.4,
+   "margin_over_shuffled_min": 0.2,
+   "near_far_gap_min": 0.8
+  },
+  "swap": {
+   "top1_min": 0.75,
+   "decision4_min": 0.65,
+   "uplift_min": 0.25,
+   "mass_uplift_nat_min": 0.5,
+   "swap_over_self_min": 0.8,
+   "note": "round 19: self = oracle ceiling, excluded from uplift comparators"
+  },
+  "seeds_required": 2,
+  "readouts_for_positive": 4,
+  "mandatory": [
+   "composition",
+   "swap"
+  ]
  }
 }

@@ -1,0 +1,435 @@
+{
+ "config": "onewrite_recall_rung1",
+ "sha256": {
+  "runner": "03f7962a25be9e764e86133fd6f641bd4cf510c275f2d4a81fa162e6d81ac6a3",
+  "config": "0f76833c95f009f177e2e6a7a4657b9918a5ee2979446ae8c427f80cf64eb609",
+  "machinery": "ba4aedfdd8458204d7abfd5de585c4b1be3d1e9986582a47428c91822c51bd7f"
+ },
+ "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
+ "validation": {
+  "summary": {
+   "visible_acc": 1.0,
+   "cue_acc": 0.125,
+   "visible_completion": 1.0,
+   "cue_completion": 0.9583333333333334,
+   "visible_by_wording": {
+    "train": 1.0
+   },
+   "cue_by_wording": {
+    "train": 0.125
+   },
+   "zero_hook_matches_cue": true
+  },
+  "passed": true,
+  "rows": [
+   {
+    "fact": 0,
+    "wording": "train",
+    "tag": "HESK",
+    "visible": {
+     "text": " hesk",
+     "choice": "HESK",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " fask",
+     "choice": "FASK",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 1,
+    "wording": "train",
+    "tag": "NIMB",
+    "visible": {
+     "text": " nimb",
+     "choice": "NIMB",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " fask",
+     "choice": "FASK",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 2,
+    "wording": "train",
+    "tag": "FASK",
+    "visible": {
+     "text": " fask",
+     "choice": "FASK",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " fask",
+     "choice": "FASK",
+     "completed": true,
+     "correct": true
+    }
+   },
+   {
+    "fact": 3,
+    "wording": "train",
+    "tag": "NIMB",
+    "visible": {
+     "text": " nimb",
+     "choice": "NIMB",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " 1",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 4,
+    "wording": "train",
+    "tag": "GORM",
+    "visible": {
+     "text": " gorm",
+     "choice": "GORM",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " fask",
+     "choice": "FASK",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 5,
+    "wording": "train",
+    "tag": "FASK",
+    "visible": {
+     "text": " fask",
+     "choice": "FASK",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " fask",
+     "choice": "FASK",
+     "completed": true,
+     "correct": true
+    }
+   },
+   {
+    "fact": 6,
+    "wording": "train",
+    "tag": "VORN",
+    "visible": {
+     "text": " vorn",
+     "choice": "VORN",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " fask",
+     "choice": "FASK",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 7,
+    "wording": "train",
+    "tag": "RUZZ",
+    "visible": {
+     "text": " ruzz",
+     "choice": "RUZZ",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " fask",
+     "choice": "FASK",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 8,
+    "wording": "train",
+    "tag": "HESK",
+    "visible": {
+     "text": " hesk",
+     "choice": "HESK",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " fask",
+     "choice": "FASK",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 9,
+    "wording": "train",
+    "tag": "RUZZ",
+    "visible": {
+     "text": " ruzz",
+     "choice": "RUZZ",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " fask",
+     "choice": "FASK",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 10,
+    "wording": "train",
+    "tag": "NIMB",
+    "visible": {
+     "text": " nimb",
+     "choice": "NIMB",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " fask",
+     "choice": "FASK",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 11,
+    "wording": "train",
+    "tag": "PELT",
+    "visible": {
+     "text": " pelt",
+     "choice": "PELT",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " fask",
+     "choice": "FASK",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 12,
+    "wording": "train",
+    "tag": "HESK",
+    "visible": {
+     "text": " hesk",
+     "choice": "HESK",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " fask",
+     "choice": "FASK",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 13,
+    "wording": "train",
+    "tag": "PELT",
+    "visible": {
+     "text": " pelt",
+     "choice": "PELT",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " fask",
+     "choice": "FASK",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 14,
+    "wording": "train",
+    "tag": "RUZZ",
+    "visible": {
+     "text": " ruzz",
+     "choice": "RUZZ",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " fask",
+     "choice": "FASK",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 15,
+    "wording": "train",
+    "tag": "TWYL",
+    "visible": {
+     "text": " twyl",
+     "choice": "TWYL",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " fask",
+     "choice": "FASK",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 16,
+    "wording": "train",
+    "tag": "FASK",
+    "visible": {
+     "text": " fask",
+     "choice": "FASK",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " fask",
+     "choice": "FASK",
+     "completed": true,
+     "correct": true
+    }
+   },
+   {
+    "fact": 17,
+    "wording": "train",
+    "tag": "TWYL",
+    "visible": {
+     "text": " twyl",
+     "choice": "TWYL",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " fask",
+     "choice": "FASK",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 18,
+    "wording": "train",
+    "tag": "VORN",
+    "visible": {
+     "text": " vorn",
+     "choice": "VORN",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " fask",
+     "choice": "FASK",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 19,
+    "wording": "train",
+    "tag": "TWYL",
+    "visible": {
+     "text": " twyl",
+     "choice": "TWYL",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " fask",
+     "choice": "FASK",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 20,
+    "wording": "train",
+    "tag": "GORM",
+    "visible": {
+     "text": " gorm",
+     "choice": "GORM",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " fask",
+     "choice": "FASK",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 21,
+    "wording": "train",
+    "tag": "PELT",
+    "visible": {
+     "text": " pelt",
+     "choice": "PELT",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " fask",
+     "choice": "FASK",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 22,
+    "wording": "train",
+    "tag": "VORN",
+    "visible": {
+     "text": " vorn",
+     "choice": "VORN",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " fask",
+     "choice": "FASK",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 23,
+    "wording": "train",
+    "tag": "GORM",
+    "visible": {
+     "text": " gorm",
+     "choice": "GORM",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " fask",
+     "choice": "FASK",
+     "completed": true,
+     "correct": false
+    }
+   }
+  ]
+ }
+}

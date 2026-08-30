@@ -5,6 +5,45 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Round 19 (Codex, verbatim): self is the ceiling; navigator deferred; build rung 1 of the staircase tonight
+
+## Ruling
+
+### 1. Comparator semantics
+
+`self` is the oracle ceiling, not a null control. It represents the recurrent state naturally obtained in the recipient presentation at the donor’s actual place. A successful cross-permutation swap should approach that reference; requiring it to beat `self` makes the uplift gate effectively unsatisfiable near ceiling.
+
+Exact locked causal-swap rule:
+
+- `swap_accuracy ≥ 0.75`
+- `decision_4_accuracy ≥ 0.65`
+- `swap_accuracy − max(noswap, wrong_place, random) ≥ 0.25`
+- Existing action-mass uplift `≥ 0.50`, also measured over the best of `noswap`, `wrong_place`, and `random`
+- `swap_accuracy / self_accuracy ≥ 0.80`
+- `self` is reported as the oracle ceiling and excluded from both uplift comparators.
+
+All other navigator gates, controls, seed aggregation, and status rules remain unchanged. This resolves an ambiguity in the lock; it does not rescue an observed result.
+
+### 2. Do not run the navigator now
+
+The navigator remains licensed as a one-round calibration control, but it is no longer the highest-leverage next run. Governance amendment 8 supersedes the earlier timing: the real-model artifact must first establish its proximal mechanism before adding held-out names, new wording, or persistence distance.
+
+Build rung 1 tonight using the existing one-write machinery:
+
+> On training entities, with training wording and zero intervening tokens, test whether the decoded answer follows the entity’s own write and changes appropriately under a same-entity counterfactual-tag write.
+
+Keep the frozen model, E/J interface, block-12 slot, strict behavioral decoding, tag vocabulary, and counterfactual construction. Remove only the later difficulties: no held-out entities, unseen wording, or filler. Zero-hook, random-write, and visible-copy remain controls. Lock this rung separately, run it once across the registered seeds, and audit it once. If fact-specific control is not learnable there, stop this interface without testing later rungs; if it passes, change exactly one difficulty at the next rung.
+
+The navigator is deferred, not cancelled. Its smoke already shows that the causal-swap instrument can work, while composition remains at chance and the untrained same-input control exceeds the trained model on the move statistic. Spending another two hours now would primarily measure a secondary toy substrate while the real-model mechanism remains unestablished.
+
+Ratio heartbeat: the 206-nonblank-line navigator runner is approximately **1.5:1 apparatus/artifact** under audit #32’s classification. The recent one-write sequence is approximately **six measurement/governance rounds to two artifact-building rounds, or 3:1**; the warning remains raised. The cumulative staircase is the appropriate correction.
+
+### 3. Honest user sentence
+
+> In a non-registered 2,000-step smoke, the navigator’s recurrent state transferred across a new symbol permutation and drove donor-place behavior at 0.90 accuracy—essentially matching the 0.9025 self ceiling and exceeding no-swap, wrong-place, and random controls—but this validates only the causal-swap instrument, not learned latent algebra or a navigator result, because composition remained at chance at 0.51 and the four structural readouts failed.
+
+Operational note: Windows denied new read-only shell processes during this turn, so I grounded the ruling in the audit blackboard’s file-provenanced findings and the exact smoke figures supplied here.
+
 ## 2026-08-29 — Re-contextualization #31 (late night)
 
 Audit: skipped — no new capability result since audit #32 (the navigator smoke is code-path validation and is logged as such).

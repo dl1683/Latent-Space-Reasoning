@@ -1,0 +1,143 @@
+{
+ "name": "onewrite_recall_rung1",
+ "purpose": "STAIRCASE RUNG 1 (governance amendment 8; Codex round 19): on TRAINING entities, with the TRAINING wording and zero intervening tokens, does the decoded answer follow the entity's own one write and change under a same-entity counterfactual-tag write? Same frozen model, E/J interface, block-12 slot, strict decoding, tag vocabulary, counterfactual construction, zero-hook/random/visible controls. No held-out entities, unseen wording, or filler.",
+ "model_id": "Qwen/Qwen3-1.7B-Base",
+ "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
+ "layer": 12,
+ "state_dim": 16,
+ "norm_clamp_fraction": 0.25,
+ "slot": "Internal record:",
+ "anchor": " Internal record:",
+ "tags": [
+  "fask",
+  "nimb",
+  "ruzz",
+  "pelt",
+  "gorm",
+  "twyl",
+  "hesk",
+  "vorn"
+ ],
+ "names_train": [
+  "Velmora",
+  "Tasquin",
+  "Orbelle",
+  "Kindrath",
+  "Sablyn",
+  "Pherox",
+  "Marvenne",
+  "Dulcair",
+  "Yostrel",
+  "Caprindo",
+  "Fennwick",
+  "Lorbast",
+  "Quenlith",
+  "Ravosk",
+  "Tiberune",
+  "Hollmere",
+  "Zephrand",
+  "Ambrosil",
+  "Gastwyn",
+  "Nerival",
+  "Ophandre",
+  "Brelcott",
+  "Ilsavane",
+  "Wexmoor"
+ ],
+ "names_eval": [
+  "Cordovel",
+  "Jasminth",
+  "Thraline",
+  "Ulmerick",
+  "Perrigal",
+  "Estovan",
+  "Halbrook",
+  "Vantessa",
+  "Kelmoor",
+  "Rozalind",
+  "Sindrell",
+  "Farrowin",
+  "Danquist",
+  "Belmaris",
+  "Trevanon",
+  "Islington"
+ ],
+ "assignment_seed": 4101,
+ "source_templates_train": [
+  "The private tag assigned to {name} is {tag}.",
+  "Registry note: {name} carries the private tag {tag}.",
+  "For the record, the tag filed under {name} reads {tag}."
+ ],
+ "source_templates_eval": [
+  "Archive slip. Entity {name}; private tag on file: {tag}.",
+  "Catalogue entry for {name} lists the private tag {tag}."
+ ],
+ "wordings": {
+  "train": "TAG OF {NAME}:",
+  "A": "PRIVATE TAG FOR {NAME}:",
+  "B": "Registry lookup. Tag on file for {name} ="
+ },
+ "visible_note": "Note: the tag of {name} is {tag}.\n",
+ "train": {
+  "seeds": [
+   11,
+   23,
+   37
+  ],
+  "steps": 400,
+  "lr": 0.003,
+  "weight_decay": 0.0001,
+  "clip": 1.0,
+  "hard_wall_minutes": 150,
+  "seed_wall_minutes": 40
+ },
+ "decode": {
+  "max_new_tokens": 4
+ },
+ "eval": {
+  "bootstraps": 2000,
+  "randomizations": 200
+ },
+ "validation_gate": {
+  "visible_min": 0.9,
+  "visible_wording_min": 0.85,
+  "completion_min": 0.95,
+  "cue_max": 0.2,
+  "cue_wording_max": 0.25,
+  "visible_minus_cue_min": 0.65
+ },
+ "gates": {
+  "write_min": 0.75,
+  "write_minus_cue_min": 0.5,
+  "write_minus_cue_lb_min": 0.3,
+  "write_minus_random_min": 0.5,
+  "write_minus_random_lb_min": 0.3,
+  "random_max": 0.2,
+  "recovery_min": 0.6,
+  "write_sub_min": 0.7,
+  "wording_gap_max": 0.15,
+  "wrong_follows_cf_min": 0.6,
+  "wrong_over_cue_cf_min": 0.4,
+  "completion_min": 0.95,
+  "seeds_required": 2,
+  "completion_arms": [
+   "write",
+   "wrong",
+   "random",
+   "visible"
+  ]
+ },
+ "valid_line": "VALID TAGS: fask | nimb | ruzz | pelt | gorm | twyl | hesk | vorn\nANSWER WITH ONE VALID TAG ONLY.\n",
+ "fillers": [
+  "Internal record:\n",
+  "Internal record:\n"
+ ],
+ "design_note": "Round 16 (2026-08-29) locked amendments: 8 tags (chance 0.125), fixed VALID TAGS line in every target, two fixed fillers >= 64 tokens within 2 tokens of each other, both heldout source phrasings x both target wordings (64 cases), wrong-state = same entity with a counterfactual tag (balanced derangement) under the same source wording, write at the slot's final token, byte-identical nonvisible target across arms, zero-hook must reproduce cue row-for-row else INVALID.",
+ "amendment_r17": "Round 17 (2026-08-29): cue completion is a diagnostic with no minimum (pre-lock and locked); completion >= 0.95 required in write, wrong, random and visible arms; if random-write completion fails the construction is FAIL not PARTIAL; zero-hook must reproduce cue raw text, choice and completion row-for-row else INVALID - NO VERDICT. The round-16 validation stands recorded as a formal failure of its original gate.",
+ "eval_split": "train",
+ "eval_wordings": [
+  "train"
+ ],
+ "min_filler_tokens": 0,
+ "rung_note": "Rung 1 passes only if fact-specific control is learnable on training items at zero delay (write follows own tag; counterfactual write follows the counterfactual tag). If it fails, this interface stops without testing later rungs (round 19)."
+}
