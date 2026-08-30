@@ -4,495 +4,1268 @@
       {
         "entity_id": 0,
         "role": "source",
-        "row_idx": 0
+        "row_idx": 0,
+        "e": 0,
+        "s": 0,
+        "t": 0,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 0,
         "role": "target_1",
-        "row_idx": 20
+        "row_idx": 20,
+        "e": 0,
+        "s": 1,
+        "t": 1,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 0,
         "role": "target_2",
-        "row_idx": 24
+        "row_idx": 24,
+        "e": 0,
+        "s": 1,
+        "t": 2,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 0,
         "role": "target_3",
-        "row_idx": 28
+        "row_idx": 28,
+        "e": 0,
+        "s": 1,
+        "t": 3,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 1,
         "role": "source",
-        "row_idx": 144
+        "row_idx": 144,
+        "e": 1,
+        "s": 1,
+        "t": 0,
+        "span": [
+          67,
+          69
+        ],
+        "len": 70
       },
       {
         "entity_id": 1,
         "role": "target_1",
-        "row_idx": 164
+        "row_idx": 164,
+        "e": 1,
+        "s": 2,
+        "t": 1,
+        "span": [
+          67,
+          69
+        ],
+        "len": 70
       },
       {
         "entity_id": 1,
         "role": "target_2",
-        "row_idx": 168
+        "row_idx": 168,
+        "e": 1,
+        "s": 2,
+        "t": 2,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 1,
         "role": "target_3",
-        "row_idx": 172
+        "row_idx": 172,
+        "e": 1,
+        "s": 2,
+        "t": 3,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 2,
         "role": "source",
-        "row_idx": 288
+        "row_idx": 288,
+        "e": 2,
+        "s": 2,
+        "t": 0,
+        "span": [
+          67,
+          69
+        ],
+        "len": 70
       },
       {
         "entity_id": 2,
         "role": "target_1",
-        "row_idx": 308
+        "row_idx": 308,
+        "e": 2,
+        "s": 3,
+        "t": 1,
+        "span": [
+          67,
+          69
+        ],
+        "len": 70
       },
       {
         "entity_id": 2,
         "role": "target_2",
-        "row_idx": 312
+        "row_idx": 312,
+        "e": 2,
+        "s": 3,
+        "t": 2,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 2,
         "role": "target_3",
-        "row_idx": 316
+        "row_idx": 316,
+        "e": 2,
+        "s": 3,
+        "t": 3,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 3,
         "role": "source",
-        "row_idx": 432
+        "row_idx": 432,
+        "e": 3,
+        "s": 3,
+        "t": 0,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 3,
         "role": "target_1",
-        "row_idx": 452
+        "row_idx": 452,
+        "e": 3,
+        "s": 4,
+        "t": 1,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 3,
         "role": "target_2",
-        "row_idx": 456
+        "row_idx": 456,
+        "e": 3,
+        "s": 4,
+        "t": 2,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 3,
         "role": "target_3",
-        "row_idx": 460
+        "row_idx": 460,
+        "e": 3,
+        "s": 4,
+        "t": 3,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 4,
         "role": "source",
-        "row_idx": 576
+        "row_idx": 576,
+        "e": 4,
+        "s": 4,
+        "t": 0,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 4,
         "role": "target_1",
-        "row_idx": 596
+        "row_idx": 596,
+        "e": 4,
+        "s": 5,
+        "t": 1,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 4,
         "role": "target_2",
-        "row_idx": 600
+        "row_idx": 600,
+        "e": 4,
+        "s": 5,
+        "t": 2,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 4,
         "role": "target_3",
-        "row_idx": 604
+        "row_idx": 604,
+        "e": 4,
+        "s": 5,
+        "t": 3,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 5,
         "role": "source",
-        "row_idx": 720
+        "row_idx": 720,
+        "e": 5,
+        "s": 5,
+        "t": 0,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 5,
         "role": "target_1",
-        "row_idx": 740
+        "row_idx": 740,
+        "e": 5,
+        "s": 6,
+        "t": 1,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 5,
         "role": "target_2",
-        "row_idx": 744
+        "row_idx": 744,
+        "e": 5,
+        "s": 6,
+        "t": 2,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 5,
         "role": "target_3",
-        "row_idx": 748
+        "row_idx": 748,
+        "e": 5,
+        "s": 6,
+        "t": 3,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 6,
         "role": "source",
-        "row_idx": 864
+        "row_idx": 864,
+        "e": 6,
+        "s": 6,
+        "t": 0,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 6,
         "role": "target_1",
-        "row_idx": 884
+        "row_idx": 884,
+        "e": 6,
+        "s": 7,
+        "t": 1,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 6,
         "role": "target_2",
-        "row_idx": 888
+        "row_idx": 888,
+        "e": 6,
+        "s": 7,
+        "t": 2,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 6,
         "role": "target_3",
-        "row_idx": 892
+        "row_idx": 892,
+        "e": 6,
+        "s": 7,
+        "t": 3,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 7,
         "role": "source",
-        "row_idx": 1008
+        "row_idx": 1008,
+        "e": 7,
+        "s": 7,
+        "t": 0,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 7,
         "role": "target_1",
-        "row_idx": 900
+        "row_idx": 900,
+        "e": 7,
+        "s": 0,
+        "t": 1,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 7,
         "role": "target_2",
-        "row_idx": 904
+        "row_idx": 904,
+        "e": 7,
+        "s": 0,
+        "t": 2,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 7,
         "role": "target_3",
-        "row_idx": 908
+        "row_idx": 908,
+        "e": 7,
+        "s": 0,
+        "t": 3,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 8,
         "role": "source",
-        "row_idx": 1024
+        "row_idx": 1024,
+        "e": 8,
+        "s": 0,
+        "t": 0,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 8,
         "role": "target_1",
-        "row_idx": 1044
+        "row_idx": 1044,
+        "e": 8,
+        "s": 1,
+        "t": 1,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 8,
         "role": "target_2",
-        "row_idx": 1048
+        "row_idx": 1048,
+        "e": 8,
+        "s": 1,
+        "t": 2,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 8,
         "role": "target_3",
-        "row_idx": 1052
+        "row_idx": 1052,
+        "e": 8,
+        "s": 1,
+        "t": 3,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 9,
         "role": "source",
-        "row_idx": 1168
+        "row_idx": 1168,
+        "e": 9,
+        "s": 1,
+        "t": 0,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 9,
         "role": "target_1",
-        "row_idx": 1188
+        "row_idx": 1188,
+        "e": 9,
+        "s": 2,
+        "t": 1,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 9,
         "role": "target_2",
-        "row_idx": 1192
+        "row_idx": 1192,
+        "e": 9,
+        "s": 2,
+        "t": 2,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 9,
         "role": "target_3",
-        "row_idx": 1196
+        "row_idx": 1196,
+        "e": 9,
+        "s": 2,
+        "t": 3,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 10,
         "role": "source",
-        "row_idx": 1312
+        "row_idx": 1312,
+        "e": 10,
+        "s": 2,
+        "t": 0,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 10,
         "role": "target_1",
-        "row_idx": 1332
+        "row_idx": 1332,
+        "e": 10,
+        "s": 3,
+        "t": 1,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 10,
         "role": "target_2",
-        "row_idx": 1336
+        "row_idx": 1336,
+        "e": 10,
+        "s": 3,
+        "t": 2,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 10,
         "role": "target_3",
-        "row_idx": 1340
+        "row_idx": 1340,
+        "e": 10,
+        "s": 3,
+        "t": 3,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 11,
         "role": "source",
-        "row_idx": 1456
+        "row_idx": 1456,
+        "e": 11,
+        "s": 3,
+        "t": 0,
+        "span": [
+          67,
+          69
+        ],
+        "len": 70
       },
       {
         "entity_id": 11,
         "role": "target_1",
-        "row_idx": 1476
+        "row_idx": 1476,
+        "e": 11,
+        "s": 4,
+        "t": 1,
+        "span": [
+          67,
+          69
+        ],
+        "len": 70
       },
       {
         "entity_id": 11,
         "role": "target_2",
-        "row_idx": 1480
+        "row_idx": 1480,
+        "e": 11,
+        "s": 4,
+        "t": 2,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 11,
         "role": "target_3",
-        "row_idx": 1484
+        "row_idx": 1484,
+        "e": 11,
+        "s": 4,
+        "t": 3,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 12,
         "role": "source",
-        "row_idx": 1600
+        "row_idx": 1600,
+        "e": 12,
+        "s": 4,
+        "t": 0,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 12,
         "role": "target_1",
-        "row_idx": 1620
+        "row_idx": 1620,
+        "e": 12,
+        "s": 5,
+        "t": 1,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 12,
         "role": "target_2",
-        "row_idx": 1624
+        "row_idx": 1624,
+        "e": 12,
+        "s": 5,
+        "t": 2,
+        "span": [
+          70,
+          72
+        ],
+        "len": 73
       },
       {
         "entity_id": 12,
         "role": "target_3",
-        "row_idx": 1628
+        "row_idx": 1628,
+        "e": 12,
+        "s": 5,
+        "t": 3,
+        "span": [
+          70,
+          72
+        ],
+        "len": 73
       },
       {
         "entity_id": 13,
         "role": "source",
-        "row_idx": 1744
+        "row_idx": 1744,
+        "e": 13,
+        "s": 5,
+        "t": 0,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 13,
         "role": "target_1",
-        "row_idx": 1764
+        "row_idx": 1764,
+        "e": 13,
+        "s": 6,
+        "t": 1,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 13,
         "role": "target_2",
-        "row_idx": 1768
+        "row_idx": 1768,
+        "e": 13,
+        "s": 6,
+        "t": 2,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 13,
         "role": "target_3",
-        "row_idx": 1772
+        "row_idx": 1772,
+        "e": 13,
+        "s": 6,
+        "t": 3,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 14,
         "role": "source",
-        "row_idx": 1888
+        "row_idx": 1888,
+        "e": 14,
+        "s": 6,
+        "t": 0,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 14,
         "role": "target_1",
-        "row_idx": 1908
+        "row_idx": 1908,
+        "e": 14,
+        "s": 7,
+        "t": 1,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 14,
         "role": "target_2",
-        "row_idx": 1912
+        "row_idx": 1912,
+        "e": 14,
+        "s": 7,
+        "t": 2,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 14,
         "role": "target_3",
-        "row_idx": 1916
+        "row_idx": 1916,
+        "e": 14,
+        "s": 7,
+        "t": 3,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 15,
         "role": "source",
-        "row_idx": 2032
+        "row_idx": 2032,
+        "e": 15,
+        "s": 7,
+        "t": 0,
+        "span": [
+          67,
+          69
+        ],
+        "len": 70
       },
       {
         "entity_id": 15,
         "role": "target_1",
-        "row_idx": 1924
+        "row_idx": 1924,
+        "e": 15,
+        "s": 0,
+        "t": 1,
+        "span": [
+          67,
+          69
+        ],
+        "len": 70
       },
       {
         "entity_id": 15,
         "role": "target_2",
-        "row_idx": 1928
+        "row_idx": 1928,
+        "e": 15,
+        "s": 0,
+        "t": 2,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 15,
         "role": "target_3",
-        "row_idx": 1932
+        "row_idx": 1932,
+        "e": 15,
+        "s": 0,
+        "t": 3,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 16,
         "role": "source",
-        "row_idx": 2048
+        "row_idx": 2048,
+        "e": 16,
+        "s": 0,
+        "t": 0,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 16,
         "role": "target_1",
-        "row_idx": 2068
+        "row_idx": 2068,
+        "e": 16,
+        "s": 1,
+        "t": 1,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 16,
         "role": "target_2",
-        "row_idx": 2072
+        "row_idx": 2072,
+        "e": 16,
+        "s": 1,
+        "t": 2,
+        "span": [
+          70,
+          72
+        ],
+        "len": 73
       },
       {
         "entity_id": 16,
         "role": "target_3",
-        "row_idx": 2076
+        "row_idx": 2076,
+        "e": 16,
+        "s": 1,
+        "t": 3,
+        "span": [
+          70,
+          72
+        ],
+        "len": 73
       },
       {
         "entity_id": 17,
         "role": "source",
-        "row_idx": 2192
+        "row_idx": 2192,
+        "e": 17,
+        "s": 1,
+        "t": 0,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 17,
         "role": "target_1",
-        "row_idx": 2212
+        "row_idx": 2212,
+        "e": 17,
+        "s": 2,
+        "t": 1,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 17,
         "role": "target_2",
-        "row_idx": 2216
+        "row_idx": 2216,
+        "e": 17,
+        "s": 2,
+        "t": 2,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 17,
         "role": "target_3",
-        "row_idx": 2220
+        "row_idx": 2220,
+        "e": 17,
+        "s": 2,
+        "t": 3,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 18,
         "role": "source",
-        "row_idx": 2336
+        "row_idx": 2336,
+        "e": 18,
+        "s": 2,
+        "t": 0,
+        "span": [
+          67,
+          69
+        ],
+        "len": 70
       },
       {
         "entity_id": 18,
         "role": "target_1",
-        "row_idx": 2356
+        "row_idx": 2356,
+        "e": 18,
+        "s": 3,
+        "t": 1,
+        "span": [
+          67,
+          69
+        ],
+        "len": 70
       },
       {
         "entity_id": 18,
         "role": "target_2",
-        "row_idx": 2360
+        "row_idx": 2360,
+        "e": 18,
+        "s": 3,
+        "t": 2,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 18,
         "role": "target_3",
-        "row_idx": 2364
+        "row_idx": 2364,
+        "e": 18,
+        "s": 3,
+        "t": 3,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 19,
         "role": "source",
-        "row_idx": 2480
+        "row_idx": 2480,
+        "e": 19,
+        "s": 3,
+        "t": 0,
+        "span": [
+          67,
+          69
+        ],
+        "len": 70
       },
       {
         "entity_id": 19,
         "role": "target_1",
-        "row_idx": 2500
+        "row_idx": 2500,
+        "e": 19,
+        "s": 4,
+        "t": 1,
+        "span": [
+          67,
+          69
+        ],
+        "len": 70
       },
       {
         "entity_id": 19,
         "role": "target_2",
-        "row_idx": 2504
+        "row_idx": 2504,
+        "e": 19,
+        "s": 4,
+        "t": 2,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 19,
         "role": "target_3",
-        "row_idx": 2508
+        "row_idx": 2508,
+        "e": 19,
+        "s": 4,
+        "t": 3,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 20,
         "role": "source",
-        "row_idx": 2624
+        "row_idx": 2624,
+        "e": 20,
+        "s": 4,
+        "t": 0,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 20,
         "role": "target_1",
-        "row_idx": 2644
+        "row_idx": 2644,
+        "e": 20,
+        "s": 5,
+        "t": 1,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 20,
         "role": "target_2",
-        "row_idx": 2648
+        "row_idx": 2648,
+        "e": 20,
+        "s": 5,
+        "t": 2,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 20,
         "role": "target_3",
-        "row_idx": 2652
+        "row_idx": 2652,
+        "e": 20,
+        "s": 5,
+        "t": 3,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 21,
         "role": "source",
-        "row_idx": 2768
+        "row_idx": 2768,
+        "e": 21,
+        "s": 5,
+        "t": 0,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 21,
         "role": "target_1",
-        "row_idx": 2788
+        "row_idx": 2788,
+        "e": 21,
+        "s": 6,
+        "t": 1,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 21,
         "role": "target_2",
-        "row_idx": 2792
+        "row_idx": 2792,
+        "e": 21,
+        "s": 6,
+        "t": 2,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 21,
         "role": "target_3",
-        "row_idx": 2796
+        "row_idx": 2796,
+        "e": 21,
+        "s": 6,
+        "t": 3,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 22,
         "role": "source",
-        "row_idx": 2912
+        "row_idx": 2912,
+        "e": 22,
+        "s": 6,
+        "t": 0,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 22,
         "role": "target_1",
-        "row_idx": 2932
+        "row_idx": 2932,
+        "e": 22,
+        "s": 7,
+        "t": 1,
+        "span": [
+          68,
+          70
+        ],
+        "len": 71
       },
       {
         "entity_id": 22,
         "role": "target_2",
-        "row_idx": 2936
+        "row_idx": 2936,
+        "e": 22,
+        "s": 7,
+        "t": 2,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 22,
         "role": "target_3",
-        "row_idx": 2940
+        "row_idx": 2940,
+        "e": 22,
+        "s": 7,
+        "t": 3,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 23,
         "role": "source",
-        "row_idx": 3056
+        "row_idx": 3056,
+        "e": 23,
+        "s": 7,
+        "t": 0,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 23,
         "role": "target_1",
-        "row_idx": 2948
+        "row_idx": 2948,
+        "e": 23,
+        "s": 0,
+        "t": 1,
+        "span": [
+          69,
+          71
+        ],
+        "len": 72
       },
       {
         "entity_id": 23,
         "role": "target_2",
-        "row_idx": 2952
+        "row_idx": 2952,
+        "e": 23,
+        "s": 0,
+        "t": 2,
+        "span": [
+          70,
+          72
+        ],
+        "len": 73
       },
       {
         "entity_id": 23,
         "role": "target_3",
-        "row_idx": 2956
+        "row_idx": 2956,
+        "e": 23,
+        "s": 0,
+        "t": 3,
+        "span": [
+          70,
+          72
+        ],
+        "len": 73
       }
     ],
     "count": 96,
     "entities": 24,
-    "hash": "cfe5d3f96e68da5785f8e98c58ba61a7f305a62c6be44eb03bd9e23aeb2f550e"
+    "hash": "1f94b77748961a68aeb412871fbf75575f0be890213d5c1db1b2464f6a13a7f9"
   },
-  "runner_sha256": "95dca37a44181c4d95074841be34e7b88e3a6512939af10677fb8bfa005c1601",
+  "runner_sha256": "13307607d9bf337f973b6b875eb1b73ac961e5faf5612cc77a32e8324e20a47a",
   "config_sha256": "fa30bdc02a064bef78b2ac82f1352fc233465ed28fd0aa86324807d9699cdd63",
-  "call_table_hash": "ccce1c5d31d3ba8b737d7e36cdc4fd72327823470a4bb1836d5b369032e8fdc3",
-  "call_count": 32,
-  "stage": "smoke",
+  "smoke_call_table_hash": "ccce1c5d31d3ba8b737d7e36cdc4fd72327823470a4bb1836d5b369032e8fdc3",
+  "science_call_table_hash": "262307700ce0c0da4875ab3fbe96582031ba9e94c2b032a96a168ed7a439c8a2",
+  "science_call_count": 2688,
+  "smoke_call_count": 32,
   "model_id": "Qwen/Qwen3-1.7B-Base",
   "model_revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
+  "tokenizer_file_hashes": {
+    "tokenizer.json": "c0382117ea329cdf097041132f6d735924b697924d6f6fc3945713e96ce87539",
+    "tokenizer_config.json": "3c04ed3ca964ea2f6b2b5faf0dc4d31aec1cb1e8b4bcf63f402d295046b422b5"
+  },
   "vocab_size": 151936,
   "device": "cpu",
   "dtype": "torch.float32",
@@ -530,8 +1303,32 @@
     "substitution_probe": "69a605dfdc5be18fdeab4c4002eedbef8301c488c99b669fb702d24da1a03a12",
     "run_onewrite_state_ref": "741dd8fb0126f8ffd0c98d9901d295bc31d7b915d4d90eaa716c8cf089190665"
   },
+  "resample_index_hash": "f9032529e2fb04adbe59b13a98e9727a4b6446180dd25ce985488860409a21b7",
+  "resample_shape": [
+    2000,
+    24
+  ],
+  "resample_seed": 4141,
+  "canonical_science_argv": "python experiments/run_native_bridge.py --config experiments/config/native_bridge_v1.json --stage science --lock-row experiments/results/native_bridge_v1/lock_row.json",
+  "status_tree_version": "round41_audit47",
+  "stop_rule": "no_post_output_repair_or_rerun",
   "python_version": "3.13.7",
   "torch_version": "2.11.0+cu128",
+  "transformers_version": "5.12.1",
+  "tokenizers_version": "0.22.2",
+  "numpy_version": "2.5.2",
   "platform": "Windows-11-10.0.26200-SP0",
-  "manifest_hash": "70699796a37dd1408399d70b445b099663a1dea9c87868bf00f61c7370a339c7"
+  "manifest_hash": "74b96b90fee6981df73a8bd186f4ffcb9cc49d245b259c77ccfbdbf9b8e5a2e5",
+  "smoke_commitment": {
+    "status": "SMOKE_VALID",
+    "eta_smoke": 8.71246556020739e-09,
+    "epsilon_smoke": 1e-05,
+    "s_plain": 1.2192410826683044,
+    "s_hooked": 1.2251173257827759,
+    "s_smoke": 1.2251173257827759,
+    "F_CPU": 82.32788429260253,
+    "H_CPU": 85,
+    "forecast_ok": true,
+    "smoke_artifact_hash": "1de9875467383049c671350245795cfd9924641ddd5cb842e29fe0c55aeae70a"
+  }
 }

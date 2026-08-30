@@ -58,23 +58,46 @@ def verify_authorities(cfg: dict) -> dict[str, str]:
     return shas
 
 
-def build_manifest(cfg: dict, rows_data: list[dict]) -> dict | str:
+def build_row_manifest(cfg: dict, rows_data: list[dict]) -> dict | str:
     entities = cfg["entities"]
     rows = []
     for e in entities:
-        sr = rows_data[e["source_row"]]
-        if sr["e"] != e["id"] or sr["destroyed"]:
-            return f"INVALID — ROW/TOKENIZATION MANIFEST: source row {e['source_row']} entity {e['id']}"
-        rows.append({"entity_id": e["id"], "role": "source", "row_idx": e["source_row"]})
+        i = e["id"]
+        sr_idx = e["source_row"]
+        sr = rows_data[sr_idx]
+        if sr["e"] != i or sr["destroyed"]:
+            return f"INVALID — ROW/TOKENIZATION MANIFEST: source row {sr_idx} entity {i}"
+        if sr_idx != 128 * i + 16 * (i % 8):
+            return f"INVALID — ROW/TOKENIZATION MANIFEST: source row formula mismatch entity {i}"
+        rows.append({"entity_id": i, "role": "source", "row_idx": sr_idx,
+                      "e": sr["e"], "s": sr.get("s"), "t": sr.get("t"),
+                      "span": sr.get("span"), "len": sr.get("len")})
         for ti, tr in enumerate(e["target_rows"]):
             r = rows_data[tr]
-            if r["e"] != e["id"] or r["destroyed"]:
-                return f"INVALID — ROW/TOKENIZATION MANIFEST: target row {tr} entity {e['id']}"
-            rows.append({"entity_id": e["id"], "role": f"target_{ti+1}", "row_idx": tr})
-        for dr in e["correct_centroid_donor_rows"] + e["wrong_centroid_donor_rows"]:
+            if r["e"] != i or r["destroyed"]:
+                return f"INVALID — ROW/TOKENIZATION MANIFEST: target row {tr} entity {i}"
+            expected_tr = 128 * i + 16 * ((i + 1) % 8) + 4 * (ti + 1)
+            if tr != expected_tr:
+                return f"INVALID — ROW/TOKENIZATION MANIFEST: target row formula mismatch entity {i} target {ti+1}"
+            rows.append({"entity_id": i, "role": f"target_{ti+1}", "row_idx": tr,
+                          "e": r["e"], "s": r.get("s"), "t": r.get("t"),
+                          "span": r.get("span"), "len": r.get("len")})
+        if e["target_label"] != (i + 1) % 8:
+            return f"INVALID — ROW/TOKENIZATION MANIFEST: target_label mismatch entity {i}"
+        if e["wrong_label"] != ((i + 1) % 8 + 1) % 8:
+            return f"INVALID — ROW/TOKENIZATION MANIFEST: wrong_label mismatch entity {i}"
+        for dr in e["correct_centroid_donor_rows"]:
             r = rows_data[dr]
             if r["destroyed"]:
-                return f"INVALID — ROW/TOKENIZATION MANIFEST: donor row {dr} destroyed"
+                return f"INVALID — ROW/TOKENIZATION MANIFEST: correct donor row {dr} destroyed"
+            if r["e"] == i:
+                return f"INVALID — ROW/TOKENIZATION MANIFEST: correct donor row {dr} is own entity"
+        for dr in e["wrong_centroid_donor_rows"]:
+            r = rows_data[dr]
+            if r["destroyed"]:
+                return f"INVALID — ROW/TOKENIZATION MANIFEST: wrong donor row {dr} destroyed"
+            if r["e"] == i:
+                return f"INVALID — ROW/TOKENIZATION MANIFEST: wrong donor row {dr} is own entity"
     assert len(rows) == len(entities) * 4, f"Manifest rows {len(rows)} != {len(entities) * 4}"
     manifest_hash = hashlib.sha256(json.dumps(rows, sort_keys=True).encode()).hexdigest()
     return {"rows": rows, "count": len(rows), "entities": len(entities), "hash": manifest_hash}
@@ -362,7 +385,7 @@ class BridgeModel:
 
 # --------------- smoke stage ---------------
 
-def run_smoke(cfg: dict, bm: BridgeModel, rows_data: list[dict], out_dir: str, log_fn) -> dict:
+def run_smoke(cfg: dict, bm: BridgeModel, rows_data: list[dict], out_dir: str, log_fn, smoke_call_hash: str = "") -> dict:
     log_fn("=== SMOKE STAGE ===")
     smoke_entities = cfg["smoke"]["entities"]
     smoke_words = cfg["smoke"]["words"]
@@ -488,9 +511,29 @@ def run_smoke(cfg: dict, bm: BridgeModel, rows_data: list[dict], out_dir: str, l
         "F_CPU": F_CPU, "H_CPU": H_CPU,
         "n_calls": len(laws), "forecast_ok": forecast_ok,
         "fixtures": fixture_results, "replay_discrepancies": replay_details,
-        "call_table_hash": hashlib.sha256(json.dumps(
-            [call_identity(c) for c in build_call_table(cfg, "smoke")]).encode()).hexdigest(),
+        "call_table_hash": smoke_call_hash,
     }
+
+# --------------- tokenizer + resample helpers ---------------
+
+def _tokenizer_file_hashes(model_id: str, revision: str) -> dict[str, str]:
+    from huggingface_hub import snapshot_download
+    snap = snapshot_download(model_id, revision=revision, local_files_only=True)
+    tok_files = ["tokenizer.json", "tokenizer_config.json"]
+    hashes = {}
+    for f in tok_files:
+        fp = os.path.join(snap, f)
+        if os.path.exists(fp):
+            hashes[f] = hashlib.sha256(open(fp, "rb").read()).hexdigest()
+    return hashes
+
+
+def _build_resample_index(seed: int, n_resamples: int, n_entities: int) -> tuple[np.ndarray, str]:
+    rng = np.random.Generator(np.random.PCG64(seed))
+    idx = rng.integers(0, n_entities, size=(n_resamples, n_entities), dtype=np.int64)
+    idx_hash = hashlib.sha256(idx.tobytes()).hexdigest()
+    return idx, idx_hash
+
 
 # --------------- main ---------------
 
@@ -519,44 +562,85 @@ def main():
 
     # Stage 1: load rows and build manifest
     rows_data = json.load(open(cfg["authorities"]["run_rows"]["path"]))
-    manifest = build_manifest(cfg, rows_data)
+    manifest = build_row_manifest(cfg, rows_data)
     if isinstance(manifest, str):
         log(manifest)
         return
     log(f"Row manifest: {manifest['count']} rows, hash={manifest['hash'][:16]}...")
 
-    # Stage 2: enumerate call table
-    log("Stage 2: Enumerating call table...")
-    if a.stage == "smoke":
-        calls = build_call_table(cfg, "smoke")
-        log(f"Smoke calls: {len(calls)}")
-    else:
-        calls = build_call_table(cfg, "science")
-        log(f"Science calls: {len(calls)}")
+    # Stage 2: enumerate BOTH call tables (smoke and science)
+    log("Stage 2: Enumerating call tables...")
+    smoke_calls = build_call_table(cfg, "smoke")
+    science_calls = build_call_table(cfg, "science")
+    log(f"Smoke calls: {len(smoke_calls)}, Science calls: {len(science_calls)}")
 
-    call_ids = [call_identity(c) for c in calls]
-    call_hash = hashlib.sha256(json.dumps(call_ids).encode()).hexdigest()
-    log(f"Call table hash: {call_hash}")
+    smoke_call_ids = [call_identity(c) for c in smoke_calls]
+    smoke_call_hash = hashlib.sha256(json.dumps(smoke_call_ids).encode()).hexdigest()
+    science_call_ids = [call_identity(c) for c in science_calls]
+    science_call_hash = hashlib.sha256(json.dumps(science_call_ids).encode()).hexdigest()
+    log(f"Smoke call table hash: {smoke_call_hash[:16]}...")
+    log(f"Science call table hash: {science_call_hash[:16]}...")
 
     runner_sha = hashlib.sha256(open(__file__, "rb").read()).hexdigest()
     config_sha = hashlib.sha256(open(a.config, "rb").read()).hexdigest()
+
+    # Pre-commit bootstrap resample index
+    resample_idx, resample_hash = _build_resample_index(
+        cfg["constants"]["bootstrap_seed"], cfg["constants"]["resamples_B"], 24)
+    log(f"Resample index: shape={resample_idx.shape}, hash={resample_hash[:16]}...")
 
     # Stage 3: load model
     log("Stage 3: Loading model...")
     bm = BridgeModel(cfg, rows_data)
     log(f"Model loaded: {bm.sp.model_id}, revision={bm.sp.revision}")
 
-    # Stage 4: retokenize and verify
+    # Stage 4: retokenize and verify (strengthened row/span/donor validation)
     log("Stage 4: Retokenizing and verifying...")
     for e in cfg["entities"]:
         for row_idx in [e["source_row"]] + e["target_rows"]:
+            row = rows_data[row_idx]
             tids = bm.get_row_tokens(row_idx)
             if tids is None:
                 log(f"INVALID — ROW/TOKENIZATION MANIFEST: row {row_idx}")
                 return
-            site_pos = bm.get_site_pos(row_idx)
+            stored_ids = row.get("ids")
+            if stored_ids is not None and tids != stored_ids:
+                log(f"INVALID — ROW/TOKENIZATION MANIFEST: retokenization mismatch row {row_idx}")
+                return
+            stored_len = row.get("len")
+            if stored_len is not None and stored_len != len(tids):
+                log(f"INVALID — ROW/TOKENIZATION MANIFEST: len mismatch row {row_idx}")
+                return
+            span = row.get("span")
+            if span is None or len(span) != 2:
+                log(f"INVALID — ROW/TOKENIZATION MANIFEST: missing/bad span for row {row_idx}")
+                return
+            if span[0] < 0 or span[1] > len(tids) or span[0] >= span[1]:
+                log(f"INVALID — ROW/TOKENIZATION MANIFEST: span out of range for row {row_idx}")
+                return
+            site_pos = span[1] - 1
             if site_pos < 0 or site_pos >= len(tids):
                 log(f"INVALID — ROW/TOKENIZATION MANIFEST: site pos {site_pos} out of range for row {row_idx}")
+                return
+            span_ids = tids[span[0]:span[1]]
+            span_text = row.get("span_text")
+            if span_text is not None:
+                decoded = bm.tok.decode(span_ids)
+                if decoded != span_text:
+                    log(f"INVALID — ROW/TOKENIZATION MANIFEST: span_text mismatch row {row_idx}")
+                    return
+        # Verify donor membership
+        all_phase_d_target_rows = set()
+        for ent in cfg["entities"]:
+            for tr in ent["target_rows"]:
+                all_phase_d_target_rows.add(tr)
+        for dr in e["correct_centroid_donor_rows"]:
+            if dr not in all_phase_d_target_rows:
+                log(f"INVALID — ROW/TOKENIZATION MANIFEST: correct donor {dr} not a Phase D target row")
+                return
+        for dr in e["wrong_centroid_donor_rows"]:
+            if dr not in all_phase_d_target_rows:
+                log(f"INVALID — ROW/TOKENIZATION MANIFEST: wrong donor {dr} not a Phase D target row")
                 return
     # Verify numeral tokens
     for i, d in enumerate(cfg["numerals"]):
@@ -564,19 +648,55 @@ def main():
         if len(tids) != 1 or tids[0] != bm.numeral_ids[i]:
             log(f"INVALID — NUMERAL TOKEN: '{d}' -> {tids}")
             return
-    log("Retokenization and site positions verified")
+    log("Retokenization, site positions, spans, and donors verified")
 
-    # Write full manifest binding runner/config/model/call table/constants
+    # Materialize token IDs into call tables
+    log("Materializing token IDs into call tables...")
+    for call_list in [smoke_calls, science_calls]:
+        for c in call_list:
+            eid = c["entity_id"]
+            e = cfg["entities"][eid]
+            fam = c["family"]
+            wname = c["word"]
+            if fam in SMOKE_FAMILIES:
+                if fam in ("source_plain", "source_hooked"):
+                    row_idx = e["source_row"]
+                else:
+                    row_idx = e["target_rows"][0]
+            elif fam in ("target_1", "target_2", "target_3"):
+                fi = FAMILIES.index(fam)
+                row_idx = e["target_rows"][fi]
+            elif fam == "pasteback":
+                row_idx = e["target_rows"][0]
+            else:
+                row_idx = e["source_row"]
+            input_ids = bm.build_input_ids(row_idx, wname, eid)
+            assert input_ids is not None, f"Failed to build input_ids for {call_identity(c)}"
+            c["input_ids"] = input_ids
+            c["row_idx"] = row_idx
+    # Recompute call table hashes with materialized token IDs
+    smoke_call_ids = [call_identity(c) for c in smoke_calls]
+    smoke_call_hash = hashlib.sha256(json.dumps(smoke_call_ids).encode()).hexdigest()
+    science_call_ids = [call_identity(c) for c in science_calls]
+    science_call_hash = hashlib.sha256(json.dumps(science_call_ids).encode()).hexdigest()
+    log(f"Materialized smoke call hash: {smoke_call_hash[:16]}...")
+    log(f"Materialized science call hash: {science_call_hash[:16]}...")
+
+    # Build expanded prospective science manifest
     import platform, torch as _torch
+    import transformers, tokenizers as _tokenizers_mod
+    tok_file_hashes = _tokenizer_file_hashes(cfg["model_id"], cfg["revision"])
     full_manifest = {
         "row_manifest": manifest,
         "runner_sha256": runner_sha,
         "config_sha256": config_sha,
-        "call_table_hash": call_hash,
-        "call_count": len(calls),
-        "stage": a.stage,
+        "smoke_call_table_hash": smoke_call_hash,
+        "science_call_table_hash": science_call_hash,
+        "science_call_count": 2688,
+        "smoke_call_count": 32,
         "model_id": bm.sp.model_id,
         "model_revision": bm.sp.revision,
+        "tokenizer_file_hashes": tok_file_hashes,
         "vocab_size": bm.model.config.vocab_size,
         "device": str(next(bm.model.parameters()).device),
         "dtype": str(next(bm.model.parameters()).dtype),
@@ -585,15 +705,23 @@ def main():
         "numeral_ids": bm.numeral_ids,
         "constants": cfg["constants"],
         "authorities": {k: v["sha256"] for k, v in cfg["authorities"].items()},
+        "resample_index_hash": resample_hash,
+        "resample_shape": list(resample_idx.shape),
+        "resample_seed": cfg["constants"]["bootstrap_seed"],
+        "canonical_science_argv": f"python experiments/run_native_bridge.py --config {a.config} --stage science --lock-row {cfg['results_dir']}/lock_row.json",
+        "status_tree_version": cfg.get("status_tree", {}).get("version", "round41_audit47"),
+        "stop_rule": "no_post_output_repair_or_rerun",
         "python_version": platform.python_version(),
         "torch_version": _torch.__version__,
+        "transformers_version": transformers.__version__,
+        "tokenizers_version": _tokenizers_mod.__version__,
+        "numpy_version": np.__version__,
         "platform": platform.platform(),
     }
     manifest_hash = hashlib.sha256(json.dumps(full_manifest, sort_keys=True).encode()).hexdigest()
     full_manifest["manifest_hash"] = manifest_hash
     manifest_path = os.path.join(out_dir, "manifest.json")
-    json.dump(full_manifest, open(manifest_path, "w"), indent=2)
-    log(f"Manifest written: hash={manifest_hash[:16]}...")
+    log(f"Manifest hash: {manifest_hash[:16]}...")
 
     # QP token-order fixture: D1 rightmost-first means a_Qa_P appends P_ids || Q_ids
     for e in cfg["entities"]:
@@ -607,7 +735,7 @@ def main():
             return
 
     if a.stage == "smoke":
-        result = run_smoke(cfg, bm, rows_data, out_dir, log)
+        result = run_smoke(cfg, bm, rows_data, out_dir, log, smoke_call_hash=smoke_call_hash)
         result["runner_sha256"] = runner_sha
         result["config_sha256"] = config_sha
         result["manifest_hash"] = manifest_hash
@@ -615,6 +743,29 @@ def main():
         smoke_json = json.dumps(result, sort_keys=True, indent=2,
                   default=lambda o: o.item() if hasattr(o, "item") else float(o) if isinstance(o, (np.floating,)) else o)
         result["smoke_artifact_hash"] = hashlib.sha256(smoke_json.encode()).hexdigest()
+        # Write smoke commitment into manifest and save
+        full_manifest["smoke_commitment"] = {
+            "status": result.get("status"),
+            "eta_smoke": result.get("eta_smoke"),
+            "epsilon_smoke": result.get("epsilon_smoke"),
+            "s_plain": result.get("s_plain"),
+            "s_hooked": result.get("s_hooked"),
+            "s_smoke": result.get("s_smoke"),
+            "F_CPU": result.get("F_CPU"),
+            "H_CPU": result.get("H_CPU"),
+            "forecast_ok": result.get("forecast_ok"),
+            "smoke_artifact_hash": result["smoke_artifact_hash"],
+        }
+        # Recompute manifest hash with smoke commitment included
+        manifest_hash = hashlib.sha256(json.dumps(full_manifest, sort_keys=True,
+                  default=lambda o: o.item() if hasattr(o, "item") else float(o) if isinstance(o, (np.floating,)) else o).encode()).hexdigest()
+        full_manifest["manifest_hash"] = manifest_hash
+        result["manifest_hash"] = manifest_hash
+        json.dump(full_manifest, open(manifest_path, "w"), indent=2,
+                  default=lambda o: o.item() if hasattr(o, "item") else float(o) if isinstance(o, (np.floating,)) else o)
+        log(f"Manifest written with smoke commitment: hash={manifest_hash[:16]}...")
+        # Save resample index
+        np.save(os.path.join(out_dir, "resample_index.npy"), resample_idx)
         json.dump(result, open(os.path.join(out_dir, "smoke_result.json"), "w"), indent=2,
                   default=lambda o: o.item() if hasattr(o, "item") else float(o) if isinstance(o, (np.floating,)) else o)
         log(f"Smoke complete: {result['status']} ({time.time()-T0:.0f}s)")
@@ -627,15 +778,51 @@ def main():
                 log(f"ABORT: smoke status={result['status']} (no forecast available)")
         return
 
-    # Stage 7: verify lock row
+    # Stage 7: verify retained manifest and lock row
+    log("Stage 7: Verifying manifest and lock row...")
+    # Load and verify the retained manifest (written during smoke)
+    if not os.path.exists(manifest_path):
+        log("REFUSED — manifest.json missing; run smoke first")
+        return
+    retained_manifest = json.load(open(manifest_path))
+    if retained_manifest.get("manifest_hash") != manifest_hash:
+        # The manifest was written during smoke with smoke_commitment; recompute with it
+        if "smoke_commitment" in retained_manifest:
+            check_manifest = dict(full_manifest)
+            check_manifest["smoke_commitment"] = retained_manifest["smoke_commitment"]
+            check_hash = hashlib.sha256(json.dumps(check_manifest, sort_keys=True,
+                      default=lambda o: o.item() if hasattr(o, "item") else float(o) if isinstance(o, (np.floating,)) else o).encode()).hexdigest()
+            if retained_manifest.get("manifest_hash") != check_hash:
+                log(f"REFUSED — manifest hash mismatch: retained={retained_manifest.get('manifest_hash')}, recomputed={check_hash}")
+                return
+            manifest_hash = check_hash
+        else:
+            log(f"REFUSED — manifest hash mismatch and no smoke_commitment found")
+            return
+    log(f"Manifest verified: hash={manifest_hash[:16]}...")
+
+    # Verify resample index
+    resample_path = os.path.join(out_dir, "resample_index.npy")
+    if not os.path.exists(resample_path):
+        log("REFUSED — resample_index.npy missing; run smoke first")
+        return
+    stored_resample = np.load(resample_path)
+    stored_resample_hash = hashlib.sha256(stored_resample.tobytes()).hexdigest()
+    if stored_resample_hash != resample_hash:
+        log(f"REFUSED — resample index hash mismatch: stored={stored_resample_hash}, computed={resample_hash}")
+        return
+    resample_idx = stored_resample
+    log(f"Resample index verified: hash={resample_hash[:16]}...")
+
+    # Verify lock row
     if a.lock_row is None:
         log("REFUSED — no --lock-row provided; scientific mode requires a valid pre-science lock row")
         return
     lock = json.load(open(a.lock_row))
-    runner_sha = hashlib.sha256(open(__file__, "rb").read()).hexdigest()
-    config_sha = hashlib.sha256(open(a.config, "rb").read()).hexdigest()
     required_lock_fields = ["runner_sha256", "config_sha256", "call_count", "manifest_hash",
-                            "call_table_hash", "smoke_status", "H_CPU", "eta_smoke", "epsilon_smoke"]
+                            "call_table_hash", "smoke_status", "smoke_artifact_hash",
+                            "H_CPU", "eta_smoke", "epsilon_smoke", "s_smoke", "F_CPU",
+                            "constants", "stop_rule"]
     missing = [f for f in required_lock_fields if f not in lock]
     if missing:
         log(f"REFUSED — lock row missing fields: {missing}")
@@ -652,34 +839,83 @@ def main():
     if lock["manifest_hash"] != manifest_hash:
         log(f"REFUSED — manifest hash mismatch: lock={lock['manifest_hash']}, actual={manifest_hash}")
         return
-    sci_call_hash = hashlib.sha256(json.dumps(
-        [call_identity(c) for c in build_call_table(cfg, "science")]).encode()).hexdigest()
-    if lock["call_table_hash"] != sci_call_hash:
-        log(f"REFUSED — call table hash mismatch: lock={lock['call_table_hash']}, actual={sci_call_hash}")
+    if lock["call_table_hash"] != science_call_hash:
+        log(f"REFUSED — call table hash mismatch: lock={lock['call_table_hash']}, actual={science_call_hash}")
         return
     if lock["smoke_status"] != "SMOKE_VALID":
         log(f"REFUSED — lock row smoke was not SMOKE_VALID: {lock['smoke_status']}")
         return
+    # Verify smoke artifact hash against retained smoke result
+    smoke_result_path = os.path.join(out_dir, "smoke_result.json")
+    if os.path.exists(smoke_result_path):
+        stored_smoke = json.load(open(smoke_result_path))
+        if stored_smoke.get("smoke_artifact_hash") != lock["smoke_artifact_hash"]:
+            log(f"REFUSED — smoke artifact hash mismatch")
+            return
+    # Verify forecast is within ceiling
+    if lock["F_CPU"] > cfg["constants"]["cpu_forecast_ceiling_minutes"]:
+        log(f"REFUSED — F_CPU {lock['F_CPU']} exceeds ceiling {cfg['constants']['cpu_forecast_ceiling_minutes']}")
+        return
+    if lock["H_CPU"] > cfg["constants"]["cpu_forecast_ceiling_minutes"]:
+        log(f"REFUSED — H_CPU {lock['H_CPU']} exceeds ceiling {cfg['constants']['cpu_forecast_ceiling_minutes']}")
+        return
+    if lock["stop_rule"] != "no_post_output_repair_or_rerun":
+        log(f"REFUSED — stop rule mismatch: {lock['stop_rule']}")
+        return
     log(f"Lock row verified: runner={runner_sha[:16]}... config={config_sha[:16]}...")
 
     consts = cfg["constants"]
-    deadline = T0 + lock["H_CPU"] * 60
+    calls = science_calls
+    # Hard-wall clock starts HERE, after all verification, not at T0
+    science_t0 = time.monotonic()
+    deadline = science_t0 + lock["H_CPU"] * 60
+
+    # Open checkpoint journal
+    ckpt_path = os.path.join(out_dir, "call_checkpoints.jsonl")
+    ckpt_f = open(ckpt_path, "w")
 
     # Stage 8: execute Phase D + Phase E per replay
     log("Stage 8: Scientific execution...")
     laws = {}         # (replay, entity_id, family, word) -> log_probs (full vocab)
     donors = {}       # (replay, target_row_id) -> site_vec tensor
     timings = []
+    call_ordinal = 0
+
+    def _checkpoint_call(c, lp, t_info, payload_hash=None, donor_hash=None):
+        nonlocal call_ordinal
+        law_hash = hashlib.sha256(lp.tobytes()).hexdigest()
+        entry = {
+            "ordinal": call_ordinal,
+            "identity": call_identity(c),
+            "hook_mode": c["hook_mode"],
+            "recipe_hash": c.get("recipe_hash"),
+            "law_hash": law_hash,
+            "seconds": t_info["seconds"],
+        }
+        if payload_hash is not None:
+            entry["payload_hash"] = payload_hash
+        if donor_hash is not None:
+            entry["donor_hash"] = donor_hash
+        ckpt_f.write(json.dumps(entry) + "\n")
+        ckpt_f.flush()
+        call_ordinal += 1
+
+    def _check_wall():
+        if time.monotonic() > deadline:
+            ckpt_f.close()
+            result = {"status": "INCOMPLETE — CPU HARD WALL", "completed_calls": len(laws),
+                      "science_seconds": time.monotonic() - science_t0,
+                      "total_seconds": time.time() - T0}
+            json.dump(result, open(os.path.join(out_dir, "science_result.json"), "w"), indent=2)
+            log(f"HARD WALL at call {len(laws)} ({time.monotonic()-science_t0:.0f}s science)")
+            return True
+        return False
 
     for replay in ["A", "B"]:
         log(f"Replay {replay}: Phase D (72 target-epsilon calls)...")
         d_calls = phase_d_calls(calls, replay)
         for ci, c in enumerate(d_calls):
-            if time.time() > deadline:
-                result = {"status": "INCOMPLETE — CPU HARD WALL", "completed_calls": len(laws),
-                          "seconds": time.time() - T0}
-                json.dump(result, open(os.path.join(out_dir, "science_result.json"), "w"), indent=2)
-                log(f"HARD WALL at call {len(laws)} ({time.time()-T0:.0f}s)")
+            if _check_wall():
                 return
             e = cfg["entities"][c["entity_id"]]
             tgt_family_idx = FAMILIES.index(c["family"])
@@ -690,21 +926,24 @@ def main():
             timings.append(t["seconds"])
             laws[(replay, c["entity_id"], c["family"], c["word"])] = lp
             donors[(replay, tgt_row)] = site_vec
+            donor_h = hashlib.sha256(site_vec.numpy().tobytes()).hexdigest()
+            _checkpoint_call(c, lp, t, donor_hash=donor_h)
             if ci % 12 == 0:
-                log(f"  D-{replay} call {ci}/{len(d_calls)} entity={c['entity_id']} ({time.time()-T0:.0f}s)")
+                log(f"  D-{replay} call {ci}/{len(d_calls)} entity={c['entity_id']} ({time.monotonic()-science_t0:.0f}s)")
+
+        # Entity checkpoint after Phase D
+        ckpt_f.write(json.dumps({"marker": f"phase_d_complete_{replay}", "calls": len(laws)}) + "\n")
+        ckpt_f.flush()
 
         log(f"Replay {replay}: Phase E (1272 remaining calls)...")
         e_calls = phase_e_calls(calls, replay)
         for ci, c in enumerate(e_calls):
-            if time.time() > deadline:
-                result = {"status": "INCOMPLETE — CPU HARD WALL", "completed_calls": len(laws),
-                          "seconds": time.time() - T0}
-                json.dump(result, open(os.path.join(out_dir, "science_result.json"), "w"), indent=2)
-                log(f"HARD WALL at call {len(laws)} ({time.time()-T0:.0f}s)")
+            if _check_wall():
                 return
             e = cfg["entities"][c["entity_id"]]
             src_row = e["source_row"]
             src_site_pos = bm.get_site_pos(src_row)
+            payload_h = None
 
             if c["family"] in ("target_1", "target_2", "target_3"):
                 tgt_family_idx = FAMILIES.index(c["family"])
@@ -714,13 +953,14 @@ def main():
                 timings.append(t["seconds"])
 
             elif c["family"] == "pasteback":
-                tgt_row = e["target_rows"][0]  # y_i^* = target_1
+                tgt_row = e["target_rows"][0]
                 tgt_site_pos = bm.get_site_pos(tgt_row)
                 input_ids = bm.build_input_ids(tgt_row, c["word"], c["entity_id"])
                 paste_vec = donors.get((replay, tgt_row))
                 if paste_vec is None:
                     log(f"INVALID — MISSING DONOR for pasteback replay={replay} row={tgt_row}")
                     return
+                payload_h = hashlib.sha256(paste_vec.numpy().tobytes()).hexdigest()
                 lp, t = bm.forward_hooked(input_ids, paste_vec, tgt_site_pos)
                 timings.append(t["seconds"])
 
@@ -731,6 +971,7 @@ def main():
                 if native_vec is None:
                     log(f"INVALID — MISSING DONOR for native replay={replay} row={tgt_row}")
                     return
+                payload_h = hashlib.sha256(native_vec.numpy().tobytes()).hexdigest()
                 lp, t = bm.forward_hooked(input_ids, native_vec, src_site_pos)
                 timings.append(t["seconds"])
 
@@ -747,6 +988,7 @@ def main():
                     log(f"INVALID — MISSING CENTROID DONORS for entity {c['entity_id']} replay={replay}")
                     return
                 centroid_vec = torch.stack(vecs).mean(dim=0)
+                payload_h = hashlib.sha256(centroid_vec.numpy().tobytes()).hexdigest()
                 lp, t = bm.forward_hooked(input_ids, centroid_vec, src_site_pos)
                 timings.append(t["seconds"])
 
@@ -758,6 +1000,7 @@ def main():
                     log(f"INVALID — MISSING WRONG DONORS for entity {c['entity_id']} replay={replay}")
                     return
                 wrong_vec = torch.stack(vecs).mean(dim=0)
+                payload_h = hashlib.sha256(wrong_vec.numpy().tobytes()).hexdigest()
                 lp, t = bm.forward_hooked(input_ids, wrong_vec, src_site_pos)
                 timings.append(t["seconds"])
 
@@ -766,19 +1009,23 @@ def main():
                 return
 
             laws[(replay, c["entity_id"], c["family"], c["word"])] = lp
+            _checkpoint_call(c, lp, t, payload_hash=payload_h)
 
             if ci % 100 == 0:
-                log(f"  E-{replay} call {ci}/{len(e_calls)} ({time.time()-T0:.0f}s)")
+                log(f"  E-{replay} call {ci}/{len(e_calls)} ({time.monotonic()-science_t0:.0f}s)")
 
         replay_count = sum(1 for k in laws if k[0] == replay)
+        ckpt_f.write(json.dumps({"marker": f"replay_complete_{replay}", "calls": replay_count}) + "\n")
+        ckpt_f.flush()
         log(f"Replay {replay} complete: {replay_count} calls")
 
-    log(f"All {len(laws)} laws collected ({time.time()-T0:.0f}s)")
+    ckpt_f.close()
+    log(f"All {len(laws)} laws collected ({time.monotonic()-science_t0:.0f}s science, {time.time()-T0:.0f}s total)")
 
     # Completeness gate: every declared call must have a law
     if len(laws) != 2688:
         result = {"status": "INVALID — INCOMPLETE", "collected": len(laws), "expected": 2688,
-                  "seconds": time.time() - T0}
+                  "science_seconds": time.monotonic() - science_t0, "total_seconds": time.time() - T0}
         json.dump(result, open(os.path.join(out_dir, "science_result.json"), "w"), indent=2)
         log(f"INVALID — INCOMPLETE: {len(laws)}/2688 laws collected")
         return
@@ -786,7 +1033,7 @@ def main():
     missing_keys = expected_keys - set(laws.keys())
     if missing_keys:
         result = {"status": "INVALID — MISSING KEYS", "missing_count": len(missing_keys),
-                  "seconds": time.time() - T0}
+                  "science_seconds": time.monotonic() - science_t0, "total_seconds": time.time() - T0}
         json.dump(result, open(os.path.join(out_dir, "science_result.json"), "w"), indent=2)
         log(f"INVALID — MISSING KEYS: {len(missing_keys)} call keys not in laws")
         return
@@ -924,11 +1171,9 @@ def main():
     delta_spec_A = [entity_data[("A", i)]["E_cent"] - entity_data[("A", i)]["E_wrong"] for i in range(24)]
     delta_spec_B = [entity_data[("B", i)]["E_cent"] - entity_data[("B", i)]["E_wrong"] for i in range(24)]
 
-    # Entity-cluster stability bounds (2000 resamples)
-    rng = np.random.Generator(np.random.PCG64(consts["bootstrap_seed"]))
+    # Entity-cluster stability bounds (precommitted resample index)
     B = consts["resamples_B"]
     alpha = consts["stability_tail_alpha"]
-    resample_idx = rng.integers(0, 24, size=(B, 24))
 
     def stability_bounds(vals_per_entity):
         vals = np.array(vals_per_entity)
@@ -1008,11 +1253,15 @@ def main():
         } for eid in range(24)},
         "call_count": len(laws),
         "runner_sha256": runner_sha, "config_sha256": config_sha,
-        "seconds": time.time() - T0
+        "manifest_hash": manifest_hash,
+        "resample_index_hash": resample_hash,
+        "checkpoint_hash": hashlib.sha256(open(ckpt_path, "rb").read()).hexdigest(),
+        "science_seconds": time.monotonic() - science_t0,
+        "total_seconds": time.time() - T0
     }
     json.dump(result, open(os.path.join(out_dir, "science_result.json"), "w"), indent=2,
               default=lambda o: float(o) if isinstance(o, (np.floating,)) else o)
-    log(f"FINAL STATUS: {result['status']} ({time.time()-T0:.0f}s)")
+    log(f"FINAL STATUS: {result['status']} ({time.monotonic()-science_t0:.0f}s science, {time.time()-T0:.0f}s total)")
 
 
 if __name__ == "__main__":
