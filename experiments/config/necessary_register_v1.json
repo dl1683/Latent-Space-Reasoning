@@ -1,0 +1,9 @@
+{
+ "name": "necessary_register_v1",
+ "purpose": "Constructed-substrate calibration ladder, RUNG 0 = INSTRUMENT CHECK (Codex rounds 24-25): a two-layer hard-masked register transformer trained from scratch; eight fixed orthonormal oracle codes REPLACE the <REG> input embedding; every episode shows a visible permutation of 8 abstract states to 8 panel labels; training and evaluation permutations are disjoint, so a code-to-label lookup cannot pass. Not a scientific positive; a mandatory bridge to Qwen3-1.7B-Base (register_bridge_v1) precedes any mathematics claim.",
+ "model": {"d_model": 128, "n_layers": 2, "n_heads": 4, "d_ff": 256, "dropout": 0.0, "code_seed": 4242},
+ "world": {"n_entities": 24, "n_states": 8, "n_templates": 4, "n_panels": 4, "train_perms_per_panel": 128, "eval_perms_per_panel": 16, "perm_seed": 5151},
+ "train": {"seeds": [11, 23, 37], "steps": 3000, "lr": 0.001, "weight_decay": 0.01, "batch": 256, "clip": 1.0, "hard_wall_minutes": 60},
+ "eval": {"episodes_per_arm": 2304, "n_random": 3, "bootstraps": 2000},
+ "gates": {"termination_min": 0.95, "heldout_acc_min": 0.90, "heldout_acc_lb_min": 0.85, "per_group_min": 0.80, "agreement_min": 0.90, "paired_dir_min": 0.85, "paired_dir_lb_min": 0.75, "uplift_min": 0.65, "uplift_lb_min": 0.55, "control_max": 0.20, "lookup_train_min": 0.90, "lookup_heldout_max": 0.80, "lookup_gap_max": 0.15, "seeds_required": 2, "seed_floor": 0.80}
+}
