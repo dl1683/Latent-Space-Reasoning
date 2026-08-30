@@ -5,6 +5,53 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Rounds 11–12 (Codex, verbatim): navigator designed, then demoted; the real-model one-write state artifact goes first
+
+Round 11 designed `necessity_navigator_v1` (GRU on Z_11² ⋊ C_4 with aliased, per-episode-permuted observations; five readouts). I built it (`experiments/run_necessity_navigator.py`, 196 nonblank lines; config) and smoke-tested it — code-path validation only, not a result: 2000 training steps reach held-out top-1 in A* of 0.879 against a historyless control of 0.484 (behaviourally valid); readouts execute; at that budget moves R = 0.24 (untrained-GRU control 0.38), composition order accuracy 0.51, inverse ratio 0.63, distance Spearman 0.30; the swap pairing needs same-goal episodes across permutations (to be generated deliberately if it is ever run). Round 12 then reconciled audit #31's alternative against it and ruled for the real-model artifact: the navigator has the better odds but lower evidentiary value and the toy-world repeat risk; it is now an optional one-round calibration control, not to be run before the one-write real-model result. Round 13 (design gate for `onewrite_state_v1`) is in flight.
+
+### Round 11 (verbatim)
+
+Written to [.codex_direction_r11.md](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/.codex_direction_r11.md>).
+
+The locked design uses a ~17.7k-parameter GRU, three CPU seeds, a 60–100 minute estimate, five controlled approximate readouts, and a non-tautological cross-presentation state swap. Planned apparatus-to-artifact code ratio is at most 1.1:1. No experiment was launched.
+
+### Round 12 (verbatim)
+
+## Head-to-head ruling
+
+The probabilities below are judgment calls about one locked CPU run, not statistical estimates.
+
+| | Real-model co-designed state | `necessity_navigator_v1` |
+|---|---|---|
+| **Bounded-positive probability** | **30–40%**. One-write persistence, new wording, and genuinely untrained consequences are difficult, especially after the bus failure. | **55–65%**. Behavioral learning is likely; satisfying four of five readouts, including composition and cross-presentation swap, remains nontrivial. |
+| **What a positive licenses** | A real language model can host a persistent, causally addressable state that survives paraphrase and governs held-out consequences. This establishes a defensible foundational object, but not that it was native to the frozen model or that a full latent mathematics has been recovered. | Task pressure can induce an approximately algebraic, readable, causally portable state in a small recurrent model. This is a constructive existence result, not evidence about pretrained language models. |
+| **What a negative teaches** | If behavioral validity and state-use controls pass, the model still did not rely on a one-write state for unseen consequences. That would materially narrow the real-model constructive route, while remaining architecture-specific. | If behavior is valid but the structural readouts fail, persistent-state necessity alone does not produce readable algebra. If behavior fails, only this training construction is implicated. |
+| **Repeat risk** | Another state bus: supervised response control, lexical overlap between training and evaluation, visible-text mediation, repeated injection, or an intact cue-rich bypass. | Another toy-world cycle: the algebra is known, memory is forced, and a positive can collapse to “a GRU learned the world it was designed to learn.” Approximate gates improve integrity but do not solve relevance. |
+| **Narrative score** | **9/10:** “Write a thought once, change the wording, and the model still uses it to derive something it was never trained to say.” | **7.5/10:** intrinsically interesting, but visibly a controlled synthetic demonstration. |
+
+## Ruling
+
+Build the auditor’s **real-model, one-write state** now.
+
+The navigator has the better chance of succeeding, but the expected evidentiary value is lower. Even its strongest positive cannot answer the program’s present question about a real model; the real-model artifact can. After a day dominated by apparatus and after Rounds 36–37 already exhausted the toy-world route, choosing the navigator first would optimize for obtaining a positive rather than resolving the central uncertainty.
+
+The real-model artifact qualifies as a new substrate only if it is structurally unlike `state_bus_v1r1`:
+
+- One state write; no repeated injection.
+- New wording after the write.
+- Consequence families whose labels and templates were absent from state training.
+- State ablation and cue-only baselines.
+- Explicit visible-text mediation control.
+- No positive based solely on likelihood movement or trained consequence names.
+
+`necessity_navigator_v1` does **not** follow regardless. A real-model positive makes it unnecessary. It may follow once, as a calibration control, only if a clean real-model negative leaves the specific question: “Can task necessity produce any readable causal algebra, even in a purpose-built substrate?” It must not become the central artifact or another expandable toy program.
+
+## Exact round-11 amendment
+
+> **Amendment:** `necessity_navigator_v1` is an optional one-round calibration control, not the next central artifact. Do not implement it before the one-write real-model state result. If it is later run and at least two seeds pass behavioral validity but composition/noncommutativity and causal swap both fail, close the hypothesis that task necessity alone yields a readable, causally portable latent algebra; do not change the group, GRU size, alias map, optimizer, or readouts. If fewer than two seeds pass behavioral validity, close only this training construction.
+
+All existing constraints remain: under 250 nonblank runner lines, one config and result, tolerance-based effects, seed spread, diagnostic-only exact certificates, no reducer, no rescue run, and one audit for the completed result.
+
 ## 2026-08-29 — Audit #31 on control_cost_v1 (fresh, unprimed; verbatim): FAIL upheld; 'the first-order law does not hold', the Spearman/ratio/asymmetry residues, and '4x under-prediction' are WITHDRAWN
 
 Correction to the control_cost_v1 entry below: seven censored costs were stored as 4x predicted, so the rank agreement and the ratio are artefacts of censoring; the cross-vs-within gate compared censoring bounds; B was invalid; the only licensed residue is bounded causal responsiveness of the A readout with a construction-conditioned directional difference. The auditor's alternative next artifact class (a real-model co-designed causally addressable state) is recorded verbatim beside Codex round 10's from-scratch navigator; the required dialogue precedes implementation.
