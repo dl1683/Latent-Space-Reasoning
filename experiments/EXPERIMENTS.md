@@ -40,12 +40,184 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   `state_bus_v1r1_result`, `state_bus_v1r1_audit_stage`,
   `state_bus_v1r1_audit29`); no bus v2.** Licensed sentence (verbatim):
   **`state_bus_v1r1` is a fixed-construction FAIL: a 98,400-parameter supervised interface repeatedly injected a 16-dimensional code into frozen Qwen3-1.7B-Base, and across three seeds held-out same-state donors preserved every four-way categorical choice but failed the training-derived confidence-signature tolerance on 15–16/16 rows, while fixed-cycle cross codes changed taxonomy choice on 7/16 rows—always cat→dog in 3/4 and cow→horse in 4/4—and the complete registered gate vector also failed heldout taxonomy and the cross-consequence third/first movement criterion; taxonomy verbalizers were absent from the bus loss, but the all-pair sensitivity was donor-verbalizer-specific rather than state-general, so the licensed residue is a repeatedly maintained supervised response controller with pair-specific lexical/semantic steering, not autonomous persistence, abstraction, general interchangeability, or native latent mathematics.**
-- **`interchange_v2` — pre-declared FAIL** (`FAIL — FIXED BLOCK-12
-  SINGLE-ANCHOR INTERCHANGE CONSTRUCTION`; ledger `interchange_v2_lock`,
-  `interchange_v2_result`); audit #30 pending; no v3. Next artifact:
-  reachability / control cost (direction round 8; round 9 design pending).
+- **`interchange_v2` — REGISTERED CONSTRUCTION-LEVEL FAIL, CLOSED** (audit
+  #30 adopted verbatim `fe3c541`; ledger `interchange_v2_lock`,
+  `interchange_v2_result`); no v3. Licensed sentence and never-say list
+  verbatim in `STATE.md` "Current statement".
+- **`control_cost_v1` — REGISTERED CONSTRUCTION-LEVEL FAIL, CLOSED** (audit
+  #31 adopted verbatim `17b3d90`; ledger `control_cost_v1_result`,
+  `control_cost_v1_audit31_correction`). Cost-law, rank, ratio and
+  asymmetry readings withdrawn as censoring artefacts. Entry below.
+- **Frozen-residual line STOPPED (Codex direction round 10, ledger
+  `direction_r10_program_ruling`)** — an allocation stop point, not a proof
+  that pretrained models lack latent mathematics.
+- **`onewrite_state_v1` — KILLED PRE-LOCK** (ledger
+  `onewrite_state_v1_killed_prelock`): the base model cannot apply a stated
+  rule to visible tags; no state hypothesis was tested. Entry below.
+- **`onewrite_recall_v1` — BUILT; pre-lock validation referred (Codex round
+  17); not locked, not run** (ledger `onewrite_recall_v1_validation`,
+  `onewrite_recall_v1_validation_r16`). Entry below.
+- **`necessity_navigator_v1` — BUILT, smoke-tested; optional one-round
+  calibration control; UNRUN** (ledger `direction_r12_ruling`). Entry below.
 
-## interchange_v2 — bias-controlled operational interchangeability, Qwen3-1.7B-Base block 12: pre-declared FAIL; audit pending (2026-08-29; ledger `interchange_v2_lock`, `interchange_v2_result`)
+## onewrite_recall_v1 — single-fact one-write recall channel on frozen Qwen3-1.7B-Base: BUILT; pre-lock validation referred; not locked, not run (2026-08-29; ledger `direction_r15_ruling`, `onewrite_recall_v1_validation`, `direction_r16_recall_gates`, `onewrite_recall_v1_validation_r16`)
+
+- **Design (Codex direction round 15; gates and amendments round 16).**
+  Runner `experiments/run_onewrite_recall.py`, config
+  `experiments/config/onewrite_recall_v1.json` (`95fb53e`, amendments
+  `c1486f1`). Source `The private tag assigned to {name} is {tag}.` -> one
+  write of a 16-d code at block 12 at the slot's final token -> unseen
+  target wording (`PRIVATE TAG FOR {NAME}:`) after two fixed fillers of >=
+  64 tokens; endpoint = the raw decoded tag; 8 nonce tags (3 train + 2
+  heldout facts per tag; chance 0.125); canonical VALID TAGS line in every
+  target; arms visible-copy / cue-only / correct-write / wrong-donor
+  (counterfactual tag by balanced derangement) / random / zero-hook;
+  byte-identical nonvisible target across arms. A positive would license
+  only: "a co-designed interface can write one factual value once into a
+  frozen real model and recover it after unseen wording" — a persistent
+  causal memory channel, not abstraction, transfer, native state, or latent
+  mathematics. Result gates (round 16): write >= 0.75; write − cue >= 0.50
+  (LB > 0.30); write − random >= 0.50 (LB > 0.30); random <= 0.20; recovery
+  >= 0.60; per-phrasing/wording write >= 0.70 with gaps <= 0.15; wrong-state
+  follows its counterfactual tag >= 0.60 and exceeds the cue rate by >=
+  0.40; completion >= 0.95 in all six arms; zero-hook must reproduce cue
+  row-for-row else INVALID — NO VERDICT; no repair run.
+- **Pre-lock validation 1 (provisional gates; no state;
+  `experiments/results/onewrite_recall_v1/validate.log`):** 16 heldout
+  entities x 2 wordings, 16 tags: visible-copy 0.906 (A 0.875, B 0.938),
+  visible completion 0.906; cue accuracy 0.0, cue completion 0.0.
+- **Pre-lock validation 2 (round-16 locked gate; no state;
+  `experiments/results/onewrite_recall_v1/validate_result.json`):**
+  visible-copy accuracy 1.0 (A 1.0, B 1.0), visible completion 1.0; cue
+  accuracy 0.0 (both wordings); visible − cue = 1.0; cue completion 0.031
+  (without the fact the model emits `100`/`123`, not a listed tag, despite
+  the VALID TAGS line). By the letter of the gate (`cue completion >= 0.95`)
+  this is a pre-lock FAIL on a protocol criterion orthogonal to the state
+  hypothesis while the substantive instrument (visible 1.0 vs cue 0.0) is
+  perfect. **Not locked; referred to Codex round 17** (kill by the letter, or
+  amend the protocol criterion pre-lock). No training run; nothing licensed.
+
+## onewrite_state_v1 — one-write persistent state on frozen Qwen3-1.7B-Base: KILLED PRE-LOCK (2026-08-29; ledger `direction_r13_onewrite_design`, `onewrite_state_v1_smoke`, `direction_r14_instrument`, `onewrite_state_v1_killed_prelock`)
+
+- **Design (Codex direction round 13, locked; `experiments/run_onewrite_state.py`,
+  `experiments/config/onewrite_state_v1.json`, `b7991dc`).** Train only E
+  (2048->16) and J (16->2048), 65,552 params; one write at block 12 to the
+  final token of an early `Internal record:` slot, clamp ||Jz|| <= 0.25
+  ||h_slot||; 40 invented entities over three binary nonce attributes;
+  trained consequence families PORT/VAULT, NORTH/SOUTH, RING/STAR; heldout
+  families H1 (XOR -> CEDAR/QUARTZ) and H2 (attr2 x attr3 -> four labels)
+  with labels and templates absent from training; arms correct-write /
+  cue-only / wrong-state / random / visible-text ceiling; raw decoded
+  choices only.
+- **Smoke (60 steps, seed 11; `experiments/results/onewrite_state_v1/smoke.log`;
+  not a result):** behavioural instrument invalid before any state
+  question — visible-text ceiling 0.27 (gate >= 0.80), termination 0.17;
+  cue 0.20; write 0.39 = wrong 0.39 = random 0.39 (a non-specific format
+  effect). Referred to Codex round 14, which allowed ONE instrument repair
+  (terse FORMAT EXAMPLE / TEST CASE / NEW ITEM format, strict first-item
+  parsing) and pre-declared the kill sentence.
+- **Sole pre-lock validation (round-14 format; no state; 64 heldout cases;
+  `experiments/results/onewrite_state_v1/validate_result.json`):**
+  visible-tag accuracy 0.344 (H1 0.50, H2 0.19; wording A 0.31, B 0.38) =
+  cue accuracy 0.344; completion 1.0 in both arms — the model always emits
+  an allowed label but ignores whether the tags are shown. Gate (visible >=
+  0.80, visible − cue >= 0.30) FAILED. **Pre-declared ruling (Codex round 14,
+  verbatim):** onewrite_state_v1 is killed pre-lock because Qwen3-1.7B-Base
+  could not support the registered behavioral instrument even when the
+  facts were visible; no state hypothesis was tested. Side probe
+  (`instrument_probe.log`, `instrument_probe_4b.log`): Qwen3-4B-Base is also
+  at chance on the H1/H2 two-variable tables (0.44/0.31 terse; 0.50/0.56
+  one-shot) while managing a one-attribute rule at 0.81. No training run;
+  no prompt iteration or model substitution (pre-declared). Untracked
+  smoke artifacts (`iface_seed11.pt`, `smoke_result.json`) are local only.
+- **What we learned:** the discovered constraint is instrument validity —
+  the tested Qwen3 bases through 4B cannot reliably apply a two-variable
+  table to visible facts, so rule-dependent behavioral readouts cannot
+  adjudicate hidden-state interventions at this scale (round 15).
+
+## necessity_navigator_v1 — from-scratch navigator on Z_11^2 ⋊ C_4 with aliased, per-episode-permuted observations: BUILT, smoke-tested; optional one-round calibration control; UNRUN (2026-08-29; ledger `direction_r11_navigator_design`, `direction_r12_ruling`)
+
+- **Design (Codex direction round 11).** GRU hidden 64 (~17.7k params);
+  8 observation classes over 121 positions with per-episode S_8 symbol
+  permutation from disjoint banks; goal-word episodes with BFS-optimal
+  action sets; historyless Bayes control; behavioural validity = held-out
+  top-1 membership >= 0.85 and >= 0.20 above the control; five approximate
+  readouts on held-out permutations (moves, composition/noncommutativity,
+  inverses, reachability distance, causal state swap); statuses BOUNDED
+  POSITIVE / PARTIAL / FAIL; no v1r2. Runner
+  `experiments/run_necessity_navigator.py` (196 nonblank lines), config
+  `experiments/config/necessity_navigator_v1.json` (`ab758ec`).
+- **Smoke (2000 steps, seed 11; code-path validation, not a result;
+  `experiments/results/necessity_navigator_v1/smoke_result.json`, untracked):**
+  held-out top-1 in A* 0.879 vs historyless control 0.484; readouts execute
+  — moves R 0.243 (untrained-GRU control 0.383), composition order accuracy
+  0.509, inverse ratio 0.629, distance Spearman 0.296; the swap pairing
+  needs same-goal episodes across permutations if it is ever run.
+- **Status (round 12 amendment, round 15):** optional one-round calibration
+  control, not the central artifact; do not run before a real-model result;
+  runs once only if direct recall is valid but donor-specific persistence
+  fails; if run and >= 2 seeds are behaviourally valid but composition and
+  swap both fail, close the hypothesis that task necessity alone yields a
+  readable causally portable algebra; no repair of group/GRU/alias/optimizer/readouts.
+
+## control_cost_v1 — minimum-energy span control, Qwen3-1.7B-Base block 12: REGISTERED CONSTRUCTION-LEVEL FAIL, CLOSED (2026-08-29; ledger `direction_r9_control_cost_design`, `control_cost_v1_lock`, `control_cost_v1_result`, `control_cost_v1_audit31_correction`)
+
+- **Design (Codex direction round 9; runner `experiments/run_control_cost.py`,
+  config `experiments/config/control_cost_v1.json`, lock `f5aaf9f`).**
+  One-time sigma-scaled field broadcast over the 23-token prefix span at
+  block 12; first-order minimum-energy solve `v* = J^T (J J^T)^+ r` through
+  the three-probe signature Jacobian at v=0; alpha grid {0, .25, .5, 1, 2,
+  4}; A readout (cat/dog probes) and B readout (unoptimized consequence);
+  prompt-specific and shared fields; random-field and lexical controls.
+- **Result (`experiments/results/control_cost_v1/result.json`; `ff361bc`):**
+  status `FAIL — FIXED BLOCK-12 SPAN CONTROL CONSTRUCTION`. Native A
+  validity 23/24; native B validity 17/24 (cat 7/12, dog 10/12) -> B gates
+  void. Prompt-specific first-order fields realized the A target in 1/8
+  recipients by alpha <= 4 (7 right-censored); shared fields attained A in
+  2/4 recipients per direction at alpha = 2.
+- **Audit #31 (fresh, unprimed; adopted verbatim `17b3d90`).** FAIL upheld;
+  interpretation corrected: "the first-order minimum-energy law does not
+  hold", Spearman 0.76 (censored costs stored as 4x predicted, ranks
+  inherited), median ratio 4.0 (a censoring boundary), cross-vs-within 8/8
+  (only 2 orderings identified), the semantic-B advantage (B invalid),
+  "random fields move B just as much", and the directional cost asymmetry
+  are all withdrawn as evidence. Licensed residue: the registered A readout
+  responds causally and directionally to the constructed fields (mean
+  dog->cat movement 0.28/0.40/0.54/0.67 vs cat->dog 0.04/0.11/0.14/0.16 at
+  alpha .25/.5/1/2) — an actuator/readout-specific response asymmetry, not
+  an effort geometry. **Licensed sentence (verbatim):** At fixed block 12 in Qwen3-1.7B-Base, the registered sigma-scaled uniform 23-token prefix-span field derived from the v=0 three-probe Jacobian attained the joint A endpoint in 1/8 held-out recipients by α≤4, while B was not a native-valid readout; because seven local costs and six within-class costs were right-censored, the saved data do not establish a realized-cost rank law, cross-versus-within effort geometry, semantic transfer, or directional cost asymmetry, so this closes the registered actuator/solver/readout/budget construction—not first-order control, span reachability, or latent effort generally.
+- **Never say (audit #31):** “The first-order minimum-energy law does not hold.” “The model’s response is strongly nonlinear at the magnitudes needed” without naming the unresolved solver, scaling, actuator, and censoring alternatives. “Predicted cost ranked realized cost.” “The method underpredicted realized cost fourfold.” “Cross-class moves cost more than presentation changes.” “The semantic field transferred to unoptimized consequences.” “The semantic field beat lexical steering.” “`p=.008` establishes semantic structure.” “Random fields moved B just as much.” “Cat→dog is intrinsically cheaper than dog→cat.” “Span control failed” or “reachability failed” without the complete registered scope. “The preregistration was executed completely.” “Five independent interventions prove the substrate lacks native structure.” “Frozen residual streams cannot support structured reasoning.” “The next latent space must be trained” as a scientific conclusion rather than an allocation hypothesis.
+- **What we learned:** construction family closed; no alpha/rcond/layer/
+  span/probe/optimizer repair; ratio ~6.4:1; the broader question continues
+  only after a substrate-level pivot (direction round 10).
+
+## Direction rounds 10–17 (Codex direction dialogue, 2026-08-29 evening) — rulings
+
+- **Round 10** (ledger `direction_r10_program_ruling`, `44c5507`): STOP
+  POINT for the frozen-pretrained residual-stream line as constituted (six
+  measurement rounds to one build round); not a proof that pretrained
+  models lack latent mathematics; next artifact class = a constructive
+  state-bearing substrate.
+- **Round 11** (ledger `direction_r11_navigator_design`, `17b3d90`):
+  `necessity_navigator_v1` locked design (entry above).
+- **Round 12** (ledger `direction_r12_ruling`, `17b3d90`/`ab758ec`):
+  reconciliation with audit #31's alternative — build the real-model
+  one-write state artifact first; navigator demoted to an optional
+  one-round calibration control.
+- **Round 13** (ledger `direction_r13_onewrite_design`, `5934693`):
+  `onewrite_state_v1` locked design (entry above).
+- **Round 14** (ledger `direction_r14_instrument`, `9a2a54a`): one
+  instrument repair for `onewrite_state_v1`, sole pre-lock validation, and
+  the pre-declared kill sentence.
+- **Round 15** (ledger `direction_r15_ruling`, `a31235e`; verbatim in
+  NOTEBOOK): keep the kill; dominant problem = semantic instrumentation;
+  next artifact `onewrite_recall_v1`; navigator not now.
+- **Round 16** (ledger `direction_r16_recall_gates`, `95fb53e`):
+  `onewrite_recall_v1` locked amendments and gates (entry above).
+- **Round 17** (RUNNING; no ledger row yet): ruling on the
+  `onewrite_recall_v1` pre-lock cue-completion criterion.
+
+## interchange_v2 — bias-controlled operational interchangeability, Qwen3-1.7B-Base block 12: REGISTERED CONSTRUCTION-LEVEL FAIL, CLOSED (2026-08-29; ledger `interchange_v2_lock`, `interchange_v2_result`; audit #30 adopted `fe3c541`)
 
 - **Design (Codex direction round 8, `d069955`; runner
   `experiments/run_interchange.py` + config
@@ -61,11 +233,13 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 - **Result** (`experiments/results/interchange_v2/result.json`; `65680e5`):
   native centred validity passed (cat 11/12, dog 12/12; gate met), same-state donors within tolerance 8/8 (median distance 0.35, tau 3.38), but replacing the block-12 anchor residual with the opposite class's anchor residual moved the three-probe signature by a median fractional 0.009 of the class separation with 0/8 recipients flipping two decisions; on-manifold cow/horse third-state donors moved recipients |T| 0.10–0.21 and the cross-vs-third specificity test was null (4/8 paired positive; exact sign-flip p = 0.47). Pre-declared status, verbatim: `FAIL — FIXED BLOCK-12 SINGLE-ANCHOR INTERCHANGE CONSTRUCTION` (480 forwards, 105 s). Gates: same_state True, cross_state False,
   specificity False.
-- **Status:** audit #30 pending. Audit #29 (on the bus, without inspecting
-  this run) flagged the lock as not confirmatory-run-ready (third-donor
-  identities not counterbalanced; gates pooled across classes; preregistered
-  short decodes not implemented). No reading beyond the pre-declared status
-  is licensed until the audit lands.
+- **Audit #30 (fresh, unprimed; ledger `interchange_v2_audit30_correction`;
+  adopted verbatim `fe3c541`): REGISTERED CONSTRUCTION-LEVEL FAIL upheld;
+  distributed-state and toward-neutral readings withdrawn.** The same-state
+  gate is non-discriminating (every cross- and third-state arm also lies
+  within tolerance); `p=.4727` is a descriptive sign-symmetry sensitivity,
+  not an exact randomized test. **Licensed sentence (verbatim):** In Qwen3-1.7B-Base, with calibration-relative three-probe validity on 23/24 decisions, coefficient-one replacement of the block-12 residual at only the final generic ` The animal` token by matched opposite-class donors moved the standardized probe signature a median 0.0087 class separations and changed none of 24 probe signs across eight recipients, so `interchange_v2` fails its preregistered fixed single-anchor construction; because same-, cross-, and cow/horse third-state donor perturbations all fell within the same-state tolerance and the unchanged prefix remained causally available, this result does not establish absence of class information at the anchor, a distributed animal state, or failure of frozen-residual interchangeability outside this site, layer, coefficient, donor pairing, and readout.
+- **Never say (audit #30):** “There is no class state at the anchor.” “The animal state lives across the prefix.” “The probes read the class from earlier tokens through attention” as an established mechanism. “Later layers overwrote the donor state.” “Block 12 is the wrong layer” as a result rather than a hypothesis. “Same-state interchangeability passed.” “Same-state signatures were preserved.” “Cow and horse donors moved both classes toward neutral.” “The exact `p=.47` proves no specificity.” “Interchangeability failed in Qwen3-1.7B-Base.” “Frozen residual streams lack native state or native mathematics.” “Persistent state must be trained.” “Native animal classification was 23/24” without “calibration-relative.” “Twenty-four independent decisions” or “three independent probes.” “The preregistration was executed completely”; the short decodes are absent.
 
 ## state_bus_v1r1 — result, audit-stage re-adjudication and audit #29: REGISTERED FAIL, CLOSED (2026-08-29; ledger `state_bus_v1r1_result`, `state_bus_v1r1_audit_stage`, `state_bus_v1r1_audit29`)
 
@@ -180,7 +354,7 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   bias-controlled `interchange_v2` with calibration-midpoint/paired
   contrasts preregistered, on-manifold wrong-donor control, clustered
   reporting — authorized by direction round 8 and run (entry above;
-  pre-declared FAIL, audit pending).
+  REGISTERED CONSTRUCTION-LEVEL FAIL under audit #30).
 
 ## coordinate_v3 — prediction-site two-bit coordinate (tense × number), Qwen3-1.7B-Base: gates met mechanically; audit #27 = narrow late lexical-control effect (2026-08-29; ledger `coordinate_v3_result`, `coordinate_v3_audit27`)
 
