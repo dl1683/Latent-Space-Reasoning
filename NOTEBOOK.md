@@ -5,6 +5,57 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Round 15 (Codex, verbatim): keep the kill; next = `onewrite_recall_v1` (single-fact recall through a one-write channel)
+
+## Program ruling
+
+Keep the pre-lock kill exactly as adopted. `onewrite_state_v1` never tested hidden-state persistence: the repaired protocol achieved completion 1.0, but visible and hidden prompts produced essentially the same choices. The dominant problem is now semantic instrumentation—these small base models cannot reliably execute the registered two-variable lookup.
+
+Choose **both routes asymmetrically**:
+
+- The next artifact is a simpler real-model readout on Qwen3-1.7B-Base.
+- A bounded model-capacity screen preserves the possibility of restoring novel-consequence tests later, but is not the next artifact.
+
+### Next artifact: `onewrite_recall_v1`
+
+Use direct single-fact recall:
+
+```text
+Source: The private tag assigned to Cordovel is keld.
+...
+New target wording: PRIVATE TAG FOR CORDOVEL:
+```
+
+Train the same small encoder/injector to write once at block 12. Use a balanced vocabulary of tokenizer-verified nonce tags, heldout entities, unseen source and target phrasings, and enough text after the write to test persistence. The behavioral endpoint is the raw decoded tag itself—no rule, mapping, XOR, or multi-variable consequence.
+
+Retain visible-copy, cue-only, correct-write, wrong-donor, random-write, and zero-hook arms. The crucial causal signature is not merely correct recall: a wrong donor must specifically produce the donor’s tag while random writes do not.
+
+This is a new, weaker artifact, not a rescue of the killed construction. A positive would license:
+
+> A co-designed interface can write one factual value once into a frozen real model and recover it after unseen wording.
+
+It would not license abstraction, transfer to consequences absent from training, native pretrained state, or latent mathematics. It establishes a persistent causal memory channel—the prerequisite that `onewrite_state_v1` attempted to leap beyond.
+
+For future consequence work, use one fixed no-training screen:
+
+1. Qwen3-8B-Base, isolating scale within the same family.
+2. Qwen3-4B-Instruct, isolating instruction tuning against the failed 4B Base.
+3. Qwen3-8B-Instruct only if those results disagree.
+
+An instruct checkpoint passing the table lookup would not rehabilitate earlier polarity-sensitive probes; it would validate only a balanced visible-versus-cue consequence instrument.
+
+## Navigator ruling
+
+**No—do not run `necessity_navigator_v1` now.** Round 12 required a clean real-model negative after behavioral validity. This was an instrument negative, so the condition remains unmet. Running the navigator now would answer the easier synthetic existence question while leaving the real-transformer persistence question untouched.
+
+If direct visible recall is valid but the one-write, donor-specific persistence test fails, that becomes the clean real-model negative that licenses the navigator once. If direct recall succeeds, the navigator is unnecessary.
+
+## What to tell the user tonight
+
+> Today established bounded causal facts—late interventions can steer lexical output, a repeatedly injected bus can act as a supervised controller, and the registered anchor/span constructions fail their stated laws—but it established no native coordinates, interchangeable state, persistent state, or latent mathematics.  
+> The most important discovered constraint is that the tested Qwen3 base models through 4B cannot reliably apply a two-variable table even when the facts are visible, so rule-dependent behavioral readouts cannot adjudicate hidden-state interventions at this scale.  
+> The one next artifact is `onewrite_recall_v1`: “Tell the model one private tag, change every word around it, and test whether a single hidden write lets it recall that tag later.”
+
 ## 2026-08-29 — onewrite_state_v1 killed pre-lock: the base model cannot apply a stated rule to visible tags
 
 Codex round 14 allowed exactly one instrument repair (its own terse FORMAT EXAMPLE / TEST CASE / NEW ITEM format, strict first-item parsing) and a sole pre-lock validation with no state involved. Result on all 64 heldout cases: visible-tag accuracy 0.344 (H1 0.50, H2 0.19) and cue (`TAGS: STORED`) accuracy 0.344 — identical; completion 1.0 in both arms. The 1.7B base emits an allowed label every time but ignores whether the tags are shown. Pre-declared ruling, verbatim: "onewrite_state_v1 is killed pre-lock because Qwen3-1.7B-Base could not support the registered behavioral instrument even when the facts were visible; no state hypothesis was tested." My side probe shows Qwen3-4B-Base is also at chance on the same H1/H2 tables (0.44/0.31 terse; 0.50/0.56 one-shot) while managing a simple one-attribute rule at 0.81, so the limit is rule-following at this scale, not the wording. No further prompt iteration or model substitution (pre-declared).
