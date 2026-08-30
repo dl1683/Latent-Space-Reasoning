@@ -1441,68 +1441,76 @@ is audited may a small real-model refutation-oriented bridge artifact be
 considered. Exact bridge equality remains diagnostic; `native_horizon_v1`
 remains unselected; no computation is authorized.
 
-### Native bridge specification (proposed, round 40; pending audit #45)
+### Native bridge specification (proposed, rounds 40-41; audit #45 corrections applied; pending lock-readiness audit #46)
 
 **Status.** The carrier, actions, restricted distance, excess-discrepancy
-estimand, and outcome meanings below are **defined**. The two carrier
-obligations and the restricted lower-bound statement are **proved**. The
-cross-prompt native-residual positive-control prediction and the centroid-
-write population criterion are **conjectured**. This is mathematics and
-typing only: no manifest is locked, no artifact is selected, and no compute is
-authorized.
+estimands, controls, and outcome meanings below are **defined**. Totality and
+unchanged denizen maps are **proved from the case definitions**, and the
+finite registered lower-bound property is **proved**. Faithful transformer
+continuation and the lift-intertwining identity are **conditional** on the
+registered computation-DAG cut and canonical token/mask/position/cache
+construction; deterministic fixtures must test those premises. The
+cross-prompt native paste and both centroid predictions are **conjectured**.
+This is repair pass 1 of at most three consecutive repair rounds. No manifest
+or lock row exists, and no scientific forward pass is authorized.
 
 #### One-model, one-site population — defined
 
 Fix frozen `Qwen/Qwen3-1.7B-Base` at revision
-`ea980cb0a6c2ae4b936e82123acc929f1cec04c1`. Use only the existing,
+`ea980cb0a6c2ae4b936e82123acc929f1cec04c1`. Use only the existing intact,
 tokenization-verified explicit-legend rows for the 24 registered entities.
-For entity \(e_i\), let the source label be \(e_i\bmod 8\), let the target
+For entity \(e_i\), let the source label be \(q_i=e_i\bmod8\) and the target
 label be
 
 \[
-s_i=(e_i+1)\bmod 8,
+s_i=(e_i+1)\bmod8.
 \]
 
-and choose one source prompt \(x_i\) and three independently presented intact
-target prompts
+Choose one source prompt \(x_i\) and
+
+> three distinct, prospectively row-ID-selected intact target prompts; no
+> stochastic independence is assumed
+
+forming
 
 \[
-\mathcal Y_{i,s_i}=\{y_{i,s_i}^{(1)},y_{i,s_i}^{(2)},y_{i,s_i}^{(3)}\}
+\mathcal Y_{i,s_i}
+=\{y_{i,s_i}^{(1)},y_{i,s_i}^{(2)},y_{i,s_i}^{(3)}\}.
 \]
 
-by a prospective row-ID rule across distinct registered templates. Thus the
-base evaluation set has \(24+24\times3=96\) prompts. The exact template,
-permutation-replicate, and row-ID rule remains to be bound only if audit #45
-licenses a later preregistration; it may not depend on a model output.
+They come from three distinct registered templates under the outcome-blind
+row rule bound in `theory/EXPERIMENTS.md`. The base set therefore has
+\(24+24\times3=96\) prompts. These 24 entities are the whole registered
+population for the claim below, not a probability sample from a declared
+superpopulation.
 
 There is one residual site: zero-based block \(\ell=16\), at the final token
 of the final record-tag occurrence, with
 \(h_{\ell,p}(x)\in\mathbb R^d\) the post-block residual
-(`hidden_states[17]`) at that one position. Block 16 is the layer selected in
-all three preflight folds, but the preflight pooled a two-token span. It did
-not validate this single-position site; that choice is new and must be audited
-as such.
+(`hidden_states[17]`) at that position. The pooled preflight selected block 16
+using a two-token span. The block-16 single-position site is unvalidated until
+the conjectured proximal site-sufficiency control is run; the prior preflight
+did not validate it.
 
-Let \(\mathcal A_D=\{P,Q\}\) be the two prospectively assigned append macros
-for a source unit: the registered first-query-token macro and its corresponding
-complete query macro. Their names denote deterministic total maps;
-missing entity metadata or context overflow goes to failure. For each pair,
-the registered word table is
+Let \(\mathcal A_D=\{a_P,a_Q\}\). For each source unit, \(a_P\) appends the
+registered first query token and \(a_Q\) appends its corresponding complete
+query. Both are deterministic total maps; missing metadata, token mismatch,
+or context overflow enters a tagged failure. The registered word table is
 
 \[
-W_0=\{\epsilon,P,Q,PP,PQ,QP,QQ\},
+W_0=\{\epsilon,a_P,a_Q,a_Pa_P,a_Pa_Q,a_Qa_P,a_Qa_Q\},
 \]
 
 with D1's rightmost-first execution convention. The source-indexed literal
-token strings are fixed before outputs; the seven syntactic words are the same
-for every pair.
+strings and token IDs are fixed before outputs; the seven syntactic words are
+the same for every entity.
 
-#### Common phase-typed carrier and continuation — defined
+#### Common phase-typed carrier and canonical continuation — defined
 
-Let \(P_0\) be the 96 base prompts above. Define the prompt phase \(P\) as the
-closure of \(P_0\) under finite registered macro appends up to the model's
-declared context limit. No new natural-language prompt family is introduced:
-the base rows and macro strings already exist. Let
+Let \(\mathsf P_0\) be the 96 base prompts. Define the prompt phase
+\(\mathsf P\) as the closure of \(\mathsf P_0\) under finite registered macro
+appends up to the declared context limit. No new natural-language prompt
+family is introduced. Let
 
 \[
 F=\{f_{\rm phase},f_{\rm site},f_{\rm shape},f_{\rm token},
@@ -1511,93 +1519,110 @@ f_{\rm overflow}\}
 
 be tagged observable absorbing failures.
 
-For the fixed site, a **continuation record** \(\kappa\in K_\ell\) contains
-the token IDs, mask, positions, immutable prefix caches and nonedited tensors
-needed to resume the frozen decoder from the post-block-\(\ell\) residual at
-position \(p\), the fixed tokens after \(p\), and the accumulated append
-suffix. It contains no upper-layer quantity that depends on the singled-out
-residual vector. Define
+For a canonically tokenized registered input, let \(G\) be the frozen
+transformer's deterministic computation DAG under the registered batch-one
+mask, position, and cache policy, and let \(v_{\ell,p}\) be the edited
+post-block residual node. Put
+\(D_v=\{v_{\ell,p}\}\cup\operatorname{Desc}(v_{\ell,p})\). The **canonical
+cut** is the graph-theoretic incoming boundary
+
+\[
+\partial^-D_v
+=\{u\in V(G)\setminus D_v:
+\exists d\in\operatorname{Desc}(v_{\ell,p})\text{ with }(u,d)\in E(G)\},
+\]
+
+together with any exogenous token/mask/position/cache-construction inputs not
+represented as vertices of \(G\). Every path from outside \(D_v\) into a
+descendant crosses this boundary. Thus it contains every non-descendant input
+needed to recompute all descendants of the edited residual, and no descendant
+of that residual.
+
+A continuation record \(\kappa\in K_\ell\) is exactly the registered values
+and construction metadata on that canonical cut, the fixed tokens after
+\(p\), and the accumulated append suffix. In particular, \(K_\ell\) is not
+defined as an arbitrary bag of tensors that happens to make replay work.
+Define
 
 \[
 H_\ell=K_\ell\times\mathbb R^d,
 \qquad
-Z=P\;\sqcup\;H_\ell\;\sqcup\;F.
+Z=\mathsf P\;\sqcup\;H_\ell\;\sqcup\;F.
 \]
 
-The deterministic map
-\(\operatorname{Cont}_\ell(\kappa,h)\) completes the frozen forward pass from
-that site, then processes the suffix stored in \(\kappa\), and returns the
-full next-token law at the resulting answer position. This is a lazy but
-extensional representation of ordinary causal execution: appending future
-tokens cannot change a past residual site. It is not an assumption that an
-implementation may omit any cache or tensor on which continuation depends.
+Conditional on the cut being faithfully registered, the deterministic
+response constructor \(\operatorname{Cont}_\ell(\kappa,h)\) substitutes
+\(h\) for \(v_{\ell,p}\), recomputes every descendant from the cut, processes
+the stored suffix, and returns the full next-token law at the answer position.
+Invalid records return their declared failure law. This is a total response
+constructor on valid site states, not a transition or an endomap.
 
 Define the total site lift
 
 \[
-\iota_\ell:P\longrightarrow H_\ell\cup F
+\iota_\ell:\mathsf P\longrightarrow H_\ell\cup F
 \]
 
 by running an unedited prompt through block \(\ell\), extracting its canonical
-continuation record and site vector, and returning the appropriate failure for
-a missing site, wrong tokenization, shape error, or overflow. Its valid domain
-is \(P_\ell=\iota_\ell^{-1}(H_\ell)\). Every \(x_i\) and every member of
-\(\mathcal Y_{i,s_i}\) must lie in \(P_\ell\).
+cut record and site vector, and returning the appropriate failure for a
+missing site, wrong tokenization, shape error, or overflow. Its valid domain
+is \(\mathsf P_\ell=\iota_\ell^{-1}(H_\ell)\). Every \(x_i\) and every member
+of \(\mathcal Y_{i,s_i}\) must lie in \(\mathsf P_\ell\). The lift is total on
+\(\mathsf P\), but it is not an endomap of \(Z\).
 
 For \(a\in\mathcal A_D\), define \(T_a^D:Z\to Z\) by cases:
 
-1. on \(P\), append the registered macro and remain in \(P\), or enter the
-   declared token/overflow failure;
+1. on \(\mathsf P\), append the registered macro and remain in \(\mathsf P\),
+   or enter the declared token/overflow failure;
 2. on \((\kappa,h)\in H_\ell\), append the same macro tokens to the suffix in
    \(\kappa\), retain \(h\), and remain in \(H_\ell\), or enter the same
    declared failure; and
 3. on \(f\in F\), return \(f\).
 
-Thus a denizen append on \(H_\ell\) means continuing the forward pass from the
-site under the same future token append. It never means that the denizen made
-or re-applied a residual edit.
+A denizen append on \(H_\ell\) therefore adds future tokens under the same
+continuation construction. It never makes or reapplies a residual edit.
 
-The primitive channel \(c_{\rm full}\) emits the full next-token law; the
-derived channel \(c_9\) is its fixed Markov pushforward to digits \(0,\ldots,7\)
-plus `other`. On valid prompt states the response runs the ordinary frozen
-model; on valid site states it uses
-\(\operatorname{Cont}_\ell\). On failures the full outcome space is augmented
-by a tagged failure symbol, and \(c_9\) maps it to `other`. Both channels use
-normalized square-root Jensen--Shannon distance. Hence every response law is
-total on \(Z\), including \(F\).
+The primitive channel \(c_{\rm full}\) emits the full next-token law. The
+derived channel \(c_9\) is its fixed Markov pushforward to digits
+\(0,\ldots,7\) plus `other`. On valid prompt states, the response is the
+ordinary frozen model; on valid site states it is
+\(\operatorname{Cont}_\ell\). On failures the full outcome space includes a
+tagged failure symbol and \(c_9\) maps it to `other`. Both channels use
+normalized square-root Jensen--Shannon distance. Because \(c_9\) is a fixed
+pushforward of \(c_{\rm full}\), it is an interpretation channel and adds no
+independent refutation power.
 
-For every registered surgeon action \(m\), define \(m:Z\to Z\) by replacing
+For each registered surgeon action \(m\), define \(m:Z\to Z\) by replacing
 the \(\mathbb R^d\) component only on a matching valid \(H_\ell\) state,
-sending a nonmatching prompt, site, token, or shape case to its declared
-failure, and fixing every state already in \(F\). Put these actions in
+sending every nonmatching prompt/site/token/shape case to its declared
+failure, and fixing every state in \(F\). Put these actions in
 \(\mathcal A_S\setminus\mathcal A_D\). The surgeon extension uses exactly the
-same \(T_a\) for every \(a\in\mathcal A_D\), the same carrier, and the same
-response laws.
+same denizen maps, carrier, and response laws.
 
-#### Carrier obligations — proved
+#### Carrier obligations — proved cases and conditional transformer premises
 
-**Unchanged denizen transitions.** For \(u\in P\) and
-\(a\in\mathcal A_D\), both worlds apply the same registered token append or
-the same failure map, so \(T_a^S(u)=T_a^D(u)\). The same equality holds on
-\(H_\ell\) and \(F\) by the case definition. Therefore every denizen
-transition is unchanged on all of \(Z\), as D9 and Theorem 8 require.
+**Proved from the case definitions: unchanged denizen maps.** For
+\(u\in\mathsf P\) and \(a\in\mathcal A_D\), both worlds apply the same token
+append or failure map. The same equality holds on \(H_\ell\) and \(F\).
+Hence \(T_a^S=T_a^D\) on all of \(Z\), as D9 and Theorem 8 require.
 
-**Totality.** The tagged union exhausts \(Z\). Each denizen action has one
-defined branch on \(P\), one on \(H_\ell\), and one on \(F\). Each surgeon
-action likewise returns a valid edited site state, a declared failure, or the
-same absorbing failure. Thus every denizen and surgeon action is a total
-endomap of \(Z\). Responses are total by the preceding channel definition.
+**Proved from the case definitions: totality.** The tagged union exhausts
+\(Z\). Each denizen action has one branch on each summand. Each surgeon action
+returns an edited site state, a declared failure, or the same absorbing
+failure. Thus every denizen and surgeon action is a total endomap of \(Z\),
+and the case-defined response laws are total.
 
-Moreover, canonical causal continuation gives the site-lift intertwining
+**Conditional transformer premises.** Faithful continuation and the identity
 
 \[
 T_w^D\iota_\ell(u)=\iota_\ell(T_w^D u)
 \]
 
-for every valid registered prompt/word pair before overflow: both sides retain
-the same past site vector and add the same future token suffix. A deterministic
-fixture must check this identity before any scientific arm; failure is a
-carrier implementation invalidity, not a model result.
+for valid registered prompt/word pairs before overflow are conditional on the
+registered DAG cut and the canonical token/mask/position/cache construction.
+Deterministic fixtures test cut continuation against plain forward execution,
+same-carrier paste-back, and D1 token order. Any failure is carrier
+implementation invalidity, not a scientific model result.
 
 #### Finite registered bridge lower bound — defined; lower-bound property proved
 
@@ -1621,15 +1646,15 @@ B_{W_0,C_0}(x,y_s;m_s)
 \le d_\infty^D\!\left(m_s\iota_\ell(x),\iota_\ell(y_s)\right).
 \]
 
-Let \(\varepsilon_{\rm rep}\) be the prospectively defined replay envelope.
-If the same registered word/channel discrepancy exceeds that envelope in both
-replay schedules, it is a tolerance-robust finite witness and refutes the exact
-bridge for that pair. Otherwise the only exact status is **not refuted at the
-registered access**. It is never confirmed by this table.
+A certified positive discrepancy invokes Theorem 7 and refutes the exact
+bridge. A replay-robust measured exceedance without a certified numerical-
+error bound is recorded as a **tolerance-robust registered-access refutation
+in the registered numerical implementation**. Otherwise the exact bridge is
+only **not refuted at registered access**; finite agreement never confirms it.
 
-#### Excess-discrepancy target-fiber estimand — defined; population claim conjectured
+#### Replay envelopes and excess-discrepancy estimands — defined
 
-Choose audit #44's **excess-discrepancy** form. For entity-pair \(i\), define
+For entity \(i\), define
 
 \[
 R_i(m)=\operatorname*{median}_{y\in\mathcal Y_{i,s_i}}
@@ -1643,165 +1668,251 @@ d^D_{W_0,C_0}\!\left(\iota_\ell(y),\iota_\ell(y')\right),
 E_i(m)=R_i(m)-V_i.
 \]
 
-The target prompts are independently presented native members of the same
-externally registered label fiber; neither the label nor the fiber is inferred
-from these distances. Define the finite-population estimand
+Here \(V_i\) is a three-pair within-fiber comparator. It is not a normalizer
+and does not certify that the target label fiber is behaviorally distinct.
+Neither the label nor its fiber is inferred from these distances.
+
+For a registered action family \((m_i)_{i=1}^{24}\), the primary estimand is
+the exact registered finite-population mean
 
 \[
-\Theta(m)=\frac1{24}\sum_{i=1}^{24}E_i(m).
+\Theta_{24}((m_i))=\frac1{24}\sum_{i=1}^{24}E_i(m_i).
 \]
 
-For a pair-indexed registered action family \((m_i)_{i=1}^{24}\), use the
-shorthand
+Resampling the 24 entity clusters produces **entity-cluster stability bounds**
+for sensitivity to entity composition. The bounds make no sampling-coverage
+claim and are not confidence intervals for \(\Theta_{24}\). No
+superpopulation model is declared because the licensed claim concerns this
+complete, fixed 24-entity registry.
+
+Let \(\mathcal Q\) be all eight registered endpoint families. Across both
+replay schedules define the endpoint-law replay discrepancy
 
 \[
-\Theta((m_i))=\frac1{24}\sum_{i=1}^{24}E_i(m_i).
+\eta=
+\max_{\substack{q\in\mathcal Q,\,w\in W_0,\,c\in C_0}}
+D_c\!\left(r_c^{(A)}(q,w),r_c^{(B)}(q,w)\right).
 \]
 
-All target presentations and repeated words remain inside their entity
-cluster. A later preregistration, if licensed, must fix a paired entity-
-cluster bootstrap and report one-sided lower and upper bounds
-\(L_{1-\alpha}(m)\) and \(U_{1-\alpha}(m)\), all eight target-label strata,
-and the entity spread.
-
-The threshold structure is fixed before outcomes, although its numerical
-constants are not locked in this round. Let
+The registered envelopes are
 
 \[
-\eta=\max\{\text{identical-input replay discrepancy}\},
+\varepsilon_B=\max(\varepsilon_0,k_B\eta),\qquad k_B\ge2,
+\]
+
+\[
+\varepsilon_E=\max(\varepsilon_0,k_E\eta),\qquad k_E\ge4,
 \qquad
-\varepsilon_{\rm rep}=\max(\varepsilon_0,k\eta),
-\qquad
-\tau=\varepsilon_{\rm rep}+\delta,
+\tau=\varepsilon_E+\delta.
 \]
 
-where \(\varepsilon_0>0\), \(k\ge1\), the material tolerance
-\(\delta>0\), the replay-invalidity ceiling, \(\alpha\), bootstrap count, and
-seed must all be bound prospectively. Then:
+Use \(\varepsilon_B\) for every individual bridge discrepancy and
+\(\varepsilon_E\) for every \(E\)-based status. The factors follow from the
+metric triangle inequality: moving both laws between replay schedules changes
+one endpoint-pair distance by at most \(2\eta\). Maxima and medians are
+1-Lipschitz under a uniform perturbation, so \(R_i\) and \(V_i\) each change by
+at most \(2\eta\); their difference \(E_i=R_i-V_i\) changes by at most
+\(4\eta\). In each paired contrast the common \(V_i\) cancels, leaving a
+difference of two \(R_i\) terms, so \(4\eta\) also bounds replay drift in
+\(\Delta_{\rm src}\) and \(\Delta_{\rm spec}\). The preregistration binds
+\(\varepsilon_0,k_B,k_E,\delta\), the replay-invalidity ceiling, and the
+stability-resampling algorithm before any scientific output.
 
-- \(U_{1-\alpha}(m)\le\tau\) is an **approximate target-fiber PASS at
-  registered access**;
-- \(L_{1-\alpha}(m)>\tau\) is an **approximate target-fiber REFUTATION**; and
-- every valid interval overlapping \(\tau\) is **INCONCLUSIVE**.
+If \(U_E(m)\) and \(L_E(m)\) are the registered upper and lower entity-
+cluster stability bounds for \(\Theta_{24}(m)\), then
+\(U_E(m)\le\tau\) is target-fiber fit, \(L_E(m)>\tau\) refutes that approximate
+fit criterion, and overlap is inconclusive. An \(E_i\le0\) value says only
+that the endpoint's median restricted discrepancy from the three native
+targets is no larger than their registered median pairwise discrepancy. It
+does not prove equality, target-place identity, unseen-future control,
+behavioral fiber separation, an edit effect, or validity for every entity.
 
-An \(E_i\le0\) value, up to tolerance, says only that the edited endpoint's
-median restricted response discrepancy from native targets is no larger than
-the registered median native target-to-target variation. Under Theorem 7 it
-does not establish exact equality, control unseen denizen futures, identify
-hidden states, or prove reachability. An approximate PASS may coexist with a
-small positive exact diagnostic \(B\); the approximate and exact questions are
-deliberately different.
+#### Proximal control, source control, and specificity control — defined
 
-#### Proximal controls and the real edit — defined; predictions separated
-
-For each \(i\), take \(y_i^*=y_{i,s_i}^{(1)}\). The **same-carrier round-trip
-fixture** replaces \(h_{\ell,p}(y_i^*)\) by that identical vector while keeping
-the continuation record of \(y_i^*\). Its endpoint equals
-\(\iota_\ell(y_i^*)\) by construction, so every registered discrepancy is zero
-in exact arithmetic. A deviation beyond replay tolerance makes the artifact
+For each \(i\), take \(y_i^*=y_{i,s_i}^{(1)}\). The **same-carrier paste-back
+fixture** replaces \(h_{\ell,p}(y_i^*)\) by the identical vector while keeping
+\(y_i^*\)'s continuation record. Its endpoint is equal in exact arithmetic;
+a discrepancy beyond the replay floor makes the artifact
 **INVALID — SITE CARRIER/HOOK**.
 
-The **proximal native-residual paste control** is the total surgeon action
+The **conjectured proximal site-sufficiency control** is the total surgeon
+action
 
 \[
 m_i^{\rm nat}(\kappa_i^x,h)
 =(\kappa_i^x,h_{\ell,p}(y_i^*)),
 \]
 
-with the declared failures elsewhere. It pastes a native target prompt's site
-vector into the source continuation record. The prediction
-\(\Theta(m^{\rm nat})\lesssim0\) up to \(\tau\) is **conjectured**. It is not a
-theorem merely from copying the vector: generally
-\(\kappa_i^x\ne\kappa_i^{y_i^*}\). Only the same-carrier round trip is zero by
-construction. This distinction is exactly what lets the control test whether
-one site vector is a sufficient proximal mechanism rather than hiding that
-assumption inside the carrier.
+with declared failures elsewhere. Generally
+\(\kappa_i^x\ne\kappa_i^{y_i^*}\), so native paste is not equal to the native
+target by construction. Its PASS is necessary before scientific
+interpretation of the centroid arm, but does not validate centroid formation,
+averaging, target specificity, or the centroid edit.
 
-The **real centroid write** inherits the audit-#38/#39 intervention form but is
-typed entirely inside this Qwen carrier. Let
+The **unedited-source family** \(m_i^0\) keeps the source continuation record
+and its original residual unchanged. It is evaluated through the same hook
+path as the edited families, so an apparent target-fiber fit must improve on
+the actual source endpoint rather than inherit source behavior.
+
+For every registered target label \(s\), define explicitly
+
+\[
+\mathcal Y_{s,-e_i}
+=\bigcup_{\substack{j\ne i\\s_j=s}}\mathcal Y_{j,s}.
+\]
+
+The correct entity-excluding centroid is
 
 \[
 \mu_{s_i,-e_i}
 =\frac{1}{|\mathcal Y_{s_i,-e_i}|}
-\sum_{y\in\mathcal Y_{s_i,-e_i}}h_{\ell,p}(y)
+\sum_{y\in\mathcal Y_{s_i,-e_i}}h_{\ell,p}(y),
 \]
 
-be the prospectively formed entity-excluding centroid of registered native
-target-site vectors with label \(s_i\). The surgeon action
-\(m_{s_i,-e_i}^{\rm cent}\) replaces the source site vector by
-\(\mu_{s_i,-e_i}\). Vector averaging is an analyst operation, not a denizen
-primitive or native geometry.
+and \(m_i^{\rm cent}\) replaces the source vector by
+\(\mu_{s_i,-e_i}\). This is a new within-Qwen surgeon edit motivated by prior
+registered populations; it does not inherit an audit-#38/#39 intervention.
+Vector averaging is analyst-authored structure, not a denizen primitive or
+native geometry.
 
-Outcome implications are:
+Set the prospectively cycled wrong label to
 
-1. If replay, tokenization, lift/intertwining, shape, response-totality, or the
-   same-carrier round trip fails, the artifact is **INVALID** and neither edit
-   has a scientific verdict.
-2. If the round trip is valid and
-   \(U_{1-\alpha}(m^{\rm nat})\le\tau\), the proximal control **PASSES**: a
-   native target residual is sufficient to land within registered target-fiber
-   variability at this site and access. If
-   \(L_{1-\alpha}(m^{\rm nat})>\tau\), it **FAILS**: residual-only transfer at
-   this site is not established, and the centroid arm is diagnostic only. An
-   overlapping interval is proximal **INCONCLUSIVE**.
-3. Only after a proximal PASS is the centroid write adjudicated. Its upper-
-   bound PASS licenses the sentence below. Its lower-bound REFUTATION rejects
-   this entity-excluding centroid write at this site and registered access,
-   not all residual bridges. An overlapping interval is **INCONCLUSIVE**.
-4. Independently of the population statuses, every replay-robust positive
-   \(B_{W_0,C_0}\) is reported as the corresponding pair's Theorem-7 exact-
-   bridge refuter; absence of one remains only not-refuted-at-access.
+\[
+t_i=(s_i+1)\bmod8.
+\]
+
+Form \(\mu_{t_i,-e_i}\) from \(\mathcal Y_{t_i,-e_i}\) by the same rule and
+let \(m_i^{\rm wrong}\) paste that vector into the source continuation. The
+paired mean contrasts are
+
+\[
+\Delta_{\rm src}(m)
+=\frac1{24}\sum_i[E_i(m_i)-E_i(m_i^0)],
+\]
+
+\[
+\Delta_{\rm spec}
+=\frac1{24}\sum_i[E_i(m_i^{\rm cent})-E_i(m_i^{\rm wrong})].
+\]
+
+Negative values favor the named edit. The material thresholds
+\(\delta_{\rm move}>0\) and \(\delta_{\rm spec}>0\) are bound before outputs.
+All stability bounds for these paired contrasts resample whole entities and
+preserve every within-entity target, word, channel, family, and replay.
+
+#### Registered statuses and exact implications — defined
+
+Write \(L_{\rm src}(m),U_{\rm src}(m)\) for the entity-cluster stability
+bounds on \(\Delta_{\rm src}(m)\), and
+\(L_{\rm spec},U_{\rm spec}\) for those on \(\Delta_{\rm spec}\).
+
+1. Any manifest, row, tokenization, site, shape, response-totality, replay,
+   DAG-cut continuation, lift/intertwining, token-order, or same-carrier
+   paste-back failure makes the run **INVALID**. No scientific edit verdict
+   survives.
+2. Native paste **PASSES** only if both target-fiber fit
+   \(U_E(m^{\rm nat})\le\tau\) and prospective improvement over source
+   \(U_{\rm src}(m^{\rm nat})
+   \le-(\varepsilon_E+\delta_{\rm move})\) hold. It **FAILS** if
+   \(L_E(m^{\rm nat})>\tau\) or
+   \(L_{\rm src}(m^{\rm nat})
+   >-(\varepsilon_E+\delta_{\rm move})\); every other valid case is
+   **INCONCLUSIVE**. Even a PASS does not validate centroid formation.
+3. Unless native paste PASSES, the centroid endpoints are reported
+   **DIAGNOSTIC ONLY — PROXIMAL CONTROL NOT PASSED**.
+4. Conditional on native-paste PASS, the correct centroid **PASSES** only if
+   it fits the target fiber
+   \(U_E(m^{\rm cent})\le\tau\), improves over source
+   \(U_{\rm src}(m^{\rm cent})
+   \le-(\varepsilon_E+\delta_{\rm move})\), and improves over the wrong-label
+   centroid \(U_{\rm spec}\le-(\varepsilon_E+\delta_{\rm spec})\).
+5. Conditional on native-paste PASS, the centroid criterion is **REFUTED** if
+   \(L_E(m^{\rm cent})>\tau\),
+   \(L_{\rm src}(m^{\rm cent})
+   >-(\varepsilon_E+\delta_{\rm move})\), or
+   \(L_{\rm spec}>-(\varepsilon_E+\delta_{\rm spec})\). Every other valid case is
+   **INCONCLUSIVE**. This refutes this population criterion at this site and
+   access, not all residual bridges.
+6. Independently, a certified positive individual discrepancy invokes
+   Theorem 7. Without a certified numerical-error bound, an individual
+   discrepancy exceeding \(\varepsilon_B\) in both replays receives only the
+   tolerance-robust registered-access numerical-implementation wording above.
 
 #### Surgeon-only claim wall — defined
 
-This is a surgeon-world artifact. The site lift, residual capture, native
-paste, centroid formation, and centroid write are not denizen moves; only the
-registered append actions in \(W_0\) are denizen futures. A PASS licenses only:
+This is a surgeon-world artifact. The lift, residual capture, paste, centroid
+formation, and centroid write are not denizen moves; only \(W_0\)'s append
+actions are denizen futures. A full centroid PASS licenses only:
 
-> The surgeon edit lands the state within the native target fiber's registered
-> response variability at registered access.
+> Across the 24 registered entities, the correct centroid edit has
+> registered-access mean excess discrepancy within the native target-fiber
+> criterion and prospectively improves that criterion relative to both no
+> edit and the cycled wrong-label centroid.
 
 It never licenses “Qwen has a register,” “a causal bridge exists,” exact
-target-place identity, denizen reachability from the source, hidden-state
-identity, storage, persistence, or model-family generality.
+target-place identity, denizen reachability, unseen-future control, hidden-
+state identity, fiber separation, storage, persistence, dimension, native
+latent mathematics, every-entity success, or model-family generality.
 
-#### Scope, evaluation-count bound, and ratio
+#### Scope, exact call unit, compute contract, and ratio
 
 The scope is one frozen model, one block, one token position, 24 entity
 clusters, three native target presentations per entity, seven denizen words,
-and two response channels derived from the same next-token law. Per entity the
-six evaluated endpoint families are three clean native targets, the same-
-carrier round trip, the native-residual paste, and the centroid write. Two
-replay schedules therefore give the pre-deduplication upper bound
+and two response channels derived from one full law. Per entity the eight
+endpoint families are the three clean native targets, same-carrier paste-back,
+native paste, unedited source, correct centroid, and wrong-label centroid.
+With two replay schedules, the pre-deduplication count is
 
 \[
-24\times6\times7\times2=2{,}016
+24\times8\times7\times2=2{,}688.
 \]
 
-model evaluations. Computing both channels adds no model call. Any later lock
-must give the exact lower deduplicated count and a runtime forecast; this round
-does neither.
+One call unit is one batch-one, cache-disabled invocation of the frozen model
+that emits one full-vocabulary next-token law for one unique
+`(replay, entity, endpoint-family, word)` tuple; cut/hook execution is part of
+that invocation. Deriving \(c_9\), computing distances, reusing already
+captured donor residuals, and forming pairwise comparisons add no call unit.
+The family tag distinguishes plain target execution from same-carrier hook
+execution, and replay is deliberately not deduplicated. The registered tuple
+table has no aliases, so the exact deduplicated scientific count is also
+\(2{,}688\).
 
-Round 40 adds no experimental apparatus and no artifact-bearing code
-\(0/0\); it is one theory/build round. Using audit #44's cumulative round
-accounting, the measurement/governance-to-build ratio becomes
-\(29:13=2.23:1\), still above the \(2:1\) warning and below the \(5:1\) halt.
+Before any scientific call, a prospective **mechanical-only smoke subset**
+must test: (1) same-carrier paste-back identity to the replay floor; (2)
+registered DAG-cut continuation versus plain forward equality on unedited
+states; and (3) the D1 execution/token order for the word \(a_Qa_P\) (`Q P`).
+The preregistration fixes the subset and a smoke-derived CPU forecast:
+measured smoke seconds per call times \(2{,}688\) times a bound safety factor
+sets the hard wall. Forecast above 90 CPU minutes aborts the CPU artifact.
+Only then may one small GPU burst be offered, and only with explicit user
+approval and a smoke-demonstrated GPU-safe hook path. A lock row must bind the
+manifest hash, exact count, forecast, hard wall, runner/config hashes,
+constants, statuses, and abort rule before any scientific forward pass.
 
-#### Audit #45 must check
+Round 41 adds no experimental apparatus and no artifact-bearing code
+\(0/0\); it is one theory/build round. After audit #45's \(30:13\) heartbeat,
+the measurement/governance-to-build ratio is \(30:14=2.14:1\), still above
+the \(2:1\) warning and below the \(5:1\) halt.
 
-Audit #45 must verify: (1) that \(K_\ell\) is sufficient for faithful causal
-continuation and contains no quantity downstream of the edited residual; (2)
-the carrier partition, observable failures, global totality, unchanged denizen
-maps, and site-lift intertwining proof; (3) whether block 16/final-tag-token is
-a defensible single site despite the historical span pooling; (4) the
-source-indexed seven-word typing and both-channel Theorem-7 lower bound; (5)
-independence and adequacy of the three-prompt target fiber, entity-excluding
-centroids, clustered bounds, replay envelope, and tolerance structure; (6)
-the crucial distinction between the proved same-carrier round trip and the
-conjectured cross-prompt native-residual paste; (7) all PASS/REFUTATION/
-INCONCLUSIVE/INVALID implications and the \(2{,}016\)-evaluation ceiling; and
-(8) the surgeon-only claim wall and whether this remains the highest-leverage
-small artifact. Audit #45 does not itself authorize a manifest lock or run.
+#### Audit #46 must check
+
+Audit #46 must verify: (1) the \(\mathsf P,a_P,a_Q\) typing and exhaustive
+case proofs; (2) the canonical DAG cut, no-descendant rule, canonical
+token/mask/position/cache construction, and conditional status of faithful
+continuation and lift intertwining; (3) the exact prospective row IDs and the
+nonindependence wording for three targets; (4) the \(2\eta/4\eta\) triangle-
+inequality propagation, \(\varepsilon_B,\varepsilon_E,\tau\), and fixed-
+population stability semantics; (5) the explicit centroid populations,
+unedited and wrong-label controls, paired contrasts, and all three centroid
+PASS gates; (6) the conjectured proximal site-sufficiency wording and its
+inability to validate centroid formation; (7) exact versus numerical-
+implementation refutation language; (8) the eight-family \(2{,}688\) count,
+equal deduplicated count, mechanical smoke, forecast, hard wall, abort, and
+pre-science lock contract; (9) every licensed and forbidden sentence,
+including the new within-Qwen surgeon wording and the unvalidated block-16
+single-position site; and (10) whether the artifact should continue and is
+still the highest-leverage bounded next step. Audit #46 does not itself create
+a lock row or authorize scientific compute.
 
 ## Prior relational foundation (Rounds 1--12; superseded, retained for provenance)
 

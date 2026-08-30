@@ -9875,3 +9875,418 @@ estimand-bearing lines, or \(0.49{:}1\). Counting audit #43 as governance, the
 repository's prior accounting is approximately 28 measurement/governance
 rounds to 10 build rounds, or \(2.80{:}1\), above the \(2{:}1\) warning. This
 correction pass is theory/build work, not another measurement.
+
+## Round 41 — native_bridge_v1 (DRAFT - not locked; pending audit #46)
+
+### Status and narrative gate
+
+This is repair pass 1 of the native bridge specification after audit #45.
+It is a preregistration **draft**, not a lock: no runner, manifest, lock row,
+scientific smoke, or model output is created or authorized here. Audit #45's
+ruling remains `REVISE; NO LOCK, NO COMPUTE` until a fresh audit #46 rules on
+this repair.
+
+The non-expert so-what is: *if a model's internal state for a naturally written
+fact is moved into another prompt, does the model behave like native examples
+of that fact across several registered questions, and does the right move beat
+both doing nothing and moving toward the wrong fact?*
+
+### Prospective manifest and exact row population
+
+Before any scientific forward pass,
+`experiments/results/native_bridge_v1/manifest.json` must exist and be hashed.
+It binds the runner/config hashes, exact command, library versions, device,
+float32 dtype, batch size one, model and tokenizer identities, all rows and
+endpoint tuples, the two replay orders, the resampling index table, constants,
+smoke timing, forecast, hard wall, and every validity/status rule below.
+
+The source authorities are:
+
+- `experiments/config/onewrite_recall_v1.json`, SHA-256
+  `65d47cf2d1c34e3d32d0943cf9c56b12da89c99abd9bab3dcc63d348abf53ecd`;
+- `experiments/config/register_bridge_preflight_v1.json`, SHA-256
+  `c016f1acd74b3260c795d34a86c5f1dc4f151455e510eab44600da819f71f682`;
+- `experiments/results/register_bridge_preflight_v1/run_rows.json`, SHA-256
+  `519846614554b6f045038fee91498638f83957ff7fd0163781131f5f9e787095`;
+  and
+- `experiments/substitution_probe.py` and
+  `experiments/run_onewrite_state.py` as the reusable loading and post-block
+  hook references, currently SHA-256
+  `69a605dfdc5be18fdeab4c4002eedbef8301c488c99b669fb702d24da1a03a12`
+  and `741dd8fb0126f8ffd0c98d9901d295bc31d7b915d4d90eaa716c8cf089190665`;
+  the eventual manifest rebinds their implementation-time hashes together
+  with the new runner hash.
+
+The model ID and revision are read from the first authority and must equal
+`Qwen/Qwen3-1.7B-Base` and
+`ea980cb0a6c2ae4b936e82123acc929f1cec04c1`. The tokenizer is loaded at that
+same requested revision; its resolved commit and tokenizer-file hashes are
+stored separately. No chat template or special token is inserted.
+
+Index entities by \(i=0,\ldots,23\). Set \(q_i=i\bmod8\) and
+\(s_i=(i+1)\bmod8\). The source is the first intact permutation row in
+template 0,
+
+\[
+\operatorname{row}(x_i)=128i+16q_i,
+\]
+
+and the three targets are the first intact permutation rows in distinct
+templates 1, 2, and 3,
+
+\[
+\operatorname{row}(y_{i,s_i}^{(r)})=128i+16s_i+4r,
+\qquad r\in\{1,2,3\}.
+\]
+
+These are three distinct, prospectively row-ID-selected intact target prompts;
+no stochastic independence is assumed.
+
+The exact 96-row table, mechanically checked against the pinned row file, is:
+
+| entity | source row | target rows \((1,2,3)\) |
+|---:|---:|:---|
+| 0 | 0 | 20, 24, 28 |
+| 1 | 144 | 164, 168, 172 |
+| 2 | 288 | 308, 312, 316 |
+| 3 | 432 | 452, 456, 460 |
+| 4 | 576 | 596, 600, 604 |
+| 5 | 720 | 740, 744, 748 |
+| 6 | 864 | 884, 888, 892 |
+| 7 | 1008 | 900, 904, 908 |
+| 8 | 1024 | 1044, 1048, 1052 |
+| 9 | 1168 | 1188, 1192, 1196 |
+| 10 | 1312 | 1332, 1336, 1340 |
+| 11 | 1456 | 1476, 1480, 1484 |
+| 12 | 1600 | 1620, 1624, 1628 |
+| 13 | 1744 | 1764, 1768, 1772 |
+| 14 | 1888 | 1908, 1912, 1916 |
+| 15 | 2032 | 1924, 1928, 1932 |
+| 16 | 2048 | 2068, 2072, 2076 |
+| 17 | 2192 | 2212, 2216, 2220 |
+| 18 | 2336 | 2356, 2360, 2364 |
+| 19 | 2480 | 2500, 2504, 2508 |
+| 20 | 2624 | 2644, 2648, 2652 |
+| 21 | 2768 | 2788, 2792, 2796 |
+| 22 | 2912 | 2932, 2936, 2940 |
+| 23 | 3056 | 2948, 2952, 2956 |
+
+All 96 IDs must resolve to intact rows with the declared entity, state,
+template, stored token IDs, and final record-tag span. The manifest asserts
+tokenization identity by retokenizing every prompt with
+`add_special_tokens=False` and requiring exact equality to its stored `ids`.
+It also asserts one final record-tag occurrence, its stored span text and IDs,
+and site position \(p=\operatorname{span.end}-1\). Any mismatch is
+`INVALID — ROW/TOKENIZATION MANIFEST` before a model call.
+
+For each entity, the native-paste donor is
+\(y_i^*=y_{i,s_i}^{(1)}\). Define
+
+\[
+\mathcal Y_{j,s_j}
+=\{y_{j,s_j}^{(1)},y_{j,s_j}^{(2)},y_{j,s_j}^{(3)}\},
+\qquad
+\mathcal Y_{s,-e_i}
+=\bigcup_{\substack{j\ne i\\s_j=s}}\mathcal Y_{j,s}.
+\]
+
+The manifest materializes the donor row IDs for every correct centroid
+\(\mathcal Y_{s_i,-e_i}\) and every wrong centroid
+\(\mathcal Y_{t_i,-e_i}\), where \(t_i=(s_i+1)\bmod8\). Correct-centroid
+sets have six rows because two other registered entities share \(s_i\);
+wrong-centroid sets have nine rows because three entities have target label
+\(t_i\) and entity \(i\) is not one of them. Donor capture is reused from the
+72 clean target evaluations and never creates a hidden extra call family.
+
+### Registered words, channels, site, and canonical execution
+
+For each entity, assign \(j(i)=1+(i\bmod3)\) and use exactly one of the three
+query literals below. Each literal begins with exactly one ASCII space:
+
+1. ` Which legend state number, 0 through 7, is the private value recorded for {entity}? Answer with one digit:`
+2. ` According to the legend, what state number does {entity}'s recorded value denote? Answer 0 through 7:`
+3. ` Map {entity}'s recorded tag through the legend. Return only its state number, 0 through 7:`
+
+Let \(a_Q\) append the complete entity-substituted literal and \(a_P\) append
+exactly its first tokenizer token. The manifest stores both strings, their
+token IDs, and the complete execution-order IDs for
+
+\[
+W_0=\{\epsilon,a_P,a_Q,a_Pa_P,a_Pa_Q,a_Qa_P,a_Qa_Q\}.
+\]
+
+D1 is rightmost-first: in particular the displayed word \(a_Qa_P\), written
+`Q P` in the token-order fixture, must execute \(a_P\) first and then \(a_Q\).
+No awkward composition may be removed after inspection.
+
+The primitive endpoint is the full-vocabulary float32 log-softmax at the final
+next-token position, \(c_{\rm full}\). The manifest binds the eight numeral
+token IDs and asserts that each numeral is exactly one token. The derived
+\(c_9\) sums those eight probabilities and assigns all remaining vocabulary
+mass to `other`. Both channels use normalized square-root Jensen--Shannon
+distance; \(c_9\) is derived from the same law and adds no model call or
+independent refutation power.
+
+The sole edit site is the output of `model.model.layers[16]` at the final token
+of the final record-tag span, equivalent to `hidden_states[17][:, p, :]`.
+This single-position site remains unvalidated until the conjectured proximal
+site-sufficiency control passes. The registered implementation is a complete
+batch-one forward with the `run_onewrite_state.py` post-block hook pattern:
+the hook replaces only `[:, p, :]`, then the frozen forward computes every
+descendant. The canonical policy is `add_special_tokens=False`, no padding,
+an all-ones attention mask, position IDs \(0,\ldots,L-1\),
+`past_key_values=None`, and `use_cache=False` for every plain and hooked call.
+
+The manifest must also serialize the architecture-resolved canonical DAG cut
+from `theory/AXIOMS.md`: every non-descendant boundary input needed to
+recompute all descendants of the edited post-block residual, no descendant,
+the module path and tensor shape, and the canonical token/mask/position/cache
+construction above. Faithful continuation and lift intertwining remain
+conditional premises tested by fixtures, not consequences of merely naming
+the cut.
+
+### Eight endpoint families and exact call accounting
+
+For every entity and word, evaluate exactly these eight endpoint families:
+
+1. `target_1`: plain forward from \(y_{i,s_i}^{(1)}\);
+2. `target_2`: plain forward from \(y_{i,s_i}^{(2)}\);
+3. `target_3`: plain forward from \(y_{i,s_i}^{(3)}\);
+4. `pasteback`: hook \(y_i^*\) with its own captured site vector;
+5. `native`: hook \(x_i\) with \(h_{\ell,p}(y_i^*)\);
+6. `source`: hook \(x_i\) with its unchanged captured site vector \(m_i^0\);
+7. `centroid`: hook \(x_i\) with the mean over
+   \(\mathcal Y_{s_i,-e_i}\); and
+8. `wrong`: hook \(x_i\) with the mean over
+   \(\mathcal Y_{t_i,-e_i}\).
+
+One **call unit** is exactly one batch-one invocation of the frozen model that
+produces one full-vocabulary law for one unique
+`(replay_schedule, entity_id, endpoint_family, word_id)` tuple. A hooked call
+includes capture/replacement/upper continuation in that one invocation; it is
+not counted once per block. Deriving \(c_9\), metrics, medians, centroids, or
+pairwise comparisons adds no call. Donor residuals are captured in the clean
+target calls and reused.
+
+The pre-deduplication count is
+
+\[
+24\times8\times7\times2=2{,}688.
+\]
+
+Deduplication keys include execution mode and replay schedule. Plain
+`target_1` and hooked `pasteback` are intentionally distinct fixture paths,
+and the two replay schedules are intentionally repeated. The prospective tuple
+table has no duplicate key or tokenized input within the same execution mode,
+so the exact deduplicated scientific count is also **2,688 call units**.
+The manifest stores the complete tuple table and rejects any disagreement
+between enumerated and formula counts as `INVALID — CALL MANIFEST`.
+
+### Replay envelopes, exact estimands, and bound constants
+
+Replay A executes tuples in ascending
+`(entity_id, endpoint_family, word_id)` order. Replay B executes the identical
+tuples in the exact reverse order. Both use batch size one and the canonical
+execution policy. Let \(\eta\) be the maximum same-tuple replay discrepancy
+over every endpoint, word, and both channels. If \(\eta>10^{-4}\), the result
+is `INVALID — NUMERICAL REPLAY`.
+
+Compute every estimand and stability resample separately in A and B. For each
+quantity, the registered upper bound is the larger of the two schedule-specific
+upper bounds and the registered lower bound is the smaller of the two
+schedule-specific lower bounds. Thus a PASS gate holds in both schedules and
+a REFUTATION/FAIL gate excludes the threshold in both; no schedule may be
+chosen after outputs.
+
+Use \(R_i,V_i,E_i,\Theta_{24},\Delta_{\rm src}\), and
+\(\Delta_{\rm spec}\) exactly as defined in `theory/AXIOMS.md`. The primary
+point summaries are exact means of the fixed registered 24-entity population.
+For descriptive sensitivity only, draw 2,000 entity-cluster resamples: NumPy
+`Generator(PCG64(4141))` samples 24 entity indices with replacement, carrying
+all of each entity's targets, words, channels, families, and both replays
+together. Store and hash the ordered \(2000\times24\) index table before
+reading a scientific output. The empirical 5th and 95th percentiles are the
+one-sided lower and upper **entity-cluster stability bounds**. They are not
+confidence intervals and make no population-coverage claim.
+
+All numerical constants are bound now:
+
+| constant | bound value | one-line justification |
+|:---|---:|:---|
+| \(\varepsilon_0\) | \(10^{-5}\) | A nonzero float32 floor prevents exact-zero language while staying far below the material criterion. |
+| \(k_B\) | \(2\) | Two endpoint laws can each move by \(\eta\), giving the metric triangle-inequality factor \(2\). |
+| \(k_E\) | \(4\) | Both \(R_i\) and \(V_i\) can move by \(2\eta\), so their difference needs factor \(4\). |
+| \(\delta\) | \(0.02\) | Two percent of normalized square-root-JS range is the predeclared material slack beyond native target variation. |
+| \(\delta_{\rm move}\) | \(0.02\) | An edit must improve the paired excess criterion over no edit by a material 0.02, not merely change sign. |
+| \(\delta_{\rm spec}\) | \(0.02\) | Correct-label centroids must beat the cycled wrong label by the same material margin. |
+| replay invalidity ceiling | \(10^{-4}\) | Replay drift above ten times the fixed floor voids the deterministic numerical implementation. |
+| resamples \(B\) | 2,000 | This matches the repository's registered cluster-resampling resolution without adding model calls. |
+| stability tail \(\alpha\) | 0.05 | The 5th/95th one-sided descriptive bounds are stringent but are not sampling intervals. |
+| bootstrap generator and seed | PCG64, 4141 | A named generator and Round-41-specific seed make the entity index table exactly reproducible. |
+| forecast safety factor | 1.5 | A 50% margin covers hook-path and checkpoint overhead without hiding it in the call count. |
+| CPU forecast ceiling | 90 minutes | This is the user-directed abort boundary for calling the artifact small enough to attempt on CPU. |
+
+Thus
+
+\[
+\varepsilon_B=\max(10^{-5},2\eta),
+\qquad
+\varepsilon_E=\max(10^{-5},4\eta),
+\qquad
+\tau=\varepsilon_E+0.02.
+\]
+
+An individual measured bridge discrepancy exceeding \(\varepsilon_B\) in
+both replays is a tolerance-robust registered-access refutation in the
+registered numerical implementation. It invokes Theorem 7 as an exact bridge
+refuter only if the positive discrepancy has a certified numerical-error
+bound. Otherwise absence of an exceedance is only `NOT REFUTED AT REGISTERED
+ACCESS`.
+
+### Statuses and exact implications
+
+Let \(L_E,U_E\) be the entity-cluster stability bounds for
+\(\Theta_{24}\), \(L_{\rm src},U_{\rm src}\) those for the paired source
+contrast, and \(L_{\rm spec},U_{\rm spec}\) those for the wrong-label
+contrast.
+
+1. `INVALID` applies to any manifest/hash/row/token/site/shape/nonfinite-law,
+   numeral-token, response-totality, call-table, replay, DAG-cut continuation,
+   plain-versus-hook, lift/intertwining, `Q P` token-order, or paste-back
+   fixture failure. Any `INVALID` closes the run with no scientific verdict.
+2. `NATIVE PASTE PASS` requires both \(U_E(m^{\rm nat})\le\tau\) and
+   \(U_{\rm src}(m^{\rm nat})\le-(\varepsilon_E+0.02)\). It says the
+   conjectured proximal site-sufficiency control fits the registered target-
+   fiber criterion and prospectively improves it over the unedited source
+   across the fixed population. It does not validate centroid formation.
+3. `NATIVE PASTE FAIL` applies if \(L_E(m^{\rm nat})>\tau\) or
+   \(L_{\rm src}(m^{\rm nat})>-(\varepsilon_E+0.02)\). Every other valid
+   native-paste result is `NATIVE PASTE INCONCLUSIVE`.
+4. Unless native paste passes, correct- and wrong-centroid endpoints are
+   `DIAGNOSTIC ONLY — PROXIMAL CONTROL NOT PASSED`; no centroid PASS is
+   available.
+5. Conditional on native-paste PASS, `CENTROID PASS` requires all three gates:
+   \(U_E(m^{\rm cent})\le\tau\),
+   \(U_{\rm src}(m^{\rm cent})\le-(\varepsilon_E+0.02)\), and
+   \(U_{\rm spec}\le-(\varepsilon_E+0.02)\).
+6. Conditional on native-paste PASS, `CENTROID REFUTATION` applies if
+   \(L_E(m^{\rm cent})>\tau\),
+   \(L_{\rm src}(m^{\rm cent})>-(\varepsilon_E+0.02)\), or
+   \(L_{\rm spec}>-(\varepsilon_E+0.02)\). Every remaining valid centroid case is
+   `CENTROID INCONCLUSIVE`.
+7. `INCOMPLETE — CPU HARD WALL` applies if an otherwise valid locked run hits
+   its wall before all 2,688 call units and both replay schedules are complete;
+   partial endpoints receive no scientific status.
+
+Only `CENTROID PASS` licenses:
+
+> Across the 24 registered entities, the correct centroid edit has
+> registered-access mean excess discrepancy within the native target-fiber
+> criterion and prospectively improves that criterion relative to both no
+> edit and the cycled wrong-label centroid.
+
+It does not license an exact bridge, target-place identity, unseen-future
+control, reachability, a register, storage, persistence, dimension, native
+latent mathematics, fiber separation, every-entity success, or model-family
+generality.
+
+### Mechanical-only smoke, forecast, hard wall, and abort rule
+
+The prospective smoke subset is entities \(i\in\{0,23\}\), words
+\(\epsilon\) and \(a_Qa_P\) (`Q P`), and both replay orders. For each such
+tuple, execute plain \(x_i\), unchanged-hook \(x_i\), plain \(y_i^*\), and
+same-carrier paste-back \(y_i^*\): exactly 32 mechanical call units. These
+outputs are used only for the three fixtures and timing, never for a
+scientific effect or population status.
+
+The fixtures are:
+
+1. same-carrier paste-back equals its plain \(y_i^*\) law to the replay floor;
+2. registered DAG-cut/hook continuation on unedited \(x_i\) equals plain
+   forward execution to the replay floor; and
+3. the stored execution-order IDs for `Q P` equal
+   `ids(a_P) || ids(a_Q)` under D1 rightmost-first execution.
+
+Let \(s_{\rm smoke}\) be the larger of mean wall seconds per plain invocation
+and mean wall seconds per hooked invocation across the 32 calls; model load,
+manifest checks, and metric reduction are reported separately. This prevents
+the cheaper path from diluting a slower hook path. The CPU forecast and hard
+wall are
+
+\[
+F_{\rm CPU}=1.5\,s_{\rm smoke}\,(2688)/60\ \text{minutes},
+\qquad
+H_{\rm CPU}=5\left\lceil F_{\rm CPU}/5\right\rceil\ \text{minutes}.
+\]
+
+If \(F_{\rm CPU}>90\) minutes or \(H_{\rm CPU}>90\) minutes, abort before a
+scientific forward pass. The only offered alternative is one small GPU burst,
+and only after explicit user approval plus a detached, checkpointed
+mechanical smoke demonstrates that the exact hook path is GPU-safe. No CPU and
+GPU endpoint laws may be mixed in one claiming artifact.
+
+After a valid smoke and only after an audit permits preparation, a lock row
+must bind the manifest hash, exact 2,688 count, smoke artifact hash,
+\(s_{\rm smoke}\), \(F_{\rm CPU}\), \(H_{\rm CPU}\), runner/config hashes,
+all constants, statuses, and stop rule before any scientific forward pass.
+There is no lock row in Round 41.
+
+### Prospective runner stages — exactly ten lines, no code in Round 41
+
+1. Load the draft config, verify source hashes, and build the 96-row manifest table without loading the model.
+2. Enumerate and hash all words, endpoint tuples, replay orders, donor sets, constants, and the 2,688-call table.
+3. Load the pinned tokenizer and `SubstitutionProbe` model, assert resolved identities, freeze parameters, and disable gradients.
+4. Retokenize every row and word, assert numeral tokens, site positions, masks, positions, no-cache policy, and the registered DAG cut.
+5. Register the block-16 post-block replacement hook using the existing `run_onewrite_state.py` hook pattern and enforce exactly one matched write per hooked call.
+6. Run only the 32-call mechanical smoke, evaluate the three fixtures, and compute the smoke-derived CPU forecast and hard wall.
+7. Refuse scientific mode unless audit authorization and the complete pre-science lock row match every manifest, runner, config, count, and timing hash.
+8. Execute replay A then replay B with per-call and per-entity checkpoints, caching each full law and donor residual once under its unique tuple key.
+9. Validate replay, totality, and completeness, then derive `c_9`, bridge discrepancies, exact finite-population estimands, paired contrasts, and entity-cluster stability bounds.
+10. Apply the immutable status tree, write the result/manifest/checkpoint hashes, and stop without post-outcome repair, rerun, or population adaptation.
+
+The new runner, if later authorized, is
+`experiments/run_native_bridge.py`. Round 41 deliberately does not create it.
+
+### Stop rule and audit #46 checklist
+
+There is no repair after any scientific output. Any `INVALID` closes
+`native_bridge_v1`; any complete valid FAIL, REFUTATION, or INCONCLUSIVE is the
+registered result; any hard-wall stop is permanently `INCOMPLETE — CPU HARD
+WALL`. Changing a row, word, site, target, control, constant, replay schedule,
+or threshold after output would be a different named artifact and requires a
+new dialogue and preregistration. No same-check repair is permitted.
+
+Audit #46 must check:
+
+1. the exact audit-#45 edits 1--10 in `theory/AXIOMS.md` and their propagation
+   into this draft;
+2. the 96 explicit row IDs, three-target nonindependence wording, donor-set
+   cardinalities, cycled wrong label, and tokenization assertions;
+3. the canonical DAG-cut/no-descendant definition and the conditional status
+   of faithful continuation and lift intertwining;
+4. the batch-one token/mask/position/no-cache construction and whether the
+   existing hook pattern really instantiates that cut without a descendant in
+   the continuation record;
+5. the \(2\eta\) and \(4\eta\) triangle-inequality propagation, fixed
+   constants, and finite-population/descriptive-stability semantics;
+6. the no-edit and wrong-label contrasts and every native/centroid
+   PASS/FAIL/REFUTATION/INCONCLUSIVE implication;
+7. the certified exact-refutation versus tolerance-robust numerical-
+   implementation wording and the claim wall;
+8. the exact call-unit definition, eight families, 2,688 pre-dedup and
+   deduplicated counts, 32-call smoke, forecast equation, 90-minute abort, GPU
+   condition, and required pre-science lock row;
+9. the ten-stage runner contract and the no-repair/any-INVALID-closes stop
+   rule; and
+10. whether this program should continue and whether this remains the
+    highest-leverage bounded next artifact.
+
+Audit #46 is a lock-readiness review of the mathematics and preregistration
+draft. It does not itself create a runner, manifest, smoke forecast, lock row,
+or authorization for scientific compute.
+
+Measurement-to-artifact heartbeat: Round 41 adds 0 apparatus lines and 0
+artifact-bearing code lines, \(0/0\). It is one theory/build round. After audit
+#45's \(30:13\) accounting, the cumulative measurement/governance-to-build
+ratio is \(30:14=2.14:1\), still above the \(2:1\) warning and below the
+\(5:1\) halt.
