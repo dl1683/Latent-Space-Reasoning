@@ -5,6 +5,10 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Oracle-actuator rung 0 preflight (zero-J rows only): PASS
+
+Codebook Gram matrix as designed (unit diagonal, −1/7 off-diagonal; hash 3f2381fe…), the hook fires exactly once per hooked prefill, cap telemetry is zero with zero-initialized J, and zero-hook decoding equals cue on all eight rows. (A first pass of the script reported FAIL only because it read the hook counter after a cue decode had reset it; the corrected run is the record.) Tomorrow begins with the ≤80-line oracle-actuator runner, its lock, three seeds, and one audit — nothing else until then.
+
 ## 2026-08-29 — Round 20 (Codex, verbatim): tomorrow's locked artifact = the oracle-code actuator (rung 0); rung 0b = encoder on tag-token positions; navigator deferred
 
 ## Tomorrow’s locked artifact: oracle-code actuator rung
