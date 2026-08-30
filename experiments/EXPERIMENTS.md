@@ -54,13 +54,143 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 - **`onewrite_state_v1` — KILLED PRE-LOCK** (ledger
   `onewrite_state_v1_killed_prelock`): the base model cannot apply a stated
   rule to visible tags; no state hypothesis was tested. Entry below.
-- **`onewrite_recall_v1` — BUILT; pre-lock validation referred (Codex round
-  17); not locked, not run** (ledger `onewrite_recall_v1_validation`,
-  `onewrite_recall_v1_validation_r16`). Entry below.
-- **`necessity_navigator_v1` — BUILT, smoke-tested; optional one-round
-  calibration control; UNRUN** (ledger `direction_r12_ruling`). Entry below.
+- **`onewrite_recall_v1` — REGISTERED CONSTRUCTION-LEVEL FAIL, CLOSED**
+  (unanimous, seeds 11/23/37; audit #32 adopted verbatim `3a47fd8`; ledger
+  `onewrite_recall_v1_lock`, `onewrite_recall_v1_seed11`,
+  `direction_r18_ruling`, `onewrite_recall_v1_result`,
+  `onewrite_recall_v1_audit32`). Entry below.
+- **`necessity_navigator_v1` — BUILT; audit-#32 blockers FIXED; post-fix
+  smoke only; DEFERRED, not cancelled** (round 19; ledger
+  `navigator_smoke_r32fixes`, `direction_r19_ruling`). Entries below.
+- **`onewrite_recall_rung1` — staircase RUNG 1, LOCKED, RUNNING; no result
+  yet** (governance amendment 8; ledger `onewrite_recall_rung1_lock`).
+  Entry below.
 
-## onewrite_recall_v1 — single-fact one-write recall channel on frozen Qwen3-1.7B-Base: BUILT; pre-lock validation referred; not locked, not run (2026-08-29; ledger `direction_r15_ruling`, `onewrite_recall_v1_validation`, `direction_r16_recall_gates`, `onewrite_recall_v1_validation_r16`)
+## onewrite_recall_rung1 — positive-control staircase rung 1 (training entities, training wording, zero delay): LOCKED, RUNNING, no result yet (2026-08-29 night; ledger `direction_r19_ruling`, `onewrite_recall_rung1_lock`; commit `c71d44a`)
+
+- **Why (governance amendment 8, `AGENTS.md`; audit #32).** The common
+  explanation of the day's closures is that bespoke instruments and actuators
+  were changed before the proximal mechanism was shown learnable (the v1
+  interface never learned tag identity even on training entities: own-write
+  4/24, own vs counterfactual outputs identical 24/24). The loop now keeps one
+  cumulative artifact and climbs a staircase: (i) own-write vs same-entity
+  counterfactual specificity on training items at zero delay; (ii) zero/short
+  delay; (iii) held-out names; (iv) unseen wording; (v) long delay — one
+  difficulty per rung, each locked, run and audited once. Replaces "one locked
+  artifact per day".
+- **Lock (Codex round 19).** Same runner `experiments/run_onewrite_recall.py`
+  and one-write machinery as v1 (frozen Qwen3-1.7B-Base, E/J interface,
+  block-12 slot write, strict decoding, 8 tags, same-entity counterfactual
+  donors); config `experiments/config/onewrite_recall_rung1.json`. Every later
+  difficulty removed: 24 TRAINING entities, training wording
+  `TAG OF {NAME}:`, zero intervening tokens (target = slot + VALID TAGS line +
+  query); 24 entities x 2 training source phrasings = 48 cases per arm per
+  seed; arms write/cue/zero-hook/wrong/random/visible; gates unchanged from v1
+  (write >= 0.75; write − cue >= 0.50, LB > 0.30; write − random >= 0.50, LB
+  > 0.30; random <= 0.20; recovery >= 0.60; per-source >= 0.70; counterfactual
+  follow >= 0.60 and >= 0.40 over the cue-cf rate; completion >= 0.95 in
+  write/wrong/random/visible; zero-hook = cue row-for-row).
+- **Pre-lock validation PASS** (`experiments/results/onewrite_recall_rung1/validate_result.json`):
+  visible 1.0, cue 0.125 (chance), visible completion 1.0, cue completion
+  0.96, zero-hook = cue. No outcome inspected before the lock.
+- **Rule.** If rung 1 fails, this interface stops without testing later rungs;
+  if it passes, the next rung changes exactly one difficulty. Status: running;
+  nothing licensed.
+
+## necessity_navigator_v1 — audit-#32 blockers fixed; post-fix smoke (code-path validation, NOT a result); comparator rule; DEFERRED (2026-08-29 night; ledger `navigator_smoke_r32fixes`, `direction_r19_ruling`; commits `faa7a64`, `c71d44a`)
+
+- **Fixes (`faa7a64`).** Swap rollout continues from the donor state with
+  the NEXT step's input (no duplicated step); manifest hash binds goal words,
+  permutation triples, times, walk actions and poses; untrained controls on
+  identical inputs; comparator per the lock text.
+- **Smoke (2000 steps, seed 11, reduced readouts;
+  `experiments/results/necessity_navigator_v1/smoke_result.json`; NOT a
+  result).** Held-out top-1 in A* 0.879 vs historyless control 0.484 (valid).
+  Causal swap: donor recurrent state inserted into a recipient episode under a
+  different symbol permutation moves behaviour to the donor place — swap 0.90
+  vs noswap 0.47 / wrong-place 0.41 / random 0.44; self reference 0.9025;
+  decision-4 0.90. Structural readouts fail: moves R 0.24 (untrained
+  same-input control 0.48); composition order accuracy 0.51 (chance),
+  commuting ratio 2.1; inverse ratio 0.63 (untrained 0.90); distance Spearman
+  0.30. With self in the comparator the uplift is −0.0025 by construction;
+  referred to round 19.
+- **Round 19 comparator rule (ledger `direction_r19_ruling`; config
+  `experiments/config/necessity_navigator_v1.json`, `c71d44a`).** `self` is
+  the oracle ceiling, excluded from both uplift comparators; locked swap rule:
+  swap >= 0.75; decision-4 >= 0.65; swap − max(noswap, wrong-place, random)
+  >= 0.25; mass uplift >= 0.50 over the same three; swap/self >= 0.80; self
+  reported as ceiling. All other gates, controls, seeds (3 x 4000 steps) and
+  status rules unchanged. Resolves an ambiguity in the lock; rescues nothing.
+- **Status: DEFERRED, not cancelled** — governance amendment 8 puts the
+  real-model proximal mechanism (rung 1) first; runs only after a direction
+  dialogue; no v2. Licensed user sentence (round 19, verbatim): "In a
+  non-registered 2,000-step smoke, the navigator's recurrent state
+  transferred across a new symbol permutation and drove donor-place behavior
+  at 0.90 accuracy—essentially matching the 0.9025 self ceiling and exceeding
+  no-swap, wrong-place, and random controls—but this validates only the
+  causal-swap instrument, not learned latent algebra or a navigator result,
+  because composition remained at chance at 0.51 and the four structural
+  readouts failed."
+
+## onewrite_recall_v1 — REGISTERED CONSTRUCTION-LEVEL FAIL, CLOSED (2026-08-29 night; unanimous seeds 11/23/37; ledger `direction_r17_amendment`, `onewrite_recall_v1_lock`, `onewrite_recall_v1_seed11`, `direction_r18_ruling`, `onewrite_recall_v1_result`, `onewrite_recall_v1_audit32`; audit #32 adopted verbatim `3a47fd8`)
+
+- **Lock (rounds 15–17; `1f2fcba`).** Round 17 amended the pre-lock protocol
+  gate (cue completion diagnostic with no minimum; zero-hook must reproduce
+  cue row-for-row else INVALID — NO VERDICT); validation PASS: visible 1.0
+  (A 1.0, B 1.0), visible completion 1.0, cue 0.0, cue completion 0.031.
+  Three seeds 11/23/37, 400 single-example steps each; 64 cases per arm per
+  seed (16 heldout entities x 2 source phrasings x 2 target wordings); arms
+  write/cue/zero-hook/wrong/random/visible.
+- **Result (`experiments/results/onewrite_recall_v1/train_result.json`;
+  4094 s).** Per seed, held-out raw recall after the one write
+  0.031/0.031/0.0625 = counterfactual-write = random-write; cue 0.0;
+  visible-copy 1.0; completion under any learned write 0.44/0.53/0.42
+  (content-independent tag-shaped nudge), cue/zero-hook 0.03; counterfactual
+  follow 0.16/0.13/0.16; zero-hook reproduces cue row-for-row in all seeds
+  (valid). Audit #32 replay: correct/counterfactual/random writes produced
+  identical raw text on 64/64 rows in seeds 11 and 23 and identical choices
+  on 64/64 (raw 62/64) in seed 37; no correct-tag signal below the parser.
+  Post-hoc seed-11 training-slice diagnostic: own-write 4/24, cue 2/24, own
+  vs counterfactual-source outputs identical 24/24 (diagnostic, not a
+  result).
+- **Licensed sentence (audit #32, verbatim):** Under the round-17-amended
+  behavioral readout—visible-copy accuracy 1.00 and cue accuracy
+  0.00—`onewrite_recall_v1` was a unanimous construction-level FAIL: across
+  seeds 11, 23, and 37, the correct-source intervention achieved held-out tag
+  accuracy 0.031, 0.031, and 0.0625, respectively, exactly matching the
+  same-entity counterfactual-tag and fixed-random arms within each seed,
+  while valid-tag emission rose nonspecifically from 0.031 in cue to 0.438,
+  0.531, and 0.422; therefore this 65,552-parameter, 16-dimensional
+  encoder/injector, trained for 400 single-example steps and applied once at
+  the norm-capped block-12 slot before the registered
+  filler/instruction/query sequence, did not establish a held-out causal
+  tag-recall channel.
+- **Never say (audit #32, verbatim):** “The fact was written but did not
+  survive.” “The experiment proved that the model cannot store a fact in
+  hidden state.” “Block 12 cannot support persistent memory.” “A
+  16-dimensional or 65,552-parameter interface is insufficient in principle.”
+  “The 71–73 filler tokens are the complete write-to-query delay.” “All three
+  seeds scored 0.031.” “The training loss proves that the train facts or tag
+  identities were learned.” “Correct and counterfactual writes had identical
+  raw text in all three seeds.” Their choices did; seed 37 had two non-tag
+  raw-text differences. “Random controls rule out every useful
+  intervention.” Only one fixed random state per seed was tested. “The
+  intervention had no effect.” It strongly changed valid-tag emission. “The
+  write was content-independent” without the construction qualifier; only its
+  saved downstream choices were nonspecific under these arms. “The original
+  preregistered instrument passed.” It passed the outcome-aware but
+  pre-training round-17 amendment. “More steps, another layer, a different
+  slot, a maintained state, or another objective would also fail.” “Frozen
+  language models lack native state or latent mathematics.” “This closes the
+  real-model route.”
+- **Rounds 18–19.** Round 18 (ledger `direction_r18_ruling`) read the result
+  as a clean negative on a valid instrument for the registered construction
+  only and licensed one navigator calibration run; its sentence is superseded
+  by audit #32 above. Round 19 (ledger `direction_r19_ruling`) deferred the
+  navigator and moved the one-write line to the staircase (rung 1 above).
+  Design and pre-lock history: next entry.
+
+## onewrite_recall_v1 — design and pre-lock record (2026-08-29; ledger `direction_r15_ruling`, `onewrite_recall_v1_validation`, `direction_r16_recall_gates`, `onewrite_recall_v1_validation_r16`; result entry above)
 
 - **Design (Codex direction round 15; gates and amendments round 16).**
   Runner `experiments/run_onewrite_recall.py`, config
