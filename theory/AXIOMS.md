@@ -87,11 +87,11 @@ sandwich, and affine check are proved under their stated assumptions. C1 and
 C2 in `theory/EXPERIMENTS.md` were retired unrun in round 37: C1 is a
 synthetic-consumer check; C2's query strings and several controls are carried
 forward, but its entity-by-state factorial coverage is not. C2 was retired by
-allocation, not by full mathematical subsumption. Audit #43 ruled the proposed
-intervention-bearing `native_horizon_v1` REVISE with NO COMPUTE. Round 38
-applied the corrections but ruled that the artifact does not run; its
-lock-readiness audit is deferred until the finite-access and surgeon-world
-mathematics below is audited and an artifact is judged worth locking.
+allocation, not by full mathematical subsumption. Mathematics audit #44
+adopted the LM mathematical extension and the round-39 finite-access/surgeon-
+world mathematics after the displayed type corrections. Conjecture 5 remains
+conjectured, execution remains unqueued, and `native_horizon_v1` is not
+selected.
 
 ### D1. Raw presented transition world — definition
 
@@ -912,7 +912,7 @@ the problem is epistemic: those theories commonly start with a supplied
 transition system, whereas a denizen must construct a usable map of unexecuted
 futures from finite local access.
 
-## Extension: language-model prompt worlds (proposed, rounds 37-38; audit #43 corrections applied; execution not queued)
+## Extension: language-model prompt worlds (ADOPTED by mathematics audit #44 after the displayed type corrections; rounds 37-38; execution not queued)
 
 This extension specializes the adopted foundation to prompt strings and keeps
 three structures separate: append continuations define future-response places;
@@ -1063,7 +1063,7 @@ Lay so-what: *How many questions must an inhabitant ask before two records
 become different places--and can one question really reveal everything that
 any later question could?*
 
-### D8. Append-relative span intervention — proposed definition
+### D8. Append-relative span intervention — ADOPTED by mathematics audit #44 after the displayed type corrections
 
 Fix the append action family \(\mathcal A_+\) and its distance \(d_\infty^+\).
 An executable span intervention is a deterministic, prospectively declared
@@ -1136,7 +1136,7 @@ horizon-\(2\) query table can witness place change and can falsify target
 identity, but cannot certify either full distance unless it also supplies a
 response-completeness certificate for every unmeasured branch.
 
-## Asymmetry of finite access and surgeon worlds (proposed, round 39; pending audit #44)
+## Asymmetry of finite access and surgeon worlds (ADOPTED by mathematics audit #44 after the displayed type corrections; round 39)
 
 This extension separates two questions that the prompt-only formulation had
 conflated. First, what can finite response access establish about the exact
@@ -1275,7 +1275,7 @@ Lay so-what: *an inhabitant can prove that two places differ with one decisive
 future, but agreement on every future it happened to inspect proves sameness
 only when a map or invariant also controls the futures it did not inspect.*
 
-### D9. Denizen and surgeon worlds — proposed definition
+### D9. Denizen and surgeon worlds — ADOPTED by mathematics audit #44 after the displayed type corrections
 
 A **denizen world** is a D1--D4 world
 
@@ -1283,18 +1283,20 @@ A **denizen world** is a D1--D4 world
 \mathfrak D=(Z,\mathcal A_D,C,(r_c),(D_c)).
 \]
 
-A **surgeon extension** keeps the same carrier, architecturally fixed base
-output when one is singled out, response channels, response laws, and outcome
-metrics, but enlarges the total deterministic action family:
+A **surgeon extension** keeps the same carrier, response channels, response
+laws, outcome metrics, and every denizen transition map unchanged, and adds
+total deterministic surgeon transition maps. Thus
+\(\mathcal A_D\subseteq\mathcal A_S\) and \(T_a^S=T_a^D\) for every
+\(a\in\mathcal A_D\). Every invalid-phase, missing-site, shape, or
+tokenization case enters a declared observable absorbing failure state on
+which every action and response law is defined.
 
 \[
 \mathcal A_D\subseteq\mathcal A_S.
 \]
 
 The extra moves may include prospectively declared residual edits at declared
-execution sites. Every edit must be a total endomap of the common \(Z\);
-off-site, shape, tokenization, or phase failures are sent to declared
-observable failure states. The denizen and surgeon metrics are
+execution sites. The denizen and surgeon metrics are
 
 \[
 d_\infty^D(x,y)
@@ -1308,14 +1310,14 @@ d_\infty^S(x,y)
 D_c(r_c(T_wx),r_c(T_wy)).
 \]
 
-A residual-edit instantiation cannot merely add an edit to the prompt-string
-carrier of Theorem 4. It must register a common phase-typed execution carrier
-containing both native prompt states and site-indexed internal configurations,
-define total denizen continuations and the same emitted-output response laws
-from those configurations, and register a native site lift
-\(\iota_\ell\) that maps a prompt to its unedited configuration at site
-\(\ell\). Without this carrier, \(m\iota_\ell(x)\) and a native target are
-not objects of one D1 world and the comparison is ill-typed.
+A residual-edit instantiation must declare a prompt-phase subset
+\(P\subseteq Z\), site-phase subsets \(H_\ell\subseteq Z\), and observable
+absorbing failure states \(F\subseteq Z\). Register a total site lift
+\(\iota_\ell:P\to H_\ell\cup F\) and its valid domain
+\(P_\ell=\iota_\ell^{-1}(H_\ell)\). Define every denizen and surgeon
+transition as a total endomap of \(Z\), and define the unchanged emitted
+response laws on every phase, including \(F\). Bridge endpoints must lie in
+\(P_\ell\). Without these declarations, the comparison is ill-typed.
 
 ### Theorem 8. Surgeon refinement and denizen reachability — proved
 
@@ -1374,11 +1376,13 @@ x\sim_Dy\Longrightarrow mx\sim_Dmy.
 Theorem 1 makes \(m\) nonexpansive for \(d_\infty^S\), not automatically for
 \(d_\infty^D\).
 
-### Native bridge test — proposed definition; exact equality is finitely refutable, not finitely confirmed in general
+### Native bridge test — ADOPTED by mathematics audit #44 after the displayed type corrections; exact equality is finitely refutable, not finitely confirmed in general
 
-Fix before inspection a source prompt \(x\), a native target prompt \(y_s\)
-whose declared record denotes target state \(s\), an execution site \(\ell\),
-and a total surgeon edit \(m_s\). The exact native bridge discrepancy is
+Fix before inspection \(x,y_s\in P_\ell\), where \(y_s\) is an exact
+prospectively registered prompt selected as the native target for label \(s\),
+and fix a total surgeon-only action
+\(m_s\in\mathcal A_S\setminus\mathcal A_D\) that is phase-valid on
+\(H_\ell\) and failure-total elsewhere. The exact native bridge discrepancy is
 
 \[
 B_s(x,y_s)
@@ -1424,31 +1428,380 @@ and the record did not exhaust denizen words or reachable places to prove the
 second. All audit never-say lists, especially the frozen-model and audit-#39
 boundaries retained in `STATE.md`, remain binding.
 
-### Round-39 artifact ruling and audit #44 gate — proposed direction
+### Round-39 artifact ruling after audit #44
 
 Theorem 7 ends the search for a universally positive finite-query identity
-certificate: finite agreement needs an external completeness invariant. The
-next candidate artifact, after audit #44 and only if it adopts D9's typing, is
-therefore a small-budget **refutation-oriented native bridge test** on one real
-model and the proximal positive-control rung, using a phase-typed common
-carrier, the model's unchanged emitted law, denizen words only in the bridge
-metric, and tolerance-based population criteria. It may refute exact target-
-place realization or fail to refute it; it cannot positively certify exact
-identity from a finite table. Theorem-4 fixtures remain useful implementation
-checks but are not the central artifact, and `native_horizon_v1` remains
-unqueued. No preregistration or computation is authorized by this section.
+certificate: finite agreement needs an external completeness invariant.
+Before any native-bridge preregistration, one math-first specification must
+instantiate the common phase carrier and total transitions, define the finite
+registered bridge lower bound, define an approximate population criterion
+relative to replay and native target-fiber variation, and state the proximal
+positive control and every outcome implication. Only after that specification
+is audited may a small real-model refutation-oriented bridge artifact be
+considered. Exact bridge equality remains diagnostic; `native_horizon_v1`
+remains unselected; no computation is authorized.
 
-Audit #44 must check the counterexample against D1's word convention and D2's
-law typing; distinguish absence of a universal finite table from absence of
-finite invariant proofs; verify every finiteness premise in the abstraction
-corollary and the LM suffix/overflow boundary; require a genuinely common,
-phase-typed carrier with total denizen and surgeon moves; verify
-\(d_\infty^D\) versus \(d_\infty^S\), the quotient projection, both
-realization notions, site-lift/target typing, and the distinction between
-target-place matching and reachability; reject the unlicensed exact reading of
-the historical nulls; enforce all never-say lists; and answer whether the
-small bridge refutation is now the highest-leverage continuation before any
-artifact is locked.
+### Native bridge specification (proposed, round 40; pending audit #45)
+
+**Status.** The carrier, actions, restricted distance, excess-discrepancy
+estimand, and outcome meanings below are **defined**. The two carrier
+obligations and the restricted lower-bound statement are **proved**. The
+cross-prompt native-residual positive-control prediction and the centroid-
+write population criterion are **conjectured**. This is mathematics and
+typing only: no manifest is locked, no artifact is selected, and no compute is
+authorized.
+
+#### One-model, one-site population — defined
+
+Fix frozen `Qwen/Qwen3-1.7B-Base` at revision
+`ea980cb0a6c2ae4b936e82123acc929f1cec04c1`. Use only the existing,
+tokenization-verified explicit-legend rows for the 24 registered entities.
+For entity \(e_i\), let the source label be \(e_i\bmod 8\), let the target
+label be
+
+\[
+s_i=(e_i+1)\bmod 8,
+\]
+
+and choose one source prompt \(x_i\) and three independently presented intact
+target prompts
+
+\[
+\mathcal Y_{i,s_i}=\{y_{i,s_i}^{(1)},y_{i,s_i}^{(2)},y_{i,s_i}^{(3)}\}
+\]
+
+by a prospective row-ID rule across distinct registered templates. Thus the
+base evaluation set has \(24+24\times3=96\) prompts. The exact template,
+permutation-replicate, and row-ID rule remains to be bound only if audit #45
+licenses a later preregistration; it may not depend on a model output.
+
+There is one residual site: zero-based block \(\ell=16\), at the final token
+of the final record-tag occurrence, with
+\(h_{\ell,p}(x)\in\mathbb R^d\) the post-block residual
+(`hidden_states[17]`) at that one position. Block 16 is the layer selected in
+all three preflight folds, but the preflight pooled a two-token span. It did
+not validate this single-position site; that choice is new and must be audited
+as such.
+
+Let \(\mathcal A_D=\{P,Q\}\) be the two prospectively assigned append macros
+for a source unit: the registered first-query-token macro and its corresponding
+complete query macro. Their names denote deterministic total maps;
+missing entity metadata or context overflow goes to failure. For each pair,
+the registered word table is
+
+\[
+W_0=\{\epsilon,P,Q,PP,PQ,QP,QQ\},
+\]
+
+with D1's rightmost-first execution convention. The source-indexed literal
+token strings are fixed before outputs; the seven syntactic words are the same
+for every pair.
+
+#### Common phase-typed carrier and continuation — defined
+
+Let \(P_0\) be the 96 base prompts above. Define the prompt phase \(P\) as the
+closure of \(P_0\) under finite registered macro appends up to the model's
+declared context limit. No new natural-language prompt family is introduced:
+the base rows and macro strings already exist. Let
+
+\[
+F=\{f_{\rm phase},f_{\rm site},f_{\rm shape},f_{\rm token},
+f_{\rm overflow}\}
+\]
+
+be tagged observable absorbing failures.
+
+For the fixed site, a **continuation record** \(\kappa\in K_\ell\) contains
+the token IDs, mask, positions, immutable prefix caches and nonedited tensors
+needed to resume the frozen decoder from the post-block-\(\ell\) residual at
+position \(p\), the fixed tokens after \(p\), and the accumulated append
+suffix. It contains no upper-layer quantity that depends on the singled-out
+residual vector. Define
+
+\[
+H_\ell=K_\ell\times\mathbb R^d,
+\qquad
+Z=P\;\sqcup\;H_\ell\;\sqcup\;F.
+\]
+
+The deterministic map
+\(\operatorname{Cont}_\ell(\kappa,h)\) completes the frozen forward pass from
+that site, then processes the suffix stored in \(\kappa\), and returns the
+full next-token law at the resulting answer position. This is a lazy but
+extensional representation of ordinary causal execution: appending future
+tokens cannot change a past residual site. It is not an assumption that an
+implementation may omit any cache or tensor on which continuation depends.
+
+Define the total site lift
+
+\[
+\iota_\ell:P\longrightarrow H_\ell\cup F
+\]
+
+by running an unedited prompt through block \(\ell\), extracting its canonical
+continuation record and site vector, and returning the appropriate failure for
+a missing site, wrong tokenization, shape error, or overflow. Its valid domain
+is \(P_\ell=\iota_\ell^{-1}(H_\ell)\). Every \(x_i\) and every member of
+\(\mathcal Y_{i,s_i}\) must lie in \(P_\ell\).
+
+For \(a\in\mathcal A_D\), define \(T_a^D:Z\to Z\) by cases:
+
+1. on \(P\), append the registered macro and remain in \(P\), or enter the
+   declared token/overflow failure;
+2. on \((\kappa,h)\in H_\ell\), append the same macro tokens to the suffix in
+   \(\kappa\), retain \(h\), and remain in \(H_\ell\), or enter the same
+   declared failure; and
+3. on \(f\in F\), return \(f\).
+
+Thus a denizen append on \(H_\ell\) means continuing the forward pass from the
+site under the same future token append. It never means that the denizen made
+or re-applied a residual edit.
+
+The primitive channel \(c_{\rm full}\) emits the full next-token law; the
+derived channel \(c_9\) is its fixed Markov pushforward to digits \(0,\ldots,7\)
+plus `other`. On valid prompt states the response runs the ordinary frozen
+model; on valid site states it uses
+\(\operatorname{Cont}_\ell\). On failures the full outcome space is augmented
+by a tagged failure symbol, and \(c_9\) maps it to `other`. Both channels use
+normalized square-root Jensen--Shannon distance. Hence every response law is
+total on \(Z\), including \(F\).
+
+For every registered surgeon action \(m\), define \(m:Z\to Z\) by replacing
+the \(\mathbb R^d\) component only on a matching valid \(H_\ell\) state,
+sending a nonmatching prompt, site, token, or shape case to its declared
+failure, and fixing every state already in \(F\). Put these actions in
+\(\mathcal A_S\setminus\mathcal A_D\). The surgeon extension uses exactly the
+same \(T_a\) for every \(a\in\mathcal A_D\), the same carrier, and the same
+response laws.
+
+#### Carrier obligations — proved
+
+**Unchanged denizen transitions.** For \(u\in P\) and
+\(a\in\mathcal A_D\), both worlds apply the same registered token append or
+the same failure map, so \(T_a^S(u)=T_a^D(u)\). The same equality holds on
+\(H_\ell\) and \(F\) by the case definition. Therefore every denizen
+transition is unchanged on all of \(Z\), as D9 and Theorem 8 require.
+
+**Totality.** The tagged union exhausts \(Z\). Each denizen action has one
+defined branch on \(P\), one on \(H_\ell\), and one on \(F\). Each surgeon
+action likewise returns a valid edited site state, a declared failure, or the
+same absorbing failure. Thus every denizen and surgeon action is a total
+endomap of \(Z\). Responses are total by the preceding channel definition.
+
+Moreover, canonical causal continuation gives the site-lift intertwining
+
+\[
+T_w^D\iota_\ell(u)=\iota_\ell(T_w^D u)
+\]
+
+for every valid registered prompt/word pair before overflow: both sides retain
+the same past site vector and add the same future token suffix. A deterministic
+fixture must check this identity before any scientific arm; failure is a
+carrier implementation invalidity, not a model result.
+
+#### Finite registered bridge lower bound — defined; lower-bound property proved
+
+Let \(C_0=\{c_{\rm full},c_9\}\). For any registered source, designated exact
+native target, and total surgeon edit, define
+
+\[
+B_{W_0,C_0}(x,y_s;m_s)
+=d^D_{W_0,C_0}\!\left(m_s\iota_\ell(x),\iota_\ell(y_s)\right)
+=\max_{\substack{w\in W_0\\c\in C_0}}
+D_c\!\left(
+r_c(T_w^D m_s\iota_\ell(x)),
+r_c(T_w^D\iota_\ell(y_s))
+\right).
+\]
+
+Because \(W_0\times C_0\subseteq\mathcal A_D^*\times C\), Theorem 7 gives
+
+\[
+B_{W_0,C_0}(x,y_s;m_s)
+\le d_\infty^D\!\left(m_s\iota_\ell(x),\iota_\ell(y_s)\right).
+\]
+
+Let \(\varepsilon_{\rm rep}\) be the prospectively defined replay envelope.
+If the same registered word/channel discrepancy exceeds that envelope in both
+replay schedules, it is a tolerance-robust finite witness and refutes the exact
+bridge for that pair. Otherwise the only exact status is **not refuted at the
+registered access**. It is never confirmed by this table.
+
+#### Excess-discrepancy target-fiber estimand — defined; population claim conjectured
+
+Choose audit #44's **excess-discrepancy** form. For entity-pair \(i\), define
+
+\[
+R_i(m)=\operatorname*{median}_{y\in\mathcal Y_{i,s_i}}
+d^D_{W_0,C_0}\!\left(m\iota_\ell(x_i),\iota_\ell(y)\right),
+\]
+
+\[
+V_i=\operatorname*{median}_{\{y,y'\}\subset\mathcal Y_{i,s_i}}
+d^D_{W_0,C_0}\!\left(\iota_\ell(y),\iota_\ell(y')\right),
+\qquad
+E_i(m)=R_i(m)-V_i.
+\]
+
+The target prompts are independently presented native members of the same
+externally registered label fiber; neither the label nor the fiber is inferred
+from these distances. Define the finite-population estimand
+
+\[
+\Theta(m)=\frac1{24}\sum_{i=1}^{24}E_i(m).
+\]
+
+For a pair-indexed registered action family \((m_i)_{i=1}^{24}\), use the
+shorthand
+
+\[
+\Theta((m_i))=\frac1{24}\sum_{i=1}^{24}E_i(m_i).
+\]
+
+All target presentations and repeated words remain inside their entity
+cluster. A later preregistration, if licensed, must fix a paired entity-
+cluster bootstrap and report one-sided lower and upper bounds
+\(L_{1-\alpha}(m)\) and \(U_{1-\alpha}(m)\), all eight target-label strata,
+and the entity spread.
+
+The threshold structure is fixed before outcomes, although its numerical
+constants are not locked in this round. Let
+
+\[
+\eta=\max\{\text{identical-input replay discrepancy}\},
+\qquad
+\varepsilon_{\rm rep}=\max(\varepsilon_0,k\eta),
+\qquad
+\tau=\varepsilon_{\rm rep}+\delta,
+\]
+
+where \(\varepsilon_0>0\), \(k\ge1\), the material tolerance
+\(\delta>0\), the replay-invalidity ceiling, \(\alpha\), bootstrap count, and
+seed must all be bound prospectively. Then:
+
+- \(U_{1-\alpha}(m)\le\tau\) is an **approximate target-fiber PASS at
+  registered access**;
+- \(L_{1-\alpha}(m)>\tau\) is an **approximate target-fiber REFUTATION**; and
+- every valid interval overlapping \(\tau\) is **INCONCLUSIVE**.
+
+An \(E_i\le0\) value, up to tolerance, says only that the edited endpoint's
+median restricted response discrepancy from native targets is no larger than
+the registered median native target-to-target variation. Under Theorem 7 it
+does not establish exact equality, control unseen denizen futures, identify
+hidden states, or prove reachability. An approximate PASS may coexist with a
+small positive exact diagnostic \(B\); the approximate and exact questions are
+deliberately different.
+
+#### Proximal controls and the real edit — defined; predictions separated
+
+For each \(i\), take \(y_i^*=y_{i,s_i}^{(1)}\). The **same-carrier round-trip
+fixture** replaces \(h_{\ell,p}(y_i^*)\) by that identical vector while keeping
+the continuation record of \(y_i^*\). Its endpoint equals
+\(\iota_\ell(y_i^*)\) by construction, so every registered discrepancy is zero
+in exact arithmetic. A deviation beyond replay tolerance makes the artifact
+**INVALID — SITE CARRIER/HOOK**.
+
+The **proximal native-residual paste control** is the total surgeon action
+
+\[
+m_i^{\rm nat}(\kappa_i^x,h)
+=(\kappa_i^x,h_{\ell,p}(y_i^*)),
+\]
+
+with the declared failures elsewhere. It pastes a native target prompt's site
+vector into the source continuation record. The prediction
+\(\Theta(m^{\rm nat})\lesssim0\) up to \(\tau\) is **conjectured**. It is not a
+theorem merely from copying the vector: generally
+\(\kappa_i^x\ne\kappa_i^{y_i^*}\). Only the same-carrier round trip is zero by
+construction. This distinction is exactly what lets the control test whether
+one site vector is a sufficient proximal mechanism rather than hiding that
+assumption inside the carrier.
+
+The **real centroid write** inherits the audit-#38/#39 intervention form but is
+typed entirely inside this Qwen carrier. Let
+
+\[
+\mu_{s_i,-e_i}
+=\frac{1}{|\mathcal Y_{s_i,-e_i}|}
+\sum_{y\in\mathcal Y_{s_i,-e_i}}h_{\ell,p}(y)
+\]
+
+be the prospectively formed entity-excluding centroid of registered native
+target-site vectors with label \(s_i\). The surgeon action
+\(m_{s_i,-e_i}^{\rm cent}\) replaces the source site vector by
+\(\mu_{s_i,-e_i}\). Vector averaging is an analyst operation, not a denizen
+primitive or native geometry.
+
+Outcome implications are:
+
+1. If replay, tokenization, lift/intertwining, shape, response-totality, or the
+   same-carrier round trip fails, the artifact is **INVALID** and neither edit
+   has a scientific verdict.
+2. If the round trip is valid and
+   \(U_{1-\alpha}(m^{\rm nat})\le\tau\), the proximal control **PASSES**: a
+   native target residual is sufficient to land within registered target-fiber
+   variability at this site and access. If
+   \(L_{1-\alpha}(m^{\rm nat})>\tau\), it **FAILS**: residual-only transfer at
+   this site is not established, and the centroid arm is diagnostic only. An
+   overlapping interval is proximal **INCONCLUSIVE**.
+3. Only after a proximal PASS is the centroid write adjudicated. Its upper-
+   bound PASS licenses the sentence below. Its lower-bound REFUTATION rejects
+   this entity-excluding centroid write at this site and registered access,
+   not all residual bridges. An overlapping interval is **INCONCLUSIVE**.
+4. Independently of the population statuses, every replay-robust positive
+   \(B_{W_0,C_0}\) is reported as the corresponding pair's Theorem-7 exact-
+   bridge refuter; absence of one remains only not-refuted-at-access.
+
+#### Surgeon-only claim wall — defined
+
+This is a surgeon-world artifact. The site lift, residual capture, native
+paste, centroid formation, and centroid write are not denizen moves; only the
+registered append actions in \(W_0\) are denizen futures. A PASS licenses only:
+
+> The surgeon edit lands the state within the native target fiber's registered
+> response variability at registered access.
+
+It never licenses “Qwen has a register,” “a causal bridge exists,” exact
+target-place identity, denizen reachability from the source, hidden-state
+identity, storage, persistence, or model-family generality.
+
+#### Scope, evaluation-count bound, and ratio
+
+The scope is one frozen model, one block, one token position, 24 entity
+clusters, three native target presentations per entity, seven denizen words,
+and two response channels derived from the same next-token law. Per entity the
+six evaluated endpoint families are three clean native targets, the same-
+carrier round trip, the native-residual paste, and the centroid write. Two
+replay schedules therefore give the pre-deduplication upper bound
+
+\[
+24\times6\times7\times2=2{,}016
+\]
+
+model evaluations. Computing both channels adds no model call. Any later lock
+must give the exact lower deduplicated count and a runtime forecast; this round
+does neither.
+
+Round 40 adds no experimental apparatus and no artifact-bearing code
+\(0/0\); it is one theory/build round. Using audit #44's cumulative round
+accounting, the measurement/governance-to-build ratio becomes
+\(29:13=2.23:1\), still above the \(2:1\) warning and below the \(5:1\) halt.
+
+#### Audit #45 must check
+
+Audit #45 must verify: (1) that \(K_\ell\) is sufficient for faithful causal
+continuation and contains no quantity downstream of the edited residual; (2)
+the carrier partition, observable failures, global totality, unchanged denizen
+maps, and site-lift intertwining proof; (3) whether block 16/final-tag-token is
+a defensible single site despite the historical span pooling; (4) the
+source-indexed seven-word typing and both-channel Theorem-7 lower bound; (5)
+independence and adequacy of the three-prompt target fiber, entity-excluding
+centroids, clustered bounds, replay envelope, and tolerance structure; (6)
+the crucial distinction between the proved same-carrier round trip and the
+conjectured cross-prompt native-residual paste; (7) all PASS/REFUTATION/
+INCONCLUSIVE/INVALID implications and the \(2{,}016\)-evaluation ceiling; and
+(8) the surgeon-only claim wall and whether this remains the highest-leverage
+small artifact. Audit #45 does not itself authorize a manifest lock or run.
 
 ## Prior relational foundation (Rounds 1--12; superseded, retained for provenance)
 

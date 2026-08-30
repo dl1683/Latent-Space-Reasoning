@@ -9429,15 +9429,15 @@ therefore prevents any claim about a persistent residual state, storage, or a
 causal bridge. C2 is an observational identity/covariance check on prompt
 episodes only.
 
-## Rounds 37-38 — native_horizon_v1: native query horizon and span intervention in a real prompt world (PREREGISTERED PROPOSAL; audit #43 corrections applied; pending lock-readiness audit #44; NO RUN)
+## Rounds 37-38 — native_horizon_v1: native query horizon and span intervention in a real prompt world (Audit #43 corrections verified by audit #44; proposal NOT SELECTED; NO RUN)
 
 ### Status, ruling, and narrative gate
 
-Status: REVISE after audit #43; NO COMPUTE and not authorized to execute.
-Round 38 applies audit #43's required corrections 1--15, but audit #43 does
-not authorize a manifest lock, forward pass, config, runner, or result.
-Execution remains pending a fresh lock-readiness audit #44. No model forward
-pass, config, runner, result, or manifest was created in rounds 37--38.
+Audit #43 corrections verified by audit #44; proposal NOT SELECTED; NO RUN.
+Audit #44 adopts the LM mathematics but does not select, lock, or authorize
+`native_horizon_v1`. Round 38 applied audit #43's required corrections 1--15,
+but no model forward pass, config, runner, result, or manifest was created in
+rounds 37--38.
 
 The non-expert so-what is: *can changing one word in a model's record move it
 to the same operational place as a naturally written record of the new fact,
@@ -9814,8 +9814,9 @@ manifest hash, exact endpoint count, runner/config hashes, smoke-derived CPU
 forecast, hard wall, gates, statuses, and stop rule. Audit #43 does not itself
 authorize that lock or execution. No model run occurred in rounds 37--38.
 
-No new runner is created unless audit #44 finds the corrected proposal ready
-to lock. Any future implementation uses one canonical runner for manifest,
+Audit #44 did not select this proposal, so no runner, manifest, or lock is
+created for it. Any scientifically different future implementation requires
+its own audited specification and uses one canonical runner for manifest,
 produce, and separate reduce/fixture modes; all result claims enter
 experiments/ledger.jsonl and the experiment index or they did not happen.
 
@@ -9830,12 +9831,12 @@ off-direction, not because every one of its controls is mathematically
 subsumed. Neither historical preregistration may run in parallel or be
 resurrected after this result.
 
-### Audit #44 must check
+### Audit #44 checklist and disposition
 
-Audit #44 is a lock-readiness review, not authorization to execute. It must
-answer whether the program should continue, whether this is the
-highest-leverage next artifact, and whether `native_horizon_v1` should be
-locked at all. It must independently verify:
+Audit #44 completed this review and verified audit #43's corrections while
+ruling that `native_horizon_v1` is **NOT SELECTED; NO RUN**. It adopted the LM
+mathematics, not this artifact, manifest, lock, or execution. Its checklist
+was:
 
 1. Theorem 4's proof, append-only scope, macro-depth/token-length distinction,
    query-token accounting, and sliding-wrapper versus full-context boundary.
