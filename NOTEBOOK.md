@@ -5,6 +5,43 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — onewrite_recall_v1 seeds 11/23 FAIL; round 18 (Codex, verbatim): clean negative on a valid instrument; navigator runs once after the audit
+
+## Ruling
+
+Yes: this is a clean negative on a valid real-model instrument, but only for the registered construction. Visible-copy accuracy was 1.00 while cue accuracy was 0.00; zero-hook reproduced cue row-for-row; and correct, counterfactual, and random writes were indistinguishable in both completed seeds. The increased tag completion under every nonzero write is a content-independent nudge, not evidence that a fact was written and forgotten.
+
+Exact STATE/README sentence:
+
+> With a valid direct-recall instrument (visible 1.00; cue 0.00), `onewrite_recall_v1` failed its registered two-seed rule: the 65,552-parameter encoder/injector, trained for 400 single-example steps and applied once at the norm-capped block-12 slot, gave the same 0.031 held-out tag accuracy for correct, counterfactual, and random writes after a 71–73-token delay, so this fixed construction did not establish a transferable causal recall channel.
+
+The loss reduction licenses only that optimization fitted some aspect of the training objective. It does not show that train-entity facts were encoded in a transferable state.
+
+Never say:
+
+- “The model cannot store a fact in its hidden state.”
+- “The fact was written but did not survive 70 tokens.”
+- “Block 12 cannot support persistent memory.”
+- “A 65k-parameter interface cannot work in principle.”
+- “More training, another layer, or another write mechanism would also fail.”
+- “The loss curve proves the interface learned the facts.”
+- “Frozen language models have no native state or latent mathematics.”
+- “This closes the real-model route.”
+
+## Navigator ruling
+
+Run `necessity_navigator_v1` once, after seed 37 finishes and the required fresh audit closes the recall result. This satisfies the round-15 condition: the real-model readout was valid, and the registered intervention construction then failed substantively.
+
+The round-11 design and round-12 amendment remain unchanged: same \( \mathbb{Z}_{11}^2\rtimes C_4 \) world, GRU, training procedure, five tolerance-based readouts, seed aggregation, and numerical gates. BOUNDED POSITIVE still requires at least four of five readouts, with composition/noncommutativity and causal swap mandatory. If at least two seeds learn valid behavior but both mandatory readouts fail, close the claim that task necessity alone yields readable causal algebra; if fewer than two seeds learn valid behavior, close only this training construction. No repair run follows.
+
+Generating same-goal swap episodes is a permitted pre-lock implementation fix: it instantiates the already-registered test rather than changing its hypothesis. Freeze and hash an outcome-independent evaluation manifest with exactly 200 recipient–donor pairs, using held-out permutations, the same goal, and different underlying places. Each group must contain at least a third same-goal trajectory for the wrong-place control; the implementation must never fall back to using the donor as its own wrong control. Do not change any statistic, threshold, training sample, or status rule.
+
+## Three sentences for the user
+
+Today we obtained a clean negative on a real model: with a perfect visible-fact readout, the locked one-write interface produced the same near-zero held-out recall for correct, counterfactual, and random writes, so it did not carry fact-specific content. This closes one 65k-parameter block-12 additive construction—not persistent state or native latent mathematics—and satisfies our predeclared condition for one final navigator calibration. Next we will run that already-locked navigator once to ask whether a model forced to navigate an aliased world learns a readable, causally swappable map.
+
+Tomorrow’s single structural change: enforce **one locked artifact per day**. Its first hour is an end-to-end sample-and-control preflight; then the run, audit, and propagation must finish before another construction may be designed.
+
 ## 2026-08-29 — Round 15 (Codex, verbatim): keep the kill; next = `onewrite_recall_v1` (single-fact recall through a one-write channel)
 
 ## Program ruling
