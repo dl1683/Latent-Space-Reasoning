@@ -110,7 +110,9 @@ def cluster_lb(vals, clusters, rng, n, q=0.025):
 
 def readouts(W, cfg, model, untrained, perms, seed, log):
     rng = np.random.default_rng(1000 + seed); R = cfg["readout"]; lam = R["ridge_lambda"]; G = cfg["gates"]; out = {}
-    fit = collect(W, cfg, model, perms["fit"], rng, R["traj_per_perm"] * 4); test = collect(W, cfg, model, perms["test"], rng, R["traj_per_perm"] * 4); test_u = collect(W, cfg, untrained, perms["test"], rng, R["traj_per_perm"] * 4)
+    fit = collect(W, cfg, model, perms["fit"], rng, R["traj_per_perm"] * 4); test = collect(W, cfg, model, perms["test"], rng, R["traj_per_perm"] * 4)
+    with torch.no_grad(): _, Hu_all = untrained(torch.tensor(test["E"]["act"]), torch.tensor(test["E"]["obs"]), torch.tensor(test["E"]["phase"]))     # untrained GRU on IDENTICAL inputs
+    test_u = dict(test, H=Hu_all[:, cfg["world"]["goal_word_len"] + 1:].numpy())
     flat = lambda D: (D["H"][:, :-1].reshape(-1, D["H"].shape[-1]), D["H"][:, 1:].reshape(-1, D["H"].shape[-1]), D["a"][:, :-1].reshape(-1), D["pose"][:, :-1].reshape(-1), np.repeat(D["perm"], D["H"].shape[1] - 1))
     Hf, Hf1, af, pf, cf = flat(fit); Ht, Ht1, at, pt, ct = flat(test); Hu, Hu1, au, pu, cu = flat(test_u)
     # (a) approximate moves
@@ -157,7 +159,7 @@ def readouts(W, cfg, model, untrained, perms, seed, log):
         r, d, w = 3 * k, 3 * k + 1, 3 * k + 2
         cand = [t for t in range(5, test["H"].shape[1] - K - 1) if test["pose"][d, t] != test["pose"][r, t] and test["pose"][w, t] not in (test["pose"][r, t], test["pose"][d, t])]
         if cand: pairs.append((r, d)); ts.append(int(mrng.choice(cand)))
-    manifest_hash = hashlib.sha256(json.dumps({"gw": [g.tolist() for g in gw], "pk": [p.tolist() for p in pk], "t": ts}).encode()).hexdigest(); log(f"  swap manifest: {len(pairs)} triplets, hash {manifest_hash[:12]}")
+    manifest_hash = hashlib.sha256(json.dumps({"gw": [g.tolist() for g in gw], "pk": [p.tolist() for p in pk], "t": ts, "acts": E["act"].tolist(), "poses": E["pose"].tolist()}).encode()).hexdigest(); log(f"  swap manifest: {len(pairs)} triplets, hash {manifest_hash[:12]}")
     for (r, d), t in zip(pairs, ts):
         P1 = perms["test"][test["perm"][r]]; gd = test["pose"][d, t]; G_ = test["goal"][r]; wrong_b = r + 2
         states = {"swap": test["H"][d, t], "noswap": test["H"][r, t], "wrong": test["H"][wrong_b, t], "random": None, "self": None}
@@ -166,16 +168,16 @@ def readouts(W, cfg, model, untrained, perms, seed, log):
         Ed = E["act"][d:d + 1, :Lg + 1 + t + 1].copy(); Od = E["obs"][d:d + 1, :Lg + 1 + t + 1].copy(); Pd = perms["test"][test["perm"][d]]; inv = np.argsort(Pd); Od = P1[inv[Od]]
         with torch.no_grad(): _, Hs = model(torch.tensor(Ed), torch.tensor(Od), torch.tensor(E["phase"][d:d + 1, :Lg + 1 + t + 1]))
         states["self"] = Hs[0, -1].numpy()
-        acts = rng.integers(4, size=K); g = gd; prev = test["a"][r, t - 1] if t > 0 else 4
+        acts = rng.integers(4, size=K); a_t = int(test["a"][d, t])                                  # the action executed at step t of the donor episode
         for name, h in states.items():
-            h0 = torch.tensor(h, dtype=torch.float32).view(1, 1, -1); gg, pv, hits, ms = g, int(test["a"][d, t - 1]), [], []
+            h0 = torch.tensor(h, dtype=torch.float32).view(1, 1, -1); gg, pv, hits, ms = W.step_tab[gd, a_t], a_t, [], []      # next step: pose after a_t, previous action a_t
             with torch.no_grad():
                 for k in range(K):
                     lg, Hn = model(torch.tensor([[pv]]), torch.tensor([[int(P1[W.symbol(gg)])]]), torch.tensor([[2]]), h0); h0 = Hn[:, -1:].contiguous()
                     p = torch.softmax(lg[0, -1], -1).numpy(); o = W.opt[gg, G_]; hits.append(bool(o[p.argmax()])); ms.append(float(np.log(p[o].sum() + 1e-12))); pv = int(acts[k]); gg = W.step_tab[gg, pv]
             arms[name].append(hits); mass[name].append(ms)
     acc = {k: float(np.mean(v)) for k, v in arms.items()}; acc4 = {k: float(np.mean([x[-1] for x in v])) for k, v in arms.items()}; m = {k: float(np.mean(v)) for k, v in mass.items()}
-    best = max(acc[k] for k in ("noswap", "wrong", "random")); bestm = max(m[k] for k in ("noswap", "wrong", "random"))
+    best = max(acc[k] for k in ("noswap", "wrong", "random", "self")); bestm = max(m[k] for k in ("noswap", "wrong", "random", "self"))      # lock text: uplift over ALL controls incl. self
     out["swap"] = {"acc": acc, "acc_decision4": acc4, "mass_nat": m, "n_pairs": len(pairs), "manifest_hash": manifest_hash, "pass": acc["swap"] >= G["swap"]["top1_min"] and acc4["swap"] >= G["swap"]["decision4_min"] and acc["swap"] - best >= G["swap"]["uplift_min"] and m["swap"] - bestm >= G["swap"]["mass_uplift_nat_min"]}
     J = lambda o: o.item() if hasattr(o, "item") else (float(o) if isinstance(o, (np.floating,)) else str(o))
     for k, v in out.items(): log(f"  seed {seed} {k}: {json.dumps(v, default=J)}")
