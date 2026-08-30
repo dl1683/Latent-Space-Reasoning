@@ -1,0 +1,143 @@
+{
+ "name": "necessary_register_rung1",
+ "stage": "writer",
+ "purpose": "Rung 1 of the constructed-substrate staircase (Codex round 26): replay and freeze the audit-adopted rung-0 consumers (seeds 11/23/37), then train ONLY a source writer (64-d source embedding -> 1-layer GRU(128) -> biasless linear -> unit vector replacing the <REG> embedding) with the answer-label + EOS cross-entropy through the frozen consumer. No code regression, no cosine loss, no state classifier. Zero configured filler between <WRITE> and <REG>. Arms on held-out permutations: own (s_e = e mod 8), 7 counterfactual values, shuffled donor source (state-changing derangement within matched panel/template/permutation), masked value, zero, fixed random, oracle code, zero-hook identity. Code-space telemetry is diagnostic only. Not a language-understanding or native-mathematics result: the unique value token makes this a proximal supervised symbol writer.",
+ "rung0": {
+  "config": "experiments/config/necessary_register_v1.json",
+  "result": "experiments/results/necessary_register_v1/run_result.json",
+  "config_sha256": "498b8c8241643cfdc18c81a87dd4960486f1531c267daf7cc1f4cae8331246f6",
+  "result_sha256": "d09643e27cbd4ecea9173fde1e957d5f70c6662ee64648f32543c603641cc2e2",
+  "runner_sha256_at_rung0": "4543a970303235a1c351f3b5d17cef3c87de11b6c123378c780c2e4c330c9946"
+ },
+ "writer": {
+  "src_dim": 64,
+  "hidden": 128
+ },
+ "train": {
+  "seeds": [
+   11,
+   23,
+   37
+  ],
+  "steps": 3000,
+  "hard_wall_minutes": 90
+ },
+ "eval": {
+  "episodes_per_arm": 2304,
+  "n_random": 3,
+  "bootstraps": 2000
+ },
+ "gates": {
+  "termination_min": 0.95,
+  "acc_min": 0.9,
+  "acc_lb_min": 0.85,
+  "per_group_min": 0.8,
+  "agreement_min": 0.9,
+  "paired_dir_min": 0.85,
+  "paired_dir_lb_min": 0.75,
+  "donor_follow_min": 0.85,
+  "recipient_follow_max": 0.2,
+  "shuffled_effect_lb_min": 0.55,
+  "control_max": 0.2,
+  "lookup_train_min": 0.9,
+  "lookup_heldout_max": 0.8,
+  "lookup_gap_max": 0.15,
+  "oracle_recovery_min": 0.85,
+  "seeds_required": 2,
+  "seed_floor": 0.75
+ },
+ "preflight": {
+  "name": "register_bridge_preflight_v1",
+  "status_note": "Noncausal feasibility measurement (Codex round 27), NOT staircase advancement; runs after the writer rung; one CPU process at a time.",
+  "model": "Qwen/Qwen3-1.7B-Base",
+  "dtype": "float32",
+  "device": "cpu",
+  "tags": [
+   "fask",
+   "nimb",
+   "ruzz",
+   "pelt",
+   "gorm",
+   "twyl",
+   "hesk",
+   "vorn"
+  ],
+  "n_entities": 24,
+  "state_rule": "e mod 8",
+  "prompt": {
+   "legend": "Legend: {clauses}.",
+   "clause": "state {k} = {tag}",
+   "clause_order": "shuffled per row",
+   "record": "Registry: the private value for {entity} is {tag}.",
+   "templates_train": 2,
+   "templates_heldout": 2,
+   "permutation_banks": {
+    "count": 2,
+    "size": 8,
+    "balanced": "every tag occurs once for every state within each bank",
+    "disjoint": true
+   },
+   "delay": "zero"
+  },
+  "representation": {
+   "span": "final occurrence of the record tag span (never legend copies)",
+   "pooling": "mean residual over span",
+   "layers_zero_based": [
+    4,
+    8,
+    12,
+    16,
+    20,
+    24,
+    27
+   ],
+   "hidden_states_index": "layer+1"
+  },
+  "decoder": {
+   "type": "standardized ridge scores XW+b -> R^8 (rank <= 8)",
+   "ridge_grid": [
+    0.01,
+    0.1,
+    1,
+    10
+   ],
+   "outer_folds": 3,
+   "outer_holdout": "one entity per state (8 held-out entities)",
+   "inner": "entity folds for layer + ridge selection",
+   "eval": "held-out entities x held-out templates x held-out permutations"
+  },
+  "controls": [
+   "mean input embedding over the identical tag span",
+   "categorical linear baseline: tag identity, template, entity-as-OOV, span position, token length",
+   "token-matched context-destroyed prompt: legend pairings independently shuffled, token multiset preserved",
+   "200 entity-clustered shuffled-coordinate fits (permute training state assignments; evaluation truth retained)"
+  ],
+  "bootstraps": 2000,
+  "chance": 0.125,
+  "gates": {
+   "acc_min": 0.6,
+   "fold_min": 0.5,
+   "state_recall_min": 0.4,
+   "entity_lb_min": 0.45,
+   "control_advantage_min": 0.2,
+   "control_advantage_lb_min": 0.1,
+   "shuffle_null_p99_margin": 0.2
+  },
+  "statuses": [
+   "PREFLIGHT PASS \u2014 CONTEXTUAL SOURCE-SPAN CODE LINEARLY DECODABLE",
+   "PREFLIGHT PARTIAL \u2014 TOKEN/CONTEXT-BOUND DECODABILITY",
+   "PREFLIGHT FAIL \u2014 NO QUALIFYING LINEAR SOURCE-SPAN BRIDGE",
+   "INVALID \u2014 TOKENIZATION/SPLIT MANIFEST"
+  ],
+  "licenses": {
+   "pass": "frozen Qwen's tested source span contains a linearly accessible, presentation-transferring episode-defined state signal, warranting the required dialogue about moving register_bridge_v1 earlier",
+   "partial": "an engineering bridge from lexical/context features, not an abstract native state",
+   "fail": "this rank-eight zero-delay source-span route is not a supported bridge; it does not say Qwen lacks state"
+  },
+  "runner": "experiments/run_register_bridge_preflight.py",
+  "budget": {
+   "nonblank_lines_max": 140,
+   "cpu_minutes_approx": "35-50"
+  }
+ }
+}
