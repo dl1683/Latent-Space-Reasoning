@@ -5,6 +5,204 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — Audit #35 on site_oracle_v1 (fresh, unprimed; verbatim): FAIL upheld as an allocation stop only; 'cap active 21%' and '~36 tokens' corrected; random directions equal cue row-for-row; no reachable-channel claim licensed
+
+My 'narrow tag-selective channel' reading is withdrawn as a dimensional claim; the licensed residue is construction-bound HESK/VORN lexical sensitivity with strong context/threshold dependence.
+
+## Verdict
+
+The registered **`FAIL — BLOCK-12 SLOT/PROMPT EIGHT-WAY BOUNDED CONTROL` is upheld**.
+
+The predeclared no-repair consequence also stands, but only as an **allocation stop for the exact registered recipe**: frozen revision, block 12, final `Internal record:` slot, fixed prompt/tag set, cross-fitted mean first-token-margin gradients, one \(0.25\lVert h_{\text{slot}}\rVert\) dose, and strict greedy decoding.
+
+“The block-12 slot/prompt closes for actuator repair” is acceptable only with that allocation scope. The result does **not** scientifically close the slot, establish a low-dimensional causal channel, show that the intervention was adequately dosed, or exclude sequence-level, context-conditioned, or other site constructions.
+
+Two factual corrections are required:
+
+- “Cap active on 21% of rows” is technically true of the Boolean flag but scientifically misleading: the flag reflects floating-point behavior at the cap boundary, not meaningful clipping.
+- The queried first-token logits occur **42–43 tokenizer positions downstream**, not approximately 36.
+
+This is not working as an actuator-repair loop: `oracle_actuator_rung0` and `site_oracle_v1` are consecutive registered failures. The broader program should continue, but this exact branch should not.
+
+## Integrity and registered adjudication
+
+The current runner, config, and shared LM machinery hashes match those saved in `run_result.json`. The model revision is pinned, all 24 name rows and three folds are present, zero-hook equals cue row-for-row, and the registered baseline completion gate passes.
+
+| Quantity | Replay |
+|---|---:|
+| Target-direction follow | 50/192 = 0.260 |
+| Name-bootstrap lower bound | 0.214 |
+| Cue-to-assigned-tag match | 23/192 = 0.120 |
+| Random-to-assigned-tag match | 23/192 = 0.120 |
+| Target choices changed from cue | 45/192 = 0.234 |
+| Target completion | 183/192 = 0.953 |
+| Random completion | 184/192 = 0.958 |
+| Cue completion | 23/24 = 0.958 |
+| Fold follow | 0.234 / 0.281 / 0.266 |
+
+The random equality is stronger than the summary suggests: **all 192 fixed-random-direction strict choices reproduce cue row-for-row**. The common 0.120 match rate is exactly the inherited FASK cue prior—23 valid FASK cues divided over eight assigned tags—not an independent random-control success rate. This establishes that this one fixed set of eight random directions never crossed a strict-choice boundary; it does not establish unchanged random-arm logits or characterize a distribution of random directions.
+
+The FASK target direction also reproduces cue row-for-row. Consequently, the non-prior target directions follow their requested tag in only \(27/168=0.161\) rows.
+
+## Cap telemetry: no dose-response evidence
+
+Forty of 192 target rows have `cap_active=true`, but:
+
+- Every flagged scale is `0.9999999404`.
+- Their pre-cap/threshold ratio is `1.0000000882`.
+- The largest removed norm is \(7.63\times10^{-6}\).
+- Every intervention was constructed nominally at the threshold.
+
+This is normalization and floating-point rounding around an equality boundary. It is not a practically distinct lower-dose group.
+
+The nominally flagged rows follow at 0.125 versus 0.296 for unflagged rows, but the flag is concentrated in particular fold/tag directions—RUZZ, GORM, TWYL, and VORN. That comparison is therefore compositional and cannot be read as a dose response.
+
+The data contain exactly one substantive dose. They cannot determine whether the weak tags were under-dosed, whether the \(0.25\)-norm step was too large for a local gradient direction, or whether no useful finite dose exists.
+
+## Choice structure
+
+| Direction | Target follow | Changes from cue | Strict outputs |
+|---|---:|---:|---|
+| FASK | 23/24 | 0 | FASK 23, invalid 1 |
+| NIMB | 0/24 | 0 | FASK 23, invalid 1 |
+| RUZZ | 1/24 | 1 | FASK 22, RUZZ 1, invalid 1 |
+| PELT | 2/24 | 4 | FASK 19, PELT 2, VORN 1, invalid 2 |
+| GORM | 0/24 | 1 | FASK 22, VORN 1, invalid 1 |
+| TWYL | 0/24 | 10 | FASK 13, HESK 7, RUZZ 2, VORN 1, invalid 1 |
+| HESK | 13/24 | 13 | HESK 13, FASK 10, invalid 1 |
+| VORN | 11/24 | 16 | VORN 11, FASK 7, HESK 4, PELT 1, invalid 1 |
+
+NIMB does not push toward a specific wrong tag; it is exactly cue. The strongest off-target structure is TWYL→HESK/RUZZ/VORN. VORN itself divides between VORN, HESK, and PELT. Thus the effect funnels toward a small output set, but a strict-choice funnel is not a response-space rank measurement.
+
+HESK and VORN are the only material recurrent non-prior effects:
+
+- HESK: 5/8, 4/8, 4/8 by fold.
+- VORN: 3/8, 5/8, 3/8 by fold.
+- Eight names respond to both; eight respond to neither.
+
+The folds are not independent replications: each fold-specific direction is derived from 16 names, and the three derivation sets overlap. Cross-fitting licenses name-held-out behavior within the same prompt and vocabulary, not task, wording, or semantic generalization.
+
+## Tokenization, cue rank, and threshold confound
+
+All eight leading-space labels are exactly two tokens and have distinct first tokens. HESK and VORN share neither a token-count advantage nor a first-token collision.
+
+A pinned-model cue replay gives this mean first-token-logit order:
+
+> FASK, RUZZ, GORM, NIMB, PELT, VORN, HESK, TWYL.
+
+HESK and VORN are therefore not globally cue-favored. However, strict success is associated with smaller name-specific target-to-FASK gaps:
+
+| Tag | Mean cue rank, successes | Mean cue rank, failures | Target−FASK gap, successes | Gap, failures |
+|---|---:|---:|---:|---:|
+| HESK | 3.92 | 7.18 | −0.628 | −1.574 |
+| VORN | 4.91 | 5.92 | −0.784 | −1.076 |
+
+This is particularly strong for HESK. Its direction has a real causal strict-choice effect, but the apparent behavioral selectivity is partly governed by how close each name already placed HESK to the FASK decision boundary.
+
+The runner optimizes an infinitesimal first-token margin but evaluates a two-token greedy label after a large finite step. First-token uniqueness makes the surrogate sensible, but it remains a surrogate—not a “full sequence oracle.”
+
+## What the rung-0/site-oracle pair licenses
+
+The strongest joint explanation is:
+
+> At this exact site and prompt, finite strict-choice response is strongly tag- and context-dependent. Removing the learned shared J does not remove the concentration of effects, so J optimization was not its sole source; nevertheless, the concentration remains inseparable from baseline logit gaps, cross-name gradient averaging, local-to-finite extrapolation, the fixed norm, and the first-token greedy readout.
+
+Audit #34’s “anisotropic response under the learned J” is strengthened only to **anisotropic finite behavioral response under two related constructions**.
+
+The following stronger narratives are not established:
+
+- A one- or two-dimensional reachable channel.
+- An intrinsic HESK/VORN subspace.
+- A site capacity limit.
+- Successful storage or retrieval of two codes.
+- Failure of block-12 reachability.
+- Adequacy—or inadequacy—of the \(0.25\) dose.
+- A native structural property rather than prompt/output-boundary geometry.
+
+The site oracle removes the learned-J parameterization as the sole explanation. It does not remove the prompt, label set, residual norm, first-token objective, or greedy threshold.
+
+## Governance amendment 8
+
+If `site_oracle_v1` is treated as an intervention artifact, it bypasses the positive-control staircase: it combines name-level cross-fitting with a 42–43-position delay before training-item zero-delay specificity has been demonstrated.
+
+The run remains valid under its own registered diagnostic contract, but it must be classified as a **one-off localization measurement**, not advancement of the cumulative staircase artifact. It cannot localize failure among proximal actuation, cross-context alignment, and downstream propagation.
+
+## Program ruling
+
+The broader program should continue. The current block-12 `Internal record:` actuator-repair branch should not.
+
+The highest-leverage candidate after the mandatory 2–3-round direction dialogue is one terminal, properly nulled **budgeted reachable-response geometry** measurement—not another binary actuator. For each name, measure the Jacobian of the centered eight first-token logits with respect to the slot residual, then report:
+
+- Singular-value effect sizes scaled by the registered intervention budget and the name’s baseline logit gaps.
+- Effective rank, never numerical rank.
+- Per-name spread and cross-name subspace alignment/principal angles.
+- The spectrum of the mean Jacobian separately from the distribution of per-name spectra, so gradient cancellation cannot masquerade as low dimension.
+- Matched same-block slot and equal-length prompt nulls with causal distance and residual norm controlled.
+- Matched alternative tag sets or prompt realizations to separate slot geometry from this pseudoword/output-token geometry.
+- A small, preregistered finite-difference linearity check—not a dose sweep or new actuator verdict.
+
+That object could distinguish a narrow aligned response aperture from broad but context-misaligned sensitivity. It still would not prove finite-dose behavioral control.
+
+The deferred navigator should **not** run instead. It is a constructed GRU-world calibration question, not a diagnosis of this Qwen slot. Its smoke already supports the causal-swap instrument while composition and structural readouts fail. It remains eligible for one locked run only if the direction dialogue explicitly pivots to a constructed latent-space program.
+
+## Ranked next increments
+
+1. Propagate this audit’s corrections and conduct the required direction dialogue; authorize no run beforehand.
+2. If the dialogue agrees, lock one terminal reachable-response geometry study with matched nulls and a predetermined branch-to-artifact decision.
+3. If response rank is low relative to nulls and stable across names, treat it as a bounded prompt/site hole and use it as a design requirement for a next-generation latent space—do not repair this slot.
+4. If per-name rank is broad but alignment is weak, build a proximal context-conditioned artifact at staircase rung 0; if rank and alignment are broad, re-examine finite-dose/sequence readout only through a newly justified proximal construction.
+5. Run the navigator once only if the dialogue abandons the real-model reachability question in favor of the constructed-substrate calibration path.
+
+## Exact licensed sentence
+
+> **`site_oracle_v1` is a registered construction-level FAIL:** in frozen Qwen3-1.7B-Base, for each of three name folds and eight tags, a unit block-12 `Internal record:`-slot direction was formed by averaging the first-token-margin gradient over the other 16 names and injected once at a fixed \(0.25\lVert h_{\mathrm{slot}}\rVert\) on eight held-out-fold names; at the queried logits 42–43 tokenizer positions downstream, strict target following was 50/192 = 0.260 with name-bootstrap lower bound 0.214, comprising FASK 23/24 exactly equal to the cue prior, HESK 13/24, VORN 11/24, and only 3/120 across the other five non-prior tags, while all 192 fixed-random-direction choices reproduced cue row-for-row and completion remained 0.953–0.958. The reported 40/192 cap-active flags removed at most \(7.63\times10^{-6}\) residual norm and therefore reflect numerical boundary rounding, not a meaningful capped-dose condition. The construction did not provide balanced bounded eight-way decoded control; its positive residue is tag- and context-dependent cross-fitted lexical sensitivity for HESK and VORN under this fixed prompt, dose, and readout—not storage, retrieval, a two-dimensional channel, or a reachable-dimension limit. The predeclared closure is licensed only as an allocation stop for further repair of this exact slot/prompt recipe, not as scientific exclusion of block-12 reachability or other actuator constructions.
+
+## Never-say list
+
+Do not say:
+
+- “The cap was active on 21% of rows” without stating that the maximum removed norm was \(7.63\times10^{-6}\).
+- “Capped rows performed worse,” or “the cap caused the failure.”
+- “The experiment was under-dosed,” or “the fixed dose was adequate.”
+- “The effect survived approximately 36 tokens.” The pinned distance is 42–43 token-position steps.
+- “Two tags are controllable” without the fixed construction, fold counts, and base-gap qualification.
+- “HESK and VORN define two reachable dimensions.”
+- “The site exposes a narrow causal channel” as an established dimensional claim.
+- “Block 12 cannot support eight-way control.”
+- “The slot cannot carry a code.”
+- “Two codes were stored or retrieved.”
+- “Cross-fitting proves generalization.” Only names changed; prompt and tag vocabulary did not.
+- “Three folds are independent replications.”
+- “Random directions had no effect.” They produced no strict-choice changes; their logits were not saved.
+- “NIMB was redirected to a particular wrong tag.” It reproduced cue exactly.
+- “The first-token direction is a full sequence oracle.”
+- “The pair of experiments proves intrinsic anisotropy.” It proves construction-bound behavioral anisotropy; threshold and prompt geometry remain live.
+- “The site-oracle advanced the positive-control staircase.”
+- “The navigator must run next.”
+
+## Copy-ready README wording
+
+> **`site_oracle_v1` — REGISTERED CONSTRUCTION-LEVEL FAIL; EXACT RECIPE CLOSED AS AN ALLOCATION DECISION.** With no learned map, cross-fitted block-12 first-token-margin directions injected once at \(0.25\lVert h_{\mathrm{slot}}\rVert\) selected their requested tag in 50/192 strict decodes 42–43 tokenizer positions later. FASK contributed 23/24 by exactly reproducing the cue prior; HESK reached 13/24 and VORN 11/24, while the other five non-prior tags totaled 3/120. Every fixed-random-direction choice reproduced cue row-for-row. The nominal 21% cap-active rate was only floating-point boundary behavior, removing at most \(7.63\times10^{-6}\) norm. This fails balanced eight-way control and closes further repair of this exact slot/prompt/direction/dose/readout recipe, not block-12 reachability or hidden-state control generally. The positive residue is bounded tag- and context-dependent lexical sensitivity, not a two-dimensional channel, storage, or retrieval.
+
+## Copy-ready STATE wording
+
+> - **`site_oracle_v1` — REGISTERED CONSTRUCTION-LEVEL FAIL; exact recipe closed as an allocation stop.** Frozen Qwen3-1.7B-Base; no learned map; three name folds; eight cross-fitted unit directions formed from mean first-token-margin gradients on the other 16 names; one block-12 final-`Internal record:` injection at \(0.25\lVert h_{\mathrm{slot}}\rVert\); strict decoding 42–43 tokenizer positions downstream. Target follow was 50/192 = 0.260 (name-bootstrap LB 0.214): FASK 23/24 exactly matched cue, HESK 13/24, VORN 11/24, and the other five non-prior tags 3/120; folds were 0.234/0.281/0.266. All 192 fixed-random-direction choices equaled cue row-for-row; completion was 0.953–0.958 and zero-hook equaled cue. The 40/192 `cap_active` flags applied scale 0.9999999404 and removed at most \(7.63\times10^{-6}\) norm, so they are numerical boundary flags rather than a dose condition. Licensed residue: cross-fitted, construction-bound HESK/VORN lexical sensitivity with strong context/threshold dependence. This does not establish storage, retrieval, a narrow or two-dimensional channel, adequate dosing, or a block-12 reachability limit. Under governance amendment 8 this is a localization diagnostic, not staircase advancement. No further repair of this exact slot/prompt recipe; next action is the mandated direction dialogue. Rung 0b stays off and the navigator remains deferred pending that dialogue.
+
+## Ratio heartbeat
+
+Declared code-line classification for `run_site_oracle.py`:
+
+- Artifact-bearing scientific intervention/null/metric code: 31 lines.
+- Apparatus, preflight, and verdict plumbing: 26 lines.
+- Documentation and section comments: 8 lines.
+- Apparatus/artifact-bearing ratio: \(26/31=0.84\).
+
+This meets the incremental ratio target, but the predeclared “at least 45 artifact-bearing lines” is not met under this disjoint physical-line classification. Semicolon-packed physical lines make the metric brittle.
+
+At the round level, I classify `site_oracle_v1` as **measurement/control**, not building the cumulative staircase artifact; this audit is also measurement. Taking round 21’s declared 11:4 as the pre-run baseline gives **13:4 = 3.25:1**, above the governance warning threshold. It is below the 5:1 halt threshold, but it rules out another open-ended measurement chain.
+
+Blackboard convergence completed with no open signals. No repository files were edited; existing worktree changes were left untouched.
+
 ## 2026-08-30 — Round 22 (Codex, verbatim): pivot = one nulled reachable-dimension measurement of the closed slot, then write up the structured negative
 
 ## Ruling: choose A once, then D
