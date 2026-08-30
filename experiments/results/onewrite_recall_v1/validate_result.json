@@ -1,0 +1,568 @@
+{
+ "config": "onewrite_recall_v1",
+ "sha256": {
+  "runner": "456245eccc62f9af1b026598bef62a0153d6c44253f78ccfab0160b56a9f1432",
+  "config": "fc3d12c4cfd80b01164480079404ae26a7cf612476874bfc7bf0af91b697e706",
+  "machinery": "ba4aedfdd8458204d7abfd5de585c4b1be3d1e9986582a47428c91822c51bd7f"
+ },
+ "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
+ "validation": {
+  "summary": {
+   "visible_acc": 0.90625,
+   "cue_acc": 0.0,
+   "visible_completion": 0.90625,
+   "cue_completion": 0.0,
+   "visible_by_wording": {
+    "A": 0.875,
+    "B": 0.9375
+   }
+  },
+  "passed": false,
+  "rows": [
+   {
+    "fact": 0,
+    "wording": "A",
+    "tag": "GORM",
+    "visible": {
+     "text": " gorm",
+     "choice": "GORM",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " 123",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 0,
+    "wording": "B",
+    "tag": "GORM",
+    "visible": {
+     "text": " gorm",
+     "choice": "GORM",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " 123",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 1,
+    "wording": "A",
+    "tag": "BREL",
+    "visible": {
+     "text": " brel",
+     "choice": "BREL",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " 123",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 1,
+    "wording": "B",
+    "tag": "BREL",
+    "visible": {
+     "text": " brel",
+     "choice": "BREL",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " 123",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 2,
+    "wording": "A",
+    "tag": "ORIN",
+    "visible": {
+     "text": " orin",
+     "choice": "ORIN",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " 123",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 2,
+    "wording": "B",
+    "tag": "ORIN",
+    "visible": {
+     "text": " orin",
+     "choice": "ORIN",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " 100",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 3,
+    "wording": "A",
+    "tag": "QUON",
+    "visible": {
+     "text": " 100",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    },
+    "cue": {
+     "text": " 123",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 3,
+    "wording": "B",
+    "tag": "QUON",
+    "visible": {
+     "text": " quon",
+     "choice": "QUON",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " 123",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 4,
+    "wording": "A",
+    "tag": "NIMB",
+    "visible": {
+     "text": " nimb",
+     "choice": "NIMB",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " 123",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 4,
+    "wording": "B",
+    "tag": "NIMB",
+    "visible": {
+     "text": " nimb",
+     "choice": "NIMB",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " 100",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 5,
+    "wording": "A",
+    "tag": "RUZZ",
+    "visible": {
+     "text": " ruzz",
+     "choice": "RUZZ",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " 123",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 5,
+    "wording": "B",
+    "tag": "RUZZ",
+    "visible": {
+     "text": " ruzz",
+     "choice": "RUZZ",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " 123",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 6,
+    "wording": "A",
+    "tag": "FASK",
+    "visible": {
+     "text": " fask",
+     "choice": "FASK",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " 123",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 6,
+    "wording": "B",
+    "tag": "FASK",
+    "visible": {
+     "text": " fask",
+     "choice": "FASK",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " 100",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 7,
+    "wording": "A",
+    "tag": "VEP",
+    "visible": {
+     "text": " vep",
+     "choice": "VEP",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " 123",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 7,
+    "wording": "B",
+    "tag": "VEP",
+    "visible": {
+     "text": " vep",
+     "choice": "VEP",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " 100",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 8,
+    "wording": "A",
+    "tag": "KELD",
+    "visible": {
+     "text": " keld",
+     "choice": "KELD",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " 123",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 8,
+    "wording": "B",
+    "tag": "KELD",
+    "visible": {
+     "text": " keld",
+     "choice": "KELD",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " 100",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 9,
+    "wording": "A",
+    "tag": "MARN",
+    "visible": {
+     "text": " marn",
+     "choice": "MARN",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " 123",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 9,
+    "wording": "B",
+    "tag": "MARN",
+    "visible": {
+     "text": " marn",
+     "choice": "MARN",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " 123",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 10,
+    "wording": "A",
+    "tag": "PELT",
+    "visible": {
+     "text": " PELT",
+     "choice": "PELT",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " 123",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 10,
+    "wording": "B",
+    "tag": "PELT",
+    "visible": {
+     "text": " pelt",
+     "choice": "PELT",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " 100",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 11,
+    "wording": "A",
+    "tag": "TAZZ",
+    "visible": {
+     "text": " TAZZ",
+     "choice": "TAZZ",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " 123",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 11,
+    "wording": "B",
+    "tag": "TAZZ",
+    "visible": {
+     "text": " tazz",
+     "choice": "TAZZ",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " 100",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 12,
+    "wording": "A",
+    "tag": "HESK",
+    "visible": {
+     "text": " hesk",
+     "choice": "HESK",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " 123",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 12,
+    "wording": "B",
+    "tag": "HESK",
+    "visible": {
+     "text": " hesk",
+     "choice": "HESK",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " 100",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 13,
+    "wording": "A",
+    "tag": "TWYL",
+    "visible": {
+     "text": " 123",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    },
+    "cue": {
+     "text": " 123",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 13,
+    "wording": "B",
+    "tag": "TWYL",
+    "visible": {
+     "text": " 201",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    },
+    "cue": {
+     "text": " 123",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 14,
+    "wording": "A",
+    "tag": "SUTH",
+    "visible": {
+     "text": " suth",
+     "choice": "SUTH",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " 123",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 14,
+    "wording": "B",
+    "tag": "SUTH",
+    "visible": {
+     "text": " suth",
+     "choice": "SUTH",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " 123",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 15,
+    "wording": "A",
+    "tag": "DRASK",
+    "visible": {
+     "text": " drask",
+     "choice": "DRASK",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " 123",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   },
+   {
+    "fact": 15,
+    "wording": "B",
+    "tag": "DRASK",
+    "visible": {
+     "text": " drask",
+     "choice": "DRASK",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " 123",
+     "choice": null,
+     "completed": false,
+     "correct": false
+    }
+   }
+  ]
+ }
+}
