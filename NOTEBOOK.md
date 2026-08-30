@@ -5,6 +5,17 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — Re-contextualization at the pause (2-hour check-in; audit #39 in flight)
+
+Live question unchanged: can a real model's latent space carry a causally addressable, content-specific state, and what must a denizen of that space invent to navigate it? Where the picture stands: every frozen-model *actuator* failed (audits #27–#36); the constructed substrate is a working but trivial calibration (audits #37–#38); and the preflight — the first measurement that asks about the *source* rather than the actuator — says the explicit-legend state is linearly readable at layer 16 of Qwen3-1.7B-Base, transferring across entities, templates and permutations, with the paired destroyed arm showing the decoder reads the legend binding rather than the tag. That reframes the frozen-model negatives: the failures sat in write/actuation and in weak *generic-anchor* source extraction (`Internal record:` slot), not in the absence of a readable episode state at the record span.
+
+Alternatives held live for whoever restarts (mine; audit #39 adjudicates and its alternatives are adopted verbatim):
+1. The decodable signal is "which tag occupies the record" + "which legend slot names it" resolved by attention at layer 16 — a lookup, not a state; a bridge from it would inherit the same lookup character as the constructed consumer.
+2. Decodability ≠ addressability: rank-8 readability at the span says nothing about whether writing into that span moves behaviour; the cheapest next test is causal (audit #38's centroid-injection bridge), not another readout.
+3. The record span is not where a denizen keeps state across time; the delay rungs that killed the one-write line may kill this too — the first informative failure is decodability *after* filler, which is one config change away.
+4. A cheaper moot-maker: a 0.6B or 4B base with the same preflight would show whether the signal is scale-tied; and a plain token-level probe on the *legend* occurrence (0.944 here) suggests most of the information is already present where the tag is defined.
+Tunnel check: the program is pausing with two independent lines closed by audit and one open measurement; no repair ladder is live. Ratio ~23:7 (warning), which is why the restart rule requires a fresh direction dialogue before any build.
+
 ## 2026-08-30 — register_bridge_preflight_v1 result (provisional; audit #39 in flight) and the pause
 
 Devansh asked for a clean pause: finish and audit the running measurement, write a zero-context handoff, clean the sprawl, commit and push, then stop. The preflight (locked 8beb8e9) returned PREFLIGHT PASS — EXPLICIT-LEGEND STATE LINEARLY DECODABLE: held-out accuracy 0.815 (entity LB 0.779; folds 0.828/0.852/0.766; state recall 0.61–0.99), input-embedding 0.125, categorical 0.135, paired context-destroyed 0.016 with the destroyed arm following the legend-denoted state at 0.852, entitywise-max control advantage 0.642 (LB 0.602), balanced label-shuffle null mean 0.124 / p99 0.204, legend-occurrence reference 0.944, layer 16 selected in every fold. Ledger `register_bridge_preflight_v1_result` (d2acfe8). Provisional until audit #39; the pre-declared licence is only that frozen Qwen's tested source span contains a linearly accessible, presentation-transferring explicit-legend state signal — not a code-level or causal bridge.
