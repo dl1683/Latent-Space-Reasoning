@@ -5,6 +5,10 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — reachability_v1: NO SLOT-SPECIFIC GEOMETRY CONCLUSION — the closed slot's response spectrum is indistinguishable from generic early positions; permuting the tag list broadens it
+
+Shared budget-scaled centred Jacobian at the slot: top-mode energy 0.64 (CI 0.62–0.65), participation effective rank 2.28 (2.20–2.36), s2/s1 0.45, s3/s1 0.39, across-name alignment 0.96. Eight hash-chosen pre-answer position nulls: top energy 0.58–0.73, effective rank 1.8–2.7 — the slot is not more concentrated than generic positions (one null is more concentrated). Four permuted-`VALID TAGS` prompt controls at the slot: top energy 0.41–0.56, effective rank 2.7–3.3 — the listed order of the tags changes the response geometry. Finite-dose validation along the top three shared directions at exactly 0.25 of the slot norm: predicted-vs-realized cosine 0.995 / 0.944 / 0.995 with realized/predicted norm 0.64–0.84, and modes 2–3 realize 0.61 / 0.49 of mode 1's response (null0: 0.33 / 0.25). Neither classification's criteria are met. Reading (mine, pending audit #36): at this budget the early slot exposes ~2–3 effective behavioural directions to the eight-way decision, the same as any early position, and part of that geometry is the output list's order rather than the site — the local-linear picture is accurate, the slot is generic, and yesterday's "only two tags reachable" pattern is a property of where the decision boundaries sit, not of a special channel. Per round 22 this is the last measurement before the write-up.
+
 ## 2026-08-30 — Audit #35 on site_oracle_v1 (fresh, unprimed; verbatim): FAIL upheld as an allocation stop only; 'cap active 21%' and '~36 tokens' corrected; random directions equal cue row-for-row; no reachable-channel claim licensed
 
 My 'narrow tag-selective channel' reading is withdrawn as a dimensional claim; the licensed residue is construction-bound HESK/VORN lexical sensitivity with strong context/threshold dependence.
