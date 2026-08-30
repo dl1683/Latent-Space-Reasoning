@@ -5,6 +5,121 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Round 13 (Codex, verbatim): `onewrite_state_v1` locked design
+
+# `onewrite_state_v1` — locked design gate
+
+## Object
+
+Freeze Qwen3-1.7B-Base. Train only:
+
+\[
+E:\mathbb R^{2048}\rightarrow\mathbb R^{16},\qquad
+J:\mathbb R^{16}\rightarrow\mathbb R^{2048},
+\]
+
+for **65,552 parameters**. Encode \(z=E(\mathrm{LN}(h_{12}^{source}))\) from the final token of a neutral source anchor. In a separate target prefill, add \(Jz\) once to the final token of `Internal record:` at block 12. Clamp \(\|Jz\|_2\le0.25\|h_{\text{slot}}\|_2\).
+
+The slot occurs early; 64–96 tokens of new wording, rules, and the question follow it. Block 12 leaves the upper transformer layers to propagate the write into cached keys and values. Disable the hook before greedy continuation and assert that exactly one batch-position was modified. There is no continuation hook, repeated injection, reader, recurrent bus, or direct KV editing.
+
+## World and training
+
+Create **40 invented entities**, five for each combination of three binary nonce attributes:
+
+- `marn/suth`
+- `vep/keld`
+- `orin/tazz`
+
+Randomly assign balanced states to names. Use three entities per state—24 facts—for training and two per state—16 facts—for evaluation. Training and evaluation use disjoint entity names, source templates, target templates, and RNG streams.
+
+A source says, for example, that an entity’s three registry tags are `marn`, `keld`, and `orin`. The target names the entity but contains no selected attribute values. All possible values may appear symmetrically inside a rule.
+
+Training consequences, with mappings explicitly stated and counterbalanced across facts:
+
+- Attribute 1 → `PORT/VAULT`
+- Attribute 2 → `NORTH/SOUTH`
+- Attribute 3 → `RING/STAR`
+
+Entirely absent from optimization—labels and templates:
+
+- **Heldout H1:** whether exactly one of `marn` and `vep` applies → `CEDAR/QUARTZ`.
+- **Heldout H2:** the four combinations of attribute 2 and attribute 3 → `LARK/ORIEL/PINE/WREN`.
+
+Every heldout prompt states its rule and uses balanced label rotations, preventing a fixed label prior from solving the task.
+
+Initialize \(J=0\). Train seeds 11, 23, and 37 for 400 fixed single-example AdamW steps: learning rate \(3\times10^{-3}\), weight decay \(10^{-4}\), gradient clip 1.0. The sole loss is mean token cross-entropy on the correct decoded label for the three training families.
+
+The optimizer must never access heldout labels, templates, prompts, logits, outcomes, or stopping metrics. It also receives no prototype, reconstruction, persistence, contrastive, likelihood-uplift, or tolerance-fitting objective. Source facts never appear visibly in training target passages.
+
+## Demonstration
+
+Each heldout fact receives two H1/H2 cases under two unseen post-write wordings: 64 cases per seed. Decode greedily for at most 12 tokens, stopping at newline/EOS, and parse the first complete allowed label. Save every decoded string and report termination beside accuracy.
+
+| Arm | Intervention |
+|---|---|
+| Correct one-write | Encode the heldout source and write its state once. |
+| No-write / cue-only | Identical target with zero delta. These are operationally the same deterministic baseline and are computed once under both names. |
+| Wrong state | Write a heldout donor state whose correct answer differs; donor assignment is an on-manifold balanced derangement. |
+| Random state | Fixed Gaussian \(z\), centred and norm-matched to training states. |
+| Visible-text mediation | No write; insert the exact source fact visibly. This is the text-mediated ceiling. |
+
+Primary cases generate no state-specific word before the scored answer, eliminating the bus’s visible-output mediation path. Verdicts use raw decoded choices, never likelihood movement alone.
+
+## Gates
+
+Facts—not rows or seeds—are inferential units. Use 2,000 fact-cluster bootstraps and 200 paired sign-flip randomizations. Uniform descriptive chance is \(0.375\), averaging H1’s binary and H2’s four-way choice sets; paired arms are primary. A gate must pass in at least two seeds and in the across-seed median; report all seed values and ranges.
+
+**Behavioral instrument**
+
+- Visible-text accuracy ≥0.80.
+- Correct-write and visible-text termination ≥0.95.
+- Cue-only accuracy ≤0.50.
+
+**Heldout transfer and survival**
+
+- Correct-write accuracy ≥0.75 overall and ≥0.70 in each heldout family.
+- Difference between the two unseen wording templates ≤0.15.
+- Correct-write minus cue-only accuracy ≥0.25, with fact-bootstrap lower 95% bound >0.10.
+- Correct-write minus random-state accuracy ≥0.20.
+- Hidden recovery fraction  
+  \[
+  \frac{A_{\text{write}}-A_{\text{cue}}}
+       {A_{\text{visible}}-A_{\text{cue}}}\ge0.60.
+  \]
+
+**State specificity**
+
+- Wrong-state decoded choice follows the donor’s correct answer ≥0.60.
+- Donor-follow accuracy exceeds its no-write donor-choice baseline by ≥0.20.
+
+Exact all-case success, exact groupings, and exact randomization tails are diagnostic only.
+
+## Status and kill rule
+
+**BOUNDED POSITIVE:** every instrument, heldout-transfer, wording, mediation, specificity, control, and seed gate passes.
+
+> In frozen Qwen3-1.7B-Base, a 65,552-parameter interface wrote a 16-dimensional state once into one block-12 prefill slot; after unseen wording, that cached state specifically changed raw decoded choices for consequence labels and templates absent from training across heldout facts and seeds. This establishes a bounded co-designed persistent causal state, not native pretrained structure or a full latent mathematics.
+
+**SUPERVISED CONTROLLER:** heldout evaluation on the three trained consequence families reaches accuracy ≥0.80 and improves ≥0.25 over no-write in at least two seeds, but any bounded-positive gate fails.
+
+> The one-write interface controlled raw choices for consequence families it was trained to name but failed the locked heldout-family, wording, specificity, or mediation gates; it is a supervised response controller, not an abstract persistent state.
+
+**FAIL:** the behavioral instrument is invalid, state effects are nonspecific, or neither trained nor heldout state use passes.
+
+> `onewrite_state_v1` did not produce a specific one-write effect that survived unseen wording and governed heldout decoded consequences; this closes the fixed encoder, slot, injector, norm budget, and training construction—not persistent state in real models generally.
+
+One completed three-seed result receives one audit. No layer, position, dimension, norm, prompt, label, template, optimizer, step-count, or decoding repair is permitted.
+
+## Build and budget
+
+Reuse `SubstitutionProbe` model loading/tokenization and `run_state_bus.py` hashing, logging, checkpointed `result.json`, and ledger conventions. Do not reuse its bus, reader, prototypes, repeated hook, training-derived tau, signature scoring, or candidate rollouts.
+
+One runner under 240 nonblank lines; one config under 90; one result; no reducer/dashboard. Target approximately 140 artifact-bearing lines and at most 170 evaluation/config/I/O lines: combined apparatus ratio ≤1.3:1. Expected CPU wall time is 2–2.5 hours, hard-capped at three hours.
+
+**Build first:** the complete source-cache → encoder → one-slot write → hook-disabled cached decode → five-arm evaluation for seed 11. It must finish within 55 minutes and can falsify the artifact; the unchanged process then continues seeds 23 and 37.
+
+**Lay line — 9/10 if all heldout gates pass:** “Write a private fact into a language model once, change every word around it, and see whether that hidden fact still decides a brand-new consequence.”
+
 ## 2026-08-29 — Rounds 11–12 (Codex, verbatim): navigator designed, then demoted; the real-model one-write state artifact goes first
 
 Round 11 designed `necessity_navigator_v1` (GRU on Z_11² ⋊ C_4 with aliased, per-episode-permuted observations; five readouts). I built it (`experiments/run_necessity_navigator.py`, 196 nonblank lines; config) and smoke-tested it — code-path validation only, not a result: 2000 training steps reach held-out top-1 in A* of 0.879 against a historyless control of 0.484 (behaviourally valid); readouts execute; at that budget moves R = 0.24 (untrained-GRU control 0.38), composition order accuracy 0.51, inverse ratio 0.63, distance Spearman 0.30; the swap pairing needs same-goal episodes across permutations (to be generated deliberately if it is ever run). Round 12 then reconciled audit #31's alternative against it and ruled for the real-model artifact: the navigator has the better odds but lower evidentiary value and the toy-world repeat risk; it is now an optional one-round calibration control, not to be run before the one-write real-model result. Round 13 (design gate for `onewrite_state_v1`) is in flight.
