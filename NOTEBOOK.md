@@ -5,6 +5,89 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — Round 21 (Codex, verbatim): the cross-fitted site-oracle control runs next; spectrum deferred; rung 0b and navigator off
+
+## Ruling: run the cross-fitted site-oracle control
+
+### 1. What a site-oracle pass would mean
+
+The proposed Jacobian intervention is lexical steering. If each direction were derived and evaluated on the same names, a positive first-order margin movement would be substantially built into the construction; that would add little beyond “gradient directions steer logits.”
+
+The control becomes informative only with name-level cross-fitting and finite-dose behavioral evaluation:
+
+- Derive each direction on 16 training names.
+- Inject it once on eight disjoint training names.
+- Rotate through three fixed folds.
+- Require actual decoded choices, not margin movement.
+- Keep the intervention at the block-12 slot, approximately 36 tokens before the answer.
+
+A PASS would license exactly:
+
+> At this fixed block-12 slot and prompt, fixed residual directions derived on other names can provide balanced, bounded eight-way lexical control approximately 36 tokens later.
+
+That is stronger than `coordinate_v3` only in transmission distance and context transfer: `coordinate_v3` demonstrated late lexical steering near the decision, whereas this would demonstrate that an earlier residual write survives the intervening prompt and controls behavior on names not used to derive its direction. It would not establish fact storage, memory, semantic state, native algebra, or an eight-dimensional latent representation.
+
+### 2. Site oracle versus reachable dimension
+
+The centered eight-margin Jacobian spectrum is the cleaner native-geometry object. It asks how many independent local response directions the slot exposes and would properly use effective rank, singular-value effect sizes, and matched random-slot/prompt nulls—not numerical matrix rank.
+
+It should not run next as a separate verdict, however:
+
+- The learned \(J\)’s approximately rank-one response does not prove the site itself is rank one.
+- Tiny nonzero singular values can produce apparent high rank without usable finite-dose control.
+- A local spectrum does not show that a \(0.25\)-slot-norm move survives 36 tokens or changes decoded behavior.
+- It would add another measurement round without resolving the immediate branch.
+
+The site-oracle is therefore the sharper discriminator. Its Jacobians can later motivate a reachability study, but no spectrum statistic should carry this run’s verdict.
+
+### 3. Exact next run
+
+Split the 24 training names into three immutable folds of eight. For fold \(f\) and tag \(k\), define
+
+\[
+m_k=\ell_k-\frac17\sum_{j\ne k}\ell_j,\qquad
+d_{f,k}=
+\frac{\operatorname{mean}_{n\notin f}\nabla_{h_{\text{slot}}}m_k(n)}
+{\left\|\operatorname{mean}_{n\notin f}\nabla_{h_{\text{slot}}}m_k(n)\right\|}.
+\]
+
+For every heldout-fold name, inject once:
+
+\[
+\delta_{f,k}=0.25\lVert h_{\text{slot}}\rVert d_{f,k}.
+\]
+
+Evaluate all \(24\times8\) cross-fitted name–direction cases, cue, zero-hook, and one fixed norm-matched random-direction set. No learned \(J\), encoder, optimization, layer/site/prompt/norm sweep, or same-name direction fitting.
+
+PASS gates:
+
+- Completion ≥0.95.
+- Target-direction decoded-tag follow ≥0.85.
+- Name-cluster bootstrap 95% LB >0.75.
+- Every tag ≥0.75.
+- Every heldout-name fold ≥0.75.
+- Uplift over cue-to-target matching and paired random-direction matching ≥0.60, with clustered LB >0.50.
+- Random assigned-tag follow ≤0.20.
+- Zero-hook reproduces cue row-for-row.
+
+Statuses:
+
+> **SITE-ORACLE PASS — BOUNDED EARLY-SLOT EIGHT-WAY LEXICAL CONTROL.** Cross-fitted, fixed block-12 directions controlled all eight registered tag choices approximately 36 tokens later under the bounded intervention.
+
+> **FAIL — BLOCK-12 SLOT/PROMPT EIGHT-WAY BOUNDED CONTROL.** Cross-fitted full-downstream margin directions did not provide balanced eight-way decoded control; this specific slot/prompt closes for further actuator repair.
+
+`INVALID — NO VERDICT` applies only if baseline completion or hook identity fails.
+
+A PASS permits design of a site-aware actuator before any encoder. A FAIL pivots away from this slot/prompt. Rung 0b and the navigator remain off in either case until this branch is adjudicated.
+
+Line budget: ≤85 incremental nonblank lines—at least 45 artifact-bearing Jacobian/intervention lines and at most 40 apparatus/control/verdict lines, for apparatus/artifact ≤0.89. The cumulative round ratio is now **11:4 = 2.75:1**, still above warning.
+
+Lay line:
+
+> **Can one bounded hidden nudge early in a prompt select any of eight answers 36 tokens later?**
+
+Direct shell access to the audit and ledger was denied during this turn; I grounded the ruling in audit #34’s converged blackboard, whose four source documents were fully read, plus the supplied exact findings.
+
 ## 2026-08-30 — Audit #34 on rung 0 (fresh, unprimed; verbatim): FAIL upheld; 'two of eight codes' and '|Jc| ≤ 14' withdrawn; the only non-prior effect is code 6 → HESK; next = a downstream-Jacobian site-oracle control
 
 My readings are corrected: code 0 merely reproduces the cue prior; the response is anisotropic but no reachable-dimension limit is proven; rung 0b and the navigator do not run next.
