@@ -1,0 +1,2505 @@
+{
+ "config": "onewrite_state_v1",
+ "sha256": {
+  "runner": "721499cc81aa88ea7d9614a14434fd765b61b5e75184252e6b9e2a446bdff8a6",
+  "config": "c8a1a2e1960433ad6e43204b58211dd343c41c9702980598417d6bfb8183c88a"
+ },
+ "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
+ "seeds": {
+  "11": {
+   "summary": {
+    "params": 65552,
+    "loss_history": [
+     2.0484206676483154,
+     4.094964504241943,
+     6.259830474853516,
+     7.7633562088012695,
+     3.149123191833496,
+     4.303657531738281,
+     4.292702674865723,
+     1.9674826860427856,
+     3.047748565673828,
+     1.1336606740951538,
+     1.9882843494415283,
+     2.8572516441345215,
+     2.3036231994628906,
+     3.0582594871520996,
+     0.7716220021247864,
+     1.5970277786254883,
+     0.8704444766044617,
+     0.6403634548187256,
+     1.00731360912323,
+     1.3535263538360596,
+     0.32642662525177,
+     0.8597143292427063,
+     0.8461072444915771,
+     1.2480297088623047,
+     1.5337611436843872,
+     1.3491425514221191,
+     0.36740705370903015,
+     0.9554256200790405,
+     0.1167587861418724,
+     0.15105491876602173,
+     0.8061542510986328,
+     0.7959484457969666,
+     0.810936450958252,
+     0.749343991279602,
+     0.35866785049438477,
+     0.8742073774337769,
+     2.8562557697296143,
+     0.05571860820055008,
+     0.367374449968338,
+     0.5929906368255615,
+     0.6400463581085205,
+     0.4278990924358368,
+     1.5871556997299194,
+     0.8409220576286316,
+     0.09638991206884384,
+     0.4789971709251404,
+     0.4009557366371155,
+     0.5648263096809387,
+     0.7816494107246399,
+     0.0763261467218399,
+     0.09052549302577972,
+     0.6866204738616943,
+     0.6978175640106201,
+     0.4321242570877075,
+     0.37610524892807007,
+     2.048489570617676,
+     2.250075101852417,
+     0.9283422231674194,
+     0.33569833636283875,
+     1.2165247201919556
+    ],
+    "acc": {
+     "write": 0.390625,
+     "cue": 0.203125,
+     "wrong": 0.390625,
+     "random": 0.390625,
+     "visible": 0.265625
+    },
+    "termination": {
+     "write": 0.890625,
+     "visible": 0.171875
+    },
+    "family_acc": {
+     "H1": 0.5,
+     "H2": 0.28125
+    },
+    "template_acc": [
+     0.40625,
+     0.375
+    ],
+    "write_minus_cue": 0.1875,
+    "write_minus_cue_lb": 0.109375,
+    "signflip_p": 0.005,
+    "write_minus_random": 0.0,
+    "recovery": 3.0,
+    "wrong_follows_donor": 0.359375,
+    "wrong_baseline": 0.1875,
+    "trained_write": 0.5,
+    "trained_cue": 0.4791666666666667,
+    "gates": {
+     "instrument": false,
+     "transfer": false,
+     "specificity": false,
+     "controller": false
+    },
+    "class": "FAIL"
+   },
+   "rows": [
+    {
+     "fact": 0,
+     "family": "H1",
+     "template": 0,
+     "correct": "QUARTZ",
+     "donor_correct": "CEDAR",
+     "write": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "cue": {
+      "text": " CEDAR Question: what is the result for Cordovel",
+      "choice": "CEDAR",
+      "ended": false
+     },
+     "wrong": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "random": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "visible": {
+      "text": " QUARTZ. Question: what is the result for Cord",
+      "choice": "QUARTZ",
+      "ended": false
+     }
+    },
+    {
+     "fact": 0,
+     "family": "H1",
+     "template": 1,
+     "correct": "CEDAR",
+     "donor_correct": "QUARTZ",
+     "write": {
+      "text": " CEDAR.",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "cue": {
+      "text": " The examiner applies the clause: when the entity holds precisely one",
+      "choice": null,
+      "ended": false
+     },
+     "wrong": {
+      "text": " CEDAR.",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "random": {
+      "text": " CEDAR.",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "visible": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     }
+    },
+    {
+     "fact": 0,
+     "family": "H2",
+     "template": 0,
+     "correct": "LARK",
+     "donor_correct": "ORIEL",
+     "write": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "cue": {
+      "text": " The pairing table gives Cordovel the class of LARK.",
+      "choice": "LARK",
+      "ended": false
+     },
+     "wrong": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "random": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "visible": {
+      "text": " The pairing table gives Cordovel the class LARK.",
+      "choice": "LARK",
+      "ended": true
+     }
+    },
+    {
+     "fact": 0,
+     "family": "H2",
+     "template": 1,
+     "correct": "ORIEL",
+     "donor_correct": "PINE",
+     "write": {
+      "text": " ORIEL.",
+      "choice": "ORIEL",
+      "ended": true
+     },
+     "cue": {
+      "text": " The relevant information is: for a second tag of vep",
+      "choice": null,
+      "ended": false
+     },
+     "wrong": {
+      "text": " ORIEL.",
+      "choice": "ORIEL",
+      "ended": true
+     },
+     "random": {
+      "text": " ORIEL.",
+      "choice": "ORIEL",
+      "ended": true
+     },
+     "visible": {
+      "text": " The relevant sentence in the passage is: The officer consults",
+      "choice": null,
+      "ended": false
+     }
+    },
+    {
+     "fact": 1,
+     "family": "H1",
+     "template": 0,
+     "correct": "CEDAR",
+     "donor_correct": "QUARTZ",
+     "write": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "cue": {
+      "text": " QUARTZ Question: what is the result for Jasmin",
+      "choice": "QUARTZ",
+      "ended": false
+     },
+     "wrong": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "random": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "visible": {
+      "text": " QUARTZ. Question: what is the result for Jas",
+      "choice": "QUARTZ",
+      "ended": false
+     }
+    },
+    {
+     "fact": 1,
+     "family": "H1",
+     "template": 1,
+     "correct": "QUARTZ",
+     "donor_correct": "CEDAR",
+     "write": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "cue": {
+      "text": " The examiner applies the clause: when the entity holds precisely one",
+      "choice": null,
+      "ended": false
+     },
+     "wrong": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "random": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "visible": {
+      "text": " The examiner gives Jasminth the mark QUARTZ.",
+      "choice": "QUARTZ",
+      "ended": false
+     }
+    },
+    {
+     "fact": 1,
+     "family": "H2",
+     "template": 0,
+     "correct": "ORIEL",
+     "donor_correct": "PINE",
+     "write": {
+      "text": " ORIEL.",
+      "choice": "ORIEL",
+      "ended": true
+     },
+     "cue": {
+      "text": " The pairing table gives Jasminth the class ORIEL.",
+      "choice": "ORIEL",
+      "ended": false
+     },
+     "wrong": {
+      "text": " ORIEL.",
+      "choice": "ORIEL",
+      "ended": true
+     },
+     "random": {
+      "text": " ORIEL.",
+      "choice": "ORIEL",
+      "ended": true
+     },
+     "visible": {
+      "text": " The pairing table gives Jasminth the class ORIEL.",
+      "choice": "ORIEL",
+      "ended": false
+     }
+    },
+    {
+     "fact": 1,
+     "family": "H2",
+     "template": 1,
+     "correct": "PINE",
+     "donor_correct": "LARK",
+     "write": {
+      "text": " WREN.",
+      "choice": "WREN",
+      "ended": true
+     },
+     "cue": {
+      "text": " The relevant information is: for a second tag of vep",
+      "choice": null,
+      "ended": false
+     },
+     "wrong": {
+      "text": " WREN.",
+      "choice": "WREN",
+      "ended": true
+     },
+     "random": {
+      "text": " WREN.",
+      "choice": "WREN",
+      "ended": true
+     },
+     "visible": {
+      "text": " The relevant information is: for a second tag of vep",
+      "choice": null,
+      "ended": false
+     }
+    },
+    {
+     "fact": 2,
+     "family": "H1",
+     "template": 0,
+     "correct": "QUARTZ",
+     "donor_correct": "CEDAR",
+     "write": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "cue": {
+      "text": " CEDAR Question: what is the result for Thral",
+      "choice": "CEDAR",
+      "ended": false
+     },
+     "wrong": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "random": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "visible": {
+      "text": " CEDAR. Question: what is the result for Th",
+      "choice": "CEDAR",
+      "ended": false
+     }
+    },
+    {
+     "fact": 2,
+     "family": "H1",
+     "template": 1,
+     "correct": "CEDAR",
+     "donor_correct": "QUARTZ",
+     "write": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "cue": {
+      "text": " Thraline holds neither marn nor vep, so",
+      "choice": null,
+      "ended": false
+     },
+     "wrong": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "random": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "visible": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     }
+    },
+    {
+     "fact": 2,
+     "family": "H2",
+     "template": 0,
+     "correct": "WREN",
+     "donor_correct": "LARK",
+     "write": {
+      "text": " WREN.",
+      "choice": "WREN",
+      "ended": true
+     },
+     "cue": {
+      "text": " The pairing table gives Thraline the class of WREN",
+      "choice": "WREN",
+      "ended": false
+     },
+     "wrong": {
+      "text": " WREN.",
+      "choice": "WREN",
+      "ended": true
+     },
+     "random": {
+      "text": " WREN.",
+      "choice": "WREN",
+      "ended": true
+     },
+     "visible": {
+      "text": " The pairing table gives Thraline the class of LARK",
+      "choice": "LARK",
+      "ended": false
+     }
+    },
+    {
+     "fact": 2,
+     "family": "H2",
+     "template": 1,
+     "correct": "LARK",
+     "donor_correct": "ORIEL",
+     "write": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "cue": {
+      "text": " The relevant information is: for a second tag of vep",
+      "choice": null,
+      "ended": false
+     },
+     "wrong": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "random": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "visible": {
+      "text": " The relevant information is: for a second tag of vep",
+      "choice": null,
+      "ended": false
+     }
+    },
+    {
+     "fact": 3,
+     "family": "H1",
+     "template": 0,
+     "correct": "CEDAR",
+     "donor_correct": "QUARTZ",
+     "write": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "cue": {
+      "text": " QUARTZ Question: what is the result for Ulmer",
+      "choice": "QUARTZ",
+      "ended": false
+     },
+     "wrong": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "random": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "visible": {
+      "text": " CEDAR. Question: what is the result for Ul",
+      "choice": "CEDAR",
+      "ended": false
+     }
+    },
+    {
+     "fact": 3,
+     "family": "H1",
+     "template": 1,
+     "correct": "QUARTZ",
+     "donor_correct": "CEDAR",
+     "write": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "cue": {
+      "text": " The examiner applies the clause \"when the entity holds precisely one",
+      "choice": null,
+      "ended": false
+     },
+     "wrong": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "random": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "visible": {
+      "text": " The examiner gives Ulmerick the mark CEDAR.",
+      "choice": "CEDAR",
+      "ended": false
+     }
+    },
+    {
+     "fact": 3,
+     "family": "H2",
+     "template": 0,
+     "correct": "LARK",
+     "donor_correct": "ORIEL",
+     "write": {
+      "text": " WREN.",
+      "choice": "WREN",
+      "ended": true
+     },
+     "cue": {
+      "text": " The pairing table gives Ulmerick the class of WREN",
+      "choice": "WREN",
+      "ended": false
+     },
+     "wrong": {
+      "text": " WREN.",
+      "choice": "WREN",
+      "ended": true
+     },
+     "random": {
+      "text": " WREN.",
+      "choice": "WREN",
+      "ended": true
+     },
+     "visible": {
+      "text": " The pairing table gives Ulmerick the class of WREN",
+      "choice": "WREN",
+      "ended": false
+     }
+    },
+    {
+     "fact": 3,
+     "family": "H2",
+     "template": 1,
+     "correct": "ORIEL",
+     "donor_correct": "WREN",
+     "write": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "cue": {
+      "text": " The relevant information is: for a second tag of vep",
+      "choice": null,
+      "ended": false
+     },
+     "wrong": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "random": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "visible": {
+      "text": " The relevant information is: for a second tag of vep",
+      "choice": null,
+      "ended": false
+     }
+    },
+    {
+     "fact": 4,
+     "family": "H1",
+     "template": 0,
+     "correct": "CEDAR",
+     "donor_correct": "QUARTZ",
+     "write": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "cue": {
+      "text": " CEDAR Question: what is the result for Perrig",
+      "choice": "CEDAR",
+      "ended": false
+     },
+     "wrong": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "random": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "visible": {
+      "text": " CEDAR. Question: what is the result for Perr",
+      "choice": "CEDAR",
+      "ended": false
+     }
+    },
+    {
+     "fact": 4,
+     "family": "H1",
+     "template": 1,
+     "correct": "QUARTZ",
+     "donor_correct": "CEDAR",
+     "write": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "cue": {
+      "text": " The examiner applies the clause: when the entity holds precisely one",
+      "choice": null,
+      "ended": false
+     },
+     "wrong": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "random": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "visible": {
+      "text": " CEDAR. Explanation: The examiner applies the clause when",
+      "choice": "CEDAR",
+      "ended": false
+     }
+    },
+    {
+     "fact": 4,
+     "family": "H2",
+     "template": 0,
+     "correct": "PINE",
+     "donor_correct": "WREN",
+     "write": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "cue": {
+      "text": " The pairing table gives LARK for Perrigal. The",
+      "choice": "LARK",
+      "ended": false
+     },
+     "wrong": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "random": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "visible": {
+      "text": " The pairing table gives Perrigal the class LARK.",
+      "choice": "LARK",
+      "ended": false
+     }
+    },
+    {
+     "fact": 4,
+     "family": "H2",
+     "template": 1,
+     "correct": "WREN",
+     "donor_correct": "LARK",
+     "write": {
+      "text": " ORIEL.",
+      "choice": "ORIEL",
+      "ended": true
+     },
+     "cue": {
+      "text": " The relevant sentence in the passage is: The officer consults",
+      "choice": null,
+      "ended": false
+     },
+     "wrong": {
+      "text": " ORIEL.",
+      "choice": "ORIEL",
+      "ended": true
+     },
+     "random": {
+      "text": " ORIEL.",
+      "choice": "ORIEL",
+      "ended": true
+     },
+     "visible": {
+      "text": " The relevant sentence in the passage is: The officer consults",
+      "choice": null,
+      "ended": false
+     }
+    },
+    {
+     "fact": 5,
+     "family": "H1",
+     "template": 0,
+     "correct": "QUARTZ",
+     "donor_correct": "CEDAR",
+     "write": {
+      "text": " QUARTZ Please answer a question about this article. What",
+      "choice": "QUARTZ",
+      "ended": false
+     },
+     "cue": {
+      "text": " QUARTZ Question: what is the result for Estovan",
+      "choice": "QUARTZ",
+      "ended": false
+     },
+     "wrong": {
+      "text": " QUARTZ Please answer a question about this article. What",
+      "choice": "QUARTZ",
+      "ended": false
+     },
+     "random": {
+      "text": " QUARTZ Please answer a question about this article. What",
+      "choice": "QUARTZ",
+      "ended": false
+     },
+     "visible": {
+      "text": " CEDAR. Question: what is the result for Est",
+      "choice": "CEDAR",
+      "ended": false
+     }
+    },
+    {
+     "fact": 5,
+     "family": "H1",
+     "template": 1,
+     "correct": "CEDAR",
+     "donor_correct": "QUARTZ",
+     "write": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "cue": {
+      "text": " The examiner applies the clause: when the entity holds precisely one",
+      "choice": null,
+      "ended": false
+     },
+     "wrong": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "random": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "visible": {
+      "text": " The examiner gives Estovan the mark CEDAR.",
+      "choice": "CEDAR",
+      "ended": true
+     }
+    },
+    {
+     "fact": 5,
+     "family": "H2",
+     "template": 0,
+     "correct": "WREN",
+     "donor_correct": "LARK",
+     "write": {
+      "text": " ORIEL The registrar uses the pairing table. Pairing table",
+      "choice": "ORIEL",
+      "ended": false
+     },
+     "cue": {
+      "text": " The pairing table gives Estovan the class ORIEL.",
+      "choice": "ORIEL",
+      "ended": true
+     },
+     "wrong": {
+      "text": " ORIEL The registrar uses the pairing table. Pairing table",
+      "choice": "ORIEL",
+      "ended": false
+     },
+     "random": {
+      "text": " ORIEL The registrar uses the pairing table. Pairing table",
+      "choice": "ORIEL",
+      "ended": false
+     },
+     "visible": {
+      "text": " The pairing table gives Estovan the class ORIEL.",
+      "choice": "ORIEL",
+      "ended": true
+     }
+    },
+    {
+     "fact": 5,
+     "family": "H2",
+     "template": 1,
+     "correct": "LARK",
+     "donor_correct": "PINE",
+     "write": {
+      "text": " WREN.",
+      "choice": "WREN",
+      "ended": true
+     },
+     "cue": {
+      "text": " The relevant information is: for a second tag of vep",
+      "choice": null,
+      "ended": false
+     },
+     "wrong": {
+      "text": " WREN.",
+      "choice": "WREN",
+      "ended": true
+     },
+     "random": {
+      "text": " WREN.",
+      "choice": "WREN",
+      "ended": true
+     },
+     "visible": {
+      "text": " The relevant information is: for a second tag of vep",
+      "choice": null,
+      "ended": false
+     }
+    },
+    {
+     "fact": 6,
+     "family": "H1",
+     "template": 0,
+     "correct": "CEDAR",
+     "donor_correct": "QUARTZ",
+     "write": {
+      "text": " CEDAR Question: what is the result for Halbrook",
+      "choice": "CEDAR",
+      "ended": false
+     },
+     "cue": {
+      "text": " CEDAR Question: what is the result for Halbrook",
+      "choice": "CEDAR",
+      "ended": false
+     },
+     "wrong": {
+      "text": " CEDAR Question: what is the result for Halbrook",
+      "choice": "CEDAR",
+      "ended": false
+     },
+     "random": {
+      "text": " CEDAR Question: what is the result for Halbrook",
+      "choice": "CEDAR",
+      "ended": false
+     },
+     "visible": {
+      "text": " CEDAR. Question: what is the result for Hal",
+      "choice": "CEDAR",
+      "ended": false
+     }
+    },
+    {
+     "fact": 6,
+     "family": "H1",
+     "template": 1,
+     "correct": "QUARTZ",
+     "donor_correct": "CEDAR",
+     "write": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "cue": {
+      "text": " The examiner applies the clause \"when the entity holds precisely one",
+      "choice": null,
+      "ended": false
+     },
+     "wrong": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "random": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "visible": {
+      "text": " CEDAR. Explanation: Halbrook holds precisely one of",
+      "choice": "CEDAR",
+      "ended": false
+     }
+    },
+    {
+     "fact": 6,
+     "family": "H2",
+     "template": 0,
+     "correct": "ORIEL",
+     "donor_correct": "PINE",
+     "write": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "cue": {
+      "text": " The pairing table gives Halbrook the class of LARK.",
+      "choice": "LARK",
+      "ended": false
+     },
+     "wrong": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "random": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "visible": {
+      "text": " The pairing table gives Halbrook the class of LARK.",
+      "choice": "LARK",
+      "ended": false
+     }
+    },
+    {
+     "fact": 6,
+     "family": "H2",
+     "template": 1,
+     "correct": "PINE",
+     "donor_correct": "WREN",
+     "write": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "cue": {
+      "text": " The relevant information is: for a second tag of vep",
+      "choice": null,
+      "ended": false
+     },
+     "wrong": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "random": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "visible": {
+      "text": " The relevant information is: for a second tag of vep",
+      "choice": null,
+      "ended": false
+     }
+    },
+    {
+     "fact": 7,
+     "family": "H1",
+     "template": 0,
+     "correct": "QUARTZ",
+     "donor_correct": "CEDAR",
+     "write": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "cue": {
+      "text": " QUARTZ Question: what is the result for Vant",
+      "choice": "QUARTZ",
+      "ended": false
+     },
+     "wrong": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "random": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "visible": {
+      "text": " CEDAR. Question: what is the result for V",
+      "choice": "CEDAR",
+      "ended": false
+     }
+    },
+    {
+     "fact": 7,
+     "family": "H1",
+     "template": 1,
+     "correct": "CEDAR",
+     "donor_correct": "QUARTZ",
+     "write": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "cue": {
+      "text": " The examiner applies the clause: when the entity holds precisely one",
+      "choice": null,
+      "ended": false
+     },
+     "wrong": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "random": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "visible": {
+      "text": " The examiner gives Vantessa the mark QUARTZ.",
+      "choice": "QUARTZ",
+      "ended": false
+     }
+    },
+    {
+     "fact": 7,
+     "family": "H2",
+     "template": 0,
+     "correct": "PINE",
+     "donor_correct": "WREN",
+     "write": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "cue": {
+      "text": " The pairing table gives Vantessa the class WREN.",
+      "choice": "WREN",
+      "ended": false
+     },
+     "wrong": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "random": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "visible": {
+      "text": " The pairing table gives Vantessa the class WREN.",
+      "choice": "WREN",
+      "ended": false
+     }
+    },
+    {
+     "fact": 7,
+     "family": "H2",
+     "template": 1,
+     "correct": "WREN",
+     "donor_correct": "ORIEL",
+     "write": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "cue": {
+      "text": " The relevant information is: for a second tag of vep",
+      "choice": null,
+      "ended": false
+     },
+     "wrong": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "random": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "visible": {
+      "text": " The relevant information is: for a second tag of vep",
+      "choice": null,
+      "ended": false
+     }
+    },
+    {
+     "fact": 8,
+     "family": "H1",
+     "template": 0,
+     "correct": "CEDAR",
+     "donor_correct": "QUARTZ",
+     "write": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "cue": {
+      "text": " CEDAR Question: what is the result for Kelmo",
+      "choice": "CEDAR",
+      "ended": false
+     },
+     "wrong": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "random": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "visible": {
+      "text": " CEDAR. Question: what is the result for Kel",
+      "choice": "CEDAR",
+      "ended": false
+     }
+    },
+    {
+     "fact": 8,
+     "family": "H1",
+     "template": 1,
+     "correct": "QUARTZ",
+     "donor_correct": "CEDAR",
+     "write": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "cue": {
+      "text": " The examiner applies the clause \"when the entity holds precisely one",
+      "choice": null,
+      "ended": false
+     },
+     "wrong": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "random": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "visible": {
+      "text": " The examiner gives Kelmoor the mark QUARTZ.",
+      "choice": "QUARTZ",
+      "ended": false
+     }
+    },
+    {
+     "fact": 8,
+     "family": "H2",
+     "template": 0,
+     "correct": "LARK",
+     "donor_correct": "PINE",
+     "write": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "cue": {
+      "text": " The pairing table gives Kelmoor the class of LARK",
+      "choice": "LARK",
+      "ended": false
+     },
+     "wrong": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "random": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "visible": {
+      "text": " The pairing table gives Kelmoor the class of LARK",
+      "choice": "LARK",
+      "ended": false
+     }
+    },
+    {
+     "fact": 8,
+     "family": "H2",
+     "template": 1,
+     "correct": "ORIEL",
+     "donor_correct": "WREN",
+     "write": {
+      "text": " ORIEL The entity Kelmoor awaits its pairing code.",
+      "choice": "ORIEL",
+      "ended": false
+     },
+     "cue": {
+      "text": " The relevant information is: for a second tag of vep",
+      "choice": null,
+      "ended": false
+     },
+     "wrong": {
+      "text": " ORIEL The entity Kelmoor awaits its pairing code.",
+      "choice": "ORIEL",
+      "ended": false
+     },
+     "random": {
+      "text": " ORIEL The entity Kelmoor awaits its pairing code.",
+      "choice": "ORIEL",
+      "ended": false
+     },
+     "visible": {
+      "text": " The relevant sentence in the passage is: Code chart: for",
+      "choice": null,
+      "ended": false
+     }
+    },
+    {
+     "fact": 9,
+     "family": "H1",
+     "template": 0,
+     "correct": "QUARTZ",
+     "donor_correct": "CEDAR",
+     "write": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "cue": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "wrong": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "random": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "visible": {
+      "text": " CEDAR. Question: what is the result for Roz",
+      "choice": "CEDAR",
+      "ended": false
+     }
+    },
+    {
+     "fact": 9,
+     "family": "H1",
+     "template": 1,
+     "correct": "CEDAR",
+     "donor_correct": "QUARTZ",
+     "write": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "cue": {
+      "text": " The examiner applies the clause: when the entity holds precisely one",
+      "choice": null,
+      "ended": false
+     },
+     "wrong": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "random": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "visible": {
+      "text": " The examiner gives Rozalind the mark QUARTZ.",
+      "choice": "QUARTZ",
+      "ended": false
+     }
+    },
+    {
+     "fact": 9,
+     "family": "H2",
+     "template": 0,
+     "correct": "ORIEL",
+     "donor_correct": "WREN",
+     "write": {
+      "text": " ORIEL The registrar uses the pairing table. Pairing table",
+      "choice": "ORIEL",
+      "ended": false
+     },
+     "cue": {
+      "text": " The pairing table gives Rozalind the class ORIEL.",
+      "choice": "ORIEL",
+      "ended": false
+     },
+     "wrong": {
+      "text": " ORIEL The registrar uses the pairing table. Pairing table",
+      "choice": "ORIEL",
+      "ended": false
+     },
+     "random": {
+      "text": " ORIEL The registrar uses the pairing table. Pairing table",
+      "choice": "ORIEL",
+      "ended": false
+     },
+     "visible": {
+      "text": " The pairing table gives Rozalind the class ORIEL.",
+      "choice": "ORIEL",
+      "ended": false
+     }
+    },
+    {
+     "fact": 9,
+     "family": "H2",
+     "template": 1,
+     "correct": "PINE",
+     "donor_correct": "ORIEL",
+     "write": {
+      "text": " WREN.",
+      "choice": "WREN",
+      "ended": true
+     },
+     "cue": {
+      "text": " Rozalind awaits its pairing code. The officer consults",
+      "choice": null,
+      "ended": false
+     },
+     "wrong": {
+      "text": " WREN.",
+      "choice": "WREN",
+      "ended": true
+     },
+     "random": {
+      "text": " WREN.",
+      "choice": "WREN",
+      "ended": true
+     },
+     "visible": {
+      "text": " The officer consults the code chart only. Code chart:",
+      "choice": null,
+      "ended": false
+     }
+    },
+    {
+     "fact": 10,
+     "family": "H1",
+     "template": 0,
+     "correct": "CEDAR",
+     "donor_correct": "QUARTZ",
+     "write": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "cue": {
+      "text": " CEDAR Question: what is the result for Sindrell",
+      "choice": "CEDAR",
+      "ended": false
+     },
+     "wrong": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "random": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "visible": {
+      "text": " CEDAR. Question: what is the result for Sind",
+      "choice": "CEDAR",
+      "ended": false
+     }
+    },
+    {
+     "fact": 10,
+     "family": "H1",
+     "template": 1,
+     "correct": "QUARTZ",
+     "donor_correct": "CEDAR",
+     "write": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "cue": {
+      "text": " The examiner applies the clause: when the entity holds precisely one",
+      "choice": null,
+      "ended": false
+     },
+     "wrong": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "random": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "visible": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     }
+    },
+    {
+     "fact": 10,
+     "family": "H2",
+     "template": 0,
+     "correct": "WREN",
+     "donor_correct": "ORIEL",
+     "write": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "cue": {
+      "text": " The pairing table gives Sindrell the class of LARK.",
+      "choice": "LARK",
+      "ended": false
+     },
+     "wrong": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "random": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "visible": {
+      "text": " The pairing table gives Sindrell the class of LARK.",
+      "choice": "LARK",
+      "ended": false
+     }
+    },
+    {
+     "fact": 10,
+     "family": "H2",
+     "template": 1,
+     "correct": "LARK",
+     "donor_correct": "PINE",
+     "write": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "cue": {
+      "text": " Sindrell receives the pairing code WREN. The officer consult",
+      "choice": "WREN",
+      "ended": false
+     },
+     "wrong": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "random": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "visible": {
+      "text": " Sindrell receives the pairing code WREN. Step-by-step",
+      "choice": "WREN",
+      "ended": false
+     }
+    },
+    {
+     "fact": 11,
+     "family": "H1",
+     "template": 0,
+     "correct": "QUARTZ",
+     "donor_correct": "CEDAR",
+     "write": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "cue": {
+      "text": " CEDAR. Question: what is the result for F",
+      "choice": "CEDAR",
+      "ended": false
+     },
+     "wrong": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "random": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "visible": {
+      "text": " CEDAR. Question: what is the result for F",
+      "choice": "CEDAR",
+      "ended": false
+     }
+    },
+    {
+     "fact": 11,
+     "family": "H1",
+     "template": 1,
+     "correct": "CEDAR",
+     "donor_correct": "QUARTZ",
+     "write": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "cue": {
+      "text": " The examiner applies the clause: when the entity holds precisely one",
+      "choice": null,
+      "ended": false
+     },
+     "wrong": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "random": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "visible": {
+      "text": " QUARTZ.",
+      "choice": "QUARTZ",
+      "ended": true
+     }
+    },
+    {
+     "fact": 11,
+     "family": "H2",
+     "template": 0,
+     "correct": "LARK",
+     "donor_correct": "PINE",
+     "write": {
+      "text": " WREN.",
+      "choice": "WREN",
+      "ended": true
+     },
+     "cue": {
+      "text": " The pairing table gives Farrowin the class of WREN",
+      "choice": "WREN",
+      "ended": false
+     },
+     "wrong": {
+      "text": " WREN.",
+      "choice": "WREN",
+      "ended": true
+     },
+     "random": {
+      "text": " WREN.",
+      "choice": "WREN",
+      "ended": true
+     },
+     "visible": {
+      "text": " The pairing table gives Farrowin the class WREN.",
+      "choice": "WREN",
+      "ended": false
+     }
+    },
+    {
+     "fact": 11,
+     "family": "H2",
+     "template": 1,
+     "correct": "ORIEL",
+     "donor_correct": "LARK",
+     "write": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "cue": {
+      "text": " The relevant information is: for a second tag of vep",
+      "choice": null,
+      "ended": false
+     },
+     "wrong": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "random": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "visible": {
+      "text": " The relevant information is: for a second tag of vep",
+      "choice": null,
+      "ended": false
+     }
+    },
+    {
+     "fact": 12,
+     "family": "H1",
+     "template": 0,
+     "correct": "QUARTZ",
+     "donor_correct": "CEDAR",
+     "write": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "cue": {
+      "text": " CEDAR Question: what is the result for Danquist",
+      "choice": "CEDAR",
+      "ended": false
+     },
+     "wrong": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "random": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "visible": {
+      "text": " CEDAR. Question: what is the result for Dan",
+      "choice": "CEDAR",
+      "ended": false
+     }
+    },
+    {
+     "fact": 12,
+     "family": "H1",
+     "template": 1,
+     "correct": "CEDAR",
+     "donor_correct": "QUARTZ",
+     "write": {
+      "text": " CEDAR The examiner applies the clause and no other.",
+      "choice": "CEDAR",
+      "ended": false
+     },
+     "cue": {
+      "text": " The examiner applies the clause: when the entity holds precisely one",
+      "choice": null,
+      "ended": false
+     },
+     "wrong": {
+      "text": " CEDAR The examiner applies the clause and no other.",
+      "choice": "CEDAR",
+      "ended": false
+     },
+     "random": {
+      "text": " CEDAR The examiner applies the clause and no other.",
+      "choice": "CEDAR",
+      "ended": false
+     },
+     "visible": {
+      "text": " The examiner gives Danquist the mark QUARTZ.",
+      "choice": "QUARTZ",
+      "ended": true
+     }
+    },
+    {
+     "fact": 12,
+     "family": "H2",
+     "template": 0,
+     "correct": "PINE",
+     "donor_correct": "LARK",
+     "write": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "cue": {
+      "text": " The pairing table gives Danquist the class of LARK.",
+      "choice": "LARK",
+      "ended": false
+     },
+     "wrong": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "random": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "visible": {
+      "text": " The pairing table gives Danquist the class LARK.",
+      "choice": "LARK",
+      "ended": true
+     }
+    },
+    {
+     "fact": 12,
+     "family": "H2",
+     "template": 1,
+     "correct": "WREN",
+     "donor_correct": "ORIEL",
+     "write": {
+      "text": " ORIEL.",
+      "choice": "ORIEL",
+      "ended": true
+     },
+     "cue": {
+      "text": " The relevant information is: for a second tag of vep",
+      "choice": null,
+      "ended": false
+     },
+     "wrong": {
+      "text": " ORIEL.",
+      "choice": "ORIEL",
+      "ended": true
+     },
+     "random": {
+      "text": " ORIEL.",
+      "choice": "ORIEL",
+      "ended": true
+     },
+     "visible": {
+      "text": " The relevant information is: for a second tag of vep",
+      "choice": null,
+      "ended": false
+     }
+    },
+    {
+     "fact": 13,
+     "family": "H1",
+     "template": 0,
+     "correct": "CEDAR",
+     "donor_correct": "QUARTZ",
+     "write": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "cue": {
+      "text": " QUARTZ Question: what is the result for Belmar",
+      "choice": "QUARTZ",
+      "ended": false
+     },
+     "wrong": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "random": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "visible": {
+      "text": " CEDAR. Question: what is the result for Bel",
+      "choice": "CEDAR",
+      "ended": false
+     }
+    },
+    {
+     "fact": 13,
+     "family": "H1",
+     "template": 1,
+     "correct": "QUARTZ",
+     "donor_correct": "CEDAR",
+     "write": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "cue": {
+      "text": " The examiner gives Belmaris the mark QUARTZ.",
+      "choice": "QUARTZ",
+      "ended": false
+     },
+     "wrong": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "random": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "visible": {
+      "text": " The examiner gives Belmaris the mark QUARTZ.",
+      "choice": "QUARTZ",
+      "ended": false
+     }
+    },
+    {
+     "fact": 13,
+     "family": "H2",
+     "template": 0,
+     "correct": "WREN",
+     "donor_correct": "ORIEL",
+     "write": {
+      "text": " ORIEL The registrar uses the pairing table. Pairing table",
+      "choice": "ORIEL",
+      "ended": false
+     },
+     "cue": {
+      "text": " The pairing table gives Belmaris the class of ORIEL",
+      "choice": "ORIEL",
+      "ended": false
+     },
+     "wrong": {
+      "text": " ORIEL The registrar uses the pairing table. Pairing table",
+      "choice": "ORIEL",
+      "ended": false
+     },
+     "random": {
+      "text": " ORIEL The registrar uses the pairing table. Pairing table",
+      "choice": "ORIEL",
+      "ended": false
+     },
+     "visible": {
+      "text": " The pairing table gives Belmaris the class ORIEL.",
+      "choice": "ORIEL",
+      "ended": false
+     }
+    },
+    {
+     "fact": 13,
+     "family": "H2",
+     "template": 1,
+     "correct": "LARK",
+     "donor_correct": "WREN",
+     "write": {
+      "text": " WREN.",
+      "choice": "WREN",
+      "ended": true
+     },
+     "cue": {
+      "text": " The relevant information is: for a second tag of vep",
+      "choice": null,
+      "ended": false
+     },
+     "wrong": {
+      "text": " WREN.",
+      "choice": "WREN",
+      "ended": true
+     },
+     "random": {
+      "text": " WREN.",
+      "choice": "WREN",
+      "ended": true
+     },
+     "visible": {
+      "text": " The relevant information is: for a second tag of vep",
+      "choice": null,
+      "ended": false
+     }
+    },
+    {
+     "fact": 14,
+     "family": "H1",
+     "template": 0,
+     "correct": "QUARTZ",
+     "donor_correct": "CEDAR",
+     "write": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "cue": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "wrong": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "random": {
+      "text": " CEDAR",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "visible": {
+      "text": " CEDAR. Question: what is the result for Trev",
+      "choice": "CEDAR",
+      "ended": false
+     }
+    },
+    {
+     "fact": 14,
+     "family": "H1",
+     "template": 1,
+     "correct": "CEDAR",
+     "donor_correct": "QUARTZ",
+     "write": {
+      "text": " CEDAR.",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "cue": {
+      "text": " The examiner applies the clause \"when the entity holds precisely one",
+      "choice": null,
+      "ended": false
+     },
+     "wrong": {
+      "text": " CEDAR.",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "random": {
+      "text": " CEDAR.",
+      "choice": "CEDAR",
+      "ended": true
+     },
+     "visible": {
+      "text": " The examiner gives Trevanon the mark QUARTZ.",
+      "choice": "QUARTZ",
+      "ended": true
+     }
+    },
+    {
+     "fact": 14,
+     "family": "H2",
+     "template": 0,
+     "correct": "ORIEL",
+     "donor_correct": "WREN",
+     "write": {
+      "text": " WREN.",
+      "choice": "WREN",
+      "ended": true
+     },
+     "cue": {
+      "text": " The pairing table gives PINE for the second tag vep",
+      "choice": "PINE",
+      "ended": false
+     },
+     "wrong": {
+      "text": " WREN.",
+      "choice": "WREN",
+      "ended": true
+     },
+     "random": {
+      "text": " WREN.",
+      "choice": "WREN",
+      "ended": true
+     },
+     "visible": {
+      "text": " The pairing table gives the following classes: PINE, W",
+      "choice": "PINE",
+      "ended": false
+     }
+    },
+    {
+     "fact": 14,
+     "family": "H2",
+     "template": 1,
+     "correct": "PINE",
+     "donor_correct": "LARK",
+     "write": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "cue": {
+      "text": " The relevant information is: for a second tag of vep",
+      "choice": null,
+      "ended": false
+     },
+     "wrong": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "random": {
+      "text": " LARK.",
+      "choice": "LARK",
+      "ended": true
+     },
+     "visible": {
+      "text": " The relevant information is: for a second tag of vep",
+      "choice": null,
+      "ended": false
+     }
+    },
+    {
+     "fact": 15,
+     "family": "H1",
+     "template": 0,
+     "correct": "CEDAR",
+     "donor_correct": "QUARTZ",
+     "write": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "cue": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "wrong": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "random": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "visible": {
+      "text": " CEDAR. Question: what is the result for Is",
+      "choice": "CEDAR",
+      "ended": false
+     }
+    },
+    {
+     "fact": 15,
+     "family": "H1",
+     "template": 1,
+     "correct": "QUARTZ",
+     "donor_correct": "CEDAR",
+     "write": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "cue": {
+      "text": " Islington holds neither marn nor vep, so the",
+      "choice": null,
+      "ended": false
+     },
+     "wrong": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "random": {
+      "text": " QUARTZ",
+      "choice": "QUARTZ",
+      "ended": true
+     },
+     "visible": {
+      "text": " The examiner gives Islington the mark QUARTZ.",
+      "choice": "QUARTZ",
+      "ended": true
+     }
+    },
+    {
+     "fact": 15,
+     "family": "H2",
+     "template": 0,
+     "correct": "PINE",
+     "donor_correct": "LARK",
+     "write": {
+      "text": " WREN.",
+      "choice": "WREN",
+      "ended": true
+     },
+     "cue": {
+      "text": " The pairing table gives Islington the class of WREN.",
+      "choice": "WREN",
+      "ended": false
+     },
+     "wrong": {
+      "text": " WREN.",
+      "choice": "WREN",
+      "ended": true
+     },
+     "random": {
+      "text": " WREN.",
+      "choice": "WREN",
+      "ended": true
+     },
+     "visible": {
+      "text": " The pairing table gives Islington the class of WREN.",
+      "choice": "WREN",
+      "ended": false
+     }
+    },
+    {
+     "fact": 15,
+     "family": "H2",
+     "template": 1,
+     "correct": "WREN",
+     "donor_correct": "PINE",
+     "write": {
+      "text": " LARK",
+      "choice": "LARK",
+      "ended": true
+     },
+     "cue": {
+      "text": " The relevant information is: for a second tag of vep",
+      "choice": null,
+      "ended": false
+     },
+     "wrong": {
+      "text": " LARK",
+      "choice": "LARK",
+      "ended": true
+     },
+     "random": {
+      "text": " LARK",
+      "choice": "LARK",
+      "ended": true
+     },
+     "visible": {
+      "text": " The relevant information is: for a second tag of vep",
+      "choice": null,
+      "ended": false
+     }
+    }
+   ],
+   "trained_rows": [
+    {
+     "fact": 0,
+     "family": 0,
+     "correct": "PORT",
+     "write": "PORT",
+     "cue": "VAULT"
+    },
+    {
+     "fact": 0,
+     "family": 1,
+     "correct": "NORTH",
+     "write": "SOUTH",
+     "cue": "NORTH"
+    },
+    {
+     "fact": 0,
+     "family": 2,
+     "correct": "RING",
+     "write": "RING",
+     "cue": "RING"
+    },
+    {
+     "fact": 1,
+     "family": 0,
+     "correct": "VAULT",
+     "write": "VAULT",
+     "cue": "VAULT"
+    },
+    {
+     "fact": 1,
+     "family": 1,
+     "correct": "SOUTH",
+     "write": "SOUTH",
+     "cue": "SOUTH"
+    },
+    {
+     "fact": 1,
+     "family": 2,
+     "correct": "STAR",
+     "write": "RING",
+     "cue": "STAR"
+    },
+    {
+     "fact": 2,
+     "family": 0,
+     "correct": "PORT",
+     "write": "PORT",
+     "cue": "PORT"
+    },
+    {
+     "fact": 2,
+     "family": 1,
+     "correct": "NORTH",
+     "write": "NORTH",
+     "cue": "NORTH"
+    },
+    {
+     "fact": 2,
+     "family": 2,
+     "correct": "STAR",
+     "write": "RING",
+     "cue": "RING"
+    },
+    {
+     "fact": 3,
+     "family": 0,
+     "correct": "VAULT",
+     "write": "VAULT",
+     "cue": "VAULT"
+    },
+    {
+     "fact": 3,
+     "family": 1,
+     "correct": "SOUTH",
+     "write": "SOUTH",
+     "cue": "SOUTH"
+    },
+    {
+     "fact": 3,
+     "family": 2,
+     "correct": "RING",
+     "write": "STAR",
+     "cue": "STAR"
+    },
+    {
+     "fact": 4,
+     "family": 0,
+     "correct": "PORT",
+     "write": "VAULT",
+     "cue": "VAULT"
+    },
+    {
+     "fact": 4,
+     "family": 1,
+     "correct": "SOUTH",
+     "write": "SOUTH",
+     "cue": "NORTH"
+    },
+    {
+     "fact": 4,
+     "family": 2,
+     "correct": "RING",
+     "write": "RING",
+     "cue": "RING"
+    },
+    {
+     "fact": 5,
+     "family": 0,
+     "correct": "VAULT",
+     "write": "VAULT",
+     "cue": "VAULT"
+    },
+    {
+     "fact": 5,
+     "family": 1,
+     "correct": "NORTH",
+     "write": "SOUTH",
+     "cue": "SOUTH"
+    },
+    {
+     "fact": 5,
+     "family": 2,
+     "correct": "STAR",
+     "write": "STAR",
+     "cue": "STAR"
+    },
+    {
+     "fact": 6,
+     "family": 0,
+     "correct": "PORT",
+     "write": "VAULT",
+     "cue": "VAULT"
+    },
+    {
+     "fact": 6,
+     "family": 1,
+     "correct": "SOUTH",
+     "write": "SOUTH",
+     "cue": "NORTH"
+    },
+    {
+     "fact": 6,
+     "family": 2,
+     "correct": "STAR",
+     "write": "RING",
+     "cue": "RING"
+    },
+    {
+     "fact": 7,
+     "family": 0,
+     "correct": "VAULT",
+     "write": "VAULT",
+     "cue": "VAULT"
+    },
+    {
+     "fact": 7,
+     "family": 1,
+     "correct": "NORTH",
+     "write": "SOUTH",
+     "cue": "SOUTH"
+    },
+    {
+     "fact": 7,
+     "family": 2,
+     "correct": "RING",
+     "write": "STAR",
+     "cue": "STAR"
+    },
+    {
+     "fact": 8,
+     "family": 0,
+     "correct": "VAULT",
+     "write": "VAULT",
+     "cue": "VAULT"
+    },
+    {
+     "fact": 8,
+     "family": 1,
+     "correct": "NORTH",
+     "write": "SOUTH",
+     "cue": "NORTH"
+    },
+    {
+     "fact": 8,
+     "family": 2,
+     "correct": "RING",
+     "write": "RING",
+     "cue": "RING"
+    },
+    {
+     "fact": 9,
+     "family": 0,
+     "correct": "PORT",
+     "write": "VAULT",
+     "cue": "VAULT"
+    },
+    {
+     "fact": 9,
+     "family": 1,
+     "correct": "SOUTH",
+     "write": "SOUTH",
+     "cue": "SOUTH"
+    },
+    {
+     "fact": 9,
+     "family": 2,
+     "correct": "STAR",
+     "write": "STAR",
+     "cue": "STAR"
+    },
+    {
+     "fact": 10,
+     "family": 0,
+     "correct": "VAULT",
+     "write": "PORT",
+     "cue": "PORT"
+    },
+    {
+     "fact": 10,
+     "family": 1,
+     "correct": "NORTH",
+     "write": "SOUTH",
+     "cue": "NORTH"
+    },
+    {
+     "fact": 10,
+     "family": 2,
+     "correct": "STAR",
+     "write": "RING",
+     "cue": "RING"
+    },
+    {
+     "fact": 11,
+     "family": 0,
+     "correct": "PORT",
+     "write": "VAULT",
+     "cue": "VAULT"
+    },
+    {
+     "fact": 11,
+     "family": 1,
+     "correct": "SOUTH",
+     "write": "SOUTH",
+     "cue": "SOUTH"
+    },
+    {
+     "fact": 11,
+     "family": 2,
+     "correct": "RING",
+     "write": "STAR",
+     "cue": "STAR"
+    },
+    {
+     "fact": 12,
+     "family": 0,
+     "correct": "VAULT",
+     "write": "VAULT",
+     "cue": "VAULT"
+    },
+    {
+     "fact": 12,
+     "family": 1,
+     "correct": "SOUTH",
+     "write": "SOUTH",
+     "cue": "NORTH"
+    },
+    {
+     "fact": 12,
+     "family": 2,
+     "correct": "RING",
+     "write": "RING",
+     "cue": "RING"
+    },
+    {
+     "fact": 13,
+     "family": 0,
+     "correct": "PORT",
+     "write": "VAULT",
+     "cue": "VAULT"
+    },
+    {
+     "fact": 13,
+     "family": 1,
+     "correct": "NORTH",
+     "write": "SOUTH",
+     "cue": "SOUTH"
+    },
+    {
+     "fact": 13,
+     "family": 2,
+     "correct": "STAR",
+     "write": "STAR",
+     "cue": "STAR"
+    },
+    {
+     "fact": 14,
+     "family": 0,
+     "correct": "VAULT",
+     "write": "PORT",
+     "cue": "PORT"
+    },
+    {
+     "fact": 14,
+     "family": 1,
+     "correct": "SOUTH",
+     "write": "SOUTH",
+     "cue": "NORTH"
+    },
+    {
+     "fact": 14,
+     "family": 2,
+     "correct": "STAR",
+     "write": "RING",
+     "cue": "RING"
+    },
+    {
+     "fact": 15,
+     "family": 0,
+     "correct": "PORT",
+     "write": "VAULT",
+     "cue": null
+    },
+    {
+     "fact": 15,
+     "family": 1,
+     "correct": "NORTH",
+     "write": "SOUTH",
+     "cue": null
+    },
+    {
+     "fact": 15,
+     "family": 2,
+     "correct": "RING",
+     "write": "STAR",
+     "cue": "STAR"
+    }
+   ]
+  }
+ },
+ "status": "INCOMPLETE \u2014 NO VERDICT",
+ "per_seed": [
+  "FAIL"
+ ],
+ "seconds": 739.2352185249329
+}
