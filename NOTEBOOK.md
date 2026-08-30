@@ -5,6 +5,14 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — Audit #40 (mathematics-only) on the proposed foundation: REVISE BEFORE ADOPTION; 14 exact edits; C1/C2 stay blocked
+
+Verbatim in `theory/dialogue/004.md`. Licensed sentence: The future-response construction is a valid deterministic behavioral-pseudometric foundation after explicit nonempty/free-word assumptions and corrections to Proposition 2, D6, D7, and the audit-#36 retrospective; `reachability_v1` remains only a family of restricted centered-logit instrument seminorms with `NO SLOT-SPECIFIC GEOMETRY CONCLUSION`, and C1/C2 must not run until their mathematical and preregistration defects are repaired.
+
+Never say (audit #40): “Theorem 1 is false.” “The \(|Z|^2-1\) bound is wrong.” “Theorem 1 is a new latent-space theorem.” “The cited probabilistic-bisimulation papers prove this exact deterministic construction.” “\(G=\lambda P_{\mathcal O}\) makes the Gramian seminorm equal to ambient Euclidean distance on all of \(V\).” “Pointwise differentiability proves that \(p_x\) is the first variation of \(d_\infty\).” “Finite \(h\) and \(C_0\) always give a finite-access object.” “D2 makes external decoders impossible to smuggle into the interface.” “D6 already defines outcome-name transport.” “`reachability_v1` measured the native JS/Fisher tangent seminorm.” “The patched residual directions were denizen-executable moves.” “`reachability_v1` lower-bounds the declared \(p_x\)” without the missing response-metric and direction qualifications. “C1b establishes intrinsic Hilbert geometry beyond its finite registered support.” “C2 establishes exact places, an \(\varepsilon\)-quotient, persistence, or a causal bridge.” Every audit-#36 never-say sentence in `STATE.md` remains binding unchanged. “Audit #40 authorizes computation.”
+
+Round 34 applies the edits (Codex), then audit #41.
+
 ## 2026-08-30 — Round 33: foundation text adopted as PROPOSED (pending audit #40)
 
 Codex wrote the final text into `theory/AXIOMS.md` (Foundation: future-response geometry — D1–D7, Theorem 1 proved for deterministic moves / distributional responses, Proposition 2 proved in the linear case with the chart boundary, softmax extension sketched, D7 local response seminorm with its lemma, Open Problem 7 conjectured) and the C1/C2 preregistrations into `theory/EXPERIMENTS.md`. Corrections to my round-33 asks: a finite denizen estimates only the restricted p_{x,h,C0}, not full p_x; audit #36 is recorded as 24 restricted empty-continuation Jacobian seminorms plus a shared mean operator, not one base-state p_x and not evidence that global p_x is low-rank; the C1 same-state cross-permutation control is presentation sensitivity when nonzero, not automatically a pull-back error. Next: fresh mathematics-only audit #40 (audit board e5a4e16f); C1/C2 blocked until it is adopted. No compute ran.
