@@ -8961,14 +8961,16 @@ is re-taken after this amendment; no Round 37 outcome may be inspected until
 the amended module passes Tier-1 correctness and performance review and its
 final config and module hashes are recorded.
 
-## Round 33/34 — future-response geometry checks C1/C2 (PREREGISTERED; audit #40 corrections applied; blocked on audit #41)
+## Round 33/35 — future-response geometry checks C1/C2 (PREREGISTERED; audits #40-#41 corrections applied; pending audit #42)
 
 **Status: PREREGISTERED THEORY CHECKS; NOT RUN.** These checks may not execute
-until the corrected Round 31--34 foundation in `theory/AXIOMS.md` receives a
-fresh, unprimed mathematics-only audit #41 and that audit is adopted. Audit
-#40 returned `REVISE BEFORE ADOPTION`; its thirteen theory/C1/C2 corrections
-are applied here and in `theory/AXIOMS.md`. Neither check is the audit-#39
-causal bridge, and neither queues that bridge.
+unless the corrected Round 31--35 foundation in `theory/AXIOMS.md` receives a
+fresh, unprimed mathematics-only audit #42 and that audit adopts it. Audit #41
+returned `REVISE BEFORE ADOPTION; NO COMPUTE`: it upheld Theorem 1,
+Proposition 2's algebra, typed D6, and D7's conditional fixed-curve lemma, but
+required the ten theory/C1/C2 corrections now applied here and in
+`theory/AXIOMS.md`. Neither check is the audit-#39 causal bridge, and neither
+queues that bridge.
 
 ### C1. Frozen constructed-consumer response geometry — preregistered
 
@@ -8980,12 +8982,22 @@ write moves overwrite the register with the eight fixed oracle codes. The
 response law is the consumer's full answer-position output distribution. Use
 normalized square-root Jensen--Shannon distance.
 
-Before comparing presentations, pull visible-label probability coordinates
-back through the displayed permutation to the common abstract-state outcome
-coordinates. Because a write overwrites the previous register, repeated write
-words add no future beyond their final write. The finite future-response
-pseudometric \(d_C\) is therefore enumerated from the empty/query continuation
-and the eight write/query continuations.
+The registered primitive interface emits the joint observable
+\((p,\ell)\), where \(p\) is the displayed permutation and \(\ell\) is the
+random visible answer label. Register once, before scoring, the fixed wrapper
+
+\[
+K(p,\ell)=p^{-1}(\ell)
+\]
+
+on that joint observable. Its pushforward is the derived response law in
+common abstract-state outcome coordinates. Because \(K\) is one fixed,
+state-independent Markov kernel on the joint emitted observable, this
+pull-back is D2-compatible; no state-conditioned postprocessing is introduced
+after outputs are seen. Because a write overwrites the previous register,
+repeated write words add no future beyond their final write. The finite
+future-response pseudometric \(d_C\) is therefore enumerated from the
+empty/query continuation and the eight write/query continuations.
 
 #### C1-P. Pull-back controls and presentation diagnostic — preregistered
 
@@ -8993,7 +9005,7 @@ Two controls must not be conflated.
 
 1. **Algebraic round-trip control.** For each saved probability vector and
    visible permutation, push the vector to visible-label coordinates and pull
-   it back using the registered inverse. The normalized square-root JS
+   it back using the registered wrapper \(K\). The normalized square-root JS
    distance from the original vector must be zero up to the measured replay
    floor. A larger value means the permutation implementation is wrong and
    makes C1 `INVALID — OUTCOME PULL-BACK`.
@@ -9065,8 +9077,15 @@ where \(\mathbf 1_p\) and \(\mathbf 1_e\) are canonical one-hot vectors over
 the union of the manifest's permutation and episode IDs. This makes explicit
 that the raw state is \((p,e,z)\), not \(z\) alone. Every fitted or scored pair
 holds \((p,e)\) fixed and varies only \(z\), so those one-hot blocks cancel;
-positive regularization below therefore sets their unidentified rows and
-columns to zero rather than allowing hidden presentation or episode effects.
+the fitted form is therefore constrained to
+
+\[
+G=\operatorname{diag}(0,0,H),
+\qquad H\succeq0,
+\]
+
+and the optimizer operates only on the register block \(H\). No presentation
+or episode block is fitted.
 
 For each `(seed, split, p, e)` block, include all
 \(\binom{16}{2}=120\) unordered pairs of the sixteen registered points. Give
@@ -9078,75 +9097,126 @@ each block equal total weight and every pair within a block equal weight:
 \frac{1}{|\mathcal B_{\rm split}|\binom{16}{2}}.
 \]
 
+The held-out blocks reuse all 120 registered \(z\)-pairs present in every
+training block. The split changes episodes and permutations, not register
+points or pair directions; C1b therefore tests cross-context stability on
+fixed finite register support, not generalization to unseen \(z\)-points.
+
 The manifest's `pair_id` is the canonical concatenation of seed, split,
 panel, permutation index, entity, state, template, and the two ordered point
 IDs; duplicate IDs or any pair whose two rows disagree on \((p,e)\) make C1b
 `INVALID — PAIR MANIFEST`.
 
 Let \(d_{ij}=d_C(u_i,u_j)\),
-\(\Delta_{ij}=\Phi(u_i)-\Phi(u_j)\), and
-\(X_{ij}=\Delta_{ij}\Delta_{ij}^{\top}\). Fit the unique regularized PSD form
+\(\delta z_{ij}=z_i-z_j\), and
+\(X^z_{ij}=\delta z_{ij}\delta z_{ij}^{\top}\). Fit the unique regularized
+register-block PSD form
 
 \[
-G_s^\star
+H_s^\star
 =
-\underset{G\succeq0}{\arg\min}
+\underset{H\succeq0}{\arg\min}
 \left\{
 \sum_{(i,j)\in\mathcal P_{\rm train}}
 \omega_{ij}
-\bigl(d_{ij}^2-\operatorname{tr}(GX_{ij})\bigr)^2
-+10^{-6}\|G\|_F^2
-\right\}.
+\bigl(d_{ij}^2-\operatorname{tr}(HX^z_{ij})\bigr)^2
++10^{-6}\|H\|_F^2
+\right\},
+\qquad
+G_s^\star=\operatorname{diag}(0,0,H_s^\star).
 \]
 
-Denote the displayed objective by \(f_s(G)\). The positive Frobenius term is
+Denote the displayed objective by \(f_s(H)\). The positive Frobenius term is
 the regularizer and deterministic tie-breaker.
-The optimizer is projected gradient descent from \(G_0=0\), with projection
+The optimizer is projected gradient descent from \(H_0=0\), with projection
 obtained by symmetrizing and clipping negative eigenvalues to zero. Use the
 fixed step \(1/L\), where
 
 \[
 L=2\sum_{(i,j)\in\mathcal P_{\rm train}}
-\omega_{ij}\|X_{ij}\|_F^2+2\times10^{-6}.
+\omega_{ij}\|X^z_{ij}\|_F^2+2\times10^{-6}.
 \]
 
 Stop only after
 
 \[
-\frac{\|G_{k+1}-G_k\|_F}{\max(1,\|G_k\|_F)}\leq10^{-10}
+\frac{\|H_{k+1}-H_k\|_F}{\max(1,\|H_k\|_F)}\leq10^{-10}
 \quad\text{and}\quad
-\frac{|f_s(G_{k+1})-f_s(G_k)|}{\max(1,|f_s(G_k)|)}\leq10^{-12}
+\frac{|f_s(H_{k+1})-f_s(H_k)|}{\max(1,|f_s(H_k)|)}\leq10^{-12}
 \]
 
 for ten consecutive iterations, with a ceiling of 100,000 iterations.
-Nonconvergence is
-`INVALID — PSD OPTIMIZER`. Predict held-out response distances by
+Supplement those successive-iterate checks with a projected-gradient/KKT
+residual. At the final iterate \(H\), define
+
+\[
+\widetilde H
+=\Pi_{\succeq0}\!\left(H-L^{-1}\nabla f_s(H)\right),
+\qquad
+\eta_{\rm PG}
+=L\|H-\widetilde H\|_F.
+\]
+
+Report \(\eta_{\rm PG}\) for every seed. The objective is
+\(\mu\)-strongly convex with \(\mu=2\times10^{-6}\). Projection optimality
+and \(L\)-smoothness give a KKT residual at \(\widetilde H\) of at most
+\(2\eta_{\rm PG}\), hence the a posteriori bound
+
+\[
+\|\widetilde H-H_s^\star\|_F
+\leq B_H:=\frac{2\eta_{\rm PG}}{\mu}.
+\]
+
+Nonconvergence is `INVALID — PSD OPTIMIZER`. Predict held-out response
+distances using \(\widetilde H\):
 
 \[
 \widehat d_s(u_i,u_j)
 =
-\sqrt{\Delta_{ij}^{\top}G_s^\star\Delta_{ij}}.
+\sqrt{\delta z_{ij}^{\top}\widetilde H\delta z_{ij}}.
 \]
 
 If either the training or held-out denominator
 \(\sum\omega_{ij}d_{ij}^2\) is zero, C1b is
-`INVALID — DEGENERATE RESPONSE DISTANCE`. Otherwise the candidate proposition
-is
+`INVALID — DEGENERATE RESPONSE DISTANCE`. Otherwise let
 
 \[
+D_{\rm held}
+=\left(\sum_{\mathcal P_{\rm heldout}}\omega_{ij}d_{ij}^2\right)^{1/2},
+\qquad
+B_{\rm stress}
+=
+\frac{
+\left(B_H\sum_{\mathcal P_{\rm heldout}}
+\omega_{ij}\|X^z_{ij}\|_F\right)^{1/2}
+}{D_{\rm held}}.
+\]
+
+The square-root inequality and the bound on \(H_s^\star\) make
+\(B_{\rm stress}\) an upper bound on optimizer-induced error in held-out
+normalized stress. Require \(B_{\rm stress}\leq10^{-4}\); otherwise C1b is
+`INVALID — OPTIMIZER BOUND`. The candidate proposition is
+
+\[
+\widehat S_s+B_{\rm stress}\leq0.10,
+\qquad
+\widehat S_s
+=
 \frac{
 \left(\sum_{\mathcal P_{\rm heldout}}\omega_{ij}
 (d_{ij}-\widehat d_s(u_i,u_j))^2\right)^{1/2}
 }{
-\left(\sum_{\mathcal P_{\rm heldout}}\omega_{ij}d_{ij}^2\right)^{1/2}
-}
-\leq0.10
+D_{\rm held}
+}.
 \]
 
 in at least two of three seeds. Report every seed estimate and the spread over
 held-out permutations; exact equality is diagnostic only.
 
-**Falsifier.** Held-out normalized stress above 0.10 in at least two seeds.
+**Falsifier.** \(\widehat S_s-B_{\rm stress}>0.10\) in at least two seeds. A
+seed whose certified interval intersects 0.10 is boundary-indeterminate; any
+overall case satisfying neither the proposition nor the falsifier is
+`INCONCLUSIVE — HILBERT ADEQUACY`.
 
 This tests one regularized Hilbert seminorm on within-episode register
 differences over the finite registered support. It does not establish an
@@ -9186,18 +9256,17 @@ Before any model forward pass, write and hash a manifest containing:
 - the nine-outcome map from full-vocabulary token IDs to digits plus `other`;
 - the intact/destroyed source-row ID, entity, template, permutation, record
   tag, original state, and legend-denoted state for every row; and
-- a unique canonical `pair_id` for every same/different comparator and every
-  paired-reassigned margin unit. Each `pair_id` records the estimand
-  (`Delta` or `M`), entity, ordered template pair, every constituent source-row
-  ID and its role, query IDs, permutation IDs, literal tags, original states,
-  and legend-denoted states. The same/different members of a `Delta` unit must
-  agree on every manifest field not explicitly named as the denotation change.
+- a unique canonical `pair_id` for every deterministic comparator unit and a
+  unique `destroyed_row_id` for every paired-reassigned margin row. Each ID
+  records its estimand (`Delta` or `M`), entity, state, template role(s),
+  replicate role(s), every constituent source-row ID and its role, query IDs,
+  permutation IDs, literal tags, original states, and legend-denoted states.
 
 If any digit is not represented by the declared single token, any prompt is
 not prefix-aligned at the answer position, any intact/destroyed pairing is
-missing, any `pair_id` is duplicated or incomplete, a comparator changes an
-undeclared factor, any pinned hash differs, or any row fails its denotation
-check, the check is
+missing, any `pair_id` or `destroyed_row_id` is duplicated or incomplete, a
+comparator changes an undeclared factor, any pinned hash differs, or any row
+fails its denotation check, the check is
 `INVALID — TOKENIZATION/PAIR MANIFEST`. No forward pass runs and there is no
 same-check repair; a scientifically different design requires a new dialogue
 and preregistration.
@@ -9211,56 +9280,88 @@ these fixed queries:
 2. `According to the legend, what state number does {entity}'s recorded value denote? Answer 0 through 7:`
 3. `Map {entity}'s recorded tag through the legend. Return only its state number, 0 through 7:`
 
-The primitive response is the model's own full next-token law. A derived
-nine-outcome channel records the probability assigned to digit tokens
-`0`--`7` and an `other` bucket. Let \(\mathcal W_Q\) be the three query
-continuations and define
+Let \(r^{\rm full}(x)\) be the primitive full-vocabulary next-token law and let
+\(\tau_k\) be the manifest-pinned single token for digit \(k\). Name the fixed
+derived nine-bin response explicitly:
+
+\[
+\widetilde r(x)_k=r^{\rm full}(x)(\tau_k)\quad(0\leq k\leq7),
+\qquad
+\widetilde r(x)_{\rm other}
+=1-\sum_{k=0}^7\widetilde r(x)_k.
+\]
+
+Let \(\mathcal W_Q\) be the three query continuations and define
 
 \[
 d_Q(x,y)
 =
 \sup_{w\in\mathcal W_Q}
-D_{\sqrt{\mathrm{JS}}}(r(wx),r(wy)),
+D_{\sqrt{\mathrm{JS}}}(\widetilde r(T_wx),\widetilde r(T_wy)),
 \]
 
 using normalized square-root Jensen--Shannon distance.
 
-Form only the manifest-bound entity-clustered matched pairs for:
+The comparator construction is deterministic. Within each source cell
+`(entity e, original state s, template t)`, order the two intact rows by source
+row ID and label their registered permutation-replicates \(r=0,1\). Each
+intact row has exactly one source-paired destroyed row with the same entity,
+original state, template, permutation index, clause order, literal record tag,
+and token multiset, but with a different legend-denoted state. For every
+entity \(e\), state \(s\), ordered template pair \(i\ne j\), and registered
+replicate pair \((r_i,r_j)\in\{0,1\}^2\), let
 
-- same denotation across template and legend presentations;
-- different denotation with presentation factors matched; and
-- intact versus paired-reassigned legend, holding the literal record tag fixed
-  while changing what it denotes.
+- \(I_i\) be the unique intact row for \((e,s,i,r_i)\);
+- \(I_j\) be the unique intact row for \((e,s,j,r_j)\); and
+- \(D_j\) be the unique source-paired destroyed row of \(I_j\).
+
+The unit \(u=(e,s,i,j,r_i,r_j)\) is fixed before any forward pass and has
+
+\[
+\Delta_u=d_Q(I_i,D_j)-d_Q(I_i,I_j).
+\]
+
+Thus the same reference \(I_i\) is used in both terms, while \(I_j\) and
+\(D_j\) differ only by the registered paired legend reassignment. A missing or
+nonunique row, a destroyed row whose denoted state still equals \(s\), or any
+field mismatch outside that reassignment makes the design
+`INVALID — TOKENIZATION/PAIR MANIFEST`; no matching choice may depend on an
+output.
 
 #### C2 proposition — conjectured and preregistered
 
 Denotation predicts the restricted native response law. For each ordered
-template pair \((t_i,t_j)\) and for the pooled table, report
+template pair \((i,j)\) and for the pooled table, report
 
 \[
-\Delta_{t_i,t_j}
+\Delta_{i,j}
 =
-\mathbb E_e[
-d_Q(\text{different denotation})
--d_Q(\text{same denotation})
-],
+\mathbb E_{e,s,r_i,r_j}[\Delta_u].
 \]
 
-and
+For the paired-reassigned arm, compute the log-probability margin once per
+unique destroyed source row, not once per reference template or comparator.
+If \(s_{\rm new}(D_j)\ne s\) is that row's legend-denoted state, define
 
 \[
-M_{t_i,t_j}
+m(D_j)
 =
-\mathbb E_e[
-\log p(\text{newly denoted state})
--\log p(\text{original state})
-]
+\frac{1}{|\mathcal W_Q|}
+\sum_{w\in\mathcal W_Q}
+\left[
+\log r^{\rm full}(T_wD_j)(\tau_{s_{\rm new}(D_j)})
+-\log r^{\rm full}(T_wD_j)(\tau_s)
+\right],
+\qquad
+M_j=\mathbb E[m(D_j):\operatorname{template}(D_j)=j].
 \]
 
-on the paired-reassigned arm. Compute these terms from the full-vocabulary
-float32 `log_softmax` at the answer position, not by taking a logarithm after
-probability rounding or nine-outcome bucketing. The primary pooled
-propositions are
+Each `destroyed_row_id` contributes exactly once to pooled
+\(M=\mathbb E[m(D_j)]\), even though its \(D_j\) can appear in several
+\(\Delta_u\) units. Compute all log terms from full-vocabulary float32
+`log_softmax` at the answer position, not by taking a logarithm after
+probability rounding or nine-bin bucketing. The primary pooled propositions
+are
 
 \[
 \Delta>0
@@ -9268,30 +9369,39 @@ propositions are
 M>0.
 \]
 
-Report every per-template-pair estimate beside the pooled effect; pooling may
-not hide wording concentration. For each estimand, compute each entity's mean
-over all of its pooled registered `pair_id` units first and average the 24
-entity means; repeat the same entity-first reduction within every ordered
-template-pair stratum. Use
+Report every \(\Delta_{i,j}\) and every \(M_j\) beside the pooled effects;
+pooling may not hide wording concentration. For \(\Delta\), compute each
+entity's mean over its registered comparator units first; for \(M\), compute
+each entity's mean over its unique destroyed rows first. Average the 24 entity
+means, and repeat the same entity-first reduction within every ordered
+template-pair \(\Delta\) stratum and manipulated-template \(M\) stratum. Use
 exactly 2,000 paired entity-cluster bootstrap replicates: sample 24 entity IDs
 with replacement using NumPy `PCG64` seed `2727`, carry all of each sampled
 entity's matched units together, and use percentile 2.5%/97.5% bounds. The
 manifest stores the ordered list of sampled entity-index vectors and its
 SHA-256 before any verdict is computed.
 
-The numeric wording-support rule uses all registered ordered template pairs
+The predeclared numeric wording-support rule uses all registered ordered
+template pairs
 
 \[
 \mathcal U=\{(t_i,t_j):t_i,t_j\in\{0,1,2,3\},\ i\ne j\},
 \qquad |\mathcal U|=12.
 \]
 
-It passes only if at least six pairs satisfy both
-\(\Delta_{t_i,t_j}>0\) and \(M_{t_i,t_j}>0\), and if, for every
-\(u\in\mathcal U\), the pooled point estimates recomputed after removing all
-units with wording pair \(u\) remain strictly positive for both \(\Delta\) and
-\(M\). These are point-estimate support checks beside, not substitutes for,
-the entity-clustered pooled intervals.
+It passes only if all three thresholds, fixed before any forward pass, hold:
+
+1. at least six of the twelve ordered pairs have \(\Delta_{i,j}>0\);
+2. at least three of the four manipulated-template strata have \(M_j>0\); and
+3. for every whole template \(k\in\{0,1,2,3\}\), both leave-one-template-out
+   pooled point estimates are positive:
+   \(\Delta^{(-k)}>0\) after removing every unit with \(i=k\) or \(j=k\), and
+   \(M^{(-k)}>0\) after removing every destroyed row with manipulated template
+   \(j=k\).
+
+These leave out entire templates, not isolated ordered pairs. They are
+point-estimate support checks beside, not substitutes for, the
+entity-clustered pooled intervals.
 
 **Falsifier.** The entity-clustered 95% lower bound is at or below zero for
 either pooled \(\Delta\) or pooled \(M\), or the numeric wording-support rule

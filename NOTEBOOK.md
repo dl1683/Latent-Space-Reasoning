@@ -5,6 +5,10 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — Round 35: audit-#41 edits applied (repair pass 2 of 3); Theorem 3 candidate stated; audit #42 fired
+
+Verbatim in `theory/dialogue/004.md`. All ten audit-#41 edits applied; disclaimer now 'Nothing currently proved is genuinely new mathematics.' Ruling on 'responses are futures': FOR, with the correction that registration relativity is relocated (to an architecturally fixed base output o and legal move family), not removed. Theorem 3 candidate: with accessible responses = the action closure {o∘T_w}, (1) finite Z ⇒ d_h = d_∞ for h ≥ |Z|²−1 (zero truncation error after a finite horizon); (2) no uniform affine rate: Z = ℝ, T(x) = 2x, o(x) = δ_x with ground metric min(1,|u−v|) gives d_h = min(1, 2^h|x−y|), d_∞ = 1, sup(d_∞ − d_h) = 1 for every h. Lay so-what: in a finite latent world, acting and reading the world's own outputs eventually yields a complete map; in an expanding continuous world, decisive differences can stay beyond every fixed exploration budget. Ratio 26:9. Audit #42 (math-only) fires now; if it does not adopt, the repair ladder stops (rule 7).
+
 ## 2026-08-30 — Re-contextualization (2-hour check-in, theory-first mode); audit skipped as duplicate
 
 Audit status: every theory claim written since the restart has already been audited fresh and unprimed — audit #40 (REVISE) and audit #41 (REVISE; NO COMPUTE), both adopted verbatim with their alternatives on the audit board (e734, e736). Round 35 (repair pass 2 of 3) is applying audit #41's ten edits; audit #42 follows it. Firing another auditor now would audit a text mid-edit, so this check-in records the step-back instead.

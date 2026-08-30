@@ -65,14 +65,28 @@ not evidence of semantics.
 Status: the navigation requirements remain the program-level target. The
 future-response foundation below was proposed in Round 33 after the Round
 31--33 dialogue and corrected in Round 34 after mathematics-only audit #40.
-It remains **proposed pending mathematics-only audit #41**. Dialogue and
-rejected formulations stay in `dialogue/`.
+Round 35 applies mathematics-only audit #41's correction list. It remains
+**proposed pending mathematics-only audit #42**. Dialogue and rejected
+formulations stay in `dialogue/`.
 
-## Foundation: future-response geometry (proposed, rounds 31-34; audit #40 corrections applied; pending audit #41)
+## Foundation: future-response geometry (proposed, rounds 31-35; audits #40-#41 corrections applied; pending audit #42)
 
 The status of every item is stated explicitly. Definitions D1--D7 replace
 L1--L4 as the proposed active foundation. Presentation covariance remains a
 candidate law. No empirical result is promoted to an axiom by this section.
+Nothing currently proved is genuinely new mathematics. The potentially
+distinctive contribution is the application-level synthesis of interface
+governance, presentation transport, finite denizen access, and executable-germ
+restrictions; no mathematical novelty is claimed for that synthesis here.
+
+Status ledger. D1--D6 are proposed definitions. D7 is a proposed definition;
+its seminorm statement and uniform first-variation lemma are proved under
+their displayed assumptions. Theorem 1 and its finite corollary are proved.
+Proposition 2's affine, Gramian, and chart statements are proved in its
+explicitly extended setting; the softmax extension is sketched. Open Problem
+7 is conjectured; only its displayed conditional inequalities, finite-access
+sandwich, and affine check are proved under their stated assumptions. C1 and
+C2 in `theory/EXPERIMENTS.md` are preregistered and unrun.
 
 ### D1. Raw presented transition world — definition
 
@@ -119,7 +133,9 @@ defines a different registered world. In a language model, the full next-token
 law at a declared query position is primitive; grouping its token
 probabilities into declared outcome classes by a fixed Markov kernel is
 derived. Equality of the full native laws is preserved by every such derived
-response.
+response. This criterion is registration-relative and does not itself certify
+denizen accessibility. Interface admissibility requires an independently
+fixed architectural or capability boundary.
 
 ### D3. Immediate response discrepancy and legal futures — definition
 
@@ -219,8 +235,12 @@ A syntactically specified rewrite \(g:Z\to Z\) may be registered with fixed,
 state-independent transport data:
 
 - a channel map \(\pi_C^g:C\to C\);
-- a monoid map \(\pi_A^g:\mathcal W\to\mathcal W\), fixed by its action-name
-  map and preserving the empty word and concatenation; and
+- an action-name map
+  \(\pi_{\mathcal A}^g:\mathcal A\to\mathcal A\), with
+  \(\pi_A^g:\mathcal W\to\mathcal W\) its unique free-monoid extension:
+  \(\pi_A^g(\epsilon)=\epsilon\) and
+  \(\pi_A^g(a_1\cdots a_k)=
+  \pi_{\mathcal A}^g(a_1)\cdots\pi_{\mathcal A}^g(a_k)\); and
 - measurable outcome maps
   \(\tau_{g,c}:O_c\to O_{\pi_C^g(c)}\) whose pushforwards preserve the declared
   metrics:
@@ -451,7 +471,21 @@ coalgebra is
 \mathsf{beh}:Z\to R^{\mathcal A^*},
 \]
 
-and \(d_\infty\) is exactly the pullback of the supremum metric on
+Under D1's convention, the final coalgebra has output \(f(\epsilon)\) and
+transition
+
+\[
+(\partial_a f)(w)=f(wa).
+\]
+
+Consequently
+
+\[
+\mathsf{beh}(T_ax)(w)=\mathsf{beh}(x)(wa),
+\]
+
+so \(\mathsf{beh}\) is a coalgebra morphism, and \(d_\infty\) is exactly the
+pullback of the supremum metric on
 \(R^{\mathcal A^*}\). This remark identifies the standard semantics without
 replacing the elementary word-and-response formulation: the latter keeps the
 fixed native interface, finite word access, and the denizen's map problem
@@ -466,11 +500,11 @@ and [Ferns--Panangaden--Precup](https://arxiv.org/abs/1207.4114) are neighboring
 probabilistic-transition or MDP metric theories, not sources for this exact
 deterministic construction.
 
-Finite deterministic corollary — proved. If \(Z,\mathcal A,C\) are finite,
-then \(d_h(x,y)=0\) is exactly equality of the horizon-\(h\) future-response
-signatures. The synchronous ordered-pair graph has at most \(|Z|^2\) vertices,
-and every reachable pair has a simple path of length at most \(|Z|^2-1\).
-Consequently
+Finite deterministic corollary — proved. If \(Z\neq\varnothing\) and
+\(Z,\mathcal A,C\) are finite, then \(d_h(x,y)=0\) is exactly equality of the
+horizon-\(h\) future-response signatures. The synchronous ordered-pair graph
+has at most \(|Z|^2\) vertices, and every reachable pair has a simple path of
+length at most \(|Z|^2-1\). Consequently
 
 \[
 d_{|Z|^2-1}=d_\infty.
@@ -490,15 +524,27 @@ or observable failure-state totalization.
 
 ### Proposition 2. Linear observability seminorm — proved in the linear case
 
-Let \(Z=V=\mathbb R^n\). Suppose every move and response has the affine form
+This proposition temporarily extends D2's bounded setting. Let
+\(Z=V=\mathbb R^n\), let each outcome space be a finite-dimensional normed
+vector space, and suppose every move and response-location map has the affine
+form
 
 \[
 T_a(x)=A_ax+b_a,
 \qquad
-r_c(x)=W_cx+q_c,
+\ell_c(x)=W_cx+q_c.
 \]
 
-and outcome discrepancy is induced by a norm. Let
+The actual response is the deterministic probability law
+\(r_c(x)=\delta_{\ell_c(x)}\). On probability laws with finite first moment,
+use the Wasserstein-1 metric induced by the possibly unbounded ground norm, so
+
+\[
+D_c(\delta_u,\delta_v)=\|u-v\|_c.
+\]
+
+Thus the responses remain Dirac laws, but the outcome metrics need not satisfy
+D2's normalization \(D_c\leq1\). Let
 
 \[
 T_w(x)=A_wx+b_w.
@@ -510,7 +556,10 @@ For positive weights \(\alpha_w\), define
 d_\alpha(x,y)
 =
 \sup_{w,c}\alpha_w
-\|r_c(T_wx)-r_c(T_wy)\|_c
+D_c(r_c(T_wx),r_c(T_wy))
+=
+\sup_{w,c}\alpha_w
+\|\ell_c(T_wx)-\ell_c(T_wy)\|_c
 \]
 
 and
@@ -558,8 +607,9 @@ p_\alpha(v)=p_\alpha(P_{\mathcal O}v).
 
 The kernel and quotient are intrinsic; the orthogonal projector is not.
 
-For weights \(\beta_{w,c}>0\) such that the displayed series converges for
-every \(v\), define the weighted \(\ell_2\) aggregation
+For the next construction only, assume that \(\mathcal W\times C\) is
+countable. For weights \(\beta_{w,c}>0\) such that the displayed series
+converges for every \(v\), define the weighted \(\ell_2\) aggregation
 
 \[
 p_2(v)^2
@@ -586,7 +636,7 @@ aggregation generally gives an arbitrary seminorm.
 Proof. Affine offsets cancel under a shared word:
 
 \[
-r_c(T_wx)-r_c(T_wy)=W_cA_w(x-y).
+\ell_c(T_wx)-\ell_c(T_wy)=W_cA_w(x-y).
 \]
 
 The supremum of seminorms is a seminorm when finite. Its zero set is exactly
@@ -675,14 +725,19 @@ Dq_x(E_x)=\bar E_{q(x)}.
 From this point, \(\delta_E\) on \(Q\) denotes the same path formula with
 \((\bar p,\bar E)\). The precise candidate theorem is:
 
-1. Along every executable piecewise-\(C^1\) curve, the D7 first-order expansion
-   holds uniformly on compact parameter intervals and
-   \(t\mapsto\bar p_{\gamma(t)}(\dot\gamma(t))\) is continuous.
+1. Every executable absolutely continuous curve \(\gamma\) is absolutely
+   continuous for \(\bar d\), and its \(\bar d\)-metric derivative satisfies
+   \[
+   |\gamma'|_{\bar d}(t)
+   =\bar p_{\gamma(t)}(\dot\gamma(t))
+   \quad\text{for almost every }t.
+   \]
 2. The behavior map \(\mathsf{beh}:Q\to R^{\mathcal A^*}\) is injective and
    its image is \(L\)-quasiconvex in the supremum metric: any two behavior
    points are joined in the image by a rectifiable path of length at most
    \(L\bar d\).
-3. Every such behavior path has an executable lift with the same length.
+3. Every such behavior path has an absolutely continuous parametrization with
+   an executable absolutely continuous lift of the same length.
 
 Then
 
@@ -695,13 +750,17 @@ L\bar d([x],[y]).
 \]
 
 For \(L=1\), \(\delta_E=\bar d\). The first inequality is proved under item 1:
-the uniform expansion identifies \(p_{\gamma(t)}(\dot\gamma(t))\) with the
-\(d_\infty\)-metric speed, so endpoint distance is at most curve length.
-Items 2--3 give an executable curve of length at most \(L\bar d\), proving the
-second inequality. Reversibility is not needed for either ordered inequality,
-but it is needed to call the resulting object an undirected length metric.
-Without items 2--3, bounded response metrics can saturate and make
-\(d_\infty\) strictly smaller than every integrating path length.
+the endpoint distance of a \(\bar d\)-absolutely continuous curve is at most
+the integral of its metric derivative, which item 1 identifies with its
+\(\bar p\)-length. Items 2--3 give an executable absolutely continuous curve
+of length at most \(L\bar d\), proving the second inequality. The
+absolutely-continuous formulation is used rather than restricting
+\(\delta_E\) to piecewise-\(C^1\) curves because a rectifiable quasiconvex path
+and its executable lift need not be piecewise \(C^1\). Reversibility is not
+needed for either ordered inequality, but it is needed to call the resulting
+object an undirected length metric. Without items 2--3, bounded response
+metrics can saturate and make \(d_\infty\) strictly smaller than every
+integrating path length.
 
 For finite denizen access, let \(W_n\subset\mathcal W\) and \(C_n\subset C\)
 be finite registered sets, let \(p_x^{(n)}=p_{x,W_n,C_n}\), and let
@@ -713,6 +772,8 @@ tangent bundle of the quotient,
 \leq p_x^{(n)}(v)
 \leq p_x(v),
 \qquad
+0\leq\varepsilon_n<1,
+\quad
 \varepsilon_n\downarrow0,
 \]
 
@@ -744,7 +805,16 @@ behavior-space quasiconvexity, and executable lifting in a real latent space.
 **Affine check — proved, with a counterexample to the unconditional claim.**
 In Proposition 2's affine world, \(p_\alpha\) is constant in \(x\). If every
 straight-line translation is admitted as a reversible executable germ, then
-for every piecewise-\(C^1\) curve from \(x\) to \(y\),
+define the weighted executable path distance
+
+\[
+\delta_{E,\alpha}(x,y)
+=
+\inf_\gamma\int_0^1p_\alpha(\dot\gamma(t))\,dt,
+\]
+
+where the infimum ranges over executable absolutely continuous curves from
+\(x\) to \(y\). For every such curve,
 
 \[
 p_\alpha(y-x)
@@ -753,21 +823,54 @@ p_\alpha(y-x)
 \]
 
 The straight segment attains equality, so
-\(\delta_E(x,y)=p_\alpha(y-x)=d_\alpha(x,y)\), and the same statement holds on
-\(V/K\). Likewise the unrestricted path distance of the Gramian seminorm is
-\(p_2(x-y)\), hence equals the corresponding \(\ell_2\)-aggregated global
-pseudometric; it need not equal the supremum-based \(d_\infty\) unless
-\(p_2=p_\infty\).
+\(\delta_{E,\alpha}(x,y)=p_\alpha(y-x)=d_\alpha(x,y)\), and the same statement
+holds on \(V/K\). This is a claim about the explicitly weighted path distance,
+not the unweighted \(\delta_E\) above. Likewise the unrestricted path distance
+of the Gramian seminorm is \(p_2(x-y)\), hence equals the corresponding
+\(\ell_2\)-aggregated global pseudometric; it need not equal the supremum-based
+\(d_\infty\) unless \(p_2=p_\infty\).
 
 The discrete affine alphabet alone does not license those curves. Take
 \(V=\mathbb R\), the finite alphabet \(\mathcal A=\{a\}\) with
-\(T_a(x)=x\), and the single response \(r(x)=x\) with absolute-value outcome
-distance. Then \(d_\infty(x,y)=|x-y|\) and \(p_x(v)=|v|\), but if no
-parameterized move germs are declared, \(E_x=\{0\}\) and
-\(\delta_E(x,y)=+\infty\) for \(x\ne y\). If only the positive translation
-germ is declared, the path distance is \(y-x\) for \(y\geq x\) and
-\(+\infty\) otherwise. Therefore Proposition 2 supplies the local seminorm,
-not the controllability or reversibility needed for local-to-global equality.
+\(T_a(x)=x\), and the law-valued response \(r(x)=\delta_x\). Give the outcome
+line the bounded ground metric
+
+\[
+d_0(u,v)=\min(1,|u-v|)
+\]
+
+and give its probability laws the corresponding Wasserstein-1 metric
+\(D=W_1^{d_0}\). All words act as the identity and Wasserstein distance between
+Dirac laws equals their ground distance, so
+
+\[
+d_\infty(x,y)
+=D(\delta_x,\delta_y)
+=\min(1,|x-y|).
+\]
+
+Moreover, for every \(v\),
+
+\[
+\lim_{t\to0}
+\frac{D(\delta_x,\delta_{x+tv})}{|t|}
+=
+\lim_{t\to0}\frac{\min(1,|tv|)}{|t|}
+=|v|,
+\]
+
+and every future branch is the same branch, hence \(p_x(v)=|v|\). If no
+parameterized move germs are declared, then \(E_x=\{0\}\). Every executable
+absolutely continuous curve has derivative zero almost everywhere and is
+therefore constant. Thus there is no executable curve from \(x\) to \(y\) for
+\(x\ne y\), and
+
+\[
+\delta_E(x,y)=+\infty\qquad(x\ne y).
+\]
+
+Therefore Proposition 2 supplies the local seminorm, not the controllability
+or reversibility needed for local-to-global equality.
 
 Switched/semigroup observability and Finsler/control geometry contain
 neighboring special cases; novelty is not claimed. The latent-specific role of
