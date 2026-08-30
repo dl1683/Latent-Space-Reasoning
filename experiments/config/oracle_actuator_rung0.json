@@ -1,0 +1,20 @@
+{
+ "name": "oracle_actuator_rung0",
+ "purpose": "Staircase rung 0 (Codex round 20, 2026-08-30): oracle-code actuator control. No encoder. A fixed, hashed 8-code centred-simplex codebook is injected through a zero-initialized biasless J at the block-12 'Internal record:' slot; only J is trained (24 training entities x 8 codes, target = the injected code's tag). Isolates the actuator/site/retrieval stage from source extraction. Norm cap kept in primary; uncapped replay is a diagnostic.",
+ "model_id": "Qwen/Qwen3-1.7B-Base",
+ "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
+ "layer": 12,
+ "state_dim": 16,
+ "norm_clamp_fraction": 0.25,
+ "slot": "Internal record:",
+ "tags": ["fask", "nimb", "ruzz", "pelt", "gorm", "twyl", "hesk", "vorn"],
+ "names_train": ["Velmora", "Tasquin", "Orbelle", "Kindrath", "Sablyn", "Pherox", "Marvenne", "Dulcair", "Yostrel", "Caprindo", "Fennwick", "Lorbast", "Quenlith", "Ravosk", "Tiberune", "Hollmere", "Zephrand", "Ambrosil", "Gastwyn", "Nerival", "Ophandre", "Brelcott", "Ilsavane", "Wexmoor"],
+ "filler": "Internal record:\n",
+ "valid_line": "VALID TAGS: fask | nimb | ruzz | pelt | gorm | twyl | hesk | vorn\nANSWER WITH ONE VALID TAG ONLY.\n",
+ "query": "TAG OF {NAME}:",
+ "train": {"seeds": [11, 23, 37], "steps": 400, "lr": 0.003, "weight_decay": 0.0001, "clip": 1.0, "hard_wall_minutes": 150},
+ "decode": {"max_new_tokens": 6},
+ "n_random": 8,
+ "eval": {"bootstraps": 2000},
+ "gates": {"completion_min": 0.95, "code_follow_min": 0.85, "code_follow_lb_min": 0.75, "per_code_min": 0.75, "own_min": 0.85, "wrong_follow_min": 0.85, "wrong_uplift_min": 0.65, "wrong_uplift_lb_min": 0.50, "cue_max": 0.20, "random_max": 0.20, "own_minus_random_min": 0.60, "own_minus_random_lb_min": 0.50, "seeds_required": 2}
+}

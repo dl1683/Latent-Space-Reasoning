@@ -33,7 +33,9 @@ class LM:
     def _hook(self, mod, i, o):
         if self.delta is None: return o
         h = o[0] if isinstance(o, tuple) else o; h = h.clone(); p = self.slot_pos; d = self.delta
-        scale = torch.clamp(self.cfg["norm_clamp_fraction"] * h[0, p].norm().detach() / (d.norm() + 1e-6), max=1.0)   # ||Jz|| <= 0.25 ||h_slot||
+        frac = self.cfg["norm_clamp_fraction"] if not getattr(self, "uncapped", False) else float("inf")
+        scale = torch.clamp(frac * h[0, p].norm().detach() / (d.norm() + 1e-6), max=1.0)   # ||Jz|| <= frac * ||h_slot||
+        self.telemetry = {"slot_norm": float(h[0, p].norm()), "pre_cap_norm": float(d.norm()), "threshold": float(frac * h[0, p].norm()), "cap_active": bool(scale < 1.0), "scale": float(scale), "post_cap_norm": float((scale * d).norm())}
         h[0, p, :] = h[0, p, :] + scale * d; self.writes += 1; return (h,) + tuple(o[1:]) if isinstance(o, tuple) else h
 
     @torch.no_grad()
