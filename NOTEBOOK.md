@@ -7732,3 +7732,29 @@ least one of alternatives 1–4, not by NLM-002 on more words.
   null model, clustered stats, propagation).
 - New direction opened (see STATE.md). Starting the Codex dialogue on axiom
   candidates and the first target construct.
+
+## Re-contextualization (2026-08-30, session 2)
+
+**What holds:** Theory stack frozen at audit #47 LOCK-READY. Runner implementation at design gate v3 (all 6 v2 blockers applied). No new claims to audit.
+
+**Direction still makes sense:** The 32-call smoke is the minimum viable test of whether the d_∞ framework makes any falsifiable prediction at all. It will produce eta_smoke (replay stability), fixture checks (hook identity), and timing forecasts. If eta is above the ceiling or fixtures fail, the framework has a mechanical problem before we even get to science.
+
+**Live alternatives:**
+1. Framework could be trivially satisfied/violated — smoke + forecast will surface this
+2. Native vs surgeon distinction might be vacuous — centroid vs wrong-centroid contrast directly tests this
+3. Simpler cosine-similarity baseline could make the framework moot — deferred until we have d_∞ numbers to compare against
+
+**No tunnel vision:** Single thread is correct — it's the critical path to the first empirical test. No theory drift, no infrastructure accumulation.
+
+## Smoke result (2026-08-30)
+
+native_bridge_v1 32-call mechanical smoke: **SMOKE_VALID**.
+- eta_smoke = 8.7e-9 (replay discrepancy near zero; well below 1e-4 ceiling)
+- epsilon_smoke = 1e-5 (= epsilon_0; eta negligible)
+- All fixtures passed: pasteback and source_hook within epsilon_smoke on both channels (c_full, c_9) and both replays (A, B)
+- s_smoke = 1.179s/call (plain ≈ hooked)
+- F_CPU = 79.2 min, H_CPU = 80 min (within 90-min ceiling)
+- Total smoke time: 53 seconds
+- Lock row written with all required bindings (runner/config/manifest/call_table hashes, constants, stop rule)
+- Codex design gate: v1-v4 completed; smoke-blocking items resolved; 5 science-grade items deferred (token IDs in identity, expanded manifest, bootstrap precommitment, row validation detail, per-call checkpointing)
+- Next: commit, apply science-grade fixes, then scientific Phase D/E execution

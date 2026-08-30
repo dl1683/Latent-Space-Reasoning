@@ -1,0 +1,975 @@
+{
+  "name": "native_bridge_v1",
+  "purpose": "First empirical test of the d_infinity bridge framework. For each of 24 registered entities: does the correct-label residual centroid edit bring the source prompt within the native target-fiber criterion, improve over no edit, and beat the wrong-label centroid? Surgeon-world artifact; no denizen bridge claimed.",
+  "model_id": "Qwen/Qwen3-1.7B-Base",
+  "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
+  "device": "cpu",
+  "dtype": "float32",
+  "layer": 16,
+  "site_description": "output of model.model.layers[16] at position p = span.end - 1 of the final record-tag span; equivalent to hidden_states[17][:, p, :]",
+  "authorities": {
+    "onewrite_recall_config": {
+      "path": "experiments/config/onewrite_recall_v1.json",
+      "sha256": "65d47cf2d1c34e3d32d0943cf9c56b12da89c99abd9bab3dcc63d348abf53ecd"
+    },
+    "register_bridge_preflight_config": {
+      "path": "experiments/config/register_bridge_preflight_v1.json",
+      "sha256": "c016f1acd74b3260c795d34a86c5f1dc4f151455e510eab44600da819f71f682"
+    },
+    "run_rows": {
+      "path": "experiments/results/register_bridge_preflight_v1/run_rows.json",
+      "sha256": "519846614554b6f045038fee91498638f83957ff7fd0163781131f5f9e787095"
+    },
+    "substitution_probe": {
+      "path": "experiments/substitution_probe.py",
+      "sha256": "69a605dfdc5be18fdeab4c4002eedbef8301c488c99b669fb702d24da1a03a12"
+    },
+    "run_onewrite_state_ref": {
+      "path": "experiments/run_onewrite_state.py",
+      "sha256": "741dd8fb0126f8ffd0c98d9901d295bc31d7b915d4d90eaa716c8cf089190665"
+    }
+  },
+  "entities": [
+    {
+      "id": 0,
+      "name": "Velmora",
+      "source_row": 0,
+      "target_rows": [
+        20,
+        24,
+        28
+      ],
+      "target_label": 1,
+      "wrong_label": 2,
+      "query_idx": 1,
+      "correct_centroid_donor_rows": [
+        1044,
+        1048,
+        1052,
+        2068,
+        2072,
+        2076
+      ],
+      "wrong_centroid_donor_rows": [
+        164,
+        168,
+        172,
+        1188,
+        1192,
+        1196,
+        2212,
+        2216,
+        2220
+      ]
+    },
+    {
+      "id": 1,
+      "name": "Tasquin",
+      "source_row": 144,
+      "target_rows": [
+        164,
+        168,
+        172
+      ],
+      "target_label": 2,
+      "wrong_label": 3,
+      "query_idx": 2,
+      "correct_centroid_donor_rows": [
+        1188,
+        1192,
+        1196,
+        2212,
+        2216,
+        2220
+      ],
+      "wrong_centroid_donor_rows": [
+        308,
+        312,
+        316,
+        1332,
+        1336,
+        1340,
+        2356,
+        2360,
+        2364
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Orbelle",
+      "source_row": 288,
+      "target_rows": [
+        308,
+        312,
+        316
+      ],
+      "target_label": 3,
+      "wrong_label": 4,
+      "query_idx": 3,
+      "correct_centroid_donor_rows": [
+        1332,
+        1336,
+        1340,
+        2356,
+        2360,
+        2364
+      ],
+      "wrong_centroid_donor_rows": [
+        452,
+        456,
+        460,
+        1476,
+        1480,
+        1484,
+        2500,
+        2504,
+        2508
+      ]
+    },
+    {
+      "id": 3,
+      "name": "Kindrath",
+      "source_row": 432,
+      "target_rows": [
+        452,
+        456,
+        460
+      ],
+      "target_label": 4,
+      "wrong_label": 5,
+      "query_idx": 1,
+      "correct_centroid_donor_rows": [
+        1476,
+        1480,
+        1484,
+        2500,
+        2504,
+        2508
+      ],
+      "wrong_centroid_donor_rows": [
+        596,
+        600,
+        604,
+        1620,
+        1624,
+        1628,
+        2644,
+        2648,
+        2652
+      ]
+    },
+    {
+      "id": 4,
+      "name": "Sablyn",
+      "source_row": 576,
+      "target_rows": [
+        596,
+        600,
+        604
+      ],
+      "target_label": 5,
+      "wrong_label": 6,
+      "query_idx": 2,
+      "correct_centroid_donor_rows": [
+        1620,
+        1624,
+        1628,
+        2644,
+        2648,
+        2652
+      ],
+      "wrong_centroid_donor_rows": [
+        740,
+        744,
+        748,
+        1764,
+        1768,
+        1772,
+        2788,
+        2792,
+        2796
+      ]
+    },
+    {
+      "id": 5,
+      "name": "Pherox",
+      "source_row": 720,
+      "target_rows": [
+        740,
+        744,
+        748
+      ],
+      "target_label": 6,
+      "wrong_label": 7,
+      "query_idx": 3,
+      "correct_centroid_donor_rows": [
+        1764,
+        1768,
+        1772,
+        2788,
+        2792,
+        2796
+      ],
+      "wrong_centroid_donor_rows": [
+        884,
+        888,
+        892,
+        1908,
+        1912,
+        1916,
+        2932,
+        2936,
+        2940
+      ]
+    },
+    {
+      "id": 6,
+      "name": "Marvenne",
+      "source_row": 864,
+      "target_rows": [
+        884,
+        888,
+        892
+      ],
+      "target_label": 7,
+      "wrong_label": 0,
+      "query_idx": 1,
+      "correct_centroid_donor_rows": [
+        1908,
+        1912,
+        1916,
+        2932,
+        2936,
+        2940
+      ],
+      "wrong_centroid_donor_rows": [
+        900,
+        904,
+        908,
+        1924,
+        1928,
+        1932,
+        2948,
+        2952,
+        2956
+      ]
+    },
+    {
+      "id": 7,
+      "name": "Dulcair",
+      "source_row": 1008,
+      "target_rows": [
+        900,
+        904,
+        908
+      ],
+      "target_label": 0,
+      "wrong_label": 1,
+      "query_idx": 2,
+      "correct_centroid_donor_rows": [
+        1924,
+        1928,
+        1932,
+        2948,
+        2952,
+        2956
+      ],
+      "wrong_centroid_donor_rows": [
+        20,
+        24,
+        28,
+        1044,
+        1048,
+        1052,
+        2068,
+        2072,
+        2076
+      ]
+    },
+    {
+      "id": 8,
+      "name": "Yostrel",
+      "source_row": 1024,
+      "target_rows": [
+        1044,
+        1048,
+        1052
+      ],
+      "target_label": 1,
+      "wrong_label": 2,
+      "query_idx": 3,
+      "correct_centroid_donor_rows": [
+        20,
+        24,
+        28,
+        2068,
+        2072,
+        2076
+      ],
+      "wrong_centroid_donor_rows": [
+        164,
+        168,
+        172,
+        1188,
+        1192,
+        1196,
+        2212,
+        2216,
+        2220
+      ]
+    },
+    {
+      "id": 9,
+      "name": "Caprindo",
+      "source_row": 1168,
+      "target_rows": [
+        1188,
+        1192,
+        1196
+      ],
+      "target_label": 2,
+      "wrong_label": 3,
+      "query_idx": 1,
+      "correct_centroid_donor_rows": [
+        164,
+        168,
+        172,
+        2212,
+        2216,
+        2220
+      ],
+      "wrong_centroid_donor_rows": [
+        308,
+        312,
+        316,
+        1332,
+        1336,
+        1340,
+        2356,
+        2360,
+        2364
+      ]
+    },
+    {
+      "id": 10,
+      "name": "Fennwick",
+      "source_row": 1312,
+      "target_rows": [
+        1332,
+        1336,
+        1340
+      ],
+      "target_label": 3,
+      "wrong_label": 4,
+      "query_idx": 2,
+      "correct_centroid_donor_rows": [
+        308,
+        312,
+        316,
+        2356,
+        2360,
+        2364
+      ],
+      "wrong_centroid_donor_rows": [
+        452,
+        456,
+        460,
+        1476,
+        1480,
+        1484,
+        2500,
+        2504,
+        2508
+      ]
+    },
+    {
+      "id": 11,
+      "name": "Lorbast",
+      "source_row": 1456,
+      "target_rows": [
+        1476,
+        1480,
+        1484
+      ],
+      "target_label": 4,
+      "wrong_label": 5,
+      "query_idx": 3,
+      "correct_centroid_donor_rows": [
+        452,
+        456,
+        460,
+        2500,
+        2504,
+        2508
+      ],
+      "wrong_centroid_donor_rows": [
+        596,
+        600,
+        604,
+        1620,
+        1624,
+        1628,
+        2644,
+        2648,
+        2652
+      ]
+    },
+    {
+      "id": 12,
+      "name": "Quenlith",
+      "source_row": 1600,
+      "target_rows": [
+        1620,
+        1624,
+        1628
+      ],
+      "target_label": 5,
+      "wrong_label": 6,
+      "query_idx": 1,
+      "correct_centroid_donor_rows": [
+        596,
+        600,
+        604,
+        2644,
+        2648,
+        2652
+      ],
+      "wrong_centroid_donor_rows": [
+        740,
+        744,
+        748,
+        1764,
+        1768,
+        1772,
+        2788,
+        2792,
+        2796
+      ]
+    },
+    {
+      "id": 13,
+      "name": "Ravosk",
+      "source_row": 1744,
+      "target_rows": [
+        1764,
+        1768,
+        1772
+      ],
+      "target_label": 6,
+      "wrong_label": 7,
+      "query_idx": 2,
+      "correct_centroid_donor_rows": [
+        740,
+        744,
+        748,
+        2788,
+        2792,
+        2796
+      ],
+      "wrong_centroid_donor_rows": [
+        884,
+        888,
+        892,
+        1908,
+        1912,
+        1916,
+        2932,
+        2936,
+        2940
+      ]
+    },
+    {
+      "id": 14,
+      "name": "Tiberune",
+      "source_row": 1888,
+      "target_rows": [
+        1908,
+        1912,
+        1916
+      ],
+      "target_label": 7,
+      "wrong_label": 0,
+      "query_idx": 3,
+      "correct_centroid_donor_rows": [
+        884,
+        888,
+        892,
+        2932,
+        2936,
+        2940
+      ],
+      "wrong_centroid_donor_rows": [
+        900,
+        904,
+        908,
+        1924,
+        1928,
+        1932,
+        2948,
+        2952,
+        2956
+      ]
+    },
+    {
+      "id": 15,
+      "name": "Hollmere",
+      "source_row": 2032,
+      "target_rows": [
+        1924,
+        1928,
+        1932
+      ],
+      "target_label": 0,
+      "wrong_label": 1,
+      "query_idx": 1,
+      "correct_centroid_donor_rows": [
+        900,
+        904,
+        908,
+        2948,
+        2952,
+        2956
+      ],
+      "wrong_centroid_donor_rows": [
+        20,
+        24,
+        28,
+        1044,
+        1048,
+        1052,
+        2068,
+        2072,
+        2076
+      ]
+    },
+    {
+      "id": 16,
+      "name": "Zephrand",
+      "source_row": 2048,
+      "target_rows": [
+        2068,
+        2072,
+        2076
+      ],
+      "target_label": 1,
+      "wrong_label": 2,
+      "query_idx": 2,
+      "correct_centroid_donor_rows": [
+        20,
+        24,
+        28,
+        1044,
+        1048,
+        1052
+      ],
+      "wrong_centroid_donor_rows": [
+        164,
+        168,
+        172,
+        1188,
+        1192,
+        1196,
+        2212,
+        2216,
+        2220
+      ]
+    },
+    {
+      "id": 17,
+      "name": "Ambrosil",
+      "source_row": 2192,
+      "target_rows": [
+        2212,
+        2216,
+        2220
+      ],
+      "target_label": 2,
+      "wrong_label": 3,
+      "query_idx": 3,
+      "correct_centroid_donor_rows": [
+        164,
+        168,
+        172,
+        1188,
+        1192,
+        1196
+      ],
+      "wrong_centroid_donor_rows": [
+        308,
+        312,
+        316,
+        1332,
+        1336,
+        1340,
+        2356,
+        2360,
+        2364
+      ]
+    },
+    {
+      "id": 18,
+      "name": "Gastwyn",
+      "source_row": 2336,
+      "target_rows": [
+        2356,
+        2360,
+        2364
+      ],
+      "target_label": 3,
+      "wrong_label": 4,
+      "query_idx": 1,
+      "correct_centroid_donor_rows": [
+        308,
+        312,
+        316,
+        1332,
+        1336,
+        1340
+      ],
+      "wrong_centroid_donor_rows": [
+        452,
+        456,
+        460,
+        1476,
+        1480,
+        1484,
+        2500,
+        2504,
+        2508
+      ]
+    },
+    {
+      "id": 19,
+      "name": "Nerival",
+      "source_row": 2480,
+      "target_rows": [
+        2500,
+        2504,
+        2508
+      ],
+      "target_label": 4,
+      "wrong_label": 5,
+      "query_idx": 2,
+      "correct_centroid_donor_rows": [
+        452,
+        456,
+        460,
+        1476,
+        1480,
+        1484
+      ],
+      "wrong_centroid_donor_rows": [
+        596,
+        600,
+        604,
+        1620,
+        1624,
+        1628,
+        2644,
+        2648,
+        2652
+      ]
+    },
+    {
+      "id": 20,
+      "name": "Ophandre",
+      "source_row": 2624,
+      "target_rows": [
+        2644,
+        2648,
+        2652
+      ],
+      "target_label": 5,
+      "wrong_label": 6,
+      "query_idx": 3,
+      "correct_centroid_donor_rows": [
+        596,
+        600,
+        604,
+        1620,
+        1624,
+        1628
+      ],
+      "wrong_centroid_donor_rows": [
+        740,
+        744,
+        748,
+        1764,
+        1768,
+        1772,
+        2788,
+        2792,
+        2796
+      ]
+    },
+    {
+      "id": 21,
+      "name": "Brelcott",
+      "source_row": 2768,
+      "target_rows": [
+        2788,
+        2792,
+        2796
+      ],
+      "target_label": 6,
+      "wrong_label": 7,
+      "query_idx": 1,
+      "correct_centroid_donor_rows": [
+        740,
+        744,
+        748,
+        1764,
+        1768,
+        1772
+      ],
+      "wrong_centroid_donor_rows": [
+        884,
+        888,
+        892,
+        1908,
+        1912,
+        1916,
+        2932,
+        2936,
+        2940
+      ]
+    },
+    {
+      "id": 22,
+      "name": "Ilsavane",
+      "source_row": 2912,
+      "target_rows": [
+        2932,
+        2936,
+        2940
+      ],
+      "target_label": 7,
+      "wrong_label": 0,
+      "query_idx": 2,
+      "correct_centroid_donor_rows": [
+        884,
+        888,
+        892,
+        1908,
+        1912,
+        1916
+      ],
+      "wrong_centroid_donor_rows": [
+        900,
+        904,
+        908,
+        1924,
+        1928,
+        1932,
+        2948,
+        2952,
+        2956
+      ]
+    },
+    {
+      "id": 23,
+      "name": "Wexmoor",
+      "source_row": 3056,
+      "target_rows": [
+        2948,
+        2952,
+        2956
+      ],
+      "target_label": 0,
+      "wrong_label": 1,
+      "query_idx": 3,
+      "correct_centroid_donor_rows": [
+        900,
+        904,
+        908,
+        1924,
+        1928,
+        1932
+      ],
+      "wrong_centroid_donor_rows": [
+        20,
+        24,
+        28,
+        1044,
+        1048,
+        1052,
+        2068,
+        2072,
+        2076
+      ]
+    }
+  ],
+  "queries": [
+    " Which legend state number, 0 through 7, is the private value recorded for {entity}? Answer with one digit:",
+    " According to the legend, what state number does {entity}'s recorded value denote? Answer 0 through 7:",
+    " Map {entity}'s recorded tag through the legend. Return only its state number, 0 through 7:"
+  ],
+  "words": {
+    "epsilon": {
+      "display": "epsilon",
+      "actions": []
+    },
+    "a_P": {
+      "display": "a_P",
+      "actions": [
+        "P"
+      ]
+    },
+    "a_Q": {
+      "display": "a_Q",
+      "actions": [
+        "Q"
+      ]
+    },
+    "a_Pa_P": {
+      "display": "a_Pa_P",
+      "actions": [
+        "P",
+        "P"
+      ]
+    },
+    "a_Pa_Q": {
+      "display": "a_Pa_Q",
+      "actions": [
+        "P",
+        "Q"
+      ]
+    },
+    "a_Qa_P": {
+      "display": "a_Qa_P",
+      "actions": [
+        "Q",
+        "P"
+      ]
+    },
+    "a_Qa_Q": {
+      "display": "a_Qa_Q",
+      "actions": [
+        "Q",
+        "Q"
+      ]
+    }
+  },
+  "word_order_note": "D1 rightmost-first execution: displayed a_Qa_P = QP executes a_P first then a_Q. The actions list is in DISPLAY order (left to right); the runner reverses it to get execution order.",
+  "endpoint_families": [
+    "target_1",
+    "target_2",
+    "target_3",
+    "pasteback",
+    "native",
+    "source",
+    "centroid",
+    "wrong"
+  ],
+  "replay_schedules": {
+    "A": "ascending by (entity_id, target_family) in Phase D; ascending key order in Phase E",
+    "B": "descending by (entity_id, target_family) in Phase D; descending key order in Phase E"
+  },
+  "phases": {
+    "D": {
+      "families": [
+        "target_1",
+        "target_2",
+        "target_3"
+      ],
+      "word": "epsilon",
+      "count_per_replay": 72,
+      "note": "Each call supplies both its registered endpoint law AND that replay's donor residual at the edit site"
+    },
+    "E": {
+      "families": [
+        "target_1",
+        "target_2",
+        "target_3",
+        "pasteback",
+        "native",
+        "source",
+        "centroid",
+        "wrong"
+      ],
+      "words": [
+        "epsilon",
+        "a_P",
+        "a_Q",
+        "a_Pa_P",
+        "a_Pa_Q",
+        "a_Qa_P",
+        "a_Qa_Q"
+      ],
+      "count_per_replay": 1272,
+      "note": "Remaining tuples after Phase D. Native and centroid edits use donors captured in Phase D from the same replay."
+    }
+  },
+  "call_count": {
+    "scientific": 2688,
+    "smoke": 32,
+    "formula": "24 entities * 8 families * 7 words * 2 replays = 2688",
+    "smoke_formula": "2 entities * 4 families * 2 words * 2 replays = 32"
+  },
+  "smoke": {
+    "entities": [
+      0,
+      23
+    ],
+    "words": [
+      "epsilon",
+      "a_Qa_P"
+    ],
+    "families": [
+      "source_plain",
+      "source_hooked",
+      "target_plain",
+      "target_pasteback"
+    ],
+    "note": "32 mechanical calls; plain=capture_only (reads site vec), hooked/pasteback=donor_replace (writes back captured vec = identity); excluded from scientific identities; run_phase=smoke namespace",
+    "fixtures": {
+      "replay_eta_ceiling": 0.0001,
+      "pasteback_ceiling": "epsilon_smoke = max(1e-5, 2*eta_smoke)",
+      "source_hook_ceiling": "epsilon_smoke"
+    }
+  },
+  "constants": {
+    "epsilon_0": 1e-05,
+    "k_B": 2,
+    "k_E": 4,
+    "delta": 0.02,
+    "delta_move": 0.02,
+    "delta_spec": 0.02,
+    "replay_invalidity_ceiling": 0.0001,
+    "resamples_B": 2000,
+    "stability_tail_alpha": 0.05,
+    "bootstrap_generator": "PCG64",
+    "bootstrap_seed": 4141,
+    "forecast_safety_factor": 1.5,
+    "cpu_forecast_ceiling_minutes": 90
+  },
+  "metric": {
+    "name": "sqrt_JS",
+    "formula": "sqrt((KL(p||m) + KL(q||m)) / (2 * ln(2))), m = (p+q)/2",
+    "convention": "0 * log(0) = 0",
+    "range": "[0, 1]",
+    "channels": {
+      "c_full": "full-vocabulary float32 log-softmax at final next-token position",
+      "c_9": "9-category: 8 numeral token probabilities + 'other' remainder; derived from same law, no extra model call"
+    }
+  },
+  "numerals": [
+    "0",
+    "1",
+    "2",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7"
+  ],
+  "canonical_policy": {
+    "add_special_tokens": false,
+    "padding": null,
+    "attention_mask": "all-ones",
+    "position_ids": "0 through L-1",
+    "past_key_values": null,
+    "use_cache": false
+  },
+  "results_dir": "experiments/results/native_bridge_v1"
+}
