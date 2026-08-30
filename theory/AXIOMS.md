@@ -84,9 +84,10 @@ Proposition 2's affine, Gramian, and chart statements are proved in its
 explicitly extended setting; the softmax extension is sketched. Open Problem
 7 is conjectured; only its displayed conditional inequalities, finite-access
 sandwich, and affine check are proved under their stated assumptions. C1 and
-C2 in `theory/EXPERIMENTS.md` are preregistered and unrun.
-
-C1 remains blocked until its total other-bin wrapper is applied (done in this pass) and a run is separately authorized; C2 remains unrun; audit #42 does not itself authorize computation.
+C2 in `theory/EXPERIMENTS.md` were retired unrun in round 37: C1 is a
+synthetic-consumer check and C2 is subsumed by the proposed intervention-bearing
+`native_horizon_v1`. That successor remains pending audit #43 and is not
+authorized to run.
 
 ### D1. Raw presented transition world — definition
 
@@ -906,6 +907,216 @@ neighboring special cases; novelty is not claimed. The latent-specific role of
 the problem is epistemic: those theories commonly start with a supplied
 transition system, whereas a denizen must construct a usable map of unexecuted
 futures from finite local access.
+
+## Extension: language-model prompt worlds (proposed, round 37; pending audit #43)
+
+This extension specializes the adopted foundation to prompt strings and keeps
+three structures separate: append continuations define future-response places;
+span substitutions are executable interventions on those places; and the
+model's emitted next-token law is the only primitive response. No hidden-state
+probe, residual injection, generated sample, or synthetic consumer enters the
+definitions below.
+
+### Theorem 4. Finite-memory append worlds have exact finite-horizon response distance — proved under the displayed assumptions
+
+Let \(V\) be a token vocabulary and let \(\mathcal A_+\) be a declared family
+of append moves. Each \(a\in\mathcal A_+\) appends a fixed nonempty finite
+token string \(\sigma(a)\). For a word \(w\in\mathcal A_+^*\), let
+\(\sigma(w)\) be the concatenated appended string and let
+\(\lambda(w)=|\sigma(w)|\) be its token length. Write \(d_\infty^+\) and
+\(d_h^+\) for D4's distances when only \(\mathcal A_+\) is used.
+
+Assume that the registered response interface has memory at most \(N\geq1\):
+for every channel \(c\) there is a map \(\widehat r_c\) such that
+
+\[
+r_c(x)=\widehat r_c(\operatorname{suf}_N(x)),
+\]
+
+where \(\operatorname{suf}_N\) keeps the final \(N\) tokens (or the whole
+string when it is shorter). Then, for all prompt states \(x,y\),
+
+\[
+d_\infty^+(x,y)
+=
+\sup_{\substack{w\in\mathcal A_+^*\\\lambda(w)\leq N-1}}
+\sup_{c\in C}D_c(r_c(wx),r_c(wy))
+=d_{N-1}^+(x,y).
+\]
+
+The first equality is the sharper token-budget statement; the second uses
+only that every primitive append contributes at least one token. If every
+primitive move appends exactly one token, token budget and D4 word horizon
+coincide.
+
+Proof. If \(\lambda(w)\geq N\), the final \(N\) tokens of both \(wx\) and
+\(wy\) lie wholly inside the shared appended string \(\sigma(w)\). Hence
+\(\operatorname{suf}_N(wx)=\operatorname{suf}_N(wy)\), so every channel
+discrepancy after \(w\) is zero. Removing all such zero terms from D4's
+supremum leaves exactly the words with \(\lambda(w)\leq N-1\). Moreover
+\(|w|\geq N\) implies \(\lambda(w)\geq N\), so no word beyond D4 horizon
+\(N-1\) can enlarge the supremum. No finiteness of \(Z\) is used.
+\(\square\)
+
+If a channel appends its own fixed query suffix \(q_c\) before reading the
+law, its channel-specific last possibly distinguishing token budget is
+\(N-1-|q_c|\), truncated below at the empty continuation. Query tokens must
+therefore be counted exactly once: either inside \(r_c\), or as legal append
+moves, never both.
+
+Scope and boundary. The theorem is native to a sliding-window architecture or
+to an explicitly registered left-truncation wrapper. A full-context model
+whose native interface merely rejects strings longer than \(N\) does not
+satisfy the displayed suffix law on \(V^*\). Its prompt set and append maps
+must instead be typed on their common domains or totalized by an observable
+overflow state; any finite bound then comes from that registered capacity and
+failure semantics, not from suffix forgetting. Software truncation is part of
+the registered world, not an unmentioned architectural fact. Corollary and
+counterexample 3's affine world violates the finite-memory premise; calling it
+"infinite-memory" is an interpretation, not an additional theorem.
+
+Theorem 4 removes an infinite *depth* tail, but not an exponential *branch*
+problem. Even with finite \(V\), all append strings of token length below \(N\)
+can be far too numerous to enumerate. A small query family computes a
+restricted lower bound on \(d_\infty^+\), not the full distance, unless a
+separate response-completeness certificate controls the unqueried branches.
+
+### Discrete-map boundary
+
+Prompt strings do not supply the differentiable structure required by D7.
+Thus \(p_x\), \(E_x\), and \(\delta_E\) are absent rather than automatically
+zero. If one explicitly equips the prompt set with its discrete
+zero-dimensional manifold structure, then \(T_xZ=E_x=\{0\}\), so
+\(\delta_E(x,y)=+\infty\) for distinct points and \(0\) on the diagonal. In
+either formulation, the differential route in Open Problem 7 is not a
+denizen-usable map of this prompt world. Its native map is combinatorial: a
+finite-depth response tree under append moves, usually compressed to a
+directed graph after suffix or response equivalences are identified.
+
+### Conjecture 5. One-query discrimination in explicit-legend prompt worlds — conjectured; exact identity clause is definitional
+
+In a finite-memory append world define the discrimination horizon
+
+\[
+H^+(x,y)=\min\{h\geq0:d_h^+(x,y)=d_\infty^+(x,y)\}.
+\]
+
+Theorem 4 makes this minimum well-defined. When \(d_\infty^+(x,y)>0\), define
+the saturation profile
+
+\[
+S_h(x,y)=\frac{d_h^+(x,y)}{d_\infty^+(x,y)}.
+\]
+
+For \(d_\infty^+(x,y)=0\), set \(H^+(x,y)=0\) and leave \(S_h\) undefined;
+such a pair is one operational place by D5, not by conjecture.
+
+Conjecture. Fix before inspection a finite alphabet of shared-numeral query
+macros and an explicit-legend prompt population. For pairs that differ in the
+state denoted by the declared record span, while the remaining registered
+factors are matched, a single complete query macro attains the full
+append-future distance:
+
+\[
+H^+(x,y)=1.
+\]
+
+For a separately predeclared delayed-route control whose differing fact is
+not exposed by any one-move query but is exposed by a legal two-move
+composition,
+
+\[
+H^+(x,y)>1,
+\]
+
+with \(H^+=2\) the proximal positive-control prediction. This is a conjecture
+about the registered prompt and move families, not about all language-model
+prompts.
+
+Exact falsifiers are direct. Any later continuation with discrepancy strictly
+larger than \(d_1^+(x,y)\) falsifies \(H^+=1\) for that pair. Any one-move word
+that attains \(d_\infty^+\) falsifies \(H^+>1\) for a delayed control. A
+two-move witness with \(d_2^+(x,y)>d_1^+(x,y)\) proves \(H^+>1\) without
+enumerating the remaining tree. A positive discrepancy on any finite
+registered continuation is a witness against exact place identity; agreement
+on a finite query family is not evidence that \(d_\infty^+=0\).
+
+For floating-point model laws, native_horizon_v1 must predeclare a replay
+floor, material effect tolerance, clustered population rule, and an
+inconclusive band. Exact equality tables remain diagnostics only.
+
+Lay so-what: *How many questions must an inhabitant ask before two records
+become different places--and can one question really reveal everything that
+any later question could?*
+
+### D8. Append-relative span intervention — proposed definition
+
+Fix the append action family \(\mathcal A_+\) and its distance \(d_\infty^+\).
+An executable span intervention is a deterministic, prospectively declared,
+typed rewrite
+
+\[
+s:Z_{\rm src}\to Z_{\rm tgt}
+\]
+
+that replaces exactly one declared token span and leaves every other token
+unchanged. Failed span, type, or tokenization preconditions produce a declared
+observable failure rather than silent row removal. The intervention is
+*admissible on append-future places* when it respects append-future identity:
+
+\[
+d_\infty^+(x,y)=0
+\Longrightarrow
+d_\infty^+(sx,sy)=0.
+\]
+
+Only then does it descend to a well-defined map on \(Q^+=Z/{\sim_+}\).
+Nonexpansiveness with respect to \(d_\infty^+\) is the stronger condition
+
+\[
+d_\infty^+(sx,sy)\leq d_\infty^+(x,y),
+\]
+
+and is not automatic. If \(s\) is instead added to D1's action alphabet and
+the future distance is redefined over arbitrary words containing \(s\),
+Theorem 1 makes \(s\) nonexpansive for that enlarged distance; but Theorem 4's
+append-only \(N-1\) conclusion no longer follows. An intervention is therefore
+not "a legal move that is not a continuation": in D1 every primitive legal
+move is a one-letter continuation. The append/intervention typing is the
+needed distinction.
+
+### Proposition 6. Place change and target realization by a span intervention — proved as an exact quotient characterization
+
+Let \(s\) be a D8 intervention, let \(x\) be a registered source prompt, and
+let \(y\) be a prospectively selected, independently presented native prompt
+for the target denotation. Then:
+
+1. \(s\) is place-changing at \(x\) exactly when
+   \[
+   [sx]_+\ne[x]_+
+   \iff
+   d_\infty^+(x,sx)>0.
+   \]
+2. \(s\) realizes the registered target place at \(x\) exactly when
+   \[
+   [sx]_+=[y]_+
+   \iff
+   d_\infty^+(sx,y)=0.
+   \]
+3. If \(s\) satisfies D8's congruence condition, these pointwise endpoint
+   statements are values of a well-defined intervention map
+   \(\bar s:Q^+\to Q^+\). Pointwise success alone does not prove descent on
+   other representatives.
+
+Proof. The first two equivalences are precisely D5's zero-kernel definition
+of the append-future quotient. The third is the standard quotient-map
+criterion. \(\square\)
+
+Under Theorem 4, both endpoint distances are exactly determined by append
+words of token length at most \(N-1\) (or the channel-tightened bound). A
+horizon-\(2\) query table can witness place change and can falsify target
+identity, but cannot certify either full distance unless it also supplies a
+response-completeness certificate for every unmeasured branch.
 
 ## Prior relational foundation (Rounds 1--12; superseded, retained for provenance)
 

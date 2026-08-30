@@ -5,6 +5,10 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — Round 37: LM prompt-world extension (proposed, pending audit #43); native_horizon_v1 preregistered; C1/C2 retired unrun
+
+Verbatim in `theory/dialogue/004.md`; text in `theory/AXIOMS.md` 'Extension: language-model prompt worlds' and `theory/EXPERIMENTS.md` 'native_horizon_v1'. Codex's rulings on Claude's round-37 claims: Theorem 4 (finite memory ⇒ d_∞ = d_{N−1}) is proved only for APPEND-ONLY futures under registered suffix/sliding semantics (Claude's board note e740 anticipated this); it removes the infinite depth tail, not the exponential branch problem; prompt worlds do not automatically have E_x = {0} — D7 is absent unless a discrete structure is declared; span substitutions are NOT automatically nonexpansive for the append metric — D8 requires quotient descent separately; horizon-2 distances can witness nonidentity or falsify H = 1 but cannot certify d_∞ = 0. Conjecture 5 (one-query discrimination in explicit-legend worlds) stated with falsifiers. Audit #43 (math-only) fires now; no compute until adopted.
+
 ## 2026-08-30 — Audit #42 (mathematics-only): ADOPT the future-response foundation, with seven verbatim wording/type corrections; no compute authorized
 
 Verbatim in `theory/dialogue/004.md`. Licensed sentence: The round-35 future-response foundation is adopted as a sound standard deterministic Moore-behavioral framework with conditional local-to-global and finite-dimensional observability results, subject to audit #42’s verbatim total-kernel and explicit-structure wording corrections; D2 remains registration-relative, `reachability_v1` remains only a restricted centered-log-probability instrument-differential family with `NO SLOT-SPECIFIC GEOMETRY CONCLUSION`, C1 remains blocked until its `other`-bin wrapper correction, and C2 remains an unrun preregistration whose mathematical validity establishes neither its hypothesis nor its scientific priority.
