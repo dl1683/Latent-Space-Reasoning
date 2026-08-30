@@ -5,6 +5,31 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — PSQ-1 design finalized (3-round Codex dialogue) + smoke attempt #7 failed
+
+### Smoke attempt #7
+CivilizationV exited, ran smoke immediately. FAILED: s_smoke=2.199s → F_CPU=147.8 min, ceiling=90 min. Cause: ~8GB in background processes (Chrome, Spotify, Steam, WhatsApp, Codex, Claude). Need ≤1.34s per call. Restored committed stale artifacts from git.
+
+### PSQ-1 rounds 2–3 (successor design refinements)
+
+**Round 2 — substrate and horizon corrected:**
+- OthelloGPT REJECTED as headline substrate (specialist model, PASS would be unsurprising). Replaced with frozen Qwen3-1.7B-Base (general pretrained).
+- Task: 64-state two-dial world, q=(x,y) ∈ Z_8², actions A:(x,y)→(x+1,y), B:(x,y)→(-x,y), C:(x,y)→(x,y+1), D:(x,y)→(x,-y). Observations: is x=0? is y=0?
+- d_2 KILLED — horizon 2 too weak. Replaced with d_4 (H*=4: Moore partition saturates at 64 classes). 341 action words × 2 channels = 682 evaluations per state.
+- Quasiconvexity tested with permutation null (99/100 random endpoint permutations).
+- Post-result pivot REJECTED — severity is the point. Pre-register layer/rank from grid {8,16,24}×{16,32,64} on training data only.
+
+**Round 3 — presentation, compute, fallback:**
+- Presentation: systemless 4-shot Python-completion template (expanded operations, NOT symbolic actions). Readout: normalize(p(" 0"), p(" 1")) — binary, separate x/y queries.
+- Capability gate: ≥95% per-cell (not overall — x=0 occurs only ~1/8 of the time).
+- Compute: capability screen ~20-30 min (laptop-feasible); FULL PSQ-1 ~4-6 CPU days (NOT laptop-feasible). Exhaustive 9-cell grid = 6-9 days. Conflicts with theory-first directive.
+- If Qwen3-1.7B-Base fails capability gate → NO-INTERFACE, stop PSQ-1 immediately. No repair.
+- Separate fallback successor: Qwen3-8B-Base on stable 24GB+ hardware. Same protocol.
+
+Full Codex outputs at scratchpad/direction_successor_{program,r2,r3}.md. Decision pending.
+
+---
+
 ## 2026-08-30 — Codex successor program design: PSQ-1 (Othello Predictive-State Transport)
 
 Following the should-continue STOP verdict, launched a Codex direction dialogue on the successor program. Codex designed PSQ-1 — a concrete one-experiment successor:
