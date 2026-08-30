@@ -5,6 +5,14 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — Audit #45 on the native bridge specification: REVISE; NO LOCK, NO COMPUTE; carrier schema and finite bound sound; replay/bootstrap/controls/compute contract require repair; ceiling 2,688 with the two added controls
+
+Verbatim in `theory/dialogue/004.md`. Licensed sentence: Audit #45 finds the round-40 carrier and finite lower-bound mathematics sound at the formal schema level but the native-bridge specification not lock-ready: its replay and clustered-bound semantics, population-mean wording, and intervention controls require repair, and no register, exact bridge, denizen reachability, storage, persistence, dimension, or native latent mathematics is established.
+
+Never say (audit #45): “The carrier fixture proves faithful transformer continuation.” “All carrier objects, including \(\iota_\ell\) and \(\operatorname{Cont}_\ell\), are endomaps.” “The three target presentations are statistically independent.” “\(V_i\) normalizes the discrepancy” or “certifies a distinct target fiber.” “The bootstrap interval is a confidence interval for the fixed 24-entity mean.” “\(E\le0\) proves an exact bridge, target-place identity, unseen-future control, or reachability.” “A population-mean PASS means every edited state landed in the target fiber.” “Native-residual paste equals the native target by construction.” “Native-paste PASS validates centroid formation.” “Centroid PASS proves causal target-specific movement” without no-edit and wrong-label comparisons. “The nine-bin channel supplies independent refutation power beyond the full law.” “The pooled-span preflight validated the block-16 single-position site.” “\(2{,}016\) evaluations proves the run is small.” “Qwen has a register” or “a causal bridge exists.” Any audit-#36 or audit-#39 forbidden claim.
+
+Round 41 applies edits 1–10 (repair pass 1 of the specification) and drafts the preregistration with a mechanical-only smoke plan; audit #46 = lock-readiness review of the preregistration + smoke forecast.
+
 ## 2026-08-30 — Re-contextualization (2-hour check-in, theory-first); audit skipped as duplicate (audit #45 in flight)
 
 Audit status: since the last note, audits #42 (ADOPT foundation), #43 (REVISE LM extension), #44 (ADOPT round-39 mathematics + revised extension) were adopted verbatim with their alternatives on the audit board (e738, e742, e745); the only unaudited claim is the round-40 native bridge specification, and audit #45 is running on it now with the tunnel/alternatives questions in its brief. Firing a second auditor on the same text would duplicate it.
