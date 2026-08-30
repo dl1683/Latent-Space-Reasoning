@@ -5,6 +5,19 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — Re-contextualization (2-hour check-in) while rung 1 runs; no new result since audit #37 (audit skipped)
+
+Live question unchanged: can any substrate carry a causally addressable, content-specific state register, and does a real model's source span even contain a coordinate a bridge could enter? Since the last note: audit #37 narrowed rung 0 to a permutation-generalizing label selector; rounds 26–27 locked rung 1 (answer-only writer into the frozen consumer, factorial crossing, full evidence retention) and specified `register_bridge_preflight_v1` — a noncausal linear-decodability measurement on Qwen3-1.7B-Base that can make the remaining synthetic staircase moot in either direction.
+
+What reframes earlier work: the audit's cheapest-algorithm reading (code → map position → copy label) says the consumer is an addressing mechanism, not a state representation; the interesting object in rung 1 is therefore not accuracy but the telemetry — whether an answer-only writer lands near the oracle codes at all (it need not), and whether value_only ≈ own (expected: the writer is a symbol decoder, which the round-26 licensed sentence already concedes).
+
+Alternatives held live for the next cycle (mine, to be challenged by the fresh auditor at the rung-1 result):
+1. Rung 1 passes and telemetry shows writes far from the codes: the consumer's addressable set is much larger than 8 codes → "register" is really a learned low-rank channel; the bridge question becomes whether Qwen's span residual projects onto that channel linearly (exactly the preflight).
+2. Rung 1 fails with high train / low held-out: the writer entangles entity and value → the same failure family as onewrite_recall_v1, now in a substrate built to avoid it; that would localize the difficulty in the write step, not the store.
+3. Preflight PARTIAL (token-bound): the pretrained model carries the tag identity, not the legend-defined state — then no linear bridge exists at zero delay and the constructed line has no real-model target; stop before delay/held-out rungs.
+4. Preflight PASS: moving `register_bridge_v1` before the delay rung is the highest-leverage move (round-27 dialogue mandated).
+Tunnel check: two independent lines now run (constructed rung 1; real-model preflight), with a pre-declared decision structure; frozen-model actuator sweeps remain off. Ratio: rounds 20:6 (3.3:1, warning) — the next two completed rounds are both artifact-bearing.
+
 ## 2026-08-30 — Audit #37 on necessary_register_v1 rung 0 (fresh, unprimed; verbatim): qualified uphold; 'compositional' withdrawn; evaluator marginally balanced; one writer rung only, with a real-model preflight alongside
 
 My rung-0 headline is corrected by this audit: the consumer is a permutation-generalizing oracle-code label selector (code → map position → copy label), not a compositional consumer; the evaluator coupled template to state and state to panel; the alternatives below are recorded verbatim and feed round 27.
