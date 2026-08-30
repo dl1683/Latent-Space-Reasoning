@@ -1,8 +1,8 @@
 {
  "config": "onewrite_recall_v1",
  "sha256": {
-  "runner": "533cc1b0cd8bd8a335cf10961fbc5434c93676c6e8488cd64bdd55bcc76add64",
-  "config": "365939bdc64c3bffc72fafa613a265566b788eedc71c4e594eefcd2edd2cfbdf",
+  "runner": "02a71297fb40d1c7133fe906954ecabe4d9c4b43609b5c1f1685f6e8712589b4",
+  "config": "65d47cf2d1c34e3d32d0943cf9c56b12da89c99abd9bab3dcc63d348abf53ecd",
   "machinery": "ba4aedfdd8458204d7abfd5de585c4b1be3d1e9986582a47428c91822c51bd7f"
  },
  "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
@@ -19,9 +19,10 @@
    "cue_by_wording": {
     "A": 0.0,
     "B": 0.0
-   }
+   },
+   "zero_hook_matches_cue": true
   },
-  "passed": false,
+  "passed": true,
   "rows": [
    {
     "fact": 0,

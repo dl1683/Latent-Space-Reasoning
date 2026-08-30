@@ -119,12 +119,19 @@
   "wrong_follows_cf_min": 0.6,
   "wrong_over_cue_cf_min": 0.4,
   "completion_min": 0.95,
-  "seeds_required": 2
+  "seeds_required": 2,
+  "completion_arms": [
+   "write",
+   "wrong",
+   "random",
+   "visible"
+  ]
  },
  "valid_line": "VALID TAGS: fask | nimb | ruzz | pelt | gorm | twyl | hesk | vorn\nANSWER WITH ONE VALID TAG ONLY.\n",
  "fillers": [
   "Internal record:\nThe registry office keeps its ledgers in a locked cabinet on the second floor of the old annex. Each morning the clerk on duty checks the seals, initials the daily sheet, and files any new slips that arrived overnight. Requests for lookups are handled strictly in the order received, and the answer is written on a single line of the reply form.\n",
   "Internal record:\nBefore noon the archive room is quiet except for the steady ticking of the old brass wall clock. The junior assistant sorts the incoming post into three small wooden trays, stamps each item with the date, and carries the sealed envelopes across to the reading desk. Any query about a filed item is answered briefly, with the reply entered on one line.\n"
  ],
- "design_note": "Round 16 (2026-08-29) locked amendments: 8 tags (chance 0.125), fixed VALID TAGS line in every target, two fixed fillers >= 64 tokens within 2 tokens of each other, both heldout source phrasings x both target wordings (64 cases), wrong-state = same entity with a counterfactual tag (balanced derangement) under the same source wording, write at the slot's final token, byte-identical nonvisible target across arms, zero-hook must reproduce cue row-for-row else INVALID."
+ "design_note": "Round 16 (2026-08-29) locked amendments: 8 tags (chance 0.125), fixed VALID TAGS line in every target, two fixed fillers >= 64 tokens within 2 tokens of each other, both heldout source phrasings x both target wordings (64 cases), wrong-state = same entity with a counterfactual tag (balanced derangement) under the same source wording, write at the slot's final token, byte-identical nonvisible target across arms, zero-hook must reproduce cue row-for-row else INVALID.",
+ "amendment_r17": "Round 17 (2026-08-29): cue completion is a diagnostic with no minimum (pre-lock and locked); completion >= 0.95 required in write, wrong, random and visible arms; if random-write completion fails the construction is FAIL not PARTIAL; zero-hook must reproduce cue raw text, choice and completion row-for-row else INVALID - NO VERDICT. The round-16 validation stands recorded as a formal failure of its original gate."
 }

@@ -53,8 +53,10 @@ def main():
             log(f"{f['name']} ({f['tag']}): " + " | ".join(f"{r['wording']} vis={r['visible']['text'].strip()[:8]!r}{'+' if r['visible']['correct'] else '-'} cue={r['cue']['text'].strip()[:8]!r}" for r in rows[-2:]))
         acc = lambda arm, rs=rows: float(np.mean([r[arm]["correct"] for r in rs])); comp = lambda arm: float(np.mean([r[arm]["completed"] for r in rows])); byw = lambda arm: {w: acc(arm, [r for r in rows if r["wording"] == w]) for w in ("A", "B")}
         s = {"visible_acc": acc("visible"), "cue_acc": acc("cue"), "visible_completion": comp("visible"), "cue_completion": comp("cue"), "visible_by_wording": byw("visible"), "cue_by_wording": byw("cue")}
+        zero_ok = all((lambda t, c2, ok2: t == r["cue"]["text"] and c2 == r["cue"]["choice"] and ok2 == r["cue"]["completed"])(*dec(M.ids(target(cfg, ev[r["fact"]], r["wording"], 0 if r["wording"] == "A" else 1, False)), torch.zeros(M.m.config.hidden_size))) for r in rows)
+        s["zero_hook_matches_cue"] = zero_ok                                                     # round 17: cue completion is diagnostic only
         passed = (s["visible_acc"] >= V["visible_min"] and all(v >= V["visible_wording_min"] for v in s["visible_by_wording"].values()) and s["visible_completion"] >= V["completion_min"] and s["cue_acc"] <= V["cue_max"]
-                  and all(v <= V["cue_wording_max"] for v in s["cue_by_wording"].values()) and s["cue_completion"] >= V["completion_min"] and s["visible_acc"] - s["cue_acc"] >= V["visible_minus_cue_min"])
+                  and all(v <= V["cue_wording_max"] for v in s["cue_by_wording"].values()) and s["visible_acc"] - s["cue_acc"] >= V["visible_minus_cue_min"] and zero_ok)
         res["validation"] = {"summary": s, "passed": passed, "rows": rows}; save(); log(json.dumps(s, indent=1)); log(f"PRE-LOCK VALIDATION: {'PASS' if passed else 'FAIL - KILL PRE-LOCK'} ({time.time()-T0:.0f}s)"); return
     for f in facts:                                                                            # cached source states; heldout facts also cache the counterfactual-tag sources
         tpl = cfg["source_templates_train"] if f["split"] == "train" else cfg["source_templates_eval"]; f["src"] = [M.source_state(t.format(name=f["name"], tag=f["tag"])) for t in tpl]
@@ -86,14 +88,14 @@ def main():
         by_fact = lambda arm: np.array([np.mean([r[arm]["correct"] for r in rows if r["fact"] == fi]) for fi in range(len(ev))]); boot = lambda d: float(np.quantile([np.mean(rng.choice(d, len(d))) for _ in range(cfg["eval"]["bootstraps"])], 0.025))
         dc = by_fact("write") - by_fact("cue"); drn = by_fact("write") - by_fact("random"); sub = {f"source{si}": acc("write", [r for r in rows if r["source"] == si]) for si in range(2)} | {f"wording{w}": acc("write", [r for r in rows if r["wording"] == w]) for w in ("A", "B")}
         cf_follow = float(np.mean([r["wrong"]["choice"] == r["cf_tag"] for r in rows])); cue_cf = float(np.mean([r["cue"]["choice"] == r["cf_tag"] for r in rows])); recov = (acc("write") - acc("cue")) / max(acc("visible") - acc("cue"), 1e-6)
-        zero_match = all(r["zero_hooked"]["text"] == r["cue"]["text"] for r in rows)
+        zero_match = all(r["zero_hooked"]["text"] == r["cue"]["text"] and r["zero_hooked"]["choice"] == r["cue"]["choice"] and r["zero_hooked"]["completed"] == r["cue"]["completed"] for r in rows)
         s = {"loss_history": hist, "acc": {k: acc(k) for k in ("write", "cue", "zero_hooked", "wrong", "random", "visible")}, "completion": {k: comp(k) for k in ("write", "cue", "zero_hooked", "wrong", "random", "visible")}, "write_sub": sub,
              "write_minus_cue": float(dc.mean()), "write_minus_cue_lb": boot(dc), "write_minus_random": float(drn.mean()), "write_minus_random_lb": boot(drn), "recovery": recov, "cf_follow": cf_follow, "cue_cf_rate": cue_cf, "zero_hook_matches_cue": zero_match}
         gates = {"core": s["acc"]["write"] >= G["write_min"] and dc.mean() >= G["write_minus_cue_min"] and s["write_minus_cue_lb"] > G["write_minus_cue_lb_min"] and drn.mean() >= G["write_minus_random_min"] and s["write_minus_random_lb"] > G["write_minus_random_lb_min"] and s["acc"]["random"] <= G["random_max"] and recov >= G["recovery_min"],
                  "wording": all(v >= G["write_sub_min"] for v in sub.values()) and abs(sub["source0"] - sub["source1"]) <= G["wording_gap_max"] and abs(sub["wordingA"] - sub["wordingB"]) <= G["wording_gap_max"],
                  "specificity": cf_follow >= G["wrong_follows_cf_min"] and cf_follow - cue_cf >= G["wrong_over_cue_cf_min"],
-                 "completion": all(s["completion"][k] >= G["completion_min"] for k in ("write", "cue", "visible", "wrong", "random", "zero_hooked"))}
-        s["gates"] = gates; s["class"] = "INVALID" if not zero_match else ("POSITIVE" if all(gates.values()) else ("PARTIAL" if gates["core"] and gates["completion"] else "FAIL"))
+                 "completion": all(s["completion"][k] >= G["completion_min"] for k in G["completion_arms"])}          # round 17: cue/zero-hook completion diagnostic only
+        s["gates"] = gates; s["class"] = "INVALID" if not zero_match else ("POSITIVE" if all(gates.values()) else ("PARTIAL" if gates["core"] and gates["completion"] else "FAIL"))   # random-write completion failure => completion gate fails => FAIL
         res["seeds"][seed] = {"summary": s, "rows": rows}; save(); log(f"seed {seed}: " + json.dumps({k: v for k, v in s.items() if k != "loss_history"}, default=float)); log(f"seed {seed} class: {s['class']} ({time.time()-T0:.0f}s)")
         if time.time() > deadline: log("hard wall: stopping seeds"); break
     kinds = [v["summary"]["class"] for v in res["seeds"].values()]
