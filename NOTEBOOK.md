@@ -5,6 +5,25 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — Re-contextualization (2-hour check-in, runner engineering)
+
+**What still holds:** The adopted theory stack (D1–D9, Theorems 1–8) is unchanged and sound by audits #42/#44. The native_bridge_v1 preregistration is LOCK-READY (audit #47). The runner code has all 6 Codex-identified blockers fixed (committed 44d8c1a). The scientific run is the correct next empirical step.
+
+**What's reframed:** This entire session has been tunnel-visioned on engineering plumbing — six Codex review rounds, three fix iterations, six smoke attempts. No scientific call has executed. The bottleneck is now a hardware-state issue (CPU contention from a game), not a code issue. Continuing to retry smoke is waste of session time.
+
+**Tunnel check:** YES, narrowed onto one thread (runner review loop). Two corrective actions taken: (1) launched a Codex dialogue on the information-geometric D7 alternative (the next foundational thread identified at the last re-contextualization), (2) launched the mandatory "should this program continue" Codex review (§2.7 rule 5). Both running in background.
+
+**Alternatives held live:**
+- Information-geometric D7: replace abstract tangent norms with Fisher metric / √JS on next-token laws. Would make the instrument/native distinction intrinsic to the output space.
+- Theory simplification: is the full D1–D9 stack necessary, or can the essential content be stated in fewer primitives?
+- Different model: if Qwen3-1.7B-Base shows no bridge signal, try an instruct model (larger capacity for structured state)
+- Different site: block 16 single-position is a narrow probe; multi-site or different-layer interventions
+- The central bet (README) vs the current work: has any artifact tested the bet? (Codex "should continue" review answering this now)
+
+**Ratio:** 32:15 (theory rounds : empirical/build rounds). No scientific artifact has run since the restart. The theory is ahead of the empirics by design (theory-first mode), but the gap is widening — the runner is ready, the CPU is not.
+
+---
+
 ## 2026-08-30 — Codex v6 REVISE → 3 blockers fixed (44d8c1a); smoke rerun blocked by CPU contention
 
 Codex v6 design-gate review (REVISE) identified 3 remaining blockers, all genuine, all fixed in commit 44d8c1a:
