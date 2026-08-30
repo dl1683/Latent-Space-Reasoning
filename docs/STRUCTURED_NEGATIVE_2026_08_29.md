@@ -1,4 +1,4 @@
-<!-- Structured negative write-up. Drafted by the direction session (round 23) from audit-adopted wording in STATE.md and the ledger; the reachability_v1 paragraph is subject to verbatim revision from audit #36. No new claims. -->
+<!-- Structured negative write-up. Drafted by the direction session (round 23) from audit-adopted wording in STATE.md and the ledger; reachability_v1 wording revised verbatim from audit #36. No new claims. Every construction's licensed sentence and never-say list is in STATE.md; the append-only record is experiments/ledger.jsonl. -->
 
 # Structured Negative: What Two Days of Audited Latent-Space Experiments Localized
 
@@ -14,9 +14,13 @@ Across 2026-08-29–30, the program moved from toy certification to causal inter
 
 - `onewrite_recall_v1` closes “the fixed model/layer/source-state/16-dimensional encoder/injector/norm-cap/slot/objective/400-step/prompt construction—not one-write memory, persistence, block-12 capacity, or persistent state in real models generally.”
 
-- For the rung-0/site-oracle pair: “At this exact site and prompt, finite strict-choice response is strongly tag- and context-dependent. Removing the learned shared J does not remove the concentration of effects, so J optimization was not its sole source; nevertheless, the concentration remains inseparable from baseline logit gaps, cross-name gradient averaging, local-to-finite extrapolation, the fixed norm, and the first-token greedy readout.” `reachability_v1` then classified the measured response as **NO SLOT-SPECIFIC GEOMETRY CONCLUSION** because the slot spectrum was not distinguished from generic-position nulls and changed under tag-order prompt controls.
+- For the rung-0/site-oracle pair: “At this exact site and prompt, finite strict-choice response is strongly tag- and context-dependent. Removing the learned shared J does not remove the concentration of effects, so J optimization was not its sole source; nevertheless, the concentration remains inseparable from baseline logit gaps, cross-name gradient averaging, local-to-finite extrapolation, the fixed norm, and the first-token greedy readout.” `reachability_v1` (audit #36, verbatim): `reachability_v1` is a preregistered measurement with classification `NO SLOT-SPECIFIC GEOMETRY CONCLUSION`: at the fixed block-12 final `Internal record:` slot in frozen Qwen3-1.7B-Base, 42–43 tokenizer-position steps before the queried logits, the mean over 24 training names of the \(0.25\|h\|\)-scaled centered Jacobian of eight tag first-token logits had top-mode energy 0.638 (name-bootstrap 95% CI 0.624–0.652), participation effective rank 2.279 (2.197–2.362), \(\sigma_2/\sigma_1=0.450\), and \(\sigma_3/\sigma_1=0.389\); a read-only audit recomputation found typical per-name geometry of similar width and 0.895 mean-energy coherence, so averaging did not create the result, while the eight preselected instruction-token position controls spanned top energies 0.579–0.731 and effective ranks 1.809–2.664 and all four fixed displayed-tag-order permutations produced broader spectra; at one finite dose the top three shared slot directions had median predicted-versus-realized centered-logit cosines 0.995, 0.944, and 0.995 and substantial secondary-mode responses, but sign-dependent magnitude and decoded-boundary asymmetries remained, so the result licenses a coherent several-mode local response under this exact prompt, vocabulary, site, layer, and dose, not a slot-specific dimension, a hard reachability limit, equivalence to generic positions, an explanation of the earlier two-tag pattern, or evidence about memory capacity.
 
 The strongest unified explanation is correspondingly local and plural. Several frozen-model effects are parsimoniously explained by cue-redundant lexical-semantic response geometry rather than persistent state. Small base models could not support the more demanding rule-application instruments, although direct visible recall was valid. The chosen generic source anchor carried only weak tag information. Finally, the actuator’s apparent anisotropy was construction-bound and was not isolated from prompt, label-order, baseline-gap, or output-boundary geometry. These are four constraints, not one universal latent-space hole.
+
+## The central sentence (audit #36)
+
+> The sequence did not show that the block-12 slot is too low-dimensional to carry state; it showed that this exact frozen-model interface never converted weak, presentation-bound source and response geometry into balanced, content-specific causal control, even though the slot has a coherent several-mode local effect on the registered output logits.
 
 ## Methodological result and cost
 
@@ -57,6 +61,7 @@ Never say:
 - The state bus demonstrated persistence, abstraction, or general interchangeability.
 - `coordinate_v3` demonstrated a grammatical coordinate.
 - `reachability_v1` established a low-dimensional slot or a general early-position geometry.
+- The slot is equivalent to, or indistinguishable from, generic early positions; the two-tag pattern was proved to be boundary geometry; the finite-dose response is linear at 0.25‖h‖ (only directional agreement along the tested modes at one amplitude was shown).
 - More steps, another site, a larger model, or a different actuator would either succeed or fail.
 
 **README status:** Across two days of audited CPU experiments, no tested construction established a transferable causal state or native latent mathematics in a real model; the durable result is a localized set of instrument-validity, source-extraction, actuator, and prompt/output-geometry constraints that any future substrate must satisfy.

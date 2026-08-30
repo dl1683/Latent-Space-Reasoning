@@ -5,6 +5,282 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — Audit #36 on reachability_v1 (fresh, unprimed; verbatim): classification upheld; 'generic / indistinguishable / boundary geometry / linear' readings withdrawn; the slot has a coherent several-mode response that is not shown to be special
+
+My NOTEBOOK reading below is corrected by this audit: the position controls do not establish equivalence to generic positions; the two-tag pattern is made more plausible as boundary geometry, not proven; finite-dose agreement is directional only at one amplitude with sign-dependent asymmetry.
+
+## Verdict
+
+**The registered classification is upheld: `NO SLOT-SPECIFIC GEOMETRY CONCLUSION`.**
+
+The measurement is technically intact and informative, but the current reading overstates it in three places:
+
+- The data do not show that the slot is “like any early position” or generically equivalent to the nulls.
+- They do not prove that the earlier two-tag behavioral pattern *is* output-boundary geometry; they make that explanation more plausible while ruling against a hard two-direction channel.
+- The finite-dose check validates response direction along three shared modes at one dose, not general linearity, magnitude accuracy, or dose adequacy.
+
+The corresponding under-claim is also wrong: “no conclusion” does not mean nothing was learned. The slot has a coherent, several-mode, name-shared local causal response to the registered eight logits. What failed is evidence that this response geometry is special to the slot.
+
+The exact slot/prompt repair branch should stop. The broader program should continue only through the predeclared structured-negative write-up and subsequent substrate redesign—not through another measurement. **This is not working as an artifact-producing loop.**
+
+The hashes of the current [runner](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_reachability.py>), [configuration](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/config/reachability_v1.json>), and [shared hook machinery](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_onewrite_state.py>) exactly match the saved [result](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/results/reachability_v1/run_result.json>). The hook adds the write once at `self.slot_pos` as declared.
+
+## 1. Mean Jacobian and cancellation
+
+The shared mean Jacobian is an appropriate object for one specific question:
+
+> Does a single residual direction produce a consistent centered-logit response across names?
+
+It is not sufficient by itself for:
+
+> How many local response directions are available to each name?
+
+I therefore recomputed the 24 per-name slot Jacobians read-only on CPU from the hash-matched implementation. Results:
+
+| Statistic | Per-name distribution | Mean Jacobian |
+|---|---:|---:|
+| Top-mode energy | median 0.635; IQR 0.613–0.650; range 0.569–0.738 | 0.638 |
+| Effective rank | median 2.302; IQR 2.211–2.434; range 1.775–2.712 | 2.279 |
+| RMS-stacked effective rank | — | 2.754 |
+| RMS-stacked top energy | — | 0.579 |
+
+Cancellation is small:
+
+- \(\|\bar G\|_F^2/\operatorname{mean}\|G_n\|_F^2 = 0.895\).
+- Unit-normalized coherence is 0.905.
+- Pairwise matrix-cosine median is 0.920, with IQR 0.895–0.940.
+- Median top-three right-subspace overlap with the shared top-three subspace is 0.928.
+
+Therefore averaging is **not manufacturing** the observed effective rank of approximately 2.3. The mean is highly representative of the typical per-name spectrum. The RMS object is somewhat broader, so the complete write-up should report both: approximately 2.28 for name-shared response and approximately 2.75 for aggregate name-local sensitivity.
+
+The saved result did not retain the per-name \(G_n\) matrices, so these checks had to be recomputed. Future geometry results should save them.
+
+## 2. Position nulls
+
+The nulls were outcome-independent and comply with the executable lock, but they are not sufficiently matched to license “any early position” or “the slot is generic.”
+
+- All eight nulls are non-label tokens inside the `VALID TAGS`/instruction block.
+- Six lie only 8–14 token positions before the answer.
+- The slot is 42–43 token-position steps upstream.
+- Only offsets 39 and 41 are approximately distance-matched.
+- Token function and downstream context are not matched.
+- No paired name-bootstrap contrast between the slot and each null was reported.
+
+The two approximately distance-matched nulls straddle the slot:
+
+| Site | Top energy | Effective rank |
+|---|---:|---:|
+| Slot | 0.638 | 2.279 |
+| Offset 39 | 0.731 | 1.809 |
+| Offset 41 | 0.595 | 2.540 |
+
+That supports “no detected exceptional spectral concentration at the slot,” but not equivalence or indistinguishability.
+
+The slot also has higher reported leading-right-direction alignment across names, 0.96 versus 0.63–0.84 for the position nulls. This is a descriptive distinction, though it was not a registered comparative gate and the null mismatch prevents interpreting it as a slot-specific property.
+
+There is one protocol deviation: seed 4411 draws offsets in the order
+
+`[13, 10, 8, 12, 14, 39, 41, 11]`
+
+but the runner sorts the offsets before naming them. Consequently, finite-dose `null0` is offset 8, not the first RNG-selected offset 13. This does not change the final classification, whose decisive failures are at the slot spectrum and slot-versus-null concentration gates, but it weakens the finite-dose null comparison.
+
+## 3. Prompt permutations
+
+This is not a logit-relabeling artefact.
+
+The runner keeps the measured output token IDs in the original fixed tag order. It only changes the order in which the tag strings appear in the prompt. The centering matrix \(P\) continues to act on the same eight physical token logits. Moreover, even a consistent row permutation would leave singular values unchanged.
+
+Thus the observed change is real prompt-context sensitivity. All four fixed permutations yielded a broader shared spectrum than the base order:
+
+- Base effective rank: 2.28.
+- Fixed permutations: 2.72, 3.24, 3.28, 3.22.
+- Base top energy: 0.638.
+- Fixed permutations: 0.563, 0.412, 0.409, 0.453.
+
+The licensed statement is:
+
+> All four preselected tag-order permutations broadened the shared spectrum relative to the base displayed order.
+
+Do not generalize this to “permuting tag order broadens the spectrum” as a law. Four orders do not identify whether every permutation broadens it, whether the base order is unusually concentrated, or which positional/token interaction causes the effect.
+
+The direction document mentioned permuting both tag order and registry-filler sentence order, whereas the executable lock implemented only tag-order permutations; the configured filler contains only `Internal record:\n`. This is a pre-outcome narrowing of the intended control, not an outcome-conditioned change, but the controls must be described accurately as tag-order controls only.
+
+## 5. Finite-dose validation
+
+The registered finite-dose work was performed as specified at the slot:
+
+- one fixed dose, \(0.25\|h\|\);
+- top three shared right-singular directions;
+- both signs;
+- all 24 names.
+
+At the slot, every saved predicted-versus-realized cosine exceeds 0.881. This is strong evidence that the Jacobian predicts the **direction** of the eight-logit displacement along these modes at this dose.
+
+However, pooling both signs conceals substantial magnitude asymmetry:
+
+| Slot mode | \(+\) norm-ratio median | \(-\) norm-ratio median |
+|---|---:|---:|
+| 1 | 0.601 | 0.673 |
+| 2 | 0.651 | 1.102 |
+| 3 | 0.924 | 0.712 |
+
+Sign-specific realized norms relative to mode 1 are:
+
+- Positive: mode 2 = 0.496, mode 3 = 0.603.
+- Negative: mode 2 = 0.736, mode 3 = 0.414.
+
+The null is more extreme: null0 mode-1 norm-ratio medians are 1.869 positive and 0.338 negative. Their pooled median, 0.503, represents neither sign.
+
+Decoded behavior is likewise asymmetric. At the slot:
+
+- \(+v_1\) produces `HESK` on 17/24 names.
+- \(-v_1\) reproduces `FASK` on 23/24.
+- \(+v_2\) reproduces `FASK` on 23/24.
+- \(-v_2\) crosses several output boundaries, including `PELT`, `VORN`, `RUZZ`, and `GORM`.
+
+Therefore the finite-dose result licenses:
+
+> Strong directional Jacobian agreement along the top three shared modes at one fixed dose, with material sign-dependent magnitude and decoded-boundary asymmetry.
+
+It does not license “the local-linear picture is accurate” without qualification. One amplitude cannot establish a linear regime or decide whether 0.25 was adequate. The pooled-sign reporting should be supplemented by sign-specific summaries in the write-up.
+
+These reporting weaknesses do not alter the registered classification: narrow reachability already fails the spectrum/null gates, and multidirectional reachability already fails the effective-rank gate.
+
+## 6. Claim audit in both directions
+
+### Overclaims to withdraw
+
+The current [NOTEBOOK entry](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/NOTEBOOK.md:8>) and result-ledger reading overreach in saying:
+
+- “roughly two to three effective behavioural directions” as though effective rank were an integer capacity;
+- “the same as any early position”;
+- “nothing about it is slot-specific”;
+- “the slot is generic”;
+- the two-tag pattern “is” output-boundary geometry;
+- the local-linear picture is generally accurate;
+- tag permutation generally broadens the spectrum.
+
+The evidence supports the narrower replacements:
+
+- The shared centered-logit Jacobian has participation effective rank 2.28; typical per-name effective rank is similar.
+- The registered slot concentration did not exceed the chosen position controls.
+- All four fixed tag-order permutations broadened the shared spectrum.
+- The earlier two-tag decoded pattern is inconsistent with a literal two-direction local-response ceiling and is **consistent with** prompt/output-boundary effects, but no unique causal explanation was established.
+- The top three shared modes predict finite-dose centered-logit direction well at one amplitude.
+
+### Underclaims to reject
+
+“No slot-specific geometry conclusion” does not mean:
+
+- no coherent geometry exists;
+- averaging destroyed the signal;
+- the slot has no causal influence;
+- only one mode is usable;
+- the measurement learned nothing.
+
+It established:
+
+- high cross-name coherence;
+- several material response modes;
+- strong finite-dose directional agreement along the shared top three;
+- substantial prompt-order sensitivity;
+- no registered evidence that the slot’s spectral concentration is exceptional relative to these controls.
+
+## 7. What the complete sequence licenses
+
+The rung-1 → rung-0 → site-oracle → reachability sequence is methodologically useful even though it produced no cumulative intervention artifact.
+
+1. **Rung 1:** The learned source-to-write interface did not produce reliable own-write specificity over same-entity counterfactual or random writes at the easiest evaluated training-name rung. Post-hoc localization found only weak tag information at the chosen source anchor.
+
+2. **Oracle actuator rung 0:** Removing source extraction did not rescue balanced eight-way control through the learned shared \(J\). Beyond the cue prior, `HESK` was the only replicated strong decoded effect. This closed the exact shared-\(J\) construction without localizing a hard site capacity.
+
+3. **Site oracle:** Removing \(J\) and deriving downstream gradients on other names still did not provide balanced eight-way decoded control. It established construction-bound HESK/VORN sensitivity, while leaving baseline gaps, cross-name averaging, dose, prompt, and first-token decoding entangled.
+
+4. **Reachability:** The full local response is not a literal two-tag or two-direction channel. Per-name and shared Jacobians contain several material modes, and the top three realize coherent finite-dose logit movements. Yet the spectral concentration is not exceptional relative to the chosen positions and changes under displayed tag order.
+
+The most important write-up sentence is:
+
+> **The sequence did not show that the block-12 slot is too low-dimensional to carry state; it showed that this exact frozen-model interface never converted weak, presentation-bound source and response geometry into balanced, content-specific causal control, even though the slot has a coherent several-mode local effect on the registered output logits.**
+
+## 8. Requirement for a future substrate
+
+A future substrate must provide a causally addressable state register in which:
+
+- distinct oracle writes produce balanced, content-specific effects at the easiest training/zero-delay rung;
+- own-write and same-entity counterfactual-write outcomes separate before learned source extraction is introduced;
+- controllable coordinates remain stable across entities and surface presentation;
+- finite-dose effects are not determined primarily by pseudoword order or pre-existing output boundaries;
+- longer delay, unseen wording, held-out names, and composition are attempted only after that proximal mechanism passes.
+
+The present evidence demonstrates that this exact block-12 slot/prompt/dose/readout construction did not satisfy that proximal balanced-control requirement. It does not demonstrate that Qwen3-1.7B-Base or frozen residual streams generally cannot satisfy it elsewhere.
+
+## Exact licensed sentence
+
+> **`reachability_v1` is a preregistered measurement with classification `NO SLOT-SPECIFIC GEOMETRY CONCLUSION`: at the fixed block-12 final `Internal record:` slot in frozen Qwen3-1.7B-Base, 42–43 tokenizer-position steps before the queried logits, the mean over 24 training names of the \(0.25\|h\|\)-scaled centered Jacobian of eight tag first-token logits had top-mode energy 0.638 (name-bootstrap 95% CI 0.624–0.652), participation effective rank 2.279 (2.197–2.362), \(\sigma_2/\sigma_1=0.450\), and \(\sigma_3/\sigma_1=0.389\); a read-only audit recomputation found typical per-name geometry of similar width and 0.895 mean-energy coherence, so averaging did not create the result, while the eight preselected instruction-token position controls spanned top energies 0.579–0.731 and effective ranks 1.809–2.664 and all four fixed displayed-tag-order permutations produced broader spectra; at one finite dose the top three shared slot directions had median predicted-versus-realized centered-logit cosines 0.995, 0.944, and 0.995 and substantial secondary-mode responses, but sign-dependent magnitude and decoded-boundary asymmetries remained, so the result licenses a coherent several-mode local response under this exact prompt, vocabulary, site, layer, and dose, not a slot-specific dimension, a hard reachability limit, equivalence to generic positions, an explanation of the earlier two-tag pattern, or evidence about memory capacity.**
+
+## Never-say list
+
+Do not say:
+
+- “The slot has two or three reachable dimensions.”
+- “The slot is equivalent to any early position.”
+- “The spectrum is indistinguishable from generic positions.”
+- “Nothing about the slot is distinctive.”
+- “Yesterday’s two-tag pattern was proved to be boundary geometry.”
+- “The two-tag pattern was a two-dimensional channel.”
+- “Permuting tag order always broadens the spectrum.”
+- “The prompt effect is merely relabeling the logits.”
+- “The prompt controls permuted registry-filler sentences.”
+- “Null0 was the first RNG-selected offset.”
+- “The finite-dose response is linear at \(0.25\|h\|\)” without “directionally along the tested modes.”
+- “Both signs behaved similarly.”
+- “The pooled norm-ratio medians characterize either sign.”
+- “The dose was adequate,” “too small,” or “too large.”
+- “The mean Jacobian describes every name exactly.”
+- “Name averaging caused the low effective rank.”
+- “No conclusion means nothing was learned.”
+- “The slot cannot carry memory or eight-way state.”
+- “Frozen residual streams lack usable native structure.”
+- “The measurement advanced the positive-control staircase.”
+- “The response was measured about 36 tokens later”; use 42–43 tokenizer-position steps.
+
+## Copy-ready README wording
+
+> At the fixed block-12 final `Internal record:` slot in Qwen3-1.7B-Base, the shared centered eight-tag logit Jacobian had participation effective rank 2.28, with typical per-name spectra of similar width and high cross-name coherence; its top three shared directions also predicted finite-dose logit-displacement direction well at one fixed \(0.25\|h\|\) intervention. However, the slot’s spectral concentration did not exceed eight preselected instruction-position controls, and all four fixed displayed-tag-order permutations broadened the spectrum. The licensed result is therefore a coherent, several-mode, prompt-sensitive local response—not a slot-specific dimension, a hard capacity limit, or proof that the earlier HESK/VORN concentration was caused by output boundaries. This completes the predeclared final measurement of the closed slot; the exact actuator-repair branch remains closed and the next step is the structured-negative write-up.
+
+## Copy-ready STATE wording
+
+> - **`reachability_v1` — MEASUREMENT; `NO SLOT-SPECIFIC GEOMETRY CONCLUSION` (audit #36).** At frozen Qwen3-1.7B-Base block 12, the final `Internal record:` slot’s \(0.25\|h\|\)-scaled shared centered Jacobian of eight tag first-token logits, evaluated 42–43 tokenizer-position steps downstream over 24 training names, had top-mode energy 0.638 (95% name-bootstrap CI 0.624–0.652), participation effective rank 2.279 (2.197–2.362), \(\sigma_2/\sigma_1=0.450\), and \(\sigma_3/\sigma_1=0.389\). Audit recomputation found per-name median top energy 0.635 and effective rank 2.302, with 0.895 mean-energy coherence, so name averaging did not manufacture the spectrum; an RMS-stacked name-local object was somewhat broader at effective rank 2.754. Eight preselected non-label positions inside the `VALID TAGS`/instruction block spanned top energy 0.579–0.731 and effective rank 1.809–2.664, so the slot did not pass the registered exceptional-concentration gate, although these controls do not establish equivalence to generic early positions. Four fixed displayed-tag-order permutations had top energies 0.409–0.563 and effective ranks 2.721–3.279; this is genuine prompt-context sensitivity, not output-logit relabeling, but it is descriptive for those four orders only. At one fixed finite dose, the top three shared slot directions had predicted-versus-realized centered-logit cosine medians 0.995/0.944/0.995 and realized relative norms 1.00/0.61/0.49, with material sign-dependent magnitude and decoded-boundary asymmetry. The result licenses a coherent several-mode local response under this exact model/layer/site/prompt/tag vocabulary/dose, not a two- or three-dimensional capacity, slot-specific geometry, dose adequacy, storage, retrieval, or a proven explanation of the prior two-tag behavior. The runner sorted hash-selected offsets before naming `null0`, so finite-dose null0 used offset 8 rather than the first RNG draw, offset 13; this does not change the classification. Per Round 22, no further measurement or repair precedes the structured-negative write-up.
+
+The present [STATE header](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/STATE.md:3>) is also stale about pending audits and should be refreshed when propagation is authorized.
+
+## Ranked next increments
+
+1. Complete or revise the structured-negative write-up using the licensed sentence above; make the four-stage failure localization—not “low-dimensional slot”—the central result.
+2. Propagate audit #36 to README, STATE, NOTEBOOK, and an append-only ledger audit row; withdraw “indistinguishable,” “generic,” “any early position,” and the unqualified boundary-geometry claim.
+3. Record the per-name/RMS spectrum and sign-specific finite-dose summaries in the write-up; do not run another model computation merely to create a new verdict.
+4. Extract a future-substrate contract centered on balanced oracle-write specificity, presentation stability, and a proximal causal register; deposit that transferable residue under the flywheel rule.
+5. Only after the write-up and a fresh 2–3-round direction dialogue, consider one new substrate artifact at the easiest proximal rung. No alternate slot, layer, dose, model, navigator, or prompt sweep should intervene.
+
+## Continue-or-not and ratio heartbeat
+
+- `reachability_v1`: complete.
+- Current block-12 slot/prompt actuator branch: **stop**.
+- Existing measurement/repair loop: **do not continue**.
+- Broader program: **continue after the write-up only as substrate construction**, with the proximal positive-control staircase binding.
+- Highest-leverage action now: the predeclared structured-negative write-up, not another experiment.
+
+Declared physical-line classification for `run_reachability.py`:
+
+- Artifact-bearing scientific code: 41 lines.
+- Apparatus/result plumbing: 16 lines.
+- Documentation/import/scaffolding: 18 lines.
+- Apparatus/artifact ratio: \(16/41=0.39\).
+
+The ratio passes the registered ≤0.50 apparatus/artifact ceiling, although the predeclared minimum of 70 artifact-bearing physical lines was not met. At round level, the reachability run is a measurement and this audit is an integrity/measurement round: the Round-22 post-audit heartbeat is **15 measurement/audit rounds : 5 artifact-building rounds = 3.0:1**, above the 2:1 warning threshold. The predeclared closure rules out another measurement before the write-up regardless.
+
+Blackboard `0c0c926d` converged with no open signals. No tracked repository file was edited; the existing untracked files were left untouched.
+
 ## 2026-08-30 — reachability_v1: NO SLOT-SPECIFIC GEOMETRY CONCLUSION — the closed slot's response spectrum is indistinguishable from generic early positions; permuting the tag list broadens it
 
 Shared budget-scaled centred Jacobian at the slot: top-mode energy 0.64 (CI 0.62–0.65), participation effective rank 2.28 (2.20–2.36), s2/s1 0.45, s3/s1 0.39, across-name alignment 0.96. Eight hash-chosen pre-answer position nulls: top energy 0.58–0.73, effective rank 1.8–2.7 — the slot is not more concentrated than generic positions (one null is more concentrated). Four permuted-`VALID TAGS` prompt controls at the slot: top energy 0.41–0.56, effective rank 2.7–3.3 — the listed order of the tags changes the response geometry. Finite-dose validation along the top three shared directions at exactly 0.25 of the slot norm: predicted-vs-realized cosine 0.995 / 0.944 / 0.995 with realized/predicted norm 0.64–0.84, and modes 2–3 realize 0.61 / 0.49 of mode 1's response (null0: 0.33 / 0.25). Neither classification's criteria are met. Reading (mine, pending audit #36): at this budget the early slot exposes ~2–3 effective behavioural directions to the eight-way decision, the same as any early position, and part of that geometry is the output list's order rather than the site — the local-linear picture is accurate, the slot is generic, and yesterday's "only two tags reachable" pattern is a property of where the decision boundaries sit, not of a special channel. Per round 22 this is the last measurement before the write-up.
