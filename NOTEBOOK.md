@@ -5,6 +5,32 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — Codex successor program design: PSQ-1 (Othello Predictive-State Transport)
+
+Following the should-continue STOP verdict, launched a Codex direction dialogue on the successor program. Codex designed PSQ-1 — a concrete one-experiment successor:
+
+**Model:** OthelloGPT (Baidicoot/Othello-GPT-Transformer-Lens, 25M params, 8 layers, 512 dims). Known board-state representations, lawful state transitions. Real model, not a toy.
+
+**Registered world:** Valid Othello prefixes plies 12–48; moves = 61 legal tokens; response = full 61-way next-token distribution; horizon = 2 appended tokens. d_2(x,y) = max_{|w|≤2} √JS(r(wx), r(wy)) is the exact d_∞ of this finite world.
+
+**Measurement:** (1) Predictive-state recovery via d_2 on transpositions (Myhill-Nerode). (2) Behavior-space quasiconvexity: R = (d_2(x_0,x_1) + d_2(x_1,x_2)) / d_2(x_0,x_2) for held-out legal two-move paths. (3) DAS: rank-32 distributed alignment at post-layer-4 final-token residual; swap aligned subspace; compare patched vs source over all ≤2-step continuations.
+
+**Baselines:** Euclidean, cosine, linear probe, function vector (Todd et al.), random rotation, full swap (positive control).
+
+**Joint PASS (across 3 seeds):** d_2 transposition AUC ≥ 0.95 and ≥ 0.05 above baselines; held-out 95th-percentile R ≤ 2.0; full-swap target reduction ≥ 80%; DAS ≥ 50% reduction and ≥ 15pp above non-positive-control; game-clustered 95% bounds clear all thresholds; no seed reversal.
+
+**D1–D9 relationship:** D1–D5 recast Moore behavior / computational mechanics / Myhill-Nerode. Genuine additions: D2's native-output boundary, D6's coherent presentation transport, Theorem 7's finite-agreement refusal, D9's denizen/surgeon separation, Open Problem 7's quasiconvexity. PSQ-1 tests the last directly.
+
+**One-result stop rule:** Run once. Any failed gate or seed reversal kills PSQ-1. A PASS also ends it — licenses a new proposal but queues nothing.
+
+**Ratio target:** 1:1 measurement-to-artifact, cap at 1.5:1. Crossing 2.0 kills the successor.
+
+**Repo reset:** Archive existing runners/configs/results under read-only snapshot. Keep README, AXIOMS, STATE, NOTEBOOK, EXPERIMENTS, ledger, handoff, structured negative. Delete regenerable artifacts. Add one runner, one config, one result directory.
+
+Full Codex output at `scratchpad/direction_successor_program.md`. This is a PROPOSAL — not authorized for implementation until user decides.
+
+---
+
 ## 2026-08-30 — Audit #48 adopted (REVISE): D7 specialization corrections applied
 
 Codex audit #48 verdict: REVISE. Headline coefficient 1/√(8 ln 2) confirmed correct, but three classes of repair required and applied:
