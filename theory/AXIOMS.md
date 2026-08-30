@@ -63,11 +63,12 @@ metrics on the same supported move family. Stratification is a sampling repair,
 not evidence of semantics.
 
 Status: the navigation requirements remain the program-level target. The
-future-response foundation below was adopted in Round 33 after the Round
-31--33 dialogue and is **proposed pending mathematics-only audit #40**.
-Dialogue and rejected formulations stay in `dialogue/`.
+future-response foundation below was proposed in Round 33 after the Round
+31--33 dialogue and corrected in Round 34 after mathematics-only audit #40.
+It remains **proposed pending mathematics-only audit #41**. Dialogue and
+rejected formulations stay in `dialogue/`.
 
-## Foundation: future-response geometry (proposed, rounds 31--33; pending audit #40)
+## Foundation: future-response geometry (proposed, rounds 31-34; audit #40 corrections applied; pending audit #41)
 
 The status of every item is stated explicitly. Definitions D1--D7 replace
 L1--L4 as the proposed active foundation. Presentation covariance remains a
@@ -82,9 +83,11 @@ family \(\mathcal A\) of primitive legal moves
 T_a:Z\to Z.
 \]
 
-The empty move is legal, and legal moves compose into a word monoid
-\(\mathcal W\). The notation \(wa\) means: apply \(a\) first, then continue
-with \(w\).
+Let \(\mathcal W=\mathcal A^*\) be the free syntactic word monoid, acting by
+\(T_{wa}=T_w\circ T_a\), with \(|wa|=|w|+1\). Distinct words may induce the
+same state map. Assume \(C\neq\varnothing\), and declare each \(O_c\) as a
+measurable outcome space. The empty word is legal. The notation \(wa\) means:
+apply \(a\) first, then continue with \(w\).
 
 All prompt forms, encodings, and stored arrays remain distinct elements of
 \(Z\) until the response theory identifies them. No vector-space, metric,
@@ -108,13 +111,15 @@ be the outcome law emitted through a declared interface of the world. Equip
 \(0\leq D_c\leq1\). Total variation and normalized square-root
 Jensen--Shannon distance are admissible; KL divergence is not a metric.
 
-A primitive response may inspect only output available through the declared
-interface. A decoder, classifier, or coordinate projection applied directly
-to hidden states is an external instrument, not a primitive response. A
-deterministic or stochastic postprocessing of a native output law is a derived
-response and cannot refine equality of the full native laws. In a language
-model, the full next-token law at a declared query position is primitive;
-grouping its token probabilities into declared outcome classes is derived.
+Fix the emitted-observation interface before hidden-state inspection.
+Primitive responses are its declared native output laws; every derived
+response must factor through them by a fixed, state-independent Markov kernel.
+A hidden-state decoder does not so factor. Adding its output to the interface
+defines a different registered world. In a language model, the full next-token
+law at a declared query position is primitive; grouping its token
+probabilities into declared outcome classes by a fixed Markov kernel is
+derived. Equality of the full native laws is preserved by every such derived
+response.
 
 ### D3. Immediate response discrepancy and legal futures — definition
 
@@ -210,18 +215,49 @@ whose existence follows from Theorem 1.
 A native law is an equality, inequality, or compositional relation among
 descended maps that predicts denizen-accessible response consequences.
 
-A syntactically specified rewrite \(g:Z\to Z\) is observationally passive on
-\(S\subseteq Z\) when
+A syntactically specified rewrite \(g:Z\to Z\) may be registered with fixed,
+state-independent transport data:
+
+- a channel map \(\pi_C^g:C\to C\);
+- a monoid map \(\pi_A^g:\mathcal W\to\mathcal W\), fixed by its action-name
+  map and preserving the empty word and concatenation; and
+- measurable outcome maps
+  \(\tau_{g,c}:O_c\to O_{\pi_C^g(c)}\) whose pushforwards preserve the declared
+  metrics:
+  \[
+  D_{\pi_C^g(c)}\bigl((\tau_{g,c})_*\mu,(\tau_{g,c})_*\nu\bigr)
+  =D_c(\mu,\nu).
+  \]
+
+The transported future-response discrepancy is
 
 \[
-d_\infty(x,gx)=0
-\qquad
-\text{for every }x\in S,
+d_\infty^g(x,gx)
+=
+\sup_{\substack{w\in\mathcal W\\c\in C}}
+D_{\pi_C^g(c)}
+\bigl((\tau_{g,c})_*r_c(T_wx),
+r_{\pi_C^g(c)}(T_{\pi_A^g(w)}gx)\bigr).
 \]
 
-after any declared transport of outcome names. This is a tested property, not
-an axiom. A behaviorally consequential rewrite is a legal move only when it is
-included in the declared action family.
+For the identity rewrite all three transports are identities. For composable
+rewrites \(g,h\), registration requires
+
+\[
+\pi_C^{h\circ g}=\pi_C^h\circ\pi_C^g,
+\qquad
+\pi_A^{h\circ g}=\pi_A^h\circ\pi_A^g,
+\qquad
+\tau_{h\circ g,c}
+=\tau_{h,\pi_C^g(c)}\circ\tau_{g,c}.
+\]
+
+These identity and composition laws prevent state- or word-dependent
+realignment after outcomes are seen. The rewrite is observationally passive on
+\(S\subseteq Z\) exactly when \(d_\infty^g(x,gx)=0\) for every \(x\in S\).
+Passivity is a tested property, not an axiom. A behaviorally consequential
+rewrite is a legal move only when it is included in the declared action
+family.
 
 The distance \(d_\infty\) measures future response distinguishability, not
 effort. Movement cost requires a separate resource assignment to executable
@@ -245,21 +281,52 @@ When finite, \(p_x\) is a seminorm because it is a supremum of seminorms. A
 finite denizen can estimate only a restricted object
 
 \[
-p_{x,h,C_0}(v)
+p_{x,W_0,C_0}(v)
 =
-\sup_{\substack{|w|\leq h\\c\in C_0}}
+\sup_{\substack{w\in W_0\\c\in C_0}}
 \left\|D(r_c\circ T_w)_xv\right\|_{D_c,r_c(T_wx)},
 \]
 
-for finite \(h\) and \(C_0\). Immediate derivatives alone do not determine
-the full \(p_x\), because its definition still ranges over all future words.
+for a finite registered word set \(W_0\subset\mathcal W\) and finite
+\(C_0\subset C\). The choice \(W_0=\{w:|w|\leq h\}\) is finite only when the
+primitive action alphabet \(\mathcal A\) is finite. Immediate derivatives
+alone do not determine the full \(p_x\), because its definition still ranges
+over all future words.
 
 Once a restricted Jacobian is known, it is a local map: it predicts the
 first-order response consequence of an unexecuted infinitesimal perturbation.
-This navigational interpretation applies only to a declared executable tangent
-cone \(E_x\subseteq T_xZ\), generated by differentiable families of legal
-moves. On arbitrary chart directions outside \(E_x\), \(p_x\) is an
-instrument-level sensitivity geometry rather than a denizen-usable map.
+Separately declare parameterized legal-move germs \(\phi_j(t,\cdot)\) with
+\(\phi_j(0,x)=x\); define \(E_x\) as the specified cone generated by
+\(\partial_t\phi_j(0,x)\), for example their closed conic hull. Discrete legal
+moves alone do not determine \(E_x\). The navigational interpretation applies
+only on \(E_x\subseteq T_xZ\). On arbitrary chart directions outside \(E_x\),
+\(p_x\) is an instrument-level sensitivity geometry rather than a
+denizen-usable map.
+
+Uniform first-variation lemma — proved under the displayed condition. Let
+\(x_t\) be any differentiable curve with \(x_0=x\) and \(\dot x_0=v\), and
+assume \(p_x(v)<\infty\). If the metric first-order expansions are uniform over
+\((w,c)\), meaning
+
+\[
+\sup_{\substack{w\in\mathcal W\\c\in C}}
+\left|
+\frac{D_c(r_c(T_wx),r_c(T_wx_t))}{|t|}
+-
+\left\|D(r_c\circ T_w)_xv\right\|_{D_c,r_c(T_wx)}
+\right|
+\longrightarrow0,
+\]
+
+then
+
+\[
+\lim_{t\to0}\frac{d_\infty(x,x_t)}{|t|}=p_x(v).
+\]
+
+Indeed, the absolute difference between the two suprema is bounded by the
+displayed uniform remainder. Pointwise differentiability without this
+uniformity does not justify exchanging the limit with the infinite supremum.
 
 #### Audit #36 retrospective — measured restricted instance, not a theorem
 
@@ -271,12 +338,13 @@ token tag logits, equivalently centered log probabilities of those eight
 tokens. Each
 
 \[
-p^{(0)}_{x_n}(v)=\|J_nv\|_2
+q_{x_n}(v)=\|J_nv\|_2
 \]
 
-is a restricted local response seminorm and a pointwise lower-bound component
-of any full \(p_{x_n}\) that includes this response channel and these residual
-directions.
+is an instrument-level local seminorm of the centered-log-probability
+coordinate map. It is not identified with D7's native \(p_{x_n}\). It becomes
+one empty-word component only if that derived observable, a compatible bounded
+metric/tangent norm, and the direction domain are separately declared.
 
 The registered headline was the scaled shared operator
 
@@ -358,10 +426,55 @@ for every word \(w\); taking the supremum gives \(d_\infty\leq p\). The
 quotient and descent statements follow from the zero kernel. The final two
 inequalities follow by shifting word length by one. \(\square\)
 
+Coalgebraic reading — standard specialization, not a restatement. Put
+
+\[
+R=\prod_{c\in C}\mathcal P(O_c),
+\qquad
+D_R(u,v)=\sup_{c\in C}D_c(u_c,v_c),
+\qquad
+r(x)=(r_c(x))_{c\in C}.
+\]
+
+Then D1--D3 give the deterministic Moore coalgebra
+
+\[
+x\longmapsto\bigl(r(x),(T_ax)_{a\in\mathcal A}\bigr)
+\]
+
+for \(F(X)=R\times X^{\mathcal A}\). Its behavior map into the final Moore
+coalgebra is
+
+\[
+\mathsf{beh}(x)(w)=r(T_wx),
+\qquad
+\mathsf{beh}:Z\to R^{\mathcal A^*},
+\]
+
+and \(d_\infty\) is exactly the pullback of the supremum metric on
+\(R^{\mathcal A^*}\). This remark identifies the standard semantics without
+replacing the elementary word-and-response formulation: the latter keeps the
+fixed native interface, finite word access, and the denizen's map problem
+explicit.
+
+Attribution. Theorem 1 is deterministic Moore-machine/final-coalgebra
+behavioral-pseudometric mathematics; see Baldan et al.,
+[*Coalgebraic Behavioral Metrics*](https://arxiv.org/abs/1712.07511).
+[Desharnais et al.](https://www.cs.mcgill.ca/~prakash/Pubs/concur99.pdf),
+[van Breugel--Worrell](https://www.sciencedirect.com/science/article/pii/S0304397504006711),
+and [Ferns--Panangaden--Precup](https://arxiv.org/abs/1207.4114) are neighboring
+probabilistic-transition or MDP metric theories, not sources for this exact
+deterministic construction.
+
 Finite deterministic corollary — proved. If \(Z,\mathcal A,C\) are finite,
 then \(d_h(x,y)=0\) is exactly equality of the horizon-\(h\) future-response
-signatures. The full metric is attained after the synchronously reachable
-state-pair graph has been exhausted, at worst after \(|Z|^2-1\) steps.
+signatures. The synchronous ordered-pair graph has at most \(|Z|^2\) vertices,
+and every reachable pair has a simple path of length at most \(|Z|^2-1\).
+Consequently
+
+\[
+d_{|Z|^2-1}=d_\infty.
+\]
 
 Language-model scope. For the main LM world, a state is a prompt token
 sequence. Declared moves such as appending fixed tokens or substituting a
@@ -392,6 +505,15 @@ T_w(x)=A_wx+b_w.
 \]
 
 For positive weights \(\alpha_w\), define
+
+\[
+d_\alpha(x,y)
+=
+\sup_{w,c}\alpha_w
+\|r_c(T_wx)-r_c(T_wy)\|_c
+\]
+
+and
 
 \[
 p_\alpha(v)
@@ -436,7 +558,8 @@ p_\alpha(v)=p_\alpha(P_{\mathcal O}v).
 
 The kernel and quotient are intrinsic; the orthogonal projector is not.
 
-For a convergent weighted \(\ell_2\) aggregation,
+For weights \(\beta_{w,c}>0\) such that the displayed series converges for
+every \(v\), define the weighted \(\ell_2\) aggregation
 
 \[
 p_2(v)^2
@@ -470,16 +593,25 @@ The supremum of seminorms is a seminorm when finite. Its zero set is exactly
 the displayed intersection of kernels. The Gramian identity follows by
 expanding the convergent sum. \(\square\)
 
-Chart boundary — proved. Ambient Euclidean distance agrees with the Gramian
-seminorm up to scale exactly when
+Attribution. This is switched/semigroup linear observability because the
+observable family ranges over arbitrary products \(A_w\), rather than only
+powers of one state matrix as in
+[single-\(A\) Kalman observability](https://people.duke.edu/~hpgavin/SystemID/References/Kalman-JSIAM-1963.pdf);
+see also the
+[switched-system observability literature](https://homepages.laas.fr/atanwani/bibentries/2013_tac.html).
+
+Chart boundary — proved. The Gramian seminorm agrees up to scale with the
+Euclidean quotient seminorm \(v\mapsto\|P_{\mathcal O}v\|_2\) exactly when
 
 \[
 G=\lambda P_{\mathcal O},\qquad \lambda>0,
 \]
 
-in that chart. A chart that merely separates \(\mathcal O\) from \(K\) is
-insufficient. Cosine agrees with Euclidean ordering only after normalization
-and the corresponding isotropy conditions.
+in that chart. It agrees with the ambient Euclidean norm on all of \(V\) up to
+scale exactly when \(K=\{0\}\) and \(G=\lambda I\). A chart that merely
+separates \(\mathcal O\) from \(K\) is insufficient. Cosine agrees with
+Euclidean ordering only after normalization and the corresponding isotropy
+conditions.
 
 Softmax extension — sketched. If
 
@@ -488,34 +620,160 @@ r_c(x)=\operatorname{softmax}(W_cx+q_c),
 \]
 
 the global future-response metric is generally not translation-invariant and
-therefore is not a seminorm of \(x-y\). Its first variation is the D7
-state-dependent local seminorm, subject to the stated differentiability,
-tangent-norm, uniformity, and finiteness conditions. This is a Finsler-type
-local geometry. Global lower comparison with the linear seminorm fails under
+therefore is not a seminorm of \(x-y\). If the metric first-order expansions
+are uniform over \((w,c)\), then for every differentiable curve \(x_t\) with
+\(\dot x_0=v\),
+
+\[
+\lim_{t\to0}\frac{d_\infty(x,x_t)}{|t|}=p_x(v).
+\]
+
+Without this uniformity, \(p_x\) is only the supremum of the individual
+pullback tangent seminorms; equality with the first variation of \(d_\infty\)
+is not claimed. Under the uniform condition this is a Finsler-type local
+geometry. Global lower comparison with the linear seminorm fails under
 logit-shift gauge and saturation. Non-affine moves make the differential
 observability family depend on the entire orbit from \(x\).
 
-### Open problem 7. Local-to-global map problem — conjectured program, not proved
+### Open problem 7. Directed local-to-global map problem — conjectured program; conditional and affine special cases proved
 
-Characterize the worlds in which \(d_\infty\), or the quotient metric on
-\(Q\), is computable or uniformly approximable from finitely many restricted
-local seminorms \(p_{x,h,C_0}\) sampled along executable words. Stronger
-versions ask when \(d_\infty\) equals or is bi-Lipschitz equivalent to a length
-metric obtained by integrating \(p_x\) along executable curves.
+An executable curve is an absolutely continuous curve
+\(\gamma:[0,1]\to Z\) with
+\(\dot\gamma(t)\in E_{\gamma(t)}\) for almost every \(t\) and integrable
+\(p_{\gamma(t)}(\dot\gamma(t))\). Define the directed extended path distance
 
-No unconditional integration theorem is claimed. Local derivatives can miss
-disconnected response offsets, finite moves, singular points, and future
-branches not represented in the sampled word family; moreover,
-\(d_\infty\) need not be a length metric. Required hypotheses may include
-regular response laws, controllable executable tangent cones, compactness or a
-finite covering property, quantitative observability, and uniform control of
-truncation error.
+\[
+\delta_E(x,y)
+=
+\inf_{\substack{\gamma(0)=x,\ \gamma(1)=y\\
+                  \dot\gamma(t)\in E_{\gamma(t)}\ \mathrm{a.e.}}}
+\int_0^1p_{\gamma(t)}(\dot\gamma(t))\,dt,
+\]
 
-Classical bisimulation metrics, observability theory, and Finsler/control
-geometry contain neighboring special cases; novelty is not claimed. The
-latent-specific role of this problem is epistemic: those theories commonly
-start with a supplied transition system, whereas a denizen must construct a
-usable map of unexecuted futures from finite local access.
+with the infimum of the empty set equal to \(+\infty\). If the germs are
+reversible, so \(E_x=-E_x\), then reversing an executable curve is executable
+and \(\delta_E\) is symmetric. Otherwise \(\delta_E\) is generally a directed
+extended path distance, not a metric. It descends to a genuine metric on the
+reachable part of \(Q\) only after its zero kernel and two-way reachability are
+checked.
+
+**Conjecture 7 — local-to-global response geometry.** In a latent world whose
+future-response quotient is a regular differentiable space, uniform metric
+differentiation, reversible path-generating move germs, and finite uniform
+control of unseen response branches should make \(\delta_E\) a finite-access
+upper reconstruction of \(\bar d\), with equality when future-response
+geodesics lift to executable state curves. Assume first that the quotient map
+\(q:Z\to Q\) is differentiable and there are \(\bar p\) and \(\bar E\) on
+\(Q\) such that
+
+\[
+p_x(v)=\bar p_{q(x)}(Dq_xv),
+\qquad
+Dq_x(E_x)=\bar E_{q(x)}.
+\]
+
+From this point, \(\delta_E\) on \(Q\) denotes the same path formula with
+\((\bar p,\bar E)\). The precise candidate theorem is:
+
+1. Along every executable piecewise-\(C^1\) curve, the D7 first-order expansion
+   holds uniformly on compact parameter intervals and
+   \(t\mapsto\bar p_{\gamma(t)}(\dot\gamma(t))\) is continuous.
+2. The behavior map \(\mathsf{beh}:Q\to R^{\mathcal A^*}\) is injective and
+   its image is \(L\)-quasiconvex in the supremum metric: any two behavior
+   points are joined in the image by a rectifiable path of length at most
+   \(L\bar d\).
+3. Every such behavior path has an executable lift with the same length.
+
+Then
+
+\[
+\bar d([x],[y])
+\leq
+\delta_E([x],[y])
+\leq
+L\bar d([x],[y]).
+\]
+
+For \(L=1\), \(\delta_E=\bar d\). The first inequality is proved under item 1:
+the uniform expansion identifies \(p_{\gamma(t)}(\dot\gamma(t))\) with the
+\(d_\infty\)-metric speed, so endpoint distance is at most curve length.
+Items 2--3 give an executable curve of length at most \(L\bar d\), proving the
+second inequality. Reversibility is not needed for either ordered inequality,
+but it is needed to call the resulting object an undirected length metric.
+Without items 2--3, bounded response metrics can saturate and make
+\(d_\infty\) strictly smaller than every integrating path length.
+
+For finite denizen access, let \(W_n\subset\mathcal W\) and \(C_n\subset C\)
+be finite registered sets, let \(p_x^{(n)}=p_{x,W_n,C_n}\), and let
+\(\delta_E^{(n)}\) be the corresponding path distance. If, on the executable
+tangent bundle of the quotient,
+
+\[
+(1-\varepsilon_n)p_x(v)
+\leq p_x^{(n)}(v)
+\leq p_x(v),
+\qquad
+\varepsilon_n\downarrow0,
+\]
+
+uniformly in \((x,v)\), then integration and infimization give the proved
+sandwich
+
+\[
+(1-\varepsilon_n)\delta_E
+\leq\delta_E^{(n)}
+\leq\delta_E.
+\]
+
+Equivalently,
+
+\[
+\delta_E^{(n)}
+\leq\delta_E
+\leq\frac{\delta_E^{(n)}}{1-\varepsilon_n}.
+\]
+
+When \(L=1\), this is a finite-access multiplicative sandwich for
+\(\bar d=\delta_E\); without the certified relative tail bound, the restricted
+path distance need not even upper-bound \(\bar d\).
+
+Thus the genuinely open part is not the formal integration step. It is to find
+denizen-checkable hypotheses or certificates for uniform unseen-branch control,
+behavior-space quasiconvexity, and executable lifting in a real latent space.
+
+**Affine check — proved, with a counterexample to the unconditional claim.**
+In Proposition 2's affine world, \(p_\alpha\) is constant in \(x\). If every
+straight-line translation is admitted as a reversible executable germ, then
+for every piecewise-\(C^1\) curve from \(x\) to \(y\),
+
+\[
+p_\alpha(y-x)
+=p_\alpha\!\left(\int_0^1\dot\gamma(t)\,dt\right)
+\leq\int_0^1p_\alpha(\dot\gamma(t))\,dt.
+\]
+
+The straight segment attains equality, so
+\(\delta_E(x,y)=p_\alpha(y-x)=d_\alpha(x,y)\), and the same statement holds on
+\(V/K\). Likewise the unrestricted path distance of the Gramian seminorm is
+\(p_2(x-y)\), hence equals the corresponding \(\ell_2\)-aggregated global
+pseudometric; it need not equal the supremum-based \(d_\infty\) unless
+\(p_2=p_\infty\).
+
+The discrete affine alphabet alone does not license those curves. Take
+\(V=\mathbb R\), the finite alphabet \(\mathcal A=\{a\}\) with
+\(T_a(x)=x\), and the single response \(r(x)=x\) with absolute-value outcome
+distance. Then \(d_\infty(x,y)=|x-y|\) and \(p_x(v)=|v|\), but if no
+parameterized move germs are declared, \(E_x=\{0\}\) and
+\(\delta_E(x,y)=+\infty\) for \(x\ne y\). If only the positive translation
+germ is declared, the path distance is \(y-x\) for \(y\geq x\) and
+\(+\infty\) otherwise. Therefore Proposition 2 supplies the local seminorm,
+not the controllability or reversibility needed for local-to-global equality.
+
+Switched/semigroup observability and Finsler/control geometry contain
+neighboring special cases; novelty is not claimed. The latent-specific role of
+the problem is epistemic: those theories commonly start with a supplied
+transition system, whereas a denizen must construct a usable map of unexecuted
+futures from finite local access.
 
 ## Prior relational foundation (Rounds 1--12; superseded, retained for provenance)
 

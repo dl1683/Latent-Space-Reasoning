@@ -5,6 +5,10 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — Round 34: audit-#40 corrections applied to the foundation; Open Problem 7 made precise; audit #41 next
+
+Verbatim in `theory/dialogue/004.md`. All 13 file edits applied (free word monoid, C ≠ ∅, measurable outcomes; ex-ante emitted interface with fixed Markov postprocessing; typed channel/action/outcome transports with coherence; finite registered word set; declared move germs and executable cone; reachability_v1 as instrument seminorms q_{x_n}; d_α defined; positive/convergent ℓ² weights; Euclidean-quotient vs ambient boundary; uniform first-order remainder lemma; directed path distance; C1b/C2 preregistration repairs). Theorem 1 kept elementary with a final-coalgebra remark. Open Problem 7: directed executable path distance δ_E; uniform differentiation gives d̄ ≤ δ_E; L-quasiconvex behaviour image gives d̄ ≤ δ_E ≤ L·d̄; affine world with reversible straight-line germs: δ_E = p_α(y−x) = d_α; counterexample: no germs ⇒ δ_E = +∞ while d_∞ finite (matches Claude's hand check: failure is reachability, not geometry). Ratio 25:8. Audit #41 (math-only) fires now; C1/C2 still blocked.
+
 ## 2026-08-30 — Audit #40 (mathematics-only) on the proposed foundation: REVISE BEFORE ADOPTION; 14 exact edits; C1/C2 stay blocked
 
 Verbatim in `theory/dialogue/004.md`. Licensed sentence: The future-response construction is a valid deterministic behavioral-pseudometric foundation after explicit nonempty/free-word assumptions and corrections to Proposition 2, D6, D7, and the audit-#36 retrospective; `reachability_v1` remains only a family of restricted centered-logit instrument seminorms with `NO SLOT-SPECIFIC GEOMETRY CONCLUSION`, and C1/C2 must not run until their mathematical and preregistration defects are repaired.

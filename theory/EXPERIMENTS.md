@@ -8961,14 +8961,14 @@ is re-taken after this amendment; no Round 37 outcome may be inspected until
 the amended module passes Tier-1 correctness and performance review and its
 final config and module hashes are recorded.
 
-## Round 33 — future-response geometry checks C1/C2 (PREREGISTERED; blocked on audit #40)
+## Round 33/34 — future-response geometry checks C1/C2 (PREREGISTERED; audit #40 corrections applied; blocked on audit #41)
 
 **Status: PREREGISTERED THEORY CHECKS; NOT RUN.** These checks may not execute
-until the Round 31--33 foundation in `theory/AXIOMS.md` receives a fresh,
-unprimed mathematics-only audit #40 and that audit is adopted. Audit #40 must
-check proof gaps, imported vector structure, novelty honesty, the D2
-instrument boundary, and Proposition 2's finiteness assumptions. Neither
-check is the audit-#39 causal bridge, and neither queues that bridge.
+until the corrected Round 31--34 foundation in `theory/AXIOMS.md` receives a
+fresh, unprimed mathematics-only audit #41 and that audit is adopted. Audit
+#40 returned `REVISE BEFORE ADOPTION`; its thirteen theory/C1/C2 corrections
+are applied here and in `theory/AXIOMS.md`. Neither check is the audit-#39
+causal bridge, and neither queues that bridge.
 
 ### C1. Frozen constructed-consumer response geometry — preregistered
 
@@ -9024,24 +9024,121 @@ Theorem 1.
 
 #### C1b. Finite Hilbert-chart adequacy — conjectured and preregistered
 
-For a consumer seed, let \(S\) contain the eight oracle codes and the eight
-state-conditioned writer centroids. Fit a positive-semidefinite matrix \(G_s\)
-using training permutations only and predict held-out response distances by
+The check is separate for consumer seeds \(s\in\{11,23,37\}\). A raw point is
 
 \[
-\widehat d_s(z_i,z_j)
-=
-\sqrt{(z_i-z_j)^\top G_s(z_i-z_j)}.
+u=(p,e,z),
 \]
 
-The candidate proposition is
+where \(p\) is the exact visible permutation, \(e\) is the complete frozen
+episode ID `(entity, abstract_state, template, panel)`, and \(z\) is one of the
+eight fixed oracle codes or eight state-conditioned writer centroids for seed
+\(s\). Before any response is scored, a canonical JSON manifest must record
+and hash:
+
+- the seed, point ID, point kind, abstract-state index, full float32 \(z\)
+  vector, and source artifact/checkpoint SHA-256;
+- every \(e\), with entities `0..23`, states `0..7`, templates `0..3`, and
+  panels `0..3` fully crossed;
+- every permutation vector from the frozen `necessary_register_v1` bank
+  (`perm_seed=5151`, bank SHA-256
+  `7fa32bd5e8cf18fe493d169a539259efa44aad6dcc9e14d750d79d91560d0b9e`),
+  with within-panel indices `0..127` declared training and `128..143`
+  declared held out; and
+- the episode split: entities
+  \(\{0,1,3,4,6,7,9,10,12,13,15,16,18,19,21,22\}\) are training and
+  \(\{2,5,8,11,14,17,20,23\}\) are held out, with every state, template,
+  and panel retained in both splits.
+
+The fitting blocks use training episodes and training permutations. The
+primary prediction blocks use held-out episodes and held-out permutations.
+No row may change split after its response law is inspected. The manifest
+defines the complete fixed embedding
+
+\[
+\Phi(p,e,z)
+=
+(\mathbf 1_p,\mathbf 1_e,z),
+\]
+
+where \(\mathbf 1_p\) and \(\mathbf 1_e\) are canonical one-hot vectors over
+the union of the manifest's permutation and episode IDs. This makes explicit
+that the raw state is \((p,e,z)\), not \(z\) alone. Every fitted or scored pair
+holds \((p,e)\) fixed and varies only \(z\), so those one-hot blocks cancel;
+positive regularization below therefore sets their unidentified rows and
+columns to zero rather than allowing hidden presentation or episode effects.
+
+For each `(seed, split, p, e)` block, include all
+\(\binom{16}{2}=120\) unordered pairs of the sixteen registered points. Give
+each block equal total weight and every pair within a block equal weight:
+
+\[
+\omega_{ij}
+=
+\frac{1}{|\mathcal B_{\rm split}|\binom{16}{2}}.
+\]
+
+The manifest's `pair_id` is the canonical concatenation of seed, split,
+panel, permutation index, entity, state, template, and the two ordered point
+IDs; duplicate IDs or any pair whose two rows disagree on \((p,e)\) make C1b
+`INVALID — PAIR MANIFEST`.
+
+Let \(d_{ij}=d_C(u_i,u_j)\),
+\(\Delta_{ij}=\Phi(u_i)-\Phi(u_j)\), and
+\(X_{ij}=\Delta_{ij}\Delta_{ij}^{\top}\). Fit the unique regularized PSD form
+
+\[
+G_s^\star
+=
+\underset{G\succeq0}{\arg\min}
+\left\{
+\sum_{(i,j)\in\mathcal P_{\rm train}}
+\omega_{ij}
+\bigl(d_{ij}^2-\operatorname{tr}(GX_{ij})\bigr)^2
++10^{-6}\|G\|_F^2
+\right\}.
+\]
+
+Denote the displayed objective by \(f_s(G)\). The positive Frobenius term is
+the regularizer and deterministic tie-breaker.
+The optimizer is projected gradient descent from \(G_0=0\), with projection
+obtained by symmetrizing and clipping negative eigenvalues to zero. Use the
+fixed step \(1/L\), where
+
+\[
+L=2\sum_{(i,j)\in\mathcal P_{\rm train}}
+\omega_{ij}\|X_{ij}\|_F^2+2\times10^{-6}.
+\]
+
+Stop only after
+
+\[
+\frac{\|G_{k+1}-G_k\|_F}{\max(1,\|G_k\|_F)}\leq10^{-10}
+\quad\text{and}\quad
+\frac{|f_s(G_{k+1})-f_s(G_k)|}{\max(1,|f_s(G_k)|)}\leq10^{-12}
+\]
+
+for ten consecutive iterations, with a ceiling of 100,000 iterations.
+Nonconvergence is
+`INVALID — PSD OPTIMIZER`. Predict held-out response distances by
+
+\[
+\widehat d_s(u_i,u_j)
+=
+\sqrt{\Delta_{ij}^{\top}G_s^\star\Delta_{ij}}.
+\]
+
+If either the training or held-out denominator
+\(\sum\omega_{ij}d_{ij}^2\) is zero, C1b is
+`INVALID — DEGENERATE RESPONSE DISTANCE`. Otherwise the candidate proposition
+is
 
 \[
 \frac{
-\left(\sum_{\mathrm{heldout}}
-(d_C-\widehat d_s)^2\right)^{1/2}
+\left(\sum_{\mathcal P_{\rm heldout}}\omega_{ij}
+(d_{ij}-\widehat d_s(u_i,u_j))^2\right)^{1/2}
 }{
-\left(\sum_{\mathrm{heldout}}d_C^2\right)^{1/2}
+\left(\sum_{\mathcal P_{\rm heldout}}\omega_{ij}d_{ij}^2\right)^{1/2}
 }
 \leq0.10
 \]
@@ -9051,17 +9148,18 @@ held-out permutations; exact equality is diagnostic only.
 
 **Falsifier.** Held-out normalized stress above 0.10 in at least two seeds.
 
-This tests one presentation-independent Hilbert seminorm in the existing
-register chart. It does not test every seminorm. With only eight code writes,
-arbitrary-seminorm homogeneity and translation invariance are not identifiable;
-those would require scaled and translated register inputs to be declared
-legal.
+This tests one regularized Hilbert seminorm on within-episode register
+differences over the finite registered support. It does not establish an
+intrinsic or presentation-independent geometry outside that support and does
+not test every seminorm. With only eight code writes, arbitrary-seminorm
+homogeneity and translation invariance are not identifiable; those would
+require scaled and translated register inputs to be declared legal.
 
 **Expectation.** Descent passes as a theorem/harness certificate. Hilbert
 adequacy is genuinely open; the prior non-Voronoi finding does not imply its
 failure. The simplest confound is finite-point interpolation by an overly
-flexible PSD form; the training/held-out permutation split and seed spread are
-therefore mandatory.
+flexible PSD form; the locked episode/permutation split, explicit
+regularization, held-out stress, and seed spread are therefore mandatory.
 
 ### C2. Qwen restricted native response geometry — preregistered
 
@@ -9070,17 +9168,36 @@ therefore mandatory.
 Before any model forward pass, write and hash a manifest containing:
 
 - the exact three query strings below for every entity substitution;
-- tokenizer revision and chat-template/revision fields;
+- model `Qwen/Qwen3-1.7B-Base` at revision
+  `ea980cb0a6c2ae4b936e82123acc929f1cec04c1`, plus tokenizer revision and
+  chat-template/revision fields;
+- source config
+  `experiments/config/register_bridge_preflight_v1.json` at SHA-256
+  `c016f1acd74b3260c795d34a86c5f1dc4f151455e510eab44600da819f71f682`,
+  source rows `experiments/results/register_bridge_preflight_v1/run_rows.json`
+  at SHA-256
+  `519846614554b6f045038fee91498638f83957ff7fd0163781131f5f9e787095`,
+  and source result
+  `experiments/results/register_bridge_preflight_v1/run_result.json` at
+  SHA-256
+  `82179ba1837605f2858ba1654295ba892ce4ee4494a594f4d5b51f87ae73554f`;
 - token IDs for each complete prompt/query boundary;
 - token IDs for the intended single-token outcomes `0` through `7`;
 - the nine-outcome map from full-vocabulary token IDs to digits plus `other`;
-  and
-- the intact/destroyed pair ID, entity, template, permutation, record tag,
-  original state, and legend-denoted state for every row.
+- the intact/destroyed source-row ID, entity, template, permutation, record
+  tag, original state, and legend-denoted state for every row; and
+- a unique canonical `pair_id` for every same/different comparator and every
+  paired-reassigned margin unit. Each `pair_id` records the estimand
+  (`Delta` or `M`), entity, ordered template pair, every constituent source-row
+  ID and its role, query IDs, permutation IDs, literal tags, original states,
+  and legend-denoted states. The same/different members of a `Delta` unit must
+  agree on every manifest field not explicitly named as the denotation change.
 
 If any digit is not represented by the declared single token, any prompt is
 not prefix-aligned at the answer position, any intact/destroyed pairing is
-missing, or any row fails its denotation check, the check is
+missing, any `pair_id` is duplicated or incomplete, a comparator changes an
+undeclared factor, any pinned hash differs, or any row fails its denotation
+check, the check is
 `INVALID — TOKENIZATION/PAIR MANIFEST`. No forward pass runs and there is no
 same-check repair; a scientifically different design requires a new dialogue
 and preregistration.
@@ -9108,7 +9225,7 @@ D_{\sqrt{\mathrm{JS}}}(r(wx),r(wy)),
 
 using normalized square-root Jensen--Shannon distance.
 
-Form entity-clustered matched pairs for:
+Form only the manifest-bound entity-clustered matched pairs for:
 
 - same denotation across template and legend presentations;
 - different denotation with presentation factors matched; and
@@ -9140,7 +9257,10 @@ M_{t_i,t_j}
 ]
 \]
 
-on the paired-reassigned arm. The primary pooled propositions are
+on the paired-reassigned arm. Compute these terms from the full-vocabulary
+float32 `log_softmax` at the answer position, not by taking a logarithm after
+probability rounding or nine-outcome bucketing. The primary pooled
+propositions are
 
 \[
 \Delta>0
@@ -9149,20 +9269,45 @@ M>0.
 \]
 
 Report every per-template-pair estimate beside the pooled effect; pooling may
-not hide a sign reversal. Entity-clustered intervals are required.
+not hide wording concentration. For each estimand, compute each entity's mean
+over all of its pooled registered `pair_id` units first and average the 24
+entity means; repeat the same entity-first reduction within every ordered
+template-pair stratum. Use
+exactly 2,000 paired entity-cluster bootstrap replicates: sample 24 entity IDs
+with replacement using NumPy `PCG64` seed `2727`, carry all of each sampled
+entity's matched units together, and use percentile 2.5%/97.5% bounds. The
+manifest stores the ordered list of sampled entity-index vectors and its
+SHA-256 before any verdict is computed.
+
+The numeric wording-support rule uses all registered ordered template pairs
+
+\[
+\mathcal U=\{(t_i,t_j):t_i,t_j\in\{0,1,2,3\},\ i\ne j\},
+\qquad |\mathcal U|=12.
+\]
+
+It passes only if at least six pairs satisfy both
+\(\Delta_{t_i,t_j}>0\) and \(M_{t_i,t_j}>0\), and if, for every
+\(u\in\mathcal U\), the pooled point estimates recomputed after removing all
+units with wording pair \(u\) remain strictly positive for both \(\Delta\) and
+\(M\). These are point-estimate support checks beside, not substitutes for,
+the entity-clustered pooled intervals.
 
 **Falsifier.** The entity-clustered 95% lower bound is at or below zero for
-either pooled \(\Delta\) or pooled \(M\), or the template-pair table shows that
-the pooled sign is carried by only one wording pair. Then the tested native
-output geometry does not support legend-denoted places at a nontrivial
-resolution under these continuations; the preflight remains instrument-only.
+either pooled \(\Delta\) or pooled \(M\), or the numeric wording-support rule
+fails. Then the tested native output geometry does not support
+denotation-organized restricted response geometry under these continuations;
+the preflight remains instrument-only.
 
 Exact template passivity, \(d_Q(x,gx)=0\), is reported only as a diagnostic. A
 positive value is a witness against passivity for that rewrite and finite
 continuation family. A zero value does not prove \(d_\infty(x,gx)=0\).
 
-**Expectation.** Same-denotation pairs are closer than matched different-
-denotation pairs, and the reassigned response favors the newly denoted state.
+**Expectation.** The preregistered evidence criterion may be met if
+same-denotation pairs are closer than matched different-denotation pairs and
+the reassigned response favors the newly denoted state across the registered
+wording support.
+
 The simplest global confound is an explicit prompt-local dictionary lookup.
 That mechanism is compatible with the target prompt-world response law and
 therefore prevents any claim about a persistent residual state, storage, or a
