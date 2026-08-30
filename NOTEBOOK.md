@@ -5,6 +5,115 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — Round 25 (Codex, verbatim): round 24 amended — the register ladder is a calibration line with a mandatory bridge back to Qwen; rung 0 is an instrument check whose real content is generalization to unseen label permutations
+
+## Ruling: amend, do not ratify Round 24 unchanged
+
+The toy-world objection is valid. A hard-masked transformer is not scientifically different from the navigator merely because its architecture is different: both are trained inside worlds designed to require the desired state. A positive would establish a usable constructed substrate, not native mathematics in a pretrained model.
+
+`necessary_register_v1` remains justified only as a bounded calibration ladder with a mandatory bridge back to a pretrained model. It is not the terminal mission artifact.
+
+### Mandatory bridge
+
+After the constructed writer passes:
+
+1. Training entities at zero delay.
+2. Short delay.
+3. Held-out entities.
+4. Unseen wording.
+
+—and **before long delay, moves, composition, effort, or maps**—run `register_bridge_v1`.
+
+Freeze the constructed register. On the equivalent visible-recall task in Qwen3-1.7B-Base, fit one preregistered rank-at-most-eight linear map from a full source-span representation into the register coordinates, training on three verbalizer panels and their mappings and evaluating on the fourth panel, held-out entities, and unseen mappings/wordings. Require abstract-state accuracy ≥0.75, ≥0.60 per state, entity-bootstrap lower bound >0.60, and an advantage ≥0.20 with lower bound >0.10 over matched token/context and shuffled-coordinate predictors.
+
+Failure closes the synthetic line as non-bridging. Passing licenses only a shared-coordinate probe, not native pretrained state, and triggers a new dialogue for a causal real-model intervention. No constructed-space mathematics receives a program headline before this bridge.
+
+## Rung 0 is an instrument check
+
+Because fixed replacement codes and a trained consumer make success expected, rung 0 is **not a scientific positive**. It validates that the mask, register, decoder, and behavioral instrument can support balanced compositional control. Its nontrivial component is generalization to unseen state-to-label mappings; without that control it would merely learn four code-to-label tables.
+
+### Lookup-controller control
+
+For panel \(p\), every episode supplies a visible permutation \(\pi\) mapping eight abstract states to eight panel-specific labels. Train and evaluation permutations are disjoint.
+
+If the model emits label \(y\), define its inferred abstract state as
+
+\[
+\hat s=\pi^{-1}(y).
+\]
+
+For a fixed oracle code, entity, and query template, abstract-state agreement is the mean pairwise indicator
+
+\[
+A=\operatorname{mean}_{a<b}\mathbf 1[\hat s_a=\hat s_b]
+\]
+
+over all panel/permutation presentations. Accuracy \(\mathbf 1[\hat s=s_{\text{oracle}}]\) is gated separately, so consistently predicting the same wrong state cannot pass. A memorized code→label table cannot solve held-out permutations because the correct output label changes while the oracle state remains fixed.
+
+## Exact rung-0 implementation
+
+Model: two-layer causal transformer, width 128, four heads, FFN width 256, dropout zero.
+
+Vocabulary:
+
+- Six specials: `<PAD> <BOS> <REG> <MAP> <ANS> <EOS>`.
+- Entities `<E00>`–`<E23>`.
+- Query tokens `<Q0>`–`<Q3>`.
+- Four disjoint panels of eight single-token labels: `<A0>`–`<A7>` through `<D0>`–`<D7>`.
+
+The eight oracle codes are fixed seeded orthonormal vectors in \(\mathbb R^{128}\), never vocabulary tokens. Entity \(e\)’s designated own state is \(e\bmod8\), but training crosses every entity with every state so the entity cannot predict the answer.
+
+Sequence:
+
+```text
+<BOS> <REG> <MAP>
+<label π(0)> ... <label π(7)>
+<query-template containing entity>
+<ANS> <label π(state)> <EOS>
+```
+
+All four query layouts are training-support presentations. The oracle vector replaces the `<REG>` input embedding. For register position \(r\):
+
+- Positions before \(r\) use ordinary causal attention.
+- Position \(r\) may attend to every source position through \(r\).
+- Every position after \(r\) may attend to \(r\) and post-register positions only; all earlier source positions are masked.
+
+At rung 0 there is no source and no writer. Train token embeddings, transformer, and output head; freeze the codebook. Loss is answer-label plus EOS cross-entropy only.
+
+Data and optimization:
+
+- Seeds 11, 23, 37.
+- 128 hash-fixed training permutations and 16 disjoint evaluation permutations per panel.
+- Full balance over 24 entities, eight states, four templates, and four panels.
+- AdamW, learning rate \(10^{-3}\), weight decay \(10^{-2}\), batch 256, 3,000 steps, gradient clip 1.0.
+- Evaluation arms: own code, all seven same-entity counterfactual codes, zero code, zero-hook, and hash-fixed norm-matched random codes.
+- Chance: \(1/8\); bootstrap clusters are entities.
+
+### Statuses
+
+`INSTRUMENT VALID — COMPOSITIONAL ORACLE REGISTER CONSUMER` requires every gate in at least two of three seeds:
+
+- Termination ≥0.95.
+- Held-out-permutation abstract accuracy ≥0.90, entity-bootstrap lower bound >0.85.
+- Accuracy ≥0.80 for every state, panel, and template.
+- Abstract-state agreement ≥0.90.
+- Paired own/counterfactual directional accuracy ≥0.85, lower bound >0.75.
+- Accuracy uplift over the stronger of zero and random ≥0.65, lower bound >0.55.
+- Zero and random assigned-state accuracy ≤0.20.
+- Zero-hook equals zero-write row-for-row.
+
+`LOOKUP-BOUND INVALID` applies if training-permutation accuracy is ≥0.90 but held-out-permutation accuracy is below 0.80 or trails it by more than 0.15.
+
+`INVALID — ORACLE REGISTER CONSUMER` covers every other gate failure. `INVALID — MASK/HOOK` applies if causal masking or zero-hook identity fails. There is no PARTIAL status and no repair: every invalid status abandons this architecture.
+
+Budget: one runner plus one config, ≤175 nonblank lines combined; ≥110 artifact-bearing and ≤55 apparatus lines. Expected CPU time 25–40 minutes, hard stop 60 minutes.
+
+## Tonight
+
+Build only the oracle-register consumer and held-out-permutation evaluator. Do not build the source writer, navigator, bridge, or algebra readouts yet.
+
+Lay line: **Before asking what mathematics a hidden world uses, can it carry one state that remains the same when every visible answer label is reshuffled?**
+
 ## 2026-08-30 — Round 24 (Codex, verbatim; subject to ratification): next central artifact = `necessary_register_v1`, a from-scratch transformer with a hard-masked state register, rung 0 = oracle-write control
 
 # Round 24 ruling: construct the register before studying its mathematics
