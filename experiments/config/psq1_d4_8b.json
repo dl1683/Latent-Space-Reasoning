@@ -1,0 +1,34 @@
+{
+  "experiment": "psq1_d4_8b",
+  "description": "PSQ-1 full d_4 measurement on Qwen3-8B-Base (GPU). 43,648 forward passes + hidden state extraction + quasiconvexity + permutation null.",
+  "model_id": "Qwen/Qwen3-8B-Base",
+  "revision": null,
+  "device": "cuda",
+  "max_word_len": 4,
+  "checkpoint_every": 5000,
+  "target_layers": [9, 18, 27],
+  "world": {
+    "type": "two_dial",
+    "state_space": "Z_8 x Z_8",
+    "n_states": 64,
+    "actions": {
+      "A": "(x,y) -> ((x+1)%8, y)",
+      "B": "(x,y) -> ((-x)%8, y)",
+      "C": "(x,y) -> (x, (y+1)%8)",
+      "D": "(x,y) -> (x, (-y)%8)"
+    },
+    "observations": {
+      "is_x_zero": "x == 0",
+      "is_y_zero": "y == 0"
+    },
+    "H_star": 4,
+    "moore_refinement": [4, 9, 25, 49, 64]
+  },
+  "pass_criteria": {
+    "d4_separation": "All 64 states pairwise distinguishable (d_4 > 0)",
+    "quasiconvexity": "90th-percentile stretch delta_4/d_4 <= 2",
+    "vs_euclidean": ">=25% lower stretch than Euclidean geometry",
+    "vs_permutation": "Beat 99/100 permutations",
+    "source": "Codex PSQ-1 round 2 specification"
+  }
+}

@@ -278,7 +278,7 @@ def main():
     verdict = "CAPABILITY_PASS" if gate_pass else "NO_INTERFACE"
     print(f"Verdict: {verdict}")
 
-    out_dir = os.path.join(os.path.dirname(__file__), "results", "psq1_v1")
+    out_dir = os.path.join(os.path.dirname(__file__), "results", cfg.get("experiment", "psq1_v1"))
     os.makedirs(out_dir, exist_ok=True)
     out_path = os.path.join(out_dir, "capability_screen.json")
 

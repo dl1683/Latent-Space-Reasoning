@@ -1,0 +1,20 @@
+{
+  "experiment": "psq2_v2",
+  "description": "PSQ-2 v2: Class-balanced LoRA fine-tune with 1-3 step examples. Tests generalization to 4-8 step sequences. Fixes v1 class imbalance (87.5% of v1 training was answer=0).",
+  "model_id": "Qwen/Qwen3-1.7B-Base",
+  "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
+  "device": "cuda",
+  "lora_r": 16,
+  "lora_alpha": 32,
+  "epochs": 5,
+  "learning_rate": 3e-5,
+  "batch_size": 4,
+  "seed": 42,
+  "include_multistep_training": true,
+  "gate_n_per_cell": 32,
+  "gate_threshold": 0.95,
+  "gate_min_steps": 4,
+  "gate_max_steps": 8,
+  "scientific_question": "Does 1-3 step training generalize to 4-8 step compositional sequences?",
+  "v1_lesson": "v1 failed (60.2%) due to class imbalance (87.5% answer=0 in training) and no multi-step exposure"
+}

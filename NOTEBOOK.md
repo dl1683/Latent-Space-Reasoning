@@ -5,6 +5,32 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — PSQ-1 CLOSED (all substrates NO_INTERFACE) + PSQ-2 launched
+
+### PSQ-1 closure
+Three substrates tested, all fail the capability gate:
+- **Qwen3-1.7B-Base**: 50.0% (always predicts "1"). NO_INTERFACE.
+- **Qwen3-8B-Base**: 55.5% (same bias). NO_INTERFACE.
+- **Qwen3-8B-Instruct**: 50.0% with 4-shot, 64.1% with balanced 2-shot. NO_INTERFACE.
+
+**Root cause diagnostic**: Models cannot do modular wrap-around arithmetic (7+1=0 mod 8) from few-shot prompting. Instruct model passes 9/10 hand-picked diagnostics (including wrap-around) but fails the full 128-case screen with random 2-8 step sequences. The failure is specific to multi-step modular computation, not the presentation format. Prefix-answer bias dominates: 4-shot examples (3/4 answer "0") → model always predicts "1"; balanced 2-shot → model mostly predicts "0".
+
+**What was learned**: Current 1.7B-8B models cannot serve as PSQ substrates via few-shot prompting. The capability gate worked as designed — it correctly identifies substrates that pattern-match rather than track state. The two-dial world is a valid test environment but needs a model that can execute multi-step modular arithmetic.
+
+### Ground-truth geometry computed
+Two-dial world Z_8 x Z_8: diameter 8, Moore refinement [4,9,25,49,64] at H=0-4, confirming H*=4. Normalized Hamming d_4 has 15 distinct distances from origin (range 0.003-0.682). Graph-metric quasiconvexity: max R=2.0, mean R=1.036. Binary d_4 is trivially quasiconvex (constant 1 for all non-self pairs at H*=4; 1.2% violations from cycle-through-origin only).
+
+### PSQ-2 launched (fine-tuning approach)
+Design: LoRA fine-tune Qwen3-1.7B-Base on single-step two-dial transitions, test multi-step generalization.
+
+**v1 result (single-step training only)**: 60.2% overall, NO_INTERFACE. Model learned "not zero" bias (87.5% of training data has answer=0). Per-step degradation: 81.2% at 2-step → 40.0% at 8-step. Training converged (loss 0.082 → 0.005 over 3 epochs).
+
+**v2 in progress**: Class-balanced training with 1-3 step examples, test on 4-8 step sequences. Fixes v1 class imbalance.
+
+Runner: `experiments/run_psq2_finetune.py`. Configs: `experiments/config/psq2_v{1,2}.json`. d_4 measurement runner ready: `experiments/run_psq1_d4.py`.
+
+---
+
 ## 2026-08-30 — PSQ-1 design finalized (3-round Codex dialogue) + smoke attempt #7 failed
 
 ### Smoke attempt #7

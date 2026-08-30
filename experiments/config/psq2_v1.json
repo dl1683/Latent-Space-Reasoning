@@ -1,0 +1,36 @@
+{
+  "experiment": "psq2_v1",
+  "description": "PSQ-2 v1: LoRA fine-tune Qwen3-1.7B-Base on single-step two-dial transitions, then test multi-step generalization. Tests whether learned single-step dynamics induce multi-step latent geometry.",
+  "model_id": "Qwen/Qwen3-1.7B-Base",
+  "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
+  "device": "cuda",
+  "lora_r": 16,
+  "lora_alpha": 32,
+  "epochs": 3,
+  "learning_rate": 5e-5,
+  "batch_size": 4,
+  "seed": 42,
+  "include_multistep_training": false,
+  "gate_n_per_cell": 32,
+  "gate_threshold": 0.95,
+  "world": {
+    "type": "two_dial",
+    "state_space": "Z_8 x Z_8",
+    "n_states": 64,
+    "actions": {
+      "A": "(x,y) -> ((x+1)%8, y)",
+      "B": "(x,y) -> ((-x)%8, y)",
+      "C": "(x,y) -> (x, (y+1)%8)",
+      "D": "(x,y) -> (x, (-y)%8)"
+    },
+    "observations": {
+      "is_x_zero": "x == 0",
+      "is_y_zero": "y == 0"
+    },
+    "H_star": 4,
+    "moore_refinement": [4, 9, 25, 49, 64]
+  },
+  "scientific_question": "Does single-step LoRA fine-tuning induce multi-step compositional generalization? If the model learns A,B,C,D individually, can it compose them in sequences it never trained on?",
+  "success_criterion": ">=95% per-cell accuracy on 2-8 step sequences (never seen during training)",
+  "fallback": "If single-step training fails: psq2_v2 with 1-3 step training, test on 4-8 step"
+}

@@ -1,0 +1,2624 @@
+{
+  "experiment": "psq2_v1",
+  "model_id": "Qwen/Qwen3-1.7B-Base",
+  "verdict": "NO_INTERFACE",
+  "overall_accuracy": 0.6016,
+  "per_cell": {
+    "x_0": {
+      "total": 32,
+      "correct": 31,
+      "accuracy": 0.9688
+    },
+    "x_1": {
+      "total": 32,
+      "correct": 8,
+      "accuracy": 0.25
+    },
+    "y_0": {
+      "total": 32,
+      "correct": 32,
+      "accuracy": 1.0
+    },
+    "y_1": {
+      "total": 32,
+      "correct": 6,
+      "accuracy": 0.1875
+    }
+  },
+  "per_step_accuracy": {
+    "7": {
+      "total": 19,
+      "correct": 8,
+      "accuracy": 0.4211
+    },
+    "8": {
+      "total": 15,
+      "correct": 6,
+      "accuracy": 0.4
+    },
+    "2": {
+      "total": 16,
+      "correct": 13,
+      "accuracy": 0.8125
+    },
+    "4": {
+      "total": 22,
+      "correct": 16,
+      "accuracy": 0.7273
+    },
+    "3": {
+      "total": 20,
+      "correct": 13,
+      "accuracy": 0.65
+    },
+    "6": {
+      "total": 11,
+      "correct": 5,
+      "accuracy": 0.4545
+    },
+    "5": {
+      "total": 25,
+      "correct": 16,
+      "accuracy": 0.64
+    }
+  },
+  "gate_threshold": 0.95,
+  "training": {
+    "n_train_examples": 512,
+    "include_multistep": false,
+    "lora_r": 16,
+    "lora_alpha": 32,
+    "epochs": 3,
+    "lr": 5e-05,
+    "steps": 384,
+    "train_time_s": 781.6
+  },
+  "gate_mean_forward_time_s": 0.089,
+  "predictions": [
+    {
+      "init": [
+        3,
+        1
+      ],
+      "actions": [
+        "C",
+        "C",
+        "A",
+        "A",
+        "D",
+        "A",
+        "C"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.5312,
+      "logit_1": 28.1562,
+      "n_steps": 7
+    },
+    {
+      "init": [
+        2,
+        0
+      ],
+      "actions": [
+        "D",
+        "D",
+        "B",
+        "C",
+        "D",
+        "A",
+        "C",
+        "C"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.5469,
+      "logit_1": 27.5,
+      "n_steps": 8
+    },
+    {
+      "init": [
+        5,
+        0
+      ],
+      "actions": [
+        "B",
+        "B"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 30.9062,
+      "logit_1": 26.9062,
+      "n_steps": 2
+    },
+    {
+      "init": [
+        5,
+        1
+      ],
+      "actions": [
+        "A",
+        "B",
+        "C",
+        "C"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.7969,
+      "logit_1": 27.0938,
+      "n_steps": 4
+    },
+    {
+      "init": [
+        2,
+        2
+      ],
+      "actions": [
+        "B",
+        "B"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.0156,
+      "logit_1": 26.25,
+      "n_steps": 2
+    },
+    {
+      "init": [
+        4,
+        3
+      ],
+      "actions": [
+        "A",
+        "B",
+        "B",
+        "C",
+        "B",
+        "B",
+        "A"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.1875,
+      "logit_1": 28.5,
+      "n_steps": 7
+    },
+    {
+      "init": [
+        7,
+        5
+      ],
+      "actions": [
+        "C",
+        "B",
+        "B"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.0,
+      "logit_1": 27.9531,
+      "n_steps": 3
+    },
+    {
+      "init": [
+        1,
+        0
+      ],
+      "actions": [
+        "D",
+        "D",
+        "D",
+        "C",
+        "D",
+        "A"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.3594,
+      "logit_1": 27.3438,
+      "n_steps": 6
+    },
+    {
+      "init": [
+        7,
+        1
+      ],
+      "actions": [
+        "A",
+        "B",
+        "A",
+        "A",
+        "A",
+        "D",
+        "B"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 30.75,
+      "logit_1": 29.2344,
+      "n_steps": 7
+    },
+    {
+      "init": [
+        2,
+        5
+      ],
+      "actions": [
+        "D",
+        "D",
+        "D"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 32.4375,
+      "logit_1": 25.0156,
+      "n_steps": 3
+    },
+    {
+      "init": [
+        4,
+        4
+      ],
+      "actions": [
+        "A",
+        "C",
+        "D"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.9062,
+      "logit_1": 25.9062,
+      "n_steps": 3
+    },
+    {
+      "init": [
+        3,
+        7
+      ],
+      "actions": [
+        "D",
+        "A",
+        "A",
+        "B"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 30.9688,
+      "logit_1": 28.3281,
+      "n_steps": 4
+    },
+    {
+      "init": [
+        6,
+        4
+      ],
+      "actions": [
+        "D",
+        "C",
+        "B",
+        "B",
+        "D"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.5312,
+      "logit_1": 28.3594,
+      "n_steps": 5
+    },
+    {
+      "init": [
+        3,
+        1
+      ],
+      "actions": [
+        "D",
+        "B",
+        "B"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 30.8438,
+      "logit_1": 27.8125,
+      "n_steps": 3
+    },
+    {
+      "init": [
+        1,
+        5
+      ],
+      "actions": [
+        "D",
+        "B",
+        "B",
+        "D",
+        "C"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.4844,
+      "logit_1": 27.5,
+      "n_steps": 5
+    },
+    {
+      "init": [
+        0,
+        5
+      ],
+      "actions": [
+        "D",
+        "A",
+        "C",
+        "D",
+        "C",
+        "C",
+        "D"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.3906,
+      "logit_1": 29.5469,
+      "n_steps": 7
+    },
+    {
+      "init": [
+        4,
+        2
+      ],
+      "actions": [
+        "A",
+        "D",
+        "D",
+        "B",
+        "D"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.7812,
+      "logit_1": 27.2344,
+      "n_steps": 5
+    },
+    {
+      "init": [
+        4,
+        2
+      ],
+      "actions": [
+        "C",
+        "B",
+        "A",
+        "C",
+        "C"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.6562,
+      "logit_1": 27.2188,
+      "n_steps": 5
+    },
+    {
+      "init": [
+        5,
+        7
+      ],
+      "actions": [
+        "B",
+        "D",
+        "D",
+        "A",
+        "B",
+        "A"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.1875,
+      "logit_1": 28.1094,
+      "n_steps": 6
+    },
+    {
+      "init": [
+        1,
+        0
+      ],
+      "actions": [
+        "D",
+        "C",
+        "D",
+        "C",
+        "C"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 32.25,
+      "logit_1": 25.75,
+      "n_steps": 5
+    },
+    {
+      "init": [
+        2,
+        7
+      ],
+      "actions": [
+        "C",
+        "A"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.7656,
+      "logit_1": 26.0312,
+      "n_steps": 2
+    },
+    {
+      "init": [
+        0,
+        5
+      ],
+      "actions": [
+        "B",
+        "A",
+        "D"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 1,
+      "correct": false,
+      "logit_0": 29.5938,
+      "logit_1": 30.4688,
+      "n_steps": 3
+    },
+    {
+      "init": [
+        1,
+        3
+      ],
+      "actions": [
+        "C",
+        "C"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 32.3438,
+      "logit_1": 25.5781,
+      "n_steps": 2
+    },
+    {
+      "init": [
+        3,
+        4
+      ],
+      "actions": [
+        "C",
+        "D"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 32.625,
+      "logit_1": 25.25,
+      "n_steps": 2
+    },
+    {
+      "init": [
+        1,
+        3
+      ],
+      "actions": [
+        "B",
+        "C"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.3906,
+      "logit_1": 24.8438,
+      "n_steps": 2
+    },
+    {
+      "init": [
+        2,
+        4
+      ],
+      "actions": [
+        "D",
+        "A",
+        "D",
+        "A"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.8438,
+      "logit_1": 27.1406,
+      "n_steps": 4
+    },
+    {
+      "init": [
+        2,
+        1
+      ],
+      "actions": [
+        "B",
+        "D",
+        "A",
+        "D"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.6875,
+      "logit_1": 26.9688,
+      "n_steps": 4
+    },
+    {
+      "init": [
+        0,
+        4
+      ],
+      "actions": [
+        "D",
+        "A",
+        "A",
+        "A"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 30.8438,
+      "logit_1": 28.3125,
+      "n_steps": 4
+    },
+    {
+      "init": [
+        3,
+        6
+      ],
+      "actions": [
+        "B",
+        "D",
+        "D",
+        "A",
+        "B",
+        "B",
+        "D",
+        "C"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.5625,
+      "logit_1": 28.125,
+      "n_steps": 8
+    },
+    {
+      "init": [
+        2,
+        4
+      ],
+      "actions": [
+        "C",
+        "B",
+        "C",
+        "C"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.6719,
+      "logit_1": 26.6875,
+      "n_steps": 4
+    },
+    {
+      "init": [
+        0,
+        7
+      ],
+      "actions": [
+        "A",
+        "C",
+        "A",
+        "C",
+        "D",
+        "A",
+        "A",
+        "C"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.2031,
+      "logit_1": 29.125,
+      "n_steps": 8
+    },
+    {
+      "init": [
+        6,
+        6
+      ],
+      "actions": [
+        "B",
+        "B",
+        "B",
+        "B",
+        "A",
+        "B"
+      ],
+      "channel": "x",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.1094,
+      "logit_1": 28.8594,
+      "n_steps": 6
+    },
+    {
+      "init": [
+        7,
+        2
+      ],
+      "actions": [
+        "C",
+        "C",
+        "C",
+        "C",
+        "A"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.6094,
+      "logit_1": 28.2812,
+      "n_steps": 5
+    },
+    {
+      "init": [
+        1,
+        4
+      ],
+      "actions": [
+        "B",
+        "A",
+        "D"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.4844,
+      "logit_1": 26.7188,
+      "n_steps": 3
+    },
+    {
+      "init": [
+        0,
+        5
+      ],
+      "actions": [
+        "D",
+        "B",
+        "C"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.1094,
+      "logit_1": 29.4688,
+      "n_steps": 3
+    },
+    {
+      "init": [
+        6,
+        7
+      ],
+      "actions": [
+        "A",
+        "C",
+        "C",
+        "B",
+        "B",
+        "C",
+        "A",
+        "D"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.5625,
+      "logit_1": 28.3906,
+      "n_steps": 8
+    },
+    {
+      "init": [
+        7,
+        3
+      ],
+      "actions": [
+        "C",
+        "A",
+        "C",
+        "B",
+        "B"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.0,
+      "logit_1": 28.4219,
+      "n_steps": 5
+    },
+    {
+      "init": [
+        2,
+        3
+      ],
+      "actions": [
+        "C",
+        "A",
+        "B",
+        "A",
+        "A",
+        "D",
+        "A"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.375,
+      "logit_1": 28.2344,
+      "n_steps": 7
+    },
+    {
+      "init": [
+        0,
+        3
+      ],
+      "actions": [
+        "C",
+        "D",
+        "D"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 1,
+      "correct": true,
+      "logit_0": 26.375,
+      "logit_1": 31.9688,
+      "n_steps": 3
+    },
+    {
+      "init": [
+        2,
+        7
+      ],
+      "actions": [
+        "D",
+        "B",
+        "A",
+        "C",
+        "A",
+        "B",
+        "D"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.6562,
+      "logit_1": 28.6875,
+      "n_steps": 7
+    },
+    {
+      "init": [
+        0,
+        3
+      ],
+      "actions": [
+        "C",
+        "B",
+        "C",
+        "B",
+        "C",
+        "D"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 30.5781,
+      "logit_1": 30.2188,
+      "n_steps": 6
+    },
+    {
+      "init": [
+        0,
+        0
+      ],
+      "actions": [
+        "B",
+        "D",
+        "B",
+        "D",
+        "B"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 1,
+      "correct": true,
+      "logit_0": 28.3594,
+      "logit_1": 30.4688,
+      "n_steps": 5
+    },
+    {
+      "init": [
+        7,
+        0
+      ],
+      "actions": [
+        "A",
+        "C",
+        "B",
+        "B",
+        "C",
+        "D",
+        "C"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.5781,
+      "logit_1": 28.5781,
+      "n_steps": 7
+    },
+    {
+      "init": [
+        0,
+        2
+      ],
+      "actions": [
+        "C",
+        "C"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 1,
+      "correct": true,
+      "logit_0": 26.2031,
+      "logit_1": 31.9688,
+      "n_steps": 2
+    },
+    {
+      "init": [
+        5,
+        0
+      ],
+      "actions": [
+        "A",
+        "A",
+        "A"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.3438,
+      "logit_1": 27.5156,
+      "n_steps": 3
+    },
+    {
+      "init": [
+        0,
+        7
+      ],
+      "actions": [
+        "B",
+        "B",
+        "D",
+        "B"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 1,
+      "correct": true,
+      "logit_0": 28.5156,
+      "logit_1": 30.1562,
+      "n_steps": 4
+    },
+    {
+      "init": [
+        7,
+        3
+      ],
+      "actions": [
+        "D",
+        "A"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.3438,
+      "logit_1": 26.9062,
+      "n_steps": 2
+    },
+    {
+      "init": [
+        0,
+        2
+      ],
+      "actions": [
+        "C",
+        "C",
+        "C",
+        "C"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 1,
+      "correct": true,
+      "logit_0": 26.9062,
+      "logit_1": 31.7812,
+      "n_steps": 4
+    },
+    {
+      "init": [
+        7,
+        3
+      ],
+      "actions": [
+        "D",
+        "A",
+        "D",
+        "C",
+        "B",
+        "B",
+        "C"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.5,
+      "logit_1": 28.8594,
+      "n_steps": 7
+    },
+    {
+      "init": [
+        0,
+        6
+      ],
+      "actions": [
+        "C",
+        "B",
+        "C",
+        "C",
+        "D"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 1,
+      "correct": true,
+      "logit_0": 29.8438,
+      "logit_1": 30.5312,
+      "n_steps": 5
+    },
+    {
+      "init": [
+        6,
+        0
+      ],
+      "actions": [
+        "C",
+        "A",
+        "D",
+        "A",
+        "B",
+        "C"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.5625,
+      "logit_1": 28.125,
+      "n_steps": 6
+    },
+    {
+      "init": [
+        7,
+        6
+      ],
+      "actions": [
+        "A",
+        "C"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 1,
+      "correct": true,
+      "logit_0": 29.6406,
+      "logit_1": 31.8594,
+      "n_steps": 2
+    },
+    {
+      "init": [
+        7,
+        7
+      ],
+      "actions": [
+        "D",
+        "D",
+        "A",
+        "C",
+        "D"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.7188,
+      "logit_1": 28.3594,
+      "n_steps": 5
+    },
+    {
+      "init": [
+        7,
+        7
+      ],
+      "actions": [
+        "A",
+        "D",
+        "B",
+        "C"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.4531,
+      "logit_1": 29.125,
+      "n_steps": 4
+    },
+    {
+      "init": [
+        0,
+        1
+      ],
+      "actions": [
+        "C",
+        "B",
+        "B",
+        "A",
+        "D",
+        "B",
+        "A",
+        "D"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 30.9219,
+      "logit_1": 29.6562,
+      "n_steps": 8
+    },
+    {
+      "init": [
+        7,
+        1
+      ],
+      "actions": [
+        "D",
+        "D",
+        "B",
+        "A",
+        "B",
+        "A",
+        "C",
+        "A"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.1406,
+      "logit_1": 28.7969,
+      "n_steps": 8
+    },
+    {
+      "init": [
+        2,
+        7
+      ],
+      "actions": [
+        "B",
+        "B",
+        "C",
+        "B",
+        "A",
+        "A",
+        "C",
+        "D"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.4531,
+      "logit_1": 28.2969,
+      "n_steps": 8
+    },
+    {
+      "init": [
+        1,
+        0
+      ],
+      "actions": [
+        "D",
+        "B",
+        "D",
+        "C",
+        "D",
+        "A"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.4375,
+      "logit_1": 27.4531,
+      "n_steps": 6
+    },
+    {
+      "init": [
+        7,
+        5
+      ],
+      "actions": [
+        "C",
+        "D",
+        "C",
+        "A",
+        "B"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.0781,
+      "logit_1": 27.8906,
+      "n_steps": 5
+    },
+    {
+      "init": [
+        3,
+        1
+      ],
+      "actions": [
+        "B",
+        "A",
+        "A",
+        "A",
+        "D"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.2969,
+      "logit_1": 27.7812,
+      "n_steps": 5
+    },
+    {
+      "init": [
+        7,
+        3
+      ],
+      "actions": [
+        "A",
+        "B"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 30.6875,
+      "logit_1": 26.5312,
+      "n_steps": 2
+    },
+    {
+      "init": [
+        0,
+        5
+      ],
+      "actions": [
+        "A",
+        "D",
+        "B",
+        "A",
+        "D",
+        "D",
+        "C"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.3906,
+      "logit_1": 28.7344,
+      "n_steps": 7
+    },
+    {
+      "init": [
+        0,
+        7
+      ],
+      "actions": [
+        "C",
+        "B",
+        "B",
+        "D"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 1,
+      "correct": true,
+      "logit_0": 29.9062,
+      "logit_1": 29.9375,
+      "n_steps": 4
+    },
+    {
+      "init": [
+        5,
+        2
+      ],
+      "actions": [
+        "C",
+        "A",
+        "A",
+        "C",
+        "A",
+        "C",
+        "B"
+      ],
+      "channel": "x",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.1406,
+      "logit_1": 28.2344,
+      "n_steps": 7
+    },
+    {
+      "init": [
+        7,
+        2
+      ],
+      "actions": [
+        "C",
+        "C",
+        "C",
+        "C",
+        "A"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.3281,
+      "logit_1": 28.5469,
+      "n_steps": 5
+    },
+    {
+      "init": [
+        1,
+        4
+      ],
+      "actions": [
+        "B",
+        "A",
+        "D"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 32.2188,
+      "logit_1": 27.1406,
+      "n_steps": 3
+    },
+    {
+      "init": [
+        3,
+        1
+      ],
+      "actions": [
+        "C",
+        "C",
+        "A",
+        "A",
+        "D",
+        "A",
+        "C"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.6562,
+      "logit_1": 28.3125,
+      "n_steps": 7
+    },
+    {
+      "init": [
+        2,
+        0
+      ],
+      "actions": [
+        "D",
+        "D",
+        "B",
+        "C",
+        "D",
+        "A",
+        "C",
+        "C"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.3281,
+      "logit_1": 29.7344,
+      "n_steps": 8
+    },
+    {
+      "init": [
+        5,
+        1
+      ],
+      "actions": [
+        "A",
+        "B",
+        "C",
+        "C"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.9688,
+      "logit_1": 28.5938,
+      "n_steps": 4
+    },
+    {
+      "init": [
+        2,
+        2
+      ],
+      "actions": [
+        "B",
+        "B"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 32.3438,
+      "logit_1": 24.9375,
+      "n_steps": 2
+    },
+    {
+      "init": [
+        4,
+        3
+      ],
+      "actions": [
+        "A",
+        "B",
+        "B",
+        "C",
+        "B",
+        "B",
+        "A"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 32.4062,
+      "logit_1": 26.9375,
+      "n_steps": 7
+    },
+    {
+      "init": [
+        7,
+        5
+      ],
+      "actions": [
+        "C",
+        "B",
+        "B"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.7969,
+      "logit_1": 28.625,
+      "n_steps": 3
+    },
+    {
+      "init": [
+        1,
+        0
+      ],
+      "actions": [
+        "D",
+        "D",
+        "D",
+        "C",
+        "D",
+        "A"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.0781,
+      "logit_1": 30.1406,
+      "n_steps": 6
+    },
+    {
+      "init": [
+        7,
+        1
+      ],
+      "actions": [
+        "A",
+        "B",
+        "A",
+        "A",
+        "A",
+        "D",
+        "B"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.9375,
+      "logit_1": 29.5625,
+      "n_steps": 7
+    },
+    {
+      "init": [
+        2,
+        5
+      ],
+      "actions": [
+        "D",
+        "D",
+        "D"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.1094,
+      "logit_1": 27.6562,
+      "n_steps": 3
+    },
+    {
+      "init": [
+        0,
+        5
+      ],
+      "actions": [
+        "D",
+        "B",
+        "C"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.7188,
+      "logit_1": 28.1875,
+      "n_steps": 3
+    },
+    {
+      "init": [
+        4,
+        4
+      ],
+      "actions": [
+        "A",
+        "C",
+        "D"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 30.9219,
+      "logit_1": 26.8125,
+      "n_steps": 3
+    },
+    {
+      "init": [
+        3,
+        7
+      ],
+      "actions": [
+        "D",
+        "A",
+        "A",
+        "B"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.5312,
+      "logit_1": 27.7188,
+      "n_steps": 4
+    },
+    {
+      "init": [
+        6,
+        7
+      ],
+      "actions": [
+        "A",
+        "C",
+        "C",
+        "B",
+        "B",
+        "C",
+        "A",
+        "D"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 32.0625,
+      "logit_1": 29.4062,
+      "n_steps": 8
+    },
+    {
+      "init": [
+        6,
+        4
+      ],
+      "actions": [
+        "D",
+        "C",
+        "B",
+        "B",
+        "D"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.6875,
+      "logit_1": 29.0,
+      "n_steps": 5
+    },
+    {
+      "init": [
+        3,
+        1
+      ],
+      "actions": [
+        "D",
+        "B",
+        "B"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.1562,
+      "logit_1": 27.2812,
+      "n_steps": 3
+    },
+    {
+      "init": [
+        1,
+        5
+      ],
+      "actions": [
+        "D",
+        "B",
+        "B",
+        "D",
+        "C"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.9375,
+      "logit_1": 28.6875,
+      "n_steps": 5
+    },
+    {
+      "init": [
+        0,
+        5
+      ],
+      "actions": [
+        "D",
+        "A",
+        "C",
+        "D",
+        "C",
+        "C",
+        "D"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.4688,
+      "logit_1": 29.4219,
+      "n_steps": 7
+    },
+    {
+      "init": [
+        7,
+        3
+      ],
+      "actions": [
+        "C",
+        "A",
+        "C",
+        "B",
+        "B"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 32.0,
+      "logit_1": 28.9844,
+      "n_steps": 5
+    },
+    {
+      "init": [
+        4,
+        2
+      ],
+      "actions": [
+        "A",
+        "D",
+        "D",
+        "B",
+        "D"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.5469,
+      "logit_1": 29.5938,
+      "n_steps": 5
+    },
+    {
+      "init": [
+        4,
+        2
+      ],
+      "actions": [
+        "C",
+        "B",
+        "A",
+        "C",
+        "C"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.6562,
+      "logit_1": 28.6094,
+      "n_steps": 5
+    },
+    {
+      "init": [
+        5,
+        7
+      ],
+      "actions": [
+        "B",
+        "D",
+        "D",
+        "A",
+        "B",
+        "A"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 32.0312,
+      "logit_1": 28.4688,
+      "n_steps": 6
+    },
+    {
+      "init": [
+        1,
+        0
+      ],
+      "actions": [
+        "D",
+        "C",
+        "D",
+        "C",
+        "C"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 30.8906,
+      "logit_1": 28.75,
+      "n_steps": 5
+    },
+    {
+      "init": [
+        0,
+        5
+      ],
+      "actions": [
+        "B",
+        "A",
+        "D"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 32.25,
+      "logit_1": 27.3594,
+      "n_steps": 3
+    },
+    {
+      "init": [
+        1,
+        3
+      ],
+      "actions": [
+        "C",
+        "C"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.6562,
+      "logit_1": 27.2656,
+      "n_steps": 2
+    },
+    {
+      "init": [
+        3,
+        4
+      ],
+      "actions": [
+        "C",
+        "D"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 30.7188,
+      "logit_1": 26.2188,
+      "n_steps": 2
+    },
+    {
+      "init": [
+        1,
+        3
+      ],
+      "actions": [
+        "B",
+        "C"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 32.5312,
+      "logit_1": 28.1562,
+      "n_steps": 2
+    },
+    {
+      "init": [
+        2,
+        4
+      ],
+      "actions": [
+        "D",
+        "A",
+        "D",
+        "A"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.375,
+      "logit_1": 27.1875,
+      "n_steps": 4
+    },
+    {
+      "init": [
+        2,
+        1
+      ],
+      "actions": [
+        "B",
+        "D",
+        "A",
+        "D"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.8594,
+      "logit_1": 29.4844,
+      "n_steps": 4
+    },
+    {
+      "init": [
+        0,
+        4
+      ],
+      "actions": [
+        "D",
+        "A",
+        "A",
+        "A"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.5156,
+      "logit_1": 27.125,
+      "n_steps": 4
+    },
+    {
+      "init": [
+        3,
+        6
+      ],
+      "actions": [
+        "B",
+        "D",
+        "D",
+        "A",
+        "B",
+        "B",
+        "D",
+        "C"
+      ],
+      "channel": "y",
+      "truth": 0,
+      "predicted": 0,
+      "correct": true,
+      "logit_0": 31.8438,
+      "logit_1": 29.0,
+      "n_steps": 8
+    },
+    {
+      "init": [
+        5,
+        0
+      ],
+      "actions": [
+        "B",
+        "B"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 1,
+      "correct": true,
+      "logit_0": 27.6562,
+      "logit_1": 32.0312,
+      "n_steps": 2
+    },
+    {
+      "init": [
+        2,
+        7
+      ],
+      "actions": [
+        "C",
+        "A"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.7812,
+      "logit_1": 29.375,
+      "n_steps": 2
+    },
+    {
+      "init": [
+        0,
+        7
+      ],
+      "actions": [
+        "A",
+        "C",
+        "A",
+        "C",
+        "D",
+        "A",
+        "A",
+        "C"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.6094,
+      "logit_1": 28.1719,
+      "n_steps": 8
+    },
+    {
+      "init": [
+        3,
+        0
+      ],
+      "actions": [
+        "A",
+        "A",
+        "D",
+        "D",
+        "D",
+        "D",
+        "A"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.1094,
+      "logit_1": 29.8281,
+      "n_steps": 7
+    },
+    {
+      "init": [
+        0,
+        0
+      ],
+      "actions": [
+        "B",
+        "D",
+        "B",
+        "D",
+        "B"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 1,
+      "correct": true,
+      "logit_0": 30.3438,
+      "logit_1": 31.0469,
+      "n_steps": 5
+    },
+    {
+      "init": [
+        4,
+        0
+      ],
+      "actions": [
+        "D",
+        "A",
+        "D",
+        "B",
+        "B"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 1,
+      "correct": true,
+      "logit_0": 29.2188,
+      "logit_1": 31.0938,
+      "n_steps": 5
+    },
+    {
+      "init": [
+        0,
+        6
+      ],
+      "actions": [
+        "A",
+        "B",
+        "C",
+        "C",
+        "D",
+        "B"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.8438,
+      "logit_1": 29.8281,
+      "n_steps": 6
+    },
+    {
+      "init": [
+        2,
+        5
+      ],
+      "actions": [
+        "B",
+        "C",
+        "C",
+        "C"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.4844,
+      "logit_1": 28.75,
+      "n_steps": 4
+    },
+    {
+      "init": [
+        6,
+        6
+      ],
+      "actions": [
+        "A",
+        "C",
+        "C"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.5781,
+      "logit_1": 28.625,
+      "n_steps": 3
+    },
+    {
+      "init": [
+        3,
+        0
+      ],
+      "actions": [
+        "A",
+        "A",
+        "C",
+        "D",
+        "A",
+        "C",
+        "B"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.5938,
+      "logit_1": 29.7031,
+      "n_steps": 7
+    },
+    {
+      "init": [
+        5,
+        0
+      ],
+      "actions": [
+        "A",
+        "A",
+        "A"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 1,
+      "correct": true,
+      "logit_0": 27.5,
+      "logit_1": 31.9062,
+      "n_steps": 3
+    },
+    {
+      "init": [
+        7,
+        7
+      ],
+      "actions": [
+        "C",
+        "B",
+        "A"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.4531,
+      "logit_1": 29.3281,
+      "n_steps": 3
+    },
+    {
+      "init": [
+        6,
+        4
+      ],
+      "actions": [
+        "B",
+        "C",
+        "C",
+        "A",
+        "C",
+        "A",
+        "C"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 32.125,
+      "logit_1": 29.4375,
+      "n_steps": 7
+    },
+    {
+      "init": [
+        6,
+        0
+      ],
+      "actions": [
+        "C",
+        "A",
+        "D",
+        "A",
+        "B",
+        "C"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.25,
+      "logit_1": 29.7344,
+      "n_steps": 6
+    },
+    {
+      "init": [
+        0,
+        1
+      ],
+      "actions": [
+        "D",
+        "C",
+        "A",
+        "B",
+        "A",
+        "B",
+        "B",
+        "A"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.8594,
+      "logit_1": 29.2188,
+      "n_steps": 8
+    },
+    {
+      "init": [
+        6,
+        0
+      ],
+      "actions": [
+        "C",
+        "B",
+        "D",
+        "A",
+        "C"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.2969,
+      "logit_1": 29.625,
+      "n_steps": 5
+    },
+    {
+      "init": [
+        7,
+        7
+      ],
+      "actions": [
+        "D",
+        "D",
+        "A",
+        "C",
+        "D"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.2344,
+      "logit_1": 29.8125,
+      "n_steps": 5
+    },
+    {
+      "init": [
+        3,
+        6
+      ],
+      "actions": [
+        "C",
+        "C",
+        "A",
+        "B"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.5781,
+      "logit_1": 28.4688,
+      "n_steps": 4
+    },
+    {
+      "init": [
+        1,
+        0
+      ],
+      "actions": [
+        "A",
+        "B",
+        "B",
+        "B"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 1,
+      "correct": true,
+      "logit_0": 28.3906,
+      "logit_1": 32.0625,
+      "n_steps": 4
+    },
+    {
+      "init": [
+        2,
+        7
+      ],
+      "actions": [
+        "C",
+        "B",
+        "B"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.7188,
+      "logit_1": 29.9531,
+      "n_steps": 3
+    },
+    {
+      "init": [
+        0,
+        6
+      ],
+      "actions": [
+        "B",
+        "C",
+        "C",
+        "A",
+        "A"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 32.0938,
+      "logit_1": 29.4531,
+      "n_steps": 5
+    },
+    {
+      "init": [
+        0,
+        6
+      ],
+      "actions": [
+        "C",
+        "B",
+        "D",
+        "A",
+        "D",
+        "A",
+        "C"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.9688,
+      "logit_1": 29.4531,
+      "n_steps": 7
+    },
+    {
+      "init": [
+        2,
+        6
+      ],
+      "actions": [
+        "A",
+        "A",
+        "C",
+        "C",
+        "A",
+        "A",
+        "A",
+        "B"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 32.0938,
+      "logit_1": 28.125,
+      "n_steps": 8
+    },
+    {
+      "init": [
+        6,
+        6
+      ],
+      "actions": [
+        "C",
+        "A",
+        "B",
+        "D",
+        "A",
+        "B",
+        "D",
+        "C"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.6094,
+      "logit_1": 29.375,
+      "n_steps": 8
+    },
+    {
+      "init": [
+        1,
+        7
+      ],
+      "actions": [
+        "C",
+        "A",
+        "B",
+        "A"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.8438,
+      "logit_1": 29.9062,
+      "n_steps": 4
+    },
+    {
+      "init": [
+        7,
+        7
+      ],
+      "actions": [
+        "D",
+        "B",
+        "D",
+        "C",
+        "A",
+        "B",
+        "D",
+        "D"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.4375,
+      "logit_1": 30.3125,
+      "n_steps": 8
+    },
+    {
+      "init": [
+        0,
+        7
+      ],
+      "actions": [
+        "C",
+        "B",
+        "B",
+        "D"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.6406,
+      "logit_1": 28.9531,
+      "n_steps": 4
+    },
+    {
+      "init": [
+        4,
+        6
+      ],
+      "actions": [
+        "C",
+        "B",
+        "C",
+        "A"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.9688,
+      "logit_1": 28.5469,
+      "n_steps": 4
+    },
+    {
+      "init": [
+        5,
+        7
+      ],
+      "actions": [
+        "B",
+        "A",
+        "B",
+        "C",
+        "D"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 32.0625,
+      "logit_1": 28.2031,
+      "n_steps": 5
+    },
+    {
+      "init": [
+        2,
+        0
+      ],
+      "actions": [
+        "D",
+        "B",
+        "A",
+        "A"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 1,
+      "correct": true,
+      "logit_0": 28.5312,
+      "logit_1": 31.375,
+      "n_steps": 4
+    },
+    {
+      "init": [
+        6,
+        0
+      ],
+      "actions": [
+        "D",
+        "C",
+        "B",
+        "B",
+        "A",
+        "D",
+        "C"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.3594,
+      "logit_1": 30.4531,
+      "n_steps": 7
+    },
+    {
+      "init": [
+        3,
+        2
+      ],
+      "actions": [
+        "D",
+        "C",
+        "A",
+        "C",
+        "A",
+        "B"
+      ],
+      "channel": "y",
+      "truth": 1,
+      "predicted": 0,
+      "correct": false,
+      "logit_0": 31.7656,
+      "logit_1": 28.4531,
+      "n_steps": 6
+    }
+  ],
+  "runner_sha256": "a4c2e8c3e2d157351864f36efe5323cb1903ea0201b0eaad4aaf66861342a987"
+}
