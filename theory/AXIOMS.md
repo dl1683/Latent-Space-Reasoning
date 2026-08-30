@@ -88,8 +88,10 @@ C2 in `theory/EXPERIMENTS.md` were retired unrun in round 37: C1 is a
 synthetic-consumer check; C2's query strings and several controls are carried
 forward, but its entity-by-state factorial coverage is not. C2 was retired by
 allocation, not by full mathematical subsumption. Audit #43 ruled the proposed
-intervention-bearing `native_horizon_v1` REVISE with NO COMPUTE; its corrected
-preregistration remains unauthorized pending lock-readiness audit #44.
+intervention-bearing `native_horizon_v1` REVISE with NO COMPUTE. Round 38
+applied the corrections but ruled that the artifact does not run; its
+lock-readiness audit is deferred until the finite-access and surgeon-world
+mathematics below is audited and an artifact is judged worth locking.
 
 ### D1. Raw presented transition world — definition
 
@@ -910,7 +912,7 @@ the problem is epistemic: those theories commonly start with a supplied
 transition system, whereas a denizen must construct a usable map of unexecuted
 futures from finite local access.
 
-## Extension: language-model prompt worlds (proposed, rounds 37-38; audit #43 corrections applied; pending lock-readiness audit #44)
+## Extension: language-model prompt worlds (proposed, rounds 37-38; audit #43 corrections applied; execution not queued)
 
 This extension specializes the adopted foundation to prompt strings and keeps
 three structures separate: append continuations define future-response places;
@@ -1133,6 +1135,320 @@ words of token length at most \(N-1\) (or the channel-tightened bound). A
 horizon-\(2\) query table can witness place change and can falsify target
 identity, but cannot certify either full distance unless it also supplies a
 response-completeness certificate for every unmeasured branch.
+
+## Asymmetry of finite access and surgeon worlds (proposed, round 39; pending audit #44)
+
+This extension separates two questions that the prompt-only formulation had
+conflated. First, what can finite response access establish about the exact
+future-response metric? Second, how can an analyst's hidden-state edit be
+compared honestly with moves and outputs available to a denizen? Theorem 7 is
+a standard finite-trace/coinductive asymmetry; no novelty is claimed. D9 and
+Theorem 8 add an analyst, called the surgeon, without promoting the surgeon's
+edit to a denizen move.
+
+### Theorem 7. Asymmetry of finite response access — proved
+
+For nonempty finite registered sets \(W_0\subset\mathcal W\) and
+\(C_0\subset C\), define the restricted distance
+
+\[
+d_{W_0,C_0}(x,y)
+=
+\max_{\substack{w\in W_0\\c\in C_0}}
+D_c(r_c(T_wx),r_c(T_wy)).
+\]
+
+In every world satisfying D1--D4:
+
+1. **Restricted access gives a lower bound:**
+   \[
+   d_{W_0,C_0}(x,y)\leq d_\infty(x,y).
+   \]
+2. **Nonidentity is finitely witnessable.** If \(d_\infty(x,y)>0\), then
+   there are a word \(w\) and channel \(c\) for which
+   \[
+   D_c(r_c(T_wx),r_c(T_wy))>0.
+   \]
+   Hence the singleton table \(W_0=\{w\}\), \(C_0=\{c\}\) already proves
+   that \(x\not\sim y\).
+3. **Finite agreement does not certify identity uniformly over D1--D4.**
+   Even with a fixed two-action append alphabet and the same nonempty finite
+   channel family in the restricted and full metrics, every finite word table
+   admits a finite-memory append world and a pair with
+   \[
+   d_{W_0,C}(x,y)=0
+   \quad\text{but}\quad
+   d_\infty(x,y)=1.
+   \]
+
+Proof. The first claim follows because the restricted index set is contained
+in \(\mathcal W\times C\). If the supremum defining \(d_\infty\) is positive,
+not every nonnegative term can be zero, which proves the second claim.
+
+For the third claim, fix the append actions
+\(\mathcal A=\{a_0,a_1\}\), where \(a_i\) appends token \(i\), and let
+\(\sigma(w)\) be the execution-order binary string defined as in Theorem 4.
+Choose a nonempty word \(u\notin W_0\), which is possible because
+\(W_0\) is finite. Let the token vocabulary contain distinct markers
+\(X,Y\) in addition to \(0,1\), take \(Z=\{X,Y,0,1\}^*\), and set
+\(x=X\), \(y=Y\). Take \(C\) to be the prescribed nonempty finite channel
+family and put \(N=|u|+1\). For every \(c\in C\), use the two-point outcome
+space with total-variation distance and define
+
+\[
+r_c(z)
+=
+\begin{cases}
+\delta_1,&\operatorname{suf}_N(z)=X\sigma(u),\\
+\delta_0,&\text{otherwise}.
+\end{cases}
+\]
+
+The response has memory at most \(N\). At \(u\), the two responses are
+\(\delta_1\) and \(\delta_0\). For every other word \(v\), they agree: when
+\(|v|\leq |u|\), the only accepting suffix would require \(v=u\); when
+\(|v|\geq N\), the shared binary append has erased the initial marker from
+the final \(N\) tokens. Thus \(u\) is the only discriminating word,
+\(d_\infty(x,y)=1\), and the table \(W_0\) reports zero. The continuation
+tree has \(2^h\) words at depth \(h\). \(\square\)
+
+#### Finite-state abstraction corollary — proved; sufficient, not necessary
+
+Suppose there are a finite set \(S\), a map \(s:Z\to S\), response maps
+\(\widehat r_c:S\to\mathcal P(O_c)\), and deterministic updates
+\(\delta_a:S\to S\) such that
+
+\[
+r_c=\widehat r_c\circ s,
+\qquad
+s(T_ax)=\delta_a(s(x))
+\]
+
+for every \(a,c,x\). Replacing \(S\) by \(s(Z)\) if necessary, this makes
+\(s\) a surjective morphism to a finite Moore machine. Induction on words
+gives \(s(T_wx)=\delta_w(s(x))\), so every response discrepancy factors
+through the finite synchronous pair graph on \(S\). Consequently
+
+\[
+d_\infty=d_{|S|^2-1}.
+\]
+
+If \(\mathcal A\) and \(C\) are also finite, the table containing **all**
+channels and all words of length at most \(|S|^2-1\) is finite and certifies
+exact identity. With an infinite channel family, a finite response-complete
+channel basis is an additional premise.
+
+This finite-state condition is not necessary. An invariant, bisimulation, or
+other proof controlling every unseen branch can certify identity in an
+infinite-state world. The negative result says that finite *agreement alone*,
+without such a completeness proof, has no uniform identity implication over
+D1--D4.
+
+For Theorem 4's explicitly registered suffix wrapper with finite vocabulary
+\(V\), one may take
+
+\[
+S=\bigcup_{k=0}^{N}V^k,
+\qquad
+|S|=\sum_{k=0}^{N}|V|^k,
+\]
+
+or \(|V|^N\) under a padded fixed-length convention. Thus a finite abstraction
+does exist in that registered world, and Theorem 4 supplies the much tighter
+depth bound \(N-1\); the exact all-branch table is nevertheless astronomical.
+For a full-context model without a suffix wrapper, Theorem 4 does not register
+this abstraction. A finite context/overflow carrier can still invoke Theorem
+1's finite corollary, but it is likewise computationally vacuous at LM scale.
+
+Finite access therefore always supplies lower bounds on \(d_\infty\), and a
+positive lower bound certifies nonidentity and place separation. A nontrivial
+upper bound requires a separate unseen-branch argument: exhaustive finite-state
+coverage, an invariant, contractive or analytic tail control, or a proof that
+a witnessed word attains the supremum. Attainment cannot be inferred from the
+witness itself. For an exact LM identity claim under an incomplete finite
+table, the honest status is **refuted** when a robust positive witness is
+found and **not refuted at the registered access** otherwise; it is not
+certified by a plateau. Approximate tolerance claims remain distinct and must
+use the governance amendment's effect-size and uncertainty rules.
+
+Lay so-what: *an inhabitant can prove that two places differ with one decisive
+future, but agreement on every future it happened to inspect proves sameness
+only when a map or invariant also controls the futures it did not inspect.*
+
+### D9. Denizen and surgeon worlds — proposed definition
+
+A **denizen world** is a D1--D4 world
+
+\[
+\mathfrak D=(Z,\mathcal A_D,C,(r_c),(D_c)).
+\]
+
+A **surgeon extension** keeps the same carrier, architecturally fixed base
+output when one is singled out, response channels, response laws, and outcome
+metrics, but enlarges the total deterministic action family:
+
+\[
+\mathcal A_D\subseteq\mathcal A_S.
+\]
+
+The extra moves may include prospectively declared residual edits at declared
+execution sites. Every edit must be a total endomap of the common \(Z\);
+off-site, shape, tokenization, or phase failures are sent to declared
+observable failure states. The denizen and surgeon metrics are
+
+\[
+d_\infty^D(x,y)
+=\sup_{w\in\mathcal A_D^*,c\in C}
+D_c(r_c(T_wx),r_c(T_wy)),
+\]
+
+\[
+d_\infty^S(x,y)
+=\sup_{w\in\mathcal A_S^*,c\in C}
+D_c(r_c(T_wx),r_c(T_wy)).
+\]
+
+A residual-edit instantiation cannot merely add an edit to the prompt-string
+carrier of Theorem 4. It must register a common phase-typed execution carrier
+containing both native prompt states and site-indexed internal configurations,
+define total denizen continuations and the same emitted-output response laws
+from those configurations, and register a native site lift
+\(\iota_\ell\) that maps a prompt to its unedited configuration at site
+\(\ell\). Without this carrier, \(m\iota_\ell(x)\) and a native target are
+not objects of one D1 world and the comparison is ill-typed.
+
+### Theorem 8. Surgeon refinement and denizen reachability — proved
+
+Let \(\mathfrak S\) be a D9 surgeon extension of \(\mathfrak D\). Then:
+
+1. For every \(x,y\in Z\),
+   \[
+   d_\infty^D(x,y)\leq d_\infty^S(x,y).
+   \]
+   Hence \(\sim_S\subseteq\sim_D\), and
+   \[
+   \pi:Q^S\to Q^D,
+   \qquad
+   [x]_S\mapsto[x]_D,
+   \]
+   is a well-defined surjective nonexpansive map. Surgeon places refine
+   denizen places.
+2. Define the denizen-reachable places from \(x\) by
+   \[
+   \operatorname{Reach}_D(x)
+   =\{[T_wx]_D:w\in\mathcal A_D^*\}.
+   \]
+   A surgeon move \(m\in\mathcal A_S\setminus\mathcal A_D\) is
+   **denizen-place-realizable at \(x\)** exactly when
+   \[
+   [mx]_D\in\operatorname{Reach}_D(x),
+   \]
+   equivalently, when there exists \(w\in\mathcal A_D^*\) such that
+   \[
+   d_\infty^D(mx,T_wx)=0.
+   \]
+   The stronger condition
+   \[
+   \exists w\in\mathcal A_D^*:
+   d_\infty^S(mx,T_wx)=0
+   \]
+   is **surgeon-place denizen realization**. It implies denizen-place
+   realization, but the converse need not hold because surgeon observations
+   may split one denizen place.
+
+Proof. The free-word inclusion
+\(\mathcal A_D^*\subseteq\mathcal A_S^*\) makes the denizen supremum a
+restriction of the surgeon supremum, proving the inequality. If
+\(x\sim_Sy\), the inequality gives \(x\sim_Dy\), so \(\pi\) is well-defined;
+every denizen class has the preimage \([x]_S\), and the same inequality proves
+nonexpansiveness. The two realization equivalences are D5's zero-kernel
+definition applied respectively to \(Q^D\) and \(Q^S\). \(\square\)
+
+The surgeon move need not descend to a map on \(Q^D\): that requires the
+additional congruence
+
+\[
+x\sim_Dy\Longrightarrow mx\sim_Dmy.
+\]
+
+Theorem 1 makes \(m\) nonexpansive for \(d_\infty^S\), not automatically for
+\(d_\infty^D\).
+
+### Native bridge test — proposed definition; exact equality is finitely refutable, not finitely confirmed in general
+
+Fix before inspection a source prompt \(x\), a native target prompt \(y_s\)
+whose declared record denotes target state \(s\), an execution site \(\ell\),
+and a total surgeon edit \(m_s\). The exact native bridge discrepancy is
+
+\[
+B_s(x,y_s)
+=
+d_\infty^D
+\bigl(m_s\iota_\ell(x),\iota_\ell(y_s)\bigr).
+\]
+
+The edit is **registered-target-place-realizing in denizen behavior** for this
+pair exactly when \(B_s(x,y_s)=0\). This compares a surgeon-produced internal
+configuration using only denizen moves and the unchanged emitted-output
+interface. It does not make the edit a denizen move, identify hidden states,
+or establish denizen reachability from the source. The latter additionally
+requires \([\iota_\ell(y_s)]_D\in
+\operatorname{Reach}_D(\iota_\ell(x))\).
+
+By Theorem 7, any denizen word and channel with positive discrepancy refutes
+the exact bridge claim. Failure to find such a word only fails to refute it at
+the registered access unless an independent completeness invariant controls
+all remaining branches. Floating-point and population experiments must use
+predeclared approximate criteria; an exact zero table is diagnostic only.
+
+### Record-reading proposition — supported qualitative interpretation; exact metric disjunction not licensed
+
+Within the audited frozen-model record, no tested residual intervention
+established both material content-specific change in the registered native
+response behavior and registered-target-place realization or denizen
+reachability. Some constructions failed to show material target-specific
+change at their declared readouts and easiest controls; others produced
+lexical, verbalizer, prompt-boundary, or construction-bound effects without
+establishing target-place identity or reachability.
+
+This reading does **not** license either exact half of the proposed dichotomy
+
+\[
+d_\infty^D(mx,x)=0
+\quad\text{or}\quad
+[mx]_D\notin\operatorname{Reach}_D(x)
+\]
+
+for every tested move. The finite null results cannot prove the first claim,
+and the record did not exhaust denizen words or reachable places to prove the
+second. All audit never-say lists, especially the frozen-model and audit-#39
+boundaries retained in `STATE.md`, remain binding.
+
+### Round-39 artifact ruling and audit #44 gate — proposed direction
+
+Theorem 7 ends the search for a universally positive finite-query identity
+certificate: finite agreement needs an external completeness invariant. The
+next candidate artifact, after audit #44 and only if it adopts D9's typing, is
+therefore a small-budget **refutation-oriented native bridge test** on one real
+model and the proximal positive-control rung, using a phase-typed common
+carrier, the model's unchanged emitted law, denizen words only in the bridge
+metric, and tolerance-based population criteria. It may refute exact target-
+place realization or fail to refute it; it cannot positively certify exact
+identity from a finite table. Theorem-4 fixtures remain useful implementation
+checks but are not the central artifact, and `native_horizon_v1` remains
+unqueued. No preregistration or computation is authorized by this section.
+
+Audit #44 must check the counterexample against D1's word convention and D2's
+law typing; distinguish absence of a universal finite table from absence of
+finite invariant proofs; verify every finiteness premise in the abstraction
+corollary and the LM suffix/overflow boundary; require a genuinely common,
+phase-typed carrier with total denizen and surgeon moves; verify
+\(d_\infty^D\) versus \(d_\infty^S\), the quotient projection, both
+realization notions, site-lift/target typing, and the distinction between
+target-place matching and reachability; reject the unlicensed exact reading of
+the historical nulls; enforce all never-say lists; and answer whether the
+small bridge refutation is now the highest-leverage continuation before any
+artifact is locked.
 
 ## Prior relational foundation (Rounds 1--12; superseded, retained for provenance)
 
