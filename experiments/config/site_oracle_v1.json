@@ -1,0 +1,20 @@
+{
+ "name": "site_oracle_v1",
+ "purpose": "Cross-fitted site-oracle control (Codex round 21): can one bounded hidden nudge at the block-12 'Internal record:' slot, derived from the downstream Jacobian of a tag's first-token margin on OTHER names, select any of eight tag answers ~36 tokens later? No learned J, no encoder, no optimization, no sweeps.",
+ "model_id": "Qwen/Qwen3-1.7B-Base",
+ "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
+ "layer": 12,
+ "state_dim": 16,
+ "norm_clamp_fraction": 0.25,
+ "slot": "Internal record:",
+ "tags": ["fask", "nimb", "ruzz", "pelt", "gorm", "twyl", "hesk", "vorn"],
+ "names_train": ["Velmora", "Tasquin", "Orbelle", "Kindrath", "Sablyn", "Pherox", "Marvenne", "Dulcair", "Yostrel", "Caprindo", "Fennwick", "Lorbast", "Quenlith", "Ravosk", "Tiberune", "Hollmere", "Zephrand", "Ambrosil", "Gastwyn", "Nerival", "Ophandre", "Brelcott", "Ilsavane", "Wexmoor"],
+ "folds": [[0, 3, 6, 9, 12, 15, 18, 21], [1, 4, 7, 10, 13, 16, 19, 22], [2, 5, 8, 11, 14, 17, 20, 23]],
+ "filler": "Internal record:\n",
+ "valid_line": "VALID TAGS: fask | nimb | ruzz | pelt | gorm | twyl | hesk | vorn\nANSWER WITH ONE VALID TAG ONLY.\n",
+ "query": "TAG OF {NAME}:",
+ "decode": {"max_new_tokens": 6},
+ "random_seed": 2030,
+ "eval": {"bootstraps": 2000},
+ "gates": {"completion_min": 0.95, "follow_min": 0.85, "follow_lb_min": 0.75, "per_tag_min": 0.75, "per_fold_min": 0.75, "uplift_min": 0.60, "uplift_lb_min": 0.50, "random_max": 0.20}
+}

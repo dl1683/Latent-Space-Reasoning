@@ -1,0 +1,41 @@
+{
+ "config": "site_oracle_v1",
+ "sha256": {
+  "runner": "6c6627735bd97682947eed1078cdf83050bab2b3c55025972e50822075d183a4",
+  "config": "764dbe20a0471d9594d8c1824c1e603b64e0864152abbed2395c7a6aef539c87",
+  "machinery": "741dd8fb0126f8ffd0c98d9901d295bc31d7b915d4d90eaa716c8cf089190665"
+ },
+ "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
+ "fold_hash": "6b44dcbe3c8aa1c05f9cec996a452920d534891aabf5bd6166d44f5fa36f670f",
+ "preflight": {
+  "cue_completion": 0.9583333333333334,
+  "zero_hook_matches_cue": true,
+  "slot_norm_mean": 173.02159118652344,
+  "cue_choices": [
+   "FASK",
+   "FASK",
+   "FASK",
+   null,
+   "FASK",
+   "FASK",
+   "FASK",
+   "FASK",
+   "FASK",
+   "FASK",
+   "FASK",
+   "FASK",
+   "FASK",
+   "FASK",
+   "FASK",
+   "FASK",
+   "FASK",
+   "FASK",
+   "FASK",
+   "FASK",
+   "FASK",
+   "FASK",
+   "FASK",
+   "FASK"
+  ]
+ }
+}
