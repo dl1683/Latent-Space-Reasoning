@@ -8966,10 +8966,12 @@ final config and module hashes are recorded.
 **Status: RETIRED UNRUN; HISTORICAL PREREGISTRATIONS ONLY.** Audit #42 adopted
 the corrected foundation but did not establish either check's scientific
 priority. Round 37 retires C1 because it tests a synthetic consumer rather
-than the real-model intervention now required, and retires C2 because its
-paired legend/output-law estimands are carried forward inside the
-intervention-bearing `native_horizon_v1`. Neither C1 nor C2 may now execute or
-be revived as a fallback after seeing `native_horizon_v1`; a scientifically
+than the real-model intervention now required. C2's query strings, nine-bin
+law, denotation margin, and clustered discipline are carried forward, but its
+entity-by-state factorial coverage is not. C2 is retired by allocation because
+a separate observational run is off-direction, not because every one of its
+controls is mathematically subsumed. Neither C1 nor C2 may now execute or be
+revived as a fallback after seeing `native_horizon_v1`; a scientifically
 different successor requires a new dialogue and preregistration.
 
 ### C1. Frozen constructed-consumer response geometry — preregistered
@@ -9427,13 +9429,15 @@ therefore prevents any claim about a persistent residual state, storage, or a
 causal bridge. C2 is an observational identity/covariance check on prompt
 episodes only.
 
-## Round 37 — native_horizon_v1: native query horizon and span intervention in a real prompt world (PREREGISTERED; proposed pending audit #43; NO RUN)
+## Rounds 37-38 — native_horizon_v1: native query horizon and span intervention in a real prompt world (PREREGISTERED PROPOSAL; audit #43 corrections applied; pending lock-readiness audit #44; NO RUN)
 
 ### Status, ruling, and narrative gate
 
-Status: one theory-first preregistration, not authorized to execute before a
-fresh unprimed mathematics-and-design audit #43. No model forward pass, config,
-runner, result, or manifest was created in round 37.
+Status: REVISE after audit #43; NO COMPUTE and not authorized to execute.
+Round 38 applies audit #43's required corrections 1--15, but audit #43 does
+not authorize a manifest lock, forward pass, config, runner, or result.
+Execution remains pending a fresh lock-readiness audit #44. No model forward
+pass, config, runner, result, or manifest was created in rounds 37--38.
 
 The non-expert so-what is: *can changing one word in a model's record move it
 to the same operational place as a naturally written record of the new fact,
@@ -9511,6 +9515,10 @@ experiments/results/native_horizon_v1/manifest.json and its SHA-256. It binds:
 - the model/tokenizer/config revisions and hashes, \(N\), wrapper policy,
   exact command, code/config hashes, device, dtype, batch size, and thread or
   GPU settings;
+- special-token insertion, attention-mask construction, position IDs, cache
+  policy, and batching. No cache or position offset may depend on tokens
+  discarded by \(\operatorname{suf}_N\); otherwise the result is
+  `INVALID — SUFFIX-LAW IMPLEMENTATION`;
 - source config
   experiments/config/register_bridge_preflight_v1.json at SHA-256
   c016f1acd74b3260c795d34a86c5f1dc4f151455e510eab44600da819f71f682
@@ -9519,9 +9527,9 @@ experiments/results/native_horizon_v1/manifest.json and its SHA-256. It binds:
   519846614554b6f045038fee91498638f83957ff7fd0163781131f5f9e787095;
 - the exact three C2 shared-numeral query strings after every entity
   substitution, their token IDs, and each query's exact one-token prefix;
-- the ordered per-entity action alphabet, every word in
-  \(\mathcal U_e^{\leq2}\), its macro depth, concatenated token IDs, token
-  length, and SHA-256;
+- the ordered per-source-unit action alphabet, every word in
+  \(\mathcal U_{e,t}^{\leq2}\), its macro depth, execution-order concatenated
+  token IDs, token length, and SHA-256;
 - numeral token IDs, the total nine-bin map, and validation that the nine
   probabilities are nonnegative and sum to one;
 - every source, paired reassigned-legend, same-state reference,
@@ -9535,8 +9543,10 @@ experiments/results/native_horizon_v1/manifest.json and its SHA-256. It binds:
 - the deterministic population and target-selection rules below;
 - the two identical-input replay schedules, the ordered bootstrap entity
   index vectors, and their hashes; and
-- the expected endpoint count and a uniqueness table proving that cached
-  laws are reused rather than recomputed under different pair names.
+- the cap of 9,408 model evaluations before deduplication, the exact lower
+  deduplicated endpoint count, a smoke-derived CPU forecast, a hard wall, and
+  a uniqueness table proving that cached laws are reused rather than
+  recomputed under different pair names.
 
 Any hash drift, nonsingle numeral token, nonprefix-aligned query, empty append
 macro, missing or duplicate pair, denotation mismatch, span edit outside the
@@ -9578,33 +9588,37 @@ destroyed row are never treated as independent samples.
 
 ### Append continuations and restricted horizons
 
-For each entity fiber \(e\), let \(Q_{e,1},Q_{e,2},Q_{e,3}\) be the three
+For each source unit \((e,t)\), let \(Q_{e,1},Q_{e,2},Q_{e,3}\) be the three
 fixed complete shared-numeral query append maps and let
 \(P_{e,1},P_{e,2},P_{e,3}\) append the exact first tokenizer token of the
-corresponding complete query. The ordered macro alphabet is
+corresponding complete query. Prospectively set
+\(j(e,t)=1+((e+t)\bmod3)\) and register only the ordered macro alphabet
 
 \[
-\mathcal U_e=
-[P_{e,1},P_{e,2},P_{e,3},Q_{e,1},Q_{e,2},Q_{e,3}].
+\mathcal U_{e,t}=[P_{e,j(e,t)},Q_{e,j(e,t)}].
 \]
 
-Within an entity fiber every macro appends one fixed nonempty token string, so
+This outcome-blind assignment balances query wording across the population.
+Within a source unit every macro appends one fixed nonempty token string, so
 Theorem 4 applies. Macro depth is not token length. Enumerate exactly
 
 \[
-1+6+6^2=43
+1+2+2^2=7
 \]
 
-words in \(\mathcal U_e^{\leq2}\), including the empty word and every ordered
-two-macro composition. No linguistically awkward composition is dropped
-after inspection.
+words in \(\mathcal U_{e,t}^{\leq2}\), including the empty word and every
+ordered two-macro composition. No linguistically awkward composition is
+dropped after inspection. With at most 672 base prompt IDs and two replay
+schedules, the preregistered cap is 9,408 model evaluations before
+deduplication. The manifest records the exact lower deduplicated count. A
+smoke-derived CPU forecast and hard wall must be locked before execution.
 
 For any registered pair \((a,b)\), define the restricted distances
 
 \[
 d_h^{\mathcal U}(a,b)
 =
-\max_{\substack{w\in\mathcal U_e^*\\|w|\leq h}}
+\max_{\substack{w\in\mathcal U_{e,t}^*\\|w|\leq h}}
 D_{\sqrt{\rm JS}}\bigl(\widetilde r(wa),\widetilde r(wb)\bigr),
 \qquad h\in\{0,1,2\}.
 \]
@@ -9616,11 +9630,11 @@ They are lower bounds on the full append distance. The symbols
 \(d_\infty^+\), \(H^+\), and place identity are not assigned from a
 horizon-2 plateau.
 
-Theorem 4 is validated here as an implementation theorem, not an empirical
-hypothesis: the manifest must prove the suffix wrapper, nonempty append
-macros, exact token accounting, and exhaustive 43-word depth-2 enumeration.
-The run reports the architecture-level bound \(N-1\). It does not enumerate
-all branches to that bound and therefore does not claim global saturation.
+The run does not validate Theorem 4, which is proved. Manifest checks and
+deterministic fixtures test whether the implementation instantiates its
+suffix, nonempty-append, token-accounting, and enumeration premises. The run
+reports the architecture-level bound \(N-1\). It does not enumerate all
+branches to that bound and therefore does not claim global saturation.
 
 ### Delayed-route positive control
 
@@ -9633,13 +9647,16 @@ substituted:
 token twice in immediate succession; in that case answer from the backup
 record.”
 
-For a one-move complete query \(Q_{e,j}\), its first token appears once. For
-the two-move word \(P_{e,j}Q_{e,j}\), it appears twice. The manifest verifies
-the exact token concatenation and binds backup states \(s\) and
-\((s+4)\bmod8\) to the two control prompts. The intended profile is no
-material incremental discrimination from depth 0 to 1 and material new
-discrimination from depth 1 to 2. This is a positive control of the horizon
-instrument, not an assumption that a real model must obey the routing text.
+For the assigned one-move complete query \(Q_{e,j(e,t)}\), its first token
+appears once. The two-move word
+\(Q_{e,j(e,t)}P_{e,j(e,t)}\), which under D1 executes
+\(P_{e,j(e,t)}\) first and then \(Q_{e,j(e,t)}\), makes it appear twice. The
+manifest verifies the exact execution-order token concatenation and binds
+backup states \(s\) and \((s+4)\bmod8\) to the two control prompts. The
+intended profile is no material incremental discrimination from depth 0 to 1
+and material new discrimination from depth 1 to 2. This is a positive control
+of the horizon instrument, not an assumption that a real model must obey the
+routing text.
 
 ### Span intervention and target endpoint
 
@@ -9678,13 +9695,16 @@ E_h=R_h-B_h
 
 for excess target residual above an independently presented same-target
 baseline. Also apply the corresponding state-to-\(v\) record substitution to
-\(x^{=}\) and report the before/after same-state spread as a D8 quotient-
-descent diagnostic. It is not promoted to exact congruence or
+\(x^{=}\) and report the before/after same-denotation spread as a
+presentation-stability diagnostic relevant to D8. Because the pre-edit
+prompts are not established to be one exact place, this is not a
+quotient-descent test. It is not promoted to exact congruence or
 nonexpansiveness.
 
 For every reassigned-legend row, retain C2's paired denotation contrast and
-old-versus-new numeral log-probability margin under the complete one-query
-macros. This carries forward C2's native-output question inside the
+old-versus-new numeral log-probability margin under the prospectively assigned
+complete one-query macro. This carries forward C2's registered nine-bin
+pushforward question inside the
 intervention artifact rather than running a separate observational ladder.
 
 ### Replay floor, clustered reduction, and approximate criteria
@@ -9715,8 +9735,8 @@ individual units exceeding \(m\). There is no sampling seed or generation
 termination rate: the model law is read directly and deterministically;
 termination is not applicable.
 
-The joint proximal result is NATIVE HORIZON V1 SUPPORT only if all four
-conditions hold:
+The joint proximal result is `RESTRICTED DEPTH-2 PROFILE SUPPORT` only if all
+four conditions hold:
 
 1. Explicit-state one-query profile: for different-denotation and
    reassigned-legend pairs, the entity-mean lower bound of
@@ -9727,12 +9747,13 @@ conditions hold:
 2. Delayed-route positive control: the upper bound of
    \(d_1^{\mathcal U}-d_0^{\mathcal U}\) is at most
    \(\varepsilon_{\rm eq}+0.005\), while the lower bound of
-   \(d_2^{\mathcal U}-d_1^{\mathcal U}\) is above \(m\). This two-step
-   witness proves \(H^+>1\) for the witnessed controls even though the full
-   horizon is not enumerated.
+   \(d_2^{\mathcal U}-d_1^{\mathcal U}\) is above \(m\). Any
+   tolerance-robust unit satisfying the individual witness rule below proves
+   \(H^+>1\) for that pair; the population lower bound alone does not assign
+   an exact individual horizon.
 3. Place change: the entity-mean lower bound of \(I_2\) is above \(m\), and
    all four source-template point estimates exceed \(m\).
-4. Approximate target realization: the entity-mean lower bound of \(G_2\) is
+4. Restricted target direction: the entity-mean lower bound of \(G_2\) is
    above \(m\), the upper bound of \(E_2\) is at most \(m\), and at least
    three of four target-template strata have positive target-directed gain.
 
@@ -9746,30 +9767,33 @@ The following outcomes are predeclared:
 
 - CONJECTURE-5 SHALLOW FALSIFIER when the entity-clustered lower bound of the
   explicit-state increment \(d_2^{\mathcal U}-d_1^{\mathcal U}\) exceeds
-  \(m\). Any individual increment above its replay interval is also reported
-  as an exact finite witness against \(H^+=1\) for that pair, without turning
-  one row into the population verdict.
+  \(m\). Any individual increment is also reported as a tolerance-robust
+  finite witness against \(H^+=1\) for that pair only when
+  \(d_2^{\mathcal U}-d_1^{\mathcal U}>\varepsilon_{\rm eq}\) in both replay
+  schedules, without turning one row into the population verdict. Exact
+  equality remains diagnostic.
 - DELAYED CONTROL FAIL when the one-step leakage criterion fails or the
   two-step gain criterion does not pass. This invalidates the intended
   positive control; absence of a depth-2 gain does not prove \(H^+=1\), since
   a later branch may still discriminate.
-- INTERVENTION FAIL — NO PLACE CHANGE when condition 3 fails after a valid
-  horizon instrument.
-- INTERVENTION FAIL — TARGET NOT REALIZED when place change passes but
+- `NO MATERIAL RESTRICTED PLACE-CHANGE EVIDENCE` when condition 3 fails after
+  a valid horizon instrument.
+- `RESTRICTED TARGET-DIRECTION CRITERION FAIL` when place change passes but
   condition 4 or the inherited denotation control fails.
 - INCONCLUSIVE for every complete valid combination that satisfies neither
   the joint support rule nor a named falsifier.
 
 A positive finite distance witnesses nonidentity. A small or zero restricted
-distance never certifies \(d_\infty^+=0\). NATIVE HORIZON V1 SUPPORT therefore
-licenses only: under this fixed model, prompt population, query-macro family,
-and tolerance, one query captured the measured explicit-denotation response
-separation, the delayed control required two moves, and a record-tag
-substitution moved native output behavior toward independently presented
-targets. It does not license exact place identity, full branch completeness,
-global \(H=1\), D8 quotient descent, storage, persistence, semantic
-understanding, residual state, a hidden causal bridge, or model-family
-generality.
+distance never certifies \(d_\infty^+=0\). `RESTRICTED DEPTH-2 PROFILE
+SUPPORT` therefore licenses only: under this fixed model, prompt population,
+query-macro family, and tolerance, one registered macro captured the measured
+depth-\(\leq2\) separation in the derived nine-bin response law, the delayed
+control required two moves, and a record-tag substitution moved registered
+nine-bin pushforward behavior toward independently presented targets. This
+does not positively establish Conjecture 5's global \(H^+=1\). It does not
+license exact place identity, full branch completeness, D8 quotient descent,
+storage, persistence, semantic understanding, residual state, a hidden causal
+bridge, or model-family generality.
 
 The cheapest confound is prompt-local dictionary lookup. It is deliberately
 not controlled away: dictionary lookup is a native executable mechanism in
@@ -9785,28 +9809,33 @@ time, and a ten-minute hard wall; sustained GPU load is forbidden. CPU and
 GPU outputs may not be mixed inside one claiming artifact. The implementation
 must cache one law per unique endpoint, checkpoint complete entity blocks,
 and stop as INCOMPLETE — DEADLINE rather than adapt the population, horizon,
-or query set. No model run occurred in round 37.
+or query set. Before any model forward pass, append a lock row binding the
+manifest hash, exact endpoint count, runner/config hashes, smoke-derived CPU
+forecast, hard wall, gates, statuses, and stop rule. Audit #43 does not itself
+authorize that lock or execution. No model run occurred in rounds 37--38.
 
-No new runner is created until audit #43 accepts the mathematics, pair
-construction, endpoint count, and budget. Any future implementation uses one
-canonical runner for manifest, produce, and separate reduce/fixture modes;
-all result claims enter experiments/ledger.jsonl and the experiment index or
-they did not happen.
+No new runner is created unless audit #44 finds the corrected proposal ready
+to lock. Any future implementation uses one canonical runner for manifest,
+produce, and separate reduce/fixture modes; all result claims enter
+experiments/ledger.jsonl and the experiment index or they did not happen.
 
 ### Retirement decision
 
 C1 and C2 are retired unrun now, not merely paused. C1's theorem harness and
 finite Hilbert fit are off-direction because they concern a synthetic
-consumer. C2's prompt-output comparator, manifest discipline, clustered
-statistics, and denotation margin are subsumed here, while its observational
-claim is strengthened by an executable record-span substitution and
-independent target endpoint. Neither historical preregistration may run in
-parallel or be resurrected after this result.
+consumer. C2's query strings, nine-bin law, denotation margin, and clustered
+discipline are carried forward, but its entity-by-state factorial coverage is
+not. C2 is retired by allocation because a separate observational run is
+off-direction, not because every one of its controls is mathematically
+subsumed. Neither historical preregistration may run in parallel or be
+resurrected after this result.
 
-### Audit #43 must check
+### Audit #44 must check
 
-Audit #43 must answer whether the program should continue and whether this is
-the highest-leverage next artifact. It must independently verify:
+Audit #44 is a lock-readiness review, not authorization to execute. It must
+answer whether the program should continue, whether this is the
+highest-leverage next artifact, and whether `native_horizon_v1` should be
+locked at all. It must independently verify:
 
 1. Theorem 4's proof, append-only scope, macro-depth/token-length distinction,
    query-token accounting, and sliding-wrapper versus full-context boundary.
@@ -9819,17 +9848,29 @@ the highest-leverage next artifact. It must independently verify:
 5. That the target \(y\) is independently presented rather than byte-identical
    to \(s_vx\), and that all pair, source-row, target, and intervention rules
    are outcome-blind and executable.
-6. The 43-word continuation enumeration, delayed-route control semantics,
-   nine-bin total kernel, replay floor, clustered estimands, tolerance rules,
-   and exact-diagnostic-only treatment.
-7. Whether the endpoint count and CPU or explicitly approved short-GPU budget
-   are credible on this laptop without sustained load.
-8. Whether retiring C1/C2 loses any nonredundant control worth retaining
+6. The prospectively assigned two-macro alphabet, seven-word continuation
+   enumeration, D1-consistent delayed-route control semantics, nine-bin total
+   kernel, replay floor, clustered estimands, tolerance rules, and
+   exact-diagnostic-only treatment.
+7. That every model-call input depends only on the wrapped suffix, including
+   special-token insertion, masks, position IDs, cache policy, and batching;
+   any discarded-token dependency must yield
+   `INVALID — SUFFIX-LAW IMPLEMENTATION`.
+8. The exact deduplicated endpoint count, 9,408 pre-deduplication cap,
+   smoke-derived CPU forecast, hard wall, and mandatory ledger lock before any
+   forward pass.
+9. That the verdict labels and licensed interpretation stay restricted to the
+   depth-2 derived nine-bin profile and do not claim global \(H^+=1\), target
+   identity, quotient descent, latent state, or a causal bridge.
+10. Whether retiring C1/C2 loses any nonredundant control worth retaining
    inside this single artifact.
-9. The licensed sentence, never-say list, cheapest dictionary-lookup
+11. The licensed sentence, never-say list, cheapest dictionary-lookup
    explanation, alternative directions, and the remaining unseen-branch gap.
 
-Measurement-to-artifact heartbeat: round 37 added 0 lines of experimental
-apparatus and 0 lines of artifact-bearing code, so the code ratio is \(0/0\);
-since adoption, the cadence is 0 measurement rounds to 1 theorem/artifact
-design round. This is a build round, not another observational result.
+Measurement-to-artifact heartbeat: round 38 adds 0 lines of experimental
+apparatus and 0 lines of artifact-bearing code, so its code ratio is \(0/0\).
+The last completed runner ratio remains approximately 34 apparatus to 70
+estimand-bearing lines, or \(0.49{:}1\). Counting audit #43 as governance, the
+repository's prior accounting is approximately 28 measurement/governance
+rounds to 10 build rounds, or \(2.80{:}1\), above the \(2{:}1\) warning. This
+correction pass is theory/build work, not another measurement.

@@ -85,9 +85,11 @@ explicitly extended setting; the softmax extension is sketched. Open Problem
 7 is conjectured; only its displayed conditional inequalities, finite-access
 sandwich, and affine check are proved under their stated assumptions. C1 and
 C2 in `theory/EXPERIMENTS.md` were retired unrun in round 37: C1 is a
-synthetic-consumer check and C2 is subsumed by the proposed intervention-bearing
-`native_horizon_v1`. That successor remains pending audit #43 and is not
-authorized to run.
+synthetic-consumer check; C2's query strings and several controls are carried
+forward, but its entity-by-state factorial coverage is not. C2 was retired by
+allocation, not by full mathematical subsumption. Audit #43 ruled the proposed
+intervention-bearing `native_horizon_v1` REVISE with NO COMPUTE; its corrected
+preregistration remains unauthorized pending lock-readiness audit #44.
 
 ### D1. Raw presented transition world — definition
 
@@ -908,7 +910,7 @@ the problem is epistemic: those theories commonly start with a supplied
 transition system, whereas a denizen must construct a usable map of unexecuted
 futures from finite local access.
 
-## Extension: language-model prompt worlds (proposed, round 37; pending audit #43)
+## Extension: language-model prompt worlds (proposed, rounds 37-38; audit #43 corrections applied; pending lock-readiness audit #44)
 
 This extension specializes the adopted foundation to prompt strings and keeps
 three structures separate: append continuations define future-response places;
@@ -921,10 +923,12 @@ definitions below.
 
 Let \(V\) be a token vocabulary and let \(\mathcal A_+\) be a declared family
 of append moves. Each \(a\in\mathcal A_+\) appends a fixed nonempty finite
-token string \(\sigma(a)\). For a word \(w\in\mathcal A_+^*\), let
-\(\sigma(w)\) be the concatenated appended string and let
-\(\lambda(w)=|\sigma(w)|\) be its token length. Write \(d_\infty^+\) and
-\(d_h^+\) for D4's distances when only \(\mathcal A_+\) is used.
+token string \(\sigma(a)\). Define the execution-order append recursively by
+\(\sigma(\epsilon)=\epsilon\) and
+\(\sigma(wa)=\sigma(a)\sigma(w)\), consistently with D1's
+\(T_{wa}=T_w\circ T_a\). Thus \(T_wx=x\,\sigma(w)\). Let
+\(\lambda(w)=|\sigma(w)|\). Write \(d_\infty^+\) and \(d_h^+\) for D4's
+distances when only \(\mathcal A_+\) is used.
 
 Assume that the registered response interface has memory at most \(N\geq1\):
 for every channel \(c\) there is a map \(\widehat r_c\) such that
@@ -959,19 +963,22 @@ supremum leaves exactly the words with \(\lambda(w)\leq N-1\). Moreover
 \(\square\)
 
 If a channel appends its own fixed query suffix \(q_c\) before reading the
-law, its channel-specific last possibly distinguishing token budget is
-\(N-1-|q_c|\), truncated below at the empty continuation. Query tokens must
-therefore be counted exactly once: either inside \(r_c\), or as legal append
-moves, never both.
+law and \(|q_c|<N\), the channel-specific last possibly distinguishing append
+budget is \(N-1-|q_c|\). If \(|q_c|\geq N\), that channel is independent of
+the starting prompt for every continuation and contributes only zero terms,
+including at the empty continuation. Query tokens must therefore be counted
+exactly once: either inside \(r_c\), or as legal append moves, never both.
 
 Scope and boundary. The theorem is native to a sliding-window architecture or
 to an explicitly registered left-truncation wrapper. A full-context model
 whose native interface merely rejects strings longer than \(N\) does not
-satisfy the displayed suffix law on \(V^*\). Its prompt set and append maps
-must instead be typed on their common domains or totalized by an observable
-overflow state; any finite bound then comes from that registered capacity and
-failure semantics, not from suffix forgetting. Software truncation is part of
-the registered world, not an unmentioned architectural fact. Corollary and
+satisfy the displayed suffix law on \(V^*\). Within D1--D4, its append maps
+must be totalized by an observable overflow state. A genuinely typed
+partial-action alternative requires a separately defined typed-word and
+common-domain distance theory and does not inherit Theorem 4 automatically.
+Any finite bound then comes from the registered capacity and failure
+semantics, not from suffix forgetting. Software truncation is part of the
+registered world, not an unmentioned architectural fact. Corollary and
 counterexample 3's affine world violates the finite-memory premise; calling it
 "infinite-memory" is an interpretation, not an additional theorem.
 
@@ -995,14 +1002,19 @@ directed graph after suffix or response equivalences are identified.
 
 ### Conjecture 5. One-query discrimination in explicit-legend prompt worlds — conjectured; exact identity clause is definitional
 
-In a finite-memory append world define the discrimination horizon
+For any append world in which the following minimum exists, define the
+discrimination horizon
 
 \[
 H^+(x,y)=\min\{h\geq0:d_h^+(x,y)=d_\infty^+(x,y)\}.
 \]
 
-Theorem 4 makes this minimum well-defined. When \(d_\infty^+(x,y)>0\), define
-the saturation profile
+Theorem 4 is a sufficient, not necessary, condition for this minimum to be
+well-defined. The value is relative to the registered primitive append
+macros: regrouping one query into several primitive moves can change \(H^+\).
+The exact assertion \(H^+=1\) means
+\(d_0^+<d_\infty^+=d_1^+\). When \(d_\infty^+(x,y)>0\), define the saturation
+profile
 
 \[
 S_h(x,y)=\frac{d_h^+(x,y)}{d_\infty^+(x,y)}.
@@ -1052,25 +1064,25 @@ any later question could?*
 ### D8. Append-relative span intervention — proposed definition
 
 Fix the append action family \(\mathcal A_+\) and its distance \(d_\infty^+\).
-An executable span intervention is a deterministic, prospectively declared,
-typed rewrite
+An executable span intervention is a deterministic, prospectively declared
+total endomap
 
 \[
-s:Z_{\rm src}\to Z_{\rm tgt}
+s:Z\to Z.
 \]
 
-that replaces exactly one declared token span and leaves every other token
-unchanged. Failed span, type, or tokenization preconditions produce a declared
-observable failure rather than silent row removal. The intervention is
-*admissible on append-future places* when it respects append-future identity:
+It replaces exactly one declared token span and leaves every other token
+unchanged. Span, type, and tokenization failures are sent to declared
+observable failure states in \(Z\), never removed. It is *admissible on
+append-future places* exactly when
 
 \[
-d_\infty^+(x,y)=0
-\Longrightarrow
-d_\infty^+(sx,sy)=0.
+x\sim_+y\Longrightarrow sx\sim_+sy.
 \]
 
-Only then does it descend to a well-defined map on \(Q^+=Z/{\sim_+}\).
+Exactly then it descends to \(\bar s:Q^+\to Q^+\). A genuinely typed map
+between different carriers would instead require separately defined source
+and target quotients and is not used in Proposition 6.
 Nonexpansiveness with respect to \(d_\infty^+\) is the stronger condition
 
 \[
@@ -1085,7 +1097,7 @@ not "a legal move that is not a continuation": in D1 every primitive legal
 move is a one-letter continuation. The append/intervention typing is the
 needed distinction.
 
-### Proposition 6. Place change and target realization by a span intervention — proved as an exact quotient characterization
+### Proposition 6. Place change and registered-target-place realization by a span intervention — proved as an exact quotient characterization
 
 Let \(s\) be a D8 intervention, let \(x\) be a registered source prompt, and
 let \(y\) be a prospectively selected, independently presented native prompt
@@ -1097,12 +1109,16 @@ for the target denotation. Then:
    \iff
    d_\infty^+(x,sx)>0.
    \]
-2. \(s\) realizes the registered target place at \(x\) exactly when
+2. \(s\) is *registered-target-place-realizing* at \(x\), meaning that it
+   realizes the registered target place relative to the declared response
+   channels, exactly when
    \[
    [sx]_+=[y]_+
    \iff
    d_\infty^+(sx,y)=0.
    \]
+   This is behavioral identity in the registered interface, not identity of
+   hidden states or semantic state.
 3. If \(s\) satisfies D8's congruence condition, these pointwise endpoint
    statements are values of a well-defined intervention map
    \(\bar s:Q^+\to Q^+\). Pointwise success alone does not prove descent on
