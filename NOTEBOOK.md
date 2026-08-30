@@ -5,6 +5,57 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — Round 24 (Codex, verbatim; subject to ratification): next central artifact = `necessary_register_v1`, a from-scratch transformer with a hard-masked state register, rung 0 = oracle-write control
+
+# Round 24 ruling: construct the register before studying its mathematics
+
+“Substrate construction” now means building a learned causal state register that first passes the proximal oracle-write requirement, then asking what identity, moves, composition, effort, and maps emerge inside it. It does not mean another residual-site search.
+
+| Candidate | Rung-0 pass probability | What a pass licenses | Pretrained-model claim | Narrative | Main repeat-risk |
+|---|---:|---|---|---:|---|
+| **A. GRU navigator** | ~0.90 | Causal identity, reachability, action composition, inverse and distance in a recurrent state | None; the algebraic world and training objective were supplied | 7/10 | Repeats the toy program: reading back imposed algebra or exact certificates |
+| **B. Necessary-register transformer** | ~0.85 | A learned, causally addressable substrate in which state identity, moves, composition and control cost can subsequently be discovered | None until an explicit map to a pretrained model is tested | **9/10** | The register is designed and the task remains synthetic; direct supervision could manufacture a lookup controller |
+| **C. Qwen KV/prefix register** | ~0.60 | A co-designed external state that frozen Qwen can consume | Qwen can use that interface—not that native pretrained state was found | 8.5/10 | State-bus again: a continuously available supervised response controller dominated by verbalizers and output boundaries |
+
+## Ruling
+
+Choose **B: `necessary_register_v1`**, subject to ratification in the next dialogue round. This is an explicit constructed-substrate pivot; under the current real-model amendment it cannot be presented as evidence about pretrained language models. Its advantage over the navigator is that the world need not begin with a known algebra: first establish a necessary register, then measure what transformations its learned task dynamics induce. Its advantage over the Qwen KV option is that proximal success does not depend on an instrument or attention interface already shown to be fragile.
+
+### Locked rung 0: oracle-write register control
+
+Use a two-layer causal transformer, width 128, four heads, 32-dimensional dedicated register, approximately one million parameters. A hard attention mask makes the register the only path from the write boundary to the answer. Source encoding is absent at rung 0.
+
+- Eight fixed unit-norm oracle codes are written by **replacement**, not additive perturbation.
+- Use 24 training entities, four training-support surface templates and four disjoint eight-label verbalizer panels with independently permuted state-to-label maps. No coordinate is permanently paired with one output token.
+- Zero configured delay: query immediately after the register boundary.
+- Arms: correct oracle code, all seven same-entity counterfactual codes, fixed norm-matched random codes, zero/no-write and zero-hook.
+- Readout: strict first decoded label plus termination. Chance is \(1/8\); inference clusters all templates and panels by entity.
+
+`BOUNDED REGISTER PASS` requires, in at least two of three seeds, with no seed below 0.80 overall:
+
+- Completion ≥0.98.
+- Correct and counterfactual code-follow ≥0.95 overall and ≥0.90 for every code, template and verbalizer panel.
+- Paired own/counterfactual directional separation ≥0.90, entity-bootstrap lower bound >0.85.
+- Correct-write uplift over the stronger of zero and random ≥0.70, lower bound >0.60.
+- Zero and random assigned-target following ≤0.20.
+- Abstract-state agreement after undoing panel permutations ≥0.95 across templates and panels.
+- Zero-hook equals no-write row-for-row.
+
+Exact tables are diagnostic. There is no PARTIAL rung-0 advance: failure, label-panel concentration, or dependence on one presentation abandons this architecture without width, optimizer, label or step repair.
+
+Budget: one runner plus one config; ≤180 nonblank lines, with ≥120 artifact-bearing and ≤60 apparatus lines. Expected three-seed CPU time 45–75 minutes; hard stop 90 minutes. Lay line: **“Can we build a tiny language model with one hidden register where writing a symbol once predictably changes what it says, regardless of the name, wording, or answer vocabulary?”**
+
+After rung 0, preserve the same cumulative artifact and change one difficulty at a time:
+
+1. Train only the source writer into the fixed register consumer, using training entities at zero delay.
+2. Add short delay.
+3. Add held-out entities.
+4. Add unseen wording.
+5. Add long delay.
+6. Only then test learned moves, composition, effort and maps.
+
+Honest user sentence: **This is the highest-leverage move because it tests whether the prerequisite object—a balanced causal state register—can exist before we build more mathematics around it; if oracle writes cannot control every state across presentations in one locked run, we abandon this constructed substrate rather than begin another repair ladder.**
+
 ## 2026-08-30 — Audit #36 on reachability_v1 (fresh, unprimed; verbatim): classification upheld; 'generic / indistinguishable / boundary geometry / linear' readings withdrawn; the slot has a coherent several-mode response that is not shown to be special
 
 My NOTEBOOK reading below is corrected by this audit: the position controls do not establish equivalence to generic positions; the two-tag pattern is made more plausible as boundary geometry, not proven; finite-dose agreement is directional only at one amplitude with sign-dependent asymmetry.
