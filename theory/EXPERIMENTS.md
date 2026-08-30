@@ -9876,7 +9876,7 @@ repository's prior accounting is approximately 28 measurement/governance
 rounds to 10 build rounds, or \(2.80{:}1\), above the \(2{:}1\) warning. This
 correction pass is theory/build work, not another measurement.
 
-## Round 41 — native_bridge_v1 (DRAFT - not locked; repair pass 2 applied; pending audit #47)
+## Round 41 — native_bridge_v1 (DRAFT - not locked; audit #47 LOCK-READY — wording corrections applied; runner/smoke/forecast/lock authorized)
 
 ### Status and narrative gate
 
@@ -10092,12 +10092,17 @@ The pre-deduplication count is
 Deduplication keys include execution mode and replay schedule. Plain
 `target_1` and hooked `pasteback` are intentionally distinct fixture paths,
 and the two replay schedules are intentionally repeated. The prospective tuple
-table has no duplicate complete call identity. A complete identity is
-`(replay, entity, endpoint family, word, execution mode, token IDs,
-intervention-payload recipe/hash)`. Source-derived hook families
-intentionally share token IDs and execution mode but have distinct
-intervention payloads; they are not deduplicated. There are **2,688 complete
-call identities** and **1,680 token/mode combinations**. The manifest stores
+table has no duplicate prospective scientific identity. A prospective
+scientific identity is `(run_phase=science, replay, entity, endpoint family,
+word, execution mode, token IDs, intervention-payload recipe hash)`. For
+donor-derived edits, the realized float32 payload hash is recorded after
+Phase D and before the dependent Phase-E invocation as execution provenance
+under that identity; it never substitutes a donor from another replay.
+Source-derived hook families intentionally share token IDs and execution mode
+but have distinct intervention payloads; they are not deduplicated. There are
+**2,688 scientific identities** and **1,680 replay-scoped `(replay, entity,
+token IDs, execution mode)` combinations**---840 if replay is ignored. The
+manifest stores
 the complete tuple table and rejects any disagreement between enumerated and
 formula counts as `INVALID — CALL MANIFEST`.
 
@@ -10220,9 +10225,11 @@ generality.
 The prospective smoke subset is entities \(i\in\{0,23\}\), words
 \(\epsilon\) and \(a_Qa_P\) (`Q P`), and both replay orders. For each such
 tuple, execute plain \(x_i\), unchanged-hook \(x_i\), plain \(y_i^*\), and
-same-carrier paste-back \(y_i^*\): exactly 32 mechanical call units. These
-outputs are used only for the three fixtures and timing, never for a
-scientific effect or population status.
+same-carrier paste-back \(y_i^*\): exactly 32 mechanical call executions,
+stored under a separate `run_phase=smoke` namespace. They are excluded from
+the 2,688 scientific identities and may not be reused as locked scientific
+endpoints; any overlapping execution path is repeated after the lock under
+`run_phase=science`.
 
 Let \(\eta_{\rm smoke}\) be the maximum same-tuple A/B discrepancy over all 32
 smoke calls and both channels, and put
@@ -10280,7 +10287,7 @@ There is no lock row in Round 41.
 The new runner, if later authorized, is
 `experiments/run_native_bridge.py`. Round 41 deliberately does not create it.
 
-### Stop rule and audit #46 checklist
+### Stop rule and audit #47 lock-readiness disposition
 
 There is no repair after any scientific output. Any `INVALID` closes
 `native_bridge_v1`; any complete valid FAIL, REFUTATION, or INCONCLUSIVE is the
@@ -10289,34 +10296,15 @@ WALL`. Changing a row, word, site, target, control, constant, replay schedule,
 or threshold after output would be a different named artifact and requires a
 new dialogue and preregistration. No same-check repair is permitted.
 
-Audit #46 must check:
-
-1. the exact audit-#45 edits 1--10 in `theory/AXIOMS.md` and their propagation
-   into this draft;
-2. the 96 explicit row IDs, three-target nonindependence wording, donor-set
-   cardinalities, cycled wrong label, and tokenization assertions;
-3. the canonical DAG-cut/no-descendant definition and the conditional status
-   of faithful continuation and response-level intertwining;
-4. the batch-one token/mask/position/no-cache construction and whether the
-   existing hook pattern really instantiates that cut without a descendant in
-   the continuation record;
-5. the \(2\eta\) and \(4\eta\) triangle-inequality propagation, fixed
-   constants, and finite-population/descriptive-stability semantics;
-6. the no-edit and wrong-label contrasts and every native/centroid
-   PASS/FAIL/REFUTATION/INCONCLUSIVE implication;
-7. the certified exact-refutation versus tolerance-robust numerical-
-   implementation wording and the claim wall;
-8. the exact call-unit definition, eight families, 2,688 pre-dedup and
-   deduplicated counts, 32-call smoke, forecast equation, 90-minute abort, GPU
-   condition, and required pre-science lock row;
-9. the ten-stage runner contract and the no-repair/any-INVALID-closes stop
-   rule; and
-10. whether this program should continue and whether this remains the
-    highest-leverage bounded next artifact.
-
-Audit #46 is a lock-readiness review of the mathematics and preregistration
-draft. It does not itself create a runner, manifest, smoke forecast, lock row,
-or authorization for scientific compute.
+Audit #47 verified the seven repair families, the 72+1,272 dependency
+schedule, the 2,688 scientific identities, the 1,680 replay-scoped
+token/mode combinations, the 32-call mechanical smoke, the normalized metric
+and replay envelopes, and the absence of hidden calls, serialized cut
+records, and cross-replay donors. Verdict: LOCK-READY subject to the
+report's wording-only identity and provenance corrections. This authorizes
+runner/config construction, the mechanical smoke, forecast derivation,
+and---if valid---a pre-science lock row; no scientific forward pass is
+authorized before that row.
 
 Measurement-to-artifact heartbeat: Round 41 adds 0 apparatus lines and 0
 artifact-bearing code lines, \(0/0\). It is one theory/build round. After audit

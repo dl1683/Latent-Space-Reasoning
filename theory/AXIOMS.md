@@ -1441,7 +1441,7 @@ is audited may a small real-model refutation-oriented bridge artifact be
 considered. Exact bridge equality remains diagnostic; `native_horizon_v1`
 remains unselected; no computation is authorized.
 
-### Native bridge specification (proposed, rounds 40-42; audits #45-#46 corrections applied; pending lock-readiness audit #47)
+### Native bridge specification (proposed, rounds 40-42; audits #45-#47 corrections applied; audit #47 LOCK-READY — wording corrections only)
 
 **Status.** The carrier, actions, restricted distance, excess-discrepancy
 estimands, controls, and outcome meanings below are **defined**. Totality and
@@ -1907,25 +1907,17 @@ Round 41 adds no experimental apparatus and no artifact-bearing code
 the measurement/governance-to-build ratio is \(30:14=2.14:1\), still above
 the \(2:1\) warning and below the \(5:1\) halt.
 
-#### Audit #46 must check
+#### Audit #47 lock-readiness disposition
 
-Audit #46 must verify: (1) the \(\mathsf P,a_P,a_Q\) typing and exhaustive
-case proofs; (2) the canonical DAG cut, no-descendant rule, canonical
-token/mask/position/cache construction, and conditional status of faithful
-continuation and response-level intertwining; (3) the exact prospective row IDs and the
-nonindependence wording for three targets; (4) the \(2\eta/4\eta\) triangle-
-inequality propagation, \(\varepsilon_B,\varepsilon_E,\tau\), and fixed-
-population stability semantics; (5) the explicit centroid populations,
-unedited and wrong-label controls, paired contrasts, and all three centroid
-PASS gates; (6) the conjectured proximal site-sufficiency wording and its
-inability to validate centroid formation; (7) exact versus numerical-
-implementation refutation language; (8) the eight-family \(2{,}688\) count,
-equal deduplicated count, mechanical smoke, forecast, hard wall, abort, and
-pre-science lock contract; (9) every licensed and forbidden sentence,
-including the new within-Qwen surgeon wording and the unvalidated block-16
-single-position site; and (10) whether the artifact should continue and is
-still the highest-leverage bounded next step. Audit #46 does not itself create
-a lock row or authorize scientific compute.
+Audit #47 verified the seven repair families, the 72+1,272 dependency
+schedule, the 2,688 scientific identities, the 1,680 replay-scoped
+token/mode combinations, the 32-call mechanical smoke, the normalized metric
+and replay envelopes, and the absence of hidden calls, serialized cut
+records, and cross-replay donors. Verdict: LOCK-READY subject to the
+report's wording-only identity and provenance corrections. This authorizes
+runner/config construction, the mechanical smoke, forecast derivation,
+and---if valid---a pre-science lock row; no scientific forward pass is
+authorized before that row.
 
 ## Prior relational foundation (Rounds 1--12; superseded, retained for provenance)
 
