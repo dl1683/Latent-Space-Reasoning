@@ -5,6 +5,36 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — Round 28 (direction session; verbatim): lock review of the repaired preflight runner — six edits required, then lockable
+
+All six edits were applied (pidx = (e + 4j) mod 8 with tag-balance assertion; destroyed arm scored with the intact fold decoders; legend-occurrence reported as a reference, not gated; balanced entity-clustered label-shuffle null; deadline enforced through fitting; float32 features; separate hash-bound config `experiments/config/register_bridge_preflight_v1.json`; renamed statuses; denoted state asserted and saved). Smoke ran end to end; locked at 8beb8e9 (`register_bridge_preflight_v1_lock`) and launched.
+
+**Lock ruling: EDITS REQUIRED.** The smoke may finish as an implementation diagnostic, but the full run is not yet evidentiary.
+
+1. [Line 57](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_register_bridge_preflight.py:57) leaks state through permutation selection: `e*K` vanishes modulo 8, leaving `pidx` determined by `s,t,j`. Use `pidx=(e+j*(K//2))%K` and assert equal `pidx`/tag frequencies within every fold × state × template.
+
+2. [Lines 70–90](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_register_bridge_preflight.py:70) retrain a decoder on destroyed prompts. Fit each fold decoder on intact training rows once, then apply those exact weights to both intact and paired-destroyed held-out rows. Save accuracy against original `s` and following of the destroyed-legend state.
+
+3. [Lines 89–100](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_register_bridge_preflight.py:89) incorrectly put `legend_occurrence` inside the control that PASS must beat by 0.20. It is an easier positive reference/ceiling, not a null. Report it separately. Gate paired advantage against input embedding, categorical, and destroyed-context controls only—preferably using the entitywise maximum before bootstrapping.
+
+4. [Lines 93–97](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_register_bridge_preflight.py:93) preserve fold-level label balance, but shuffle individual repeated rows. Use one state permutation per entity, applied consistently to every training row belonging to each `(entity,state)` cell. This preserves entity, fold, and repeated-view structure. It is a **balanced entity-clustered label-shuffle null**, never a coordinate-shuffle null.
+
+5. [Line 65](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_register_bridge_preflight.py:65) enforces the deadline only during model forwards. Enforce it during feature compression, decoder selection, controls, nulls, and serialization too. [Line 67](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_register_bridge_preflight.py:67) should retain float32 features; float16 need not reproduce ridge selection or boundary predictions.
+
+6. A separate config is mandatory: `experiments/config/register_bridge_preflight_v1.json`. The locked rung-1 config still says `state=e mod 8`, “one entity per state,” and code/bridge-level statuses. Do not edit it. The new config must bind the exact templates, revision, entity source, seed 2727, 200 shuffles, two permutations per cell, 2,000 bootstraps, 150-minute total wall, feature dtype, and corrected statuses. Remove operational defaults from [line 33](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_register_bridge_preflight.py:33).
+
+The destroyed prompt construction itself is correct. Under the intact legend, tag `π[s]` denotes `s`; under the destroyed legend it denotes `σ⁻¹(s)`, which differs from `s` because `σ` is a derangement. The arms share clause order, permutation, record, and token multiset—not identical token sequence, since the legend tags must move. Explicitly assert and save `destroyed_denoted_state = σ⁻¹(s)`.
+
+Finally, change the emitted statuses at [line 100](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_register_bridge_preflight.py:100) to:
+
+- `PREFLIGHT PASS — EXPLICIT-LEGEND STATE LINEARLY DECODABLE`
+- `PREFLIGHT PARTIAL — TOKEN/CONTEXT-BOUND DECODABILITY`
+- `PREFLIGHT FAIL — NO QUALIFYING EXPLICIT-LEGEND STATE DECODER`
+
+After these edits and one manifest/runtime smoke, the design is ready to lock without further scientific changes.
+
+Ratio heartbeat: approximately `22:7 = 3.14:1`; the warning remains active, so this one preflight must lead directly to a causal bridge dialogue or closure.
+
 ## 2026-08-30 — Audit #38 on necessary_register_rung1 (fresh, unprimed; verbatim): qualified uphold; 'functional source writer' narrowed to an answer-supervised eight-symbol writer; synthetic staircase stops; preflight runner not lockable (nine defects)
 
 My reading is corrected: value_only reproduces own, so the entity is dispensable and the rung tests no relation; 'the addressable set is larger than the 8 codes' is replaced by the audited decision-region reading. The nine preflight defects are repaired before any run (the smoke timed out at 1500 s in the fitting phase, confirming defect 5).
