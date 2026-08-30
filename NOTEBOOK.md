@@ -5,6 +5,280 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — register_bridge_preflight_v1 result (provisional; audit #39 in flight) and the pause
+
+Devansh asked for a clean pause: finish and audit the running measurement, write a zero-context handoff, clean the sprawl, commit and push, then stop. The preflight (locked 8beb8e9) returned PREFLIGHT PASS — EXPLICIT-LEGEND STATE LINEARLY DECODABLE: held-out accuracy 0.815 (entity LB 0.779; folds 0.828/0.852/0.766; state recall 0.61–0.99), input-embedding 0.125, categorical 0.135, paired context-destroyed 0.016 with the destroyed arm following the legend-denoted state at 0.852, entitywise-max control advantage 0.642 (LB 0.602), balanced label-shuffle null mean 0.124 / p99 0.204, legend-occurrence reference 0.944, layer 16 selected in every fold. Ledger `register_bridge_preflight_v1_result` (d2acfe8). Provisional until audit #39; the pre-declared licence is only that frozen Qwen's tested source span contains a linearly accessible, presentation-transferring explicit-legend state signal — not a code-level or causal bridge.
+
+## 2026-08-30 — Round 29 (direction session; verbatim): pause / handoff design and cleanup ruling
+
+The right handoff is one committed front door, finalized only after audit #39 is adopted. The actual chronology is prior program → NLM-007 → toy quotient → frozen-model line → constructed substrate → real-model preflight; the prompt’s toy/NLM ordering is reversed.
+
+## 1. Handoff document spec
+
+Create [docs/HANDOFF_2026_08_30.md](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/docs/HANDOFF_2026_08_30.md) with these sections.
+
+### Title and pause banner
+
+```md
+# Latent-Space Reasoning — pause handoff, 2026-08-30
+
+> **PAUSED.** No experiment is authorized merely by reopening this repository.
+> Read this document, `STATE.md`, and the adopted audit #39 record before
+> proposing work. Any restart begins with the blackboard and a fresh direction
+> dialogue.
+```
+
+### Mission and guiding question
+
+Copy the mission sentence from the opening of `README.md`, followed by this exact text from `AGENTS.md`:
+
+> Mathematics was invented by inhabitants of a world to navigate it — counting, measuring, mapping, predicting — and its laws were shaped by what that world made necessary. Invert the dynamic: **take the latent space as the world.** Ask what a denizen of that world would have to invent to find its way — what counts as the same place, what a move is, what effort a move costs, what a map is, what regularities make prediction possible — and let that need decide which primitives and laws we build.
+
+Then state:
+
+> The mission remains open. No tested real-model construction has established native latent mathematics, a transferable causal state, or a general impossibility result.
+
+### Exact pause point
+
+Do not draft this until audit #39 is adopted. Copy, verbatim:
+
+1. Audit #39 headline.
+2. Its exact licensed sentence.
+3. Its never-say list.
+4. Its “continue-or-not / highest-leverage” ruling.
+5. Its final measurement-to-artifact ratio.
+
+Sources, in authority order:
+
+- The audit-#39 block added to [STATE.md](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/STATE.md).
+- Ledger rows `register_bridge_preflight_v1_result` and `register_bridge_preflight_v1_audit39`.
+- The local `.codex_audit39.md` only as a cross-check; it is git-ignored and cannot be the committed authority.
+
+Never copy the raw `run_result.json` headline without the audit qualification.
+
+### One-screen program arc
+
+Use this table:
+
+| Line | Status | Binding provenance |
+|---|---|---|
+| Prior perturbation/diffusion program | Closed 2026-08-27; nested-arithmetic claims withdrawn after the benchmark was shown to measure termination under a token cap | `README.md` “Prior program and correction”; `legacy/docs/CORRECTION_NESTED_ARITHMETIC_2026_08.md` |
+| NLM-007 residual-dynamics line | Closed by terminal allocation rule, not by a scientific null | Audit #22; ledger `nlm007_closed_audit22`; `STATE.md` “NLM-007 — CLOSED” |
+| Toy operational-quotient program | Ended; no learned artifact passed the complete exact reducer, and Round 37 found no architectural win | Audits #23–#26 plus Round 37 audit; ledger IDs enumerated in `STATE.md` “Closed toy program” |
+| Frozen-model coordinate/interchange/state-bus/control-cost line | Stopped as an allocation pivot, not a scientific conclusion | Audits #27–#31; ledger `direction_r10_program_ruling` and construction rows |
+| One-write positive-control staircase | Exact constructions failed or localized instrument, extraction, actuator, or prompt/output-geometry constraints; no general memory/capacity conclusion | Audits #32–#36 |
+| Constructed register substrate | Rung 0 is a qualified synthetic oracle-code selector; rung 1 is a qualified answer-supervised eight-symbol writer; neither establishes semantic writing, persistence, geometry, or pretrained-model structure | Audits #37–#38 |
+| Real-model bridge preflight | Insert audit #39’s exact adopted classification here | Ledger `register_bridge_preflight_v1_lock`, result, and audit #39 |
+
+Immediately below it, copy the four durable findings and unified explanation from [docs/STRUCTURED_NEGATIVE_2026_08_29.md](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/docs/STRUCTURED_NEGATIVE_2026_08_29.md), verbatim.
+
+### Do not repeat
+
+Include this closure index. The “Licensed/never-say authority” column is a pointer, not permission to paraphrase.
+
+| Construction | Closure reason | Licensed/never-say authority |
+|---|---|---|
+| NLM-007 | Terminal allocation stop; Round 34b inconclusive | `STATE.md` NLM-007 block, audit #22 |
+| Operational quotient v1/36b/36c/36d and presentation quotient | Toy program ended; exact certificates diagnostic-only; Round 37 no architectural win | `STATE.md` closed-toy blocks, audits #23–#26/Round 37 |
+| `coordinate_v1` | `UNINTERPRETABLE — INVALID POLARITY BASELINE` | `STATE.md` historical coordinate block |
+| `coordinate_v2` | Killed at the predeclared baseline gate | Same |
+| `coordinate_v3` | Coordinate claim negative; narrow late lexical-control diagnostic only | Audit #27 block |
+| `interchange_v1` | Locked raw-zero baseline failed; no swap arm ran | Audit #28 block |
+| `interchange_v2` | Fixed single-anchor replacement construction failed | Audit #30 block |
+| `state_bus_v1r1` | Fixed-construction fail; repeated supervised response controller, not autonomous state | Audit #29 block |
+| `control_cost_v1` | Fixed actuator/solver/readout/budget construction failed; censored costs void broader laws | Audit #31 block |
+| `onewrite_state_v1` | Killed pre-lock because the visible-fact instrument failed; no state hypothesis tested | Current statement |
+| `onewrite_recall_v1` | Valid instrument, but the registered held-out channel failed | Audit #32 block |
+| `onewrite_recall_rung1` | Training-item construction failed; failure initially unlocalized | Audit #33 block |
+| `oracle_actuator_rung0` | Exact shared-J oracle actuator failed | Audit #34 block |
+| `site_oracle_v1` | Balanced bounded eight-way control failed; exact slot/prompt recipe closed | Audit #35 block |
+| `reachability_v1` | Measurement classified `NO SLOT-SPECIFIC GEOMETRY CONCLUSION` | Audit #36 block |
+| Constructed register rungs 0–1 | Qualified synthetic calibrations; synthetic staircase stopped after audit #38 | Audits #37–#38 |
+| `register_bridge_preflight_v1` | No repair or rerun; use audit #39 | Audit #39 |
+
+Add:
+
+> `necessity_navigator_v1` is **deferred, not a result and not automatically next**. Its 2,000-step record is a smoke only. Running it requires a fresh direction dialogue.
+
+### Standing decision after the preflight
+
+Audit #39 supersedes everything here. Copy its ruling verbatim. If it preserves audit #38’s branches, reproduce:
+
+- PASS → direction dialogue, then one held-out causal bridge test mapping real-model residuals to successful constructed-writer centroids and injecting them into the frozen consumer.
+- PARTIAL → lexical/context engineering evidence only; no staircase advance.
+- FAIL → close the synthetic register route as nonbridging through this tested source-span path.
+- Never reopen layer, site, actuator, prompt, or model-size sweeps as repairs.
+
+### Binding operating contract
+
+Reproduce these rules because `AGENTS.md` is git-ignored:
+
+- Every session calls `bb_list` first, records findings with provenance, and calls `bb_synthesis` before a verdict.
+- Before any run, state the expectation, what each possible outcome implies, and the simplest confound that could explain every row.
+- A scientific run requires a frozen design, config, runner hash, thresholds, statuses, controls, and kill rule.
+- A locked outcome is audited once. There are no outcome-dependent rescue runs. A scientifically different successor requires the 2–3-round direction dialogue and a new lock.
+- Exact certificates are diagnostics only. Learned continuous-model verdicts require tolerance criteria, effect sizes, and seed spread.
+- Use the positive-control staircase: training items/zero delay → short delay → held-out names → unseen wording → long delay, changing one difficulty per audited rung.
+- Report apparatus/artifact lines and measurement/build rounds at every heartbeat. Above 2:1, warn; above 5:1, halt and pivot.
+- Generation accuracies always include termination. Task-nested samples use paired or clustered inference.
+- Audit wording overrides raw runner status. Propagate an adopted downgrade or qualification to README, STATE, NOTEBOOK, EXPERIMENTS, and the ledger in the same session.
+- One CPU process at a time. No GPU run without Devansh’s explicit approval.
+- Codex means the real CLI:
+
+```text
+codex exec -s workspace-write --skip-git-repo-check -C "<dir>" -o "<out>" "<prompt>"
+```
+
+- Each Codex session is fresh; the repository carries context. `resume --last` is only for an immediate one-line follow-up.
+- One idea per commit; commit messages end `Committed by Devansh`. Never use `git add -A`. Never commit `AGENTS.md`, `internal/`, `.codex_*`, `.claude_*`, `.blackboard/`, secrets, routing, costs, or local model details.
+
+### Hardware and process facts
+
+Copy the Hardware section of `AGENTS.md`, including:
+
+- Sustained GPU load has hard-crashed this laptop.
+- Explicit approval is required per GPU run.
+- One compute process at a time.
+- Use detached, checkpointed execution for approved long jobs.
+- After unexplained restart:
+
+```powershell
+Get-WinEvent -FilterHashtable @{LogName='System'; Id=6008,41}
+```
+
+- Windows runs use `PYTHONUNBUFFERED=1` and `PYTHONIOENCODING=utf-8`.
+
+### Canonical runners
+
+Make clear that commands for closed runners are for reproduction only.
+
+| Runner | Exact command authority |
+|---|---|
+| `run_lm_dynamics.py` | Relevant NLM-007 ledger result row; do not reconstruct its multi-stage commands |
+| `run_coordinate.py` | `coordinate_v1_result`, `coordinate_v2_baseline`, `coordinate_v3_result` |
+| `run_interchange.py` | `interchange_v1_result`, `interchange_v2_lock/result` |
+| `run_state_bus.py` | `state_bus_v1r1` lock/result rows |
+| `run_control_cost.py` | `control_cost_v1_result` |
+| `run_onewrite_state.py` | `onewrite_state_v1_killed_prelock` |
+| `run_onewrite_recall.py` | `onewrite_recall_v1_lock/result`, `onewrite_recall_rung1_lock/result` |
+| `run_oracle_actuator.py` | `oracle_actuator_rung0_lock` |
+| `run_site_oracle.py` | `site_oracle_v1_lock` |
+| `run_reachability.py` | `reachability_v1_lock` |
+| `run_necessity_navigator.py` | Deferred; smoke command only in `navigator_smoke_r32fixes`; do not run |
+| `run_necessary_register.py` | Rung-0 and rung-1 lock rows |
+| `run_register_bridge_preflight.py` | `register_bridge_preflight_v1_lock`; do not rerun |
+
+The current reproducibility commands are:
+
+```text
+python experiments/run_necessary_register.py --config experiments/config/necessary_register_v1.json
+python experiments/run_necessary_register.py --config experiments/config/necessary_register_rung1.json
+python experiments/run_register_bridge_preflight.py --config experiments/config/register_bridge_preflight_v1.json
+```
+
+All three are completed/closed once audit #39 lands; none is a restart instruction.
+
+### Repository map
+
+- `README.md`: public front door.
+- `docs/HANDOFF_2026_08_30.md`: pause and restart authority.
+- `STATE.md`: canonical scientific wording and never-say lists.
+- `docs/STRUCTURED_NEGATIVE_2026_08_29.md`: audited two-day synthesis.
+- `experiments/ledger.jsonl`: append-only run, hash, command, result, and audit provenance.
+- `experiments/EXPERIMENTS.md`: detailed experiment record; older queue language is historical.
+- `NOTEBOOK.md`: reverse-chronological dialogue and audit record, not claim authority over `STATE.md`.
+- `experiments/config/*.json`: immutable contracts for completed runs.
+- `experiments/results/*/result.json` or `run_result.json`: raw outcomes; audit wording may narrow their status strings.
+- `legacy/`: closed previous program, not an active queue.
+- `.codex_*`, `.blackboard/`, `AGENTS.md`, logs, feature dumps, and some checkpoints: local-only unless separately packaged.
+
+### First 30 minutes for a fresh reader
+
+```md
+1. Run `bb_list`; reuse the existing direction/audit board.
+2. Read README → this handoff → STATE Current statement → the structured negative.
+3. Read the final five ledger rows, audit #39’s adopted block, and the preflight result summary.
+4. Run `git status --short` and record HEAD; do not edit hash-bearing configs or runners.
+5. Confirm that no experiment process is active.
+6. Classify every proposed action against audit #39’s restart rule.
+7. State expectation, outcome branches, simplest confound, and the current ratio before proposing a run.
+8. If work resumes, begin a fresh 2–3-round direction dialogue; do not resume an old repair ladder.
+```
+
+## 2. `STATE.md`
+
+Replace the header with:
+
+```md
+## Current statement (2026-08-30, PAUSED; audits #27–#39 adopted; `docs/HANDOFF_2026_08_30.md` is the restart authority; no experiment is running)
+```
+
+Insert immediately below it:
+
+```md
+- **PAUSE / RESTART AUTHORITY.** This program is paused. The adopted `register_bridge_preflight_v1` result and audit #39 wording below govern any restart. No embedded `NEXT` sentence from audits #27–#38 authorizes work; those sentences are historical. A restart begins with `bb_list`, the handoff and this Current statement, followed by the direction dialogue required by audit #39 before any build or run.
+```
+
+Do not alter any verbatim audit block. Remove only the final standalone bullet beginning:
+
+```md
+- NEXT: `register_bridge_preflight_v1` locked ... and RUNNING
+```
+
+Replace it with:
+
+```md
+- `register_bridge_preflight_v1` — [COPY AUDIT #39 HEADLINE VERBATIM].
+  Licensed sentence (audit #39, verbatim): [COPY FROM THE ADOPTED STATE BLOCK].
+  Never say (audit #39): [COPY VERBATIM].
+- **PAUSED.** [COPY AUDIT #39’S CONTINUE-OR-NOT RULING VERBATIM.] No further run is authorized until a fresh direction dialogue ratifies the applicable branch.
+```
+
+Also reconcile the top of `experiments/EXPERIMENTS.md`: it currently says “early,” calls audit #38 pending, and still calls audit #34 pending. Those must become adopted/history entries before handoff.
+
+## 3. Cleanup ruling
+
+Delete:
+
+- `experiments/analyze_r34a_frozen.py` — untracked temporary copy; its own ledger row says the completed chain deletes it.
+
+Retain or explicitly commit/package—do not silently delete:
+
+- `experiments/results/onewrite_state_v1/smoke_result.json` — untracked, but contains raw pre-lock decodes and is named as a ledger `data_ref`. Either add it explicitly as diagnostic evidence or retain it locally with a recorded hash.
+- `experiments/results/register_bridge_preflight_v1/run_features.npz` once produced — git-ignored but required for recomputation; retain at least through audit #39 and record its hash/location.
+- `experiments/results/necessity_navigator_v1/` — the construction remains deferred.
+- Every closed result directory, including toy quotient and NLM-007 outputs. Negative results are permanent.
+- `op_update_fixture.py` — no filename-level ledger hit, but it is documented historical Round-36 fixture machinery.
+- All locked configs, runners, raw-row archives, consumer/writer checkpoints, and audit-adopted result JSONs.
+
+Do not delete or consolidate `STATE.md`, `NOTEBOOK.md`, `experiments/EXPERIMENTS.md`, or the structured negative. There is currently no duplicate file in `docs/`; the handoff has a distinct front-door role.
+
+## 4. README Status replacement
+
+Replace the entire run-on Status section with:
+
+```md
+## Status (paused 2026-08-30)
+
+Across two days of audited CPU experiments, no tested construction established a transferable causal state or native latent mathematics in a real model; the durable result is a localized set of instrument-validity, source-extraction, actuator, and prompt/output-geometry constraints that any future substrate must satisfy.
+
+The program is paused after `register_bridge_preflight_v1` and audit #39. Start with the [pause handoff](docs/HANDOFF_2026_08_30.md), then the canonical [current state](STATE.md). The audited two-day closeout is [the structured negative](docs/STRUCTURED_NEGATIVE_2026_08_29.md), and append-only run/audit provenance is in the [experiment ledger](experiments/ledger.jsonl).
+```
+
+## 5. Newcomer traps
+
+- Raw status strings are not final scientific claims. Audit #37 narrowed rung 0; audit #38 narrowed rung 1; audit #39 must govern the preflight.
+- `state_bus_v1r1`’s displayed status omits one registered failure because of control flow; use audit #29.
+- The oracle-actuator result’s initial “two codes worked” interpretation was corrected: code 0 reproduced the cue prior.
+- `site_oracle_v1`’s reported cap-active rate was numerical boundary rounding, not meaningful clipping.
+- `reachability_v1` does not establish two or three reachable dimensions.
+- The tracked navigator `smoke_result.json` is not the 2,000-step smoke cited in `STATE.md`; `NOTEBOOK.md` records that the live file was overwritten by a later 300-step invalid smoke. Cite the ledger row, never that file, for the 2,000-step numbers.
+- `legacy/` is historical and closed; its older NEXT/queue language is not authorization.
+- `.codex_*`, `AGENTS.md`, `.blackboard/`, logs, and feature dumps are git-ignored. A fresh clone will not contain them.
+- Many `NOTEBOOK.md` links are absolute paths tied to this laptop.
+- Hash-bearing completed configs and runners are evidence. Editing them destroys reproducibility; successors need new filenames/configs and a new lock.
+- The final closeout is not complete until `git status --short` is clean or every remaining local-only evidentiary artifact is explicitly listed in the handoff.
+
 ## 2026-08-30 — Round 28 (direction session; verbatim): lock review of the repaired preflight runner — six edits required, then lockable
 
 All six edits were applied (pidx = (e + 4j) mod 8 with tag-balance assertion; destroyed arm scored with the intact fold decoders; legend-occurrence reported as a reference, not gated; balanced entity-clustered label-shuffle null; deadline enforced through fitting; float32 features; separate hash-bound config `experiments/config/register_bridge_preflight_v1.json`; renamed statuses; denoted state asserted and saved). Smoke ran end to end; locked at 8beb8e9 (`register_bridge_preflight_v1_lock`) and launched.
