@@ -5,6 +5,460 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — Audit #38 on necessary_register_rung1 (fresh, unprimed; verbatim): qualified uphold; 'functional source writer' narrowed to an answer-supervised eight-symbol writer; synthetic staircase stops; preflight runner not lockable (nine defects)
+
+My reading is corrected: value_only reproduces own, so the entity is dispensable and the rung tests no relation; 'the addressable set is larger than the 8 codes' is replaced by the audited decision-region reading. The nine preflight defects are repaired before any run (the smoke timed out at 1500 s in the fitting phase, confirming defect 5).
+
+## Verdict
+
+**Qualified uphold; headline narrowed.**
+
+`necessary_register_rung1` mechanically and reproducibly passes its locked gates on seeds 11/23/37. The defensible classification is:
+
+**`QUALIFIED PASS — ANSWER-SUPERVISED EIGHT-SYMBOL WRITER INTO A FROZEN SYNTHETIC CONSUMER`**
+
+The result establishes more than ordinary eight-class training: downstream answer-label-plus-EOS loss alone found non-oracle unit interventions that a separately trained frozen consumer follows under unseen output permutations. But `value_only` reproduces `own`, so the source task itself is trivial: `<V_s>` directly names the state, the entity is unnecessary, and no relation or semantic fact must be inferred.
+
+The current phrase “functional source writer” is acceptable only with that qualification. The broader reading—semantic source writing, code recovery, persistence, or discovery of a register geometry—is unsupported.
+
+No research artifact was modified; only the required git-ignored blackboard record was updated.
+
+## Replay and freeze
+
+The binding evidence is strong:
+
+- The live rung-1 runner/config hashes and bound rung-0 config/result hashes match `run_result.json`.
+- All six saved writer/consumer checkpoint hashes match.
+- The replayed consumer reproduces the seven checked rung-0 scalars exactly, apart from floating-point roundoff of at most \(2.8\times10^{-17}\) in `random_assigned`.
+- The factorial oracle regression remains `VALID` at 0.960/1.000/1.000.
+
+The qualification is that “replay” means deterministic retraining, not loading the original rung-0 consumer: no original checkpoint existed. `replay_ok` compares seven scalar summaries, not parameters, logits, rows, or checkpoint bytes.
+
+The freeze is genuine by code:
+
+- `model.eval()` is called before the crossed regression and writer training.
+- Every consumer parameter receives `requires_grad_(False)`.
+- AdamW receives only `wr.parameters()`.
+- Dropout is zero and the model has no batch-normalization-style mutable state.
+
+The consumer checkpoint is saved before writer training and is not rehashed afterward. Thus immutability is established by the inspected execution path, not by a saved before/after comparison. A post-fit consumer hash would make future runs stronger.
+
+## Writer and controls
+
+The writer sees exactly:
+
+`<SRC> <E_e|MASK> <HAS> <V_s|MASK> <WRITE>`
+
+It receives no panel, permutation, template, query, answer, or output label. Its loss is answer-label plus EOS cross-entropy through the frozen consumer; there is no code regression, cosine objective, or auxiliary state classifier.
+
+The controls localize what it learned:
+
+- `value_only` accuracy is 0.967/1.000/1.000 versus `own` 0.966/1.000/1.000.
+- Decoded `own` and `value_only` outputs are identical on 2,297/2,304 seed-11 rows and every row for seeds 23/37. It is therefore near-equality, not literal equality in all seeds.
+- Full-source versus value-only write-vector cosine averages 0.996/0.992/0.985.
+- Masking the value reduces assigned-target accuracy to 0.124/0.109/0.109.
+- All arms terminate at 1.000.
+
+Consequently, the entity token is behaviorally dispensable and the value token supplies essentially the entire state signal. Shuffled donors mainly repeat the counterfactual-value test with another entity attached.
+
+The crossing is genuine within its declared scope:
+
+- All 384 `(entity, template, panel)` cells occur exactly six times per seed.
+- All 128 `(state, template, panel)` cells occur exactly eighteen times.
+- Every panel × held-out-permutation cell appears, with 22–51 rows per cell.
+
+But state is fixed as `entity mod 8`; entity × state is not factorially crossed. The seven counterfactual arms change the value for each fixed prompt and provide the important within-prompt causal evidence.
+
+Donors always change state. Exact panel/template/permutation matching holds for 6,911/6,912 rows. Seed 11 has one registered fallback matched only on panel/template; it still follows the donor state. This negligible deviation does not change the verdict, but “perfectly context matched” would be false.
+
+## Telemetry interpretation
+
+The saved telemetry does not support nearest-oracle-code decoding:
+
+- True-code cosine is 0.721/0.421/0.493.
+- Seed 23’s 24 state-6 writes are all nearest another oracle code.
+- Seed 37’s 24 state-3 writes are all nearest another oracle code.
+- Nevertheless, the full writes score 0.966/1.000/1.000.
+
+Checkpoint interventions sharpen the geometry:
+
+- Mean energy inside the eight-code span: 0.548/0.286/0.442.
+- Mean orthogonal-complement energy: 0.452/0.714/0.558.
+- Code-span projection alone: 0.939/0.871/0.975 accuracy.
+- Orthogonal complement alone: 0.398/0.305/0.688.
+- Per-state full-write centroids: 0.965/1.000/1.000.
+- Nearest-code replacement: 0.961/0.875/0.875.
+- Sign-only code coefficients: 0.284/0.191/0.220.
+
+The consumer is therefore reading neither nearest-code cosine nor a simple sign pattern. Both projected and off-code components carry causally useful state information, and their combination matters.
+
+The narrow licensed interpretation is that the consumer has context-dependent decision regions containing the eight oracle points and additional learned writer centroids. “The addressable set contains successful non-code points” is established. “The addressable set is a larger subspace,” its dimension, topology, smoothness, or interpolation structure is not.
+
+## Wording audit in both directions
+
+**Over-claim:**
+
+- “Source writer” suggests semantic extraction; this is an eight-token symbol writer.
+- The state is directly named by `<V_s>`, so the rung does not test relational binding, factual interpretation, or language understanding.
+- `value_only = own` is approximate for seed 11, not row-for-row exact.
+- Donor context matching is 6,911/6,912, not perfect.
+- Entity × template × panel is factorial; entity × state is not.
+- Far-from-code writes do not establish a larger addressable subspace.
+- Nearest-code error does not itself reveal what geometric rule the consumer uses.
+- “Zero/random behaved at chance” must remain “assigned-target accuracy near 1/8”; their output distributions are systematic.
+- Zero configured filler is not evidence of memory or persistence.
+
+**Under-claim:**
+
+Calling this only “a GRU learned eight symbols” omits the real engineering positive. Three independently initialized writers, trained without code supervision, found unit interventions that a separately trained frozen consumer accepts under globally unseen output mappings. Same-prompt counterfactual following is 0.964/1.000/1.000, and per-state centroids retain full behavior.
+
+It is also genuinely established that the consumer’s behavioral partition is not the oracle-code Voronoi partition: two complete state classes are closer to the wrong oracle code while remaining perfectly followed.
+
+## Preflight runner defects
+
+The current `register_bridge_preflight_v1` runner should **not** receive a full run or evidentiary lock yet.
+
+1. **The central estimand is confounded.** State is always `e mod 8`; entities never change state. A PASS can therefore reflect held-out-name lexical or morphological structure rather than an episode-defined legend/record relation. Cross every entity with every state.
+
+2. **The context-destroyed control is not paired.** Intact and destroyed prompts independently shuffle clause order. The arm changes both state–tag pairings and clause order, so its gap cannot isolate contextual binding. Reuse identical clause order, positions, permutation, and token multiset.
+
+3. **Evidence retention is inadequate.** Final rows omit residuals, embeddings, permutation index, clause order, destroyed mapping, control predictions, and the full shuffle-null distribution. Main model selection, controls, bootstrap, and null cannot be independently recomputed.
+
+4. **The shuffle null breaks fold balance.** It globally permutes the 24 entity labels, so individual eight-entity folds may lose states. That can depress the null. It is also a label-shuffle null, not a “shuffled-coordinate” null. Permute assignments within each balanced eight-entity fold and save all 200 scores.
+
+5. **The solver is computationally infeasible as written.** Each fit solves a dense approximately \(2048\times2048\) system. Layer/ridge selection, controls, and 200 null refits imply roughly fifteen thousand such solves. The claimed 35–50 CPU minutes is implausible, and no deadline is enforced. Use dual ridge on the much smaller sample-space matrix.
+
+6. **Tokenization identity is incomplete.** The runner feeds `b_ids + ids(".")` without verifying equality to tokenizing the declared full prompt. It must save exact prompt text, token IDs, span indices, decoded spans, and require the span to be the final record-tag occurrence.
+
+7. **The status overstates bridge relevance.** The runner never loads the constructed codebook, writer, or consumer. It predicts one-hot state labels from Qwen residuals. A PASS is linear state decodability for an explicit legend lookup—not linear access to the register code or evidence that the resulting vector can drive the consumer.
+
+8. **Bootstrap evidence can disagree with the gate.** `boot(acc_e)` is redrawn separately for logging, gating, and saved `entity_lb`. Compute each bootstrap statistic once and reuse it.
+
+9. **The execution contract is implicit.** CPU/float32 happen to follow `SubstitutionProbe` defaults, but config values are not explicitly applied, and no wall-clock limit exists.
+
+A FAIL would also conflate held-out entity, template, and permutation shifts. That conjunction is a legitimate stringent screen, but it cannot localize why the bridge failed.
+
+## Continue-or-not
+
+**Continue conditionally, but stop the synthetic staircase now.**
+
+The calibration artifact is working; the native-latent-space program is not yet working. The highest-leverage next action is one repaired real-model preflight because it can moot the synthetic line in either direction. Running short delay or another constructed rung first would be tunnel vision.
+
+The program is moderately-to-strongly tunnel-visioned around the same eight-symbol lookup structure: rung 0 selects a map position, rung 1 decodes `<V_s>`, and the preflight asks whether an explicit legend lookup is linearly readable. These are useful interface calibrations, but not yet a denizen’s state, motion, effort, or map in a real latent world.
+
+Decision rule:
+
+- **PASS after repair:** conduct the mandated dialogue and move directly to a held-out causal bridge test.
+- **PARTIAL:** treat it as lexical/context engineering evidence; do not advance the constructed staircase.
+- **FAIL:** close this synthetic line as unsupported by the tested real-model source-span route.
+- Do not reopen layer/site/actuator sweeps.
+
+## Alternatives
+
+The strongest alternative explanation of rung 1 is the cheapest one: a GRU maps eight unique value tokens into eight learned representatives inside broad, context-dependent consumer decision regions. Entity, source relation, and persistence are unnecessary.
+
+Better explorations instead of or alongside further synthetic development:
+
+- Make the real-model preflight truly episode-defined by crossing every entity with every state.
+- Replace the explicit `<V_s>` constructed source with a legend plus indirect record label, using an exactly paired mapping-destroyed control.
+- If the repaired preflight passes, fit a map from Qwen residuals directly to the eight successful writer centroids and test whether injection into the frozen constructed consumer follows held-out states and permutations.
+- Add a matched legend-tag-occurrence baseline: compare the record-tag residual with the identical tag at its legend occurrence to distinguish contextual binding from token reuse.
+- Treat input embedding, categorical, destroyed-context, and balanced label-shuffle controls as separate named estimands, not one generic “control.”
+- Do not spend another round characterizing the synthetic consumer’s geometry unless a real-model bridge first survives.
+
+## Exact licensed sentence
+
+> In the locked constructed `necessary_register_v1` task, three answer-label-plus-EOS-trained GRU interfaces, seeing the training-format source `<SRC> <E_e> <HAS> <V_s> <WRITE>`, produced unit register writes that made separately reconstructed-and-frozen rung-0 consumers follow own, all seven same-prompt counterfactual, and state-changing shuffled-donor value tokens under held-out output permutations at zero configured filler, with own accuracy 0.966/1.000/1.000, counterfactual following 0.964/1.000/1.000, and shuffled-donor following 0.967/1.000/1.000; because masking the entity preserved behavior, this establishes an answer-supervised eight-symbol writer into a synthetic consumer—not semantic source understanding, persistence, oracle-code recovery, an addressable geometric subspace, or structure in a pretrained model.
+
+## Never-say list
+
+- “The writer learned semantic facts.”
+- “The writer understood the source sentence.”
+- “Entity identity contributed to successful writing.”
+- “`value_only` equaled `own` row-for-row in every seed.”
+- “Every shuffled donor was exactly permutation matched.”
+- “Entity and state were factorially crossed.”
+- “The writer recovered the oracle codes.”
+- “The consumer implements nearest-code decoding.”
+- “The consumer learned an eight-dimensional addressable subspace.”
+- “Far-from-code cosine proves a larger continuous channel.”
+- “Zero and random interventions had no systematic effect.”
+- “Zero configured filler demonstrates persistence or memory.”
+- “The result generalizes to unseen entities or source wording.”
+- “The result establishes a register in Qwen or another pretrained model.”
+- “The current preflight can support an interpretable PASS/PARTIAL/FAIL.”
+- “A preflight PASS would establish a causal or code-level bridge.”
+- “The constructed substrate has discovered native latent mathematics.”
+
+## Copy-ready README wording
+
+> `necessary_register_rung1` is a qualified synthetic calibration PASS: on seeds 11/23/37, an answer-label-plus-EOS-trained GRU converted an explicit eight-way source value token into a unit register intervention that made a reconstructed-and-frozen rung-0 consumer follow own, counterfactual, and shuffled-donor states under held-out output permutations, with own accuracy 0.966/1.000/1.000 and counterfactual following 0.964/1.000/1.000. Entity masking preserved behavior, so the result establishes an answer-supervised symbol writer—not semantic source understanding, persistence, oracle-code recovery, a geometric subspace, or pretrained-model structure; successful writes include non-oracle points, but their decision-region geometry remains unidentified.
+
+## Copy-ready STATE wording
+
+> - **`necessary_register_rung1` — QUALIFIED PASS: ANSWER-SUPERVISED EIGHT-SYMBOL WRITER.** The locked gates mechanically pass in seeds 11/23/37: own 0.966/1.000/1.000, all-seven counterfactual following 0.964/1.000/1.000, and shuffled-donor following 0.967/1.000/1.000 with recipient following 0.006/0/0; all arms terminate. The consumer replay/freeze and factorial entity × template × panel evaluation are genuine, with one of 6,912 donors using the registered same-panel/template permutation fallback. Entity masking preserves behavior, so this establishes downstream-trained decoding of eight explicit value tokens into successful non-oracle interventions—not semantic source writing, persistence, code recovery, a larger subspace, or pretrained-model structure. NEXT: repair `register_bridge_preflight_v1` before any run by crossing entity × state, pairing the destroyed-context arm, balancing the label-shuffle null, retaining recomputable evidence, fixing tokenization/bootstrap invariants, and replacing the primal ridge solver; do not advance the synthetic staircase meanwhile.
+
+## Ranked next increments
+
+1. Repair the preflight’s entity–state confound, paired destroyed-context arm, evidence retention, balanced null, tokenization checks, bootstrap reuse, and solver.
+2. Run only a cheap smoke validating manifests, folds, saved evidence, and runtime; then lock the repaired runner.
+3. Run the repaired CPU preflight once and audit it once.
+4. On PASS, hold the required dialogue and move `register_bridge_v1` earlier: map Qwen residuals to successful writer centroids and test held-out causal consumption.
+5. On PARTIAL or FAIL, close the synthetic register line as nonbridging under this route.
+6. If a constructed-source follow-up is ever justified, remove the direct `<V_s>` symbol and require legend-conditioned relational resolution.
+7. Keep short delay, held-out constructed entities, unseen wording, long delay, moves, algebra, effort, maps, larger models, and actuator sweeps off until a real-model bridge survives.
+
+## Ratio heartbeat
+
+Declared line classification:
+
+- `run_necessary_register.py`: 183 nonblank lines; approximately 32 apparatus and 151 artifact-bearing lines, **0.21:1**.
+- `run_register_bridge_preflight.py`: 84 nonblank lines; approximately 26 apparatus and 58 substantive measurement lines, **0.45:1**.
+- Both are below the 2:1 line warning, though the preflight’s computational implementation is currently defective.
+
+Declared round classification:
+
+- Audit #37 baseline: 18 measurement/governance : 6 build.
+- Direction rounds 26–27: +2 governance → 20:6.
+- Rung-1 result: +1 build → 20:7.
+- This audit: +1 measurement → **21:7 = 3.0:1**.
+
+That remains above the 2:1 warning and below the greater-than-5:1 mandatory halt. The unrun preflight is a measurement, not central-artifact construction; its run and audit would raise the ratio to 23:7 unless followed immediately by a real bridge or closure. The missing substantive NOTEBOOK entries for rounds 26–27 also weaken the round-classification audit trail; their lock is recoverable only from the ledger.
+
+## 2026-08-30 — Round 27 (direction session; verbatim): conditional lock ruling for rung 1 and the register_bridge_preflight_v1 specification
+
+The writer design is sound, but the current runner is not lockable yet. Four evidence-contract fixes are required; no model, optimizer, codebook, or scientific arm should change.
+
+## Required edits
+
+1. **Separate exact replay from the crossed oracle regression.**  
+   [run_necessary_register.py:140](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_necessary_register.py:140) still uses the old marginal schedule. Keep that path solely for exact historical replay, then run a second oracle evaluation with `states=lambda ents: ents % 8`, fully crossing entity × template × panel with six repetitions. Retain its raw rows and require it to pass before writer training. Exact replay and audit-required factorial regression cannot be the same evaluation.
+
+2. **Fix the paired-uplift estimand.**  
+   [run_necessary_register.py:134](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_necessary_register.py:134) takes the control maximum row-by-row, not entity-by-entity. Use:
+   `own_e − max(zero_e, mean_random_e)` per entity; report its mean and bootstrap entities. The present calculation is a different, unnecessarily punitive estimand.
+
+3. **Gate termination for every behavioural arm.**  
+   [run_necessary_register.py:144](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_necessary_register.py:144) and [run_necessary_register.py:185](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_necessary_register.py:185) gate only `own`. Require `>=0.95` for own, cf1–7, shuffled, masked, value-only, oracle, zero, and every random arm. Retain zero-hook/untouched EOS decisions alongside their raw token IDs and full-logit gap.
+
+4. **Deadline truncation must be incomplete, never negative.**  
+   [run_necessary_register.py:102](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_necessary_register.py:102) silently returns a partial fit. Return a completion flag; a truncated consumer or writer seed is `INCOMPLETE — DEADLINE` and excluded from substantive seed counts.
+
+5. **Small provenance/wording cleanup.**
+
+   - Assert `prior["sha256"]["runner"] == rung0.runner_sha256_at_rung0` at [line 76](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_necessary_register.py:76).
+   - Preserve raw first-token IDs, not only derived state `-1..7`, at [lines 109–118](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_necessary_register.py:109).
+   - Replace the stale “COMPOSITIONAL ORACLE REGISTER CONSUMER” status at [line 196](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_necessary_register.py:196) with audit #37’s narrowed headline.
+   - The runner is currently 189 nonblank lines, already above the round-25 limit. Retain every scientific arm; shorten the docstring, comments, and logging to restore `<180` after these edits.
+
+Ignoring the newly added summary keys in the exact historical comparison is acceptable: they do not exist in the stored result. They must instead be gated in the new crossed regression. Do not pretend they were historically replayed.
+
+No separately trained entity-lookup writer is wanted. Training makes entity and state independent, same-entity cf1–7 is the strongest specificity test, and the masked-value arm directly tests entity lookup in the actual writer. `value_only` is an expected-positive sufficiency ablation, not a negative baseline; a separately trained entity lookup would trivially exploit `state=e mod 8` and add no diagnosis.
+
+## Writer lock ruling
+
+**Conditional lock after the edits above.** Freeze the consumer, oracle codes, `d=128`, model, seeds, 3,000 steps, writer architecture, downstream answer+EOS loss, zero configured filler, and all thresholds in [necessary_register_rung1.json](/C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/config/necessary_register_rung1.json).
+
+Per-seed PASS remains:
+
+- all-arm termination `>=0.95`;
+- own and cf-follow `>=0.90`;
+- own entity-bootstrap LB `>0.85`;
+- state/template/panel minimum `>=0.80`;
+- agreement `>=0.90`;
+- paired direction `>=0.85`, LB `>0.75`;
+- shuffled donor-follow `>=0.85`, recipient-follow `<=0.20`, effect LB `>0.55`;
+- masked, zero, and random assigned-target accuracy `<=0.20`;
+- train–heldout permutation gap `<=0.15`;
+- oracle-normalized recovery `>=0.85`.
+
+Global PASS requires two seeds and the registered completed-seed floor. Statuses remain `PASS — FUNCTIONAL SOURCE WRITER AT ZERO CONFIGURED FILLER`, `LOOKUP-BOUND FAIL — OUTPUT MAPPING`, `ENTITY/CONTEXT-BOUND FAIL — SOURCE NOT IDENTIFIED`, `FAIL — SOURCE WRITER CONSTRUCTION`, `INVALID — CONSUMER PRECONDITION`, or `INCOMPLETE — NO VERDICT`.
+
+## `register_bridge_preflight_v1`
+
+This runs after the writer process ends. It is a noncausal feasibility measurement, **not staircase advancement**.
+
+**Data.** Use the existing 24 training entities, with state `e mod 8`, and the eight tokenizer-verified tags `fask, nimb, ruzz, pelt, gorm, twyl, hesk, vorn`. Every prompt contains:
+
+```text
+Legend: state 0 = {tag}; ...; state 7 = {tag}.   # clause order shuffled
+Registry: the private value for {entity} is {tag}.
+```
+
+The per-row permutation determines which tag denotes each state; the record uses the tag denoting that entity’s state. Use two fixed training templates and two disjoint held-out templates. Generate two balanced, disjoint banks of eight permutations, so every tag occurs once for every state within each bank. This prevents tag identity alone from predicting state.
+
+**Representation.** Read the mean residual over the final occurrence of the record’s tag span—never its copies in the legend—at zero delay. Collect zero-based layers `4, 8, 12, 16, 20, 24, 27`, using `hidden_states[layer+1]`.
+
+**Decoder.** Three stratified outer entity folds hold out one entity per state. Within each fold, choose layer and ridge coefficient from `{0.01, 0.1, 1, 10}` using only inner entity folds. Fit standardized ridge scores `XW+b → R⁸`; this is rank at most eight. Refit on the 16 outer-training entities and evaluate the eight held-out entities under held-out templates and permutations. No Qwen weights change.
+
+**Controls.**
+
+- Mean input embedding over the identical tag span.
+- A categorical linear baseline using tag identity, template, entity-as-OOV, span position, and token length.
+- A token-matched/context-destroyed prompt whose legend pairings are independently shuffled while preserving the token multiset.
+- Two hundred entity-clustered shuffled-coordinate fits, permuting training state/code assignments while retaining the evaluation truth.
+
+Chance is `1/8`. Bootstrap the 24 entity-level accuracies 2,000 times.
+
+**Statuses.**
+
+`PREFLIGHT PASS — CONTEXTUAL SOURCE-SPAN CODE LINEARLY DECODABLE` requires:
+
+- accuracy `>=0.60`;
+- every outer fold `>=0.50`;
+- every state recall `>=0.40`;
+- entity-bootstrap LB `>0.45`;
+- entity-paired advantage over the best control `>=0.20`, LB `>0.10`;
+- accuracy at least `0.20` above the 99th percentile of the shuffled-coordinate null.
+
+`PREFLIGHT PARTIAL — TOKEN/CONTEXT-BOUND DECODABILITY` means the raw accuracy, fold, state, and shuffle gates pass but the control-advantage gate fails.
+
+`PREFLIGHT FAIL — NO QUALIFYING LINEAR SOURCE-SPAN BRIDGE` means the primary decodability gates fail. `INVALID — TOKENIZATION/SPLIT MANIFEST` covers nonunique spans, imbalance, or permutation overlap.
+
+A PASS licenses only: frozen Qwen’s tested source span contains a linearly accessible, presentation-transferring episode-defined state signal, warranting the required dialogue about moving `register_bridge_v1` earlier. A PARTIAL licenses an engineering bridge from lexical/context features, not an abstract native state. A FAIL says this rank-eight, zero-delay source-span route is not a supported bridge; it does not say Qwen lacks state.
+
+Do not edit the hash-bearing historical runner. Add one new file, `experiments/run_register_bridge_preflight.py`, importing `SubstitutionProbe` and reading a frozen `preflight` block added to the current rung-1 config before lock. Budget: `<140` nonblank lines and approximately 35–50 CPU minutes.
+
+Ratio heartbeat: approximately `20:6 = 3.33:1`; the writer must be the next artifact-bearing round.
+
+## 2026-08-30 — Round 26 (direction session; verbatim): source-writer rung specification
+
+## `necessary_register_v1` rung 1 — locked source-writer specification
+
+This lock is conditional on audit #37 adopting rung 0. No writer run is authorized before that.
+
+### 1. Frozen substrate and writer
+
+Rung 0 saved no model checkpoints. Therefore the writer stage must first replay each seed’s exact rung-0 training path using the hash-bound runner/config, rerun the complete instrument gates, then save and hash `consumer_seed{11,23,37}.pt`. Any replay that does not reproduce an audit-adopted valid consumer yields `INVALID — CONSUMER PRECONDITION`; no writer is trained.
+
+After replay, freeze and set to evaluation mode:
+
+- Entire `RegisterLM`: token and position embeddings, transformer layers, normalization and output head.
+- Hard attention mask.
+- Eight orthonormal codes and code seed.
+- Panel vocabulary, training/evaluation permutation banks and query templates.
+- Model width 128 and every rung-0 hyperparameter.
+
+Writer:
+
+```text
+source vocabulary:
+<SRC> <HAS> <WRITE> <MASK>
+<E00>…<E23>
+<V0>…<V7>
+
+source:
+<SRC> <E_e> <HAS> <V_s> <WRITE>
+```
+
+Module:
+
+- Learned source embedding, dimension 64.
+- One-layer GRU, hidden size 128.
+- Biasless linear map \(128\rightarrow128\).
+- L2 normalization, producing unit vector \(w\).
+- \(w\) replaces the `<REG>` input embedding exactly as an oracle code did.
+
+The source tensor is never supplied to the consumer. The writer cannot see the panel, permutation, legend, query or answer. Its unit vector is the sole causal path from source to consumer.
+
+Train only writer parameters for seeds 11/23/37, paired with the same-seed frozen consumers: AdamW, learning rate \(10^{-3}\), weight decay \(10^{-2}\), batch 256, gradient clip 1.0, 3,000 steps. Training crosses every entity with every state and samples the existing four panels, four query templates and 128 training permutations.
+
+#### Objective
+
+Use only the existing answer-label plus EOS cross-entropy through the frozen consumer:
+
+\[
+L=\operatorname{CE}(\text{answer logit},\,\pi(s))
+ +\operatorname{CE}(\text{next logit},\,\texttt{EOS}).
+\]
+
+Do not regress \(w\) toward an oracle code, add a cosine loss, or train a state classifier.
+
+Direct code regression would teach the answer by declaring an arbitrary Euclidean coordinate to be truth; it is a source-token classifier disguised as state learning. Answer-only training is the honest test because the writer cannot see which output label represents its source state, while the frozen consumer must interpret the same write across independently varying legends.
+
+This remains an easy symbol-to-state task: `<V_s>` uniquely names the source state. A pass tests the proximal writer mechanism, not semantic abstraction.
+
+### 2. Zero configured delay
+
+Logical episode:
+
+```text
+<SRC> <E_e> <HAS> <V_s> <WRITE>
+        ↓ Writer
+<BOS> <REG=w> <MAP> π(0)…π(7) <query containing E_e> <ANS> π(s) <EOS>
+```
+
+There is no filler between `<WRITE>` and `<REG>`, and `<MAP>` immediately follows `<REG>`. This is **zero configured filler**, not literal adjacency to the answer: the visible legend and query place the answer logits 12–13 consumer positions after `<REG>`.
+
+### 3. Evaluation arms and gates
+
+Use the existing 16 held-out permutations per panel. Primary evaluation contains 2,304 balanced recipient contexts; entity is the bootstrap cluster.
+
+Arms:
+
+- **Own source:** state \(s_e=e\bmod8\).
+- **Counterfactual sources:** same entity with each of the other seven value tokens; score toward the counterfactual state.
+- **Shuffled source:** a precomputed state-changing derangement within matched panel/template/permutation contexts. Replace the complete source with a donor entity/value source; score toward donor state and against recipient-own state.
+- **Masked source:** replace `<V_s>` with `<MASK>`.
+- **Zero and fixed-random writes:** inherited controls.
+- **Oracle write:** inherited same-seed ceiling.
+- **Untouched/zero-hook:** inherited mechanical identity control.
+
+`PASS — FUNCTIONAL SOURCE WRITER AT ZERO CONFIGURED FILLER` requires every gate in at least two of three paired seeds, with no seed below 0.75 overall own/counterfactual accuracy:
+
+- Termination ≥0.95.
+- Own and counterfactual abstract-state accuracy ≥0.90; entity-bootstrap lower bound >0.85.
+- Accuracy ≥0.80 for every state, panel and query template.
+- Inverse-permutation cross-presentation agreement ≥0.90.
+- Paired own/counterfactual directional rate ≥0.85; lower bound >0.75.
+- Shuffled-source donor following ≥0.85.
+- Shuffled-source recipient-own following ≤0.20.
+- Shuffled donor-minus-recipient effect lower bound >0.55.
+- Masked-source, zero and random assigned-state accuracy ≤0.20.
+- Train-permutation minus held-out-permutation accuracy ≤0.15.
+- Oracle-normalized recovery
+
+\[
+\frac{\text{writer}-\max(\text{masked},\text{zero},\text{random})}
+{\text{oracle}-\max(\text{masked},\text{zero},\text{random})}
+\ge 0.85.
+\]
+
+- Frozen consumer retains its audit-adopted rung-0 gates and zero-hook identity.
+
+Code-space telemetry is diagnostic only: log writer norm, true-code cosine, nearest-code accuracy, cosine margin, Euclidean distance and per-state spread. Raw proximity to the engineered oracle vectors is neither necessary nor sufficient; cross-context causal behavior is the identity criterion.
+
+### 4. Statuses
+
+- `PASS — FUNCTIONAL SOURCE WRITER AT ZERO CONFIGURED FILLER`: all primary gates pass; advance only to short delay.
+- `LOOKUP-BOUND FAIL — OUTPUT MAPPING`: training-permutation accuracy ≥0.90, but held-out accuracy <0.80 or the gap exceeds 0.15.
+- `ENTITY/CONTEXT-BOUND FAIL — SOURCE NOT IDENTIFIED`: apparent own-source success, but counterfactual, shuffled-donor or masked-source controls fail.
+- `FAIL — SOURCE WRITER CONSTRUCTION`: remaining primary failures.
+- `INVALID — CONSUMER PRECONDITION`: audit #37 does not adopt rung 0, exact replay is invalid, or frozen-consumer identity fails.
+- `INCOMPLETE — NO VERDICT`: fewer than two paired seeds complete.
+
+There is no PARTIAL advancement and no optimizer, writer-width, codebook or consumer repair.
+
+### 5. Licensed wording
+
+Pass:
+
+> In constructed `necessary_register_v1`, an answer-only-trained source writer converted the registered training-format source value into a one-write unit vector that made a frozen consumer follow own, counterfactual and shuffled source states across held-out output permutations at zero configured filler.
+
+Never say:
+
+> The writer learned semantic facts, recovered the oracle coordinates, generalized to unseen entities or source wording, demonstrated long persistence or composition, discovered native mathematics, or established anything about Qwen or pretrained models.
+
+### 6. Freeze ruling and implementation constraint
+
+Do not change seed 11, the eight orthonormal codes, \(d=128\), panels, mask, permutations or thresholds. Seed 11’s weakest registered state and panel groups remain above their predeclared minima; that is spread to report, not a defect to repair.
+
+One requested constraint needs correction: the existing config is hash-bound to rung 0 and must not be edited. Use the same runner with a config-selected stage, but create exactly one new writer-stage config binding the original runner, config and result hashes. “No new file” can safely mean no new runner; literally forbidding a new config would require either mutating the locked config or making the stage CLI-only, both of which break the requested provenance contract.
+
+Extension budget: ≤70 nonblank lines after refactoring shared training/evaluation code, with ≥45 writer/source/control lines and ≤25 new plumbing lines. No reducer or dashboard.
+
+Pushback on the summary: rung 0 is provisional until audit #37; no saved frozen consumer presently exists; “zero delay” means zero filler, not an immediate answer; and this rung’s unique value token makes it a proximal supervised symbol writer, not yet a language-understanding or native-mathematics result.
+
 ## 2026-08-30 — Re-contextualization (2-hour check-in) while rung 1 runs; no new result since audit #37 (audit skipped)
 
 Live question unchanged: can any substrate carry a causally addressable, content-specific state register, and does a real model's source span even contain a coordinate a bridge could enter? Since the last note: audit #37 narrowed rung 0 to a permutation-generalizing label selector; rounds 26–27 locked rung 1 (answer-only writer into the frozen consumer, factorial crossing, full evidence retention) and specified `register_bridge_preflight_v1` — a noncausal linear-decodability measurement on Qwen3-1.7B-Base that can make the remaining synthetic staircase moot in either direction.
