@@ -8960,3 +8960,211 @@ eligibility stage, the four locked architecture-by-role cells, and the
 is re-taken after this amendment; no Round 37 outcome may be inspected until
 the amended module passes Tier-1 correctness and performance review and its
 final config and module hashes are recorded.
+
+## Round 33 — future-response geometry checks C1/C2 (PREREGISTERED; blocked on audit #40)
+
+**Status: PREREGISTERED THEORY CHECKS; NOT RUN.** These checks may not execute
+until the Round 31--33 foundation in `theory/AXIOMS.md` receives a fresh,
+unprimed mathematics-only audit #40 and that audit is adopted. Audit #40 must
+check proof gaps, imported vector structure, novelty honesty, the D2
+instrument boundary, and Proposition 2's finiteness assumptions. Neither
+check is the audit-#39 causal bridge, and neither queues that bridge.
+
+### C1. Frozen constructed-consumer response geometry — preregistered
+
+#### C1 world and response law
+
+For each frozen rung-0 consumer seed, a raw state consists of a visible
+permutation, the frozen episode input, and a register vector. The eight legal
+write moves overwrite the register with the eight fixed oracle codes. The
+response law is the consumer's full answer-position output distribution. Use
+normalized square-root Jensen--Shannon distance.
+
+Before comparing presentations, pull visible-label probability coordinates
+back through the displayed permutation to the common abstract-state outcome
+coordinates. Because a write overwrites the previous register, repeated write
+words add no future beyond their final write. The finite future-response
+pseudometric \(d_C\) is therefore enumerated from the empty/query continuation
+and the eight write/query continuations.
+
+#### C1-P. Pull-back controls and presentation diagnostic — preregistered
+
+Two controls must not be conflated.
+
+1. **Algebraic round-trip control.** For each saved probability vector and
+   visible permutation, push the vector to visible-label coordinates and pull
+   it back using the registered inverse. The normalized square-root JS
+   distance from the original vector must be zero up to the measured replay
+   floor. A larger value means the permutation implementation is wrong and
+   makes C1 `INVALID — OUTCOME PULL-BACK`.
+2. **Cross-presentation diagnostic.** Evaluate two genuinely different
+   visible permutations with the same abstract state and identical register,
+   pull both output laws back, and report their \(d_C\). This value is not
+   forced to zero by relabeling: zero supports observational passivity for the
+   tested pair, while a positive value measures genuine presentation
+   sensitivity or another model-response difference. It does not by itself
+   show that the pull-back is wrong.
+
+The second distinction corrects the stronger Round-33 suggestion that
+cross-presentation distance 'must' vanish after pull-back. Coordinate
+alignment is algebraic; presentation covariance is a falsifiable law.
+
+#### C1a. Descent certificate — proved target, preregistered implementation check
+
+For every seed, code, presentation, and registered state pair, the target is
+
+\[
+d_C(\operatorname{write}_s x,\operatorname{write}_s y)
+\leq d_C(x,y).
+\]
+
+**Falsifier.** Any violation exceeding the checkpoint replay/numerical floor.
+Such a failure falsifies the registered enumeration or move semantics, not
+Theorem 1.
+
+#### C1b. Finite Hilbert-chart adequacy — conjectured and preregistered
+
+For a consumer seed, let \(S\) contain the eight oracle codes and the eight
+state-conditioned writer centroids. Fit a positive-semidefinite matrix \(G_s\)
+using training permutations only and predict held-out response distances by
+
+\[
+\widehat d_s(z_i,z_j)
+=
+\sqrt{(z_i-z_j)^\top G_s(z_i-z_j)}.
+\]
+
+The candidate proposition is
+
+\[
+\frac{
+\left(\sum_{\mathrm{heldout}}
+(d_C-\widehat d_s)^2\right)^{1/2}
+}{
+\left(\sum_{\mathrm{heldout}}d_C^2\right)^{1/2}
+}
+\leq0.10
+\]
+
+in at least two of three seeds. Report every seed estimate and the spread over
+held-out permutations; exact equality is diagnostic only.
+
+**Falsifier.** Held-out normalized stress above 0.10 in at least two seeds.
+
+This tests one presentation-independent Hilbert seminorm in the existing
+register chart. It does not test every seminorm. With only eight code writes,
+arbitrary-seminorm homogeneity and translation invariance are not identifiable;
+those would require scaled and translated register inputs to be declared
+legal.
+
+**Expectation.** Descent passes as a theorem/harness certificate. Hilbert
+adequacy is genuinely open; the prior non-Voronoi finding does not imply its
+failure. The simplest confound is finite-point interpolation by an overly
+flexible PSD form; the training/held-out permutation split and seed spread are
+therefore mandatory.
+
+### C2. Qwen restricted native response geometry — preregistered
+
+#### C2 tokenization manifest — preregistered validity gate
+
+Before any model forward pass, write and hash a manifest containing:
+
+- the exact three query strings below for every entity substitution;
+- tokenizer revision and chat-template/revision fields;
+- token IDs for each complete prompt/query boundary;
+- token IDs for the intended single-token outcomes `0` through `7`;
+- the nine-outcome map from full-vocabulary token IDs to digits plus `other`;
+  and
+- the intact/destroyed pair ID, entity, template, permutation, record tag,
+  original state, and legend-denoted state for every row.
+
+If any digit is not represented by the declared single token, any prompt is
+not prefix-aligned at the answer position, any intact/destroyed pairing is
+missing, or any row fails its denotation check, the check is
+`INVALID — TOKENIZATION/PAIR MANIFEST`. No forward pass runs and there is no
+same-check repair; a scientifically different design requires a new dialogue
+and preregistration.
+
+#### C2 world and response law
+
+Reuse the saved intact and paired-reassigned-legend prompt cells, appending
+these fixed queries:
+
+1. `Which legend state number, 0 through 7, is the private value recorded for {entity}? Answer with one digit:`
+2. `According to the legend, what state number does {entity}'s recorded value denote? Answer 0 through 7:`
+3. `Map {entity}'s recorded tag through the legend. Return only its state number, 0 through 7:`
+
+The primitive response is the model's own full next-token law. A derived
+nine-outcome channel records the probability assigned to digit tokens
+`0`--`7` and an `other` bucket. Let \(\mathcal W_Q\) be the three query
+continuations and define
+
+\[
+d_Q(x,y)
+=
+\sup_{w\in\mathcal W_Q}
+D_{\sqrt{\mathrm{JS}}}(r(wx),r(wy)),
+\]
+
+using normalized square-root Jensen--Shannon distance.
+
+Form entity-clustered matched pairs for:
+
+- same denotation across template and legend presentations;
+- different denotation with presentation factors matched; and
+- intact versus paired-reassigned legend, holding the literal record tag fixed
+  while changing what it denotes.
+
+#### C2 proposition — conjectured and preregistered
+
+Denotation predicts the restricted native response law. For each ordered
+template pair \((t_i,t_j)\) and for the pooled table, report
+
+\[
+\Delta_{t_i,t_j}
+=
+\mathbb E_e[
+d_Q(\text{different denotation})
+-d_Q(\text{same denotation})
+],
+\]
+
+and
+
+\[
+M_{t_i,t_j}
+=
+\mathbb E_e[
+\log p(\text{newly denoted state})
+-\log p(\text{original state})
+]
+\]
+
+on the paired-reassigned arm. The primary pooled propositions are
+
+\[
+\Delta>0
+\qquad\text{and}\qquad
+M>0.
+\]
+
+Report every per-template-pair estimate beside the pooled effect; pooling may
+not hide a sign reversal. Entity-clustered intervals are required.
+
+**Falsifier.** The entity-clustered 95% lower bound is at or below zero for
+either pooled \(\Delta\) or pooled \(M\), or the template-pair table shows that
+the pooled sign is carried by only one wording pair. Then the tested native
+output geometry does not support legend-denoted places at a nontrivial
+resolution under these continuations; the preflight remains instrument-only.
+
+Exact template passivity, \(d_Q(x,gx)=0\), is reported only as a diagnostic. A
+positive value is a witness against passivity for that rewrite and finite
+continuation family. A zero value does not prove \(d_\infty(x,gx)=0\).
+
+**Expectation.** Same-denotation pairs are closer than matched different-
+denotation pairs, and the reassigned response favors the newly denoted state.
+The simplest global confound is an explicit prompt-local dictionary lookup.
+That mechanism is compatible with the target prompt-world response law and
+therefore prevents any claim about a persistent residual state, storage, or a
+causal bridge. C2 is an observational identity/covariance check on prompt
+episodes only.

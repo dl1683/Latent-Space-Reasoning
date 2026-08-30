@@ -62,8 +62,469 @@ support and candidate-stratum accounting, and (iv) a lead over simple chart
 metrics on the same supported move family. Stratification is a sampling repair,
 not evidence of semantics.
 
-Status: Round 3 audited, 2026-08-27. This file contains only the active
-relational foundation. Dialogue and rejected formulations stay in `dialogue/`.
+Status: the navigation requirements remain the program-level target. The
+future-response foundation below was adopted in Round 33 after the Round
+31--33 dialogue and is **proposed pending mathematics-only audit #40**.
+Dialogue and rejected formulations stay in `dialogue/`.
+
+## Foundation: future-response geometry (proposed, rounds 31--33; pending audit #40)
+
+The status of every item is stated explicitly. Definitions D1--D7 replace
+L1--L4 as the proposed active foundation. Presentation covariance remains a
+candidate law. No empirical result is promoted to an axiom by this section.
+
+### D1. Raw presented transition world — definition
+
+A latent world begins with a set \(Z\) of raw presented states and a declared
+family \(\mathcal A\) of primitive legal moves
+
+\[
+T_a:Z\to Z.
+\]
+
+The empty move is legal, and legal moves compose into a word monoid
+\(\mathcal W\). The notation \(wa\) means: apply \(a\) first, then continue
+with \(w\).
+
+All prompt forms, encodings, and stored arrays remain distinct elements of
+\(Z\) until the response theory identifies them. No vector-space, metric,
+topological, differentiable, or presentation-invariance structure is
+primitive.
+
+Theorems below assume deterministic total moves. A partial move must either be
+restricted to a common declared domain or totalized by an observable absorbing
+failure state.
+
+### D2. Denizen-accessible response laws — definition
+
+For each response channel \(c\in C\), let
+
+\[
+r_c:Z\to\mathcal P(O_c)
+\]
+
+be the outcome law emitted through a declared interface of the world. Equip
+\(\mathcal P(O_c)\) with a true metric \(D_c\), normalized so that
+\(0\leq D_c\leq1\). Total variation and normalized square-root
+Jensen--Shannon distance are admissible; KL divergence is not a metric.
+
+A primitive response may inspect only output available through the declared
+interface. A decoder, classifier, or coordinate projection applied directly
+to hidden states is an external instrument, not a primitive response. A
+deterministic or stochastic postprocessing of a native output law is a derived
+response and cannot refine equality of the full native laws. In a language
+model, the full next-token law at a declared query position is primitive;
+grouping its token probabilities into declared outcome classes is derived.
+
+### D3. Immediate response discrepancy and legal futures — definition
+
+Define immediate response discrepancy by
+
+\[
+\rho(x,y)=\sup_{c\in C}D_c(r_c(x),r_c(y)).
+\]
+
+For \(w\in\mathcal W\), \(wx\) denotes the state reached by executing \(w\)
+from \(x\). The empty word is included, so present responses are among the
+future responses.
+
+### D4. Future-response pseudometrics — definition
+
+The foundational future-response distance is
+
+\[
+d_\infty(x,y)
+=
+\sup_{\substack{w\in\mathcal W\\c\in C}}
+D_c(r_c(wx),r_c(wy))
+=
+\sup_{w\in\mathcal W}\rho(wx,wy).
+\]
+
+Two auxiliary approximants are
+
+\[
+d_h(x,y)
+=
+\sup_{\substack{|w|\leq h\\c\in C}}
+D_c(r_c(wx),r_c(wy))
+\]
+
+and, for \(0<\gamma<1\),
+
+\[
+d_\gamma(x,y)
+=
+\sup_{\substack{w\in\mathcal W\\c\in C}}
+\gamma^{|w|}D_c(r_c(wx),r_c(wy)).
+\]
+
+The undiscounted \(d_\infty\) is foundational. A horizon or discount is an
+additional resource convention unless supplied by the world. Finite resources
+can limit both response resolution and executable word length.
+
+### D5. Operational identity, place, and resolution — definition
+
+Future observational identity is
+
+\[
+x\sim y
+\iff
+d_\infty(x,y)=0.
+\]
+
+An exact operational place is an equivalence class in
+
+\[
+Q=Z/{\sim}.
+\]
+
+The quotient distance is
+
+\[
+\bar d([x],[y])=d_\infty(x,y).
+\]
+
+At finite resolution \(\varepsilon>0\), the available neighborhoods are the
+balls
+
+\[
+B_\varepsilon(x)=\{y:d_\infty(x,y)<\varepsilon\}.
+\]
+
+The threshold relation \(d_\infty(x,y)<\varepsilon\) is not assumed
+transitive and does not define an exact quotient.
+
+### D6. Maps, laws, presentation candidates, and cost — definition
+
+For a legal move \(a\), its operational map is the descended map
+
+\[
+\bar T_a:Q\to Q,
+\qquad
+[x]\mapsto[T_ax],
+\]
+
+whose existence follows from Theorem 1.
+
+A native law is an equality, inequality, or compositional relation among
+descended maps that predicts denizen-accessible response consequences.
+
+A syntactically specified rewrite \(g:Z\to Z\) is observationally passive on
+\(S\subseteq Z\) when
+
+\[
+d_\infty(x,gx)=0
+\qquad
+\text{for every }x\in S,
+\]
+
+after any declared transport of outcome names. This is a tested property, not
+an axiom. A behaviorally consequential rewrite is a legal move only when it is
+included in the declared action family.
+
+The distance \(d_\infty\) measures future response distinguishability, not
+effort. Movement cost requires a separate resource assignment to executable
+programs.
+
+### D7. Local response seminorm — definition; seminorm lemma proved under the stated assumptions
+
+This is additional structure, not part of every latent world. Assume \(Z\) has
+a differentiable presentation, every relevant \(T_w\) and \(r_c\) is
+differentiable at \(x\), and each outcome metric has a declared tangent norm
+\(\|\cdot\|_{D_c,r_c(T_wx)}\). For \(v\in T_xZ\), define
+
+\[
+p_x(v)
+=
+\sup_{\substack{w\in\mathcal W\\c\in C}}
+\left\|D(r_c\circ T_w)_xv\right\|_{D_c,r_c(T_wx)}.
+\]
+
+When finite, \(p_x\) is a seminorm because it is a supremum of seminorms. A
+finite denizen can estimate only a restricted object
+
+\[
+p_{x,h,C_0}(v)
+=
+\sup_{\substack{|w|\leq h\\c\in C_0}}
+\left\|D(r_c\circ T_w)_xv\right\|_{D_c,r_c(T_wx)},
+\]
+
+for finite \(h\) and \(C_0\). Immediate derivatives alone do not determine
+the full \(p_x\), because its definition still ranges over all future words.
+
+Once a restricted Jacobian is known, it is a local map: it predicts the
+first-order response consequence of an unexecuted infinitesimal perturbation.
+This navigational interpretation applies only to a declared executable tangent
+cone \(E_x\subseteq T_xZ\), generated by differentiable families of legal
+moves. On arbitrary chart directions outside \(E_x\), \(p_x\) is an
+instrument-level sensitivity geometry rather than a denizen-usable map.
+
+#### Audit #36 retrospective — measured restricted instance, not a theorem
+
+Treat the patched block-12 residual as the local presented state and the fixed
+remaining forward pass as part of the response law. For each of 24 prompt/name
+base states \(x_n\), `reachability_v1` measured the empty-continuation
+Jacobian \(J_n\) of an eight-outcome derived response channel: centered first-
+token tag logits, equivalently centered log probabilities of those eight
+tokens. Each
+
+\[
+p^{(0)}_{x_n}(v)=\|J_nv\|_2
+\]
+
+is a restricted local response seminorm and a pointwise lower-bound component
+of any full \(p_{x_n}\) that includes this response channel and these residual
+directions.
+
+The registered headline was the scaled shared operator
+
+\[
+\bar J=\frac1{24}\sum_{n=1}^{24}0.25\|h_n\|J_n,
+\]
+
+not a single-state \(p_x\) and not the average of the 24 seminorms. Its
+top-mode energy was 0.638 (name-bootstrap 95% CI 0.624--0.652), participation
+effective rank 2.279 (2.197--2.362), \(\sigma_2/\sigma_1=0.450\), and
+\(\sigma_3/\sigma_1=0.389\). The audit found per-name median top energy 0.635,
+median effective rank 2.302, and 0.895 mean-energy coherence; the RMS-stacked
+name-local object was broader at effective rank 2.754. Thus averaging did not
+manufacture the several-mode local response, but these statistics do not give
+the rank or dimension of the full future seminorm.
+
+Eight preselected position controls spanned top energies 0.579--0.731 and
+effective ranks 1.809--2.664, so the result earned `NO SLOT-SPECIFIC GEOMETRY
+CONCLUSION`. Four displayed-tag-order controls produced broader spectra,
+showing presentation sensitivity only for those orders. At one fixed dose,
+the top three shared directions had median predicted-versus-realized centered-
+logit cosines 0.995, 0.944, and 0.995, with substantial secondary responses
+and sign-dependent magnitude and decoded-boundary asymmetries.
+
+Audit #36 therefore licenses a coherent several-mode, restricted local
+response-differential family under this exact model, prompt, vocabulary, site,
+layer, and dose. It does not license a two- or three-dimensional capacity,
+low rank of the global \(p_x\), slot-specific geometry, equivalence to generic
+positions, dose adequacy, storage, retrieval, an explanation of the earlier
+two-tag pattern, memory capacity, or advancement of the positive-control
+staircase. The audit-#36 never-say list in `STATE.md` remains binding.
+
+### Theorem 1. Canonical response geometry and descent — proved
+
+Assume D1--D4, with deterministic total legal moves and bounded true outcome
+metrics. Then:
+
+1. \(d_\infty\) is a bounded pseudometric on \(Z\).
+2. Every legal move is nonexpansive:
+   \[
+   d_\infty(T_ax,T_ay)\leq d_\infty(x,y).
+   \]
+3. \(d_\infty\) is the least pseudometric \(p\) such that
+   \[
+   \rho(x,y)\leq p(x,y)
+   \]
+   and every legal move is nonexpansive for \(p\).
+4. Future observational identity is an equivalence relation; \(\bar d\) is a
+   metric on \(Q\); and every legal move induces a nonexpansive map on \(Q\).
+5. The truncated distances satisfy
+   \[
+   d_h(T_ax,T_ay)\leq d_{h+1}(x,y).
+   \]
+6. The discounted supremum satisfies
+   \[
+   d_\gamma(T_ax,T_ay)\leq\gamma^{-1}d_\gamma(x,y),
+   \]
+   but
+   \[
+   d_\gamma(x,y)=0\iff d_\infty(x,y)=0.
+   \]
+
+Proof. For fixed \(w,c\), the pullback
+
+\[
+(x,y)\mapsto D_c(r_c(wx),r_c(wy))
+\]
+
+is a pseudometric. Its supremum is therefore a pseudometric. Continuations
+after \(a\) correspond to the subset of words \(wa\), proving
+nonexpansiveness. If \(p\geq\rho\) and all moves are nonexpansive for \(p\),
+then
+
+\[
+\rho(wx,wy)\leq p(wx,wy)\leq p(x,y)
+\]
+
+for every word \(w\); taking the supremum gives \(d_\infty\leq p\). The
+quotient and descent statements follow from the zero kernel. The final two
+inequalities follow by shifting word length by one. \(\square\)
+
+Finite deterministic corollary — proved. If \(Z,\mathcal A,C\) are finite,
+then \(d_h(x,y)=0\) is exactly equality of the horizon-\(h\) future-response
+signatures. The full metric is attained after the synchronously reachable
+state-pair graph has been exhausted, at worst after \(|Z|^2-1\) steps.
+
+Language-model scope. For the main LM world, a state is a prompt token
+sequence. Declared moves such as appending fixed tokens or substituting a
+declared span are deterministic maps on prompts, while \(r_c\) is the
+distributional next-token law. Theorem 1 therefore covers this LM prompt world
+exactly. If token sampling itself is declared a move, generation produces a
+stochastic state transition; that different move family requires a declared
+lifting to distributions, such as an appropriate Kantorovich construction.
+
+Boundary. If outcome discrepancies are unbounded, \(d_\infty\) may be an
+extended pseudometric. State-dependent legality requires typed common domains
+or observable failure-state totalization.
+
+### Proposition 2. Linear observability seminorm — proved in the linear case
+
+Let \(Z=V=\mathbb R^n\). Suppose every move and response has the affine form
+
+\[
+T_a(x)=A_ax+b_a,
+\qquad
+r_c(x)=W_cx+q_c,
+\]
+
+and outcome discrepancy is induced by a norm. Let
+
+\[
+T_w(x)=A_wx+b_w.
+\]
+
+For positive weights \(\alpha_w\), define
+
+\[
+p_\alpha(v)
+=
+\sup_{w,c}
+\alpha_w\|W_cA_wv\|_c.
+\]
+
+Assume explicitly that this supremum is finite for every \(v\). This holds,
+for example, for a finite horizon or a uniformly bounded weighted observable
+family. Then
+
+\[
+d_\alpha(x,y)=p_\alpha(x-y)
+\]
+
+and \(p_\alpha\) is a seminorm. Its null subspace is
+
+\[
+K=\bigcap_{w,c}\ker(W_cA_w),
+\]
+
+so the exact operational places are the cosets \(x+K\), and the intrinsic
+linear response geometry is the normed quotient \(V/K\).
+
+After choosing an ambient inner product, define
+
+\[
+\mathcal O
+=
+K^\perp
+=
+\operatorname{span}_{w,c}
+\operatorname{range}(A_w^\top W_c^\top).
+\]
+
+For the resulting orthogonal projector \(P_{\mathcal O}\),
+
+\[
+p_\alpha(v)=p_\alpha(P_{\mathcal O}v).
+\]
+
+The kernel and quotient are intrinsic; the orthogonal projector is not.
+
+For a convergent weighted \(\ell_2\) aggregation,
+
+\[
+p_2(v)^2
+=
+\sum_{w,c}\beta_{w,c}^2
+\|W_cA_wv\|_2^2
+=
+v^\top Gv,
+\]
+
+where
+
+\[
+G
+=
+\sum_{w,c}
+\beta_{w,c}^2
+A_w^\top W_c^\top W_cA_w.
+\]
+
+Thus the \(\ell_2\) aggregation gives a Hilbert seminorm. The supremum
+aggregation generally gives an arbitrary seminorm.
+
+Proof. Affine offsets cancel under a shared word:
+
+\[
+r_c(T_wx)-r_c(T_wy)=W_cA_w(x-y).
+\]
+
+The supremum of seminorms is a seminorm when finite. Its zero set is exactly
+the displayed intersection of kernels. The Gramian identity follows by
+expanding the convergent sum. \(\square\)
+
+Chart boundary — proved. Ambient Euclidean distance agrees with the Gramian
+seminorm up to scale exactly when
+
+\[
+G=\lambda P_{\mathcal O},\qquad \lambda>0,
+\]
+
+in that chart. A chart that merely separates \(\mathcal O\) from \(K\) is
+insufficient. Cosine agrees with Euclidean ordering only after normalization
+and the corresponding isotropy conditions.
+
+Softmax extension — sketched. If
+
+\[
+r_c(x)=\operatorname{softmax}(W_cx+q_c),
+\]
+
+the global future-response metric is generally not translation-invariant and
+therefore is not a seminorm of \(x-y\). Its first variation is the D7
+state-dependent local seminorm, subject to the stated differentiability,
+tangent-norm, uniformity, and finiteness conditions. This is a Finsler-type
+local geometry. Global lower comparison with the linear seminorm fails under
+logit-shift gauge and saturation. Non-affine moves make the differential
+observability family depend on the entire orbit from \(x\).
+
+### Open problem 7. Local-to-global map problem — conjectured program, not proved
+
+Characterize the worlds in which \(d_\infty\), or the quotient metric on
+\(Q\), is computable or uniformly approximable from finitely many restricted
+local seminorms \(p_{x,h,C_0}\) sampled along executable words. Stronger
+versions ask when \(d_\infty\) equals or is bi-Lipschitz equivalent to a length
+metric obtained by integrating \(p_x\) along executable curves.
+
+No unconditional integration theorem is claimed. Local derivatives can miss
+disconnected response offsets, finite moves, singular points, and future
+branches not represented in the sampled word family; moreover,
+\(d_\infty\) need not be a length metric. Required hypotheses may include
+regular response laws, controllable executable tangent cones, compactness or a
+finite covering property, quantitative observability, and uniform control of
+truncation error.
+
+Classical bisimulation metrics, observability theory, and Finsler/control
+geometry contain neighboring special cases; novelty is not claimed. The
+latent-specific role of this problem is epistemic: those theories commonly
+start with a supplied transition system, whereas a denizen must construct a
+usable map of unexecuted futures from finite local access.
+
+## Prior relational foundation (Rounds 1--12; superseded, retained for provenance)
+
+The L1--L5 neighborhood foundation, context-rank definitions, and T1--T3 below
+are historical. Round 31 found L1 to be normalization, L2/L3 to be vacuous
+under unrestricted probe completion, L4 to require future closure, and L5 to
+be a tested presentation law rather than an adopted axiom. They remain here
+to preserve the record and audit boundaries; they are not co-active axioms
+beside D1--D7.
 
 ## Primitives
 
