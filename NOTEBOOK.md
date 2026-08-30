@@ -5,6 +5,16 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — Runner built, SMOKE_VALID, lock row bound; science-grade fixes applied; Codex v6 review pending before Phase D
+
+Runner (`experiments/run_native_bridge.py`, committed 83b7267) built with full science-grade hardening per Codex v4/v5 reviews: per-call checkpoint journal (call_checkpoints.jsonl with ordinal, identity, law_hash, payload_hash, donor_hash, timing); bootstrap resample index precommitted at Stage 2 (PCG64(4141), 2000×24, hash f9032529...); expanded manifest with tokenizer file hashes, library versions (transformers/tokenizers/numpy), resample_index_hash, canonical_science_argv, status_tree_version, stop_rule, smoke_commitment; strengthened Stage 4 row/span/donor validation (formula checks, retokenization, span_text decode, donor membership); stage-independent manifest with smoke_commitment section (resolves Blocker 0: smoke/science manifest mismatch); monotonic hard-wall clock (science_t0 after all verification, deadline = H_CPU × 60).
+
+32-call mechanical smoke: SMOKE_VALID. η_smoke = 8.71e-9, ε_smoke = 1e-5, s_plain = 1.219s, s_hooked = 1.225s, s_smoke = 1.225s, F_CPU = 82.3 min, H_CPU = 85 min, forecast_ok = true (within 90-min ceiling). Lock row rebuilt with science-grade runner hash (13307607...) and science call table hash (262307700c...).
+
+Authorized sequence steps 1–6 complete. Next: Codex v6 design-gate review confirms all 6 blockers resolved → scientific Phase D/E execution (~85 min CPU).
+
+---
+
 ## 2026-08-30 — Audit #47: LOCK-READY subject to wording-only corrections; no scientific forward pass before smoke, forecast, and lock row
 
 Verbatim in `theory/dialogue/004.md`. Licensed sentence: Audit #47 finds `native_bridge_v1` lock-ready as a preregistration after wording-only audit-label, runtime-identity, and smoke-namespace corrections: its registered subset tests conditional response-law intertwining only, its donor-first same-replay schedule yields exactly 2,688 scientific identities without hidden calls or a serialized cut, and its scientific gates are prospectively fixed; no scientific result exists yet, and only a future complete valid `CENTROID PASS` may license the sentence “Across the 24 registered entities, the correct centroid edit has registered-access mean excess discrepancy within the native target-fiber criterion and prospectively improves that criterion relative to both no edit and the cycled wrong-label centroid.”
