@@ -5,6 +5,195 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — Audit #39 on register_bridge_preflight_v1 (fresh, unprimed; verbatim): UPHOLD; pause stands; on restart, direction dialogue then one causal residual-to-writer-centroid injection test
+
+Adopted verbatim into STATE, README, EXPERIMENTS, the handoff and the ledger; this is the last entry before the 2026-08-30 pause.
+
+## Verdict
+
+**UPHOLD — `PREFLIGHT PASS — EXPLICIT-LEGEND STATE LINEARLY DECODABLE`.**
+
+The saved features reproduce the recorded status under every predeclared gate:
+
+| Gate | Result | Threshold |
+|---|---:|---:|
+| Accuracy | 0.8151 | ≥0.60 |
+| Minimum fold | 0.7656 | ≥0.50 |
+| Minimum state recall | 0.6146 | ≥0.40 |
+| Entity-bootstrap LB | 0.7786 | >0.45 |
+| Best-control advantage | 0.6419 | ≥0.20 |
+| Advantage LB | 0.6016 | >0.10 |
+| Accuracy − null p99 | 0.6106 | ≥0.20 |
+
+Imported `Ridge` reproduced every saved main/control prediction, both bootstrap bounds, and the selected layers/lambdas. The first ten RNG-replayed null scores matched bit-for-bit, and the saved-score p99 recomputed exactly.
+
+This is a strong noncausal feasibility result. It is not a code-level bridge, causal bridge, persistent register, or native-mathematics result.
+
+No tracked source, documentation, or result artifact was modified; only the mandatory git-ignored blackboard was updated.
+
+## Split and leakage
+
+The split is genuine within its declared scope:
+
+- All 24 entities are crossed with all eight states: 192 entity-state cells, each with 16 rows.
+- Outer folds are by entity: each holds out eight entities and trains on the other 16.
+- Templates 0–1 use the training permutation bank; templates 2–3 use the held-out bank.
+- The two banks contain eight exact permutations each with zero exact overlap.
+- The held-out bank is nevertheless another cyclic Latin bank, so this is not arbitrary-permutation generalization.
+- Template and permutation shifts are coupled. The run establishes their conjunction, not their independent contributions.
+
+The nuisance checks pass:
+
+- `pidx=(e+4j) mod 8` holds everywhere and is independent of state and template.
+- Within every fold × state × template × arm, each tag occurs exactly twice.
+- For each of the 96 entity-template cells, span position and prompt length are constant across states, permutations, and arms.
+- Every record tag is two tokens.
+- Retokenizing all 3,072 prompts exactly reproduced the saved IDs; every saved record and legend span decoded to the intended tag.
+- The registered categorical control scored 0.1354.
+- An expanded linear baseline containing tag, permutation index, tag×permutation interaction, template, complete clause-order positions, span, and length scored exactly 0.125 at every tested regularization.
+
+Thus tag identity, permutation index, clause order, length, and span position do not explain the result as transferable linear nuisances. A symbolic procedure that matches the record tag to its legend occurrence and reads the adjacent numeral would solve the task—but that is the intended explicit-legend lookup, not an accidental leak.
+
+## Controls and null
+
+The paired destroyed arm is correctly built. All 1,536 intact/destroyed pairs share entity, original state, template, bank, permutation index, record tag, clause order, record span, record token IDs, length, and full token-ID multiset. Every destroyed permutation is a derangement, and the saved denoted state is exactly \(\sigma^{-1}(s)\ne s\).
+
+The intact decoders are correctly reused:
+
+- Intact accuracy against \(s\): 0.8151.
+- Destroyed accuracy against original \(s\): 0.0156.
+- Destroyed following of \(\sigma^{-1}(s)\): 0.8516.
+- Intact/destroyed predictions differ on 0.9661 of held-out pairs.
+- Paired input embeddings are exactly identical.
+
+This decisively rejects a fixed record-tag decoder. It shows that changing only the legend assignment changes what state is linearly readable from the record span. It does not distinguish semantic interpretation from a local tag-to-numeral association mediated by attention.
+
+The legend-occurrence reference is correctly kept outside the gate and scores 0.9440. It is useful positive evidence that the explicit state is especially accessible where the numeral and tag co-occur; it is not a null or a causal ceiling.
+
+The shuffle null is balanced as locked: one state permutation per entity is applied consistently to every repeated row of that entity-state cell. Its 200 saved scores have mean 0.12430 and p99 0.204466, exactly as reported.
+
+Two limitations should remain explicit:
+
+- The null conditions on the observed layer/lambda selections rather than rerunning the complete selection pipeline for every shuffle.
+- The bootstrap resamples the 24 evaluation entities but does not refit the decoders, so it measures conditional held-out-entity uncertainty rather than training-pipeline uncertainty.
+
+Neither limitation is remotely large enough to explain the observed margin.
+
+## Decoder stability
+
+Layer selection is stable; regularization selection is less so:
+
+- Every outer fold selected layer 16.
+- Lambdas were 1, 10, and 10.
+- In folds 1–2, the winning lambda exceeded the runner-up by only about 0.002–0.004 inner accuracy.
+- Layer 12 was consistently close to layer 16.
+
+Post-hoc sensitivity checks preserve the result:
+
+- Fixed layer 16, lambda 10: accuracy 0.8164, minimum fold 0.7656, minimum state recall 0.5729.
+- Fixed layer 12, lambda 10: accuracy 0.8060, minimum fold 0.7617, minimum state recall 0.6146.
+- Multinomial logistic regression at fixed layer 16, with inner-fold selection of \(C\): accuracy 0.8138, folds 0.8164/0.8359/0.7891, minimum state recall 0.5938, destroyed-denoted following 0.8359.
+
+The result is therefore not ridge-specific or produced by foldwise layer variation. It is, however, depth-localized: several early and late fixed layers fail one or more pointwise gates. Do not describe the signal as layer-invariant.
+
+Same-presentation held-out-entity accuracy is 0.8802 versus 0.8151 under the joint held-out-template/permutation shift, indicating a modest presentation cost without isolating which shift causes it.
+
+## Wording audit in both directions
+
+**Over-claim corrections:**
+
+- “Presentation-transferring” must mean the two tested held-out templates plus the disjoint cyclic Latin bank, not arbitrary wording or permutations.
+- “State” means the numeric state explicitly assigned to the record tag by the prompt’s legend.
+- Rank ≤8 describes the decoder’s output parameterization, not an eight-dimensional intrinsic state space.
+- The destroyed arm is not information-free; it coherently assigns the unchanged record tag a different state.
+- The bootstrap is not uncertainty over retraining, and the shuffle null is not a full-pipeline selection null.
+- `STATE.md` is internally inconsistent: its pause banner says audit #39 is adopted while its detailed `NEXT` still says the preflight is running and audit #39 is pending. That is a propagation defect, not a numerical defect.
+
+**Under-claim corrections:**
+
+- This is stronger than within-template decodability or a tag classifier.
+- The state transfers jointly across unseen entities, two unseen templates, and eight unseen exact permutations.
+- Reassigning the legend flips the intact decoder toward the newly denoted state while the record token and its embedding remain unchanged.
+- Ridge, fixed-layer Ridge, and logistic regression agree closely.
+- The strongest reading the numbers do **not** license is that these residuals can be mapped into the constructed writer centroids and causally drive the frozen consumer. That is precisely the next experiment.
+
+## Continue-or-not
+
+**Continue conditionally; the predeclared PASS branch should apply.**
+
+The highest-leverage next move is the required 2–3-round direction dialogue followed by one held-out causal bridge test: map Qwen record-span residuals into the successful writer centroids and inject them into the frozen constructed consumer.
+
+The program should not continue through another synthetic rung, decoder characterization round, layer sweep, or prompt repair. The current pause remains appropriate until the dialogue produces a locked causal test.
+
+The program is still tunnel-visioned around an eight-symbol explicit-lookup micro-world. The PASS justifies one causal discriminator; it does not justify extending the ladder indefinitely.
+
+## Alternatives
+
+The strongest alternative explanation is a local dictionary-lookup mechanism: the record tag attends to its identical legend occurrence and inherits the nearby numeral. That is genuine contextual binding, but it may be prompt-local rather than a reusable latent state.
+
+Useful alternatives or embedded controls are:
+
+- Include the paired reassigned-legend arm in the causal bridge test.
+- Compare residual-to-centroid mapping against input-embedding, wrong-centroid, zero, and shuffled-label mappings.
+- Require held-out entities, templates, and permutations in the causal consumer test.
+- Treat legend-occurrence mapping as an easier positive reference, not the headline route.
+- After this line resolves, test an orthogonal real-model source where the state is indirect and cannot be obtained by matching an identical explicit tag.
+- Do not run standalone attention localization or further decoder sweeps before the causal discriminator; the ratio no longer permits another measurement-only detour.
+
+## Exact licensed sentence
+
+> In frozen Qwen3-1.7B-Base revision `ea980cb0a6c2ae4b936e82123acc929f1cec04c1`, a predeclared rank-≤8 cross-fitted linear decoder read the explicitly legend-denoted state from the two-token record-tag residual under held-out entities, two held-out templates, and a disjoint balanced permutation bank at 0.815 accuracy (folds 0.828/0.852/0.766, entity-bootstrap lower bound 0.779, minimum state recall 0.615), versus 0.125 input-embedding, 0.135 categorical, and 0.016 paired reassigned-legend original-state controls and a 0.204 shuffle-null p99; on the paired reassigned legends the unchanged-tag decoder followed the newly denoted state at 0.852, establishing a noncausal, prompt-family-bounded explicit-legend state signal—not a code-level or causal bridge, persistent register, synthetic-consumer capability, or native latent mathematics.
+
+## Never-say list
+
+- “Qwen learned a register.”
+- “This establishes a causal bridge.”
+- “The Qwen residual already contains the constructed consumer’s code.”
+- “The state survived, persisted, or was remembered.”
+- “The result establishes an eight-dimensional state subspace.”
+- “The decoder reads tag identity.”
+- “The destroyed arm contains no state information.”
+- “The destroyed context failed.”
+- “Template and permutation transfer were independently established.”
+- “The result generalizes to arbitrary templates, legends, or permutations.”
+- “The shuffle null reran the entire selection pipeline.”
+- “The bootstrap includes decoder-training uncertainty.”
+- “Every layer contains the signal.”
+- “The legend-occurrence reference is a gated control.”
+- “The residuals can drive the frozen synthetic consumer.”
+- “This demonstrates semantic facts, an autonomous state, or native latent mathematics.”
+
+## Copy-ready README wording
+
+> `register_bridge_preflight_v1` is a noncausal feasibility PASS: in frozen Qwen3-1.7B-Base, a predeclared cross-fitted rank-≤8 linear decoder read the state explicitly assigned to a record tag by an in-prompt legend under held-out entities, two held-out templates, and a disjoint balanced permutation bank at 0.815 accuracy, versus 0.125 input-embedding, 0.135 categorical, and 0.016 paired reassigned-legend original-state controls; the same intact decoders followed the state newly denoted by the paired reassigned legend at 0.852. This establishes a prompt-family-bounded, presentation-transferring explicit-legend signal at the record span—not a code-level or causal bridge, persistent register, synthetic-consumer usability, or native latent mathematics.
+
+## Copy-ready STATE wording
+
+> - **`register_bridge_preflight_v1` — PREFLIGHT PASS: EXPLICIT-LEGEND STATE LINEARLY DECODABLE.** In frozen Qwen3-1.7B-Base, cross-fitted rank-≤8 Ridge decoders evaluated on held-out entities × templates × a disjoint balanced permutation bank achieved 0.815 accuracy (entity-bootstrap LB 0.779; folds 0.828/0.852/0.766; minimum state recall 0.615), versus input-embedding 0.125, categorical 0.135, paired reassigned-legend original-state 0.016, and shuffle-null p99 0.204; the intact decoders followed the paired legend’s newly denoted state at 0.852, ruling out fixed tag identity. This is a noncausal explicit-legend lookup signal, not a code-level or causal bridge. The program remains paused; on restart, conduct the required direction dialogue and then one held-out causal residual-to-writer-centroid injection test, with no synthetic staircase advance or further decoder sweep first.
+
+## Ranked next increments
+
+1. Conduct the mandatory 2–3-round direction dialogue around the causal bridge and its stop rule.
+2. Lock one residual-to-writer-centroid mapping test using training entities/templates/permutations only.
+3. Evaluate injection into the frozen constructed consumer on held-out entities, templates, permutations, and paired reassigned legends.
+4. Include zero, wrong-centroid, shuffled-label, embedding-derived, and destroyed-legend controls in that same run.
+5. On causal success, license only cross-system causal consumption under this interface and decide whether one indirect-source generalization is warranted.
+6. On failure, close the synthetic register bridge under this route; do not reopen layer, prompt, decoder, or actuator sweeps.
+7. After closure or causal success, move to an orthogonal real-model task where the state is not recoverable by matching an identical explicit tag.
+
+## Ratio heartbeat
+
+Current runner: 104 nonblank lines. Under the repository’s existing line convention, approximately 34 are generic apparatus and 70 are estimand-bearing measurement logic, about **0.49:1**. That is below the line warning, but this runner builds no causal central artifact; it remains a measurement.
+
+Round accounting:
+
+- Audit #38 baseline: 21 measurement/governance : 7 build.
+- Round 28 lock review: 22:7.
+- Preflight result: 23:7.
+- This audit: **24:7 = 3.43:1**.
+
+The ratio remains above the 2:1 warning and below the 5:1 mandatory halt. The next active round must build the causal bridge discriminator or close the line; another measurement-only round is not justified.
+
 ## 2026-08-30 — Re-contextualization at the pause (2-hour check-in; audit #39 in flight)
 
 Live question unchanged: can a real model's latent space carry a causally addressable, content-specific state, and what must a denizen of that space invent to navigate it? Where the picture stands: every frozen-model *actuator* failed (audits #27–#36); the constructed substrate is a working but trivial calibration (audits #37–#38); and the preflight — the first measurement that asks about the *source* rather than the actuator — says the explicit-legend state is linearly readable at layer 16 of Qwen3-1.7B-Base, transferring across entities, templates and permutations, with the paired destroyed arm showing the decoder reads the legend binding rather than the tag. That reframes the frozen-model negatives: the failures sat in write/actuation and in weak *generic-anchor* source extraction (`Internal record:` slot), not in the absence of a readable episode state at the record span.

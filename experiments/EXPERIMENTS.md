@@ -5,7 +5,9 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
-## Program status (2026-08-30, early)
+## Program status (2026-08-30 — PAUSED; audits #27–#39 adopted; restart authority is `docs/HANDOFF_2026_08_30.md`)
+
+- **`register_bridge_preflight_v1` — PREFLIGHT PASS — EXPLICIT-LEGEND STATE LINEARLY DECODABLE (audit #39: UPHOLD; noncausal feasibility result, not a code-level or causal bridge)** (locked `8beb8e9`; result `d2acfe8`; ledger `register_bridge_preflight_v1_lock`, `register_bridge_preflight_v1_result`, `register_bridge_preflight_v1_audit39`; config `experiments/config/register_bridge_preflight_v1.json`; runner `experiments/run_register_bridge_preflight.py`; results `experiments/results/register_bridge_preflight_v1/`). `register_bridge_preflight_v1` — PREFLIGHT PASS: EXPLICIT-LEGEND STATE LINEARLY DECODABLE. In frozen Qwen3-1.7B-Base, cross-fitted rank-≤8 Ridge decoders evaluated on held-out entities × templates × a disjoint balanced permutation bank achieved 0.815 accuracy (entity-bootstrap LB 0.779; folds 0.828/0.852/0.766; minimum state recall 0.615), versus input-embedding 0.125, categorical 0.135, paired reassigned-legend original-state 0.016, and shuffle-null p99 0.204; the intact decoders followed the paired legend’s newly denoted state at 0.852, ruling out fixed tag identity. This is a noncausal explicit-legend lookup signal, not a code-level or causal bridge. The program remains paused; on restart, conduct the required direction dialogue and then one held-out causal residual-to-writer-centroid injection test, with no synthetic staircase advance or further decoder sweep first. Entry below.
 
 - **NLM-007 — CLOSED** under the program's terminal allocation rule, not by a
   scientific null (audit #22 closing statement, verbatim in `STATE.md`; ledger
@@ -81,8 +83,7 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   code actuator rung 0 designed as the one next locked artifact, rung 0b
   (encoder on tag-token positions) only after a bounded rung-0 pass. NEXT:
   audit #34 -> Codex round 21.
-- **`necessary_register_rung1` — PASS — FUNCTIONAL SOURCE WRITER AT ZERO
-  CONFIGURED FILLER, seeds 11/23/37; PROVISIONAL, audit #38 pending** (locked
+- **`necessary_register_rung1` — QUALIFIED PASS — ANSWER-SUPERVISED EIGHT-SYMBOL WRITER INTO A FROZEN SYNTHETIC CONSUMER, seeds 11/23/37 (audit #38 adopted `d4b82b7`; wording in `STATE.md`)** (locked
   `ea2e831`; ledger `necessary_register_rung1_lock`,
   `necessary_register_rung1_result`; config
   `experiments/config/necessary_register_rung1.json`; results
@@ -102,12 +103,16 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   frozen-model line is closed; write-up `docs/STRUCTURED_NEGATIVE_2026_08_29.md`;
   licensed sentences and never-say lists verbatim in `STATE.md`.
 
-## necessary_register_rung1 — constructed substrate, rung 1 (zero-delay training-entity source writer; replayed rung-0 consumers): PASS — FUNCTIONAL SOURCE WRITER AT ZERO CONFIGURED FILLER; PROVISIONAL, audit #38 pending (2026-08-30; locked `ea2e831`; runner `experiments/run_necessary_register.py`, config `experiments/config/necessary_register_rung1.json`, results `experiments/results/necessary_register_rung1/`; ledger `necessary_register_rung1_lock`, `necessary_register_rung1_result`)
+## register_bridge_preflight_v1 — noncausal real-model feasibility measurement: PREFLIGHT PASS — EXPLICIT-LEGEND STATE LINEARLY DECODABLE (audit #39: UPHOLD; noncausal feasibility result, not a code-level or causal bridge) (2026-08-30; audit #39 adopted verbatim)
 
-STATE.md wording, verbatim (provisional until audit #38):
+- **Licensed sentence (audit #39, verbatim).** In frozen Qwen3-1.7B-Base revision `ea980cb0a6c2ae4b936e82123acc929f1cec04c1`, a predeclared rank-≤8 cross-fitted linear decoder read the explicitly legend-denoted state from the two-token record-tag residual under held-out entities, two held-out templates, and a disjoint balanced permutation bank at 0.815 accuracy (folds 0.828/0.852/0.766, entity-bootstrap lower bound 0.779, minimum state recall 0.615), versus 0.125 input-embedding, 0.135 categorical, and 0.016 paired reassigned-legend original-state controls and a 0.204 shuffle-null p99; on the paired reassigned legends the unchanged-tag decoder followed the newly denoted state at 0.852, establishing a noncausal, prompt-family-bounded explicit-legend state signal—not a code-level or causal bridge, persistent register, synthetic-consumer capability, or native latent mathematics.
+- **Never say (audit #39).** “Qwen learned a register.” “This establishes a causal bridge.” “The Qwen residual already contains the constructed consumer’s code.” “The state survived, persisted, or was remembered.” “The result establishes an eight-dimensional state subspace.” “The decoder reads tag identity.” “The destroyed arm contains no state information.” “The destroyed context failed.” “Template and permutation transfer were independently established.” “The result generalizes to arbitrary templates, legends, or permutations.” “The shuffle null reran the entire selection pipeline.” “The bootstrap includes decoder-training uncertainty.” “Every layer contains the signal.” “The legend-occurrence reference is a gated control.” “The residuals can drive the frozen synthetic consumer.” “This demonstrates semantic facts, an autonomous state, or native latent mathematics.”
+- **Restart ruling (audit #39, verbatim).** **Continue conditionally; the predeclared PASS branch should apply.** The highest-leverage next move is the required 2–3-round direction dialogue followed by one held-out causal bridge test: map Qwen record-span residuals into the successful writer centroids and inject them into the frozen constructed consumer. The program should not continue through another synthetic rung, decoder characterization round, layer sweep, or prompt repair. The current pause remains appropriate until the dialogue produces a locked causal test. The program is still tunnel-visioned around an eight-symbol explicit-lookup micro-world. The PASS justifies one causal discriminator; it does not justify extending the ladder indefinitely.
+- Evidence: `run_result.json`, `run_rows.json` (per-row prompts, ids, spans, predictions), `run_features.npz` (local only; sha256 in the ledger result row).
 
-- `necessary_register_rung1` (locked ea2e831): PASS — FUNCTIONAL SOURCE WRITER AT ZERO CONFIGURED FILLER on seeds 11/23/37 (own 0.966/1.0/1.0; counterfactual 0.964/1.0/1.0; shuffled-donor follow 0.967/1.0/1.0, recipient ≤0.006; masked/zero/random 0.11–0.13; value_only = own). Telemetry: writes far from the oracle codes (cosine 0.72/0.42/0.49) yet followed. Provisional until audit #38.
-- NEXT: audit #38 → `register_bridge_preflight_v1` (round 27; noncausal linear-decodability preflight on Qwen3-1.7B-Base; smoke → lock → run → audit) → direction dialogue on moving `register_bridge_v1` earlier vs short delay. Moves, algebra, effort, maps, long delay, larger models, the navigator and any block-12 actuator stay off.
+## necessary_register_rung1 — constructed substrate, rung 1 (zero-delay training-entity source writer; replayed rung-0 consumers): QUALIFIED PASS — ANSWER-SUPERVISED EIGHT-SYMBOL WRITER INTO A FROZEN SYNTHETIC CONSUMER (audit #38 adopted `d4b82b7`; wording in `STATE.md`) (2026-08-30; locked `ea2e831`; runner `experiments/run_necessary_register.py`, config `experiments/config/necessary_register_rung1.json`, results `experiments/results/necessary_register_rung1/`; ledger `necessary_register_rung1_lock`, `necessary_register_rung1_result`)
+
+Audit #38's exact licensed sentence, qualifications, and never-say list are reproduced in `STATE.md`'s Current statement. The synthetic staircase stopped after this rung; the only subsequent action was the separately locked noncausal preflight, now governed by audit #39.
 
 ## necessary_register_v1 — constructed substrate, rung 0 (oracle write, hard-masked register, unseen label permutations): QUALIFIED INSTRUMENT PASS — PERMUTATION-GENERALIZING ORACLE-CODE LABEL SELECTOR (2026-08-30; audit #37 adopted verbatim `abee584`; runner `experiments/run_necessary_register.py`, config `experiments/config/necessary_register_v1.json`, results `experiments/results/necessary_register_v1/`; commits `805bce2`, `e35b836`, `be28305`, `ff6c42b`, `abee584`)
 
@@ -118,7 +123,7 @@ STATE.md wording, verbatim:
   Never say (audit #37): “The model learned compositional reasoning.” “No lookup strategy can pass the held-out gate.” “The evaluation fully crossed every state, panel, and template.” “Zero and random codes had no systematic effect.” “Zero/random-code behavior was at chance” without “assigned-target accuracy.” “Zero-hook proved exact logit-level identity” or “zero-hook equals the zero-vector arm.” “The mask proved that source information flows only through the register.” “Seed 11 was uniformly robust across presentations.” “The register learned to write, retain, or retrieve state.” “This establishes an abstract state representation in a pretrained model.” “The constructed ladder will transfer to Qwen.” “Instrument valid” without the synthetic, first-label, schedule, and evidence-retention qualifications.
 - NEXT (historical; superseded by the rung-1 entry above): `necessary_register_rung1` (round 26 spec + audit #37 requirements: replay/freeze the rung-0 consumers, answer-only source writer at zero configured filler, fully crossed evaluation, raw rows, checkpoints, per-arm termination, logit-level identity, paired clustered uplift, lookup baselines) → one audit → direction dialogue on moving `register_bridge_v1` earlier vs short delay. Alongside (not staircase advancement): a cheap CPU real-model source-span linear-decodability preflight with token/context and shuffled-coordinate controls. Failure closes the constructed architecture; a lookup-only pass also stops advancement. Moves, algebra, effort, maps, long delay, larger models, the navigator and any block-12 actuator stay off.
 
-## oracle_actuator_rung0 — positive-control staircase rung 0 (oracle code, no encoder; actuator/site/retrieval control): REGISTERED FAIL, unanimous; audit #34 PENDING (2026-08-30; ledger `direction_r20_rung0_design`, `oracle_actuator_rung0_preflight`, `oracle_actuator_rung0_lock`, `oracle_actuator_rung0_seed11`, `oracle_actuator_rung0_result`, `oracle_actuator_rung0_diag`; commits `2939d39`, `2ed1f5a`, `3a66506`, `0576717`, `c986668`, `aaba738`, `df8827e`)
+## oracle_actuator_rung0 — positive-control staircase rung 0 (oracle code, no encoder; actuator/site/retrieval control): REGISTERED FAIL, unanimous; audit #34 ADOPTED (2026-08-30; ledger `direction_r20_rung0_design`, `oracle_actuator_rung0_preflight`, `oracle_actuator_rung0_lock`, `oracle_actuator_rung0_seed11`, `oracle_actuator_rung0_result`, `oracle_actuator_rung0_diag`; commits `2939d39`, `2ed1f5a`, `3a66506`, `0576717`, `c986668`, `aaba738`, `df8827e`)
 
 - **Why (audit #33 + rung-0 localization; Codex round 20).** Rung 1 failed
   and its failure was not localized among encoder, actuator, cap, site,
@@ -174,9 +179,7 @@ STATE.md wording, verbatim:
   late-training loss by code: code 0 1.20–1.22, code 6 1.41–1.56, all others
   1.59–2.10; every tag is two tokens with distinct first tokens. Diagnostic
   only; feeds audit #34.
-- **Status.** Registered FAIL; audit #34 (fresh, unprimed) pending — its
-  wording will govern; then Codex direction round 21. Nothing licensed beyond
-  the ledger row.
+- **Status.** Registered FAIL; audit #34 (fresh, unprimed) ADOPTED — licensed sentence and never-say list verbatim in `STATE.md` (ledger `oracle_actuator_rung0_audit34`).
 
 ## onewrite_recall_rung1 — positive-control staircase rung 1 (training entities, training wording, zero configured filler): REGISTERED CONSTRUCTION-LEVEL FAIL, CLOSED (2026-08-29 night; unanimous seeds 11/23/37; ledger `direction_r19_ruling`, `onewrite_recall_rung1_lock`, `onewrite_recall_rung1_result`, `onewrite_recall_rung1_rung0_diag`, `onewrite_recall_rung1_audit33`, `onewrite_recall_rung1_z_localization`; commits `c71d44a`, `15758aa`, `9c14c7b`, `25f65ac`, `844676b`)
 
