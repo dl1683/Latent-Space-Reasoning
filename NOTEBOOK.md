@@ -5,6 +5,14 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — Re-contextualization #32 (early morning): the first rung that produced a structured result
+
+Project and live question. Latent-Space-Reasoning: is there a native mathematics of latent spaces, found or built? After yesterday's eleven pre-declared closures, the staircase's rung 0 — a *known* 8-way code written once through a trainable linear map into frozen Qwen3-1.7B-Base — is the first construction whose result is structured rather than null: in every seed so far, one or two codes drive their tag near-perfectly (0.96, 0.75) while the remaining codes do nothing, with the norm cap never active and the training loss flat. That is neither the "actuator inert" nor the "actuator works" branch; it says the write site can carry a code to the output, but a single linear J trained for 400 balanced steps finds only one or two usable directions. The fresh audit (fired on the complete three-seed result) adjudicates the wording and the branch.
+
+What reframes earlier work. Yesterday's recall interfaces (E+J) failed at *source extraction*; today's oracle rung shows that even with extraction removed the actuator is only partially learnable under this budget — so the two failures are separable, and the staircase is doing what it was introduced to do: localize.
+
+Alternatives held live: (a) the partial-code pattern may be an optimization artefact (lr/steps/zero-init J) rather than a capacity fact — the audit is asked to say whether more steps would be a repair or a rung; (b) the codebook geometry (centred simplex) may be the wrong basis for a linear injector; (c) the site (slot token two positions in) may only expose a low-dimensional causal channel to the query — a *reachable-dimension* question, which is itself a native-geometry object (reachability/control cost returns here from the front, not as a probe); (d) the navigator remains deferred as the calibration control. Not narrowed: the next rung is chosen by the audit and Codex, not by me.
+
 ## 2026-08-29 — Oracle-actuator rung 0 preflight (zero-J rows only): PASS
 
 Codebook Gram matrix as designed (unit diagonal, −1/7 off-diagonal; hash 3f2381fe…), the hook fires exactly once per hooked prefill, cap telemetry is zero with zero-initialized J, and zero-hook decoding equals cue on all eight rows. (A first pass of the script reported FAIL only because it read the hook counter after a cue decode had reset it; the corrected run is the record.) Tomorrow begins with the ≤80-line oracle-actuator runner, its lock, three seeds, and one audit — nothing else until then.
