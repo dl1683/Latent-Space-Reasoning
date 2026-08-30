@@ -5,6 +5,160 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Audit #32 on onewrite_recall_v1 (fresh, unprimed; verbatim): FAIL upheld; sentence corrected; navigator not run-ready; loop change = positive-control staircase
+
+The round-18 sentence is replaced by the audit's; the navigator has four pre-run blockers and the 'one artifact per day' rule is replaced by the cumulative positive-control staircase.
+
+## Verdict
+
+`onewrite_recall_v1` is a unanimous registered construction-level FAIL. The scope “this fixed construction did not establish a transferable causal recall channel” is substantially correct, but the pre-drafted sentence needs numerical and wording corrections.
+
+This result does not establish that a fact was successfully written and then forgotten. It does not isolate encoding, persistence, retrieval, or held-out binding. The strongest supported interpretation is that the trained intervention changed the model’s output mode without carrying source-tag-specific information.
+
+The program should continue, but the present rapid construction-closing loop is not working and is not the highest-leverage approach. `necessity_navigator_v1` is procedurally eligible as the promised one-off calibration, but its current implementation is not run-ready and it should not become the central artifact.
+
+No repository files were edited.
+
+## Result audit
+
+The primary approximate evidence is decisive:
+
+| Seed | Correct-source accuracy | Counterfactual accuracy | Random accuracy | Cue | Visible | Correct-source valid-tag emission |
+|---|---:|---:|---:|---:|---:|---:|
+| 11 | 0.03125 | 0.03125 | 0.03125 | 0.000 | 1.000 | 0.4375 |
+| 23 | 0.03125 | 0.03125 | 0.03125 | 0.000 | 1.000 | 0.53125 |
+| 37 | 0.0625 | 0.0625 | 0.0625 | 0.000 | 1.000 | 0.421875 |
+
+Raw replay of all six arms in [train_result.json](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/results/onewrite_recall_v1/train_result.json>) found:
+
+- Seeds 11 and 23: correct-source, counterfactual, and random writes produced identical raw text on all 64 rows.
+- Seed 37: correct-source and counterfactual parsed choices matched on 64/64 rows; correct-source and random choices matched on 62/64. The two choice differences did not improve correct recall.
+- Every decode contained zero or one valid tag. “Correct tag anywhere in the decode” therefore equals strict-parser accuracy; there is no correct-tag rank signal hidden below the parser.
+- Counterfactual following was 0.156/0.125/0.156, with no improvement over the registered specificity requirement.
+- Zero-hook reproduced cue text, choice, and completion row-for-row.
+
+The intervention unquestionably affects downstream greedy behavior: valid-tag emission rises from cue’s 2/64 rows to 28/64, 34/64, and 27/64. Because counterfactual and random writes induce essentially the same behavior, the positive residue is a nonspecific output/format nudge—not factual recall.
+
+The saved JSON contains decoded outputs, not logits. It proves that the argmax behavior changed; it cannot support quantitative claims about the full next-token distribution.
+
+## Within-train diagnostic
+
+A read-only seed-11 diagnostic decoded all 24 training entities using:
+
+- training source template 0;
+- filler 0 and the training query wording;
+- own-source write, cue, and same-entity counterfactual-source write.
+
+Results:
+
+- Own-write accuracy: 4/24 = 0.167.
+- Cue accuracy: 2/24 = 0.083.
+- Counterfactual-tag following: 4/24 = 0.167.
+- Own-source and counterfactual-source raw outputs: identical on 24/24 entities.
+
+This is one post-hoc diagnostic slice, so it cannot characterize every training template, filler, or seed. It is nevertheless enough to withhold the claim that the interface learned tag identity even on training entities.
+
+The stochastic loss did decline: first-50 mean loss was approximately 1.26–1.30 and last-50 mean was 0.99–1.05 across seeds. But these are single-example sampled losses, not full-training-set evaluations. The loss licenses optimization-objective reduction only—not learned facts, tag identity, or a transferable state.
+
+## Why this null does not kill one-write memory
+
+The strongest alternative explanations, ranked by current evidence, are:
+
+1. **Source-insensitive optimization collapse.** The train diagnostic and correct/counterfactual equality indicate that the learned delta largely ignored tag content and became an unconditional response-mode controller.
+
+2. **Missing proximal learnability control.** No locked gate required own-write versus same-entity counterfactual specificity on training entities at zero or short delay before testing held-out names and long-context recall.
+
+3. **Source-state choice.** The encoder reads only the final generic anchor token of a short source sentence. Tag information may be weak, distributed, or inaccessible through this linear 16-dimensional interface.
+
+4. **Actuator/retrieval construction.** One norm-capped block-12 addition at a generic slot must remain usable through the rest of the filler, the fixed vocabulary/instruction lines, and the query. Failure may occur at the site, upper-layer propagation, attention-based retrieval, or target-name binding.
+
+5. **Optimization and generalization burden.** Four hundred batch-one steps jointly ask the interface to learn source extraction, an eight-way code, injection, delayed retrieval, unseen-name binding, and unseen query wording. A 16-dimensional state is information-theoretically ample for eight tags, but this training construction was not shown to solve even its proximal train behavior.
+
+The result therefore closes the registered combination of model, layer, source state, encoder/injector, norm cap, slot, objective, optimizer budget, prompt sequence, and held-out evaluation. It does not close any component independently.
+
+### Exact licensed sentence
+
+> Under the round-17-amended behavioral readout—visible-copy accuracy 1.00 and cue accuracy 0.00—`onewrite_recall_v1` was a unanimous construction-level FAIL: across seeds 11, 23, and 37, the correct-source intervention achieved held-out tag accuracy 0.031, 0.031, and 0.0625, respectively, exactly matching the same-entity counterfactual-tag and fixed-random arms within each seed, while valid-tag emission rose nonspecifically from 0.031 in cue to 0.438, 0.531, and 0.422; therefore this 65,552-parameter, 16-dimensional encoder/injector, trained for 400 single-example steps and applied once at the norm-capped block-12 slot before the registered filler/instruction/query sequence, did not establish a held-out causal tag-recall channel.
+
+## Exact README/STATE wording
+
+> **`onewrite_recall_v1` — REGISTERED CONSTRUCTION-LEVEL FAIL, CLOSED.** Under the round-17-amended behavioral readout—visible-copy accuracy 1.00 and cue accuracy 0.00—correct-source held-out accuracy was 0.031/0.031/0.0625 across seeds 11/23/37 and exactly matched the same-entity counterfactual-tag and fixed-random arms within every seed. Correct, counterfactual, and random writes all increased valid-tag emission far above cue, establishing a nonspecific downstream output effect but no tag-specific content. A post-hoc seed-11 training-slice diagnostic likewise produced own-write accuracy 4/24 and identical own-tag versus same-entity counterfactual-source outputs on 24/24 entities. This closes the fixed model/layer/source-state/16-dimensional encoder/injector/norm-cap/slot/objective/400-step/prompt construction—not one-write memory, persistence, block-12 capacity, or persistent state in real models generally.
+
+## Never-say list
+
+Never say:
+
+- “The fact was written but did not survive.”
+- “The experiment proved that the model cannot store a fact in hidden state.”
+- “Block 12 cannot support persistent memory.”
+- “A 16-dimensional or 65,552-parameter interface is insufficient in principle.”
+- “The 71–73 filler tokens are the complete write-to-query delay.”
+- “All three seeds scored 0.031.”
+- “The training loss proves that the train facts or tag identities were learned.”
+- “Correct and counterfactual writes had identical raw text in all three seeds.” Their choices did; seed 37 had two non-tag raw-text differences.
+- “Random controls rule out every useful intervention.” Only one fixed random state per seed was tested.
+- “The intervention had no effect.” It strongly changed valid-tag emission.
+- “The write was content-independent” without the construction qualifier; only its saved downstream choices were nonspecific under these arms.
+- “The original preregistered instrument passed.” It passed the outcome-aware but pre-training round-17 amendment.
+- “More steps, another layer, a different slot, a maintained state, or another objective would also fail.”
+- “Frozen language models lack native state or latent mathematics.”
+- “This closes the real-model route.”
+
+## `necessity_navigator_v1`
+
+The recall negative satisfies the earlier procedural condition for one bounded navigator calibration. That makes the navigator eligible, not automatically correct or run-ready.
+
+Scientifically, it is secondary. Its algebra is supplied by the designed world, the GRU receives the goal action word and executed-action history, and the behavioral loss is generated from exact BFS-optimal actions. A positive would show that task pressure can induce readable, approximately compositional path-integration state in a purpose-built recurrent system. It would not resolve structure in a real pretrained model.
+
+The current runner has pre-run integrity blockers:
+
+1. **Duplicated swap input.** The donor hidden state `H[d,t]` already includes the time-`t` previous-action/current-observation input. The swap rollout then starts at the same pose with the same previous action and feeds that input again, creating an off-manifold duplicated step and misaligning the claimed four-decision continuation.
+
+2. **Incomplete manifest binding.** The manifest hash includes goal words, permutation triples, and selected times, but excludes the generated walk actions and realized poses that define the actual recipient/donor/wrong-place triplets.
+
+3. **Control mismatch.** The locked ledger describes uplift against no-swap, wrong-place, random, and self controls, but the implementation excludes `self` from its best-control comparator. The untrained move/inverse controls are also evaluated on different randomly drawn episodes rather than fixed identical inputs.
+
+4. **Smoke provenance mismatch.** `STATE.md` and the ledger cite an older 2,000-step smoke with top-1 0.879 versus control 0.484. The only live [smoke_result.json](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/results/necessity_navigator_v1/smoke_result.json>) is a later 300-step smoke with top-1 0.499, control 0.484, and invalid behavior. The cited smoke is not reproducible from the current result directory.
+
+5. **Measurement-to-artifact ratio.** The runner has 206 nonblank lines. A strict functional classification gives 60 artifact-core lines versus 146 evaluation/control/orchestration lines, or 2.43:1; a generous allocation of mixed main-loop code gives roughly 1.5:1. The precise ratio is classification-sensitive, but the claimed ≤1.1:1 is not supported, and the strict split crosses the governance warning.
+
+Ruling: do not launch the full navigator in its current state. Correct only these implementation/lock discrepancies, then use the required direction dialogue to decide whether honoring the single calibration run remains worth its bounded evidentiary value. No navigator v2 or synthetic program follows.
+
+Its licensed lay sentence, if retained, is:
+
+> Can an agent forced to navigate an aliased world invent a portable internal map whose moves compose?
+
+## Program audit
+
+The strongest common explanation of the ten closed constructions is not that current latent spaces are hostile to structured reasoning. It is that the program repeatedly changed bespoke instruments and actuators before establishing proximal mechanism learnability:
+
+- several constructions died at behavioral or calibration validity;
+- successful interventions reduced to late lexical or supervised response control;
+- cost and interchange constructions were actuator/readout limited;
+- the one-write interface was source-insensitive even on the tested training slice.
+
+The only locked round-level ratio is the earlier six measurement rounds to one build round—already above the amendment’s 5:1 halt threshold. Later one-write builds improve that ratio, but no current canonical full-day recount exists; an exact ten-round ratio should not be invented.
+
+“One locked artifact per day” reduces parallel thrash but does not fix the main failure. It may even preserve daily turnover. The single highest-leverage loop change is:
+
+> Maintain one active cumulative artifact and require a proximal positive-control staircase before advancing: train own-write versus same-entity counterfactual specificity first, then zero/short delay, then held-out names, then unseen wording, then long delay—changing only one difficulty at each rung.
+
+This would have localized `onewrite_recall_v1` at source/content learning before the expensive held-out persistence claim.
+
+## Ranked next increments
+
+1. Propagate the licensed construction-level wording and explicitly close `onewrite_recall_v1`; retain the train diagnostic as diagnostic, not a new result.
+
+2. Replace “one artifact per day” with the cumulative positive-control staircase above and report the ratio using a declared line/round classification.
+
+3. Resolve the navigator’s duplicated-step, manifest-binding, comparator, and smoke-provenance discrepancies; then complete the required direction dialogue before any full run.
+
+4. If reaffirmed, run the navigator exactly once as a calibration control, audit it once, and forbid a repair or v2 regardless of outcome.
+
+5. Return the central program to a real-model, co-developed state carrier only after its proximal content-specific intervention works before delay, paraphrase, or held-out transfer is introduced.
+
+Final program ruling: **continue, but say plainly that the current loop is not working. It is not presently doing the highest-leverage thing.** The scientific question remains open; what should stop is rapid turnover among under-localized constructions.
+
 ## 2026-08-29 — onewrite_recall_v1 seeds 11/23 FAIL; round 18 (Codex, verbatim): clean negative on a valid instrument; navigator runs once after the audit
 
 ## Ruling
