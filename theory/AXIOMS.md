@@ -80,7 +80,10 @@ restrictions; no mathematical novelty is claimed for that synthesis here.
 Status ledger. D1--D6 are adopted definitions. D7 is an adopted definition;
 its seminorm statement and uniform first-variation lemma are proved under
 their displayed assumptions; the compatibility requirement and LM finite-
-vocabulary specialization (round 43) are proposed, pending audit #48. Theorem 1 and its finite corollary are proved.
+vocabulary specialization (round 43) have been revised per audit #48 (REVISE:
+proof coefficients corrected, compatibility clause rewritten as curve-based
+expansion, type annotations and caveats strengthened; headline coefficient and
+seminorm structure confirmed correct). Theorem 1 and its finite corollary are proved.
 Proposition 2's affine, Gramian, and chart statements are proved in its
 explicitly extended setting; the softmax extension is sketched. Open Problem
 7 is conjectured; only its displayed conditional inequalities, finite-access
@@ -356,20 +359,31 @@ Indeed, the absolute difference between the two suprema is bounded by the
 displayed uniform remainder. Pointwise differentiability without this
 uniformity does not justify exchanging the limit with the infinite supremum.
 
-#### Compatibility requirement (proposed, pending audit)
+#### Compatibility requirement (proposed, audit #48 REVISE applied)
 
-When the registered outcome metric \(D_c\) is itself a smooth metric on a
-finite-dimensional manifold of outcomes and each \(r_c\) is differentiable, D7's
-tangent norm \(\|\cdot\|_{D_c,r_c(T_wx)}\) **must** be the metric differential
-of \(D_c\) at \(r_c(T_wx)\) rather than an independently declared norm. This
-closes the gap between D2's global metric and D7's local geometry: the tangent
-norm is not free; it is determined by the registered distance.
+When the registered outcome distance \(D_c\) admits a first-order expansion
+along every relevant \(C^1\) curve \(\eta\) through \(y=r_c(T_wx)\),
 
-#### LM finite-vocabulary specialization — proved under stated assumptions (proposed, pending audit)
+\[
+D_c(y,\eta(t))=|t|\,F_{c,y}(\dot\eta(0))+o(|t|),
+\]
 
-Let \(V\) be a finite vocabulary and let the outcome space be the probability
-simplex \(\Delta^{|V|-1}\), equipped with the normalized \(\sqrt{\mathrm{JS}}\)
-metric
+where \(F_{c,y}\) is curve-independent and is a norm or seminorm on the tangent
+space at \(y\), then D7's tangent norm **must** equal \(F_{c,y}\) rather than an
+independently declared norm. If no such \(F_{c,y}\) exists for a given channel
+\(c\), that channel cannot instantiate ordinary D7. Note that D2's \(D_c\) is a
+distance on the response-law space \(\mathcal P(O_c)\), not a smooth metric
+tensor; ordinary distances — including \(\sqrt{\mathrm{JS}}\) — are not smooth
+at the diagonal as two-point functions, so the expansion is taken along curves
+rather than as a bivariate differential. Branchwise compatibility still does not
+provide the uniformity over \((w,c)\) required to differentiate \(d_\infty\).
+
+#### LM finite-vocabulary specialization — proved under stated assumptions (proposed, audit #48 REVISE applied)
+
+Let \(V\) be a finite vocabulary with outcome space \(O_c=V\), so that the
+response-law space is identified with the probability simplex
+\(\mathcal P(V)\cong\Delta^{|V|-1}\). Equip it with the normalized
+\(\sqrt{\mathrm{JS}}\) metric (KL in natural logarithms throughout)
 
 \[
 D_{\sqrt{\mathrm{JS}}}(p,q)
@@ -398,34 +412,46 @@ p_x^{\mathrm{JS}}(v)
 
 where \(\pi_{w,c}=r_c(T_wx)\) and \(u_{w,c}=D(r_c\circ T_w)_x v\).
 
-*Proof sketch.* Write \(f(t)=\mathrm{KL}(\pi\|\tfrac12(\pi+\pi+tu))
-+\mathrm{KL}(\pi+tu\|\tfrac12(\pi+\pi+tu))\). Each KL expands as
-\(\tfrac{t^2}{4}g_\pi(u,u)+O(t^3)\) for interior \(\pi\), giving
-\(f(t)=\tfrac{t^2}{2}g_\pi(u,u)+O(t^3)\). Then
+*Proof sketch.* Write \(m=\pi+\tfrac12tu\) and
+\(f(t)=\mathrm{KL}(\pi\|m)+\mathrm{KL}(\pi+tu\|m)\). Each KL expands as
+\(\tfrac{t^2}{8}g_\pi(u,u)+O(t^3)\) for interior \(\pi\), giving
+\(f(t)=\tfrac{t^2}{4}g_\pi(u,u)+O(t^3)\). Then
 \(D_{\sqrt{\mathrm{JS}}}=\sqrt{f/(2\ln2)}
-=|t|\sqrt{g_\pi(u,u)/(4\ln2)}\cdot(1+O(t))
-=|t|\sqrt{g_\pi(u,u)}/({\sqrt{8\ln2}})+o(|t|)\).
+=|t|\sqrt{g_\pi(u,u)/(8\ln2)}\cdot(1+O(t))
+=|t|\sqrt{g_\pi(u,u)}/(\sqrt{8\ln2})+o(|t|)\).
 
 Each branch \((w,c)\mapsto(1/\sqrt{8\ln2})\sqrt{g_{\pi_{w,c}}(u_{w,c},u_{w,c})}\)
 is a seminorm in \(v\) (the pullback of an inner-product norm through the linear
-differential), so \(p_x^{\mathrm{JS}}\) is a seminorm when finite.
+differential), so \(p_x^{\mathrm{JS}}\) is a seminorm when finite. Strict
+positivity of each individual branch does not by itself imply that the supremum
+is finite, uniformly interior, or uniformly differentiable; the construction is
+generally a supremum, not an attained maximum.
 
 **Remarks.** (1) For a softmax law \(\pi=\operatorname{softmax}(\ell)\) with
-logit perturbation \(\dot\ell\), \(g_\pi(\dot\pi,\dot\pi)
-=\operatorname{Var}_{A\sim\pi}[\dot\ell_A]\), so \(p_x^{\mathrm{JS}}\)
-measures the maximal standard deviation of the log-likelihood score under the
-model's own law. (2) For a Markov grouping kernel \(K\),
-\(g_{K\pi}(Ku,Ku)\le g_\pi(u,u)\), so the full next-token channel locally
-dominates every fixed grouping — the differential counterpart of
+logit perturbation \(\dot\ell\),
+\(\dot\pi_a=\pi_a(\dot\ell_a-\mathbb E_\pi\dot\ell_A)\), so
+\(g_\pi(\dot\pi,\dot\pi)=\operatorname{Var}_{A\sim\pi}[\dot\ell_A]\); here
+\(\dot\ell_A\) is the logit perturbation and the log-probability score is its
+centered version. (2) For a Markov grouping kernel \(K\),
+\(g_{K\pi}(Ku,Ku)\le g_\pi(u,u)\) (by Jensen on each output bin, with zero-mass
+bins excluded), so the full next-token channel locally dominates every fixed
+grouping — the differential counterpart of
 \(D_{\sqrt{\mathrm{JS}}}(Kp,Kq)\le D_{\sqrt{\mathrm{JS}}}(p,q)\).
-(3) If \(\pi_a=0\) for some \(a\), the Fisher coefficient \(1/\pi_a\) diverges;
-the local expansion becomes \(O(\sqrt{|t|})\) rather than \(O(|t|)\), and no
-finite ordinary tangent norm exists. The specialization therefore requires
-strictly positive next-token law. (4) A supremum of Fisher pullback norms is
-generally a nonsmooth Finsler seminorm (maximum of ellipsoidal norms), not a
-single Riemannian Fisher tensor. (5) Open Problem 7 remains open: this
+(3) Boundary behavior is direction-dependent: if \(\pi_a=0\) for some \(a\), a
+perturbation remaining within the positive-support face retains \(O(|t|)\) Fisher
+behavior, but a perturbation introducing first-order mass into a previously zero
+coordinate scales as \(O(\sqrt{|t|})\), and no finite ordinary tangent norm
+exists for that direction. The specialization therefore requires strictly
+positive next-token law. (4) A supremum of Fisher pullback norms is generally a
+nonsmooth Finsler-type (Minkowski) seminorm, not a single Riemannian Fisher
+tensor; the maximum or supremum of ellipsoidal norms need not meet classical
+Finsler smoothness requirements. (5) Open Problem 7 remains open: this
 specialization does not supply uniform control of unseen branches, quotient
-regularity, or executable lifting.
+regularity, or executable lifting. (6) Finite vocabulary is essential; infinite
+alphabets require summability and interchange-of-limit controls not addressed
+here. (7) This specialization requires a separately declared differentiable LM
+carrier and differentiable response maps; a prompt-string LM does not
+automatically have D7 tangent structure.
 
 #### Audit #36 retrospective — measured restricted instance, not a theorem
 

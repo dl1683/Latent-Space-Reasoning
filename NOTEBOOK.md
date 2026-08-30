@@ -5,7 +5,19 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
-## 2026-08-30 — Round 43: D7 compatibility requirement and LM finite-vocabulary specialization (proposed, audit #48 pending)
+## 2026-08-30 — Audit #48 adopted (REVISE): D7 specialization corrections applied
+
+Codex audit #48 verdict: REVISE. Headline coefficient 1/√(8 ln 2) confirmed correct, but three classes of repair required and applied:
+
+1. **Proof sketch coefficients**: Each KL term is t²g_π/8 (not t²/4), sum is t²g_π/4 (not t²/2). Intermediate steps now consistent with the correct final result.
+2. **Compatibility requirement rewritten**: D2's D_c is a distance on response-law space, not a smooth metric tensor. Replaced with curve-based first-order expansion requirement: D_c(y, η(t)) = |t|F_{c,y}(η̇(0)) + o(|t|). Channels without such F cannot instantiate D7. Notes that branchwise compatibility does not provide (w,c)-uniformity.
+3. **Caveats strengthened**: (a) boundary behavior is direction-dependent (face-interior vs zero-mass directions); (b) finite supremum not implied by strict positivity alone; (c) supremum not necessarily attained; (d) "Finsler-type/Minkowski seminorm" safer than classical "Finsler"; (e) finite vocabulary essential; (f) prompt-string LMs need separately declared differentiable carrier; (g) KL uses natural logarithms; (h) O_c = V type annotation.
+
+Licensed sentence (audit #48 verbatim): normalized √JS induces the Fisher pullback seminorm with coefficient 1/√(8 ln 2) at interior finite-vocabulary laws under D7's differentiability and finiteness assumptions; softmax-variance and fixed-Markov-contraction identities correct; does not promote reachability_v1 or establish denizen-executable native geometry. Ratio: 33:15 = 2.20:1.
+
+---
+
+## 2026-08-30 — Round 43: D7 compatibility requirement and LM finite-vocabulary specialization (audit #48 REVISE applied above)
 
 Codex dialogue on information-geometric D7 completed. Ruling: specialize D7, don't replace it. Written into `theory/AXIOMS.md` after the first-variation lemma:
 
