@@ -5,6 +5,16 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — Round 43: D7 compatibility requirement and LM finite-vocabulary specialization (proposed, audit #48 pending)
+
+Codex dialogue on information-geometric D7 completed. Ruling: specialize D7, don't replace it. Written into `theory/AXIOMS.md` after the first-variation lemma:
+
+1. **Compatibility requirement**: D7's tangent norm must be the metric differential of the registered D_c (closes the gap between D2's global metric and D7's local geometry).
+
+2. **LM finite-vocabulary specialization** (proved under interior-simplex assumption): normalized √JS induces (1/√(8 ln 2)) × Fisher norm. Explicitly: D_{√JS}(π, π+tu) = |t|/√(8 ln 2) · √(g_π(u,u)) + o(|t|), where g_π is the Fisher metric. The compatible D7 seminorm for an LM with strictly positive next-token law is p_x^JS(v) = sup_{w,c} (1/√(8 ln 2)) √(g_{π_{w,c}}(u_{w,c}, u_{w,c})).
+
+Key properties: seminorm (pullback of inner product through linear differential); for softmax laws, measures Var_{A~π}[dℓ_A]; Markov contraction (full channel dominates any fixed grouping); boundary singularity when π_a = 0; Finsler not Riemannian; Open Problem 7 still open. Does NOT collapse instrument/native, does NOT promote reachability_v1, does NOT change the bridge specification or locked estimands. Audit #48 pending.
+
 ## 2026-08-30 — Re-contextualization (2-hour check-in, runner engineering)
 
 **What still holds:** The adopted theory stack (D1–D9, Theorems 1–8) is unchanged and sound by audits #42/#44. The native_bridge_v1 preregistration is LOCK-READY (audit #47). The runner code has all 6 Codex-identified blockers fixed (committed 44d8c1a). The scientific run is the correct next empirical step.
