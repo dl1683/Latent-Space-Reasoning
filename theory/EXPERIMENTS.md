@@ -8979,19 +8979,21 @@ queues that bridge.
 For each frozen rung-0 consumer seed, a raw state consists of a visible
 permutation, the frozen episode input, and a register vector. The eight legal
 write moves overwrite the register with the eight fixed oracle codes. The
-response law is the consumer's full answer-position output distribution. Use
-normalized square-root Jensen--Shannon distance.
-
-The registered primitive interface emits the joint observable
-\((p,\ell)\), where \(p\) is the displayed permutation and \(\ell\) is the
-random visible answer label. Register once, before scoring, the fixed wrapper
+response law is the consumer's full answer-position distribution on the full
+vocabulary. Let \(O_C=\{0,\ldots,7,\mathrm{other}\}\). On the joint emitted
+observable \((p,\ell)\), register the single total deterministic Markov kernel
 
 \[
-K(p,\ell)=p^{-1}(\ell)
+K(p,\ell)=
+\begin{cases}
+p^{-1}(\ell),&\ell\text{ is one of the eight labels displayed by }p,\\
+\mathrm{other},&\text{otherwise}.
+\end{cases}
 \]
 
-on that joint observable. Its pushforward is the derived response law in
-common abstract-state outcome coordinates. Because \(K\) is one fixed,
+Its pushforward is the derived nine-outcome response law used throughout C1
+and in \(d_C\). Use normalized square-root Jensen--Shannon distance. Because
+\(K\) is one fixed,
 state-independent Markov kernel on the joint emitted observable, this
 pull-back is D2-compatible; no state-conditioned postprocessing is introduced
 after outputs are seen. Because a write overwrites the previous register,
@@ -9003,12 +9005,13 @@ empty/query continuation and the eight write/query continuations.
 
 Two controls must not be conflated.
 
-1. **Algebraic round-trip control.** For each saved probability vector and
-   visible permutation, push the vector to visible-label coordinates and pull
-   it back using the registered wrapper \(K\). The normalized square-root JS
-   distance from the original vector must be zero up to the measured replay
-   floor. A larger value means the permutation implementation is wrong and
-   makes C1 `INVALID — OUTCOME PULL-BACK`.
+1. **Algebraic round-trip control.** For each saved full-vocabulary probability
+   law \(\mu\), compute \(K_*\mu\) and verify nonnegativity and total mass one.
+   Separately, for an abstract nine-bin test law, push its eight state masses
+   through \(p\) while leaving `other` fixed, then pull it back with \(K\); the
+   normalized square-root JS distance from the original nine-bin law must be
+   zero up to the measured replay floor. A larger value makes C1
+   `INVALID — OUTCOME PULL-BACK`.
 2. **Cross-presentation diagnostic.** Evaluate two genuinely different
    visible permutations with the same abstract state and identical register,
    pull both output laws back, and report their \(d_C\). This value is not

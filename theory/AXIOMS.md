@@ -63,23 +63,21 @@ metrics on the same supported move family. Stratification is a sampling repair,
 not evidence of semantics.
 
 Status: the navigation requirements remain the program-level target. The
-future-response foundation below was proposed in Round 33 after the Round
-31--33 dialogue and corrected in Round 34 after mathematics-only audit #40.
-Round 35 applies mathematics-only audit #41's correction list. It remains
-**proposed pending mathematics-only audit #42**. Dialogue and rejected
-formulations stay in `dialogue/`.
+future-response foundation below was adopted by mathematics audit #42 after
+the round-35 repairs and audit-#42 wording/type corrections. Dialogue and
+rejected formulations stay in `dialogue/`.
 
-## Foundation: future-response geometry (proposed, rounds 31-35; audits #40-#41 corrections applied; pending audit #42)
+## Foundation: future-response geometry (ADOPTED by mathematics audit #42 after the round-35 repairs and audit-#42 wording/type corrections; rounds 31-36)
 
 The status of every item is stated explicitly. Definitions D1--D7 replace
-L1--L4 as the proposed active foundation. Presentation covariance remains a
+L1--L4 as the adopted active foundation. Presentation covariance remains a
 candidate law. No empirical result is promoted to an axiom by this section.
 Nothing currently proved is genuinely new mathematics. The potentially
 distinctive contribution is the application-level synthesis of interface
 governance, presentation transport, finite denizen access, and executable-germ
 restrictions; no mathematical novelty is claimed for that synthesis here.
 
-Status ledger. D1--D6 are proposed definitions. D7 is a proposed definition;
+Status ledger. D1--D6 are adopted definitions. D7 is an adopted definition;
 its seminorm statement and uniform first-variation lemma are proved under
 their displayed assumptions. Theorem 1 and its finite corollary are proved.
 Proposition 2's affine, Gramian, and chart statements are proved in its
@@ -87,6 +85,8 @@ explicitly extended setting; the softmax extension is sketched. Open Problem
 7 is conjectured; only its displayed conditional inequalities, finite-access
 sandwich, and affine check are proved under their stated assumptions. C1 and
 C2 in `theory/EXPERIMENTS.md` are preregistered and unrun.
+
+C1 remains blocked until its total other-bin wrapper is applied (done in this pass) and a run is separately authorized; C2 remains unrun; audit #42 does not itself authorize computation.
 
 ### D1. Raw presented transition world — definition
 
@@ -285,10 +285,12 @@ programs.
 
 ### D7. Local response seminorm — definition; seminorm lemma proved under the stated assumptions
 
-This is additional structure, not part of every latent world. Assume \(Z\) has
-a differentiable presentation, every relevant \(T_w\) and \(r_c\) is
-differentiable at \(x\), and each outcome metric has a declared tangent norm
-\(\|\cdot\|_{D_c,r_c(T_wx)}\). For \(v\in T_xZ\), define
+This is additional structure, not part of every latent world. Assume \(Z\) is
+equipped with a specified finite-dimensional \(C^1\) manifold structure, or
+another explicitly named differentiable structure supplying tangent spaces,
+differentials, and absolutely continuous curves, every relevant \(T_w\) and
+\(r_c\) is differentiable at \(x\), and each outcome metric has a declared
+tangent norm \(\|\cdot\|_{D_c,r_c(T_wx)}\). For \(v\in T_xZ\), define
 
 \[
 p_x(v)
@@ -500,8 +502,11 @@ and [Ferns--Panangaden--Precup](https://arxiv.org/abs/1207.4114) are neighboring
 probabilistic-transition or MDP metric theories, not sources for this exact
 deterministic construction.
 
-Finite deterministic corollary — proved. If \(Z\neq\varnothing\) and
-\(Z,\mathcal A,C\) are finite, then \(d_h(x,y)=0\) is exactly equality of the
+### Corollary and counterexample 3 - finite carriers have exact finite-horizon response distance; affine continuous carriers need not converge uniformly
+
+Finite clause — proved; restatement of Theorem 1's finite corollary. If
+\(Z\neq\varnothing\) and \(Z,\mathcal A,C\) are finite, then \(d_h(x,y)=0\) is
+exactly equality of the
 horizon-\(h\) future-response signatures. The synchronous ordered-pair graph
 has at most \(|Z|^2\) vertices, and every reachable pair has a simple path of
 length at most \(|Z|^2-1\). Consequently
@@ -509,6 +514,27 @@ length at most \(|Z|^2-1\). Consequently
 \[
 d_{|Z|^2-1}=d_\infty.
 \]
+
+Affine clause — counterexample proved. Even for one affine action,
+\(d_h\to d_\infty\) need not converge uniformly on \(Z\times Z\). Let
+\(Z=\mathbb R\), let the single action be \(T(x)=2x\), and let the response be
+\(r(x)=\delta_x\). Equip the output laws with the metric \(W_1^{d_0}\) induced
+by \(d_0(u,v)=\min(1,|u-v|)\). Then
+
+\[
+d_h(x,y)=\min(1,2^h|x-y|),
+\qquad
+d_\infty(x,y)=1\quad(x\ne y).
+\]
+
+Consequently, for every finite \(h\),
+
+\[
+\sup_{x,y\in Z}\bigl(d_\infty(x,y)-d_h(x,y)\bigr)=1,
+\]
+
+and the supremum is not attained. Thus \(d_h\to d_\infty\) pointwise but not
+uniformly on \(Z\times Z\).
 
 Language-model scope. For the main LM world, a state is a prompt token
 sequence. Declared moves such as appending fixed tokens or substituting a
@@ -608,8 +634,11 @@ p_\alpha(v)=p_\alpha(P_{\mathcal O}v).
 The kernel and quotient are intrinsic; the orthogonal projector is not.
 
 For the next construction only, assume that \(\mathcal W\times C\) is
-countable. For weights \(\beta_{w,c}>0\) such that the displayed series
-converges for every \(v\), define the weighted \(\ell_2\) aggregation
+countable and equip every response outcome vector space used below with a
+fixed Euclidean inner product, so that \(\|\cdot\|_2\), adjoints, and
+\(W_c^\top W_c\) are defined. For weights \(\beta_{w,c}>0\) such that the
+displayed series converges for every \(v\), define the weighted \(\ell_2\)
+aggregation
 
 \[
 p_2(v)^2
