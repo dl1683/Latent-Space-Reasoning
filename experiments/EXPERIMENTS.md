@@ -70,7 +70,7 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   The one-write E/J interface stops under its predeclared rule. Entry below.
 - **`oracle_actuator_rung0` — staircase RUNG 0 — REGISTERED FAIL
   (`FAIL — ORACLE ACTUATOR/SITE/RETRIEVAL CONSTRUCTION`), unanimous; audit #34
-  PENDING** (Codex round 20 design; ledger `direction_r20_rung0_design`,
+  ADOPTED (licensed sentence and never-say verbatim in `STATE.md`)** (Codex round 20 design; ledger `direction_r20_rung0_design`,
   `oracle_actuator_rung0_preflight`, `oracle_actuator_rung0_lock`,
   `oracle_actuator_rung0_seed11`, `oracle_actuator_rung0_result`,
   `oracle_actuator_rung0_diag`). Nothing beyond the ledger row is licensed.
@@ -81,6 +81,27 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
   code actuator rung 0 designed as the one next locked artifact, rung 0b
   (encoder on tag-token positions) only after a bounded rung-0 pass. NEXT:
   audit #34 -> Codex round 21.
+- **`necessary_register_v1` rung 0 — QUALIFIED INSTRUMENT PASS —
+  PERMUTATION-GENERALIZING ORACLE-CODE LABEL SELECTOR** (audit #37 adopted
+  verbatim `abee584`; result `ff6c42b`; lock `be28305`; results
+  `experiments/results/necessary_register_v1/run_result.json`). Own-code
+  first-label accuracy 0.955/1.000/1.000; counterfactual following
+  0.962/1.000/1.000; not compositional. Licensed sentence and never-say list
+  verbatim in `STATE.md` "Current statement". Entry below.
+- **Audits #34–#36 adopted** (`oracle_actuator_rung0` FAIL wording; `site_oracle_v1`
+  REGISTERED CONSTRUCTION-LEVEL FAIL, exact recipe closed as an allocation stop;
+  `reachability_v1` MEASUREMENT, `NO SLOT-SPECIFIC GEOMETRY CONCLUSION`); the
+  frozen-model line is closed; write-up `docs/STRUCTURED_NEGATIVE_2026_08_29.md`;
+  licensed sentences and never-say lists verbatim in `STATE.md`.
+
+## necessary_register_v1 — constructed substrate, rung 0 (oracle write, hard-masked register, unseen label permutations): QUALIFIED INSTRUMENT PASS — PERMUTATION-GENERALIZING ORACLE-CODE LABEL SELECTOR (2026-08-30; audit #37 adopted verbatim `abee584`; runner `experiments/run_necessary_register.py`, config `experiments/config/necessary_register_v1.json`, results `experiments/results/necessary_register_v1/`; commits `805bce2`, `e35b836`, `be28305`, `ff6c42b`, `abee584`)
+
+STATE.md wording, verbatim:
+
+- `necessary_register_v1` rung 0 — QUALIFIED INSTRUMENT PASS. The locked scalar gates mechanically passed in seeds 11/23/37, with own-code first-label accuracy 0.955/1.000/1.000 and same-prompt all-seven counterfactual following 0.962/1.000/1.000 on globally unseen state-to-label permutations. The result establishes a learned synthetic permutation-generalizing oracle-code-to-visible-label consumer, not general composition, source writing, persistence, or pretrained-model structure. Qualification: state/template/panel evaluation was marginally rather than factorially balanced; zero/random results are assigned-target accuracies only; zero-hook is decoded-state identity; and termination/raw rows were not retained for every arm. NEXT: one zero-delay training-entity writer rung, with fully crossed evaluation and complete evidence retention, alongside a cheap real-model source-span bridge-feasibility preflight; then audit once and stop on failure.
+  Licensed sentence (audit #37): In this locked synthetic task, three independently initialized two-layer causal transformers trained from scratch used fixed orthonormal vectors injected at a dedicated register position to select the intended abstract state under globally unseen visible state-to-label permutations, with own-code first-label accuracy 0.955/1.000/1.000 and all-seven same-prompt counterfactual-code following 0.962/1.000/1.000; this establishes a learned permutation-generalizing oracle-code-to-visible-label consumer for the tested schedule, not general compositional reasoning, learned writing or persistence, a fully crossed presentation-invariance result, or structure in a pretrained model.
+  Never say (audit #37): “The model learned compositional reasoning.” “No lookup strategy can pass the held-out gate.” “The evaluation fully crossed every state, panel, and template.” “Zero and random codes had no systematic effect.” “Zero/random-code behavior was at chance” without “assigned-target accuracy.” “Zero-hook proved exact logit-level identity” or “zero-hook equals the zero-vector arm.” “The mask proved that source information flows only through the register.” “Seed 11 was uniformly robust across presentations.” “The register learned to write, retain, or retrieve state.” “This establishes an abstract state representation in a pretrained model.” “The constructed ladder will transfer to Qwen.” “Instrument valid” without the synthetic, first-label, schedule, and evidence-retention qualifications.
+- NEXT: `necessary_register_rung1` (round 26 spec + audit #37 requirements: replay/freeze the rung-0 consumers, answer-only source writer at zero configured filler, fully crossed evaluation, raw rows, checkpoints, per-arm termination, logit-level identity, paired clustered uplift, lookup baselines) → one audit → direction dialogue on moving `register_bridge_v1` earlier vs short delay. Alongside (not staircase advancement): a cheap CPU real-model source-span linear-decodability preflight with token/context and shuffled-coordinate controls. Failure closes the constructed architecture; a lookup-only pass also stops advancement. Moves, algebra, effort, maps, long delay, larger models, the navigator and any block-12 actuator stay off.
 
 ## oracle_actuator_rung0 — positive-control staircase rung 0 (oracle code, no encoder; actuator/site/retrieval control): REGISTERED FAIL, unanimous; audit #34 PENDING (2026-08-30; ledger `direction_r20_rung0_design`, `oracle_actuator_rung0_preflight`, `oracle_actuator_rung0_lock`, `oracle_actuator_rung0_seed11`, `oracle_actuator_rung0_result`, `oracle_actuator_rung0_diag`; commits `2939d39`, `2ed1f5a`, `3a66506`, `0576717`, `c986668`, `aaba738`, `df8827e`)
 
