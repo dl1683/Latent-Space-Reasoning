@@ -5,6 +5,18 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Re-contextualization #30 (evening): after the stop point
+
+Audit: skipped this cycle — no new capability result since audit #31; the navigator and one-write runs are smokes (code-path and instrument validation), not results, and are logged as such.
+
+Whole picture. The mission — native mathematics of latent spaces from axioms upward — has now been attacked three ways: (1) toy quotient worlds with exact certificates (Rounds 36–37; ended: the certificates guaranteed bad verdicts on continuous learners); (2) interventions on frozen pretrained models (seven constructions today; stopped as an allocation pivot — most never reached a valid causal test, the rest reduced to lexical steering or supervised control); (3) now a choice between building the object (a navigator whose behaviour makes an algebraic state necessary) and co-training a one-write state into a real model. The evening's new fact is small but sharp: the one-write instrument fails before the state question — Qwen3-1.7B-Base cannot apply a stated two-way rule to *visibly given* tags better than chance in any of three formats — so the readout side of every real-model construction today has been limited by the base model's own rule-following, not only by our interventions.
+
+What reframes earlier work. Three of today's kills (coordinate_v1/v2, interchange_v1) and now the one-write smoke share one cause: the readout instrument is invalid on the base model before the intervention is testable. That is a substrate fact about small base models as *readout devices*, and it argues for either a larger base for the readout or a readout that does not require instruction/rule-following (the navigator's next-action prediction is exactly that).
+
+Live alternatives (verbatim sources: audits #28–#31, rounds 10–13): the navigator as a one-round calibration control; predictive dynamics/flow; reachability with a nonuniform actuator (explicitly deferred); distributed transformation operators over spans; response-law topology; and the unified alternative that everything seen is a biased, cue-redundant lexical-semantic response geometry with visible-text mediation. Not narrowed: the fork is explicit and Codex round 14 decides on data (the 4B probe).
+
+Foundational thread: the governance loop's own cost is now visible — since the stop point, two design rounds and two smokes without a locked run; the tripwire cuts both ways, and the next cycle must lock or kill.
+
 ## 2026-08-29 — Round 13 (Codex, verbatim): `onewrite_state_v1` locked design
 
 # `onewrite_state_v1` — locked design gate
