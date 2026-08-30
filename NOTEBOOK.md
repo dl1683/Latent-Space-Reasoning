@@ -5,6 +5,10 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — Rung-0 diagnostic on the rung-1 interfaces (read-only): the failure is at the encoder/cap, not at persistence
+
+Saved seeds 11/23/37: the encoder's 16-d codes separate tags on *training* sources at only 0.36/0.14/0.12 (nearest-centroid leave-one-out; chance 0.125); the write lifts the correct tag's log-probability by +1.4 nats but a counterfactual-tag write lifts its own tag by the same +1.3 — a generic "emit a tag" direction; and |Jz| before the 0.25-residual cap is ~2000, so the cap rescales every write to nearly the same small vector. The proximal failure is that no tag-separated code was ever obtained from the final anchor token of a short source sentence, and the cap collapses direction differences — a rung-0 check the staircase should start from tomorrow. Not a repair; recorded for audit #33 and round 20.
+
 ## 2026-08-29 — Staircase rung 1: FAIL, unanimous — the one-write interface learns no fact-specific control even on training entities at zero delay
 
 On the 24 training entities, training wording, and zero intervening tokens (the easiest rung): write accuracy 0.17/0.19/0.29 vs counterfactual write 0.17/0.19/0.27 vs random write 0.17/0.21/0.33 (cue = chance 0.125; visible 1.0); counterfactual follow ≤0.17; completion 1.0 under any write; zero-hook = cue. The single-example loss fell from ~2.2 to ~1.0, but greedy decodes show the write is content-independent. By the round-19 rule this interface (16-d linear E/J, block-12 slot addition, norm-capped, label-CE) stops here; no later rung is tested. Fresh audit next; Codex round 20 decides tomorrow's rung-1 candidate (a different write mechanism) or the navigator.
