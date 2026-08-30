@@ -5,6 +5,78 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — Round 22 (Codex, verbatim): pivot = one nulled reachable-dimension measurement of the closed slot, then write up the structured negative
+
+## Ruling: choose A once, then D
+
+Run one properly nulled reachable-dimension characterization of the now-closed block-12 slot. This is not another actuator attempt and cannot reopen the slot. After its single audit, write up the structured negative regardless of outcome.
+
+Do not move immediately to another position: that would be a repair ladder without a site-selection principle. Do not scale models yet: it would change substrate before the discovered constraint is characterized. The navigator remains a valid synthetic calibration, but it cannot explain this real-model anisotropy.
+
+## Locked measurement protocol
+
+For each of the 24 training-name prompts, let \(\ell_n\in\mathbb R^8\) be the eight first-token logits and \(P=I-\mathbf1\mathbf1^\top/8\). At block 12 and position \(s\), compute the full normalized-budget Jacobian
+
+\[
+G_{n,s}=0.25\lVert h_{n,s}\rVert P\frac{\partial\ell_n}{\partial h_{n,s}}.
+\]
+
+The primary site is the closed final `Internal record:` slot.
+
+Nulls:
+
+- Eight precommitted pre-answer positions selected using a recorded hash seed from tokens 8–64 positions before the answer. Exclude the target slot, entity name, candidate-label tokens, and final query tokens.
+- Four hash-fixed prompt controls made only by permuting the existing `VALID TAGS` order and registry-filler sentence order. They preserve the same tokens and length.
+- No site, prompt, or null is selected after inspecting spectra.
+
+For each site and prompt control, report:
+
+- Spectrum of the shared Jacobian \(\bar G_s=\frac1{24}\sum_nG_{n,s}\).
+- Top-mode energy \(\sigma_1^2/\sum_i\sigma_i^2\).
+- Participation effective rank \((\sum_i\sigma_i^2)^2/\sum_i\sigma_i^4\).
+- \(\sigma_2/\sigma_1\) and \(\sigma_3/\sigma_1\).
+- Principal-response alignment across names.
+- Name-bootstrap 95% intervals from 2,000 resamples.
+
+Finite-dose validation: at the closed slot, inject both signs of the top three shared right-singular directions at exactly \(0.25\lVert h_{\text{slot}}\rVert\) across all 24 names. Repeat at the first hash-selected position null. Report predicted-versus-realized centered-logit cosine, realized/predicted norm ratio, each mode’s realized norm relative to mode 1, and decoded-tag distributions. No direction targets a particular tag; no amplitude, layer, site, prompt, or label sweep is allowed.
+
+## Licensed classifications
+
+This is a measurement, not PASS/FAIL.
+
+**NARROW SHARED REACHABILITY** is licensed only if:
+
+- Slot top-mode-energy bootstrap LB ≥0.75.
+- Effective-rank bootstrap UB ≤2.0.
+- Slot top-mode energy exceeds the 95th percentile of both position and prompt controls.
+- Finite-dose mode-1 predicted/realized cosine median ≥0.70.
+- Modes 2 and 3 each realize no more than 0.25 of mode 1’s response norm.
+
+**MULTIDIRECTIONAL LOCAL REACHABILITY** is licensed only if:
+
+- Effective-rank bootstrap LB ≥3.0.
+- \(\sigma_3/\sigma_1\) bootstrap LB ≥0.25.
+- All three finite-dose modes have median predicted/realized cosine ≥0.60.
+- Modes 2 and 3 each realize at least 0.25 of mode 1’s norm.
+
+Otherwise report **NO SLOT-SPECIFIC GEOMETRY CONCLUSION**.
+
+Even the strongest result applies only to this model, layer, position, prompt family, tag vocabulary, and intervention budget. It cannot establish a hard reachable-dimension limit, absence of memory, or a general limitation of pretrained models.
+
+## Budget and closure
+
+- One CPU process.
+- Expected wall time: 90–120 minutes.
+- Incremental runner: ≤105 nonblank lines.
+- At least 70 reachability/Jacobian/finite-dose artifact lines; at most 35 bootstrap/hash/result apparatus lines—apparatus/artifact ≤0.50.
+- Current round ratio: **13:5 = 2.6:1**. After this measurement and its single audit: **15:5 = 3.0:1**. No further measurement or repair follows before the write-up.
+
+Rung 0b, alternate write positions, larger models, the navigator, and every further block-12-slot actuator remain off.
+
+Lay line:
+
+> **How many genuinely different decisions can one early hidden location reach before its influence collapses into a few favored answers?**
+
 ## 2026-08-30 — site_oracle_v1: FAIL — the block-12 slot/prompt closes for actuator repair
 
 Cross-fitted margin-gradient directions (derived on 16 names, injected once on the other 8, bounded at 0.25 of the slot residual, cap active on 21% of rows) select the target tag ~36 tokens later in 0.26 of cases (LB 0.21): fask 0.96 (the cue prior), hesk 0.54, vorn 0.46, all other tags ≤0.08; per fold 0.23–0.28; cue and random-direction matching 0.12; completion ≥0.95; zero-hook = cue. By the round-21 rule this slot/prompt is closed for further actuator repair. Reading (pending audit #35): with no learned map at all, the same tag-selective narrowness appears — the slot exposes a narrow causal channel to the query under the bounded norm — which is the cleanest statement yet of what this site can and cannot do. Fresh audit next; then the pivot dialogue (round 22).
