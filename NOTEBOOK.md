@@ -5,6 +5,202 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — Audit #34 on rung 0 (fresh, unprimed; verbatim): FAIL upheld; 'two of eight codes' and '|Jc| ≤ 14' withdrawn; the only non-prior effect is code 6 → HESK; next = a downstream-Jacobian site-oracle control
+
+My readings are corrected: code 0 merely reproduces the cue prior; the response is anisotropic but no reachable-dimension limit is proven; rung 0b and the navigator do not run next.
+
+## Verdict
+
+The registered **`FAIL — ORACLE ACTUATOR/SITE/RETRIEVAL CONSTRUCTION` is upheld**, but only for the exact joint construction.
+
+The common “two of eight codes worked” reading is incorrect:
+
+- Code 0 has **no strict-choice effect**: it reproduces cue row-for-row. Its 23/24 `FASK` score is inherited from the base prior.
+- Code 6 is the sole replicated non-prior behavioral effect: it changes the output to `HESK` on 18/24, 23/24, and 23/24 entities.
+- Code 7 produces `VORN` on only 1/24 entities per seed.
+- Codes 1–5 never change the strict choice, although post-hoc logits show small target-directed effects.
+
+Therefore the run did not realize an eight-way bounded oracle-code channel. It does not establish separate failures of the actuator parameterization, block-12 site, downstream retrieval, or a hard reachable-dimension limit.
+
+The exact shared-J construction stops. Rung 0b must not run. The broader program should continue for one bounded site-localization control, but plainly: **this is not working as an artifact-producing loop**, and open-ended repair is not justified.
+
+## Integrity and registered adjudication
+
+The current runner, config, and shared machinery hashes match those stored in [run_result.json](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/results/oracle_actuator_rung0/run_result.json>). All three registered order seeds completed 400 steps and both evaluations.
+
+| Seed | Code follow | Code 0 | Code 6 | Code 7 | Own code | Wrong follow | Completion | Capped / uncapped pass |
+|---|---:|---:|---:|---:|---:|---:|---:|---:|
+| 11 | 0.219 | 0.958 | 0.750 | 0.042 | 0.250 | 0.214 | 0.958 | No / No |
+| 23 | 0.245 | 0.958 | 0.958 | 0.042 | 0.250 | 0.244 | 0.958 | No / No |
+| 37 | 0.245 | 0.958 | 0.958 | 0.042 | 0.250 | 0.244 | 0.958 | No / No |
+
+Additional integrity findings:
+
+- Cue is `FASK` on 23/24 entities and invalid on Kindrath. Code 0 equals that pattern exactly.
+- Capped and uncapped choices differ on zero saved arm-rows.
+- The cap was inactive, but the stated `|Jc| ≤ 14` is wrong. Maximum evaluated code-delta norms were **19.67, 21.71, and 22.53**, versus threshold 43.26. Approximately 14 is the maximum for random-vector deltas.
+- The lock’s codebook hash `3f2381fe…` hashes the ideal float64 formula; the result’s `656db2ca…` hashes the float32 tensor cast back to float64. The formula and Gram matrix agree. This is a provenance/bookkeeping defect, not a changed codebook.
+- Raw telemetry retains the values needed to derive pre/post ratios, but the explicitly requested ratios and summaries by code/seed/step were not stored. This protocol deviation does not change the no-cap conclusion.
+- Because J is identically zero-initialized, these are three data-order seeds, not three independent parameter initializations.
+
+## What explains the pattern?
+
+### 1. Base prior: explains code 0 completely
+
+Code 0 never changes any strict choice from cue. Calling it a driven tag is an overclaim. It contributes no behavioral evidence that the injected code was carried.
+
+### 2. Codebook geometry: not the explanation
+
+The centered simplex makes no geometric distinction between code 0 and code 6. The learned `Jc_k` vectors also do not collapse to two directions:
+
+- all seven available simplex dimensions are nonzero in every seed;
+- effective residual-space rank is 5.49–5.67;
+- the first singular direction contains only 37–39% of residual-vector energy.
+
+Thus “J learned only two dimensions” is false.
+
+### 3. Tokenization: explains the loss scale, not the selected codes
+
+Under the pinned tokenizer, every trained label with its leading space has exactly two tokens, and all first tokens are distinct. There are no first-token collisions and no one-token/two-token advantage.
+
+The second token is nearly trivial under teacher forcing: replayed suffix cross-entropy is only 0.002–0.017. First-token cross-entropy dominates. This validates audit #33’s two-token warning, but it does not explain why `HESK` is uniquely strong.
+
+### 4. Base tag preference: does not explain `HESK`
+
+At cue, `FASK` has the largest average tag-first-token logit. `HESK` ranks seventh of eight. Its success is therefore not inherited from a favorable base prior.
+
+### 5. Optimization budget remains a live confound
+
+Loss is not literally flat:
+
+- first-50 to last-50 mean loss: 1.749→1.571, 1.712→1.566, 1.650→1.560;
+- `HESK` improves substantially more than the other tags;
+- each code receives only 48–53 updates.
+
+Zero initialization does not block J’s gradient, but the finite budget, shared linear map, centered-simplex interference, AdamW dynamics, learning rate, and two-token objective remain entangled. This run does not license either “more steps would work” or “400 steps were adequate.”
+
+### 6. The downstream response is strongly anisotropic, but no dimension ceiling is proven
+
+A read-only replay at the actual query found positive target-first-token uplift for every code. Approximate uplift ranges across seeds were:
+
+- `FASK`: +0.21 to +0.24
+- `NIMB`: +0.09 to +0.11
+- `RUZZ`: +0.12 to +0.14
+- `PELT`: +0.09 to +0.18
+- `GORM`: +0.06 to +0.08
+- `TWYL`: +0.22 to +0.52
+- `HESK`: +1.15 to +2.03
+- `VORN`: +0.22 to +0.41
+
+The centered eight-tag response matrix is dominated by one singular direction: rank-one energy is 0.876, 0.944, and 0.947, with effective rank 1.30–1.65.
+
+That is credible evidence of **anisotropic prompt/site-specific controllability under the learned J**. It is not a proven reachable-dimension limit because:
+
+- the residual deltas themselves span all seven available dimensions;
+- only one learned parameterization and finite optimizer budget were tested;
+- only one layer, slot, prompt family, and tag set were measured;
+- every code has a subthreshold target-directed logit effect.
+
+The raw logit lens `W_U(Jc_k)` does not predict the causal behavior: `VORN` is the best tag-aligned delta there, while `HESK` ranks only fifth. Later blocks and final normalization materially transform the intervention.
+
+## Positive residue audit
+
+The sentence “the site can carry a known code to the output for some codes” is too strong.
+
+Licensed residue:
+
+> At this exact block-12 slot and prompt, one learned delta—code 6—causally changed the strict output from the cue behavior to `HESK` on 18/24, 23/24, and 23/24 training entities across the three data-order seeds; a post-hoc logit replay found smaller target-directed first-token shifts for every code. This is bounded evidence of anisotropic lexical controllability, not evidence that an eight-way hidden code was carried, stored, or retrieved.
+
+Code 0 must not be counted as a second behavioral success.
+
+## Program ruling and next rung-0 variant
+
+Do not run the navigator now. Its synthetic causal-swap calibration cannot distinguish shared-J optimization, site reachability, and downstream transformation in this real model.
+
+The single most informative next variant is a freshly locked **site-oracle margin control**, not a repair sweep:
+
+1. Keep the frozen model, block 12, exact slot, prompt, names, cap, and strict decoding.
+2. Remove J and the centered codebook.
+3. For each tag, derive one independent residual direction from the **full downstream Jacobian** of that tag’s first-token margin over the other seven tag tokens, averaged across the same 24 training names.
+4. Normalize each direction once to the existing 0.25 slot-norm bound.
+5. Run one fixed evaluation with the existing completion and per-tag behavioral gates. No layer, amplitude, learning-rate, or step sweep.
+
+Do not use raw `W_U^T e_tag` as the primary site control: the replay demonstrates that raw unembedding alignment at block 12 does not predict the post-layer causal effect.
+
+Interpretation:
+
+- **Pass:** the site can support bounded eight-way lexical control; the failed component is upstream in the shared-J/codebook/objective construction. Design a site-aware actuator before considering an encoder.
+- **Fail:** close this block-12 `Internal record:` slot/prompt for further repair and pivot through the required direction dialogue.
+- Neither result licenses the existing rung 0b, whose frozen J failed.
+
+## Exact licensed sentence
+
+> **`oracle_actuator_rung0` is a unanimous registered construction-level FAIL:** in frozen Qwen3-1.7B-Base, a fixed eight-code centered-simplex codebook was mapped by a zero-initialized biasless linear J and injected once at the block-12 final `Internal record:` slot while only J was trained for 400 entity-by-code steps; no seed passed either the capped or uncapped gate, capped and uncapped choices were identical because evaluated code-delta norms remained at or below 22.53 versus a 43.26 threshold, code 0 reproduced the cue’s `FASK`/invalid choices row-for-row, code 6 changed the output to `HESK` on 18/24, 23/24, and 23/24 entities, codes 1–5 never changed the strict choice, and code 7 produced `VORN` on 1/24 entities per seed; therefore this exact shared-J, codebook, optimizer-budget, block-12-slot, prompt, and two-token-label construction did not realize a bounded eight-way oracle-code channel. Removing the encoder excludes source extraction from this rung, but the result does not separately identify actuator capacity, optimization, site reachability, downstream retrieval, or a hard reachable-dimension limit as the cause.
+
+## Never-say list
+
+Do not say:
+
+- “Two of eight codes worked.”
+- “Code 0 was carried to the output.”
+- “The site can carry a known code for codes 0 and 6.”
+- “Codes 0 and 6 are geometrically special.”
+- “`HESK` succeeded because it was favored by the base model.”
+- “Token length or first-token collisions explain the two-code pattern.”
+- “The loss was flat” or “the loss shows that nothing learned.”
+- “The cap caused the failure.”
+- “`|Jc|` never exceeded 14.”
+- “The uncapped replay tested larger interventions”; it applied the same below-threshold deltas.
+- “J collapsed to two dimensions.”
+- “Only one or two causal dimensions are reachable from this site.”
+- “Three independent initializations reproduced the result.”
+- “The actuator, site, and retrieval each failed.”
+- “The oracle actuator failed” without naming the learned shared-J construction.
+- “A known code was stored and later retrieved.”
+- “The one HESK effect demonstrates hidden-state memory.”
+- “More steps would solve it” or “400 steps were enough.”
+- “Block 12 cannot support an eight-way channel.”
+- “Frozen pretrained latent spaces are hostile to structured reasoning.”
+- “The navigator should run next to diagnose this failure.”
+
+## Copy-ready public wording
+
+For [README.md](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/README.md:13>):
+
+> **`oracle_actuator_rung0` — REGISTERED CONSTRUCTION-LEVEL FAIL, CLOSED.** With source encoding removed, a fixed centered-simplex eight-code codebook was injected through a learned biasless linear J at the frozen Qwen3-1.7B-Base block-12 `Internal record:` slot. Across seeds 11/23/37, neither capped nor uncapped evaluation passed; the cap never activated. Code 0 merely reproduced the cue’s `FASK` prior, while code 6 causally produced `HESK` on 18/24, 23/24, and 23/24 entities; no other non-prior tag was reliably selected. This exact shared-J, 400-step, slot, prompt, and two-token-label construction did not realize a bounded eight-way oracle-code channel. It does not establish a block-12 capacity limit or failure of hidden-state control generally. Rung 0b and the navigator remain deferred.
+
+For [STATE.md](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/STATE.md:3>):
+
+> **`oracle_actuator_rung0` — REGISTERED CONSTRUCTION-LEVEL FAIL, CLOSED.** Frozen Qwen3-1.7B-Base; no encoder; fixed eight-code centered-simplex codebook; only zero-initialized biasless J trained for 400 entity-by-code steps at the block-12 final `Internal record:` slot. Capped and uncapped passes were 0/3 and produced identical choices because the maximum evaluated code-delta norm was 22.53 versus the 43.26 cap threshold. Cue emitted `FASK` on 23/24 entities and was invalid on Kindrath. Code 0 matched cue row-for-row and is not an intervention success. Code 6 emitted `HESK` on 18/24, 23/24, and 23/24 entities; codes 1–5 never changed the strict choice; code 7 emitted `VORN` on 1/24 entities per seed. All eight labels were distinct two-token targets. A read-only diagnostic found small on-target first-token logit uplift for every code but a rank-one-dominated downstream tag response; this supports anisotropic controllability under the learned construction, not a hard reachable-dimension limit. The exact shared-J line stops; source extraction was absent, but actuator parameterization, optimization, site, and retrieval remain unlocalized. No rung 0b. Navigator remains deferred pending direction dialogue.
+
+Replace the current `NEXT` line with:
+
+> **NEXT:** conduct the required 2–3-round direction dialogue and, only if retained, lock one no-sweep downstream-Jacobian site-oracle control at the same block-12 slot. A pass motivates a new site-aware actuator; a fail closes this slot/prompt for repair. Do not run rung 0b or the navigator first.
+
+[experiments/EXPERIMENTS.md](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/EXPERIMENTS.md:65>) is also stale: it still describes rung 1 as having no result and does not record this oracle rung.
+
+## Ranked next increments
+
+1. Propagate this licensed wording to README, STATE, NOTEBOOK, EXPERIMENTS, and an append-only audit ledger row.
+2. Complete the required direction dialogue and lock the single downstream-Jacobian site-oracle control.
+3. Run and audit that control once—no amplitude, layer, optimizer, or step sweep.
+4. On pass, design a site-aware actuator before any source encoder; on fail, close this slot/prompt and pivot.
+5. Reconsider the navigator only after that branch decision; it is not the current diagnostic.
+
+## Governance heartbeat
+
+Declared incremental line classification for [run_oracle_actuator.py](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_oracle_actuator.py:1>):
+
+- Artifact-bearing mechanism/protocol: 41/70 nonblank lines.
+- Apparatus/wrapping: 29/70.
+- Incremental apparatus:artifact ratio: **0.71:1**.
+
+Starting from round 20’s declared 9:3 round ratio, counting this construction as one artifact round and this audit as one measurement/governance round gives **10:4 = 2.5:1**, still above the 2:1 warning.
+
+The broader program may continue, but the existing J construction is not the highest-leverage work. The one bounded site-oracle control is.
+
+No repository source, state, result, or documentation file was edited. Only the required git-ignored blackboard record was updated, and blackboard convergence completed with no open signals.
+
 ## 2026-08-30 — Re-contextualization #32 (early morning): the first rung that produced a structured result
 
 Project and live question. Latent-Space-Reasoning: is there a native mathematics of latent spaces, found or built? After yesterday's eleven pre-declared closures, the staircase's rung 0 — a *known* 8-way code written once through a trainable linear map into frozen Qwen3-1.7B-Base — is the first construction whose result is structured rather than null: in every seed so far, one or two codes drive their tag near-perfectly (0.96, 0.75) while the remaining codes do nothing, with the norm cap never active and the training loss flat. That is neither the "actuator inert" nor the "actuator works" branch; it says the write site can carry a code to the output, but a single linear J trained for 400 balanced steps finds only one or two usable directions. The fresh audit (fired on the complete three-seed result) adjudicates the wording and the branch.
