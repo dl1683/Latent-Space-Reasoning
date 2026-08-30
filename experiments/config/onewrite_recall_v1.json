@@ -9,14 +9,6 @@
  "slot": "Internal record:",
  "anchor": " Internal record:",
  "tags": [
-  "keld",
-  "marn",
-  "vep",
-  "suth",
-  "orin",
-  "tazz",
-  "brel",
-  "quon",
   "fask",
   "nimb",
   "ruzz",
@@ -24,7 +16,7 @@
   "gorm",
   "twyl",
   "hesk",
-  "drask"
+  "vorn"
  ],
  "names_train": [
   "Velmora",
@@ -80,7 +72,6 @@
   "Archive slip. Entity {name}; private tag on file: {tag}.",
   "Catalogue entry for {name} lists the private tag {tag}."
  ],
- "filler": "Internal record:\nThe registry office keeps its ledgers in a locked cabinet on the second floor. Each morning the clerk on duty checks the seals, initials the daily sheet, and files any new slips that arrived overnight. Requests for lookups are handled in the order received, and the answer is written on a single line.\n",
  "wordings": {
   "train": "TAG OF {NAME}:",
   "A": "PRIVATE TAG FOR {NAME}:",
@@ -109,21 +100,31 @@
  },
  "validation_gate": {
   "visible_min": 0.9,
+  "visible_wording_min": 0.85,
   "completion_min": 0.95,
-  "cue_max": 0.15
+  "cue_max": 0.2,
+  "cue_wording_max": 0.25,
+  "visible_minus_cue_min": 0.65
  },
  "gates": {
   "write_min": 0.75,
-  "write_wording_min": 0.7,
   "write_minus_cue_min": 0.5,
   "write_minus_cue_lb_min": 0.3,
   "write_minus_random_min": 0.5,
-  "wrong_follows_donor_min": 0.6,
-  "wrong_over_cue_donor_min": 0.4,
+  "write_minus_random_lb_min": 0.3,
   "random_max": 0.2,
-  "completion_min": 0.95,
   "recovery_min": 0.6,
-  "wording_diff_max": 0.15,
+  "write_sub_min": 0.7,
+  "wording_gap_max": 0.15,
+  "wrong_follows_cf_min": 0.6,
+  "wrong_over_cue_cf_min": 0.4,
+  "completion_min": 0.95,
   "seeds_required": 2
- }
+ },
+ "valid_line": "VALID TAGS: fask | nimb | ruzz | pelt | gorm | twyl | hesk | vorn\nANSWER WITH ONE VALID TAG ONLY.\n",
+ "fillers": [
+  "Internal record:\nThe registry office keeps its ledgers in a locked cabinet on the second floor of the old annex. Each morning the clerk on duty checks the seals, initials the daily sheet, and files any new slips that arrived overnight. Requests for lookups are handled strictly in the order received, and the answer is written on a single line of the reply form.\n",
+  "Internal record:\nBefore noon the archive room is quiet except for the steady ticking of the old brass wall clock. The junior assistant sorts the incoming post into three small wooden trays, stamps each item with the date, and carries the sealed envelopes across to the reading desk. Any query about a filed item is answered briefly, with the reply entered on one line.\n"
+ ],
+ "design_note": "Round 16 (2026-08-29) locked amendments: 8 tags (chance 0.125), fixed VALID TAGS line in every target, two fixed fillers >= 64 tokens within 2 tokens of each other, both heldout source phrasings x both target wordings (64 cases), wrong-state = same entity with a counterfactual tag (balanced derangement) under the same source wording, write at the slot's final token, byte-identical nonvisible target across arms, zero-hook must reproduce cue row-for-row else INVALID."
 }
