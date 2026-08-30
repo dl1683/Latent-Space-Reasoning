@@ -1,0 +1,1115 @@
+{
+ "config": "onewrite_state_v1",
+ "sha256": {
+  "runner": "ba4aedfdd8458204d7abfd5de585c4b1be3d1e9986582a47428c91822c51bd7f",
+  "config": "74e5aaea5d66aeee3dc75a648f1893c11eacafa155cc4731bed9a24aa5c41456"
+ },
+ "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
+ "validation": {
+  "summary": {
+   "visible_acc": 0.34375,
+   "cue_acc": 0.34375,
+   "visible_completion": 1.0,
+   "cue_completion": 1.0,
+   "visible_by_family": {
+    "H1": 0.5,
+    "H2": 0.1875
+   },
+   "visible_by_wording": {
+    "A": 0.3125,
+    "B": 0.375
+   }
+  },
+  "passed": false,
+  "rows": [
+   {
+    "fact": 0,
+    "family": "H1",
+    "wording": "A",
+    "visible": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 0,
+    "family": "H1",
+    "wording": "B",
+    "visible": {
+     "text": " QUARTZ",
+     "choice": "QUARTZ",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " QUARTZ",
+     "choice": "QUARTZ",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 0,
+    "family": "H2",
+    "wording": "A",
+    "visible": {
+     "text": " ORIEL",
+     "choice": "ORIEL",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " ORIEL",
+     "choice": "ORIEL",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 0,
+    "family": "H2",
+    "wording": "B",
+    "visible": {
+     "text": " ORIEL",
+     "choice": "ORIEL",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " ORIEL",
+     "choice": "ORIEL",
+     "completed": true,
+     "correct": true
+    }
+   },
+   {
+    "fact": 1,
+    "family": "H1",
+    "wording": "A",
+    "visible": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": true
+    }
+   },
+   {
+    "fact": 1,
+    "family": "H1",
+    "wording": "B",
+    "visible": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 1,
+    "family": "H2",
+    "wording": "A",
+    "visible": {
+     "text": " ORIEL",
+     "choice": "ORIEL",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " ORIEL",
+     "choice": "ORIEL",
+     "completed": true,
+     "correct": true
+    }
+   },
+   {
+    "fact": 1,
+    "family": "H2",
+    "wording": "B",
+    "visible": {
+     "text": " PINE",
+     "choice": "PINE",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " PINE",
+     "choice": "PINE",
+     "completed": true,
+     "correct": true
+    }
+   },
+   {
+    "fact": 2,
+    "family": "H1",
+    "wording": "A",
+    "visible": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 2,
+    "family": "H1",
+    "wording": "B",
+    "visible": {
+     "text": " QUARTZ",
+     "choice": "QUARTZ",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " QUARTZ",
+     "choice": "QUARTZ",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 2,
+    "family": "H2",
+    "wording": "A",
+    "visible": {
+     "text": " PINE",
+     "choice": "PINE",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " PINE",
+     "choice": "PINE",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 2,
+    "family": "H2",
+    "wording": "B",
+    "visible": {
+     "text": " WREN",
+     "choice": "WREN",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " WREN",
+     "choice": "WREN",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 3,
+    "family": "H1",
+    "wording": "A",
+    "visible": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": true
+    }
+   },
+   {
+    "fact": 3,
+    "family": "H1",
+    "wording": "B",
+    "visible": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 3,
+    "family": "H2",
+    "wording": "A",
+    "visible": {
+     "text": " ORIEL",
+     "choice": "ORIEL",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " WREN",
+     "choice": "WREN",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 3,
+    "family": "H2",
+    "wording": "B",
+    "visible": {
+     "text": " LARK",
+     "choice": "LARK",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " LARK",
+     "choice": "LARK",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 4,
+    "family": "H1",
+    "wording": "A",
+    "visible": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": true
+    }
+   },
+   {
+    "fact": 4,
+    "family": "H1",
+    "wording": "B",
+    "visible": {
+     "text": " QUARTZ",
+     "choice": "QUARTZ",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " QUARTZ",
+     "choice": "QUARTZ",
+     "completed": true,
+     "correct": true
+    }
+   },
+   {
+    "fact": 4,
+    "family": "H2",
+    "wording": "A",
+    "visible": {
+     "text": " ORIEL",
+     "choice": "ORIEL",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " ORIEL",
+     "choice": "ORIEL",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 4,
+    "family": "H2",
+    "wording": "B",
+    "visible": {
+     "text": " ORIEL",
+     "choice": "ORIEL",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " ORIEL",
+     "choice": "ORIEL",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 5,
+    "family": "H1",
+    "wording": "A",
+    "visible": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 5,
+    "family": "H1",
+    "wording": "B",
+    "visible": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": true
+    }
+   },
+   {
+    "fact": 5,
+    "family": "H2",
+    "wording": "A",
+    "visible": {
+     "text": " ORIEL",
+     "choice": "ORIEL",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " ORIEL",
+     "choice": "ORIEL",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 5,
+    "family": "H2",
+    "wording": "B",
+    "visible": {
+     "text": " PINE",
+     "choice": "PINE",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " PINE",
+     "choice": "PINE",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 6,
+    "family": "H1",
+    "wording": "A",
+    "visible": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": true
+    }
+   },
+   {
+    "fact": 6,
+    "family": "H1",
+    "wording": "B",
+    "visible": {
+     "text": " QUARTZ",
+     "choice": "QUARTZ",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " QUARTZ",
+     "choice": "QUARTZ",
+     "completed": true,
+     "correct": true
+    }
+   },
+   {
+    "fact": 6,
+    "family": "H2",
+    "wording": "A",
+    "visible": {
+     "text": " PINE",
+     "choice": "PINE",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " PINE",
+     "choice": "PINE",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 6,
+    "family": "H2",
+    "wording": "B",
+    "visible": {
+     "text": " WREN",
+     "choice": "WREN",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " WREN",
+     "choice": "WREN",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 7,
+    "family": "H1",
+    "wording": "A",
+    "visible": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 7,
+    "family": "H1",
+    "wording": "B",
+    "visible": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": true
+    }
+   },
+   {
+    "fact": 7,
+    "family": "H2",
+    "wording": "A",
+    "visible": {
+     "text": " ORIEL",
+     "choice": "ORIEL",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " WREN",
+     "choice": "WREN",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 7,
+    "family": "H2",
+    "wording": "B",
+    "visible": {
+     "text": " LARK",
+     "choice": "LARK",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " LARK",
+     "choice": "LARK",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 8,
+    "family": "H1",
+    "wording": "A",
+    "visible": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": true
+    }
+   },
+   {
+    "fact": 8,
+    "family": "H1",
+    "wording": "B",
+    "visible": {
+     "text": " QUARTZ",
+     "choice": "QUARTZ",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " QUARTZ",
+     "choice": "QUARTZ",
+     "completed": true,
+     "correct": true
+    }
+   },
+   {
+    "fact": 8,
+    "family": "H2",
+    "wording": "A",
+    "visible": {
+     "text": " ORIEL",
+     "choice": "ORIEL",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " ORIEL",
+     "choice": "ORIEL",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 8,
+    "family": "H2",
+    "wording": "B",
+    "visible": {
+     "text": " ORIEL",
+     "choice": "ORIEL",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " ORIEL",
+     "choice": "ORIEL",
+     "completed": true,
+     "correct": true
+    }
+   },
+   {
+    "fact": 9,
+    "family": "H1",
+    "wording": "A",
+    "visible": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 9,
+    "family": "H1",
+    "wording": "B",
+    "visible": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": true
+    }
+   },
+   {
+    "fact": 9,
+    "family": "H2",
+    "wording": "A",
+    "visible": {
+     "text": " ORIEL",
+     "choice": "ORIEL",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " ORIEL",
+     "choice": "ORIEL",
+     "completed": true,
+     "correct": true
+    }
+   },
+   {
+    "fact": 9,
+    "family": "H2",
+    "wording": "B",
+    "visible": {
+     "text": " PINE",
+     "choice": "PINE",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " PINE",
+     "choice": "PINE",
+     "completed": true,
+     "correct": true
+    }
+   },
+   {
+    "fact": 10,
+    "family": "H1",
+    "wording": "A",
+    "visible": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": true
+    }
+   },
+   {
+    "fact": 10,
+    "family": "H1",
+    "wording": "B",
+    "visible": {
+     "text": " QUARTZ",
+     "choice": "QUARTZ",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " QUARTZ",
+     "choice": "QUARTZ",
+     "completed": true,
+     "correct": true
+    }
+   },
+   {
+    "fact": 10,
+    "family": "H2",
+    "wording": "A",
+    "visible": {
+     "text": " PINE",
+     "choice": "PINE",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " PINE",
+     "choice": "PINE",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 10,
+    "family": "H2",
+    "wording": "B",
+    "visible": {
+     "text": " WREN",
+     "choice": "WREN",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " WREN",
+     "choice": "WREN",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 11,
+    "family": "H1",
+    "wording": "A",
+    "visible": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 11,
+    "family": "H1",
+    "wording": "B",
+    "visible": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": true
+    }
+   },
+   {
+    "fact": 11,
+    "family": "H2",
+    "wording": "A",
+    "visible": {
+     "text": " WREN",
+     "choice": "WREN",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " WREN",
+     "choice": "WREN",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 11,
+    "family": "H2",
+    "wording": "B",
+    "visible": {
+     "text": " LARK",
+     "choice": "LARK",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " LARK",
+     "choice": "LARK",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 12,
+    "family": "H1",
+    "wording": "A",
+    "visible": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 12,
+    "family": "H1",
+    "wording": "B",
+    "visible": {
+     "text": " QUARTZ",
+     "choice": "QUARTZ",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " QUARTZ",
+     "choice": "QUARTZ",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 12,
+    "family": "H2",
+    "wording": "A",
+    "visible": {
+     "text": " ORIEL",
+     "choice": "ORIEL",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " ORIEL",
+     "choice": "ORIEL",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 12,
+    "family": "H2",
+    "wording": "B",
+    "visible": {
+     "text": " ORIEL",
+     "choice": "ORIEL",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " ORIEL",
+     "choice": "ORIEL",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 13,
+    "family": "H1",
+    "wording": "A",
+    "visible": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": true
+    }
+   },
+   {
+    "fact": 13,
+    "family": "H1",
+    "wording": "B",
+    "visible": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 13,
+    "family": "H2",
+    "wording": "A",
+    "visible": {
+     "text": " ORIEL",
+     "choice": "ORIEL",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " ORIEL",
+     "choice": "ORIEL",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 13,
+    "family": "H2",
+    "wording": "B",
+    "visible": {
+     "text": " PINE",
+     "choice": "PINE",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " PINE",
+     "choice": "PINE",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 14,
+    "family": "H1",
+    "wording": "A",
+    "visible": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 14,
+    "family": "H1",
+    "wording": "B",
+    "visible": {
+     "text": " QUARTZ",
+     "choice": "QUARTZ",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " QUARTZ",
+     "choice": "QUARTZ",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 14,
+    "family": "H2",
+    "wording": "A",
+    "visible": {
+     "text": " PINE",
+     "choice": "PINE",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " PINE",
+     "choice": "PINE",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 14,
+    "family": "H2",
+    "wording": "B",
+    "visible": {
+     "text": " WREN",
+     "choice": "WREN",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " WREN",
+     "choice": "WREN",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 15,
+    "family": "H1",
+    "wording": "A",
+    "visible": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": true
+    },
+    "cue": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": true
+    }
+   },
+   {
+    "fact": 15,
+    "family": "H1",
+    "wording": "B",
+    "visible": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " CEDAR",
+     "choice": "CEDAR",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 15,
+    "family": "H2",
+    "wording": "A",
+    "visible": {
+     "text": " ORIEL",
+     "choice": "ORIEL",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " WREN",
+     "choice": "WREN",
+     "completed": true,
+     "correct": false
+    }
+   },
+   {
+    "fact": 15,
+    "family": "H2",
+    "wording": "B",
+    "visible": {
+     "text": " LARK",
+     "choice": "LARK",
+     "completed": true,
+     "correct": false
+    },
+    "cue": {
+     "text": " LARK",
+     "choice": "LARK",
+     "completed": true,
+     "correct": false
+    }
+   }
+  ]
+ }
+}

@@ -5,6 +5,12 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-29 — onewrite_state_v1 killed pre-lock: the base model cannot apply a stated rule to visible tags
+
+Codex round 14 allowed exactly one instrument repair (its own terse FORMAT EXAMPLE / TEST CASE / NEW ITEM format, strict first-item parsing) and a sole pre-lock validation with no state involved. Result on all 64 heldout cases: visible-tag accuracy 0.344 (H1 0.50, H2 0.19) and cue (`TAGS: STORED`) accuracy 0.344 — identical; completion 1.0 in both arms. The 1.7B base emits an allowed label every time but ignores whether the tags are shown. Pre-declared ruling, verbatim: "onewrite_state_v1 is killed pre-lock because Qwen3-1.7B-Base could not support the registered behavioral instrument even when the facts were visible; no state hypothesis was tested." My side probe shows Qwen3-4B-Base is also at chance on the same H1/H2 tables (0.44/0.31 terse; 0.50/0.56 one-shot) while managing a simple one-attribute rule at 0.81, so the limit is rule-following at this scale, not the wording. No further prompt iteration or model substitution (pre-declared).
+
+Where this leaves the program: every real-model construction today has been closed — four by instrument/baseline failure before the intervention was testable (coordinate_v1/v2, interchange_v1, onewrite_state_v1), three by pre-declared causal gates (coordinate_v3 → lexical steering; interchange_v2 null; state_bus_v1r1 → supervised controller; control_cost_v1 → construction fail). Round 12 said the navigator may follow only after a *clean* real-model negative; this is an instrument negative, so the program ruling is referred to Codex (round 15).
+
 ## 2026-08-29 — Re-contextualization #30 (evening): after the stop point
 
 Audit: skipped this cycle — no new capability result since audit #31; the navigator and one-write runs are smokes (code-path and instrument validation), not results, and are logged as such.

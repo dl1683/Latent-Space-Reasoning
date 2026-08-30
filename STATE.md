@@ -21,6 +21,8 @@
 
 - Never say (audit #31): “The first-order minimum-energy law does not hold.” “The model’s response is strongly nonlinear at the magnitudes needed” without naming the unresolved solver, scaling, actuator, and censoring alternatives. “Predicted cost ranked realized cost.” “The method underpredicted realized cost fourfold.” “Cross-class moves cost more than presentation changes.” “The semantic field transferred to unoptimized consequences.” “The semantic field beat lexical steering.” “`p=.008` establishes semantic structure.” “Random fields moved B just as much.” “Cat→dog is intrinsically cheaper than dog→cat.” “Span control failed” or “reachability failed” without the complete registered scope. “The preregistration was executed completely.” “Five independent interventions prove the substrate lacks native structure.” “Frozen residual streams cannot support structured reasoning.” “The next latent space must be trained” as a scientific conclusion rather than an allocation hypothesis.
 
+- `onewrite_state_v1` — KILLED PRE-LOCK (round 14 rule, verbatim): onewrite_state_v1 is killed pre-lock because Qwen3-1.7B-Base could not support the registered behavioral instrument even when the facts were visible; no state hypothesis was tested. Validation: visible 0.344 = cue 0.344 on 64 heldout cases; completion 1.0. `necessity_navigator_v1` is built and smoke-tested (optional calibration control, unrun). Program ruling after this kill: Codex round 15 pending.
+
 Everything below this statement is the historical record; where it conflicts, this statement and the verbatim audit blocks govern.
 
 

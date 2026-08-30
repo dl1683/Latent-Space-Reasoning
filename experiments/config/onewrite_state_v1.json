@@ -7,9 +7,64 @@
  "state_dim": 16,
  "norm_clamp_fraction": 0.25,
  "slot": "Internal record:",
- "attributes": [["marn", "suth"], ["vep", "keld"], ["orin", "tazz"]],
- "names_train": ["Velmora", "Tasquin", "Orbelle", "Kindrath", "Sablyn", "Pherox", "Marvenne", "Dulcair", "Yostrel", "Caprindo", "Fennwick", "Lorbast", "Quenlith", "Ravosk", "Tiberune", "Hollmere", "Zephrand", "Ambrosil", "Gastwyn", "Nerival", "Ophandre", "Brelcott", "Ilsavane", "Wexmoor"],
- "names_eval": ["Cordovel", "Jasminth", "Thraline", "Ulmerick", "Perrigal", "Estovan", "Halbrook", "Vantessa", "Kelmoor", "Rozalind", "Sindrell", "Farrowin", "Danquist", "Belmaris", "Trevanon", "Islington"],
+ "attributes": [
+  [
+   "marn",
+   "suth"
+  ],
+  [
+   "vep",
+   "keld"
+  ],
+  [
+   "orin",
+   "tazz"
+  ]
+ ],
+ "names_train": [
+  "Velmora",
+  "Tasquin",
+  "Orbelle",
+  "Kindrath",
+  "Sablyn",
+  "Pherox",
+  "Marvenne",
+  "Dulcair",
+  "Yostrel",
+  "Caprindo",
+  "Fennwick",
+  "Lorbast",
+  "Quenlith",
+  "Ravosk",
+  "Tiberune",
+  "Hollmere",
+  "Zephrand",
+  "Ambrosil",
+  "Gastwyn",
+  "Nerival",
+  "Ophandre",
+  "Brelcott",
+  "Ilsavane",
+  "Wexmoor"
+ ],
+ "names_eval": [
+  "Cordovel",
+  "Jasminth",
+  "Thraline",
+  "Ulmerick",
+  "Perrigal",
+  "Estovan",
+  "Halbrook",
+  "Vantessa",
+  "Kelmoor",
+  "Rozalind",
+  "Sindrell",
+  "Farrowin",
+  "Danquist",
+  "Belmaris",
+  "Trevanon",
+  "Islington"
+ ],
  "source_templates_train": [
   "Registry entry for {name}. Tag one: {a1}. Tag two: {a2}. Tag three: {a3}. End of entry.",
   "Archive card. The entity called {name} carries the tags {a1}, {a2}, and {a3}. Card closed.",
@@ -20,29 +75,99 @@
   "Index slip for the entity {name} lists {a1}, then {a2}, then {a3}, in that order."
  ],
  "anchor": " Internal record:",
- "target_templates_train": [
-  "Internal record: the entity {name} is under review. A clerk consults the registry rules for this case. Rule for this question: if the first tag is {v1a}, the answer is {L0}; if the first tag is {v1b}, the answer is {L1}. All tags are held privately in the registry and are not repeated here. Question: applying the rule to {name}, what is the answer? Answer:",
-  "Internal record: {name} appears in today's docket. The assessor reads the rule sheet before deciding. Rule sheet for this item: when the second tag is {v2a}, write {L0}; when the second tag is {v2b}, write {L1}. Nothing about {name}'s tags is printed on the docket itself. Question: what should the assessor write for {name}? Answer:",
-  "Internal record: a file on {name} has been opened. The reviewer must apply the standing rule and nothing else. Standing rule: a third tag of {v3a} yields {L0}; a third tag of {v3b} yields {L1}. The file body does not restate the tags. Question: what does the standing rule yield for {name}? Answer:"
+ "train_family_attr": [
+  0,
+  1,
+  2
  ],
- "train_family_attr": [0, 1, 2],
- "labels_train": [["PORT", "VAULT"], ["NORTH", "SOUTH"], ["RING", "STAR"]],
+ "labels_train": [
+  [
+   "PORT",
+   "VAULT"
+  ],
+  [
+   "NORTH",
+   "SOUTH"
+  ],
+  [
+   "RING",
+   "STAR"
+  ]
+ ],
  "heldout": {
-  "H1": {"labels": ["CEDAR", "QUARTZ"], "templates": [
-   "Internal record: the case of {name} is being settled this afternoon. The auditor follows the parity clause. Parity clause: if exactly one of the tags {x1} and {x2} applies to the entity, the result is {L0}; otherwise the result is {L1}. The entity's tags are on file and are not shown in this memo. Question: under the parity clause, what is the result for {name}? Answer:",
-   "Internal record: {name} has come up for a parity check. The examiner applies the following clause and no other. Clause: when the entity holds precisely one of {x1} and {x2}, mark {L0}; when it holds both or neither, mark {L1}. No tag values are written in this note. Question: what mark does the examiner give {name}? Answer:"]},
-  "H2": {"labels": ["LARK", "ORIEL", "PINE", "WREN"], "templates": [
-   "Internal record: {name} is scheduled for classification. The registrar uses the pairing table. Pairing table: second tag {v2a} with third tag {v3a} gives {L0}; {v2a} with {v3b} gives {L1}; {v2b} with {v3a} gives {L2}; {v2b} with {v3b} gives {L3}. The tags themselves are kept in the sealed registry. Question: which class does the pairing table give {name}? Answer:",
-   "Internal record: the entity {name} awaits its pairing code. The officer consults the code chart only. Code chart: for a second tag of {v2a} and a third tag of {v3a}, the code is {L0}; for {v2a} and {v3b}, {L1}; for {v2b} and {v3a}, {L2}; for {v2b} and {v3b}, {L3}. Nothing here states the tags. Question: what pairing code does {name} receive? Answer:"]}
+  "H1": {
+   "labels": [
+    "CEDAR",
+    "QUARTZ"
+   ]
+  },
+  "H2": {
+   "labels": [
+    "LARK",
+    "ORIEL",
+    "PINE",
+    "WREN"
+   ]
+  }
  },
- "train": {"seeds": [11, 23, 37], "steps": 400, "lr": 0.003, "weight_decay": 0.0001, "clip": 1.0, "hard_wall_minutes": 180, "seed_wall_minutes": 55},
- "decode": {"max_new_tokens": 12},
- "eval": {"bootstraps": 2000, "randomizations": 200},
+ "train": {
+  "seeds": [
+   11,
+   23,
+   37
+  ],
+  "steps": 400,
+  "lr": 0.003,
+  "weight_decay": 0.0001,
+  "clip": 1.0,
+  "hard_wall_minutes": 180,
+  "seed_wall_minutes": 55
+ },
+ "decode": {
+  "max_new_tokens": 6
+ },
+ "eval": {
+  "bootstraps": 2000,
+  "randomizations": 200
+ },
  "gates": {
-  "visible_min": 0.80, "termination_min": 0.95, "cue_max": 0.50,
-  "write_min": 0.75, "write_family_min": 0.70, "wording_diff_max": 0.15,
-  "write_minus_cue_min": 0.25, "write_minus_cue_lb_min": 0.10, "write_minus_random_min": 0.20, "recovery_min": 0.60,
-  "wrong_follows_donor_min": 0.60, "wrong_over_baseline_min": 0.20,
-  "controller_trained_min": 0.80, "controller_uplift_min": 0.25, "seeds_required": 2
- }
+  "visible_min": 0.8,
+  "termination_min": 0.95,
+  "cue_max": 0.5,
+  "write_min": 0.75,
+  "write_family_min": 0.7,
+  "wording_diff_max": 0.15,
+  "write_minus_cue_min": 0.25,
+  "write_minus_cue_lb_min": 0.1,
+  "write_minus_random_min": 0.2,
+  "recovery_min": 0.6,
+  "wrong_follows_donor_min": 0.6,
+  "wrong_over_baseline_min": 0.2,
+  "controller_trained_min": 0.8,
+  "controller_uplift_min": 0.25,
+  "seeds_required": 2
+ },
+ "prompt": {
+  "demo": "Internal record:\nFORMAT EXAMPLE\nENTITY: Norvex\nTAGS: marn | keld | tazz\nTABLE: first marn = PORT; first suth = VAULT\nOPTIONS: PORT | VAULT\nANSWER: PORT\nEND EXAMPLE\n",
+  "wordings": {
+   "train": "TRAIN CASE\nENTITY: {name}\nTAGS: {tags}\nTABLE: {table}\nOPTIONS: {options}\nANSWER:",
+   "A": "TEST CASE\nENTITY: {name}\nTAGS: {tags}\nTABLE: {table}\nOPTIONS: {options}\nRETURN ONE OPTION.\nANSWER:",
+   "B": "NEW ITEM\nNAME: {name}\nMARKS: {tags}\nLOOKUP: {table}\nCHOICES: {options}\nPRINT ONE CHOICE.\nOUTPUT:"
+  },
+  "tables": {
+   "T1": "first marn = {L0}; first suth = {L1}",
+   "T2": "second vep = {L0}; second keld = {L1}",
+   "T3": "third orin = {L0}; third tazz = {L1}",
+   "H1": "first marn + second vep = {L1}; first marn + second keld = {L0}; first suth + second vep = {L0}; first suth + second keld = {L1}",
+   "H2": "second vep + third orin = {L0}; second vep + third tazz = {L1}; second keld + third orin = {L2}; second keld + third tazz = {L3}"
+  }
+ },
+ "validation_gate": {
+  "visible_min": 0.8,
+  "visible_sub_min": 0.75,
+  "completion_min": 0.95,
+  "cue_max": 0.5,
+  "visible_minus_cue_min": 0.3
+ },
+ "instrument_note": "Round 14 (2026-08-29): the ONLY instrument repair. Pre-lock validation (visible vs cue, no state) must pass or the artifact is killed pre-lock; no second prompt iteration, no 4B/8B substitution."
 }
