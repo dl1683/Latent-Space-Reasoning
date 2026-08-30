@@ -1,0 +1,33 @@
+{
+  "experiment": "psq1_v1_8b",
+  "description": "PSQ-1 capability screen on Qwen3-8B-Base (Codex-designated fallback substrate)",
+  "model_id": "Qwen/Qwen3-8B-Base",
+  "revision": null,
+  "n_per_cell": 32,
+  "seed": 42,
+  "device": "cuda",
+  "gate_threshold": 0.95,
+  "world": {
+    "type": "two_dial",
+    "state_space": "Z_8 x Z_8",
+    "n_states": 64,
+    "actions": {
+      "A": "(x,y) -> ((x+1)%8, y)",
+      "B": "(x,y) -> ((-x)%8, y)",
+      "C": "(x,y) -> (x, (y+1)%8)",
+      "D": "(x,y) -> (x, (-y)%8)"
+    },
+    "observations": {
+      "is_x_zero": "x == 0",
+      "is_y_zero": "y == 0"
+    },
+    "H_star": 4,
+    "moore_refinement": [4, 9, 25, 49, 64]
+  },
+  "presentation": {
+    "format": "python_completion",
+    "n_shots": 4,
+    "readout": "normalize(p('0'), p('1'))",
+    "note": "Expanded operations (no symbolic A/B/C/D). Separate x/y queries."
+  }
+}
