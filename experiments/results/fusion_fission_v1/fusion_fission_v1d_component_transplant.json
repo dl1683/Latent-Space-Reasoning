@@ -1,0 +1,397 @@
+{
+  "results": [
+    {
+      "layer": 2,
+      "status": "FUSED",
+      "full_transplant_b": {
+        "pred": "blue",
+        "margin": -2.262272834777832,
+        "b_changed": true
+      },
+      "attn_transplant_b": {
+        "pred": "red",
+        "margin": 1.6261487007141113,
+        "b_changed": false
+      },
+      "mlp_transplant_b": {
+        "pred": "red",
+        "margin": 1.626993179321289,
+        "b_changed": false
+      },
+      "full_transplant_a": {
+        "pred": "blue",
+        "margin": -3.4999465942382812
+      }
+    },
+    {
+      "layer": 3,
+      "status": "PARTIAL",
+      "full_transplant_b": {
+        "pred": "blue",
+        "margin": -2.262272834777832,
+        "b_changed": true
+      },
+      "attn_transplant_b": {
+        "pred": "red",
+        "margin": 1.786454200744629,
+        "b_changed": false
+      },
+      "mlp_transplant_b": {
+        "pred": "red",
+        "margin": 1.8456172943115234,
+        "b_changed": false
+      },
+      "full_transplant_a": {
+        "pred": "blue",
+        "margin": -3.4999465942382812
+      }
+    },
+    {
+      "layer": 4,
+      "status": "PARTIAL",
+      "full_transplant_b": {
+        "pred": "blue",
+        "margin": -2.262272834777832,
+        "b_changed": true
+      },
+      "attn_transplant_b": {
+        "pred": "red",
+        "margin": 1.895918369293213,
+        "b_changed": false
+      },
+      "mlp_transplant_b": {
+        "pred": "red",
+        "margin": 2.1506290435791016,
+        "b_changed": false
+      },
+      "full_transplant_a": {
+        "pred": "blue",
+        "margin": -3.4999465942382812
+      }
+    },
+    {
+      "layer": 5,
+      "status": "SEPARATE",
+      "full_transplant_b": {
+        "pred": "blue",
+        "margin": -2.262272834777832,
+        "b_changed": true
+      },
+      "attn_transplant_b": {
+        "pred": "red",
+        "margin": 1.1422672271728516,
+        "b_changed": false
+      },
+      "mlp_transplant_b": {
+        "pred": "red",
+        "margin": 2.7183923721313477,
+        "b_changed": false
+      },
+      "full_transplant_a": {
+        "pred": "blue",
+        "margin": -3.4999465942382812
+      }
+    },
+    {
+      "layer": 6,
+      "status": "SEPARATE",
+      "full_transplant_b": {
+        "pred": "blue",
+        "margin": -2.262272834777832,
+        "b_changed": true
+      },
+      "attn_transplant_b": {
+        "pred": "red",
+        "margin": 1.9639296531677246,
+        "b_changed": false
+      },
+      "mlp_transplant_b": {
+        "pred": "red",
+        "margin": 2.3199567794799805,
+        "b_changed": false
+      },
+      "full_transplant_a": {
+        "pred": "blue",
+        "margin": -3.4999465942382812
+      }
+    },
+    {
+      "layer": 7,
+      "status": "FUSED",
+      "full_transplant_b": {
+        "pred": "blue",
+        "margin": -2.262272834777832,
+        "b_changed": true
+      },
+      "attn_transplant_b": {
+        "pred": "red",
+        "margin": 1.8718109130859375,
+        "b_changed": false
+      },
+      "mlp_transplant_b": {
+        "pred": "red",
+        "margin": 0.9731264114379883,
+        "b_changed": false
+      },
+      "full_transplant_a": {
+        "pred": "blue",
+        "margin": -3.4999465942382812
+      }
+    },
+    {
+      "layer": 8,
+      "status": "SEPARATE",
+      "full_transplant_b": {
+        "pred": "blue",
+        "margin": -2.262272834777832,
+        "b_changed": true
+      },
+      "attn_transplant_b": {
+        "pred": "red",
+        "margin": 1.970193862915039,
+        "b_changed": false
+      },
+      "mlp_transplant_b": {
+        "pred": "red",
+        "margin": 1.7326149940490723,
+        "b_changed": false
+      },
+      "full_transplant_a": {
+        "pred": "blue",
+        "margin": -3.4999465942382812
+      }
+    },
+    {
+      "layer": 9,
+      "status": "PARTIAL",
+      "full_transplant_b": {
+        "pred": "blue",
+        "margin": -2.262272834777832,
+        "b_changed": true
+      },
+      "attn_transplant_b": {
+        "pred": "red",
+        "margin": 1.7797017097473145,
+        "b_changed": false
+      },
+      "mlp_transplant_b": {
+        "pred": "red",
+        "margin": 2.827479362487793,
+        "b_changed": false
+      },
+      "full_transplant_a": {
+        "pred": "blue",
+        "margin": -3.4999465942382812
+      }
+    },
+    {
+      "layer": 10,
+      "status": "PARTIAL",
+      "full_transplant_b": {
+        "pred": "blue",
+        "margin": -2.262272834777832,
+        "b_changed": true
+      },
+      "attn_transplant_b": {
+        "pred": "red",
+        "margin": 1.8748269081115723,
+        "b_changed": false
+      },
+      "mlp_transplant_b": {
+        "pred": "red",
+        "margin": 2.0726962089538574,
+        "b_changed": false
+      },
+      "full_transplant_a": {
+        "pred": "blue",
+        "margin": -3.4999465942382812
+      }
+    },
+    {
+      "layer": 13,
+      "status": "FUSED",
+      "full_transplant_b": {
+        "pred": "blue",
+        "margin": -2.262272834777832,
+        "b_changed": true
+      },
+      "attn_transplant_b": {
+        "pred": "red",
+        "margin": 2.252619743347168,
+        "b_changed": false
+      },
+      "mlp_transplant_b": {
+        "pred": "red",
+        "margin": 2.445889949798584,
+        "b_changed": false
+      },
+      "full_transplant_a": {
+        "pred": "blue",
+        "margin": -3.4999465942382812
+      }
+    },
+    {
+      "layer": 14,
+      "status": "FUSED",
+      "full_transplant_b": {
+        "pred": "blue",
+        "margin": -2.262272834777832,
+        "b_changed": true
+      },
+      "attn_transplant_b": {
+        "pred": "red",
+        "margin": 1.8251748085021973,
+        "b_changed": false
+      },
+      "mlp_transplant_b": {
+        "pred": "red",
+        "margin": 2.4249205589294434,
+        "b_changed": false
+      },
+      "full_transplant_a": {
+        "pred": "blue",
+        "margin": -3.4999465942382812
+      }
+    },
+    {
+      "layer": 15,
+      "status": "PARTIAL",
+      "full_transplant_b": {
+        "pred": "blue",
+        "margin": -2.262272834777832,
+        "b_changed": true
+      },
+      "attn_transplant_b": {
+        "pred": "red",
+        "margin": 2.8247852325439453,
+        "b_changed": false
+      },
+      "mlp_transplant_b": {
+        "pred": "red",
+        "margin": 1.77036714553833,
+        "b_changed": false
+      },
+      "full_transplant_a": {
+        "pred": "blue",
+        "margin": -3.4999465942382812
+      }
+    },
+    {
+      "layer": 18,
+      "status": "FUSED",
+      "full_transplant_b": {
+        "pred": "blue",
+        "margin": -2.262272834777832,
+        "b_changed": true
+      },
+      "attn_transplant_b": {
+        "pred": "red",
+        "margin": 1.8329625129699707,
+        "b_changed": false
+      },
+      "mlp_transplant_b": {
+        "pred": "red",
+        "margin": 0.7891831398010254,
+        "b_changed": false
+      },
+      "full_transplant_a": {
+        "pred": "blue",
+        "margin": -3.4999465942382812
+      }
+    },
+    {
+      "layer": 20,
+      "status": "PARTIAL",
+      "full_transplant_b": {
+        "pred": "blue",
+        "margin": -2.262272834777832,
+        "b_changed": true
+      },
+      "attn_transplant_b": {
+        "pred": "red",
+        "margin": 1.7025065422058105,
+        "b_changed": false
+      },
+      "mlp_transplant_b": {
+        "pred": "red",
+        "margin": 1.718961238861084,
+        "b_changed": false
+      },
+      "full_transplant_a": {
+        "pred": "blue",
+        "margin": -3.4999465942382812
+      }
+    },
+    {
+      "layer": 22,
+      "status": "SEPARATE",
+      "full_transplant_b": {
+        "pred": "blue",
+        "margin": -2.262272834777832,
+        "b_changed": true
+      },
+      "attn_transplant_b": {
+        "pred": "red",
+        "margin": 1.9042320251464844,
+        "b_changed": false
+      },
+      "mlp_transplant_b": {
+        "pred": "red",
+        "margin": 1.4015464782714844,
+        "b_changed": false
+      },
+      "full_transplant_a": {
+        "pred": "blue",
+        "margin": -3.4999465942382812
+      }
+    },
+    {
+      "layer": 23,
+      "status": "SEPARATE",
+      "full_transplant_b": {
+        "pred": "blue",
+        "margin": -2.262272834777832,
+        "b_changed": true
+      },
+      "attn_transplant_b": {
+        "pred": "red",
+        "margin": 1.926175594329834,
+        "b_changed": false
+      },
+      "mlp_transplant_b": {
+        "pred": "red",
+        "margin": 1.7114129066467285,
+        "b_changed": false
+      },
+      "full_transplant_a": {
+        "pred": "blue",
+        "margin": -3.4999465942382812
+      }
+    },
+    {
+      "layer": 24,
+      "status": "SEPARATE",
+      "full_transplant_b": {
+        "pred": "blue",
+        "margin": -2.262272834777832,
+        "b_changed": true
+      },
+      "attn_transplant_b": {
+        "pred": "red",
+        "margin": 1.4952783584594727,
+        "b_changed": false
+      },
+      "mlp_transplant_b": {
+        "pred": "red",
+        "margin": 2.15521240234375,
+        "b_changed": false
+      },
+      "full_transplant_a": {
+        "pred": "blue",
+        "margin": -3.4999465942382812
+      }
+    }
+  ],
+  "baseline_a_diff": 1.620490550994873,
+  "baseline_b_diff": 1.8740601539611816
+}
