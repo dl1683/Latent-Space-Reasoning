@@ -27,11 +27,28 @@ identification (AGENTS.md 2026-08-31). The PSQ line was tunnel-visioned on R^n
 tools applied to latent spaces, not building native latent-space mathematics.
 Phase D/E execution next-steps from earlier entries are cancelled.
 
-**Direction round 7 in progress:** 3-round Codex dialogue on what native
-latent-space math actually is. R1 proposed separator languages, executable
-differences, cell complexes. R2 gave brutal novelty assessment: all map to
-existing math (coalgebra, PSR, automata). R3 pushing coupling theorem conjecture
-and honest should-continue.
+**Direction round 7 complete (4 rounds).** R1: proposed separator languages,
+executable differences, cell complexes as native objects. R2: brutal novelty
+assessment — all map to existing math (coalgebra, PSR, automata, causal
+abstraction). R3: coupling conjecture stated formally but has proof gaps;
+honest should-continue = no, close program, redirect to constructive
+architecture. R4: five transferable insights (the program's real strategic
+deposit):
+1. A model has many operational latent spaces, not one — indexed by (actions,
+   observations, horizon). "The latent space" is incomplete.
+2. Information ≠ state: state has three gates (present → addressable →
+   composable). Never call something state until it passes read/write/compose.
+3. The right null is the system's cheapest native mechanism (identity +
+   shared displacement), not random features.
+4. A quotient must be earned by a transport — held-out presentation is not
+   quotient-level generalization.
+5. Absence requires a collision witness (same carrier, different future),
+   not a failed probe.
+
+Constructive pivot headline: "What if you could change one thing in an AI's
+mind — and know exactly what else would change?" Build a system with explicit
+read/write/transport/compose commitments and test whether learned cognition
+can honor them.
 
 ---
 
