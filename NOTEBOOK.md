@@ -5,6 +5,34 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31T03:00 — Behavioral equivalence v1: first non-R^n metric on fact-worlds
+
+**The right distance is behavioral, not geometric.** Measured next-token
+distribution distance (KL, JSD) between four fact-worlds (ZOG big/small ×
+MIP big/small, querying ZOG). This is a genuinely non-R^n measurement: it
+uses the model's own output as the distance function, not vector geometry.
+
+**Results:**
+- sqrt(JSD) forms a proper metric (triangle inequality: 24/24 pass)
+- Same-ZOG worlds are 2.35x closer than different-ZOG worlds (0.158 vs 0.373)
+- **Cosine INVERTS the ranking at layer 0:** w00-w10 has cosine 0.99994 (closer)
+  but behavioral KL 0.525 (farther) vs w00-w01 at cosine 0.99980 (farther)
+  but KL 0.096 (closer). R^n says "same-fact worlds are farther apart."
+- KL is asymmetric: KL(w00||w10) = 0.66, KL(w10||w00) = 0.39 (ratio 1.69).
+  Supports BP-3: native distance may be asymmetric.
+- By layer 21+, cosine starts correctly ranking but with tiny margins compared
+  to behavioral gaps.
+
+**This is the first instrument that measures in the model's native terms** —
+behavioral equivalence classes, not vector space quantities. The model's own
+output defines "same place" and "different place."
+
+**Next:** Layer-dependent behavioral distance (what does the behavioral metric
+look like at intermediate layers, by running remaining layers from a given
+hidden state?). This would give us a native "resolution" measure at each layer.
+
+---
+
 ## 2026-08-31T02:30 — Config-dependence diagnosed: template format is the primary driver
 
 Ran systematic ablation: same entities with different values, same values with
