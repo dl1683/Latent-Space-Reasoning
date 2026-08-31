@@ -5,7 +5,43 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
-## 2026-08-31T23:30 — predictive_fiber_action_v1: DECISIVE — S_p idempotent, square does NOT commute
+## 2026-08-31T01:45 — Codex v6 review: construction error in action_v1 square test
+
+**Codex found a construction error in the correction/synchronization square.**
+
+The runner uses the old-world restatement (S_p) on both paths, not S_{p'}
+(post-correction restatement). So:
+- Path CS: correction ("Actually, ZOG is small") then old-world restatement
+  ("To be clear: ZOG is big") — contradictory, last assertion is old value
+- Path SC: old-world restatement then correction — last assertion is new value
+
+These paths do NOT share an endpoint. The intended typed square is
+S_{p'} ∘ C vs C ∘ S_p where both end at corrected world p'. The measured
+JSD 0.204 reflects order-sensitivity of contradictory text (recency effect),
+not algebraic non-commutativity.
+
+**What stands:** S_p idempotence (100% greedy, JSD 0.078). Action table.
+Held-out generalization.
+
+**What's downgraded:** "Coupled" verdict → "not adjudicated." The square
+was not the intended square.
+
+**Second typing issue:** Places are (entity, greedy-token) buckets but
+restatement uses hidden ground-truth worlds → S_w, not representative-
+independent S_p.
+
+**Updated claim (Codex-licensed):** "In a bounded three-fact prompt world in
+one small language model, continuation behavior supports an approximate argmax
+quotient algebra, while its fibers remain distributionally and predictively
+nontrivial; canonical restatement is repeatable, but has not yet been shown to
+define a quotient-level synchronization."
+
+**Next:** Build PREDICTIVE_FIBER_ACTION_ALGEBRA.md (artifact first). Then one
+corrected run (v2) with properly typed square if synchronization stays.
+
+---
+
+## 2026-08-31T23:30 — predictive_fiber_action_v1: S_p idempotent, square test (construction error found, see above)
 
 **The algebra-validation experiment (Codex v5) has run and produced a decisive result.**
 

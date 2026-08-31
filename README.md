@@ -4,71 +4,78 @@
 
 This project is building the **native mathematics of latent spaces** — not porting existing math onto embeddings, but discovering what math the space itself demands. Like Euclid building geometry by asking what axioms a flat plane requires, we ask: what axioms does a latent space require? What are its native notions of *place*, *move*, *distance*, and *composition*?
 
-## Why this matters
+## The headline
 
-Mechanistic interpretability treats latent space as ℝⁿ — a bag of numbers you can probe with linear algebra. This works surprisingly well for finding features. But it misses something fundamental: **the model doesn't think in vectors. It thinks in transformations.** The vector is a snapshot; the computation is the object.
+**Cosine similarity — the standard tool for comparing neural network representations — is blind to the model's actual behavioral structure.** Not imprecise. *Blind.* It inverts the ranking: states cosine calls most similar are the most behaviorally different. What does see the structure? The model's own output distributions, measured through logit lens + Jensen-Shannon divergence.
 
-We have 50+ audited experiments showing exactly where ℝⁿ mathematics breaks down inside real models — nine documented breakpoints where standard tools give confident wrong answers, or miss structure the model actively uses. These aren't edge cases. They're systematic blind spots in how we understand AI internals.
+Using this instrument across 16 audited experiments, we've found that a small language model maintains a **structured behavioral algebra** entirely invisible to ℝⁿ metrics:
 
-**The ambition:** build mathematical tools that see what cosine similarity, PCA, and linear probes cannot. If we succeed, we change how the field understands, controls, and aligns AI systems.
+| Finding | Number | What it means |
+|---------|--------|---------------|
+| **Peak selective amplification** | 62× | At layers 21-25, the model amplifies the queried fact's signature 62× while suppressing irrelevants to near-zero |
+| **Cosine at the same point** | 0.98 | Standard metric sees "nearly identical" where the model sees "completely different" |
+| **Greedy congruence** | 97% | Same-place histories produce the same next-token prediction — the argmax algebra is real |
+| **Distributional congruence** | 0% | But the full output distributions *always* differ — every greedy fiber contains distinguishable states |
+| **Commitment bottleneck** | 0.05 bits | Entropy drops to near-zero at L25 (the model fully commits), then re-broadens to 5.5-7.7 bits |
+| **Synchronization idempotence** | 100% | The restatement operator S_p is a genuine algebraic retraction: S_p² ≈ S_p |
 
 ## What we've found
 
-### The nine breakpoints
+### The resolution layer
 
-Across 50+ experiments on Qwen3 models, we've catalogued nine places where ℝⁿ mathematics fails in latent space. Each one is a clue about what native math must look like.
+Between layers 21 and 25 (of 28), the model selectively amplifies the behavioral signature of the queried fact while suppressing all irrelevant facts to near-zero. Cosine similarity stays above 0.91 throughout — it cannot see any of this.
+
+- **62× peak selectivity** (PLIM/KROT, L25)
+- **Not attention routing** — attention weights show no selectivity (r < 0.25); attention to the queried entity is high at ALL layers
+- **Whole-sequence operation** — the resolution signal is distributed across all input positions, not concentrated at the queried entity
+- **Multi-fact generalization** — in 3-fact worlds, all irrelevant facts are suppressed equally and simultaneously
+
+### The commitment bottleneck
+
+Tracking Shannon entropy through all 28 layers reveals a dramatic structural phenomenon: the model funnels through a near-deterministic bottleneck at L24-25 (entropy ≈ 0.05 bits, top-1 mass ≈ 0.999), then re-broadens the distribution to 5.5-7.7 bits in the final output.
+
+This explains two otherwise contradictory findings:
+- **Greedy congruence (97%)** holds because the commitment determines the argmax
+- **Distributional congruence (0%)** fails because the re-broadened distribution encodes history-dependent structure
+
+The re-broadened distribution is not noise — the tokens with the largest probability differences between same-place histories are overwhelmingly history-related entity values. The model leaks its entire fact-world into every output distribution.
+
+### The behavioral algebra
+
+The model supports a **coarse partial action algebra** of greedy commitments:
+
+- **Places** are greedy answer profiles (which entity gets which answer)
+- **Moves** are typed continuations: empty, neutral, correction, restatement
+- **Place preservation** is near-total for identity-like operations (100% empty, 95% neutral/restatement) and genuinely state-changing for corrections (35%)
+- **Synchronization (S_p)** via canonical restatement is approximately idempotent: JSD(S, S²) = 0.078, 100% greedy idempotence
+
+The decisive test: does the algebra factorize into a clean predictive core and a presentation shell? **Open question.** The initial commutativity test contained a construction error (both paths used old-world restatement, not corrected-world S_{p'}). A corrected experiment is next. What's established: the greedy algebra is real, the fibers are nontrivial, and canonical restatement is a genuine retraction.
+
+All results generalize to held-out entities the model has never seen in the training prompts.
+
+### The nine breakpoints (Phase 1)
+
+Across 50+ earlier experiments, we catalogued nine places where ℝⁿ mathematics fails in latent space. Each is a constraint on what native math must look like.
 
 | # | Breakpoint | What it means |
 |---|-----------|---------------|
-| 1 | **Presence ≠ causation** | A concept can be perfectly decodable from activations yet have zero causal effect. Linear probes find ghosts. |
-| 2 | **Single-site ≠ distributed** | Facts aren't stored at locations — they're distributed properties of entire layer transformations. Patching one site does nothing; patching the whole state changes everything. |
-| 3 | **Vector distance ≠ semantic distance** | Points close in cosine can be functionally opposite. The metric structure of ℝⁿ doesn't reflect meaning. |
-| 4 | **Fixed dimensions ≠ fixed structure** | The effective dimensionality of a representation changes with context and task. There is no fixed *d*. |
-| 5 | **Vector composition ≠ computational composition** | The model composes through its forward pass, not through vector arithmetic. Addition and concatenation are human projections. |
-| 6 | **Observation ≠ state** | The act of choosing what to probe constrains what you can find. Instruments aren't neutral. |
-| 7 | **Snapshot ≠ computation** | A model's representation at layer *l* can't be understood without the trajectory through all layers. The object is a path, not a point. |
+| 1 | **Presence ≠ causation** | A concept can be perfectly decodable yet have zero causal effect. Linear probes find ghosts. |
+| 2 | **Single-site ≠ distributed** | Facts are distributed properties of entire layer transformations. Patching one site does nothing; patching the whole state changes everything. |
+| 3 | **Vector distance ≠ semantic distance** | Points close in cosine can be functionally opposite. |
+| 4 | **Fixed dimensions ≠ fixed structure** | Effective dimensionality changes with context and task. |
+| 5 | **Vector composition ≠ computational composition** | The model composes through its forward pass, not through vector arithmetic. |
+| 6 | **Observation ≠ state** | The act of choosing what to probe constrains what you can find. |
+| 7 | **Snapshot ≠ computation** | A representation at layer *l* can't be understood without the trajectory through all layers. |
 | 8 | **ℝⁿ tools find ℝⁿ structure** | PCA finds linear structure because PCA *is* linear structure. The measurement imposes itself on the answer. |
-| 9 | **Metric blindness to composition** | Four fact-worlds with cosine similarity ~1.000 produce dramatically different behavioral outcomes under intervention. ℝⁿ distance sees "same" where the computation sees "different." |
+| 9 | **Metric blindness to composition** | Four fact-worlds with cosine ≈ 1.000 produce dramatically different behavioral outcomes under intervention. |
 
-Full details with experimental evidence: [`theory/BREAKPOINT_REGISTRY.md`](theory/BREAKPOINT_REGISTRY.md)
-
-### Fusion-fission: facts become entangled
-
-Our most striking ongoing investigation. Store two independent facts in a language model ("HESK is red" and "VORN is blue"). Ask about one. At which layers are the facts independently controllable, and at which do they become computationally entangled?
-
-**Method:** Causal transfer matrices. Run a donor model with altered facts, capture its internal state at each layer, transplant only the fact-storage positions into a host model, and measure how both answers shift. This gives a 2×2 matrix **K** at every layer:
-
-```
-K_l = [[dA/dA, dA/dB],
-       [dB/dA, dB/dB]]
-```
-
-where `dX/dY` = how much answer-X shifts when fact-Y is changed via transplant.
-
-**What the K matrix reveals:**
-- **Strong diagonal, weak off-diagonal** → facts are independently addressable (SEPARATE)
-- **Strong off-diagonal** → changing one fact inevitably changes the other (FUSED)
-- **Both weak** → the transplant has no effect at this layer (NO_CONTROL)
-
-This is a continuous, causal, layer-by-layer map of how factual representations interact during computation — something no static metric can see.
-
-*Status: instrument validated (zero self-patch noise after BPE boundary fix), config-dependent patterns observed, cross-config replication under investigation.*
-
-### The three-gate model
-
-One of our most useful theoretical insights. Information in a latent space passes through three gates:
-
-1. **Present** — the information exists somewhere in the activation (a linear probe can find it)
-2. **Addressable** — the model can read and use it (causal intervention affects output)
-3. **Composable** — the model can combine it with other information to produce novel outputs
-
-Most interpretability work tests gate 1. Gates 2 and 3 are where the real action is — and where ℝⁿ tools break down.
+Full details: [`theory/BREAKPOINT_REGISTRY.md`](theory/BREAKPOINT_REGISTRY.md)
 
 ## Theoretical framework
 
 We're building axioms for latent space the way a denizen of that world would: not importing geometry from outside, but asking what mathematical structures are needed to *navigate*.
 
-**The five navigation requirements** (what a latent-space denizen must define):
+**The five navigation requirements:**
 
 1. **Identity** — when have I returned to the same place? (Not: when are two vectors close)
 2. **Moves** — what interventions does this world permit? (Not: what vectors can I add)
@@ -76,14 +83,14 @@ We're building axioms for latent space the way a denizen of that world would: no
 4. **Map** — can I predict consequences of moves I haven't made? (Not: can I interpolate)
 5. **Laws** — what regularities hold across regions? (Not: what's the basis)
 
-The formal development is in [`theory/AXIOMS.md`](theory/AXIOMS.md). Current directions include typed latent actions (partial-action categories over behavioral response classes), predictive-state algebra, and gauge-transported operator algebras.
+The formal development is in [`theory/AXIOMS.md`](theory/AXIOMS.md).
 
 ## Repository structure
 
 ```
-theory/               Axioms, breakpoint registry, Codex dialogue transcripts
+theory/               Axioms, breakpoint registry, formal constructions
 experiments/           All experiment code (one file per experiment)
-  ledger.jsonl         Machine-readable experiment log (394 entries)
+  ledger.jsonl         Machine-readable experiment log
   results/             Raw outputs, JSON artifacts
   EXPERIMENTS.md       Human-readable experiment summaries
 docs/                  Handoff documents, structured negatives
@@ -94,12 +101,9 @@ NOTEBOOK.md            Reverse-chronological running log
 
 ## Current status
 
-**Phase 2** (active). Phase 1 (50 experiments, 2026-08-27 → 2026-08-31) established the nine breakpoints and the ℝⁿ trap. Phase 2 builds genuinely non-ℝⁿ instruments and theory.
+**Phase 2** (active). Phase 1 (50 experiments, 2026-08-27 → 2026-08-31) established the nine breakpoints and the ℝⁿ trap. Phase 2 (16 experiments, 2026-08-31) builds genuinely non-ℝⁿ instruments and discovers the behavioral algebra.
 
-Active threads:
-- **Fusion-fission instrument** — causal transfer matrices across layers, configs, and models
-- **Typed latent actions** — partial-action categories derived from causal response laws
-- **Breakpoint exploitation** — each breakpoint is a constraint on what native math must look like
+The central empirical claim (Codex-audited): *In a bounded three-fact prompt world in one small language model, continuation behavior supports an approximate argmax quotient algebra, while its fibers remain distributionally and predictively nontrivial; canonical restatement is repeatable, but has not yet been shown to define a quotient-level synchronization.*
 
 Current state: [`STATE.md`](STATE.md) · Running log: [`NOTEBOOK.md`](NOTEBOOK.md) · Phase 1 handoff: [`docs/HANDOFF_2026_08_30.md`](docs/HANDOFF_2026_08_30.md)
 
@@ -107,14 +111,14 @@ Current state: [`STATE.md`](STATE.md) · Running log: [`NOTEBOOK.md`](NOTEBOOK.m
 
 Every claim follows a strict evidence protocol:
 
-- **Codex-audited.** An independent AI reviewer (OpenAI Codex CLI) adversarially checks every result for overclaims, instrument artifacts, and alternative explanations. Claims are adopted only in Codex-licensed language.
+- **Codex-audited.** An independent AI reviewer adversarially checks every result for overclaims, instrument artifacts, and alternative explanations. Claims are adopted only in auditor-licensed language.
 - **Negative results are first-class.** Failed experiments are logged permanently and shape future directions. We've withdrawn prior claims when controls revealed artifacts.
-- **Instrument-first.** Before interpreting results, validate the instrument: baseline retrieval, self-patch controls, sham-patch controls. The v1→v2 fusion-fission arc is a case study — five instrument defects were found and fixed before any interpretive claims.
+- **Instrument-first.** Before interpreting results, validate the instrument: baseline retrieval, self-patch controls, sham-patch controls.
 - **Reproducible.** CPU-only experiments, deterministic seeds, full configs logged. Every experiment in the ledger includes the git commit, command, config, and metrics.
 
 ## Prior work and corrections
 
-The previous program (LLM embedding perturbation, diffusion latent repair) is archived under [`legacy/`](legacy/). Its nested-arithmetic claims were **withdrawn** after independent controls showed the benchmark measured termination under a token cap, not arithmetic capability. Full record: [`legacy/docs/CORRECTION_NESTED_ARITHMETIC_2026_08.md`](legacy/docs/CORRECTION_NESTED_ARITHMETIC_2026_08.md). One finding carries forward: greedy decoding determinism is hardware-dependent, so any diversity claim must report the numerical noise floor.
+The previous program (LLM embedding perturbation, diffusion latent repair) is archived under [`legacy/`](legacy/). Its nested-arithmetic claims were **withdrawn** after independent controls showed the benchmark measured termination under a token cap, not arithmetic capability. Full record: [`legacy/docs/CORRECTION_NESTED_ARITHMETIC_2026_08.md`](legacy/docs/CORRECTION_NESTED_ARITHMETIC_2026_08.md).
 
 ## Contributing
 
