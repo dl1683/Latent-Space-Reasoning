@@ -212,3 +212,6 @@ experiments/results/*/gt_d4_matrix.npz
 
 # Claude Code agents directory
 .agents/
+
+# Local scratchpad (Codex outputs, temp files)
+scratchpad/
