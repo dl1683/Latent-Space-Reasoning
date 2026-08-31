@@ -73,6 +73,89 @@ through the routing. This connects to BP-2 (state is distributed) and BP-5
 
 ---
 
+## 2026-08-31T11:00 — Codex direction dialogue v2 (five questions, adopted)
+
+**Codex narrowing (adopted verbatim):** The logit-lens finding is a
+"query-conditioned vocabulary-readout separation that residual cosine does not
+faithfully summarize." NOT yet "semantic resolution layer," "irreversible
+commitment," or "clean native instrument" — those are hypotheses pending controls.
+
+**Already addressed by this session's experiments (before Codex returned):**
+1. Q1 (attention confound): Attention WEIGHTS don't explain it (r<0.25).
+   But Codex wants causal attention VALUE intervention — deferred.
+2. Q5 (two-fact worlds): Three-fact experiment shows generalization.
+
+**Codex challenges still open:**
+1. First-write-wins was never directly tested in setter algebra. The "primacy
+   bias" diagnosis assumes first-write-wins without a clean control.
+2. T3 arm has 0/4 baseline yet shows selectivity peak — evidence that the
+   logit-lens measures generic next-token finalization, not semantic resolution.
+3. Cosine comparator uses w00 vs w10 in query-B configs, which is the
+   IRRELEVANT contrast. Need to verify this doesn't confound the result.
+
+**Codex's recommended next experiment: Predictive Continuation Congruence v1.**
+Test whether token updates act as well-defined moves on behavioral places.
+Define behavioral places by calibration signature (which entity → which value).
+Append the same continuation to two histories with the same signature.
+If they bifurcate (same update → different outcome), the update is not a
+well-defined operation on places. This measures composability, not distance.
+
+**Algebraic candidate (Codex):** Left-regular band over partial commitments.
+State = partial assignment E→V∪{⊥}. Commitment C_E^v(s) = s[E↦v] if s(E)=⊥,
+else s. First write absorbs later ones. Products obey xyx = xy. Not a lattice
+(conflicting commitments have no upper bound). Query adds a projection ρ_E
+that collapses irrelevant distinctions.
+
+**Decision:** Build continuation congruence v1 per Codex spec. This is the
+highest-leverage next step — it tests a SECOND native property (composability)
+independent of the first (behavioral distance).
+
+---
+
+## 2026-08-31T11:30 — Continuation congruence v1: most operations are well-defined
+
+**Tested whether token continuations are well-defined operations on behavioral
+places.** Two histories with the same behavioral signature (answer the same to
+all queries) should give the same outcome after the same continuation.
+
+**Baseline:** 19/24 (79.2%) — 5 failures all in MIP/std-order (known issue).
+8 distinct behavioral places found. Used only passing histories.
+
+**Congruence results (32 tests, 31 pass, 1 defect = 3.1%):**
+- Neutral distractors: 0/8 defects — well-defined
+- New entity commits: 0/8 defects — well-defined
+- Repeated values: 0/8 defects — well-defined (idempotent)
+- Corrections: 1/8 defects (12%) — NOT well-defined in all cases
+
+**The one defect:** sig=(big, cold, red) + correct_zog → two histories
+(rev and dup) with identical behavioral signature produce different outcomes
+after the same "Actually, ZOG: small." correction. This is history-dependence:
+the correction depends on HOW the place was reached, not just WHICH place.
+
+**Interpretation for native math:** The model's behavioral places support a
+TYPED partial-action system:
+- Distractors, new commits, repeats = global well-defined operations (monoid)
+- Corrections = partial operations, history-indexed, not globally well-defined
+- This matches Codex's left-regular-band prediction: commitments absorb later
+  conflicting writes, so the correction's effect depends on whether the first
+  write was already committed.
+
+**Emerging picture (8 experiments total, Phase 2):**
+1. Behavioral distance: JSD is a proper metric, cosine inverts ranking
+2. Resolution layer: L21-25 selectively amplifies queried fact
+3. Not attention routing: weights don't explain it
+4. Value space: post-attention already shows resolution
+5. Generalizes: 3-fact worlds, multi-fact suppression
+6. Causal test: uninformative (full-state injection trivial)
+7. Setter algebra: FAIL (primacy bias)
+8. Continuation congruence: MOST operations well-defined, corrections are partial
+
+**Two independent native properties established:**
+- **Behavioral distance** (logit-lens + JSD): where and how the model resolves
+- **Behavioral congruence** (continuation test): which operations are well-defined
+
+---
+
 ## 2026-08-31T10:15 — Three-fact resolution v1: resolution is a general mechanism
 
 **Resolution generalizes to three-fact worlds.** Three entities × two values =
