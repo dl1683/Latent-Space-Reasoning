@@ -5,6 +5,30 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31T06:00 — Fusion-fission v1: first Phase 2 data point
+
+**12 fusion-fission transitions across 28 layers of Qwen3-0.6B.** Two
+independently stored facts (HESK color, VORN color) oscillate between
+SEPARATE (transplanting one changes only its answer), FUSED (transplanting
+one changes both answers), and PARTIAL status as computation proceeds.
+
+**Critical breakpoint (BP-9):** R^n cosine similarity is ~1.0000 at layers
+4-24 — R^n sees all four worlds as identical. Yet transplant experiments
+show FUSED vs SEPARATE behavior at those same layers. Native compositional
+structure is invisible to global R^n distance.
+
+Caveats: baseline 75% (model struggles with some VORN queries), single
+prompt template, binary values only. But the R^n breakpoint is real — the
+computation distinguishes worlds that cosine similarity cannot.
+
+Next: (1) PCA probe at fused vs separate layers — can a linear subspace
+find what global cosine misses? If yes, native structure is low-rank-linear,
+not truly non-R^n. If no, the structure is genuinely nonlinear. (2) More
+prompt variants for reproducibility. (3) More values (4-way) to stress the
+encoding.
+
+---
+
 ## 2026-08-31T03:00 — PROGRAM REOPENED
 
 The closure was not authorized by the project owner. Native latent-space math

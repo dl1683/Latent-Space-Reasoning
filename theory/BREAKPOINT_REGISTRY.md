@@ -167,6 +167,32 @@ R^n tools FAIL and asking what structure would explain the failure.
 
 ---
 
+## BP-9: R^n distance is blind to compositional structure (Phase 2, fusion-fission v1)
+
+**Assumption:** If two representations are cosine-similar, they are
+functionally similar — similar inputs to downstream computation.
+
+**Where it broke:** Fusion-fission v1. Four worlds (2x2 fact combinations)
+have cosine similarity ~1.0000 at layers 4-24. Yet transplanting one
+world's hidden state into another produces dramatically different behavioral
+outcomes depending on the layer: at some layers facts are independently
+controllable (SEPARATE), at others changing one fact inevitably changes
+both (FUSED). R^n's distance metric sees "same" where the computation
+sees "different."
+
+**What this tells us:** The behaviorally relevant structure lives in a
+subspace or nonlinear manifold that global distance metrics can't see.
+"Close in cosine" does not mean "functionally equivalent." Native
+distance (whatever it is) must be sensitive to the compositional
+structure that cosine misses. This may be the clearest evidence yet
+that R^n distance ≠ native distance.
+
+**Open test:** Can PCA find the relevant subspace? If a linear probe
+separates worlds at fused/separate layers, the structure is low-rank
+linear (R^n but not global-R^n). If not, it's genuinely nonlinear.
+
+---
+
 ## Open questions from the breakpoints
 
 1. If composition happens through the forward pass (BP-5), can we

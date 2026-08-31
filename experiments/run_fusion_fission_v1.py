@@ -3,8 +3,8 @@ Fusion-Fission v1: test whether two independently controllable facts
 become indivisible during computation and later separate.
 
 DUAL METHODOLOGY (breakpoint hunting):
-  1. Opaque whole-record transplants → categorical behavioral outcomes
-  2. R^n probes (linear, cosine) → continuous geometric measures
+  1. Opaque whole-record transplants -> categorical behavioral outcomes
+  2. R^n probes (linear, cosine) -> continuous geometric measures
   Where they agree: R^n captures native structure.
   Where they disagree: BREAKPOINT revealing native structure R^n can't see.
 
@@ -31,6 +31,8 @@ def load_model():
         MODEL_ID, torch_dtype=DTYPE, device_map=DEVICE, trust_remote_code=True
     )
     model.eval()
+    if hasattr(model, "generation_config"):
+        model.generation_config.do_sample = False
     return model, tok
 
 
@@ -200,9 +202,9 @@ def run_fusion_fission_scan(model, tok):
     host_prompt = make_prompt(host["hesk"], host["vorn"])
 
     # Counterfactual donors
-    donor_a = WORLDS[2]  # hesk=blue, vorn=red → changes A only
-    donor_b = WORLDS[1]  # hesk=red, vorn=blue → changes B only
-    donor_ab = WORLDS[3]  # hesk=blue, vorn=blue → changes both
+    donor_a = WORLDS[2]  # hesk=blue, vorn=red -> changes A only
+    donor_b = WORLDS[1]  # hesk=red, vorn=blue -> changes B only
+    donor_ab = WORLDS[3]  # hesk=blue, vorn=blue -> changes both
 
     layer_results = []
 
@@ -243,8 +245,8 @@ def run_fusion_fission_scan(model, tok):
         joint_changes_b = tab_qb["pred"] != host["vorn"]
 
         # Determine fusion status
-        a_leaks = a_only_changes_b  # A transplant changed B → fused
-        b_leaks = b_only_changes_a  # B transplant changed A → fused
+        a_leaks = a_only_changes_b  # A transplant changed B -> fused
+        b_leaks = b_only_changes_a  # B transplant changed A -> fused
 
         if not a_leaks and not b_leaks:
             status = "SEPARATE"
@@ -273,9 +275,9 @@ def run_fusion_fission_scan(model, tok):
 
         sym = {"SEPARATE": "S", "FUSED": "F", "PARTIAL": "P"}[status]
         print(f"  Layer {layer:2d}: [{sym}] "
-              f"A-transplant→(A:{ta_qa['pred']},B:{ta_qb['pred']}) "
-              f"B-transplant→(A:{tb_qa['pred']},B:{tb_qb['pred']}) "
-              f"Joint→(A:{tab_qa['pred']},B:{tab_qb['pred']})")
+              f"A-transplant->(A:{ta_qa['pred']},B:{ta_qb['pred']}) "
+              f"B-transplant->(A:{tb_qa['pred']},B:{tb_qb['pred']}) "
+              f"Joint->(A:{tab_qa['pred']},B:{tab_qb['pred']})")
 
     return layer_results
 
@@ -374,8 +376,8 @@ def main():
                 "from_status": ff_results[i]["status"],
                 "to_status": ff_results[i+1]["status"],
             })
-            print(f"  Layer {ff_results[i]['layer']}→{ff_results[i+1]['layer']}: "
-                  f"{ff_results[i]['status']}→{ff_results[i+1]['status']}")
+            print(f"  Layer {ff_results[i]['layer']}->{ff_results[i+1]['layer']}: "
+                  f"{ff_results[i]['status']}->{ff_results[i+1]['status']}")
 
     if not transitions:
         print("  No transitions detected — facts remain in same status across all layers.")
