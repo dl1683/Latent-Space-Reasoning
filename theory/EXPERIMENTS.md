@@ -10311,3 +10311,94 @@ artifact-bearing code lines, \(0/0\). It is one theory/build round. After audit
 #45's \(30:13\) accounting, the cumulative measurement/governance-to-build
 ratio is \(30:14=2.14:1\), still above the \(2:1\) warning and below the
 \(5:1\) halt.
+
+## PSQ-3μ — smallest necessary-condition intervention test (Codex direction round 5, 2026-08-31)
+
+### Proposition
+
+If a small real model treats textually different instances of the same dial location as one behavioral place, one shared learned move should carry all of them toward the next place.
+
+Concretely: in the two-dial Z_8 × Z_8 world restricted to S_μ = Z_8 × {0,2,4,6} (32 states, only x-channel probes), a Procrustes operator M_A fitted on calibration states should, when applied to held-out carrier representations, produce response profiles closer to the true A-successor's oracle profile than any control edit does.
+
+### Locked design
+
+| Component | Choice |
+|---|---|
+| Model | Qwen3-0.6B-Base, revision da87bfb608c14b7cf20ba1ce41287e8de496c0cd, CPU float32 |
+| States | S_μ = Z_8 × {0,2,4,6}: 32 states |
+| Registered quotient | Only x-channel responses (is_x_zero probes); y is fiber/nuisance |
+| Probe panel | Eight x probes: is_x_zero after words of length 0–4 containing only A and B |
+| Move | A: x → x+1 mod 8. B: x → −x mod 8 is wrong-action control |
+| Split | Block-floor rule: cal = {(x,y) : (floor(x/2)+floor(y/2)) mod 2 = 0}, 16 cal / 16 held-out |
+| Carrier | Newline token after "y = {digit}" (same as PSQ-3) |
+| Geometry | Fixed block 18, transductive PCA k=4 over all 32 states, calibration-only Procrustes M_A and M_B |
+| Primary number | Held-out mean G_{M_A} and paired G_{M_A} − G_{control} |
+| Controls | No edit, mean displacement, M_B (wrong action), fixed-seed matched-random O(k) |
+| Call cap | Exactly 1,152 forwards |
+| Wall clock | 30 minutes, fail closed |
+| Device | CPU only (no GPU) |
+
+### Call budget (1,152 total)
+
+- 256 baseline/profile calls: 32 states × 8 probes, capturing carrier at block 18
+- 128 same-state replay (32 states × 4 probes, determinism check)
+- 128 donor positive control (32 held-out targets, using cal source carrier)
+- 128 calibration-source M_A positive control (32 cal states, self-check)
+- 512 held-out calls: 16 held-out sources × 4 interventions (M_A, mean displacement, M_B, matched random) × 8 probes... [NOTE: exact decomposition follows the micro phase implementation]
+
+### Predeclared outcomes (immutable)
+
+- **NO_INTERFACE**: balanced panel accuracy below 95% across states, excessive non-digit probability mass (>10% mean), or no response-law separation between x places (oracle profile spread < 0.1 JS₂). Stop before intervention.
+- **INVALID**: replay exceeds 1e-3 max-absolute logit difference, donor control decodes fewer than 15/16 successors, or calibration M_A decodes fewer than 14/16. The instrument is broken.
+- **MICRO_SIGNAL**: held-out M_A mean gain ≥ 0.25, decodes at least 12/16 correct successors, and its paired 95% source-bootstrap lower bound exceeds each control by more than zero. Licensed sentence below applies.
+- **MICRO_FAIL**: interface and proximal controls pass but held-out M_A does not meet MICRO_SIGNAL thresholds.
+
+### Licensed sentence (if MICRO_SIGNAL)
+
+In frozen Qwen3-0.6B-Base, a single calibration-fitted Procrustes operator for action A, applied to held-out carrier representations at block 18, produces response profiles whose nearest-state decode matches the true A-successor at [N/16] states, with mean behavioral gain [G] exceeding all four controls (no edit, mean displacement, wrong action B, matched random) at the 95% bootstrap level. This establishes one-action, fixed-presentation response-law equivariance at this site.
+
+### Never say
+
+- "The micro test establishes full d_∞ geometry."
+- "Composition, presentation invariance, or denizen reachability is demonstrated."
+- "The framework is validated" or "native latent mathematics is proved."
+- "The result generalizes to other models, actions, or sites."
+- "0.6B results predict 1.7B behavior."
+- "The y-channel responses were tested."
+- "The test is a replication of PSQ-3."
+
+### Stop rule
+
+No repair after any outcome. Any NO_INTERFACE or INVALID closes PSQ-3μ. A MICRO_FAIL is the registered negative result. A MICRO_SIGNAL promotes PSQ-3 to the stable-hardware queue after its false-pass verdict reducer is repaired. No same-check repair is permitted. One audit fires after the result.
+
+Measurement-to-artifact ratio: this adds ~200 lines of proposition + ~150 lines of micro phase code (artifact-bearing). Ratio contribution: 0:1 (pure artifact build). Cumulative after: 33:16 = 2.06:1.
+
+### Outcome (2026-08-31)
+
+**Status: NO_INTERFACE — PSQ-3μ CLOSED.**
+
+Result (from `experiments/results/psq3_micro_cpu/result.json`):
+- Panel accuracy: 68/256 = 0.2656 (gate: ≥0.95) — **FAIL**
+- Mean p_other: 0.0424 (gate: ≤0.10) — pass
+- Oracle spread: 0.5000 (gate: ≥0.10) — pass
+
+Execution stopped at stage 1 (baseline profiling), consuming 256 of 1,152
+budgeted calls (132.6s, 1.9 fwd/s on CPU float32). Stages 2–6 never ran.
+
+**Analysis:** The frozen Qwen3-0.6B-Base model cannot perform modular
+arithmetic on the two-dial world. It predicts digit "1" approximately 81%
+of the time across all states and probes. Since 7/8 x-places produce
+answer "0" under is_x_zero probes, the model achieves ~12.5% on the
+majority class and ~100% on the single minority class (x=0), yielding
+26.56% overall. The behavioral interface required for intervention testing
+does not exist.
+
+**Disposition:** Per the predeclared stop rule, NO_INTERFACE closes PSQ-3μ
+with no repair. The frozen 0.6B model lacks the task competence for this
+test. This does not invalidate the PSQ-3 design (which targets the 1.7B
+model with LoRA training); it confirms that a frozen small model cannot
+serve as a shortcut for the intervention program.
+
+Measurement-to-artifact ratio contribution: 0 measurement lines added;
+~250 lines of micro phase code (artifact-bearing). Post-PSQ-3μ ratio
+unchanged from the pre-run 33:16.

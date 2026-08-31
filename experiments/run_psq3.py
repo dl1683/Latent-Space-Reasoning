@@ -10,6 +10,8 @@ Usage:
   python experiments/run_psq3.py --config experiments/config/psq3.json
   python experiments/run_psq3.py --config experiments/config/psq3.json --pilot
   python experiments/run_psq3.py --config experiments/config/psq3.json --phase gate
+  python experiments/run_psq3.py --config experiments/config/psq3_micro_cpu.json --phase micro --dry-run
+  python experiments/run_psq3.py --config experiments/config/psq3_micro_cpu.json --phase micro --device cpu
 """
 from __future__ import annotations
 import argparse, hashlib, itertools, json, math, os, random, time, sys
@@ -1284,6 +1286,463 @@ def frozen_base_control(model, tok, device, id_0, id_1, locked_layer, out_dir):
         json.dump(result, f, indent=2)
     return result
 
+# ---- PSQ-3 micro helpers ----
+
+def micro_d_panel(profile_a, profile_b):
+    n = len(profile_a)
+    total = sum(js_divergence_bits(pa, pb) for pa, pb in zip(profile_a, profile_b))
+    return math.sqrt(total / n) if n > 0 else 0.0
+
+
+def _micro_save(result, out_dir):
+    os.makedirs(out_dir, exist_ok=True)
+    path = os.path.join(out_dir, "result.json")
+    with open(path, "w") as f:
+        json.dump(result, f, indent=2)
+    print(f"  Result saved to {path}")
+
+
+def micro_phase(model, tok, device, id_0, id_1, cfg, out_dir, dry_run=False):
+    mcfg = cfg["micro"]
+    probes = XPROBES
+    n_probes = len(probes)
+    block = mcfg["block"]
+    k_pca = mcfg["pca_k"]
+    action_name = mcfg["action"]
+    wrong_action_name = mcfg["wrong_action"]
+    call_cap = mcfg["call_cap"]
+    wall_minutes = mcfg["wall_minutes"]
+
+    y_vals = mcfg["states_y"]
+    mu_states = [(x, y) for x in range(8) for y in y_vals]
+    cal_mu = [s for s in mu_states if (s[0] // 2 + s[1] // 2) % 2 == 0]
+    held_mu = [s for s in mu_states if (s[0] // 2 + s[1] // 2) % 2 != 0]
+
+    x_class_profiles = {}
+    for x in range(8):
+        x_class_profiles[x] = [
+            [1.0, 0.0, 0.0] if oracle_answer((x, 0), w, ch) == 0
+            else [0.0, 1.0, 0.0] for w, ch in probes]
+    for s in mu_states:
+        actual = [[1.0, 0.0, 0.0] if oracle_answer(s, w, ch) == 0
+                  else [0.0, 1.0, 0.0] for w, ch in probes]
+        assert actual == x_class_profiles[s[0]], f"x-profile y-dependent at {s}"
+
+    x_spreads = []
+    for x1 in range(8):
+        for x2 in range(x1 + 1, 8):
+            d = micro_d_panel(x_class_profiles[x1], x_class_profiles[x2])
+            if d > 0:
+                x_spreads.append(d)
+    min_spread = min(x_spreads) if x_spreads else 0.0
+    n_unique = len(set(
+        tuple(tuple(p) for p in x_class_profiles[x]) for x in range(8)))
+
+    def decode_x(profile):
+        best_d, best_x = float("inf"), -1
+        for x in range(8):
+            d = micro_d_panel(profile, x_class_profiles[x])
+            if d < best_d - 1e-12:
+                best_d, best_x = d, x
+        return best_x
+
+    n_replay_probes = n_probes // 2
+    budget = {
+        "baseline": len(mu_states) * n_probes,
+        "replay": len(mu_states) * n_replay_probes,
+        "donor": len(held_mu) * n_probes,
+        "cal_ma": len(cal_mu) * n_probes,
+        "heldout": len(held_mu) * 4 * n_probes,
+    }
+    total_budget = sum(budget.values())
+
+    if dry_run:
+        print(f"\nPSQ-3u DRY RUN VALIDATION")
+        print(f"  States: {len(mu_states)} "
+              f"(S_u = Z_8 x {{{','.join(str(y) for y in y_vals)}}})")
+        print(f"  Cal / Held-out: {len(cal_mu)} / {len(held_mu)}")
+        print(f"  Probes: {n_probes} (x-only)")
+        print(f"  Unique oracle x-profiles: {n_unique}")
+        print(f"  Min oracle spread: {min_spread:.4f}")
+        print(f"  Block: {block}, PCA k: {k_pca}")
+        print(f"  Action: {action_name}, Wrong action: {wrong_action_name}")
+        print(f"  Call budget:")
+        for stage_name, n in budget.items():
+            print(f"    {stage_name:12s}: {n}")
+        print(f"    {'TOTAL':12s}: {total_budget}")
+        print(f"  Call cap: {call_cap}")
+        assert total_budget == call_cap, (
+            f"Budget {total_budget} != cap {call_cap}")
+        print(f"  Wall limit: {wall_minutes} min")
+        print(f"  Cal states:      {sorted(cal_mu)}")
+        print(f"  Held-out states: {sorted(held_mu)}")
+        for s in mu_states:
+            t_a = apply_action(s, action_name)
+            t_b = apply_action(s, wrong_action_name)
+            assert t_a in mu_states, f"{action_name}({s})={t_a} outside S_u"
+            assert t_b in mu_states, f"{wrong_action_name}({s})={t_b} outside S_u"
+        print(f"\n  DRY RUN PASSED.")
+        result = {"status": "DRY_RUN_VALID", "total_calls": total_budget,
+                  "states": len(mu_states),
+                  "split": f"{len(cal_mu)}/{len(held_mu)}",
+                  "unique_profiles": n_unique,
+                  "min_oracle_spread": round(min_spread, 4)}
+        os.makedirs(out_dir, exist_ok=True)
+        with open(os.path.join(out_dir, "micro_dry_run.json"), "w") as f:
+            json.dump(result, f, indent=2)
+        return result
+
+    print(f"\n{'=' * 60}")
+    print(f"PSQ-3u EXECUTION")
+    print(f"{'=' * 60}")
+    wall_start = time.time()
+    wall_limit = wall_minutes * 60
+    calls = [0]
+
+    def wall_expired(stage):
+        if time.time() - wall_start > wall_limit:
+            r = {"status": "WALL_TIMEOUT", "stage": stage,
+                 "elapsed_s": round(time.time() - wall_start, 1),
+                 "calls": calls[0]}
+            print(f"\n  WALL TIMEOUT at '{stage}'")
+            _micro_save(r, out_dir)
+            return r
+        return None
+
+    model = model.float()
+    model.eval()
+
+    def micro_intervene(state, new_h):
+        ci = find_carrier_position(tok, state)
+        profile = []
+        for w, ch in probes:
+            prompt = make_prompt(state, w, ch)
+            ids = tok.encode(prompt, add_special_tokens=True)
+            ids_t = torch.tensor([ids], device=device)
+            def hook(mod, inp, out, _ci=ci, _nh=new_h):
+                out[0][0, _ci] = _nh.to(out[0].device, dtype=out[0].dtype)
+                return (out[0],) + out[1:]
+            hndl = model.model.layers[block].register_forward_hook(hook)
+            with torch.no_grad():
+                o = model(input_ids=ids_t, use_cache=False)
+            hndl.remove()
+            profile.append(three_bin_response(o.logits[0, -1], id_0, id_1))
+            calls[0] += 1
+        return profile
+
+    # Stage 1: Baseline + carrier extraction
+    print(f"\n--- Stage 1: Baseline profiles + carrier extraction ---")
+    t1 = time.time()
+    baseline = {}
+    logits_01 = {}
+    H_raw = {}
+    for si, s in enumerate(mu_states):
+        ci = find_carrier_position(tok, s)
+        prof = []
+        for pi, (w, ch) in enumerate(probes):
+            prompt = make_prompt(s, w, ch)
+            ids = tok.encode(prompt, add_special_tokens=True)
+            ids_t = torch.tensor([ids], device=device)
+            if pi == 0:
+                cap = {}
+                def _hcap(mod, inp, out, _ci=ci):
+                    cap["h"] = out[0][0, _ci].detach().clone()
+                hndl = model.model.layers[block].register_forward_hook(_hcap)
+                with torch.no_grad():
+                    o = model(input_ids=ids_t, use_cache=False)
+                hndl.remove()
+                H_raw[s] = cap["h"]
+            else:
+                with torch.no_grad():
+                    o = model(input_ids=ids_t, use_cache=False)
+            lg = o.logits[0, -1]
+            logits_01[(s, pi)] = (lg[id_0].item(), lg[id_1].item())
+            prof.append(three_bin_response(lg, id_0, id_1))
+            calls[0] += 1
+        baseline[s] = prof
+        if (si + 1) % 8 == 0:
+            rate = calls[0] / (time.time() - t1)
+            print(f"  {si+1}/{len(mu_states)}, {calls[0]} calls, "
+                  f"{rate:.1f} fwd/s")
+    print(f"  Stage 1: {calls[0]} calls, {time.time()-t1:.1f}s")
+    wc = wall_expired("baseline")
+    if wc:
+        return wc
+
+    # Interface check
+    print(f"\n--- Interface check ---")
+    correct = 0
+    po_sum = 0.0
+    total_p = len(mu_states) * n_probes
+    for s in mu_states:
+        for pi, (w, ch) in enumerate(probes):
+            p0, p1, po = baseline[s][pi]
+            if (0 if p0 > p1 else 1) == oracle_answer(s, w, ch):
+                correct += 1
+            po_sum += po
+    acc = correct / total_p
+    mpo = po_sum / total_p
+    print(f"  Accuracy: {correct}/{total_p} = {acc:.4f}")
+    print(f"  Mean p_other: {mpo:.4f}")
+    print(f"  Oracle spread: {min_spread:.4f}")
+    if acc < 0.95 or mpo > 0.10 or min_spread < 0.1:
+        reasons = []
+        if acc < 0.95:
+            reasons.append(f"accuracy={acc:.4f}<0.95")
+        if mpo > 0.10:
+            reasons.append(f"p_other={mpo:.4f}>0.10")
+        if min_spread < 0.1:
+            reasons.append(f"spread={min_spread:.4f}<0.1")
+        r = {"status": "NO_INTERFACE", "accuracy": round(acc, 4),
+             "mean_p_other": round(mpo, 4),
+             "oracle_spread": round(min_spread, 4),
+             "calls": calls[0], "reasons": reasons}
+        print(f"  VERDICT: NO_INTERFACE ({'; '.join(reasons)})")
+        _micro_save(r, out_dir)
+        return r
+    print(f"  Interface: PASS")
+
+    # Stage 2: PCA + Procrustes (0 calls)
+    print(f"\n--- Stage 2: PCA + Procrustes (0 calls) ---")
+    H_arr = np.stack([H_raw[s].numpy() for s in mu_states])
+    mu_vec = H_arr.mean(axis=0)
+    cent = H_arr - mu_vec
+    _, S_v, Vt = np.linalg.svd(cent, full_matrices=False)
+    P = Vt[:k_pca]
+    Z = cent @ P.T
+    sv = S_v[:k_pca]
+    vexp = (sv ** 2) / (S_v ** 2).sum()
+    cond = sv.min() / sv.max() if sv.max() > 0 else 0
+    print(f"  PCA sv={sv}, cond={cond:.4f}, var_exp={vexp}")
+    mi = {s: i for i, s in enumerate(mu_states)}
+    cal_src = [mi[s] for s in cal_mu]
+    cal_tgt_A = [mi[apply_action(s, action_name)] for s in cal_mu]
+    cal_tgt_B = [mi[apply_action(s, wrong_action_name)] for s in cal_mu]
+    M_A, rA = fit_procrustes(Z[cal_src], Z[cal_tgt_A])
+    M_B, rB = fit_procrustes(Z[cal_src], Z[cal_tgt_B])
+    v_A = (Z[cal_tgt_A] - Z[cal_src]).mean(axis=0)
+    print(f"  M_A det={np.linalg.det(M_A):.4f} res={rA:.4f}")
+    print(f"  M_B det={np.linalg.det(M_B):.4f} res={rB:.4f}")
+    wc = wall_expired("geometry")
+    if wc:
+        return wc
+
+    # Stage 3: Replay determinism
+    print(f"\n--- Stage 3: Replay determinism ---")
+    t3 = time.time()
+    max_rdiff = 0.0
+    for s in mu_states:
+        for pi in range(n_replay_probes):
+            w, ch = probes[pi]
+            prompt = make_prompt(s, w, ch)
+            ids = tok.encode(prompt, add_special_tokens=True)
+            ids_t = torch.tensor([ids], device=device)
+            with torch.no_grad():
+                o = model(input_ids=ids_t, use_cache=False)
+            calls[0] += 1
+            l0 = o.logits[0, -1][id_0].item()
+            l1 = o.logits[0, -1][id_1].item()
+            b0, b1 = logits_01[(s, pi)]
+            d = max(abs(l0 - b0), abs(l1 - b1))
+            max_rdiff = max(max_rdiff, d)
+    print(f"  Max replay diff: {max_rdiff:.8f} ({time.time()-t3:.1f}s)")
+    if max_rdiff > 1e-3:
+        r = {"status": "INVALID", "reason": "replay",
+             "max_replay_diff": max_rdiff, "calls": calls[0]}
+        print(f"  VERDICT: INVALID (replay {max_rdiff:.6f} > 1e-3)")
+        _micro_save(r, out_dir)
+        return r
+    print(f"  Replay: PASS")
+    wc = wall_expired("replay")
+    if wc:
+        return wc
+
+    # Stage 4: Donor positive control
+    print(f"\n--- Stage 4: Donor positive control ---")
+    t4 = time.time()
+    donor_hits = 0
+    for s in held_mu:
+        t = apply_action(s, action_name)
+        prof = micro_intervene(s, H_raw[t])
+        if decode_x(prof) == t[0]:
+            donor_hits += 1
+    dr = donor_hits / len(held_mu)
+    print(f"  Donor: {donor_hits}/{len(held_mu)} = {dr:.3f} "
+          f"({time.time()-t4:.1f}s)")
+    if donor_hits < 15:
+        r = {"status": "INVALID", "reason": "donor",
+             "donor_hits": donor_hits, "calls": calls[0]}
+        print(f"  VERDICT: INVALID (donor {donor_hits} < 15)")
+        _micro_save(r, out_dir)
+        return r
+    print(f"  Donor: PASS")
+    wc = wall_expired("donor")
+    if wc:
+        return wc
+
+    # Stage 5: Cal M_A self-check
+    print(f"\n--- Stage 5: Cal M_A self-check ---")
+    t5 = time.time()
+    cal_hits = 0
+    for s in cal_mu:
+        idx = mi[s]
+        t = apply_action(s, action_name)
+        h_ed = procrustes_edit(H_arr[idx], mu_vec, P, M_A)
+        prof = micro_intervene(s, torch.tensor(h_ed, dtype=torch.float32))
+        if decode_x(prof) == t[0]:
+            cal_hits += 1
+    cr = cal_hits / len(cal_mu)
+    print(f"  Cal M_A: {cal_hits}/{len(cal_mu)} = {cr:.3f} "
+          f"({time.time()-t5:.1f}s)")
+    if cal_hits < 14:
+        r = {"status": "INVALID", "reason": "cal_ma",
+             "cal_ma_hits": cal_hits, "calls": calls[0]}
+        print(f"  VERDICT: INVALID (cal M_A {cal_hits} < 14)")
+        _micro_save(r, out_dir)
+        return r
+    print(f"  Cal M_A: PASS")
+    wc = wall_expired("cal_ma")
+    if wc:
+        return wc
+
+    # Stage 6: Held-out interventions
+    print(f"\n--- Stage 6: Held-out interventions ---")
+    t6 = time.time()
+    g_ma, g_disp, g_mb, g_rand = [], [], [], []
+    hits_ma = 0
+
+    for s in held_mu:
+        idx = mi[s]
+        t = apply_action(s, action_name)
+        tx = t[0]
+        tgt_prof = x_class_profiles[tx]
+        E0 = micro_d_panel(baseline[s], tgt_prof)
+        if E0 <= 0.01:
+            continue
+
+        h_ed = procrustes_edit(H_arr[idx], mu_vec, P, M_A)
+        pf = micro_intervene(s, torch.tensor(h_ed, dtype=torch.float32))
+        E = micro_d_panel(pf, tgt_prof)
+        G = 1 - E / E0
+        g_ma.append(G)
+        if decode_x(pf) == tx:
+            hits_ma += 1
+
+        h_d = displacement_edit(H_arr[idx], mu_vec, P, v_A)
+        pf_d = micro_intervene(s, torch.tensor(h_d, dtype=torch.float32))
+        g_disp.append(1 - micro_d_panel(pf_d, tgt_prof) / E0)
+
+        h_b = procrustes_edit(H_arr[idx], mu_vec, P, M_B)
+        pf_b = micro_intervene(s, torch.tensor(h_b, dtype=torch.float32))
+        g_mb.append(1 - micro_d_panel(pf_b, tgt_prof) / E0)
+
+        z_s = (H_arr[idx] - mu_vec) @ P.T
+        z_ed = z_s @ M_A
+        enorm = np.linalg.norm(z_ed - z_s)
+        rng_s = np.random.default_rng(seed=idx * 100 + ACTION_IDX[action_name])
+        rv = rng_s.standard_normal(k_pca)
+        rn = np.linalg.norm(rv)
+        if rn > 1e-10:
+            rv = rv / rn * enorm
+        h_r = H_arr[idx] + rv @ P
+        pf_r = micro_intervene(s, torch.tensor(h_r, dtype=torch.float32))
+        g_rand.append(1 - micro_d_panel(pf_r, tgt_prof) / E0)
+
+    g_ma = np.array(g_ma)
+    g_disp = np.array(g_disp)
+    g_mb = np.array(g_mb)
+    g_rand = np.array(g_rand)
+    ne = len(g_ma)
+    print(f"  {ne} eligible, {calls[0]} calls, {time.time()-t6:.1f}s")
+    wc = wall_expired("heldout")
+    if wc:
+        return wc
+
+    if ne < 8:
+        r = {"status": "MICRO_FAIL", "reason": "insufficient",
+             "n_eligible": ne, "calls": calls[0]}
+        print(f"  VERDICT: MICRO_FAIL ({ne} eligible < 8)")
+        _micro_save(r, out_dir)
+        return r
+
+    mean_G = float(g_ma.mean())
+    decode_rate = hits_ma / ne
+    print(f"  Mean G_MA: {mean_G:.4f}")
+    print(f"  Decode: {hits_ma}/{ne} = {decode_rate:.3f}")
+
+    b_none = source_clustered_bootstrap(g_ma, rng_seed=42)
+    b_disp = source_clustered_bootstrap(g_ma - g_disp, rng_seed=43)
+    b_mb = source_clustered_bootstrap(g_ma - g_mb, rng_seed=44)
+    b_rand = source_clustered_bootstrap(g_ma - g_rand, rng_seed=45)
+
+    print(f"\n  Paired superiority (95% bootstrap CI):")
+    for label, b in [("unedited", b_none), ("displacement", b_disp),
+                     (f"M_{wrong_action_name}", b_mb),
+                     ("matched_random", b_rand)]:
+        st = "PASS" if b["ci_low"] > 0 else "FAIL"
+        print(f"    vs {label}: ci_low={b['ci_low']:.4f} [{st}]")
+
+    sig = (mean_G >= 0.25 and hits_ma >= 12
+           and b_none["ci_low"] > 0 and b_disp["ci_low"] > 0
+           and b_mb["ci_low"] > 0 and b_rand["ci_low"] > 0)
+    verdict = "MICRO_SIGNAL" if sig else "MICRO_FAIL"
+    freasons = []
+    if mean_G < 0.25:
+        freasons.append(f"mean_G={mean_G:.4f}<0.25")
+    if hits_ma < 12:
+        freasons.append(f"decode={hits_ma}<12")
+    if b_none["ci_low"] <= 0:
+        freasons.append("vs_unedited CI<=0")
+    if b_disp["ci_low"] <= 0:
+        freasons.append("vs_disp CI<=0")
+    if b_mb["ci_low"] <= 0:
+        freasons.append("vs_M_B CI<=0")
+    if b_rand["ci_low"] <= 0:
+        freasons.append("vs_rand CI<=0")
+
+    elapsed = time.time() - wall_start
+    print(f"\n  VERDICT: {verdict}")
+    if freasons:
+        print(f"  Reasons: {'; '.join(freasons)}")
+    print(f"  Calls: {calls[0]}, Time: {elapsed:.1f}s ({elapsed/60:.1f}min)")
+
+    result = {
+        "status": verdict,
+        "n_eligible": ne, "mean_G_MA": round(mean_G, 4),
+        "decode_hits": hits_ma, "decode_rate": round(decode_rate, 3),
+        "accuracy": round(acc, 4), "mean_p_other": round(mpo, 4),
+        "oracle_spread": round(min_spread, 4),
+        "pca_condition": round(cond, 4),
+        "pca_var_explained": vexp.tolist(),
+        "procrustes_A_residual": round(rA, 4),
+        "procrustes_B_residual": round(rB, 4),
+        "max_replay_diff": max_rdiff,
+        "donor_hits": donor_hits, "donor_rate": round(dr, 3),
+        "cal_ma_hits": cal_hits, "cal_ma_rate": round(cr, 3),
+        "boot_vs_unedited": {"ci_low": round(b_none["ci_low"], 4),
+                             "observed": round(b_none["observed"], 4)},
+        "boot_vs_displacement": {"ci_low": round(b_disp["ci_low"], 4),
+                                 "observed": round(b_disp["observed"], 4)},
+        "boot_vs_M_B": {"ci_low": round(b_mb["ci_low"], 4),
+                        "observed": round(b_mb["observed"], 4)},
+        "boot_vs_random": {"ci_low": round(b_rand["ci_low"], 4),
+                           "observed": round(b_rand["observed"], 4)},
+        "calls": calls[0], "elapsed_s": round(elapsed, 1),
+        "runner_sha256": hashlib.sha256(
+            open(__file__, "rb").read()).hexdigest()[:32],
+        "per_state": {
+            "gains_ma": [round(g, 4) for g in g_ma],
+            "gains_disp": [round(g, 4) for g in g_disp],
+            "gains_mb": [round(g, 4) for g in g_mb],
+            "gains_rand": [round(g, 4) for g in g_rand],
+        },
+    }
+    if freasons:
+        result["fail_reasons"] = freasons
+    _micro_save(result, out_dir)
+    return result
+
+
 # ---- Main ----
 
 def main():
@@ -1293,8 +1752,10 @@ def main():
     parser.add_argument("--pilot", action="store_true",
                         help="Run 100 inference forwards only (local validation)")
     parser.add_argument("--phase", default=None,
-                        choices=["train", "gate", "geometry", "causal", "all"],
+                        choices=["train", "gate", "geometry", "causal", "all", "micro"],
                         help="Run specific phase (default: all)")
+    parser.add_argument("--dry-run", action="store_true",
+                        help="Validate micro phase without model loading")
     args = parser.parse_args()
 
     with open(args.config) as f:
@@ -1314,12 +1775,20 @@ def main():
     print(f"Device: {device}")
     print(f"Output: {out_dir}")
 
+    if args.phase == "micro" and args.dry_run:
+        micro_phase(None, None, device, None, None, cfg, out_dir, dry_run=True)
+        return
+
     # Load model
     model, tok = load_model(cfg, device)
     id_0 = tok.encode("0", add_special_tokens=False)[-1]
     id_1 = tok.encode("1", add_special_tokens=False)[-1]
     assert id_0 == 15, f"Expected id_0=15, got {id_0}"
     assert id_1 == 16, f"Expected id_1=16, got {id_1}"
+
+    if args.phase == "micro":
+        micro_phase(model, tok, device, id_0, id_1, cfg, out_dir)
+        return
 
     # Pilot mode
     if args.pilot:

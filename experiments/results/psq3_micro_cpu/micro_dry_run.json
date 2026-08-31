@@ -1,0 +1,8 @@
+{
+  "status": "DRY_RUN_VALID",
+  "total_calls": 1152,
+  "states": 32,
+  "split": "16/16",
+  "unique_profiles": 8,
+  "min_oracle_spread": 0.5
+}

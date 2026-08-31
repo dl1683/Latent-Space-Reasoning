@@ -1,0 +1,16 @@
+{
+  "experiment": "psq3_micro_cpu",
+  "description": "PSQ-3μ: one-action necessary-condition intervention test on frozen Qwen3-0.6B-Base, CPU only",
+  "model_id": "Qwen/Qwen3-0.6B-Base",
+  "revision": "da87bfb608c14b7cf20ba1ce41287e8de496c0cd",
+  "device": "cpu",
+  "micro": {
+    "states_y": [0, 2, 4, 6],
+    "block": 18,
+    "pca_k": 4,
+    "action": "A",
+    "wrong_action": "B",
+    "call_cap": 1152,
+    "wall_minutes": 30
+  }
+}

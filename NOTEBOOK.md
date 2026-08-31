@@ -5,6 +5,30 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31 — PSQ-3μ: NO_INTERFACE on frozen 0.6B, closed
+
+**PSQ-3μ implemented and executed.** Micro phase added to `experiments/run_psq3.py`
+(~250 lines), config at `experiments/config/psq3_micro_cpu.json`. Dry-run validated
+32 states, 16/16 cal/held-out split, 8 unique oracle profiles, 1,152 call budget.
+
+**Result: NO_INTERFACE.** Panel accuracy 26.56% (gate ≥95%). The frozen
+Qwen3-0.6B-Base model predicts "1" ~81% of the time — it cannot perform the
+modular arithmetic needed for is_x_zero probes. Stopped at stage 1 (256/1,152
+calls, 132.6s CPU). Stages 2–6 (PCA, Procrustes, replay, donor, intervention)
+never ran.
+
+**Disposition:** Per predeclared stop rule, NO_INTERFACE closes PSQ-3μ with no
+repair. This confirms the frozen small model lacks the behavioral interface for
+intervention testing. It does not invalidate the PSQ-3 design (targets 1.7B with
+LoRA training on stable/cloud hardware).
+
+**What's next:** Fire one Codex audit on the result. Then return to Codex
+dialogue for direction — the PSQ-3 full runner's false-pass verdict reducer
+still needs repair before any cloud run, and the native bridge program
+(`native_bridge_v1`) awaits authorization.
+
+---
+
 ## 2026-08-31 — PSQ-3 runner built, reviewed, pilot passed
 
 **Runner built** (`experiments/run_psq3.py`, commit cf0f4f7): ~1400 lines implementing
