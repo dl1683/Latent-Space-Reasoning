@@ -5,6 +5,24 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31T09:00 — HANDLE deposit outcome: Codex NO-GO in moonshot-llm-genome
+
+The HANDLE constructive pivot (deposited as `research/59_HANDLE_SUBSTRATE_PROPOSAL.md`
+in moonshot-llm-genome) received a Codex direction review: **NO-GO as currently
+specified.** Architecturally outside MC007–MC033, but the dumbest explanation
+(finite-state KV store with answer code in a slot) is not defeated. The real
+problem is task/interface selection, not substrate — the same insight the LSR
+closure reached from the other side. Conditional path: a HANDLE-0 admission
+packet with renderer-crossed counterfactual data and competing hypotheses must
+demonstrate task identifiability before any training. Kill condition about
+requiring "new math" was correctly flagged as importing the failed LSR ambition.
+
+This completes the LSR program's residue routing. The five insights, the
+conjecture, and the HANDLE proposal (with its NO-GO qualification) are all
+deposited and adopted or qualified by Codex review.
+
+---
+
 ## 2026-08-31T07:15 — PROGRAM CLOSED: archive + deposit (Codex R8 decision)
 
 Codex direction round 8 (portfolio review) returned. Ranking: **1 >> 3 > 4 > 2**
