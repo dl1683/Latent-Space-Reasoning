@@ -5,6 +5,30 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31T04:15 — Codex v7 scope corrections adopted + paper skeleton written
+
+**Algebra artifact revised.** Core object now includes W (semantic worlds),
+S renamed to S^W_w (world-conditioned restatement). Law sheet properly
+stratified: established (L1-L3, non-naturality L4) / partial (descent) /
+open (S^G_g existence, correction descent) / not-established (global
+nonfactorization). One-sentence claim updated across all three surfaces
+(algebra artifact, STATE.md, README.md) to Codex v7 licensed version.
+
+**Key scope correction:** "Presentation and prediction are coupled" →
+"Prediction remains presentation-path dependent after both paths have
+reached the same declarative world." Non-naturality of one canonicalizer ≠
+impossibility of all factorizations.
+
+**Paper skeleton written** (theory/PAPER_SKELETON.md). Title: "Commitments,
+Fibers, and Synchronization: A Behavioral Algebra of Transformer Prompt
+State." 7 sections + appendices, framed as bounded case study. Sent to
+Codex for design-gate review.
+
+**What's next:** Codex review of paper skeleton, then fill in prose if
+structure is approved.
+
+---
+
 ## 2026-08-31T02:30 — predictive_fiber_action_v2: CORRECTLY TYPED SQUARE CONFIRMS NON-COMMUTATIVITY
 
 **The v1 construction error is fixed. The result is the same or stronger.**
