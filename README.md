@@ -47,7 +47,7 @@ The model supports a **coarse partial action algebra** of greedy commitments:
 - **Places** are greedy answer profiles (which entity gets which answer)
 - **Moves** are typed continuations: empty, neutral, correction, restatement
 - **Place preservation** is near-total for identity-like operations (100% empty, 95% neutral/restatement) and genuinely state-changing for corrections (35%)
-- **Synchronization (S_p)** via canonical restatement is approximately idempotent: JSD(S, S²) = 0.078, 100% greedy idempotence
+- **Synchronization (S^W)** via world-conditioned restatement is approximately idempotent: JSD(S, S²) = 0.078, 100% greedy idempotence
 
 The decisive test: does world-conditioned restatement commute with correction? **No.** A corrected experiment (v2) with the properly typed square (both paths ending at the corrected world) confirms non-naturality: the correction/restatement square does not commute (JSD distance 0.21, greedy commutativity 70.8-89.6%). Two update paths denoting the same corrected world produce different response laws and, on held-out names, different greedy answers in 14 of 48 cases. Prediction remains presentation-path dependent even when both paths have reached the same declarative world.
 
