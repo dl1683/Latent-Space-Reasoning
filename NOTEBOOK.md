@@ -5,6 +5,28 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — PSQ-2 v3 NO_INTERFACE (75.0%), exploratory d_4 launched
+
+**PSQ-2 v3 result**: 75.0% overall, NO_INTERFACE. Trained on class-balanced ALL step lengths 1-8 (1536 examples, 48/cell/length). Per-cell: x_0=75.0%, x_1=81.2%, y_0=90.6%, y_1=53.1%. Per-step: 1-step 100%, 2-step 100%, 3-step 78.3%, 4-step 85.7%, 5-step 77.8%, 6-step 46.7%, 7-step 60.0%, 8-step 63.2%. Training: 1920 steps (5 epochs × 384 steps/epoch), 4590s, final loss 0.102.
+
+**Key finding**: The model learns basic modular operations perfectly (1-2 step = 100%) but cannot compose them deeply (6-8 step = 47-63%). This is worse than v2's OOD result on long sequences (v2: 73.4% on 4-8 step trained only on 1-3 step). Spreading training across 8 lengths with lower lr (2e-5 vs 3e-5) diluted per-length signal. The 1.7B model with r=16 LoRA lacks capacity for reliable 8-step modular arithmetic.
+
+**Exploratory d_4 measurement launched**: Despite NO_INTERFACE at 75%, the d_4 calibration analysis shows d_4 ≈ 0.43 at this accuracy level (above the 0.1 noise threshold). Running d_4 measurement on the v3 adapter as an EXPLORATORY test — the quasiconvexity and Spearman tests depend on rank ordering, not absolute accuracy. If the latent geometry respects d_4 even with noisy outputs, that is strong evidence. Result caveated as exploratory (sub-gate accuracy). Config: `psq2_v3_d4.json`.
+
+---
+
+## 2026-08-30 — PSQ-2 v2 FAIL (73.4%), v3 in-distribution launched
+
+**PSQ-2 v2 result**: 73.4% overall, NO_INTERFACE. Trained on class-balanced 1-3 step sequences, tested on 4-8 step (OOD). Per-cell: x_0=65.6%, x_1=84.4%, y_0=62.5%, y_1=81.2%. Clear length degradation: 86.4% at 4-step → 56.0% at 8-step. Model learned short dynamics but composition doesn't generalize.
+
+**PSQ-2 v3 launched**: In-distribution test — class-balanced training on ALL step lengths 1-8. 1536 examples (48/cell/length × 8 lengths × 4 cells), perfectly balanced. Scientific question shifts from "does generalization emerge?" to "can the model learn modular state tracking with explicit supervision?" If PASS → d_4 measurement unlocked.
+
+**Bug found and fixed**: Config key collision — `train_max_steps: 8` (intended for max sequence length) was also read by the early-stopping code (`train_max_steps`), causing training to stop after 8 steps. Fixed by renaming to `train_seq_max`.
+
+**Theoretical prediction (pre-registered before result)**: If v3 passes the 95% gate, the d_4 measurement tests a finite discrete instance of Open Problem 7 (behavior-space quasiconvexity). Theorem 1's finite corollary gives d_4 = d_∞ for this world (Moore partition saturates at H*=4). The quasiconvexity test checks: along latent-space interpolations, does d_4 remain bounded by the max of its endpoint values? A positive result would be the first empirical evidence that a model's latent geometry respects the behavior metric — the core prediction of native latent mathematics. d_4 runner extended with LoRA adapter support (merge-and-unload); config `psq2_v3_d4.json` prepared.
+
+---
+
 ## 2026-08-30 — PSQ-1 CLOSED (all substrates NO_INTERFACE) + PSQ-2 launched
 
 ### PSQ-1 closure

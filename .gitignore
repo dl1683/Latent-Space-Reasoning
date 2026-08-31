@@ -199,3 +199,10 @@ experiments/results/presentation_quotient_*/*.npz
 
 # large feature dumps retained locally for recomputation (not committed)
 experiments/results/**/*_features.npz
+
+# LoRA adapter weights (large binary, retained locally)
+experiments/results/*/lora_adapter/
+
+# response table checkpoints (intermediate, large)
+experiments/results/*/response_table*.npz
+experiments/results/*/gt_d4_matrix.npz

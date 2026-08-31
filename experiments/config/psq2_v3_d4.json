@@ -1,0 +1,17 @@
+{
+  "experiment": "psq2_v3_d4",
+  "description": "Full d_4 measurement on PSQ-2 v3 fine-tuned Qwen3-1.7B-Base. LoRA adapter merged into base. Tests whether the latent geometry encodes d_4 distances (quasiconvexity, Spearman correlation, permutation null).",
+  "model_id": "Qwen/Qwen3-1.7B-Base",
+  "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
+  "lora_adapter": "experiments/results/psq2_v3/lora_adapter",
+  "device": "cuda",
+  "max_word_len": 4,
+  "checkpoint_every": 5000,
+  "target_layers": [6, 12, 18],
+  "pass_criteria": {
+    "d4_separation": "off-diagonal d_4 > 0.1 for Moore-distinct state pairs",
+    "quasiconvexity": "violation rate < 5% at best layer",
+    "spearman_vs_euclidean": "rho > 0.25 and rank 0 out of 100 permutations",
+    "beat_permutation_null": "real rho beats 99/100 random endpoint shuffles"
+  }
+}

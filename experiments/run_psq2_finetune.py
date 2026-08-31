@@ -102,16 +102,17 @@ def generate_single_step_data(seed=42):
     return examples
 
 
-def generate_multistep_data(n_per_cell=64, max_len=4, seed=43):
+def generate_multistep_data(n_per_cell=64, min_len=2, max_len=4, seed=43):
     """Generate class-balanced multi-step examples for training."""
     rng = random.Random(seed)
     action_alphabet = ["A", "B", "C", "D"]
     cells = {("x", 0): [], ("x", 1): [], ("y", 0): [], ("y", 1): []}
+    n_lengths = max_len - min_len + 1
 
-    for length in range(2, max_len + 1):
+    for length in range(min_len, max_len + 1):
         target_per_cell = n_per_cell
         for _ in range(target_per_cell * 200):
-            if all(len(v) >= target_per_cell * (max_len - 1) for v in cells.values()):
+            if all(len(v) >= target_per_cell * n_lengths for v in cells.values()):
                 break
             init = (rng.randint(0, 7), rng.randint(0, 7))
             acts = [rng.choice(action_alphabet) for _ in range(length)]
@@ -191,14 +192,25 @@ def finetune(cfg: dict):
     out_dir = os.path.join(os.path.dirname(__file__), "results", cfg["experiment"])
     os.makedirs(out_dir, exist_ok=True)
 
-    print(f"Generating single-step training data...")
-    train_data = generate_single_step_data(seed=seed)
-    print(f"Training examples: {len(train_data)}")
+    balanced_only = cfg.get("balanced_only", False)
+    train_min = cfg.get("train_seq_min", 1)
+    train_max = cfg.get("train_seq_max", 1)
+    n_per_cell_per_len = cfg.get("train_n_per_cell_per_length", 48)
 
-    if cfg.get("include_multistep_training", False):
-        multi = generate_multistep_data(n_per_cell=64, max_len=3, seed=seed + 1)
-        train_data.extend(multi)
-        print(f"Added multi-step (class-balanced): {len(multi)} examples, total: {len(train_data)}")
+    if balanced_only:
+        print(f"Generating class-balanced training data for {train_min}-{train_max} step sequences...")
+        train_data = generate_multistep_data(
+            n_per_cell=n_per_cell_per_len, min_len=train_min, max_len=train_max, seed=seed
+        )
+        print(f"Training examples: {len(train_data)}")
+    else:
+        print(f"Generating single-step training data...")
+        train_data = generate_single_step_data(seed=seed)
+        print(f"Training examples: {len(train_data)}")
+        if cfg.get("include_multistep_training", False):
+            multi = generate_multistep_data(n_per_cell=64, min_len=2, max_len=3, seed=seed + 1)
+            train_data.extend(multi)
+            print(f"Added multi-step (class-balanced): {len(multi)} examples, total: {len(train_data)}")
 
     # Report class balance
     balance = {}

@@ -132,6 +132,7 @@ def run_d4_measurement(cfg: dict) -> dict:
     print(f"Words (len 1-{max_word_len}): {n_words}")
     print(f"Total prompts: {total_prompts}")
 
+    lora_adapter = cfg.get("lora_adapter")
     print(f"Loading model: {model_id} on {device}")
     from transformers import AutoTokenizer, AutoModelForCausalLM
     tok = AutoTokenizer.from_pretrained(model_id, revision=revision, trust_remote_code=True)
@@ -139,6 +140,12 @@ def run_d4_measurement(cfg: dict) -> dict:
     model = AutoModelForCausalLM.from_pretrained(
         model_id, revision=revision, trust_remote_code=True, torch_dtype=dtype,
     )
+    if lora_adapter:
+        from peft import PeftModel
+        print(f"Loading LoRA adapter: {lora_adapter}")
+        model = PeftModel.from_pretrained(model, lora_adapter)
+        model = model.merge_and_unload()
+        print("LoRA merged into base model")
     model.eval()
     if device != "cpu":
         model = model.to(device)
@@ -379,6 +386,43 @@ def run_d4_measurement(cfg: dict) -> dict:
         }
         print(f"  Layer {layer}: real={real_rho:.4f}, perm_mean={np.mean(perm_rhos):.4f}+/-{np.std(perm_rhos):.4f}, rank={rank}/{n_perms}")
 
+    # ---- Ground-truth d_4 comparison ----
+    print("\nComputing ground-truth d_4 (normalized Hamming)...")
+    gt_hamming = np.zeros((n_states, n_states), dtype=np.float64)
+    total_tests = n_words * 2
+    for i in range(n_states):
+        for j in range(i + 1, n_states):
+            n_diff = 0
+            for word in words:
+                si = apply_sequence(ALL_STATES[i], word)
+                sj = apply_sequence(ALL_STATES[j], word)
+                for ci_idx in range(2):
+                    if (si[ci_idx] == 0) != (sj[ci_idx] == 0):
+                        n_diff += 1
+            gt_hamming[i, j] = n_diff / total_tests
+            gt_hamming[j, i] = gt_hamming[i, j]
+
+    gt_flat = gt_hamming[np.triu_indices(n_states, k=1)]
+    model_flat = d4_matrix[np.triu_indices(n_states, k=1)]
+    from scipy import stats as scipy_stats_gt
+    rho_gt, p_gt = scipy_stats_gt.spearmanr(gt_flat, model_flat)
+    gt_comparison = {
+        "spearman_model_vs_gt_hamming": round(float(rho_gt), 4),
+        "p_value": float(p_gt),
+        "gt_hamming_min": round(float(gt_flat.min()), 4),
+        "gt_hamming_max": round(float(gt_flat.max()), 4),
+        "gt_hamming_mean": round(float(gt_flat.mean()), 4),
+        "model_d4_mean": round(float(model_flat.mean()), 4),
+        "model_d4_min": round(float(model_flat.min()), 4),
+        "model_d4_max": round(float(model_flat.max()), 4),
+        "n_pairs": int(len(gt_flat)),
+    }
+    print(f"  Spearman(model_d4, gt_hamming_d4) = {rho_gt:.4f} (p={p_gt:.2e})")
+    print(f"  GT Hamming range: [{gt_flat.min():.4f}, {gt_flat.max():.4f}]")
+    print(f"  Model d_4 range: [{model_flat.min():.4f}, {model_flat.max():.4f}]")
+
+    np.savez(os.path.join(out_dir, "gt_d4_matrix.npz"), gt_hamming=gt_hamming)
+
     # ---- Save results ----
     runner_hash = hashlib.sha256(open(__file__, "rb").read()).hexdigest()
     config_hash = hashlib.sha256(json.dumps(cfg, sort_keys=True).encode()).hexdigest()
@@ -404,6 +448,7 @@ def run_d4_measurement(cfg: dict) -> dict:
         "quasiconvexity": {str(k): v for k, v in qc_results.items()},
         "stretch_comparison": {str(k): v for k, v in stretch_results.items()},
         "permutation_null": {str(k): v for k, v in perm_results.items()},
+        "ground_truth_comparison": gt_comparison,
         "runner_sha256": runner_hash,
         "config_sha256": config_hash,
     }

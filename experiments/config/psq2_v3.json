@@ -1,0 +1,23 @@
+{
+  "experiment": "psq2_v3",
+  "description": "PSQ-2 v3: Class-balanced training on ALL step lengths 1-8. In-distribution gate test. v2 showed 73% on OOD 4-8 step; v3 asks whether the model can learn modular state tracking with explicit supervision at all lengths.",
+  "model_id": "Qwen/Qwen3-1.7B-Base",
+  "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
+  "device": "cuda",
+  "lora_r": 16,
+  "lora_alpha": 32,
+  "epochs": 5,
+  "learning_rate": 2e-5,
+  "batch_size": 4,
+  "seed": 42,
+  "balanced_only": true,
+  "train_seq_min": 1,
+  "train_seq_max": 8,
+  "train_n_per_cell_per_length": 48,
+  "gate_n_per_cell": 32,
+  "gate_threshold": 0.95,
+  "gate_min_steps": 1,
+  "gate_max_steps": 8,
+  "scientific_question": "Can a 1.7B model learn modular state tracking across 1-8 step sequences with balanced in-distribution training? If yes: run d_4 measurement.",
+  "v2_lesson": "v2 (73.4% OOD) shows composition from short training alone is insufficient. Explicit supervision at all lengths needed."
+}
