@@ -5,13 +5,54 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — Codex PSQ-3 design review: NOT LOCK-READY, corrections adopted
+
+**Codex PSQ-3 design review (round 2)**: PSQ-3 direction is correct but the draft design has structural flaws. Corrections adopted verbatim:
+
+1. **Causal test is tautological**: `h(s) + [h(a(s)) - h(s)] = h(a(s))` is target-state donor paste by construction. It is a necessary positive control (carrier sufficiency), not evidence for a shared action law. Fix: 4-step staircase — (i) same-state replay baseline, (ii) target-paste positive control, (iii) wrong-state/random-paste negatives, (iv) shared action operator fitted on calibration states, tested on held-out states.
+
+2. **Operators, not vectors**: A constant displacement v_a is structurally wrong for cyclic increments (A,C) and reflections (B,D). Use orthogonal Procrustes M_a per action fitted on calibration states. Composition: M_b M_a h(s), never recomputing from intermediate oracle state. Algebraic diagnostics: M_B² ≈ I, M_D² ≈ I, M_A M_C ≈ M_C M_A, cross-dial commutativity, reflection-increment conjugacy.
+
+3. **Data count correction**: 64 per cell × 4 cells × 4 lengths = 1,024, not 4,096. Length-1 has only 32 unique positives per cell (8 × 4¹). Include empty word ε: 341 words, 43,648 responses. Normalize JS explicitly: JS₂ = JS_nats / ln(2), d_{2,4} = sqrt(mean JS₂ / 682).
+
+4. **Three distinct scientific quantities**: (i) Response fidelity: ρ(D_model, D_oracle). (ii) Correlational latent geometry: ρ(D_hidden, D_model) and ρ(D_hidden, D_oracle). (iii) Causal equivariance under held-out interventions. Current Spearman criterion only measures (i). Need all three separated.
+
+5. **Sharpened gates**: Spearman > 0.5 too weak — require ≥ 0.8 per seed. Primary metric: statewise behavior-profile error e(s) = d_{2,4}(beh_hat(s), beh*(s)). Continuous causal gain G = 1 - E/E₀ with clustered lower bounds against four null conditions.
+
+6. **Layer choice protocol**: Do not choose from final results. Run donor-paste positive controls on calibration states at layers 12 and 18. Select earliest passing layer. Lock before operator fitting. Phase-aligned carrier position (delimiter after state declaration, before action/query suffix).
+
+7. **Staged arms**: PSQ-3A (task-only supervision) first. PSQ-3B (equivariance objective) only if A clears interface but fails causal equivariance. Equivariance loss trains only on calibration states; evaluation held out.
+
+8. **Feasibility**: ~6.8h per seed × 3 seeds × 2 arms ≈ 40h GPU. Incompatible with sustained-GPU rule. Needs resolution (fewer epochs, 1 seed first, or shorter sequences).
+
+9. **Distance-0 artifact**: The shared, held-out-generalizing action operator plus its executable phase-typed intervention. Training is a prerequisite, not the artifact. Causal evaluation is distance 2.
+
+**Verdict**: One final math-first lock round before implementation. Do not build the current draft verbatim.
+
+---
+
 ## 2026-08-30 — PSQ-2 v3 NO_INTERFACE (75.0%), exploratory d_4 launched
 
 **PSQ-2 v3 result**: 75.0% overall, NO_INTERFACE. Trained on class-balanced ALL step lengths 1-8 (1536 examples, 48/cell/length). Per-cell: x_0=75.0%, x_1=81.2%, y_0=90.6%, y_1=53.1%. Per-step: 1-step 100%, 2-step 100%, 3-step 78.3%, 4-step 85.7%, 5-step 77.8%, 6-step 46.7%, 7-step 60.0%, 8-step 63.2%. Training: 1920 steps (5 epochs × 384 steps/epoch), 4590s, final loss 0.102.
 
 **Key finding**: The model learns basic modular operations perfectly (1-2 step = 100%) but cannot compose them deeply (6-8 step = 47-63%). This is worse than v2's OOD result on long sequences (v2: 73.4% on 4-8 step trained only on 1-3 step). Spreading training across 8 lengths with lower lr (2e-5 vs 3e-5) diluted per-length signal. The 1.7B model with r=16 LoRA lacks capacity for reliable 8-step modular arithmetic.
 
-**Exploratory d_4 measurement launched**: Despite NO_INTERFACE at 75%, the d_4 calibration analysis shows d_4 ≈ 0.43 at this accuracy level (above the 0.1 noise threshold). Running d_4 measurement on the v3 adapter as an EXPLORATORY test — the quasiconvexity and Spearman tests depend on rank ordering, not absolute accuracy. If the latent geometry respects d_4 even with noisy outputs, that is strong evidence. Result caveated as exploratory (sub-gate accuracy). Config: `psq2_v3_d4.json`.
+**Exploratory d_4 measurement launched**: Running d_4 on v3 adapter as DIAGNOSTIC (not scientific result). Config: `psq2_v3_d4.json`.
+
+**Codex direction review (PSQ-2 round 1)**: Critical structural issues identified:
+1. **Metric mismatch**: Model d_4 uses max √JS (supremum), but ground-truth d_4 for deterministic binary responses = 1 for every distinguishable pair at H*=4 (no rank structure). Normalized Hamming is a different metric. The Spearman comparison is not a same-metric validation.
+2. **Quasiconvexity test invalid for Open Problem 7**: Snapping interpolated points to nearest observed states ≠ evaluating along executable curves. The test is a nearest-neighbor surrogate, not the theoretical condition.
+3. **Structured noise**: y_1=53.1% means errors are systematic, not iid. Max over 682 probes means confident errors reorder distances.
+4. **Verdict**: PSQ-2 hyperparameter staircase should STOP. The v1→v4→8B ladder is "can we tune modular arithmetic?" — too weak.
+
+**Codex's recommended redesign (adopted)**:
+- Replace max √JS with a nondegenerate product metric: `d_{2,4} = sqrt(mean_{|w|≤4,c} JS(r_c(T_w x), r_c(T_w y)))` — same metric for model and oracle, with rank structure for both.
+- Align the gate to H*=4 (max 4 steps, not 8) — this IS the distinguishing horizon.
+- Evaluate exhaustive 43,648 responses, not random 128-sample gate.
+- Add frozen-base, lexical-distance, and alternate-presentation controls. Multiple seeds.
+- Make the central artifact CAUSAL: does action intervention move s toward a(s)? Does it compose for 2 actions?
+- Stay with 1.7B until valid contract shows it can't clear H=4.
+- A meaningful comparison: direct-answer supervision vs transition/composition-consistent supervision at matched H=4 accuracy. If only the latter develops equivariant interventions, that's a real finding about how latent geometry arises.
 
 ---
 
