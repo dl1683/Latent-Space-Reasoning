@@ -17,7 +17,7 @@ Using this instrument across 16 audited experiments, we've found that a small la
 | **Greedy congruence** | 97% | Same-place histories produce the same next-token prediction — the argmax algebra is real |
 | **Distributional congruence** | 0% | But the full output distributions *always* differ — every greedy fiber contains distinguishable states |
 | **Commitment bottleneck** | 0.05 bits | Entropy drops to near-zero at L25 (the model fully commits), then re-broadens to 5.5-7.7 bits |
-| **Synchronization idempotence** | 100% | The restatement operator S_p is a genuine algebraic retraction: S_p² ≈ S_p |
+| **Synchronization idempotence** | 100% | The world-conditioned restatement S^W is a genuine algebraic retraction: (S^W)² ≈ S^W |
 
 ## What we've found
 
@@ -49,7 +49,7 @@ The model supports a **coarse partial action algebra** of greedy commitments:
 - **Place preservation** is near-total for identity-like operations (100% empty, 95% neutral/restatement) and genuinely state-changing for corrections (35%)
 - **Synchronization (S_p)** via canonical restatement is approximately idempotent: JSD(S, S²) = 0.078, 100% greedy idempotence
 
-The decisive test: does the algebra factorize into a clean predictive core and a presentation shell? **No.** A corrected experiment (v2) with the properly typed square (both paths ending at the corrected world) confirms: the correction/synchronization square does not commute (JSD 0.21, greedy commutativity 70.8-89.6%). Presentation and prediction are *coupled*, not separable. The structure is a quotient-with-fibers, not a product of independent components.
+The decisive test: does world-conditioned restatement commute with correction? **No.** A corrected experiment (v2) with the properly typed square (both paths ending at the corrected world) confirms non-naturality: the correction/restatement square does not commute (JSD distance 0.21, greedy commutativity 70.8-89.6%). Two update paths denoting the same corrected world produce different response laws and, on held-out names, different greedy answers in 14 of 48 cases. Prediction remains presentation-path dependent even when both paths have reached the same declarative world.
 
 All results generalize to held-out entities the model has never seen in the training prompts.
 
@@ -103,7 +103,7 @@ NOTEBOOK.md            Reverse-chronological running log
 
 **Phase 2** (active). Phase 1 (50 experiments, 2026-08-27 → 2026-08-31) established the nine breakpoints and the ℝⁿ trap. Phase 2 (17 experiments, 2026-08-31) builds genuinely non-ℝⁿ instruments and discovers the behavioral algebra.
 
-The central empirical claim (Codex-audited): *In a bounded three-fact prompt world in one small language model, continuation behavior supports an approximate argmax quotient algebra whose fibers are distributionally and predictively nontrivial; canonical restatement is an idempotent retraction but does not commute with correction — presentation and prediction are coupled.*
+The central empirical claim (Codex-audited): *In a bounded three-fact prompt world in one small language model, greedy answer signatures form an approximate behavioral quotient with nontrivial predictive fibers, while a world-conditioned canonical restatement is approximately idempotent but non-natural with correction: two update paths denoting the same corrected world produce different response laws and, on held-out names, different greedy answers in 14 of 48 cases.*
 
 Current state: [`STATE.md`](STATE.md) · Running log: [`NOTEBOOK.md`](NOTEBOOK.md) · Phase 1 handoff: [`docs/HANDOFF_2026_08_30.md`](docs/HANDOFF_2026_08_30.md)
 
