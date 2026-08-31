@@ -2576,3 +2576,34 @@ genuinely new latent-space mathematics would require an architecture whose
 state has structure that is neither growing-dimensional (transformer) nor
 standard-linear-algebraic (SSM) — perhaps a system with compositional,
 typed, or topological state that current architectures do not have.
+
+### What kind of state would require new mathematics? (SPECULATIVE NOTE)
+
+The architectural comparison identifies a gap in the landscape of neural state
+representations:
+
+| Architecture | State type | Dimension | Existing math | Non-R^n? |
+|---|---|---|---|---|
+| Transformer | KV cache | O(Ldt), growing | Coalgebra, final semantics | Yes (growing), but inaccessible from residual |
+| SSM (Mamba) | Diagonal recurrence | O(n), fixed | Spectral theory, linear systems | No — standard R^n dynamics |
+| GNN | Node embeddings | O(Vd), graph-dependent | Graph signal processing | Partially — graph topology is non-R^n |
+| Slot attention | Slot vectors | O(kd), fixed k | Set functions, permutation equivariance | Partially — unordered set structure |
+
+A state type that would genuinely require new mathematics would need to be:
+1. **Fixed-dimensional** (unlike transformers, so a port can capture it)
+2. **Non-linear-algebraic** (unlike SSMs, so existing spectral theory doesn't
+   suffice)
+3. **Compositional** — supporting typed operations (read, write, compose)
+   whose algebraic laws are non-trivial and not reducible to matrix algebra
+4. **Accessible** — the denizen can read and write it through the architecture's
+   native interface, not just through an analyst's probe
+
+This is exactly the HANDLE specification: persistent entity slots with typed
+operations and causal handles. The program's negative result thus points
+constructively at what to build: the mathematics does not exist because the
+architecture does not exist. Building the architecture and discovering its
+mathematics would be a co-development, as the "co-evolve theory and practice"
+feedback memory mandates.
+
+This speculative note is the program's closing theoretical direction. It
+does not constitute a claim, a plan, or authorization for any work.
