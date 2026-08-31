@@ -1,0 +1,10 @@
+{
+  "experiment": "psq3",
+  "description": "PSQ-3: Shared orthogonal action operators in latent space. Design spec v6 (5 Codex lock rounds, repair-round cap reached). Distance-0 artifact: shared, held-out-generalizing action operator M_a in O(k).",
+  "model_id": "Qwen/Qwen3-1.7B-Base",
+  "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
+  "device": "cuda",
+  "seeds": [42, 137, 2024],
+  "dataset_seed": 7,
+  "candidate_layers": [12, 18]
+}
