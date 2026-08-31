@@ -187,9 +187,11 @@ distance (whatever it is) must be sensitive to the compositional
 structure that cosine misses. This may be the clearest evidence yet
 that R^n distance ≠ native distance.
 
-**Open test:** Can PCA find the relevant subspace? If a linear probe
-separates worlds at fused/separate layers, the structure is low-rank
-linear (R^n but not global-R^n). If not, it's genuinely nonlinear.
+**PCA result (v1b):** PCA CAN separate worlds at all layers — so the
+structure is linearly accessible. But PCA separation doesn't predict
+behavioral fusion/fission: facts are linearly decodable even when
+behaviorally inseparable. PRESENCE (PCA) ≠ ADDRESSABILITY (transplant).
+The native math must describe causal accessibility, not storage geometry.
 
 ---
 
