@@ -1,0 +1,18 @@
+{
+  "experiment": "fusion_fission_v1",
+  "model": "Qwen/Qwen3-0.6B",
+  "device": "cpu",
+  "dtype": "float32",
+  "entities": ["HESK", "VORN"],
+  "values": ["red", "blue"],
+  "worlds": ["00", "01", "10", "11"],
+  "methodology": "dual: opaque whole-record transplants + R^n cosine probes",
+  "purpose": "Test whether two independently stored facts become indivisible (fuse) during computation and later separate (fission). Disagreements between opaque and R^n methods are breakpoints revealing native structure.",
+  "host_world": "00",
+  "donor_a_world": "10",
+  "donor_b_world": "01",
+  "donor_ab_world": "11",
+  "estimated_forwards": "700-1100",
+  "success_criterion": "At least one SEPARATE→FUSED or FUSED→SEPARATE transition detected, reproducible across prompt variants",
+  "breakpoint_criterion": "Layer where transplant behavioral outcome disagrees with R^n cosine similarity prediction"
+}
