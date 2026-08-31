@@ -1,0 +1,10 @@
+{
+  "status": "NO_INTERFACE",
+  "accuracy": 0.6914,
+  "mean_p_other": 0.0011,
+  "oracle_spread": 0.5,
+  "calls": 256,
+  "reasons": [
+    "accuracy=0.6914<0.95"
+  ]
+}

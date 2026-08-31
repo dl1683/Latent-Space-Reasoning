@@ -1,0 +1,14 @@
+{
+  "runner_sha256": "c9464ee32dfb7a775f660301dc251697e89c00dc7573d5f99038885a5b6503e4",
+  "locked_layer": null,
+  "seeds": [
+    42
+  ],
+  "data_hash": "ecaa2d93f7ce4d08c68d2a3b81c8938f8b023b5d61af0c7c9248a2b5745a02f4",
+  "seed_verdicts": {
+    "42": {
+      "overall": "COMPLETE"
+    }
+  },
+  "global_verdict": "PSQ3_PASS"
+}
