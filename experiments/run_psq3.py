@@ -600,7 +600,27 @@ def gate_phase(model, tok, device, id_0, id_1, out_dir, seed,
     total, correct, invalid_count = 0, 0, 0
     t0 = time.time()
 
+    partial_path = os.path.join(out_dir, f"gate_seed{seed}_partial.json")
+    start_idx = 0
+    if os.path.exists(partial_path):
+        with open(partial_path) as f:
+            partial = json.load(f)
+        for key_str, resp in partial["responses"].items():
+            s_str, wc_str = key_str.split("|", 1)
+            sx, sy = s_str.split(",")
+            state = (int(sx), int(sy))
+            w, ch = wc_str.rsplit(",", 1)
+            responses.setdefault(state, {})[(w, ch)] = resp
+        start_idx = partial["next_idx"]
+        total = partial["total"]
+        correct = partial["correct"]
+        invalid_count = partial["invalid_count"]
+        cell_counts = {tuple(json.loads(k)): v for k, v in partial["cell_counts"].items()}
+        print(f"  Resumed gate from index {start_idx}/{len(ALL_TRIPLES)}")
+
     for i, (state, word, channel) in enumerate(ALL_TRIPLES):
+        if i < start_idx:
+            continue
         resp = evaluate_probe(model, tok, state, word, channel, device, id_0, id_1)
         responses.setdefault(state, {})[(word, channel)] = resp
         truth = oracle_answer(state, word, channel)
@@ -625,8 +645,17 @@ def gate_phase(model, tok, device, id_0, id_1, out_dir, seed,
 
         if (i + 1) % 5000 == 0:
             elapsed = time.time() - t0
-            rate = (i + 1) / elapsed
+            rate = (i + 1 - start_idx) / elapsed if elapsed > 0 else 0
             print(f"  [{i+1}/43648] acc={correct/total:.3f} rate={rate:.1f}/s")
+            resp_serial = {}
+            for s, wc_dict in responses.items():
+                for (w, ch), r in wc_dict.items():
+                    resp_serial[f"{s[0]},{s[1]}|{w},{ch}"] = r
+            cc_serial = {json.dumps(list(k)): v for k, v in cell_counts.items()}
+            with open(partial_path, "w") as f:
+                json.dump({"next_idx": i + 1, "total": total, "correct": correct,
+                           "invalid_count": invalid_count, "responses": resp_serial,
+                           "cell_counts": cc_serial}, f)
 
     elapsed = time.time() - t0
     print(f"Gate eval: {total} triples, {elapsed:.1f}s, {total/elapsed:.1f}/s")
@@ -669,6 +698,8 @@ def gate_phase(model, tok, device, id_0, id_1, out_dir, seed,
                         D_model=D_model, D_oracle=D_oracle)
     with open(os.path.join(out_dir, f"gate_seed{seed}.json"), "w") as f:
         json.dump(result, f, indent=2)
+    if os.path.exists(partial_path):
+        os.remove(partial_path)
     return result, responses, D_model, D_oracle
 
 def geometry_phase(model, tok, device, D_model, D_oracle, out_dir, seed,
