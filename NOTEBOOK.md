@@ -5,6 +5,43 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31T10:00 — Fusion-fission v1c/v1d/v1e complete; five-experiment synthesis
+
+**v1c (attention):** Cross-fact attention is LOWER at fused layers (0.275)
+than separate (0.336). Last token overwhelmingly attends to fact A (~0.6-0.8)
+vs fact B (~0.04-0.08). Fusion is NOT attention-mediated. Fix: used
+`attn_implementation="eager"` (SDPA blocks output_attentions) and
+`return_offsets_mapping=True` for token span detection.
+
+**v1d (component transplant):** At each layer, transplant ONLY attention or
+ONLY MLP output from an A-different donor. Neither flips B (0/17 layers).
+Full transplant flips B at all 17 layers (+4.1 logit shift, -0.1 each
+component alone). Fusion is a WHOLE-STATE property — not localizable to
+attention or MLP. An earlier flawed design (zeroing components) was scrapped
+and replaced with proper component-level transplant.
+
+**v1e (trajectory):** Worlds ALWAYS diverge through all 28 layers (negative
+convergence everywhere). FUSED layers diverge slowly (-1.2 avg), SEPARATE
+layers diverge fast (-5.7 avg). Update directions nearly identical everywhere
+(>0.97 cosine). Update magnitudes grow dramatically: 7.8 at layer 1 to 527.4
+at layer 28. No trajectory convergence pattern.
+
+**Five-experiment synthesis:**
+1. Cosine: blind (~1.000). PCA: sees storage, not computation. Transplant: sees the truth.
+2. Fusion is whole-state, not attention, not MLP, not trajectory convergence.
+3. Fusion = world-insensitive computation (model treats all A-worlds the same).
+4. Fission = world-sensitive computation (model discriminates A-worlds).
+5. Behavioral transplant amplifies tiny state differences through remaining layers.
+
+The observational line is saturated — we know WHAT fusion is (world-sensitivity
+of the layer transformation) and that no single component drives it. The next
+move is to BUILD something that uses this structure: operators, predictors, or
+constructions that leverage the fusion/fission pattern for generalized prediction.
+
+Codex synthesis running. Next: direction decision based on Codex response.
+
+---
+
 ## 2026-08-31T08:30 — Codex effective-direction dialogue + v1b PCA result
 
 **Codex 4 directions (effective framing, recommended 1→4→2→3):**
