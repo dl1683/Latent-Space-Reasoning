@@ -101,7 +101,7 @@ NOTEBOOK.md            Reverse-chronological running log
 
 ## Current status
 
-**Phase 2** (active). Phase 1 (50 experiments, 2026-08-27 → 2026-08-31) established the nine breakpoints and the ℝⁿ trap. Phase 2 (16 experiments, 2026-08-31) builds genuinely non-ℝⁿ instruments and discovers the behavioral algebra.
+**Phase 2** (active). Phase 1 (50 experiments, 2026-08-27 → 2026-08-31) established the nine breakpoints and the ℝⁿ trap. Phase 2 (17 experiments, 2026-08-31) builds genuinely non-ℝⁿ instruments and discovers the behavioral algebra.
 
 The central empirical claim (Codex-audited): *In a bounded three-fact prompt world in one small language model, continuation behavior supports an approximate argmax quotient algebra whose fibers are distributionally and predictively nontrivial; canonical restatement is an idempotent retraction but does not commute with correction — presentation and prediction are coupled.*
 
