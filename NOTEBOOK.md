@@ -5,6 +5,38 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31T18:27 — Distributional congruence v1: 100% DEFECT RATE
+
+**Strengthened continuation congruence from greedy to distributional level.** Instead of
+checking if same-place histories give the same argmax after a continuation, measured
+whether they give the same FULL NEXT-TOKEN DISTRIBUTION via sqrt(JSD). Threshold: 0.05.
+
+**Result: total failure.** 0/96 tests congruent (100% defect rate), despite the same
+histories showing 97% greedy congruence (continuation_congruence_v1). Same-place
+histories that produce identical greedy answers have substantially different full
+distributions (JSD 0.07-0.45).
+
+**By continuation type (avg max_jsd):**
+- repeat_zog: 0.168 (lowest — repeating reinforces, but doesn't equalize)
+- neutral_distractor: 0.259
+- correct_zog: 0.275 (corrections create most divergence)
+- new_entity_commit: 0.283
+
+**Interpretation:** Greedy congruence was "lucky argmax agreement" — the peaks of the
+distributions happen to align even though the full distributions differ substantially.
+The behavioral place defined by greedy answers is COARSER than the model's actual
+internal state. Two histories that look identical at the argmax level are different at
+the distributional level.
+
+**Implication for native math:** The equivalence classes in the native mathematics
+need to be finer-grained than "same greedy answer." The model's internal state carries
+more information than the greedy readout reveals. This could mean:
+1. The right equivalence relation is distributional (full output law), not greedy
+2. The "places" in the native algebra should be defined by distributions, not tokens
+3. History information persists in the distribution even when it doesn't affect the argmax
+
+---
+
 ## 2026-08-31T20:30 — Position contribution v1: resolution signal is DISTRIBUTED
 
 **Decomposed attention output by source position.** For each position, computed the

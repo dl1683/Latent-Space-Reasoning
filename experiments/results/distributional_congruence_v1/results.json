@@ -1,0 +1,1957 @@
+{
+  "experiment": "distributional_congruence_v1",
+  "timestamp": "2026-08-31T18:26:57.666121",
+  "model": "Qwen/Qwen3-0.6B",
+  "purpose": "Test whether continuations produce the same DISTRIBUTION (not just greedy answer) across same-place histories",
+  "status": "COMPLETE",
+  "jsd_threshold": 0.05,
+  "baseline_rate": 0.7916666666666666,
+  "n_congruence_tests": 96,
+  "n_congruent": 0,
+  "n_defects": 96,
+  "defect_rate": 1.0,
+  "by_continuation": {
+    "neutral_distractor": {
+      "total": 24,
+      "defects": 24,
+      "avg_max_jsd": 0.259093
+    },
+    "new_entity_commit": {
+      "total": 24,
+      "defects": 24,
+      "avg_max_jsd": 0.283468
+    },
+    "repeat_zog": {
+      "total": 24,
+      "defects": 24,
+      "avg_max_jsd": 0.16751
+    },
+    "correct_zog": {
+      "total": 24,
+      "defects": 24,
+      "avg_max_jsd": 0.274589
+    }
+  },
+  "congruence_results": [
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "red"
+      ],
+      "continuation": "neutral_distractor",
+      "query_entity": "ZOG",
+      "max_jsd": 0.254524,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.254524
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.074092
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.24775
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "red"
+      ],
+      "continuation": "neutral_distractor",
+      "query_entity": "MIP",
+      "max_jsd": 0.210109,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.210109
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.133051
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.205176
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "red"
+      ],
+      "continuation": "neutral_distractor",
+      "query_entity": "PLIM",
+      "max_jsd": 0.280172,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.280172
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.163536
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.242421
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "red"
+      ],
+      "continuation": "new_entity_commit",
+      "query_entity": "ZOG",
+      "max_jsd": 0.236138,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.173607
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.236138
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.156974
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "red"
+      ],
+      "continuation": "new_entity_commit",
+      "query_entity": "MIP",
+      "max_jsd": 0.264312,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.255395
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.247191
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.264312
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "red"
+      ],
+      "continuation": "new_entity_commit",
+      "query_entity": "PLIM",
+      "max_jsd": 0.285769,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.285769
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.26894
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.187817
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "red"
+      ],
+      "continuation": "repeat_zog",
+      "query_entity": "ZOG",
+      "max_jsd": 0.114781,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.114781
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.070544
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.10784
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "red"
+      ],
+      "continuation": "repeat_zog",
+      "query_entity": "MIP",
+      "max_jsd": 0.254701,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.179972
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.115888
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.254701
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "red"
+      ],
+      "continuation": "repeat_zog",
+      "query_entity": "PLIM",
+      "max_jsd": 0.123376,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.123376
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.059428
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.119181
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "red"
+      ],
+      "continuation": "correct_zog",
+      "query_entity": "ZOG",
+      "max_jsd": 0.196576,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.144243
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.187529
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.196576
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "red"
+      ],
+      "continuation": "correct_zog",
+      "query_entity": "MIP",
+      "max_jsd": 0.406744,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.259503
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.272866
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.406744
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "red"
+      ],
+      "continuation": "correct_zog",
+      "query_entity": "PLIM",
+      "max_jsd": 0.239044,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.16613
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.177618
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.239044
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "blue"
+      ],
+      "continuation": "neutral_distractor",
+      "query_entity": "ZOG",
+      "max_jsd": 0.237717,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.237717
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.078602
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.232895
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "blue"
+      ],
+      "continuation": "neutral_distractor",
+      "query_entity": "MIP",
+      "max_jsd": 0.22219,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.180293
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.14435
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.22219
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "blue"
+      ],
+      "continuation": "neutral_distractor",
+      "query_entity": "PLIM",
+      "max_jsd": 0.291426,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.291426
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.141833
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.225486
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "blue"
+      ],
+      "continuation": "new_entity_commit",
+      "query_entity": "ZOG",
+      "max_jsd": 0.22276,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.155343
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.22276
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.16658
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "blue"
+      ],
+      "continuation": "new_entity_commit",
+      "query_entity": "MIP",
+      "max_jsd": 0.262646,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.222385
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.229861
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.262646
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "blue"
+      ],
+      "continuation": "new_entity_commit",
+      "query_entity": "PLIM",
+      "max_jsd": 0.365257,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.365257
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.272786
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.327368
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "blue"
+      ],
+      "continuation": "repeat_zog",
+      "query_entity": "ZOG",
+      "max_jsd": 0.116563,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.116563
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.078244
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.085304
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "blue"
+      ],
+      "continuation": "repeat_zog",
+      "query_entity": "MIP",
+      "max_jsd": 0.227999,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.141478
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.130787
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.227999
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "blue"
+      ],
+      "continuation": "repeat_zog",
+      "query_entity": "PLIM",
+      "max_jsd": 0.213134,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.168796
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.066785
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.213134
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "blue"
+      ],
+      "continuation": "correct_zog",
+      "query_entity": "ZOG",
+      "max_jsd": 0.183531,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.148853
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.167046
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.183531
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "blue"
+      ],
+      "continuation": "correct_zog",
+      "query_entity": "MIP",
+      "max_jsd": 0.398568,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.248303
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.280024
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.398568
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "blue"
+      ],
+      "continuation": "correct_zog",
+      "query_entity": "PLIM",
+      "max_jsd": 0.340501,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.211515
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.19725
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.340501
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "red"
+      ],
+      "continuation": "neutral_distractor",
+      "query_entity": "ZOG",
+      "max_jsd": 0.330174,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.330174
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "red"
+      ],
+      "continuation": "neutral_distractor",
+      "query_entity": "MIP",
+      "max_jsd": 0.213444,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.213444
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "red"
+      ],
+      "continuation": "neutral_distractor",
+      "query_entity": "PLIM",
+      "max_jsd": 0.210253,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.210253
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "red"
+      ],
+      "continuation": "new_entity_commit",
+      "query_entity": "ZOG",
+      "max_jsd": 0.205615,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.205615
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "red"
+      ],
+      "continuation": "new_entity_commit",
+      "query_entity": "MIP",
+      "max_jsd": 0.222072,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.222072
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "red"
+      ],
+      "continuation": "new_entity_commit",
+      "query_entity": "PLIM",
+      "max_jsd": 0.279851,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.279851
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "red"
+      ],
+      "continuation": "repeat_zog",
+      "query_entity": "ZOG",
+      "max_jsd": 0.127384,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.127384
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "red"
+      ],
+      "continuation": "repeat_zog",
+      "query_entity": "MIP",
+      "max_jsd": 0.23086,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.23086
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "red"
+      ],
+      "continuation": "repeat_zog",
+      "query_entity": "PLIM",
+      "max_jsd": 0.143254,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.143254
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "red"
+      ],
+      "continuation": "correct_zog",
+      "query_entity": "ZOG",
+      "max_jsd": 0.219903,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.219903
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "red"
+      ],
+      "continuation": "correct_zog",
+      "query_entity": "MIP",
+      "max_jsd": 0.350744,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.350744
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "red"
+      ],
+      "continuation": "correct_zog",
+      "query_entity": "PLIM",
+      "max_jsd": 0.323698,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.323698
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "blue"
+      ],
+      "continuation": "neutral_distractor",
+      "query_entity": "ZOG",
+      "max_jsd": 0.289473,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.289473
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "blue"
+      ],
+      "continuation": "neutral_distractor",
+      "query_entity": "MIP",
+      "max_jsd": 0.217284,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.217284
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "blue"
+      ],
+      "continuation": "neutral_distractor",
+      "query_entity": "PLIM",
+      "max_jsd": 0.284318,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.284318
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "blue"
+      ],
+      "continuation": "new_entity_commit",
+      "query_entity": "ZOG",
+      "max_jsd": 0.205984,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.205984
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "blue"
+      ],
+      "continuation": "new_entity_commit",
+      "query_entity": "MIP",
+      "max_jsd": 0.20572,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.20572
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "blue"
+      ],
+      "continuation": "new_entity_commit",
+      "query_entity": "PLIM",
+      "max_jsd": 0.427942,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.427942
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "blue"
+      ],
+      "continuation": "repeat_zog",
+      "query_entity": "ZOG",
+      "max_jsd": 0.104132,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.104132
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "blue"
+      ],
+      "continuation": "repeat_zog",
+      "query_entity": "MIP",
+      "max_jsd": 0.165068,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.165068
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "blue"
+      ],
+      "continuation": "repeat_zog",
+      "query_entity": "PLIM",
+      "max_jsd": 0.298465,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.298465
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "blue"
+      ],
+      "continuation": "correct_zog",
+      "query_entity": "ZOG",
+      "max_jsd": 0.215147,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.215147
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "blue"
+      ],
+      "continuation": "correct_zog",
+      "query_entity": "MIP",
+      "max_jsd": 0.307593,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.307593
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "blue"
+      ],
+      "continuation": "correct_zog",
+      "query_entity": "PLIM",
+      "max_jsd": 0.449989,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.449989
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "red"
+      ],
+      "continuation": "neutral_distractor",
+      "query_entity": "ZOG",
+      "max_jsd": 0.235095,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.173383
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.151972
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.235095
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "red"
+      ],
+      "continuation": "neutral_distractor",
+      "query_entity": "MIP",
+      "max_jsd": 0.292891,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.292891
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.157266
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.248019
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "red"
+      ],
+      "continuation": "neutral_distractor",
+      "query_entity": "PLIM",
+      "max_jsd": 0.407988,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.407988
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.201966
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.340731
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "red"
+      ],
+      "continuation": "new_entity_commit",
+      "query_entity": "ZOG",
+      "max_jsd": 0.428147,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.270265
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.428147
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.235243
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "red"
+      ],
+      "continuation": "new_entity_commit",
+      "query_entity": "MIP",
+      "max_jsd": 0.312455,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.261105
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.243196
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.312455
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "red"
+      ],
+      "continuation": "new_entity_commit",
+      "query_entity": "PLIM",
+      "max_jsd": 0.371669,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.334261
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.371669
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.196067
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "red"
+      ],
+      "continuation": "repeat_zog",
+      "query_entity": "ZOG",
+      "max_jsd": 0.106678,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.106678
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.062985
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.102727
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "red"
+      ],
+      "continuation": "repeat_zog",
+      "query_entity": "MIP",
+      "max_jsd": 0.313842,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.222919
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.138769
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.313842
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "red"
+      ],
+      "continuation": "repeat_zog",
+      "query_entity": "PLIM",
+      "max_jsd": 0.121747,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.097725
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.072933
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.121747
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "red"
+      ],
+      "continuation": "correct_zog",
+      "query_entity": "ZOG",
+      "max_jsd": 0.187775,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.175834
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.187775
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.168546
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "red"
+      ],
+      "continuation": "correct_zog",
+      "query_entity": "MIP",
+      "max_jsd": 0.30687,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.224732
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.23223
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.30687
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "red"
+      ],
+      "continuation": "correct_zog",
+      "query_entity": "PLIM",
+      "max_jsd": 0.215693,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.125132
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.169926
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.215693
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "blue"
+      ],
+      "continuation": "neutral_distractor",
+      "query_entity": "ZOG",
+      "max_jsd": 0.191973,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.191973
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "blue"
+      ],
+      "continuation": "neutral_distractor",
+      "query_entity": "MIP",
+      "max_jsd": 0.269354,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.269354
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "blue"
+      ],
+      "continuation": "neutral_distractor",
+      "query_entity": "PLIM",
+      "max_jsd": 0.232658,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.232658
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "blue"
+      ],
+      "continuation": "new_entity_commit",
+      "query_entity": "ZOG",
+      "max_jsd": 0.199911,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.199911
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "blue"
+      ],
+      "continuation": "new_entity_commit",
+      "query_entity": "MIP",
+      "max_jsd": 0.324242,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.324242
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "blue"
+      ],
+      "continuation": "new_entity_commit",
+      "query_entity": "PLIM",
+      "max_jsd": 0.321755,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.321755
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "blue"
+      ],
+      "continuation": "repeat_zog",
+      "query_entity": "ZOG",
+      "max_jsd": 0.079207,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.079207
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "blue"
+      ],
+      "continuation": "repeat_zog",
+      "query_entity": "MIP",
+      "max_jsd": 0.253637,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.253637
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "blue"
+      ],
+      "continuation": "repeat_zog",
+      "query_entity": "PLIM",
+      "max_jsd": 0.169183,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.169183
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "blue"
+      ],
+      "continuation": "correct_zog",
+      "query_entity": "ZOG",
+      "max_jsd": 0.143245,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.143245
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "blue"
+      ],
+      "continuation": "correct_zog",
+      "query_entity": "MIP",
+      "max_jsd": 0.286727,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.286727
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "blue"
+      ],
+      "continuation": "correct_zog",
+      "query_entity": "PLIM",
+      "max_jsd": 0.345523,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.345523
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "red"
+      ],
+      "continuation": "neutral_distractor",
+      "query_entity": "ZOG",
+      "max_jsd": 0.291311,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.291311
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "red"
+      ],
+      "continuation": "neutral_distractor",
+      "query_entity": "MIP",
+      "max_jsd": 0.219763,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.219763
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "red"
+      ],
+      "continuation": "neutral_distractor",
+      "query_entity": "PLIM",
+      "max_jsd": 0.330475,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.330475
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "red"
+      ],
+      "continuation": "new_entity_commit",
+      "query_entity": "ZOG",
+      "max_jsd": 0.276831,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.276831
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "red"
+      ],
+      "continuation": "new_entity_commit",
+      "query_entity": "MIP",
+      "max_jsd": 0.256698,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.256698
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "red"
+      ],
+      "continuation": "new_entity_commit",
+      "query_entity": "PLIM",
+      "max_jsd": 0.256136,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.256136
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "red"
+      ],
+      "continuation": "repeat_zog",
+      "query_entity": "ZOG",
+      "max_jsd": 0.088163,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.088163
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "red"
+      ],
+      "continuation": "repeat_zog",
+      "query_entity": "MIP",
+      "max_jsd": 0.22977,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.22977
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "red"
+      ],
+      "continuation": "repeat_zog",
+      "query_entity": "PLIM",
+      "max_jsd": 0.100035,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.100035
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "red"
+      ],
+      "continuation": "correct_zog",
+      "query_entity": "ZOG",
+      "max_jsd": 0.151933,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.151933
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "red"
+      ],
+      "continuation": "correct_zog",
+      "query_entity": "MIP",
+      "max_jsd": 0.269037,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.269037
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "red"
+      ],
+      "continuation": "correct_zog",
+      "query_entity": "PLIM",
+      "max_jsd": 0.273282,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.273282
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "blue"
+      ],
+      "continuation": "neutral_distractor",
+      "query_entity": "ZOG",
+      "max_jsd": 0.222904,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.222904
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "blue"
+      ],
+      "continuation": "neutral_distractor",
+      "query_entity": "MIP",
+      "max_jsd": 0.247426,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.247426
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "blue"
+      ],
+      "continuation": "neutral_distractor",
+      "query_entity": "PLIM",
+      "max_jsd": 0.235315,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.235315
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "blue"
+      ],
+      "continuation": "new_entity_commit",
+      "query_entity": "ZOG",
+      "max_jsd": 0.22467,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.22467
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "blue"
+      ],
+      "continuation": "new_entity_commit",
+      "query_entity": "MIP",
+      "max_jsd": 0.259238,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.259238
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "blue"
+      ],
+      "continuation": "new_entity_commit",
+      "query_entity": "PLIM",
+      "max_jsd": 0.387407,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.387407
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "blue"
+      ],
+      "continuation": "repeat_zog",
+      "query_entity": "ZOG",
+      "max_jsd": 0.071464,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.071464
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "blue"
+      ],
+      "continuation": "repeat_zog",
+      "query_entity": "MIP",
+      "max_jsd": 0.157889,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.157889
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "blue"
+      ],
+      "continuation": "repeat_zog",
+      "query_entity": "PLIM",
+      "max_jsd": 0.208919,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.208919
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "blue"
+      ],
+      "continuation": "correct_zog",
+      "query_entity": "ZOG",
+      "max_jsd": 0.133556,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.133556
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "blue"
+      ],
+      "continuation": "correct_zog",
+      "query_entity": "MIP",
+      "max_jsd": 0.216307,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.216307
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "blue"
+      ],
+      "continuation": "correct_zog",
+      "query_entity": "PLIM",
+      "max_jsd": 0.428143,
+      "congruent": false,
+      "pair_jsds": [
+        {
+          "pair": "rev-dup",
+          "jsd": 0.428143
+        }
+      ]
+    }
+  ]
+}

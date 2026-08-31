@@ -46,6 +46,12 @@
   - **Conclusion:** Resolution is a whole-sequence operation — value vectors combine across positions through the attention mechanism. Not decomposable to a single source.
   - Fixed GQA dimension mismatch: Qwen3-0.6B has num_heads=16, num_kv_heads=8, head_dim=128; o_proj takes 2048, not 1024.
 
+- **Distributional congruence v1 (2026-08-31).** Strengthens continuation_congruence_v1 from greedy (argmax) to distributional (full next-token law via sqrt(JSD), threshold 0.05).
+  - **Result: 100% DEFECT RATE.** 0/96 tests congruent. Same-place histories that produce identical greedy answers have JSD 0.07-0.45 in their full output distributions.
+  - Greedy congruence (97%, continuation_congruence_v1) was "lucky argmax agreement" — distribution peaks align but the full distributions differ substantially.
+  - By continuation type (avg max_jsd): repeat_zog=0.168 (lowest), neutral=0.259, correct=0.275, new_commit=0.283.
+  - **Implication:** The behavioral place defined by greedy answers is COARSER than the model's actual internal state. The native mathematics needs equivalence classes defined by full output laws, not argmax tokens. History information persists in the distribution even when it doesn't affect the greedy answer.
+
 - **Causal resolution v1 (2026-08-31): UNINFORMATIVE.** Full-state injection at any layer trivially carries donor information through remaining layers (identical logits at all injection points). Tells us fact-identity information is present at ALL layers; the resolution layer AMPLIFIES existing signal, doesn't create it. Meaningful causal test needs partial-state injection (R^n tools required).
 
 - **Predictive setter algebra v1 (2026-08-31): FAIL.** Product-of-registers algebra not supported. 16 types instead of 4. Last-write-wins 27%, commutation 56%. Root cause: PRIMACY BIAS — first mention of a fact dominates over later contradictions. The model is not a clean register machine. In-context appending is not the right "native operation" for fact overwriting. However, the primacy bias itself is structural data: the model commits to facts early and resists override, suggesting a commitment-lattice structure rather than overwrite registers.
