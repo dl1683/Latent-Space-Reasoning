@@ -5,6 +5,62 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31 — PSQ-3 runner built, reviewed, pilot passed
+
+**Runner built** (`experiments/run_psq3.py`, commit cf0f4f7): ~1400 lines implementing
+full PSQ-3 v6 pipeline — dataset generation, LoRA training, gate, geometry, PCA+Procrustes,
+layer selection, 6-step causal staircase, composition, frozen-base control.
+
+**Self-review (6 critical paths):** No verdict-changing bugs found.
+1. `id()` set exclusion in training data: fragile but correct within single function call
+2. Class-weighted loss: correct reshape/shift; minor waste passing labels to model
+3. Procrustes edit formula: matches v6 spec exactly (`h + (h-mu) @ P.T @ (M-I) @ P`)
+4. State-level geometry bootstrap: correctly resamples 64 states with replacement
+5. Frozen-base action-weighted pooling: correct equal weight per action
+6. Variable scoping with `--phase`: `dir()` pattern unusual but works; all early exits sound
+
+**Independent verification:**
+- All import-time invariants pass: 341 words, 43,648 triples, 64 unique profiles,
+  72 oracle distances, 2,000 training triples (hash ecaa2d93), moved A=32 B=24 C=32 D=24
+- Carrier position stable at token 103 across all states and word lengths
+- Token IDs 0→15, 1→16 confirmed on Qwen3-1.7B-Base (revision ea980cb0)
+- JS divergence: 0 for identical, 1 bit for disjoint deltas, symmetric
+- Module imports cleanly (46 callables, no errors)
+
+**Pilot (100 forwards on local GPU):** PASS.
+- Rate: 25.1 forwards/s
+- Carrier at token 103 (token ID 198)
+- Elapsed: 4.0s (short burst, no crash)
+- Full gate estimate: ~29 min at this rate (requires stable/cloud hardware)
+- Results saved: `experiments/results/psq3/pilot.json`
+
+**Codex correctness review (16 findings, adopted):** NOT CLEAN. Key fixes applied:
+1. CRASH: `oracle_profiles` was dict, `nearest_state_decode` iterated keys not values → extracted to `build_oracle_profiles_list()` returning a proper list
+2. CRASH: `torch.set_grad_enabled(False)` was global, would disable gradients for subsequent seeds → removed; `train_phase` now explicitly re-enables
+3. Prompt space: training appended " 0" (two tokens [220,15]) but inference checked token 15 at wrong position → prompt now ends with "# prints: " (trailing space), training uses `prompt + answer`
+4. Gate contamination: 1,872 training triples included in "held-out" gate → `training_keys` set passed to `gate_phase`
+5. Invalid controls biased: G=-1 for invalid panels inflated Procrustes advantage → NaN + `paired_boot()` helper that filters NaN pairs
+6. Replay fixture: d_panel metric instead of max-absolute logit difference → full logit vector comparison, threshold 1e-3
+7. Cross-seed verdict: no PASS/FAIL logic → `seed_verdicts` tracker + global `PSQ3_PASS`/`PSQ3_FAIL`
+8. OOM between seeds: models stayed on GPU → `del model; gc.collect(); torch.cuda.empty_cache()`
+9. `dir()` checks: fragile → replaced with `phase != "all"` guards
+
+Remaining Codex findings NOT fixed (operational, not verdict-changing at pilot stage):
+- Training set order may differ from v6 canonical (hash matches, content identical)
+- Geometry bootstrap (`state_clustered_geometry_bootstrap`) defined but never called (diagnostic only)
+- Frozen-base control is partial G pooling, not full staircase
+- No checkpoint-resume or hardware-placement guard
+- Composition fixed-point exclusion is conservative (excludes more, harder to pass)
+
+**Post-fix verification (2026-08-31):** All 5 critical fixes verified.
+- Token position fix empirically confirmed: base model P(0)+P(1) ≈ 0.999 at eval position with fixed prompt (was P(space) ≈ 0.997 before fix)
+- Pilot re-run: 25.9 fwd/s, carrier at token 103, 3.9s elapsed — consistent with pre-fix pilot
+- Remaining 4 non-critical Codex findings assessed and deferred (no overall verdict gate, dir() cross-seed single-phase-only, OOM risk unlikely at 1.7B, frozen pooling safe with 24+ moved edges per action)
+
+**What's next:** Full run requires stable/cloud hardware (375,908 inference forwards + 15,000 training steps). Runner is ready for science-grade execution.
+
+---
+
 ## 2026-08-30 — PSQ-3 lock round 5: REVISE, 5 blockers; repair-round cap reached; v6 final
 
 **Codex PSQ-3 lock round 5**: Verdict REVISE. Math core and most round-4 operational

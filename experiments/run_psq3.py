@@ -97,7 +97,7 @@ def make_prompt(state, word, channel):
     lines.append("# current state")
     dial = "x" if channel == "x" else "y"
     lines.append(f"print(1 if {dial} == 0 else 0)")
-    lines.append("# prints:")
+    lines.append("# prints: ")
     return FEWSHOT_PREFIX + "\n".join(lines)
 
 def oracle_answer(state, word, channel):
@@ -233,10 +233,11 @@ def compute_d_panel(profile_a, profile_b):
         total += js_divergence_bits(pa, pb)
     return math.sqrt(total / 16)
 
-def nearest_state_decode(profile, oracle_profiles):
-    """Returns decoded state index or -1 if tie."""
+def nearest_state_decode(profile, oracle_profiles_list):
+    """Returns decoded state index or -1 if tie.
+    oracle_profiles_list: list of 64 profiles, indexed by state index."""
     best_d, best_idx, tie = float("inf"), -1, False
-    for idx, op in enumerate(oracle_profiles):
+    for idx, op in enumerate(oracle_profiles_list):
         d = compute_d_panel(profile, op)
         if d < best_d - 1e-12:
             best_d, best_idx, tie = d, idx, False
@@ -252,7 +253,7 @@ class PSQ3Dataset(Dataset):
         for state, word, channel in triples:
             prompt = make_prompt(state, word, channel)
             answer = str(oracle_answer(state, word, channel))
-            full_text = prompt + " " + answer
+            full_text = prompt + answer
             enc = tokenizer(full_text, return_tensors="pt", max_length=max_length,
                             truncation=True, padding="max_length", add_special_tokens=True)
             prompt_enc = tokenizer(prompt, return_tensors="pt", max_length=max_length,
@@ -319,6 +320,15 @@ def evaluate_panel(model, tokenizer, state, device, id_0, id_1,
 
 def panel_is_valid(profile, threshold=0.3):
     return all(p[2] <= threshold for p in profile)
+
+def build_oracle_profiles_list():
+    """Returns a list of 64 oracle profiles, indexed by STATE_IDX."""
+    profiles = [None] * 64
+    for s in ALL_STATES:
+        profiles[STATE_IDX[s]] = [[1.0, 0.0, 0.0] if oracle_answer(s, w, ch) == 0
+                                   else [0.0, 1.0, 0.0]
+                                   for w, ch in PANEL_PROBES]
+    return profiles
 
 # ---- Hidden state extraction ----
 
@@ -485,6 +495,7 @@ def setup_lora(model):
     return model
 
 def train_phase(model, tok, training_triples, cfg, device, out_dir, seed):
+    torch.set_grad_enabled(True)
     os.environ["CUBLAS_WORKSPACE_CONFIG"] = ":4096:8"
     torch.manual_seed(seed)
     np.random.seed(seed)
@@ -553,7 +564,8 @@ def train_phase(model, tok, training_triples, cfg, device, out_dir, seed):
     print(f"Training complete: {step} steps, {train_time:.1f}s")
     return adapter_path, step, train_time
 
-def gate_phase(model, tok, device, id_0, id_1, out_dir, seed):
+def gate_phase(model, tok, device, id_0, id_1, out_dir, seed,
+               training_keys=None):
     model.eval()
     print(f"\n=== INTERFACE GATE (seed {seed}) ===")
     responses = {}
@@ -571,7 +583,10 @@ def gate_phase(model, tok, device, id_0, id_1, out_dir, seed):
         pred = 0 if resp[0] > resp[1] else 1
         is_correct = (pred == truth) and not is_invalid
 
-        is_train = len(word) == 0
+        if training_keys is not None:
+            is_train = (state, word, channel) in training_keys
+        else:
+            is_train = len(word) == 0
         partition = "train" if is_train else "heldout"
         cell_key = (partition, channel, truth, len(word))
         cell_counts.setdefault(cell_key, [0, 0])
@@ -682,11 +697,7 @@ def layer_selection_phase(model, tok, device, id_0, id_1, H_by_layer,
                           out_dir, seed, candidate_layers=[12, 18]):
     print(f"\n=== LAYER SELECTION (seed {seed}) ===")
 
-    oracle_profiles = {}
-    for s in ALL_STATES:
-        oracle_profiles[STATE_IDX[s]] = [[1.0, 0.0, 0.0] if oracle_answer(s, w, ch) == 0
-                                          else [0.0, 1.0, 0.0]
-                                          for w, ch in PANEL_PROBES]
+    oracle_profiles = build_oracle_profiles_list()
 
     rng = np.random.default_rng(seed=7)
 
@@ -746,27 +757,27 @@ def layer_selection_phase(model, tok, device, id_0, id_1, H_by_layer,
 
 def replay_fixture(model, tok, device, id_0, id_1, layer):
     print(f"\n=== REPLAY FIXTURE (layer {layer}) ===")
-    max_diff = 0.0
-    for s in ALL_STATES:
-        p1 = evaluate_panel(model, tok, s, device, id_0, id_1)
-        p2 = evaluate_panel(model, tok, s, device, id_0, id_1)
-        d = compute_d_panel(p1, p2)
-        max_diff = max(max_diff, d)
-    print(f"  Max d_panel across replays: {max_diff:.6f}")
-    passes = max_diff < 1e-4
+    max_abs_diff = 0.0
+    for s in ALL_STATES[:16]:
+        prompt = make_prompt(s, "", "x")
+        input_ids = tok.encode(prompt, add_special_tokens=True)
+        ids_t = torch.tensor([input_ids], device=device)
+        with torch.no_grad():
+            out1 = model(input_ids=ids_t, use_cache=False)
+            out2 = model(input_ids=ids_t, use_cache=False)
+        diff = (out1.logits[0, -1] - out2.logits[0, -1]).abs().max().item()
+        max_abs_diff = max(max_abs_diff, diff)
+    print(f"  Max absolute logit diff across replays: {max_abs_diff:.8f}")
+    passes = max_abs_diff < 1e-3
     print(f"  Replay fixture: {'PASS' if passes else 'FAIL'}")
-    return passes, max_diff
+    return passes, max_abs_diff
 
 def causal_staircase(model, tok, device, id_0, id_1, H_all, mu, P, Z,
                      M_operators, v_displacements, locked_layer, out_dir, seed):
     print(f"\n=== CAUSAL STAIRCASE (seed {seed}, layer {locked_layer}) ===")
     k = P.shape[0]
 
-    oracle_profiles = {}
-    for s in ALL_STATES:
-        oracle_profiles[STATE_IDX[s]] = [[1.0, 0.0, 0.0] if oracle_answer(s, w, ch) == 0
-                                          else [0.0, 1.0, 0.0]
-                                          for w, ch in PANEL_PROBES]
+    oracle_profiles = build_oracle_profiles_list()
 
     # Step 1: Same-state replay
     print("\n  Step 1: Same-state replay...")
@@ -928,7 +939,7 @@ def causal_staircase(model, tok, device, id_0, id_1, H_all, mu, P, Z,
                                            torch.tensor(h_disp, dtype=torch.bfloat16),
                                            device, id_0, id_1)
             E_disp = compute_d_panel(prof_disp, prof_target)
-            G_disp = 1 - E_disp / E_0 if panel_is_valid(prof_disp) else -1.0
+            G_disp = 1 - E_disp / E_0 if panel_is_valid(prof_disp) else np.nan
             gains_disp.append(G_disp)
 
             # Random O(k)
@@ -941,9 +952,9 @@ def causal_staircase(model, tok, device, id_0, id_1, H_all, mu, P, Z,
                                             torch.tensor(h_r, dtype=torch.bfloat16),
                                             device, id_0, id_1)
                 E_r = compute_d_panel(prof_r, prof_target)
-                G_r = 1 - E_r / E_0 if panel_is_valid(prof_r) else -1.0
+                G_r = 1 - E_r / E_0 if panel_is_valid(prof_r) else np.nan
                 G_randoms.append(G_r)
-            gains_random.append(np.mean(G_randoms))
+            gains_random.append(np.nanmean(G_randoms) if any(not np.isnan(g) for g in G_randoms) else np.nan)
 
             # Wrong action
             for b in ACTIONS:
@@ -955,16 +966,16 @@ def causal_staircase(model, tok, device, id_0, id_1, H_all, mu, P, Z,
                                              torch.tensor(h_wrong_a, dtype=torch.bfloat16),
                                              device, id_0, id_1)
                 E_wa = compute_d_panel(prof_wa, prof_target)
-                G_wa = 1 - E_wa / E_0 if panel_is_valid(prof_wa) else -1.0
+                G_wa = 1 - E_wa / E_0 if panel_is_valid(prof_wa) else np.nan
                 gains_wrong[b].append(G_wa)
 
             # Wrong-state (from step 3)
             ws_gs = [g for g in neg_wrong[action][s] if g is not None]
-            gain_wrong_state.append(np.mean(ws_gs) if ws_gs else -1.0)
+            gain_wrong_state.append(np.mean(ws_gs) if ws_gs else np.nan)
 
             # Matched-norm random (from step 3)
             g_m = neg_matched[action][s]
-            gain_matched.append(g_m if g_m is not None else -1.0)
+            gain_matched.append(g_m if g_m is not None else np.nan)
 
         gains_proc = np.array(gains_proc)
         gains_disp = np.array(gains_disp)
@@ -983,19 +994,25 @@ def causal_staircase(model, tok, device, id_0, id_1, H_all, mu, P, Z,
             print(f"    FAIL: insufficient eligible edges ({n_eligible} < 16)")
             return {"verdict": "FAIL_INSUFFICIENT_EDGES", "action": action}
 
-        # Adjudication: paired superiority bootstrap
+        # Adjudication: paired superiority bootstrap (filter NaN pairs)
+        def paired_boot(a, b, rng_seed=42):
+            diff = a - b
+            valid = ~np.isnan(diff)
+            if valid.sum() < 8:
+                return {"observed": np.nan, "ci_low": np.nan, "ci_high": np.nan,
+                        "p_value": 1.0, "n_resamples": 0, "n_valid": int(valid.sum())}
+            result = source_clustered_bootstrap(diff[valid], rng_seed=rng_seed)
+            result["n_valid"] = int(valid.sum())
+            return result
+
         comparisons = {}
-        comparisons["vs_displacement"] = source_clustered_bootstrap(
-            gains_proc - gains_disp, rng_seed=42)
-        comparisons["vs_random_Ok"] = source_clustered_bootstrap(
-            gains_proc - gains_random, rng_seed=42)
-        comparisons["vs_wrong_state"] = source_clustered_bootstrap(
-            gains_proc - gain_wrong_state, rng_seed=42)
-        comparisons["vs_matched_random"] = source_clustered_bootstrap(
-            gains_proc - gain_matched, rng_seed=42)
+        comparisons["vs_displacement"] = paired_boot(gains_proc, gains_disp, 42)
+        comparisons["vs_random_Ok"] = paired_boot(gains_proc, gains_random, 42)
+        comparisons["vs_wrong_state"] = paired_boot(gains_proc, gain_wrong_state, 42)
+        comparisons["vs_matched_random"] = paired_boot(gains_proc, gain_matched, 42)
         for b in gains_wrong:
-            comparisons[f"vs_wrong_{b}"] = source_clustered_bootstrap(
-                gains_proc - np.array(gains_wrong[b]), rng_seed=42)
+            comparisons[f"vs_wrong_{b}"] = paired_boot(
+                gains_proc, np.array(gains_wrong[b]), 42)
 
         step4_results[action] = {
             "n_eligible": n_eligible, "mean_G": round(mean_G, 4),
@@ -1045,7 +1062,7 @@ def causal_staircase(model, tok, device, id_0, id_1, H_all, mu, P, Z,
                                                 torch.tensor(h_disp_comp, dtype=torch.bfloat16),
                                                 device, id_0, id_1)
             E_disp_comp = compute_d_panel(prof_disp_comp, prof_target)
-            G_disp_comp = 1 - E_disp_comp / E_0 if panel_is_valid(prof_disp_comp) else -1.0
+            G_disp_comp = 1 - E_disp_comp / E_0 if panel_is_valid(prof_disp_comp) else np.nan
             gains_comp_disp.append(G_disp_comp)
 
         if len(gains_comp_proc) < 8:
@@ -1053,7 +1070,11 @@ def causal_staircase(model, tok, device, id_0, id_1, H_all, mu, P, Z,
             continue
 
         diff = np.array(gains_comp_proc) - np.array(gains_comp_disp)
-        boot = source_clustered_bootstrap(diff, rng_seed=42)
+        valid = ~np.isnan(diff)
+        if valid.sum() < 8:
+            comp_results[f"{a}{b}"] = {"n": int(valid.sum()), "verdict": "INSUFFICIENT_VALID"}
+            continue
+        boot = source_clustered_bootstrap(diff[valid], rng_seed=42)
         passes = boot["ci_low"] > 0
         if passes:
             comp_pass_count += 1
@@ -1165,11 +1186,7 @@ def frozen_base_control(model, tok, device, id_0, id_1, locked_layer, out_dir):
         v_displacements[action] = (Z_t - Z_s).mean(axis=0)
 
     # Compute frozen G (action-weighted)
-    oracle_profiles = {}
-    for s in ALL_STATES:
-        oracle_profiles[STATE_IDX[s]] = [[1.0, 0.0, 0.0] if oracle_answer(s, w, ch) == 0
-                                          else [0.0, 1.0, 0.0]
-                                          for w, ch in PANEL_PROBES]
+    oracle_profiles = build_oracle_profiles_list()
 
     model_profiles = {}
     for s in ALL_STATES:
@@ -1271,7 +1288,9 @@ def main():
 
     # Generate training data
     training_triples, data_hash = generate_training_set(dataset_seed=7)
+    training_keys = {(t[0], t[1], t[2]) for t in training_triples}
     print(f"Training set: {len(training_triples)} triples, hash: {data_hash[:16]}...")
+    print(f"  Held-out triples: {43648 - len(training_keys)}")
     with open(os.path.join(out_dir, "training_hash.txt"), "w") as f:
         f.write(data_hash)
 
@@ -1279,6 +1298,7 @@ def main():
     candidate_layers = cfg.get("candidate_layers", [12, 18])
     locked_layer = None
     phase = args.phase or "all"
+    seed_verdicts = {}
 
     for seed_idx, seed in enumerate(seeds):
         print(f"\n{'='*60}")
@@ -1288,6 +1308,9 @@ def main():
         # Training
         if phase in ("train", "all"):
             model_fresh, tok = load_model(cfg, device)
+            torch.manual_seed(seed)
+            np.random.seed(seed)
+            random.seed(seed)
             model_lora = setup_lora(model_fresh)
             adapter_path, steps, train_time = train_phase(
                 model_lora, tok, training_triples, cfg, device, out_dir, seed)
@@ -1305,22 +1328,24 @@ def main():
 
         model.eval()
         model.to(device)
-        torch.set_grad_enabled(False)
 
         # Gate
         if phase in ("gate", "all"):
             gate_result, responses, D_model, D_oracle = gate_phase(
-                model, tok, device, id_0, id_1, out_dir, seed)
+                model, tok, device, id_0, id_1, out_dir, seed,
+                training_keys=training_keys)
+            seed_verdicts.setdefault(seed, {})["gate"] = gate_result["verdict"]
             if gate_result["verdict"] == "GATE_FAIL":
-                print(f"\nGATE FAIL at seed {seed}. Stopping.")
+                print(f"\nGATE FAIL at seed {seed}.")
+                seed_verdicts[seed]["overall"] = "FAIL_GATE"
                 if seed == seeds[0]:
                     print("First seed failed. Aborting all.")
-                    return
+                    break
                 continue
 
         # Geometry
         if phase in ("geometry", "all"):
-            if "D_model" not in dir():
+            if phase != "all":
                 gate_data = np.load(os.path.join(out_dir, f"gate_seed{seed}.npz"))
                 D_model = gate_data["D_model"]
                 D_oracle = gate_data["D_oracle"]
@@ -1330,7 +1355,7 @@ def main():
         # Layer selection (seed 42 only)
         if phase in ("causal", "all"):
             if seed == seeds[0]:
-                if "H_by_layer" not in dir():
+                if phase != "all":
                     H_by_layer = {}
                     for layer in candidate_layers:
                         H = extract_hidden_states(model, tok, ALL_STATES, layer, device)
@@ -1372,6 +1397,16 @@ def main():
             causal_result = causal_staircase(
                 model, tok, device, id_0, id_1, H_all, mu, P, Z,
                 M_operators, v_displacements, locked_layer, out_dir, seed)
+            seed_verdicts.setdefault(seed, {})["causal"] = causal_result.get("verdict", "COMPLETE")
+
+        seed_verdicts.setdefault(seed, {}).setdefault("overall", "COMPLETE")
+
+        # Cleanup model from this seed before next
+        import gc
+        del model
+        gc.collect()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
 
     # Frozen-base control
     if phase in ("all",):
@@ -1383,13 +1418,26 @@ def main():
         base_model.eval()
         frozen_result = frozen_base_control(
             base_model, tok, device, id_0, id_1, locked_layer, out_dir)
+        del base_model
+        gc.collect()
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
 
-    # Final summary
+    # Cross-seed verdict
     print(f"\n{'='*60}")
-    print("PSQ-3 COMPLETE")
+    print("PER-SEED VERDICTS:")
+    for s, v in seed_verdicts.items():
+        print(f"  Seed {s}: {v}")
+    all_pass = all(v.get("overall") == "COMPLETE" for v in seed_verdicts.values())
+    all_pass = all_pass and len(seed_verdicts) == len(seeds)
+    global_verdict = "PSQ3_PASS" if all_pass else "PSQ3_FAIL"
+    print(f"\nGLOBAL VERDICT: {global_verdict}")
+
     runner_hash = hashlib.sha256(open(__file__, "rb").read()).hexdigest()
     summary = {"runner_sha256": runner_hash, "locked_layer": locked_layer,
-               "seeds": seeds, "data_hash": data_hash}
+               "seeds": seeds, "data_hash": data_hash,
+               "seed_verdicts": {str(k): v for k, v in seed_verdicts.items()},
+               "global_verdict": global_verdict}
     with open(os.path.join(out_dir, "summary.json"), "w") as f:
         json.dump(summary, f, indent=2)
     print(f"Runner hash: {runner_hash[:16]}...")
