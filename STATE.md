@@ -23,6 +23,25 @@
   - **Template effect:** T3 (verbose) peaks later (L26) with weaker amplitude (0.45 vs 0.72-0.80).
   - **Baseline correlation:** Configs with strong retrieval baselines show cleaner resolution.
 
+- **Attention control v1 (2026-08-31).** Tests whether the resolution layer is just attention routing. Measures attention from query position to queried vs irrelevant entity tokens, correlates with JSD ratio.
+  - **Result: confound ruled out.** Correlation(attn_ratio, jsd_ratio) range: -0.10 to +0.25 across 4 configs (all below 0.7 kill threshold).
+  - Attention to queried entity is already HIGH from L3 onward (~0.5-0.8 at ALL layers), not selective at L21-25.
+  - KROT queryB case definitive: attention ratio near 0 everywhere yet JSD ratio hits 62x at L24-25.
+  - **Conclusion:** Resolution is NOT attention routing. It's in the computation, not the information routing.
+
+- **MLP decomposition v1 (2026-08-31).** Hooks inside layers to capture post-attention state (before MLP) vs post-MLP state.
+  - **Surprise:** Resolution is already present AFTER attention, BEFORE the MLP. Post-attn JSD ratio peaks at the same layers as post-MLP.
+  - MLP sometimes sharpens (+8.61 for HESK/VORN) and sometimes blurs (-15.46 for PLIM/KROT).
+  - Combined with attention control: resolution is in the VALUE SPACE — not attention weights (routing), not MLP (transformation), but the content of value vectors at resolution layers.
+
+- **Three-fact resolution v1 (2026-08-31).** Extends logit-lens to 3 entities × 2 values = 8 worlds.
+  - **Resolution generalizes.** All configs with clean baselines (4/4) show L25 resolution with ratios 10-42x.
+  - BOTH irrelevant facts suppressed simultaneously and EQUALLY (HESK/VORN/KROT: irrel1=0.020, irrel2=0.019).
+  - Last entity (PLIM queryC) resolves just as cleanly (28.59x) as first. Not just primacy.
+  - **Conclusion:** Resolution is a general multi-fact mechanism, not pairwise competition.
+
+- **Causal resolution v1 (2026-08-31): UNINFORMATIVE.** Full-state injection at any layer trivially carries donor information through remaining layers (identical logits at all injection points). Tells us fact-identity information is present at ALL layers; the resolution layer AMPLIFIES existing signal, doesn't create it. Meaningful causal test needs partial-state injection (R^n tools required).
+
 - **Predictive setter algebra v1 (2026-08-31): FAIL.** Product-of-registers algebra not supported. 16 types instead of 4. Last-write-wins 27%, commutation 56%. Root cause: PRIMACY BIAS — first mention of a fact dominates over later contradictions. The model is not a clean register machine. In-context appending is not the right "native operation" for fact overwriting. However, the primacy bias itself is structural data: the model commits to facts early and resists override, suggesting a commitment-lattice structure rather than overwrite registers.
 
 - **PSQ empirical program (2026-08-31).** Two-dial world Z_8×Z_8. PSQ-1 CLOSED (frozen models NO_INTERFACE). PSQ-2 CLOSED: v1 FAIL (60.2%), v2 FAIL (73.4%), v3 NO_INTERFACE (75.0%). d_4 diagnostic on v3 adapter COMPLETE (DIAGNOSTIC only). **PSQ-3μ CLOSED: NO_INTERFACE** — frozen Qwen3-0.6B-Base scored 26.56% on the registered x-channel panel (gate ≥95%); the registered interface gate was not met; stopped at stage 1 (256/1,152 calls, 132.6s CPU); no auditable prediction histogram saved; per predeclared stop rule, no repair; does not adjudicate full PSQ-3 (audit #49 adopted). PSQ-3 full design v6 FINAL. Runner BUILT, REVIEWED, pilot PASSED. Full run requires stable/cloud hardware (375,908 forwards + 15,000 training steps). False-pass verdict reducer FIXED (commit a923a1a). **PSQ-3α CLOSED: NO_INTERFACE** (audit #50 adopted) — single-seed (42), PCA-k4, block-18, task-trained Qwen3-1.7B-Base LoRA (5,000 steps, seed 42, final training loss 0.0154; training provenance: 10 GPU bursts, checkpoints step_500–step_5000) scored 69.14% (177/256) on the registered x-channel panel (gate >=95%); registered interface gate not met; stopped at stage 1 (256/1,152 calls). Mechanical classification: this configuration received NO_INTERFACE. Allocation decision: Codex direction round 6 ends further PSQ work. The result does not scientifically close the broader native-structure question — the quotient-holdout design shares all x-places between calibration and held-out sets (only y-fiber varies), PCA is transductive over all 32 states, and the single-seed single-action scope prevents terminal scientific inference. The PSQ line stops because continuing PCA/Procrustes/linear-chart repair remains inside the R^n trap (AGENTS.md), not because 69.14% proves a general impossibility. Full PSQ-3 design v6 and runner are retained as historical artifacts, not queued work.

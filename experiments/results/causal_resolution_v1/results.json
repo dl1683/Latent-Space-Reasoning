@@ -1,0 +1,818 @@
+{
+  "experiment": "causal_resolution_v1",
+  "timestamp": "2026-08-31T17:59:20.422510",
+  "model": "Qwen/Qwen3-0.6B",
+  "purpose": "Causal test: does injecting query-A state at layer L into query-B forward pass flip the output from expected-B to expected-A?",
+  "prediction": "Injection at L25 (resolution layer) should flip the output; injection at early layers may not (resolution happens later)",
+  "n_configs": 2,
+  "results": [
+    {
+      "config": "ZOG_MIP_bigsmall",
+      "prompt_a": "ZOG: big. MIP: small.\nZOG:",
+      "prompt_b": "ZOG: big. MIP: small.\nMIP:",
+      "baseline_a": "big",
+      "baseline_b": "small",
+      "injection_direction": "A(ZOG)->B(MIP)",
+      "layers": [
+        {
+          "layer": 0,
+          "greedy": "big",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 15.7712,
+          "logit_b": 14.5641,
+          "logit_diff": 1.2071,
+          "top3": [
+            "big",
+            "small",
+            ""
+          ]
+        },
+        {
+          "layer": 1,
+          "greedy": "big",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 15.7712,
+          "logit_b": 14.5641,
+          "logit_diff": 1.2071,
+          "top3": [
+            "big",
+            "small",
+            ""
+          ]
+        },
+        {
+          "layer": 2,
+          "greedy": "big",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 15.7712,
+          "logit_b": 14.5641,
+          "logit_diff": 1.2071,
+          "top3": [
+            "big",
+            "small",
+            ""
+          ]
+        },
+        {
+          "layer": 3,
+          "greedy": "big",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 15.7712,
+          "logit_b": 14.5641,
+          "logit_diff": 1.2071,
+          "top3": [
+            "big",
+            "small",
+            ""
+          ]
+        },
+        {
+          "layer": 4,
+          "greedy": "big",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 15.7712,
+          "logit_b": 14.5641,
+          "logit_diff": 1.2071,
+          "top3": [
+            "big",
+            "small",
+            ""
+          ]
+        },
+        {
+          "layer": 5,
+          "greedy": "big",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 15.7712,
+          "logit_b": 14.5641,
+          "logit_diff": 1.2071,
+          "top3": [
+            "big",
+            "small",
+            ""
+          ]
+        },
+        {
+          "layer": 6,
+          "greedy": "big",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 15.7712,
+          "logit_b": 14.5641,
+          "logit_diff": 1.2071,
+          "top3": [
+            "big",
+            "small",
+            ""
+          ]
+        },
+        {
+          "layer": 7,
+          "greedy": "big",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 15.7712,
+          "logit_b": 14.5641,
+          "logit_diff": 1.2071,
+          "top3": [
+            "big",
+            "small",
+            ""
+          ]
+        },
+        {
+          "layer": 8,
+          "greedy": "big",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 15.7712,
+          "logit_b": 14.5641,
+          "logit_diff": 1.2071,
+          "top3": [
+            "big",
+            "small",
+            ""
+          ]
+        },
+        {
+          "layer": 9,
+          "greedy": "big",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 15.7712,
+          "logit_b": 14.5641,
+          "logit_diff": 1.2071,
+          "top3": [
+            "big",
+            "small",
+            ""
+          ]
+        },
+        {
+          "layer": 10,
+          "greedy": "big",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 15.7712,
+          "logit_b": 14.5641,
+          "logit_diff": 1.2071,
+          "top3": [
+            "big",
+            "small",
+            ""
+          ]
+        },
+        {
+          "layer": 11,
+          "greedy": "big",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 15.7712,
+          "logit_b": 14.5641,
+          "logit_diff": 1.2071,
+          "top3": [
+            "big",
+            "small",
+            ""
+          ]
+        },
+        {
+          "layer": 12,
+          "greedy": "big",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 15.7712,
+          "logit_b": 14.5641,
+          "logit_diff": 1.2071,
+          "top3": [
+            "big",
+            "small",
+            ""
+          ]
+        },
+        {
+          "layer": 13,
+          "greedy": "big",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 15.7712,
+          "logit_b": 14.5641,
+          "logit_diff": 1.2071,
+          "top3": [
+            "big",
+            "small",
+            ""
+          ]
+        },
+        {
+          "layer": 14,
+          "greedy": "big",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 15.7712,
+          "logit_b": 14.5641,
+          "logit_diff": 1.2071,
+          "top3": [
+            "big",
+            "small",
+            ""
+          ]
+        },
+        {
+          "layer": 15,
+          "greedy": "big",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 15.7712,
+          "logit_b": 14.5641,
+          "logit_diff": 1.2071,
+          "top3": [
+            "big",
+            "small",
+            ""
+          ]
+        },
+        {
+          "layer": 16,
+          "greedy": "big",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 15.7712,
+          "logit_b": 14.5641,
+          "logit_diff": 1.2071,
+          "top3": [
+            "big",
+            "small",
+            ""
+          ]
+        },
+        {
+          "layer": 17,
+          "greedy": "big",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 15.7712,
+          "logit_b": 14.5641,
+          "logit_diff": 1.2071,
+          "top3": [
+            "big",
+            "small",
+            ""
+          ]
+        },
+        {
+          "layer": 18,
+          "greedy": "big",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 15.7712,
+          "logit_b": 14.5641,
+          "logit_diff": 1.2071,
+          "top3": [
+            "big",
+            "small",
+            ""
+          ]
+        },
+        {
+          "layer": 19,
+          "greedy": "big",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 15.7712,
+          "logit_b": 14.5641,
+          "logit_diff": 1.2071,
+          "top3": [
+            "big",
+            "small",
+            ""
+          ]
+        },
+        {
+          "layer": 20,
+          "greedy": "big",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 15.7712,
+          "logit_b": 14.5641,
+          "logit_diff": 1.2071,
+          "top3": [
+            "big",
+            "small",
+            ""
+          ]
+        },
+        {
+          "layer": 21,
+          "greedy": "big",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 15.7712,
+          "logit_b": 14.5641,
+          "logit_diff": 1.2071,
+          "top3": [
+            "big",
+            "small",
+            ""
+          ]
+        },
+        {
+          "layer": 22,
+          "greedy": "big",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 15.7712,
+          "logit_b": 14.5641,
+          "logit_diff": 1.2071,
+          "top3": [
+            "big",
+            "small",
+            ""
+          ]
+        },
+        {
+          "layer": 23,
+          "greedy": "big",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 15.7712,
+          "logit_b": 14.5641,
+          "logit_diff": 1.2071,
+          "top3": [
+            "big",
+            "small",
+            ""
+          ]
+        },
+        {
+          "layer": 24,
+          "greedy": "big",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 15.7712,
+          "logit_b": 14.5641,
+          "logit_diff": 1.2071,
+          "top3": [
+            "big",
+            "small",
+            ""
+          ]
+        },
+        {
+          "layer": 25,
+          "greedy": "big",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 15.7712,
+          "logit_b": 14.5641,
+          "logit_diff": 1.2071,
+          "top3": [
+            "big",
+            "small",
+            ""
+          ]
+        },
+        {
+          "layer": 26,
+          "greedy": "big",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 15.7712,
+          "logit_b": 14.5641,
+          "logit_diff": 1.2071,
+          "top3": [
+            "big",
+            "small",
+            ""
+          ]
+        },
+        {
+          "layer": 27,
+          "greedy": "big",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 15.7712,
+          "logit_b": 14.5641,
+          "logit_diff": 1.2071,
+          "top3": [
+            "big",
+            "small",
+            ""
+          ]
+        }
+      ],
+      "first_flip_layer": 0,
+      "n_flipped": 28
+    },
+    {
+      "config": "PLIM_KROT_hotcold",
+      "prompt_a": "PLIM: hot. KROT: cold.\nPLIM:",
+      "prompt_b": "PLIM: hot. KROT: cold.\nKROT:",
+      "baseline_a": "hot",
+      "baseline_b": "cold",
+      "injection_direction": "A(PLIM)->B(KROT)",
+      "layers": [
+        {
+          "layer": 0,
+          "greedy": "hot",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 16.5473,
+          "logit_b": 13.2452,
+          "logit_diff": 3.3021,
+          "top3": [
+            "hot",
+            "",
+            "warm"
+          ]
+        },
+        {
+          "layer": 1,
+          "greedy": "hot",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 16.5473,
+          "logit_b": 13.2452,
+          "logit_diff": 3.3021,
+          "top3": [
+            "hot",
+            "",
+            "warm"
+          ]
+        },
+        {
+          "layer": 2,
+          "greedy": "hot",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 16.5473,
+          "logit_b": 13.2452,
+          "logit_diff": 3.3021,
+          "top3": [
+            "hot",
+            "",
+            "warm"
+          ]
+        },
+        {
+          "layer": 3,
+          "greedy": "hot",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 16.5473,
+          "logit_b": 13.2452,
+          "logit_diff": 3.3021,
+          "top3": [
+            "hot",
+            "",
+            "warm"
+          ]
+        },
+        {
+          "layer": 4,
+          "greedy": "hot",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 16.5473,
+          "logit_b": 13.2452,
+          "logit_diff": 3.3021,
+          "top3": [
+            "hot",
+            "",
+            "warm"
+          ]
+        },
+        {
+          "layer": 5,
+          "greedy": "hot",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 16.5473,
+          "logit_b": 13.2452,
+          "logit_diff": 3.3021,
+          "top3": [
+            "hot",
+            "",
+            "warm"
+          ]
+        },
+        {
+          "layer": 6,
+          "greedy": "hot",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 16.5473,
+          "logit_b": 13.2452,
+          "logit_diff": 3.3021,
+          "top3": [
+            "hot",
+            "",
+            "warm"
+          ]
+        },
+        {
+          "layer": 7,
+          "greedy": "hot",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 16.5473,
+          "logit_b": 13.2452,
+          "logit_diff": 3.3021,
+          "top3": [
+            "hot",
+            "",
+            "warm"
+          ]
+        },
+        {
+          "layer": 8,
+          "greedy": "hot",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 16.5473,
+          "logit_b": 13.2452,
+          "logit_diff": 3.3021,
+          "top3": [
+            "hot",
+            "",
+            "warm"
+          ]
+        },
+        {
+          "layer": 9,
+          "greedy": "hot",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 16.5473,
+          "logit_b": 13.2452,
+          "logit_diff": 3.3021,
+          "top3": [
+            "hot",
+            "",
+            "warm"
+          ]
+        },
+        {
+          "layer": 10,
+          "greedy": "hot",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 16.5473,
+          "logit_b": 13.2452,
+          "logit_diff": 3.3021,
+          "top3": [
+            "hot",
+            "",
+            "warm"
+          ]
+        },
+        {
+          "layer": 11,
+          "greedy": "hot",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 16.5473,
+          "logit_b": 13.2452,
+          "logit_diff": 3.3021,
+          "top3": [
+            "hot",
+            "",
+            "warm"
+          ]
+        },
+        {
+          "layer": 12,
+          "greedy": "hot",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 16.5473,
+          "logit_b": 13.2452,
+          "logit_diff": 3.3021,
+          "top3": [
+            "hot",
+            "",
+            "warm"
+          ]
+        },
+        {
+          "layer": 13,
+          "greedy": "hot",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 16.5473,
+          "logit_b": 13.2452,
+          "logit_diff": 3.3021,
+          "top3": [
+            "hot",
+            "",
+            "warm"
+          ]
+        },
+        {
+          "layer": 14,
+          "greedy": "hot",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 16.5473,
+          "logit_b": 13.2452,
+          "logit_diff": 3.3021,
+          "top3": [
+            "hot",
+            "",
+            "warm"
+          ]
+        },
+        {
+          "layer": 15,
+          "greedy": "hot",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 16.5473,
+          "logit_b": 13.2452,
+          "logit_diff": 3.3021,
+          "top3": [
+            "hot",
+            "",
+            "warm"
+          ]
+        },
+        {
+          "layer": 16,
+          "greedy": "hot",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 16.5473,
+          "logit_b": 13.2452,
+          "logit_diff": 3.3021,
+          "top3": [
+            "hot",
+            "",
+            "warm"
+          ]
+        },
+        {
+          "layer": 17,
+          "greedy": "hot",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 16.5473,
+          "logit_b": 13.2452,
+          "logit_diff": 3.3021,
+          "top3": [
+            "hot",
+            "",
+            "warm"
+          ]
+        },
+        {
+          "layer": 18,
+          "greedy": "hot",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 16.5473,
+          "logit_b": 13.2452,
+          "logit_diff": 3.3021,
+          "top3": [
+            "hot",
+            "",
+            "warm"
+          ]
+        },
+        {
+          "layer": 19,
+          "greedy": "hot",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 16.5473,
+          "logit_b": 13.2452,
+          "logit_diff": 3.3021,
+          "top3": [
+            "hot",
+            "",
+            "warm"
+          ]
+        },
+        {
+          "layer": 20,
+          "greedy": "hot",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 16.5473,
+          "logit_b": 13.2452,
+          "logit_diff": 3.3021,
+          "top3": [
+            "hot",
+            "",
+            "warm"
+          ]
+        },
+        {
+          "layer": 21,
+          "greedy": "hot",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 16.5473,
+          "logit_b": 13.2452,
+          "logit_diff": 3.3021,
+          "top3": [
+            "hot",
+            "",
+            "warm"
+          ]
+        },
+        {
+          "layer": 22,
+          "greedy": "hot",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 16.5473,
+          "logit_b": 13.2452,
+          "logit_diff": 3.3021,
+          "top3": [
+            "hot",
+            "",
+            "warm"
+          ]
+        },
+        {
+          "layer": 23,
+          "greedy": "hot",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 16.5473,
+          "logit_b": 13.2452,
+          "logit_diff": 3.3021,
+          "top3": [
+            "hot",
+            "",
+            "warm"
+          ]
+        },
+        {
+          "layer": 24,
+          "greedy": "hot",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 16.5473,
+          "logit_b": 13.2452,
+          "logit_diff": 3.3021,
+          "top3": [
+            "hot",
+            "",
+            "warm"
+          ]
+        },
+        {
+          "layer": 25,
+          "greedy": "hot",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 16.5473,
+          "logit_b": 13.2452,
+          "logit_diff": 3.3021,
+          "top3": [
+            "hot",
+            "",
+            "warm"
+          ]
+        },
+        {
+          "layer": 26,
+          "greedy": "hot",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 16.5473,
+          "logit_b": 13.2452,
+          "logit_diff": 3.3021,
+          "top3": [
+            "hot",
+            "",
+            "warm"
+          ]
+        },
+        {
+          "layer": 27,
+          "greedy": "hot",
+          "flipped_to_a": true,
+          "stayed_b": false,
+          "logit_a": 16.5473,
+          "logit_b": 13.2452,
+          "logit_diff": 3.3021,
+          "top3": [
+            "hot",
+            "",
+            "warm"
+          ]
+        }
+      ],
+      "first_flip_layer": 0,
+      "n_flipped": 28
+    }
+  ]
+}
