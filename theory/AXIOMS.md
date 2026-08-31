@@ -2418,3 +2418,100 @@ audit but is diagnosed as saturated for this question because word identity
 dominates it. Future consequence testing should use a predeclared rank of
 candidate completions by held-out KL to truth; this is a measurement redesign,
 not a change to any earlier gate or axiom.
+
+---
+
+## Closing deposit — Robust Port-Compression Conjecture (UNAUDITED)
+
+*Added 2026-08-31 as the program's closing theoretical deposit. This is an
+open problem from Codex direction round 7 (R3), not an adopted theorem.
+Requires a dedicated mathematics audit before any claim.*
+
+### Setup
+
+Let \(M\) be a decoder-only softmax-attention transformer with \(L\) layers
+and model dimension \(d\). After processing prefix \(u\) of length \(t\), its
+complete incremental state is
+
+\[
+C_t(u) = \bigl(t,\{K_{\ell,t}(u), V_{\ell,t}(u)\}_{\ell=1}^{L}\bigr).
+\]
+
+For token \(a\), the append action \(A_{t,a}: C_t \to C_{t+1}\) is the actual
+transformer computation, and \(\rho_t: C_t \to \Delta(\mathcal{V})\) the
+next-token distribution.
+
+An internal port \(p_{\ell,t}: C_t \to \mathbb{R}^d\) (e.g., the
+newest-token residual after layer \(\ell\)) is an *internally sufficient
+carrier* if maps \(F_{t,a}\) and \(g_t\) exist such that
+
+\[
+p_{\ell,t+1} \circ A_{t,a} = F_{t,a} \circ p_{\ell,t},
+\qquad
+\rho_t = g_t \circ p_{\ell,t}.
+\]
+
+Equivalently, equality at the port is an output-respecting right congruence.
+
+### Conjecture (Robust Port-Compression)
+
+Let \(M\) have generic, nondegenerate weights. Let \(X_t\) contain an open
+set of continuous soft prefixes, and let \(p_{\ell,t}: X_t \to \mathbb{R}^d\)
+be the residual at the newest token after a fixed layer \(\ell\).
+
+Once the behaviorally effective dimension of \(X_t\) exceeds \(d\), there
+exist soft prefixes \(x, x' \in X_t\) such that
+\(p_{\ell,t}(x) = p_{\ell,t}(x')\) but for some admissible appended soft
+token \(a\),
+
+\[
+\rho_{t+1}(xa) \neq \rho_{t+1}(x'a).
+\]
+
+Therefore no fixed layer's newest-token residual realizes the transformer's
+append-action process on all such prefixes. By contrast, the full distributed
+KV-cache carrier \(C_t\) realizes it exactly.
+
+### Why this might be true
+
+1. A continuous map from a high-dimensional open domain into \(\mathbb{R}^d\)
+   must have nontrivial fibers.
+2. Those histories can produce different keys/values at earlier layers.
+3. Under nondegeneracy, a suitable future query distinguishes such cache
+   configurations via \(\mathrm{softmax}(qK^\top)V\).
+4. If downstream computation is nondegenerate, that difference reaches
+   \(\rho\).
+
+### Known gaps
+
+- Raw prefix dimension need not equal behaviorally effective dimension.
+- Two different caches might be future-equivalent (gauge symmetry).
+- A separating soft query may exist even when no vocabulary token supplies it.
+- Discrete natural-language prefixes admit exact injective encodings into
+  \(\mathbb{R}^d\).
+- Approximate/finite-precision claims require a metric and robustness
+  assumptions.
+- Close prior art: Haris and Onak (COLT 2025) prove linear memory lower
+  bounds for exact attention-based generation under communication complexity.
+
+### Properties
+
+This conjecture is:
+- **Interior:** about the implementation, not just input-output behavior.
+- **Coordinate-invariant:** whether the commuting laws exist is unchanged
+  under arbitrary bijective recodings \(\phi: P \to P'\).
+- **Not yet novel:** internally sufficient carriers are standard in causal
+  abstraction and state-realization theory.
+
+### Connection to the adopted foundation
+
+In the D1--D9 framework, this conjecture instantiates the surgeon-vs-denizen
+asymmetry (Theorem 8) at the implementation level. The KV cache is the full
+surgeon carrier \(C_t\); a fixed-layer residual is a restricted port. The
+conjecture says this port is not an internally sufficient carrier once prefix
+complexity exceeds the port's dimension — the surgeon's full state space
+genuinely refines the port's quotient. This is the architectural reason a
+denizen limited to one residual tap cannot replicate the full model's
+append-action process, and connects the abstract place-refinement inequality
+\(d_\infty^D \leq d_\infty^S\) to the concrete geometry of transformer
+attention.

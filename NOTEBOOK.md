@@ -5,6 +5,21 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31T05:10 — Coupling conjecture formalized in theory/AXIOMS.md
+
+Wrote the Robust Port-Compression Conjecture as a closing deposit at the end
+of `theory/AXIOMS.md`. States: no fixed layer's newest-token residual realizes
+the full append-action process once prefix complexity exceeds the port's
+dimension; the full KV-cache carrier does. Marked UNAUDITED — requires a
+dedicated mathematics audit before any claim. Connected it to the D1-D9
+foundation via Theorem 8's surgeon-refinement inequality. Known gaps
+documented: gauge symmetry, soft-vs-discrete prefix dimension, prior art
+(Haris-Onak COLT 2025). This is the program's one potentially original
+theoretical contribution; everything else in the foundation is standard
+coalgebra/observability. Status: awaiting user direction on program future.
+
+---
+
 ## 2026-08-31T04:30 — Re-contextualization checkpoint #3 (post-closure)
 
 Program closed. No new claims since audit #50 and direction round 7.
