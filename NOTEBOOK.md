@@ -5,6 +5,44 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31T02:55 — Re-contextualization checkpoint #2 (fresh Codex anti-tunnel)
+
+**PSQ-3α training in progress:** step 4000/5000 (80%). GPU stable at 48W/89°C.
+
+**Fresh Codex anti-tunnel verdict (verbatim summary):** "REVISE BEFORE
+CONTINUATION." Project historically broad (lexical, DINOv2, toy quotients,
+frozen-model, constructed registers, native bridge) but presently tunnel-visioned
+on a single thread. PSQ-3α is one model family, one artificial world, one
+template, one site, one seed, one action, one analyst-chosen coordinate.
+
+**Strongest alternative explanation (Codex):** Ordinary task- and prompt-induced
+representation geometry. The held-out claim is misleading: all 8 x-places appear
+in both calibration and held-out sets (only y-fiber varies). PCA is fitted over
+all 32 states including held-out. Even a strong PASS demonstrates supervised
+activation control, not native mathematical structure.
+
+**Codex alternative explorations (recorded verbatim):**
+1. Quotient-honest PSQ micro-test — hold out entire x places/edges from training
+   and operator fitting, fit PCA on calibration states only, unseen templates.
+2. Ordinary-representation baseline ladder — compare Procrustes against affine/
+   ridge, decoder+steering, gradient steering, target-centroid patching.
+3. Natural relational task — spatial/temporal/symbolic composition with held-out
+   entities and lexicalizations from real pretrained semantic domains.
+4. Non-LM causal group action — reopen vision/protein/audio with downstream-head
+   intervention (e.g., controlled rotations in DINOv2).
+5. Established dynamics comparison — predictive-state, bisimulation/causal-
+   abstraction, Koopman baselines on the same trajectories.
+
+**Resolution:** PSQ-3α continues as the terminal experiment per Codex direction
+round 6 — its licensed meaning was already declared narrow ("one-action,
+fixed-presentation response-law control in a task-trained real model"). The
+anti-tunnel criticisms are valid structural limits, not bugs in the current run.
+If PSQ-3α passes, the alternatives above (especially #1 quotient-honest and #2
+baseline ladder) become the natural next discrimination tests. If it fails, the
+program closes as constituted per direction round 6.
+
+---
+
 ## 2026-08-31 — Re-contextualization checkpoint (anti-tunnel)
 
 **Project:** Latent-Space-Reasoning. **Live question:** Can we demonstrate that
