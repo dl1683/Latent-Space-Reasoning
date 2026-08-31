@@ -5,6 +5,45 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31T02:30 — Config-dependence diagnosed: template format is the primary driver
+
+Ran systematic ablation: same entities with different values, same values with
+different entities, same everything with different templates. Results at layer 14:
+
+| Config | Template | Diag | Offdiag |
+|--------|----------|------|---------|
+| HESK/VORN red/blue | T3 (long) | 0.12 | 0.18 |
+| HESK/VORN red/blue | T4 (compact) | 2.52 | 0.70 |
+| HESK/VORN big/small | T3 (long) | 2.46 | 1.94 |
+| HESK/VORN big/small | T4 (compact) | 2.41 | 1.70 |
+| ZOG/MIP big/small | T4 | 1.93 | 1.01 |
+| PLIM/KROT big/small | T4 | 1.43 | 0.76 |
+| FOX/BAT big/small | T4 | 1.57 | 0.87 |
+
+**Findings:**
+1. **Template format is the dominant factor.** HESK/VORN red/blue goes from
+   diag=0.12 (T3) to diag=2.52 (T4). The long template distributes information
+   so broadly that transplanting storage positions misses it.
+2. **Value tokens also matter.** big/small consistently stronger (1.4-1.9) than
+   hot/cold (0.5-1.0) or red/blue (0.8) with same template.
+3. **Entity names are NOT the driver.** FOX/BAT and DAX/NUB (novel entities)
+   show similar K to ZOG/MIP with same values.
+4. **HESK/VORN all-NO_CONTROL in v2b was a template artifact**, not an entity
+   artifact. The T3 template's redundant restatement dilutes the signal.
+
+**Critical observation:** No config/layer ever shows SEPARATE. Always PARTIAL.
+Facts are entangled at every layer — the model never stores them independently
+at the storage-position level. This connects to BP-2 (distributed state) and
+the three-gate model (present but not independently addressable).
+
+**R^n trap check:** The K matrix is itself an R^n instrument (vector
+replacement). It measures linear response to vector substitution. What we
+really need: an instrument that doesn't presuppose R^n structure. But the
+K matrix's layer-dependence and template-sensitivity IS informative about
+what aspects of the representation are causally load-bearing.
+
+---
+
 ## 2026-08-31T01:00 — Fusion-fission v2b: BPE boundary fix confirms zero self-patch
 
 **Root cause found and fixed.** The non-zero self-patch in v2 (0.27-0.45) was
