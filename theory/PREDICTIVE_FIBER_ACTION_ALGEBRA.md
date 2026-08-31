@@ -17,7 +17,7 @@ $$
 | $\pi: Q \to G$ | Projection | Maps fine future-response state to coarse greedy commitment |
 | $\mathcal{A}$ | Continuation monoid | Typed continuation operations under concatenation |
 | $F_g = \pi^{-1}(g)$ | Fibers | Pre-images of greedy places; encode history-dependent structure invisible to argmax |
-| $S$ | Synchronization candidate | Place-indexed canonical restatement; idempotent retraction; does NOT commute with correction |
+| $S$ | Synchronization candidate | World-indexed canonical restatement $S_w$; idempotent retraction; does NOT commute with correction. Note: currently constructed from ground-truth world, not greedy signature alone — hence $S_w$, not representative-independent $S_p$ |
 
 ## 2. Greedy places (carrier table)
 
@@ -57,7 +57,11 @@ same target place under the operation.
 | Registered | 12/12 (100%) | 11/12 (91.7%) |
 | Held-out | 15/15 (100%) | 15/15 (100%) |
 
-**Empty descent is perfect.** Restatement descent is near-perfect.
+**Empty descent is perfect.** Restatement descent is near-perfect (one failure:
+registered fiber `MIP=blue|PLIM=blue|ZOG=small` has members from different
+worlds w101 and w111 with different MIP ground truths — so world-indexed $S_w$
+maps them to different MIP answers. This confirms the $S_w$ vs $S_p$ typing
+issue: restatement uses ground-truth world, not greedy signature alone).
 
 ## 4. Law sheet
 
