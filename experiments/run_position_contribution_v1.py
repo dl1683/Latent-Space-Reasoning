@@ -116,15 +116,27 @@ def get_per_position_value_contributions(model, tok, prompt, target_layers):
             get_residual_at_layer(model, tok, prompt, l_idx)
         )
 
-        head_dim = model.config.hidden_size // model.config.num_attention_heads
-        v_proj = layer.self_attn.v_proj(normed)
-        v_heads = v_proj[0].view(seq_len, n_heads, head_dim).transpose(0, 1)
+        head_dim = getattr(model.config, 'head_dim',
+                           model.config.hidden_size // model.config.num_attention_heads)
+        num_kv_heads = getattr(model.config, 'num_key_value_heads',
+                               model.config.num_attention_heads)
+        num_q_heads = model.config.num_attention_heads
+        kv_group_size = num_q_heads // num_kv_heads
+
+        v_proj_out = layer.self_attn.v_proj(normed)
+        v_kv = v_proj_out[0].view(seq_len, num_kv_heads, head_dim)
+        v_expanded = v_kv.unsqueeze(2).expand(-1, -1, kv_group_size, -1)
+        v_expanded = v_expanded.reshape(seq_len, num_q_heads, head_dim)
+        v_heads = v_expanded.transpose(0, 1)
 
         per_pos[l_idx] = {}
+        o_proj = layer.self_attn.o_proj
         for pos in range(seq_len):
             weight_to_pos = attn_w[:, last_pos, pos]
-            weighted_v = (weight_to_pos.unsqueeze(-1) * v_heads[:, pos, :]).sum(dim=0)
-            per_pos[l_idx][pos] = weighted_v.detach()
+            per_head = weight_to_pos.unsqueeze(-1) * v_heads[:, pos, :]
+            concat = per_head.reshape(1, -1)
+            projected = o_proj(concat)[0]
+            per_pos[l_idx][pos] = projected.detach()
 
     return per_pos
 

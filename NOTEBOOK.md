@@ -5,6 +5,38 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31T20:30 — Position contribution v1: resolution signal is DISTRIBUTED
+
+**Decomposed attention output by source position.** For each position, computed the
+attention-weighted value contribution (with GQA expansion + o_proj), applied logit lens,
+measured JSD between fact-worlds. Tells us WHERE the resolution signal comes from.
+
+**Result: distributed, not localized.** The resolution signal at L25 is NOT concentrated
+at the queried entity's position. Key observations (PLIM/KROT queryB):
+- Value tokens (" hot") hit the JSD ceiling (0.833) — they carry maximum fact-discriminating signal
+- But ONLY the first entity's value (pos 3): JSD=0.833. The second entity's value (pos 8): JSD=0.003
+- Entity name positions show a complex pattern: sometimes suppressed (KROT at pos 5 = 0.035 at L21),
+  sometimes contributing (KROT at pos 6 = 0.749 at L25)
+- Many "structural" positions (colons, periods, newlines) also carry strong signal
+
+**The resolution is a whole-sequence operation**, not a local read from one position.
+The o_proj projection mixes value contributions across heads, and the resulting signal
+is spread across many positions. This is consistent with the value-space finding
+(MLP decomposition v1): resolution emerges from the way value vectors COMBINE,
+not from any single position's contribution.
+
+**Fixed: GQA dimension mismatch.** Qwen3-0.6B uses grouped query attention
+(num_attention_heads=16, num_key_value_heads=8, head_dim=128). The o_proj takes
+16*128=2048 input dims, not hidden_size=1024. Fixed by expanding KV heads via
+repeat for the GQA group size before concatenating.
+
+**What's next:** The distributed pattern suggests resolution may be best understood
+as a property of the full attention pattern + value content, not decomposable to
+single positions. The next step is to characterize what the value vectors at
+resolution layers encode differently from non-resolution layers.
+
+---
+
 ## 2026-08-31T09:15 — Attention control v1: resolution layer is NOT attention routing
 
 **Ruled out the simplest confound.** Measured attention from the query position

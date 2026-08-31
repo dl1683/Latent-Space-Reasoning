@@ -1,0 +1,1859 @@
+{
+  "experiment": "position_contribution_v1",
+  "timestamp": "2026-08-31T18:21:23.117369",
+  "model": "Qwen/Qwen3-0.6B",
+  "purpose": "Decompose resolution by position: which tokens' value contributions carry the resolution signal?",
+  "n_configs": 2,
+  "results": [
+    {
+      "config": "PLIM_KROT_hotcold_queryB",
+      "queried_entity": "KROT",
+      "tokens": [
+        "PL",
+        "IM",
+        ":",
+        " hot",
+        ".",
+        " K",
+        "ROT",
+        ":",
+        " hot",
+        ".\n",
+        "K",
+        "ROT",
+        ":"
+      ],
+      "query_span": [
+        5,
+        6
+      ],
+      "entity_a_span": [
+        0,
+        1
+      ],
+      "entity_b_span": [
+        5,
+        6
+      ],
+      "layers": [
+        {
+          "layer": 10,
+          "positions": [
+            {
+              "position": 0,
+              "token": "PL",
+              "label": "entity_A(PLIM)",
+              "jsd_between_worlds": 0.095722
+            },
+            {
+              "position": 1,
+              "token": "IM",
+              "label": "entity_A(PLIM)",
+              "jsd_between_worlds": 0.286675
+            },
+            {
+              "position": 2,
+              "token": ":",
+              "label": "pos2(:)",
+              "jsd_between_worlds": 0.243799
+            },
+            {
+              "position": 3,
+              "token": " hot",
+              "label": "pos3(hot)",
+              "jsd_between_worlds": 0.736766
+            },
+            {
+              "position": 4,
+              "token": ".",
+              "label": "pos4(.)",
+              "jsd_between_worlds": 0.674916
+            },
+            {
+              "position": 5,
+              "token": " K",
+              "label": "entity_B(KROT)",
+              "jsd_between_worlds": 0.497429
+            },
+            {
+              "position": 6,
+              "token": "ROT",
+              "label": "entity_B(KROT)",
+              "jsd_between_worlds": 0.429004
+            },
+            {
+              "position": 7,
+              "token": ":",
+              "label": "pos7(:)",
+              "jsd_between_worlds": 0.449143
+            },
+            {
+              "position": 8,
+              "token": " hot",
+              "label": "pos8(hot)",
+              "jsd_between_worlds": 0.706763
+            },
+            {
+              "position": 9,
+              "token": ".\n",
+              "label": "pos9(.)",
+              "jsd_between_worlds": 0.607172
+            },
+            {
+              "position": 10,
+              "token": "K",
+              "label": "pos10(K)",
+              "jsd_between_worlds": 0.640974
+            },
+            {
+              "position": 11,
+              "token": "ROT",
+              "label": "pos11(ROT)",
+              "jsd_between_worlds": 0.384742
+            },
+            {
+              "position": 12,
+              "token": ":",
+              "label": "pos12(:)",
+              "jsd_between_worlds": 0.573781
+            }
+          ]
+        },
+        {
+          "layer": 15,
+          "positions": [
+            {
+              "position": 0,
+              "token": "PL",
+              "label": "entity_A(PLIM)",
+              "jsd_between_worlds": 0.144685
+            },
+            {
+              "position": 1,
+              "token": "IM",
+              "label": "entity_A(PLIM)",
+              "jsd_between_worlds": 0.002552
+            },
+            {
+              "position": 2,
+              "token": ":",
+              "label": "pos2(:)",
+              "jsd_between_worlds": 0.419967
+            },
+            {
+              "position": 3,
+              "token": " hot",
+              "label": "pos3(hot)",
+              "jsd_between_worlds": 0.668964
+            },
+            {
+              "position": 4,
+              "token": ".",
+              "label": "pos4(.)",
+              "jsd_between_worlds": 0.557089
+            },
+            {
+              "position": 5,
+              "token": " K",
+              "label": "entity_B(KROT)",
+              "jsd_between_worlds": 0.571404
+            },
+            {
+              "position": 6,
+              "token": "ROT",
+              "label": "entity_B(KROT)",
+              "jsd_between_worlds": 0.560958
+            },
+            {
+              "position": 7,
+              "token": ":",
+              "label": "pos7(:)",
+              "jsd_between_worlds": 0.602768
+            },
+            {
+              "position": 8,
+              "token": " hot",
+              "label": "pos8(hot)",
+              "jsd_between_worlds": 0.783019
+            },
+            {
+              "position": 9,
+              "token": ".\n",
+              "label": "pos9(.)",
+              "jsd_between_worlds": 0.784889
+            },
+            {
+              "position": 10,
+              "token": "K",
+              "label": "pos10(K)",
+              "jsd_between_worlds": 0.423939
+            },
+            {
+              "position": 11,
+              "token": "ROT",
+              "label": "pos11(ROT)",
+              "jsd_between_worlds": 0.408697
+            },
+            {
+              "position": 12,
+              "token": ":",
+              "label": "pos12(:)",
+              "jsd_between_worlds": 0.613016
+            }
+          ]
+        },
+        {
+          "layer": 20,
+          "positions": [
+            {
+              "position": 0,
+              "token": "PL",
+              "label": "entity_A(PLIM)",
+              "jsd_between_worlds": 0.024263
+            },
+            {
+              "position": 1,
+              "token": "IM",
+              "label": "entity_A(PLIM)",
+              "jsd_between_worlds": 0.298982
+            },
+            {
+              "position": 2,
+              "token": ":",
+              "label": "pos2(:)",
+              "jsd_between_worlds": 0.488633
+            },
+            {
+              "position": 3,
+              "token": " hot",
+              "label": "pos3(hot)",
+              "jsd_between_worlds": 0.825331
+            },
+            {
+              "position": 4,
+              "token": ".",
+              "label": "pos4(.)",
+              "jsd_between_worlds": 0.327259
+            },
+            {
+              "position": 5,
+              "token": " K",
+              "label": "entity_B(KROT)",
+              "jsd_between_worlds": 0.784178
+            },
+            {
+              "position": 6,
+              "token": "ROT",
+              "label": "entity_B(KROT)",
+              "jsd_between_worlds": 0.459198
+            },
+            {
+              "position": 7,
+              "token": ":",
+              "label": "pos7(:)",
+              "jsd_between_worlds": 0.256857
+            },
+            {
+              "position": 8,
+              "token": " hot",
+              "label": "pos8(hot)",
+              "jsd_between_worlds": 0.631563
+            },
+            {
+              "position": 9,
+              "token": ".\n",
+              "label": "pos9(.)",
+              "jsd_between_worlds": 0.774399
+            },
+            {
+              "position": 10,
+              "token": "K",
+              "label": "pos10(K)",
+              "jsd_between_worlds": 0.524859
+            },
+            {
+              "position": 11,
+              "token": "ROT",
+              "label": "pos11(ROT)",
+              "jsd_between_worlds": 0.32604
+            },
+            {
+              "position": 12,
+              "token": ":",
+              "label": "pos12(:)",
+              "jsd_between_worlds": 0.747189
+            }
+          ]
+        },
+        {
+          "layer": 21,
+          "positions": [
+            {
+              "position": 0,
+              "token": "PL",
+              "label": "entity_A(PLIM)",
+              "jsd_between_worlds": 0.015894
+            },
+            {
+              "position": 1,
+              "token": "IM",
+              "label": "entity_A(PLIM)",
+              "jsd_between_worlds": 0.245786
+            },
+            {
+              "position": 2,
+              "token": ":",
+              "label": "pos2(:)",
+              "jsd_between_worlds": 0.640597
+            },
+            {
+              "position": 3,
+              "token": " hot",
+              "label": "pos3(hot)",
+              "jsd_between_worlds": 0.832554
+            },
+            {
+              "position": 4,
+              "token": ".",
+              "label": "pos4(.)",
+              "jsd_between_worlds": 0.830807
+            },
+            {
+              "position": 5,
+              "token": " K",
+              "label": "entity_B(KROT)",
+              "jsd_between_worlds": 0.034681
+            },
+            {
+              "position": 6,
+              "token": "ROT",
+              "label": "entity_B(KROT)",
+              "jsd_between_worlds": 0.262412
+            },
+            {
+              "position": 7,
+              "token": ":",
+              "label": "pos7(:)",
+              "jsd_between_worlds": 0.578141
+            },
+            {
+              "position": 8,
+              "token": " hot",
+              "label": "pos8(hot)",
+              "jsd_between_worlds": 0.118804
+            },
+            {
+              "position": 9,
+              "token": ".\n",
+              "label": "pos9(.)",
+              "jsd_between_worlds": 0.438684
+            },
+            {
+              "position": 10,
+              "token": "K",
+              "label": "pos10(K)",
+              "jsd_between_worlds": 0.118709
+            },
+            {
+              "position": 11,
+              "token": "ROT",
+              "label": "pos11(ROT)",
+              "jsd_between_worlds": 0.789568
+            },
+            {
+              "position": 12,
+              "token": ":",
+              "label": "pos12(:)",
+              "jsd_between_worlds": 0.364502
+            }
+          ]
+        },
+        {
+          "layer": 22,
+          "positions": [
+            {
+              "position": 0,
+              "token": "PL",
+              "label": "entity_A(PLIM)",
+              "jsd_between_worlds": 0.019918
+            },
+            {
+              "position": 1,
+              "token": "IM",
+              "label": "entity_A(PLIM)",
+              "jsd_between_worlds": 0.706244
+            },
+            {
+              "position": 2,
+              "token": ":",
+              "label": "pos2(:)",
+              "jsd_between_worlds": 0.005693
+            },
+            {
+              "position": 3,
+              "token": " hot",
+              "label": "pos3(hot)",
+              "jsd_between_worlds": 0.797372
+            },
+            {
+              "position": 4,
+              "token": ".",
+              "label": "pos4(.)",
+              "jsd_between_worlds": 0.000703
+            },
+            {
+              "position": 5,
+              "token": " K",
+              "label": "entity_B(KROT)",
+              "jsd_between_worlds": 0.03171
+            },
+            {
+              "position": 6,
+              "token": "ROT",
+              "label": "entity_B(KROT)",
+              "jsd_between_worlds": 0.600311
+            },
+            {
+              "position": 7,
+              "token": ":",
+              "label": "pos7(:)",
+              "jsd_between_worlds": 0.519592
+            },
+            {
+              "position": 8,
+              "token": " hot",
+              "label": "pos8(hot)",
+              "jsd_between_worlds": 0.598335
+            },
+            {
+              "position": 9,
+              "token": ".\n",
+              "label": "pos9(.)",
+              "jsd_between_worlds": 0.189175
+            },
+            {
+              "position": 10,
+              "token": "K",
+              "label": "pos10(K)",
+              "jsd_between_worlds": 0.285272
+            },
+            {
+              "position": 11,
+              "token": "ROT",
+              "label": "pos11(ROT)",
+              "jsd_between_worlds": 0.519386
+            },
+            {
+              "position": 12,
+              "token": ":",
+              "label": "pos12(:)",
+              "jsd_between_worlds": 0.351786
+            }
+          ]
+        },
+        {
+          "layer": 23,
+          "positions": [
+            {
+              "position": 0,
+              "token": "PL",
+              "label": "entity_A(PLIM)",
+              "jsd_between_worlds": 0.032144
+            },
+            {
+              "position": 1,
+              "token": "IM",
+              "label": "entity_A(PLIM)",
+              "jsd_between_worlds": 0.462205
+            },
+            {
+              "position": 2,
+              "token": ":",
+              "label": "pos2(:)",
+              "jsd_between_worlds": 0.308744
+            },
+            {
+              "position": 3,
+              "token": " hot",
+              "label": "pos3(hot)",
+              "jsd_between_worlds": 0.82824
+            },
+            {
+              "position": 4,
+              "token": ".",
+              "label": "pos4(.)",
+              "jsd_between_worlds": 0.829192
+            },
+            {
+              "position": 5,
+              "token": " K",
+              "label": "entity_B(KROT)",
+              "jsd_between_worlds": 0.383132
+            },
+            {
+              "position": 6,
+              "token": "ROT",
+              "label": "entity_B(KROT)",
+              "jsd_between_worlds": 0.652656
+            },
+            {
+              "position": 7,
+              "token": ":",
+              "label": "pos7(:)",
+              "jsd_between_worlds": 0.611757
+            },
+            {
+              "position": 8,
+              "token": " hot",
+              "label": "pos8(hot)",
+              "jsd_between_worlds": 0.448452
+            },
+            {
+              "position": 9,
+              "token": ".\n",
+              "label": "pos9(.)",
+              "jsd_between_worlds": 0.699352
+            },
+            {
+              "position": 10,
+              "token": "K",
+              "label": "pos10(K)",
+              "jsd_between_worlds": 0.414297
+            },
+            {
+              "position": 11,
+              "token": "ROT",
+              "label": "pos11(ROT)",
+              "jsd_between_worlds": 0.442616
+            },
+            {
+              "position": 12,
+              "token": ":",
+              "label": "pos12(:)",
+              "jsd_between_worlds": 0.374654
+            }
+          ]
+        },
+        {
+          "layer": 24,
+          "positions": [
+            {
+              "position": 0,
+              "token": "PL",
+              "label": "entity_A(PLIM)",
+              "jsd_between_worlds": 0.032962
+            },
+            {
+              "position": 1,
+              "token": "IM",
+              "label": "entity_A(PLIM)",
+              "jsd_between_worlds": 0.022753
+            },
+            {
+              "position": 2,
+              "token": ":",
+              "label": "pos2(:)",
+              "jsd_between_worlds": 0.132891
+            },
+            {
+              "position": 3,
+              "token": " hot",
+              "label": "pos3(hot)",
+              "jsd_between_worlds": 0.832553
+            },
+            {
+              "position": 4,
+              "token": ".",
+              "label": "pos4(.)",
+              "jsd_between_worlds": 0.803766
+            },
+            {
+              "position": 5,
+              "token": " K",
+              "label": "entity_B(KROT)",
+              "jsd_between_worlds": 0.035516
+            },
+            {
+              "position": 6,
+              "token": "ROT",
+              "label": "entity_B(KROT)",
+              "jsd_between_worlds": 0.828072
+            },
+            {
+              "position": 7,
+              "token": ":",
+              "label": "pos7(:)",
+              "jsd_between_worlds": 0.763736
+            },
+            {
+              "position": 8,
+              "token": " hot",
+              "label": "pos8(hot)",
+              "jsd_between_worlds": 0.474607
+            },
+            {
+              "position": 9,
+              "token": ".\n",
+              "label": "pos9(.)",
+              "jsd_between_worlds": 0.7725
+            },
+            {
+              "position": 10,
+              "token": "K",
+              "label": "pos10(K)",
+              "jsd_between_worlds": 0.832543
+            },
+            {
+              "position": 11,
+              "token": "ROT",
+              "label": "pos11(ROT)",
+              "jsd_between_worlds": 0.040722
+            },
+            {
+              "position": 12,
+              "token": ":",
+              "label": "pos12(:)",
+              "jsd_between_worlds": 0.198796
+            }
+          ]
+        },
+        {
+          "layer": 25,
+          "positions": [
+            {
+              "position": 0,
+              "token": "PL",
+              "label": "entity_A(PLIM)",
+              "jsd_between_worlds": 0.01729
+            },
+            {
+              "position": 1,
+              "token": "IM",
+              "label": "entity_A(PLIM)",
+              "jsd_between_worlds": 0.145616
+            },
+            {
+              "position": 2,
+              "token": ":",
+              "label": "pos2(:)",
+              "jsd_between_worlds": 0.34394
+            },
+            {
+              "position": 3,
+              "token": " hot",
+              "label": "pos3(hot)",
+              "jsd_between_worlds": 0.832555
+            },
+            {
+              "position": 4,
+              "token": ".",
+              "label": "pos4(.)",
+              "jsd_between_worlds": 0.797831
+            },
+            {
+              "position": 5,
+              "token": " K",
+              "label": "entity_B(KROT)",
+              "jsd_between_worlds": 0.623563
+            },
+            {
+              "position": 6,
+              "token": "ROT",
+              "label": "entity_B(KROT)",
+              "jsd_between_worlds": 0.749367
+            },
+            {
+              "position": 7,
+              "token": ":",
+              "label": "pos7(:)",
+              "jsd_between_worlds": 0.641428
+            },
+            {
+              "position": 8,
+              "token": " hot",
+              "label": "pos8(hot)",
+              "jsd_between_worlds": 0.00306
+            },
+            {
+              "position": 9,
+              "token": ".\n",
+              "label": "pos9(.)",
+              "jsd_between_worlds": 0.803922
+            },
+            {
+              "position": 10,
+              "token": "K",
+              "label": "pos10(K)",
+              "jsd_between_worlds": 0.393718
+            },
+            {
+              "position": 11,
+              "token": "ROT",
+              "label": "pos11(ROT)",
+              "jsd_between_worlds": 0.397323
+            },
+            {
+              "position": 12,
+              "token": ":",
+              "label": "pos12(:)",
+              "jsd_between_worlds": 0.432783
+            }
+          ]
+        },
+        {
+          "layer": 26,
+          "positions": [
+            {
+              "position": 0,
+              "token": "PL",
+              "label": "entity_A(PLIM)",
+              "jsd_between_worlds": 0.038088
+            },
+            {
+              "position": 1,
+              "token": "IM",
+              "label": "entity_A(PLIM)",
+              "jsd_between_worlds": 0.258948
+            },
+            {
+              "position": 2,
+              "token": ":",
+              "label": "pos2(:)",
+              "jsd_between_worlds": 0.086564
+            },
+            {
+              "position": 3,
+              "token": " hot",
+              "label": "pos3(hot)",
+              "jsd_between_worlds": 0.794113
+            },
+            {
+              "position": 4,
+              "token": ".",
+              "label": "pos4(.)",
+              "jsd_between_worlds": 0.570444
+            },
+            {
+              "position": 5,
+              "token": " K",
+              "label": "entity_B(KROT)",
+              "jsd_between_worlds": 0.081013
+            },
+            {
+              "position": 6,
+              "token": "ROT",
+              "label": "entity_B(KROT)",
+              "jsd_between_worlds": 0.071858
+            },
+            {
+              "position": 7,
+              "token": ":",
+              "label": "pos7(:)",
+              "jsd_between_worlds": 0.733037
+            },
+            {
+              "position": 8,
+              "token": " hot",
+              "label": "pos8(hot)",
+              "jsd_between_worlds": 0.826868
+            },
+            {
+              "position": 9,
+              "token": ".\n",
+              "label": "pos9(.)",
+              "jsd_between_worlds": 0.783949
+            },
+            {
+              "position": 10,
+              "token": "K",
+              "label": "pos10(K)",
+              "jsd_between_worlds": 0.125226
+            },
+            {
+              "position": 11,
+              "token": "ROT",
+              "label": "pos11(ROT)",
+              "jsd_between_worlds": 0.561394
+            },
+            {
+              "position": 12,
+              "token": ":",
+              "label": "pos12(:)",
+              "jsd_between_worlds": 0.416879
+            }
+          ]
+        },
+        {
+          "layer": 27,
+          "positions": [
+            {
+              "position": 0,
+              "token": "PL",
+              "label": "entity_A(PLIM)",
+              "jsd_between_worlds": 0.0182
+            },
+            {
+              "position": 1,
+              "token": "IM",
+              "label": "entity_A(PLIM)",
+              "jsd_between_worlds": 0.36576
+            },
+            {
+              "position": 2,
+              "token": ":",
+              "label": "pos2(:)",
+              "jsd_between_worlds": 0.542526
+            },
+            {
+              "position": 3,
+              "token": " hot",
+              "label": "pos3(hot)",
+              "jsd_between_worlds": 0.753325
+            },
+            {
+              "position": 4,
+              "token": ".",
+              "label": "pos4(.)",
+              "jsd_between_worlds": 0.824956
+            },
+            {
+              "position": 5,
+              "token": " K",
+              "label": "entity_B(KROT)",
+              "jsd_between_worlds": 0.560444
+            },
+            {
+              "position": 6,
+              "token": "ROT",
+              "label": "entity_B(KROT)",
+              "jsd_between_worlds": 0.450965
+            },
+            {
+              "position": 7,
+              "token": ":",
+              "label": "pos7(:)",
+              "jsd_between_worlds": 0.643239
+            },
+            {
+              "position": 8,
+              "token": " hot",
+              "label": "pos8(hot)",
+              "jsd_between_worlds": 0.727477
+            },
+            {
+              "position": 9,
+              "token": ".\n",
+              "label": "pos9(.)",
+              "jsd_between_worlds": 0.593951
+            },
+            {
+              "position": 10,
+              "token": "K",
+              "label": "pos10(K)",
+              "jsd_between_worlds": 0.445861
+            },
+            {
+              "position": 11,
+              "token": "ROT",
+              "label": "pos11(ROT)",
+              "jsd_between_worlds": 0.620848
+            },
+            {
+              "position": 12,
+              "token": ":",
+              "label": "pos12(:)",
+              "jsd_between_worlds": 0.631528
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "config": "HESK_VORN_redblue_queryA",
+      "queried_entity": "HESK",
+      "tokens": [
+        "H",
+        "ES",
+        "K",
+        ":",
+        " red",
+        ".",
+        " V",
+        "ORN",
+        ":",
+        " red",
+        ".\n",
+        "H",
+        "ES",
+        "K",
+        ":"
+      ],
+      "query_span": [
+        0,
+        1,
+        2
+      ],
+      "entity_a_span": [
+        0,
+        1,
+        2
+      ],
+      "entity_b_span": [
+        6,
+        7
+      ],
+      "layers": [
+        {
+          "layer": 10,
+          "positions": [
+            {
+              "position": 0,
+              "token": "H",
+              "label": "entity_A(HESK)",
+              "jsd_between_worlds": 0.17012
+            },
+            {
+              "position": 1,
+              "token": "ES",
+              "label": "entity_A(HESK)",
+              "jsd_between_worlds": 0.155454
+            },
+            {
+              "position": 2,
+              "token": "K",
+              "label": "query(HESK)",
+              "jsd_between_worlds": 0.243302
+            },
+            {
+              "position": 3,
+              "token": ":",
+              "label": "pos3(:)",
+              "jsd_between_worlds": 0.238221
+            },
+            {
+              "position": 4,
+              "token": " red",
+              "label": "pos4(red)",
+              "jsd_between_worlds": 0.816496
+            },
+            {
+              "position": 5,
+              "token": ".",
+              "label": "pos5(.)",
+              "jsd_between_worlds": 0.707077
+            },
+            {
+              "position": 6,
+              "token": " V",
+              "label": "entity_B(VORN)",
+              "jsd_between_worlds": 0.808022
+            },
+            {
+              "position": 7,
+              "token": "ORN",
+              "label": "entity_B(VORN)",
+              "jsd_between_worlds": 0.606448
+            },
+            {
+              "position": 8,
+              "token": ":",
+              "label": "pos8(:)",
+              "jsd_between_worlds": 0.425296
+            },
+            {
+              "position": 9,
+              "token": " red",
+              "label": "pos9(red)",
+              "jsd_between_worlds": 0.786491
+            },
+            {
+              "position": 10,
+              "token": ".\n",
+              "label": "pos10(.)",
+              "jsd_between_worlds": 0.467375
+            },
+            {
+              "position": 11,
+              "token": "H",
+              "label": "pos11(H)",
+              "jsd_between_worlds": 0.465423
+            },
+            {
+              "position": 12,
+              "token": "ES",
+              "label": "pos12(ES)",
+              "jsd_between_worlds": 0.296682
+            },
+            {
+              "position": 13,
+              "token": "K",
+              "label": "pos13(K)",
+              "jsd_between_worlds": 0.250848
+            },
+            {
+              "position": 14,
+              "token": ":",
+              "label": "pos14(:)",
+              "jsd_between_worlds": 0.443222
+            }
+          ]
+        },
+        {
+          "layer": 15,
+          "positions": [
+            {
+              "position": 0,
+              "token": "H",
+              "label": "entity_A(HESK)",
+              "jsd_between_worlds": 0.199888
+            },
+            {
+              "position": 1,
+              "token": "ES",
+              "label": "entity_A(HESK)",
+              "jsd_between_worlds": 0.001666
+            },
+            {
+              "position": 2,
+              "token": "K",
+              "label": "query(HESK)",
+              "jsd_between_worlds": 0.296224
+            },
+            {
+              "position": 3,
+              "token": ":",
+              "label": "pos3(:)",
+              "jsd_between_worlds": 0.569073
+            },
+            {
+              "position": 4,
+              "token": " red",
+              "label": "pos4(red)",
+              "jsd_between_worlds": 0.715134
+            },
+            {
+              "position": 5,
+              "token": ".",
+              "label": "pos5(.)",
+              "jsd_between_worlds": 0.658669
+            },
+            {
+              "position": 6,
+              "token": " V",
+              "label": "entity_B(VORN)",
+              "jsd_between_worlds": 0.76688
+            },
+            {
+              "position": 7,
+              "token": "ORN",
+              "label": "entity_B(VORN)",
+              "jsd_between_worlds": 0.589947
+            },
+            {
+              "position": 8,
+              "token": ":",
+              "label": "pos8(:)",
+              "jsd_between_worlds": 0.534008
+            },
+            {
+              "position": 9,
+              "token": " red",
+              "label": "pos9(red)",
+              "jsd_between_worlds": 0.773973
+            },
+            {
+              "position": 10,
+              "token": ".\n",
+              "label": "pos10(.)",
+              "jsd_between_worlds": 0.604927
+            },
+            {
+              "position": 11,
+              "token": "H",
+              "label": "pos11(H)",
+              "jsd_between_worlds": 0.50725
+            },
+            {
+              "position": 12,
+              "token": "ES",
+              "label": "pos12(ES)",
+              "jsd_between_worlds": 0.410194
+            },
+            {
+              "position": 13,
+              "token": "K",
+              "label": "pos13(K)",
+              "jsd_between_worlds": 0.331339
+            },
+            {
+              "position": 14,
+              "token": ":",
+              "label": "pos14(:)",
+              "jsd_between_worlds": 0.511633
+            }
+          ]
+        },
+        {
+          "layer": 20,
+          "positions": [
+            {
+              "position": 0,
+              "token": "H",
+              "label": "entity_A(HESK)",
+              "jsd_between_worlds": 0.030274
+            },
+            {
+              "position": 1,
+              "token": "ES",
+              "label": "entity_A(HESK)",
+              "jsd_between_worlds": 0.485879
+            },
+            {
+              "position": 2,
+              "token": "K",
+              "label": "query(HESK)",
+              "jsd_between_worlds": 0.472752
+            },
+            {
+              "position": 3,
+              "token": ":",
+              "label": "pos3(:)",
+              "jsd_between_worlds": 0.204907
+            },
+            {
+              "position": 4,
+              "token": " red",
+              "label": "pos4(red)",
+              "jsd_between_worlds": 0.832407
+            },
+            {
+              "position": 5,
+              "token": ".",
+              "label": "pos5(.)",
+              "jsd_between_worlds": 0.498799
+            },
+            {
+              "position": 6,
+              "token": " V",
+              "label": "entity_B(VORN)",
+              "jsd_between_worlds": 0.465921
+            },
+            {
+              "position": 7,
+              "token": "ORN",
+              "label": "entity_B(VORN)",
+              "jsd_between_worlds": 0.610984
+            },
+            {
+              "position": 8,
+              "token": ":",
+              "label": "pos8(:)",
+              "jsd_between_worlds": 0.547366
+            },
+            {
+              "position": 9,
+              "token": " red",
+              "label": "pos9(red)",
+              "jsd_between_worlds": 0.732581
+            },
+            {
+              "position": 10,
+              "token": ".\n",
+              "label": "pos10(.)",
+              "jsd_between_worlds": 0.622637
+            },
+            {
+              "position": 11,
+              "token": "H",
+              "label": "pos11(H)",
+              "jsd_between_worlds": 0.634652
+            },
+            {
+              "position": 12,
+              "token": "ES",
+              "label": "pos12(ES)",
+              "jsd_between_worlds": 0.426066
+            },
+            {
+              "position": 13,
+              "token": "K",
+              "label": "pos13(K)",
+              "jsd_between_worlds": 0.209118
+            },
+            {
+              "position": 14,
+              "token": ":",
+              "label": "pos14(:)",
+              "jsd_between_worlds": 0.542845
+            }
+          ]
+        },
+        {
+          "layer": 21,
+          "positions": [
+            {
+              "position": 0,
+              "token": "H",
+              "label": "entity_A(HESK)",
+              "jsd_between_worlds": 0.021228
+            },
+            {
+              "position": 1,
+              "token": "ES",
+              "label": "entity_A(HESK)",
+              "jsd_between_worlds": 0.204827
+            },
+            {
+              "position": 2,
+              "token": "K",
+              "label": "query(HESK)",
+              "jsd_between_worlds": 0.301742
+            },
+            {
+              "position": 3,
+              "token": ":",
+              "label": "pos3(:)",
+              "jsd_between_worlds": 0.801011
+            },
+            {
+              "position": 4,
+              "token": " red",
+              "label": "pos4(red)",
+              "jsd_between_worlds": 0.832554
+            },
+            {
+              "position": 5,
+              "token": ".",
+              "label": "pos5(.)",
+              "jsd_between_worlds": 0.832263
+            },
+            {
+              "position": 6,
+              "token": " V",
+              "label": "entity_B(VORN)",
+              "jsd_between_worlds": 0.207354
+            },
+            {
+              "position": 7,
+              "token": "ORN",
+              "label": "entity_B(VORN)",
+              "jsd_between_worlds": 0.37811
+            },
+            {
+              "position": 8,
+              "token": ":",
+              "label": "pos8(:)",
+              "jsd_between_worlds": 0.580679
+            },
+            {
+              "position": 9,
+              "token": " red",
+              "label": "pos9(red)",
+              "jsd_between_worlds": 0.82642
+            },
+            {
+              "position": 10,
+              "token": ".\n",
+              "label": "pos10(.)",
+              "jsd_between_worlds": 0.768188
+            },
+            {
+              "position": 11,
+              "token": "H",
+              "label": "pos11(H)",
+              "jsd_between_worlds": 0.803332
+            },
+            {
+              "position": 12,
+              "token": "ES",
+              "label": "pos12(ES)",
+              "jsd_between_worlds": 0.181922
+            },
+            {
+              "position": 13,
+              "token": "K",
+              "label": "pos13(K)",
+              "jsd_between_worlds": 0.227616
+            },
+            {
+              "position": 14,
+              "token": ":",
+              "label": "pos14(:)",
+              "jsd_between_worlds": 0.831158
+            }
+          ]
+        },
+        {
+          "layer": 22,
+          "positions": [
+            {
+              "position": 0,
+              "token": "H",
+              "label": "entity_A(HESK)",
+              "jsd_between_worlds": 0.026211
+            },
+            {
+              "position": 1,
+              "token": "ES",
+              "label": "entity_A(HESK)",
+              "jsd_between_worlds": 0.012028
+            },
+            {
+              "position": 2,
+              "token": "K",
+              "label": "query(HESK)",
+              "jsd_between_worlds": 0.779247
+            },
+            {
+              "position": 3,
+              "token": ":",
+              "label": "pos3(:)",
+              "jsd_between_worlds": 0.013802
+            },
+            {
+              "position": 4,
+              "token": " red",
+              "label": "pos4(red)",
+              "jsd_between_worlds": 0.811692
+            },
+            {
+              "position": 5,
+              "token": ".",
+              "label": "pos5(.)",
+              "jsd_between_worlds": 0.712476
+            },
+            {
+              "position": 6,
+              "token": " V",
+              "label": "entity_B(VORN)",
+              "jsd_between_worlds": 0.831976
+            },
+            {
+              "position": 7,
+              "token": "ORN",
+              "label": "entity_B(VORN)",
+              "jsd_between_worlds": 0.520544
+            },
+            {
+              "position": 8,
+              "token": ":",
+              "label": "pos8(:)",
+              "jsd_between_worlds": 0.613381
+            },
+            {
+              "position": 9,
+              "token": " red",
+              "label": "pos9(red)",
+              "jsd_between_worlds": 0.271148
+            },
+            {
+              "position": 10,
+              "token": ".\n",
+              "label": "pos10(.)",
+              "jsd_between_worlds": 0.753889
+            },
+            {
+              "position": 11,
+              "token": "H",
+              "label": "pos11(H)",
+              "jsd_between_worlds": 0.085612
+            },
+            {
+              "position": 12,
+              "token": "ES",
+              "label": "pos12(ES)",
+              "jsd_between_worlds": 0.009644
+            },
+            {
+              "position": 13,
+              "token": "K",
+              "label": "pos13(K)",
+              "jsd_between_worlds": 0.588378
+            },
+            {
+              "position": 14,
+              "token": ":",
+              "label": "pos14(:)",
+              "jsd_between_worlds": 0.699566
+            }
+          ]
+        },
+        {
+          "layer": 23,
+          "positions": [
+            {
+              "position": 0,
+              "token": "H",
+              "label": "entity_A(HESK)",
+              "jsd_between_worlds": 0.112899
+            },
+            {
+              "position": 1,
+              "token": "ES",
+              "label": "entity_A(HESK)",
+              "jsd_between_worlds": 0.823201
+            },
+            {
+              "position": 2,
+              "token": "K",
+              "label": "query(HESK)",
+              "jsd_between_worlds": 0.392384
+            },
+            {
+              "position": 3,
+              "token": ":",
+              "label": "pos3(:)",
+              "jsd_between_worlds": 0.825644
+            },
+            {
+              "position": 4,
+              "token": " red",
+              "label": "pos4(red)",
+              "jsd_between_worlds": 0.771038
+            },
+            {
+              "position": 5,
+              "token": ".",
+              "label": "pos5(.)",
+              "jsd_between_worlds": 0.669427
+            },
+            {
+              "position": 6,
+              "token": " V",
+              "label": "entity_B(VORN)",
+              "jsd_between_worlds": 0.105598
+            },
+            {
+              "position": 7,
+              "token": "ORN",
+              "label": "entity_B(VORN)",
+              "jsd_between_worlds": 0.626508
+            },
+            {
+              "position": 8,
+              "token": ":",
+              "label": "pos8(:)",
+              "jsd_between_worlds": 0.582461
+            },
+            {
+              "position": 9,
+              "token": " red",
+              "label": "pos9(red)",
+              "jsd_between_worlds": 0.293557
+            },
+            {
+              "position": 10,
+              "token": ".\n",
+              "label": "pos10(.)",
+              "jsd_between_worlds": 0.633662
+            },
+            {
+              "position": 11,
+              "token": "H",
+              "label": "pos11(H)",
+              "jsd_between_worlds": 0.325397
+            },
+            {
+              "position": 12,
+              "token": "ES",
+              "label": "pos12(ES)",
+              "jsd_between_worlds": 0.347272
+            },
+            {
+              "position": 13,
+              "token": "K",
+              "label": "pos13(K)",
+              "jsd_between_worlds": 0.459045
+            },
+            {
+              "position": 14,
+              "token": ":",
+              "label": "pos14(:)",
+              "jsd_between_worlds": 0.521174
+            }
+          ]
+        },
+        {
+          "layer": 24,
+          "positions": [
+            {
+              "position": 0,
+              "token": "H",
+              "label": "entity_A(HESK)",
+              "jsd_between_worlds": 0.021068
+            },
+            {
+              "position": 1,
+              "token": "ES",
+              "label": "entity_A(HESK)",
+              "jsd_between_worlds": 0.535126
+            },
+            {
+              "position": 2,
+              "token": "K",
+              "label": "query(HESK)",
+              "jsd_between_worlds": 0.043505
+            },
+            {
+              "position": 3,
+              "token": ":",
+              "label": "pos3(:)",
+              "jsd_between_worlds": 0.175251
+            },
+            {
+              "position": 4,
+              "token": " red",
+              "label": "pos4(red)",
+              "jsd_between_worlds": 0.832552
+            },
+            {
+              "position": 5,
+              "token": ".",
+              "label": "pos5(.)",
+              "jsd_between_worlds": 0.82038
+            },
+            {
+              "position": 6,
+              "token": " V",
+              "label": "entity_B(VORN)",
+              "jsd_between_worlds": 0.009012
+            },
+            {
+              "position": 7,
+              "token": "ORN",
+              "label": "entity_B(VORN)",
+              "jsd_between_worlds": 0.196364
+            },
+            {
+              "position": 8,
+              "token": ":",
+              "label": "pos8(:)",
+              "jsd_between_worlds": 0.712926
+            },
+            {
+              "position": 9,
+              "token": " red",
+              "label": "pos9(red)",
+              "jsd_between_worlds": 0.262474
+            },
+            {
+              "position": 10,
+              "token": ".\n",
+              "label": "pos10(.)",
+              "jsd_between_worlds": 0.30996
+            },
+            {
+              "position": 11,
+              "token": "H",
+              "label": "pos11(H)",
+              "jsd_between_worlds": 0.028787
+            },
+            {
+              "position": 12,
+              "token": "ES",
+              "label": "pos12(ES)",
+              "jsd_between_worlds": 0.290468
+            },
+            {
+              "position": 13,
+              "token": "K",
+              "label": "pos13(K)",
+              "jsd_between_worlds": 0.001907
+            },
+            {
+              "position": 14,
+              "token": ":",
+              "label": "pos14(:)",
+              "jsd_between_worlds": 0.669938
+            }
+          ]
+        },
+        {
+          "layer": 25,
+          "positions": [
+            {
+              "position": 0,
+              "token": "H",
+              "label": "entity_A(HESK)",
+              "jsd_between_worlds": 0.007489
+            },
+            {
+              "position": 1,
+              "token": "ES",
+              "label": "entity_A(HESK)",
+              "jsd_between_worlds": 0.009816
+            },
+            {
+              "position": 2,
+              "token": "K",
+              "label": "query(HESK)",
+              "jsd_between_worlds": 0.369105
+            },
+            {
+              "position": 3,
+              "token": ":",
+              "label": "pos3(:)",
+              "jsd_between_worlds": 0.523836
+            },
+            {
+              "position": 4,
+              "token": " red",
+              "label": "pos4(red)",
+              "jsd_between_worlds": 0.832555
+            },
+            {
+              "position": 5,
+              "token": ".",
+              "label": "pos5(.)",
+              "jsd_between_worlds": 0.783498
+            },
+            {
+              "position": 6,
+              "token": " V",
+              "label": "entity_B(VORN)",
+              "jsd_between_worlds": 0.219686
+            },
+            {
+              "position": 7,
+              "token": "ORN",
+              "label": "entity_B(VORN)",
+              "jsd_between_worlds": 0.327355
+            },
+            {
+              "position": 8,
+              "token": ":",
+              "label": "pos8(:)",
+              "jsd_between_worlds": 0.153233
+            },
+            {
+              "position": 9,
+              "token": " red",
+              "label": "pos9(red)",
+              "jsd_between_worlds": 0.195399
+            },
+            {
+              "position": 10,
+              "token": ".\n",
+              "label": "pos10(.)",
+              "jsd_between_worlds": 0.616109
+            },
+            {
+              "position": 11,
+              "token": "H",
+              "label": "pos11(H)",
+              "jsd_between_worlds": 0.687845
+            },
+            {
+              "position": 12,
+              "token": "ES",
+              "label": "pos12(ES)",
+              "jsd_between_worlds": 0.733014
+            },
+            {
+              "position": 13,
+              "token": "K",
+              "label": "pos13(K)",
+              "jsd_between_worlds": 0.512697
+            },
+            {
+              "position": 14,
+              "token": ":",
+              "label": "pos14(:)",
+              "jsd_between_worlds": 0.779874
+            }
+          ]
+        },
+        {
+          "layer": 26,
+          "positions": [
+            {
+              "position": 0,
+              "token": "H",
+              "label": "entity_A(HESK)",
+              "jsd_between_worlds": 0.050055
+            },
+            {
+              "position": 1,
+              "token": "ES",
+              "label": "entity_A(HESK)",
+              "jsd_between_worlds": 0.806057
+            },
+            {
+              "position": 2,
+              "token": "K",
+              "label": "query(HESK)",
+              "jsd_between_worlds": 0.279301
+            },
+            {
+              "position": 3,
+              "token": ":",
+              "label": "pos3(:)",
+              "jsd_between_worlds": 0.064923
+            },
+            {
+              "position": 4,
+              "token": " red",
+              "label": "pos4(red)",
+              "jsd_between_worlds": 0.831921
+            },
+            {
+              "position": 5,
+              "token": ".",
+              "label": "pos5(.)",
+              "jsd_between_worlds": 0.668045
+            },
+            {
+              "position": 6,
+              "token": " V",
+              "label": "entity_B(VORN)",
+              "jsd_between_worlds": 0.135248
+            },
+            {
+              "position": 7,
+              "token": "ORN",
+              "label": "entity_B(VORN)",
+              "jsd_between_worlds": 0.250924
+            },
+            {
+              "position": 8,
+              "token": ":",
+              "label": "pos8(:)",
+              "jsd_between_worlds": 0.713164
+            },
+            {
+              "position": 9,
+              "token": " red",
+              "label": "pos9(red)",
+              "jsd_between_worlds": 0.581327
+            },
+            {
+              "position": 10,
+              "token": ".\n",
+              "label": "pos10(.)",
+              "jsd_between_worlds": 0.383136
+            },
+            {
+              "position": 11,
+              "token": "H",
+              "label": "pos11(H)",
+              "jsd_between_worlds": 0.526119
+            },
+            {
+              "position": 12,
+              "token": "ES",
+              "label": "pos12(ES)",
+              "jsd_between_worlds": 0.181164
+            },
+            {
+              "position": 13,
+              "token": "K",
+              "label": "pos13(K)",
+              "jsd_between_worlds": 0.317867
+            },
+            {
+              "position": 14,
+              "token": ":",
+              "label": "pos14(:)",
+              "jsd_between_worlds": 0.603546
+            }
+          ]
+        },
+        {
+          "layer": 27,
+          "positions": [
+            {
+              "position": 0,
+              "token": "H",
+              "label": "entity_A(HESK)",
+              "jsd_between_worlds": 0.026896
+            },
+            {
+              "position": 1,
+              "token": "ES",
+              "label": "entity_A(HESK)",
+              "jsd_between_worlds": 0.471563
+            },
+            {
+              "position": 2,
+              "token": "K",
+              "label": "query(HESK)",
+              "jsd_between_worlds": 0.58944
+            },
+            {
+              "position": 3,
+              "token": ":",
+              "label": "pos3(:)",
+              "jsd_between_worlds": 0.518067
+            },
+            {
+              "position": 4,
+              "token": " red",
+              "label": "pos4(red)",
+              "jsd_between_worlds": 0.816899
+            },
+            {
+              "position": 5,
+              "token": ".",
+              "label": "pos5(.)",
+              "jsd_between_worlds": 0.829254
+            },
+            {
+              "position": 6,
+              "token": " V",
+              "label": "entity_B(VORN)",
+              "jsd_between_worlds": 0.522865
+            },
+            {
+              "position": 7,
+              "token": "ORN",
+              "label": "entity_B(VORN)",
+              "jsd_between_worlds": 0.591764
+            },
+            {
+              "position": 8,
+              "token": ":",
+              "label": "pos8(:)",
+              "jsd_between_worlds": 0.809676
+            },
+            {
+              "position": 9,
+              "token": " red",
+              "label": "pos9(red)",
+              "jsd_between_worlds": 0.641688
+            },
+            {
+              "position": 10,
+              "token": ".\n",
+              "label": "pos10(.)",
+              "jsd_between_worlds": 0.713439
+            },
+            {
+              "position": 11,
+              "token": "H",
+              "label": "pos11(H)",
+              "jsd_between_worlds": 0.228051
+            },
+            {
+              "position": 12,
+              "token": "ES",
+              "label": "pos12(ES)",
+              "jsd_between_worlds": 0.205334
+            },
+            {
+              "position": 13,
+              "token": "K",
+              "label": "pos13(K)",
+              "jsd_between_worlds": 0.78932
+            },
+            {
+              "position": 14,
+              "token": ":",
+              "label": "pos14(:)",
+              "jsd_between_worlds": 0.752359
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

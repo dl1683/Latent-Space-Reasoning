@@ -40,6 +40,12 @@
   - Last entity (PLIM queryC) resolves just as cleanly (28.59x) as first. Not just primacy.
   - **Conclusion:** Resolution is a general multi-fact mechanism, not pairwise competition.
 
+- **Position contribution v1 (2026-08-31).** Decomposes attention output by source position via GQA-aware value reconstruction + o_proj + logit lens.
+  - **Result: DISTRIBUTED.** Resolution signal at L25 is NOT concentrated at the queried entity's position. Value tokens (" hot", " red") hit the JSD ceiling (0.833). But only the FIRST entity's value carries signal — second entity's value near-zero (0.003). Entity name positions show complex, layer-varying patterns.
+  - Many structural positions (colons, periods, newlines) also carry strong signal.
+  - **Conclusion:** Resolution is a whole-sequence operation — value vectors combine across positions through the attention mechanism. Not decomposable to a single source.
+  - Fixed GQA dimension mismatch: Qwen3-0.6B has num_heads=16, num_kv_heads=8, head_dim=128; o_proj takes 2048, not 1024.
+
 - **Causal resolution v1 (2026-08-31): UNINFORMATIVE.** Full-state injection at any layer trivially carries donor information through remaining layers (identical logits at all injection points). Tells us fact-identity information is present at ALL layers; the resolution layer AMPLIFIES existing signal, doesn't create it. Meaningful causal test needs partial-state injection (R^n tools required).
 
 - **Predictive setter algebra v1 (2026-08-31): FAIL.** Product-of-registers algebra not supported. 16 types instead of 4. Last-write-wins 27%, commutation 56%. Root cause: PRIMACY BIAS — first mention of a fact dominates over later contradictions. The model is not a clean register machine. In-context appending is not the right "native operation" for fact overwriting. However, the primacy bias itself is structural data: the model commits to facts early and resists override, suggesting a commitment-lattice structure rather than overwrite registers.
