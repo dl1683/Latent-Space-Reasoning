@@ -1,0 +1,908 @@
+{
+  "experiment": "predictive_setter_algebra_v1",
+  "timestamp": "2026-08-31T17:34:07.128623",
+  "model": "Qwen/Qwen3-0.6B",
+  "values": [
+    "big",
+    "small"
+  ],
+  "calibration_pairs": [
+    [
+      "ZOG",
+      "MIP"
+    ]
+  ],
+  "eval_pairs": [
+    [
+      "KUXE",
+      "BRADL"
+    ],
+    [
+      "JEVQ",
+      "POXA"
+    ],
+    [
+      "WUDR",
+      "CELP"
+    ],
+    [
+      "GYFI",
+      "TOKN"
+    ]
+  ],
+  "baseline_accuracy": 0.95,
+  "baseline_results": {
+    "ZOG=big,MIP=big,AB": {
+      "query_A": "big",
+      "expected_A": "big",
+      "ok_A": true,
+      "query_B": "small",
+      "expected_B": "big",
+      "ok_B": false
+    },
+    "ZOG=big,MIP=big,BA": {
+      "query_A": "big",
+      "expected_A": "big",
+      "ok_A": true,
+      "query_B": "big",
+      "expected_B": "big",
+      "ok_B": true
+    },
+    "ZOG=big,MIP=small,AB": {
+      "query_A": "big",
+      "expected_A": "big",
+      "ok_A": true,
+      "query_B": "small",
+      "expected_B": "small",
+      "ok_B": true
+    },
+    "ZOG=big,MIP=small,BA": {
+      "query_A": "big",
+      "expected_A": "big",
+      "ok_A": true,
+      "query_B": "small",
+      "expected_B": "small",
+      "ok_B": true
+    },
+    "ZOG=small,MIP=big,AB": {
+      "query_A": "small",
+      "expected_A": "small",
+      "ok_A": true,
+      "query_B": "small",
+      "expected_B": "big",
+      "ok_B": false
+    },
+    "ZOG=small,MIP=big,BA": {
+      "query_A": "small",
+      "expected_A": "small",
+      "ok_A": true,
+      "query_B": "big",
+      "expected_B": "big",
+      "ok_B": true
+    },
+    "ZOG=small,MIP=small,AB": {
+      "query_A": "small",
+      "expected_A": "small",
+      "ok_A": true,
+      "query_B": "small",
+      "expected_B": "small",
+      "ok_B": true
+    },
+    "ZOG=small,MIP=small,BA": {
+      "query_A": "small",
+      "expected_A": "small",
+      "ok_A": true,
+      "query_B": "small",
+      "expected_B": "small",
+      "ok_B": true
+    },
+    "KUXE=big,BRADL=big,AB": {
+      "query_A": "big",
+      "expected_A": "big",
+      "ok_A": true,
+      "query_B": "big",
+      "expected_B": "big",
+      "ok_B": true
+    },
+    "KUXE=big,BRADL=big,BA": {
+      "query_A": "big",
+      "expected_A": "big",
+      "ok_A": true,
+      "query_B": "big",
+      "expected_B": "big",
+      "ok_B": true
+    },
+    "KUXE=big,BRADL=small,AB": {
+      "query_A": "big",
+      "expected_A": "big",
+      "ok_A": true,
+      "query_B": "small",
+      "expected_B": "small",
+      "ok_B": true
+    },
+    "KUXE=big,BRADL=small,BA": {
+      "query_A": "big",
+      "expected_A": "big",
+      "ok_A": true,
+      "query_B": "small",
+      "expected_B": "small",
+      "ok_B": true
+    },
+    "KUXE=small,BRADL=big,AB": {
+      "query_A": "small",
+      "expected_A": "small",
+      "ok_A": true,
+      "query_B": "big",
+      "expected_B": "big",
+      "ok_B": true
+    },
+    "KUXE=small,BRADL=big,BA": {
+      "query_A": "small",
+      "expected_A": "small",
+      "ok_A": true,
+      "query_B": "big",
+      "expected_B": "big",
+      "ok_B": true
+    },
+    "KUXE=small,BRADL=small,AB": {
+      "query_A": "small",
+      "expected_A": "small",
+      "ok_A": true,
+      "query_B": "small",
+      "expected_B": "small",
+      "ok_B": true
+    },
+    "KUXE=small,BRADL=small,BA": {
+      "query_A": "small",
+      "expected_A": "small",
+      "ok_A": true,
+      "query_B": "small",
+      "expected_B": "small",
+      "ok_B": true
+    },
+    "JEVQ=big,POXA=big,AB": {
+      "query_A": "big",
+      "expected_A": "big",
+      "ok_A": true,
+      "query_B": "big",
+      "expected_B": "big",
+      "ok_B": true
+    },
+    "JEVQ=big,POXA=big,BA": {
+      "query_A": "big",
+      "expected_A": "big",
+      "ok_A": true,
+      "query_B": "big",
+      "expected_B": "big",
+      "ok_B": true
+    },
+    "JEVQ=big,POXA=small,AB": {
+      "query_A": "big",
+      "expected_A": "big",
+      "ok_A": true,
+      "query_B": "small",
+      "expected_B": "small",
+      "ok_B": true
+    },
+    "JEVQ=big,POXA=small,BA": {
+      "query_A": "big",
+      "expected_A": "big",
+      "ok_A": true,
+      "query_B": "small",
+      "expected_B": "small",
+      "ok_B": true
+    },
+    "JEVQ=small,POXA=big,AB": {
+      "query_A": "small",
+      "expected_A": "small",
+      "ok_A": true,
+      "query_B": "big",
+      "expected_B": "big",
+      "ok_B": true
+    },
+    "JEVQ=small,POXA=big,BA": {
+      "query_A": "small",
+      "expected_A": "small",
+      "ok_A": true,
+      "query_B": "big",
+      "expected_B": "big",
+      "ok_B": true
+    },
+    "JEVQ=small,POXA=small,AB": {
+      "query_A": "small",
+      "expected_A": "small",
+      "ok_A": true,
+      "query_B": "small",
+      "expected_B": "small",
+      "ok_B": true
+    },
+    "JEVQ=small,POXA=small,BA": {
+      "query_A": "small",
+      "expected_A": "small",
+      "ok_A": true,
+      "query_B": "small",
+      "expected_B": "small",
+      "ok_B": true
+    },
+    "WUDR=big,CELP=big,AB": {
+      "query_A": "big",
+      "expected_A": "big",
+      "ok_A": true,
+      "query_B": "big",
+      "expected_B": "big",
+      "ok_B": true
+    },
+    "WUDR=big,CELP=big,BA": {
+      "query_A": "big",
+      "expected_A": "big",
+      "ok_A": true,
+      "query_B": "big",
+      "expected_B": "big",
+      "ok_B": true
+    },
+    "WUDR=big,CELP=small,AB": {
+      "query_A": "big",
+      "expected_A": "big",
+      "ok_A": true,
+      "query_B": "small",
+      "expected_B": "small",
+      "ok_B": true
+    },
+    "WUDR=big,CELP=small,BA": {
+      "query_A": "big",
+      "expected_A": "big",
+      "ok_A": true,
+      "query_B": "small",
+      "expected_B": "small",
+      "ok_B": true
+    },
+    "WUDR=small,CELP=big,AB": {
+      "query_A": "small",
+      "expected_A": "small",
+      "ok_A": true,
+      "query_B": "small",
+      "expected_B": "big",
+      "ok_B": false
+    },
+    "WUDR=small,CELP=big,BA": {
+      "query_A": "small",
+      "expected_A": "small",
+      "ok_A": true,
+      "query_B": "big",
+      "expected_B": "big",
+      "ok_B": true
+    },
+    "WUDR=small,CELP=small,AB": {
+      "query_A": "small",
+      "expected_A": "small",
+      "ok_A": true,
+      "query_B": "small",
+      "expected_B": "small",
+      "ok_B": true
+    },
+    "WUDR=small,CELP=small,BA": {
+      "query_A": "small",
+      "expected_A": "small",
+      "ok_A": true,
+      "query_B": "small",
+      "expected_B": "small",
+      "ok_B": true
+    },
+    "GYFI=big,TOKN=big,AB": {
+      "query_A": "big",
+      "expected_A": "big",
+      "ok_A": true,
+      "query_B": "big",
+      "expected_B": "big",
+      "ok_B": true
+    },
+    "GYFI=big,TOKN=big,BA": {
+      "query_A": "big",
+      "expected_A": "big",
+      "ok_A": true,
+      "query_B": "big",
+      "expected_B": "big",
+      "ok_B": true
+    },
+    "GYFI=big,TOKN=small,AB": {
+      "query_A": "big",
+      "expected_A": "big",
+      "ok_A": true,
+      "query_B": "small",
+      "expected_B": "small",
+      "ok_B": true
+    },
+    "GYFI=big,TOKN=small,BA": {
+      "query_A": "big",
+      "expected_A": "big",
+      "ok_A": true,
+      "query_B": "small",
+      "expected_B": "small",
+      "ok_B": true
+    },
+    "GYFI=small,TOKN=big,AB": {
+      "query_A": "small",
+      "expected_A": "small",
+      "ok_A": true,
+      "query_B": "big",
+      "expected_B": "big",
+      "ok_B": true
+    },
+    "GYFI=small,TOKN=big,BA": {
+      "query_A": "small",
+      "expected_A": "small",
+      "ok_A": true,
+      "query_B": "small",
+      "expected_B": "big",
+      "ok_B": false
+    },
+    "GYFI=small,TOKN=small,AB": {
+      "query_A": "small",
+      "expected_A": "small",
+      "ok_A": true,
+      "query_B": "small",
+      "expected_B": "small",
+      "ok_B": true
+    },
+    "GYFI=small,TOKN=small,BA": {
+      "query_A": "small",
+      "expected_A": "small",
+      "ok_A": true,
+      "query_B": "small",
+      "expected_B": "small",
+      "ok_B": true
+    }
+  },
+  "total_forward_calls": 3360,
+  "distinct_types": 16,
+  "type_registry": {
+    "('big', 'small', ('big', 'big'), ('small', 'small'))": "T0",
+    "('big', 'big', ('big', 'big'), ('big', 'big'))": "T1",
+    "('small', 'small', ('small', 'small'), ('small', 'small'))": "T2",
+    "('big', 'small', ('big', 'small'), ('small', 'big'))": "T3",
+    "('small', 'small', ('small', 'big'), ('small', 'small'))": "T4",
+    "('small', 'small', ('small', 'small'), ('small', 'big'))": "T5",
+    "('small', 'big', ('small', 'small'), ('big', 'small'))": "T6",
+    "('small', 'big', ('small', 'big'), ('big', 'small'))": "T7",
+    "('big', 'small', ('big', 'small'), ('small', 'small'))": "T8",
+    "('big', 'big', ('big', 'small'), ('big', 'big'))": "T9",
+    "('small', 'small', ('small', 'big'), ('small', 'big'))": "T10",
+    "('big', 'big', ('big', 'small'), ('big', 'small'))": "T11",
+    "('small', 'big', ('small', 'small'), ('big', 'big'))": "T12",
+    "('big', 'small', ('big', 'big'), ('small', 'big'))": "T13",
+    "('small', 'big', ('small', 'big'), ('big', 'big'))": "T14",
+    "('big', 'big', ('big', 'big'), ('big', 'small'))": "T15"
+  },
+  "law_results": {
+    "ZOG/MIP": {
+      "setter_changes_own_role": {
+        "pass": 25,
+        "fail": 7,
+        "rate": 0.78125,
+        "violations": [
+          "big/small,AB,S_MIP^big: got small",
+          "small/big,AB,S_ZOG^big: got small",
+          "small/big,BA,S_ZOG^big: got small",
+          "small/small,AB,S_ZOG^big: got small",
+          "small/small,AB,S_MIP^big: got small",
+          "small/small,BA,S_ZOG^big: got small",
+          "small/small,BA,S_MIP^big: got small"
+        ]
+      },
+      "setter_preserves_other_role": {
+        "pass": 26,
+        "fail": 6,
+        "rate": 0.8125,
+        "violations": [
+          "big/big,AB,S_ZOG^small: other=small expected=big",
+          "big/big,AB,S_MIP^small: other=small expected=big",
+          "big/big,BA,S_ZOG^small: other=small expected=big",
+          "big/big,BA,S_MIP^small: other=small expected=big",
+          "small/big,AB,S_ZOG^big: other=small expected=big",
+          "small/small,AB,S_ZOG^big: other=big expected=small"
+        ]
+      },
+      "idempotence": {
+        "pass": 23,
+        "fail": 9,
+        "rate": 0.71875,
+        "violations": [
+          "big/small,AB,S_MIP^big.S_MIP^big",
+          "big/small,BA,S_ZOG^small.S_ZOG^small",
+          "big/small,BA,S_MIP^big.S_MIP^big",
+          "small/big,AB,S_ZOG^big.S_ZOG^big",
+          "small/big,AB,S_MIP^small.S_MIP^small",
+          "small/small,AB,S_ZOG^big.S_ZOG^big",
+          "small/small,AB,S_MIP^big.S_MIP^big",
+          "small/small,BA,S_ZOG^big.S_ZOG^big",
+          "small/small,BA,S_MIP^big.S_MIP^big"
+        ]
+      },
+      "last_write_wins": {
+        "pass": 13,
+        "fail": 19,
+        "rate": 0.40625,
+        "violations": [
+          "big/big,AB,S_ZOG^small.S_ZOG^big vs S_ZOG^big",
+          "big/big,AB,S_MIP^big.S_MIP^small vs S_MIP^small",
+          "big/big,AB,S_MIP^small.S_MIP^big vs S_MIP^big",
+          "big/big,BA,S_ZOG^big.S_ZOG^small vs S_ZOG^small",
+          "big/big,BA,S_ZOG^small.S_ZOG^big vs S_ZOG^big",
+          "big/big,BA,S_MIP^small.S_MIP^big vs S_MIP^big",
+          "big/small,AB,S_ZOG^big.S_ZOG^small vs S_ZOG^small",
+          "big/small,AB,S_ZOG^small.S_ZOG^big vs S_ZOG^big",
+          "big/small,BA,S_ZOG^big.S_ZOG^small vs S_ZOG^small",
+          "big/small,BA,S_ZOG^small.S_ZOG^big vs S_ZOG^big"
+        ]
+      },
+      "disjoint_commutation": {
+        "pass": 19,
+        "fail": 13,
+        "rate": 0.59375,
+        "violations": [
+          "big/big,AB,S_A^big.S_B^small vs S_B^small.S_A^big",
+          "big/big,AB,S_A^small.S_B^big vs S_B^big.S_A^small",
+          "big/big,BA,S_A^small.S_B^big vs S_B^big.S_A^small",
+          "big/small,BA,S_A^big.S_B^big vs S_B^big.S_A^big",
+          "big/small,BA,S_A^small.S_B^small vs S_B^small.S_A^small",
+          "small/big,AB,S_A^small.S_B^big vs S_B^big.S_A^small",
+          "small/big,AB,S_A^small.S_B^small vs S_B^small.S_A^small",
+          "small/big,BA,S_A^big.S_B^big vs S_B^big.S_A^big",
+          "small/small,AB,S_A^big.S_B^small vs S_B^small.S_A^big",
+          "small/small,AB,S_A^small.S_B^big vs S_B^big.S_A^small"
+        ]
+      },
+      "same_role_distinguishable": {
+        "pass": 18,
+        "fail": 14,
+        "rate": 0.5625,
+        "violations": [
+          "big/big,BA,S_MIP^big.S_MIP^small == S_MIP^small.S_MIP^big",
+          "big/big,BA,S_MIP^small.S_MIP^big == S_MIP^big.S_MIP^small",
+          "big/small,AB,S_MIP^big.S_MIP^small == S_MIP^small.S_MIP^big",
+          "big/small,AB,S_MIP^small.S_MIP^big == S_MIP^big.S_MIP^small",
+          "big/small,BA,S_MIP^big.S_MIP^small == S_MIP^small.S_MIP^big",
+          "big/small,BA,S_MIP^small.S_MIP^big == S_MIP^big.S_MIP^small",
+          "small/big,AB,S_ZOG^big.S_ZOG^small == S_ZOG^small.S_ZOG^big",
+          "small/big,AB,S_ZOG^small.S_ZOG^big == S_ZOG^big.S_ZOG^small",
+          "small/big,AB,S_MIP^big.S_MIP^small == S_MIP^small.S_MIP^big",
+          "small/big,AB,S_MIP^small.S_MIP^big == S_MIP^big.S_MIP^small"
+        ]
+      },
+      "presentation_invariance": {
+        "pass": 8,
+        "fail": 8,
+        "rate": 0.5,
+        "violations": [
+          "big/big: AB=T0 vs BA=T1",
+          "small/big: AB=T10 vs BA=T7",
+          "big/big: AB=T0 vs BA=T1",
+          "small/big: AB=T10 vs BA=T7",
+          "big/big: AB=T0 vs BA=T1",
+          "small/big: AB=T10 vs BA=T7",
+          "big/big: AB=T0 vs BA=T1",
+          "small/big: AB=T10 vs BA=T7"
+        ]
+      }
+    },
+    "KUXE/BRADL": {
+      "setter_changes_own_role": {
+        "pass": 26,
+        "fail": 6,
+        "rate": 0.8125,
+        "violations": [
+          "big/small,AB,S_KUXE^big: got small",
+          "big/small,AB,S_BRADL^big: got small",
+          "big/small,BA,S_KUXE^small: got big",
+          "big/small,BA,S_BRADL^big: got small",
+          "small/big,AB,S_KUXE^big: got small",
+          "small/big,BA,S_KUXE^big: got small"
+        ]
+      },
+      "setter_preserves_other_role": {
+        "pass": 26,
+        "fail": 6,
+        "rate": 0.8125,
+        "violations": [
+          "big/big,AB,S_KUXE^small: other=small expected=big",
+          "big/big,BA,S_BRADL^small: other=small expected=big",
+          "big/small,AB,S_KUXE^small: other=big expected=small",
+          "big/small,BA,S_BRADL^big: other=small expected=big",
+          "small/big,AB,S_KUXE^big: other=small expected=big",
+          "small/small,AB,S_KUXE^big: other=big expected=small"
+        ]
+      },
+      "idempotence": {
+        "pass": 21,
+        "fail": 11,
+        "rate": 0.65625,
+        "violations": [
+          "big/big,BA,S_KUXE^small.S_KUXE^small",
+          "big/big,BA,S_BRADL^small.S_BRADL^small",
+          "big/small,AB,S_KUXE^big.S_KUXE^big",
+          "big/small,AB,S_KUXE^small.S_KUXE^small",
+          "big/small,AB,S_BRADL^big.S_BRADL^big",
+          "big/small,BA,S_KUXE^small.S_KUXE^small",
+          "big/small,BA,S_BRADL^big.S_BRADL^big",
+          "small/big,AB,S_KUXE^big.S_KUXE^big",
+          "small/big,BA,S_BRADL^small.S_BRADL^small",
+          "small/small,AB,S_KUXE^big.S_KUXE^big"
+        ]
+      },
+      "last_write_wins": {
+        "pass": 7,
+        "fail": 25,
+        "rate": 0.21875,
+        "violations": [
+          "big/big,AB,S_KUXE^big.S_KUXE^small vs S_KUXE^small",
+          "big/big,AB,S_KUXE^small.S_KUXE^big vs S_KUXE^big",
+          "big/big,AB,S_BRADL^big.S_BRADL^small vs S_BRADL^small",
+          "big/big,AB,S_BRADL^small.S_BRADL^big vs S_BRADL^big",
+          "big/big,BA,S_KUXE^big.S_KUXE^small vs S_KUXE^small",
+          "big/big,BA,S_KUXE^small.S_KUXE^big vs S_KUXE^big",
+          "big/big,BA,S_BRADL^big.S_BRADL^small vs S_BRADL^small",
+          "big/big,BA,S_BRADL^small.S_BRADL^big vs S_BRADL^big",
+          "big/small,AB,S_KUXE^big.S_KUXE^small vs S_KUXE^small",
+          "big/small,AB,S_KUXE^small.S_KUXE^big vs S_KUXE^big"
+        ]
+      },
+      "disjoint_commutation": {
+        "pass": 18,
+        "fail": 14,
+        "rate": 0.5625,
+        "violations": [
+          "big/big,AB,S_A^big.S_B^small vs S_B^small.S_A^big",
+          "big/big,AB,S_A^small.S_B^big vs S_B^big.S_A^small",
+          "big/big,BA,S_A^small.S_B^big vs S_B^big.S_A^small",
+          "big/small,AB,S_A^big.S_B^big vs S_B^big.S_A^big",
+          "big/small,AB,S_A^small.S_B^small vs S_B^small.S_A^small",
+          "big/small,BA,S_A^small.S_B^small vs S_B^small.S_A^small",
+          "small/big,AB,S_A^big.S_B^big vs S_B^big.S_A^big",
+          "small/big,AB,S_A^big.S_B^small vs S_B^small.S_A^big",
+          "small/big,AB,S_A^small.S_B^small vs S_B^small.S_A^small",
+          "small/big,BA,S_A^big.S_B^small vs S_B^small.S_A^big"
+        ]
+      },
+      "same_role_distinguishable": {
+        "pass": 22,
+        "fail": 10,
+        "rate": 0.6875,
+        "violations": [
+          "big/small,AB,S_BRADL^big.S_BRADL^small == S_BRADL^small.S_BRADL^big",
+          "big/small,AB,S_BRADL^small.S_BRADL^big == S_BRADL^big.S_BRADL^small",
+          "big/small,BA,S_BRADL^big.S_BRADL^small == S_BRADL^small.S_BRADL^big",
+          "big/small,BA,S_BRADL^small.S_BRADL^big == S_BRADL^big.S_BRADL^small",
+          "small/small,AB,S_BRADL^big.S_BRADL^small == S_BRADL^small.S_BRADL^big",
+          "small/small,AB,S_BRADL^small.S_BRADL^big == S_BRADL^big.S_BRADL^small",
+          "small/small,BA,S_KUXE^big.S_KUXE^small == S_KUXE^small.S_KUXE^big",
+          "small/small,BA,S_KUXE^small.S_KUXE^big == S_KUXE^big.S_KUXE^small",
+          "small/small,BA,S_BRADL^big.S_BRADL^small == S_BRADL^small.S_BRADL^big",
+          "small/small,BA,S_BRADL^small.S_BRADL^big == S_BRADL^big.S_BRADL^small"
+        ]
+      },
+      "presentation_invariance": {
+        "pass": 16,
+        "fail": 0,
+        "rate": 1.0,
+        "violations": []
+      }
+    },
+    "JEVQ/POXA": {
+      "setter_changes_own_role": {
+        "pass": 24,
+        "fail": 8,
+        "rate": 0.75,
+        "violations": [
+          "big/small,AB,S_POXA^big: got small",
+          "big/small,BA,S_POXA^big: got small",
+          "small/big,AB,S_JEVQ^big: got small",
+          "small/big,AB,S_POXA^small: got big",
+          "small/big,BA,S_JEVQ^big: got small",
+          "small/small,AB,S_JEVQ^big: got small",
+          "small/small,BA,S_JEVQ^big: got small",
+          "small/small,BA,S_POXA^big: got small"
+        ]
+      },
+      "setter_preserves_other_role": {
+        "pass": 26,
+        "fail": 6,
+        "rate": 0.8125,
+        "violations": [
+          "big/big,AB,S_JEVQ^small: other=small expected=big",
+          "big/big,BA,S_JEVQ^small: other=small expected=big",
+          "big/big,BA,S_POXA^small: other=small expected=big",
+          "big/small,BA,S_POXA^big: other=small expected=big",
+          "small/big,AB,S_JEVQ^big: other=small expected=big",
+          "small/big,BA,S_JEVQ^big: other=small expected=big"
+        ]
+      },
+      "idempotence": {
+        "pass": 23,
+        "fail": 9,
+        "rate": 0.71875,
+        "violations": [
+          "big/big,AB,S_JEVQ^small.S_JEVQ^small",
+          "big/big,BA,S_JEVQ^small.S_JEVQ^small",
+          "big/small,AB,S_JEVQ^big.S_JEVQ^big",
+          "big/small,AB,S_POXA^big.S_POXA^big",
+          "big/small,BA,S_JEVQ^small.S_JEVQ^small",
+          "big/small,BA,S_POXA^big.S_POXA^big",
+          "small/big,AB,S_JEVQ^big.S_JEVQ^big",
+          "small/big,AB,S_POXA^small.S_POXA^small",
+          "small/small,AB,S_POXA^big.S_POXA^big"
+        ]
+      },
+      "last_write_wins": {
+        "pass": 9,
+        "fail": 23,
+        "rate": 0.28125,
+        "violations": [
+          "big/big,AB,S_JEVQ^big.S_JEVQ^small vs S_JEVQ^small",
+          "big/big,AB,S_JEVQ^small.S_JEVQ^big vs S_JEVQ^big",
+          "big/big,AB,S_POXA^big.S_POXA^small vs S_POXA^small",
+          "big/big,AB,S_POXA^small.S_POXA^big vs S_POXA^big",
+          "big/big,BA,S_JEVQ^big.S_JEVQ^small vs S_JEVQ^small",
+          "big/big,BA,S_JEVQ^small.S_JEVQ^big vs S_JEVQ^big",
+          "big/big,BA,S_POXA^big.S_POXA^small vs S_POXA^small",
+          "big/big,BA,S_POXA^small.S_POXA^big vs S_POXA^big",
+          "big/small,AB,S_JEVQ^big.S_JEVQ^small vs S_JEVQ^small",
+          "big/small,AB,S_JEVQ^small.S_JEVQ^big vs S_JEVQ^big"
+        ]
+      },
+      "disjoint_commutation": {
+        "pass": 17,
+        "fail": 15,
+        "rate": 0.53125,
+        "violations": [
+          "big/big,AB,S_A^small.S_B^big vs S_B^big.S_A^small",
+          "big/big,BA,S_A^big.S_B^small vs S_B^small.S_A^big",
+          "big/big,BA,S_A^small.S_B^small vs S_B^small.S_A^small",
+          "big/small,AB,S_A^big.S_B^big vs S_B^big.S_A^big",
+          "big/small,AB,S_A^small.S_B^big vs S_B^big.S_A^small",
+          "big/small,BA,S_A^big.S_B^big vs S_B^big.S_A^big",
+          "big/small,BA,S_A^small.S_B^big vs S_B^big.S_A^small",
+          "small/big,AB,S_A^small.S_B^small vs S_B^small.S_A^small",
+          "small/big,BA,S_A^big.S_B^big vs S_B^big.S_A^big",
+          "small/big,BA,S_A^big.S_B^small vs S_B^small.S_A^big"
+        ]
+      },
+      "same_role_distinguishable": {
+        "pass": 22,
+        "fail": 10,
+        "rate": 0.6875,
+        "violations": [
+          "big/small,AB,S_POXA^big.S_POXA^small == S_POXA^small.S_POXA^big",
+          "big/small,AB,S_POXA^small.S_POXA^big == S_POXA^big.S_POXA^small",
+          "big/small,BA,S_POXA^big.S_POXA^small == S_POXA^small.S_POXA^big",
+          "big/small,BA,S_POXA^small.S_POXA^big == S_POXA^big.S_POXA^small",
+          "small/big,AB,S_JEVQ^big.S_JEVQ^small == S_JEVQ^small.S_JEVQ^big",
+          "small/big,AB,S_JEVQ^small.S_JEVQ^big == S_JEVQ^big.S_JEVQ^small",
+          "small/small,AB,S_POXA^big.S_POXA^small == S_POXA^small.S_POXA^big",
+          "small/small,AB,S_POXA^small.S_POXA^big == S_POXA^big.S_POXA^small",
+          "small/small,BA,S_JEVQ^big.S_JEVQ^small == S_JEVQ^small.S_JEVQ^big",
+          "small/small,BA,S_JEVQ^small.S_JEVQ^big == S_JEVQ^big.S_JEVQ^small"
+        ]
+      },
+      "presentation_invariance": {
+        "pass": 16,
+        "fail": 0,
+        "rate": 1.0,
+        "violations": []
+      }
+    },
+    "WUDR/CELP": {
+      "setter_changes_own_role": {
+        "pass": 25,
+        "fail": 7,
+        "rate": 0.78125,
+        "violations": [
+          "big/small,AB,S_CELP^big: got small",
+          "big/small,BA,S_CELP^big: got small",
+          "small/big,BA,S_WUDR^big: got small",
+          "small/big,BA,S_CELP^big: got small",
+          "small/small,AB,S_WUDR^big: got small",
+          "small/small,AB,S_CELP^big: got small",
+          "small/small,BA,S_CELP^big: got small"
+        ]
+      },
+      "setter_preserves_other_role": {
+        "pass": 21,
+        "fail": 11,
+        "rate": 0.65625,
+        "violations": [
+          "big/big,AB,S_WUDR^small: other=small expected=big",
+          "big/big,AB,S_CELP^small: other=small expected=big",
+          "big/big,BA,S_WUDR^small: other=small expected=big",
+          "big/big,BA,S_CELP^small: other=small expected=big",
+          "big/small,AB,S_CELP^big: other=small expected=big",
+          "big/small,BA,S_CELP^big: other=small expected=big",
+          "small/big,AB,S_WUDR^big: other=small expected=big",
+          "small/big,AB,S_CELP^small: other=big expected=small",
+          "small/big,BA,S_WUDR^big: other=small expected=big",
+          "small/big,BA,S_CELP^small: other=big expected=small"
+        ]
+      },
+      "idempotence": {
+        "pass": 22,
+        "fail": 10,
+        "rate": 0.6875,
+        "violations": [
+          "big/big,AB,S_CELP^small.S_CELP^small",
+          "big/big,BA,S_CELP^small.S_CELP^small",
+          "big/small,AB,S_CELP^big.S_CELP^big",
+          "small/big,AB,S_WUDR^big.S_WUDR^big",
+          "small/big,AB,S_CELP^small.S_CELP^small",
+          "small/big,BA,S_WUDR^big.S_WUDR^big",
+          "small/big,BA,S_CELP^big.S_CELP^big",
+          "small/big,BA,S_CELP^small.S_CELP^small",
+          "small/small,AB,S_WUDR^big.S_WUDR^big",
+          "small/small,AB,S_CELP^big.S_CELP^big"
+        ]
+      },
+      "last_write_wins": {
+        "pass": 8,
+        "fail": 24,
+        "rate": 0.25,
+        "violations": [
+          "big/big,AB,S_WUDR^big.S_WUDR^small vs S_WUDR^small",
+          "big/big,AB,S_WUDR^small.S_WUDR^big vs S_WUDR^big",
+          "big/big,AB,S_CELP^big.S_CELP^small vs S_CELP^small",
+          "big/big,AB,S_CELP^small.S_CELP^big vs S_CELP^big",
+          "big/big,BA,S_WUDR^big.S_WUDR^small vs S_WUDR^small",
+          "big/big,BA,S_WUDR^small.S_WUDR^big vs S_WUDR^big",
+          "big/big,BA,S_CELP^big.S_CELP^small vs S_CELP^small",
+          "big/big,BA,S_CELP^small.S_CELP^big vs S_CELP^big",
+          "big/small,AB,S_WUDR^small.S_WUDR^big vs S_WUDR^big",
+          "big/small,AB,S_CELP^small.S_CELP^big vs S_CELP^big"
+        ]
+      },
+      "disjoint_commutation": {
+        "pass": 17,
+        "fail": 15,
+        "rate": 0.53125,
+        "violations": [
+          "big/big,AB,S_A^big.S_B^small vs S_B^small.S_A^big",
+          "big/big,AB,S_A^small.S_B^big vs S_B^big.S_A^small",
+          "big/big,BA,S_A^big.S_B^small vs S_B^small.S_A^big",
+          "big/big,BA,S_A^small.S_B^big vs S_B^big.S_A^small",
+          "big/big,BA,S_A^small.S_B^small vs S_B^small.S_A^small",
+          "big/small,AB,S_A^big.S_B^big vs S_B^big.S_A^big",
+          "big/small,AB,S_A^small.S_B^big vs S_B^big.S_A^small",
+          "big/small,BA,S_A^small.S_B^big vs S_B^big.S_A^small",
+          "big/small,BA,S_A^small.S_B^small vs S_B^small.S_A^small",
+          "small/big,AB,S_A^big.S_B^big vs S_B^big.S_A^big"
+        ]
+      },
+      "same_role_distinguishable": {
+        "pass": 18,
+        "fail": 14,
+        "rate": 0.5625,
+        "violations": [
+          "big/small,AB,S_WUDR^big.S_WUDR^small == S_WUDR^small.S_WUDR^big",
+          "big/small,AB,S_WUDR^small.S_WUDR^big == S_WUDR^big.S_WUDR^small",
+          "big/small,AB,S_CELP^big.S_CELP^small == S_CELP^small.S_CELP^big",
+          "big/small,AB,S_CELP^small.S_CELP^big == S_CELP^big.S_CELP^small",
+          "big/small,BA,S_WUDR^big.S_WUDR^small == S_WUDR^small.S_WUDR^big",
+          "big/small,BA,S_WUDR^small.S_WUDR^big == S_WUDR^big.S_WUDR^small",
+          "big/small,BA,S_CELP^big.S_CELP^small == S_CELP^small.S_CELP^big",
+          "big/small,BA,S_CELP^small.S_CELP^big == S_CELP^big.S_CELP^small",
+          "small/big,AB,S_WUDR^big.S_WUDR^small == S_WUDR^small.S_WUDR^big",
+          "small/big,AB,S_WUDR^small.S_WUDR^big == S_WUDR^big.S_WUDR^small"
+        ]
+      },
+      "presentation_invariance": {
+        "pass": 12,
+        "fail": 4,
+        "rate": 0.75,
+        "violations": [
+          "small/big: AB=T10 vs BA=T7",
+          "small/big: AB=T10 vs BA=T7",
+          "small/big: AB=T10 vs BA=T7",
+          "small/big: AB=T10 vs BA=T7"
+        ]
+      }
+    },
+    "GYFI/TOKN": {
+      "setter_changes_own_role": {
+        "pass": 26,
+        "fail": 6,
+        "rate": 0.8125,
+        "violations": [
+          "big/small,AB,S_TOKN^big: got small",
+          "big/small,BA,S_TOKN^big: got small",
+          "small/big,AB,S_GYFI^big: got small",
+          "small/big,BA,S_GYFI^big: got small",
+          "small/small,AB,S_GYFI^big: got small",
+          "small/small,BA,S_TOKN^big: got small"
+        ]
+      },
+      "setter_preserves_other_role": {
+        "pass": 26,
+        "fail": 6,
+        "rate": 0.8125,
+        "violations": [
+          "big/big,AB,S_GYFI^small: other=small expected=big",
+          "big/big,BA,S_GYFI^small: other=small expected=big",
+          "big/big,BA,S_TOKN^small: other=small expected=big",
+          "big/small,BA,S_TOKN^big: other=small expected=big",
+          "small/big,BA,S_GYFI^big: other=small expected=big",
+          "small/big,BA,S_TOKN^small: other=big expected=small"
+        ]
+      },
+      "idempotence": {
+        "pass": 27,
+        "fail": 5,
+        "rate": 0.84375,
+        "violations": [
+          "big/big,BA,S_GYFI^small.S_GYFI^small",
+          "big/small,AB,S_TOKN^big.S_TOKN^big",
+          "small/big,BA,S_GYFI^big.S_GYFI^big",
+          "small/big,BA,S_TOKN^small.S_TOKN^small",
+          "small/small,AB,S_GYFI^big.S_GYFI^big"
+        ]
+      },
+      "last_write_wins": {
+        "pass": 10,
+        "fail": 22,
+        "rate": 0.3125,
+        "violations": [
+          "big/big,AB,S_GYFI^big.S_GYFI^small vs S_GYFI^small",
+          "big/big,AB,S_GYFI^small.S_GYFI^big vs S_GYFI^big",
+          "big/big,AB,S_TOKN^big.S_TOKN^small vs S_TOKN^small",
+          "big/big,AB,S_TOKN^small.S_TOKN^big vs S_TOKN^big",
+          "big/big,BA,S_GYFI^big.S_GYFI^small vs S_GYFI^small",
+          "big/big,BA,S_GYFI^small.S_GYFI^big vs S_GYFI^big",
+          "big/big,BA,S_TOKN^big.S_TOKN^small vs S_TOKN^small",
+          "big/big,BA,S_TOKN^small.S_TOKN^big vs S_TOKN^big",
+          "big/small,AB,S_GYFI^big.S_GYFI^small vs S_GYFI^small",
+          "big/small,AB,S_GYFI^small.S_GYFI^big vs S_GYFI^big"
+        ]
+      },
+      "disjoint_commutation": {
+        "pass": 20,
+        "fail": 12,
+        "rate": 0.625,
+        "violations": [
+          "big/big,AB,S_A^big.S_B^small vs S_B^small.S_A^big",
+          "big/big,AB,S_A^small.S_B^big vs S_B^big.S_A^small",
+          "big/big,BA,S_A^small.S_B^big vs S_B^big.S_A^small",
+          "big/small,AB,S_A^small.S_B^big vs S_B^big.S_A^small",
+          "big/small,BA,S_A^small.S_B^small vs S_B^small.S_A^small",
+          "small/big,AB,S_A^big.S_B^small vs S_B^small.S_A^big",
+          "small/big,BA,S_A^big.S_B^big vs S_B^big.S_A^big",
+          "small/big,BA,S_A^big.S_B^small vs S_B^small.S_A^big",
+          "small/small,AB,S_A^big.S_B^big vs S_B^big.S_A^big",
+          "small/small,AB,S_A^small.S_B^big vs S_B^big.S_A^small"
+        ]
+      },
+      "same_role_distinguishable": {
+        "pass": 12,
+        "fail": 20,
+        "rate": 0.375,
+        "violations": [
+          "big/big,AB,S_TOKN^big.S_TOKN^small == S_TOKN^small.S_TOKN^big",
+          "big/big,AB,S_TOKN^small.S_TOKN^big == S_TOKN^big.S_TOKN^small",
+          "big/big,BA,S_GYFI^big.S_GYFI^small == S_GYFI^small.S_GYFI^big",
+          "big/big,BA,S_GYFI^small.S_GYFI^big == S_GYFI^big.S_GYFI^small",
+          "big/small,AB,S_TOKN^big.S_TOKN^small == S_TOKN^small.S_TOKN^big",
+          "big/small,AB,S_TOKN^small.S_TOKN^big == S_TOKN^big.S_TOKN^small",
+          "big/small,BA,S_GYFI^big.S_GYFI^small == S_GYFI^small.S_GYFI^big",
+          "big/small,BA,S_GYFI^small.S_GYFI^big == S_GYFI^big.S_GYFI^small",
+          "big/small,BA,S_TOKN^big.S_TOKN^small == S_TOKN^small.S_TOKN^big",
+          "big/small,BA,S_TOKN^small.S_TOKN^big == S_TOKN^big.S_TOKN^small"
+        ]
+      },
+      "presentation_invariance": {
+        "pass": 12,
+        "fail": 4,
+        "rate": 0.75,
+        "violations": [
+          "small/big: AB=T7 vs BA=T10",
+          "small/big: AB=T7 vs BA=T10",
+          "small/big: AB=T7 vs BA=T10",
+          "small/big: AB=T7 vs BA=T10"
+        ]
+      }
+    }
+  }
+}

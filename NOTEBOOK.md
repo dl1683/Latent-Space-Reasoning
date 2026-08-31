@@ -41,6 +41,51 @@ structure through native token operations. ~5,040 CPU forwards.
 
 ---
 
+## 2026-08-31T07:00 — Predictive setter algebra v1: FAIL (primacy bias)
+
+**The model does NOT support a product-of-registers overwrite algebra.**
+Purely behavioral (no hooks, no vectors). Tested whether appending setter
+operations (`" ZOG: big."`) and query operations (`"\nZOG:"`) constitute
+a product of two two-state overwrite automata.
+
+**Results:**
+- 16 distinct predictive types instead of expected 4 (presentation entanglement)
+- setter_changes_own_role: 79% (below 90% gate)
+- setter_preserves_other_role: 77% (below 90% gate)
+- idempotence: 73%
+- **last_write_wins: 27% (FAIL)** — model has primacy bias, first mention dominates
+- **disjoint_commutation: 56% (FAIL)** — facts not independent
+- same_role_distinguishable: 58% (FAIL)
+- presentation_invariance: 88% (eval pairs pass, calibration pair fails)
+
+**Key diagnosis:** The model has PRIMACY bias, not recency bias. After
+`MIP: small. ... MIP: big.`, model still answers "small" (18.75 > 16.80).
+The first mention establishes the world model; later contradictory statements
+can't override it. This defeats the entire register-overwrite paradigm.
+
+**What this means for native math:**
+1. The model's internal "fact storage" is not a clean set of writable registers.
+2. Primacy bias = early tokens establish causal dominance that resists override.
+3. This connects to the logit-lens resolution finding: the model resolves facts
+   early and the resolution is hard to reverse.
+4. The failure is NOT evidence against native math — it's evidence that the
+   native operations are not "append contradictory text." The native algebra
+   (if it exists) must account for primacy and irreversibility.
+
+**Next:** Think about what algebraic structure DOES fit the primacy-bias observation.
+Overwrite algebras assume reversible registers. The model's behavior is more like
+a commitment lattice — once a fact is established, it can be weakened but not
+cleanly overwritten.
+
+---
+
+## 2026-08-31T05:30 — Logit-lens resolution v1: query-selective resolution layer, cosine-blind
+
+**The model has a resolution layer where it selects the queried fact and
+becomes blind to the irrelevant one.** Applied the logit lens (final
+
+---
+
 ## 2026-08-31T03:00 — Behavioral equivalence v1: first non-R^n metric on fact-worlds
 
 **The right distance is behavioral, not geometric.** Measured next-token
