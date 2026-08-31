@@ -5,6 +5,36 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31T03:55 — PSQ-3α result: NO_INTERFACE; audit #50 adopted; PSQ line closed
+
+**Result:** PSQ-3α returned NO_INTERFACE — 177/256 = 69.14% accuracy (gate ≥95%).
+Single-seed (42), PCA-k4, block-18, task-trained Qwen3-1.7B-Base LoRA (5,000
+steps, 10 GPU bursts). Stopped at stage 1 (256/1,152 calls). Training improved
+behavioral accuracy from frozen-0.6B 26.56% to trained-1.7B 69.14%, but the
+registered interface gate was not met.
+
+**Audit #50 (adopted verbatim):** The configuration received NO_INTERFACE; Codex
+direction round 6 ends further PSQ work. The result does not scientifically close
+the broader question — the quotient-holdout design shares all x-places between
+calibration and held-out (only y-fiber varies), PCA is transductive, single-seed/
+single-action scope prevents terminal scientific inference. The PSQ line stops
+because continuing PCA/Procrustes/linear-chart repair is inside the R^n trap, not
+because 69.14% proves general impossibility.
+
+**Correction (supersedes earlier notebook entries):** Prior entries stating "no
+tunnel vision" or "single thread is correct" are superseded by the R^n trap
+identification (AGENTS.md 2026-08-31). The PSQ line was tunnel-visioned on R^n
+tools applied to latent spaces, not building native latent-space mathematics.
+Phase D/E execution next-steps from earlier entries are cancelled.
+
+**Direction round 7 in progress:** 3-round Codex dialogue on what native
+latent-space math actually is. R1 proposed separator languages, executable
+differences, cell complexes. R2 gave brutal novelty assessment: all map to
+existing math (coalgebra, PSR, automata). R3 pushing coupling theorem conjecture
+and honest should-continue.
+
+---
+
 ## 2026-08-31T02:55 — Re-contextualization checkpoint #2 (fresh Codex anti-tunnel)
 
 **PSQ-3α training in progress:** step 4000/5000 (80%). GPU stable at 48W/89°C.
