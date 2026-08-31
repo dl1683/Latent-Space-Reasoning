@@ -9,6 +9,10 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 Instrument: logit lens (apply model's final layernorm + unembedding at each layer) + sqrt(JSD) as behavioral distance. Model: Qwen3-0.6B (28 layers, 1024 hidden dim), CPU-only. Synthetic fact-worlds (2- or 3-entity, controlled assignments).
 
+- **predictive_fiber_action_v2** (`dc7d4ae`; `results/predictive_fiber_action_v2/results.json`). Codex v6 corrected experiment. Fixes v1 construction error: typed square S_{p'}.C vs C.S_p with both paths ending at corrected world. Full greedy signatures. Descent tested. **CONFIRMS COUPLING**: idempotence 100% greedy (JSD 0.070); typed square JSD 0.208 (registered 89.6% greedy, held-out 70.8% greedy). Held-out commutativity WORSE than v1's invalid test. Coupling is genuine. Descent: empty 100%, restatement 92-100%.
+
+- **predictive_fiber_action_v1** (`e4e8ba7`; `results/predictive_fiber_action_v1/results.json`). *(Superseded by v2.)* Construction error: old-world restatement on both paths. Idempotence valid; square test invalid. Codex v6 review identified the error.
+
 - **predictive_fiber_v1** (`4978a85`; `results/predictive_fiber_v1/results.json`). Codex-directed (v4). Tests whether distributional residual inside greedy fibers is predictive or presentation. Three pair classes, six continuations. **MIXED**: history>benign at baseline+corrections (3/3), history<benign after restatement (0/3). Cross-world smallest. Residual = predictive commitment + resetable presentation. Canonical restatement = synchronization.
 
 - **rebroadening_test_v1** (`915988c`; `results/rebroadening_test_v1/results.json`). Re-broadened distribution is **MEANINGFUL**: 5-7/10 divergent tokens are history-related entity values. Model leaks entire fact-world into output. Repetition narrows 2-3x.

@@ -49,7 +49,7 @@ The model supports a **coarse partial action algebra** of greedy commitments:
 - **Place preservation** is near-total for identity-like operations (100% empty, 95% neutral/restatement) and genuinely state-changing for corrections (35%)
 - **Synchronization (S_p)** via canonical restatement is approximately idempotent: JSD(S, S²) = 0.078, 100% greedy idempotence
 
-The decisive test: does the algebra factorize into a clean predictive core and a presentation shell? **Open question.** The initial commutativity test contained a construction error (both paths used old-world restatement, not corrected-world S_{p'}). A corrected experiment is next. What's established: the greedy algebra is real, the fibers are nontrivial, and canonical restatement is a genuine retraction.
+The decisive test: does the algebra factorize into a clean predictive core and a presentation shell? **No.** A corrected experiment (v2) with the properly typed square (both paths ending at the corrected world) confirms: the correction/synchronization square does not commute (JSD 0.21, greedy commutativity 70.8-89.6%). Presentation and prediction are *coupled*, not separable. The structure is a quotient-with-fibers, not a product of independent components.
 
 All results generalize to held-out entities the model has never seen in the training prompts.
 
@@ -103,7 +103,7 @@ NOTEBOOK.md            Reverse-chronological running log
 
 **Phase 2** (active). Phase 1 (50 experiments, 2026-08-27 → 2026-08-31) established the nine breakpoints and the ℝⁿ trap. Phase 2 (16 experiments, 2026-08-31) builds genuinely non-ℝⁿ instruments and discovers the behavioral algebra.
 
-The central empirical claim (Codex-audited): *In a bounded three-fact prompt world in one small language model, continuation behavior supports an approximate argmax quotient algebra, while its fibers remain distributionally and predictively nontrivial; canonical restatement is repeatable, but has not yet been shown to define a quotient-level synchronization.*
+The central empirical claim (Codex-audited): *In a bounded three-fact prompt world in one small language model, continuation behavior supports an approximate argmax quotient algebra whose fibers are distributionally and predictively nontrivial; canonical restatement is an idempotent retraction but does not commute with correction — presentation and prediction are coupled.*
 
 Current state: [`STATE.md`](STATE.md) · Running log: [`NOTEBOOK.md`](NOTEBOOK.md) · Phase 1 handoff: [`docs/HANDOFF_2026_08_30.md`](docs/HANDOFF_2026_08_30.md)
 

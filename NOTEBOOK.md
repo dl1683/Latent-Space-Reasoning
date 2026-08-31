@@ -5,6 +5,47 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31T02:30 — predictive_fiber_action_v2: CORRECTLY TYPED SQUARE CONFIRMS NON-COMMUTATIVITY
+
+**The v1 construction error is fixed. The result is the same or stronger.**
+
+With the correctly typed square (S_{p'} . C vs C . S_p, both paths ending
+at corrected world p'):
+
+| Metric | Registered | Held-out |
+|--------|-----------|----------|
+| Baseline | 89.6% | 93.8% |
+| Idempotence JSD mean | 0.069 | 0.071 |
+| Idempotence greedy | 100% | 100% |
+| Typed square JSD mean | 0.208 | 0.208 |
+| Greedy commutativity | 89.6% (43/48) | 70.8% (34/48) |
+| Task kernel diff mean | 0.155 | 0.155 |
+| Empty descent | 100% (12/12) | 100% (15/15) |
+| Restatement descent | 91.7% (11/12) | 100% (15/15) |
+
+**Key observations:**
+1. Idempotence CONFIRMED again (100% greedy, JSD ~0.07).
+2. Typed square does NOT commute: JSD ~0.21, above 0.20 threshold.
+3. Held-out greedy commutativity WORSE (70.8%) than v1's invalid test
+   (80%). The corrected construction reveals MORE non-commutativity.
+4. In v2, CS path has correction + corrected-world restatement (both
+   asserting new value). SC path has old-world restatement + correction.
+   Both end at corrected world. Yet they're still distributionally
+   different (JSD 0.21). This is a stronger argument for coupling
+   than v1's contradictory-text order effect.
+5. Descent: empty is perfect (100%). Restatement descent near-perfect
+   (11/12 registered, 15/15 held-out).
+
+**The v1 direction was RIGHT.** The construction error understated the
+non-commutativity (contradictory text masked some of the real effect).
+The corrected v2 confirms: presentation and prediction are coupled.
+
+**Verdict: COUPLED.** The square does not commute. S_p is a genuine
+idempotent retraction, but it does not define a clean quotient-level
+synchronization that commutes with correction.
+
+---
+
 ## 2026-08-31T01:45 — Codex v6 review: construction error in action_v1 square test
 
 **Codex found a construction error in the correction/synchronization square.**
