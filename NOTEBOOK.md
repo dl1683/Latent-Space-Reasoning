@@ -5,6 +5,51 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31T10:45 — Codex adversarial audit of fusion-fission v1 series
+
+**Codex verdict: "The three runs do not yet establish fusion-fission as a
+property of transformer computation."** Major instrument defects:
+
+1. **75% baseline is fatal.** Worlds 01 and 10 already fail independent
+   retrieval (HESK red → answers blue). Facts were never independently
+   retrievable, so "independent facts fuse" is unsupported.
+2. **Layer alignment bug.** v1 injects `donor_hs[layer_idx]` as output of
+   `layers[layer_idx]` — pre-block state in post-block slot. Could create
+   oscillatory off-manifold artifacts.
+3. **"R^n blind" overclaimed.** PCA (itself R^n) finds the contrasts.
+   Correct claim: uncentered global cosine is insensitive. Not all R^n.
+4. **v1d doesn't localize.** Full transplant replaces entire state with
+   donor whose B is already wrong — trivially expected to "flip at all
+   layers." Not evidence for whole-state fusion.
+5. **Attention claim too strong.** Raw weights ≠ computation. Depth confound
+   (separate layers later). One prompt, no query.
+6. **"12 transitions" misleading.** Only 3 direct S↔F boundaries; only
+   layers 5-6-8 have both intended effects. 22-24 control only A.
+
+**Codex licensed sentence (adopted verbatim):** "In one binary prompt,
+centered between-world activation contrasts coexist with nearly identical
+uncentered cosine, while a whole-prefix transplant instrument produces
+layer-dependent categorical response patterns. Baseline and intervention
+defects prevent interpreting those patterns as intrinsic fusion-fission."
+
+**Next (Codex prescribed):**
+1. Fix baseline: near-perfect retrieval for all 4 worlds × both questions,
+   across templates, entity orders, value pairs. No leakage.
+2. Fix status classifier: compute continuous 2×2 causal transfer matrix K_l.
+   "SEPARATE" = strong diagonal, small off-diagonal. "NO_CONTROL" if both
+   diagonals absent.
+3. Fix layer alignment: capture block output directly, patch at identical
+   boundary. Add self-patch and sham-patch controls.
+4. Replicate across templates.
+5. THEN component mediation with synergy decomposition (E_AM = E_{A+M} -
+   E_A - E_M + E_0).
+
+The fusion_sensitivity_v1 experiment (fork-designed) is DEFERRED until the
+instrument is repaired. Building predictions on top of a broken instrument
+is exactly the failure mode Codex is catching.
+
+---
+
 ## 2026-08-31T10:00 — Fusion-fission v1c/v1d/v1e complete; five-experiment synthesis
 
 **v1c (attention):** Cross-fact attention is LOWER at fused layers (0.275)

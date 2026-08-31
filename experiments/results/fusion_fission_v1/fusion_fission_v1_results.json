@@ -1,0 +1,807 @@
+{
+  "model": "Qwen/Qwen3-0.6B",
+  "device": "cpu",
+  "timestamp": "2026-08-31T07:47:15Z",
+  "baseline": {
+    "00_A": {
+      "expected": "red",
+      "pred": "red",
+      "ok": true,
+      "margin": 2.8423404693603516
+    },
+    "00_B": {
+      "expected": "red",
+      "pred": "red",
+      "ok": true,
+      "margin": 3.300532341003418
+    },
+    "01_A": {
+      "expected": "red",
+      "pred": "blue",
+      "ok": false,
+      "margin": 0.1763629913330078
+    },
+    "01_B": {
+      "expected": "blue",
+      "pred": "blue",
+      "ok": true,
+      "margin": 3.959878921508789
+    },
+    "10_A": {
+      "expected": "blue",
+      "pred": "blue",
+      "ok": true,
+      "margin": 4.100861549377441
+    },
+    "10_B": {
+      "expected": "red",
+      "pred": "blue",
+      "ok": false,
+      "margin": 0.0357666015625
+    },
+    "11_A": {
+      "expected": "blue",
+      "pred": "blue",
+      "ok": true,
+      "margin": 5.495182037353516
+    },
+    "11_B": {
+      "expected": "blue",
+      "pred": "blue",
+      "ok": true,
+      "margin": 5.648519515991211
+    }
+  },
+  "baseline_accuracy": 0.75,
+  "fusion_fission": [
+    {
+      "layer": 0,
+      "a_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "b_transplant": {
+        "changes_a": false,
+        "changes_b": false,
+        "qa_pred": "red",
+        "qb_pred": "red"
+      },
+      "joint_transplant": {
+        "changes_a": false,
+        "changes_b": false,
+        "qa_pred": "red",
+        "qb_pred": "red"
+      },
+      "status": "PARTIAL"
+    },
+    {
+      "layer": 1,
+      "a_transplant": {
+        "changes_a": false,
+        "changes_b": false,
+        "qa_pred": "red",
+        "qb_pred": "red"
+      },
+      "b_transplant": {
+        "changes_a": false,
+        "changes_b": false,
+        "qa_pred": "red",
+        "qb_pred": "red"
+      },
+      "joint_transplant": {
+        "changes_a": false,
+        "changes_b": false,
+        "qa_pred": "red",
+        "qb_pred": "red"
+      },
+      "status": "SEPARATE"
+    },
+    {
+      "layer": 2,
+      "a_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "b_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "joint_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "status": "FUSED"
+    },
+    {
+      "layer": 3,
+      "a_transplant": {
+        "changes_a": true,
+        "changes_b": false,
+        "qa_pred": "blue",
+        "qb_pred": "red"
+      },
+      "b_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "joint_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "status": "PARTIAL"
+    },
+    {
+      "layer": 4,
+      "a_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "b_transplant": {
+        "changes_a": false,
+        "changes_b": true,
+        "qa_pred": "red",
+        "qb_pred": "blue"
+      },
+      "joint_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "status": "PARTIAL"
+    },
+    {
+      "layer": 5,
+      "a_transplant": {
+        "changes_a": true,
+        "changes_b": false,
+        "qa_pred": "blue",
+        "qb_pred": "red"
+      },
+      "b_transplant": {
+        "changes_a": false,
+        "changes_b": true,
+        "qa_pred": "red",
+        "qb_pred": "blue"
+      },
+      "joint_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "status": "SEPARATE"
+    },
+    {
+      "layer": 6,
+      "a_transplant": {
+        "changes_a": true,
+        "changes_b": false,
+        "qa_pred": "blue",
+        "qb_pred": "red"
+      },
+      "b_transplant": {
+        "changes_a": false,
+        "changes_b": true,
+        "qa_pred": "red",
+        "qb_pred": "blue"
+      },
+      "joint_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "status": "SEPARATE"
+    },
+    {
+      "layer": 7,
+      "a_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "b_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "joint_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "status": "FUSED"
+    },
+    {
+      "layer": 8,
+      "a_transplant": {
+        "changes_a": true,
+        "changes_b": false,
+        "qa_pred": "blue",
+        "qb_pred": "red"
+      },
+      "b_transplant": {
+        "changes_a": false,
+        "changes_b": true,
+        "qa_pred": "red",
+        "qb_pred": "blue"
+      },
+      "joint_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "status": "SEPARATE"
+    },
+    {
+      "layer": 9,
+      "a_transplant": {
+        "changes_a": true,
+        "changes_b": false,
+        "qa_pred": "blue",
+        "qb_pred": "red"
+      },
+      "b_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "joint_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "status": "PARTIAL"
+    },
+    {
+      "layer": 10,
+      "a_transplant": {
+        "changes_a": true,
+        "changes_b": false,
+        "qa_pred": "blue",
+        "qb_pred": "red"
+      },
+      "b_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "joint_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "status": "PARTIAL"
+    },
+    {
+      "layer": 11,
+      "a_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "b_transplant": {
+        "changes_a": false,
+        "changes_b": true,
+        "qa_pred": "red",
+        "qb_pred": "blue"
+      },
+      "joint_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "status": "PARTIAL"
+    },
+    {
+      "layer": 12,
+      "a_transplant": {
+        "changes_a": true,
+        "changes_b": false,
+        "qa_pred": "blue",
+        "qb_pred": "red"
+      },
+      "b_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "joint_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "status": "PARTIAL"
+    },
+    {
+      "layer": 13,
+      "a_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "b_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "joint_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "status": "FUSED"
+    },
+    {
+      "layer": 14,
+      "a_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "b_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "joint_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "status": "FUSED"
+    },
+    {
+      "layer": 15,
+      "a_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "b_transplant": {
+        "changes_a": false,
+        "changes_b": true,
+        "qa_pred": "red",
+        "qb_pred": "blue"
+      },
+      "joint_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "status": "PARTIAL"
+    },
+    {
+      "layer": 16,
+      "a_transplant": {
+        "changes_a": true,
+        "changes_b": false,
+        "qa_pred": "blue",
+        "qb_pred": "red"
+      },
+      "b_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "joint_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "status": "PARTIAL"
+    },
+    {
+      "layer": 17,
+      "a_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "b_transplant": {
+        "changes_a": false,
+        "changes_b": true,
+        "qa_pred": "red",
+        "qb_pred": "blue"
+      },
+      "joint_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "status": "PARTIAL"
+    },
+    {
+      "layer": 18,
+      "a_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "b_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "joint_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "status": "FUSED"
+    },
+    {
+      "layer": 19,
+      "a_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "b_transplant": {
+        "changes_a": false,
+        "changes_b": true,
+        "qa_pred": "red",
+        "qb_pred": "blue"
+      },
+      "joint_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "status": "PARTIAL"
+    },
+    {
+      "layer": 20,
+      "a_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "b_transplant": {
+        "changes_a": false,
+        "changes_b": true,
+        "qa_pred": "red",
+        "qb_pred": "blue"
+      },
+      "joint_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "status": "PARTIAL"
+    },
+    {
+      "layer": 21,
+      "a_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "b_transplant": {
+        "changes_a": false,
+        "changes_b": true,
+        "qa_pred": "red",
+        "qb_pred": "blue"
+      },
+      "joint_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "status": "PARTIAL"
+    },
+    {
+      "layer": 22,
+      "a_transplant": {
+        "changes_a": true,
+        "changes_b": false,
+        "qa_pred": "blue",
+        "qb_pred": "red"
+      },
+      "b_transplant": {
+        "changes_a": false,
+        "changes_b": false,
+        "qa_pred": "red",
+        "qb_pred": "red"
+      },
+      "joint_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "status": "SEPARATE"
+    },
+    {
+      "layer": 23,
+      "a_transplant": {
+        "changes_a": true,
+        "changes_b": false,
+        "qa_pred": "blue",
+        "qb_pred": "red"
+      },
+      "b_transplant": {
+        "changes_a": false,
+        "changes_b": false,
+        "qa_pred": "red",
+        "qb_pred": "red"
+      },
+      "joint_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "status": "SEPARATE"
+    },
+    {
+      "layer": 24,
+      "a_transplant": {
+        "changes_a": true,
+        "changes_b": false,
+        "qa_pred": "blue",
+        "qb_pred": "red"
+      },
+      "b_transplant": {
+        "changes_a": false,
+        "changes_b": false,
+        "qa_pred": "red",
+        "qb_pred": "red"
+      },
+      "joint_transplant": {
+        "changes_a": true,
+        "changes_b": true,
+        "qa_pred": "blue",
+        "qb_pred": "blue"
+      },
+      "status": "SEPARATE"
+    },
+    {
+      "layer": 25,
+      "a_transplant": {
+        "changes_a": false,
+        "changes_b": false,
+        "qa_pred": "red",
+        "qb_pred": "red"
+      },
+      "b_transplant": {
+        "changes_a": false,
+        "changes_b": false,
+        "qa_pred": "red",
+        "qb_pred": "red"
+      },
+      "joint_transplant": {
+        "changes_a": false,
+        "changes_b": false,
+        "qa_pred": "red",
+        "qb_pred": "red"
+      },
+      "status": "SEPARATE"
+    },
+    {
+      "layer": 26,
+      "a_transplant": {
+        "changes_a": false,
+        "changes_b": false,
+        "qa_pred": "red",
+        "qb_pred": "red"
+      },
+      "b_transplant": {
+        "changes_a": false,
+        "changes_b": false,
+        "qa_pred": "red",
+        "qb_pred": "red"
+      },
+      "joint_transplant": {
+        "changes_a": false,
+        "changes_b": false,
+        "qa_pred": "red",
+        "qb_pred": "red"
+      },
+      "status": "SEPARATE"
+    },
+    {
+      "layer": 27,
+      "a_transplant": {
+        "changes_a": false,
+        "changes_b": false,
+        "qa_pred": "red",
+        "qb_pred": "red"
+      },
+      "b_transplant": {
+        "changes_a": false,
+        "changes_b": false,
+        "qa_pred": "red",
+        "qb_pred": "red"
+      },
+      "joint_transplant": {
+        "changes_a": false,
+        "changes_b": false,
+        "qa_pred": "red",
+        "qb_pred": "red"
+      },
+      "status": "SEPARATE"
+    }
+  ],
+  "rn_comparison": [
+    {
+      "layer": 0,
+      "sim_differ_A": 0.9800326228141785,
+      "sim_differ_B": 0.9800326228141785,
+      "sim_differ_both": 0.9189948439598083,
+      "sim_same_A": 0.9790400862693787
+    },
+    {
+      "layer": 4,
+      "sim_differ_A": 0.9999982714653015,
+      "sim_differ_B": 0.9999988079071045,
+      "sim_differ_both": 0.999995231628418,
+      "sim_same_A": 0.9999980330467224
+    },
+    {
+      "layer": 8,
+      "sim_differ_A": 0.9999890923500061,
+      "sim_differ_B": 0.9999963641166687,
+      "sim_differ_both": 0.9999848008155823,
+      "sim_same_A": 0.9999895691871643
+    },
+    {
+      "layer": 12,
+      "sim_differ_A": 0.9999378323554993,
+      "sim_differ_B": 0.9999880194664001,
+      "sim_differ_both": 0.9999268651008606,
+      "sim_same_A": 0.9999421238899231
+    },
+    {
+      "layer": 16,
+      "sim_differ_A": 0.9999512434005737,
+      "sim_differ_B": 0.9999704360961914,
+      "sim_differ_both": 0.9999541640281677,
+      "sim_same_A": 0.9999565482139587
+    },
+    {
+      "layer": 20,
+      "sim_differ_A": 0.9998133182525635,
+      "sim_differ_B": 0.9998946785926819,
+      "sim_differ_both": 0.9997454881668091,
+      "sim_same_A": 0.9998403787612915
+    },
+    {
+      "layer": 24,
+      "sim_differ_A": 0.9994138479232788,
+      "sim_differ_B": 0.9998055696487427,
+      "sim_differ_both": 0.9992052316665649,
+      "sim_same_A": 0.9995153546333313
+    },
+    {
+      "layer": 28,
+      "sim_differ_A": 0.9924468398094177,
+      "sim_differ_B": 0.9981629848480225,
+      "sim_differ_both": 0.9916667938232422,
+      "sim_same_A": 0.9942077994346619
+    }
+  ],
+  "transitions": [
+    {
+      "from_layer": 0,
+      "to_layer": 1,
+      "from_status": "PARTIAL",
+      "to_status": "SEPARATE"
+    },
+    {
+      "from_layer": 1,
+      "to_layer": 2,
+      "from_status": "SEPARATE",
+      "to_status": "FUSED"
+    },
+    {
+      "from_layer": 2,
+      "to_layer": 3,
+      "from_status": "FUSED",
+      "to_status": "PARTIAL"
+    },
+    {
+      "from_layer": 4,
+      "to_layer": 5,
+      "from_status": "PARTIAL",
+      "to_status": "SEPARATE"
+    },
+    {
+      "from_layer": 6,
+      "to_layer": 7,
+      "from_status": "SEPARATE",
+      "to_status": "FUSED"
+    },
+    {
+      "from_layer": 7,
+      "to_layer": 8,
+      "from_status": "FUSED",
+      "to_status": "SEPARATE"
+    },
+    {
+      "from_layer": 8,
+      "to_layer": 9,
+      "from_status": "SEPARATE",
+      "to_status": "PARTIAL"
+    },
+    {
+      "from_layer": 12,
+      "to_layer": 13,
+      "from_status": "PARTIAL",
+      "to_status": "FUSED"
+    },
+    {
+      "from_layer": 14,
+      "to_layer": 15,
+      "from_status": "FUSED",
+      "to_status": "PARTIAL"
+    },
+    {
+      "from_layer": 17,
+      "to_layer": 18,
+      "from_status": "PARTIAL",
+      "to_status": "FUSED"
+    },
+    {
+      "from_layer": 18,
+      "to_layer": 19,
+      "from_status": "FUSED",
+      "to_status": "PARTIAL"
+    },
+    {
+      "from_layer": 21,
+      "to_layer": 22,
+      "from_status": "PARTIAL",
+      "to_status": "SEPARATE"
+    }
+  ],
+  "total_forwards": 208
+}
