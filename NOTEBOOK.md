@@ -5,6 +5,27 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31T07:15 — PROGRAM CLOSED: archive + deposit (Codex R8 decision)
+
+Codex direction round 8 (portfolio review) returned. Ranking: **1 >> 3 > 4 > 2**
+(archive+deposit >> prove conjecture > study SSMs > HANDLE here).
+
+Key findings from R8:
+- SSMs (S4, Mamba, RWKV, linear attention) are described by linear systems,
+  spectral theory, structured matrices, and recurrence — not new mathematics.
+  Option 4 escapes the residual-port mistake but not the R^n trap.
+- The conjecture's broad compression thesis is close to Haris & Onak's result;
+  keep as unaudited open deposit, not a proof project.
+- HANDLE belongs in moonshot-llm-genome (already owns the three-gate contract).
+- Option 2 (HANDLE here) would reopen a closed math program as engineering.
+
+**Executed:** Updated handoff document from pause/restart to program closure.
+Deposit targets: moonshot-llm-genome (state gates, quotients, collision
+witnesses, cheapest-mechanism nulls), neuro-ai-lab (information-vs-causal-state),
+_meta/INDEX.md (row update).
+
+---
+
 ## 2026-08-31T06:05 — Architectural comparison: transformers vs SSMs under D1-D9
 
 Added a theoretical note to `theory/AXIOMS.md` comparing how the coupling
