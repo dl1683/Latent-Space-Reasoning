@@ -1,0 +1,17 @@
+{
+  "experiment": "psq3_alpha",
+  "description": "PSQ-3α: one-action intervention test on task-trained Qwen3-1.7B-Base, seed 42, local GPU bursts + CPU micro staircase",
+  "model_id": "Qwen/Qwen3-1.7B-Base",
+  "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
+  "device": "cuda",
+  "seeds": [42],
+  "micro": {
+    "states_y": [0, 2, 4, 6],
+    "block": 18,
+    "pca_k": 4,
+    "action": "A",
+    "wrong_action": "B",
+    "call_cap": 1152,
+    "wall_minutes": 60
+  }
+}

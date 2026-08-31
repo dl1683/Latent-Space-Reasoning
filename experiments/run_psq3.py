@@ -1773,6 +1773,8 @@ def main():
                         help="Run specific phase (default: all)")
     parser.add_argument("--dry-run", action="store_true",
                         help="Validate micro phase without model loading")
+    parser.add_argument("--adapter", default=None,
+                        help="Path to trained LoRA adapter for micro phase (PSQ-3α)")
     args = parser.parse_args()
 
     with open(args.config) as f:
@@ -1804,6 +1806,11 @@ def main():
     assert id_1 == 16, f"Expected id_1=16, got {id_1}"
 
     if args.phase == "micro":
+        if args.adapter:
+            from peft import PeftModel
+            model = PeftModel.from_pretrained(model, args.adapter)
+            model = model.merge_and_unload()
+            print(f"Loaded and merged adapter from {args.adapter}")
         micro_phase(model, tok, device, id_0, id_1, cfg, out_dir)
         return
 

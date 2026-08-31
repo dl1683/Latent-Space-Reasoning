@@ -10395,3 +10395,65 @@ budgeted calls (132.6s, 1.9 fwd/s on CPU float32). Stages 2–6 never ran.
 - "The behavioral interface does not exist." (Overclaim; the registered gate was not met.)
 - "PSQ-3μ confirms that frozen small models lack the interface." (Overclaim beyond the one tested panel.)
 - Any class-specific accuracy claim (12.5%/100%) without an auditable saved histogram.
+
+## PSQ-3α — one-action intervention on task-trained 1.7B (Codex direction round 6, 2026-08-31)
+
+### Proposition
+
+If a task-trained real model treats textually different instances of the same
+dial location as one behavioral place, one shared learned move should carry
+all of them toward the next place — even on held-out states the operator was
+not fitted on.
+
+### Locked design
+
+| Component | Choice |
+|---|---|
+| Model | Qwen3-1.7B-Base, revision ea980cb0, fresh LoRA seed 42, 5,000 steps |
+| States | S_μ = Z_8 × {0,2,4,6}: 32 states |
+| Registered quotient | Only x-channel responses (is_x_zero probes); y is fiber/nuisance |
+| Probe panel | Eight x probes: is_x_zero after words of length 0–4 containing only A and B |
+| Move | A: x → x+1 mod 8. B: x → −x mod 8 is wrong-action control |
+| Split | Block-floor rule: 16 cal / 16 held-out |
+| Carrier | Newline token after "y = {digit}" |
+| Geometry | Fixed block 18, transductive PCA k=4, cal-only Procrustes M_A and M_B |
+| Primary number | Held-out mean G_{M_A} and paired G_{M_A} − G_{control} |
+| Controls | No edit, mean displacement, M_B (wrong action), fixed-seed matched-random O(k) |
+| Call cap | Exactly 1,152 intervention forwards (after training) |
+| Wall clock | 60 minutes for micro phase, fail closed |
+| Training | LoRA r=16, 5,000 steps, batch 4, lr 5e-5, 500-step GPU bursts |
+| Inference | CPU float32 (merged adapter) |
+
+### Predeclared outcomes (same as PSQ-3μ)
+
+- **NO_INTERFACE**: panel accuracy <95%, p_other >10%, or spread <0.1.
+- **INVALID**: replay >1e-3, donor <15/16, or cal M_A <14/16.
+- **MICRO_SIGNAL**: held-out M_A mean gain ≥0.25, ≥12/16 decodes, all 4 bootstrap CIs >0.
+- **MICRO_FAIL**: interface and proximal controls pass but held-out operator fails.
+
+### Licensed sentence (if MICRO_SIGNAL)
+
+In task-trained Qwen3-1.7B-Base (LoRA seed 42), a single calibration-fitted
+Procrustes operator for action A, applied to held-out carrier representations
+at block 18, produces response profiles whose nearest-state decode matches the
+true A-successor at [N/16] states, with mean behavioral gain [G] exceeding
+all four controls at the 95% bootstrap level. This establishes one-action,
+fixed-presentation response-law control in a task-trained real model.
+
+### Never say
+
+- "The result demonstrates spontaneous pretrained structure."
+- "Full d_∞ geometry, composition, or presentation covariance is established."
+- "Denizen reachability or new native mathematics is proved."
+- "The result generalizes to other models, actions, sites, or tasks."
+- "The 0.6B frozen-model result predicted the 1.7B trained result."
+- "The y-channel responses were tested."
+- "PSQ-3α is a replication of PSQ-3."
+
+### Stop rule
+
+No repair after any outcome. PASS promotes one full stable-hardware PSQ-3
+campaign; every other valid outcome closes the program as currently constituted.
+One audit fires after the result. If PSQ-3α fails, the program is CLOSED —
+a different architecture or natural-language task requires explicit new
+authorization.
