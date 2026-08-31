@@ -1,6 +1,6 @@
 # Latent Space Reasoning
 
-**Program (opened 2026-08-27): the native mathematics of latent spaces.**
+**Program (2026-08-27 → 2026-08-31, CLOSED): the native mathematics of latent spaces.**
 Embedding and latent spaces are not number systems. This program builds their
 mathematics from axioms upward — what a latent space is, which relations and
 operations are meaningful — and derives definitions and propositions from
@@ -11,17 +11,40 @@ counterparts.
 
 - Current state: [STATE.md](STATE.md) · running log: [NOTEBOOK.md](NOTEBOOK.md)
 
-## Status (restarted 2026-08-30 — theory-first)
+## Status: PROGRAM CLOSED (2026-08-31)
 
-The program restarted on 2026-08-30 in theory-first mode (math first, intuition second, compute third; no heavy LLM work). `theory/AXIOMS.md` now carries an adopted foundation — future-response geometry (mathematics audit #42): identity as zero future-response distance over the world's own response laws, nonexpansive descent of legal moves, a linear observability seminorm, and the local-to-global map problem as the open question. Nothing proved so far is new mathematics; the distinctive content is the boundary between a denizen's native responses and an analyst's instruments, under which every earlier empirical construction reads as instrument-level. The dialogue is verbatim in `theory/dialogue/004.md`.
+The discovery program is **closed**. Across 50 audited experiments and 4 rounds
+of Codex direction dialogue, no tested construction established native latent
+mathematics — every proposed object (separator languages, executable
+differences, cell complexes, internal port sufficiency) mapped to existing
+established mathematics (coalgebra, PSR, automata, causal abstraction). The
+terminal experiment (PSQ-3α: task-trained Qwen3-1.7B one-action intervention)
+returned NO_INTERFACE (69.14% accuracy, gate ≥95%).
 
-### Empirical record (closed lines, 2026-08-27 → 2026-08-30)
+### Deposits
 
-Across two days of audited CPU experiments, no tested construction established a transferable causal state or native latent mathematics in a real model; the durable result is a localized set of instrument-validity, source-extraction, actuator, and prompt/output-geometry constraints that any future substrate must satisfy.
+**Theory.** `theory/AXIOMS.md` carries an adopted foundation — future-response
+geometry (D1–D9, Theorems 1/4/7/8): identity as zero future-response distance,
+nonexpansive legal moves, surgeon-vs-denizen refinement, and the Robust
+Port-Compression Conjecture (unaudited closing deposit: no fixed layer's
+newest-token residual realizes the full append-action process once prefix
+complexity exceeds d).
 
-`register_bridge_preflight_v1` is a noncausal feasibility PASS: in frozen Qwen3-1.7B-Base, a predeclared cross-fitted rank-≤8 linear decoder read the state explicitly assigned to a record tag by an in-prompt legend under held-out entities, two held-out templates, and a disjoint balanced permutation bank at 0.815 accuracy, versus 0.125 input-embedding, 0.135 categorical, and 0.016 paired reassigned-legend original-state controls; the same intact decoders followed the state newly denoted by the paired reassigned legend at 0.852. This establishes a prompt-family-bounded, presentation-transferring explicit-legend signal at the record span—not a code-level or causal bridge, persistent register, synthetic-consumer usability, or native latent mathematics.
+**Five transferable insights:**
+1. A model has many operational latent spaces — indexed by (actions, observations, horizon).
+2. Information ≠ state: state has three gates (present → addressable → composable).
+3. The right null is the system's cheapest native mechanism, not random features.
+4. A quotient must be earned by a transport — held-out presentation ≠ quotient-level generalization.
+5. Absence requires a collision witness (same carrier, different future), not a failed probe.
 
-The empirical program paused after `register_bridge_preflight_v1` and audit #39 and was then restarted theory-first. Orientation: the [handoff](docs/HANDOFF_2026_08_30.md) (record of everything tried and closed), then the canonical [current state](STATE.md). The audited two-day closeout is [the structured negative](docs/STRUCTURED_NEGATIVE_2026_08_29.md), and append-only run/audit provenance is in the [experiment ledger](experiments/ledger.jsonl).
+**Empirical record.** Across two days of audited CPU experiments (2026-08-27 →
+2026-08-30), no tested construction established a transferable causal state.
+The durable empirical result is a localized set of instrument-validity,
+source-extraction, actuator, and prompt/output-geometry constraints that any
+future substrate must satisfy. Orientation: the
+[handoff](docs/HANDOFF_2026_08_30.md), the canonical [current state](STATE.md),
+and the [structured negative](docs/STRUCTURED_NEGATIVE_2026_08_29.md).
+Append-only provenance is in the [experiment ledger](experiments/ledger.jsonl).
 
 ## Prior program and correction (closed 2026-08-27)
 
