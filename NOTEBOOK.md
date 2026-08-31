@@ -5,6 +5,40 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31T19:15 — Entropy structure v1: COMMITMENT BOTTLENECK discovered
+
+**Measured Shannon entropy of logit-lens output distributions across all 28 layers.**
+Used 4-world (2×2) design with 3 entity pairs to connect the resolution layer finding
+to the distributional congruence failure.
+
+**Key finding: the model passes through a COMMITMENT BOTTLENECK at L24-25.**
+
+The entropy profile has a dramatic U-shape:
+- **Early layers (0-15):** entropy 4-6 bits, broad distributions, no fact discrimination
+- **Resolution layer L25:** entropy drops to **0.30 bits** (ZOG/MIP) or **0.05 bits** (PLIM/KROT).
+  Top-1 probability mass reaches 0.987-0.999. The model is essentially certain of the answer.
+- **Final output:** entropy JUMPS BACK UP to **5.5-7.7 bits**. The distribution re-broadens
+  massively (20-25x entropy increase from L25 to final output).
+
+The entropy-vs-layer profile:
+```
+ZOG/MIP:  L0=5.3 → L15=4.3 → L24=2.1 → L25=0.3 → final=7.3
+PLIM/KROT: L0=4.8 → L15=4.4 → L21=1.1 → L25=0.05 → final=6.2
+```
+
+**This explains the distributional congruence failure:**
+- At L25, the model has committed (near-zero entropy → same argmax across histories)
+- In the final layers, the distribution re-broadens (uncertainty/hedging/alternatives added)
+- The re-broadening is HISTORY-DEPENDENT: same argmax, different distributional tails
+- Greedy congruence holds because the commitment at L25 determines the argmax
+- Distributional congruence fails because the re-broadening adds back history-specific structure
+
+**What's next:** The commitment bottleneck is a clean, replicating, non-R^n structural property.
+The natural follow-up is to characterize WHAT the re-broadened distribution encodes — is it
+just noise, or does it carry meaningful information about the history?
+
+---
+
 ## 2026-08-31T18:27 — Distributional congruence v1: 100% DEFECT RATE
 
 **Strengthened continuation congruence from greedy to distributional level.** Instead of

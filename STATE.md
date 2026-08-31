@@ -46,6 +46,13 @@
   - **Conclusion:** Resolution is a whole-sequence operation — value vectors combine across positions through the attention mechanism. Not decomposable to a single source.
   - Fixed GQA dimension mismatch: Qwen3-0.6B has num_heads=16, num_kv_heads=8, head_dim=128; o_proj takes 2048, not 1024.
 
+- **Entropy structure v1 (2026-08-31).** Measures Shannon entropy of logit-lens output distributions across all 28 layers. 4-world (2×2) design, 3 configs.
+  - **COMMITMENT BOTTLENECK discovered.** Entropy drops to near-zero at L24-25 (0.05-0.30 bits, top-1 mass 0.987-0.999) then JUMPS BACK UP to 5.5-7.7 bits in the final output.
+  - ZOG/MIP: L0=5.3 → L15=4.3 → L24=2.1 → L25=0.30 → final=7.3 bits. JSD ratio peaks at 33.65x at L25.
+  - PLIM/KROT: entropy reaches 0.05 bits at L25 (top-1 mass 0.999).
+  - **Explains distributional congruence failure:** commitment at L25 determines the argmax (greedy congruence holds), but the re-broadening in final layers adds back history-dependent distributional structure (distributional congruence fails).
+  - The commitment bottleneck is a structural property of the transformer's layer-wise computation, not an R^n artifact.
+
 - **Distributional congruence v1 (2026-08-31).** Strengthens continuation_congruence_v1 from greedy (argmax) to distributional (full next-token law via sqrt(JSD), threshold 0.05).
   - **Result: 100% DEFECT RATE.** 0/96 tests congruent. Same-place histories that produce identical greedy answers have JSD 0.07-0.45 in their full output distributions.
   - Greedy congruence (97%, continuation_congruence_v1) was "lucky argmax agreement" — distribution peaks align but the full distributions differ substantially.
