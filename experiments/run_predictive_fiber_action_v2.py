@@ -2,26 +2,26 @@
 Predictive Fiber Action Algebra v2.
 
 Codex v6 corrected experiment. Fixes construction errors in v1:
-  1. Square test uses CORRECTED-world restatement S_{p'} on path C-then-S,
-     so both paths end at the corrected world p'.
+  1. Square test uses CORRECTED-world restatement S^W_{w'} on path C-then-S,
+     so both paths end at the corrected world w'.
   2. Places defined by full greedy answer SIGNATURE (all queries), not
      per-entity buckets.
-  3. Restatement S_p constructed from the greedy signature observable,
-     not hidden ground-truth world.
+  3. Restatement S^W_w constructed from the EXPERIMENTER-KNOWN WORLD,
+     not the observable greedy signature. (This is S^W, not S^G.)
   4. Tests fiber-wide descent (all representatives of a fiber map to
      same target under each operation).
   5. Task-response kernel is primary endpoint. Full-vocab JSD secondary.
   6. Paired intervals reported.
 
 The typed square being tested:
-    F_p --C--> F_{p'}
+    F_g --C--> F_{g'}
     |           |
-    S_p         S_{p'}
+    S^W_w       S^W_{w'}
     |           |
-    S_p(F_p) --C--> S_{p'}(F_{p'})
+    S^W_w(F_g) --C--> S^W_{w'}(F_{g'})
 
-If S_{p'} . C ~= C . S_p (both ending at corrected world), then
-synchronization descends cleanly and the fiber factorizes.
+If S^W_{w'} . C ~= C . S^W_w (both ending at corrected world), then
+synchronization is natural with correction.
 """
 
 import torch
