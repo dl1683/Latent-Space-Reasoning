@@ -5,6 +5,41 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31T19:45 — Rebroadening test v1: distribution carries MEANINGFUL history info
+
+**Tested whether the re-broadened final distribution is meaningful or noise.**
+After the commitment bottleneck (L25 → near-zero entropy), the final output
+re-broadens to 5.5-7.7 bits. Are the extra bits random or informative?
+
+**Finding 1: The divergent tokens are overwhelmingly HISTORY-RELATED.**
+Between same-place histories (same greedy answer "big"), the tokens with the
+largest probability differences are: "big", "hot", "Big", "small", "red", "blue",
+"BIG" — the entity values from the input history. 5-7 of the top 10 divergent
+tokens are fact-world values in every query × pair combination.
+
+**The model leaks the entire fact-world into every output distribution.** When you
+query ZOG (answer: "big"), the distribution also carries elevated probability on
+"hot" (MIP's value), "red" (PLIM's value), and their variants. The output
+distribution at any position is a compressed representation of the full input.
+
+**Finding 2: Repetition narrows the distribution.**
+- ZOG query: std=5.86, rev=3.90, dup=2.17 bits (dup is 2.7x narrower)
+- MIP query: std=7.66, rev=7.35, dup=2.99 bits
+- PLIM query: std=5.94, rev=5.98, dup=2.28 bits
+
+Repeating a fact (the "dup" variant) dramatically increases confidence, consistent
+with the primacy/repetition bias. The model treats repetition as confirmation.
+
+**Finding 3: L27 vs final output discrepancy.**
+Logit-lens entropy at the last hidden state: 1.27 bits.
+Final output entropy: 5.86 bits. JSD between them: 0.356.
+The final norm+lm_head produces substantially different distributions than the
+logit lens at the same layer. This may be a numerical artifact of RMSNorm
+behavior at the boundary, or it may indicate that logit lens is not a perfect
+proxy for the final layers.
+
+---
+
 ## 2026-08-31T19:15 — Entropy structure v1: COMMITMENT BOTTLENECK discovered
 
 **Measured Shannon entropy of logit-lens output distributions across all 28 layers.**

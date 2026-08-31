@@ -46,6 +46,12 @@
   - **Conclusion:** Resolution is a whole-sequence operation — value vectors combine across positions through the attention mechanism. Not decomposable to a single source.
   - Fixed GQA dimension mismatch: Qwen3-0.6B has num_heads=16, num_kv_heads=8, head_dim=128; o_proj takes 2048, not 1024.
 
+- **Rebroadening test v1 (2026-08-31).** Tests whether the re-broadened final distribution carries meaningful history information.
+  - **MEANINGFUL, not noise.** Top divergent tokens between same-place histories are overwhelmingly history-related: entity values (big/small/hot/cold/red/blue) and their capitalizations. 5-7 of top 10 divergent tokens are fact-world values.
+  - **The model leaks the entire fact-world** into every output position's distribution, not just the queried fact. Querying ZOG also carries elevated probability on "hot" (MIP), "red" (PLIM).
+  - **Repetition narrows the distribution.** Dup variants have 2-3x lower entropy (ZOG: 2.17 vs 5.86 bits). Repetition = confirmation in the model's distributional structure.
+  - L27 logit-lens vs final output: JSD=0.356, entropy 1.27 vs 5.86 bits.
+
 - **Entropy structure v1 (2026-08-31).** Measures Shannon entropy of logit-lens output distributions across all 28 layers. 4-world (2×2) design, 3 configs.
   - **COMMITMENT BOTTLENECK discovered.** Entropy drops to near-zero at L24-25 (0.05-0.30 bits, top-1 mass 0.987-0.999) then JUMPS BACK UP to 5.5-7.7 bits in the final output.
   - ZOG/MIP: L0=5.3 → L15=4.3 → L24=2.1 → L25=0.30 → final=7.3 bits. JSD ratio peaks at 33.65x at L25.

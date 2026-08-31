@@ -1,0 +1,1370 @@
+{
+  "experiment": "rebroadening_test_v1",
+  "timestamp": "2026-08-31T18:41:43.015588",
+  "model": "Qwen/Qwen3-0.6B",
+  "purpose": "Test whether the re-broadened final distribution carries meaningful history information, and investigate L27 vs final-output entropy discrepancy",
+  "results": [
+    {
+      "query_entity": "ZOG",
+      "expected_answer": "big",
+      "entropies": {
+        "std": 5.8642,
+        "rev": 3.9,
+        "dup": 2.1671
+      },
+      "greedy_tokens": {
+        "std": "big",
+        "rev": "big",
+        "dup": "big"
+      },
+      "pairs": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.224797,
+          "top_divergent": [
+            {
+              "token": "big",
+              "token_id": 2409,
+              "abs_diff": 0.181826,
+              "prob_p": 0.525506,
+              "prob_q": 0.707332
+            },
+            {
+              "token": "hot",
+              "token_id": 4017,
+              "abs_diff": 0.031815,
+              "prob_p": 0.043923,
+              "prob_q": 0.012108
+            },
+            {
+              "token": "Big",
+              "token_id": 6164,
+              "abs_diff": 0.019882,
+              "prob_p": 0.004448,
+              "prob_q": 0.02433
+            },
+            {
+              "token": "small",
+              "token_id": 2613,
+              "abs_diff": 0.014622,
+              "prob_p": 0.018683,
+              "prob_q": 0.004061
+            },
+            {
+              "token": "red",
+              "token_id": 2518,
+              "abs_diff": 0.013385,
+              "prob_p": 0.021744,
+              "prob_q": 0.008359
+            },
+            {
+              "token": "the",
+              "token_id": 279,
+              "abs_diff": 0.005685,
+              "prob_p": 0.00536,
+              "prob_q": 0.011045
+            },
+            {
+              "token": "blue",
+              "token_id": 6303,
+              "abs_diff": 0.005204,
+              "prob_p": 0.007842,
+              "prob_q": 0.002638
+            },
+            {
+              "token": "a",
+              "token_id": 264,
+              "abs_diff": 0.004927,
+              "prob_p": 0.010017,
+              "prob_q": 0.00509
+            },
+            {
+              "token": "cool",
+              "token_id": 7010,
+              "abs_diff": 0.004924,
+              "prob_p": 0.005364,
+              "prob_q": 0.000441
+            },
+            {
+              "token": "BIG",
+              "token_id": 36854,
+              "abs_diff": 0.004068,
+              "prob_p": 0.001402,
+              "prob_q": 0.005469
+            },
+            {
+              "token": "big",
+              "token_id": 16154,
+              "abs_diff": 0.003062,
+              "prob_p": 0.002815,
+              "prob_q": 0.005876
+            },
+            {
+              "token": "is",
+              "token_id": 374,
+              "abs_diff": 0.00278,
+              "prob_p": 0.002064,
+              "prob_q": 0.004844
+            },
+            {
+              "token": "warm",
+              "token_id": 8205,
+              "abs_diff": 0.002777,
+              "prob_p": 0.00405,
+              "prob_q": 0.001273
+            },
+            {
+              "token": "green",
+              "token_id": 6176,
+              "abs_diff": 0.002644,
+              "prob_p": 0.003495,
+              "prob_q": 0.00085
+            },
+            {
+              "token": "The",
+              "token_id": 576,
+              "abs_diff": 0.002567,
+              "prob_p": 0.000436,
+              "prob_q": 0.003003
+            },
+            {
+              "token": "cold",
+              "token_id": 9255,
+              "abs_diff": 0.002547,
+              "prob_p": 0.002932,
+              "prob_q": 0.000385
+            },
+            {
+              "token": "color",
+              "token_id": 1894,
+              "abs_diff": 0.002523,
+              "prob_p": 0.00289,
+              "prob_q": 0.000367
+            },
+            {
+              "token": "black",
+              "token_id": 3691,
+              "abs_diff": 0.002363,
+              "prob_p": 0.003204,
+              "prob_q": 0.000841
+            },
+            {
+              "token": "__",
+              "token_id": 1304,
+              "abs_diff": 0.002354,
+              "prob_p": 0.002946,
+              "prob_q": 0.000591
+            },
+            {
+              "token": "",
+              "token_id": 220,
+              "abs_diff": 0.002095,
+              "prob_p": 0.00846,
+              "prob_q": 0.006364
+            }
+          ]
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.275562,
+          "top_divergent": [
+            {
+              "token": "big",
+              "token_id": 2409,
+              "abs_diff": 0.31933,
+              "prob_p": 0.525506,
+              "prob_q": 0.844836
+            },
+            {
+              "token": "hot",
+              "token_id": 4017,
+              "abs_diff": 0.037298,
+              "prob_p": 0.043923,
+              "prob_q": 0.006625
+            },
+            {
+              "token": "red",
+              "token_id": 2518,
+              "abs_diff": 0.015996,
+              "prob_p": 0.021744,
+              "prob_q": 0.005748
+            },
+            {
+              "token": "small",
+              "token_id": 2613,
+              "abs_diff": 0.008801,
+              "prob_p": 0.018683,
+              "prob_q": 0.009882
+            },
+            {
+              "token": "a",
+              "token_id": 264,
+              "abs_diff": 0.008121,
+              "prob_p": 0.010017,
+              "prob_q": 0.001896
+            },
+            {
+              "token": "",
+              "token_id": 220,
+              "abs_diff": 0.007196,
+              "prob_p": 0.00846,
+              "prob_q": 0.001263
+            },
+            {
+              "token": "blue",
+              "token_id": 6303,
+              "abs_diff": 0.006286,
+              "prob_p": 0.007842,
+              "prob_q": 0.001556
+            },
+            {
+              "token": "Big",
+              "token_id": 6164,
+              "abs_diff": 0.00445,
+              "prob_p": 0.004448,
+              "prob_q": 0.008898
+            },
+            {
+              "token": "cool",
+              "token_id": 7010,
+              "abs_diff": 0.00435,
+              "prob_p": 0.005364,
+              "prob_q": 0.001015
+            },
+            {
+              "token": "warm",
+              "token_id": 8205,
+              "abs_diff": 0.003438,
+              "prob_p": 0.00405,
+              "prob_q": 0.000611
+            },
+            {
+              "token": "the",
+              "token_id": 279,
+              "abs_diff": 0.003356,
+              "prob_p": 0.00536,
+              "prob_q": 0.002004
+            },
+            {
+              "token": "BIG",
+              "token_id": 36854,
+              "abs_diff": 0.002919,
+              "prob_p": 0.001402,
+              "prob_q": 0.004321
+            },
+            {
+              "token": "__",
+              "token_id": 1304,
+              "abs_diff": 0.002734,
+              "prob_p": 0.002946,
+              "prob_q": 0.000212
+            },
+            {
+              "token": "green",
+              "token_id": 6176,
+              "abs_diff": 0.002518,
+              "prob_p": 0.003495,
+              "prob_q": 0.000977
+            },
+            {
+              "token": "cold",
+              "token_id": 9255,
+              "abs_diff": 0.002451,
+              "prob_p": 0.002932,
+              "prob_q": 0.000481
+            },
+            {
+              "token": "color",
+              "token_id": 1894,
+              "abs_diff": 0.002384,
+              "prob_p": 0.00289,
+              "prob_q": 0.000507
+            },
+            {
+              "token": "black",
+              "token_id": 3691,
+              "abs_diff": 0.002363,
+              "prob_p": 0.003204,
+              "prob_q": 0.00084
+            },
+            {
+              "token": "something",
+              "token_id": 2494,
+              "abs_diff": 0.002171,
+              "prob_p": 0.002446,
+              "prob_q": 0.000274
+            },
+            {
+              "token": "...",
+              "token_id": 2503,
+              "abs_diff": 0.001995,
+              "prob_p": 0.002234,
+              "prob_q": 0.000239
+            },
+            {
+              "token": "big",
+              "token_id": 16154,
+              "abs_diff": 0.001927,
+              "prob_p": 0.002815,
+              "prob_q": 0.000888
+            }
+          ]
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.163282,
+          "top_divergent": [
+            {
+              "token": "big",
+              "token_id": 2409,
+              "abs_diff": 0.137504,
+              "prob_p": 0.707332,
+              "prob_q": 0.844836
+            },
+            {
+              "token": "Big",
+              "token_id": 6164,
+              "abs_diff": 0.015432,
+              "prob_p": 0.02433,
+              "prob_q": 0.008898
+            },
+            {
+              "token": "the",
+              "token_id": 279,
+              "abs_diff": 0.009041,
+              "prob_p": 0.011045,
+              "prob_q": 0.002004
+            },
+            {
+              "token": "small",
+              "token_id": 2613,
+              "abs_diff": 0.00582,
+              "prob_p": 0.004061,
+              "prob_q": 0.009882
+            },
+            {
+              "token": "hot",
+              "token_id": 4017,
+              "abs_diff": 0.005483,
+              "prob_p": 0.012108,
+              "prob_q": 0.006625
+            },
+            {
+              "token": "",
+              "token_id": 220,
+              "abs_diff": 0.005101,
+              "prob_p": 0.006364,
+              "prob_q": 0.001263
+            },
+            {
+              "token": "big",
+              "token_id": 16154,
+              "abs_diff": 0.004989,
+              "prob_p": 0.005876,
+              "prob_q": 0.000888
+            },
+            {
+              "token": "is",
+              "token_id": 374,
+              "abs_diff": 0.00362,
+              "prob_p": 0.004844,
+              "prob_q": 0.001224
+            },
+            {
+              "token": "a",
+              "token_id": 264,
+              "abs_diff": 0.003194,
+              "prob_p": 0.00509,
+              "prob_q": 0.001896
+            },
+            {
+              "token": "The",
+              "token_id": 576,
+              "abs_diff": 0.002725,
+              "prob_p": 0.003003,
+              "prob_q": 0.000278
+            },
+            {
+              "token": "red",
+              "token_id": 2518,
+              "abs_diff": 0.002611,
+              "prob_p": 0.008359,
+              "prob_q": 0.005748
+            },
+            {
+              "token": "A",
+              "token_id": 362,
+              "abs_diff": 0.001664,
+              "prob_p": 0.002046,
+              "prob_q": 0.000382
+            },
+            {
+              "token": "Z",
+              "token_id": 1863,
+              "abs_diff": 0.001582,
+              "prob_p": 0.000382,
+              "prob_q": 0.001965
+            },
+            {
+              "token": "M",
+              "token_id": 386,
+              "abs_diff": 0.001485,
+              "prob_p": 0.000628,
+              "prob_q": 0.002113
+            },
+            {
+              "token": "BIG",
+              "token_id": 36854,
+              "abs_diff": 0.001149,
+              "prob_p": 0.005469,
+              "prob_q": 0.004321
+            },
+            {
+              "token": "blue",
+              "token_id": 6303,
+              "abs_diff": 0.001082,
+              "prob_p": 0.002638,
+              "prob_q": 0.001556
+            },
+            {
+              "token": "[",
+              "token_id": 508,
+              "abs_diff": 0.00086,
+              "prob_p": 0.001171,
+              "prob_q": 0.00031
+            },
+            {
+              "token": "(",
+              "token_id": 320,
+              "abs_diff": 0.000795,
+              "prob_p": 0.001283,
+              "prob_q": 0.000488
+            },
+            {
+              "token": "\"",
+              "token_id": 330,
+              "abs_diff": 0.000786,
+              "prob_p": 0.000934,
+              "prob_q": 0.000148
+            },
+            {
+              "token": "biggest",
+              "token_id": 8538,
+              "abs_diff": 0.000765,
+              "prob_p": 0.001568,
+              "prob_q": 0.000803
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "query_entity": "MIP",
+      "expected_answer": "hot",
+      "entropies": {
+        "std": 7.6556,
+        "rev": 7.3453,
+        "dup": 2.9926
+      },
+      "greedy_tokens": {
+        "std": "hot",
+        "rev": "hot",
+        "dup": "hot"
+      },
+      "pairs": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.227539,
+          "top_divergent": [
+            {
+              "token": "hot",
+              "token_id": 4017,
+              "abs_diff": 0.099069,
+              "prob_p": 0.288951,
+              "prob_q": 0.38802
+            },
+            {
+              "token": "red",
+              "token_id": 2518,
+              "abs_diff": 0.073045,
+              "prob_p": 0.137243,
+              "prob_q": 0.064197
+            },
+            {
+              "token": "big",
+              "token_id": 2409,
+              "abs_diff": 0.04104,
+              "prob_p": 0.004661,
+              "prob_q": 0.045701
+            },
+            {
+              "token": "?",
+              "token_id": 17607,
+              "abs_diff": 0.010729,
+              "prob_p": 0.0122,
+              "prob_q": 0.001471
+            },
+            {
+              "token": "",
+              "token_id": 220,
+              "abs_diff": 0.009868,
+              "prob_p": 0.012207,
+              "prob_q": 0.022075
+            },
+            {
+              "token": "cool",
+              "token_id": 7010,
+              "abs_diff": 0.006325,
+              "prob_p": 0.008251,
+              "prob_q": 0.001926
+            },
+            {
+              "token": "__",
+              "token_id": 1304,
+              "abs_diff": 0.005572,
+              "prob_p": 0.006752,
+              "prob_q": 0.00118
+            },
+            {
+              "token": "?",
+              "token_id": 937,
+              "abs_diff": 0.005486,
+              "prob_p": 0.007179,
+              "prob_q": 0.001693
+            },
+            {
+              "token": "(",
+              "token_id": 320,
+              "abs_diff": 0.005014,
+              "prob_p": 0.006369,
+              "prob_q": 0.001355
+            },
+            {
+              "token": "color",
+              "token_id": 1894,
+              "abs_diff": 0.00484,
+              "prob_p": 0.005708,
+              "prob_q": 0.000868
+            },
+            {
+              "token": "...",
+              "token_id": 2503,
+              "abs_diff": 0.004839,
+              "prob_p": 0.006393,
+              "prob_q": 0.001554
+            },
+            {
+              "token": "?",
+              "token_id": 23754,
+              "abs_diff": 0.004808,
+              "prob_p": 0.005457,
+              "prob_q": 0.000649
+            },
+            {
+              "token": "small",
+              "token_id": 2613,
+              "abs_diff": 0.004017,
+              "prob_p": 0.003318,
+              "prob_q": 0.007335
+            },
+            {
+              "token": "a",
+              "token_id": 264,
+              "abs_diff": 0.003796,
+              "prob_p": 0.010598,
+              "prob_q": 0.006802
+            },
+            {
+              "token": "Hot",
+              "token_id": 8007,
+              "abs_diff": 0.003789,
+              "prob_p": 0.00421,
+              "prob_q": 0.007999
+            },
+            {
+              "token": "something",
+              "token_id": 2494,
+              "abs_diff": 0.00368,
+              "prob_p": 0.004655,
+              "prob_q": 0.000975
+            },
+            {
+              "token": "",
+              "token_id": 715,
+              "abs_diff": 0.003352,
+              "prob_p": 0.005196,
+              "prob_q": 0.001845
+            },
+            {
+              "token": "cold",
+              "token_id": 9255,
+              "abs_diff": 0.003136,
+              "prob_p": 0.00657,
+              "prob_q": 0.003434
+            },
+            {
+              "token": "...",
+              "token_id": 12236,
+              "abs_diff": 0.003035,
+              "prob_p": 0.003711,
+              "prob_q": 0.000676
+            },
+            {
+              "token": "?",
+              "token_id": 5267,
+              "abs_diff": 0.002932,
+              "prob_p": 0.00365,
+              "prob_q": 0.000718
+            }
+          ]
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.366408,
+          "top_divergent": [
+            {
+              "token": "hot",
+              "token_id": 4017,
+              "abs_diff": 0.448451,
+              "prob_p": 0.288951,
+              "prob_q": 0.737402
+            },
+            {
+              "token": "red",
+              "token_id": 2518,
+              "abs_diff": 0.061215,
+              "prob_p": 0.137243,
+              "prob_q": 0.076028
+            },
+            {
+              "token": "?",
+              "token_id": 17607,
+              "abs_diff": 0.011926,
+              "prob_p": 0.0122,
+              "prob_q": 0.000274
+            },
+            {
+              "token": "the",
+              "token_id": 279,
+              "abs_diff": 0.011713,
+              "prob_p": 0.012942,
+              "prob_q": 0.001229
+            },
+            {
+              "token": "",
+              "token_id": 220,
+              "abs_diff": 0.009937,
+              "prob_p": 0.012207,
+              "prob_q": 0.00227
+            },
+            {
+              "token": "a",
+              "token_id": 264,
+              "abs_diff": 0.009517,
+              "prob_p": 0.010598,
+              "prob_q": 0.001082
+            },
+            {
+              "token": "?",
+              "token_id": 937,
+              "abs_diff": 0.007001,
+              "prob_p": 0.007179,
+              "prob_q": 0.000178
+            },
+            {
+              "token": "__",
+              "token_id": 1304,
+              "abs_diff": 0.006609,
+              "prob_p": 0.006752,
+              "prob_q": 0.000142
+            },
+            {
+              "token": "...",
+              "token_id": 2503,
+              "abs_diff": 0.00599,
+              "prob_p": 0.006393,
+              "prob_q": 0.000403
+            },
+            {
+              "token": "(",
+              "token_id": 320,
+              "abs_diff": 0.005753,
+              "prob_p": 0.006369,
+              "prob_q": 0.000616
+            },
+            {
+              "token": "?",
+              "token_id": 23754,
+              "abs_diff": 0.005311,
+              "prob_p": 0.005457,
+              "prob_q": 0.000146
+            },
+            {
+              "token": "color",
+              "token_id": 1894,
+              "abs_diff": 0.004917,
+              "prob_p": 0.005708,
+              "prob_q": 0.000791
+            },
+            {
+              "token": "is",
+              "token_id": 374,
+              "abs_diff": 0.004606,
+              "prob_p": 0.005565,
+              "prob_q": 0.00096
+            },
+            {
+              "token": "something",
+              "token_id": 2494,
+              "abs_diff": 0.004455,
+              "prob_p": 0.004655,
+              "prob_q": 0.0002
+            },
+            {
+              "token": "blue",
+              "token_id": 6303,
+              "abs_diff": 0.004359,
+              "prob_p": 0.006211,
+              "prob_q": 0.001852
+            },
+            {
+              "token": "",
+              "token_id": 715,
+              "abs_diff": 0.003985,
+              "prob_p": 0.005196,
+              "prob_q": 0.001211
+            },
+            {
+              "token": "heat",
+              "token_id": 8628,
+              "abs_diff": 0.003468,
+              "prob_p": 0.007549,
+              "prob_q": 0.004081
+            },
+            {
+              "token": "?",
+              "token_id": 5267,
+              "abs_diff": 0.003414,
+              "prob_p": 0.00365,
+              "prob_q": 0.000235
+            },
+            {
+              "token": "what",
+              "token_id": 1128,
+              "abs_diff": 0.003385,
+              "prob_p": 0.003775,
+              "prob_q": 0.00039
+            },
+            {
+              "token": "...",
+              "token_id": 12236,
+              "abs_diff": 0.003249,
+              "prob_p": 0.003711,
+              "prob_q": 0.000462
+            }
+          ]
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.321889,
+          "top_divergent": [
+            {
+              "token": "hot",
+              "token_id": 4017,
+              "abs_diff": 0.349382,
+              "prob_p": 0.38802,
+              "prob_q": 0.737402
+            },
+            {
+              "token": "big",
+              "token_id": 2409,
+              "abs_diff": 0.040164,
+              "prob_p": 0.045701,
+              "prob_q": 0.005537
+            },
+            {
+              "token": "",
+              "token_id": 220,
+              "abs_diff": 0.019805,
+              "prob_p": 0.022075,
+              "prob_q": 0.00227
+            },
+            {
+              "token": "the",
+              "token_id": 279,
+              "abs_diff": 0.012363,
+              "prob_p": 0.013592,
+              "prob_q": 0.001229
+            },
+            {
+              "token": "red",
+              "token_id": 2518,
+              "abs_diff": 0.01183,
+              "prob_p": 0.064197,
+              "prob_q": 0.076028
+            },
+            {
+              "token": "cold",
+              "token_id": 9255,
+              "abs_diff": 0.005788,
+              "prob_p": 0.003434,
+              "prob_q": 0.009222
+            },
+            {
+              "token": "a",
+              "token_id": 264,
+              "abs_diff": 0.005721,
+              "prob_p": 0.006802,
+              "prob_q": 0.001082
+            },
+            {
+              "token": "cool",
+              "token_id": 7010,
+              "abs_diff": 0.00572,
+              "prob_p": 0.001926,
+              "prob_q": 0.007646
+            },
+            {
+              "token": "Hot",
+              "token_id": 8007,
+              "abs_diff": 0.005661,
+              "prob_p": 0.007999,
+              "prob_q": 0.002338
+            },
+            {
+              "token": "is",
+              "token_id": 374,
+              "abs_diff": 0.005633,
+              "prob_p": 0.006592,
+              "prob_q": 0.00096
+            },
+            {
+              "token": "blue",
+              "token_id": 6303,
+              "abs_diff": 0.00346,
+              "prob_p": 0.005312,
+              "prob_q": 0.001852
+            },
+            {
+              "token": "A",
+              "token_id": 362,
+              "abs_diff": 0.002453,
+              "prob_p": 0.002697,
+              "prob_q": 0.000244
+            },
+            {
+              "token": "small",
+              "token_id": 2613,
+              "abs_diff": 0.002297,
+              "prob_p": 0.007335,
+              "prob_q": 0.005038
+            },
+            {
+              "token": "Red",
+              "token_id": 3731,
+              "abs_diff": 0.00199,
+              "prob_p": 0.002456,
+              "prob_q": 0.000467
+            },
+            {
+              "token": "Big",
+              "token_id": 6164,
+              "abs_diff": 0.001844,
+              "prob_p": 0.001884,
+              "prob_q": 4e-05
+            },
+            {
+              "token": "large",
+              "token_id": 3460,
+              "abs_diff": 0.001831,
+              "prob_p": 0.002933,
+              "prob_q": 0.001103
+            },
+            {
+              "token": "what",
+              "token_id": 1128,
+              "abs_diff": 0.001605,
+              "prob_p": 0.001995,
+              "prob_q": 0.00039
+            },
+            {
+              "token": "The",
+              "token_id": 576,
+              "abs_diff": 0.001517,
+              "prob_p": 0.001573,
+              "prob_q": 5.6e-05
+            },
+            {
+              "token": "?",
+              "token_id": 937,
+              "abs_diff": 0.001515,
+              "prob_p": 0.001693,
+              "prob_q": 0.000178
+            },
+            {
+              "token": "hot",
+              "token_id": 10622,
+              "abs_diff": 0.001496,
+              "prob_p": 0.001781,
+              "prob_q": 0.000285
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "query_entity": "PLIM",
+      "expected_answer": "red",
+      "entropies": {
+        "std": 5.9386,
+        "rev": 5.9791,
+        "dup": 2.2783
+      },
+      "greedy_tokens": {
+        "std": "red",
+        "rev": "red",
+        "dup": "red"
+      },
+      "pairs": [
+        {
+          "pair": "std-rev",
+          "jsd": 0.279612,
+          "top_divergent": [
+            {
+              "token": "green",
+              "token_id": 6176,
+              "abs_diff": 0.025345,
+              "prob_p": 0.003022,
+              "prob_q": 0.028367
+            },
+            {
+              "token": "hot",
+              "token_id": 4017,
+              "abs_diff": 0.023503,
+              "prob_p": 0.030966,
+              "prob_q": 0.054469
+            },
+            {
+              "token": "RED",
+              "token_id": 25810,
+              "abs_diff": 0.02065,
+              "prob_p": 0.021992,
+              "prob_q": 0.001342
+            },
+            {
+              "token": "big",
+              "token_id": 2409,
+              "abs_diff": 0.01709,
+              "prob_p": 0.000939,
+              "prob_q": 0.018029
+            },
+            {
+              "token": "is",
+              "token_id": 374,
+              "abs_diff": 0.016789,
+              "prob_p": 0.018017,
+              "prob_q": 0.001228
+            },
+            {
+              "token": "blue",
+              "token_id": 6303,
+              "abs_diff": 0.013496,
+              "prob_p": 0.003521,
+              "prob_q": 0.017017
+            },
+            {
+              "token": "Red",
+              "token_id": 3731,
+              "abs_diff": 0.01177,
+              "prob_p": 0.014237,
+              "prob_q": 0.002467
+            },
+            {
+              "token": "color",
+              "token_id": 1894,
+              "abs_diff": 0.011211,
+              "prob_p": 0.012339,
+              "prob_q": 0.001127
+            },
+            {
+              "token": "black",
+              "token_id": 3691,
+              "abs_diff": 0.008918,
+              "prob_p": 0.001288,
+              "prob_q": 0.010206
+            },
+            {
+              "token": "(",
+              "token_id": 320,
+              "abs_diff": 0.007689,
+              "prob_p": 0.008254,
+              "prob_q": 0.000565
+            },
+            {
+              "token": "the",
+              "token_id": 279,
+              "abs_diff": 0.006855,
+              "prob_p": 0.008835,
+              "prob_q": 0.00198
+            },
+            {
+              "token": "a",
+              "token_id": 264,
+              "abs_diff": 0.006322,
+              "prob_p": 0.008622,
+              "prob_q": 0.002299
+            },
+            {
+              "token": "red",
+              "token_id": 2518,
+              "abs_diff": 0.005835,
+              "prob_p": 0.517979,
+              "prob_q": 0.512144
+            },
+            {
+              "token": "?",
+              "token_id": 17607,
+              "abs_diff": 0.005349,
+              "prob_p": 0.005951,
+              "prob_q": 0.000602
+            },
+            {
+              "token": "white",
+              "token_id": 4158,
+              "abs_diff": 0.004784,
+              "prob_p": 0.000592,
+              "prob_q": 0.005376
+            },
+            {
+              "token": "what",
+              "token_id": 1128,
+              "abs_diff": 0.004286,
+              "prob_p": 0.005186,
+              "prob_q": 0.0009
+            },
+            {
+              "token": "small",
+              "token_id": 2613,
+              "abs_diff": 0.004249,
+              "prob_p": 0.001005,
+              "prob_q": 0.005255
+            },
+            {
+              "token": "...",
+              "token_id": 2503,
+              "abs_diff": 0.003836,
+              "prob_p": 0.004737,
+              "prob_q": 0.000901
+            },
+            {
+              "token": "?",
+              "token_id": 937,
+              "abs_diff": 0.003436,
+              "prob_p": 0.003974,
+              "prob_q": 0.000538
+            },
+            {
+              "token": "cold",
+              "token_id": 9255,
+              "abs_diff": 0.003423,
+              "prob_p": 0.001603,
+              "prob_q": 0.005026
+            }
+          ]
+        },
+        {
+          "pair": "std-dup",
+          "jsd": 0.29561,
+          "top_divergent": [
+            {
+              "token": "red",
+              "token_id": 2518,
+              "abs_diff": 0.290492,
+              "prob_p": 0.517979,
+              "prob_q": 0.808471
+            },
+            {
+              "token": "hot",
+              "token_id": 4017,
+              "abs_diff": 0.027138,
+              "prob_p": 0.030966,
+              "prob_q": 0.058104
+            },
+            {
+              "token": "RED",
+              "token_id": 25810,
+              "abs_diff": 0.020262,
+              "prob_p": 0.021992,
+              "prob_q": 0.00173
+            },
+            {
+              "token": "is",
+              "token_id": 374,
+              "abs_diff": 0.016748,
+              "prob_p": 0.018017,
+              "prob_q": 0.00127
+            },
+            {
+              "token": "Red",
+              "token_id": 3731,
+              "abs_diff": 0.012702,
+              "prob_p": 0.014237,
+              "prob_q": 0.001535
+            },
+            {
+              "token": "color",
+              "token_id": 1894,
+              "abs_diff": 0.010968,
+              "prob_p": 0.012339,
+              "prob_q": 0.001371
+            },
+            {
+              "token": "the",
+              "token_id": 279,
+              "abs_diff": 0.00791,
+              "prob_p": 0.008835,
+              "prob_q": 0.000925
+            },
+            {
+              "token": "(",
+              "token_id": 320,
+              "abs_diff": 0.007546,
+              "prob_p": 0.008254,
+              "prob_q": 0.000708
+            },
+            {
+              "token": "a",
+              "token_id": 264,
+              "abs_diff": 0.00744,
+              "prob_p": 0.008622,
+              "prob_q": 0.001182
+            },
+            {
+              "token": "?",
+              "token_id": 17607,
+              "abs_diff": 0.005208,
+              "prob_p": 0.005951,
+              "prob_q": 0.000743
+            },
+            {
+              "token": "big",
+              "token_id": 2409,
+              "abs_diff": 0.004484,
+              "prob_p": 0.000939,
+              "prob_q": 0.005423
+            },
+            {
+              "token": "what",
+              "token_id": 1128,
+              "abs_diff": 0.004475,
+              "prob_p": 0.005186,
+              "prob_q": 0.000711
+            },
+            {
+              "token": "[",
+              "token_id": 508,
+              "abs_diff": 0.00419,
+              "prob_p": 0.004851,
+              "prob_q": 0.000661
+            },
+            {
+              "token": "",
+              "token_id": 220,
+              "abs_diff": 0.003962,
+              "prob_p": 0.005205,
+              "prob_q": 0.001243
+            },
+            {
+              "token": "...",
+              "token_id": 2503,
+              "abs_diff": 0.003819,
+              "prob_p": 0.004737,
+              "prob_q": 0.000918
+            },
+            {
+              "token": "?",
+              "token_id": 937,
+              "abs_diff": 0.003457,
+              "prob_p": 0.003974,
+              "prob_q": 0.000517
+            },
+            {
+              "token": "__",
+              "token_id": 1304,
+              "abs_diff": 0.003164,
+              "prob_p": 0.003434,
+              "prob_q": 0.00027
+            },
+            {
+              "token": "?",
+              "token_id": 23754,
+              "abs_diff": 0.003002,
+              "prob_p": 0.003474,
+              "prob_q": 0.000472
+            },
+            {
+              "token": "RED",
+              "token_id": 6504,
+              "abs_diff": 0.002881,
+              "prob_p": 0.00298,
+              "prob_q": 9.9e-05
+            },
+            {
+              "token": "has",
+              "token_id": 702,
+              "abs_diff": 0.002771,
+              "prob_p": 0.003316,
+              "prob_q": 0.000545
+            }
+          ]
+        },
+        {
+          "pair": "rev-dup",
+          "jsd": 0.270028,
+          "top_divergent": [
+            {
+              "token": "red",
+              "token_id": 2518,
+              "abs_diff": 0.296327,
+              "prob_p": 0.512144,
+              "prob_q": 0.808471
+            },
+            {
+              "token": "green",
+              "token_id": 6176,
+              "abs_diff": 0.024289,
+              "prob_p": 0.028367,
+              "prob_q": 0.004078
+            },
+            {
+              "token": "blue",
+              "token_id": 6303,
+              "abs_diff": 0.01435,
+              "prob_p": 0.017017,
+              "prob_q": 0.002667
+            },
+            {
+              "token": "big",
+              "token_id": 2409,
+              "abs_diff": 0.012606,
+              "prob_p": 0.018029,
+              "prob_q": 0.005423
+            },
+            {
+              "token": "black",
+              "token_id": 3691,
+              "abs_diff": 0.009009,
+              "prob_p": 0.010206,
+              "prob_q": 0.001197
+            },
+            {
+              "token": "",
+              "token_id": 220,
+              "abs_diff": 0.005159,
+              "prob_p": 0.006401,
+              "prob_q": 0.001243
+            },
+            {
+              "token": "white",
+              "token_id": 4158,
+              "abs_diff": 0.004841,
+              "prob_p": 0.005376,
+              "prob_q": 0.000535
+            },
+            {
+              "token": "warm",
+              "token_id": 8205,
+              "abs_diff": 0.003712,
+              "prob_p": 0.005584,
+              "prob_q": 0.001871
+            },
+            {
+              "token": "hot",
+              "token_id": 4017,
+              "abs_diff": 0.003635,
+              "prob_p": 0.054469,
+              "prob_q": 0.058104
+            },
+            {
+              "token": "yellow",
+              "token_id": 13753,
+              "abs_diff": 0.003548,
+              "prob_p": 0.00449,
+              "prob_q": 0.000941
+            },
+            {
+              "token": "small",
+              "token_id": 2613,
+              "abs_diff": 0.002327,
+              "prob_p": 0.005255,
+              "prob_q": 0.002928
+            },
+            {
+              "token": "light",
+              "token_id": 3100,
+              "abs_diff": 0.002218,
+              "prob_p": 0.002621,
+              "prob_q": 0.000403
+            },
+            {
+              "token": "orange",
+              "token_id": 18575,
+              "abs_diff": 0.002192,
+              "prob_p": 0.002572,
+              "prob_q": 0.00038
+            },
+            {
+              "token": "cold",
+              "token_id": 9255,
+              "abs_diff": 0.002026,
+              "prob_p": 0.005026,
+              "prob_q": 0.003
+            },
+            {
+              "token": "dark",
+              "token_id": 6319,
+              "abs_diff": 0.001869,
+              "prob_p": 0.002354,
+              "prob_q": 0.000485
+            },
+            {
+              "token": "[",
+              "token_id": 508,
+              "abs_diff": 0.001771,
+              "prob_p": 0.002432,
+              "prob_q": 0.000661
+            },
+            {
+              "token": "purple",
+              "token_id": 24932,
+              "abs_diff": 0.00148,
+              "prob_p": 0.001795,
+              "prob_q": 0.000315
+            },
+            {
+              "token": "star",
+              "token_id": 6774,
+              "abs_diff": 0.00127,
+              "prob_p": 0.00149,
+              "prob_q": 0.00022
+            },
+            {
+              "token": "a",
+              "token_id": 264,
+              "abs_diff": 0.001118,
+              "prob_p": 0.002299,
+              "prob_q": 0.001182
+            },
+            {
+              "token": "brown",
+              "token_id": 13876,
+              "abs_diff": 0.001103,
+              "prob_p": 0.001201,
+              "prob_q": 9.8e-05
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
