@@ -5,6 +5,42 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31T05:30 — Logit-lens resolution v1: query-selective resolution layer, cosine-blind
+
+**The model has a resolution layer where it selects the queried fact and
+becomes blind to the irrelevant one.** Applied the logit lens (final
+layernorm + unembedding) at each layer to get pseudo-distributions, then
+measured sqrt(JSD) between fact-worlds. At layer 25, the queried fact's
+behavioral signature spikes (JSD 0.72-0.80) while the irrelevant fact's
+drops to near-zero (JSD 0.01-0.11). Cosine stays 0.91-0.99 throughout.
+
+**Results (6 configs, 3 entity pairs × 2 queries):**
+- ZOG/MIP queryA: peak L25, ratio 6.55, q=0.72, irrel=0.11 (4/4 baseline)
+- ZOG/MIP queryB: peak L25, ratio 3.78, q=0.41, irrel=0.11 (2/4 baseline — MIP retrieval broken)
+- PLIM/KROT queryA: peak L25, ratio 7.13, q=0.73, irrel=0.10 (4/4 baseline)
+- PLIM/KROT queryB: peak L25, ratio **62.43**, q=0.73, irrel=**0.01** (4/4 baseline)
+- HESK/VORN queryA: peak **L21**, ratio 31.44, q=0.80, irrel=0.03 (3/4 baseline)
+- HESK/VORN T3 queryA: peak L26, ratio 7.13, q=0.45, irrel=0.06 (0/4 baseline — model can't retrieve but structure still visible)
+
+**What this means:**
+1. BP-9 confirmed by a clean instrument. Cosine is blind to the resolution transition.
+2. Three-gate model gets evidence: gate 2 (addressable) has a visible transition at L21-25.
+3. This is NOT the K-matrix. No transplants, no sign-averaging, no token-encoding issues.
+4. Resolution strength correlates with baseline accuracy (strong retrieval → clean resolution).
+5. Template affects timing: T3 (verbose) peaks later (L26) with weaker amplitude.
+
+**Also this session:** Codex review of K-matrix instrument identified token-encoding
+bug (bare "big" vs " big" — different token IDs) and sign-averaging cancellation.
+K-matrix results should be downgraded until v2c addresses these.
+
+**Codex direction dialogue:** Recommends predictive-state algebra as next experiment.
+Purely behavioral (no hooks/vectors), tests whether model supports product-of-registers
+structure through native token operations. ~5,040 CPU forwards.
+
+**Next:** Implement predictive_setter_algebra_v1 per Codex spec.
+
+---
+
 ## 2026-08-31T03:00 — Behavioral equivalence v1: first non-R^n metric on fact-worlds
 
 **The right distance is behavioral, not geometric.** Measured next-token
