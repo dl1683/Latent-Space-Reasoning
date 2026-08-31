@@ -5,6 +5,44 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31T08:30 — Codex effective-direction dialogue + v1b PCA result
+
+**Codex 4 directions (effective framing, recommended 1→4→2→3):**
+1. Typed latent action groupoid — learn typed partial operators with
+   causal-abstraction training (~3-6K CPU forwards)
+2. Predictive-state algebra — PSR-style Hankel factorization for world
+   models (~5-10K forwards)
+3. Role-filler binding algebra — tensor-product variable binding with
+   structured memory slots
+4. Gauge-transported operator algebra — learn transports between
+   presentation families, test conjugacy
+
+**v1b PCA probe result:** PCA SEPARATES at all layers. Structure is
+low-rank linear (lives in an R^n subspace). FUSED layers: A-sep=2.49,
+B-sep=0.38. SEPARATE layers: A-sep=10.40, B-sep=1.07 (4.2x more).
+AB-orthogonality ~0.64 at both — not diagnostic. Massive A>B asymmetry
+(A-sep ~13x B-sep at late layers).
+
+**Combined v1+v1b interpretation:** Three layers of "seeing":
+- Cosine similarity: blind (sees nothing — all worlds ~1.000)
+- PCA: sees structure at every layer (linearly decodable), but doesn't
+  predict fusion/fission
+- Transplant: sees fusion/fission transitions (the computational truth)
+
+This is BP-1 confirmed with numbers: PRESENCE (PCA can decode) ≠
+ADDRESSABILITY (transplant can independently control). The native math
+must describe causal accessibility — the computational dynamics — not
+storage geometry.
+
+Visualization published as interactive artifact.
+
+Next: (1) Attention analysis at fused vs separate layers — WHY do facts
+fuse? (2) Prompt variation — is the pattern robust to entity names? (3)
+Begin Codex Direction 1 (typed latent action groupoid) using fusion-fission
+insights to guide operator design.
+
+---
+
 ## 2026-08-31T06:00 — Fusion-fission v1: first Phase 2 data point
 
 **12 fusion-fission transitions across 28 layers of Qwen3-0.6B.** Two

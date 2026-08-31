@@ -1,0 +1,317 @@
+{
+  "prompt": "HESK is red. VORN is blue. Remember these facts.\n",
+  "a_positions": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5
+  ],
+  "b_positions": [
+    7,
+    8,
+    9,
+    10
+  ],
+  "tokens": [
+    "H",
+    "ES",
+    "K",
+    " is",
+    " red",
+    ".",
+    " V",
+    "ORN",
+    " is",
+    " blue",
+    ".",
+    " Remember",
+    " these",
+    " facts",
+    ".\n"
+  ],
+  "verdict": "NO CLEAR ATTENTION DIFFERENCE: fusion mechanism is not primarily attention cross-talk",
+  "layer_results": [
+    {
+      "layer": 0,
+      "avg_cross": 0.11972047508106698,
+      "avg_self": 0.8454389460384846,
+      "cross_self_ratio": 0.14160747578763336,
+      "max_cross": 0.24854302406311035,
+      "max_cross_head": 0,
+      "last_tok_to_a": 0.19185399496927857,
+      "last_tok_to_b": 0.18710534693673253
+    },
+    {
+      "layer": 1,
+      "avg_cross": 0.19719418417662382,
+      "avg_self": 0.7574487328529358,
+      "cross_self_ratio": 0.2603399750025201,
+      "max_cross": 0.3368508219718933,
+      "max_cross_head": 8,
+      "last_tok_to_a": 0.2581666652113199,
+      "last_tok_to_b": 0.2216172106564045
+    },
+    {
+      "layer": 2,
+      "avg_cross": 0.20474330929573625,
+      "avg_self": 0.757240105420351,
+      "cross_self_ratio": 0.27038096348856394,
+      "max_cross": 0.38460391759872437,
+      "max_cross_head": 3,
+      "last_tok_to_a": 0.29380640015006065,
+      "last_tok_to_b": 0.1448786910623312
+    },
+    {
+      "layer": 3,
+      "avg_cross": 0.34247235115617514,
+      "avg_self": 0.6419138759374619,
+      "cross_self_ratio": 0.5335176010271202,
+      "max_cross": 0.3985033631324768,
+      "max_cross_head": 9,
+      "last_tok_to_a": 0.7408309103921056,
+      "last_tok_to_b": 0.04336013924330473
+    },
+    {
+      "layer": 4,
+      "avg_cross": 0.3035211842507124,
+      "avg_self": 0.6816536858677864,
+      "cross_self_ratio": 0.44527183017328154,
+      "max_cross": 0.39146652817726135,
+      "max_cross_head": 3,
+      "last_tok_to_a": 0.7413987033069134,
+      "last_tok_to_b": 0.06304382160305977
+    },
+    {
+      "layer": 5,
+      "avg_cross": 0.32217608764767647,
+      "avg_self": 0.6707649491727352,
+      "cross_self_ratio": 0.48031145343092424,
+      "max_cross": 0.3987569212913513,
+      "max_cross_head": 0,
+      "last_tok_to_a": 0.6370319980196655,
+      "last_tok_to_b": 0.06267683487385511
+    },
+    {
+      "layer": 6,
+      "avg_cross": 0.30909642030019313,
+      "avg_self": 0.6800474040210247,
+      "cross_self_ratio": 0.4545218737290216,
+      "max_cross": 0.3761635720729828,
+      "max_cross_head": 10,
+      "last_tok_to_a": 0.6556903524324298,
+      "last_tok_to_b": 0.03967629256658256
+    },
+    {
+      "layer": 7,
+      "avg_cross": 0.2827007183805108,
+      "avg_self": 0.7014030702412128,
+      "cross_self_ratio": 0.40305030071124426,
+      "max_cross": 0.38707539439201355,
+      "max_cross_head": 7,
+      "last_tok_to_a": 0.47738067060709,
+      "last_tok_to_b": 0.12287952657788992
+    },
+    {
+      "layer": 8,
+      "avg_cross": 0.32603202434256673,
+      "avg_self": 0.6692353822290897,
+      "cross_self_ratio": 0.4871709311851071,
+      "max_cross": 0.38623881340026855,
+      "max_cross_head": 13,
+      "last_tok_to_a": 0.7001158602070063,
+      "last_tok_to_b": 0.07636432140134275
+    },
+    {
+      "layer": 9,
+      "avg_cross": 0.2761652837507427,
+      "avg_self": 0.7122026942670345,
+      "cross_self_ratio": 0.3877622002468819,
+      "max_cross": 0.3883332908153534,
+      "max_cross_head": 14,
+      "last_tok_to_a": 0.5307559504872188,
+      "last_tok_to_b": 0.0695508545031771
+    },
+    {
+      "layer": 10,
+      "avg_cross": 0.26233681850135326,
+      "avg_self": 0.7170684225857258,
+      "cross_self_ratio": 0.3658462850105365,
+      "max_cross": 0.37449055910110474,
+      "max_cross_head": 12,
+      "last_tok_to_a": 0.5926879765465856,
+      "last_tok_to_b": 0.09315522015094757
+    },
+    {
+      "layer": 11,
+      "avg_cross": 0.28381546798482304,
+      "avg_self": 0.6995857395231724,
+      "cross_self_ratio": 0.40569075661586185,
+      "max_cross": 0.3814585208892822,
+      "max_cross_head": 12,
+      "last_tok_to_a": 0.6534114538226277,
+      "last_tok_to_b": 0.04195577139034867
+    },
+    {
+      "layer": 12,
+      "avg_cross": 0.3096389779821038,
+      "avg_self": 0.6686362139880657,
+      "cross_self_ratio": 0.46309034943720606,
+      "max_cross": 0.38514336943626404,
+      "max_cross_head": 1,
+      "last_tok_to_a": 0.6833887537941337,
+      "last_tok_to_b": 0.08035955997183919
+    },
+    {
+      "layer": 13,
+      "avg_cross": 0.2856617448851466,
+      "avg_self": 0.6807635091245174,
+      "cross_self_ratio": 0.4196196491972907,
+      "max_cross": 0.38749659061431885,
+      "max_cross_head": 0,
+      "last_tok_to_a": 0.7631731434958056,
+      "last_tok_to_b": 0.03352182637900114
+    },
+    {
+      "layer": 14,
+      "avg_cross": 0.29426118335686624,
+      "avg_self": 0.684404019266367,
+      "cross_self_ratio": 0.42995244778412256,
+      "max_cross": 0.39065343141555786,
+      "max_cross_head": 10,
+      "last_tok_to_a": 0.6675431714393198,
+      "last_tok_to_b": 0.0345259215682745
+    },
+    {
+      "layer": 15,
+      "avg_cross": 0.30392173561267555,
+      "avg_self": 0.678165540099144,
+      "cross_self_ratio": 0.4481527262034634,
+      "max_cross": 0.3747518062591553,
+      "max_cross_head": 1,
+      "last_tok_to_a": 0.6405577794648707,
+      "last_tok_to_b": 0.06942385388538241
+    },
+    {
+      "layer": 16,
+      "avg_cross": 0.30839627888053656,
+      "avg_self": 0.667298462241888,
+      "cross_self_ratio": 0.4621564357340695,
+      "max_cross": 0.3991874158382416,
+      "max_cross_head": 15,
+      "last_tok_to_a": 0.7743421534541994,
+      "last_tok_to_b": 0.03685694048181176
+    },
+    {
+      "layer": 17,
+      "avg_cross": 0.2968552876263857,
+      "avg_self": 0.6861064545810223,
+      "cross_self_ratio": 0.43266651354805186,
+      "max_cross": 0.3704696595668793,
+      "max_cross_head": 8,
+      "last_tok_to_a": 0.6384339723736048,
+      "last_tok_to_b": 0.08119679754599929
+    },
+    {
+      "layer": 18,
+      "avg_cross": 0.30841784831136465,
+      "avg_self": 0.6722876653075218,
+      "cross_self_ratio": 0.45875874901004815,
+      "max_cross": 0.3747410178184509,
+      "max_cross_head": 11,
+      "last_tok_to_a": 0.6902647111564875,
+      "last_tok_to_b": 0.04735392099246383
+    },
+    {
+      "layer": 19,
+      "avg_cross": 0.32595209032297134,
+      "avg_self": 0.6546737365424633,
+      "cross_self_ratio": 0.4978847815775019,
+      "max_cross": 0.39780348539352417,
+      "max_cross_head": 4,
+      "last_tok_to_a": 0.7369085701648146,
+      "last_tok_to_b": 0.025240776245482266
+    },
+    {
+      "layer": 20,
+      "avg_cross": 0.33314997516572475,
+      "avg_self": 0.654341671615839,
+      "cross_self_ratio": 0.5091376411088725,
+      "max_cross": 0.3943001627922058,
+      "max_cross_head": 2,
+      "last_tok_to_a": 0.8190459575271234,
+      "last_tok_to_b": 0.025006255600601435
+    },
+    {
+      "layer": 21,
+      "avg_cross": 0.3615822084248066,
+      "avg_self": 0.632109995931387,
+      "cross_self_ratio": 0.5720241900178002,
+      "max_cross": 0.39021843671798706,
+      "max_cross_head": 7,
+      "last_tok_to_a": 0.7820720310555771,
+      "last_tok_to_b": 0.033884350676089525
+    },
+    {
+      "layer": 22,
+      "avg_cross": 0.35069963335990906,
+      "avg_self": 0.637405700981617,
+      "cross_self_ratio": 0.5501984573087829,
+      "max_cross": 0.3958018720149994,
+      "max_cross_head": 3,
+      "last_tok_to_a": 0.8161667000968009,
+      "last_tok_to_b": 0.025745115242898464
+    },
+    {
+      "layer": 23,
+      "avg_cross": 0.34501650370657444,
+      "avg_self": 0.649586882442236,
+      "cross_self_ratio": 0.5311321903690917,
+      "max_cross": 0.3915676474571228,
+      "max_cross_head": 5,
+      "last_tok_to_a": 0.8166945680277422,
+      "last_tok_to_b": 0.03346200846135616
+    },
+    {
+      "layer": 24,
+      "avg_cross": 0.3639529189094901,
+      "avg_self": 0.6319841742515564,
+      "cross_self_ratio": 0.5758892923869664,
+      "max_cross": 0.3889286518096924,
+      "max_cross_head": 4,
+      "last_tok_to_a": 0.8316677193506621,
+      "last_tok_to_b": 0.036226909374818206
+    },
+    {
+      "layer": 25,
+      "avg_cross": 0.3602432142943144,
+      "avg_self": 0.6363373659551144,
+      "cross_self_ratio": 0.5661198502049384,
+      "max_cross": 0.39251652359962463,
+      "max_cross_head": 15,
+      "last_tok_to_a": 0.8254968059482053,
+      "last_tok_to_b": 0.045169463381171227
+    },
+    {
+      "layer": 26,
+      "avg_cross": 0.3376382775604725,
+      "avg_self": 0.6583917886018753,
+      "cross_self_ratio": 0.512822734738935,
+      "max_cross": 0.3855472505092621,
+      "max_cross_head": 13,
+      "last_tok_to_a": 0.7232767334207892,
+      "last_tok_to_b": 0.07335640594828874
+    },
+    {
+      "layer": 27,
+      "avg_cross": 0.34833620861172676,
+      "avg_self": 0.6500866152346134,
+      "cross_self_ratio": 0.5358304577398717,
+      "max_cross": 0.39569416642189026,
+      "max_cross_head": 12,
+      "last_tok_to_a": 0.7678797832340933,
+      "last_tok_to_b": 0.0280458404449746
+    }
+  ]
+}
