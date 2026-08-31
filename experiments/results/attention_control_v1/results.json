@@ -1,0 +1,714 @@
+{
+  "experiment": "attention_control_v1",
+  "timestamp": "2026-08-31T17:49:28.355945",
+  "model": "Qwen/Qwen3-0.6B",
+  "purpose": "Test whether attention routing explains logit-lens resolution layer",
+  "kill_condition": "If correlation(attn_ratio, jsd_ratio) > 0.7 across configs, resolution layer reduces to attention patterns",
+  "n_configs": 4,
+  "results": [
+    {
+      "config": "ZOG_MIP_bigsmall_queryA",
+      "queried_entity": "ZOG",
+      "irrelevant_entity": "MIP",
+      "layers": [
+        {
+          "layer": 0,
+          "attn_to_queried": 0.131395,
+          "attn_to_irrelevant": 0.013463,
+          "attn_ratio": 9.76
+        },
+        {
+          "layer": 1,
+          "attn_to_queried": 0.135081,
+          "attn_to_irrelevant": 0.019139,
+          "attn_ratio": 7.0578
+        },
+        {
+          "layer": 2,
+          "attn_to_queried": 0.237233,
+          "attn_to_irrelevant": 0.008494,
+          "attn_ratio": 27.9281
+        },
+        {
+          "layer": 3,
+          "attn_to_queried": 0.763444,
+          "attn_to_irrelevant": 0.005228,
+          "attn_ratio": 146.016
+        },
+        {
+          "layer": 4,
+          "attn_to_queried": 0.666418,
+          "attn_to_irrelevant": 0.007338,
+          "attn_ratio": 90.8161
+        },
+        {
+          "layer": 5,
+          "attn_to_queried": 0.745271,
+          "attn_to_irrelevant": 0.002609,
+          "attn_ratio": 285.6416
+        },
+        {
+          "layer": 6,
+          "attn_to_queried": 0.696763,
+          "attn_to_irrelevant": 0.00559,
+          "attn_ratio": 124.6361
+        },
+        {
+          "layer": 7,
+          "attn_to_queried": 0.543216,
+          "attn_to_irrelevant": 0.005123,
+          "attn_ratio": 106.029
+        },
+        {
+          "layer": 8,
+          "attn_to_queried": 0.615833,
+          "attn_to_irrelevant": 0.009203,
+          "attn_ratio": 66.9194
+        },
+        {
+          "layer": 9,
+          "attn_to_queried": 0.610445,
+          "attn_to_irrelevant": 0.007835,
+          "attn_ratio": 77.9101
+        },
+        {
+          "layer": 10,
+          "attn_to_queried": 0.596788,
+          "attn_to_irrelevant": 0.002943,
+          "attn_ratio": 202.7925
+        },
+        {
+          "layer": 11,
+          "attn_to_queried": 0.52616,
+          "attn_to_irrelevant": 0.001921,
+          "attn_ratio": 273.8952
+        },
+        {
+          "layer": 12,
+          "attn_to_queried": 0.643794,
+          "attn_to_irrelevant": 0.006814,
+          "attn_ratio": 94.4802
+        },
+        {
+          "layer": 13,
+          "attn_to_queried": 0.48965,
+          "attn_to_irrelevant": 0.00795,
+          "attn_ratio": 61.5888
+        },
+        {
+          "layer": 14,
+          "attn_to_queried": 0.405077,
+          "attn_to_irrelevant": 0.002292,
+          "attn_ratio": 176.7306
+        },
+        {
+          "layer": 15,
+          "attn_to_queried": 0.50358,
+          "attn_to_irrelevant": 0.003276,
+          "attn_ratio": 153.7298
+        },
+        {
+          "layer": 16,
+          "attn_to_queried": 0.402438,
+          "attn_to_irrelevant": 0.01433,
+          "attn_ratio": 28.083
+        },
+        {
+          "layer": 17,
+          "attn_to_queried": 0.468875,
+          "attn_to_irrelevant": 0.01119,
+          "attn_ratio": 41.9019
+        },
+        {
+          "layer": 18,
+          "attn_to_queried": 0.502069,
+          "attn_to_irrelevant": 0.011149,
+          "attn_ratio": 45.0343
+        },
+        {
+          "layer": 19,
+          "attn_to_queried": 0.649901,
+          "attn_to_irrelevant": 0.008133,
+          "attn_ratio": 79.9121
+        },
+        {
+          "layer": 20,
+          "attn_to_queried": 0.654688,
+          "attn_to_irrelevant": 0.005675,
+          "attn_ratio": 115.3729
+        },
+        {
+          "layer": 21,
+          "attn_to_queried": 0.760144,
+          "attn_to_irrelevant": 0.007287,
+          "attn_ratio": 104.313
+        },
+        {
+          "layer": 22,
+          "attn_to_queried": 0.663246,
+          "attn_to_irrelevant": 0.013907,
+          "attn_ratio": 47.6899
+        },
+        {
+          "layer": 23,
+          "attn_to_queried": 0.679899,
+          "attn_to_irrelevant": 0.006069,
+          "attn_ratio": 112.0293
+        },
+        {
+          "layer": 24,
+          "attn_to_queried": 0.756004,
+          "attn_to_irrelevant": 0.01289,
+          "attn_ratio": 58.652
+        },
+        {
+          "layer": 25,
+          "attn_to_queried": 0.707128,
+          "attn_to_irrelevant": 0.003761,
+          "attn_ratio": 188.0104
+        },
+        {
+          "layer": 26,
+          "attn_to_queried": 0.634402,
+          "attn_to_irrelevant": 0.008283,
+          "attn_ratio": 76.5874
+        },
+        {
+          "layer": 27,
+          "attn_to_queried": 0.770868,
+          "attn_to_irrelevant": 0.001048,
+          "attn_ratio": 735.3125
+        }
+      ],
+      "correlation_with_jsd": 0.2468
+    },
+    {
+      "config": "PLIM_KROT_hotcold_queryA",
+      "queried_entity": "PLIM",
+      "irrelevant_entity": "KROT",
+      "layers": [
+        {
+          "layer": 0,
+          "attn_to_queried": 0.132161,
+          "attn_to_irrelevant": 0.009034,
+          "attn_ratio": 14.6289
+        },
+        {
+          "layer": 1,
+          "attn_to_queried": 0.14333,
+          "attn_to_irrelevant": 0.015199,
+          "attn_ratio": 9.4302
+        },
+        {
+          "layer": 2,
+          "attn_to_queried": 0.25172,
+          "attn_to_irrelevant": 0.007395,
+          "attn_ratio": 34.0401
+        },
+        {
+          "layer": 3,
+          "attn_to_queried": 0.75381,
+          "attn_to_irrelevant": 0.006699,
+          "attn_ratio": 112.5248
+        },
+        {
+          "layer": 4,
+          "attn_to_queried": 0.646589,
+          "attn_to_irrelevant": 0.008772,
+          "attn_ratio": 73.7115
+        },
+        {
+          "layer": 5,
+          "attn_to_queried": 0.718229,
+          "attn_to_irrelevant": 0.002574,
+          "attn_ratio": 279.0771
+        },
+        {
+          "layer": 6,
+          "attn_to_queried": 0.646043,
+          "attn_to_irrelevant": 0.003752,
+          "attn_ratio": 172.1938
+        },
+        {
+          "layer": 7,
+          "attn_to_queried": 0.55712,
+          "attn_to_irrelevant": 0.00415,
+          "attn_ratio": 134.2618
+        },
+        {
+          "layer": 8,
+          "attn_to_queried": 0.529457,
+          "attn_to_irrelevant": 0.007309,
+          "attn_ratio": 72.442
+        },
+        {
+          "layer": 9,
+          "attn_to_queried": 0.543128,
+          "attn_to_irrelevant": 0.0069,
+          "attn_ratio": 78.7153
+        },
+        {
+          "layer": 10,
+          "attn_to_queried": 0.542335,
+          "attn_to_irrelevant": 0.004011,
+          "attn_ratio": 135.2064
+        },
+        {
+          "layer": 11,
+          "attn_to_queried": 0.455602,
+          "attn_to_irrelevant": 0.002256,
+          "attn_ratio": 201.9434
+        },
+        {
+          "layer": 12,
+          "attn_to_queried": 0.649721,
+          "attn_to_irrelevant": 0.005268,
+          "attn_ratio": 123.3369
+        },
+        {
+          "layer": 13,
+          "attn_to_queried": 0.443865,
+          "attn_to_irrelevant": 0.006685,
+          "attn_ratio": 66.3954
+        },
+        {
+          "layer": 14,
+          "attn_to_queried": 0.412215,
+          "attn_to_irrelevant": 0.002414,
+          "attn_ratio": 170.7373
+        },
+        {
+          "layer": 15,
+          "attn_to_queried": 0.521701,
+          "attn_to_irrelevant": 0.00343,
+          "attn_ratio": 152.1155
+        },
+        {
+          "layer": 16,
+          "attn_to_queried": 0.392998,
+          "attn_to_irrelevant": 0.014242,
+          "attn_ratio": 27.5943
+        },
+        {
+          "layer": 17,
+          "attn_to_queried": 0.501646,
+          "attn_to_irrelevant": 0.008103,
+          "attn_ratio": 61.9054
+        },
+        {
+          "layer": 18,
+          "attn_to_queried": 0.454923,
+          "attn_to_irrelevant": 0.015128,
+          "attn_ratio": 30.0716
+        },
+        {
+          "layer": 19,
+          "attn_to_queried": 0.619466,
+          "attn_to_irrelevant": 0.00836,
+          "attn_ratio": 74.098
+        },
+        {
+          "layer": 20,
+          "attn_to_queried": 0.689122,
+          "attn_to_irrelevant": 0.003848,
+          "attn_ratio": 179.0985
+        },
+        {
+          "layer": 21,
+          "attn_to_queried": 0.752633,
+          "attn_to_irrelevant": 0.004458,
+          "attn_ratio": 168.8119
+        },
+        {
+          "layer": 22,
+          "attn_to_queried": 0.700426,
+          "attn_to_irrelevant": 0.011006,
+          "attn_ratio": 63.6383
+        },
+        {
+          "layer": 23,
+          "attn_to_queried": 0.700014,
+          "attn_to_irrelevant": 0.005047,
+          "attn_ratio": 138.7085
+        },
+        {
+          "layer": 24,
+          "attn_to_queried": 0.76626,
+          "attn_to_irrelevant": 0.008243,
+          "attn_ratio": 92.9601
+        },
+        {
+          "layer": 25,
+          "attn_to_queried": 0.684169,
+          "attn_to_irrelevant": 0.004567,
+          "attn_ratio": 149.8058
+        },
+        {
+          "layer": 26,
+          "attn_to_queried": 0.643114,
+          "attn_to_irrelevant": 0.006862,
+          "attn_ratio": 93.7243
+        },
+        {
+          "layer": 27,
+          "attn_to_queried": 0.775042,
+          "attn_to_irrelevant": 0.001427,
+          "attn_ratio": 543.1009
+        }
+      ],
+      "correlation_with_jsd": 0.15
+    },
+    {
+      "config": "PLIM_KROT_hotcold_queryB",
+      "queried_entity": "KROT",
+      "irrelevant_entity": "PLIM",
+      "layers": [
+        {
+          "layer": 0,
+          "attn_to_queried": 0.008979,
+          "attn_to_irrelevant": 0.133448,
+          "attn_ratio": 0.0673
+        },
+        {
+          "layer": 1,
+          "attn_to_queried": 0.015707,
+          "attn_to_irrelevant": 0.093945,
+          "attn_ratio": 0.1672
+        },
+        {
+          "layer": 2,
+          "attn_to_queried": 0.007379,
+          "attn_to_irrelevant": 0.185823,
+          "attn_ratio": 0.0397
+        },
+        {
+          "layer": 3,
+          "attn_to_queried": 0.005704,
+          "attn_to_irrelevant": 0.726031,
+          "attn_ratio": 0.0079
+        },
+        {
+          "layer": 4,
+          "attn_to_queried": 0.008616,
+          "attn_to_irrelevant": 0.656264,
+          "attn_ratio": 0.0131
+        },
+        {
+          "layer": 5,
+          "attn_to_queried": 0.002631,
+          "attn_to_irrelevant": 0.716557,
+          "attn_ratio": 0.0037
+        },
+        {
+          "layer": 6,
+          "attn_to_queried": 0.003923,
+          "attn_to_irrelevant": 0.629667,
+          "attn_ratio": 0.0062
+        },
+        {
+          "layer": 7,
+          "attn_to_queried": 0.005073,
+          "attn_to_irrelevant": 0.528415,
+          "attn_ratio": 0.0096
+        },
+        {
+          "layer": 8,
+          "attn_to_queried": 0.004266,
+          "attn_to_irrelevant": 0.536351,
+          "attn_ratio": 0.008
+        },
+        {
+          "layer": 9,
+          "attn_to_queried": 0.008455,
+          "attn_to_irrelevant": 0.555314,
+          "attn_ratio": 0.0152
+        },
+        {
+          "layer": 10,
+          "attn_to_queried": 0.003759,
+          "attn_to_irrelevant": 0.547475,
+          "attn_ratio": 0.0069
+        },
+        {
+          "layer": 11,
+          "attn_to_queried": 0.002924,
+          "attn_to_irrelevant": 0.456389,
+          "attn_ratio": 0.0064
+        },
+        {
+          "layer": 12,
+          "attn_to_queried": 0.006005,
+          "attn_to_irrelevant": 0.680823,
+          "attn_ratio": 0.0088
+        },
+        {
+          "layer": 13,
+          "attn_to_queried": 0.006039,
+          "attn_to_irrelevant": 0.401628,
+          "attn_ratio": 0.015
+        },
+        {
+          "layer": 14,
+          "attn_to_queried": 0.002521,
+          "attn_to_irrelevant": 0.442519,
+          "attn_ratio": 0.0057
+        },
+        {
+          "layer": 15,
+          "attn_to_queried": 0.002334,
+          "attn_to_irrelevant": 0.516905,
+          "attn_ratio": 0.0045
+        },
+        {
+          "layer": 16,
+          "attn_to_queried": 0.011867,
+          "attn_to_irrelevant": 0.46853,
+          "attn_ratio": 0.0253
+        },
+        {
+          "layer": 17,
+          "attn_to_queried": 0.004869,
+          "attn_to_irrelevant": 0.490488,
+          "attn_ratio": 0.0099
+        },
+        {
+          "layer": 18,
+          "attn_to_queried": 0.008826,
+          "attn_to_irrelevant": 0.460471,
+          "attn_ratio": 0.0192
+        },
+        {
+          "layer": 19,
+          "attn_to_queried": 0.005555,
+          "attn_to_irrelevant": 0.587604,
+          "attn_ratio": 0.0095
+        },
+        {
+          "layer": 20,
+          "attn_to_queried": 0.00283,
+          "attn_to_irrelevant": 0.663985,
+          "attn_ratio": 0.0043
+        },
+        {
+          "layer": 21,
+          "attn_to_queried": 0.003886,
+          "attn_to_irrelevant": 0.766304,
+          "attn_ratio": 0.0051
+        },
+        {
+          "layer": 22,
+          "attn_to_queried": 0.008989,
+          "attn_to_irrelevant": 0.69607,
+          "attn_ratio": 0.0129
+        },
+        {
+          "layer": 23,
+          "attn_to_queried": 0.003146,
+          "attn_to_irrelevant": 0.712475,
+          "attn_ratio": 0.0044
+        },
+        {
+          "layer": 24,
+          "attn_to_queried": 0.004595,
+          "attn_to_irrelevant": 0.760632,
+          "attn_ratio": 0.006
+        },
+        {
+          "layer": 25,
+          "attn_to_queried": 0.003011,
+          "attn_to_irrelevant": 0.682758,
+          "attn_ratio": 0.0044
+        },
+        {
+          "layer": 26,
+          "attn_to_queried": 0.005655,
+          "attn_to_irrelevant": 0.633618,
+          "attn_ratio": 0.0089
+        },
+        {
+          "layer": 27,
+          "attn_to_queried": 0.001366,
+          "attn_to_irrelevant": 0.788852,
+          "attn_ratio": 0.0017
+        }
+      ],
+      "correlation_with_jsd": -0.1046
+    },
+    {
+      "config": "HESK_VORN_redblue_queryA",
+      "queried_entity": "HESK",
+      "irrelevant_entity": "VORN",
+      "layers": [
+        {
+          "layer": 0,
+          "attn_to_queried": 0.135184,
+          "attn_to_irrelevant": 0.006037,
+          "attn_ratio": 22.3936
+        },
+        {
+          "layer": 1,
+          "attn_to_queried": 0.154191,
+          "attn_to_irrelevant": 0.011179,
+          "attn_ratio": 13.7932
+        },
+        {
+          "layer": 2,
+          "attn_to_queried": 0.252993,
+          "attn_to_irrelevant": 0.009588,
+          "attn_ratio": 26.3862
+        },
+        {
+          "layer": 3,
+          "attn_to_queried": 0.757693,
+          "attn_to_irrelevant": 0.008519,
+          "attn_ratio": 88.9416
+        },
+        {
+          "layer": 4,
+          "attn_to_queried": 0.624076,
+          "attn_to_irrelevant": 0.009213,
+          "attn_ratio": 67.7366
+        },
+        {
+          "layer": 5,
+          "attn_to_queried": 0.690681,
+          "attn_to_irrelevant": 0.002382,
+          "attn_ratio": 289.9309
+        },
+        {
+          "layer": 6,
+          "attn_to_queried": 0.681503,
+          "attn_to_irrelevant": 0.006621,
+          "attn_ratio": 102.9324
+        },
+        {
+          "layer": 7,
+          "attn_to_queried": 0.554879,
+          "attn_to_irrelevant": 0.003809,
+          "attn_ratio": 145.692
+        },
+        {
+          "layer": 8,
+          "attn_to_queried": 0.605277,
+          "attn_to_irrelevant": 0.006609,
+          "attn_ratio": 91.5779
+        },
+        {
+          "layer": 9,
+          "attn_to_queried": 0.549657,
+          "attn_to_irrelevant": 0.005576,
+          "attn_ratio": 98.5705
+        },
+        {
+          "layer": 10,
+          "attn_to_queried": 0.529099,
+          "attn_to_irrelevant": 0.006767,
+          "attn_ratio": 78.1908
+        },
+        {
+          "layer": 11,
+          "attn_to_queried": 0.573079,
+          "attn_to_irrelevant": 0.003765,
+          "attn_ratio": 152.2184
+        },
+        {
+          "layer": 12,
+          "attn_to_queried": 0.623155,
+          "attn_to_irrelevant": 0.009431,
+          "attn_ratio": 66.0772
+        },
+        {
+          "layer": 13,
+          "attn_to_queried": 0.433515,
+          "attn_to_irrelevant": 0.026968,
+          "attn_ratio": 16.0754
+        },
+        {
+          "layer": 14,
+          "attn_to_queried": 0.419066,
+          "attn_to_irrelevant": 0.017408,
+          "attn_ratio": 24.0731
+        },
+        {
+          "layer": 15,
+          "attn_to_queried": 0.562573,
+          "attn_to_irrelevant": 0.005298,
+          "attn_ratio": 106.1853
+        },
+        {
+          "layer": 16,
+          "attn_to_queried": 0.392963,
+          "attn_to_irrelevant": 0.023894,
+          "attn_ratio": 16.4464
+        },
+        {
+          "layer": 17,
+          "attn_to_queried": 0.513981,
+          "attn_to_irrelevant": 0.014923,
+          "attn_ratio": 34.4434
+        },
+        {
+          "layer": 18,
+          "attn_to_queried": 0.505465,
+          "attn_to_irrelevant": 0.016079,
+          "attn_ratio": 31.4366
+        },
+        {
+          "layer": 19,
+          "attn_to_queried": 0.61272,
+          "attn_to_irrelevant": 0.023931,
+          "attn_ratio": 25.604
+        },
+        {
+          "layer": 20,
+          "attn_to_queried": 0.687623,
+          "attn_to_irrelevant": 0.0063,
+          "attn_ratio": 109.1435
+        },
+        {
+          "layer": 21,
+          "attn_to_queried": 0.744186,
+          "attn_to_irrelevant": 0.01032,
+          "attn_ratio": 72.1109
+        },
+        {
+          "layer": 22,
+          "attn_to_queried": 0.715138,
+          "attn_to_irrelevant": 0.012347,
+          "attn_ratio": 57.9222
+        },
+        {
+          "layer": 23,
+          "attn_to_queried": 0.697666,
+          "attn_to_irrelevant": 0.007879,
+          "attn_ratio": 88.5513
+        },
+        {
+          "layer": 24,
+          "attn_to_queried": 0.816391,
+          "attn_to_irrelevant": 0.009323,
+          "attn_ratio": 87.5681
+        },
+        {
+          "layer": 25,
+          "attn_to_queried": 0.740261,
+          "attn_to_irrelevant": 0.00407,
+          "attn_ratio": 181.8889
+        },
+        {
+          "layer": 26,
+          "attn_to_queried": 0.616272,
+          "attn_to_irrelevant": 0.010411,
+          "attn_ratio": 59.1939
+        },
+        {
+          "layer": 27,
+          "attn_to_queried": 0.805767,
+          "attn_to_irrelevant": 0.001012,
+          "attn_ratio": 796.572
+        }
+      ],
+      "correlation_with_jsd": -0.0133
+    }
+  ]
+}
