@@ -62,9 +62,9 @@ same target place under the operation.
 
 **Empty descent is perfect.** Restatement descent is near-perfect (one failure:
 registered fiber `MIP=blue|PLIM=blue|ZOG=small` has members from different
-worlds w101 and w111 with different MIP ground truths — so world-indexed $S_w$
-maps them to different MIP answers. This confirms the $S_w$ vs $S_p$ typing
-issue: restatement uses ground-truth world, not greedy signature alone).
+worlds w101 and w111 with different MIP ground truths — so $S^W_w$
+maps them to different MIP answers. This confirms the $S^W$ vs $S^G$ typing
+issue: restatement uses the hidden world, not the observable greedy signature).
 
 ## 4. Law sheet
 
@@ -159,7 +159,7 @@ histories that produce the same greedy answer signature.
 distributional residual IS task-relevant predictive state.
 
 **History < Benign** after restatement (0/3): restatement partially collapses
-the within-fiber distance. S_p is a genuine retraction.
+the within-fiber distance. $S^W_w$ is a genuine retraction.
 
 **Cross-world smallest**: presentation (how you told the model) matters more
 than what else you told it.
