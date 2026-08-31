@@ -5,6 +5,50 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — PSQ-3 lock round 5: REVISE, 5 blockers; repair-round cap reached; v6 final
+
+**Codex PSQ-3 lock round 5**: Verdict REVISE. Math core and most round-4 operational
+repairs verified sound. Independent enumeration confirmed: 341 words, 43,648 triples,
+2,016 pairs, 72 nonzero d_{2,4} values, 64 unique panel signatures, 32/32 split,
+moved counts 32/24/32/24. Five residual blockers:
+
+1. **Training-set construction contradictory**: 16 reserved positives not reconciled
+   with subsequent 1,872 draw (128 + 16 + 1,872 = 2,016, not 2,000). Population
+   ordering, final dataset ordering, padding side, special-token handling, and
+   sampler/RNG restoration all unspecified. Fix: exact pseudocode with 128 + 16 +
+   1,856 = 2,000; padding_side="right"; add_special_tokens=True; sampler resume
+   by re-seeding and fast-forwarding.
+
+2. **Geometry CI breaks nesting**: 2,016 pairs share 64 endpoints; pair-level
+   bootstrap violates clustered inference. Fix: state-level clustered bootstrap
+   (resample 64 states, compute rho on induced submatrix).
+
+3. **Verdict rules ambiguous**: Frozen G < 0.1 "pooled" undefined (edge-weighted
+   vs action-weighted produce different verdicts); invalid-panel treatment for
+   fixed-point stability and continuous G unspecified. Fix: action-weighted pooling
+   (equal weight per action); invalid panel = stability FAIL for fixed points,
+   edge EXCLUDED from G for moved edges.
+
+4. **Ledger mixes workload units**: 435,908 sums batch-4 training steps with
+   batch-1 inference forwards; 17.3h applies inference rate to training.
+   Fix: separate workload types with distinct units and rates.
+
+5. **GPU plan conflicts**: Full campaign not assigned to stable/cloud hardware.
+   Fix: stable/cloud for full campaign; local limited to 100-forward pilot.
+
+**v6 created** with all 5 fixes applied mechanically. **No round 6 submitted** —
+rounds 3-4-5 = three consecutive REVISE rounds, hitting the repair-round cap
+(CLAUDE.md §2.7 rule 7). Codex's own strategic recommendation (e841): "this is
+no longer the highest-leverage place for another broad paper dialogue... 5:0
+audit-to-build ratio, governance alarm. Make one mechanical repair then move
+directly to runner construction."
+
+**Next**: Build the PSQ-3 runner (`experiments/run_psq3.py`) implementing the v6
+spec. The runner will mechanically resolve remaining ambiguities by making
+concrete implementation choices. No further spec review rounds.
+
+---
+
 ## 2026-08-30 — d_4 diagnostic on PSQ-2 v3 adapter (75% accuracy)
 
 **Result**: DIAGNOSTIC ONLY. Exhaustive d_4 distance matrix on 43,520 probes (len 1-4).
