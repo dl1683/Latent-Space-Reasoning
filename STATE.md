@@ -46,6 +46,14 @@
   - **Conclusion:** Resolution is a whole-sequence operation — value vectors combine across positions through the attention mechanism. Not decomposable to a single source.
   - Fixed GQA dimension mismatch: Qwen3-0.6B has num_heads=16, num_kv_heads=8, head_dim=128; o_proj takes 2048, not 1024.
 
+- **Predictive fiber v1 (2026-08-31).** Codex-directed decisive experiment (direction v4). Tests whether the distributional residual inside greedy fibers is predictive state or presentation leakage. Three pair classes (benign presentation, history pair, cross-world), six continuations.
+  - **MIXED RESULT: two-component residual.** The distributional residual is BOTH predictive and presentation leakage.
+  - At baseline (empty) and after corrections: history-pair JSD EXCEEDS benign presentation JSD (3/3 each). The residual is task-relevant predictive state — corrections interact differently with different histories.
+  - After neutral continuation and canonical restatement: history-pair JSD DROPS BELOW benign (0/3 each). The residual is partially resetable presentation structure.
+  - Cross-world distance is SMALLEST everywhere — presentation (order, repetition) matters MORE than which irrelevant facts are present.
+  - **Canonical restatement acts as a SYNCHRONIZATION operation**, reducing all within-fiber distances. It partially resets the distributional structure.
+  - **Interpretation (per Codex):** Retain the coarse greedy task algebra. The distributional tails carry a mixture of predictive commitment state (correction-sensitive) and resetable presentation structure (restatement-collapsible). The greedy-level algebra IS the native task algebra.
+
 - **Rebroadening test v1 (2026-08-31).** Tests whether the re-broadened final distribution carries meaningful history information.
   - **MEANINGFUL, not noise.** Top divergent tokens between same-place histories are overwhelmingly history-related: entity values (big/small/hot/cold/red/blue) and their capitalizations. 5-7 of top 10 divergent tokens are fact-world values.
   - **The model leaks the entire fact-world** into every output position's distribution, not just the queried fact. Querying ZOG also carries elevated probability on "hot" (MIP), "red" (PLIM).

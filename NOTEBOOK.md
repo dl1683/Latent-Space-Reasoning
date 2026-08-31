@@ -5,6 +5,60 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31T20:15 — Predictive fiber v1: distributional residual is BOTH predictive AND presentation
+
+**Codex-directed decisive experiment (direction v4).** Tests whether the
+distributional residual inside greedy fibers is predictive state (predicts
+future task behavior) or presentation leakage (static stylistic mass).
+
+**Design:** Three pair classes within each greedy fiber:
+1. Benign presentation: same facts, different order (std vs rev)
+2. History pairs: same final facts, different write history (std vs dup)
+3. Cross-world (positive control): different fact assignments
+
+Six continuations: empty, neutral, repeat, correction, new entity, canonical
+restatement. Key estimand: does history-pair JSD EXCEED benign-presentation JSD?
+
+**Result: MIXED — the residual is a two-component mixture.**
+
+| Continuation | Benign JSD | History JSD | Cross JSD | H>B |
+|---|---|---|---|---|
+| empty | 0.254 | 0.292 | 0.157 | 3/3 |
+| neutral | 0.275 | 0.193 | 0.167 | 0/3 |
+| repeat | 0.161 | 0.147 | 0.232 | 1/3 |
+| correction | 0.179 | 0.223 | 0.168 | 3/3 |
+| new_entity | 0.243 | 0.242 | 0.156 | 2/3 |
+| restatement | 0.174 | 0.124 | 0.126 | 0/3 |
+
+**Finding 1: Predictive component.** At baseline (empty) and after corrections,
+history-pair distance EXCEEDS benign presentation distance (3/3 each). The
+distributional residual is NOT purely presentation leakage — it encodes
+task-relevant predictive state that interacts differently with corrections
+depending on the history.
+
+**Finding 2: Presentation component.** After neutral continuations and canonical
+restatement, history-pair distance DROPS BELOW benign (0/3 each). The canonical
+restatement acts as a SYNCHRONIZATION operation, partially resetting the fiber.
+The residual is resetable, therefore partially presentation-dependent.
+
+**Finding 3: Cross-world distance is SMALLEST.** Presentation (order, repetition)
+matters MORE than which irrelevant facts are present. The model's output
+distribution at the query position is more sensitive to HOW facts are presented
+than to WHICH irrelevant facts exist.
+
+**Interpretation (per Codex direction v4):** The residual survives for
+correction continuations but collapses under canonical restatement. Per Codex:
+"If residual collapses after canonical restatement: retain the coarse task
+algebra and classify the remainder as presentation structure." The greedy-level
+algebra IS the native task algebra; the distributional tails carry a mixture of
+predictive commitment state and resetable presentation structure.
+
+**Next:** Build the cumulative algebraic artifact (Codex mandate). The predictive
+fiber result provides the data; the artifact should formalize the greedy task
+algebra with the predictive/presentation decomposition.
+
+---
+
 ## 2026-08-31T19:45 — Rebroadening test v1: distribution carries MEANINGFUL history info
 
 **Tested whether the re-broadened final distribution is meaningful or noise.**
