@@ -488,7 +488,7 @@ def setup_lora(model):
     from peft import LoraConfig, get_peft_model, TaskType
     lora_config = LoraConfig(
         task_type=TaskType.CAUSAL_LM, r=16, lora_alpha=32, lora_dropout=0.0,
-        bias="none", init_lora_weights="default",
+        bias="none", init_lora_weights=True,
         target_modules=["q_proj","k_proj","v_proj","o_proj","gate_proj","up_proj","down_proj"])
     model = get_peft_model(model, lora_config)
     model.print_trainable_parameters()
@@ -502,7 +502,7 @@ def train_phase(model, tok, training_triples, cfg, device, out_dir, seed):
     random.seed(seed)
     torch.use_deterministic_algorithms(True)
 
-    dataset = PSQ3Dataset(training_triples, tok, max_length=512, positive_weight=7.0)
+    dataset = PSQ3Dataset(training_triples, tok, max_length=192, positive_weight=7.0)
     loader = DataLoader(dataset, batch_size=4, shuffle=True, drop_last=True, num_workers=0)
 
     optimizer = torch.optim.AdamW(model.parameters(), lr=5e-5, weight_decay=0.01,
@@ -515,6 +515,33 @@ def train_phase(model, tok, training_triples, cfg, device, out_dir, seed):
     model.to(device)
     step = 0
     t0 = time.time()
+
+    latest_ckpt = None
+    if os.path.exists(ckpt_dir):
+        ckpt_steps = sorted([int(d.split("_")[1]) for d in os.listdir(ckpt_dir)
+                             if d.startswith("step_") and os.path.isfile(
+                                 os.path.join(ckpt_dir, d, "training_state.pt"))])
+        if ckpt_steps:
+            latest_step = ckpt_steps[-1]
+            latest_ckpt = os.path.join(ckpt_dir, f"step_{latest_step}")
+    if latest_ckpt is not None:
+        from peft import set_peft_model_state_dict
+        state = torch.load(os.path.join(latest_ckpt, "training_state.pt"),
+                           map_location=device, weights_only=False)
+        adapter_file = os.path.join(latest_ckpt, "adapter_model.safetensors")
+        if os.path.exists(adapter_file):
+            import safetensors.torch
+            adapter_weights = safetensors.torch.load_file(adapter_file, device=str(device))
+        else:
+            adapter_weights = torch.load(os.path.join(latest_ckpt, "adapter_model.bin"),
+                                          map_location=device, weights_only=True)
+        set_peft_model_state_dict(model, adapter_weights)
+        optimizer.load_state_dict(state["optimizer"])
+        step = state["step"]
+        torch.set_rng_state(state["torch_rng"])
+        np.random.set_state(state["numpy_rng"])
+        random.setstate(state["python_rng"])
+        print(f"  Resumed from checkpoint step {step}")
 
     for epoch in range(10):
         for batch in loader:
@@ -1306,17 +1333,24 @@ def main():
         print(f"{'='*60}")
 
         # Training
+        adapter_path = os.path.join(out_dir, f"adapter_seed{seed}")
         if phase in ("train", "all"):
-            model_fresh, tok = load_model(cfg, device)
-            torch.manual_seed(seed)
-            np.random.seed(seed)
-            random.seed(seed)
-            model_lora = setup_lora(model_fresh)
-            adapter_path, steps, train_time = train_phase(
-                model_lora, tok, training_triples, cfg, device, out_dir, seed)
-            model = model_lora
+            if os.path.exists(adapter_path) and phase == "all":
+                print(f"  Adapter already exists at {adapter_path}, loading...")
+                from peft import PeftModel
+                base_model, tok = load_model(cfg, device)
+                model = PeftModel.from_pretrained(base_model, adapter_path)
+                model.to(device)
+            else:
+                model_fresh, tok = load_model(cfg, device)
+                torch.manual_seed(seed)
+                np.random.seed(seed)
+                random.seed(seed)
+                model_lora = setup_lora(model_fresh)
+                adapter_path, steps, train_time = train_phase(
+                    model_lora, tok, training_triples, cfg, device, out_dir, seed)
+                model = model_lora
         else:
-            adapter_path = os.path.join(out_dir, f"adapter_seed{seed}")
             if os.path.exists(adapter_path):
                 from peft import PeftModel
                 base_model, tok = load_model(cfg, device)
