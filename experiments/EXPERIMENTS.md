@@ -5,6 +5,28 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
+## Phase 2 — Non-R^n behavioral algebra (2026-08-31 →)
+
+Instrument: logit lens (apply model's final layernorm + unembedding at each layer) + sqrt(JSD) as behavioral distance. Model: Qwen3-0.6B (28 layers, 1024 hidden dim), CPU-only. Synthetic fact-worlds (2- or 3-entity, controlled assignments).
+
+- **predictive_fiber_v1** (`4978a85`; `results/predictive_fiber_v1/results.json`). Codex-directed (v4). Tests whether distributional residual inside greedy fibers is predictive or presentation. Three pair classes, six continuations. **MIXED**: history>benign at baseline+corrections (3/3), history<benign after restatement (0/3). Cross-world smallest. Residual = predictive commitment + resetable presentation. Canonical restatement = synchronization.
+
+- **rebroadening_test_v1** (`915988c`; `results/rebroadening_test_v1/results.json`). Re-broadened distribution is **MEANINGFUL**: 5-7/10 divergent tokens are history-related entity values. Model leaks entire fact-world into output. Repetition narrows 2-3x.
+
+- **entropy_structure_v1** (`cc83d06`; `results/entropy_structure_v1/results.json`). **COMMITMENT BOTTLENECK**: entropy 0.05-0.30 bits at L24-25 (top-1: 0.999), re-broadens to 5.5-7.7. Explains greedy congruence (97%) + distributional failure (0%).
+
+- **distributional_congruence_v1** (`048bae1`; `results/distributional_congruence_v1/results.json`). Full-distribution congruence (sqrt(JSD), threshold 0.05). **0/96 congruent**. JSD 0.07-0.45.
+
+- **position_contribution_v1**, **three_fact_resolution_v1**, **mlp_decomposition_v1**, **attention_control_v1**, **continuation_congruence_v1**, **logit_lens_resolution_v1** — see STATE.md for details. Key findings: resolution (L21-25, up to 62x selectivity), not attention routing (r<0.25), whole-sequence value-space operation, generalizes to 3 facts, 97% greedy congruence.
+
+- **fusion_fission_v1-v2b** — compositional structure series. Cosine blind; behavioral transplant sees structure; whole-state property; K-matrix instrument has defects (Codex v2b review).
+
+- **causal_resolution_v1** — UNINFORMATIVE (full-state injection trivial).
+
+- **predictive_setter_algebra_v1** — FAIL (16 types, primacy bias).
+
+---
+
 ## Phase 1 record (2026-08-27 → 2026-08-31; PROGRAM REOPENED 2026-08-31; Phase 1 experiments below are closed results; Phase 2 begins with non-R^n approaches; audits #27–#50 adopted; orientation document `docs/HANDOFF_2026_08_30.md` is historical)
 
 - **Theory (restart 2026-08-30; PROGRAM REOPENED 2026-08-31).** Adopted foundation: `theory/AXIOMS.md` D1–D9, Theorems 1/4/7/8, Propositions 2/6, native bridge definition (mathematics audits #42 and #44; D7 audit #48 REVISE adopted; licensed wording in `STATE.md`). Phase 1 Codex review verdict was STOP, but closure was not authorized by the project owner; native math existence is axiomatic (see `feedback_native_math_is_axiom.md` in memory). Five transferable insights deposited; Phase 2 begins with genuinely non-R^n approaches. The bullets below are retained as Phase 1's closed record; their "program remains paused / on restart" language is historical.
