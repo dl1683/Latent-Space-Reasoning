@@ -2515,3 +2515,64 @@ denizen limited to one residual tap cannot replicate the full model's
 append-action process, and connects the abstract place-refinement inequality
 \(d_\infty^D \leq d_\infty^S\) to the concrete geometry of transformer
 attention.
+
+### Architectural comparison: transformers vs recurrent state-space models (UNAUDITED NOTE)
+
+The conjecture's mechanism depends on a dimension mismatch between the full
+state carrier and the port. This mismatch is architecture-dependent:
+
+**Transformer (softmax attention).** The full incremental state
+\(C_t \in \mathbb{R}^{2Ldt}\) grows linearly with sequence length \(t\).
+The port \(p_{\ell,t} \in \mathbb{R}^d\) is fixed-dimensional. For
+\(t \gg 1\), the dimension ratio \(2Ldt/d = 2Lt \to \infty\). The fiber
+argument (a continuous map from a high-dimensional domain to
+\(\mathbb{R}^d\) must have nontrivial fibers) applies once
+\(\dim(X_t) > d\).
+
+**Linear recurrent model (S4/Mamba/RWKV).** The full incremental state is a
+fixed-dimensional recurrent hidden state \(h_t \in \mathbb{R}^n\) (or
+\(\mathbb{C}^{n/2}\) for complex-diagonal SSMs), with \(n\) independent of
+\(t\). The update rule has the form
+
+\[
+h_{t+1} = A_t h_t + B_t x_t,
+\qquad
+y_t = C_t h_t + D_t x_t,
+\]
+
+where \(A_t, B_t, C_t, D_t\) may be input-dependent (as in Mamba's selective
+mechanism) but the state dimension \(n\) is fixed. A "port" reading
+\(h_t\) at a fixed layer has the same dimension as the full state at that
+layer. The fiber argument therefore does not apply within a single layer:
+the port-to-state map can be the identity.
+
+**Consequence for the program's central question.** The D1--D9 framework
+applies to both architectures. But the denizen-surgeon gap (Theorem 8)
+manifests differently:
+
+- In a transformer, a fixed-layer residual port provably loses information
+  about the growing KV-cache state (this conjecture). The "native math" of
+  the full state is the non-commutative, position-indexed KV-cache algebra
+  — genuinely non-\(\mathbb{R}^n\) because its dimension grows.
+- In an SSM, the full state IS fixed-dimensional, so a single-layer state
+  port can in principle be an internally sufficient carrier. The native math
+  is the linear-algebraic structure of the diagonal state-transition matrix
+  \(A\): its eigenvalues (complex frequencies and decay rates), its
+  selectivity gates, its spectral decomposition. This is standard
+  linear-systems theory, not a new mathematics.
+
+This suggests the program's negative result (no native non-\(\mathbb{R}^n\)
+mathematics found) may be partially explained by architecture: transformer
+residual streams genuinely ARE \(\mathbb{R}^d\) vectors (the non-\(\mathbb{R}^n\)
+structure lives in the growing KV cache, which the residual can't capture),
+while SSM states have algebraic structure (eigenvalue dynamics) that is
+standard and already well-studied. In neither case does a genuinely new
+mathematics emerge from the existing architecture — the interesting structure
+is either inaccessible (transformer KV cache) or already described (SSM
+spectral theory).
+
+This observation does not close the guiding question. It sharpens it: a
+genuinely new latent-space mathematics would require an architecture whose
+state has structure that is neither growing-dimensional (transformer) nor
+standard-linear-algebraic (SSM) — perhaps a system with compositional,
+typed, or topological state that current architectures do not have.

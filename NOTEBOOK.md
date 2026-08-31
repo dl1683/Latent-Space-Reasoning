@@ -5,6 +5,22 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31T06:05 — Architectural comparison: transformers vs SSMs under D1-D9
+
+Added a theoretical note to `theory/AXIOMS.md` comparing how the coupling
+conjecture and denizen-surgeon gap manifest in transformers vs SSMs. Key
+finding: the conjecture's mechanism (dimension mismatch between port and full
+state) is architecture-dependent. In transformers, the KV cache grows with t,
+so a fixed-d port provably loses information. In SSMs, the full state is
+fixed-dimensional, so the gap can close — but the state's structure is standard
+linear-systems spectral theory, not new math. Conclusion: a genuinely new
+latent-space mathematics would require an architecture whose state is neither
+growing-dimensional nor standard-linear-algebraic — perhaps compositional,
+typed, or topological state. This sharpens the program's central question and
+partially explains why the negative result was inevitable for transformers.
+
+---
+
 ## 2026-08-31T05:45 — Re-contextualization checkpoint #4 (hourly ops + 2-hour audit)
 
 **Ops:** Work alive (Codex R8 running, all surfaces updated, 2.3GB cleaned).
