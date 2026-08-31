@@ -5,6 +5,109 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31T09:15 — Attention control v1: resolution layer is NOT attention routing
+
+**Ruled out the simplest confound.** Measured attention from the query position
+(last token) to queried vs irrelevant entity token spans across all layers.
+Compared attention selectivity ratio to JSD ratio from logit_lens_resolution_v1.
+
+**Result: no correlation.** Pearson(attn_ratio, jsd_ratio) across 4 configs:
+- ZOG/MIP queryA: r = 0.25
+- PLIM/KROT queryA: r = 0.15
+- PLIM/KROT queryB: r = -0.10
+- HESK/VORN queryA: r = -0.01
+
+**Why this matters:** Attention to the queried entity is HIGH everywhere (~0.5-0.8
+from L3 onward). It does NOT spike at L21-25 where JSD ratio spikes. The KROT
+queryB case is definitive: attention ratio is near 0 at all layers (KROT is
+second in prompt, attention favors first-mentioned), yet JSD ratio hits 62.43x
+at L24-25. Resolution is happening IN the MLP/combined transformation, not in
+attention routing.
+
+**Implications:**
+1. The resolution layer finding is a property of the COMPUTATION, not just
+   information routing. This is genuine native structure.
+2. Connects to BP-7 (static snapshot ≠ dynamic computation): the resolution
+   is in the transformation, not the attention pattern.
+3. The MLP at L21-25 does something that selectively amplifies one fact's
+   behavioral signature — this is the next thing to understand.
+
+**Next:** What specifically does the MLP do at resolution layers? Two paths:
+(a) MLP output analysis at L21-25 specifically, (b) Codex direction dialogue
+for the algebraic structure question.
+
+---
+
+## 2026-08-31T09:45 — MLP decomposition v1: resolution is in VALUE space, not routing
+
+**The resolution layer is already present AFTER attention, BEFORE the MLP.**
+Hooked post-attention-layernorm (receives post-attn residual stream) and
+post-layer (post-MLP residual stream). Applied logit lens to both. Compared
+JSD ratios.
+
+**Results (3 configs):**
+- ZOG/MIP queryA: post-attn peak L25 r=6.19, post-MLP L25 r=6.55 (MLP +0.36)
+- PLIM/KROT queryB: post-attn peak L25 r=77.89, post-MLP L25 r=62.43 (MLP -15.46!)
+- HESK/VORN queryA: post-attn peak L21 r=22.83, post-MLP L21 r=31.44 (MLP +8.61)
+
+**The surprise:** Combined with the attention control result (attention WEIGHTS
+are not selective, r~0 across all layers), this means:
+
+1. **Resolution is in the VALUE SPACE.** Attention weights route uniformly to
+   all tokens, but the VALUE VECTORS at resolution layers encode information
+   that, when combined, selectively amplifies the queried fact.
+2. **The MLP MODULATES rather than creates.** It sometimes sharpens (HESK/VORN
+   +8.61) and sometimes blurs (PLIM/KROT -15.46) the resolution that attention
+   already produced.
+3. **This is not "the model looks at the right token."** It's "the model's
+   value vectors at L21-25 carry a pattern that, when combined by ANY attention
+   routing, amplifies the queried fact's behavioral signature."
+
+**Implication for native math:** The resolution is an EMERGENT property of
+value-vector composition. Not in the attention weights (routing), not primarily
+in the MLP (transformation), but in the VALUE space — the content that flows
+through the routing. This connects to BP-2 (state is distributed) and BP-5
+(composition through forward pass).
+
+**Next:** Codex direction dialogue for the algebraic interpretation.
+
+---
+
+## 2026-08-31T10:15 — Three-fact resolution v1: resolution is a general mechanism
+
+**Resolution generalizes to three-fact worlds.** Three entities × two values =
+eight worlds. At each layer, measure the JSD from flipping each entity's value
+(averaged over all 4 flip-pairs per entity). Compare queried entity's JSD to
+both irrelevant entities.
+
+**Results (4 configs):**
+- ZOG/MIP/PLIM queryA: L25, ratio=10.22, q_jsd=0.82, baseline 4/4
+- ZOG/MIP/PLIM queryB: L24, ratio=1.70, q_jsd=0.53, baseline 2/4 (MIP retrieval broken)
+- ZOG/MIP/PLIM queryC: L25, ratio=28.59, q_jsd=0.83, baseline 4/4
+- HESK/VORN/KROT queryA: L25, ratio=42.46, q_jsd=0.83, baseline 4/4
+
+**Key observations:**
+1. BOTH irrelevant facts suppressed simultaneously and EQUALLY (HESK: irrel1=0.020,
+   irrel2=0.019). Not pairwise competition — genuine multi-fact resolution.
+2. Last entity (PLIM queryC) resolves just as cleanly as first (28.59x). The
+   mechanism works regardless of position — not just primacy.
+3. Resolution strength still correlates with baseline accuracy.
+4. Peak layer stable at L25 across both 2-fact and 3-fact worlds.
+
+**Emerging picture (4 experiments):**
+- Resolution layer (L21-25): general mechanism, not pairwise
+- Not attention routing (attn control): weights are flat
+- In the value space (MLP decomp): post-attention already shows it
+- Works across 2 and 3 fact worlds
+- Peak layer is robust (L25 consistently)
+- What the resolution IS: value vectors at resolution layers project the
+  queried fact into the behavioral-readout subspace while orthogonalizing
+  all irrelevant facts. This is a NATIVE OPERATION of the forward pass.
+
+**Next:** Commit everything, then get Codex's take on the algebraic structure.
+
+---
+
 ## 2026-08-31T05:30 — Logit-lens resolution v1: query-selective resolution layer, cosine-blind
 
 **The model has a resolution layer where it selects the queried fact and
