@@ -5,6 +5,28 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31T01:30 — Codex correctness review of HANDLE-0 interpreter: 3 critical findings fixed
+
+Codex exhaustively verified core GF(5) algebra correct across all 10,000 states,
+all 2,000 composition triples, full equivariance. Three critical findings:
+
+1. **Unsound verdict gate**: KC5/7/8/9/10 were unconditional "PASS" strings;
+   dep_violations and perm_violations not wired into all_pass. Fixed: real
+   checks where possible, BY_CONSTRUCTION labels where not machine-decidable.
+2. **Incomplete interpreter**: No command executor (SETV/SETM/TRANSPORT/COMPOSE/
+   SWAPV/SWAPM). Fixed: added execute_commands() + trajectory-level ceiling test
+   (KC7 now a real check over 200 random trajectories).
+3. **Unpersisted artifacts**: state_query_matrix, renderer_matrix, patch_oracle
+   built in memory and discarded. Fixed: all three now written to disk (683KB +
+   tiny + 141MB). Gitignored.
+
+All machine-checkable conditions PASS. Committed `010c8c4`, pushed.
+
+HANDLE-0 admission apparatus is now complete (admission packet, reference
+interpreter, data generator, preregistration). Training requires GPU approval.
+
+---
+
 ## 2026-08-31T11:00 — HANDLE-0 Affine Ledger admission packet deposited
 
 Recovered the jammed Codex HANDLE-0 design output (task bdeslr2ii, `-o` file
