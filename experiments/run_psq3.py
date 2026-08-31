@@ -538,7 +538,7 @@ def train_phase(model, tok, training_triples, cfg, device, out_dir, seed):
         set_peft_model_state_dict(model, adapter_weights)
         optimizer.load_state_dict(state["optimizer"])
         step = state["step"]
-        torch.set_rng_state(state["torch_rng"])
+        torch.set_rng_state(state["torch_rng"].cpu())
         np.random.set_state(state["numpy_rng"])
         random.setstate(state["python_rng"])
         print(f"  Resumed from checkpoint step {step}")
