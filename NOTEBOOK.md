@@ -5,6 +5,93 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31T23:30 — predictive_fiber_action_v1: DECISIVE — S_p idempotent, square does NOT commute
+
+**The algebra-validation experiment (Codex v5) has run and produced a decisive result.**
+
+**S_p is approximately idempotent.** JSD(S, S^2) = 0.078 (registered), 0.076
+(held-out). 100% greedy idempotence. The canonical restatement IS a retraction
+— applying it twice is the same as applying it once at the greedy level, and
+very close distributionally. This establishes S_p as a well-defined algebraic
+operation.
+
+**The correction/synchronization square does NOT commute.** JSD(CS vs SC) = 0.204
+(registered), 0.222 (held-out). Only 81% greedy commutativity. Task kernel
+differs by 0.20-0.21. The order matters: correct-then-restate produces a
+different state than restate-then-correct. **Presentation and prediction are
+coupled, not cleanly separable.**
+
+**Generalizes to held-out entities.** All patterns replicate on KROT/HESK/VORN
+(baseline 95.8%). The algebra is not a prompt-family artifact.
+
+**Per Codex v5 binary interpretation:** "It collapses → retain the greedy task
+algebra plus synchronizable presentation nuisance; withdraw the independent
+predictive-component claim."
+
+**What we have:**
+- A coarse partial action algebra of greedy commitments (97% congruent, 93-96%
+  restatement-preserved, 94-96% neutral-preserved)
+- Fibers with coupled correction-relevant and presentation structure
+- An approximately idempotent synchronization map S_p (100% greedy, JSD 0.078)
+- Non-commutativity of correction and synchronization (the fiber structure is real
+  but not factorizable)
+- A late distributed decoder-lens commitment transition (L21-25) that cosine
+  does not track
+
+**What we do NOT have:**
+- A clean predictive/presentation factorization (the square fails)
+- An exact algebra (3-7% defect rates on operations)
+- Mechanism-level explanation (only behavioral evidence)
+
+**The honest paper claim (per Codex v5):**
+"In one registered three-fact prompt family, a small language model supports a
+coarse partial action algebra of greedy commitments whose fibers retain
+correction-relevant and partly restatement-contractible response structure, with
+a late distributed decoder-lens commitment transition that residual cosine does
+not track."
+
+---
+
+## 2026-08-31T23:00 — Codex direction v5: build the Synchronized Predictive-Fiber Action Algebra
+
+**Codex architectural verdict (scratchpad/codex_direction_v5_artifact_design.txt).**
+The greedy algebra is real but is only the task-facing QUOTIENT. The full native
+object is A_PF = (Q →g G, M, α, {F_p}, {S_p}, {ρ_e}).
+
+**Key design decisions:**
+1. Carrier table: every fine future-response state q, its greedy commitment g(q).
+2. Cayley-style action table: rows=greedy places, cols=continuation generators.
+3. Fiber table: representatives in each F_p, which distinctions survive/contract.
+4. Law sheet: equations that hold, fail, or remain candidates.
+5. Implementation overlay: resolution/entropy attached to algebraic maps, not the algebra itself.
+
+**Critical correction:** Do NOT represent as F_p = P ⊕ T (additive decomposition).
+Represent OPERATIONALLY: presentation-contractible (S_p collapses it) vs predictive
+(survives correction after synchronization). Test S_p² ≈ S_p (idempotent retraction).
+
+**The central proposed square:**
+```
+F_p --C--> F_p'
+|           |
+S_p         S_p'
+|           |
+S_p(F_p) --C--> S_p'(F_p')
+```
+If commutes: presentation separated from predictive state. If fails: coupled.
+
+**One remaining experiment:** `predictive_fiber_action_v1` — algebra validation.
+Task-total response law primary, full-vocabulary JSD secondary. Place-typed
+restatement S_p for every greedy signature. Test S_p², correction/sync square,
+held-out entities. Binary interpretation: correction sensitivity survives sync →
+full algebra; collapses → greedy algebra + presentation nuisance.
+
+**Paper title:** "Commitments, Fibers, and Synchronization: A Behavioral Algebra
+of Transformer Prompt State."
+
+**Next:** Build `predictive_fiber_action_v1` runner.
+
+---
+
 ## 2026-08-31T20:15 — Predictive fiber v1: distributional residual is BOTH predictive AND presentation
 
 **Codex-directed decisive experiment (direction v4).** Tests whether the

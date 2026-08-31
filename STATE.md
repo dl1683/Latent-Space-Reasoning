@@ -46,6 +46,13 @@
   - **Conclusion:** Resolution is a whole-sequence operation — value vectors combine across positions through the attention mechanism. Not decomposable to a single source.
   - Fixed GQA dimension mismatch: Qwen3-0.6B has num_heads=16, num_kv_heads=8, head_dim=128; o_proj takes 2048, not 1024.
 
+- **Predictive fiber ACTION v1 (2026-08-31).** Codex-directed algebra-validation experiment (direction v5). Builds and validates the Synchronized Predictive-Fiber Action Algebra. Registered + held-out entity sets.
+  - **S_p is approximately idempotent.** JSD(S, S^2) = 0.078 (registered), 0.076 (held-out). 100% greedy idempotence. Canonical restatement IS a retraction.
+  - **Correction/synchronization square does NOT commute.** JSD(CS vs SC) = 0.204 (registered), 0.222 (held-out). 81% greedy commutativity, tk_diff 0.20. Presentation and prediction are COUPLED, not cleanly separable.
+  - **Generalizes to held-out entities.** All patterns replicate on KROT/HESK/VORN (baseline 95.8%).
+  - **Per Codex v5 binary:** "It collapses" — retain the greedy task algebra plus coupled fiber structure; withdraw any clean predictive/presentation factorization.
+  - **Honest paper claim:** "In one registered three-fact prompt family, a small language model supports a coarse partial action algebra of greedy commitments whose fibers retain correction-relevant and partly restatement-contractible response structure, with a late distributed decoder-lens commitment transition that residual cosine does not track."
+
 - **Predictive fiber v1 (2026-08-31).** Codex-directed decisive experiment (direction v4). Tests whether the distributional residual inside greedy fibers is predictive state or presentation leakage. Three pair classes (benign presentation, history pair, cross-world), six continuations.
   - **MIXED RESULT: two-component residual.** The distributional residual is BOTH predictive and presentation leakage.
   - At baseline (empty) and after corrections: history-pair JSD EXCEEDS benign presentation JSD (3/3 each). The residual is task-relevant predictive state — corrections interact differently with different histories.
