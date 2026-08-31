@@ -1,0 +1,229 @@
+{
+  "results": [
+    {
+      "layer": 1,
+      "update_sim_a_different": 0.9999903738498688,
+      "update_sim_b_different": 0.9999760687351227,
+      "convergence_a": -0.06855608522891998,
+      "convergence_b": -0.11453995108604431,
+      "avg_update_magnitude": 7.7695536613464355
+    },
+    {
+      "layer": 2,
+      "update_sim_a_different": 0.9997026920318604,
+      "update_sim_b_different": 0.9996840953826904,
+      "convergence_a": -0.1458195298910141,
+      "convergence_b": -0.10874238610267639,
+      "avg_update_magnitude": 4.38628351688385
+    },
+    {
+      "layer": 3,
+      "update_sim_a_different": 0.9995092451572418,
+      "update_sim_b_different": 0.99956414103508,
+      "convergence_a": -0.11851751804351807,
+      "convergence_b": -0.10019078850746155,
+      "avg_update_magnitude": 5.066166281700134
+    },
+    {
+      "layer": 4,
+      "update_sim_a_different": 0.9981622695922852,
+      "update_sim_b_different": 0.9982486367225647,
+      "convergence_a": -0.45242416858673096,
+      "convergence_b": -0.4328816831111908,
+      "avg_update_magnitude": 6.103951334953308
+    },
+    {
+      "layer": 5,
+      "update_sim_a_different": 0.9971271455287933,
+      "update_sim_b_different": 0.9973573982715607,
+      "convergence_a": -0.16274923086166382,
+      "convergence_b": -0.13905948400497437,
+      "avg_update_magnitude": 6.047748565673828
+    },
+    {
+      "layer": 6,
+      "update_sim_a_different": 0.9953667223453522,
+      "update_sim_b_different": 0.9962267577648163,
+      "convergence_a": -0.5145617127418518,
+      "convergence_b": -0.4500744938850403,
+      "avg_update_magnitude": 6.925456881523132
+    },
+    {
+      "layer": 7,
+      "update_sim_a_different": 0.9934832751750946,
+      "update_sim_b_different": 0.996833860874176,
+      "convergence_a": -0.8121083974838257,
+      "convergence_b": -0.2851755619049072,
+      "avg_update_magnitude": 8.965801477432251
+    },
+    {
+      "layer": 8,
+      "update_sim_a_different": 0.9845974445343018,
+      "update_sim_b_different": 0.9875877797603607,
+      "convergence_a": -1.2403805255889893,
+      "convergence_b": -1.5260543823242188,
+      "avg_update_magnitude": 9.193653345108032
+    },
+    {
+      "layer": 9,
+      "update_sim_a_different": 0.9806896150112152,
+      "update_sim_b_different": 0.9846050441265106,
+      "convergence_a": -0.9925990104675293,
+      "convergence_b": -0.8593096733093262,
+      "avg_update_magnitude": 9.059238910675049
+    },
+    {
+      "layer": 10,
+      "update_sim_a_different": 0.9829051494598389,
+      "update_sim_b_different": 0.9880538582801819,
+      "convergence_a": -1.7326655387878418,
+      "convergence_b": -1.281550407409668,
+      "avg_update_magnitude": 13.458749532699585
+    },
+    {
+      "layer": 11,
+      "update_sim_a_different": 0.9806100428104401,
+      "update_sim_b_different": 0.9848653972148895,
+      "convergence_a": -0.8055691719055176,
+      "convergence_b": -0.7510776519775391,
+      "avg_update_magnitude": 14.422212362289429
+    },
+    {
+      "layer": 12,
+      "update_sim_a_different": 0.9792525470256805,
+      "update_sim_b_different": 0.9854016602039337,
+      "convergence_a": -0.7503786087036133,
+      "convergence_b": -0.5325193405151367,
+      "avg_update_magnitude": 14.041027069091797
+    },
+    {
+      "layer": 13,
+      "update_sim_a_different": 0.9750949144363403,
+      "update_sim_b_different": 0.9823658764362335,
+      "convergence_a": -0.9442911148071289,
+      "convergence_b": -0.8109240531921387,
+      "avg_update_magnitude": 13.257623195648193
+    },
+    {
+      "layer": 14,
+      "update_sim_a_different": 0.9751803278923035,
+      "update_sim_b_different": 0.982243001461029,
+      "convergence_a": -0.3586435317993164,
+      "convergence_b": -0.347012996673584,
+      "avg_update_magnitude": 11.764552593231201
+    },
+    {
+      "layer": 15,
+      "update_sim_a_different": 0.9713647067546844,
+      "update_sim_b_different": 0.9792338609695435,
+      "convergence_a": -0.6174468994140625,
+      "convergence_b": -0.4180927276611328,
+      "avg_update_magnitude": 13.315145015716553
+    },
+    {
+      "layer": 16,
+      "update_sim_a_different": 0.9755217730998993,
+      "update_sim_b_different": 0.9806097149848938,
+      "convergence_a": -2.733297348022461,
+      "convergence_b": -2.6552791595458984,
+      "avg_update_magnitude": 19.519689083099365
+    },
+    {
+      "layer": 17,
+      "update_sim_a_different": 0.9847169816493988,
+      "update_sim_b_different": 0.9882404804229736,
+      "convergence_a": -1.5307750701904297,
+      "convergence_b": -1.326171875,
+      "avg_update_magnitude": 24.196765422821045
+    },
+    {
+      "layer": 18,
+      "update_sim_a_different": 0.9876317381858826,
+      "update_sim_b_different": 0.9914700388908386,
+      "convergence_a": -3.8273353576660156,
+      "convergence_b": -2.6555938720703125,
+      "avg_update_magnitude": 36.84139633178711
+    },
+    {
+      "layer": 19,
+      "update_sim_a_different": 0.989011824131012,
+      "update_sim_b_different": 0.9926578402519226,
+      "convergence_a": -4.712804794311523,
+      "convergence_b": -3.7775917053222656,
+      "avg_update_magnitude": 46.27086925506592
+    },
+    {
+      "layer": 20,
+      "update_sim_a_different": 0.9909731447696686,
+      "update_sim_b_different": 0.9939973056316376,
+      "convergence_a": -4.720760345458984,
+      "convergence_b": -3.8830490112304688,
+      "avg_update_magnitude": 54.646347999572754
+    },
+    {
+      "layer": 21,
+      "update_sim_a_different": 0.9872227013111115,
+      "update_sim_b_different": 0.9923383295536041,
+      "convergence_a": -6.306358337402344,
+      "convergence_b": -4.028209686279297,
+      "avg_update_magnitude": 55.177165031433105
+    },
+    {
+      "layer": 22,
+      "update_sim_a_different": 0.9846831262111664,
+      "update_sim_b_different": 0.9926091730594635,
+      "convergence_a": -10.214546203613281,
+      "convergence_b": -6.4971771240234375,
+      "avg_update_magnitude": 70.8733081817627
+    },
+    {
+      "layer": 23,
+      "update_sim_a_different": 0.988499104976654,
+      "update_sim_b_different": 0.9943697154521942,
+      "convergence_a": -11.693489074707031,
+      "convergence_b": -6.947532653808594,
+      "avg_update_magnitude": 95.20427703857422
+    },
+    {
+      "layer": 24,
+      "update_sim_a_different": 0.9824142456054688,
+      "update_sim_b_different": 0.9918489456176758,
+      "convergence_a": -10.195503234863281,
+      "convergence_b": -7.0139007568359375,
+      "avg_update_magnitude": 77.55949401855469
+    },
+    {
+      "layer": 25,
+      "update_sim_a_different": 0.993849903345108,
+      "update_sim_b_different": 0.9970421493053436,
+      "convergence_a": -8.784812927246094,
+      "convergence_b": -6.066253662109375,
+      "avg_update_magnitude": 131.68264770507812
+    },
+    {
+      "layer": 26,
+      "update_sim_a_different": 0.9940909445285797,
+      "update_sim_b_different": 0.997135728597641,
+      "convergence_a": -5.52996826171875,
+      "convergence_b": -3.3412437438964844,
+      "avg_update_magnitude": 122.42252922058105
+    },
+    {
+      "layer": 27,
+      "update_sim_a_different": 0.988273411989212,
+      "update_sim_b_different": 0.9944822490215302,
+      "convergence_a": -7.784584045410156,
+      "convergence_b": -5.159320831298828,
+      "avg_update_magnitude": 116.8814525604248
+    },
+    {
+      "layer": 28,
+      "update_sim_a_different": 0.9979185461997986,
+      "update_sim_b_different": 0.9989959597587585,
+      "convergence_a": 64.5494155883789,
+      "convergence_b": 44.60601043701172,
+      "avg_update_magnitude": 527.4369659423828
+    }
+  ],
+  "verdict": "No clear update-similarity difference: fusion is not simple trajectory convergence"
+}
