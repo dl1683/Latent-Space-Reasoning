@@ -40,6 +40,15 @@ but it worked through direct logit projection, not state. `state_bus`
 achieved repeated categorical control but it was pair-specific
 lexical/semantic steering, not state-general.
 
+**Phase 2 confirmation (v1d):** Component-level transplant proves this
+directly. Transplanting only the attention output or only the MLP output
+from an A-different donor shifts the B-answer by <1 logit (0/17 layers
+flip). Full residual-stream transplant shifts by +4.1 logits (all layers
+flip). Fusion is a WHOLE-STATE property — not localizable to any single
+component. The distributed nature isn't just about position; even within
+a single position, the state is a holistic object that can't be
+decomposed into independent component contributions.
+
 **What this tells us:** Native "place" may not be a point in activation
 space. It may be distributed across positions and layers in a way that
 R^n patching can't capture. A native "move" might need to be a
@@ -192,6 +201,22 @@ structure is linearly accessible. But PCA separation doesn't predict
 behavioral fusion/fission: facts are linearly decodable even when
 behaviorally inseparable. PRESENCE (PCA) ≠ ADDRESSABILITY (transplant).
 The native math must describe causal accessibility, not storage geometry.
+
+**Attention result (v1c):** Cross-fact attention is LOWER at fused layers
+(0.275) than separate (0.336). The mechanism causing fusion is not
+attention cross-talk — ruling out the most obvious pathway.
+
+**Component transplant (v1d):** Neither attention-only nor MLP-only
+transplant can flip fact B. Only full residual-stream transplant does.
+Fusion is a WHOLE-STATE emergent property of the layer transformation.
+(Connects to BP-2.)
+
+**Trajectory result (v1e):** Worlds ALWAYS diverge through all layers.
+FUSED layers diverge slowly (-1.2), SEPARATE layers diverge fast (-5.7).
+Fusion = world-insensitive computation (model treats all A-worlds the
+same). Fission = world-sensitive computation (model discriminates).
+The behavioral transplant amplifies tiny directional differences through
+remaining layers — static trajectory metrics are too coarse.
 
 ---
 
