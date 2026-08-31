@@ -5,22 +5,68 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31 — Re-contextualization checkpoint (anti-tunnel)
+
+**Project:** Latent-Space-Reasoning. **Live question:** Can we demonstrate that
+a real language model's latent space contains native mathematical structure
+(places, moves, laws) that is not just projected R^n geometry?
+
+**What still holds:** The theory stack (AXIOMS.md D1–D9, Theorems 1/4/7/8,
+Propositions 2/6) is sound per audits #40–#48. The PSQ-3 v6 runner is built
+and reviewed. The frozen-model line is definitively closed (audits #27–#36).
+The necessary_register line showed a qualified instrument pass (audit #37) and
+rung 1 pass (audit #38). The native bridge specification is lock-ready (#47)
+but Codex should-continue said STOP on the current form.
+
+**What PSQ-3μ reframes:** The frozen 0.6B model scored 26.56% on the
+registered x-channel panel (gate ≥95%). The registered interface gate was
+not met. PSQ-3μ is scoped to frozen Qwen3-0.6B-Base under this panel and
+does not adjudicate full PSQ-3 (which uses a different model and training
+intervention). The result does not invalidate PSQ-3 or the theory.
+
+**Alternative interpretations/directions to hold live:**
+1. **PSQ-3 on cloud hardware** — the designed experiment, waiting on
+   infrastructure. False-pass reducer fix needed first.
+2. **Native bridge program** — theory-side, Codex said STOP on current form
+   (zero central artifacts, infinite effective ratio). Could pivot to "build
+   the smallest thing that can be wrong" — a crude one-write intervention
+   that tests the bridge definition directly.
+3. **Theory-only push** — the axiom stack is sound but nothing is genuinely
+   new mathematics. The distinctive material (registration-relative D2,
+   coherent presentation transport D6, finite-access reconstruction) could
+   be developed into a standalone mathematical contribution without any
+   empirical artifact.
+4. **Different model family** — all work so far is on Qwen3. A different
+   architecture (Llama, Gemma) might have different latent structure.
+5. **Different task** — the two-dial Z_8×Z_8 world is synthetic. A natural
+   language task with known algebraic structure (e.g., spatial reasoning,
+   temporal reasoning) might be more compelling.
+
+**Tunnel-vision check:** Currently narrowed on PSQ-3 (intervention testing on
+two-dial world). The theory stack and the native bridge are both idle. The
+Codex should-continue verdict said the central bet is untested with zero
+central artifacts — that is still true after PSQ-3μ. The highest-leverage
+un-tunneled move is to ask Codex what the next direction should be given
+the full picture: theory, empirics, and the should-continue verdict.
+
+---
+
 ## 2026-08-31 — PSQ-3μ: NO_INTERFACE on frozen 0.6B, closed
 
 **PSQ-3μ implemented and executed.** Micro phase added to `experiments/run_psq3.py`
 (~250 lines), config at `experiments/config/psq3_micro_cpu.json`. Dry-run validated
 32 states, 16/16 cal/held-out split, 8 unique oracle profiles, 1,152 call budget.
 
-**Result: NO_INTERFACE.** Panel accuracy 26.56% (gate ≥95%). The frozen
-Qwen3-0.6B-Base model predicts "1" ~81% of the time — it cannot perform the
-modular arithmetic needed for is_x_zero probes. Stopped at stage 1 (256/1,152
-calls, 132.6s CPU). Stages 2–6 (PCA, Procrustes, replay, donor, intervention)
-never ran.
+**Result: NO_INTERFACE.** Panel accuracy 68/256 = 26.56% (gate ≥95%). The model
+did not demonstrate reliable performance on the registered x-channel `is_x_zero`
+probes; the registered behavioral-interface gate was not met. Stopped at stage 1
+(256/1,152 calls, 132.6s CPU). No prediction histogram was saved, so
+contemporaneous prediction-frequency observations are not independently auditable.
 
-**Disposition:** Per predeclared stop rule, NO_INTERFACE closes PSQ-3μ with no
-repair. This confirms the frozen small model lacks the behavioral interface for
-intervention testing. It does not invalidate the PSQ-3 design (targets 1.7B with
-LoRA training on stable/cloud hardware).
+**Disposition (audit #49 adopted verbatim):** `NO_INTERFACE` closes PSQ-3μ with
+no repair. This result is scoped to frozen Qwen3-0.6B-Base under the PSQ-3μ
+panel and does not adjudicate the distinct full PSQ-3 experiment, which uses a
+different model and training intervention.
 
 **What's next:** Fire one Codex audit on the result. Then return to Codex
 dialogue for direction — the PSQ-3 full runner's false-pass verdict reducer

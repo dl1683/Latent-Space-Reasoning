@@ -10371,11 +10371,11 @@ In frozen Qwen3-0.6B-Base, a single calibration-fitted Procrustes operator for a
 
 No repair after any outcome. Any NO_INTERFACE or INVALID closes PSQ-3μ. A MICRO_FAIL is the registered negative result. A MICRO_SIGNAL promotes PSQ-3 to the stable-hardware queue after its false-pass verdict reducer is repaired. No same-check repair is permitted. One audit fires after the result.
 
-Measurement-to-artifact ratio: this adds ~200 lines of proposition + ~150 lines of micro phase code (artifact-bearing). Ratio contribution: 0:1 (pure artifact build). Cumulative after: 33:16 = 2.06:1.
+Measurement-to-artifact heartbeat: PSQ-3μ contributes 0 measurement/governance rounds and 1 build round, taking the cumulative round ratio from 33:15 to 33:16 = 2.06:1. Commit `17e0b4e` added 470 and removed 1 runner line, and `micro_phase` spans 443 physical lines (410 nonblank), but no apparatus-versus-artifact-bearing line classification was recorded; therefore the ~150 and ~250 artifact-bearing-line estimates are withdrawn pending explicit classification.
 
 ### Outcome (2026-08-31)
 
-**Status: NO_INTERFACE — PSQ-3μ CLOSED.**
+**Status: NO_INTERFACE — PSQ-3μ CLOSED.** (Audit #49 adopted verbatim below.)
 
 Result (from `experiments/results/psq3_micro_cpu/result.json`):
 - Panel accuracy: 68/256 = 0.2656 (gate: ≥0.95) — **FAIL**
@@ -10385,20 +10385,13 @@ Result (from `experiments/results/psq3_micro_cpu/result.json`):
 Execution stopped at stage 1 (baseline profiling), consuming 256 of 1,152
 budgeted calls (132.6s, 1.9 fwd/s on CPU float32). Stages 2–6 never ran.
 
-**Analysis:** The frozen Qwen3-0.6B-Base model cannot perform modular
-arithmetic on the two-dial world. It predicts digit "1" approximately 81%
-of the time across all states and probes. Since 7/8 x-places produce
-answer "0" under is_x_zero probes, the model achieves ~12.5% on the
-majority class and ~100% on the single minority class (x=0), yielding
-26.56% overall. The behavioral interface required for intervention testing
-does not exist.
+**Analysis (audit #49, verbatim):** Frozen Qwen3-0.6B-Base scored 68/256 (26.56%) on the registered x-channel `is_x_zero` panel, below the 95% interface gate. A contemporaneous observation suggested that the model favored token "1" approximately 81% of the time, but the saved result contains no prediction histogram or confusion matrix, so that rate and all class-specific accuracies are not independently auditable. The model did not demonstrate reliable performance on the registered probes, and the registered behavioral-interface gate was not met.
 
-**Disposition:** Per the predeclared stop rule, NO_INTERFACE closes PSQ-3μ
-with no repair. The frozen 0.6B model lacks the task competence for this
-test. This does not invalidate the PSQ-3 design (which targets the 1.7B
-model with LoRA training); it confirms that a frozen small model cannot
-serve as a shortcut for the intervention program.
+**Disposition (audit #49, verbatim):** Per the predeclared stop rule, `NO_INTERFACE` closes PSQ-3μ with no repair. This result is scoped to frozen Qwen3-0.6B-Base under the PSQ-3μ panel and does not adjudicate the distinct full PSQ-3 experiment, which uses a different model and training intervention.
 
-Measurement-to-artifact ratio contribution: 0 measurement lines added;
-~250 lines of micro phase code (artifact-bearing). Post-PSQ-3μ ratio
-unchanged from the pre-run 33:16.
+### Never say (PSQ-3μ, audit #49)
+
+- "The frozen 0.6B model cannot perform modular arithmetic." (Overclaim beyond the registered panel.)
+- "The behavioral interface does not exist." (Overclaim; the registered gate was not met.)
+- "PSQ-3μ confirms that frozen small models lack the interface." (Overclaim beyond the one tested panel.)
+- Any class-specific accuracy claim (12.5%/100%) without an auditable saved histogram.
