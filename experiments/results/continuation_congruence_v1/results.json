@@ -1,0 +1,1986 @@
+{
+  "experiment": "continuation_congruence_v1",
+  "timestamp": "2026-08-31T18:06:28.478487",
+  "model": "Qwen/Qwen3-0.6B",
+  "purpose": "Test whether token continuations are well-defined operations on behavioral places",
+  "status": "COMPLETE",
+  "baseline_rate": 0.7916666666666666,
+  "n_congruence_tests": 32,
+  "n_congruent": 31,
+  "n_defects": 1,
+  "defect_rate": 0.03125,
+  "by_continuation": {
+    "neutral_distractor": {
+      "total": 8,
+      "defects": 0
+    },
+    "new_entity_commit": {
+      "total": 8,
+      "defects": 0
+    },
+    "repeat_zog": {
+      "total": 8,
+      "defects": 0
+    },
+    "correct_zog": {
+      "total": 8,
+      "defects": 1
+    }
+  },
+  "kill_conditions": {
+    "baseline_kill": "< 90% direct recall",
+    "algebra_kill": "> 10% congruence defect rate"
+  },
+  "baseline_results": [
+    {
+      "tag": "w000",
+      "variant": "std",
+      "signature": {
+        "ZOG": "big",
+        "MIP": "hot",
+        "PLIM": "red"
+      },
+      "expected": {
+        "ZOG": "big",
+        "MIP": "hot",
+        "PLIM": "red"
+      },
+      "all_correct": true
+    },
+    {
+      "tag": "w000",
+      "variant": "rev",
+      "signature": {
+        "ZOG": "big",
+        "MIP": "hot",
+        "PLIM": "red"
+      },
+      "expected": {
+        "ZOG": "big",
+        "MIP": "hot",
+        "PLIM": "red"
+      },
+      "all_correct": true
+    },
+    {
+      "tag": "w000",
+      "variant": "dup",
+      "signature": {
+        "ZOG": "big",
+        "MIP": "hot",
+        "PLIM": "red"
+      },
+      "expected": {
+        "ZOG": "big",
+        "MIP": "hot",
+        "PLIM": "red"
+      },
+      "all_correct": true
+    },
+    {
+      "tag": "w001",
+      "variant": "std",
+      "signature": {
+        "ZOG": "big",
+        "MIP": "hot",
+        "PLIM": "blue"
+      },
+      "expected": {
+        "ZOG": "big",
+        "MIP": "hot",
+        "PLIM": "blue"
+      },
+      "all_correct": true
+    },
+    {
+      "tag": "w001",
+      "variant": "rev",
+      "signature": {
+        "ZOG": "big",
+        "MIP": "hot",
+        "PLIM": "blue"
+      },
+      "expected": {
+        "ZOG": "big",
+        "MIP": "hot",
+        "PLIM": "blue"
+      },
+      "all_correct": true
+    },
+    {
+      "tag": "w001",
+      "variant": "dup",
+      "signature": {
+        "ZOG": "big",
+        "MIP": "hot",
+        "PLIM": "blue"
+      },
+      "expected": {
+        "ZOG": "big",
+        "MIP": "hot",
+        "PLIM": "blue"
+      },
+      "all_correct": true
+    },
+    {
+      "tag": "w010",
+      "variant": "std",
+      "signature": {
+        "ZOG": "big",
+        "MIP": "red",
+        "PLIM": "red"
+      },
+      "expected": {
+        "ZOG": "big",
+        "MIP": "cold",
+        "PLIM": "red"
+      },
+      "all_correct": false
+    },
+    {
+      "tag": "w010",
+      "variant": "rev",
+      "signature": {
+        "ZOG": "big",
+        "MIP": "cold",
+        "PLIM": "red"
+      },
+      "expected": {
+        "ZOG": "big",
+        "MIP": "cold",
+        "PLIM": "red"
+      },
+      "all_correct": true
+    },
+    {
+      "tag": "w010",
+      "variant": "dup",
+      "signature": {
+        "ZOG": "big",
+        "MIP": "cold",
+        "PLIM": "red"
+      },
+      "expected": {
+        "ZOG": "big",
+        "MIP": "cold",
+        "PLIM": "red"
+      },
+      "all_correct": true
+    },
+    {
+      "tag": "w011",
+      "variant": "std",
+      "signature": {
+        "ZOG": "big",
+        "MIP": "blue",
+        "PLIM": "blue"
+      },
+      "expected": {
+        "ZOG": "big",
+        "MIP": "cold",
+        "PLIM": "blue"
+      },
+      "all_correct": false
+    },
+    {
+      "tag": "w011",
+      "variant": "rev",
+      "signature": {
+        "ZOG": "big",
+        "MIP": "cold",
+        "PLIM": "blue"
+      },
+      "expected": {
+        "ZOG": "big",
+        "MIP": "cold",
+        "PLIM": "blue"
+      },
+      "all_correct": true
+    },
+    {
+      "tag": "w011",
+      "variant": "dup",
+      "signature": {
+        "ZOG": "big",
+        "MIP": "cold",
+        "PLIM": "blue"
+      },
+      "expected": {
+        "ZOG": "big",
+        "MIP": "cold",
+        "PLIM": "blue"
+      },
+      "all_correct": true
+    },
+    {
+      "tag": "w100",
+      "variant": "std",
+      "signature": {
+        "ZOG": "small",
+        "MIP": "hot",
+        "PLIM": "red"
+      },
+      "expected": {
+        "ZOG": "small",
+        "MIP": "hot",
+        "PLIM": "red"
+      },
+      "all_correct": true
+    },
+    {
+      "tag": "w100",
+      "variant": "rev",
+      "signature": {
+        "ZOG": "small",
+        "MIP": "hot",
+        "PLIM": "red"
+      },
+      "expected": {
+        "ZOG": "small",
+        "MIP": "hot",
+        "PLIM": "red"
+      },
+      "all_correct": true
+    },
+    {
+      "tag": "w100",
+      "variant": "dup",
+      "signature": {
+        "ZOG": "small",
+        "MIP": "hot",
+        "PLIM": "red"
+      },
+      "expected": {
+        "ZOG": "small",
+        "MIP": "hot",
+        "PLIM": "red"
+      },
+      "all_correct": true
+    },
+    {
+      "tag": "w101",
+      "variant": "std",
+      "signature": {
+        "ZOG": "small",
+        "MIP": "blue",
+        "PLIM": "blue"
+      },
+      "expected": {
+        "ZOG": "small",
+        "MIP": "hot",
+        "PLIM": "blue"
+      },
+      "all_correct": false
+    },
+    {
+      "tag": "w101",
+      "variant": "rev",
+      "signature": {
+        "ZOG": "small",
+        "MIP": "hot",
+        "PLIM": "blue"
+      },
+      "expected": {
+        "ZOG": "small",
+        "MIP": "hot",
+        "PLIM": "blue"
+      },
+      "all_correct": true
+    },
+    {
+      "tag": "w101",
+      "variant": "dup",
+      "signature": {
+        "ZOG": "small",
+        "MIP": "hot",
+        "PLIM": "blue"
+      },
+      "expected": {
+        "ZOG": "small",
+        "MIP": "hot",
+        "PLIM": "blue"
+      },
+      "all_correct": true
+    },
+    {
+      "tag": "w110",
+      "variant": "std",
+      "signature": {
+        "ZOG": "small",
+        "MIP": "red",
+        "PLIM": "red"
+      },
+      "expected": {
+        "ZOG": "small",
+        "MIP": "cold",
+        "PLIM": "red"
+      },
+      "all_correct": false
+    },
+    {
+      "tag": "w110",
+      "variant": "rev",
+      "signature": {
+        "ZOG": "small",
+        "MIP": "cold",
+        "PLIM": "red"
+      },
+      "expected": {
+        "ZOG": "small",
+        "MIP": "cold",
+        "PLIM": "red"
+      },
+      "all_correct": true
+    },
+    {
+      "tag": "w110",
+      "variant": "dup",
+      "signature": {
+        "ZOG": "small",
+        "MIP": "cold",
+        "PLIM": "red"
+      },
+      "expected": {
+        "ZOG": "small",
+        "MIP": "cold",
+        "PLIM": "red"
+      },
+      "all_correct": true
+    },
+    {
+      "tag": "w111",
+      "variant": "std",
+      "signature": {
+        "ZOG": "small",
+        "MIP": "blue",
+        "PLIM": "blue"
+      },
+      "expected": {
+        "ZOG": "small",
+        "MIP": "cold",
+        "PLIM": "blue"
+      },
+      "all_correct": false
+    },
+    {
+      "tag": "w111",
+      "variant": "rev",
+      "signature": {
+        "ZOG": "small",
+        "MIP": "cold",
+        "PLIM": "blue"
+      },
+      "expected": {
+        "ZOG": "small",
+        "MIP": "cold",
+        "PLIM": "blue"
+      },
+      "all_correct": true
+    },
+    {
+      "tag": "w111",
+      "variant": "dup",
+      "signature": {
+        "ZOG": "small",
+        "MIP": "cold",
+        "PLIM": "blue"
+      },
+      "expected": {
+        "ZOG": "small",
+        "MIP": "cold",
+        "PLIM": "blue"
+      },
+      "all_correct": true
+    }
+  ],
+  "congruence_results": [
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "red"
+      ],
+      "continuation": "neutral_distractor",
+      "n_histories": 3,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w000",
+          "variant": "std",
+          "pre_sig": [
+            "big",
+            "hot",
+            "red"
+          ],
+          "continuation": "neutral_distractor",
+          "post_sig": [
+            "big",
+            "hot",
+            "red"
+          ]
+        },
+        {
+          "tag": "w000",
+          "variant": "rev",
+          "pre_sig": [
+            "big",
+            "hot",
+            "red"
+          ],
+          "continuation": "neutral_distractor",
+          "post_sig": [
+            "big",
+            "hot",
+            "red"
+          ]
+        },
+        {
+          "tag": "w000",
+          "variant": "dup",
+          "pre_sig": [
+            "big",
+            "hot",
+            "red"
+          ],
+          "continuation": "neutral_distractor",
+          "post_sig": [
+            "big",
+            "hot",
+            "red"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "red"
+      ],
+      "continuation": "new_entity_commit",
+      "n_histories": 3,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w000",
+          "variant": "std",
+          "pre_sig": [
+            "big",
+            "hot",
+            "red"
+          ],
+          "continuation": "new_entity_commit",
+          "post_sig": [
+            "big",
+            "hot",
+            "red"
+          ]
+        },
+        {
+          "tag": "w000",
+          "variant": "rev",
+          "pre_sig": [
+            "big",
+            "hot",
+            "red"
+          ],
+          "continuation": "new_entity_commit",
+          "post_sig": [
+            "big",
+            "hot",
+            "red"
+          ]
+        },
+        {
+          "tag": "w000",
+          "variant": "dup",
+          "pre_sig": [
+            "big",
+            "hot",
+            "red"
+          ],
+          "continuation": "new_entity_commit",
+          "post_sig": [
+            "big",
+            "hot",
+            "red"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "red"
+      ],
+      "continuation": "repeat_zog",
+      "n_histories": 3,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w000",
+          "variant": "std",
+          "pre_sig": [
+            "big",
+            "hot",
+            "red"
+          ],
+          "continuation": "repeat_zog",
+          "post_sig": [
+            "big",
+            "hot",
+            "red"
+          ]
+        },
+        {
+          "tag": "w000",
+          "variant": "rev",
+          "pre_sig": [
+            "big",
+            "hot",
+            "red"
+          ],
+          "continuation": "repeat_zog",
+          "post_sig": [
+            "big",
+            "hot",
+            "red"
+          ]
+        },
+        {
+          "tag": "w000",
+          "variant": "dup",
+          "pre_sig": [
+            "big",
+            "hot",
+            "red"
+          ],
+          "continuation": "repeat_zog",
+          "post_sig": [
+            "big",
+            "hot",
+            "red"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "red"
+      ],
+      "continuation": "correct_zog",
+      "n_histories": 3,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w000",
+          "variant": "std",
+          "pre_sig": [
+            "big",
+            "hot",
+            "red"
+          ],
+          "continuation": "correct_zog",
+          "post_sig": [
+            "small",
+            "hot",
+            "red"
+          ]
+        },
+        {
+          "tag": "w000",
+          "variant": "rev",
+          "pre_sig": [
+            "big",
+            "hot",
+            "red"
+          ],
+          "continuation": "correct_zog",
+          "post_sig": [
+            "small",
+            "hot",
+            "red"
+          ]
+        },
+        {
+          "tag": "w000",
+          "variant": "dup",
+          "pre_sig": [
+            "big",
+            "hot",
+            "red"
+          ],
+          "continuation": "correct_zog",
+          "post_sig": [
+            "small",
+            "hot",
+            "red"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "blue"
+      ],
+      "continuation": "neutral_distractor",
+      "n_histories": 3,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w001",
+          "variant": "std",
+          "pre_sig": [
+            "big",
+            "hot",
+            "blue"
+          ],
+          "continuation": "neutral_distractor",
+          "post_sig": [
+            "big",
+            "hot",
+            "blue"
+          ]
+        },
+        {
+          "tag": "w001",
+          "variant": "rev",
+          "pre_sig": [
+            "big",
+            "hot",
+            "blue"
+          ],
+          "continuation": "neutral_distractor",
+          "post_sig": [
+            "big",
+            "hot",
+            "blue"
+          ]
+        },
+        {
+          "tag": "w001",
+          "variant": "dup",
+          "pre_sig": [
+            "big",
+            "hot",
+            "blue"
+          ],
+          "continuation": "neutral_distractor",
+          "post_sig": [
+            "big",
+            "hot",
+            "blue"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "blue"
+      ],
+      "continuation": "new_entity_commit",
+      "n_histories": 3,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w001",
+          "variant": "std",
+          "pre_sig": [
+            "big",
+            "hot",
+            "blue"
+          ],
+          "continuation": "new_entity_commit",
+          "post_sig": [
+            "big",
+            "hot",
+            "blue"
+          ]
+        },
+        {
+          "tag": "w001",
+          "variant": "rev",
+          "pre_sig": [
+            "big",
+            "hot",
+            "blue"
+          ],
+          "continuation": "new_entity_commit",
+          "post_sig": [
+            "big",
+            "hot",
+            "blue"
+          ]
+        },
+        {
+          "tag": "w001",
+          "variant": "dup",
+          "pre_sig": [
+            "big",
+            "hot",
+            "blue"
+          ],
+          "continuation": "new_entity_commit",
+          "post_sig": [
+            "big",
+            "hot",
+            "blue"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "blue"
+      ],
+      "continuation": "repeat_zog",
+      "n_histories": 3,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w001",
+          "variant": "std",
+          "pre_sig": [
+            "big",
+            "hot",
+            "blue"
+          ],
+          "continuation": "repeat_zog",
+          "post_sig": [
+            "big",
+            "hot",
+            "blue"
+          ]
+        },
+        {
+          "tag": "w001",
+          "variant": "rev",
+          "pre_sig": [
+            "big",
+            "hot",
+            "blue"
+          ],
+          "continuation": "repeat_zog",
+          "post_sig": [
+            "big",
+            "hot",
+            "blue"
+          ]
+        },
+        {
+          "tag": "w001",
+          "variant": "dup",
+          "pre_sig": [
+            "big",
+            "hot",
+            "blue"
+          ],
+          "continuation": "repeat_zog",
+          "post_sig": [
+            "big",
+            "hot",
+            "blue"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "hot",
+        "blue"
+      ],
+      "continuation": "correct_zog",
+      "n_histories": 3,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w001",
+          "variant": "std",
+          "pre_sig": [
+            "big",
+            "hot",
+            "blue"
+          ],
+          "continuation": "correct_zog",
+          "post_sig": [
+            "small",
+            "hot",
+            "blue"
+          ]
+        },
+        {
+          "tag": "w001",
+          "variant": "rev",
+          "pre_sig": [
+            "big",
+            "hot",
+            "blue"
+          ],
+          "continuation": "correct_zog",
+          "post_sig": [
+            "small",
+            "hot",
+            "blue"
+          ]
+        },
+        {
+          "tag": "w001",
+          "variant": "dup",
+          "pre_sig": [
+            "big",
+            "hot",
+            "blue"
+          ],
+          "continuation": "correct_zog",
+          "post_sig": [
+            "small",
+            "hot",
+            "blue"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "red"
+      ],
+      "continuation": "neutral_distractor",
+      "n_histories": 2,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w010",
+          "variant": "rev",
+          "pre_sig": [
+            "big",
+            "cold",
+            "red"
+          ],
+          "continuation": "neutral_distractor",
+          "post_sig": [
+            "big",
+            "cold",
+            "red"
+          ]
+        },
+        {
+          "tag": "w010",
+          "variant": "dup",
+          "pre_sig": [
+            "big",
+            "cold",
+            "red"
+          ],
+          "continuation": "neutral_distractor",
+          "post_sig": [
+            "big",
+            "cold",
+            "red"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "red"
+      ],
+      "continuation": "new_entity_commit",
+      "n_histories": 2,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w010",
+          "variant": "rev",
+          "pre_sig": [
+            "big",
+            "cold",
+            "red"
+          ],
+          "continuation": "new_entity_commit",
+          "post_sig": [
+            "big",
+            "cold",
+            "red"
+          ]
+        },
+        {
+          "tag": "w010",
+          "variant": "dup",
+          "pre_sig": [
+            "big",
+            "cold",
+            "red"
+          ],
+          "continuation": "new_entity_commit",
+          "post_sig": [
+            "big",
+            "cold",
+            "red"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "red"
+      ],
+      "continuation": "repeat_zog",
+      "n_histories": 2,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w010",
+          "variant": "rev",
+          "pre_sig": [
+            "big",
+            "cold",
+            "red"
+          ],
+          "continuation": "repeat_zog",
+          "post_sig": [
+            "big",
+            "cold",
+            "red"
+          ]
+        },
+        {
+          "tag": "w010",
+          "variant": "dup",
+          "pre_sig": [
+            "big",
+            "cold",
+            "red"
+          ],
+          "continuation": "repeat_zog",
+          "post_sig": [
+            "big",
+            "cold",
+            "red"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "red"
+      ],
+      "continuation": "correct_zog",
+      "n_histories": 2,
+      "n_distinct_post_sigs": 2,
+      "congruent": false,
+      "defect": true,
+      "details": [
+        {
+          "tag": "w010",
+          "variant": "rev",
+          "pre_sig": [
+            "big",
+            "cold",
+            "red"
+          ],
+          "continuation": "correct_zog",
+          "post_sig": [
+            "small",
+            "cold",
+            "red"
+          ]
+        },
+        {
+          "tag": "w010",
+          "variant": "dup",
+          "pre_sig": [
+            "big",
+            "cold",
+            "red"
+          ],
+          "continuation": "correct_zog",
+          "post_sig": [
+            "big",
+            "cold",
+            "red"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "blue"
+      ],
+      "continuation": "neutral_distractor",
+      "n_histories": 2,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w011",
+          "variant": "rev",
+          "pre_sig": [
+            "big",
+            "cold",
+            "blue"
+          ],
+          "continuation": "neutral_distractor",
+          "post_sig": [
+            "big",
+            "cold",
+            "blue"
+          ]
+        },
+        {
+          "tag": "w011",
+          "variant": "dup",
+          "pre_sig": [
+            "big",
+            "cold",
+            "blue"
+          ],
+          "continuation": "neutral_distractor",
+          "post_sig": [
+            "big",
+            "cold",
+            "blue"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "blue"
+      ],
+      "continuation": "new_entity_commit",
+      "n_histories": 2,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w011",
+          "variant": "rev",
+          "pre_sig": [
+            "big",
+            "cold",
+            "blue"
+          ],
+          "continuation": "new_entity_commit",
+          "post_sig": [
+            "big",
+            "cold",
+            "blue"
+          ]
+        },
+        {
+          "tag": "w011",
+          "variant": "dup",
+          "pre_sig": [
+            "big",
+            "cold",
+            "blue"
+          ],
+          "continuation": "new_entity_commit",
+          "post_sig": [
+            "big",
+            "cold",
+            "blue"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "blue"
+      ],
+      "continuation": "repeat_zog",
+      "n_histories": 2,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w011",
+          "variant": "rev",
+          "pre_sig": [
+            "big",
+            "cold",
+            "blue"
+          ],
+          "continuation": "repeat_zog",
+          "post_sig": [
+            "big",
+            "cold",
+            "blue"
+          ]
+        },
+        {
+          "tag": "w011",
+          "variant": "dup",
+          "pre_sig": [
+            "big",
+            "cold",
+            "blue"
+          ],
+          "continuation": "repeat_zog",
+          "post_sig": [
+            "big",
+            "cold",
+            "blue"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "big",
+        "cold",
+        "blue"
+      ],
+      "continuation": "correct_zog",
+      "n_histories": 2,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w011",
+          "variant": "rev",
+          "pre_sig": [
+            "big",
+            "cold",
+            "blue"
+          ],
+          "continuation": "correct_zog",
+          "post_sig": [
+            "small",
+            "cold",
+            "blue"
+          ]
+        },
+        {
+          "tag": "w011",
+          "variant": "dup",
+          "pre_sig": [
+            "big",
+            "cold",
+            "blue"
+          ],
+          "continuation": "correct_zog",
+          "post_sig": [
+            "small",
+            "cold",
+            "blue"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "red"
+      ],
+      "continuation": "neutral_distractor",
+      "n_histories": 3,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w100",
+          "variant": "std",
+          "pre_sig": [
+            "small",
+            "hot",
+            "red"
+          ],
+          "continuation": "neutral_distractor",
+          "post_sig": [
+            "small",
+            "hot",
+            "red"
+          ]
+        },
+        {
+          "tag": "w100",
+          "variant": "rev",
+          "pre_sig": [
+            "small",
+            "hot",
+            "red"
+          ],
+          "continuation": "neutral_distractor",
+          "post_sig": [
+            "small",
+            "hot",
+            "red"
+          ]
+        },
+        {
+          "tag": "w100",
+          "variant": "dup",
+          "pre_sig": [
+            "small",
+            "hot",
+            "red"
+          ],
+          "continuation": "neutral_distractor",
+          "post_sig": [
+            "small",
+            "hot",
+            "red"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "red"
+      ],
+      "continuation": "new_entity_commit",
+      "n_histories": 3,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w100",
+          "variant": "std",
+          "pre_sig": [
+            "small",
+            "hot",
+            "red"
+          ],
+          "continuation": "new_entity_commit",
+          "post_sig": [
+            "small",
+            "hot",
+            "red"
+          ]
+        },
+        {
+          "tag": "w100",
+          "variant": "rev",
+          "pre_sig": [
+            "small",
+            "hot",
+            "red"
+          ],
+          "continuation": "new_entity_commit",
+          "post_sig": [
+            "small",
+            "hot",
+            "red"
+          ]
+        },
+        {
+          "tag": "w100",
+          "variant": "dup",
+          "pre_sig": [
+            "small",
+            "hot",
+            "red"
+          ],
+          "continuation": "new_entity_commit",
+          "post_sig": [
+            "small",
+            "hot",
+            "red"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "red"
+      ],
+      "continuation": "repeat_zog",
+      "n_histories": 3,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w100",
+          "variant": "std",
+          "pre_sig": [
+            "small",
+            "hot",
+            "red"
+          ],
+          "continuation": "repeat_zog",
+          "post_sig": [
+            "small",
+            "hot",
+            "red"
+          ]
+        },
+        {
+          "tag": "w100",
+          "variant": "rev",
+          "pre_sig": [
+            "small",
+            "hot",
+            "red"
+          ],
+          "continuation": "repeat_zog",
+          "post_sig": [
+            "small",
+            "hot",
+            "red"
+          ]
+        },
+        {
+          "tag": "w100",
+          "variant": "dup",
+          "pre_sig": [
+            "small",
+            "hot",
+            "red"
+          ],
+          "continuation": "repeat_zog",
+          "post_sig": [
+            "small",
+            "hot",
+            "red"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "red"
+      ],
+      "continuation": "correct_zog",
+      "n_histories": 3,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w100",
+          "variant": "std",
+          "pre_sig": [
+            "small",
+            "hot",
+            "red"
+          ],
+          "continuation": "correct_zog",
+          "post_sig": [
+            "small",
+            "hot",
+            "red"
+          ]
+        },
+        {
+          "tag": "w100",
+          "variant": "rev",
+          "pre_sig": [
+            "small",
+            "hot",
+            "red"
+          ],
+          "continuation": "correct_zog",
+          "post_sig": [
+            "small",
+            "hot",
+            "red"
+          ]
+        },
+        {
+          "tag": "w100",
+          "variant": "dup",
+          "pre_sig": [
+            "small",
+            "hot",
+            "red"
+          ],
+          "continuation": "correct_zog",
+          "post_sig": [
+            "small",
+            "hot",
+            "red"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "blue"
+      ],
+      "continuation": "neutral_distractor",
+      "n_histories": 2,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w101",
+          "variant": "rev",
+          "pre_sig": [
+            "small",
+            "hot",
+            "blue"
+          ],
+          "continuation": "neutral_distractor",
+          "post_sig": [
+            "small",
+            "hot",
+            "blue"
+          ]
+        },
+        {
+          "tag": "w101",
+          "variant": "dup",
+          "pre_sig": [
+            "small",
+            "hot",
+            "blue"
+          ],
+          "continuation": "neutral_distractor",
+          "post_sig": [
+            "small",
+            "hot",
+            "blue"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "blue"
+      ],
+      "continuation": "new_entity_commit",
+      "n_histories": 2,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w101",
+          "variant": "rev",
+          "pre_sig": [
+            "small",
+            "hot",
+            "blue"
+          ],
+          "continuation": "new_entity_commit",
+          "post_sig": [
+            "small",
+            "hot",
+            "blue"
+          ]
+        },
+        {
+          "tag": "w101",
+          "variant": "dup",
+          "pre_sig": [
+            "small",
+            "hot",
+            "blue"
+          ],
+          "continuation": "new_entity_commit",
+          "post_sig": [
+            "small",
+            "hot",
+            "blue"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "blue"
+      ],
+      "continuation": "repeat_zog",
+      "n_histories": 2,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w101",
+          "variant": "rev",
+          "pre_sig": [
+            "small",
+            "hot",
+            "blue"
+          ],
+          "continuation": "repeat_zog",
+          "post_sig": [
+            "small",
+            "hot",
+            "blue"
+          ]
+        },
+        {
+          "tag": "w101",
+          "variant": "dup",
+          "pre_sig": [
+            "small",
+            "hot",
+            "blue"
+          ],
+          "continuation": "repeat_zog",
+          "post_sig": [
+            "small",
+            "hot",
+            "blue"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "hot",
+        "blue"
+      ],
+      "continuation": "correct_zog",
+      "n_histories": 2,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w101",
+          "variant": "rev",
+          "pre_sig": [
+            "small",
+            "hot",
+            "blue"
+          ],
+          "continuation": "correct_zog",
+          "post_sig": [
+            "small",
+            "hot",
+            "blue"
+          ]
+        },
+        {
+          "tag": "w101",
+          "variant": "dup",
+          "pre_sig": [
+            "small",
+            "hot",
+            "blue"
+          ],
+          "continuation": "correct_zog",
+          "post_sig": [
+            "small",
+            "hot",
+            "blue"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "red"
+      ],
+      "continuation": "neutral_distractor",
+      "n_histories": 2,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w110",
+          "variant": "rev",
+          "pre_sig": [
+            "small",
+            "cold",
+            "red"
+          ],
+          "continuation": "neutral_distractor",
+          "post_sig": [
+            "small",
+            "cold",
+            "red"
+          ]
+        },
+        {
+          "tag": "w110",
+          "variant": "dup",
+          "pre_sig": [
+            "small",
+            "cold",
+            "red"
+          ],
+          "continuation": "neutral_distractor",
+          "post_sig": [
+            "small",
+            "cold",
+            "red"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "red"
+      ],
+      "continuation": "new_entity_commit",
+      "n_histories": 2,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w110",
+          "variant": "rev",
+          "pre_sig": [
+            "small",
+            "cold",
+            "red"
+          ],
+          "continuation": "new_entity_commit",
+          "post_sig": [
+            "small",
+            "cold",
+            "red"
+          ]
+        },
+        {
+          "tag": "w110",
+          "variant": "dup",
+          "pre_sig": [
+            "small",
+            "cold",
+            "red"
+          ],
+          "continuation": "new_entity_commit",
+          "post_sig": [
+            "small",
+            "cold",
+            "red"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "red"
+      ],
+      "continuation": "repeat_zog",
+      "n_histories": 2,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w110",
+          "variant": "rev",
+          "pre_sig": [
+            "small",
+            "cold",
+            "red"
+          ],
+          "continuation": "repeat_zog",
+          "post_sig": [
+            "small",
+            "cold",
+            "red"
+          ]
+        },
+        {
+          "tag": "w110",
+          "variant": "dup",
+          "pre_sig": [
+            "small",
+            "cold",
+            "red"
+          ],
+          "continuation": "repeat_zog",
+          "post_sig": [
+            "small",
+            "cold",
+            "red"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "red"
+      ],
+      "continuation": "correct_zog",
+      "n_histories": 2,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w110",
+          "variant": "rev",
+          "pre_sig": [
+            "small",
+            "cold",
+            "red"
+          ],
+          "continuation": "correct_zog",
+          "post_sig": [
+            "small",
+            "cold",
+            "red"
+          ]
+        },
+        {
+          "tag": "w110",
+          "variant": "dup",
+          "pre_sig": [
+            "small",
+            "cold",
+            "red"
+          ],
+          "continuation": "correct_zog",
+          "post_sig": [
+            "small",
+            "cold",
+            "red"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "blue"
+      ],
+      "continuation": "neutral_distractor",
+      "n_histories": 2,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w111",
+          "variant": "rev",
+          "pre_sig": [
+            "small",
+            "cold",
+            "blue"
+          ],
+          "continuation": "neutral_distractor",
+          "post_sig": [
+            "small",
+            "cold",
+            "blue"
+          ]
+        },
+        {
+          "tag": "w111",
+          "variant": "dup",
+          "pre_sig": [
+            "small",
+            "cold",
+            "blue"
+          ],
+          "continuation": "neutral_distractor",
+          "post_sig": [
+            "small",
+            "cold",
+            "blue"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "blue"
+      ],
+      "continuation": "new_entity_commit",
+      "n_histories": 2,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w111",
+          "variant": "rev",
+          "pre_sig": [
+            "small",
+            "cold",
+            "blue"
+          ],
+          "continuation": "new_entity_commit",
+          "post_sig": [
+            "small",
+            "cold",
+            "blue"
+          ]
+        },
+        {
+          "tag": "w111",
+          "variant": "dup",
+          "pre_sig": [
+            "small",
+            "cold",
+            "blue"
+          ],
+          "continuation": "new_entity_commit",
+          "post_sig": [
+            "small",
+            "cold",
+            "blue"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "blue"
+      ],
+      "continuation": "repeat_zog",
+      "n_histories": 2,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w111",
+          "variant": "rev",
+          "pre_sig": [
+            "small",
+            "cold",
+            "blue"
+          ],
+          "continuation": "repeat_zog",
+          "post_sig": [
+            "small",
+            "cold",
+            "blue"
+          ]
+        },
+        {
+          "tag": "w111",
+          "variant": "dup",
+          "pre_sig": [
+            "small",
+            "cold",
+            "blue"
+          ],
+          "continuation": "repeat_zog",
+          "post_sig": [
+            "small",
+            "cold",
+            "blue"
+          ]
+        }
+      ]
+    },
+    {
+      "pre_sig": [
+        "small",
+        "cold",
+        "blue"
+      ],
+      "continuation": "correct_zog",
+      "n_histories": 2,
+      "n_distinct_post_sigs": 1,
+      "congruent": true,
+      "defect": false,
+      "details": [
+        {
+          "tag": "w111",
+          "variant": "rev",
+          "pre_sig": [
+            "small",
+            "cold",
+            "blue"
+          ],
+          "continuation": "correct_zog",
+          "post_sig": [
+            "small",
+            "cold",
+            "blue"
+          ]
+        },
+        {
+          "tag": "w111",
+          "variant": "dup",
+          "pre_sig": [
+            "small",
+            "cold",
+            "blue"
+          ],
+          "continuation": "correct_zog",
+          "post_sig": [
+            "small",
+            "cold",
+            "blue"
+          ]
+        }
+      ]
+    }
+  ]
+}
