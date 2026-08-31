@@ -5,6 +5,18 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31T03:00 — PROGRAM REOPENED
+
+The closure was not authorized by the project owner. Native latent-space math
+existence is an axiom — the job is to discover it, not evaluate whether it
+exists. Phase 1 (50 experiments) established that R^n tools can't find native
+math (the R^n trap). Phase 2 must use genuinely non-R^n approaches.
+
+Codex direction dialogue launched for Phase 2 directions with corrected framing:
+native math as axiom, R^n tools banned, existing-math mappings excluded.
+
+---
+
 ## 2026-08-31T01:30 — Codex correctness review of HANDLE-0 interpreter: 3 critical findings fixed
 
 Codex exhaustively verified core GF(5) algebra correct across all 10,000 states,

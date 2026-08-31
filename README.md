@@ -1,6 +1,6 @@
 # Latent Space Reasoning
 
-**Program (2026-08-27 → 2026-08-31, CLOSED): the native mathematics of latent spaces.**
+**Program (2026-08-27 → present, ACTIVE): the native mathematics of latent spaces.**
 Embedding and latent spaces are not number systems. This program builds their
 mathematics from axioms upward — what a latent space is, which relations and
 operations are meaningful — and derives definitions and propositions from
@@ -11,15 +11,14 @@ counterparts.
 
 - Current state: [STATE.md](STATE.md) · running log: [NOTEBOOK.md](NOTEBOOK.md)
 
-## Status: PROGRAM CLOSED (2026-08-31)
+## Status: REOPENED (2026-08-31)
 
-The discovery program is **closed**. Across 50 audited experiments and 4 rounds
-of Codex direction dialogue, no tested construction established native latent
-mathematics — every proposed object (separator languages, executable
-differences, cell complexes, internal port sufficiency) mapped to existing
-established mathematics (coalgebra, PSR, automata, causal abstraction). The
-terminal experiment (PSQ-3α: task-trained Qwen3-1.7B one-action intervention)
-returned NO_INTERFACE (69.14% accuracy, gate ≥95%).
+**Axiom: native latent-space mathematics exists.** The job is to discover it.
+
+Phase 1 (50 experiments, 2026-08-27 → 2026-08-31) established that R^n tools
+(PCA, cosine similarity, Procrustes, linear probes) cannot find native math —
+they project R^n structure onto the space and then "find" it. This is the R^n
+trap, not evidence of absence. Phase 2 starts from genuinely non-R^n approaches.
 
 ### Deposits
 
