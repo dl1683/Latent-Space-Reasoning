@@ -206,3 +206,9 @@ experiments/results/*/lora_adapter/
 # response table checkpoints (intermediate, large)
 experiments/results/*/response_table*.npz
 experiments/results/*/gt_d4_matrix.npz
+
+# Ruff linter cache
+.ruff_cache/
+
+# Claude Code agents directory
+.agents/
