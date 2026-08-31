@@ -1,0 +1,96 @@
+{
+  "experiment": "psq2_v3_d4",
+  "model_id": "Qwen/Qwen3-1.7B-Base",
+  "revision": "ea980cb0a6c2ae4b936e82123acc929f1cec04c1",
+  "device": "cuda",
+  "max_word_len": 4,
+  "n_words": 340,
+  "n_states": 64,
+  "total_prompts": 43520,
+  "mean_forward_time_s": 0.0746,
+  "total_elapsed_s": 6303.6,
+  "d4_stats": {
+    "min": 0.143969,
+    "max": 0.989521,
+    "mean": 0.790696,
+    "median": 0.888243
+  },
+  "target_layers": [
+    6,
+    12,
+    18
+  ],
+  "quasiconvexity": {
+    "6": {
+      "violations": 52251,
+      "total": 659680,
+      "rate": 0.079207
+    },
+    "12": {
+      "violations": 43023,
+      "total": 651700,
+      "rate": 0.066017
+    },
+    "18": {
+      "violations": 30127,
+      "total": 653030,
+      "rate": 0.046134
+    }
+  },
+  "stretch_comparison": {
+    "6": {
+      "spearman_euclidean": 0.2585,
+      "p_euclidean": 3.961726846580369e-32,
+      "spearman_cosine": 0.258,
+      "p_cosine": 5.173261587856031e-32
+    },
+    "12": {
+      "spearman_euclidean": 0.2765,
+      "p_euclidean": 1.0848630565000707e-36,
+      "spearman_cosine": 0.2766,
+      "p_cosine": 9.836780759841863e-37
+    },
+    "18": {
+      "spearman_euclidean": 0.5046,
+      "p_euclidean": 1.0258197800780125e-130,
+      "spearman_cosine": 0.5089,
+      "p_cosine": 2.821104419505778e-133
+    }
+  },
+  "permutation_null": {
+    "6": {
+      "real_rho": 0.2585,
+      "perm_mean_rho": -0.0019,
+      "perm_std_rho": 0.0551,
+      "rank": 0,
+      "n_perms": 100
+    },
+    "12": {
+      "real_rho": 0.2765,
+      "perm_mean_rho": 0.0038,
+      "perm_std_rho": 0.0581,
+      "rank": 0,
+      "n_perms": 100
+    },
+    "18": {
+      "real_rho": 0.5046,
+      "perm_mean_rho": -0.0042,
+      "perm_std_rho": 0.0515,
+      "rank": 0,
+      "n_perms": 100
+    }
+  },
+  "ground_truth_comparison": {
+    "spearman_model_vs_gt_hamming": 0.579,
+    "p_value": 8.14938726817275e-181,
+    "gt_hamming_min": 0.0029,
+    "gt_hamming_max": 0.6824,
+    "gt_hamming_mean": 0.2222,
+    "model_d4_mean": 0.7907,
+    "model_d4_min": 0.144,
+    "model_d4_max": 0.9895,
+    "n_pairs": 2016
+  },
+  "runner_sha256": "58950696794852dac17ef729bb3864a1cdc6c03b228a1b61c0033e6eec955825",
+  "config_sha256": "2dcb4e5f43876701d163440cc8f036036f03cc84cd0eceaaf8b291974f1a4fb7"
+}

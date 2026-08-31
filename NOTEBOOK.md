@@ -5,6 +5,92 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-30 — d_4 diagnostic on PSQ-2 v3 adapter (75% accuracy)
+
+**Result**: DIAGNOSTIC ONLY. Exhaustive d_4 distance matrix on 43,520 probes (len 1-4).
+
+Key numbers:
+- d_4 range: [0.144, 0.990], mean 0.791, median 0.888
+- Response fidelity: rho(D_model, D_oracle) = 0.579 (below 0.8 gate — expected at 75%)
+- Hidden-state geometry (Euclidean in hidden space vs d_4):
+  - Layer 6: rho = 0.259
+  - Layer 12: rho = 0.277
+  - **Layer 18: rho = 0.505** (best, p ~ 1e-130)
+- Quasiconvexity violations: 7.9% (L6), 6.6% (L12), **4.6% (L18)**
+- Model revision: ea980cb0a6c2ae4b936e82123acc929f1cec04c1
+- Rate: ~7/s, total 6304s (~105 min)
+
+**Interpretation**: Even at 75% accuracy, significant latent geometry exists. Layer 18 is clearly the best candidate for PSQ-3 (strongest correlation, fewest violations). With 95%+ accuracy (PSQ-3 gate target), expect stronger structure. Forward rate ~7/s confirms PSQ-3 budget estimates.
+
+---
+
+## 2026-08-30 — Codex PSQ-3 lock round 3: REVISE, 8 blockers adopted into v4
+
+**Codex PSQ-3 lock round 3**: Verdict REVISE. Five v2→v3 structural repairs verified clean (split, 16-probe panel, row convention algebra). One accounting error plus several unbound adjudication details:
+
+1. **Orthogonal complement notation**: Line 201 used column notation `(I - P.T @ P)(h - mu)` instead of row `(h - mu) @ (I - P.T @ P)`.
+2. **Transductive claim scope**: All-64-state PCA is transductive (PCA sees held-out node representations). Claim must say so explicitly.
+3. **Probabilistic d_panel undefined**: Spec defined d_panel for binary oracle profiles only. Causal E and E₀ use three-bin model responses. Fix: `d_panel(f,g) = sqrt(1/16 × Σ_q JS₂(f_q, g_q))`. Nearest-state decoder: argmin over 64 oracle profiles, ties = miss. Invalid probe (P_other > 0.3) = MISS.
+4. **Layer-screen budget stale**: 10,752 used old 42-probe count. With 16 probes + 1 wrong target: 8,192. Wrong-target cardinality was unspecified.
+5. **Missing cal-source operator rung**: Donor paste proves site, not operator learnability. Added Step 2b: apply M_a to cal sources (in-sample), require >= 90% hit rate.
+6. **Bootstrap/RNG unbound**: Pinned: source-state clustered bootstrap, 10,000 resamples, seed=42. Haar O(k) via QR of Gaussian. Matched-random and wrong-state pools pinned with per-edge RNG seeds.
+7. **Invalid-counts-as-wrong absent**: For gate, invalid probes now count as WRONG. For causal panel, invalid = MISS.
+8. **No pass criterion for correlational geometry**: Added: rho(D_hidden_ft, D_model) > rho(D_hidden_frozen, D_model).
+9. **Three-seed aggregation unbound**: Pinned: per-seed + median with range, all 3 seeds must pass individually.
+10. **GPU governance conflict**: 24.7h GPU budget noted as requiring explicit user authorization per AGENTS.md.
+
+**v4 changes**: All above adopted. Total per seed: 93,440 forwards (~3.7h @7/s). 11 pass criteria (up from 9). v4 in Codex lock round 4.
+
+---
+
+## 2026-08-30 — Codex PSQ-3 lock round 2: REVISE, 5 corrections adopted into v3
+
+**Codex PSQ-3 lock round 2**: Verdict REVISE. v2 fixes preserved but 5 lock-blocking defects found:
+
+1. **PCA convention inconsistency**: Procrustes uses row action (Z_s @ M), but intervention formula used column action P^T(M-I)P. Also origin problem: cal-only mean biases A/C targets which cross partitions. Fix: row convention throughout; all-64-state mean/PCA.
+
+2. **Checkerboard maximally confounds parity quadrants**: (x+y) mod 2 puts ALL even-even and odd-odd in cal (16/0), ALL mixed in held-out (0/16). Fix: cal = {(x,y) : (floor(x/2)+floor(y/2)) mod 2 = 0} gives 8/8 in every parity quadrant and 16 within + 16 cross per action.
+
+3. **Budget incomplete**: Missing layer-screen second arm (+5,376) and displacement-composition controls (+32,256). True total ~147k forwards, ~5.1h per seed.
+
+4. **Controls not adjudicated**: Procrustes could pass while displacement or wrong action performs equally. Fix: paired, source-clustered superiority over every moot-maker with 95% CI.
+
+5. **42-probe set is broken for hit rate**: d_{2,2} yields only 25 distinct profiles (one 16-state class). Only 25% of targets uniquely identifiable. 75% hit gate impossible even for perfect oracle. Fix: 16-probe state-separating panel (8 value indicators per dial, all within H*=4). Cheaper AND fully separates all 64 states.
+
+**v3 changes**: row convention; all-64-state PCA; new split; 16-probe panel; complete budget (~94k/seed, ~3.3h); paired superiority adjudication; frozen base diagnostic regardless; all implementation details pinned.
+
+**Status**: v3 in Codex lock round 3.
+
+---
+
+## 2026-08-30 — Codex PSQ-3 lock round 1: REVISE, 9 corrections adopted into v2
+
+**Codex PSQ-3 final lock round (round 1)**: Verdict REVISE. Direction sound and build-worthy, but draft not lock-ready. All 9 corrections adopted into v2 spec:
+
+1. **PCA edit must preserve orthogonal complement**: h'_a(s) = h(s) + P^T(M_a - I)P(h(s) - mu). Allow M_a in O(k), det = +/-1 for reflections. Report singular values and conditioning.
+
+2. **Three-bin response law**: [P(0), P(1), P_other] from full softmax, not renormalized {0,1}. Output-validity gate: P_other > 0.3 flags invalid. JS divergence over three-bin distributions.
+
+3. **Primary causal comparison is model-vs-model**: E = d(beh(edit), beh_model(a(s))), not oracle. Isolates transport quality from residual task error. Oracle comparison secondary.
+
+4. **Separate training from evaluation triples**: ~2000 training triples reported descriptively. Primary gate on ~41,648 held-out triples. Length-0 cells (<=8 states) diagnostic, not primary gate.
+
+5. **Frozen-base runs full causal pipeline**: Procrustes fitting + intervention on unmodified base model. Tests whether digit-token geometry already produces action-aligned effects (moot-maker).
+
+6. **Algebraic diagnostics demoted to secondary**: M_a = I trivially satisfies involution, commutation, conjugacy. Added M_A^8, M_C^8, M_DM_CD. Report det(M_a) and ||M_a - I||_F alongside. Value only if G > 0.
+
+7. **Checkerboard split pinned**: cal = {(x,y) : (x+y) mod 2 = 0}. Balanced: each x/y value 4 cal/4 held-out, B/D-fixed 8/8, A/C flip partition (cal->held-out), B/D preserve partition (cal->cal). Claim narrowed: held-out source-action-edge generalization.
+
+8. **Feasibility corrected**: Original 30-min causal estimate untenable — actual is 32x4x682 = 87,296 forwards (~3h). Solution: proximal probe set (lengths 0-2, 42 probes) for primary staircase. Exact forward-call ledger: ~110k forwards/seed (~3.8h eval). Total PSQ-3A: ~25h GPU.
+
+9. **Fixed-point handling**: B fixes 16 states (x in {0,4}), D fixes 16 (y in {0,4}). E_0=0 makes gain undefined. Excluded from gain computation. Fixed-point stability reported separately (operator should not move fixed points).
+
+Additional v2 changes: natural-prevalence sampling with class weight (not balanced+weighted); all 128 epsilon triples in training; PSQ-3B deferred to separate prospective lock; seeds [42, 137, 2024] sequential with abort; dataset seed 7 with SHA-256 hash.
+
+**Status**: v2 spec in Codex lock round 2.
+
+---
+
 ## 2026-08-30 — Codex PSQ-3 design review: NOT LOCK-READY, corrections adopted
 
 **Codex PSQ-3 design review (round 2)**: PSQ-3 direction is correct but the draft design has structural flaws. Corrections adopted verbatim:
