@@ -5,6 +5,32 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31T11:00 — HANDLE-0 Affine Ledger admission packet deposited
+
+Recovered the jammed Codex HANDLE-0 design output (task bdeslr2ii, `-o` file
+write failed on Windows but full 456-line response recovered from task output
+stream). The Codex design: four-register affine machine over GF(5) — two value
+registers, two transformation registers (affine bijections), 10,000 behaviorally
+distinct states, 13.29 zero-error bits. Renderer crossing exactly balanced:
+I(logical answer; output token) = 0 marginally.
+
+Key Codex conclusion: **conditional admission only.** The narrower claim is that
+HANDLE may learn a causally factorized, cache-like state mechanism more reliably
+than matched unstructured recurrence. Behavioral accuracy alone is a control
+result. No I/O dataset can distinguish HANDLE from a symbolic cache — the later
+causal slot intervention (hybrid-patch oracle, dependency-cone locality,
+permutation equivariance) is the distinguishing test. 10 kill conditions
+preregistered, 5 competing hypotheses specified.
+
+Written to `moonshot-llm-genome/research/60_HANDLE_0_AFFINE_LEDGER_ADMISSION.md`,
+committed `8f0ce88`, pushed. Proposal doc updated with next-steps reference.
+
+This completes the LSR → moonshot-llm-genome constructive handoff. The remaining
+work (reference interpreter, kill-condition verification, preregistration,
+training) belongs entirely in moonshot-llm-genome.
+
+---
+
 ## 2026-08-31T09:00 — HANDLE deposit outcome: Codex NO-GO in moonshot-llm-genome
 
 The HANDLE constructive pivot (deposited as `research/59_HANDLE_SUBSTRATE_PROPOSAL.md`
