@@ -1197,15 +1197,32 @@ def causal_staircase(model, tok, device, id_0, id_1, H_all, mu, P, Z,
         status = "PASS" if rate >= 0.75 else "FAIL"
         print(f"    {action}: {stable_count}/{total_fp} = {rate:.3f} [{status}]")
 
+    # Compute causal verdict from sub-gates
+    causal_failures = []
+    for action, res in step4_results.items():
+        for comp_name, comp in res.get("comparisons", {}).items():
+            if comp.get("ci_low", -1) <= 0:
+                causal_failures.append(f"step4_{action}_{comp_name}")
+    if not comp_verdict:
+        causal_failures.append(f"composition_{comp_pass_count}/12")
+    for action, fp in fp_results.items():
+        if fp.get("rate", 0) < 0.75:
+            causal_failures.append(f"fixed_point_{action}_{fp.get('rate', 0)}")
+    causal_verdict = "COMPLETE" if not causal_failures else "FAIL_CAUSAL"
+
     full_result = {
         "step4": step4_results,
         "composition": comp_results,
         "composition_pass_count": comp_pass_count,
         "algebraic": alg,
         "fixed_point_stability": fp_results,
+        "verdict": causal_verdict,
+        "failures": causal_failures,
     }
     with open(os.path.join(out_dir, f"causal_seed{seed}.json"), "w") as f:
         json.dump(full_result, f, indent=2)
+    print(f"\n  Causal verdict: {causal_verdict}"
+          + (f" ({', '.join(causal_failures[:5])})" if causal_failures else ""))
     return full_result
 
 # ---- Frozen-base control ----
@@ -1931,7 +1948,11 @@ def main():
             causal_result = causal_staircase(
                 model, tok, device, id_0, id_1, H_all, mu, P, Z,
                 M_operators, v_displacements, locked_layer, out_dir, seed)
-            seed_verdicts.setdefault(seed, {})["causal"] = causal_result.get("verdict", "COMPLETE")
+            causal_v = causal_result.get("verdict", "FAIL_NO_VERDICT")
+            seed_verdicts.setdefault(seed, {})["causal"] = causal_v
+            if causal_v != "COMPLETE":
+                seed_verdicts[seed]["overall"] = "FAIL_CAUSAL"
+                seed_verdicts[seed]["causal_failures"] = causal_result.get("failures", [])
 
         seed_verdicts.setdefault(seed, {}).setdefault("overall", "COMPLETE")
 
