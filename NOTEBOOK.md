@@ -5,6 +5,27 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31T01:00 — Fusion-fission v2b: BPE boundary fix confirms zero self-patch
+
+**Root cause found and fixed.** The non-zero self-patch in v2 (0.27-0.45) was
+caused by a BPE tokenization boundary mismatch. The donor ran on a storage-only
+prompt while the host ran on a full prompt. The tokenizer merges the final
+period with the newline into a single token (`.` → `.\n`), so the last storage
+position had different token IDs in donor vs host.
+
+**Fix:** Run donor on the full prompt (same as host), transplant only storage
+positions. Causal attention guarantees storage positions compute identically.
+
+**v2b results (self-patch = 0.0000 everywhere):**
+- HESK/VORN: 28/28 NO_CONTROL
+- PLIM/KROT: 24 NO_CONTROL, 4 PARTIAL
+- ZOG/MIP: 25 PARTIAL, 3 NO_CONTROL (K[1][1] grows to +1.50 at L15)
+- Cross-config: HESK-PLIM 86%, HESK-ZOG 11%, PLIM-ZOG 25%
+
+Clean instrument, config-dependent signal. No SEPARATE or FUSED — all PARTIAL.
+
+---
+
 ## 2026-08-31T10:45 — Codex adversarial audit of fusion-fission v1 series
 
 **Codex verdict: "The three runs do not yet establish fusion-fission as a
