@@ -18,7 +18,7 @@ Using this instrument across 18 audited experiments, we've found that a small la
 | **Distributional congruence** | 0% | But the full output distributions *always* differ — every greedy fiber contains distinguishable states |
 | **Commitment bottleneck** | 0.05 bits | Entropy drops to near-zero at L25 (the model fully commits), then re-broadens to 5.5-7.7 bits |
 | **Synchronization idempotence** | 100% | Both S^W (world-conditioned) and S^G (observable) restatements are genuine algebraic retractions |
-| **Observable canonicalizer** | 100% descent | S^G, built from the model's own greedy answers alone, descends perfectly to the quotient |
+| **Observable canonicalizer** | 100% observed descent | S^G, built from the model's own greedy answers alone, has perfect observed descent on the tested carrier |
 
 ## What we've found
 

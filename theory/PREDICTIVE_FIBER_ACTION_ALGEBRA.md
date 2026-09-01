@@ -21,7 +21,7 @@ $$
 | $\mathcal{A}$ | Continuation monoid | Typed continuation operations under concatenation |
 | $F_g = \pi^{-1}(g)$ | Fibers | Pre-images of greedy places; encode history-dependent structure invisible to argmax |
 | $S^W_w$ | World-conditioned restatement | Canonical restatement constructed from the experimenter-known world $w \in W$. Approximately idempotent; non-natural with correction under tested append action. **Not** representative-independent: requires the hidden world, not the observable greedy signature $g$ |
-| $S^G_g$ | Signature-indexed restatement | Canonical restatement constructed from the observable greedy signature $g \in G$ alone. Approximately idempotent; **perfect descent** to $G$ (fixes $S^W$'s one failure). Representative-independent: uses only observables. Defined via renderer $R(g)$: $S^G_g(x) = x \cdot R(g)$ |
+| $S^G_g$ | Signature-indexed restatement | Canonical restatement constructed from the observable greedy signature $g \in G$ alone. Approximately idempotent; perfect observed descent on the empirical carrier (fixes $S^W$'s one failure). Representative-independent: uses only observables. Defined via renderer $R(g)$: $S^G_g(x) = x \cdot R(g)$ |
 
 ## 2. Greedy places (carrier table)
 
@@ -76,7 +76,7 @@ issue: restatement uses the hidden world, not the observable greedy signature).
 
 **L2: Idempotence of $S^W$.** $(S^W_w)^2 \approx S^W_w$.
 *Status:* **Established.** 100% greedy idempotence (96/96 across both entity sets).
-JSD($S$, $S^2$) mean = 0.070 (range 0.025-0.140). The retraction is genuine.
+JSD distance (√JSD) mean = 0.070 (range 0.025-0.140).
 
 **L2a: Idempotence of $S^G$.** $(S^G_g)^2 \approx S^G_g$.
 *Status:* **Established.** 100% greedy idempotence (96/96 across both entity sets).
@@ -116,7 +116,7 @@ correction: $K(Cx) \neq C(Kx)$ in general.
 
 | Metric | Registered | Held-out |
 |--------|-----------|----------|
-| JSD distance mean ($S^G$) | 0.193 | 0.189 |
+| JSD distance mean ($S^G$) | 0.193 | 0.188 |
 | JSD distance mean ($S^W$) | 0.208 | 0.208 |
 | Greedy commutativity ($S^G$) | 85.4% (41/48) | 79.2% (38/48) |
 
@@ -127,9 +127,12 @@ depends on hidden information.
 
 ### Established (was Open)
 
-**L4a: $S^G$ descent to $G$.**
-*Status:* **Established.** 12/12 registered (100%), 15/15 held-out (100%).
-Perfect descent — fixes $S^W$'s one failure (fiber spanning worlds w101/w111).
+**L4a: $S^G$ descent to $G$ (empirical carrier).**
+*Status:* **Established on the empirical carrier.** 12/12 registered coordinate
+checks (4/4 non-singleton fibers), 15/15 held-out (5/5 non-singleton fibers).
+Perfect observed descent on the tested histories — fixes $S^W$'s one failure
+(fiber spanning worlds w101/w111). Does not prove descent over all histories
+in the globally defined $X$.
 
 For comparison, $S^W$ descent: 11/12 registered (91.7%), 15/15 held-out (100%).
 
@@ -137,9 +140,11 @@ For comparison, $S^W$ descent: 11/12 registered (91.7%), 15/15 held-out (100%).
 
 **O1: ~~Existence of representative-independent $S^G_g$.~~**
 *Status:* **RESOLVED — YES.** $S^G_g$ exists, is approximately idempotent (L2a),
-descends perfectly to $G$ (L4a), and preserves greedy places (100%). Constructed
-from the observable greedy signature via renderer $R(g)$. Established in
-experiment `signature_restatement_v1`.
+has perfect observed descent on the empirical carrier (L4a), and preserves
+greedy places (100%). Constructed from the observable greedy signature via
+renderer $R(g)$. Established in experiment `signature_restatement_v1`.
+"Held-out" means new entity names and value words under the same template,
+not held-out prompt structures or tasks.
 
 **O2: Correction descent to $G$.**
 Does correction descend to the greedy quotient? Direct measurement: correction
@@ -207,11 +212,13 @@ becomes visible in the computation, not a separate algebraic law.
 1. A finite partial action algebra of greedy commitments over a small prompt family.
 2. An operational, non-$\mathbb{R}^n$ account of behavioral places, actions, and
    hidden fibers.
-3. A world-conditioned idempotent restatement ($S^W_w$) with near-perfect descent.
-4. A representative-independent idempotent restatement ($S^G_g$) with perfect descent,
-   constructed from the observable greedy signature alone.
-5. A demonstrated non-naturality: both $S^W$ and $S^G$ do not commute with correction
-   under the tested append action — prediction is presentation-path dependent.
+3. A world-conditioned approximately idempotent restatement ($S^W_w$) with near-perfect
+   observed descent.
+4. A representative-independent approximately idempotent restatement ($S^G_g$) with
+   perfect observed descent on the empirical carrier, constructed from the observable
+   greedy signature alone.
+5. A demonstrated pointwise non-naturality: both $S^W$ and $S^G$ do not commute with
+   correction under the tested append action — prediction is presentation-path dependent.
 
 ### What this algebra is NOT
 

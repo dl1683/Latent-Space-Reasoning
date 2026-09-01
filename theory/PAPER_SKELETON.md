@@ -25,10 +25,10 @@ canonical restatements: $S^W$ (from experimenter-known ground truth) and $S^G$
 (from the model's own observable greedy answers). Both are approximately
 idempotent and non-natural with correction: two update paths denoting the same
 corrected world produce different response laws and, on held-out entity names,
-different greedy answers in 14 of 48 cases. The observable $S^G$ descends
-perfectly to the greedy quotient (100%), while $S^W$ fails for one cross-world
-fiber. Correction itself does not reliably descend (58-80%), establishing that
-non-naturality is pointwise, not quotient-level.
+different greedy answers in 14 of 48 cases. On the empirical carrier, the
+observable $S^G$ has perfect observed descent (100%), while $S^W$ fails for one
+cross-world fiber. Correction itself does not reliably descend (58-80%),
+establishing that non-naturality is pointwise, not quotient-level.
 
 All results are from one 0.6B-parameter model on one prompt family. We frame
 this as a methodological case study: a worked example of what becomes visible
@@ -436,7 +436,7 @@ not a genuine quotient-level statement.
 
 - ~~**O1: Representative-independent restatement.**~~ **RESOLVED.** $S^G_g$
   exists, is approximately idempotent (100% greedy, JSD 0.077/0.071), and
-  descends perfectly to $G$.
+  has perfect observed descent on the empirical carrier.
 - **O2: Correction descent.** Correction does NOT reliably descend: 58-80%.
   Fiber members given the same correction produce different post-correction
   signatures. The correction operator is itself presentation-path dependent.
@@ -483,10 +483,10 @@ The world-conditioned restatement $S^W_w$ uses experimenter knowledge of the
 hidden ground truth — a genuine methodological limitation. We construct an
 alternative: $S^G_g$, which builds restatement text from the model's own
 observable greedy answers. $S^G$ retains approximate idempotence (100% greedy,
-JSD comparable to $S^W$), achieves perfect descent to $G$ (fixing the one
+JSD comparable to $S^W$), achieves perfect observed descent on the empirical carrier (fixing the one
 $S^W$ failure), and preserves greedy places 100%.
 
-Non-naturality persists with $S^G$ (JSD 0.193/0.189), eliminating the objection
+Non-naturality persists with $S^G$ (JSD 0.193/0.188), eliminating the objection
 that non-commutativity is an artifact of injecting hidden information. The
 adaptive canonicalizer $K(x) = x \cdot R(\gamma(x))$ — which reads the model's
 own greedy answers and feeds them back — still does not commute with correction.

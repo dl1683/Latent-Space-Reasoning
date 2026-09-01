@@ -15,7 +15,7 @@ not the hidden world — exists and retains all algebraic properties:
 - Idempotence: 100% greedy (96/96). JSD 0.077 / 0.071 — comparable to S^W's 0.070.
 - Descent to G: **12/12 (100%) / 15/15 (100%)** — fixes S^W's one failure.
 - Place preservation: 32/32 (100%).
-- Non-naturality with correction persists: JSD mean 0.193 / 0.189.
+- Non-naturality with correction persists: JSD mean 0.193 / 0.188.
   Greedy commutativity 85.4% / 79.2%.
 
 **New finding — correction does not descend:**
