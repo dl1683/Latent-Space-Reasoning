@@ -18,7 +18,7 @@ Using this instrument across 18 audited experiments, we've found that a small la
 | **Distributional congruence** | 0% | But the full output distributions *always* differ — every greedy fiber contains distinguishable states |
 | **Commitment bottleneck** | 0.05 bits | Entropy drops to near-zero at L25 (the model fully commits), then re-broadens to 5.5-7.7 bits |
 | **Synchronization idempotence** | 100% | Both S^W (world-conditioned) and S^G (observable) restatements are genuine algebraic retractions |
-| **Observable canonicalizer** | 100% observed descent | S^G, built from the model's own greedy answers alone, has perfect observed descent on the tested carrier; shuffled control (0%) confirms content, not format |
+| **Observable canonicalizer** | 100% observed descent | S^G, built from the model's own greedy answers alone, has perfect observed descent on the tested carrier |
 
 ## What we've found
 
@@ -49,7 +49,7 @@ The model supports a **coarse partial action algebra** of greedy commitments:
 - **Moves** are typed continuations: empty, neutral, correction, restatement
 - **Place preservation** is near-total for identity-like operations (100% empty, 95% neutral/restatement) and genuinely state-changing for corrections (35%)
 - **Synchronization** via canonical restatement is approximately idempotent: JSD(S, S²) ≈ 0.07, 100% greedy idempotence
-- **Two canonicalizers:** S^W (from experimenter-known world) and S^G (from the model's own observable greedy answers). S^G descends perfectly to the quotient; S^W fails for one cross-world fiber. A shuffled-renderer control (same format, values rotated among entities: 0/32 preservation vs 100%) confirms the model reads content, not format.
+- **Two canonicalizers:** S^W (from experimenter-known world) and S^G (from the model's own observable greedy answers). S^G descends perfectly to the quotient; S^W fails for one cross-world fiber.
 
 The decisive test: does restatement commute with correction? **No — with either canonicalizer.** Both S^W and S^G show non-naturality: the correction/restatement square does not commute (JSD distance ~0.20, greedy commutativity 70.8-89.6%). Two update paths denoting the same corrected world produce different response laws. Prediction remains presentation-path dependent even when both paths have reached the same declarative world. S^G eliminates the objection that non-naturality depends on hidden experimenter information.
 

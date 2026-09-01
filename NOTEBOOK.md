@@ -5,20 +5,20 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
-## 2026-08-31T08:30 — Shuffled-renderer control DECISIVE: content, not format
+## 2026-08-31T08:30 — Shuffled-renderer control: pairing-sensitive, echo unresolved
 
 Re-ran `signature_restatement_v1` with Phase 4b (shuffled-renderer control).
-Same format, same tokens, values rotated among entities. Result:
+One fixed cyclic reassignment of value words among entity labels. Result:
 
-- **Shuffled place preservation: 0/16 (0%) on BOTH registered and held-out.**
-- S^G place preservation: 16/16 (100%) on both.
-- Every single shuffled case disrupted — model absorbs wrong entity-value pairings.
+- **Shuffled place preservation: 0/32 on BOTH registered and held-out.**
+- S^G place preservation: 32/32 (100%) on both.
 
-The textual-echo confound is ruled out. S^G's place preservation is because
-the model reads its own answers matched to the correct entities, not because
-any restatement-shaped text preserves signatures. This is the "cheapest falsifier"
-Codex recommended. All other results (idempotence, descent, non-naturality,
-correction non-descent) reproduced identically.
+**Codex evidence gate (REVISE):** The shuffled control is pairing-sensitive but
+does NOT rule out textual echo. 74/96 post-shuffle coordinates echo the shuffled
+value — a last-mention copier predicts the headline contrast. The control rejects
+a content-blind template effect, not textual echo. Licensed wording adopted
+verbatim. Next: type-valid anti-echo control where the correct answer token is
+not placed in the queried entity's latest declaration.
 
 ---
 

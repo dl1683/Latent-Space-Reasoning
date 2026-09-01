@@ -486,10 +486,11 @@ observable greedy answers. $S^G$ retains approximate idempotence (100% greedy,
 JSD comparable to $S^W$), achieves perfect observed descent on the empirical carrier (fixing the one
 $S^W$ failure), and preserves greedy places 100%.
 
-A shuffled-renderer control rules out the textual-echo confound: rotating values
-among entities (same format, same tokens) disrupts every signature (0/32 place
-preservation vs 100% for $S^G$). The model reads its own answers matched to
-the correct entities, not merely restatement-shaped text.
+A fixed cyclic shuffle control (reassigning value words among entity labels)
+preserved no full greedy signature (0/32 vs 32/32 for $S^G$), showing that
+the effect is sensitive to entity-value pairing rather than the renderer
+template or value-word multiset alone. This does not distinguish semantic use
+from last-mention copying and does not rule out textual echo.
 
 Non-naturality persists with $S^G$ (JSD 0.193/0.188), eliminating the objection
 that non-commutativity is an artifact of injecting hidden information. The

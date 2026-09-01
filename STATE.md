@@ -50,7 +50,7 @@
   - **S^G idempotent.** 100% greedy (96/96), JSD mean 0.077/0.071. Comparable to S^W.
   - **S^G descent PERFECT.** 12/12 registered (100%), 15/15 held-out (100%). Fixes S^W's one failure (w101/w111 cross-world fiber).
   - **S^G place preservation 100%.** S^G never changes the greedy signature.
-  - **Shuffled-renderer control: 0/16 (0%) on both sets.** Same format, same tokens, values rotated among entities — every signature disrupted. Content matters: the model reads its own answers paired with the correct entities, not just restatement-shaped text. The textual-echo confound is ruled out.
+  - **Fixed cyclic shuffle 0/32 (pairing-sensitive; textual echo unresolved).** One fixed cyclic reassignment of value words among entity labels preserved no full greedy signature (0/32 vs 32/32 for S^G). Sensitive to entity-value pairing, not the template or value-word multiset alone. Does not distinguish semantic use from last-mention copying. (Codex evidence gate: 74/96 post-shuffle coordinates echo the shuffled value — a last-mention copier predicts the headline contrast.)
   - **Non-naturality persists with S^G.** JSD mean 0.193/0.188. Greedy commutativity 85.4%/79.2%. The non-naturality is NOT an artifact of S^W using hidden information.
   - **NEW FINDING: Correction does NOT descend to G.** 7/12 (58.3%) registered, 12/15 (80.0%) held-out. Same correction applied to fiber members produces different post-correction signatures. Typed square is pointwise K(Cx) vs C(Kx), not quotient-level naturality.
   - **Implication:** The algebra can now be defined entirely from observables. S^G eliminates the "experimenter knowledge required" objection.
