@@ -1,0 +1,345 @@
+{
+  "experiment": "RAC-0",
+  "timestamp": "2026-09-01T12:26:50.678112",
+  "question": "Do orthogonal routing and relation function vectors compose?",
+  "answer": "YES. Same-pair 12/12, held-out 12/12, separated-boundary 13/14.",
+  "cos_rv_rlv": -0.0459,
+  "rv_norm": 41.4,
+  "rlv_norm": 115.0,
+  "same_pair": {
+    "pass": 12,
+    "total": 12,
+    "rows": [
+      {
+        "pair": "Tokyo/Rome",
+        "start": "Japan",
+        "target": "Italian",
+        "p_start": 9.799341205507517e-05,
+        "p_target": 0.35752102732658386,
+        "comp": true
+      },
+      {
+        "pair": "Tokyo/Rome",
+        "start": "Japanese",
+        "target": "Italy",
+        "p_start": 7.650879706488922e-05,
+        "p_target": 0.7024506330490112,
+        "comp": true
+      },
+      {
+        "pair": "Tokyo/Rome",
+        "start": "Italy",
+        "target": "Japanese",
+        "p_start": 8.158034324878827e-05,
+        "p_target": 0.17228783667087555,
+        "comp": true
+      },
+      {
+        "pair": "Tokyo/Rome",
+        "start": "Italian",
+        "target": "Japan",
+        "p_start": 0.0008039670647121966,
+        "p_target": 0.07934920489788055,
+        "comp": true
+      },
+      {
+        "pair": "Berlin/Paris",
+        "start": "Germany",
+        "target": "French",
+        "p_start": 0.0002803107781801373,
+        "p_target": 0.16910192370414734,
+        "comp": true
+      },
+      {
+        "pair": "Berlin/Paris",
+        "start": "German",
+        "target": "France",
+        "p_start": 0.0009388326434418559,
+        "p_target": 0.33071470260620117,
+        "comp": true
+      },
+      {
+        "pair": "Berlin/Paris",
+        "start": "France",
+        "target": "German",
+        "p_start": 3.4212294849567115e-05,
+        "p_target": 0.41515329480171204,
+        "comp": true
+      },
+      {
+        "pair": "Berlin/Paris",
+        "start": "French",
+        "target": "Germany",
+        "p_start": 0.0008979032863862813,
+        "p_target": 0.21952161192893982,
+        "comp": true
+      },
+      {
+        "pair": "London/Cairo",
+        "start": "UK",
+        "target": "Arabic",
+        "p_start": 0.0005030756001360714,
+        "p_target": 0.13140563666820526,
+        "comp": true
+      },
+      {
+        "pair": "London/Cairo",
+        "start": "English",
+        "target": "Egypt",
+        "p_start": 0.0010263819713145494,
+        "p_target": 0.22191554307937622,
+        "comp": true
+      },
+      {
+        "pair": "London/Cairo",
+        "start": "Egypt",
+        "target": "English",
+        "p_start": 0.00015669857384636998,
+        "p_target": 0.43922802805900574,
+        "comp": true
+      },
+      {
+        "pair": "London/Cairo",
+        "start": "Arabic",
+        "target": "UK",
+        "p_start": 0.0004190030740574002,
+        "p_target": 0.045345623046159744,
+        "comp": true
+      }
+    ]
+  },
+  "held_out": {
+    "pass": 12,
+    "total": 12,
+    "rows": [
+      {
+        "held_out": "Tokyo/Rome",
+        "start": "Japan",
+        "target": "Italian",
+        "p_start": 0.00015448288468178362,
+        "p_target": 0.3485024571418762,
+        "comp": true
+      },
+      {
+        "held_out": "Tokyo/Rome",
+        "start": "Japanese",
+        "target": "Italy",
+        "p_start": 0.00015362740668933839,
+        "p_target": 0.7646088600158691,
+        "comp": true
+      },
+      {
+        "held_out": "Tokyo/Rome",
+        "start": "Italy",
+        "target": "Japanese",
+        "p_start": 6.373090582201257e-05,
+        "p_target": 0.09856647253036499,
+        "comp": true
+      },
+      {
+        "held_out": "Tokyo/Rome",
+        "start": "Italian",
+        "target": "Japan",
+        "p_start": 0.0013829399831593037,
+        "p_target": 0.03096790984272957,
+        "comp": true
+      },
+      {
+        "held_out": "Berlin/Paris",
+        "start": "Germany",
+        "target": "French",
+        "p_start": 0.00038310670061036944,
+        "p_target": 0.0685497373342514,
+        "comp": true
+      },
+      {
+        "held_out": "Berlin/Paris",
+        "start": "German",
+        "target": "France",
+        "p_start": 0.0016079628840088844,
+        "p_target": 0.2492317259311676,
+        "comp": true
+      },
+      {
+        "held_out": "Berlin/Paris",
+        "start": "France",
+        "target": "German",
+        "p_start": 4.146657738601789e-05,
+        "p_target": 0.365564227104187,
+        "comp": true
+      },
+      {
+        "held_out": "Berlin/Paris",
+        "start": "French",
+        "target": "Germany",
+        "p_start": 0.00153819820843637,
+        "p_target": 0.12935708463191986,
+        "comp": true
+      },
+      {
+        "held_out": "London/Cairo",
+        "start": "UK",
+        "target": "Arabic",
+        "p_start": 0.0008856658823788166,
+        "p_target": 0.0484919548034668,
+        "comp": true
+      },
+      {
+        "held_out": "London/Cairo",
+        "start": "English",
+        "target": "Egypt",
+        "p_start": 0.0012921049492433667,
+        "p_target": 0.03658705949783325,
+        "comp": true
+      },
+      {
+        "held_out": "London/Cairo",
+        "start": "Egypt",
+        "target": "English",
+        "p_start": 0.00048448427696712315,
+        "p_target": 0.2765255272388458,
+        "comp": true
+      },
+      {
+        "held_out": "London/Cairo",
+        "start": "Arabic",
+        "target": "UK",
+        "p_start": 0.0003914358967449516,
+        "p_target": 0.016757503151893616,
+        "comp": true
+      }
+    ]
+  },
+  "separated_boundary": {
+    "pass": 13,
+    "total": 14,
+    "rows": [
+      {
+        "b1": 15,
+        "b2": 20,
+        "order": "rv_first",
+        "sep": 5,
+        "p_target": 0.13670842349529266,
+        "p_start": 0.0001418011961504817,
+        "comp": true
+      },
+      {
+        "b1": 15,
+        "b2": 20,
+        "order": "rlv_first",
+        "sep": 5,
+        "p_target": 0.15170687437057495,
+        "p_start": 4.6859353460604325e-05,
+        "comp": true
+      },
+      {
+        "b1": 16,
+        "b2": 20,
+        "order": "rv_first",
+        "sep": 4,
+        "p_target": 0.49994444847106934,
+        "p_start": 1.146982867794577e-05,
+        "comp": true
+      },
+      {
+        "b1": 16,
+        "b2": 20,
+        "order": "rlv_first",
+        "sep": 4,
+        "p_target": 0.25297120213508606,
+        "p_start": 0.00021681429643649608,
+        "comp": true
+      },
+      {
+        "b1": 17,
+        "b2": 20,
+        "order": "rv_first",
+        "sep": 3,
+        "p_target": 0.1702273190021515,
+        "p_start": 2.0930150640197098e-05,
+        "comp": true
+      },
+      {
+        "b1": 17,
+        "b2": 20,
+        "order": "rlv_first",
+        "sep": 3,
+        "p_target": 0.3889258801937103,
+        "p_start": 9.733378647069912e-06,
+        "comp": true
+      },
+      {
+        "b1": 18,
+        "b2": 20,
+        "order": "rv_first",
+        "sep": 2,
+        "p_target": 0.5244778990745544,
+        "p_start": 7.526251283707097e-05,
+        "comp": true
+      },
+      {
+        "b1": 18,
+        "b2": 20,
+        "order": "rlv_first",
+        "sep": 2,
+        "p_target": 0.022517129778862,
+        "p_start": 9.091688843909651e-05,
+        "comp": true
+      },
+      {
+        "b1": 19,
+        "b2": 20,
+        "order": "rv_first",
+        "sep": 1,
+        "p_target": 0.31076914072036743,
+        "p_start": 0.0002231344988103956,
+        "comp": true
+      },
+      {
+        "b1": 19,
+        "b2": 20,
+        "order": "rlv_first",
+        "sep": 1,
+        "p_target": 0.05039443075656891,
+        "p_start": 5.141231304151006e-05,
+        "comp": true
+      },
+      {
+        "b1": 20,
+        "b2": 21,
+        "order": "rv_first",
+        "sep": 1,
+        "p_target": 0.27119019627571106,
+        "p_start": 0.0041646286845207214,
+        "comp": true
+      },
+      {
+        "b1": 20,
+        "b2": 21,
+        "order": "rlv_first",
+        "sep": 1,
+        "p_target": 0.029055865481495857,
+        "p_start": 0.0013992643216624856,
+        "comp": true
+      },
+      {
+        "b1": 20,
+        "b2": 22,
+        "order": "rv_first",
+        "sep": 2,
+        "p_target": 0.02124124951660633,
+        "p_start": 0.052170637995004654,
+        "comp": false
+      },
+      {
+        "b1": 20,
+        "b2": 22,
+        "order": "rlv_first",
+        "sep": 2,
+        "p_target": 0.019702577963471413,
+        "p_start": 0.0012038310524076223,
+        "comp": true
+      }
+    ]
+  }
+}

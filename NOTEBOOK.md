@@ -4,6 +4,164 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — RAC-0: Response-Algebra Composition (FIRST SUCCESSFUL COMPOSITION)
+
+**The first successful composition in 75+ experiments.** Two orthogonal function
+vectors at B20 — routing (which position to retrieve) and relation (which
+relation: capital vs language) — independently and jointly control retrieval.
+
+### Vector extraction
+Mixed 4-fact prompt: "{E1} is the capital of {V1}. {E1} speaks {L1}. {E2}
+is the capital of {V2}. {E2} speaks {L2}. {Q} [query]"
+
+- Routing vector rv = mean(pos1_states) - mean(pos2_states): ||rv||=43.2
+- Relation vector rlv = mean(cap_states) - mean(lang_states): ||rlv||=116.1
+- **cos(rv, rlv) = -0.046** — orthogonal, independent encoding
+- PCA: PC1 (79.3%) = relation direction, PC2 (10.9%) = position direction
+
+### Composition results
+- **Same-pair: 12/12** — apply rv+rlv to reach diagonal opposite cell
+- **Held-out: 12/12 (100%)** — vectors from 2 pairs compose on unseen 3rd pair
+- **Separated boundary: 13/14** — rv@B(k) + rlv@B20 through 1-5 layers of
+  model computation. Only failure: rv@B20 + rlv@B22 (content commitment layer)
+- **Commutativity:** both orderings (rv first vs rlv first) reach correct target
+  through intervening computation, though magnitudes differ
+- **Specificity (Gate 1):** rv changes position while preserving relation (4/4);
+  rlv changes relation while preserving position (4/4)
+- **Idempotence:** rv applied twice ~ rv applied once
+- **Cancellation:** rv then -rv ~ clean (Italian: 0.234 vs 0.259)
+
+### Layer-phase deformation
+Composition works through B15-B21 (the routing phase). Breaks at B22 (the
+content-commitment transition where routing dissolves into concrete answers).
+This boundary is the model-specific structure that can't be predicted from R^n
+geometry alone.
+
+### Why this worked when all prior composition failed
+Prior attempts composed SEMANTIC OPERATIONS (apply action A then B). Those failed
+because the model doesn't have decomposable semantic operations. RAC-0 composes
+RETRIEVAL INSTRUCTIONS — where to look (position) and what to extract (relation).
+Retrieval is mediated by attention (approximately linear), while semantic
+composition requires nonlinear whole-state interaction.
+
+The fork's synthesis captured it: "The routing algebra is the address book. The
+native math is the language spoken at those addresses."
+
+Runner: `experiments/run_rac_0.py`. Results: `experiments/results/rac_0/verdict.json`.
+
+---
+
+## 2026-09-01 — OCI-003: Cross-Template Routing + Synthesis
+
+### OCI-003: Cross-template routing disagreement test
+
+**Question:** Does B20 routing follow structural sentence position (ordinal
+clause) or absolute token position? OCI-002 confounded them — same 20-token
+template throughout.
+
+**Design:** Three templates with different token layouts:
+- A: standard (20 tokens) — facts at tokens 0-7 and 8-14
+- B: padded "Here, ... Also, ..." (23 tokens) — facts shifted +1/+3 tokens
+- C: verbose "The city ..." (23 tokens) — facts shifted +2/+3 tokens
+All 9 template-pair combinations (A→A, A→B, ... C→C). 216 total transplant rows
+(3 cross-panel × 4 slot combos × 9 template combos). Same disjoint panels as
+OCI-002.
+
+**Result: STRUCTURAL.** Cross-template transplant: **96.5%** follow donor slot.
+Same-template: **97.2%**. The difference is negligible — routing survives token
+position shifts of 1-3 tokens between templates. Template B→any and C→any
+achieve **100%** (24/24 each).
+
+**Codex decision criterion met:** "If ordinal routing survives coordinate
+disagreement, promote the response-law class to a credible causal type;
+composition becomes next." → Promoted.
+
+Runner: `experiments/run_oci_003.py`. Results:
+`experiments/results/oci_003/verdict.json`.
+
+### Research synthesis (deep reflection fork)
+
+Internal/external research synthesis across 75+ experiments and literature:
+
+**What worked:** Positional routing (OCI-002/003), resolution layers (logit-lens),
+whole-state fusion-fission, observable algebra (S^G), typed architecture (LAC-0).
+
+**What failed and why:** ~30% NO_INTERFACE (model can't do the task), ~40%
+TAUTOLOGICAL (effect reduces to known mechanism), ~30% INSTRUMENT DEFECTS.
+Common thread: portability succeeds; composition fails.
+
+**Key insight:** The positives split into two non-connecting groups:
+1. Routing algebra (R^n-describable): function vector, routing, attention redirect
+2. Whole-state phenomena (resist R^n decomposition): fusion-fission, resolution,
+   S^G non-naturality
+
+The routing algebra is the ADDRESS BOOK. The native math, if it exists, is the
+LANGUAGE SPOKEN AT THOSE ADDRESSES — the value-space content mechanism at L21-25.
+
+**Codex round 5v2 verdict:** "No new native algebra discovered yet." Defines
+candidate object operationally: Q_b = H_b / ~_b (quotient by behavioral
+interchangeability). Escapes R^n trap — identity defined by executable future,
+not coordinates.
+
+### B20→B22 transformation linearity test
+
+The transformation is approximately linear near the operating point:
+- alpha=0.5: cos(predicted,actual)=0.998, rel_error=6.3%
+- alpha=2.0: cos=0.987, rel_error=19% (nonlinear at extremes)
+Routing vector ROTATES through layers: cos(rv_B20, rv_B22)=0.698, amplifies
+2.77x. Consistent with softmax nonlinearity in attention.
+
+---
+
+## 2026-09-01 — Function Vector Extraction & Causal Attention Mechanism
+
+**Post-OCI-002 follow-up.** Three experiments characterize the B20 routing
+signal's mechanism and mathematical structure.
+
+### A. Causal attention mechanism (disagreeing donor/recipient)
+Donor: Vienna@s1 (routes to pos 1). Recipient: Rome@s1, Tokyo@s2, query=Tokyo
+(naturally routes to pos 2). Clean: Japan=0.261, top=Japan. Patched at B20:
+Japan=0.008, Italy=0.537, top=Italy. COMPLETE OUTPUT FLIP.
+
+Attention shift at L20: slot1 +19%, slot2 -12%. Sustained through L21-L27.
+Per-head: H14 at L23 nearly fully swaps (+0.20 s1, -0.19 s2). Causal chain
+confirmed: B20 hidden state → attention redirect → value retrieval → output.
+
+### B. Function vector extraction
+Collected 12 B20 hidden states grouped by sentence position. Computed
+routing_vec = mean(pos1) - mean(pos2). Key results:
+- PC1 alignment with routing_vec: **0.999** (PC1 explains 49.8% of variance)
+- Cohen's d: **19.9**, ZERO overlap, 100% classification accuracy
+- Vector addition at alpha=1.0 flips Tokyo@s2 recipient from Japan to Italy
+- Continuous control: alpha=-1.0 strengthens natural routing, alpha=+1.0 flips
+
+This is a **function vector** (Todd et al., ICLR 2024) for positional retrieval.
+
+### C. Algebraic properties
+- **Negation**: -rv strengthens opposite routing
+- **Scaling**: continuous monotonic control, crossover at ~alpha=0.4
+- **Identity**: alpha=0 = no change
+- **Layer general**: B20-extracted rv works at B16-B21 (strongest B19!), fades B22
+
+### D. Generalization
+- Unseen entities (same domain): 5/6 correct direction
+- Cross-domain (capital→language): Japanese 0.139→0.402 with +rv
+- Cross-template: partial — structure matters
+
+### E. Codex round 5 verdict (without the above data)
+"Architecture-native, not native mathematics. Pivot to DPM." C2 correction
+valid (23/24 conflict cells). Overall FAIL maintained (C4 not dropped). The
+function vector evidence was NOT available to Codex in round 5. Round 6
+launched to challenge the DPM pivot with the new evidence.
+
+### Literature connections
+1. Todd et al. (ICLR 2024): function vectors in LLMs — compact task representations
+2. Geiger et al. (JMLR 2025): causal abstraction — our methodology IS interchange interventions
+3. Chughtai et al. (2024): "Summing Up the Facts" — additive factual recall mechanisms
+4. Heap et al. (2023): interpretability illusion — methodological caution for subspace patching
+
+---
+
 ## 2026-09-01 — OCI-002: Factorial Positional-Carrier Confirmation
 
 **Codex Round 4 specification, adapted.** Nonce entities failed (0/8 panels
