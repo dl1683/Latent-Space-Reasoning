@@ -12,6 +12,7 @@ Usage:
 """
 
 import argparse
+import copy
 import json
 import math
 import os
@@ -47,7 +48,7 @@ class Config:
     n_actions: int = 5          # N, S, E, W, use
     n_object_types: int = 4     # key, lock, goal, agent
     n_status_values: int = 4    # idle, held, open, active
-    max_pos_offset: int = 4     # visibility diameter - 1 = 4
+    max_pos_offset: int = 2     # visibility radius = 2, positions in [-2,2]
     sparse_top_k: int = 2
 
     n_train_levels: int = 64
@@ -223,12 +224,20 @@ class KeyLockGridWorld:
 
     def observe_encoded(self, state: WorldState, rng: random.Random,
                         n_slots: int, record_dim: int, max_pos_offset: int,
-                        n_object_types: int, n_status_values: int) -> np.ndarray:
-        """Directly encode observation as numpy array. Returns (n_slots, record_dim)."""
+                        n_object_types: int, n_status_values: int,
+                        identity_perm: list = None) -> np.ndarray:
+        """Directly encode observation as numpy array. Returns (n_slots, record_dim).
+
+        identity_perm: fixed object→carrier mapping for the episode. If None,
+        falls back to per-call shuffle (legacy behavior, should not be used).
+        """
         result = np.zeros((n_slots, record_dim), dtype=np.float32)
         objects = self.get_objects(state)
-        identities = list(range(len(objects)))
-        rng.shuffle(identities)
+        if identity_perm is not None:
+            identities = identity_perm
+        else:
+            identities = list(range(len(objects)))
+            rng.shuffle(identities)
 
         visible_ids = []
         for i, obj in enumerate(objects):
@@ -264,7 +273,7 @@ class KeyLockGridWorld:
 
 
 def generate_level(seed: int, grid_size: int = 7) -> LevelConfig:
-    """Generate a random level configuration."""
+    """Generate a random level configuration. Geometry only — bijection is episode-local."""
     rng = random.Random(seed)
     positions = [(r, c) for r in range(grid_size) for c in range(grid_size)]
     rng.shuffle(positions)
@@ -272,13 +281,11 @@ def generate_level(seed: int, grid_size: int = 7) -> LevelConfig:
     lock_pos = [positions[2], positions[3]]
     goal_pos = positions[4]
     agent_start = positions[5]
-    bijection = [0, 1]
-    rng.shuffle(bijection)
     return LevelConfig(
         grid_size=grid_size,
         key_positions=key_pos, lock_positions=lock_pos,
         goal_position=goal_pos, agent_start=agent_start,
-        key_lock_bijection=bijection,
+        key_lock_bijection=[0, 1],  # placeholder; resampled per episode
     )
 
 
@@ -337,6 +344,7 @@ class Trajectory:
     events: list              # list of event code lists
     states: list              # list of WorldState (ground truth for intervention)
     level_config: object      # LevelConfig
+    episode_carrier_map: list = None  # complete object→carrier bijection, stable per episode
 
 
 def generate_trajectories(level_seeds: list, cfg: Config, data_rng_seed: int = 0) -> list:
@@ -344,13 +352,25 @@ def generate_trajectories(level_seeds: list, cfg: Config, data_rng_seed: int = 0
     rng = random.Random(data_rng_seed)
     all_trajs = []
     rd = _record_dim(cfg)
+    n_objects = cfg.n_slots  # 6 objects: agent + 2 keys + 2 locks + goal
 
     for ls in level_seeds:
         level = generate_level(ls, cfg.grid_size)
-        world = KeyLockGridWorld(level)
 
         for t_idx in range(cfg.trajs_per_level):
             obs_rng = random.Random(rng.randint(0, 2**31))
+
+            # Per-episode identity permutation (R3b §1)
+            identity_perm = list(range(n_objects))
+            rng.shuffle(identity_perm)
+
+            # Per-episode key-lock bijection (R3b §3)
+            episode_bijection = [0, 1]
+            rng.shuffle(episode_bijection)
+            episode_level = copy.copy(level)
+            episode_level.key_lock_bijection = episode_bijection
+
+            world = KeyLockGridWorld(episode_level)
             state = world.reset()
             obs_encoded = np.zeros((cfg.traj_length + 1, cfg.n_slots, rd), dtype=np.float32)
             slot_maps = []
@@ -363,12 +383,13 @@ def generate_trajectories(level_seeds: list, cfg: Config, data_rng_seed: int = 0
             for step in range(cfg.traj_length):
                 enc, vis_ids = world.observe_encoded(
                     state, obs_rng, cfg.n_slots, rd,
-                    cfg.max_pos_offset, cfg.n_object_types, cfg.n_status_values)
+                    cfg.max_pos_offset, cfg.n_object_types, cfg.n_status_values,
+                    identity_perm=identity_perm)
                 obs_encoded[step] = enc
                 slot_maps.append(vis_ids)
 
                 if use_scripted:
-                    action = scripted_policy(state, level, rng)
+                    action = scripted_policy(state, episode_level, rng)
                 else:
                     action = rng.randint(0, cfg.n_actions - 1)
 
@@ -379,7 +400,8 @@ def generate_trajectories(level_seeds: list, cfg: Config, data_rng_seed: int = 0
 
             enc, vis_ids = world.observe_encoded(
                 state, obs_rng, cfg.n_slots, rd,
-                cfg.max_pos_offset, cfg.n_object_types, cfg.n_status_values)
+                cfg.max_pos_offset, cfg.n_object_types, cfg.n_status_values,
+                identity_perm=identity_perm)
             obs_encoded[cfg.traj_length] = enc
             slot_maps.append(vis_ids)
 
@@ -387,7 +409,8 @@ def generate_trajectories(level_seeds: list, cfg: Config, data_rng_seed: int = 0
                 level_seed=ls, obs_encoded=obs_encoded,
                 slot_maps=slot_maps,
                 actions=actions, events=events_list,
-                states=states, level_config=level
+                states=states, level_config=episode_level,
+                episode_carrier_map=list(identity_perm),
             ))
 
     return all_trajs
@@ -519,27 +542,34 @@ class SparseMessaging(nn.Module):
 
 
 class PredictionHead(nn.Module):
-    """Predict next observation records and events from slot states."""
+    """Factorized per-field heads with permutation-invariant event output (R3b §4)."""
     def __init__(self, cfg: Config):
         super().__init__()
-        rd = _record_dim(cfg)
-        self.obs_head = nn.Sequential(
-            nn.Linear(cfg.slot_width, cfg.slot_width),
-            nn.ReLU(),
-            nn.Linear(cfg.slot_width, rd),
-        )
-        total_slot = cfg.n_slots * cfg.slot_width
-        self.event_head = nn.Sequential(
-            nn.Linear(total_slot, cfg.slot_width),
-            nn.ReLU(),
-            nn.Linear(cfg.slot_width, 4),  # pickup, unlock, activate, none
-        )
+        n_pos = 2 * cfg.max_pos_offset + 1
+        sw = cfg.slot_width
+        self.type_head = nn.Sequential(nn.Linear(sw, sw), nn.ReLU(),
+                                       nn.Linear(sw, cfg.n_object_types))
+        self.row_head = nn.Sequential(nn.Linear(sw, sw), nn.ReLU(),
+                                      nn.Linear(sw, n_pos))
+        self.col_head = nn.Sequential(nn.Linear(sw, sw), nn.ReLU(),
+                                      nn.Linear(sw, n_pos))
+        self.status_head = nn.Sequential(nn.Linear(sw, sw), nn.ReLU(),
+                                         nn.Linear(sw, cfg.n_status_values))
+        self.vis_head = nn.Sequential(nn.Linear(sw, sw), nn.ReLU(),
+                                      nn.Linear(sw, 1))
+        self.event_head = nn.Sequential(nn.Linear(sw, sw), nn.ReLU(),
+                                        nn.Linear(sw, 4))
 
     def forward(self, slots):
         """slots: (B, N, D). Returns obs_pred (B, N, rd), event_pred (B, 4)."""
-        obs_pred = self.obs_head(slots)
-        B, N, D = slots.shape
-        event_pred = self.event_head(slots.reshape(B, N * D))
+        obs_pred = torch.cat([
+            self.type_head(slots),
+            self.row_head(slots),
+            self.col_head(slots),
+            self.status_head(slots),
+            self.vis_head(slots),
+        ], dim=-1)
+        event_pred = self.event_head(slots.sum(dim=1))
         return obs_pred, event_pred
 
 
@@ -662,22 +692,29 @@ class FlatGRUModel(nn.Module):
     @staticmethod
     def _estimate_slot_params(cfg):
         rd = _record_dim(cfg)
-        enc = rd * cfg.slot_width + cfg.slot_width + cfg.slot_width * cfg.slot_width + cfg.slot_width
-        gru = 3 * (cfg.slot_width * cfg.slot_width + cfg.slot_width * cfg.slot_width + cfg.slot_width * 2)
-        msg = 4 * (cfg.slot_width * cfg.slot_width + cfg.slot_width)
-        head_obs = cfg.slot_width * cfg.slot_width + cfg.slot_width + cfg.slot_width * rd + rd
-        head_evt = (cfg.n_slots * cfg.slot_width) * cfg.slot_width + cfg.slot_width + cfg.slot_width * 4 + 4
-        act = cfg.n_actions * cfg.slot_width
-        return enc + gru + msg + head_obs + head_evt + act
+        sw = cfg.slot_width
+        n_pos = 2 * cfg.max_pos_offset + 1
+        enc = rd * sw + sw + sw * sw + sw
+        gru = 3 * (sw * sw + sw * sw + sw * 2)
+        msg = 4 * (sw * sw + sw)
+        act = cfg.n_actions * sw
+        # Factorized head: 5 per-field heads + 1 event head, each sw→sw→out
+        def _head_params(out_dim):
+            return sw * sw + sw + sw * out_dim + out_dim
+        head = (_head_params(cfg.n_object_types) + _head_params(n_pos) +
+                _head_params(n_pos) + _head_params(cfg.n_status_values) +
+                _head_params(1) + _head_params(4))
+        return enc + gru + msg + head + act
 
     @staticmethod
     def _solve_hidden(input_dim, target_params, cfg):
         rd = _record_dim(cfg)
+        sw = cfg.slot_width
         for h in range(32, 512):
             proj = input_dim * h + h
             gru = 3 * (h * h + h * h + h * 2)
-            obs = h * cfg.slot_width + cfg.slot_width + cfg.slot_width * (cfg.n_slots * rd) + cfg.n_slots * rd
-            evt = h * cfg.slot_width + cfg.slot_width + cfg.slot_width * 4 + 4
+            obs = h * sw + sw + sw * (cfg.n_slots * rd) + cfg.n_slots * rd
+            evt = h * sw + sw + sw * 4 + 4
             total = proj + gru + obs + evt
             if total >= target_params * 0.95:
                 return h
@@ -716,6 +753,74 @@ class FlatGRUModel(nn.Module):
         op = self.obs_head(hidden).reshape(B, N, rd_dim)
         ep = self.event_head(hidden)
         return op, ep, hidden
+
+
+class ControlBModel(nn.Module):
+    """Set-aware monolithic recurrent control (R3b §5).
+
+    Carrier-tagged encoding → invariant sum-pool → global GRU →
+    per-carrier decode conditioned on carrier query.
+    """
+    def __init__(self, cfg: Config, hidden_dim: int):
+        super().__init__()
+        self.cfg = cfg
+        self.hidden_dim = hidden_dim
+        rd = _record_dim(cfg)
+        n_pos = 2 * cfg.max_pos_offset + 1
+
+        self.encoder = nn.Sequential(
+            nn.Linear(rd, hidden_dim), nn.ReLU(),
+            nn.Linear(hidden_dim, hidden_dim))
+        self.action_embed = nn.Embedding(cfg.n_actions, hidden_dim)
+        self.gru = nn.GRUCell(hidden_dim, hidden_dim)
+
+        # Per-carrier decode: cat(global_hidden, carrier_enc) → per-field logits
+        d = hidden_dim * 2
+        self.type_head = nn.Sequential(nn.Linear(d, hidden_dim), nn.ReLU(),
+                                       nn.Linear(hidden_dim, cfg.n_object_types))
+        self.row_head = nn.Sequential(nn.Linear(d, hidden_dim), nn.ReLU(),
+                                      nn.Linear(hidden_dim, n_pos))
+        self.col_head = nn.Sequential(nn.Linear(d, hidden_dim), nn.ReLU(),
+                                      nn.Linear(hidden_dim, n_pos))
+        self.status_head = nn.Sequential(nn.Linear(d, hidden_dim), nn.ReLU(),
+                                         nn.Linear(hidden_dim, cfg.n_status_values))
+        self.vis_head = nn.Sequential(nn.Linear(d, hidden_dim), nn.ReLU(),
+                                      nn.Linear(hidden_dim, 1))
+        self.event_head = nn.Sequential(nn.Linear(hidden_dim, hidden_dim), nn.ReLU(),
+                                        nn.Linear(hidden_dim, 4))
+
+    def init_hidden(self, batch_size):
+        return torch.zeros(batch_size, self.hidden_dim,
+                           device=next(self.parameters()).device)
+
+    def _step(self, obs_encoded, action, hidden):
+        per_carrier = self.encoder(obs_encoded)        # (B, N, hd)
+        pooled = per_carrier.sum(dim=1)                # (B, hd)
+        act_emb = self.action_embed(action)            # (B, hd)
+        hidden = self.gru(pooled + act_emb, hidden)    # (B, hd)
+        B, N, _ = per_carrier.shape
+        h_exp = hidden.unsqueeze(1).expand(B, N, -1)
+        combined = torch.cat([h_exp, per_carrier], dim=-1)  # (B, N, 2*hd)
+        obs_pred = torch.cat([
+            self.type_head(combined), self.row_head(combined),
+            self.col_head(combined), self.status_head(combined),
+            self.vis_head(combined)], dim=-1)
+        event_pred = self.event_head(hidden)
+        return obs_pred, event_pred, hidden
+
+    def forward(self, obs_seq, action_seq):
+        B, Tp1, N, rd = obs_seq.shape
+        T = Tp1 - 1
+        hidden = self.init_hidden(B)
+        obs_preds, event_preds = [], []
+        for t in range(T):
+            op, ep, hidden = self._step(obs_seq[:, t], action_seq[:, t], hidden)
+            obs_preds.append(op)
+            event_preds.append(ep)
+        return torch.stack(obs_preds, 1), torch.stack(event_preds, 1), hidden
+
+    def forward_step_with_hidden(self, obs_t, action_t, hidden):
+        return self._step(obs_t, action_t, hidden)
 
 
 class HistorylessModel(nn.Module):
@@ -816,16 +921,51 @@ def prepare_batches(trajs: list, cfg: Config, shuffle: bool = True) -> list:
 # ---------------------------------------------------------------------------
 
 def compute_loss(obs_pred, event_pred, target_obs, target_events, cfg: Config):
-    """Masked cross-entropy for obs + events."""
+    """Factorized per-field CE + visibility BCE + event CE (R3b §4).
+
+    L = (L_type + L_row + L_col + L_status + L_vis) / 5 + L_event
+    Type/row/col/status CE on visible carriers only; visibility BCE on all carriers.
+    """
     B, T, N, rd = target_obs.shape
+    n_types = cfg.n_object_types
+    n_pos = 2 * cfg.max_pos_offset + 1
+    n_status = cfg.n_status_values
 
-    vis_mask = target_obs[:, :, :, -1]  # visibility flag
-    obs_loss = F.mse_loss(obs_pred * vis_mask.unsqueeze(-1),
-                          target_obs * vis_mask.unsqueeze(-1))
+    t_end = n_types
+    r_end = t_end + n_pos
+    c_end = r_end + n_pos
+    s_end = c_end + n_status
 
-    event_loss = F.cross_entropy(event_pred.reshape(-1, 4), target_events.reshape(-1))
+    vis_flag = target_obs[:, :, :, -1]
+    vis_mask = vis_flag.bool()
 
-    return obs_loss + cfg.event_loss_weight * event_loss, obs_loss.item(), event_loss.item()
+    tgt_type = target_obs[:, :, :, :t_end].argmax(dim=-1)
+    tgt_row = target_obs[:, :, :, t_end:r_end].argmax(dim=-1)
+    tgt_col = target_obs[:, :, :, r_end:c_end].argmax(dim=-1)
+    tgt_status = target_obs[:, :, :, c_end:s_end].argmax(dim=-1)
+
+    pred_type = obs_pred[:, :, :, :t_end]
+    pred_row = obs_pred[:, :, :, t_end:r_end]
+    pred_col = obs_pred[:, :, :, r_end:c_end]
+    pred_status = obs_pred[:, :, :, c_end:s_end]
+    pred_vis = obs_pred[:, :, :, -1]
+
+    zero = torch.tensor(0.0, device=obs_pred.device)
+    if vis_mask.any():
+        L_type = F.cross_entropy(pred_type[vis_mask], tgt_type[vis_mask])
+        L_row = F.cross_entropy(pred_row[vis_mask], tgt_row[vis_mask])
+        L_col = F.cross_entropy(pred_col[vis_mask], tgt_col[vis_mask])
+        L_status = F.cross_entropy(pred_status[vis_mask], tgt_status[vis_mask])
+    else:
+        L_type = L_row = L_col = L_status = zero
+
+    L_vis = F.binary_cross_entropy_with_logits(pred_vis, vis_flag)
+
+    L_record = (L_type + L_row + L_col + L_status + L_vis) / 5.0
+    L_event = F.cross_entropy(event_pred.reshape(-1, 4), target_events.reshape(-1))
+
+    total = L_record + L_event
+    return total, L_record.item(), L_event.item()
 
 
 def train_model(model, train_batches, val_batches, cfg: Config, model_name: str):
@@ -1133,15 +1273,21 @@ def evaluate_intervention(model, pairs: list, cfg: Config, model_type: str) -> d
             if donor_hidden is None or recip_hidden is None:
                 continue
 
-            target_slot = _find_target_slot_from_map(
-                dt.slot_maps[ds], pair.target_handle, cfg.n_slots)
+            # Independent d_idx / r_idx from per-episode carrier maps (R3b §7)
+            if dt.episode_carrier_map is not None and rt.episode_carrier_map is not None:
+                d_idx = _carrier_slot_for_handle(dt.episode_carrier_map, pair.target_handle)
+                r_idx = _carrier_slot_for_handle(rt.episode_carrier_map, pair.target_handle)
+            else:
+                d_idx = _find_target_slot_from_map(
+                    dt.slot_maps[ds], pair.target_handle, cfg.n_slots)
+                r_idx = _find_target_slot_from_map(
+                    rt.slot_maps[rs], pair.target_handle, cfg.n_slots)
+                if d_idx is None or r_idx is None:
+                    continue
 
-            if target_slot is None:
-                continue
-
-            # Create hybrid: recipient hidden with donor's target slot
+            # Patch donor content into recipient carrier
             hybrid_hidden = recip_hidden.clone()
-            hybrid_hidden[0, target_slot] = donor_hidden[0, target_slot]
+            hybrid_hidden[0, r_idx] = donor_hidden[0, d_idx]
 
             # Run forward with shared suffix, comparing predictions
             h_recip = recip_hidden.clone()
@@ -1218,6 +1364,16 @@ def _find_target_slot_from_map(slot_map: list, target_handle: int, n_slots: int)
     return None
 
 
+def _carrier_slot_for_handle(episode_carrier_map: list, target_handle: int) -> int:
+    """Get carrier slot for a handle from the episode's fixed carrier map.
+
+    Objects: [agent, key0, key1, lock0, lock1, goal]
+    Handles: [-1,    0,    1,    2,     3,     4   ]
+    obj_idx = target_handle + 1
+    """
+    return episode_carrier_map[target_handle + 1]
+
+
 # ---------------------------------------------------------------------------
 # Composition test (higher-order: both locks -> goal)
 # ---------------------------------------------------------------------------
@@ -1282,25 +1438,32 @@ def evaluate_composition(model, trajs: list, cfg: Config, model_type: str) -> di
             if d_hidden is None or r_hidden is None:
                 continue
 
-            lock0_slot = _find_target_slot_from_map(donor.slot_maps[d_step], 2, cfg.n_slots)
-            lock1_slot = _find_target_slot_from_map(donor.slot_maps[d_step], 3, cfg.n_slots)
-            goal_slot = _find_target_slot_from_map(donor.slot_maps[d_step], 4, cfg.n_slots)
-
-            if lock0_slot is None or lock1_slot is None or goal_slot is None:
-                continue
+            # Independent d_idx / r_idx from per-episode carrier maps (R3b §7)
+            if donor.episode_carrier_map is not None and recipient.episode_carrier_map is not None:
+                d_lock0 = _carrier_slot_for_handle(donor.episode_carrier_map, 2)
+                d_lock1 = _carrier_slot_for_handle(donor.episode_carrier_map, 3)
+                r_lock0 = _carrier_slot_for_handle(recipient.episode_carrier_map, 2)
+                r_lock1 = _carrier_slot_for_handle(recipient.episode_carrier_map, 3)
+            else:
+                d_lock0 = _find_target_slot_from_map(donor.slot_maps[d_step], 2, cfg.n_slots)
+                d_lock1 = _find_target_slot_from_map(donor.slot_maps[d_step], 3, cfg.n_slots)
+                r_lock0 = d_lock0
+                r_lock1 = d_lock1
+                if d_lock0 is None or d_lock1 is None:
+                    continue
 
             # Single lock 0 patch
             h_single0 = r_hidden.clone()
-            h_single0[0, lock0_slot] = d_hidden[0, lock0_slot]
+            h_single0[0, r_lock0] = d_hidden[0, d_lock0]
 
             # Single lock 1 patch
             h_single1 = r_hidden.clone()
-            h_single1[0, lock1_slot] = d_hidden[0, lock1_slot]
+            h_single1[0, r_lock1] = d_hidden[0, d_lock1]
 
             # Double lock patch
             h_double = r_hidden.clone()
-            h_double[0, lock0_slot] = d_hidden[0, lock0_slot]
-            h_double[0, lock1_slot] = d_hidden[0, lock1_slot]
+            h_double[0, r_lock0] = d_hidden[0, d_lock0]
+            h_double[0, r_lock1] = d_hidden[0, d_lock1]
 
             # Run forward and check if goal activates
             for h, label in [(h_single0, "single0"), (h_single1, "single1"), (h_double, "double")]:
@@ -1380,6 +1543,7 @@ def evaluate_gates(results: dict, cfg: Config) -> dict:
     dense = results.get("dense_slots", {})
     sparse = results.get("sparse_slots", {})
     flat = results.get("flat_gru", {})
+    control_b = results.get("control_b", {})
     historyless = results.get("historyless", {})
     oracle = results.get("oracle", {})
 
@@ -1389,6 +1553,8 @@ def evaluate_gates(results: dict, cfg: Config) -> dict:
     sparse_event = sparse.get("prediction", {}).get("event_macro_f1", 0)
     sparse_status = sparse.get("prediction", {}).get("status_macro_f1", 0)
     flat_event = flat.get("prediction", {}).get("event_macro_f1", 0)
+    cb_event = control_b.get("prediction", {}).get("event_macro_f1", 0)
+    cb_status = control_b.get("prediction", {}).get("status_macro_f1", 0)
     hist_event = historyless.get("prediction", {}).get("event_macro_f1", 0)
 
     recurrent_lift = dense_event - hist_event if hist_event else 0
@@ -1400,15 +1566,20 @@ def evaluate_gates(results: dict, cfg: Config) -> dict:
         "dense_status_f1": dense_status,
         "sparse_event_f1": sparse_event,
         "sparse_status_f1": sparse_status,
+        "control_b_event_f1": cb_event,
+        "control_b_status_f1": cb_status,
         "dense_pass": dense_event >= 0.90 and dense_status >= 0.90,
         "sparse_pass": sparse_event >= 0.90 and sparse_status >= 0.90,
         "recurrent_lift": recurrent_lift,
         "recurrent_lift_pass": recurrent_lift >= 0.10,
-        "flat_within_3": abs(flat_event - dense_event) <= 0.03,
+        "flat_within_3": abs(cb_event - dense_event) <= 0.03,
+        "flat_gru_event_f1": flat_event,
         "overall": False,
     }
-    eligibility["overall"] = (eligibility["dense_pass"] and eligibility["sparse_pass"]
-                              and eligibility["recurrent_lift_pass"])
+    eligibility["overall"] = (eligibility["oracle_pass"] and eligibility["dense_pass"]
+                              and eligibility["sparse_pass"]
+                              and eligibility["recurrent_lift_pass"]
+                              and eligibility["flat_within_3"])
     gates["eligibility"] = eligibility
 
     # Intervention gates (only if eligible)
@@ -1470,64 +1641,39 @@ def evaluate_gates(results: dict, cfg: Config) -> dict:
 # Oracle training (special case: uses ground-truth state)
 # ---------------------------------------------------------------------------
 
-def train_oracle(trajs: list, cfg: Config) -> tuple:
-    """Train oracle model on ground-truth states (batched)."""
-    model = OracleModel(cfg).to(cfg.device)
-    optimizer = torch.optim.Adam(model.parameters(), lr=cfg.lr)
+def evaluate_oracle(trajs: list, cfg: Config) -> dict:
+    """Deterministic simulator oracle (R3b §9). No training — runs world.step()."""
     rd = _record_dim(cfg)
+    n_correct_events = 0
+    n_correct_obs = 0
+    n_total = 0
+    dummy_rng = random.Random(0)
 
-    # Pre-encode all state-action pairs and targets into tensors
-    all_x = []
-    all_tgt_obs = []
-    all_tgt_evt = []
     for traj in trajs:
+        world = KeyLockGridWorld(traj.level_config)
         for step in range(len(traj.actions)):
-            all_x.append(OracleModel.encode_state(traj.states[step], traj.actions[step], cfg))
-            all_tgt_obs.append(torch.from_numpy(traj.obs_encoded[step + 1]))
-            all_tgt_evt.append(traj.events[step][0])
+            state = traj.states[step]
+            action = traj.actions[step]
+            next_state, events = world.step(state, action)
 
-    X = torch.stack(all_x).to(cfg.device)
-    T_obs = torch.stack(all_tgt_obs).to(cfg.device)
-    T_evt = torch.tensor(all_tgt_evt, dtype=torch.long).to(cfg.device)
-    n_samples = len(all_x)
-    bs = min(256, n_samples)
+            pred_event = world.encode_events(events)[0]
+            tgt_event = traj.events[step][0]
+            if pred_event == tgt_event:
+                n_correct_events += 1
 
-    for epoch in range(40):
-        model.train()
-        perm = torch.randperm(n_samples)
-        total_loss = 0.0
-        n_batches = 0
-        for i in range(0, n_samples, bs):
-            idx = perm[i:i+bs]
-            x_b = X[idx]
-            tgt_o = T_obs[idx]
-            tgt_e = T_evt[idx]
+            pred_obs, _ = world.observe_encoded(
+                next_state, dummy_rng, cfg.n_slots, rd,
+                cfg.max_pos_offset, cfg.n_object_types, cfg.n_status_values,
+                identity_perm=traj.episode_carrier_map)
+            tgt_obs = traj.obs_encoded[step + 1]
+            if np.allclose(pred_obs, tgt_obs):
+                n_correct_obs += 1
 
-            h = model.net(x_b)
-            op = model.obs_head(h).reshape(-1, cfg.n_slots, rd)
-            ep = model.event_head(h)
+            n_total += 1
 
-            vis = tgt_o[:, :, -1:]
-            loss = F.mse_loss(op * vis, tgt_o * vis) + F.cross_entropy(ep, tgt_e)
-            optimizer.zero_grad()
-            loss.backward()
-            optimizer.step()
-            total_loss += loss.item()
-            n_batches += 1
-
-        if epoch % 10 == 0:
-            print(f"  [oracle] Epoch {epoch}  loss={total_loss/max(n_batches,1):.4f}")
-
-    # Evaluate
-    model.eval()
-    with torch.no_grad():
-        h = model.net(X)
-        ep = model.event_head(h)
-        preds = ep.argmax(dim=-1)
-        correct = (preds == T_evt).sum().item()
-
-    acc = correct / max(n_samples, 1)
-    return model, {"event_macro_f1": acc, "n_samples": n_samples}
+    event_acc = n_correct_events / max(n_total, 1)
+    obs_acc = n_correct_obs / max(n_total, 1)
+    return {"event_macro_f1": event_acc, "obs_accuracy": obs_acc, "n_samples": n_total}
 
 
 # ---------------------------------------------------------------------------
@@ -1551,9 +1697,12 @@ def run_seed(cfg: Config, model_seed: int) -> dict:
     val_levels = list(range(1000, 1000 + cfg.n_val_levels))
     test_levels = list(range(2000, 2000 + cfg.n_test_levels))
 
-    train_trajs = generate_trajectories(train_levels, cfg, data_rng_seed=model_seed)
-    val_trajs = generate_trajectories(val_levels, cfg, data_rng_seed=model_seed + 1000)
-    test_trajs = generate_trajectories(test_levels, cfg, data_rng_seed=model_seed + 2000)
+    # Frozen data manifest shared across all model seeds (R3b §8).
+    # model_seed controls initialization and training order only.
+    data_seed = 0
+    train_trajs = generate_trajectories(train_levels, cfg, data_rng_seed=data_seed)
+    val_trajs = generate_trajectories(val_levels, cfg, data_rng_seed=data_seed + 1000)
+    test_trajs = generate_trajectories(test_levels, cfg, data_rng_seed=data_seed + 2000)
     print(f"  Generated {len(train_trajs)} train, {len(val_trajs)} val, {len(test_trajs)} test trajectories")
     print(f"  Time: {time.time()-t0:.1f}s")
 
@@ -1565,17 +1714,32 @@ def run_seed(cfg: Config, model_seed: int) -> dict:
 
     results = {"seed": model_seed, "config": asdict(cfg)}
 
-    # Train oracle
-    print("\nTraining oracle...")
-    oracle_model, oracle_pred = train_oracle(train_trajs[:512], cfg)
+    # Deterministic oracle (simulator transition, no training)
+    print("\nEvaluating deterministic oracle...")
+    oracle_pred = evaluate_oracle(train_trajs[:512], cfg)
     results["oracle"] = {"prediction": oracle_pred}
     print(f"  Oracle event accuracy: {oracle_pred['event_macro_f1']:.4f}")
+    print(f"  Oracle obs accuracy: {oracle_pred.get('obs_accuracy', 'N/A')}")
+
+    # Compute Control B parameter-matched hidden dim
+    dense_ref = DenseSlotModel(cfg)
+    dense_n_params = sum(p.numel() for p in dense_ref.parameters())
+    del dense_ref
+    controlb_hpm = 32
+    for h in range(16, 256):
+        cb_test = ControlBModel(cfg, h)
+        if sum(p.numel() for p in cb_test.parameters()) >= dense_n_params * 0.95:
+            controlb_hpm = h
+            del cb_test
+            break
+        del cb_test
 
     # Train and evaluate each model
     model_configs = [
         ("dense_slots", DenseSlotModel),
         ("sparse_slots", SparseSlotModel),
         ("flat_gru", FlatGRUModel),
+        ("control_b", ControlBModel),
         ("historyless", HistorylessModel),
     ]
 
@@ -1583,8 +1747,8 @@ def run_seed(cfg: Config, model_seed: int) -> dict:
         print(f"\nTraining {model_name}...")
         torch.manual_seed(model_seed)
 
-        if model_name == "historyless":
-            model = ModelClass(cfg).to(cfg.device)
+        if model_name == "control_b":
+            model = ModelClass(cfg, controlb_hpm).to(cfg.device)
         else:
             model = ModelClass(cfg).to(cfg.device)
 
