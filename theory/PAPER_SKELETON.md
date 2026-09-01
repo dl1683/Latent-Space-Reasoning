@@ -68,24 +68,67 @@ laws (idempotence, non-naturality) generalize is an open empirical question.
 
 ### 2.1 The prompt world
 
-- 3 entities (ZOG, MIP, PLIM), each with 2 possible values
-- 8 worlds = full factorial
-- 2 presentation orders (standard, reversed) per world → 16 base histories
-- Registered entity names + held-out entity names (KROT, BLEN, DASK)
+We construct a minimal synthetic world with three nonsense entities (ZOG, MIP,
+PLIM), each taking one of two possible values (e.g., ZOG is "big" or "small").
+This yields $2^3 = 8$ possible *worlds* (complete fact assignments). Each world
+is presented as a prompt history of the form:
+
+> `ZOG: big. MIP: hot. PLIM: red.`
+
+For each world we generate two *presentation orders*: standard (ZOG, MIP, PLIM)
+and reversed (PLIM, MIP, ZOG). This gives $8 \times 2 = 16$ base histories,
+which form the prompt set $X$.
+
+We query the model by appending `\nENTITY:` and reading the greedy next token.
+A history's *greedy signature* is its vector of greedy answers across all three
+queries.
+
+**Held-out generalization.** We repeat the entire protocol with three fresh
+entity names (KROT, HESK, VORN) and fresh value pairs (fast/slow, tall/short,
+loud/quiet) that never appear in the registered set. All algebraic laws are
+tested on both entity sets independently.
 
 ### 2.2 The instrument
 
-- **Logit lens**: apply final layernorm + unembedding at each intermediate layer
-- **Jensen-Shannon distance** (√JSD): proper metric between probability distributions
-- Why not cosine: cosine ≥ 0.91 throughout the resolution layer where √JSD shows
-  62× selectivity. Cosine is not wrong in general; it does not resolve the
-  behaviorally relevant structure in this setting.
+**Logit lens.** At each intermediate layer $\ell$, we apply the model's final
+layernorm and unembedding head to the hidden state, producing a
+pseudo-distribution over vocabulary. This gives a layer-by-layer behavioral
+trajectory without training any auxiliary model.
 
-### 2.3 Model and reproducibility
+**Jensen-Shannon distance.** We measure distributional differences using
+$d_{\text{JS}}(p, q) = \sqrt{\text{JSD}(p \| q)}$, which is a proper metric on
+probability distributions (bounded in $[0, 1]$, satisfying the triangle
+inequality). Following Codex review: this is JSD *distance* (square root), not
+raw JSD — the paper uses this term throughout.
 
-- Qwen3-0.6B (28 layers, 1024 hidden dim, GQA with 16/8 heads)
-- CPU-only, deterministic seeds, full configs in experiment ledger
-- All code, configs, and raw results committed to the repository
+**Why not cosine.** Cosine similarity between hidden states remains ≥ 0.91
+throughout the resolution layer (L21-25) where √JSD shows 62× selectivity
+between queried and irrelevant facts. Cosine is not wrong in general; it does
+not resolve the behaviorally relevant structure in this setting.
+
+### 2.3 Typed continuations
+
+We define four typed continuation operations, each appended to a base history:
+
+| Operation | Text appended | Example |
+|-----------|--------------|---------|
+| Empty ($\varepsilon$) | Nothing | (base prompt only) |
+| Neutral ($N$) | Irrelevant padding | `" Note: the sky is blue."` |
+| Correction ($C_{e \leftarrow v}$) | Fact override | `" Actually, ZOG: small."` |
+| Restatement ($S^W_w$) | Full-world restatement | `" To be clear: ZOG: big. MIP: hot. PLIM: red."` |
+
+The restatement $S^W_w$ is constructed from the experimenter-known world $w$
+(the ground-truth fact assignment), not from the model's observable greedy
+signature. This is a deliberate design choice whose implications we discuss in
+§6.3.
+
+### 2.4 Model and reproducibility
+
+Qwen3-0.6B: 28 transformer layers, 1024 hidden dimension, grouped-query
+attention (16 query heads, 8 key-value heads, head dimension 128). All
+experiments run on CPU with deterministic seeds (`torch.manual_seed`). Full
+configs, commands, and raw JSON results are committed to the repository and
+logged in a machine-readable experiment ledger (JSONL).
 
 ---
 
