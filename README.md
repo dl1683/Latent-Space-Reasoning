@@ -8,7 +8,7 @@ This project is building the **native mathematics of latent spaces** — not por
 
 **Cosine similarity — the standard tool for comparing neural network representations — is blind to the model's actual behavioral structure.** Not imprecise. *Blind.* It inverts the ranking: states cosine calls most similar are the most behaviorally different. What does see the structure? The model's own output distributions, measured through logit lens + Jensen-Shannon divergence.
 
-Using this instrument across 16 audited experiments, we've found that a small language model maintains a **structured behavioral algebra** entirely invisible to ℝⁿ metrics:
+Using this instrument across 18 audited experiments, we've found that a small language model maintains a **structured behavioral algebra** entirely invisible to ℝⁿ metrics:
 
 | Finding | Number | What it means |
 |---------|--------|---------------|
@@ -17,7 +17,8 @@ Using this instrument across 16 audited experiments, we've found that a small la
 | **Greedy congruence** | 97% | Same-place histories produce the same next-token prediction — the argmax algebra is real |
 | **Distributional congruence** | 0% | But the full output distributions *always* differ — every greedy fiber contains distinguishable states |
 | **Commitment bottleneck** | 0.05 bits | Entropy drops to near-zero at L25 (the model fully commits), then re-broadens to 5.5-7.7 bits |
-| **Synchronization idempotence** | 100% | The world-conditioned restatement S^W is a genuine algebraic retraction: (S^W)² ≈ S^W |
+| **Synchronization idempotence** | 100% | Both S^W (world-conditioned) and S^G (observable) restatements are genuine algebraic retractions |
+| **Observable canonicalizer** | 100% descent | S^G, built from the model's own greedy answers alone, descends perfectly to the quotient |
 
 ## What we've found
 
@@ -47,9 +48,12 @@ The model supports a **coarse partial action algebra** of greedy commitments:
 - **Places** are greedy answer profiles (which entity gets which answer)
 - **Moves** are typed continuations: empty, neutral, correction, restatement
 - **Place preservation** is near-total for identity-like operations (100% empty, 95% neutral/restatement) and genuinely state-changing for corrections (35%)
-- **Synchronization (S^W)** via world-conditioned restatement is approximately idempotent: JSD(S, S²) = 0.078, 100% greedy idempotence
+- **Synchronization** via canonical restatement is approximately idempotent: JSD(S, S²) ≈ 0.07, 100% greedy idempotence
+- **Two canonicalizers:** S^W (from experimenter-known world) and S^G (from the model's own observable greedy answers). S^G descends perfectly to the quotient; S^W fails for one cross-world fiber.
 
-The decisive test: does world-conditioned restatement commute with correction? **No.** A corrected experiment (v2) with the properly typed square (both paths ending at the corrected world) confirms non-naturality: the correction/restatement square does not commute (JSD distance 0.21, greedy commutativity 70.8-89.6%). Two update paths denoting the same corrected world produce different response laws and, on held-out names, different greedy answers in 14 of 48 cases. Prediction remains presentation-path dependent even when both paths have reached the same declarative world.
+The decisive test: does restatement commute with correction? **No — with either canonicalizer.** Both S^W and S^G show non-naturality: the correction/restatement square does not commute (JSD distance ~0.20, greedy commutativity 70.8-89.6%). Two update paths denoting the same corrected world produce different response laws. Prediction remains presentation-path dependent even when both paths have reached the same declarative world. S^G eliminates the objection that non-naturality depends on hidden experimenter information.
+
+A new finding: **correction itself does not reliably descend to the quotient** (58-80%). The same correction is ignored by some presentation orders and accepted by others — the fiber's distributional residual (invisible to argmax) affects how the model responds to further operations.
 
 All results generalize to held-out entities the model has never seen in the training prompts.
 
@@ -103,7 +107,7 @@ NOTEBOOK.md            Reverse-chronological running log
 
 **Phase 2** (active). Phase 1 (50 experiments, 2026-08-27 → 2026-08-31) established the nine breakpoints and the ℝⁿ trap. Phase 2 (17 experiments, 2026-08-31) builds genuinely non-ℝⁿ instruments and discovers the behavioral algebra.
 
-The central empirical claim (Codex-audited): *In a bounded three-fact prompt world in one small language model, greedy answer signatures form an approximate behavioral quotient with nontrivial predictive fibers, while a world-conditioned canonical restatement is approximately idempotent but non-natural with correction: two update paths denoting the same corrected world produce different response laws and, on held-out names, different greedy answers in 14 of 48 cases.*
+The central empirical claim (Codex-audited): *In a bounded three-fact prompt world in one small language model, greedy answer signatures form an approximate behavioral quotient with nontrivial predictive fibers. Two canonical restatements — one from the hidden world (S^W) and one from the model's own observable greedy answers (S^G) — are both approximately idempotent but non-natural with correction: two update paths denoting the same corrected world produce different response laws and, on held-out names, different greedy answers in 14 of 48 cases. The observable canonicalizer S^G descends perfectly to the quotient and eliminates the hidden-information objection.*
 
 Current state: [`STATE.md`](STATE.md) · Running log: [`NOTEBOOK.md`](NOTEBOOK.md) · Phase 1 handoff: [`docs/HANDOFF_2026_08_30.md`](docs/HANDOFF_2026_08_30.md)
 
