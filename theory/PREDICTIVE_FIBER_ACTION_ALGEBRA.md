@@ -86,7 +86,7 @@ Fixed cyclic shuffle 0/32 (pairing-sensitive; textual echo unresolved). On the 3
 
 Anti-echo alias control (Phase 4c, Codex evidence gate REVISE): no anti-echo evidence. The faithful alias arm did not exceed either comparator by the predeclared 30-point margin. A subsequent direct R(g) recovered 47.9%, ruling out a deterministic latest-explicit-assignment rule. Implementation defects: shuffled alias uses out-of-type values (disjoint entity domains); alias grammar differs from direct format; aliases not counterbalanced. This particular alias renderer did not override the direct decoy; this does not prove the model cannot resolve aliases. The literal signature renderer preserved 32/32 full greedy signatures — do not call this semantic or latent-space invariance. The v2 non-commuting square establishes sequence/path dependence but does not rule out ordinary textual order or multiplicity effects.
 
-#### Phase 4d terminal anti-echo factorial (pre-registered; unrun)
+#### Phase 4d terminal anti-echo factorial (pre-registered; RUN — NO_INTERFACE_OR_INVALID__TERMINAL_DEMOTION)
 
 **So what:** this is the last prompt-only test of whether signature restatement
 does more than let the most recent literal record dominate the answer; any
@@ -220,6 +220,18 @@ the observed signature moved answers against a conflicting direct record, so
 verbatim entity-value copying and the registered final-block recency rule are
 insufficient for these prompts."  Even that outcome does not establish a
 latent-space invariant, a semantic retraction, or native mathematics.
+
+**Result (2026-08-31).** 2304 forward passes, Qwen3-0.6B CPU.  Gate 0
+(integrity) passed: 100% domain validity, all token multisets verified, alias
+counterbalancing exact.  **Gate 1 (interface) FAILED** in both sets: confirming
+records followed at 97.9%/91.7% (D1) but contradicting records followed at only
+43.8%/16.7% (D2, threshold 60%).  Gate 2 (direct recency) failed: logit order
+effect −0.043/−0.086 with CI crossing zero.  Gate 3 (alias necessity) failed:
+A1 counterfactual follow 4.2%/6.9%.  Gate 4 (alias anti-echo) failed: greedy
+rates too low despite strong logit effects (3.6/2.4 nats).  **Verdict:
+NO_INTERFACE_OR_INVALID__TERMINAL_DEMOTION.**  $S^G$ is locked as a literal
+append operator; no further renderer tuning.  Raw data:
+`experiments/results/signature_restatement_v1/phase4d_results.json`.
 
 **L3: Correction changes place.** $C_{e \leftarrow v}$ maps greedy place $g$ to a
 different place $g'$ where entity $e$'s answer is $v$, in 58-65% of cases.
