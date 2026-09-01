@@ -1149,3 +1149,30 @@ identity carry.
 
 A nonpass kills this exact block/carrier/span construction, not internal
 endogenous computation laws generally.
+
+### 10.12 Result: INVALID_OR_NO_PROPAGATION_CONTROL (2026-09-01)
+
+144 forward passes. Instrument integrity PASS (noop $d = 0.0$). Material
+support PASS (12/12 edge clusters eligible). **Bypass viability FAIL (7/48
+cells retain $\ge 50\%$ value token mass).**
+
+| Gate | Value | Bar | Status |
+|------|-------|-----|--------|
+| Instrument | $d_{\text{noop}} = 0.0$ | $\le 10^{-5}$ | **PASS** |
+| Material | 12/12 | $\ge 9/12$ | **PASS** |
+| Bypass viability | 7/48 | $\ge 44/48$ | FAIL |
+| $A_O$ | 0.254 [0.198, 0.313] | lb $\ge 0.10$ | **PASS** (descriptive) |
+| $C_O$ | 0.174 [0.086, 0.256] | lb $\ge 0.05$ | **PASS** (descriptive) |
+| $\Sigma_O$ | 0.428 [0.304, 0.539] | lb $\ge 0.20$ | **PASS** (descriptive) |
+| $A_F$ | 0.159 [0.111, 0.208] | est $\ge 0.05$, lb $> 0$ | **PASS** (descriptive) |
+| $C_F$ | 0.013 [$-$0.017, 0.043] | est $\ge 0.05$, lb $> 0$ | FAIL |
+| $\Sigma_F$ | 0.172 [0.126, 0.214] | est $\ge 0.10$, lb $\ge 0.05$ | **PASS** (descriptive) |
+| Stability | ub = 0.038 | $\le 0.05$ | **PASS** (descriptive) |
+| Family | all $> 0.02$ | each $\ge 0.02$ | **PASS** (descriptive) |
+
+The identity bypass is too destructive --- block 25 is a critical
+computation step, and skipping it pushes blocks 26--27 into off-manifold
+states. This is exactly the pre-declared strongest null: deleting the block
+is an off-manifold lesion. No scientific verdict. The O-endpoint data is
+descriptively consistent with query-selective action but the control is
+invalid. Terminal.
