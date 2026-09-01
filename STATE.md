@@ -14,14 +14,22 @@ logit-additive null explains 99.1% of the composition effect (sqrt(JSD) = 0.0001
 (2) logit-additive composition through the linear unembedding (decoder competition);
 (3) template-dependent responses (no fiber invariance). None are native math.
 
-**Next direction (under Codex review):** Constructive program — Fiber-Bottleneck
-Architecture (FBA). Build a system where D1-D9 are design contracts (not discovery
-targets). Compositional grid world with opaque action tokens; fiber-bundle
-bottleneck constrains but doesn't solve; flat transformer control; held-out
-composition pairs. Kill gates: K6 (≥20pp gap), K7 (ablation ≥15pp), K8 (not
-tautological), K9 (axiom satisfaction). Codex direction dialogue rounds 11-12
-in progress; round 11 recommended stopping the frozen-model loop (agreed) and
-chartering a new stateful-substrate program (the FBA IS that program).
+**Constructive program: FBA-0 (Codex rounds 11-18, R18 review pending).**
+Distance from claim: 1 (engineered-factorization control for the native math program).
+Architecture: two-branch 16/16 independently-updated recurrent bottleneck (32 dims total).
+Six-way comparison: FBA (33,664 params), flat GRU (40K), flat-matched GRU (33,368),
+asymmetric split (24/8, 34,688), modular (4×8 groups, 34,688), flat bottleneck (37,760).
+Environment: cyclic world Z/8 × Z/4 (32 cells), 16 opaque actions, T=3, 85/15 confusion
+matrix on both observation dimensions. Oracle separation: historyless ~73%, recurrent ~96%.
+Split: response-law equivalence classes (32 classes, 21/3/8).
+Kill gates (joint predicate per seed, majority required): K4 (all train ≥90%),
+K6 (FBA > best flat ≥20pp), K7a (FBA > asymmetric ≥15pp), K7b (branch interchange
+beats historyless null with Bonferroni-corrected CI, wrong-channel CI-gated,
+class-clustered CI-gated). Cosine LR (1e-3→1e-5, 2000 epochs). Paired effects
+CI-gated. Theory bridge: theory/FBA_BRIDGE.md. R18 GO/NO-GO pending.
+Claim scope (bounded): "In this synthetic Z_8×Z_4 POMDP, does the 16/16 independently
+updated recurrent architecture improve held-out response-class accuracy over
+registered controls and support matched branch-interchange behavior?"
 
 ### Closed results (OCI/RAC line — bounded activation-steering)
 

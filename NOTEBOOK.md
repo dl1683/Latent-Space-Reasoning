@@ -4,6 +4,129 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — FBA-0 CNW: REINFORCE→PPO transition
+
+**Diagnosis:** REINFORCE training on CNW produced 4-9% single-goal eval (greedy),
+matching the constant-action baseline (2-5%). Training "success" of 35-38% matched
+the RANDOM WALK baseline (37.3%). The agent was learning NOTHING — 48K episodes,
+zero signal above random.
+
+**Root causes identified:**
+1. Entropy coefficient (0.01-0.05) too high for 5 actions — entropy stayed at 99%
+   of max (ln(5)≈1.609), drowning out policy gradient.
+2. REINFORCE variance too high for this exploration-heavy POMDP.
+3. Observation permutation (obs_perm) + action permutation simultaneously makes
+   the task a full meta-learning challenge too hard for vanilla PG.
+
+**Fix: PPO with GAE.** Rewrote train_fba_batched.py:
+- PPO clip objective (eps=0.2), 4 epochs per rollout
+- GAE lambda=0.95 for advantage estimation
+- Entropy coefficient reduced to 0.005-0.01
+- Gradient clipping at 0.5
+
+**Added env config flags:** `obs_perm_enabled`, `action_perm_enabled` for
+controlled difficulty scaling. Default: both disabled for capability test.
+
+**Fixed-action capability test (obs_noise=0, no perms, ent=0.005):**
+- 500 updates, 16K episodes, ~27 ep/s
+- Single-goal eval: 83.3% (vs random 37%, K_cap=80% threshold MET)
+- Composition eval: 46% (vs random ~5-10%)
+- Entropy dropped: 1.50 → 0.26 (policy concentrates)
+- Architecture CAN learn, training pipeline works
+
+**Action-perm test running:** Same settings but with permuted actions per world.
+Agent must discover action mapping within each episode (meta-learning). Critical
+test for whether the GRU hidden state can support within-episode dynamics learning.
+Result pending.
+
+**Next:** If action-perm works → full campaign (4 archs × 3 seeds). If not → add
+BPTT or fall back to fixed-action comparison.
+
+
+## 2026-09-01 — FBA-0: R17 NO-GO → R18 Fixes → Resubmit
+
+**Codex R17 verdict: NO-GO.** Fatal orientation bug + 5 smaller issues:
+1. K7b orientation bug: for B=place, code fed H([B_i, A_j]) — permuting the
+   decoder's trained input slots. FIXED: both orientations always feed
+   H([A_..., B_...]) with correct slot order; only episode indices swap.
+   A=place: H([A_i, B_j]). B=place: H([A_j, B_i]).
+2. Post-selection bias from picking better orientation. FIXED: Bonferroni
+   correction alpha/2=0.025 on all K7b bootstrap CIs.
+3. CI pseudoreplication (pairs reuse episodes). ACKNOWLEDGED: Bonferroni
+   widens CIs; multi-seed majority gate provides additional robustness.
+4. Class-clustered stat not gated. FIXED: cross_by_class CI lower bound
+   > hl_cross_null now required in joint predicate.
+5. Wrong-channel on point estimates. FIXED: wc_loc_ci and wc_state_ci
+   lower bounds gated instead of point estimates.
+6. Distance overclassification. FIXED: distance 0→1, docstring updated.
+
+Theory bridge created: theory/FBA_BRIDGE.md with Definitions 1-4 and
+Proposition 1 (response-law equivalence, product factorization, branch
+interchange, wrong-channel controls).
+
+Awaiting Codex R18 GO/NO-GO.
+
+## 2026-09-01 — FBA-0: R16 NO-GO → R17 Fixes → Resubmit
+
+**Codex R16 verdict: NO-GO.** Three blockers:
+1. Paired effects computed but not gated. FIXED: evaluate_gates reads
+   paired_effects, requires CI lower bound > 0 for all flat controls.
+2. K7b different random pairs per orientation, no CI. FIXED: shared pair
+   manifest before orientation loop, bootstrap CI on all scores, CI lower
+   bounds in gate.
+3. Theory bridge missing. DEFERRED per artifact precedence.
+
+Awaiting Codex R17 GO/NO-GO.
+
+## 2026-09-01 — FBA-0: R15 NO-GO → R16 Fixes → Resubmit
+
+**Codex R15 verdict: NO-GO.** Four scientific blockers:
+1. 24/8 is asymmetric-width ablation, not wrong topology. FIXED: renamed to
+   `asymmetric_split`, dropped all topology/fiber-bundle/native-math claims.
+   Licensed claim bounded to: "16/16 independently updated recurrent architecture
+   improved held-out response-class accuracy over registered controls."
+2. K7b thresholds vacuous (historyless null clears 30%/50%/50%). FIXED: complete
+   rewrite — orientation search (both A=place/B=fiber and reverse), exact self-patch,
+   wrong-channel controls (same-loc/same-state), thresholds beat historyless null
+   by margin (cross>0.7525, pres>0.87, wc>0.85). Verified: untrained model scores
+   cross=4.5%, place=13%, fiber=31% → correctly fails.
+3. Gate escape hatch (separate per-gate majorities). FIXED: joint predicate per seed
+   (K4 AND K6 AND K7a AND mod AND K7b all must pass for same seed), then majority.
+4. No paired clustered effects. FIXED: `paired_class_effect()` computes FBA-minus-
+   control per response class with bootstrap CI.
+
+Also: cosine LR scheduling integrated (1e-3→1e-5 over 2000 epochs), confirmed
+reaching K4 threshold (train=0.913). Class manifests include full member lists.
+
+Awaiting Codex R16 GO/NO-GO.
+
+## 2026-09-01 — FBA-0: R14 NO-GO → R15 Fixes → Resubmit
+
+**Codex R14 verdict: NO-GO.** Six issues:
+1. Wrong-topology control was conjugate reparameterization (coordinate permutation
+   absorbable by learned projection). FIXED: replaced with asymmetric (24/8) split,
+   provably non-conjugate to (16/16).
+2. K7b interchange test missing. FIXED: implemented causal branch interchange —
+   cross-patch head(cat(place_i, fiber_j)) checks if branches encode separate factors.
+3. Gate logic not conjunctive (K4 not enforced, modular not checked, oracle
+   violations only warned). FIXED: overall now requires ALL of: oracle validity,
+   K4 all seeds, K6/K7a/modular/K7b majority.
+4. No paired response-class uncertainty. FIXED: per-episode results with class IDs,
+   bootstrap CI per class.
+5. Only MD5 for response classes. FIXED: exact transition tuples stored, class
+   manifests in verdict.json.
+6. Capacity-matched flat missing. FIXED: added flat_matched (d_h=24, 33,368 params ≈
+   FBA's 33,664).
+
+**Training signal confirmed:** 500-epoch FBA-only run reached 81.3% test accuracy,
+above historyless ceiling (73%), confirming the model learns to exploit recurrence.
+
+**Param counts verified:** FBA 33,664 | flat_matched 33,368 | wrong_topo(24/8) 34,688 |
+modular(4×8) 34,688 | flat 40,000 | flat_bn 37,760.
+
+**R15 submitted.** Awaiting Codex GO/NO-GO.
+
+
 ## 2026-09-01 — Codex Round 11: Direction Dialogue (Round 1 of 2-3)
 
 **Codex recommendation: stop the frozen-model discovery program.**
@@ -38,10 +161,26 @@ identifiability stress test. Correct claim: "behaviorally grounded structural
 prior enables compositional generalization," NOT "system discovered a fiber bundle."
 Falsifier genuine: K6+K7 with K8/K9 as validity preconditions.
 
-**Round 13 in progress:** Final specification-hardening. GO/NO-GO decision.
-All four additions addressed. Architecture sketch updated (independent encoding,
-no cross-attention leakage). Four-way comparison designed. Partial observability
-via noisy state observations (70% correct).
+**Round 13 result: NO-GO — 5 mandatory fixes.** Codex approved the FBA direction
+but ruled the spec not implementation-ready:
+(1) Bottleneck was decorative — GRU h_t (128d) bypassed it; all heads read h_t.
+    FIX: z_t (32d) is now the SOLE persistent state. GRU h_t is transient (zeroed).
+(2) Exchangeability contradiction — 50% swap augmentation vs K7b swap-must-fail.
+    FIX: removed swap augmentation; scrambled uses fixed permutation, not per-step rotation.
+(3) K9 quotient mathematically invalid — d_∞ < ε not transitive.
+    FIX: replaced with approximate behavioral congruence (no quotient claim).
+(4) Recurrence necessity unproven — need aliasing witness, memoryless baseline, oracle.
+    FIX: added ReactiveAgent, BFS oracle, aliasing witness computation.
+(5) Primitive confound — 10pp K_prim too loose; A→B→C may be option chaining.
+    FIX: K_prim tightened to 3pp; option-chaining controller added as null hypothesis.
+Additional controls: factorization-negative worlds, composition staircase (all 2-goal,
+3-goal, and repetition sequences). Parameter parity: all recurrent archs exactly 111,956.
+
+**Round 14 submitted (2026-09-01):** All fixes implemented in code. Awaiting GO/NO-GO.
+Architecture, training loop, and gate evaluation harness all implemented and smoke-tested.
+
+**Files created:** experiments/env_cnw.py (environment), experiments/arch_fba.py (5 architectures),
+experiments/train_fba_batched.py (training), experiments/eval_gates.py (gate evaluation).
 
 
 ## 2026-09-01 — BMM-0: Behavioral Manifold Mapping (instrument calibration)
