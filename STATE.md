@@ -14,7 +14,7 @@ logit-additive null explains 99.1% of the composition effect (sqrt(JSD) = 0.0001
 (2) logit-additive composition through the linear unembedding (decoder competition);
 (3) template-dependent responses (no fiber invariance). None are native math.
 
-**Constructive program: FBA-0 (Codex rounds 11-18, R18 review pending).**
+**Constructive program: FBA-0 (Codex rounds 11-21, R21 GO).**
 Distance from claim: 1 (engineered-factorization control for the native math program).
 Architecture: two-branch 16/16 independently-updated recurrent bottleneck (32 dims total).
 Six-way comparison: FBA (33,664 params), flat GRU (40K), flat-matched GRU (33,368),
@@ -24,12 +24,14 @@ matrix on both observation dimensions. Oracle separation: historyless ~73%, recu
 Split: response-law equivalence classes (32 classes, 21/3/8).
 Kill gates (joint predicate per seed, majority required): K4 (all train ≥90%),
 K6 (FBA > best flat ≥20pp), K7a (FBA > asymmetric ≥15pp), K7b (branch interchange
-beats historyless null with Bonferroni-corrected CI, wrong-channel CI-gated,
-class-clustered CI-gated). Cosine LR (1e-3→1e-5, 2000 epochs). Paired effects
-CI-gated. Theory bridge: theory/FBA_BRIDGE.md. R18 GO/NO-GO pending.
+beats historyless null with Bonferroni-corrected CI, Clopper-Pearson exact CI for
+wrong-channel with MIN_WC_PAIRS=30 gate, class-clustered CI-gated, disjoint episode
+pairs). Cosine LR (1e-3→1e-5, 2000 epochs). Paired effects CI-gated.
+Theory bridge: theory/FBA_BRIDGE.md (decoder-compatible branch separation, not
+product factorization). R21 GO — full campaign awaiting CPU availability.
 Claim scope (bounded): "In this synthetic Z_8×Z_4 POMDP, does the 16/16 independently
 updated recurrent architecture improve held-out response-class accuracy over
-registered controls and support matched branch-interchange behavior?"
+registered controls and support decoder-compatible branch-interchange behavior?"
 
 ### Closed results (OCI/RAC line — bounded activation-steering)
 
