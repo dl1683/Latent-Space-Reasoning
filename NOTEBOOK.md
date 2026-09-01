@@ -4,6 +4,53 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — OCI-001: Operation-Carrier Interchangeability — NEGATIVE
+
+**Experiment OCI-001 (Codex round 3 design).** Can a donor's "operation" transfer
+to a recipient's facts via hidden-state transplant? Donor: capital-city prompts
+with France/Germany. Recipient: Spain/Italy. Operation A = "retrieve 1st entity
+property," Operation B = "retrieve 2nd entity property." Transplant at 10
+boundaries (L6–L24).
+
+**Baselines CLEAN.** DA: "France" at 83.4%. DB: "Germany" at 38.0%. RA: "Spain"
+at 68.5%. RB: "Italy" at 23.9% (near-tied with "Spain" at 23.8%).
+
+**Three regimes found:**
+1. **Early (L6–12):** No transfer. Recipient KV cache dominates. DA→RA still
+   predicts "Spain" at 68%. Donor state has zero effect.
+2. **Mid (L14–20):** Differential perturbation. DA and DB push recipient
+   differently, but NOT toward donor's operation. DA→RB increases Italy (0.436),
+   DB→RB increases Spain (0.296). This reflects ENTITY IDENTITY leaking, not
+   abstract operation transfer.
+3. **Late (L22–24):** PURE CONTENT TRANSFER. DA→RA predicts "France" at 88.6%
+   (donor's answer). DA→RB predicts "France" at 87.3%. DB→RA predicts "Germany"
+   at 58.7%. The donor's specific answer overwrites the recipient completely.
+
+**DEFINITIVE NEGATIVE for operation transfer.** At NO layer does DA→RB produce
+"Spain" (which operation transfer requires — DA's "retrieve 1st entity" applied
+to RB's facts). Operations are not separable from content in single hidden-state
+vectors. They are distributed across the full KV cache and attention patterns.
+
+**Implication:** The "native object" of a transformer is NOT a vector at a single
+position — it is the full computational state across all positions. This validates
+the "verbs thesis" in a negative direction: you cannot transplant the verb (operation)
+by transplanting a single noun (hidden state). The verb is the transformation itself.
+
+---
+
+## 2026-09-01 — ATTN-001: Process-specific attention heads found but redundant
+
+**Experiment.** Compared attention patterns between same-process and cross-process
+prompts at L16. Head 10 shows 0.963 cosine similarity for same-process pairs vs
+0.451 for cross-process (gap = 0.512). Answer-position attention ratio: 31x
+discrimination. Head 14 also process-specific (gap = 0.347).
+
+**Ablation:** Ablating head 10, head 14, or both simultaneously has MINIMAL effect
+on model output. The model has redundant pathways. Process-specific attention is
+real but not necessary at any single head.
+
+---
+
 ## 2026-09-01 — CPD-001: Causal Perturbation Dimension — RETRACTED rank-1, corrected
 
 **Experiment CPD-001.** Measured the Jacobian rank of the suffix map (layers l..L →
