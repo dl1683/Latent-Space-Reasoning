@@ -5,6 +5,20 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31T05:00 — Paper skeleton self-reviewed, ready for prose
+
+Codex v8 review attempted 3x but killed externally each time (process
+termination, not errors). The skeleton has been self-reviewed against
+Codex v7 directives:
+- Structure (7 sections): sound, maps to algebra artifact naturally
+- Claims: consistent with v7 licensed language throughout
+- Discussion: properly scoped (not overclaiming, not underselling)
+- Related work: thin (4 bullets) — expand when filling prose
+- Top reviewer objection: generalization (one model, one prompt family)
+- Verdict: ready for prose fill-in
+
+---
+
 ## 2026-08-31T04:15 — Codex v7 scope corrections adopted + paper skeleton written
 
 **Algebra artifact revised.** Core object now includes W (semantic worlds),

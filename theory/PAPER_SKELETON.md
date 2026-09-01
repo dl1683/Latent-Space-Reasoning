@@ -1,4 +1,4 @@
-# Commitments, Fibers, and Synchronization: A Behavioral Algebra of Transformer Prompt State
+# Commitments, Fibers, and Path Dependence: A Behavioral Algebra of Transformer Prompt Histories
 
 **A bounded empirical and methodological case study**
 
@@ -12,9 +12,9 @@ Devansh (devansh@svam.com)
 
 Standard interpretability treats transformer hidden states as ℝⁿ vectors and
 measures similarity via cosine distance. We show that in a controlled prompt
-family (three synthetic facts, one small model), cosine is *blind* to the
-model's actual behavioral structure: states cosine calls most similar (≥0.98)
-produce maximally different behavioral outcomes.
+family (three synthetic facts, one small model), cosine does not resolve the
+model's behavioral structure: states with cosine similarity ≥0.98 produce
+qualitatively different behavioral outcomes under intervention.
 
 We build an alternative instrument — logit-lens projections measured by
 Jensen-Shannon distance — and use it to discover a behavioral algebra invisible
@@ -38,10 +38,9 @@ of study.
 ### 1.1 The problem
 
 Interpretability research defaults to ℝⁿ: cosine similarity, linear probes,
-PCA, activation patching at single sites. These tools assume that vector-space
-proximity tracks behavioral similarity. We present a controlled setting where
-this assumption fails completely — and show what becomes visible when it is
-dropped.
+PCA, activation patching. These tools assume that vector-space proximity tracks
+behavioral similarity. We present a controlled setting where this assumption
+does not hold — and show what becomes visible when it is dropped.
 
 ### 1.2 The methodological thesis
 
@@ -79,9 +78,8 @@ laws (idempotence, non-naturality) generalize is an open empirical question.
 - **Logit lens**: apply final layernorm + unembedding at each intermediate layer
 - **Jensen-Shannon distance** (√JSD): proper metric between probability distributions
 - Why not cosine: cosine ≥ 0.91 throughout the resolution layer where √JSD shows
-  62× selectivity. Cosine is not wrong in general; it is wrong *here* because the
-  behaviorally relevant structure lives in a subspace that cosine, measuring angle
-  in the full ambient space, cannot resolve.
+  62× selectivity. Cosine is not wrong in general; it does not resolve the
+  behaviorally relevant structure in this setting.
 
 ### 2.3 Model and reproducibility
 
@@ -119,46 +117,66 @@ are overwhelmingly history-related entity values.
 
 This explains the central puzzle: greedy congruence (97%) coexists with
 distributional incongruence (0%) because the bottleneck fixes the argmax while
-the re-broadened tail encodes the full prompt history.
+the re-broadened tail retains history-dependent distributional residuals.
 
 ---
 
 ## 4. The behavioral algebra
 
-### 4.1 The greedy quotient
+### 4.1 The core object and its maps
 
-Define the greedy quotient $G = X / {\sim_\text{greedy}}$ where two prompt
-histories are equivalent iff they produce the same greedy answer to every
-registered query. This yields 12 distinct places (registered) and 11 (held-out)
-from 16 histories each.
+$$\mathfrak{A} = (X, W, Q, G, \tau, \gamma, \pi, \mathcal{A}, S^W)$$
 
-### 4.2 Fibers and distributional residuals
+| Symbol | Definition |
+|--------|-----------|
+| $X$ | Prompt histories (raw textual sequences) |
+| $W$ | Semantic worlds (experimenter-known fact assignments) |
+| $Q = X / {\sim_\infty}$ | Future-response quotient: $x \sim_\infty y$ iff identical response distributions under all continuations |
+| $G = X / {\sim_\text{greedy}}$ | Greedy quotient: equality of greedy answer vector across all registered queries |
+| $\tau: X \to W$ | World map (assigns generating world) |
+| $\gamma: X \to G$ | Greedy map (assigns greedy answer signature) |
+| $\pi: Q \to G$ | Projection (coarsens future-response equivalence to greedy equivalence) |
+| $\mathcal{A}$ | Continuation monoid (typed append operations) |
+| $S^W_w$ | World-conditioned restatement (constructed from experimenter-known world $w$) |
+
+$Q$ is not directly observable; $G$ is. The fiber $F_g = \pi^{-1}(g)$ is the
+set of future-response states that share a greedy signature. Two histories in
+the same fiber agree on the argmax but may differ distributionally.
+
+**Approximation thresholds.** We declare two distributions "congruent" when
+their JSD distance is below 0.01 (approximately the noise floor from
+deterministic re-runs with different padding). Place preservation is measured as
+the fraction of greedy signatures unchanged after an operation.
+
+### 4.2 The greedy quotient
+
+Define $G = X / {\sim_\text{greedy}}$ where two prompt histories are equivalent
+iff they produce the same greedy answer to every registered query. This yields
+12 distinct places (registered) and 11 (held-out) from 16 histories each.
+
+### 4.3 Fibers and distributional residuals
 
 Each greedy place $g$ has a fiber $F_g = \pi^{-1}(g)$. Despite greedy identity,
 fiber members always differ distributionally (0/96 distributional congruences).
-Within-fiber JSD:
+Within-fiber JSD distance:
 - Benign presentation pairs: 0.254
 - Cross-world history pairs: 0.292
 - After correction: history > benign (3/3)
 - After restatement: history < benign (0/3) — restatement partially collapses
 
-[Figure 3: Within-fiber distance matrix showing the two-component residual]
+[Figure 3: Conceptual diagram of the quotient/fiber structure — greedy places,
+fibers with within-fiber distributional distances, typed actions between places,
+and empirical within-fiber distance distributions. This is the paper's central
+visual.]
 
-### 4.3 Continuation generators
+### 4.4 Continuation generators
 
 | Generator | Type | Notation | Place preservation |
 |-----------|------|----------|-------------------|
 | Empty | Identity | ε | 100% |
 | Neutral | Near-identity | N | 95.8% |
 | Correction | State-changing | C_{e←v} | 35-42% |
-| Restatement | Idempotent retraction | S^W_w | 89.6-93.8% |
-
-### 4.4 The core object
-
-$$\mathfrak{A} = (X, W, Q, G, \tau, \gamma, \pi, \mathcal{A}, S^W)$$
-
-where $W$ is the experimenter-known semantic world, $G$ is the greedy quotient,
-and $S^W_w$ is the world-conditioned restatement.
+| Restatement | Approximately idempotent | S^W_w | 89.6-93.8% |
 
 ---
 
@@ -188,7 +206,10 @@ Both paths end at the corrected world $w'$. The square does NOT commute:
 | JSD distance mean | 0.208 | 0.208 |
 | Greedy commutativity | 89.6% (43/48) | 70.8% (34/48) |
 
-[Figure 4: The typed square diagram and per-pair JSD heatmap]
+[Figure 4: The typed square diagram and per-pair JSD heatmap. Must visibly
+disclose the unequal fact multiplicities: path CS contains the corrected value
+twice (correction + corrected-world restatement), while path SC contains the
+original value twice (original-world restatement + correction).]
 
 **Interpretation.** Prediction remains presentation-path dependent after both
 paths have reached the same declarative world. This is non-naturality in the
@@ -203,8 +224,9 @@ alternative canonicalizer or product decomposition exists.
 
 - **O1:** Does a representative-independent $S^G_g$ (defined from observable
   greedy signature alone) exist and retain idempotence?
-- **O2:** Does correction descend to $G$? (Currently 29/48 registered, 28/48
-  held-out.)
+- **O2:** Does correction descend to $G$? Correction reaches its asserted target
+  token in 29/48 registered and 28/48 held-out cases, but descent to the greedy
+  quotient (all fiber members mapping to the same target place) is untested.
 - **N1:** Global predictive × presentation nonfactorization is NOT established.
 
 ---
@@ -214,19 +236,19 @@ alternative canonicalizer or product decomposition exists.
 ### 6.1 What the behavioral-quotient method buys
 
 The method — define objects via behavioral equivalence, not vector proximity —
-makes visible structure that ℝⁿ tools structurally cannot see. The quotient/fiber
-decomposition separates the coarse commitment (greedy place) from the fine
-distributional residual in a principled way, without choosing a basis or
-assuming linearity.
+makes visible structure that cosine similarity did not resolve in this setting.
+The quotient/fiber decomposition separates the coarse commitment (greedy place)
+from the fine distributional residual in a principled way, without choosing a
+basis or assuming linearity.
 
-### 6.2 What cosine misses and why
+### 6.2 What cosine missed here
 
-Cosine similarity measures angle in the full ambient ℝⁿ. The behaviorally
-relevant structure occupies a low-dimensional subspace whose angular footprint
-is small relative to the total embedding norm. Two states can be cosine-similar
-(0.98) while being maximally different in the subspace that determines behavior.
-This is not an argument against cosine in general; it is an observation that
-behavioral distance and representational distance can decouple.
+Cosine similarity measures angle in the full ambient ℝⁿ. In this prompt family,
+states with cosine similarity ≥ 0.98 produce qualitatively different behavioral
+outcomes under intervention. This is not an argument against cosine in general;
+it is an observation that behavioral distance and representational distance can
+decouple, and that when they do, behavioral equivalence classes become the more
+informative objects of study.
 
 ### 6.3 The S^W vs S^G gap
 
@@ -249,15 +271,25 @@ is the central open question for future work.
 
 ### 6.5 Relation to prior work
 
-- **Linear probes / representation engineering:** measures presence, not
-  causation (breakpoint 1). Our instruments are behavioral, not representational.
-- **Activation patching:** works at single sites; the resolution phenomenon is
-  whole-sequence distributed (breakpoint 2).
-- **Causal tracing (Meng et al.):** localizes to specific layers; our fibers
-  show that same-layer states are distributionally distinguishable.
-- **Logit lens (nostalgebraist, Belrose et al.):** we use logit lens as an
-  instrument, not as an interpretability method per se. The contribution is the
-  algebraic structure it reveals, not the lens itself.
+- **Linear probes / representation engineering (Belinkov 2022, Burns et al.
+  2023):** Probes measure decodability of a concept, which can diverge from
+  causal relevance (breakpoint 1). Our instruments are behavioral (output
+  distributions under intervention), not representational.
+- **Activation patching (Vig et al. 2020, Geiger et al. 2021):** Patching can
+  be applied at multiple granularities; our resolution phenomenon is
+  whole-sequence distributed, which makes single-position patching uninformative
+  in this setting. The approaches are complementary: patching localizes
+  causally, while our method characterizes the behavioral equivalence structure.
+- **Causal tracing (Meng et al. 2022):** Localizes factual recall to specific
+  layers and positions; our fibers show that same-layer, same-greedy-place
+  states are distributionally distinguishable.
+- **Logit lens (nostalgebraist 2020, Belrose et al. 2023):** We use logit lens
+  as an instrument, not as an interpretability method per se. The contribution
+  is the algebraic structure it reveals, not the lens itself.
+- **Behavioral equivalence in RL (Ferns et al. 2004, Castro & Precup 2010):**
+  Bisimulation metrics define state equivalence via behavioral indistinguishability.
+  Our greedy quotient is analogous but defined over language model output
+  distributions rather than MDP transitions.
 
 ---
 
@@ -270,9 +302,9 @@ idempotent but non-natural with correction: two update paths denoting the same
 corrected world produce different response laws and, on held-out names,
 different greedy answers in 14 of 48 cases.
 
-The behavioral-quotient method makes this structure visible. Standard ℝⁿ metrics
-cannot see it. Whether the structure generalizes beyond this setting is open;
-the method itself is general.
+The behavioral-quotient method makes this structure visible. Standard cosine
+similarity did not resolve it in this setting. Whether the structure generalizes
+beyond this prompt family is open; the method itself is general.
 
 ---
 
