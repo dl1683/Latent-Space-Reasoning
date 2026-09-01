@@ -1570,6 +1570,127 @@ Possible reasons:
    and carrier integrity checks prevent off-manifold artifacts from
    masquerading as scientific results.
 
-### 13.5 Pivot direction
+### 13.5 Pivot direction: co-designed dynamical carrier
 
-Awaiting Codex postmortem (scratchpad/codex\_qpc1\_pivot.txt).
+Codex postmortem (scratchpad/codex\_qpc1\_pivot.txt) rules:
+
+1. **Program continues.** The axiom of native math is intact. What is
+   exhausted is the frozen-model prompt-mining approach.
+
+2. **Pivot to a co-designed carrier** where actions are endogenous,
+   learnable, composable, and intervention-stable by construction.
+   Not a larger model (changes capacity, not observer/intervention),
+   not a different task on frozen Qwen (no viable causal carrier),
+   not SAEs/gradients (R\^n instruments), not imported math frameworks
+   (description languages for \emph{after} operational laws are found).
+
+3. **Six constraints** from the micro-world closure:
+   (a) identity must be operational and observer-relative;
+   (b) moves must be endogenous and viable;
+   (c) state may be distributed and temporal;
+   (d) composition must be earned, not assumed;
+   (e) the algebra is probably partial and context-indexed;
+   (f) every law must defeat decoding, lexical, recency, and
+       generic-disruption nulls.
+
+---
+
+## Section 14 --- EAC-1: Endogenous Action Carrier (Preregistration)
+
+### 14.1 Central question
+
+Can a small recurrent model, trained only from behavioral consequences
+(final-state prediction), develop a latent carrier whose state
+transitions are well-defined on the approximate behavioral quotient
+and compose causally under transplantation?
+
+### 14.2 Mathematical object
+
+Define behavioral equivalence at horizon $H$:
+
+$$z(h) \sim_H z(h') \iff \text{response laws agree under every
+registered suffix of length} \le H.$$
+
+For each endogenous action $a$, attempt to define the action map
+
+$$T_a([z(h)]) = [z(ha)].$$
+
+EAC-1 tests whether $T_a$ is well-defined on the approximate
+behavioral quotient and whether transplanted carrier states compose
+causally with subsequent actions.
+
+### 14.3 Construction
+
+\begin{itemize}
+\item CPU-trainable recurrent model, at most 2M parameters.
+\item Each episode supplies 6 opaque states and 3 opaque actions with
+      an arbitrary world-specific transition table. Actions need not be
+      invertible.
+\item State names, action names, declaration order, and presentation
+      are all randomized.
+\item A single recurrent latent carrier is updated by one shared
+      endogenous cell per action.
+\item Training loss is \textbf{only} final-state prediction. No
+      latent-coordinate target, probe loss, PCA, cosine, SAE, or
+      transition-vector supervision.
+\item Train on action words of length 1--3. Test on held-out worlds,
+      renamings, presentations, and length-4 words.
+\end{itemize}
+
+### 14.4 Causal evaluation protocol
+
+Within the same held-out world, transplant a naturally occurring
+carrier state after one history into another history, then execute
+the untouched recipient suffix.
+
+Arms:
+\begin{enumerate}
+\item Exact self-patches (integrity).
+\item Different histories reaching the same simulator state
+      (same-place interchangeability).
+\item Three-way clashes: host endpoint, donor current state, and
+      donor-under-recipient-suffix target are all distinct.
+\end{enumerate}
+
+### 14.5 Budget
+
+\begin{itemize}
+\item Three fixed seeds.
+\item 120{,}000 training sequence-forwards.
+\item 24{,}000 scientific evaluation forwards.
+\item 6{,}000 integrity/replay reserve.
+\item \textbf{Hard maximum:} 150{,}000 sequence-forwards and 120 CPU
+      minutes.
+\item No GPU. No generation. Termination inapplicable.
+\end{itemize}
+
+### 14.6 Gates
+
+\textbf{PASS} (all must hold in every seed):
+\begin{enumerate}
+\item Held-out length-4 accuracy $\ge 95\%$.
+\item Self-patch full-law discrepancy $\le 10^{-5}$.
+\item Same-place, different-history interchangeability $\ge 95\%$,
+      with $\sqrt{\mathrm{JSD}} \le 0.05$ in $\ge 90\%$ of registered
+      suffix tests.
+\item Action descent on $\ge 95\%$ of held-out equivalence/action cells.
+\item Three-way causal target following $\ge 85\%$, clustered lower
+      bound $\ge 75\%$, every seed $\ge 75\%$.
+\item Target probability exceeds both host and donor alternatives by
+      $\ge 0.20$, clustered lower bound above $0.10$.
+\end{enumerate}
+
+### 14.7 Verdicts
+
+\begin{itemize}
+\item \textbf{PASS}: bounded learned carrier with approximate
+      operational action algebra. Licenses one transfer rung to a
+      less architecturally constrained model. Does not establish new
+      mathematics, say anything about Qwen, or prove universality.
+\item \textbf{INVALID\_CARRIER\_CONSTRUCTION}: capability or
+      self-patch fails. No carrier claim; no repair run.
+\item \textbf{VALID\_CARRIER\_FAIL}: capability passes but descent
+      or causal composition fails. Kills co-designed recurrent-state
+      transplantation as empirical route. Stop carrier variations
+      until the mathematical notion of identity or move changes.
+\end{itemize}

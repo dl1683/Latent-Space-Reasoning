@@ -4,6 +4,33 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — Codex pivot postmortem: EAC-1 designed, co-designed carrier direction
+
+**Codex ruling (scratchpad/codex_qpc1_pivot.txt):** Program continues. Frozen Qwen
+prompt-mining stops. Pivot to a **co-designed dynamical carrier** — a recurrent
+model trained only from behavioral consequences, where actions are endogenous
+operations on the carrier state.
+
+**Why not alternatives:**
+- Larger model: changes capacity without fixing the observer or intervention
+- Different task on frozen Qwen: richer behavior without viable causal carrier
+- SAEs/gradients/causal directions: primarily linear/local R^n instruments
+- Info geometry/category theory/topology: description languages for AFTER laws found
+
+**EAC-1 (Endogenous Action Carrier) design:**
+- CPU-trainable recurrent model, ≤2M params, 3 seeds
+- 6 opaque states, 3 opaque actions, arbitrary world-specific transition tables
+- Training loss: ONLY final-state prediction (no latent supervision)
+- Causal evaluation: self-patch, same-place interchangeability, three-way clash
+- Budget: 150K sequence-forwards, 120 CPU minutes
+- PASS: held-out ≥95%, self-patch ≤1e-5, interchangeability ≥95%, descent ≥95%,
+  three-way ≥85% [lb 75%], target exceeds alternatives by ≥0.20 [lb 0.10]
+- Distance-from-claim: 0 (carrier IS the central artifact)
+
+**Constraint set from micro-world (6 rules):** identity operational/observer-relative;
+moves endogenous/viable; state may be distributed/temporal; composition earned;
+algebra probably partial/context-indexed; every law must defeat nulls.
+
 ## 2026-09-01 — Re-contextualization: Qwen micro-world CLOSED, awaiting Codex pivot
 
 **What we established across ~70 experiments on frozen Qwen3-0.6B two-fact recall:**
