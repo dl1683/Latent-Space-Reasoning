@@ -139,6 +139,51 @@ def make_shuffled_restatement(sig, entity_names):
     return " To be clear: " + ". ".join(parts) + "."
 
 
+ENTITY_ALIASES = {
+    "registered": {"ZOG": "cedar", "MIP": "amber", "PLIM": "violet"},
+    "heldout": {"KROT": "maple", "HESK": "coral", "VORN": "slate"},
+}
+
+
+def make_decoy(sig, entity_names, entities):
+    """Append wrong direct assignments for every entity (anti-signature)."""
+    sig_dict = dict(sig)
+    parts = []
+    for n in entity_names:
+        vals = entities[n]
+        decoy_val = [v for v in vals if v != sig_dict[n]]
+        if decoy_val:
+            parts.append(f"{n}: {decoy_val[0]}")
+        else:
+            parts.append(f"{n}: {sig_dict[n]}")
+    return " To be clear: " + ". ".join(parts) + "."
+
+
+def make_alias_clause(entity_names, set_name):
+    """Define the nonce alias mapping."""
+    aliases = ENTITY_ALIASES[set_name]
+    parts = [f"{aliases[n]} means {n}" for n in entity_names]
+    return " In the coded record, " + ", ".join(parts[:-1]) + ", and " + parts[-1] + "."
+
+
+def make_alias_restatement(sig, entity_names, set_name):
+    """Faithful alias rendering: correct values via nonce aliases."""
+    aliases = ENTITY_ALIASES[set_name]
+    sig_dict = dict(sig)
+    parts = [f"{aliases[n]} has value {sig_dict[n]}" for n in entity_names]
+    return " The coded record says: " + ". ".join(parts) + "."
+
+
+def make_shuffled_alias_restatement(sig, entity_names, set_name):
+    """Shuffled alias rendering: same aliases, wrong value-alias pairing."""
+    aliases = ENTITY_ALIASES[set_name]
+    sig_dict = dict(sig)
+    values = [sig_dict[n] for n in entity_names]
+    rotated = values[1:] + values[:1]
+    parts = [f"{aliases[n]} has value {rotated[i]}" for i, n in enumerate(entity_names)]
+    return " The coded record says: " + ". ".join(parts) + "."
+
+
 def make_corrected_world(world, target_entity, new_value):
     corrected = dict(world)
     corrected[target_entity] = new_value
@@ -367,6 +412,86 @@ def run_sg_validation(model, tok, entities, entity_set_name):
     shuf_pres = sum(1 for r in shuffled_results if r["preserved"]) / len(shuffled_results)
     print(f"  Shuffled place preservation: {sum(1 for r in shuffled_results if r['preserved'])}/{len(shuffled_results)} = {shuf_pres:.1%}")
     print(f"  (S^G was {pres_rate:.1%} — shuffled should be lower if content matters)")
+
+    # Phase 4c: Anti-echo alias control (Codex design gate)
+    # Decoy (wrong direct assignment) + faithful alias rendering via nonce aliases.
+    # A copier predicts the decoy; semantic use predicts the original via alias resolution.
+    print("\n--- Phase 4c: Anti-echo alias control ---")
+    alias_clause = make_alias_clause(entity_names, entity_set_name)
+    alias_results = []
+
+    for key, state in all_states.items():
+        base = state["base_prompt"]
+        sig = state["signature"]
+        sig_dict = dict(sig)
+
+        decoy = make_decoy(sig, entity_names, entities)
+        faithful_alias = make_alias_restatement(sig, entity_names, entity_set_name)
+        shuffled_alias = make_shuffled_alias_restatement(sig, entity_names, entity_set_name)
+        direct_faithful = make_restatement_from_signature(sig, entity_names)
+
+        # Arm 1: Decoy only
+        arm1_prompt = base + decoy
+        arm1_sig, _ = get_greedy_signature(model, tok, arm1_prompt, entity_names)
+
+        # Arm 2: Decoy + direct faithful R(g)
+        arm2_prompt = base + decoy + direct_faithful
+        arm2_sig, _ = get_greedy_signature(model, tok, arm2_prompt, entity_names)
+
+        # Arm 3: Decoy + alias clause + faithful alias rendering (DECISIVE)
+        arm3_prompt = base + decoy + alias_clause + faithful_alias
+        arm3_sig, _ = get_greedy_signature(model, tok, arm3_prompt, entity_names)
+
+        # Arm 4: Decoy + alias clause + shuffled alias rendering
+        arm4_prompt = base + decoy + alias_clause + shuffled_alias
+        arm4_sig, _ = get_greedy_signature(model, tok, arm4_prompt, entity_names)
+
+        # Arm 5: Alias clause + faithful alias only (no decoy)
+        arm5_prompt = base + alias_clause + faithful_alias
+        arm5_sig, _ = get_greedy_signature(model, tok, arm5_prompt, entity_names)
+
+        # Score per-coordinate recovery and decoy adoption
+        decoy_sig = {}
+        for n in entity_names:
+            vals = entities[n]
+            decoy_sig[n] = [v for v in vals if v != sig_dict[n]][0] if len([v for v in vals if v != sig_dict[n]]) > 0 else sig_dict[n]
+
+        def score_arm(arm_sig):
+            arm_dict = dict(arm_sig)
+            recovery = sum(1 for n in entity_names if arm_dict.get(n) == sig_dict[n])
+            decoy_adopt = sum(1 for n in entity_names if arm_dict.get(n) == decoy_sig[n])
+            return recovery, decoy_adopt
+
+        r1, d1 = score_arm(arm1_sig)
+        r2, d2 = score_arm(arm2_sig)
+        r3, d3 = score_arm(arm3_sig)
+        r4, d4 = score_arm(arm4_sig)
+        r5, d5 = score_arm(arm5_sig)
+
+        n_ent = len(entity_names)
+        alias_results.append({
+            "source": key,
+            "sig_original": "|".join(f"{k}={v}" for k, v in sig),
+            "arm1_decoy_only": {"sig": "|".join(f"{k}={v}" for k, v in arm1_sig), "recovery": r1, "decoy_adopt": d1},
+            "arm2_decoy_direct": {"sig": "|".join(f"{k}={v}" for k, v in arm2_sig), "recovery": r2, "decoy_adopt": d2},
+            "arm3_decoy_alias": {"sig": "|".join(f"{k}={v}" for k, v in arm3_sig), "recovery": r3, "decoy_adopt": d3},
+            "arm4_decoy_shuffled_alias": {"sig": "|".join(f"{k}={v}" for k, v in arm4_sig), "recovery": r4, "decoy_adopt": d4},
+            "arm5_alias_only": {"sig": "|".join(f"{k}={v}" for k, v in arm5_sig), "recovery": r5, "decoy_adopt": d5},
+            "n_entities": n_ent,
+        })
+
+    results["anti_echo_alias"] = alias_results
+    n_total = sum(r["n_entities"] for r in alias_results)
+    for arm_key, arm_name in [
+        ("arm1_decoy_only", "Decoy only"),
+        ("arm2_decoy_direct", "Decoy + direct R(g)"),
+        ("arm3_decoy_alias", "Decoy + faithful alias"),
+        ("arm4_decoy_shuffled_alias", "Decoy + shuffled alias"),
+        ("arm5_alias_only", "Alias only (no decoy)"),
+    ]:
+        rec = sum(r[arm_key]["recovery"] for r in alias_results)
+        dec = sum(r[arm_key]["decoy_adopt"] for r in alias_results)
+        print(f"  {arm_name}: recovery={rec}/{n_total} ({rec/n_total:.1%}), decoy_adopt={dec}/{n_total} ({dec/n_total:.1%})")
 
     # Phase 5a: Correction descent — does C_{e<-v} produce same g' for all fiber members?
     # (Codex: prerequisite for a genuine quotient-level typed square)

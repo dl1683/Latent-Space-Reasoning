@@ -1,6 +1,6 @@
 {
   "model": "Qwen/Qwen3-0.6B",
-  "timestamp": "2026-08-31T21:11:11.966647",
+  "timestamp": "2026-08-31T21:39:37.029803",
   "sets": {
     "registered": {
       "entity_set": "registered",
@@ -3077,6 +3077,488 @@
           "sig_after": "MIP=blue|PLIM=small|ZOG=small",
           "preserved": false,
           "shuffled_text": " To be clear: ZOG: cold. MIP: blue. PLIM: small."
+        }
+      ],
+      "anti_echo_alias": [
+        {
+          "source": "w000_std",
+          "sig_original": "MIP=hot|PLIM=red|ZOG=big",
+          "arm1_decoy_only": {
+            "sig": "MIP=hot|PLIM=blue|ZOG=small",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm2_decoy_direct": {
+            "sig": "MIP=hot|PLIM=blue|ZOG=small",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm3_decoy_alias": {
+            "sig": "MIP=value|PLIM=blue|ZOG=small",
+            "recovery": 0,
+            "decoy_adopt": 2
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "MIP=value|PLIM=?|ZOG=?",
+            "recovery": 0,
+            "decoy_adopt": 0
+          },
+          "arm5_alias_only": {
+            "sig": "MIP=red|PLIM=red|ZOG=big",
+            "recovery": 2,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
+        },
+        {
+          "source": "w000_rev",
+          "sig_original": "MIP=hot|PLIM=red|ZOG=big",
+          "arm1_decoy_only": {
+            "sig": "MIP=hot|PLIM=blue|ZOG=small",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm2_decoy_direct": {
+            "sig": "MIP=hot|PLIM=blue|ZOG=big",
+            "recovery": 2,
+            "decoy_adopt": 1
+          },
+          "arm3_decoy_alias": {
+            "sig": "MIP=?|PLIM=blue|ZOG=big",
+            "recovery": 1,
+            "decoy_adopt": 1
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "MIP=?|PLIM=blue|ZOG=big",
+            "recovery": 1,
+            "decoy_adopt": 1
+          },
+          "arm5_alias_only": {
+            "sig": "MIP=hot|PLIM=red|ZOG=big",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
+        },
+        {
+          "source": "w001_std",
+          "sig_original": "MIP=hot|PLIM=blue|ZOG=big",
+          "arm1_decoy_only": {
+            "sig": "MIP=hot|PLIM=red|ZOG=small",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm2_decoy_direct": {
+            "sig": "MIP=hot|PLIM=red|ZOG=small",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm3_decoy_alias": {
+            "sig": "MIP=value|PLIM=red|ZOG=small",
+            "recovery": 0,
+            "decoy_adopt": 2
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "MIP=value|PLIM=?|ZOG=small",
+            "recovery": 0,
+            "decoy_adopt": 1
+          },
+          "arm5_alias_only": {
+            "sig": "MIP=blue|PLIM=blue|ZOG=big",
+            "recovery": 2,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
+        },
+        {
+          "source": "w001_rev",
+          "sig_original": "MIP=hot|PLIM=blue|ZOG=big",
+          "arm1_decoy_only": {
+            "sig": "MIP=cold|PLIM=red|ZOG=small",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm2_decoy_direct": {
+            "sig": "MIP=hot|PLIM=red|ZOG=big",
+            "recovery": 2,
+            "decoy_adopt": 1
+          },
+          "arm3_decoy_alias": {
+            "sig": "MIP=?|PLIM=red|ZOG=big",
+            "recovery": 1,
+            "decoy_adopt": 1
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "MIP=?|PLIM=red|ZOG=big",
+            "recovery": 1,
+            "decoy_adopt": 1
+          },
+          "arm5_alias_only": {
+            "sig": "MIP=hot|PLIM=blue|ZOG=big",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
+        },
+        {
+          "source": "w010_std",
+          "sig_original": "MIP=red|PLIM=red|ZOG=big",
+          "arm1_decoy_only": {
+            "sig": "MIP=hot|PLIM=blue|ZOG=small",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm2_decoy_direct": {
+            "sig": "MIP=blue|PLIM=blue|ZOG=small",
+            "recovery": 0,
+            "decoy_adopt": 2
+          },
+          "arm3_decoy_alias": {
+            "sig": "MIP=value|PLIM=blue|ZOG=?",
+            "recovery": 0,
+            "decoy_adopt": 1
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "MIP=value|PLIM=blue|ZOG=?",
+            "recovery": 0,
+            "decoy_adopt": 1
+          },
+          "arm5_alias_only": {
+            "sig": "MIP=red|PLIM=red|ZOG=big",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
+        },
+        {
+          "source": "w010_rev",
+          "sig_original": "MIP=cold|PLIM=red|ZOG=big",
+          "arm1_decoy_only": {
+            "sig": "MIP=hot|PLIM=blue|ZOG=small",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm2_decoy_direct": {
+            "sig": "MIP=hot|PLIM=blue|ZOG=big",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm3_decoy_alias": {
+            "sig": "MIP=hot|PLIM=blue|ZOG=big",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "MIP=hot|PLIM=blue|ZOG=big",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm5_alias_only": {
+            "sig": "MIP=red|PLIM=red|ZOG=big",
+            "recovery": 2,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
+        },
+        {
+          "source": "w011_std",
+          "sig_original": "MIP=blue|PLIM=blue|ZOG=big",
+          "arm1_decoy_only": {
+            "sig": "MIP=hot|PLIM=red|ZOG=small",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm2_decoy_direct": {
+            "sig": "MIP=blue|PLIM=blue|ZOG=small",
+            "recovery": 2,
+            "decoy_adopt": 1
+          },
+          "arm3_decoy_alias": {
+            "sig": "MIP=value|PLIM=?|ZOG=small",
+            "recovery": 0,
+            "decoy_adopt": 1
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "MIP=value|PLIM=blue|ZOG=small",
+            "recovery": 1,
+            "decoy_adopt": 1
+          },
+          "arm5_alias_only": {
+            "sig": "MIP=blue|PLIM=blue|ZOG=big",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
+        },
+        {
+          "source": "w011_rev",
+          "sig_original": "MIP=cold|PLIM=blue|ZOG=big",
+          "arm1_decoy_only": {
+            "sig": "MIP=hot|PLIM=red|ZOG=small",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm2_decoy_direct": {
+            "sig": "MIP=hot|PLIM=blue|ZOG=big",
+            "recovery": 2,
+            "decoy_adopt": 1
+          },
+          "arm3_decoy_alias": {
+            "sig": "MIP=hot|PLIM=red|ZOG=big",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "MIP=hot|PLIM=red|ZOG=small",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm5_alias_only": {
+            "sig": "MIP=blue|PLIM=blue|ZOG=big",
+            "recovery": 2,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
+        },
+        {
+          "source": "w100_std",
+          "sig_original": "MIP=hot|PLIM=red|ZOG=small",
+          "arm1_decoy_only": {
+            "sig": "MIP=cold|PLIM=blue|ZOG=big",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm2_decoy_direct": {
+            "sig": "MIP=blue|PLIM=blue|ZOG=small",
+            "recovery": 1,
+            "decoy_adopt": 1
+          },
+          "arm3_decoy_alias": {
+            "sig": "MIP=blue|PLIM=blue|ZOG=big",
+            "recovery": 0,
+            "decoy_adopt": 2
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "MIP=?|PLIM=?|ZOG=big",
+            "recovery": 0,
+            "decoy_adopt": 1
+          },
+          "arm5_alias_only": {
+            "sig": "MIP=hot|PLIM=red|ZOG=small",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
+        },
+        {
+          "source": "w100_rev",
+          "sig_original": "MIP=hot|PLIM=red|ZOG=small",
+          "arm1_decoy_only": {
+            "sig": "MIP=cold|PLIM=blue|ZOG=small",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm2_decoy_direct": {
+            "sig": "MIP=cold|PLIM=blue|ZOG=small",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm3_decoy_alias": {
+            "sig": "MIP=?|PLIM=blue|ZOG=small",
+            "recovery": 1,
+            "decoy_adopt": 1
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "MIP=?|PLIM=blue|ZOG=small",
+            "recovery": 1,
+            "decoy_adopt": 1
+          },
+          "arm5_alias_only": {
+            "sig": "MIP=hot|PLIM=red|ZOG=small",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
+        },
+        {
+          "source": "w101_std",
+          "sig_original": "MIP=blue|PLIM=blue|ZOG=small",
+          "arm1_decoy_only": {
+            "sig": "MIP=hot|PLIM=blue|ZOG=big",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm2_decoy_direct": {
+            "sig": "MIP=blue|PLIM=blue|ZOG=small",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "arm3_decoy_alias": {
+            "sig": "MIP=blue|PLIM=?|ZOG=big",
+            "recovery": 1,
+            "decoy_adopt": 1
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "MIP=blue|PLIM=?|ZOG=big",
+            "recovery": 1,
+            "decoy_adopt": 1
+          },
+          "arm5_alias_only": {
+            "sig": "MIP=blue|PLIM=blue|ZOG=small",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
+        },
+        {
+          "source": "w101_rev",
+          "sig_original": "MIP=hot|PLIM=blue|ZOG=small",
+          "arm1_decoy_only": {
+            "sig": "MIP=cold|PLIM=red|ZOG=small",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm2_decoy_direct": {
+            "sig": "MIP=cold|PLIM=red|ZOG=small",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm3_decoy_alias": {
+            "sig": "MIP=?|PLIM=red|ZOG=small",
+            "recovery": 1,
+            "decoy_adopt": 1
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "MIP=?|PLIM=red|ZOG=small",
+            "recovery": 1,
+            "decoy_adopt": 1
+          },
+          "arm5_alias_only": {
+            "sig": "MIP=|PLIM=blue|ZOG=small",
+            "recovery": 2,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
+        },
+        {
+          "source": "w110_std",
+          "sig_original": "MIP=red|PLIM=red|ZOG=small",
+          "arm1_decoy_only": {
+            "sig": "MIP=hot|PLIM=blue|ZOG=big",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm2_decoy_direct": {
+            "sig": "MIP=blue|PLIM=blue|ZOG=small",
+            "recovery": 1,
+            "decoy_adopt": 1
+          },
+          "arm3_decoy_alias": {
+            "sig": "MIP=blue|PLIM=blue|ZOG=big",
+            "recovery": 0,
+            "decoy_adopt": 2
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "MIP=?|PLIM=blue|ZOG=big",
+            "recovery": 0,
+            "decoy_adopt": 2
+          },
+          "arm5_alias_only": {
+            "sig": "MIP=red|PLIM=red|ZOG=small",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
+        },
+        {
+          "source": "w110_rev",
+          "sig_original": "MIP=cold|PLIM=red|ZOG=small",
+          "arm1_decoy_only": {
+            "sig": "MIP=hot|PLIM=blue|ZOG=small",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm2_decoy_direct": {
+            "sig": "MIP=hot|PLIM=blue|ZOG=small",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm3_decoy_alias": {
+            "sig": "MIP=?|PLIM=blue|ZOG=small",
+            "recovery": 1,
+            "decoy_adopt": 1
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "MIP=...|PLIM=blue|ZOG=small",
+            "recovery": 1,
+            "decoy_adopt": 1
+          },
+          "arm5_alias_only": {
+            "sig": "MIP=small|PLIM=red|ZOG=small",
+            "recovery": 2,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
+        },
+        {
+          "source": "w111_std",
+          "sig_original": "MIP=blue|PLIM=blue|ZOG=small",
+          "arm1_decoy_only": {
+            "sig": "MIP=hot|PLIM=red|ZOG=big",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm2_decoy_direct": {
+            "sig": "MIP=blue|PLIM=blue|ZOG=small",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "arm3_decoy_alias": {
+            "sig": "MIP=|PLIM=red|ZOG=big",
+            "recovery": 0,
+            "decoy_adopt": 2
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "MIP=|PLIM=blue|ZOG=big",
+            "recovery": 1,
+            "decoy_adopt": 1
+          },
+          "arm5_alias_only": {
+            "sig": "MIP=blue|PLIM=blue|ZOG=small",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
+        },
+        {
+          "source": "w111_rev",
+          "sig_original": "MIP=cold|PLIM=blue|ZOG=small",
+          "arm1_decoy_only": {
+            "sig": "MIP=hot|PLIM=red|ZOG=small",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm2_decoy_direct": {
+            "sig": "MIP=hot|PLIM=red|ZOG=small",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm3_decoy_alias": {
+            "sig": "MIP=...|PLIM=red|ZOG=small",
+            "recovery": 1,
+            "decoy_adopt": 1
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "MIP=...|PLIM=red|ZOG=small",
+            "recovery": 1,
+            "decoy_adopt": 1
+          },
+          "arm5_alias_only": {
+            "sig": "MIP=small|PLIM=blue|ZOG=small",
+            "recovery": 2,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
         }
       ],
       "correction_descent": [
@@ -6351,6 +6833,488 @@
           "shuffled_text": " To be clear: KROT: short. HESK: short. VORN: slow."
         }
       ],
+      "anti_echo_alias": [
+        {
+          "source": "w000_std",
+          "sig_original": "HESK=fast|KROT=fast|VORN=loud",
+          "arm1_decoy_only": {
+            "sig": "HESK=tall|KROT=fast|VORN=loud",
+            "recovery": 2,
+            "decoy_adopt": 1
+          },
+          "arm2_decoy_direct": {
+            "sig": "HESK=fast|KROT=fast|VORN=loud",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "arm3_decoy_alias": {
+            "sig": "HESK=tall|KROT=fast|VORN=loud",
+            "recovery": 2,
+            "decoy_adopt": 1
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "HESK=tall|KROT=fast|VORN=loud",
+            "recovery": 2,
+            "decoy_adopt": 1
+          },
+          "arm5_alias_only": {
+            "sig": "HESK=tall|KROT=fast|VORN=loud",
+            "recovery": 2,
+            "decoy_adopt": 1
+          },
+          "n_entities": 3
+        },
+        {
+          "source": "w000_rev",
+          "sig_original": "HESK=tall|KROT=fast|VORN=loud",
+          "arm1_decoy_only": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 2,
+            "decoy_adopt": 1
+          },
+          "arm2_decoy_direct": {
+            "sig": "HESK=short|KROT=fast|VORN=quiet",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm3_decoy_alias": {
+            "sig": "HESK=short|KROT=fast|VORN=quiet",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "HESK=short|KROT=fast|VORN=quiet",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm5_alias_only": {
+            "sig": "HESK=tall|KROT=fast|VORN=loud",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
+        },
+        {
+          "source": "w001_std",
+          "sig_original": "HESK=tall|KROT=fast|VORN=quiet",
+          "arm1_decoy_only": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm2_decoy_direct": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm3_decoy_alias": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm5_alias_only": {
+            "sig": "HESK=tall|KROT=fast|VORN=quiet",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
+        },
+        {
+          "source": "w001_rev",
+          "sig_original": "HESK=tall|KROT=fast|VORN=quiet",
+          "arm1_decoy_only": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm2_decoy_direct": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm3_decoy_alias": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "HESK=short|KROT=slow|VORN=loud",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm5_alias_only": {
+            "sig": "HESK=tall|KROT=fast|VORN=quiet",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
+        },
+        {
+          "source": "w010_std",
+          "sig_original": "HESK=short|KROT=fast|VORN=loud",
+          "arm1_decoy_only": {
+            "sig": "HESK=tall|KROT=fast|VORN=loud",
+            "recovery": 2,
+            "decoy_adopt": 1
+          },
+          "arm2_decoy_direct": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "arm3_decoy_alias": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "arm5_alias_only": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
+        },
+        {
+          "source": "w010_rev",
+          "sig_original": "HESK=short|KROT=fast|VORN=loud",
+          "arm1_decoy_only": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "arm2_decoy_direct": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "arm3_decoy_alias": {
+            "sig": "HESK=tall|KROT=fast|VORN=quiet",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "HESK=tall|KROT=slow|VORN=quiet",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm5_alias_only": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
+        },
+        {
+          "source": "w011_std",
+          "sig_original": "HESK=short|KROT=fast|VORN=quiet",
+          "arm1_decoy_only": {
+            "sig": "HESK=tall|KROT=fast|VORN=loud",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm2_decoy_direct": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 2,
+            "decoy_adopt": 1
+          },
+          "arm3_decoy_alias": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 2,
+            "decoy_adopt": 1
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 2,
+            "decoy_adopt": 1
+          },
+          "arm5_alias_only": {
+            "sig": "HESK=short|KROT=fast|VORN=quiet",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
+        },
+        {
+          "source": "w011_rev",
+          "sig_original": "HESK=short|KROT=fast|VORN=short",
+          "arm1_decoy_only": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 2,
+            "decoy_adopt": 1
+          },
+          "arm2_decoy_direct": {
+            "sig": "HESK=tall|KROT=fast|VORN=loud",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm3_decoy_alias": {
+            "sig": "HESK=tall|KROT=fast|VORN=loud",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "HESK=tall|KROT=fast|VORN=loud",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm5_alias_only": {
+            "sig": "HESK=short|KROT=fast|VORN=quiet",
+            "recovery": 2,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
+        },
+        {
+          "source": "w100_std",
+          "sig_original": "HESK=tall|KROT=slow|VORN=loud",
+          "arm1_decoy_only": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm2_decoy_direct": {
+            "sig": "HESK=short|KROT=fast|VORN=quiet",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm3_decoy_alias": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm5_alias_only": {
+            "sig": "HESK=tall|KROT=slow|VORN=loud",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
+        },
+        {
+          "source": "w100_rev",
+          "sig_original": "HESK=tall|KROT=slow|VORN=loud",
+          "arm1_decoy_only": {
+            "sig": "HESK=short|KROT=fast|VORN=quiet",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm2_decoy_direct": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm3_decoy_alias": {
+            "sig": "HESK=short|KROT=fast|VORN=quiet",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "HESK=short|KROT=fast|VORN=quiet",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm5_alias_only": {
+            "sig": "HESK=tall|KROT=slow|VORN=loud",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
+        },
+        {
+          "source": "w101_std",
+          "sig_original": "HESK=tall|KROT=slow|VORN=quiet",
+          "arm1_decoy_only": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm2_decoy_direct": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm3_decoy_alias": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm5_alias_only": {
+            "sig": "HESK=tall|KROT=slow|VORN=quiet",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
+        },
+        {
+          "source": "w101_rev",
+          "sig_original": "HESK=tall|KROT=slow|VORN=quiet",
+          "arm1_decoy_only": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm2_decoy_direct": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm3_decoy_alias": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm5_alias_only": {
+            "sig": "HESK=tall|KROT=slow|VORN=quiet",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
+        },
+        {
+          "source": "w110_std",
+          "sig_original": "HESK=short|KROT=slow|VORN=loud",
+          "arm1_decoy_only": {
+            "sig": "HESK=tall|KROT=fast|VORN=loud",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm2_decoy_direct": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 2,
+            "decoy_adopt": 1
+          },
+          "arm3_decoy_alias": {
+            "sig": "HESK=tall|KROT=fast|VORN=loud",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "HESK=tall|KROT=fast|VORN=loud",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm5_alias_only": {
+            "sig": "HESK=short|KROT=slow|VORN=loud",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
+        },
+        {
+          "source": "w110_rev",
+          "sig_original": "HESK=short|KROT=slow|VORN=loud",
+          "arm1_decoy_only": {
+            "sig": "HESK=tall|KROT=fast|VORN=quiet",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm2_decoy_direct": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 2,
+            "decoy_adopt": 1
+          },
+          "arm3_decoy_alias": {
+            "sig": "HESK=tall|KROT=fast|VORN=quiet",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "HESK=tall|KROT=fast|VORN=quiet",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm5_alias_only": {
+            "sig": "HESK=short|KROT=slow|VORN=loud",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
+        },
+        {
+          "source": "w111_std",
+          "sig_original": "HESK=short|KROT=slow|VORN=quiet",
+          "arm1_decoy_only": {
+            "sig": "HESK=tall|KROT=fast|VORN=loud",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm2_decoy_direct": {
+            "sig": "HESK=short|KROT=slow|VORN=quiet",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "arm3_decoy_alias": {
+            "sig": "HESK=tall|KROT=fast|VORN=loud",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "HESK=tall|KROT=fast|VORN=loud",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm5_alias_only": {
+            "sig": "HESK=short|KROT=slow|VORN=quiet",
+            "recovery": 3,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
+        },
+        {
+          "source": "w111_rev",
+          "sig_original": "HESK=short|KROT=slow|VORN=short",
+          "arm1_decoy_only": {
+            "sig": "HESK=short|KROT=fast|VORN=loud",
+            "recovery": 1,
+            "decoy_adopt": 2
+          },
+          "arm2_decoy_direct": {
+            "sig": "HESK=tall|KROT=fast|VORN=loud",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm3_decoy_alias": {
+            "sig": "HESK=tall|KROT=fast|VORN=loud",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm4_decoy_shuffled_alias": {
+            "sig": "HESK=tall|KROT=fast|VORN=loud",
+            "recovery": 0,
+            "decoy_adopt": 3
+          },
+          "arm5_alias_only": {
+            "sig": "HESK=short|KROT=slow|VORN=quiet",
+            "recovery": 2,
+            "decoy_adopt": 0
+          },
+          "n_entities": 3
+        }
+      ],
       "correction_descent": [
         {
           "fiber": "HESK=tall|KROT=fast|VORN=quiet",
@@ -6519,14 +7483,5 @@
         }
       ]
     }
-  },
-  "provenance": {
-    "runner_hash": "cd20be1d5814",
-    "torch_version": "2.11.0+cu128",
-    "transformers_version": "5.12.1",
-    "python_version": "3.13",
-    "vocab_size": 151643,
-    "device": "cpu",
-    "git_commit": "c97082c"
   }
 }
