@@ -1190,7 +1190,8 @@ def find_paired_histories(trajs: list, cfg: Config, target_handle: int,
                     suffix_len = min(8, len(t1.actions) - step, len(t2.actions) - step)
                     if suffix_len < 2:
                         continue
-                    shared_suffix = t1.actions[step:step + suffix_len]
+                    # Use recipient's actions as the shared suffix (R3b §7)
+                    shared_suffix = t2.actions[step:step + suffix_len]
 
                     fc = _find_first_contact(t1, t2, step, target_handle, cfg)
 
