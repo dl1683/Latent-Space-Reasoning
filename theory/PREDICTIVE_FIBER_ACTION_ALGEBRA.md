@@ -402,3 +402,504 @@ becomes visible in the computation, not a separate algebraic law.
 | predictive_fiber_v1 | Two-component residual (predictive + presentation) | 4978a85 |
 | predictive_fiber_action_v2 | $S^W_w$ idempotent, non-natural with correction, path dependence confirmed | e9e54ef |
 | signature_restatement_v1 | $S^G_g$ exists: 100% idempotent, 100% descent, non-natural with correction, correction non-descent (58-80%), fixed cyclic shuffle 0/32 (pairing-sensitive), anti-echo alias Gate 3 FAILS (faithful ≈ shuffled) | pending |
+
+## 8. CPA-1 pre-registration: commitment-port absorption after failed textual correction
+
+**Status:** DESIGN-GATE PRE-REGISTRATION, UNRUN, DEFERRED. Deferred in favor
+of Commitment Hysteresis v1 (Section 9), which tests a related but more
+fundamental question with fewer forward passes (456 vs 2,077). CPA-1 is
+authorized only after the Hysteresis experiment completes and is audited.
+No model forward pass is authorized by this section. This is a new
+intervention-defined line, not a repair of the terminal prompt-renderer line.
+The Phase 4d selection, carriers, sites, estimands, thresholds, and call count
+below must be bound to a manifest before scientific compute.
+
+**So what:** *A failed textual correction can be made to stick by replacing one
+causal state at the model's own commitment boundary -- the first evidence that
+a model decision is a transplantable, directed state rather than a point in
+vector space.*
+
+### 8.1 Fixed population and exact prompts
+
+Use frozen `Qwen/Qwen3-0.6B` at revision
+`c1899de289a04d12100db370d81485cdf75e47ca`, CPU float32, batch one, cache
+disabled. The source population is fixed from the completed Phase 4d artifact
+`experiments/results/signature_restatement_v1/phase4d_results.json`. A
+coordinate belongs to the population exactly when its stored
+`D2_counterfactual_only` row has `output_class != "counterfactual"`. No row is
+selected from CPA-1 outcomes. This gives 67 directed coordinates: 27 registered
+and 40 held-out, spanning all eight semantic-world clusters in each set.
+
+For selected coordinate $i$, let $B_i$ be its stored shared-domain base
+history, $e_i$ its queried entity, $g_i$ its stored observed base signature,
+and $\bar g_i=\nu\circ g_i$ the already-locked Phase 4d fixed-point-free
+counterfactual. Let $R(h)$ be the already-locked direct `Record` rendering of
+signature $h$. The presentation order of $B_i$ is retained. Define
+
+\[
+\begin{aligned}
+x_i^- &= B_i\,R(\bar g_i)\,q_{e_i},
+&&\text{the resistant Phase 4d contradiction},\\
+x_i^+ &= B_i\,R(g_i)\,q_{e_i},
+&&\text{the matched incumbent-confirming carrier},\\
+y_i &= B_{\bar g_i}\,R(\bar g_i)\,q_{e_i},
+&&\text{the congruent counterfactual donor},\\
+z_i &= B_{h_i}\,R(h_i)\,q_{e_i},
+&&\text{the queried-value specificity donor},
+\end{aligned}
+\]
+
+where $B_h$ uses the same shared-domain declaration, entity order, grammar,
+and query as $B_i$ but declares signature $h$, and
+
+\[
+(h_i)_{e_i}=(g_i)_{e_i},\qquad
+(h_i)_j=(\bar g_i)_j\quad(j\ne e_i).
+\]
+
+Thus $z_i$ matches the counterfactual donor on both nonqueried coordinates but
+retains the incumbent value at the queried coordinate. Every value is one
+token under the Phase 4d preflight. The runner must verify equal token length,
+equal non-value token IDs, identical query-port index, fixed-point freedom,
+and the stored 67-row selection before installing hooks. Any failure is
+`INVALID_CARRIER`; no scientific result survives.
+
+For example, the first fixed registered coordinate is
+`w000_std / MIP`, with stored $g=(\text{big},\text{hot},\text{blue})$ and
+$\bar g=(\text{small},\text{cold},\text{red})$. Its exact resistant recipient
+is:
+
+```text
+Every named item has exactly one value from this shared value vocabulary: big, small, hot, cold, red, blue. ZOG: big. MIP: hot. PLIM: red.
+Record:
+ZOG: small
+MIP: cold
+PLIM: red
+End record.
+MIP:
+```
+
+Its exact counterfactual donor $y$ changes the base declarations to
+`ZOG: small. MIP: cold. PLIM: red.` and keeps the displayed record and query
+unchanged. Its exact specificity donor $z$ uses
+`ZOG: small. MIP: hot. PLIM: red.` in both the base declarations and record.
+The other 66 prompt quadruples follow this same deterministic construction
+from their stored row IDs; the manifest saves every complete prompt and hash.
+
+### 8.2 Commitment-port action -- definition
+
+Let $H_\ell$ be the post-block-$\ell$ whole-sequence carrier and let $p_i$ be
+the final query position of coordinate $i$. For a donor $y$ and recipient $x$
+with the same registered carrier layout, define the surgeon action
+
+\[
+P_{\ell,p_i}^{y\leftarrow x}:H_\ell\to H_\ell
+\]
+
+by replacing exactly the single row $h_{\ell,p_i}(x)$ with
+$h_{\ell,p_i}(y)$ and leaving every other row unchanged, then executing the
+model's unchanged blocks $\ell+1,\ldots,27$, final norm, and unembedding. This
+is an exact same-carrier substitution. It does not add, average, rotate,
+project, normalize, or compare residual vectors.
+
+Use intervention sites
+
+\[
+\mathcal L=\{18,21,22,23,24,25,26\},
+\]
+
+with zero-based post-block indexing, matching the existing hook convention.
+Layer 21, the entry to the measured resolution transition, is the prospectively
+primary site; layer 18 is the prospectively primary pre-transition comparator.
+Layers 22--26 report the locked transition curve and may not replace either
+primary site after inspection. Layer 25 is a near-output positive-control
+ceiling: success there cannot rescue a layer-21 nonpass.
+
+For every downstream post-block checkpoint $k>\ell$, let $\rho_k(u)$ be the
+final-norm-plus-unembedding law of the final query row. Let $\rho_{\rm out}(u)$
+be the actual final next-token law. All response discrepancies use the existing
+natural-log square-root Jensen--Shannon distance $D$ on the full vocabulary,
+exactly as implemented by `js_dist` in the proven instrument. Argmax is a
+secondary behavioral endpoint only. (The capture ratio below is invariant to
+any common positive normalization of $D$.)
+
+For recipient $x$, target donor $y$, edited run $u=P_{\ell,p}^{y\leftarrow x}x$,
+and checkpoint $k$, define **target capture**
+
+\[
+\chi_{\ell,k}(x\leftarrow y)=
+\frac{D(\rho_k(u),\rho_k(x))-D(\rho_k(u),\rho_k(y))}
+     {D(\rho_k(x),\rho_k(y))}.
+\]
+
+By the reverse triangle inequality, $-1\le\chi\le1$: an unchanged source has
+$\chi=-1$, an exact target has $\chi=1$, and an equidistant response has
+$\chi=0$. If the denominator is below the locked material-separation floor
+$0.05$, set $\chi=-1$ for the primary aggregation rather than dropping the
+row. For the primary layer define the **transition-absorption score**
+
+\[
+a_{21}(x\leftarrow y)=
+\min\{\chi_{21,22}(x\leftarrow y),
+       \chi_{21,25}(x\leftarrow y),
+       \chi_{21,{\rm out}}(x\leftarrow y)\}.
+\]
+
+This asks whether a target state installed at the entry to the resolution
+transition remains targetward across that transition and the remaining native
+suffix, not merely whether the immediate logit lens reads the copied donor row.
+
+### 8.3 CPA-1 proposition and falsifier
+
+**Proposition CPA-1 (commitment-port absorption, empirical).** On Phase 4d
+coordinates where a fixed-point-free contradictory record failed to control
+the answer, the counterfactual query-port action
+$P_{21,p_i}^{y_i\leftarrow x_i^-}$ is an approximately target-absorbing,
+queried-value-specific continuation action: it moves the final full-vocabulary
+response law from the resistant source toward the congruent counterfactual
+donor, the move survives the remaining native suffix, the matched donor that
+changes only nonqueried commitments does not reproduce it, and the effect is
+materially stronger than the same target-port substitution at layer 18.
+
+The strongest confound is trivial dominance by any donor query row, independent
+of the queried value. The $z_i$ arm is the direct moot-maker: it has the same
+grammar, positions, and two counterfactual nonquery values as $y_i$ but retains
+the incumbent queried value. A positive target action without a positive
+target-minus-$z$ specificity margin does not test the proposition.
+
+The direct falsifier is a valid carrier on which the layer-21 target action
+remains sourceward, does not change argmax at a material rate, or is no more
+targetward than the $z_i$ action. A layer-21 effect that is equally present at
+layer 18, or a layer-25 effect without a layer-21 effect, establishes at most a
+late query port and falsifies the claimed commitment-transition action.
+
+### 8.4 Locked estimands, clustering, and verdict bars
+
+Rows are nested inside the already-fixed semantic-world cluster. Registered
+and held-out sets are adjudicated separately. Each point estimate is the mean
+of equal-weight world-cluster means. Bounds are deterministic 10,000-resample
+percentile intervals over the eight whole-world clusters per set, seed 51203;
+entity, presentation order, carrier, layer, and downstream checkpoint remain
+nested.
+
+Before the proposition is interpreted, all of these interface checks must pass:
+
+1. every carrier/token/query-position check and every same-row hook check is
+   valid;
+2. unedited deterministic replay and layer-21 self-patch have maximum
+   full-law distance at most $10^{-5}$;
+3. $y_i$ follows $(\bar g_i)_{e_i}$ greedily on at least 90% of coordinates in
+   each set, with world-cluster lower bound at least 75%; and
+4. $D(\rho_{\rm out}(x_i^-),\rho_{\rm out}(y_i))\ge0.05$ on at least 90% of
+   coordinates in each set. Sub-floor rows remain in the primary aggregation
+   as $\chi=-1$.
+
+Failure is `NO_INTERFACE_OR_INVALID`; mechanism bars are not interpreted and
+there is no prompt, layer, threshold, or donor repair.
+
+Conditional on interface validity, `CPA1_CONFIRMED` requires **all** of the
+following approximate/effect-size bars in each entity set:
+
+1. layer-21 final target capture has estimate at least $0.50$ and lower bound
+   at least $0.25$;
+2. layer-21 greedy counterfactual following is at least 70%, with lower bound
+   at least 50% (the selected Phase 4d source rate is exactly zero by
+   construction);
+3. layer-21 final specificity,
+   $\chi(x^-\leftarrow y)-\chi(x^-\leftarrow z)$, is at least $0.50$ with
+   lower bound above zero;
+4. the transition-absorption score $a_{21}$ is at least $0.25$ with lower bound
+   above zero; and
+5. the localization contrast
+   $\chi_{21,{\rm out}}(x^-\leftarrow y)-
+    \chi_{18,{\rm out}}(x^-\leftarrow y)$ is at least $0.25$ with lower bound
+   above zero.
+
+Exact row counts are diagnostics only. A valid result is `CPA1_REFUTED` if, in
+either set, the upper bound for layer-21 target capture is below $0.20$, the
+upper bound for greedy counterfactual following is below 40%, or the upper
+bound for target-minus-$z$ specificity is at most zero. A valid result that
+meets neither approximate confirmation nor refutation bars is
+`CPA1_INCONCLUSIVE`. If the target action passes its capture, following,
+specificity, and absorption bars but misses localization, report
+`PORT_ACTION_NOT_COMMITMENT_LOCALIZED`; do not call it CPA-1 confirmation.
+If layer 21 fails but layer 25 passes, report `LATE_PORT_ONLY`; this is an
+activation-proximity diagnostic, not confirmation.
+
+The $y_i\to x_i^+$ arm is an adversarial incumbent-confirming-context control.
+Its effect and its paired difference from $y_i\to x_i^-$ are descriptive: the
+Phase 4d resistance selection makes them unsuitable for an unqualified
+hysteresis claim. No threshold may be added after inspection.
+
+### 8.5 Implementation and exact CPU budget
+
+Create one runner, `experiments/run_commitment_port_action_v1.py`; do not alter
+or rerun `run_signature_restatement_v1.py`. Reuse:
+
+- Phase 4d carriers, fixed involution, record grammar, tokenizer preflight,
+  model revision, and SHA helpers from `run_signature_restatement_v1.py`;
+- whole-stack hidden capture and final-norm-plus-unembedding from
+  `run_logit_lens_resolution_v1.py`;
+- the hook shape from `run_causal_resolution_v1.py`, but replace only
+  `output[0][:,-1,:]`, never the complete residual sequence; and
+- the Phase 4d whole-world clustered estimator, extended to the locked CPA-1
+  estimands.
+
+Every edited call computes the full downstream logit-lens trajectory and final
+full-law JSD before reduction, and saves every component distance, capture
+score, greedy token, target/incumbent logits, top tokens, prompt and carrier
+hashes, hook count, model/tokenizer revisions, runner/config/manifest hashes,
+and source row ID. Retain the float32 full-vocabulary laws needed to recompute
+every primary layer-21 capture, specificity, absorption, interface, replay, and
+self-patch endpoint; nonprimary curve laws may be reduced to the registered
+scalar components plus hashes. The runner must refuse overwrite and checkpoint
+each completed call identity.
+
+The exact scientific call table has 2,077 batch-one CPU forward passes:
+
+| Calls | Purpose |
+|---:|---|
+| $67\times4\times2=536$ | capture and deterministic replay of $x^-$, $x^+$, $y$, and $z$ |
+| $67\times7=469$ | $y\to x^-$ at all seven sites |
+| $67\times7=469$ | $y\to x^+$ at all seven sites |
+| $67\times7=469$ | $z\to x^-$ specificity arm at all seven sites |
+| $67\times2=134$ | layer-21 self-patches of $x^-$ and $x^+$ |
+
+No generation, sampling, training, GPU work, PCA, cosine, Euclidean distance,
+linear probe, learned direction, vector addition, or interpolation is allowed.
+A tokenizer-only preflight and manifest construction add zero model forwards.
+
+Projected new-runner classification: approximately 100--130 lines implement
+the carrier/action/response artifact and approximately 150--190 lines implement
+validation, checkpointing, provenance, reduction, and reporting, for a projected
+apparatus-to-artifact ratio of 1.2--1.9:1. This theory/design round is one
+artifact-definition round and zero measurement rounds; the first scientific run
+would be one measurement round.
+
+### 8.6 R^n-trap and claim wall
+
+The experiment uses a residual tensor as a carrier but no structure inherited
+from $\mathbb R^n$. Its action is exact same-phase substitution at a named
+causal port, and its equality/direction/cost-free claims are defined only by
+future response laws. Under any bijective recoding of the port carrier, the
+action and every $\chi$ value are unchanged after conjugating the substitution.
+The mathematical candidate is therefore a directed partial action on
+response-law places with an absorption property, not a vector displacement.
+
+This is still a **surgeon-world** action and has close analogues in causal
+abstraction, automata, and hysteresis theory. A pass would establish a new
+native operational primitive for this model -- a target-absorbing commitment
+port -- not novel mathematics in the theorem-discovery sense. Never say that
+the port is a denizen move, that a residual vector is a semantic object, that
+the action proves a register, that one position stores the whole fact world,
+that full future-response identity is certified, or that CPA-1 alone is native
+mathematics. A nonpass kills this commitment-port proposition and this exact
+carrier/action construction, not internal intervention laws generally.
+
+## 9. Commitment Hysteresis v1 pre-registration (PRIMARY)
+
+**Status:** DESIGN-GATE PRE-REGISTRATION, UNRUN. Primary next experiment
+(Codex design gate recommendation). No model forward pass is authorized
+by this section until the runner, config, and manifest are bound.
+
+**So what:** *A fact copied into the model before commitment may leave a causal
+trace that survives putting the original fact-state back — giving latent
+motion history and direction, not merely a destination.*
+
+### 9.1 Population and prompts
+
+Use frozen `Qwen/Qwen3-0.6B` at revision
+`c1899de289a04d12100db370d81485cdf75e47ca`, CPU float32, batch one, cache
+disabled. Three binary families from the standard Phase 2 prompt surface:
+
+| Family | Entities | Values |
+|--------|----------|--------|
+| 1 | ZOG, MIP | big, small |
+| 2 | PLIM, KROT | hot, cold |
+| 3 | HESK, VORN | red, blue |
+
+Prompt template:
+```
+{A}: {va}. {B}: {vb}.
+{Q}:
+```
+
+For every family, run all four worlds and both direct queries. A donor world
+$y = x^e$ differs from host $x$ in exactly one entity's value. No reversed
+declaration order, fresh names, unseen wording, or longer continuations —
+those are separate staircase rungs, authorized only after this rung passes
+and is audited.
+
+### 9.2 Intervention span
+
+Let $P$ be every token wholly before the queried entity on the second line —
+the complete declaration prefix, including punctuation/newline tokens that lie
+wholly before the boundary.
+
+**Preflight must reject a prompt if:**
+- a token straddles the declaration/query boundary;
+- host and donor lengths differ;
+- their query-suffix token IDs differ;
+- prefix masks do not align exactly.
+
+### 9.3 Actions — definition
+
+Let $J_\ell^{x \leftarrow y}$ copy the clean donor's post-block-$\ell$ hidden
+rows on $P$ into the host execution. Query-suffix rows remain untouched.
+
+Define:
+- $F_{21} = J_{21}^{x \leftarrow y}$: early donor-prefix action (pre-commitment)
+- $F_{25} = J_{25}^{x \leftarrow y}$: late-action comparison (post-commitment)
+- $R_m = J_m^{x \leftarrow x}$, $m \in \{21, \ldots, 25\}$: restore the natural
+  host prefix after the forward action
+- $C_{25}$: restore every position — not merely $P$ — from the clean host at
+  L25 (instrumentation closure control)
+
+**Arms per directed host/donor/query row:**
+
+| Arm | Action | Purpose |
+|-----|--------|---------|
+| 1 | self-patch at L21 | Control: identity check |
+| 2 | $F_{21}$ | Primary: early donor-prefix transplant |
+| 3 | $F_{25}$ | Comparison: late donor-prefix transplant |
+| 4 | $R_{21} F_{21}$ | Immediate restoration |
+| 5 | $R_{22} F_{21}$ | Progressive restoration curve |
+| 6 | $R_{23} F_{21}$ | Progressive restoration curve |
+| 7 | $R_{24} F_{21}$ | Progressive restoration curve |
+| 8 | $R_{25} F_{21}$ | Key: does donor influence survive commitment? |
+| 9 | $C_{25} F_{21}$ | Full-state restoration control |
+
+Population: 12 undirected square edges, 48 directed intervention/query rows,
+24 clean prompt-query rows. **Total: 456 CPU forward passes.**
+
+### 9.4 Prefix-relative hysteresis — definition
+
+Let $x, y$ be histories with aligned declaration-prefix span $P$, and let
+$s_\ell(x; q)$ denote the model's complete execution state after block $\ell$
+under registered query $q$.
+
+The natural prefix substitution $J_\ell^{x \leftarrow y}$ replaces
+$s_\ell(x; q)|_P$ by $s_\ell(y; q)|_P$, leaving all positions outside $P$
+unchanged, after which the model's ordinary transition resumes.
+
+For $F = J_{\ell_0}^{x \leftarrow y}$ and $R_m = J_m^{x \leftarrow x}$, the
+execution has **prefix-relative hysteresis at $m$** when
+
+$$
+[Fx]_Q \neq [x]_Q, \qquad [R_m F x]_Q \neq [x]_Q,
+$$
+
+even though the designated prefix has been restored to its clean host state
+at layer $m$.
+
+### 9.5 Proposition — finite-kernel hysteresis witness
+
+Let $F = J_{21}^{x \leftarrow y}$, let $R_m = J_m^{x \leftarrow x}$, and let
+$C_{25}$ restore the complete clean host state at L25. If
+
+$$
+[Fx]_Q \neq [x]_Q,
+$$
+$$
+[R_{21} F x]_Q = [x]_Q,
+$$
+$$
+[R_{25} F x]_Q \neq [x]_Q,
+$$
+
+and
+
+$$
+[C_{25} F x]_Q = [x]_Q,
+$$
+
+then $R_{25}$ is not a left inverse of $F$ on the registered response quotient.
+Consequently, sequential execution has transferred response-relevant residue
+outside the restored prefix, and the system exhibits prefix-relative hysteresis.
+
+If $F_{21}$ is materially more donor-directed than $F_{25}$, the accessibility
+of the move is additionally depth-dependent across the L21–L25 commitment
+interval.
+
+The proposition is exact mathematics. Empirical adjudication uses the
+approximate criteria below; exact equalities are diagnostics only.
+
+### 9.6 Response-law distance
+
+For each query $q$, retain the complete next-token probability distribution
+over the model vocabulary — never argmax, selected tokens, or top-$k$
+truncation.
+
+Use the normalized response-law distance:
+
+$$
+d_{Q_f}(Sx, Ty) = \max_{q \in Q_f} \sqrt{\frac{D_{\mathrm{JS}}(p_\theta(\cdot \mid S(x,q)),\; p_\theta(\cdot \mid T(y,q)))}{\log 2}}.
+$$
+
+This is a finite registered quotient, not a certificate of complete
+future-law equality. A positive value is nevertheless a valid witness that
+the full future laws differ.
+
+### 9.7 Estimands and gates
+
+For directed edge $i: x \to y = x^e$, let $b_i = d_{q_e}(x, y)$ be the
+natural response-law separation on the changed entity's query.
+
+An edge is carrier-eligible when $b_i \geq \max(0.02, 8\eta)$, where $\eta$
+is the maximum clean-replay/control discrepancy.
+
+Define:
+- $M_i = d_Q(F_{21} x, x) / b_i$ — move size
+- $T_i = (b_i - d_{q_e}(F_{21} x, y)) / b_i$ — donor-directed progress
+- $H_i = d_Q(R_{25} F_{21} x, x) / b_i$ — restored-prefix residue
+- $U_i = (b_i - d_{q_e}(R_{25} F_{21} x, y)) / b_i$ — donor-directed residue after restoration
+- $L_i = T_i^{(21)} - T_i^{(25)}$ — commitment localization
+
+Statistical unit: undirected binary-world edge (12 clusters). Average the two
+directions and both query executions inside each edge. Deterministic
+10,000-resample cluster bootstrap, seed 51203.
+
+### 9.8 Locked verdict bars
+
+**Interface checks (must all pass):**
+1. Every carrier/token/query-position/prefix-mask check is valid
+2. Normalized self-patch, $R_{21} F_{21}$, and $C_{25} F_{21}$ controls: 95%
+   upper bound $\leq 0.02$
+3. At least 9/12 edge clusters carrier-eligible
+
+**`COMMITMENT_HYSTERESIS_REGISTERED` requires ALL of:**
+1. Lower bound of mean $M_i \geq 0.25$
+2. Lower bound of mean $T_i \geq 0.20$
+3. Lower bound of mean $H_i \geq 0.15$
+4. Lower bound of mean $U_i \geq 0.10$
+5. Lower bound of mean $L_i \geq 0.10$
+
+**Stop conditions:**
+
+| Status | Rule | Consequence |
+|--------|------|-------------|
+| `INVALID_CARRIER` | <9/12 eligible edges or control UB > 0.02 | Fix integrity only; no scientific verdict |
+| `NO_ACTION_INTERFACE` | 95% UB of $M$ or $T$ < 0.10 | Kill whole-prefix substitution as action interface |
+| `REVERSIBLE_ACTION` | Action passes but UB of $H$ and $U$ both < 0.05 | Kill hysteresis law; retain reversibility |
+| `HYSTERESIS_NOT_COMMITMENT_LOCALIZED` | $H, U$ pass but UB of $L$ < 0.05 | Keep generic hysteresis; kill localization claim |
+| `INCONCLUSIVE_ALLOCATION_STOP` | Valid but intervals between pass/kill | Stop; no tuning |
+| `COMMITMENT_HYSTERESIS_REGISTERED` | All success gates pass | Audit, then design held-out-name rung |
+
+No generation, prompt repair, threshold tuning, or parameter sweep after
+inspection. One terminal attempt.
+
+### 9.9 R^n trap and claim wall
+
+The experiment uses residual tensors as carriers but no structure inherited
+from $\mathbb{R}^n$. Its actions are exact naturally occurring causal
+substitutions. The mathematical object is sequential action on response-law
+equivalence classes with a hysteresis property. Under any bijective recoding
+of the carrier, the actions and all estimands are unchanged after conjugating
+the substitution.
+
+**Claim wall:** A pass establishes prefix-relative hysteresis at the
+commitment transition — a donor-directed response-law move that survives
+prefix restoration. It does NOT establish intrinsic denizen action, full
+future-response identity, held-out-name generality, unseen-wording
+generality, or native mathematics alone. A nonpass kills this exact
+carrier/action/span construction, not internal intervention laws generally.
