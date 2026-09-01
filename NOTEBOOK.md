@@ -4,6 +4,76 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — Differential-topological codimension theorem KILLED by own analysis; information bottleneck variant identified
+
+**The differential-topological formulation fails at its mathematical foundation.**
+
+The intended theorem: prove the composition-consistent set has positive codimension
+(hence measure zero) relative to the endpoint-consistent fiber. But careful
+formalization reveals both sets are OPEN in R^64:
+
+1. **Omega** (endpoint-correct carriers) = {c : argmax B_s(c) = delta(s, a) for all s}.
+   Since B_s is continuous and argmax is locally constant on the strict-maximum set,
+   Omega is open. For a trained model with 100% endpoint accuracy, Omega is nonempty.
+
+2. **Z** (composition-correct carriers) = {c in Omega : argmax compositions match
+   sequential for all (s, k)}. Same argument: Z is open.
+
+3. An open nonempty set in R^64 has positive Lebesgue measure. The measure-zero
+   claim is structurally impossible. Transversality/codimension arguments require
+   smooth submanifolds, not open sets.
+
+The smooth-logit version (exact logit match, not argmax) does define a submanifold
+Z_cont, but Z_cont is a STRICT SUBSET of Z — proving Z_cont has measure zero says
+nothing about Z.
+
+**Alternative: information bottleneck theorem.**
+
+A structurally different argument survives:
+- Sequential execution uses 2 x 64 = 128 dims of action information (c_a, c_b applied
+  separately through 1-block executor with gate ~= 0)
+- Composed execution uses 64 dims (mu(c_a, c_b) applied through 2-block executor
+  with gate ~= 1)
+- The GRU composer compresses R^128 -> R^64
+- Block 1 must recover c_a-equivalent projection, Block 2 must recover c_b-equivalent
+- This is a 2:1 information bottleneck activated precisely by the gate mechanism
+- The bottleneck is architectural (gate creates asymmetric computation paths)
+
+This is not a measure-zero theorem — it's a representational capacity argument.
+Design corollary: endpoint-only training cannot force the composer to allocate
+its 64 dims to serve both blocks simultaneously. Explicit composition loss or
+wider carriers (per-block projections from a shared wider carrier) are needed.
+
+**Prior art to check:** information bottleneck (Tishby 1999), autoencoder capacity
+bounds, compositional generalization in neural networks (Hupkes et al., Lake & Baroni).
+
+**Codex design gate verdict: REJECT.** Codex independently confirmed the kill:
+
+1. **Rank premise analytically disproved (same-recipient).** When B (endpoint) and
+   C (composition defect) use the same worlds, C(z) = B(z) - s (constant shift).
+   Therefore DC = DB, and DC|_{ker DB} = 0 identically. No extra rank exists.
+2. **Disjoint-panel variant is checkpoint-dependent.** Using different worlds for
+   B vs C makes the relative Jacobian rank architecture- AND weight-dependent.
+   Nothing in the Composer-Executor-Renderer architecture analytically forces
+   positive relative rank. This reduces to a numerical diagnostic, not a theorem.
+3. **Finite carrier set.** ActionWriter produces 4 primitives x 4 roles = finite
+   set of carriers. Ambient measure arguments are meaningless for finite sets.
+4. **R^n trap.** Jacobians, Euclidean dimension, transversality — all standard
+   R^n mathematics applied to R^128 activations. Not native latent-space math
+   under the project's own D7 boundary.
+
+Combined with the independent argmax/open-set kill: both theorem paths are dead.
+
+**Design recommendations from Codex (valid but not theorems):**
+1. Structural homomorphism: build rho(mu(a,b)) = rho(b) o rho(a) into architecture
+2. Explicit composition supervision: L_comp loss term
+3. Carriers that denote typed executable operators, not unstructured GRU outputs
+
+**Program archives definitively.** Both bounded theorem attempts evaluated and
+rejected. No remaining paths. Transferable residue deposited to AGI Thesis.
+
+---
+
 ## 2026-09-01 — Re-contextualization: archival stands, one alternative alive, anti-tunnel check
 
 **What still holds:** The empirical program is dead (75+ experiments, zero

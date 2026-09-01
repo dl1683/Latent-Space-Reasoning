@@ -4,9 +4,9 @@
 
 This project attempted to build the **native mathematics of latent spaces** — not porting existing math onto embeddings, but discovering what math the space itself demands.
 
-## Status: one bounded theory attempt remains (2026-09-01)
+## Status: archived (2026-09-01)
 
-After 75+ experiments across 5 phases, no positive result supporting native latent-space mathematics survives audit. The algebraic composition-identifiability theorem was rejected at the Codex design gate (direct specialization of syntactic congruence). A differential-topological variant (relative-fiber codimension via transversality) was identified by the bidirectional Codex audit as untested and materially different. One bounded attempt remains; if it fails, the program archives.
+After 75+ experiments across 5 phases and two independent theorem attempts, no positive result supporting native latent-space mathematics survives audit. The algebraic composition-identifiability theorem was rejected (direct specialization of syntactic congruence). The differential-topological variant (relative-fiber codimension via transversality) was also rejected: the rank premise is analytically disproved when endpoint and composition maps share the same worlds, and the argmax formulation makes the relevant carrier sets open (not smooth submanifolds), killing the measure-zero argument.
 
 The central hypothesis — "latent spaces have native mathematics" — is **not refuted** but is **unsupported** by this work. The experiments failed at eligibility (models couldn't provide a behavioral interface) or at composition (engineered systems learned shortcuts, not algebra), never reaching the geometric measurements that could test the bet.
 

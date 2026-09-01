@@ -1,8 +1,12 @@
 # STATE
 
-## Current statement (2026-09-01, ALGEBRAIC THEOREM REJECTED — one differential-topological attempt remains)
+## Current statement (2026-09-01, PROGRAM ARCHIVED — both theorem attempts rejected)
 
-**Empirical program closed; one bounded theory attempt remains.** After 75+ experiments across 5 phases, no positive result supporting native latent-space mathematics survives audit. The algebraic composition-identifiability theorem was REJECTED at the Codex design gate: direct specialization of syntactic congruence (Chow's W-method, Angluin's observation table, syntactic monoid theorem). The bidirectional Codex audit (2026-09-01) found the archival premature: a differential-topological variant (relative-fiber codimension via transversality, proving composition-defect contributes Jacobian rank beyond endpoint constraints) was never evaluated and is materially different from the algebraic version. One bounded attempt remains under the revised kill gate (standard machinery allowed if the specialization proves a nontrivial neural-specific conclusion with checkable conditions and a design consequence). If it fails, the program archives.
+**Program archived.** After 75+ experiments across 5 phases and two independent theorem attempts, no positive result supporting native latent-space mathematics survives audit.
+
+**Theorem attempt 1 (algebraic):** Composition-identifiability via behavioral congruence. REJECTED at Codex design gate — direct specialization of syntactic congruence (Chow's W-method, Angluin's observation table, syntactic monoid theorem). Prior-art delta fails.
+
+**Theorem attempt 2 (differential-topological):** Relative-fiber codimension via transversality — prove composition-defect Jacobian contributes rank beyond endpoint Jacobian on the endpoint-consistent fiber. REJECTED at Codex design gate for two independent reasons: (a) When endpoint map B and composition-defect map C use the same worlds, C(z) = B(z) - s (constant shift), so DC = DB and the relative Jacobian DC|_{ker DB} = 0 identically. The rank premise is analytically disproved. (b) The "fiber" under argmax (which is what training uses) is an open set, not a smooth submanifold — both endpoint-correct and composition-correct carrier sets are open in R^d, so nonempty composition-correct sets have positive measure. The measure-zero codimension argument fails structurally. A disjoint-panel variant (different worlds for B vs C) would make the rank premise checkpoint-dependent, reducing to a numerical diagnostic rather than an architecture theorem.
 
 Native math existence remains logically open but ceases to be a funded/live hypothesis here. Reopening requires genuinely new external evidence or a materially different architecture, not another substrate or task sweep. The axiomatic framework (D1-D9, Theorems 1/4/7/8), nine breakpoints, LAC-0 typed architecture residue, and Codex adversarial methodology are preserved as archival contributions.
 
