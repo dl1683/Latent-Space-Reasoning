@@ -4,6 +4,47 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-08-31T10:30 — Re-contextualization after Codex evidence gate
+
+**What still holds (instrument-based, strong):**
+- Cosine blindness (BP-9): 0.98 cosine where behavior is completely different. Replicated.
+- Logit-lens resolution: 62x selective amplification at L21-25. Clean, no text-operation dependency.
+- Attention independence: resolution is NOT attention routing (r < 0.25).
+- Commitment bottleneck: near-zero entropy at L25, re-broadening to 5.5-7.7 bits.
+- Distributed resolution: whole-sequence operation, not single-site.
+- Three-fact generalization: works across entity sets.
+
+**What was narrowed (text-operation-based, Codex-corrected):**
+- S^G is a literal append operator, not a semantic canonicalizer. Idempotence,
+  descent, place preservation follow from text mechanics. Codex: "do not call
+  semantic or latent-space invariance."
+- Non-naturality establishes sequence/path dependence but does not rule out
+  ordinary textual order/multiplicity effects. Codex: "it does not rule out
+  ordinary textual order or multiplicity effects."
+- Phase 4c anti-echo control provides no evidence either way (implementation
+  defects, not a clean test).
+
+**Key structural insight:** The project's strongest results are the INSTRUMENT
+findings (what cosine can't see, how the model processes facts through layers).
+These are about the model's internal computation. The TEXT-OPERATION findings
+(S^G, non-naturality, correction descent) may all be ordinary sequence-sensitive
+text processing. The gap between instrument findings and native math has not
+been bridged by text operations.
+
+**Live alternatives (per §2.6 anti-tunnel mandate):**
+1. Terminal anti-echo factorial (Codex designing) — final word on S^G semantics
+2. Pivot to intervention-defined continuation laws — test math at the internal
+   state level, not the text output level
+3. Build native math from the resolution layer — the commitment trajectory
+   through layers IS the mathematical structure (logit-lens is the right instrument)
+4. Holonomy at the internal level — test path-dependence in latent states at
+   L25, not in text outputs
+
+**What is NOT an alternative:** More alias tweaks, more text-operation experiments,
+more attempts to rescue S^G as semantic.
+
+---
+
 ## 2026-08-31T09:45 — Phase 4c anti-echo alias control: no anti-echo evidence (Codex REVISE)
 
 Five-arm control (Codex design gate). Results against pre-registration gates:
