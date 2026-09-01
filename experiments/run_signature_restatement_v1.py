@@ -17,8 +17,10 @@ corrected history through the model to get its NEW greedy signature g',
 then building the restatement from g'. This is the key construction.
 """
 
+import sys
 import torch
 import torch.nn.functional as F
+import transformers
 from transformers import AutoTokenizer, AutoModelForCausalLM
 import math
 import json
@@ -696,7 +698,23 @@ def main():
 
     os.makedirs(RESULTS_DIR, exist_ok=True)
 
-    all_results = {"model": MODEL_ID, "timestamp": datetime.now().isoformat(), "sets": {}}
+    import hashlib, subprocess as _sp
+    _rh = hashlib.md5(open(__file__, "rb").read()).hexdigest()[:12]
+    _gc = _sp.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True).stdout.strip()
+    all_results = {
+        "model": MODEL_ID,
+        "timestamp": datetime.now().isoformat(),
+        "provenance": {
+            "runner_hash": _rh,
+            "torch_version": torch.__version__,
+            "transformers_version": transformers.__version__,
+            "python_version": f"{sys.version_info.major}.{sys.version_info.minor}",
+            "vocab_size": tok.vocab_size,
+            "device": str(next(model.parameters()).device),
+            "git_commit": _gc,
+        },
+        "sets": {},
+    }
 
     for set_name, entities in [("registered", REGISTERED_ENTITIES), ("heldout", HELDOUT_ENTITIES)]:
         print(f"\n{'#' * 60}")
