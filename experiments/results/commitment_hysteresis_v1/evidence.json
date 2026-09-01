@@ -1,0 +1,2220 @@
+{
+  "experiment": "commitment_hysteresis_v1",
+  "timestamp": "2026-08-31T23:33:10.039765",
+  "model_id": "Qwen/Qwen3-0.6B",
+  "model_revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+  "config_hash": "6d4e8888e81c3ec4",
+  "runner_hash": "35aace96aabd3282",
+  "total_time_s": 46.62,
+  "n_edges": 48,
+  "edges": [
+    {
+      "host_world": "w00",
+      "donor_world": "w01",
+      "query": "ZOG",
+      "family": "ZOG_MIP",
+      "host_expected": "big",
+      "donor_expected": "big",
+      "host_greedy": "big",
+      "donor_greedy": "big",
+      "f21_greedy": "big",
+      "b": 0.183753,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.051092,
+      "f21_d_donor": 0.169267,
+      "f25_d_host": 0.03182,
+      "f25_d_donor": 0.19307,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.183753
+        },
+        "22": {
+          "d_host": 0.06362,
+          "d_donor": 0.142383
+        },
+        "23": {
+          "d_host": 0.114941,
+          "d_donor": 0.128171
+        },
+        "24": {
+          "d_host": 0.089614,
+          "d_donor": 0.128722
+        },
+        "25": {
+          "d_host": 0.046946,
+          "d_donor": 0.157499
+        }
+      },
+      "M": 0.278048,
+      "T": 0.078833,
+      "H": 0.255484,
+      "U": 0.142877,
+      "T25": -0.050705,
+      "L": 0.129538
+    },
+    {
+      "host_world": "w00",
+      "donor_world": "w10",
+      "query": "ZOG",
+      "family": "ZOG_MIP",
+      "host_expected": "big",
+      "donor_expected": "small",
+      "host_greedy": "big",
+      "donor_greedy": "small",
+      "f21_greedy": "big",
+      "b": 0.396555,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.116547,
+      "f21_d_donor": 0.336001,
+      "f25_d_host": 0.036879,
+      "f25_d_donor": 0.377948,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.396555
+        },
+        "22": {
+          "d_host": 0.125795,
+          "d_donor": 0.487351
+        },
+        "23": {
+          "d_host": 0.231546,
+          "d_donor": 0.568628
+        },
+        "24": {
+          "d_host": 0.208152,
+          "d_donor": 0.545975
+        },
+        "25": {
+          "d_host": 0.09186,
+          "d_donor": 0.374398
+        }
+      },
+      "M": 0.293899,
+      "T": 0.1527,
+      "H": 0.231645,
+      "U": 0.055873,
+      "T25": 0.04692,
+      "L": 0.10578
+    },
+    {
+      "host_world": "w00",
+      "donor_world": "w01",
+      "query": "MIP",
+      "family": "ZOG_MIP",
+      "host_expected": "big",
+      "donor_expected": "small",
+      "host_greedy": "small",
+      "donor_greedy": "small",
+      "f21_greedy": "small",
+      "b": 0.330443,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.072765,
+      "f21_d_donor": 0.290353,
+      "f25_d_host": 0.064977,
+      "f25_d_donor": 0.276908,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.330443
+        },
+        "22": {
+          "d_host": 0.132286,
+          "d_donor": 0.428389
+        },
+        "23": {
+          "d_host": 0.21267,
+          "d_donor": 0.499012
+        },
+        "24": {
+          "d_host": 0.145313,
+          "d_donor": 0.423853
+        },
+        "25": {
+          "d_host": 0.062955,
+          "d_donor": 0.342569
+        }
+      },
+      "M": 0.220205,
+      "T": 0.121321,
+      "H": 0.190517,
+      "U": -0.036698,
+      "T25": 0.162007,
+      "L": -0.040686
+    },
+    {
+      "host_world": "w00",
+      "donor_world": "w10",
+      "query": "MIP",
+      "family": "ZOG_MIP",
+      "host_expected": "big",
+      "donor_expected": "big",
+      "host_greedy": "small",
+      "donor_greedy": "small",
+      "f21_greedy": "small",
+      "b": 0.273831,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.080054,
+      "f21_d_donor": 0.239515,
+      "f25_d_host": 0.02657,
+      "f25_d_donor": 0.270449,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.273831
+        },
+        "22": {
+          "d_host": 0.088957,
+          "d_donor": 0.270704
+        },
+        "23": {
+          "d_host": 0.20047,
+          "d_donor": 0.292192
+        },
+        "24": {
+          "d_host": 0.141216,
+          "d_donor": 0.264912
+        },
+        "25": {
+          "d_host": 0.068355,
+          "d_donor": 0.241752
+        }
+      },
+      "M": 0.292348,
+      "T": 0.125318,
+      "H": 0.249625,
+      "U": 0.117148,
+      "T25": 0.012351,
+      "L": 0.112966
+    },
+    {
+      "host_world": "w01",
+      "donor_world": "w00",
+      "query": "ZOG",
+      "family": "ZOG_MIP",
+      "host_expected": "big",
+      "donor_expected": "big",
+      "host_greedy": "big",
+      "donor_greedy": "big",
+      "f21_greedy": "big",
+      "b": 0.183753,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.04961,
+      "f21_d_donor": 0.169326,
+      "f25_d_host": 0.030526,
+      "f25_d_donor": 0.196508,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.183753
+        },
+        "22": {
+          "d_host": 0.073513,
+          "d_donor": 0.145089
+        },
+        "23": {
+          "d_host": 0.123761,
+          "d_donor": 0.137318
+        },
+        "24": {
+          "d_host": 0.102663,
+          "d_donor": 0.133883
+        },
+        "25": {
+          "d_host": 0.047513,
+          "d_donor": 0.159477
+        }
+      },
+      "M": 0.269985,
+      "T": 0.078511,
+      "H": 0.25857,
+      "U": 0.132112,
+      "T25": -0.069413,
+      "L": 0.147924
+    },
+    {
+      "host_world": "w01",
+      "donor_world": "w11",
+      "query": "ZOG",
+      "family": "ZOG_MIP",
+      "host_expected": "big",
+      "donor_expected": "small",
+      "host_greedy": "big",
+      "donor_greedy": "small",
+      "f21_greedy": "small",
+      "b": 0.498494,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.357298,
+      "f21_d_donor": 0.312965,
+      "f25_d_host": 0.046619,
+      "f25_d_donor": 0.483238,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.498494
+        },
+        "22": {
+          "d_host": 0.163209,
+          "d_donor": 0.606958
+        },
+        "23": {
+          "d_host": 0.226496,
+          "d_donor": 0.637109
+        },
+        "24": {
+          "d_host": 0.248802,
+          "d_donor": 0.680251
+        },
+        "25": {
+          "d_host": 0.278952,
+          "d_donor": 0.354973
+        }
+      },
+      "M": 0.716755,
+      "T": 0.372177,
+      "H": 0.55959,
+      "U": 0.287909,
+      "T25": 0.030603,
+      "L": 0.341574
+    },
+    {
+      "host_world": "w01",
+      "donor_world": "w00",
+      "query": "MIP",
+      "family": "ZOG_MIP",
+      "host_expected": "small",
+      "donor_expected": "big",
+      "host_greedy": "small",
+      "donor_greedy": "small",
+      "f21_greedy": "small",
+      "b": 0.330443,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.17282,
+      "f21_d_donor": 0.223391,
+      "f25_d_host": 0.052817,
+      "f25_d_donor": 0.289742,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.330443
+        },
+        "22": {
+          "d_host": 0.091109,
+          "d_donor": 0.398941
+        },
+        "23": {
+          "d_host": 0.138728,
+          "d_donor": 0.429196
+        },
+        "24": {
+          "d_host": 0.195092,
+          "d_donor": 0.479365
+        },
+        "25": {
+          "d_host": 0.130897,
+          "d_donor": 0.29934
+        }
+      },
+      "M": 0.522996,
+      "T": 0.323963,
+      "H": 0.396126,
+      "U": 0.094124,
+      "T25": 0.123169,
+      "L": 0.200794
+    },
+    {
+      "host_world": "w01",
+      "donor_world": "w11",
+      "query": "MIP",
+      "family": "ZOG_MIP",
+      "host_expected": "small",
+      "donor_expected": "small",
+      "host_greedy": "small",
+      "donor_greedy": "small",
+      "f21_greedy": "small",
+      "b": 0.3274,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.101496,
+      "f21_d_donor": 0.281742,
+      "f25_d_host": 0.02094,
+      "f25_d_donor": 0.31743,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.3274
+        },
+        "22": {
+          "d_host": 0.031021,
+          "d_donor": 0.311126
+        },
+        "23": {
+          "d_host": 0.054015,
+          "d_donor": 0.30537
+        },
+        "24": {
+          "d_host": 0.059508,
+          "d_donor": 0.298764
+        },
+        "25": {
+          "d_host": 0.091482,
+          "d_donor": 0.299697
+        }
+      },
+      "M": 0.310005,
+      "T": 0.139457,
+      "H": 0.279419,
+      "U": 0.084616,
+      "T25": 0.030453,
+      "L": 0.109004
+    },
+    {
+      "host_world": "w10",
+      "donor_world": "w00",
+      "query": "ZOG",
+      "family": "ZOG_MIP",
+      "host_expected": "small",
+      "donor_expected": "big",
+      "host_greedy": "small",
+      "donor_greedy": "big",
+      "f21_greedy": "small",
+      "b": 0.396555,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.198878,
+      "f21_d_donor": 0.247049,
+      "f25_d_host": 0.03787,
+      "f25_d_donor": 0.376772,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.396555
+        },
+        "22": {
+          "d_host": 0.079338,
+          "d_donor": 0.433433
+        },
+        "23": {
+          "d_host": 0.114206,
+          "d_donor": 0.446741
+        },
+        "24": {
+          "d_host": 0.185667,
+          "d_donor": 0.465041
+        },
+        "25": {
+          "d_host": 0.175171,
+          "d_donor": 0.278573
+        }
+      },
+      "M": 0.501516,
+      "T": 0.377011,
+      "H": 0.441732,
+      "U": 0.297517,
+      "T25": 0.049886,
+      "L": 0.327125
+    },
+    {
+      "host_world": "w10",
+      "donor_world": "w11",
+      "query": "ZOG",
+      "family": "ZOG_MIP",
+      "host_expected": "small",
+      "donor_expected": "small",
+      "host_greedy": "small",
+      "donor_greedy": "small",
+      "f21_greedy": "small",
+      "b": 0.196551,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.065888,
+      "f21_d_donor": 0.157553,
+      "f25_d_host": 0.020809,
+      "f25_d_donor": 0.202318,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.196551
+        },
+        "22": {
+          "d_host": 0.055511,
+          "d_donor": 0.168279
+        },
+        "23": {
+          "d_host": 0.086516,
+          "d_donor": 0.1603
+        },
+        "24": {
+          "d_host": 0.078319,
+          "d_donor": 0.152037
+        },
+        "25": {
+          "d_host": 0.069225,
+          "d_donor": 0.154292
+        }
+      },
+      "M": 0.335224,
+      "T": 0.198408,
+      "H": 0.352199,
+      "U": 0.215001,
+      "T25": -0.029344,
+      "L": 0.227752
+    },
+    {
+      "host_world": "w10",
+      "donor_world": "w00",
+      "query": "MIP",
+      "family": "ZOG_MIP",
+      "host_expected": "big",
+      "donor_expected": "big",
+      "host_greedy": "small",
+      "donor_greedy": "small",
+      "f21_greedy": "big",
+      "b": 0.273831,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.120859,
+      "f21_d_donor": 0.27731,
+      "f25_d_host": 0.026797,
+      "f25_d_donor": 0.272607,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.273831
+        },
+        "22": {
+          "d_host": 0.043089,
+          "d_donor": 0.265013
+        },
+        "23": {
+          "d_host": 0.100165,
+          "d_donor": 0.252655
+        },
+        "24": {
+          "d_host": 0.076857,
+          "d_donor": 0.238307
+        },
+        "25": {
+          "d_host": 0.114132,
+          "d_donor": 0.275097
+        }
+      },
+      "M": 0.441364,
+      "T": -0.012705,
+      "H": 0.416798,
+      "U": -0.004624,
+      "T25": 0.004471,
+      "L": -0.017176
+    },
+    {
+      "host_world": "w10",
+      "donor_world": "w11",
+      "query": "MIP",
+      "family": "ZOG_MIP",
+      "host_expected": "big",
+      "donor_expected": "small",
+      "host_greedy": "small",
+      "donor_greedy": "small",
+      "f21_greedy": "small",
+      "b": 0.372824,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.263448,
+      "f21_d_donor": 0.21878,
+      "f25_d_host": 0.041931,
+      "f25_d_donor": 0.349213,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.372824
+        },
+        "22": {
+          "d_host": 0.16862,
+          "d_donor": 0.497256
+        },
+        "23": {
+          "d_host": 0.257513,
+          "d_donor": 0.566102
+        },
+        "24": {
+          "d_host": 0.179283,
+          "d_donor": 0.490234
+        },
+        "25": {
+          "d_host": 0.23905,
+          "d_donor": 0.232138
+        }
+      },
+      "M": 0.706628,
+      "T": 0.413181,
+      "H": 0.641188,
+      "U": 0.377352,
+      "T25": 0.06333,
+      "L": 0.349851
+    },
+    {
+      "host_world": "w11",
+      "donor_world": "w01",
+      "query": "ZOG",
+      "family": "ZOG_MIP",
+      "host_expected": "small",
+      "donor_expected": "big",
+      "host_greedy": "small",
+      "donor_greedy": "big",
+      "f21_greedy": "small",
+      "b": 0.498494,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.151614,
+      "f21_d_donor": 0.405773,
+      "f25_d_host": 0.036544,
+      "f25_d_donor": 0.489641,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.498494
+        },
+        "22": {
+          "d_host": 0.077977,
+          "d_donor": 0.505675
+        },
+        "23": {
+          "d_host": 0.111284,
+          "d_donor": 0.511679
+        },
+        "24": {
+          "d_host": 0.169089,
+          "d_donor": 0.510295
+        },
+        "25": {
+          "d_host": 0.133027,
+          "d_donor": 0.422493
+        }
+      },
+      "M": 0.304145,
+      "T": 0.186001,
+      "H": 0.266858,
+      "U": 0.15246,
+      "T25": 0.017758,
+      "L": 0.168243
+    },
+    {
+      "host_world": "w11",
+      "donor_world": "w10",
+      "query": "ZOG",
+      "family": "ZOG_MIP",
+      "host_expected": "small",
+      "donor_expected": "small",
+      "host_greedy": "small",
+      "donor_greedy": "small",
+      "f21_greedy": "small",
+      "b": 0.196551,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.050861,
+      "f21_d_donor": 0.164287,
+      "f25_d_host": 0.017673,
+      "f25_d_donor": 0.199322,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.196551
+        },
+        "22": {
+          "d_host": 0.038873,
+          "d_donor": 0.173161
+        },
+        "23": {
+          "d_host": 0.060539,
+          "d_donor": 0.161201
+        },
+        "24": {
+          "d_host": 0.063249,
+          "d_donor": 0.15458
+        },
+        "25": {
+          "d_host": 0.052042,
+          "d_donor": 0.16118
+        }
+      },
+      "M": 0.25877,
+      "T": 0.16415,
+      "H": 0.264777,
+      "U": 0.179957,
+      "T25": -0.014099,
+      "L": 0.178249
+    },
+    {
+      "host_world": "w11",
+      "donor_world": "w01",
+      "query": "MIP",
+      "family": "ZOG_MIP",
+      "host_expected": "small",
+      "donor_expected": "small",
+      "host_greedy": "small",
+      "donor_greedy": "small",
+      "f21_greedy": "small",
+      "b": 0.3274,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.120855,
+      "f21_d_donor": 0.259363,
+      "f25_d_host": 0.026819,
+      "f25_d_donor": 0.326219,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.3274
+        },
+        "22": {
+          "d_host": 0.070649,
+          "d_donor": 0.282454
+        },
+        "23": {
+          "d_host": 0.117961,
+          "d_donor": 0.263029
+        },
+        "24": {
+          "d_host": 0.163793,
+          "d_donor": 0.220566
+        },
+        "25": {
+          "d_host": 0.112499,
+          "d_donor": 0.252074
+        }
+      },
+      "M": 0.369135,
+      "T": 0.207812,
+      "H": 0.343613,
+      "U": 0.230074,
+      "T25": 0.00361,
+      "L": 0.204202
+    },
+    {
+      "host_world": "w11",
+      "donor_world": "w10",
+      "query": "MIP",
+      "family": "ZOG_MIP",
+      "host_expected": "small",
+      "donor_expected": "big",
+      "host_greedy": "small",
+      "donor_greedy": "small",
+      "f21_greedy": "small",
+      "b": 0.372824,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.117332,
+      "f21_d_donor": 0.295928,
+      "f25_d_host": 0.032031,
+      "f25_d_donor": 0.364729,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.372824
+        },
+        "22": {
+          "d_host": 0.052338,
+          "d_donor": 0.378819
+        },
+        "23": {
+          "d_host": 0.085984,
+          "d_donor": 0.390039
+        },
+        "24": {
+          "d_host": 0.105039,
+          "d_donor": 0.383168
+        },
+        "25": {
+          "d_host": 0.10064,
+          "d_donor": 0.314187
+        }
+      },
+      "M": 0.314712,
+      "T": 0.206252,
+      "H": 0.26994,
+      "U": 0.157278,
+      "T25": 0.021713,
+      "L": 0.184539
+    },
+    {
+      "host_world": "w00",
+      "donor_world": "w01",
+      "query": "PLIM",
+      "family": "PLIM_KROT",
+      "host_expected": "hot",
+      "donor_expected": "hot",
+      "host_greedy": "hot",
+      "donor_greedy": "hot",
+      "f21_greedy": "hot",
+      "b": 0.21032,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.185188,
+      "f21_d_donor": 0.100416,
+      "f25_d_host": 0.024123,
+      "f25_d_donor": 0.203211,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.21032
+        },
+        "22": {
+          "d_host": 0.080683,
+          "d_donor": 0.148565
+        },
+        "23": {
+          "d_host": 0.120985,
+          "d_donor": 0.124442
+        },
+        "24": {
+          "d_host": 0.144995,
+          "d_donor": 0.11706
+        },
+        "25": {
+          "d_host": 0.190441,
+          "d_donor": 0.108377
+        }
+      },
+      "M": 0.880508,
+      "T": 0.522557,
+      "H": 0.905482,
+      "U": 0.484704,
+      "T25": 0.033803,
+      "L": 0.488754
+    },
+    {
+      "host_world": "w00",
+      "donor_world": "w10",
+      "query": "PLIM",
+      "family": "PLIM_KROT",
+      "host_expected": "hot",
+      "donor_expected": "cold",
+      "host_greedy": "hot",
+      "donor_greedy": "cold",
+      "f21_greedy": "hot",
+      "b": 0.516674,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.174544,
+      "f21_d_donor": 0.425821,
+      "f25_d_host": 0.063787,
+      "f25_d_donor": 0.476494,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.516674
+        },
+        "22": {
+          "d_host": 0.195254,
+          "d_donor": 0.648418
+        },
+        "23": {
+          "d_host": 0.269954,
+          "d_donor": 0.696342
+        },
+        "24": {
+          "d_host": 0.300769,
+          "d_donor": 0.71025
+        },
+        "25": {
+          "d_host": 0.14312,
+          "d_donor": 0.473377
+        }
+      },
+      "M": 0.337822,
+      "T": 0.175843,
+      "H": 0.277002,
+      "U": 0.0838,
+      "T25": 0.077768,
+      "L": 0.098075
+    },
+    {
+      "host_world": "w00",
+      "donor_world": "w01",
+      "query": "KROT",
+      "family": "PLIM_KROT",
+      "host_expected": "hot",
+      "donor_expected": "cold",
+      "host_greedy": "hot",
+      "donor_greedy": "cold",
+      "f21_greedy": "hot",
+      "b": 0.639066,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.085434,
+      "f21_d_donor": 0.625597,
+      "f25_d_host": 0.049066,
+      "f25_d_donor": 0.614581,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.639066
+        },
+        "22": {
+          "d_host": 0.059868,
+          "d_donor": 0.663413
+        },
+        "23": {
+          "d_host": 0.074751,
+          "d_donor": 0.677222
+        },
+        "24": {
+          "d_host": 0.149127,
+          "d_donor": 0.711135
+        },
+        "25": {
+          "d_host": 0.098977,
+          "d_donor": 0.654342
+        }
+      },
+      "M": 0.133686,
+      "T": 0.021075,
+      "H": 0.154878,
+      "U": -0.023904,
+      "T25": 0.038313,
+      "L": -0.017238
+    },
+    {
+      "host_world": "w00",
+      "donor_world": "w10",
+      "query": "KROT",
+      "family": "PLIM_KROT",
+      "host_expected": "hot",
+      "donor_expected": "hot",
+      "host_greedy": "hot",
+      "donor_greedy": "hot",
+      "f21_greedy": "hot",
+      "b": 0.17522,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.135372,
+      "f21_d_donor": 0.17227,
+      "f25_d_host": 0.040034,
+      "f25_d_donor": 0.165973,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.17522
+        },
+        "22": {
+          "d_host": 0.075585,
+          "d_donor": 0.169052
+        },
+        "23": {
+          "d_host": 0.10823,
+          "d_donor": 0.174092
+        },
+        "24": {
+          "d_host": 0.165608,
+          "d_donor": 0.185393
+        },
+        "25": {
+          "d_host": 0.10911,
+          "d_donor": 0.162047
+        }
+      },
+      "M": 0.772588,
+      "T": 0.016833,
+      "H": 0.622705,
+      "U": 0.075177,
+      "T25": 0.052773,
+      "L": -0.03594
+    },
+    {
+      "host_world": "w01",
+      "donor_world": "w00",
+      "query": "PLIM",
+      "family": "PLIM_KROT",
+      "host_expected": "hot",
+      "donor_expected": "hot",
+      "host_greedy": "hot",
+      "donor_greedy": "hot",
+      "f21_greedy": "hot",
+      "b": 0.21032,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.219884,
+      "f21_d_donor": 0.119799,
+      "f25_d_host": 0.027019,
+      "f25_d_donor": 0.20886,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.21032
+        },
+        "22": {
+          "d_host": 0.111864,
+          "d_donor": 0.143202
+        },
+        "23": {
+          "d_host": 0.156461,
+          "d_donor": 0.127267
+        },
+        "24": {
+          "d_host": 0.166878,
+          "d_donor": 0.130932
+        },
+        "25": {
+          "d_host": 0.207476,
+          "d_donor": 0.126401
+        }
+      },
+      "M": 1.045475,
+      "T": 0.430396,
+      "H": 0.986478,
+      "U": 0.399006,
+      "T25": 0.00694,
+      "L": 0.423456
+    },
+    {
+      "host_world": "w01",
+      "donor_world": "w11",
+      "query": "PLIM",
+      "family": "PLIM_KROT",
+      "host_expected": "hot",
+      "donor_expected": "cold",
+      "host_greedy": "hot",
+      "donor_greedy": "cold",
+      "f21_greedy": "hot",
+      "b": 0.575912,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.225586,
+      "f21_d_donor": 0.472285,
+      "f25_d_host": 0.069559,
+      "f25_d_donor": 0.619109,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.575912
+        },
+        "22": {
+          "d_host": 0.138744,
+          "d_donor": 0.678133
+        },
+        "23": {
+          "d_host": 0.177308,
+          "d_donor": 0.700566
+        },
+        "24": {
+          "d_host": 0.1878,
+          "d_donor": 0.706393
+        },
+        "25": {
+          "d_host": 0.184959,
+          "d_donor": 0.511695
+        }
+      },
+      "M": 0.391702,
+      "T": 0.179935,
+      "H": 0.321158,
+      "U": 0.111505,
+      "T25": -0.075005,
+      "L": 0.254941
+    },
+    {
+      "host_world": "w01",
+      "donor_world": "w00",
+      "query": "KROT",
+      "family": "PLIM_KROT",
+      "host_expected": "cold",
+      "donor_expected": "hot",
+      "host_greedy": "cold",
+      "donor_greedy": "hot",
+      "f21_greedy": "cold",
+      "b": 0.639066,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.24301,
+      "f21_d_donor": 0.482728,
+      "f25_d_host": 0.03467,
+      "f25_d_donor": 0.644013,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.639066
+        },
+        "22": {
+          "d_host": 0.1366,
+          "d_donor": 0.725735
+        },
+        "23": {
+          "d_host": 0.16395,
+          "d_donor": 0.735779
+        },
+        "24": {
+          "d_host": 0.317619,
+          "d_donor": 0.821412
+        },
+        "25": {
+          "d_host": 0.166406,
+          "d_donor": 0.558201
+        }
+      },
+      "M": 0.380258,
+      "T": 0.244634,
+      "H": 0.26039,
+      "U": 0.126536,
+      "T25": -0.007742,
+      "L": 0.252376
+    },
+    {
+      "host_world": "w01",
+      "donor_world": "w11",
+      "query": "KROT",
+      "family": "PLIM_KROT",
+      "host_expected": "cold",
+      "donor_expected": "cold",
+      "host_greedy": "cold",
+      "donor_greedy": "cold",
+      "f21_greedy": "cold",
+      "b": 0.279928,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.080543,
+      "f21_d_donor": 0.254995,
+      "f25_d_host": 0.054259,
+      "f25_d_donor": 0.267427,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.279928
+        },
+        "22": {
+          "d_host": 0.042398,
+          "d_donor": 0.301015
+        },
+        "23": {
+          "d_host": 0.054061,
+          "d_donor": 0.276749
+        },
+        "24": {
+          "d_host": 0.09223,
+          "d_donor": 0.32852
+        },
+        "25": {
+          "d_host": 0.089566,
+          "d_donor": 0.292865
+        }
+      },
+      "M": 0.287727,
+      "T": 0.089069,
+      "H": 0.319961,
+      "U": -0.046215,
+      "T25": 0.044657,
+      "L": 0.044412
+    },
+    {
+      "host_world": "w10",
+      "donor_world": "w00",
+      "query": "PLIM",
+      "family": "PLIM_KROT",
+      "host_expected": "cold",
+      "donor_expected": "hot",
+      "host_greedy": "cold",
+      "donor_greedy": "hot",
+      "f21_greedy": "cold",
+      "b": 0.516674,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.277863,
+      "f21_d_donor": 0.351761,
+      "f25_d_host": 0.072557,
+      "f25_d_donor": 0.521044,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.516674
+        },
+        "22": {
+          "d_host": 0.152311,
+          "d_donor": 0.607872
+        },
+        "23": {
+          "d_host": 0.222922,
+          "d_donor": 0.643589
+        },
+        "24": {
+          "d_host": 0.346237,
+          "d_donor": 0.702941
+        },
+        "25": {
+          "d_host": 0.206186,
+          "d_donor": 0.410969
+        }
+      },
+      "M": 0.537792,
+      "T": 0.319182,
+      "H": 0.399064,
+      "U": 0.204588,
+      "T25": -0.008458,
+      "L": 0.327639
+    },
+    {
+      "host_world": "w10",
+      "donor_world": "w11",
+      "query": "PLIM",
+      "family": "PLIM_KROT",
+      "host_expected": "cold",
+      "donor_expected": "cold",
+      "host_greedy": "cold",
+      "donor_greedy": "cold",
+      "f21_greedy": "cold",
+      "b": 0.296514,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.164973,
+      "f21_d_donor": 0.230499,
+      "f25_d_host": 0.03766,
+      "f25_d_donor": 0.275524,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.296514
+        },
+        "22": {
+          "d_host": 0.087316,
+          "d_donor": 0.253452
+        },
+        "23": {
+          "d_host": 0.137583,
+          "d_donor": 0.238739
+        },
+        "24": {
+          "d_host": 0.130702,
+          "d_donor": 0.230288
+        },
+        "25": {
+          "d_host": 0.132386,
+          "d_donor": 0.240943
+        }
+      },
+      "M": 0.556376,
+      "T": 0.222637,
+      "H": 0.446475,
+      "U": 0.187414,
+      "T25": 0.07079,
+      "L": 0.151848
+    },
+    {
+      "host_world": "w10",
+      "donor_world": "w00",
+      "query": "KROT",
+      "family": "PLIM_KROT",
+      "host_expected": "hot",
+      "donor_expected": "hot",
+      "host_greedy": "hot",
+      "donor_greedy": "hot",
+      "f21_greedy": "hot",
+      "b": 0.17522,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.091732,
+      "f21_d_donor": 0.152772,
+      "f25_d_host": 0.054975,
+      "f25_d_donor": 0.171634,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.17522
+        },
+        "22": {
+          "d_host": 0.029529,
+          "d_donor": 0.175892
+        },
+        "23": {
+          "d_host": 0.051441,
+          "d_donor": 0.17082
+        },
+        "24": {
+          "d_host": 0.059826,
+          "d_donor": 0.175898
+        },
+        "25": {
+          "d_host": 0.05287,
+          "d_donor": 0.15426
+        }
+      },
+      "M": 0.523525,
+      "T": 0.128109,
+      "H": 0.301736,
+      "U": 0.119619,
+      "T25": 0.020463,
+      "L": 0.107647
+    },
+    {
+      "host_world": "w10",
+      "donor_world": "w11",
+      "query": "KROT",
+      "family": "PLIM_KROT",
+      "host_expected": "hot",
+      "donor_expected": "cold",
+      "host_greedy": "hot",
+      "donor_greedy": "cold",
+      "f21_greedy": "hot",
+      "b": 0.646785,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.213033,
+      "f21_d_donor": 0.496555,
+      "f25_d_host": 0.050913,
+      "f25_d_donor": 0.681266,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.646785
+        },
+        "22": {
+          "d_host": 0.127473,
+          "d_donor": 0.739143
+        },
+        "23": {
+          "d_host": 0.131145,
+          "d_donor": 0.73707
+        },
+        "24": {
+          "d_host": 0.183561,
+          "d_donor": 0.771917
+        },
+        "25": {
+          "d_host": 0.195281,
+          "d_donor": 0.52503
+        }
+      },
+      "M": 0.329371,
+      "T": 0.232273,
+      "H": 0.301925,
+      "U": 0.188247,
+      "T25": -0.053311,
+      "L": 0.285583
+    },
+    {
+      "host_world": "w11",
+      "donor_world": "w01",
+      "query": "PLIM",
+      "family": "PLIM_KROT",
+      "host_expected": "cold",
+      "donor_expected": "hot",
+      "host_greedy": "cold",
+      "donor_greedy": "hot",
+      "f21_greedy": "hot",
+      "b": 0.575912,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.176406,
+      "f21_d_donor": 0.472629,
+      "f25_d_host": 0.047166,
+      "f25_d_donor": 0.553948,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.575912
+        },
+        "22": {
+          "d_host": 0.060902,
+          "d_donor": 0.598053
+        },
+        "23": {
+          "d_host": 0.128108,
+          "d_donor": 0.630327
+        },
+        "24": {
+          "d_host": 0.162004,
+          "d_donor": 0.605885
+        },
+        "25": {
+          "d_host": 0.159301,
+          "d_donor": 0.484775
+        }
+      },
+      "M": 0.306307,
+      "T": 0.179339,
+      "H": 0.276606,
+      "U": 0.158248,
+      "T25": 0.038139,
+      "L": 0.1412
+    },
+    {
+      "host_world": "w11",
+      "donor_world": "w10",
+      "query": "PLIM",
+      "family": "PLIM_KROT",
+      "host_expected": "cold",
+      "donor_expected": "cold",
+      "host_greedy": "cold",
+      "donor_greedy": "cold",
+      "f21_greedy": "cold",
+      "b": 0.296514,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.078991,
+      "f21_d_donor": 0.241407,
+      "f25_d_host": 0.037158,
+      "f25_d_donor": 0.273563,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.296514
+        },
+        "22": {
+          "d_host": 0.028329,
+          "d_donor": 0.276458
+        },
+        "23": {
+          "d_host": 0.057139,
+          "d_donor": 0.257707
+        },
+        "24": {
+          "d_host": 0.057394,
+          "d_donor": 0.252651
+        },
+        "25": {
+          "d_host": 0.04748,
+          "d_donor": 0.264456
+        }
+      },
+      "M": 0.2664,
+      "T": 0.185848,
+      "H": 0.160128,
+      "U": 0.108115,
+      "T25": 0.077401,
+      "L": 0.108448
+    },
+    {
+      "host_world": "w11",
+      "donor_world": "w01",
+      "query": "KROT",
+      "family": "PLIM_KROT",
+      "host_expected": "cold",
+      "donor_expected": "cold",
+      "host_greedy": "cold",
+      "donor_greedy": "cold",
+      "f21_greedy": "cold",
+      "b": 0.279928,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.156477,
+      "f21_d_donor": 0.308209,
+      "f25_d_host": 0.045192,
+      "f25_d_donor": 0.249853,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.279928
+        },
+        "22": {
+          "d_host": 0.019464,
+          "d_donor": 0.273102
+        },
+        "23": {
+          "d_host": 0.048859,
+          "d_donor": 0.275338
+        },
+        "24": {
+          "d_host": 0.098627,
+          "d_donor": 0.218743
+        },
+        "25": {
+          "d_host": 0.159373,
+          "d_donor": 0.314356
+        }
+      },
+      "M": 0.558988,
+      "T": -0.101028,
+      "H": 0.569336,
+      "U": -0.122989,
+      "T25": 0.107437,
+      "L": -0.208466
+    },
+    {
+      "host_world": "w11",
+      "donor_world": "w10",
+      "query": "KROT",
+      "family": "PLIM_KROT",
+      "host_expected": "cold",
+      "donor_expected": "hot",
+      "host_greedy": "cold",
+      "donor_greedy": "hot",
+      "f21_greedy": "cold",
+      "b": 0.646785,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.189977,
+      "f21_d_donor": 0.504264,
+      "f25_d_host": 0.040295,
+      "f25_d_donor": 0.636666,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.646785
+        },
+        "22": {
+          "d_host": 0.020643,
+          "d_donor": 0.642397
+        },
+        "23": {
+          "d_host": 0.029214,
+          "d_donor": 0.6516
+        },
+        "24": {
+          "d_host": 0.080434,
+          "d_donor": 0.619455
+        },
+        "25": {
+          "d_host": 0.192803,
+          "d_donor": 0.505712
+        }
+      },
+      "M": 0.293725,
+      "T": 0.220353,
+      "H": 0.298094,
+      "U": 0.218115,
+      "T25": 0.015646,
+      "L": 0.204707
+    },
+    {
+      "host_world": "w00",
+      "donor_world": "w01",
+      "query": "HESK",
+      "family": "HESK_VORN",
+      "host_expected": "red",
+      "donor_expected": "red",
+      "host_greedy": "red",
+      "donor_greedy": "red",
+      "f21_greedy": "red",
+      "b": 0.160761,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.100558,
+      "f21_d_donor": 0.147245,
+      "f25_d_host": 0.036787,
+      "f25_d_donor": 0.153861,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.160761
+        },
+        "22": {
+          "d_host": 0.057413,
+          "d_donor": 0.156241
+        },
+        "23": {
+          "d_host": 0.107695,
+          "d_donor": 0.188757
+        },
+        "24": {
+          "d_host": 0.09857,
+          "d_donor": 0.167931
+        },
+        "25": {
+          "d_host": 0.079646,
+          "d_donor": 0.142823
+        }
+      },
+      "M": 0.625514,
+      "T": 0.084074,
+      "H": 0.495432,
+      "U": 0.111579,
+      "T25": 0.042921,
+      "L": 0.041154
+    },
+    {
+      "host_world": "w00",
+      "donor_world": "w10",
+      "query": "HESK",
+      "family": "HESK_VORN",
+      "host_expected": "red",
+      "donor_expected": "blue",
+      "host_greedy": "red",
+      "donor_greedy": "blue",
+      "f21_greedy": "red",
+      "b": 0.411885,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.205028,
+      "f21_d_donor": 0.306892,
+      "f25_d_host": 0.095717,
+      "f25_d_donor": 0.35026,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.411885
+        },
+        "22": {
+          "d_host": 0.207356,
+          "d_donor": 0.518716
+        },
+        "23": {
+          "d_host": 0.25257,
+          "d_donor": 0.539209
+        },
+        "24": {
+          "d_host": 0.279595,
+          "d_donor": 0.560306
+        },
+        "25": {
+          "d_host": 0.161529,
+          "d_donor": 0.377339
+        }
+      },
+      "M": 0.49778,
+      "T": 0.254909,
+      "H": 0.39217,
+      "U": 0.083874,
+      "T25": 0.149618,
+      "L": 0.105291
+    },
+    {
+      "host_world": "w00",
+      "donor_world": "w01",
+      "query": "VORN",
+      "family": "HESK_VORN",
+      "host_expected": "red",
+      "donor_expected": "blue",
+      "host_greedy": "red",
+      "donor_greedy": "blue",
+      "f21_greedy": "red",
+      "b": 0.411094,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.134165,
+      "f21_d_donor": 0.34681,
+      "f25_d_host": 0.044665,
+      "f25_d_donor": 0.3881,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.411094
+        },
+        "22": {
+          "d_host": 0.076605,
+          "d_donor": 0.448532
+        },
+        "23": {
+          "d_host": 0.12649,
+          "d_donor": 0.470182
+        },
+        "24": {
+          "d_host": 0.131783,
+          "d_donor": 0.452534
+        },
+        "25": {
+          "d_host": 0.143005,
+          "d_donor": 0.342126
+        }
+      },
+      "M": 0.32636,
+      "T": 0.156373,
+      "H": 0.347864,
+      "U": 0.167767,
+      "T25": 0.055933,
+      "L": 0.100441
+    },
+    {
+      "host_world": "w00",
+      "donor_world": "w10",
+      "query": "VORN",
+      "family": "HESK_VORN",
+      "host_expected": "red",
+      "donor_expected": "red",
+      "host_greedy": "red",
+      "donor_greedy": "red",
+      "f21_greedy": "red",
+      "b": 0.267835,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.238913,
+      "f21_d_donor": 0.343809,
+      "f25_d_host": 0.057492,
+      "f25_d_donor": 0.274847,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.267835
+        },
+        "22": {
+          "d_host": 0.066894,
+          "d_donor": 0.236637
+        },
+        "23": {
+          "d_host": 0.090025,
+          "d_donor": 0.229667
+        },
+        "24": {
+          "d_host": 0.081757,
+          "d_donor": 0.228526
+        },
+        "25": {
+          "d_host": 0.216871,
+          "d_donor": 0.328145
+        }
+      },
+      "M": 0.892018,
+      "T": -0.283659,
+      "H": 0.809719,
+      "U": -0.225177,
+      "T25": -0.026182,
+      "L": -0.257477
+    },
+    {
+      "host_world": "w01",
+      "donor_world": "w00",
+      "query": "HESK",
+      "family": "HESK_VORN",
+      "host_expected": "red",
+      "donor_expected": "red",
+      "host_greedy": "red",
+      "donor_greedy": "red",
+      "f21_greedy": "red",
+      "b": 0.160761,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.110532,
+      "f21_d_donor": 0.169764,
+      "f25_d_host": 0.05913,
+      "f25_d_donor": 0.171968,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.160761
+        },
+        "22": {
+          "d_host": 0.062945,
+          "d_donor": 0.162161
+        },
+        "23": {
+          "d_host": 0.141418,
+          "d_donor": 0.219497
+        },
+        "24": {
+          "d_host": 0.118201,
+          "d_donor": 0.189728
+        },
+        "25": {
+          "d_host": 0.084137,
+          "d_donor": 0.157759
+        }
+      },
+      "M": 0.687559,
+      "T": -0.056008,
+      "H": 0.523368,
+      "U": 0.018671,
+      "T25": -0.069716,
+      "L": 0.013708
+    },
+    {
+      "host_world": "w01",
+      "donor_world": "w11",
+      "query": "HESK",
+      "family": "HESK_VORN",
+      "host_expected": "red",
+      "donor_expected": "blue",
+      "host_greedy": "red",
+      "donor_greedy": "green",
+      "f21_greedy": "red",
+      "b": 0.326653,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.237804,
+      "f21_d_donor": 0.382808,
+      "f25_d_host": 0.062962,
+      "f25_d_donor": 0.304755,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.326653
+        },
+        "22": {
+          "d_host": 0.292807,
+          "d_donor": 0.506076
+        },
+        "23": {
+          "d_host": 0.332645,
+          "d_donor": 0.531405
+        },
+        "24": {
+          "d_host": 0.342774,
+          "d_donor": 0.530256
+        },
+        "25": {
+          "d_host": 0.329475,
+          "d_donor": 0.519676
+        }
+      },
+      "M": 0.728002,
+      "T": -0.171909,
+      "H": 1.008638,
+      "U": -0.59091,
+      "T25": 0.06704,
+      "L": -0.238949
+    },
+    {
+      "host_world": "w01",
+      "donor_world": "w00",
+      "query": "VORN",
+      "family": "HESK_VORN",
+      "host_expected": "blue",
+      "donor_expected": "red",
+      "host_greedy": "blue",
+      "donor_greedy": "red",
+      "f21_greedy": "red",
+      "b": 0.411094,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.198447,
+      "f21_d_donor": 0.276982,
+      "f25_d_host": 0.064192,
+      "f25_d_donor": 0.44817,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.411094
+        },
+        "22": {
+          "d_host": 0.225682,
+          "d_donor": 0.597605
+        },
+        "23": {
+          "d_host": 0.333422,
+          "d_donor": 0.682308
+        },
+        "24": {
+          "d_host": 0.300571,
+          "d_donor": 0.652785
+        },
+        "25": {
+          "d_host": 0.148291,
+          "d_donor": 0.34067
+        }
+      },
+      "M": 0.482728,
+      "T": 0.326233,
+      "H": 0.360723,
+      "U": 0.171309,
+      "T25": -0.090189,
+      "L": 0.416422
+    },
+    {
+      "host_world": "w01",
+      "donor_world": "w11",
+      "query": "VORN",
+      "family": "HESK_VORN",
+      "host_expected": "blue",
+      "donor_expected": "blue",
+      "host_greedy": "blue",
+      "donor_greedy": "blue",
+      "f21_greedy": "blue",
+      "b": 0.394987,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.177398,
+      "f21_d_donor": 0.314211,
+      "f25_d_host": 0.055378,
+      "f25_d_donor": 0.367591,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.394987
+        },
+        "22": {
+          "d_host": 0.036715,
+          "d_donor": 0.415694
+        },
+        "23": {
+          "d_host": 0.046223,
+          "d_donor": 0.400056
+        },
+        "24": {
+          "d_host": 0.050358,
+          "d_donor": 0.404511
+        },
+        "25": {
+          "d_host": 0.143815,
+          "d_donor": 0.326366
+        }
+      },
+      "M": 0.449123,
+      "T": 0.204504,
+      "H": 0.364101,
+      "U": 0.17373,
+      "T25": 0.069359,
+      "L": 0.135145
+    },
+    {
+      "host_world": "w10",
+      "donor_world": "w00",
+      "query": "HESK",
+      "family": "HESK_VORN",
+      "host_expected": "blue",
+      "donor_expected": "red",
+      "host_greedy": "blue",
+      "donor_greedy": "red",
+      "f21_greedy": "blue",
+      "b": 0.411885,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.229908,
+      "f21_d_donor": 0.457585,
+      "f25_d_host": 0.040594,
+      "f25_d_donor": 0.404142,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.411885
+        },
+        "22": {
+          "d_host": 0.353579,
+          "d_donor": 0.606175
+        },
+        "23": {
+          "d_host": 0.552462,
+          "d_donor": 0.741428
+        },
+        "24": {
+          "d_host": 0.555345,
+          "d_donor": 0.740493
+        },
+        "25": {
+          "d_host": 0.291617,
+          "d_donor": 0.536122
+        }
+      },
+      "M": 0.558185,
+      "T": -0.110953,
+      "H": 0.708005,
+      "U": -0.301629,
+      "T25": 0.0188,
+      "L": -0.129753
+    },
+    {
+      "host_world": "w10",
+      "donor_world": "w11",
+      "query": "HESK",
+      "family": "HESK_VORN",
+      "host_expected": "blue",
+      "donor_expected": "blue",
+      "host_greedy": "blue",
+      "donor_greedy": "green",
+      "f21_greedy": "red",
+      "b": 0.162206,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.176101,
+      "f21_d_donor": 0.12631,
+      "f25_d_host": 0.071214,
+      "f25_d_donor": 0.114864,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.162206
+        },
+        "22": {
+          "d_host": 0.093537,
+          "d_donor": 0.132467
+        },
+        "23": {
+          "d_host": 0.217806,
+          "d_donor": 0.195533
+        },
+        "24": {
+          "d_host": 0.224934,
+          "d_donor": 0.209666
+        },
+        "25": {
+          "d_host": 0.1372,
+          "d_donor": 0.134977
+        }
+      },
+      "M": 1.085667,
+      "T": 0.2213,
+      "H": 0.845839,
+      "U": 0.167866,
+      "T25": 0.291862,
+      "L": -0.070562
+    },
+    {
+      "host_world": "w10",
+      "donor_world": "w00",
+      "query": "VORN",
+      "family": "HESK_VORN",
+      "host_expected": "red",
+      "donor_expected": "red",
+      "host_greedy": "red",
+      "donor_greedy": "red",
+      "f21_greedy": "red",
+      "b": 0.267835,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.094608,
+      "f21_d_donor": 0.260681,
+      "f25_d_host": 0.062233,
+      "f25_d_donor": 0.26712,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.267835
+        },
+        "22": {
+          "d_host": 0.035465,
+          "d_donor": 0.257099
+        },
+        "23": {
+          "d_host": 0.067509,
+          "d_donor": 0.272315
+        },
+        "24": {
+          "d_host": 0.068648,
+          "d_donor": 0.277208
+        },
+        "25": {
+          "d_host": 0.09576,
+          "d_donor": 0.272282
+        }
+      },
+      "M": 0.353233,
+      "T": 0.026708,
+      "H": 0.357534,
+      "U": -0.016604,
+      "T25": 0.002668,
+      "L": 0.024041
+    },
+    {
+      "host_world": "w10",
+      "donor_world": "w11",
+      "query": "VORN",
+      "family": "HESK_VORN",
+      "host_expected": "red",
+      "donor_expected": "blue",
+      "host_greedy": "red",
+      "donor_greedy": "blue",
+      "f21_greedy": "red",
+      "b": 0.71079,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.330833,
+      "f21_d_donor": 0.485823,
+      "f25_d_host": 0.048472,
+      "f25_d_donor": 0.694362,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.71079
+        },
+        "22": {
+          "d_host": 0.057567,
+          "d_donor": 0.728357
+        },
+        "23": {
+          "d_host": 0.176502,
+          "d_donor": 0.72081
+        },
+        "24": {
+          "d_host": 0.101959,
+          "d_donor": 0.747061
+        },
+        "25": {
+          "d_host": 0.20279,
+          "d_donor": 0.605368
+        }
+      },
+      "M": 0.465444,
+      "T": 0.316503,
+      "H": 0.285302,
+      "U": 0.148317,
+      "T25": 0.023113,
+      "L": 0.293391
+    },
+    {
+      "host_world": "w11",
+      "donor_world": "w01",
+      "query": "HESK",
+      "family": "HESK_VORN",
+      "host_expected": "blue",
+      "donor_expected": "red",
+      "host_greedy": "green",
+      "donor_greedy": "red",
+      "f21_greedy": "blue",
+      "b": 0.326653,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.216042,
+      "f21_d_donor": 0.284866,
+      "f25_d_host": 0.074409,
+      "f25_d_donor": 0.283658,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.326653
+        },
+        "22": {
+          "d_host": 0.259615,
+          "d_donor": 0.451054
+        },
+        "23": {
+          "d_host": 0.455013,
+          "d_donor": 0.560789
+        },
+        "24": {
+          "d_host": 0.478509,
+          "d_donor": 0.569547
+        },
+        "25": {
+          "d_host": 0.244132,
+          "d_donor": 0.343281
+        }
+      },
+      "M": 0.66138,
+      "T": 0.127927,
+      "H": 0.747373,
+      "U": -0.050903,
+      "T25": 0.131623,
+      "L": -0.003695
+    },
+    {
+      "host_world": "w11",
+      "donor_world": "w10",
+      "query": "HESK",
+      "family": "HESK_VORN",
+      "host_expected": "blue",
+      "donor_expected": "blue",
+      "host_greedy": "green",
+      "donor_greedy": "blue",
+      "f21_greedy": "blue",
+      "b": 0.162206,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.15465,
+      "f21_d_donor": 0.096975,
+      "f25_d_host": 0.056345,
+      "f25_d_donor": 0.118941,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.162206
+        },
+        "22": {
+          "d_host": 0.068795,
+          "d_donor": 0.140824
+        },
+        "23": {
+          "d_host": 0.146316,
+          "d_donor": 0.13759
+        },
+        "24": {
+          "d_host": 0.137554,
+          "d_donor": 0.13775
+        },
+        "25": {
+          "d_host": 0.099388,
+          "d_donor": 0.112966
+        }
+      },
+      "M": 0.953417,
+      "T": 0.402148,
+      "H": 0.612728,
+      "U": 0.303564,
+      "T25": 0.266729,
+      "L": 0.135418
+    },
+    {
+      "host_world": "w11",
+      "donor_world": "w01",
+      "query": "VORN",
+      "family": "HESK_VORN",
+      "host_expected": "blue",
+      "donor_expected": "blue",
+      "host_greedy": "blue",
+      "donor_greedy": "blue",
+      "f21_greedy": "blue",
+      "b": 0.394987,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.144843,
+      "f21_d_donor": 0.318722,
+      "f25_d_host": 0.0387,
+      "f25_d_donor": 0.38339,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.394987
+        },
+        "22": {
+          "d_host": 0.033697,
+          "d_donor": 0.404324
+        },
+        "23": {
+          "d_host": 0.048904,
+          "d_donor": 0.408157
+        },
+        "24": {
+          "d_host": 0.093276,
+          "d_donor": 0.414897
+        },
+        "25": {
+          "d_host": 0.093745,
+          "d_donor": 0.34399
+        }
+      },
+      "M": 0.366702,
+      "T": 0.193082,
+      "H": 0.237337,
+      "U": 0.129111,
+      "T25": 0.02936,
+      "L": 0.163722
+    },
+    {
+      "host_world": "w11",
+      "donor_world": "w10",
+      "query": "VORN",
+      "family": "HESK_VORN",
+      "host_expected": "blue",
+      "donor_expected": "red",
+      "host_greedy": "blue",
+      "donor_greedy": "red",
+      "f21_greedy": "blue",
+      "b": 0.71079,
+      "self_d": 0.0,
+      "c25_d": 0.0,
+      "f21_d_host": 0.186356,
+      "f21_d_donor": 0.585166,
+      "f25_d_host": 0.046684,
+      "f25_d_donor": 0.698823,
+      "restore_profile": {
+        "21": {
+          "d_host": 0.0,
+          "d_donor": 0.71079
+        },
+        "22": {
+          "d_host": 0.05664,
+          "d_donor": 0.712158
+        },
+        "23": {
+          "d_host": 0.077119,
+          "d_donor": 0.719912
+        },
+        "24": {
+          "d_host": 0.082466,
+          "d_donor": 0.723326
+        },
+        "25": {
+          "d_host": 0.140833,
+          "d_donor": 0.62547
+        }
+      },
+      "M": 0.262182,
+      "T": 0.176738,
+      "H": 0.198136,
+      "U": 0.120035,
+      "T25": 0.016836,
+      "L": 0.159902
+    }
+  ]
+}

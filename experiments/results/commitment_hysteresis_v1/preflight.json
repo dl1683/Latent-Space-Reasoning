@@ -1,0 +1,230 @@
+{
+  "valid": true,
+  "checks": [
+    {
+      "family": "ZOG_MIP",
+      "world": "w00",
+      "query": "ZOG",
+      "n_tokens": 13,
+      "n_prefix": 10,
+      "boundary_ok": true,
+      "prompt_hash": "15b17aee83074c1f"
+    },
+    {
+      "family": "ZOG_MIP",
+      "world": "w00",
+      "query": "MIP",
+      "n_tokens": 13,
+      "n_prefix": 10,
+      "boundary_ok": true,
+      "prompt_hash": "7e0a3aad80097f57"
+    },
+    {
+      "family": "ZOG_MIP",
+      "world": "w01",
+      "query": "ZOG",
+      "n_tokens": 13,
+      "n_prefix": 10,
+      "boundary_ok": true,
+      "prompt_hash": "d84979e2036a8f9d"
+    },
+    {
+      "family": "ZOG_MIP",
+      "world": "w01",
+      "query": "MIP",
+      "n_tokens": 13,
+      "n_prefix": 10,
+      "boundary_ok": true,
+      "prompt_hash": "321b3c95f2ece5bf"
+    },
+    {
+      "family": "ZOG_MIP",
+      "world": "w10",
+      "query": "ZOG",
+      "n_tokens": 13,
+      "n_prefix": 10,
+      "boundary_ok": true,
+      "prompt_hash": "1990f297318347b6"
+    },
+    {
+      "family": "ZOG_MIP",
+      "world": "w10",
+      "query": "MIP",
+      "n_tokens": 13,
+      "n_prefix": 10,
+      "boundary_ok": true,
+      "prompt_hash": "7859ebb8fc256e50"
+    },
+    {
+      "family": "ZOG_MIP",
+      "world": "w11",
+      "query": "ZOG",
+      "n_tokens": 13,
+      "n_prefix": 10,
+      "boundary_ok": true,
+      "prompt_hash": "2989549e67698b3a"
+    },
+    {
+      "family": "ZOG_MIP",
+      "world": "w11",
+      "query": "MIP",
+      "n_tokens": 13,
+      "n_prefix": 10,
+      "boundary_ok": true,
+      "prompt_hash": "de09b403eca351cd"
+    },
+    {
+      "family": "PLIM_KROT",
+      "world": "w00",
+      "query": "PLIM",
+      "n_tokens": 13,
+      "n_prefix": 10,
+      "boundary_ok": true,
+      "prompt_hash": "1619defe300e3bed"
+    },
+    {
+      "family": "PLIM_KROT",
+      "world": "w00",
+      "query": "KROT",
+      "n_tokens": 13,
+      "n_prefix": 10,
+      "boundary_ok": true,
+      "prompt_hash": "3b54565c5e0f3a1a"
+    },
+    {
+      "family": "PLIM_KROT",
+      "world": "w01",
+      "query": "PLIM",
+      "n_tokens": 13,
+      "n_prefix": 10,
+      "boundary_ok": true,
+      "prompt_hash": "1d3a0fe3fdcec5b2"
+    },
+    {
+      "family": "PLIM_KROT",
+      "world": "w01",
+      "query": "KROT",
+      "n_tokens": 13,
+      "n_prefix": 10,
+      "boundary_ok": true,
+      "prompt_hash": "84fa294264055cd7"
+    },
+    {
+      "family": "PLIM_KROT",
+      "world": "w10",
+      "query": "PLIM",
+      "n_tokens": 13,
+      "n_prefix": 10,
+      "boundary_ok": true,
+      "prompt_hash": "cb803c54435bbb5e"
+    },
+    {
+      "family": "PLIM_KROT",
+      "world": "w10",
+      "query": "KROT",
+      "n_tokens": 13,
+      "n_prefix": 10,
+      "boundary_ok": true,
+      "prompt_hash": "cdaa926a9a2b467d"
+    },
+    {
+      "family": "PLIM_KROT",
+      "world": "w11",
+      "query": "PLIM",
+      "n_tokens": 13,
+      "n_prefix": 10,
+      "boundary_ok": true,
+      "prompt_hash": "0fb11931ba41a57d"
+    },
+    {
+      "family": "PLIM_KROT",
+      "world": "w11",
+      "query": "KROT",
+      "n_tokens": 13,
+      "n_prefix": 10,
+      "boundary_ok": true,
+      "prompt_hash": "525299fe3d663b96"
+    },
+    {
+      "family": "HESK_VORN",
+      "world": "w00",
+      "query": "HESK",
+      "n_tokens": 15,
+      "n_prefix": 11,
+      "boundary_ok": true,
+      "prompt_hash": "b84223960b920315"
+    },
+    {
+      "family": "HESK_VORN",
+      "world": "w00",
+      "query": "VORN",
+      "n_tokens": 14,
+      "n_prefix": 11,
+      "boundary_ok": true,
+      "prompt_hash": "09cc7384d062324f"
+    },
+    {
+      "family": "HESK_VORN",
+      "world": "w01",
+      "query": "HESK",
+      "n_tokens": 15,
+      "n_prefix": 11,
+      "boundary_ok": true,
+      "prompt_hash": "906e82c60cda26ea"
+    },
+    {
+      "family": "HESK_VORN",
+      "world": "w01",
+      "query": "VORN",
+      "n_tokens": 14,
+      "n_prefix": 11,
+      "boundary_ok": true,
+      "prompt_hash": "ee052e5f365ac739"
+    },
+    {
+      "family": "HESK_VORN",
+      "world": "w10",
+      "query": "HESK",
+      "n_tokens": 15,
+      "n_prefix": 11,
+      "boundary_ok": true,
+      "prompt_hash": "ba7042baccad57c4"
+    },
+    {
+      "family": "HESK_VORN",
+      "world": "w10",
+      "query": "VORN",
+      "n_tokens": 14,
+      "n_prefix": 11,
+      "boundary_ok": true,
+      "prompt_hash": "7a181579df6ffc4d"
+    },
+    {
+      "family": "HESK_VORN",
+      "world": "w11",
+      "query": "HESK",
+      "n_tokens": 15,
+      "n_prefix": 11,
+      "boundary_ok": true,
+      "prompt_hash": "8e3ee9d57036c0bc"
+    },
+    {
+      "family": "HESK_VORN",
+      "world": "w11",
+      "query": "VORN",
+      "n_tokens": 14,
+      "n_prefix": 11,
+      "boundary_ok": true,
+      "prompt_hash": "8a0797b04afe7dcd"
+    }
+  ],
+  "n_prompts": 24,
+  "val_tokens": {
+    "small": 2613,
+    "big": 2409,
+    "hot": 4017,
+    "blue": 6303,
+    "cold": 9255,
+    "red": 2518
+  }
+}

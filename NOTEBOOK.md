@@ -4,6 +4,36 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — Commitment Hysteresis v1: INCONCLUSIVE_ALLOCATION_STOP — undirected hysteresis exists, directed transfer does not
+
+456 CPU forward passes (47 seconds). Pre-registered in theory Section 9. Codex
+design gate selected this over CPA-1 (456 vs 2077 passes, more fundamental
+question). Tests: transplant donor prefix at L21 → restore host prefix at L25 →
+does donor influence survive in non-prefix positions?
+
+**Result: undirected hysteresis exists but directed commitment-port transfer
+does not.** The donor prefix leaves a persistent imprint on query/suffix
+positions (M=0.48, H=0.42 — both pass). But this imprint does not encode the
+donor's intended answer (T=0.17, U=0.11 — both fail). Controls perfect
+(self-patch 0.00, full-restore C25 0.00). All 12 clusters eligible.
+
+T is highly variable across edges (-0.28 to +0.52). Some world pairs show strong
+directed transfer (e.g., ZOG_MIP w01→w11: T=0.37, L=0.34; PLIM_KROT w00→w01:
+T=0.52, L=0.49) while others show anti-directional (HESK_VORN w00→w10: T=-0.28;
+PLIM_KROT w11→w01: T=-0.10). Not uniform failure — configuration-dependent.
+
+**What this means for the line:** The commitment bottleneck at L24-25 does
+process foreign prefix influence, but what gets imprinted on the non-prefix
+positions is mostly generic disruption ("something was different") rather than
+directed semantic transfer ("the answer should be X"). The model's commitment
+is robust to perturbation — it doesn't simply adopt whatever prefix state was
+present during processing.
+
+**Next:** Send to Codex evidence gate. Then: the variable T suggests a natural
+follow-up — what distinguishes the high-T edges from the anti-directional ones?
+Is it the structural similarity of the host/donor worlds, the query entity's
+position, or the direction of the value change?
+
 ## 2026-08-31T22:42 — Phase 4d terminal anti-echo factorial: NO_INTERFACE — allocation stop (Codex evidence gate UPHOLD with corrections)
 
 The terminal Phase 4d factorial ran to completion (2304 forward passes: 2208

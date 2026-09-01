@@ -2,6 +2,8 @@
 
 ## Current statement (2026-08-31, PROGRAM REOPENED; Phase 1 record preserved below; Phase 2 begins — genuinely non-R^n approaches; native math existence is axiomatic)
 
+- **Commitment Hysteresis v1 (2026-09-01, Phase 2). INCONCLUSIVE_ALLOCATION_STOP.** 456 CPU forward passes, 48 directed edges, 12 clusters, controls perfect (self-patch 0.00, C25 0.00). Prefix transplant at L21 → restore host prefix at L25. M=0.48 [0.42, 0.54] PASS: transplant moves output. H=0.42 [0.37, 0.48] PASS: perturbation survives host restoration (genuine hysteresis). T=0.17 [0.12, 0.22] FAIL: not donor-directed. U=0.11 [0.04, 0.16] FAIL: surviving residue not donor-directed. L=0.13 [0.08, 0.18]: mild commitment localization. **Undirected hysteresis exists but directed semantic transfer does not.** T varies widely across edges (-0.28 to +0.52): some configurations allow directed propagation, others are anti-directional.
+
 - **Fusion-fission series (2026-08-31, Phase 2).** Qwen3-0.6B, two independently stored facts (HESK color, VORN color), four worlds (2×2). Five experiments completed:
   - **v1:** 12 fusion-fission transitions across 28 layers. Cosine similarity ~1.000 everywhere (blind). Behavioral whole-residual-stream transplant is the only tool that sees the structure. **BP-9 confirmed:** R^n distance blind to compositional structure.
   - **v1b:** PCA separates worlds at all layers (structure linearly accessible). But PCA separation does NOT predict fusion/fission. **BP-1 confirmed:** PRESENCE ≠ ADDRESSABILITY.
