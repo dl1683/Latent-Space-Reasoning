@@ -5,7 +5,7 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
-## HANDLE-mu Rung 1 — Causal Handle Algebra, distance-1 (2026-09-01; FAIL)
+## HANDLE-mu Rung 1 — Causal Handle Algebra, distance-1 (2026-09-01; PIPELINE-INVALID)
 
 Distance from claim: 1 (designed latent world). 7x7 key-lock grid, 5 causal handles
 (2 keys, 2 locks, goal; agent excluded), partial visibility (Manhattan r=2), observation
@@ -35,8 +35,10 @@ Spec: `theory/HANDLE_MU.md`. Ledger: `handle_mu_rung1`.
 | Shielding | PASS | PASS | PASS |
 | Timing | PASS | PASS | PASS |
 
-**Overall verdict: FAIL.** Eligibility never passes (status F1 ~0.33, need >=0.90).
-Causal consumption improvement = 0 or negative across all seeds.
+**Overall verdict: PIPELINE-INVALID (Codex R3).** Not a scientific negative — five
+protocol bugs invalidate the run. Eligibility never passes (status F1 ~0.33, need
+>=0.90). Causal consumption improvement = 0 or negative across all seeds. Bounded
+spec/runner repair justified.
 
 **What we learned:**
 1. **MSE loss drowns status signal.** Status is 4/27 dims of the observation record,
