@@ -37,30 +37,67 @@ of study.
 
 ### 1.1 The problem
 
-Interpretability research defaults to ℝⁿ: cosine similarity, linear probes,
-PCA, activation patching. These tools assume that vector-space proximity tracks
-behavioral similarity. We present a controlled setting where this assumption
-does not hold — and show what becomes visible when it is dropped.
+How should we measure whether two transformer hidden states are "the same"?
+Interpretability research defaults to ℝⁿ metrics: cosine similarity, linear
+probes, PCA projections, activation patching. These tools share an implicit
+assumption — that vector-space proximity tracks behavioral similarity.
+
+We present a controlled setting where this assumption does not hold. In a
+synthetic prompt family with three facts and eight possible worlds, states with
+cosine similarity ≥ 0.98 produce qualitatively different behavioral outcomes
+under intervention: different greedy answers, different distributional
+responses to corrections, different sensitivity to restatement. The standard
+metric does not resolve the structure the model uses.
+
+This is not an argument against ℝⁿ tools in general. It is a demonstration
+that behavioral structure and representational structure can decouple — and that
+when they do, an alternative framework is needed.
 
 ### 1.2 The methodological thesis
 
-Rather than treating hidden states as points in ℝⁿ and asking what structure
-they have, we ask: what behavioral equivalence classes does the model's own
-output define? This inverts the standard approach. The objects of study become
-*places* (equivalence classes of prompts producing the same greedy answer
-profile), *fibers* (the states within each place that differ distributionally),
-and *actions* (typed continuations that move the model between places). The
-mathematical framework is a partial action algebra over a quotient, not a
-metric space.
+We propose inverting the standard approach. Rather than treating hidden states
+as points in ℝⁿ and asking what geometric structure they have, we ask: what
+behavioral equivalence classes does the model's own output define?
+
+This reframing replaces continuous distances with discrete algebraic objects:
+- **Places**: equivalence classes of prompts producing the same greedy answer
+  profile across all registered queries.
+- **Fibers**: the distributionally distinguishable states within each place —
+  histories that agree on the argmax but carry different predictive residuals.
+- **Actions**: typed continuations (corrections, restatements, neutral padding)
+  that move the model between places.
+
+The result is a partial action algebra over a quotient — a framework closer to
+group actions and fiber bundles than to metric spaces. The instrument that makes
+this visible is the logit lens (applying the model's own unembedding at each
+layer) measured by Jensen-Shannon distance, which resolves behavioral structure
+where cosine does not.
 
 ### 1.3 Scope and limitations
 
-Everything reported here is from Qwen3-0.6B on a single synthetic prompt
-family with three binary-valued entities and 8 possible worlds. This is
-deliberately a case study, not a universality claim. The contribution is the
-*method* — behavioral quotients, fiber structure, naturality testing — which
-can be applied to any model and prompt family. Whether the specific algebraic
-laws (idempotence, non-naturality) generalize is an open empirical question.
+Everything reported here is from Qwen3-0.6B (0.6 billion parameters) on a
+single synthetic prompt family with three binary-valued entities and 8 possible
+worlds. This is deliberately a case study, not a universality claim.
+
+The contribution is the *method* — behavioral quotients, fiber structure,
+naturality testing — which can be applied to any model and prompt family that
+admits typed continuations. Whether the specific algebraic laws (approximate
+idempotence, non-naturality with correction) generalize to larger models,
+natural-language prompts, or different task structures is an open empirical
+question that we do not address here.
+
+### 1.4 Summary of results
+
+1. A *resolution layer* (L21-25) where the model selectively amplifies the
+   queried fact 62× while cosine similarity stays above 0.91 (§3.1).
+2. A *commitment bottleneck* at L24-25 where entropy drops to 0.05 bits, then
+   re-broadens — explaining 97% greedy congruence with 0% distributional
+   congruence (§3.2).
+3. A *behavioral algebra* with 12 greedy places, non-trivial fibers (0/96
+   distributional congruences), and typed continuation generators (§4).
+4. *Non-naturality*: world-conditioned restatement does not commute with
+   correction — two paths to the same corrected world produce different response
+   laws and, on held-out names, different greedy answers in 14/48 cases (§5.2).
 
 ---
 
@@ -136,31 +173,62 @@ logged in a machine-readable experiment ledger (JSONL).
 
 ### 3.1 Selective amplification
 
-At layers 21-25, the model amplifies the queried fact's behavioral signature
-62× while suppressing all irrelevant facts to near-zero. This is:
-- Not attention routing (attention selectivity r < 0.25; attention to queried
-  entity is high at ALL layers)
-- Whole-sequence distributed (signal at all input positions, not concentrated
-  at the queried entity's tokens)
-- Multi-fact: in 3-fact worlds, all irrelevants suppressed equally and
-  simultaneously
+To measure how the model resolves a queried fact across layers, we compare the
+logit-lens JSD distance between worlds that differ on the queried entity
+(queried JSD) against worlds that differ only on an irrelevant entity
+(irrelevant JSD). The ratio — queried JSD / irrelevant JSD — measures how
+selectively the model amplifies the behaviorally relevant signal.
 
-[Figure 1: Resolution layer heatmap — JSD by layer and entity, showing the
-selective amplification window]
+At layers 21-25, this selectivity ratio peaks at 62× (PLIM/KROT, L25). The
+queried fact's behavioral signature is amplified to near-maximum JSD distance
+(~0.80) while all irrelevant facts are simultaneously suppressed to near-zero
+(~0.01). Before L21, both queried and irrelevant JSD are moderate and
+interleaved; after L25, both are high (the model's output distribution reflects
+many facts). The resolution window is the narrow band where the model isolates
+the answer.
+
+Three controls establish the nature of this phenomenon:
+
+1. **Not attention routing.** Attention weights to the queried entity's tokens
+   are high at ALL layers (not just L21-25), and the correlation between
+   attention selectivity and JSD selectivity is r < 0.25. The model attends to
+   the queried entity throughout; the resolution is a value-space operation, not
+   an attention-routing event.
+2. **Whole-sequence distributed.** Ablating individual token positions shows
+   that the resolution signal is distributed across all input positions, not
+   concentrated at the queried entity's tokens. The model uses the entire prompt
+   context to resolve the query.
+3. **Multi-fact generalization.** In 3-fact worlds, all irrelevant facts are
+   suppressed equally and simultaneously. The model does not resolve facts
+   sequentially; it resolves the queried fact in one pass.
+
+[Figure 1: Resolution layer heatmap — JSD distance by layer and entity, showing
+the selective amplification window at L21-25. Cosine similarity overlay shows
+≥0.91 throughout, demonstrating that cosine does not resolve this structure.]
 
 ### 3.2 The commitment bottleneck
 
-Shannon entropy through all 28 layers reveals a near-deterministic commitment
-at L24-25 (entropy ≈ 0.05 bits, top-1 mass ≈ 0.999) followed by re-broadening
-to 5.5-7.7 bits in the final output. The re-broadened distribution is not noise:
-tokens with the largest probability differences between same-place histories
-are overwhelmingly history-related entity values.
+Tracking Shannon entropy of the logit-lens distribution through all 28 layers
+reveals a striking structural phenomenon. At layers 24-25, entropy drops to
+0.05-0.30 bits — near-deterministic commitment — with top-1 probability mass
+reaching 0.999. The model has fully committed to a single next token.
 
-[Figure 2: Entropy trajectory showing the bottleneck and re-broadening]
+But the final output distribution re-broadens dramatically to 5.5-7.7 bits. The
+re-broadened distribution is not noise: the tokens with the largest probability
+differences between same-place histories (histories that share the same greedy
+answer) are overwhelmingly history-related entity values. The model leaks
+information about its entire fact-world into the output distribution's tail.
 
-This explains the central puzzle: greedy congruence (97%) coexists with
-distributional incongruence (0%) because the bottleneck fixes the argmax while
-the re-broadened tail retains history-dependent distributional residuals.
+[Figure 2: Entropy trajectory showing the bottleneck at L24-25 and
+re-broadening to the final output. Annotate the commitment point and the
+history-dependent tokens in the re-broadened tail.]
+
+This two-phase structure — commit, then re-broaden — explains the central
+puzzle. Greedy congruence (97%) coexists with distributional incongruence (0%)
+because the bottleneck fixes the argmax while the re-broadened tail retains
+history-dependent distributional residuals. The commitment bottleneck is where
+the greedy quotient $G$ becomes visible in the computation; the re-broadening is
+where the fiber structure $F_g$ becomes visible.
 
 ---
 
@@ -193,33 +261,69 @@ the fraction of greedy signatures unchanged after an operation.
 
 ### 4.2 The greedy quotient
 
-Define $G = X / {\sim_\text{greedy}}$ where two prompt histories are equivalent
-iff they produce the same greedy answer to every registered query. This yields
-12 distinct places (registered) and 11 (held-out) from 16 histories each.
+Define the greedy quotient $G = X / {\sim_\text{greedy}}$ where two prompt
+histories are equivalent iff they produce the same greedy answer to every
+registered query. With 16 base histories (8 worlds × 2 orders), the greedy map
+$\gamma$ yields 12 distinct places in the registered set and 11 in the held-out
+set. The quotient is non-trivial: some places contain only one history (the
+model's greedy answers distinguish the two presentation orders), while others
+contain two or more (the orders produce identical greedy signatures).
+
+The fact that $|G| < |X|$ — that distinct histories collapse to the same greedy
+place — is the starting point. The question is whether these collapsed histories
+are truly equivalent or merely agree on the coarsest observable.
 
 ### 4.3 Fibers and distributional residuals
 
-Each greedy place $g$ has a fiber $F_g = \pi^{-1}(g)$. Despite greedy identity,
-fiber members always differ distributionally (0/96 distributional congruences).
-Within-fiber JSD distance:
-- Benign presentation pairs: 0.254
-- Cross-world history pairs: 0.292
-- After correction: history > benign (3/3)
-- After restatement: history < benign (0/3) — restatement partially collapses
+They are not equivalent. Each greedy place $g$ has a fiber $F_g = \pi^{-1}(g)$
+containing all histories with the same greedy signature. We test distributional
+congruence by computing the JSD distance between the full output distributions
+of every pair of histories within the same fiber. Of 96 within-fiber pairs
+tested (registered + held-out), zero are distributionally congruent (all JSD
+distances exceed the 0.01 threshold). The fibers are non-trivial: same greedy
+answer, different distributional state.
 
-[Figure 3: Conceptual diagram of the quotient/fiber structure — greedy places,
-fibers with within-fiber distributional distances, typed actions between places,
-and empirical within-fiber distance distributions. This is the paper's central
-visual.]
+The within-fiber distances have structure. We distinguish three pair types:
+
+| Pair type | Mean JSD distance | What differs |
+|-----------|------------------|--------------|
+| Benign presentation | 0.254 | Fact order or repetition within same world |
+| Cross-world history | 0.292 | Different fact-worlds, same greedy signature |
+| Cross-irrelevant | 0.157 | Different irrelevant facts only |
+
+The distributional residual inside fibers is not pure presentation noise. Under
+correction (appending "Actually, ZOG: small."), cross-world history pairs show
+larger JSD distance than benign presentation pairs (3/3 continuation types).
+This means the residual carries task-relevant predictive state — corrections
+interact differently with different histories even when those histories share
+the same greedy signature. Under restatement, the ordering reverses (0/3):
+restatement partially collapses the within-fiber distance, consistent with its
+role as an approximate retraction.
+
+[Figure 3: Conceptual diagram of the quotient/fiber structure — greedy places
+as nodes, fibers as collections of histories within each place, typed actions
+as arrows between places, and empirical within-fiber JSD distance distributions.
+This is the paper's central visual: it shows the algebra's objects (places,
+fibers) and morphisms (actions) together with the distributional evidence that
+fibers are non-trivial.]
 
 ### 4.4 Continuation generators
 
+Each typed continuation appends text to a base history and produces a new output
+distribution. We measure each generator's *place preservation*: the fraction of
+greedy signatures unchanged after the operation.
+
 | Generator | Type | Notation | Place preservation |
 |-----------|------|----------|-------------------|
-| Empty | Identity | ε | 100% |
-| Neutral | Near-identity | N | 95.8% |
-| Correction | State-changing | C_{e←v} | 35-42% |
-| Restatement | Approximately idempotent | S^W_w | 89.6-93.8% |
+| Empty | Identity | $\varepsilon$ | 100% |
+| Neutral | Near-identity | $N$ | 95.8% |
+| Correction | State-changing | $C_{e \leftarrow v}$ | 35-42% |
+| Restatement | Approximately idempotent | $S^W_w$ | 89.6-93.8% |
+
+The generators span a range from identity-like (empty, neutral) to genuinely
+state-changing (correction). Restatement occupies an intermediate position: it
+preserves most greedy places but not all, and its approximate idempotence
+(§5.1) distinguishes it from a generic near-identity operation.
 
 ---
 
@@ -334,9 +438,18 @@ because it uses the hidden world, not the shared greedy signature.
 
 The method — define objects via behavioral equivalence, not vector proximity —
 makes visible structure that cosine similarity did not resolve in this setting.
-The quotient/fiber decomposition separates the coarse commitment (greedy place)
-from the fine distributional residual in a principled way, without choosing a
-basis or assuming linearity.
+Three specific advantages:
+
+1. **No basis choice.** The quotient is defined by the model's own outputs, not
+   by a researcher's choice of projection, probe architecture, or similarity
+   metric. The objects of study are behavioral, not representational.
+2. **Principled coarse/fine separation.** The quotient/fiber decomposition
+   separates the coarse commitment (greedy place) from the fine distributional
+   residual without assuming linearity or choosing a subspace.
+3. **Algebraic laws are testable.** Idempotence, descent, and naturality are
+   precise algebraic properties with clear experimental tests. They produce
+   discrete verdicts (pass/fail with defect rates), not continuous measures that
+   require threshold choices.
 
 ### 6.2 What cosine missed here
 
@@ -345,7 +458,9 @@ states with cosine similarity ≥ 0.98 produce qualitatively different behaviora
 outcomes under intervention. This is not an argument against cosine in general;
 it is an observation that behavioral distance and representational distance can
 decouple, and that when they do, behavioral equivalence classes become the more
-informative objects of study.
+informative objects of study. The logit lens + JSD instrument resolves the
+structure here because it projects hidden states through the model's own output
+head, measuring behavioral similarity directly rather than geometric proximity.
 
 ### 6.3 The S^W vs S^G gap
 
@@ -388,20 +503,62 @@ is the central open question for future work.
   Our greedy quotient is analogous but defined over language model output
   distributions rather than MDP transitions.
 
+### 6.6 Is this just prompt-order sensitivity?
+
+The most natural objection is that the behavioral algebra is sophisticated
+terminology for a well-known phenomenon: language models are sensitive to prompt
+order. We address this directly.
+
+The observation that prompt order affects model output is indeed well-known. Our
+contribution is not the observation but the *structure*. Prompt-order sensitivity
+tells you that the model's answer can change; the behavioral algebra tells you
+*how* — which equivalence classes are stable, which operations are approximately
+idempotent, which compositions commute and which do not. The quotient/fiber
+decomposition is a specific structural claim: that the model maintains a coarse
+commitment algebra (the quotient) with a fine distributional residual (the
+fibers) that carries predictive state beyond the argmax.
+
+The non-naturality result in particular goes beyond order sensitivity. The typed
+square tests two paths that both arrive at the same declarative world — the
+content of the final prompt is the same in both cases, only the order of
+construction differs. That these paths produce different response laws is a
+structural property of the model's processing, not a restatement of the
+observation that order matters.
+
+That said, the multiplicity confound (§5.2) means we cannot attribute the
+non-commutativity to order alone. The two paths also differ in which value
+appears twice in the text. Disentangling order from multiplicity is an open
+question for future work.
+
 ---
 
 ## 7. Conclusion
 
-In a bounded three-fact prompt world in one small language model, greedy answer
-signatures form an approximate behavioral quotient with nontrivial predictive
-fibers, while a world-conditioned canonical restatement is approximately
-idempotent but non-natural with correction: two update paths denoting the same
-corrected world produce different response laws and, on held-out names,
-different greedy answers in 14 of 48 cases.
+We have presented a behavioral algebra of transformer prompt state, discovered
+by replacing vector-space distances with behavioral equivalence classes as the
+objects of study. In a bounded three-fact prompt world in one small language
+model:
 
-The behavioral-quotient method makes this structure visible. Standard cosine
-similarity did not resolve it in this setting. Whether the structure generalizes
-beyond this prompt family is open; the method itself is general.
+1. Greedy answer signatures define an approximate behavioral quotient with 12
+   places and non-trivial fibers (0/96 distributional congruences).
+2. A world-conditioned canonical restatement is approximately idempotent (100%
+   greedy, JSD 0.070) — a genuine algebraic retraction.
+3. This restatement is non-natural with correction: two update paths denoting
+   the same corrected world produce different response laws and, on held-out
+   entity names, different greedy answers in 14 of 48 cases.
+4. A commitment bottleneck at layers 24-25 (entropy 0.05 bits) explains how
+   greedy congruence (97%) coexists with distributional incongruence (0%).
+
+The behavioral-quotient method makes this structure visible. Cosine similarity
+did not resolve it in this setting. The method itself — behavioral quotients,
+fiber distances, naturality testing — is general; whether the specific algebraic
+laws generalize beyond this prompt family is the central open question.
+
+The most immediate next steps are: (1) constructing a representative-independent
+restatement $S^G_g$ from observable greedy signatures alone, removing the
+experimenter's hidden-world knowledge; (2) testing non-naturality on larger
+models and natural-language prompt families; (3) disentangling order from
+multiplicity in the typed square.
 
 ---
 
