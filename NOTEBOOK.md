@@ -4,6 +4,90 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — LAC-0 architecture rewrite: gated executor, temperature fix, Codex corrections
+
+**Architecture changes (prior session + this session):**
+- Scaled typed model: world_dim=240, action_dim=128 (from 128/64), 739K params
+- Gated ExecutorBlock: per-block learned gate sigmoid(Linear(action_carrier)) controls
+  whether each block activates. Fixes conflicting gradients between primitives (need
+  block-2 as identity) and compositions (need block-2 active).
+- Temperature fix: normalize each similarity separately by /sqrt(D) BEFORE multiplication.
+  Raw multiplicative score = src_sim * move_sim has variance O(D²); at D=240, single
+  sqrt(D) normalization on the product saturates softmax. Per-sim normalization fixes this.
+
+**Results (seed 42, raw multiplicative scoring):**
+- Training: 100% accuracy from step 500 through step 5000 (loss=0.0000)
+- Clean accuracy: 1.0000 (OLD eval — primitives + train compositions only)
+- Self-patch: 0.00e+00 (PASS)
+- Three-way F: 1.0000 (PASS — perfect action portability across worlds)
+
+**Codex corrections adopted (scratchpad/codex_conjunctive_breakthrough.txt):**
+1. Additive attention CAN do conjunctive lookup on complete Cartesian tables (Product
+   Key Memory insight). The claim is INDUCTIVE BIAS difference, not impossibility.
+2. The 12.5%→84% jump was confounded with a target-label bug fix. Cannot attribute
+   to multiplicative scoring alone.
+3. Signed-product aliasing: negative × negative = positive gives doubly-wrong rows
+   spuriously high attention. Softplus fix TESTED but kills convergence (55% at step
+   3000 vs 100% at step 500 for raw multiplication). Root cause: softplus maps
+   near-zero similarities to ~ln(2), destroying discriminative signal (CoV drops from
+   1.48 to 1.10). Raw multiplication kept — aliasing is theoretical, not empirical.
+4. eval_clean_accuracy ONLY tested TRAIN_COMPOSITIONS — never HELD_OUT_COMPOSITIONS.
+   FIXED: now separately reports primitive, train-comp, held-out-comp accuracy.
+5. Per-block diagnostic readouts ADDED: gate values and accuracy after each block for
+   primitives, train compositions, held-out compositions.
+6. This is R^n engineering (D2 positive control), not native math (D0).
+
+**Softplus experiment (negative result):**
+Softplus(src_sim) * softplus(move_sim) kills convergence. At D=240 with per-sim
+/sqrt(D) normalization, similarities are ~O(0.065). Softplus maps these to ~0.69,
+making all products ~0.48 — nearly uniform attention. CoV drops 26%.
+
+**What's next:** Run definitive training with raw multiplication + new eval
+(primitive/train-comp/held-out-comp split) + block diagnostics. Key question:
+does the model generalize to held-out compositions?
+
+## 2026-09-01 — Permutation eligibility: INELIGIBLE — model cannot do the task (Launch 1/4, terminal)
+
+**Verdict: INELIGIBLE. Kills entire 4-launch program.**
+
+Qwen3-0.6B-Base on three-item permutation with fixed 3-shot prompt, 200 cases:
+- Overall: 48.0% accuracy (gate >=95%), 0.5% termination (gate >=95%)
+- rotate left: 13.4% (at chance), rotate right: 34.3%, reverse: 97.0%
+- 318s elapsed, CPU only
+
+The model can reverse (simplest pattern) but cannot track cyclic rotation. Per
+Codex R2 rules, no prompt repair allowed. Kill condition fires: 48% < 95%.
+No Launch 2-4. KV command-slot transplant direction is dead.
+
+**Hole result:** Qwen3-0.6B-Base lacks internal structure for modular
+permutation execution even with explicit few-shot demonstration. This is
+consistent with the project's emerging picture: small base models don't
+have compositional modular operations in their latent space.
+
+## 2026-09-01 — Direction dialogue: KV command-slot transplant (Codex R1+R2, scratchpad/codex_direction_r1.txt, codex_direction_r2.txt)
+
+**Codex direction dialogue (2 rounds) converged on a bounded engineering
+falsification, explicitly NOT native-math discovery.**
+
+Round 1 recommended real-model executable-action algebra in frozen Qwen3-0.6B.
+Round 2 self-corrected: the only concrete intervention design (all-layer
+command-slot KV transplant) would test modular prompt-cache engineering, not
+discover native algebra. Operations and composition table are supplied by us;
+the carrier is architecture-specific KV cache. Round 1 overclaimed.
+
+**Concrete task:** three-item permutation (rotate left, rotate right, reverse).
+Fixed few-shot prompt, base model, no prompt repair.
+
+**Budget:** 4 launches, 2000 total CPU forwards, 6 wall hours, 0 GPU. Hard
+kill conditions per launch. No repair loops.
+
+**Launch 1 (eligibility):** 200 baseline cases. Kill if overall acc < 95%
+or per-op acc < 90%. Expectation: Qwen3-0.6B-Base probably fails (0.6B base
+model doing algorithmic reasoning). A negative is a clean hole result.
+
+**Distance-from-claim:** 1. Modular execution is a prerequisite for native
+algebra, not the algebra itself.
+
 ## 2026-09-01 — EAC-1 STOP: architecturally tautological (Codex ruling, scratchpad/codex_eac1_next_rung.txt)
 
 **Codex verdict: STOP the EAC/LAC line as constituted.** EAC-1 is a valid
@@ -9926,3 +10010,78 @@ native_bridge_v1 32-call mechanical smoke: **SMOKE_VALID**.
 - Lock row written with all required bindings (runner/config/manifest/call_table hashes, constants, stop rule)
 - Codex design gate: v1-v4 completed; smoke-blocking items resolved; 5 science-grade items deferred (token IDs in identity, expanded manifest, bootstrap precommitment, row validation detail, per-call checkpointing)
 - Next: commit, apply science-grade fixes, then scientific Phase D/E execution
+
+## LAC-0 architecture rewrite (2026-09-01)
+
+### Conjunctive-matching breakthrough
+Standard transformer cross-attention uses ADDITIVE scoring: `score = sum(Q_i*K_i)`.
+For table lookup requiring both source-place AND move match, this fails: a high move
+match can compensate for a low place match. Table lookup needs CONJUNCTIVE (AND)
+matching: `score = sim(carrier,src) * sim(action,move)`.
+
+Replace: cross-attention → multiplicative matching. Accuracy jumped from 12.5% (chance)
+to 84% on single-world test. The binding problem in attention, instantiated.
+
+### Architecture scaling
+Scaled to match untyped control within 2%: world_dim=240, action_dim=128, 2-block
+executor. TypedLAC: 739,200 params. UntypedControl: 730,381 params (1.2% diff).
+
+Executor now has 2 conjunctive-lookup blocks per Codex spec: composed carrier μ(a,b)
+should induce two-hop behavior via different action_to_move projections per block.
+Primitives must learn block-2 as near-identity.
+
+SharedLAC test (shared embeddings + no residual): WORSE — single-world 53%, multi-world
+oscillating 69-89%. Separate embeddings and residual connections are load-bearing.
+
+### Thesis connection (binding gate)
+The AGI thesis defines the operational-state ladder:
+  present → addressable → causally writable → composable → transportable → correctable
+
+Conjunctive matching exposes an ARCHITECTURAL BARRIER between addressability and causal
+consumption. Standard attention makes individual attributes addressable (place sim OR
+move sim) but cannot consume their conjunction (place sim AND move sim). This is NOT a
+capacity issue — no amount of training fixes additive attention for conjunctive lookup.
+The gate is structural.
+
+This maps directly to the technical appendix's research gates:
+- Gate 1 (Readability): state is decodable ✓
+- Gate 2 (Writability): state can be changed ✓
+- Gate 3 (Causal consumption): standard attention FAILS — architecture must change
+- The barrier is exactly the binding problem from cognitive science
+
+### Full training results
+- Ungated 2-block (D=240): 34% clean accuracy after 5000 steps. FAIL. Block-2
+  corrupts primitives with conflicting gradients.
+- Gated 2-block (D=128, 206K): 64% at step 2500, still climbing slowly. Gate works.
+- 1-block (D=240, no gate): 42% at step 1400. Temperature scaling issue confirmed —
+  multiplicative score has variance O(D^2), dividing by sqrt(D) is insufficient.
+- Fix applied: normalize each sim separately (/sqrt(D)) BEFORE multiplication.
+- Scaled gated (D=240, 739K) with fixed temperature launched.
+
+### Codex review of conjunctive-matching claim (2026-09-01)
+**Corrections adopted verbatim:**
+1. "Additive attention cannot do conjunctive lookup" is WRONG for complete Cartesian
+   tables. On 8×4 full product, softmax(s_p + t_m) = softmax(s)_p * softmax(t)_m.
+   Product Key Memory (Lample et al. 2019) exploits this. Corrected claim: different
+   parameterizations have different inductive biases, not impossibility.
+2. The 12.5%→84% jump is confounded: target-label bug fix happened simultaneously.
+   Not a clean multiplicative-vs-additive ablation.
+3. Signed-product aliasing: neg × neg = positive score for doubly-wrong rows.
+   Should use positive kernels (sigmoid/softplus) or normalized similarities.
+4. eval_clean_accuracy only tests TRAIN_COMPOSITIONS, never HELD_OUT_COMPOSITIONS.
+   Must add held-out composition evaluation.
+5. Multiplied dot products are still R^n machinery. Not native latent math.
+6. Two blocks without a stop gate is hard to optimize (primitive identity must be
+   mediated through retrieval). Gate added — correct design.
+7. Thesis connection IS valid but must be stated as "architecture determines
+   consumability relative to reader/action interface" — NOT impossibility.
+8. Composer memorization risk: disconnected pair split ({0,3}→{0,1} and {1,2}→{2,3})
+   allows regime-specific memorization without learning independent action slots.
+
+**Required actions per Codex:**
+- Clean additive-vs-multiplicative comparison with identical data/target/dims
+- Report attention entropy, score norms, top-row accuracy, per-block diagnostics
+- Fix signed-product issue (positive kernels)
+- Add held-out composition evaluation
+- Add 5 diagnostic readouts: primitive endpoint after block 1/2, composed midpoint
+  after block 1, composed endpoint after block 2, held-out pair sequential agreement

@@ -1,0 +1,32 @@
+{
+  "experiment": "permutation_eligibility_v1",
+  "model_id": "Qwen/Qwen3-0.6B-Base",
+  "device": "cpu",
+  "n_cases": 200,
+  "elapsed_s": 317.8,
+  "overall_accuracy": 0.48,
+  "overall_termination": 0.005,
+  "per_operation": {
+    "rotate left": {
+      "n": 67,
+      "accuracy": 0.13432835820895522,
+      "termination": 0.0
+    },
+    "rotate right": {
+      "n": 67,
+      "accuracy": 0.34328358208955223,
+      "termination": 0.0
+    },
+    "reverse": {
+      "n": 66,
+      "accuracy": 0.9696969696969697,
+      "termination": 0.015151515151515152
+    }
+  },
+  "verdict": "INELIGIBLE",
+  "gates": {
+    "overall_accuracy_ge_95": false,
+    "per_op_accuracy_ge_90": false
+  },
+  "timestamp": "2026-09-01T05:42:04.148885"
+}

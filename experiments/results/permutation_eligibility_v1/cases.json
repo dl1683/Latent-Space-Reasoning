@@ -1,0 +1,2602 @@
+[
+  {
+    "id": 0,
+    "operation": "rotate right",
+    "symbols": [
+      "E",
+      "A",
+      "B"
+    ],
+    "expected": "B E A",
+    "generated": "B A E\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 1,
+    "operation": "rotate right",
+    "symbols": [
+      "A",
+      "B",
+      "D"
+    ],
+    "expected": "D A B",
+    "generated": "D B A\n\nSequence: C D E",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 2,
+    "operation": "rotate left",
+    "symbols": [
+      "E",
+      "C",
+      "B"
+    ],
+    "expected": "C B E",
+    "generated": "B C E\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 3,
+    "operation": "rotate left",
+    "symbols": [
+      "G",
+      "C",
+      "H"
+    ],
+    "expected": "C H G",
+    "generated": "H G C\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 4,
+    "operation": "reverse",
+    "symbols": [
+      "B",
+      "F",
+      "A"
+    ],
+    "expected": "A F B",
+    "generated": "A F B\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 5,
+    "operation": "rotate left",
+    "symbols": [
+      "B",
+      "D",
+      "A"
+    ],
+    "expected": "D A B",
+    "generated": "A B D\n\nSequence: C D E",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 6,
+    "operation": "rotate left",
+    "symbols": [
+      "H",
+      "E",
+      "A"
+    ],
+    "expected": "E A H",
+    "generated": "E A H\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 7,
+    "operation": "reverse",
+    "symbols": [
+      "E",
+      "C",
+      "B"
+    ],
+    "expected": "B C E",
+    "generated": "B C E\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 8,
+    "operation": "rotate left",
+    "symbols": [
+      "B",
+      "C",
+      "D"
+    ],
+    "expected": "C D B",
+    "generated": "D C B\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 9,
+    "operation": "reverse",
+    "symbols": [
+      "B",
+      "D",
+      "A"
+    ],
+    "expected": "A D B",
+    "generated": "A D B\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 10,
+    "operation": "rotate left",
+    "symbols": [
+      "A",
+      "D",
+      "C"
+    ],
+    "expected": "D C A",
+    "generated": "C D A\n\nSequence: B E F",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 11,
+    "operation": "rotate left",
+    "symbols": [
+      "H",
+      "C",
+      "B"
+    ],
+    "expected": "C B H",
+    "generated": "B C H\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 12,
+    "operation": "rotate left",
+    "symbols": [
+      "G",
+      "H",
+      "A"
+    ],
+    "expected": "H A G",
+    "generated": "H A G\n\nSequence: B C D",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 13,
+    "operation": "reverse",
+    "symbols": [
+      "H",
+      "E",
+      "D"
+    ],
+    "expected": "D E H",
+    "generated": "D E H\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 14,
+    "operation": "rotate left",
+    "symbols": [
+      "F",
+      "H",
+      "E"
+    ],
+    "expected": "H E F",
+    "generated": "E F H\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 15,
+    "operation": "rotate right",
+    "symbols": [
+      "C",
+      "G",
+      "F"
+    ],
+    "expected": "F C G",
+    "generated": "F G C\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 16,
+    "operation": "rotate right",
+    "symbols": [
+      "E",
+      "D",
+      "H"
+    ],
+    "expected": "H E D",
+    "generated": "H E D\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 17,
+    "operation": "reverse",
+    "symbols": [
+      "B",
+      "G",
+      "C"
+    ],
+    "expected": "C G B",
+    "generated": "C G B\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 18,
+    "operation": "rotate left",
+    "symbols": [
+      "E",
+      "D",
+      "A"
+    ],
+    "expected": "D A E",
+    "generated": "A D E\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 19,
+    "operation": "reverse",
+    "symbols": [
+      "H",
+      "F",
+      "A"
+    ],
+    "expected": "A F H",
+    "generated": "A F H\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 20,
+    "operation": "reverse",
+    "symbols": [
+      "B",
+      "C",
+      "F"
+    ],
+    "expected": "F C B",
+    "generated": "F C B\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 21,
+    "operation": "reverse",
+    "symbols": [
+      "B",
+      "C",
+      "G"
+    ],
+    "expected": "G C B",
+    "generated": "G C B\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 22,
+    "operation": "rotate left",
+    "symbols": [
+      "F",
+      "G",
+      "B"
+    ],
+    "expected": "G B F",
+    "generated": "B F G\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 23,
+    "operation": "reverse",
+    "symbols": [
+      "A",
+      "G",
+      "D"
+    ],
+    "expected": "D G A",
+    "generated": "D G A\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 24,
+    "operation": "rotate left",
+    "symbols": [
+      "A",
+      "G",
+      "C"
+    ],
+    "expected": "G C A",
+    "generated": "G C A\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 25,
+    "operation": "rotate left",
+    "symbols": [
+      "A",
+      "E",
+      "D"
+    ],
+    "expected": "E D A",
+    "generated": "D E A\n\nSequence: B C D",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 26,
+    "operation": "rotate right",
+    "symbols": [
+      "H",
+      "F",
+      "D"
+    ],
+    "expected": "D H F",
+    "generated": "D F H\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 27,
+    "operation": "rotate left",
+    "symbols": [
+      "C",
+      "B",
+      "A"
+    ],
+    "expected": "B A C",
+    "generated": "A B C\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 28,
+    "operation": "reverse",
+    "symbols": [
+      "G",
+      "E",
+      "H"
+    ],
+    "expected": "H E G",
+    "generated": "H E G\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 29,
+    "operation": "rotate right",
+    "symbols": [
+      "G",
+      "D",
+      "C"
+    ],
+    "expected": "C G D",
+    "generated": "C D G\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 30,
+    "operation": "rotate left",
+    "symbols": [
+      "H",
+      "E",
+      "C"
+    ],
+    "expected": "E C H",
+    "generated": "C E H\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 31,
+    "operation": "rotate left",
+    "symbols": [
+      "D",
+      "H",
+      "B"
+    ],
+    "expected": "H B D",
+    "generated": "B D H\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 32,
+    "operation": "reverse",
+    "symbols": [
+      "F",
+      "E",
+      "B"
+    ],
+    "expected": "B E F",
+    "generated": "B E F\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 33,
+    "operation": "rotate right",
+    "symbols": [
+      "G",
+      "C",
+      "E"
+    ],
+    "expected": "E G C",
+    "generated": "E C G\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 34,
+    "operation": "reverse",
+    "symbols": [
+      "B",
+      "C",
+      "D"
+    ],
+    "expected": "D C B",
+    "generated": "D C B\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 35,
+    "operation": "rotate right",
+    "symbols": [
+      "C",
+      "H",
+      "G"
+    ],
+    "expected": "G C H",
+    "generated": "G H C\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 36,
+    "operation": "reverse",
+    "symbols": [
+      "A",
+      "G",
+      "F"
+    ],
+    "expected": "F G A",
+    "generated": "F G A",
+    "exact": true,
+    "terminated": true
+  },
+  {
+    "id": 37,
+    "operation": "rotate left",
+    "symbols": [
+      "F",
+      "E",
+      "G"
+    ],
+    "expected": "E G F",
+    "generated": "G F E\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 38,
+    "operation": "rotate left",
+    "symbols": [
+      "B",
+      "E",
+      "G"
+    ],
+    "expected": "E G B",
+    "generated": "E B G\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 39,
+    "operation": "rotate left",
+    "symbols": [
+      "B",
+      "C",
+      "A"
+    ],
+    "expected": "C A B",
+    "generated": "A B C\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 40,
+    "operation": "rotate left",
+    "symbols": [
+      "D",
+      "A",
+      "G"
+    ],
+    "expected": "A G D",
+    "generated": "A D G\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 41,
+    "operation": "reverse",
+    "symbols": [
+      "D",
+      "H",
+      "B"
+    ],
+    "expected": "B H D",
+    "generated": "B H D\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 42,
+    "operation": "rotate right",
+    "symbols": [
+      "F",
+      "D",
+      "E"
+    ],
+    "expected": "E F D",
+    "generated": "E F D\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 43,
+    "operation": "rotate right",
+    "symbols": [
+      "H",
+      "F",
+      "B"
+    ],
+    "expected": "B H F",
+    "generated": "B F H\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 44,
+    "operation": "rotate left",
+    "symbols": [
+      "A",
+      "E",
+      "G"
+    ],
+    "expected": "E G A",
+    "generated": "E G A\n\nSequence: B C D",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 45,
+    "operation": "reverse",
+    "symbols": [
+      "F",
+      "C",
+      "E"
+    ],
+    "expected": "E C F",
+    "generated": "E F C\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 46,
+    "operation": "rotate right",
+    "symbols": [
+      "G",
+      "H",
+      "D"
+    ],
+    "expected": "D G H",
+    "generated": "D H G\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 47,
+    "operation": "reverse",
+    "symbols": [
+      "A",
+      "H",
+      "E"
+    ],
+    "expected": "E H A",
+    "generated": "E H A\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 48,
+    "operation": "rotate left",
+    "symbols": [
+      "F",
+      "H",
+      "G"
+    ],
+    "expected": "H G F",
+    "generated": "G H F\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 49,
+    "operation": "reverse",
+    "symbols": [
+      "G",
+      "C",
+      "B"
+    ],
+    "expected": "B C G",
+    "generated": "B C G\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 50,
+    "operation": "reverse",
+    "symbols": [
+      "D",
+      "G",
+      "B"
+    ],
+    "expected": "B G D",
+    "generated": "B G D\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 51,
+    "operation": "rotate left",
+    "symbols": [
+      "A",
+      "G",
+      "D"
+    ],
+    "expected": "G D A",
+    "generated": "D G A\n\nSequence: B C D",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 52,
+    "operation": "rotate left",
+    "symbols": [
+      "C",
+      "E",
+      "H"
+    ],
+    "expected": "E H C",
+    "generated": "E C H\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 53,
+    "operation": "rotate right",
+    "symbols": [
+      "F",
+      "G",
+      "C"
+    ],
+    "expected": "C F G",
+    "generated": "C F G\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 54,
+    "operation": "rotate left",
+    "symbols": [
+      "H",
+      "C",
+      "B"
+    ],
+    "expected": "C B H",
+    "generated": "B C H\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 55,
+    "operation": "rotate right",
+    "symbols": [
+      "D",
+      "E",
+      "G"
+    ],
+    "expected": "G D E",
+    "generated": "E D G\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 56,
+    "operation": "rotate right",
+    "symbols": [
+      "F",
+      "C",
+      "E"
+    ],
+    "expected": "E F C",
+    "generated": "E F C\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 57,
+    "operation": "rotate left",
+    "symbols": [
+      "G",
+      "E",
+      "F"
+    ],
+    "expected": "E F G",
+    "generated": "F E G\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 58,
+    "operation": "rotate left",
+    "symbols": [
+      "C",
+      "H",
+      "F"
+    ],
+    "expected": "H F C",
+    "generated": "F C H\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 59,
+    "operation": "rotate right",
+    "symbols": [
+      "B",
+      "D",
+      "E"
+    ],
+    "expected": "E B D",
+    "generated": "E D B\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 60,
+    "operation": "rotate left",
+    "symbols": [
+      "E",
+      "F",
+      "D"
+    ],
+    "expected": "F D E",
+    "generated": "D E F\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 61,
+    "operation": "reverse",
+    "symbols": [
+      "F",
+      "H",
+      "C"
+    ],
+    "expected": "C H F",
+    "generated": "C H F\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 62,
+    "operation": "rotate right",
+    "symbols": [
+      "A",
+      "B",
+      "F"
+    ],
+    "expected": "F A B",
+    "generated": "F B A\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 63,
+    "operation": "reverse",
+    "symbols": [
+      "H",
+      "C",
+      "F"
+    ],
+    "expected": "F C H",
+    "generated": "F C H\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 64,
+    "operation": "reverse",
+    "symbols": [
+      "F",
+      "D",
+      "E"
+    ],
+    "expected": "E D F",
+    "generated": "E D F\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 65,
+    "operation": "reverse",
+    "symbols": [
+      "F",
+      "B",
+      "D"
+    ],
+    "expected": "D B F",
+    "generated": "D B F\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 66,
+    "operation": "rotate left",
+    "symbols": [
+      "E",
+      "D",
+      "G"
+    ],
+    "expected": "D G E",
+    "generated": "D G E\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 67,
+    "operation": "rotate right",
+    "symbols": [
+      "A",
+      "H",
+      "D"
+    ],
+    "expected": "D A H",
+    "generated": "D H A\n\nSequence: B C D",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 68,
+    "operation": "rotate left",
+    "symbols": [
+      "F",
+      "B",
+      "D"
+    ],
+    "expected": "B D F",
+    "generated": "D B F\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 69,
+    "operation": "rotate right",
+    "symbols": [
+      "F",
+      "A",
+      "E"
+    ],
+    "expected": "E F A",
+    "generated": "E F A\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 70,
+    "operation": "rotate left",
+    "symbols": [
+      "F",
+      "C",
+      "H"
+    ],
+    "expected": "C H F",
+    "generated": "H F C\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 71,
+    "operation": "rotate left",
+    "symbols": [
+      "F",
+      "D",
+      "G"
+    ],
+    "expected": "D G F",
+    "generated": "G F D\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 72,
+    "operation": "rotate left",
+    "symbols": [
+      "H",
+      "E",
+      "B"
+    ],
+    "expected": "E B H",
+    "generated": "B E H\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 73,
+    "operation": "reverse",
+    "symbols": [
+      "B",
+      "H",
+      "E"
+    ],
+    "expected": "E H B",
+    "generated": "E H B\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 74,
+    "operation": "rotate left",
+    "symbols": [
+      "A",
+      "B",
+      "H"
+    ],
+    "expected": "B H A",
+    "generated": "B A H\n\nSequence: 1 2",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 75,
+    "operation": "reverse",
+    "symbols": [
+      "B",
+      "H",
+      "G"
+    ],
+    "expected": "G H B",
+    "generated": "G H B\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 76,
+    "operation": "reverse",
+    "symbols": [
+      "D",
+      "F",
+      "A"
+    ],
+    "expected": "A F D",
+    "generated": "A F D\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 77,
+    "operation": "rotate right",
+    "symbols": [
+      "B",
+      "H",
+      "C"
+    ],
+    "expected": "C B H",
+    "generated": "C B H\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 78,
+    "operation": "reverse",
+    "symbols": [
+      "E",
+      "G",
+      "H"
+    ],
+    "expected": "H G E",
+    "generated": "H G E\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 79,
+    "operation": "rotate left",
+    "symbols": [
+      "G",
+      "C",
+      "A"
+    ],
+    "expected": "C A G",
+    "generated": "C A G\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 80,
+    "operation": "reverse",
+    "symbols": [
+      "C",
+      "H",
+      "B"
+    ],
+    "expected": "B H C",
+    "generated": "B H C\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 81,
+    "operation": "rotate right",
+    "symbols": [
+      "C",
+      "G",
+      "F"
+    ],
+    "expected": "F C G",
+    "generated": "F G C\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 82,
+    "operation": "rotate right",
+    "symbols": [
+      "A",
+      "D",
+      "B"
+    ],
+    "expected": "B A D",
+    "generated": "B A D\n\nSequence: C D E",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 83,
+    "operation": "reverse",
+    "symbols": [
+      "G",
+      "D",
+      "C"
+    ],
+    "expected": "C D G",
+    "generated": "C D G\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 84,
+    "operation": "rotate right",
+    "symbols": [
+      "C",
+      "A",
+      "F"
+    ],
+    "expected": "F C A",
+    "generated": "F C A\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 85,
+    "operation": "rotate left",
+    "symbols": [
+      "E",
+      "G",
+      "H"
+    ],
+    "expected": "G H E",
+    "generated": "H E G\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 86,
+    "operation": "rotate right",
+    "symbols": [
+      "B",
+      "H",
+      "G"
+    ],
+    "expected": "G B H",
+    "generated": "G H B\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 87,
+    "operation": "rotate left",
+    "symbols": [
+      "H",
+      "D",
+      "B"
+    ],
+    "expected": "D B H",
+    "generated": "B D H\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 88,
+    "operation": "reverse",
+    "symbols": [
+      "A",
+      "C",
+      "E"
+    ],
+    "expected": "E C A",
+    "generated": "E C A\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 89,
+    "operation": "rotate left",
+    "symbols": [
+      "D",
+      "C",
+      "A"
+    ],
+    "expected": "C A D",
+    "generated": "A C D\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 90,
+    "operation": "rotate right",
+    "symbols": [
+      "C",
+      "A",
+      "D"
+    ],
+    "expected": "D C A",
+    "generated": "D C A\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 91,
+    "operation": "rotate right",
+    "symbols": [
+      "F",
+      "B",
+      "A"
+    ],
+    "expected": "A F B",
+    "generated": "A B F\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 92,
+    "operation": "rotate right",
+    "symbols": [
+      "C",
+      "A",
+      "E"
+    ],
+    "expected": "E C A",
+    "generated": "E C A\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 93,
+    "operation": "rotate right",
+    "symbols": [
+      "D",
+      "A",
+      "B"
+    ],
+    "expected": "B D A",
+    "generated": "B A D\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 94,
+    "operation": "reverse",
+    "symbols": [
+      "G",
+      "E",
+      "A"
+    ],
+    "expected": "A E G",
+    "generated": "A E G\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 95,
+    "operation": "rotate right",
+    "symbols": [
+      "E",
+      "B",
+      "G"
+    ],
+    "expected": "G E B",
+    "generated": "G E B\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 96,
+    "operation": "rotate left",
+    "symbols": [
+      "H",
+      "F",
+      "C"
+    ],
+    "expected": "F C H",
+    "generated": "F C H\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 97,
+    "operation": "rotate right",
+    "symbols": [
+      "D",
+      "H",
+      "A"
+    ],
+    "expected": "A D H",
+    "generated": "A H D\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 98,
+    "operation": "reverse",
+    "symbols": [
+      "C",
+      "B",
+      "E"
+    ],
+    "expected": "E B C",
+    "generated": "E B C\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 99,
+    "operation": "reverse",
+    "symbols": [
+      "E",
+      "D",
+      "G"
+    ],
+    "expected": "G D E",
+    "generated": "G D E\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 100,
+    "operation": "rotate right",
+    "symbols": [
+      "E",
+      "B",
+      "F"
+    ],
+    "expected": "F E B",
+    "generated": "F E B\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 101,
+    "operation": "reverse",
+    "symbols": [
+      "A",
+      "C",
+      "G"
+    ],
+    "expected": "G C A",
+    "generated": "G C A\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 102,
+    "operation": "rotate right",
+    "symbols": [
+      "B",
+      "D",
+      "G"
+    ],
+    "expected": "G B D",
+    "generated": "G D B\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 103,
+    "operation": "rotate left",
+    "symbols": [
+      "A",
+      "H",
+      "C"
+    ],
+    "expected": "H C A",
+    "generated": "C H A\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 104,
+    "operation": "rotate right",
+    "symbols": [
+      "B",
+      "G",
+      "H"
+    ],
+    "expected": "H B G",
+    "generated": "H G B\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 105,
+    "operation": "rotate right",
+    "symbols": [
+      "A",
+      "G",
+      "F"
+    ],
+    "expected": "F A G",
+    "generated": "F G A\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 106,
+    "operation": "reverse",
+    "symbols": [
+      "E",
+      "G",
+      "A"
+    ],
+    "expected": "A G E",
+    "generated": "A G E\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 107,
+    "operation": "reverse",
+    "symbols": [
+      "H",
+      "D",
+      "G"
+    ],
+    "expected": "G D H",
+    "generated": "G D H\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 108,
+    "operation": "rotate right",
+    "symbols": [
+      "G",
+      "C",
+      "F"
+    ],
+    "expected": "F G C",
+    "generated": "F G C\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 109,
+    "operation": "rotate left",
+    "symbols": [
+      "B",
+      "G",
+      "D"
+    ],
+    "expected": "G D B",
+    "generated": "D B G\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 110,
+    "operation": "rotate left",
+    "symbols": [
+      "E",
+      "D",
+      "A"
+    ],
+    "expected": "D A E",
+    "generated": "A D E\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 111,
+    "operation": "reverse",
+    "symbols": [
+      "E",
+      "A",
+      "B"
+    ],
+    "expected": "B A E",
+    "generated": "B A E\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 112,
+    "operation": "rotate right",
+    "symbols": [
+      "C",
+      "E",
+      "D"
+    ],
+    "expected": "D C E",
+    "generated": "D E C\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 113,
+    "operation": "rotate right",
+    "symbols": [
+      "G",
+      "C",
+      "E"
+    ],
+    "expected": "E G C",
+    "generated": "E C G\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 114,
+    "operation": "rotate right",
+    "symbols": [
+      "C",
+      "A",
+      "F"
+    ],
+    "expected": "F C A",
+    "generated": "F C A\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 115,
+    "operation": "rotate left",
+    "symbols": [
+      "B",
+      "A",
+      "F"
+    ],
+    "expected": "A F B",
+    "generated": "A B F\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 116,
+    "operation": "rotate left",
+    "symbols": [
+      "B",
+      "H",
+      "A"
+    ],
+    "expected": "H A B",
+    "generated": "A H B\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 117,
+    "operation": "rotate left",
+    "symbols": [
+      "H",
+      "B",
+      "E"
+    ],
+    "expected": "B E H",
+    "generated": "E B H\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 118,
+    "operation": "rotate right",
+    "symbols": [
+      "F",
+      "E",
+      "B"
+    ],
+    "expected": "B F E",
+    "generated": "B F E\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 119,
+    "operation": "rotate right",
+    "symbols": [
+      "C",
+      "A",
+      "D"
+    ],
+    "expected": "D C A",
+    "generated": "D C A\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 120,
+    "operation": "rotate left",
+    "symbols": [
+      "C",
+      "B",
+      "H"
+    ],
+    "expected": "B H C",
+    "generated": "B C H\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 121,
+    "operation": "rotate right",
+    "symbols": [
+      "F",
+      "A",
+      "H"
+    ],
+    "expected": "H F A",
+    "generated": "H F A\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 122,
+    "operation": "rotate left",
+    "symbols": [
+      "G",
+      "B",
+      "E"
+    ],
+    "expected": "B E G",
+    "generated": "B G E\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 123,
+    "operation": "reverse",
+    "symbols": [
+      "C",
+      "F",
+      "B"
+    ],
+    "expected": "B F C",
+    "generated": "B F C\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 124,
+    "operation": "rotate right",
+    "symbols": [
+      "F",
+      "A",
+      "B"
+    ],
+    "expected": "B F A",
+    "generated": "B A F\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 125,
+    "operation": "rotate left",
+    "symbols": [
+      "C",
+      "H",
+      "D"
+    ],
+    "expected": "H D C",
+    "generated": "D C H\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 126,
+    "operation": "rotate right",
+    "symbols": [
+      "G",
+      "D",
+      "H"
+    ],
+    "expected": "H G D",
+    "generated": "H G D\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 127,
+    "operation": "reverse",
+    "symbols": [
+      "B",
+      "H",
+      "E"
+    ],
+    "expected": "E H B",
+    "generated": "E H B\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 128,
+    "operation": "rotate right",
+    "symbols": [
+      "D",
+      "B",
+      "C"
+    ],
+    "expected": "C D B",
+    "generated": "C B D\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 129,
+    "operation": "rotate right",
+    "symbols": [
+      "D",
+      "A",
+      "C"
+    ],
+    "expected": "C D A",
+    "generated": "C A D\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 130,
+    "operation": "rotate right",
+    "symbols": [
+      "E",
+      "F",
+      "B"
+    ],
+    "expected": "B E F",
+    "generated": "B E F\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 131,
+    "operation": "rotate left",
+    "symbols": [
+      "E",
+      "G",
+      "B"
+    ],
+    "expected": "G B E",
+    "generated": "B E G\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 132,
+    "operation": "reverse",
+    "symbols": [
+      "B",
+      "H",
+      "C"
+    ],
+    "expected": "C H B",
+    "generated": "C H B\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 133,
+    "operation": "rotate right",
+    "symbols": [
+      "E",
+      "B",
+      "C"
+    ],
+    "expected": "C E B",
+    "generated": "C B E\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 134,
+    "operation": "reverse",
+    "symbols": [
+      "G",
+      "D",
+      "A"
+    ],
+    "expected": "A D G",
+    "generated": "A D G\n\nSequence: B C D",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 135,
+    "operation": "reverse",
+    "symbols": [
+      "A",
+      "C",
+      "F"
+    ],
+    "expected": "F C A",
+    "generated": "F C A\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 136,
+    "operation": "rotate left",
+    "symbols": [
+      "E",
+      "H",
+      "F"
+    ],
+    "expected": "H F E",
+    "generated": "F E H\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 137,
+    "operation": "reverse",
+    "symbols": [
+      "B",
+      "G",
+      "A"
+    ],
+    "expected": "A G B",
+    "generated": "A G B\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 138,
+    "operation": "rotate right",
+    "symbols": [
+      "C",
+      "F",
+      "H"
+    ],
+    "expected": "H C F",
+    "generated": "H F C\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 139,
+    "operation": "reverse",
+    "symbols": [
+      "H",
+      "D",
+      "A"
+    ],
+    "expected": "A D H",
+    "generated": "A D H\n\nSequence: B C D",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 140,
+    "operation": "reverse",
+    "symbols": [
+      "B",
+      "C",
+      "A"
+    ],
+    "expected": "A C B",
+    "generated": "A C B\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 141,
+    "operation": "reverse",
+    "symbols": [
+      "A",
+      "H",
+      "E"
+    ],
+    "expected": "E H A",
+    "generated": "E H A\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 142,
+    "operation": "rotate right",
+    "symbols": [
+      "G",
+      "H",
+      "E"
+    ],
+    "expected": "E G H",
+    "generated": "E H G\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 143,
+    "operation": "rotate right",
+    "symbols": [
+      "H",
+      "B",
+      "D"
+    ],
+    "expected": "D H B",
+    "generated": "D B H\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 144,
+    "operation": "reverse",
+    "symbols": [
+      "D",
+      "A",
+      "H"
+    ],
+    "expected": "H A D",
+    "generated": "H A D\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 145,
+    "operation": "rotate left",
+    "symbols": [
+      "D",
+      "G",
+      "H"
+    ],
+    "expected": "G H D",
+    "generated": "H G D\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 146,
+    "operation": "rotate right",
+    "symbols": [
+      "E",
+      "D",
+      "B"
+    ],
+    "expected": "B E D",
+    "generated": "B D E\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 147,
+    "operation": "rotate left",
+    "symbols": [
+      "F",
+      "H",
+      "A"
+    ],
+    "expected": "H A F",
+    "generated": "H F A\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 148,
+    "operation": "rotate left",
+    "symbols": [
+      "H",
+      "G",
+      "E"
+    ],
+    "expected": "G E H",
+    "generated": "E F G\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 149,
+    "operation": "rotate right",
+    "symbols": [
+      "C",
+      "A",
+      "D"
+    ],
+    "expected": "D C A",
+    "generated": "D C A\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 150,
+    "operation": "rotate left",
+    "symbols": [
+      "C",
+      "A",
+      "B"
+    ],
+    "expected": "A B C",
+    "generated": "B A C\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 151,
+    "operation": "rotate left",
+    "symbols": [
+      "F",
+      "B",
+      "C"
+    ],
+    "expected": "B C F",
+    "generated": "C B F\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 152,
+    "operation": "rotate right",
+    "symbols": [
+      "E",
+      "C",
+      "F"
+    ],
+    "expected": "F E C",
+    "generated": "F E C\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 153,
+    "operation": "reverse",
+    "symbols": [
+      "E",
+      "B",
+      "D"
+    ],
+    "expected": "D B E",
+    "generated": "D B E\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 154,
+    "operation": "reverse",
+    "symbols": [
+      "H",
+      "F",
+      "E"
+    ],
+    "expected": "E F H",
+    "generated": "E F H\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 155,
+    "operation": "rotate left",
+    "symbols": [
+      "A",
+      "B",
+      "D"
+    ],
+    "expected": "B D A",
+    "generated": "B A D\n\nSequence: C D E",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 156,
+    "operation": "reverse",
+    "symbols": [
+      "B",
+      "A",
+      "C"
+    ],
+    "expected": "C A B",
+    "generated": "C B A\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 157,
+    "operation": "rotate right",
+    "symbols": [
+      "D",
+      "B",
+      "A"
+    ],
+    "expected": "A D B",
+    "generated": "A B D\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 158,
+    "operation": "rotate left",
+    "symbols": [
+      "C",
+      "G",
+      "D"
+    ],
+    "expected": "G D C",
+    "generated": "D C G\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 159,
+    "operation": "reverse",
+    "symbols": [
+      "D",
+      "G",
+      "H"
+    ],
+    "expected": "H G D",
+    "generated": "H G D\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 160,
+    "operation": "rotate right",
+    "symbols": [
+      "G",
+      "A",
+      "C"
+    ],
+    "expected": "C G A",
+    "generated": "C A G\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 161,
+    "operation": "reverse",
+    "symbols": [
+      "D",
+      "H",
+      "F"
+    ],
+    "expected": "F H D",
+    "generated": "F H D\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 162,
+    "operation": "rotate left",
+    "symbols": [
+      "C",
+      "E",
+      "F"
+    ],
+    "expected": "E F C",
+    "generated": "F E C\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 163,
+    "operation": "reverse",
+    "symbols": [
+      "D",
+      "F",
+      "H"
+    ],
+    "expected": "H F D",
+    "generated": "H F D\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 164,
+    "operation": "reverse",
+    "symbols": [
+      "E",
+      "D",
+      "B"
+    ],
+    "expected": "B D E",
+    "generated": "B D E\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 165,
+    "operation": "rotate left",
+    "symbols": [
+      "D",
+      "F",
+      "B"
+    ],
+    "expected": "F B D",
+    "generated": "B F D\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 166,
+    "operation": "rotate right",
+    "symbols": [
+      "D",
+      "G",
+      "C"
+    ],
+    "expected": "C D G",
+    "generated": "C G D\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 167,
+    "operation": "rotate right",
+    "symbols": [
+      "F",
+      "H",
+      "D"
+    ],
+    "expected": "D F H",
+    "generated": "D H F\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 168,
+    "operation": "rotate right",
+    "symbols": [
+      "C",
+      "H",
+      "E"
+    ],
+    "expected": "E C H",
+    "generated": "E H C\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 169,
+    "operation": "rotate right",
+    "symbols": [
+      "F",
+      "A",
+      "D"
+    ],
+    "expected": "D F A",
+    "generated": "D A F\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 170,
+    "operation": "reverse",
+    "symbols": [
+      "D",
+      "E",
+      "C"
+    ],
+    "expected": "C E D",
+    "generated": "C E D\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 171,
+    "operation": "reverse",
+    "symbols": [
+      "E",
+      "B",
+      "D"
+    ],
+    "expected": "D B E",
+    "generated": "D B E\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 172,
+    "operation": "rotate left",
+    "symbols": [
+      "B",
+      "F",
+      "A"
+    ],
+    "expected": "F A B",
+    "generated": "A F B\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 173,
+    "operation": "rotate right",
+    "symbols": [
+      "G",
+      "A",
+      "C"
+    ],
+    "expected": "C G A",
+    "generated": "C A G\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 174,
+    "operation": "rotate right",
+    "symbols": [
+      "G",
+      "H",
+      "D"
+    ],
+    "expected": "D G H",
+    "generated": "D H G\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 175,
+    "operation": "rotate right",
+    "symbols": [
+      "E",
+      "G",
+      "D"
+    ],
+    "expected": "D E G",
+    "generated": "D E G\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 176,
+    "operation": "rotate left",
+    "symbols": [
+      "E",
+      "A",
+      "G"
+    ],
+    "expected": "A G E",
+    "generated": "A G E\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 177,
+    "operation": "rotate right",
+    "symbols": [
+      "F",
+      "G",
+      "E"
+    ],
+    "expected": "E F G",
+    "generated": "E F G\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 178,
+    "operation": "rotate left",
+    "symbols": [
+      "E",
+      "C",
+      "A"
+    ],
+    "expected": "C A E",
+    "generated": "A C E\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 179,
+    "operation": "rotate left",
+    "symbols": [
+      "B",
+      "D",
+      "A"
+    ],
+    "expected": "D A B",
+    "generated": "A B D\n\nSequence: C D E",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 180,
+    "operation": "reverse",
+    "symbols": [
+      "G",
+      "B",
+      "A"
+    ],
+    "expected": "A B G",
+    "generated": "A B G\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 181,
+    "operation": "reverse",
+    "symbols": [
+      "D",
+      "G",
+      "H"
+    ],
+    "expected": "H G D",
+    "generated": "H G D\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 182,
+    "operation": "reverse",
+    "symbols": [
+      "F",
+      "E",
+      "A"
+    ],
+    "expected": "A E F",
+    "generated": "A E F\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 183,
+    "operation": "reverse",
+    "symbols": [
+      "A",
+      "C",
+      "F"
+    ],
+    "expected": "F C A",
+    "generated": "F C A\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 184,
+    "operation": "rotate left",
+    "symbols": [
+      "G",
+      "H",
+      "F"
+    ],
+    "expected": "H F G",
+    "generated": "F G H\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 185,
+    "operation": "reverse",
+    "symbols": [
+      "F",
+      "E",
+      "G"
+    ],
+    "expected": "G E F",
+    "generated": "G E F\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 186,
+    "operation": "reverse",
+    "symbols": [
+      "E",
+      "F",
+      "G"
+    ],
+    "expected": "G F E",
+    "generated": "G F E\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 187,
+    "operation": "rotate left",
+    "symbols": [
+      "G",
+      "F",
+      "C"
+    ],
+    "expected": "F C G",
+    "generated": "F C G\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 188,
+    "operation": "reverse",
+    "symbols": [
+      "A",
+      "E",
+      "C"
+    ],
+    "expected": "C E A",
+    "generated": "C E A\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 189,
+    "operation": "reverse",
+    "symbols": [
+      "D",
+      "F",
+      "E"
+    ],
+    "expected": "E F D",
+    "generated": "E F D\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 190,
+    "operation": "rotate right",
+    "symbols": [
+      "B",
+      "F",
+      "E"
+    ],
+    "expected": "E B F",
+    "generated": "E F B\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 191,
+    "operation": "reverse",
+    "symbols": [
+      "C",
+      "G",
+      "E"
+    ],
+    "expected": "E G C",
+    "generated": "E G C\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 192,
+    "operation": "rotate right",
+    "symbols": [
+      "A",
+      "E",
+      "G"
+    ],
+    "expected": "G A E",
+    "generated": "G E A\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 193,
+    "operation": "rotate left",
+    "symbols": [
+      "H",
+      "C",
+      "D"
+    ],
+    "expected": "C D H",
+    "generated": "D C H\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 194,
+    "operation": "reverse",
+    "symbols": [
+      "H",
+      "A",
+      "C"
+    ],
+    "expected": "C A H",
+    "generated": "C A H\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  },
+  {
+    "id": 195,
+    "operation": "rotate left",
+    "symbols": [
+      "F",
+      "B",
+      "D"
+    ],
+    "expected": "B D F",
+    "generated": "D B F\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 196,
+    "operation": "rotate right",
+    "symbols": [
+      "D",
+      "B",
+      "A"
+    ],
+    "expected": "A D B",
+    "generated": "A B D\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 197,
+    "operation": "rotate right",
+    "symbols": [
+      "C",
+      "F",
+      "H"
+    ],
+    "expected": "H C F",
+    "generated": "H F C\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 198,
+    "operation": "rotate right",
+    "symbols": [
+      "B",
+      "C",
+      "D"
+    ],
+    "expected": "D B C",
+    "generated": "D C B\n\nSequence: A B C",
+    "exact": false,
+    "terminated": false
+  },
+  {
+    "id": 199,
+    "operation": "reverse",
+    "symbols": [
+      "E",
+      "G",
+      "D"
+    ],
+    "expected": "D G E",
+    "generated": "D G E\n\nSequence: A B C",
+    "exact": true,
+    "terminated": false
+  }
+]

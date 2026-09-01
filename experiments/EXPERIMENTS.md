@@ -13,6 +13,14 @@ Build a learned carrier whose internal states compose under causal transplantati
 
 ---
 
+## Phase 4 attempt — KV command-slot transplant (2026-09-01, killed at eligibility)
+
+Test whether frozen Qwen3-0.6B-Base admits modular KV-level command execution. Distance-from-claim: 1 (modular execution is prerequisite for native algebra). Codex direction R1+R2: engineering falsification, not native math.
+
+- **permutation_eligibility_v1 — INELIGIBLE (kills 4-launch program)** (`results/permutation_eligibility_v1/eligibility.json`, `cases.json`). 200 CPU forwards, 318s. Three-item permutation (rotate left/right/reverse) with fixed 3-shot prompt, 8-symbol pool. Overall accuracy 48.0% (gate >=95%), termination 0.5% (gate >=95%). Per-op: rotate left 13.4%, rotate right 34.3%, reverse 97.0%. Model can reverse but cannot track cyclic rotation. Kill condition fires. No Launch 2-4. Direction dead.
+
+---
+
 ## Phase 2 — Non-R^n behavioral algebra (2026-08-31 →)
 
 Instrument: logit lens (apply model's final layernorm + unembedding at each layer) + sqrt(JSD) as behavioral distance. Model: Qwen3-0.6B (28 layers, 1024 hidden dim), CPU-only. Synthetic fact-worlds (2- or 3-entity, controlled assignments).

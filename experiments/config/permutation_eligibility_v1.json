@@ -1,0 +1,19 @@
+{
+  "experiment": "permutation_eligibility_v1",
+  "description": "Launch 1/4: three-item permutation baseline eligibility for Qwen3-0.6B-Base. Kill task if overall acc < 95% or per-op acc < 90%.",
+  "model_id": "Qwen/Qwen3-0.6B-Base",
+  "device": "cpu",
+  "n_cases": 200,
+  "seed": 42,
+  "max_new_tokens": 10,
+  "operations": ["rotate left", "rotate right", "reverse"],
+  "symbol_pool": ["A","B","C","D","E","F","G","H"],
+  "few_shot_symbols": ["J","K","L","X","Y","Z","P","Q","R"],
+  "gates": {
+    "overall_accuracy": 0.95,
+    "overall_termination": 0.95,
+    "per_op_accuracy": 0.90
+  },
+  "scientific_question": "Can Qwen3-0.6B-Base execute three-item permutations (rotate left, rotate right, reverse) at >= 95% accuracy with a fixed few-shot prompt? Eligibility gate for KV command-slot transplant experiment.",
+  "kill_condition": "If either overall accuracy < 95% or any per-operation accuracy < 90%, kill the entire 4-launch program. No prompt repair."
+}
