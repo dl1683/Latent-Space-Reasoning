@@ -220,6 +220,135 @@ remaining layers — static trajectory metrics are too coarse.
 
 ---
 
+## Phase 2–5 breakpoints (2026-08-31 → 2026-09-01)
+
+Additional structural holes discovered across 60+ experiments on frozen
+Qwen3-0.6B-Base and learned architectures.
+
+---
+
+## BP-10: Composition is logit addition (terminal diagnostic, Gate I)
+
+**Assumption:** If two interventions compose (the combined effect produces
+the correct output), the model is performing some nontrivial nonlinear
+computation to integrate them.
+
+**Where it broke:** Terminal diagnostic Gate I. The logit-additive null
+l_a + l_b - l_0 explains 99.1% of the composition effect measured in
+RAC-0/RAC-1 (sqrt(JSD) = 0.0001 between predicted and actual composed
+distributions, 12/12 top-1 match). The "composition" is ordinary logit
+addition through the linear unembedding matrix.
+
+**What this tells us:** The unembedding is linear, so perturbations at
+hidden-state level produce approximately additive logit effects. The
+post-B20 nonlinear layers do NOT significantly mix the two steering
+directions. "Composition" through vector addition is just decoder
+competition — the two perturbations independently shift logits, and
+softmax picks the winner. Native composition (if it exists) must
+operate through a mechanism that is NOT reducible to logit addition.
+
+---
+
+## BP-11: No template-invariant response fibers (terminal diagnostic, Gate F)
+
+**Assumption:** States presenting the same fact in different wordings
+produce sufficiently similar response distributions that they can be
+treated as the same "place" in response space.
+
+**Where it broke:** Terminal diagnostic Gate F. No template pair has
+baseline sqrt(JSD) < 0.15 across 36 tested pairs (smallest gap: 0.19).
+The model's response law is highly presentation-dependent — different
+wordings of the same fact produce different distributions.
+
+**What this tells us:** In Qwen3-0.6B, there are no template-invariant
+response fibers at this task granularity. The model does not have a
+"canonical response" for a given fact — the response depends on HOW
+the fact was stated, not just WHAT was stated. Native math must either
+work with presentation-dependent response laws or find/build a model
+where presentation invariance holds.
+
+---
+
+## BP-12: Circuit selection in learned models (LAC-0)
+
+**Assumption:** A model trained to compose actions will learn a single
+compositional mechanism.
+
+**Where it broke:** LAC-0 (learned action carrier, 739K params, 3 seeds).
+Different weight initializations learn fundamentally different
+capabilities: default init → endpoint composition (96%) but 0%
+sequential; Xavier init → sequential execution (95%) but 34% composed
+carriers. These are different optimization basins. Neither passes the
+complete composition gate.
+
+**What this tells us:** Composition may have multiple incompatible
+realizations in neural parameter space. Training doesn't converge to
+"the" compositional solution — it finds one of several incomplete
+solutions depending on initialization. Native math must account for
+this multiplicity: the "algebra" of the learned system depends on
+which basin the optimizer fell into.
+
+---
+
+## BP-13: Capability floors (PSQ-1, permutation eligibility)
+
+**Assumption:** A language model can track state through prompts if
+the prompts clearly describe state transitions.
+
+**Where it broke:** Every tested model size fails the two-dial world
+(Z8×Z8, 64 states, Python-completion) capability gate (≥95%): 0.6B
+(48%), 1.7B (50-54%), 4B (56%), 8B (55.5%), 8B-Instruct (50-64%).
+Permutation eligibility: 48% overall, with only "reverse" working (97%);
+cyclic rotations fail (13-34%).
+
+**What this tells us:** Small-to-medium base models cannot track
+multi-step state evolution through prompts. There is a CAPABILITY
+FLOOR below which native mathematical structure cannot be tested —
+the model doesn't have the behavioral interface. Any program seeking
+native math in frozen models must first confirm the model can
+reliably perform the underlying task.
+
+---
+
+## BP-14: Selectivity is verbalizer-sufficient (OSQ-1)
+
+**Assumption:** Query-selective processing in late layers reflects
+structured computation (a behavioral algebra, attention routing, or
+state-dependent processing).
+
+**Where it broke:** OSQ-1 (observational selectivity quotient). The
+62× late-layer amplification is real (S(25)=0.633, G(25)=0.633,
+R(25)=0.785) but coarse-graining to 3-bin (v0, v1, rest) accounts
+for 100% of the selectivity signal (V=1.01). The selectivity is
+entirely ordinary answer-token routing through the verbalizer.
+
+**What this tells us:** What looks like "structured computation" in
+the logit lens may be entirely explained by token-level routing to
+the answer vocabulary. The verbalizer null (does coarse answer-token
+routing explain everything?) must be tested before claiming behavioral
+algebra.
+
+---
+
+## BP-15: Bypass is destructive (ERQ-1)
+
+**Assumption:** Individual transformer blocks make independent
+contributions that can be removed (bypassed) to study their function.
+
+**Where it broke:** ERQ-1 (endogenous response quotient). Identity
+bypass at block 25 produces viable states for only 7/48 cells. The
+bypassed state is off-manifold — it's too destructive to serve as a
+scientific instrument.
+
+**What this tells us:** Transformer blocks are deeply coupled. The
+output of block N is precisely on the manifold that block N+1 expects.
+Removing a block doesn't give you "the representation without block
+N's contribution" — it gives you garbage. Native math must account
+for this coupling: layers are not independent operators that can be
+composed/decomposed at will.
+
+---
+
 ## Open questions from the breakpoints
 
 1. If composition happens through the forward pass (BP-5), can we
