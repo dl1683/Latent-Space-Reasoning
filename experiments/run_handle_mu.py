@@ -1282,20 +1282,43 @@ def _construct_counterfactual_state(donor_state: WorldState, recip_state: WorldS
 # Intervention evaluation (R4 rewrite: counterfactual resimulation)
 # ---------------------------------------------------------------------------
 
+def _directed_event_diff(cf_events: list, bl_events: list,
+                         target_handle: int) -> Optional[int]:
+    """First non-target handle whose event differs between branches."""
+    cf_set = {(e[0], e[1]) for e in cf_events}
+    bl_set = {(e[0], e[1]) for e in bl_events}
+    for event_type, handle_id in cf_set.symmetric_difference(bl_set):
+        if handle_id != target_handle:
+            return handle_id
+    return None
+
+
+def _event_code(events: list) -> int:
+    """Single event class code for model comparison."""
+    _map = {"pickup": 0, "unlock": 1, "activate": 2}
+    if not events:
+        return 3
+    return _map.get(events[0][0], 3)
+
+
 def evaluate_intervention(model, pairs: list, cfg: Config, model_type: str) -> dict:
-    """Slot-swap intervention with counterfactual resimulation (R4 fix)."""
-    if not pairs or model_type in ("flat_gru", "historyless"):
-        return {"skipped": True, "reason": f"no swap for {model_type}"}
+    """Slot-swap intervention with observe-patch-act boundary and directed contact (R5 fix)."""
+    if not pairs or model_type in ("flat_gru", "historyless", "control_b"):
+        return {"skipped": True, "reason": f"no slot swap for {model_type}"}
 
     model.eval()
     rd = _record_dim(cfg)
     dummy_rng = random.Random(0)
+    suffix_sentinel = 20
     results = {
         "n_pairs": len(pairs),
         "patch_integrity": [],
         "causal_consumption": [],
         "pre_contact_effects": [],
         "timing_errors": [],
+        "timing_misses": 0,
+        "timing_contacts": 0,
+        "by_cell": defaultdict(list),
         "by_level": defaultdict(list),
     }
 
@@ -1304,45 +1327,88 @@ def evaluate_intervention(model, pairs: list, cfg: Config, model_type: str) -> d
             dt, rt = pair.donor_traj, pair.recipient_traj
             ds, rs = pair.donor_step, pair.recipient_step
             suffix = pair.shared_suffix
+            if len(suffix) < 2:
+                continue
 
             donor_obs = torch.from_numpy(dt.obs_encoded).unsqueeze(0)
             recip_obs = torch.from_numpy(rt.obs_encoded).unsqueeze(0)
             donor_acts = torch.tensor(dt.actions, dtype=torch.long).unsqueeze(0)
             recip_acts = torch.tensor(rt.actions, dtype=torch.long).unsqueeze(0)
 
-            # Prefix: process through (o_{ds-1}, a_{ds-1})
+            # PREFIX: process through (o_{ds-1}, a_{ds-1})
             _, _, donor_hidden = model(donor_obs[:, :ds+1], donor_acts[:, :ds])
             _, _, recip_hidden = model(recip_obs[:, :rs+1], recip_acts[:, :rs])
 
             if donor_hidden is None or recip_hidden is None:
                 continue
 
+            # OBSERVE: assimilate o_ds with shared action suffix[0] (spec step 1)
+            act_ds = torch.tensor([suffix[0]], dtype=torch.long)
+            enc_donor = model.encoder(donor_obs[:, ds])
+            enc_recip = model.encoder(recip_obs[:, ds])
+            donor_hidden = model.forward_step(enc_donor, act_ds, donor_hidden)
+            recip_hidden = model.forward_step(enc_recip, act_ds, recip_hidden)
+
+            # PATCH: donor target → recipient target (spec step 2)
             d_idx = _carrier_slot_for_handle(dt.episode_carrier_map, pair.target_handle)
             r_idx = _carrier_slot_for_handle(rt.episode_carrier_map, pair.target_handle)
-
-            # Patch: donor target content → recipient target carrier
             hybrid_hidden = recip_hidden.clone()
             hybrid_hidden[0, r_idx] = donor_hidden[0, d_idx]
+            h_recip = recip_hidden.clone()
 
-            # Construct counterfactual world: recipient with donor's target handle
+            # PREDICT from patched hidden (spec step 3 — event prediction at step ds)
+            _, ep_hybrid_0 = model.head(hybrid_hidden)
+            _, ep_recip_0 = model.head(h_recip)
+
+            # TRANSITION both simulator branches with suffix[0] (spec step 4)
             cf_state = _construct_counterfactual_state(
-                dt.states[ds], rt.states[ds], pair.target_handle)
+                dt.states[ds], rt.states[rs], pair.target_handle)
             bl_state = copy.deepcopy(rt.states[rs])
             cf_world = KeyLockGridWorld(rt.level_config)
             bl_world = KeyLockGridWorld(rt.level_config)
+            cf_state, cf_events_0 = cf_world.step(cf_state, suffix[0])
+            bl_state, bl_events_0 = bl_world.step(bl_state, suffix[0])
 
-            h_hybrid = hybrid_hidden.clone()
-            h_recip = recip_hidden.clone()
+            # --- Evaluate step ds (the intervention step) ---
+            p_hyb = F.softmax(ep_hybrid_0, dim=-1)
+            p_rec = F.softmax(ep_recip_0, dim=-1)
+            tv_0 = 0.5 * (p_hyb - p_rec).abs().sum().item()
 
+            contact_step = None
+            affected_handle = None
+            first_tv_crossing = None
             pre_contact_false = 0
             pre_contact_total = 0
-            contact_step = None
-            first_tv_crossing = None
 
-            for si, action in enumerate(suffix):
+            dd_0 = _directed_event_diff(cf_events_0, bl_events_0, pair.target_handle)
+            if dd_0 is not None:
+                contact_step = 0
+                affected_handle = dd_0
+
+            if tv_0 > cfg.epsilon_tv:
+                first_tv_crossing = 0
+
+            if contact_step is None:
+                if tv_0 > cfg.epsilon_tv:
+                    pre_contact_false += 1
+                pre_contact_total += 1
+            else:
+                cf_code = _event_code(cf_events_0)
+                results["causal_consumption"].append({
+                    "correct": int(ep_hybrid_0.argmax(dim=-1).item() == cf_code),
+                    "recip_correct": int(ep_recip_0.argmax(dim=-1).item() == cf_code),
+                    "level": pair.level_seed,
+                    "handle": pair.target_handle,
+                    "cell": (pair.target_handle, affected_handle),
+                })
+
+            # --- Continue suffix from step 1 (spec steps 5-6 loop) ---
+            h_hybrid = hybrid_hidden.clone()
+            h_recip_loop = h_recip.clone()
+
+            for si, action in enumerate(suffix[1:], start=1):
                 act_t = torch.tensor([action], dtype=torch.long)
 
-                # Observations from counterfactual and baseline simulators
                 cf_obs_enc, _ = cf_world.observe_encoded(
                     cf_state, dummy_rng, cfg.n_slots, rd,
                     cfg.max_pos_offset, cfg.n_object_types, cfg.n_status_values,
@@ -1355,63 +1421,67 @@ def evaluate_intervention(model, pairs: list, cfg: Config, model_type: str) -> d
                 cf_obs_t = torch.from_numpy(cf_obs_enc).unsqueeze(0)
                 bl_obs_t = torch.from_numpy(bl_obs_enc).unsqueeze(0)
 
-                # Hybrid gets counterfactual observations; baseline gets baseline
-                _, ep_hybrid, h_hybrid = model.forward_step_with_hidden(
+                _, ep_h, h_hybrid = model.forward_step_with_hidden(
                     cf_obs_t, act_t, h_hybrid)
-                _, ep_recip, h_recip = model.forward_step_with_hidden(
-                    bl_obs_t, act_t, h_recip)
+                _, ep_r, h_recip_loop = model.forward_step_with_hidden(
+                    bl_obs_t, act_t, h_recip_loop)
 
-                # Transition both simulator branches
-                cf_state, cf_events = cf_world.step(cf_state, action)
-                bl_state, bl_events = bl_world.step(bl_state, action)
-                cf_event = cf_world.encode_events(cf_events)[0]
-                bl_event = bl_world.encode_events(bl_events)[0]
+                cf_state, cf_ev = cf_world.step(cf_state, action)
+                bl_state, bl_ev = bl_world.step(bl_state, action)
 
-                # TV between hybrid and recipient predictions
-                p_hybrid = F.softmax(ep_hybrid, dim=-1)
-                p_recip = F.softmax(ep_recip, dim=-1)
-                tv_hr = 0.5 * (p_hybrid - p_recip).abs().sum().item()
+                p_h = F.softmax(ep_h, dim=-1)
+                p_r = F.softmax(ep_r, dim=-1)
+                tv = 0.5 * (p_h - p_r).abs().sum().item()
 
-                # Detect simulator divergence (first contact)
-                if cf_event != bl_event and contact_step is None:
-                    contact_step = si
+                if contact_step is None:
+                    dd = _directed_event_diff(cf_ev, bl_ev, pair.target_handle)
+                    if dd is not None:
+                        contact_step = si
+                        affected_handle = dd
 
-                # Track model TV crossing
-                if tv_hr > cfg.epsilon_tv and first_tv_crossing is None:
+                if tv > cfg.epsilon_tv and first_tv_crossing is None:
                     first_tv_crossing = si
 
                 if contact_step is None:
-                    if tv_hr > cfg.epsilon_tv:
+                    if tv > cfg.epsilon_tv:
                         pre_contact_false += 1
                     pre_contact_total += 1
                 elif si == contact_step:
-                    hybrid_event = ep_hybrid.argmax(dim=-1).item()
-                    recip_event = ep_recip.argmax(dim=-1).item()
-
+                    cf_code = _event_code(cf_ev)
                     results["causal_consumption"].append({
-                        "correct": int(hybrid_event == cf_event),
-                        "recip_correct": int(recip_event == cf_event),
+                        "correct": int(ep_h.argmax(dim=-1).item() == cf_code),
+                        "recip_correct": int(ep_r.argmax(dim=-1).item() == cf_code),
                         "level": pair.level_seed,
                         "handle": pair.target_handle,
+                        "cell": (pair.target_handle, affected_handle),
                     })
 
             if pre_contact_total > 0:
                 results["pre_contact_effects"].append(
                     pre_contact_false / pre_contact_total)
 
-            # Missing TV crossing = timing miss (spec: never dropped)
             if contact_step is not None:
+                results["timing_contacts"] += 1
                 if first_tv_crossing is not None:
                     results["timing_errors"].append(
                         abs(first_tv_crossing - contact_step))
                 else:
-                    results["timing_errors"].append(contact_step + 1)
+                    results["timing_misses"] += 1
+                    results["timing_errors"].append(suffix_sentinel)
 
-            results["by_level"][pair.level_seed].append({
+            ah = affected_handle if affected_handle is not None else -1
+            cell_key = f"{pair.target_handle}->{ah}"
+            results["by_cell"][cell_key].append({
+                "level": pair.level_seed,
+                "contact_found": contact_step is not None,
+            })
+            results["by_level"][str(pair.level_seed)].append({
                 "target_handle": pair.target_handle,
                 "contact_found": contact_step is not None,
             })
 
+    results["by_cell"] = dict(results["by_cell"])
+    results["by_level"] = dict(results["by_level"])
     return results
 
 
@@ -1653,6 +1723,24 @@ def evaluate_gates(results: dict, cfg: Config) -> dict:
     if not dense_interv.get("skipped", False):
         cc = dense_interv.get("causal_consumption", [])
         if cc:
+            # Per-cell macro reduction: compute accuracy per (source, target) cell, then average
+            from collections import defaultdict as _dd
+            cell_data = _dd(list)
+            for c in cc:
+                cell_key = tuple(c.get("cell", (c["handle"], -1)))
+                cell_data[cell_key].append(c)
+
+            cell_accs = []
+            cell_details = {}
+            for cell_key, entries in cell_data.items():
+                n = len(entries)
+                acc = sum(e["correct"] for e in entries) / n if n else 0
+                cell_accs.append(acc)
+                cell_details[str(cell_key)] = {"n": n, "accuracy": acc}
+
+            macro_acc = float(np.mean(cell_accs)) if cell_accs else 0
+            n_cells = len(cell_accs)
+
             cc_correct = [c["correct"] for c in cc]
             cc_levels = [c["level"] for c in cc]
             cc_boot = clustered_bootstrap_ci(cc_correct, cc_levels, cfg.bootstrap_n, cfg.bootstrap_ci)
@@ -1661,30 +1749,46 @@ def evaluate_gates(results: dict, cfg: Config) -> dict:
             recip_boot = clustered_bootstrap_ci(recip_correct, cc_levels, cfg.bootstrap_n, cfg.bootstrap_ci)
 
             improvement = (cc_boot["mean"] or 0) - (recip_boot["mean"] or 0)
+            improvement_vals = [c["correct"] - c["recip_correct"] for c in cc]
+            imp_boot = clustered_bootstrap_ci(improvement_vals, cc_levels, cfg.bootstrap_n, cfg.bootstrap_ci)
 
             gates["causal_consumption"] = {
+                "macro_accuracy": macro_acc,
+                "n_cells": n_cells,
+                "cell_details": cell_details,
                 "hybrid_accuracy": cc_boot,
                 "recipient_accuracy": recip_boot,
                 "improvement": improvement,
-                "pass": ((cc_boot["mean"] or 0) >= 0.80
+                "improvement_lb": imp_boot.get("ci_lower", 0) or 0,
+                "pass": (macro_acc >= 0.80
                          and (cc_boot["ci_lower"] or 0) >= 0.70
-                         and improvement >= 0.30),
+                         and improvement >= 0.30
+                         and (imp_boot.get("ci_lower", 0) or 0) >= 0.20),
             }
 
         pre = dense_interv.get("pre_contact_effects", [])
         if pre:
             false_rate = float(np.mean(pre))
+            pre_levels = list(range(len(pre)))
+            pre_boot = clustered_bootstrap_ci(pre, pre_levels, cfg.bootstrap_n, cfg.bootstrap_ci)
             gates["shielding"] = {
                 "false_effect_rate": false_rate,
-                "pass": false_rate <= 0.10,
+                "ub": pre_boot.get("ci_upper", 1.0) or 1.0,
+                "pass": false_rate <= 0.10 and (pre_boot.get("ci_upper", 1.0) or 1.0) <= 0.15,
             }
 
         timing = dense_interv.get("timing_errors", [])
+        timing_misses = dense_interv.get("timing_misses", 0)
+        timing_contacts = dense_interv.get("timing_contacts", 0)
+        miss_rate = timing_misses / timing_contacts if timing_contacts > 0 else 1.0
         if timing:
             gates["timing"] = {
                 "median_error": float(np.median(timing)),
                 "p90_error": float(np.percentile(timing, 90)),
-                "pass": np.median(timing) == 0 and np.percentile(timing, 90) <= 1,
+                "miss_rate": miss_rate,
+                "pass": (np.median(timing) == 0
+                         and np.percentile(timing, 90) <= 1
+                         and miss_rate <= 0.20),
             }
 
     # Composition gate
