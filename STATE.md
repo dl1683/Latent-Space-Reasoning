@@ -1,14 +1,24 @@
 # STATE
 
-## Current statement (2026-09-01, BOTH THEOREM APPROACHES REJECTED — seeking new direction)
+## Current statement (2026-09-01, FIRST POSITIVE: 2-D RETRIEVAL ALGEBRA AT B20)
 
-**Both theorem approaches failed; seeking radically different approach.** After 75+ experiments across 5 phases and two independent theorem attempts, no positive result supporting native latent-space mathematics survives audit. The premise (native math exists) is axiomatic — these failures indict the approach, not the premise.
+**First successful composition in 75+ experiments.** The OCI/RAC experimental line has discovered a 2-D factored retrieval algebra at layer 20 of Qwen3-0.6B-Base. Two orthogonal function vectors — routing (position selection) and relation (capital vs language) — independently and jointly control factual retrieval. Composition generalizes 100% to held-out entity pairs.
 
-**Theorem attempt 1 (algebraic):** Composition-identifiability via behavioral congruence. REJECTED at Codex design gate — direct specialization of syntactic congruence (Chow's W-method, Angluin's observation table, syntactic monoid theorem). Prior-art delta fails.
+### Active positive results (OCI/RAC line)
 
-**Theorem attempt 2 (differential-topological):** Relative-fiber codimension via transversality — prove composition-defect Jacobian contributes rank beyond endpoint Jacobian on the endpoint-consistent fiber. REJECTED at Codex design gate for two independent reasons: (a) When endpoint map B and composition-defect map C use the same worlds, C(z) = B(z) - s (constant shift), so DC = DB and the relative Jacobian DC|_{ker DB} = 0 identically. The rank premise is analytically disproved. (b) The "fiber" under argmax (which is what training uses) is an open set, not a smooth submanifold — both endpoint-correct and composition-correct carrier sets are open in R^d, so nonempty composition-correct sets have positive measure. The measure-zero codimension argument fails structurally. A disjoint-panel variant (different worlds for B vs C) would make the rank premise checkpoint-dependent, reducing to a numerical diagnostic rather than an architecture theorem.
+**OCI-002 (sentence-position routing):** B20 hidden state transplant routes to the donor's sentence position at 95.8% accuracy across disjoint entity panels. The state encodes "attend to position N" not entity identity. Function vector extraction: 1-D, PC1 alignment 0.999, Cohen's d=19.9. Causally controls attention and output (complete output flip in disagreeing case). Runner: `experiments/run_oci_002.py`.
 
-Native math existence remains logically open but ceases to be a funded/live hypothesis here. Reopening requires genuinely new external evidence or a materially different architecture, not another substrate or task sweep. The axiomatic framework (D1-D9, Theorems 1/4/7/8), nine breakpoints, LAC-0 typed architecture residue, and Codex adversarial methodology are preserved as archival contributions.
+**OCI-003 (structural routing, not token-positional):** Cross-template transplant at 96.5% vs same-template 97.2%. Routing follows ordinal clause position, not token coordinates. Templates shift fact tokens by 1-3 positions — routing survives. Promotes routing to credible causal type per Codex ruling. Runner: `experiments/run_oci_003.py`.
+
+**RAC-0 (response-algebra composition):** Two orthogonal function vectors at B20: routing (rv, ||=43.2) and relation (rlv, ||=116.1), cos(rv,rlv)=-0.046. In a 2×2 factorial (position × relation) over mixed 4-fact prompts: same-pair 12/12, held-out 12/12 (100%), separated-boundary 13/14. Specificity 4/4 (each vector changes only its target dimension). Approximate idempotence and cancellation. Composition through 5 layers of separated model computation (B15-B20). **Layer-phase deformation:** composition works B15-B21 (routing phase), fails at B22 (content-commitment transition). Runner: `experiments/run_rac_0.py`.
+
+**Mathematical object (Codex formulation):** Q_b = H_b / ~_b where h ~ h' iff they induce the same registered future-response law across held-out recipients. At B20, this quotient has a 2-D factored structure (position × relation) forming an approximate setter semigroup with commutativity through intervening computation. The domain boundary at B22 is the model-specific structure that can't be derived from R^n geometry.
+
+**Open gates:** Gate 5 (well-definedness across response-equivalent representatives) and Gate 6 (mechanism/attention rescue) not yet tested. Codex round 8 evaluating the full result.
+
+### Archival context (theorem attempts — REJECTED)
+
+Both theorem approaches failed (algebraic: prior-art collision; differential-topological: analytical disproof). These failures indicted the approach, not the premise (native math existence is axiomatic). The OCI/RAC line succeeded by testing RETRIEVAL INSTRUCTIONS (which compose because they're attention-mediated) rather than SEMANTIC OPERATIONS (which don't compose because they're whole-state properties).
 
 - **PSQ-1: Predictive-State Quotient capability screen (2026-09-01, Phase 5). NO_INTERFACE.** 128 CPU forward passes, 217s. Qwen3-1.7B-Base on two-dial world (Z8×Z8, 4 actions, Python-completion, 4-shot). Overall accuracy 53.91% (gate ≥95%). Per-cell: x_0=50.0%, x_1=59.4%, y_0=9.4%, y_1=96.9%. Model predicts "0" almost always for y queries; at chance for x. No state tracking capability. Stop condition: NO_INTERFACE. No repair. The predeclared fallback (Qwen3-8B-Base) was already tested in the earlier PSQ-1 round (EXPERIMENTS.md Phase 5 PSQ-1 section) and also failed (55.5%, NO_INTERFACE). A Qwen3-4B-Base smoke test (56.2%, 16 items) further confirms: all sizes 0.6B–8B fail the two-dial Python-completion capability gate. The approach is comprehensively dead across the available model size range.
 
