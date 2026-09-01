@@ -1,0 +1,81 @@
+{
+  "exp": "endogenous_action_carrier_v1",
+  "ts": "2026-09-01T03:22:50.292420",
+  "elapsed_s": 62.4,
+  "training": [
+    {
+      "seed": 42,
+      "n_bat": 1250,
+      "elapsed": 18.2,
+      "final_loss": 0.002271
+    },
+    {
+      "seed": 137,
+      "n_bat": 1250,
+      "elapsed": 16.7,
+      "final_loss": 0.006875
+    },
+    {
+      "seed": 2026,
+      "n_bat": 1250,
+      "elapsed": 20.4,
+      "final_loss": 0.006619
+    }
+  ],
+  "evaluation": [
+    {
+      "seed": 42,
+      "accuracy": {
+        "1": 1.0,
+        "2": 0.999496,
+        "3": 0.995464,
+        "4": 0.980343
+      },
+      "accuracy_overall": 0.993826,
+      "self_patch_max": 0.0,
+      "same_place_rate": 1.0,
+      "same_place_jsd_pass": 0.928571,
+      "action_descent": 0.955556,
+      "three_way_target": 1.0,
+      "three_way_exc_host": 0.997153,
+      "three_way_exc_donor": 0.996497,
+      "three_way_n": 41
+    },
+    {
+      "seed": 137,
+      "accuracy": {
+        "1": 1.0,
+        "2": 1.0,
+        "3": 0.998488,
+        "4": 0.993952
+      },
+      "accuracy_overall": 0.99811,
+      "self_patch_max": 0.0,
+      "same_place_rate": 1.0,
+      "same_place_jsd_pass": 1.0,
+      "action_descent": 1.0,
+      "three_way_target": 1.0,
+      "three_way_exc_host": 0.994927,
+      "three_way_exc_donor": 0.994844,
+      "three_way_n": 35
+    },
+    {
+      "seed": 2026,
+      "accuracy": {
+        "1": 0.998992,
+        "2": 0.998992,
+        "3": 0.995968,
+        "4": 0.989415
+      },
+      "accuracy_overall": 0.995842,
+      "self_patch_max": 0.0,
+      "same_place_rate": 1.0,
+      "same_place_jsd_pass": 1.0,
+      "action_descent": 1.0,
+      "three_way_target": 1.0,
+      "three_way_exc_host": 0.988965,
+      "three_way_exc_donor": 0.994176,
+      "three_way_n": 41
+    }
+  ]
+}

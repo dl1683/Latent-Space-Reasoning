@@ -1,0 +1,31 @@
+{
+  "experiment": "endogenous_action_carrier_v1",
+  "n_states": 6,
+  "n_actions": 3,
+  "hidden_dim": 256,
+  "n_heads": 4,
+  "world_encoder_layers": 2,
+  "vocab_pool_size": 120,
+  "train_word_lengths": [1, 2, 3],
+  "test_word_lengths": [1, 2, 3, 4],
+  "train_forwards_per_seed": 40000,
+  "eval_forwards_per_seed": 8000,
+  "integrity_forwards_per_seed": 2000,
+  "batch_size": 32,
+  "lr": 3e-4,
+  "seeds": [42, 137, 2026],
+  "bootstrap_seed": 51203,
+  "bootstrap_resamples": 10000,
+  "gates": {
+    "held_out_accuracy": 0.95,
+    "self_patch_max": 1e-5,
+    "same_place_interchangeability": 0.95,
+    "same_place_jsd_ub": 0.05,
+    "same_place_jsd_rate": 0.90,
+    "action_descent": 0.95,
+    "three_way_target_following": 0.85,
+    "three_way_target_following_lb": 0.75,
+    "three_way_target_exceeds": 0.20,
+    "three_way_target_exceeds_lb": 0.10
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "exp": "endogenous_action_carrier_v1",
+  "ts": "2026-09-01T03:23:12.047959",
+  "verdict": "ENDOGENOUS_ACTION_CARRIER_PASS",
+  "gates": {
+    "held_out_acc": {
+      "ok": true,
+      "per_seed": {
+        "42": true,
+        "137": true,
+        "2026": true
+      }
+    },
+    "self_patch": {
+      "ok": true,
+      "per_seed": {
+        "42": true,
+        "137": true,
+        "2026": true
+      }
+    },
+    "same_place": {
+      "ok": true,
+      "per_seed": {
+        "42": true,
+        "137": true,
+        "2026": true
+      }
+    },
+    "same_place_jsd": {
+      "ok": true,
+      "per_seed": {
+        "42": true,
+        "137": true,
+        "2026": true
+      }
+    },
+    "action_descent": {
+      "ok": true,
+      "per_seed": {
+        "42": true,
+        "137": true,
+        "2026": true
+      }
+    },
+    "three_way_follow": {
+      "ok": true,
+      "per_seed": {
+        "42": true,
+        "137": true,
+        "2026": true
+      }
+    },
+    "three_way_exceed": {
+      "ok": true,
+      "per_seed": {
+        "42": true,
+        "137": true,
+        "2026": true
+      }
+    }
+  },
+  "per_seed": [
+    {
+      "seed": 42,
+      "accuracy": {
+        "1": 1.0,
+        "2": 0.999496,
+        "3": 0.995464,
+        "4": 0.980343
+      },
+      "acc_all": 0.993826,
+      "self_patch": 0.0,
+      "same_place": 1.0,
+      "jsd_pass": 0.928571,
+      "descent": 0.955556,
+      "tw_target": 1.0,
+      "tw_eh": 0.997153,
+      "tw_ed": 0.996497,
+      "tw_n": 41
+    },
+    {
+      "seed": 137,
+      "accuracy": {
+        "1": 1.0,
+        "2": 1.0,
+        "3": 0.998488,
+        "4": 0.993952
+      },
+      "acc_all": 0.99811,
+      "self_patch": 0.0,
+      "same_place": 1.0,
+      "jsd_pass": 1.0,
+      "descent": 1.0,
+      "tw_target": 1.0,
+      "tw_eh": 0.994927,
+      "tw_ed": 0.994844,
+      "tw_n": 35
+    },
+    {
+      "seed": 2026,
+      "accuracy": {
+        "1": 0.998992,
+        "2": 0.998992,
+        "3": 0.995968,
+        "4": 0.989415
+      },
+      "acc_all": 0.995842,
+      "self_patch": 0.0,
+      "same_place": 1.0,
+      "jsd_pass": 1.0,
+      "descent": 1.0,
+      "tw_target": 1.0,
+      "tw_eh": 0.988965,
+      "tw_ed": 0.994176,
+      "tw_n": 41
+    }
+  ],
+  "elapsed_s": 62.4
+}

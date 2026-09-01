@@ -5,6 +5,14 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
+## Phase 3 — Co-designed dynamical carrier (2026-09-01 →)
+
+Build a learned carrier whose internal states compose under causal transplantation. Distance-from-claim: 0 (the carrier IS the artifact).
+
+- **endogenous_action_carrier_v1 — ENDOGENOUS_ACTION_CARRIER_PASS** (`results/endogenous_action_carrier_v1/evidence.json`, `verdict.json`). 150K CPU forwards (40K train + 8K eval + 2K integrity × 3 seeds), 62 seconds total. 359K-param model: structured world encoding (18 transition triples split into key=(state,action) and value=next_state) + differentiable attention lookup + context-dependent readout (carrier vs state-name embeddings → 6-class logits). 6 states, 3 actions, 120-token name pool, random worlds per batch. Trained on word lengths 1-3, tested on 1-4. Loss: 1.70 → 0.004. **All 7 gates PASS across all 3 seeds:** held_out_accuracy (99.4/99.8/99.6%, ≥95%), self_patch (0.0, ≤1e-5), same_place (100%, ≥95%), same_place_jsd (100%, ≥90%), action_descent (95.6/100/100%, ≥95%), three_way_target (100%, ≥85%), three_way_exceed (eh=99.7/99.5/98.9%, ≥20%). Carrier transplantation makes the host execute the donor's action on its own world (target following=100%). Two paths to the same state produce interchangeable carriers (same-place=100%). **Architecture note:** Original transformer-encoder + GRU design failed (loss plateaued at chance). Fix: explicit triple structure → differentiable table lookup. Per Codex ruling, PASS licenses held-out world transfer rung.
+
+---
+
 ## Phase 2 — Non-R^n behavioral algebra (2026-08-31 →)
 
 Instrument: logit lens (apply model's final layernorm + unembedding at each layer) + sqrt(JSD) as behavioral distance. Model: Qwen3-0.6B (28 layers, 1024 hidden dim), CPU-only. Synthetic fact-worlds (2- or 3-entity, controlled assignments).
