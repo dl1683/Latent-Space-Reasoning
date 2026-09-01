@@ -17,8 +17,8 @@ Using this instrument across 18 audited experiments, we've found that a small la
 | **Greedy congruence** | 97% | Same-place histories produce the same next-token prediction — the argmax algebra is real |
 | **Distributional congruence** | 0% | But the full output distributions *always* differ — every greedy fiber contains distinguishable states |
 | **Commitment bottleneck** | 0.05 bits | Entropy drops to near-zero at L25 (the model fully commits), then re-broadens to 5.5-7.7 bits |
-| **Synchronization idempotence** | 100% | Both S^W (world-conditioned) and S^G (observable) restatements are genuine algebraic retractions |
-| **Observable canonicalizer** | 100% observed descent | S^G, built from the model's own greedy answers alone, has perfect observed descent on the tested carrier |
+| **Synchronization idempotence** | 100% | Both S^W and S^G literal signature renderers are greedy-idempotent on the tested carrier (textual echo not ruled out) |
+| **Sequence/path dependence** | 70.8-89.6% | Two append sequences asserting the same corrected world produce different response laws — order matters |
 
 ## What we've found
 
@@ -48,10 +48,10 @@ The model supports a **coarse partial action algebra** of greedy commitments:
 - **Places** are greedy answer profiles (which entity gets which answer)
 - **Moves** are typed continuations: empty, neutral, correction, restatement
 - **Place preservation** is near-total for identity-like operations (100% empty, 95% neutral/restatement) and genuinely state-changing for corrections (35%)
-- **Synchronization** via canonical restatement is approximately idempotent: JSD(S, S²) ≈ 0.07, 100% greedy idempotence
-- **Two canonicalizers:** S^W (from experimenter-known world) and S^G (from the model's own observable greedy answers). S^G descends perfectly to the quotient; S^W fails for one cross-world fiber.
+- **Synchronization** via literal signature restatement is approximately idempotent: JSD(S, S²) ≈ 0.07, 100% greedy idempotence (textual echo not ruled out — an anti-echo alias control failed to provide evidence either way)
+- **Two renderers:** S^W (from experimenter-known world) and S^G (from the model's own observable greedy answers). Both are literal append operators; neither has been demonstrated as a semantic canonicalizer.
 
-The decisive test: does restatement commute with correction? **No — with either canonicalizer.** Both S^W and S^G show non-naturality: the correction/restatement square does not commute (JSD distance ~0.20, greedy commutativity 70.8-89.6%). Two update paths denoting the same corrected world produce different response laws. Prediction remains presentation-path dependent even when both paths have reached the same declarative world. S^G eliminates the objection that non-naturality depends on hidden experimenter information.
+The two append sequences yield different response laws despite ending with the same per-entity declared values (JSD distance ~0.20, greedy commutativity 70.8-89.6%), establishing sequence/path dependence under the tested operations. This does not rule out ordinary textual order or multiplicity effects — the two paths differ in assertion order, multiplicity, and token distance.
 
 A new finding: **correction itself does not reliably descend to the quotient** (58-80%). The same correction is ignored by some presentation orders and accepted by others — the fiber's distributional residual (invisible to argmax) affects how the model responds to further operations.
 
@@ -107,7 +107,7 @@ NOTEBOOK.md            Reverse-chronological running log
 
 **Phase 2** (active). Phase 1 (50 experiments, 2026-08-27 → 2026-08-31) established the nine breakpoints and the ℝⁿ trap. Phase 2 (17 experiments, 2026-08-31) builds genuinely non-ℝⁿ instruments and discovers the behavioral algebra.
 
-The central empirical claim (Codex-audited): *In a bounded three-fact prompt world in one small language model, greedy answer signatures form an approximate behavioral quotient with nontrivial predictive fibers. Two canonical restatements — one from the hidden world (S^W) and one from the model's own observable greedy answers (S^G) — are both approximately idempotent but non-natural with correction: two update paths denoting the same corrected world produce different response laws and, on held-out names, different greedy answers in 14 of 48 cases. The observable canonicalizer S^G descends perfectly to the quotient and eliminates the hidden-information objection.*
+The central empirical claim (Codex-audited): *In a bounded three-fact prompt world in one small language model, greedy answer signatures form an approximate behavioral quotient with nontrivial predictive fibers. Two literal signature renderers — one from the hidden world (S^W) and one from the model's own observable greedy answers (S^G) — are both greedy-idempotent (textual echo not ruled out). The two append sequences yield different response laws despite ending with the same per-entity declared values, establishing sequence/path dependence under the tested operations; this does not rule out ordinary textual order or multiplicity effects.*
 
 Current state: [`STATE.md`](STATE.md) · Running log: [`NOTEBOOK.md`](NOTEBOOK.md) · Phase 1 handoff: [`docs/HANDOFF_2026_08_30.md`](docs/HANDOFF_2026_08_30.md)
 

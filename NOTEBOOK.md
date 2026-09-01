@@ -4,32 +4,41 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
-## 2026-08-31T09:45 — Phase 4c anti-echo alias control: FAILS decisive gate
+## 2026-08-31T09:45 — Phase 4c anti-echo alias control: no anti-echo evidence (Codex REVISE)
 
-Five-arm control design (Codex design gate) testing whether S^G place preservation
-is semantic vs textual echo. Results against pre-registration gates:
+Five-arm control (Codex design gate). Results against pre-registration gates:
 
-**Gate 1 (PASS):** Decoy effective — recovery drops from ~100% to 16.7%/35.4%
-(registered/heldout), decoy adoption 83%/65%.
+**Gate 1 (PASS):** Appending a wrong direct anti-signature reduced recovery from
+100% to 16.7% registered and 35.4% held-out, with 83.3% and 64.6% decoy adoption.
 
-**Gate 3 (FAIL):** Faithful alias recovery (18.8%/29.2%) statistically
-indistinguishable from shuffled alias (20.8%/25.0%). Model does not resolve
-nonce aliases to override direct decoy. Required ≥30pp separation.
+**Gate 3 (FAIL):** The faithful alias arm did not exceed either comparator by
+the predeclared 30-point margin; Phase 4c therefore provides no anti-echo evidence.
 
-**Subtlety:** Direct R(g) placed AFTER decoy recovers only 48% (not 100%),
-so the model is NOT a pure last-mention copier either — it integrates information
-from multiple competing assignments with recency bias. But it cannot resolve
-indirect (alias-based) references to override direct ones.
+**Direct arm:** A subsequent direct R(g) recovered 47.9%, ruling out a
+deterministic latest-explicit-assignment rule on these prompts.
 
-**Alias-only (no decoy):** 85%/94% recovery. Aliases work in isolation but
-cannot compete with direct assignments.
+**Alias-only:** Adding the faithful alias suffix without a decoy preserved
+85.4–93.8% of the pre-suffix signature. Does not prove alias comprehension —
+base prompt already supports the target signature.
 
-**Impact on claims:** S^G place preservation (100%) is explained by R(g) being
-the only direct assignment in the text — consistent with recency-weighted
-direct-mention integration, not semantic algebraic preservation. However, the
-non-naturality result (v2 experiment, 70.8-89.6% commutativity) is NOT explained
-by pure textual echo, since both paths in that experiment end at the same
-corrected world via the same last mentions.
+**Implementation defects (Codex):** Shuffled alias arm uses out-of-type values
+(disjoint entity domains); alias grammar differs from direct format; aliases
+not counterbalanced. This particular alias renderer did not override the direct
+decoy; this does not prove the model cannot resolve aliases.
+
+**Codex verdict on S^G narrative:** S^G survives as a literal append operator
+(32/32 preservation, 100% descent, idempotence on this carrier). S^G as a
+semantic canonicalizer, retraction, or native latent-space invariant does NOT
+survive. The v2 non-commuting square establishes sequence/path dependence under
+the tested operations but does not rule out ordinary textual order or
+multiplicity effects — its two paths differ in assertion order, multiplicity,
+and token distance, not just which world they end at.
+
+**Next:** One terminal, prelocked CPU factorial with shared value domain,
+type-valid counterfactuals, counterbalanced aliases, alias-necessity arm, and
+crossed decoy→R(g) vs R(g)→decoy ordering. If alias-necessity fails: stop
+interpreting aliases. If crossed order explains response: demote S^G to
+syntactic append operator and pivot to intervention-defined continuation laws.
 
 ---
 ---

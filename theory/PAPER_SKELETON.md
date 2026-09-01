@@ -491,21 +491,23 @@ preserved no full greedy signature (0/32 vs 32/32 for $S^G$), showing that
 the effect is sensitive to entity-value pairing rather than the renderer
 template or value-word multiset alone. This does not distinguish semantic use
 from last-mention copying and does not rule out textual echo.
-nA five-arm anti-echo alias control (Phase 4c) strengthens the textual-echo
-concern. Nonce aliases (cedar→ZOG, amber→MIP, violet→PLIM) faithfully restate
-the correct entity-value pairs indirectly, competing against wrong direct
-assignments (decoy). Faithful alias recovery (19-29%) is statistically
-indistinguishable from shuffled alias (21-25%): the model does not resolve
-nonce aliases to override a direct decoy (pre-registered Gate 3 fails). Direct
-$R(g)$ placed after the decoy recovers only 48%, so the model is not a pure
-last-mention copier—it integrates competing direct assignments with recency
-bias—but cannot resolve indirect references. $S^G$ place preservation (100%)
-is consistent with $R(g)$ being the sole direct assignment.
 
-Non-naturality persists with $S^G$ (JSD 0.193/0.188), eliminating the objection
-that non-commutativity is an artifact of injecting hidden information. The
-adaptive canonicalizer $K(x) = x \cdot R(\gamma(x))$ — which reads the model's
-own greedy answers and feeds them back — still does not commute with correction.
+A five-arm anti-echo alias control (Phase 4c) provides no anti-echo evidence.
+The faithful alias arm did not exceed either comparator by the predeclared
+30-point margin; Gate 3 fails. A subsequent direct $R(g)$ recovered 47.9\%,
+ruling out a deterministic latest-explicit-assignment rule. This particular
+alias renderer did not override the direct decoy, but implementation defects
+(out-of-type shuffled values, format mismatch, no counterbalancing) mean this
+does not prove the model cannot resolve aliases. The literal signature renderer
+preserved 32/32 full greedy signatures on the tested histories.
+
+The two append sequences in the non-naturality test yield different response
+laws despite ending with the same per-entity declared values, establishing
+sequence/path dependence under the tested operations (JSD 0.193/0.188). This
+does not rule out ordinary textual order or multiplicity effects — the two paths
+differ in assertion order, multiplicity, and token distance. $S^G$ eliminates
+the objection that non-commutativity requires hidden information, but does not
+establish that the non-commutativity transcends sequence-sensitive text processing.
 
 Where $S^W$ and $S^G$ differ textually (when greedy answer $\neq$ ground truth),
 their distributional divergence is substantial (JSD up to 0.68), confirming that
