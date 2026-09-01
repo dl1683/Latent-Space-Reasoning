@@ -1494,3 +1494,82 @@ structure (Phase 1), block bypass is too destructive (ERQ-1), whole-prefix
 transplant is too blunt (hysteresis v1), observational selectivity is
 entirely answer-token routing (OSQ-1), and query-port composition fails
 (QPC-1). The next direction requires a fundamental pivot.
+
+---
+
+## Section 13 — Micro-World Closure: Qwen3-0.6B Two-Fact Recall
+
+### 13.1 Summary of the exhausted surface
+
+Approximately 70 experiments across two phases on frozen Qwen3-0.6B,
+all using the two-entity one-fact-per-entity recall task
+("{A}: {va}. {B}: {vb}.\n{Q}:"), with three nonsense-word entity
+families and binary/ternary value assignments.
+
+### 13.2 What was established
+
+1. **Query-selective computation exists at L21--25** (62$\times$
+   selectivity, OSQ-1 Section 11). The model performs dramatically
+   different internal computation depending on which entity is queried.
+
+2. **This selectivity is entirely answer-token routing** ($V = 1.01$,
+   OSQ-1). Collapsing the vocabulary to $\{v_0, v_1, \text{rest}\}$
+   preserves 100\% of the selectivity signal. The model amplifies the
+   correct answer token and suppresses the incorrect one, nothing more.
+
+3. **The query-position state carries partial answer code, not a
+   compositional query action** (QPC-1, Section 12). Transplanting the
+   query-position hidden state from a donor produces partial donor-answer
+   leakage ($D_{21} = 58\%$), not target-following composition
+   ($F_{21} = 31\%$, at three-way chance).
+
+4. **Block bypass is too destructive** (ERQ-1, Section 10). Skipping
+   block 25 pushes the model off-manifold; 7/48 cells retain viable
+   output. No scientific verdict possible.
+
+5. **Whole-prefix transplant is too blunt** (hysteresis v1, Section 9).
+   Transplanting the entire prefix at L21 leaves a trace that survives
+   L25 restoration, but the trace is not donor-directed --- it is
+   nonspecific propagation.
+
+6. **R$^n$ tools project their own structure** (Phase 1, 50 experiments).
+   PCA, cosine similarity, Procrustes, and linear probes find structure
+   that they themselves impose. PSQ-3$\alpha$ returned NO\_INTERFACE
+   (69.14\%, gate $\ge 95\%$) under PCA/Procrustes intervention.
+
+### 13.3 What was NOT established
+
+The micro-world closure does **not** establish that native latent-space
+mathematics does not exist. It establishes that this specific
+observer $\times$ task $\times$ model combination cannot reveal it.
+Possible reasons:
+
+- Qwen3-0.6B (0.6B parameters) may be too small for compositional
+  internal structure beyond answer-token routing.
+- Two-fact recall may be too simple to require compositional operations.
+- The intervention toolkit (block bypass, prefix transplant, row copy)
+  may be too coarse to detect structure that exists.
+
+### 13.4 Transferable deposits
+
+1. **Five insights** (Phase 1): operational latent spaces are indexed by
+   (actions, observations, horizon); information $\ne$ state (three
+   gates: present $\to$ addressable $\to$ composable); the right null is
+   the system's cheapest native mechanism; quotients must be earned by
+   transport; absence requires a collision witness.
+
+2. **Three-way clash design** (QPC-1): a decisive experimental design
+   that separates compositional query actions from answer-code transplant
+   by making source, target, and donor answers all distinct.
+
+3. **Verbalizer null** (OSQ-1): any observational selectivity claim must
+   pass the verbalizer null --- coarse-graining to answer tokens and
+   checking whether selectivity survives.
+
+4. **Instrument viability as a hard gate**: bypass viability, self-patch,
+   and carrier integrity checks prevent off-manifold artifacts from
+   masquerading as scientific results.
+
+### 13.5 Pivot direction
+
+Awaiting Codex postmortem (scratchpad/codex\_qpc1\_pivot.txt).
