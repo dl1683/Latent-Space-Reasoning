@@ -46,6 +46,14 @@
   - **Conclusion:** Resolution is a whole-sequence operation — value vectors combine across positions through the attention mechanism. Not decomposable to a single source.
   - Fixed GQA dimension mismatch: Qwen3-0.6B has num_heads=16, num_kv_heads=8, head_dim=128; o_proj takes 2048, not 1024.
 
+- **Signature restatement v1 (2026-08-31).** O1 RESOLVED: S^G_g (representative-independent restatement from observable greedy signatures) EXISTS.
+  - **S^G idempotent.** 100% greedy (96/96), JSD mean 0.077/0.071. Comparable to S^W.
+  - **S^G descent PERFECT.** 12/12 registered (100%), 15/15 held-out (100%). Fixes S^W's one failure (w101/w111 cross-world fiber).
+  - **S^G place preservation 100%.** S^G never changes the greedy signature.
+  - **Non-naturality persists with S^G.** JSD mean 0.193/0.189. Greedy commutativity 85.4%/79.2%. The non-naturality is NOT an artifact of S^W using hidden information.
+  - **NEW FINDING: Correction does NOT descend to G.** 7/12 (58.3%) registered, 12/15 (80.0%) held-out. Same correction applied to fiber members produces different post-correction signatures. Typed square is pointwise K(Cx) vs C(Kx), not quotient-level naturality.
+  - **Implication:** The algebra can now be defined entirely from observables. S^G eliminates the "experimenter knowledge required" objection.
+
 - **Predictive fiber ACTION v2 (2026-08-31).** Corrected algebra-validation experiment. Fixes v1 construction error: uses S_{p'} (corrected-world restatement) so both paths end at corrected world p'. Full greedy signatures. Descent tested.
   - **S_p idempotence RE-CONFIRMED.** 100% greedy (96/96), JSD mean 0.070 (registered 0.069, held-out 0.071).
   - **CORRECTLY TYPED SQUARE does NOT commute.** S_{p'} . C vs C . S_p, both ending at p'. Registered: JSD mean 0.208, greedy 89.6% (43/48). Held-out: JSD mean 0.208, greedy 70.8% (34/48). Task kernel diff mean 0.155.
