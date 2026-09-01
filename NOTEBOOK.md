@@ -5,6 +5,49 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31T07:15 — O1 ANSWERED: S^G_g exists
+
+Experiment `signature_restatement_v1` complete. The representative-independent
+restatement S^G_g — constructed from the model's own observable greedy answers,
+not the hidden world — exists and retains all algebraic properties:
+
+**Results (registered / held-out):**
+- Idempotence: 100% greedy (96/96). JSD 0.077 / 0.071 — comparable to S^W's 0.070.
+- Descent to G: **12/12 (100%) / 15/15 (100%)** — fixes S^W's one failure.
+- Place preservation: 32/32 (100%).
+- Non-naturality with correction persists: JSD mean 0.193 / 0.189.
+  Greedy commutativity 85.4% / 79.2%.
+
+**New finding — correction does not descend:**
+Correction descent: 7/12 (58.3%) / 12/15 (80.0%). Fiber members given the
+same correction produce different post-correction signatures. The typed square
+is a pointwise comparison K(Cx) vs C(Kx), not quotient-level naturality.
+
+**What this means:** S^G is the first observable-only canonicalizer. The algebra
+can now be defined entirely from observables. Next: Codex evidence gate, then
+update the algebra artifact.
+
+---
+
+## 2026-08-31T05:45 — Pivot from paper prose to S^G_g experiment
+
+Paper draft complete (583 lines, all 7 sections with full prose).
+Leverage check: polishing prose further is diminishing returns. The
+highest-leverage next move is building S^G_g — the representative-
+independent restatement from greedy signatures alone. This is the
+difference between "structure requires experimenter knowledge" and
+"the model's own behavior defines the algebra."
+
+Design gate sent to Codex. Key construction: replace
+make_restatement_from_world(world) with
+make_restatement_from_signature(greedy_sig) — build restatement text
+from what the model greedy-answers, not from the hidden world.
+
+Prediction: S^G should fix the one descent failure (fiber spanning
+worlds w101/w111 where S^W disagrees on MIP, but S^G agrees on MIP=blue).
+
+---
+
 ## 2026-08-31T05:00 — Paper skeleton self-reviewed, ready for prose
 
 Codex v8 review attempted 3x but killed externally each time (process

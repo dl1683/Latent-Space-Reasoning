@@ -1,12 +1,12 @@
 # Predictive-Fiber Action Algebra
 
 The canonical algebraic artifact for the behavioral algebra discovered in
-Qwen3-0.6B across 17 audited experiments (Phase 2, 2026-08-31).
+Qwen3-0.6B across 18 audited experiments (Phase 2, 2026-08-31).
 
 ## 1. Core object
 
 $$
-\mathfrak{A} = (X, W, Q, G, \tau, \gamma, \pi, \mathcal{A}, S^W)
+\mathfrak{A} = (X, W, Q, G, \tau, \gamma, \pi, \mathcal{A}, S^W, S^G)
 $$
 
 | Symbol | Name | Definition |
@@ -21,6 +21,7 @@ $$
 | $\mathcal{A}$ | Continuation monoid | Typed continuation operations under concatenation |
 | $F_g = \pi^{-1}(g)$ | Fibers | Pre-images of greedy places; encode history-dependent structure invisible to argmax |
 | $S^W_w$ | World-conditioned restatement | Canonical restatement constructed from the experimenter-known world $w \in W$. Approximately idempotent; non-natural with correction under tested append action. **Not** representative-independent: requires the hidden world, not the observable greedy signature $g$ |
+| $S^G_g$ | Signature-indexed restatement | Canonical restatement constructed from the observable greedy signature $g \in G$ alone. Approximately idempotent; **perfect descent** to $G$ (fixes $S^W$'s one failure). Representative-independent: uses only observables. Defined via renderer $R(g)$: $S^G_g(x) = x \cdot R(g)$ |
 
 ## 2. Greedy places (carrier table)
 
@@ -77,6 +78,11 @@ issue: restatement uses the hidden world, not the observable greedy signature).
 *Status:* **Established.** 100% greedy idempotence (96/96 across both entity sets).
 JSD($S$, $S^2$) mean = 0.070 (range 0.025-0.140). The retraction is genuine.
 
+**L2a: Idempotence of $S^G$.** $(S^G_g)^2 \approx S^G_g$.
+*Status:* **Established.** 100% greedy idempotence (96/96 across both entity sets).
+JSD($S^G$, $(S^G)^2$) mean = 0.077 registered, 0.071 held-out (range 0.025-0.191).
+Comparable to $S^W$. Place preservation: 32/32 (100%).
+
 **L3: Correction changes place.** $C_{e \leftarrow v}$ maps greedy place $g$ to a
 different place $g'$ where entity $e$'s answer is $v$, in 58-65% of cases.
 *Status:* **Established** (as a partial action — not defined everywhere).
@@ -103,26 +109,46 @@ have reached the same declarative world. One failed naturality square for one
 content-bearing canonicalizer rules out that particular clean separation; it does
 **not** prove that no alternative canonicalizer or product decomposition exists.
 
-### Partial
+**L4b: $S^G$ is non-natural with correction (pointwise).**
+The adaptive canonicalizer $K(x) = x \cdot R(\gamma(x))$ does not commute with
+correction: $K(Cx) \neq C(Kx)$ in general.
+*Status:* **Established** (signature_restatement_v1 experiment).
 
-**L4a: World-restatement descent.** $S^W_w$ descent to $G$.
-*Status:* **Partial.** 11/12 registered (91.7%), 15/15 held-out (100%). The one
-failure is precisely where a greedy fiber spans different worlds — $S^W_w$ maps
-members to different targets because it uses the hidden world, not the shared
-greedy signature.
+| Metric | Registered | Held-out |
+|--------|-----------|----------|
+| JSD distance mean ($S^G$) | 0.193 | 0.189 |
+| JSD distance mean ($S^W$) | 0.208 | 0.208 |
+| Greedy commutativity ($S^G$) | 85.4% (41/48) | 79.2% (38/48) |
+
+This is a **pointwise** comparison, not quotient-level naturality, because
+correction itself does not descend to $G$ (see O2 below). The observable
+canonicalizer $S^G$ eliminates the objection that $S^W$'s non-naturality
+depends on hidden information.
+
+### Established (was Open)
+
+**L4a: $S^G$ descent to $G$.**
+*Status:* **Established.** 12/12 registered (100%), 15/15 held-out (100%).
+Perfect descent — fixes $S^W$'s one failure (fiber spanning worlds w101/w111).
+
+For comparison, $S^W$ descent: 11/12 registered (91.7%), 15/15 held-out (100%).
 
 ### Open questions
 
-**O1: Existence of representative-independent $S^G_g$.**
-Does a restatement defined from the observable greedy signature $g$ alone (without
-the hidden world $w$) exist and retain approximate idempotence and descent?
-*Status:* **Open.** The current $S^W_w$ is world-conditioned. A true $S^G_g$ from
-greedy signatures has not been constructed or tested.
+**O1: ~~Existence of representative-independent $S^G_g$.~~**
+*Status:* **RESOLVED — YES.** $S^G_g$ exists, is approximately idempotent (L2a),
+descends perfectly to $G$ (L4a), and preserves greedy places (100%). Constructed
+from the observable greedy signature via renderer $R(g)$. Established in
+experiment `signature_restatement_v1`.
 
 **O2: Correction descent to $G$.**
-Does correction descend to the greedy quotient? Correction reaches its asserted
-target token in only 29/48 registered and 28/48 held-out cases.
-*Status:* **Open.**
+Does correction descend to the greedy quotient? Direct measurement: correction
+descent is 7/12 (58.3%) registered, 12/15 (80.0%) held-out. Fiber members
+given the same correction $C_{e \leftarrow v}$ produce different post-correction
+signatures. This means the typed non-naturality square is pointwise, not
+quotient-level.
+*Status:* **Partially answered — NO for many fibers.** Correction does not
+reliably descend.
 
 ### Not established
 
@@ -182,8 +208,10 @@ becomes visible in the computation, not a separate algebraic law.
 2. An operational, non-$\mathbb{R}^n$ account of behavioral places, actions, and
    hidden fibers.
 3. A world-conditioned idempotent restatement ($S^W_w$) with near-perfect descent.
-4. A demonstrated non-naturality: $S^W$ does not commute with correction under
-   the tested append action — prediction is presentation-path dependent.
+4. A representative-independent idempotent restatement ($S^G_g$) with perfect descent,
+   constructed from the observable greedy signature alone.
+5. A demonstrated non-naturality: both $S^W$ and $S^G$ do not commute with correction
+   under the tested append action — prediction is presentation-path dependent.
 
 ### What this algebra is NOT
 
@@ -216,3 +244,4 @@ becomes visible in the computation, not a separate algebraic law.
 | rebroadening_test_v1 | Re-broadened distribution meaningful | 915988c |
 | predictive_fiber_v1 | Two-component residual (predictive + presentation) | 4978a85 |
 | predictive_fiber_action_v2 | $S^W_w$ idempotent, non-natural with correction, path dependence confirmed | e9e54ef |
+| signature_restatement_v1 | $S^G_g$ exists: 100% idempotent, 100% descent, non-natural with correction, correction non-descent (58-80%) | pending |
