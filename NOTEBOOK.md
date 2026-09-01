@@ -4,6 +4,26 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — Re-contextualization: Qwen micro-world CLOSED, awaiting Codex pivot
+
+**What we established across ~70 experiments on frozen Qwen3-0.6B two-fact recall:**
+1. The model computes query-selective representations at L21-25 (62x selectivity)
+2. This selectivity is entirely answer-token routing (V=1.01)
+3. The query position carries partial answer code, not a compositional query action
+4. R^n tools project structure they find (Phase 1 trap)
+5. Block bypass is too destructive; whole-prefix transplant too blunt
+
+**What we did NOT establish:** That native math doesn't exist. We showed that
+THIS observer × THIS task × THIS model doesn't reveal it. Qwen3-0.6B may be too
+small, two-fact recall too simple, or the intervention toolkit too coarse. The
+axiom stands — the approach was wrong, not the premise.
+
+**What's different now vs. the OSQ-1 re-contextualization:** The QPC-1 result
+removes the last "maybe composition is there and OSQ just couldn't see it"
+possibility. The causal test directly showed: no composition. The Codex pivot
+postmortem is running (scratchpad/codex_qpc1_pivot.txt) to decide the next
+direction — likely co-designed latent carriers rather than mining frozen models.
+
 ## 2026-09-01 — QPC-1 (Query-Port Composition): INCONCLUSIVE_ALLOCATION_STOP
 
 144 CPU forwards (36 cells × 4 arms), 3 families (ZOG/MIP, PLIM/KROT, DREN/VORN),
