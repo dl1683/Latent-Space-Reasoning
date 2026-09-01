@@ -29,10 +29,25 @@ directed semantic transfer ("the answer should be X"). The model's commitment
 is robust to perturbation — it doesn't simply adopt whatever prefix state was
 present during processing.
 
-**Next:** Send to Codex evidence gate. Then: the variable T suggests a natural
-follow-up — what distinguishes the high-T edges from the anti-directional ones?
-Is it the structural similarity of the host/donor worlds, the query entity's
-position, or the direction of the value change?
+**Post-hoc layer-resolved analysis (not pre-registered; descriptive only):**
+The restore profile across layers reveals a qualitative transition at the
+commitment boundary. L22-L24: residue grows (30→51%) but is ANTI-directional
+(U_norm = -5% to -10%). L25: residue DROPS (42%) while U_norm FLIPS to
++11% pro-directional. Pattern replicates across all three families (ZOG_MIP:
+-3%→+16%, PLIM_KROT: -2%→+14%, HESK_VORN: -23%→+3%). The commitment
+bottleneck acts as a compressive filter: pre-commitment layers amplify generic
+disruption; the commitment layer reduces total perturbation while extracting
+directional information from what remains.
+
+Relevant/irrelevant split: when the world difference changes the queried
+entity's value (relevant), T=0.20; when it changes the non-queried entity
+(irrelevant), T=0.14. But irrelevant edges have HIGHER M (0.54 vs 0.43) and
+H (0.46 vs 0.39) — changing the irrelevant entity creates more total disruption
+but less directed signal.
+
+**Next:** Codex evidence gate running. The layer-resolved flip is the strongest
+signal — it's a native computational law about how the commitment process
+transforms perturbation quality, not just quantity.
 
 ## 2026-08-31T22:42 — Phase 4d terminal anti-echo factorial: NO_INTERFACE — allocation stop (Codex evidence gate UPHOLD with corrections)
 
