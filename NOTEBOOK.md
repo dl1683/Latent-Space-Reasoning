@@ -4,38 +4,55 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
-## 2026-08-31T22:42 — Phase 4d terminal anti-echo factorial: NO_INTERFACE_OR_INVALID__TERMINAL_DEMOTION
+## 2026-08-31T22:42 — Phase 4d terminal anti-echo factorial: NO_INTERFACE — allocation stop (Codex evidence gate UPHOLD with corrections)
 
-The terminal Phase 4d factorial ran to completion (2304 forward passes, ~110
-minutes CPU). All integrity checks passed (100% domain validity, token multisets
-verified, counterbalancing exact). The verdict is a clean negative driven by
-Gate 1 (interface) failure.
+The terminal Phase 4d factorial ran to completion (2304 forward passes: 2208
+factorial + 96 base-signature). All integrity checks passed (100% domain
+validity, token multisets verified, counterbalancing exact). Verdict:
+`NO_INTERFACE_OR_INVALID__TERMINAL_DEMOTION` — a cleanly adjudicated
+allocation stop (not a "clean negative"; the anti-echo question remains
+scientifically inconclusive because the interface failed).
 
-**The asymmetry that killed it:** D1 (confirming record) follow rate 97.9%/91.7%
-— the model reads and follows records that match its existing greedy output. D2
-(contradicting record) follow rate 43.8%/16.7% — far below the 60% threshold.
-The record-append mechanism confirms what the model already believes but cannot
-reliably contradict it. This makes all downstream gates (recency, alias
-necessity, alias anti-echo) uninterpretable by the pre-registered protocol.
+**Commitment-congruence asymmetry (bounded discovery):** D1 (confirming record)
+follow rate 97.9%/91.7% — the model follows records matching its incumbent
+commitment. D2 (contradicting record) follow rate 43.8%/16.7% (21/48 and 8/48
+coordinates followed) — not reliable overwrite, but not zero. The gap is
+nonnegative in every registered world, positive in every held-out world. The
+append action is state-dependent: nearly identity-like when congruent, unreliable
+when not. More informative than simply saying "the interface failed."
 
-**Recency is NOT the mechanism:** logit order effect is negative (-0.043/-0.086)
-with CI crossing zero. D3 and D4 (identical token multisets, only block order
-differs) produce no recency signal. The model doesn't simply follow the last
-appended record.
+**Crossed-order recency rule did not pass:** logit order effect -0.043/-0.086,
+CI crosses zero. The specific registered rule failed; recency generally was not
+excluded.
 
-**Alias counterfactual steering fails catastrophically:** A1 follow rate
-4.2%/6.9% (need ≥60%). But the logit-level anti-echo effect is strong
-(3.6/2.4 nats, tight CIs). The model's probability mass shifts toward the
-alias target in the right direction, but not enough to change the greedy
-output. The logit signal exists; the behavioral signal doesn't.
+**Gates 2-4 unreached, with descriptive component results:** Because Gate 1
+failed, later gates are not interpretable under the locked hierarchy. However,
+descriptive component results are informative: keyed alias content produced
+consistent target-rate shifts (46.2/30.2 pp) and logit effects (3.62/2.39 nats,
+tight CIs, positive across every alias map). These establish keyed alias-content
+sensitivity below reliable argmax control, insufficient to establish anti-echo,
+semantic canonicalizer, latent invariant, or native mathematics.
 
-**Terminal implication:** S^G is locked as a literal append operator. No
-semantic canonicalizer upgrade is licensed. The counterfactual interface lacks
-sufficient steering power to make the anti-echo question answerable. This is
-evidence about the test's power, not about S^G's nature.
+**Codex auditor-licensed language:** "In an integrity-valid, pre-registered
+terminal Phase 4d run on two three-entity prompt sets, confirming direct records
+preserved the incumbent greedy signature on 47/48 and 44/48 coordinates, while
+fixed-point-free contradictory records moved the answer to their payload on only
+21/48 and 8/48, failing the interface gate in both sets. The locked verdict is
+NO_INTERFACE_OR_INVALID__TERMINAL_DEMOTION: later mechanism gates are therefore
+not interpreted and prompt-renderer tuning ends. Keyed alias content nevertheless
+produced consistent descriptive target-rate and logit shifts, insufficient to
+establish an anti-echo pass, semantic canonicalizer, latent invariant, or native
+mathematics."
 
-Next: Codex evidence gate on these results, then update README and theory docs
-with the terminal adjudication.
+**Terminal implication:** S^G receives no semantic upgrade; prompt-renderer
+tuning ends. Phase 4d does not itself prove S^G is merely syntactic — it says
+the instrument lacked the interface power to answer.
+
+**Next direction (Codex-recommended):** Terminate the record-append renderer
+line. Build intervention-defined continuation actions at the model's commitment
+transition (L21-25), using full response-law equivalence (not argmax), directed
+causal interventions (not prompt append), and test state-dependent reachability/
+hysteresis. Definition/proposition/falsifier in theory/ before any compute.
 
 
 ## 2026-08-31T22:35 — Phase 4d terminal anti-echo factorial locked and implemented; UNRUN
