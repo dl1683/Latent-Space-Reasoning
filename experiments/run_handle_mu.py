@@ -54,7 +54,7 @@ class Config:
     n_train_levels: int = 64
     n_val_levels: int = 16
     n_test_levels: int = 32
-    trajs_per_level: int = 32
+    trajs_per_level: int = 128
     traj_length: int = 32
     scripted_fraction: float = 0.5
 
@@ -756,10 +756,10 @@ class FlatGRUModel(nn.Module):
 
 
 class ControlBModel(nn.Module):
-    """Set-aware monolithic recurrent control (R3b §5).
+    """Set-aware monolithic recurrent control (R3b §5, R4 carrier-tag fix).
 
     Carrier-tagged encoding → invariant sum-pool → global GRU →
-    per-carrier decode conditioned on carrier query.
+    per-carrier decode conditioned on carrier-ID query.
     """
     def __init__(self, cfg: Config, hidden_dim: int):
         super().__init__()
@@ -768,13 +768,13 @@ class ControlBModel(nn.Module):
         rd = _record_dim(cfg)
         n_pos = 2 * cfg.max_pos_offset + 1
 
+        self.carrier_embed = nn.Embedding(cfg.n_slots, hidden_dim)
         self.encoder = nn.Sequential(
-            nn.Linear(rd, hidden_dim), nn.ReLU(),
+            nn.Linear(rd + hidden_dim, hidden_dim), nn.ReLU(),
             nn.Linear(hidden_dim, hidden_dim))
         self.action_embed = nn.Embedding(cfg.n_actions, hidden_dim)
         self.gru = nn.GRUCell(hidden_dim, hidden_dim)
 
-        # Per-carrier decode: cat(global_hidden, carrier_enc) → per-field logits
         d = hidden_dim * 2
         self.type_head = nn.Sequential(nn.Linear(d, hidden_dim), nn.ReLU(),
                                        nn.Linear(hidden_dim, cfg.n_object_types))
@@ -788,23 +788,32 @@ class ControlBModel(nn.Module):
                                       nn.Linear(hidden_dim, 1))
         self.event_head = nn.Sequential(nn.Linear(hidden_dim, hidden_dim), nn.ReLU(),
                                         nn.Linear(hidden_dim, 4))
+        self._carrier_ids = None
+
+    def _get_carrier_ids(self, B, N, device):
+        if self._carrier_ids is None or self._carrier_ids.shape[0] != B:
+            self._carrier_ids = torch.arange(N, device=device).unsqueeze(0).expand(B, -1)
+        return self._carrier_ids
 
     def init_hidden(self, batch_size):
         return torch.zeros(batch_size, self.hidden_dim,
                            device=next(self.parameters()).device)
 
     def _step(self, obs_encoded, action, hidden):
-        per_carrier = self.encoder(obs_encoded)        # (B, N, hd)
-        pooled = per_carrier.sum(dim=1)                # (B, hd)
-        act_emb = self.action_embed(action)            # (B, hd)
-        hidden = self.gru(pooled + act_emb, hidden)    # (B, hd)
-        B, N, _ = per_carrier.shape
+        B, N, rd = obs_encoded.shape
+        carrier_ids = self._get_carrier_ids(B, N, obs_encoded.device)
+        carrier_emb = self.carrier_embed(carrier_ids)
+        tagged = torch.cat([obs_encoded, carrier_emb], dim=-1)
+        per_carrier = self.encoder(tagged)
+        pooled = per_carrier.sum(dim=1)
+        act_emb = self.action_embed(action)
+        hidden = self.gru(pooled + act_emb, hidden)
         h_exp = hidden.unsqueeze(1).expand(B, N, -1)
-        combined = torch.cat([h_exp, per_carrier], dim=-1)  # (B, N, 2*hd)
+        query = torch.cat([h_exp, carrier_emb], dim=-1)
         obs_pred = torch.cat([
-            self.type_head(combined), self.row_head(combined),
-            self.col_head(combined), self.status_head(combined),
-            self.vis_head(combined)], dim=-1)
+            self.type_head(query), self.row_head(query),
+            self.col_head(query), self.status_head(query),
+            self.vis_head(query)], dim=-1)
         event_pred = self.event_head(hidden)
         return obs_pred, event_pred, hidden
 
@@ -824,13 +833,15 @@ class ControlBModel(nn.Module):
 
 
 class HistorylessModel(nn.Module):
-    """No recurrence — tests whether persistent state is needed."""
+    """Dense slots without recurrence — isolates whether persistent state is needed."""
     def __init__(self, cfg: Config):
         super().__init__()
         self.cfg = cfg
-        rd = _record_dim(cfg)
         self.encoder = RecordEncoder(cfg)
+        self.action_embed = nn.Embedding(cfg.n_actions, cfg.slot_width)
+        self.messaging = DenseMessaging(cfg)
         self.head = PredictionHead(cfg)
+        self.n_slots = cfg.n_slots
 
     def forward(self, obs_seq, action_seq):
         B, Tp1, N, rd = obs_seq.shape
@@ -838,7 +849,10 @@ class HistorylessModel(nn.Module):
         obs_preds, event_preds = [], []
         for t in range(T):
             enc = self.encoder(obs_seq[:, t])
-            op, ep = self.head(enc)
+            act_emb = self.action_embed(action_seq[:, t]).unsqueeze(1).expand(B, N, -1)
+            combined = enc + act_emb
+            combined = combined + self.messaging(combined)
+            op, ep = self.head(combined)
             obs_preds.append(op)
             event_preds.append(ep)
         return torch.stack(obs_preds, 1), torch.stack(event_preds, 1), None
@@ -1237,21 +1251,51 @@ def _find_first_contact(t1: Trajectory, t2: Trajectory, step: int,
 
 
 # ---------------------------------------------------------------------------
-# Intervention evaluation
+# Counterfactual construction
+# ---------------------------------------------------------------------------
+
+def _construct_counterfactual_state(donor_state: WorldState, recip_state: WorldState,
+                                    target_handle: int) -> WorldState:
+    """Recipient world state with donor's target handle state transplanted."""
+    import copy as _cp
+    cf = _cp.deepcopy(recip_state)
+
+    if target_handle < 2:
+        ki = target_handle
+        cf.keys[ki] = _cp.deepcopy(donor_state.keys[ki])
+        cf.key_held[ki] = donor_state.key_held[ki]
+        if cf.key_held[ki]:
+            cf.keys[ki].row = cf.agent_row
+            cf.keys[ki].col = cf.agent_col
+    elif target_handle < 4:
+        li = target_handle - 2
+        cf.locks[li] = _cp.deepcopy(donor_state.locks[li])
+        cf.lock_open[li] = donor_state.lock_open[li]
+    else:
+        cf.goal = _cp.deepcopy(donor_state.goal)
+        cf.goal_active = donor_state.goal_active
+
+    return cf
+
+
+# ---------------------------------------------------------------------------
+# Intervention evaluation (R4 rewrite: counterfactual resimulation)
 # ---------------------------------------------------------------------------
 
 def evaluate_intervention(model, pairs: list, cfg: Config, model_type: str) -> dict:
-    """Run slot-swap intervention and measure causal consumption."""
+    """Slot-swap intervention with counterfactual resimulation (R4 fix)."""
     if not pairs or model_type in ("flat_gru", "historyless"):
         return {"skipped": True, "reason": f"no swap for {model_type}"}
 
     model.eval()
+    rd = _record_dim(cfg)
+    dummy_rng = random.Random(0)
     results = {
         "n_pairs": len(pairs),
-        "patch_integrity": [],      # same-value patch non-target TV
-        "causal_consumption": [],   # hybrid counterfactual accuracy at first contact
-        "pre_contact_effects": [],  # false effect rate before contact
-        "timing_errors": [],        # onset timing error
+        "patch_integrity": [],
+        "causal_consumption": [],
+        "pre_contact_effects": [],
+        "timing_errors": [],
         "by_level": defaultdict(list),
     }
 
@@ -1261,97 +1305,111 @@ def evaluate_intervention(model, pairs: list, cfg: Config, model_type: str) -> d
             ds, rs = pair.donor_step, pair.recipient_step
             suffix = pair.shared_suffix
 
-            # Use pre-encoded observations
             donor_obs = torch.from_numpy(dt.obs_encoded).unsqueeze(0)
             recip_obs = torch.from_numpy(rt.obs_encoded).unsqueeze(0)
             donor_acts = torch.tensor(dt.actions, dtype=torch.long).unsqueeze(0)
             recip_acts = torch.tensor(rt.actions, dtype=torch.long).unsqueeze(0)
 
-            # Run both to intervention point
+            # Prefix: process through (o_{ds-1}, a_{ds-1})
             _, _, donor_hidden = model(donor_obs[:, :ds+1], donor_acts[:, :ds])
             _, _, recip_hidden = model(recip_obs[:, :rs+1], recip_acts[:, :rs])
 
             if donor_hidden is None or recip_hidden is None:
                 continue
 
-            # Independent d_idx / r_idx from per-episode carrier maps (R3b §7)
-            if dt.episode_carrier_map is not None and rt.episode_carrier_map is not None:
-                d_idx = _carrier_slot_for_handle(dt.episode_carrier_map, pair.target_handle)
-                r_idx = _carrier_slot_for_handle(rt.episode_carrier_map, pair.target_handle)
-            else:
-                d_idx = _find_target_slot_from_map(
-                    dt.slot_maps[ds], pair.target_handle, cfg.n_slots)
-                r_idx = _find_target_slot_from_map(
-                    rt.slot_maps[rs], pair.target_handle, cfg.n_slots)
-                if d_idx is None or r_idx is None:
-                    continue
+            d_idx = _carrier_slot_for_handle(dt.episode_carrier_map, pair.target_handle)
+            r_idx = _carrier_slot_for_handle(rt.episode_carrier_map, pair.target_handle)
 
-            # Patch donor content into recipient carrier
+            # Patch: donor target content → recipient target carrier
             hybrid_hidden = recip_hidden.clone()
             hybrid_hidden[0, r_idx] = donor_hidden[0, d_idx]
 
-            # Run forward with shared suffix, comparing predictions
-            h_recip = recip_hidden.clone()
+            # Construct counterfactual world: recipient with donor's target handle
+            cf_state = _construct_counterfactual_state(
+                dt.states[ds], rt.states[ds], pair.target_handle)
+            bl_state = copy.deepcopy(rt.states[rs])
+            cf_world = KeyLockGridWorld(rt.level_config)
+            bl_world = KeyLockGridWorld(rt.level_config)
+
             h_hybrid = hybrid_hidden.clone()
-            h_donor = donor_hidden.clone()
+            h_recip = recip_hidden.clone()
 
             pre_contact_false = 0
             pre_contact_total = 0
-            contact_found = False
             contact_step = None
+            first_tv_crossing = None
 
             for si, action in enumerate(suffix):
                 act_t = torch.tensor([action], dtype=torch.long)
 
-                if si + ds < dt.obs_encoded.shape[0] and si + rs < rt.obs_encoded.shape[0]:
-                    obs_d = torch.from_numpy(dt.obs_encoded[si + ds]).unsqueeze(0)
-                    obs_r = torch.from_numpy(rt.obs_encoded[si + rs]).unsqueeze(0)
-                else:
-                    break
+                # Observations from counterfactual and baseline simulators
+                cf_obs_enc, _ = cf_world.observe_encoded(
+                    cf_state, dummy_rng, cfg.n_slots, rd,
+                    cfg.max_pos_offset, cfg.n_object_types, cfg.n_status_values,
+                    identity_perm=rt.episode_carrier_map)
+                bl_obs_enc, _ = bl_world.observe_encoded(
+                    bl_state, dummy_rng, cfg.n_slots, rd,
+                    cfg.max_pos_offset, cfg.n_object_types, cfg.n_status_values,
+                    identity_perm=rt.episode_carrier_map)
 
-                _, ep_recip, h_recip = model.forward_step_with_hidden(obs_r, act_t, h_recip)
-                _, ep_hybrid, h_hybrid = model.forward_step_with_hidden(obs_r, act_t, h_hybrid)
-                _, ep_donor, h_donor = model.forward_step_with_hidden(obs_d, act_t, h_donor)
+                cf_obs_t = torch.from_numpy(cf_obs_enc).unsqueeze(0)
+                bl_obs_t = torch.from_numpy(bl_obs_enc).unsqueeze(0)
 
-                # TV between hybrid and recipient event predictions
-                p_recip = F.softmax(ep_recip, dim=-1)
+                # Hybrid gets counterfactual observations; baseline gets baseline
+                _, ep_hybrid, h_hybrid = model.forward_step_with_hidden(
+                    cf_obs_t, act_t, h_hybrid)
+                _, ep_recip, h_recip = model.forward_step_with_hidden(
+                    bl_obs_t, act_t, h_recip)
+
+                # Transition both simulator branches
+                cf_state, cf_events = cf_world.step(cf_state, action)
+                bl_state, bl_events = bl_world.step(bl_state, action)
+                cf_event = cf_world.encode_events(cf_events)[0]
+                bl_event = bl_world.encode_events(bl_events)[0]
+
+                # TV between hybrid and recipient predictions
                 p_hybrid = F.softmax(ep_hybrid, dim=-1)
-                p_donor = F.softmax(ep_donor, dim=-1)
-
+                p_recip = F.softmax(ep_recip, dim=-1)
                 tv_hr = 0.5 * (p_hybrid - p_recip).abs().sum().item()
 
-                if pair.first_contact_step is not None:
-                    if si < pair.first_contact_step:
-                        if tv_hr > cfg.epsilon_tv:
-                            pre_contact_false += 1
-                        pre_contact_total += 1
-                    elif si == pair.first_contact_step and not contact_found:
-                        contact_found = True
-                        contact_step = si
+                # Detect simulator divergence (first contact)
+                if cf_event != bl_event and contact_step is None:
+                    contact_step = si
 
-                        # Causal consumption: does hybrid predict donor's event?
-                        donor_event = dt.events[ds + si][0] if ds + si < len(dt.events) else 3
-                        hybrid_event = ep_hybrid.argmax(dim=-1).item()
-                        recip_event = ep_recip.argmax(dim=-1).item()
+                # Track model TV crossing
+                if tv_hr > cfg.epsilon_tv and first_tv_crossing is None:
+                    first_tv_crossing = si
 
-                        results["causal_consumption"].append({
-                            "correct": int(hybrid_event == donor_event),
-                            "recip_correct": int(recip_event == donor_event),
-                            "level": pair.level_seed,
-                            "handle": pair.target_handle,
-                        })
+                if contact_step is None:
+                    if tv_hr > cfg.epsilon_tv:
+                        pre_contact_false += 1
+                    pre_contact_total += 1
+                elif si == contact_step:
+                    hybrid_event = ep_hybrid.argmax(dim=-1).item()
+                    recip_event = ep_recip.argmax(dim=-1).item()
+
+                    results["causal_consumption"].append({
+                        "correct": int(hybrid_event == cf_event),
+                        "recip_correct": int(recip_event == cf_event),
+                        "level": pair.level_seed,
+                        "handle": pair.target_handle,
+                    })
 
             if pre_contact_total > 0:
                 results["pre_contact_effects"].append(
                     pre_contact_false / pre_contact_total)
 
-            if pair.first_contact_step is not None and contact_step is not None:
-                results["timing_errors"].append(
-                    abs(contact_step - pair.first_contact_step))
+            # Missing TV crossing = timing miss (spec: never dropped)
+            if contact_step is not None:
+                if first_tv_crossing is not None:
+                    results["timing_errors"].append(
+                        abs(first_tv_crossing - contact_step))
+                else:
+                    results["timing_errors"].append(contact_step + 1)
 
             results["by_level"][pair.level_seed].append({
                 "target_handle": pair.target_handle,
-                "contact_found": contact_found,
+                "contact_found": contact_step is not None,
             })
 
     return results
@@ -1560,6 +1618,13 @@ def evaluate_gates(results: dict, cfg: Config) -> dict:
 
     recurrent_lift = dense_event - hist_event if hist_event else 0
 
+    # Control B within 3 points of dense for BOTH event and status (one-sided: CB≥dense is OK)
+    cb_event_within = (dense_event - cb_event) <= 0.03
+    cb_status_within = (dense_status - cb_status) <= 0.03
+    cb_event_threshold = cb_event >= 0.90
+    cb_status_threshold = cb_status >= 0.90
+    cb_pass = cb_event_within and cb_status_within and cb_event_threshold and cb_status_threshold
+
     eligibility = {
         "oracle_acc": oracle_acc,
         "oracle_pass": oracle_acc >= 0.99,
@@ -1569,18 +1634,18 @@ def evaluate_gates(results: dict, cfg: Config) -> dict:
         "sparse_status_f1": sparse_status,
         "control_b_event_f1": cb_event,
         "control_b_status_f1": cb_status,
+        "control_b_pass": cb_pass,
         "dense_pass": dense_event >= 0.90 and dense_status >= 0.90,
         "sparse_pass": sparse_event >= 0.90 and sparse_status >= 0.90,
         "recurrent_lift": recurrent_lift,
         "recurrent_lift_pass": recurrent_lift >= 0.10,
-        "flat_within_3": abs(cb_event - dense_event) <= 0.03,
         "flat_gru_event_f1": flat_event,
         "overall": False,
     }
     eligibility["overall"] = (eligibility["oracle_pass"] and eligibility["dense_pass"]
                               and eligibility["sparse_pass"]
                               and eligibility["recurrent_lift_pass"]
-                              and eligibility["flat_within_3"])
+                              and eligibility["control_b_pass"])
     gates["eligibility"] = eligibility
 
     # Intervention gates (only if eligible)
@@ -1704,7 +1769,13 @@ def run_seed(cfg: Config, model_seed: int) -> dict:
     train_trajs = generate_trajectories(train_levels, cfg, data_rng_seed=data_seed)
     val_trajs = generate_trajectories(val_levels, cfg, data_rng_seed=data_seed + 1000)
     test_trajs = generate_trajectories(test_levels, cfg, data_rng_seed=data_seed + 2000)
-    print(f"  Generated {len(train_trajs)} train, {len(val_trajs)} val, {len(test_trajs)} test trajectories")
+
+    # Rung 1 evaluation bank: training layouts, independently seeded episodes
+    # NOT used for gradients, early stopping, width selection, or checkpoint selection
+    eval_trajs = generate_trajectories(train_levels, cfg, data_rng_seed=data_seed + 5000)
+
+    print(f"  Generated {len(train_trajs)} train, {len(val_trajs)} val, "
+          f"{len(test_trajs)} test, {len(eval_trajs)} eval trajectories")
     print(f"  Time: {time.time()-t0:.1f}s")
 
     # Prepare batches
@@ -1715,9 +1786,9 @@ def run_seed(cfg: Config, model_seed: int) -> dict:
 
     results = {"seed": model_seed, "config": asdict(cfg)}
 
-    # Deterministic oracle (simulator transition, no training)
+    # Deterministic oracle on validation episodes (R4 fix)
     print("\nEvaluating deterministic oracle...")
-    oracle_pred = evaluate_oracle(train_trajs[:512], cfg)
+    oracle_pred = evaluate_oracle(val_trajs, cfg)
     results["oracle"] = {"prediction": oracle_pred}
     print(f"  Oracle event accuracy: {oracle_pred['event_macro_f1']:.4f}")
     print(f"  Oracle obs accuracy: {oracle_pred.get('obs_accuracy', 'N/A')}")
@@ -1769,9 +1840,12 @@ def run_seed(cfg: Config, model_seed: int) -> dict:
         if model_name in ("dense_slots", "sparse_slots"):
             print(f"  Running intervention tests for {model_name}...")
             interv_rng = random.Random(model_seed + 7777)
+            # Rung 1: training layouts, independent eval episodes
+            # Rung 3+: held-out layouts (test_trajs)
+            interv_source = eval_trajs if cfg.staircase_rung <= 2 else test_trajs
             all_interv = {}
             for target_h in range(5):
-                pairs = find_paired_histories(test_trajs, cfg, target_h,
+                pairs = find_paired_histories(interv_source, cfg, target_h,
                                               cfg.intervention_n_pairs // 5, interv_rng)
                 if pairs:
                     interv = evaluate_intervention(model, pairs, cfg, model_name)
@@ -1837,14 +1911,24 @@ def main():
     parser.add_argument("--n-epochs", type=int, default=40)
     parser.add_argument("--batch-size", type=int, default=64)
     parser.add_argument("--device", type=str, default="cpu")
+    parser.add_argument("--smoke", action="store_true",
+                        help="Smoke test: fewer levels/trajs, forces NOT_ADJUDICATED")
     args = parser.parse_args()
 
-    cfg = Config(
-        staircase_rung=args.staircase_rung,
-        n_epochs=args.n_epochs,
-        batch_size=args.batch_size,
-        device=args.device,
-    )
+    if args.smoke:
+        cfg = Config(
+            staircase_rung=args.staircase_rung,
+            n_epochs=15, batch_size=args.batch_size, device=args.device,
+            n_train_levels=8, n_val_levels=4, n_test_levels=4,
+            trajs_per_level=16, intervention_n_pairs=64,
+        )
+    else:
+        cfg = Config(
+            staircase_rung=args.staircase_rung,
+            n_epochs=args.n_epochs,
+            batch_size=args.batch_size,
+            device=args.device,
+        )
 
     seeds = [args.seed] if args.seed else list(cfg.model_seeds)
 
@@ -1863,13 +1947,16 @@ def main():
 
     elapsed = time.time() - t_start
 
+    is_smoke = cfg.n_train_levels < 64
     # Save combined verdict
     verdict = {
         "experiment": "handle_mu",
+        "smoke": is_smoke,
         "staircase_rung": cfg.staircase_rung,
         "seeds": seeds,
         "elapsed_seconds": elapsed,
         "per_seed": all_results,
+        "adjudication": "NOT_ADJUDICATED" if is_smoke else "PENDING",
     }
 
     verdict_path = RESULTS_DIR / f"verdict_rung_{cfg.staircase_rung}.json"

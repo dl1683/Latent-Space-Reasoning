@@ -65,7 +65,8 @@ Each visible record contains:
 Total encoded: 5 fields per carrier. The previous 9-class position encoding
 contained four unreachable classes; five classes suffice under Manhattan radius 2.
 
-Record order and identity assignment are independently permuted per step.
+Identity assignment is fixed per episode (Amendment 1); record order within
+the observation may still vary per step as an interface-invariance check.
 No key–lock relation, causal edge, global semantic ID, or simulator adjacency
 is exposed. Full visibility would make recurrence decorative — rejected.
 
