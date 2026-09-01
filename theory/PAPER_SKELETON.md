@@ -20,11 +20,15 @@ We build an alternative instrument — logit-lens projections measured by
 Jensen-Shannon distance — and use it to discover a behavioral algebra invisible
 to ℝⁿ metrics. Greedy answer signatures define an approximate quotient; the
 fibers of this quotient contain distributionally distinguishable states (0%
-distributional congruence despite 97% greedy congruence). A world-conditioned
-canonical restatement is approximately idempotent but non-natural with
-correction: two update paths denoting the same corrected world produce different
-response laws and, on held-out entity names, different greedy answers in 14 of
-48 cases.
+distributional congruence despite 97% greedy congruence). We construct two
+canonical restatements: $S^W$ (from experimenter-known ground truth) and $S^G$
+(from the model's own observable greedy answers). Both are approximately
+idempotent and non-natural with correction: two update paths denoting the same
+corrected world produce different response laws and, on held-out entity names,
+different greedy answers in 14 of 48 cases. The observable $S^G$ descends
+perfectly to the greedy quotient (100%), while $S^W$ fails for one cross-world
+fiber. Correction itself does not reliably descend (58-80%), establishing that
+non-naturality is pointwise, not quotient-level.
 
 All results are from one 0.6B-parameter model on one prompt family. We frame
 this as a methodological case study: a worked example of what becomes visible
@@ -236,7 +240,7 @@ where the fiber structure $F_g$ becomes visible.
 
 ### 4.1 The core object and its maps
 
-$$\mathfrak{A} = (X, W, Q, G, \tau, \gamma, \pi, \mathcal{A}, S^W)$$
+$$\mathfrak{A} = (X, W, Q, G, \tau, \gamma, \pi, \mathcal{A}, S^W, S^G)$$
 
 | Symbol | Definition |
 |--------|-----------|
@@ -249,6 +253,7 @@ $$\mathfrak{A} = (X, W, Q, G, \tau, \gamma, \pi, \mathcal{A}, S^W)$$
 | $\pi: Q \to G$ | Projection (coarsens future-response equivalence to greedy equivalence) |
 | $\mathcal{A}$ | Continuation monoid (typed append operations) |
 | $S^W_w$ | World-conditioned restatement (constructed from experimenter-known world $w$) |
+| $S^G_g$ | Signature-indexed restatement (constructed from observable greedy signature $g$; representative-independent) |
 
 $Q$ is not directly observable; $G$ is. The fiber $F_g = \pi^{-1}(g)$ is the
 set of future-response states that share a greedy signature. Two histories in
@@ -409,26 +414,36 @@ fiber map to the same target place under the operation.
 | Operation | Registered | Held-out |
 |-----------|-----------|----------|
 | Empty descent | 12/12 (100%) | 15/15 (100%) |
-| Restatement descent | 11/12 (91.7%) | 15/15 (100%) |
+| $S^W$ descent | 11/12 (91.7%) | 15/15 (100%) |
+| $S^G$ descent | 12/12 (100%) | 15/15 (100%) |
+| Correction descent | 7/12 (58.3%) | 12/15 (80.0%) |
 
-Empty descent is perfect by construction (fibers were defined from the same
-greedy queries). Restatement descent fails for one registered fiber whose members
-come from different semantic worlds — $S^W_w$ maps them to different targets
-because it uses the hidden world, not the shared greedy signature.
+Empty descent is perfect by construction. $S^W$ descent fails for one registered
+fiber whose members come from different semantic worlds — $S^W_w$ maps them to
+different targets because it uses the hidden world, not the shared greedy
+signature. $S^G$ descent is **perfect**: because it uses only the observable
+greedy signature, the cross-world fiber receives identical text and maps to
+identical targets.
+
+**Correction non-descent** is a new finding. Fiber members given the same
+correction $C_{e \leftarrow v}$ produce different post-correction greedy
+signatures. The failures are presentation-path dependent: the same correction
+is ignored by some order variants and accepted by others. This means the typed
+non-naturality square (§5.2) is a *pointwise* comparison $K(Cx)$ vs $C(Kx)$,
+not a genuine quotient-level statement.
 
 ### 5.4 Open questions
 
-- **O1: Representative-independent restatement.** Does a restatement $S^G_g$
-  defined from the observable greedy signature alone (without the hidden world)
-  exist and retain approximate idempotence? The current $S^W_w$ requires
-  experimenter knowledge of the ground-truth world.
-- **O2: Correction descent.** Correction reaches its target token in 29/48
-  registered and 28/48 held-out cases, but whether all fiber members map to the
-  same target place (descent to $G$) is untested.
-- **N1: Global nonfactorization.** The non-naturality of $S^W$ with correction
-  rules out one specific factorization. Global predictive × presentation
-  nonfactorization is NOT established — alternative canonicalizers or product
-  decompositions remain possible.
+- ~~**O1: Representative-independent restatement.**~~ **RESOLVED.** $S^G_g$
+  exists, is approximately idempotent (100% greedy, JSD 0.077/0.071), and
+  descends perfectly to $G$.
+- **O2: Correction descent.** Correction does NOT reliably descend: 58-80%.
+  Fiber members given the same correction produce different post-correction
+  signatures. The correction operator is itself presentation-path dependent.
+- **N1: Global nonfactorization.** The non-naturality of both $S^W$ and $S^G$
+  with correction rules out two specific factorizations. Global predictive ×
+  presentation nonfactorization is NOT established — alternative canonicalizers
+  or product decompositions remain possible.
 
 ---
 
@@ -462,15 +477,23 @@ informative objects of study. The logit lens + JSD instrument resolves the
 structure here because it projects hidden states through the model's own output
 head, measuring behavioral similarity directly rather than geometric proximity.
 
-### 6.3 The S^W vs S^G gap
+### 6.3 From $S^W$ to $S^G$: an observable canonicalizer
 
-The tested restatement $S^W_w$ is constructed from the experimenter's knowledge
-of the hidden world, not from the model's observable greedy signature. This is
-a genuine limitation: the descent failure (one fiber where $S^W$ maps members
-to different targets) occurs precisely where a greedy fiber spans different
-semantic worlds. Whether a purely signature-based $S^G_g$ exists — and whether
-it preserves idempotence and non-naturality — is the most immediate open
-question.
+The world-conditioned restatement $S^W_w$ uses experimenter knowledge of the
+hidden ground truth — a genuine methodological limitation. We construct an
+alternative: $S^G_g$, which builds restatement text from the model's own
+observable greedy answers. $S^G$ retains approximate idempotence (100% greedy,
+JSD comparable to $S^W$), achieves perfect descent to $G$ (fixing the one
+$S^W$ failure), and preserves greedy places 100%.
+
+Non-naturality persists with $S^G$ (JSD 0.193/0.189), eliminating the objection
+that non-commutativity is an artifact of injecting hidden information. The
+adaptive canonicalizer $K(x) = x \cdot R(\gamma(x))$ — which reads the model's
+own greedy answers and feeds them back — still does not commute with correction.
+
+Where $S^W$ and $S^G$ differ textually (when greedy answer $\neq$ ground truth),
+their distributional divergence is substantial (JSD up to 0.68), confirming that
+the distinction is not merely notational.
 
 ### 6.4 Generalization
 
