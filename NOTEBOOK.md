@@ -4,6 +4,40 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-08-31T22:35 — Phase 4d terminal anti-echo factorial locked and implemented; UNRUN
+
+The terminal design gate is complete. The stronger direct recency test is the
+primary estimand: `R(counterfactual) -> R(g)` versus
+`R(g) -> R(counterfactual)` with identical complete prompt token multisets.
+If final-block order clears its clustered rate and logit gates, S^G is demoted
+regardless of alias behavior.
+
+The alias instrument is secondary and gated. The prompt explicitly declares a
+shared six-value type; a fixed-point-free involution supplies a type-valid
+counterfactual at every coordinate. `Q7`, `V4`, and `J2` are Latin-square
+counterbalanced across entity identity and assignment position. The A1
+necessity cell must move answers away from the base signature before A2--A5
+can be interpreted. Exact prompts, raw other outputs, target/counterfactual
+logits, revisions, hashes, and world-cluster bootstrap summaries are retained.
+
+Tokenizer-only preflight PASS: 12/12 value verbalizers are one token; 96/96
+static crossed-order query pairs have identical token multisets; the
+counterfactual is total/fixed-point-free/involutive; alias balance is exact.
+No model forward pass ran. The terminal command is
+`python experiments/run_signature_restatement_v1.py --phase4d-only`; it
+refuses to overwrite `phase4d_results.json`.
+
+Measurement-to-artifact ratio for this gate: 877 added runner lines / 135
+theory-lock lines = 6.50:1; round ratio = one measurement-design round / zero
+artifact-building rounds. This exceeds the 5:1 halt threshold. Accordingly,
+Phase 4d receives no renderer or alias repair after its one run; every non-pass
+pivots to intervention-defined continuation-response kernel actions. Even a
+narrow pass is content-sensitive text processing, not a latent invariant or
+native mathematics.
+
+---
+
+
 ## 2026-08-31T10:30 — Re-contextualization after Codex evidence gate
 
 **What still holds (instrument-based, strong):**

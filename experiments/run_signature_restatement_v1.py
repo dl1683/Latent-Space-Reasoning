@@ -15,8 +15,13 @@ because S^G uses only the shared observable, not the divergent hidden world.
 For the typed square, S^G_{g'} after correction requires running the
 corrected history through the model to get its NEW greedy signature g',
 then building the restatement from g'. This is the key construction.
+
+Phase 4d is the terminal anti-echo factorial. Run its tokenizer-only checks
+with --phase4d-preflight. The scientific run is isolated behind
+--phase4d-only and refuses to overwrite its terminal result artifact.
 """
 
+import argparse
 import sys
 import torch
 import torch.nn.functional as F
@@ -25,12 +30,74 @@ from transformers import AutoTokenizer, AutoModelForCausalLM
 import math
 import json
 import os
+import random
 import statistics
+import subprocess
+from collections import Counter, defaultdict
 from datetime import datetime
+import hashlib
 
 MODEL_ID = "Qwen/Qwen3-0.6B"
+MODEL_REVISION = "c1899de289a04d12100db370d81485cdf75e47ca"
 DEVICE = "cpu"
 RESULTS_DIR = os.path.join(os.path.dirname(__file__), "results", "signature_restatement_v1")
+
+PHASE4D_ALIASES = ("Q7", "V4", "J2")
+PHASE4D_DOMAINS = {
+    "registered": ("big", "small", "hot", "cold", "red", "blue"),
+    "heldout": ("fast", "slow", "tall", "short", "loud", "quiet"),
+}
+PHASE4D_COUNTERFACTUAL = {
+    "big": "small", "small": "big",
+    "hot": "cold", "cold": "hot",
+    "red": "blue", "blue": "red",
+    "fast": "slow", "slow": "fast",
+    "tall": "short", "short": "tall",
+    "loud": "quiet", "quiet": "loud",
+}
+PHASE4D_LOCK = {
+    "registration_id": "signature-restatement-phase4d-terminal-v1",
+    "status": "PRE_REGISTERED_UNRUN",
+    "primary_estimand": "world-cluster mean target-minus-counterfactual logit contrast for counterfactual-then-target minus target-then-counterfactual",
+    "bootstrap": {"resamples": 10000, "seed": 43117, "cluster": "entity_set + semantic_world"},
+    "integrity_interface": {
+        "domain_valid_rate_each_set_min": 0.95,
+        "target_only_follow_each_set_min": 0.90,
+        "counterfactual_only_follow_each_set_min": 0.60,
+        "counterfactual_only_cluster_ci_low_each_set_min": 0.40,
+        "require_all_ordered_prompt_token_multisets_equal": True,
+        "require_all_counterfactuals_fixed_point_free": True,
+        "require_exact_alias_counterbalance": True,
+        "require_single_token_value_verbalizers": True,
+    },
+    "direct_recency": {
+        "last_block_follow_each_set_min": 0.70,
+        "last_block_follow_ci_low_each_set_min": 0.50,
+        "target_rate_order_effect_each_set_min": 0.30,
+        "target_rate_order_effect_ci_low_each_set_strictly_above": 0.0,
+        "logit_order_effect_each_set_min": 1.0,
+        "logit_order_effect_ci_low_each_set_strictly_above": 0.0,
+    },
+    "alias_necessity": {
+        "counterfactual_follow_each_set_min": 0.60,
+        "counterfactual_follow_ci_low_each_set_min": 0.40,
+        "target_rate_drop_each_set_min": 0.30,
+        "target_rate_drop_ci_low_each_set_strictly_above": 0.0,
+        "logit_shift_each_set_min": 1.0,
+        "logit_shift_ci_low_each_set_strictly_above": 0.0,
+        "require_every_alias_map_point_shift_positive": True,
+    },
+    "alias_anti_echo": {
+        "matched_target_rate_effect_each_set_min": 0.30,
+        "matched_target_rate_effect_ci_low_each_set_strictly_above": 0.0,
+        "matched_logit_effect_each_set_min": 1.0,
+        "matched_logit_effect_ci_low_each_set_strictly_above": 0.0,
+        "discordant_alias_last_follow_each_set_min": 0.60,
+        "discordant_alias_last_follow_ci_low_each_set_min": 0.40,
+        "require_every_alias_map_point_shift_positive": True,
+    },
+    "terminal_rule": "Any non-pass ends alias/renderer tuning. RECENCY_EXPLAINS takes precedence over alias outcomes. A narrow anti-echo pass is not evidence of a latent invariant or native mathematics.",
+}
 
 REGISTERED_ENTITIES = {
     "ZOG": ("big", "small"),
@@ -45,10 +112,17 @@ HELDOUT_ENTITIES = {
 }
 
 
+def load_tokenizer():
+    return AutoTokenizer.from_pretrained(
+        MODEL_ID, revision=MODEL_REVISION, trust_remote_code=True
+    )
+
+
 def load_model():
-    tok = AutoTokenizer.from_pretrained(MODEL_ID, trust_remote_code=True)
+    tok = load_tokenizer()
     model = AutoModelForCausalLM.from_pretrained(
-        MODEL_ID, dtype=torch.float32, device_map=DEVICE, trust_remote_code=True
+        MODEL_ID, revision=MODEL_REVISION, dtype=torch.float32,
+        device_map=DEVICE, trust_remote_code=True
     )
     model.eval()
     return model, tok
@@ -184,6 +258,746 @@ def make_shuffled_alias_restatement(sig, entity_names, set_name):
     rotated = values[1:] + values[:1]
     parts = [f"{aliases[n]} has value {rotated[i]}" for i, n in enumerate(entity_names)]
     return " The coded record says: " + ". ".join(parts) + "."
+
+
+def sha256_text(text):
+    return hashlib.sha256(text.encode("utf-8")).hexdigest()
+
+
+def phase4d_signature_string(sig):
+    return "|".join(f"{key}={value}" for key, value in sig)
+
+
+def make_phase4d_history(world, entities, order, set_name):
+    """Base carrier with an explicit shared value type for every entity."""
+    domain = ", ".join(PHASE4D_DOMAINS[set_name])
+    declaration = (
+        "Every named item has exactly one value from this shared value "
+        f"vocabulary: {domain}. "
+    )
+    return declaration + make_history(world, entities, order)
+
+
+def make_phase4d_record(sig, entity_names=None, label_for_entity=None):
+    """Common direct/alias assignment grammar used by every Phase 4d arm."""
+    sig_dict = dict(sig)
+    if entity_names is None:
+        entity_names = [name for name, _ in sig]
+    if label_for_entity is None:
+        ordered_labels = [(name, name) for name in entity_names]
+    else:
+        entity_for_label = {label: entity for entity, label in label_for_entity.items()}
+        ordered_labels = [(label, entity_for_label[label]) for label in PHASE4D_ALIASES]
+    lines = [f"{label}: {sig_dict[entity]}" for label, entity in ordered_labels]
+    return "\nRecord:\n" + "\n".join(lines) + "\nEnd record."
+
+
+def make_phase4d_alias_maps(entity_names):
+    """Three Latin-square maps: every entity occupies every alias/position."""
+    maps = []
+    n = len(entity_names)
+    if n != len(PHASE4D_ALIASES):
+        raise ValueError("Phase 4d requires exactly three entities and aliases")
+    for shift in range(n):
+        entity_to_alias = {
+            entity_names[(index + shift) % n]: alias
+            for index, alias in enumerate(PHASE4D_ALIASES)
+        }
+        maps.append({
+            "alias_map_id": f"latin_shift_{shift}",
+            "entity_to_alias": entity_to_alias,
+        })
+    return maps
+
+
+def make_phase4d_alias_key(entity_to_alias):
+    entity_for_alias = {alias: entity for entity, alias in entity_to_alias.items()}
+    lines = [f"{alias} means {entity_for_alias[alias]}." for alias in PHASE4D_ALIASES]
+    return "\nKey:\n" + "\n".join(lines) + "\nEnd key."
+
+
+def phase4d_token_multiset(tok, prompt):
+    token_ids = tok(prompt, add_special_tokens=False).input_ids
+    counts = Counter(int(token_id) for token_id in token_ids)
+    canonical = json.dumps(sorted(counts.items()), separators=(",", ":"))
+    return {
+        "token_count": len(token_ids),
+        "multiset_sha256": sha256_text(canonical),
+        "counts": counts,
+    }
+
+
+def phase4d_value_token_ids(tok, set_name):
+    token_ids = {}
+    failures = []
+    for value in PHASE4D_DOMAINS[set_name]:
+        ids = tok.encode(f" {value}", add_special_tokens=False)
+        token_ids[value] = [int(token_id) for token_id in ids]
+        if len(ids) != 1:
+            failures.append({"value": value, "token_ids": token_ids[value]})
+    return token_ids, failures
+
+
+def phase4d_alias_balance(entity_names):
+    maps = make_phase4d_alias_maps(entity_names)
+    counts = {entity: {alias: 0 for alias in PHASE4D_ALIASES} for entity in entity_names}
+    positions = {entity: {str(position): 0 for position in range(len(PHASE4D_ALIASES))} for entity in entity_names}
+    for mapping in maps:
+        entity_to_alias = mapping["entity_to_alias"]
+        for entity, alias in entity_to_alias.items():
+            counts[entity][alias] += 1
+            positions[entity][str(PHASE4D_ALIASES.index(alias))] += 1
+    exact = all(
+        count == 1
+        for table in (counts, positions)
+        for entity_counts in table.values()
+        for count in entity_counts.values()
+    )
+    return {"exact": exact, "alias_counts": counts, "position_counts": positions, "maps": maps}
+
+
+def evaluate_phase4d_prompt(model, tok, prompt, target_value, counterfactual_value,
+                            target_token_id, counterfactual_token_id):
+    encoded = tok(prompt, return_tensors="pt")
+    ids = encoded.input_ids.to(DEVICE)
+    with torch.no_grad():
+        logits = model(ids).logits[0, -1]
+    probs = F.softmax(logits, dim=-1)
+    greedy_id = int(torch.argmax(logits).item())
+    greedy_raw = tok.decode([greedy_id])
+    greedy = greedy_raw.strip()
+    if greedy == target_value:
+        output_class = "target"
+    elif greedy == counterfactual_value:
+        output_class = "counterfactual"
+    else:
+        output_class = "other"
+    top_values, top_indices = torch.topk(probs, 5)
+    top5 = []
+    for probability, token_id in zip(top_values.tolist(), top_indices.tolist()):
+        top5.append({
+            "token_id": int(token_id),
+            "token_text": tok.decode([int(token_id)]),
+            "probability": round(float(probability), 9),
+            "logit": round(float(logits[int(token_id)]), 9),
+        })
+    target_logit = float(logits[target_token_id])
+    counterfactual_logit = float(logits[counterfactual_token_id])
+    prompt_ids = encoded.input_ids[0].tolist()
+    return {
+        "prompt": prompt,
+        "prompt_sha256": sha256_text(prompt),
+        "prompt_token_count": len(prompt_ids),
+        "greedy_token_id": greedy_id,
+        "greedy_token_raw": greedy_raw,
+        "greedy_output": greedy,
+        "output_class": output_class,
+        "other_output": greedy_raw if output_class == "other" else None,
+        "target_token_id": int(target_token_id),
+        "counterfactual_token_id": int(counterfactual_token_id),
+        "target_logit": round(target_logit, 9),
+        "counterfactual_logit": round(counterfactual_logit, 9),
+        "target_minus_counterfactual_logit": round(target_logit - counterfactual_logit, 9),
+        "target_probability": round(float(probs[target_token_id]), 9),
+        "counterfactual_probability": round(float(probs[counterfactual_token_id]), 9),
+        "top5": top5,
+    }
+
+
+def phase4d_cluster_stat(records, label):
+    """Equal-world estimate and deterministic percentile interval."""
+    grouped = defaultdict(list)
+    for record in records:
+        grouped[record["cluster"]].append(float(record["value"]))
+    cluster_means = {
+        cluster: statistics.mean(values) for cluster, values in grouped.items()
+    }
+    if not cluster_means:
+        return {
+            "label": label, "estimate": None, "ci_low": None, "ci_high": None,
+            "n_clusters": 0, "n_nested_rows": 0, "cluster_means": {},
+        }
+    ordered = sorted(cluster_means)
+    point = statistics.mean(cluster_means.values())
+    seed_offset = int(sha256_text(label)[:8], 16)
+    rng = random.Random(PHASE4D_LOCK["bootstrap"]["seed"] + seed_offset)
+    boot = []
+    for _ in range(PHASE4D_LOCK["bootstrap"]["resamples"]):
+        sampled = [cluster_means[rng.choice(ordered)] for _ in ordered]
+        boot.append(statistics.mean(sampled))
+    boot.sort()
+    lower_index = int(0.025 * (len(boot) - 1))
+    upper_index = int(0.975 * (len(boot) - 1))
+    return {
+        "label": label,
+        "estimate": round(point, 9),
+        "ci_low": round(boot[lower_index], 9),
+        "ci_high": round(boot[upper_index], 9),
+        "n_clusters": len(cluster_means),
+        "n_nested_rows": sum(len(values) for values in grouped.values()),
+        "cluster_means": {key: round(value, 9) for key, value in sorted(cluster_means.items())},
+    }
+
+
+def phase4d_arm_stat(rows, arm, value_fn, label, alias_map_id=None):
+    selected = []
+    for row in rows:
+        if row["arm"] != arm:
+            continue
+        if alias_map_id is not None and row["alias_map_id"] != alias_map_id:
+            continue
+        selected.append({"cluster": row["cluster"], "value": value_fn(row)})
+    return phase4d_cluster_stat(selected, label)
+
+
+def phase4d_paired_records(rows, high_arm, low_arm, value_fn, pair_label,
+                           alias_map_id=None):
+    by_arm = {high_arm: {}, low_arm: {}}
+    for row in rows:
+        if row["arm"] not in by_arm:
+            continue
+        if alias_map_id is not None and row["alias_map_id"] != alias_map_id:
+            continue
+        key = (row["source"], row["entity"], row["alias_map_id"])
+        by_arm[row["arm"]][key] = row
+    if set(by_arm[high_arm]) != set(by_arm[low_arm]):
+        missing_high = sorted(set(by_arm[low_arm]) - set(by_arm[high_arm]))
+        missing_low = sorted(set(by_arm[high_arm]) - set(by_arm[low_arm]))
+        raise RuntimeError(
+            f"Unpaired Phase 4d rows for {pair_label}: "
+            f"missing_high={missing_high[:3]}, missing_low={missing_low[:3]}"
+        )
+    paired = []
+    for key in sorted(by_arm[high_arm]):
+        high = by_arm[high_arm][key]
+        low = by_arm[low_arm][key]
+        paired.append({
+            "cluster": high["cluster"],
+            "value": float(value_fn(high)) - float(value_fn(low)),
+            "alias_map_id": high["alias_map_id"],
+            "pair": pair_label,
+        })
+    return paired
+
+
+def phase4d_preflight(tok):
+    checks = {
+        "registration_id": PHASE4D_LOCK["registration_id"],
+        "model_id": MODEL_ID,
+        "requested_revision": MODEL_REVISION,
+        "sets": {},
+        "counterfactual_involution": {},
+    }
+    all_values = [value for values in PHASE4D_DOMAINS.values() for value in values]
+    checks["counterfactual_involution"] = {
+        "covers_all_values": all(value in PHASE4D_COUNTERFACTUAL for value in all_values),
+        "fixed_point_free": all(PHASE4D_COUNTERFACTUAL[value] != value for value in all_values),
+        "involutive": all(
+            PHASE4D_COUNTERFACTUAL[PHASE4D_COUNTERFACTUAL[value]] == value
+            for value in all_values
+        ),
+    }
+    for set_name, entities in [
+        ("registered", REGISTERED_ENTITIES), ("heldout", HELDOUT_ENTITIES)
+    ]:
+        entity_names = list(entities)
+        token_ids, token_failures = phase4d_value_token_ids(tok, set_name)
+        balance = phase4d_alias_balance(entity_names)
+        multiset_checks = []
+        for world_key, world in make_worlds(entities).items():
+            target_sig = tuple((entity, world[entity]) for entity in entity_names)
+            counterfactual_sig = tuple(
+                (entity, PHASE4D_COUNTERFACTUAL[world[entity]])
+                for entity in entity_names
+            )
+            target_record = make_phase4d_record(target_sig, entity_names=entity_names)
+            counterfactual_record = make_phase4d_record(counterfactual_sig, entity_names=entity_names)
+            for order in ("std", "rev"):
+                base = make_phase4d_history(world, entities, order, set_name)
+                for entity in entity_names:
+                    query = f"\n{entity}:"
+                    cf_then_target = base + counterfactual_record + target_record + query
+                    target_then_cf = base + target_record + counterfactual_record + query
+                    first = phase4d_token_multiset(tok, cf_then_target)
+                    second = phase4d_token_multiset(tok, target_then_cf)
+                    multiset_checks.append({
+                        "source": f"{world_key}_{order}",
+                        "entity": entity,
+                        "equal": first["counts"] == second["counts"],
+                        "counterfactual_then_target_sha256": first["multiset_sha256"],
+                        "target_then_counterfactual_sha256": second["multiset_sha256"],
+                    })
+        checks["sets"][set_name] = {
+            "value_token_ids": token_ids,
+            "single_token_value_verbalizers": len(token_failures) == 0,
+            "single_token_failures": token_failures,
+            "alias_balance": balance,
+            "ordered_prompt_multisets_all_equal": all(item["equal"] for item in multiset_checks),
+            "ordered_prompt_multiset_checks": multiset_checks,
+            "alias_token_ids": {
+                alias: tok.encode(alias, add_special_tokens=False)
+                for alias in PHASE4D_ALIASES
+            },
+        }
+    checks["passed"] = (
+        all(checks["counterfactual_involution"].values())
+        and all(
+            set_checks["single_token_value_verbalizers"]
+            and set_checks["alias_balance"]["exact"]
+            and set_checks["ordered_prompt_multisets_all_equal"]
+            for set_checks in checks["sets"].values()
+        )
+    )
+    return checks
+
+
+def run_phase4d_set(model, tok, entities, set_name, preflight):
+    worlds = make_worlds(entities)
+    entity_names = list(entities)
+    alias_maps = make_phase4d_alias_maps(entity_names)
+    value_token_ids = {
+        value: ids[0]
+        for value, ids in preflight["sets"][set_name]["value_token_ids"].items()
+        if len(ids) == 1
+    }
+    domain = set(PHASE4D_DOMAINS[set_name])
+    rows = []
+    sources = []
+    integrity = {
+        "counterfactual_coordinate_checks": 0,
+        "counterfactual_fixed_points": [],
+        "ordered_prompt_multiset_checks": 0,
+        "ordered_prompt_multiset_failures": [],
+        "domain_valid_coordinates": 0,
+        "domain_total_coordinates": 0,
+        "eligible_sources": 0,
+        "total_sources": 0,
+    }
+
+    for world_key, world in worlds.items():
+        for order in ("std", "rev"):
+            source = f"{world_key}_{order}"
+            cluster = f"{set_name}:{world_key}"
+            base = make_phase4d_history(world, entities, order, set_name)
+            sig, margins = get_greedy_signature(model, tok, base, entity_names)
+            sig_dict = dict(sig)
+            invalid = {
+                entity: value for entity, value in sig if value not in domain
+            }
+            integrity["total_sources"] += 1
+            integrity["domain_total_coordinates"] += len(entity_names)
+            integrity["domain_valid_coordinates"] += len(entity_names) - len(invalid)
+            source_record = {
+                "source": source,
+                "world_key": world_key,
+                "cluster": cluster,
+                "presentation_order": order,
+                "world": world,
+                "base_prompt": base,
+                "base_prompt_sha256": sha256_text(base),
+                "observed_signature": phase4d_signature_string(sig),
+                "observed_signature_margins": margins,
+                "domain_invalid_outputs": invalid,
+                "eligible": not invalid,
+            }
+            if invalid:
+                sources.append(source_record)
+                continue
+
+            integrity["eligible_sources"] += 1
+            counterfactual_sig = tuple(
+                (entity, PHASE4D_COUNTERFACTUAL[sig_dict[entity]])
+                for entity in entity_names
+            )
+            counterfactual_dict = dict(counterfactual_sig)
+            source_record["counterfactual_signature"] = phase4d_signature_string(counterfactual_sig)
+            sources.append(source_record)
+            for entity in entity_names:
+                integrity["counterfactual_coordinate_checks"] += 1
+                if counterfactual_dict[entity] == sig_dict[entity]:
+                    integrity["counterfactual_fixed_points"].append({
+                        "source": source, "entity": entity, "value": sig_dict[entity]
+                    })
+
+            target_record = make_phase4d_record(sig, entity_names=entity_names)
+            counterfactual_record = make_phase4d_record(
+                counterfactual_sig, entity_names=entity_names
+            )
+            direct_arms = {
+                "D0_base": "",
+                "D1_target_only": target_record,
+                "D2_counterfactual_only": counterfactual_record,
+                "D3_counterfactual_then_target": counterfactual_record + target_record,
+                "D4_target_then_counterfactual": target_record + counterfactual_record,
+            }
+            for entity in entity_names:
+                query = f"\n{entity}:"
+                prompt_d3 = base + direct_arms["D3_counterfactual_then_target"] + query
+                prompt_d4 = base + direct_arms["D4_target_then_counterfactual"] + query
+                multiset_d3 = phase4d_token_multiset(tok, prompt_d3)
+                multiset_d4 = phase4d_token_multiset(tok, prompt_d4)
+                integrity["ordered_prompt_multiset_checks"] += 1
+                if multiset_d3["counts"] != multiset_d4["counts"]:
+                    integrity["ordered_prompt_multiset_failures"].append({
+                        "source": source,
+                        "entity": entity,
+                        "d3_multiset_sha256": multiset_d3["multiset_sha256"],
+                        "d4_multiset_sha256": multiset_d4["multiset_sha256"],
+                    })
+                for arm, suffix in direct_arms.items():
+                    prompt = base + suffix + query
+                    evaluated = evaluate_phase4d_prompt(
+                        model, tok, prompt,
+                        sig_dict[entity], counterfactual_dict[entity],
+                        value_token_ids[sig_dict[entity]],
+                        value_token_ids[counterfactual_dict[entity]],
+                    )
+                    rows.append({
+                        "entity_set": set_name,
+                        "source": source,
+                        "world_key": world_key,
+                        "cluster": cluster,
+                        "presentation_order": order,
+                        "entity": entity,
+                        "alias_map_id": None,
+                        "arm": arm,
+                        "target_value": sig_dict[entity],
+                        "counterfactual_value": counterfactual_dict[entity],
+                        **evaluated,
+                    })
+
+            for alias_mapping in alias_maps:
+                alias_map_id = alias_mapping["alias_map_id"]
+                entity_to_alias = alias_mapping["entity_to_alias"]
+                key_block = make_phase4d_alias_key(entity_to_alias)
+                alias_target = make_phase4d_record(
+                    sig, entity_names=entity_names, label_for_entity=entity_to_alias
+                )
+                alias_counterfactual = make_phase4d_record(
+                    counterfactual_sig, entity_names=entity_names,
+                    label_for_entity=entity_to_alias
+                )
+                alias_arms = {
+                    "A0_alias_target_only": key_block + alias_target,
+                    "A1_alias_counterfactual_only": key_block + alias_counterfactual,
+                    "A2_counterfactual_then_alias_target": counterfactual_record + key_block + alias_target,
+                    "A3_counterfactual_then_alias_counterfactual": counterfactual_record + key_block + alias_counterfactual,
+                    "A4_target_then_alias_target": target_record + key_block + alias_target,
+                    "A5_target_then_alias_counterfactual": target_record + key_block + alias_counterfactual,
+                }
+                for entity in entity_names:
+                    query = f"\n{entity}:"
+                    for arm, suffix in alias_arms.items():
+                        prompt = base + suffix + query
+                        evaluated = evaluate_phase4d_prompt(
+                            model, tok, prompt,
+                            sig_dict[entity], counterfactual_dict[entity],
+                            value_token_ids[sig_dict[entity]],
+                            value_token_ids[counterfactual_dict[entity]],
+                        )
+                        rows.append({
+                            "entity_set": set_name,
+                            "source": source,
+                            "world_key": world_key,
+                            "cluster": cluster,
+                            "presentation_order": order,
+                            "entity": entity,
+                            "alias_map_id": alias_map_id,
+                            "alias_map": entity_to_alias,
+                            "arm": arm,
+                            "target_value": sig_dict[entity],
+                            "counterfactual_value": counterfactual_dict[entity],
+                            **evaluated,
+                        })
+    return {"sources": sources, "rows": rows, "integrity": integrity}
+
+
+def analyze_phase4d_set(set_result, set_name):
+    rows = set_result["rows"]
+    integrity = set_result["integrity"]
+    is_target = lambda row: 1.0 if row["output_class"] == "target" else 0.0
+    is_counterfactual = lambda row: 1.0 if row["output_class"] == "counterfactual" else 0.0
+    is_other = lambda row: 1.0 if row["output_class"] == "other" else 0.0
+    logit_contrast = lambda row: row["target_minus_counterfactual_logit"]
+
+    direct = {
+        "target_only_follow": phase4d_arm_stat(
+            rows, "D1_target_only", is_target, f"{set_name}:D1 target follow"
+        ),
+        "counterfactual_only_follow": phase4d_arm_stat(
+            rows, "D2_counterfactual_only", is_counterfactual,
+            f"{set_name}:D2 counterfactual follow"
+        ),
+        "other_rate_by_arm": {},
+    }
+    for arm in (
+        "D0_base", "D1_target_only", "D2_counterfactual_only",
+        "D3_counterfactual_then_target", "D4_target_then_counterfactual",
+    ):
+        direct["other_rate_by_arm"][arm] = phase4d_arm_stat(
+            rows, arm, is_other, f"{set_name}:{arm} other rate"
+        )
+    order_target_records = phase4d_paired_records(
+        rows, "D3_counterfactual_then_target", "D4_target_then_counterfactual",
+        is_target, "D3 minus D4 target follow"
+    )
+    order_logit_records = phase4d_paired_records(
+        rows, "D3_counterfactual_then_target", "D4_target_then_counterfactual",
+        logit_contrast, "D3 minus D4 target-counterfactual logit"
+    )
+    direct["target_rate_order_effect"] = phase4d_cluster_stat(
+        order_target_records, f"{set_name}:direct target-rate order effect"
+    )
+    direct["logit_order_effect"] = phase4d_cluster_stat(
+        order_logit_records, f"{set_name}:direct logit order effect"
+    )
+    last_block_records = []
+    for row in rows:
+        if row["arm"] == "D3_counterfactual_then_target":
+            last_block_records.append({"cluster": row["cluster"], "value": is_target(row)})
+        elif row["arm"] == "D4_target_then_counterfactual":
+            last_block_records.append({"cluster": row["cluster"], "value": is_counterfactual(row)})
+    direct["last_block_follow"] = phase4d_cluster_stat(
+        last_block_records, f"{set_name}:direct final-block follow"
+    )
+
+    necessity_target_drop_records = phase4d_paired_records(
+        rows, "A0_alias_target_only", "A1_alias_counterfactual_only",
+        is_target, "A0 minus A1 target follow"
+    )
+    necessity_logit_records = phase4d_paired_records(
+        rows, "A0_alias_target_only", "A1_alias_counterfactual_only",
+        logit_contrast, "A0 minus A1 target-counterfactual logit"
+    )
+    alias = {
+        "necessity_counterfactual_follow": phase4d_arm_stat(
+            rows, "A1_alias_counterfactual_only", is_counterfactual,
+            f"{set_name}:A1 alias counterfactual follow"
+        ),
+        "necessity_target_rate_drop": phase4d_cluster_stat(
+            necessity_target_drop_records, f"{set_name}:alias necessity target drop"
+        ),
+        "necessity_logit_shift": phase4d_cluster_stat(
+            necessity_logit_records, f"{set_name}:alias necessity logit shift"
+        ),
+        "other_rate_by_arm": {},
+    }
+    for arm in (
+        "A0_alias_target_only", "A1_alias_counterfactual_only",
+        "A2_counterfactual_then_alias_target",
+        "A3_counterfactual_then_alias_counterfactual",
+        "A4_target_then_alias_target", "A5_target_then_alias_counterfactual",
+    ):
+        alias["other_rate_by_arm"][arm] = phase4d_arm_stat(
+            rows, arm, is_other, f"{set_name}:{arm} other rate"
+        )
+
+    anti_target_records = []
+    anti_logit_records = []
+    for high_arm, low_arm, pair_label in (
+        ("A2_counterfactual_then_alias_target", "A3_counterfactual_then_alias_counterfactual", "counterfactual direct context"),
+        ("A4_target_then_alias_target", "A5_target_then_alias_counterfactual", "target direct context"),
+    ):
+        anti_target_records.extend(phase4d_paired_records(
+            rows, high_arm, low_arm, is_target, f"anti target: {pair_label}"
+        ))
+        anti_logit_records.extend(phase4d_paired_records(
+            rows, high_arm, low_arm, logit_contrast, f"anti logit: {pair_label}"
+        ))
+    alias["anti_echo_matched_target_rate_effect"] = phase4d_cluster_stat(
+        anti_target_records, f"{set_name}:alias anti-echo matched target-rate effect"
+    )
+    alias["anti_echo_matched_logit_effect"] = phase4d_cluster_stat(
+        anti_logit_records, f"{set_name}:alias anti-echo matched logit effect"
+    )
+    discordant_follow_records = []
+    for row in rows:
+        if row["arm"] == "A2_counterfactual_then_alias_target":
+            discordant_follow_records.append({"cluster": row["cluster"], "value": is_target(row)})
+        elif row["arm"] == "A5_target_then_alias_counterfactual":
+            discordant_follow_records.append({"cluster": row["cluster"], "value": is_counterfactual(row)})
+    alias["discordant_alias_last_follow"] = phase4d_cluster_stat(
+        discordant_follow_records, f"{set_name}:discordant final-alias follow"
+    )
+
+    alias["necessity_logit_shift_by_alias_map"] = {}
+    alias["anti_echo_logit_effect_by_alias_map"] = {}
+    for alias_map_id in ("latin_shift_0", "latin_shift_1", "latin_shift_2"):
+        necessity_map = phase4d_paired_records(
+            rows, "A0_alias_target_only", "A1_alias_counterfactual_only",
+            logit_contrast, f"necessity {alias_map_id}", alias_map_id=alias_map_id
+        )
+        alias["necessity_logit_shift_by_alias_map"][alias_map_id] = phase4d_cluster_stat(
+            necessity_map, f"{set_name}:necessity {alias_map_id}"
+        )
+        anti_map = []
+        for high_arm, low_arm in (
+            ("A2_counterfactual_then_alias_target", "A3_counterfactual_then_alias_counterfactual"),
+            ("A4_target_then_alias_target", "A5_target_then_alias_counterfactual"),
+        ):
+            anti_map.extend(phase4d_paired_records(
+                rows, high_arm, low_arm, logit_contrast,
+                f"anti {alias_map_id}", alias_map_id=alias_map_id
+            ))
+        alias["anti_echo_logit_effect_by_alias_map"][alias_map_id] = phase4d_cluster_stat(
+            anti_map, f"{set_name}:anti-echo {alias_map_id}"
+        )
+
+    domain_valid_rate = (
+        integrity["domain_valid_coordinates"] / integrity["domain_total_coordinates"]
+        if integrity["domain_total_coordinates"] else 0.0
+    )
+    return {
+        "entity_set": set_name,
+        "support": {
+            "domain_valid_coordinates": integrity["domain_valid_coordinates"],
+            "domain_total_coordinates": integrity["domain_total_coordinates"],
+            "domain_valid_rate": round(domain_valid_rate, 9),
+            "eligible_sources": integrity["eligible_sources"],
+            "total_sources": integrity["total_sources"],
+            "semantic_world_clusters": len({row["cluster"] for row in rows}),
+            "scored_rows": len(rows),
+        },
+        "direct": direct,
+        "alias": alias,
+    }
+
+
+def adjudicate_phase4d(preflight, set_results, analyses):
+    integrity_by_set = {}
+    for set_name, set_result in set_results.items():
+        integrity = set_result["integrity"]
+        integrity_by_set[set_name] = {
+            "no_counterfactual_fixed_points": not integrity["counterfactual_fixed_points"],
+            "ordered_prompt_multisets_all_equal": not integrity["ordered_prompt_multiset_failures"],
+            "alias_balance_exact": preflight["sets"][set_name]["alias_balance"]["exact"],
+            "single_token_value_verbalizers": preflight["sets"][set_name]["single_token_value_verbalizers"],
+        }
+    gate0_integrity = preflight["passed"] and all(
+        all(checks.values()) for checks in integrity_by_set.values()
+    )
+
+    interface_by_set = {}
+    recency_by_set = {}
+    necessity_by_set = {}
+    anti_echo_by_set = {}
+    for set_name, analysis in analyses.items():
+        support = analysis["support"]
+        direct = analysis["direct"]
+        alias = analysis["alias"]
+        interface_checks = {
+            "domain_valid_rate": support["domain_valid_rate"] >= PHASE4D_LOCK["integrity_interface"]["domain_valid_rate_each_set_min"],
+            "target_only_follow": direct["target_only_follow"]["estimate"] is not None and direct["target_only_follow"]["estimate"] >= PHASE4D_LOCK["integrity_interface"]["target_only_follow_each_set_min"],
+            "counterfactual_only_follow": direct["counterfactual_only_follow"]["estimate"] is not None and direct["counterfactual_only_follow"]["estimate"] >= PHASE4D_LOCK["integrity_interface"]["counterfactual_only_follow_each_set_min"],
+            "counterfactual_only_ci_low": direct["counterfactual_only_follow"]["ci_low"] is not None and direct["counterfactual_only_follow"]["ci_low"] >= PHASE4D_LOCK["integrity_interface"]["counterfactual_only_cluster_ci_low_each_set_min"],
+        }
+        interface_by_set[set_name] = {"passed": all(interface_checks.values()), "checks": interface_checks}
+
+        recency_checks = {
+            "last_block_follow": direct["last_block_follow"]["estimate"] is not None and direct["last_block_follow"]["estimate"] >= PHASE4D_LOCK["direct_recency"]["last_block_follow_each_set_min"],
+            "last_block_follow_ci_low": direct["last_block_follow"]["ci_low"] is not None and direct["last_block_follow"]["ci_low"] >= PHASE4D_LOCK["direct_recency"]["last_block_follow_ci_low_each_set_min"],
+            "target_rate_order_effect": direct["target_rate_order_effect"]["estimate"] is not None and direct["target_rate_order_effect"]["estimate"] >= PHASE4D_LOCK["direct_recency"]["target_rate_order_effect_each_set_min"],
+            "target_rate_order_effect_ci_low": direct["target_rate_order_effect"]["ci_low"] is not None and direct["target_rate_order_effect"]["ci_low"] > PHASE4D_LOCK["direct_recency"]["target_rate_order_effect_ci_low_each_set_strictly_above"],
+            "logit_order_effect": direct["logit_order_effect"]["estimate"] is not None and direct["logit_order_effect"]["estimate"] >= PHASE4D_LOCK["direct_recency"]["logit_order_effect_each_set_min"],
+            "logit_order_effect_ci_low": direct["logit_order_effect"]["ci_low"] is not None and direct["logit_order_effect"]["ci_low"] > PHASE4D_LOCK["direct_recency"]["logit_order_effect_ci_low_each_set_strictly_above"],
+        }
+        recency_by_set[set_name] = {"passed": all(recency_checks.values()), "checks": recency_checks}
+
+        necessity_map_positive = all(
+            stat["estimate"] is not None and stat["estimate"] > 0.0
+            for stat in alias["necessity_logit_shift_by_alias_map"].values()
+        )
+        necessity_checks = {
+            "counterfactual_follow": alias["necessity_counterfactual_follow"]["estimate"] is not None and alias["necessity_counterfactual_follow"]["estimate"] >= PHASE4D_LOCK["alias_necessity"]["counterfactual_follow_each_set_min"],
+            "counterfactual_follow_ci_low": alias["necessity_counterfactual_follow"]["ci_low"] is not None and alias["necessity_counterfactual_follow"]["ci_low"] >= PHASE4D_LOCK["alias_necessity"]["counterfactual_follow_ci_low_each_set_min"],
+            "target_rate_drop": alias["necessity_target_rate_drop"]["estimate"] is not None and alias["necessity_target_rate_drop"]["estimate"] >= PHASE4D_LOCK["alias_necessity"]["target_rate_drop_each_set_min"],
+            "target_rate_drop_ci_low": alias["necessity_target_rate_drop"]["ci_low"] is not None and alias["necessity_target_rate_drop"]["ci_low"] > PHASE4D_LOCK["alias_necessity"]["target_rate_drop_ci_low_each_set_strictly_above"],
+            "logit_shift": alias["necessity_logit_shift"]["estimate"] is not None and alias["necessity_logit_shift"]["estimate"] >= PHASE4D_LOCK["alias_necessity"]["logit_shift_each_set_min"],
+            "logit_shift_ci_low": alias["necessity_logit_shift"]["ci_low"] is not None and alias["necessity_logit_shift"]["ci_low"] > PHASE4D_LOCK["alias_necessity"]["logit_shift_ci_low_each_set_strictly_above"],
+            "all_alias_maps_positive": necessity_map_positive,
+        }
+        necessity_by_set[set_name] = {"passed": all(necessity_checks.values()), "checks": necessity_checks}
+
+        anti_map_positive = all(
+            stat["estimate"] is not None and stat["estimate"] > 0.0
+            for stat in alias["anti_echo_logit_effect_by_alias_map"].values()
+        )
+        anti_checks = {
+            "matched_target_rate_effect": alias["anti_echo_matched_target_rate_effect"]["estimate"] is not None and alias["anti_echo_matched_target_rate_effect"]["estimate"] >= PHASE4D_LOCK["alias_anti_echo"]["matched_target_rate_effect_each_set_min"],
+            "matched_target_rate_effect_ci_low": alias["anti_echo_matched_target_rate_effect"]["ci_low"] is not None and alias["anti_echo_matched_target_rate_effect"]["ci_low"] > PHASE4D_LOCK["alias_anti_echo"]["matched_target_rate_effect_ci_low_each_set_strictly_above"],
+            "matched_logit_effect": alias["anti_echo_matched_logit_effect"]["estimate"] is not None and alias["anti_echo_matched_logit_effect"]["estimate"] >= PHASE4D_LOCK["alias_anti_echo"]["matched_logit_effect_each_set_min"],
+            "matched_logit_effect_ci_low": alias["anti_echo_matched_logit_effect"]["ci_low"] is not None and alias["anti_echo_matched_logit_effect"]["ci_low"] > PHASE4D_LOCK["alias_anti_echo"]["matched_logit_effect_ci_low_each_set_strictly_above"],
+            "discordant_alias_last_follow": alias["discordant_alias_last_follow"]["estimate"] is not None and alias["discordant_alias_last_follow"]["estimate"] >= PHASE4D_LOCK["alias_anti_echo"]["discordant_alias_last_follow_each_set_min"],
+            "discordant_alias_last_follow_ci_low": alias["discordant_alias_last_follow"]["ci_low"] is not None and alias["discordant_alias_last_follow"]["ci_low"] >= PHASE4D_LOCK["alias_anti_echo"]["discordant_alias_last_follow_ci_low_each_set_min"],
+            "all_alias_maps_positive": anti_map_positive,
+        }
+        anti_echo_by_set[set_name] = {"passed": all(anti_checks.values()), "checks": anti_checks}
+
+    gate1_interface = gate0_integrity and all(item["passed"] for item in interface_by_set.values())
+    recency_explains = gate1_interface and all(item["passed"] for item in recency_by_set.values())
+    alias_necessity = gate1_interface and all(item["passed"] for item in necessity_by_set.values())
+    alias_anti_echo = alias_necessity and all(item["passed"] for item in anti_echo_by_set.values())
+    if not gate1_interface:
+        verdict = "NO_INTERFACE_OR_INVALID__TERMINAL_DEMOTION"
+        interpretation = "Mechanism gates are uninterpretable; terminal allocation ends renderer tuning and S^G receives no semantic upgrade."
+    elif recency_explains:
+        verdict = "RECENCY_EXPLAINS__DEMOTE_SG"
+        interpretation = "Identical-token direct blocks follow crossed final-block order; demote S^G to a sequence-sensitive syntactic append operator regardless of alias outcomes."
+    elif not alias_necessity:
+        verdict = "ALIASES_UNINTERPRETABLE__TERMINAL_DEMOTION"
+        interpretation = "The alias instrument did not move answers away from the base signature; do not interpret later alias arms, do not tune aliases again, and demote S^G by terminal allocation."
+    elif not alias_anti_echo:
+        verdict = "ANTI_ECHO_NONPASS__DEMOTE_SG"
+        interpretation = "Aliases were behaviorally usable but did not clear the matched conflict gate; demote S^G and pivot."
+    else:
+        verdict = "NARROW_ANTI_ECHO_PASS"
+        interpretation = "Keyed re-encoding beats the registered verbatim/recency explanations; this does not establish a latent invariant, semantic retraction, or native mathematics."
+    return {
+        "verdict": verdict,
+        "interpretation": interpretation,
+        "gate_0_integrity": {"passed": gate0_integrity, "by_set": integrity_by_set},
+        "gate_1_interface": {"passed": gate1_interface, "by_set": interface_by_set},
+        "gate_2_direct_recency": {"passed": recency_explains, "by_set": recency_by_set},
+        "gate_3_alias_necessity": {"passed": alias_necessity, "by_set": necessity_by_set},
+        "gate_4_alias_anti_echo": {"passed": alias_anti_echo, "by_set": anti_echo_by_set},
+        "termination_rate": "not_applicable_one_step_next_token_scoring",
+    }
+
+
+def run_phase4d(model, tok):
+    preflight = phase4d_preflight(tok)
+    if not preflight["passed"]:
+        raise RuntimeError("Phase 4d tokenizer/integrity preflight failed; no model factorial was run")
+    set_results = {}
+    analyses = {}
+    for set_name, entities in (
+        ("registered", REGISTERED_ENTITIES), ("heldout", HELDOUT_ENTITIES)
+    ):
+        print(f"\n--- Phase 4d terminal factorial: {set_name} ---")
+        set_result = run_phase4d_set(model, tok, entities, set_name, preflight)
+        set_results[set_name] = set_result
+        analyses[set_name] = analyze_phase4d_set(set_result, set_name)
+        print(json.dumps({
+            "support": analyses[set_name]["support"],
+            "direct": {
+                "last_block_follow": analyses[set_name]["direct"]["last_block_follow"],
+                "logit_order_effect": analyses[set_name]["direct"]["logit_order_effect"],
+            },
+            "alias": {
+                "necessity_counterfactual_follow": analyses[set_name]["alias"]["necessity_counterfactual_follow"],
+                "anti_echo_matched_logit_effect": analyses[set_name]["alias"]["anti_echo_matched_logit_effect"],
+            },
+        }, indent=2))
+    adjudication = adjudicate_phase4d(preflight, set_results, analyses)
+    return {
+        "schema_version": "signature-restatement-phase4d-v1",
+        "registration": PHASE4D_LOCK,
+        "registration_sha256": sha256_text(json.dumps(PHASE4D_LOCK, sort_keys=True, separators=(",", ":"))),
+        "preflight": preflight,
+        "sets": set_results,
+        "analysis": analyses,
+        "adjudication": adjudication,
+    }
 
 
 def make_corrected_world(world, target_entity, new_value):
@@ -691,6 +1505,66 @@ def run_sg_validation(model, tok, entities, entity_set_name):
 
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument(
+        "--phase4d-only", action="store_true",
+        help="Run the terminal Phase 4d factorial once and write phase4d_results.json",
+    )
+    mode.add_argument(
+        "--phase4d-preflight", action="store_true",
+        help="Run tokenizer-only Phase 4d integrity checks; no model inference",
+    )
+    args = parser.parse_args()
+
+    if args.phase4d_preflight:
+        tok = load_tokenizer()
+        print(json.dumps(phase4d_preflight(tok), indent=2))
+        return
+
+    if args.phase4d_only:
+        out_path = os.path.join(RESULTS_DIR, "phase4d_results.json")
+        if os.path.exists(out_path):
+            raise FileExistsError(
+                f"Terminal Phase 4d artifact already exists: {out_path}. "
+                "The runner refuses to overwrite or silently rerun it."
+            )
+        print("Loading model for terminal Phase 4d...")
+        model, tok = load_model()
+        os.makedirs(RESULTS_DIR, exist_ok=True)
+        result = run_phase4d(model, tok)
+        runner_bytes = open(__file__, "rb").read()
+        git_commit = subprocess.run(
+            ["git", "rev-parse", "HEAD"], capture_output=True, text=True
+        ).stdout.strip()
+        git_status = subprocess.run(
+            ["git", "status", "--short"], capture_output=True, text=True
+        ).stdout
+        result["generated_at"] = datetime.now().isoformat()
+        result["provenance"] = {
+            "model_id": MODEL_ID,
+            "model_revision_requested": MODEL_REVISION,
+            "model_revision_loaded": getattr(model.config, "_commit_hash", None),
+            "tokenizer_revision_loaded": tok.init_kwargs.get("_commit_hash"),
+            "runner_sha256": hashlib.sha256(runner_bytes).hexdigest(),
+            "git_commit": git_commit,
+            "git_status_porcelain": git_status,
+            "git_status_sha256": sha256_text(git_status),
+            "python_version": sys.version,
+            "torch_version": torch.__version__,
+            "transformers_version": transformers.__version__,
+            "device": str(next(model.parameters()).device),
+            "tokenizer_vocab_size": tok.vocab_size,
+            "argv": sys.argv,
+        }
+        payload = json.dumps(result, sort_keys=True, separators=(",", ":"), default=str)
+        result["provenance"]["payload_sha256_before_hash_field"] = sha256_text(payload)
+        with open(out_path, "w", encoding="utf-8") as handle:
+            json.dump(result, handle, indent=2, default=str)
+        print(json.dumps(result["adjudication"], indent=2))
+        print(f"\nTerminal Phase 4d results saved to {out_path}")
+        return
+
     print("Loading model...")
     model, tok = load_model()
     print(f"Model: {MODEL_ID}")
@@ -698,9 +1572,8 @@ def main():
 
     os.makedirs(RESULTS_DIR, exist_ok=True)
 
-    import hashlib, subprocess as _sp
     _rh = hashlib.md5(open(__file__, "rb").read()).hexdigest()[:12]
-    _gc = _sp.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True).stdout.strip()
+    _gc = subprocess.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True).stdout.strip()
     all_results = {
         "model": MODEL_ID,
         "timestamp": datetime.now().isoformat(),
