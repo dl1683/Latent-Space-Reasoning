@@ -49,17 +49,18 @@ as primary arm; learned-sparse and flat GRU as controls. Training: next-obs + ne
 prediction only, no swap/graph supervision. Seven pre-registered gates.
 Spec: theory/HANDLE_MU.md. Runner: experiments/run_handle_mu.py.
 
-**Rung 1 campaign complete (3 seeds x 40 epochs, 1003s): PIPELINE-INVALID.**
-Not a scientific negative — five protocol bugs invalidate the run:
-1. Status F1 = 0.33 (need 0.90): MSE loss drowns 4/27-dim status signal
-2. Flat GRU hidden=33 vs slots' 192-dim: worse than historyless in 2/3 seeds
-3. Slot swap targets wrong slot 88% of time (per-step identity permutation)
-4. Shared suffix not actually shared (0% full suffix match)
-5. Events identical at contact 94% of cases
+**Rung 1 pipeline repair complete (Codex R3b: LOCK WITH AMENDMENTS).**
+Original rung 1 was pipeline-invalid (five protocol bugs). Spec relocked with
+9 amendments, 8/9 implemented in runner. Deterministic oracle: exact (1.0/1.0).
+Smoke test: all 5 models train, pipeline end-to-end, gates compute correctly.
+Awaiting Codex R4 PR gate review before claim-bearing campaign (3 seeds, 40 epochs).
 
-Shielding and timing PASS consistently. Codex R3 verdict: "pipeline-invalid rung,
-one bounded spec/runner repair justified." Spec revision and relock in progress
-(Codex R3b). Results: experiments/results/handle_mu/.
+Amendments implemented: per-episode identity permutation, episode-local bijection,
+factorized per-field CE loss, Control B set-aware recurrent, deterministic oracle,
+d_idx/r_idx independent swap, eligibility gate fix, frozen data manifest, shared
+suffix fix. Remaining: identity perm partition (Rung 4 only).
+
+Prior rung 1 results (PIPELINE-INVALID): experiments/results/handle_mu/.
 
 ### Closed results (OCI/RAC line — bounded activation-steering)
 

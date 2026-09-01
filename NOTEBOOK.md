@@ -4,6 +4,29 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — HANDLE-mu pipeline repair complete, campaign pending
+
+**8/9 Codex R3b amendments implemented and smoke-tested.** Deterministic oracle
+exact (1.0/1.0 event/obs). All 5 models train (dense, sparse, Control B,
+flat GRU, historyless). Factorized per-field CE loss replaces MSE. Per-episode
+identity permutation eliminates carrier-role memorization. Episode-local bijection
+prevents layout-specific causal memorization. Control B (set-aware recurrent with
+invariant pooling) replaces old FlatGRU for flat_within_3 gate. d_idx/r_idx
+independent lookup from episode_carrier_map. Shared suffix uses recipient actions.
+Frozen data manifest across model seeds.
+
+**Codex R4 PR gate review running.** Campaign (3 seeds, 64 levels, 40 epochs) pending review.
+
+**Re-contextualization:** The direction is BOUNDED REPAIR — one more shot at
+HANDLE-mu with a correct pipeline. If eligibility passes and causal consumption
+still fails, HANDLE-mu terminates as preregistered. If it passes, we have the
+first constructive evidence for causal handle algebra, and the evaluator freezes
+for later application to real models (distance-0). Alternative live thread: the
+structured negative from prior experiments is itself a contribution — it maps
+the boundary between what R^n tools can and cannot capture.
+
+---
+
 ## 2026-09-01 — HANDLE-mu Rung 1 results: FAIL, deep diagnosis
 
 **Campaign complete** (3 seeds x 40 epochs, 1003s on CPU). All seeds FAIL eligibility.
