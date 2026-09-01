@@ -1390,3 +1390,107 @@ the minimum necessary for correct answers. Any future experiment claiming
 deeper structure must go beyond answer-token routing --- either by using
 a measurement that is not explained by the verbalizer, or by
 demonstrating causal intervention effects.
+
+## Section 12 — Query-Port Composition (QPC-1)
+
+### 12.1 Preregistration
+
+**Proposition.** If the query-position latent state at layer 21 carries a
+separable query-selector action (not merely a partial answer code), then
+transplanting a donor's query-position state into a host prompt should
+compose with the host's world context: the edited output should favor the
+host's answer to the *transplanted* query ($t$), not the donor's clean
+answer ($d$) or the host's original answer ($s$).
+
+**Three-way clash population.** Extend the two-value families to three
+values each (big/small/medium, hot/cold/warm, red/blue/green), using
+entity pairs ZOG/MIP, PLIM/KROT, DREN/VORN. For each family, query
+direction $q \in \{A, B\}$, cyclic rotation $r \in \mathbb{Z}_3$, and
+declaration order (standard/reversed):
+
+$$x(q) = v_r,\quad x(\bar q) = v_{r+1},\quad x \text{ asks } q$$
+$$y(q) = v_r,\quad y(\bar q) = v_{r+2},\quad y \text{ asks } \bar q$$
+
+Three deliberately distinct answers: $s = v_r$ (host clean), $t = v_{r+1}$
+(host's answer to transplanted query), $d = v_{r+2}$ (donor clean).
+
+**Intervention.** Exact row-copy at the query position (final token):
+$h_{\ell, p}(x) \leftarrow h_{\ell, p}(y)$ at $\ell \in \{21, 25\}$.
+No prefix replacement, no block bypass, no interpolation.
+
+**Budget.** 36 cells $\times$ 4 arms (clean, self-patch, L21 donor, L25
+donor) = 144 CPU forwards.
+
+**Estimands.** Restrict to three-token triplet $\{s, t, d\}$:
+$\rho_u(z) = p_u(z) / (p_u(s) + p_u(t) + p_u(d))$.
+
+- $F_\ell$: fraction where $t = \arg\max \rho_\ell$
+- $C_\ell = \mathbb{E}[\rho_\ell(t) - \rho_\ell(d)]$ (target over donor)
+- $W_\ell = \mathbb{E}[\rho_\ell(t) - \rho_\ell(s)]$ (target over host)
+- $L = C_{21} - C_{25}$ (localization)
+
+Bootstrap: 10,000 resamples over 9 family$\times$rotation clusters,
+seed 51203.
+
+**Locked gates (10).** Carrier integrity, self-patch ($\le 10^{-5}$),
+clean interface ($\ge 0.85$, cluster LB $\ge 0.70$, family $\ge 0.75$),
+L21 viability (triplet mass $\ge 50\%$ on $\ge 0.85$, LB $\ge 0.70$),
+target following ($F_{21} \ge 0.70$, LB $\ge 0.50$), beats donor
+($C_{21} \ge 0.20$, LB $> 0$), beats host ($W_{21} \ge 0.20$, LB $> 0$),
+presentation (both orders $F_{21} \ge 0.60$, $C_{21} > 0$), family
+robustness (every family $F_{21} \ge 0.50$, $C_{21} \ge 0.05$),
+transition localization ($L \ge 0.15$, LB $> 0$).
+
+**Verdict table (8).** INVALID\_INSTRUMENT, NO\_VIABLE\_QUERY\_PORT,
+QUERY\_PORT\_COMPOSITION\_LOCALIZED, QUERY\_PORT\_COMPOSITION\_REGISTERED,
+DONOR\_VERBALIZER\_COPY, HOST\_INERTIA, LATE\_PORT\_ONLY,
+INCONCLUSIVE\_ALLOCATION\_STOP.
+
+### 12.2 Result
+
+**Verdict: INCONCLUSIVE\_ALLOCATION\_STOP.**
+
+**Instrument.** All instrument gates PASS. Carrier: 36 cells, 144 forwards.
+Self-patch: max discrepancy $= 0.0$ (exact). Clean interface: $94.4\%$
+correct, cluster LB $= 0.86$, all families $\ge 0.75$ (DREN\_VORN
+$91.7\%$, PLIM\_KROT $100\%$, ZOG\_MIP $91.7\%$). L21 viability: $94.4\%$,
+cluster LB $= 0.83$.
+
+**Composition gates (all FAIL).**
+
+| Gate | Criterion | Observed | CI |
+|------|-----------|----------|----|
+| Target following | $F_{21} \ge 0.70$ | $0.306$ | $[0.139, 0.472]$ |
+| Beats donor | $C_{21} \ge 0.20$ | $-0.062$ | $[-0.201, 0.077]$ |
+| Beats host | $W_{21} \ge 0.20$ | $0.125$ | $[-0.024, 0.273]$ |
+| Presentation | $F_{21} \ge 0.60$ both | std $0.278$, rev $0.333$ | --- |
+| Family | $F_{21} \ge 0.50$ all | $0.17$--$0.42$ | --- |
+
+**Localization PASS:** $L = 0.639$ $[0.548, 0.726]$.
+
+**Donor and source at L21:** Donor wins $58.3\%$ $[0.361, 0.778]$; source
+wins $11.1\%$ $[0.0, 0.278]$. The intervention strongly disrupts the host
+(source drops from $94.4\%$ clean to $11.1\%$) but does not reliably
+direct toward the target --- the output scatters across the triplet with
+a partial donor lean.
+
+**At L25:** $F_{25} = 0.028$, $C_{25} = -0.701$ $[-0.793, -0.607]$. Pure
+donor-verbalizer copying: the L25 state IS the answer code, and
+transplanting it produces the donor's answer. This confirms localization
+--- L21 is fundamentally different from L25 --- but what L21 carries is
+not a composable query-selector action.
+
+**Interpretation.** The query-position state at L21 carries partial
+answer-routing information but not a separable query selector. Transplanting
+it disrupts the host and partially transfers the donor's answer tendency,
+but does not compose with the recipient's world to produce the recipient's
+answer to the transplanted query. The three-way clash decisively separates
+composition from verbalizer copying, and composition fails.
+
+**Consequence for the program.** This is the terminal experiment for the
+frozen Qwen3-0.6B two-fact readout surface, per the Codex allocation
+ruling. The surface has been exhausted: R$^n$ tools project their own
+structure (Phase 1), block bypass is too destructive (ERQ-1), whole-prefix
+transplant is too blunt (hysteresis v1), observational selectivity is
+entirely answer-token routing (OSQ-1), and query-port composition fails
+(QPC-1). The next direction requires a fundamental pivot.

@@ -1,0 +1,140 @@
+{
+  "exp": "query_port_composition_v1",
+  "ts": "2026-09-01T02:31:32.024267",
+  "verdict": "INCONCLUSIVE_ALLOCATION_STOP",
+  "gates": {
+    "carrier": {
+      "ok": true,
+      "n": 36
+    },
+    "self_patch": {
+      "ok": true,
+      "max_diff": 0.0
+    },
+    "clean_interface": {
+      "ok": true,
+      "rate": 0.9444,
+      "cluster_ci": {
+        "est": 0.944444,
+        "lb": 0.861111,
+        "ub": 1.0
+      },
+      "family": {
+        "DREN_VORN": 0.9167,
+        "PLIM_KROT": 1.0,
+        "ZOG_MIP": 0.9167
+      }
+    },
+    "l21_viability": {
+      "ok": true,
+      "rate": 0.9444,
+      "cluster_ci": {
+        "est": 0.944444,
+        "lb": 0.833333,
+        "ub": 1.0
+      }
+    },
+    "target_following": {
+      "ok": false,
+      "F21": {
+        "est": 0.305556,
+        "lb": 0.138889,
+        "ub": 0.472222
+      }
+    },
+    "beats_donor": {
+      "ok": false,
+      "C21": {
+        "est": -0.062211,
+        "lb": -0.200645,
+        "ub": 0.077273
+      }
+    },
+    "beats_host": {
+      "ok": false,
+      "W21": {
+        "est": 0.1247,
+        "lb": -0.02397,
+        "ub": 0.272818
+      }
+    },
+    "presentation": {
+      "ok": false,
+      "F21": {
+        "std": 0.277778,
+        "rev": 0.333333
+      },
+      "C21": {
+        "std": -0.090071,
+        "rev": -0.034352
+      }
+    },
+    "family_robustness": {
+      "ok": false,
+      "F21": {
+        "DREN_VORN": 0.333333,
+        "PLIM_KROT": 0.166667,
+        "ZOG_MIP": 0.416667
+      },
+      "C21": {
+        "DREN_VORN": -0.104575,
+        "PLIM_KROT": -0.113453,
+        "ZOG_MIP": 0.031395
+      }
+    },
+    "localization": {
+      "ok": true,
+      "L": {
+        "est": 0.63867,
+        "lb": 0.548432,
+        "ub": 0.725722
+      }
+    }
+  },
+  "estimands": {
+    "F21": {
+      "est": 0.305556,
+      "lb": 0.138889,
+      "ub": 0.472222
+    },
+    "C21": {
+      "est": -0.062211,
+      "lb": -0.200645,
+      "ub": 0.077273
+    },
+    "W21": {
+      "est": 0.1247,
+      "lb": -0.02397,
+      "ub": 0.272818
+    },
+    "F25": {
+      "est": 0.027778,
+      "lb": 0.0,
+      "ub": 0.083333
+    },
+    "C25": {
+      "est": -0.700881,
+      "lb": -0.793186,
+      "ub": -0.606787
+    },
+    "L": {
+      "est": 0.63867,
+      "lb": 0.548432,
+      "ub": 0.725722
+    },
+    "D21": {
+      "est": 0.583333,
+      "lb": 0.361111,
+      "ub": 0.777778
+    },
+    "S21": {
+      "est": 0.111111,
+      "lb": 0.0,
+      "ub": 0.277778
+    }
+  },
+  "bootstrap": {
+    "seed": 51203,
+    "n": 10000
+  }
+}

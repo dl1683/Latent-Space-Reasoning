@@ -4,6 +4,80 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — QPC-1 (Query-Port Composition): INCONCLUSIVE_ALLOCATION_STOP
+
+144 CPU forwards (36 cells × 4 arms), 3 families (ZOG/MIP, PLIM/KROT, DREN/VORN),
+3 values each (three-way clash: s, t, d all distinct). Pre-registered in theory
+Section 12. Exact hidden-state row-copy at L21/L25, query position.
+
+**Result:** Instrument PASS (carrier, self-patch max=0.0, clean interface 94.4%,
+L21 viability 94.4%). All composition gates FAIL:
+- F(21)=0.306 [0.139] — target following at chance (33% for 3-way)
+- C(21)=-0.062 [-0.201, 0.077] — donor slightly favored over target
+- W(21)=0.125 [-0.024, 0.273] — target slightly over source, CI includes 0
+- D(21)=0.583 [0.361] — donor wins 58% of triplet, but not DONOR_VERBALIZER_COPY
+- At L25: C(25)=-0.701 — pure donor-verbalizer copying, as expected
+- Localization: L=0.639 [0.548] — strong; L21 is not a late verbalizer
+
+**Interpretation:** The transplanted query state does NOT compose with the
+recipient world. At L21 the intervention disrupts (source drops to 11%) but
+does not direct toward the target; the output scatters with a donor lean. At L25
+pure verbalizer copying dominates. The query position does not carry a separable
+query-selector action — it carries partial answer-routing information that
+partially transfers to the wrong answer when transplanted.
+
+**Terminal per Codex allocation ruling.** INCONCLUSIVE_ALLOCATION_STOP ends the
+Qwen prompt micro-world. Frozen Qwen3-0.6B two-fact surface is exhausted:
+Phase 1 (R^n trap), hysteresis (too blunt), ERQ-1 (too destructive), OSQ-1
+(verbalizer ceiling), QPC-1 (no composition). Next: fundamental pivot.
+
+## 2026-09-01 — Re-contextualization: anti-tunnel check after observational line closure
+
+**What still holds:** (1) The model performs robust query-selective computation at
+L21-25, peaking at L25. (2) This is entirely accounted for by answer-token
+routing. (3) R^n tools cannot find native math (Phase 1). (4) Block bypass is too
+destructive for ordinary-propagation controls (ERQ-1). (5) Whole-prefix transplant
+leaves a trace but is too blunt for donor-directed attribution (hysteresis v1).
+
+**What's reframed:** The observational line is not a dead end — it successfully
+mapped WHERE the model computes and WHAT the computation does (answer routing).
+It simply cannot distinguish "minimum necessary computation" from "deeper
+structure." QPC-1 is designed to make exactly that distinction: can a transplanted
+query state compose with a recipient world to select the recipient's answer, or
+does it just carry the donor's answer code?
+
+**Alternatives still live:**
+- QPC-1 might fail because 0.6B is too small for compositional query actions
+- A larger model or trained task might show non-verbalizer selectivity even observationally
+- The right native math might manifest only in dynamics (operations/composition), not states
+- Co-designed interfaces (Phase 1 staircase approach) might be needed, but with better interventions
+
+**Current position:** One terminal causal bridge experiment (QPC-1), then pivot if
+it doesn't pass. This is the correct anti-tunnel stance per Codex.
+
+## 2026-09-01 — Codex postmortem: observational line CLOSED; QPC-1 designed
+
+Codex ruling (scratchpad/codex_osq1_postmortem.txt): observational logit-lens
+line is closed for this model/population/observer. Another layer sweep, attention
+decomposition, or logit-lens refinement would be apparatus without a new
+mathematical object. V=1.01 means there is no detectable selectivity residual
+beyond the answer-token channel.
+
+**Next experiment: QPC-1 (Query-Port Composition under Three-Way Clash).** Can an
+early latent query state be moved into another world and select THAT world's
+answer, rather than carrying the donor's answer code? Three-way clash: source,
+target, and donor answers are all distinct tokens. Intervention: replace only the
+final query-position state at L21/L25. If the transplanted state is a query
+selector (not an answer code), it should compose with the recipient context.
+
+36 prompt cells × 4 arms = 144 CPU forwards. 10 locked gates. 8 verdicts.
+Terminal. Estimands: F_ℓ (target following), C_ℓ (target over donor-copy),
+W_ℓ (target over host inertia), L (localization = C_21 − C_25).
+
+**Allocation ruling:** continue for QPC-1 only. QPC-1 composition PASS → one
+further test. Any other valid verdict → end this Qwen prompt micro-world and
+pivot fundamentally.
+
 ## 2026-09-01 — OSQ-1 (Observational Selectivity Quotient): OBSERVATIONAL_SELECTIVITY_VERBALIZER_SUFFICIENT
 
 48 CPU forward passes, 28-layer logit-lens profile, 12 undirected edges, 10,000

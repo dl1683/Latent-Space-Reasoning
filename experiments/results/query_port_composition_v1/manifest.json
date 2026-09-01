@@ -1,0 +1,373 @@
+{
+  "exp": "query_port_composition_v1",
+  "ts": "2026-09-01T02:30:23.348898",
+  "model": "Qwen/Qwen3-0.6B",
+  "rev": "c1899de289a04d12100db370d81485cdf75e47ca",
+  "nl": 28,
+  "vs": 151936,
+  "rh": "529f9fa4f5391e3b1ba654984ccdcf012f581217414c4b860c5818d915a9bcc4",
+  "ch": "5e953eafe24bfca145f73fe6f905f01fdf06e05eaf891bbd1c2e3330a9501195",
+  "bl": [
+    {
+      "fam": "ZOG_MIP",
+      "r": 0,
+      "qi": 0,
+      "order": "std",
+      "Q": "ZOG",
+      "got": "big",
+      "exp": "big",
+      "ok": true
+    },
+    {
+      "fam": "ZOG_MIP",
+      "r": 1,
+      "qi": 0,
+      "order": "std",
+      "Q": "ZOG",
+      "got": "small",
+      "exp": "small",
+      "ok": true
+    },
+    {
+      "fam": "ZOG_MIP",
+      "r": 2,
+      "qi": 0,
+      "order": "std",
+      "Q": "ZOG",
+      "got": "medium",
+      "exp": "medium",
+      "ok": true
+    },
+    {
+      "fam": "ZOG_MIP",
+      "r": 0,
+      "qi": 1,
+      "order": "std",
+      "Q": "MIP",
+      "got": "small",
+      "exp": "big",
+      "ok": false
+    },
+    {
+      "fam": "ZOG_MIP",
+      "r": 1,
+      "qi": 1,
+      "order": "std",
+      "Q": "MIP",
+      "got": "small",
+      "exp": "small",
+      "ok": true
+    },
+    {
+      "fam": "ZOG_MIP",
+      "r": 2,
+      "qi": 1,
+      "order": "std",
+      "Q": "MIP",
+      "got": "medium",
+      "exp": "medium",
+      "ok": true
+    },
+    {
+      "fam": "ZOG_MIP",
+      "r": 0,
+      "qi": 0,
+      "order": "rev",
+      "Q": "ZOG",
+      "got": "big",
+      "exp": "big",
+      "ok": true
+    },
+    {
+      "fam": "ZOG_MIP",
+      "r": 1,
+      "qi": 0,
+      "order": "rev",
+      "Q": "ZOG",
+      "got": "small",
+      "exp": "small",
+      "ok": true
+    },
+    {
+      "fam": "ZOG_MIP",
+      "r": 2,
+      "qi": 0,
+      "order": "rev",
+      "Q": "ZOG",
+      "got": "medium",
+      "exp": "medium",
+      "ok": true
+    },
+    {
+      "fam": "ZOG_MIP",
+      "r": 0,
+      "qi": 1,
+      "order": "rev",
+      "Q": "MIP",
+      "got": "big",
+      "exp": "big",
+      "ok": true
+    },
+    {
+      "fam": "ZOG_MIP",
+      "r": 1,
+      "qi": 1,
+      "order": "rev",
+      "Q": "MIP",
+      "got": "small",
+      "exp": "small",
+      "ok": true
+    },
+    {
+      "fam": "ZOG_MIP",
+      "r": 2,
+      "qi": 1,
+      "order": "rev",
+      "Q": "MIP",
+      "got": "medium",
+      "exp": "medium",
+      "ok": true
+    },
+    {
+      "fam": "PLIM_KROT",
+      "r": 0,
+      "qi": 0,
+      "order": "std",
+      "Q": "PLIM",
+      "got": "hot",
+      "exp": "hot",
+      "ok": true
+    },
+    {
+      "fam": "PLIM_KROT",
+      "r": 1,
+      "qi": 0,
+      "order": "std",
+      "Q": "PLIM",
+      "got": "cold",
+      "exp": "cold",
+      "ok": true
+    },
+    {
+      "fam": "PLIM_KROT",
+      "r": 2,
+      "qi": 0,
+      "order": "std",
+      "Q": "PLIM",
+      "got": "warm",
+      "exp": "warm",
+      "ok": true
+    },
+    {
+      "fam": "PLIM_KROT",
+      "r": 0,
+      "qi": 1,
+      "order": "std",
+      "Q": "KROT",
+      "got": "hot",
+      "exp": "hot",
+      "ok": true
+    },
+    {
+      "fam": "PLIM_KROT",
+      "r": 1,
+      "qi": 1,
+      "order": "std",
+      "Q": "KROT",
+      "got": "cold",
+      "exp": "cold",
+      "ok": true
+    },
+    {
+      "fam": "PLIM_KROT",
+      "r": 2,
+      "qi": 1,
+      "order": "std",
+      "Q": "KROT",
+      "got": "warm",
+      "exp": "warm",
+      "ok": true
+    },
+    {
+      "fam": "PLIM_KROT",
+      "r": 0,
+      "qi": 0,
+      "order": "rev",
+      "Q": "PLIM",
+      "got": "hot",
+      "exp": "hot",
+      "ok": true
+    },
+    {
+      "fam": "PLIM_KROT",
+      "r": 1,
+      "qi": 0,
+      "order": "rev",
+      "Q": "PLIM",
+      "got": "cold",
+      "exp": "cold",
+      "ok": true
+    },
+    {
+      "fam": "PLIM_KROT",
+      "r": 2,
+      "qi": 0,
+      "order": "rev",
+      "Q": "PLIM",
+      "got": "warm",
+      "exp": "warm",
+      "ok": true
+    },
+    {
+      "fam": "PLIM_KROT",
+      "r": 0,
+      "qi": 1,
+      "order": "rev",
+      "Q": "KROT",
+      "got": "hot",
+      "exp": "hot",
+      "ok": true
+    },
+    {
+      "fam": "PLIM_KROT",
+      "r": 1,
+      "qi": 1,
+      "order": "rev",
+      "Q": "KROT",
+      "got": "cold",
+      "exp": "cold",
+      "ok": true
+    },
+    {
+      "fam": "PLIM_KROT",
+      "r": 2,
+      "qi": 1,
+      "order": "rev",
+      "Q": "KROT",
+      "got": "warm",
+      "exp": "warm",
+      "ok": true
+    },
+    {
+      "fam": "DREN_VORN",
+      "r": 0,
+      "qi": 0,
+      "order": "std",
+      "Q": "DREN",
+      "got": "red",
+      "exp": "red",
+      "ok": true
+    },
+    {
+      "fam": "DREN_VORN",
+      "r": 1,
+      "qi": 0,
+      "order": "std",
+      "Q": "DREN",
+      "got": "blue",
+      "exp": "blue",
+      "ok": true
+    },
+    {
+      "fam": "DREN_VORN",
+      "r": 2,
+      "qi": 0,
+      "order": "std",
+      "Q": "DREN",
+      "got": "green",
+      "exp": "green",
+      "ok": true
+    },
+    {
+      "fam": "DREN_VORN",
+      "r": 0,
+      "qi": 1,
+      "order": "std",
+      "Q": "VORN",
+      "got": "red",
+      "exp": "red",
+      "ok": true
+    },
+    {
+      "fam": "DREN_VORN",
+      "r": 1,
+      "qi": 1,
+      "order": "std",
+      "Q": "VORN",
+      "got": "blue",
+      "exp": "blue",
+      "ok": true
+    },
+    {
+      "fam": "DREN_VORN",
+      "r": 2,
+      "qi": 1,
+      "order": "std",
+      "Q": "VORN",
+      "got": "green",
+      "exp": "green",
+      "ok": true
+    },
+    {
+      "fam": "DREN_VORN",
+      "r": 0,
+      "qi": 0,
+      "order": "rev",
+      "Q": "DREN",
+      "got": "red",
+      "exp": "red",
+      "ok": true
+    },
+    {
+      "fam": "DREN_VORN",
+      "r": 1,
+      "qi": 0,
+      "order": "rev",
+      "Q": "DREN",
+      "got": "blue",
+      "exp": "blue",
+      "ok": true
+    },
+    {
+      "fam": "DREN_VORN",
+      "r": 2,
+      "qi": 0,
+      "order": "rev",
+      "Q": "DREN",
+      "got": "green",
+      "exp": "green",
+      "ok": true
+    },
+    {
+      "fam": "DREN_VORN",
+      "r": 0,
+      "qi": 1,
+      "order": "rev",
+      "Q": "VORN",
+      "got": "red",
+      "exp": "red",
+      "ok": true
+    },
+    {
+      "fam": "DREN_VORN",
+      "r": 1,
+      "qi": 1,
+      "order": "rev",
+      "Q": "VORN",
+      "got": "red",
+      "exp": "blue",
+      "ok": false
+    },
+    {
+      "fam": "DREN_VORN",
+      "r": 2,
+      "qi": 1,
+      "order": "rev",
+      "Q": "VORN",
+      "got": "green",
+      "exp": "green",
+      "ok": true
+    }
+  ],
+  "ok": "34/36"
+}

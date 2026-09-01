@@ -1,0 +1,1776 @@
+{
+  "exp": "query_port_composition_v1",
+  "ts": "2026-09-01T02:31:12.795417",
+  "n_cells": 36,
+  "n_fwd": 144,
+  "layers": [
+    21,
+    25
+  ],
+  "evidence": [
+    {
+      "fam": "ZOG_MIP",
+      "order": "std",
+      "qi": 0,
+      "r": 0,
+      "Q": "ZOG",
+      "Qb": "MIP",
+      "s": "big",
+      "t": "small",
+      "d": "medium",
+      "cluster": "ZOG_MIP_r0",
+      "clean": {
+        "probs": {
+          "big": 0.37928087,
+          "small": 0.11343181,
+          "medium": 0.0036582
+        },
+        "top1": "big",
+        "triplet_mass": 0.496371
+      },
+      "self_patch": {
+        "probs": {
+          "big": 0.37928087,
+          "small": 0.11343181,
+          "medium": 0.0036582
+        },
+        "top1": "big",
+        "triplet_mass": 0.496371,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "big": 0.00643677,
+          "small": 0.29173008,
+          "medium": 0.37907234
+        },
+        "top1": "medium",
+        "triplet_mass": 0.677239
+      },
+      "donor_L25": {
+        "probs": {
+          "big": 0.00441899,
+          "small": 0.06213579,
+          "medium": 0.61863834
+        },
+        "top1": "medium",
+        "triplet_mass": 0.685193
+      }
+    },
+    {
+      "fam": "ZOG_MIP",
+      "order": "std",
+      "qi": 0,
+      "r": 1,
+      "Q": "ZOG",
+      "Qb": "MIP",
+      "s": "small",
+      "t": "medium",
+      "d": "big",
+      "cluster": "ZOG_MIP_r1",
+      "clean": {
+        "probs": {
+          "small": 0.19924806,
+          "medium": 0.02522516,
+          "big": 0.00633471
+        },
+        "top1": "small",
+        "triplet_mass": 0.230808
+      },
+      "self_patch": {
+        "probs": {
+          "small": 0.19924806,
+          "medium": 0.02522516,
+          "big": 0.00633471
+        },
+        "top1": "small",
+        "triplet_mass": 0.230808,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "small": 0.29543734,
+          "medium": 0.05158224,
+          "big": 0.02096154
+        },
+        "top1": "small",
+        "triplet_mass": 0.367981
+      },
+      "donor_L25": {
+        "probs": {
+          "small": 0.2644622,
+          "medium": 0.02023424,
+          "big": 0.14349657
+        },
+        "top1": "small",
+        "triplet_mass": 0.428193
+      }
+    },
+    {
+      "fam": "ZOG_MIP",
+      "order": "std",
+      "qi": 0,
+      "r": 2,
+      "Q": "ZOG",
+      "Qb": "MIP",
+      "s": "medium",
+      "t": "big",
+      "d": "small",
+      "cluster": "ZOG_MIP_r2",
+      "clean": {
+        "probs": {
+          "medium": 0.31180957,
+          "big": 0.0044388,
+          "small": 0.02289976
+        },
+        "top1": "medium",
+        "triplet_mass": 0.339148
+      },
+      "self_patch": {
+        "probs": {
+          "medium": 0.31180957,
+          "big": 0.0044388,
+          "small": 0.02289976
+        },
+        "top1": "medium",
+        "triplet_mass": 0.339148,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "medium": 0.175648,
+          "big": 0.01705999,
+          "small": 0.18101536
+        },
+        "top1": "small",
+        "triplet_mass": 0.373723
+      },
+      "donor_L25": {
+        "probs": {
+          "medium": 0.17158523,
+          "big": 0.0022472,
+          "small": 0.1851528
+        },
+        "top1": "small",
+        "triplet_mass": 0.358985
+      }
+    },
+    {
+      "fam": "ZOG_MIP",
+      "order": "std",
+      "qi": 1,
+      "r": 0,
+      "Q": "MIP",
+      "Qb": "ZOG",
+      "s": "big",
+      "t": "small",
+      "d": "medium",
+      "cluster": "ZOG_MIP_r0",
+      "clean": {
+        "probs": {
+          "big": 0.17708065,
+          "small": 0.25825772,
+          "medium": 0.00554505
+        },
+        "top1": "small",
+        "triplet_mass": 0.440883
+      },
+      "self_patch": {
+        "probs": {
+          "big": 0.17708065,
+          "small": 0.25825772,
+          "medium": 0.00554505
+        },
+        "top1": "small",
+        "triplet_mass": 0.440883,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "big": 0.01230372,
+          "small": 0.14233847,
+          "medium": 0.07488745
+        },
+        "top1": "small",
+        "triplet_mass": 0.22953
+      },
+      "donor_L25": {
+        "probs": {
+          "big": 0.00674633,
+          "small": 0.04071821,
+          "medium": 0.19294152
+        },
+        "top1": "medium",
+        "triplet_mass": 0.240406
+      }
+    },
+    {
+      "fam": "ZOG_MIP",
+      "order": "std",
+      "qi": 1,
+      "r": 1,
+      "Q": "MIP",
+      "Qb": "ZOG",
+      "s": "small",
+      "t": "medium",
+      "d": "big",
+      "cluster": "ZOG_MIP_r1",
+      "clean": {
+        "probs": {
+          "small": 0.20332624,
+          "medium": 0.17173871,
+          "big": 0.00169883
+        },
+        "top1": "small",
+        "triplet_mass": 0.376764
+      },
+      "self_patch": {
+        "probs": {
+          "small": 0.20332624,
+          "medium": 0.17173871,
+          "big": 0.00169883
+        },
+        "top1": "small",
+        "triplet_mass": 0.376764,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "small": 0.12310027,
+          "medium": 0.26936001,
+          "big": 0.04790492
+        },
+        "top1": "medium",
+        "triplet_mass": 0.440365
+      },
+      "donor_L25": {
+        "probs": {
+          "small": 0.11578497,
+          "medium": 0.02426383,
+          "big": 0.317763
+        },
+        "top1": "big",
+        "triplet_mass": 0.457812
+      }
+    },
+    {
+      "fam": "ZOG_MIP",
+      "order": "std",
+      "qi": 1,
+      "r": 2,
+      "Q": "MIP",
+      "Qb": "ZOG",
+      "s": "medium",
+      "t": "big",
+      "d": "small",
+      "cluster": "ZOG_MIP_r2",
+      "clean": {
+        "probs": {
+          "medium": 0.67568046,
+          "big": 0.00395553,
+          "small": 0.04390508
+        },
+        "top1": "medium",
+        "triplet_mass": 0.723541
+      },
+      "self_patch": {
+        "probs": {
+          "medium": 0.67568046,
+          "big": 0.00395553,
+          "small": 0.04390508
+        },
+        "top1": "medium",
+        "triplet_mass": 0.723541,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "medium": 0.06172289,
+          "big": 0.03781622,
+          "small": 0.18202507
+        },
+        "top1": "small",
+        "triplet_mass": 0.281564
+      },
+      "donor_L25": {
+        "probs": {
+          "medium": 0.03255405,
+          "big": 0.00858132,
+          "small": 0.18587795
+        },
+        "top1": "small",
+        "triplet_mass": 0.227013
+      }
+    },
+    {
+      "fam": "ZOG_MIP",
+      "order": "rev",
+      "qi": 0,
+      "r": 0,
+      "Q": "ZOG",
+      "Qb": "MIP",
+      "s": "big",
+      "t": "small",
+      "d": "medium",
+      "cluster": "ZOG_MIP_r0",
+      "clean": {
+        "probs": {
+          "big": 0.45432737,
+          "small": 0.09758832,
+          "medium": 0.00166567
+        },
+        "top1": "big",
+        "triplet_mass": 0.553581
+      },
+      "self_patch": {
+        "probs": {
+          "big": 0.45432737,
+          "small": 0.09758832,
+          "medium": 0.00166567
+        },
+        "top1": "big",
+        "triplet_mass": 0.553581,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "big": 0.04227392,
+          "small": 0.26126039,
+          "medium": 0.21309221
+        },
+        "top1": "small",
+        "triplet_mass": 0.516626
+      },
+      "donor_L25": {
+        "probs": {
+          "big": 0.02943764,
+          "small": 0.15922399,
+          "medium": 0.31119412
+        },
+        "top1": "medium",
+        "triplet_mass": 0.499856
+      }
+    },
+    {
+      "fam": "ZOG_MIP",
+      "order": "rev",
+      "qi": 0,
+      "r": 1,
+      "Q": "ZOG",
+      "Qb": "MIP",
+      "s": "small",
+      "t": "medium",
+      "d": "big",
+      "cluster": "ZOG_MIP_r1",
+      "clean": {
+        "probs": {
+          "small": 0.35497937,
+          "medium": 0.01275219,
+          "big": 0.00129007
+        },
+        "top1": "small",
+        "triplet_mass": 0.369022
+      },
+      "self_patch": {
+        "probs": {
+          "small": 0.35497937,
+          "medium": 0.01275219,
+          "big": 0.00129007
+        },
+        "top1": "small",
+        "triplet_mass": 0.369022,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "small": 0.41004309,
+          "medium": 0.0754103,
+          "big": 0.07058456
+        },
+        "top1": "small",
+        "triplet_mass": 0.556038
+      },
+      "donor_L25": {
+        "probs": {
+          "small": 0.2637493,
+          "medium": 0.04086227,
+          "big": 0.34888828
+        },
+        "top1": "big",
+        "triplet_mass": 0.6535
+      }
+    },
+    {
+      "fam": "ZOG_MIP",
+      "order": "rev",
+      "qi": 0,
+      "r": 2,
+      "Q": "ZOG",
+      "Qb": "MIP",
+      "s": "medium",
+      "t": "big",
+      "d": "small",
+      "cluster": "ZOG_MIP_r2",
+      "clean": {
+        "probs": {
+          "medium": 0.41783679,
+          "big": 0.01728417,
+          "small": 0.05095301
+        },
+        "top1": "medium",
+        "triplet_mass": 0.486074
+      },
+      "self_patch": {
+        "probs": {
+          "medium": 0.41783679,
+          "big": 0.01728417,
+          "small": 0.05095301
+        },
+        "top1": "medium",
+        "triplet_mass": 0.486074,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "medium": 0.07752221,
+          "big": 0.06191642,
+          "small": 0.37940341
+        },
+        "top1": "small",
+        "triplet_mass": 0.518842
+      },
+      "donor_L25": {
+        "probs": {
+          "medium": 0.07952942,
+          "big": 0.0067666,
+          "small": 0.50175393
+        },
+        "top1": "small",
+        "triplet_mass": 0.58805
+      }
+    },
+    {
+      "fam": "ZOG_MIP",
+      "order": "rev",
+      "qi": 1,
+      "r": 0,
+      "Q": "MIP",
+      "Qb": "ZOG",
+      "s": "big",
+      "t": "small",
+      "d": "medium",
+      "cluster": "ZOG_MIP_r0",
+      "clean": {
+        "probs": {
+          "big": 0.37966225,
+          "small": 0.26224002,
+          "medium": 0.01003566
+        },
+        "top1": "big",
+        "triplet_mass": 0.651938
+      },
+      "self_patch": {
+        "probs": {
+          "big": 0.37966225,
+          "small": 0.26224002,
+          "medium": 0.01003566
+        },
+        "top1": "big",
+        "triplet_mass": 0.651938,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "big": 0.03950861,
+          "small": 0.33838192,
+          "medium": 0.0512215
+        },
+        "top1": "small",
+        "triplet_mass": 0.429112
+      },
+      "donor_L25": {
+        "probs": {
+          "big": 0.02379644,
+          "small": 0.08892553,
+          "medium": 0.21450201
+        },
+        "top1": "medium",
+        "triplet_mass": 0.327224
+      }
+    },
+    {
+      "fam": "ZOG_MIP",
+      "order": "rev",
+      "qi": 1,
+      "r": 1,
+      "Q": "MIP",
+      "Qb": "ZOG",
+      "s": "small",
+      "t": "medium",
+      "d": "big",
+      "cluster": "ZOG_MIP_r1",
+      "clean": {
+        "probs": {
+          "small": 0.52989471,
+          "medium": 0.05872415,
+          "big": 0.00432364
+        },
+        "top1": "small",
+        "triplet_mass": 0.592943
+      },
+      "self_patch": {
+        "probs": {
+          "small": 0.52989471,
+          "medium": 0.05872415,
+          "big": 0.00432364
+        },
+        "top1": "small",
+        "triplet_mass": 0.592943,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "small": 0.17203605,
+          "medium": 0.14219089,
+          "big": 0.02240975
+        },
+        "top1": "small",
+        "triplet_mass": 0.336637
+      },
+      "donor_L25": {
+        "probs": {
+          "small": 0.11089809,
+          "medium": 0.0114386,
+          "big": 0.37262961
+        },
+        "top1": "big",
+        "triplet_mass": 0.494966
+      }
+    },
+    {
+      "fam": "ZOG_MIP",
+      "order": "rev",
+      "qi": 1,
+      "r": 2,
+      "Q": "MIP",
+      "Qb": "ZOG",
+      "s": "medium",
+      "t": "big",
+      "d": "small",
+      "cluster": "ZOG_MIP_r2",
+      "clean": {
+        "probs": {
+          "medium": 0.47730139,
+          "big": 0.0190716,
+          "small": 0.08458795
+        },
+        "top1": "medium",
+        "triplet_mass": 0.580961
+      },
+      "self_patch": {
+        "probs": {
+          "medium": 0.47730139,
+          "big": 0.0190716,
+          "small": 0.08458795
+        },
+        "top1": "medium",
+        "triplet_mass": 0.580961,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "medium": 0.04927872,
+          "big": 0.09857018,
+          "small": 0.08427168
+        },
+        "top1": "big",
+        "triplet_mass": 0.232121
+      },
+      "donor_L25": {
+        "probs": {
+          "medium": 0.01509582,
+          "big": 0.00182929,
+          "small": 0.29786596
+        },
+        "top1": "small",
+        "triplet_mass": 0.314791
+      }
+    },
+    {
+      "fam": "PLIM_KROT",
+      "order": "std",
+      "qi": 0,
+      "r": 0,
+      "Q": "PLIM",
+      "Qb": "KROT",
+      "s": "hot",
+      "t": "cold",
+      "d": "warm",
+      "cluster": "PLIM_KROT_r0",
+      "clean": {
+        "probs": {
+          "hot": 0.57204223,
+          "cold": 0.02105412,
+          "warm": 0.02763719
+        },
+        "top1": "hot",
+        "triplet_mass": 0.620734
+      },
+      "self_patch": {
+        "probs": {
+          "hot": 0.57204223,
+          "cold": 0.02105412,
+          "warm": 0.02763719
+        },
+        "top1": "hot",
+        "triplet_mass": 0.620734,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "hot": 0.10562866,
+          "cold": 0.12993588,
+          "warm": 0.09723639
+        },
+        "top1": "cold",
+        "triplet_mass": 0.332801
+      },
+      "donor_L25": {
+        "probs": {
+          "hot": 0.02938557,
+          "cold": 0.01467451,
+          "warm": 0.51989609
+        },
+        "top1": "warm",
+        "triplet_mass": 0.563956
+      }
+    },
+    {
+      "fam": "PLIM_KROT",
+      "order": "std",
+      "qi": 0,
+      "r": 1,
+      "Q": "PLIM",
+      "Qb": "KROT",
+      "s": "cold",
+      "t": "warm",
+      "d": "hot",
+      "cluster": "PLIM_KROT_r1",
+      "clean": {
+        "probs": {
+          "cold": 0.40174356,
+          "warm": 0.03126227,
+          "hot": 0.03582098
+        },
+        "top1": "cold",
+        "triplet_mass": 0.468827
+      },
+      "self_patch": {
+        "probs": {
+          "cold": 0.40174356,
+          "warm": 0.03126227,
+          "hot": 0.03582098
+        },
+        "top1": "cold",
+        "triplet_mass": 0.468827,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "cold": 0.04675039,
+          "warm": 0.13791868,
+          "hot": 0.26797241
+        },
+        "top1": "hot",
+        "triplet_mass": 0.452641
+      },
+      "donor_L25": {
+        "probs": {
+          "cold": 0.017104,
+          "warm": 0.01189618,
+          "hot": 0.68589532
+        },
+        "top1": "hot",
+        "triplet_mass": 0.714895
+      }
+    },
+    {
+      "fam": "PLIM_KROT",
+      "order": "std",
+      "qi": 0,
+      "r": 2,
+      "Q": "PLIM",
+      "Qb": "KROT",
+      "s": "warm",
+      "t": "hot",
+      "d": "cold",
+      "cluster": "PLIM_KROT_r2",
+      "clean": {
+        "probs": {
+          "warm": 0.17479584,
+          "hot": 0.05040682,
+          "cold": 0.06894764
+        },
+        "top1": "warm",
+        "triplet_mass": 0.29415
+      },
+      "self_patch": {
+        "probs": {
+          "warm": 0.17479584,
+          "hot": 0.05040682,
+          "cold": 0.06894764
+        },
+        "top1": "warm",
+        "triplet_mass": 0.29415,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "warm": 0.0310798,
+          "hot": 0.10597603,
+          "cold": 0.11989857
+        },
+        "top1": "cold",
+        "triplet_mass": 0.256954
+      },
+      "donor_L25": {
+        "probs": {
+          "warm": 0.01837179,
+          "hot": 0.01387034,
+          "cold": 0.3769486
+        },
+        "top1": "cold",
+        "triplet_mass": 0.409191
+      }
+    },
+    {
+      "fam": "PLIM_KROT",
+      "order": "std",
+      "qi": 1,
+      "r": 0,
+      "Q": "KROT",
+      "Qb": "PLIM",
+      "s": "hot",
+      "t": "cold",
+      "d": "warm",
+      "cluster": "PLIM_KROT_r0",
+      "clean": {
+        "probs": {
+          "hot": 0.61808467,
+          "cold": 0.02125976,
+          "warm": 0.01438611
+        },
+        "top1": "hot",
+        "triplet_mass": 0.653731
+      },
+      "self_patch": {
+        "probs": {
+          "hot": 0.61808467,
+          "cold": 0.02125976,
+          "warm": 0.01438611
+        },
+        "top1": "hot",
+        "triplet_mass": 0.653731,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "hot": 0.08961731,
+          "cold": 0.1125091,
+          "warm": 0.17481811
+        },
+        "top1": "warm",
+        "triplet_mass": 0.376945
+      },
+      "donor_L25": {
+        "probs": {
+          "hot": 0.04117832,
+          "cold": 0.06452104,
+          "warm": 0.26058331
+        },
+        "top1": "warm",
+        "triplet_mass": 0.366283
+      }
+    },
+    {
+      "fam": "PLIM_KROT",
+      "order": "std",
+      "qi": 1,
+      "r": 1,
+      "Q": "KROT",
+      "Qb": "PLIM",
+      "s": "cold",
+      "t": "warm",
+      "d": "hot",
+      "cluster": "PLIM_KROT_r1",
+      "clean": {
+        "probs": {
+          "cold": 0.34522781,
+          "warm": 0.02019091,
+          "hot": 0.00953505
+        },
+        "top1": "cold",
+        "triplet_mass": 0.374954
+      },
+      "self_patch": {
+        "probs": {
+          "cold": 0.34522781,
+          "warm": 0.02019091,
+          "hot": 0.00953505
+        },
+        "top1": "cold",
+        "triplet_mass": 0.374954,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "cold": 0.0598673,
+          "warm": 0.19385245,
+          "hot": 0.26116589
+        },
+        "top1": "hot",
+        "triplet_mass": 0.514886
+      },
+      "donor_L25": {
+        "probs": {
+          "cold": 0.02146991,
+          "warm": 0.02754636,
+          "hot": 0.63750219
+        },
+        "top1": "hot",
+        "triplet_mass": 0.686518
+      }
+    },
+    {
+      "fam": "PLIM_KROT",
+      "order": "std",
+      "qi": 1,
+      "r": 2,
+      "Q": "KROT",
+      "Qb": "PLIM",
+      "s": "warm",
+      "t": "hot",
+      "d": "cold",
+      "cluster": "PLIM_KROT_r2",
+      "clean": {
+        "probs": {
+          "warm": 0.4508267,
+          "hot": 0.04616949,
+          "cold": 0.01571367
+        },
+        "top1": "warm",
+        "triplet_mass": 0.51271
+      },
+      "self_patch": {
+        "probs": {
+          "warm": 0.4508267,
+          "hot": 0.04616949,
+          "cold": 0.01571367
+        },
+        "top1": "warm",
+        "triplet_mass": 0.51271,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "warm": 0.04472624,
+          "hot": 0.14671563,
+          "cold": 0.20723374
+        },
+        "top1": "cold",
+        "triplet_mass": 0.398676
+      },
+      "donor_L25": {
+        "probs": {
+          "warm": 0.02580375,
+          "hot": 0.0388599,
+          "cold": 0.49437764
+        },
+        "top1": "cold",
+        "triplet_mass": 0.559041
+      }
+    },
+    {
+      "fam": "PLIM_KROT",
+      "order": "rev",
+      "qi": 0,
+      "r": 0,
+      "Q": "PLIM",
+      "Qb": "KROT",
+      "s": "hot",
+      "t": "cold",
+      "d": "warm",
+      "cluster": "PLIM_KROT_r0",
+      "clean": {
+        "probs": {
+          "hot": 0.52006954,
+          "cold": 0.03322934,
+          "warm": 0.01032475
+        },
+        "top1": "hot",
+        "triplet_mass": 0.563624
+      },
+      "self_patch": {
+        "probs": {
+          "hot": 0.52006954,
+          "cold": 0.03322934,
+          "warm": 0.01032475
+        },
+        "top1": "hot",
+        "triplet_mass": 0.563624,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "hot": 0.05233683,
+          "cold": 0.08826389,
+          "warm": 0.1612068
+        },
+        "top1": "warm",
+        "triplet_mass": 0.301808
+      },
+      "donor_L25": {
+        "probs": {
+          "hot": 0.02333488,
+          "cold": 0.05115651,
+          "warm": 0.33418226
+        },
+        "top1": "warm",
+        "triplet_mass": 0.408674
+      }
+    },
+    {
+      "fam": "PLIM_KROT",
+      "order": "rev",
+      "qi": 0,
+      "r": 1,
+      "Q": "PLIM",
+      "Qb": "KROT",
+      "s": "cold",
+      "t": "warm",
+      "d": "hot",
+      "cluster": "PLIM_KROT_r1",
+      "clean": {
+        "probs": {
+          "cold": 0.22538173,
+          "warm": 0.08000942,
+          "hot": 0.00980134
+        },
+        "top1": "cold",
+        "triplet_mass": 0.315192
+      },
+      "self_patch": {
+        "probs": {
+          "cold": 0.22538173,
+          "warm": 0.08000942,
+          "hot": 0.00980134
+        },
+        "top1": "cold",
+        "triplet_mass": 0.315192,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "cold": 0.0298597,
+          "warm": 0.21670148,
+          "hot": 0.13687736
+        },
+        "top1": "warm",
+        "triplet_mass": 0.383439
+      },
+      "donor_L25": {
+        "probs": {
+          "cold": 0.01237508,
+          "warm": 0.01812833,
+          "hot": 0.66745055
+        },
+        "top1": "hot",
+        "triplet_mass": 0.697954
+      }
+    },
+    {
+      "fam": "PLIM_KROT",
+      "order": "rev",
+      "qi": 0,
+      "r": 2,
+      "Q": "PLIM",
+      "Qb": "KROT",
+      "s": "warm",
+      "t": "hot",
+      "d": "cold",
+      "cluster": "PLIM_KROT_r2",
+      "clean": {
+        "probs": {
+          "warm": 0.2309944,
+          "hot": 0.14679159,
+          "cold": 0.02625165
+        },
+        "top1": "warm",
+        "triplet_mass": 0.404038
+      },
+      "self_patch": {
+        "probs": {
+          "warm": 0.2309944,
+          "hot": 0.14679159,
+          "cold": 0.02625165
+        },
+        "top1": "warm",
+        "triplet_mass": 0.404038,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "warm": 0.02381388,
+          "hot": 0.06793226,
+          "cold": 0.27093798
+        },
+        "top1": "cold",
+        "triplet_mass": 0.362684
+      },
+      "donor_L25": {
+        "probs": {
+          "warm": 0.01173202,
+          "hot": 0.02130114,
+          "cold": 0.52729607
+        },
+        "top1": "cold",
+        "triplet_mass": 0.560329
+      }
+    },
+    {
+      "fam": "PLIM_KROT",
+      "order": "rev",
+      "qi": 1,
+      "r": 0,
+      "Q": "KROT",
+      "Qb": "PLIM",
+      "s": "hot",
+      "t": "cold",
+      "d": "warm",
+      "cluster": "PLIM_KROT_r0",
+      "clean": {
+        "probs": {
+          "hot": 0.59732401,
+          "cold": 0.01378877,
+          "warm": 0.01509274
+        },
+        "top1": "hot",
+        "triplet_mass": 0.626206
+      },
+      "self_patch": {
+        "probs": {
+          "hot": 0.59732401,
+          "cold": 0.01378877,
+          "warm": 0.01509274
+        },
+        "top1": "hot",
+        "triplet_mass": 0.626206,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "hot": 0.35390705,
+          "cold": 0.10432738,
+          "warm": 0.05239741
+        },
+        "top1": "hot",
+        "triplet_mass": 0.510632
+      },
+      "donor_L25": {
+        "probs": {
+          "hot": 0.11187223,
+          "cold": 0.03116761,
+          "warm": 0.28657895
+        },
+        "top1": "warm",
+        "triplet_mass": 0.429619
+      }
+    },
+    {
+      "fam": "PLIM_KROT",
+      "order": "rev",
+      "qi": 1,
+      "r": 1,
+      "Q": "KROT",
+      "Qb": "PLIM",
+      "s": "cold",
+      "t": "warm",
+      "d": "hot",
+      "cluster": "PLIM_KROT_r1",
+      "clean": {
+        "probs": {
+          "cold": 0.44799644,
+          "warm": 0.01458353,
+          "hot": 0.01620829
+        },
+        "top1": "cold",
+        "triplet_mass": 0.478788
+      },
+      "self_patch": {
+        "probs": {
+          "cold": 0.44799644,
+          "warm": 0.01458353,
+          "hot": 0.01620829
+        },
+        "top1": "cold",
+        "triplet_mass": 0.478788,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "cold": 0.0961986,
+          "warm": 0.13324861,
+          "hot": 0.15435869
+        },
+        "top1": "hot",
+        "triplet_mass": 0.383806
+      },
+      "donor_L25": {
+        "probs": {
+          "cold": 0.03528982,
+          "warm": 0.01143625,
+          "hot": 0.52776438
+        },
+        "top1": "hot",
+        "triplet_mass": 0.57449
+      }
+    },
+    {
+      "fam": "PLIM_KROT",
+      "order": "rev",
+      "qi": 1,
+      "r": 2,
+      "Q": "KROT",
+      "Qb": "PLIM",
+      "s": "warm",
+      "t": "hot",
+      "d": "cold",
+      "cluster": "PLIM_KROT_r2",
+      "clean": {
+        "probs": {
+          "warm": 0.25002265,
+          "hot": 0.02966776,
+          "cold": 0.05761021
+        },
+        "top1": "warm",
+        "triplet_mass": 0.337301
+      },
+      "self_patch": {
+        "probs": {
+          "warm": 0.25002265,
+          "hot": 0.02966776,
+          "cold": 0.05761021
+        },
+        "top1": "warm",
+        "triplet_mass": 0.337301,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "warm": 0.10017209,
+          "hot": 0.0801723,
+          "cold": 0.11698679
+        },
+        "top1": "cold",
+        "triplet_mass": 0.297331
+      },
+      "donor_L25": {
+        "probs": {
+          "warm": 0.08216735,
+          "hot": 0.0152833,
+          "cold": 0.24261363
+        },
+        "top1": "cold",
+        "triplet_mass": 0.340064
+      }
+    },
+    {
+      "fam": "DREN_VORN",
+      "order": "std",
+      "qi": 0,
+      "r": 0,
+      "Q": "DREN",
+      "Qb": "VORN",
+      "s": "red",
+      "t": "blue",
+      "d": "green",
+      "cluster": "DREN_VORN_r0",
+      "clean": {
+        "probs": {
+          "red": 0.51261681,
+          "blue": 0.01181012,
+          "green": 0.01750971
+        },
+        "top1": "red",
+        "triplet_mass": 0.541937
+      },
+      "self_patch": {
+        "probs": {
+          "red": 0.51261681,
+          "blue": 0.01181012,
+          "green": 0.01750971
+        },
+        "top1": "red",
+        "triplet_mass": 0.541937,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "red": 0.07581411,
+          "blue": 0.10460331,
+          "green": 0.21996322
+        },
+        "top1": "green",
+        "triplet_mass": 0.400381
+      },
+      "donor_L25": {
+        "probs": {
+          "red": 0.01561599,
+          "blue": 0.00292064,
+          "green": 0.63316363
+        },
+        "top1": "green",
+        "triplet_mass": 0.6517
+      }
+    },
+    {
+      "fam": "DREN_VORN",
+      "order": "std",
+      "qi": 0,
+      "r": 1,
+      "Q": "DREN",
+      "Qb": "VORN",
+      "s": "blue",
+      "t": "green",
+      "d": "red",
+      "cluster": "DREN_VORN_r1",
+      "clean": {
+        "probs": {
+          "blue": 0.45439264,
+          "green": 0.06577084,
+          "red": 0.07852514
+        },
+        "top1": "blue",
+        "triplet_mass": 0.598689
+      },
+      "self_patch": {
+        "probs": {
+          "blue": 0.45439264,
+          "green": 0.06577084,
+          "red": 0.07852514
+        },
+        "top1": "blue",
+        "triplet_mass": 0.598689,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "blue": 0.02266339,
+          "green": 0.14926176,
+          "red": 0.26492512
+        },
+        "top1": "red",
+        "triplet_mass": 0.43685
+      },
+      "donor_L25": {
+        "probs": {
+          "blue": 0.02213794,
+          "green": 0.0086579,
+          "red": 0.5878818
+        },
+        "top1": "red",
+        "triplet_mass": 0.618678
+      }
+    },
+    {
+      "fam": "DREN_VORN",
+      "order": "std",
+      "qi": 0,
+      "r": 2,
+      "Q": "DREN",
+      "Qb": "VORN",
+      "s": "green",
+      "t": "red",
+      "d": "blue",
+      "cluster": "DREN_VORN_r2",
+      "clean": {
+        "probs": {
+          "green": 0.69932532,
+          "red": 0.01521352,
+          "blue": 0.00751366
+        },
+        "top1": "green",
+        "triplet_mass": 0.722053
+      },
+      "self_patch": {
+        "probs": {
+          "green": 0.69932532,
+          "red": 0.01521352,
+          "blue": 0.00751366
+        },
+        "top1": "green",
+        "triplet_mass": 0.722053,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "green": 0.05299355,
+          "red": 0.30352962,
+          "blue": 0.10141964
+        },
+        "top1": "red",
+        "triplet_mass": 0.457943
+      },
+      "donor_L25": {
+        "probs": {
+          "green": 0.017821,
+          "red": 0.01080901,
+          "blue": 0.63429594
+        },
+        "top1": "blue",
+        "triplet_mass": 0.662926
+      }
+    },
+    {
+      "fam": "DREN_VORN",
+      "order": "std",
+      "qi": 1,
+      "r": 0,
+      "Q": "VORN",
+      "Qb": "DREN",
+      "s": "red",
+      "t": "blue",
+      "d": "green",
+      "cluster": "DREN_VORN_r0",
+      "clean": {
+        "probs": {
+          "red": 0.59475398,
+          "blue": 0.02074174,
+          "green": 0.00865634
+        },
+        "top1": "red",
+        "triplet_mass": 0.624152
+      },
+      "self_patch": {
+        "probs": {
+          "red": 0.59475398,
+          "blue": 0.02074174,
+          "green": 0.00865634
+        },
+        "top1": "red",
+        "triplet_mass": 0.624152,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "red": 0.03028144,
+          "blue": 0.09269843,
+          "green": 0.48179981
+        },
+        "top1": "green",
+        "triplet_mass": 0.60478
+      },
+      "donor_L25": {
+        "probs": {
+          "red": 0.0087387,
+          "blue": 0.00863637,
+          "green": 0.74501133
+        },
+        "top1": "green",
+        "triplet_mass": 0.762386
+      }
+    },
+    {
+      "fam": "DREN_VORN",
+      "order": "std",
+      "qi": 1,
+      "r": 1,
+      "Q": "VORN",
+      "Qb": "DREN",
+      "s": "blue",
+      "t": "green",
+      "d": "red",
+      "cluster": "DREN_VORN_r1",
+      "clean": {
+        "probs": {
+          "blue": 0.59457612,
+          "green": 0.01816289,
+          "red": 0.00566342
+        },
+        "top1": "blue",
+        "triplet_mass": 0.618402
+      },
+      "self_patch": {
+        "probs": {
+          "blue": 0.59457612,
+          "green": 0.01816289,
+          "red": 0.00566342
+        },
+        "top1": "blue",
+        "triplet_mass": 0.618402,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "blue": 0.00921717,
+          "green": 0.21087031,
+          "red": 0.14069663
+        },
+        "top1": "green",
+        "triplet_mass": 0.360784
+      },
+      "donor_L25": {
+        "probs": {
+          "blue": 0.01534592,
+          "green": 0.02806671,
+          "red": 0.48523253
+        },
+        "top1": "red",
+        "triplet_mass": 0.528645
+      }
+    },
+    {
+      "fam": "DREN_VORN",
+      "order": "std",
+      "qi": 1,
+      "r": 2,
+      "Q": "VORN",
+      "Qb": "DREN",
+      "s": "green",
+      "t": "red",
+      "d": "blue",
+      "cluster": "DREN_VORN_r2",
+      "clean": {
+        "probs": {
+          "green": 0.56893945,
+          "red": 0.02681462,
+          "blue": 0.00351371
+        },
+        "top1": "green",
+        "triplet_mass": 0.599268
+      },
+      "self_patch": {
+        "probs": {
+          "green": 0.56893945,
+          "red": 0.02681462,
+          "blue": 0.00351371
+        },
+        "top1": "green",
+        "triplet_mass": 0.599268,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "green": 0.09420565,
+          "red": 0.18723653,
+          "blue": 0.28315449
+        },
+        "top1": "blue",
+        "triplet_mass": 0.564597
+      },
+      "donor_L25": {
+        "probs": {
+          "green": 0.0554762,
+          "red": 0.13126226,
+          "blue": 0.43817976
+        },
+        "top1": "blue",
+        "triplet_mass": 0.624918
+      }
+    },
+    {
+      "fam": "DREN_VORN",
+      "order": "rev",
+      "qi": 0,
+      "r": 0,
+      "Q": "DREN",
+      "Qb": "VORN",
+      "s": "red",
+      "t": "blue",
+      "d": "green",
+      "cluster": "DREN_VORN_r0",
+      "clean": {
+        "probs": {
+          "red": 0.44257075,
+          "blue": 0.10604794,
+          "green": 0.04149631
+        },
+        "top1": "red",
+        "triplet_mass": 0.590115
+      },
+      "self_patch": {
+        "probs": {
+          "red": 0.44257075,
+          "blue": 0.10604794,
+          "green": 0.04149631
+        },
+        "top1": "red",
+        "triplet_mass": 0.590115,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "red": 0.15427382,
+          "blue": 0.13751423,
+          "green": 0.42439044
+        },
+        "top1": "green",
+        "triplet_mass": 0.716178
+      },
+      "donor_L25": {
+        "probs": {
+          "red": 0.126423,
+          "blue": 0.08129233,
+          "green": 0.51645285
+        },
+        "top1": "green",
+        "triplet_mass": 0.724168
+      }
+    },
+    {
+      "fam": "DREN_VORN",
+      "order": "rev",
+      "qi": 0,
+      "r": 1,
+      "Q": "DREN",
+      "Qb": "VORN",
+      "s": "blue",
+      "t": "green",
+      "d": "red",
+      "cluster": "DREN_VORN_r1",
+      "clean": {
+        "probs": {
+          "blue": 0.5048849,
+          "green": 0.08850968,
+          "red": 0.03211866
+        },
+        "top1": "blue",
+        "triplet_mass": 0.625513
+      },
+      "self_patch": {
+        "probs": {
+          "blue": 0.5048849,
+          "green": 0.08850968,
+          "red": 0.03211866
+        },
+        "top1": "blue",
+        "triplet_mass": 0.625513,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "blue": 0.07207037,
+          "green": 0.22130832,
+          "red": 0.31478381
+        },
+        "top1": "red",
+        "triplet_mass": 0.608163
+      },
+      "donor_L25": {
+        "probs": {
+          "blue": 0.10727366,
+          "green": 0.13309717,
+          "red": 0.36212873
+        },
+        "top1": "red",
+        "triplet_mass": 0.6025
+      }
+    },
+    {
+      "fam": "DREN_VORN",
+      "order": "rev",
+      "qi": 0,
+      "r": 2,
+      "Q": "DREN",
+      "Qb": "VORN",
+      "s": "green",
+      "t": "red",
+      "d": "blue",
+      "cluster": "DREN_VORN_r2",
+      "clean": {
+        "probs": {
+          "green": 0.49611941,
+          "red": 0.1222111,
+          "blue": 0.0154594
+        },
+        "top1": "green",
+        "triplet_mass": 0.63379
+      },
+      "self_patch": {
+        "probs": {
+          "green": 0.49611941,
+          "red": 0.1222111,
+          "blue": 0.0154594
+        },
+        "top1": "green",
+        "triplet_mass": 0.63379,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "green": 0.16443142,
+          "red": 0.23852412,
+          "blue": 0.20048121
+        },
+        "top1": "red",
+        "triplet_mass": 0.603437
+      },
+      "donor_L25": {
+        "probs": {
+          "green": 0.12033986,
+          "red": 0.28955215,
+          "blue": 0.2096418
+        },
+        "top1": "red",
+        "triplet_mass": 0.619534
+      }
+    },
+    {
+      "fam": "DREN_VORN",
+      "order": "rev",
+      "qi": 1,
+      "r": 0,
+      "Q": "VORN",
+      "Qb": "DREN",
+      "s": "red",
+      "t": "blue",
+      "d": "green",
+      "cluster": "DREN_VORN_r0",
+      "clean": {
+        "probs": {
+          "red": 0.36654103,
+          "blue": 0.09365038,
+          "green": 0.13842595
+        },
+        "top1": "red",
+        "triplet_mass": 0.598617
+      },
+      "self_patch": {
+        "probs": {
+          "red": 0.36654103,
+          "blue": 0.09365038,
+          "green": 0.13842595
+        },
+        "top1": "red",
+        "triplet_mass": 0.598617,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "red": 0.2198908,
+          "blue": 0.15700282,
+          "green": 0.23555611
+        },
+        "top1": "green",
+        "triplet_mass": 0.61245
+      },
+      "donor_L25": {
+        "probs": {
+          "red": 0.07466986,
+          "blue": 0.0152771,
+          "green": 0.60904521
+        },
+        "top1": "green",
+        "triplet_mass": 0.698992
+      }
+    },
+    {
+      "fam": "DREN_VORN",
+      "order": "rev",
+      "qi": 1,
+      "r": 1,
+      "Q": "VORN",
+      "Qb": "DREN",
+      "s": "blue",
+      "t": "green",
+      "d": "red",
+      "cluster": "DREN_VORN_r1",
+      "clean": {
+        "probs": {
+          "blue": 0.21250682,
+          "green": 0.15278699,
+          "red": 0.23080732
+        },
+        "top1": "red",
+        "triplet_mass": 0.596101
+      },
+      "self_patch": {
+        "probs": {
+          "blue": 0.21250682,
+          "green": 0.15278699,
+          "red": 0.23080732
+        },
+        "top1": "red",
+        "triplet_mass": 0.596101,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "blue": 0.09802318,
+          "green": 0.22283359,
+          "red": 0.23432581
+        },
+        "top1": "red",
+        "triplet_mass": 0.555183
+      },
+      "donor_L25": {
+        "probs": {
+          "blue": 0.11948298,
+          "green": 0.04026853,
+          "red": 0.42720285
+        },
+        "top1": "red",
+        "triplet_mass": 0.586954
+      }
+    },
+    {
+      "fam": "DREN_VORN",
+      "order": "rev",
+      "qi": 1,
+      "r": 2,
+      "Q": "VORN",
+      "Qb": "DREN",
+      "s": "green",
+      "t": "red",
+      "d": "blue",
+      "cluster": "DREN_VORN_r2",
+      "clean": {
+        "probs": {
+          "green": 0.4006581,
+          "red": 0.19166671,
+          "blue": 0.08135074
+        },
+        "top1": "green",
+        "triplet_mass": 0.673676
+      },
+      "self_patch": {
+        "probs": {
+          "green": 0.4006581,
+          "red": 0.19166671,
+          "blue": 0.08135074
+        },
+        "top1": "green",
+        "triplet_mass": 0.673676,
+        "max_diff": 0.0
+      },
+      "donor_L21": {
+        "probs": {
+          "green": 0.16684294,
+          "red": 0.23203446,
+          "blue": 0.1666629
+        },
+        "top1": "red",
+        "triplet_mass": 0.56554
+      },
+      "donor_L25": {
+        "probs": {
+          "green": 0.07228336,
+          "red": 0.05766583,
+          "blue": 0.53373975
+        },
+        "top1": "blue",
+        "triplet_mass": 0.663689
+      }
+    }
+  ]
+}
