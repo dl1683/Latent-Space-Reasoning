@@ -4,6 +4,28 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — Codex R3: no concrete next step; project needs user direction (scratchpad/codex_direction_r3.txt)
+
+**Codex R3 verdict: "There is no concrete next experiment I can specify with
+confidence. The project needs user direction for a genuine Phase 5 pivot."**
+
+Three-round direction dialogue converged:
+- R1: Recommended real-model executable-action algebra in frozen Qwen3-0.6B
+- R2: Self-corrected — the only concrete design is engineering (KV cache splice),
+  not native math. Specified bounded 4-launch falsification.
+- R3: Falsification killed at eligibility (48% accuracy). No next step specifiable.
+
+**The open question for Devansh:** Should Phase 5 pursue discovery inside a
+LARGER frozen pretrained model, or co-develop a modified real model whose latent
+space supports navigation? Codex leans toward co-development, since accumulated
+holes suggest current frozen spaces may be structurally hostile. But this changes
+the project from discovering native structure to constructing a next-generation
+latent space — authorization required.
+
+**Until that choice and effectiveness target are fixed: 0 experimental runs,
+0 forwards.** The project is open; the experimental program is paused at a
+genuine fork point.
+
 ## 2026-09-01 — LAC-0 architecture rewrite: gated executor, temperature fix, Codex corrections
 
 **Architecture changes (prior session + this session):**
@@ -42,9 +64,34 @@ Softplus(src_sim) * softplus(move_sim) kills convergence. At D=240 with per-sim
 /sqrt(D) normalization, similarities are ~O(0.065). Softplus maps these to ~0.69,
 making all products ~0.48 — nearly uniform attention. CoV drops 26%.
 
-**What's next:** Run definitive training with raw multiplication + new eval
-(primitive/train-comp/held-out-comp split) + block diagnostics. Key question:
-does the model generalize to held-out compositions?
+**Definitive run seed 42 results (raw multiplication + corrected eval):**
+- Training: 100% accuracy from step 500, loss=0.0000
+- Clean: 98.65% (prim=100%, train_comp=100%, **held_comp=95.96%**)
+- Self-patch: 0.00e+00 (PASS)
+- Three-way F: 1.0000 (PASS)
+- Block diagnostics:
+  - Gates: prim b1=0.932 b2=0.889 | comp b1=0.969 b2=0.503
+  - Acc after b1: prim=0%, comp_train=12%, comp_held=11%
+  - Acc after b2: prim=100%, comp_train=100%, comp_held=94%
+  - Gate pattern: BOTH blocks active for primitives (not expected identity at b2)
+  - Block 1 alone can't solve anything; block 2 does all the work
+- **KEY RESULT: 95.96% held-out composition accuracy — gate ≥85% PASSES**
+
+**Codex review corrections adopted (scratchpad/codex_softplus_review.txt):**
+1. Untyped is_composed ambiguity: command2=0 for primitives is ambiguous with
+   composed command2 that maps to alias 0. FIXED: added type-7 is_composed token.
+2. eval_worlds generated but never used — eval runs only on train_worlds.
+3. Config d_model=128 but main uses 148. FIXED config.
+4. random.shuffle breaks RNG determinism. FIXED: use rng.permutation(32).
+5. Block-1 composition accuracy scores against endpoint, not midpoint.
+6. Log-domain conjunction recommended: logsigmoid(α*src) + logsigmoid(β*move).
+7. Portability tests engineered shared ontology, not discovery.
+8. Distance: still D2. New eval/diagnostic work is D3.
+
+**What's next:** Seeds 137/2025 running (untyped control for seed 42 in progress).
+If held-out composition passes ≥85% across 3 seeds, gate 4 passes. Then: re-run
+with all Codex fixes (is_composed, log-domain scoring, eval_worlds) for the
+claim-bearing version.
 
 ## 2026-09-01 — Permutation eligibility: INELIGIBLE — model cannot do the task (Launch 1/4, terminal)
 
