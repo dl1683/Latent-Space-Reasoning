@@ -4,6 +4,19 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — Qwen3-4B-Base smoke diagnostic: still NO_INTERFACE
+
+**Quick test:** 16-item balanced diagnostic (4 per cell) on the two-dial world,
+same Python-completion format as PSQ-1. Qwen3-4B-Base (float16, 7.6GB). Result:
+9/16 = 56.2% — essentially identical to 1.7B's 53.91%. Scaling from 1.7B to 4B
+does not help. The state-tracking deficit is not a parameter-count problem in this
+range.
+
+**Implication for direction:** The predeclared Codex R3 fallback (Qwen3-8B-Base)
+might also fail. The two-dial world PSQ approach appears blocked below ~8B at
+minimum, possibly higher. This is informational for the Codex direction dialogue,
+not a formal experiment.
+
 ## 2026-09-01 — PSQ-1 capability screen: NO_INTERFACE (Qwen3-1.7B-Base)
 
 **Result:** Overall 69/128 = 53.91% (gate ≥95%). Per-cell: x_0=50.0%, x_1=59.4%,
