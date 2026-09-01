@@ -228,26 +228,51 @@ visual.]
 ### 5.1 Established laws
 
 **Identity (L1).** Empty continuation preserves all greedy places (100%).
+Appending nothing to a history does not change its greedy signature — a sanity
+check that confirms the quotient is stable under the trivial action.
 
-**Idempotence (L2).** $(S^W_w)^2 \approx S^W_w$: 100% greedy idempotence
-(96/96), JSD(S, S²) mean = 0.070.
+**Approximate idempotence (L2).** $(S^W_w)^2 \approx S^W_w$: applying
+world-conditioned restatement twice produces the same greedy signature as
+applying it once (100% greedy idempotence, 96/96 across both entity sets). The
+distributional residual is small: JSD distance between $S$ and $S^2$ averages
+0.070 (range 0.025-0.140). This establishes $S^W$ as an approximate retraction
+in the algebraic sense — it projects onto a subspace of prompt histories and
+then stabilizes there.
 
-**Correction changes place (L3).** $C_{e \leftarrow v}$ changes the greedy
-place in 58-65% of cases.
+**Correction changes place (L3).** Appending a correction $C_{e \leftarrow v}$
+("Actually, ZOG: small.") changes the greedy answer for entity $e$ to $v$ in
+29/48 registered and 28/48 held-out cases. In the remaining cases, the model's
+greedy answer was already $v$ or the correction did not override the prior
+context. Correction is a partial action: it is not defined on all histories
+(some resist correction), and its effect depends on the base history.
 
 ### 5.2 Non-naturality of $S^W$ with correction
 
-The typed naturality square tests whether correction commutes with
-world-conditioned restatement:
+The central algebraic test asks whether the world-conditioned restatement
+commutes with correction. Consider two paths from a base history to the same
+corrected world $w'$:
+
+- **Path CS:** First correct ($C$: "Actually, ZOG: small."), then restate the
+  corrected world ($S^W_{w'}$: "To be clear: ZOG: small. MIP: hot. PLIM: red.")
+- **Path SC:** First restate the original world ($S^W_w$: "To be clear: ZOG:
+  big. MIP: hot. PLIM: red."), then correct ($C$: "Actually, ZOG: small.")
+
+Both paths end at the corrected world $w'$. If restatement were natural with
+respect to correction, the two paths would produce the same response law:
 
 $$S^W_{w'} \circ C \stackrel{?}{=} C \circ S^W_w$$
 
-Both paths end at the corrected world $w'$. The square does NOT commute:
+The square does NOT commute:
 
 | Metric | Registered | Held-out |
 |--------|-----------|----------|
 | JSD distance mean | 0.208 | 0.208 |
 | Greedy commutativity | 89.6% (43/48) | 70.8% (34/48) |
+
+All 19 greedy disagreements (14 held-out + 5 registered) occur on
+baseline-correct source queries — cases where the model initially answered
+correctly and was then corrected to a wrong value. This is where the model has
+the strongest prior, and the path dependence is most visible.
 
 [Figure 4: The typed square diagram and per-pair JSD heatmap. Must visibly
 disclose the unequal fact multiplicities: path CS contains the corrected value
@@ -259,18 +284,47 @@ paths have reached the same declarative world. This is non-naturality in the
 categorical sense: the restatement transformation does not commute with
 correction.
 
+**Multiplicity confound.** The two paths contain different textual
+multiplicities: in CS, the corrected value appears twice (in the correction and
+the corrected-world restatement), while in SC, the original value appears twice
+(in the original-world restatement and then overridden by correction). This does
+not invalidate the non-naturality result — the algebra is defined over append
+actions, and append inherently carries textual content — but it means the
+non-commutativity cannot be attributed to order alone. The paths differ in both
+order and multiplicity.
+
 **Scope.** One failed naturality square for one content-bearing canonicalizer
 rules out that particular clean separation. It does not prove that no
 alternative canonicalizer or product decomposition exists.
 
-### 5.3 Open questions
+### 5.3 Descent
 
-- **O1:** Does a representative-independent $S^G_g$ (defined from observable
-  greedy signature alone) exist and retain idempotence?
-- **O2:** Does correction descend to $G$? Correction reaches its asserted target
-  token in 29/48 registered and 28/48 held-out cases, but descent to the greedy
-  quotient (all fiber members mapping to the same target place) is untested.
-- **N1:** Global predictive × presentation nonfactorization is NOT established.
+An operation *descends* to the greedy quotient $G$ when all representatives of a
+fiber map to the same target place under the operation.
+
+| Operation | Registered | Held-out |
+|-----------|-----------|----------|
+| Empty descent | 12/12 (100%) | 15/15 (100%) |
+| Restatement descent | 11/12 (91.7%) | 15/15 (100%) |
+
+Empty descent is perfect by construction (fibers were defined from the same
+greedy queries). Restatement descent fails for one registered fiber whose members
+come from different semantic worlds — $S^W_w$ maps them to different targets
+because it uses the hidden world, not the shared greedy signature.
+
+### 5.4 Open questions
+
+- **O1: Representative-independent restatement.** Does a restatement $S^G_g$
+  defined from the observable greedy signature alone (without the hidden world)
+  exist and retain approximate idempotence? The current $S^W_w$ requires
+  experimenter knowledge of the ground-truth world.
+- **O2: Correction descent.** Correction reaches its target token in 29/48
+  registered and 28/48 held-out cases, but whether all fiber members map to the
+  same target place (descent to $G$) is untested.
+- **N1: Global nonfactorization.** The non-naturality of $S^W$ with correction
+  rules out one specific factorization. Global predictive × presentation
+  nonfactorization is NOT established — alternative canonicalizers or product
+  decompositions remain possible.
 
 ---
 
