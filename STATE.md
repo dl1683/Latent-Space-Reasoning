@@ -1,6 +1,8 @@
 # STATE
 
-## Current statement (2026-09-01, PSQ-1 NO_INTERFACE on 1.7B; LAC-0 TERMINAL; all experimental lines stopped/ineligible; native math existence is axiomatic)
+## Current statement (2026-09-01, EMPIRICAL PROGRAM CLOSED — Codex R1-R2 converged; one bounded theory attempt remains)
+
+**Empirical authority closed.** After 75+ experiments across 5 phases, zero positive results survive audit. All experimental lines are terminal, stopped, inconclusive, or ineligible. Codex direction dialogue R1-R2 converged: stop experiments; one bounded theory attempt (composition-identifiability theorem on action carriers); hard kill gate (five conditions: type validity, prior-art delta, nontrivial separation, LAC retrodiction without fitting, finite CPU falsifier). If the theory attempt fails, the program archives. Native math existence remains axiomatic (user directive) but unsupported by this work.
 
 - **PSQ-1: Predictive-State Quotient capability screen (2026-09-01, Phase 5). NO_INTERFACE.** 128 CPU forward passes, 217s. Qwen3-1.7B-Base on two-dial world (Z8×Z8, 4 actions, Python-completion, 4-shot). Overall accuracy 53.91% (gate ≥95%). Per-cell: x_0=50.0%, x_1=59.4%, y_0=9.4%, y_1=96.9%. Model predicts "0" almost always for y queries; at chance for x. No state tracking capability. Stop condition: NO_INTERFACE. No repair. The predeclared fallback (Qwen3-8B-Base) was already tested in the earlier PSQ-1 round (EXPERIMENTS.md Phase 5 PSQ-1 section) and also failed (55.5%, NO_INTERFACE). A Qwen3-4B-Base smoke test (56.2%, 16 items) further confirms: all sizes 0.6B–8B fail the two-dial Python-completion capability gate. The approach is comprehensively dead across the available model size range.
 

@@ -2,69 +2,50 @@
 
 > *Every neural network has a vast mathematical world inside it. We treat it as ordinary vector space and apply linear algebra. But what if it has its own mathematics — structure that exists, that the model uses, and that our standard tools literally cannot see?*
 
-This project is building the **native mathematics of latent spaces** — not porting existing math onto embeddings, but discovering what math the space itself demands. Like Euclid building geometry by asking what axioms a flat plane requires, we ask: what axioms does a latent space require? What are its native notions of *place*, *move*, *distance*, and *composition*?
+This project attempted to build the **native mathematics of latent spaces** — not porting existing math onto embeddings, but discovering what math the space itself demands.
 
-## The headline
+## Status: empirical program closed (2026-09-01)
 
-**Cosine similarity — the standard tool for comparing neural network representations — is blind to the model's actual behavioral structure.** Not imprecise. *Blind.* It inverts the ranking: states cosine calls most similar are the most behaviorally different. What does see the structure? The model's own output distributions, measured through logit lens + Jensen-Shannon divergence.
+After 75+ experiments across 5 phases, two eligibility screens, one terminal composition result, and multiple independent Codex adversarial audits, the empirical program is closed. **No positive scientific result survives audit.** The theoretical framework (axioms D1–D9, Theorems 1/4/7/8) is sound standard mathematics. One bounded theory attempt (composition-identifiability theorem) remains; if it fails its kill gate, the program archives.
 
-Using this instrument across 18 audited experiments, we've found that a small language model maintains a **structured behavioral algebra** entirely invisible to ℝⁿ metrics:
+The central hypothesis — "latent spaces have native mathematics" — is **not refuted** but is **unsupported** by this work. The experiments failed at eligibility (models couldn't provide a behavioral interface) or at composition (engineered systems learned shortcuts, not algebra), never reaching the geometric measurements that could test the bet.
 
-| Finding | Number | What it means |
-|---------|--------|---------------|
-| **Peak selective amplification** | 62× | At layers 21-25, the model amplifies the queried fact's signature 62× while suppressing irrelevants to near-zero |
-| **Cosine at the same point** | 0.98 | Standard metric sees "nearly identical" where the model sees "completely different" |
-| **Greedy congruence** | 97% | Same-place histories produce the same next-token prediction — the argmax algebra is real |
-| **Distributional congruence** | 0% | But the full output distributions *always* differ — every greedy fiber contains distinguishable states |
-| **Commitment bottleneck** | 0.05 bits | Entropy drops to near-zero at L25 (the model fully commits), then re-broadens to 5.5-7.7 bits |
-| **Synchronization idempotence** | 100% | Both S^W and S^G literal signature renderers are greedy-idempotent on the tested carrier (textual echo not ruled out; terminal anti-echo test inconclusive due to weak counterfactual interface) |
-| **Sequence/path dependence** | 70.8-89.6% | Two append sequences asserting the same corrected world produce different response laws — order matters |
+## What we observed
 
-## What we've found
+### Bounded observations (Codex-audited, in one small LM prompt world)
 
-### The resolution layer
+In a three-fact prompt micro-world on frozen Qwen3-0.6B-Base (Phases 1–2, 68 experiments):
 
-Between layers 21 and 25 (of 28), the model selectively amplifies the behavioral signature of the queried fact while suppressing all irrelevant facts to near-zero. Cosine similarity stays above 0.91 throughout — it cannot see any of this.
+- **Cosine similarity misses response-law distinctions** in bounded settings. States with cosine ≈ 0.98 produce behaviorally different outputs under logit-lens JSD. This establishes that cosine is an *insufficient* instrument for behavioral structure, not that it is categorically blind.
+- **Greedy answer signatures form an approximate behavioral quotient** with nontrivial predictive fibers. Path dependence is confirmed, but ordinary textual order/multiplicity effects are not ruled out.
+- **Observational selectivity is verbalizer-sufficient** (OSQ-1: V=1.01). The 62× late-layer amplification is real but fully explained by 3-bin answer-token routing — ordinary language-model decoding, not native behavioral algebra.
+- **Composition fails** (QPC-1). Transplanted query-state at L21 does not compose with the recipient world. The Qwen prompt micro-world is closed.
 
-- **62× peak selectivity** (PLIM/KROT, L25)
-- **Not attention routing** — attention weights show no selectivity (r < 0.25); attention to the queried entity is high at ALL layers
-- **Whole-sequence operation** — the resolution signal is distributed across all input positions, not concentrated at the queried entity
-- **Multi-fact generalization** — in 3-fact worlds, all irrelevant facts are suppressed equally and simultaneously
+### Terminal composition result (Phase 3)
 
-### The commitment bottleneck
+**LAC-0: Learned Action Carrier (739K params, 3 seeds).** A typed neural machine achieves 100% primitive execution and F=1.0 cross-world portability — capabilities the matched untyped transformer cannot achieve (12.5%, chance). But composition fails: held-out endpoint 14–34% (gate ≥85%), sequential agreement 12–34% (gate ≥90%). **Circuit selection** (Codex design gate): default initialization learns endpoint shortcuts (96%) but 0% sequential; Xavier learns sequential execution (95%) but not composed carriers (34%). These are different optimization basins. Neither passes. Terminal per §14.7(b).
 
-Tracking Shannon entropy through all 28 layers reveals a dramatic structural phenomenon: the model funnels through a near-deterministic bottleneck at L24-25 (entropy ≈ 0.05 bits, top-1 mass ≈ 0.999), then re-broadens the distribution to 5.5-7.7 bits in the final output.
+**EAC-1** passed all 7 causal gates but was ruled architecturally tautological — the carrier IS the next-state embedding.
 
-This explains two otherwise contradictory findings:
-- **Greedy congruence (97%)** holds because the commitment determines the argmax
-- **Distributional congruence (0%)** fails because the re-broadened distribution encodes history-dependent structure
+### Eligibility failures (Phases 4–5)
 
-The re-broadened distribution is not noise — the tokens with the largest probability differences between same-place histories are overwhelmingly history-related entity values. The model leaks its entire fact-world into every output distribution.
+All tested model sizes fail the two-dial world (Z8×Z8, 64 states, Python-completion) capability gate (≥95%):
+- Qwen3-0.6B-Base: 48% (permutation task)
+- Qwen3-1.7B-Base: 50–54%
+- Qwen3-4B-Base: 56% (smoke)
+- Qwen3-8B-Base: 55.5%
+- Qwen3-8B-Instruct: 50–64%
 
-### The behavioral algebra
+Small-to-medium base models cannot track multi-step state evolution through prompts.
 
-The model supports a **coarse partial action algebra** of greedy commitments:
+### Nine breakpoints (Phase 1)
 
-- **Places** are greedy answer profiles (which entity gets which answer)
-- **Moves** are typed continuations: empty, neutral, correction, restatement
-- **Place preservation** is near-total for identity-like operations (100% empty, 95% neutral/restatement) and genuinely state-changing for corrections (35%)
-- **Synchronization** via literal signature restatement is approximately idempotent: JSD(S, S²) ≈ 0.07, 100% greedy idempotence (textual echo not ruled out — a terminal 2304-pass anti-echo factorial found the counterfactual-record interface too weak to answer the question)
-- **Two renderers:** S^W (from experimenter-known world) and S^G (from the model's own observable greedy answers). Both are literal append operators; neither has been demonstrated as a semantic canonicalizer. The terminal Phase 4d factorial revealed a **commitment-congruence asymmetry**: confirming records preserve the incumbent signature on 47/48 and 44/48 coordinates, while contradicting records move it on only 21/48 and 8/48 — the append is state-dependent, nearly identity-like when congruent.
-
-The two append sequences yield different response laws despite ending with the same per-entity declared values (JSD distance ~0.20, greedy commutativity 70.8-89.6%), establishing sequence/path dependence under the tested operations. This does not rule out ordinary textual order or multiplicity effects — the two paths differ in assertion order, multiplicity, and token distance.
-
-A new finding: **correction itself does not reliably descend to the quotient** (58-80%). The same correction is ignored by some presentation orders and accepted by others — the fiber's distributional residual (invisible to argmax) affects how the model responds to further operations.
-
-All results generalize to held-out entities the model has never seen in the training prompts.
-
-### The nine breakpoints (Phase 1)
-
-Across 50+ earlier experiments, we catalogued nine places where ℝⁿ mathematics fails in latent space. Each is a constraint on what native math must look like.
+Across 50+ experiments, we catalogued nine places where ℝⁿ mathematics fails in latent space. Each is a constraint on what native math must look like — not evidence that native math was found.
 
 | # | Breakpoint | What it means |
 |---|-----------|---------------|
 | 1 | **Presence ≠ causation** | A concept can be perfectly decodable yet have zero causal effect. Linear probes find ghosts. |
-| 2 | **Single-site ≠ distributed** | Facts are distributed properties of entire layer transformations. Patching one site does nothing; patching the whole state changes everything. |
+| 2 | **Single-site ≠ distributed** | Facts are distributed properties of entire layer transformations. |
 | 3 | **Vector distance ≠ semantic distance** | Points close in cosine can be functionally opposite. |
 | 4 | **Fixed dimensions ≠ fixed structure** | Effective dimensionality changes with context and task. |
 | 5 | **Vector composition ≠ computational composition** | The model composes through its forward pass, not through vector arithmetic. |
@@ -77,17 +58,9 @@ Full details: [`theory/BREAKPOINT_REGISTRY.md`](theory/BREAKPOINT_REGISTRY.md)
 
 ## Theoretical framework
 
-We're building axioms for latent space the way a denizen of that world would: not importing geometry from outside, but asking what mathematical structures are needed to *navigate*.
+The axiomatic framework defines behavioral place, move, cost, and composition for deterministic transition-output systems. The formal development (D1–D9, Theorems 1/4/7/8, Open Problem 7, Conjectures 5/7) is in [`theory/AXIOMS.md`](theory/AXIOMS.md).
 
-**The five navigation requirements:**
-
-1. **Identity** — when have I returned to the same place? (Not: when are two vectors close)
-2. **Moves** — what interventions does this world permit? (Not: what vectors can I add)
-3. **Cost** — what effort does a move require? (Not: what's the Euclidean distance)
-4. **Map** — can I predict consequences of moves I haven't made? (Not: can I interpolate)
-5. **Laws** — what regularities hold across regions? (Not: what's the basis)
-
-The formal development is in [`theory/AXIOMS.md`](theory/AXIOMS.md).
+The adopted theory is sound standard mathematics — Moore-behavioral pseudometrics, observability seminorms, finite-memory append worlds, finite-access asymmetry, and surgeon/denizen world separation. The distinctive material is the registration-relative interface (D2), coherent presentation transport (D6), executable-germ restrictions (D9), and the native bridge definition. Nothing currently proved is genuinely new mathematics; the framework's value is in governing claims and preventing hidden decoders.
 
 ## Repository structure
 
@@ -103,14 +76,6 @@ STATE.md               Canonical current state of all claims
 NOTEBOOK.md            Reverse-chronological running log
 ```
 
-## Current status
-
-**Phase 3 stopped; pivoting** (2026-09-01). Phase 1 (50 experiments, 2026-08-27 → 2026-08-31) established the nine breakpoints and the ℝⁿ trap. Phase 2 (18 experiments, 2026-08-31) built non-ℝⁿ instruments and discovered the behavioral algebra; observational ceiling reached (verbalizer null V=1.01), QPC-1 composition failed, micro-world closed. Phase 3 (EAC-1, 2026-09-01) achieved all 7 causal gates but Codex ruled it architecturally tautological — the carrier IS the next-state embedding, not a compositional action. EAC/LAC line stopped. Direction dialogue underway for the next program.
-
-Phase 2 central empirical claim (Codex-audited): *In a bounded three-fact prompt world in one small language model, greedy answer signatures form an approximate behavioral quotient with nontrivial predictive fibers. Path dependence is confirmed but ordinary textual order/multiplicity effects are not ruled out.* Phase 3 result (Codex-audited): *A 359K-parameter from-scratch network's learned content-addressing validated a differentiable associative-memory construction, not a transplanted action carrier or native latent-space mathematics.*
-
-Current state: [`STATE.md`](STATE.md) · Running log: [`NOTEBOOK.md`](NOTEBOOK.md) · Phase 1 handoff: [`docs/HANDOFF_2026_08_30.md`](docs/HANDOFF_2026_08_30.md)
-
 ## Methodology
 
 Every claim follows a strict evidence protocol:
@@ -124,16 +89,9 @@ Every claim follows a strict evidence protocol:
 
 The previous program (LLM embedding perturbation, diffusion latent repair) is archived under [`legacy/`](legacy/). Its nested-arithmetic claims were **withdrawn** after independent controls showed the benchmark measured termination under a token cap, not arithmetic capability. Full record: [`legacy/docs/CORRECTION_NESTED_ARITHMETIC_2026_08.md`](legacy/docs/CORRECTION_NESTED_ARITHMETIC_2026_08.md).
 
-## Contributing
+## Remaining work
 
-This is early-stage mathematical research. We're looking for people excited about:
-
-- **Mechanistic interpretability** — especially if you've hit the limits of linear probes and want something deeper
-- **Abstract algebra / category theory** — we need mathematical structures that aren't vector spaces
-- **Causal inference** — our instruments are causal interventions on neural network internals
-- **Philosophy of mathematics** — seriously: what *kind* of mathematical object is a latent space?
-
-Start by reading the [breakpoint registry](theory/BREAKPOINT_REGISTRY.md) — each breakpoint is an open problem. If one excites you, open an issue.
+One bounded theory attempt: a composition-identifiability theorem for action carriers in behavioral quotients, with a hard kill gate (five conditions including prior-art delta, nontrivial separation, LAC retrodiction without fitting, and a finite CPU falsifier). If it fails, the program archives as a negative-results and methodological contribution. Details in [`STATE.md`](STATE.md).
 
 ## License
 

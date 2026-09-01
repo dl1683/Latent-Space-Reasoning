@@ -4,6 +4,36 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — Codex direction dialogue R1-R2: CONVERGED — close experiments, one theory attempt
+
+**Codex R1 verdict:** Stop the experimental program. One bounded theory attempt
+(composition-identifiability theorem), then archive if it fails. Correction: the
+8B fallback was already tested and failed (55.5% base, 50-64% instruct). The
+README's "cosine is blind" and "structured behavioral algebra" claims are
+unsupported by audited results.
+
+**Claude R2 pushback:** Proposed δ_E (germ-restricted path distance) interpretation
+of LAC-0 composition failure. Proposed tighter kill gate (three conditions).
+
+**Codex R2 ruling:** δ_E interpretation REJECTED (three independent reasons: same
+endpoint ≠ close in d_∞; LAC-0 never instantiated δ_E; δ_E can't distinguish
+paths with same endpoints). The right object is the transformation monoid/
+executable category, not state-space geometry. LAC-0 failure is arrow-level
+(transformation equivalence), not state-distance-level. Kill gate tightened to
+five conditions: type validity, prior-art delta, nontrivial separation, LAC
+retrodiction without fitting, finite CPU falsifier.
+
+**Sequence agreed:** (1) Clean closure commit (README correction, reconcile all
+docs). (2) Lock theorem statement + kill gate + prior-art matrix + falsifier.
+(3) Attempt proof. (4) One audit. (5) Archive or reopen based on kill gate.
+
+**Scope of closure if theory fails:** Close LSR as active research program
+(archival negative-results contribution). C5 in AGI thesis survives as live
+hypothesis but without positive LSR evidence. Reopening requires genuinely new
+external evidence or architecture, not another substrate/task sweep.
+
+**Next:** Execute closure commit, then set up the theory attempt.
+
 ## 2026-09-01 — Qwen3-4B-Base smoke diagnostic: still NO_INTERFACE
 
 **Quick test:** 16-item balanced diagnostic (4 per cell) on the two-dial world,
@@ -12,10 +42,10 @@ same Python-completion format as PSQ-1. Qwen3-4B-Base (float16, 7.6GB). Result:
 does not help. The state-tracking deficit is not a parameter-count problem in this
 range.
 
-**Implication for direction:** The predeclared Codex R3 fallback (Qwen3-8B-Base)
-might also fail. The two-dial world PSQ approach appears blocked below ~8B at
-minimum, possibly higher. This is informational for the Codex direction dialogue,
-not a formal experiment.
+**Implication for direction:** Combined with the earlier PSQ-1 results (8B-Base
+55.5%, 8B-Instruct 50-64%), all sizes 0.6B through 8B fail. The two-dial
+Python-completion approach is comprehensively dead. This is informational for the
+Codex direction dialogue, not a formal experiment.
 
 ## 2026-09-01 — PSQ-1 capability screen: NO_INTERFACE (Qwen3-1.7B-Base)
 
