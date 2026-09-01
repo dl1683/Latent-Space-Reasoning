@@ -1,0 +1,154 @@
+{
+  "experiment": "BMM-0",
+  "timestamp": "2026-09-01T18:01:31.564148+00:00",
+  "model": "Qwen/Qwen3-0.6B-Base",
+  "n_prompts": 22,
+  "n_continuations": 10,
+  "extract_layer": 20,
+  "forward_passes": 242,
+  "elapsed_s": 40.4,
+  "gates": {
+    "G1_instrument": {
+      "pass": true,
+      "max_self_jsd": 0.0
+    },
+    "G2_variation": {
+      "pass": false,
+      "cv": 0.18349342901221816,
+      "d_beh_min": 0.0,
+      "d_beh_max": 0.7799314450133761,
+      "d_beh_mean": 0.6126015954766021
+    },
+    "G3_disagreement": {
+      "spearman_r": 0.6982892338487007,
+      "spearman_p": 4.217364475297913e-35,
+      "metric_disagrees": true,
+      "base_spearman_r": 0.6278433160274898
+    }
+  },
+  "extreme_pairs": [
+    {
+      "i": 0,
+      "j": 1,
+      "residual": 0.4163228075848931,
+      "d_beh": 0.43753979791242636,
+      "d_cos": 0.016087472438812256,
+      "label_i": "capitals:Paris is the capital",
+      "label_j": "capitals:Tokyo is the capital",
+      "cat_i": "capitals",
+      "cat_j": "capitals"
+    },
+    {
+      "i": 1,
+      "j": 12,
+      "residual": 0.4163228075848931,
+      "d_beh": 0.43753979791242636,
+      "d_cos": 0.016087472438812256,
+      "label_i": "capitals:Tokyo is the capital",
+      "label_j": "tvar:Paris is the capital",
+      "cat_i": "capitals",
+      "cat_j": "capitals"
+    },
+    {
+      "i": 1,
+      "j": 2,
+      "residual": 0.40478955543263967,
+      "d_beh": 0.4205406570095698,
+      "d_cos": 0.011943042278289795,
+      "label_i": "capitals:Tokyo is the capital",
+      "label_j": "capitals:Moscow is the capita",
+      "cat_i": "capitals",
+      "cat_j": "capitals"
+    },
+    {
+      "i": 0,
+      "j": 2,
+      "residual": 0.38830123865040306,
+      "d_beh": 0.4133583121837547,
+      "d_cos": 0.018999159336090088,
+      "label_i": "capitals:Paris is the capital",
+      "label_j": "capitals:Moscow is the capita",
+      "cat_i": "capitals",
+      "cat_j": "capitals"
+    },
+    {
+      "i": 2,
+      "j": 12,
+      "residual": 0.38830123865040306,
+      "d_beh": 0.4133583121837547,
+      "d_cos": 0.018999159336090088,
+      "label_i": "capitals:Moscow is the capita",
+      "label_j": "tvar:Paris is the capital",
+      "cat_i": "capitals",
+      "cat_j": "capitals"
+    },
+    {
+      "i": 3,
+      "j": 5,
+      "residual": 0.3173934079562337,
+      "d_beh": 0.426377327627967,
+      "d_cos": 0.08263546228408813,
+      "label_i": "colors:The sky is typically",
+      "label_j": "colors:Blood is typically c",
+      "cat_i": "colors",
+      "cat_j": "colors"
+    },
+    {
+      "i": 4,
+      "j": 5,
+      "residual": 0.3091631529362895,
+      "d_beh": 0.3811721416607977,
+      "d_cos": 0.054599761962890625,
+      "label_i": "colors:Grass is typically c",
+      "label_j": "colors:Blood is typically c",
+      "cat_i": "colors",
+      "cat_j": "colors"
+    },
+    {
+      "i": 10,
+      "j": 16,
+      "residual": 0.29033098897908405,
+      "d_beh": 0.5214326203736317,
+      "d_cos": 0.17522943019866943,
+      "label_i": "math:The square root of n",
+      "label_j": "tvar:What is 2 + 2? The a",
+      "cat_i": "math",
+      "cat_j": "math"
+    },
+    {
+      "i": 3,
+      "j": 4,
+      "residual": 0.2873697322509755,
+      "d_beh": 0.3387930450435683,
+      "d_cos": 0.03899097442626953,
+      "label_i": "colors:The sky is typically",
+      "label_j": "colors:Grass is typically c",
+      "cat_i": "colors",
+      "cat_j": "colors"
+    },
+    {
+      "i": 9,
+      "j": 21,
+      "residual": -0.25952481305786734,
+      "d_beh": 0.6190936137439494,
+      "d_cos": 0.6661995649337769,
+      "label_i": "math:Two plus two equals",
+      "label_j": "cross:The chemical formula",
+      "cat_i": "math",
+      "cat_j": "cross"
+    }
+  ],
+  "verdict": "DEGENERATE_VARIATION",
+  "d_beh_stats": {
+    "mean": 0.6126015954766021,
+    "std": 0.11240836737254097,
+    "min": 0.0,
+    "max": 0.7799314450133761
+  },
+  "d_cos_stats": {
+    "mean": 0.4644961953163147,
+    "std": 0.15641464293003082,
+    "min": -2.384185791015625e-07,
+    "max": 0.7432314157485962
+  }
+}
