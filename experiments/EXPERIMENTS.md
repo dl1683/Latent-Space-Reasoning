@@ -5,6 +5,22 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
+## OCI/RAC — Real-entity activation steering (2026-09-01; CLOSED per Codex round 10)
+
+Qwen3-0.6B-Base, frozen, CPU-only. Real capital-city entities (Tokyo/Japan, Berlin/Germany, London/UK, etc.). Hidden-state transplant and function-vector composition at B20. Distance-from-claim: 1 (activation steering is R^n scaffolding, not native math; signals inform the next constructive program).
+
+- **OCI-001 through OCI-003** — Operational positional-carrier confirmation. Cross-template routing follows ordinal clause position (96.5%), not token position. Sentence-position routing at B20 confirmed across 3 disjoint panels, 192+ transplant rows.
+
+- **RAC-0 — POSITIVE (bounded)** (`results/rac_0/verdict.json`; `run_rac_0.py`). First successful composition in 75+ experiments. Two orthogonal function vectors (routing=position rv, relation=capital/language rlv; cos=-0.046) independently and jointly control retrieval. Composition generalizes 100% to held-out entity pairs. Survives 5 layers of separated computation (B15-B20). Layer-phase deformation: works B15-B21, FAILS at B22 (content commitment transition).
+
+- **RAC-1 — FAIL (Codex round 9; algebra program CLOSED)** (`results/rac_1/verdict_affine.json`; `run_rac_1.py`). Affine coordinate-overwrite setters: S_v(h) = h + direction * (tau - c_dim(h)). True mathematical idempotence (48/48). correct_top1 composition 21/36 (58%) — binding metric per spec. Metric substitution error caught by Codex: comp metric (32/36, 89%) was p_target>p_start, not top-1. Same-layer commutativity tautological (affine construction, rv perp rlv). Transport: ALL DEFORM. Codex ruling: "useful local coordinate actuator, not a response quotient carrying a product algebra."
+
+- **Codex direction round 10 — END FROZEN-RESIDUAL MEASUREMENT LANE.** Jacobian rank experiment REJECTED (already run as CPD-001, R^n trap; full rank 40/40, effective rank 6-28). Terminal diagnostic prescribed: Gate I (logit-additive null) + Gate F (response-fiber stability). Outcome table governs closure characterization.
+
+- **Terminal diagnostic — CLOSE AS DECODER/LOGIT COMPETITION** (`results/terminal_diagnostic/verdict.json`). Gate I: logit-additive null l_a+l_b-l_0 explains 99.1% of composition effect (sqrt(JSD) = 0.0001 between predicted and actual composed distributions; 12/12 top-1 match). The "composition" in RAC-0/RAC-1 is ordinary logit addition through a linear unembedding — decoder competition, not nonlinear response geometry. Gate F: NO_INTERFACE — no template pair has baseline sqrt(JSD) < 0.15 (smallest gap: 0.19). The model's response law is presentation-dependent; no template-invariant response fiber exists. Per Codex outcome table: CLOSE AS DECODER/LOGIT COMPETITION. Frozen-residual measurement lane ends.
+
+---
+
 ## Phase 3 — Co-designed dynamical carrier (2026-09-01 →)
 
 Build a learned carrier whose internal states compose under causal transplantation. Distance-from-claim: 0 (the carrier IS the artifact).

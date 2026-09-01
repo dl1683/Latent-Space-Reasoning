@@ -1,15 +1,23 @@
 # STATE
 
-## Current statement (2026-09-01, RAC-1 FAIL → ALGEBRA LINE CLOSED → PIVOT)
+## Current statement (2026-09-01, FROZEN-RESIDUAL MEASUREMENT LANE CLOSED)
 
-**The OCI/RAC algebra program is CLOSED.** RAC-1 confirmatory round FAILED (Codex
-round 9). The model permits useful local coordinate actuation at B20, but its
-response behavior does not respect those coordinates as independent,
-quotient-well-defined, transportable variables. No RAC-2 rescue round warranted.
+**The entire frozen-residual measurement lane is CLOSED.** Terminal diagnostic
+(Codex round 10) showed the OCI/RAC composition is ordinary logit addition
+through a linear unembedding — decoder competition, not native structure. Gate I:
+logit-additive null explains 99.1% of the composition effect (sqrt(JSD) = 0.0001,
+12/12 top-1 match). Gate F: NO_INTERFACE — no template pair has baseline sqrt(JSD)
+< 0.15; the model has no template-invariant response fiber.
 
-**Next direction needed.** The transferable residue: factored encoding exists, linear
-actuation steers it, but the response function doesn't form a clean product algebra.
-What IS the native mathematical structure of this gap?
+**Closure characterization:** Everything the OCI/RAC line found reduces to:
+(1) factored encoding in hidden states (PCA/linear algebra, R^n scaffolding);
+(2) logit-additive composition through the linear unembedding (decoder competition);
+(3) template-dependent responses (no fiber invariance). None are native math.
+
+**Next direction:** Continue only through a materially different constructive
+program whose moves are endogenous and executable, whose response-equivalent
+fibers remain stable under those moves, and whose portable composition beats
+matched symbolic and untyped controls under independent relabelings (Codex round 10).
 
 ### Closed results (OCI/RAC line — bounded activation-steering)
 
@@ -22,7 +30,12 @@ What IS the native mathematical structure of this gap?
 **RAC-1 (affine setter confirmatory, FAIL):** Affine coordinate-overwrite setters.
 Correct_top1 composition: 21/36 train (58%), 14/24 held-out (58%). Gate A per-setter
 S_pos1 at 8/12 triggers stop condition. Same-layer commutativity tautological (property
-of affine construction, not model). Gates F, I not run. Runner: `experiments/run_rac_1.py`.
+of affine construction, not model). Runner: `experiments/run_rac_1.py`.
+
+**Terminal diagnostic (Gates I + F, Codex round 10):** Gate I: logit-additive null
+l_a+l_b-l_0 explains 99.1% of composition (sqrt(JSD)=0.0001, 12/12 top-1 match).
+Gate F: NO_INTERFACE (no eligible template pairs). Verdict: CLOSE AS DECODER/LOGIT
+COMPETITION. Results: `experiments/results/terminal_diagnostic/verdict.json`.
 
 ### Archival context (theorem attempts — REJECTED)
 

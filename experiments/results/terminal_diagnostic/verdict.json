@@ -1,0 +1,129 @@
+{
+  "timestamp": "2026-09-01T13:38:23.219410",
+  "gate_i": {
+    "verdict": "ADDITIVE_EXPLAINS",
+    "top1_agreement": "12/12",
+    "mean_sqrt_jsd_additive_vs_composed": 0.00012894947031937034,
+    "mean_sqrt_jsd_clean_vs_composed": 0.013627634666600545,
+    "results": [
+      {
+        "entity": "Tokyo",
+        "cell": "pos1_cap",
+        "sqrt_jsd_additive_vs_composed": 5.844497947589572e-06,
+        "sqrt_jsd_clean_vs_composed": 0.0017614321613177006,
+        "top1_match": true,
+        "top1_predicted": "Japan",
+        "top1_composed": "Japan"
+      },
+      {
+        "entity": "Tokyo",
+        "cell": "pos1_lang",
+        "sqrt_jsd_additive_vs_composed": 0.0002416727408150247,
+        "sqrt_jsd_clean_vs_composed": 0.025815351990477853,
+        "top1_match": true,
+        "top1_predicted": "Japanese",
+        "top1_composed": "Japanese"
+      },
+      {
+        "entity": "Rome",
+        "cell": "pos2_cap",
+        "sqrt_jsd_additive_vs_composed": 0.0001865043960584014,
+        "sqrt_jsd_clean_vs_composed": 0.009440540422851416,
+        "top1_match": true,
+        "top1_predicted": "Italy",
+        "top1_composed": "Italy"
+      },
+      {
+        "entity": "Rome",
+        "cell": "pos2_lang",
+        "sqrt_jsd_additive_vs_composed": 2.7552861617563236e-05,
+        "sqrt_jsd_clean_vs_composed": 0.007374118135987322,
+        "top1_match": true,
+        "top1_predicted": "Italian",
+        "top1_composed": "Italian"
+      },
+      {
+        "entity": "Berlin",
+        "cell": "pos1_cap",
+        "sqrt_jsd_additive_vs_composed": 5.754828280467156e-05,
+        "sqrt_jsd_clean_vs_composed": 0.007424155016877055,
+        "top1_match": true,
+        "top1_predicted": "Germany",
+        "top1_composed": "Germany"
+      },
+      {
+        "entity": "Berlin",
+        "cell": "pos1_lang",
+        "sqrt_jsd_additive_vs_composed": 7.929130154896635e-05,
+        "sqrt_jsd_clean_vs_composed": 0.017085418627050406,
+        "top1_match": true,
+        "top1_predicted": "German",
+        "top1_composed": "German"
+      },
+      {
+        "entity": "Paris",
+        "cell": "pos2_cap",
+        "sqrt_jsd_additive_vs_composed": 0.00019616715265287514,
+        "sqrt_jsd_clean_vs_composed": 0.012533704922737848,
+        "top1_match": true,
+        "top1_predicted": "France",
+        "top1_composed": "France"
+      },
+      {
+        "entity": "Paris",
+        "cell": "pos2_lang",
+        "sqrt_jsd_additive_vs_composed": 1.945080463587826e-05,
+        "sqrt_jsd_clean_vs_composed": 0.02394110241004917,
+        "top1_match": true,
+        "top1_predicted": "French",
+        "top1_composed": "French"
+      },
+      {
+        "entity": "London",
+        "cell": "pos1_cap",
+        "sqrt_jsd_additive_vs_composed": 0.00024163263927336868,
+        "sqrt_jsd_clean_vs_composed": 0.014047715412279338,
+        "top1_match": true,
+        "top1_predicted": "UK",
+        "top1_composed": "UK"
+      },
+      {
+        "entity": "London",
+        "cell": "pos1_lang",
+        "sqrt_jsd_additive_vs_composed": 0.00012952267158536268,
+        "sqrt_jsd_clean_vs_composed": 0.014339352214995356,
+        "top1_match": true,
+        "top1_predicted": "English",
+        "top1_composed": "English"
+      },
+      {
+        "entity": "Cairo",
+        "cell": "pos2_cap",
+        "sqrt_jsd_additive_vs_composed": 2.0213412480630465e-06,
+        "sqrt_jsd_clean_vs_composed": 0.0027198714228207225,
+        "top1_match": true,
+        "top1_predicted": "Egypt",
+        "top1_composed": "Egypt"
+      },
+      {
+        "entity": "Cairo",
+        "cell": "pos2_lang",
+        "sqrt_jsd_additive_vs_composed": 0.0003601849536446797,
+        "sqrt_jsd_clean_vs_composed": 0.027048853261762346,
+        "top1_match": true,
+        "top1_predicted": "Arabic",
+        "top1_composed": "Arabic"
+      }
+    ]
+  },
+  "gate_f": {
+    "verdict": "NO_INTERFACE",
+    "eligible_pairs": 0,
+    "stable_pairs": 0,
+    "unstable_pairs": 0,
+    "threshold_match": 0.15,
+    "threshold_stable": 0.15,
+    "results": []
+  },
+  "overall_verdict": "CLOSE_DECODER_COMPETITION"
+}

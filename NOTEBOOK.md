@@ -4,6 +4,61 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — Terminal Diagnostic: CLOSE AS DECODER/LOGIT COMPETITION
+
+**Gate I (logit-additive null): ADDITIVE EXPLAINS.**
+- Predicted composed logits as l_pos + l_rel - l_0.
+- softmax(prediction) matches softmax(actual composed) with sqrt(JSD) = 0.0001.
+- 12/12 top-1 agreement. Explains 99.1% of the composition gap.
+- **The "composition" in RAC-0/RAC-1 is ordinary logit addition through a linear
+  unembedding.** Not nonlinear response geometry, not algebra, not native math.
+
+**Gate F (response-fiber stability): NO_INTERFACE.**
+- No template pair has baseline sqrt(JSD) < 0.15. Smallest gap: 0.19.
+- The model's response law is presentation-dependent — no template-invariant fiber.
+- Cannot test whether interventions preserve fiber equivalence.
+
+**Per Codex round 10 outcome table → CLOSE AS DECODER/LOGIT COMPETITION.**
+The frozen-residual measurement lane ends here. Everything the OCI/RAC line
+found reduces to: (1) factored encoding in hidden states (PCA/linear algebra,
+R^n scaffolding); (2) logit-additive composition through the linear unembedding
+(decoder competition, not native structure); (3) template-dependent responses
+(no fiber invariance). None of these are native latent-space mathematics.
+
+Data: `experiments/results/terminal_diagnostic/verdict.json`
+
+
+## 2026-09-01 — Codex Round 10: End Frozen-Residual Measurement Lane
+
+**Codex pivot ruling after RAC-1 FAIL.** Three directives:
+
+1. **Jacobian rank experiment REJECTED.** Already run in substance as CPD-001
+   (40-direction sketch → rank 40/40, effective rank 6-28). Falls into the R^n
+   trap: isotropic residual directions + Euclidean SVD = ambient linear geometry.
+   Random-direction finite-difference spectrum estimates JV, not J; doesn't test
+   quotient dimension.
+
+2. **Terminal diagnostic prescribed (non-confirmatory postmortem):**
+   - Gate I: Logit-additive null. Predict composed logits as l_a + l_b - l_0.
+     If this explains composition, it's ordinary logit competition, not geometry.
+   - Gate F: Response-fiber stability. Find held-out natural states with matched
+     baseline responses. Apply the same move. Do responses stay matched?
+   - Outcome table: additive explains → decoder competition; fiber fails →
+     instability hole; fiber passes + additive fails → nonlinear quotient
+     candidate (one replication); no eligible fibers → NO_INTERFACE.
+
+3. **End the frozen-residual measurement lane.** Continue the broader mission
+   only through a materially different constructive program: endogenous executable
+   moves, stable response fibers, portable composition beating symbolic/untyped
+   controls under independent relabelings.
+
+**Narrative sentence (Codex):** "An AI can expose two clean internal knobs
+without making them real variables; the decisive test is whether states that are
+indistinguishable to the model stay indistinguishable after the same move."
+
+Next: implement terminal diagnostic (Gates I + F), then close this lane.
+
+
 ## 2026-09-01 — RAC-1 Affine Setters: Confirmatory Round Results
 
 **Affine coordinate-overwrite setters** per Codex follow-up guidance. Construction:
