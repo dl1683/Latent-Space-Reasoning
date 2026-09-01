@@ -4,32 +4,44 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
-## 2026-09-01 — Codex pivot postmortem: EAC-1 designed, co-designed carrier direction
+## 2026-09-01 — Codex pivot postmortem: LAC-0 designed, co-designed carrier direction
 
-**Codex ruling (scratchpad/codex_qpc1_pivot.txt):** Program continues. Frozen Qwen
-prompt-mining stops. Pivot to a **co-designed dynamical carrier** — a recurrent
-model trained only from behavioral consequences, where actions are endogenous
-operations on the carrier state.
+**Codex ruling (scratchpad/codex_qpc1_pivot.txt, 191 lines):** Program continues.
+Frozen Qwen prompt-mining stops permanently. Pivot to a **Learned Action Carrier**
+— a typed neural machine where action writer cannot see world values/answers (access
+control prevents answer copying), trained only from behavioral consequences.
 
 **Why not alternatives:**
 - Larger model: changes capacity without fixing the observer or intervention
 - Different task on frozen Qwen: richer behavior without viable causal carrier
 - SAEs/gradients/causal directions: primarily linear/local R^n instruments
 - Info geometry/category theory/topology: description languages for AFTER laws found
+- Another fixed-code register: would repeat the prior line, not execute the pivot
 
-**EAC-1 (Endogenous Action Carrier) design:**
-- CPU-trainable recurrent model, ≤2M params, 3 seeds
-- 6 opaque states, 3 opaque actions, arbitrary world-specific transition tables
-- Training loss: ONLY final-state prediction (no latent supervision)
-- Causal evaluation: self-patch, same-place interchangeability, three-way clash
-- Budget: 150K sequence-forwards, 120 CPU minutes
-- PASS: held-out ≥95%, self-patch ≤1e-5, interchangeability ≥95%, descent ≥95%,
-  three-way ≥85% [lb 75%], target exceeds alternatives by ≥0.20 [lb 0.10]
+**LAC-0 (Learned Action Carrier) design:**
+- 8-place random navigation worlds, 4 primitive moves (each a permutation of 8 places)
+- Episode-independent permutation of place names, move aliases, output labels
+- Legend connects aliases to abstract moves
+- Typed architecture: action writer sees command+legend only; world writer sees
+  world+place only; executor combines through a named port
+- ≤1.5M params, matched untyped transformer control, 3 seeds
+- Training: 5000 optimizer steps × batch 128, CPU only, 3-hour wall
+- 8 of 16 ordered two-move compositions held out for composition test
+- No latent supervision (no action-vector targets, PCA, cosine, SAE objectives)
 - Distance-from-claim: 0 (carrier IS the central artifact)
 
-**Constraint set from micro-world (6 rules):** identity operational/observer-relative;
-moves endogenous/viable; state may be distributed/temporal; composition earned;
-algebra probably partial/context-indexed; every law must defeat nulls.
+**6 locked gates:** (1) integrity/oracle: self-patch ≤1e-5, clean ≥98%, oracle ≥99%;
+(2) primitive specificity ≥95% [seed lb 90%]; (3) three-way portability F≥0.90
+[lb 0.85], margins ≥0.50 [lb >0]; (4) held-out composition ≥85% [lb 75%], agrees
+with sequential ≥90%; (5) recipient dependence ≥90%, donor-world following ≤10%;
+(6) matched control comparison.
+
+**4 verdicts:** INVALID_CARRIER, NO_LEARNED_ACTION_INTERFACE,
+PORTABLE_NOT_COMPOSABLE (terminal), PORTABLE_ACTION_CARRIER_REGISTERED.
+
+**Stop conditions (Codex):** if oracle passes but portability fails in 2/3 seeds;
+if portability works but composition doesn't; if success requires fixed codes or
+answer access; if result reduces to verbalizer routing; apparatus-to-artifact >5:1.
 
 ## 2026-09-01 — Re-contextualization: Qwen micro-world CLOSED, awaiting Codex pivot
 

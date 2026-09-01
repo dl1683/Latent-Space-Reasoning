@@ -1595,102 +1595,113 @@ Codex postmortem (scratchpad/codex\_qpc1\_pivot.txt) rules:
 
 ---
 
-## Section 14 --- EAC-1: Endogenous Action Carrier (Preregistration)
+## Section 14 --- LAC-0: Learned Action Carrier (Preregistration)
 
 ### 14.1 Central question
 
-Can a small recurrent model, trained only from behavioral consequences
-(final-state prediction), develop a latent carrier whose state
-transitions are well-defined on the approximate behavioral quotient
-and compose causally under transplantation?
+Can a typed neural machine, trained only from behavioral consequences
+(endpoint prediction), develop a latent action carrier whose naturally
+produced states can be transplanted into different worlds, composed
+with other action states, and rendered correctly under independently
+permuted output labels?
 
 ### 14.2 Mathematical object
 
-Define behavioral equivalence at horizon $H$:
+The operational object is $(M, A, E, \mu, R)$ where:
+- $M$ is a world carrier;
+- $A$ is an action carrier;
+- $E: M \times A \to M$ executes an action;
+- $\mu: A \times A \to A$ composes actions;
+- $R_\pi: M \to Y$ renders a place using episode-specific output
+  code $\pi$.
 
-$$z(h) \sim_H z(h') \iff \text{response laws agree under every
-registered suffix of length} \le H.$$
+The architecture enforces causal typing by access control:
+- The action writer sees the command and its legend, but not world
+  values, donor answers, or output labels.
+- The world writer sees the world and current place, but not which
+  action will be requested.
+- The executor combines them through a named, naturally used port.
 
-For each endogenous action $a$, attempt to define the action map
+The behavioral law to satisfy:
 
-$$T_a([z(h)]) = [z(ha)].$$
+$$R_{\pi_x}(E(m_x, a_y)) = \text{the result of donor action } a_y
+\text{ in recipient world } x.$$
 
-EAC-1 tests whether $T_a$ is well-defined on the approximate
-behavioral quotient and whether transplanted carrier states compose
-causally with subsequent actions.
+### 14.3 Task world
 
-### 14.3 Construction
+Eight-place navigation worlds. Each world contains four primitive
+moves, each implemented by a separately sampled permutation of the
+eight places. Every episode independently permutes place names, move
+aliases, and output labels. A supplied legend connects aliases to
+abstract moves.
 
-\begin{itemize}
-\item CPU-trainable recurrent model, at most 2M parameters.
-\item Each episode supplies 6 opaque states and 3 opaque actions with
-      an arbitrary world-specific transition table. Actions need not be
-      invertible.
-\item State names, action names, declaration order, and presentation
-      are all randomized.
-\item A single recurrent latent carrier is updated by one shared
-      endogenous cell per action.
-\item Training loss is \textbf{only} final-state prediction. No
-      latent-coordinate target, probe loss, PCA, cosine, SAE, or
-      transition-vector supervision.
-\item Train on action words of length 1--3. Test on held-out worlds,
-      renamings, presentations, and length-4 words.
-\end{itemize}
+Training includes primitive moves and 8 of the 16 ordered two-move
+compositions. The other 8 compositions are held out.
 
-### 14.4 Causal evaluation protocol
+### 14.4 Construction
 
-Within the same held-out world, transplant a naturally occurring
-carrier state after one history into another history, then execute
-the untouched recipient suffix.
+- One typed Learned Action Carrier ($\le 1.5$M parameters).
+- One parameter-matched untyped transformer control.
+- Three seeds.
+- 5{,}000 optimizer steps $\times$ batch 128 per model and seed.
+- 3.84 million total training episodes.
+- CPU only, sequentially.
+- Maximum 20{,}000 evaluation forwards per model and seed.
+- Three-hour total hard wall, with seed-one early stopping.
+- One configuration, no sweep.
+- No action-vector targets, fixed orthogonal codes, PCA coordinates,
+  cosine objectives, or latent supervision of any kind.
 
-Arms:
-\begin{enumerate}
-\item Exact self-patches (integrity).
-\item Different histories reaching the same simulator state
-      (same-place interchangeability).
-\item Three-way clashes: host endpoint, donor current state, and
-      donor-under-recipient-suffix target are all distinct.
-\end{enumerate}
+### 14.5 Gates
 
-### 14.5 Budget
+\textbf{Gate 1 --- Integrity and positive control:}
+exact information-flow audit; output permutations balanced;
+self-patch discrepancy $\le 10^{-5}$; clean accuracy $\ge 98\%$;
+oracle-action control $\ge 99\%$.
 
-\begin{itemize}
-\item Three fixed seeds.
-\item 120{,}000 training sequence-forwards.
-\item 24{,}000 scientific evaluation forwards.
-\item 6{,}000 integrity/replay reserve.
-\item \textbf{Hard maximum:} 150{,}000 sequence-forwards and 120 CPU
-      minutes.
-\item No GPU. No generation. Termination inapplicable.
-\end{itemize}
+\textbf{Gate 2 --- Learned primitive specificity:}
+on training worlds at zero delay, own action and same-world
+counterfactual action each produce their corresponding endpoint
+on $\ge 95\%$ of cells, every seed $\ge 90\%$.
 
-### 14.6 Gates
+\textbf{Gate 3 --- Three-way portability:}
+balanced source/target/donor clash; target following $F \ge 0.90$,
+world-cluster lower bound $\ge 0.85$; target-over-donor and
+target-over-source probability margins each $\ge 0.50$ with lower
+bounds above zero; every primitive move $\ge 0.80$.
 
-\textbf{PASS} (all must hold in every seed):
-\begin{enumerate}
-\item Held-out length-4 accuracy $\ge 95\%$.
-\item Self-patch full-law discrepancy $\le 10^{-5}$.
-\item Same-place, different-history interchangeability $\ge 95\%$,
-      with $\sqrt{\mathrm{JSD}} \le 0.05$ in $\ge 90\%$ of registered
-      suffix tests.
-\item Action descent on $\ge 95\%$ of held-out equivalence/action cells.
-\item Three-way causal target following $\ge 85\%$, clustered lower
-      bound $\ge 75\%$, every seed $\ge 75\%$.
-\item Target probability exceeds both host and donor alternatives by
-      $\ge 0.20$, clustered lower bound above $0.10$.
-\end{enumerate}
+\textbf{Gate 4 --- Composition:}
+on the 8 unseen ordered action pairs, $E(m, \mu(a, b))$ reaches the
+correct endpoint on $\ge 85\%$, lower bound $\ge 0.75$, and agrees
+with sequential execution $E(E(m, a), b)$ on $\ge 90\%$.
 
-### 14.7 Verdicts
+\textbf{Gate 5 --- Recipient dependence:}
+changing only the recipient world changes the result appropriately
+on $\ge 90\%$; donor-world answer following remains $\le 10\%$.
 
-\begin{itemize}
-\item \textbf{PASS}: bounded learned carrier with approximate
-      operational action algebra. Licenses one transfer rung to a
-      less architecturally constrained model. Does not establish new
-      mathematics, say anything about Qwen, or prove universality.
-\item \textbf{INVALID\_CARRIER\_CONSTRUCTION}: capability or
-      self-patch fails. No carrier claim; no repair run.
-\item \textbf{VALID\_CARRIER\_FAIL}: capability passes but descent
-      or causal composition fails. Kills co-designed recurrent-state
-      transplantation as empirical route. Stop carrier variations
-      until the mathematical notion of identity or move changes.
-\end{itemize}
+\textbf{Gate 6 --- Matched control:}
+if both typed and untyped models pass, broader evidence that
+portable actions emerge without explicit typing. If only typed
+passes while clean accuracy is within two points, architecture
+earns a causal-effectiveness claim.
+
+### 14.6 Verdicts
+
+- \textbf{INVALID\_CARRIER}: integrity or oracle controls fail.
+- \textbf{NO\_LEARNED\_ACTION\_INTERFACE}: proximal specificity or
+  portability fails.
+- \textbf{PORTABLE\_NOT\_COMPOSABLE}: portability passes but held-out
+  composition fails. Terminal under the breakthrough bar.
+- \textbf{PORTABLE\_ACTION\_CARRIER\_REGISTERED}: every core gate
+  passes. Licenses one subsequent rung on held-out worlds.
+
+### 14.7 Stop conditions
+
+The program stops as an active experimental line if:
+(a) oracle passes but portability fails in 2/3 seeds;
+(b) portability works but composition does not;
+(c) success requires fixed codes, direct action-vector supervision,
+    or access to the answer vocabulary;
+(d) result reduces to verbalizer routing under three-way clash;
+(e) apparatus-to-artifact ratio exceeds 5:1;
+(f) artifact cannot leave the synthetic rung to held-out worlds.
