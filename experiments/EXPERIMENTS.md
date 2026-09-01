@@ -5,6 +5,45 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
+## FBA-0 — Factored Bottleneck Architecture campaign (2026-09-01; FAIL)
+
+Distance from claim: 1 (engineered-factorization control). Synthetic Z/8×Z/4 POMDP, 16 opaque actions, T=3 episodes, 85/15 confusion matrix. Six architectures: FBA (16/16, 33,664 params), flat GRU (40K), flat-matched (33K), asymmetric split (24/8, 34,688), modular (4×8, 34,688), flat bottleneck (37,760). Three seeds (42, 137, 2026). 2000 epochs, cosine LR (1e-3→1e-5), batch 256. Kill gates: K4 (all train≥0.90), K6 (FBA>best flat≥20pp), K7a (FBA>asym≥15pp), K7b (branch interchange>historyless null with Bonferroni CI), paired effects. Response-class equivalence split: 21/3/8 (train/val/test) from 32 classes. Oracle ceilings: historyless ~72-73%, recurrent ~95-96%.
+
+Runner: `experiments/run_fba_0.py`. Theory: `theory/FBA_BRIDGE.md`. Ledger: `fba0_full_campaign`.
+
+**Test accuracies:**
+
+| Model | Seed 42 | Seed 137 | Seed 2026 |
+|-------|---------|----------|-----------|
+| FBA (16/16) | 0.847 | **0.915** | 0.897 |
+| Flat GRU (40K) | 0.802 | 0.832 | 0.847 |
+| Flat matched (33K) | 0.796 | 0.804 | 0.775 |
+| Asym split (24/8) | **0.924** | 0.828 | 0.924 |
+| Modular (4×8) | 0.891 | 0.805 | 0.847 |
+| Flat BN (37K) | 0.884 | 0.812 | **0.926** |
+
+**K7b branch interchange (cross-accuracy, null=0.722):**
+
+| Seed | Cross | CI | Orient | Verdict |
+|------|-------|----|--------|---------|
+| 42 | 0.630 | [0.571, 0.687] | A=place,B=fiber | FAIL |
+| 137 | 0.884 | [0.846, 0.923] | A=fiber,B=place | PASS |
+| 2026 | 0.414 | [0.355, 0.481] | A=fiber,B=place | FAIL |
+
+**Overall verdict: FAIL.** Joint predicate 0/3 seeds. K7b passes for seed 137 only.
+
+**What we learned:**
+1. Architecture matters: structured > flat consistently, but WHICH structure wins is seed-dependent.
+2. The 16/16 symmetric split is not robustly optimal — asymmetric 24/8 wins 2/3 seeds on test accuracy.
+3. Branch interchange is possible (seed 137: cross=0.884) but does not emerge consistently across seeds. The response-class split (which classes land in train vs test) determines whether factored representations develop.
+4. Pre-registered kill gates (20pp, 15pp gaps) were too aggressive — actual effects are 4-9pp.
+5. Wrong-channel controls (same-factor preservation) consistently pass (0.93-0.98 range) — the branches carry factor-relevant information even when cross-episode hybrids fail.
+6. Flat bottleneck (37K) can match or beat FBA (seed 2026: 0.926 vs 0.897), suggesting bottleneck constraint alone, without independent branch updates, is sometimes sufficient.
+
+**Transferable residue:** Width allocation (how many dims per branch) matters more than product factorization. Alignment between architectural priors and task structure determines whether factored representations emerge. This informs next-direction choices about typed vs untyped architectural constraints.
+
+---
+
 ## OCI/RAC — Real-entity activation steering (2026-09-01; CLOSED per Codex round 10)
 
 Qwen3-0.6B-Base, frozen, CPU-only. Real capital-city entities (Tokyo/Japan, Berlin/Germany, London/UK, etc.). Hidden-state transplant and function-vector composition at B20. Distance-from-claim: 1 (activation steering is R^n scaffolding, not native math; signals inform the next constructive program).

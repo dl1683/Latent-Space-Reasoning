@@ -14,24 +14,36 @@ logit-additive null explains 99.1% of the composition effect (sqrt(JSD) = 0.0001
 (2) logit-additive composition through the linear unembedding (decoder competition);
 (3) template-dependent responses (no fiber invariance). None are native math.
 
-**Constructive program: FBA-0 (Codex rounds 11-21, R21 GO).**
-Distance from claim: 1 (engineered-factorization control for the native math program).
+**FBA-0 (Codex rounds 11-21, R21 GO → CAMPAIGN COMPLETE: FAIL).**
+Distance from claim: 1 (engineered-factorization control).
 Architecture: two-branch 16/16 independently-updated recurrent bottleneck (32 dims total).
-Six-way comparison: FBA (33,664 params), flat GRU (40K), flat-matched GRU (33,368),
-asymmetric split (24/8, 34,688), modular (4×8 groups, 34,688), flat bottleneck (37,760).
-Environment: cyclic world Z/8 × Z/4 (32 cells), 16 opaque actions, T=3, 85/15 confusion
-matrix on both observation dimensions. Oracle separation: historyless ~73%, recurrent ~96%.
-Split: response-law equivalence classes (32 classes, 21/3/8).
-Kill gates (joint predicate per seed, majority required): K4 (all train ≥90%),
-K6 (FBA > best flat ≥20pp), K7a (FBA > asymmetric ≥15pp), K7b (branch interchange
-beats historyless null with Bonferroni-corrected CI, Clopper-Pearson exact CI for
-wrong-channel with MIN_WC_PAIRS=30 gate, class-clustered CI-gated, disjoint episode
-pairs). Cosine LR (1e-3→1e-5, 2000 epochs). Paired effects CI-gated.
-Theory bridge: theory/FBA_BRIDGE.md (decoder-compatible branch separation, not
-product factorization). R21 GO — full campaign awaiting CPU availability.
-Claim scope (bounded): "In this synthetic Z_8×Z_4 POMDP, does the 16/16 independently
-updated recurrent architecture improve held-out response-class accuracy over
-registered controls and support decoder-compatible branch-interchange behavior?"
+Six-way comparison: FBA (33,664), flat GRU (40K), flat-matched (33K), asymmetric split
+(24/8, 34,688), modular (4×8, 34,688), flat bottleneck (37,760).
+Environment: Z/8 × Z/4 POMDP, 16 opaque actions, T=3, 85/15 confusion matrix.
+Oracle: historyless ~72-73%, recurrent ~95-96%. Split: 21/3/8 response classes.
+Kill gates: K4/K6/K7a/K7b + paired effects. Theory: theory/FBA_BRIDGE.md.
+
+**Campaign results (3 seeds, 2000 epochs, 20.1 minutes total):**
+- Seed 42: FBA=0.847, asym=0.924, K7b FAIL (cross=0.630 < null=0.722)
+- Seed 137: FBA=0.915, asym=0.828, K7b PASS (cross=0.884, CI=[0.846,0.923])
+- Seed 2026: FBA=0.897, asym=0.924, K7b FAIL (cross=0.414 < null=0.722)
+- Joint predicate: 0/3 seeds pass. **OVERALL FAIL.**
+
+**Key findings:** (1) K7b interchange is seed-dependent — passes brilliantly for seed 137,
+fails for 42 and 2026. (2) Asymmetric 24/8 wins 2/3 seeds on test accuracy; width
+allocation dominates product factorization. (3) Flat bottleneck matches or beats FBA
+(seed 2026: 0.926 vs 0.897). (4) Pre-registered gates (20pp, 15pp) too aggressive for
+actual 4-9pp effects. (5) Wrong-channel controls pass consistently (0.93-0.98).
+
+**Transferable residue (Codex Round 1 HANDLE-1):** Separate recurrent write paths are
+insufficient for autonomous causal handles. Same-factor preservation is insufficient
+for composition. Width should track factor complexity. A handle claim requires
+off-episode intervention with future-response validation.
+
+**Next direction: HANDLE-μ** (Codex Round 1 recommendation). Non-visual key-lock grid
+world on CPU. Behaviorally defined causal graph: i→j iff intervention on handle i
+changes j's one-step future response law. Distance-1 constructive control; does not
+replace the real-model central artifact without explicit scope amendment.
 
 ### Closed results (OCI/RAC line — bounded activation-steering)
 

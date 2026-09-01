@@ -4,6 +4,31 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — FBA-0 full campaign COMPLETE: FAIL (0/3 joint)
+
+**Campaign:** 6 architectures × 3 seeds × 2000 epochs on Z/8×Z/4 POMDP. 20.1 minutes total.
+
+**Results (test accuracy):**
+| Model | Seed 42 | Seed 137 | Seed 2026 |
+|-------|---------|----------|-----------|
+| FBA (16/16) | 0.847 | 0.915 | 0.897 |
+| Asym (24/8) | 0.924 | 0.828 | 0.924 |
+| Flat BN | 0.884 | 0.812 | 0.926 |
+
+K7b interchange: PASS for seed 137 only (cross=0.884, CI=[0.846,0.923]). Seeds 42/2026 FAIL (0.630/0.414). Joint predicate 0/3 → OVERALL FAIL.
+
+**What was learned:**
+1. Branch interchange IS possible (seed 137) but inconsistent — the response-class split determines whether factored representations emerge.
+2. Width allocation (asym 24/8) matters more than product factorization (FBA 16/16).
+3. Pre-registered 20pp/15pp gates unrealistic for this task; actual effects 4-9pp.
+4. Wrong-channel controls pass consistently (0.93-0.98) even when cross-episode hybrids fail.
+
+**Codex HANDLE-1 Round 1 (strategic direction):** Agrees causal-graph math is native in form but HANDLE-1's architecture installs the structure rather than discovering it. Recommendation: HANDLE-μ (non-visual key-lock grid, CPU, behaviorally defined causal graph) as the smallest falsifier before any visual Procgen work. Real-model central artifact constraint preserved. Round 2 dialogue next.
+
+**What's next:** Codex Round 2 on HANDLE-μ design; then implement and run.
+
+---
+
 ## 2026-09-01 — FBA-0 CNW: REINFORCE→PPO transition
 
 **Diagnosis:** REINFORCE training on CNW produced 4-9% single-goal eval (greedy),
