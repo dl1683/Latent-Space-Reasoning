@@ -86,6 +86,141 @@ Fixed cyclic shuffle 0/32 (pairing-sensitive; textual echo unresolved). On the 3
 
 Anti-echo alias control (Phase 4c, Codex evidence gate REVISE): no anti-echo evidence. The faithful alias arm did not exceed either comparator by the predeclared 30-point margin. A subsequent direct R(g) recovered 47.9%, ruling out a deterministic latest-explicit-assignment rule. Implementation defects: shuffled alias uses out-of-type values (disjoint entity domains); alias grammar differs from direct format; aliases not counterbalanced. This particular alias renderer did not override the direct decoy; this does not prove the model cannot resolve aliases. The literal signature renderer preserved 32/32 full greedy signatures — do not call this semantic or latent-space invariance. The v2 non-commuting square establishes sequence/path dependence but does not rule out ordinary textual order or multiplicity effects.
 
+#### Phase 4d terminal anti-echo factorial (pre-registered; unrun)
+
+**So what:** this is the last prompt-only test of whether signature restatement
+does more than let the most recent literal record dominate the answer; any
+non-pass ends renderer tuning and moves the program to intervention-defined
+continuation laws.
+
+Let each entity set have an explicitly declared shared value domain $V$:
+
+\[
+V_{\rm reg}=\{\text{big, small, hot, cold, red, blue}\},\qquad
+V_{\rm held}=\{\text{fast, slow, tall, short, loud, quiet}\}.
+\]
+
+The base prompt says that every named entity may take any one value in the
+relevant $V$.  This makes cross-pair values type-valid rather than silently
+assuming the old disjoint entity-specific types.  Fix a public, pre-run,
+fixed-point-free involution $\nu:V\to V$ pairing the two words from each old
+binary domain (big/small, hot/cold, and so on).  For an observed in-domain
+signature $g$, define the counterfactual signature
+$\bar g=\nu\circ g$.  Thus $\bar g_e\ne g_e$ at every coordinate, even
+when $g$ contains duplicate or formerly cross-type values.  No row is
+silently repaired or filtered: an observed value outside $V$ is saved and
+counts against the domain-interface gate.
+
+Write $R(h)$ for a direct `Record` block rendering signature $h$.  Let
+$K_\pi$ be an alias key and $A_\pi(h)$ the same `Record` grammar with entity
+names replaced by aliases.  The aliases are the arbitrary identifiers `Q7`,
+`V4`, and `J2`.  The three cyclic Latin-square maps $\pi$ put every entity
+under every alias and in every assignment position exactly once.  Alias
+records are emitted in fixed alias order, not entity order, so alias identity,
+entity identity, and record position are counterbalanced.
+
+For a base history $B_x$ and entity query $q_e$, the **primary direct
+factorial** is
+
+\[
+\begin{array}{ll}
+D0:&B_xq_e,\\
+D1:&B_xR(g)q_e,\\
+D2:&B_xR(\bar g)q_e,\\
+D3:&B_xR(\bar g)R(g)q_e,\\
+D4:&B_xR(g)R(\bar g)q_e.
+\end{array}
+\]
+
+The runner must prove before inference that every D3/D4 query pair has the
+same complete token multiset.  Their only manipulated factor is block order.
+Let
+
+\[
+L_e(p)=\operatorname{logit}_p(g_e)-
+       \operatorname{logit}_p(\bar g_e).
+\]
+
+The primary continuous estimand is
+
+\[
+\Delta_{\rm order}=\mathbb E_{\rm world}
+  [L_e(D3)-L_e(D4)],
+\]
+
+with world-cluster weighting; the paired greedy endpoint is the mean rate of
+following the final block, $\tfrac12(1[D3=g_e]+1[D4=\bar g_e])$.
+
+For each of the three alias maps, the **secondary 2 x 2 alias factorial** is
+
+\[
+\begin{array}{ll}
+A0:&B_xK_\pi A_\pi(g)q_e,\\
+A1:&B_xK_\pi A_\pi(\bar g)q_e,\\
+A2:&B_xR(\bar g)K_\pi A_\pi(g)q_e,\\
+A3:&B_xR(\bar g)K_\pi A_\pi(\bar g)q_e,\\
+A4:&B_xR(g)K_\pi A_\pi(g)q_e,\\
+A5:&B_xR(g)K_\pi A_\pi(\bar g)q_e.
+\end{array}
+\]
+
+A1 is the alias-necessity arm: unlike Phase 4c's alias-only arm, it can pass
+only by moving the answer away from the base signature toward $\bar g$.
+A2 versus A3 is the requested faithful-versus-type-valid-counterfactual
+comparison after a direct decoy; A4 versus A5 supplies the symmetric direct
+context.  The alias-content estimand averages the paired A0/A1, A2/A3, and
+A4/A5 changes rather than treating nested entity or alias-map rows as
+independent evidence.
+
+All intervals are deterministic 10,000-resample percentile intervals over
+semantic-world clusters.  Entity queries, the two base presentation orders,
+and alias maps remain nested inside a world.  Registered and held-out entity
+sets are reported separately; a gate that says "each set" requires both.
+Exact counts are diagnostics, not all-or-none verdicts.
+
+**Locked gates.** They are evaluated in order.
+
+1. **Integrity/interface.** All D3/D4 token-multiset checks, fixed-point-free
+   counterfactual checks, alias-balance checks, and one-token value-verbalizer
+   checks must pass.  At least 95% of base coordinates in each set must emit a
+   value in the declared shared domain.  D1 must follow $g$ on at least 90%
+   of coordinates in each set.  D2 must follow $\bar g$ on at least 60%,
+   with world-cluster 95% lower bound at least 40%.  Failure is
+   `NO_INTERFACE_OR_INVALID`; later mechanism gates are not interpreted.
+2. **Direct recency.** `RECENCY_EXPLAINS` requires, in each set: final-block
+   following at least 70% with cluster lower bound at least 50%; D3-minus-D4
+   target-following at least 30 percentage points with lower bound above zero;
+   and $\Delta_{\rm order}\ge1.0$ logit with lower bound above zero.  If this
+   passes, the literal $S^G$ renderer is demoted regardless of alias results.
+3. **Alias necessity.** A1 must follow $\bar g$ at least 60% in each set
+   (cluster lower bound at least 40%).  Relative to A0, it must reduce target
+   following by at least 30 points and shift the target-minus-counterfactual
+   logit contrast by at least 1.0 logit, with both paired cluster bounds above
+   zero in the counterfactual direction.  The logit shift must be point-positive
+   for all three alias maps in both sets.  Failure kills alias interpretation;
+   A2--A5 become descriptive only.
+4. **Alias anti-echo.** Conditional on Gate 3, average target-following for
+   alias-target minus alias-counterfactual across the two direct contexts
+   (A2/A3 and A4/A5) must be at least 30 points in each set with lower bound
+   above zero.  The corresponding logit-contrast shift must be at least 1.0
+   with lower bound above zero.  The two discordant cells A2 and A5 must follow
+   their final alias payload at least 60% with lower bound at least 40%, and
+   every alias map's point shift must be positive in both sets.
+
+**Terminal adjudication.** `RECENCY_EXPLAINS` scientifically demotes $S^G$
+to a sequence-sensitive syntactic append operator.  Gate-3 failure says only
+that aliases are not an interpretable instrument, but because this is the
+terminal renderer control it also ends any semantic upgrade and demotes
+$S^G$ by allocation.  A Gate-3 pass followed by Gate-4 failure is a clean
+anti-echo non-pass and demotes $S^G$.  Integrity/interface failure is
+scientifically inconclusive but allocation-terminal: no prompt or alias repair
+follows.  Only Gate-3 and Gate-4 passes together, with Direct Recency not
+passing, license the narrow sentence: "A counterbalanced keyed re-encoding of
+the observed signature moved answers against a conflicting direct record, so
+verbatim entity-value copying and the registered final-block recency rule are
+insufficient for these prompts."  Even that outcome does not establish a
+latent-space invariant, a semantic retraction, or native mathematics.
+
 **L3: Correction changes place.** $C_{e \leftarrow v}$ maps greedy place $g$ to a
 different place $g'$ where entity $e$'s answer is $v$, in 58-65% of cases.
 *Status:* **Established** (as a partial action — not defined everywhere).
