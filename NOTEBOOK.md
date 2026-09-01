@@ -4,6 +4,40 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-08-31T22:42 — Phase 4d terminal anti-echo factorial: NO_INTERFACE_OR_INVALID__TERMINAL_DEMOTION
+
+The terminal Phase 4d factorial ran to completion (2304 forward passes, ~110
+minutes CPU). All integrity checks passed (100% domain validity, token multisets
+verified, counterbalancing exact). The verdict is a clean negative driven by
+Gate 1 (interface) failure.
+
+**The asymmetry that killed it:** D1 (confirming record) follow rate 97.9%/91.7%
+— the model reads and follows records that match its existing greedy output. D2
+(contradicting record) follow rate 43.8%/16.7% — far below the 60% threshold.
+The record-append mechanism confirms what the model already believes but cannot
+reliably contradict it. This makes all downstream gates (recency, alias
+necessity, alias anti-echo) uninterpretable by the pre-registered protocol.
+
+**Recency is NOT the mechanism:** logit order effect is negative (-0.043/-0.086)
+with CI crossing zero. D3 and D4 (identical token multisets, only block order
+differs) produce no recency signal. The model doesn't simply follow the last
+appended record.
+
+**Alias counterfactual steering fails catastrophically:** A1 follow rate
+4.2%/6.9% (need ≥60%). But the logit-level anti-echo effect is strong
+(3.6/2.4 nats, tight CIs). The model's probability mass shifts toward the
+alias target in the right direction, but not enough to change the greedy
+output. The logit signal exists; the behavioral signal doesn't.
+
+**Terminal implication:** S^G is locked as a literal append operator. No
+semantic canonicalizer upgrade is licensed. The counterfactual interface lacks
+sufficient steering power to make the anti-echo question answerable. This is
+evidence about the test's power, not about S^G's nature.
+
+Next: Codex evidence gate on these results, then update README and theory docs
+with the terminal adjudication.
+
+
 ## 2026-08-31T22:35 — Phase 4d terminal anti-echo factorial locked and implemented; UNRUN
 
 The terminal design gate is complete. The stronger direct recency test is the
