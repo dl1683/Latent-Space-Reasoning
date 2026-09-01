@@ -14,10 +14,14 @@ logit-additive null explains 99.1% of the composition effect (sqrt(JSD) = 0.0001
 (2) logit-additive composition through the linear unembedding (decoder competition);
 (3) template-dependent responses (no fiber invariance). None are native math.
 
-**Next direction:** Continue only through a materially different constructive
-program whose moves are endogenous and executable, whose response-equivalent
-fibers remain stable under those moves, and whose portable composition beats
-matched symbolic and untyped controls under independent relabelings (Codex round 10).
+**Next direction (under Codex review):** Constructive program — Fiber-Bottleneck
+Architecture (FBA). Build a system where D1-D9 are design contracts (not discovery
+targets). Compositional grid world with opaque action tokens; fiber-bundle
+bottleneck constrains but doesn't solve; flat transformer control; held-out
+composition pairs. Kill gates: K6 (≥20pp gap), K7 (ablation ≥15pp), K8 (not
+tautological), K9 (axiom satisfaction). Codex direction dialogue rounds 11-12
+in progress; round 11 recommended stopping the frozen-model loop (agreed) and
+chartering a new stateful-substrate program (the FBA IS that program).
 
 ### Closed results (OCI/RAC line — bounded activation-steering)
 

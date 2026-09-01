@@ -19,6 +19,12 @@ Qwen3-0.6B-Base, frozen, CPU-only. Real capital-city entities (Tokyo/Japan, Berl
 
 - **Terminal diagnostic — CLOSE AS DECODER/LOGIT COMPETITION** (`results/terminal_diagnostic/verdict.json`). Gate I: logit-additive null l_a+l_b-l_0 explains 99.1% of composition effect (sqrt(JSD) = 0.0001 between predicted and actual composed distributions; 12/12 top-1 match). The "composition" in RAC-0/RAC-1 is ordinary logit addition through a linear unembedding — decoder competition, not nonlinear response geometry. Gate F: NO_INTERFACE — no template pair has baseline sqrt(JSD) < 0.15 (smallest gap: 0.19). The model's response law is presentation-dependent; no template-invariant response fiber exists. Per Codex outcome table: CLOSE AS DECODER/LOGIT COMPETITION. Frozen-residual measurement lane ends.
 
+- **Codex direction round 11 — DIRECTION DIALOGUE (round 1/3).** Codex recommends stopping the frozen-model discovery program (agreed). Provides "genuinely different" criteria table: agent state (not residual vector), native actions (not external edits), behavioral identity (not cosine/PCA), persistent environments (not prompt templates), composition surviving time and relabeling. D1-D9 should be design contracts. Bar: "not induced by or dependent upon chosen vector coordinates." Three options: (a) archive, (b) falsification-methods paper, (c) new stateful-substrate design project. Codex leans toward (b) then (c). Pushback: option (c) IS the FBA constructive program per AGENTS.md second lens.
+
+- **Codex direction round 12 — CONDITIONAL YES (round 2/3).** FBA IS option 3. Four additions required: (1) partial observability/recurrence, (2) response-law definitions for place/fiber, (3) four-way comparison (flat, FBA, scrambled FBA, modular), (4) strengthened K7 ablation. Tautology risk: architecture and world share factorization. Falsifier genuine. Correct claim: "behaviorally grounded structural prior enables compositional generalization." One more spec-hardening round before compute.
+
+- **Codex direction round 13 — SPEC HARDENING (round 3/3, in progress).** All four additions addressed. Architecture updated with independent encoding, four baselines designed, partial observability via noisy observations, K7 strengthened. GO/NO-GO decision pending.
+
 ---
 
 ## Phase 3 — Co-designed dynamical carrier (2026-09-01 →)

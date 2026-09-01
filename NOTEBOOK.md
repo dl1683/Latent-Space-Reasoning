@@ -4,6 +4,102 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — Codex Round 11: Direction Dialogue (Round 1 of 2-3)
+
+**Codex recommendation: stop the frozen-model discovery program.**
+
+Key points from Codex:
+1. Frozen-pretrained-model discovery loop is exhausted — agreed.
+2. A "genuinely different" program must change the causal substrate: agent state
+   (not residual vector), native actions (not external edits), behavioral identity
+   (not cosine/PCA), persistent environments (not prompt templates), composition
+   that survives time and relabeling.
+3. The denizen question on a frozen model reduces to existing math (predictive-state
+   representations, computational mechanics, coalgebra).
+4. Structural holes are publishable only as narrow falsification methodology, not
+   as broad claims about transformer limitations.
+5. D1-D9 should be design contracts, not a generative theory.
+6. Recommends: (a) archive discovery program, (b) narrow falsification-methods paper,
+   (c) new stateful-substrate design project.
+
+**Pushback (round 12, in progress):** Codex's own "genuinely different" table maps
+directly onto the Fiber-Bottleneck Architecture (FBA) proposal. The constructive
+program IS option (c). FBA has genuine falsifiers: K6 (composition gap ≥20pp over
+flat), K7 (ablation ≥15pp), K8 (not tautological), K9 (axiom satisfaction).
+
+**Round 12 result: CONDITIONAL YES.** Codex explicitly retracts that option 3 was
+hypothetical — "FBA IS option 3." Requires four additions before implementation:
+(1) partial observability/recurrence (full-state I/O = supervised factor learning);
+(2) define place/fiber through response laws, not architecture slots;
+(3) four-way comparison (flat, FBA, topology-scrambled FBA, generic modular);
+(4) strengthen K7 ablation (retrained scrambled, not just destroyed channels).
+Tautology risk identified: architecture and world share the factoring. Fix via
+identifiability stress test. Correct claim: "behaviorally grounded structural
+prior enables compositional generalization," NOT "system discovered a fiber bundle."
+Falsifier genuine: K6+K7 with K8/K9 as validity preconditions.
+
+**Round 13 in progress:** Final specification-hardening. GO/NO-GO decision.
+All four additions addressed. Architecture sketch updated (independent encoding,
+no cross-attention leakage). Four-way comparison designed. Partial observability
+via noisy state observations (70% correct).
+
+
+## 2026-09-01 — BMM-0: Behavioral Manifold Mapping (instrument calibration)
+
+First experiment using the model's own forward pass (not R^n tools) to measure
+distance between latent states. Tests whether the axioms' d_∞ behavioral metric
+(D4) reveals different structure than cosine distance.
+
+**Result: Spearman(cosine, behavioral_JSD) = 0.698.** Cosine explains only ~49%
+of behavioral distance variance. The behavioral geometry genuinely differs from
+R^n geometry. Most dramatic: same-template capital prompts (Paris/Tokyo/Moscow)
+have cosine distance 0.01-0.02 at L20 but behavioral distance 0.41-0.44.
+
+- G1 (instrument validity): PASS
+- G2 (nontrivial variation): FAIL (CV=0.183 — most distances clustered at 0.61)
+- G3 (metric disagreement): Spearman=0.698 (DIFFERS from R^n, threshold was <0.90)
+
+**Interpretation:** The behavioral metric sees entity-level distinctions that
+cosine conflates. This validates d_∞ as a richer instrument than cosine. But the
+disagreement may reflect measurement completeness (cosine at L20 doesn't see
+layers 21-27) rather than "native math." The constructive direction is still
+needed — this is instrument calibration, not a discovery.
+
+Data: `experiments/results/bmm_0/verdict.json`
+
+
+## 2026-09-01 — Codex Round 11: Stop Frozen-Model Loop, Constructive Direction
+
+**Codex ruling:** Stop the frozen-pretrained-model discovery program. The loop
+is exhausted — 100+ experiments, every line closed. Repeating with more models,
+layers, or probes would improve coverage without changing the ontology.
+
+**Key pushback:** Codex questioned the axiomatic status of "native math exists,"
+calling it unfalsifiable. Response: the user has declared it an engineering
+axiom (a design commitment, not an empirical claim). Under this framing, the
+question isn't WHETHER native math exists but WHETHER WE CAN BUILD a substrate
+where it demonstrably does.
+
+**Recommended direction:** Stateful-substrate design — "design learned state in
+which operational identity can survive the model's own actions." Concrete:
+- Recurrent/stateful agent in partially observable, independently relabeled worlds
+- Actions are environment-native (not vector edits)
+- Identity defined by indistinguishability under future interactions (d_∞)
+- No successor embeddings, answer labels, or architect-supplied algebra (EAC-1 trap)
+- Structure must emerge from learning, not be hard-coded
+- Must beat matched symbolic predictive-state AND untyped neural controls
+
+**D1-D9 role:** Design contracts and claim controls, not generative theory.
+Use them to prohibit leakage and define legal access.
+
+**Publishable residue:** Not "latent spaces are hostile to reasoning" (too broad).
+Instead: "How to falsify latent-algebra claims" — methodological paper requiring
+decoder-additive null, fiber eligibility, and prerequisite capability verification.
+
+Codex round 12 pending: requesting concrete architecture/task/gate specification
+for the constructive program.
+
+
 ## 2026-09-01 — Terminal Diagnostic: CLOSE AS DECODER/LOGIT COMPETITION
 
 **Gate I (logit-additive null): ADDITIVE EXPLAINS.**
