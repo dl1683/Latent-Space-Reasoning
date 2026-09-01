@@ -47,6 +47,14 @@ composition requires nonlinear whole-state interaction.
 The fork's synthesis captured it: "The routing algebra is the address book. The
 native math is the language spoken at those addresses."
 
+### Cross-template relation transfer (objection test)
+Strongest objection: does rlv encode the RELATION or just the QUERY TEMPLATE?
+Extracted rlv from template A ("X is the capital of" / "X speaks"). Applied to
+template B ("The language of X is"). Result: 4/4 FLIP. Japanese→Japan (0.310→
+0.456), Italian→Italy (0.283→0.578), German→Germany (0.666→0.631), French→
+France (0.362→0.541). The relation vector encodes semantic relation, not
+template syntax.
+
 Runner: `experiments/run_rac_0.py`. Results: `experiments/results/rac_0/verdict.json`.
 
 ---
