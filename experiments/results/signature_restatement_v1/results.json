@@ -6519,5 +6519,14 @@
         }
       ]
     }
+  },
+  "provenance": {
+    "runner_hash": "cd20be1d5814",
+    "torch_version": "2.11.0+cu128",
+    "transformers_version": "5.12.1",
+    "python_version": "3.13",
+    "vocab_size": 151643,
+    "device": "cpu",
+    "git_commit": "c97082c"
   }
 }
