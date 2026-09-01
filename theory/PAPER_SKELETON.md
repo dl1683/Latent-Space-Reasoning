@@ -491,6 +491,16 @@ preserved no full greedy signature (0/32 vs 32/32 for $S^G$), showing that
 the effect is sensitive to entity-value pairing rather than the renderer
 template or value-word multiset alone. This does not distinguish semantic use
 from last-mention copying and does not rule out textual echo.
+nA five-arm anti-echo alias control (Phase 4c) strengthens the textual-echo
+concern. Nonce aliases (cedar→ZOG, amber→MIP, violet→PLIM) faithfully restate
+the correct entity-value pairs indirectly, competing against wrong direct
+assignments (decoy). Faithful alias recovery (19-29%) is statistically
+indistinguishable from shuffled alias (21-25%): the model does not resolve
+nonce aliases to override a direct decoy (pre-registered Gate 3 fails). Direct
+$R(g)$ placed after the decoy recovers only 48%, so the model is not a pure
+last-mention copier—it integrates competing direct assignments with recency
+bias—but cannot resolve indirect references. $S^G$ place preservation (100%)
+is consistent with $R(g)$ being the sole direct assignment.
 
 Non-naturality persists with $S^G$ (JSD 0.193/0.188), eliminating the objection
 that non-commutativity is an artifact of injecting hidden information. The
