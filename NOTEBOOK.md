@@ -4,6 +4,47 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — Re-contextualization: archival stands, one alternative alive, anti-tunnel check
+
+**What still holds:** The empirical program is dead (75+ experiments, zero
+positive results). The algebraic composition theorem is standard (syntactic
+congruence). The archival is procedurally correct per the agreed kill gate.
+
+**What's reframed:** The kill gate was designed for an algebraic theorem. A
+*measure-theoretic* theorem (composable solutions have codimension ≥32 in the
+endpoint-consistent fiber, hence measure zero) is a different object with
+different prior-art proximity. This was not evaluated. The classical automata
+literature does not address overparameterized carriers or measure-theoretic
+non-identifiability. The neural-network identifiability literature (2025-2026)
+addresses parameter identifiability, not composition identifiability.
+
+**Alternatives now live:**
+1. Measure-theoretic composition non-identifiability theorem (different from the
+   rejected algebraic version — needs independent Codex evaluation)
+2. The structured negative itself as a field contribution (methodology paper)
+3. Pivot to C1/Stage I0 (Codex portfolio recommendation)
+
+**Bidirectional Codex audit result: PREMATURE KILL.** The audit found:
+1. Algebraic theorem correctly rejected (syntactic congruence).
+2. BUT a differential-topological variant was never evaluated: relative-fiber
+   codimension via transversality (prove DC contributes rank beyond DB on the
+   endpoint fiber F = B^{-1}(y), conclude F ∩ C^{-1}(0) has positive codimension).
+3. Language corrections adopted: "no positive result supporting native latent-space
+   mathematics" (not "no positive scientific result"); "initialization-conditioned
+   failure modes" (not "different optimization basins"); nine breakpoints are mostly
+   design hazards, not demonstrated R^n failures.
+4. The 56-dim fiber counting was wrong: executor projects into 240 dims across
+   multiple worlds, so endpoint Jacobian rank could be much higher.
+5. Revised kill gate: standard machinery allowed if specialization proves a
+   nontrivial neural-specific conclusion with checkable conditions and design
+   consequence.
+6. One bounded differential-topological attempt reopened. No new empirical work.
+
+**Cross-project signal:** LSR's fiber non-identifiability (endpoint ≠
+compositional) applies to Metagen CGR-0 composition gates. Deposited.
+
+---
+
 ## 2026-09-01 — Composition theorem REJECTED at design gate — program archives
 
 **Codex design gate verdict: REJECT.** The composition-identifiability theorem
