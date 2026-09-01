@@ -11,17 +11,16 @@
   "model": {
     "typed": {
       "name": "TypedLAC",
-      "world_dim": 128,
-      "action_dim": 64,
+      "world_dim": 240,
+      "action_dim": 128,
       "world_memory_slots": 32,
-      "world_encoder_layers": 2,
       "executor_blocks": 2,
-      "composer": "GRU(64,64)",
+      "composer": "GRU(128,128)",
       "renderer": "pointer_scorer"
     },
     "untyped": {
       "name": "UntypedControl",
-      "d_model": 128,
+      "d_model": 148,
       "n_heads": 4,
       "n_layers": 4
     }

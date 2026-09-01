@@ -4,6 +4,103 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — LAC-0 TERMINAL: PORTABLE_NOT_COMPOSABLE (Codex design gate)
+
+**Codex design gate (scratchpad/codex_init_gate_response.txt):** LAC-0 is terminal.
+Neither initialization strategy passes the complete preregistered Gate 4 (composition).
+
+**Claim-bearing run (Xavier init, 3 seeds):**
+
+| Seed | Prim | Train comp | Held comp | Self-patch | Port F | Oracle | Seq agree | Recip |
+|------|------|-----------|-----------|------------|--------|--------|-----------|-------|
+| 42   | 100% | 55.11%    | 33.83%    | 0.0 PASS   | 1.0 PASS | 1.0 PASS | 33.8% FAIL | 1.0/0.0 PASS |
+| 137  | 100% | 46.85%    | 14.82%    | 0.0 PASS   | 1.0 PASS | 1.0 PASS | 11.6% FAIL | 1.0/0.0 PASS |
+| 2025 | 100% | 61.11%    | 13.32%    | 0.0 PASS   | 1.0 PASS | 1.0 PASS | 14.2% FAIL | 1.0/0.0 PASS |
+
+Untyped controls: seed 42 = 12.65%, seed 137 = 13.35%, seed 2025 = 13.20% (chance ~12.5%). Control CONFIRMED.
+
+**Cross-evaluation of provisional checkpoint (default PyTorch init):**
+Codex independently loaded the provisional checkpoint and evaluated with corrected
+evaluators on eval_worlds:
+- Held-out composition: 96.11% PASS (endpoints work)
+- Sequential accuracy: 0.0% (E(E(M,a1),a2) gives zero correct answers)
+- Sequential agreement: 0.8% FAIL (gate ≥90%)
+- Block 1 prim accuracy: 0.0% (both blocks always active, block 2 does all work)
+
+**Critical insight — circuit selection, not convergence speed:**
+
+| Init | Held-out endpoint | Sequential accuracy | Agreement |
+|------|------------------:|--------------------:|----------:|
+| PyTorch default | 96.11% | 0.0% | 0.8% |
+| Xavier + orthogonal | 33.83% | 94.8% | 33.8% |
+
+Default init learns endpoint composition but NOT sequential execution. Xavier learns
+sequential execution but NOT the composed carrier. These are different optimization
+basins / circuits. Neither passes Gate 4 (agreement ≥90%).
+
+**Init diagnosis corrected (Codex):** Xavier gives LARGER weights than PyTorch default
+(kaiming_uniform_ with a=sqrt(5)). Xavier → sharper attention (entropy 0.071 vs 0.751),
+higher gate dispersion (0.215 vs 0.085), higher logit std (14.45 vs 3.42).
+
+**Stop condition fires:** Preregistration §14.7(b): "portability works but composition
+does not" → PORTABLE_NOT_COMPOSABLE (terminal). No re-run warranted — changing init
+after inspection is post-hoc tuning.
+
+**Additional evaluator gaps (Codex):** Portability `pass` doesn't check the registered
+margins (≥0.50, lb>0). Mean target probability ≠ target-over-donor margin. Moot for
+terminal verdict but flagged for any successor.
+
+**Useful residue for redesign:**
+1. Typed architecture enables perfect primitives (100%) and perfect portability (F=1.0)
+2. Untyped transformer cannot learn either (chance level) — causal gap confirmed
+3. Composition endpoint and sequential composition are different optimization targets
+4. GRU composer learns "shortcut" composition that doesn't match sequential execution
+5. Native-math successor must define composition via response-law quotients, not learned shortcuts
+6. The executor's output must be re-feedable as input (recurrence) for sequential to work
+
+**Distance-from-claim:** D2 positive control attempt → terminal. D1 was never reachable from LAC-0.
+
+**Seed 2025 complete (all 3 seeds confirmed).** PORTABLE_NOT_COMPOSABLE terminal across all seeds.
+
+**Next direction (Codex R1-R3):** PSQ-1 capability screen — two-dial world (Z_8^2, 64 states,
+4 actions) on frozen Qwen3-1.7B-Base. Python-completion format, H*=4, response-law quotient.
+Capability gate first: ≥95% per-cell macro accuracy. If NO_INTERFACE, predeclare Qwen3-8B-Base.
+
+## 2026-09-01 — Codex evidence gate: LAC-0 provisional D2 pass, claim-bearing re-run designed
+
+**Codex evidence gate (scratchpad/codex_composition_result.txt):** 95.96% held-out
+composition is genuine but provisional. Three methodological gaps identified and
+fixed:
+
+1. **eval_worlds never used** — all evaluation ran on train_worlds. Fixed: held-out
+   compositions now sample from the 256 eval_worlds (independently seeded,
+   structurally independent from train_worlds).
+2. **Block-1 midpoint never scored** — block 1 output was scored against the
+   ENDPOINT (state after both moves), not the MIDPOINT (state after first move only).
+   Cannot interpret sequential composition without midpoint scoring. Fixed: added
+   `mid_target` to composition tensors and midpoint accuracy in block diagnostics.
+3. **Single seed** — needs 3-seed validation. Old run in progress with seeds 42/137/2025.
+
+**Licensed sentence (Codex):** "At seed 42, a 739K-parameter from-scratch typed
+controller with an explicit shared action-role legend and two trainable executor
+blocks achieved 95.96% endpoint accuracy on eight ordered action pairs withheld
+from training, exact self-patch, and perfect same-ontology donor-to-recipient
+target following. This demonstrates learned combinatorial execution within an
+engineered interface on the training-world set; it does not establish unseen-world
+generalization, emergent action identity, blockwise sequential composition, native
+mathematics, or structure in a pretrained real model."
+
+**D2→D1 path (Codex):** No LAC-0 follow-up can reach D1. D1 requires frozen real
+model where action identity is defined only by induced future-response laws and
+naturally formed composite carriers agree with sequential execution.
+
+**AGI thesis connection:** Updated RESEARCH_COEVOLUTION_LEDGER.md claim C5 with
+LAC-0 component evidence. Representation structure causally determines
+compositional capability (typed 100% vs untyped ~10%).
+
+**Next:** Kill old run after seed 42 untyped completes, launch claim-bearing re-run
+with all Codex fixes (eval_worlds, midpoint scoring, is_composed, RNG determinism).
+
 ## 2026-09-01 — Codex R3: no concrete next step; project needs user direction (scratchpad/codex_direction_r3.txt)
 
 **Codex R3 verdict: "There is no concrete next experiment I can specify with
@@ -10132,3 +10229,34 @@ This maps directly to the technical appendix's research gates:
 - Add held-out composition evaluation
 - Add 5 diagnostic readouts: primitive endpoint after block 1/2, composed midpoint
   after block 1, composed endpoint after block 2, held-out pair sequential agreement
+
+---
+
+### Preregistration lock: LAC-0 claim-bearing three-seed aggregation (2026-09-01)
+
+**Locked before results.** Per Codex design gate (scratchpad/codex_claim_bearing_design.txt):
+
+**Per-seed gates (EVERY seed must pass independently):**
+- Clean accuracy (eval_worlds) ≥ 98%
+- Self-patch ≤ 1e-5
+- Oracle-action ≥ 99%
+- Primitive specificity ≥ 90% per seed
+- Portability target-following ≥ 90%, per-move ≥ 80%
+- Composition held-pair endpoint ≥ 85%
+- Explicit sequential agreement ≥ 90%
+- Recipient dependence: recipient following ≥ 90%, donor-answer following ≤ 10%
+
+**Aggregate gates (across all 3 seeds):**
+- Composition bootstrap lower-5% ≥ 75% for every seed
+- Portability bootstrap lower-5% ≥ 85% for every seed
+- Mean composition accuracy across seeds ≥ 85%
+
+**Midpoint (informational, not gating):**
+- Midpoint accuracy in the stratum where mid ≠ endpoint is informational
+- Does NOT substitute for explicit sequential comparator
+
+**Untyped control:**
+- If untyped primitive accuracy is NOT within 2pp of typed, the control is confounded and the run is non-claim-bearing for the architecture comparison
+- If untyped CAN do primitives but NOT compositions, that IS the signal
+
+**Pass condition:** ALL per-seed gates pass for ALL 3 seeds AND aggregate gates pass.
