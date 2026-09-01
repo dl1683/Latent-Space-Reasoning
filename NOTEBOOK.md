@@ -4,6 +4,45 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — OCI-001b: Positional Operation Transfer — POSITIVE (L18-L20)
+
+**Follow-up to OCI-001 disambiguation.** The "England" boost from DA→RB at L18
+could be entity identity leaking (Paris≈London) or genuine operation transfer.
+
+**Test:** Confidence-matched donors (Berlin/Vienna, confidence ratio 1.19). Both
+are European capitals equally close to London semantically. But DA queries Berlin
+(1st entity) while DB queries Vienna (2nd entity). Same pair, different query position.
+
+**Result at L18 (recipient=London/Tokyo query=Tokyo, baseline Eng=6.3%, Jpn=42.1%):**
+- DA (1st entity query) → England=**36.1%**, Japan=4.2%
+- DB (2nd entity query) → England=3.2%, Japan=**54.5%**
+- Δ_England = **32.9 percentage points**
+
+**Result at L20:**
+- DA → England=**44.9%**, Japan=0.5%
+- DB → England=3.8%, Japan=**51.2%**
+- Δ_England = **41.1 percentage points**
+
+**This is SYMMETRIC POSITIONAL OPERATION TRANSFER.** DA "query 1st entity" boosts
+the recipient's 1st-entity property. DB "query 2nd entity" boosts the recipient's
+2nd-entity property. Both directions work. Confidence-controlled. NOT entity
+identity — same donor pair, different query position.
+
+**Mechanism hypothesis:** The hidden state at L18-L20 encodes positional attention
+routing — "which structural position to attend to." This survives cross-context
+transplant when the donor and recipient have matched structure (same sentence
+template, same token positions). The "operation" is positional attention pattern,
+not high-level semantic procedure.
+
+**Open question:** Is this just "how attention works" (a known property), or is
+it evidence of separable computational structure? The fact that the operation
+IS the positional routing, and it transfers reliably, means the model DOES have
+a decomposition of its computation into {what to look up} × {where the facts are}.
+Whether this counts as "native math" depends on whether this decomposition is
+richer than just attention-position indexing.
+
+---
+
 ## 2026-09-01 — OCI-001: Operation-Carrier Interchangeability — NEGATIVE
 
 **Experiment OCI-001 (Codex round 3 design).** Can a donor's "operation" transfer
