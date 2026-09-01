@@ -5,6 +5,23 @@ was learned, what's next. Canonical state lives in STATE.md.
 
 ---
 
+## 2026-08-31T08:30 — Shuffled-renderer control DECISIVE: content, not format
+
+Re-ran `signature_restatement_v1` with Phase 4b (shuffled-renderer control).
+Same format, same tokens, values rotated among entities. Result:
+
+- **Shuffled place preservation: 0/16 (0%) on BOTH registered and held-out.**
+- S^G place preservation: 16/16 (100%) on both.
+- Every single shuffled case disrupted — model absorbs wrong entity-value pairings.
+
+The textual-echo confound is ruled out. S^G's place preservation is because
+the model reads its own answers matched to the correct entities, not because
+any restatement-shaped text preserves signatures. This is the "cheapest falsifier"
+Codex recommended. All other results (idempotence, descent, non-naturality,
+correction non-descent) reproduced identically.
+
+---
+
 ## 2026-08-31T07:15 — O1 ANSWERED: S^G_g exists
 
 Experiment `signature_restatement_v1` complete. The representative-independent

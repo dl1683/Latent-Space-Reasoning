@@ -130,6 +130,15 @@ def make_restatement_from_signature(sig, entity_names):
     return " To be clear: " + ". ".join(parts) + "."
 
 
+def make_shuffled_restatement(sig, entity_names):
+    """Control: same format, same tokens, but values rotated among entities."""
+    sig_dict = dict(sig)
+    values = [sig_dict[n] for n in entity_names]
+    rotated = values[1:] + values[:1]
+    parts = [f"{n}: {rotated[i]}" for i, n in enumerate(entity_names)]
+    return " To be clear: " + ". ".join(parts) + "."
+
+
 def make_corrected_world(world, target_entity, new_value):
     corrected = dict(world)
     corrected[target_entity] = new_value
@@ -332,7 +341,32 @@ def run_sg_validation(model, tok, entities, entity_set_name):
 
     results["place_preservation"] = preservation_results
     pres_rate = sum(1 for r in preservation_results if r["preserved"]) / len(preservation_results)
-    print(f"  Place preservation: {sum(1 for r in preservation_results if r['preserved'])}/{len(preservation_results)} = {pres_rate:.1%}")
+    print(f"  S^G place preservation: {sum(1 for r in preservation_results if r['preserved'])}/{len(preservation_results)} = {pres_rate:.1%}")
+
+    # Phase 4b: Shuffled-renderer control (Codex confound: textual echo)
+    print("\n--- Phase 4b: Shuffled-renderer control ---")
+    shuffled_results = []
+    for key, state in all_states.items():
+        base = state["base_prompt"]
+        sig = state["signature"]
+        shuffled = make_shuffled_restatement(sig, entity_names)
+        after_prompt = base + shuffled
+        sig_after, _ = get_greedy_signature(model, tok, after_prompt, entity_names)
+        preserved = sig == sig_after
+        shuffled_results.append({
+            "source": key,
+            "sig_before": "|".join(f"{k}={v}" for k, v in sig),
+            "sig_after": "|".join(f"{k}={v}" for k, v in sig_after),
+            "preserved": preserved,
+            "shuffled_text": shuffled[:60],
+        })
+        if not preserved:
+            print(f"  DISRUPTED: {key}: {dict(sig)} -> {dict(sig_after)}")
+
+    results["shuffled_control"] = shuffled_results
+    shuf_pres = sum(1 for r in shuffled_results if r["preserved"]) / len(shuffled_results)
+    print(f"  Shuffled place preservation: {sum(1 for r in shuffled_results if r['preserved'])}/{len(shuffled_results)} = {shuf_pres:.1%}")
+    print(f"  (S^G was {pres_rate:.1%} — shuffled should be lower if content matters)")
 
     # Phase 5a: Correction descent — does C_{e<-v} produce same g' for all fiber members?
     # (Codex: prerequisite for a genuine quotient-level typed square)

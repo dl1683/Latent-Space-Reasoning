@@ -82,6 +82,7 @@ JSD distance (√JSD) mean = 0.070 (range 0.025-0.140).
 *Status:* **Established.** 100% greedy idempotence (96/96 across both entity sets).
 JSD($S^G$, $(S^G)^2$) mean = 0.077 registered, 0.071 held-out (range 0.025-0.191).
 Comparable to $S^W$. Place preservation: 32/32 (100%).
+Shuffled-renderer control: 0/32 (0%) — same format with rotated values disrupts every signature, ruling out the textual-echo confound.
 
 **L3: Correction changes place.** $C_{e \leftarrow v}$ maps greedy place $g$ to a
 different place $g'$ where entity $e$'s answer is $v$, in 58-65% of cases.
@@ -251,4 +252,4 @@ becomes visible in the computation, not a separate algebraic law.
 | rebroadening_test_v1 | Re-broadened distribution meaningful | 915988c |
 | predictive_fiber_v1 | Two-component residual (predictive + presentation) | 4978a85 |
 | predictive_fiber_action_v2 | $S^W_w$ idempotent, non-natural with correction, path dependence confirmed | e9e54ef |
-| signature_restatement_v1 | $S^G_g$ exists: 100% idempotent, 100% descent, non-natural with correction, correction non-descent (58-80%) | pending |
+| signature_restatement_v1 | $S^G_g$ exists: 100% idempotent, 100% descent, non-natural with correction, correction non-descent (58-80%), shuffled control 0/32 (content not format) | pending |

@@ -1,6 +1,6 @@
 {
   "model": "Qwen/Qwen3-0.6B",
-  "timestamp": "2026-08-31T20:50:30.996560",
+  "timestamp": "2026-08-31T21:11:11.966647",
   "sets": {
     "registered": {
       "entity_set": "registered",
@@ -2839,8 +2839,8 @@
           ],
           "sg_descends": true,
           "sw_targets": [
-            "cold",
-            "hot"
+            "hot",
+            "cold"
           ],
           "sw_descends": false
         },
@@ -2963,6 +2963,120 @@
           "sig_before": "MIP=cold|PLIM=blue|ZOG=small",
           "sig_after": "MIP=cold|PLIM=blue|ZOG=small",
           "preserved": true
+        }
+      ],
+      "shuffled_control": [
+        {
+          "source": "w000_std",
+          "sig_before": "MIP=hot|PLIM=red|ZOG=big",
+          "sig_after": "MIP=red|PLIM=big|ZOG=hot",
+          "preserved": false,
+          "shuffled_text": " To be clear: ZOG: hot. MIP: red. PLIM: big."
+        },
+        {
+          "source": "w000_rev",
+          "sig_before": "MIP=hot|PLIM=red|ZOG=big",
+          "sig_after": "MIP=red|PLIM=big|ZOG=hot",
+          "preserved": false,
+          "shuffled_text": " To be clear: ZOG: hot. MIP: red. PLIM: big."
+        },
+        {
+          "source": "w001_std",
+          "sig_before": "MIP=hot|PLIM=blue|ZOG=big",
+          "sig_after": "MIP=blue|PLIM=big|ZOG=hot",
+          "preserved": false,
+          "shuffled_text": " To be clear: ZOG: hot. MIP: blue. PLIM: big."
+        },
+        {
+          "source": "w001_rev",
+          "sig_before": "MIP=hot|PLIM=blue|ZOG=big",
+          "sig_after": "MIP=blue|PLIM=big|ZOG=big",
+          "preserved": false,
+          "shuffled_text": " To be clear: ZOG: hot. MIP: blue. PLIM: big."
+        },
+        {
+          "source": "w010_std",
+          "sig_before": "MIP=red|PLIM=red|ZOG=big",
+          "sig_after": "MIP=red|PLIM=big|ZOG=red",
+          "preserved": false,
+          "shuffled_text": " To be clear: ZOG: red. MIP: red. PLIM: big."
+        },
+        {
+          "source": "w010_rev",
+          "sig_before": "MIP=cold|PLIM=red|ZOG=big",
+          "sig_after": "MIP=red|PLIM=big|ZOG=big",
+          "preserved": false,
+          "shuffled_text": " To be clear: ZOG: cold. MIP: red. PLIM: big."
+        },
+        {
+          "source": "w011_std",
+          "sig_before": "MIP=blue|PLIM=blue|ZOG=big",
+          "sig_after": "MIP=blue|PLIM=big|ZOG=blue",
+          "preserved": false,
+          "shuffled_text": " To be clear: ZOG: blue. MIP: blue. PLIM: big."
+        },
+        {
+          "source": "w011_rev",
+          "sig_before": "MIP=cold|PLIM=blue|ZOG=big",
+          "sig_after": "MIP=blue|PLIM=big|ZOG=big",
+          "preserved": false,
+          "shuffled_text": " To be clear: ZOG: cold. MIP: blue. PLIM: big."
+        },
+        {
+          "source": "w100_std",
+          "sig_before": "MIP=hot|PLIM=red|ZOG=small",
+          "sig_after": "MIP=red|PLIM=small|ZOG=hot",
+          "preserved": false,
+          "shuffled_text": " To be clear: ZOG: hot. MIP: red. PLIM: small."
+        },
+        {
+          "source": "w100_rev",
+          "sig_before": "MIP=hot|PLIM=red|ZOG=small",
+          "sig_after": "MIP=red|PLIM=small|ZOG=small",
+          "preserved": false,
+          "shuffled_text": " To be clear: ZOG: hot. MIP: red. PLIM: small."
+        },
+        {
+          "source": "w101_std",
+          "sig_before": "MIP=blue|PLIM=blue|ZOG=small",
+          "sig_after": "MIP=blue|PLIM=small|ZOG=blue",
+          "preserved": false,
+          "shuffled_text": " To be clear: ZOG: blue. MIP: blue. PLIM: small."
+        },
+        {
+          "source": "w101_rev",
+          "sig_before": "MIP=hot|PLIM=blue|ZOG=small",
+          "sig_after": "MIP=blue|PLIM=small|ZOG=small",
+          "preserved": false,
+          "shuffled_text": " To be clear: ZOG: hot. MIP: blue. PLIM: small."
+        },
+        {
+          "source": "w110_std",
+          "sig_before": "MIP=red|PLIM=red|ZOG=small",
+          "sig_after": "MIP=red|PLIM=small|ZOG=red",
+          "preserved": false,
+          "shuffled_text": " To be clear: ZOG: red. MIP: red. PLIM: small."
+        },
+        {
+          "source": "w110_rev",
+          "sig_before": "MIP=cold|PLIM=red|ZOG=small",
+          "sig_after": "MIP=red|PLIM=small|ZOG=small",
+          "preserved": false,
+          "shuffled_text": " To be clear: ZOG: cold. MIP: red. PLIM: small."
+        },
+        {
+          "source": "w111_std",
+          "sig_before": "MIP=blue|PLIM=blue|ZOG=small",
+          "sig_after": "MIP=blue|PLIM=small|ZOG=blue",
+          "preserved": false,
+          "shuffled_text": " To be clear: ZOG: blue. MIP: blue. PLIM: small."
+        },
+        {
+          "source": "w111_rev",
+          "sig_before": "MIP=cold|PLIM=blue|ZOG=small",
+          "sig_after": "MIP=blue|PLIM=small|ZOG=small",
+          "preserved": false,
+          "shuffled_text": " To be clear: ZOG: cold. MIP: blue. PLIM: small."
         }
       ],
       "correction_descent": [
@@ -6121,6 +6235,120 @@
           "sig_before": "HESK=short|KROT=slow|VORN=short",
           "sig_after": "HESK=short|KROT=slow|VORN=short",
           "preserved": true
+        }
+      ],
+      "shuffled_control": [
+        {
+          "source": "w000_std",
+          "sig_before": "HESK=fast|KROT=fast|VORN=loud",
+          "sig_after": "HESK=loud|KROT=fast|VORN=fast",
+          "preserved": false,
+          "shuffled_text": " To be clear: KROT: fast. HESK: loud. VORN: fast."
+        },
+        {
+          "source": "w000_rev",
+          "sig_before": "HESK=tall|KROT=fast|VORN=loud",
+          "sig_after": "HESK=loud|KROT=fast|VORN=fast",
+          "preserved": false,
+          "shuffled_text": " To be clear: KROT: tall. HESK: loud. VORN: fast."
+        },
+        {
+          "source": "w001_std",
+          "sig_before": "HESK=tall|KROT=fast|VORN=quiet",
+          "sig_after": "HESK=quiet|KROT=fast|VORN=fast",
+          "preserved": false,
+          "shuffled_text": " To be clear: KROT: tall. HESK: quiet. VORN: fast."
+        },
+        {
+          "source": "w001_rev",
+          "sig_before": "HESK=tall|KROT=fast|VORN=quiet",
+          "sig_after": "HESK=quiet|KROT=fast|VORN=fast",
+          "preserved": false,
+          "shuffled_text": " To be clear: KROT: tall. HESK: quiet. VORN: fast."
+        },
+        {
+          "source": "w010_std",
+          "sig_before": "HESK=short|KROT=fast|VORN=loud",
+          "sig_after": "HESK=short|KROT=fast|VORN=fast",
+          "preserved": false,
+          "shuffled_text": " To be clear: KROT: short. HESK: loud. VORN: fast."
+        },
+        {
+          "source": "w010_rev",
+          "sig_before": "HESK=short|KROT=fast|VORN=loud",
+          "sig_after": "HESK=short|KROT=short|VORN=fast",
+          "preserved": false,
+          "shuffled_text": " To be clear: KROT: short. HESK: loud. VORN: fast."
+        },
+        {
+          "source": "w011_std",
+          "sig_before": "HESK=short|KROT=fast|VORN=quiet",
+          "sig_after": "HESK=quiet|KROT=fast|VORN=fast",
+          "preserved": false,
+          "shuffled_text": " To be clear: KROT: short. HESK: quiet. VORN: fast."
+        },
+        {
+          "source": "w011_rev",
+          "sig_before": "HESK=short|KROT=fast|VORN=short",
+          "sig_after": "HESK=short|KROT=fast|VORN=fast",
+          "preserved": false,
+          "shuffled_text": " To be clear: KROT: short. HESK: short. VORN: fast."
+        },
+        {
+          "source": "w100_std",
+          "sig_before": "HESK=tall|KROT=slow|VORN=loud",
+          "sig_after": "HESK=loud|KROT=tall|VORN=loud",
+          "preserved": false,
+          "shuffled_text": " To be clear: KROT: tall. HESK: loud. VORN: slow."
+        },
+        {
+          "source": "w100_rev",
+          "sig_before": "HESK=tall|KROT=slow|VORN=loud",
+          "sig_after": "HESK=loud|KROT=slow|VORN=slow",
+          "preserved": false,
+          "shuffled_text": " To be clear: KROT: tall. HESK: loud. VORN: slow."
+        },
+        {
+          "source": "w101_std",
+          "sig_before": "HESK=tall|KROT=slow|VORN=quiet",
+          "sig_after": "HESK=quiet|KROT=tall|VORN=slow",
+          "preserved": false,
+          "shuffled_text": " To be clear: KROT: tall. HESK: quiet. VORN: slow."
+        },
+        {
+          "source": "w101_rev",
+          "sig_before": "HESK=tall|KROT=slow|VORN=quiet",
+          "sig_after": "HESK=quiet|KROT=slow|VORN=slow",
+          "preserved": false,
+          "shuffled_text": " To be clear: KROT: tall. HESK: quiet. VORN: slow."
+        },
+        {
+          "source": "w110_std",
+          "sig_before": "HESK=short|KROT=slow|VORN=loud",
+          "sig_after": "HESK=short|KROT=short|VORN=short",
+          "preserved": false,
+          "shuffled_text": " To be clear: KROT: short. HESK: loud. VORN: slow."
+        },
+        {
+          "source": "w110_rev",
+          "sig_before": "HESK=short|KROT=slow|VORN=loud",
+          "sig_after": "HESK=short|KROT=short|VORN=slow",
+          "preserved": false,
+          "shuffled_text": " To be clear: KROT: short. HESK: loud. VORN: slow."
+        },
+        {
+          "source": "w111_std",
+          "sig_before": "HESK=short|KROT=slow|VORN=quiet",
+          "sig_after": "HESK=quiet|KROT=short|VORN=slow",
+          "preserved": false,
+          "shuffled_text": " To be clear: KROT: short. HESK: quiet. VORN: slow."
+        },
+        {
+          "source": "w111_rev",
+          "sig_before": "HESK=short|KROT=slow|VORN=short",
+          "sig_after": "HESK=short|KROT=slow|VORN=slow",
+          "preserved": false,
+          "shuffled_text": " To be clear: KROT: short. HESK: short. VORN: slow."
         }
       ],
       "correction_descent": [
