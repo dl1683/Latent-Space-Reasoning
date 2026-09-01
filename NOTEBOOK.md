@@ -4,6 +4,50 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — EAC-1 STOP: architecturally tautological (Codex ruling, scratchpad/codex_eac1_next_rung.txt)
+
+**Codex verdict: STOP the EAC/LAC line as constituted.** EAC-1 is a valid
+engineering result (learned content-addressing across unseen random transition
+tables, generalized to held-out length 4) but is architecturally tautological
+as a native-mathematics claim.
+
+**Why the causal gates are tautological:** The carrier IS the next-state
+embedding (raw attention output over state-name embeddings). Transplanting a
+state embedding into the same world and doing another lookup trivially produces
+the correct transition. The three-way arm transplants a STATE carrier, not an
+action carrier — no donor action representation is produced or transplanted.
+Host and donor share the same world. All 7 gates verify that the differentiable
+table lookup works as designed; they do not independently reveal emergent algebra.
+
+**Licensed sentence (Codex):** "In a 359K-parameter from-scratch network,
+learned content-addressing projections supported near-perfect repeated execution
+of unseen random transition tables; because each transition supplied its
+successor as the value embedding that became the carrier and was read against
+the same state embeddings, the causal swaps validate this differentiable
+associative-memory construction, not a transplanted action carrier, cross-world
+composition, an emergent quotient, or native latent-space mathematics."
+
+**Stop conditions that fire:**
+1. Answer/state code supplied directly as transition value and exposed at readout
+2. Transition algebra installed by architecture
+3. Only recovered structure = supplied finite automaton
+4. Symbolic table lookup achieves perfect accuracy with equal causal control
+5. No matched monolithic comparison or robustness advantage
+6. Artifact is a from-scratch lookup network, not real-model latent structure
+
+**Secondary corrections:**
+- Bootstrap/lower-bound gates declared in config but never computed by reducer
+- Three-way denominators only 41/35/41 (small sample)
+- Same-place JSD pass rate 92.857% in verdict.json vs 100% reported (argmax rate is 100%)
+
+**What a non-tautological continuation would require (Codex, for reference):**
+(a) Real-model carrier; (b) hard access control separating action/world writers;
+(c) no raw successor embeddings in transition values; (d) genuinely distinct
+donor/recipient worlds with independent relabelings; (e) held-out compositions;
+(f) explicit symbolic controller + matched monolithic comparison; (g) response-
+defined quotient neither labeled by task nor enforced by architecture. This is
+a new preregistration requiring an explicit restart decision.
+
 ## 2026-09-01 — EAC-1: ENDOGENOUS_ACTION_CARRIER_PASS — all 7 gates, all 3 seeds
 
 **Result:** The model learned to track state through arbitrary transition tables
