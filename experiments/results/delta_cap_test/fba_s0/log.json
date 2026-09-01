@@ -1,0 +1,211 @@
+{
+  "arch": "fba",
+  "seed": 0,
+  "params": 28025,
+  "algorithm": "ppo",
+  "obs_noise": 0.0,
+  "obs_perm": false,
+  "action_perm": true,
+  "bptt": true,
+  "delta_coef": 2.0,
+  "train_curve": [
+    {
+      "update": 50,
+      "episodes": 800,
+      "running_reward": -0.5764,
+      "running_success": 0.3432,
+      "loss": 2.5233,
+      "delta_loss": 1.2419,
+      "clip_frac": 0.0,
+      "entropy": 1.5944,
+      "eps_per_sec": 17.1
+    },
+    {
+      "update": 100,
+      "episodes": 1600,
+      "running_reward": -0.6397,
+      "running_success": 0.3509,
+      "loss": 2.1625,
+      "delta_loss": 1.0666,
+      "clip_frac": 0.0,
+      "entropy": 1.5152,
+      "eps_per_sec": 19.2
+    },
+    {
+      "update": 150,
+      "episodes": 2400,
+      "running_reward": -0.6177,
+      "running_success": 0.378,
+      "loss": 2.2032,
+      "delta_loss": 1.0888,
+      "clip_frac": 0.0,
+      "entropy": 1.5255,
+      "eps_per_sec": 19.5
+    },
+    {
+      "update": 200,
+      "episodes": 3200,
+      "running_reward": -0.6055,
+      "running_success": 0.3905,
+      "loss": 2.2861,
+      "delta_loss": 1.129,
+      "clip_frac": 0.0,
+      "entropy": 1.5306,
+      "eps_per_sec": 20.0
+    },
+    {
+      "update": 250,
+      "episodes": 4000,
+      "running_reward": -0.603,
+      "running_success": 0.393,
+      "loss": 2.2842,
+      "delta_loss": 1.129,
+      "clip_frac": 0.0,
+      "entropy": 1.5594,
+      "eps_per_sec": 20.0
+    },
+    {
+      "update": 300,
+      "episodes": 4800,
+      "running_reward": -0.6152,
+      "running_success": 0.381,
+      "loss": 2.1899,
+      "delta_loss": 1.0816,
+      "clip_frac": 0.0,
+      "entropy": 1.5573,
+      "eps_per_sec": 20.2
+    },
+    {
+      "update": 350,
+      "episodes": 5600,
+      "running_reward": -0.6276,
+      "running_success": 0.3687,
+      "loss": 2.2423,
+      "delta_loss": 1.1092,
+      "clip_frac": 0.0,
+      "entropy": 1.539,
+      "eps_per_sec": 20.1
+    },
+    {
+      "update": 400,
+      "episodes": 6400,
+      "running_reward": -0.613,
+      "running_success": 0.3831,
+      "loss": 2.251,
+      "delta_loss": 1.1099,
+      "clip_frac": 0.0,
+      "entropy": 1.5442,
+      "eps_per_sec": 19.8
+    },
+    {
+      "update": 450,
+      "episodes": 7200,
+      "running_reward": -0.62,
+      "running_success": 0.3762,
+      "loss": 2.4233,
+      "delta_loss": 1.1959,
+      "clip_frac": 0.0,
+      "entropy": 1.5382,
+      "eps_per_sec": 19.8
+    },
+    {
+      "update": 500,
+      "episodes": 8000,
+      "running_reward": -0.5836,
+      "running_success": 0.4123,
+      "loss": 2.1948,
+      "delta_loss": 1.0841,
+      "clip_frac": 0.0,
+      "entropy": 1.5113,
+      "eps_per_sec": 19.8
+    }
+  ],
+  "eval_single": [
+    {
+      "update": 100,
+      "episodes": 1600,
+      "rate": 0.0167,
+      "per_goal": [
+        0.0,
+        0.05,
+        0.0
+      ]
+    },
+    {
+      "update": 200,
+      "episodes": 3200,
+      "rate": 0.0667,
+      "per_goal": [
+        0.1,
+        0.05,
+        0.05
+      ]
+    },
+    {
+      "update": 300,
+      "episodes": 4800,
+      "rate": 0.0,
+      "per_goal": [
+        0.0,
+        0.0,
+        0.0
+      ]
+    },
+    {
+      "update": 400,
+      "episodes": 6400,
+      "rate": 0.0333,
+      "per_goal": [
+        0.0,
+        0.05,
+        0.05
+      ]
+    },
+    {
+      "update": 500,
+      "episodes": 8000,
+      "rate": 0.0167,
+      "per_goal": [
+        0.0,
+        0.0,
+        0.05
+      ]
+    }
+  ],
+  "eval_compose": [
+    {
+      "update": 100,
+      "episodes": 1600,
+      "rate": 0.0
+    },
+    {
+      "update": 200,
+      "episodes": 3200,
+      "rate": 0.0
+    },
+    {
+      "update": 300,
+      "episodes": 4800,
+      "rate": 0.0
+    },
+    {
+      "update": 400,
+      "episodes": 6400,
+      "rate": 0.0
+    },
+    {
+      "update": 500,
+      "episodes": 8000,
+      "rate": 0.0
+    }
+  ],
+  "final_single_rate": 0.0167,
+  "final_compose_rate": 0.0,
+  "final_per_goal": [
+    0.05,
+    0.0,
+    0.0
+  ],
+  "total_time_s": 406.6,
+  "total_episodes": 8000
+}

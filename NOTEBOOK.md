@@ -34,13 +34,32 @@ controlled difficulty scaling. Default: both disabled for capability test.
 - Entropy dropped: 1.50 → 0.26 (policy concentrates)
 - Architecture CAN learn, training pipeline works
 
-**Action-perm test running:** Same settings but with permuted actions per world.
-Agent must discover action mapping within each episode (meta-learning). Critical
-test for whether the GRU hidden state can support within-episode dynamics learning.
-Result pending.
+**Action-perm capability tests (obs_noise=0, action_perm=True, 500 updates):**
 
-**Next:** If action-perm works → full campaign (4 archs × 3 seeds). If not → add
-BPTT or fall back to fixed-action comparison.
+Three configurations tested — all FAILED to learn above random baseline:
+
+1. **No BPTT, delta_coef=2.0**: delta_loss 1.25→1.10 (learning direction prediction),
+   but eval single=3-7% (random=37%, baseline=2%). Policy gradient without temporal
+   credit assignment cannot learn to use encoded action-mapping information.
+
+2. **TBPTT-10, delta_coef=2.0**: delta_loss 1.24→1.08, eval single=0-7%.
+   10-step truncation still too short for meaningful credit assignment.
+
+3. **Full BPTT (prior session, 400 updates)**: eval single=8% — marginal improvement
+   but far from the 37% random walk or 83% fixed-action result.
+
+**Diagnosis:** Delta prediction successfully teaches the GRU to encode action-effect
+relationships (loss decreases from random 1.61 to ~1.1). But the policy head cannot
+translate this into better navigation because:
+- Without BPTT: no temporal credit assignment at all
+- With BPTT: the meta-learning problem is too hard — the agent must learn an
+  exploration strategy (try actions, observe results) AND a navigation strategy
+- clip_frac=0.00 throughout — policy ratio never deviates, gradient too weak
+
+**Conclusion:** Action permutation at 50-world scale is too hard for vanilla PPO,
+even with delta prediction auxiliary. The fixed-action campaign (R21 GO) proceeds
+without action permutation. Action permutation is a future research direction
+requiring either curriculum learning, explicit action probing, or model-based RL.
 
 
 ## 2026-09-01 — FBA-0: R20 NO-GO → R21 Fixes → Resubmit

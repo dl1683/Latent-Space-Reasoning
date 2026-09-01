@@ -35,6 +35,7 @@ class TrainConfig:
     delta_coef: float = 1.0
     max_grad_norm: float = 0.5
     bptt: bool = True
+    tbptt_k: int = 0
     n_train_worlds: int = 200
     n_eval_worlds: int = 50
     eval_interval: int = 200
@@ -201,6 +202,8 @@ def ppo_epoch(agent, rollout, advantages, returns, optimizer, cfg, device):
 
     for t in range(T):
         if not cfg.bptt:
+            state = {k: v.detach() for k, v in state.items()} if state else {}
+        elif cfg.tbptt_k > 0 and t > 0 and t % cfg.tbptt_k == 0:
             state = {k: v.detach() for k, v in state.items()} if state else {}
         logits, pred, value, state, extras = agent(
             rollout["obs"][t], prev_act, rollout["goals"], state, training=True
@@ -489,6 +492,7 @@ if __name__ == "__main__":
     parser.add_argument("--entropy-coef", type=float, default=0.01)
     parser.add_argument("--delta-coef", type=float, default=1.0)
     parser.add_argument("--no-bptt", action="store_true", default=False)
+    parser.add_argument("--tbptt-k", type=int, default=0)
     parser.add_argument("--lr", type=float, default=3e-4)
     args = parser.parse_args()
 
@@ -504,6 +508,7 @@ if __name__ == "__main__":
         entropy_coef=args.entropy_coef,
         delta_coef=args.delta_coef,
         bptt=not args.no_bptt,
+        tbptt_k=args.tbptt_k,
         lr=args.lr,
     )
     train(cfg)
