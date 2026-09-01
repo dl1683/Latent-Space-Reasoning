@@ -904,48 +904,49 @@ future-response identity, held-out-name generality, unseen-wording
 generality, or native mathematics alone. A nonpass kills this exact
 carrier/action/span construction, not internal intervention laws generally.
 
-### 9.10 Result: INCONCLUSIVE_ALLOCATION_STOP (2026-09-01)
+### 9.10 Result: INCONCLUSIVE_ALLOCATION_STOP (2026-09-01, Codex evidence gate: REVISE, corrections adopted)
 
 456 forward passes, 48 directed edges, 12 clusters, all eligible.
 Controls perfect ($\eta = 0$, self-patch and C25 both 0.000).
 
+Corrected metrics (Codex independent reduction per Section 9.7):
+
 | Estimand | Mean | 95% CI | Gate | Status |
 |----------|------|--------|------|--------|
-| $M$ | 0.482 | [0.421, 0.544] | $\geq 0.25$ | **PASS** |
-| $T$ | 0.168 | [0.117, 0.216] | $\geq 0.20$ | FAIL |
-| $H$ | 0.423 | [0.367, 0.483] | $\geq 0.15$ | **PASS** |
-| $U$ | 0.108 | [0.041, 0.165] | $\geq 0.10$ | FAIL |
-| $L$ | 0.130 | [0.076, 0.180] | $\geq 0.10$ | (not evaluated) |
+| $M$ | 0.438 | [0.383, 0.504] | $\geq 0.25$ | **PASS** |
+| $T$ | 0.200 | [0.144, 0.247] | $\geq 0.20$ | FAIL |
+| $H$ | 0.403 | [0.322, 0.512] | $\geq 0.15$ | **PASS** |
+| $U$ | 0.092 | [$-$0.005, 0.169] | $\geq 0.10$ | FAIL |
+| $L$ | 0.162 | [0.091, 0.222] | $\geq 0.10$ | FAIL |
 
-Verdict: INCONCLUSIVE. Kills this exact carrier/action/span construction's
-aggregate gates. Undirected hysteresis exists ($M, H$ pass); directed
-semantic transfer does not reach the locked threshold ($T, U$ fail).
+Under this exact whole-prefix intervention, an L21 transplant produced a
+response-law shift that remained after the clean host prefix was restored
+at L25. The corrected preregistered reduction cleared the descriptive $M$
+and $H$ thresholds but did not clear the donor-directed $T$/$U$ or
+localization $L$ lower-bound gates; the locked result is
+INCONCLUSIVE_ALLOCATION_STOP. It does not establish absence of
+donor-directed transfer, generic disruption, or commitment-specific
+hysteresis.
+
+Codex audit note: original reducer averaged all queries instead of using
+changed-entity query for $T$/$U$/$L$ per Section 9.7. High $H$ remains
+compatible with ordinary causal propagation from replacing an entire
+upstream prefix. This experiment is terminal.
 
 #### Post-hoc layer-resolved observation (descriptive; not pre-registered)
 
-The restore profile across layers $\ell \in \{21,...,25\}$ reveals a
-qualitative transition at the commitment boundary:
+The restore profile across layers $\ell \in \{21,...,25\}$ shows a pattern
+at the commitment boundary:
 
 | Restore $\ell$ | $H_\ell$ | $U_\ell$ | Efficiency $U/H$ | Pos. $U$ edges |
 |----------------|----------|----------|-------------------|----------------|
-| 21 | 0.000 | 0.000 | — | 0/48 |
+| 21 | 0.000 | 0.000 | --- | 0/48 |
 | 22 | 0.297 | $-$0.051 | $-$0.17 | 20/48 |
 | 23 | 0.480 | $-$0.102 | $-$0.21 | 17/48 |
 | 24 | 0.507 | $-$0.092 | $-$0.18 | 16/48 |
 | 25 | 0.423 | +0.108 | +0.25 | 38/48 |
 
 At L24$\to$L25: 25/48 edges flip from anti-directional to pro-directional;
-3/48 flip the other way (ratio 25:3). Raw $d_{\rm donor}$ drops by 0.089
-while raw $d_{\rm host}$ drops by 0.026 (3.4$\times$ ratio). Pattern
-replicates across all three families.
-
-Not explained by "later layers are always more directional": direct
-transplant at L25 ($F_{25}$) has $T = 0.038$, much worse than
-$F_{21}$'s $T = 0.168$ (38/48 edges have $T_{21} > T_{25}$).
-
-**Descriptive claim (pending Codex evidence gate):** The commitment
-bottleneck at L24-L25 acts as a compressive directional filter on prefix
-perturbation: pre-commitment layers amplify generic disruption but not
-donor direction; the commitment layer reduces total perturbation magnitude
-while extracting directional signal from the residue in non-prefix
-positions. This is a descriptive observation, not a pre-registered gate.
+3/48 flip the other way (ratio 25:3). Codex notes this is compatible with
+ordinary causal propagation from replacing an entire upstream prefix --- not
+confirmed as a commitment-specific mechanism.

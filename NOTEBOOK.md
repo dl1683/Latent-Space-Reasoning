@@ -4,50 +4,41 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
-## 2026-09-01 — Commitment Hysteresis v1: INCONCLUSIVE_ALLOCATION_STOP — undirected hysteresis exists, directed transfer does not
+## 2026-09-01 — Commitment Hysteresis v1: INCONCLUSIVE_ALLOCATION_STOP (Codex evidence gate: REVISE, corrections adopted)
 
 456 CPU forward passes (47 seconds). Pre-registered in theory Section 9. Codex
 design gate selected this over CPA-1 (456 vs 2077 passes, more fundamental
-question). Tests: transplant donor prefix at L21 → restore host prefix at L25 →
-does donor influence survive in non-prefix positions?
+question). Tests: transplant donor prefix at L21, restore host prefix at L25,
+measure whether donor influence survives in non-prefix positions.
 
-**Result: undirected hysteresis exists but directed commitment-port transfer
-does not.** The donor prefix leaves a persistent imprint on query/suffix
-positions (M=0.48, H=0.42 — both pass). But this imprint does not encode the
-donor's intended answer (T=0.17, U=0.11 — both fail). Controls perfect
-(self-patch 0.00, full-restore C25 0.00). All 12 clusters eligible.
+**Result (Codex-corrected):** Under this exact whole-prefix intervention, an L21
+transplant produced a response-law shift that remained after the clean host
+prefix was restored at L25. The corrected preregistered reduction cleared the
+descriptive M and H thresholds but did not clear the donor-directed T/U or
+localization L lower-bound gates; the locked result is
+INCONCLUSIVE_ALLOCATION_STOP. It does not establish absence of donor-directed
+transfer, generic disruption, or commitment-specific hysteresis.
 
-T is highly variable across edges (-0.28 to +0.52). Some world pairs show strong
-directed transfer (e.g., ZOG_MIP w01→w11: T=0.37, L=0.34; PLIM_KROT w00→w01:
-T=0.52, L=0.49) while others show anti-directional (HESK_VORN w00→w10: T=-0.28;
-PLIM_KROT w11→w01: T=-0.10). Not uniform failure — configuration-dependent.
+Corrected metrics (Codex independent reduction, seed 51203, 12 clusters):
+M=0.438 [0.383, 0.504] PASS, T=0.200 [0.144, 0.247] FAIL,
+H=0.403 [0.322, 0.512] PASS, U=0.092 [-0.005, 0.169] FAIL,
+L=0.162 [0.091, 0.222] FAIL. Controls perfect (self-patch 0.00, C25 0.00).
 
-**What this means for the line:** The commitment bottleneck at L24-25 does
-process foreign prefix influence, but what gets imprinted on the non-prefix
-positions is mostly generic disruption ("something was different") rather than
-directed semantic transfer ("the answer should be X"). The model's commitment
-is robust to perturbation — it doesn't simply adopt whatever prefix state was
-present during processing.
+Codex audit found the original reducer averaged all queries instead of using
+changed-entity query for T/U/L per Section 9; corrected metrics adopted.
 
 **Post-hoc layer-resolved analysis (not pre-registered; descriptive only):**
-The restore profile across layers reveals a qualitative transition at the
-commitment boundary. L22-L24: residue grows (30→51%) but is ANTI-directional
-(U_norm = -5% to -10%). L25: residue DROPS (42%) while U_norm FLIPS to
-+11% pro-directional. Pattern replicates across all three families (ZOG_MIP:
--3%→+16%, PLIM_KROT: -2%→+14%, HESK_VORN: -23%→+3%). The commitment
-bottleneck acts as a compressive filter: pre-commitment layers amplify generic
-disruption; the commitment layer reduces total perturbation while extracting
-directional information from what remains.
+The restore profile across layers shows a pattern at the commitment boundary.
+L22-L24: residue grows (30-51%) but is anti-directional (U_norm = -5% to -10%).
+L25: residue drops (40%) while U_norm flips to +11% pro-directional. Pattern
+replicates across all three families. Codex notes this is compatible with
+ordinary causal propagation from replacing an entire upstream prefix — not
+confirmed as commitment-specific.
 
-Relevant/irrelevant split: when the world difference changes the queried
-entity's value (relevant), T=0.20; when it changes the non-queried entity
-(irrelevant), T=0.14. But irrelevant edges have HIGHER M (0.54 vs 0.43) and
-H (0.46 vs 0.39) — changing the irrelevant entity creates more total disruption
-but less directed signal.
-
-**Next:** Codex evidence gate running. The layer-resolved flip is the strongest
-signal — it's a native computational law about how the commitment process
-transforms perturbation quality, not just quantity.
+**Next:** This experiment is terminal. Do not mine high-T edges or advance to
+held-out names. Next direction per Codex: a math-first endogenous action that
+descends to response-law equivalence classes and beats an ordinary-propagation
+control.
 
 ## 2026-08-31T22:42 — Phase 4d terminal anti-echo factorial: NO_INTERFACE — allocation stop (Codex evidence gate UPHOLD with corrections)
 
