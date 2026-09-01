@@ -3,6 +3,35 @@
 Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
+
+## 2026-08-31T09:45 — Phase 4c anti-echo alias control: FAILS decisive gate
+
+Five-arm control design (Codex design gate) testing whether S^G place preservation
+is semantic vs textual echo. Results against pre-registration gates:
+
+**Gate 1 (PASS):** Decoy effective — recovery drops from ~100% to 16.7%/35.4%
+(registered/heldout), decoy adoption 83%/65%.
+
+**Gate 3 (FAIL):** Faithful alias recovery (18.8%/29.2%) statistically
+indistinguishable from shuffled alias (20.8%/25.0%). Model does not resolve
+nonce aliases to override direct decoy. Required ≥30pp separation.
+
+**Subtlety:** Direct R(g) placed AFTER decoy recovers only 48% (not 100%),
+so the model is NOT a pure last-mention copier either — it integrates information
+from multiple competing assignments with recency bias. But it cannot resolve
+indirect (alias-based) references to override direct ones.
+
+**Alias-only (no decoy):** 85%/94% recovery. Aliases work in isolation but
+cannot compete with direct assignments.
+
+**Impact on claims:** S^G place preservation (100%) is explained by R(g) being
+the only direct assignment in the text — consistent with recency-weighted
+direct-mention integration, not semantic algebraic preservation. However, the
+non-naturality result (v2 experiment, 70.8-89.6% commutativity) is NOT explained
+by pure textual echo, since both paths in that experiment end at the same
+corrected world via the same last mentions.
+
+---
 ---
 
 ## 2026-08-31T08:30 — Shuffled-renderer control: pairing-sensitive, echo unresolved
