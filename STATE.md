@@ -40,7 +40,7 @@ insufficient for autonomous causal handles. Same-factor preservation is insuffic
 for composition. Width should track factor complexity. A handle claim requires
 off-episode intervention with future-response validation.
 
-**HANDLE-mu Rung 1 (Codex Rounds 1-3, PIPELINE-INVALID — bounded repair in progress).**
+**HANDLE-mu Rung 1 (Codex Rounds 1-4, R4 fixes applied, campaign running).**
 Distance-1 constructive control. Non-visual key-lock grid (7x7, partial visibility r=2).
 5 causal handles (2 keys, 2 locks, goal; agent is shared context, excluded from handle
 graph). Behaviorally defined: i→_c j iff paired interventions differing only in i
@@ -49,16 +49,15 @@ as primary arm; learned-sparse and flat GRU as controls. Training: next-obs + ne
 prediction only, no swap/graph supervision. Seven pre-registered gates.
 Spec: theory/HANDLE_MU.md. Runner: experiments/run_handle_mu.py.
 
-**Rung 1 pipeline repair complete (Codex R3b: LOCK WITH AMENDMENTS).**
-Original rung 1 was pipeline-invalid (five protocol bugs). Spec relocked with
-9 amendments, 8/9 implemented in runner. Deterministic oracle: exact (1.0/1.0).
-Smoke test: all 5 models train, pipeline end-to-end, gates compute correctly.
-Awaiting Codex R4 PR gate review before claim-bearing campaign (3 seeds, 40 epochs).
+**Codex R4 fixes applied, second campaign running.**
+R4 identified 7 blocking issues. All addressed: counterfactual resimulation
+in intervention evaluator (simulator ground truth), Control B carrier tags,
+expanded eligibility gates, historyless with action+messaging, Rung 1 eval bank
+on training layouts, oracle on validation episodes, smoke mode.
 
-Amendments implemented: per-episode identity permutation, episode-local bijection,
-factorized per-field CE loss, Control B set-aware recurrent, deterministic oracle,
-d_idx/r_idx independent swap, eligibility gate fix, frozen data manifest, shared
-suffix fix. Remaining: identity perm partition (Rung 4 only).
+Pre-fix diagnostic (seed 42): dense event F1=0.986, status=0.995.
+Causal consumption improvement = -0.009 (ground truth was wrong). R4 fixes
+provide correct counterfactual ground truth.
 
 Prior rung 1 results (PIPELINE-INVALID): experiments/results/handle_mu/.
 

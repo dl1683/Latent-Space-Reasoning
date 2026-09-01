@@ -4,6 +4,27 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — Codex R4 fixes implemented, second campaign running
+
+**Seven R4 blocking findings addressed.** The most critical: the intervention
+evaluator was comparing against donor events instead of counterfactual simulator
+events. Now constructs R[target←D] world state and resimulates both branches.
+Also: Control B carrier-tag embeddings, eligibility expansion (status F1 +
+one-sided margin), historyless with action+messaging (properly isolates
+recurrence), Rung 1 eval bank on training layouts, oracle on val episodes,
+smoke mode.
+
+**Old campaign diagnostic (pre-fix):** Dense event F1=0.986, status=0.995
+(both pass). Causal consumption improvement = -0.009 (hybrid no better than
+unpatched). Shielding rate 0.106 (marginal FAIL). The zero intervention effect
+is likely due to ground truth bug — comparing against donor events instead of
+counterfactual truth. R4 fixes address this.
+
+**New campaign running:** seed 42 first, ~30-60 min with 128 trajs/level.
+Codex R5 verification review in parallel.
+
+---
+
 ## 2026-09-01 — HANDLE-mu pipeline repair complete, campaign pending
 
 **8/9 Codex R3b amendments implemented and smoke-tested.** Deterministic oracle
