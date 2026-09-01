@@ -40,10 +40,26 @@ insufficient for autonomous causal handles. Same-factor preservation is insuffic
 for composition. Width should track factor complexity. A handle claim requires
 off-episode intervention with future-response validation.
 
-**Next direction: HANDLE-μ** (Codex Round 1 recommendation). Non-visual key-lock grid
-world on CPU. Behaviorally defined causal graph: i→j iff intervention on handle i
-changes j's one-step future response law. Distance-1 constructive control; does not
-replace the real-model central artifact without explicit scope amendment.
+**HANDLE-mu Rung 1 (Codex Rounds 1-3, PIPELINE-INVALID — bounded repair in progress).**
+Distance-1 constructive control. Non-visual key-lock grid (7x7, partial visibility r=2).
+5 causal handles (2 keys, 2 locks, goal; agent is shared context, excluded from handle
+graph). Behaviorally defined: i→_c j iff paired interventions differing only in i
+change j's next-response distribution. Dense typed slots (6x32, all-pairs messaging)
+as primary arm; learned-sparse and flat GRU as controls. Training: next-obs + next-event
+prediction only, no swap/graph supervision. Seven pre-registered gates.
+Spec: theory/HANDLE_MU.md. Runner: experiments/run_handle_mu.py.
+
+**Rung 1 campaign complete (3 seeds x 40 epochs, 1003s): PIPELINE-INVALID.**
+Not a scientific negative — five protocol bugs invalidate the run:
+1. Status F1 = 0.33 (need 0.90): MSE loss drowns 4/27-dim status signal
+2. Flat GRU hidden=33 vs slots' 192-dim: worse than historyless in 2/3 seeds
+3. Slot swap targets wrong slot 88% of time (per-step identity permutation)
+4. Shared suffix not actually shared (0% full suffix match)
+5. Events identical at contact 94% of cases
+
+Shielding and timing PASS consistently. Codex R3 verdict: "pipeline-invalid rung,
+one bounded spec/runner repair justified." Spec revision and relock in progress
+(Codex R3b). Results: experiments/results/handle_mu/.
 
 ### Closed results (OCI/RAC line — bounded activation-steering)
 

@@ -5,6 +5,61 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
+## HANDLE-mu Rung 1 — Causal Handle Algebra, distance-1 (2026-09-01; FAIL)
+
+Distance from claim: 1 (designed latent world). 7x7 key-lock grid, 5 causal handles
+(2 keys, 2 locks, goal; agent excluded), partial visibility (Manhattan r=2), observation
+identity permuted per step. Five architectures: dense typed slots (6x32, all-pairs
+messaging, 20,927 params), learned-sparse slots (top-2, 20,927), flat GRU (19,930),
+historyless (10,207), direct-state oracle. Training: next-obs MSE + next-event CE,
+40 epochs, 3 seeds (42, 137, 2026), 2048 train / 512 val / 1024 test trajectories.
+Seven pre-registered gates. Runner: `experiments/run_handle_mu.py`.
+Spec: `theory/HANDLE_MU.md`. Ledger: `handle_mu_rung1`.
+
+**Prediction metrics (event macro-F1 / status macro-F1):**
+
+| Model | Seed 42 | Seed 137 | Seed 2026 |
+|-------|---------|----------|-----------|
+| Oracle | 0.990 / - | 0.996 / - | 0.996 / - |
+| Dense slots | 0.991 / 0.337 | 0.992 / 0.348 | 0.996 / 0.330 |
+| Sparse slots | 0.988 / 0.330 | 0.991 / 0.345 | 0.994 / 0.335 |
+| Flat GRU | 0.682 / 0.343 | 0.383 / 0.218 | 0.386 / 0.245 |
+| Historyless | 0.655 / 0.299 | 0.814 / 0.297 | 0.915 / 0.297 |
+
+**Gate results:**
+
+| Gate | Seed 42 | Seed 137 | Seed 2026 |
+|------|---------|----------|-----------|
+| Eligibility | FAIL | FAIL | FAIL |
+| Causal consumption | FAIL | FAIL | FAIL |
+| Shielding | PASS | PASS | PASS |
+| Timing | PASS | PASS | PASS |
+
+**Overall verdict: FAIL.** Eligibility never passes (status F1 ~0.33, need >=0.90).
+Causal consumption improvement = 0 or negative across all seeds.
+
+**What we learned:**
+1. **MSE loss drowns status signal.** Status is 4/27 dims of the observation record,
+   trained with MSE. Status changes are sparse events. Model predicts majority class
+   (status_acc ~0.69, macro-F1 ~0.34). Needs separate CE head for status.
+2. **Flat GRU bottleneck.** Parameter-matching forces flat GRU to hidden_dim=33 vs
+   slots' effective 192-dim state. Flat GRU is WORSE than historyless in 2/3 seeds
+   (0.38 vs 0.81-0.91). The "within 3 points" gate is structurally impossible.
+3. **Events are too predictable.** Historyless achieves 0.91 event F1 (seed 2026) —
+   events can be predicted from current observation alone. Undermines need for temporal
+   causal tracking.
+4. **Slot swap targets wrong slot 88% of the time.** Identity permuted independently per
+   trajectory means donor slot N and recipient slot N usually carry different handles.
+   Codex R3 diagnostic: same_numeric_slot = 11/93 pairs.
+5. **Shared suffix not actually shared.** The paired history finder uses donor actions as
+   suffix but recipient trajectory has different actions. zero full-suffix matches.
+6. **Events identical at contact 94% of the time.** Only 5/88 contacted pairs have
+   different events at the contact step. Most events are "none."
+7. **Only keys (handles 0-1) have paired histories.** Locks and goal never independently
+   differ between same-level trajectories.
+
+---
+
 ## FBA-0 — Factored Bottleneck Architecture campaign (2026-09-01; FAIL)
 
 Distance from claim: 1 (engineered-factorization control). Synthetic Z/8×Z/4 POMDP, 16 opaque actions, T=3 episodes, 85/15 confusion matrix. Six architectures: FBA (16/16, 33,664 params), flat GRU (40K), flat-matched (33K), asymmetric split (24/8, 34,688), modular (4×8, 34,688), flat bottleneck (37,760). Three seeds (42, 137, 2026). 2000 epochs, cosine LR (1e-3→1e-5), batch 256. Kill gates: K4 (all train≥0.90), K6 (FBA>best flat≥20pp), K7a (FBA>asym≥15pp), K7b (branch interchange>historyless null with Bonferroni CI), paired effects. Response-class equivalence split: 21/3/8 (train/val/test) from 32 classes. Oracle ceilings: historyless ~72-73%, recurrent ~95-96%.

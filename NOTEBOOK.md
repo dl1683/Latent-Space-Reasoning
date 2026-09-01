@@ -4,6 +4,55 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — HANDLE-mu Rung 1 results: FAIL, deep diagnosis
+
+**Campaign complete** (3 seeds x 40 epochs, 1003s on CPU). All seeds FAIL eligibility.
+
+**Critical findings:**
+1. Status F1 = 0.33 (need 0.90). MSE loss on 27-dim record drowns the 4-dim status signal.
+   Model predicts majority class. Fix: separate CE head for status.
+2. Flat GRU hidden=33 (vs slots' effective 192-dim state). Worse than historyless in 2/3 seeds.
+   Parameter matching creates unfair bottleneck.
+3. Events predictable from current frame (historyless achieves 0.91 event F1 in seed 2026).
+   Temporal causal tracking not required for event prediction at rung 1.
+4. Slot swap targets wrong slot 88% of the time (identity permutation per step means
+   donor slot N != recipient slot N). Codex R3 diagnostic confirmed.
+5. "Shared suffix" never actually shared (0/93 full suffix matches). Different action sequences.
+6. Events identical at contact in 94% of cases. Causal effects act through handle STATE, not events.
+
+**Shielding and timing PASS consistently** — the false-effect and timing measurement work correctly.
+
+**Codex R3 diagnosis in progress.** Waiting for recommendations on whether to fix within
+HANDLE-mu (repair protocol) or redesign fundamentally.
+
+---
+
+## 2026-09-01 — HANDLE-mu spec locked, runner implemented, campaign running
+
+**Codex Round 2 completed.** Locked spec for HANDLE-mu: 7x7 key-lock grid, 5 causal
+handles (2 keys, 2 locks, goal; agent excluded as shared control context), partial
+visibility (Manhattan r=2), behaviorally defined causal graph. Spec: theory/HANDLE_MU.md.
+
+**Key design decisions (Codex R2):**
+- Dense typed slots (6 slots, width 32, all-pairs messaging) as PRIMARY arm
+- Learned-sparse slots as SECONDARY (top-2 gating)
+- Flat GRU as predictive control, historyless for recurrence necessity
+- Direct-state oracle for pipeline validity
+- Training: next-obs + next-event prediction ONLY (no swap/graph supervision)
+- Seven pre-registered gates with 95% level-clustered bootstrap CIs
+
+**Smoke test (5 epochs, seed 42):**
+- Oracle: 0.9961 (PASS >= 0.99) — pipeline valid
+- Recurrent lift: 0.2273 (PASS >= 0.10) — recurrence needed
+- Shielding: 0.0424 false-effect rate (PASS <= 0.10) — pre-contact silence holds
+- Dense/sparse undertrained at 5 epochs (event F1 ~0.47, need >= 0.90)
+
+**Full campaign (40 epochs, 3 seeds) running.** Runner: experiments/run_handle_mu.py.
+
+**What's next:** Read campaign results; if eligibility passes, evaluate intervention gates.
+
+---
+
 ## 2026-09-01 — FBA-0 full campaign COMPLETE: FAIL (0/3 joint)
 
 **Campaign:** 6 architectures × 3 seeds × 2000 epochs on Z/8×Z/4 POMDP. 20.1 minutes total.
