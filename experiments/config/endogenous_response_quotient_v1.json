@@ -1,0 +1,33 @@
+{
+  "experiment": "endogenous_response_quotient_v1",
+  "model_id": "Qwen/Qwen3-0.6B",
+  "model_revision": "c1899de289a04d12100db370d81485cdf75e47ca",
+  "device": "cpu",
+  "dtype": "float32",
+  "bypass_block": 25,
+  "template_standard": "{A}: {va}. {B}: {vb}.\n{Q}:",
+  "template_reversed": "{B}: {vb}. {A}: {va}.\n{Q}:",
+  "families": [
+    {"name": "ZOG_MIP", "entities": ["ZOG", "MIP"], "values": ["big", "small"]},
+    {"name": "PLIM_KROT", "entities": ["PLIM", "KROT"], "values": ["hot", "cold"]},
+    {"name": "HESK_VORN", "entities": ["HESK", "VORN"], "values": ["red", "blue"]}
+  ],
+  "bootstrap_resamples": 10000,
+  "bootstrap_seed": 51203,
+  "gates": {
+    "noop_tolerance": 1e-5,
+    "material_separation_floor": 0.05,
+    "min_eligible_edges": 9,
+    "bypass_viability_min_cells": 44,
+    "bypass_viability_mass_fraction": 0.50,
+    "A_O_lb": 0.10,
+    "C_O_lb": 0.05,
+    "Sigma_O_lb": 0.20,
+    "A_F_est_min": 0.05,
+    "C_F_est_min": 0.05,
+    "Sigma_F_est_min": 0.10,
+    "Sigma_F_lb": 0.05,
+    "presentation_stability_ub": 0.05,
+    "family_Sigma_F_min": 0.02
+  }
+}

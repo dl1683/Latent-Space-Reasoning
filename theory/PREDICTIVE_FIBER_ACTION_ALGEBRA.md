@@ -950,3 +950,202 @@ At L24$\to$L25: 25/48 edges flip from anti-directional to pro-directional;
 3/48 flip the other way (ratio 25:3). Codex notes this is compatible with
 ordinary causal propagation from replacing an entire upstream prefix --- not
 confirmed as a commitment-specific mechanism.
+
+---
+
+## Section 10: Endogenous Response-Quotient Selector (ERQ-1)
+
+### 10.1 Motivation
+
+Section 9's commitment hysteresis used a *surgeon-defined* action: the
+experimenter chose which prefix positions to replace, which layers to
+transplant at, and which layers to restore. The resulting signal is
+compatible with ordinary causal propagation from replacing an entire
+upstream prefix. ERQ-1 asks whether the model's *own* block-25 computation
+performs a query-selective response-law transformation that an identity
+carry of the same state cannot produce.
+
+### 10.2 Mathematical object
+
+The object is a phase-indexed **response-kernel category**, not a group:
+
+$$
+\mathcal{Q}_{\mathcal{R}}
+= (Q_{24}, Q_{25}, Q_{\mathrm{out}};\;
+   \bar{B}_{25}, \bar{I}_{25}, \bar{F}).
+$$
+
+Carrier and maps:
+
+- $H_{24}$: whole-sequence hidden state entering `model.model.layers[25]`,
+  i.e. the post-block-24 carrier.
+- $B_{25}: H_{24} \to H_{25}$: the model's actual block-25
+  computation --- the **endogenous action** under test.
+- $I_{25}: H_{24} \to H_{25}$: identity carry $I(h) = h$, the
+  **ordinary-propagation control**.
+- $F: H_{25} \to \Delta(V)$: unchanged blocks 26--27, final layernorm,
+  and unembedding. The **full suffix** observer.
+- $O: H_{25} \to \Delta(V)$: immediate final-layernorm-plus-unembedding
+  (logit lens). The **immediate** observer.
+
+### 10.3 Phase equivalence
+
+Define equivalence by registered future response laws:
+
+$$
+h \sim_\ell h'
+\iff
+\rho_c(h) = \rho_c(h')
+\quad \forall\, c \in \mathcal{R}_\ell.
+$$
+
+The registered ports include $O$, $F$, and their compositions with
+$B_{25}$ and $I_{25}$. Because the continuation family is prefix-closed,
+the native block descends to $\bar{B}_{25}: Q_{24} \to Q_{25}$.
+Composition is sequential execution; there is no assumed inverse or
+vector operation.
+
+### 10.4 Distance
+
+All distances exclusively use the normalized response-law metric:
+
+$$
+d(p, p') = \sqrt{\frac{D_{\mathrm{JS}}(p, p')}{\log 2}},
+\qquad
+D_{\mathrm{JS}}(p, p') = \tfrac{1}{2} D_{\mathrm{KL}}(p \| m)
+                        + \tfrac{1}{2} D_{\mathrm{KL}}(p' \| m),
+\quad m = \tfrac{1}{2}(p + p').
+$$
+
+Full vocabulary, no top-$k$ truncation. Range $[0, 1]$.
+
+### 10.5 Selective-identification morphism
+
+The candidate law is a **query-indexed selective identification
+morphism** --- not a categorical coequalizer with a claimed universal
+property.
+
+For a world edge changing fact $e$, block 25 should:
+
+1. **Separate** that edge more when $e$ is queried (amplification).
+2. **Identify** it more when the other fact is queried (compression).
+3. Do both **beyond** the identity-carry suffix.
+4. **Preserve** the pattern under declaration-order reversal.
+
+### 10.6 Estimands
+
+For endpoint $z \in \{O, F\}$, define:
+
+$$
+A_z = \mathbb{E}\bigl[d^B_{z,\text{relevant}} - d^I_{z,\text{relevant}}\bigr],
+$$
+
+$$
+C_z = \mathbb{E}\bigl[d^I_{z,\text{irrelevant}} - d^B_{z,\text{irrelevant}}\bigr],
+$$
+
+$$
+\Sigma_z = A_z + C_z.
+$$
+
+Here "relevant" means the edge changes the queried fact; "irrelevant"
+means it changes the non-queried fact.
+
+Ordinary propagation is literally the $I_{25}$ arm: the same naturally
+occurring upstream state enters the same remaining suffix, with no
+donor replacement. Its null is $\Sigma_F \approx 0$.
+
+ERQ-1 predicts $A > 0$, $C > 0$, and therefore $\Sigma > 0$. The same
+semantic edge must reverse its role when the query changes. A generic
+perturbation or indiscriminate block effect cannot satisfy that paired
+difference-in-differences.
+
+The immediate $O$ endpoint localizes the operation to block 25. The true
+$F$ endpoint establishes that it remains effective through the actual
+suffix. An $O$-only result is merely a logit-lens phenomenon.
+
+### 10.7 Population and budget
+
+Reuse the three fixed families from Section 9:
+
+- ZOG / MIP --- big / small
+- PLIM / KROT --- hot / cold
+- HESK / VORN --- red / blue
+
+Use four worlds, both queries, and standard / reversed declaration order:
+
+$$
+3 \times 4 \times 2 \times 2 = 48 \text{ prompt cells}.
+$$
+
+Run exactly three arms per cell:
+
+1. Native clean execution.
+2. No-op output-hook replay (instrument control).
+3. Block-25 identity bypass.
+
+**Total: 144 CPU forward passes.** No generation, donor state, position
+mask, layer sweep, training, PCA, cosine, interpolation, or vector
+arithmetic.
+
+### 10.8 Statistical design
+
+Statistical unit: the 12 undirected semantic-world edges. Query roles
+and the two presentation orders are paired and nested inside each edge.
+
+Bootstrap: deterministic 10,000-resample percentile bootstrap over whole
+edge clusters, seed `51203`. Family means are robustness diagnostics.
+Exact row counts remain diagnostics, not primary verdict gates.
+
+### 10.9 Locked preregistration
+
+| Gate | Locked bar |
+|------|------------|
+| Instrument integrity | Model/revision/layer/token checks pass; exactly one hook invocation per arm; every law finite and normalized; max clean-vs-noop $d_F \le 10^{-5}$ |
+| Material support | $\ge 9/12$ edge clusters have native relevant $d_F \ge 0.05$ |
+| Bypass viability | On $\ge 44/48$ cells, bypass probability mass on the family's two registered value tokens $\ge 50\%$ of native mass |
+| Immediate native action | $A_O$ lower bound $\ge 0.10$; $C_O$ lower bound $\ge 0.05$; $\Sigma_O$ lower bound $\ge 0.20$ |
+| Suffix survival | $A_F, C_F$ estimates $\ge 0.05$ with lower bounds $> 0$; $\Sigma_F$ estimate $\ge 0.10$ and lower bound $\ge 0.05$ |
+| Presentation stability | Upper bound of native-minus-identity presentation excess $\le 0.05$ |
+| Family robustness | Every family's $\Sigma_F$ estimate $\ge 0.02$ |
+
+### 10.10 Verdicts
+
+In priority order:
+
+| Verdict | Condition | Consequence |
+|---------|-----------|-------------|
+| `INVALID_OR_NO_PROPAGATION_CONTROL` | Instrument, material, or bypass gate fails | Fix integrity only; no scientific verdict |
+| `ENDOGENOUS_RESPONSE_QUOTIENT_REGISTERED` | All seven gates pass | Block 25 is an effective query-selective sieve for this model and carrier |
+| `LOCAL_OBSERVER_ONLY` | Immediate action passes, suffix survival fails | Block-25 selection is a logit-lens artifact that does not persist |
+| `ORDINARY_PROPAGATION_SUFFICIENT` | Both immediate and suffix fail | Block 25 adds nothing query-selective beyond identity carry |
+| `QUERY_SELECTIVE_BUT_PRESENTATION_UNSTABLE` | Action passes but presentation stability fails | Signal is declaration-order-dependent |
+| `ONE_SIDED_BLOCK_ACTION` | Only $A$ or only $C$ passes, not both | Block amplifies or compresses but does not selectively identify |
+| `INCONCLUSIVE_ALLOCATION_STOP` | Valid but intervals between pass/kill | Stop; no tuning |
+
+Every nonpass is terminal. No alternate layer, carrier subset, threshold,
+or prompt repair.
+
+### 10.11 $\mathbb{R}^n$ trap and claim wall
+
+The experiment uses residual tensors as carriers but no structure inherited
+from $\mathbb{R}^n$. The endogenous action $B_{25}$ is the model's own
+block computation, not an experimenter-designed substitution. The identity
+carry $I_{25}$ is the simplest possible control: pass the state unchanged.
+All estimands are defined in response-law distance $d$, which is invariant
+under any bijective recoding of the carrier.
+
+**Claim wall:** A pass establishes an effective, registration-relative
+response-quotient morphism for this model and this carrier. It does NOT
+establish a universal algebra, an autonomous denizen move, a mechanism
+beyond ordinary late decoding, or native mathematics alone. The strongest
+surviving null is: block 25 is simply a generic late query-conditioned
+decoder that sharpens the requested verbalizer and damps unrelated token
+mass; deleting it is an off-manifold lesion. A pass would show that one
+native transformer block acts as a query-controlled sieve, keeping apart
+worlds that differ in the fact being asked about while identifying worlds
+that differ only elsewhere --- effective selective identification beyond
+identity carry.
+
+A nonpass kills this exact block/carrier/span construction, not internal
+endogenous computation laws generally.

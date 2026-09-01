@@ -1,0 +1,71 @@
+{
+  "exp": "endogenous_response_quotient_v1",
+  "ts": "2026-09-01T01:12:42.130216",
+  "verdict": "INVALID_OR_NO_PROPAGATION_CONTROL",
+  "gates": {
+    "instrument": {
+      "ok": true,
+      "mn": 0.0
+    },
+    "material": {
+      "ok": true,
+      "n": 12
+    },
+    "bypass": {
+      "ok": false,
+      "v": 7
+    },
+    "immediate": {
+      "ok": true,
+      "AO": {
+        "est": 0.253843,
+        "lb": 0.198011,
+        "ub": 0.31946
+      },
+      "CO": {
+        "est": 0.173828,
+        "lb": 0.086007,
+        "ub": 0.267229
+      },
+      "SO": {
+        "est": 0.427671,
+        "lb": 0.303996,
+        "ub": 0.554848
+      }
+    },
+    "suffix": {
+      "ok": false,
+      "AF": {
+        "est": 0.159003,
+        "lb": 0.111009,
+        "ub": 0.208142
+      },
+      "CF": {
+        "est": 0.012527,
+        "lb": -0.017075,
+        "ub": 0.039409
+      },
+      "SF": {
+        "est": 0.17153,
+        "lb": 0.126367,
+        "ub": 0.218602
+      }
+    },
+    "presentation": {
+      "ok": true,
+      "ub": 0.037991
+    },
+    "family": {
+      "ok": true,
+      "sf": {
+        "ZOG_MIP": 0.209068,
+        "PLIM_KROT": 0.205688,
+        "HESK_VORN": 0.099835
+      }
+    }
+  },
+  "bootstrap": {
+    "seed": 51203,
+    "n": 10000
+  }
+}

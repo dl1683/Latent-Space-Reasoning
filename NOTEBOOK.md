@@ -4,6 +4,34 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — ERQ-1 (Endogenous Response-Quotient Selector): INVALID_OR_NO_PROPAGATION_CONTROL
+
+144 CPU forward passes. Pre-registered in theory Section 10. Codex design gate
+selected this: compare block 25's native computation with identity carry (skip
+block, pass pre-block state unchanged). No donor transplant — purely endogenous.
+Tests whether block 25 performs query-selective response-law transformation
+beyond ordinary propagation.
+
+**Result:** Instrument integrity PASS (noop d=0.0). Material support PASS
+(12/12 edges eligible). **Bypass viability FAIL (7/48 cells retain ≥50% value
+token mass).** The identity bypass is too destructive — block 25 is a critical
+computation step, and skipping it pushes remaining blocks into off-manifold
+states. This is exactly Codex's pre-declared strongest null: "deleting it is an
+off-manifold lesion." No scientific verdict possible under the preregistration.
+
+**Descriptive (not gateable):** At the immediate observer (logit lens, O
+endpoint), block 25 performs clear query-selective action: A_O=0.254 [0.198],
+C_O=0.174 [0.086], Σ_O=0.428 [0.304] — all would pass their gates. At the
+full-suffix endpoint (F), amplification survives (A_F=0.159 [0.111]) but
+compression does not (C_F=0.013 [-0.017]). Presentation stability clean
+(ub=0.038). All three families show positive Σ_F. The O-endpoint data is
+consistent with block 25 performing a query-selective sieve, but the bypass
+control is invalid because it is off-manifold.
+
+**Terminal.** No alternate layer, carrier subset, threshold, or prompt repair.
+
+---
+
 ## 2026-09-01 — Commitment Hysteresis v1: INCONCLUSIVE_ALLOCATION_STOP (Codex evidence gate: REVISE, corrections adopted)
 
 456 CPU forward passes (47 seconds). Pre-registered in theory Section 9. Codex
