@@ -355,7 +355,7 @@ def train(cfg: TrainConfig):
             print(f"[{cfg.arch} s{cfg.seed}] u={update+1:5d} ep={total_episodes:6d} "
                   f"r={running_reward:.3f} succ={running_success:.3f} "
                   f"dl={avg_delta:.3f} ent={avg_entropy:.3f} "
-                  f"clip={avg_clip:.2f} ({eps_per_sec:.1f} ep/s)")
+                  f"clip={avg_clip:.2f} ({eps_per_sec:.1f} ep/s)", flush=True)
 
         if (update + 1) % cfg.eval_interval == 0:
             single_rate, compose_rate, per_goal = evaluate(
@@ -372,7 +372,7 @@ def train(cfg: TrainConfig):
             })
             print(f"  EVAL single={single_rate:.3f} "
                   f"(per_goal={[f'{x:.2f}' for x in per_goal]}) "
-                  f"compose={compose_rate:.3f}")
+                  f"compose={compose_rate:.3f}", flush=True)
             agent.train()
 
         if (update + 1) % cfg.checkpoint_interval == 0:
@@ -395,7 +395,7 @@ def train(cfg: TrainConfig):
     with open(out_dir / "log.json", "w") as f:
         json.dump(log, f, indent=2)
 
-    print(f"\n[{cfg.arch} s{cfg.seed}] DONE in {log['total_time_s']:.0f}s")
+    print(f"\n[{cfg.arch} s{cfg.seed}] DONE in {log['total_time_s']:.0f}s", flush=True)
     print(f"  Final single={log['final_single_rate']:.3f} "
           f"compose={log['final_compose_rate']:.3f}")
     return log

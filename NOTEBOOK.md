@@ -43,6 +43,46 @@ Result pending.
 BPTT or fall back to fixed-action comparison.
 
 
+## 2026-09-01 — FBA-0: R20 NO-GO → R21 Fixes → Resubmit
+
+**Codex R20 verdict: NO-GO.** Code fully clean (Clopper-Pearson, MIN_WC_PAIRS,
+disjoint pairs all verified correct). Three remaining overclaims in
+theory/FBA_BRIDGE.md:
+1. "non-recurrent encoder" was broader than the registered historyless null.
+   FIXED: Now says "the registered historyless null."
+2. Wrong-channel section claimed swaps rule out redundancy. Both donors share
+   the scored factor, so redundant encoding can pass.
+   FIXED: Rewritten as "same-factor preservation" checks with explicit disclaimer.
+3. Conclusion said FBA-0 tests "product factorization."
+   FIXED: Now says "decoder-compatible branch interchange."
+
+R21 submitted for final text-only review. **R21 verdict: GO.** All overclaims
+resolved. Codex noted two slightly broad phrases remain but surrounding
+disclaimers prevent overclaim — not blocking. Also proactively fixed:
+- "rule out degenerate solutions" → "same-factor preservation controls"
+- "operationalize the definitions above" → "operationalize the branch
+  interchange test (Definition 4) and its same-factor preservation controls"
+- Section header "Wrong-channel controls" → "Same-factor preservation controls
+  (wrong-channel tests)"
+
+FBA-0 is now cleared for full campaign run: 6 models × 3 seeds × 2000 epochs.
+
+## 2026-09-01 — FBA-0: R19 NO-GO → R20 Fixes → Resubmit
+
+**Codex R19 verdict: NO-GO.** Pseudoreplication FIXED (disjoint pairs verified).
+Two remaining issues:
+1. Wrong-channel small sample (n=48): bootstrap CI unreliable at this count.
+   FIXED: Clopper-Pearson exact binomial CI replaces bootstrap for wrong-channel.
+   Added MIN_WC_PAIRS=30 gate.
+2. Theory overclaim: Proposition 1 claimed interchange implies factorization.
+   FIXED: Narrowed to "decoder-compatible branch separation."
+
+## 2026-09-01 — FBA-0: R18 NO-GO → R19 Fixes → Resubmit
+
+**Codex R18 verdict: NO-GO.** All R17 fixes verified EXCEPT pseudoreplication.
+FIXED: Disjoint episode pairs (permutation-based, no episode reuse).
+Yields ~336 matched, ~48 same-loc, ~112 same-state independent pairs.
+
 ## 2026-09-01 — FBA-0: R17 NO-GO → R18 Fixes → Resubmit
 
 **Codex R17 verdict: NO-GO.** Fatal orientation bug + 5 smaller issues:

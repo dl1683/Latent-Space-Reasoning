@@ -690,10 +690,14 @@ def evaluate_k7b(model, world, seed, n_episodes=1024):
                 fiber_m, fiber_lo, fiber_hi = bootstrap_ci(
                     per_pair_fiber, alpha=bonf_alpha)
 
-                wc_loc_m, wc_loc_lo, wc_loc_hi = bootstrap_ci(
-                    wc_loc_scores, alpha=bonf_alpha) if wc_loc_scores else (0, 0, 0)
-                wc_state_m, wc_state_lo, wc_state_hi = bootstrap_ci(
-                    wc_state_scores, alpha=bonf_alpha) if wc_state_scores else (0, 0, 0)
+                wc_loc_k = sum(wc_loc_scores)
+                wc_loc_n = len(wc_loc_scores)
+                wc_loc_m, wc_loc_lo, wc_loc_hi = clopper_pearson_ci(
+                    wc_loc_k, wc_loc_n, alpha=bonf_alpha) if wc_loc_n > 0 else (0, 0, 0)
+                wc_state_k = sum(wc_state_scores)
+                wc_state_n = len(wc_state_scores)
+                wc_state_m, wc_state_lo, wc_state_hi = clopper_pearson_ci(
+                    wc_state_k, wc_state_n, alpha=bonf_alpha) if wc_state_n > 0 else (0, 0, 0)
 
                 by_cls = defaultdict(list)
                 for k, c in enumerate(per_pair_cls):
@@ -744,6 +748,20 @@ def bootstrap_ci(values, n_boot=1000, alpha=0.05, seed=42):
     lo = np.percentile(means, 100 * alpha / 2)
     hi = np.percentile(means, 100 * (1 - alpha / 2))
     return float(np.mean(arr)), float(lo), float(hi)
+
+
+def clopper_pearson_ci(k, n, alpha=0.05):
+    """Exact Clopper-Pearson CI for binomial proportion. Returns (mean, lo, hi)."""
+    from scipy import stats
+    if n == 0:
+        return 0.0, 0.0, 0.0
+    p_hat = k / n
+    lo = stats.beta.ppf(alpha / 2, k, n - k + 1) if k > 0 else 0.0
+    hi = stats.beta.ppf(1 - alpha / 2, k + 1, n - k) if k < n else 1.0
+    return float(p_hat), float(lo), float(hi)
+
+
+MIN_WC_PAIRS = 30
 
 
 def per_class_accuracy(episodes):
@@ -896,8 +914,11 @@ def evaluate_gates(all_results, cfg):
         k7b_fiber = k7b_fiber_ci[0] > hl_pres_null + 0.02
         wc_loc_ci = k7b.get("wc_loc_ci", [0, 0])
         wc_state_ci = k7b.get("wc_state_ci", [0, 0])
-        k7b_wc = (wc_loc_ci[0] > hl_pres_null and
-                  wc_state_ci[0] > hl_pres_null)
+        wc_loc_n = k7b.get("n_wc_loc_pairs", 0)
+        wc_state_n = k7b.get("n_wc_state_pairs", 0)
+        k7b_wc = (wc_loc_n >= MIN_WC_PAIRS and wc_state_n >= MIN_WC_PAIRS
+                  and wc_loc_ci[0] > hl_pres_null
+                  and wc_state_ci[0] > hl_pres_null)
         cls_ci = k7b.get("cross_by_class", {})
         k7b_cls = cls_ci.get("ci_lo", 0) > hl_cross_null
         k7b_pass = (k7b_self and k7b_cross and k7b_place and k7b_fiber

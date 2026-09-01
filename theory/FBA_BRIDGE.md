@@ -57,29 +57,34 @@ The cross-accuracy is the fraction of hybrids correctly decoded. The test
 passes if cross-accuracy exceeds the historyless null (the accuracy achievable
 from a single observation without recurrence).
 
-## Proposition 1 (Interchange implies factorization)
+## Proposition 1 (Interchange implies decoder-compatible branch separation)
 
 If a recurrent encoder consistently passes the branch interchange test
 (cross-accuracy significantly above historyless null, with Bonferroni-corrected
-CI), then the encoder has learned a product factorization where each branch
-independently encodes one factor of the state space.
+CI), then the encoder's branches carry **decoder-compatible** factor information:
+cross-episode hybrids decode to the expected (location, state) combination
+at rates exceeding the registered historyless null (the accuracy achievable
+from a single observation without recurrence).
 
-*Proof sketch*: If $\pi_L(z_i)$ did not carry location information independently
-of $\pi_F(z_i)$, then replacing $\pi_F$ with a mismatched episode's fiber
-representation would corrupt the location prediction. High cross-accuracy on
-mismatched pairs implies the information is separable.
+This is an empirical decoder-compatibility statement, not a claim of exclusive
+independent factor encoding. Branches may carry redundant or entangled
+information; the test shows the decoder can extract the correct factors from
+cross-episode hybrids, not that each branch exclusively encodes one factor.
 
-## Wrong-channel controls
+## Same-factor preservation controls (wrong-channel tests)
 
-The interchange test includes **wrong-channel controls** to rule out
-degenerate solutions:
+The interchange test includes **same-factor preservation controls** to
+check decoder-compatibility in each branch direction:
 
-- **Same-location pairs** ($\ell_i = \ell_j$): if the encoder stored location
-  redundantly in both branches, swapping one would not change the location
-  prediction. The wrong-channel test checks that the designated place-branch
-  alone determines location.
+- **Same-location pairs** ($\ell_i = \ell_j$): when both episodes share
+  the same location, swapping the place branch should preserve location
+  decoding. This is a **same-factor preservation** check: it tests that
+  the designated branch carries decoder-compatible location information,
+  not that it exclusively determines location (redundant encoding across
+  branches could also pass).
 
-- **Same-fiber pairs** ($f_i = f_j$): analogous check for the fiber factor.
+- **Same-state pairs** ($f_i = f_j$): analogous same-factor preservation
+  check for the fiber branch.
 
 ## Connection to FBA-0
 
@@ -87,10 +92,12 @@ FBA-0 instantiates this framework with $L = \mathbb{Z}/8$ (locations),
 $F = \mathbb{Z}/4$ (states), a 16/16 independently-updated recurrent
 architecture as the encoder, and the six-way comparison (flat, matched, 
 asymmetric split, modular, flat-bottleneck) as controls. The kill gates
-(K4, K6, K7a, K7b, paired effects) operationalize the definitions above.
+(K4, K6, K7a, K7b, paired effects) operationalize the branch interchange
+test (Definition 4) and its same-factor preservation controls.
 
 FBA-0 is a **control experiment** (distance 1): it tests whether an
-engineered product architecture can learn product factorization in a synthetic
-POMDP. It does NOT constitute native latent-space mathematics — the central
-artifact of this project is the discovery of factorization structure in
-real model latent spaces, for which FBA-0 provides empirical grounding.
+engineered product architecture can support decoder-compatible branch
+interchange in a synthetic POMDP. It does NOT constitute native
+latent-space mathematics — the central artifact of this project is the
+discovery of intervenable structure in real model latent spaces, for
+which FBA-0 provides empirical grounding.
