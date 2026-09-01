@@ -4,6 +4,24 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — PSQ-1 capability screen: NO_INTERFACE (Qwen3-1.7B-Base)
+
+**Result:** Overall 69/128 = 53.91% (gate ≥95%). Per-cell: x_0=50.0%, x_1=59.4%,
+y_0=9.4%, y_1=96.9%. Only y_1 passes — the model predicts "0" almost always for y
+queries and is at chance for x queries. No state tracking through Python-completion.
+
+**Stop condition fires (Codex R3):** NO_INTERFACE. No prompt repair, no layer change,
+no task simplification, no model swap inside PSQ-1. PSQ-1 is dead.
+
+**Predeclared fallback:** Qwen3-8B-Base on stable 24GB+ hardware (not available locally).
+
+**Pattern across eligibility screens:** Qwen3-0.6B-Base failed permutation (48%),
+Qwen3-1.7B-Base failed two-dial (54%). Small base models cannot track multi-step
+state evolution through prompts. The task requires either a larger/capable model
+or a fundamentally different approach.
+
+**Next:** Codex direction dialogue on post-PSQ-1 options.
+
 ## 2026-09-01 — LAC-0 TERMINAL: PORTABLE_NOT_COMPOSABLE (Codex design gate)
 
 **Codex design gate (scratchpad/codex_init_gate_response.txt):** LAC-0 is terminal.

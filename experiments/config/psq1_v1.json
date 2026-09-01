@@ -27,7 +27,7 @@
   "presentation": {
     "format": "python_completion",
     "n_shots": 4,
-    "readout": "normalize(p(' 0'), p(' 1'))",
+    "readout": "normalize(p('0'), p('1')) after trailing space in prompt",
     "note": "Expanded operations (no symbolic A/B/C/D). Separate x/y queries."
   }
 }

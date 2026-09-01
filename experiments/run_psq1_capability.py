@@ -70,7 +70,7 @@ def state_to_python_block(init_state: tuple[int, int], actions: list[str],
         lines.append("print(1 if x == 0 else 0)")
     else:
         lines.append("print(1 if y == 0 else 0)")
-    lines.append("# prints:")
+    lines.append("# prints: ")
     return "\n".join(lines)
 
 
@@ -85,7 +85,7 @@ def build_fewshot_prefix() -> str:
     blocks = ["# Python 3. Execute each block exactly. Values are modulo 8.\n"]
     for init, acts, ch, ans in DEMO_CASES:
         block = state_to_python_block(init, acts, ch)
-        blocks.append(block + f" {ans}\n")
+        blocks.append(block + f"{ans}\n")
     return "\n".join(blocks)
 
 
@@ -173,13 +173,13 @@ def run_capability_screen(cfg: dict) -> CapabilityResult:
         model = model.to(device)
     torch.set_grad_enabled(False)
 
-    token_0 = tok.encode(" 0", add_special_tokens=False)
-    token_1 = tok.encode(" 1", add_special_tokens=False)
-    assert len(token_0) == 1, f"' 0' is not a single token: {token_0}"
-    assert len(token_1) == 1, f"' 1' is not a single token: {token_1}"
+    token_0 = tok.encode("0", add_special_tokens=False)
+    token_1 = tok.encode("1", add_special_tokens=False)
+    assert len(token_0) == 1, f"'0' is not a single token: {token_0}"
+    assert len(token_1) == 1, f"'1' is not a single token: {token_1}"
     id_0 = token_0[0]
     id_1 = token_1[0]
-    print(f"Token IDs: ' 0'={id_0}, ' 1'={id_1}")
+    print(f"Token IDs: '0'={id_0}, '1'={id_1}")
 
     result = CapabilityResult()
     cell_counts = {("x", 0): [0, 0], ("x", 1): [0, 0],

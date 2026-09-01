@@ -15,6 +15,14 @@ Build a learned carrier whose internal states compose under causal transplantati
 
 ---
 
+## Phase 5 — PSQ-1: Predictive-State Quotient (2026-09-01, killed at eligibility)
+
+Test whether frozen Qwen3-1.7B-Base can track state in a 64-state two-dial world (Z8×Z8) via Python-completion prompts. Distance-from-claim: 0 (predictive-state quotient geometry IS native math). Codex R1-R3 direction dialogue.
+
+- **psq1_v1_capability — NO_INTERFACE** (`results/psq1_v1/capability_screen.json`). 128 CPU forwards, 217s. 4-shot Python-completion, 2-8 operations per test, separate x/y queries. Overall 53.91% (gate ≥95%). Per-cell: x_0=50.0%, x_1=59.4%, y_0=9.4%, y_1=96.9%. Model almost always predicts "0" for y queries; at chance for x. No state tracking. Stop condition: NO_INTERFACE. No repair per Codex R3. Predeclared fallback: Qwen3-8B-Base on 24GB+ hardware (not locally available).
+
+---
+
 ## Phase 4 attempt — KV command-slot transplant (2026-09-01, killed at eligibility)
 
 Test whether frozen Qwen3-0.6B-Base admits modular KV-level command execution. Distance-from-claim: 1 (modular execution is prerequisite for native algebra). Codex direction R1+R2: engineering falsification, not native math.
