@@ -4,6 +4,116 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — RAC-1 Affine Setters: Confirmatory Round Results
+
+**Affine coordinate-overwrite setters** per Codex follow-up guidance. Construction:
+- V = [rv, rlv] (1024×2), proj = (V'V)^{-1} V' (2×1024)
+- c(h) = proj @ (h - grand_mean) → [c_pos, c_rel] coordinates
+- S_pos1(h) = h + rv * (τ_pos1 - c_pos(h)), τ_pos1 ≈ 0.5
+- Fixed FUNCTION (frozen V, proj, tau), state-dependent (reads current coordinate)
+
+### Gate results
+
+| Gate | Result | Verdict |
+|------|--------|---------|
+| A (efficacy) | train 40/48, held 24/32 | Partial (multi-token confound on Seoul) |
+| B (specificity) | 26/48 (probability-level) | **Coordinate-level: PERFECT (0.000000 off-axis)** |
+| C (composition) | train 32/36 (89%), held 22/24 (92%) | **PASS** |
+| D (overwrite) | **48/48 PERFECT** | **PASS** — true mathematical idempotence |
+| E (commutativity) | **48/48 PERFECT** | **PASS** |
+| G (transport) | ALL DEFORM (constant-vector test) | Expected |
+| H (random ctrl) | mean 0.3/12 | **PASS** — random doesn't work |
+
+### Key findings
+
+1. **Coordinate-level specificity is EXACT.** Off-axis coordinate change = 0.000000
+   for every setter. The probability-level bleed (26/48 FAIL) comes entirely from
+   the model's nonlinear post-B20 computation, not the setter construction.
+
+2. **True idempotence achieved (48/48).** Impossible with constant-additive setters
+   (which scored 14/24). The affine construction guarantees S(S(h)) = S(h) because
+   the second application finds delta = 0.
+
+3. **Composition dramatically improved.** Centred constant setters: 10/36 train,
+   11/24 held-out. Affine setters: 32/36 train, 22/24 held-out. The algebra works
+   when setters compute the exact delta needed.
+
+4. **Multi-token measurement artifact.** "South Korea" tokenizes as [" South",
+   " Korea"]. Test checks last token ("Korea") but model outputs first ("South").
+   Affects 4+ Gate A and some Gate C measurements for Seoul entities.
+
+5. **Scaling diagnostic.** Centred setters at 2× (= RAC-0 magnitude) recover 31/36
+   composition — confirming the issue was magnitude, not construction.
+
+### Comparison: constant centred vs affine vs RAC-0
+
+| Metric | Constant 1x | Constant 2x | Affine | RAC-0 |
+|--------|-------------|-------------|--------|-------|
+| Composition (train) | 10/36 | 31/36 | 32/36 | 12/12 |
+| Idempotence | 14/24 | N/A | 48/48 | N/A |
+| Commutativity | 48/48 | N/A | 48/48 | N/A |
+
+### Codex Round 9 Adjudication: RAC-1 FAIL
+
+**RAC-1 FAILS the confirmatory round. Algebra program CLOSED.**
+
+Critical corrections by Codex:
+1. **Gate C metric error:** I used `p_target > p_start` (32/36) but spec requires
+   `correct_top1` (target is THE top-1 token). Actual: 21/36 train (58%), 14/24 held (58%).
+2. **Gate A per-setter:** S_pos1 at 8/12 triggers the ≥4-failure stop condition.
+3. **Gate E tautological:** Same-layer affine maps commute algebraically before
+   the model sees them — this is a property of the construction, not the model.
+4. **Gates F, I never implemented.**
+5. **Transport discrepancy:** RAC-0's JSD 0.06-0.08 = sqrt(JSD) 0.245-0.283 =
+   already DEFORM under RAC-1 thresholds. B16-B21 routing phase claim withdrawn.
+
+**What survives:** "In one mixed-fact prompt family, a frozen two-coordinate affine
+actuator at B20 provides direction-specific crossed retrieval steering and exact
+chart-level overwrite identities, while random composed directions do not reproduce
+its pairwise steering effect." This is a useful local actuator, not a response
+quotient carrying a product algebra.
+
+**The hole exposed:** The model permits useful local coordinate actuation, yet its
+response behavior does not respect those coordinates as independent,
+quotient-well-defined, transportable variables.
+
+Data: `experiments/results/rac_1/verdict_affine.json`
+
+---
+
+## 2026-09-01 — Codex Round 8 Verdict + RAC-1 Design
+
+**Codex ruling on RAC-0:** PASS for B20 crossed-factor causal steering; PARTIAL
+for response algebra; CONTINUE for exactly one confirmatory round (RAC-1).
+
+Key deficiencies identified:
+- Gate 1 (specificity): relation efficacy not serialized in canonical artifact
+- Gate 3 (same-variable): no idempotence/cancellation rows in runner
+- Gate 4 (different-variable): commutativity criterion too weak — needs
+  response-distribution equality, not just p_target > p_start
+- Layer deformation: hypothesis supported but boundary not established (only
+  one prompt, one cell tested for separated boundary)
+- **Strongest objection:** "You added two Euclidean function vectors in a
+  deliberately factorable retrieval task and used a pairwise token contest as
+  the success criterion. You demonstrated additive activation steering, not
+  setters on a quotient or a new algebra."
+
+**RAC-1 specification written** (`theory/RAC_1_SPECIFICATION.md`). Key changes
+from RAC-0:
+- Fixed absolute setters (centred, not transition directions)
+- Quotient descent test (h ~ h' => S(h) ~ S(h'))
+- Response-law commutativity (JSD between orderings, not just both-correct)
+- 20 random direction controls
+- Logit-additive baseline comparison
+- Full response distributions serialized (top-10 tokens)
+- New held-out entities (Seoul/Madrid, Moscow/Athens) + template variants
+- Transport defect matrix across layer pairs
+
+**Norm discrepancy fixed:** NOTEBOOK and STATE.md corrected from 43.2/116.1
+to 41.4/115.0 (matching the canonical verdict.json).
+
+---
+
 ## 2026-09-01 — RAC-0: Response-Algebra Composition (FIRST SUCCESSFUL COMPOSITION)
 
 **The first successful composition in 75+ experiments.** Two orthogonal function
@@ -14,8 +124,8 @@ relation: capital vs language) — independently and jointly control retrieval.
 Mixed 4-fact prompt: "{E1} is the capital of {V1}. {E1} speaks {L1}. {E2}
 is the capital of {V2}. {E2} speaks {L2}. {Q} [query]"
 
-- Routing vector rv = mean(pos1_states) - mean(pos2_states): ||rv||=43.2
-- Relation vector rlv = mean(cap_states) - mean(lang_states): ||rlv||=116.1
+- Routing vector rv = mean(pos1_states) - mean(pos2_states): ||rv||=41.4
+- Relation vector rlv = mean(cap_states) - mean(lang_states): ||rlv||=115.0
 - **cos(rv, rlv) = -0.046** — orthogonal, independent encoding
 - PCA: PC1 (79.3%) = relation direction, PC2 (10.9%) = position direction
 

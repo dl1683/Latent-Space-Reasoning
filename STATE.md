@@ -1,20 +1,28 @@
 # STATE
 
-## Current statement (2026-09-01, FIRST POSITIVE: 2-D RETRIEVAL ALGEBRA AT B20)
+## Current statement (2026-09-01, RAC-1 FAIL → ALGEBRA LINE CLOSED → PIVOT)
 
-**First successful composition in 75+ experiments.** The OCI/RAC experimental line has discovered a 2-D factored retrieval algebra at layer 20 of Qwen3-0.6B-Base. Two orthogonal function vectors — routing (position selection) and relation (capital vs language) — independently and jointly control factual retrieval. Composition generalizes 100% to held-out entity pairs.
+**The OCI/RAC algebra program is CLOSED.** RAC-1 confirmatory round FAILED (Codex
+round 9). The model permits useful local coordinate actuation at B20, but its
+response behavior does not respect those coordinates as independent,
+quotient-well-defined, transportable variables. No RAC-2 rescue round warranted.
 
-### Active positive results (OCI/RAC line)
+**Next direction needed.** The transferable residue: factored encoding exists, linear
+actuation steers it, but the response function doesn't form a clean product algebra.
+What IS the native mathematical structure of this gap?
 
-**OCI-002 (sentence-position routing):** B20 hidden state transplant routes to the donor's sentence position at 95.8% accuracy across disjoint entity panels. The state encodes "attend to position N" not entity identity. Function vector extraction: 1-D, PC1 alignment 0.999, Cohen's d=19.9. Causally controls attention and output (complete output flip in disagreeing case). Runner: `experiments/run_oci_002.py`.
+### Closed results (OCI/RAC line — bounded activation-steering)
 
-**OCI-003 (structural routing, not token-positional):** Cross-template transplant at 96.5% vs same-template 97.2%. Routing follows ordinal clause position, not token coordinates. Templates shift fact tokens by 1-3 positions — routing survives. Promotes routing to credible causal type per Codex ruling. Runner: `experiments/run_oci_003.py`.
+**OCI-002 (sentence-position routing):** B20 hidden state transplant routes to the donor's sentence position at 95.8% accuracy across disjoint entity panels. Runner: `experiments/run_oci_002.py`.
 
-**RAC-0 (response-algebra composition):** Two orthogonal function vectors at B20: routing (rv, ||=43.2) and relation (rlv, ||=116.1), cos(rv,rlv)=-0.046. In a 2×2 factorial (position × relation) over mixed 4-fact prompts: same-pair 12/12, held-out 12/12 (100%), separated-boundary 13/14. Specificity 4/4 (each vector changes only its target dimension). Approximate idempotence and cancellation. Composition through 5 layers of separated model computation (B15-B20). **Layer-phase deformation:** composition works B15-B21 (routing phase), fails at B22 (content-commitment transition). Runner: `experiments/run_rac_0.py`.
+**OCI-003 (structural routing):** Cross-template transplant at 96.5%. Routing follows ordinal clause position, not token coordinates. Runner: `experiments/run_oci_003.py`.
 
-**Mathematical object (Codex formulation):** Q_b = H_b / ~_b where h ~ h' iff they induce the same registered future-response law across held-out recipients. At B20, this quotient has a 2-D factored structure (position × relation) forming an approximate setter semigroup with commutativity through intervening computation. The domain boundary at B22 is the model-specific structure that can't be derived from R^n geometry.
+**RAC-0 (crossed-factor steering, Codex PASS):** Two orthogonal function vectors at B20: routing (rv, ||=41.4) and relation (rlv, ||=115.0), cos(rv,rlv)=-0.046. Pairwise steering 12/12 same-pair, 12/12 held-out. B16-B21 routing phase claim WITHDRAWN per Codex round 9 (sqrt(JSD) was already DEFORM). Runner: `experiments/run_rac_0.py`.
 
-**Open gates:** Gate 5 (well-definedness across response-equivalent representatives) and Gate 6 (mechanism/attention rescue) not yet tested. Codex round 8 evaluating the full result.
+**RAC-1 (affine setter confirmatory, FAIL):** Affine coordinate-overwrite setters.
+Correct_top1 composition: 21/36 train (58%), 14/24 held-out (58%). Gate A per-setter
+S_pos1 at 8/12 triggers stop condition. Same-layer commutativity tautological (property
+of affine construction, not model). Gates F, I not run. Runner: `experiments/run_rac_1.py`.
 
 ### Archival context (theorem attempts — REJECTED)
 
