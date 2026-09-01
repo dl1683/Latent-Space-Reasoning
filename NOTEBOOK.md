@@ -4,6 +4,37 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — OSQ-1 (Observational Selectivity Quotient): OBSERVATIONAL_SELECTIVITY_VERBALIZER_SUFFICIENT
+
+48 CPU forward passes, 28-layer logit-lens profile, 12 undirected edges, 10,000
+bootstrap resamples. Pre-registered in theory Section 11 (Codex design gate).
+Purely observational — no bypass, no intervention. Measures layer-resolved
+selectivity contrast: how much does the logit-lens vocabulary distribution change
+when you vary the queried fact vs the irrelevant fact?
+
+**Result:** All 11 core gates PASS with strong margins. Integrity PASS (d=0.00023).
+Material PASS (12/12). Early null PASS (B=0.008). Window emergence PASS
+(Gw=0.239 [0.137]). Anchor: G(25)=0.633 [0.554], R(25)=0.785 [0.712],
+OSQ(25)=0.706 [0.612]. Peak=L25, onset=L24. Persistence PASS (S(27)=0.240
+[0.184]). Presentation-stable (std=0.644 [0.506], rev=0.638 [0.512]). All three
+families strong (0.56–0.70).
+
+**Verbalizer null FAIL (V=1.01).** The 3-bin answer-token distribution (v0, v1,
+rest) accounts for 100% of the selectivity signal. S^pi(25) = 0.647 ≈ S(25) =
+0.641. The model's late-layer selectivity is entirely ordinary answer-token
+routing — amplifying the correct answer and suppressing the incorrect one.
+
+**What this means:** The selectivity is real and robust. The model IS selectively
+processing the queried fact at layers 21–25. But this selectivity is exactly what
+the model needs to produce the correct answer token — no more. Purely
+observational logit-lens measurements have reached their ceiling. The next
+direction must go beyond answer-token routing.
+
+**What's next:** Codex postmortem on what VERBALIZER_SUFFICIENT means for the
+program direction. The observational line is exhausted. Need either
+intervention-based measurements, measurements beyond the verbalizer, or a
+fundamentally different approach.
+
 ## 2026-09-01 — ERQ-1 (Endogenous Response-Quotient Selector): INVALID_OR_NO_PROPAGATION_CONTROL
 
 144 CPU forward passes. Pre-registered in theory Section 10. Codex design gate

@@ -1176,3 +1176,217 @@ states. This is exactly the pre-declared strongest null: deleting the block
 is an off-manifold lesion. No scientific verdict. The O-endpoint data is
 descriptively consistent with query-selective action but the control is
 invalid. Terminal.
+
+---
+
+## Section 11: Observational Selectivity Quotient (OSQ-1)
+
+### 11.1 Motivation
+
+ERQ-1 demonstrated that the identity bypass at block 25 is too destructive
+to serve as an ordinary-propagation control (7/48 bypass viability). But
+its O-endpoint data --- purely observational logit-lens measurements at
+block output, requiring no bypass --- showed strong query-selective action
+($\Sigma_O = 0.428$ $[0.304]$). The earlier logit-lens resolution v1
+independently measured selectivity ratios of 3.78--62.43$\times$ at
+L21--25, with ratio $\approx 1$ at early layers.
+
+OSQ-1 formalizes these observational measurements with the statistical
+apparatus developed for ERQ-1: edge-cluster bootstrap, declaration-order
+reversal, and family robustness gates. It is **purely observational** ---
+no intervention, no bypass, no transplant. The control is the early-layer
+null: at layers before the resolution span, the model has not yet decided
+which fact to amplify, so selectivity should be $\approx 0$.
+
+OSQ-1 shares ERQ-1's 48-cell population (same families, templates, worlds).
+It is therefore a locked consolidation of the layer-resolved selectivity
+trajectory, not an independent confirmation on new stimuli.
+
+### 11.2 Mathematical object
+
+The object is a **layer-resolved selectivity contrast** with emergence
+and quotient quantities:
+
+$$
+S(\ell) = \mathbb{E}_{e,o}[\delta_{e,o}(\ell)], \quad
+\delta_{e,o}(\ell) = d^{\mathrm{rel}}_{e,o}(\ell) - d^{\mathrm{irr}}_{e,o}(\ell)
+$$
+
+$$
+B = \tfrac{1}{5}\sum_{\ell=0}^{4} S(\ell), \quad
+G(\ell) = S(\ell) - B
+$$
+
+$$
+R(\ell) = \mathbb{E}[d^{\mathrm{rel}}], \quad
+I(\ell) = \mathbb{E}[d^{\mathrm{irr}}], \quad
+\mathrm{OSQ}(\ell) = \frac{R(\ell) - I(\ell)}{R(\ell) + I(\ell)}
+$$
+
+where:
+
+- $\ell \in \{0, \ldots, L{-}1\}$ indexes post-block layers.
+- $e$ ranges over 12 undirected edges (3 families $\times$ 4 each).
+- $o \in \{\mathrm{std}, \mathrm{rev}\}$ is declaration order.
+- $d^{\mathrm{rel}}_{e,o}(\ell)$ is JSD$_{\mathrm{norm}}$ at layer $\ell$
+  between the two edge endpoints when Q queries the changed fact.
+- $d^{\mathrm{irr}}_{e,o}(\ell)$ is the same when Q queries the unchanged fact.
+- $B$ is the early-window baseline (layers 0--4).
+- $G(\ell)$ is the emergence gain above baseline.
+- OSQ$(\ell)$ is a scale-free selectivity quotient.
+
+The JSD$_{\mathrm{norm}}$ uses the logit lens: apply the model's own final
+layernorm + unembedding to the last-token hidden state at layer $\ell$ to
+get a pseudo-distribution, then compute $\sqrt{\mathrm{JSD}(p, q) / \ln 2}$.
+
+### 11.3 Why purely observational
+
+No intervention means no off-manifold confound. The logit lens uses the
+model's own unembedding matrix --- it is the model's native readout at
+intermediate layers, not an external R$^n$ projection. The selectivity
+gain $S(l)$ compares what the model would say at layer $l$ about two
+different inputs (changing one fact), conditioned on which fact the query
+asks for. The comparison is between the model's own computations, not
+between external metrics.
+
+### 11.4 Estimands
+
+| Estimand | Definition | Interpretation |
+|----------|-----------|----------------|
+| $G(\ell)$ | $S(\ell) - B$ | Emergence gain above early baseline |
+| $\mathrm{OSQ}(\ell)$ | $(R - I)/(R + I)$ | Scale-free selectivity |
+| $\ell_{\mathrm{peak}}$ | $\arg\max_\ell G(\ell)$ | Peak emergence layer |
+| $\ell_{\mathrm{onset}}$ | First $\ell$ with $G(\ell), G(\ell{+}1) \ge 0.10$, both lb $> 0$ | Onset layer |
+| $S_{\mathrm{std}}$, $S_{\mathrm{rev}}$ | Selectivity per declaration order at anchor | Presentation stability |
+| $V$ | $S^\pi(a) / S(a)$ | Verbalizer sufficiency ratio |
+
+### 11.5 Population and budget
+
+48 prompts: 3 families $\times$ 4 worlds $\times$ 2 queries $\times$
+2 declaration orders. Each prompt: 1 forward pass capturing hidden states
+at all $L$ layers. **Budget: 48 forward passes.** Edge measurements:
+12 edges $\times$ 2 queries $\times$ 2 orders $\times$ $L$ layers
+$= 48 \cdot L$ JSD values.
+
+### 11.6 Statistical design
+
+**Bootstrap.** 10,000 resamples over 12 undirected edge clusters, seed
+51203, percentile CI. Computed independently at each layer $l$.
+
+**Declaration-order reversal.** Templates ``{A}: {va}. {B}: {vb}.\\n{Q}:``
+(standard) and ``{B}: {vb}. {A}: {va}.\\n{Q}:`` (reversed). Presentation
+stability measured at $l_{\mathrm{peak}}$: $|S_{\mathrm{std}}(l_{\mathrm{peak}})
+- S_{\mathrm{rev}}(l_{\mathrm{peak}})|$.
+
+**Family robustness.** Per-family $S_f(l_{\mathrm{peak}})$ must exceed
+minimum threshold for all three families.
+
+### 11.7 Locked gates
+
+| Gate | Quantity | Bar |
+|------|----------|-----|
+| Integrity | Logit lens at $L{-}1$ vs final logits | $d \le 10^{-5}$ all cells |
+| Material | Edges with $d_{\mathrm{rel}} \ge 0.05$ at any layer | $\ge 9/12$ |
+| Early-role null | Simultaneous $S(0{:}4)$ bands | within $[-0.10, 0.10]$ |
+| Late-window emergence | $\bar{G}_{21{:}25}$ lower bound | $\ge 0.10$ |
+| Anchor strength | $G(25)$ lower bound | $\ge 0.30$ |
+| Material separation | $R(25)$ lower bound | $\ge 0.40$ |
+| Scale-free selectivity | OSQ$(25)$ lower bound | $\ge 0.30$ |
+| Timing | $\ell_{\mathrm{peak}} \in [21,25]$, $\ell_{\mathrm{onset}} \in [19,25]$ | |
+| Persistence | $S(27)$ lower bound | $\ge 0.05$ |
+| Presentation | Per-order $S_{\mathrm{std}}(25)$, $S_{\mathrm{rev}}(25)$ lb | each $\ge 0.20$ |
+| Family | Per-family $S_f(25)$ | each $\ge 0.20$ |
+| Verbalizer null | $V = S^\pi(25)/S(25)$ | $V < 0.80$ and residual lb $\ge 0.05$ |
+
+### 11.8 Verdict table (priority order)
+
+| Verdict | Condition |
+|---------|-----------|
+| INVALID\_MEASUREMENT | Integrity fails |
+| **OBSERVATIONAL\_SELECTIVITY\_BROAD** | All core gates pass, verbalizer null rejected |
+| OBSERVATIONAL\_SELECTIVITY\_VERBALIZER\_SUFFICIENT | All core gates pass, 3-bin readout accounts for signal |
+| PRESENTATION\_SENSITIVE\_SELECTIVITY | Signal pass, presentation fails |
+| FAMILY\_SPECIFIC\_SELECTIVITY | Signal pass, one or more families fail |
+| SELECTIVITY\_NOT\_LATE\_EMERGENT | Selectivity exists but early null or timing fails |
+| TRANSIENT\_LOGIT\_LENS\_SELECTIVITY | L25 pass, L27 persistence fails |
+| NO\_REGISTERED\_LATE\_SELECTIVITY | Valid run, late-window and anchor below bars |
+| INCONCLUSIVE\_ALLOCATION\_STOP | Any remaining pattern |
+
+Every verdict is terminal for this population.
+
+### 11.9 Strongest null
+
+**Verbalizer sufficiency.** Coarse-grain each vocabulary distribution to
+$\pi_f(p) = (p(v_0), p(v_1), 1{-}p(v_0){-}p(v_1))$ and recompute
+$S^\pi(25)$. If $V = S^\pi(25)/S(25)$ has upper bound $\ge 0.80$, the
+selectivity is accounted for by the two registered answer tokens ---
+ordinary late query-conditioned answer decoding, not a discovered latent
+algebra. The ``VERBALIZER\_SUFFICIENT'' verdict attaches; the basic
+observational result may still pass.
+
+**Generic late-decoder null.** The final unembedding head amplifies the
+two registered answer tokens and ignores the nonqueried fact. This is
+useful model behavior but not a native-math structure.
+
+### 11.10 R$^n$ trap check and claim wall
+
+**R$^n$ trap.** Escapes the direct residual-coordinate trap: no cosine,
+PCA, Euclidean distance, or fitted coordinate map enters the estimand.
+The observer is model-owned; the result is invariant to bijective recoding
+of the hidden carrier when the observer is conjugated accordingly.
+
+**Does NOT establish native latent-space mathematics:**
+- Final norm plus unembedding is applied *counterfactually* at
+  intermediate layers.
+- JSD is an externally selected information metric.
+- Observation alone defines no endogenous action or denizen-executable
+  move.
+
+The licensed object is a **query-indexed response-law resolution profile**,
+not a block morphism or causal quotient.
+
+**Claim wall.** A passing verdict means: at specific layers, the model's
+intermediate computation (as read by its own unembedding) is selectively
+sensitive to changes in the queried fact and insensitive to changes in
+the irrelevant fact, robustly across declaration orders and entity
+families. It does NOT establish causal mechanism, endogenous vs.
+inherited selectivity, logit-lens faithfulness, hidden-state geometry,
+or independent replication beyond these three families.
+
+A nonpass kills this claim for this model and measurement apparatus.
+
+### 11.11 Result
+
+**Verdict: OBSERVATIONAL_SELECTIVITY_VERBALIZER_SUFFICIENT.**
+
+All 11 core gates PASS. The verbalizer-sufficiency null is NOT rejected
+($V = 1.0095$; $S^{\pi}(25) = 0.647$, $S(25) = 0.641$). The three-bin
+answer-token distribution accounts for the entire selectivity signal.
+
+**Layer profile.** Early baseline $B = 0.008$ (layers 0--4 near zero).
+Emergence onset at $\ell = 24$; peak at $\ell = 25$. Resolution-window
+mean emergence gain $\bar{G}_{21{:}25} = 0.239$ [0.137]. At the anchor
+layer ($\ell = 25$): $G = 0.633$ [0.554], $R = 0.785$ [0.712],
+$I = 0.144$, $\mathrm{OSQ} = 0.706$ [0.612]. Persistence at $\ell = 27$:
+$S = 0.240$ [0.184].
+
+**Robustness.** Presentation-stable: standard-order $S(25) = 0.644$
+[0.506], reversed-order $S(25) = 0.638$ [0.512]. Family-stable:
+ZOG\_MIP 0.664, PLIM\_KROT 0.696, HESK\_VORN 0.563.
+
+**Interpretation.** The selectivity at layer 25 is real and robust: the
+model's intermediate computation, as read by its own unembedding, is
+strongly and stably selective for the queried fact. However, this
+selectivity is entirely accounted for by the two registered answer tokens.
+The model's late-layer computation is amplifying the correct answer token
+and suppressing the incorrect one --- ordinary answer decoding, not a
+deeper distributional structure beyond what the final readout already
+needs. This is Codex's pre-declared strongest null: ordinary late
+query-conditioned answer decoding.
+
+**Consequence for the program.** Purely observational logit-lens
+measurements have reached their ceiling. The selectivity they detect is
+the minimum necessary for correct answers. Any future experiment claiming
+deeper structure must go beyond answer-token routing --- either by using
+a measurement that is not explained by the verbalizer, or by
+demonstrating causal intervention effects.

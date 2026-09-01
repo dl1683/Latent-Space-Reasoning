@@ -1,0 +1,14 @@
+{
+  "valid": true,
+  "n": 48,
+  "fwd": 48,
+  "checks": [],
+  "vtok": {
+    "big": 2409,
+    "small": 2613,
+    "hot": 4017,
+    "cold": 9255,
+    "red": 2518,
+    "blue": 6303
+  }
+}

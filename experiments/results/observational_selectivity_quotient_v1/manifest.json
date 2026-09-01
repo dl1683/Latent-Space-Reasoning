@@ -1,0 +1,205 @@
+{
+  "exp": "observational_selectivity_quotient_v1",
+  "ts": "2026-09-01T01:49:12.881228",
+  "model": "Qwen/Qwen3-0.6B",
+  "rev": "c1899de289a04d12100db370d81485cdf75e47ca",
+  "nl": 28,
+  "vs": 151936,
+  "rh": "0a8b6ddba9939812d12b094d87baee31347880ec8c28d53fff0fdac9578e0692",
+  "ch": "521abfcc01c8f668489159b933096e1565fddb530f2207975ca4088a3403463d",
+  "bl": [
+    {
+      "f": "ZOG_MIP",
+      "w": "w00",
+      "q": "ZOG",
+      "g": "big",
+      "e": "big",
+      "ok": true
+    },
+    {
+      "f": "ZOG_MIP",
+      "w": "w01",
+      "q": "ZOG",
+      "g": "big",
+      "e": "big",
+      "ok": true
+    },
+    {
+      "f": "ZOG_MIP",
+      "w": "w10",
+      "q": "ZOG",
+      "g": "small",
+      "e": "small",
+      "ok": true
+    },
+    {
+      "f": "ZOG_MIP",
+      "w": "w11",
+      "q": "ZOG",
+      "g": "small",
+      "e": "small",
+      "ok": true
+    },
+    {
+      "f": "ZOG_MIP",
+      "w": "w00",
+      "q": "MIP",
+      "g": "small",
+      "e": "big",
+      "ok": false
+    },
+    {
+      "f": "ZOG_MIP",
+      "w": "w01",
+      "q": "MIP",
+      "g": "small",
+      "e": "small",
+      "ok": true
+    },
+    {
+      "f": "ZOG_MIP",
+      "w": "w10",
+      "q": "MIP",
+      "g": "small",
+      "e": "big",
+      "ok": false
+    },
+    {
+      "f": "ZOG_MIP",
+      "w": "w11",
+      "q": "MIP",
+      "g": "small",
+      "e": "small",
+      "ok": true
+    },
+    {
+      "f": "PLIM_KROT",
+      "w": "w00",
+      "q": "PLIM",
+      "g": "hot",
+      "e": "hot",
+      "ok": true
+    },
+    {
+      "f": "PLIM_KROT",
+      "w": "w01",
+      "q": "PLIM",
+      "g": "hot",
+      "e": "hot",
+      "ok": true
+    },
+    {
+      "f": "PLIM_KROT",
+      "w": "w10",
+      "q": "PLIM",
+      "g": "cold",
+      "e": "cold",
+      "ok": true
+    },
+    {
+      "f": "PLIM_KROT",
+      "w": "w11",
+      "q": "PLIM",
+      "g": "cold",
+      "e": "cold",
+      "ok": true
+    },
+    {
+      "f": "PLIM_KROT",
+      "w": "w00",
+      "q": "KROT",
+      "g": "hot",
+      "e": "hot",
+      "ok": true
+    },
+    {
+      "f": "PLIM_KROT",
+      "w": "w01",
+      "q": "KROT",
+      "g": "cold",
+      "e": "cold",
+      "ok": true
+    },
+    {
+      "f": "PLIM_KROT",
+      "w": "w10",
+      "q": "KROT",
+      "g": "hot",
+      "e": "hot",
+      "ok": true
+    },
+    {
+      "f": "PLIM_KROT",
+      "w": "w11",
+      "q": "KROT",
+      "g": "cold",
+      "e": "cold",
+      "ok": true
+    },
+    {
+      "f": "HESK_VORN",
+      "w": "w00",
+      "q": "HESK",
+      "g": "red",
+      "e": "red",
+      "ok": true
+    },
+    {
+      "f": "HESK_VORN",
+      "w": "w01",
+      "q": "HESK",
+      "g": "red",
+      "e": "red",
+      "ok": true
+    },
+    {
+      "f": "HESK_VORN",
+      "w": "w10",
+      "q": "HESK",
+      "g": "blue",
+      "e": "blue",
+      "ok": true
+    },
+    {
+      "f": "HESK_VORN",
+      "w": "w11",
+      "q": "HESK",
+      "g": "green",
+      "e": "blue",
+      "ok": false
+    },
+    {
+      "f": "HESK_VORN",
+      "w": "w00",
+      "q": "VORN",
+      "g": "red",
+      "e": "red",
+      "ok": true
+    },
+    {
+      "f": "HESK_VORN",
+      "w": "w01",
+      "q": "VORN",
+      "g": "blue",
+      "e": "blue",
+      "ok": true
+    },
+    {
+      "f": "HESK_VORN",
+      "w": "w10",
+      "q": "VORN",
+      "g": "red",
+      "e": "red",
+      "ok": true
+    },
+    {
+      "f": "HESK_VORN",
+      "w": "w11",
+      "q": "VORN",
+      "g": "blue",
+      "e": "blue",
+      "ok": true
+    }
+  ],
+  "ok": "21/24"
+}
