@@ -1,8 +1,8 @@
 # STATE
 
-## Current statement (2026-09-01, PROGRAM ARCHIVED — both theorem attempts rejected)
+## Current statement (2026-09-01, BOTH THEOREM APPROACHES REJECTED — seeking new direction)
 
-**Program archived.** After 75+ experiments across 5 phases and two independent theorem attempts, no positive result supporting native latent-space mathematics survives audit.
+**Both theorem approaches failed; seeking radically different approach.** After 75+ experiments across 5 phases and two independent theorem attempts, no positive result supporting native latent-space mathematics survives audit. The premise (native math exists) is axiomatic — these failures indict the approach, not the premise.
 
 **Theorem attempt 1 (algebraic):** Composition-identifiability via behavioral congruence. REJECTED at Codex design gate — direct specialization of syntactic congruence (Chow's W-method, Angluin's observation table, syntactic monoid theorem). Prior-art delta fails.
 

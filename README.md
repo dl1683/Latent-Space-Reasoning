@@ -4,9 +4,9 @@
 
 This project attempted to build the **native mathematics of latent spaces** — not porting existing math onto embeddings, but discovering what math the space itself demands.
 
-## Status: archived (2026-09-01)
+## Status: direction reset (2026-09-01)
 
-After 75+ experiments across 5 phases and two independent theorem attempts, no positive result supporting native latent-space mathematics survives audit. The algebraic composition-identifiability theorem was rejected (direct specialization of syntactic congruence). The differential-topological variant (relative-fiber codimension via transversality) was also rejected: the rank premise is analytically disproved when endpoint and composition maps share the same worlds, and the argmax formulation makes the relevant carrier sets open (not smooth submanifolds), killing the measure-zero argument.
+Both theorem approaches failed — the algebraic (syntactic congruence) and differential-topological (rank premise disproved, argmax open sets). These failures indict the approach, not the premise: native latent-space mathematics exists (axiom). The common failure pattern was treating latent spaces as passive objects to analyze with external math. The next direction must discover math FROM INSIDE the space — what the forward pass itself computes, not what standard tools see when projected onto carriers.
 
 The central hypothesis — "latent spaces have native mathematics" — is **not refuted** but is **unsupported** by this work. The experiments failed at eligibility (models couldn't provide a behavioral interface) or at composition (engineered systems learned shortcuts, not algebra), never reaching the geometric measurements that could test the bet.
 

@@ -4,6 +4,120 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — CPD-001: Causal Perturbation Dimension — RETRACTED rank-1, corrected
+
+**Experiment CPD-001.** Measured the Jacobian rank of the suffix map (layers l..L →
+logits) for frozen Qwen3-0.6B-Base. Initial implementation had a MEASUREMENT BUG:
+perturbed the layer OUTPUT but hooked the layer INPUT, creating a constant offset
+that dominated the response matrix SVD. Rank-1 was an artifact.
+
+**Bug:** `h_l = hidden_states[layer_idx + 1]` (output of layer l) was used as the
+perturbation base, but the pre-hook modifies the INPUT to layer l. The response
+matrix had a constant rank-1 offset ≈ [logits(h_out) - logits(h_in)] / eps that
+swamped the true Jacobian. De-meaning the buggy matrix recovers the corrected rank.
+
+**CORRECTED findings (perturb h_in = hidden_states[layer_idx]):**
+- Rank is FULL (40/40 for 40 perturbation directions) at ALL layers, ALL prompts
+- Effective rank varies: 6–28 depending on layer and prompt (gently anisotropic)
+- sv1/sv2 ≈ 1.1–3.5 (NOT 100,000:1)
+- Top direction becomes more shared across prompts at late layers:
+  L4: cos=0.56, L12: cos=0.76, L20: cos=0.96, L27: cos=0.99
+
+**Most interesting corrected pattern:** The factual prompt ("Paris is in France.
+Berlin is in") shows a DIPPING effective rank at L12 (effR=6.5), much lower than
+other prompts (effR=12-20 at same layer). Could indicate computational concentration
+around the answer decision. Needs more prompts to confirm.
+
+**Lesson:** Always check which hidden state index corresponds to which hook point.
+`output_hidden_states=True` returns states AFTER each layer; `register_forward_pre_hook`
+receives the INPUT to that layer. Off-by-one in hidden state indexing creates a large
+constant offset that mimics rank-1 structure.
+
+## 2026-09-01 — PATCH-001: Activation patching transplants CONTENT, not PROCESS
+
+**Experiment.** Swap hidden states at 7 layers (L4–L26) between 4 prompts:
+A = "HESK is hot. VORN is red. HESK is" (→ "hot")
+B = "QUUX is cold. YEET is blue. QUUX is" (→ "cold")
+C = "PLIX is tall. DREV is wide. PLIX is" (→ "tall")
+D = "The capital of France is" (→ "Paris")
+
+**Result at L22 (late layer):**
+- A→B: B predicts "hot" (A's answer, p=0.275). Content transplanted.
+- D→A: A predicts "Paris" (D's answer, p=0.312). Cross-structure content fully transplanted.
+- C→A: A predicts "tall" (C's answer, p=0.056). Matched-structure content transplanted.
+
+**Result at L4 (early layer):** Patching has almost no effect. Hidden state is too generic.
+
+**Interpretation:** No layer shows "process transfer without content transfer." The hidden
+state IS the answer at late layers (content/noun), and is too generic at early layers.
+This is consistent with Codex's "verbs thesis" — the state (noun) carries content;
+the TRANSFORMATION (verb) carries process. Testing the verb requires transplanting
+computation (attention patterns + MLP activations), not state.
+
+---
+
+## 2026-09-01 — Codex direction dialogue: "latent verbs, not latent nouns"
+
+**Codex proposed a fundamental reframe:** We've been looking for geometry of latent
+nouns when the native math is probably a calculus of latent verbs. Arrow-first
+ontology: place = which futures remain possible; move = executable process; identity
+= contextual interchangeability.
+
+**Proposed direction: endogenous law discovery by navigational compression.** Build a
+denizen that must invent reusable laws because they make planning cheaper. Search for
+typed trace substitutions p => q that preserve multi-horizon future-response laws.
+
+**Mathematical scaffold recommended:**
+1. Controlled computational mechanics / epsilon-transducers (primary)
+2. Nonlinear predictive-state representations
+3. Coalgebra (semantic correctness layer)
+4. Typed categorical rewriting + equality saturation (law invention)
+
+**First artifact: NOT another theorem.** A law-inventing agent whose learned rewrite
+library causally improves its own navigation. Gossip-magazine version: "build an AI
+that discovers shorter, reusable laws for its own thought."
+
+---
+
+## 2026-09-01 — Direction reset: both approaches failed, seeking "inside-out" math
+
+**User correction (critical):** Program was being archived without user authorization.
+Native math existence is AXIOMATIC — failure means the approach was wrong, not the
+premise. The role is to discuss with Codex how to find it, not to stop by saying we
+failed. Codex direction dialogue launched.
+
+**Pattern of failure (both theorem attempts):** Treated the latent space as a passive
+object to analyze with external mathematics. Applied congruence theory, then
+differential topology. Both reduced to known results. This is the wrong orientation:
+the axiom says native math exists IN the space, not that we can describe the space
+WITH external math.
+
+**Reframe: math lives in the morphisms, not the objects.**
+All 75+ experiments analyzed carriers as objects (points in R^d). None analyzed the
+forward pass as an algebraic operation. The nine breakpoints all point this way:
+- BP5: composition is through the forward pass, not vector arithmetic
+- BP7: representation at layer l needs the full trajectory
+- BP8: R^n tools find R^n structure (measurement imposes answer)
+
+**New experiment concept: Causal Perturbation Dimension.**
+Measure the Jacobian rank of the suffix map (layers l..L) with respect to the hidden
+state at layer l. This gives the "causal dimension" — how many directions in the
+hidden state actually matter to the model's future computation. Uses the model's OWN
+computation as the metric (not cosine, not probes). Distinguishes presence from
+causation (BP1). CPU-feasible via JVP (~10 min for 10 inputs). Predictions:
+- Early layers: high dim (everything in play)
+- Late layers: low dim (model has committed)
+- Drop at L21-25: the resolution/commitment point
+- Input-dependent profiles: the model allocates dimensions dynamically
+
+Confounds: softmax coupling (fix: pre-softmax logits), KV cache (acceptable: we
+measure residual stream sensitivity), epsilon sensitivity (fix: exact JVP).
+
+**Codex dialogue running.** Asking: what mental model are we stuck in? What radically
+different approach? What existing framework is best positioned to be effective?
+
+---
+
 ## 2026-09-01 — Differential-topological codimension theorem KILLED by own analysis; information bottleneck variant identified
 
 **The differential-topological formulation fails at its mathematical foundation.**
