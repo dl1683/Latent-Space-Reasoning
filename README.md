@@ -4,9 +4,9 @@
 
 This project attempted to build the **native mathematics of latent spaces** — not porting existing math onto embeddings, but discovering what math the space itself demands.
 
-## Status: empirical program closed (2026-09-01)
+## Status: archived (2026-09-01)
 
-After 75+ experiments across 5 phases, two eligibility screens, one terminal composition result, and multiple independent Codex adversarial audits, the empirical program is closed. **No positive scientific result survives audit.** The theoretical framework (axioms D1–D9, Theorems 1/4/7/8) is sound standard mathematics. One bounded theory attempt (composition-identifiability theorem) remains; if it fails its kill gate, the program archives.
+After 75+ experiments across 5 phases and one bounded theory attempt, this program is archived as a **negative-results and methodological contribution**. No positive scientific result survives audit. The composition-identifiability theorem (the final permitted attempt) was rejected at the Codex design gate: its substance is a direct specialization of syntactic congruence and finite-state conformance testing, not novel mathematics.
 
 The central hypothesis — "latent spaces have native mathematics" — is **not refuted** but is **unsupported** by this work. The experiments failed at eligibility (models couldn't provide a behavioral interface) or at composition (engineered systems learned shortcuts, not algebra), never reaching the geometric measurements that could test the bet.
 
@@ -89,9 +89,16 @@ Every claim follows a strict evidence protocol:
 
 The previous program (LLM embedding perturbation, diffusion latent repair) is archived under [`legacy/`](legacy/). Its nested-arithmetic claims were **withdrawn** after independent controls showed the benchmark measured termination under a token cap, not arithmetic capability. Full record: [`legacy/docs/CORRECTION_NESTED_ARITHMETIC_2026_08.md`](legacy/docs/CORRECTION_NESTED_ARITHMETIC_2026_08.md).
 
-## Remaining work
+## Archival value
 
-One bounded theory attempt: a composition-identifiability theorem for action carriers in behavioral quotients, with a hard kill gate (five conditions including prior-art delta, nontrivial separation, LAC retrodiction without fitting, and a finite CPU falsifier). If it fails, the program archives as a negative-results and methodological contribution. Details in [`STATE.md`](STATE.md).
+This program is complete. Its contributions are methodological and negative:
+
+- **Axiomatic framework** (D1-D9, Theorems 1/4/7/8): sound standard mathematics for behavioral place, move, cost, and composition in deterministic transition-output systems.
+- **Nine breakpoints** cataloguing where R^n mathematics fails in latent spaces — constraints on what native math must look like, not evidence that native math was found.
+- **LAC-0 typed architecture**: demonstrates that typed neural machines achieve primitives + portability that untyped transformers cannot, but composition requires structural constraints beyond endpoint supervision.
+- **Codex adversarial methodology**: every claim subjected to independent adversarial audit; claims withdrawn when controls revealed artifacts; negative results logged permanently.
+
+Reopening would require genuinely new external evidence or a materially different architecture. Details in [`STATE.md`](STATE.md).
 
 ## License
 

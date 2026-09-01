@@ -4,6 +4,30 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — Composition theorem REJECTED at design gate — program archives
+
+**Codex design gate verdict: REJECT.** The composition-identifiability theorem
+(fiber non-identifiability in overparameterized carrier spaces) is provable but
+is a direct specialization of existing finite-automata frameworks:
+
+1. **Syntactic monoid theorem** (Adámek et al.): contextual transformation
+   equivalence is the same mechanism. Our additions are application-specific typings.
+2. **Chow's W-method**: our (R, B) test construction = transition cover +
+   characterization set. Same completeness mechanism.
+3. **Angluin's observation table**: the recipient-by-continuation matrix is this
+   exact pattern.
+4. **Sevetlidis (arXiv 2606.01092, May 2026)**: fiber criterion for representation
+   identifiability already formalized — directly covers our fiber argument.
+
+Kill gate condition 2 (prior-art delta) FAILS. LAC retrodiction explains
+vulnerability but cannot predict failure (correct GRU solution also permitted).
+
+Per agreed protocol: program archives as negative-results + methodological
+contribution. Native math existence remains logically open but ceases to be
+a live hypothesis here.
+
+---
+
 ## 2026-09-01 — Codex direction dialogue R1-R2: CONVERGED — close experiments, one theory attempt
 
 **Codex R1 verdict:** Stop the experimental program. One bounded theory attempt
