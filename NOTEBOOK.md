@@ -47,6 +47,24 @@ composition requires nonlinear whole-state interaction.
 The fork's synthesis captured it: "The routing algebra is the address book. The
 native math is the language spoken at those addresses."
 
+### Intertwining law test (layer-phase deformation)
+Codex's formal test: does A_b1^k transport through F_{b1->b2}?
+
+**Within routing phase (B16-B20):**
+- rlv: INTERTWINE (JSD 0.002-0.004) — near-perfect equivariance
+- rv: PARTIAL (JSD 0.06-0.08) — top-1 agrees, magnitudes differ
+- rv+rlv: INTERTWINE (JSD 0.004-0.024)
+
+**Across B22 boundary:**
+- ALL setters DEFORM (JSD 0.18-0.53)
+- Early application (B20) produces correct target; late (B22) stays at clean answer
+- The model's content-commitment computation DESTROYS instruction structure
+
+Formally: F_{b1->b2} . A_{b1}^k ~ A_{b2}^k . F_{b1->b2} for b1,b2 in [16,21].
+This equivariance FAILS when b2 >= 22. The B22 boundary is a deformation
+point where the setter algebra ceases to be natural (in the category-theoretic
+sense). This is the genuinely model-specific structure.
+
 ### Cross-template relation transfer (objection test)
 Strongest objection: does rlv encode the RELATION or just the QUERY TEMPLATE?
 Extracted rlv from template A ("X is the capital of" / "X speaks"). Applied to
