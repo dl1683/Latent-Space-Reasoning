@@ -1,0 +1,447 @@
+{
+  "typed_seed42": {
+    "training": {
+      "model_name": "typed",
+      "seed": 42,
+      "n_params": 739458,
+      "n_steps": 5000,
+      "total_forwards": 640000,
+      "final_loss": 0.7851827144622803,
+      "final_acc": 0.703125,
+      "elapsed_s": 333.3533356189728,
+      "train_log": [
+        {
+          "step": 100,
+          "loss": 2.337368965148926,
+          "acc": 0.1796875,
+          "forwards": 12800,
+          "elapsed_s": 10.20160174369812
+        },
+        {
+          "step": 200,
+          "loss": 2.365123987197876,
+          "acc": 0.1796875,
+          "forwards": 25600,
+          "elapsed_s": 16.454174757003784
+        },
+        {
+          "step": 300,
+          "loss": 1.2732082605361938,
+          "acc": 0.5625,
+          "forwards": 38400,
+          "elapsed_s": 22.57280707359314
+        },
+        {
+          "step": 400,
+          "loss": 0.9085683226585388,
+          "acc": 0.6875,
+          "forwards": 51200,
+          "elapsed_s": 28.8285014629364
+        },
+        {
+          "step": 500,
+          "loss": 0.9208723306655884,
+          "acc": 0.6640625,
+          "forwards": 64000,
+          "elapsed_s": 38.02241253852844
+        },
+        {
+          "step": 600,
+          "loss": 0.8938583135604858,
+          "acc": 0.6484375,
+          "forwards": 76800,
+          "elapsed_s": 49.3097927570343
+        },
+        {
+          "step": 700,
+          "loss": 0.8790932297706604,
+          "acc": 0.6171875,
+          "forwards": 89600,
+          "elapsed_s": 59.83535957336426
+        },
+        {
+          "step": 800,
+          "loss": 0.7525174617767334,
+          "acc": 0.6875,
+          "forwards": 102400,
+          "elapsed_s": 70.73300743103027
+        },
+        {
+          "step": 900,
+          "loss": 0.728550374507904,
+          "acc": 0.71875,
+          "forwards": 115200,
+          "elapsed_s": 77.84397602081299
+        },
+        {
+          "step": 1000,
+          "loss": 0.7588410377502441,
+          "acc": 0.6953125,
+          "forwards": 128000,
+          "elapsed_s": 84.12903428077698
+        },
+        {
+          "step": 1100,
+          "loss": 0.7994411587715149,
+          "acc": 0.6640625,
+          "forwards": 140800,
+          "elapsed_s": 90.63040113449097
+        },
+        {
+          "step": 1200,
+          "loss": 0.867336094379425,
+          "acc": 0.609375,
+          "forwards": 153600,
+          "elapsed_s": 97.08191084861755
+        },
+        {
+          "step": 1300,
+          "loss": 0.7918055057525635,
+          "acc": 0.6796875,
+          "forwards": 166400,
+          "elapsed_s": 103.3918719291687
+        },
+        {
+          "step": 1400,
+          "loss": 0.8670569062232971,
+          "acc": 0.640625,
+          "forwards": 179200,
+          "elapsed_s": 109.84204936027527
+        },
+        {
+          "step": 1500,
+          "loss": 0.9000648260116577,
+          "acc": 0.640625,
+          "forwards": 192000,
+          "elapsed_s": 116.43982887268066
+        },
+        {
+          "step": 1600,
+          "loss": 0.8455300331115723,
+          "acc": 0.6640625,
+          "forwards": 204800,
+          "elapsed_s": 122.82229900360107
+        },
+        {
+          "step": 1700,
+          "loss": 0.802969753742218,
+          "acc": 0.6875,
+          "forwards": 217600,
+          "elapsed_s": 129.1684548854828
+        },
+        {
+          "step": 1800,
+          "loss": 0.7203757166862488,
+          "acc": 0.71875,
+          "forwards": 230400,
+          "elapsed_s": 135.57849788665771
+        },
+        {
+          "step": 1900,
+          "loss": 0.8245601654052734,
+          "acc": 0.65625,
+          "forwards": 243200,
+          "elapsed_s": 141.91268706321716
+        },
+        {
+          "step": 2000,
+          "loss": 0.9137986302375793,
+          "acc": 0.6328125,
+          "forwards": 256000,
+          "elapsed_s": 148.24663758277893
+        },
+        {
+          "step": 2100,
+          "loss": 0.8100919723510742,
+          "acc": 0.6640625,
+          "forwards": 268800,
+          "elapsed_s": 154.69316840171814
+        },
+        {
+          "step": 2200,
+          "loss": 0.8714061379432678,
+          "acc": 0.6796875,
+          "forwards": 281600,
+          "elapsed_s": 160.77308082580566
+        },
+        {
+          "step": 2300,
+          "loss": 0.7418939471244812,
+          "acc": 0.703125,
+          "forwards": 294400,
+          "elapsed_s": 166.91412258148193
+        },
+        {
+          "step": 2400,
+          "loss": 0.9496617317199707,
+          "acc": 0.609375,
+          "forwards": 307200,
+          "elapsed_s": 173.16389799118042
+        },
+        {
+          "step": 2500,
+          "loss": 0.8963079452514648,
+          "acc": 0.6171875,
+          "forwards": 320000,
+          "elapsed_s": 179.2127709388733
+        },
+        {
+          "step": 2600,
+          "loss": 0.7913490533828735,
+          "acc": 0.671875,
+          "forwards": 332800,
+          "elapsed_s": 185.2933325767517
+        },
+        {
+          "step": 2700,
+          "loss": 0.7943721413612366,
+          "acc": 0.6640625,
+          "forwards": 345600,
+          "elapsed_s": 191.30940079689026
+        },
+        {
+          "step": 2800,
+          "loss": 0.8797968626022339,
+          "acc": 0.6640625,
+          "forwards": 358400,
+          "elapsed_s": 197.42012429237366
+        },
+        {
+          "step": 2900,
+          "loss": 0.7566789984703064,
+          "acc": 0.6953125,
+          "forwards": 371200,
+          "elapsed_s": 203.68119716644287
+        },
+        {
+          "step": 3000,
+          "loss": 0.8354750275611877,
+          "acc": 0.65625,
+          "forwards": 384000,
+          "elapsed_s": 209.76473784446716
+        },
+        {
+          "step": 3100,
+          "loss": 0.8915663361549377,
+          "acc": 0.6171875,
+          "forwards": 396800,
+          "elapsed_s": 215.85612607002258
+        },
+        {
+          "step": 3200,
+          "loss": 0.9207202792167664,
+          "acc": 0.6484375,
+          "forwards": 409600,
+          "elapsed_s": 221.91325497627258
+        },
+        {
+          "step": 3300,
+          "loss": 0.829357385635376,
+          "acc": 0.6796875,
+          "forwards": 422400,
+          "elapsed_s": 227.97939801216125
+        },
+        {
+          "step": 3400,
+          "loss": 0.8947338461875916,
+          "acc": 0.6328125,
+          "forwards": 435200,
+          "elapsed_s": 234.28702807426453
+        },
+        {
+          "step": 3500,
+          "loss": 0.7546252608299255,
+          "acc": 0.6796875,
+          "forwards": 448000,
+          "elapsed_s": 240.39219689369202
+        },
+        {
+          "step": 3600,
+          "loss": 0.7155822515487671,
+          "acc": 0.6875,
+          "forwards": 460800,
+          "elapsed_s": 246.43570184707642
+        },
+        {
+          "step": 3700,
+          "loss": 0.7636377811431885,
+          "acc": 0.671875,
+          "forwards": 473600,
+          "elapsed_s": 252.97212171554565
+        },
+        {
+          "step": 3800,
+          "loss": 0.8583930730819702,
+          "acc": 0.6328125,
+          "forwards": 486400,
+          "elapsed_s": 259.7505440711975
+        },
+        {
+          "step": 3900,
+          "loss": 0.8797554969787598,
+          "acc": 0.6171875,
+          "forwards": 499200,
+          "elapsed_s": 266.22529554367065
+        },
+        {
+          "step": 4000,
+          "loss": 0.7368749976158142,
+          "acc": 0.6953125,
+          "forwards": 512000,
+          "elapsed_s": 272.32160782814026
+        },
+        {
+          "step": 4100,
+          "loss": 0.7721453905105591,
+          "acc": 0.6640625,
+          "forwards": 524800,
+          "elapsed_s": 278.5847661495209
+        },
+        {
+          "step": 4200,
+          "loss": 0.7830769419670105,
+          "acc": 0.6796875,
+          "forwards": 537600,
+          "elapsed_s": 284.6136088371277
+        },
+        {
+          "step": 4300,
+          "loss": 0.8547263145446777,
+          "acc": 0.640625,
+          "forwards": 550400,
+          "elapsed_s": 290.7872676849365
+        },
+        {
+          "step": 4400,
+          "loss": 0.7366098165512085,
+          "acc": 0.703125,
+          "forwards": 563200,
+          "elapsed_s": 296.80116295814514
+        },
+        {
+          "step": 4500,
+          "loss": 0.8679966330528259,
+          "acc": 0.6328125,
+          "forwards": 576000,
+          "elapsed_s": 302.95279264450073
+        },
+        {
+          "step": 4600,
+          "loss": 0.767254650592804,
+          "acc": 0.671875,
+          "forwards": 588800,
+          "elapsed_s": 308.9966154098511
+        },
+        {
+          "step": 4700,
+          "loss": 0.8586540818214417,
+          "acc": 0.6484375,
+          "forwards": 601600,
+          "elapsed_s": 315.0988426208496
+        },
+        {
+          "step": 4800,
+          "loss": 0.6799412965774536,
+          "acc": 0.7421875,
+          "forwards": 614400,
+          "elapsed_s": 321.0865466594696
+        },
+        {
+          "step": 4900,
+          "loss": 0.7522599101066589,
+          "acc": 0.6953125,
+          "forwards": 627200,
+          "elapsed_s": 327.19615602493286
+        },
+        {
+          "step": 5000,
+          "loss": 0.7851827144622803,
+          "acc": 0.703125,
+          "forwards": 640000,
+          "elapsed_s": 333.35331201553345
+        }
+      ],
+      "checkpoint": "experiments\\results\\lac0_run_20260901_063614\\typed_seed42.pt"
+    },
+    "clean_train_worlds": {
+      "clean_accuracy": 0.5005,
+      "primitive_accuracy": 1.0,
+      "train_composition_accuracy": 0.37537537537537535,
+      "held_out_composition_accuracy": 0.12724550898203593,
+      "n_samples": 2000
+    },
+    "clean_eval_worlds": {
+      "clean_accuracy": 0.488,
+      "primitive_accuracy": 1.0,
+      "train_composition_accuracy": 0.3303303303303303,
+      "held_out_composition_accuracy": 0.1347305389221557,
+      "n_samples": 2000
+    },
+    "self_patch": {
+      "max_discrepancy": 0.0,
+      "pass": true,
+      "n_samples": 500
+    },
+    "portability": {
+      "target_following_F": 1.0,
+      "donor_answer_F": 0.0,
+      "per_move_F": {
+        "0": 1.0,
+        "1": 1.0,
+        "2": 1.0,
+        "3": 1.0
+      },
+      "mean_target_margin": 0.9997345463633537,
+      "n_samples": 1000,
+      "pass": true
+    },
+    "oracle_action": {
+      "accuracy": 1.0,
+      "pass": true,
+      "n_samples": 500
+    },
+    "sequential_agreement": {
+      "agreement": 0.138,
+      "sequential_accuracy": 0.102,
+      "composed_accuracy": 0.14,
+      "pass": false,
+      "n_samples": 500
+    },
+    "recipient_dependence": {
+      "recipient_following_F": 1.0,
+      "donor_answer_F": 0.0,
+      "pass": true,
+      "n_samples": 500
+    },
+    "block_diagnostics": {
+      "prim_gate_b1_mean": 0.7462505625955986,
+      "prim_gate_b2_mean": 0.9809993135206627,
+      "comp_gate_b1_mean": 0.8137935336792108,
+      "comp_gate_b2_mean": 0.18842031623265057,
+      "prim_acc_after_b1": 0.10606060606060606,
+      "prim_acc_after_b2": 1.0,
+      "comp_train_acc_after_b1": 0.09090909090909091,
+      "comp_train_acc_after_b2": 0.18181818181818182,
+      "comp_held_acc_after_b1": 0.10606060606060606,
+      "comp_held_acc_after_b2": 0.07575757575757576,
+      "comp_train_mid_after_b1": 0.16666666666666666,
+      "comp_held_mid_after_b1": 0.13636363636363635
+    },
+    "bootstrap_composition": {
+      "mean": 0.1078125,
+      "std": 0.10047494634857987,
+      "lower_5": 0.0875,
+      "upper_95": 0.1296875,
+      "n_worlds": 64,
+      "n_per_world": 10
+    },
+    "bootstrap_portability": {
+      "mean": 1.0,
+      "std": 0.0,
+      "lower_5": 1.0,
+      "upper_95": 1.0,
+      "n_pairs": 90
+    },
+    "early_stop": "clean_accuracy"
+  }
+}

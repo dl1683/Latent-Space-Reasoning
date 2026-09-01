@@ -1,0 +1,199 @@
+{
+  "config": {
+    "experiment": "learned_action_carrier_v0",
+    "task": {
+      "n_places": 8,
+      "n_moves": 4,
+      "n_train_worlds": 256,
+      "n_eval_worlds": 256,
+      "train_compositions": [
+        [
+          0,
+          0
+        ],
+        [
+          0,
+          1
+        ],
+        [
+          1,
+          2
+        ],
+        [
+          1,
+          3
+        ],
+        [
+          2,
+          2
+        ],
+        [
+          2,
+          3
+        ],
+        [
+          3,
+          0
+        ],
+        [
+          3,
+          1
+        ]
+      ],
+      "held_out_compositions": [
+        [
+          0,
+          2
+        ],
+        [
+          0,
+          3
+        ],
+        [
+          1,
+          0
+        ],
+        [
+          1,
+          1
+        ],
+        [
+          2,
+          0
+        ],
+        [
+          2,
+          1
+        ],
+        [
+          3,
+          2
+        ],
+        [
+          3,
+          3
+        ]
+      ]
+    },
+    "model": {
+      "typed": {
+        "name": "TypedLAC",
+        "world_dim": 240,
+        "action_dim": 128,
+        "world_memory_slots": 32,
+        "executor_blocks": 2,
+        "composer": "GRU(128,128)",
+        "renderer": "pointer_scorer"
+      },
+      "untyped": {
+        "name": "UntypedControl",
+        "d_model": 148,
+        "n_heads": 4,
+        "n_layers": 4
+      }
+    },
+    "training": {
+      "optimizer": "adamw",
+      "lr": 0.0003,
+      "weight_decay": 1e-05,
+      "batch_size": 128,
+      "n_steps": 5000,
+      "seeds": [
+        42,
+        137,
+        2025
+      ],
+      "grad_clip": 1.0,
+      "warmup_steps": 200,
+      "log_every": 100,
+      "eval_every": 500,
+      "batch_composition": "64 primitive + 64 composed"
+    },
+    "evaluation": {
+      "self_patch_threshold": 1e-05,
+      "clean_accuracy_threshold": 0.98,
+      "portability_F_threshold": 0.9,
+      "portability_per_move_lb": 0.8,
+      "composition_accuracy_threshold": 0.85,
+      "composition_accuracy_lb": 0.75
+    },
+    "budget": {
+      "total_wall_hours": 3,
+      "cpu_only": true,
+      "no_gpu": true
+    }
+  },
+  "code_hash": "f143fc786c25eff3",
+  "config_hash": "0391c271ea4fad4f",
+  "run_id": "20260901_064645",
+  "n_train_worlds": 256,
+  "n_eval_worlds": 256,
+  "train_compositions": [
+    [
+      0,
+      0
+    ],
+    [
+      0,
+      1
+    ],
+    [
+      1,
+      2
+    ],
+    [
+      1,
+      3
+    ],
+    [
+      2,
+      2
+    ],
+    [
+      2,
+      3
+    ],
+    [
+      3,
+      0
+    ],
+    [
+      3,
+      1
+    ]
+  ],
+  "held_out_compositions": [
+    [
+      0,
+      2
+    ],
+    [
+      0,
+      3
+    ],
+    [
+      1,
+      0
+    ],
+    [
+      1,
+      1
+    ],
+    [
+      2,
+      0
+    ],
+    [
+      2,
+      1
+    ],
+    [
+      3,
+      2
+    ],
+    [
+      3,
+      3
+    ]
+  ]
+}
