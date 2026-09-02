@@ -1435,21 +1435,20 @@ def evaluate_intervention(model, pairs: list, cfg: Config, model_type: str) -> d
             if donor_hidden is None or recip_hidden is None:
                 continue
 
-            # OBSERVE: assimilate o_ds with shared action suffix[0] (spec step 1)
-            act_ds = torch.tensor([suffix[0]], dtype=torch.long)
-            enc_donor = model.encoder(donor_obs[:, ds])
-            enc_recip = model.encoder(recip_obs[:, ds])
-            donor_hidden = model.forward_step(enc_donor, act_ds, donor_hidden)
-            recip_hidden = model.forward_step(enc_recip, act_ds, recip_hidden)
-
-            # PATCH: donor target -> recipient target (spec step 2)
+            # PATCH: donor target -> recipient target BEFORE contact step
             d_idx = _carrier_slot_for_handle(dt.episode_carrier_map, pair.target_handle)
             r_idx = _carrier_slot_for_handle(rt.episode_carrier_map, pair.target_handle)
             hybrid_hidden = recip_hidden.clone()
             hybrid_hidden[0, r_idx] = donor_hidden[0, d_idx]
             h_recip = recip_hidden.clone()
 
-            # PREDICT from patched hidden (spec step 3 — event prediction at step ds)
+            # OBSERVE+ACT: process contact step ds with patched/unpatched hidden
+            act_ds = torch.tensor([suffix[0]], dtype=torch.long)
+            enc_recip = model.encoder(recip_obs[:, ds])
+            hybrid_hidden = model.forward_step(enc_recip, act_ds, hybrid_hidden)
+            h_recip = model.forward_step(enc_recip, act_ds, h_recip)
+
+            # PREDICT from resulting hidden (event prediction at step ds)
             _, ep_hybrid_0 = model.head(hybrid_hidden)
             _, ep_recip_0 = model.head(h_recip)
 
@@ -2059,16 +2058,22 @@ def run_seed(cfg: Config, model_seed: int) -> dict:
             all_cc = []
             all_pre = []
             all_timing = []
+            all_timing_misses = 0
+            all_timing_contacts = 0
             for h_key, h_res in all_interv.items():
                 if isinstance(h_res, dict) and not h_res.get("skipped"):
                     all_cc.extend(h_res.get("causal_consumption", []))
                     all_pre.extend(h_res.get("pre_contact_effects", []))
                     all_timing.extend(h_res.get("timing_errors", []))
+                    all_timing_misses += h_res.get("timing_misses", 0)
+                    all_timing_contacts += h_res.get("timing_contacts", 0)
 
             model_results["intervention"] = {
                 "causal_consumption": all_cc,
                 "pre_contact_effects": all_pre,
                 "timing_errors": all_timing,
+                "timing_misses": all_timing_misses,
+                "timing_contacts": all_timing_contacts,
                 "per_handle": all_interv,
                 "n_pairs_total": sum(len(h.get("causal_consumption", []))
                                      for h in all_interv.values()
@@ -2555,20 +2560,34 @@ def main():
                     all_results[s_key]["control_b_selection_method"] = "cross_seed_no_qualifying"
                     all_results[s_key]["gates"] = evaluate_gates(all_results[s_key], cfg)
 
-    # Experiment-wide adjudication (locked spec line 288: median across seeds + 2/3 qualifying)
+    # Experiment-wide adjudication: numerical median + 2/3 qualifying (V2 spec)
     gate_adjudication = None
     if len(seeds) >= 3 and not is_smoke:
         gate_metrics = {}
+        metric_keys = {
+            "eligibility": ("recurrent_lift", 0.10, "ge"),
+            "causal_consumption": ("macro_accuracy", 0.80, "ge"),
+            "shielding": ("false_effect_rate", 0.10, "le"),
+            "timing": ("miss_rate", 0.20, "le"),
+        }
         for gate_name in ["eligibility", "causal_consumption", "shielding", "timing"]:
             seed_passes = []
+            seed_values = []
+            m_key, threshold, direction = metric_keys[gate_name]
             for s_key in all_results:
                 g = all_results[s_key].get("gates", {}).get(gate_name, {})
                 seed_passes.append(bool(g.get("pass", g.get("overall", False))))
+                seed_values.append(float(g.get(m_key, 1.0 if direction == "le" else 0.0)))
             n_pass = sum(seed_passes)
-            median_pass = sorted(seed_passes, reverse=True)[len(seed_passes) // 2]
+            sorted_vals = sorted(seed_values)
+            median_val = sorted_vals[len(sorted_vals) // 2]
+            median_pass = (median_val >= threshold) if direction == "ge" else (median_val <= threshold)
             two_thirds = n_pass >= (2 * len(seeds) + 2) // 3
             gate_metrics[gate_name] = {
                 "seeds_pass": n_pass, "total": len(seeds),
+                "seed_values": seed_values,
+                "median_value": median_val,
+                "threshold": threshold,
                 "median_pass": median_pass, "two_thirds_pass": two_thirds,
                 "adjudicated_pass": median_pass and two_thirds,
             }
