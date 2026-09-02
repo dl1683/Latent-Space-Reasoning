@@ -46,6 +46,15 @@ class _NumpyEncoder(json.JSONEncoder):
             return obj.tolist()
         return super().default(obj)
 
+
+def _strip_internal(d):
+    """Remove underscore-prefixed keys (raw arrays) before JSON serialization."""
+    if isinstance(d, dict):
+        return {k: _strip_internal(v) for k, v in d.items() if not k.startswith("_")}
+    if isinstance(d, list):
+        return [_strip_internal(x) for x in d]
+    return d
+
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
@@ -1188,6 +1197,15 @@ def evaluate_prediction(model, batches, cfg: Config) -> dict:
     event_preds = torch.cat(all_event_preds, dim=0).reshape(-1).numpy()
     event_targets = torch.cat(all_event_targets, dim=0).reshape(-1).numpy()
 
+    # Build per-level event indices for level-clustered bootstrap
+    _level_ids_flat = []
+    for batch in batches:
+        n_samples = batch["target_events"].shape[0]
+        n_steps = batch["target_events"].shape[1]
+        for lid in batch["level_ids"]:
+            _level_ids_flat.extend([lid] * n_steps)
+    level_ids_arr = np.array(_level_ids_flat[:len(event_preds)])
+
     # Event macro-F1
     event_classes = set(event_targets) | set(event_preds)
     f1s = []
@@ -1240,6 +1258,9 @@ def evaluate_prediction(model, batches, cfg: Config) -> dict:
         "n_event_samples": len(event_preds),
         "n_status_samples": status_total,
         "level_ids": list(set(all_level_ids)),
+        "_event_preds": event_preds,
+        "_event_targets": event_targets,
+        "_event_level_ids": level_ids_arr,
     }
 
 
@@ -1568,8 +1589,10 @@ def evaluate_intervention(model, pairs: list, cfg: Config, model_type: str) -> d
                     })
 
             if pre_contact_total > 0:
-                results["pre_contact_effects"].append(
-                    pre_contact_false / pre_contact_total)
+                results["pre_contact_effects"].append({
+                    "rate": pre_contact_false / pre_contact_total,
+                    "level": pair.level_seed,
+                })
 
             if contact_step is not None:
                 results["timing_contacts"] += 1
@@ -1771,6 +1794,54 @@ def clustered_bootstrap_ci(values: list, cluster_ids: list, n_boot: int = 2000,
     }
 
 
+def _bootstrap_recurrent_lift_ci(dense_pred: dict, hist_pred: dict,
+                                  n_boot: int = 2000, ci: float = 0.95) -> dict:
+    """Level-clustered bootstrap CI for recurrent lift (dense - historyless macro-F1)."""
+    d_preds = dense_pred.get("_event_preds")
+    d_tgts = dense_pred.get("_event_targets")
+    d_lvls = dense_pred.get("_event_level_ids")
+    h_preds = hist_pred.get("_event_preds")
+    h_tgts = hist_pred.get("_event_targets")
+    h_lvls = hist_pred.get("_event_level_ids")
+    if d_preds is None or h_preds is None:
+        return {"lift": 0, "ci_lower": 0, "ci_upper": 0, "n_levels": 0}
+    unique_levels = list(set(d_lvls) & set(h_lvls))
+    if len(unique_levels) < 2:
+        lift = float(dense_pred["event_macro_f1"] - hist_pred["event_macro_f1"])
+        return {"lift": lift, "ci_lower": lift, "ci_upper": lift, "n_levels": len(unique_levels)}
+    d_by_level = {lv: np.where(d_lvls == lv)[0] for lv in unique_levels}
+    h_by_level = {lv: np.where(h_lvls == lv)[0] for lv in unique_levels}
+
+    def _macro_f1(preds, tgts):
+        classes = set(tgts) | set(preds)
+        f1s = []
+        for c in classes:
+            tp = ((preds == c) & (tgts == c)).sum()
+            fp = ((preds == c) & (tgts != c)).sum()
+            fn = ((preds != c) & (tgts == c)).sum()
+            prec = tp / max(tp + fp, 1)
+            rec = tp / max(tp + fn, 1)
+            f1s.append(2 * prec * rec / max(prec + rec, 1e-8))
+        return float(np.mean(f1s)) if f1s else 0.0
+
+    rng = np.random.RandomState(42)
+    lifts = []
+    level_arr = np.array(unique_levels)
+    for _ in range(n_boot):
+        sampled = rng.choice(level_arr, size=len(level_arr), replace=True)
+        d_idx = np.concatenate([d_by_level[lv] for lv in sampled])
+        h_idx = np.concatenate([h_by_level[lv] for lv in sampled])
+        d_f1 = _macro_f1(d_preds[d_idx], d_tgts[d_idx])
+        h_f1 = _macro_f1(h_preds[h_idx], h_tgts[h_idx])
+        lifts.append(d_f1 - h_f1)
+    lifts = np.array(lifts)
+    alpha = (1 - ci) / 2
+    lo, hi = np.percentile(lifts, [100 * alpha, 100 * (1 - alpha)])
+    point = float(dense_pred["event_macro_f1"] - hist_pred["event_macro_f1"])
+    return {"lift": point, "ci_lower": float(lo), "ci_upper": float(hi),
+            "n_levels": len(unique_levels)}
+
+
 # ---------------------------------------------------------------------------
 # Gate evaluation
 # ---------------------------------------------------------------------------
@@ -1798,6 +1869,10 @@ def evaluate_gates(results: dict, cfg: Config) -> dict:
     hist_event = historyless.get("prediction", {}).get("event_macro_f1", 0)
 
     recurrent_lift = dense_event - hist_event if hist_event else 0
+    lift_ci = _bootstrap_recurrent_lift_ci(
+        dense.get("prediction", {}), historyless.get("prediction", {}),
+        n_boot=cfg.bootstrap_n, ci=cfg.bootstrap_ci)
+    lift_lb = lift_ci["ci_lower"]
 
     # Control B within 3 points of dense for BOTH event and status (one-sided: CB≥dense is OK)
     cb_event_within = (dense_event - cb_event) <= 0.03
@@ -1820,7 +1895,9 @@ def evaluate_gates(results: dict, cfg: Config) -> dict:
         "dense_pass": dense_event >= 0.90 and dense_status >= 0.90,
         "sparse_pass": sparse_event >= 0.90 and sparse_status >= 0.90,
         "recurrent_lift": recurrent_lift,
-        "recurrent_lift_pass": recurrent_lift >= 0.10,
+        "recurrent_lift_ci_lower": lift_lb,
+        "recurrent_lift_ci_upper": lift_ci["ci_upper"],
+        "recurrent_lift_pass": recurrent_lift >= 0.10 and lift_lb > 0,
         "flat_gru_event_f1": flat_event,
         "overall": False,
     }
@@ -1861,38 +1938,69 @@ def evaluate_gates(results: dict, cfg: Config) -> dict:
             macro_acc = float(np.mean(cell_accs)) if cell_accs else 0
             n_cells = len(cell_accs)
 
-            cc_correct = [c["correct"] for c in cc]
-            cc_levels = [c["level"] for c in cc]
-            cc_boot = clustered_bootstrap_ci(cc_correct, cc_levels, cfg.bootstrap_n, cfg.bootstrap_ci)
+            # Cell-macro bootstrap: resample levels, compute per-cell acc, then macro-mean
+            unique_levels = sorted(set(c["level"] for c in cc))
+            by_level_cell = {}
+            for c in cc:
+                key = (c["level"], tuple(c.get("cell", (c["handle"], -1))))
+                by_level_cell.setdefault(key, []).append(c)
 
-            recip_correct = [c["recip_correct"] for c in cc]
-            recip_boot = clustered_bootstrap_ci(recip_correct, cc_levels, cfg.bootstrap_n, cfg.bootstrap_ci)
+            rng_cm = np.random.RandomState(42)
+            level_arr = np.array(unique_levels)
+            n_boot = cfg.bootstrap_n
+            boot_macro_accs = []
+            boot_macro_imps = []
+            cell_keys = sorted(cell_data.keys())
+            for _ in range(n_boot):
+                sampled_levels = rng_cm.choice(level_arr, size=len(level_arr), replace=True)
+                cell_acc_boot = []
+                cell_imp_boot = []
+                for ck in cell_keys:
+                    entries_b = []
+                    for lv in sampled_levels:
+                        entries_b.extend(by_level_cell.get((lv, ck), []))
+                    if entries_b:
+                        cell_acc_boot.append(np.mean([e["correct"] for e in entries_b]))
+                        cell_imp_boot.append(np.mean([e["correct"] - e["recip_correct"] for e in entries_b]))
+                if cell_acc_boot:
+                    boot_macro_accs.append(float(np.mean(cell_acc_boot)))
+                    boot_macro_imps.append(float(np.mean(cell_imp_boot)))
 
-            improvement = (cc_boot["mean"] or 0) - (recip_boot["mean"] or 0)
-            improvement_vals = [c["correct"] - c["recip_correct"] for c in cc]
-            imp_boot = clustered_bootstrap_ci(improvement_vals, cc_levels, cfg.bootstrap_n, cfg.bootstrap_ci)
+            alpha = (1 - cfg.bootstrap_ci) / 2
+            if boot_macro_accs:
+                acc_arr = np.array(boot_macro_accs)
+                imp_arr = np.array(boot_macro_imps)
+                acc_lb = float(np.percentile(acc_arr, 100 * alpha))
+                acc_ub = float(np.percentile(acc_arr, 100 * (1 - alpha)))
+                imp_lb = float(np.percentile(imp_arr, 100 * alpha))
+                imp_ub = float(np.percentile(imp_arr, 100 * (1 - alpha)))
+                imp_mean = float(np.mean(imp_arr))
+            else:
+                acc_lb = acc_ub = imp_lb = imp_ub = imp_mean = 0.0
 
             gates["causal_consumption"] = {
                 "macro_accuracy": macro_acc,
+                "macro_accuracy_ci_lower": acc_lb,
+                "macro_accuracy_ci_upper": acc_ub,
                 "n_cells": n_cells,
                 "cell_details": cell_details,
                 "pair_support_ok": pair_support_ok,
-                "hybrid_accuracy": cc_boot,
-                "recipient_accuracy": recip_boot,
-                "improvement": improvement,
-                "improvement_lb": imp_boot.get("ci_lower", 0) or 0,
+                "improvement": imp_mean,
+                "improvement_ci_lower": imp_lb,
+                "improvement_ci_upper": imp_ub,
                 "pass": (pair_support_ok
                          and macro_acc >= 0.80
-                         and (cc_boot["ci_lower"] or 0) >= 0.70
-                         and improvement >= 0.30
-                         and (imp_boot.get("ci_lower", 0) or 0) >= 0.20),
+                         and acc_lb >= 0.70
+                         and imp_mean >= 0.30
+                         and imp_lb >= 0.20),
             }
 
         pre = dense_interv.get("pre_contact_effects", [])
         if pre:
-            false_rate = float(np.mean(pre))
-            pre_levels = list(range(len(pre)))
-            pre_boot = clustered_bootstrap_ci(pre, pre_levels, cfg.bootstrap_n, cfg.bootstrap_ci)
+            pre_rates = [p["rate"] if isinstance(p, dict) else p for p in pre]
+            pre_levels = [p["level"] if isinstance(p, dict) else i for i, p in enumerate(pre)]
+            false_rate = float(np.mean(pre_rates))
+            pre_boot = clustered_bootstrap_ci(pre_rates, pre_levels, cfg.bootstrap_n, cfg.bootstrap_ci)
             gates["shielding"] = {
                 "false_effect_rate": false_rate,
                 "ub": pre_boot.get("ci_upper", 1.0) or 1.0,
@@ -2499,7 +2607,7 @@ def main():
         smoke_prefix = "smoke_" if args.smoke else ""
         out_path = RESULTS_DIR / f"{smoke_prefix}{prefix}seed_{seed}_rung_{cfg.staircase_rung}.json"
         with open(out_path, "w") as f:
-            json.dump(result, f, indent=2, cls=_NumpyEncoder)
+            json.dump(_strip_internal(result), f, indent=2, cls=_NumpyEncoder)
         print(f"\nSaved: {out_path}")
 
     elapsed = time.time() - t_start
@@ -2624,6 +2732,15 @@ def main():
             failing = [k for k, v in gate_metrics.items() if not v["adjudicated_pass"]]
             print(f"\n  Experiment-wide adjudication: FAIL ({', '.join(failing)})")
 
+    # Rewrite per-seed JSONs after cross-seed adjustments (ControlB, gates)
+    if not is_smoke:
+        prefix = "v2_" if cfg.v2_latent_keys else ""
+        for seed in seeds:
+            s_key = str(seed)
+            out_path = RESULTS_DIR / f"{prefix}seed_{seed}_rung_{cfg.staircase_rung}.json"
+            with open(out_path, "w") as f:
+                json.dump(_strip_internal(all_results[s_key]), f, indent=2, cls=_NumpyEncoder)
+
     # Save combined verdict
     verdict = {
         "experiment": "handle_mu",
@@ -2647,7 +2764,7 @@ def main():
     smoke_tag = "smoke_" if is_smoke else ""
     verdict_path = RESULTS_DIR / f"{smoke_tag}{prefix}verdict_rung_{cfg.staircase_rung}.json"
     with open(verdict_path, "w") as f:
-        json.dump(verdict, f, indent=2, cls=_NumpyEncoder)
+        json.dump(_strip_internal(verdict), f, indent=2, cls=_NumpyEncoder)
     print(f"\nVerdict saved: {verdict_path}")
     print(f"Total time: {elapsed:.1f}s")
 
