@@ -337,25 +337,30 @@ def scripted_policy(state: WorldState, level_cfg: LevelConfig, rng: random.Rando
 class ScriptedPolicyV2:
     """V2 coverage policy: pick up ONE key, probe locks blindly, then second key.
 
-    Stateful: tracks which locks have been probed to avoid infinite loops.
+    Stateful: tracks probed locks. Randomizes first-key and lock-probe order
+    per episode. Includes blind goal probe after lock probes.
     """
 
-    def __init__(self):
+    def __init__(self, episode_rng: random.Random):
         self.probed_locks = set()
+        self.goal_probed = False
+        self.first_key = episode_rng.randint(0, 1)
+        self.lock_order = [0, 1]
+        episode_rng.shuffle(self.lock_order)
 
     def __call__(self, state: WorldState, level_cfg: LevelConfig, rng: random.Random) -> int:
         ar, ac = state.agent_row, state.agent_col
         n_held = sum(state.key_held)
 
         if n_held == 0:
-            ki = 0
+            ki = self.first_key
             kr, kc = state.keys[ki].row, state.keys[ki].col
             if ar == kr and ac == kc:
                 return USE
             return _navigate(ar, ac, kr, kc)
 
         if n_held == 1:
-            for li in range(2):
+            for li in self.lock_order:
                 if not state.lock_open[li] and li not in self.probed_locks:
                     lr, lc = state.locks[li].row, state.locks[li].col
                     if ar == lr and ac == lc:
@@ -363,7 +368,14 @@ class ScriptedPolicyV2:
                         return USE
                     return _navigate(ar, ac, lr, lc)
 
-            second_ki = 1 if state.key_held[0] else 0
+            if not self.goal_probed:
+                gr, gc = level_cfg.goal_position
+                if ar == gr and ac == gc:
+                    self.goal_probed = True
+                    return USE
+                return _navigate(ar, ac, gr, gc)
+
+            second_ki = 1 - self.first_key
             if not state.key_held[second_ki]:
                 kr, kc = state.keys[second_ki].row, state.keys[second_ki].col
                 if ar == kr and ac == kc:
@@ -440,7 +452,7 @@ def generate_trajectories(level_seeds: list, cfg: Config, data_rng_seed: int = 0
             episode_level.key_lock_bijection = episode_bijection
 
             world = KeyLockGridWorld(episode_level, v2_latent_keys=cfg.v2_latent_keys)
-            v2_policy = ScriptedPolicyV2() if cfg.v2_latent_keys else None
+            v2_policy = ScriptedPolicyV2(random.Random(rng.randint(0, 2**31))) if cfg.v2_latent_keys else None
             state = world.reset()
             obs_encoded = np.zeros((cfg.traj_length + 1, cfg.n_slots, rd), dtype=np.float32)
             slot_maps = []
@@ -1328,7 +1340,8 @@ def _find_first_contact(t1: Trajectory, t2: Trajectory, step: int,
 # ---------------------------------------------------------------------------
 
 def _construct_counterfactual_state(donor_state: WorldState, recip_state: WorldState,
-                                    target_handle: int) -> WorldState:
+                                    target_handle: int,
+                                    v2_latent_keys: bool = False) -> WorldState:
     """Recipient world state with donor's target handle state transplanted."""
     import copy as _cp
     cf = _cp.deepcopy(recip_state)
@@ -1338,8 +1351,12 @@ def _construct_counterfactual_state(donor_state: WorldState, recip_state: WorldS
         cf.keys[ki] = _cp.deepcopy(donor_state.keys[ki])
         cf.key_held[ki] = donor_state.key_held[ki]
         if cf.key_held[ki]:
-            cf.keys[ki].row = cf.agent_row
-            cf.keys[ki].col = cf.agent_col
+            if v2_latent_keys:
+                cf.keys[ki].row = -99
+                cf.keys[ki].col = -99
+            else:
+                cf.keys[ki].row = cf.agent_row
+                cf.keys[ki].col = cf.agent_col
     elif target_handle < 4:
         li = target_handle - 2
         cf.locks[li] = _cp.deepcopy(donor_state.locks[li])
@@ -1435,10 +1452,11 @@ def evaluate_intervention(model, pairs: list, cfg: Config, model_type: str) -> d
 
             # TRANSITION both simulator branches with suffix[0] (spec step 4)
             cf_state = _construct_counterfactual_state(
-                dt.states[ds], rt.states[rs], pair.target_handle)
+                dt.states[ds], rt.states[rs], pair.target_handle,
+                v2_latent_keys=cfg.v2_latent_keys)
             bl_state = copy.deepcopy(rt.states[rs])
-            cf_world = KeyLockGridWorld(rt.level_config)
-            bl_world = KeyLockGridWorld(rt.level_config)
+            cf_world = KeyLockGridWorld(rt.level_config, v2_latent_keys=cfg.v2_latent_keys)
+            bl_world = KeyLockGridWorld(rt.level_config, v2_latent_keys=cfg.v2_latent_keys)
             cf_state, cf_events_0 = cf_world.step(cf_state, suffix[0])
             bl_state, bl_events_0 = bl_world.step(bl_state, suffix[0])
 
@@ -1893,7 +1911,7 @@ def evaluate_oracle(trajs: list, cfg: Config) -> dict:
     dummy_rng = random.Random(0)
 
     for traj in trajs:
-        world = KeyLockGridWorld(traj.level_config)
+        world = KeyLockGridWorld(traj.level_config, v2_latent_keys=cfg.v2_latent_keys)
         for step in range(len(traj.actions)):
             state = traj.states[step]
             action = traj.actions[step]
@@ -1982,24 +2000,20 @@ def run_seed(cfg: Config, model_seed: int) -> dict:
             del cb_test
             break
         del cb_test
+    controlb_widths = sorted(set([controlb_hpm, 96, 192]))
 
     # Train and evaluate each model
     model_configs = [
         ("dense_slots", DenseSlotModel),
         ("sparse_slots", SparseSlotModel),
         ("flat_gru", FlatGRUModel),
-        ("control_b", ControlBModel),
         ("historyless", HistorylessModel),
     ]
 
     for model_name, ModelClass in model_configs:
         print(f"\nTraining {model_name}...")
         torch.manual_seed(model_seed)
-
-        if model_name == "control_b":
-            model = ModelClass(cfg, controlb_hpm).to(cfg.device)
-        else:
-            model = ModelClass(cfg).to(cfg.device)
+        model = ModelClass(cfg).to(cfg.device)
 
         n_params = sum(p.numel() for p in model.parameters())
         print(f"  Parameters: {n_params:,}")
@@ -2055,6 +2069,34 @@ def run_seed(cfg: Config, model_seed: int) -> dict:
 
         results[model_name] = model_results
 
+    # ControlB width ladder: train at {h_pm, 96, 192}, select by best val loss
+    best_cb_val = float("inf")
+    best_cb_width = controlb_widths[0]
+    cb_ladder_results = {}
+    for cb_w in controlb_widths:
+        cb_name = f"control_b_w{cb_w}"
+        print(f"\nTraining {cb_name}...")
+        torch.manual_seed(model_seed)
+        model = ControlBModel(cfg, cb_w).to(cfg.device)
+        n_params = sum(p.numel() for p in model.parameters())
+        print(f"  Parameters: {n_params:,}")
+        train_metrics = train_model(model, train_batches, val_batches, cfg, cb_name)
+        pred_metrics = evaluate_prediction(model, test_batches, cfg)
+        cb_ladder_results[cb_name] = {
+            "n_params": n_params, "training": train_metrics,
+            "prediction": pred_metrics, "width": cb_w,
+        }
+        final_val = train_metrics.get("best_val_loss", train_metrics.get("val_losses", [float("inf")])[-1])
+        if final_val < best_cb_val:
+            best_cb_val = final_val
+            best_cb_width = cb_w
+        del model
+
+    results["control_b_ladder"] = cb_ladder_results
+    results["control_b_selected_width"] = best_cb_width
+    results["control_b"] = cb_ladder_results[f"control_b_w{best_cb_width}"]
+    print(f"\n  ControlB selected width: {best_cb_width} (val loss {best_cb_val:.4f})")
+
     # Evaluate gates
     gates = evaluate_gates(results, cfg)
     results["gates"] = gates
@@ -2088,12 +2130,13 @@ def _canonical_obs(obs_encoded_t: np.ndarray) -> tuple:
 
 
 def ambiguity_preflight(cfg: Config, n_levels: int = 16, trajs_per_level: int = 128) -> dict:
-    """V2 ambiguity preflight: verify the world creates observation aliasing.
+    """V2 ambiguity preflight: verify the world creates genuine memory dependence.
 
-    Uses permutation-invariant observation matching (sorted carrier vectors)
-    to find timestep pairs where functionally identical observations + same
-    action produce different outcomes.
+    Post-identification analysis: first blind USE at a lock is calibration
+    (reveals bijection); subsequent contacts are post-identification.
+    Reports: current-obs ceiling, full-history ceiling, cell balance, goal bank.
     """
+    import hashlib
     assert cfg.v2_latent_keys, "Preflight requires v2_latent_keys=True"
 
     preflight_cfg = Config(
@@ -2107,103 +2150,196 @@ def ambiguity_preflight(cfg: Config, n_levels: int = 16, trajs_per_level: int = 
     level_seeds = list(range(n_levels))
     trajs = generate_trajectories(level_seeds, preflight_cfg, data_rng_seed=9999)
 
-    obs_action_to_outcomes = {}
-    use_at_lock_cases = []
+    def _obs_hash(obs_t):
+        return _canonical_obs(obs_t)
 
-    for traj in trajs:
+    def _history_hash(traj, t):
+        h = hashlib.sha256()
+        h.update(traj.obs_encoded[:t+1].tobytes())
+        h.update(np.asarray(traj.actions[:t+1], dtype=np.int8).tobytes())
+        return h.digest()
+
+    obs_groups_all = {}
+    obs_groups_postid = {}
+    hist_groups_postid = {}
+    cell_counts = {}
+    cell_levels = {}
+    goal_bank = {"ready_activate": 0, "ready_none": 0, "unready_activate": 0, "unready_none": 0}
+    coverage = {"picked_both": 0, "opened_both": 0, "goal": 0, "n_scripted": 0}
+
+    for traj_idx, traj in enumerate(trajs):
+        is_scripted = (traj_idx % trajs_per_level) < int(trajs_per_level * preflight_cfg.scripted_fraction)
+        identified = False
+        first_lock_use_done = False
+
+        if is_scripted:
+            coverage["n_scripted"] += 1
+            final = traj.states[-1]
+            if all(final.key_held):
+                coverage["picked_both"] += 1
+            if all(final.lock_open):
+                coverage["opened_both"] += 1
+            if final.goal_active:
+                coverage["goal"] += 1
+
         for t in range(len(traj.actions)):
-            obs_key = _canonical_obs(traj.obs_encoded[t])
+            st = traj.states[t]
             action = traj.actions[t]
-            event = tuple(traj.events[t])
-            key = (obs_key, action)
+            event_code = traj.events[t][0]
+            obs_key = _obs_hash(traj.obs_encoded[t])
+            combo = (obs_key, action)
 
-            if key not in obs_action_to_outcomes:
-                obs_action_to_outcomes[key] = {}
-            obs_action_to_outcomes[key][event] = obs_action_to_outcomes[key].get(event, 0) + 1
+            if combo not in obs_groups_all:
+                obs_groups_all[combo] = {}
+            obs_groups_all[combo][event_code] = obs_groups_all[combo].get(event_code, 0) + 1
 
-            if action == USE:
-                has_unlock = any(e == 2 for e in traj.events[t])
-                use_at_lock_cases.append({
-                    "level": traj.level_seed,
-                    "obs_key": obs_key,
-                    "event": event,
-                    "has_unlock": has_unlock,
-                    "held": [s.key_held[:] for s in [traj.states[t]]][0],
-                    "bij": traj.level_config.key_lock_bijection[:],
-                })
+            at_lock = next((li for li, l in enumerate(st.locks)
+                            if (l.row, l.col) == (st.agent_row, st.agent_col)), None)
+            held_keys = [i for i, h in enumerate(st.key_held) if h]
+            is_lock_use = action == USE and at_lock is not None and len(held_keys) == 1 and not st.lock_open[at_lock]
 
-    ambiguous_keys = 0
-    total_keys = len(obs_action_to_outcomes)
-    ambiguous_timesteps = 0
-    total_timesteps = 0
-    use_ambiguous = 0
-    majority_fracs = []
+            if is_lock_use and not first_lock_use_done:
+                first_lock_use_done = True
+                identified = True
+                continue
 
-    for (obs_key, action), outcome_counts in obs_action_to_outcomes.items():
-        n_total = sum(outcome_counts.values())
-        total_timesteps += n_total
+            if identified and is_lock_use:
+                ki = held_keys[0]
+                li = at_lock
+                cell = (ki, li)
 
-        if len(outcome_counts) > 1:
-            ambiguous_keys += 1
-            ambiguous_timesteps += n_total
-            majority = max(outcome_counts.values())
-            majority_fracs.append(majority / n_total)
-            if action == USE:
-                use_ambiguous += 1
+                if combo not in obs_groups_postid:
+                    obs_groups_postid[combo] = {}
+                obs_groups_postid[combo][event_code] = obs_groups_postid[combo].get(event_code, 0) + 1
 
-    bayes_ceiling = (sum(majority_fracs) / len(majority_fracs)) if majority_fracs else 1.0
+                hist_key = _history_hash(traj, t)
+                if hist_key not in hist_groups_postid:
+                    hist_groups_postid[hist_key] = {}
+                hist_groups_postid[hist_key][event_code] = hist_groups_postid[hist_key].get(event_code, 0) + 1
 
-    by_level_use = {}
-    for c in use_at_lock_cases:
-        lv = c["level"]
-        if lv not in by_level_use:
-            by_level_use[lv] = {"unlock": 0, "no_event": 0, "total": 0}
-        by_level_use[lv]["total"] += 1
-        if c["has_unlock"]:
-            by_level_use[lv]["unlock"] += 1
-        else:
-            by_level_use[lv]["no_event"] += 1
+                if cell not in cell_counts:
+                    cell_counts[cell] = {"unlock": 0, "none": 0}
+                    cell_levels[cell] = set()
+                if event_code == 1:
+                    cell_counts[cell]["unlock"] += 1
+                else:
+                    cell_counts[cell]["none"] += 1
+                cell_levels[cell].add(traj.level_seed)
 
-    levels_with_both = sum(1 for v in by_level_use.values()
-                           if v["unlock"] > 0 and v["no_event"] > 0)
+            if action == USE and identified:
+                at_goal = (st.agent_row, st.agent_col) == tuple(traj.level_config.goal_position)
+                if at_goal:
+                    ready = all(st.lock_open)
+                    activated = event_code == 2
+                    if ready and activated:
+                        goal_bank["ready_activate"] += 1
+                    elif ready and not activated:
+                        goal_bank["ready_none"] += 1
+                    elif not ready and activated:
+                        goal_bank["unready_activate"] += 1
+                    else:
+                        goal_bank["unready_none"] += 1
+
+    def _bayes_ceiling(groups):
+        if not groups:
+            return 1.0
+        total = sum(sum(v.values()) for v in groups.values())
+        correct = sum(max(v.values()) for v in groups.values())
+        return correct / total if total > 0 else 1.0
+
+    def _macro_ceiling(groups):
+        ambig = [v for v in groups.values() if len(v) > 1]
+        if not ambig:
+            return 1.0
+        fracs = [max(v.values()) / sum(v.values()) for v in ambig]
+        return sum(fracs) / len(fracs)
+
+    def _count_ambiguous(groups):
+        return sum(1 for v in groups.values() if len(v) > 1)
+
+    obs_ceil_all = _bayes_ceiling(obs_groups_all)
+    obs_ceil_postid = _bayes_ceiling(obs_groups_postid)
+    obs_macro_postid = _macro_ceiling(obs_groups_postid)
+    hist_ceil_postid = _bayes_ceiling(hist_groups_postid)
+
+    n_ambig_all = _count_ambiguous(obs_groups_all)
+    n_ambig_postid = _count_ambiguous(obs_groups_postid)
+    n_ambig_hist = _count_ambiguous(hist_groups_postid)
+
+    total_postid = sum(sum(v.values()) for v in obs_groups_postid.values())
+
+    cells_ok = True
+    cell_report = {}
+    for cell_key in [(0, 0), (0, 1), (1, 0), (1, 1)]:
+        cc = cell_counts.get(cell_key, {"unlock": 0, "none": 0})
+        cl = cell_levels.get(cell_key, set())
+        balanced = min(cc["unlock"], cc["none"]) >= 8
+        cell_report[f"{cell_key[0]}->{cell_key[1]}"] = {
+            "unlock": cc["unlock"], "none": cc["none"],
+            "total": cc["unlock"] + cc["none"],
+            "levels": len(cl),
+            "balanced": balanced,
+        }
+        if cc["unlock"] + cc["none"] < 32 or len(cl) < 4:
+            cells_ok = False
+        if not balanced:
+            cells_ok = False
+
+    goal_ok = goal_bank["unready_none"] > 0 and goal_bank["ready_activate"] > 0
+
+    passed = (
+        total_postid >= 100
+        and obs_ceil_postid < 0.75
+        and hist_ceil_postid > 0.99
+        and cells_ok
+        and n_ambig_postid >= 1
+    )
 
     result = {
         "n_trajs": len(trajs),
-        "total_distinct_obs_action": total_keys,
-        "ambiguous_obs_action_groups": ambiguous_keys,
-        "ambiguous_fraction": ambiguous_keys / max(total_keys, 1),
-        "total_timesteps": total_timesteps,
-        "ambiguous_timesteps": ambiguous_timesteps,
-        "use_action_ambiguous_groups": use_ambiguous,
-        "observation_bayes_ceiling": bayes_ceiling,
-        "full_history_ceiling": 1.0,
-        "total_use_cases": len(use_at_lock_cases),
-        "levels_with_mixed_use_outcomes": levels_with_both,
-        "PASS": ambiguous_keys >= 10 and bayes_ceiling < 0.75,
+        "all_obs_groups": len(obs_groups_all),
+        "all_obs_ambiguous": n_ambig_all,
+        "all_obs_bayes_ceiling": obs_ceil_all,
+        "postid_obs_groups": len(obs_groups_postid),
+        "postid_obs_ambiguous": n_ambig_postid,
+        "postid_obs_bayes_ceiling": obs_ceil_postid,
+        "postid_obs_macro_ceiling": obs_macro_postid,
+        "postid_total_samples": total_postid,
+        "postid_hist_groups": len(hist_groups_postid),
+        "postid_hist_ambiguous": n_ambig_hist,
+        "postid_hist_bayes_ceiling": hist_ceil_postid,
+        "cells": cell_report,
+        "cells_ok": cells_ok,
+        "goal_bank": goal_bank,
+        "goal_ok": goal_ok,
+        "coverage": coverage,
+        "PASS": passed,
     }
 
     print("\n" + "=" * 60)
-    print("V2 AMBIGUITY PREFLIGHT RESULTS")
+    print("V2 AMBIGUITY PREFLIGHT (post-identification)")
     print("=" * 60)
-    for k, v in result.items():
-        if isinstance(v, float):
-            print(f"  {k}: {v:.4f}")
-        else:
-            print(f"  {k}: {v}")
+    print(f"  Post-ID obs Bayes ceiling:  {obs_ceil_postid:.4f}  (need < 0.75)")
+    print(f"  Post-ID obs macro ceiling:  {obs_macro_postid:.4f}")
+    print(f"  Post-ID hist Bayes ceiling: {hist_ceil_postid:.4f}  (need > 0.99)")
+    print(f"  Post-ID ambiguous groups:   {n_ambig_postid}")
+    print(f"  Post-ID total samples:      {total_postid}")
+    print(f"  All-obs Bayes ceiling:      {obs_ceil_all:.4f}")
+    print()
+    print("  Cell balance:")
+    for name, info in cell_report.items():
+        bal = "OK" if info["balanced"] else "FAIL"
+        print(f"    {name}: unlock={info['unlock']} none={info['none']} levels={info['levels']} [{bal}]")
+    print(f"  Cells OK: {cells_ok}")
+    print()
+    print(f"  Goal bank: {goal_bank}")
+    print(f"  Goal OK:   {goal_ok}")
+    print()
+    print(f"  Coverage (scripted): picked_both={coverage['picked_both']}/{coverage['n_scripted']} "
+          f"opened_both={coverage['opened_both']}/{coverage['n_scripted']} "
+          f"goal={coverage['goal']}/{coverage['n_scripted']}")
     print("=" * 60)
-
-    if result["PASS"]:
-        print("PASS: World creates genuine observation aliasing.")
-        print(f"  {ambiguous_keys} groups with identical (obs, action) -> different outcomes")
-        print(f"  Observation-only Bayes ceiling: {bayes_ceiling:.3f}")
-    else:
-        print("FAIL: Insufficient observation aliasing.")
-        if ambiguous_keys < 10:
-            print(f"  Only {ambiguous_keys} ambiguous groups (need >= 10)")
-        if bayes_ceiling >= 0.75:
-            print(f"  Bayes ceiling {bayes_ceiling:.3f} too high (need < 0.75)")
-        print(f"\n  Diagnostic: {len(use_at_lock_cases)} USE actions across {len(by_level_use)} levels")
-        print(f"  Levels with both unlock and no-event USE outcomes: {levels_with_both}")
+    print(f"  VERDICT: {'PASS' if passed else 'FAIL'}")
 
     return result
 
@@ -2225,8 +2361,10 @@ def main():
                         help="Run with v2 latent-inventory world")
     args = parser.parse_args()
 
+    v2_traj_length = 48
+
     if args.v2_preflight:
-        cfg = Config(v2_latent_keys=True)
+        cfg = Config(v2_latent_keys=True, traj_length=v2_traj_length)
         result = ambiguity_preflight(cfg)
         out_path = RESULTS_DIR / "v2_preflight.json"
         with open(out_path, "w") as f:
@@ -2241,6 +2379,7 @@ def main():
             n_train_levels=8, n_val_levels=4, n_test_levels=4,
             trajs_per_level=16, intervention_n_pairs=64,
             v2_latent_keys=args.v2,
+            traj_length=v2_traj_length if args.v2 else 32,
         )
     else:
         cfg = Config(
@@ -2249,6 +2388,7 @@ def main():
             batch_size=args.batch_size,
             device=args.device,
             v2_latent_keys=args.v2,
+            traj_length=v2_traj_length if args.v2 else 32,
         )
 
     seeds = [args.seed] if args.seed else list(cfg.model_seeds)
@@ -2261,7 +2401,8 @@ def main():
         all_results[str(seed)] = result
 
         # Save per-seed result
-        out_path = RESULTS_DIR / f"seed_{seed}_rung_{cfg.staircase_rung}.json"
+        prefix = "v2_" if cfg.v2_latent_keys else ""
+        out_path = RESULTS_DIR / f"{prefix}seed_{seed}_rung_{cfg.staircase_rung}.json"
         with open(out_path, "w") as f:
             json.dump(result, f, indent=2, default=str)
         print(f"\nSaved: {out_path}")
@@ -2280,7 +2421,8 @@ def main():
         "adjudication": "NOT_ADJUDICATED" if is_smoke else "PENDING",
     }
 
-    verdict_path = RESULTS_DIR / f"verdict_rung_{cfg.staircase_rung}.json"
+    prefix = "v2_" if cfg.v2_latent_keys else ""
+    verdict_path = RESULTS_DIR / f"{prefix}verdict_rung_{cfg.staircase_rung}.json"
     with open(verdict_path, "w") as f:
         json.dump(verdict, f, indent=2, default=str)
     print(f"\nVerdict saved: {verdict_path}")

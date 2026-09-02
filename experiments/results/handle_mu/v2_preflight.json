@@ -1,14 +1,59 @@
 {
   "n_trajs": 2048,
-  "total_distinct_obs_action": 1503,
-  "ambiguous_obs_action_groups": 15,
-  "ambiguous_fraction": 0.00998003992015968,
-  "total_timesteps": 65536,
-  "ambiguous_timesteps": 4353,
-  "use_action_ambiguous_groups": 15,
-  "observation_bayes_ceiling": 0.5912227685237278,
-  "full_history_ceiling": 1.0,
-  "total_use_cases": 12017,
-  "levels_with_mixed_use_outcomes": 8,
+  "all_obs_groups": 2002,
+  "all_obs_ambiguous": 27,
+  "all_obs_bayes_ceiling": 0.97686767578125,
+  "postid_obs_groups": 28,
+  "postid_obs_ambiguous": 6,
+  "postid_obs_bayes_ceiling": 0.6807017543859649,
+  "postid_obs_macro_ceiling": 0.6119995462225847,
+  "postid_total_samples": 1425,
+  "postid_hist_groups": 1411,
+  "postid_hist_ambiguous": 0,
+  "postid_hist_bayes_ceiling": 1.0,
+  "cells": {
+    "0->0": {
+      "unlock": 194,
+      "none": 166,
+      "total": 360,
+      "levels": 16,
+      "balanced": true
+    },
+    "0->1": {
+      "unlock": 187,
+      "none": 177,
+      "total": 364,
+      "levels": 16,
+      "balanced": true
+    },
+    "1->0": {
+      "unlock": 178,
+      "none": 179,
+      "total": 357,
+      "levels": 16,
+      "balanced": true
+    },
+    "1->1": {
+      "unlock": 173,
+      "none": 171,
+      "total": 344,
+      "levels": 16,
+      "balanced": true
+    }
+  },
+  "cells_ok": true,
+  "goal_bank": {
+    "ready_activate": 1353,
+    "ready_none": 574,
+    "unready_activate": 0,
+    "unready_none": 1427
+  },
+  "goal_ok": true,
+  "coverage": {
+    "picked_both": 1424,
+    "opened_both": 1424,
+    "goal": 1353,
+    "n_scripted": 1424
+  },
   "PASS": true
 }
