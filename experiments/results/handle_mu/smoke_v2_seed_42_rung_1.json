@@ -1,0 +1,2874 @@
+{
+  "seed": 42,
+  "config": {
+    "grid_size": 7,
+    "visibility_radius": 2,
+    "n_handles": 5,
+    "n_obs_records": 6,
+    "slot_width": 32,
+    "n_slots": 6,
+    "n_actions": 5,
+    "n_object_types": 4,
+    "n_status_values": 4,
+    "max_pos_offset": 2,
+    "sparse_top_k": 2,
+    "n_train_levels": 8,
+    "n_val_levels": 4,
+    "n_test_levels": 4,
+    "trajs_per_level": 16,
+    "intervention_trajs_per_level": 32,
+    "traj_length": 48,
+    "scripted_fraction": 0.5,
+    "model_seeds": [
+      42,
+      137,
+      2026
+    ],
+    "lr": 0.0003,
+    "batch_size": 64,
+    "n_epochs": 15,
+    "grad_clip": 1.0,
+    "event_loss_weight": 1.0,
+    "intervention_n_pairs": 64,
+    "bootstrap_n": 2000,
+    "bootstrap_ci": 0.95,
+    "epsilon_tv": 0.05,
+    "staircase_rung": 1,
+    "v2_latent_keys": true,
+    "device": "cpu"
+  },
+  "oracle": {
+    "prediction": {
+      "event_macro_f1": 1.0,
+      "obs_accuracy": 1.0,
+      "n_samples": 3072
+    }
+  },
+  "dense_slots": {
+    "n_params": 19511,
+    "training": {
+      "train_losses": [
+        2.715153694152832,
+        2.5329248905181885,
+        2.3576085567474365,
+        2.1872423887252808,
+        2.0257861614227295,
+        1.8806114792823792,
+        1.7603329420089722,
+        1.6707922220230103,
+        1.6143029928207397,
+        1.5855281352996826,
+        1.567780315876007,
+        1.5473636984825134,
+        1.5220072269439697,
+        1.4940126538276672,
+        1.4657061696052551
+      ],
+      "val_losses": [
+        2.5954673290252686,
+        2.4147162437438965,
+        2.2404656410217285,
+        2.0742604732513428,
+        1.9217617511749268,
+        1.7914817333221436,
+        1.6898003816604614,
+        1.6202975511550903,
+        1.5816218852996826,
+        1.56032133102417,
+        1.5396475791931152,
+        1.5146141052246094,
+        1.4870184659957886,
+        1.459195852279663,
+        1.4320188760757446
+      ],
+      "best_val_loss": 1.4320188760757446
+    },
+    "prediction": {
+      "event_macro_f1": 0.24310085298544906,
+      "status_accuracy": 0.8405482426380785,
+      "status_macro_f1": 0.3044557497112242,
+      "n_event_samples": 3072,
+      "n_status_samples": 7369,
+      "level_ids": [
+        2000,
+        2001,
+        2002,
+        2003
+      ]
+    },
+    "val_prediction": {
+      "event_macro_f1": 0.24357262103505845,
+      "status_accuracy": 0.9112235510579577,
+      "status_macro_f1": 0.3178499799438428,
+      "n_event_samples": 3072,
+      "n_status_samples": 6522,
+      "level_ids": [
+        1000,
+        1001,
+        1002,
+        1003
+      ]
+    },
+    "intervention": {
+      "causal_consumption": [
+        {
+          "correct": 1,
+          "recip_correct": 1,
+          "level": 1,
+          "handle": 0,
+          "cell": [
+            0,
+            2
+          ],
+          "contact_step": 5
+        }
+      ],
+      "pre_contact_effects": [
+        {
+          "rate": 0.0,
+          "level": 5
+        },
+        {
+          "rate": 0.0,
+          "level": 5
+        },
+        {
+          "rate": 0.0,
+          "level": 1
+        },
+        {
+          "rate": 0.0,
+          "level": 1
+        },
+        {
+          "rate": 0.0,
+          "level": 2
+        },
+        {
+          "rate": 0.0,
+          "level": 2
+        },
+        {
+          "rate": 0.0,
+          "level": 2
+        },
+        {
+          "rate": 0.0,
+          "level": 1
+        },
+        {
+          "rate": 0.0,
+          "level": 1
+        },
+        {
+          "rate": 0.0,
+          "level": 1
+        },
+        {
+          "rate": 0.0,
+          "level": 1
+        },
+        {
+          "rate": 0.0,
+          "level": 6
+        },
+        {
+          "rate": 0.0,
+          "level": 6
+        },
+        {
+          "rate": 0.0,
+          "level": 6
+        },
+        {
+          "rate": 0.0,
+          "level": 6
+        },
+        {
+          "rate": 0.0,
+          "level": 6
+        },
+        {
+          "rate": 0.0,
+          "level": 6
+        },
+        {
+          "rate": 0.0,
+          "level": 6
+        },
+        {
+          "rate": 0.0,
+          "level": 6
+        },
+        {
+          "rate": 0.0,
+          "level": 5
+        },
+        {
+          "rate": 0.0,
+          "level": 1
+        },
+        {
+          "rate": 0.0,
+          "level": 1
+        },
+        {
+          "rate": 0.0,
+          "level": 6
+        },
+        {
+          "rate": 0.0,
+          "level": 4
+        },
+        {
+          "rate": 0.0,
+          "level": 5
+        },
+        {
+          "rate": 0.0,
+          "level": 5
+        },
+        {
+          "rate": 0.0,
+          "level": 7
+        },
+        {
+          "rate": 0.0,
+          "level": 1
+        },
+        {
+          "rate": 0.0,
+          "level": 1
+        },
+        {
+          "rate": 0.0,
+          "level": 0
+        },
+        {
+          "rate": 0.0,
+          "level": 4
+        },
+        {
+          "rate": 0.0,
+          "level": 4
+        },
+        {
+          "rate": 0.0,
+          "level": 1
+        },
+        {
+          "rate": 0.0,
+          "level": 1
+        },
+        {
+          "rate": 0.0,
+          "level": 5
+        },
+        {
+          "rate": 0.0,
+          "level": 5
+        },
+        {
+          "rate": 0.0,
+          "level": 5
+        },
+        {
+          "rate": 0.0,
+          "level": 5
+        },
+        {
+          "rate": 0.0,
+          "level": 6
+        },
+        {
+          "rate": 0.0,
+          "level": 6
+        },
+        {
+          "rate": 0.0,
+          "level": 4
+        }
+      ],
+      "patch_integrity": [
+        {
+          "tv": 0.0009562229970470071,
+          "level": 5
+        },
+        {
+          "tv": 0.0009562222403474152,
+          "level": 5
+        },
+        {
+          "tv": 0.0015735756605863571,
+          "level": 1
+        },
+        {
+          "tv": 0.000888876966200769,
+          "level": 1
+        },
+        {
+          "tv": 0.0009863950544968247,
+          "level": 2
+        },
+        {
+          "tv": 0.0008496157824993134,
+          "level": 2
+        },
+        {
+          "tv": 0.00041663050069473684,
+          "level": 2
+        },
+        {
+          "tv": 0.0014365371316671371,
+          "level": 1
+        },
+        {
+          "tv": 0.0011836898047477007,
+          "level": 1
+        },
+        {
+          "tv": 0.0015031863003969193,
+          "level": 1
+        },
+        {
+          "tv": 0.0011836898047477007,
+          "level": 1
+        },
+        {
+          "tv": 0.0027715847827494144,
+          "level": 6
+        },
+        {
+          "tv": 0.0024650022387504578,
+          "level": 6
+        },
+        {
+          "tv": 0.0029453220777213573,
+          "level": 6
+        },
+        {
+          "tv": 0.0027715852484107018,
+          "level": 6
+        },
+        {
+          "tv": 0.002465000841766596,
+          "level": 6
+        },
+        {
+          "tv": 0.0029453355818986893,
+          "level": 6
+        },
+        {
+          "tv": 0.0019523861119523644,
+          "level": 6
+        },
+        {
+          "tv": 0.0029453355818986893,
+          "level": 6
+        },
+        {
+          "tv": 0.002161342417821288,
+          "level": 5
+        },
+        {
+          "tv": 0.000795255065895617,
+          "level": 1
+        },
+        {
+          "tv": 0.0005169737851247191,
+          "level": 1
+        },
+        {
+          "tv": 0.0009926542406901717,
+          "level": 6
+        },
+        {
+          "tv": 0.0017700314056128263,
+          "level": 4
+        },
+        {
+          "tv": 0.002182642463594675,
+          "level": 5
+        },
+        {
+          "tv": 0.0019516699248924851,
+          "level": 5
+        },
+        {
+          "tv": 0.0005413790931925178,
+          "level": 7
+        },
+        {
+          "tv": 0.0008244350319728255,
+          "level": 1
+        },
+        {
+          "tv": 0.0008244408527389169,
+          "level": 1
+        },
+        {
+          "tv": 0.0008977411198429763,
+          "level": 0
+        },
+        {
+          "tv": 0.0008137216791510582,
+          "level": 4
+        },
+        {
+          "tv": 0.0008393639582209289,
+          "level": 4
+        },
+        {
+          "tv": 0.0018909464124590158,
+          "level": 1
+        },
+        {
+          "tv": 0.0018909464124590158,
+          "level": 1
+        },
+        {
+          "tv": 0.0019519526977092028,
+          "level": 5
+        },
+        {
+          "tv": 0.0006515443092212081,
+          "level": 5
+        },
+        {
+          "tv": 0.0022308817133307457,
+          "level": 5
+        },
+        {
+          "tv": 0.0022308817133307457,
+          "level": 5
+        },
+        {
+          "tv": 0.0010324157774448395,
+          "level": 6
+        },
+        {
+          "tv": 0.001199694350361824,
+          "level": 6
+        },
+        {
+          "tv": 0.0006251974264159799,
+          "level": 4
+        }
+      ],
+      "timing_errors": [
+        20
+      ],
+      "timing_misses": 1,
+      "timing_contacts": 1,
+      "per_handle": {
+        "handle_0": {
+          "n_pairs": 7,
+          "patch_integrity": [
+            {
+              "tv": 0.0009562229970470071,
+              "level": 5
+            },
+            {
+              "tv": 0.0009562222403474152,
+              "level": 5
+            },
+            {
+              "tv": 0.0015735756605863571,
+              "level": 1
+            },
+            {
+              "tv": 0.000888876966200769,
+              "level": 1
+            },
+            {
+              "tv": 0.0009863950544968247,
+              "level": 2
+            },
+            {
+              "tv": 0.0008496157824993134,
+              "level": 2
+            },
+            {
+              "tv": 0.00041663050069473684,
+              "level": 2
+            }
+          ],
+          "causal_consumption": [
+            {
+              "correct": 1,
+              "recip_correct": 1,
+              "level": 1,
+              "handle": 0,
+              "cell": [
+                0,
+                2
+              ],
+              "contact_step": 5
+            }
+          ],
+          "pre_contact_effects": [
+            {
+              "rate": 0.0,
+              "level": 5
+            },
+            {
+              "rate": 0.0,
+              "level": 5
+            },
+            {
+              "rate": 0.0,
+              "level": 1
+            },
+            {
+              "rate": 0.0,
+              "level": 1
+            },
+            {
+              "rate": 0.0,
+              "level": 2
+            },
+            {
+              "rate": 0.0,
+              "level": 2
+            },
+            {
+              "rate": 0.0,
+              "level": 2
+            }
+          ],
+          "timing_errors": [
+            20
+          ],
+          "timing_misses": 1,
+          "timing_contacts": 1,
+          "by_cell": {
+            "0->-1": [
+              {
+                "level": 5,
+                "contact_found": false
+              },
+              {
+                "level": 5,
+                "contact_found": false
+              },
+              {
+                "level": 1,
+                "contact_found": false
+              },
+              {
+                "level": 2,
+                "contact_found": false
+              },
+              {
+                "level": 2,
+                "contact_found": false
+              },
+              {
+                "level": 2,
+                "contact_found": false
+              }
+            ],
+            "0->2": [
+              {
+                "level": 1,
+                "contact_found": true
+              }
+            ]
+          },
+          "by_level": {
+            "5": [
+              {
+                "target_handle": 0,
+                "contact_found": false
+              },
+              {
+                "target_handle": 0,
+                "contact_found": false
+              }
+            ],
+            "1": [
+              {
+                "target_handle": 0,
+                "contact_found": true
+              },
+              {
+                "target_handle": 0,
+                "contact_found": false
+              }
+            ],
+            "2": [
+              {
+                "target_handle": 0,
+                "contact_found": false
+              },
+              {
+                "target_handle": 0,
+                "contact_found": false
+              },
+              {
+                "target_handle": 0,
+                "contact_found": false
+              }
+            ]
+          }
+        },
+        "handle_1": {
+          "n_pairs": 12,
+          "patch_integrity": [
+            {
+              "tv": 0.0014365371316671371,
+              "level": 1
+            },
+            {
+              "tv": 0.0011836898047477007,
+              "level": 1
+            },
+            {
+              "tv": 0.0015031863003969193,
+              "level": 1
+            },
+            {
+              "tv": 0.0011836898047477007,
+              "level": 1
+            },
+            {
+              "tv": 0.0027715847827494144,
+              "level": 6
+            },
+            {
+              "tv": 0.0024650022387504578,
+              "level": 6
+            },
+            {
+              "tv": 0.0029453220777213573,
+              "level": 6
+            },
+            {
+              "tv": 0.0027715852484107018,
+              "level": 6
+            },
+            {
+              "tv": 0.002465000841766596,
+              "level": 6
+            },
+            {
+              "tv": 0.0029453355818986893,
+              "level": 6
+            },
+            {
+              "tv": 0.0019523861119523644,
+              "level": 6
+            },
+            {
+              "tv": 0.0029453355818986893,
+              "level": 6
+            }
+          ],
+          "causal_consumption": [],
+          "pre_contact_effects": [
+            {
+              "rate": 0.0,
+              "level": 1
+            },
+            {
+              "rate": 0.0,
+              "level": 1
+            },
+            {
+              "rate": 0.0,
+              "level": 1
+            },
+            {
+              "rate": 0.0,
+              "level": 1
+            },
+            {
+              "rate": 0.0,
+              "level": 6
+            },
+            {
+              "rate": 0.0,
+              "level": 6
+            },
+            {
+              "rate": 0.0,
+              "level": 6
+            },
+            {
+              "rate": 0.0,
+              "level": 6
+            },
+            {
+              "rate": 0.0,
+              "level": 6
+            },
+            {
+              "rate": 0.0,
+              "level": 6
+            },
+            {
+              "rate": 0.0,
+              "level": 6
+            },
+            {
+              "rate": 0.0,
+              "level": 6
+            }
+          ],
+          "timing_errors": [],
+          "timing_misses": 0,
+          "timing_contacts": 0,
+          "by_cell": {
+            "1->-1": [
+              {
+                "level": 1,
+                "contact_found": false
+              },
+              {
+                "level": 1,
+                "contact_found": false
+              },
+              {
+                "level": 1,
+                "contact_found": false
+              },
+              {
+                "level": 1,
+                "contact_found": false
+              },
+              {
+                "level": 6,
+                "contact_found": false
+              },
+              {
+                "level": 6,
+                "contact_found": false
+              },
+              {
+                "level": 6,
+                "contact_found": false
+              },
+              {
+                "level": 6,
+                "contact_found": false
+              },
+              {
+                "level": 6,
+                "contact_found": false
+              },
+              {
+                "level": 6,
+                "contact_found": false
+              },
+              {
+                "level": 6,
+                "contact_found": false
+              },
+              {
+                "level": 6,
+                "contact_found": false
+              }
+            ]
+          },
+          "by_level": {
+            "1": [
+              {
+                "target_handle": 1,
+                "contact_found": false
+              },
+              {
+                "target_handle": 1,
+                "contact_found": false
+              },
+              {
+                "target_handle": 1,
+                "contact_found": false
+              },
+              {
+                "target_handle": 1,
+                "contact_found": false
+              }
+            ],
+            "6": [
+              {
+                "target_handle": 1,
+                "contact_found": false
+              },
+              {
+                "target_handle": 1,
+                "contact_found": false
+              },
+              {
+                "target_handle": 1,
+                "contact_found": false
+              },
+              {
+                "target_handle": 1,
+                "contact_found": false
+              },
+              {
+                "target_handle": 1,
+                "contact_found": false
+              },
+              {
+                "target_handle": 1,
+                "contact_found": false
+              },
+              {
+                "target_handle": 1,
+                "contact_found": false
+              },
+              {
+                "target_handle": 1,
+                "contact_found": false
+              }
+            ]
+          }
+        },
+        "handle_2": {
+          "n_pairs": 5,
+          "patch_integrity": [
+            {
+              "tv": 0.002161342417821288,
+              "level": 5
+            },
+            {
+              "tv": 0.000795255065895617,
+              "level": 1
+            },
+            {
+              "tv": 0.0005169737851247191,
+              "level": 1
+            },
+            {
+              "tv": 0.0009926542406901717,
+              "level": 6
+            },
+            {
+              "tv": 0.0017700314056128263,
+              "level": 4
+            }
+          ],
+          "causal_consumption": [],
+          "pre_contact_effects": [
+            {
+              "rate": 0.0,
+              "level": 5
+            },
+            {
+              "rate": 0.0,
+              "level": 1
+            },
+            {
+              "rate": 0.0,
+              "level": 1
+            },
+            {
+              "rate": 0.0,
+              "level": 6
+            },
+            {
+              "rate": 0.0,
+              "level": 4
+            }
+          ],
+          "timing_errors": [],
+          "timing_misses": 0,
+          "timing_contacts": 0,
+          "by_cell": {
+            "2->-1": [
+              {
+                "level": 5,
+                "contact_found": false
+              },
+              {
+                "level": 1,
+                "contact_found": false
+              },
+              {
+                "level": 1,
+                "contact_found": false
+              },
+              {
+                "level": 6,
+                "contact_found": false
+              },
+              {
+                "level": 4,
+                "contact_found": false
+              }
+            ]
+          },
+          "by_level": {
+            "5": [
+              {
+                "target_handle": 2,
+                "contact_found": false
+              }
+            ],
+            "1": [
+              {
+                "target_handle": 2,
+                "contact_found": false
+              },
+              {
+                "target_handle": 2,
+                "contact_found": false
+              }
+            ],
+            "6": [
+              {
+                "target_handle": 2,
+                "contact_found": false
+              }
+            ],
+            "4": [
+              {
+                "target_handle": 2,
+                "contact_found": false
+              }
+            ]
+          }
+        },
+        "handle_3": {
+          "n_pairs": 8,
+          "patch_integrity": [
+            {
+              "tv": 0.002182642463594675,
+              "level": 5
+            },
+            {
+              "tv": 0.0019516699248924851,
+              "level": 5
+            },
+            {
+              "tv": 0.0005413790931925178,
+              "level": 7
+            },
+            {
+              "tv": 0.0008244350319728255,
+              "level": 1
+            },
+            {
+              "tv": 0.0008244408527389169,
+              "level": 1
+            },
+            {
+              "tv": 0.0008977411198429763,
+              "level": 0
+            },
+            {
+              "tv": 0.0008137216791510582,
+              "level": 4
+            },
+            {
+              "tv": 0.0008393639582209289,
+              "level": 4
+            }
+          ],
+          "causal_consumption": [],
+          "pre_contact_effects": [
+            {
+              "rate": 0.0,
+              "level": 5
+            },
+            {
+              "rate": 0.0,
+              "level": 5
+            },
+            {
+              "rate": 0.0,
+              "level": 7
+            },
+            {
+              "rate": 0.0,
+              "level": 1
+            },
+            {
+              "rate": 0.0,
+              "level": 1
+            },
+            {
+              "rate": 0.0,
+              "level": 0
+            },
+            {
+              "rate": 0.0,
+              "level": 4
+            },
+            {
+              "rate": 0.0,
+              "level": 4
+            }
+          ],
+          "timing_errors": [],
+          "timing_misses": 0,
+          "timing_contacts": 0,
+          "by_cell": {
+            "3->-1": [
+              {
+                "level": 5,
+                "contact_found": false
+              },
+              {
+                "level": 5,
+                "contact_found": false
+              },
+              {
+                "level": 7,
+                "contact_found": false
+              },
+              {
+                "level": 1,
+                "contact_found": false
+              },
+              {
+                "level": 1,
+                "contact_found": false
+              },
+              {
+                "level": 0,
+                "contact_found": false
+              },
+              {
+                "level": 4,
+                "contact_found": false
+              },
+              {
+                "level": 4,
+                "contact_found": false
+              }
+            ]
+          },
+          "by_level": {
+            "5": [
+              {
+                "target_handle": 3,
+                "contact_found": false
+              },
+              {
+                "target_handle": 3,
+                "contact_found": false
+              }
+            ],
+            "7": [
+              {
+                "target_handle": 3,
+                "contact_found": false
+              }
+            ],
+            "1": [
+              {
+                "target_handle": 3,
+                "contact_found": false
+              },
+              {
+                "target_handle": 3,
+                "contact_found": false
+              }
+            ],
+            "0": [
+              {
+                "target_handle": 3,
+                "contact_found": false
+              }
+            ],
+            "4": [
+              {
+                "target_handle": 3,
+                "contact_found": false
+              },
+              {
+                "target_handle": 3,
+                "contact_found": false
+              }
+            ]
+          }
+        },
+        "handle_4": {
+          "n_pairs": 9,
+          "patch_integrity": [
+            {
+              "tv": 0.0018909464124590158,
+              "level": 1
+            },
+            {
+              "tv": 0.0018909464124590158,
+              "level": 1
+            },
+            {
+              "tv": 0.0019519526977092028,
+              "level": 5
+            },
+            {
+              "tv": 0.0006515443092212081,
+              "level": 5
+            },
+            {
+              "tv": 0.0022308817133307457,
+              "level": 5
+            },
+            {
+              "tv": 0.0022308817133307457,
+              "level": 5
+            },
+            {
+              "tv": 0.0010324157774448395,
+              "level": 6
+            },
+            {
+              "tv": 0.001199694350361824,
+              "level": 6
+            },
+            {
+              "tv": 0.0006251974264159799,
+              "level": 4
+            }
+          ],
+          "causal_consumption": [],
+          "pre_contact_effects": [
+            {
+              "rate": 0.0,
+              "level": 1
+            },
+            {
+              "rate": 0.0,
+              "level": 1
+            },
+            {
+              "rate": 0.0,
+              "level": 5
+            },
+            {
+              "rate": 0.0,
+              "level": 5
+            },
+            {
+              "rate": 0.0,
+              "level": 5
+            },
+            {
+              "rate": 0.0,
+              "level": 5
+            },
+            {
+              "rate": 0.0,
+              "level": 6
+            },
+            {
+              "rate": 0.0,
+              "level": 6
+            },
+            {
+              "rate": 0.0,
+              "level": 4
+            }
+          ],
+          "timing_errors": [],
+          "timing_misses": 0,
+          "timing_contacts": 0,
+          "by_cell": {
+            "4->-1": [
+              {
+                "level": 1,
+                "contact_found": false
+              },
+              {
+                "level": 1,
+                "contact_found": false
+              },
+              {
+                "level": 5,
+                "contact_found": false
+              },
+              {
+                "level": 5,
+                "contact_found": false
+              },
+              {
+                "level": 5,
+                "contact_found": false
+              },
+              {
+                "level": 5,
+                "contact_found": false
+              },
+              {
+                "level": 6,
+                "contact_found": false
+              },
+              {
+                "level": 6,
+                "contact_found": false
+              },
+              {
+                "level": 4,
+                "contact_found": false
+              }
+            ]
+          },
+          "by_level": {
+            "1": [
+              {
+                "target_handle": 4,
+                "contact_found": false
+              },
+              {
+                "target_handle": 4,
+                "contact_found": false
+              }
+            ],
+            "5": [
+              {
+                "target_handle": 4,
+                "contact_found": false
+              },
+              {
+                "target_handle": 4,
+                "contact_found": false
+              },
+              {
+                "target_handle": 4,
+                "contact_found": false
+              },
+              {
+                "target_handle": 4,
+                "contact_found": false
+              }
+            ],
+            "6": [
+              {
+                "target_handle": 4,
+                "contact_found": false
+              },
+              {
+                "target_handle": 4,
+                "contact_found": false
+              }
+            ],
+            "4": [
+              {
+                "target_handle": 4,
+                "contact_found": false
+              }
+            ]
+          }
+        }
+      },
+      "n_pairs_total": 1
+    },
+    "composition": {
+      "single_lock_activation_rate": null,
+      "double_lock_activation_rate": null,
+      "n_tested": 0
+    }
+  },
+  "sparse_slots": {
+    "n_params": 19511,
+    "training": {
+      "train_losses": [
+        2.7087488174438477,
+        2.527206063270569,
+        2.35228955745697,
+        2.182473659515381,
+        2.021919846534729,
+        1.8778075575828552,
+        1.7586804628372192,
+        1.6703336834907532,
+        1.6147701740264893,
+        1.5864947438240051,
+        1.568678379058838,
+        1.5480337738990784,
+        1.5224809646606445,
+        1.494407832622528,
+        1.466074287891388
+      ],
+      "val_losses": [
+        2.589573860168457,
+        2.4094319343566895,
+        2.235711097717285,
+        2.07028865814209,
+        1.9190776348114014,
+        1.7899905443191528,
+        1.6892986297607422,
+        1.6205451488494873,
+        1.5823395252227783,
+        1.5610458850860596,
+        1.5401891469955444,
+        1.5150141716003418,
+        1.4874379634857178,
+        1.4595788717269897,
+        1.4322917461395264
+      ],
+      "best_val_loss": 1.4322917461395264
+    },
+    "prediction": {
+      "event_macro_f1": 0.24310085298544906,
+      "status_accuracy": 0.8405482426380785,
+      "status_macro_f1": 0.3044557497112242,
+      "n_event_samples": 3072,
+      "n_status_samples": 7369,
+      "level_ids": [
+        2000,
+        2001,
+        2002,
+        2003
+      ]
+    },
+    "val_prediction": {
+      "event_macro_f1": 0.24357262103505845,
+      "status_accuracy": 0.9112235510579577,
+      "status_macro_f1": 0.3178499799438428,
+      "n_event_samples": 3072,
+      "n_status_samples": 6522,
+      "level_ids": [
+        1000,
+        1001,
+        1002,
+        1003
+      ]
+    },
+    "intervention": {
+      "causal_consumption": [
+        {
+          "correct": 1,
+          "recip_correct": 1,
+          "level": 1,
+          "handle": 0,
+          "cell": [
+            0,
+            2
+          ],
+          "contact_step": 5
+        }
+      ],
+      "pre_contact_effects": [
+        {
+          "rate": 0.0,
+          "level": 5
+        },
+        {
+          "rate": 0.0,
+          "level": 5
+        },
+        {
+          "rate": 0.0,
+          "level": 1
+        },
+        {
+          "rate": 0.0,
+          "level": 1
+        },
+        {
+          "rate": 0.0,
+          "level": 2
+        },
+        {
+          "rate": 0.0,
+          "level": 2
+        },
+        {
+          "rate": 0.0,
+          "level": 2
+        },
+        {
+          "rate": 0.0,
+          "level": 1
+        },
+        {
+          "rate": 0.0,
+          "level": 1
+        },
+        {
+          "rate": 0.0,
+          "level": 1
+        },
+        {
+          "rate": 0.0,
+          "level": 1
+        },
+        {
+          "rate": 0.0,
+          "level": 6
+        },
+        {
+          "rate": 0.0,
+          "level": 6
+        },
+        {
+          "rate": 0.0,
+          "level": 6
+        },
+        {
+          "rate": 0.0,
+          "level": 6
+        },
+        {
+          "rate": 0.0,
+          "level": 6
+        },
+        {
+          "rate": 0.0,
+          "level": 6
+        },
+        {
+          "rate": 0.0,
+          "level": 6
+        },
+        {
+          "rate": 0.0,
+          "level": 6
+        },
+        {
+          "rate": 0.0,
+          "level": 5
+        },
+        {
+          "rate": 0.0,
+          "level": 1
+        },
+        {
+          "rate": 0.0,
+          "level": 1
+        },
+        {
+          "rate": 0.0,
+          "level": 6
+        },
+        {
+          "rate": 0.0,
+          "level": 4
+        },
+        {
+          "rate": 0.0,
+          "level": 5
+        },
+        {
+          "rate": 0.0,
+          "level": 5
+        },
+        {
+          "rate": 0.0,
+          "level": 7
+        },
+        {
+          "rate": 0.0,
+          "level": 1
+        },
+        {
+          "rate": 0.0,
+          "level": 1
+        },
+        {
+          "rate": 0.0,
+          "level": 0
+        },
+        {
+          "rate": 0.0,
+          "level": 4
+        },
+        {
+          "rate": 0.0,
+          "level": 4
+        },
+        {
+          "rate": 0.0,
+          "level": 1
+        },
+        {
+          "rate": 0.0,
+          "level": 1
+        },
+        {
+          "rate": 0.0,
+          "level": 5
+        },
+        {
+          "rate": 0.0,
+          "level": 5
+        },
+        {
+          "rate": 0.0,
+          "level": 5
+        },
+        {
+          "rate": 0.0,
+          "level": 5
+        },
+        {
+          "rate": 0.0,
+          "level": 6
+        },
+        {
+          "rate": 0.0,
+          "level": 6
+        },
+        {
+          "rate": 0.0,
+          "level": 4
+        }
+      ],
+      "patch_integrity": [
+        {
+          "tv": 0.0,
+          "level": 5
+        },
+        {
+          "tv": 0.0,
+          "level": 5
+        },
+        {
+          "tv": 0.0,
+          "level": 1
+        },
+        {
+          "tv": 0.002554677426815033,
+          "level": 1
+        },
+        {
+          "tv": 0.0028610392473638058,
+          "level": 2
+        },
+        {
+          "tv": 0.0024922597222030163,
+          "level": 2
+        },
+        {
+          "tv": 0.0014311583945527673,
+          "level": 2
+        },
+        {
+          "tv": 0.003994854632765055,
+          "level": 1
+        },
+        {
+          "tv": 0.0,
+          "level": 1
+        },
+        {
+          "tv": 0.003179043997079134,
+          "level": 1
+        },
+        {
+          "tv": 0.0,
+          "level": 1
+        },
+        {
+          "tv": 0.007828643545508385,
+          "level": 6
+        },
+        {
+          "tv": 0.0067186662927269936,
+          "level": 6
+        },
+        {
+          "tv": 0.008297828026115894,
+          "level": 6
+        },
+        {
+          "tv": 0.007828641682863235,
+          "level": 6
+        },
+        {
+          "tv": 0.006718659307807684,
+          "level": 6
+        },
+        {
+          "tv": 0.008297820575535297,
+          "level": 6
+        },
+        {
+          "tv": 0.0,
+          "level": 6
+        },
+        {
+          "tv": 0.008297820575535297,
+          "level": 6
+        },
+        {
+          "tv": 0.0,
+          "level": 5
+        },
+        {
+          "tv": 0.0023462926037609577,
+          "level": 1
+        },
+        {
+          "tv": 0.0006835054373368621,
+          "level": 1
+        },
+        {
+          "tv": 0.0007723037269897759,
+          "level": 6
+        },
+        {
+          "tv": 0.005464634392410517,
+          "level": 4
+        },
+        {
+          "tv": 0.0017131908098235726,
+          "level": 5
+        },
+        {
+          "tv": 0.0053506591357290745,
+          "level": 5
+        },
+        {
+          "tv": 0.0,
+          "level": 7
+        },
+        {
+          "tv": 0.00198605889454484,
+          "level": 1
+        },
+        {
+          "tv": 0.0019860579632222652,
+          "level": 1
+        },
+        {
+          "tv": 0.0026413609739392996,
+          "level": 0
+        },
+        {
+          "tv": 0.0023642440792173147,
+          "level": 4
+        },
+        {
+          "tv": 0.0005951073253527284,
+          "level": 4
+        },
+        {
+          "tv": 0.0,
+          "level": 1
+        },
+        {
+          "tv": 0.0,
+          "level": 1
+        },
+        {
+          "tv": 0.0051267268136143684,
+          "level": 5
+        },
+        {
+          "tv": 0.000388510525226593,
+          "level": 5
+        },
+        {
+          "tv": 0.006398300640285015,
+          "level": 5
+        },
+        {
+          "tv": 0.006398300640285015,
+          "level": 5
+        },
+        {
+          "tv": 0.0005476603400893509,
+          "level": 6
+        },
+        {
+          "tv": 0.0005575006944127381,
+          "level": 6
+        },
+        {
+          "tv": 0.0005206262576393783,
+          "level": 4
+        }
+      ],
+      "timing_errors": [
+        20
+      ],
+      "timing_misses": 1,
+      "timing_contacts": 1,
+      "per_handle": {
+        "handle_0": {
+          "n_pairs": 7,
+          "patch_integrity": [
+            {
+              "tv": 0.0,
+              "level": 5
+            },
+            {
+              "tv": 0.0,
+              "level": 5
+            },
+            {
+              "tv": 0.0,
+              "level": 1
+            },
+            {
+              "tv": 0.002554677426815033,
+              "level": 1
+            },
+            {
+              "tv": 0.0028610392473638058,
+              "level": 2
+            },
+            {
+              "tv": 0.0024922597222030163,
+              "level": 2
+            },
+            {
+              "tv": 0.0014311583945527673,
+              "level": 2
+            }
+          ],
+          "causal_consumption": [
+            {
+              "correct": 1,
+              "recip_correct": 1,
+              "level": 1,
+              "handle": 0,
+              "cell": [
+                0,
+                2
+              ],
+              "contact_step": 5
+            }
+          ],
+          "pre_contact_effects": [
+            {
+              "rate": 0.0,
+              "level": 5
+            },
+            {
+              "rate": 0.0,
+              "level": 5
+            },
+            {
+              "rate": 0.0,
+              "level": 1
+            },
+            {
+              "rate": 0.0,
+              "level": 1
+            },
+            {
+              "rate": 0.0,
+              "level": 2
+            },
+            {
+              "rate": 0.0,
+              "level": 2
+            },
+            {
+              "rate": 0.0,
+              "level": 2
+            }
+          ],
+          "timing_errors": [
+            20
+          ],
+          "timing_misses": 1,
+          "timing_contacts": 1,
+          "by_cell": {
+            "0->-1": [
+              {
+                "level": 5,
+                "contact_found": false
+              },
+              {
+                "level": 5,
+                "contact_found": false
+              },
+              {
+                "level": 1,
+                "contact_found": false
+              },
+              {
+                "level": 2,
+                "contact_found": false
+              },
+              {
+                "level": 2,
+                "contact_found": false
+              },
+              {
+                "level": 2,
+                "contact_found": false
+              }
+            ],
+            "0->2": [
+              {
+                "level": 1,
+                "contact_found": true
+              }
+            ]
+          },
+          "by_level": {
+            "5": [
+              {
+                "target_handle": 0,
+                "contact_found": false
+              },
+              {
+                "target_handle": 0,
+                "contact_found": false
+              }
+            ],
+            "1": [
+              {
+                "target_handle": 0,
+                "contact_found": true
+              },
+              {
+                "target_handle": 0,
+                "contact_found": false
+              }
+            ],
+            "2": [
+              {
+                "target_handle": 0,
+                "contact_found": false
+              },
+              {
+                "target_handle": 0,
+                "contact_found": false
+              },
+              {
+                "target_handle": 0,
+                "contact_found": false
+              }
+            ]
+          }
+        },
+        "handle_1": {
+          "n_pairs": 12,
+          "patch_integrity": [
+            {
+              "tv": 0.003994854632765055,
+              "level": 1
+            },
+            {
+              "tv": 0.0,
+              "level": 1
+            },
+            {
+              "tv": 0.003179043997079134,
+              "level": 1
+            },
+            {
+              "tv": 0.0,
+              "level": 1
+            },
+            {
+              "tv": 0.007828643545508385,
+              "level": 6
+            },
+            {
+              "tv": 0.0067186662927269936,
+              "level": 6
+            },
+            {
+              "tv": 0.008297828026115894,
+              "level": 6
+            },
+            {
+              "tv": 0.007828641682863235,
+              "level": 6
+            },
+            {
+              "tv": 0.006718659307807684,
+              "level": 6
+            },
+            {
+              "tv": 0.008297820575535297,
+              "level": 6
+            },
+            {
+              "tv": 0.0,
+              "level": 6
+            },
+            {
+              "tv": 0.008297820575535297,
+              "level": 6
+            }
+          ],
+          "causal_consumption": [],
+          "pre_contact_effects": [
+            {
+              "rate": 0.0,
+              "level": 1
+            },
+            {
+              "rate": 0.0,
+              "level": 1
+            },
+            {
+              "rate": 0.0,
+              "level": 1
+            },
+            {
+              "rate": 0.0,
+              "level": 1
+            },
+            {
+              "rate": 0.0,
+              "level": 6
+            },
+            {
+              "rate": 0.0,
+              "level": 6
+            },
+            {
+              "rate": 0.0,
+              "level": 6
+            },
+            {
+              "rate": 0.0,
+              "level": 6
+            },
+            {
+              "rate": 0.0,
+              "level": 6
+            },
+            {
+              "rate": 0.0,
+              "level": 6
+            },
+            {
+              "rate": 0.0,
+              "level": 6
+            },
+            {
+              "rate": 0.0,
+              "level": 6
+            }
+          ],
+          "timing_errors": [],
+          "timing_misses": 0,
+          "timing_contacts": 0,
+          "by_cell": {
+            "1->-1": [
+              {
+                "level": 1,
+                "contact_found": false
+              },
+              {
+                "level": 1,
+                "contact_found": false
+              },
+              {
+                "level": 1,
+                "contact_found": false
+              },
+              {
+                "level": 1,
+                "contact_found": false
+              },
+              {
+                "level": 6,
+                "contact_found": false
+              },
+              {
+                "level": 6,
+                "contact_found": false
+              },
+              {
+                "level": 6,
+                "contact_found": false
+              },
+              {
+                "level": 6,
+                "contact_found": false
+              },
+              {
+                "level": 6,
+                "contact_found": false
+              },
+              {
+                "level": 6,
+                "contact_found": false
+              },
+              {
+                "level": 6,
+                "contact_found": false
+              },
+              {
+                "level": 6,
+                "contact_found": false
+              }
+            ]
+          },
+          "by_level": {
+            "1": [
+              {
+                "target_handle": 1,
+                "contact_found": false
+              },
+              {
+                "target_handle": 1,
+                "contact_found": false
+              },
+              {
+                "target_handle": 1,
+                "contact_found": false
+              },
+              {
+                "target_handle": 1,
+                "contact_found": false
+              }
+            ],
+            "6": [
+              {
+                "target_handle": 1,
+                "contact_found": false
+              },
+              {
+                "target_handle": 1,
+                "contact_found": false
+              },
+              {
+                "target_handle": 1,
+                "contact_found": false
+              },
+              {
+                "target_handle": 1,
+                "contact_found": false
+              },
+              {
+                "target_handle": 1,
+                "contact_found": false
+              },
+              {
+                "target_handle": 1,
+                "contact_found": false
+              },
+              {
+                "target_handle": 1,
+                "contact_found": false
+              },
+              {
+                "target_handle": 1,
+                "contact_found": false
+              }
+            ]
+          }
+        },
+        "handle_2": {
+          "n_pairs": 5,
+          "patch_integrity": [
+            {
+              "tv": 0.0,
+              "level": 5
+            },
+            {
+              "tv": 0.0023462926037609577,
+              "level": 1
+            },
+            {
+              "tv": 0.0006835054373368621,
+              "level": 1
+            },
+            {
+              "tv": 0.0007723037269897759,
+              "level": 6
+            },
+            {
+              "tv": 0.005464634392410517,
+              "level": 4
+            }
+          ],
+          "causal_consumption": [],
+          "pre_contact_effects": [
+            {
+              "rate": 0.0,
+              "level": 5
+            },
+            {
+              "rate": 0.0,
+              "level": 1
+            },
+            {
+              "rate": 0.0,
+              "level": 1
+            },
+            {
+              "rate": 0.0,
+              "level": 6
+            },
+            {
+              "rate": 0.0,
+              "level": 4
+            }
+          ],
+          "timing_errors": [],
+          "timing_misses": 0,
+          "timing_contacts": 0,
+          "by_cell": {
+            "2->-1": [
+              {
+                "level": 5,
+                "contact_found": false
+              },
+              {
+                "level": 1,
+                "contact_found": false
+              },
+              {
+                "level": 1,
+                "contact_found": false
+              },
+              {
+                "level": 6,
+                "contact_found": false
+              },
+              {
+                "level": 4,
+                "contact_found": false
+              }
+            ]
+          },
+          "by_level": {
+            "5": [
+              {
+                "target_handle": 2,
+                "contact_found": false
+              }
+            ],
+            "1": [
+              {
+                "target_handle": 2,
+                "contact_found": false
+              },
+              {
+                "target_handle": 2,
+                "contact_found": false
+              }
+            ],
+            "6": [
+              {
+                "target_handle": 2,
+                "contact_found": false
+              }
+            ],
+            "4": [
+              {
+                "target_handle": 2,
+                "contact_found": false
+              }
+            ]
+          }
+        },
+        "handle_3": {
+          "n_pairs": 8,
+          "patch_integrity": [
+            {
+              "tv": 0.0017131908098235726,
+              "level": 5
+            },
+            {
+              "tv": 0.0053506591357290745,
+              "level": 5
+            },
+            {
+              "tv": 0.0,
+              "level": 7
+            },
+            {
+              "tv": 0.00198605889454484,
+              "level": 1
+            },
+            {
+              "tv": 0.0019860579632222652,
+              "level": 1
+            },
+            {
+              "tv": 0.0026413609739392996,
+              "level": 0
+            },
+            {
+              "tv": 0.0023642440792173147,
+              "level": 4
+            },
+            {
+              "tv": 0.0005951073253527284,
+              "level": 4
+            }
+          ],
+          "causal_consumption": [],
+          "pre_contact_effects": [
+            {
+              "rate": 0.0,
+              "level": 5
+            },
+            {
+              "rate": 0.0,
+              "level": 5
+            },
+            {
+              "rate": 0.0,
+              "level": 7
+            },
+            {
+              "rate": 0.0,
+              "level": 1
+            },
+            {
+              "rate": 0.0,
+              "level": 1
+            },
+            {
+              "rate": 0.0,
+              "level": 0
+            },
+            {
+              "rate": 0.0,
+              "level": 4
+            },
+            {
+              "rate": 0.0,
+              "level": 4
+            }
+          ],
+          "timing_errors": [],
+          "timing_misses": 0,
+          "timing_contacts": 0,
+          "by_cell": {
+            "3->-1": [
+              {
+                "level": 5,
+                "contact_found": false
+              },
+              {
+                "level": 5,
+                "contact_found": false
+              },
+              {
+                "level": 7,
+                "contact_found": false
+              },
+              {
+                "level": 1,
+                "contact_found": false
+              },
+              {
+                "level": 1,
+                "contact_found": false
+              },
+              {
+                "level": 0,
+                "contact_found": false
+              },
+              {
+                "level": 4,
+                "contact_found": false
+              },
+              {
+                "level": 4,
+                "contact_found": false
+              }
+            ]
+          },
+          "by_level": {
+            "5": [
+              {
+                "target_handle": 3,
+                "contact_found": false
+              },
+              {
+                "target_handle": 3,
+                "contact_found": false
+              }
+            ],
+            "7": [
+              {
+                "target_handle": 3,
+                "contact_found": false
+              }
+            ],
+            "1": [
+              {
+                "target_handle": 3,
+                "contact_found": false
+              },
+              {
+                "target_handle": 3,
+                "contact_found": false
+              }
+            ],
+            "0": [
+              {
+                "target_handle": 3,
+                "contact_found": false
+              }
+            ],
+            "4": [
+              {
+                "target_handle": 3,
+                "contact_found": false
+              },
+              {
+                "target_handle": 3,
+                "contact_found": false
+              }
+            ]
+          }
+        },
+        "handle_4": {
+          "n_pairs": 9,
+          "patch_integrity": [
+            {
+              "tv": 0.0,
+              "level": 1
+            },
+            {
+              "tv": 0.0,
+              "level": 1
+            },
+            {
+              "tv": 0.0051267268136143684,
+              "level": 5
+            },
+            {
+              "tv": 0.000388510525226593,
+              "level": 5
+            },
+            {
+              "tv": 0.006398300640285015,
+              "level": 5
+            },
+            {
+              "tv": 0.006398300640285015,
+              "level": 5
+            },
+            {
+              "tv": 0.0005476603400893509,
+              "level": 6
+            },
+            {
+              "tv": 0.0005575006944127381,
+              "level": 6
+            },
+            {
+              "tv": 0.0005206262576393783,
+              "level": 4
+            }
+          ],
+          "causal_consumption": [],
+          "pre_contact_effects": [
+            {
+              "rate": 0.0,
+              "level": 1
+            },
+            {
+              "rate": 0.0,
+              "level": 1
+            },
+            {
+              "rate": 0.0,
+              "level": 5
+            },
+            {
+              "rate": 0.0,
+              "level": 5
+            },
+            {
+              "rate": 0.0,
+              "level": 5
+            },
+            {
+              "rate": 0.0,
+              "level": 5
+            },
+            {
+              "rate": 0.0,
+              "level": 6
+            },
+            {
+              "rate": 0.0,
+              "level": 6
+            },
+            {
+              "rate": 0.0,
+              "level": 4
+            }
+          ],
+          "timing_errors": [],
+          "timing_misses": 0,
+          "timing_contacts": 0,
+          "by_cell": {
+            "4->-1": [
+              {
+                "level": 1,
+                "contact_found": false
+              },
+              {
+                "level": 1,
+                "contact_found": false
+              },
+              {
+                "level": 5,
+                "contact_found": false
+              },
+              {
+                "level": 5,
+                "contact_found": false
+              },
+              {
+                "level": 5,
+                "contact_found": false
+              },
+              {
+                "level": 5,
+                "contact_found": false
+              },
+              {
+                "level": 6,
+                "contact_found": false
+              },
+              {
+                "level": 6,
+                "contact_found": false
+              },
+              {
+                "level": 4,
+                "contact_found": false
+              }
+            ]
+          },
+          "by_level": {
+            "1": [
+              {
+                "target_handle": 4,
+                "contact_found": false
+              },
+              {
+                "target_handle": 4,
+                "contact_found": false
+              }
+            ],
+            "5": [
+              {
+                "target_handle": 4,
+                "contact_found": false
+              },
+              {
+                "target_handle": 4,
+                "contact_found": false
+              },
+              {
+                "target_handle": 4,
+                "contact_found": false
+              },
+              {
+                "target_handle": 4,
+                "contact_found": false
+              }
+            ],
+            "6": [
+              {
+                "target_handle": 4,
+                "contact_found": false
+              },
+              {
+                "target_handle": 4,
+                "contact_found": false
+              }
+            ],
+            "4": [
+              {
+                "target_handle": 4,
+                "contact_found": false
+              }
+            ]
+          }
+        }
+      },
+      "n_pairs_total": 1
+    },
+    "composition": {
+      "single_lock_activation_rate": null,
+      "double_lock_activation_rate": null,
+      "n_tested": 0
+    }
+  },
+  "flat_gru": {
+    "n_params": 18574,
+    "training": {
+      "train_losses": [
+        2.640221357345581,
+        2.6275124549865723,
+        2.61535906791687,
+        2.603733777999878,
+        2.5925623178482056,
+        2.5816996097564697,
+        2.570941925048828,
+        2.560129404067993,
+        2.5491182804107666,
+        2.537822961807251,
+        2.5261446237564087,
+        2.514029383659363,
+        2.501400589942932,
+        2.488178253173828,
+        2.474271059036255
+      ],
+      "val_losses": [
+        2.626749038696289,
+        2.6142189502716064,
+        2.6023001670837402,
+        2.590902090072632,
+        2.579843044281006,
+        2.5688910484313965,
+        2.557917594909668,
+        2.5467801094055176,
+        2.5353798866271973,
+        2.523615837097168,
+        2.511404514312744,
+        2.4986748695373535,
+        2.4853079319000244,
+        2.4712209701538086,
+        2.456355571746826
+      ],
+      "best_val_loss": 2.456355571746826
+    },
+    "prediction": {
+      "event_macro_f1": 0.24310085298544906,
+      "status_accuracy": 0.534400868503189,
+      "status_macro_f1": 0.23941402526771274,
+      "n_event_samples": 3072,
+      "n_status_samples": 7369,
+      "level_ids": [
+        2000,
+        2001,
+        2002,
+        2003
+      ]
+    },
+    "val_prediction": {
+      "event_macro_f1": 0.24357262103505845,
+      "status_accuracy": 0.5875498313400798,
+      "status_macro_f1": 0.22525058241051535,
+      "n_event_samples": 3072,
+      "n_status_samples": 6522,
+      "level_ids": [
+        1000,
+        1001,
+        1002,
+        1003
+      ]
+    }
+  },
+  "historyless": {
+    "n_params": 13175,
+    "training": {
+      "train_losses": [
+        2.992637515068054,
+        2.8132606744766235,
+        2.6474143266677856,
+        2.4943034648895264,
+        2.352893590927124,
+        2.2232929468154907,
+        2.1058223247528076,
+        2.0003151893615723,
+        1.9057742357254028,
+        1.8220080137252808,
+        1.7483747601509094,
+        1.682979702949524,
+        1.6249451041221619,
+        1.5738528370857239,
+        1.5287118554115295
+      ],
+      "val_losses": [
+        2.8857827186584473,
+        2.715611457824707,
+        2.55820894241333,
+        2.4125657081604004,
+        2.2785191535949707,
+        2.156224489212036,
+        2.046111583709717,
+        1.9468848705291748,
+        1.858158826828003,
+        1.7799549102783203,
+        1.7103455066680908,
+        1.6483243703842163,
+        1.5935667753219604,
+        1.545428991317749,
+        1.5022127628326416
+      ],
+      "best_val_loss": 1.5022127628326416
+    },
+    "prediction": {
+      "event_macro_f1": 0.24310085298544906,
+      "status_accuracy": 0.5319582032840277,
+      "status_macro_f1": 0.26987194226924033,
+      "n_event_samples": 3072,
+      "n_status_samples": 7369,
+      "level_ids": [
+        2000,
+        2001,
+        2002,
+        2003
+      ]
+    },
+    "val_prediction": {
+      "event_macro_f1": 0.24357262103505845,
+      "status_accuracy": 0.5806501073290402,
+      "status_macro_f1": 0.2646317793860133,
+      "n_event_samples": 3072,
+      "n_status_samples": 6522,
+      "level_ids": [
+        1000,
+        1001,
+        1002,
+        1003
+      ]
+    }
+  },
+  "control_b_ladder": {
+    "control_b_w30": {
+      "n_params": 19133,
+      "training": {
+        "train_losses": [
+          2.6677870750427246,
+          2.6115338802337646,
+          2.5568037033081055,
+          2.5051971673965454,
+          2.4565980434417725,
+          2.410458564758301,
+          2.365995168685913,
+          2.322848081588745,
+          2.280837059020996,
+          2.2396609783172607,
+          2.199084520339966,
+          2.1589611768722534,
+          2.1192188262939453,
+          2.0797442197799683,
+          2.0404950380325317
+        ],
+        "val_losses": [
+          2.627079486846924,
+          2.5715768337249756,
+          2.519050121307373,
+          2.469744920730591,
+          2.4225566387176514,
+          2.37728214263916,
+          2.333448886871338,
+          2.2909297943115234,
+          2.249350070953369,
+          2.2084076404571533,
+          2.167903184890747,
+          2.1277782917022705,
+          2.087921142578125,
+          2.048269271850586,
+          2.0088069438934326
+        ],
+        "best_val_loss": 2.0088069438934326
+      },
+      "prediction": {
+        "event_macro_f1": 0.24310085298544906,
+        "status_accuracy": 0.8405482426380785,
+        "status_macro_f1": 0.3044557497112242,
+        "n_event_samples": 3072,
+        "n_status_samples": 7369,
+        "level_ids": [
+          2000,
+          2001,
+          2002,
+          2003
+        ]
+      },
+      "val_prediction": {
+        "event_macro_f1": 0.24357262103505845,
+        "status_accuracy": 0.9107635694572217,
+        "status_macro_f1": 0.3177660086663457,
+        "n_event_samples": 3072,
+        "n_status_samples": 6522,
+        "level_ids": [
+          1000,
+          1001,
+          1002,
+          1003
+        ]
+      },
+      "width": 30,
+      "qualifies": false
+    },
+    "control_b_w96": {
+      "n_params": 181559,
+      "training": {
+        "train_losses": [
+          2.591928720474243,
+          2.38316810131073,
+          2.1881879568099976,
+          2.0040223598480225,
+          1.8323753476142883,
+          1.6754204630851746,
+          1.5374242663383484,
+          1.420958936214447,
+          1.3257396817207336,
+          1.2503727674484253,
+          1.1937109231948853,
+          1.1552665829658508,
+          1.1328760385513306,
+          1.1224417686462402,
+          1.118689477443695
+        ],
+        "val_losses": [
+          2.4339075088500977,
+          2.2367496490478516,
+          2.0491981506347656,
+          1.8731377124786377,
+          1.7106038331985474,
+          1.5660653114318848,
+          1.443145513534546,
+          1.3417906761169434,
+          1.2605658769607544,
+          1.197828769683838,
+          1.1532031297683716,
+          1.1252079010009766,
+          1.110406517982483,
+          1.103917121887207,
+          1.1008895635604858
+        ],
+        "best_val_loss": 1.1008895635604858
+      },
+      "prediction": {
+        "event_macro_f1": 0.24310085298544906,
+        "status_accuracy": 0.8405482426380785,
+        "status_macro_f1": 0.3044557497112242,
+        "n_event_samples": 3072,
+        "n_status_samples": 7369,
+        "level_ids": [
+          2000,
+          2001,
+          2002,
+          2003
+        ]
+      },
+      "val_prediction": {
+        "event_macro_f1": 0.24357262103505845,
+        "status_accuracy": 0.9112235510579577,
+        "status_macro_f1": 0.3178499799438428,
+        "n_event_samples": 3072,
+        "n_status_samples": 6522,
+        "level_ids": [
+          1000,
+          1001,
+          1002,
+          1003
+        ]
+      },
+      "width": 96,
+      "qualifies": false
+    },
+    "control_b_w192": {
+      "n_params": 713303,
+      "training": {
+        "train_losses": [
+          2.5898951292037964,
+          2.094658613204956,
+          1.7160459756851196,
+          1.437155544757843,
+          1.2552317380905151,
+          1.1604281663894653,
+          1.1262591481208801,
+          1.1177721619606018,
+          1.1131628155708313,
+          1.1082082390785217,
+          1.102953851222992,
+          1.096027433872223,
+          1.0877651572227478,
+          1.0800586938858032,
+          1.0746772289276123
+        ],
+        "val_losses": [
+          2.20628023147583,
+          1.8033506870269775,
+          1.4984204769134521,
+          1.290061593055725,
+          1.171187400817871,
+          1.1211044788360596,
+          1.1056474447250366,
+          1.09881591796875,
+          1.0934455394744873,
+          1.0898324251174927,
+          1.0857692956924438,
+          1.0800364017486572,
+          1.073580265045166,
+          1.0684236288070679,
+          1.064788579940796
+        ],
+        "best_val_loss": 1.064788579940796
+      },
+      "prediction": {
+        "event_macro_f1": 0.24310085298544906,
+        "status_accuracy": 0.8405482426380785,
+        "status_macro_f1": 0.3044557497112242,
+        "n_event_samples": 3072,
+        "n_status_samples": 7369,
+        "level_ids": [
+          2000,
+          2001,
+          2002,
+          2003
+        ]
+      },
+      "val_prediction": {
+        "event_macro_f1": 0.24357262103505845,
+        "status_accuracy": 0.9112235510579577,
+        "status_macro_f1": 0.3178499799438428,
+        "n_event_samples": 3072,
+        "n_status_samples": 6522,
+        "level_ids": [
+          1000,
+          1001,
+          1002,
+          1003
+        ]
+      },
+      "width": 192,
+      "qualifies": false
+    }
+  },
+  "control_b_selected_width": null,
+  "control_b_selection_method": "no_qualifying_width",
+  "control_b": {
+    "prediction": {
+      "event_macro_f1": 0,
+      "status_macro_f1": 0
+    },
+    "val_prediction": {
+      "event_macro_f1": 0,
+      "status_macro_f1": 0
+    },
+    "no_qualifying_width": true
+  },
+  "gates": {
+    "eligibility": {
+      "oracle_acc": 1.0,
+      "oracle_pass": true,
+      "dense_event_f1": 0.24310085298544906,
+      "dense_status_f1": 0.3044557497112242,
+      "sparse_event_f1": 0.24310085298544906,
+      "sparse_status_f1": 0.3044557497112242,
+      "control_b_event_f1": 0,
+      "control_b_status_f1": 0,
+      "control_b_pass": false,
+      "dense_pass": false,
+      "sparse_pass": false,
+      "recurrent_lift": 0.0,
+      "recurrent_lift_ci_lower": 0.0,
+      "recurrent_lift_ci_upper": 0.0,
+      "recurrent_lift_pass": false,
+      "flat_gru_event_f1": 0.24310085298544906,
+      "overall": false
+    },
+    "patch_integrity": {
+      "mean_tv": 0.001512495281952774,
+      "ub": 0.001615162404066101,
+      "n_pairs": 41,
+      "pass": true
+    },
+    "shielding": {
+      "false_effect_rate": 0.0,
+      "ub": 1.0,
+      "pass": false
+    },
+    "timing": {
+      "median_error": 20.0,
+      "p90_error": 20.0,
+      "miss_rate": 1.0,
+      "pass": false
+    }
+  }
+}
