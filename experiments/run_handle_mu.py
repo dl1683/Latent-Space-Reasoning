@@ -65,7 +65,7 @@ class Config:
     grad_clip: float = 1.0
     event_loss_weight: float = 1.0
 
-    intervention_n_pairs: int = 512
+    intervention_n_pairs: int = 1024
     bootstrap_n: int = 2000
     bootstrap_ci: float = 0.95
 
