@@ -33,6 +33,19 @@ REPO = Path(__file__).resolve().parent.parent
 RESULTS_DIR = REPO / "experiments" / "results" / "handle_mu"
 RESULTS_DIR.mkdir(parents=True, exist_ok=True)
 
+
+class _NumpyEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, (np.bool_,)):
+            return bool(obj)
+        if isinstance(obj, (np.integer,)):
+            return int(obj)
+        if isinstance(obj, (np.floating,)):
+            return float(obj)
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return super().default(obj)
+
 # ---------------------------------------------------------------------------
 # Configuration
 # ---------------------------------------------------------------------------
@@ -2437,7 +2450,7 @@ def main():
         result = ambiguity_preflight(cfg)
         out_path = RESULTS_DIR / "v2_preflight.json"
         with open(out_path, "w") as f:
-            json.dump(result, f, indent=2)
+            json.dump(result, f, indent=2, cls=_NumpyEncoder)
         print(f"\nSaved: {out_path}")
         return
 
@@ -2474,7 +2487,7 @@ def main():
         smoke_prefix = "smoke_" if args.smoke else ""
         out_path = RESULTS_DIR / f"{smoke_prefix}{prefix}seed_{seed}_rung_{cfg.staircase_rung}.json"
         with open(out_path, "w") as f:
-            json.dump(result, f, indent=2, default=str)
+            json.dump(result, f, indent=2, cls=_NumpyEncoder)
         print(f"\nSaved: {out_path}")
 
     elapsed = time.time() - t_start
@@ -2622,7 +2635,7 @@ def main():
     smoke_tag = "smoke_" if is_smoke else ""
     verdict_path = RESULTS_DIR / f"{smoke_tag}{prefix}verdict_rung_{cfg.staircase_rung}.json"
     with open(verdict_path, "w") as f:
-        json.dump(verdict, f, indent=2, default=str)
+        json.dump(verdict, f, indent=2, cls=_NumpyEncoder)
     print(f"\nVerdict saved: {verdict_path}")
     print(f"Total time: {elapsed:.1f}s")
 
