@@ -14,8 +14,9 @@
   "postid_hist_groups": 1411,
   "postid_hist_ambiguous": 0,
   "postid_hist_bayes_ceiling": 1.0,
-  "memory_gap": 0.2343859649122807,
-  "ceiling_note": "PASS uses memory gap (hist - raw) > 0.20 derived from V1 contract (obs<0.75 + hist>0.99 -> gap>0.24, relaxed to 0.20 for raw interface); raw ceiling is exact model interface; canonical is diagnostic",
+  "memory_gap_raw": 0.2343859649122807,
+  "memory_gap_canon": 0.3192982456140351,
+  "ceiling_note": "PASS uses V1 contract: canonical ceiling < 0.75, hist ceiling > 0.99. Raw ceiling (exact model interface) reported as diagnostic per e905. No new thresholds.",
   "cells": {
     "0->0": {
       "unlock": 194,

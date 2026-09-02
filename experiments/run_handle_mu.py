@@ -2332,10 +2332,11 @@ def ambiguity_preflight(cfg: Config, n_levels: int = 16, trajs_per_level: int = 
 
     goal_ok = goal_bank["unready_none"] > 0 and goal_bank["ready_activate"] > 0
 
-    memory_gap = hist_ceil_postid - raw_ceil_postid
+    memory_gap_raw = hist_ceil_postid - raw_ceil_postid
+    memory_gap_canon = hist_ceil_postid - obs_ceil_postid
     passed = (
         total_postid >= 100
-        and memory_gap > 0.20
+        and obs_ceil_postid < 0.75
         and hist_ceil_postid > 0.99
         and cells_ok
         and n_ambig_raw >= 1
@@ -2358,8 +2359,9 @@ def ambiguity_preflight(cfg: Config, n_levels: int = 16, trajs_per_level: int = 
         "postid_hist_groups": len(hist_groups_postid),
         "postid_hist_ambiguous": n_ambig_hist,
         "postid_hist_bayes_ceiling": hist_ceil_postid,
-        "memory_gap": memory_gap,
-        "ceiling_note": "PASS uses memory gap (hist - raw) > 0.20 derived from V1 contract (obs<0.75 + hist>0.99 -> gap>0.24, relaxed to 0.20 for raw interface); raw ceiling is exact model interface; canonical is diagnostic",
+        "memory_gap_raw": memory_gap_raw,
+        "memory_gap_canon": memory_gap_canon,
+        "ceiling_note": "PASS uses V1 contract: canonical ceiling < 0.75, hist ceiling > 0.99. Raw ceiling (exact model interface) reported as diagnostic per e905. No new thresholds.",
         "cells": cell_report,
         "cells_ok": cells_ok,
         "goal_bank": goal_bank,
@@ -2371,9 +2373,10 @@ def ambiguity_preflight(cfg: Config, n_levels: int = 16, trajs_per_level: int = 
     print("\n" + "=" * 60)
     print("V2 AMBIGUITY PREFLIGHT (post-identification)")
     print("=" * 60)
-    print(f"  Post-ID raw ceiling:        {raw_ceil_postid:.4f}  (exact model interface)")
-    print(f"  Post-ID canonical ceiling:  {obs_ceil_postid:.4f}  (diagnostic — sorted carriers)")
-    print(f"  Memory gap (hist - raw):    {memory_gap:.4f}  (need > 0.20, PASS metric)")
+    print(f"  Post-ID canonical ceiling:  {obs_ceil_postid:.4f}  (need < 0.75, V1 contract PASS)")
+    print(f"  Post-ID raw ceiling:        {raw_ceil_postid:.4f}  (diagnostic, exact model interface)")
+    print(f"  Memory gap (canon):         {memory_gap_canon:.4f}")
+    print(f"  Memory gap (raw):           {memory_gap_raw:.4f}")
     print(f"  Post-ID obs macro ceiling:  {obs_macro_postid:.4f}")
     print(f"  Post-ID hist Bayes ceiling: {hist_ceil_postid:.4f}  (need > 0.99)")
     print(f"  Post-ID canon ambig groups: {n_ambig_postid}")
@@ -2526,8 +2529,25 @@ def main():
             }
             if selected_cross_seed_width is not None:
                 print(f"\n  Cross-seed ControlB width: {selected_cross_seed_width}")
+                cb_name = f"control_b_w{selected_cross_seed_width}"
+                for s_key in all_results:
+                    ladder = all_results[s_key].get("control_b_ladder", {})
+                    if cb_name in ladder:
+                        all_results[s_key]["control_b"] = ladder[cb_name]
+                        all_results[s_key]["control_b_selected_width"] = selected_cross_seed_width
+                        all_results[s_key]["control_b_selection_method"] = "cross_seed_common"
+                        all_results[s_key]["gates"] = evaluate_gates(all_results[s_key], cfg)
             else:
                 print(f"\n  Cross-seed ControlB: NO qualifying width -> eligibility FAIL")
+                for s_key in all_results:
+                    all_results[s_key]["control_b"] = {
+                        "prediction": {"event_macro_f1": 0, "status_macro_f1": 0},
+                        "val_prediction": {"event_macro_f1": 0, "status_macro_f1": 0},
+                        "no_qualifying_width": True,
+                    }
+                    all_results[s_key]["control_b_selected_width"] = None
+                    all_results[s_key]["control_b_selection_method"] = "cross_seed_no_qualifying"
+                    all_results[s_key]["gates"] = evaluate_gates(all_results[s_key], cfg)
 
     # Save combined verdict
     verdict = {
