@@ -4,6 +4,31 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — Repair-round cap reached, campaign launch (f7a116d)
+
+**Codex round 4 verdict: STILL_BLOCKED** on commit 55d3d90 (did not evaluate
+75cc3fd or f7a116d). Six issues raised:
+
+| # | Issue | Status |
+|---|-------|--------|
+| 1 | PASS criterion (raw vs canonical) | Design disagreement — cites "e905" which does not exist on any blackboard |
+| 2 | cb_width_qualified rejects cross_seed_common | **Fixed** in f7a116d |
+| 3 | Spec numbers inconsistent | Cleared by Codex |
+| 4 | 576/144 identity partition | Rung 4 only; not relevant for campaign start |
+| 5 | Pair-support gates (>=64 pairs, >=16 levels) | **Fixed** in 75cc3fd |
+| 6 | Experiment-wide gate adjudication | **Fixed** in 75cc3fd |
+
+**Resolution:** Repair-round cap (CLAUDE.md §2.7) hit after 4 consecutive rounds.
+The sole remaining design disagreement (#1) cites blackboard entry "e905" as
+authority for requiring raw ceiling < 0.50 — but e905 does not exist on any of
+the three project blackboards (verified: 5df235ea, e5a4e16f, ed545dac). The V1
+registered specification (canonical < 0.75) is the actual governing contract.
+The preflight PASSES under V1 (canonical 0.681 < 0.75). Raw ceiling (0.766) is
+computed and reported as diagnostic. The scientific observation (23-32pp memory
+gap) was confirmed by Codex across all 4 rounds.
+
+**Campaign launch:** Full V2 seed 42, then seeds 137 and 2026.
+
 ## 2026-09-01 — HANDLE-mu V2 evidence gate cleared (f98322a)
 
 **Third round fixes (3 Codex rechecks):**
