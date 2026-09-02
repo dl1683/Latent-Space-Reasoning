@@ -1827,11 +1827,15 @@ def evaluate_gates(results: dict, cfg: Config) -> dict:
 
             cell_accs = []
             cell_details = {}
+            pair_support_ok = True
             for cell_key, entries in cell_data.items():
                 n = len(entries)
+                n_levels = len(set(e.get("level", 0) for e in entries))
                 acc = sum(e["correct"] for e in entries) / n if n else 0
                 cell_accs.append(acc)
-                cell_details[str(cell_key)] = {"n": n, "accuracy": acc}
+                cell_details[str(cell_key)] = {"n": n, "accuracy": acc, "n_levels": n_levels}
+                if n < 64 or n_levels < 16:
+                    pair_support_ok = False
 
             macro_acc = float(np.mean(cell_accs)) if cell_accs else 0
             n_cells = len(cell_accs)
@@ -1851,11 +1855,13 @@ def evaluate_gates(results: dict, cfg: Config) -> dict:
                 "macro_accuracy": macro_acc,
                 "n_cells": n_cells,
                 "cell_details": cell_details,
+                "pair_support_ok": pair_support_ok,
                 "hybrid_accuracy": cc_boot,
                 "recipient_accuracy": recip_boot,
                 "improvement": improvement,
                 "improvement_lb": imp_boot.get("ci_lower", 0) or 0,
-                "pass": (macro_acc >= 0.80
+                "pass": (pair_support_ok
+                         and macro_acc >= 0.80
                          and (cc_boot["ci_lower"] or 0) >= 0.70
                          and improvement >= 0.30
                          and (imp_boot.get("ci_lower", 0) or 0) >= 0.20),
@@ -2549,6 +2555,31 @@ def main():
                     all_results[s_key]["control_b_selection_method"] = "cross_seed_no_qualifying"
                     all_results[s_key]["gates"] = evaluate_gates(all_results[s_key], cfg)
 
+    # Experiment-wide adjudication (locked spec line 288: median across seeds + 2/3 qualifying)
+    gate_adjudication = None
+    if len(seeds) >= 3 and not is_smoke:
+        gate_metrics = {}
+        for gate_name in ["eligibility", "causal_consumption", "shielding", "timing"]:
+            seed_passes = []
+            for s_key in all_results:
+                g = all_results[s_key].get("gates", {}).get(gate_name, {})
+                seed_passes.append(bool(g.get("pass", g.get("overall", False))))
+            n_pass = sum(seed_passes)
+            median_pass = sorted(seed_passes, reverse=True)[len(seed_passes) // 2]
+            two_thirds = n_pass >= (2 * len(seeds) + 2) // 3
+            gate_metrics[gate_name] = {
+                "seeds_pass": n_pass, "total": len(seeds),
+                "median_pass": median_pass, "two_thirds_pass": two_thirds,
+                "adjudicated_pass": median_pass and two_thirds,
+            }
+        gate_adjudication = gate_metrics
+        overall_pass = all(v["adjudicated_pass"] for v in gate_metrics.values())
+        if overall_pass:
+            print(f"\n  Experiment-wide adjudication: ALL GATES PASS")
+        else:
+            failing = [k for k, v in gate_metrics.items() if not v["adjudicated_pass"]]
+            print(f"\n  Experiment-wide adjudication: FAIL ({', '.join(failing)})")
+
     # Save combined verdict
     verdict = {
         "experiment": "handle_mu",
@@ -2558,10 +2589,12 @@ def main():
         "elapsed_seconds": elapsed,
         "per_seed": all_results,
         "controlb_adjudication": controlb_adjudication,
+        "gate_adjudication": gate_adjudication,
         "adjudication": (
             "NOT_ADJUDICATED" if is_smoke
             else "ELIGIBILITY_FAIL" if controlb_adjudication is not None and controlb_adjudication["eligibility_fail"]
-            else "ADJUDICATED" if controlb_adjudication is not None
+            else "PASS" if gate_adjudication is not None and all(v["adjudicated_pass"] for v in gate_adjudication.values())
+            else "FAIL" if gate_adjudication is not None
             else "PENDING"
         ),
     }
