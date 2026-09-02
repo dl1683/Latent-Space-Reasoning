@@ -5,6 +5,52 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
+## RCQ-0 — Real Causal Quotient on Finch-3B (2026-09-02; IN PROGRESS)
+
+Distance from claim: 0 (the quotient and action law ARE the native math).
+Runner: `experiments/run_rcq0.py`. Config: `experiments/config/rcq0_v1.json`.
+Spec: `theory/REAL_CAUSAL_QUOTIENT.md`. Ledger: `rcq0_substrate_confirmed`,
+`rcq0_v1_composition_fail`.
+
+**Substrate selection:**
+Tested RWKV-4 (169M, 430M, 1.5B), RWKV-6 Finch (1.6B, 3B). Entity
+discrimination gate (asymmetric-state Q0-Q1 TV > 0.10) confirmed only on
+Finch-3B (TV=0.43). RWKV-4 at all sizes tracks location dominance, not
+entity-specific state (TV=0.03). Finch-1.6B marginal (TV=0.08). State replay
+bit-exact (TV=0.000000). Entity swap via state injection confirmed (TV=0.41/0.46).
+
+**Task:** 2 entities × 3 locations = 9 joint states. 6 macro-actions. 2 probes.
+Teacher-forced log-likelihood scoring.
+
+**8 iterations, varying quotient construction:**
+
+| Run | Method | Classes | Comp Top-1 | Trans Cons | Sub Same |
+|-----|--------|---------|------------|------------|----------|
+| 1 | δ=0.05 hard | 35/36 | 0/0 | n/a | n/a |
+| 2 | δ=0.10 hard | ~35 | 0/0 | n/a | n/a |
+| 3 | TV 0.10 + moved | 26 | 0.25 | ~0.85 | ~0.08 |
+| 4 | TV 0.10 direct | 17 | 0.47 | ~0.88 | ~0.06 |
+| 5 | TV 0.15 phrased | 15 | 0.34 | 0.88 | 0.07 |
+| 6 | TV 0.05 word-order | 16 | 0.43 | 1.00* | 0.02 |
+| 7 | GT 9-state (4 phr) | 9 | 0.51 | 0.86 | 0.13 |
+| 8 | GT 9-state (1 phr) | 9 | 0.65 | 1.00* | n/a |
+
+(*) Trivially 1.0 due to single member per class.
+
+**Key finding: path dependence.** Within-state word-order TV: min=0.0004,
+max=0.2948, median=0.09. Post-action distributions differ from direct-statement
+distributions by TV~0.25. The model encodes HOW information was presented.
+
+**What we learned:**
+1. Entity discrimination emerges between 1.6B and 3B in RWKV-6
+2. The model has genuine entity state (discrimination + injection + substitution)
+3. The 9-state quotient has real structure but cannot compose (gate: 90%)
+4. Path dependence prevents discrete quotient composition
+5. No parser surplus: quotient TV=0.24 vs parser TV=0.19
+6. Affine behavioral dynamics under investigation
+
+---
+
 ## HANDLE-mu Rung 1 — Causal Handle Algebra, distance-1 (2026-09-01; PIPELINE-INVALID)
 
 Distance from claim: 1 (designed latent world). 7x7 key-lock grid, 5 causal handles
