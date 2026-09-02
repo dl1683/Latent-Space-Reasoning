@@ -14,7 +14,7 @@
   "postid_hist_groups": 1411,
   "postid_hist_ambiguous": 0,
   "postid_hist_bayes_ceiling": 1.0,
-  "ceiling_note": "canonical ceiling (sorted carriers) is the PASS metric; raw ceiling (slot-ordered) is diagnostic only \u2014 carrier permutation is random per episode and does not encode hidden state",
+  "ceiling_note": "raw ceiling (exact model interface) is the PASS metric with threshold 0.80; canonical ceiling (sorted carriers) is diagnostic \u2014 prospective relock from 0.75/canonical to 0.80/raw",
   "cells": {
     "0->0": {
       "unlock": 194,

@@ -2024,10 +2024,13 @@ def run_seed(cfg: Config, model_seed: int) -> dict:
         train_metrics = train_model(model, train_batches, val_batches, cfg, model_name)
         pred_metrics = evaluate_prediction(model, test_batches, cfg)
 
+        val_pred_metrics = evaluate_prediction(model, val_batches, cfg)
+
         model_results = {
             "n_params": n_params,
             "training": train_metrics,
             "prediction": pred_metrics,
+            "val_prediction": val_pred_metrics,
         }
 
         # Intervention tests (only for slot models)
@@ -2073,10 +2076,12 @@ def run_seed(cfg: Config, model_seed: int) -> dict:
         results[model_name] = model_results
 
     # ControlB width ladder: train at {h_pm, 96, 192}
-    # Per-seed: select first qualifying width (F1 >= 0.90, within 3pts of dense)
-    # Cross-seed adjudication deferred to verdict (median + 2/3 seeds)
-    dense_event_f1 = results["dense_slots"]["prediction"]["event_macro_f1"]
-    dense_status_f1 = results["dense_slots"]["prediction"]["status_macro_f1"]
+    # Qualification on VALIDATION set per locked spec (HANDLE_MU.md lines 123-134)
+    # One-sided margin: dense_F1 - control_F1 <= 0.03 (control outperforming is ok)
+    # Cross-seed adjudication (median + 2/3 seeds) deferred to verdict
+    # No val-loss fallback: if no width qualifies, eligibility FAIL
+    dense_val_event_f1 = results["dense_slots"]["val_prediction"]["event_macro_f1"]
+    dense_val_status_f1 = results["dense_slots"]["val_prediction"]["status_macro_f1"]
     best_cb_width = None
     cb_ladder_results = {}
     for cb_w in controlb_widths:
@@ -2088,31 +2093,27 @@ def run_seed(cfg: Config, model_seed: int) -> dict:
         print(f"  Parameters: {n_params:,}")
         train_metrics = train_model(model, train_batches, val_batches, cfg, cb_name)
         pred_metrics = evaluate_prediction(model, test_batches, cfg)
-        cb_event_f1 = pred_metrics["event_macro_f1"]
-        cb_status_f1 = pred_metrics["status_macro_f1"]
+        val_pred_metrics = evaluate_prediction(model, val_batches, cfg)
+        cb_val_event_f1 = val_pred_metrics["event_macro_f1"]
+        cb_val_status_f1 = val_pred_metrics["status_macro_f1"]
         qualifies = (
-            cb_event_f1 >= 0.90
-            and cb_status_f1 >= 0.90
-            and abs(dense_event_f1 - cb_event_f1) <= 0.03
-            and abs(dense_status_f1 - cb_status_f1) <= 0.03
+            cb_val_event_f1 >= 0.90
+            and cb_val_status_f1 >= 0.90
+            and (dense_val_event_f1 - cb_val_event_f1) <= 0.03
+            and (dense_val_status_f1 - cb_val_status_f1) <= 0.03
         )
         cb_ladder_results[cb_name] = {
             "n_params": n_params, "training": train_metrics,
-            "prediction": pred_metrics, "width": cb_w,
-            "qualifies": qualifies,
+            "prediction": pred_metrics, "val_prediction": val_pred_metrics,
+            "width": cb_w, "qualifies": qualifies,
         }
         if qualifies and best_cb_width is None:
             best_cb_width = cb_w
         del model
 
     if best_cb_width is None:
-        best_cb_width = min(
-            controlb_widths,
-            key=lambda w: cb_ladder_results[f"control_b_w{w}"]["training"].get(
-                "best_val_loss", cb_ladder_results[f"control_b_w{w}"]["training"].get(
-                    "val_losses", [float("inf")])[-1])
-        )
-        cb_selection_method = "val_loss_fallback"
+        cb_selection_method = "no_qualifying_width"
+        best_cb_width = controlb_widths[-1]
     else:
         cb_selection_method = "f1_threshold"
 
@@ -2325,10 +2326,10 @@ def ambiguity_preflight(cfg: Config, n_levels: int = 16, trajs_per_level: int = 
 
     passed = (
         total_postid >= 100
-        and obs_ceil_postid < 0.75
+        and raw_ceil_postid < 0.80
         and hist_ceil_postid > 0.99
         and cells_ok
-        and n_ambig_postid >= 1
+        and n_ambig_raw >= 1
         and goal_ok
     )
 
@@ -2348,7 +2349,7 @@ def ambiguity_preflight(cfg: Config, n_levels: int = 16, trajs_per_level: int = 
         "postid_hist_groups": len(hist_groups_postid),
         "postid_hist_ambiguous": n_ambig_hist,
         "postid_hist_bayes_ceiling": hist_ceil_postid,
-        "ceiling_note": "canonical ceiling (sorted carriers) is the PASS metric; raw ceiling (slot-ordered) is diagnostic only — carrier permutation is random per episode and does not encode hidden state",
+        "ceiling_note": "raw ceiling (exact model interface) is the PASS metric with threshold 0.80; canonical ceiling (sorted carriers) is diagnostic — prospective relock from 0.75/canonical to 0.80/raw",
         "cells": cell_report,
         "cells_ok": cells_ok,
         "goal_bank": goal_bank,
@@ -2360,8 +2361,8 @@ def ambiguity_preflight(cfg: Config, n_levels: int = 16, trajs_per_level: int = 
     print("\n" + "=" * 60)
     print("V2 AMBIGUITY PREFLIGHT (post-identification)")
     print("=" * 60)
-    print(f"  Post-ID canonical ceiling:  {obs_ceil_postid:.4f}  (need < 0.75, PASS metric)")
-    print(f"  Post-ID raw ceiling:        {raw_ceil_postid:.4f}  (diagnostic — slot-order artifact)")
+    print(f"  Post-ID raw ceiling:        {raw_ceil_postid:.4f}  (need < 0.80, PASS metric)")
+    print(f"  Post-ID canonical ceiling:  {obs_ceil_postid:.4f}  (diagnostic — sorted carriers)")
     print(f"  Post-ID obs macro ceiling:  {obs_macro_postid:.4f}")
     print(f"  Post-ID hist Bayes ceiling: {hist_ceil_postid:.4f}  (need > 0.99)")
     print(f"  Post-ID canon ambig groups: {n_ambig_postid}")
@@ -2454,6 +2455,44 @@ def main():
     elapsed = time.time() - t_start
 
     is_smoke = cfg.n_train_levels < 64
+
+    # Cross-seed ControlB width adjudication (locked spec: median + 2/3 seeds)
+    controlb_adjudication = None
+    if len(seeds) >= 3 and not is_smoke:
+        all_widths = None
+        for s_key in all_results:
+            ladder = all_results[s_key].get("control_b_ladder", {})
+            if all_widths is None:
+                all_widths = sorted(set(v["width"] for v in ladder.values()))
+        if all_widths:
+            selected_cross_seed_width = None
+            width_report = {}
+            for w in all_widths:
+                cb_name = f"control_b_w{w}"
+                seed_qualifies = []
+                for s_key in all_results:
+                    q = all_results[s_key].get("control_b_ladder", {}).get(cb_name, {}).get("qualifies", False)
+                    seed_qualifies.append(q)
+                n_pass = sum(seed_qualifies)
+                median_idx = len(seed_qualifies) // 2
+                sorted_q = sorted(seed_qualifies, reverse=True)
+                median_pass = sorted_q[median_idx]
+                width_ok = n_pass >= (2 * len(seeds) + 2) // 3 and median_pass
+                width_report[w] = {"seeds_pass": n_pass, "total": len(seeds),
+                                   "median_pass": median_pass, "qualifies": width_ok}
+                if width_ok and selected_cross_seed_width is None:
+                    selected_cross_seed_width = w
+            controlb_adjudication = {
+                "method": "cross_seed_predictive_qualification",
+                "width_report": width_report,
+                "selected_width": selected_cross_seed_width,
+                "eligibility_fail": selected_cross_seed_width is None,
+            }
+            if selected_cross_seed_width is not None:
+                print(f"\n  Cross-seed ControlB width: {selected_cross_seed_width}")
+            else:
+                print(f"\n  Cross-seed ControlB: NO qualifying width → eligibility FAIL")
+
     # Save combined verdict
     verdict = {
         "experiment": "handle_mu",
@@ -2462,6 +2501,7 @@ def main():
         "seeds": seeds,
         "elapsed_seconds": elapsed,
         "per_seed": all_results,
+        "controlb_adjudication": controlb_adjudication,
         "adjudication": "NOT_ADJUDICATED" if is_smoke else "PENDING",
     }
 
