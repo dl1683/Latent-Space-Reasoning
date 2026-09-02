@@ -68,6 +68,7 @@ class Config:
     n_val_levels: int = 16
     n_test_levels: int = 32
     trajs_per_level: int = 128
+    intervention_trajs_per_level: int = 512
     traj_length: int = 32
     scripted_fraction: float = 0.5
 
@@ -78,7 +79,7 @@ class Config:
     grad_clip: float = 1.0
     event_loss_weight: float = 1.0
 
-    intervention_n_pairs: int = 1024
+    intervention_n_pairs: int = 2560
     bootstrap_n: int = 2000
     bootstrap_ci: float = 0.95
 
@@ -441,17 +442,19 @@ class Trajectory:
     episode_carrier_map: list = None  # complete object->carrier bijection, stable per episode
 
 
-def generate_trajectories(level_seeds: list, cfg: Config, data_rng_seed: int = 0) -> list:
+def generate_trajectories(level_seeds: list, cfg: Config, data_rng_seed: int = 0,
+                          trajs_per_level: int = None) -> list:
     """Generate trajectories for a set of level seeds."""
     rng = random.Random(data_rng_seed)
     all_trajs = []
     rd = _record_dim(cfg)
     n_objects = cfg.n_slots  # 6 objects: agent + 2 keys + 2 locks + goal
+    tpl = trajs_per_level if trajs_per_level is not None else cfg.trajs_per_level
 
     for ls in level_seeds:
         level = generate_level(ls, cfg.grid_size)
 
-        for t_idx in range(cfg.trajs_per_level):
+        for t_idx in range(tpl):
             obs_rng = random.Random(rng.randint(0, 2**31))
 
             # Per-episode identity permutation (R3b §1)
@@ -473,7 +476,7 @@ def generate_trajectories(level_seeds: list, cfg: Config, data_rng_seed: int = 0
             events_list = []
             states = [state]
 
-            use_scripted = t_idx < int(cfg.trajs_per_level * cfg.scripted_fraction)
+            use_scripted = t_idx < int(tpl * cfg.scripted_fraction)
 
             for step in range(cfg.traj_length):
                 enc, vis_ids = world.observe_encoded(
@@ -1275,7 +1278,7 @@ def find_paired_histories(trajs: list, cfg: Config, target_handle: int,
         if len(level_trajs) < 2:
             continue
 
-        for attempt in range(min(100, len(level_trajs) * 2)):
+        for attempt in range(min(500, len(level_trajs) * 3)):
             if len(pairs) >= n_pairs:
                 break
             t1, t2 = rng.sample(level_trajs, 2)
@@ -1506,6 +1509,7 @@ def evaluate_intervention(model, pairs: list, cfg: Config, model_type: str) -> d
                     "level": pair.level_seed,
                     "handle": pair.target_handle,
                     "cell": (pair.target_handle, affected_handle),
+                    "contact_step": 0,
                 })
 
             # --- Continue suffix from step 1 (spec steps 5-6 loop) ---
@@ -1560,6 +1564,7 @@ def evaluate_intervention(model, pairs: list, cfg: Config, model_type: str) -> d
                         "level": pair.level_seed,
                         "handle": pair.target_handle,
                         "cell": (pair.target_handle, affected_handle),
+                        "contact_step": si,
                     })
 
             if pre_contact_total > 0:
@@ -1828,9 +1833,13 @@ def evaluate_gates(results: dict, cfg: Config) -> dict:
     # Intervention gates (only if eligible)
     dense_interv = dense.get("intervention", {})
     if not dense_interv.get("skipped", False):
-        cc = dense_interv.get("causal_consumption", [])
+        cc_raw = dense_interv.get("causal_consumption", [])
+        registered_cells = {(0, 2), (0, 3), (1, 2), (1, 3)}
+        max_contact_delay = {1: 1, 2: 2, 3: 6, 4: 6, 5: 6, 6: 6}.get(cfg.staircase_rung, 1)
+        cc = [c for c in cc_raw
+              if tuple(c.get("cell", (-1, -1))) in registered_cells
+              and c.get("contact_step", 99) <= max_contact_delay]
         if cc:
-            # Per-cell macro reduction: compute accuracy per (source, target) cell, then average
             from collections import defaultdict as _dd
             cell_data = _dd(list)
             for c in cc:
@@ -1987,9 +1996,11 @@ def run_seed(cfg: Config, model_seed: int) -> dict:
     val_trajs = generate_trajectories(val_levels, cfg, data_rng_seed=data_seed + 1000)
     test_trajs = generate_trajectories(test_levels, cfg, data_rng_seed=data_seed + 2000)
 
-    # Rung 1 evaluation bank: training layouts, independently seeded episodes
+    # Intervention evaluation bank: training layouts, independently seeded episodes
     # NOT used for gradients, early stopping, width selection, or checkpoint selection
-    eval_trajs = generate_trajectories(train_levels, cfg, data_rng_seed=data_seed + 5000)
+    # Uses intervention_trajs_per_level for sufficient pair support (64/cell, 16 levels)
+    eval_trajs = generate_trajectories(train_levels, cfg, data_rng_seed=data_seed + 5000,
+                                       trajs_per_level=cfg.intervention_trajs_per_level)
 
     print(f"  Generated {len(train_trajs)} train, {len(val_trajs)} val, "
           f"{len(test_trajs)} test, {len(eval_trajs)} eval trajectories")
@@ -2055,7 +2066,7 @@ def run_seed(cfg: Config, model_seed: int) -> dict:
         # Intervention tests (only for slot models)
         if model_name in ("dense_slots", "sparse_slots"):
             print(f"  Running intervention tests for {model_name}...")
-            interv_rng = random.Random(model_seed + 7777)
+            interv_rng = random.Random(data_seed + 7777)
             # Rung 1: training layouts, independent eval episodes
             # Rung 3+: held-out layouts (test_trajs)
             interv_source = eval_trajs if cfg.staircase_rung <= 2 else test_trajs
@@ -2459,7 +2470,8 @@ def main():
             staircase_rung=args.staircase_rung,
             n_epochs=15, batch_size=args.batch_size, device=args.device,
             n_train_levels=8, n_val_levels=4, n_test_levels=4,
-            trajs_per_level=16, intervention_n_pairs=64,
+            trajs_per_level=16, intervention_trajs_per_level=32,
+            intervention_n_pairs=64,
             v2_latent_keys=args.v2,
             traj_length=v2_traj_length if args.v2 else 32,
         )
