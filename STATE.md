@@ -49,43 +49,34 @@ as primary arm; learned-sparse and flat GRU as controls. Training: next-obs + ne
 prediction only, no swap/graph supervision. Seven pre-registered gates.
 Spec: theory/HANDLE_MU.md. Runner: experiments/run_handle_mu.py.
 
-**R4+R5 fixes applied. Seed 42 campaign complete (R5 code). THREE BLOCKERS.**
-R4 (7 blocking): counterfactual resimulation, Control B carrier tags,
-eligibility expansion, historyless action+messaging, eval bank, oracle on val, smoke.
-R5 (4 blocking): observe-patch-act boundary (assimilate o_ds before patch, predict
-from head(patched_hidden)), directed i→j contact detection, timing miss penalty
-(sentinel=20, miss_rate gate ≤ 0.20), per-cell macro reduction + improvement LB.
-ControlB excluded from intervention (global hidden, no per-slot swap).
+**V1: FAIL (world too transparent, recurrent lift -0.003). V2: campaign in progress.**
 
-**Seed 42 campaign results (R5 code, 64 levels, 128 trajs/level, 40 epochs, 3211s):**
+**V2 seed 42 (R5 code, 64 levels, 128 trajs/level, 40 epochs, 3211s): ELIGIBILITY FAIL.**
 
 | Model | Params | Val Loss | Event F1 | Status F1 |
 |-------|--------|----------|----------|-----------|
-| Dense | 19511 | 0.079 | 0.990 | 0.999 |
-| Sparse | 19511 | 0.083 | 0.992 | 0.998 |
-| FlatGRU | 18574 | 0.423 | 0.979 | 0.683 |
-| ControlB | 19133 | 0.708 | 0.999 | 0.433 |
-| Historyless| 13175 | 0.107 | 0.993 | 0.984 |
+| Dense | 19511 | 0.093 | 0.961 | 0.993 |
+| Sparse | 19511 | 0.115 | 0.955 | 0.990 |
+| CB w192 | 19079 | 0.189 | 0.966 | 0.959 |
+| Historyless| 13175 | 0.168 | 0.862 | 0.932 |
+| FlatGRU | 18574 | 0.455 | 0.845 | 0.877 |
 | Oracle | — | — | 1.000 | 1.000 |
 
-Gate outcomes:
-- Eligibility: **FAIL** (Dense/Sparse PASS; CB status 0.433 FAIL; recurrent lift -0.003 FAIL)
-- Causal consumption: **FAIL** (hybrid=0.54, recipient=0.00, improvement=0.54; needs ≥0.80)
-- Shielding: PASS (0.007)
-- Timing: PASS (median=0, p90=1)
+Gate outcomes (seed 42, OLD evaluator — 3 bugs present):
+- Eligibility: **FAIL** (recurrent lift 0.098 < 0.10, CB status gap 0.034 > 0.03)
+- Causal consumption: FAIL (0.127, buggy patch boundary + insufficient pair budget)
+- Shielding: PASS (0.061)
+- Timing: FAIL (miss_rate=1.0, aggregation bug — actual 46.3%)
 
-**Root cause analysis:** The world is too transparent for recurrence. Historyless model
-(no GRU, just encoder+messaging+head per timestep) achieves event F1=0.993 and status
-F1=0.984 — matching or exceeding Dense. This means: (1) the observation alone carries
-enough information for prediction, (2) recurrence is decorative, (3) hidden state carries
-minimal causal information → patch has limited effect → causal consumption fails.
-Status is persistent (once picked up, a key stays held) and objects are visible during
-interactions (visibility r=2 covers all adjacent cells). The model never needs to remember
-anything it can't see.
+**Evaluator repair (5 fixes, 2f9d3ce):**
+1. Patch boundary: transplant before forward_step (was after — spec violation)
+2. Timing aggregation: timing_misses/contacts propagated (was dropped → 1.0)
+3. Cross-seed adjudication: numerical median of gate metrics (was boolean)
+4. Pair budget: 512→1024 (204/handle, above 128 floor)
+5. NumPy bool serialization: _NumpyEncoder (was default=str → "True"/"False")
 
-**Codex R6 verdict:** Do not patch v1. Create HANDLE-mu V2 with targeted changes:
-(1) held keys vanish from observation (latent inventory), (2) blind USE probes (scripted
-policy does not leak bijection), (3) frozen ambiguity bank.
+**Campaign status:** Seed 137 running (OLD code, recurrent lift valid). Seed 2026
+pending (will use fixed evaluator). Codex correctness review of fixes in progress.
 
 **Codex V2 design gate (2026-09-01): conditional no-go, 7 blocking repairs.** Repairs
 implemented and committed (97dad28): event code fix, V2 oracle/intervention/counterfactual
@@ -98,14 +89,13 @@ raw ceiling 0.7656 (diagnostic, exact model interface), hist ceiling 1.0000 (> 0
 Memory gap: 31.9pp (canonical), 23.4pp (raw). All 4 cells balanced (~170 each).
 Goal bank healthy. Coverage 100%.
 
-**Evidence gate: 4 Codex rounds, repair-round cap reached (f7a116d).**
-Mechanical fixes (all committed): goal_ok, bijection filter, ControlB F1 qualification
-+ gate leak + cross-seed propagation, smoke/full separation, numerical median adjudicator,
-pair-support gates (>=64 pairs, >=16 levels), experiment-wide gate adjudication.
-Sole remaining disagreement: Codex cites non-existent blackboard entry "e905" as
-authority for raw-bank PASS criterion; verified absent from all 3 boards. V1 registered
-specification (canonical < 0.75) governs. Scientific observation (23-32pp gap) confirmed
-by Codex in all 4 rounds. Campaign launched under repair-round cap (CLAUDE.md 2.7).
+**Evidence gate: 4 Codex rounds pre-campaign + 1 post-seed-42 structural review.**
+Pre-campaign fixes (all committed, f7a116d): goal_ok, bijection filter, ControlB F1
+qualification + gate leak + cross-seed propagation, smoke/full separation, numerical
+median adjudicator, pair-support gates (>=64 pairs, >=16 levels), experiment-wide gate
+adjudication. Post-seed-42 Codex structural review identified 3 evaluator bugs (patch
+boundary, timing aggregation, boolean median) + pair budget insufficiency. All fixed
+(2f9d3ce + db2df73). Additional fix: NumPy bool serialization (2f9d3ce).
 Spec: theory/HANDLE_MU_V2.md.
 
 Prior V1 rung 1 results: experiments/results/handle_mu/seed_42_rung_1.json.
