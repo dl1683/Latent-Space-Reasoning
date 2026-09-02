@@ -451,8 +451,21 @@ class Trajectory:
     episode_carrier_map: list = None  # complete object->carrier bijection, stable per episode
 
 
+def _make_perm_partition(n_objects: int, data_seed: int) -> tuple:
+    """Generate the 576/144 train/test identity permutation partition (Amendment 2)."""
+    import itertools
+    all_perms = [list(p) for p in itertools.permutations(range(n_objects))]
+    part_rng = random.Random(data_seed + 999)
+    part_rng.shuffle(all_perms)
+    n_test = len(all_perms) // 5  # 720 // 5 = 144
+    train_perms = all_perms[n_test:]  # 576
+    test_perms = all_perms[:n_test]   # 144
+    return train_perms, test_perms
+
+
 def generate_trajectories(level_seeds: list, cfg: Config, data_rng_seed: int = 0,
-                          trajs_per_level: int = None) -> list:
+                          trajs_per_level: int = None,
+                          allowed_perms: list = None) -> list:
     """Generate trajectories for a set of level seeds."""
     rng = random.Random(data_rng_seed)
     all_trajs = []
@@ -466,9 +479,12 @@ def generate_trajectories(level_seeds: list, cfg: Config, data_rng_seed: int = 0
         for t_idx in range(tpl):
             obs_rng = random.Random(rng.randint(0, 2**31))
 
-            # Per-episode identity permutation (R3b §1)
-            identity_perm = list(range(n_objects))
-            rng.shuffle(identity_perm)
+            # Per-episode identity permutation (R3b §1, Amendment 2)
+            if allowed_perms is not None:
+                identity_perm = list(allowed_perms[rng.randint(0, len(allowed_perms) - 1)])
+            else:
+                identity_perm = list(range(n_objects))
+                rng.shuffle(identity_perm)
 
             # Per-episode key-lock bijection (R3b §3)
             episode_bijection = [0, 1]
@@ -1486,8 +1502,18 @@ def evaluate_intervention(model, pairs: list, cfg: Config, model_type: str) -> d
             h_recip = model.forward_step(enc_recip, act_ds, h_recip)
 
             # PREDICT from resulting hidden (event prediction at step ds)
-            _, ep_hybrid_0 = model.head(hybrid_hidden)
-            _, ep_recip_0 = model.head(h_recip)
+            op_hybrid_0, ep_hybrid_0 = model.head(hybrid_hidden)
+            op_recip_0, ep_recip_0 = model.head(h_recip)
+
+            # Patch integrity: non-target slot TV (Amendment 3)
+            non_target_mask = torch.ones(cfg.n_slots, dtype=torch.bool)
+            non_target_mask[r_idx] = False
+            nt_hyb = F.softmax(op_hybrid_0[0, non_target_mask], dim=-1)
+            nt_rec = F.softmax(op_recip_0[0, non_target_mask], dim=-1)
+            nt_tv = 0.5 * (nt_hyb - nt_rec).abs().sum(dim=-1).mean().item()
+            results["patch_integrity"].append({
+                "tv": nt_tv, "level": pair.level_seed,
+            })
 
             # TRANSITION both simulator branches with suffix[0] (spec step 4)
             cf_state = _construct_counterfactual_state(
@@ -1995,6 +2021,19 @@ def evaluate_gates(results: dict, cfg: Config) -> dict:
                          and imp_lb >= 0.20),
             }
 
+        pi = dense_interv.get("patch_integrity", [])
+        if pi:
+            pi_tvs = [p["tv"] if isinstance(p, dict) else p for p in pi]
+            pi_levels = [p["level"] if isinstance(p, dict) else i for i, p in enumerate(pi)]
+            pi_mean = float(np.mean(pi_tvs))
+            pi_boot = clustered_bootstrap_ci(pi_tvs, pi_levels, cfg.bootstrap_n, cfg.bootstrap_ci)
+            gates["patch_integrity"] = {
+                "mean_tv": pi_mean,
+                "ub": pi_boot.get("ci_upper", 1.0) or 1.0,
+                "n_pairs": len(pi),
+                "pass": pi_mean <= 0.05 and (pi_boot.get("ci_upper", 1.0) or 1.0) <= 0.05,
+            }
+
         pre = dense_interv.get("pre_contact_effects", [])
         if pre:
             pre_rates = [p["rate"] if isinstance(p, dict) else p for p in pre]
@@ -2100,15 +2139,21 @@ def run_seed(cfg: Config, model_seed: int) -> dict:
     # Frozen data manifest shared across all model seeds (R3b §8).
     # model_seed controls initialization and training order only.
     data_seed = 0
-    train_trajs = generate_trajectories(train_levels, cfg, data_rng_seed=data_seed)
-    val_trajs = generate_trajectories(val_levels, cfg, data_rng_seed=data_seed + 1000)
-    test_trajs = generate_trajectories(test_levels, cfg, data_rng_seed=data_seed + 2000)
+    train_perms, test_perms = _make_perm_partition(cfg.n_slots, data_seed)
+    use_perms = train_perms if cfg.staircase_rung <= 3 else test_perms
+    train_trajs = generate_trajectories(train_levels, cfg, data_rng_seed=data_seed,
+                                        allowed_perms=train_perms)
+    val_trajs = generate_trajectories(val_levels, cfg, data_rng_seed=data_seed + 1000,
+                                      allowed_perms=train_perms)
+    test_trajs = generate_trajectories(test_levels, cfg, data_rng_seed=data_seed + 2000,
+                                       allowed_perms=use_perms)
 
     # Intervention evaluation bank: training layouts, independently seeded episodes
     # NOT used for gradients, early stopping, width selection, or checkpoint selection
     # Uses intervention_trajs_per_level for sufficient pair support (64/cell, 16 levels)
     eval_trajs = generate_trajectories(train_levels, cfg, data_rng_seed=data_seed + 5000,
-                                       trajs_per_level=cfg.intervention_trajs_per_level)
+                                       trajs_per_level=cfg.intervention_trajs_per_level,
+                                       allowed_perms=use_perms)
 
     print(f"  Generated {len(train_trajs)} train, {len(val_trajs)} val, "
           f"{len(test_trajs)} test, {len(eval_trajs)} eval trajectories")
@@ -2189,6 +2234,7 @@ def run_seed(cfg: Config, model_seed: int) -> dict:
             # Aggregate
             all_cc = []
             all_pre = []
+            all_pi = []
             all_timing = []
             all_timing_misses = 0
             all_timing_contacts = 0
@@ -2196,6 +2242,7 @@ def run_seed(cfg: Config, model_seed: int) -> dict:
                 if isinstance(h_res, dict) and not h_res.get("skipped"):
                     all_cc.extend(h_res.get("causal_consumption", []))
                     all_pre.extend(h_res.get("pre_contact_effects", []))
+                    all_pi.extend(h_res.get("patch_integrity", []))
                     all_timing.extend(h_res.get("timing_errors", []))
                     all_timing_misses += h_res.get("timing_misses", 0)
                     all_timing_contacts += h_res.get("timing_contacts", 0)
@@ -2203,11 +2250,12 @@ def run_seed(cfg: Config, model_seed: int) -> dict:
             model_results["intervention"] = {
                 "causal_consumption": all_cc,
                 "pre_contact_effects": all_pre,
+                "patch_integrity": all_pi,
                 "timing_errors": all_timing,
                 "timing_misses": all_timing_misses,
                 "timing_contacts": all_timing_contacts,
                 "per_handle": all_interv,
-                "n_pairs_total": sum(len(h.get("causal_consumption", []))
+                "n_pairs_total": sum(h.get("n_pairs", 0)
                                      for h in all_interv.values()
                                      if isinstance(h, dict) and not h.get("skipped")),
             }
