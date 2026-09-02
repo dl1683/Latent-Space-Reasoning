@@ -1491,6 +1491,13 @@ def evaluate_intervention(model, pairs: list, cfg: Config, model_type: str) -> d
             # PATCH: donor target -> recipient target BEFORE contact step
             d_idx = _carrier_slot_for_handle(dt.episode_carrier_map, pair.target_handle)
             r_idx = _carrier_slot_for_handle(rt.episode_carrier_map, pair.target_handle)
+
+            # Amendment 10: pair eligible only if target-slot records are equal
+            d_rec = dt.obs_encoded[ds, d_idx]
+            r_rec = rt.obs_encoded[ds, r_idx]
+            if not np.array_equal(d_rec, r_rec):
+                continue
+
             hybrid_hidden = recip_hidden.clone()
             hybrid_hidden[0, r_idx] = donor_hidden[0, d_idx]
             h_recip = recip_hidden.clone()

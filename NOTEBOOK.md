@@ -4,6 +4,44 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-02 — Full evaluator overhaul: 18 fixes, spec amendment, session pause
+
+**Codex correctness review returned NO-GO on the original 5 fixes.** Identified
+7 additional invalidating issues. All addressed in this session:
+
+**Post-Codex fixes (c0bb1fe):** pair RNG data_seed, contact_step recording,
+registered cell filter {(0,2),(0,3),(1,2),(1,3)}, contact delay τ≤1 for Rung 1,
+intervention eval bank 512 trajs/level, pair search 500 attempts, budget 2560.
+
+**Statistical fixes (5e631a6):** recurrent lift CI (level-clustered bootstrap,
+gate requires LB > 0), cell-macro causal consumption CI (matches spec estimand),
+shielding level clustering (proper level IDs), per-seed JSON rewrite after
+cross-seed adjustments, _strip_internal helper for JSON serialization.
+
+**Structural fixes (4679c17):** patch integrity gate (non-target slot TV),
+576/144 identity permutation partition (Amendment 2), n_pairs_total counts
+actual pairs.
+
+**Spec amendment — V2 Amendment 10 (Codex verdict):** Patch boundary amended
+from observe→patch→act to native pre-update recurrent-state boundary
+(patch→obs+act→predict). Codex identified that observation encoding is
+slot-specific (NOT broadcast) — so eligible pairs must have identical
+target-slot records. Filter implemented. All prior intervention results are
+NOT_ADJUDICATED under the amendment.
+
+**4 smoke tests passed** (exit 0, all gate fields display correctly).
+
+**Seed 137:** Was running (~1h) when session paused for shutdown. Running under
+OLD code — recurrent lift valid, intervention gates diagnostic only. Check on
+resume: either completed (result file exists) or was killed by shutdown.
+
+**What's next on resume:**
+1. Check if seed 137 completed — if so, read recurrent lift result
+2. If not, relaunch seed 137 with the fully fixed evaluator
+3. ALL seeds must be rerun under the final evaluator for valid intervention gates
+4. Launch seed 2026 after seed 137 completes (one CPU at a time)
+5. Cross-seed adjudication when all 3 seeds complete
+
 ## 2026-09-02 — Evaluator repair: 4 fixes committed, Codex review pending
 
 **Fixes applied (8fc3bff, db2df73):**

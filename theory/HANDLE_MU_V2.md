@@ -103,6 +103,52 @@ the same episode-local key-lock bijection. Pairs crossing different bijections
 produce ill-defined interventions (transplanting key state that encodes a
 different relation).
 
+### 10. Native pre-update recurrent boundary
+
+This V2 amendment overrides V1 Amendment 6 for the Dense and Sparse slot
+models only.
+
+These models expose no observation-only recurrent state. Their native step is
+
+h_t+ = Phi(h_t-, E(o_t) + A(a_t)),
+
+where Phi is the per-slot GRU update followed by learned messaging, and
+the event/next-observation prediction is read from h_t+ before
+o_{t+1} is revealed. The observation encoding is slot-specific; only the
+action embedding is broadcast across slots.
+
+The V2 intervention therefore uses the model's native pre-update hidden-state
+boundary:
+
+1. Replay donor and recipient prefixes through
+   (o_{t-1}, a_{t-1}), obtaining h_t^{D,-} and h_t^{R,-}.
+2. Locate the donor and recipient target carriers independently as
+   `d_idx` and `r_idx`.
+3. A pair is eligible for causal scoring only if its current raw target-slot
+   records are exactly equal:
+   `donor_obs[t, d_idx] == recipient_obs[t, r_idx]`.
+   Excluded pairs and remaining support must be reported by handle, causal
+   cell, and level. Insufficient remaining support is a coverage failure.
+4. Form the intervention
+   `hybrid_hidden[r_idx] = donor_hidden[d_idx]`.
+5. Feed the identical recipient observation o_t^R and registered action
+   a_t to the patched and unpatched models, then score their predictions
+   before revealing o_{t+1}.
+6. Transition the baseline world R and counterfactual world
+   R[target<-D]. Thereafter, feed each branch its own
+   resulting observation and repeat.
+
+This is a pre-update recurrent-state intervention, not an exactly equivalent
+implementation of the V1 observe-then-patch boundary. It tests whether donor
+target-slot state encoded by the prefix is causally preserved and consumed
+through the trained model's native observation-action update. Attenuation or
+overwrite by that update counts as a failure of causal persistence at this
+boundary; it is not repaired by changing or retraining the architecture.
+
+Intervention outputs generated before this amendment are exploratory and
+remain NOT_ADJUDICATED. Confirmatory scoring requires a re-locked evaluator
+run with the amended pair-eligibility and support accounting.
+
 ## Preflight result (2026-09-01, V1 contract PASS)
 
 **PASS** (registered seed 9999).
@@ -124,7 +170,8 @@ Everything not listed above carries over from HANDLE_MU.md unchanged:
 - Record encoding: type/row/col/status/vis (Amendment 4b)
 - All five architectures: Dense, Sparse, FlatGRU, ControlB, Historyless
 - Factorized CE loss (Amendment 4)
-- Intervention protocol: observe-patch-act boundary (Amendment 6)
+- Intervention protocol: native pre-update recurrent-state boundary
+  (V2 Amendment 10; overrides V1 Amendment 6)
 - Counterfactual branches (Amendment 7)
 - Data manifest and seed separation (Amendment 8)
 - Deterministic oracle (Amendment 9)

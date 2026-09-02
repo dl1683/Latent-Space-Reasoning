@@ -75,8 +75,33 @@ Gate outcomes (seed 42, OLD evaluator — 3 bugs present):
 4. Pair budget: 512→1024 (204/handle, above 128 floor)
 5. NumPy bool serialization: _NumpyEncoder (was default=str → "True"/"False")
 
-**Campaign status:** Seed 137 running (OLD code, recurrent lift valid). Seed 2026
-pending (will use fixed evaluator). Codex correctness review of fixes in progress.
+**Post-Codex evaluator repair (13 fixes total, 4679c17):**
+Codex NO-GO verdict on original 5 fixes identified 7 additional issues. All addressed:
+6. Pair RNG uses data_seed (not model_seed) per shared-manifest rule (c0bb1fe)
+7. Contact step recorded in causal_consumption entries (c0bb1fe)
+8. Registered cell filter: only {(0,2),(0,3),(1,2),(1,3)} scored (c0bb1fe)
+9. Contact delay filter: Rung 1 = τ≤1 only (c0bb1fe)
+10. Intervention eval bank: 512 trajs/level for pair support (c0bb1fe)
+11. Pair search: 500 attempts, budget 2560 (c0bb1fe)
+12. Recurrent lift CI: level-clustered bootstrap, gate requires LB > 0 (5e631a6)
+13. Cell-macro causal consumption CI: bootstrap matches spec estimand (5e631a6)
+14. Shielding level clustering: proper level IDs instead of fake clusters (5e631a6)
+15. Per-seed JSON rewrite after cross-seed adjustments (5e631a6)
+16. Patch integrity gate: non-target slot TV with bootstrap CI (4679c17)
+17. Identity permutation partition: 576/144 train/test split (4679c17)
+18. n_pairs_total counts actual pairs, not causal contact rows (4679c17)
+Smoke-tested: 4 successful runs, exit 0, all gates display correctly.
+
+**Remaining:** Patch boundary spec amendment — Codex review in progress (was
+running when session ended). The current order (patch→obs+act→predict) is
+semantically correct for V2 latent keys because observation is broadcast and
+key state is exclusively in hidden memory, but spec says observe→patch→act→predict.
+
+**Campaign status:** Seed 137 was running (OLD code, ~1h in, likely near ControlB
+or evaluation). Will need to be re-checked on resume — may have completed or been
+killed by shutdown. Recurrent lift from seed 137 is valid regardless. Seed 2026
+pending: will use fully fixed evaluator. ALL existing seeds (42, 137) must be
+rerun under the corrected evaluator for valid intervention gates.
 
 **Codex V2 design gate (2026-09-01): conditional no-go, 7 blocking repairs.** Repairs
 implemented and committed (97dad28): event code fix, V2 oracle/intervention/counterfactual
@@ -89,13 +114,14 @@ raw ceiling 0.7656 (diagnostic, exact model interface), hist ceiling 1.0000 (> 0
 Memory gap: 31.9pp (canonical), 23.4pp (raw). All 4 cells balanced (~170 each).
 Goal bank healthy. Coverage 100%.
 
-**Evidence gate: 4 Codex rounds pre-campaign + 1 post-seed-42 structural review.**
+**Evidence gate: 4 Codex rounds pre-campaign + 2 post-seed-42 reviews.**
 Pre-campaign fixes (all committed, f7a116d): goal_ok, bijection filter, ControlB F1
 qualification + gate leak + cross-seed propagation, smoke/full separation, numerical
 median adjudicator, pair-support gates (>=64 pairs, >=16 levels), experiment-wide gate
-adjudication. Post-seed-42 Codex structural review identified 3 evaluator bugs (patch
-boundary, timing aggregation, boolean median) + pair budget insufficiency. All fixed
-(2f9d3ce + db2df73). Additional fix: NumPy bool serialization (2f9d3ce).
+adjudication. Post-seed-42 structural review (3 bugs + pair budget) → 5 fixes (2f9d3ce,
+db2df73). Post-fix Codex correctness review: NO-GO, 7 additional issues → 8 more fixes
+(c0bb1fe, 5e631a6, 4679c17). Total: 18 evaluator fixes across 6 commits. 4 smoke tests
+passed. Patch boundary spec amendment pending Codex decision.
 Spec: theory/HANDLE_MU_V2.md.
 
 Prior V1 rung 1 results: experiments/results/handle_mu/seed_42_rung_1.json.
