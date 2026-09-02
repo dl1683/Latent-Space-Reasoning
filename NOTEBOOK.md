@@ -4,6 +4,37 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-02 — V2 seed 42 complete: ELIGIBILITY FAIL by 0.0016
+
+**Recurrent lift: 0.0984 (threshold 0.10).** Missed by 1.6 thousandths of an F1
+point. Dense event F1 = 0.961, Historyless = 0.862, gap = 9.8pp. Compare V1
+where lift was -0.003 — V2's latent keys created genuine memory dependence.
+
+| Model | Event F1 | Status F1 | Val Loss |
+|-------|----------|-----------|----------|
+| Dense | 0.961 | 0.993 | 0.093 |
+| Sparse | 0.955 | 0.990 | 0.115 |
+| CB w192 | 0.966 | 0.959 | 0.189 |
+| Historyless | 0.862 | 0.932 | 0.168 |
+| FlatGRU | 0.845 | 0.877 | 0.455 |
+| Oracle | 1.000 | 1.000 | — |
+
+**ControlB w192 qualified** (selected via f1_threshold) but status gap = 0.034
+exceeds 0.03 limit. CB w96/w30 too weak.
+
+**Intervention gates data-starved:** Only 67 pairs (need 64/cell), 5 cells.
+Causal consumption 0.127 (need 0.80). Timing miss_rate 1.0 (every prediction
+wrong). Shielding PASS 0.061. The pair-finding algorithm may struggle with V2's
+bijection-matching requirement under latent keys.
+
+**Historyless event F1 (0.862) exceeds raw observation ceiling (0.766).** This
+suggests the overall event F1 metric includes easy-to-predict timesteps (most
+timesteps have no event) that dilute the post-identification memory signal.
+
+**Decision:** Proceed with seeds 137 and 2026 per protocol. The 3-seed design
+handles seed variance. Seed 137 launched. Codex consultation on intervention
+gate failures pending.
+
 ## 2026-09-01 — Re-contextualization: V2 campaign mid-flight check
 
 **Training progress (seed 42):** Dense 0.0932, Sparse 0.1149, FlatGRU 0.4549,
