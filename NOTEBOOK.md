@@ -4,6 +4,36 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-02 (session 2) — Codex design gate + affine dynamics + predictive-state refinement
+
+**Affine behavioral dynamics result (diagnostic):** Single-action affine TV=0.08
+(good fit). Two-action composition affine TV=0.21. Parser one-hot baseline
+TV=0.83 (unfair — one-hot vs soft distribution). Fair comparison: affine
+composition (0.21) vs parser-centroid from RCQ (0.19) — roughly comparable.
+The affine maps capture dynamics but provide modest surplus over a fair parser.
+
+**Codex design gate verdict:** Fixed 9-state quotient NO-GO. Affine-as-native-
+math NO-GO (legitimate diagnostic, not native). Path dependence is interesting
+but narrow (model-specific, not a general law). The R^n vs non-R^n distinction
+should be reframed as "operational invariant vs coordinate artifact."
+
+**Codex recommended direction:** One bounded predictive-state closure/refinement
+round. Algorithm: start with Γ = {direct queries}. Find pairs in same class
+whose post-action successors diverge. Add distinguishing suffix to Γ. Recompute
+quotient. Repeat within budget. Test if refined quotient composes and beats
+baselines. Two outcomes: (a) small refined quotient closes → genuine predictive-
+state artifact, or (b) states grow with history → no compact quotient at this
+task/horizon.
+
+**Key theoretical proposition (from Codex):** A finite behavioral quotient
+admits an induced action law exactly when its equivalence is an approximate
+right congruence under the registered actions.
+
+**Implementing now:** Predictive-state refinement script. Budget: max 3
+refinement rounds, max 1000 model calls, max 50 states.
+
+---
+
 ## 2026-09-02 — RCQ-0: quotient structure found, composition fails, exploring affine dynamics
 
 **Finch-3B confirmed as RCQ substrate.** Entity discrimination TV=0.43 (PASS).

@@ -170,10 +170,27 @@ lookup maps post-action states to wrong classes when path-dependent shift exceed
 between-class gap. The 9-state model is too coarse for the model's actual
 behavioral state space.
 
-**Current exploration:** Testing whether Finch-3B's behavioral dynamics admit an
-affine (linear) representation in the 6D response-distribution space. If
-T_a(B) ≈ A_a B + b_a composes, this is native math without discretization —
-a continuous action law on the behavioral manifold.
+**Affine behavioral dynamics (diagnostic, not native math):** Single-action
+affine fit TV=0.08. Two-action composition affine TV=0.21. Parser one-hot
+baseline TV=0.83 (unfair; fair parser-centroid comparison ~0.19 from RCQ).
+Codex ruling: affine fit is R^n diagnostic, not native math. It shows the
+dynamics have structure but the structure is an imported affine model, not
+discovered mathematics.
+
+**Codex design gate verdict (2026-09-02):** Fixed 9-state quotient NO-GO.
+Affine-as-native NO-GO. Path dependence interesting but narrow (model-specific).
+The R^n vs non-R^n mandate reframed: the coherent distinction is operational
+invariant vs coordinate artifact, model-discovered equivalence vs researcher-
+imposed labels. Recommended: one bounded predictive-state closure/refinement
+round using Nerode-style counterexample-guided right congruence.
+
+**Current exploration:** Predictive-state refinement (PSR). Starts with
+Γ = {direct queries}. Finds same-class pairs whose post-action successors
+diverge, adds distinguishing action-query suffixes to Γ, recomputes quotient.
+Tests whether refined quotient forms a right congruence and composes. Two
+possible outcomes: (a) small refined quotient closes → genuine predictive-state
+artifact, or (b) states grow with history → no compact quotient at this task.
+Runner: experiments/run_psr.py. Running now.
 
 ### Closed results (OCI/RAC line — bounded activation-steering)
 
