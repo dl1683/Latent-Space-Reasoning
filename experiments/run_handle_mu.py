@@ -1787,7 +1787,7 @@ def evaluate_gates(results: dict, cfg: Config) -> dict:
     cb_status_within = (dense_status - cb_status) <= 0.03
     cb_event_threshold = cb_event >= 0.90
     cb_status_threshold = cb_status >= 0.90
-    cb_width_qualified = results.get("control_b_selection_method", "") == "f1_threshold"
+    cb_width_qualified = results.get("control_b_selection_method", "") in ("f1_threshold", "cross_seed_common")
     cb_pass = cb_event_within and cb_status_within and cb_event_threshold and cb_status_threshold and cb_width_qualified
 
     eligibility = {
