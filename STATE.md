@@ -40,7 +40,7 @@ insufficient for autonomous causal handles. Same-factor preservation is insuffic
 for composition. Width should track factor complexity. A handle claim requires
 off-episode intervention with future-response validation.
 
-**HANDLE-mu Rung 1 (Codex Rounds 1-4, R4 fixes applied, campaign running).**
+**HANDLE-mu Rung 1 (V1 FAIL, V2 campaign running seed 42).**
 Distance-1 constructive control. Non-visual key-lock grid (7x7, partial visibility r=2).
 5 causal handles (2 keys, 2 locks, goal; agent is shared context, excluded from handle
 graph). Behaviorally defined: i→_c j iff paired interventions differing only in i
@@ -92,21 +92,20 @@ implemented and committed (97dad28): event code fix, V2 oracle/intervention/coun
 propagation, output path separation, policy randomization (first-key + lock order), blind
 goal probe, post-identification preflight with history ceiling, ControlB width ladder.
 
-**HANDLE-mu V2 preflight PASSES (2026-09-01, evidence gate cleared f98322a).**
-Post-identification analysis: memory gap 0.234 (> 0.20, PASS metric, derived from V1
-contract). Raw ceiling 0.7656 (exact model interface), canonical 0.6807 (diagnostic),
-hist ceiling 1.0000. Out-of-sample validated on 3 independent seeds (gaps: 0.234, 0.249,
-0.249). All 4 cells balanced (~170 each). Goal bank healthy. Coverage 100%.
+**HANDLE-mu V2 preflight PASSES (2026-09-01, V1 contract: canonical < 0.75).**
+Post-identification analysis: canonical ceiling 0.6807 (< 0.75, V1 contract PASS),
+raw ceiling 0.7656 (diagnostic, exact model interface), hist ceiling 1.0000 (> 0.99).
+Memory gap: 31.9pp (canonical), 23.4pp (raw). All 4 cells balanced (~170 each).
+Goal bank healthy. Coverage 100%.
 
-**Evidence gate repairs (3 rounds):**
-1. Memory gap criterion (hist - raw > 0.20) replaces post-hoc absolute threshold
-2. goal_ok in PASS condition
-3. Shared-bijection filter in intervention pairing
-4. ControlB: val-based F1 qualification, one-sided margin, no fallback (eligibility FAIL),
-   gate-level cb_width_qualified check, zeroed metrics for non-qualifying widths
-5. Smoke/full output separation
-6. Numerical median F1 in cross-seed adjudicator (not boolean), reconciled verdict status
-Codex final clearance check pending.
+**Evidence gate: 4 Codex rounds, repair-round cap reached (f7a116d).**
+Mechanical fixes (all committed): goal_ok, bijection filter, ControlB F1 qualification
++ gate leak + cross-seed propagation, smoke/full separation, numerical median adjudicator,
+pair-support gates (>=64 pairs, >=16 levels), experiment-wide gate adjudication.
+Sole remaining disagreement: Codex cites non-existent blackboard entry "e905" as
+authority for raw-bank PASS criterion; verified absent from all 3 boards. V1 registered
+specification (canonical < 0.75) governs. Scientific observation (23-32pp gap) confirmed
+by Codex in all 4 rounds. Campaign launched under repair-round cap (CLAUDE.md 2.7).
 Spec: theory/HANDLE_MU_V2.md.
 
 Prior V1 rung 1 results: experiments/results/handle_mu/seed_42_rung_1.json.
