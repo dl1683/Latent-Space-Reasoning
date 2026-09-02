@@ -4,6 +4,29 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — Re-contextualization: V2 campaign mid-flight check
+
+**Training progress (seed 42):** Dense 0.0932, Sparse 0.1149, FlatGRU 0.4549,
+Historyless 0.1682 (all complete). ControlB width ladder started (w30 training).
+Dense-Historyless val loss gap: 0.075 (V1 was 0.028 — gap nearly tripled).
+
+**What still holds:** V2's latent keys are working as designed — the memoryless
+model cannot match Dense. Theoretical prediction: historyless event F1 bounded
+by raw observation ceiling (~0.77), Dense should reach ~0.99, giving recurrent
+lift ~0.22. Well above 0.10 threshold.
+
+**Alternatives held live (not acted on, but not forgotten):**
+1. Causal consumption may still fail even if eligibility passes (V1: 0.54)
+2. Recurrent lift could be "shallow memory" (literal event replay, not causal
+   structure) — composition gate is the discriminator
+3. If handle algebra fails at distance-0: information geometry (Fisher metric)
+   or topological methods (persistent homology) as alternative native math
+4. If V2 PASSES: bridge to distance-0 is the next major decision point —
+   which real model, which tasks, how to define causal handles in practice
+
+**Verdict:** Correct to wait for V2 results. No tunnel vision — monitoring
+alternatives. Highest leverage = let the campaign finish, then analyze.
+
 ## 2026-09-01 — Repair-round cap reached, campaign launch (f7a116d)
 
 **Codex round 4 verdict: STILL_BLOCKED** on commit 55d3d90 (did not evaluate

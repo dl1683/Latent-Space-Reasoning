@@ -4,11 +4,11 @@
 
 This project builds the **native mathematics of latent spaces** — not porting existing math onto embeddings, but discovering what math the space itself demands.
 
-## Status: HANDLE-mu repair in progress (2026-09-01)
+## Status: HANDLE-mu V2 campaign running (2026-09-01)
 
 Both theorem approaches failed — the algebraic (syntactic congruence) and differential-topological (rank premise disproved, argmax open sets). These failures indict the approach, not the premise: native latent-space mathematics exists (axiom). The common failure pattern was treating latent spaces as passive objects to analyze with external math.
 
-The current line is **HANDLE-mu** — a constructive control using a non-visual key-lock grid (7x7, 5 causal handles, partial visibility) to test whether dense typed slot architectures learn causal handle algebra from prediction alone. Rung 1 was pipeline-invalid (five protocol bugs); bounded spec/runner repair is in progress (Codex R3). Details in [`STATE.md`](STATE.md).
+The current line is **HANDLE-mu V2** — a constructive control using a non-visual key-lock grid (7×7, 5 causal handles, partial visibility, latent inventory) to test whether dense typed slot architectures learn causal handle algebra from prediction alone. V1 failed eligibility (world too transparent); V2 adds latent keys (held keys vanish from observation) creating genuine memory dependence. Three-seed campaign running. Details in [`STATE.md`](STATE.md).
 
 ## What we observed
 
