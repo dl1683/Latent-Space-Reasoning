@@ -7,10 +7,14 @@
   "postid_obs_ambiguous": 6,
   "postid_obs_bayes_ceiling": 0.6807017543859649,
   "postid_obs_macro_ceiling": 0.6119995462225847,
+  "postid_raw_obs_groups": 572,
+  "postid_raw_obs_ambiguous": 40,
+  "postid_raw_obs_bayes_ceiling": 0.7656140350877193,
   "postid_total_samples": 1425,
   "postid_hist_groups": 1411,
   "postid_hist_ambiguous": 0,
   "postid_hist_bayes_ceiling": 1.0,
+  "ceiling_note": "canonical ceiling (sorted carriers) is the PASS metric; raw ceiling (slot-ordered) is diagnostic only \u2014 carrier permutation is random per episode and does not encode hidden state",
   "cells": {
     "0->0": {
       "unlock": 194,

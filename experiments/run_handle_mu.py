@@ -1267,6 +1267,9 @@ def find_paired_histories(trajs: list, cfg: Config, target_handle: int,
                 break
             t1, t2 = rng.sample(level_trajs, 2)
 
+            if t1.level_config.key_lock_bijection != t2.level_config.key_lock_bijection:
+                continue
+
             for step in range(1, min(len(t1.states) - 2, len(t2.states) - 2)):
                 s1, s2 = t1.states[step], t2.states[step]
 
@@ -2069,9 +2072,12 @@ def run_seed(cfg: Config, model_seed: int) -> dict:
 
         results[model_name] = model_results
 
-    # ControlB width ladder: train at {h_pm, 96, 192}, select by best val loss
-    best_cb_val = float("inf")
-    best_cb_width = controlb_widths[0]
+    # ControlB width ladder: train at {h_pm, 96, 192}
+    # Per-seed: select first qualifying width (F1 >= 0.90, within 3pts of dense)
+    # Cross-seed adjudication deferred to verdict (median + 2/3 seeds)
+    dense_event_f1 = results["dense_slots"]["prediction"]["event_macro_f1"]
+    dense_status_f1 = results["dense_slots"]["prediction"]["status_macro_f1"]
+    best_cb_width = None
     cb_ladder_results = {}
     for cb_w in controlb_widths:
         cb_name = f"control_b_w{cb_w}"
@@ -2082,20 +2088,39 @@ def run_seed(cfg: Config, model_seed: int) -> dict:
         print(f"  Parameters: {n_params:,}")
         train_metrics = train_model(model, train_batches, val_batches, cfg, cb_name)
         pred_metrics = evaluate_prediction(model, test_batches, cfg)
+        cb_event_f1 = pred_metrics["event_macro_f1"]
+        cb_status_f1 = pred_metrics["status_macro_f1"]
+        qualifies = (
+            cb_event_f1 >= 0.90
+            and cb_status_f1 >= 0.90
+            and abs(dense_event_f1 - cb_event_f1) <= 0.03
+            and abs(dense_status_f1 - cb_status_f1) <= 0.03
+        )
         cb_ladder_results[cb_name] = {
             "n_params": n_params, "training": train_metrics,
             "prediction": pred_metrics, "width": cb_w,
+            "qualifies": qualifies,
         }
-        final_val = train_metrics.get("best_val_loss", train_metrics.get("val_losses", [float("inf")])[-1])
-        if final_val < best_cb_val:
-            best_cb_val = final_val
+        if qualifies and best_cb_width is None:
             best_cb_width = cb_w
         del model
 
+    if best_cb_width is None:
+        best_cb_width = min(
+            controlb_widths,
+            key=lambda w: cb_ladder_results[f"control_b_w{w}"]["training"].get(
+                "best_val_loss", cb_ladder_results[f"control_b_w{w}"]["training"].get(
+                    "val_losses", [float("inf")])[-1])
+        )
+        cb_selection_method = "val_loss_fallback"
+    else:
+        cb_selection_method = "f1_threshold"
+
     results["control_b_ladder"] = cb_ladder_results
     results["control_b_selected_width"] = best_cb_width
+    results["control_b_selection_method"] = cb_selection_method
     results["control_b"] = cb_ladder_results[f"control_b_w{best_cb_width}"]
-    print(f"\n  ControlB selected width: {best_cb_width} (val loss {best_cb_val:.4f})")
+    print(f"\n  ControlB selected width: {best_cb_width} (method: {cb_selection_method})")
 
     # Evaluate gates
     gates = evaluate_gates(results, cfg)
@@ -2150,8 +2175,11 @@ def ambiguity_preflight(cfg: Config, n_levels: int = 16, trajs_per_level: int = 
     level_seeds = list(range(n_levels))
     trajs = generate_trajectories(level_seeds, preflight_cfg, data_rng_seed=9999)
 
-    def _obs_hash(obs_t):
+    def _obs_hash_canonical(obs_t):
         return _canonical_obs(obs_t)
+
+    def _obs_hash_raw(obs_t):
+        return obs_t.tobytes()
 
     def _history_hash(traj, t):
         h = hashlib.sha256()
@@ -2161,6 +2189,7 @@ def ambiguity_preflight(cfg: Config, n_levels: int = 16, trajs_per_level: int = 
 
     obs_groups_all = {}
     obs_groups_postid = {}
+    raw_groups_postid = {}
     hist_groups_postid = {}
     cell_counts = {}
     cell_levels = {}
@@ -2186,8 +2215,8 @@ def ambiguity_preflight(cfg: Config, n_levels: int = 16, trajs_per_level: int = 
             st = traj.states[t]
             action = traj.actions[t]
             event_code = traj.events[t][0]
-            obs_key = _obs_hash(traj.obs_encoded[t])
-            combo = (obs_key, action)
+            canon_key = _obs_hash_canonical(traj.obs_encoded[t])
+            combo = (canon_key, action)
 
             if combo not in obs_groups_all:
                 obs_groups_all[combo] = {}
@@ -2211,6 +2240,11 @@ def ambiguity_preflight(cfg: Config, n_levels: int = 16, trajs_per_level: int = 
                 if combo not in obs_groups_postid:
                     obs_groups_postid[combo] = {}
                 obs_groups_postid[combo][event_code] = obs_groups_postid[combo].get(event_code, 0) + 1
+
+                raw_key = (_obs_hash_raw(traj.obs_encoded[t]), action)
+                if raw_key not in raw_groups_postid:
+                    raw_groups_postid[raw_key] = {}
+                raw_groups_postid[raw_key][event_code] = raw_groups_postid[raw_key].get(event_code, 0) + 1
 
                 hist_key = _history_hash(traj, t)
                 if hist_key not in hist_groups_postid:
@@ -2260,10 +2294,12 @@ def ambiguity_preflight(cfg: Config, n_levels: int = 16, trajs_per_level: int = 
     obs_ceil_all = _bayes_ceiling(obs_groups_all)
     obs_ceil_postid = _bayes_ceiling(obs_groups_postid)
     obs_macro_postid = _macro_ceiling(obs_groups_postid)
+    raw_ceil_postid = _bayes_ceiling(raw_groups_postid)
     hist_ceil_postid = _bayes_ceiling(hist_groups_postid)
 
     n_ambig_all = _count_ambiguous(obs_groups_all)
     n_ambig_postid = _count_ambiguous(obs_groups_postid)
+    n_ambig_raw = _count_ambiguous(raw_groups_postid)
     n_ambig_hist = _count_ambiguous(hist_groups_postid)
 
     total_postid = sum(sum(v.values()) for v in obs_groups_postid.values())
@@ -2293,6 +2329,7 @@ def ambiguity_preflight(cfg: Config, n_levels: int = 16, trajs_per_level: int = 
         and hist_ceil_postid > 0.99
         and cells_ok
         and n_ambig_postid >= 1
+        and goal_ok
     )
 
     result = {
@@ -2304,10 +2341,14 @@ def ambiguity_preflight(cfg: Config, n_levels: int = 16, trajs_per_level: int = 
         "postid_obs_ambiguous": n_ambig_postid,
         "postid_obs_bayes_ceiling": obs_ceil_postid,
         "postid_obs_macro_ceiling": obs_macro_postid,
+        "postid_raw_obs_groups": len(raw_groups_postid),
+        "postid_raw_obs_ambiguous": n_ambig_raw,
+        "postid_raw_obs_bayes_ceiling": raw_ceil_postid,
         "postid_total_samples": total_postid,
         "postid_hist_groups": len(hist_groups_postid),
         "postid_hist_ambiguous": n_ambig_hist,
         "postid_hist_bayes_ceiling": hist_ceil_postid,
+        "ceiling_note": "canonical ceiling (sorted carriers) is the PASS metric; raw ceiling (slot-ordered) is diagnostic only — carrier permutation is random per episode and does not encode hidden state",
         "cells": cell_report,
         "cells_ok": cells_ok,
         "goal_bank": goal_bank,
@@ -2319,10 +2360,12 @@ def ambiguity_preflight(cfg: Config, n_levels: int = 16, trajs_per_level: int = 
     print("\n" + "=" * 60)
     print("V2 AMBIGUITY PREFLIGHT (post-identification)")
     print("=" * 60)
-    print(f"  Post-ID obs Bayes ceiling:  {obs_ceil_postid:.4f}  (need < 0.75)")
+    print(f"  Post-ID canonical ceiling:  {obs_ceil_postid:.4f}  (need < 0.75, PASS metric)")
+    print(f"  Post-ID raw ceiling:        {raw_ceil_postid:.4f}  (diagnostic — slot-order artifact)")
     print(f"  Post-ID obs macro ceiling:  {obs_macro_postid:.4f}")
     print(f"  Post-ID hist Bayes ceiling: {hist_ceil_postid:.4f}  (need > 0.99)")
-    print(f"  Post-ID ambiguous groups:   {n_ambig_postid}")
+    print(f"  Post-ID canon ambig groups: {n_ambig_postid}")
+    print(f"  Post-ID raw ambig groups:   {n_ambig_raw}")
     print(f"  Post-ID total samples:      {total_postid}")
     print(f"  All-obs Bayes ceiling:      {obs_ceil_all:.4f}")
     print()
@@ -2402,7 +2445,8 @@ def main():
 
         # Save per-seed result
         prefix = "v2_" if cfg.v2_latent_keys else ""
-        out_path = RESULTS_DIR / f"{prefix}seed_{seed}_rung_{cfg.staircase_rung}.json"
+        smoke_prefix = "smoke_" if args.smoke else ""
+        out_path = RESULTS_DIR / f"{smoke_prefix}{prefix}seed_{seed}_rung_{cfg.staircase_rung}.json"
         with open(out_path, "w") as f:
             json.dump(result, f, indent=2, default=str)
         print(f"\nSaved: {out_path}")
@@ -2422,7 +2466,8 @@ def main():
     }
 
     prefix = "v2_" if cfg.v2_latent_keys else ""
-    verdict_path = RESULTS_DIR / f"{prefix}verdict_rung_{cfg.staircase_rung}.json"
+    smoke_tag = "smoke_" if is_smoke else ""
+    verdict_path = RESULTS_DIR / f"{smoke_tag}{prefix}verdict_rung_{cfg.staircase_rung}.json"
     with open(verdict_path, "w") as f:
         json.dump(verdict, f, indent=2, default=str)
     print(f"\nVerdict saved: {verdict_path}")
