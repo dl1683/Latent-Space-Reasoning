@@ -83,15 +83,23 @@ Status is persistent (once picked up, a key stays held) and objects are visible 
 interactions (visibility r=2 covers all adjacent cells). The model never needs to remember
 anything it can't see.
 
-**Codex R6 verdict:** Do not patch v1. Create HANDLE-mu V2 with three targeted changes:
+**Codex R6 verdict:** Do not patch v1. Create HANDLE-mu V2 with targeted changes:
 (1) held keys vanish from observation (latent inventory), (2) blind USE probes (scripted
 policy does not leak bijection), (3) frozen ambiguity bank.
 
-**HANDLE-mu V2 preflight PASSES (2026-09-01).** 15 ambiguous observation groups,
-Bayes ceiling 0.591 (< 0.75 threshold), 8/16 levels with mixed USE outcomes.
-Spec: theory/HANDLE_MU_V2.md. Codex V2 design gate in progress.
+**Codex V2 design gate (2026-09-01): conditional no-go, 7 blocking repairs.** Repairs
+implemented and committed (97dad28): event code fix, V2 oracle/intervention/counterfactual
+propagation, output path separation, policy randomization (first-key + lock order), blind
+goal probe, post-identification preflight with history ceiling, ControlB width ladder.
 
-Prior rung 1 results (PIPELINE-INVALID): experiments/results/handle_mu/.
+**HANDLE-mu V2 repaired preflight PASSES (2026-09-01).** Post-identification analysis:
+obs Bayes ceiling 0.6807 (< 0.75), hist Bayes ceiling 1.0000 (> 0.99), memory gap 32pp.
+All 4 key-lock cells balanced (~170 each outcome, 16 levels). Goal bank: ready_activate=1353,
+unready_none=1427. Coverage 100%. Traj length 48. ControlB width ladder {h_pm, 96, 192}.
+Spec: theory/HANDLE_MU_V2.md. Codex V2 evidence gate in progress.
+
+Prior V1 rung 1 results: experiments/results/handle_mu/seed_42_rung_1.json.
+V2 results: experiments/results/handle_mu/v2_*.json.
 
 ### Closed results (OCI/RAC line — bounded activation-steering)
 

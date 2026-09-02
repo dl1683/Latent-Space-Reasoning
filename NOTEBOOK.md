@@ -4,6 +4,34 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — HANDLE-mu V2 design gate repairs: 7 blocking fixes, repaired preflight PASSES
+
+**Codex V2 design gate:** conditional no-go, 7 blocking repairs identified.
+Repairs implemented (commit 97dad28):
+
+1. **Event code bug**: preflight checked `e==2` (goal activation) instead of `e==1` (unlock)
+2. **V2 oracle propagation**: oracle world now receives v2_latent_keys
+3. **V2 intervention propagation**: counterfactual + baseline worlds get v2_latent_keys
+4. **Counterfactual transplant**: held keys go to sentinel (-99,-99) in V2, not agent position
+5. **Output path separation**: V2 saves to v2_seed_*.json (no V1 overwrite)
+6. **Policy randomization**: first_key random {0,1}, lock_order shuffled, blind goal probe
+7. **Preflight rewrite**: post-identification analysis, full-history ceiling, cell balance, goal bank
+
+**Repaired preflight results:**
+- Post-ID obs Bayes ceiling: 0.6807 (memory-dependent: observation alone insufficient)
+- Post-ID hist Bayes ceiling: 1.0000 (full history uniquely determines outcome)
+- Memory gap: 32 percentage points (0.68 vs 1.00)
+- All 4 key-lock cells balanced across 16 levels
+- ControlB width ladder: {h_pm, 96, 192} now trains all three widths
+- Trajectory length: 32 -> 48 (100% scripted completion)
+
+**Smoke test signal:** ControlB w192 (val 1.07) beats w30 (val 2.01) and even Dense (val 1.44).
+Width matters in V2 — more capacity helps with memory-dependent predictions.
+
+**What's next:** Codex evidence gate on repaired preflight, then full V2 campaign seed 42.
+
+---
+
 ## 2026-09-01 — HANDLE-mu V2: latent inventory, ambiguity preflight PASSES
 
 **Codex R6 verdict:** V1 world is too transparent — don't patch, create V2.
