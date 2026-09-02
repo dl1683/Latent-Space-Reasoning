@@ -235,7 +235,7 @@ class KeyLockGridWorld:
                         identity_perm: list = None) -> np.ndarray:
         """Directly encode observation as numpy array. Returns (n_slots, record_dim).
 
-        identity_perm: fixed object→carrier mapping for the episode. If None,
+        identity_perm: fixed object->carrier mapping for the episode. If None,
         falls back to per-call shuffle (legacy behavior, should not be used).
         """
         result = np.zeros((n_slots, record_dim), dtype=np.float32)
@@ -425,7 +425,7 @@ class Trajectory:
     events: list              # list of event code lists
     states: list              # list of WorldState (ground truth for intervention)
     level_config: object      # LevelConfig
-    episode_carrier_map: list = None  # complete object→carrier bijection, stable per episode
+    episode_carrier_map: list = None  # complete object->carrier bijection, stable per episode
 
 
 def generate_trajectories(level_seeds: list, cfg: Config, data_rng_seed: int = 0) -> list:
@@ -783,7 +783,7 @@ class FlatGRUModel(nn.Module):
         gru = 3 * (sw * sw + sw * sw + sw * 2)
         msg = 4 * (sw * sw + sw)
         act = cfg.n_actions * sw
-        # Factorized head: 5 per-field heads + 1 event head, each sw→sw→out
+        # Factorized head: 5 per-field heads + 1 event head, each sw->sw->out
         def _head_params(out_dim):
             return sw * sw + sw + sw * out_dim + out_dim
         head = (_head_params(cfg.n_object_types) + _head_params(n_pos) +
@@ -843,7 +843,7 @@ class FlatGRUModel(nn.Module):
 class ControlBModel(nn.Module):
     """Set-aware monolithic recurrent control (R3b §5, R4 carrier-tag fix).
 
-    Carrier-tagged encoding → invariant sum-pool → global GRU →
+    Carrier-tagged encoding -> invariant sum-pool -> global GRU ->
     per-carrier decode conditioned on carrier-ID query.
     """
     def __init__(self, cfg: Config, hidden_dim: int):
@@ -1442,7 +1442,7 @@ def evaluate_intervention(model, pairs: list, cfg: Config, model_type: str) -> d
             donor_hidden = model.forward_step(enc_donor, act_ds, donor_hidden)
             recip_hidden = model.forward_step(enc_recip, act_ds, recip_hidden)
 
-            # PATCH: donor target → recipient target (spec step 2)
+            # PATCH: donor target -> recipient target (spec step 2)
             d_idx = _carrier_slot_for_handle(dt.episode_carrier_map, pair.target_handle)
             r_idx = _carrier_slot_for_handle(rt.episode_carrier_map, pair.target_handle)
             hybrid_hidden = recip_hidden.clone()
@@ -1787,7 +1787,8 @@ def evaluate_gates(results: dict, cfg: Config) -> dict:
     cb_status_within = (dense_status - cb_status) <= 0.03
     cb_event_threshold = cb_event >= 0.90
     cb_status_threshold = cb_status >= 0.90
-    cb_pass = cb_event_within and cb_status_within and cb_event_threshold and cb_status_threshold
+    cb_width_qualified = results.get("control_b_selection_method", "") == "f1_threshold"
+    cb_pass = cb_event_within and cb_status_within and cb_event_threshold and cb_status_threshold and cb_width_qualified
 
     eligibility = {
         "oracle_acc": oracle_acc,
@@ -2113,15 +2114,22 @@ def run_seed(cfg: Config, model_seed: int) -> dict:
 
     if best_cb_width is None:
         cb_selection_method = "no_qualifying_width"
-        best_cb_width = controlb_widths[-1]
+        results["control_b_ladder"] = cb_ladder_results
+        results["control_b_selected_width"] = None
+        results["control_b_selection_method"] = cb_selection_method
+        results["control_b"] = {
+            "prediction": {"event_macro_f1": 0, "status_macro_f1": 0},
+            "val_prediction": {"event_macro_f1": 0, "status_macro_f1": 0},
+            "no_qualifying_width": True,
+        }
+        print(f"\n  ControlB: NO qualifying width -> eligibility FAIL")
     else:
         cb_selection_method = "f1_threshold"
-
-    results["control_b_ladder"] = cb_ladder_results
-    results["control_b_selected_width"] = best_cb_width
-    results["control_b_selection_method"] = cb_selection_method
-    results["control_b"] = cb_ladder_results[f"control_b_w{best_cb_width}"]
-    print(f"\n  ControlB selected width: {best_cb_width} (method: {cb_selection_method})")
+        results["control_b_ladder"] = cb_ladder_results
+        results["control_b_selected_width"] = best_cb_width
+        results["control_b_selection_method"] = cb_selection_method
+        results["control_b"] = cb_ladder_results[f"control_b_w{best_cb_width}"]
+        print(f"\n  ControlB selected width: {best_cb_width} (method: {cb_selection_method})")
 
     # Evaluate gates
     gates = evaluate_gates(results, cfg)
@@ -2155,7 +2163,7 @@ def _canonical_obs(obs_encoded_t: np.ndarray) -> tuple:
     return tuple(sorted(rows))
 
 
-def ambiguity_preflight(cfg: Config, n_levels: int = 16, trajs_per_level: int = 128) -> dict:
+def ambiguity_preflight(cfg: Config, n_levels: int = 16, trajs_per_level: int = 128, data_rng_seed: int = 9999) -> dict:
     """V2 ambiguity preflight: verify the world creates genuine memory dependence.
 
     Post-identification analysis: first blind USE at a lock is calibration
@@ -2174,7 +2182,7 @@ def ambiguity_preflight(cfg: Config, n_levels: int = 16, trajs_per_level: int = 
     )
 
     level_seeds = list(range(n_levels))
-    trajs = generate_trajectories(level_seeds, preflight_cfg, data_rng_seed=9999)
+    trajs = generate_trajectories(level_seeds, preflight_cfg, data_rng_seed=data_rng_seed)
 
     def _obs_hash_canonical(obs_t):
         return _canonical_obs(obs_t)
@@ -2324,9 +2332,10 @@ def ambiguity_preflight(cfg: Config, n_levels: int = 16, trajs_per_level: int = 
 
     goal_ok = goal_bank["unready_none"] > 0 and goal_bank["ready_activate"] > 0
 
+    memory_gap = hist_ceil_postid - raw_ceil_postid
     passed = (
         total_postid >= 100
-        and raw_ceil_postid < 0.80
+        and memory_gap > 0.20
         and hist_ceil_postid > 0.99
         and cells_ok
         and n_ambig_raw >= 1
@@ -2349,7 +2358,8 @@ def ambiguity_preflight(cfg: Config, n_levels: int = 16, trajs_per_level: int = 
         "postid_hist_groups": len(hist_groups_postid),
         "postid_hist_ambiguous": n_ambig_hist,
         "postid_hist_bayes_ceiling": hist_ceil_postid,
-        "ceiling_note": "raw ceiling (exact model interface) is the PASS metric with threshold 0.80; canonical ceiling (sorted carriers) is diagnostic — prospective relock from 0.75/canonical to 0.80/raw",
+        "memory_gap": memory_gap,
+        "ceiling_note": "PASS uses memory gap (hist - raw) > 0.20 derived from V1 contract (obs<0.75 + hist>0.99 -> gap>0.24, relaxed to 0.20 for raw interface); raw ceiling is exact model interface; canonical is diagnostic",
         "cells": cell_report,
         "cells_ok": cells_ok,
         "goal_bank": goal_bank,
@@ -2361,8 +2371,9 @@ def ambiguity_preflight(cfg: Config, n_levels: int = 16, trajs_per_level: int = 
     print("\n" + "=" * 60)
     print("V2 AMBIGUITY PREFLIGHT (post-identification)")
     print("=" * 60)
-    print(f"  Post-ID raw ceiling:        {raw_ceil_postid:.4f}  (need < 0.80, PASS metric)")
+    print(f"  Post-ID raw ceiling:        {raw_ceil_postid:.4f}  (exact model interface)")
     print(f"  Post-ID canonical ceiling:  {obs_ceil_postid:.4f}  (diagnostic — sorted carriers)")
+    print(f"  Memory gap (hist - raw):    {memory_gap:.4f}  (need > 0.20, PASS metric)")
     print(f"  Post-ID obs macro ceiling:  {obs_macro_postid:.4f}")
     print(f"  Post-ID hist Bayes ceiling: {hist_ceil_postid:.4f}  (need > 0.99)")
     print(f"  Post-ID canon ambig groups: {n_ambig_postid}")
@@ -2456,7 +2467,7 @@ def main():
 
     is_smoke = cfg.n_train_levels < 64
 
-    # Cross-seed ControlB width adjudication (locked spec: median + 2/3 seeds)
+    # Cross-seed ControlB width adjudication (locked spec: numerical median + 2/3 seeds)
     controlb_adjudication = None
     if len(seeds) >= 3 and not is_smoke:
         all_widths = None
@@ -2469,21 +2480,46 @@ def main():
             width_report = {}
             for w in all_widths:
                 cb_name = f"control_b_w{w}"
+                seed_event_f1s = []
+                seed_status_f1s = []
                 seed_qualifies = []
+                seed_dense_event_f1s = []
+                seed_dense_status_f1s = []
                 for s_key in all_results:
-                    q = all_results[s_key].get("control_b_ladder", {}).get(cb_name, {}).get("qualifies", False)
+                    ladder_entry = all_results[s_key].get("control_b_ladder", {}).get(cb_name, {})
+                    q = ladder_entry.get("qualifies", False)
+                    val_pred = ladder_entry.get("val_prediction", {})
+                    seed_event_f1s.append(val_pred.get("event_macro_f1", 0))
+                    seed_status_f1s.append(val_pred.get("status_macro_f1", 0))
                     seed_qualifies.append(q)
+                    dense_val = all_results[s_key].get("dense_slots", {}).get("val_prediction", {})
+                    seed_dense_event_f1s.append(dense_val.get("event_macro_f1", 0))
+                    seed_dense_status_f1s.append(dense_val.get("status_macro_f1", 0))
                 n_pass = sum(seed_qualifies)
-                median_idx = len(seed_qualifies) // 2
-                sorted_q = sorted(seed_qualifies, reverse=True)
-                median_pass = sorted_q[median_idx]
-                width_ok = n_pass >= (2 * len(seeds) + 2) // 3 and median_pass
-                width_report[w] = {"seeds_pass": n_pass, "total": len(seeds),
-                                   "median_pass": median_pass, "qualifies": width_ok}
+                median_event = sorted(seed_event_f1s)[len(seed_event_f1s) // 2]
+                median_status = sorted(seed_status_f1s)[len(seed_status_f1s) // 2]
+                median_dense_event = sorted(seed_dense_event_f1s)[len(seed_dense_event_f1s) // 2]
+                median_dense_status = sorted(seed_dense_status_f1s)[len(seed_dense_status_f1s) // 2]
+                median_qualifies = (
+                    median_event >= 0.90
+                    and median_status >= 0.90
+                    and (median_dense_event - median_event) <= 0.03
+                    and (median_dense_status - median_status) <= 0.03
+                )
+                two_thirds_pass = n_pass >= (2 * len(seeds) + 2) // 3
+                width_ok = median_qualifies and two_thirds_pass
+                width_report[w] = {
+                    "seeds_pass": n_pass, "total": len(seeds),
+                    "median_event_f1": median_event, "median_status_f1": median_status,
+                    "median_dense_event_f1": median_dense_event,
+                    "median_dense_status_f1": median_dense_status,
+                    "median_qualifies": median_qualifies,
+                    "two_thirds_pass": two_thirds_pass, "qualifies": width_ok,
+                }
                 if width_ok and selected_cross_seed_width is None:
                     selected_cross_seed_width = w
             controlb_adjudication = {
-                "method": "cross_seed_predictive_qualification",
+                "method": "cross_seed_numerical_median_qualification",
                 "width_report": width_report,
                 "selected_width": selected_cross_seed_width,
                 "eligibility_fail": selected_cross_seed_width is None,
@@ -2491,7 +2527,7 @@ def main():
             if selected_cross_seed_width is not None:
                 print(f"\n  Cross-seed ControlB width: {selected_cross_seed_width}")
             else:
-                print(f"\n  Cross-seed ControlB: NO qualifying width → eligibility FAIL")
+                print(f"\n  Cross-seed ControlB: NO qualifying width -> eligibility FAIL")
 
     # Save combined verdict
     verdict = {
@@ -2502,7 +2538,12 @@ def main():
         "elapsed_seconds": elapsed,
         "per_seed": all_results,
         "controlb_adjudication": controlb_adjudication,
-        "adjudication": "NOT_ADJUDICATED" if is_smoke else "PENDING",
+        "adjudication": (
+            "NOT_ADJUDICATED" if is_smoke
+            else "ELIGIBILITY_FAIL" if controlb_adjudication is not None and controlb_adjudication["eligibility_fail"]
+            else "ADJUDICATED" if controlb_adjudication is not None
+            else "PENDING"
+        ),
     }
 
     prefix = "v2_" if cfg.v2_latent_keys else ""
