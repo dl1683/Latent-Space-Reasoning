@@ -72,6 +72,8 @@ class Config:
     epsilon_tv: float = 0.05  # TV threshold for causal contact
     staircase_rung: int = 1   # 1-6, advance one at a time
 
+    v2_latent_keys: bool = False  # v2: held keys vanish from observation
+
     device: str = "cpu"
 
 
@@ -118,9 +120,10 @@ class WorldState:
 
 class KeyLockGridWorld:
 
-    def __init__(self, level_config: LevelConfig):
+    def __init__(self, level_config: LevelConfig, v2_latent_keys: bool = False):
         self.cfg = level_config
         self.gs = level_config.grid_size
+        self.v2_latent_keys = v2_latent_keys
 
     def reset(self) -> WorldState:
         cfg = self.cfg
@@ -171,8 +174,12 @@ class KeyLockGridWorld:
         bij = self.cfg.key_lock_bijection
         for ki in range(2):
             if new_state.key_held[ki]:
-                new_state.keys[ki].row = nr
-                new_state.keys[ki].col = nc
+                if self.v2_latent_keys:
+                    new_state.keys[ki].row = -99
+                    new_state.keys[ki].col = -99
+                else:
+                    new_state.keys[ki].row = nr
+                    new_state.keys[ki].col = nc
 
             li = bij[ki]
             lock = new_state.locks[li]
@@ -327,6 +334,68 @@ def scripted_policy(state: WorldState, level_cfg: LevelConfig, rng: random.Rando
     return rng.randint(0, 4)
 
 
+class ScriptedPolicyV2:
+    """V2 coverage policy: pick up ONE key, probe locks blindly, then second key.
+
+    Stateful: tracks which locks have been probed to avoid infinite loops.
+    """
+
+    def __init__(self):
+        self.probed_locks = set()
+
+    def __call__(self, state: WorldState, level_cfg: LevelConfig, rng: random.Random) -> int:
+        ar, ac = state.agent_row, state.agent_col
+        n_held = sum(state.key_held)
+
+        if n_held == 0:
+            ki = 0
+            kr, kc = state.keys[ki].row, state.keys[ki].col
+            if ar == kr and ac == kc:
+                return USE
+            return _navigate(ar, ac, kr, kc)
+
+        if n_held == 1:
+            for li in range(2):
+                if not state.lock_open[li] and li not in self.probed_locks:
+                    lr, lc = state.locks[li].row, state.locks[li].col
+                    if ar == lr and ac == lc:
+                        self.probed_locks.add(li)
+                        return USE
+                    return _navigate(ar, ac, lr, lc)
+
+            second_ki = 1 if state.key_held[0] else 0
+            if not state.key_held[second_ki]:
+                kr, kc = state.keys[second_ki].row, state.keys[second_ki].col
+                if ar == kr and ac == kc:
+                    self.probed_locks.clear()
+                    return USE
+                return _navigate(ar, ac, kr, kc)
+
+        if n_held >= 1:
+            for li in range(2):
+                if not state.lock_open[li]:
+                    lr, lc = state.locks[li].row, state.locks[li].col
+                    if ar == lr and ac == lc:
+                        return USE
+                    return _navigate(ar, ac, lr, lc)
+
+        if all(state.lock_open) and not state.goal_active:
+            gr, gc = level_cfg.goal_position
+            if ar == gr and ac == gc:
+                return USE
+            return _navigate(ar, ac, gr, gc)
+
+        return rng.randint(0, 4)
+
+
+def _navigate(ar: int, ac: int, tr: int, tc: int) -> int:
+    if ar > tr: return NORTH
+    if ar < tr: return SOUTH
+    if ac > tc: return WEST
+    if ac < tc: return EAST
+    return USE
+
+
 # ---------------------------------------------------------------------------
 # Data generation
 # ---------------------------------------------------------------------------
@@ -370,7 +439,8 @@ def generate_trajectories(level_seeds: list, cfg: Config, data_rng_seed: int = 0
             episode_level = copy.copy(level)
             episode_level.key_lock_bijection = episode_bijection
 
-            world = KeyLockGridWorld(episode_level)
+            world = KeyLockGridWorld(episode_level, v2_latent_keys=cfg.v2_latent_keys)
+            v2_policy = ScriptedPolicyV2() if cfg.v2_latent_keys else None
             state = world.reset()
             obs_encoded = np.zeros((cfg.traj_length + 1, cfg.n_slots, rd), dtype=np.float32)
             slot_maps = []
@@ -389,7 +459,10 @@ def generate_trajectories(level_seeds: list, cfg: Config, data_rng_seed: int = 0
                 slot_maps.append(vis_ids)
 
                 if use_scripted:
-                    action = scripted_policy(state, episode_level, rng)
+                    if cfg.v2_latent_keys:
+                        action = v2_policy(state, episode_level, rng)
+                    else:
+                        action = scripted_policy(state, episode_level, rng)
                 else:
                     action = rng.randint(0, cfg.n_actions - 1)
 
@@ -2006,6 +2079,135 @@ def run_seed(cfg: Config, model_seed: int) -> dict:
     return results
 
 
+def _canonical_obs(obs_encoded_t: np.ndarray) -> tuple:
+    """Permutation-invariant observation key: sort carrier vectors."""
+    rows = []
+    for slot in range(obs_encoded_t.shape[0]):
+        rows.append(tuple(obs_encoded_t[slot].tolist()))
+    return tuple(sorted(rows))
+
+
+def ambiguity_preflight(cfg: Config, n_levels: int = 16, trajs_per_level: int = 128) -> dict:
+    """V2 ambiguity preflight: verify the world creates observation aliasing.
+
+    Uses permutation-invariant observation matching (sorted carrier vectors)
+    to find timestep pairs where functionally identical observations + same
+    action produce different outcomes.
+    """
+    assert cfg.v2_latent_keys, "Preflight requires v2_latent_keys=True"
+
+    preflight_cfg = Config(
+        v2_latent_keys=True,
+        n_train_levels=n_levels,
+        trajs_per_level=trajs_per_level,
+        traj_length=cfg.traj_length,
+        scripted_fraction=0.7,
+    )
+
+    level_seeds = list(range(n_levels))
+    trajs = generate_trajectories(level_seeds, preflight_cfg, data_rng_seed=9999)
+
+    obs_action_to_outcomes = {}
+    use_at_lock_cases = []
+
+    for traj in trajs:
+        for t in range(len(traj.actions)):
+            obs_key = _canonical_obs(traj.obs_encoded[t])
+            action = traj.actions[t]
+            event = tuple(traj.events[t])
+            key = (obs_key, action)
+
+            if key not in obs_action_to_outcomes:
+                obs_action_to_outcomes[key] = {}
+            obs_action_to_outcomes[key][event] = obs_action_to_outcomes[key].get(event, 0) + 1
+
+            if action == USE:
+                has_unlock = any(e == 2 for e in traj.events[t])
+                use_at_lock_cases.append({
+                    "level": traj.level_seed,
+                    "obs_key": obs_key,
+                    "event": event,
+                    "has_unlock": has_unlock,
+                    "held": [s.key_held[:] for s in [traj.states[t]]][0],
+                    "bij": traj.level_config.key_lock_bijection[:],
+                })
+
+    ambiguous_keys = 0
+    total_keys = len(obs_action_to_outcomes)
+    ambiguous_timesteps = 0
+    total_timesteps = 0
+    use_ambiguous = 0
+    majority_fracs = []
+
+    for (obs_key, action), outcome_counts in obs_action_to_outcomes.items():
+        n_total = sum(outcome_counts.values())
+        total_timesteps += n_total
+
+        if len(outcome_counts) > 1:
+            ambiguous_keys += 1
+            ambiguous_timesteps += n_total
+            majority = max(outcome_counts.values())
+            majority_fracs.append(majority / n_total)
+            if action == USE:
+                use_ambiguous += 1
+
+    bayes_ceiling = (sum(majority_fracs) / len(majority_fracs)) if majority_fracs else 1.0
+
+    by_level_use = {}
+    for c in use_at_lock_cases:
+        lv = c["level"]
+        if lv not in by_level_use:
+            by_level_use[lv] = {"unlock": 0, "no_event": 0, "total": 0}
+        by_level_use[lv]["total"] += 1
+        if c["has_unlock"]:
+            by_level_use[lv]["unlock"] += 1
+        else:
+            by_level_use[lv]["no_event"] += 1
+
+    levels_with_both = sum(1 for v in by_level_use.values()
+                           if v["unlock"] > 0 and v["no_event"] > 0)
+
+    result = {
+        "n_trajs": len(trajs),
+        "total_distinct_obs_action": total_keys,
+        "ambiguous_obs_action_groups": ambiguous_keys,
+        "ambiguous_fraction": ambiguous_keys / max(total_keys, 1),
+        "total_timesteps": total_timesteps,
+        "ambiguous_timesteps": ambiguous_timesteps,
+        "use_action_ambiguous_groups": use_ambiguous,
+        "observation_bayes_ceiling": bayes_ceiling,
+        "full_history_ceiling": 1.0,
+        "total_use_cases": len(use_at_lock_cases),
+        "levels_with_mixed_use_outcomes": levels_with_both,
+        "PASS": ambiguous_keys >= 10 and bayes_ceiling < 0.75,
+    }
+
+    print("\n" + "=" * 60)
+    print("V2 AMBIGUITY PREFLIGHT RESULTS")
+    print("=" * 60)
+    for k, v in result.items():
+        if isinstance(v, float):
+            print(f"  {k}: {v:.4f}")
+        else:
+            print(f"  {k}: {v}")
+    print("=" * 60)
+
+    if result["PASS"]:
+        print("PASS: World creates genuine observation aliasing.")
+        print(f"  {ambiguous_keys} groups with identical (obs, action) -> different outcomes")
+        print(f"  Observation-only Bayes ceiling: {bayes_ceiling:.3f}")
+    else:
+        print("FAIL: Insufficient observation aliasing.")
+        if ambiguous_keys < 10:
+            print(f"  Only {ambiguous_keys} ambiguous groups (need >= 10)")
+        if bayes_ceiling >= 0.75:
+            print(f"  Bayes ceiling {bayes_ceiling:.3f} too high (need < 0.75)")
+        print(f"\n  Diagnostic: {len(use_at_lock_cases)} USE actions across {len(by_level_use)} levels")
+        print(f"  Levels with both unlock and no-event USE outcomes: {levels_with_both}")
+
+    return result
+
+
 def main():
     parser = argparse.ArgumentParser(description="HANDLE-μ experiment")
     parser.add_argument("--seed", type=int, default=None,
@@ -2017,7 +2219,20 @@ def main():
     parser.add_argument("--device", type=str, default="cpu")
     parser.add_argument("--smoke", action="store_true",
                         help="Smoke test: fewer levels/trajs, forces NOT_ADJUDICATED")
+    parser.add_argument("--v2-preflight", action="store_true",
+                        help="Run v2 ambiguity preflight (no training)")
+    parser.add_argument("--v2", action="store_true",
+                        help="Run with v2 latent-inventory world")
     args = parser.parse_args()
+
+    if args.v2_preflight:
+        cfg = Config(v2_latent_keys=True)
+        result = ambiguity_preflight(cfg)
+        out_path = RESULTS_DIR / "v2_preflight.json"
+        with open(out_path, "w") as f:
+            json.dump(result, f, indent=2)
+        print(f"\nSaved: {out_path}")
+        return
 
     if args.smoke:
         cfg = Config(
@@ -2025,6 +2240,7 @@ def main():
             n_epochs=15, batch_size=args.batch_size, device=args.device,
             n_train_levels=8, n_val_levels=4, n_test_levels=4,
             trajs_per_level=16, intervention_n_pairs=64,
+            v2_latent_keys=args.v2,
         )
     else:
         cfg = Config(
@@ -2032,6 +2248,7 @@ def main():
             n_epochs=args.n_epochs,
             batch_size=args.batch_size,
             device=args.device,
+            v2_latent_keys=args.v2,
         )
 
     seeds = [args.seed] if args.seed else list(cfg.model_seeds)

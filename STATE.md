@@ -49,15 +49,47 @@ as primary arm; learned-sparse and flat GRU as controls. Training: next-obs + ne
 prediction only, no swap/graph supervision. Seven pre-registered gates.
 Spec: theory/HANDLE_MU.md. Runner: experiments/run_handle_mu.py.
 
-**Codex R4 fixes applied, second campaign running.**
-R4 identified 7 blocking issues. All addressed: counterfactual resimulation
-in intervention evaluator (simulator ground truth), Control B carrier tags,
-expanded eligibility gates, historyless with action+messaging, Rung 1 eval bank
-on training layouts, oracle on validation episodes, smoke mode.
+**R4+R5 fixes applied. Seed 42 campaign complete (R5 code). THREE BLOCKERS.**
+R4 (7 blocking): counterfactual resimulation, Control B carrier tags,
+eligibility expansion, historyless action+messaging, eval bank, oracle on val, smoke.
+R5 (4 blocking): observe-patch-act boundary (assimilate o_ds before patch, predict
+from head(patched_hidden)), directed i→j contact detection, timing miss penalty
+(sentinel=20, miss_rate gate ≤ 0.20), per-cell macro reduction + improvement LB.
+ControlB excluded from intervention (global hidden, no per-slot swap).
 
-Pre-fix diagnostic (seed 42): dense event F1=0.986, status=0.995.
-Causal consumption improvement = -0.009 (ground truth was wrong). R4 fixes
-provide correct counterfactual ground truth.
+**Seed 42 campaign results (R5 code, 64 levels, 128 trajs/level, 40 epochs, 3211s):**
+
+| Model | Params | Val Loss | Event F1 | Status F1 |
+|-------|--------|----------|----------|-----------|
+| Dense | 19511 | 0.079 | 0.990 | 0.999 |
+| Sparse | 19511 | 0.083 | 0.992 | 0.998 |
+| FlatGRU | 18574 | 0.423 | 0.979 | 0.683 |
+| ControlB | 19133 | 0.708 | 0.999 | 0.433 |
+| Historyless| 13175 | 0.107 | 0.993 | 0.984 |
+| Oracle | — | — | 1.000 | 1.000 |
+
+Gate outcomes:
+- Eligibility: **FAIL** (Dense/Sparse PASS; CB status 0.433 FAIL; recurrent lift -0.003 FAIL)
+- Causal consumption: **FAIL** (hybrid=0.54, recipient=0.00, improvement=0.54; needs ≥0.80)
+- Shielding: PASS (0.007)
+- Timing: PASS (median=0, p90=1)
+
+**Root cause analysis:** The world is too transparent for recurrence. Historyless model
+(no GRU, just encoder+messaging+head per timestep) achieves event F1=0.993 and status
+F1=0.984 — matching or exceeding Dense. This means: (1) the observation alone carries
+enough information for prediction, (2) recurrence is decorative, (3) hidden state carries
+minimal causal information → patch has limited effect → causal consumption fails.
+Status is persistent (once picked up, a key stays held) and objects are visible during
+interactions (visibility r=2 covers all adjacent cells). The model never needs to remember
+anything it can't see.
+
+**Codex R6 verdict:** Do not patch v1. Create HANDLE-mu V2 with three targeted changes:
+(1) held keys vanish from observation (latent inventory), (2) blind USE probes (scripted
+policy does not leak bijection), (3) frozen ambiguity bank.
+
+**HANDLE-mu V2 preflight PASSES (2026-09-01).** 15 ambiguous observation groups,
+Bayes ceiling 0.591 (< 0.75 threshold), 8/16 levels with mixed USE outcomes.
+Spec: theory/HANDLE_MU_V2.md. Codex V2 design gate in progress.
 
 Prior rung 1 results (PIPELINE-INVALID): experiments/results/handle_mu/.
 

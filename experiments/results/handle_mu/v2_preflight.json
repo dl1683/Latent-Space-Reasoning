@@ -1,0 +1,14 @@
+{
+  "n_trajs": 2048,
+  "total_distinct_obs_action": 1503,
+  "ambiguous_obs_action_groups": 15,
+  "ambiguous_fraction": 0.00998003992015968,
+  "total_timesteps": 65536,
+  "ambiguous_timesteps": 4353,
+  "use_action_ambiguous_groups": 15,
+  "observation_bayes_ceiling": 0.5912227685237278,
+  "full_history_ceiling": 1.0,
+  "total_use_cases": 12017,
+  "levels_with_mixed_use_outcomes": 8,
+  "PASS": true
+}

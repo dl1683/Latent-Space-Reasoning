@@ -4,6 +4,72 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — HANDLE-mu V2: latent inventory, ambiguity preflight PASSES
+
+**Codex R6 verdict:** V1 world is too transparent — don't patch, create V2.
+Three modifications: (1) held keys vanish from observation, (2) blind USE
+probes (policy doesn't leak bijection), (3) frozen ambiguity bank.
+
+**Implementation:** Added Config.v2_latent_keys, sentinel position (-99,-99)
+for held keys, ScriptedPolicyV2 (stateful, picks up one key, probes all locks,
+then second key), and ambiguity_preflight() with permutation-invariant matching.
+
+**Key insight during implementation:** First v2 policy picked up BOTH keys before
+visiting any lock. With both keys held, USE at any lock always opens it (one key
+must match). Zero ambiguity! Fixed by interleaving: pick up ONE key, probe
+locks, then pick up second key.
+
+**Preflight result: PASS.** 15 ambiguous groups (need ≥10), Bayes ceiling 0.591
+(need <0.75), 8/16 levels with mixed USE outcomes. The world now creates genuine
+observation aliasing: identical (obs, action) pairs produce different outcomes
+depending on hidden history.
+
+**What was learned:**
+- Permutation-invariant observation matching (sorted carrier vectors) is essential
+  for finding ambiguity — per-episode carrier permutations prevent exact matching
+- The interleaving insight is structural: with N keys and M locks, you must probe
+  locks with partial inventory to create ambiguity
+- Bayes ceiling 0.591 (not 0.500) because some observation context helps — the
+  full spatial layout provides partial disambiguation even without key knowledge
+
+**Codex V2 design gate in progress.** If approved, run seed 42 campaign with
+v2 world. Spec: theory/HANDLE_MU_V2.md.
+
+
+## 2026-09-01 — HANDLE-mu seed 42 complete: THREE BLOCKERS, world too transparent
+
+**Seed 42 full campaign completed (R5 code, 3211s).** Dense and Sparse pass
+eligibility (event F1 ≥0.99, status F1 ≥0.999). Three blocking failures:
+
+1. **Recurrent lift = -0.003** (needs ≥0.10). Historyless model (no GRU)
+   achieves event F1=0.993 and status F1=0.984 — matching Dense. The
+   observation alone carries enough for prediction. Memory is decorative.
+
+2. **Control B status F1 = 0.433** (needs ≥0.90 and within 3pt of Dense).
+   Global pooling architecture can't represent per-carrier status.
+
+3. **Causal consumption = 0.54** (needs ≥0.80). Patched hidden state carries
+   some signal (recipient=0.00 → hybrid=0.54) but model doesn't rely on it.
+
+**Root cause:** The world is too transparent. Status is persistent (held stays
+held) and visible whenever in range (r=2). The model never needs to remember
+anything it can't currently see. This is a world design issue, not a model
+issue — Dense/Sparse learn perfectly but don't USE recurrence.
+
+**What was learned:**
+- The prediction task is separable: event prediction (when does something
+  happen?) is easy from current obs; status prediction (what's the current
+  state?) is trivially cached in the observation.
+- A world that tests causal handle algebra needs information that ISN'T in
+  the current observation — requiring memory of past events.
+- Class imbalance in status (idle 65%, active 2%) is solvable with enough
+  data (128 trajs/level works; old 32 trajs/level gave status F1=0.35).
+
+**Next:** Codex R6 design gate review in progress. Key question: reduce
+visibility radius to force memory use, or accept as terminal?
+
+---
+
 ## 2026-09-01 — Codex R4 fixes implemented, second campaign running
 
 **Seven R4 blocking findings addressed.** The most critical: the intervention
