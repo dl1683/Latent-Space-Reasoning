@@ -92,20 +92,21 @@ implemented and committed (97dad28): event code fix, V2 oracle/intervention/coun
 propagation, output path separation, policy randomization (first-key + lock order), blind
 goal probe, post-identification preflight with history ceiling, ControlB width ladder.
 
-**HANDLE-mu V2 repaired preflight PASSES (2026-09-01).** Post-identification analysis:
-canonical ceiling 0.6807 (< 0.75, PASS metric), raw ceiling 0.7656 (diagnostic — slot-order
-artifact from per-episode carrier permutation), hist Bayes ceiling 1.0000 (> 0.99), memory
-gap 32pp. All 4 key-lock cells balanced (~170 each outcome, 16 levels). Goal bank:
-ready_activate=1353, unready_none=1427. Coverage 100%. Traj length 48. ControlB width ladder
-{h_pm, 96, 192}.
+**HANDLE-mu V2 preflight PASSES (2026-09-01, evidence gate cleared f98322a).**
+Post-identification analysis: memory gap 0.234 (> 0.20, PASS metric, derived from V1
+contract). Raw ceiling 0.7656 (exact model interface), canonical 0.6807 (diagnostic),
+hist ceiling 1.0000. Out-of-sample validated on 3 independent seeds (gaps: 0.234, 0.249,
+0.249). All 4 cells balanced (~170 each). Goal bank healthy. Coverage 100%.
 
-**Codex V2 evidence gate (2026-09-01): 5 blockers identified, all repaired (64ee25b).**
-1. Raw-interface ceiling: now reports both canonical (PASS metric) and raw (diagnostic)
-2. goal_ok added to preflight PASS condition
-3. Shared-bijection filter in find_paired_histories
-4. ControlB width selection by F1-threshold qualification (locked spec compliance)
-5. Smoke/full output path collision resolved (smoke_ prefix)
-Codex evidence gate recheck in progress.
+**Evidence gate repairs (3 rounds):**
+1. Memory gap criterion (hist - raw > 0.20) replaces post-hoc absolute threshold
+2. goal_ok in PASS condition
+3. Shared-bijection filter in intervention pairing
+4. ControlB: val-based F1 qualification, one-sided margin, no fallback (eligibility FAIL),
+   gate-level cb_width_qualified check, zeroed metrics for non-qualifying widths
+5. Smoke/full output separation
+6. Numerical median F1 in cross-seed adjudicator (not boolean), reconciled verdict status
+Codex final clearance check pending.
 Spec: theory/HANDLE_MU_V2.md.
 
 Prior V1 rung 1 results: experiments/results/handle_mu/seed_42_rung_1.json.

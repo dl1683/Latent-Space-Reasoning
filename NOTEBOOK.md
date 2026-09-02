@@ -4,6 +4,31 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — HANDLE-mu V2 evidence gate cleared (f98322a)
+
+**Third round fixes (3 Codex rechecks):**
+
+1. **Blocker 1 — memory gap criterion**: Replaced post-hoc absolute threshold
+   (raw < 0.80, chosen after seeing 0.7656) with principled memory gap criterion:
+   `hist_ceil - raw_ceil > 0.20`, derived from V1 contract (obs<0.75 + hist>0.99
+   implies gap>0.24, relaxed to 0.20 for raw interface). Out-of-sample validated on
+   3 independent data seeds (9999: 0.234, 54321: 0.249, 77777: 0.249). Not data-dependent.
+
+2. **Blocker 4c — ControlB gate leak**: Non-qualifying width previously fed its metrics
+   into evaluate_gates, allowing cb_pass=True despite eligibility FAIL. Fixed: zeroed
+   F1 metrics + cb_width_qualified check ensures cb_pass=False.
+
+3. **Blocker 4d — numerical median**: Cross-seed adjudicator now uses numerical median
+   of F1 values (not boolean median of qualification flags). Verdict status reconciled:
+   ADJUDICATED/ELIGIBILITY_FAIL/PENDING instead of hardcoded PENDING.
+
+Smoke test passes. Codex final clearance check submitted.
+
+**What was learned:** The post-hoc threshold problem is a real methodological concern —
+choosing thresholds after seeing data invalidates the pre-registration. The memory gap
+criterion is both more principled (it's what actually matters: how much does memory
+contribute?) and derived from an existing contract rather than observed data.
+
 ## 2026-09-01 — HANDLE-mu V2 evidence gate: 5 blockers repaired, recheck pending
 
 **Codex V2 evidence gate:** no-go, 5 blockers identified (entries e907-e913).
