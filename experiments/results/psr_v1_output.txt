@@ -1,0 +1,293 @@
+C:\Users\devan\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\cuda\__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
+  import pynvml  # type: ignore[import]
+Loading RWKV/v6-Finch-3B-HF...
+W0902 19:04:35.545000 35664 site-packages\torch\utils\flop_counter.py:29] triton not found; flop counting will not work for triton kernels
+Required module is not installed. Please install it using the following commands:
+pip install -U git+https://github.com/sustcsonglin/flash-linear-attention
+Additionally, ensure you have the correct version of Triton installed:
+pip install triton==2.2.0
+Loading weights:   0%|          | 0/902 [00:00<?, ?it/s]Loading weights:  18%|#7        | 159/902 [00:00<00:00, 1545.29it/s]Loading weights:  35%|###4      | 314/902 [00:00<00:00, 1324.40it/s]Loading weights:  50%|####9     | 449/902 [00:00<00:00, 1258.08it/s]Loading weights:  64%|######3   | 576/902 [00:00<00:00, 1250.93it/s]Loading weights:  78%|#######7  | 702/902 [00:00<00:00, 1161.54it/s]Loading weights:  91%|######### | 820/902 [00:00<00:00, 1155.11it/s]Loading weights: 100%|##########| 902/902 [00:00<00:00, 1116.03it/s]
+Loaded in 16.6s
+
+=== Generating histories ===
+  D0=9, D1=54, D2=54 (sampled), total=117
+
+=== Initial Gamma: 2 suffixes ===
+
+Computing initial signatures...
+[transformers] `use_return_dict` is deprecated! Use `return_dict` instead!
+  [100 model calls]
+  [200 model calls]
+  Calls: 234
+
+============================================================
+REFINEMENT ROUND 1
+============================================================
+  Classes: 50
+  C0: 12 mems, abs={('kitchen', 'kitchen'), ('office', 'kitchen')}, dep={0, 1, 2}
+  C1: 3 mems, abs={('kitchen', 'garden')}, dep={0, 1, 2}
+  C2: 1 mems, abs={('kitchen', 'office')}, dep={0}
+  C3: 1 mems, abs={('garden', 'kitchen')}, dep={0}
+  C4: 3 mems, abs={('garden', 'garden')}, dep={0, 1}
+  C5: 1 mems, abs={('garden', 'office')}, dep={0}
+  C6: 2 mems, abs={('office', 'garden')}, dep={0, 1}
+  C8: 10 mems, abs={('kitchen', 'office'), ('kitchen', 'garden'), ('garden', 'kitchen')}, dep={1, 2}
+  C9: 2 mems, abs={('office', 'kitchen')}, dep={1, 2}
+  C10: 1 mems, abs={('kitchen', 'office')}, dep={1}
+  C11: 2 mems, abs={('garden', 'garden')}, dep={1, 2}
+  C12: 1 mems, abs={('office', 'garden')}, dep={1}
+  C13: 1 mems, abs={('kitchen', 'office')}, dep={1}
+  C14: 4 mems, abs={('kitchen', 'kitchen'), ('kitchen', 'office')}, dep={1, 2}
+  C15: 1 mems, abs={('garden', 'office')}, dep={1}
+  C16: 3 mems, abs={('office', 'office'), ('office', 'kitchen'), ('kitchen', 'office')}, dep={1, 2}
+  C17: 1 mems, abs={('kitchen', 'garden')}, dep={1}
+  C18: 3 mems, abs={('garden', 'garden'), ('garden', 'kitchen')}, dep={1, 2}
+  C19: 2 mems, abs={('office', 'kitchen')}, dep={1, 2}
+  C21: 1 mems, abs={('garden', 'office')}, dep={1}
+  C22: 3 mems, abs={('office', 'garden'), ('garden', 'office'), ('office', 'office')}, dep={1, 2}
+  C23: 2 mems, abs={('garden', 'office')}, dep={1, 2}
+  C24: 2 mems, abs={('garden', 'office')}, dep={1, 2}
+  C25: 3 mems, abs={('office', 'office'), ('garden', 'office')}, dep={1, 2}
+  C26: 1 mems, abs={('garden', 'garden')}, dep={1}
+  C27: 4 mems, abs={('office', 'garden'), ('garden', 'garden'), ('garden', 'kitchen')}, dep={1, 2}
+  C28: 3 mems, abs={('office', 'office'), ('office', 'kitchen'), ('kitchen', 'office')}, dep={1, 2}
+  C29: 4 mems, abs={('office', 'kitchen'), ('kitchen', 'office')}, dep={1, 2}
+  C30: 1 mems, abs={('garden', 'garden')}, dep={1}
+  C31: 1 mems, abs={('office', 'garden')}, dep={1}
+  C32: 4 mems, abs={('kitchen', 'kitchen'), ('office', 'kitchen'), ('kitchen', 'garden'), ('garden', 'kitchen')}, dep={1, 2}
+  C33: 3 mems, abs={('office', 'office'), ('office', 'garden')}, dep={1, 2}
+  C34: 5 mems, abs={('office', 'garden'), ('garden', 'office')}, dep={1, 2}
+  C35: 2 mems, abs={('office', 'garden')}, dep={1, 2}
+  C36: 2 mems, abs={('garden', 'garden')}, dep={2}
+  C37: 1 mems, abs={('garden', 'garden')}, dep={2}
+  C38: 1 mems, abs={('garden', 'garden')}, dep={2}
+  C39: 1 mems, abs={('garden', 'kitchen')}, dep={2}
+  C40: 1 mems, abs={('garden', 'office')}, dep={2}
+  C41: 1 mems, abs={('kitchen', 'garden')}, dep={2}
+  C42: 1 mems, abs={('kitchen', 'garden')}, dep={2}
+  C43: 2 mems, abs={('office', 'office'), ('kitchen', 'office')}, dep={2}
+  C44: 1 mems, abs={('kitchen', 'office')}, dep={2}
+  C45: 1 mems, abs={('office', 'garden')}, dep={2}
+  C46: 1 mems, abs={('office', 'garden')}, dep={2}
+  C47: 1 mems, abs={('office', 'kitchen')}, dep={2}
+  C48: 1 mems, abs={('office', 'kitchen')}, dep={2}
+  C49: 1 mems, abs={('office', 'office')}, dep={2}
+  Mixed-abstract classes: 14
+  Right congruence violations: 9
+    C0 + 'Avery moved to the garden.' -> classes {8, 27}
+    C0 + 'Avery moved to the office.' -> classes {9, 28}
+    C0 + 'Blake moved to the kitchen.' -> classes {0, 29}
+    C0 + 'Blake moved to the garden.' -> classes {8, 27}
+    C0 + 'Blake moved to the office.' -> classes {10, 28}
+    C4 + 'Blake moved to the kitchen.' -> classes {8, 20}
+    C7 + 'Avery moved to the garden.' -> classes {34, 22}
+    C7 + 'Blake moved to the garden.' -> classes {34, 35}
+  Adding 10 suffixes (Gamma: 2 -> 12)
+  Computing extended signatures...
+  [300 model calls]
+  [400 model calls]
+  [500 model calls]
+  [600 model calls]
+  [700 model calls]
+  [800 model calls]
+  [900 model calls]
+  [1000 model calls]
+  [1100 model calls]
+  [1200 model calls]
+  [1300 model calls]
+  [1400 model calls]
+  Calls: 1404
+
+============================================================
+REFINEMENT ROUND 2
+============================================================
+  Classes: 48
+  C1: 6 mems, abs={('garden', 'garden'), ('kitchen', 'garden')}, dep={0, 1, 2}
+  C2: 1 mems, abs={('kitchen', 'office')}, dep={0}
+  C3: 3 mems, abs={('garden', 'kitchen')}, dep={0, 1, 2}
+  C4: 3 mems, abs={('garden', 'garden')}, dep={0, 1}
+  C5: 1 mems, abs={('garden', 'office')}, dep={0}
+  C6: 6 mems, abs={('kitchen', 'kitchen'), ('office', 'kitchen'), ('kitchen', 'office')}, dep={0, 1, 2}
+  C7: 3 mems, abs={('office', 'garden'), ('garden', 'garden')}, dep={0, 1}
+  C9: 6 mems, abs={('kitchen', 'kitchen'), ('kitchen', 'garden'), ('garden', 'kitchen')}, dep={1, 2}
+  C10: 2 mems, abs={('office', 'kitchen')}, dep={1, 2}
+  C11: 2 mems, abs={('kitchen', 'kitchen'), ('kitchen', 'office')}, dep={1}
+  C12: 2 mems, abs={('office', 'garden')}, dep={1, 2}
+  C13: 3 mems, abs={('kitchen', 'office')}, dep={1, 2}
+  C14: 2 mems, abs={('kitchen', 'office')}, dep={1, 2}
+  C15: 1 mems, abs={('garden', 'office')}, dep={1}
+  C16: 2 mems, abs={('office', 'office'), ('office', 'kitchen')}, dep={1, 2}
+  C17: 1 mems, abs={('kitchen', 'garden')}, dep={1}
+  C18: 2 mems, abs={('garden', 'garden'), ('garden', 'kitchen')}, dep={1}
+  C19: 2 mems, abs={('office', 'kitchen')}, dep={1, 2}
+  C20: 3 mems, abs={('office', 'kitchen'), ('garden', 'office'), ('kitchen', 'office')}, dep={1, 2}
+  C21: 7 mems, abs={('kitchen', 'kitchen'), ('kitchen', 'office'), ('kitchen', 'garden'), ('garden', 'kitchen')}, dep={1, 2}
+  C22: 5 mems, abs={('office', 'garden'), ('garden', 'office'), ('office', 'office')}, dep={1, 2}
+  C23: 2 mems, abs={('garden', 'office')}, dep={1, 2}
+  C24: 1 mems, abs={('office', 'office')}, dep={1}
+  C25: 1 mems, abs={('garden', 'garden')}, dep={1}
+  C26: 5 mems, abs={('office', 'garden'), ('office', 'kitchen'), ('garden', 'garden'), ('garden', 'kitchen')}, dep={1, 2}
+  C27: 4 mems, abs={('office', 'office'), ('office', 'kitchen'), ('kitchen', 'office')}, dep={1, 2}
+  C28: 2 mems, abs={('kitchen', 'garden')}, dep={1, 2}
+  C29: 7 mems, abs={('office', 'garden'), ('office', 'office')}, dep={1, 2}
+  C30: 4 mems, abs={('office', 'garden'), ('garden', 'office')}, dep={1, 2}
+  C31: 2 mems, abs={('garden', 'garden')}, dep={2}
+  C32: 1 mems, abs={('garden', 'garden')}, dep={2}
+  C33: 1 mems, abs={('garden', 'garden')}, dep={2}
+  C34: 1 mems, abs={('garden', 'kitchen')}, dep={2}
+  C35: 1 mems, abs={('garden', 'kitchen')}, dep={2}
+  C36: 1 mems, abs={('garden', 'kitchen')}, dep={2}
+  C37: 1 mems, abs={('garden', 'office')}, dep={2}
+  C38: 1 mems, abs={('garden', 'office')}, dep={2}
+  C39: 1 mems, abs={('kitchen', 'garden')}, dep={2}
+  C40: 2 mems, abs={('kitchen', 'kitchen'), ('kitchen', 'garden')}, dep={2}
+  C41: 1 mems, abs={('kitchen', 'kitchen')}, dep={2}
+  C42: 1 mems, abs={('kitchen', 'office')}, dep={2}
+  C43: 1 mems, abs={('kitchen', 'office')}, dep={2}
+  C44: 1 mems, abs={('office', 'garden')}, dep={2}
+  C45: 1 mems, abs={('office', 'kitchen')}, dep={2}
+  C46: 1 mems, abs={('office', 'office')}, dep={2}
+  C47: 1 mems, abs={('office', 'office')}, dep={2}
+  Mixed-abstract classes: 15
+  Right congruence violations: 9
+    C3 + 'Avery moved to the garden.' -> classes {18, 35}
+    C4 + 'Blake moved to the kitchen.' -> classes {3, 21}
+    C6 + 'Blake moved to the garden.' -> classes {26, 39}
+    C7 + 'Avery moved to the kitchen.' -> classes {40, 28}
+    C8 + 'Avery moved to the garden.' -> classes {37, 30}
+    C8 + 'Blake moved to the garden.' -> classes {29, 30}
+    C9 + 'Blake moved to the kitchen.' -> classes {0, 9}
+    C21 + 'Avery moved to the office.' -> classes {20, 46}
+  Adding 2 suffixes (Gamma: 12 -> 14)
+  Computing extended signatures...
+  [1500 model calls]
+  [1600 model calls]
+  Calls: 1638
+
+============================================================
+REFINEMENT ROUND 3
+============================================================
+  Classes: 41
+  C0: 8 mems, abs={('kitchen', 'kitchen'), ('kitchen', 'garden'), ('garden', 'kitchen')}, dep={0, 1, 2}
+  C1: 6 mems, abs={('garden', 'garden'), ('kitchen', 'garden')}, dep={0, 1, 2}
+  C2: 1 mems, abs={('kitchen', 'office')}, dep={0}
+  C3: 3 mems, abs={('garden', 'kitchen')}, dep={0, 1, 2}
+  C5: 2 mems, abs={('garden', 'garden'), ('garden', 'office')}, dep={0, 2}
+  C6: 7 mems, abs={('kitchen', 'kitchen'), ('office', 'kitchen'), ('kitchen', 'office')}, dep={0, 1, 2}
+  C7: 3 mems, abs={('office', 'garden'), ('garden', 'garden')}, dep={0, 1}
+  C8: 5 mems, abs={('office', 'office'), ('office', 'garden')}, dep={0, 1, 2}
+  C9: 3 mems, abs={('office', 'kitchen'), ('kitchen', 'office')}, dep={1, 2}
+  C10: 2 mems, abs={('kitchen', 'kitchen'), ('kitchen', 'garden')}, dep={1}
+  C11: 2 mems, abs={('office', 'garden')}, dep={1, 2}
+  C12: 3 mems, abs={('kitchen', 'office')}, dep={1, 2}
+  C13: 3 mems, abs={('kitchen', 'kitchen'), ('kitchen', 'office')}, dep={1, 2}
+  C14: 1 mems, abs={('garden', 'office')}, dep={1}
+  C15: 2 mems, abs={('office', 'office'), ('office', 'kitchen')}, dep={1, 2}
+  C16: 1 mems, abs={('kitchen', 'garden')}, dep={1}
+  C17: 10 mems, abs={('kitchen', 'kitchen'), ('kitchen', 'office'), ('kitchen', 'garden'), ('garden', 'kitchen')}, dep={1, 2}
+  C18: 3 mems, abs={('garden', 'garden'), ('garden', 'kitchen')}, dep={1, 2}
+  C19: 3 mems, abs={('office', 'kitchen'), ('garden', 'office')}, dep={1, 2}
+  C20: 6 mems, abs={('office', 'garden'), ('garden', 'office'), ('office', 'office')}, dep={1, 2}
+  C21: 2 mems, abs={('garden', 'office')}, dep={1, 2}
+  C22: 5 mems, abs={('office', 'garden'), ('office', 'kitchen'), ('garden', 'garden'), ('garden', 'kitchen')}, dep={1, 2}
+  C23: 3 mems, abs={('office', 'office'), ('office', 'kitchen'), ('kitchen', 'office')}, dep={1, 2}
+  C24: 2 mems, abs={('kitchen', 'garden')}, dep={1, 2}
+  C25: 7 mems, abs={('office', 'garden'), ('garden', 'office'), ('office', 'office')}, dep={1, 2}
+  C26: 2 mems, abs={('garden', 'garden')}, dep={2}
+  C27: 1 mems, abs={('garden', 'garden')}, dep={2}
+  C28: 1 mems, abs={('garden', 'kitchen')}, dep={2}
+  C29: 2 mems, abs={('kitchen', 'office'), ('garden', 'kitchen')}, dep={2}
+  C30: 1 mems, abs={('garden', 'kitchen')}, dep={2}
+  C31: 3 mems, abs={('office', 'garden'), ('garden', 'office')}, dep={2}
+  C32: 1 mems, abs={('garden', 'office')}, dep={2}
+  C33: 1 mems, abs={('garden', 'office')}, dep={2}
+  C34: 1 mems, abs={('kitchen', 'garden')}, dep={2}
+  C35: 2 mems, abs={('office', 'office'), ('kitchen', 'office')}, dep={2}
+  C36: 1 mems, abs={('office', 'garden')}, dep={2}
+  C37: 1 mems, abs={('office', 'kitchen')}, dep={2}
+  C38: 1 mems, abs={('office', 'kitchen')}, dep={2}
+  C39: 1 mems, abs={('office', 'office')}, dep={2}
+  C40: 1 mems, abs={('office', 'office')}, dep={2}
+  Mixed-abstract classes: 20
+  Right congruence violations: 9
+    C4 + 'Blake moved to the kitchen.' -> classes {17, 3}
+    C6 + 'Avery moved to the office.' -> classes {39, 23}
+    C6 + 'Blake moved to the garden.' -> classes {34, 22}
+    C7 + 'Avery moved to the kitchen.' -> classes {24, 17}
+    C8 + 'Avery moved to the garden.' -> classes {25, 31}
+    C8 + 'Blake moved to the garden.' -> classes {25, 31}
+    C17 + 'Avery moved to the office.' -> classes {35, 37}
+    C17 + 'Blake moved to the kitchen.' -> classes {0, 17}
+  No new suffixes — refinement exhausted
+
+============================================================
+FINAL QUOTIENT: 41 classes from 117 histories
+Gamma: 14 suffixes
+Total model calls: 1638
+============================================================
+  C0: 8 mems, abs={('kitchen', 'kitchen'), ('kitchen', 'garden'), ('garden', 'kitchen')}, dep={0, 1, 2}
+  C1: 6 mems, abs={('garden', 'garden'), ('kitchen', 'garden')}, dep={0, 1, 2}
+  C2: 1 mems, abs={('kitchen', 'office')}, dep={0}
+  C3: 3 mems, abs={('garden', 'kitchen')}, dep={0, 1, 2}
+  C4: 4 mems, abs={('garden', 'garden')}, dep={0, 1}
+  C5: 2 mems, abs={('garden', 'garden'), ('garden', 'office')}, dep={0, 2}
+  C6: 7 mems, abs={('kitchen', 'kitchen'), ('office', 'kitchen'), ('kitchen', 'office')}, dep={0, 1, 2}
+  C7: 3 mems, abs={('office', 'garden'), ('garden', 'garden')}, dep={0, 1}
+  C8: 5 mems, abs={('office', 'office'), ('office', 'garden')}, dep={0, 1, 2}
+  C9: 3 mems, abs={('office', 'kitchen'), ('kitchen', 'office')}, dep={1, 2}
+  C10: 2 mems, abs={('kitchen', 'kitchen'), ('kitchen', 'garden')}, dep={1}
+  C11: 2 mems, abs={('office', 'garden')}, dep={1, 2}
+  C12: 3 mems, abs={('kitchen', 'office')}, dep={1, 2}
+  C13: 3 mems, abs={('kitchen', 'kitchen'), ('kitchen', 'office')}, dep={1, 2}
+  C14: 1 mems, abs={('garden', 'office')}, dep={1}
+  C15: 2 mems, abs={('office', 'office'), ('office', 'kitchen')}, dep={1, 2}
+  C16: 1 mems, abs={('kitchen', 'garden')}, dep={1}
+  C17: 10 mems, abs={('kitchen', 'kitchen'), ('kitchen', 'office'), ('kitchen', 'garden'), ('garden', 'kitchen')}, dep={1, 2}
+  C18: 3 mems, abs={('garden', 'garden'), ('garden', 'kitchen')}, dep={1, 2}
+  C19: 3 mems, abs={('office', 'kitchen'), ('garden', 'office')}, dep={1, 2}
+  C20: 6 mems, abs={('office', 'garden'), ('garden', 'office'), ('office', 'office')}, dep={1, 2}
+  C21: 2 mems, abs={('garden', 'office')}, dep={1, 2}
+  C22: 5 mems, abs={('office', 'garden'), ('office', 'kitchen'), ('garden', 'garden'), ('garden', 'kitchen')}, dep={1, 2}
+  C23: 3 mems, abs={('office', 'office'), ('office', 'kitchen'), ('kitchen', 'office')}, dep={1, 2}
+  C24: 2 mems, abs={('kitchen', 'garden')}, dep={1, 2}
+  C25: 7 mems, abs={('office', 'garden'), ('garden', 'office'), ('office', 'office')}, dep={1, 2}
+  C26: 2 mems, abs={('garden', 'garden')}, dep={2}
+  C27: 1 mems, abs={('garden', 'garden')}, dep={2}
+  C28: 1 mems, abs={('garden', 'kitchen')}, dep={2}
+  C29: 2 mems, abs={('kitchen', 'office'), ('garden', 'kitchen')}, dep={2}
+  C30: 1 mems, abs={('garden', 'kitchen')}, dep={2}
+  C31: 3 mems, abs={('office', 'garden'), ('garden', 'office')}, dep={2}
+  C32: 1 mems, abs={('garden', 'office')}, dep={2}
+  C33: 1 mems, abs={('garden', 'office')}, dep={2}
+  C34: 1 mems, abs={('kitchen', 'garden')}, dep={2}
+  C35: 2 mems, abs={('office', 'office'), ('kitchen', 'office')}, dep={2}
+  C36: 1 mems, abs={('office', 'garden')}, dep={2}
+  C37: 1 mems, abs={('office', 'kitchen')}, dep={2}
+  C38: 1 mems, abs={('office', 'kitchen')}, dep={2}
+  C39: 1 mems, abs={('office', 'office')}, dep={2}
+  C40: 1 mems, abs={('office', 'office')}, dep={2}
+
+=== Composition Test ===
+  Composition: 12/19 = 0.6316
+  Parser baseline: 8/54 = 0.1481
+  Surplus: +0.4834
+  Transition coverage: 54/246
+
+=== Summary ===
+{
+  "experiment": "psr_v1",
+  "model": "RWKV/v6-Finch-3B-HF",
+  "n_suffixes_final": 14,
+  "n_classes": 41,
+  "n_histories": 117,
+  "refinement_rounds": 3,
+  "total_model_calls": 1638,
+  "composition_rate": 0.6316,
+  "parser_rate": 0.1481,
+  "surplus": 0.4834,
+  "mixed_abstract_classes": 20,
+  "pure_abstract_classes": 21,
+  "tv_threshold": 0.1
+}
+
+Saved to experiments\results\psr_v1\result.json

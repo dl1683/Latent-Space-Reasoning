@@ -5,6 +5,57 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
+## PSR-v1 — Predictive-State Refinement on Finch-3B (2026-09-02; EVIDENCE-GATE NO-GO)
+
+Distance from claim: 0 (the refined quotient and transition law ARE native math).
+Runner: `experiments/run_psr.py`. Results: `experiments/results/psr_v1/`.
+Ledger: `psr_v1_launch`, `psr_v1_complete`, `psr_v1_evidence_gate`.
+
+**Method:** Nerode-style counterexample-guided refinement. Start with Γ = {2
+direct queries}. Build behavioral quotient (greedy clustering, mean TV ≤ 0.10).
+Check right congruence: for each class, verify all members' post-action
+successors land in the same class. On violation, add action+query suffixes
+to Γ, recompute.
+
+**Budget:** 3 rounds, 2000 calls max, 80 states max. Used 1638 calls.
+
+| Round | Γ size | Classes | Violations | New suffixes |
+|-------|--------|---------|------------|--------------|
+| 1     | 2→12   | 50      | 9          | 10           |
+| 2     | 12→14  | 41      | 9          | 0 (exhausted)|
+| 3     | 14     | 41      | 9          | 0            |
+
+**Raw result:**
+- 41 classes from 117 histories (2.9:1 compression, 14 singletons)
+- Selected-coverage composition: 12/19 (35 histories uncovered)
+- Common-denominator: 12/54=22.2% vs parser 8/54=14.8% (p=0.229, NS)
+- Right congruence: 9 violations remain
+
+**Codex evidence gate (NO-GO on headline claim):**
+1. ~~48.3pp surplus~~ WITHDRAWN — denominator mismatch (12/19 vs 8/54)
+2. Not valid Nerode refinement — classes merged (50→48→41) due to greedy TV
+   averaging with new low-distance suffixes diluting existing differences
+3. Comparison unfair — quotient uses 14 suffixes + learned lookup vs parser
+   using only ground-truth abstract state
+4. Coverage selection bias — 19 testable cases are mechanically easy ones
+5. Simpler controls not run (kNN, memorization, last-action, shuffled)
+6. Proposed full-table fix trains on test answers — unsafe
+
+**Licensed sentence:** "In a transductive selected-coverage screen, a
+thresholded response-signature partition correctly predicted 12 of 19
+covered two-action class labels; no predictive surplus or quotient action
+law is established."
+
+**What we learned:**
+1. Path-conditioned response signatures contain reusable transition info
+2. 41 distinguishable behavioral states exist (vs 9 abstract), but greedy
+   order-dependent clustering ≠ genuine equivalence relation
+3. The composition test must use identical denominators and proper train/test
+4. Greedy exemplar clustering is non-transitive — need proper refinement
+5. Positive exploratory evidence justifies ONE corrected adjudication
+
+---
+
 ## RCQ-0 — Real Causal Quotient on Finch-3B (2026-09-02; IN PROGRESS)
 
 Distance from claim: 0 (the quotient and action law ARE the native math).

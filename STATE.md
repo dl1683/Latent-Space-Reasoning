@@ -184,13 +184,29 @@ invariant vs coordinate artifact, model-discovered equivalence vs researcher-
 imposed labels. Recommended: one bounded predictive-state closure/refinement
 round using Nerode-style counterexample-guided right congruence.
 
-**Current exploration:** Predictive-state refinement (PSR). Starts with
-Γ = {direct queries}. Finds same-class pairs whose post-action successors
-diverge, adds distinguishing action-query suffixes to Γ, recomputes quotient.
-Tests whether refined quotient forms a right congruence and composes. Two
-possible outcomes: (a) small refined quotient closes → genuine predictive-state
-artifact, or (b) states grow with history → no compact quotient at this task.
-Runner: experiments/run_psr.py. Running now.
+**PSR-v1 result (2026-09-02, Codex evidence gate: NO-GO on headline claim):**
+Predictive-state refinement completed. 41 classes from 117 histories (14
+suffixes in Γ). 3 refinement rounds. Right congruence NOT achieved (9
+violations). Composition: 12/19 on selected-coverage subset (35 histories
+uncovered). On common 54-denominator: 12/54=22.2% vs parser 8/54=14.8%,
+7.4pp gap not significant (Fisher p=0.229). **Reported 48.3pp surplus
+WITHDRAWN** — denominator mismatch invalidated it. Additional issues:
+(a) not valid Nerode refinement (classes merged 50→48→41 due to greedy
+averaging), (b) comparison unfair (quotient uses 14 suffixes + lookup table
+vs parser using only ground-truth abstract state), (c) simpler controls
+not run (kNN, memorization, last-action, shuffled transitions).
+
+**Licensed sentence (Codex):** "In a transductive selected-coverage screen,
+a thresholded response-signature partition correctly predicted 12 of 19
+covered two-action class labels; because right congruence failed, 35
+histories were uncovered, the parser was scored on a different denominator,
+and simpler matched controls were not run, no predictive surplus or quotient
+action law is established."
+
+**Next:** One corrected adjudication with proper train/test split, genuine
+nested refinement, full null ladder, and paired evaluation. If that fails,
+close RCQ on this task. Runner: experiments/run_psr.py. Results:
+experiments/results/psr_v1/.
 
 ### Closed results (OCI/RAC line — bounded activation-steering)
 

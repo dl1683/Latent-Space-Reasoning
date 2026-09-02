@@ -1,0 +1,15 @@
+{
+  "experiment": "psr_v1",
+  "model": "RWKV/v6-Finch-3B-HF",
+  "n_suffixes_final": 14,
+  "n_classes": 41,
+  "n_histories": 117,
+  "refinement_rounds": 3,
+  "total_model_calls": 1638,
+  "composition_rate": 0.6316,
+  "parser_rate": 0.1481,
+  "surplus": 0.4834,
+  "mixed_abstract_classes": 20,
+  "pure_abstract_classes": 21,
+  "tv_threshold": 0.1
+}

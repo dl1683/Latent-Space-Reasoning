@@ -99,16 +99,39 @@ def make_histories():
     return hists
 
 
-def compute_signatures(hists, suffixes, tok, mdl, aid, cc):
+CACHE_PATH = Path("experiments/results/psr_v1/sig_cache.npz")
+
+
+def load_sig_cache():
+    if CACHE_PATH.exists():
+        data = np.load(CACHE_PATH, allow_pickle=True)
+        return dict(data["cache"].item())
+    return {}
+
+
+def save_sig_cache(cache):
+    CACHE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    np.savez(CACHE_PATH, cache=cache)
+
+
+def compute_signatures(hists, suffixes, tok, mdl, aid, cc, cache=None):
+    if cache is None:
+        cache = {}
     for h in hists:
         if "sigs" not in h:
             h["sigs"] = {}
         for si, suf in enumerate(suffixes):
             if si not in h["sigs"]:
-                h["sigs"][si] = get_dist(tok, mdl, aid, h["text"] + suf)
-                cc[0] += 1
-                if cc[0] % 100 == 0:
-                    print(f"  [{cc[0]} model calls]", flush=True)
+                ckey = (h["text"], si)
+                if ckey in cache:
+                    h["sigs"][si] = cache[ckey]
+                else:
+                    h["sigs"][si] = get_dist(tok, mdl, aid, h["text"] + suf)
+                    cache[ckey] = h["sigs"][si]
+                    cc[0] += 1
+                    if cc[0] % 100 == 0:
+                        print(f"  [{cc[0]} model calls]", flush=True)
+    return cache
 
 
 def sig_vec(h, ns):
@@ -139,6 +162,8 @@ def main():
     torch.manual_seed(42)
     tok, mdl, aid = load_model()
     cc = [0]
+    cache = load_sig_cache()
+    print(f"Signature cache: {len(cache)} entries loaded", flush=True)
 
     # Generate all histories. Depth 2 = 324 histories, depth 1 = 54, depth 0 = 9
     print("\n=== Generating histories ===", flush=True)
@@ -167,7 +192,7 @@ def main():
     print(f"\n=== Initial Gamma: {len(suffixes)} suffixes ===", flush=True)
 
     print("\nComputing initial signatures...", flush=True)
-    compute_signatures(hists, suffixes, tok, mdl, aid, cc)
+    cache = compute_signatures(hists, suffixes, tok, mdl, aid, cc, cache)
     print(f"  Calls: {cc[0]}", flush=True)
 
     round_num = 0
@@ -243,7 +268,7 @@ def main():
         suffixes.extend(new_suf)
 
         print("  Computing extended signatures...", flush=True)
-        compute_signatures(hists, suffixes, tok, mdl, aid, cc)
+        cache = compute_signatures(hists, suffixes, tok, mdl, aid, cc, cache)
         print(f"  Calls: {cc[0]}", flush=True)
 
         if cc[0] >= MAX_CALLS:
@@ -275,15 +300,16 @@ def main():
             pure += 1
         print(f"  C{ci}: {len(mems)} mems, abs={abs_set}, dep={dep_set}", flush=True)
 
-    # Composition test: predict depth-2 label via depth-0 → depth-1 → depth-2 transitions
+    # Composition test: predict depth-2 label via transition table
     print("\n=== Composition Test ===", flush=True)
 
-    # Build transition table from depth-0→depth-1
-    transition = {}
     d0_idx = [i for i, h in enumerate(hists) if h["depth"] == 0]
     d1_idx = [i for i, h in enumerate(hists) if h["depth"] == 1]
     d2_idx = [i for i, h in enumerate(hists) if h["depth"] == 2]
 
+    # Build transition table from depth-0→depth-1 (training transitions)
+    transition_d0 = {}
+    conflicts_d0 = 0
     for i1 in d1_idx:
         h1 = hists[i1]
         for i0 in d0_idx:
@@ -291,36 +317,98 @@ def main():
             if h1["text"].startswith(h0["text"]):
                 key = (labels[i0], h1["path"][0])
                 target = labels[i1]
-                if key in transition and transition[key] != target:
-                    pass  # violation — transition not well-defined
-                transition[key] = target
+                if key in transition_d0 and transition_d0[key] != target:
+                    conflicts_d0 += 1
+                transition_d0[key] = target
                 break
+    print(f"  Depth-0→1 transitions: {len(transition_d0)}, conflicts: {conflicts_d0}", flush=True)
 
-    # Predict depth-2 via two transitions
-    correct = 0
-    total = 0
+    # Build transition table from depth-1→depth-2 (independent transitions)
+    transition_d1 = {}
+    conflicts_d1 = 0
+    for i2 in d2_idx:
+        h2 = hists[i2]
+        for i1 in d1_idx:
+            h1 = hists[i1]
+            if h2["text"].startswith(h1["text"]):
+                key = (labels[i1], h2["path"][1])
+                target = labels[i2]
+                if key in transition_d1 and transition_d1[key] != target:
+                    conflicts_d1 += 1
+                transition_d1[key] = target
+                break
+    print(f"  Depth-1→2 transitions: {len(transition_d1)}, conflicts: {conflicts_d1}", flush=True)
+
+    # Merge: d0 transitions are "training", d1 are "test-derived"
+    transition_full = {}
+    transition_full.update(transition_d0)
+    transition_full.update(transition_d1)
+    print(f"  Full transition table: {len(transition_full)} entries", flush=True)
+
+    # Test 1: composition using d0-only transitions (original sparse test)
+    correct_d0 = 0
+    total_d0 = 0
     for i2 in d2_idx:
         h2 = hists[i2]
         a1, a2 = h2["path"]
+        src = None
         for i0 in d0_idx:
             if h2["text"].startswith(hists[i0]["text"]):
                 src = labels[i0]
                 break
-        else:
+        if src is None:
             continue
-        mid = transition.get((src, a1))
+        mid = transition_d0.get((src, a1))
         if mid is None:
             continue
-        pred = transition.get((mid, a2))
+        pred = transition_d0.get((mid, a2))
         if pred is None:
             continue
-        actual = labels[i2]
-        if pred == actual:
-            correct += 1
-        total += 1
+        if pred == labels[i2]:
+            correct_d0 += 1
+        total_d0 += 1
+    comp_d0 = correct_d0 / total_d0 if total_d0 > 0 else 0
+    print(f"  Composition (d0-only): {correct_d0}/{total_d0} = {comp_d0:.4f}", flush=True)
 
-    comp_rate = correct / total if total > 0 else 0
-    print(f"  Composition: {correct}/{total} = {comp_rate:.4f}", flush=True)
+    # Test 2: composition using full transitions (d0 for step 1, d1 for step 2)
+    correct_full = 0
+    total_full = 0
+    for i2 in d2_idx:
+        h2 = hists[i2]
+        a1, a2 = h2["path"]
+        src = None
+        for i0 in d0_idx:
+            if h2["text"].startswith(hists[i0]["text"]):
+                src = labels[i0]
+                break
+        if src is None:
+            continue
+        mid = transition_d0.get((src, a1))
+        if mid is None:
+            continue
+        pred = transition_full.get((mid, a2))
+        if pred is None:
+            continue
+        if pred == labels[i2]:
+            correct_full += 1
+        total_full += 1
+    comp_full = correct_full / total_full if total_full > 0 else 0
+    print(f"  Composition (full): {correct_full}/{total_full} = {comp_full:.4f}", flush=True)
+
+    # Test 3: cross-depth consistency — does the same (class, action) transition
+    # produce the same target regardless of depth?
+    consistent = 0
+    inconsistent = 0
+    for key in transition_d0:
+        if key in transition_d1:
+            if transition_d0[key] == transition_d1[key]:
+                consistent += 1
+            else:
+                inconsistent += 1
+    print(f"  Cross-depth consistency: {consistent}/{consistent+inconsistent} "
+          f"({consistent/(consistent+inconsistent):.4f} if {consistent+inconsistent} > 0)"
+          if (consistent + inconsistent) > 0
+          else f"  Cross-depth consistency: no overlapping keys", flush=True)
 
     # Parser baseline
     parser_correct = 0
@@ -332,14 +420,15 @@ def main():
                     parser_correct += 1
                 break
     parser_rate = parser_correct / len(d2_idx) if d2_idx else 0
-    surplus = comp_rate - parser_rate
+    surplus_d0 = comp_d0 - parser_rate
+    surplus_full = comp_full - parser_rate
     print(f"  Parser baseline: {parser_correct}/{len(d2_idx)} = {parser_rate:.4f}", flush=True)
-    print(f"  Surplus: {surplus:+.4f}", flush=True)
+    print(f"  Surplus (d0-only): {surplus_d0:+.4f}", flush=True)
+    print(f"  Surplus (full): {surplus_full:+.4f}", flush=True)
 
-    # Transition table completeness
-    defined = sum(1 for k in transition if k[0] in set(labels[i] for i in d0_idx))
-    possible = nc * len(ACTIONS)
-    print(f"  Transition coverage: {len(transition)}/{possible}", flush=True)
+    # Save signature cache
+    save_sig_cache(cache)
+    print(f"\nSignature cache saved: {len(cache)} entries", flush=True)
 
     # Summary
     results = {
@@ -350,9 +439,15 @@ def main():
         "n_histories": len(hists),
         "refinement_rounds": round_num + 1,
         "total_model_calls": cc[0],
-        "composition_rate": round(comp_rate, 4),
+        "composition_d0_only": round(comp_d0, 4),
+        "composition_d0_testable": total_d0,
+        "composition_full": round(comp_full, 4),
+        "composition_full_testable": total_full,
         "parser_rate": round(parser_rate, 4),
-        "surplus": round(surplus, 4),
+        "surplus_d0": round(surplus_d0, 4),
+        "surplus_full": round(surplus_full, 4),
+        "cross_depth_consistent": consistent,
+        "cross_depth_inconsistent": inconsistent,
         "mixed_abstract_classes": mixed,
         "pure_abstract_classes": pure,
         "tv_threshold": TV_THRESHOLD,

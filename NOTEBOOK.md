@@ -29,8 +29,34 @@ task/horizon.
 admits an induced action law exactly when its equivalence is an approximate
 right congruence under the registered actions.
 
-**Implementing now:** Predictive-state refinement script. Budget: max 3
-refinement rounds, max 1000 model calls, max 50 states.
+**PSR-v1 result (1638 calls, ~25 min wall-clock):**
+- 41 classes from 117 histories, 14 suffixes in Γ
+- 3 refinement rounds, right congruence NOT achieved (9 violations)
+- Composition: 12/19 on selected-coverage subset (35 uncovered)
+- Common-denominator: 12/54=22.2% vs parser 8/54=14.8%, gap not significant
+- ~~Surplus: 48.3pp~~ **WITHDRAWN per Codex evidence gate** — denominator
+  mismatch invalidated it. Also: not valid Nerode refinement (classes merged
+  due to greedy averaging), unfair baseline comparison, no simpler controls.
+- Licensed: "transductive selected-coverage screen, 12/19 covered, no
+  predictive surplus or quotient action law established"
+
+**Codex evidence gate verdict (PSR-v1):** NO-GO on headline claim. Key issues:
+(1) 48.3pp compares 12/19 with 8/54 — different denominators, invalid;
+(2) not valid Nerode refinement — classes merged (50→48→41) because greedy
+averaging with new low-distance suffixes can dilute existing differences;
+(3) comparison unfair — quotient has 14 suffixes + 54-entry lookup table,
+parser has only ground-truth abstract state; (4) transition coverage selected
+mechanically for easy cases; (5) simpler mechanisms (kNN, memorization,
+last-action) not ruled out; (6) proposed depth-1→2 fix trains on test answers.
+
+**Corrected adjudication design (Codex §7):** (1) freeze construction and
+held-out history families before quotient discovery; (2) genuine nested
+refinement; (3) learn all prototypes and transitions from construction only;
+(4) score every held-out history, coverage as first-class gate; (5) compare
+parser/quotient/kNN/last-action/memorization/shuffled on identical rows;
+(6) paired, history-clustered response-distribution losses; (7) require
+approximate action descent and state substitution before calling classes
+causal. If single corrected test fails, close RCQ on this task.
 
 ---
 
