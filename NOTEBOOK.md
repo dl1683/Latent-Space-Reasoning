@@ -4,6 +4,44 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-02 — Deep reflection: HANDLE-mu freeze verdict, pivot planning
+
+**Two independent Codex reviews converge: HANDLE-mu V2 should be frozen.**
+
+Key findings from architecture review + process reflection:
+1. HANDLE-mu is calibration (distance-1), not the artifact. Even a perfect pass
+   cannot complete the mission of native latent-space math.
+2. The tunnel pattern: propose algebra → build world → fail → repair evaluator →
+   interpret calibration as progress. "A good ML experiment. Not discovery of
+   mathematics demanded by an encountered latent world."
+3. Infrastructure drift at 6:1 (measurement vs world-building) exceeds the 5:1
+   halt threshold. 18 evaluator fixes for a calibration experiment.
+4. Sunk cost is materially influencing continuation — the quality of the harness
+   and the 0.16pp shortfall keep the same vehicle central.
+5. Post-ID contacts are only 1.45% of transitions — the global lift estimand
+   massively dilutes the real memory signal.
+6. V1 cross-seed analysis: lift variance is dominated by historyless instability
+   (stddev 0.107), not Dense (stddev 0.002). The gate measures training variance
+   of the ablation control.
+7. Historyless exceeds observation ceiling (0.862 > 0.766) because action channel
+   leaks episode state — compresses available lift.
+8. Dense val loss still declining at epoch 40 (schedule-limited), but extending
+   epochs would be post-hoc rescue, not the formal campaign.
+
+**Decision:** Allow seed 137 (running) to finish as closure evidence. Do NOT launch
+seed 2026 or further evaluator repairs. Pivot to highest-leverage alternative:
+real recurrent/SSM causal quotient. Direction dialogue round 1 in progress.
+
+**Valuable residue from HANDLE-mu:** Response-defined identity, shielding, timing,
+causal consumption, and composition gates — transferable methodology.
+
+**Seed 137 closure:** Run completed (exit 0, ~21K seconds CPU) but produced no
+result JSON — Python stdout buffering masked a silent failure. No V2 seed 137
+result file exists. Given the freeze verdict, this is adequate closure: three
+Codex reviews converge that HANDLE-mu is calibration, not the artifact.
+
+**HANDLE-mu V2: FROZEN.** No further seeds, no V3, no evaluator amendments.
+Pivot to real-model causal quotient direction.
 ## 2026-09-02 — Full evaluator overhaul: 18 fixes, spec amendment, session pause
 
 **Codex correctness review returned NO-GO on the original 5 fixes.** Identified

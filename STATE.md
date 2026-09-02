@@ -97,11 +97,14 @@ running when session ended). The current order (patch→obs+act→predict) is
 semantically correct for V2 latent keys because observation is broadcast and
 key state is exclusively in hidden memory, but spec says observe→patch→act→predict.
 
-**Campaign status:** Seed 137 was running (OLD code, ~1h in, likely near ControlB
-or evaluation). Will need to be re-checked on resume — may have completed or been
-killed by shutdown. Recurrent lift from seed 137 is valid regardless. Seed 2026
-pending: will use fully fixed evaluator. ALL existing seeds (42, 137) must be
-rerun under the corrected evaluator for valid intervention gates.
+**Campaign status: FROZEN (2026-09-02).** Seed 42 ran under old evaluator
+(eligibility FAIL, lift 9.84pp < 10pp). Seed 137 ran under corrected evaluator
+but produced no result JSON (exit 0, ~21K CPU seconds, stdout buffering failure).
+Seed 2026 cancelled. Three independent Codex reviews (architecture review,
+process reflection, estimand mismatch analysis) converge: HANDLE-mu is calibration
+(distance-1), not the artifact. Infrastructure drift at 6:1 exceeds 5:1 halt
+threshold. No V3, no further evaluator amendments. Valuable residue: response-defined
+identity, shielding, timing, causal consumption, and composition gates.
 
 **Codex V2 design gate (2026-09-01): conditional no-go, 7 blocking repairs.** Repairs
 implemented and committed (97dad28): event code fix, V2 oracle/intervention/counterfactual
