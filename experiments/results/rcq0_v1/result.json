@@ -1,0 +1,53 @@
+{
+  "experiment_id": "rcq0_v1",
+  "model_id": "RWKV/v6-Finch-3B-HF",
+  "timestamp": "2026-09-02T18:38:38",
+  "elapsed_seconds": 222.3,
+  "n_joint_states": 9,
+  "n_histories": 9,
+  "n_classes": 9,
+  "class_sizes": [
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1,
+    1
+  ],
+  "gates": {
+    "entity_discrimination": {
+      "value": 0.4253,
+      "threshold": 0.1,
+      "pass": true
+    },
+    "transition_consistency": {
+      "value": 1.0,
+      "threshold": 0.95,
+      "pass": true
+    },
+    "composition_top1": {
+      "value": 0.6481,
+      "threshold": 0.9,
+      "pass": false
+    },
+    "composition_tv": {
+      "value": 0.2416,
+      "threshold": 0.15
+    },
+    "substitution_same": {
+      "value": 1.0,
+      "threshold": 0.1,
+      "pass": false
+    },
+    "substitution_cross": {
+      "value": 0.5551,
+      "threshold": 0.05
+    }
+  },
+  "parser_null_tv": 0.2184,
+  "overall_pass": false,
+  "status": "FAIL"
+}

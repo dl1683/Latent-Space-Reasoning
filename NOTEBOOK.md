@@ -4,6 +4,56 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-02 — RCQ-0: quotient structure found, composition fails, exploring affine dynamics
+
+**Finch-3B confirmed as RCQ substrate.** Entity discrimination TV=0.43 (PASS).
+State replay bit-exact (TV=0.000000). State injection: entity swap confirmed
+(TV=0.41/0.46). RWKV-4 at all sizes lacks entity discrimination — only RWKV-6
+at 3B+ tracks entity-specific state.
+
+**RCQ-0 runner built and iterated 8 times.** Progression:
+1. δ=0.05 hard quantization: 35/36 classes (near-trivial)
+2. δ=0.10 hard: same
+3. TV clustering 0.10 + moved paths: 26 classes, 12 comps (25%)
+4. TV 0.10 + direct only: 17 classes, 60 comps (47%)
+5. TV 0.15 + "Currently" phrasing: 15 classes, 58 comps (34%)
+6. TV 0.05 + word-order only: 16 classes, 7 comps (43%)
+7. Ground-truth 9-state (4 phrasings): consistency 0.86, comp 51%
+8. Ground-truth 9-state (1 phrasing, self-comp): consistency 1.0, comp 65%
+
+**Key discovery: path dependence.** Within-state word-order TV measured across
+all 9 states: min=0.0004, max=0.2948, median=0.09. "Office" states have highest
+path dependence. The model genuinely distinguishes how entity state was described,
+not just what the state is.
+
+**Why composition fails:** Post-action distributions differ from direct-statement
+distributions by TV ~0.25 (path dependence). The nearest-centroid lookup can't
+reliably map post-action states to the correct abstract-state class because the
+path-dependent shift exceeds the between-class margin for close state pairs.
+No threshold setting resolves this: compression and consistency trade off.
+
+**Parser surplus: NONE.** Quotient composition TV (0.24) is worse than parser
+baseline TV (0.19). The quotient adds no predictive power beyond text parsing.
+
+**What does work:** Substitution PASSES (same-class TV=0.07, cross-class TV=0.36).
+Entity discrimination is strong (0.42-0.52). State injection is exact. The model
+HAS genuine entity state — the quotient approximation just can't capture it
+cleanly enough for composition.
+
+**Current test:** Affine behavioral dynamics — can T_a(B) = A_a B + b_a in the
+6D response-distribution space predict two-action composition? Tests whether the
+model's behavioral dynamics have a simple algebraic description that composes
+without discretization.
+
+**What was learned:**
+1. The quotient as defined (behavioral equivalence on a finite query set) is
+   correct but produces a structure too fine for clean composition at the
+   abstract level and too coarse at the individual-prefix level
+2. Recurrent models have path-dependent state: "is in X" ≠ "moved to X"
+3. The 9-state model is a human abstraction, not the model's native structure
+4. The model's native structure has ~15-18 behavioral states for our probe set
+5. Discretization loses information; continuous behavioral space may work better
+
 ## 2026-09-02 — Deep reflection: HANDLE-mu freeze verdict, pivot planning
 
 **Two independent Codex reviews converge: HANDLE-mu V2 should be frozen.**

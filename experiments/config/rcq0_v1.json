@@ -1,0 +1,36 @@
+{
+  "experiment_id": "rcq0_v1",
+  "model_id": "RWKV/v6-Finch-3B-HF",
+  "model_revision": "c17eed9625bba0bc71c4b67db39f6d34ac9846fc",
+  "dtype": "float32",
+  "device": "cpu",
+
+  "entities": ["Avery", "Blake"],
+  "locations": ["kitchen", "garden", "office"],
+  "n_joint_states": 9,
+
+  "histories_per_state": 1,
+  "construction_split": 1,
+  "held_out_split": 0,
+
+  "quotient_mode": "ground_truth",
+  "quantization_delta": 0.15,
+
+  "gates": {
+    "entity_discrimination_tv": 0.10,
+    "replay_tv_max": 0.0001,
+    "injection_tv_min": 0.20,
+    "within_class_transition_consistency": 0.95,
+    "composition_top1_agreement": 0.90,
+    "composition_tv_max": 0.15,
+    "parser_surplus_tv": 0.02,
+    "substitution_same_class_tv_max": 0.10,
+    "substitution_cross_class_tv_min": 0.05
+  },
+
+  "seed": 42,
+  "max_runner_lines": 450,
+  "bootstrap_resamples": 1000,
+
+  "output_dir": "experiments/results/rcq0_v1"
+}

@@ -130,6 +130,51 @@ Spec: theory/HANDLE_MU_V2.md.
 Prior V1 rung 1 results: experiments/results/handle_mu/seed_42_rung_1.json.
 V2 results: experiments/results/handle_mu/v2_*.json.
 
+### RCQ-0: Real Causal Quotient on Finch-3B (2026-09-02, IN PROGRESS)
+
+Distance-from-claim: **0** — the quotient and action law ARE the native math.
+Spec: theory/REAL_CAUSAL_QUOTIENT.md. Runner: experiments/run_rcq0.py.
+Config: experiments/config/rcq0_v1.json.
+
+**Substrate (confirmed):** RWKV/v6-Finch-3B-HF. Entity discrimination TV=0.43
+(PASS, gate >0.10). State replay TV=0.000000 (bit-exact). State injection:
+entity swap confirmed (TV=0.41/0.46). RWKV-4 models at ALL sizes FAIL entity
+discrimination (track location dominance, not entity-specific state). Entity
+discrimination emerges between 1.6B and 3B in RWKV-6 architecture.
+
+**Task:** 2 entities (Avery, Blake) × 3 locations (kitchen, garden, office) =
+9 joint states. 6 macro-actions. 2 probes. Teacher-forced log-likelihood scoring
+over 3 location tokens.
+
+**Key finding: path dependence.** The model's recurrent state depends not just
+on the abstract entity configuration but on HOW it was described. Within-state
+word-order TV ranges from 0.0004 (symmetric states) to 0.2948 (office states).
+Median within-state TV = 0.09. This means the model genuinely distinguishes
+"Avery is in the kitchen. Blake is in the garden." from "Blake is in the garden.
+Avery is in the kitchen." — they are different behavioral states.
+
+**9-state quotient: structural but non-compositional.**
+- Ground-truth 9-state assignment (4 phrasings/state, 2 con + 2 held):
+  within-class TV mean=0.12, max=0.33.
+- Transition consistency: 0.86 (different phrasings of same state transition to
+  different target classes 14% of the time).
+- Composition top-1: 0.51 (4.6× chance, real signal but far from 0.90 gate).
+- Self-composition (1 phrasing, no held-out): 0.65.
+- Substitution: same-class TV=0.07 PASS, cross-class TV=0.36 PASS.
+- Parser null: TV=0.19. Quotient composition TV=0.24. **No predictive surplus
+  over text parser.**
+
+**Diagnosis:** Post-action distributions differ from direct-statement distributions
+for the same entity configuration (path dependence TV ~0.25). The nearest-centroid
+lookup maps post-action states to wrong classes when path-dependent shift exceeds
+between-class gap. The 9-state model is too coarse for the model's actual
+behavioral state space.
+
+**Current exploration:** Testing whether Finch-3B's behavioral dynamics admit an
+affine (linear) representation in the 6D response-distribution space. If
+T_a(B) ≈ A_a B + b_a composes, this is native math without discretization —
+a continuous action law on the behavioral manifold.
+
 ### Closed results (OCI/RAC line — bounded activation-steering)
 
 **OCI-002 (sentence-position routing):** B20 hidden state transplant routes to the donor's sentence position at 95.8% accuracy across disjoint entity panels. Runner: `experiments/run_oci_002.py`.
