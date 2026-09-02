@@ -1,7 +1,7 @@
 # HANDLE-mu V2: Latent-Inventory Causal Handles
 
-**Status:** Codex design gate PASSED (conditional). Repairs implemented.
-**Date:** 2026-09-01 (spec), 2026-09-01 (design gate repairs)
+**Status:** Design gate PASSED. Evidence gate: 5 blockers repaired (64ee25b), recheck pending.
+**Date:** 2026-09-01 (spec), 2026-09-01 (design + evidence gate repairs)
 **Predecessor:** `theory/HANDLE_MU.md` (v1, locked, eligibility FAIL)
 **Runner:** `experiments/run_handle_mu.py` with `--v2` flag
 
@@ -60,9 +60,10 @@ V2 semantics (sentinel positions, latent inventory) propagate to:
 
 ### 5. ControlB width ladder
 
-Three widths are trained per seed: {h_pm, 96, 192}. The best is selected
-by validation loss. This matches the v1 spec requirement but was not
-previously implemented.
+Three widths are trained per seed: {h_pm, 96, 192}. Per-seed selection:
+first width where event F1 >= 0.90, status F1 >= 0.90, and both are within
+3 percentage points of Dense. Val-loss fallback when no width qualifies.
+Cross-seed adjudication (median + 2/3 seeds) applied at verdict level.
 
 ### 6. Trajectory length
 
@@ -76,10 +77,27 @@ achieve 100% completion for both-locks-open and goal-activation.
 V2 results save to v2_seed_{seed}_rung_{rung}.json and
 v2_verdict_rung_{rung}.json, preserving V1 results.
 
-## Preflight result (2026-09-01, repaired)
+### 8. Observation ceiling methodology
+
+The preflight computes two observation ceilings:
+- **Canonical** (sorted carrier vectors): the PASS metric. Measures the
+  information content of the observation independent of slot ordering.
+  Carrier permutation is random per episode and does not encode hidden state.
+- **Raw** (slot-ordered tensors): diagnostic only. Inflated by episode-indexed
+  carrier permutation artifacts. Not used for PASS/FAIL.
+
+### 9. Intervention pair bijection filter
+
+`find_paired_histories` requires donor and recipient trajectories to share
+the same episode-local key-lock bijection. Pairs crossing different bijections
+produce ill-defined interventions (transplanting key state that encodes a
+different relation).
+
+## Preflight result (2026-09-01, evidence gate repairs)
 
 **PASS.**
-- Post-ID obs Bayes ceiling: 0.6807 (< 0.75)
+- Post-ID canonical ceiling: 0.6807 (< 0.75, PASS metric)
+- Post-ID raw ceiling: 0.7656 (diagnostic — slot-order artifact)
 - Post-ID hist Bayes ceiling: 1.0000 (> 0.99)
 - Memory gap: 32 percentage points
 - All 4 cells balanced (160-194 per outcome per cell, 16 levels each)

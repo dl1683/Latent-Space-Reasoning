@@ -93,10 +93,20 @@ propagation, output path separation, policy randomization (first-key + lock orde
 goal probe, post-identification preflight with history ceiling, ControlB width ladder.
 
 **HANDLE-mu V2 repaired preflight PASSES (2026-09-01).** Post-identification analysis:
-obs Bayes ceiling 0.6807 (< 0.75), hist Bayes ceiling 1.0000 (> 0.99), memory gap 32pp.
-All 4 key-lock cells balanced (~170 each outcome, 16 levels). Goal bank: ready_activate=1353,
-unready_none=1427. Coverage 100%. Traj length 48. ControlB width ladder {h_pm, 96, 192}.
-Spec: theory/HANDLE_MU_V2.md. Codex V2 evidence gate in progress.
+canonical ceiling 0.6807 (< 0.75, PASS metric), raw ceiling 0.7656 (diagnostic — slot-order
+artifact from per-episode carrier permutation), hist Bayes ceiling 1.0000 (> 0.99), memory
+gap 32pp. All 4 key-lock cells balanced (~170 each outcome, 16 levels). Goal bank:
+ready_activate=1353, unready_none=1427. Coverage 100%. Traj length 48. ControlB width ladder
+{h_pm, 96, 192}.
+
+**Codex V2 evidence gate (2026-09-01): 5 blockers identified, all repaired (64ee25b).**
+1. Raw-interface ceiling: now reports both canonical (PASS metric) and raw (diagnostic)
+2. goal_ok added to preflight PASS condition
+3. Shared-bijection filter in find_paired_histories
+4. ControlB width selection by F1-threshold qualification (locked spec compliance)
+5. Smoke/full output path collision resolved (smoke_ prefix)
+Codex evidence gate recheck in progress.
+Spec: theory/HANDLE_MU_V2.md.
 
 Prior V1 rung 1 results: experiments/results/handle_mu/seed_42_rung_1.json.
 V2 results: experiments/results/handle_mu/v2_*.json.

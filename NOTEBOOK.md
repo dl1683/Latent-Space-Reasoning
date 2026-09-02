@@ -4,6 +4,34 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-01 — HANDLE-mu V2 evidence gate: 5 blockers repaired, recheck pending
+
+**Codex V2 evidence gate:** no-go, 5 blockers identified (entries e907-e913).
+All repaired (commit 64ee25b):
+
+1. **Raw-interface ceiling**: Preflight now computes BOTH canonical (sorted carriers,
+   0.6807) and raw (slot-ordered, 0.7656) ceilings. Canonical is PASS metric — carrier
+   permutation is random per episode and carries no hidden-state info. Raw reported as
+   diagnostic.
+2. **goal_ok omitted from PASS**: Added `and goal_ok` to preflight PASS condition.
+3. **Cross-bijection intervention pairs**: find_paired_histories now requires donor and
+   recipient to share the same episode-local bijection. Eliminates ~50% of cross-bijection
+   pairs that confounded the intervention.
+4. **ControlB width selection**: Changed from per-seed val-loss to F1-threshold
+   qualification (event F1 >= 0.90, status F1 >= 0.90, within 3pts of dense). Val-loss
+   is fallback when no width qualifies. Cross-seed adjudication (median + 2/3 seeds)
+   deferred to verdict.
+5. **Smoke/full path collision**: Smoke outputs now have `smoke_` prefix
+   (smoke_v2_seed_42_rung_1.json vs v2_seed_42_rung_1.json).
+
+**Re-verified preflight:** PASS (canonical 0.6807, raw 0.7656 diagnostic, hist 1.0000).
+**Re-verified smoke test:** Pipeline clean, all 5 architectures train, gates compute.
+ControlB selected w192 by val-loss fallback (expected — F1 too low at 15 epochs).
+
+**What's next:** Codex evidence gate recheck, then full V2 campaign seed 42.
+
+---
+
 ## 2026-09-01 — HANDLE-mu V2 design gate repairs: 7 blocking fixes, repaired preflight PASSES
 
 **Codex V2 design gate:** conditional no-go, 7 blocking repairs identified.
