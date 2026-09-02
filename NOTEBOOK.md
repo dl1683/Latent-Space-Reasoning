@@ -4,6 +4,21 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-02 — Evaluator repair: 4 fixes committed, Codex review pending
+
+**Fixes applied (8fc3bff, db2df73):**
+1. Patch boundary: transplant now before forward_step (was after).
+2. Timing aggregation: timing_misses/timing_contacts propagated (was dropped → miss_rate=1.0).
+3. Cross-seed adjudication: numerical median of gate metrics (was boolean median).
+4. Pair budget: 512→1024 (204/handle, above 128 floor for 2×64 cells).
+
+**Status:** Seed 137 running under OLD code (sparse epoch 15/40). Recurrent lift
+valid. Intervention/timing gates will reflect old bugs — diagnostic only. Seed 2026
+will use all fixes. Codex correctness review in progress.
+
+**What's next:** Codex clears fixes → seed 137 finishes → launch seed 2026 with
+fixed evaluator → cross-seed adjudication.
+
 ## 2026-09-02 — V2 seed 42 complete: ELIGIBILITY FAIL by 0.0016
 
 **Recurrent lift: 0.0984 (threshold 0.10).** Missed by 1.6 thousandths of an F1
