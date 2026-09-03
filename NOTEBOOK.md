@@ -4,6 +4,55 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### Order independence probe: commutativity confirmed, token dominance discovered (2026-09-03)
+
+**P1 test from idempotent consolidation framework.** 216 calls, 524s, Falcon-H1
+at d3. Seven conditions: s0 baseline, s1 comment, s1 pass, and four s2
+combinations (comment+pass, pass+comment, comment+comment, pass+pass).
+
+**Results:**
+
+| Condition         | Mean sigma | Gain vs s0 |
+|-------------------|-----------|------------|
+| s0_none           | 0.302     | —          |
+| s1_comment        | 0.900     | +198%      |
+| s1_pass           | 0.343     | +13%       |
+| s2_comment_pass   | 0.885     | +193%      |
+| s2_pass_comment   | 0.874     | +189%      |
+| s2_comment_comment| 0.840     | +178%      |
+| s2_pass_pass      | 0.411     | +36%       |
+
+**Three findings:**
+
+1. **Commutativity confirmed.** comment+pass (0.885) ≈ pass+comment (0.874),
+   absolute difference 0.011. Order does not matter — consistent with a
+   projection interpretation where the operators commute.
+
+2. **Comment far dominates pass.** s1_comment (0.900) vs s1_pass (0.343). This
+   is NOT "approximately the same projection." `# No changes.` is semantically
+   loaded — it may function as an explicit instruction to maintain bindings,
+   not just a neutral computation step.
+
+3. **Strong-type dominance in mixed pairs.** In any pair containing a comment,
+   the result ≈ comment alone (0.87-0.88 vs 0.90). The weaker token (pass)
+   contributes nothing beyond what the comment already achieves.
+
+**Critical caveat — ceiling effect.** This probe used a simplified template
+(nested defs, no function calls/returns, inner value always 0). The same
+`# No changes.` suffix gives 0.430 on the SVB-2 template (which has function
+calls, returns, distinct inner values 99/999/9999). The probe's 0.900 comment
+result is near ceiling, so commutativity could be a compression artifact.
+
+**Next step: rerun with SVB-2 template** to test commutativity in the
+lower-sigma regime (s1 ≈ 0.43) where there's more dynamic range.
+
+**Implication for the framework:** The "type-dependent trigger" property (P1
+prediction 3) is confirmed far more strongly than expected. The consolidation
+operator is not type-independent — `C_comment >> C_pass`. The projection
+interpretation survives (commutativity, approximate idempotency), but the
+"approximately the same" claim must be replaced with "same STRUCTURE, different
+MAGNITUDE." [pending validation — rerun with SVB-2 template needed]
+
 ### Theoretical framework: idempotent consolidation operator (2026-09-03)
 
 **The settling time law can be modeled as an approximate idempotent projection

@@ -1,0 +1,61 @@
+{
+  "experiment": "order_independence_probe",
+  "model": "tiiuae/Falcon-H1-1.5B-Instruct",
+  "depth": 3,
+  "n_per_condition": 27,
+  "elapsed_seconds": 524.2,
+  "total_calls": 216,
+  "conditions": {
+    "s0_none": {
+      "mean": 0.3023,
+      "std": 0.0938
+    },
+    "s1_comment": {
+      "mean": 0.9002,
+      "std": 0.0324
+    },
+    "s1_pass": {
+      "mean": 0.343,
+      "std": 0.1205
+    },
+    "s2_comment_pass": {
+      "mean": 0.8849,
+      "std": 0.0441
+    },
+    "s2_pass_comment": {
+      "mean": 0.8742,
+      "std": 0.0564
+    },
+    "s2_comment_comment": {
+      "mean": 0.8395,
+      "std": 0.0395
+    },
+    "s2_pass_pass": {
+      "mean": 0.4107,
+      "std": 0.1296
+    }
+  },
+  "analysis": {
+    "commutativity_test": {
+      "comment_pass": 0.8849,
+      "pass_comment": 0.8742,
+      "absolute_difference": 0.0108,
+      "verdict": "COMMUTATIVE (diff < 0.02)"
+    },
+    "within_type_idempotency": {
+      "comment_s1": 0.9002,
+      "comment_s2": 0.8395,
+      "comment_diff": -0.0607,
+      "pass_s1": 0.343,
+      "pass_s2": 0.4107,
+      "pass_diff": 0.0677,
+      "verdict": "APPROXIMATELY IDEMPOTENT (|diff| < 0.07)"
+    },
+    "cross_type_dominance": {
+      "mixed_avg": 0.8796,
+      "best_single": 0.9002,
+      "worst_single": 0.343,
+      "verdict": "COMMENT DOMINATES: mixed approx comment-alone, not average"
+    }
+  }
+}
