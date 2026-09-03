@@ -439,6 +439,22 @@ doesn't exist. Mode F (full text) is correct: all layers see full context,
 suffixes are semantically neutral. ALL SVB experiments on Falcon-H1 also used
 the affected cached continuation pattern.
 
+**Decode mode verification (2026-09-03, COMPLETE):**
+Single-token decode matches full-text exactly in all 4 tested conditions
+(TV < 1.2e-6). Bug inflation ranges from 1.7x to 9.0x.
+
+| Condition | Buggy σ | Correct σ | TV(decode,full) |
+|-----------|---------|-----------|-----------------|
+| d1_s0 | 0.747 | 0.142 | 9.3e-7 |
+| d1_s1 | 0.722 | 0.080 | 5.3e-7 |
+| d2_s0 | 0.691 | 0.402 | 1.2e-6 |
+| d2_s1 | 0.677 | 0.292 | 1.1e-6 |
+
+**Architecture separation confirmed:** On correct Falcon-H1, settling time is
+NEGATIVE (d1: -44%, d2: -27%). SSM recency bias erodes scope info over processing
+steps. On Qwen3 (pure transformer), settling is positive (+1.2% to +12.6%).
+Attention consolidates; SSM erodes.
+
 **Status:** Suffix algebra on Falcon-H1 is an implementation artifact. Mode F
 result (semantically neutral suffixes) is the ground truth. SVB-Qwen3 (pure
 transformer, no Mamba) is unaffected. The mathematical framework (TV, bootstrap,
@@ -446,11 +462,14 @@ hypothesis testing) is sound; the measurement instrument was broken.
 
 Spec: theory/SUFFIX_ACTION_ALGEBRA.md. Normalizer: theory/suffix_algebra.py.
 
-### SVB-2: Fine-grained suffix resolution confirms one-shot trigger (2026-09-03, SCOPE_STACK_WITNESS)
+### SVB-2: Fine-grained suffix resolution (2026-09-03, AFFECTED BY MAMBA BUG)
 
 Distance-from-claim: **1** — resolves suffix mechanism at fine granularity.
 Runner: experiments/run_svb_0.py. Config: experiments/config/svb_2.json.
-945 model calls, 2613s. Verdict: SCOPE_STACK_WITNESS.
+945 model calls, 2613s. **CAUTION: All data below used buggy multi-token
+cached continuation on Falcon-H1. Numbers are inflated by the Mamba state gap.
+Qualitative patterns (one-shot trigger, depth scaling) may survive but need
+re-verification with decode mode or on Qwen3.**
 
 **Suffix counts [0,1,2,3,4,6,8] at depths 1-4 on Falcon-H1:**
 
