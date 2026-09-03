@@ -4,6 +4,55 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-03 (session 4) — Direction pivot: response curvature / path-fiber calculus
+
+**Codex evidence gate adopted:** PSR-v2 ruled INVALID (not valid FAIL). Right
+congruence "0 violations" was vacuous (all d0 singletons). kNN comparison was
+target-informed. RCQ closed on entity-location tracking by bounded-round protocol,
+not empirically falsified. Corrected all canonical surfaces.
+
+**Codex direction dialogue (3 rounds):**
+
+Round 1 lean: response curvature / path holonomy — make actions and paths primary,
+states derived from behavior. Key insight: the tunnel was "find the right partition
+= discover native state." The genuinely different move: ask which apparently
+commuting actions fail to commute behaviorally, whether loop residues compose or
+transport. Anti-tunnel diagnosis: algebraic partition is the tunnel; shift to paths.
+Narrative: "Two routes can reach the same facts but leave the model in different
+internal worlds; do those route effects obey a reusable calculus?"
+
+Round 2 accepted: prediction-first framing. Four-corner path square (p00, pL, pR,
+pLR) with washout tail to defeat recency. Learn transports K_L, K_R from 3 corners,
+predict unseen 4th on held-out roots. Key correction from Codex: "recency is a null
+law, not a separate ontology" — state injection cannot distinguish recency from path
+structure since recency itself lives in recurrent state. Must beat increasingly
+strong recency models (last-1, last-2, discounted history). Drop the π projection;
+paths and response laws are primary. Base/fiber decomposition is earned by the
+calculus, not assumed.
+
+Round 3 GO verdict: Codex delivered complete lock specification (PFC-0). Exact task
+population: 9 roots × 3 panels × 6 paths × 2 queries = 324 endpoint calls + 54
+replay calls = 378 total. Three fixed folds for cross-fitting. Seven baselines:
+parser, last-1, last-2, multiset, discounted history (inner LOO-root lambda
+selection), primitive composition (Adam 3000 steps), causal 1-NN. Full adjudication
+tree with 9 possible verdicts. Runner committed at 9c3891b, experiment launched.
+
+**Preliminary commutation defect found in PSR-v2 cache:**
+Start=(office,office), actions: Avery→kitchen + Blake→garden.
+κ = 0.2087 TV (well above 0.05 noise floor). AB order shows entity confusion
+(Avery query gets 0.18 for garden=Blake's location). BA order cleaner (0.08).
+Both orderings correct but with different confidence. Only 1 of 81 commuting
+pairs has both orderings cached; need systematic measurement.
+
+**Key transferable residues from RCQ/PSR program (deposited):**
+1. Substrate certificate: Finch-3B has entity-specific behavioral state
+2. Operational apparatus: signatures, construction/eval quarantine, controls
+3. Path-fiber constraint: semantics-only state is not predictively sufficient
+4. Quantitative obstruction: path-dependent TV=0.29 → κ/2 worst-case error
+5. Horizon-custody, nonvacuity, approximate-identity methodological lessons
+
+---
+
 ## 2026-09-02 (session 3) — PSR-v2 corrected adjudication
 
 **PSR-v2 launched.** One bounded corrected adjudication, addressing all 7 Codex
