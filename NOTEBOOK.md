@@ -4,6 +4,80 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### MAMBA STATE BUG: EMI divergence traced to HuggingFace implementation gap (2026-09-03)
+
+**Root cause identified.** The EMI divergence across execution modes is caused by
+a gap in HuggingFace's Falcon-H1 `torch_forward` implementation: for multi-token
+continuation from cached state (`seq_len > 1`), the Mamba SSM layers start from
+**zero initial state** instead of using the cached recurrent state.
+
+**Evidence chain:**
+1. `modeling_falcon_h1.py`, line 819: `previous_states = torch.zeros_like(states[:, :1])`
+   — hardcoded zeros for the inter-chunk SSM recurrence initial state.
+2. Line 705: `self.conv1d(hidden_states_B_C)` — convolution applied WITHOUT
+   cached conv state (uses nn.Conv1d's zero padding instead).
+3. Both `mamba_chunk_scan_combined` and `causal_conv1d_fn` accept `initial_states`
+   parameters — the model code simply never passes them for `seq_len > 1`.
+4. The `cuda_kernels_forward` path has the same gap (no `initial_states` passed).
+5. Single-token decode (`seq_len == 1`) CORRECTLY uses cached states (lines 686-762).
+
+**Minimal reproduction (32-token text):**
+- One-shot vs two-shot (multi-token continuation): TV = 0.118, max logit diff = 6.527
+- One-shot vs single-token decode: TV = 0.000000 (exact match)
+- Cross-prefix two-shot convergence: TV = 0.794 (Mamba layers ignore prefix)
+
+**This is not a "bug" but a missing feature.** Standard LLM inference (prefill + single-token
+decode) never needs multi-token continuation from cache. The code is optimized for
+that workflow. Our experiments used a non-standard pattern (chunked multi-token continuation).
+
+**Scope of impact:**
+- ALL SVB experiments (SVB-0, SVB-1, SVB-2, suffix conditions, order independence)
+  use `get_state_after_prefix` → cache → `get_dist_from_state` with multi-token suffix.
+  They measure behavior where Mamba layers don't see the prefix (only attention carries context).
+- ALL suffix algebra experiments in `legacy/` used the same cached continuation pattern.
+- EMI modes L, W, G all use cached continuation → all affected.
+- EMI mode F (full text, no cache) processes everything in one pass → CORRECT.
+- SVB competence staircase uses full-text mode → CORRECT.
+- SVB-Qwen3 uses Qwen3 (standard transformer, no Mamba) → CORRECT (KV cache is exact).
+- Cross-architecture comparison (Falcon-H1 vs Qwen3) is invalid: comparing broken Mamba
+  state vs correct full state.
+
+**Reinterpretation of EMI result:**
+The EMI divergence is NOT about "execution-schedule-dependent algebra" or "KV-cache mathematics."
+It is about Mamba layers receiving zero initial state instead of the cached prefix state.
+Mode F collapses all defects because it processes full text in one pass — all layers
+(Mamba + attention) see the complete context. In cached modes, only attention layers see
+the prefix; Mamba layers process continuation tokens from zero state.
+
+**Reinterpretation of suffix algebra:**
+The "suffix action algebra" measured in prior experiments reflects how the model behaves
+when ONLY attention layers carry prefix context (Mamba layers start fresh). This is a
+real behavioral regime (it IS what happens during multi-token cached inference on this model),
+but it does NOT reflect the model's full text understanding capability.
+
+**What remains valid:**
+- Mode F result: model correctly identifies suffixes as semantically neutral (TV < 0.016)
+- Single-token decode: correctly continues from cached state
+- SVB-Qwen3: correctly measured (no Mamba, pure transformer)
+- Competence staircase: correctly measured (full-text mode)
+- The mathematical FRAMEWORK (TV metric, bootstrap CIs, hypothesis testing) is sound
+
+**What is invalidated:**
+- All σ values from SVB on Falcon-H1 reflect attention-only context, not full model
+- Suffix algebra on Falcon-H1 is an artifact of the implementation gap
+- Cross-architecture comparison is apples-to-oranges
+- "Settling time" on Falcon-H1 may be an artifact (attention-only context needs more
+  tokens to compensate for missing Mamba context)
+
+**Options for next steps:**
+1. Fix the implementation gap in HuggingFace code (pass `initial_states` to
+   `mamba_chunk_scan_combined` and `causal_conv1d_fn`) and re-run experiments
+2. Use single-token decode for suffix processing (correct, slower)
+3. Use full-text mode for all measurements (correct, no caching benefit)
+4. Switch to a pure transformer model where KV cache continuation is exact
+5. Study the Mamba-bug regime itself as a phenomenon (attention-only context behavior)
+
+
 ### EMI RESULT: All modes DIVERGENT — algebra is execution-schedule-dependent (2026-09-03)
 
 Execution-Mode Invariance experiment complete. 2079 calls, 5568s (~93 min), CPU.

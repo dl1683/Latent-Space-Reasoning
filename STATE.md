@@ -422,18 +422,27 @@ artifact). W vs G: TV 0.05-0.18 (generator packaging matters). Mode F
 without KV caching. Spearman L/W/G: rho 0.54-0.69 (moderate structural
 correlation). F vs all: rho -0.007 to 0.189 (uncorrelated).
 
-**Interpretation:** The suffix algebra is a property of the KV-cache
-execution schedule, not of text semantics. The model correctly identifies
-suffixes as semantically neutral when processing complete text (Mode F).
-Within any single execution mode, the algebra is reproducible and
-structurally coherent — but it is mode-specific, not mode-invariant.
+**ROOT CAUSE IDENTIFIED (2026-09-03): HuggingFace Mamba state continuation gap.**
+The EMI divergence is caused by HuggingFace's Falcon-H1 `torch_forward` starting
+Mamba SSM layers from ZERO state for multi-token continuation (`seq_len > 1`),
+instead of using the cached recurrent state. `modeling_falcon_h1.py` line 819:
+`previous_states = torch.zeros_like(states[:, :1])`. Both `mamba_chunk_scan_combined`
+and `causal_conv1d_fn` accept `initial_states` — the code never passes them.
+Single-token decode (`seq_len == 1`) is correct. Verified: one-shot vs two-shot
+TV = 0.118; one-shot vs single-token decode TV = 0.000000.
 
-**Status:** H-LRB, H-BAND2, H-GEN-IDEM refuted. H-SAT3 best fit but formally
-inconclusive. EMI: execution-mode invariance FAILS — the algebra is
-execution-schedule-dependent. No partition-independent cached action exists.
-All prior conclusions scoped to Mode L (legacy joint execution). The
-observed structure is real but is architecture mathematics (KV cache
-dynamics), not text-level semantics.
+**Revised interpretation:** The suffix algebra is NOT architecture mathematics or
+KV-cache dynamics. It is an artifact of Mamba layers receiving zero initial state
+during multi-token cached continuation. In cached modes, only attention layers
+carry prefix context; Mamba layers process continuation tokens as if the prefix
+doesn't exist. Mode F (full text) is correct: all layers see full context,
+suffixes are semantically neutral. ALL SVB experiments on Falcon-H1 also used
+the affected cached continuation pattern.
+
+**Status:** Suffix algebra on Falcon-H1 is an implementation artifact. Mode F
+result (semantically neutral suffixes) is the ground truth. SVB-Qwen3 (pure
+transformer, no Mamba) is unaffected. The mathematical framework (TV, bootstrap,
+hypothesis testing) is sound; the measurement instrument was broken.
 
 Spec: theory/SUFFIX_ACTION_ALGEBRA.md. Normalizer: theory/suffix_algebra.py.
 

@@ -46,12 +46,24 @@ of the Mamba-Transformer hybrid. Codex design gate: CONDITIONAL GO.
 - Spearman structural invariance: L/W/G moderately correlated (rho 0.54-0.69),
   F uncorrelated with all (rho -0.007 to 0.189, p>0.27).
 
-**Interpretation:** The algebra is a property of the KV-cache execution
-schedule, not of text semantics. The model correctly identifies suffixes
-as semantically neutral in full-text mode (F). Within any single execution
-mode, the algebra is reproducible — but it is mode-specific.
+**Interpretation (REVISED 2026-09-03):** The EMI divergence is caused by a
+HuggingFace implementation gap: Falcon-H1 `torch_forward` starts Mamba SSM
+layers from ZERO state for multi-token continuation (line 819:
+`previous_states = torch.zeros_like(states[:, :1])`). Both
+`mamba_chunk_scan_combined` and `causal_conv1d_fn` accept `initial_states`
+parameters — the code never passes them for `seq_len > 1`. Single-token
+decode (`seq_len == 1`) correctly uses cached state.
 
-**Status:** COMPLETE. Execution-mode invariance FAILS.
+Verification: one-shot vs two-shot TV = 0.118, max logit diff = 6.527.
+One-shot vs single-token decode TV = 0.000000 (exact match).
+Cross-prefix two-shot convergence TV = 0.794 (Mamba ignores prefix).
+
+The suffix algebra is an artifact of Mamba layers receiving zero initial
+state during cached continuation. Mode F is correct (all layers see full text).
+ALL prior SVB/suffix experiments on Falcon-H1 used the affected pattern.
+SVB-Qwen3 (pure transformer) is unaffected.
+
+**Status:** COMPLETE. Root cause: HuggingFace Mamba state gap, not architecture math.
 
 ---
 
