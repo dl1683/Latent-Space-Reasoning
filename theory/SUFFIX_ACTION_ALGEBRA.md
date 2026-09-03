@@ -1,5 +1,18 @@
 # Suffix action algebra — behavioral composition laws in the SVB response world
 
+## CRITICAL CAVEAT (2026-09-03)
+
+**All measurements in this document are affected by a HuggingFace implementation
+gap.** The Falcon-H1 `torch_forward` method starts Mamba SSM layers from zero
+state for multi-token cached continuation (`seq_len > 1`), ignoring the cached
+recurrent state (`modeling_falcon_h1.py` line 819). All SVB experiments used this
+affected pattern. The suffix algebra was measured under a regime where only
+attention layers carry prefix context; Mamba layers process continuation tokens
+from zero state. Mode F (full text, no cache) shows suffixes are semantically
+neutral (TV < 0.016). The algebraic structure described below is an artifact of
+this implementation gap, not a property of the model's text understanding.
+See NOTEBOOK.md entry "MAMBA STATE BUG" for details.
+
 ## Non-claim boundary
 
 This document does not claim:
@@ -387,20 +400,20 @@ further actions change the place.
 
 ### What is NOT yet established
 
-- **The decisive law R(a, b):** aba ≈ ab has NOT been measured for any
-  (a, b) pair. This is the load-bearing prediction that distinguishes an LRB
-  from a merely idempotent noncommutative monoid. Testing it requires
-  three-action sequences (CPC, PCP) that have not been run.
+**NOTE (2026-09-03): All items below are MOOT given the Mamba state gap finding.**
+The suffix algebra is an artifact of the implementation gap (see CRITICAL CAVEAT).
+H-LRB, H-BAND2, and H-GEN-IDEM were refuted within Mode L; the remaining open
+items were never tested before the root cause was identified. These are retained
+for historical completeness only.
+
+- **The decisive law R(a, b):** aba ≈ ab was measured and REFUTED (H-LRB).
+  CPC, PCP data showed no terminal absorption.
 
 - **Quantitative idempotence:** ρ_JS(s1, s2) = 0.045 exceeds the formal
-  binding ε = 0.02. Either the binding is too tight, or idempotence is
-  only approximate in a weaker sense.
+  binding ε = 0.02. Moot — the idempotence is an artifact.
 
-- **Mean defects do not define a congruence.** Approximate generator
-  relations (bounded I and R on a finite panel) do not license the global
-  Cayley table without closure and error-propagation conditions. The
-  predictions are conditional on H-LRB holding globally, not merely on
-  the measured generators.
+- **Mean defects do not define a congruence.** Moot — the defects are artifacts
+  of the Mamba state gap.
 
 
 ## Theorem: truth-congruence reversal obstruction
