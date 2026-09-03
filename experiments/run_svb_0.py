@@ -65,8 +65,22 @@ class ModelAdapter:
     def get_dist_from_state(self, state, suffix_text, deepcopy=True):
         ids = self.tok.encode(suffix_text, add_special_tokens=False, return_tensors="pt")
         st = copy.deepcopy(state) if deepcopy else state
+        if getattr(self, 'use_decode_mode', False):
+            return self._get_dist_decode(st, ids)
         with torch.no_grad():
             out = self._forward_with_cache(ids, st)
+        self.call_count += 1
+        return self._extract_11bin(out.logits[0, -1, :])
+
+    def _get_dist_decode(self, state, ids_tensor):
+        """Single-token decode: feeds tokens one at a time (correct for Mamba)."""
+        st = state
+        token_ids = ids_tensor[0].tolist()
+        for tok_id in token_ids:
+            with torch.no_grad():
+                out = self._forward_with_cache(
+                    torch.tensor([[tok_id]]), st)
+            st = self._get_cache(out)
         self.call_count += 1
         return self._extract_11bin(out.logits[0, -1, :])
 
