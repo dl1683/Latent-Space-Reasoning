@@ -4,6 +4,76 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-02 (session 3) — PSR-v2 corrected adjudication
+
+**PSR-v2 launched.** One bounded corrected adjudication, addressing all 7 Codex
+evidence gate issues from PSR-v1. Key changes:
+1. Frozen train/test split: construction (d0+d1=63), evaluation (d2=54 sampled)
+2. Genuine nested refinement: argmax quantization (classes can only split, never
+   merge). Each suffix maps to argmax of 3-location probability -> discrete
+   category. Adding suffixes adds tuple dimensions -> monotone partition.
+3. Construction-only transition table (d0->d1 only, never d1->d2 test data)
+4. Full coverage: every d2 history scored, uncovered = abstention
+5. Null ladder: parser, kNN, last-action, memorization, shuffled transitions
+6. Paired TV evaluation on identical rows (quotient vs each baseline)
+7. Action descent + state substitution tests
+
+**Pre-registered adjudication tree:**
+- G1: Coverage >= 30%
+- G2: Right congruence <= 5 violations
+- G3: Quotient mean TV < Parser mean TV (paired, common rows)
+- G4: Quotient mean TV < kNN mean TV
+- G5: Quotient mean TV < Shuffled mean TV
+- G6: Action descent >= 90%
+- ALL must pass. If any fails: close RCQ on entity-location tracking.
+
+**Think-before-you-run predictions:**
+- Argmax quantization with 2 initial suffixes gives ~3-9 initial classes (coarse)
+- After refinement, up to 63 classes possible (one per construction history)
+- Key concern: argmax may be too coarse (distributions [0.50,0.25,0.25] and
+  [0.95,0.03,0.02] both map to same category). If so, heavy transition conflicts.
+- If kNN beats quotient: quotient abstraction loses info, no compositional structure
+- Confound: depth-2 signatures may systematically differ from construction sigs
+
+Running on CPU. Codex design gate also in progress (will refine before claiming).
+
+**PSR-v2 RESULT: OVERALL FAIL.** 702 model calls, ~50 min wall-clock. Key numbers:
+- 21 classes from 63 construction histories, 6 suffixes in Gamma
+- Right congruence ACHIEVED (0 violations, 0 transition conflicts)
+- Coverage: 19/54 = 35.2% (4 novel signatures)
+- **kNN (TV=0.1090) BEATS quotient (TV=0.1183)** — decisive
+- Quotient beats parser (TV 0.1183 vs 0.1758, p=0.008) and shuffled (p=0.000)
+- Action descent: 0/0 (all 9 d0 histories are singletons under argmax w/ 6 suffixes)
+- Within-class TV: 0.1542 mean, 0.4998 max (argmax too coarse)
+- Class-label accuracy: quotient 76.5%, parser 18.0%, kNN 56.0%
+
+Pre-registered adjudication gates:
+- G1 Coverage >= 30%: PASS (35.2%)
+- G2 Congruence <= 5: PASS (0 violations)
+- G3 Quotient < Parser: PASS (p=0.008)
+- G4 Quotient < kNN: **FAIL** (0.1183 vs 0.1090)
+- G5 Quotient < Shuffled: PASS (p=0.000)
+- G6 Action descent >= 90%: **FAIL** (0/0)
+- OVERALL: FAIL
+
+**What this tells us:**
+1. Right congruence WAS achieved — the model's behavioral state IS structured.
+   21 classes, 0 violations — deterministic action maps exist at the class level.
+2. kNN beating quotient = the quotient abstraction LOSES information. Raw
+   signatures capture the predictive information; the composition mechanism
+   cannot exploit structure beyond what kNN does with raw similarity.
+3. Within-class TV of 0.1542 (max 0.4998) shows argmax classes are internally
+   heterogeneous — the abstraction is too coarse.
+4. Caveat: horizon safety violation (suffixes query depth-2 from d1 construction).
+   But even WITH this leak helping the quotient, kNN still wins.
+
+**RCQ on entity-location tracking: CLOSED** per pre-registered adjudication tree.
+
+**Next:** Codex evidence gate for formal verdict, then direction dialogue on what
+to try next. The failure closes the approach, not the premise.
+
+---
+
 ## 2026-09-02 (session 2) — Codex design gate + affine dynamics + predictive-state refinement
 
 **Affine behavioral dynamics result (diagnostic):** Single-action affine TV=0.08

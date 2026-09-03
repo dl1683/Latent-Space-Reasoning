@@ -1,13 +1,13 @@
 """PSR: Predictive-State Refinement of the RCQ quotient.
 
 Counterexample-guided Nerode-style refinement. Starts with direct-query
-behavioral signature (Γ₀ = {q₁,q₂}), then adds action-query suffixes
+behavioral signature (Gamma_0 = {q1,q2}), then adds action-query suffixes
 wherever same-class members diverge post-action (right congruence failure).
 Tests whether the refined quotient composes and beats a text parser.
 
-Key efficiency: congruence check uses depth-0→1 and depth-1→2 histories
+Key efficiency: congruence check uses depth-0->1 and depth-1->2 histories
 already in the set — zero extra model calls for checking. New calls only
-for computing extended signatures when Γ grows.
+for computing extended signatures when Gamma grows.
 
 Budget: max 3 refinement rounds, max 1500 model calls, max 80 states.
 """
@@ -184,10 +184,10 @@ def main():
     hists = d0 + d1 + d2s
     print(f"  D0={len(d0)}, D1={len(d1)}, D2={len(d2s)} (sampled), total={len(hists)}", flush=True)
 
-    # Build text→index for successor lookup
+    # Build text->index for successor lookup
     txt2idx = {h["text"]: i for i, h in enumerate(hists)}
 
-    # Initial Γ
+    # Initial Gamma
     suffixes = list(QUERIES)
     print(f"\n=== Initial Gamma: {len(suffixes)} suffixes ===", flush=True)
 
@@ -225,7 +225,7 @@ def main():
                 print(f"  C{ci}: {len(mems)} mems, abs={abs_set}, dep={dep_set}", flush=True)
         print(f"  Mixed-abstract classes: {mixed}", flush=True)
 
-        # Check right congruence: depth-0→depth-1 and depth-1→depth-2
+        # Check right congruence: depth-0->depth-1 and depth-1->depth-2
         violations = []
         for ci in range(nc):
             mems = cls_mem[ci]
@@ -307,7 +307,7 @@ def main():
     d1_idx = [i for i, h in enumerate(hists) if h["depth"] == 1]
     d2_idx = [i for i, h in enumerate(hists) if h["depth"] == 2]
 
-    # Build transition table from depth-0→depth-1 (training transitions)
+    # Build transition table from depth-0->depth-1 (training transitions)
     transition_d0 = {}
     conflicts_d0 = 0
     for i1 in d1_idx:
@@ -321,9 +321,9 @@ def main():
                     conflicts_d0 += 1
                 transition_d0[key] = target
                 break
-    print(f"  Depth-0→1 transitions: {len(transition_d0)}, conflicts: {conflicts_d0}", flush=True)
+    print(f"  Depth-0->1 transitions: {len(transition_d0)}, conflicts: {conflicts_d0}", flush=True)
 
-    # Build transition table from depth-1→depth-2 (independent transitions)
+    # Build transition table from depth-1->depth-2 (independent transitions)
     transition_d1 = {}
     conflicts_d1 = 0
     for i2 in d2_idx:
@@ -337,7 +337,7 @@ def main():
                     conflicts_d1 += 1
                 transition_d1[key] = target
                 break
-    print(f"  Depth-1→2 transitions: {len(transition_d1)}, conflicts: {conflicts_d1}", flush=True)
+    print(f"  Depth-1->2 transitions: {len(transition_d1)}, conflicts: {conflicts_d1}", flush=True)
 
     # Merge: d0 transitions are "training", d1 are "test-derived"
     transition_full = {}

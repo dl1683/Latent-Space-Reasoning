@@ -203,10 +203,43 @@ histories were uncovered, the parser was scored on a different denominator,
 and simpler matched controls were not run, no predictive surplus or quotient
 action law is established."
 
-**Next:** One corrected adjudication with proper train/test split, genuine
-nested refinement, full null ladder, and paired evaluation. If that fails,
-close RCQ on this task. Runner: experiments/run_psr.py. Results:
-experiments/results/psr_v1/.
+**PSR-v2 result (2026-09-02, pre-registered adjudication: OVERALL FAIL):**
+Corrected adjudication addressing all 7 PSR-v1 evidence gate issues. Frozen
+train/test split (d0+d1=63 construction, d2=54 evaluation), argmax
+quantization for monotone refinement, construction-only transition table,
+full null ladder (parser, kNN, last-action, shuffled). 702 model calls.
+
+Result: 21 classes from 63 construction histories (6 suffixes). Right
+congruence ACHIEVED (0 violations, 0 transition conflicts). Coverage:
+19/54=35.2%. **kNN (TV=0.1090) beats quotient composition (TV=0.1183).**
+Quotient beats parser (TV 0.1183 vs 0.1758, paired p=0.008). Action
+descent untestable: all 9 d0 histories in singleton classes (0/0).
+Within-class TV: 0.1542 (mean), 0.4998 (max). Class-label accuracy:
+quotient 76.5%, parser 18.0%, kNN 56.0%.
+
+Pre-registered adjudication: G1 coverage PASS, G2 congruence PASS, G3
+surplus vs parser PASS, **G4 surplus vs kNN FAIL** (0.1183 vs 0.1090),
+G5 surplus vs shuffled PASS, **G6 action descent FAIL** (0/0). OVERALL
+FAIL. Known caveat: horizon safety violation (suffixes query depth-2
+behavior from d1 construction histories). Even with this leak (which
+should help the quotient), kNN still beats it.
+
+**Licensed sentence (pending Codex evidence gate):** "Under a corrected
+pre-registered adjudication with frozen train/test split, argmax quantization,
+and a full null ladder, a 21-class behavioral quotient on Finch-3B achieved
+right congruence (0 violations) and beat the text parser (paired p=0.008),
+but kNN on raw signatures predicted better (TV 0.1090 vs 0.1183), and action
+descent was untestable (all d0 histories singleton); no compositional surplus
+over nearest-neighbor matching is established."
+
+**RCQ on entity-location tracking: CLOSED per pre-registered adjudication
+tree.** kNN superiority means the quotient abstraction loses information that
+raw signatures preserve — the compositional structure does not add predictive
+power beyond nearest-neighbor matching. Right congruence was achieved (the
+model's behavioral state IS structured), but the structure cannot be exploited
+compositionally beyond what raw similarity matching does.
+
+Runner: experiments/run_psr_v2.py. Results: experiments/results/psr_v2/.
 
 ### Closed results (OCI/RAC line — bounded activation-steering)
 

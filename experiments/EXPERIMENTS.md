@@ -5,6 +5,34 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
+## PSR-v2 — Corrected Predictive-State Adjudication on Finch-3B (2026-09-02; PRE-REGISTERED FAIL)
+
+Distance from claim: 0 (the refined quotient and transition law ARE native math).
+Runner: `experiments/run_psr_v2.py`. Results: `experiments/results/psr_v2/`.
+Ledger: `psr_v2_launch`, `psr_v2_complete`.
+
+**Method:** Corrected adjudication addressing all 7 PSR-v1 evidence gate issues.
+Frozen train/test split (d0+d1=63 construction, d2=54 evaluation). Argmax
+quantization for monotone refinement. Construction-only transition table. Full
+null ladder: parser, kNN, last-action, shuffled. Paired TV evaluation.
+
+**Budget:** 2 refinement rounds, 702 model calls.
+
+**Result:** 21 classes, 6 suffixes, right congruence ACHIEVED (0 violations).
+Coverage: 19/54=35.2%. **kNN (TV=0.1090) beats quotient (TV=0.1183).** Quotient
+beats parser (p=0.008) and shuffled (p=0.000). Action descent: 0/0 (untestable).
+Class accuracy: quotient 76.5%, kNN 56.0%, parser 18.0%. Within-class TV: 0.1542.
+
+**Pre-registered adjudication:** G1 PASS, G2 PASS, G3 PASS, **G4 FAIL** (kNN
+beats quotient), G5 PASS, **G6 FAIL** (action descent 0/0). OVERALL: **FAIL**.
+
+**What we learned:** Right congruence is achievable (algebraic structure exists)
+but quotient composition cannot beat nearest-neighbor matching on raw signatures.
+The abstraction loses predictive information. Closes RCQ on entity-location
+tracking per pre-registered adjudication tree.
+
+---
+
 ## PSR-v1 — Predictive-State Refinement on Finch-3B (2026-09-02; EVIDENCE-GATE NO-GO)
 
 Distance from claim: 0 (the refined quotient and transition law ARE native math).

@@ -1,0 +1,67 @@
+{
+  "experiment": "psr_v2",
+  "model": "RWKV/v6-Finch-3B-HF",
+  "seed": 42,
+  "n_suffixes_final": 6,
+  "n_classes": 21,
+  "n_construction": 63,
+  "n_evaluation": 54,
+  "refinement_rounds": 2,
+  "total_model_calls": 702,
+  "congruence_achieved": true,
+  "final_violations": 0,
+  "coverage": 0.3519,
+  "n_covered": 19,
+  "n_novel_sigs": 4,
+  "class_accuracy_quotient": 0.7647,
+  "class_accuracy_parser": 0.18,
+  "class_accuracy_knn": 0.56,
+  "mean_tv": {
+    "quotient": 0.1183,
+    "parser": 0.1982,
+    "knn": 0.1141,
+    "last_action": 0.1905,
+    "memorization": null,
+    "shuffled": 0.3339
+  },
+  "paired_tests": {
+    "parser": {
+      "n": 19,
+      "mean_diff": 0.0575,
+      "t": 2.6745,
+      "p": 0.0077
+    },
+    "knn": {
+      "n": 19,
+      "mean_diff": -0.0093,
+      "t": -1.2338,
+      "p": 0.8834
+    },
+    "last_action": {
+      "n": 19,
+      "mean_diff": 0.0363,
+      "t": 1.7302,
+      "p": 0.0504
+    },
+    "shuffled": {
+      "n": 19,
+      "mean_diff": 0.2819,
+      "t": 6.7327,
+      "p": 0.0
+    }
+  },
+  "action_descent_rate": 0,
+  "within_class_tv": 0.1542,
+  "cross_class_tv": 0.3713,
+  "conflicts": 0,
+  "transition_entries": 54,
+  "gates": {
+    "coverage": true,
+    "congruence": true,
+    "surplus_vs_parser": true,
+    "surplus_vs_knn": false,
+    "surplus_vs_shuffled": true,
+    "action_descent": false
+  },
+  "overall": false
+}
