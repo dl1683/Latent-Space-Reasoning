@@ -497,22 +497,24 @@ weakening semantic truth as mechanism.
 Results: experiments/results/semantic_content_result.json.
 [Codex evidence gate: REVISE — adopted corrections]
 
-### Semantic paraphrase probe: BPE-controlled semantic class effect (2026-09-03)
+### Semantic paraphrase probe: phrase-family association at controlled BPE count (2026-09-03)
 
-Distance-from-claim: **1** — semantic structure of settling mechanism.
+Distance-from-claim: **1** — phrase sensitivity of settling mechanism.
 
 Follow-up to address Codex concern about BPE confounding. All paraphrases and
 opposites exactly 5 BPE tokens. 10 conditions, 27 measurements each.
 
-**"Unchanged" meaning (5 tokens each):** mean 0.4501 (range 0.3303-0.5825)
-**"Changed" meaning (5 tokens each):** mean 0.2958 (range 0.2667-0.3249)
-**Difference at controlled token count: +0.1502**
+**Five unchanged-labelled (5 tokens each):** mean 0.4460 (range 0.3303-0.5825)
+**Two changed-labelled (5 tokens each):** mean 0.2958 (range 0.2667-0.3249)
+**Paired contrast: +0.1502, positive in 25/27 cells.**
 
-"Values unchanged" (+108%) surpasses original "# No changes." (+53.5%).
-4/5 paraphrases work well — not token-specific. Controls near or below baseline.
+Rules out BPE count as cause. Effect not confined to one exact phrase. But
+semantic class not identified as cause: negation confounded with class, 5-vs-2
+unmatched design, within-class range (0.2522) exceeds class contrast (0.1502),
+truth congruence untested.
 
 Results: experiments/results/semantic_paraphrase_result.json.
-[Codex evidence gate in progress]
+[Codex evidence gate: REVISE — corrections adopted]
 
 ### SVB-1: Depth Capacity Curve on Falcon-H1-1.5B-Instruct (2026-09-03, SCOPE_STACK_WITNESS)
 

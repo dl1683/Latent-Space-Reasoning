@@ -4,9 +4,8 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
-### Semantic paraphrase probe: settling is SEMANTIC-CLASS dependent (2026-09-03)
+### Semantic paraphrase probe: phrase-family association at controlled token count (2026-09-03)
 
-**Discriminating test between semantic meaning and token/distributional effects.**
 10 conditions on SVB-2 template, d3, Falcon-H1, 27 measurements each.
 All paraphrases and opposites are exactly 5 BPE tokens — token count is controlled.
 
@@ -23,35 +22,47 @@ All paraphrases and opposites are exactly 5 BPE tokens — token count is contro
 | s1_changes_made       | 5   | 0.2667 | -4.8%      |
 | s1_continue           | 4   | 0.1976 | -29.4%     |
 
-**Established (BPE-controlled):**
-1. **Semantic class matters.** "Unchanged" paraphrases (5 tokens): mean 0.4501.
-   "Changed" opposites (5 tokens): mean 0.2958. Difference: 0.1502 absolute.
-   At controlled token count, MEANING drives the effect.
-2. **Not token-specific.** 4/5 paraphrases of "# No changes." work well
-   (+18% to +108%). Different tokens, same meaning, same effect class.
-3. **"Values unchanged" is BEST** (+108%), surpassing original "# No changes."
-   (+53.5%). Mentioning "values" directly and using "unchanged" may be more
-   aligned with the scope-binding task.
-4. **Semantic opposites are weaker but heterogeneous.** "Changes made" (-4.8%)
-   hurts slightly. "Values updated" (+16%) is positive but much weaker than
-   unchanged equivalents.
+**Established (Codex evidence gate: REVISE — adopted corrections):**
+1. **Phrase-family association at controlled token count.** Five unchanged-labelled
+   conditions (5 tokens each): mean 0.4460. Two changed-labelled conditions
+   (5 tokens each): mean 0.2958. Paired contrast +0.1502, positive in 25/27 cells.
+   This rules out BPE count as the explanation and shows the effect is not confined
+   to one exact phrase, but remains confounded with negation, token identity,
+   phrasing, truth congruence, and training distribution.
+2. **Not confined to one exact phrase.** 4/5 paraphrases of "# No changes." show
+   uplift (+18% to +108%). But token choice still matters: within-class range
+   (0.2522) exceeds the class contrast itself (0.1502).
+3. **"Values unchanged" has the highest mean** (0.5825 vs 0.4299 for "No changes"),
+   winning 20/27 paired cells. But it loses on the x-variable block by 0.0421 and
+   wins strongly on y and z. Not established as generally superior.
+4. **"Changed"-labelled phrases are weaker.** All five unchanged-labelled means
+   exceed both changed-labelled means. But there are only two "changed" phrases,
+   the 5-vs-2 sets are unmatched, and "semantic opposites" overstates the contrast.
 
-**Not established (pending Codex gate):**
-- Clean semantic/token separation: "# No modifications." (+18%) is barely above
-  "# Values updated." (+16%). The semantic class boundary is fuzzy.
-- Mechanism: whether this is instruction-following, training-distribution
-  association, or learned code-context sensitivity.
-- Variance WITHIN the "unchanged" class is large (0.3303-0.5825).
-- One model, depth, template, deterministic panel.
-- Truth-congruence reversal (matching changed/unchanged comments with actual
-  changed/unchanged program states) not yet tested.
+**Not established:**
+- Semantic class as cause: negation is perfectly confounded with the unchanged
+  class (every unchanged wording uses "no", "nothing", or "un-"; neither changed
+  wording does).
+- Clean class boundary: "No modifications" (+18%) nearly ties "Values updated"
+  (+16%), difference only 0.0054.
+- Mechanism: instruction-following, training-distribution association, learned
+  code-context sensitivity, negation cues, or truth congruence all remain live.
+- One model, depth, template, deterministic panel. No generalization surface.
+- Truth-congruence reversal not yet tested.
 
 **Tension with Qwen3 data:** Earlier Qwen3 probes showed "# Value updated." working
 as well as "# No changes." at all depths. On Falcon-H1, "# Values updated." (+16%)
-is much weaker than "# No changes." (+53.5%). This model difference is itself
-informative — Falcon-H1 is more semantically sensitive than Qwen3.
+is much weaker. This is suggestive but not identified — different models,
+tokenizers, training regimes, and singular/plural wordings.
 
-[Codex evidence gate pending]
+**Licensed sentence (Codex):** On one fixed 3-variable × 9-value SVB-2 panel in
+Falcon-H1 at depth 3, five suffixes reported as five BPE tokens and describing an
+unchanged state averaged σ=0.4460, versus 0.2958 for two same-length suffixes
+describing a changed state; the positionally paired contrast was +0.1502 and
+positive in 25/27 cells. This rules out BPE count as the explanation for that
+contrast and shows the effect is not confined to the exact phrase "No changes," but
+unmatched wording, negative-polarity cues, phrase sampling, and truth congruence
+prevent attributing it to semantic class.
 
 
 ### Semantic content probe: settling is CONTENT-DEPENDENT (2026-09-03)
