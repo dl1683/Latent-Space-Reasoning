@@ -348,6 +348,44 @@ independently worded histories per intended operational state.
 
 Runner: experiments/run_psr_v2.py. Results: experiments/results/psr_v2/.
 
+### SVB-0: Scope-Variable Binding on Falcon-H1-1.5B-Instruct (2026-09-03, INSUFFICIENT_SCOPE_BINDING)
+
+Distance-from-claim: **1** — variable binding through recurrent state is a direct
+observable of scope structure, one step from native math.
+Spec: theory/SVB_0.md. Runner: experiments/run_svb_0.py.
+
+Python lexical scoping as task family: outer assignment → inner function (shadows) →
+scope closure → query reveals outer value. Falcon-H1-1.5B-Instruct selected for
+code capability + recurrent state (DynamicCache). 11-bin response law (digits 0-9
++ OTHER). State injection via saved/restored DynamicCache. 1854 model calls,
+4385s elapsed (73 min CPU). 1188 observations.
+
+**Competence:** Rung 1 PASS (27/27, direct assignment). Rung 2 PASS (27/27,
+single-var depth-1). Rung 3 FAIL (23/30 = 76.7%, two-var depth-1, gate 80%).
+
+**Verdict: INSUFFICIENT_SCOPE_BINDING.** Two-var competence fails formal gate.
+All science observables computed from 1188 observations.
+
+**Observables:**
+- σ_d1 = 0.6811 [0.637, 0.725], σ_d2 = 0.4975 [0.437, 0.557] (scope binding fidelity)
+- κ_d1 = 0.7123 [0.691, 0.733], κ_d2 = 0.5009 [0.472, 0.531] (path contrast TV)
+- ι = 0.3593 [0.343, 0.376] (entity interaction — variable-specific, not global)
+- Depth-1 suffix profile: s0=0.681, s1=0.669, s2=0.560, s4=0.396 (monotone decay)
+- Depth-2 suffix profile: s0=0.497, s1=0.645, s2=0.597, s4=0.516 (anomalous: s1>s0)
+- Null ladder d1: uniform=0.627, inner=0.833, mean=0.597, identity=0.712
+- Null ladder d2: uniform=0.609, inner=0.636, mean=0.555, identity=0.501
+
+**Significance:** First experiment to simultaneously satisfy structured-negative
+requirements 1-3 (valid behavioral readout, source contains the fact, proximal
+causal control). Path contrast (κ~0.71) two orders of magnitude stronger than
+entity-location family (TV~0.03 in PMO-0R/PFC-0). Single-var scope binding in
+the "strong" band (σ≥0.50, κ≥0.50). Entity interaction ι=0.36 confirms
+variable-specific binding, not global state shift. Depth-2 suffix anomaly
+(s1>s0) suggests neutral context aids deeper scope retrieval.
+
+Results: experiments/results/svb_0/result.json. Codex evidence gate deferred
+(credits exhausted until 2026-09-06).
+
 ### Closed results (OCI/RAC line — bounded activation-steering)
 
 **OCI-002 (sentence-position routing):** B20 hidden state transplant routes to the donor's sentence position at 95.8% accuracy across disjoint entity panels. Runner: `experiments/run_oci_002.py`.

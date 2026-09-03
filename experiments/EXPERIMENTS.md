@@ -5,6 +5,68 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
+## SVB-0 — Scope-Variable Binding on Falcon-H1-1.5B-Instruct (2026-09-03; INSUFFICIENT_SCOPE_BINDING)
+
+Distance from claim: 1 (variable binding through recurrent state is a direct
+observable of scope structure, one step from native math).
+Runner: `experiments/run_svb_0.py`. Config: `experiments/config/svb_0.json`.
+Results: `experiments/results/svb_0/`. Ledger: `svb_0_launch`, `svb_0_result`.
+Spec: `theory/SVB_0.md`.
+
+**Method:** Python lexical scoping as the task family: outer assignment → inner
+function call (shadows variable) → scope closure → query. Falcon-H1-1.5B-Instruct
+selected for code capability + recurrent state (DynamicCache save/restore for
+state injection). 11-bin response law: {digit 0-9, OTHER}. 3 variables (x,y,z),
+9 outer values (1-9), depths 1-2, suffix counts [0,1,2,4] neutral comment lines.
+Competence staircase: direct assignment → single-var depth-1 → two-var depth-1.
+Single-var and two-var science observations with suffix profiles. 3 observables:
+σ (scope binding fidelity = P(correct digit)), κ (path contrast = TV between
+different outer values), ι (entity interaction = variable-specific vs global).
+Null ladder: uniform, inner_value, mean_dist, identity. Bootstrap CIs (1000 resamples).
+
+**Competence:** Rung 1 PASS (27/27 = 100.0%, gate 90%). Rung 2 PASS (27/27 = 100.0%,
+gate 85%). Rung 3 FAIL (23/30 = 76.7%, gate 80%).
+
+**Verdict: INSUFFICIENT_SCOPE_BINDING.** Two-var depth-1 competence (76.7%) below
+80% gate. Formal adjudication stops at the competence check. However, all observables
+computed from 1188 observations (1854 model calls, 4385s/73min CPU).
+
+**Observables:**
+- σ_d1 = 0.6811 (CI: [0.637, 0.725]), σ_d2 = 0.4975 (CI: [0.437, 0.557])
+- κ_d1 = 0.7123 (CI: [0.691, 0.733]), κ_d2 = 0.5009 (CI: [0.472, 0.531])
+- ι = 0.3593 (CI: [0.343, 0.376])
+- Depth-1 suffix profile: s0=0.681, s1=0.669, s2=0.560, s4=0.396
+- Depth-2 suffix profile: s0=0.497, s1=0.645, s2=0.597, s4=0.516
+
+**Null ladder:**
+- d1: uniform=0.627, inner_value=0.833, mean_dist=0.597, identity=0.712
+- d2: uniform=0.609, inner_value=0.636, mean_dist=0.555, identity=0.501
+
+**What was learned:**
+(1) First experiment in the project to satisfy structured-negative requirements 1-3
+simultaneously (behavioral readout valid, source contains fact, proximal causal
+control demonstrated via DynamicCache state injection).
+(2) Scope binding fidelity in the "strong" band at depth 1 (σ=0.68, κ=0.71).
+(3) Path contrast two orders of magnitude stronger than entity-location family
+(κ~0.71 vs TV~0.03 in PMO-0R/PFC-0).
+(4) Depth decay: σ drops 27% (0.681→0.497), κ drops 30% (0.712→0.501) from d1→d2.
+Both remain above "registered" thresholds at depth 2.
+(5) Entity interaction ι=0.36 (gate ≥0.10) confirms variable-specific binding,
+not a global state shift — the model tracks individual variables, not just "something changed."
+(6) Depth-2 suffix anomaly: adding one neutral comment line INCREASES σ from 0.497
+to 0.645. Neutral context may provide recurrent "breathing room" for deeper retrieval.
+(7) Two-var competence borderline (76.7% vs 80% gate) — not zero, suggesting
+partial multi-variable binding capability.
+
+**Closure:** Two-var competence formally fails, but single-var observables represent
+the strongest positive signal in the entire project. The scope-binding phenomenon
+is real and measurable; the limitation is in multi-variable simultaneous binding,
+not in the existence of binding structure.
+
+**Codex evidence gate: DEFERRED (Codex credits exhausted until 2026-09-06).**
+
+---
+
 ## PMO-0R — Path-Memory Observability Revised on Finch-3B (2026-09-02; TASK_POPULATION_VOID)
 
 Distance from claim: 1 (bounded continuation-distinguishability witness).

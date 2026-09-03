@@ -1,0 +1,145 @@
+{
+  "manifest": {
+    "config_hash": "42f18976a778d23bb45468303e9b542f520080ebb5f6a7931c473e74ec77d80e",
+    "model_id": "tiiuae/Falcon-H1-1.5B-Instruct",
+    "total_calls": 1854,
+    "elapsed_seconds": 4385.320556402206
+  },
+  "competence": {
+    "direct": {
+      "n": 27,
+      "correct": 27,
+      "accuracy": 1.0,
+      "threshold": 0.9,
+      "pass": true
+    },
+    "single_d1": {
+      "n": 27,
+      "correct": 27,
+      "accuracy": 1.0,
+      "threshold": 0.85,
+      "pass": true
+    },
+    "two_var_d1": {
+      "n": 30,
+      "correct": 23,
+      "accuracy": 0.7666666666666667,
+      "threshold": 0.8,
+      "pass": false
+    }
+  },
+  "observables": {
+    "depth1": {
+      "sigma_mean": 0.681054084389298,
+      "sigma_std": 0.11808086960986182,
+      "sigma_ci95": [
+        0.6371059527275739,
+        0.7246553430678667
+      ],
+      "kappa_mean": 0.7123022985567028,
+      "kappa_std": 0.11181878145091738,
+      "kappa_ci95": [
+        0.6908076555319389,
+        0.7331840129274362
+      ],
+      "n_sigma": 27,
+      "n_kappa": 108
+    },
+    "depth2": {
+      "sigma_mean": 0.49748797218004864,
+      "sigma_std": 0.16116231928074412,
+      "sigma_ci95": [
+        0.4369488394094838,
+        0.5571741116267663
+      ],
+      "kappa_mean": 0.5009060427374034,
+      "kappa_std": 0.15695774277405683,
+      "kappa_ci95": [
+        0.47175192813285527,
+        0.5306424879212432
+      ],
+      "n_sigma": 27,
+      "n_kappa": 108
+    },
+    "entity_interaction": {
+      "iota_mean": 0.35929496912932435,
+      "iota_ci95": [
+        0.34281193924274433,
+        0.37575439766412644
+      ],
+      "n": 216
+    },
+    "depth1_suffix_profile": {
+      "s0": {
+        "sigma_mean": 0.681054084389298,
+        "n": 27
+      },
+      "s1": {
+        "sigma_mean": 0.6685771180523766,
+        "n": 27
+      },
+      "s2": {
+        "sigma_mean": 0.5602278245819939,
+        "n": 27
+      },
+      "s4": {
+        "sigma_mean": 0.39638328828193525,
+        "n": 27
+      }
+    },
+    "depth2_suffix_profile": {
+      "s0": {
+        "sigma_mean": 0.49748797218004864,
+        "n": 27
+      },
+      "s1": {
+        "sigma_mean": 0.644820440698553,
+        "n": 27
+      },
+      "s2": {
+        "sigma_mean": 0.5966787525901088,
+        "n": 27
+      },
+      "s4": {
+        "sigma_mean": 0.5161870955317108,
+        "n": 27
+      }
+    }
+  },
+  "null_ladder": {
+    "d1_uniform": {
+      "mean_tv": 0.6269758837579776,
+      "n": 108
+    },
+    "d1_inner_value": {
+      "mean_tv": 0.8325969215689434,
+      "n": 108
+    },
+    "d1_mean_dist": {
+      "mean_tv": 0.5974342257999055,
+      "n": 108
+    },
+    "d1_identity": {
+      "mean_tv": 0.7123022985567028,
+      "n": 108
+    },
+    "d2_uniform": {
+      "mean_tv": 0.6086192966410608,
+      "n": 108
+    },
+    "d2_inner_value": {
+      "mean_tv": 0.6356865669152251,
+      "n": 108
+    },
+    "d2_mean_dist": {
+      "mean_tv": 0.5552269596297013,
+      "n": 108
+    },
+    "d2_identity": {
+      "mean_tv": 0.5009060427374034,
+      "n": 108
+    }
+  },
+  "verdict": "INSUFFICIENT_SCOPE_BINDING",
+  "detail": "two_var_d1 failed"
+}

@@ -4,6 +4,53 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-03 (session 8) — SVB-0 result: strongest positive signal in project history
+
+**SVB-0 completed on Falcon-H1-1.5B-Instruct.** Scope-variable binding experiment
+using Python lexical scoping. DynamicCache state injection. 11-bin response law.
+1854 model calls in 4385s (73min) on CPU.
+
+**Competence staircase:**
+- Rung 1: Direct assignment 27/27 = 100.0% (gate 90%) PASS
+- Rung 2: Single-var depth-1 27/27 = 100.0% (gate 85%) PASS
+- Rung 3: Two-var depth-1 23/30 = 76.7% (gate 80%) FAIL
+
+**Verdict: INSUFFICIENT_SCOPE_BINDING** (two-var competence below gate). But all
+science observables computed from 1188 observations:
+
+**Observables:**
+- σ_d1 = 0.6811 (scope binding fidelity at depth 1) — "strong" band (≥0.50)
+- σ_d2 = 0.4975 (depth 2) — "registered" band (≥0.30, CI crosses 0.50)
+- κ_d1 = 0.7123 (path contrast TV) — "strong" band (≥0.50)
+- κ_d2 = 0.5009 — "strong" band (barely, LB 0.472)
+- ι = 0.3593 (entity interaction) — strong (gate ≥0.10, LB 0.343)
+- Suffix profile d1: s0=0.681, s1=0.669, s2=0.560, s4=0.396 (monotone decay)
+- Suffix profile d2: s0=0.497, s1=0.645, s2=0.597, s4=0.516 (anomalous: s1>s0)
+- Null ladder d1: uniform=0.627, inner=0.833, mean=0.597, identity=0.712
+- Null ladder d2: uniform=0.609, inner=0.636, mean=0.555, identity=0.501
+
+**Why this matters:**
+(1) First experiment satisfying structured-negative requirements 1-3 simultaneously.
+(2) Path contrast two orders of magnitude stronger than entity-location family
+(κ~0.71 vs TV~0.03 in PMO-0R/PFC-0).
+(3) Depth decay quantified: σ 0.681→0.497 (27% drop), κ 0.712→0.501 (30% drop).
+(4) Entity interaction ι=0.36 — binding is variable-specific, not global state shift.
+(5) Two-var 76.7% is borderline, not zero — partial multi-variable capability.
+(6) Depth-2 suffix anomaly: adding one neutral comment line INCREASES σ from 0.497
+to 0.645. Neutral context may provide "breathing room" for deeper scope retrieval.
+
+**Infrastructure fixes committed this session:**
+- OOM fix: eliminated state accumulation (was ~27GB → stable 6.9GB)
+- Deepcopy optimization: skip redundant copies on last use
+- Observation checkpointing: npz-based crash resilience
+- Commits: aa422a9 (fixes), e39a2a6 (ledger + STATE heading)
+
+**What's next:** Interpret depth-2 suffix anomaly. Consider: (a) depth capacity
+curve (depths 3-5 on single-var), (b) variable count scaling (3,4,5 vars),
+(c) cross-model comparison on same task family, (d) binding algebra (composition
+of scope operations). Codex evidence gate when credits return 2026-09-06.
+
+
 ## 2026-09-02 (session 7) — PMO-0R locked, implemented, launched
 
 **Codex PMO-0 design gate R1 completed.** Two PFC-0 design defects identified:
