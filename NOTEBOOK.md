@@ -4,6 +4,64 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### Response-law geometry of the settling operator (2026-09-03, CONSTRUCTION)
+
+**First concrete instantiation of D1-D5 on SVB-2 behavioral data.**
+
+Distance-from-claim: **0** — this IS the central artifact (native math from data).
+
+Using full 11-bin response distributions from SVB-2 checkpoint (obs_checkpoint.npz),
+computed the sqrt-Jensen-Shannon response distance (D2/D3) between all suffix
+conditions at each depth. Key findings:
+
+**1. Approximate fixed point.** The suffix operator T (appending `# No changes.\n`)
+has an approximate fixed point cluster {s3, s4, s6, s8} with mutual distances
+d ≤ 0.06 (mean sqrt-JS). This cluster is at distance ~0.17 from s0 at d3 — a
+different operational place from the baseline, confirming settling is a genuine
+place-change in the D5 sense.
+
+**2. Transient overshoot.** The orbit s0 → s1 → s2 → ... OVERSHOOTS the fixed
+point on the first step. At d3: d(s0, s1) = 0.188 > d(s0, fixed-point) ≈ 0.17.
+The correct-digit probability peaks at the overshoot (σ=0.43 at s1) before
+converging to the fixed-point value (σ≈0.29-0.34). The USEFUL settling effect
+is a non-equilibrium transient, not the equilibrium.
+
+**3. Oscillatory convergence.** Orbit step sizes d(s_k, s_{k+1}) show a universal
+pattern: large initial step → sharp contraction → bounce-back → contraction.
+The bounce (s2→s3 step larger than s1→s2 step) occurs in 67-89% of cells at
+d2-d3. This is not R^n contraction — it's a native nonlinear phenomenon.
+
+**4. Depth-dependent topology.** The nearest-neighbor structure of the response
+metric space changes with depth:
+- s1 and s2 are mutual nearest neighbors at ALL depths (invariant)
+- s4 and s6 are mutual nearest neighbors at ALL depths (invariant)
+- s0's nearest neighbor changes: s1 at d1, s2 at d2, s8 at d3-d4
+
+**5. Depth-topology correlation.** Spearman rank correlation of distance matrices:
+d3-d4 = 0.944 (nearly identical topology), d1-d2 = 0.778 (different).
+
+**6. Non-contraction.** The suffix operator is NOT a uniform contraction on the
+response metric space: d(T(s1), T(s2)) / d(s1, s2) > 1 at all depths (the
+close pair {s1, s2} spreads apart under one more application of T).
+
+**Native-math objects identified:**
+- The settled cluster Q* ≈ {s3, s4, s6} at d3 is an approximate D5
+  operational place (mutual distances ≤ 0.05)
+- The settling time s*(d) is the orbit index that maximizes a declared
+  response functional, NOT the convergence time to the fixed point
+- The response metric space (Z, d_0) has depth-dependent nearest-neighbor
+  structure with invariant pair-clusters
+
+**Falsifiable predictions:**
+- Different neutral suffix strings (other paraphrases) should converge to
+  the same approximate fixed-point cluster
+- The oscillatory convergence pattern should hold for different response
+  channels (not just correct-digit probability)
+- The nearest-neighbor invariants (s1~s2, s4~s6) should survive template changes
+
+Data: experiments/results/svb_2/obs_checkpoint.npz (full 11-bin distributions).
+[Codex design gate completed — suffix-action algebra construction plan adopted]
+
 ### Semantic paraphrase probe: phrase-family association at controlled token count (2026-09-03)
 
 10 conditions on SVB-2 template, d3, Falcon-H1, 27 measurements each.
