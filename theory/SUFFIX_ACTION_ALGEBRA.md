@@ -186,8 +186,13 @@ first-occurrence law aba ≈ ab.
 
 measures the noncommutativity of a and b.
 
-A binding threshold ε (derived from the noise floor η as ε = max(5η, 0.02))
-and an order threshold δ_order = 0.05 give the decision rules:
+Two threshold conventions are used. The original binding ε = max(5η, 0.02)
+is noise-floor-derived. The LRB decisive test used a separate tolerance
+threshold ε_TV = 0.06, calibrated from the measured I_TV(C) ≈ 0.050
+(bootstrap UB ~0.057). These are distinct: ε is a noise-floor bound,
+ε_TV is a tolerance chosen for the specific TV-based test.
+
+An order threshold δ_order = 0.05 gives the decision rules:
 
 - Approximate idempotence: I(a) ≤ ε for all tested a.
 - Approximate first-occurrence: R(a, b) ≤ ε for all tested (a, b).
@@ -287,11 +292,13 @@ centroid is at distance ~0.17 from s0 in mean ρ_JS.
 Correct-digit probability peaks at s1 (σ = 0.430) before settling to the
 fixed-point value (σ ≈ 0.34 at s3-s4). The useful settling effect is a
 non-equilibrium transient at the first application, not the equilibrium
-fixed point. This motivates the first-occurrence law: the first application
-carries the information; repetitions converge to a less useful equilibrium.
+fixed point. Note: this observation motivated the first-occurrence hypothesis
+(H-LRB), but the LRB decisive test showed that the effect is not well
+described by first-occurrence absorption. The transient remains real; the
+algebraic interpretation must accommodate it without the LRB law.
 
 
-## Candidate axiom: H-LRB (first-occurrence action law) — UNEARNED
+## Candidate axiom: H-LRB (first-occurrence action law) — REFUTED 2026-09-03
 
 **Hypothesis H-LRB.** The suffix transition monoid S is approximately a
 left-regular band: for all a, b ∈ S,
@@ -300,6 +307,35 @@ left-regular band: for all a, b ∈ S,
   aba ≈ ab   (first-occurrence law)
 
 where ≈ means the defects I(a) and R(a, b) are bounded by ε.
+
+**Status: REFUTED.** The decisive test (lrb_decisive_test, commit 766a1cf)
+measured all defects on the 27-cell panel using TV metric with pre-registered
+threshold ε_TV = 0.06 (calibrated from I_TV(C) ≈ 0.050, bootstrap UB ~0.057).
+
+Results (TV metric, stratified bootstrap 10K, seed 42, 95% CI):
+
+  I(C)   = 0.050  CI [0.041, 0.058]  — passes registered rule
+  I(P)   = 0.021  CI [0.018, 0.023]  — passes registered rule
+  R(C,P) = 0.091  CI [0.081, 0.100]  — REFUTES (LB > ε_TV)
+  R(P,C) = 0.141  CI [0.126, 0.154]  — REFUTES (LB > ε_TV)
+  N(C,P) = 0.091  CI [0.075, 0.107]  — non-collapse confirmed
+
+Bonferroni-corrected lower bounds (~0.079 and ~0.122) remain above ε_TV.
+Codex evidence gate (session 01a066e3, 211K tokens) independently verified:
+all 8 arrays finite 27×11, normalize exactly, 0/216 tokenizer boundary
+mismatches, recomputed TVs match.
+
+Precision note: I(C) passes the registered marginal rule but is borderline
+under simultaneous inference (Bonferroni UB ~0.0605). The correct statement
+is "generators C and P satisfy panel-local approximate idempotence under
+the registered rule," not "idempotence is established." Bandness of their
+products (e.g., (CP)² ≈ CP) is untested.
+
+Confound note: adding suffix tokens moves the query position and changes
+its immediate token history. This position/recency effect cannot rescue
+H-LRB (the literal action law predicted equivalence despite such effects)
+but can explain the absorption failure without implying semantic accumulation.
+Equal-token padding controls are needed for a stronger interpretation.
 
 ### What this predicts
 
@@ -464,18 +500,79 @@ Under truth-covariance: DID ≈ 0 (bounded by ε_U + ε_V).
   separate literal generators; semantic factorization remains unidentified.
 
 
+## Competing hypotheses after H-LRB refutation
+
+The generators C and P satisfy panel-local approximate idempotence under
+the registered rule (I(C) UB ≤ ε_TV, I(P) UB ≤ ε_TV). The absorption
+law aba ≈ ab fails decisively. Three competing hypotheses remain:
+
+### H-BAND2: composite idempotence (band-return)
+
+The suffix monoid S is a band (every element is idempotent):
+
+  (CP)² = CPCP ≈ CP
+  (PC)² = PCPC ≈ PC
+
+If this holds, S is provisionally consistent with the free band on two
+generators, which has exactly six nonidentity elements:
+{C, P, CP, PC, CPC, PCP}. The only law is x² = x; there is no
+first-occurrence absorption.
+
+### H-GEN-IDEM: generator idempotence only
+
+Only adjacent repeats of the same generator reduce (CC ≈ C, PP ≈ P).
+Alternating words may continue growing indefinitely: CPCP ≠ CP, CPCP ≠ CPC.
+The monoid is infinite (or at least not a band).
+
+### H-SAT3: length-three saturation (non-band)
+
+Length-three words with both generators become right-absorbing:
+
+  CPCP ≈ CPC   (not CP — so not a band)
+  PCPC ≈ PCP   (not PC — so not a band)
+
+This means CPC and PCP are "terminal" elements, but the saturation law
+is not x² = x; it is a length-3 absorbing property that does not constitute
+a band.
+
+### Predictions from each hypothesis (frozen before adjudication)
+
+For any q in the evaluation panel, with ε_TV = 0.06:
+
+  | Pair          | H-BAND2     | H-GEN-IDEM  | H-SAT3      |
+  |---------------|-------------|-------------|-------------|
+  | TV(CPCP, CP)  | ≤ ε_TV      | > ε_TV      | > ε_TV      |
+  | TV(CPCP, CPC) | > ε_TV      | > ε_TV      | ≤ ε_TV      |
+  | TV(PCPC, PC)  | ≤ ε_TV      | > ε_TV      | > ε_TV      |
+  | TV(PCPC, PCP) | > ε_TV      | > ε_TV      | ≤ ε_TV      |
+
+Decision rules:
+- **H-BAND2 supported:** UB(TV(CPCP,CP)) ≤ ε_TV AND UB(TV(PCPC,PC)) ≤ ε_TV
+- **H-SAT3 supported:** UB(TV(CPCP,CPC)) ≤ ε_TV AND UB(TV(PCPC,PCP)) ≤ ε_TV
+  AND LB(TV(CPCP,CP)) > ε_TV
+- **H-GEN-IDEM supported:** LB of all four TV pairs > ε_TV
+- **Mixed / inconclusive:** anything else
+
+
 ## Open falsifiers
 
-### For H-LRB
+### For H-LRB — RESOLVED
 
-1. **Decisive test:** Measure R(C, P) and R(P, C) on the existing panel.
-   If a clustered lower bound for either exceeds ε, the left-regular band
-   hypothesis is falsified. The word CPC (three suffix applications:
-   comment, then pass, then comment) must approximate CP (comment then pass).
+**Decisive test completed (lrb_decisive_test, 766a1cf).** H-LRB refuted:
+R(C,P) LB = 0.081 > 0.06, R(P,C) LB = 0.126 > 0.06.
 
-2. **Generator expansion:** Extend to U and V generators. The 4-generator
-   LRB has at most 65 elements; test whether the predicted Cayley table
-   holds for 3-action sequences involving all generators.
+### For H-BAND2 / H-GEN-IDEM / H-SAT3
+
+1. **Decisive test:** Measure TV(CPCP, CP), TV(CPCP, CPC), TV(PCPC, PC),
+   TV(PCPC, PCP) on the same 27-cell panel. Same protocol: ε_TV = 0.06,
+   stratified bootstrap 10K, seed 42.
+
+2. **Right-action table:** For positive characterization, also measure
+   CPP, PCC, CPCC, PCPP to observe the continuation of each element by
+   each generator. This maps the observed transition graph.
+
+3. **Cached-vs-full check:** Run one cell both ways (cached prefix +
+   suffix IDs vs full-text encoding) to verify caching fidelity.
 
 ### For H-Truth
 
@@ -488,37 +585,31 @@ Under truth-covariance: DID ≈ 0 (bounded by ε_U + ε_V).
    permutation must be declared. The fidelity-symmetry assumption F(Jq) ≈ F(q)
    must be verified on s0 (baseline) data.
 
+H-Truth is independent of H-LRB and remains live.
 
-## Predictions (frozen before adjudication)
 
-The following predictions are generated from H-LRB and frozen before any
-new model output is inspected.
+## Predictions (frozen before adjudication) — LRB predictions FALSIFIED
 
-### Two-generator predictions ({C, P})
+### Two-generator predictions ({C, P}) — H-LRB (FALSIFIED 766a1cf)
 
 For any q in the evaluation panel:
 
-  E_{CC} q  ≈  E_C q           (idempotence, partially supported)
-  E_{PP} q  ≈  E_P q           (idempotence, partially supported)
-  E_{CPC} q ≈  E_{CP} q        (UNTESTED — decisive LRB test)
-  E_{PCP} q ≈  E_{PC} q        (UNTESTED — decisive LRB test)
-  E_{CPCP} q ≈ E_{CP} q        (UNTESTED)
-  E_{PCPC} q ≈ E_{PC} q        (UNTESTED)
-  E_{CCP} q ≈  E_{CP} q        (follows from CC ≈ C)
-  E_{CPP} q ≈  E_{CP} q        (follows from PP ≈ P)
+  E_{CC} q  ≈  E_C q           (generator idempotence — passes registered rule)
+  E_{PP} q  ≈  E_P q           (generator idempotence — passes registered rule)
+  E_{CPC} q ≈  E_{CP} q        (FALSIFIED — TV = 0.091, LB = 0.081 > 0.06)
+  E_{PCP} q ≈  E_{PC} q        (FALSIFIED — TV = 0.141, LB = 0.126 > 0.06)
+  E_{CPCP} q ≈ E_{CP} q        (UNTESTED — now H-BAND2 prediction)
+  E_{PCPC} q ≈ E_{PC} q        (UNTESTED — now H-BAND2 prediction)
 
-### Absorbing property
+### Competing length-four predictions (frozen before band2 test)
 
-If H-LRB holds, elements of length ≥ |A| (containing all generators) are
-right-absorbing: for any further action a,
+  H-BAND2:    TV(CPCP, CP)  ≤ 0.06,  TV(PCPC, PC)  ≤ 0.06
+  H-SAT3:     TV(CPCP, CPC) ≤ 0.06,  TV(PCPC, PCP) ≤ 0.06
+  H-GEN-IDEM: all four TV pairs > 0.06
 
-  E_{w} q ≈ E_{wa} q   when w contains all generators.
+### Truth-reversal prediction (H-Truth) — independent of H-LRB
 
-This means: once every action type has been applied, the place is frozen.
-
-### Truth-reversal prediction (H-Truth)
-
-If both H-LRB and H-Truth hold, then for matched unchanged/changed worlds:
+For matched unchanged/changed worlds:
 
   Δ(Jq) = -Δ(q) ± (ε_U + ε_V)
 
@@ -554,7 +645,10 @@ H-Truth adjudicates.
 This document IS the central artifact. It defines native mathematical
 objects from behavioral data using only legal actions, response-equivalence
 places, composition, reachability, and directed cost. No imported ℝⁿ
-geometry on the raw state space. No hidden-state inspection. The
-accompanying symbolic normalizer (theory/suffix_algebra.py) generates
-predictions from H-LRB before any new experiment. The model run merely
-adjudicates.
+geometry on the raw state space. No hidden-state inspection.
+
+Current status: H-LRB refuted. The suffix monoid has richer structure
+than a left-regular band. Three competing hypotheses (H-BAND2, H-GEN-IDEM,
+H-SAT3) are frozen with predictions. The length-four experiment adjudicates.
+The accompanying symbolic normalizer (theory/suffix_algebra.py) generates
+predictions from each hypothesis before any new experiment.

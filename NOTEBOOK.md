@@ -4,6 +4,35 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### Codex evidence gate: REFUTE confirmed, bandness test designed (2026-09-03)
+
+Codex evidence gate (session 01a066e3, 211K tokens, xhigh) independently
+verified the LRB REFUTE verdict:
+- All 8 arrays finite 27x11, normalize exactly
+- Recomputed TVs match exactly
+- 0/216 tokenizer boundary mismatches
+- Bonferroni-corrected LBs (~0.079, ~0.122) remain above 0.06
+
+Key algebraic correction from Codex: band requires x^2=x for EVERY
+element, not just generators. The free band on {C,P} has exactly 6
+nonidentity elements: C, P, CP, PC, CPC, PCP. Current data only
+establishes generator idempotence (CC~C, PP~P), NOT bandness.
+
+Three competing hypotheses frozen with predictions:
+- H-BAND2: (CP)^2=CPCP ~ CP and (PC)^2=PCPC ~ PC (free band)
+- H-SAT3: CPCP ~ CPC and PCPC ~ PCP (length-3 saturation, non-band)
+- H-GEN-IDEM: all four TV pairs > 0.06 (only generator idempotence)
+
+Codex warning: "forcing tolerance clusters into familiar semigroup
+varieties would be a new taxonomy trap. The native object to construct
+next is the right-continuation response signature and its observed
+transition graph."
+
+Updated: SUFFIX_ACTION_ALGEBRA.md (H-LRB marked REFUTED, competing
+hypotheses added), suffix_algebra.py (3 normalizer modes: lrb/band/gen_idem).
+Experiment runner: run_band2_decisive.py (12 arms including CPCP, PCPC,
+CPP, PCC for right-action table, plus cached-vs-full fidelity check).
+
 ### LRB decisive test: H-LRB REFUTED (2026-09-03)
 
 **Distance-from-claim: 0 — tests the central constructive artifact.**
