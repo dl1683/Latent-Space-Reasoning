@@ -2,15 +2,16 @@
 
 ## CRITICAL CAVEAT (2026-09-03)
 
-**All measurements in this document are affected by a HuggingFace implementation
-gap.** The Falcon-H1 `torch_forward` method starts Mamba SSM layers from zero
-state for multi-token cached continuation (`seq_len > 1`), ignoring the cached
-recurrent state (`modeling_falcon_h1.py` line 819). All SVB experiments used this
-affected pattern. The suffix algebra was measured under a regime where only
-attention layers carry prefix context; Mamba layers process continuation tokens
-from zero state. Mode F (full text, no cache) shows suffixes are semantically
-neutral (TV < 0.016). The algebraic structure described below is an artifact of
-this implementation gap, not a property of the model's text understanding.
+**All measurements in this document used a Falcon-H1 continuation path with a
+HuggingFace implementation gap.** For multi-token cached continuation
+(`seq_len > 1`), `torch_forward` initializes the Mamba SSM recurrence from zero
+instead of passing cached recurrent state (`modeling_falcon_h1.py` line 819);
+the same branch omits direct cached convolutional history. Prefix information
+may still propagate through attention-conditioned hidden states, so this does
+not prove complete prefix blindness or that the gap causes every recorded
+contrast. It does make the resulting suffix algebra non-claim-bearing as
+faithful Falcon-H1 state dynamics. On the registered nine-word panel, Mode F
+(full text, no cache) put every measured suffix defect below TV 0.016.
 See NOTEBOOK.md entry "MAMBA STATE BUG" for details.
 
 ## Non-claim boundary
@@ -24,8 +25,8 @@ This document does not claim:
 - That these results generalize beyond the measured model, template, and panel.
 
 What this document does: it formalizes the behavioral observations from
-SVB-0 through SVB-2 as an algebraic structure native to the latent world —
-defined entirely through legal actions, response-equivalence places,
+SVB-0 through SVB-2 as an algebraic structure of the **affected runtime** —
+defined entirely through registered actions, response-equivalence places,
 composition, reachability, and operational cost, with no imported ℝⁿ
 geometry on the raw state space. (The response metrics TV and sqrt-JS
 are standard metrics on the probability simplex, imported via D2; the
@@ -236,10 +237,11 @@ words), and order-sensitive (CP and PC have different costs because they
 reach different places).
 
 
-## Empirical grounding (SVB-0 through SVB-2, Falcon-H1-1.5B-Instruct, d3)
+## Historical empirical grounding (SVB-0 through SVB-2, affected Falcon-H1 runtime, d3)
 
 All numbers below are on a fixed panel: 3 variables × 9 outer values = 27
-cells, depth 3, SVB-2 template.
+cells, depth 3, SVB-2 template. They characterize the defective multi-token
+cached pathway documented above, not faithful Falcon-H1 state dynamics.
 
 ### Measured defects (generators C and P)
 
@@ -290,7 +292,7 @@ immediate-response discrepancy ρ_JS, mean over 27 cells):
   ρ_JS(s4, s6) = 0.019  (convergence)
   ρ_JS(s6, s8) = 0.049  (residual oscillation)
 
-Pattern: large step → contraction → bounce → contraction → convergence.
+Recorded pattern: large step → contraction → bounce → contraction → convergence.
 This rules out a uniform contraction in the response metric (which would
 show monotone decreasing steps). Nonlinear ℝⁿ dynamical systems can also
 exhibit nonmonotone convergence, so the pattern alone does not demonstrate
@@ -306,13 +308,11 @@ centroid is at distance ~0.17 from s0 in mean ρ_JS.
 
 ### Transient overshoot
 
-Correct-digit probability peaks at s1 (σ = 0.430) before settling to the
-fixed-point value (σ ≈ 0.34 at s3-s4). The useful settling effect is a
-non-equilibrium transient at the first application, not the equilibrium
-fixed point. Note: this observation motivated the first-occurrence hypothesis
-(H-LRB), but the LRB decisive test showed that the effect is not well
-described by first-occurrence absorption. The transient remains real; the
-algebraic interpretation must accommodate it without the LRB law.
+Correct-digit probability in the affected pathway peaks at s1 (σ = 0.430)
+before falling toward σ ≈ 0.34 at s3-s4. Note: this observation motivated the first-occurrence hypothesis
+(H-LRB), but the LRB decisive test showed that the recorded effect is not well
+described by first-occurrence absorption. It remains a runtime diagnostic, not
+a faithful-model transition law.
 
 
 ## Candidate axiom: H-LRB (first-occurrence action law) — REFUTED 2026-09-03
@@ -391,7 +391,7 @@ further actions change the place.
 4. For k generators, S has at most 1 + Σ_{j=1}^{k} k!/(k-j)! elements
    (ordered subsets). With 4 generators {C, P, U, V}: |S| ≤ 65.
 
-### What is already supported
+### What the affected runtime table supports descriptively
 
 - I(C) qualitatively small (0.045 sqrt-JS vs 0.157 initial step).
 - I(P) negligible (|PP - P| = 0.011 scalar).
@@ -400,20 +400,22 @@ further actions change the place.
 
 ### What is NOT yet established
 
-**NOTE (2026-09-03): All items below are MOOT given the Mamba state gap finding.**
-The suffix algebra is an artifact of the implementation gap (see CRITICAL CAVEAT).
+**NOTE (2026-09-03): All items below are non-claim-bearing after the Mamba
+state-gap finding.** The suffix algebra was measured through the defective
+interface (see CRITICAL CAVEAT); the current evidence does not identify which
+contrasts the omitted history caused.
 H-LRB, H-BAND2, and H-GEN-IDEM were refuted within Mode L; the remaining open
-items were never tested before the root cause was identified. These are retained
+items were never tested before the runtime gap was localized. These are retained
 for historical completeness only.
 
 - **The decisive law R(a, b):** aba ≈ ab was measured and REFUTED (H-LRB).
   CPC, PCP data showed no terminal absorption.
 
 - **Quantitative idempotence:** ρ_JS(s1, s2) = 0.045 exceeds the formal
-  binding ε = 0.02. Moot — the idempotence is an artifact.
+  binding ε = 0.02. This is an affected-runtime diagnostic only.
 
-- **Mean defects do not define a congruence.** Moot — the defects are artifacts
-  of the Mamba state gap.
+- **Mean defects do not define a congruence.** This conclusion applies only to
+  the affected response table, not faithful Falcon-H1 dynamics.
 
 
 ## Theorem: truth-congruence reversal obstruction
@@ -598,28 +600,29 @@ R(C,P) LB = 0.081 > 0.06, R(P,C) LB = 0.126 > 0.06.
 H-GEN-IDEM refuted, H-SAT3 best fit but formally inconclusive. See
 §Competing hypotheses and §Predictions sections above.
 
-### For the continuation automaton (open, priority order)
+### For the historical continuation automaton — adjudicated
 
-1. **Execution-mode invariance (highest priority):** On the same 12 words
-   and 27 cells, compare: (a) current whole-word cached chunk,
-   (b) generator-by-generator sequential cache updates, (c) full-text
-   forward pass. Pre-register per-word mode TV and whether the four
-   registered BAND2/SAT3 defect conclusions survive mode changes. Pin
-   model/tokenizer revisions and library versions. If whole-chunk ≠
-   stepwise, the current artifact is a word-response code, not a
-   composed generator action.
+1. **Execution-mode invariance:** completed EMI measurements found material
+   differences among whole-word cached, generator-by-generator, and full-text
+   schedules. The historical artifact is a word-response code for the affected
+   runtime, not a partition-independent composed generator action.
 
-2. **Full-forward validation:** At least one key relation (e.g., CPCP≈CPC)
-   needs measurement under full-text forward pass (no prefix caching).
-   TV=0.533 between cached and full modes shows substantial divergence.
+2. **Full-forward validation:** completed Mode F measurements found every
+   registered nine-word defect below TV 0.016 and substantial divergence from
+   cached modes. No historical relation transfers as a faithful full-forward
+   claim.
 
-3. **CPCC and PCPP:** MEASURED (right_continuation_test, 2026-09-03).
+3. **CPCC and PCPP:** measured inside the affected runtime
+   (`right_continuation_test`, 2026-09-03).
    CPC does NOT absorb C: TV(CPC, CPCC) = 0.060 [0.051, 0.067],
    INCONCLUSIVE. PCP does NOT absorb P: TV(PCP, PCPP) = 0.072
    [0.066, 0.077], LB > ε_TV. CPCPC genuinely different from CPC:
    TV(CPC, CPCPC) = 0.099 [0.086, 0.110], REFUTE. The monoid does
-   not collapse to a finite quotient — words continue evolving past
-   length 3. Sigma degrades: CPC=0.486 → CPCC=0.439 → CPCPC=0.393.
+   not collapse inside that response table. These are diagnostics, not a
+   faithful-model quotient claim.
+
+The live falsifier is the original-segmentation F/T/L gate with per-cell
+retention and complete provenance.
 
 ### For H-Truth
 
@@ -674,12 +677,11 @@ The unchanged-suffix advantage reverses sign with the actual world state.
 
 ## Relation to prior work
 
-### Settling time law (SVB-0/SVB-1)
+### Historical suffix-response profile (SVB-0/SVB-1)
 
-The "settling time" s*(d) is reinterpreted: it is not the convergence time
-to a fixed point, but the word length that maximizes a declared response
-functional. The optimal "settling" is a transient overshoot at the first
-action application, not the equilibrium.
+Within the affected runtime, the historical "settling time" s*(d) denotes the
+word length maximizing a declared response functional. It is not licensed as a
+faithful-model convergence time or access-cost law.
 
 The depth-dependent settling profile s*(1)=0, s*(2)=1, s*(3)=2, s*(4)=1
 becomes the depth-dependent structure of the accessibility language
@@ -696,12 +698,12 @@ equivalent under a truth-congruence quotient is exactly the question
 H-Truth adjudicates.
 
 
-## Distance from claim: 0
+## Distance from claim: 2 after runtime audit
 
-This document IS the central artifact. It defines native mathematical
-objects from behavioral data using only legal actions, response-equivalence
-places, composition, reachability, and directed cost. No imported ℝⁿ
-geometry on the raw state space. No hidden-state inspection.
+This document preserves a mathematically explicit diagnostic of the affected
+runtime using registered actions, response-equivalence places, composition,
+reachability, and directed cost. It does not establish native mathematical
+structure in faithfully executed Falcon-H1 state.
 
 Current status: H-LRB, H-BAND2, and H-GEN-IDEM all refuted. H-SAT3 is the
 best descriptive fit but formally inconclusive (CP arm passes, PC arm
@@ -709,14 +711,14 @@ borderline). No named semigroup variety is licensed. The idealized
 presentation C²=C, P²=P, CPCP=CPC, PCPC=PCP would yield a 7-element
 aperiodic non-band monoid {ε, C, P, CP, PC, CPC, PCP} with two
 approximate sinks — but this is a reference model, not an empirical
-classification. All empirical conclusions are scoped to the
-whole-continuation cached pathway of Falcon-H1-1.5B-Instruct; the runner
-sends each entire word plus query as one cached chunk, so generator
-composition itself has not been validated. Execution-mode invariance,
-full-forward validation, and CPCC/PCPP measurement remain open.
+classification. All retained numerical conclusions describe the affected
+whole-continuation cached pathway of Falcon-H1-1.5B-Instruct. The completed
+execution-mode and right-continuation artifacts diagnosed that pathway but do
+not validate faithful generator composition. The original-segmentation F/T/L
+gate with per-cell retention remains open.
 
-The native object is a truncated response-labelled continuation automaton
-(see §Pairwise structure), not a familiar semigroup quotient.
+The historical diagnostic object is a truncated response-labelled continuation
+automaton (see §Pairwise structure), not a model-native semigroup quotient.
 
 
 ## Pairwise structure (2026-09-03, Codex evidence gate adopted)
@@ -767,12 +769,13 @@ The CP-versus-PC child-separation gap is 0.028, with a post-hoc paired
 bootstrap CI [0.021, 0.035], supporting asymmetric coalescence on this
 panel.
 
-**Branchwise near-returns:** CPCP ≈ CPC (TV = 0.050, UB = 0.056, passes
+**Branchwise near-returns in the affected table:** CPCP ≈ CPC (TV = 0.050, UB = 0.056, passes
 registered rule) — CPC·P returns near CPC. PCPC ≈ PCP (TV = 0.052,
 UB = 0.064) — PCP·C returns near PCP, borderline. These test one
-outgoing edge from each length-three word. Full right absorption would
-additionally require CPCC ≈ CPC and PCPP ≈ PCP (both unmeasured), plus
-continuation-stability tests.
+outgoing edge from each length-three word. CPCC and PCPP were later measured
+inside the same affected runtime: CPC/CPCC was inconclusive and PCP/PCPP
+refuted the registered absorption relation. None licenses faithful-model
+composition.
 
 ### Exploratory contraction analysis (post-hoc, unregistered)
 
@@ -783,14 +786,15 @@ Cell-level analysis for C,P → CC,PC: 21/27 cells show ratio < 1
 under C (78%); under P, 16/27 (59%).
 
 No contraction or isometry is established. Action descent to response
-distributions is unproved, pair selection is incomplete and post-hoc,
-intervals were not registered, and execution-mode invariance is untested.
-The pattern is consistent but exploratory.
+distributions is unproved, pair selection is incomplete and post-hoc, and
+intervals were not registered. The later execution-mode experiment found large
+schedule dependence and a defective continuation branch, making this pattern a
+historical runtime diagnostic.
 
-### The native object: response-labelled continuation automaton
+### Historical diagnostic object: response-labelled continuation automaton
 
-The native object supported by the current data is a quantitative
-Moore-style response automaton. Define the panel response signature of
+The affected table can be represented as a quantitative Moore-style response
+automaton. This is not licensed as a model-native object. Define the panel response signature of
 word w at horizon h:
 
   R_{Π,h}(w) = ( r(T_{wu} q) )_{q ∈ Π, |u| ≤ h}
@@ -815,18 +819,20 @@ cached call; it does not execute C, update the cache, then execute P.
 Thus the claimed generator COMPOSITION has not been validated — only
 whole-word response signatures have been measured.
 
-Three validation levels remain open (in priority order):
+The historical validation ladder is now adjudicated as follows:
 
-1. **Chunking invariance:** Compare whole-word cached processing against
-   generator-by-generator sequential cache updates. If these differ,
-   the current artifact is a word-response code, not a composed action.
+1. **Chunking invariance:** completed EMI measurements found material differences
+   between whole-word and generator-by-generator schedules. The historical
+   artifact is not a partition-independent composed action.
 
-2. **Full-forward validation:** At least one key relation (e.g.,
-   CPCP ≈ CPC) needs measurement under full-text forward pass (no prefix
-   caching). The cached-vs-full fidelity gap (TV = 0.533) shows the two
-   modes diverge substantially.
+2. **Full-forward validation:** completed Mode F measurements placed every
+   registered nine-word defect below TV 0.016 and diverged substantially from
+   the cached modes. No historical suffix relation transfers as a faithful
+   full-forward claim.
 
-3. **CPCC/PCPP measurement — RESOLVED (2026-09-03):** Right-continuation
-   test shows CPC does NOT absorb C (TV=0.060, INCONCLUSIVE), PCP does
-   NOT absorb P (TV=0.072, REFUTE). CPCPC≠CPC (TV=0.099, REFUTE).
-   The monoid does not collapse. See right-continuation table above.
+3. **CPCC/PCPP measurement:** completed inside the affected runtime. Those
+   numerical relations remain diagnostic only.
+
+The live gate is a new original-segmentation F/T/L experiment with per-cell
+retention and complete provenance; it is not a continuation of this native-
+object claim.

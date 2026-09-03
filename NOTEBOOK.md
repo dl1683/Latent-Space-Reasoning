@@ -4,10 +4,14 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
-### SVB DECODE VERIFICATION COMPLETE: Architecture separation confirmed (2026-09-03)
+### SVB DECODE VERIFICATION COMPLETE: runtime path localized; architecture claim rejected (2026-09-03)
 
-**Decode mode perfectly matches full-text in all 4 conditions** (TV < 1.2e-6).
-Single-token decode is validated as the correct measurement method for Mamba hybrids.
+Across four fixed conditions, tokenwise cached processing of the 12-token query
+produced condition-mean projected response laws within `1.2107523675e-6` TV of
+full-text execution. The legacy multi-token cached query path was `0.546–0.885`
+TV from full text. This validates tokenwise cache advancement for this bounded
+query-only diagnostic; it is not a full-vocabulary or per-cell equivalence
+certificate.
 
 **Complete results (Falcon-H1-1.5B, correct single-token decode):**
 
@@ -18,31 +22,42 @@ Single-token decode is validated as the correct measurement method for Mamba hyb
 | d2_s0 | 0.691 | 0.402 | 1.72x | 1.2e-6 |
 | d2_s1 | 0.677 | 0.292 | 2.32x | 1.1e-6 |
 
-**Critical finding: settling time is NEGATIVE on Falcon-H1.**
+**Bounded Falcon observation:**
 - d1: s0=0.142 → s1=0.080 (suffix *hurts* by -44%)
 - d2: s0=0.402 → s1=0.292 (suffix *hurts* by -27%)
 
-This is the **opposite** of Qwen3, where settling helps (+1.2% to +12.6%).
-The SSM layers' sequential recency bias *erodes* scope information over processing
-steps, while attention *consolidates* it. Extra tokens give SSM more opportunity
-to overwrite attention-mediated scope resolution with recent-token bias.
+That sign differs from the Qwen fixed-panel observation, but the comparison is
+not controlled. Falcon is an instruction-tuned hybrid using a reduced template,
+inner value `0`, and `s1 = # No changes.\npass\n`; Qwen is a base transformer
+using different templates, inner values, and a comment-only intervention. Model
+family, weights, training, tokenizer, prompt, suffix, and architecture all vary.
+No architecture ablation was run. `Attention consolidates`, `SSM erodes`, and
+`architecture separation confirmed` are therefore rejected interpretations.
 
-**Architecture separation:** Pure transformer (Qwen3) = settling helps.
-Mamba hybrid (Falcon-H1, correct measurement) = settling hurts. The mechanism
-is different: attention looks back to arbitrary positions (consolidation),
-SSM compresses sequentially (erosion).
+The runner also prefetched `s0`/`s1` and varied only whether the subsequent
+query was submitted in one cached chunk, token by token, or as part of full
+text. It did not directly rerun the original prefix-cache → suffix-plus-query
+boundary. The JSON stores four aggregate rows rather than the 108 per-cell
+distributions, so cellwise equality and outliers are not independently
+recomputable from the retained artifact.
 
 Data: `experiments/results/svb_decode_verification.json`
 Ledger: `svb_decode_verification_full`
 
+**Ledger correction:** append-only entry `svb_decode_verification_audit_correction`
+supersedes the causal architecture interpretation while preserving the numeric
+diagnostic.
+
 ---
 
-### MAMBA STATE BUG: EMI divergence traced to HuggingFace implementation gap (2026-09-03)
+### MAMBA STATE GAP: affected continuation path localized (2026-09-03)
 
-**Root cause identified.** The EMI divergence across execution modes is caused by
-a gap in HuggingFace's Falcon-H1 `torch_forward` implementation: for multi-token
-continuation from cached state (`seq_len > 1`), the Mamba SSM layers start from
-**zero initial state** instead of using the cached recurrent state.
+**Runtime gap identified.** The EMI divergence coincides with a specific gap in
+HuggingFace's Falcon-H1 `torch_forward`: for multi-token cached continuation
+(`seq_len > 1`), the Mamba SSM recurrence starts from **zero initial state**
+instead of receiving the cached recurrent state. The bounded diagnostic
+localizes this execution branch; it does not prove that the omission causes
+every historical response contrast.
 
 **Evidence chain:**
 1. `modeling_falcon_h1.py`, line 819: `previous_states = torch.zeros_like(states[:, :1])`
@@ -52,12 +67,13 @@ continuation from cached state (`seq_len > 1`), the Mamba SSM layers start from
 3. Both `mamba_chunk_scan_combined` and `causal_conv1d_fn` accept `initial_states`
    parameters — the model code simply never passes them for `seq_len > 1`.
 4. The `cuda_kernels_forward` path has the same gap (no `initial_states` passed).
-5. Single-token decode (`seq_len == 1`) CORRECTLY uses cached states (lines 686-762).
+5. Single-token decode (`seq_len == 1`) consumes cached states (lines 686-762).
 
 **Minimal reproduction (32-token text):**
 - One-shot vs two-shot (multi-token continuation): TV = 0.118, max logit diff = 6.527
 - One-shot vs single-token decode: TV = 0.000000 (exact match)
-- Cross-prefix two-shot convergence: TV = 0.794 (Mamba layers ignore prefix)
+- Cross-prefix two-shot response convergence: TV = 0.794 (consistent with lost
+  direct recurrent history; not proof of zero prefix influence through attention)
 
 **This is not a "bug" but a missing feature.** Standard LLM inference (prefill + single-token
 decode) never needs multi-token continuation from cache. The code is optimized for
@@ -66,50 +82,61 @@ that workflow. Our experiments used a non-standard pattern (chunked multi-token 
 **Scope of impact:**
 - ALL SVB experiments (SVB-0, SVB-1, SVB-2, suffix conditions, order independence)
   use `get_state_after_prefix` → cache → `get_dist_from_state` with multi-token suffix.
-  They measure behavior where Mamba layers don't see the prefix (only attention carries context).
+  That path omits direct cached recurrent and convolutional history. Attention-
+  conditioned hidden states may still carry prefix information into later layers.
 - ALL suffix algebra experiments in `legacy/` used the same cached continuation pattern.
 - EMI modes L, W, G all use cached continuation → all affected.
-- EMI mode F (full text, no cache) processes everything in one pass → CORRECT.
-- SVB competence staircase uses full-text mode → CORRECT.
-- SVB-Qwen3 uses Qwen3 (standard transformer, no Mamba) → CORRECT (KV cache is exact).
-- Cross-architecture comparison (Falcon-H1 vs Qwen3) is invalid: comparing broken Mamba
-  state vs correct full state.
+- EMI mode F (full text, no cache) is the faithful reference for this comparison.
+- SVB competence staircase uses full-text mode and is outside this cache defect.
+- SVB-Qwen3 does not use the Falcon/Mamba continuation branch; its bounded
+  fixed-panel response result survives this defect audit.
+- Cross-architecture comparison (Falcon-H1 vs Qwen3) is invalid because model,
+  training, tokenizer, prompt, intervention, and execution path all differ.
 
 **Reinterpretation of EMI result:**
-The EMI divergence is NOT about "execution-schedule-dependent algebra" or "KV-cache mathematics."
-It is about Mamba layers receiving zero initial state instead of the cached prefix state.
-Mode F collapses all defects because it processes full text in one pass — all layers
-(Mamba + attention) see the complete context. In cached modes, only attention layers see
-the prefix; Mamba layers process continuation tokens from zero state.
+The affected multi-token branch omits direct cached recurrent and convolutional
+history, and its response law differs sharply from full-forward and tokenwise
+execution. This is a runtime-contract failure, not evidence for a model-native
+algebra. It does not prove that every discrepancy is caused solely by the gap.
 
 **Reinterpretation of suffix algebra:**
-The "suffix action algebra" measured in prior experiments reflects how the model behaves
-when ONLY attention layers carry prefix context (Mamba layers start fresh). This is a
-real behavioral regime (it IS what happens during multi-token cached inference on this model),
-but it does NOT reflect the model's full text understanding capability.
+The recorded suffix tables characterize the affected runtime, in which direct
+cached Mamba recurrence is reset. They are useful diagnostics but do not reflect
+faithful full-context execution or isolate which surviving pathway carries
+prefix information.
 
 **What remains valid:**
-- Mode F result: model correctly identifies suffixes as semantically neutral (TV < 0.016)
-- Single-token decode: correctly continues from cached state
-- SVB-Qwen3: correctly measured (no Mamba, pure transformer)
-- Competence staircase: correctly measured (full-text mode)
+- On the registered nine-word Mode F panel, all measured suffix defects are below TV 0.016.
+- Tokenwise cached query processing closely matches full-forward processing on
+  the four aggregate 11-bin conditions in the retained diagnostic.
+- The bounded Qwen fixed-panel response result is outside this Falcon code path.
+- The competence staircase used full-text mode and is outside this cache defect.
 - The mathematical FRAMEWORK (TV metric, bootstrap CIs, hypothesis testing) is sound
 
 **What is invalidated:**
-- All σ values from SVB on Falcon-H1 reflect attention-only context, not full model
-- Suffix algebra on Falcon-H1 is an artifact of the implementation gap
+- All recorded Falcon-H1 SVB σ values used a non-faithful continuation interface.
+- The recorded Falcon-H1 suffix algebra is not claim-bearing as faithful state dynamics.
 - Cross-architecture comparison is apples-to-oranges
-- "Settling time" on Falcon-H1 may be an artifact (attention-only context needs more
-  tokens to compensate for missing Mamba context)
+- No Falcon settling, architecture, or mechanism claim survives without corrected remeasurement.
 
 **Options for next steps:**
 1. Fix the implementation gap in HuggingFace code (pass `initial_states` to
    `mamba_chunk_scan_combined` and `causal_conv1d_fn`) and re-run experiments
-2. Use single-token decode for suffix processing (correct, slower)
-3. Use full-text mode for all measurements (correct, no caching benefit)
-4. Switch to a pure transformer model where KV cache continuation is exact
-5. Study the Mamba-bug regime itself as a phenomenon (attention-only context behavior)
+2. Use tokenwise cache advancement as the candidate repaired path, then verify
+   it at the original segmentation with per-cell retention
+3. Use full-text mode as the registered reference
+4. Test a pure-transformer continuation path under its own equivalence gate
+5. Retain the affected Mamba path only as a runtime-diagnostic regime
 
+
+<details>
+<summary><strong>Historical Falcon suffix-algebra analysis — superseded</strong></summary>
+
+> **Terminal correction:** Everything in this block was analyzed before the
+> continuation gap was localized. The numbers describe the affected runtime;
+> the schedule-dependent algebra, native-object, semantic-neutrality, causal
+> binding, and mechanism interpretations are not claim-bearing. The invalid
+> simultaneous-band interpretation is also superseded by the top audit entry.
 
 ### EMI RESULT: All modes DIVERGENT — algebra is execution-schedule-dependent (2026-09-03)
 
@@ -512,63 +539,58 @@ finite-access limits, R^n trap, theorem correctness, notation consistency).
 Files: theory/SUFFIX_ACTION_ALGEBRA.md, theory/suffix_algebra.py,
 theory/frozen_predictions_CP.txt.
 
-### Response-law geometry of the settling operator (2026-09-03, CONSTRUCTION)
+### Historical response-law geometry of the affected suffix runtime (2026-09-03, INTERPRETATION SUPERSEDED)
 
-**First concrete instantiation of D1-D5 on SVB-2 behavioral data.**
+**Historical formalization of the response table produced by the defective multi-token cached path.**
 
-Distance-from-claim: **0** — this IS the central artifact (native math from data).
+Distance-from-claim: **2** — runtime-diagnostic mathematics, not model-native structure.
 
 Using full 11-bin response distributions from SVB-2 checkpoint (obs_checkpoint.npz),
 computed the sqrt-Jensen-Shannon response distance (D2/D3) between all suffix
-conditions at each depth. Key findings:
+conditions at each depth. The calculations below describe that retained table;
+they do not license a faithful-model settling or native-mathematics claim.
 
-**1. Approximate fixed point.** The suffix operator T (appending `# No changes.\n`)
-has an approximate fixed point cluster {s3, s4, s6, s8} with mutual distances
-d ≤ 0.06 (mean sqrt-JS). This cluster is at distance ~0.17 from s0 at d3 — a
-different operational place from the baseline, confirming settling is a genuine
-place-change in the D5 sense.
+**1. Bounded cluster in the affected table.** The recorded suffix operator T
+(appending `# No changes.\n`) has a cluster {s3, s4, s6, s8} with mutual mean
+distances d ≤ 0.06. The calculation does not certify an operational place for
+faithful Falcon execution.
 
-**2. Transient overshoot.** The orbit s0 → s1 → s2 → ... OVERSHOOTS the fixed
-point on the first step. At d3: d(s0, s1) = 0.188 > d(s0, fixed-point) ≈ 0.17.
-The correct-digit probability peaks at the overshoot (σ=0.43 at s1) before
-converging to the fixed-point value (σ≈0.29-0.34). The USEFUL settling effect
-is a non-equilibrium transient, not the equilibrium.
+**2. Recorded transient maximum.** The affected orbit s0 → s1 → s2 → ... has
+d(s0, s1) = 0.188 > d(s0, cluster centroid) ≈ 0.17 at d3, and the recorded
+correct-digit probability peaks at s1 before falling toward σ≈0.29–0.34.
 
-**3. Oscillatory convergence.** Orbit step sizes d(s_k, s_{k+1}) show a universal
-pattern: large initial step → sharp contraction → bounce-back → contraction.
-The bounce (s2→s3 step larger than s1→s2 step) occurs in 67-89% of cells at
-d2-d3. This is not R^n contraction — it's a native nonlinear phenomenon.
+**3. Nonmonotone steps in the affected table.** The recorded orbit follows a
+large step → contraction → bounce → contraction profile. The bounce occurs in
+67–89% of cells at d2–d3. It is neither a universal pattern nor evidence of a
+model-native non-Euclidean phenomenon.
 
-**4. Depth-dependent topology.** The nearest-neighbor structure of the response
-metric space changes with depth:
+**4. Depth-dependent geometry inside the recorded response table.** The
+nearest-neighbor structure changes with depth:
 - s1 and s2 are mutual nearest neighbors at ALL depths (invariant)
 - s4 and s6 are mutual nearest neighbors at ALL depths (invariant)
 - s0's nearest neighbor changes: s1 at d1, s2 at d2, s8 at d3-d4
 
-**5. Depth-topology correlation.** Spearman rank correlation of distance matrices:
+**5. Recorded depth-table correlation.** Spearman rank correlation of distance matrices:
 d3-d4 = 0.944 (nearly identical topology), d1-d2 = 0.778 (different).
 
-**6. Non-contraction.** The suffix operator is NOT a uniform contraction on the
-response metric space: d(T(s1), T(s2)) / d(s1, s2) > 1 at all depths (the
-close pair {s1, s2} spreads apart under one more application of T).
+**6. Non-contraction within the affected table.** The calculated map is not a
+uniform contraction: d(T(s1), T(s2)) / d(s1, s2) > 1 at all depths.
 
-**Native-math objects identified:**
-- The settled cluster Q* ≈ {s3, s4, s6} at d3 is an approximate D5
-  operational place (mutual distances ≤ 0.05)
-- The settling time s*(d) is the orbit index that maximizes a declared
-  response functional, NOT the convergence time to the fixed point
-- The response metric space (Z, d_0) has depth-dependent nearest-neighbor
-  structure with invariant pair-clusters
+**Diagnostic objects constructed, not licensed as model-native:**
+- a bounded cluster {s3, s4, s6} in the affected d3 response table;
+- the orbit index maximizing a declared response functional;
+- depth-dependent nearest-neighbor structure in the recorded table.
 
-**Falsifiable predictions:**
+**Historical proposed follow-ups, superseded by instrument repair:**
 - Different neutral suffix strings (other paraphrases) should converge to
   the same approximate fixed-point cluster
 - The oscillatory convergence pattern should hold for different response
   channels (not just correct-digit probability)
 - The nearest-neighbor invariants (s1~s2, s4~s6) should survive template changes
 
-Data: experiments/results/svb_2/obs_checkpoint.npz (full 11-bin distributions).
-[Codex design gate completed — suffix-action algebra construction plan adopted]
+Data: experiments/results/svb_2/obs_checkpoint.npz (full 11-bin distributions
+from the affected runtime). No item in this entry is claim-bearing until rebuilt
+through a faithful, provenance-complete continuation interface.
 
 ### Semantic paraphrase probe: phrase-family association at controlled token count (2026-09-03)
 
@@ -748,6 +770,17 @@ ceiling compression (comment at 0.90) or a genuine template interaction.
 Multiple variables changed between v1 and v2.
 
 [Codex evidence gate: REVISE — see corrections above]
+
+</details>
+
+<details>
+<summary><strong>Historical pre-audit suffix and mechanism notes — superseded</strong></summary>
+
+> **Terminal correction:** The Falcon measurements in this block used the
+> defective multi-token cached continuation. The Qwen measurements retain their
+> fixed-panel numeric value, but their consolidation, attention, universality,
+> and efficiency interpretations were not identified. This block is retained
+> for provenance and is not claim-bearing.
 
 ### Order independence probe v1: commutativity on simplified template (2026-09-03)
 
@@ -1045,46 +1078,56 @@ during training, and competing values poison it.
 
 [ALL CLAIMS NEED CODEX VALIDATION]
 
+</details>
+
 ---
 
-### SVB-Qwen3-Formal: settling time CONFIRMED universal across architectures (2026-09-03)
+### SVB-Qwen3-Formal: bounded suffix-conditioned response effect (2026-09-03; interpretation corrected)
 
-**Formal SVB on Qwen3-1.7B-Base (pure transformer, 621 model calls, 3.3 min CPU).**
-Verdict: SCOPE_STACK_WITNESS. All gates pass. Sigma band: strong. Kappa band: strong.
+**Formal SVB on Qwen3-1.7B-Base (621 model calls, 3.3 min CPU under the
+stored run summary).** The then-registered response gates passed; the audit
+narrows the licensed interpretation to the fixed panel below.
 
-**Settling time profiles — Qwen3 vs Falcon:**
+| Depth | σ(s0) | σ(s1) | Absolute change | Positive cells |
+|-------|------:|------:|----------------:|---------------:|
+| d1 | 0.95812 | 0.96997 | +0.01185 | 24/27 |
+| d2 | 0.89660 | 0.94534 | +0.04874 | 27/27 |
+| d3 | 0.79167 | 0.90033 | +0.10867 | 27/27 |
+| d4 | 0.75328 | 0.87958 | +0.12630 | 27/27 |
 
-| Depth | Qwen3 σ(s0) | Qwen3 σ(s1) | Qwen3 Gain | Falcon σ(s0) | Falcon σ(s1) | Falcon Gain |
-|-------|-------------|-------------|------------|-------------|-------------|-------------|
-| d1 | 0.958 | 0.970 | +1.2% | 0.681 | 0.669 | -1.8% (no settling) |
-| d2 | 0.897 | 0.945 | +5.4% | 0.497 | 0.645 | +30% |
-| d3 | 0.792 | 0.900 | +13.7% | 0.280 | 0.441 | +57% |
-| d4 | 0.753 | 0.880 | +16.7% | 0.229 | 0.431 | +88% |
-
-**H1_universal_settling: CONFIRMED.** Settling exists at all depths d>=2 in a pure
-transformer with no recurrence. Gain grows with depth — same qualitative pattern as
-Falcon. The depth-dependent cost law is universal.
+**Corrected verdict:** In this Qwen model and fixed prompt family, the comment
+intervention improves the registered correct-digit probability at d2–d4 and the
+descriptive gain grows with depth. The Falcon arm cannot serve as a replication
+because its cached continuation was defective and its model, prompt, values, and
+intervention differ. No universality or architecture effect is established.
 
 **Key observations:**
-1. Qwen3 base accuracy much higher than Falcon at all depths (0.753 vs 0.229 at d4)
-2. Settling gain magnitude ~5x smaller (17% vs 88% at d4) — the transformer needs
-   settling less because it already has better scope access through direct attention
-3. Peak is ALWAYS s1 in Qwen3 (Falcon peaks at s1 for d2/d4, s2 for d3)
-4. Effective sigma with settling: Qwen3 reaches 0.880 at d4, Falcon only 0.431
+1. Qwen3 s0 declines with nesting depth on the fixed panel.
+2. The fixed comment raises the mean at every tested depth and every cell at d2–d4.
+3. Among tested suffix counts `{0,1,2,4}`, s1 has the highest mean at d2–d4.
+4. The intervention changes text, position, attention state, and computation jointly;
+   the present data do not identify a consolidation mechanism.
 
-**Theoretical interpretation:** Settling time is NOT about recurrent state propagation.
-It's about the network needing extra forward passes to "consolidate" deep scope bindings
-regardless of architecture. Recurrence AMPLIFIES the effect (Falcon needs it more) but
-does not CAUSE it. The underlying phenomenon is that deep information requires processing
-time — a native property of latent-space computation.
+**Theory status:** computational-depth, lexical-cue, position, and attention-state
+accounts remain competing hypotheses. A causal interpretation requires matched textual
+controls, aligned templates, multiple checkpoints, and an intervention that separates
+additional computation from added content.
 
-**Effective sigma (at optimal settling) comparison:**
-- Qwen3: d1=0.970, d2=0.945, d3=0.900, d4=0.880
-- Falcon: d1=0.681, d2=0.645, d3=0.441, d4=0.431
+No numerical Falcon comparison is claim-bearing until it is rerun through a
+faithful, provenance-complete continuation interface.
 
 ---
 
-### Theoretical analysis: WHY settling time is architecture-universal (2026-09-03)
+<details>
+<summary><strong>Historical cross-model and settling-law analysis — superseded</strong></summary>
+
+> **Terminal correction:** The following hypotheses predate the runtime audit.
+> They mix a bounded Qwen text intervention with affected Falcon measurements
+> and cannot identify computation depth, attention stabilization, recurrence,
+> stored knowledge, a native law, or an efficiency advantage. They are retained
+> only as a record of hypotheses and proposed controls.
+
+### Historical hypothesis analysis: possible mechanisms for the Qwen suffix effect (2026-09-03; not an architecture-universal result)
 
 Four hypotheses for why pure transformers — which have direct attention to ALL
 positions — still benefit from neutral suffix tokens. Each evaluated against data,
@@ -1499,36 +1542,41 @@ due to sustained load battery concern. Ready for next good battery window.
 6. Is the 11-bin response law a limitation or a feature? Does it bias results?
 
 
-### SVB-1 result — settling time law CONFIRMED, geometric decay REJECTED
+</details>
 
-**Geometric decay hypothesis REJECTED.** Predicted σ_d3 = 0.36, actual = 0.28.
+---
+
+### Historical SVB-1 result — affected by the Mamba continuation gap (interpretation superseded)
+
+**Recorded affected-runtime curve:** Predicted σ_d3 = 0.36, recorded = 0.28.
 Decay ratios: d1→d2 = 0.73, d2→d3 = 0.56, d3→d4 = 0.82. Not constant — sharp
-acceleration at d3, then deceleration. Suggests a phase transition, not smooth decay.
+acceleration at d3, then deceleration. This rejects the registered geometric fit
+inside the defective execution regime; it does not identify a phase transition.
 
-**Settling time hypothesis CONFIRMED with massive effect sizes:**
+**Historical suffix profile (not faithful-state evidence):**
 - d1: peak at s0 (monotone decay) — as predicted
 - d2: peak at s1 (σ: 0.497→0.645, +30%) — as predicted
 - d3: peak at s2 (σ: 0.280→0.441, +57%) — CONFIRMED: peak shifts rightward
 - d4: peak at s1 (σ: 0.229→0.431, +88%) — partial: huge gain but peak doesn't continue shifting
 
-The s1-s0 gap at d3 (0.150) IS larger than at d2 (0.148), confirming prediction.
-At d4, the gain (0.202) is even larger. The settling time effect GROWS with depth.
+The recorded s1-s0 gap at d3 (0.150) is larger than at d2 (0.148); at d4 it is
+0.202. These values characterize the affected runtime only.
 
-**Critical insight:** With optimal suffix, effective binding is much flatter:
-d1=0.681, d2=0.645, d3=0.441, d4=0.431. The raw depth curve overestimates
-binding loss by ~2x at depth 4. The model CAN maintain deep bindings — it needs
-recurrent processing steps to ACCESS them.
-
-**Native math established:** The cost of accessing depth d = structural depth +
-settling time s*(d). This is a genuinely native property with no R^n analogue.
-Connects to "cost" navigation requirement in AXIOMS.md.
+**Superseded interpretation:** the recorded optimum profile is flatter, but the
+runtime discarded the cached recurrent state. It therefore does not show that
+the faithful model maintained inaccessible bindings, needed recurrent settling
+steps, or instantiated a native access-cost law.
 
 
-## 2026-09-03 (session 8) — SVB-0 result: strongest positive signal in project history
+## 2026-09-03 (session 8) — Historical SVB-0 result (affected by the Mamba continuation gap)
 
 **SVB-0 completed on Falcon-H1-1.5B-Instruct.** Scope-variable binding experiment
 using Python lexical scoping. DynamicCache state injection. 11-bin response law.
 1854 model calls in 4385s (73min) on CPU.
+
+**Terminal correction:** this run used the defective multi-token cached
+continuation. The measurements below are retained as historical runtime evidence,
+not as faithful Falcon state, settling-time, or native-mathematics evidence.
 
 **Competence staircase:**
 - Rung 1: Direct assignment 27/27 = 100.0% (gate 90%) PASS

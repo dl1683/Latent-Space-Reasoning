@@ -5,6 +5,38 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
+## Decode-versus-full diagnostic — faithful query continuation localized (2026-09-03, COMPLETE; INTERPRETATION CORRECTED)
+
+Distance from claim: 2 (runtime-instrument validation).
+
+Four fixed 27-cell Falcon-H1 conditions compare:
+
+- prefix prefill followed by the 12-token query in one multi-token cached call;
+- prefix prefill followed by the same query one token at a time;
+- the same complete text in one no-cache forward pass.
+
+**Results:** condition-mean TV between tokenwise cached and full-forward 11-bin
+response laws was `5.269e-7` to `1.2107523675e-6`. Multi-token cached versus
+full-forward TV was `0.546–0.885`. The prefetched `s1` condition reduced mean
+correct-digit probability relative to `s0` at both tested depths.
+
+**Licensed interpretation:** the multi-token cached query path changes the
+tested hybrid runtime's response law, while tokenwise cache advancement agrees
+closely with full-forward execution on this projected aggregate diagnostic.
+
+**Limits:** the runner inserts `s0`/`s1` before prefill and changes only query
+chunking, so it does not rerun the original prefix-cache → suffix-plus-query
+boundary. The result JSON retains condition aggregates rather than per-cell
+response laws. It does not establish full-vocabulary equivalence, architecture
+separation, an attention-versus-SSM mechanism, continuous-vector reasoning,
+efficiency, or future acquisition.
+
+Runner: `experiments/verify_svb_decode_mode.py`. Result:
+`experiments/results/svb_decode_verification.json`. Audit correction:
+`svb_decode_verification_audit_correction` in the append-only ledger.
+
+---
+
 ## Execution-Mode Invariance — four modes, 9 core words (2026-09-03, COMPLETE: ALL DIVERGENT)
 
 Distance from claim: 2 (measurement of the artifact).
@@ -22,7 +54,8 @@ of the Mamba-Transformer hybrid. Codex design gate: CONDITIONAL GO.
 - Mode tolerance: eps_mode = max(0.01, 5 * delta_replay), calibrated from replay
 - Defect re-adjudication per mode (BAND2, SAT3, right-continuation) at eps_TV=0.06
 - 100K bootstrap for mode comparisons, 10K for defects, seed 42
-- Simultaneous max-statistic band reanalysis (post-hoc, confirms independent CIs)
+- A post-hoc simultaneous-band artifact was produced but is nondecision-grade:
+  its maximum statistic was uncentered and cannot validate the independent intervals.
 
 **Decision rules:**
 - L≠W: query-boundary artifact in existing evidence
@@ -34,8 +67,9 @@ of the Mamba-Transformer hybrid. Codex design gate: CONDITIONAL GO.
 - Token identity gate: 420 checks, zero mismatches.
 - Replay calibration: delta_replay=0.0 (perfectly deterministic), eps_mode=0.01.
 - Consistency check: Mode L CPC bit-for-bit identical to band2 historical data.
-- ALL 54 word×mode-pair comparisons: **DIVERGENT** (0 disagreements with
-  simultaneous max-statistic band).
+- All 54 word×mode-pair point comparisons exceed the registered mode tolerance
+  under the original reducer. The committed simultaneous reanalysis is not a
+  valid confidence-band repair and carries no additional decision weight.
 - L vs W: TV 0.33-0.42 — MASSIVE query-boundary artifact.
 - W vs G: TV 0.05-0.18 — generator packaging changes state.
 - All vs F: TV 0.36-0.78 — cached vs non-cached fundamentally different.
@@ -46,30 +80,40 @@ of the Mamba-Transformer hybrid. Codex design gate: CONDITIONAL GO.
 - Spearman structural invariance: L/W/G moderately correlated (rho 0.54-0.69),
   F uncorrelated with all (rho -0.007 to 0.189, p>0.27).
 
-**Interpretation (REVISED 2026-09-03):** The EMI divergence is caused by a
-HuggingFace implementation gap: Falcon-H1 `torch_forward` starts Mamba SSM
+**Interpretation (REVISED 2026-09-03):** Source inspection localizes a
+HuggingFace implementation gap: Falcon-H1 `torch_forward` starts the Mamba SSM
 layers from ZERO state for multi-token continuation (line 819:
 `previous_states = torch.zeros_like(states[:, :1])`). Both
 `mamba_chunk_scan_combined` and `causal_conv1d_fn` accept `initial_states`
-parameters — the code never passes them for `seq_len > 1`. Single-token
-decode (`seq_len == 1`) correctly uses cached state.
+parameters; this path does not pass them for `seq_len > 1`.
 
 Verification: one-shot vs two-shot TV = 0.118, max logit diff = 6.527.
 One-shot vs single-token decode TV = 0.000000 (exact match).
-Cross-prefix two-shot convergence TV = 0.794 (Mamba ignores prefix).
+Cross-prefix two-shot response convergence TV = 0.794, consistent with lost
+direct recurrent history but not proof of zero prefix influence through attention.
 
-The suffix algebra is an artifact of Mamba layers receiving zero initial
-state during cached continuation. Mode F is correct (all layers see full text).
-ALL prior SVB/suffix experiments on Falcon-H1 used the affected pattern.
-SVB-Qwen3 (pure transformer) is unaffected.
+The affected path omits direct cached recurrent and convolutional history, and
+its registered response law differs sharply from full-forward and tokenwise
+execution. This makes the recorded Falcon suffix algebra non-claim-bearing as
+faithful state dynamics; it does not prove that the omission causes every
+suffix contrast. All prior Falcon-H1 SVB/suffix experiments used this path.
+SVB-Qwen3 does not use the Falcon/Mamba branch.
 
-**Status:** COMPLETE. Root cause: HuggingFace Mamba state gap, not architecture math.
+**Status:** COMPLETE runtime diagnosis; no architecture or mechanism claim.
 
 ---
 
-## Right-Continuation Test — terminal absorption and length-5 saturation (2026-09-03)
+<details>
+<summary><strong>Historical affected-runtime algebra experiments — superseded</strong></summary>
 
-Distance from claim: 0.
+> **Terminal correction:** The following measurements were made through the
+> defective multi-token cached continuation. Their arithmetic remains a runtime
+> diagnostic, but their native-object, composition, and faithful-model
+> interpretations are not claim-bearing.
+
+## Historical Right-Continuation Test (2026-09-03)
+
+Distance from claim: 2 after runtime audit.
 
 Tests whether length-3 words are genuine terminal elements (right absorption)
 or merely single-step near-returns. 4 arms (CPC, CPCC, PCPP, CPCPC), 27 cells,
@@ -91,14 +135,14 @@ Key findings:
 - CPC absorbing C remains inconclusive (point estimate exactly at threshold).
 - CPC arm bit-for-bit consistent with band2 run (consistency check PASS).
 
-Native object: truncated response-labelled continuation automaton where suffix
-actions produce measurable displacement that does not converge to a fixed point.
+Historical diagnostic object: a truncated response-labelled continuation table
+for the affected runtime.
 
 ---
 
-## Band2 Decisive Test — composite idempotence and length-3 saturation (2026-09-03)
+## Historical Band2 Decisive Test (2026-09-03)
 
-Distance from claim: 0.
+Distance from claim: 2 after runtime audit.
 
 Tests three competing hypotheses after H-LRB refutation:
 H-BAND2 ((CP)^2~CP), H-SAT3 (CPCP~CPC), H-GEN-IDEM (all grow).
@@ -118,8 +162,8 @@ Key findings:
 - Overlapping maximal cliques at ε=0.06, not a single equivalence class.
 - Exploratory contraction (unregistered): C distance-reducing (mean r=0.67),
   P mixed (mean r=1.03). Post-hoc, incomplete pair selection.
-- No semigroup variety licensed. Native object: truncated response-labelled
-  continuation automaton.
+- No semigroup variety licensed. The affected-runtime table can be represented
+  as a truncated response-labelled continuation automaton.
 Fidelity: cached-vs-full TV=0.533; all conclusions scoped to cached-continuation.
 Codex evidence gates (two rounds): REVISE verdicts adopted. LRB-era defects
 reproduce exactly.
@@ -129,9 +173,9 @@ Predictions frozen: commit f95dfb7.
 
 ---
 
-## Suffix Action Algebra — formal construction from SVB data (2026-09-03; Codex audit ADOPTED)
+## Historical Suffix Action Algebra construction (2026-09-03; interpretation superseded)
 
-Distance from claim: 0 — this IS the central constructive artifact.
+Distance from claim: 2 after runtime audit — formal diagnostic, not native-model evidence.
 Files: `theory/SUFFIX_ACTION_ALGEBRA.md`, `theory/suffix_algebra.py`, `theory/frozen_predictions_CP.txt`.
 Ledger: `suffix_action_algebra_construction`.
 
@@ -155,9 +199,11 @@ Ledger: `suffix_action_algebra_construction`.
 **Codex audit:** FAIL → 7 corrections adopted (D1 convention bridge, finite-access,
 theorem retyping on Z, notation clashes, R^n claim narrowed, LRB caveats, metric scale).
 
+</details>
+
 ---
 
-## Semantic Content Probe — suffix content drives settling effect (2026-09-03; Codex gate pending)
+## Historical Falcon content screen — affected by the Mamba continuation gap (2026-09-03)
 
 Distance from claim: 1 (settling mechanism characterization).
 Runner: `scratchpad/semantic_content_probe.py`. Results: `experiments/results/semantic_content_result.json`.
@@ -178,14 +224,14 @@ Tested: "# No changes.", "# TODO", "# Lorem ipsum dolor sit amet", "#", "# ", "p
 | Lorem ipsum | 0.2351 | -16.1% |
 | bare newline | 0.2230 | -20.4% |
 
-**What we learned:** Settling is content-dependent, not a generic syntactic trigger or extra-processing-time
-effect. Comment range = 0.1948. "# No changes." is uniquely effective. Irrelevant content (lorem, newline)
-actively hurts. Whether the effect is semantic (meaning) or distributional (training frequency) is open.
-Codex evidence gate in progress.
+**Current interpretation:** these contrasts are reproducible inside the defective
+multi-token cached runtime but are not faithful Falcon-state evidence. The
+registered strings must be rerun through the corrected interface before any
+content, semantic, or computation mechanism is promoted.
 
 ---
 
-## Order Independence v1/v2 — commutativity breaks on SVB-2 template (2026-09-03; Codex REVISE)
+## Historical Falcon order screen — affected by the Mamba continuation gap (2026-09-03)
 
 Distance from claim: 1 (structural prediction test).
 Runners: `scratchpad/order_independence_probe.py` (v1), `scratchpad/order_independence_svb2.py` (v2).
@@ -196,8 +242,9 @@ Results: `experiments/results/order_independence_result.json` (v1),
 s2_comment+comment, s2_pass+pass) at d3 on Falcon-H1. V1 used simplified template, V2 used SVB-2 template.
 
 **V1:** Commutativity appeared to hold (diff 0.011) but comment was near ceiling (0.90).
-**V2:** Order sensitivity confirmed — comment→pass produces 0.084 higher σ than pass→comment,
-same sign in all 27 paired cases. Within-type scalar idempotency strong.
+**V2 historical observation:** comment→pass produces 0.084 higher σ than
+pass→comment, same sign in all 27 paired cases, inside the defective execution
+regime. No faithful-state commutativity or idempotence claim survives.
 
 **Codex evidence gate (REVISE):** Order effect is real but projection/subspace mechanism language
 not earned. "Pass hurts" is heterogeneous across variables. Prompt-history sensitivity is an equally
@@ -206,52 +253,62 @@ projection or consolidation law.
 
 ---
 
-## SVB-2 — Fine-grained suffix resolution on Falcon-H1 (2026-09-03; SCOPE_STACK_WITNESS)
+## Historical SVB-2 on Falcon-H1 — affected by the Mamba continuation gap (2026-09-03)
 
-Distance from claim: 1 (settling mechanism at fine granularity).
+Distance from claim: 2 (historical runtime diagnostic; not mechanism identification).
 Runner: `experiments/run_svb_0.py experiments/config/svb_2.json`. Config: `experiments/config/svb_2.json`.
 Results: `experiments/results/svb_2/`. Ledger: `svb_2_result`.
 
 **Method:** Suffix counts [0,1,2,3,4,6,8] at depths 1-4. Neutral suffix = "# No changes.\n".
 Fine-grained resolution to determine if d4 s1 peak is genuine.
 
-**Results:** Peak at s1 for ALL depths d2-d4 (d3 s2>s1 not significant, p=0.86).
-Gain scales linearly with depth: d2 +29.6%, d3 +53.5%, d4 +87.9% (~30% per depth level).
-One-shot trigger confirmed — additional suffixes provide diminishing returns.
+**Results:** The observed maximum was at s1 for d2 and d4 and at s2 for d3;
+the d3 s1/s2 difference was unresolved (p=0.86).
+Recorded s1-relative gain increased across d2-d4 in the affected runtime:
+d2 +29.6%, d3 +53.5%, d4 +87.9%.
+The numerical profile is retained as historical diagnostic evidence only; it
+does not confirm a faithful one-shot trigger.
 
 ---
 
-## SVB-Qwen3-Formal — settling time UNIVERSAL across architectures (2026-09-03; SCOPE_STACK_WITNESS)
+## SVB-Qwen3-Formal — bounded suffix-conditioned response effect (2026-09-03; FIXED-PANEL WITNESS)
 
-Distance from claim: 1 (universality confirmation).
+Distance from claim: 1 (bounded depth-dependent response intervention).
 Runner: `experiments/run_svb_0.py experiments/config/svb_qwen3_formal.json`.
-Results: `experiments/results/svb_qwen3_formal/`. Ledger: `svb_qwen3_formal_result`.
+Results: `experiments/results/svb_qwen3_formal/`. Ledger: `svb_qwen3_formal`.
 
 **Method:** Full SVB on Qwen3-1.7B-Base (pure transformer, no recurrence). 621 calls, 3.3 min CPU.
 
-**Results:** Same qualitative settling law (gain grows with depth, peak at s1).
-Qwen3 magnitudes ~5x smaller (d4: +16.7% vs Falcon +87.9%). Different architecture,
-same behavioral law. Cross-model universality confirmed.
+**Results:** On this Qwen fixed panel, the comment intervention increases mean
+correct-digit probability by 0.0118, 0.0487, 0.1087, and 0.1263 at depths 1–4.
+The paired change is positive in 24/27 cells at d1 and 27/27 at d2–d4. Among
+tested suffix counts `{0,1,2,4}`, s1 has the highest mean at d2–d4.
+
+**Corrected interpretation:** this is one prompt-family-bounded extra-text
+response effect. The affected Falcon measurements cannot provide a clean
+cross-architecture replication. Added computation, token position, lexical
+content, syntax, and attention state change together. No universal settling
+law, prior answer encoding, architecture mechanism, or efficiency claim is
+licensed.
 
 ---
 
-## Settling Mechanism Probes — one-shot consolidation, Python-specific (2026-09-03; SUFFIX_MECHANISM)
+## Qwen suffix-response probes — descriptive mechanism screen (2026-09-03)
 
-Distance from claim: 1 (mechanism characterization).
+Distance from claim: 1 (bounded response characterization; mechanism unresolved).
 Runners: various probe scripts in scratchpad. Results in STATE.md and NOTEBOOK.md.
 
 Series of quick probes on Qwen3-1.7B-Base:
-1. Double comment (+11.8%) worse than single (+13.0%) — one-shot trigger, not processing time.
-2. Python `#` (+13.0%) >> C++ `//` (+2.9%) — Python-specific.
-3. Docstrings stronger than comments (+17.5% at d3). Anti-settling from competing values (-26-34%).
-4. Optimal suffix at d4 reaches σ=0.940, higher than raw d2 (0.897).
+1. Double comment (+11.8%) is below single comment (+13.0%); this rejects a simple monotone token-count account, not all computation-time accounts.
+2. Python `#` (+13.0%) exceeds C++ `//` (+2.9%) inside the Python prompt family; syntax, lexical familiarity, and position remain entangled.
+3. Docstrings exceed comments (+17.5% at d3), while a competing value lowers the score by 26–34% on tested cells.
+4. The best tested task-relevant reminder at d4 reaches σ=0.940, above raw d2 (0.897); because it supplies relevant content, it is not latent-only computation evidence.
 
 ---
 
-## SVB-1 — Depth Capacity Curve on Falcon-H1-1.5B-Instruct (2026-09-03; SCOPE_STACK_WITNESS)
+## Historical SVB-1 Falcon depth curve — affected by the Mamba continuation gap (2026-09-03)
 
-Distance from claim: 1 (depth scaling law and settling time are direct observables
-of native latent-space structure).
+Distance from claim: 2 (archived measurement from a defective cached-state interface).
 Runner: `experiments/run_svb_0.py experiments/config/svb_1.json`. Config: `experiments/config/svb_1.json`.
 Results: `experiments/results/svb_1/`. Ledger: `svb_1_launch`, `svb_1_result`.
 
@@ -268,9 +325,9 @@ predictions: geometric decay r≈0.73, σ_d3≈0.36, σ_d4≈0.26.
 | 3 | 0.280 | [0.213, 0.350] | 0.243 | [0.218, 0.267] |
 | 4 | 0.229 | [0.182, 0.280] | 0.190 | [0.174, 0.206] |
 
-Decay ratios: d1→d2=0.73, d2→d3=0.56, d3→d4=0.82. **Geometric decay REJECTED.**
+Recorded decay ratios are d1→d2=0.73, d2→d3=0.56, d3→d4=0.82. They reject the preregistered geometric fit **inside the affected runtime only**.
 
-**Settling time (suffix profile across depths):**
+**Recorded suffix profile across depths:**
 | Depth | s0 | s1 | s2 | s4 | Peak | Gain |
 |-------|-------|-------|-------|-------|------|------|
 | 1 | 0.681 | 0.669 | 0.560 | 0.396 | s0 | — |
@@ -278,31 +335,21 @@ Decay ratios: d1→d2=0.73, d2→d3=0.56, d3→d4=0.82. **Geometric decay REJECT
 | 3 | 0.280 | 0.430 | 0.441 | 0.338 | s2 | +57% |
 | 4 | 0.229 | 0.431 | 0.401 | 0.298 | s1 | +88% |
 
-**What was learned:**
-(1) Depth decay is NOT geometric — accelerates at d2→d3 (ratio 0.56), then
-decelerates at d3→d4 (ratio 0.82). Suggests phase transition, not smooth decay.
-(2) Settling time hypothesis CONFIRMED: for d≥2, adding neutral suffix tokens
-INCREASES σ, with massive effect sizes (+30% to +88%). The peak shifts rightward
-from s0 (d1) to s1 (d2) to s2 (d3), though d4 peaks at s1.
-(3) With optimal suffix, effective σ is much flatter: d1=0.681, d2=0.645,
-d3=0.441, d4=0.431. The raw depth curve overestimates binding loss.
-(4) The model CAN maintain deep bindings — the limiting factor is not storage
-capacity but access time (recurrent processing steps needed to surface information).
-(5) This establishes a native cost law: C(d) = d + s*(d), where s*(d) > 0 for
-d ≥ 2. No R^n analogue exists (all coordinates equally accessible in Euclidean space).
+**Historical interpretation, superseded:** the recorded curve is non-geometric
+and its largest tested suffix-conditioned gain rises from d2 to d4. Because the
+multi-token continuation discarded cached recurrent state, it cannot establish
+a phase transition, stored-but-inaccessible bindings, a recurrent settling
+mechanism, or a native cost law. It remains a diagnostic profile of that runtime.
 
-**Closure:** Settling time is the strongest finding in the project. Geometric decay
-rejected as too simple — the actual dynamics involve a phase transition and a
-recurrent settling mechanism. Depth-1-2 numbers reproduce SVB-0 exactly.
-
-**Codex evidence gate: DEFERRED (credits exhausted until 2026-09-06).**
+**Evidence gate:** superseded by the 2026-09-03 Mamba continuation audit and the
+append-only correction `svb_decode_verification_audit_correction`.
 
 ---
 
-## SVB-0 — Scope-Variable Binding on Falcon-H1-1.5B-Instruct (2026-09-03; INSUFFICIENT_SCOPE_BINDING)
+## Historical SVB-0 on Falcon-H1-1.5B-Instruct (2026-09-03; AFFECTED BY MAMBA GAP)
 
-Distance from claim: 1 (variable binding through recurrent state is a direct
-observable of scope structure, one step from native math).
+Distance from claim: 2 (the task remains useful, but the recorded cached-state
+result is not faithful hybrid-state evidence).
 Runner: `experiments/run_svb_0.py`. Config: `experiments/config/svb_0.json`.
 Results: `experiments/results/svb_0/`. Ledger: `svb_0_launch`, `svb_0_result`.
 Spec: `theory/SVB_0.md`.
@@ -325,6 +372,10 @@ gate 85%). Rung 3 FAIL (23/30 = 76.7%, gate 80%).
 80% gate. Formal adjudication stops at the competence check. However, all observables
 computed from 1188 observations (1854 model calls, 4385s/73min CPU).
 
+**Terminal correction:** all suffix/state observables below were captured through
+the defective multi-token cached continuation. They remain historical runtime
+measurements and cannot establish faithful state, binding, access, or mechanism.
+
 **Observables:**
 - σ_d1 = 0.6811 (CI: [0.637, 0.725]), σ_d2 = 0.4975 (CI: [0.437, 0.557])
 - κ_d1 = 0.7123 (CI: [0.691, 0.733]), κ_d2 = 0.5009 (CI: [0.472, 0.531])
@@ -336,28 +387,10 @@ computed from 1188 observations (1854 model calls, 4385s/73min CPU).
 - d1: uniform=0.627, inner_value=0.833, mean_dist=0.597, identity=0.712
 - d2: uniform=0.609, inner_value=0.636, mean_dist=0.555, identity=0.501
 
-**What was learned:**
-(1) First experiment in the project to satisfy structured-negative requirements 1-3
-simultaneously (behavioral readout valid, source contains fact, proximal causal
-control demonstrated via DynamicCache state injection).
-(2) Scope binding fidelity in the "strong" band at depth 1 (σ=0.68, κ=0.71).
-(3) Path contrast two orders of magnitude stronger than entity-location family
-(κ~0.71 vs TV~0.03 in PMO-0R/PFC-0).
-(4) Depth decay: σ drops 27% (0.681→0.497), κ drops 30% (0.712→0.501) from d1→d2.
-Both remain above "registered" thresholds at depth 2.
-(5) Entity interaction ι=0.36 (gate ≥0.10) confirms variable-specific binding,
-not a global state shift — the model tracks individual variables, not just "something changed."
-(6) Depth-2 suffix anomaly: adding one neutral comment line INCREASES σ from 0.497
-to 0.645. Neutral context may provide recurrent "breathing room" for deeper retrieval.
-(7) Two-var competence borderline (76.7% vs 80% gate) — not zero, suggesting
-partial multi-variable binding capability.
-
-**Closure:** Two-var competence formally fails, but single-var observables represent
-the strongest positive signal in the entire project. The scope-binding phenomenon
-is real and measurable; the limitation is in multi-variable simultaneous binding,
-not in the existence of binding structure.
-
-**Codex evidence gate: DEFERRED (Codex credits exhausted until 2026-09-06).**
+**Historical profile:** the affected path produced registered contrasts across
+depth, entity, and suffix conditions. Its two-variable competence rung failed.
+The later runtime audit supersedes the causal-control, variable-specific binding,
+recurrent breathing-room, and “strongest positive signal” interpretations.
 
 ---
 

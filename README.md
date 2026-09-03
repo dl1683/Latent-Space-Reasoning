@@ -4,9 +4,9 @@
 
 This project builds the **native mathematics of latent spaces** — not porting existing math onto embeddings, but discovering what math the space itself demands.
 
-## The Settling Time Effect
+## A Depth-Dependent Readout Effect
 
-Neural networks store deeply nested information but don't always surface it on the first readout. A single appended comment line — `# No changes.` — **raises mean correct-value probability by up to 12.6 percentage points** for deeply nested variable bindings. The effect scales with nesting depth: shallow bindings are already accessible, deep bindings benefit most.
+In one Qwen3-1.7B prompt family, deeply nested bindings were less likely to be read out correctly, and one fixed appended comment — `# No changes.` — **raised mean correct-value probability by up to 12.6 percentage points**. The observed change grew with nesting depth on this panel.
 
 | Depth | σ (no suffix) | σ (+1 suffix) | Gain (pp) |
 |-------|--------------|---------------|-----------|
@@ -19,17 +19,17 @@ Neural networks store deeply nested information but don't always surface it on t
 
 ### Why this matters
 
-**For AI inference:** One appended neutral line at deep nesting is a cheap intervention for a meaningful accuracy gain. This is directly applicable to transformer-based systems processing nested code or structured reasoning.
+**For AI inference:** One appended fixed comment line produced a meaningful response gain at deep nesting in this model and prompt family. That makes suffix-conditioned readout a concrete inference control to test across transformer systems; transfer, latency, and end-to-end cost remain open measurements.
 
-**For evaluation:** If depth-dependent information requires a settling step to surface, benchmarks testing nested reasoning may be measuring readout difficulty rather than whether the model encoded the answer. A model scoring low at depth 4 may improve substantially with a single additional processing step.
+**For evaluation:** The result shows that a nested-reasoning score can depend materially on the text immediately before readout. It does not establish that the answer was already encoded or that extra computation alone caused the gain; it makes those mechanisms experimentally separable.
 
-**For latent-space theory:** The settling effect is depth-dependent and suffix-sensitive — a property of how the model's computation interacts with nesting structure. Ongoing research is testing whether this supports a native transition law and whether it transfers across templates, tasks, and architectures.
+**For latent-space theory:** The measured response is depth-dependent and suffix-sensitive. Ongoing research is separating lexical cueing, position, added computation, and attention-state change before testing whether a native transition law survives across templates, tasks, and architectures.
 
 ### Key findings
 
-1. **One-shot peak.** Among tested suffix counts {0, 1, 2, 4}, suffix count 1 yields the highest σ at all depths d2–d4. Additional suffixes do not improve further.
+1. **Single-count maximum.** Among tested suffix counts {0, 1, 2, 4}, suffix count 1 yields the highest σ at all depths d2–d4. Additional suffixes do not improve further.
 
-2. **Gain scales with depth** — each deeper scope level produces a larger settling benefit. Shallow information is already accessible; deep information benefits most.
+2. **The observed gain grows with depth.** On this fixed panel, the absolute s1−s0 difference rises from 1.2 points at d1 to 12.6 points at d4.
 
 3. **Ongoing architecture investigation.** Research is testing whether the Qwen3 pattern generalizes across clean architectures, tasks, and prompt families.
 
