@@ -41,6 +41,131 @@ time — a native property of latent-space computation.
 
 ---
 
+### Theoretical analysis: WHY settling time is architecture-universal (2026-09-03)
+
+Four hypotheses for why pure transformers — which have direct attention to ALL
+positions — still benefit from neutral suffix tokens. Each evaluated against data,
+with testable predictions. [ALL CLAIMS NEED CODEX VALIDATION]
+
+**H1: Computational depth bottleneck (layer-count limitation)**
+
+The network encodes scope bindings distributed across layers, but reading them out
+at the final token requires the full layer stack to "agree." At d1, the binding is
+shallow enough that one pass suffices. At d≥2, the binding involves nested structure
+that requires more compositional steps than the model has layers in a single pass.
+A neutral suffix token gives the network another full pass through all layers,
+effectively doubling computational depth.
+
+*Evaluation:* Explains why gain grows with scope depth (deeper = more compositional
+steps needed). Explains why Qwen3 (28 layers) needs settling less than Falcon (24
+Mamba + some attention layers) — more layers = more computation per pass. Explains
+why d1 doesn't need settling (shallow enough for one pass).
+
+*Predictions:*
+- Larger models (more layers) should need settling LESS at matched depths [TESTABLE]
+- The ratio gain_d4/gain_d2 should correlate with layer count [TESTABLE with 3+ models]
+- Fine-grained suffix (SVB-2): if this is right, s1 should always be optimal because
+  one extra pass doubles depth; s2 adds diminishing returns. Matches Qwen3 data (all
+  peaks at s1) but partially conflicts with Falcon d3 peaking at s2.
+
+**H2: Attention interference / attention pattern stabilization**
+
+At the query token, the model must attend to the correct scope assignment among
+multiple competing assignments (outer=5, inner=99, deeper=999...). With more nesting,
+there are more competing attention targets. A neutral suffix token has no scope
+information of its own, so it acts as a "buffer" that lets attention patterns
+stabilize — the irrelevant assignments decay in influence while the correct one
+persists.
+
+*Evaluation:* Explains depth-dependence (more nesting = more interference). Explains
+why transformers need it less (attention is a better selector than recurrent state).
+But this predicts the effect should scale with the NUMBER of competing values, not
+the DEPTH of nesting per se. At d4 there are 4 competing values (5, 99, 999, 9999)
+vs 2 at d2 — gain ratio should be ~2:1 if interference is linear. Qwen3 shows
+16.7%/5.4% ≈ 3.1:1, Falcon shows 88%/30% ≈ 2.9:1. Both ~3:1, consistent with
+slightly-superlinear interference.
+
+*Predictions:*
+- Adding MORE competing values at fixed depth should increase settling gain [TESTABLE:
+  use multi-variable configs where multiple vars shadow at same depth]
+- The effect should correlate with attention entropy at the query position [TESTABLE:
+  measure attention entropy with/without suffix, compare to σ gain]
+- Fine-grained suffix: diminishing returns after s1, because the interference
+  reduction is mostly accomplished by one buffer token
+
+**H3: KV cache readout lag (position encoding artifact)**
+
+Modern transformers use rotary position embeddings (RoPE). The query token at the
+end of the sequence has the largest position index. RoPE's decay property means
+attention to distant positions is naturally weaker. A neutral suffix shifts the
+query position, but more importantly, it shifts the RELATIVE position of the
+suffix query to the neutral token (which is close) vs. the scope assignments
+(which are far). The neutral token itself carries no information, but attending to
+it (nearby, high-RoPE-affinity) and then to the scope assignments (through the
+cache) might let the model "relay" information through the suffix token's
+representation.
+
+*Evaluation:* Would predict that settling gain depends on the ABSOLUTE position of
+the scope assignment in the sequence, not just nesting depth. Deeper nesting =
+longer prefix = larger position gap. But d3 and d4 templates don't differ much in
+total length (maybe 30 tokens difference), yet gains differ substantially (13.7% vs
+16.7% for Qwen3). This is a weak version of the hypothesis — position effects alone
+seem too small to explain the depth-dependence.
+
+*Predictions:*
+- Padding the prefix to artificially increase position distance (without changing
+  nesting depth) should increase settling gain [TESTABLE, but probably weak effect]
+- Models with ALiBi instead of RoPE should show different settling profiles [TESTABLE
+  if ALiBi model found with code competence]
+- Fine-grained suffix: monotone diminishing returns, peak at s1
+
+**H4: Implicit chain-of-thought / residual stream accumulation**
+
+The neutral suffix `# No changes.\n` is not truly neutral — it's a comment about
+the code state. The model may be using this token's residual stream to perform
+implicit reasoning: "nothing changed in this scope, so the outer binding persists."
+Each suffix repetition reinforces this implicit inference. The token isn't
+contentless; it's a weak but genuine reasoning step.
+
+*Evaluation:* This would predict that DIFFERENT neutral suffixes produce different
+settling gains — a truly empty suffix (e.g., just `\n`) should work less well than
+a semantically meaningful one like `# No changes.\n`. Also predicts that an
+ANTI-settling suffix like `# Value updated.\n` should HURT binding fidelity.
+The fact that both Falcon and Qwen3 show the effect with the same suffix is
+consistent but not discriminating.
+
+*Predictions:*
+- Changing suffix content should change settling magnitude [DIRECTLY TESTABLE:
+  compare `# No changes.\n` vs `\n` vs `# Value updated.\n`]
+- If this hypothesis is right, the "neutral" in "neutral suffix" is doing real
+  semantic work, and settling time is actually a form of implicit CoT
+- Fine-grained suffix: may NOT show diminishing returns — if each repetition is a
+  reasoning step, more could help monotonically up to some saturation point.
+  This would predict peak at s>1, which CONTRADICTS Qwen3 data (all peaks at s1).
+  **This makes H4 the weakest hypothesis for Qwen3 specifically.**
+
+**Synthesis [NEEDS CODEX VALIDATION]:**
+
+H1 (computational depth) and H2 (attention interference) are the strongest
+candidates. They make overlapping predictions for most tests but diverge on one
+key experiment: H1 predicts the gain depends on nesting depth regardless of
+competing-value count, while H2 predicts gain depends on competing-value count
+regardless of depth. A multi-variable experiment at fixed depth (e.g., two variables
+both at d2 vs one variable at d2) would discriminate.
+
+The ~5x magnitude difference (Falcon vs Qwen3) is naturally explained by both:
+H1 says Falcon has fewer effective layers (Mamba layers are sequential, attention
+is parallel); H2 says Falcon's attention mechanism is weaker (fewer attention layers
+in the hybrid). These are really two framings of the same structural limitation.
+
+**Priority experiments to discriminate:**
+1. SVB-2 fine-grained suffix (running): resolves peak location precisely
+2. Suffix content variation: `# No changes.\n` vs `\n` vs misleading suffix — kills or confirms H4
+3. Multi-variable at fixed depth: discriminates H1 vs H2
+4. Third architecture (e.g., RWKV or RetNet): confirms universality beyond 2 architectures
+
+---
+
 ### Cross-model probe: settling time exists in PURE TRANSFORMERS (2026-09-03)
 
 **Qwen3-1.7B-Base (pure transformer, no SSM/recurrence)** shows the SAME
