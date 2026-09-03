@@ -373,6 +373,34 @@ Results: experiments/results/svb_qwen3_formal/result.json.
 
 Mamba-1.4b (pure SSM): 11-bin framework unusable (sigma~0, Pile-trained). Deferred.
 
+### Settling mechanism probes (2026-09-03, SUFFIX_MECHANISM)
+
+Distance-from-claim: **1** — characterizes the settling time mechanism.
+
+Series of quick probes on Qwen3-1.7B-Base revealing three findings:
+
+1. **Settling is a one-shot consolidation trigger, not processing time.** Double comment
+   (+11.8%) is worse than single (+13.0%). Pure computation (bare `\n`) gives only +2.5%
+   at d3, doesn't scale with depth.
+
+2. **The trigger is Python-specific.** Python `#` (+13.0%) >> C++ `//` (+2.9%). Python
+   docstrings are even stronger than comments: `"""Nothing changed."""` gives +17.5%
+   at d3, +18.6% at d4.
+
+3. **Docstring format contains attention to variable references.** Same correct statement
+   gives +16% in a docstring but -13% in a comment (when it mentions the variable name).
+
+4. **Depth loss is nearly fully recoverable.** Optimal suffix at d4 (scope reminder
+   docstring) gives +21.6%, reaching σ=0.940 — higher than raw d2 (0.897).
+
+**Anti-settling confirmed:** `# x = 0\n` drops sigma by 26-34%. Even in a comment,
+a competing value reference poisons the attention pattern.
+
+**Revised hypothesis ranking:** H2 (attention interference) > H5 (learned structural
+consolidation trigger) > H1 (computational depth) > H4 (implicit CoT).
+
+All claims need Codex validation (Sep 6 gate).
+
 ### SVB-1: Depth Capacity Curve on Falcon-H1-1.5B-Instruct (2026-09-03, SCOPE_STACK_WITNESS)
 
 Distance-from-claim: **1** — depth scaling of scope binding and settling time
