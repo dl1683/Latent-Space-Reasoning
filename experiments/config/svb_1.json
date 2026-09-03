@@ -1,0 +1,60 @@
+{
+  "experiment_name": "SVB-1",
+  "model_id": "tiiuae/Falcon-H1-1.5B-Instruct",
+  "device": "cpu",
+  "dtype": "float32",
+  "seed": 42,
+  "variables": ["x", "y", "z"],
+  "outer_values": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  "inner_value": 99,
+  "inner_value_depth2": 999,
+  "depths": [1, 2, 3, 4],
+  "single_var_only": true,
+  "neutral_suffix": "# No changes.\n",
+  "neutral_suffix_counts": [0, 1, 2, 4],
+  "query_template": "f()\nprint({var})  # Output: ",
+  "templates": {
+    "depth1_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    return {var}\n",
+    "depth2_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        return {var}\n    g()\n    return {var}\n",
+    "depth3_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        def h():\n            {var} = 9999\n            return {var}\n        h()\n        return {var}\n    g()\n    return {var}\n",
+    "depth4_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        def h():\n            {var} = 9999\n            def k():\n                {var} = 99999\n                return {var}\n            k()\n            return {var}\n        h()\n        return {var}\n    g()\n    return {var}\n"
+  },
+  "folds": {
+    "F0": [1, 2, 3],
+    "F1": [4, 5, 6],
+    "F2": [7, 8, 9]
+  },
+  "bootstrap_resamples": 10000,
+  "bootstrap_seed": 42,
+  "gates": {
+    "direct_overall": 0.9,
+    "direct_arm": 0.8,
+    "single_depth1_overall": 0.85,
+    "two_var_depth1_overall": 0.8,
+    "depth2_overall": 0.7,
+    "p_other_max": 0.1,
+    "registered_sigma": 0.30,
+    "registered_sigma_lb": 0.20,
+    "strong_sigma": 0.50,
+    "strong_sigma_lb": 0.35,
+    "registered_kappa": 0.30,
+    "registered_kappa_lb": 0.15,
+    "strong_kappa": 0.50,
+    "strong_kappa_lb": 0.30,
+    "entity_iota": 0.10,
+    "entity_iota_lb": 0.05,
+    "replay_max_tv": 0.01
+  },
+  "cpu_abort_minutes": 120,
+  "result_dir": "experiments/results/svb_1",
+  "predictions": {
+    "geometric_decay_r": 0.73,
+    "sigma_d1": 0.68,
+    "sigma_d2": 0.50,
+    "sigma_d3_predicted": 0.36,
+    "sigma_d4_predicted": 0.26,
+    "kappa_d1": 0.71,
+    "kappa_d3_predicted": 0.35,
+    "note": "Predictions from SVB-0 depth ratio. Geometric model: sigma(d) = sigma_0 * r^(d-1)"
+  }
+}

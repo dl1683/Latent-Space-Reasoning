@@ -121,6 +121,9 @@ def run_competence(adapter, cfg):
     if not results["single_d1"]["pass"]:
         return results
 
+    if cfg.get("single_var_only"):
+        print("  Rung 3: Two variables skipped (single_var_only)", flush=True)
+        return results
     print("  Rung 3: Two variables, depth 1...", flush=True)
     rows = []
     tmpl = cfg["templates"]["depth1_two"]
@@ -224,6 +227,11 @@ def run_science(adapter, cfg):
         gc.collect()
         _save_obs_checkpoint(observations, result_dir)
         print(f"  Depth {depth} single-var: {time.time()-t0:.1f}s", flush=True)
+
+    if cfg.get("single_var_only"):
+        print(f"  Two-var science skipped (single_var_only)", flush=True)
+        print(f"  Total: {len(observations)} observations", flush=True)
+        return observations
 
     var_pairs = list(combinations(cfg["variables"], 2))
     for depth in cfg["depths"]:
@@ -460,11 +468,12 @@ def adjudicate(competence, observables, null_ladder, cfg):
         return ("INSUFFICIENT_SCOPE_BINDING",
                 f"kappa={kappa1:.4f} lb={kappa1_lb:.4f}")
 
-    iota = observables.get("entity_interaction", {}).get("iota_mean", 0)
-    iota_lb = observables.get("entity_interaction", {}).get("iota_ci95", [0, 0])[0]
-    if iota < gates["entity_iota"] or iota_lb < gates["entity_iota_lb"]:
-        return ("GLOBAL_SCOPE_TRACE",
-                f"kappa passes but iota={iota:.4f} lb={iota_lb:.4f}")
+    if not cfg.get("single_var_only"):
+        iota = observables.get("entity_interaction", {}).get("iota_mean", 0)
+        iota_lb = observables.get("entity_interaction", {}).get("iota_ci95", [0, 0])[0]
+        if iota < gates["entity_iota"] or iota_lb < gates["entity_iota_lb"]:
+            return ("GLOBAL_SCOPE_TRACE",
+                    f"kappa passes but iota={iota:.4f} lb={iota_lb:.4f}")
 
     d2 = observables.get("depth2", {})
     sigma2 = d2.get("sigma_mean", 0)
@@ -486,7 +495,7 @@ def adjudicate(competence, observables, null_ladder, cfg):
 
 
 def main():
-    config_path = "experiments/config/svb_0.json"
+    config_path = sys.argv[1] if len(sys.argv) > 1 else "experiments/config/svb_0.json"
     with open(config_path, "rb") as f:
         config_bytes = f.read()
     config_hash = hashlib.sha256(config_bytes).hexdigest()
@@ -495,7 +504,7 @@ def main():
     result_dir = Path(cfg["result_dir"])
     result_dir.mkdir(parents=True, exist_ok=True)
 
-    print("SVB-0 Runner", flush=True)
+    print(f"{cfg.get('experiment_name', 'SVB-0')} Runner", flush=True)
     print(f"Config hash: {config_hash}", flush=True)
     t_start = time.time()
 
