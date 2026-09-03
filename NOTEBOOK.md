@@ -4,6 +4,39 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### SVB DECODE VERIFICATION COMPLETE: Architecture separation confirmed (2026-09-03)
+
+**Decode mode perfectly matches full-text in all 4 conditions** (TV < 1.2e-6).
+Single-token decode is validated as the correct measurement method for Mamba hybrids.
+
+**Complete results (Falcon-H1-1.5B, correct single-token decode):**
+
+| Condition | Buggy σ | Correct σ | Bug inflation | TV(decode,full) |
+|-----------|---------|-----------|---------------|-----------------|
+| d1_s0 | 0.747 | 0.142 | 5.25x | 9.3e-7 |
+| d1_s1 | 0.722 | 0.080 | 9.0x | 5.3e-7 |
+| d2_s0 | 0.691 | 0.402 | 1.72x | 1.2e-6 |
+| d2_s1 | 0.677 | 0.292 | 2.32x | 1.1e-6 |
+
+**Critical finding: settling time is NEGATIVE on Falcon-H1.**
+- d1: s0=0.142 → s1=0.080 (suffix *hurts* by -44%)
+- d2: s0=0.402 → s1=0.292 (suffix *hurts* by -27%)
+
+This is the **opposite** of Qwen3, where settling helps (+1.2% to +12.6%).
+The SSM layers' sequential recency bias *erodes* scope information over processing
+steps, while attention *consolidates* it. Extra tokens give SSM more opportunity
+to overwrite attention-mediated scope resolution with recent-token bias.
+
+**Architecture separation:** Pure transformer (Qwen3) = settling helps.
+Mamba hybrid (Falcon-H1, correct measurement) = settling hurts. The mechanism
+is different: attention looks back to arbitrary positions (consolidation),
+SSM compresses sequentially (erosion).
+
+Data: `experiments/results/svb_decode_verification.json`
+Ledger: `svb_decode_verification_full`
+
+---
+
 ### MAMBA STATE BUG: EMI divergence traced to HuggingFace implementation gap (2026-09-03)
 
 **Root cause identified.** The EMI divergence across execution modes is caused by

@@ -1,0 +1,34 @@
+{
+  "d1_s0": {
+    "multi_sigma_mean": 0.7469190933086254,
+    "decode_sigma_mean": 0.14222447594834697,
+    "full_sigma_mean": 0.14222459432979426,
+    "tv_multi_vs_decode": 0.8276331431611821,
+    "tv_multi_vs_full": 0.827633026159472,
+    "tv_decode_vs_full": 9.277515356447768e-07
+  },
+  "d1_s1": {
+    "multi_sigma_mean": 0.721765806277593,
+    "decode_sigma_mean": 0.07993137336301583,
+    "full_sigma_mean": 0.07993137250068011,
+    "tv_multi_vs_decode": 0.8849111916842284,
+    "tv_multi_vs_full": 0.8849112071372844,
+    "tv_decode_vs_full": 5.269284381336513e-07
+  },
+  "d2_s0": {
+    "multi_sigma_mean": 0.6904913937603986,
+    "decode_sigma_mean": 0.4024926379874901,
+    "full_sigma_mean": 0.4024924812493501,
+    "tv_multi_vs_decode": 0.5461770477532236,
+    "tv_multi_vs_full": 0.5461771967648356,
+    "tv_decode_vs_full": 1.2107523675000366e-06
+  },
+  "d2_s1": {
+    "multi_sigma_mean": 0.6767690314186944,
+    "decode_sigma_mean": 0.2923596782816781,
+    "full_sigma_mean": 0.2923595408598582,
+    "tv_multi_vs_decode": 0.6572772114779111,
+    "tv_multi_vs_full": 0.6572773306872006,
+    "tv_decode_vs_full": 1.1230777042175393e-06
+  }
+}
