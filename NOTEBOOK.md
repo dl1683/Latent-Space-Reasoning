@@ -4,35 +4,38 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
-### SVB-2 preliminary: settling bandwidth scales with depth (2026-09-03)
+### SVB-2 complete: settling is a one-shot trigger with depth-scaling gain (2026-09-03)
 
-**Fine-grained suffix resolution [0,1,2,3,4,6,8] on Falcon-H1 reveals a
-BANDWIDTH LAW, not just a peak law.** d1-d3 complete, d4 in progress.
+**Fine-grained suffix resolution [0,1,2,3,4,6,8] on Falcon-H1. 945 calls,
+2613s. Three findings:**
 
-| Depth | Peak suffix | Positive-gain range | Bandwidth |
-|-------|-------------|---------------------|-----------|
-| d1    | s0          | none                | 0         |
-| d2    | s1          | s1-s4               | 3         |
-| d3    | s2          | s1-s8               | 6         |
+**1. Peak is universally at s1.** The d3 "peak at s2" from preliminary analysis
+was not significant (p=0.86). With d4 data: peak is s1 at every depth (d2-d4).
+One neutral suffix token is the optimal intervention regardless of depth.
 
-Key numbers (sigma): d1 s0=0.681 s1=0.669 s2=0.560; d2 s0=0.497 s1=0.645 s2=0.597;
-d3 s0=0.280 s1=0.430 s2=0.441 s4=0.338 s8=0.289.
+**2. Gain at s1 scales linearly with depth (~30% per level):**
 
-The s2>s1 peak shift at d3 is NOT significant (p=0.86, t=0.18) — the settling
-benefit forms a PLATEAU at d3, not a sharp peak. But the width of the plateau
-scales linearly with depth (~3 positions per depth level). This means:
+| Depth | s0 sigma | s1 sigma | s1 gain | Bandwidth |
+|-------|----------|----------|---------|-----------|
+| d1    | 0.681    | 0.669    | -1.8%   | 0         |
+| d2    | 0.497    | 0.645    | +29.6%  | 3         |
+| d3    | 0.280    | 0.430    | +53.5%  | 6         |
+| d4    | 0.229    | 0.431    | +87.9%  | 5         |
 
-1. Shallow bindings (d1) are DAMAGED by any settling — already maximally accessible
-2. Medium bindings (d2) have a narrow settling window (s1-s4)
-3. Deep bindings (d3) tolerate settling across nearly all tested counts
+**3. Settling recovers cross-depth performance.** d4 with one suffix token
+(0.431) exceeds raw d3 (0.280) and approaches raw d2 (0.497). Each depth
+level's settling recovers it approximately one level shallower.
 
-**Theoretical implications:**
-- H1 (computational depth) STRENGTHENED — depth-dependent bandwidth is exactly
-  what additional forward passes for resolving deeper scopes would predict
-- H5 (learned consolidation trigger) WEAKENED — a single trigger should give a
-  sharp peak, not a broad plateau
-- Waiting for d4: prediction is bandwidth ~7 (all tested points positive), peak
-  around s3-s4 if the linear trend continues
+Full suffix profiles: d1 monotonic decline; d2 peak s1 then decay; d3 broad
+plateau s1-s2 then gradual decay; d4 sharp peak s1 then monotonic decay.
+
+**Revised theoretical implications:**
+- H5 (one-shot consolidation trigger) STRONGEST — always s1, consistent with
+  Python structural token triggering latent consolidation
+- H2 (attention interference) supports bandwidth scaling — deeper values less
+  vulnerable to interference from additional tokens
+- H1 (computational depth) WEAKENED — more forward passes do NOT help; peak at
+  exactly 1, not gradual improvement
 
 [NEEDS CODEX VALIDATION — Codex gate 2026-09-06]
 

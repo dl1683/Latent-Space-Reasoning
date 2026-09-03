@@ -348,6 +348,34 @@ independently worded histories per intended operational state.
 
 Runner: experiments/run_psr_v2.py. Results: experiments/results/psr_v2/.
 
+### SVB-2: Fine-grained suffix resolution confirms one-shot trigger (2026-09-03, SCOPE_STACK_WITNESS)
+
+Distance-from-claim: **1** — resolves suffix mechanism at fine granularity.
+Runner: experiments/run_svb_0.py. Config: experiments/config/svb_2.json.
+945 model calls, 2613s. Verdict: SCOPE_STACK_WITNESS.
+
+**Suffix counts [0,1,2,3,4,6,8] at depths 1-4 on Falcon-H1:**
+
+| Depth | s0    | s1    | s2    | s3    | s4    | s6    | s8    | Peak | s1 Gain |
+|-------|-------|-------|-------|-------|-------|-------|-------|------|---------|
+| d1    | 0.681 | 0.669 | 0.560 | 0.481 | 0.396 | 0.395 | 0.377 | s0   | -1.8%   |
+| d2    | 0.497 | 0.645 | 0.597 | 0.491 | 0.516 | 0.474 | 0.391 | s1   | +29.6%  |
+| d3    | 0.280 | 0.430 | 0.441 | 0.367 | 0.338 | 0.331 | 0.289 | s2*  | +53.5%  |
+| d4    | 0.229 | 0.431 | 0.401 | 0.335 | 0.298 | 0.268 | 0.228 | s1   | +87.9%  |
+
+*d3 s2>s1 not significant (p=0.86). Effective peak is s1 at all depths.
+
+**Three findings:**
+1. **One-shot trigger confirmed.** Peak at s1 for ALL depths d2-d4.
+2. **Gain scales ~linearly with depth** (~30% per depth level).
+3. **Bandwidth** (# suffix positions with positive gain): d1=0, d2=3, d3=6, d4=5.
+
+**Revised hypothesis ranking:** H5 (one-shot consolidation trigger) > H2
+(attention interference, explains bandwidth) > H1 (computational depth, weakened
+by strict s1 peak) > H4 (implicit CoT).
+
+Results: experiments/results/svb_2/result.json. [NEEDS CODEX VALIDATION]
+
 ### SVB-Qwen3-Formal: settling time UNIVERSAL across architectures (2026-09-03, SCOPE_STACK_WITNESS)
 
 Distance-from-claim: **1** — confirms universality of settling time law.
