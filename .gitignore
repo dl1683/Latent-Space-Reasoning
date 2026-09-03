@@ -216,3 +216,7 @@ experiments/results/*/gt_d4_matrix.npz
 # Local scratchpad (Codex outputs, temp files)
 scratchpad/
 *.pt
+
+# Regenerable observation/signal caches
+experiments/results/**/obs_cache.npz
+experiments/results/**/sig_cache.npz

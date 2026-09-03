@@ -6,6 +6,7 @@ scoping as the task family: outer assignment → inner function shadows →
 scope closure → query reveals outer value.
 """
 import copy
+import gc
 import hashlib
 import json
 import sys
@@ -48,11 +49,11 @@ class FalconAdapter:
         self.call_count += 1
         return copy.deepcopy(out.past_key_values)
 
-    def get_dist_from_state(self, state, suffix_text):
+    def get_dist_from_state(self, state, suffix_text, deepcopy=True):
         ids = self.tok.encode(suffix_text, add_special_tokens=False, return_tensors="pt")
-        state_copy = copy.deepcopy(state)
+        st = copy.deepcopy(state) if deepcopy else state
         with torch.no_grad():
-            out = self.mdl(ids, past_key_values=state_copy, use_cache=True)
+            out = self.mdl(ids, past_key_values=st, use_cache=True)
         self.call_count += 1
         return self._extract_11bin(out.logits[0, -1, :])
 
@@ -129,9 +130,9 @@ def run_competence(adapter, cfg):
         for v1, v2 in sample_vals:
             prefix = build_prefix(tmpl, var1=var1, var2=var2, val1=v1, val2=v2)
             state = adapter.get_state_after_prefix(prefix)
-            for qvar, correct in [(var1, v1), (var2, v2)]:
+            for qi, (qvar, correct) in enumerate([(var1, v1), (var2, v2)]):
                 query = build_query(qvar, cfg)
-                dist = adapter.get_dist_from_state(copy.deepcopy(state), query)
+                dist = adapter.get_dist_from_state(state, query, deepcopy=(qi == 0))
                 top_digit = int(np.argmax(dist[:10]))
                 ok = top_digit == correct
                 rows.append({
@@ -178,58 +179,91 @@ def _score_competence(rows, label, cfg, key=None):
             "threshold": threshold, "pass": passed, "rows": rows}
 
 
+def _save_obs_checkpoint(observations, result_dir):
+    ckpt = Path(result_dir) / "obs_checkpoint.npz"
+    np.savez(ckpt, **{k: v for k, v in observations.items()})
+
+def _load_obs_checkpoint(result_dir):
+    ckpt = Path(result_dir) / "obs_checkpoint.npz"
+    if not ckpt.exists():
+        return {}
+    data = np.load(ckpt)
+    return {k: data[k] for k in data.files}
+
 def run_science(adapter, cfg):
     print("\n=== SCIENCE OBSERVATIONS ===", flush=True)
-    observations = {}
-    states = {}
+    result_dir = cfg["result_dir"]
+    observations = _load_obs_checkpoint(result_dir)
+    if observations:
+        print(f"  Resumed from checkpoint: {len(observations)} obs", flush=True)
     templates = cfg["templates"]
     neutral = cfg["neutral_suffix"]
     suf_counts = cfg["neutral_suffix_counts"]
 
     for depth in cfg["depths"]:
+        phase_key = f"d{depth}_{cfg['variables'][0]}_{cfg['outer_values'][0]}_s0"
+        if phase_key in observations:
+            print(f"  Depth {depth} single-var: cached", flush=True)
+            continue
         tmpl_key = f"depth{depth}_single"
         tmpl = templates[tmpl_key]
         t0 = time.time()
         for var in cfg["variables"]:
             for val in cfg["outer_values"]:
                 prefix = build_prefix(tmpl, var=var, outer_val=val)
-                state_key = f"d{depth}_{var}_{val}"
                 state = adapter.get_state_after_prefix(prefix)
-                states[state_key] = state
 
-                for suf_n in suf_counts:
+                for i, suf_n in enumerate(suf_counts):
                     suffix_text = neutral * suf_n + build_query(var, cfg)
+                    last = (i == len(suf_counts) - 1)
                     dist = adapter.get_dist_from_state(
-                        copy.deepcopy(state), suffix_text)
+                        state, suffix_text, deepcopy=not last)
                     obs_key = f"d{depth}_{var}_{val}_s{suf_n}"
                     observations[obs_key] = dist
+                del state
+        gc.collect()
+        _save_obs_checkpoint(observations, result_dir)
         print(f"  Depth {depth} single-var: {time.time()-t0:.1f}s", flush=True)
 
-    t0 = time.time()
     var_pairs = list(combinations(cfg["variables"], 2))
     for depth in cfg["depths"]:
+        phase_key = f"d{depth}_{cfg['variables'][0]}{cfg['outer_values'][0]}_{cfg['variables'][1]}{cfg['outer_values'][0]}_{cfg['variables'][0]}_s0"
+        if phase_key in observations:
+            print(f"  Two-var depth {depth}: cached", flush=True)
+            continue
         tmpl_key = f"depth{depth}_two"
         tmpl = templates[tmpl_key]
+        t0 = time.time()
+        total = len(var_pairs) * len(cfg["outer_values"]) * len(cfg["outer_values"])
+        done = 0
         for var1, var2 in var_pairs:
             for v1 in cfg["outer_values"]:
                 for v2 in cfg["outer_values"]:
                     prefix = build_prefix(
                         tmpl, var1=var1, var2=var2, val1=v1, val2=v2)
-                    state_key = f"d{depth}_{var1}{v1}_{var2}{v2}"
                     state = adapter.get_state_after_prefix(prefix)
-                    states[state_key] = state
 
-                    for qvar in [var1, var2]:
-                        correct = v1 if qvar == var1 else v2
+                    for qi, qvar in enumerate([var1, var2]):
                         query = build_query(qvar, cfg)
+                        last = (qi == 1)
                         dist = adapter.get_dist_from_state(
-                            copy.deepcopy(state), query)
+                            state, query, deepcopy=not last)
                         obs_key = f"d{depth}_{var1}{v1}_{var2}{v2}_{qvar}_s0"
                         observations[obs_key] = dist
-    print(f"  Two-var all depths: {time.time()-t0:.1f}s", flush=True)
-    print(f"  Total: {len(observations)} observations, "
-          f"{len(states)} states", flush=True)
-    return observations, states
+                    del state
+                    done += 1
+                    if done % 50 == 0:
+                        print(f"    Two-var d{depth}: {done}/{total} "
+                              f"({done*100//total}%)", flush=True)
+                if done % 81 == 0:
+                    gc.collect()
+        gc.collect()
+        _save_obs_checkpoint(observations, result_dir)
+        print(f"  Two-var depth {depth}: {time.time()-t0:.1f}s "
+              f"({done} prefixes)", flush=True)
+
+    print(f"  Total: {len(observations)} observations", flush=True)
+    return observations
 
 
 def compute_observables(observations, cfg):
@@ -480,7 +514,7 @@ def main():
                       competence, {}, {}, verdict, detail)
         return
 
-    observations, states = run_science(adapter, cfg)
+    observations = run_science(adapter, cfg)
     observables = compute_observables(observations, cfg)
     null_ladder = run_null_ladder(observations, cfg)
 
