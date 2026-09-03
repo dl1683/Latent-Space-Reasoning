@@ -348,13 +348,12 @@ independently worded histories per intended operational state.
 
 Runner: experiments/run_psr_v2.py. Results: experiments/results/psr_v2/.
 
-### Suffix action algebra (2026-09-03, CONSTRUCTION — Codex audit pending)
+### Suffix action algebra (2026-09-03, CONSTRUCTION — H-LRB REFUTED, Codex audit adopted)
 
 Distance-from-claim: **0** — this IS the central artifact.
 
-Formal construction of the behavioral suffix-action algebra from SVB data,
-following Codex design gate recommendations for the measurement-to-construction
-pivot. Defines native mathematical objects using only legal actions,
+Formal construction of the behavioral suffix-action algebra from SVB data.
+Defines native mathematical objects using only legal actions,
 response-equivalence places, composition, reachability, and directed cost.
 No imported R^n geometry.
 
@@ -365,18 +364,21 @@ languages L_θ(q), directed cost c_θ(q).
 
 **Hypotheses:**
 - H-LRB: S is approximately a left-regular band (a^2 ≈ a, aba ≈ ab).
-  Decisive test (aba ≈ ab) UNTESTED. Predictions frozen in
-  theory/frozen_predictions_CP.txt.
-- H-Truth: suffix actions conjugate under truth-reversal involution.
+  **REFUTED** (2026-09-03). Idempotence holds but absorption fails:
+  R(C,P) = TV(CPC,CP) = 0.091 [0.081, 0.100] and
+  R(P,C) = TV(PCP,PC) = 0.141 [0.126, 0.154], both LBs > εTV = 0.06.
+  The monoid is an idempotent semigroup (band) but NOT an LRB.
+  Frozen predictions in theory/frozen_predictions_CP.txt are falsified.
+- H-Truth: suffix actions conjugate under truth-reversal involution. UNTESTED.
 
-**Theorem:** truth-congruence reversal obstruction (proved). If U/V
-conjugate under J, then Δ(Jq) = −Δ(q). Same-sign advantage in both truth
-arms constructively refutes the two-class truth quotient.
+**Theorem:** truth-congruence reversal obstruction (proved on raw states Z).
 
-**Empirical grounding (d3, 27 cells):**
-- Idempotence: |CC − C| = 0.039 (scalar), I(C) = 0.045 (sqrt-JS). Small.
-- Noncommutativity: CP − PC = +0.0845, unanimous 27/27. Large.
-- Ratio: commutativity defect ~2× idempotence defect.
+**Empirical grounding (d3, 27 cells, TV metric):**
+- Idempotence: I(C) = 0.050 [0.042, 0.058], I(P) = 0.021 [0.018, 0.023]. PASS.
+- Absorption: R(C,P) = 0.091, R(P,C) = 0.141. REFUTE — third suffix does real work.
+- Noncommutativity: N(C,P) = TV(CP,PC) = 0.091 [0.075, 0.107]. Large, confirmed.
+- CPC sigma = 0.486 > CP sigma = 0.471 > C sigma = 0.430: cumulative, not absorbing.
+- PCP sigma = 0.458 > PC sigma = 0.387 > P sigma = 0.241: third P gains 7.1pp.
 
 **Status:** Codex audit running (D1 execution order, finite-access limits,
 R^n trap, theorem correctness). No new experiments until audit completes

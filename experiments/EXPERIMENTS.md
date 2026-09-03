@@ -5,6 +5,34 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
+## Suffix Action Algebra — formal construction from SVB data (2026-09-03; Codex audit ADOPTED)
+
+Distance from claim: 0 — this IS the central constructive artifact.
+Files: `theory/SUFFIX_ACTION_ALGEBRA.md`, `theory/suffix_algebra.py`, `theory/frozen_predictions_CP.txt`.
+Ledger: `suffix_action_algebra_construction`.
+
+**What was built:**
+- SVB transition world as D1 specialization (raw states, suffix actions, 11-bin response laws)
+- Behavioral places Q = Z/~ (D5 quotient by future-response identity)
+- Suffix transition monoid S = A*/≡_Q (behaviorally distinct suffix sequences)
+- Defect measures (idempotence I, residuation R, commutator N) with binding thresholds
+- Accessibility languages L_θ(q) and directed cost c_θ(q)
+
+**Hypotheses stated:**
+- H-LRB: S is approximately a left-regular band (a² ≈ a, aba ≈ ab)
+- H-Truth: suffix actions conjugate under truth-reversal involution J
+
+**Theorem proved:** Truth-congruence reversal obstruction (on raw states Z).
+
+**Symbolic normalizer (frozen predictions before experiment):**
+- 2 generators {C, P}: 5 normal forms, 2 decisive predictions (CPC ≈ CP, PCP ≈ PC)
+- 4 generators {C, P, U, V}: 65 normal forms, 13 decisive predictions
+
+**Codex audit:** FAIL → 7 corrections adopted (D1 convention bridge, finite-access,
+theorem retyping on Z, notation clashes, R^n claim narrowed, LRB caveats, metric scale).
+
+---
+
 ## Semantic Content Probe — suffix content drives settling effect (2026-09-03; Codex gate pending)
 
 Distance from claim: 1 (settling mechanism characterization).

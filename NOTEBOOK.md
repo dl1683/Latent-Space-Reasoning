@@ -4,6 +4,79 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### LRB decisive test: H-LRB REFUTED (2026-09-03)
+
+**Distance-from-claim: 0 — tests the central constructive artifact.**
+
+Ran the frozen-prediction test from theory/frozen_predictions_CP.txt. Two
+decisive LRB predictions: CPC ≈ CP and PCP ≈ PC (first-occurrence absorption).
+
+**Result: REFUTE.** Idempotence holds but absorption fails decisively.
+
+| Defect | Mean TV | 95% CI | Verdict |
+|--------|---------|--------|---------|
+| I(C) = CC~C | 0.050 | [0.042, 0.058] | PASS |
+| I(P) = PP~P | 0.021 | [0.018, 0.023] | PASS |
+| R(C,P) = CPC~CP | 0.091 | [0.081, 0.100] | REFUTE |
+| R(P,C) = PCP~PC | 0.141 | [0.126, 0.154] | REFUTE |
+| N(C,P) = CP~PC | 0.091 | [0.075, 0.107] | Non-collapse |
+
+**What we learned:** The suffix monoid S is idempotent (a² ≈ a) but NOT a
+left-regular band (aba ≉ ab). The third suffix does real work — CPC and PCP
+are genuinely new behavioral states. This is the MORE interesting outcome:
+the algebra has richer structure than an LRB.
+
+Key observations:
+- PCP sigma = 0.458 vs PC sigma = 0.387: the third P suffix INCREASES
+  accuracy when preceded by C. The P suffix's behavior depends on context.
+- CPC sigma = 0.486 vs CP sigma = 0.471: the third C suffix slightly
+  increases accuracy. Not just noise — CI excludes zero.
+- Absorption defect R(P,C) = 0.141 is 3× the idempotence defect I(C) = 0.050.
+  This is not borderline — the effect is large and consistent.
+
+**Implications for the algebra:** The monoid has at least 7 distinct elements
+(e, C, P, CC, CP, PC, CPC, PCP — though CC ≈ C reduces this). Need to
+characterize what variety of band/semigroup it is. Codex evidence gate next.
+
+Codex design gate: conditional GO. TV metric, εTV = 0.06, 8 arms,
+stratified bootstrap, non-collapse guard. All Codex corrections adopted.
+Runner: experiments/run_lrb_decisive.py. Results: experiments/results/lrb_decisive/.
+
+---
+
+### Re-contextualization: anti-tunnel check (2026-09-03)
+
+**Live question:** Is S = A*/≡_Q an LRB? Does the suffix algebra capture genuine
+native structure or a projection of something simpler?
+
+**Alternative interpretations (generated to break tunnel vision):**
+1. **Length saturation**: The settling effect is just input-length sensitivity.
+   Longer inputs push toward a different prior. "Algebra" is trivially
+   predicted by any length-saturation model. *Test*: LRB absorption (CPC ≈ CP)
+   would also hold under pure length-saturation if the effect is fully
+   determined by the *set* of suffix types, not their count.
+2. **Attention interference**: Falcon-H1 is hybrid SSM+attention. The
+   algebraic structure might describe attention pattern interference specific
+   to this architecture, not native to latent spaces generally.
+3. **BPE tokenization artifact**: Different suffix strings have different
+   BPE decompositions. Structure might arise from tokenizer chunking.
+4. **Task-specific, not universal**: LRB might hold for Python-scope-binding
+   tasks on this model but not transfer to other task families or models.
+
+**What distinguishes these from the native-math interpretation:**
+- Alternatives 1-3 predict LRB absorption holds *trivially* (no surprise).
+  A FAILURE of LRB absorption would actually be MORE interesting because
+  it would rule out the trivial explanations.
+- Alternative 4 is only addressable by testing on a second model/task family.
+- The current direction is still the right one: the LRB decisive test
+  constrains ALL alternatives regardless of interpretation.
+
+**Direction assessment:** Still correct. The formal algebra is distance-0.
+The decisive test is the highest-leverage next step. No tunnel vision
+detected — multiple live alternatives all converge on the same next action.
+
+---
+
 ### Suffix action algebra: formal document and symbolic normalizer (2026-09-03, CONSTRUCTION)
 
 **Distance-from-claim: 0 — this IS the central artifact.**
