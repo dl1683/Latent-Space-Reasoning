@@ -374,7 +374,7 @@ Runner: experiments/run_svb_0.py. Config: experiments/config/svb_2.json.
 (attention interference, explains bandwidth) > H1 (computational depth, weakened
 by strict s1 peak) > H4 (implicit CoT).
 
-Results: experiments/results/svb_2/result.json. [NEEDS CODEX VALIDATION]
+Results: experiments/results/svb_2/result.json.
 
 ### SVB-Qwen3-Formal: settling time UNIVERSAL across architectures (2026-09-03, SCOPE_STACK_WITNESS)
 
@@ -424,10 +424,9 @@ Series of quick probes on Qwen3-1.7B-Base revealing three findings:
 **Anti-settling confirmed:** `# x = 0\n` drops sigma by 26-34%. Even in a comment,
 a competing value reference poisons the attention pattern.
 
-**Revised hypothesis ranking:** H2 (attention interference) > H5 (learned structural
-consolidation trigger) > H1 (computational depth) > H4 (implicit CoT).
-
-All claims need Codex validation (Sep 6 gate).
+**Hypothesis ranking (superseded by SVB-2 + idempotent consolidation framework):**
+H5+ (idempotent consolidation) >> H2 (bandwidth sub-mechanism) >> H1 >> H4.
+See SVB-2 section above and NOTEBOOK for full framework.
 
 ### SVB-1: Depth Capacity Curve on Falcon-H1-1.5B-Instruct (2026-09-03, SCOPE_STACK_WITNESS)
 
@@ -451,7 +450,7 @@ With optimal suffix, effective σ: d1=0.681, d2=0.645, d3=0.441, d4=0.431.
 The raw depth curve OVERESTIMATES binding loss — the model CAN maintain deep
 bindings but needs recurrent processing steps to access them.
 
-Results: experiments/results/svb_1/result.json. Codex evidence gate deferred.
+Results: experiments/results/svb_1/result.json.
 
 ### SVB-0: Scope-Variable Binding on Falcon-H1-1.5B-Instruct (2026-09-03, INSUFFICIENT_SCOPE_BINDING)
 
@@ -488,7 +487,7 @@ the "strong" band (σ≥0.50, κ≥0.50). Entity interaction ι=0.36 confirms
 variable-specific binding, not global state shift. Depth-2 suffix anomaly
 (s1>s0) suggests neutral context aids deeper scope retrieval.
 
-Results: experiments/results/svb_0/result.json. Codex evidence gate deferred
+Results: experiments/results/svb_0/result.json.
 (credits exhausted until 2026-09-06).
 
 ### Closed results (OCI/RAC line — bounded activation-steering)

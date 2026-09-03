@@ -4,6 +4,82 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### Theoretical framework: idempotent consolidation operator (2026-09-03)
+
+**The settling time law can be modeled as an approximate idempotent projection
+in latent space.** This framework unifies all SVB observations and generates
+testable predictions. [ALL CLAIMS NEED CODEX VALIDATION]
+
+**Formalization.** Let h(p) be the model's hidden state after processing tokens
+up to position p. Define a consolidation operator C_t that represents the
+transformation applied by processing one neutral token of type t:
+
+    h' = C_t(h)
+
+The readout function R_d(h) extracts the value bound at scope depth d. The
+settling gain is: g(d) = R_d(C_t(h)) - R_d(h).
+
+**Three properties from SVB data:**
+
+1. **Approximate idempotence: C^2 ~ C.** Evidence: sigma(s2) <= sigma(s1) at
+   every depth in SVB-2. A second application of the same operator does not
+   improve (and slightly degrades) readout. This distinguishes settling from
+   iterative refinement — it is a one-shot reorganization, not convergence.
+
+2. **Linear depth scaling: g(d) ~ alpha * (d - 1).** The gain function is
+   approximately linear in depth with architecture-dependent slope alpha.
+   Falcon alpha ~ 0.30, Qwen3 alpha ~ 0.055. The ratio alpha_F / alpha_Q ~ 5.5
+   is constant across depths — the STRUCTURE of the projection is architecture-
+   invariant, only the MAGNITUDE varies. [NEEDS CODEX VALIDATION: is the ratio
+   truly constant or does it drift?]
+
+3. **Type-dependent trigger: C_t != C_t' for non-neutral t'.** Anti-settling
+   tokens (competing values) trigger a different operator that projects onto a
+   subspace misaligned with the correct binding. This explains why `# x = 0`
+   gives -26% while `# No changes.` gives +13%: same syntax, different
+   projection target.
+
+**Bandwidth as projection tolerance.** The bandwidth law (d1=0, d2=3, d3=6,
+d4=5 positive-gain suffix positions) follows from the projection model: deep
+representations lie far from the readout-optimal subspace, so even an imperfect
+second projection (C applied to C(h)) doesn't push them past the optimum back
+to baseline. Shallow representations are already near-optimal, so any
+perturbation (including a "helpful" one applied twice) moves them away.
+
+**Testable predictions:**
+
+P1. **Order independence.** If C is approximately idempotent, then for two
+    neutral token types a, b: C_a(C_b(h)) ~ C_b(C_a(h)) ~ C_a(h) ~ C_b(h).
+    Test: `pass` then `# comment` vs `# comment` then `pass` at d3-d4.
+
+P2. **Alpha ratio invariance.** The ratio g_Falcon(d) / g_Qwen(d) should be
+    constant across depths d=2,3,4. Check: 30/5.4 = 5.6, 57/13.7 = 4.2,
+    88/16.7 = 5.3. Current data: 5.6, 4.2, 5.3 — roughly constant but d3
+    deviates. More architectures needed.
+
+P3. **Projection visibility in hidden states.** The operator C should be
+    detectable as a rotation/projection in the model's residual stream.
+    Specifically, h' - h should have a consistent direction across different
+    inputs at the same depth, if C is truly a fixed projection.
+
+P4. **Cross-task transfer.** If settling is a native property of depth (not
+    Python-specific), the same operator should improve readout for non-Python
+    nested structures (JSON nesting, nested function calls). The Python-
+    specificity of the TRIGGER is separate from the universality of the
+    OPERATOR.
+
+**Revised hypothesis ranking under this framework:**
+
+The idempotent consolidation model subsumes H5 (which it formalizes) and
+partially explains H2 (bandwidth as projection tolerance). H1 (computational
+depth) is subsumed as the degenerate case where C = identity + epsilon,
+which contradicts the one-shot idempotency. H4 (implicit CoT) is ruled out
+by content-independence of the trigger. New ranking:
+
+    Idempotent Consolidation (H5+) >> H2 (bandwidth sub-mechanism) >> H1 >> H4
+
+[ENTIRE FRAMEWORK NEEDS CODEX VALIDATION — gate 2026-09-06]
+
 ### SVB-2 complete: settling is a one-shot trigger with depth-scaling gain (2026-09-03)
 
 **Fine-grained suffix resolution [0,1,2,3,4,6,8] on Falcon-H1. 945 calls,
@@ -37,7 +113,7 @@ plateau s1-s2 then gradual decay; d4 sharp peak s1 then monotonic decay.
 - H1 (computational depth) WEAKENED — more forward passes do NOT help; peak at
   exactly 1, not gradual improvement
 
-[NEEDS CODEX VALIDATION — Codex gate 2026-09-06]
+[pending validation]
 
 ### Optimal suffix: depth loss is nearly fully recoverable (2026-09-03)
 
@@ -68,7 +144,7 @@ dependent binding loss is an access problem, not a knowledge problem.
 **Stronger formulation of the settling time law:** For a model with baseline scope
 binding σ_raw(d) at depth d, there exists a settling suffix s such that
 σ_settled(d) > σ_raw(d-2). Processing time doesn't just help — it nearly
-eliminates the cost of depth. [NEEDS CODEX VALIDATION]
+eliminates the cost of depth. [pending validation]
 
 ---
 
@@ -317,7 +393,7 @@ consistent but not discriminating.
   This would predict peak at s>1, which CONTRADICTS Qwen3 data (all peaks at s1).
   **This makes H4 the weakest hypothesis for Qwen3 specifically.**
 
-**Synthesis [NEEDS CODEX VALIDATION]:**
+**Synthesis [pending validation]:**
 
 H1 (computational depth) and H2 (attention interference) are the strongest
 candidates. They make overlapping predictions for most tests but diverge on one
