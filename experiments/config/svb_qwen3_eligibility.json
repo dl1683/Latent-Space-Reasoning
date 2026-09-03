@@ -1,0 +1,47 @@
+{
+  "experiment_name": "SVB-Qwen3-Eligibility",
+  "model_id": "Qwen/Qwen3-1.7B-Base",
+  "device": "cpu",
+  "dtype": "float32",
+  "seed": 42,
+  "variables": ["x"],
+  "outer_values": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  "inner_value": 99,
+  "inner_value_depth2": 999,
+  "depths": [1],
+  "single_var_only": true,
+  "neutral_suffix": "# No changes.\n",
+  "neutral_suffix_counts": [0],
+  "query_template": "f()\nprint({var})  # Output: ",
+  "templates": {
+    "depth1_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    return {var}\n"
+  },
+  "folds": {
+    "F0": [1, 2, 3],
+    "F1": [4, 5, 6],
+    "F2": [7, 8, 9]
+  },
+  "bootstrap_resamples": 10000,
+  "bootstrap_seed": 42,
+  "gates": {
+    "direct_overall": 0.9,
+    "direct_arm": 0.8,
+    "single_depth1_overall": 0.85,
+    "two_var_depth1_overall": 0.8,
+    "depth2_overall": 0.7,
+    "p_other_max": 0.1,
+    "registered_sigma": 0.30,
+    "registered_sigma_lb": 0.20,
+    "strong_sigma": 0.50,
+    "strong_sigma_lb": 0.35,
+    "registered_kappa": 0.30,
+    "registered_kappa_lb": 0.15,
+    "strong_kappa": 0.50,
+    "strong_kappa_lb": 0.30,
+    "entity_iota": 0.10,
+    "entity_iota_lb": 0.05,
+    "replay_max_tv": 0.01
+  },
+  "cpu_abort_minutes": 30,
+  "result_dir": "experiments/results/svb_qwen3_eligibility"
+}

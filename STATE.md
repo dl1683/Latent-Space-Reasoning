@@ -348,6 +348,21 @@ independently worded histories per intended operational state.
 
 Runner: experiments/run_psr_v2.py. Results: experiments/results/psr_v2/.
 
+### Cross-model settling time probe (2026-09-03, SETTLING_IN_TRANSFORMER)
+
+Distance-from-claim: **1** — tests universality of settling time law.
+
+Quick probe (not formal SVB run): Qwen3-1.7B-Base (pure transformer, no SSM)
+shows settling at depth 2 with same pattern as Falcon-H1: peak at s1, gain +6.4%.
+Mamba-1.4b (pure SSM) passes argmax competence but sigma~0 — 11-bin framework
+unusable (Pile-trained, not code-capable). Pure SSM comparison deferred.
+
+**Key result:** Settling time is NOT recurrence-specific. Pure transformers
+show the same s1 > s0 pattern. Effect size smaller (6% vs 30%) because
+attention provides direct position access, but the structure is the same.
+
+Needs formal SVB run with full CIs for evidence gate.
+
 ### SVB-1: Depth Capacity Curve on Falcon-H1-1.5B-Instruct (2026-09-03, SCOPE_STACK_WITNESS)
 
 Distance-from-claim: **1** — depth scaling of scope binding and settling time

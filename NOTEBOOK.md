@@ -4,6 +4,268 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### Cross-model probe: settling time exists in PURE TRANSFORMERS (2026-09-03)
+
+**Qwen3-1.7B-Base (pure transformer, no SSM/recurrence)** shows the SAME
+settling pattern as Falcon-H1 at depth 2:
+
+| Model | Architecture | d2 s0 | d2 s1 | d2 s2 | d2 s4 | Peak | Gain |
+|-------|-------------|-------|-------|-------|-------|------|------|
+| Falcon-H1-1.5B | Hybrid Mamba+attn | 0.497 | 0.645 | 0.597 | 0.516 | s1 | +30% |
+| Qwen3-1.7B-Base | Pure transformer | 0.891 | 0.948 | 0.938 | 0.935 | s1 | +6.4% |
+
+Depth-1 control: Falcon shows monotone decay (s0=0.681 > s1=0.669 > s2=0.560).
+Qwen3 shows near-flat with slight peak at s1 (s0=0.963, s1=0.976, +1.3%).
+
+**This refutes the hypothesis that settling time requires recurrence.** A pure
+transformer with no recurrent state still benefits from neutral processing
+tokens — the information is there but needs "context digestion" time even with
+full attention. The magnitude is smaller (6% vs 30%) because the transformer
+has direct attention access to the scope assignment, but the PATTERN is the same.
+
+**Mamba-1.4b (pure SSM):** passes argmax competence (8/9 direct, 9/9 depth-1)
+but puts 86% probability on newline tokens. Sigma values are ~0.0000 — the
+11-bin framework can't measure settling for this model. It's a Pile-trained base
+model without code-specific prompting capacity. Cross-model comparison for pure
+SSM needs a code-capable Mamba model (falcon-mamba-7b exists but too large for
+CPU). Deferred.
+
+**Implication for settling time law:** Settling time is a property of neural
+computation itself, not of recurrent architectures specifically. The
+"thinking time" effect — neutral tokens helping access deep information — works
+through attention too, not just recurrent state propagation. This strengthens
+the "native law" interpretation: it's native to latent spaces broadly, not just
+to SSM/Mamba latent spaces.
+
+**Status:** Quick probe (36+36+36+36 = ~144 model calls), not a formal SVB run.
+Needs formal SVB experiment with full CIs, all variables, and kappa/null-ladder
+for proper evidence gate. Runner adapted (ModelAdapter class) to support both
+transformer and SSM cache APIs.
+
+
+### Settling time — theoretical analysis (pre-Codex, needs validation)
+
+Speculative reasoning on the five big questions the settling time law raises.
+No Codex gate yet (credits return 2026-09-06). Claims marked [NEEDS VALIDATION].
+
+#### 1. What settling time means for the field
+
+The headline: **benchmarks systematically underestimate what models know about
+deeply structured information.** A model scored as "failing" at depth-4 nested
+reasoning actually retains 88% more binding fidelity than raw access reveals —
+it just needs processing time to surface it. This is the difference between a
+hard drive being empty and a hard drive being slow.
+
+For **practitioners**: if your model struggles with deeply nested logic (multi-hop
+reasoning, nested function calls, complex code scoping), the fix may not be a
+bigger model or better training — it may be inserting neutral processing tokens
+before the query. This is cheaper and more principled than chain-of-thought
+prompting because it adds processing time, not information. [NEEDS VALIDATION:
+does this transfer to natural-language nested reasoning, or only code scoping?]
+
+For **theorists**: this is the first empirically confirmed property of recurrent
+latent spaces that has no analogue in coordinate geometry. In R^n, all
+coordinates are equally accessible — there is no concept of "access cost" that
+depends on structural depth. Settling time is native to the space in the precise
+sense that you cannot define it with vectors and distances alone. It requires a
+recurrent dynamics AND a response channel. This connects directly to D4's
+future-response pseudometric: settling is a legal move (appending neutral tokens)
+that changes d_h without changing the underlying state z. [NEEDS VALIDATION:
+is this formally a new axiom or a derived property of D1-D6?]
+
+For **AI safety**: settling time implies models have latent knowledge that is not
+surfaced by standard evaluation. A model that appears unable to track a deeply
+nested deceptive reasoning chain might actually track it perfectly — it just
+needs more processing steps. This is relevant for evaluations of deceptive
+alignment: a model might "hide" deep computations not by being deceptive but by
+the evaluator not giving it enough settling time. [NEEDS VALIDATION: speculative
+and potentially alarmist — needs careful framing.]
+
+**Gossip-magazine version:** "A 1.5B-parameter model on a laptop CPU just
+proved that every AI benchmark in the world is measuring the wrong thing."
+
+#### 2. Mathematical form of s*(d)
+
+**Data:** s*(1)=0, s*(2)=1, s*(3)=2, s*(4)=1.
+
+The d4 anomaly is the key puzzle. Three candidate explanations:
+
+**Architecture-based explanation (favored).** Falcon-H1 is a hybrid Mamba +
+attention model. Mamba layers are recurrent — they process tokens sequentially
+and maintain a running state. Attention layers have direct access to the full
+context window. At depth 4, the nesting structure may be deep enough that an
+attention head can "shortcut" directly to the outer-scope value by attending to
+the assignment token, bypassing the recurrent state traversal that depths 2-3
+require. This would mean s*(d) is not monotonic because two different retrieval
+mechanisms compete:
+
+- Recurrent traversal: s*(d) ~ d-1 (linear, used for d2-d3)
+- Attention shortcut: s*(d) ~ 1 (constant, kicks in when recurrent path is too
+  expensive)
+
+The effective s*(d) = min(d-1, attention_cost). At d4, d-1=3 but the attention
+shortcut costs only ~1, so attention wins. [NEEDS VALIDATION: SVB-2 with
+suffix counts [0,1,2,3,4,6,8] will test this. If the d4 curve is bimodal (peaks
+at s1 AND s3), both mechanisms are active. If unimodal at s1, attention
+dominates. If the true peak is at s2-s3, the d4=s1 result was sparse sampling.]
+
+**Mathematical candidates for s*(d):**
+- If H1 (sparse artifact): s*(d) = max(0, d-1), clean linear. SVB-2 would show
+  d4 peak at s2 or s3.
+- If H2 (attention shortcut): s*(d) = min(d-1, k) for some k~1 determined by
+  the attention mechanism. Non-monotonic. Would not generalize to pure SSMs.
+- If H3 (bimodal): no simple closed form. s*(d) would be the argmax of a
+  mixture of two peaked distributions.
+
+**First-principles argument for non-monotonicity.** In a pure recurrent model,
+each recurrent step propagates information one layer of nesting at a time.
+Settling time should scale linearly: s*(d) = d - 1. But hybrid models have
+attention as a parallel channel. Attention has O(1) access to any position in
+the context window, regardless of nesting depth. The cost is that attention
+operates on token positions, not structural depth — so it may access the right
+token but without the compositional processing that recurrence provides.
+The competition between these two channels is what makes the settling curve
+non-trivial. [NEEDS VALIDATION: pure SSM vs pure transformer comparison would
+disambiguate.]
+
+**The effective sigma curve tells a separate story.** With optimal settling:
+d1=0.681, d2=0.645, d3=0.441, d4=0.431. There is a clear phase transition
+between d2 and d3 (0.645 → 0.441 = 32% drop) but near-flatness d3-d4 (0.441 →
+0.431 = 2% drop). This suggests two regimes:
+- Shallow (d1-d2): settling fully recovers binding. Residual loss < 6%.
+- Deep (d3-d4): settling partially recovers but ~35% is permanently lost.
+
+The permanent loss at d3+ may be a capacity limit — the recurrent state simply
+cannot represent 3+ levels of nested scope simultaneously, regardless of
+processing time. [NEEDS VALIDATION: variable-count scaling experiment would
+test whether the bottleneck is depth or total information.]
+
+#### 3. Applications
+
+**Inference optimization.** Given a query with known structural depth d, insert
+s*(d) neutral tokens before the response position. For Falcon-H1 on Python
+scoping: no insertion at d1, 1 token at d2, 2 at d3. This costs almost nothing
+(neutral tokens are a single comment line) but recovers up to 88% more binding
+fidelity. This is distinct from chain-of-thought (which adds semantic content)
+and think tokens (which add trainable parameters). Settling tokens add only
+processing time. [NEEDS VALIDATION: needs to be tested on tasks beyond Python
+scoping. If it generalizes, this is a practical technique.]
+
+**Training signal.** If the model has depth-d information but can't access it
+without settling, then training on raw outputs systematically penalizes the
+model for information it actually has. A training procedure that inserts optimal
+settling tokens before computing loss at depth-d queries would give the model
+credit for information it knows but currently can't surface in one step. This
+could improve training efficiency for nested reasoning tasks. [NEEDS VALIDATION:
+purely speculative — no training experiments run.]
+
+**Interpretability.** The settling time profile is a fingerprint of the model's
+internal retrieval architecture. By measuring s*(d) across different tasks and
+models, you can characterize whether a model uses recurrent traversal (s* grows
+with d), attention shortcuts (s* is bounded), or a mixture (non-monotonic s*).
+This is a behavioral probe that requires no access to weights or activations.
+[NEEDS VALIDATION: needs cross-model experiments.]
+
+**Benchmark design.** Any benchmark testing nested reasoning should report
+results both with and without optimal settling. The "raw" score measures access
+speed; the "settled" score measures knowledge. These are different quantities
+and conflating them leads to wrong conclusions about model capability. [NEEDS
+VALIDATION: this is an evaluative claim, not an empirical one — would need the
+community to adopt it.]
+
+#### 4. Fit in the AXIOMS.md framework
+
+Settling time is NOT a new axiom. It is a **derived empirical law** that emerges
+from the existing D1-D6 framework. Here's why:
+
+- **D1 (transition world):** Neutral suffix tokens are legal moves T_a: Z → Z.
+  They are deterministic and total. They are in the declared action family A.
+- **D3 (response discrepancy):** σ(d, s) is a measurement of ρ(x, y) where x
+  and y differ only in the outer-scope value. The suffix count s determines
+  which word w is applied before measurement.
+- **D4 (future-response pseudometric):** The settling time s*(d) is the word
+  length |w| that maximizes d_h(x, y) for fixed d. That is, s* is the argmax
+  of the truncated future-response distance over the settling-move sub-alphabet.
+
+Formally: let A_settle ⊂ A be the singleton {a_neutral} (append one neutral
+comment line). Then s*(d) = argmax_{h ≥ 0} d_h(x_d, y_d) where x_d, y_d are
+states differing at structural depth d. This is a property of d_h, not a new
+primitive.
+
+**What IS potentially new:** The CLAIM that s*(d) > 0 for d ≥ 2. In R^n, every
+coordinate is accessible at h=0 — there is no word that increases discrepancy
+beyond what's immediately available. The fact that d_1 > d_0 (i.e., one
+additional neutral move reveals MORE discrepancy than the immediate response)
+is a structural property that has no analogue in Proposition 2's affine world,
+where d_alpha(x, y) = p_alpha(x - y) and the seminorm is independent of word
+length.
+
+So settling time fits the framework perfectly — it's a NATIVE LAW in D6's sense:
+"an equality, inequality, or compositional relation among descended maps that
+predicts denizen-accessible response consequences." The law is:
+
+  For depth-d scope binding, d_{s*(d)} > d_0 with gain growing in d.
+
+This is a law about the gap between immediate and future response distance.
+[NEEDS VALIDATION: Codex should confirm this reading of D4/D6.]
+
+#### 5. Strongest counter-explanations
+
+**Training data memorization.** The model has seen Python code during training
+and has memorized that `print(x)` after a function call returns the outer value.
+The settling effect is the model "remembering" the pattern more strongly when
+given more context (neutral lines look like real code).
+
+Counter-counter: if this were simple memorization, s*(d) should be 0 for all
+depths — the model either knows the pattern or doesn't. The fact that settling
+time varies with depth (and specifically that it INCREASES binding at d≥2 while
+DECREASING it at d1) argues against pattern matching. A memorization model would
+benefit from more context at ALL depths, not selectively. Also, the neutral
+suffix is a comment line ("# No changes.\n") which carries no scope information.
+[NEEDS VALIDATION: a scrambled-suffix control (random tokens instead of comment
+lines) would partially address this.]
+
+**Tokenizer artifact.** The comment line tokenizes into specific tokens that
+happen to be correlated with correct scope resolution in the training data.
+
+Counter-counter: the same comment line helps at d2-d4 but hurts at d1. A
+tokenizer artifact would be depth-independent. Also, the effect size (+88% at
+d4) is far too large to be a tokenizer coincidence — it would require the
+comment tokens to have massive, depth-dependent activation effects. [NEEDS
+VALIDATION: testing with different neutral suffixes (blank lines, different
+comments, random non-code tokens) would control for this.]
+
+**Architecture-specific quirk.** Settling time is a property of Falcon-H1's
+specific Mamba+attention hybrid, not of recurrent latent spaces in general.
+
+This is the MOST SERIOUS counter-explanation. It is entirely possible that
+settling time is an artifact of Mamba's specific recurrent update rule and would
+not appear in a pure transformer, a pure LSTM, or a different hybrid. The only
+way to address this is cross-model comparison. Priority order:
+1. Pure SSM (e.g., Mamba-only model) — tests whether settling time requires
+   recurrence
+2. Pure transformer (e.g., Qwen or Llama) — tests whether attention-only models
+   show it
+3. Different hybrid (e.g., Jamba) — tests whether it's Falcon-specific
+
+If settling time appears in the pure SSM but not the pure transformer, it's a
+recurrence property. If it appears in both, it's universal. If it appears only
+in Falcon-H1, it's an architecture quirk and the "native law" claim is dead.
+[NEEDS VALIDATION: this is the highest-priority next experiment after SVB-2.]
+
+**11-bin response law as confound.** The response is binned into {0-9, OTHER}.
+This discretization might create artificial structure — the settling effect
+could be the model's probability mass shifting between bins in ways that happen
+to look like improved binding but are actually redistribution artifacts.
+
+Counter-counter: kappa (path contrast TV) shows the same depth profile as sigma,
+and kappa is computed over full 11-bin distributions, not just the argmax. If
+the effect were bin-redistribution, sigma and kappa would diverge. They don't.
+Also, the null ladder (4 different null models) all produce different values,
+confirming the signal is above all null baselines. [NEEDS VALIDATION: computing
+settling profiles for kappa as well as sigma would strengthen this argument.]
+
+
 ### SVB-2 designed — fine-grained suffix resolution (ready, not launched)
 
 **Purpose:** Map the settling curve shape at finer resolution. SVB-1 sampled

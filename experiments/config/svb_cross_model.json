@@ -1,0 +1,95 @@
+{
+  "_comment": "CROSS-MODEL SETTLING TIME COMPARISON — designed 2026-09-03, not yet launched",
+  "_purpose": "Test whether settling time is universal (all architectures), recurrence-specific (SSM/hybrid only), or Falcon-specific. Three models, same task, same observables.",
+  "_design": {
+    "key_question": "Is settling time a property of recurrent computation, or all neural computation?",
+    "prediction_if_recurrence_specific": "Pure transformer shows NO settling (peak at s0 for all depths). Pure SSM shows settling similar to hybrid.",
+    "prediction_if_universal": "All three architectures show settling, possibly with different s*(d) curves.",
+    "prediction_if_falcon_specific": "Neither pure SSM nor pure transformer shows settling. Would indicate architecture-specific interaction effect.",
+    "falsification": "Any model with settling at d>=2 (peak suffix > s0 with gain > 10%) confirms settling is not Falcon-specific."
+  },
+  "models": [
+    {
+      "label": "pure_ssm",
+      "model_id": "state-spaces/mamba-1.4b-hf",
+      "architecture": "Pure Mamba SSM, no attention layers",
+      "params": "1.4B",
+      "training_data": "300B tokens, The Pile",
+      "cache_type": "MambaCache (ssm_states + conv_states)",
+      "notes": "Base model, not instruction-tuned. May fail competence on Python scoping. Failure is informative."
+    },
+    {
+      "label": "pure_transformer",
+      "model_id": "Qwen/Qwen3-1.7B-Base",
+      "architecture": "Pure transformer, standard attention, no SSM/recurrence",
+      "params": "1.7B",
+      "training_data": "36T tokens including code",
+      "cache_type": "DynamicCache (standard KV)",
+      "notes": "Base model. Strong code training (36T tokens). Should pass competence. Key control: if no settling, recurrence is required."
+    },
+    {
+      "label": "hybrid",
+      "model_id": "tiiuae/Falcon-H1-1.5B-Instruct",
+      "architecture": "Hybrid Mamba + attention",
+      "params": "1.5B",
+      "training_data": "instruction-tuned",
+      "cache_type": "DynamicCache",
+      "notes": "ALREADY TESTED in SVB-0/SVB-1. Reuse existing data. Only rerun if needed for direct comparison under identical conditions."
+    }
+  ],
+  "shared_config": {
+    "device": "cpu",
+    "dtype": "float32",
+    "seed": 42,
+    "variables": ["x", "y", "z"],
+    "outer_values": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+    "inner_value": 99,
+    "inner_value_depth2": 999,
+    "depths": [1, 2],
+    "single_var_only": true,
+    "neutral_suffix": "# No changes.\n",
+    "neutral_suffix_counts": [0, 1, 2, 4],
+    "query_template": "f()\nprint({var})  # Output: ",
+    "templates": {
+      "depth1_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    return {var}\n",
+      "depth2_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        return {var}\n    g()\n    return {var}\n"
+    },
+    "folds": {
+      "F0": [1, 2, 3],
+      "F1": [4, 5, 6],
+      "F2": [7, 8, 9]
+    },
+    "bootstrap_resamples": 10000,
+    "bootstrap_seed": 42,
+    "gates": {
+      "direct_overall": 0.9,
+      "direct_arm": 0.8,
+      "single_depth1_overall": 0.85,
+      "two_var_depth1_overall": 0.8,
+      "depth2_overall": 0.7,
+      "p_other_max": 0.1,
+      "registered_sigma": 0.30,
+      "registered_sigma_lb": 0.20,
+      "strong_sigma": 0.50,
+      "strong_sigma_lb": 0.35,
+      "registered_kappa": 0.30,
+      "registered_kappa_lb": 0.15,
+      "strong_kappa": 0.50,
+      "strong_kappa_lb": 0.30,
+      "entity_iota": 0.10,
+      "entity_iota_lb": 0.05,
+      "replay_max_tv": 0.01
+    },
+    "cpu_abort_minutes": 60
+  },
+  "_runner_adaptation_needed": {
+    "mamba_cache": "run_svb_0.py uses copy.deepcopy(out.past_key_values) which should work with MambaCache. Verify that MambaCache supports the past_key_values kwarg on forward(). If not, need a thin adapter layer.",
+    "base_model_prompting": "Base models (not instruction-tuned) may need different prompting — no chat template, just raw code. Current templates are raw Python which should work for base models.",
+    "model_loading": "Mamba models require mamba-ssm and causal-conv1d packages. Verify installed."
+  },
+  "_execution_plan": {
+    "phase_1": "Run pure_transformer (Qwen3-1.7B) first — no special dependencies, DynamicCache works. ~30 min CPU for depths 1-2.",
+    "phase_2": "Run pure_ssm (Mamba-1.4b) — requires mamba-ssm package. Test deepcopy of MambaCache first. ~30 min CPU.",
+    "phase_3": "Compare all three. If both new models pass competence, compare settling profiles."
+  }
+}
