@@ -4,6 +4,35 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### Docstring vs comment: format shapes attention containment (2026-09-03)
+
+**Key discovery: same semantic content in docstring vs comment gives OPPOSITE effects.**
+
+| Suffix | Gain | Format |
+|--------|------|--------|
+| `"""Nothing changed."""` | +17.5% | docstring (best overall) |
+| `"""Variables: x is still the outer value."""` | +16.0% | docstring + correct state |
+| `# No changes.` | +13.0% | comment (no var reference) |
+| `"""` (empty) | +8.9% | structural trigger only |
+| `"""test"""` | +8.3% | generic docstring |
+| `# x is the outer value.` | **-13.1%** | comment mentioning x |
+| `"""x has been updated..."""` | -8.0% | misleading docstring |
+
+The same correct statement — "x is still the outer value" — gives +16% in a docstring
+but -13% in a comment. Hypothesis: the triple-quote boundary CONTAINS attention to the
+variable reference. In a docstring, "x" is inside a sealed structural element; in a
+comment `# x is the outer value`, "x" is an open token that competes in the attention
+pattern with the actual variable assignments.
+
+**Cross-language syntax** confirms this is Python-specific: C++ `//` barely works
+(+2.9%, it's integer division in Python). The model responds to Python structural
+markers learned during code pretraining: docstrings > `#` comments > other syntax.
+
+[NEEDS CODEX VALIDATION — mechanistic claim about attention containment is
+speculative, testable via attention visualization]
+
+---
+
 ### Suffix structure test: settling is a one-shot consolidation trigger (2026-09-03)
 
 **Experiment:** 9 different suffix types at d3 on Qwen3-1.7B-Base. Tests whether
