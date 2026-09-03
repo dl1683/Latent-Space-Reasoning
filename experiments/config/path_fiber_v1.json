@@ -1,0 +1,51 @@
+{
+  "model_id": "RWKV/v6-Finch-3B-HF",
+  "model_revision": "c17eed9625bba0bc71c4b67db39f6d34ac9846fc",
+  "device": "cpu",
+  "dtype": "float32",
+  "seed": 42,
+  "entities": ["Avery", "Blake"],
+  "locations": ["kitchen", "garden", "office"],
+  "panels": {
+    "KG_O": {"first": "kitchen", "second": "garden", "reset": "office"},
+    "GO_K": {"first": "garden", "second": "office", "reset": "kitchen"},
+    "OK_G": {"first": "office", "second": "kitchen", "reset": "garden"}
+  },
+  "folds": {
+    "F0": [["kitchen","kitchen"], ["garden","garden"], ["office","office"]],
+    "F1": [["kitchen","garden"], ["garden","office"], ["office","kitchen"]],
+    "F2": [["kitchen","office"], ["garden","kitchen"], ["office","garden"]]
+  },
+  "ridge": 1e-3,
+  "slsqp_ftol": 1e-12,
+  "slsqp_maxiter": 10000,
+  "slsqp_constraint_tol": 1e-8,
+  "bootstrap_resamples": 10000,
+  "bootstrap_seed": 42,
+  "discounted_lambdas": [0.0, 0.25, 0.5, 0.75, 0.9, 0.97, 1.0],
+  "primitive_lr": 0.01,
+  "primitive_steps": 3000,
+  "primitive_init_diag": 0.98,
+  "primitive_seed": 42,
+  "gates": {
+    "washed_top1_overall": 0.95,
+    "washed_top1_arm": 0.90,
+    "raw_top1_overall": 0.95,
+    "raw_top1_arm": 0.90,
+    "replay_max_tv": 0.0001,
+    "replay_defect_discrepancy": 0.0002,
+    "raw_mean_kappa": 0.05,
+    "raw_ci95_lower": 0.02,
+    "wash_mean_kappa": 0.05,
+    "wash_ci95_lower": 0.02,
+    "wash_panel_min": 0.03,
+    "wash_panel_count": 2,
+    "pfc_coverage": 1.00,
+    "pfc_mean_tv": 0.10,
+    "pfc_advantage": 0.02,
+    "pfc_order_advantage": 0.01,
+    "pfc_coherence_mean": 0.03,
+    "pfc_coherence_p90": 0.08
+  },
+  "result_dir": "experiments/results/path_fiber_v1"
+}
