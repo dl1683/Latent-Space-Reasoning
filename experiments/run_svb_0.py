@@ -468,9 +468,9 @@ def adjudicate(competence, observables, null_ladder, cfg):
         return ("INSUFFICIENT_SCOPE_BINDING",
                 f"kappa={kappa1:.4f} lb={kappa1_lb:.4f}")
 
+    iota = observables.get("entity_interaction", {}).get("iota_mean", 0)
+    iota_lb = observables.get("entity_interaction", {}).get("iota_ci95", [0, 0])[0]
     if not cfg.get("single_var_only"):
-        iota = observables.get("entity_interaction", {}).get("iota_mean", 0)
-        iota_lb = observables.get("entity_interaction", {}).get("iota_ci95", [0, 0])[0]
         if iota < gates["entity_iota"] or iota_lb < gates["entity_iota_lb"]:
             return ("GLOBAL_SCOPE_TRACE",
                     f"kappa passes but iota={iota:.4f} lb={iota_lb:.4f}")

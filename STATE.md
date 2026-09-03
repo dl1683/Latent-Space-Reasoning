@@ -348,6 +348,30 @@ independently worded histories per intended operational state.
 
 Runner: experiments/run_psr_v2.py. Results: experiments/results/psr_v2/.
 
+### SVB-1: Depth Capacity Curve on Falcon-H1-1.5B-Instruct (2026-09-03, SCOPE_STACK_WITNESS)
+
+Distance-from-claim: **1** — depth scaling of scope binding and settling time
+are direct observables of native latent-space structure.
+Runner: experiments/run_svb_0.py (SVB-1 config). Extends SVB-0 to depths 3-4.
+
+**Depth capacity curve (single-var, no two-var):**
+- σ_d1 = 0.6811, σ_d2 = 0.4975, σ_d3 = 0.2801, σ_d4 = 0.2294
+- κ_d1 = 0.7123, κ_d2 = 0.5009, κ_d3 = 0.2428, κ_d4 = 0.1898
+- Decay ratios: d1→d2 = 0.73, d2→d3 = 0.56, d3→d4 = 0.82
+- **Geometric decay REJECTED** — sharp acceleration at d2→d3, then deceleration
+
+**SETTLING TIME CONFIRMED (major finding):**
+- d1: peak at s0, monotone decay (no settling needed)
+- d2: peak at s1 (σ: 0.497→0.645, +30%)
+- d3: peak at s2 (σ: 0.280→0.441, +57%)
+- d4: peak at s1 (σ: 0.229→0.431, +88%)
+
+With optimal suffix, effective σ: d1=0.681, d2=0.645, d3=0.441, d4=0.431.
+The raw depth curve OVERESTIMATES binding loss — the model CAN maintain deep
+bindings but needs recurrent processing steps to access them.
+
+Results: experiments/results/svb_1/result.json. Codex evidence gate deferred.
+
 ### SVB-0: Scope-Variable Binding on Falcon-H1-1.5B-Instruct (2026-09-03, INSUFFICIENT_SCOPE_BINDING)
 
 Distance-from-claim: **1** — variable binding through recurrent state is a direct
