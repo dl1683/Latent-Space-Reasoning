@@ -67,6 +67,38 @@ future-response foundation below was adopted by mathematics audit #42 after
 the round-35 repairs and audit-#42 wording/type corrections. Dialogue and
 rejected formulations stay in `dialogue/`.
 
+### Empirical grounding: SVB-0 + SVB-1 (2026-09-03)
+
+Scope-variable binding experiments on Falcon-H1-1.5B-Instruct (Python lexical
+scoping, DynamicCache state injection) produced the first empirical contact
+with three navigation requirements:
+
+**Moves.** Neutral suffix tokens (processing steps that do not alter the
+semantic content) constitute a legal move that changes the accessibility of
+latent information without changing the information itself. This is a recurrent
+settling move — it does not change the input state z but changes the denizen's
+ability to read z through response channel c.
+
+**Cost.** The settling time s*(d) — the number of neutral suffix tokens that
+maximizes scope-binding fidelity σ at structural depth d — defines an empirical
+native cost function. Measured values: s*(1)=0, s*(2)=1, s*(3)=2, s*(4)=1.
+This cost is asymmetric (depth-dependent), non-metric (no triangle inequality
+observed), and has no ℝⁿ analogue (all coordinates of a vector are equally
+accessible). The gain at the optimal settling point grows with depth: +30% (d2),
++57% (d3), +88% (d4).
+
+**Laws.** The depth-dependent settling profile is a stable regularity: it holds
+across all 3 variables, all 9 outer values, and reproduces exactly between
+SVB-0 and SVB-1 at depths 1-2. The profile is NOT geometric decay (ratios
+0.73, 0.56, 0.82 — phase-transition-like acceleration at d3).
+
+Candidate native law (pending Codex evidence gate): information at structural
+depth d in a recurrent latent space has access cost C(d) = d + s*(d), where
+s*(d) > 0 for d ≥ 2 and the effective fidelity σ*(d) = σ(d, s*(d)) decays
+much more slowly than the raw σ(d, 0).
+
+Evidence: experiments/results/svb_0/result.json, experiments/results/svb_1/result.json.
+
 ## Foundation: future-response geometry (ADOPTED by mathematics audit #42 after the round-35 repairs and audit-#42 wording/type corrections; rounds 31-36)
 
 The status of every item is stated explicitly. Definitions D1--D7 replace
