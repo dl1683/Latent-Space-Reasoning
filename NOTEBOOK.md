@@ -4,7 +4,115 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
-### Order independence probe: commutativity confirmed, token dominance discovered (2026-09-03)
+### Semantic content probe: settling is CONTENT-DEPENDENT (2026-09-03)
+
+**Tested 8 suffix conditions on SVB-2 template, d3, Falcon-H1, 27 measurements each.**
+
+| Condition             | Mean σ | Gain vs s0 |
+|-----------------------|--------|------------|
+| s0_none (baseline)    | 0.2801 | —          |
+| s1_no_changes         | 0.4299 | +53.5%     |
+| s1_just_hash_space    | 0.3295 | +17.7%     |
+| s1_todo               | 0.2963 | +5.8%      |
+| s1_empty_comment      | 0.2855 | +1.9%      |
+| s1_pass               | 0.2410 | -13.9%     |
+| s1_lorem              | 0.2351 | -16.1%     |
+| s1_bare_newline       | 0.2230 | -20.4%     |
+
+**Established:**
+1. **Content matters enormously.** Comment range = 0.1948 (from 0.2351 to 0.4299).
+   "# No changes." is 83% better than "# Lorem ipsum" on the same task.
+   This is not a syntactic trigger.
+2. **"# No changes." is uniquely effective** among all tested suffixes.
+   Next best comment ("# ") is only +17.7% vs +53.5%.
+3. **Hierarchy: semantic > structural > empty > irrelevant.**
+   "No changes" (state-maintenance instruction) >> "# " (structural comment) >>
+   "# TODO" / "#" (minimal structure) >> baseline >> pass/lorem/newline.
+4. **Irrelevant content actively hurts.** Lorem (-16.1%), bare newline (-20.4%).
+
+**Not established (pending Codex gate):**
+- WHY "# No changes." works. Candidates: (a) the model interprets it as a
+  state-maintenance instruction; (b) it appears frequently in Python training
+  data in contexts where variables are unchanged; (c) token-specific attention
+  pattern. These are discriminable by further probes.
+- Whether the effect generalizes beyond this specific comment string.
+- Mechanism: whether this is "the model following an instruction" or
+  "distributional properties of the training data."
+
+**What this changes:** The settling effect is not a generic computational
+benefit of extra tokens. It is sensitive to the semantic/distributional
+content of the suffix. This rules out pure "extra processing time" explanations
+and points toward content-dependent state modulation.
+
+[Codex evidence gate pending]
+
+
+### Codex evidence gate: order independence claims revised (2026-09-03)
+
+**Codex verdict: REVISE.** Order effect is real; projection language is not earned.
+
+Corrections adopted verbatim:
+- "Pass hurts" is heterogeneous, not clean: x +9.3%, y -3.1%, z -17.9%.
+  95% CI includes zero. Cannot claim pass uniformly damages accuracy.
+- "Projection model partially falsified" is overclaimed. Only the specific
+  shared/commuting projection hypothesis is falsified. General idempotent
+  projections need not commute — the general class survives.
+- "Sequential transformation model" is one candidate, not a conclusion.
+  Ordinary prompt-history sensitivity (adjacency, position, formatting)
+  explains the evidence equally well.
+- The dominance ratio (0.994) is misleading: it averages +0.041 and -0.043
+  that cancel by coincidence. Not evidence for type dominance.
+
+**Licensed sentence (Codex):** "On one fixed 3-name × 9-digit SVB-2 panel in
+Falcon-H1 at depth 3, comment-then-pass produced 0.0845 higher mean correct-
+digit probability than pass-then-comment, with the same sign in all 27 paired
+cases; this establishes order sensitivity of these two prompt suffixes on that
+panel, not a latent projection, pass-induced interference, template-independent
+noncommutativity, or a sequential consolidation law."
+
+**Recommended next experiment:** Behavioral-semigroup test. Add CCP, CPP, PPC,
+PCC. If CCP≈CP (idempotent composition), that's a structural finding. Also test
+whether the order effect survives when a common tail is placed before the query
+(if it disappears, it's adjacency/formatting). Full 11-bin distributions, not
+just sigma.
+
+### Order independence v2: order effect confirmed on SVB-2 template (2026-09-03)
+
+**Rerun with SVB-2 template shows suffix ORDER MATTERS for accuracy.**
+216 calls, 614s, Falcon-H1, d3.
+
+| Condition         | σ mean | Gain vs s0 |
+|-------------------|--------|------------|
+| s0 (baseline)     | 0.280  | —          |
+| s1 comment        | 0.430  | +53.5%     |
+| s1 pass           | 0.241  | -13.9%     |
+| s2 comment+pass   | 0.471  | +68.2%     |
+| s2 pass+comment   | 0.387  | +38.0%     |
+| s2 comment+comment| 0.441  | +57.3%     |
+| s2 pass+pass      | 0.240  | -14.4%     |
+
+**Established:**
+1. **Order sensitivity.** comment→pass produces 0.084 higher σ than pass→comment.
+   Same sign in all 27 paired cases. Robust behavioral finding.
+2. **Within-type scalar idempotency.** Comment s1→s2: +0.011. Pass s1→s2: -0.001.
+3. **Comment effectiveness.** s1_comment = 0.430 (+53.5% over baseline),
+   consistent with SVB-2 main result.
+
+**Not established (Codex-corrected):**
+- "Pass hurts" is heterogeneous across variables (x: +9.3%, y: -3.1%, z: -17.9%).
+  Cannot claim pass uniformly damages accuracy.
+- The mechanism (projection, transformation, prompt-history sensitivity) is not
+  identified by this behavioral data alone.
+- The order effect may reflect adjacency to the query rather than latent-space
+  structure. Distinguishing test needed.
+
+V1 (simplified template) showed commutativity (diff 0.011) — this could be
+ceiling compression (comment at 0.90) or a genuine template interaction.
+Multiple variables changed between v1 and v2.
+
+[Codex evidence gate: REVISE — see corrections above]
+
+### Order independence probe v1: commutativity on simplified template (2026-09-03)
 
 **P1 test from idempotent consolidation framework.** 216 calls, 524s, Falcon-H1
 at d3. Seven conditions: s0 baseline, s1 comment, s1 pass, and four s2

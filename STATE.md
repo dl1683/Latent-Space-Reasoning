@@ -428,6 +428,69 @@ a competing value reference poisons the attention pattern.
 H5+ (idempotent consolidation) >> H2 (bandwidth sub-mechanism) >> H1 >> H4.
 See SVB-2 section above and NOTEBOOK for full framework.
 
+### Order independence: commutativity breaks, pass hurts (2026-09-03)
+
+Distance-from-claim: **1** — tests structural prediction (P1) of idempotent
+consolidation framework. Two runs: v1 (simplified template) and v2 (SVB-2 template).
+
+**V2 results (SVB-2 template, d3, Falcon-H1, 216 calls, 614s):**
+
+| Condition         | σ mean | Gain vs s0 |
+|-------------------|--------|------------|
+| s0 (baseline)     | 0.280  | —          |
+| s1 comment        | 0.430  | +53.5%     |
+| s1 pass           | 0.241  | **-13.9%** |
+| s2 comment+pass   | 0.471  | +68.2%     |
+| s2 pass+comment   | 0.387  | +38.0%     |
+| s2 comment+comment| 0.441  | +57.3%     |
+| s2 pass+pass      | 0.240  | -14.4%     |
+
+**Order sensitivity: CONFIRMED.** comment→pass produces 0.084 higher σ than
+pass→comment. Same sign in all 27 paired cases. Robust behavioral finding.
+
+**Within-type scalar idempotency: strong.** Comment s1→s2 diff=+0.011.
+Pass s1→s2 diff=-0.001.
+
+**Not established (Codex-corrected):** "Pass hurts" is heterogeneous across
+variables. The mechanism (projection, prompt-history, positional) is not
+identified. V1 commutativity (diff 0.011) may be ceiling compression or
+a genuine template interaction — multiple variables changed between v1/v2.
+
+Results: experiments/results/order_independence_result.json (v1),
+experiments/results/order_independence_v2_result.json (v2).
+[Codex evidence gate: REVISE — adopted corrections]
+
+### Semantic content probe: settling is content-dependent (2026-09-03)
+
+Distance-from-claim: **1** — characterizes what drives the settling effect.
+
+8 suffix conditions tested on SVB-2 template (d3, Falcon-H1, 27 measurements each):
+
+| Condition             | Mean σ | Gain vs s0 |
+|-----------------------|--------|------------|
+| s0_none (baseline)    | 0.2801 | —          |
+| s1_no_changes         | 0.4299 | +53.5%     |
+| s1_just_hash_space    | 0.3295 | +17.7%     |
+| s1_todo               | 0.2963 | +5.8%      |
+| s1_empty_comment      | 0.2855 | +1.9%      |
+| s1_pass               | 0.2410 | -13.9%     |
+| s1_lorem              | 0.2351 | -16.1%     |
+| s1_bare_newline       | 0.2230 | -20.4%     |
+
+**Content matters.** Comment range across conditions = 0.1948. "# No changes."
+(+53.5%) is 83% better than "# Lorem ipsum" (-16.1%) on the same task. This is
+not a generic syntactic trigger or extra-processing-time effect.
+
+**Hierarchy:** "# No changes." >> "# " >> "# TODO" ≈ "#" >> baseline >>
+pass/lorem/newline.
+
+**Not established:** Whether "# No changes." works because of its meaning
+(state-maintenance instruction), its training distribution frequency, or
+token-specific properties. Codex evidence gate pending.
+
+Results: experiments/results/semantic_content_result.json.
+[Codex evidence gate in progress]
+
 ### SVB-1: Depth Capacity Curve on Falcon-H1-1.5B-Instruct (2026-09-03, SCOPE_STACK_WITNESS)
 
 Distance-from-claim: **1** — depth scaling of scope binding and settling time

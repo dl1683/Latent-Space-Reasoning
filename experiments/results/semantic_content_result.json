@@ -1,0 +1,44 @@
+{
+  "experiment": "semantic_content_probe",
+  "model": "tiiuae/Falcon-H1-1.5B-Instruct",
+  "depth": 3,
+  "template": "SVB-2",
+  "n_per_condition": 27,
+  "elapsed_seconds": 1122.0,
+  "total_calls": 243,
+  "conditions": {
+    "s0_none": {
+      "mean": 0.2801,
+      "std": 0.184
+    },
+    "s1_no_changes": {
+      "mean": 0.4299,
+      "std": 0.2172
+    },
+    "s1_todo": {
+      "mean": 0.2963,
+      "std": 0.2528
+    },
+    "s1_lorem": {
+      "mean": 0.2351,
+      "std": 0.2628
+    },
+    "s1_empty_comment": {
+      "mean": 0.2855,
+      "std": 0.2428
+    },
+    "s1_just_hash_space": {
+      "mean": 0.3295,
+      "std": 0.2376
+    },
+    "s1_pass": {
+      "mean": 0.241,
+      "std": 0.2582
+    },
+    "s1_bare_newline": {
+      "mean": 0.223,
+      "std": 0.2211
+    }
+  },
+  "note": "Per-measurement arrays lost due to Unicode crash in print statement. Means and stds captured from stdout."
+}
