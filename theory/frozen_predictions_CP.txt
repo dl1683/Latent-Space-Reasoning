@@ -1,0 +1,44 @@
+Suffix Action Algebra — LRB Normalizer
+Alphabet: {C, P}
+============================================================
+
+Normal forms (5 elements including identity):
+  e
+  C
+  P
+  CP
+  PC
+
+Cayley table (right multiplication):
+     ·     C     P
+  ----------------
+     e     C     P
+     C     C    CP
+     P    PC     P
+    CP    CP    CP  <- absorbing
+    PC    PC    PC  <- absorbing
+
+Predictions through length 3 (10 reductions):
+Word     Normal form  Type                     
+---------------------------------------------
+CC       C            idempotence              
+PP       P            idempotence              
+CCC      C            idempotence              
+CCP      CP           composite                
+CPC      CP           first-occurrence (aba->ab)
+CPP      CP           composite                
+PCC      PC           composite                
+PCP      PC           first-occurrence (aba->ab)
+PPC      PC           composite                
+PPP      P            idempotence              
+
+Decisive first-occurrence predictions (2):
+  CPC ~= CP
+  PCP ~= PC
+
+These are the UNTESTED predictions that distinguish an LRB from
+a merely idempotent noncommutative monoid.
+
+Absorbing elements (right zeros — place is frozen after these):
+  CP · a = CP for all a
+  PC · a = PC for all a

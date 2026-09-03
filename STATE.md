@@ -348,6 +348,42 @@ independently worded histories per intended operational state.
 
 Runner: experiments/run_psr_v2.py. Results: experiments/results/psr_v2/.
 
+### Suffix action algebra (2026-09-03, CONSTRUCTION — Codex audit pending)
+
+Distance-from-claim: **0** — this IS the central artifact.
+
+Formal construction of the behavioral suffix-action algebra from SVB data,
+following Codex design gate recommendations for the measurement-to-construction
+pivot. Defines native mathematical objects using only legal actions,
+response-equivalence places, composition, reachability, and directed cost.
+No imported R^n geometry.
+
+**Objects defined:** SVB transition world (D1 specialization), behavioral
+places Q = Z/~ (D5), suffix transition monoid S = A*/≡_Q, idempotence /
+residuation / commutator defects with binding thresholds, accessibility
+languages L_θ(q), directed cost c_θ(q).
+
+**Hypotheses:**
+- H-LRB: S is approximately a left-regular band (a^2 ≈ a, aba ≈ ab).
+  Decisive test (aba ≈ ab) UNTESTED. Predictions frozen in
+  theory/frozen_predictions_CP.txt.
+- H-Truth: suffix actions conjugate under truth-reversal involution.
+
+**Theorem:** truth-congruence reversal obstruction (proved). If U/V
+conjugate under J, then Δ(Jq) = −Δ(q). Same-sign advantage in both truth
+arms constructively refutes the two-class truth quotient.
+
+**Empirical grounding (d3, 27 cells):**
+- Idempotence: |CC − C| = 0.039 (scalar), I(C) = 0.045 (sqrt-JS). Small.
+- Noncommutativity: CP − PC = +0.0845, unanimous 27/27. Large.
+- Ratio: commutativity defect ~2× idempotence defect.
+
+**Status:** Codex audit running (D1 execution order, finite-access limits,
+R^n trap, theorem correctness). No new experiments until audit completes
+and measurement-to-artifact ratio falls.
+
+Spec: theory/SUFFIX_ACTION_ALGEBRA.md. Normalizer: theory/suffix_algebra.py.
+
 ### SVB-2: Fine-grained suffix resolution confirms one-shot trigger (2026-09-03, SCOPE_STACK_WITNESS)
 
 Distance-from-claim: **1** — resolves suffix mechanism at fine granularity.

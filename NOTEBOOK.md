@@ -4,6 +4,48 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### Suffix action algebra: formal document and symbolic normalizer (2026-09-03, CONSTRUCTION)
+
+**Distance-from-claim: 0 — this IS the central artifact.**
+
+Built `theory/SUFFIX_ACTION_ALGEBRA.md` (formal construction) and
+`theory/suffix_algebra.py` (symbolic normalizer), following Codex design gate
+recommendations for the measurement-to-construction pivot.
+
+**Mathematical objects constructed:**
+1. SVB transition world as a D1 specialization (raw states, suffix actions,
+   11-bin response laws)
+2. Behavioral places Q = Z/~ (D5 quotient by future-response identity)
+3. Suffix transition monoid S = A*/≡_Q (behaviorally distinct suffix sequences)
+4. Idempotence, residuation, and commutator defects (I, R, N) with binding
+   thresholds
+5. Accessibility languages L_θ(q) and directed cost c_θ(q) — replaces scalar
+   settling time s*(d)
+
+**Hypotheses stated:**
+- H-LRB: S is approximately a left-regular band (a² ≈ a, aba ≈ ab).
+  Partially supported (idempotence), decisive test (aba ≈ ab) untested.
+- H-Truth: suffix actions conjugate under truth-reversal involution J.
+
+**Theorem proved:** truth-congruence reversal obstruction. If U and V
+conjugate under J, then the unchanged-suffix advantage Δ reverses sign
+with the actual world state: Δ(Jq) = −Δ(q). A persistent same-sign
+advantage constructively proves the suffix algebra cannot factor through
+a two-class truth quotient.
+
+**Symbolic normalizer output (frozen predictions):**
+- 2 generators {C, P}: 5 normal forms, 2 decisive untested predictions
+  (CPC ≈ CP, PCP ≈ PC)
+- 4 generators {C, P, U, V}: 65 normal forms, 13 decisive predictions
+- Absorbing property: once all generator types have appeared, the place
+  is frozen
+
+Codex audit gate running on the construction (checking D1 execution order,
+finite-access limits, R^n trap, theorem correctness, notation consistency).
+
+Files: theory/SUFFIX_ACTION_ALGEBRA.md, theory/suffix_algebra.py,
+theory/frozen_predictions_CP.txt.
+
 ### Response-law geometry of the settling operator (2026-09-03, CONSTRUCTION)
 
 **First concrete instantiation of D1-D5 on SVB-2 behavioral data.**
