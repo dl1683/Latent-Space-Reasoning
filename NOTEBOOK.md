@@ -4,6 +4,46 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### Suffix content variation: settling is NOT pure computation (2026-09-03)
+
+**Experiment:** Test 5 different suffix texts at depths 2-4 on Qwen3-1.7B-Base to
+discriminate hypotheses about WHY settling time exists.
+
+| Suffix | d2 gain | d3 gain | d4 gain |
+|--------|---------|---------|---------|
+| `# No changes.\n` | +6.4% | +13.0% | +13.4% |
+| `\n` (bare newline) | +0.9% | +2.5% | +2.7% |
+| `#\n` (empty comment) | +2.4% | — | — |
+| `# Value updated.\n` | +4.7% | +12.4% | +14.3% |
+| `# x = 0\n` | -25.7% | -33.6% | -33.3% |
+
+**Three findings that reshape the hypothesis landscape:**
+
+1. **Pure computation barely scales with depth.** Bare `\n` gives only +0.9% → +2.7%
+   across d2-d4. The depth-dependent component of settling is NOT about extra
+   forward passes providing more computational depth. **Weakens H1.**
+
+2. **Semantic correctness doesn't matter — comment structure does.** The misleading
+   suffix "# Value updated.\n" works as well as the correct "# No changes.\n" (at
+   d4: misleading is actually +14.3% vs correct +13.4%). The model doesn't reason
+   about the content; it responds to the STRUCTURAL PATTERN of a comment following
+   code. **Partially refutes H4 (implicit CoT), supports a new H5: comment tokens
+   trigger a learned state-consolidation mode.**
+
+3. **Anti-settling damage scales with depth.** Introducing a competing binding
+   (`# x = 0\n`) drops sigma by 26-34%, getting worse with depth. Even in a comment
+   (not executable code), a value reference poisons the attention pattern.
+   **Strongly supports H2 (attention interference).**
+
+**Revised hypothesis ranking:** H2 (interference) > H5 (structural consolidation
+trigger) > H1 (computation) > H4 (semantic CoT). The dominant mechanism is attention
+pattern management: comments trigger a state consolidation routine the model learned
+during training, and competing values poison it.
+
+[ALL CLAIMS NEED CODEX VALIDATION]
+
+---
+
 ### SVB-Qwen3-Formal: settling time CONFIRMED universal across architectures (2026-09-03)
 
 **Formal SVB on Qwen3-1.7B-Base (pure transformer, 621 model calls, 3.3 min CPU).**
