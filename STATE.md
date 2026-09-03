@@ -231,7 +231,7 @@ bit-exact state replay remain confirmed.
 
 Results: experiments/results/pmo_0r/result.json.
 
-### RCQ-0: Real Causal Quotient on Finch-3B (2026-09-02, IN PROGRESS)
+### RCQ-0: Real Causal Quotient on Finch-3B (2026-09-02, CLOSED — administrative/protocol)
 
 Distance-from-claim: **0** — the quotient and action law ARE the native math.
 Spec: theory/REAL_CAUSAL_QUOTIENT.md. Runner: experiments/run_rcq0.py.
