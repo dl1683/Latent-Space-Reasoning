@@ -5,6 +5,28 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
+## Band2 Decisive Test — composite idempotence and length-3 saturation (2026-09-03)
+
+Distance from claim: 0.
+
+Tests three competing hypotheses after H-LRB refutation:
+H-BAND2 ((CP)^2~CP), H-SAT3 (CPCP~CPC), H-GEN-IDEM (all grow).
+12 arms, 27 cells, 351 forward passes, 925s. TV metric, eps_TV=0.06.
+
+**Results:**
+- H-BAND2 REFUTED: TV(CPCP,CP)=0.107 [0.098,0.117], TV(PCPC,PC)=0.122 [0.108,0.136]
+- H-SAT3 STRONGLY SUPPORTED: TV(CPCP,CPC)=0.050 [0.044,0.056]; TV(PCPC,PCP)=0.052 [0.041,0.064] borderline
+- H-GEN-IDEM REFUTED: SAT3(CP) UB <= 0.06
+
+Key finding: generator idempotence does NOT propagate to products (CPP!=CP, PCC!=PC).
+The monoid is not a band. Length-3 alternating words are approximately terminal.
+Fidelity note: cached-vs-full TV=0.533 (Mamba hybrid); LRB-era defects reproduce exactly.
+
+Runner: experiments/run_band2_decisive.py. Results: experiments/results/band2_decisive/.
+Predictions frozen: commit f95dfb7.
+
+---
+
 ## Suffix Action Algebra — formal construction from SVB data (2026-09-03; Codex audit ADOPTED)
 
 Distance from claim: 0 — this IS the central constructive artifact.

@@ -601,11 +601,16 @@ For any q in the evaluation panel:
   E_{CPCP} q ≈ E_{CP} q        (UNTESTED — now H-BAND2 prediction)
   E_{PCPC} q ≈ E_{PC} q        (UNTESTED — now H-BAND2 prediction)
 
-### Competing length-four predictions (frozen before band2 test)
+### Competing length-four predictions — ADJUDICATED (band2_decisive_test)
 
-  H-BAND2:    TV(CPCP, CP)  ≤ 0.06,  TV(PCPC, PC)  ≤ 0.06
-  H-SAT3:     TV(CPCP, CPC) ≤ 0.06,  TV(PCPC, PCP) ≤ 0.06
-  H-GEN-IDEM: all four TV pairs > 0.06
+  H-BAND2:    TV(CPCP, CP)  ≤ 0.06 — FALSIFIED (TV=0.107, LB=0.098)
+              TV(PCPC, PC)  ≤ 0.06 — FALSIFIED (TV=0.122, LB=0.108)
+  H-SAT3:     TV(CPCP, CPC) ≤ 0.06 — CONFIRMED (TV=0.050, UB=0.056)
+              TV(PCPC, PCP) ≤ 0.06 — BORDERLINE (TV=0.052, UB=0.064)
+  H-GEN-IDEM: all four TV pairs > 0.06 — FALSIFIED (SAT3(CP) UB ≤ 0.06)
+
+  Additional: CPP ~/= CP (TV=0.063), PCC ~/= PC (TV=0.076).
+  Generator idempotence does not propagate to products.
 
 ### Truth-reversal prediction (H-Truth) — independent of H-LRB
 

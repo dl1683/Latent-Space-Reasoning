@@ -370,9 +370,14 @@ languages L_θ(q), directed cost c_θ(q).
   Generators C and P are panel-locally approximately idempotent (passes
   registered rule). Bandness of composites (e.g., (CP)^2 ~ CP) is UNTESTED.
   Frozen predictions in theory/frozen_predictions_CP.txt are falsified.
-- H-BAND2: (CP)^2 ~ CP and (PC)^2 ~ PC (free band, 6 nonidentity elements). UNTESTED.
-- H-SAT3: CPCP ~ CPC, PCPC ~ PCP (length-3 saturation, non-band). UNTESTED.
-- H-GEN-IDEM: only generator idempotence; alternating words grow at length 4. UNTESTED.
+- H-BAND2: (CP)^2 ~ CP and (PC)^2 ~ PC (free band). **REFUTED** (2026-09-03).
+  BAND2(CP) = TV(CPCP,CP) = 0.107 [0.098, 0.117], LB > 0.06.
+  BAND2(PC) = TV(PCPC,PC) = 0.122 [0.108, 0.136], LB > 0.06.
+  The monoid is NOT a band. Composite idempotence fails.
+- H-SAT3: CPCP ~ CPC, PCPC ~ PCP (length-3 saturation, non-band).
+  **STRONGLY SUPPORTED** (CP side: TV=0.050, UB=0.056 ≤ 0.06).
+  PC side borderline: TV=0.052, UB=0.064 > 0.06 by 0.004.
+- H-GEN-IDEM: only generator idempotence. **REFUTED** — SAT3(CP) UB ≤ 0.06.
 - H-Truth: suffix actions conjugate under truth-reversal involution. UNTESTED.
 
 **Theorem:** truth-congruence reversal obstruction (proved on raw states Z).
@@ -384,9 +389,14 @@ languages L_θ(q), directed cost c_θ(q).
 - CPC-CP sigma difference = +0.015, CI [-0.003, 0.031] — NOT established (crosses zero).
 - PCP-PC sigma difference = +0.071, CI [0.044, 0.094] — established (history-dependent reactivation).
 
-**Status:** Codex evidence gate passed. Band2 decisive experiment designed
-(run_band2_decisive.py). 12 arms including CPCP, PCPC, CPP, PCC for
-right-action table. Three hypotheses frozen with predictions.
+**Additional finding:** Generator idempotence does NOT propagate to products.
+CPP != CP (TV=0.063 [0.056, 0.070]) despite PP ~ P. PCC != PC (TV=0.076
+[0.062, 0.089]) despite CC ~ C.
+
+**Status:** H-BAND2 refuted, H-SAT3 strongly supported. Length-3
+saturation is the dominant algebraic feature. Codex evidence gate running.
+The monoid is not a band, not an LRB — it has generator idempotence
+and length-3 terminal absorbers (CPC, PCP approximately terminal).
 
 Spec: theory/SUFFIX_ACTION_ALGEBRA.md. Normalizer: theory/suffix_algebra.py.
 

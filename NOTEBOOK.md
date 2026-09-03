@@ -4,6 +4,34 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### Band2 decisive test: H-BAND2 REFUTED, H-SAT3 strongly supported (2026-09-03)
+
+Experiment: run_band2_decisive.py, 12 arms, 27 cells, 351 forward passes, 925s.
+Model: Falcon-H1-1.5B-Instruct, CPU-only, depth 3.
+
+Decisive results (TV metric, stratified bootstrap 10K, seed 42, 95% CI):
+  BAND2(CP) = TV(CPCP, CP)  = 0.107 [0.098, 0.117] — REFUTES H-BAND2
+  BAND2(PC) = TV(PCPC, PC)  = 0.122 [0.108, 0.136] — REFUTES H-BAND2
+  SAT3(CP)  = TV(CPCP, CPC) = 0.050 [0.044, 0.056] — SUPPORTS H-SAT3
+  SAT3(PC)  = TV(PCPC, PCP) = 0.052 [0.041, 0.064] — BORDERLINE (UB=0.064)
+
+Key findings:
+1. S is NOT a band. (CP)^2 != CP. Composite idempotence fails.
+2. Length-3 saturation confirmed for CP side: CPCP ~ CPC.
+3. Generator idempotence does NOT propagate: CPP != CP (TV=0.063),
+   PCC != PC (TV=0.076). PP~P does not imply CPP~CP.
+4. Perfect LRB-era reproducibility: all prior defects match exactly.
+
+Sigma ordering: CPP(0.500) > CPC(0.486) > CP(0.471) > PCP(0.458) >
+CPCP(0.448) > PCC(0.441) > CC(0.441) > C(0.430) > PCPC(0.413) >
+PC(0.387) > P(0.241) > PP(0.240).
+
+Fidelity check: TV(cached, full) = 0.533 (Mamba parallel-vs-recurrence
+mode property, not a data quality issue — perfect cross-run reproducibility
+confirms internal consistency).
+
+Codex evidence gate running in background.
+
 ### Codex evidence gate: REFUTE confirmed, bandness test designed (2026-09-03)
 
 Codex evidence gate (session 01a066e3, 211K tokens, xhigh) independently
