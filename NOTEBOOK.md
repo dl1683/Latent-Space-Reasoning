@@ -4,6 +4,72 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-02 (session 7) — PMO-0R locked, implemented, launched
+
+**Codex PMO-0 design gate R1 completed.** Two PFC-0 design defects identified:
+(1) Symmetric endpoints — both entities co-located after path actions.
+(2) Hand-picked 3-logit renormalization — not lawful pushforward of full next-token law.
+Verdict: REVISE. Proposed PMO-0R replacement spec with asymmetric panels, 4-bin response.
+
+**Codex PMO-0R design gate R2 completed.** Four objections delivered to R1:
+(1) Premature closure — PFC defects ≠ hypothesis falsification.
+(2) Threshold ratchet (0.050 sole bar above all observed effects).
+(3) Closure scope too broad.
+(4) Pivot timing (PMO-0R first, then variable binding).
+Codex accepted all four (obj 2 with two-band modification). Added entity interaction
+statistic ι = (1/4)||δ_A - δ_B||_1. Locked two-band gates: registered (0.020/0.005)
+and strong (0.050/0.020). Scoped closure to H_PMO only.
+
+**PMO-0R spec locked** (theory/PMO_0R.md, ~230 lines). Key innovations vs PFC-0:
+asymmetric endpoints, 4-bin response {kitchen, garden, office, OTHER}, suffix injection
+via saved recurrent states, competence staircase, κ+ι dual observables, 9-method null
+ladder, two-band witness gates, full adjudication tree.
+
+**PMO-0R runner written** (experiments/run_pmo_0r.py, ~910 lines). Reuses FinchAdapter
+infrastructure from PFC-0 with critical corrections. Config: experiments/config/pmo_0r.json.
+
+**Experiment launched.** CPU-only, ~21 min forecast. Commit cff8c07.
+
+**Pending:** result adjudication, Codex evidence gate, STATE/EXPERIMENTS update,
+post-PMO pivot to nested scope/variable binding.
+
+
+## 2026-09-03 (session 6) — PFC-0 evidence gate adopted, post-hoc analyses
+
+**Codex evidence gate adopted.** Corrections applied to STATE.md, NOTEBOOK.md,
+EXPERIMENTS.md, ledger.jsonl. Commit 4fd9023, pushed. Key corrections: competence
+failure is garden-specific (not capacity); washout erasure unsupported; distance-
+from-claim corrected to 2; stochastic-K vehicle closed.
+
+**Post-hoc: log-space composition analysis (zero model calls, cached data).**
+Tested 10 composition models. Ranking (mean TV, lower=better):
+- panel-additive-log: 0.0179 (supervised, BEST)
+- panel-additive-prob: 0.0194 (supervised)
+- geometric mean: 0.0222 (equal-info, BEST EQUAL-INFO)
+- arithmetic mean: 0.0231 (equal-info)
+- identity: 0.0298 (equal-info)
+- log-additive: 0.0325 (equal-info, FAILS)
+- PFC K composition: 0.0380 (equal-info, WORST)
+
+Key insight: log-additive composition (pLR ∝ pL·pR/p00) also fails — composition
+failure is NOT specific to probability simplex algebra. The geometric mean of edge
+outcomes is the best equal-info predictor (+0.008 over identity, CI [+0.003, +0.013]).
+Panel-additive in log space slightly beats prob space (+0.0015, CI above zero).
+
+Implication: the model's path effects are ~0.03 TV — too small to distinguish additive
+from multiplicative structure. Simple interpolation of edge outcomes beats any
+composition attempt. The right question for PMO-0 is not "what algebra?" but "does
+path memory SURVIVE across suffixes at all?"
+
+**Post-hoc: garden competence diagnostic.** Average probability mass across ALL 324
+observations: kitchen=47.6%, garden=15.8%, office=36.6%. Panel OK_G (reset=garden):
+P(garden)=39.5% but P(kitchen)=44.3%. Top-1: OK_G=37.5%, KG_O=100%, GO_K=100%.
+Confirmed: pure answer-token calibration bias.
+
+**Codex PMO-0 design gate R1 launched.** Waiting for response.
+
+---
+
 ## 2026-09-03 (session 5) — PFC-0 result: TASK_POPULATION_VOID
 
 **PFC-0 experiment completed.** Verdict: TASK_POPULATION_VOID.

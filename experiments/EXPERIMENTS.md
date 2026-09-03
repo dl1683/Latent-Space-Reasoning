@@ -5,6 +5,46 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
+## PMO-0R — Path-Memory Observability Revised on Finch-3B (2026-09-02; TASK_POPULATION_VOID)
+
+Distance from claim: 1 (bounded continuation-distinguishability witness).
+Runner: `experiments/run_pmo_0r.py`. Config: `experiments/config/pmo_0r.json`.
+Results: `experiments/results/pmo_0r/`. Ledger: `pmo_0r_launch`, `pmo_0r_result`.
+Spec: `theory/PMO_0R.md` (Codex R1+R2 locked).
+
+**Method:** Corrects two PFC-0 defects (symmetric endpoints, 3-logit renormalization).
+Asymmetric panels (entities end at different locations), 4-bin response law
+{kitchen, garden, office, OTHER} — full next-token softmax, no renormalization.
+9 roots × 3 panels × 6 extensions = 162 history states. 2 matched pairs per
+configuration for commutation defect κ. Suffix injection via saved recurrent
+states at 0/1/2/4 macro repetitions. Competence staircase: direct facts →
+2-action → 4-action → suffixes. 9-method cross-fitted null ladder.
+
+**Verdict: TASK_POPULATION_VOID.** Direct fact competence failed at rung 1
+(0/36, 0.0% accuracy). Model puts ~65% probability on continuation tokens
+("answer", "question") vs ~35% on all location tokens combined. Competence
+gate requires correct location > P(OTHER) — unreachable with this template.
+Even relaxed (argmax among 3 locations), accuracy only 55.6% due to kitchen bias.
+
+**What was learned:**
+(1) PFC-0's 3-logit renormalization was hiding model incompetence. After
+renormalization, kitchen at 68.5% looked like clear discrimination; the raw
+model allocates only 24% to kitchen (its strongest location) and 6%/5% to
+garden/office. Codex was correct to flag renormalization as a defect.
+(2) Finch-3B's entity-location query interface is fundamentally limited for
+path-memory measurement. The model discriminates among locations but doesn't
+produce location-dominated responses with natural-language prompts.
+(3) Kitchen calibration bias persists: kitchen is the default regardless of
+correct answer, causing 44% of relaxed errors.
+
+**Closure:** This response interface (4-bin + explicit-choice template) on
+Finch-3B is closed as unusable. Competence failure does NOT close path memory
+as a concept, entity discrimination (TV=0.43), or bit-exact state replay.
+
+**Codex evidence gate: DEFERRED (Codex credits exhausted until 2026-09-06).**
+
+---
+
 ## PFC-0 — Path-Fiber Calculus v1 on Finch-3B (2026-09-02; TASK_POPULATION_VOID)
 
 Distance from claim: 2 (Codex evidence gate correction — K is researcher-imposed

@@ -1,0 +1,32 @@
+{
+  "manifest": {
+    "config_hash": "318643dc571fca73c264354474be1f072f5239f2f2a6a71608ea9491b79cf80f",
+    "model_id": "RWKV/v6-Finch-3B-HF",
+    "model_revision": "c17eed9625bba0bc71c4b67db39f6d34ac9846fc",
+    "total_calls": 36,
+    "elapsed_seconds": 45.821072578430176
+  },
+  "competence": {
+    "direct": {
+      "n": 36,
+      "correct": 0,
+      "overall_accuracy": 0.0,
+      "min_arm_accuracy": 0.0,
+      "arm_details": {
+        "Avery_kitchen": 0.0,
+        "Blake_kitchen": 0.0,
+        "Blake_garden": 0.0,
+        "Blake_office": 0.0,
+        "Avery_garden": 0.0,
+        "Avery_office": 0.0
+      },
+      "pass": false
+    }
+  },
+  "replay": {},
+  "kappa_iota": {},
+  "null_ladder": {},
+  "verdict": "TASK_POPULATION_VOID",
+  "detail": "Competence staircase failed",
+  "measurement_to_artifact_ratio": "1:1"
+}

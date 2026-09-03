@@ -190,6 +190,47 @@ near-identity matrices nearly commute — neither demonstrates latent structure.
 
 Runner: experiments/run_path_fiber_v1.py. Results: experiments/results/path_fiber_v1/.
 
+### PMO-0R: Path-Memory Observability Revised (2026-09-02, TASK_POPULATION_VOID)
+
+Distance-from-claim: **1** — bounded continuation-distinguishability witness.
+Spec: theory/PMO_0R.md (Codex R1+R2 locked). Runner: experiments/run_pmo_0r.py.
+Config: experiments/config/pmo_0r.json.
+
+**Design (correcting PFC-0 defects):** Asymmetric endpoints (entities end at
+different locations), 4-bin response law {kitchen, garden, office, OTHER} with no
+renormalization, suffix injection via saved recurrent states, competence staircase,
+κ (commutation defect) + ι (entity interaction) dual observables, 9-method cross-
+fitted null ladder, two-band witness gates (registered 0.020/0.005, strong 0.050/0.020).
+
+**Verdict: TASK_POPULATION_VOID** — direct fact competence failed (0/36, 0% accuracy).
+
+| Gate | Value | Threshold | Result |
+|------|-------|-----------|--------|
+| Direct fact accuracy | 0.000 | ≥0.95 | FAIL |
+| Relaxed accuracy (3-loc argmax) | 0.556 | — | diagnostic |
+| P(OTHER) mean | ~0.65 | — | diagnostic |
+| Model calls | 36 | — | — |
+| Elapsed | 45.8s | <90 min | — |
+
+**Root cause:** Finch-3B puts ~65% probability on continuation tokens ("answer",
+"question") rather than location tokens. The correct location IS typically the
+highest among the 3 location tokens (kitchen 23.9% vs garden 6.1%), but cannot
+beat P(OTHER)=65.1% as the competence gate requires. Even with relaxed competence
+(argmax among locations only), accuracy is only 55.6% due to strong kitchen bias
+(model picks kitchen even when correct answer is garden/office).
+
+**Key finding:** PFC-0's 3-logit renormalization was hiding this fundamental
+model limitation. After renormalization, kitchen 68.5% looked like clear
+discrimination; the raw model barely distinguishes locations. Codex was correct
+to flag renormalization as a defect — it was also masking incompetence.
+
+**Closure:** This response interface (4-bin + explicit-choice template) on
+Finch-3B is unsuitable. Per spec, competence failure closes the interface,
+not H_PMO or path memory as a concept. Entity discrimination (TV=0.43) and
+bit-exact state replay remain confirmed.
+
+Results: experiments/results/pmo_0r/result.json.
+
 ### RCQ-0: Real Causal Quotient on Finch-3B (2026-09-02, IN PROGRESS)
 
 Distance-from-claim: **0** — the quotient and action law ARE the native math.
