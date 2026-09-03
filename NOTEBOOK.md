@@ -4,6 +4,42 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### Suffix structure test: settling is a one-shot consolidation trigger (2026-09-03)
+
+**Experiment:** 9 different suffix types at d3 on Qwen3-1.7B-Base. Tests whether
+comment structure specifically triggers settling or any token works.
+
+| Suffix | Gain | Type |
+|--------|------|------|
+| `# No changes.\n` | +13.0% | comment |
+| `# No changes.\n` x2 | +11.8% | double comment |
+| `assert True\n` | +9.3% | no-op assertion |
+| `"""test"""\n` | +8.3% | docstring |
+| `pass\n` | +6.3% | explicit no-op |
+| `\n` | +2.5% | bare newline |
+| `import os\n` | -0.3% | new name in namespace |
+| `print()\n` | -15.4% | function call |
+
+**The inertness gradient:** Settling benefit correlates with how "inert" the suffix
+is — how little it changes program state. Comments are best because they're
+structurally marked as "this changes nothing." `pass` and `assert True` are
+explicitly no-ops. `import os` introduces a new name. `print()` invokes a function.
+
+**One-shot trigger, not processing time.** Double comment (+11.8%) is WORSE than
+single (+13.0%). This is consistent with all formal SVB data (peak at s1 in Qwen3).
+Settling time is not about giving the model "more time to think" — it's about
+providing ONE structural cue that activates a learned state-consolidation routine.
+More cues slightly interfere.
+
+**Mechanistic picture (H5 refined, needs Codex):** During pretraining on code, the
+model learned that comment lines following code blocks are "processing boundaries"
+where no new state is introduced. At these boundaries, the model consolidates its
+internal representation of variable bindings. This is analogous to how the hippocampus
+consolidates memories during sleep — processing pauses, not processing time.
+[NEEDS CODEX VALIDATION — this is speculative mechanistic reasoning]
+
+---
+
 ### Suffix content variation: settling is NOT pure computation (2026-09-03)
 
 **Experiment:** Test 5 different suffix texts at depths 2-4 on Qwen3-1.7B-Base to
