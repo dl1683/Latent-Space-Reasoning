@@ -348,7 +348,7 @@ independently worded histories per intended operational state.
 
 Runner: experiments/run_psr_v2.py. Results: experiments/results/psr_v2/.
 
-### Suffix action algebra (2026-09-03, CONSTRUCTION — H-LRB REFUTED, Codex audit adopted)
+### Suffix action algebra (2026-09-03, CONSTRUCTION — convergent transition graph emerging)
 
 Distance-from-claim: **0** — this IS the central artifact.
 
@@ -375,8 +375,9 @@ languages L_θ(q), directed cost c_θ(q).
   BAND2(PC) = TV(PCPC,PC) = 0.122 [0.108, 0.136], LB > 0.06.
   The monoid is NOT a band. Composite idempotence fails.
 - H-SAT3: CPCP ~ CPC, PCPC ~ PCP (length-3 saturation, non-band).
-  **STRONGLY SUPPORTED** (CP side: TV=0.050, UB=0.056 ≤ 0.06).
-  PC side borderline: TV=0.052, UB=0.064 > 0.06 by 0.004.
+  **BEST FIT, FORMALLY INCONCLUSIVE** (CP arm passes: TV=0.050, UB=0.056 ≤ 0.06;
+  PC arm borderline: TV=0.052, UB=0.064 > 0.06; heterogeneous across cells).
+  Registered joint rule requires both arms; licensed as best fit, not confirmed.
 - H-GEN-IDEM: only generator idempotence. **REFUTED** — SAT3(CP) UB ≤ 0.06.
 - H-Truth: suffix actions conjugate under truth-reversal involution. UNTESTED.
 
@@ -390,13 +391,35 @@ languages L_θ(q), directed cost c_θ(q).
 - PCP-PC sigma difference = +0.071, CI [0.044, 0.094] — established (history-dependent reactivation).
 
 **Additional finding:** Generator idempotence does NOT propagate to products.
-CPP != CP (TV=0.063 [0.056, 0.070]) despite PP ~ P. PCC != PC (TV=0.076
-[0.062, 0.089]) despite CC ~ C.
+CPP vs CP: TV=0.063, CI [0.056, 0.070] — formally inconclusive (CI crosses ε_TV).
+PCC vs PC: TV=0.076, CI [0.062, 0.089] — marginal evidence (LB barely above ε_TV).
+These panel-level approximations are not a congruence.
 
-**Status:** H-BAND2 refuted, H-SAT3 strongly supported. Length-3
-saturation is the dominant algebraic feature. Codex evidence gate running.
-The monoid is not a band, not an LRB — it has generator idempotence
-and length-3 terminal absorbers (CPC, PCP approximately terminal).
+**Pairwise structure (12x12 TV matrix, 2026-09-03):**
+- Terminal cluster: {CC, CPC, CPCP, PCP, PCPC, CPP} all pairwise TV ≤ 0.096.
+  Tightest non-trivial pair: CC-CPCP (TV=0.035).
+- Funnel property: after CP, both continuations converge — TV(CPC,CPP)=0.039.
+  CP is an approximate right zero (next generator doesn't matter).
+- Surprising equivalence: CP ≈ PCC (TV=0.047).
+- Contraction: C is contractive (mean r=0.67), P is near-isometric (mean r=1.03).
+  C drives convergence toward the terminal zone; P shuffles without shrinking.
+- All conclusions scoped to cached-continuation pathway. Full-forward and
+  chunking-invariance checks open.
+
+**Right-continuation test (2026-09-03):** CPC does NOT absorb C
+(TV(CPC,CPCC)=0.060, INCONCLUSIVE). PCP does NOT absorb P
+(TV(PCP,PCPP)=0.072, LB>ε). CPCPC genuinely different from CPC
+(TV=0.099, REFUTE). The monoid does NOT collapse to a finite quotient —
+words continue evolving past length 3. Sigma degrades with suffix length:
+CPC=0.486 → CPCC=0.439 → CPCPC=0.393.
+
+**Status:** H-LRB, H-BAND2, H-GEN-IDEM refuted. H-SAT3 best fit but formally
+inconclusive; the near-return CPCP≈CPC is a single-step property that does
+not persist (CPCPC≠CPC). No named semigroup variety licensed. The idealized
+7-element monoid is a reference, not empirical classification. All conclusions
+scoped to whole-continuation cached pathway; execution-mode invariance
+(chunking, full-forward) is the critical open validation. Native object:
+truncated response-labelled continuation automaton.
 
 Spec: theory/SUFFIX_ACTION_ALGEBRA.md. Normalizer: theory/suffix_algebra.py.
 

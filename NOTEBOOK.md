@@ -4,6 +4,57 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### Right-continuation experiment: NO terminal absorption (2026-09-03)
+
+Experiment: run_right_continuation.py, 4 arms (CPC, CPCC, PCPP, CPCPC),
+27 cells, 135 forward passes, 2654s. CPC arm bit-for-bit consistent with
+band2 run (consistency check PASS).
+
+Results (TV metric, stratified bootstrap 10K, seed 42, 95% CI):
+  CPC absorbs C?  TV(CPC,CPCC) = 0.060 CI [0.051, 0.067] → INCONCLUSIVE
+  PCP absorbs P?  TV(PCP,PCPP) = 0.072 CI [0.066, 0.077] → REFUTE
+  Len-5 SAT?      TV(CPCP,CPCPC) = 0.064 CI [0.056, 0.072] → INCONCLUSIVE
+  CPC terminal?   TV(CPC,CPCPC) = 0.099 CI [0.086, 0.110] → REFUTE
+
+Sigma degradation with suffix length: CPC=0.486 → CPCC=0.439 → CPCPC=0.393.
+Performance degrades monotonically, contradicting terminal-zone interpretation.
+
+The monoid does NOT collapse to a finite quotient. Words continue evolving
+past length 3. The "length-3 saturation" (H-SAT3) is a one-step near-return
+(CPCP≈CPC), not genuine saturation (CPCPC≠CPC).
+
+Theory/STATE/EXPERIMENTS updated. Next: execution-mode invariance experiment
+(highest-leverage per Codex) — compare whole-word cached chunk vs
+generator-by-generator sequential cache updates vs full-text forward pass.
+
+### Pairwise structure and contraction analysis (2026-09-03)
+
+Full 12x12 pairwise TV matrix computed from band2_dists.npz. Key findings:
+
+**Codex evidence gate (first):** Verdict REVISE. Corrections adopted:
+H-SAT3 downgraded to "best fit, formally inconclusive." CPP-CP changed to
+"formally inconclusive." All conclusions scoped to cached-continuation
+pathway. No semigroup variety licensed.
+
+**Codex evidence gate (second):** Verdict REVISE. Further corrections:
+- CP is NOT a right zero — both children move from it (0.091, 0.063);
+  TV(CPC,CPP)=0.039 is branch coalescence, not parent absorption
+- No single ε=0.06 cluster — overlapping maximal cliques, not equivalence
+- Contraction analysis demoted to exploratory (post-hoc, unregistered)
+- Native object: Moore-style response automaton, not semigroup variety
+- Priority reordered: execution-mode invariance first, then CPCC/PCPP
+
+**Branch coalescence:** After CP, children converge (TV(CPC,CPP)=0.039)
+but both remain separated from CP itself. After PC, weaker convergence
+(TV(PCC,PCP)=0.067). Asymmetric one-step property, not absorption.
+
+**Exploratory contraction (unregistered):** Among six selected parent pairs,
+C reduced panel-distance point estimates (mean ratio 0.67), P ratios ranged
+0.68–1.83 (mean 1.03). Post-hoc, incomplete pair selection, no registered
+intervals.
+
+Theory/STATE/EXPERIMENTS updated with corrected language throughout.
+
 ### Band2 decisive test: H-BAND2 REFUTED, H-SAT3 strongly supported (2026-09-03)
 
 Experiment: run_band2_decisive.py, 12 arms, 27 cells, 351 forward passes, 925s.

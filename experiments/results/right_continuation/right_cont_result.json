@@ -1,0 +1,42 @@
+{
+  "model": "tiiuae/Falcon-H1-1.5B-Instruct",
+  "n_cells": 27,
+  "eps_tv": 0.06,
+  "elapsed_s": 2654.090193271637,
+  "call_count": 135,
+  "consistency_check": {},
+  "comparisons": [
+    {
+      "pair": "TV(CPCC,CPC)",
+      "label": "CPC absorbs C? TV(CPC,CPCC)",
+      "tv_mean": 0.05954917215233393,
+      "ci_lb": 0.051340875138864955,
+      "ci_ub": 0.06701255795282864,
+      "gate": "INCONCLUSIVE"
+    },
+    {
+      "pair": "TV(PCPP,PCP)",
+      "label": "PCP absorbs P? TV(PCP,PCPP)",
+      "tv_mean": 0.07226608359875779,
+      "ci_lb": 0.06621833784824789,
+      "ci_ub": 0.07719230567174101,
+      "gate": "REFUTE"
+    },
+    {
+      "pair": "TV(CPCPC,CPCP)",
+      "label": "SAT at len5?  TV(CPCP,CPCPC)",
+      "tv_mean": 0.06407769158896473,
+      "ci_lb": 0.05604919059923204,
+      "ci_ub": 0.07214590502505112,
+      "gate": "INCONCLUSIVE"
+    },
+    {
+      "pair": "TV(CPCPC,CPC)",
+      "label": "CPC terminal? TV(CPC,CPCPC)",
+      "tv_mean": 0.09880987160485583,
+      "ci_lb": 0.08625242005132519,
+      "ci_ub": 0.11022847487404726,
+      "gate": "REFUTE"
+    }
+  ]
+}

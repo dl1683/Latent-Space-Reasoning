@@ -17,8 +17,11 @@ composition, reachability, and operational cost, with no imported ℝⁿ
 geometry on the raw state space. (The response metrics TV and sqrt-JS
 are standard metrics on the probability simplex, imported via D2; the
 claim is no geometry on the latent/raw state space itself.) It states
-two falsifiable hypotheses and proves one theorem whose experimental
-adjudication determines which branch of the algebra to build.
+falsifiable hypotheses (H-LRB, H-BAND2, H-SAT3, H-GEN-IDEM, H-Truth),
+proves one theorem, and characterizes the empirical transition graph
+including contraction rates and convergence structure. Three algebraic
+hypotheses have been refuted; the remaining structure is a convergent
+right-continuation graph, not a classical semigroup variety.
 
 
 ## Scope: the SVB transition world (D1 specialization)
@@ -506,34 +509,48 @@ The generators C and P satisfy panel-local approximate idempotence under
 the registered rule (I(C) UB ≤ ε_TV, I(P) UB ≤ ε_TV). The absorption
 law aba ≈ ab fails decisively. Three competing hypotheses remain:
 
-### H-BAND2: composite idempotence (band-return)
+### H-BAND2: composite idempotence (band-return) — REFUTED 2026-09-03
 
 The suffix monoid S is a band (every element is idempotent):
 
   (CP)² = CPCP ≈ CP
   (PC)² = PCPC ≈ PC
 
-If this holds, S is provisionally consistent with the free band on two
-generators, which has exactly six nonidentity elements:
-{C, P, CP, PC, CPC, PCP}. The only law is x² = x; there is no
-first-occurrence absorption.
+**Status: REFUTED.** Decisive test (band2_decisive_test, commit fb5a3dd):
 
-### H-GEN-IDEM: generator idempotence only
+  TV(CPCP, CP) = 0.107  CI [0.098, 0.117]  — LB > ε_TV
+  TV(PCPC, PC) = 0.122  CI [0.108, 0.136]  — LB > ε_TV
+
+Bonferroni-corrected lower bounds (0.096, 0.104) remain above ε_TV.
+Composite idempotence fails decisively for both CP and PC products.
+
+### H-GEN-IDEM: generator idempotence only — REFUTED 2026-09-03
 
 Only adjacent repeats of the same generator reduce (CC ≈ C, PP ≈ P).
 Alternating words may continue growing indefinitely: CPCP ≠ CP, CPCP ≠ CPC.
 The monoid is infinite (or at least not a band).
 
-### H-SAT3: length-three saturation (non-band)
+**Status: REFUTED.** TV(CPCP, CPC) UB = 0.056 ≤ ε_TV on the CP arm,
+contradicting the prediction that all four TV pairs exceed ε_TV.
 
-Length-three words with both generators become right-absorbing:
+### H-SAT3: length-three saturation (non-band) — BEST FIT, FORMALLY INCONCLUSIVE
 
-  CPCP ≈ CPC   (not CP — so not a band)
-  PCPC ≈ PCP   (not PC — so not a band)
+H-SAT3 tested two branchwise length-four near-returns:
 
-This means CPC and PCP are "terminal" elements, but the saturation law
-is not x² = x; it is a length-3 absorbing property that does not constitute
-a band.
+  CPC·P = CPCP ≈ CPC   (not CP — so not a band)
+  PCP·C = PCPC ≈ PCP   (not PC — so not a band)
+
+These test one outgoing edge from each length-three word. They do not
+establish right absorption, which would additionally require CPCC ≈ CPC
+and PCPP ≈ PCP, followed by continuation-stability tests.
+
+**Status: best descriptive fit, formally inconclusive.** The CP arm passes:
+TV(CPCP, CPC) = 0.050, UB = 0.056 ≤ ε_TV. The PC arm is borderline:
+TV(PCPC, PCP) = 0.052, UB = 0.064 > ε_TV. The PC arm is heterogeneous,
+not merely unlucky bootstrap noise: 11/27 cells exceed ε_TV; variable-stratum
+means are x=0.078, y=0.020, z=0.059. The registered joint rule requires
+BOTH arms to pass. The licensed claim is: "H-SAT3 is the best descriptive
+fit but is not jointly supported under the registered decision rule."
 
 ### Predictions from each hypothesis (frozen before adjudication)
 
@@ -561,18 +578,34 @@ Decision rules:
 **Decisive test completed (lrb_decisive_test, 766a1cf).** H-LRB refuted:
 R(C,P) LB = 0.081 > 0.06, R(P,C) LB = 0.126 > 0.06.
 
-### For H-BAND2 / H-GEN-IDEM / H-SAT3
+### For H-BAND2 / H-GEN-IDEM / H-SAT3 — RESOLVED
 
-1. **Decisive test:** Measure TV(CPCP, CP), TV(CPCP, CPC), TV(PCPC, PC),
-   TV(PCPC, PCP) on the same 27-cell panel. Same protocol: ε_TV = 0.06,
-   stratified bootstrap 10K, seed 42.
+**Decisive test completed (band2_decisive_test, fb5a3dd).** H-BAND2 refuted,
+H-GEN-IDEM refuted, H-SAT3 best fit but formally inconclusive. See
+§Competing hypotheses and §Predictions sections above.
 
-2. **Right-action table:** For positive characterization, also measure
-   CPP, PCC, CPCC, PCPP to observe the continuation of each element by
-   each generator. This maps the observed transition graph.
+### For the continuation automaton (open, priority order)
 
-3. **Cached-vs-full check:** Run one cell both ways (cached prefix +
-   suffix IDs vs full-text encoding) to verify caching fidelity.
+1. **Execution-mode invariance (highest priority):** On the same 12 words
+   and 27 cells, compare: (a) current whole-word cached chunk,
+   (b) generator-by-generator sequential cache updates, (c) full-text
+   forward pass. Pre-register per-word mode TV and whether the four
+   registered BAND2/SAT3 defect conclusions survive mode changes. Pin
+   model/tokenizer revisions and library versions. If whole-chunk ≠
+   stepwise, the current artifact is a word-response code, not a
+   composed generator action.
+
+2. **Full-forward validation:** At least one key relation (e.g., CPCP≈CPC)
+   needs measurement under full-text forward pass (no prefix caching).
+   TV=0.533 between cached and full modes shows substantial divergence.
+
+3. **CPCC and PCPP:** MEASURED (right_continuation_test, 2026-09-03).
+   CPC does NOT absorb C: TV(CPC, CPCC) = 0.060 [0.051, 0.067],
+   INCONCLUSIVE. PCP does NOT absorb P: TV(PCP, PCPP) = 0.072
+   [0.066, 0.077], LB > ε_TV. CPCPC genuinely different from CPC:
+   TV(CPC, CPCPC) = 0.099 [0.086, 0.110], REFUTE. The monoid does
+   not collapse to a finite quotient — words continue evolving past
+   length 3. Sigma degrades: CPC=0.486 → CPCC=0.439 → CPCPC=0.393.
 
 ### For H-Truth
 
@@ -609,8 +642,12 @@ For any q in the evaluation panel:
               TV(PCPC, PCP) ≤ 0.06 — BORDERLINE (TV=0.052, UB=0.064)
   H-GEN-IDEM: all four TV pairs > 0.06 — FALSIFIED (SAT3(CP) UB ≤ 0.06)
 
-  Additional: CPP ~/= CP (TV=0.063), PCC ~/= PC (TV=0.076).
-  Generator idempotence does not propagate to products.
+  Additional:
+  CPP vs CP: TV=0.063, CI [0.056, 0.070] — formally inconclusive (CI crosses ε_TV).
+  PCC vs PC: TV=0.076, CI [0.062, 0.089] — marginal evidence (LB=0.062 barely above ε_TV).
+  Generator-local approximate idempotence cannot be propagated through context:
+  if P²≈P were an exact identity, CPP=CP would follow; the data does not support
+  this propagation. These panel-level approximations are not a congruence.
 
 ### Truth-reversal prediction (H-Truth) — independent of H-LRB
 
@@ -652,8 +689,129 @@ objects from behavioral data using only legal actions, response-equivalence
 places, composition, reachability, and directed cost. No imported ℝⁿ
 geometry on the raw state space. No hidden-state inspection.
 
-Current status: H-LRB refuted. The suffix monoid has richer structure
-than a left-regular band. Three competing hypotheses (H-BAND2, H-GEN-IDEM,
-H-SAT3) are frozen with predictions. The length-four experiment adjudicates.
-The accompanying symbolic normalizer (theory/suffix_algebra.py) generates
-predictions from each hypothesis before any new experiment.
+Current status: H-LRB, H-BAND2, and H-GEN-IDEM all refuted. H-SAT3 is the
+best descriptive fit but formally inconclusive (CP arm passes, PC arm
+borderline). No named semigroup variety is licensed. The idealized
+presentation C²=C, P²=P, CPCP=CPC, PCPC=PCP would yield a 7-element
+aperiodic non-band monoid {ε, C, P, CP, PC, CPC, PCP} with two
+approximate sinks — but this is a reference model, not an empirical
+classification. All empirical conclusions are scoped to the
+whole-continuation cached pathway of Falcon-H1-1.5B-Instruct; the runner
+sends each entire word plus query as one cached chunk, so generator
+composition itself has not been validated. Execution-mode invariance,
+full-forward validation, and CPCC/PCPP measurement remain open.
+
+The native object is a truncated response-labelled continuation automaton
+(see §Pairwise structure), not a familiar semigroup quotient.
+
+
+## Pairwise structure (2026-09-03, Codex evidence gate adopted)
+
+### Full 12x12 pairwise TV matrix
+
+The band2 decisive test measured 12 arms. The full pairwise TV matrix
+(mean over 27 cells) reveals structure beyond the individual hypothesis
+tests.
+
+**Maximal cliques at ε_TV = 0.06:**
+
+  {CC, CPCP, PCP, PCPC}
+  {CPC, CPCP, PCP}
+  {C, CC}, {CP, PCC}, {CPC, CPP}, {P, PP}
+
+These are maximal cliques in the tolerance graph, not equivalence classes.
+The approximate-equality relation (TV ≤ ε_TV) is not transitive and does
+not define a quotient. The six nodes {CC, CPC, CPCP, PCP, PCPC, CPP} form
+a connected component through overlapping tolerance edges, but this
+component is NOT a single tolerance ball: counterexamples include
+TV(CPC, PCPC) = 0.079 and TV(CPCP, CPP) = 0.072, both above ε_TV.
+
+**Observed tolerance edges (TV ≤ ε_TV):** CC-CPCP (0.035),
+CPC-CPP (0.039), PCP-CPCP (0.042), CP-PCC (0.047), C-CC (0.050),
+CPC-CPCP (0.050), CPC-PCP (0.051), CPCP-PCPC (0.051),
+PCP-PCPC (0.052), P-PP (0.021).
+
+### Right-continuation table
+
+The right-continuation data summarize how each generator moves each
+measured parent word:
+
+  | Parent | move under C | move under P | child separation |
+  |--------|-------------|-------------|-----------------|
+  | C      | 0.050       | 0.086       | 0.107           |
+  | P      | 0.154       | 0.021       | 0.153           |
+  | CP     | 0.091       | 0.063       | 0.039           |
+  | PC     | 0.076       | 0.141       | 0.067           |
+
+"Move under g" = TV(w, w*g). "Child separation" = TV(w*C, w*P).
+
+**Branch coalescence at CP:** TV(CPC, CPP) = 0.039. After CP, both
+continuations produce approximately the same distribution. This is
+one-step branch coalescence, not parent absorption: both children
+(CPC and CPP) remain separated from CP itself (TV 0.091 and 0.063).
+The CP-versus-PC child-separation gap is 0.028, with a post-hoc paired
+bootstrap CI [0.021, 0.035], supporting asymmetric coalescence on this
+panel.
+
+**Branchwise near-returns:** CPCP ≈ CPC (TV = 0.050, UB = 0.056, passes
+registered rule) — CPC·P returns near CPC. PCPC ≈ PCP (TV = 0.052,
+UB = 0.064) — PCP·C returns near PCP, borderline. These test one
+outgoing edge from each length-three word. Full right absorption would
+additionally require CPCC ≈ CPC and PCPP ≈ PCP (both unmeasured), plus
+continuation-stability tests.
+
+### Exploratory contraction analysis (post-hoc, unregistered)
+
+Among six selected parent pairs, appending C reduced aggregate
+panel-distance point estimates (mean ratio 0.67, range [0.50, 0.85]),
+whereas appending P ratios ranged from 0.68 to 1.83 (mean 1.03).
+Cell-level analysis for C,P → CC,PC: 21/27 cells show ratio < 1
+under C (78%); under P, 16/27 (59%).
+
+No contraction or isometry is established. Action descent to response
+distributions is unproved, pair selection is incomplete and post-hoc,
+intervals were not registered, and execution-mode invariance is untested.
+The pattern is consistent but exploratory.
+
+### The native object: response-labelled continuation automaton
+
+The native object supported by the current data is a quantitative
+Moore-style response automaton. Define the panel response signature of
+word w at horizon h:
+
+  R_{Π,h}(w) = ( r(T_{wu} q) )_{q ∈ Π, |u| ≤ h}
+
+Nodes are words carrying panel response signatures. Edges are labelled
+by legal suffix actions with response-displacement weights. Exact equality
+of all future signatures would induce the Nerode right-congruence quotient
+and hence a genuine transition monoid. Current data give a truncated,
+partially observed graph, mostly at horizon zero.
+
+This is analogous to, but not identical with, ergodic Markov dynamics.
+No stochastic state-transition kernel, stationary law, irreducibility,
+aperiodicity, or cross-start synchronization was measured. The closest
+analogy is a locally synchronizing response automaton, not the transition
+monoid of an established ergodic Markov chain.
+
+### Scope limitation
+
+All conclusions in this section are scoped to the whole-continuation
+cached pathway. The runner sends the entire word plus query through one
+cached call; it does not execute C, update the cache, then execute P.
+Thus the claimed generator COMPOSITION has not been validated — only
+whole-word response signatures have been measured.
+
+Three validation levels remain open (in priority order):
+
+1. **Chunking invariance:** Compare whole-word cached processing against
+   generator-by-generator sequential cache updates. If these differ,
+   the current artifact is a word-response code, not a composed action.
+
+2. **Full-forward validation:** At least one key relation (e.g.,
+   CPCP ≈ CPC) needs measurement under full-text forward pass (no prefix
+   caching). The cached-vs-full fidelity gap (TV = 0.533) shows the two
+   modes diverge substantially.
+
+3. **CPCC/PCPP measurement:** Confirms whether length-three words are
+   full right absorbers (absorbing under both generators, not just the
+   alternating one). Only meaningful after execution-mode validation.

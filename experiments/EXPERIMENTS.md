@@ -5,6 +5,35 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
+## Right-Continuation Test — terminal absorption and length-5 saturation (2026-09-03)
+
+Distance from claim: 0.
+
+Tests whether length-3 words are genuine terminal elements (right absorption)
+or merely single-step near-returns. 4 arms (CPC, CPCC, PCPP, CPCPC), 27 cells,
+135 forward passes, 2654s. TV metric, eps_TV=0.06.
+
+**Results:**
+- CPC absorbs C? TV(CPC,CPCC)=0.060 [0.051,0.067] → INCONCLUSIVE
+- PCP absorbs P? TV(PCP,PCPP)=0.072 [0.066,0.077] → REFUTE (LB>ε)
+- Len-5 SAT?    TV(CPCP,CPCPC)=0.064 [0.056,0.072] → INCONCLUSIVE
+- CPC terminal? TV(CPC,CPCPC)=0.099 [0.086,0.110] → REFUTE
+
+Key findings:
+- The monoid does NOT collapse to a finite quotient. Words keep evolving past
+  length 3. CPCPC is genuinely different from CPC (TV=0.099, well above ε).
+- H-SAT3 near-return (CPCP≈CPC) is a one-step property, not genuine saturation.
+- Sigma degrades monotonically with suffix length: CPC=0.486 → CPCC=0.439 →
+  CPCPC=0.393. Performance worsens, contradicting terminal-zone interpretation.
+- PCP definitively does NOT absorb P (LB=0.066 > ε_TV).
+- CPC absorbing C remains inconclusive (point estimate exactly at threshold).
+- CPC arm bit-for-bit consistent with band2 run (consistency check PASS).
+
+Native object: truncated response-labelled continuation automaton where suffix
+actions produce measurable displacement that does not converge to a fixed point.
+
+---
+
 ## Band2 Decisive Test — composite idempotence and length-3 saturation (2026-09-03)
 
 Distance from claim: 0.
@@ -15,12 +44,23 @@ H-BAND2 ((CP)^2~CP), H-SAT3 (CPCP~CPC), H-GEN-IDEM (all grow).
 
 **Results:**
 - H-BAND2 REFUTED: TV(CPCP,CP)=0.107 [0.098,0.117], TV(PCPC,PC)=0.122 [0.108,0.136]
-- H-SAT3 STRONGLY SUPPORTED: TV(CPCP,CPC)=0.050 [0.044,0.056]; TV(PCPC,PCP)=0.052 [0.041,0.064] borderline
+- H-SAT3 BEST FIT, FORMALLY INCONCLUSIVE: CP arm passes (TV=0.050, UB=0.056 ≤ 0.06);
+  PC arm borderline (TV=0.052, UB=0.064 > 0.06). Registered joint rule requires both.
 - H-GEN-IDEM REFUTED: SAT3(CP) UB <= 0.06
 
-Key finding: generator idempotence does NOT propagate to products (CPP!=CP, PCC!=PC).
-The monoid is not a band. Length-3 alternating words are approximately terminal.
-Fidelity note: cached-vs-full TV=0.533 (Mamba hybrid); LRB-era defects reproduce exactly.
+Key findings:
+- Generator idempotence does NOT propagate to products: CPP-CP formally inconclusive
+  (CI [0.056,0.070] crosses ε_TV); PCC-PC marginal (LB=0.062). Not a congruence.
+- Branch coalescence: TV(CPC,CPP)=0.039 — CP's children converge, but both remain
+  separated from CP itself. NOT right absorption.
+- Overlapping maximal cliques at ε=0.06, not a single equivalence class.
+- Exploratory contraction (unregistered): C distance-reducing (mean r=0.67),
+  P mixed (mean r=1.03). Post-hoc, incomplete pair selection.
+- No semigroup variety licensed. Native object: truncated response-labelled
+  continuation automaton.
+Fidelity: cached-vs-full TV=0.533; all conclusions scoped to cached-continuation.
+Codex evidence gates (two rounds): REVISE verdicts adopted. LRB-era defects
+reproduce exactly.
 
 Runner: experiments/run_band2_decisive.py. Results: experiments/results/band2_decisive/.
 Predictions frozen: commit f95dfb7.
