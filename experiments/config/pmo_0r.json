@@ -1,0 +1,81 @@
+{
+  "model_id": "RWKV/v6-Finch-3B-HF",
+  "model_revision": "c17eed9625bba0bc71c4b67db39f6d34ac9846fc",
+  "device": "cpu",
+  "dtype": "float32",
+  "seed": 42,
+  "entities": ["Avery", "Blake"],
+  "locations": ["kitchen", "garden", "office"],
+  "location_tokens": {
+    "kitchen": 52085,
+    "garden": 46078,
+    "office": 46701
+  },
+  "panels": {
+    "KG": {
+      "A1": ["Avery", "garden"],
+      "A2": ["Avery", "kitchen"],
+      "B1": ["Blake", "kitchen"],
+      "B2": ["Blake", "garden"],
+      "final_avery": "kitchen",
+      "final_blake": "garden"
+    },
+    "GO": {
+      "A1": ["Avery", "office"],
+      "A2": ["Avery", "garden"],
+      "B1": ["Blake", "garden"],
+      "B2": ["Blake", "office"],
+      "final_avery": "garden",
+      "final_blake": "office"
+    },
+    "OK": {
+      "A1": ["Avery", "kitchen"],
+      "A2": ["Avery", "office"],
+      "B1": ["Blake", "office"],
+      "B2": ["Blake", "kitchen"],
+      "final_avery": "office",
+      "final_blake": "kitchen"
+    }
+  },
+  "extensions": [
+    ["A1", "A2", "B1", "B2"],
+    ["A1", "B1", "A2", "B2"],
+    ["A1", "B1", "B2", "A2"],
+    ["B1", "A1", "A2", "B2"],
+    ["B1", "A1", "B2", "A2"],
+    ["B1", "B2", "A1", "A2"]
+  ],
+  "matched_pairs": [
+    [["A1", "B1", "A2", "B2"], ["B1", "A1", "A2", "B2"]],
+    [["A1", "B1", "B2", "A2"], ["B1", "A1", "B2", "A2"]]
+  ],
+  "suffix_macro": " Nothing else changes.",
+  "suffix_token_ids": [50487, 30746, 51165, 47],
+  "suffix_lengths": [0, 1, 2, 4],
+  "query_template": "\nQuestion: Where is {entity}? Answer exactly one of: kitchen, garden, office.\nAnswer: The",
+  "folds": {
+    "F0": [["kitchen","kitchen"], ["garden","garden"], ["office","office"]],
+    "F1": [["kitchen","garden"], ["garden","office"], ["office","kitchen"]],
+    "F2": [["kitchen","office"], ["garden","kitchen"], ["office","garden"]]
+  },
+  "bootstrap_resamples": 10000,
+  "bootstrap_seed": 42,
+  "discounted_lambdas": [0.0, 0.25, 0.5, 0.75, 0.9, 0.97, 1.0],
+  "gates": {
+    "competence_overall": 0.95,
+    "competence_arm": 0.90,
+    "replay_max_tv": 0.0001,
+    "oneshot_state_discrepancy": 0.0002,
+    "registered_witness_kappa": 0.020,
+    "registered_witness_lb": 0.005,
+    "strong_witness_kappa": 0.050,
+    "strong_witness_lb": 0.020,
+    "entity_interaction_iota": 0.020,
+    "entity_interaction_lb": 0.005,
+    "location_replication_min": 2,
+    "null_advantage": 0.01,
+    "null_advantage_lb": 0.0
+  },
+  "cpu_abort_minutes": 90,
+  "result_dir": "experiments/results/pmo_0r"
+}
