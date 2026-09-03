@@ -203,41 +203,47 @@ histories were uncovered, the parser was scored on a different denominator,
 and simpler matched controls were not run, no predictive surplus or quotient
 action law is established."
 
-**PSR-v2 result (2026-09-02, pre-registered adjudication: OVERALL FAIL):**
-Corrected adjudication addressing all 7 PSR-v1 evidence gate issues. Frozen
-train/test split (d0+d1=63 construction, d2=54 evaluation), argmax
-quantization for monotone refinement, construction-only transition table,
-full null ladder (parser, kNN, last-action, shuffled). 702 model calls.
+**PSR-v2 result (2026-09-02, Codex evidence gate: INVALID_PSR_V2):**
+Attempted corrected adjudication. Frozen train/test split (d0+d1=63
+construction, d2=54 evaluation), argmax quantization, construction-only
+transition table, full null ladder (parser, kNN, last-action, shuffled).
+702 model calls. 21 classes from 6 suffixes. Coverage: 19/54=35.2%.
 
-Result: 21 classes from 63 construction histories (6 suffixes). Right
-congruence ACHIEVED (0 violations, 0 transition conflicts). Coverage:
-19/54=35.2%. **kNN (TV=0.1090) beats quotient composition (TV=0.1183).**
-Quotient beats parser (TV 0.1183 vs 0.1758, paired p=0.008). Action
-descent untestable: all 9 d0 histories in singleton classes (0/0).
-Within-class TV: 0.1542 (mean), 0.4998 (max). Class-label accuracy:
-quotient 76.5%, parser 18.0%, kNN 56.0%.
+**Codex evidence gate verdict: INVALID, not a valid scientific negative.**
+Multiple outcome-bearing deviations invalidate confirmatory adjudication:
+(a) horizon safety violation (d1 suffixes query d2 behavior — cannot be
+assumed to "help the quotient"); (b) argmax instead of approved Q16
+quantization — within-class TV 0.1542 (max 0.4998) confirms classes are
+not approximate predictive-equivalence classes; (c) right congruence
+"0 violations" is VACUOUS — all 9 d0 anchors are singletons, no eligible
+pairs exist to test; (d) action descent 0/0 is untestable, not a result;
+(e) coverage 35% vs required 90%; (f) no actual recurrent-state
+substitution (only signature comparison); (g) kNN comparison is target-
+informed (evaluation signatures used as kNN inputs). The run failed as an
+implementation of the approved design but does not falsify a stationary
+response quotient.
 
-Pre-registered adjudication: G1 coverage PASS, G2 congruence PASS, G3
-surplus vs parser PASS, **G4 surplus vs kNN FAIL** (0.1183 vs 0.1090),
-G5 surplus vs shuffled PASS, **G6 action descent FAIL** (0/0). OVERALL
-FAIL. Known caveat: horizon safety violation (suffixes query depth-2
-behavior from d1 construction histories). Even with this leak (which
-should help the quotient), kNN still beats it.
+**Licensed sentence (Codex evidence gate, verbatim):** PSR-v2 is an invalid
+confirmatory adjudication, not a valid negative result: the implemented
+argmax quotient used out-of-horizon response laws, its zero-violation
+right-congruence diagnostic was vacuous because all depth-0 anchors were
+singleton classes, composition covered 19/54 histories, and action descent
+and causal substitution were not tested; RCQ is therefore closed on this
+task by the bounded-round protocol, not empirically falsified.
 
-**Licensed sentence (pending Codex evidence gate):** "Under a corrected
-pre-registered adjudication with frozen train/test split, argmax quantization,
-and a full null ladder, a 21-class behavioral quotient on Finch-3B achieved
-right congruence (0 violations) and beat the text parser (paired p=0.008),
-but kNN on raw signatures predicted better (TV 0.1090 vs 0.1183), and action
-descent was untestable (all d0 histories singleton); no compositional surplus
-over nearest-neighbor matching is established."
+**RCQ on entity-location tracking: CLOSED** — administrative/protocol
+closure following an invalid adjudication. Not recorded as empirical
+falsification. The PSR/RCQ line on this particular entity-location task
+is closed under the bounded one-round rule; do not run PSR-v3.
 
-**RCQ on entity-location tracking: CLOSED per pre-registered adjudication
-tree.** kNN superiority means the quotient abstraction loses information that
-raw signatures preserve — the compositional structure does not add predictive
-power beyond nearest-neighbor matching. Right congruence was achieved (the
-model's behavioral state IS structured), but the structure cannot be exploited
-compositionally beyond what raw similarity matching does.
+**Transferable residue (Codex):** (1) Horizon-custody law: depth(history)+
+horizon(suffix) <= construction horizon. (2) Nonvacuity certificate:
+congruence/descent requires multiply represented source classes; 0/0=N/A.
+(3) Approximate identity: argmax cannot define predictive equivalence;
+need explicit within-cell diameter bound. (4) Fair evaluation: score
+abstentions on common denominator; task-clustered inference. (5) Causal
+boundary: response similarity is not substitution. (6) Multiple
+independently worded histories per intended operational state.
 
 Runner: experiments/run_psr_v2.py. Results: experiments/results/psr_v2/.
 

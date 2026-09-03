@@ -5,31 +5,42 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
-## PSR-v2 — Corrected Predictive-State Adjudication on Finch-3B (2026-09-02; PRE-REGISTERED FAIL)
+## PSR-v2 — Corrected Predictive-State Adjudication on Finch-3B (2026-09-02; INVALID_PSR_V2 per Codex evidence gate)
 
 Distance from claim: 0 (the refined quotient and transition law ARE native math).
 Runner: `experiments/run_psr_v2.py`. Results: `experiments/results/psr_v2/`.
-Ledger: `psr_v2_launch`, `psr_v2_complete`.
+Ledger: `psr_v2_launch`, `psr_v2_complete`, `psr_v2_evidence_gate`.
 
-**Method:** Corrected adjudication addressing all 7 PSR-v1 evidence gate issues.
-Frozen train/test split (d0+d1=63 construction, d2=54 evaluation). Argmax
-quantization for monotone refinement. Construction-only transition table. Full
-null ladder: parser, kNN, last-action, shuffled. Paired TV evaluation.
+**Method:** Attempted corrected adjudication addressing PSR-v1 evidence gate
+issues. Frozen train/test split (d0+d1=63, d2=54 eval). Argmax quantization
+(deviated from approved Q16). Construction-only transition table. Full null
+ladder: parser, kNN, last-action, shuffled. 702 model calls.
 
-**Budget:** 2 refinement rounds, 702 model calls.
+**Raw result:** 21 classes, 6 suffixes, right congruence reported 0 violations.
+Coverage: 19/54=35.2%. kNN TV=0.1090 vs quotient TV=0.1183 on 19 covered rows.
+Action descent: 0/0 (untestable). Within-class TV: 0.1542 (mean), 0.4998 (max).
 
-**Result:** 21 classes, 6 suffixes, right congruence ACHIEVED (0 violations).
-Coverage: 19/54=35.2%. **kNN (TV=0.1090) beats quotient (TV=0.1183).** Quotient
-beats parser (p=0.008) and shuffled (p=0.000). Action descent: 0/0 (untestable).
-Class accuracy: quotient 76.5%, kNN 56.0%, parser 18.0%. Within-class TV: 0.1542.
+**Codex evidence gate: INVALID_PSR_V2 — not a valid scientific negative.**
+Multiple deviations invalidate confirmatory adjudication: (1) horizon safety
+violation (d1 suffixes query d2 behavior); (2) argmax instead of approved Q16;
+(3) right congruence "0 violations" VACUOUS — all 9 d0 anchors singletons, no
+eligible pairs; (4) action descent 0/0 = untestable; (5) coverage 35% vs
+required 90%; (6) no actual recurrent-state substitution; (7) kNN comparison
+target-informed; (8) wrong statistical test.
 
-**Pre-registered adjudication:** G1 PASS, G2 PASS, G3 PASS, **G4 FAIL** (kNN
-beats quotient), G5 PASS, **G6 FAIL** (action descent 0/0). OVERALL: **FAIL**.
+**Licensed sentence (Codex, verbatim):** PSR-v2 is an invalid confirmatory
+adjudication, not a valid negative result: the implemented argmax quotient used
+out-of-horizon response laws, its zero-violation right-congruence diagnostic was
+vacuous because all depth-0 anchors were singleton classes, composition covered
+19/54 histories, and action descent and causal substitution were not tested; RCQ
+is therefore closed on this task by the bounded-round protocol, not empirically
+falsified.
 
-**What we learned:** Right congruence is achievable (algebraic structure exists)
-but quotient composition cannot beat nearest-neighbor matching on raw signatures.
-The abstraction loses predictive information. Closes RCQ on entity-location
-tracking per pre-registered adjudication tree.
+**What we learned:** (1) Horizon-custody law required. (2) Nonvacuity certificate
+essential: 0/0 = N/A. (3) Argmax cannot define predictive equivalence. (4) Fair
+evaluation needs common denominator and task-clustered inference. (5) Response
+similarity ≠ causal substitution. (6) Need multiple histories per operational
+state. RCQ closed on entity-location tracking by protocol, not falsified.
 
 ---
 

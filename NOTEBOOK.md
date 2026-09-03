@@ -37,40 +37,41 @@ evidence gate issues from PSR-v1. Key changes:
 
 Running on CPU. Codex design gate also in progress (will refine before claiming).
 
-**PSR-v2 RESULT: OVERALL FAIL.** 702 model calls, ~50 min wall-clock. Key numbers:
-- 21 classes from 63 construction histories, 6 suffixes in Gamma
-- Right congruence ACHIEVED (0 violations, 0 transition conflicts)
-- Coverage: 19/54 = 35.2% (4 novel signatures)
-- **kNN (TV=0.1090) BEATS quotient (TV=0.1183)** — decisive
-- Quotient beats parser (TV 0.1183 vs 0.1758, p=0.008) and shuffled (p=0.000)
-- Action descent: 0/0 (all 9 d0 histories are singletons under argmax w/ 6 suffixes)
-- Within-class TV: 0.1542 mean, 0.4998 max (argmax too coarse)
-- Class-label accuracy: quotient 76.5%, parser 18.0%, kNN 56.0%
+**PSR-v2 raw result:** 702 model calls, ~50 min wall-clock. 21 classes from 63
+construction histories, 6 suffixes. Coverage: 19/54=35.2%. Right congruence
+reported 0 violations (but see Codex verdict below). kNN TV=0.1090 vs quotient
+TV=0.1183 on 19 covered rows. Action descent: 0/0 (untestable).
 
-Pre-registered adjudication gates:
-- G1 Coverage >= 30%: PASS (35.2%)
-- G2 Congruence <= 5: PASS (0 violations)
-- G3 Quotient < Parser: PASS (p=0.008)
-- G4 Quotient < kNN: **FAIL** (0.1183 vs 0.1090)
-- G5 Quotient < Shuffled: PASS (p=0.000)
-- G6 Action descent >= 90%: **FAIL** (0/0)
-- OVERALL: FAIL
+**Codex evidence gate verdict: INVALID_PSR_V2 — not a valid scientific negative.**
+Multiple deviations invalidate confirmatory adjudication: (1) horizon safety
+violation (d1 suffixes → d2 behavior, cannot be assumed to help); (2) argmax
+instead of approved Q16 — within-class TV 0.1542/0.4998 confirms classes are not
+predictive-equivalence classes; (3) right congruence "0 violations" is VACUOUS —
+all 9 d0 anchors are singletons, no eligible pairs; (4) action descent 0/0 =
+untestable, not a result; (5) coverage 35% vs required 90%; (6) no actual
+recurrent-state substitution; (7) kNN comparison is target-informed (evaluation
+sigs used as kNN inputs); (8) wrong statistical test (per-row t vs registered
+nine-cluster sign-flip).
 
-**What this tells us:**
-1. Right congruence WAS achieved — the model's behavioral state IS structured.
-   21 classes, 0 violations — deterministic action maps exist at the class level.
-2. kNN beating quotient = the quotient abstraction LOSES information. Raw
-   signatures capture the predictive information; the composition mechanism
-   cannot exploit structure beyond what kNN does with raw similarity.
-3. Within-class TV of 0.1542 (max 0.4998) shows argmax classes are internally
-   heterogeneous — the abstraction is too coarse.
-4. Caveat: horizon safety violation (suffixes query depth-2 from d1 construction).
-   But even WITH this leak helping the quotient, kNN still wins.
+**Licensed sentence (Codex, verbatim):** PSR-v2 is an invalid confirmatory
+adjudication, not a valid negative result: the implemented argmax quotient used
+out-of-horizon response laws, its zero-violation right-congruence diagnostic was
+vacuous because all depth-0 anchors were singleton classes, composition covered
+19/54 histories, and action descent and causal substitution were not tested; RCQ
+is therefore closed on this task by the bounded-round protocol, not empirically
+falsified.
 
-**RCQ on entity-location tracking: CLOSED** per pre-registered adjudication tree.
+**RCQ on entity-location tracking: CLOSED** — administrative/protocol closure,
+not empirical falsification. No PSR-v3.
 
-**Next:** Codex evidence gate for formal verdict, then direction dialogue on what
-to try next. The failure closes the approach, not the premise.
+**Transferable residue (6 items):** horizon-custody law, nonvacuity certificate,
+approximate-identity criterion, fair evaluation rules, causal boundary (response
+similarity ≠ substitution), multiple histories per operational state.
+
+**Next:** Codex direction dialogue round 1 — what is the highest-leverage pivot?
+The Codex evidence gate recommends: graded continuation-distinguishability object
+(coordinate-free response pseudometric) with genuine recurrent-state interchange,
+on a new task with multiple independently worded histories per state.
 
 ---
 
