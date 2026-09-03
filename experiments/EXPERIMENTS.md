@@ -5,6 +5,97 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
+## Semantic Content Probe — suffix content drives settling effect (2026-09-03; Codex gate pending)
+
+Distance from claim: 1 (settling mechanism characterization).
+Runner: `scratchpad/semantic_content_probe.py`. Results: `experiments/results/semantic_content_result.json`.
+Ledger: `semantic_content_probe`.
+
+**Method:** 8 suffix conditions on SVB-2 template (d3, Falcon-H1, 27 measurements each).
+Tested: "# No changes.", "# TODO", "# Lorem ipsum dolor sit amet", "#", "# ", "pass", "\n", no suffix.
+
+**Results:**
+| Condition | Mean σ | Gain |
+|-----------|--------|------|
+| # No changes. | 0.4299 | +53.5% |
+| # (space) | 0.3295 | +17.7% |
+| # TODO | 0.2963 | +5.8% |
+| # (bare) | 0.2855 | +1.9% |
+| baseline | 0.2801 | — |
+| pass | 0.2410 | -13.9% |
+| Lorem ipsum | 0.2351 | -16.1% |
+| bare newline | 0.2230 | -20.4% |
+
+**What we learned:** Settling is content-dependent, not a generic syntactic trigger or extra-processing-time
+effect. Comment range = 0.1948. "# No changes." is uniquely effective. Irrelevant content (lorem, newline)
+actively hurts. Whether the effect is semantic (meaning) or distributional (training frequency) is open.
+Codex evidence gate in progress.
+
+---
+
+## Order Independence v1/v2 — commutativity breaks on SVB-2 template (2026-09-03; Codex REVISE)
+
+Distance from claim: 1 (structural prediction test).
+Runners: `scratchpad/order_independence_probe.py` (v1), `scratchpad/order_independence_svb2.py` (v2).
+Results: `experiments/results/order_independence_result.json` (v1),
+`experiments/results/order_independence_v2_result.json` (v2). Ledger: `order_independence_v1`, `order_independence_v2`.
+
+**Method:** 7 suffix conditions (s0, s1_comment, s1_pass, s2_comment+pass, s2_pass+comment,
+s2_comment+comment, s2_pass+pass) at d3 on Falcon-H1. V1 used simplified template, V2 used SVB-2 template.
+
+**V1:** Commutativity appeared to hold (diff 0.011) but comment was near ceiling (0.90).
+**V2:** Order sensitivity confirmed — comment→pass produces 0.084 higher σ than pass→comment,
+same sign in all 27 paired cases. Within-type scalar idempotency strong.
+
+**Codex evidence gate (REVISE):** Order effect is real but projection/subspace mechanism language
+not earned. "Pass hurts" is heterogeneous across variables. Prompt-history sensitivity is an equally
+valid explanation. Licensed claim: behavioral order sensitivity on the fixed panel, not a latent
+projection or consolidation law.
+
+---
+
+## SVB-2 — Fine-grained suffix resolution on Falcon-H1 (2026-09-03; SCOPE_STACK_WITNESS)
+
+Distance from claim: 1 (settling mechanism at fine granularity).
+Runner: `experiments/run_svb_0.py experiments/config/svb_2.json`. Config: `experiments/config/svb_2.json`.
+Results: `experiments/results/svb_2/`. Ledger: `svb_2_result`.
+
+**Method:** Suffix counts [0,1,2,3,4,6,8] at depths 1-4. Neutral suffix = "# No changes.\n".
+Fine-grained resolution to determine if d4 s1 peak is genuine.
+
+**Results:** Peak at s1 for ALL depths d2-d4 (d3 s2>s1 not significant, p=0.86).
+Gain scales linearly with depth: d2 +29.6%, d3 +53.5%, d4 +87.9% (~30% per depth level).
+One-shot trigger confirmed — additional suffixes provide diminishing returns.
+
+---
+
+## SVB-Qwen3-Formal — settling time UNIVERSAL across architectures (2026-09-03; SCOPE_STACK_WITNESS)
+
+Distance from claim: 1 (universality confirmation).
+Runner: `experiments/run_svb_0.py experiments/config/svb_qwen3_formal.json`.
+Results: `experiments/results/svb_qwen3_formal/`. Ledger: `svb_qwen3_formal_result`.
+
+**Method:** Full SVB on Qwen3-1.7B-Base (pure transformer, no recurrence). 621 calls, 3.3 min CPU.
+
+**Results:** Same qualitative settling law (gain grows with depth, peak at s1).
+Qwen3 magnitudes ~5x smaller (d4: +16.7% vs Falcon +87.9%). Different architecture,
+same behavioral law. Cross-model universality confirmed.
+
+---
+
+## Settling Mechanism Probes — one-shot consolidation, Python-specific (2026-09-03; SUFFIX_MECHANISM)
+
+Distance from claim: 1 (mechanism characterization).
+Runners: various probe scripts in scratchpad. Results in STATE.md and NOTEBOOK.md.
+
+Series of quick probes on Qwen3-1.7B-Base:
+1. Double comment (+11.8%) worse than single (+13.0%) — one-shot trigger, not processing time.
+2. Python `#` (+13.0%) >> C++ `//` (+2.9%) — Python-specific.
+3. Docstrings stronger than comments (+17.5% at d3). Anti-settling from competing values (-26-34%).
+4. Optimal suffix at d4 reaches σ=0.940, higher than raw d2 (0.897).
+
+---
+
 ## SVB-1 — Depth Capacity Curve on Falcon-H1-1.5B-Instruct (2026-09-03; SCOPE_STACK_WITNESS)
 
 Distance from claim: 1 (depth scaling law and settling time are direct observables
