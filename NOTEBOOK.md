@@ -4,6 +4,38 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### SVB-2 preliminary: settling bandwidth scales with depth (2026-09-03)
+
+**Fine-grained suffix resolution [0,1,2,3,4,6,8] on Falcon-H1 reveals a
+BANDWIDTH LAW, not just a peak law.** d1-d3 complete, d4 in progress.
+
+| Depth | Peak suffix | Positive-gain range | Bandwidth |
+|-------|-------------|---------------------|-----------|
+| d1    | s0          | none                | 0         |
+| d2    | s1          | s1-s4               | 3         |
+| d3    | s2          | s1-s8               | 6         |
+
+Key numbers (sigma): d1 s0=0.681 s1=0.669 s2=0.560; d2 s0=0.497 s1=0.645 s2=0.597;
+d3 s0=0.280 s1=0.430 s2=0.441 s4=0.338 s8=0.289.
+
+The s2>s1 peak shift at d3 is NOT significant (p=0.86, t=0.18) — the settling
+benefit forms a PLATEAU at d3, not a sharp peak. But the width of the plateau
+scales linearly with depth (~3 positions per depth level). This means:
+
+1. Shallow bindings (d1) are DAMAGED by any settling — already maximally accessible
+2. Medium bindings (d2) have a narrow settling window (s1-s4)
+3. Deep bindings (d3) tolerate settling across nearly all tested counts
+
+**Theoretical implications:**
+- H1 (computational depth) STRENGTHENED — depth-dependent bandwidth is exactly
+  what additional forward passes for resolving deeper scopes would predict
+- H5 (learned consolidation trigger) WEAKENED — a single trigger should give a
+  sharp peak, not a broad plateau
+- Waiting for d4: prediction is bandwidth ~7 (all tested points positive), peak
+  around s3-s4 if the linear trend continues
+
+[NEEDS CODEX VALIDATION — Codex gate 2026-09-06]
+
 ### Optimal suffix: depth loss is nearly fully recoverable (2026-09-03)
 
 **With the right suffix, d4 accuracy (0.940) exceeds raw d2 (0.897).**
