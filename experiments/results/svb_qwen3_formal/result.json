@@ -1,0 +1,238 @@
+{
+  "manifest": {
+    "config_hash": "875cfed88e3cbd435ea6a941c601f8737b02ad851d4f06fbc5bf61a98b744ed3",
+    "model_id": "Qwen/Qwen3-1.7B-Base",
+    "total_calls": 621,
+    "elapsed_seconds": 198.42512106895447
+  },
+  "competence": {
+    "direct": {
+      "n": 27,
+      "correct": 27,
+      "accuracy": 1.0,
+      "threshold": 0.9,
+      "pass": true
+    },
+    "single_d1": {
+      "n": 27,
+      "correct": 27,
+      "accuracy": 1.0,
+      "threshold": 0.85,
+      "pass": true
+    }
+  },
+  "observables": {
+    "depth1": {
+      "sigma_mean": 0.9581216949003714,
+      "sigma_std": 0.027310402688781,
+      "sigma_ci95": [
+        0.9470242959481698,
+        0.9671137686680864
+      ],
+      "kappa_mean": 0.9660099238802408,
+      "kappa_std": 0.016489514961931805,
+      "kappa_ci95": [
+        0.9625917193264051,
+        0.9688208844707064
+      ],
+      "n_sigma": 27,
+      "n_kappa": 108
+    },
+    "depth2": {
+      "sigma_mean": 0.8965983810248198,
+      "sigma_std": 0.04711456162632974,
+      "sigma_ci95": [
+        0.8784727076689403,
+        0.9134894724797319
+      ],
+      "kappa_mean": 0.9074229814523952,
+      "kappa_std": 0.030328238591264912,
+      "kappa_ci95": [
+        0.9013074279584207,
+        0.912770817213432
+      ],
+      "n_sigma": 27,
+      "n_kappa": 108
+    },
+    "depth3": {
+      "sigma_mean": 0.7916665916089658,
+      "sigma_std": 0.07384275551745184,
+      "sigma_ci95": [
+        0.7642311479206438,
+        0.8197446308754108
+      ],
+      "kappa_mean": 0.7922469746598735,
+      "kappa_std": 0.047629550640692575,
+      "kappa_ci95": [
+        0.7829196661845008,
+        0.8011927903542899
+      ],
+      "n_sigma": 27,
+      "n_kappa": 108
+    },
+    "depth4": {
+      "sigma_mean": 0.7532811672599228,
+      "sigma_std": 0.08917673748633147,
+      "sigma_ci95": [
+        0.7195264533714012,
+        0.7867859737740622
+      ],
+      "kappa_mean": 0.7532737544508429,
+      "kappa_std": 0.052535637339091154,
+      "kappa_ci95": [
+        0.7428095688818253,
+        0.7629011017247985
+      ],
+      "n_sigma": 27,
+      "n_kappa": 108
+    },
+    "entity_interaction": {
+      "iota_mean": 0.0,
+      "iota_ci95": [
+        0.0,
+        0.0
+      ],
+      "n": 1
+    },
+    "depth1_suffix_profile": {
+      "s0": {
+        "sigma_mean": 0.9581216949003714,
+        "n": 27
+      },
+      "s1": {
+        "sigma_mean": 0.9699688884947035,
+        "n": 27
+      },
+      "s2": {
+        "sigma_mean": 0.9613701546633685,
+        "n": 27
+      },
+      "s4": {
+        "sigma_mean": 0.9586358445662039,
+        "n": 27
+      }
+    },
+    "depth2_suffix_profile": {
+      "s0": {
+        "sigma_mean": 0.8965983810248198,
+        "n": 27
+      },
+      "s1": {
+        "sigma_mean": 0.9453354124669675,
+        "n": 27
+      },
+      "s2": {
+        "sigma_mean": 0.9360032655574657,
+        "n": 27
+      },
+      "s4": {
+        "sigma_mean": 0.9342819099073056,
+        "n": 27
+      }
+    },
+    "depth3_suffix_profile": {
+      "s0": {
+        "sigma_mean": 0.7916665916089658,
+        "n": 27
+      },
+      "s1": {
+        "sigma_mean": 0.900334996205789,
+        "n": 27
+      },
+      "s2": {
+        "sigma_mean": 0.8875720633400811,
+        "n": 27
+      },
+      "s4": {
+        "sigma_mean": 0.8935532084217778,
+        "n": 27
+      }
+    },
+    "depth4_suffix_profile": {
+      "s0": {
+        "sigma_mean": 0.7532811672599228,
+        "n": 27
+      },
+      "s1": {
+        "sigma_mean": 0.8795847407093754,
+        "n": 27
+      },
+      "s2": {
+        "sigma_mean": 0.8723839962923968,
+        "n": 27
+      },
+      "s4": {
+        "sigma_mean": 0.8492851257324219,
+        "n": 27
+      }
+    }
+  },
+  "null_ladder": {
+    "d1_uniform": {
+      "mean_tv": 0.8794325418544534,
+      "n": 108
+    },
+    "d1_inner_value": {
+      "mean_tv": 0.7672890041937569,
+      "n": 108
+    },
+    "d1_mean_dist": {
+      "mean_tv": 0.8564820051246256,
+      "n": 108
+    },
+    "d1_identity": {
+      "mean_tv": 0.9660099238802408,
+      "n": 108
+    },
+    "d2_uniform": {
+      "mean_tv": 0.8318901568939687,
+      "n": 108
+    },
+    "d2_inner_value": {
+      "mean_tv": 0.7330520965710834,
+      "n": 108
+    },
+    "d2_mean_dist": {
+      "mean_tv": 0.8112895051498675,
+      "n": 108
+    },
+    "d2_identity": {
+      "mean_tv": 0.9074229814523952,
+      "n": 108
+    },
+    "d3_uniform": {
+      "mean_tv": 0.8002232960127418,
+      "n": 108
+    },
+    "d3_inner_value": {
+      "mean_tv": 0.6517565689153142,
+      "n": 108
+    },
+    "d3_mean_dist": {
+      "mean_tv": 0.7556057449277761,
+      "n": 108
+    },
+    "d3_identity": {
+      "mean_tv": 0.7922469746598735,
+      "n": 108
+    },
+    "d4_uniform": {
+      "mean_tv": 0.7950958853669037,
+      "n": 108
+    },
+    "d4_inner_value": {
+      "mean_tv": 0.6267824418566845,
+      "n": 108
+    },
+    "d4_mean_dist": {
+      "mean_tv": 0.7510205348393286,
+      "n": 108
+    },
+    "d4_identity": {
+      "mean_tv": 0.7532737544508429,
+      "n": 108
+    }
+  },
+  "verdict": "SCOPE_STACK_WITNESS",
+  "detail": "All gates pass. Sigma band: strong, Kappa band: strong. sigma_d1=0.9581, sigma_d2=0.8966, kappa_d1=0.9660, iota=0.0000"
+}
