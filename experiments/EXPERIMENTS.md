@@ -5,6 +5,31 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
+## PFC-0 — Path-Fiber Calculus v1 on Finch-3B (2026-09-02; TASK_POPULATION_VOID)
+
+Distance from claim: 0 (the transport and composition ARE native math).
+Runner: `experiments/run_path_fiber_v1.py`. Config: `experiments/config/path_fiber_v1.json`.
+Results: `experiments/results/path_fiber_v1/`. Ledger: `pfc_0_launch`, `pfc_0_result`.
+
+**Method:** Four-corner path square (p00, pL, pR, pLR) with washout tail.
+9 roots × 3 panels × 6 paths × 2 queries = 324 endpoint specs + 72 replay calls.
+Cross-fitted stochastic transports K_L, K_R learned from 3 training corners,
+predict held-out pLR. SLSQP with ridge 1e-3. 3-fold cross-fitting on roots.
+7 baselines: parser, last-1, last-2, multiset, discounted (LOO lambda), primitive
+composition (Adam 3000 steps, 6 channel types), causal 1-NN.
+
+**Verdict: TASK_POPULATION_VOID.** Competence gate failed (washed 0.79, raw 0.72,
+need 0.95). PFC transport clean (coverage 1.0, coherence 0.002) but loses to all
+baselines except causal kNN. Parser best at TV 0.019 vs PFC at 0.038.
+Defects below gate (0.03 < 0.05 required). Advantages all negative.
+
+**What was learned:** (1) Washout tail methodologically correct but erases the
+path-order signal. (2) 4-action sequences exceed Finch-3B tracking capacity.
+(3) Cross-fitted stochastic transport works mechanically but adds noise on this
+task. (4) Simple endpoint residuals near-optimal for predicting washed corners.
+
+---
+
 ## PSR-v2 — Corrected Predictive-State Adjudication on Finch-3B (2026-09-02; INVALID_PSR_V2 per Codex evidence gate)
 
 Distance from claim: 0 (the refined quotient and transition law ARE native math).

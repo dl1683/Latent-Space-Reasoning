@@ -4,6 +4,46 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+## 2026-09-03 (session 5) — PFC-0 result: TASK_POPULATION_VOID
+
+**PFC-0 experiment completed.** Verdict: TASK_POPULATION_VOID.
+
+Competence gate failed: washed accuracy 0.7917 (need 0.95), raw accuracy 0.7222
+(need 0.95). The OK_G panel is particularly weak (0.22 for washed Avery, 0.00
+for raw KG_O Avery).
+
+PFC transport is mechanically clean — coverage 1.0, coherence mean 0.0018,
+p90 0.0027, all within gates. But PFC (mean TV 0.0381) **loses to every
+baseline** except causal kNN:
+- Parser: 0.0194 (best; advantage over PFC: 0.0187, CI entirely positive)
+- Discounted: 0.0236 (advantage: 0.0145)
+- Last-1/2: 0.0248 (advantage: 0.0132)
+- Multiset: 0.0259 (advantage: 0.0122)
+- Primitive: 0.0312 (advantage: 0.0068)
+- Causal kNN: 0.0440 (PFC advantage: 0.0059, CI crosses zero)
+
+Defects small: raw 0.0356, washed 0.0298 — both BELOW the 0.05 gate (need ≥0.05
+to show path ordering matters). The washout tail designed to defeat recency baselines
+also erases the very path-order signal PFC is trying to capture.
+
+**Key insight:** The experiment is doubly clean and doubly negative. The apparatus
+works (replay TV 3e-6, PFC coverage 1.0, coherence 0.002) but the phenomenon it
+measures is too small. The washout tail, which is methodologically correct (it
+prevents confounding recency with path structure), also removes the signal.
+
+**What was learned:**
+1. 4-action entity-location sequences exceed Finch-3B's tracking capacity (79% washed)
+2. Washout tails erase path-order signal by resetting both entities to the same location
+3. Simple baselines (parser = endpoint residual) are near-perfect on this task
+4. Cross-fitted stochastic transport works mechanically but adds noise vs simpler methods
+5. The signal-to-noise ratio is too low for path-fiber calculus to emerge
+
+**What's next:** Codex evidence gate + direction dialogue. Core question: is the
+problem (a) task complexity (too many actions), (b) the washout design (erases signal),
+or (c) the phenomenon itself (path ordering doesn't compose predictively)?
+
+---
+
 ## 2026-09-03 (session 4) — Direction pivot: response curvature / path-fiber calculus
 
 **Codex evidence gate adopted:** PSR-v2 ruled INVALID (not valid FAIL). Right

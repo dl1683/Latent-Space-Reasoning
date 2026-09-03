@@ -130,6 +130,57 @@ Spec: theory/HANDLE_MU_V2.md.
 Prior V1 rung 1 results: experiments/results/handle_mu/seed_42_rung_1.json.
 V2 results: experiments/results/handle_mu/v2_*.json.
 
+### PFC-0: Path-Fiber Calculus v1 (2026-09-02, TASK_POPULATION_VOID)
+
+Distance-from-claim: **0** — the transport and composition ARE the native math.
+Spec: Codex R3 lock (session 4). Runner: experiments/run_path_fiber_v1.py.
+Config: experiments/config/path_fiber_v1.json.
+
+**Design:** Four-corner path square (p00, pL, pR, pLR) with washout tail on
+Finch-3B entity-location task. 9 roots × 3 panels × 6 paths × 2 queries = 324
+specs. Cross-fitted stochastic transports K_L, K_R learned from 3 corners on
+train roots, predict pLR on held-out roots. 7 baselines: parser, last-1, last-2,
+multiset, discounted history, primitive composition (Adam 3000 steps), causal 1-NN.
+
+**Verdict: TASK_POPULATION_VOID**
+
+| Gate | Value | Threshold | Result |
+|------|-------|-----------|--------|
+| Washed accuracy | 0.7917 | ≥0.95 | FAIL |
+| Raw accuracy | 0.7222 | ≥0.95 | FAIL |
+| Replay max TV | 3.1e-6 | ≤0.0001 | PASS |
+| PFC coverage | 1.0000 | =1.00 | PASS |
+| PFC mean TV | 0.0381 | ≤0.10 | PASS |
+| PFC coherence mean | 0.0018 | ≤0.03 | PASS |
+| PFC coherence p90 | 0.0027 | ≤0.08 | PASS |
+| Raw defect mean | 0.0356 | ≥0.05 | FAIL |
+| Wash defect mean | 0.0298 | ≥0.05 | FAIL |
+| PFC advantage | -0.0187 | ≥0.02 | FAIL |
+
+**Baselines (mean TV, lower=better):**
+| Method | Mean TV |
+|--------|---------|
+| parser | 0.0194 |
+| discounted | 0.0236 |
+| last_1 / last_2 | 0.0248 |
+| multiset | 0.0259 |
+| primitive | 0.0312 |
+| **PFC** | **0.0381** |
+| causal_knn | 0.0440 |
+
+PFC loses to every baseline except causal kNN (advantage +0.006, CI crosses zero).
+All advantages have CIs entirely below zero except causal kNN.
+
+**Diagnosis:** Double negative — (1) competence gate fails (model only 79%/72%
+accurate on 4-action entity-location sequences), and (2) PFC transport doesn't
+beat any simple baseline. The washout tail (designed to defeat recency) also
+erases the path-order signal PFC tries to capture. Defects small (0.03 TV) because
+all corners converge after washout. PFC transport is mechanically clean
+(coverage 1.0, coherence 0.002) but predicts the held-out corner LESS well than
+a simple endpoint residual (parser at 0.019 TV).
+
+Runner: experiments/run_path_fiber_v1.py. Results: experiments/results/path_fiber_v1/.
+
 ### RCQ-0: Real Causal Quotient on Finch-3B (2026-09-02, IN PROGRESS)
 
 Distance-from-claim: **0** — the quotient and action law ARE the native math.
