@@ -19,7 +19,9 @@ import numpy as np
 import torch
 
 
-class FalconAdapter:
+class ModelAdapter:
+    """Unified adapter for transformer, SSM, and hybrid models."""
+
     def __init__(self, cfg):
         from transformers import AutoTokenizer, AutoModelForCausalLM
         self.tok = AutoTokenizer.from_pretrained(
@@ -27,6 +29,7 @@ class FalconAdapter:
         self.mdl = AutoModelForCausalLM.from_pretrained(
             cfg["model_id"], trust_remote_code=True, torch_dtype=torch.float32)
         self.mdl.eval()
+        self.is_mamba = type(self.mdl).__name__.startswith("Mamba")
         self.digit_token_ids = {}
         for d in range(10):
             toks = self.tok.encode(str(d), add_special_tokens=False)
@@ -42,18 +45,28 @@ class FalconAdapter:
         bins[10] = 1.0 - bins[:10].sum()
         return bins
 
+    def _get_cache(self, out):
+        if self.is_mamba:
+            return out.cache_params
+        return out.past_key_values
+
+    def _forward_with_cache(self, ids, state):
+        if self.is_mamba:
+            return self.mdl(ids, cache_params=state, use_cache=True)
+        return self.mdl(ids, past_key_values=state, use_cache=True)
+
     def get_state_after_prefix(self, text):
         ids = self.tok.encode(text, add_special_tokens=False, return_tensors="pt")
         with torch.no_grad():
             out = self.mdl(ids, use_cache=True)
         self.call_count += 1
-        return copy.deepcopy(out.past_key_values)
+        return copy.deepcopy(self._get_cache(out))
 
     def get_dist_from_state(self, state, suffix_text, deepcopy=True):
         ids = self.tok.encode(suffix_text, add_special_tokens=False, return_tensors="pt")
         st = copy.deepcopy(state) if deepcopy else state
         with torch.no_grad():
-            out = self.mdl(ids, past_key_values=st, use_cache=True)
+            out = self._forward_with_cache(ids, st)
         self.call_count += 1
         return self._extract_11bin(out.logits[0, -1, :])
 
@@ -63,6 +76,9 @@ class FalconAdapter:
             out = self.mdl(ids)
         self.call_count += 1
         return self._extract_11bin(out.logits[0, -1, :])
+
+
+FalconAdapter = ModelAdapter
 
 
 def tv(a, b):
