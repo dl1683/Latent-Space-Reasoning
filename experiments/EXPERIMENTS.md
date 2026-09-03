@@ -7,7 +7,9 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ## PFC-0 — Path-Fiber Calculus v1 on Finch-3B (2026-09-02; TASK_POPULATION_VOID)
 
-Distance from claim: 0 (the transport and composition ARE native math).
+Distance from claim: 2 (Codex evidence gate correction — K is researcher-imposed
+3×3 stochastic matrix on softmax simplex; composition is ordinary matrix
+multiplication; imported probability algebra, not native math).
 Runner: `experiments/run_path_fiber_v1.py`. Config: `experiments/config/path_fiber_v1.json`.
 Results: `experiments/results/path_fiber_v1/`. Ledger: `pfc_0_launch`, `pfc_0_result`.
 
@@ -23,10 +25,16 @@ need 0.95). PFC transport clean (coverage 1.0, coherence 0.002) but loses to all
 baselines except causal kNN. Parser best at TV 0.019 vs PFC at 0.038.
 Defects below gate (0.03 < 0.05 required). Advantages all negative.
 
-**What was learned:** (1) Washout tail methodologically correct but erases the
-path-order signal. (2) 4-action sequences exceed Finch-3B tracking capacity.
-(3) Cross-fitted stochastic transport works mechanically but adds noise on this
-task. (4) Simple endpoint residuals near-optimal for predicting washed corners.
+**What was learned (Codex evidence gate corrected):**
+(1) Competence failure is garden-specific (all failing arms target garden;
+kitchen/office are 1.000) — answer-token calibration, not sequence-length capacity.
+(2) "Washout erases signal" unsupported — raw-to-washed decrease only 0.006 TV
+(CI crosses zero); one panel increases. At most attenuation, not erasure.
+(3) Individual K edges improve ~0.006 TV over identity (significant), but composed
+K_L·K_R is worse than identity by 0.008 TV (CI [−0.015, −0.002]). Composition
+destroys individual edge gains. Panel-additive residual (0.020) beats K (0.024).
+(4) Stochastic-K vehicle closed. Next: PMO-0 (path-memory observability via
+common-suffix distinguishability, no washout, competence staircase).
 
 ---
 

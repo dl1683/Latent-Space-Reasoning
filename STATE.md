@@ -132,7 +132,10 @@ V2 results: experiments/results/handle_mu/v2_*.json.
 
 ### PFC-0: Path-Fiber Calculus v1 (2026-09-02, TASK_POPULATION_VOID)
 
-Distance-from-claim: **0** — the transport and composition ARE the native math.
+Distance-from-claim: **2** (Codex evidence gate correction) — K is a researcher-imposed
+3×3 stochastic matrix acting on a 3-token softmax simplex; its composition is ordinary
+matrix multiplication. This is imported finite-dimensional probability algebra, not
+native latent-space math under the R^n standard.
 Spec: Codex R3 lock (session 4). Runner: experiments/run_path_fiber_v1.py.
 Config: experiments/config/path_fiber_v1.json.
 
@@ -171,13 +174,19 @@ multiset, discounted history, primitive composition (Adam 3000 steps), causal 1-
 PFC loses to every baseline except causal kNN (advantage +0.006, CI crosses zero).
 All advantages have CIs entirely below zero except causal kNN.
 
-**Diagnosis:** Double negative — (1) competence gate fails (model only 79%/72%
-accurate on 4-action entity-location sequences), and (2) PFC transport doesn't
-beat any simple baseline. The washout tail (designed to defeat recency) also
-erases the path-order signal PFC tries to capture. Defects small (0.03 TV) because
-all corners converge after washout. PFC transport is mechanically clean
-(coverage 1.0, coherence 0.002) but predicts the held-out corner LESS well than
-a simple endpoint residual (parser at 0.019 TV).
+**Diagnosis (Codex evidence gate corrected):** (1) Competence failure is
+garden-specific, not sequence-length: every failing arm targets garden (raw KG_O
+garden accuracy 0.000, washed OK_G garden 0.222); kitchen and office targets are
+1.000. "Four actions exceed capacity" is unsupported; the issue is answer-token/
+location/prompt calibration. (2) "Washout erases the signal" is unsupported:
+raw-to-washed defect decrease is only 0.006 TV (CI [−0.0002, 0.0115]); one panel
+(OK_G) increases defect under washout. At most possible attenuation, not erasure.
+(3) Composed transport adds error vs identity: identity (predict pLR=p00) gives TV
+0.0298, beating PFC 0.0381; root-paired identity-minus-PFC = −0.008, CI [−0.015,
+−0.002]. Single-edge K improves over identity by ~0.006 TV, but composition
+destroys the gain. Panel-additive residual (0.0197) beats K (0.0239).
+(4) PFC coverage 1.0 only means SLSQP converged; coherence 0.002 says two
+near-identity matrices nearly commute — neither demonstrates latent structure.
 
 Runner: experiments/run_path_fiber_v1.py. Results: experiments/results/path_fiber_v1/.
 

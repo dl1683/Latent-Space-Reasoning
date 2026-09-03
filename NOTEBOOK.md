@@ -26,21 +26,32 @@ Defects small: raw 0.0356, washed 0.0298 — both BELOW the 0.05 gate (need ≥0
 to show path ordering matters). The washout tail designed to defeat recency baselines
 also erases the very path-order signal PFC is trying to capture.
 
-**Key insight:** The experiment is doubly clean and doubly negative. The apparatus
-works (replay TV 3e-6, PFC coverage 1.0, coherence 0.002) but the phenomenon it
-measures is too small. The washout tail, which is methodologically correct (it
-prevents confounding recency with path structure), also removes the signal.
+**Key insight:** The apparatus is mechanically clean but the stochastic-K vehicle
+fails. Path order produces reproducible ~0.03 TV response differences (not noise),
+and single-edge K improves over identity by ~0.006 TV. But composing K_L·K_R is
+WORSE than identity (−0.008 TV, CI [−0.015, −0.002]). Panel-additive residual
+(0.0197 TV) beats K (0.0239 TV) beats identity (0.0300 TV) — but K composition
+destroys the individual edge gains.
 
-**What was learned:**
-1. 4-action entity-location sequences exceed Finch-3B's tracking capacity (79% washed)
-2. Washout tails erase path-order signal by resetting both entities to the same location
-3. Simple baselines (parser = endpoint residual) are near-perfect on this task
-4. Cross-fitted stochastic transport works mechanically but adds noise vs simpler methods
-5. The signal-to-noise ratio is too low for path-fiber calculus to emerge
+**What was learned (Codex evidence gate corrected):**
+1. Competence failure is garden-specific (all failing arms target garden; kitchen/office
+   are 1.000) — NOT evidence that 4 actions exceed capacity. The issue is
+   answer-token/location/prompt calibration
+2. "Washout erases signal" is unsupported — raw-to-washed decrease is only 0.006 TV
+   (CI crosses zero); one panel increases. At most attenuation, not erasure
+3. Distance-from-claim was overclaimed at 0 — K is imported finite-dimensional
+   probability algebra (3×3 stochastic matrices, ordinary matrix multiplication),
+   not native latent-space math. Corrected to distance 2
+4. Parser baseline is really a panel-conditioned mean pLR−p00 residual (not proof
+   endpoint knowledge suffices). Baselines train on pLR targets while PFC fits only
+   p00→pL/pR — comparison not fully fair
+5. The cheapest null (identity, predict pLR=p00) beats PFC. Composition adds error
 
-**What's next:** Codex evidence gate + direction dialogue. Core question: is the
-problem (a) task complexity (too many actions), (b) the washout design (erases signal),
-or (c) the phenomenon itself (path ordering doesn't compose predictively)?
+**What's next:** PMO-0 (Path-Memory Observability). Stop stochastic-K vehicle.
+Define path memory operationally via common-suffix distinguishability. Competence
+staircase to fix garden calibration. Recency-controlled population without washout,
+using saved recurrent states for identical suffix injection. If PMO-0 fails, close
+path-fiber on this task family.
 
 ---
 
