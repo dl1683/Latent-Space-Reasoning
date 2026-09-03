@@ -484,11 +484,34 @@ not a generic syntactic trigger or extra-processing-time effect.
 **Hierarchy:** "# No changes." >> "# " >> "# TODO" ≈ "#" >> baseline >>
 pass/lorem/newline.
 
-**Not established:** Whether "# No changes." works because of its meaning
-(state-maintenance instruction), its training distribution frequency, or
-token-specific properties. Codex evidence gate pending.
+**What IS established:** Suffix-sequence sensitivity — equal-token-count
+content-invariant processing rejected (5-token "# No changes." and 5-token
+"# Lorem ipsum" differ by 0.1948).
+
+**Not established (Codex-corrected):** Whether "# No changes." works because
+of meaning, lexical tokens, training distribution, or surprisal. "Semantic
+content" as cause is overclaimed — conditions differ on multiple confounded
+dimensions. Earlier Qwen3 data showed false "# Value updated." worked similarly,
+weakening semantic truth as mechanism.
 
 Results: experiments/results/semantic_content_result.json.
+[Codex evidence gate: REVISE — adopted corrections]
+
+### Semantic paraphrase probe: BPE-controlled semantic class effect (2026-09-03)
+
+Distance-from-claim: **1** — semantic structure of settling mechanism.
+
+Follow-up to address Codex concern about BPE confounding. All paraphrases and
+opposites exactly 5 BPE tokens. 10 conditions, 27 measurements each.
+
+**"Unchanged" meaning (5 tokens each):** mean 0.4501 (range 0.3303-0.5825)
+**"Changed" meaning (5 tokens each):** mean 0.2958 (range 0.2667-0.3249)
+**Difference at controlled token count: +0.1502**
+
+"Values unchanged" (+108%) surpasses original "# No changes." (+53.5%).
+4/5 paraphrases work well — not token-specific. Controls near or below baseline.
+
+Results: experiments/results/semantic_paraphrase_result.json.
 [Codex evidence gate in progress]
 
 ### SVB-1: Depth Capacity Curve on Falcon-H1-1.5B-Instruct (2026-09-03, SCOPE_STACK_WITNESS)

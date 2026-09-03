@@ -4,6 +4,56 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### Semantic paraphrase probe: settling is SEMANTIC-CLASS dependent (2026-09-03)
+
+**Discriminating test between semantic meaning and token/distributional effects.**
+10 conditions on SVB-2 template, d3, Falcon-H1, 27 measurements each.
+All paraphrases and opposites are exactly 5 BPE tokens — token count is controlled.
+
+| Condition             | BPE | Mean σ | Gain vs s0 |
+|-----------------------|-----|--------|------------|
+| s1_values_unchanged   | 5   | 0.5825 | +108.0%    |
+| s1_unchanged          | 5   | 0.4816 | +72.0%     |
+| s1_no_changes         | 5   | 0.4299 | +53.5%     |
+| s1_nothing_changed    | 5   | 0.4059 | +44.9%     |
+| s1_no_modifications   | 5   | 0.3303 | +18.0%     |
+| s1_values_updated     | 5   | 0.3249 | +16.0%     |
+| s0_none (baseline)    | 0   | 0.2801 | —          |
+| s1_end_of_block       | 6   | 0.2818 | +0.6%      |
+| s1_changes_made       | 5   | 0.2667 | -4.8%      |
+| s1_continue           | 4   | 0.1976 | -29.4%     |
+
+**Established (BPE-controlled):**
+1. **Semantic class matters.** "Unchanged" paraphrases (5 tokens): mean 0.4501.
+   "Changed" opposites (5 tokens): mean 0.2958. Difference: 0.1502 absolute.
+   At controlled token count, MEANING drives the effect.
+2. **Not token-specific.** 4/5 paraphrases of "# No changes." work well
+   (+18% to +108%). Different tokens, same meaning, same effect class.
+3. **"Values unchanged" is BEST** (+108%), surpassing original "# No changes."
+   (+53.5%). Mentioning "values" directly and using "unchanged" may be more
+   aligned with the scope-binding task.
+4. **Semantic opposites are weaker but heterogeneous.** "Changes made" (-4.8%)
+   hurts slightly. "Values updated" (+16%) is positive but much weaker than
+   unchanged equivalents.
+
+**Not established (pending Codex gate):**
+- Clean semantic/token separation: "# No modifications." (+18%) is barely above
+  "# Values updated." (+16%). The semantic class boundary is fuzzy.
+- Mechanism: whether this is instruction-following, training-distribution
+  association, or learned code-context sensitivity.
+- Variance WITHIN the "unchanged" class is large (0.3303-0.5825).
+- One model, depth, template, deterministic panel.
+- Truth-congruence reversal (matching changed/unchanged comments with actual
+  changed/unchanged program states) not yet tested.
+
+**Tension with Qwen3 data:** Earlier Qwen3 probes showed "# Value updated." working
+as well as "# No changes." at all depths. On Falcon-H1, "# Values updated." (+16%)
+is much weaker than "# No changes." (+53.5%). This model difference is itself
+informative — Falcon-H1 is more semantically sensitive than Qwen3.
+
+[Codex evidence gate pending]
+
+
 ### Semantic content probe: settling is CONTENT-DEPENDENT (2026-09-03)
 
 **Tested 8 suffix conditions on SVB-2 template, d3, Falcon-H1, 27 measurements each.**
@@ -30,21 +80,31 @@ was learned, what's next. Canonical state lives in STATE.md.
    "# TODO" / "#" (minimal structure) >> baseline >> pass/lorem/newline.
 4. **Irrelevant content actively hurts.** Lorem (-16.1%), bare newline (-20.4%).
 
-**Not established (pending Codex gate):**
-- WHY "# No changes." works. Candidates: (a) the model interprets it as a
-  state-maintenance instruction; (b) it appears frequently in Python training
-  data in contexts where variables are unchanged; (c) token-specific attention
-  pattern. These are discriminable by further probes.
-- Whether the effect generalizes beyond this specific comment string.
-- Mechanism: whether this is "the model following an instruction" or
-  "distributional properties of the training data."
+**Not established (Codex-corrected):**
+- "Semantic content" as cause is overclaimed. Conditions differ in BPE count
+  (1-5 tokens), frequency, surprisal, code-context associations. Cannot
+  separate meaning from lexical/distributional properties.
+- "# No changes." being "uniquely effective" is post-hoc — no multiplicity
+  correction, each category has one exemplar.
+- The "semantic > structural > empty > irrelevant" hierarchy is not factorial —
+  conditions differ on multiple dimensions simultaneously.
+- Earlier Qwen3 data showed false statement "# Value updated." worked similarly
+  to "# No changes." — weakens semantic truth as mechanism.
+- Raw per-measurement arrays lost to Unicode crash; only means/stds captured.
 
-**What this changes:** The settling effect is not a generic computational
-benefit of extra tokens. It is sensitive to the semantic/distributional
-content of the suffix. This rules out pure "extra processing time" explanations
-and points toward content-dependent state modulation.
+**What IS established:** Strong suffix-sequence sensitivity on this panel.
+Equal-token-count content-invariant processing is rejected ("# No changes." and
+"# Lorem ipsum" are both 5 BPE tokens, differ by 0.1948). The effect is not
+generic processing time, but the specific driver (meaning, tokens, training
+distribution, surprisal) is unidentified.
 
-[Codex evidence gate pending]
+**Next:** Matched 5-token polarity panel (Codex-recommended):
+"# No changes." vs "# Some changes.", "# No updates." vs "# Some updates.",
+"# Nothing changed." vs "# Something changed." — all 5 BPE tokens, same
+structure, differ only in state-change polarity. Pre-register pooled paired
+unchanged-minus-changed contrast.
+
+[Codex evidence gate: REVISE — adopted corrections]
 
 
 ### Codex evidence gate: order independence claims revised (2026-09-03)
