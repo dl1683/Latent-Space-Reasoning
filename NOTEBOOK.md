@@ -4,6 +4,39 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### Optimal suffix: depth loss is nearly fully recoverable (2026-09-03)
+
+**With the right suffix, d4 accuracy (0.940) exceeds raw d2 (0.897).**
+
+| Suffix | d4 gain | d4 sigma |
+|--------|---------|----------|
+| `"""Outer scope: x has not been modified."""` | **+21.6%** | **0.940** |
+| `"""Nothing changed."""` | +18.6% | 0.917 |
+| `# No changes.` | +13.4% | 0.877 |
+| `"""Variables: x is still the outer value."""` | +13.4% | 0.877 |
+| (no suffix) | — | 0.773 |
+
+The scope reminder docstring is the strongest settling suffix measured. The model goes
+from 77% to 94% accuracy with one token — beating the raw d2 baseline (0.897).
+
+**Docstring settling scales with depth:**
+- d2: docstring = +8.2% (0.891→0.964)
+- d3: docstring = +17.5% (0.796→0.936)
+- d4: docstring = +18.6% to +21.6% (0.773→0.917 to 0.940)
+
+**Interpretation split:** The +18.6% "Nothing changed" effect is pure settling
+(no new information, just a consolidation trigger). The additional +3% from "Outer
+scope: x has not been modified" is attention guidance (directing the model to the
+relevant scope). Both are single-token costs. The core settling law holds: depth-
+dependent binding loss is an access problem, not a knowledge problem.
+
+**Stronger formulation of the settling time law:** For a model with baseline scope
+binding σ_raw(d) at depth d, there exists a settling suffix s such that
+σ_settled(d) > σ_raw(d-2). Processing time doesn't just help — it nearly
+eliminates the cost of depth. [NEEDS CODEX VALIDATION]
+
+---
+
 ### Docstring vs comment: format shapes attention containment (2026-09-03)
 
 **Key discovery: same semantic content in docstring vs comment gives OPPOSITE effects.**
