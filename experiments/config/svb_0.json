@@ -1,0 +1,48 @@
+{
+  "model_id": "tiiuae/Falcon-H1-1.5B-Instruct",
+  "device": "cpu",
+  "dtype": "float32",
+  "seed": 42,
+  "variables": ["x", "y", "z"],
+  "outer_values": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  "inner_value": 99,
+  "inner_value_depth2": 999,
+  "depths": [1, 2],
+  "neutral_suffix": "# No changes.\n",
+  "neutral_suffix_counts": [0, 1, 2, 4],
+  "query_template": "f()\nprint({var})  # Output: ",
+  "templates": {
+    "depth1_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    return {var}\n",
+    "depth1_two": "{var1} = {val1}\n{var2} = {val2}\ndef f():\n    {var1} = 99\n    {var2} = 99\n    return {var1} + {var2}\n",
+    "depth2_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        return {var}\n    g()\n    return {var}\n",
+    "depth2_two": "{var1} = {val1}\n{var2} = {val2}\ndef f():\n    {var1} = 99\n    {var2} = 99\n    def g():\n        {var1} = 999\n        {var2} = 999\n        return {var1} + {var2}\n    g()\n    return {var1} + {var2}\n"
+  },
+  "folds": {
+    "F0": [1, 2, 3],
+    "F1": [4, 5, 6],
+    "F2": [7, 8, 9]
+  },
+  "bootstrap_resamples": 10000,
+  "bootstrap_seed": 42,
+  "gates": {
+    "direct_overall": 0.90,
+    "direct_arm": 0.80,
+    "single_depth1_overall": 0.85,
+    "two_var_depth1_overall": 0.80,
+    "depth2_overall": 0.70,
+    "p_other_max": 0.10,
+    "registered_sigma": 0.30,
+    "registered_sigma_lb": 0.20,
+    "strong_sigma": 0.50,
+    "strong_sigma_lb": 0.35,
+    "registered_kappa": 0.30,
+    "registered_kappa_lb": 0.15,
+    "strong_kappa": 0.50,
+    "strong_kappa_lb": 0.30,
+    "entity_iota": 0.10,
+    "entity_iota_lb": 0.05,
+    "replay_max_tv": 0.01
+  },
+  "cpu_abort_minutes": 60,
+  "result_dir": "experiments/results/svb_0"
+}

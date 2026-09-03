@@ -30,8 +30,28 @@ infrastructure from PFC-0 with critical corrections. Config: experiments/config/
 
 **Experiment launched.** CPU-only, ~21 min forecast. Commit cff8c07.
 
-**Pending:** result adjudication, Codex evidence gate, STATE/EXPERIMENTS update,
-post-PMO pivot to nested scope/variable binding.
+**PMO-0R result: TASK_POPULATION_VOID.** Direct fact competence 0/36 — model puts
+65% probability on continuation tokens vs 35% on locations. P(correct_location) < P(OTHER)
+always. Even relaxed (argmax among 3 locations), accuracy only 55.6% (kitchen bias).
+PFC-0 renormalization was masking model incompetence. Interface closed as unusable.
+
+**Pivot to nested scope/variable binding.** Post-PMO direction per Codex R1+R2.
+
+**Model screening results (Falcon-H1-1.5B-Instruct):**
+- Python scoping: PASS. Correctly predicts outer-scope value after function call.
+- State injection: WORKS. DynamicCache save/restore produces correct distributions.
+  (Full-pass vs injected TV=0.84, but injected version is actually MORE correct.)
+- Path contrast: TV 0.63-0.74 between different outer values (x=3 vs x=7). MASSIVE.
+- All values 1-9: correct top digit, probabilities 0.46-0.75. P(OTHER) only 2-4%.
+- Entity specificity: x=3,y=8 → query x returns 3, query y returns 8. Perfect.
+- Depth scaling: depth 1 correct (p=0.68), depth 2 correct (p=0.49), depth 3 FAILS.
+
+Compare to entity-location: PMO-0R got 0% competence. PFC-0 got TV ~0.03.
+Variable binding on Falcon-H1 gives TV ~0.70. Two orders of magnitude stronger.
+
+**Codex evidence gate: DEFERRED (credits exhausted until 2026-09-06).**
+
+**Pending:** SVB-0 spec, runner, experiment, evidence gate.
 
 
 ## 2026-09-03 (session 6) — PFC-0 evidence gate adopted, post-hoc analyses
