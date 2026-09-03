@@ -4,6 +4,34 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### SVB-2 designed — fine-grained suffix resolution (ready, not launched)
+
+**Purpose:** Map the settling curve shape at finer resolution. SVB-1 sampled
+suffix counts [0,1,2,4]. SVB-2 maps [0,1,2,3,4,6,8] — adds s3, s6, s8.
+
+**Key question:** Is d4's peak at s1 real or a sparse-sampling artifact?
+Three pre-registered hypotheses:
+- **H1 (sparse artifact):** True d4 peak at s2-s3, SVB-1 missed it
+- **H2 (genuine early peak):** s*(d) is non-monotonic — d4 genuinely peaks early
+  (would imply dual retrieval mechanisms, attention shortcut vs recurrent traversal)
+- **H3 (bimodal):** Two peaks at s1 and s3+, suggesting two distinct mechanisms
+
+**Additional predictions:** d1 flat/declining; d2 unimodal peak at s1; d3 peak
+at s2-s3 (finer resolution may shift slightly); by s8 all depths below s0 value.
+SVB-1 values at [0,1,2,4] should replicate within CI.
+
+**Config:** `experiments/config/svb_2.json`. Estimated ~128 min CPU. Not launched
+due to sustained load battery concern. Ready for next good battery window.
+
+**Codex evidence gate agenda (for 2026-09-06):**
+1. Are SVB-0+SVB-1 results evidence-gate clean? (no leakage, fair comparison, robust CIs)
+2. Does the settling time law qualify as a native axiom candidate? (Codex derives from first principles)
+3. Should we formalize C(d) = d + s*(d) or wait for SVB-2 to refine s*(d)?
+4. What's the strongest counter-explanation? (training data memorization? tokenizer artifact?)
+5. Cross-model priority: which single model would most efficiently test universality?
+6. Is the 11-bin response law a limitation or a feature? Does it bias results?
+
+
 ### SVB-1 result — settling time law CONFIRMED, geometric decay REJECTED
 
 **Geometric decay hypothesis REJECTED.** Predicted σ_d3 = 0.36, actual = 0.28.
