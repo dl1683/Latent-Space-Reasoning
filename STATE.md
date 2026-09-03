@@ -413,13 +413,27 @@ These panel-level approximations are not a congruence.
 words continue evolving past length 3. Sigma degrades with suffix length:
 CPC=0.486 → CPCC=0.439 → CPCPC=0.393.
 
+**Execution-mode invariance (EMI, 2026-09-03): ALL MODES DIVERGENT.**
+4 modes (L/W/G/F), 9 core words, 27 cells. 2079 calls, 5568s CPU.
+All 54 word×mode-pair comparisons DIVERGENT (simultaneous max-statistic
+band confirms, zero disagreements). L vs W: TV 0.33-0.42 (query-boundary
+artifact). W vs G: TV 0.05-0.18 (generator packaging matters). Mode F
+(full text, no cache): ALL defects NEAR (TV<0.016) — algebra vanishes
+without KV caching. Spearman L/W/G: rho 0.54-0.69 (moderate structural
+correlation). F vs all: rho -0.007 to 0.189 (uncorrelated).
+
+**Interpretation:** The suffix algebra is a property of the KV-cache
+execution schedule, not of text semantics. The model correctly identifies
+suffixes as semantically neutral when processing complete text (Mode F).
+Within any single execution mode, the algebra is reproducible and
+structurally coherent — but it is mode-specific, not mode-invariant.
+
 **Status:** H-LRB, H-BAND2, H-GEN-IDEM refuted. H-SAT3 best fit but formally
-inconclusive; the near-return CPCP≈CPC is a single-step property that does
-not persist (CPCPC≠CPC). No named semigroup variety licensed. The idealized
-7-element monoid is a reference, not empirical classification. All conclusions
-scoped to whole-continuation cached pathway; execution-mode invariance
-(chunking, full-forward) is the critical open validation. Native object:
-truncated response-labelled continuation automaton.
+inconclusive. EMI: execution-mode invariance FAILS — the algebra is
+execution-schedule-dependent. No partition-independent cached action exists.
+All prior conclusions scoped to Mode L (legacy joint execution). The
+observed structure is real but is architecture mathematics (KV cache
+dynamics), not text-level semantics.
 
 Spec: theory/SUFFIX_ACTION_ALGEBRA.md. Normalizer: theory/suffix_algebra.py.
 

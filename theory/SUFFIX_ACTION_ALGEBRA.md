@@ -19,9 +19,10 @@ are standard metrics on the probability simplex, imported via D2; the
 claim is no geometry on the latent/raw state space itself.) It states
 falsifiable hypotheses (H-LRB, H-BAND2, H-SAT3, H-GEN-IDEM, H-Truth),
 proves one theorem, and characterizes the empirical transition graph
-including contraction rates and convergence structure. Three algebraic
-hypotheses have been refuted; the remaining structure is a convergent
-right-continuation graph, not a classical semigroup variety.
+including branch coalescence and exploratory contraction observations.
+Three algebraic hypotheses have been refuted; right-continuation tests
+show no terminal absorption. The remaining structure is a truncated
+response-labelled continuation automaton, not a classical semigroup variety.
 
 
 ## Scope: the SVB transition world (D1 specialization)
@@ -812,6 +813,7 @@ Three validation levels remain open (in priority order):
    caching). The cached-vs-full fidelity gap (TV = 0.533) shows the two
    modes diverge substantially.
 
-3. **CPCC/PCPP measurement:** Confirms whether length-three words are
-   full right absorbers (absorbing under both generators, not just the
-   alternating one). Only meaningful after execution-mode validation.
+3. **CPCC/PCPP measurement — RESOLVED (2026-09-03):** Right-continuation
+   test shows CPC does NOT absorb C (TV=0.060, INCONCLUSIVE), PCP does
+   NOT absorb P (TV=0.072, REFUTE). CPCPC≠CPC (TV=0.099, REFUTE).
+   The monoid does not collapse. See right-continuation table above.

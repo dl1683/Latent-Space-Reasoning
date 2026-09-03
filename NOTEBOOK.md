@@ -4,6 +4,184 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### EMI RESULT: All modes DIVERGENT — algebra is execution-schedule-dependent (2026-09-03)
+
+Execution-Mode Invariance experiment complete. 2079 calls, 5568s (~93 min), CPU.
+ALL 54 word×mode-pair comparisons are DIVERGENT. Simultaneous max-statistic
+reanalysis confirms: zero disagreements with independent CIs.
+
+**Mode comparisons (mean TV across all 9 core words):**
+- L vs W: 0.33-0.42 — query-boundary artifact is MASSIVE
+- W vs G: 0.05-0.18 — generator packaging also changes state
+- L vs G: 0.40-0.53 — combining both effects
+- All vs F: 0.36-0.78 — cached vs non-cached = fundamentally different
+
+**Mode F (full text, no cache) collapses the algebra entirely:**
+All 8 defects become NEAR (TV < 0.016). BAND2-CP drops from 0.107 (L) to 0.008 (F).
+The model, processing complete text from scratch, identifies suffixes as semantically
+neutral. The algebra VANISHES without KV caching.
+
+**Defect re-adjudication per mode:**
+- L: matches historical perfectly (BAND2 FAR, SAT3-CP NEAR, SAT3-PC UNRESOLVED)
+- W: BAND2 FAR, SAT3-CP NEAR, SAT3-PC FAR, Right-C NEAR, CPC-terminal UNRESOLVED
+- G: all defects FAR (more structure, different structure)
+- F: all defects NEAR (no structure)
+
+**Spearman structural invariance:**
+- L/W/G moderately correlated (rho 0.54-0.69, all p<0.001)
+- F uncorrelated with L/W/G (rho -0.007 to 0.189, all p>0.27)
+
+**Interpretation (per pre-registered rules):**
+1. L≠W → query-boundary artifact in legacy runner. Existing algebra is Mode-L-specific.
+2. W≠G → generator packaging matters. No partition-independent cached action.
+3. F shows no algebra → the algebra is a property of KV-cache execution scheduling,
+   not text semantics.
+4. The model correctly identifies suffixes as semantically neutral when processing
+   complete text (Mode F). The behavioral structure we measured is HOW the inference
+   engine processes tokens incrementally, not WHAT the tokens mean.
+
+**What is salvageable:**
+- All Mode-L distributions (bit-for-bit reproducible)
+- Within-mode word distances, noncommutativity, sigma effects
+- The OBSERVATION that execution schedule produces different behavioral structure
+
+**What is NOT salvageable:**
+- E_C and E_P as autonomous pre-query endomaps
+- A suffix transition monoid (mode-dependent)
+- Branch coalescence as convergence of pre-query states
+- Any claim about text-level semantics
+
+Codex evidence gate RUNNING. Awaiting auditor verdict.
+
+### Word-space geometry and C/P asymmetry (2026-09-03, zero-call)
+
+Full 15-word pairwise mean-TV distance matrix from band2 + right-continuation data.
+
+**Metric structure**: Valid metric (0 triangle inequality violations / 4095 checks).
+Near-Euclidean (negative MDS eigenvalues only 1.1% of positive). 81.7% variance
+captured in 1D, 93% in 2D. The word space is essentially 2-dimensional.
+
+**Dominant axis**: P/PP isolation. P and PP sit at MDS coordinate -0.22, everything
+else clusters at 0.02-0.07. The primary dimension IS the P/PP boundary.
+
+**Second axis**: Within the core cluster, separates CP-ending words (neg) from
+PC-ending/compound words (pos). Fine structure exists but is compact.
+
+**C/P generator asymmetry**: C is "absorptive" — C-tail words cluster at TV 0.05-0.09
+regardless of prefix. P is "disruptive" — P/PP are TV 0.24-0.30 from all longer
+P-ending words. Within-length-group TV converges with length (0.245 → 0.057 at len 4)
+but this is word-length, not tail identity.
+
+**MDS vs string baselines**: 2D MDS reconstructs pairwise TV with Spearman=0.975,
+max error 0.040. String-level predictors are useless: shared tail (rho=0.059, p=0.55),
+edit distance (rho=0.077, p=0.44), word length diff (rho=0.311). Response distances
+require behavioral measurement — no string property predicts them. Weakens simple
+parser-state alternative (#3).
+
+Implication for CPA design: the algebraically active core region is compact and
+low-dimensional. CPA should focus on the 12-word core cluster, not the P/PP outliers.
+The 2D embedding can serve as a "learned map" baseline.
+
+### Common-tail forgetting test (2026-09-03, zero-call from band2 + right-continuation data)
+
+Codex alternative #4: "Coalescence is determined mainly by shared-tail length,
+not algebraic identity." Tested from existing distributions (15 words total).
+
+**Result: REFUTED.**
+- Within same-tail mean TV (0.122) ≈ between-tail mean TV (0.131), ratio 1.07
+- Cross-tail pairs can be closer than same-tail: TV(CPCC,CPCP) = 0.034 (tails C/P)
+  vs TV(P,PCP) = 0.284 (both tail P)
+- C-tail words cluster (most TVs 0.05-0.09), P-tail range 0.02-0.30 — asymmetry
+  not predicted by tail forgetting
+- Tail-2 within-group: TV(CPC,PC) = 0.153 despite shared tail "PC"; TV(CPP,PP) =
+  0.288 despite shared tail "PP"
+- Common-tail length has negligible predictive power for response proximity
+
+**3. Leave-one-cell-out edge survival (alternative #5 continued):**
+All 7 graph edges show ZERO gate flips under LOO — no single cell drives any
+gate decision. SAT3-CP most influential cell (x,5) TV=0.097, LOO mean 0.048
+(still NEAR). C-idem most influential cell (z,8) TV=0.115, LOO mean 0.048
+(still NEAR). Y-stratum consistently smallest effects (genuine systemic, not
+outlier-driven). Panel superposition alternative fully addressed: pooled graph
+is robust to individual cell and stratum removal.
+
+4 of 5 Codex-identified alternatives now addressed from existing data:
+  #2 answer-format gate: RULED OUT
+  #4 common-tail forgetting: RULED OUT
+  #3 learned Python parser (simple): WEAKENED (string baselines predict nothing)
+  #5 panel superposition: FULLY ADDRESSED (stratum survival + LOO zero flips)
+Remaining (requires new model calls): #1 non-Markov readout aliasing (folded
+into CPA multi-probe design). #3 nonlinear parser version still possible but
+less parsimonious.
+
+### Zero-call alternative checks (2026-09-03, from existing band2 data)
+
+Two Codex-recommended alternative-explanation tests, zero model calls:
+
+**1. Digit/OTHER factorization (alternative #2: answer-format gate):**
+Decomposed 11-bin TV into digit-gate (P(digit) vs P(OTHER)) and conditional-
+digit (which digit, given digit chosen). Result: gate component is 1-12% of
+total TV. The algebra is about conditional digit preferences, not answer format.
+Answer-format gate alternative RULED OUT.
+
+**2. Stratum-specific graph survival (alternative #5: panel superposition):**
+Reconstructed graph per variable (x, y, z). Strong edges survive all strata:
+BAND2-CP (3/3 FAR), BAND2-PC (3/3 FAR), P-idem (3/3 NEAR), branch-coal
+(3/3 NEAR). Borderline edges show heterogeneity: SAT3-CP (2/3), C-idem (2/3).
+Y-stratum consistently shows smallest effects.
+Panel superposition RULED OUT for strong edges, LIVE for borderline edges.
+
+### Re-contextualization: post-EMI strategy (2026-09-03, Codex reflection)
+
+Codex strategic reflection (scratchpad/codex_post_emi_strategy.txt) identifies:
+
+**Five alternative explanations for the observed algebra** (all testable):
+1. Non-Markov readout aliasing (states equivalent only under digit query)
+2. Answer-format gate (TV = digit-vs-OTHER shift, not scope state change)
+3. Learned Python parser state (syntax, not scope reasoning)
+4. Finite common-tail forgetting (convergence from shared suffix length)
+5. Panel superposition (pooled graph combines per-variable automata)
+
+Two are zero-call checks from existing data: (2) digit/OTHER factorization
+and (5) stratum-specific graph survival.
+
+**Post-EMI direction (if passes):** NOT more suffix enumeration — that's a
+local optimum. Instead: Causal Predictive Automaton test — multi-probe
+construction, held-out prediction, causal interchangeability, control.
+Position/recency test belongs inside this, not standalone.
+
+**Honest "so what":** Nobody cares about the 15-word graph. Field-changing
+if the automaton predicts unseen futures, supports intervention, enables
+control. Target: turn hidden execution into a testable state machine.
+
+**Alternative approach if statehood fails:** Operational holonomy — closed
+loops in action space, path defects, curvature/hysteresis, groupoid structure.
+
+**Tunnel check:** YES, suffix enumeration is a local optimum after EMI.
+Measurement-to-artifact ratio already above 2:1 warning. EMI is the last
+justified broad measurement round.
+
+Recommended order: finish EMI → two zero-call checks → causal predictive
+automaton OR operational holonomy pivot.
+
+### Execution-mode invariance: early gates PASS, Stage 1 running (2026-09-03)
+
+Experiment: run_execution_mode_invariance.py (Codex-designed, 4 modes).
+First draft NO-GO per Codex design gate (6 flaws); complete rewrite.
+Runner: experiments/run_execution_mode_invariance.py. Spec: scratchpad/codex_emi_design.txt.
+
+Four modes: L (legacy joint), W (whole then query), G (generator-by-generator),
+F (full text, no cache). Two stages: core 9 words, then 6 remaining if coherent.
+
+Early results (all PASS):
+  Token identity gate: 420 checks (405 full-text + 15 concat), zero mismatches.
+  Replay calibration: delta_replay = 0.0000000000 (perfectly deterministic).
+  eps_mode = max(0.01, 5×0) = 0.01 (tightest possible threshold).
+  Consistency check: Mode L CPC cell (x,1) bit-for-bit identical to band2 data.
+
+Stage 1 (core 9 words × 27 cells × 4 modes) in progress. Estimated 3-4 hours.
+Results pending. Committed by session but not yet pushed (waiting for results).
+
 ### Right-continuation experiment: NO terminal absorption (2026-09-03)
 
 Experiment: run_right_continuation.py, 4 arms (CPC, CPCC, PCPP, CPCPC),

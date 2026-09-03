@@ -1,216 +1,0 @@
-C:\Users\devan\AppData\Local\Programs\Python\Python313\Lib\site-packages\torch\cuda\__init__.py:61: FutureWarning: The pynvml package is deprecated. Please install nvidia-ml-py instead. If you did not install pynvml directly, please report this to the maintainers of the package that installed pynvml for you.
-  import pynvml  # type: ignore[import]
-Loading RWKV/v6-Finch-3B-HF...
-W0902 20:15:08.324000 11968 site-packages\torch\utils\flop_counter.py:29] triton not found; flop counting will not work for triton kernels
-Required module is not installed. Please install it using the following commands:
-pip install -U git+https://github.com/sustcsonglin/flash-linear-attention
-Additionally, ensure you have the correct version of Triton installed:
-pip install triton==2.2.0
-Loading weights:   0%|          | 0/902 [00:00<?, ?it/s]Loading weights:   3%|2         | 25/902 [00:00<00:04, 214.51it/s]Loading weights:   8%|8         | 75/902 [00:00<00:02, 360.25it/s]Loading weights:  12%|#2        | 112/902 [00:00<00:02, 276.01it/s]Loading weights:  16%|#6        | 148/902 [00:00<00:02, 300.49it/s]Loading weights:  21%|##        | 188/902 [00:00<00:02, 330.98it/s]Loading weights:  25%|##4       | 223/902 [00:00<00:02, 270.83it/s]Loading weights:  30%|###       | 274/902 [00:00<00:02, 310.47it/s]Loading weights:  34%|###4      | 307/902 [00:01<00:02, 281.48it/s]Loading weights:  39%|###9      | 355/902 [00:01<00:01, 327.08it/s]Loading weights:  43%|####3     | 390/902 [00:01<00:01, 298.59it/s]Loading weights:  47%|####6     | 422/902 [00:02<00:04, 100.79it/s]Loading weights:  52%|#####2    | 470/902 [00:02<00:03, 136.35it/s]Loading weights:  56%|#####5    | 503/902 [00:02<00:02, 142.91it/s]Loading weights:  61%|######1   | 554/902 [00:02<00:01, 187.01it/s]Loading weights:  65%|######5   | 587/902 [00:03<00:02, 143.99it/s]Loading weights:  71%|#######   | 638/902 [00:03<00:01, 186.23it/s]Loading weights:  74%|#######3  | 667/902 [00:03<00:01, 201.47it/s]Loading weights:  77%|#######7  | 695/902 [00:03<00:01, 146.74it/s]Loading weights:  82%|########1 | 736/902 [00:03<00:00, 185.70it/s]Loading weights:  85%|########4 | 764/902 [00:03<00:00, 197.29it/s]Loading weights:  88%|########7 | 791/902 [00:03<00:00, 199.64it/s]Loading weights:  90%|######### | 816/902 [00:04<00:00, 201.64it/s]Loading weights:  94%|#########4| 848/902 [00:04<00:00, 213.47it/s]Loading weights:  97%|#########6| 872/902 [00:04<00:00, 200.32it/s]Loading weights:  99%|#########9| 894/902 [00:04<00:00, 202.03it/s]Loading weights: 100%|##########| 902/902 [00:05<00:00, 167.22it/s]
-Loaded in 18.5s
-Signature cache: 0 entries loaded
-
-=== Step 1: History Generation & Train/Test Split ===
-  Construction: 9 d0 + 54 d1 = 63
-  Evaluation: 54 d2 histories (held out)
-
-=== Step 2: Quotient Construction ===
-  Initial Gamma: 2 suffixes
-  Computing construction signatures...
-[transformers] `use_return_dict` is deprecated! Use `return_dict` instead!
-  [100 model calls]
-  Calls after construction sigs: 126
-
-============================================================
-REFINEMENT ROUND 1
-============================================================
-  Classes: 9 (prev: 0)
-  C0: 26 mems, abs={('garden', 'kitchen'), ('kitchen', 'kitchen'), ('office', 'kitchen'), ('kitchen', 'garden'), ('office', 'garden'), ('kitchen', 'office')}, dep={0, 1}
-  C1: 4 mems, abs={('garden', 'garden'), ('kitchen', 'garden')}, dep={0, 1}
-  C2: 3 mems, abs={('kitchen', 'office')}, dep={0, 1}
-  C3: 3 mems, abs={('garden', 'garden'), ('garden', 'kitchen')}, dep={0, 1}
-  C4: 9 mems, abs={('garden', 'garden'), ('office', 'garden'), ('garden', 'office')}, dep={0, 1}
-  C5: 1 mems, abs={('garden', 'office')}, dep={0}
-  C6: 10 mems, abs={('office', 'office'), ('office', 'garden'), ('garden', 'office')}, dep={0, 1}
-  C7: 4 mems, abs={('office', 'office'), ('office', 'kitchen'), ('garden', 'office')}, dep={1}
-  C8: 3 mems, abs={('office', 'garden'), ('garden', 'office')}, dep={1}
-  Mixed-abstract classes: 7
-  Right congruence violations: 3
-    C0 + 'Avery moved to the office.' -> classes {0, 7}
-    C0 + 'Blake moved to the office.' -> classes {0, 7}
-    C4 + 'Avery moved to the office.' -> classes {8, 6}
-  Adding 4 suffixes (Gamma: 2 -> 6)
-  Computing extended signatures...
-  [200 model calls]
-  [300 model calls]
-  Calls: 378
-
-============================================================
-REFINEMENT ROUND 2
-============================================================
-  Classes: 21 (prev: 9)
-  C0: 1 mems, abs={('kitchen', 'kitchen')}, dep={0}
-  C1: 1 mems, abs={('kitchen', 'garden')}, dep={0}
-  C2: 1 mems, abs={('kitchen', 'office')}, dep={0}
-  C3: 1 mems, abs={('garden', 'kitchen')}, dep={0}
-  C4: 6 mems, abs={('garden', 'garden'), ('office', 'garden'), ('garden', 'office')}, dep={0, 1}
-  C5: 1 mems, abs={('garden', 'office')}, dep={0}
-  C6: 3 mems, abs={('kitchen', 'kitchen'), ('office', 'kitchen')}, dep={0, 1}
-  C7: 1 mems, abs={('office', 'garden')}, dep={0}
-  C8: 10 mems, abs={('office', 'office'), ('office', 'garden'), ('garden', 'office')}, dep={0, 1}
-  C9: 2 mems, abs={('kitchen', 'kitchen'), ('kitchen', 'office')}, dep={1}
-  C10: 10 mems, abs={('kitchen', 'kitchen'), ('garden', 'kitchen'), ('kitchen', 'office'), ('kitchen', 'garden')}, dep={1}
-  C11: 6 mems, abs={('garden', 'kitchen'), ('kitchen', 'kitchen'), ('office', 'kitchen'), ('kitchen', 'garden'), ('kitchen', 'office')}, dep={1}
-  C12: 1 mems, abs={('kitchen', 'kitchen')}, dep={1}
-  C13: 3 mems, abs={('garden', 'garden'), ('kitchen', 'garden')}, dep={1}
-  C14: 2 mems, abs={('kitchen', 'office')}, dep={1}
-  C15: 1 mems, abs={('garden', 'kitchen')}, dep={1}
-  C16: 4 mems, abs={('office', 'office'), ('office', 'kitchen'), ('garden', 'office')}, dep={1}
-  C17: 1 mems, abs={('garden', 'garden')}, dep={1}
-  C18: 2 mems, abs={('garden', 'garden'), ('garden', 'office')}, dep={1}
-  C19: 3 mems, abs={('office', 'kitchen'), ('office', 'garden')}, dep={1}
-  C20: 3 mems, abs={('office', 'garden'), ('garden', 'office')}, dep={1}
-  Mixed-abstract classes: 11
-  Right congruence violations: 0
-  *** RIGHT CONGRUENCE ACHIEVED ***
-
-============================================================
-FINAL QUOTIENT: 21 classes from 63 construction hists
-Gamma: 6 suffixes
-Construction calls: 378
-Final right congruence violations: 0
-Right congruence: ACHIEVED
-
-=== Step 3: Transition Table (d0->d1 only) ===
-  Transition entries: 54/126
-  Conflicts: 0
-
-=== Step 4: Evaluation Signatures ===
-  [400 model calls]
-  [500 model calls]
-  [600 model calls]
-  [700 model calls]
-  Total calls after eval sigs: 702
-
-=== Step 5: Composition Test + Null Ladder ===
-
-============================================================
-RESULTS
-============================================================
-
-  Evaluation histories: 54
-  Quotient coverage: 19/54 = 0.3519
-  Novel signatures (not in construction): 4/54
-
-  Class-label accuracy:
-    Quotient: 13/17 = 0.7647
-    Parser:   9/50 = 0.1800
-    kNN:      28/50 = 0.5600
-
-  Mean TV (lower = better prediction):
-    quotient       : 0.1183 (n=19)
-    parser         : 0.1982 (n=54)
-    knn            : 0.1141 (n=54)
-    last_action    : 0.1905 (n=54)
-    memorization   : N/A
-    shuffled       : 0.3339 (n=54)
-
-  Mean Brier (lower = better prediction):
-    quotient       : 0.0336 (n=19)
-    parser         : 0.1066 (n=54)
-    knn            : 0.0310 (n=54)
-    last_action    : 0.0883 (n=54)
-    memorization   : N/A
-    shuffled       : 0.2728 (n=54)
-
-  Paired TV comparison (quotient vs baselines, common rows):
-    vs parser         : n=19, mean_diff=+0.0575, t=2.67, p=0.0077
-    vs knn            : n=19, mean_diff=-0.0093, t=-1.23, p=0.8834
-    vs last_action    : n=19, mean_diff=+0.0363, t=1.73, p=0.0504
-    vs shuffled       : n=19, mean_diff=+0.2819, t=6.73, p=0.0000
-
-=== Step 6: Action Descent ===
-  Action descent: 0/0 = 0.0000
-
-=== Step 7: State Substitution ===
-  Within-class TV: mean=0.1542, max=0.4998, n=846
-  Cross-class TV:  mean=0.3713, min=0.0003, n=2766
-
-Signature cache saved: 702 entries
-
-=== Summary ===
-{
-  "experiment": "psr_v2",
-  "model": "RWKV/v6-Finch-3B-HF",
-  "seed": 42,
-  "n_suffixes_final": 6,
-  "n_classes": 21,
-  "n_construction": 63,
-  "n_evaluation": 54,
-  "refinement_rounds": 2,
-  "total_model_calls": 702,
-  "congruence_achieved": true,
-  "final_violations": 0,
-  "coverage": 0.3519,
-  "n_covered": 19,
-  "n_novel_sigs": 4,
-  "class_accuracy_quotient": 0.7647,
-  "class_accuracy_parser": 0.18,
-  "class_accuracy_knn": 0.56,
-  "mean_tv": {
-    "quotient": 0.1183,
-    "parser": 0.1982,
-    "knn": 0.1141,
-    "last_action": 0.1905,
-    "memorization": null,
-    "shuffled": 0.3339
-  },
-  "paired_tests": {
-    "parser": {
-      "n": 19,
-      "mean_diff": 0.0575,
-      "t": 2.6745,
-      "p": 0.0077
-    },
-    "knn": {
-      "n": 19,
-      "mean_diff": -0.0093,
-      "t": -1.2338,
-      "p": 0.8834
-    },
-    "last_action": {
-      "n": 19,
-      "mean_diff": 0.0363,
-      "t": 1.7302,
-      "p": 0.0504
-    },
-    "shuffled": {
-      "n": 19,
-      "mean_diff": 0.2819,
-      "t": 6.7327,
-      "p": 0.0
-    }
-  },
-  "action_descent_rate": 0,
-  "within_class_tv": 0.1542,
-  "cross_class_tv": 0.3713,
-  "conflicts": 0,
-  "transition_entries": 54
-}
-
-Results saved to experiments\results\psr_v2/
-
-============================================================
-PRE-REGISTERED ADJUDICATION
-============================================================
-  G1 Coverage >= 30%: 0.3519 -> PASS
-  G2 Congruence (<=5 violations): 0 -> PASS
-  G3 Quotient TV < Parser TV: 0.1183 vs 0.1758 -> PASS
-  G4 Quotient TV < kNN TV: 0.1183 vs 0.1090 -> FAIL
-  G5 Quotient TV < Shuffled TV: 0.1183 vs 0.4003 -> PASS
-  G6 Action descent >= 90%: 0.0000 -> FAIL
-
-  OVERALL: FAIL
-  Gates: {'coverage': True, 'congruence': True, 'surplus_vs_parser': True, 'surplus_vs_knn': False, 'surplus_vs_shuffled': True, 'action_descent': False}
-
-  ** PSR-v2 FAIL: Close RCQ on entity-location tracking. **

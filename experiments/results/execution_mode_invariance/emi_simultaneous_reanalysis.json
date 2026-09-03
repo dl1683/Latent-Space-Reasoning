@@ -1,0 +1,501 @@
+{
+  "eps_mode": 0.01,
+  "alpha": 0.05,
+  "n_boot": 100000,
+  "seed": 42,
+  "n_comparisons": 54,
+  "simultaneous_threshold": 0.791446190037661,
+  "max_stat_median": 0.783794123955347,
+  "max_stat_p95": 0.791446190037661,
+  "max_stat_p99": 0.7945253084158456,
+  "n_disagreements": 0,
+  "disagreements": [],
+  "comparisons": {
+    "CPCC_GvF": {
+      "observed_tv": 0.7450385590394338,
+      "independent_ci": [
+        0.734492838686263,
+        0.7553551201605134
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "CPCC_LvF": {
+      "observed_tv": 0.5016142052632792,
+      "independent_ci": [
+        0.4508507226628286,
+        0.5450201259029132
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "CPCC_LvG": {
+      "observed_tv": 0.49415735955591555,
+      "independent_ci": [
+        0.47508539525723015,
+        0.5124748172134989
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "CPCC_LvW": {
+      "observed_tv": 0.36338142353903363,
+      "independent_ci": [
+        0.34026998662286334,
+        0.38574234129929985
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "CPCC_WvF": {
+      "observed_tv": 0.6102597531345155,
+      "independent_ci": [
+        0.5954354599532153,
+        0.6249646220080278
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "CPCC_WvG": {
+      "observed_tv": 0.15986071706370072,
+      "independent_ci": [
+        0.15249270746070478,
+        0.16716730657413048
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "CPCPC_GvF": {
+      "observed_tv": 0.783765198179969,
+      "independent_ci": [
+        0.7745759402298265,
+        0.7928644521230901
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "CPCPC_LvF": {
+      "observed_tv": 0.4697963032457564,
+      "independent_ci": [
+        0.42502228554200244,
+        0.5089544208513366
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "CPCPC_LvG": {
+      "observed_tv": 0.5274553289292035,
+      "independent_ci": [
+        0.5106252759798533,
+        0.5436776137358889
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "CPCPC_LvW": {
+      "observed_tv": 0.35939723453312006,
+      "independent_ci": [
+        0.345408765749178,
+        0.3729021598429729
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "CPCPC_WvF": {
+      "observed_tv": 0.6375083746733489,
+      "independent_ci": [
+        0.6232580615414514,
+        0.6518170931548984
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "CPCPC_WvG": {
+      "observed_tv": 0.1773162958798585,
+      "independent_ci": [
+        0.16789314216347756,
+        0.1865851571921397
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "CPCP_GvF": {
+      "observed_tv": 0.7348479446437624,
+      "independent_ci": [
+        0.7247151137364132,
+        0.7447943107811389
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "CPCP_LvF": {
+      "observed_tv": 0.5060186099123072,
+      "independent_ci": [
+        0.455779118573776,
+        0.5485641932735841
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "CPCP_LvG": {
+      "observed_tv": 0.48714552067772104,
+      "independent_ci": [
+        0.46798444765585445,
+        0.5052659331234517
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "CPCP_LvW": {
+      "observed_tv": 0.36036562236646813,
+      "independent_ci": [
+        0.34122167000788506,
+        0.37883906198010125
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "CPCP_WvF": {
+      "observed_tv": 0.6145068611259814,
+      "independent_ci": [
+        0.5996714094584739,
+        0.6293784915849014
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "CPCP_WvG": {
+      "observed_tv": 0.1507839957183158,
+      "independent_ci": [
+        0.1420764357317239,
+        0.15947902318331655
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "CPC_GvF": {
+      "observed_tv": 0.6804993108466819,
+      "independent_ci": [
+        0.6693924060712259,
+        0.6916718264972722
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "CPC_LvF": {
+      "observed_tv": 0.5100304964515898,
+      "independent_ci": [
+        0.4510516444842021,
+        0.5603279713265321
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "CPC_LvG": {
+      "observed_tv": 0.4681241882758008,
+      "independent_ci": [
+        0.4448763547120271,
+        0.49036997514259484
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "CPC_LvW": {
+      "observed_tv": 0.37507143644271074,
+      "independent_ci": [
+        0.3488574482190112,
+        0.40016195345497513
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "CPC_WvF": {
+      "observed_tv": 0.5837526989203913,
+      "independent_ci": [
+        0.5681181157628695,
+        0.5993028908140129
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "CPC_WvG": {
+      "observed_tv": 0.1219116232737347,
+      "independent_ci": [
+        0.11589696509763599,
+        0.12796278209597978
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "CP_GvF": {
+      "observed_tv": 0.5894202488578029,
+      "independent_ci": [
+        0.5726679357096415,
+        0.6060721574333945
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "CP_LvF": {
+      "observed_tv": 0.42375407495570405,
+      "independent_ci": [
+        0.3621875807065172,
+        0.4754917220807531
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "CP_LvG": {
+      "observed_tv": 0.4017001511184154,
+      "independent_ci": [
+        0.3833748024681376,
+        0.4186069677083718
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "CP_LvW": {
+      "observed_tv": 0.32669163957514147,
+      "independent_ci": [
+        0.3095421153896799,
+        0.3432425143128192
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "CP_WvF": {
+      "observed_tv": 0.5289547844893403,
+      "independent_ci": [
+        0.5061118909347526,
+        0.5508818320257383
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "CP_WvG": {
+      "observed_tv": 0.08741336826373029,
+      "independent_ci": [
+        0.08329490516334773,
+        0.091528583780207
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "PCPC_GvF": {
+      "observed_tv": 0.7376285239502236,
+      "independent_ci": [
+        0.7283853218787246,
+        0.7468459792159222
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "PCPC_LvF": {
+      "observed_tv": 0.46416539671244444,
+      "independent_ci": [
+        0.4182110094361835,
+        0.5043908780371701
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "PCPC_LvG": {
+      "observed_tv": 0.4986518644210365,
+      "independent_ci": [
+        0.4800531066281514,
+        0.5169052848230219
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "PCPC_LvW": {
+      "observed_tv": 0.42052007245796696,
+      "independent_ci": [
+        0.40427546245908297,
+        0.4365539413842338
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "PCPC_WvF": {
+      "observed_tv": 0.6658916804525588,
+      "independent_ci": [
+        0.6548332726789846,
+        0.6775023729850849
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "PCPC_WvG": {
+      "observed_tv": 0.0846085464236913,
+      "independent_ci": [
+        0.07909292223414889,
+        0.09009724865426068
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "PCPP_GvF": {
+      "observed_tv": 0.7119748837969921,
+      "independent_ci": [
+        0.7017542613325296,
+        0.7224060380589906
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "PCPP_LvF": {
+      "observed_tv": 0.5050491259467823,
+      "independent_ci": [
+        0.4644646679672102,
+        0.5394506478095772
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "PCPP_LvG": {
+      "observed_tv": 0.4295248006367021,
+      "independent_ci": [
+        0.4139027220438476,
+        0.4452349855840482
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "PCPP_LvW": {
+      "observed_tv": 0.3616615716643907,
+      "independent_ci": [
+        0.34608897711840214,
+        0.37692343476745815
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "PCPP_WvF": {
+      "observed_tv": 0.6510956943449047,
+      "independent_ci": [
+        0.6376654040741009,
+        0.6652191541554338
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "PCPP_WvG": {
+      "observed_tv": 0.08176400540051637,
+      "independent_ci": [
+        0.07563534371761813,
+        0.08782341605811207
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "PCP_GvF": {
+      "observed_tv": 0.6478091053388737,
+      "independent_ci": [
+        0.6349473182336186,
+        0.6611302579511646
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "PCP_LvF": {
+      "observed_tv": 0.4864261656723641,
+      "independent_ci": [
+        0.43527761298680195,
+        0.5297097691490004
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "PCP_LvG": {
+      "observed_tv": 0.42034672352450864,
+      "independent_ci": [
+        0.40167979949878324,
+        0.4389569151042788
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "PCP_LvW": {
+      "observed_tv": 0.36933648827727195,
+      "independent_ci": [
+        0.3495155940729159,
+        0.3889123829512822
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "PCP_WvF": {
+      "observed_tv": 0.5918503272588607,
+      "independent_ci": [
+        0.5760578203842872,
+        0.6083237476733133
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "PCP_WvG": {
+      "observed_tv": 0.07100619141150404,
+      "independent_ci": [
+        0.06629703005568849,
+        0.07575409319251776
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "PC_GvF": {
+      "observed_tv": 0.5952876455116051,
+      "independent_ci": [
+        0.5792709865348621,
+        0.6115188841845979
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "PC_LvF": {
+      "observed_tv": 0.35632717426590343,
+      "independent_ci": [
+        0.3083748214865207,
+        0.3969854513273781
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "PC_LvG": {
+      "observed_tv": 0.39653668118019897,
+      "independent_ci": [
+        0.3821173668390623,
+        0.41028424088187787
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "PC_LvW": {
+      "observed_tv": 0.3523166305213063,
+      "independent_ci": [
+        0.3387358501277588,
+        0.3653043158248895
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "PC_WvF": {
+      "observed_tv": 0.5685892637681078,
+      "independent_ci": [
+        0.5494839012812547,
+        0.5878174474480113
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    },
+    "PC_WvG": {
+      "observed_tv": 0.04624811680642543,
+      "independent_ci": [
+        0.043284174385997985,
+        0.04931169315931146
+      ],
+      "independent_gate": "DIVERGENT",
+      "simultaneous_gate": "DIVERGENT"
+    }
+  }
+}

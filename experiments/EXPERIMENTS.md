@@ -5,6 +5,56 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
+## Execution-Mode Invariance — four modes, 9 core words (2026-09-03, COMPLETE: ALL DIVERGENT)
+
+Distance from claim: 2 (measurement of the artifact).
+
+Tests whether the suffix action algebra is invariant across execution modes
+of the Mamba-Transformer hybrid. Codex design gate: CONDITIONAL GO.
+
+**Four modes:**
+- L (legacy joint): prefix cached → [word + query] — reproduces existing evidence
+- W (whole then query): prefix cached → [word] → [query] — isolates query boundary
+- G (generator by generator): prefix cached → [gen1] → [gen2] → ... → [query]
+- F (full text): [prefix + word + query], no cache — tests theory's claimed Z
+
+**Pre-registered:**
+- Mode tolerance: eps_mode = max(0.01, 5 * delta_replay), calibrated from replay
+- Defect re-adjudication per mode (BAND2, SAT3, right-continuation) at eps_TV=0.06
+- 100K bootstrap for mode comparisons, 10K for defects, seed 42
+- Simultaneous max-statistic band reanalysis (post-hoc, confirms independent CIs)
+
+**Decision rules:**
+- L≠W: query-boundary artifact in existing evidence
+- L=W but W≠G: generator packaging matters, no partition-independent action
+- L=W=G but ≠F: cached-state action system valid, Z = cache states not texts
+- All agree: execution-mode blocker clears
+
+**Results (2079 calls, 5568s CPU, Stage 1 only — Stage 2 not triggered):**
+- Token identity gate: 420 checks, zero mismatches.
+- Replay calibration: delta_replay=0.0 (perfectly deterministic), eps_mode=0.01.
+- Consistency check: Mode L CPC bit-for-bit identical to band2 historical data.
+- ALL 54 word×mode-pair comparisons: **DIVERGENT** (0 disagreements with
+  simultaneous max-statistic band).
+- L vs W: TV 0.33-0.42 — MASSIVE query-boundary artifact.
+- W vs G: TV 0.05-0.18 — generator packaging changes state.
+- All vs F: TV 0.36-0.78 — cached vs non-cached fundamentally different.
+- Mode F collapses ALL defects to NEAR (TV<0.016). The algebra vanishes
+  without KV caching.
+- Defect re-adjudication: L matches historical. W shifts some edges. G makes
+  all FAR. F makes all NEAR.
+- Spearman structural invariance: L/W/G moderately correlated (rho 0.54-0.69),
+  F uncorrelated with all (rho -0.007 to 0.189, p>0.27).
+
+**Interpretation:** The algebra is a property of the KV-cache execution
+schedule, not of text semantics. The model correctly identifies suffixes
+as semantically neutral in full-text mode (F). Within any single execution
+mode, the algebra is reproducible — but it is mode-specific.
+
+**Status:** COMPLETE. Execution-mode invariance FAILS.
+
+---
+
 ## Right-Continuation Test — terminal absorption and length-5 saturation (2026-09-03)
 
 Distance from claim: 0.
