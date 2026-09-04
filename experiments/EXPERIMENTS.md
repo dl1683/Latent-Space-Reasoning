@@ -5,6 +5,46 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
+## Gate 1b — Confound Control (2×2 ANOVA + lumpability + surface equivalence) (2026-09-04, COMPLETE)
+
+Distance from claim: 0 (this IS the native math claim).
+
+3,384 calls across 8 roles (ASSERT, ASSERT_VAR, MISLEADING_ASSERT,
+MISLEADING_ASSERT_NOVAR, REWRITE, OBSERVE, BOUNDARY, BASELINE), 3 vars,
+8 outer_values, 3 depths (2-4). ~100 min CPU on Qwen3-1.7B-Base.
+
+**Purpose:** Disentangle content vs variable-mention effects from Gate 1.
+Test whether K_u is a well-defined operator (lumpability) and whether
+surfaces within the same semantic class are interchangeable (equivalence).
+
+**Results:**
+
+| Analysis | Verdict | Key number |
+|---|---|---|
+| 2×2 ANOVA | CONTENT DOMINATES | 6.3x (content +0.092 vs var-mention +0.015) |
+| Lumpability (F8) | STRONG | R2 = 0.79–0.98 across all roles |
+| Multiplicative char CV | HIGH | Within-class CV 0.33–0.51 |
+| Surface equiv (class A) | 1 pair passes | max TV = 0.009 |
+| Surface equiv (class M) | 0 pairs pass | best max TV = 0.022 |
+| K_a vs logit-bias | INCONCLUSIVE | No holdout for cross-validation |
+| R-preservation | Tentatively K_a | ASSERT dR=−0.007, MISLEADING dR=+0.003 |
+| F6 Baseline | MARGINAL | +0.006 TV over cheap features |
+
+**What we learned:**
+1. The content/misleading distinction is real and dominant (6.3x over var-mention).
+2. The (C,L,R) simplex IS approximately the right coordinate system — lumpability
+   proves K_u is well-defined on it.
+3. But the mapping surface→operator is finer than semantic role. Different surfaces
+   within the same class produce different K_u operators (CV 0.33–0.51).
+4. Gate 2 has one validated class-A pair but zero class-M pairs at eps_eq=0.01.
+
+Runner: `experiments/run_semantic_descent.py`. Config: `experiments/config/svb_qwen3_gate1b.json`.
+Result: `experiments/results/svb_qwen3_gate1b/result.json`.
+Analyzers: `analyze_multiplicative_character.py`, `analyze_lumpability.py`,
+`analyze_surface_equivalence.py`. Ledger: `gate1b_confound_control`.
+
+---
+
 ## Decode-versus-full diagnostic — faithful query continuation localized (2026-09-03, COMPLETE; INTERPRETATION CORRECTED)
 
 Distance from claim: 2 (runtime-instrument validation).
