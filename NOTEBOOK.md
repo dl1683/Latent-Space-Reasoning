@@ -4,6 +4,37 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### RE-CONTEXTUALIZATION: Two campaigns, zero positive results (2026-09-04)
+
+**Project**: Latent-Space-Reasoning.
+**Live question**: Does native mathematics exist in latent spaces, and what does it look like?
+
+**Pattern across campaigns:**
+1. SVB campaign (scalar projections): 8+ experiments, all structured negatives. Root cause: R^n trap — scalar logit projections discard structure.
+2. CRC campaign (full distributions): escaped R^n, clean apparatus, but identity partition. The model is too competent — every state is unique, no room for compression.
+
+**Alternative interpretations (anti-tunnel):**
+1. **Task exhaustion, not framework failure.** CRC works mechanically. The SVB variable-scoping task at 100% competence simply has no degeneracy. A task where the model naturally confuses states (near capacity limit) would be the right substrate.
+2. **"Almost compressible" is the signal.** Min D_1 = 0.0165 at eps=0.01. At eps=0.02, one pair merges. The model is on the boundary — presentations are almost equivalent. Better-matched presentations (same token count, same structure) might cross it.
+3. **Compact quotient is the wrong shape.** Native math might not be a finite state machine. It could be continuous (differential structure on the probability simplex), topological (connected components under action), or information-geometric (Fisher metric on response distributions).
+4. **Different model.** Qwen3-1.7B-Base may be too large / too capable for this task. A smaller model, or a model at its capacity limit on a harder task, would have forced compression.
+5. **Different response channel.** We used next-token prediction only. Hidden-state similarity, attention pattern structure, or gradient-based probes would access different structure — but those are the R^n tools the project explicitly moved away from.
+6. **The result IS the math.** The identity partition at horizon 1 with Q_0 compression at horizon 0 IS a mathematical fact about this model. The refinement tower Q_0(33) → Q_1(36) → Q_2(36) with specific split witnesses is a complete structural characterization. It's just not the compact structure we hoped for.
+
+**What still holds:**
+- The CRC framework is clean, decisive, and interpretable.
+- Full-distribution analysis (not scalar projections) is the right approach.
+- Mode F control (TV = 7e-7) confirms transformer KV cache is perfectly faithful.
+- The model genuinely maintains 36 distinct behavioral states through depth-4 nested scope.
+
+**What's reframed:**
+- The SVB task family is doubly exhausted — even escaping R^n, it doesn't compress.
+- The "almost compressible" boundary is a structural fact worth understanding, not just a near-miss.
+
+**Awaiting:** Codex Architecture Theorist strategic analysis for next direction.
+
+---
+
 ### CRC-0 result: FAIL — no compression (2026-09-04)
 
 CRC-0 complete. 544 forwards, 210s CPU. Codex-designed: 36 roots (3 vars ×
