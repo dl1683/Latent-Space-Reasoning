@@ -281,12 +281,25 @@ confident), a = 1 is the identity.
 
 On the log scale, log(a_u) is additive under composition:
 log(a_{uv}) = log(a_u) + log(a_v). This maps the null-witness
-monoid into (ℝ, +), an additive character. The log-character has a
-Bayesian interpretation: if the model were performing exact Bayesian
-updating, all null-witness classes would have a = 1 (log a = 0),
-since denotationally null operations provide no evidence. The
-deviation log(a_u) ≠ 0 measures the degree of non-Bayesian belief
-updating — the model's sensitivity to surface form over denotation.
+monoid into (ℝ, +), an additive character.
+
+**Bayesian interpretation (corrected per Codex review):** E(u) = id
+does NOT imply that the Bayesian likelihood ratio P(u|H₁)/P(u|H₀)
+is 1. A denotationally null operation can still be evidence about
+the answer, author, or task regime. Exact Bayes multiplies ODDS by
+the likelihood ratio — not raw probability L — so a Bayesian model
+would also produce multiplicative structure on the odds scale:
+L'/C' = e^{δ_u} × L/C. The rival hypothesis is that a_u ≈ e^{δ_u}
+is simply a surface-conditioned logit bias, not a witness-monoid
+character. Discriminating tests: (1) K_a predicts R' = R while the
+logit-bias model predicts R changes via normalization; (2) the logit
+model predicts saturation as L grows; (3) log-odds shift should be
+more stable than raw-probability ratio if the logit model holds.
+
+**Status:** χ is demoted to diagnostic candidate until the K_a vs
+logit-bias comparison is run and composition/representative-descent
+tests pass. The native math claim rests on the full action α and its
+quotient structure, not on χ alone (Codex review 2026-09-04).
 
 ## D15. Witness transport — definition (Codex repair)
 

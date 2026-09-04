@@ -44,9 +44,10 @@ def run_gate1(adapter, cfg):
                     for si, surf in enumerate(role_cfg["holdout_surfaces"]):
                         surfaces_to_run.append((role_name, surf, "holdout", si))
 
+                suffix_count = cfg.get("suffix_count", 1)
                 for i, (role_name, surf, split, si) in enumerate(surfaces_to_run):
                     expanded = expand_surface(surf, var)
-                    suffix_str = expanded + build_query(var, cfg)
+                    suffix_str = expanded * suffix_count + build_query(var, cfg)
                     last = (i == len(surfaces_to_run) - 1)
                     dist = adapter.get_dist_from_state(
                         state, suffix_str, deepcopy=not last)

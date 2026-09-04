@@ -1,13 +1,11 @@
-"""Idempotent analysis: tests B^2 = B for a candidate generator.
+"""Idempotent test: compare suffix_count=1 (Gate 1b) vs suffix_count=2 distributions.
 
-Combines Gate 1b data (baseline epsilon, single pass) with idempotent
-test data (pass^2, pass^3) to check:
-  1. Nontriviality: LCB D(epsilon, u) > eps_sep
-  2. First stability: UCB D(u, u^2) < eps_eq
-  3. Power stability: UCB D(u^2, u^3) < eps_eq
+Tests u² ≡_M u for each null-witness class. If TV(response(u), response(u²))
+< eps_eq, that class is idempotent. Also tests the multiplicative prediction:
+if K_a model holds, L(u²) = a_u² × L(baseline).
 
-True idempotence: B^2 = B implies B^n = B for all n >= 1.
-So stability must hold at ALL powers, not just the first.
+Can also run in the legacy mode comparing pass vs pass^2 vs pass^3 if the
+idempotent data contains PASS_x2 / PASS_x3 roles.
 """
 import json
 import sys
@@ -20,18 +18,103 @@ def tv_distance(p, q):
     return 0.5 * np.sum(np.abs(np.array(p) - np.array(q)))
 
 
-def analyze_idempotent(gate1b_path, idempotent_path):
+def analyze_idempotent(gate1b_path, idempotent_path, eps_eq=0.01):
     with open(gate1b_path) as f:
         g1b = json.load(f)
     with open(idempotent_path) as f:
         idem = json.load(f)
 
-    # Extract d4 distributions from Gate 1b for BASELINE and BOUNDARY(pass)
+    g1b_obs = g1b["observations"]
+    idem_obs = idem["observations"]
+
+    idem_roles = set(obs["role"] for obs in idem_obs.values())
+    if "PASS_x2" in idem_roles:
+        return _analyze_legacy(g1b, idem)
+
+    test_roles = sorted(set(obs["role"] for obs in idem_obs.values() if obs["role"] != "BASELINE"))
+
+    g1b_by_ctx = defaultdict(lambda: defaultdict(list))
+    idem_by_ctx = defaultdict(lambda: defaultdict(list))
+    baseline_by_ctx = {}
+
+    for key, obs in g1b_obs.items():
+        if obs["val"] == 9:
+            continue
+        ctx = (obs["depth"], obs["var"], obs["val"])
+        if obs["role"] == "BASELINE":
+            baseline_by_ctx[ctx] = np.array(obs["dist"])
+        elif obs["role"] in test_roles:
+            g1b_by_ctx[obs["role"]][ctx].append(np.array(obs["dist"]))
+
+    for key, obs in idem_obs.items():
+        if obs["val"] == 9 or obs["role"] == "BASELINE":
+            continue
+        ctx = (obs["depth"], obs["var"], obs["val"])
+        idem_by_ctx[obs["role"]][ctx].append(np.array(obs["dist"]))
+
+    print("=== IDEMPOTENT TEST: u² ≡_M u? ===\n")
+
+    for role in test_roles:
+        shared = sorted(set(g1b_by_ctx[role].keys()) & set(idem_by_ctx[role].keys()))
+        if not shared:
+            print(f"  {role}: no shared contexts\n")
+            continue
+
+        tvs = []
+        a_u_vals = []
+        a_u2_vals = []
+        pred_errors = []
+
+        for ctx in shared:
+            for d1 in g1b_by_ctx[role][ctx]:
+                for d2 in idem_by_ctx[role][ctx]:
+                    tvs.append(tv_distance(d1, d2))
+
+            bl = baseline_by_ctx.get(ctx)
+            if bl is not None and float(bl[9]) > 0.001:
+                bl_L = float(bl[9])
+                for d1 in g1b_by_ctx[role][ctx]:
+                    a_u_vals.append(float(d1[9]) / bl_L)
+                for d2 in idem_by_ctx[role][ctx]:
+                    s2_L = float(d2[9])
+                    a_u2_vals.append(s2_L / bl_L)
+                    if a_u_vals:
+                        pred = a_u_vals[-1] ** 2 * bl_L
+                        pred_errors.append(abs(s2_L - pred))
+
+        arr = np.array(tvs)
+        is_idem = arr.max() < eps_eq
+
+        print(f"  {role}:")
+        print(f"    Contexts: {len(shared)}, TV pairs: {len(tvs)}")
+        print(f"    TV(u, u²): mean={arr.mean():.4f}, med={np.median(arr):.4f}, "
+              f"p95={np.percentile(arr, 95):.4f}, max={arr.max():.4f}")
+        print(f"    Idempotent (max TV < {eps_eq}): {'YES' if is_idem else 'NO'}")
+
+        if a_u_vals:
+            a1 = np.array(a_u_vals)
+            print(f"    a_u = L(u)/L(bl): mean={a1.mean():.4f} ± {a1.std():.4f}")
+        if a_u2_vals:
+            a2 = np.array(a_u2_vals)
+            print(f"    a_u² = L(u²)/L(bl): mean={a2.mean():.4f} ± {a2.std():.4f}")
+            print(f"    Predicted a_u² (from a_u²): {a1.mean()**2:.4f}")
+        if pred_errors:
+            pe = np.array(pred_errors)
+            print(f"    Cellwise |L_actual - a²×L_bl|: mean={pe.mean():.4f}, max={pe.max():.4f}")
+        print()
+
+    print("=== SUMMARY ===\n")
+    print("Idempotent = u² ≡_M u (full response-law level).")
+    print("Multiplicative = L(u²) ≈ a_u² × L(bl) (K_a composition verified on L coordinate).")
+    print("Both can coexist only if a_u ∈ {0, 1}.")
+
+
+def _analyze_legacy(g1b, idem):
+    """Legacy mode: pass vs pass^2 vs pass^3."""
     baseline_dists = {}
     pass_dists = {}
-    newline_dists = {}
-    newline2_dists = {}
-    newline3_dists = {}
+    pass2_dists = {}
+    pass3_dists = {}
 
     for key, obs in g1b["observations"].items():
         if obs["depth"] != 4 or obs["val"] == 9:
@@ -39,20 +122,9 @@ def analyze_idempotent(gate1b_path, idempotent_path):
         ctx = (obs["var"], obs["val"])
         if obs["role"] == "BASELINE":
             baseline_dists[ctx] = np.array(obs["dist"])
-        elif obs["role"] == "BOUNDARY":
-            surf = obs["surface"]
-            if surf == "pass\n":
-                pass_dists[ctx] = np.array(obs["dist"])
-            elif surf == "\n":
-                newline_dists[ctx] = np.array(obs["dist"])
-            elif surf == "\n\n":
-                newline2_dists[ctx] = np.array(obs["dist"])
-            elif surf == "\n\n\n":
-                newline3_dists[ctx] = np.array(obs["dist"])
+        elif obs["role"] == "BOUNDARY" and obs["surface"] == "pass\n":
+            pass_dists[ctx] = np.array(obs["dist"])
 
-    # Extract pass^2 and pass^3 from idempotent test
-    pass2_dists = {}
-    pass3_dists = {}
     for key, obs in idem["observations"].items():
         if obs["val"] == 9:
             continue
@@ -62,90 +134,25 @@ def analyze_idempotent(gate1b_path, idempotent_path):
         elif obs["role"] == "PASS_x3":
             pass3_dists[ctx] = np.array(obs["dist"])
 
-    print("=== IDEMPOTENT TEST: pass\\n ===\n")
-    print(f"  Contexts at d4: baseline={len(baseline_dists)}, pass={len(pass_dists)}, "
-          f"pass^2={len(pass2_dists)}, pass^3={len(pass3_dists)}\n")
+    print("=== IDEMPOTENT TEST (LEGACY): pass\\n ===\n")
 
-    # Compute pairwise TV distances
     pairs = [
         ("epsilon vs pass", baseline_dists, pass_dists),
         ("pass vs pass^2", pass_dists, pass2_dists),
         ("pass^2 vs pass^3", pass2_dists, pass3_dists),
-        ("epsilon vs pass^2", baseline_dists, pass2_dists),
-        ("epsilon vs pass^3", baseline_dists, pass3_dists),
     ]
 
-    print(f"  {'Comparison':<25} {'n':>4} {'mean_TV':>9} {'med_TV':>9} {'p95_TV':>9} {'mean_dL':>9}")
+    print(f"  {'Comparison':<25} {'n':>4} {'mean_TV':>9} {'p95_TV':>9}")
     for name, d1, d2 in pairs:
-        tvs, dLs = [], []
-        for ctx in d1:
-            if ctx in d2:
-                tv = tv_distance(d1[ctx], d2[ctx])
-                dL = float(d2[ctx][9] - d1[ctx][9])
-                tvs.append(tv)
-                dLs.append(dL)
-        if tvs:
-            arr = np.array(tvs)
-            print(f"  {name:<25} {len(tvs):>4} {arr.mean():9.4f} {np.median(arr):9.4f} "
-                  f"{np.percentile(arr, 95):9.4f} {np.mean(dLs):+9.4f}")
-
-    # Verdict
-    eps_eq = 0.01
-    eps_sep = 0.02
-
-    tv_eps_u = []
-    tv_u_u2 = []
-    tv_u2_u3 = []
-    for ctx in baseline_dists:
-        if ctx in pass_dists:
-            tv_eps_u.append(tv_distance(baseline_dists[ctx], pass_dists[ctx]))
-        if ctx in pass_dists and ctx in pass2_dists:
-            tv_u_u2.append(tv_distance(pass_dists[ctx], pass2_dists[ctx]))
-        if ctx in pass2_dists and ctx in pass3_dists:
-            tv_u2_u3.append(tv_distance(pass2_dists[ctx], pass3_dists[ctx]))
-
-    print(f"\n=== VERDICT (eps_eq={eps_eq}, eps_sep={eps_sep}) ===\n")
-
-    if tv_eps_u:
-        lcb = np.percentile(tv_eps_u, 5)
-        print(f"  Nontriviality: LCB(TV(eps,u)) = {lcb:.4f}", end="")
-        if lcb > eps_sep:
-            print(f" > {eps_sep} -> PASS (u != identity)")
-        else:
-            print(f" <= {eps_sep} -> FAIL (u may be trivial)")
-
-    if tv_u_u2:
-        ucb = np.percentile(tv_u_u2, 95)
-        print(f"  First stability: UCB(TV(u,u^2)) = {ucb:.4f}", end="")
-        if ucb < eps_eq:
-            print(f" < {eps_eq} -> PASS (u^2 ~= u)")
-        else:
-            print(f" >= {eps_eq} -> FAIL (u^2 != u)")
-
-    if tv_u2_u3:
-        ucb = np.percentile(tv_u2_u3, 95)
-        print(f"  Power stability: UCB(TV(u^2,u^3)) = {ucb:.4f}", end="")
-        if ucb < eps_eq:
-            print(f" < {eps_eq} -> PASS (u^3 ~= u^2)")
-        else:
-            print(f" >= {eps_eq} -> FAIL (u^3 != u^2)")
-
-    # Also show newline comparison for reference
-    print(f"\n--- NEWLINE COMPARISON (from Gate 1b) ---\n")
-    nl_pairs = [
-        ("newline vs newline^2", newline_dists, newline2_dists),
-        ("newline^2 vs newline^3", newline2_dists, newline3_dists),
-    ]
-    for name, d1, d2 in nl_pairs:
         tvs = [tv_distance(d1[c], d2[c]) for c in d1 if c in d2]
         if tvs:
             arr = np.array(tvs)
-            print(f"  {name:<25} n={len(tvs):>3} mean_TV={arr.mean():.4f} p95={np.percentile(arr, 95):.4f}")
+            print(f"  {name:<25} {len(tvs):>4} {arr.mean():9.4f} {np.percentile(arr, 95):9.4f}")
 
 
 if __name__ == "__main__":
     g1b = sys.argv[1] if len(sys.argv) > 1 else \
         "experiments/results/svb_qwen3_gate1b/result.json"
     idem = sys.argv[2] if len(sys.argv) > 2 else \
-        "experiments/results/svb_qwen3_idempotent_pass/result.json"
+        "experiments/results/svb_qwen3_idempotent/result.json"
     analyze_idempotent(g1b, idem)

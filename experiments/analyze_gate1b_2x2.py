@@ -86,6 +86,29 @@ def analyze_2x2(result_path):
     else:
         print(f"  -> AMBIGUOUS: content={content_effect:+.4f}, var={var_effect:+.4f}")
 
+    print("\n=== PER-DEPTH BREAKDOWN ===\n")
+    depth_cells = defaultdict(lambda: defaultdict(list))
+    for key, obs in observations.items():
+        if obs["role"] not in cells or obs["val"] == 9:
+            continue
+        dist = np.array(obs["dist"])
+        L = float(dist[9])
+        depth_cells[obs["depth"]][obs["role"]].append(L)
+
+    print(f"  {'Depth':>6} {'content':>9} {'var_ment':>9} {'interact':>9} {'|c/v|':>7}")
+    for d in sorted(depth_cells):
+        dc = depth_cells[d]
+        if all(dc[r] for r in cells):
+            da = np.mean(dc["ASSERT"])
+            dav = np.mean(dc["ASSERT_VAR"])
+            dm = np.mean(dc["MISLEADING_ASSERT"])
+            dmn = np.mean(dc["MISLEADING_ASSERT_NOVAR"])
+            dc_eff = ((dm + dmn) / 2) - ((da + dav) / 2)
+            dv_eff = ((dav + dm) / 2) - ((da + dmn) / 2)
+            di_eff = (dm - dmn) - (dav - da)
+            ratio = abs(dc_eff) / max(abs(dv_eff), 1e-10)
+            print(f"  d{d:>5} {dc_eff:+9.4f} {dv_eff:+9.4f} {di_eff:+9.4f} {ratio:7.1f}x")
+
     print("\n=== HOLDOUT GENERALIZATION ===\n")
     for split in ["train", "holdout"]:
         split_cells = defaultdict(list)

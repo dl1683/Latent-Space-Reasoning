@@ -1,0 +1,58 @@
+{
+  "experiment_name": "SVB-Qwen3-Idempotent",
+  "purpose": "Tests whether null-witness classes are idempotent: u^2 equiv_M u. Runs suffix_count=2 for comparison against Gate 1b suffix_count=1 data. If TV(response(u), response(u^2)) < eps_eq, the class is idempotent. A nontrivial idempotent (a^2=a with a!=0,1) would prove the monoid is not a group.",
+  "model_id": "Qwen/Qwen3-1.7B-Base",
+  "device": "cpu",
+  "dtype": "float32",
+  "seed": 42,
+  "variables": ["x", "y", "z"],
+  "outer_values": [1, 2, 3, 4, 5, 6, 7, 8],
+  "inner_value": 99,
+  "depths": [4],
+  "single_var_only": true,
+  "suffix_count": 2,
+
+  "intensional_roles": {
+    "ASSERT": {
+      "description": "True invariance assertion — testing if A^2 = A",
+      "train_surfaces": [
+        "# No changes.\n",
+        "# State unchanged.\n"
+      ],
+      "holdout_surfaces": []
+    },
+    "MISLEADING_ASSERT": {
+      "description": "Misleading assertion — testing if M^2 = M",
+      "var_specific": true,
+      "train_surfaces": [
+        "# Reassigning {var} now.\n",
+        "# Updating {var}.\n"
+      ],
+      "holdout_surfaces": []
+    },
+    "BOUNDARY": {
+      "description": "Pure delimiter — testing if B^2 = B",
+      "train_surfaces": [
+        "\n",
+        "pass\n"
+      ],
+      "holdout_surfaces": []
+    }
+  },
+
+  "query_template": "f()\nprint({var})  # Output: ",
+  "templates": {
+    "depth4_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        def h():\n            {var} = 9999\n            def k():\n                {var} = 99999\n                return {var}\n            k()\n            return {var}\n        h()\n        return {var}\n    g()\n    return {var}\n"
+  },
+
+  "predictions": {
+    "H_idempotent_assert": "ASSERT class: if K_a with a~0.38, then a^2~0.14. K_A^2 != K_A. Full response TV(u, u^2) should be measurably > 0. NOT idempotent on operator level.",
+    "H_idempotent_boundary": "BOUNDARY class: if K_b with b~0.80, then b^2~0.64. K_B^2 != K_B. Also NOT idempotent.",
+    "H_idempotent_misleading": "MISLEADING class: if K_m with m~1.55, then m^2~2.4. K_M^2 != K_M. NOT idempotent.",
+    "decisive_test": "TV between suffix_count=1 (from Gate 1b) and suffix_count=2 (this experiment) distributions. If TV < 0.01 for any class, that class IS idempotent at the response-law level. If TV >> 0.01 for all classes, no idempotents exist. The ASSERT class at a~0.38 is the closest to a^2=a=0 (total absorption).",
+    "multiplicative_test": "If K_a operator model holds: L(u^2)/L(u) should equal L(u)/L(baseline) = a_u. So L(u^2) = a_u^2 * L(baseline). Verify this prediction cellwise."
+  },
+
+  "estimated_calls": "3 classes x 2 surfaces x 3 vars x 8 vals x 1 depth = 144 endpoints + 24 prefixes = 168 forwards, ~3 min CPU",
+  "result_dir": "experiments/results/svb_qwen3_idempotent"
+}

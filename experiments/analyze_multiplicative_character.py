@@ -156,6 +156,61 @@ def analyze_character(result_path):
                 within_cv = np.std(surf_means) / np.mean(surf_means) if np.mean(surf_means) > 0 else float('inf')
                 print(f"    Within-class CV of a_u: {within_cv:.3f} (want: small)")
 
+    # Step 4: K_a vs logit-bias rival (Codex review 2026-09-04)
+    print(f"\n--- STEP 4: K_a vs logit-bias rival model ---\n")
+    print("  K_a predicts: L' = a_u × L, R' = R")
+    print("  Logit-bias predicts: log(L'/C') = log(L/C) + δ_u, R changes\n")
+
+    for role in ["ASSERT", "MISLEADING_ASSERT"]:
+        ka_errors = []
+        lb_errors = []
+        r_changes = []
+
+        for ctx in role_data["BASELINE"]:
+            bl = role_data["BASELINE"][ctx]
+            ro = role_data[role].get(ctx, [])
+            if not bl or not ro:
+                continue
+
+            L_bl = np.mean([x["L"] for x in bl])
+            C_bl = np.mean([x["C"] for x in bl])
+            R_bl = np.mean([x["R"] for x in bl])
+            L_ro = np.mean([x["L"] for x in ro])
+            C_ro = np.mean([x["C"] for x in ro])
+            R_ro = np.mean([x["R"] for x in ro])
+
+            if L_bl < 1e-6 or C_bl < 1e-6 or L_ro < 1e-10 or C_ro < 1e-10:
+                continue
+
+            a_u = L_ro / L_bl
+            log_odds_bl = np.log(L_bl / C_bl)
+            log_odds_ro = np.log(L_ro / C_ro)
+            delta_u = log_odds_ro - log_odds_bl
+
+            ka_pred_L = a_u * L_bl
+            ka_pred_R = R_bl
+            ka_err = abs(L_ro - ka_pred_L) + abs(R_ro - ka_pred_R)
+
+            lb_pred_odds = np.exp(log_odds_bl + delta_u)
+            lb_pred_L = lb_pred_odds * C_ro / (1 + lb_pred_odds) if lb_pred_odds < 1e6 else 1.0
+            lb_err = abs(L_ro - lb_pred_L)
+
+            ka_errors.append(ka_err)
+            lb_errors.append(lb_err)
+            r_changes.append(abs(R_ro - R_bl))
+
+        if ka_errors:
+            ka_arr = np.array(ka_errors)
+            lb_arr = np.array(lb_errors)
+            rc_arr = np.array(r_changes)
+            print(f"  {role}:")
+            print(f"    K_a total error (|dL|+|dR|): mean={ka_arr.mean():.5f}, p95={np.percentile(ka_arr, 95):.5f}")
+            print(f"    Logit-bias L error:           mean={lb_arr.mean():.5f}, p95={np.percentile(lb_arr, 95):.5f}")
+            print(f"    |R_change| (K_a predicts 0):  mean={rc_arr.mean():.5f}, p95={np.percentile(rc_arr, 95):.5f}")
+            winner = "K_a" if ka_arr.mean() < lb_arr.mean() else "Logit-bias"
+            print(f"    Lower mean error: {winner}")
+            print()
+
     # Summary
     print(f"\n=== PROMOTION LADDER SUMMARY ===\n")
     if all_ratios:
