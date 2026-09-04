@@ -18,6 +18,13 @@ Graded by denotation via q: I → im(E). The identity fiber EqWit = ker(E)/≡_M
 is a submonoid. If the leakage observable satisfies a separable depth-scaling law,
 χ: EqWit → (R≥0, ×) is a **multiplicative character** of the monoid.
 
+**χ status (Codex 2026-09-04):** DEMOTED to diagnostic candidate. K_a is
+ordinary linear algebra (diag(1,a,1) in (S,L,R) coordinates). The strongest
+rival is a constant shadow-logit bias δ_u predicting log-odds shift, which
+reproduces the 4x ratio without EqWit. Even composition a_{uv}=a_u·a_v
+does not defeat this rival (Bayesian LRs predict the same). The native
+math claim rests on the full action α and its quotient structure, not χ.
+
 **Distance from central claim: 0.** This IS the native math claim.
 
 **Gate progression:**
