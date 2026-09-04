@@ -1,0 +1,39 @@
+{
+  "experiment_name": "SVB-Qwen3-SuffixAblation",
+  "purpose": "Test whether the ~50% recovery fraction is suffix-content-specific or a general property of any additional processing step. Discriminates between: (a) any token helps (computation hypothesis), (b) any neutral token helps (neutral-processing hypothesis), (c) only specific tokens help (content-specific hypothesis).",
+  "model_id": "Qwen/Qwen3-1.7B-Base",
+  "device": "cpu",
+  "dtype": "float32",
+  "seed": 42,
+  "variables": ["x", "y", "z"],
+  "outer_values": [1, 2, 3, 4, 5, 6, 7, 8, 9],
+  "inner_value": 99,
+  "inner_value_depth2": 999,
+  "depths": [1, 2, 3, 4],
+  "single_var_only": true,
+  "suffix_ablation": {
+    "baseline": "",
+    "comment_nochanges": "# No changes.\n",
+    "pass_stmt": "pass\n",
+    "bare_newline": "\n",
+    "short_comment": "# TODO\n",
+    "self_assign": "x = x\n"
+  },
+  "suffix_count": 1,
+  "query_template": "f()\nprint({var})  # Output: ",
+  "templates": {
+    "depth1_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    return {var}\n",
+    "depth2_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        return {var}\n    g()\n    return {var}\n",
+    "depth3_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        def h():\n            {var} = 9999\n            return {var}\n        h()\n        return {var}\n    g()\n    return {var}\n",
+    "depth4_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        def h():\n            {var} = 9999\n            def k():\n                {var} = 99999\n                return {var}\n            k()\n            return {var}\n        h()\n        return {var}\n    g()\n    return {var}\n"
+  },
+  "predictions": {
+    "H_computation": "All suffixes (including bare newline) produce similar recovery fractions (~0.5). The mechanism is about extra computation, not content.",
+    "H_neutral": "All neutral suffixes (comment, pass, newline) produce similar recovery; self-assign differs. The mechanism is about neutral processing.",
+    "H_content": "Recovery fraction varies significantly across suffix types. The mechanism is content-specific.",
+    "H_comment_specific": "Only comment-type suffixes produce the ~50% recovery. Comments trigger a specific attention pattern.",
+    "decisive_comparison": "bare_newline vs comment_nochanges at d4. If recovery fractions within 5pp of each other, H_computation supported. If bare_newline recovery < 25%, H_content supported."
+  },
+  "estimated_calls": "27 cells × 4 depths × 6 suffixes = 648 calls, ~4 min on Qwen3 CPU",
+  "result_dir": "experiments/results/svb_qwen3_suffix_ablation"
+}

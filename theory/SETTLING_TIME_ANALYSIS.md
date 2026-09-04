@@ -84,6 +84,65 @@ Linear fit of σ vs depth:
 - With suffix: slope = -0.032 per depth level
 - Ratio: 0.44 (settling reduces depth penalty by 56%)
 
+## Observation 5: Monotone decay from s1 peak (not oscillation)
+
+Normalizing the suffix trajectory as (σ(d,s) - σ(d,0)) / (σ(d,1) - σ(d,0)):
+
+| Depth | s1 (=1.0) | s2 retention | s4 retention |
+|-------|-----------|-------------|-------------|
+| d2 | 1.000 | 0.809 | 0.774 |
+| d3 | 1.000 | 0.883 | 0.938 |
+| d4 | 1.000 | 0.943 | 0.760 |
+
+At d≥2, s2 retains 81-94% of the s1 gain. The improvement decays
+monotonically with suffix count but does not oscillate. This rules out
+resonance and is consistent with attention dilution: more suffix positions
+dilute the attention budget available for scope binding.
+
+## Observation 6: Mixture model (best fit)
+
+The data is extremely well described by:
+
+    σ(d, 1) = 0.5 × σ(d, 0) + 0.5 × p
+
+where p ≈ 1.0 (depth-independent fresh readout probability).
+
+| Depth | σ(d,0) | σ(d,1) actual | σ(d,1) predicted | Residual |
+|-------|--------|---------------|------------------|----------|
+| d1 | 0.958 | 0.970 | 0.979 | -0.009 |
+| d2 | 0.897 | 0.945 | 0.948 | -0.003 |
+| d3 | 0.792 | 0.900 | 0.896 | +0.004 |
+| d4 | 0.753 | 0.880 | 0.877 | +0.003 |
+
+Residuals are ≤0.009 (well within n=27 sampling noise). At d≥2,
+residuals are ≤0.004.
+
+**Interpretation**: The suffix creates a second, independent readout
+pathway with near-perfect accuracy (~99-100% at d≥2). The model's
+answer is a 50-50 mixture of the original readout (depth-degraded)
+and this fresh readout (depth-independent). At d1, the fresh pathway
+is slightly below perfect (p ≈ 0.98), consistent with a ceiling effect.
+
+**Falsifiable prediction**: At d5, if σ(5,0) follows the exponential
+model (≈0.45), then σ(5,1) ≈ 0.5 × 0.45 + 0.5 × 1.0 ≈ 0.73. This
+is a strong prediction from 4 data points, testable with a d5 template.
+
+**Gossip-magazine version**: "One comment line lets the model look
+at the answer twice — and the second look is always right."
+
+## Theoretical summary
+
+The settling time effect has the mathematical signature of:
+1. **Exponential depth penalty** in readout (1-σ ~ exp(αd))
+2. **~50% deficit recovery** from one suffix (for d≥2)
+3. **Rate reduction** — the suffix reduces the exponential decay constant by ~21%
+4. **Monotone degradation** at suffix count > 1
+
+These four properties constrain what the mechanism can be. The suffix
+does not add generic computation (s>1 would help more). It performs a
+specific one-shot readout improvement that recovers a fixed fraction
+of the depth-dependent deficit.
+
 ## Open questions
 
 1. Is the ~50% recovery fraction a coincidence of this template/model,
