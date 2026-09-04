@@ -401,6 +401,28 @@ for any z establishes noncommutativity. The test is decisive:
 commutativity is consistent with all three scalar models;
 noncommutativity defeats all three simultaneously.
 
+**Consequences if confirmed:**
+
+1. *Lumpability failure (F8).* The (C,L,R) simplex is 2-dimensional;
+   all linear families on it commute (the K_a family exhausts the
+   commutative upper-triangular structure). A faithful linear
+   representation of two non-commuting operators requires dim ≥ 3
+   and in practice ≥ 4 (the C-L exchange plane plus hidden coordinates
+   tracking suffix history). The 10D full response distribution is the
+   upper bound.
+
+2. *Directed homotopy.* EqWit is the directed fundamental monoid
+   of Q_M (Grandis, *Directed Algebraic Topology*, 2009). Non-
+   commutativity says the directed state space is not "simply
+   connected" even after quotienting by denotation. The correct
+   mathematical framework is directed homotopy theory, not HoTT
+   (which requires invertible paths).
+
+3. *Rees structure.* If absorbing classes exist (ASSERT driving L→0),
+   Rees's theorem gives any simple ideal a matrix-semigroup
+   decomposition M(G; I, Λ; P) — genuine matrix algebra native to
+   the monoid, distinct from the imposed K_a family.
+
 ## D16. Vertical kernel action — definition (replaces "holonomy")
 
 For a composed null trace γ = u₁ · u₂ · ... · uₙ with E(γ) = id,

@@ -31,16 +31,21 @@ math claim rests on the full action α and its quotient structure, not χ.
 - Gate 1 (Semantic Descent): CONFIRMED — ASSERT L=0.032, MISLEADING_ASSERT
   L=0.124, diff=+0.092 (t=21.23). Holdout: +0.121. Depth-scaling ~4x ratio
   across all depths (3.7, 3.9, 4.0). Variable-mention confound identified.
-  Gate 1b (2×2 content × var-mention crossover) running now.
-- Gate 1b (Confound Control): IN PROGRESS. 2×2 ANOVA + fiber-square test +
-  multiplicative character promotion ladder. Also tests newline/pass idempotence.
-- Gate 2 (Composition): Do witness transport operators compose predictably?
-  BLOCKED on Gate 1b.
-- Gate 3 (Causal Transfer): Can witness state be transplanted between
-  extensionally equivalent histories? BLOCKED on Gate 2, requires GPU.
+- Gate 1b (Confound Control): IN PROGRESS (~80 min of ~85). 2×2 ANOVA +
+  fiber-square + multiplicative character + K_a vs logit-bias cross-fit +
+  F6 baseline + F8 lumpability. Analysis pipeline ready.
+- Gate 2 (Noncommutativity): REDESIGNED per Codex review. Tests order-dependence
+  of E-null suffix pairs. Both K_a matrices AND logit biases commute, so
+  noncommutativity defeats both scalar models simultaneously. Config ready
+  (120 calls, ~2.5 min). Codex design gate running. BLOCKED on Gate 1b.
+- Gate 3 (Causal Transfer): Internal state transplant between extensionally
+  equivalent histories. BLOCKED on Gate 2, requires GPU.
 
-**Idempotent test (Codex):** Newline FAILS — b≈b² but b²≉b³ (transient plateau).
-Next candidate: pass\n at d4 only, 48 calls. Config ready.
+**Logit-bias rival (Codex 2026-09-04 follow-up):** Content dominance alone
+does NOT defeat the rival — content-specific δ_u is compatible. Analyzer
+Step 4 was tautological (fixed with cross-fitting). R-preservation is the
+key discriminator: K_a predicts ΔR=0, logit-bias predicts |ΔR|≈0.026.
+Noncommutativity is the strongest overall discriminator — defeats K_a too.
 
 **Active confound:** MISLEADING_ASSERT surfaces mention the variable name
 (3/4 do), while ASSERT surfaces don't. The +0.092 L difference could be partly a
