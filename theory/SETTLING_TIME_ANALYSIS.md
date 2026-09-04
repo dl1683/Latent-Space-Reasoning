@@ -436,45 +436,75 @@ Properties of K_a:
 - K_a K_b = K_{ab} (the R-preserving family IS a multiplicative group)
   BUT the empirical system does not compose this way (one-shot, not iterable)
 
-### The semantic binding signal
+### The binding signal and multiplicative decomposition
 
-**Definition.** The *semantic binding signal* of suffix s is:
+The kernel family has a natural multiplicative decomposition
+(Codex derivation): if boundary correction and content correction
+are sequential pure attenuation kernels, their survival factors
+multiply:
 
-    beta(s) = log(a_c(s)) / log(a_c_ref)
+    a_total = a_boundary * a_content
 
-where a_c_ref = 0.380 (the "# No changes.\n" coefficient). Measured values:
+Using a_boundary ~ 0.82 (mean of generic suffixes) and a_total ~ 0.38:
 
-| Suffix | a_c | beta | Binding entropy reduction |
-|--------|-----|------|--------------------------|
-| `# No changes.\n` | 0.380 | +1.000 | 42-51% |
-| `\n` | 0.801 | +0.229 | 11-13% |
-| `# TODO\n` | 0.819 | +0.206 | ~12% |
-| `pass\n` | 0.871 | +0.143 | ~8% |
-| (identity) | 1.000 | 0.000 | 0% |
-| `x = x\n` | 1.609 | -0.492 | -18 to -40% |
+    a_content ~ 0.38 / 0.82 = 0.463
 
-**Additive decomposition** (empirical):
+The content stage removes ~54% of the leakage remaining after the
+generic boundary stage. The absolute suppression difference (0.62 -
+0.18 = 0.44) is the additive version of the same fact.
 
-    beta(s) = beta_boundary + beta_content(s)
+| Suffix | a_c | Suppression | Binding H reduction |
+|--------|-----|-------------|---------------------|
+| `# No changes.\n` | 0.380 | 62.0% | 42-51% |
+| `\n` | 0.801 | 19.9% | 11-13% |
+| `# TODO\n` | 0.819 | 18.1% | ~12% |
+| `pass\n` | 0.871 | 12.9% | ~8% |
+| (identity) | 1.000 | 0% | 0% |
+| `x = x\n` | K(1, 0.13) | -60.9% | -18 to -40% |
 
-beta_boundary ~ 0.19 (generic boundary signal from any token after
-nested code). beta_content("# No changes.") ~ 0.81. Content carries
-81% of the total disambiguation signal.
+Note: content-specificity is **intensional** (lexico-syntactic /
+discourse-act conditioning), not necessarily semantic. All tested
+suffixes are extensionally no-ops for the queried variable, yet
+produce sharply different kernels. The action does NOT factor through
+denotational store semantics. Paraphrase and contradiction equivalence
+tests (P5-P6) would be needed before "semantic" becomes the
+identified causal variable.
 
-### R-preservation as a selection principle
+### General R-preserving kernel (Codex derivation)
 
-R-preservation (|dR| < 0.002) is NOT a function of beta alone:
+Every R-preserving stochastic kernel on (C,L,R) has the form:
 
-- "# No changes.\n": beta = 1.0, R-PRESERVING
-- "\n": beta = 0.23, R-preserving (but weak)
-- "# TODO\n": beta = 0.21, R-disrupting
-- "pass\n": beta = 0.14, R-disrupting
+    K(a,b) = [[1-b, 1-a, 0],
+              [b,   a,   0],
+              [0,   0,   1]]
 
-R-preservation selects a distinguished operator from the family.
-The jointly R-preserving AND strongly suppressive kernel (a_c < 0.5,
-|dR| < 0.002) is unique among tested suffixes. This suggests the
-"# No changes.\n" content produces a targeted intervention that
-acts only on the binding subspace {C, L} without disturbing R.
+with 0 <= a, b <= 1. The attenuation law is K(a, 0) (b = 0: no C→L
+reverse flow). Self-assignment is approximately K(1, beta) with
+beta ~ 0.13 (mass flows C→L at rate beta*C).
+
+On each R-fiber (fixed R = r), using p = L/(C+L):
+
+    p' = b + (a - b) * p
+
+Fixed point: p* = b / (1 - a + b)
+Contraction rate: lambda = a - b
+
+| Suffix type | Kernel form | Attractor p* |
+|-------------|-------------|--------------|
+| `# No changes` | K(0.38, ~0) | 0 (correct) |
+| `\n` | K(0.80, ~0) | 0 (weakly) |
+| `pass`, `# TODO` | weak + R-defect | not fiber-closed |
+| `x = x` | K(~1, ~0.13) | 1 (shadow!) |
+
+The pure attenuation operators K(a, 0) form a commutative monoid
+isomorphic to ([0,1], x). Adding reverse transport (b > 0) gives the
+ordinary two-state Markov monoid and generally destroys commutativity.
+
+**Selection principle**: "# No changes.\n" is distinguished by being
+the only tested suffix that is both strongly suppressive (a < 0.5)
+AND approximately R-preserving (closed on R-fibers). The bare newline
+has similar |dR| (~0.001) but weak suppression (a ~ 0.80). Combined
+strength + R-closure is the joint selection criterion.
 
 ### Predictions from the operator family
 
