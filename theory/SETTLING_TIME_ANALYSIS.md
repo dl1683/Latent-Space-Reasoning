@@ -412,15 +412,134 @@ disturbing non-scope mass.
 the transformer more time — it tells it which overwritten value to
 stop believing."
 
+## Operator family formalization (from P2 analysis)
+
+### The binding simplex and kernel family
+
+**Definition.** The *binding simplex* S = {(C, L, R) : C+L+R=1, all >= 0}
+is the quotient of the 11-bin response distribution by the program-relative
+partition {correct digit y, shadow digit z, everything else}. The quotient
+map q_{y,z} : Delta^10 -> S is determined by the program.
+
+**Definition.** The *content-parameterized kernel family* is a map
+K : Sigma -> End(S), where Sigma = {suffix contents} and End(S) =
+stochastic maps S -> S. For the R-preserving subfamily:
+
+    K_a : (C, L, R) -> (C + (1-a)L, aL, R),   a in [0, 1]
+
+Properties of K_a:
+- Fixed point set: {(C, 0, R) : C + R = 1} (the L = 0 face)
+- Eigenvalues: 1 (multiplicity 2), a
+- Spectral gap: 1 - a (measures suppression strength)
+- det(K_a) = a (compresses volume by factor a)
+- K_a is idempotent iff a = 0 (complete suppression) or a = 1 (identity)
+- K_a K_b = K_{ab} (the R-preserving family IS a multiplicative group)
+  BUT the empirical system does not compose this way (one-shot, not iterable)
+
+### The semantic binding signal
+
+**Definition.** The *semantic binding signal* of suffix s is:
+
+    beta(s) = log(a_c(s)) / log(a_c_ref)
+
+where a_c_ref = 0.380 (the "# No changes.\n" coefficient). Measured values:
+
+| Suffix | a_c | beta | Binding entropy reduction |
+|--------|-----|------|--------------------------|
+| `# No changes.\n` | 0.380 | +1.000 | 42-51% |
+| `\n` | 0.801 | +0.229 | 11-13% |
+| `# TODO\n` | 0.819 | +0.206 | ~12% |
+| `pass\n` | 0.871 | +0.143 | ~8% |
+| (identity) | 1.000 | 0.000 | 0% |
+| `x = x\n` | 1.609 | -0.492 | -18 to -40% |
+
+**Additive decomposition** (empirical):
+
+    beta(s) = beta_boundary + beta_content(s)
+
+beta_boundary ~ 0.19 (generic boundary signal from any token after
+nested code). beta_content("# No changes.") ~ 0.81. Content carries
+81% of the total disambiguation signal.
+
+### R-preservation as a selection principle
+
+R-preservation (|dR| < 0.002) is NOT a function of beta alone:
+
+- "# No changes.\n": beta = 1.0, R-PRESERVING
+- "\n": beta = 0.23, R-preserving (but weak)
+- "# TODO\n": beta = 0.21, R-disrupting
+- "pass\n": beta = 0.14, R-disrupting
+
+R-preservation selects a distinguished operator from the family.
+The jointly R-preserving AND strongly suppressive kernel (a_c < 0.5,
+|dR| < 0.002) is unique among tested suffixes. This suggests the
+"# No changes.\n" content produces a targeted intervention that
+acts only on the binding subspace {C, L} without disturbing R.
+
+### Predictions from the operator family
+
+P5: Semantically equivalent suffixes ("# Nothing changed.\n",
+"# Same value.\n", "# Unmodified.\n") should have beta ~ 1.0.
+
+P6: Semantically opposite suffixes ("# Updated.\n", "# Changed.\n",
+"# New value.\n") should have beta < 0.
+
+P7: The 81/19 content/boundary decomposition should hold across
+models with different architectures (if it reflects pre-training
+patterns) or shift (if it reflects architectural properties).
+
+P8: R-preservation should correlate with attention pattern specificity:
+R-preserving kernels attend to scope-relevant positions only, while
+R-disrupting kernels have broader attention spread.
+
+### P4: Depth-5 extrapolation — L SATURATION (2026-09-04)
+
+Experiment: experiments/config/svb_qwen3_depth5_prediction.json
+Results: experiments/results/svb_qwen3_depth5/result.json
+81 calls (cached from prior runs), 42.5s.
+
+| Depth | C (s0) | C (s1) | L (s0) | L (s1) | R (s0) | R (s1) | a_c  |
+|-------|--------|--------|--------|--------|--------|--------|------|
+| d1 | 0.955 | 0.969 | 0.029 | 0.014 | 0.016 | 0.017 | 0.48 |
+| d2 | 0.888 | 0.943 | 0.089 | 0.034 | 0.023 | 0.023 | 0.38 |
+| d3 | 0.773 | 0.894 | 0.196 | 0.075 | 0.031 | 0.031 | 0.38 |
+| d4 | 0.731 | 0.872 | 0.234 | 0.095 | 0.035 | 0.033 | 0.41 |
+| d5 | 0.709 | 0.854 | 0.244 | 0.106 | 0.047 | 0.040 | 0.43 |
+
+**Key findings:**
+
+1. **L saturation**: L(4)=0.234, L(5)=0.244 — only 4% increase. Growth
+   ratios: d1→d2 x3.0, d2→d3 x2.2, d3→d4 x1.2, d4→d5 x1.04.
+   The exponential model L ~ 0.03·exp(0.6d) is REFUTED at d5.
+
+2. **R growth**: R(4)=0.035, R(5)=0.047 — 33% increase. As L saturates,
+   residual noise R grows instead. Different degradation mode.
+
+3. **a_c weakening**: a_c increases from 0.38 (d2-d3) to 0.43 (d5).
+   The operator is less effective in the saturation regime.
+
+4. **R invariance breaks**: |dR| = 0.007 at d5 (vs <0.002 at d2-d4).
+   The "clean" L→C transfer degrades; some mass leaks to R.
+
+5. **Recovery fraction stable**: r(5) = 0.49, consistent with d2-d4
+   (~0.50). The proportional recovery holds even as the mechanism degrades.
+
+**Interpretation**: The model has finite scope-confusion capacity. L
+saturates around 0.24 (~24% of the response mass leaks to the shadow).
+Beyond d4, additional nesting adds general noise (R growth) rather than
+scope-specific confusion (L growth). The attenuation operator degrades
+because the d5 "error" is no longer purely scope-related.
+
+**Old prediction was wrong**: The exponential model predicted
+sigma(5,0) ≈ 0.45, but actual is 0.73. The prediction interval
+[0.68, 0.78] for sigma(5,1) was based on a wrong premise. However,
+the MIXTURE FORMULA with the actual s0 gives 0.5·0.73 + 0.5 = 0.866,
+matching the actual 0.862 to within 0.004.
+
 ## Remaining predictions
 
 ### P3: Nested vs flat structure control
 Token/occurrence-matched flat repetition vs nested scopes.
-
-### P4: Depth-5 extrapolation (reframed)
-Under the attenuation law: L(5,0) ~ exp(3.0) · 0.03 ≈ 0.60.
-σ(5,1) = 1 - a_c·L(5,0) - R ≈ 1 - 0.38·0.60 - 0.035 ≈ 0.74.
-Config: experiments/config/svb_qwen3_depth5_prediction.json
 
 ## Open questions
 
@@ -431,3 +550,5 @@ Config: experiments/config/svb_qwen3_depth5_prediction.json
 5. Is the d3-d4 residual synchronization (beyond shadow suppression) real?
 6. Why is a_c consistent across shadow digits but NOT across depths
    (a_c ≈ 0.48 at d1, ≈ 0.38 at d≥2)?
+7. What is the pre-image of R-preservation in the attention pattern?
+8. Does the 81/19 content/boundary split reflect training or architecture?

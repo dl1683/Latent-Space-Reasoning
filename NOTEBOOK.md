@@ -4,6 +4,23 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### DEPTH-5 REVEALS L SATURATION: shadow leakage has finite capacity (2026-09-04)
+
+Depth-5 prediction experiment (P4) shows the exponential depth model BREAKS:
+- L(4)=0.234, L(5)=0.244 — only 4% increase (was x3.0, x2.2, x1.2 at d1-d4)
+- L saturates at ~24%. Model has finite scope-confusion capacity.
+- R grows instead (0.035→0.047) — general noise replaces scope confusion.
+- a_c weakens to 0.43 (from 0.38); R invariance breaks (|dR|=0.007).
+- Recovery fraction stable at 0.49 (consistent d2-d5).
+
+Operator family formalized: R-preserving subfamily K_a forms abelian monoid.
+Semantic binding signal beta orders suffixes on a one-dimensional scale.
+Fisher distance increases with depth (operator does more work where needed).
+K_a * K_b = K_{ab} algebraically, but empirically one-shot (not iterable).
+
+New predictions P5-P8 registered (semantic equivalence, semantic opposition,
+cross-model content/boundary decomposition, attention pattern selectivity).
+
 ### CONTENT-SPECIFICITY CONFIRMED (P2): the suffix is a semantic intervention, not a boundary signal (2026-09-04)
 
 Suffix ablation experiment (6 conditions, 756 calls, 237s CPU) tests whether
