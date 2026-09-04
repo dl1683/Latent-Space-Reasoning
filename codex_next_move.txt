@@ -1,0 +1,26 @@
+1. **Is \(\delta_L\) native math?**  
+It is a credible native **observable**, not yet native mathematics. Define \(v(s)=\delta_L(s)\): suffix \(s\) multiplies shadow odds by \(e^{v(s)}\). Depth invariance, 100% ASSERT closure, the 0.21-logit ASSERT/MISLEADING gap, and monotonic assertion strength suggest an ordered semantic quotient.
+
+But \(v\) remains a real-valued, surface-indexed readout with no demonstrated law relating surfaces. That is compatible with 43 unrelated constants. Simplicity is not the problem; lack of predictive structure is. The native object would be the transformations of text that induce lawful changes in \(v\), not the scalar values alone.
+
+2. **Highest-leverage experiment: a held-out edit-law test.**  
+Create a preregistered factorial set:
+
+- Many lexically disjoint base propositions and templates.
+- Controlled text operations: hedge, assert, intensify, mislead, rewrite.
+- Novel combinations of those operations.
+
+Estimate from training families the finite difference
+
+\[
+\Delta_g v(s)=v(g(s))-v(s)
+\]
+
+for each semantic edit \(g\). Then predict the numeric \(\delta_L\)—not merely its role label—for entirely held-out lexical families and held-out base-by-edit combinations.
+
+Compare against role means, token/length/n-gram controls, and unrestricted surface effects. Evidence for structure requires that edit-induced increments, ordering, and interaction terms generalize numerically to unseen surfaces. If only role means transfer, you have clustering; if nothing transfers, you have a lookup table. Embedding regressors may be included only as an \(R^n\) baseline, not as the native result.
+
+3. **Switch families?**  
+Run this one bounded bridge test, then decide. If it fails, SVB is squeezed dry and should close. If it passes, retain \(\delta_L\) as one observable character—but SVB may still be too one-dimensional to reveal the larger algebra.
+
+The next family should involve typed, noncommuting world updates with several behavioral queries: different execution histories reaching the same extensional state, followed by controlled future operations. That creates room for genuine composition, congruence, path dependence, and transformation-monoid structure instead of another scalar calibration curve.

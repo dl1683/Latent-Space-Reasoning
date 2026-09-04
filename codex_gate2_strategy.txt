@@ -1,0 +1,141 @@
+Do **not** run the current Gate 2 config unchanged, and do not relax the threshold merely to make class M pass. Gate 1b says the proposed semantic-role quotient is not presently available. The right next experiment is a controlled, surface-indexed operator test; class-level composition must be earned back prospectively.
+
+## 1. Do not relax class M globally
+
+The threshold landscape is:
+
+| Criterion | What it admits | Licensed claim |
+|---|---|---|
+| `max TV < 0.01` | One cross-role A pair; no M pair | A has one local equivalence witness |
+| `max TV < 0.025` | A pair plus a narrow pair inside `MISLEADING_ASSERT_NOVAR` | Local no-variable M subclass only |
+| `p95 TV < ~0.033` or `max TV < ~0.041` | First M variable/no-variable bridge | Approximate equivalence of one selected pair—not class M |
+
+The last option is unacceptable for the original class claim: global A–M separation has `p5=0.0241`, so an M equivalence tolerance of `0.033–0.041` is already larger than the class-separation floor. “Same class” and “different class” would overlap.
+
+A defensible restricted alternative is:
+
+- Define a post-hoc local class  
+  \(M_*=\{\)`# Setting a different value.`, `# Changing the current value.`\(\}\).
+- Existing evidence: mean TV `0.0064`, p95 `0.0166`, max `0.0222`.
+- Use prospective `eps_eq=0.025`, with median `≤0.01`, p95 `≤0.025`, and max only diagnostic.
+- Require restricted A\(_*\)–M\(_*\) separation `p5≥0.035` on fresh contexts. Existing selected-pair p5 values are at least `0.0389`.
+- Because this pair was selected after seeing Gate 1b, it must reproduce on a fresh depth or prefix family before becoming claim-bearing.
+
+That would establish a narrow `M_novar` cluster, not the original MISLEADING class.
+
+## 2. Move Gate 2 to surface-indexed composition
+
+Do not abandon composition; abandon **semantic-role composition as the current headline**.
+
+Use literal surfaces \(s\) as generators and test their actions \(K_s\). A positive result would mean:
+
+> These particular E-null traces have a stable, controlled, noncommuting action on the registered response world.
+
+It would not establish:
+
+- a class-level ASSERT/MISLEADING algebra;
+- compression of surface history;
+- proof relevance;
+- representative-independent native mathematics.
+
+Class-level composition can return only after at least two independently validated representatives per class produce the same atomic operator and the same compositional relation.
+
+## 3. Use lumpability—but only per surface
+
+The reported R² does not quite establish the claimed strong lumpability. The current analyzer:
+
+- averages all surfaces within a role;
+- regresses only baseline \(L\) to post-suffix \(L\);
+- evaluates in-sample;
+- does not test C/R prediction or intermediate states produced by another suffix.
+
+See [analyze_lumpability.py](C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/analyze_lumpability.py) and the stronger wording currently in [STATE.md](C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/STATE.md:37).
+
+Treat R² `0.79–0.98` as evidence that an operator experiment is promising, not proof that a role-level \(K_u\) exists.
+
+Refit separate constrained simplex operators \(K_s\) for every surface:
+
+\[
+p' = K_s p,\qquad p=(C,L,R).
+\]
+
+Fit on depths 2–3 and predict depth 4. Compare:
+
+1. scalar \(K_a\);
+2. constant logit-bias;
+3. full surface-specific stochastic \(3\times3\) operator.
+
+Then predict unseen products:
+
+\[
+\hat p_{AM}=K_MK_Ap,\qquad
+\hat p_{MA}=K_AK_Mp.
+\]
+
+Use the robust commutator margin
+
+\[
+\Gamma_z =
+TV(p_{AM},p_{MA})
+-TV(p_{AM},\hat p_{AM})
+-TV(p_{MA},\hat p_{MA}).
+\]
+
+A positive lower bound on \(\Gamma\) shows that the atomic operators actually predict the order difference. If composition prediction fails, conclude that the CLR projection is not closed on sequentially reached states—not that the full action fails to compose.
+
+## 4. Minimum decisive experiment: 192 calls
+
+Use the already specified literal pair to avoid selecting for a large Gate 1b effect:
+
+- \(A=\)`# {var} is unchanged.\n`
+- \(M=\)`# Reassigning {var} now.\n`
+
+Mechanically choose neutral fillers \(F_A,F_M\) from a frozen candidate bank such that:
+
+- `tokens(F_A) == tokens(A)`;
+- `tokens(F_M) == tokens(M)`;
+- all are one-line E-null comments;
+- selection uses tokenization only, never model outputs.
+
+For each of the 24 depth-4 contexts, run these eight arms:
+
+1. `A M`
+2. `M A`
+3. `A F_M`
+4. `F_M A`
+5. `M F_A`
+6. `F_A M`
+7. `F_A F_M`
+8. `F_M F_A`
+
+Total: `8 × 24 = 192` CPU calls.
+
+The six filler arms estimate an arbitrary additive slot/recency model. In additive log-ratio coordinates \(\phi\):
+
+\[
+\widehat{\phi(AM)}
+=\phi(AF_M)+\phi(F_AM)-\phi(F_AF_M),
+\]
+
+\[
+\widehat{\phi(MA)}
+=\phi(MF_A)+\phi(F_MA)-\phi(F_MF_A).
+\]
+
+This absorbs the discounted-scalar rival \(s'=\lambda s+\delta_u\), including different effects for A and M. The current same-role swaps do not: same-role surfaces can have similar \(\delta\) even when cross-role surfaces do not. Therefore the current analyzer’s statement that cross-role median exceeding same-role max defeats discounted-scalar models is too strong; see [run_semantic_descent.py](C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_semantic_descent.py:430).
+
+Pre-register two primary gates on the registered 11-bin response law:
+
+- Direct order effect: paired, context-stratified 95% lower bound for median `TV(AM,MA) > 0.01`.
+- Excess interaction: lower bound for the signed order contrast unexplained by the filler-derived null is `>0.01`.
+
+Interpretation:
+
+- Both pass: controlled surface-level noncommutativity; rejects \(K_a\), context-free logit addition, and position-weighted additive decay for these traces.
+- Direct passes, excess fails: ordinary recency/position explains the order effect.
+- Direct fails: the selected generators commute within tolerance.
+- Operator predictions fail: CLR is not closed enough for an operator-composition claim.
+
+Only after this 192-call screen passes should you spend on the two-A-by-two-M\(_*\) representative factorial. That second stage would test whether the commutator itself survives representative replacement. Until then, Gate 2 is a narrow diagnostic, not evidence of a class algebra.
+
+Finally, the Rⁿ check: stochastic \(K_s\) matrices are still ordinary linear-algebra scaffolding. The native result would be the **response-defined equivalence classes and representative-stable relations they obey**, subsequently realized causally at the relay state—not the matrices themselves.

@@ -1,0 +1,106 @@
+# Adjudication: REVISE / CONTROL REQUIRED
+
+A careful reviewer should accept this as evidence of a reproducible **fixed-prompt depth × suffix interaction**. They should not accept it yet as native curvature, a quotient-level law, or a depth-3/4 architectural transition.
+
+The preregistered result remains **SUB_THRESHOLD / NO_CURVATURE**. That does not make the −0.28-nat effect unreal; it makes it real but insufficiently identified.
+
+## 1. Threshold
+
+Do not retroactively lower the 0.5-nat threshold. The observed interval, approximately 0.24–0.33 nat in magnitude, is comfortably below 0.5—not borderline with it. If 0.5 was the preregistered smallest meaningful effect, that gate failed.
+
+But −0.284 nat is not negligible:
+
+- It is 17.4% of the d3 suffix contrast, −1.635 nat.
+- `exp(−0.284) = 0.753`: the MISLEAD-vs-ASSERT correct/shadow odds ratio is about 25% lower at d4.
+- All 24 crossed cells have the same sign.
+
+The correct conclusion is therefore: **statistically/descriptively nonzero, scientifically sub-threshold**. Whether 0.28 is functionally meaningful should be decided prospectively using behavioral consequences, not inferred from significance.
+
+There is also an evidence-gate defect: the config preregisters `min_snr_vs_noise = 10`, but the runner never computes a replay/numerical noise floor or includes that gate in the verdict. Therefore “only the magnitude gate failed” is formally false. The CI measures variation over eight digit rows for the single held-out variable `z`; it is not an execution-noise estimate. See [config](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/config/curvature_qwen3.json:19>) and [runner](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_curvature.py:223>).
+
+## 2. Alternative explanations
+
+### Position and length
+
+This is the strongest rival.
+
+The suffix is not farther from the query at d4—it remains immediately adjacent. But its **absolute position** changes: the prefixes tokenize to 38, 58, and 79 tokens. Moreover, ASSERT is five Qwen tokens while MISLEAD is four, so even within a depth the query occurs at different positions.
+
+That matters because this same SVB campaign already found that an apparent compositional interaction was absorbed by context-dependent positional gain [STATE.md](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/STATE.md:65>).
+
+There is an additional lexical confound: every added depth introduces another repeated-9 assignment (`99`, `999`, `9999`, `99999`), while `9` is always the shadow digit in \(z\). “Not digit-predicted” varies the correct digit but never varies this shadow digit.
+
+### Generic degradation or saturation
+
+Plausible, but a simple monotonic degradation story is insufficient. The no-suffix margin falls much more from d2→d3 than from d3→d4, yet only the latter has coherent κ. A **nonlinear, perturbation-strength-dependent positional gain** remains entirely compatible with the data.
+
+The none arm also changes the interpretation:
+
+| Quantity | d3 | d4 | Change |
+|---|---:|---:|---:|
+| ASSERT − NONE | +2.514 | +2.660 | +0.145 |
+| MISLEAD − NONE | +0.879 | +0.740 | −0.139 |
+| MISLEAD − ASSERT | −1.635 | −1.919 | **−0.284** |
+
+Thus MISLEAD alone did not “strengthen by 0.28.” Half the separation comes from ASSERT becoming relatively more beneficial. MISLEAD still improves the correct/shadow margin over no suffix at d4.
+
+### Log-ratio nonlinearity
+
+No. Because both probabilities come from the same softmax,
+
+\[
+z=\log(p_c/p_s)=\ell_c-\ell_s.
+\]
+
+It is exactly a raw logit difference. Softmax or logarithm curvature cannot create κ. The experiment rejects a **fixed additive shift of those logits**. It does not distinguish native geometry from context-dependent encoding or positional gain. See [probability extraction](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_svb_0.py:40>) and [z definition](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_curvature.py:85>).
+
+## 3. The d3/d4 asymmetry
+
+It is a change-point candidate, not evidence of a scope-processing transition.
+
+Calling d2→d3 “genuinely null” is too strong:
+
+- `x`: +0.0438
+- `y`: −0.0456
+- held-out `z`: +0.0847
+
+The training mean is near zero because `x` and `y` cancel. This is heterogeneous, non-generalizing behavior—not an established null.
+
+Likewise, the train/holdout “perfect match” at d3→d4 is less decisive than it sounds: there is only one held-out variable symbol, and its mean happens to lie between `x` and `y`. These are 24 crossed deterministic cells, not 24 independent replications.
+
+## 4. Highest-leverage next experiment
+
+Choose **(e), incorporating (b)**: one bounded, CPU-only, isochronous falsification experiment.
+
+It should:
+
+- Match ASSERT and MISLEAD exactly in Qwen-token length.
+- Match d3 and d4 at the suffix/query’s absolute token position using several mechanically selected neutral padding families.
+- Vary the shadow digit and inner literals instead of always accumulating `9`.
+- Use multiple preregistered paraphrases per semantic class and hold out entire surface/template families.
+- Estimate ASSERT−NONE and MISLEAD−NONE separately.
+- Prospectively fit the neutral position-gain null.
+- Cluster inference by template and suffix family, and actually measure the registered replay/noise floor.
+
+Do not extend to d5–d6 first: that compounds depth, length, and shadow-token exposure. Hidden-state probing and cross-model replication are also premature; they would mechanize or reproduce an unvalidated construct.
+
+Indeed, the already-collected Gate‑1b panel gives a warning: across six MISLEADING surfaces, the d3→d4 change ranges from −0.235 to +0.155 nat with mixed signs; across six ASSERT_VAR surfaces it ranges from −0.016 to +0.200. The 24/24 result is universal over variables and values **for one surface pair**, not over the proposed semantic operations.
+
+My continuation ruling: allow exactly one confound-killing control round if attributing this interaction matters. If representative-stable residual curvature does not survive, close this line rather than escalating to GPU, deeper prompts, or more models.
+
+## 5. Native-math claim
+
+Not yet.
+
+At present κ is an ordinary factorial interaction in one scalar logit coordinate. Calling a mixed finite difference “curvature” does not create a geometry: curvature requires some intrinsic transport/connection-like structure and invariance under coordinate, representative, and presentation changes.
+
+The project’s own evidence says the suffix operator is surface-specific and the proposed behavioral equivalence is not a congruence [STATE.md](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/STATE.md:21>). The broader surface-panel heterogeneity reinforces that objection.
+
+What this does advance is a narrower, useful fact: **the fixed suffix contrast is context-dependent and cannot be represented by the simplest globally additive logit-shift model.** That is a candidate obstruction and a good falsifier generator. It is not yet a law a denizen of latent space would discover.
+
+Recommended licensed sentence:
+
+> On one preregistered Qwen3-1.7B SVB surface pair, the d3→d4 change in the MISLEAD-minus-ASSERT correct/shadow logit contrast was −0.284 nat in all 24 crossed cells; it missed the 0.5-nat gate and remains confounded by position, shadow-token exposure, and surface choice.
+
+Finally, the runner, config, and result are currently untracked, and the ledger entry has `git_commit: null` [ledger](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/ledger.jsonl:529>). They should be frozen and hash-bound before even the narrow finding is treated as publication-grade evidence. The audit-board verdict and corrections are recorded as entries `e854–e863`.
+

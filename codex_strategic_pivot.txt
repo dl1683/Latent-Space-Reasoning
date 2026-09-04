@@ -1,0 +1,75 @@
+## Verdict
+
+Choose **Path B → Path C**.
+
+Retire the current SVB comment-suffix campaign as a primary discovery program. Give Path A one bounded closure test, but do not launch an SVB layer/head hunt or the current Gate 3.
+
+### Brutal assessment
+
+SVB’s present axis is played out for native mathematics:
+
+- The rich 3×3 operator disappeared under held-out testing.
+- What survives is a one-dimensional, surface-indexed logit shift.
+- It does not descend across surfaces or roles.
+- Its apparent composition reduces to position plus nonlinear gain.
+- Predicting `δ_L` from textual features would primarily study how language maps to scalar evidence strength—not discover latent-native operations.
+
+The low CV across nesting depths is genuinely interesting, but it means “the same comment induces a similar bias at different program depths.” It does **not** establish invariance across transformer layers, a reusable causal state, or an algebra.
+
+### Path ranking
+
+| Direction | Native-math prospects | Assessment |
+|---|---:|---|
+| **B followed by gated C** | Highest | Can expose a nontrivial behavioral quotient, predictive relations, and causal realization |
+| **C on current SVB** | Low for mathematics; good for mechanism | Likely localizes generic comment/evidence processing in ordinary residual coordinates |
+| **A as an extended campaign** | Very low | Likely becomes coefficient cartography or text-feature regression |
+
+### The new task family
+
+Use a **controlled multiregister execution world**. This is adjacent to Python, but it is not SVB-with-more-surfaces.
+
+Start with three registers and four operation families:
+
+- constant write `W_i(a)`
+- copy `C_{i←j}`
+- swap `S_ij`
+- state-conditional write `G_{i=j→W_k(a)}`
+
+Construct many procedurally different histories with identical final stores. Replace `(C,L,R)` with a high-dimensional future-response signature: queries about every register plus responses after registered one-step continuations.
+
+Then define the latent denizen’s places behaviorally:
+
+\[
+z \sim z' \iff \text{all registered future-response laws agree}.
+\]
+
+The target is not whether the model reproduces ordinary program algebra. It is the **model-induced quotient**:
+
+- Which histories does it identify?
+- Which distinctions survive despite equal denotation?
+- Which operations descend to that quotient?
+- Which relations—idempotence, absorption, conditional commutation, involution—predict unseen compositions?
+- Where does the model’s algebra develop holes relative to program semantics?
+
+Require held-out names, templates, histories, and compositions. That makes the object model-discovered rather than a lookup table.
+
+### How C should enter
+
+Only after the behavioral quotient predicts held-out compositions should C begin. Use causal interchange, not exploratory head archaeology:
+
+1. Identify a candidate relay position.
+2. Mask or remove access to the original operation tokens.
+3. Transplant a donor state from one behaviorally defined class.
+4. Require the recipient’s **full future-response signature** to follow the donor class.
+5. Compare against random, position-matched, and norm-matched donors.
+
+Layer-range localization can follow a successful interchange result. Head localization before that would tell us where a scalar bias travels, not what mathematics the model inhabits.
+
+### What remains for Path A
+
+One fixed-budget closure test is defensible: test whether `δ_L` descends across preregistered semantic/paraphrase families on held-out lexical families. It must beat cheap lexical predictors and unrestricted surface baselines. If it fails—as the current evidence strongly predicts—close SVB and preserve the depth-stable scalar bias as a clean negative result.
+
+The axiom that native mathematics exists should determine where we keep searching; it must not lower the evidence threshold for calling a scalar regularity an algebra.
+
+I recorded and reconciled this verdict on mission board `5df235ea` as entries `e960–e966`; the synthesis converged with the earlier provisional Gate 2 and `K_A` positives superseded. The formal reason is already implicit in [INTENSIONAL_DESCENT.md](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/theory/INTENSIONAL_DESCENT.md:631>): the native object is the response-defined quotient and its descended action, not the matrix or residual coordinates used to observe it.
+

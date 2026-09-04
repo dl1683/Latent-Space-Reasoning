@@ -1,0 +1,157 @@
+Bottom line: \(K_A\) is the strongest current research lead, but \(L\!\to\!C\approx0.72\) is still a post-hoc, surface-specific fitted regularity—not yet a native stable equation. I would pivot the program toward validating it, while keeping the public claim explicitly provisional.
+
+## 1. Stable equation or fitted statistic?
+
+It is an unusually promising equation candidate, for three reasons:
+
+- The coefficient is stable across d2–d4.
+- A d2+d3 fit predicts d4 well: \(r=0.960\), mean TV \(\approx0.019\) with the shipped estimator.
+- It compresses the depth-scaling pattern: deeper instances contain more shadow mass, so a roughly fixed correction map produces a larger absolute gain.
+
+But four qualifications prevent calling it a stable law yet.
+
+First, the quoted matrices correspond specifically to the literal suffix `# No side effects.\n` in the [Gate1b raw configuration](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/results/svb_qwen3_gate1b/result.json:42>). They are not an ASSERT-class mean, and Gate 2 uses a different assertion surface, `# {var} is unchanged.\n`.
+
+Second, other ASSERT surfaces have similarly stable but very different coefficients:
+
+- Across individual surfaces, depth variation is usually small.
+- Across surfaces, \(L\!\to\!C\) ranges from approximately \(0.475\) to \(0.861\).
+
+The stronger emerging hypothesis is therefore a surface-indexed family \(K_s\), not one universal \(K_A\).
+
+Third, only the well-supported part of the matrix is stable. Between d2 and d4:
+
+- The fitted \(L\) column changes little.
+- The \(R\) column has TV \(\approx0.466\).
+
+The input clouds are also ill-conditioned, especially at d2, so the complete \(3\times3\) matrix is not identified nearly as securely as the \(L\)-correction component.
+
+Fourth, the exact value depends on fitting procedure. A directly constrained stochastic fit gives \(L\!\to\!C\approx0.746,0.739,0.744\), rather than \(0.734,0.715,0.720\). The invariant appears real; “0.72” is not yet a canonical constant.
+
+One wording correction matters: “converts 72% of shadow probability” is too literal. In the fitted matrices, \(L\!\to\!R\) is nonzero, and the observed cellwise correct-gain divided by baseline shadow mass is about \(0.854,0.853,0.866\). The matrix coefficient is an inferred pure-\(L\) column, extrapolated from the observed response manifold—not direct tracking of probability parcels.
+
+My classification is:
+
+> **Post-hoc depth-stable response-map candidate**, one rung below a stable equation.
+
+## 2. What would make it native?
+
+The stochastic matrix itself is ordinary \(\mathbb R^3\)/Markov machinery. That is legitimate scaffolding, but it is not the native object.
+
+The native claim would be that the suffix induces a well-defined action on a response-defined quotient. Let \(r(z)\) denote the behavior available to a latent-space denizen, and define
+
+\[
+z\sim_r z' \quad\Longleftrightarrow\quad r(z)=r(z').
+\]
+
+The suffix \(s\) descends to that quotient only if
+
+\[
+z\sim_r z'
+\quad\Longrightarrow\quad
+T_s z\sim_r T_s z'.
+\]
+
+Only then is
+
+\[
+[z]\mapsto[T_s z]
+\]
+
+an intrinsic operation. A matrix equation
+
+\[
+r(T_s z)\approx K_s r(z)
+\]
+
+would then be a coordinate representation of that native operation.
+
+The present \(R^2=0.79\!-\!0.98\) does not establish this. The [lumpability analyzer](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/analyze_lumpability.py:61>) averages surfaces within roles and fits an in-sample scalar regression of post-\(L\) on baseline-\(L\). It does not test response-matched collisions, the complete output law, or states reached through other transformations. The theory document already states the stronger condition in its [lumpability section](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/theory/INTENSIONAL_DESCENT.md:342>).
+
+Graduation therefore requires:
+
+1. **Closure:** response-equivalent states remain response-equivalent after the suffix.
+2. **Held-out prediction:** one frozen \(K_s\) predicts complete response laws for unseen state families.
+3. **Off-manifold action:** it works on states reached through previously unseen predecessor operations, not merely ordinary depth variation.
+4. **Predictive surplus:** it beats logit-shift, monotone recalibration, mean-displacement, and one-parameter correction baselines.
+5. **Representative descent:** if claiming an ASSERT-class operator, the same law must transfer to wholly held-out assertion surfaces.
+6. **Composition:** eventually,
+   \[
+   r(T_sT_u z)\approx K_s\,r(T_u z)
+   \]
+   for unseen \(u\), without refitting.
+
+If collision closure passes but the matrix fails, that would still be valuable: it would mean a native quotient action exists, but its law is nonlinear or requires a richer response state.
+
+## 3. Should it replace noncommutativity as the headline?
+
+As the **research focus: yes**. As a **confirmed headline: not yet**.
+
+A defensible current sentence is:
+
+> On the fixed suffix `# No side effects.`, a three-bin response map fitted on depths 2–3 predicts depth-4 changes with gain correlation \(r=0.96\) and mean TV approximately \(0.019\); this post-hoc result nominates a depth-stable, surface-specific correction law for prospective testing.
+
+I would not currently say:
+
+- “ASSERT has a universal 72% correction operator.”
+- “The suffix transports 72% of shadow mass.”
+- “A native algebraic law has been discovered.”
+
+The fact that the cross-depth map ties your strongest naive baseline on TV is decisive here: high correlation may mostly reflect both models recognizing that gain grows with available shadow mass. In my reconstruction, one-parameter transfer and constant-logit-shift baselines reach TV around \(0.0215\) and \(0.0220\), only modestly worse than the full projected \(K_s\). That is suggestive, not a decisive predictive surplus.
+
+The strongest remaining rival is:
+
+> **A fixed lexical suffix induces a surface-specific logit/readout recalibration along the narrow natural response manifold.** Depth merely changes where examples lie on that manifold, making the same recalibration look like a stable probability-transport operator.
+
+That explanation accounts for coefficient stability and depth-scaled gains without requiring latent probability transport, lumpability, or native algebra.
+
+The composition result does not independently validate this operator: Gate 2 uses a different assertion surface, and its noncommutativity remains provisional.
+
+## 4. The decisive held-out test
+
+The strongest test is a **prospectively frozen response-collision and off-manifold transfer test**, not another depth correlation.
+
+Freeze one literal suffix \(s\), its response coordinates, fitting method, thresholds, and baselines. Fit \(K_s\) only on designated d2–d3 calibration families. Then evaluate on:
+
+- Unseen templates, names, and values.
+- New depths.
+- Completely held-out predecessor suffix families \(u\).
+- Pairs of histories \(z,z'\) deliberately selected to have nearly identical pre-suffix response laws despite different latent histories.
+
+Test two separate claims:
+
+\[
+d(r(z),r(z'))\leq\delta
+\quad\Longrightarrow\quad
+d(r(T_s z),r(T_s z'))\leq\epsilon
+\]
+
+for quotient closure, and
+
+\[
+d\!\left(r(T_sT_u z),K_s\,r(T_u z)\right)\leq\epsilon
+\]
+
+for operator prediction.
+
+The result graduates only if clustered confidence bounds show both:
+
+- Absolute held-out error below a preregistered tolerance.
+- A positive margin over the best frozen rival:
+  \[
+  \operatorname{err}(K_s)+m
+  <
+  \min_b \operatorname{err}(b),
+  \]
+  where \(b\) includes constant logit shift, monotone recalibration, mean displacement, identity, and the one-parameter \(C\!\leftrightarrow\!L\) model.
+
+Why this is decisive:
+
+- Failure of response-matched collisions means \(K_s\) is merely a projection-dependent summary.
+- Passing collisions but failing matrix prediction means a native action may exist, but \(C,L,R\) are insufficient coordinates.
+- Passing both, including unseen predecessor states and baseline surplus, would justify calling \(K_s\) a stable quotient law.
+- Transfer across held-out surface representatives would then justify promoting \(K_s\) to a class operator \(K_A\).
+
+So the next move should be one bounded, preregistered CPU experiment aimed directly at quotient closure and predictive surplus. That is currently higher leverage than further composition experiments.
+
+I recorded the audit as blackboard entries e952–e959 and ran synthesis. One propagation remnant remains: [INTENSIONAL_DESCENT.md](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/theory/INTENSIONAL_DESCENT.md:649>) still labels Gate 2 `NONCOMMUTATIVE_CONTROLLED`, despite the corrected STATE and NOTEBOOK language.

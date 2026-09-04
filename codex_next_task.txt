@@ -1,0 +1,54 @@
+Use exhaustive composition in the smallest noncommutative group, \(S_3\). It forces order-sensitive combination while remaining cheap enough to test completely.
+
+### Task
+
+Each instruction is a permutation of three nonce objects:
+
+```python
+def move(x, p):
+    return tuple(x[p[i]] for i in range(3))
+
+x = ("ka", "zu", "mi")
+x = move(x, (1, 2, 0))   # p
+x = move(x, (0, 2, 1))   # q
+print(x)
+```
+
+Ask for the final tuple only. Enumerate all \(6\times6=36\) ordered pairs, including identity. Use two lexically disjoint renderings: Python and a plain-language lookup table, with different nonce objects.
+
+Why this works: \(S_3\) is noncommutative; reversed instructions often require different answers. The output has six distinguishable permutations, and composition cannot generally be represented as independent position-specific logit biases.
+
+### Observable
+
+Score all six complete candidate tuples by teacher forcing, producing a six-way distribution—not merely three next-token bins. Also record greedy output and termination.
+
+For internal structure, avoid PCA, cosine distance, or fitted linear operators. Define a state through its **continuation-action signature**: after caching the state produced by \(p;q\), append each separating continuation
+
+\[
+T=\{e,\ (01),\ (012)\}
+\]
+
+and record the six-way output distribution. Two states are equivalent when they induce the same action signature. This tests a behavioral quotient native to the model’s computation rather than hidden-state geometry.
+
+### Pre-registered gates
+
+1. **Computation:** termination 36/36 and at least 34/36 exact compositions on each rendering.
+2. **Non-additivity:** compare observed candidate logits with the parameter-free null  
+   \[
+   \hat L(p,q)=L(p,e)+L(e,q)-L(e,e).
+   \]
+   Require the model to beat this null by at least 25 percentage points in accuracy and 0.5 nat mean NLL.
+3. **Presentation congruence:** at least 34/36 composition classes agree across the two renderings.
+4. **Internal closure:** for at least 95% of \((p,q,t)\), the action signature after \(p;q\) matches the signature of the primitive element \(q\circ p\) followed by \(t\). All six classes must occur.
+
+Failure of Gate 1 rules out this family for this model. Passing behavior but failing Gate 4 means the model computes answers without a reusable latent algebra. Passing all four identifies a candidate behavioral action algebra—not yet proof of mathematics unique to latent space.
+
+### Minimum cost
+
+- Behavioral screen: \(36\times2=72\) prompts.
+- Internal closure: \(36\times3=108\) probes plus 18 primitive-reference probes.
+- Total: **198 prompts**, each scoring six short candidates with shared prompt KV cache.
+
+Estimated Qwen3-1.7B runtime: roughly **15–30 minutes CPU**, or one batched **30–60 second GPU burst**.
+
+Reuse `ModelAdapter` for cached states and continuation decoding. Add one focused runner for \(S_3\) enumeration, complete-sequence candidate scoring, the additive null, and action-signature comparisons. Do not reuse the coarse `(C,L,R)` or old \(K_s\) analysis.

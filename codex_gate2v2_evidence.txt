@@ -1,0 +1,160 @@
+Verdict: **PROVISIONAL**. The experiment securely establishes a direct order effect for these two fixed surfaces, but it does not yet earn `NONCOMMUTATIVE_CONTROLLED`.
+
+## What is valid
+
+- The recommended eight arms are implemented exactly across 24 contexts.
+- Live tokenizer verification confirms `A/F_A = 5` tokens, `M/F_M = 7`, and every complete suffix-plus-query arm is 22 tokens for `x/y/z`.
+- The raw artifact is internally complete: 192 observations, eight arms per context, normalized nonnegative 11-bin distributions.
+- The 216 calls are correct: 192 suffix evaluations plus 24 prefix-state computations.
+- Direct TV is computed correctly as \(\frac12\lVert p_{AM}-p_{MA}\rVert_1\).
+- Independent recomputation confirms median direct TV \(=0.06748\), with every context above 0.01; the minimum is 0.02028. Gate 1’s substantive result is therefore strong.
+
+This licenses: **the fixed surfaces A and M have a robust order-dependent effect on the registered response law in these 24 contexts.**
+
+## Critical Gate 2 problem
+
+The implementation does not compute the preregistered estimand.
+
+The design called for additive log-ratio predictions and a lower confidence bound for the **signed order contrast unexplained by the filler null** ([strategy](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/codex_gate2_strategy.txt:113>), [config](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/config/svb_qwen3_composition_v2.json:18>)).
+
+Instead:
+
+- The [runner](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/run_composition_v2.py:117>) uses probability-space subtraction, clipping, and renormalization.
+- Gate 2 is the mean of the two armwise prediction errors:
+  \[
+  \tfrac12\big[TV(p_{AM},\hat p_{AM})+TV(p_{MA},\hat p_{MA})\big].
+  \]
+- The [robustness analyzer](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/analyze_composition_v2.py:59>) correctly implements the log-ratio prediction:
+  \[
+  \hat p_{AM,i}\propto
+  \frac{p_{AF_M,i}p_{F_AM,i}}{p_{F_AF_M,i}},
+  \]
+  but it still gates average armwise fit error—not residual order contrast.
+- Neither script computes a confidence lower bound for either gate.
+
+The proper order-specific residual is something like:
+
+\[
+C=
+(\phi_{AM}-\phi_{MA})
+-
+(\hat\phi_{AM}-\hat\phi_{MA}),
+\]
+
+with its norm, aggregation rule, and clustered lower bound fixed in advance.
+
+The current “excess” can be large even when both orders share the same symmetric interaction and the entire AM–MA difference remains positional. It rejects exact additive fit, but not necessarily an additive explanation of the order contrast.
+
+## What the raw data say under corrected diagnostics
+
+A plausible post-hoc probability-law residualization gives:
+
+- \(\frac12\lVert(p_{AM}-p_{MA})-(\hat p_{AM}-\hat p_{MA})\rVert_1\): mean 0.06166.
+- Minimum across contexts: 0.01116.
+- Illustrative within-variable stratified bootstrap one-sided 95% lower percentile: 0.05596.
+
+That favors rejection of the exact separable additive log-ratio null.
+
+But another natural reading—observed order magnitude beyond predicted positional magnitude—gives:
+
+\[
+TV(p_{AM},p_{MA})-TV(\hat p_{AM},\hat p_{MA})
+\]
+
+with mean **−0.0571**, positive in **0/24** contexts. The null predicts mean order TV 0.1290 versus 0.0719 observed.
+
+Because the registration did not operationalize which statistic was authoritative, the status cannot be repaired post hoc merely by choosing the favorable interpretation.
+
+## Gamma is mislabeled
+
+The reported
+
+\[
+\Gamma=TV(AM,MA)-TV(AM,\hat{AM})-TV(MA,\hat{MA})
+\]
+
+is a lower bound on \(TV(\hat{AM},\hat{MA})\) by the triangle inequality. In this experiment, positive Gamma means the filler-derived positional predictions themselves remain separated. It is not a lower bound on the commutator remaining after subtracting position effects.
+
+Therefore “positive in 14/24 contexts” does not support the controlled claim.
+
+## Strongest rival explanation
+
+The strongest rival is **position/recency followed by context-dependent nonlinear gain or saturation**.
+
+Post-hoc diagnostics show:
+
+- Mean per-context cosine between observed and filler-predicted order vectors: 0.9962.
+- The predicted vector generally points in almost exactly the observed direction but is too large.
+- Fitting one scalar gain per context reduces mean residual TV to 0.00759; only 6/24 contexts remain above 0.01.
+
+That gain fit is outcome-fitted, so it is not itself decisive. But it supplies the cheapest prospective rival: predict the gain from baseline/context features on training contexts and test it on held-out contexts and independently frozen fillers.
+
+Other weaknesses:
+
+- No frozen filler candidate bank or output-blind selection record exists.
+- Only one filler pair was tested; filler-specific interactions are indistinguishable from A–M interaction.
+- One model, depth, template family, and previously explored context family; no held-out task support.
+- The 11-bin law aggregates the entire non-digit vocabulary into one bin, so quotient closure/lumpability remains unestablished.
+- Model/tokenizer revision, library versions, and runner hashes are not bound into the result.
+- `seed=42` is not applied by the runner; evaluation is probably deterministic, but no replay/noise floor demonstrates it.
+- The artifacts are currently untracked and the ledger records `git_commit: null`.
+
+## Theory: what noncommutativity would imply
+
+Even after repair, one noncommuting pair implies only a noncommutative **surface-indexed transition action**. If closure and behavioral congruence are established, it descends to a transformation monoid \(S\) containing elements \(a,m\) with:
+
+\[
+am\ne ma.
+\]
+
+It does not imply a group, Lie algebra, dimensional lower bound, nonlinearity, semantic classes, or native mathematics. Every sequential transducer already has a transition monoid.
+
+The next equations should be tested prospectively:
+
+\[
+K_\epsilon=I,\qquad K_{uv}=K_v\circ K_u,
+\]
+
+followed by candidate relations such as:
+
+\[
+a^2\approx a,\quad m^2\approx m,
+\]
+
+\[
+ama\approx am,\quad mam\approx ma
+\]
+
+(absorption/left-regular-band behavior),
+
+\[
+am\approx m\quad\text{or}\quad am\approx a
+\]
+
+(overwrite/recency),
+
+\[
+ama\approx mam
+\]
+
+(braid-like behavior), plus conditional commutation and eventual periodicity of powers.
+
+The path to native algebra is:
+
+1. Define response equivalence from future behavior, not human semantic labels.
+2. Establish closure/lumpability so each surface induces a well-defined action.
+3. Discover a presentation \(S=\langle a,m,\ldots\mid R\rangle\) from short words.
+4. Predict held-out longer words and held-out representatives using \(R\), beating last-token, length, n-gram, nonlinear-recency, and lookup baselines.
+5. Show representative independence.
+6. Realize the same relations causally at an internal relay state.
+
+That response-defined quotient and its stable predictive relations—not fitted matrices, cosine, or TV themselves—would be the native object.
+
+## Program ruling
+
+Continue, but do not advance to GPU Gate 3 yet. The highest-leverage next step is one bounded CPU repair: freeze the exact residual-order statistic and clustered lower bound, then test the nonlinear-gain rival across multiple mechanically selected filler pairs and a held-out prefix family.
+
+The required measurement-to-artifact ratio was not reported. Conservatively, this increment contains 327 nonblank apparatus/config lines and zero artifact-bearing code lines, with one measurement round and zero build rounds—formally infinite under the project rule. Further measurement sprawl should halt after this repair.
+
+The current stronger claims in [README.md](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/README.md:38>), [STATE.md](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/STATE.md:57>), [NOTEBOOK.md](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/NOTEBOOK.md:7>), and [EXPERIMENTS.md](<C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/EXPERIMENTS.md:8>) should be downgraded together. I made no file edits. Findings and verdict were recorded on audit board `e5a4e16f`, entries `e845–e853`, and synthesized.
+

@@ -1,0 +1,34 @@
+Pick PATH C: an interventional “curvature” test on the proven SVB behavior.
+
+Use 24–36 SVB items that the model already answers correctly, balanced across digits, templates, and depths 1–3. Construct a 2×2 intervention:
+
+- \(T\): move the queried binding one scope farther away while preserving the Python-resolved value and token multiset as closely as possible.
+- \(S\): switch between the existing matched ASSERT and MISLEADING suffixes.
+- Evaluate \(x\), \(Tx\), \(Sx\), and \(TSx\).
+- Generate one digit, while also recording logits for the correct and principal shadow digits.
+
+Define the observable coordinate
+
+\[
+z(x)=\log\frac{p(\text{correct digit}\mid x)}
+                 {p(\text{shadow digit}\mid x)}
+\]
+
+and the mixed difference
+
+\[
+\kappa=[z(TSx)-z(Tx)]-[z(Sx)-z(x)].
+\]
+
+A context-independent additive-logit account requires \(\kappa=0\). A reproducible nonzero \(\kappa\) means the effect of one valid “move” depends on the latent location created by another: a candidate native curvature or interaction law defined through the model’s own observable distinctions—not PCA, probes, or Euclidean hidden-state geometry.
+
+Pre-register:
+
+1. Competence guard: ≥95% termination and ≥80% retrieval accuracy in the no-suffix and \(T\)-only arms. Otherwise the experiment is uninterpretable.
+2. Use one template family to determine the sign of mean \(\kappa\).
+3. PASS only if a held-out template family reproduces that sign, has \(|\bar\kappa|\ge0.5\) log-odds, a task-clustered 95% bootstrap interval excluding zero, and an effect at least 10× fixed-input numerical noise.
+4. Require ≥70% item-level sign agreement; digit identity must not predict the effect.
+
+Estimated cost: 144–216 short CPU forwards, comfortably under 30 minutes.
+
+Do not probe hidden states yet. Path B is observational and immediately returns to the \(R^n\) trap. This experiment first asks whether the proven behavioral quotient has any non-additive local structure worth probing.

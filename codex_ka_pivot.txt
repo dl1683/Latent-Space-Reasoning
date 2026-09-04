@@ -1,0 +1,141 @@
+## Bottom line
+
+There is no native-mathematics result yet.
+
+The strongest result is a reproducible, surface-specific, depth-transferable recalibration of an externally chosen behavioral readout. Gate 2 is a valuable structured negative: sequential suffix effects exist, but their apparent noncommutativity is explained by position and context-dependent gain.
+
+### Evidence-integrity correction
+
+The current checkout goes further and says “K is dead,” the logit shift is the real operator, and quotient closure is 100% ([STATE.md](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/STATE.md:21>)). Those conclusions are not valid:
+
+- The new fitter predicts `pre @ K.T` but constrains the rows of `K` to sum to one. Under that prediction convention, its columns must sum to one. This orientation error creates the reported pathological K fit ([analyze_quotient_closure.py](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/analyze_quotient_closure.py:26>)).
+- Its “shadow-logit” model is actually a three-log-component translation—two effective parameters after normalization—not the claimed one-parameter rival ([analyze_quotient_closure.py](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/analyze_quotient_closure.py:66>)).
+- “100% closure” selects inputs within CLR TV 0.03 and declares success when outputs remain within TV 0.09, on the same finite dataset. That is a three-times-looser collision statistic, not quotient closure ([analyze_quotient_closure.py](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/analyze_quotient_closure.py:306>)).
+
+A read-only corrected refit, using column-stochastic K, gives d2+d3→d4 mean TV on the eight ASSERT surfaces of:
+
+| Model | Mean held-out TV |
+|---|---:|
+| Correctly constrained K | 0.0141 |
+| Two-degree logit translation | 0.0188 |
+| One-parameter shadow-logit shift | 0.0273 |
+| Mean displacement | 0.0811 |
+| Identity | 0.1982 |
+
+K wins all eight ASSERT surfaces in that retrospective comparison. This rescues K as a competitive projected predictor; it does not make it native mathematics.
+
+## 1. Strongest honest claim
+
+A defensible claim is:
+
+> In one model and one registered code-prompt family, denotationally null suffix text causes a reproducible change in the immediate answer distribution. One fixed surface exhibits a correction-like pattern that transfers from depths 2–3 to depth 4, while different surfaces—even within the same human semantic class—produce materially different magnitudes. Sequential suffix experiments show no content-dependent noncommutativity beyond positional and context-dependent gain.
+
+The evidence also supports saying that the registered content contrast was 6.3 times the particular variable-mention contrast tested. It does not establish that “semantics dominates confounds” generally.
+
+It does **not** support:
+
+- a semantic operator \(K_A\) shared by an ASSERT class;
+- proof relevance or EqWit sensitivity;
+- a transformation-monoid representation;
+- a causal internal relay state;
+- a model-native coordinate system;
+- cross-task, cross-model, or long-depth universality;
+- literal transport of 72% of “shadow probability mass.”
+
+That last interpretation is especially unsafe: the \(L\to C\) coefficient is the fitted matrix’s behavior at a pure-\(L\) simplex vertex, while the observed inputs occupy only a restricted region. It is an extrapolated coefficient, not directly observed token mass flowing between bins.
+
+## 2. Is K native mathematics?
+
+No—not with current evidence.
+
+There are two distinct things here:
+
+- **Model evidence:** the output distribution really changes, and a constrained rule predicts part of that change across depth.
+- **Researcher construction:** C/L/R, the simplex, stochastic K, the selected shadow token, and the diagonal normal form are all imposed coordinates.
+
+If \(K_a\) becomes \(\operatorname{diag}(1,a,1)\) after a coordinate change, that does not make the observation false. Classical mathematics can describe a genuine model regularity. But it means the mathematical machinery itself is ordinary linear/Markov algebra, not a new structure discovered from the latent world.
+
+More importantly, approximate lumpability has not been demonstrated. The current “lumpability \(R^2\)” calculation regresses averaged post-\(L\) on baseline \(L\); it does not test whether two distinct underlying histories with the same projected state receive the same projected successor ([analyze_lumpability.py](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/experiments/analyze_lumpability.py:104>)). The formal framework correctly says that a projected operator exists only under representative independence; otherwise K is merely a fitted summary ([INTENSIONAL_DESCENT.md](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/theory/INTENSIONAL_DESCENT.md:342>)).
+
+Surface CV of 0.33–0.51 further blocks the notation \(K_A\). At most, the evidence licenses \(K_s\) for a particular literal surface \(s\).
+
+So the verdict is:
+
+> K is a promising behavioral compression of one response phenomenon, not yet a well-defined quotient action and not a native latent-space primitive.
+
+The README’s statement that lumpability demonstrates “well-defined transforms” and a native coordinate system should therefore be treated as an overclaim ([README.md](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/README.md:32>)).
+
+## 3. Most decisive next experiment
+
+Run one preregistered **adversarial representative-independence test** on CPU. Do not run Gate 3 as currently written: it still depends on composition and cosine/linear relay assumptions that Gate 2 has undermined ([GATE3_DESIGN.md](</C:/Users/devan/OneDrive/Desktop/Projects/Latent-Space-Reasoning/theory/GATE3_DESIGN.md:39>)).
+
+The central test is:
+
+\[
+r(z_1)\approx r(z_2)
+\quad\Longrightarrow\quad
+r(T_s z_1)\approx r(T_s z_2),
+\]
+
+where \(z_1,z_2\) are genuinely different histories and \(r\) is frozen before looking at their successors.
+
+Use:
+
+1. One fixed literal suffix \(s\), not a semantic class.
+2. Full 11-bin response distributions as the primary readout; CLR only as a secondary diagnostic.
+3. Response-matched pairs drawn across different grammars, names, depths, and completely held-out predecessor suffixes.
+4. The same position and token budget for every arm.
+5. Train on d2+d3 families; evaluate without refitting on d4 and off-manifold histories.
+6. Clustered uncertainty by template/context.
+7. A null ladder on exactly the same rows: identity, mean displacement, one-parameter C/L correction, one-parameter shadow-logit bias, two-parameter logit translation, flexible monotone calibration, and history/position features.
+
+The decisive outcomes are:
+
+- **Representative independence fails:** kill K as an operator on the quotient. It is a path-dependent projection summary.
+- **Closure passes but K ties simpler calibration models:** retain a quotient-like behavioral regularity, but kill the special K/native-math claim.
+- **Closure and off-manifold transfer both pass, with K beating preregistered rivals:** promote \(K_s\) to an approximate behavioral quotient action. This is important, but still not an internal native primitive.
+- **Only after that**, run a small checkpointed GPU causal-interchange test asking whether matched internal states carry the same atomic correction behavior. Rewrite Gate 3 around this atomic question; remove composition, role clustering, and cosine-defined equivalence.
+
+The strongest lexical-calibration rival predicts good interpolation on the natural depth manifold but failure or loss of advantage on independently constructed response collisions and held-out predecessor histories.
+
+This is the highest-leverage next round. If it fails, close the SVB-native-math line. Spending GPU on the current Gate 3 design before this test would be premature.
+
+## 4. Better mathematical framing
+
+The exact object presently supported is a **surface-indexed transition correspondence**:
+
+\[
+\mathcal F_s(p)
+=
+\{\,r(T_s z):r(z)=p\,\}.
+\]
+
+It is set-valued because representative independence has not been established. The experiments suggest that this correspondence may be thin along the sampled natural-data manifold.
+
+If the next test establishes approximate single-valuedness, the least inflated framing would be:
+
+- a controlled, non-autonomous response system;
+- a context-indexed operator field;
+- or a family of calibration channels sharing an approximate correction direction but carrying surface- and position-dependent amplitudes.
+
+Schematically:
+
+\[
+p_{t+1}=F_{s,t,h}(p_t),
+\]
+
+where surface \(s\), position \(t\), and history class \(h\) remain explicit.
+
+“Depth-invariant correction direction with surface-specific magnitude” suggests a common low-rank response mode whose coupling coefficient depends on the textual realization. That is closer to a constitutive response law than to a monoid or group.
+
+Calling it a category, bundle, or cocycle now would mostly rename the context dependence. Those structures become meaningful only if they predict new compatibility relations that then survive intervention.
+
+## 5. Gossip-magazine test
+
+> In one model and one code task, a comment that changes nothing in the program reliably shifts the answer distribution away from the shadowed inner value toward the correct outer value by a nearly depth-stable pattern—even though paraphrasing the comment changes its strength.
+
+That sentence is exciting and defensible if “one model,” “one code task,” and “answer distribution” remain explicit.
+
+It does not say that the model understands the comment, retrieves a stored correct answer, transports literal probability mass, or has revealed a native latent-space law.
+
+I recorded the audit, corrections, alternative structure, and licensed sentence on mission board `5df235ea` and ran synthesis; the board converged without unresolved disputes.
