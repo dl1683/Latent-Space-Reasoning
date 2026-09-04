@@ -31,6 +31,14 @@ computation is history-sensitive in specific, measurable ways. The algebra
 of actions (idempotence, absorption, commutation) fails at specific rates
 that characterize HOW the model processes history.
 
+**Competence failure analysis (post-hoc):** All 8/64 competence failures
+share the same structure: the queried register's last write is NOT the final
+line of the history. When it IS the last line: 32/32 = 100% correct. When
+it's not: 24/32 = 75% correct. In every failure, the model predicts the
+EARLIER (overwritten) value. This is a clean structural result: positional
+recency dominates semantic state tracking. Intervening writes to the OTHER
+register interfere with recall of the queried register's value.
+
 **Next:** Codex strategic analysis for what to do after CRC closure.
 
 ---
