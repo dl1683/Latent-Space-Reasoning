@@ -5,41 +5,37 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
-## Curvature Test: Depth × Suffix Interaction (2026-09-04, COMPLETE — SUB_THRESHOLD_SIGNAL)
+## Curvature Test: Depth × Suffix Interaction (2026-09-04, COMPLETE — SUB_THRESHOLD / CONTROL REQUIRED)
 
-Distance from claim: 0 (tests non-additivity of behavioral quotient).
+Distance from claim: 0.
 
 Codex-designed interventional curvature test. κ = [z(d_high, MISLEAD) - z(d_high, ASSERT)]
-- [z(d_low, MISLEAD) - z(d_low, ASSERT)]. Under additive logit model κ=0. Nonzero κ
-means the suffix effect depends on depth — a candidate native curvature.
+- [z(d_low, MISLEAD) - z(d_low, ASSERT)]. Under additive logit model κ=0.
 
 288 calls, 98.3s CPU. 3 variables × 8 values × 3 depths × 3 suffixes.
 Split-half validation: train on {x,y}, hold out {z}.
 
-**Gate 0 (Competence):** PASS — 100% accuracy (72/72) on no-suffix prompts.
+**Gate 0 (Competence):** PASS — 100% accuracy (72/72).
 
-**d2→d3:** NO_CURVATURE (genuinely null). Training mean κ=-0.0009, holdout +0.085.
-Variable-specific effects (x positive, y negative) cancel in aggregate. Sign mismatch.
+**d2→d3:** Heterogeneous (x positive, y negative — cancel in aggregate). Not null; not coherent.
 
-**d3→d4:** Sub-threshold but UNIVERSALLY consistent.
-- κ = -0.28 (ALL 24 measurements negative, 100% sign agreement)
-- Train mean: -0.286, Holdout mean: -0.281 (perfect match)
-- Bootstrap 95% CI: [-0.33, -0.24] (excludes zero)
-- Not digit-predicted (digit range 0.169 < |mean| 0.284)
-- **ONLY failing gate: magnitude (0.28 < 0.5 pre-registered threshold)**
+**d3→d4:** κ=-0.284 nat for the tested pair, 24/24 cells same sign.
+Sub-threshold: 0.28 < 0.5 pre-registered gate. SNR gate also never computed.
 
-**Suffix effect ΔS (MISLEAD - ASSERT) by depth:**
-- d2: -1.663 (std 0.182)
-- d3: -1.635 (std 0.171)
-- d4: -1.919 (std 0.256)
+**Codex adjudication (REVISE / CONTROL REQUIRED):**
+- Descriptively nonzero (17% of suffix contrast, exp(-0.28)=0.75). Scientifically sub-threshold.
+- Gate 1b cross-surface check: only 65.5% of 168 (assert,mislead) pairs show negative κ.
+  MISLEADING surfaces range −0.235 to +0.155 (mixed signs). NOT representative-invariant.
+- Position is the strongest rival: absolute token position changes with depth (38→58→79).
+- 24 deterministic cells ≠ 24 independent replications.
+- Half the separation comes from ASSERT becoming MORE beneficial at d4.
 
-**What we learned:** The misleading suffix becomes 0.28 nats MORE effective at pushing
-toward shadow at depth 4 vs depth 3, with perfect consistency across all variables and
-digit values. The depth×suffix interaction is non-additive — the model's response to
-semantic manipulation depends on structural nesting depth. This is a candidate
-structural-semantic curvature, below the pre-registered threshold but passing all
-other gates. The asymmetry (null at d2→d3, signal at d3→d4) suggests a transition
-in the model's scope-processing regime between depth 3 and depth 4.
+**What it advances:** The fixed suffix contrast is context-dependent and cannot be
+represented by the simplest globally additive logit-shift model. Candidate obstruction
+and falsifier generator, not yet a law.
+
+**Next:** One confound-killing control round (position-matched, token-matched,
+multi-surface, varied shadow). If residual curvature doesn't survive, close this line.
 
 Config: `config/curvature_qwen3.json`. Results: `results/curvature_qwen3/result.json`.
 Runner: `run_curvature.py`.

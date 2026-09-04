@@ -26,12 +26,16 @@ test FAILS: behavioral equivalence is NOT preserved under composition with
 semantically heavy suffixes (ratio 2.6-13.2x). Text features predict
 delta_L at R2=0.88.
 
-**Curvature finding (2026-09-04):** Depth × suffix interaction is NON-ADDITIVE
-at d3→d4 (κ=-0.28, 24/24 negative, CI [-0.33,-0.24] excludes zero, train/holdout
-match). Null at d2→d3. The misleading suffix strengthens by 0.28 nats at depth 4.
-Formal verdict: SUB_THRESHOLD (0.28 < 0.5 pre-registered magnitude gate). Passes
-all other gates (sign match, CI, 100% sign agreement, not digit-predicted).
-Codex adjudication pending on whether this constitutes native curvature.
+**Curvature finding (2026-09-04, Codex-adjudicated):** On one preregistered SVB
+surface pair, the d3→d4 MISLEAD-minus-ASSERT logit contrast was −0.284 nat in all
+24 crossed cells; it missed the 0.5-nat gate and remains confounded by position,
+shadow-token exposure, and surface choice. Gate 1b cross-surface check: only 65.5%
+of 168 (assert,mislead) pairs show negative κ; NOT representative-invariant.
+Codex verdict: REVISE / CONTROL REQUIRED. What it advances: the fixed suffix
+contrast is context-dependent and cannot be represented by the simplest globally
+additive logit-shift model — a candidate obstruction, not yet a law.
+NEXT: one confound-killing control round (position-matched, multi-surface, varied
+shadow). If residual curvature doesn't survive controls, close this line.
 
 **Distance from central claim: 0.** This IS the native math claim.
 

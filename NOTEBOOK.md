@@ -4,30 +4,33 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
-### CURVATURE TEST: sub-threshold but universally consistent d3→d4 interaction (2026-09-04)
+### CURVATURE TEST: sub-threshold, surface-specific interaction (2026-09-04)
 
 Codex-designed 2×2 interventional test (depth × suffix). 288 calls, 98s.
 
-d2→d3: genuinely null (κ≈0, variable-specific effects cancel).
-d3→d4: κ=-0.28 across ALL 24 measurements (100% sign agreement). Train/holdout
-perfect match. CI [-0.33, -0.24] excludes zero. Not digit-predicted.
-ONLY failing gate: magnitude (0.28 < 0.5 pre-registered threshold).
+d2→d3: heterogeneous (x positive, y negative, z positive — cancel in aggregate).
+d3→d4: κ=-0.28 for tested pair, 24/24 cells same sign. Sub-threshold (0.28 < 0.5).
 
-The misleading suffix becomes 0.28 nats more effective at depth 4 vs depth 3.
-This is a real structural-semantic interaction: the model's response to semantic
-manipulation depends on nesting depth. The effect is non-additive — under an
-additive model κ=0, but we observe κ=-0.28 with perfect consistency.
+Codex adjudication (REVISE / CONTROL REQUIRED):
+- Do NOT lower threshold retroactively. Descriptively nonzero, scientifically sub-threshold.
+- Position is strongest rival: absolute token position changes with depth (38→58→79).
+- Gate 1b cross-surface check: MISLEADING surfaces range -0.235 to +0.155 nat (mixed signs).
+  Only 65.5% of 168 (assert, mislead) pairs show negative κ. NOT quotient-level.
+- Variable-mentioning mislead surfaces (75% negative) vs non-var (52% negative).
+- 24 deterministic cells ≠ 24 independent replications. One holdout variable insufficient.
+- The SNR gate was never computed — "only magnitude failed" is formally false.
+- Half the separation comes from ASSERT becoming MORE beneficial at d4.
 
-The asymmetry is interesting: nothing happens from d2→d3, but d3→d4 shows a
-universal effect. The model's scope-processing regime changes somewhere between
-depth 3 and 4.
+Licensed: "On one preregistered SVB surface pair, the d3→d4 MISLEAD-minus-ASSERT
+logit contrast was -0.284 nat in all 24 crossed cells; it missed the 0.5-nat gate
+and remains confounded by position, shadow-token exposure, and surface choice."
 
-Formal verdict: NO_CURVATURE (pre-registered threshold). But passing 4/5 gates
-with 100% sign coherence demands Codex adjudication. Is the threshold too
-stringent, or is 0.28 nats genuinely too small to constitute native curvature?
+What it advances: the fixed suffix contrast is context-dependent and cannot be
+represented by the simplest globally additive logit-shift model. Candidate
+obstruction and falsifier generator, not yet a law.
 
-NEXT: Codex adjudication on the borderline result. Two questions: (1) Is 0.28
-nats sufficient? (2) What does the d3/d4 asymmetry mean mechanistically?
+NEXT: One confound-killing control round. Position-matched, token-matched,
+multi-surface, varied shadow digit. If residual curvature doesn't survive, close.
 
 ### S3 PERMUTATION COMPOSITION: model cannot compose (2026-09-04)
 
