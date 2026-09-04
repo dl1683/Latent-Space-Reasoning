@@ -1,6 +1,6 @@
 {
   "experiment_name": "SVB-Qwen3-Composition-Noncommutativity",
-  "purpose": "Tests the noncommutativity criterion: does order of E-null suffixes matter? Both logit-bias and K_a models predict order-independence (additive/commutative). If TV(response(AB), response(BA)) > eps_eq, the monoid is genuinely non-commutative and neither scalar model can explain the data. This is the single strongest discriminator for native non-scalar structure.",
+  "purpose": "Tests order-dependence of E-null suffix pairs. Cross-role pairs (ASSERT x MISLEADING) test genuine monoid noncommutativity. Same-role pairs control for recency/attention-decay confound. The decisive criterion: cross-role TV(AB,BA) must EXCEED same-role TV(A1A2,A2A1). Surfaces should be prevalidated representatives from Gate 1b.",
   "model_id": "Qwen/Qwen3-1.7B-Base",
   "device": "cpu",
   "dtype": "float32",
@@ -10,13 +10,31 @@
   "inner_value": 99,
   "depths": [4],
   "single_var_only": true,
+  "eps_eq": 0.01,
+
+  "_NOTE": "Surfaces below are PLACEHOLDERS. Must be replaced with Gate 1b prevalidated representatives (within-class TV < eps_eq, between-class TV > eps_sep). Token-length matching is desirable.",
 
   "composition_pairs": [
     {
+      "_label": "cross-role: ASSERT_VAR x MISLEADING (the main test)",
       "role_a": "ASSERT_VAR",
       "role_b": "MISLEADING_ASSERT",
       "surface_a": "# {var} is unchanged.\n",
       "surface_b": "# Reassigning {var} now.\n"
+    },
+    {
+      "_label": "same-role control: ASSERT_VAR x ASSERT_VAR (recency null)",
+      "role_a": "ASSERT_VAR_s1",
+      "role_b": "ASSERT_VAR_s2",
+      "surface_a": "# {var} is unchanged.\n",
+      "surface_b": "# {var} stays the same.\n"
+    },
+    {
+      "_label": "same-role control: MISLEADING x MISLEADING (recency null)",
+      "role_a": "MISLEADING_s1",
+      "role_b": "MISLEADING_s2",
+      "surface_a": "# Reassigning {var} now.\n",
+      "surface_b": "# Updating {var}.\n"
     }
   ],
 
@@ -28,11 +46,11 @@
   },
 
   "predictions": {
-    "H_commutative": "Order does not matter: TV(AB, BA) < eps_eq for all contexts. Consistent with logit-bias, K_a, and scalar character models.",
-    "H_noncommutative": "Order matters: TV(AB, BA) > eps_eq for some contexts. Defeats logit-bias, K_a, AND scalar character simultaneously. Establishes genuine non-scalar monoid structure.",
-    "decisive_test": "TV distance between A_then_B and B_then_A response distributions per context. eps_eq = 0.01. If max TV > 0.01 across contexts, declare noncommutative."
+    "H_recency_only": "Same-role TV(A1A2,A2A1) is comparable to cross-role TV(AB,BA). Order effects are from recency/position, not content. No native monoid structure.",
+    "H_content_noncommutative": "Cross-role TV(AB,BA) >> same-role TV(A1A2,A2A1). Order effect is content-dependent. Genuine non-scalar monoid action.",
+    "decisive_criterion": "Cross-role median TV exceeds same-role max TV AND exceeds eps_eq. Must hold across multiple prevalidated representative pairs to establish class-level (not string-level) noncommutativity."
   },
 
-  "estimated_calls": "3 vars x 8 vals x 1 depth x 5 conditions = 120 calls, ~2.5 min CPU",
+  "estimated_calls": "3 pairs x 5 conditions x 24 contexts = 360 calls, ~7.5 min CPU",
   "result_dir": "experiments/results/svb_qwen3_composition"
 }

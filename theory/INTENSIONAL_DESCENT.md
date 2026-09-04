@@ -401,27 +401,22 @@ for any z establishes noncommutativity. The test is decisive:
 commutativity is consistent with all three scalar models;
 noncommutativity defeats all three simultaneously.
 
-**Consequences if confirmed:**
+**Confound: recency/attention decay.** A discounted scalar model
+s' = λs + δ_u with λ ≠ 1 already produces AB ≠ BA whenever
+δ_A ≠ δ_B. The composition test must show that cross-role order
+effects EXCEED same-role order effects (A₁A₂/A₂A₁, B₁B₂/B₂B₁)
+and survive a position-weighted decay null. See Gate 2 config.
 
-1. *Lumpability failure (F8).* The (C,L,R) simplex is 2-dimensional;
-   all linear families on it commute (the K_a family exhausts the
-   commutative upper-triangular structure). A faithful linear
-   representation of two non-commuting operators requires dim ≥ 3
-   and in practice ≥ 4 (the C-L exchange plane plus hidden coordinates
-   tracking suffix history). The 10D full response distribution is the
-   upper bound.
-
-2. *Directed homotopy.* EqWit is the directed fundamental monoid
-   of Q_M (Grandis, *Directed Algebraic Topology*, 2009). Non-
-   commutativity says the directed state space is not "simply
-   connected" even after quotienting by denotation. The correct
-   mathematical framework is directed homotopy theory, not HoTT
-   (which requires invertible paths).
-
-3. *Rees structure.* If absorbing classes exist (ASSERT driving L→0),
-   Rees's theorem gives any simple ideal a matrix-semigroup
-   decomposition M(G; I, Λ; P) — genuine matrix algebra native to
-   the monoid, distinct from the imposed K_a family.
+**What noncommutativity establishes (corrected per Codex review):**
+Non-commutativity alone does NOT imply lumpability failure or a
+dimension lower bound — generic 2×2 matrices already fail to
+commute. What it establishes is that the model's action on the
+behaviorally observable response law is outside the K_a family
+(which commutes by shared eigenvectors) and outside context-free
+additive logit models (which commute by addition). It becomes
+native-math evidence only when the non-commuting relation descends
+across model-discovered equivalence classes (representative
+independence) and exceeds the recency baseline.
 
 ## D16. Vertical kernel action — definition (replaces "holonomy")
 
