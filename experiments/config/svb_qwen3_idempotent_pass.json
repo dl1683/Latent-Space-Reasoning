@@ -1,0 +1,45 @@
+{
+  "experiment_name": "SVB-Qwen3-Idempotent-Pass",
+  "purpose": "Test whether pass\\n is idempotent in the null-witness monoid: u=pass, u^2=pass;pass, u^3=pass;pass;pass. Pre-registered: (1) nontriviality LCB D(epsilon,u) > eps_sep, (2) first stability UCB D(u,u^2) < eps_eq, (3) power stability UCB D(u^2,u^3) < eps_eq. Codex design: d4 only, 48 new calls (u^2 and u^3 only; epsilon and u come from Gate 1b).",
+  "model_id": "Qwen/Qwen3-1.7B-Base",
+  "device": "cpu",
+  "dtype": "float32",
+  "seed": 42,
+  "variables": ["x", "y", "z"],
+  "outer_values": [1, 2, 3, 4, 5, 6, 7, 8],
+  "inner_value": 99,
+  "depths": [4],
+  "single_var_only": true,
+
+  "intensional_roles": {
+    "PASS_x2": {
+      "description": "pass repeated twice: u^2",
+      "train_surfaces": [
+        "pass\npass\n"
+      ],
+      "holdout_surfaces": []
+    },
+    "PASS_x3": {
+      "description": "pass repeated three times: u^3",
+      "train_surfaces": [
+        "pass\npass\npass\n"
+      ],
+      "holdout_surfaces": []
+    }
+  },
+
+  "query_template": "f()\nprint({var})  # Output: ",
+  "templates": {
+    "depth4_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        def h():\n            {var} = 9999\n            def k():\n                {var} = 99999\n                return {var}\n            k()\n            return {var}\n        h()\n        return {var}\n    g()\n    return {var}\n"
+  },
+
+  "predictions": {
+    "H_idempotent": "If pass is idempotent (P^2=P): TV(pass,pass^2) < eps_eq AND TV(pass^2,pass^3) < eps_eq. Both stability conditions must hold.",
+    "H_transient_plateau": "Like newline: TV(pass,pass^2) small but TV(pass^2,pass^3) large. Transient plateau, not stable monoid relation.",
+    "H_accumulating": "TV(pass,pass^2) and TV(pass^2,pass^3) both large. Pass effect accumulates, no saturation.",
+    "decisive_comparison": "Power stability: TV(pass^2,pass^3). If < 0.01: idempotent candidate. If > 0.02: refuted."
+  },
+
+  "estimated_calls": "2 roles x 1 surface x 3 vars x 8 vals x 1 depth = 48 calls, ~30s on CPU",
+  "result_dir": "experiments/results/svb_qwen3_idempotent_pass"
+}

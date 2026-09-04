@@ -1,0 +1,62 @@
+{
+  "experiment_name": "SVB-Qwen3-Gate2-Composition",
+  "purpose": "Gate 2 (F-comp): Test representative independence of monoid composition. If a0 equiv_M a1 and b0 equiv_M b1, then a0*b0 equiv_M a1*b1 for all i,j. Composition = suffix concatenation. Uses two within-class pairs confirmed equivalent by Gate 1b fiber-square. Cost: 4 compositions x 72 contexts = 288 calls.",
+  "model_id": "Qwen/Qwen3-1.7B-Base",
+  "device": "cpu",
+  "dtype": "float32",
+  "seed": 42,
+  "variables": ["x", "y", "z"],
+  "outer_values": [1, 2, 3, 4, 5, 6, 7, 8],
+  "inner_value": 99,
+  "depths": [2, 3, 4],
+  "single_var_only": true,
+
+  "_NOTE": "Surface representatives chosen from Gate 1b equivalence pairs. Update after Gate 1b confirms within-class equivalence.",
+
+  "intensional_roles": {
+    "ASSERT_0_x_MISLEADING_0": {
+      "description": "Composition: assert rep 0 then misleading rep 0",
+      "train_surfaces": [
+        "# No changes.\n# Updating {var}.\n"
+      ],
+      "holdout_surfaces": []
+    },
+    "ASSERT_0_x_MISLEADING_1": {
+      "description": "Composition: assert rep 0 then misleading rep 1",
+      "train_surfaces": [
+        "# No changes.\n# Overwriting {var}.\n"
+      ],
+      "holdout_surfaces": []
+    },
+    "ASSERT_1_x_MISLEADING_0": {
+      "description": "Composition: assert rep 1 then misleading rep 0",
+      "train_surfaces": [
+        "# State unchanged.\n# Updating {var}.\n"
+      ],
+      "holdout_surfaces": []
+    },
+    "ASSERT_1_x_MISLEADING_1": {
+      "description": "Composition: assert rep 1 then misleading rep 1",
+      "train_surfaces": [
+        "# State unchanged.\n# Overwriting {var}.\n"
+      ],
+      "holdout_surfaces": []
+    }
+  },
+
+  "query_template": "f()\nprint({var})  # Output: ",
+  "templates": {
+    "depth2_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        return {var}\n    g()\n    return {var}\n",
+    "depth3_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        def h():\n            {var} = 9999\n            return {var}\n        h()\n        return {var}\n    g()\n    return {var}\n",
+    "depth4_single": "{var} = {outer_val}\ndef f():\n    {var} = 99\n    def g():\n        {var} = 999\n        def h():\n            {var} = 9999\n            def k():\n                {var} = 99999\n                return {var}\n            k()\n            return {var}\n        h()\n        return {var}\n    g()\n    return {var}\n"
+  },
+
+  "predictions": {
+    "H_comp": "If monoid composition is well-defined on equivalence classes: all four compositions produce the same behavioral law (TV between any pair < eps_eq). This is F-comp.",
+    "H_position": "If position/order matters more than class: compositions differ by which specific surface comes first, not by class identity. This would indicate non-compositionality.",
+    "decisive_test": "Max pairwise TV among the four compositions. If < 0.01 in all contexts: F-comp PASS. If > 0.03: F-comp FAIL."
+  },
+
+  "estimated_calls": "4 roles x 1 surface x 3 vars x 8 vals x 3 depths = 288 calls, ~2 min on CPU",
+  "result_dir": "experiments/results/svb_qwen3_gate2_composition"
+}
