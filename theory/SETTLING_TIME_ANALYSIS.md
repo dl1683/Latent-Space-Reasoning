@@ -143,17 +143,38 @@ does not add generic computation (s>1 would help more). It performs a
 specific one-shot readout improvement that recovers a fixed fraction
 of the depth-dependent deficit.
 
+## Falsifiable predictions (pre-registered)
+
+### P1: Depth-5 extrapolation (mixture model)
+If σ(d,0) follows the exponential model, then σ(5,0) ≈ 0.45.
+The mixture model predicts: σ(5,1) ≈ 0.5 × 0.45 + 0.5 × 1.0 ≈ 0.73.
+**Pre-registered prediction: σ(5,1) ∈ [0.68, 0.78]** (±5pp from 0.73).
+If σ(5,1) < 0.60, the mixture model breaks (fresh readout degrades at d5).
+If σ(5,1) > 0.85, the recovery fraction is higher than 50% at d5.
+
+### P2: Suffix content sensitivity
+If the ~50% recovery comes from generic additional processing:
+  all suffix types should produce similar recovery.
+If it comes from content-specific attention:
+  different suffixes should produce different recovery fractions.
+Config: experiments/config/svb_qwen3_suffix_ablation.json
+
+### P3: Cross-model stability of the mixing weight
+If the 50-50 weight is architectural (attention head allocation):
+  different models should have different mixing weights.
+If the 50-50 weight is a universal property of scope binding:
+  other transformer models should also show ~50% recovery.
+
 ## Open questions
 
 1. Is the ~50% recovery fraction a coincidence of this template/model,
    or does it hold across template families and models?
-2. Does the exponential depth decay extend to d5+? (Would require
-   deeper nesting templates.)
+2. Does the exponential depth decay extend to d5+?
 3. What is the mechanism by which one suffix halves the readout error?
-   Candidates: attention redistribution, hidden-state realignment,
-   position-dependent readout recalibration.
-4. Why does s > 1 hurt? Is the extra suffix pushing the hidden state
-   past the optimal readout configuration?
-5. Is there a suffix OTHER than `# No changes.` that recovers more or
-   less than 50%? If different suffixes recover different fractions,
-   the fraction is suffix-dependent, not a depth property.
+4. Why does s > 1 hurt?
+5. Is the fresh readout pathway (p≈1.0) literally opening a new
+   attention pattern, or is it a more distributed effect?
+6. Why 50-50? Is this related to the 16 attention heads (8+8 split)?
+   Or to a residual stream mixing mechanism?
+7. Does the mixture model hold for non-Python tasks (e.g., math,
+   logic, nested natural language)?
