@@ -4,6 +4,38 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### QUOTIENT CLOSURE TEST: K_s stochastic DEAD, logit-shift WINS (2026-09-04)
+
+Held-out prediction test on Gate 1b data (3,384 obs, 43 surfaces, no new model calls).
+
+K_s (3×3 stochastic matrix on CLR simplex): 0/43 surfaces beat ANY baseline.
+Mean held-out error: 0.290 vs best baseline 0.039. The stochastic matrix
+overfits in probability space because the actual transformation is nonlinear.
+
+Logit-shift baseline (constant δ in log-probability space): best model,
+mean error 0.02 cross-depth. This IS the operator — not a matrix on the simplex.
+
+KEY FINDING — depth-invariant shadow logit shift:
+- δ_L (shadow digit logit shift) is depth-invariant: CV=0.036 for ASSERT, 0.053 for ASSERT_VAR
+- δ_C (correct digit logit shift) is NOT depth-invariant: CV=0.39
+- Each surface has a specific δ_L value, constant across depths d2-d4
+- ASSERT: δ_L ranges from -0.94 to -2.54 across surfaces
+- MISLEADING_ASSERT: δ_L ranges from +0.27 to -0.84
+
+Response collision closure: 100% for ASSERT/ASSERT_VAR (quotient exists),
+99% for MISLEADING roles, 62-70% for OBSERVE/REWRITE.
+
+Cross-role transfer: FAILS. K trained on ASSERT→ASSERT_VAR: 0.32 vs
+logit-shift baseline 0.02. Different surfaces within same role have
+different δ_L values.
+
+HONEST ASSESSMENT: The suffix effect is a surface-specific, depth-invariant
+logit bias on shadow probability. This is structurally real but mathematically
+simple — a lookup table, not an algebra. The 3×3 K_A operator was an artifact
+of the wrong coordinate system (probability vs logit space).
+
+---
+
 ### GATE 2 v2 MULTI-FILLER: CLOSED — POSITION_WITH_NONLINEAR_GAIN (2026-09-04)
 
 Multi-filler robustness test with 3 independently selected filler pairs (all

@@ -18,12 +18,14 @@ Graded by denotation via q: I → im(E). The identity fiber EqWit = ker(E)/≡_M
 is a submonoid. If the leakage observable satisfies a separable depth-scaling law,
 χ: EqWit → (R≥0, ×) is a **multiplicative character** of the monoid.
 
-**χ status (Codex 2026-09-04):** DEMOTED to diagnostic candidate. K_a is
-ordinary linear algebra (diag(1,a,1) in (S,L,R) coordinates). The strongest
-rival is a constant shadow-logit bias δ_u predicting log-odds shift, which
-reproduces the 4x ratio without EqWit. Even composition a_{uv}=a_u·a_v
-does not defeat this rival (Bayesian LRs predict the same). The native
-math claim rests on the full action α and its quotient structure, not χ.
+**Operator status (2026-09-04):** K_A as 3×3 stochastic matrix is DEAD.
+Held-out test: 0/43 surfaces beat any baseline (K_s mean err 0.29 vs logit-
+shift 0.04). The actual operator is a surface-specific, depth-invariant
+logit bias on shadow probability: δ_L(s) constant across d2-d4 (CV=0.036
+for ASSERT). This is mathematically simple (a constant, not an algebra)
+but structurally real (quotient closure 100% for ASSERT roles). The native
+math claim requires finding algebraic structure in the δ_L landscape or
+identifying a richer quotient beyond (C,L,R).
 
 **Distance from central claim: 0.** This IS the native math claim.
 

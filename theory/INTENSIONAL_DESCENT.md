@@ -646,12 +646,11 @@ survive cheap baselines (F6).
    var-mention. Lumpability R2=0.79–0.98: K_u well-defined on (C,L,R).
    Surface-specific a_u (within-class CV 0.33–0.51). Surface equivalence weak.
 4. ~~Gate 2 v1 (same-role controls)~~ — RECENCY_DOMINATED. Cross-role TV < same-role max.
-5. ~~Gate 2 v2 (filler-based, Codex design)~~ — NONCOMMUTATIVE_CONTROLLED. Both
-   pre-registered gates pass: direct TV median=0.068, excess beyond filler null
-   mean=0.038 (log-ratio). Genuine interaction survives position correction.
-   Position-specific operator analysis: K_A is a correction operator (L->C=0.34
-   in pos1, L->C=0.72 in pos2). K_M is a confusion operator (C->L=0.07).
-   Position-corrected composition residual=0.048 (MODERATE compositionality).
+5. ~~Gate 2 v2 (filler-based, Codex design)~~ — POSITION_WITH_NONLINEAR_GAIN.
+   Direct order effect robust (median TV=0.068). Multi-filler robustness (3 pairs,
+   cross-pair corr 0.69–0.92) confirms order effect is real but scalar gain fit
+   absorbs it entirely (post-gain medians 0.003–0.009). Composition is a structured
+   negative: the order effect is positional with context-dependent magnitude.
 6. Gate 3 (causal relay-state composition, requires GPU).
    Design: theory/GATE3_DESIGN.md.
 7. Cross-model replication if all gates pass.
