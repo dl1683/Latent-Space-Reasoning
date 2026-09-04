@@ -1,6 +1,6 @@
 {
   "experiment_name": "SVB-Qwen3-Composition-Noncommutativity",
-  "purpose": "Tests order-dependence of E-null suffix pairs. Cross-role pairs (ASSERT x MISLEADING) test genuine monoid noncommutativity. Same-role pairs control for recency/attention-decay confound. The decisive criterion: cross-role TV(AB,BA) must EXCEED same-role TV(A1A2,A2A1). Surfaces should be prevalidated representatives from Gate 1b.",
+  "purpose": "Tests order-dependence of suffix pairs at the operator level on (C,L,R) simplex. Cross-role pairs test genuine noncommutativity. Same-role pairs (maximally different a_u within class) control for recency/position. Decisive: cross-role TV(AB,BA) > same-role TV(A1A2,A2A1) AND > eps_eq. Gate 1b validates: lumpability R2 0.79-0.98, content dominates 6.3x.",
   "model_id": "Qwen/Qwen3-1.7B-Base",
   "device": "cpu",
   "dtype": "float32",
@@ -12,29 +12,47 @@
   "single_var_only": true,
   "eps_eq": 0.01,
 
-  "_NOTE": "Surfaces below are PLACEHOLDERS. Must be replaced with Gate 1b prevalidated representatives (within-class TV < eps_eq, between-class TV > eps_sep). Token-length matching is desirable.",
+  "_DESIGN_NOTES": {
+    "surface_selection": "Surfaces chosen to maximize operator contrast while keeping same-role controls maximally different (conservative test). a_u values from Gate 1b Step 3.",
+    "class_A_range": "a_u from 0.101 (State unchanged) to 0.380 (No changes) — 3.8x range",
+    "class_M_range": "a_u from 0.499 (Changing {var}) to 1.443 ({var} gets reassigned) — 2.9x range",
+    "cross_role_logic": "ASSERT (a_u~0.1, strong suppression) vs MISLEADING (a_u~0.5-1.4, weak/reverse). If K_u operators differ in direction, their composition should be order-dependent.",
+    "same_role_logic": "Use maximally different a_u pairs within each class. If these show low TV(AB,BA), cross-role noncommutativity cannot be attributed to recency or a_u differences alone.",
+    "no_surface_equivalence_needed": "Lumpability (R2~0.9) proves K_u is well-defined on (C,L,R). Noncommutativity is tested at operator level, not class level."
+  },
 
   "composition_pairs": [
     {
-      "_label": "cross-role: ASSERT_VAR x MISLEADING (the main test)",
-      "role_a": "ASSERT_VAR",
+      "_label": "cross-role: ASSERT x MISLEADING (main test, max operator contrast)",
+      "_a_u_contrast": "0.101 vs 0.499",
+      "role_a": "ASSERT",
       "role_b": "MISLEADING_ASSERT",
-      "surface_a": "# {var} is unchanged.\n",
-      "surface_b": "# Reassigning {var} now.\n"
+      "surface_a": "# State unchanged.\n",
+      "surface_b": "# Changing {var}.\n"
     },
     {
-      "_label": "same-role control: ASSERT_VAR x ASSERT_VAR (recency null)",
-      "role_a": "ASSERT_VAR_s1",
-      "role_b": "ASSERT_VAR_s2",
-      "surface_a": "# {var} is unchanged.\n",
-      "surface_b": "# {var} stays the same.\n"
+      "_label": "cross-role: ASSERT x MISLEADING (second pair, different surfaces)",
+      "_a_u_contrast": "0.106 vs 0.570",
+      "role_a": "ASSERT",
+      "role_b": "MISLEADING_ASSERT",
+      "surface_a": "# Nothing modified.\n",
+      "surface_b": "# Overwriting {var}.\n"
     },
     {
-      "_label": "same-role control: MISLEADING x MISLEADING (recency null)",
+      "_label": "same-role control: ASSERT x ASSERT (max within-class a_u contrast)",
+      "_a_u_contrast": "0.101 vs 0.380 (3.8x within ASSERT)",
+      "role_a": "ASSERT_s1",
+      "role_b": "ASSERT_s2",
+      "surface_a": "# State unchanged.\n",
+      "surface_b": "# No changes.\n"
+    },
+    {
+      "_label": "same-role control: MISLEADING x MISLEADING (max within-class a_u contrast)",
+      "_a_u_contrast": "0.499 vs 1.443 (2.9x within MISLEADING)",
       "role_a": "MISLEADING_s1",
       "role_b": "MISLEADING_s2",
-      "surface_a": "# Reassigning {var} now.\n",
-      "surface_b": "# Updating {var}.\n"
+      "surface_a": "# Changing {var}.\n",
+      "surface_b": "# {var} gets reassigned.\n"
     }
   ],
 
@@ -46,11 +64,12 @@
   },
 
   "predictions": {
-    "H_recency_only": "Same-role TV(A1A2,A2A1) is comparable to cross-role TV(AB,BA). Order effects are from recency/position, not content. No native monoid structure.",
-    "H_content_noncommutative": "Cross-role TV(AB,BA) >> same-role TV(A1A2,A2A1). Order effect is content-dependent. Genuine non-scalar monoid action.",
-    "decisive_criterion": "Cross-role median TV exceeds same-role max TV AND exceeds eps_eq. Must hold across multiple prevalidated representative pairs to establish class-level (not string-level) noncommutativity."
+    "H_recency_only": "Same-role TV(A1A2,A2A1) is comparable to cross-role TV(AB,BA). Despite 3-4x a_u differences within class, order effects are purely positional.",
+    "H_content_noncommutative": "Cross-role TV(AB,BA) >> same-role TV(A1A2,A2A1). The ASSERT→MISLEADING vs MISLEADING→ASSERT order matters content-dependently. K_u operators from different semantic classes do not commute.",
+    "decisive_criterion": "Cross-role median TV exceeds same-role max TV AND exceeds eps_eq=0.01.",
+    "strength_note": "Same-role controls use maximally different a_u pairs (3.8x and 2.9x contrast), making recency rejection conservative."
   },
 
-  "estimated_calls": "3 pairs x 5 conditions x 24 contexts = 360 calls, ~7.5 min CPU",
+  "estimated_calls": "4 pairs x 5 conditions x 24 contexts = 480 calls, ~10 min CPU",
   "result_dir": "experiments/results/svb_qwen3_composition"
 }
