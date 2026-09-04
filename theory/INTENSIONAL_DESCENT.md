@@ -642,8 +642,12 @@ survive cheap baselines (F6).
 
 1. ~~Codex review of theorem attempt~~ — DONE (v2 repairs adopted).
 2. ~~Gate 1 (semantic descent)~~ — CONFIRMED. +0.092 (t=21.23). Holdout +0.121.
-3. Gate 1b (confound control) — RUNNING. 2×2 content × var-mention ANOVA.
-4. Gate 2 (composition/noncommutativity) — DESIGNED with recency controls.
-   Cross-role TV must exceed same-role TV. Surfaces from Gate 1b prevalidation.
-5. If Gate 2 passes: Gate 3 (causal transfer, requires GPU).
+3. ~~Gate 1b (confound control)~~ — COMPLETE. Content dominates 6.3x over
+   var-mention. Lumpability R2=0.79–0.98: K_u well-defined on (C,L,R).
+   Surface-specific a_u (within-class CV 0.33–0.51). Surface equivalence weak.
+4. Gate 2 (composition/noncommutativity) — RUNNING. Operator-level design:
+   maximally contrasting same-role controls (3.8x and 2.9x a_u range within
+   class). Cross-role TV must exceed same-role TV.
+5. If Gate 2 passes: Gate 3 (causal relay-state composition, requires GPU).
+   Design: theory/GATE3_DESIGN.md.
 6. Cross-model replication if all gates pass.
