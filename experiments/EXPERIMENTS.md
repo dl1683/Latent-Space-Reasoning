@@ -5,17 +5,28 @@ Program opened 2026-08-27; prior program's log is at `legacy/experiments/EXPERIM
 
 ---
 
-## CEG-1: Causal Erasure Graph v1 (2026-09-04, COMPLETE — RELAY VERDICT)
+## CEG-1: Causal Erasure Graph v1 (2026-09-04, COMPLETE — REVISE / NO_INTERFACE)
 
 Distance from claim: 0.
 
 Where does dead information live when a transformer retains overwritten facts?
 Custom 4D attention mask interventions on Qwen3-1.7B-Base (eager attention,
-full forward passes, no KV cache). 16 fixed-slot histories × 4 renderings
-(2 calibration, 2 held-out), 6 intervention arms. 914 CPU forwards, 259s.
+full forward passes, no KV cache). 16 fixed-slot histories × 4 identifier sets,
+6 intervention arms. 914 CPU forwards, 259s.
 
-**Verdict: RELAY.** Dead information reaches the query through attention relay
-into live-write representations, not only through direct query→dead KV access.
+**Verdict (Codex Evidence Gate, audit #38): REVISE.** The original RELAY headline
+does not pass. Competence preflight failed (83.6% < 95%); binding design required
+NO_INTERFACE. RELAY-CUT Δ=0 is tautological (downstream positions see only
+pair-identical tokens). The residual under QUERY-CUT is channel-nonspecific.
+
+**Licensed sentence (Codex, verbatim):** In this fixed-slot Qwen3-1.7B-Base
+panel, changing overwritten assignments altered normalized binary response
+profiles, and after direct query-to-early-span attention was cut an indirect,
+identifier-consistent excess over matched dummy cuts remained (mean max-channel
+TV excess 0.101); however, the residual was channel-nonspecific and observed
+after a failed competence preflight, so CEG-1 identifies bounded
+attention-mediated context dependence, not semantic relay of dead information
+in competent computation.
 
 **Apparatus validation:**
 - Fixture: OPEN mask reproduces standard inference exactly (TV=0.00)
@@ -23,31 +34,42 @@ into live-write representations, not only through direct query→dead KV access.
 - Isochrony: 0 failures across 256 rendered histories
 - Tokenization: clean concatenation for all histories
 
-**Key results:**
-- Dead-content effect: standard OPEN Δ=0.406, dummy OPEN Δ=0.105 (ratio 3.88x)
-- RELAY-CUT: Δ=0.000 for ALL 96 pairs — 100% erasure, all pairs, all renderings
-- QUERY-CUT: Δ=0.194 (mean erasure: median 54%, but mean -24% due to outliers)
-- LIVE-CUT: Δ=0.934 (positive control, massive damage as expected)
-- SYNCHRONIZER: Δ=0.267 (mean erasure 22%, live-value restatement doesn't reset)
-- Calibration vs held-out: consistent (OPEN 0.365 vs 0.447, RELAY-CUT 0.000 vs 0.000)
-- Competence: 83.6% (below 95% threshold; continuing per Codex guidance)
+**Key results (post-audit):**
+- OPEN Δ=0.406 (accuracy 83.6%; r0=71.9%, r1=95.3%)
+- QUERY-CUT Δ=0.194 (accuracy 64.1%; channel specificity disappears)
+- RELAY-CUT Δ=0.000 (accuracy 100%; tautological by mask design)
+- LIVE-CUT Δ=0.934 (positive control)
+- SYNCHRONIZER Δ=0.267 (accuracy 89.1%)
+- Dummy OPEN Δ=0.105 (accuracy 96.1%)
+- Paired excess (QUERY-CUT − DUMMY-CUT): 0.101, bootstrap CI [0.050, 0.152]
+- Target vs orthogonal excess: 0.062 vs 0.061 (nonspecific)
 
-**Pathway decomposition (from QUERY-CUT vs RELAY-CUT gap):**
-When the query cannot attend directly to dead-write tokens (QUERY-CUT), ~48%
-of the dead-content effect persists. This residual is eliminated only by
-RELAY-CUT, which also blocks live-write tokens from attending to dead tokens.
-Therefore: live-write positions absorb dead information via attention, and the
-query reads it indirectly from them.
+**Audit corrections (adopted verbatim):**
+1. RELAY-CUT=0 is a tautology: downstream positions see pair-identical inputs.
+2. "52/48 pathway split" used arm-specific channel maxima and is invalid.
+   Dummy-adjusted ratio is 33/67.
+3. Under QUERY-CUT, register-specific effect disappears: target and orthogonal
+   channels show equal excess. Residual is broadcast context sensitivity.
+4. Four "renderings" = one syntax with four identifier pairs (name robustness,
+   not template generalization).
+5. SYNCHRONIZER rejects one string, not synchronization or irreversibility.
+6. Design omitted target/orthogonal effects, CDFs, clustered bootstrap,
+   full-vocab accuracy, replay noise, and model revision binding.
+7. Mean erasure ratio (−24%) is an unstable ratio statistic driven by 3 extreme
+   outliers at small OPEN denominators; "blocking direct access amplifies relay"
+   is not identified. Ratio of arm means shows 52.3% reduction.
+8. Measurement-to-artifact ratio: 506:0 (infinite).
 
-**Confounds and caveats:**
-- RELAY-CUT Δ=0 is mathematically expected (positions 10+ see only identical
-  tokens) — the scientific content is in the QUERY-CUT residual
-- QUERY-CUT mean erasure is negative (-24%) because some pairs show INCREASED
-  effect under QUERY-CUT (blocking direct access amplifies relay artifacts)
-- Competence below threshold limits claims about competent computation
-- QUERY-CUT residual (0.194) only partly above dummy baseline (0.105)
+**Never say:** "Dead information persists through attention relay into live-write
+representations; roughly 48% is relayed, and the failed synchronizer shows that
+this relay is irreversible."
 
-**Codex Evidence Gate:** Pending.
+**Real non-tautological finding:** RELAY-CUT raises accuracy from 83.6% to 100%.
+A hard attention reset at the first live write erases earlier interference and
+recovers every binary answer. This is an architectural hole: the append-only
+carrier lacks an endogenous overwrite boundary.
+
+**Next:** CEG-1R (terminal pretrained-Qwen localization test) or close Qwen path.
 
 Config: `config/ceg_1.json`. Result: `results/ceg_1/result.json`.
 

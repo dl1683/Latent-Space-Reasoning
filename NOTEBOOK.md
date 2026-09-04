@@ -4,31 +4,35 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
-### CEG-1 RESULT: RELAY — dead info relayed through attention (2026-09-04)
+### CEG-1 Evidence Gate: REVISE — bounded context dependence, not relay (2026-09-04)
+
+Codex Evidence Gate (audit #38) returned REVISE / formal NO_INTERFACE. The
+RELAY headline does not pass. Corrections adopted verbatim.
+
+**Key corrections:**
+1. RELAY-CUT Δ=0 is tautological — downstream positions see only pair-identical
+   tokens. Not an empirical finding.
+2. Under QUERY-CUT, register-specific dead-value effect disappears: target and
+   orthogonal channels show equal excess (0.062 vs 0.061). Residual is broadcast
+   context sensitivity, not semantic relay.
+3. "52/48 pathway split" is invalid — used arm-specific channel maxima.
+4. Competence preflight failed (83.6% < 95%); binding design required NO_INTERFACE.
+5. Measurement-to-artifact ratio: infinite (506:0).
+
+**What survives:** Paired excess (QUERY-CUT − DUMMY-CUT) = 0.101, bootstrap CI
+[0.050, 0.152], p=0.001 at block level. A hard attention reset at first live
+write recovers 100% accuracy — the append-only carrier lacks an endogenous
+overwrite boundary. One canonical restatement is not an ε-synchronizer.
+
+**Next:** CEG-1R (terminal Qwen localization test) or close Qwen path entirely.
+
+---
+
+### CEG-1 RESULT: RELAY (pre-audit) — dead info relayed through attention (2026-09-04)
 
 914 forwards, 259s. Custom 4D attention masks, eager attention, full forward
 passes. Fixture perfect (TV=0.00), mask effectiveness confirmed (TV=0.856).
-
-**Finding:** RELAY-CUT (block live+ positions from attending to dead tokens)
-eliminates 100% of dead-content effect — ALL 96 pairs, ALL renderings,
-EXACTLY zero. QUERY-CUT (block only query→dead) leaves ~48% residual.
-SYNCHRONIZER (live-value restatement) only 22% erasure.
-
-**Mechanism:** Live-write positions (tokens 10-19) attend to dead-write tokens
-(0-9) and absorb their content into their representations. The query then
-reads this relayed information from the live positions. Two pathways:
-~52% direct (query→dead KV), ~48% relay (query→live→dead).
-
-**Controls:** Dead-content effect 3.88x above dummy-register baseline
-(standard Δ=0.406 vs dummy Δ=0.105). LIVE-CUT positive control: Δ=0.934
-(masks work). Calibration vs held-out: consistent.
-
-**Caveats:** Competence 83.6% (below 95%). RELAY-CUT=0 is mathematically
-expected given mask design — scientific content in QUERY-CUT residual.
-QUERY-CUT mean erasure negative (-24%) due to outlier pairs where blocking
-direct access amplifies the effect.
-
-**Next:** Codex Evidence Gate. Then characterize the relay algebraically.
+Original RELAY verdict superseded by Evidence Gate above.
 
 ---
 

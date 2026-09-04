@@ -1,24 +1,58 @@
 # STATE
 
-## CEG-1 result: RELAY — attention-mediated information relay (2026-09-04)
+## CEG-1 result: REVISE / formal NO_INTERFACE — bounded context dependence (2026-09-04)
 
 **CEG-1 (Codex strategic design):** Custom 4D attention masks on Qwen3-1.7B-Base
-(eager attention, full forward passes). 16 fixed-slot histories × 4 renderings,
-6 intervention arms. 914 forwards, 259s CPU.
+(eager attention, full forward passes). 16 fixed-slot histories × 4 identifier
+sets, 6 intervention arms. 914 forwards, 259s CPU.
 
-**Verdict: RELAY.** Dead information persists through attention relay into
-live-write representations. Two pathways:
-- ~52% direct: query tokens attend to dead-write KV cells
-- ~48% relay: live-write tokens attend to dead-write tokens, query reads relayed info
+**Verdict (Codex Evidence Gate, audit #38): REVISE.** The original RELAY headline
+does not pass. Competence preflight failed (83.6% < 95% threshold); the binding
+design required NO_INTERFACE. RELAY-CUT Δ=0.000 is tautological (all downstream
+positions see only pair-identical tokens once the cut disconnects the graph).
 
-**Key numbers:** RELAY-CUT Δ=0.000 (100% erasure, all 96 pairs). QUERY-CUT
-Δ=0.194 (partial, ~52% median erasure). LIVE-CUT Δ=0.934 (positive control).
-SYNCHRONIZER Δ=0.267 (live restatement: only 22% erasure). Dead-content effect
-3.88x above dummy baseline. Replicates across 4 rendering templates.
+**Licensed sentence (Codex, verbatim):** In this fixed-slot Qwen3-1.7B-Base
+panel, changing overwritten assignments altered normalized binary response
+profiles, and after direct query-to-early-span attention was cut an indirect,
+identifier-consistent excess over matched dummy cuts remained (mean max-channel
+TV excess 0.101); however, the residual was channel-nonspecific and observed
+after a failed competence preflight, so CEG-1 identifies bounded
+attention-mediated context dependence, not semantic relay of dead information
+in competent computation.
 
-**Caveats (pre-Evidence-Gate):** Competence 83.6%. RELAY-CUT=0 is mathematically
-expected given mask design — scientific content is in the QUERY-CUT residual.
-QUERY-CUT residual (0.194) only partly above dummy baseline (0.105).
+**Key numbers (post-audit):**
+- OPEN Δ=0.406 (accuracy 83.6%; r0=71.9%, r1=95.3%)
+- QUERY-CUT Δ=0.194 (accuracy 64.1%; channel specificity disappears)
+- RELAY-CUT Δ=0.000 (accuracy 100%; tautological by mask design)
+- LIVE-CUT Δ=0.934 (positive control)
+- SYNCHRONIZER Δ=0.267 (accuracy 89.1%; one string rejected, not synchronization)
+- Dummy OPEN Δ=0.105 (accuracy 96.1%)
+- Paired excess (QUERY-CUT minus DUMMY-CUT): 0.101, bootstrap CI [0.050, 0.152]
+- Target vs orthogonal excess under QUERY-CUT: 0.062 vs 0.061 (nonspecific)
+
+**Audit corrections adopted verbatim:**
+1. RELAY-CUT=0 is a tautology of the intervention, not an empirical finding.
+2. The "52/48 pathway split" used arm-specific maxima across channels and cannot
+   support an additive decomposition. Dummy-adjusted ratio is 33/67.
+3. Under QUERY-CUT, register-specific dead-value effect disappears: target and
+   orthogonal channels show equal excess over dummy. The residual is broadcast
+   context sensitivity, not semantic relay.
+4. Four "renderings" are one syntax with four identifier pairs — name robustness,
+   not held-out template generalization.
+5. SYNCHRONIZER rejects one string, not synchronization or irreversibility.
+6. Design omitted target/orthogonal effects, empirical CDFs, clustered bootstrap
+   intervals, full-vocabulary accuracy, replay noise, and model revision binding.
+
+**Never say:** "Dead information persists through attention relay into live-write
+representations; roughly 48% is relayed, and the failed synchronizer shows that
+this relay is irreversible."
+
+**Measurement-to-artifact ratio:** 506 apparatus lines to 0 construction lines
+(infinite). One-more-test cap is binding.
+
+**Next: CEG-1R** (terminal pretrained-Qwen localization test). If NO_INTERFACE
+or fail → close Qwen path-dependence line, construct latent substrate with
+explicit write boundary.
 
 ---
 
