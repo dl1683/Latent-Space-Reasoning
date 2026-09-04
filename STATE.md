@@ -24,10 +24,21 @@ failure — even more decisive. CRC on Qwen3-1.7B-Base is closed.
 4. Even repeated identical writes change behavior (idempotence fails at 37.9%).
 5. The apparatus works (Mode F ~0, tokenization clean, clique-verified).
 
+**Cross-framework convergence (strong finding):** CRC-1 (Qwen3-1.7B, Python
+registers) confirms the same primacy bias and non-commutation found by
+predictive_setter_algebra_v1 (Qwen3-0.6B, natural language entity-value
+pairs). Two models, two formalisms, three instruments — same pattern. This
+is a **structural property of transformer sequential state processing**:
+early facts dominate, independent writes interfere, identical repetitions
+change behavior. Competence position analysis: 100% correct when queried
+register's last write is the final line, 75% when it's not (model predicts
+the overwritten value in all 8 failures).
+
 **Open question:** What is the next approach? CRC as a discovery engine is
 done for this transformer. Options: (a) constructive — build/find a model
 with explicit state bottleneck, (b) different instrument — not refinement
-towers but something else, (c) different model at its capacity limit.
+towers but something else, (c) different model at its capacity limit,
+(d) characterize the commitment/primacy structure itself as the native math.
 
 ---
 
