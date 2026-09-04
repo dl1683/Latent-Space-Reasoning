@@ -12,24 +12,33 @@ inference.
 Key structure: P →J→ I →q→ D factorization. Model's action factors through
 intensional quotient I but NOT through extensional denotation D.
 
+**Algebraic structure (Codex-derived):** I = P/≡_M is a **transformation monoid**
+(not a group) acting on behavioral places, isomorphic to im(α) ⊆ End(Q_M).
+Graded by denotation via q: I → im(E). The identity fiber EqWit = ker(E)/≡_M
+is a submonoid. If the leakage observable satisfies a separable depth-scaling law,
+χ: EqWit → (R≥0, ×) is a **multiplicative character** of the monoid.
+
 **Distance from central claim: 0.** This IS the native math claim.
 
-**Three sequential gates:**
-- Gate 1 (Semantic Descent): Does behavior follow intensional role, not surface
-  form? PRELIMINARY POSITIVE — MISLEADING_ASSERT L=0.114 vs ASSERT L=0.034
-  (+0.080 diff, 3.3x). Model follows content, not just form. BUT: variable-mention
-  confound identified (MISLEADING_ASSERT mentions var, ASSERT doesn't). Gate 1b
-  (2x2 confound control) designed and ready to run.
+**Gate progression:**
+- Gate 1 (Semantic Descent): CONFIRMED — ASSERT L=0.032, MISLEADING_ASSERT
+  L=0.124, diff=+0.092 (t=21.23). Holdout: +0.121. Depth-scaling ~4x ratio
+  across all depths (3.7, 3.9, 4.0). Variable-mention confound identified.
+  Gate 1b (2×2 content × var-mention crossover) running now.
+- Gate 1b (Confound Control): IN PROGRESS. 2×2 ANOVA + fiber-square test +
+  multiplicative character promotion ladder. Also tests newline/pass idempotence.
 - Gate 2 (Composition): Do witness transport operators compose predictably?
   BLOCKED on Gate 1b.
 - Gate 3 (Causal Transfer): Can witness state be transplanted between
-  extensionally equivalent histories? BLOCKED on Gate 2.
+  extensionally equivalent histories? BLOCKED on Gate 2, requires GPU.
+
+**Idempotent test (Codex):** Newline FAILS — b≈b² but b²≉b³ (transient plateau).
+Next candidate: pass\n at d4 only, 48 calls. Config ready.
 
 **Active confound:** MISLEADING_ASSERT surfaces mention the variable name
-(3/4 do), while ASSERT surfaces don't. The +0.080 L difference could be a
-variable-mention effect rather than content sensitivity. Gate 1b adds
-ASSERT_VAR (true assertions + var mention) and MISLEADING_ASSERT_NOVAR
-(misleading assertions - var mention) to disentangle.
+(3/4 do), while ASSERT surfaces don't. The +0.092 L difference could be partly a
+variable-mention effect. Gate 1b adds ASSERT_VAR (true assertions + var mention)
+and MISLEADING_ASSERT_NOVAR (misleading assertions - var mention) to disentangle.
 
 **Kill conditions:** F0-F9 in theory/INTENSIONAL_DESCENT.md. F6 (baseline)
 requires nested ladder M_state < M_cheap < M_cheap+role per Codex.

@@ -4,6 +4,35 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### CODEX FOLLOW-UP: Idempotent test + multiplicative character theory (2026-09-04)
+
+Codex Architecture Theorist follow-up on two questions from Gate 1 results.
+
+**1. Idempotent test — newline FAILS:**
+Zero-call screen from existing Gate 1 data: b="\n", b²="\n\n", b³="\n\n\n".
+TV(b,b²)=0.003 (near-equivalent), TV(b²,b³)=0.027 (clearly separated).
+True idempotence b²=b ⟹ b³=b²=b, but b³ departs. Transient plateau,
+not stable monoid relation. Cheapest next test: `pass\n` at d4 only,
+48 calls. If that fails, `type(x)` for another 48.
+
+**2. Multiplicative 4x ratio — observable constraint, not operator:**
+The stable MISLEADING/ASSERT L ratio (~4x across depths) constrains only
+ℓ∘K_M and ℓ∘K_A on three aggregated inputs. Does NOT imply K_M = 4·K_A.
+Codex derives the consistent operator family: K_a(C,L,R) = (C+(1-a)L, aL, R),
+composing as K_a·K_b = K_{ab}. If confirmed, χ: EqWit → (R≥0, ×) would be
+a multiplicative character (one-dimensional representation of the monoid).
+
+**Promotion ladder** (each step requires the previous):
+1. Stable cellwise ratio (not just depth means)
+2. R-preservation + S-preservation (coordinate action)
+3. Surface descent (paraphrases in same class yield same a_u)
+4. Composition: a_{uv} ≈ a_u·a_v on unseen compositions
+
+Gate 1b BASELINE role enables step 1 testing. Steps 3-4 need further experiments.
+
+Theory updated: transformation monoid + denotational grading + multiplicative
+character section added to INTENSIONAL_DESCENT.md. Committed and pushed.
+
 ### GATE 1 COMPLETE + CONFOUND DIAGNOSTIC + GATE 1b LAUNCHED (2026-09-04)
 
 Gate 1 re-run completed (2835 calls, 31.6 min — slower due to duplicate process contention).
