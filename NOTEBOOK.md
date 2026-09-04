@@ -4,6 +4,37 @@ Reverse-chronological running log. Newest first. Each entry: what was done, what
 was learned, what's next. Canonical state lives in STATE.md.
 
 
+### GATE 1b COMPLETE: CONTENT DOMINATES, LUMPABILITY STRONG (2026-09-04)
+
+3,384 calls across 8 roles × 3 depths × 3 vars × 8 values. ~100 min CPU.
+
+**Key results:**
+1. **2×2 ANOVA: content dominates at 6.3x** (content effect +0.0915 vs var-mention
+   +0.0145). Per depth: d2=32x, d3=6x, d4=4.9x. Replicates on holdout. The
+   +0.092 ASSERT→MISLEADING difference is overwhelmingly content-driven.
+
+2. **Lumpability: STRONG (R2 0.79–0.98).** Contexts with similar baseline (C,L,R)
+   produce similar post-suffix (C,L,R). K_u is approximately a well-defined
+   operator on the simplex. BOUNDARY (0.98) and MISLEADING_ASSERT (0.96) are
+   near-perfect. This means the (C,L,R) projection captures most of the information
+   the model uses to determine post-suffix behavior.
+
+3. **Surface equivalence: WEAK.** Only 1 cross-role pair in class A passes at
+   eps_eq=0.01 (ASSERT:"State unchanged" ↔ ASSERT_VAR:"{var} is unchanged",
+   max TV=0.009). Class M has zero qualifying pairs. The multiplicative character
+   a_u is surface-specific (within-class CV 0.33–0.51), not class-invariant.
+
+4. **K_a vs logit-bias: INCONCLUSIVE.** Cross-fit has no holdout data. R-preservation
+   tentatively favors K_a (ASSERT dR=−0.007, MISLEADING dR=+0.003, both small).
+
+**Implications for Gate 2:** Content dominance unblocks noncommutativity testing
+but surface equivalence constrains it. For class A we have one validated pair.
+For class M we need either a relaxed threshold or different surfaces. The
+lumpability result is the strongest positive: it means the (C,L,R) simplex IS
+the right coordinate system for studying suffix operators.
+
+---
+
 ### CODEX NATIVE MATH THEORY FOUNDATIONS (2026-09-04)
 
 Codex Architecture Theorist (session 01a06c67) on what native latent-space

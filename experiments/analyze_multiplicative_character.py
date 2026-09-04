@@ -165,7 +165,7 @@ def analyze_character(result_path):
     # Fingerprint difference: K_a preserves R; logit-bias rescales all non-shadow.
     print(f"\n--- STEP 4: K_a vs logit-bias rival (cross-fit) ---\n")
     print("  K_a:        L'=a·L, C'=C+(1-a)L, R'=R          (C-L exchange)")
-    print("  Logit-bias: b=e^δ, Z=1+(b-1)L, L'=bL/Z, R'=R/Z (uniform rescale)")
+    print("  Logit-bias: b=e^d, Z=1+(b-1)L, L'=bL/Z, R'=R/Z (uniform rescale)")
     print("  Fit on TRAIN split, predict HOLDOUT.\n")
 
     for role in ["ASSERT", "MISLEADING_ASSERT"]:
@@ -195,7 +195,7 @@ def analyze_character(result_path):
         b_u_fit = np.exp(delta_u_fit)
         print(f"  {role} (fitted on train):")
         print(f"    a_u = {a_u_fit:.4f}  (K_a parameter)")
-        print(f"    δ_u = {delta_u_fit:+.4f}, b = {b_u_fit:.4f}  (logit-bias parameter)")
+        print(f"    d_u = {delta_u_fit:+.4f}, b = {b_u_fit:.4f}  (logit-bias parameter)")
 
         ka_L_err, ka_R_err, ka_C_err = [], [], []
         lb_L_err, lb_R_err, lb_C_err = [], [], []

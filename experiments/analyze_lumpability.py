@@ -109,13 +109,13 @@ def analyze_lumpability(result_path):
             ss_res = np.sum((y - y_pred)**2)
             ss_tot = np.sum((y - y.mean())**2)
             r2 = 1 - ss_res / ss_tot if ss_tot > 0 else 0
-            print(f"    R²(bl_L → post_L) = {r2:.3f} (perfect lumpability = 1.0)")
+            print(f"    R2(bl_L -> post_L) = {r2:.3f} (perfect lumpability = 1.0)")
         print()
 
     # Summary
     print("=== LUMPABILITY SUMMARY ===\n")
-    print("If R² ≈ 1.0 for all roles: (C,L,R) projection is approximately lumpable.")
-    print("If R² << 1.0: the model uses information beyond (C,L,R) to determine")
+    print("If R2 ~ 1.0 for all roles: (C,L,R) projection is approximately lumpable.")
+    print("If R2 << 1.0: the model uses information beyond (C,L,R) to determine")
     print("post-suffix behavior. K_u is a fitted summary, not a well-defined operator.")
 
 

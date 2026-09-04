@@ -31,14 +31,29 @@ math claim rests on the full action α and its quotient structure, not χ.
 - Gate 1 (Semantic Descent): CONFIRMED — ASSERT L=0.032, MISLEADING_ASSERT
   L=0.124, diff=+0.092 (t=21.23). Holdout: +0.121. Depth-scaling ~4x ratio
   across all depths (3.7, 3.9, 4.0). Variable-mention confound identified.
-- Gate 1b (Confound Control): IN PROGRESS (~80 min of ~85). 2×2 ANOVA +
-  fiber-square + multiplicative character + K_a vs logit-bias cross-fit +
-  F6 baseline + F8 lumpability. Analysis pipeline ready.
+- Gate 1b (Confound Control): COMPLETE.
+  - 2×2 ANOVA: CONTENT DOMINATES at 6.3x (content +0.0915 vs var-mention +0.0145).
+    Per depth: d2=32x, d3=6x, d4=4.9x. Replicates on holdout.
+  - Lumpability (F8): STRONG (R2 0.79–0.98 all roles). The (C,L,R) simplex
+    projection is approximately lumpable — K_u is a well-defined operator on
+    the simplex, not just a fitted summary. BOUNDARY (0.98) and MISLEADING_ASSERT
+    (0.96) near-perfect.
+  - Multiplicative character: Step 1 PASS (cellwise ratio CV=0.214). Step 3:
+    within-class CV 0.33–0.51 — a_u is NOT class-invariant, it is surface-specific.
+    Step 4: K_a vs logit-bias cross-fit INCONCLUSIVE (no holdout data).
+  - R-preservation: ASSERT dR=−0.0066, MISLEADING dR=+0.0028 (both small,
+    tentatively favoring K_a over logit-bias).
+  - Surface equivalence: Class A has 1 cross-role pair at eps_eq=0.01
+    (ASSERT:"State unchanged" ↔ ASSERT_VAR:"{var} is unchanged", max TV=0.009).
+    Class M has ZERO qualifying pairs (best=0.022). Between-class p5=0.024.
+  - F6 Baseline: MARGINAL (+0.0064 TV over cheap features).
 - Gate 2 (Noncommutativity): REDESIGNED per Codex review. Tests order-dependence
   of E-null suffix pairs. Both K_a matrices AND logit biases commute, so
   noncommutativity defeats both scalar models simultaneously. Config revised
-  with same-role recency controls (360 calls, ~7.5 min). BLOCKED on Gate 1b
-  surface prevalidation. Codex design gate: REVISE (recency confound).
+  with same-role recency controls (360 calls, ~7.5 min). Codex design gate:
+  REVISE (recency confound). PARTIALLY UNBLOCKED: Class A has one validated
+  pair (ASSERT:"State unchanged" ↔ ASSERT_VAR:"{var} is unchanged"). Class M
+  has NO validated pair at eps_eq=0.01 — need relaxed threshold or new surfaces.
 - Gate 3 (Causal Relay-State Composition): Codex-designed decisive experiment.
   Compile operations into relay states at declared layer-position cut, mask
   original tokens, predict unseen compositions from atomic table, transplant
